@@ -15,7 +15,11 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "types": ["vitest/globals"]
+    "types": ["vitest/globals"],
+    "paths": {
+      "@p31/shared": ["../packages/shared/src"],
+      "@p31/shared/*": ["../packages/shared/src/*"]
+    }
   },
   "include": ["src"]
 }
