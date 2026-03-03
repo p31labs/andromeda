@@ -5,6 +5,9 @@
     "bonding",
     "spaceship-earth",
     "packages/shared",
+    "packages/node-zero",
+    "packages/game-engine",
+    "packages/love-ledger",
     "extensions/*"
   ]
 }
