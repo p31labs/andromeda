@@ -8,13 +8,13 @@ import { BridgeRoom } from './BridgeRoom';
 import { RoomNav } from '../navigation/RoomNav';
 import { CockpitHUD } from '../hud/CockpitHUD';
 import { useLoveSync } from '../../hooks/useLoveSync';
+import { useBondingHandshake } from '../../hooks/useBondingHandshake';
 
 export function RoomShell() {
   const [activeRoom, setActiveRoom] = useState<RoomId>('observatory');
   const [spoons] = useState(12);
   const [maxSpoons] = useState(20);
-  // sessionId will arrive via postMessage from BONDING iframe in a future WCD
-  const [sessionId] = useState<string | null>(null);
+  const sessionId = useBondingHandshake();
   const syncedLove = useLoveSync(sessionId);
   // Fallback to 577 until BONDING postMessage delivers the sessionId
   const love = syncedLove > 0 ? syncedLove : 577;

@@ -132,6 +132,18 @@ export async function genesisInit(config: GenesisConfig): Promise<() => void> {
     });
   });
 
+  // M12: Broadcast economy state to parent frame (Spaceship Earth)
+  const unsubLove = useEconomyStore.subscribe((state, prev) => {
+    if (state.totalLove === prev.totalLove) return;
+    if (window.parent === window) return; // standalone — no-op
+    try {
+      window.parent.postMessage({
+        type: 'P31_BONDING_STATE',
+        payload: { sessionId, totalLove: state.totalLove, ts: Date.now() },
+      }, '*');
+    } catch { /* swallow */ }
+  });
+
   // Log genesis block opening event
   void telemetryAddEvent('session_started', {
     playerId,
@@ -154,6 +166,7 @@ export async function genesisInit(config: GenesisConfig): Promise<() => void> {
     unsubPingReceived();
     unsubDifficultyChanged();
     unsubBugReport();
+    unsubLove();
     detachLifecycle();
     telemetryCleanup();
   };
