@@ -36,3 +36,4 @@ build/
 *.o
 *.elf
 *.bin
+.git-backup/
