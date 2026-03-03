@@ -25,6 +25,11 @@ vi.mock('../engine/sound', () => ({
   playQuestStep: vi.fn(),
   playQuestComplete: vi.fn(),
   playModeSelect: vi.fn(),
+  playSelectBlip: vi.fn(),
+  playReject: vi.fn(),
+  initAudio: vi.fn(),
+  isMuted: vi.fn(() => false),
+  setMuted: vi.fn(),
 }));
 
 vi.mock('../engine/haptic', () => ({

@@ -1,42 +1,32 @@
 // ═══════════════════════════════════════════════════════
 // BONDING — P31 Labs
-// LoveCounter: persistent LOVE token display
+// LoveCounter: cross-session LOVE display (Rev B)
 //
-// Shows total accumulated L.O.V.E. tokens at top center.
-// Pops on increment via CSS animation class.
-// Only visible after first LOVE is earned.
+// Rev B change: reads from economyStore (IndexedDB-backed)
+// instead of gameStore (session-only). Gates on _hasHydrated
+// to avoid showing 0 during async IDB rehydration.
 // ═══════════════════════════════════════════════════════
 
-import { useEffect, useRef, useState } from 'react';
-import { useGameStore } from '../store/gameStore';
+import { useEconomyStore } from '../genesis/economyStore';
 
 export function LoveCounter() {
-  const loveTotal = useGameStore((s) => s.loveTotal);
-  const [isPop, setIsPop] = useState(false);
-  const prevTotal = useRef(0);
+  const totalLove = useEconomyStore((s) => s.totalLove);
+  const currentStreak = useEconomyStore((s) => s.currentStreak);
+  const hasHydrated = useEconomyStore((s) => s._hasHydrated);
 
-  useEffect(() => {
-    if (loveTotal > prevTotal.current) {
-      setIsPop(true);
-      const timer = setTimeout(() => setIsPop(false), 400);
-      prevTotal.current = loveTotal;
-      return () => clearTimeout(timer);
-    }
-    prevTotal.current = loveTotal;
-  }, [loveTotal]);
+  // Don't show stale 0 during IndexedDB hydration
+  if (!hasHydrated) return null;
+  if (totalLove === 0) return null;
 
-  if (loveTotal === 0) return null;
-
+  // WCD-08: Absolute positioning stripped — now a flex child inside TopBar.
+  // (This component is superseded by the inline LoveCounter in TopBar.tsx.)
   return (
-    <div
-      className={`
-        absolute top-6 left-1/2 -translate-x-1/2
-        text-base font-semibold font-mono text-love
-        pointer-events-none transition-opacity duration-400
-        ${isPop ? 'love-pop' : ''}
-      `}
-    >
-      ♥ {loveTotal} L.O.V.E.
+    <div className="flex items-center gap-2 font-mono text-lg font-bold text-[#FFD700] pointer-events-none">
+      <span className="text-xl">💛</span>
+      <span>{totalLove % 1 === 0 ? totalLove.toFixed(0) : totalLove.toFixed(1)}</span>
+      {currentStreak > 1 && (
+        <span className="text-xs opacity-70">🔥 {currentStreak}d</span>
+      )}
     </div>
   );
 }

@@ -1,0 +1,8 @@
+name = "bonding-relay"
+main = "worker/telemetry.ts"
+compatibility_date = "2024-02-28"
+
+[[kv_namespaces]]
+binding = "TELEMETRY_KV"
+id = "60a6817aed314eb0bc988d0ac5296f2c"
+preview_id = "60a6817aed314eb0bc988d0ac5296f2c"

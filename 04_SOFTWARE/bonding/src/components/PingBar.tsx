@@ -12,6 +12,8 @@ import { useState, useCallback } from 'react';
 import { useGameStore } from '../store/gameStore';
 import { sendPing } from '../lib/gameSync';
 import { logEventA } from '../engine/exhibitA';
+import { eventBus, GameEventType } from '../genesis/eventBus';
+import { generateFormula } from '../engine/chemistry';
 
 const REACTIONS = ['\u{1F49A}', '\u{1F914}', '\u{1F602}', '\u{1F53A}']; // 💚 🤔 😂 🔺
 
@@ -19,6 +21,7 @@ export function PingBar() {
   const remotePlayers = useGameStore((s) => s.remotePlayers);
   const roomCode = useGameStore((s) => s.roomCode);
   const playerName = useGameStore((s) => s.playerName);
+  const atoms = useGameStore((s) => s.atoms);
   const [sentFlash, setSentFlash] = useState<string | null>(null);
 
   const handlePing = useCallback(async (reaction: string) => {
@@ -31,6 +34,12 @@ export function PingBar() {
         from: playerName || 'Player',
         to: player.name,
         reaction,
+      });
+      // Genesis: PING_SENT
+      eventBus.emit(GameEventType.PING_SENT, {
+        reaction,
+        targetPlayerId: player.id,
+        moleculeId: generateFormula(atoms),
       });
     }
 

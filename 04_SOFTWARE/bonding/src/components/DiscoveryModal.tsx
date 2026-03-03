@@ -9,6 +9,7 @@
 import { useState } from 'react';
 import { useGameStore } from '../store/gameStore';
 import { validateDiscoveryName } from '../engine/discovery';
+import { FormulaDisplay } from './FormulaDisplay';
 
 export function DiscoveryModal() {
   const pendingDiscovery = useGameStore((s) => s.pendingDiscovery);
@@ -53,9 +54,9 @@ export function DiscoveryModal() {
           NEW DISCOVERY!
         </h2>
 
-        {/* Formula */}
+        {/* WCD-32: Formula via FormulaDisplay for universal <sub> rendering */}
         <p className="text-3xl font-black text-white mb-2">
-          {pendingDiscovery.displayFormula}
+          <FormulaDisplay formula={pendingDiscovery.displayFormula} />
         </p>
         <p className="text-sm text-white/40 mb-5">
           This molecule has never been catalogued. Name it!

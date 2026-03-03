@@ -10,8 +10,28 @@
 // ═══════════════════════════════════════════════════════
 
 let audioCtx: AudioContext | null = null;
+let muted = localStorage.getItem('bonding_muted') === 'true';
 
-function getCtx(): AudioContext {
+/**
+ * WCD-22: Initialize AudioContext on first user gesture.
+ * Must be called from a pointerdown/click handler.
+ */
+export function initAudio(): void {
+  if (audioCtx) return;
+  const Ctor = window.AudioContext
+    || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+  audioCtx = new Ctor();
+}
+
+export function isMuted(): boolean { return muted; }
+
+export function setMuted(value: boolean): void {
+  muted = value;
+  localStorage.setItem('bonding_muted', String(value));
+}
+
+function getCtx(): AudioContext | null {
+  if (muted) return null;
   if (!audioCtx) {
     const Ctor = window.AudioContext
       || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
@@ -29,6 +49,7 @@ function getCtx(): AudioContext {
  */
 export function playAtomNote(frequency: number): void {
   const ctx = getCtx();
+  if (!ctx) return;
   const now = ctx.currentTime;
   const osc = ctx.createOscillator();
   const gain = ctx.createGain();
@@ -54,6 +75,7 @@ export function playAtomNote(frequency: number): void {
  */
 export function playBondInterval(freq1: number, freq2: number): void {
   const ctx = getCtx();
+  if (!ctx) return;
   const now = ctx.currentTime;
 
   const playNote = (freq: number, startTime: number, type: OscillatorType) => {
@@ -86,6 +108,7 @@ export function playBondInterval(freq1: number, freq2: number): void {
  */
 export function playCompletionChord(frequencies: number[]): void {
   const ctx = getCtx();
+  if (!ctx) return;
   const now = ctx.currentTime;
 
   // Sort low→high for ascending arpeggio
@@ -142,6 +165,7 @@ export function playCompletionChord(frequencies: number[]): void {
  */
 export function playAchievementUnlock(): void {
   const ctx = getCtx();
+  if (!ctx) return;
   const now = ctx.currentTime;
   const notes = [523, 659, 784, 1047]; // C5, E5, G5, C6
 
@@ -169,6 +193,7 @@ export function playAchievementUnlock(): void {
  */
 export function playLoveChime(amount: number): void {
   const ctx = getCtx();
+  if (!ctx) return;
   const now = ctx.currentTime;
 
   // Higher pitch for larger amounts
@@ -195,6 +220,7 @@ export function playLoveChime(amount: number): void {
  */
 export function playPing(): void {
   const ctx = getCtx();
+  if (!ctx) return;
   const now = ctx.currentTime;
   const osc = ctx.createOscillator();
   const gain = ctx.createGain();
@@ -217,6 +243,7 @@ export function playPing(): void {
  */
 export function playPingEmoji(reaction: string): void {
   const ctx = getCtx();
+  if (!ctx) return;
   const now = ctx.currentTime;
 
   if (reaction === '\u{1F49A}') {
@@ -283,6 +310,7 @@ export function playPingEmoji(reaction: string): void {
  */
 export function playQuestStep(): void {
   const ctx = getCtx();
+  if (!ctx) return;
   const now = ctx.currentTime;
   const notes = [523, 659]; // C5, E5
 
@@ -310,6 +338,7 @@ export function playQuestStep(): void {
  */
 export function playQuestComplete(): void {
   const ctx = getCtx();
+  if (!ctx) return;
   const now = ctx.currentTime;
   const notes = [523, 659, 784, 1047, 1319]; // C5, E5, G5, C6, E6
 
@@ -338,6 +367,7 @@ export function playQuestComplete(): void {
  */
 export function playModeSelect(): void {
   const ctx = getCtx();
+  if (!ctx) return;
   const now = ctx.currentTime;
   const osc = ctx.createOscillator();
   const gain = ctx.createGain();
@@ -360,6 +390,7 @@ export function playModeSelect(): void {
  */
 export function playReject(): void {
   const ctx = getCtx();
+  if (!ctx) return;
   const now = ctx.currentTime;
   const osc = ctx.createOscillator();
   const gain = ctx.createGain();
@@ -381,6 +412,7 @@ export function playReject(): void {
  */
 export function playSelectBlip(frequency: number): void {
   const ctx = getCtx();
+  if (!ctx) return;
   const now = ctx.currentTime;
   const osc = ctx.createOscillator();
   const gain = ctx.createGain();
@@ -402,6 +434,7 @@ export function playSelectBlip(frequency: number): void {
  */
 export function playWhoosh(): void {
   const ctx = getCtx();
+  if (!ctx) return;
   const now = ctx.currentTime;
   const bufferSize = Math.floor(ctx.sampleRate * 0.1);
   const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);

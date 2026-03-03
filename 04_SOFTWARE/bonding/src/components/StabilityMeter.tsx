@@ -27,8 +27,8 @@ export function StabilityMeter() {
   const barColor = `rgb(${r}, ${g}, 0)`;
 
   return (
-    <div className="absolute top-6 right-6 flex items-center gap-3 bg-black/50 backdrop-blur-md p-3 px-5 rounded-2xl border border-white/10">
-      <span className={`text-lg font-bold font-mono ${knownFormulaMatch ? 'formula-checkpoint text-white' : 'text-white/80'}`}>
+    <div className="absolute right-6 flex items-center gap-3 p-3 px-5 max-w-[calc(100vw-5rem)] hud-text" style={{ minWidth: 0, top: 'calc(4rem + env(safe-area-inset-top, 0px))' }}>
+      <span className={`text-lg font-bold font-mono truncate ${knownFormulaMatch ? 'formula-checkpoint text-white' : 'text-white/80'}`} style={{ minWidth: 0, direction: 'ltr' }}>
         <FormulaDisplay formula={displayFormula(formula)} />
         {knownFormulaMatch && (
           <span className="text-xs text-emerald-400 ml-2 font-semibold">
@@ -36,7 +36,7 @@ export function StabilityMeter() {
           </span>
         )}
       </span>
-      <div className="w-28 h-[3px] bg-white/10 rounded-full overflow-hidden">
+      <div className="w-28 shrink-0 h-[3px] bg-white/10 rounded-full overflow-hidden">
         <div
           className={`h-full rounded-full transition-all duration-500 ${
             gamePhase === 'complete' ? 'stability-pulse' : ''
@@ -44,7 +44,7 @@ export function StabilityMeter() {
           style={{ width: `${percent}%`, backgroundColor: barColor }}
         />
       </div>
-      <span className="text-xs text-white/40 font-mono">{percent}%</span>
+      <span className="text-xs text-white/40 font-mono shrink-0">{percent}%</span>
     </div>
   );
 }

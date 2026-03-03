@@ -139,7 +139,13 @@ export function Lobby() {
   };
 
   return (
-    <div className="relative w-full h-screen bg-[#0a0a1a] flex flex-col items-center justify-center gap-6 select-none">
+    <div
+      className="relative w-full h-full bg-[#0a0a1a] flex flex-col items-center justify-center gap-6 select-none"
+      style={{
+        paddingTop: 'env(safe-area-inset-top, 0px)',
+        paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+      }}
+    >
       {/* Title */}
       <div className="text-center">
         <h1 className="text-3xl font-black tracking-tighter text-white/90 mb-1">

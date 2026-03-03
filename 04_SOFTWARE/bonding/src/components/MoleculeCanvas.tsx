@@ -10,15 +10,16 @@
 //   - All BondBeams
 //   - GhostSites (during drag)
 //   - DragPreview (during drag)
-//   - EffectComposer + Bloom (selective, luminance-threshold)
+//   - WCD-15: Bloom removed (AdditiveBlending on cores instead)
 //   - OrbitControls (auto-rotate when idle)
 // ═══════════════════════════════════════════════════════
 
-import { Suspense, useMemo } from 'react';
+import { Suspense, useMemo, useRef } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { OrbitControls, Stars, PerspectiveCamera } from '@react-three/drei';
+import { OrbitControls, Stars, PerspectiveCamera, Environment } from '@react-three/drei';
 import * as THREE from 'three';
-import { EffectComposer, Bloom } from '@react-three/postprocessing';
+// WCD-15: EffectComposer + Bloom removed — too heavy for tablet TBDR GPUs.
+// Glow now faked via AdditiveBlending on atom cores (see VoxelAtom.tsx).
 import { VoxelAtom } from './VoxelAtom';
 import { BondBeam } from './BondBeam';
 import { GhostSite } from './GhostSite';
@@ -60,6 +61,27 @@ function CoherenceArc() {
 }
 
 /**
+ * WCD-17: LivingVoid — slowly rotating starfield.
+ * One matrix multiply per frame. Tablet won't feel it,
+ * but users see the cosmos drifting.
+ */
+function LivingVoid() {
+  const ref = useRef<THREE.Group>(null);
+
+  useFrame((_, delta) => {
+    if (!ref.current) return;
+    ref.current.rotation.y -= delta * 0.015;
+    ref.current.rotation.x += delta * 0.005;
+  });
+
+  return (
+    <group ref={ref}>
+      <Stars radius={50} depth={50} count={3000} factor={4} saturation={0} fade speed={1} />
+    </group>
+  );
+}
+
+/**
  * Scene: all 3D content. Separated from Canvas for Suspense boundary.
  */
 function Scene() {
@@ -84,7 +106,7 @@ function Scene() {
     }
 
     const sites: {
-      atomId: number;
+      atomId: number | null;
       position: { x: number; y: number; z: number };
     }[] = [];
     for (const atom of atoms) {
@@ -96,6 +118,7 @@ function Scene() {
         });
       }
     }
+
     return sites;
   }, [atoms, dragging, gamePhase]);
 
@@ -110,16 +133,12 @@ function Scene() {
       <ambientLight intensity={0.2} />
       <pointLight position={[10, 10, 10]} intensity={1.5} color="#fffaf0" />
 
-      {/* Star field */}
-      <Stars
-        radius={100}
-        depth={50}
-        count={5000}
-        factor={4}
-        saturation={0}
-        fade
-        speed={1}
-      />
+      {/* WCD-15: Environment map — cheap cubemap for standard material reflections.
+          background={false} keeps our void/CoherenceArc background visible. */}
+      <Environment preset="city" background={false} />
+
+      {/* WCD-17: Living Void — rotating starfield */}
+      <LivingVoid />
 
       {/* Placed atoms — personality hints applied on completion */}
       {atoms.map((atom) => {
@@ -195,24 +214,16 @@ function Scene() {
       {/* Drag preview (follows pointer) */}
       <DragPreview />
 
-      {/* Post-processing: selective bloom */}
-      <EffectComposer>
-        <Bloom
-          mipmapBlur
-          luminanceThreshold={1.0}
-          luminanceSmoothing={0.3}
-          intensity={1.2}
-          resolutionX={256}
-          resolutionY={256}
-        />
-      </EffectComposer>
+      {/* WCD-15: Bloom removed. Glow faked via AdditiveBlending on cores. */}
 
-      {/* Camera controls */}
+      {/* Camera controls — WCD-19: zoom clamped to prevent giant/tiny atoms */}
       <OrbitControls
         enablePan={false}
         enabled={!dragging}
         autoRotate={!dragging && atoms.length > 0}
         autoRotateSpeed={0.5}
+        minDistance={3}
+        maxDistance={15}
         makeDefault
       />
     </>
@@ -221,13 +232,14 @@ function Scene() {
 
 /**
  * MoleculeCanvas: the R3F Canvas wrapper.
- * Full viewport, flat tone mapping, no antialiasing (bloom handles edges).
+ * Full viewport, flat tone mapping.
  */
 export function MoleculeCanvas() {
   return (
-    <div style={{ width: '100vw', height: '100vh' }}>
-      <Canvas flat gl={{ antialias: false }}>
-        <PerspectiveCamera makeDefault position={[0, 0, 5]} fov={50} />
+    <div style={{ width: '100%', height: '100%', touchAction: 'none', userSelect: 'none', WebkitUserSelect: 'none' }}>
+      <Canvas flat>
+        {/* WCD-08: Y offset 0.3 centers molecule in the visual gap between TopBar and ElementDock */}
+        <PerspectiveCamera makeDefault position={[0, 0.3, 5]} fov={50} />
         <Suspense fallback={null}>
           <Scene />
         </Suspense>

@@ -3,9 +3,9 @@
 // TutorialOverlay: step-by-step guided tutorial
 //
 // WCD-35 D1: Wired to tutorial engine via gameStore.
-// WCD-47: Moved to top-center, semi-transparent, compact,
-//         with dismiss/minimize button. Never overlaps
-//         the element palette at the bottom.
+// WCD-25: Repositioned to bottom-left (Clippy zone) —
+//         above palette, left of Jitterbug Navigator.
+//         Keeps glassmorphism style, tap-to-advance UX.
 // ═══════════════════════════════════════════════════════
 
 import { useState } from 'react';
@@ -30,14 +30,14 @@ export function TutorialOverlay() {
     fireTutorialEvent({ type: 'any_tap' });
   };
 
-  // Minimized: small pill at top, tap to restore
+  // WCD-25: Minimized pill — bottom-left (Clippy zone)
   if (minimized) {
     return (
       <button
         type="button"
         onClick={() => setMinimized(false)}
-        className="fixed top-20 left-1/2 -translate-x-1/2 z-50 bg-black/50 backdrop-blur-md px-4 py-2 rounded-full border border-amber-400/30 text-sm text-amber-400/60 cursor-pointer hover:text-amber-400/80 transition-colors"
-        style={{ minHeight: 40, touchAction: 'manipulation' }}
+        className="fixed left-4 z-50 bg-black/50 backdrop-blur-md px-4 py-2 rounded-full border border-amber-400/30 text-sm text-amber-400/60 cursor-pointer hover:text-amber-400/80 transition-colors pointer-events-auto"
+        style={{ bottom: 'calc(160px + env(safe-area-inset-bottom, 0px))', minHeight: 40, touchAction: 'manipulation' }}
       >
         {step.emoji} Step {stepNum}/{totalSteps} — tap to show
       </button>
@@ -51,13 +51,19 @@ export function TutorialOverlay() {
         <button
           type="button"
           onPointerDown={handleTap}
-          className="fixed inset-0 z-40 cursor-pointer"
+          className="fixed inset-0 z-40 cursor-pointer pointer-events-auto"
           aria-label="Continue tutorial"
         />
       )}
 
-      {/* Compact glass card — top-center, above building area */}
-      <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 max-w-[340px] w-full mx-4">
+      {/* WCD-25: Clippy zone — bottom-left, above palette, left of Jitterbug */}
+      <div
+        className="fixed left-4 z-50 pointer-events-auto"
+        style={{
+          bottom: 'calc(160px + env(safe-area-inset-bottom, 0px))',
+          maxWidth: 'min(70vw, 320px)',
+        }}
+      >
         <div className="bg-black/60 backdrop-blur-md rounded-2xl border border-white/10 px-5 py-3 text-center relative">
           {/* Dismiss / minimize button */}
           <button

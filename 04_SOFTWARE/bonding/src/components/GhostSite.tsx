@@ -1,10 +1,9 @@
 // ═══════════════════════════════════════════════════════
 // BONDING — P31 Labs
-// GhostSite: pulsing indicators showing where atoms CAN snap
+// GhostSite: WCD-30 — Ethereal bond indicators
 //
-// These appear during drag. When the drag preview is near
-// a ghost site, isSnapped becomes true and the ghost
-// scales up + brightens — the "magnetic pull" effect.
+// Small pulsing spheres showing where atoms CAN snap.
+// Visible only during drag. When snapped, glows green.
 // ═══════════════════════════════════════════════════════
 
 import { useRef, memo } from 'react';
@@ -17,8 +16,8 @@ interface GhostSiteProps {
   isSnapped?: boolean;
 }
 
-// Lower detail icosahedron for ghost indicators
-const GHOST_GEOMETRY = new THREE.IcosahedronGeometry(0.3, 1);
+// WCD-30: Small sphere (0.12 radius), not 0.3 icosahedron
+const GHOST_GEOMETRY = new THREE.SphereGeometry(0.12, 16, 16);
 
 export const GhostSite = memo(function GhostSite({ position, color, isSnapped }: GhostSiteProps) {
   const meshRef = useRef<THREE.Mesh>(null);
@@ -27,32 +26,29 @@ export const GhostSite = memo(function GhostSite({ position, color, isSnapped }:
     if (!meshRef.current) return;
     const t = state.clock.elapsedTime;
 
-    // Pulse scale: larger when snapped (magnetic pull feel)
-    const targetScale = isSnapped ? 1.4 : 1.0;
+    // Gentle scale pulse when snapped
+    const targetScale = isSnapped ? 1.6 : 1.0;
     const current = meshRef.current.scale.x;
     meshRef.current.scale.setScalar(
       current + (targetScale - current) * 0.15,
     );
 
-    // Pulse opacity
-    const mat = meshRef.current.material as THREE.MeshStandardMaterial;
+    // WCD-30: Breathing opacity pulse (0.1–0.2 idle, 0.3–0.5 snapped)
+    const mat = meshRef.current.material as THREE.MeshBasicMaterial;
     if (mat) {
-      const pulse = Math.sin(t * 3) * 0.5 + 0.5;
-      mat.opacity = isSnapped ? 0.4 + pulse * 0.3 : 0.15 + pulse * 0.15;
-      mat.emissiveIntensity = isSnapped ? 1.5 : 0.5;
+      const pulse = Math.sin(t * 2) * 0.5 + 0.5;
+      mat.opacity = isSnapped ? 0.3 + pulse * 0.2 : 0.1 + pulse * 0.1;
     }
   });
 
   return (
     <mesh ref={meshRef} position={position} geometry={GHOST_GEOMETRY}>
-      <meshStandardMaterial
-        color={color}
-        emissive={color}
-        emissiveIntensity={0.5}
+      <meshBasicMaterial
+        color={isSnapped ? '#4ade80' : color}
         transparent
-        opacity={0.2}
+        opacity={0.15}
         toneMapped={false}
-        flatShading
+        depthWrite={false}
       />
     </mesh>
   );

@@ -1,28 +1,21 @@
 // ═══════════════════════════════════════════════════════
 // BONDING — P31 Labs
-// App: root component
+// App: root component — WCD-08 Phase A: THE COCKPIT
 //
-// Layers (back to front):
-//   0. ModeSelect / Lobby (full screen routing)
-//   1. MoleculeCanvas (3D scene, full viewport)
-//   2. ElementPalette (bottom, draggable elements)
-//   3. StabilityMeter (top-right, formula + bar)
-//   4. LoveCounter (top-center, LOVE token total)
-//   5. AchievementToast (top-right, slide-in notifications)
-//   6. Mode emoji (top-left, tap to return to mode select)
-//   7. QuestHUD (top-left, below mode emoji)
-//   8. Hint text (center, when no atoms)
-//   9. MoleculeCount (bottom-center, above palette)
-//  10. RoomSidebar (right, multiplayer only)
-//  11. Completion overlay (modal + Exhibit A export)
+// Z-Index contract (WCD-08):
+//   z-1:  MoleculeCanvas (R3F, full viewport)
+//   z-10: HUD Container (pointer-events: none)
+//   z-11: TopBar, ElementDock, CommandBar (glass panels)
+//   z-20: Floating overlays (retained from pre-cockpit)
+//   z-50: Toast layer (AchievementToast)
 // ═══════════════════════════════════════════════════════
 
-import { useState } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { genesisInit } from './genesis/genesis';
 import { MoleculeCanvas } from './components/MoleculeCanvas';
 import { ElementPalette } from './components/ElementPalette';
 import { StabilityMeter } from './components/StabilityMeter';
 import { AchievementToast } from './components/AchievementToast';
-import { LoveCounter } from './components/LoveCounter';
 import { ModeSelect } from './components/ModeSelect';
 import { Lobby } from './components/Lobby';
 import { RoomSidebar } from './components/RoomSidebar';
@@ -30,15 +23,30 @@ import { QuestHUD } from './components/QuestHUD';
 import { DiscoveryModal } from './components/DiscoveryModal';
 import { TutorialOverlay } from './components/TutorialOverlay';
 import { FormulaDisplay } from './components/FormulaDisplay';
-import { PingBar } from './components/PingBar';
+import { JitterbugNavigator } from './components/Navigation/Jitterbug';
+import { CockpitLayout } from './components/hud/CockpitLayout';
+import { TopBar } from './components/hud/TopBar';
+import { CommandBar } from './components/hud/CommandBar';
+import { TelemetryModal } from './components/hud/TelemetryModal';
+import { BootSequence, isBirthdayOrAfter, hasSeenBoot } from './components/hud/BootSequence';
+import { BugReport } from './components/BugReport';
 import { useGameStore } from './store/gameStore';
-import { generateFormula, displayFormula, MOLECULE_NAMES } from './engine/chemistry';
+import {
+  calculateStability,
+  generateFormula,
+  displayFormula,
+  MOLECULE_NAMES,
+} from './engine/chemistry';
 import { getPersonality } from './engine/personalities';
 import type { PersonalityType } from './engine/personalities';
 import { getModeById } from './data/modes';
+import type { DifficultyId } from './data/modes';
 import { useMultiplayer } from './hooks/useMultiplayer';
-import { exportAsSummary } from './engine/exhibitA';
-import { isHapticEnabled, setHapticEnabled } from './engine/haptic';
+import { exportAsSummary, logEventA } from './engine/exhibitA';
+// WCD-25: haptic toggle moved to Jitterbug navigator (removed from top bar)
+import { sendPing } from './lib/gameSync';
+import { eventBus, GameEventType } from './genesis/eventBus';
+import { initAudio } from './engine/sound';
 
 function App() {
   const atoms = useGameStore((s) => s.atoms);
@@ -50,18 +58,59 @@ function App() {
   const reset = useGameStore((s) => s.reset);
   const setGameMode = useGameStore((s) => s.setGameMode);
   const lobbyActive = useGameStore((s) => s.lobbyActive);
+  const setLobbyActive = useGameStore((s) => s.setLobbyActive);
   const roomCode = useGameStore((s) => s.roomCode);
   const leaveMultiplayer = useGameStore((s) => s.leaveMultiplayer);
-  const breathing = useGameStore((s) => s.breathing);
-  const toggleBreathing = useGameStore((s) => s.toggleBreathing);
   const pendingDiscovery = useGameStore((s) => s.pendingDiscovery);
   const fireTutorialEvent = useGameStore((s) => s.fireTutorialEvent);
   const showMoleculeFact = useGameStore((s) => s.showMoleculeFact);
   const continueBuilding = useGameStore((s) => s.continueBuilding);
   const pingNotification = useGameStore((s) => s.pingNotification);
+  const playerName = useGameStore((s) => s.playerName);
+  const remotePlayers = useGameStore((s) => s.remotePlayers);
 
   const [exportCopied, setExportCopied] = useState(false);
-  const [hapticOn, setHapticOn] = useState(isHapticEnabled());
+  const [telemetryOpen, setTelemetryOpen] = useState(false);
+  const [bugReportOpen, setBugReportOpen] = useState(false);
+
+  // WCD-29: Birthday boot sequence state
+  const [showBoot, setShowBoot] = useState(false);
+  const [bootChecked, setBootChecked] = useState(false);
+  useEffect(() => {
+    if (!isBirthdayOrAfter()) { setBootChecked(true); return; }
+    hasSeenBoot().then((seen) => {
+      if (!seen) setShowBoot(true);
+      setBootChecked(true);
+    });
+  }, []);
+
+  // Genesis: init once on mount, after identity is available
+  const genesisCleanup = useRef<(() => void) | null>(null);
+  useEffect(() => {
+    const id = crypto.randomUUID();
+    genesisInit({
+      playerId: id,
+      playerName: playerName || 'Player',
+      roomCode: roomCode ?? null,
+      difficulty: gameMode ?? null,
+    }).then((cleanup) => {
+      genesisCleanup.current = cleanup;
+    });
+    return () => {
+      genesisCleanup.current?.();
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // WCD-22: Initialize AudioContext on first user gesture (required by mobile browsers)
+  useEffect(() => {
+    const handleFirstGesture = () => {
+      initAudio();
+      document.removeEventListener('pointerdown', handleFirstGesture);
+    };
+    document.addEventListener('pointerdown', handleFirstGesture);
+    return () => document.removeEventListener('pointerdown', handleFirstGesture);
+  }, []);
 
   const PERSONALITY_EMOJI: Record<PersonalityType, string> = {
     mediator: '\u{1F30A}',
@@ -76,6 +125,32 @@ function App() {
   // Multiplayer polling + auto-push (no-ops when not in a room)
   useMultiplayer();
 
+  // WCD-08: Ping handler wired into CommandBar (replaces standalone PingBar)
+  // Must live before early returns to satisfy Rules of Hooks.
+  const handleCommandBarPing = useCallback(async (reaction: string) => {
+    if (remotePlayers.length === 0) return;
+    for (const player of remotePlayers) {
+      await sendPing(player.id, reaction);
+      logEventA({
+        type: 'ping_sent',
+        from: playerName || 'Player',
+        to: player.name,
+        reaction,
+      });
+      eventBus.emit(GameEventType.PING_SENT, {
+        reaction,
+        targetPlayerId: player.id,
+        moleculeId: generateFormula(atoms),
+      });
+    }
+  }, [remotePlayers, playerName, atoms]);
+
+  // WCD-29: Genesis Fire boot sequence (before anything else)
+  if (showBoot) return <BootSequence onAcknowledge={() => setShowBoot(false)} />;
+
+  // Wait for boot check before showing UI (prevents flash)
+  if (!bootChecked) return null;
+
   // Layer 0a: Lobby (multiplayer create/join)
   if (lobbyActive) return <Lobby />;
 
@@ -87,6 +162,7 @@ function App() {
   const formula = generateFormula(atoms);
   const dispFormula = displayFormula(formula);
   const moleculeName = MOLECULE_NAMES[formula] ?? dispFormula;
+  const stability = Math.round(calculateStability(atoms) * 100);
 
   // Compute personality for completed molecules
   const personality = gamePhase === 'complete' && atoms.length > 0
@@ -130,61 +206,50 @@ function App() {
   };
 
   return (
-    <div className="relative w-full h-screen bg-[#0a0a1a] overflow-hidden">
-      {/* Layer 1: 3D Scene */}
-      <MoleculeCanvas />
+    <CockpitLayout
+      viewport={<MoleculeCanvas />}
+      topBar={
+        <TopBar
+          modeEmoji={mode.emoji}
+          onModeExit={handleModeExit}
+          onLobby={() => setLobbyActive(true)}
+          isInRoom={isMultiplayer}
+          playerCount={remotePlayers.length + 1}
+        />
+      }
+      elementDock={<ElementPalette />}
+      commandBar={
+        /* WCD-20: Hide command bar when idle (no atoms on canvas) */
+        atoms.length > 0 ? (
+          <CommandBar
+            stability={stability}
+            onPing={handleCommandBarPing}
+            difficulty={gameMode as DifficultyId}
+            onDifficultyChange={setGameMode}
+            canPing={isMultiplayer && remotePlayers.length > 0}
+            onToggleTelemetry={() => setTelemetryOpen((v) => !v)}
+          />
+        ) : null
+      }
+      toastLayer={<AchievementToast />}
+    >
+      {/* ── Floating overlays (z-20) — retained from pre-cockpit layout ──
+          These are positioned absolutely and will migrate to cockpit slots
+          in future WCD phases. */}
 
-      {/* Layer 2: Element palette */}
-      <ElementPalette />
-
-      {/* Layer 3: Stability meter */}
+      {/* Stability meter: formula + bar (top-right) */}
       <StabilityMeter />
 
-      {/* Layer 4: LOVE counter */}
-      <LoveCounter />
+      {/* JitterbugNavigator (WCD-07) — fixed bottom-right */}
+      <JitterbugNavigator />
 
-      {/* Layer 5: Achievement toasts */}
-      <AchievementToast />
+      {/* WCD-25: Second icon row removed. Mode emoji now lives in TopBar.
+          Breathing pacer + haptic toggle accessible through Jitterbug navigator. */}
 
-      {/* Layer 6: Mode emoji — tap to return to mode select */}
-      <div className="absolute top-6 left-6 flex items-center gap-2">
-        <button
-          type="button"
-          onClick={handleModeExit}
-          className="text-2xl opacity-60 hover:opacity-100 transition-opacity cursor-pointer"
-          style={{ minWidth: 48, minHeight: 48, touchAction: 'manipulation' }}
-          title={`${mode.label} mode — tap to change`}
-        >
-          {mode.emoji}
-        </button>
-        <button
-          type="button"
-          onClick={toggleBreathing}
-          className={`text-lg transition-opacity cursor-pointer ${breathing ? 'opacity-80' : 'opacity-30 hover:opacity-50'}`}
-          style={{ minWidth: 40, minHeight: 48, touchAction: 'manipulation' }}
-          title={breathing ? 'Stop breathing pacer' : 'Start breathing pacer (4-4-6)'}
-        >
-          {'\u{1FAC1}'}
-        </button>
-        <button
-          type="button"
-          onClick={() => {
-            const next = !hapticOn;
-            setHapticOn(next);
-            setHapticEnabled(next);
-          }}
-          className={`text-lg transition-opacity cursor-pointer ${hapticOn ? 'opacity-80' : 'opacity-30 hover:opacity-50'}`}
-          style={{ minWidth: 40, minHeight: 48, touchAction: 'manipulation' }}
-          title={hapticOn ? 'Haptics on — tap to disable' : 'Haptics off — tap to enable'}
-        >
-          {'\u{1F4F3}'}
-        </button>
-      </div>
-
-      {/* Layer 7: Quest HUD */}
+      {/* Quest HUD */}
       <QuestHUD />
 
-      {/* Layer 8: Hint text */}
+      {/* Hint text — center when no atoms */}
       {atoms.length === 0 && gamePhase !== 'complete' && (
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none text-center">
           <p className="text-white/25 text-sm font-mono">
@@ -193,24 +258,21 @@ function App() {
         </div>
       )}
 
-      {/* Layer 9: Molecule count (WCD-46: visible at arm's length) */}
+      {/* Molecule count — positioned above both dock and command bar */}
       {completedMolecules.length > 0 && gamePhase !== 'complete' && (
-        <div className="absolute bottom-[88px] left-1/2 -translate-x-1/2 pointer-events-none">
-          <div className="bg-black/40 backdrop-blur-sm px-4 py-1.5 rounded-full border border-white/10 text-base text-white/60 font-mono">
+        <div className="absolute bottom-[148px] left-1/2 -translate-x-1/2 pointer-events-none">
+          <div className="px-4 py-1.5 text-base text-white/60 font-mono hud-text">
             {'\u{1F9EA}'} {completedMolecules.length} molecule{completedMolecules.length !== 1 ? 's' : ''}
           </div>
         </div>
       )}
 
-      {/* Layer 10: Room sidebar (multiplayer only) */}
+      {/* Room sidebar (multiplayer only) */}
       {isMultiplayer && <RoomSidebar />}
 
-      {/* Layer 10b: Ping bar (WCD-49: multiplayer reaction buttons) */}
-      {isMultiplayer && <PingBar />}
-
-      {/* Layer 10c: Ping notification (WCD-49: large centered overlay) */}
+      {/* Ping notification overlay */}
       {pingNotification && (
-        <div className="fixed inset-0 flex items-center justify-center pointer-events-none z-50">
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
           <div className="ping-enter bg-black/50 backdrop-blur-sm px-8 py-6 rounded-3xl border border-white/10 text-center">
             <p className="text-6xl mb-2">{pingNotification.emoji}</p>
             <p className="text-sm text-white/50 font-mono">{pingNotification.senderName}</p>
@@ -218,17 +280,25 @@ function App() {
         </div>
       )}
 
-      {/* Layer 11: Tutorial overlay */}
+      {/* Tutorial overlay */}
       <TutorialOverlay />
 
-      {/* Layer 12a: Discovery naming modal */}
+      {/* WCD-11: Bug report overlay */}
+      <BugReport isOpen={bugReportOpen} onClose={() => setBugReportOpen(false)} />
+
+      {/* WCD-26: Telemetry viewer (OQE log) */}
+      {telemetryOpen && (
+        <TelemetryModal onClose={() => setTelemetryOpen(false)} />
+      )}
+
+      {/* Discovery naming modal */}
       {gamePhase === 'complete' && pendingDiscovery && (
         <DiscoveryModal />
       )}
 
-      {/* Layer 11b: Completion overlay */}
+      {/* Completion overlay */}
       {gamePhase === 'complete' && !pendingDiscovery && (
-        <div className="absolute inset-0 flex items-center justify-center">
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-auto">
           <div className="complete-enter bg-black/60 backdrop-blur-md p-10 rounded-3xl border border-white/15 text-center max-w-[420px]">
             {/* Formula (WCD-50: HTML <sub> for universal rendering) */}
             <p className="text-5xl font-black text-white mb-2">
@@ -286,7 +356,7 @@ function App() {
                 Build Another
               </button>
 
-              {/* WCD-48: Keep Building — dismiss overlay, continue placing */}
+              {/* WCD-27: Build Next — clear canvas, start fresh molecule */}
               <button
                 type="button"
                 onClick={() => {
@@ -295,7 +365,7 @@ function App() {
                 }}
                 className="px-5 py-3 bg-white/10 hover:bg-white/15 text-white/70 rounded-xl transition-all cursor-pointer text-sm min-h-12"
               >
-                Keep Building
+                Build Next
               </button>
 
               {/* Exhibit A export */}
@@ -320,7 +390,7 @@ function App() {
           </div>
         </div>
       )}
-    </div>
+    </CockpitLayout>
   );
 }
 

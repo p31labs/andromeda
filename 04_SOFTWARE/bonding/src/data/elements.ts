@@ -119,6 +119,17 @@ export const ELEMENTS: Record<ElementSymbol, ElementData> = {
     size: 1.26,
     funFact: 'Your blood is red because of iron. Stars die to make this.',
   },
+  Mn: {
+    symbol: 'Mn',
+    name: 'Manganese',
+    valence: 2,
+    color: '#B76E79',
+    emissive: '#E8A0B0',
+    frequency: 131,
+    note: 'C3',
+    size: 1.17,
+    funFact: 'Element 25. The age your prefrontal cortex finishes compiling.',
+  },
 };
 
 export const ELEMENTS_ARRAY: ElementData[] = Object.values(ELEMENTS);
@@ -135,4 +146,5 @@ export const ELEMENT_NAMES: Record<ElementSymbol, string> = {
   Cl: 'Chlorine',
   S: 'Sulfur',
   Fe: 'Iron',
+  Mn: 'Manganese',
 };

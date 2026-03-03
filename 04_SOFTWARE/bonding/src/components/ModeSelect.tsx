@@ -78,7 +78,15 @@ export function ModeSelect() {
     const modeData = MODES.find(m => m.id === pendingMode);
 
     return (
-      <div className="relative w-full h-screen bg-[#0a0a1a] flex flex-col items-center justify-center gap-6 select-none overflow-y-auto py-8">
+      <div
+        className="relative w-full h-full bg-[#0a0a1a] flex flex-col items-center justify-center gap-6 select-none overflow-y-auto"
+        style={{
+          paddingTop: 'max(2rem, env(safe-area-inset-top, 0px))',
+          paddingBottom: 'max(2rem, env(safe-area-inset-bottom, 0px))',
+          paddingLeft: 'env(safe-area-inset-left, 0px)',
+          paddingRight: 'env(safe-area-inset-right, 0px)',
+        }}
+      >
         {/* Back button */}
         <button
           type="button"
@@ -154,10 +162,18 @@ export function ModeSelect() {
 
   // Phase 1: Mode selection
   return (
-    <div className="relative w-full h-screen bg-[#0a0a1a] flex flex-col items-center justify-center gap-8 select-none overflow-y-auto py-8">
+    <div
+      className="relative w-full h-full bg-[#0a0a1a] flex flex-col items-center justify-center gap-8 select-none overflow-y-auto"
+      style={{
+        paddingTop: 'max(2rem, env(safe-area-inset-top, 0px))',
+        paddingBottom: 'max(2rem, env(safe-area-inset-bottom, 0px))',
+        paddingLeft: 'env(safe-area-inset-left, 0px)',
+        paddingRight: 'env(safe-area-inset-right, 0px)',
+      }}
+    >
       {/* Title */}
       <div className="text-center">
-        <h1 className="text-5xl font-black tracking-[0.3em] text-white title-glow mb-2">
+        <h1 className="text-4xl sm:text-5xl font-black tracking-[0.3em] text-white title-glow mb-2">
           BONDING
         </h1>
         <p className="text-sm text-white/50 font-mono">
@@ -165,15 +181,15 @@ export function ModeSelect() {
         </p>
       </div>
 
-      {/* Mode cards */}
-      <div className="flex items-stretch gap-4 px-6">
+      {/* Mode cards — WCD-18: flex-wrap + constrained width for narrow screens */}
+      <div className="flex flex-wrap items-stretch justify-center gap-4 px-6 max-w-lg">
         {MODES.map((mode) => (
           <button
             key={mode.id}
             type="button"
             onClick={() => setPendingMode(mode.id)}
-            className={`mode-card group flex flex-col items-center gap-3 p-6 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 ${MODE_HOVER_BORDER[mode.id] ?? ''} transition-all active:scale-95 cursor-pointer`}
-            style={{ minWidth: 140, minHeight: 160, touchAction: 'manipulation' }}
+            className={`mode-card group flex flex-col items-center gap-3 p-5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 ${MODE_HOVER_BORDER[mode.id] ?? ''} transition-all active:scale-95 cursor-pointer flex-1`}
+            style={{ minWidth: 100, maxWidth: 160, minHeight: 150, touchAction: 'manipulation' }}
           >
             <span className="text-5xl group-hover:scale-110 transition-transform">
               {mode.emoji}
@@ -191,7 +207,7 @@ export function ModeSelect() {
         ))}
       </div>
 
-      {/* Play Together button */}
+      {/* WCD-13: Play Together — un-gated now that relay endpoints are wired */}
       <button
         type="button"
         onClick={() => setLobbyActive(true)}
