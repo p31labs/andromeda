@@ -7,13 +7,14 @@
 // PATCH 4: Server-side SHA-256 independent hash verification.
 //          Establishes serverVerified flag for Daubert defense.
 //
-// 13 routes:
+// 14 routes:
 //   POST /telemetry                   → handleTelemetryFlush
 //   POST /telemetry/seal              → handleTelemetrySeal
 //   POST /telemetry/orphan            → handleOrphanRecovery
 //   GET  /telemetry/sessions/:roomCode → handleSessionList
 //   GET  /telemetry/seal/:sessionId   → handleGetSeal
 //   GET  /telemetry/entries/:sessionId → handleGetEntries
+//   GET  /love/:sessionId              → handleGetLove       (WCD-M08, read-only)
 //   POST /bug-report                   → handleBugReport     (WCD-11)
 //   GET  /bug-reports                  → handleBugReportList  (WCD-11)
 //   POST /api/room                    → handleRoomCreate     (WCD-13)
@@ -130,6 +131,32 @@ function sealKey(sessionId: string): string {
 }
 
 // ── Route handlers ──
+
+// GET /love/:sessionId — read-only LOVE total (WCD-M08)
+// Computes love from telemetry events already in KV. Never writes.
+async function handleGetLove(sessionId: string, env: Env): Promise<Response> {
+  const entries = await env.TELEMETRY_KV.get<TelemetryEvent[]>(sessionDataKey(sessionId), 'json');
+  if (!entries || entries.length === 0) {
+    return corsResponse(JSON.stringify({ love: 0, lastUpdated: null }));
+  }
+
+  let love = 0;
+  let lastTs = 0;
+  for (const ev of entries) {
+    if (ev.type === 'MOLECULE_COMPLETED') love += 10;
+    else if (ev.type === 'ATOM_PLACED') love += 1;
+    else if (ev.type === 'PING_SENT') love += 5;
+    else if (ev.type === 'PING_RECEIVED') love += 5;
+    else if (ev.type === 'ACHIEVEMENT_UNLOCKED') {
+      const reward = ev.payload.loveReward;
+      if (typeof reward === 'number') love += reward;
+    }
+    if (ev.ts > lastTs) lastTs = ev.ts;
+  }
+
+  const lastUpdated = lastTs > 0 ? new Date(lastTs).toISOString() : null;
+  return corsResponse(JSON.stringify({ love, lastUpdated }));
+}
 
 // POST /telemetry — incremental event flush
 async function handleTelemetryFlush(req: Request, env: Env): Promise<Response> {
@@ -603,6 +630,12 @@ export default {
     const entriesMatch = path.match(/^\/telemetry\/entries\/(.+)$/);
     if (method === 'GET' && entriesMatch) {
       return handleGetEntries(entriesMatch[1], env);
+    }
+
+    // WCD-M08: GET /love/:sessionId — read-only LOVE total
+    const loveMatch = path.match(/^\/love\/(.+)$/);
+    if (method === 'GET' && loveMatch) {
+      return handleGetLove(loveMatch[1], env);
     }
 
     // WCD-11: POST /bug-report
