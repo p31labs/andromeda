@@ -167,15 +167,15 @@ export function BugReport({ isOpen, onClose }: BugReportProps) {
   return (
     <div
       className="fixed inset-0 flex items-center justify-center pointer-events-auto"
-      style={{ zIndex: 60, background: 'rgba(0, 0, 0, 0.6)' }}
+      style={{ zIndex: 60, background: 'rgba(0, 0, 0, 0.2)' }}
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
       <div
         className="relative rounded-2xl p-6"
         style={{
-          background: 'rgba(255, 255, 255, 0.08)',
-          backdropFilter: 'blur(16px)',
-          WebkitBackdropFilter: 'blur(16px)',
+          background: 'rgba(255, 255, 255, 0.06)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
           border: '1px solid rgba(255, 255, 255, 0.12)',
           width: 'min(90vw, 400px)',
           color: '#e0e0e0',

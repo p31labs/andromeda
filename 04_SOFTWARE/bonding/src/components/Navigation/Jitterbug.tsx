@@ -45,16 +45,16 @@ interface Pod {
 
 /** Isometric "magic angle" X-tilt for visual depth. */
 const PHI = 35.26 * (Math.PI / 180);
-/** Y-axis auto-rotation: 0.5 RPM → π/60 rad/s. */
-const RAD_PER_SEC = (0.5 / 60) * 2 * Math.PI;
+/** Y-axis auto-rotation: 0.3 RPM → slower, contemplative drift. */
+const RAD_PER_SEC = (0.3 / 60) * 2 * Math.PI;
 
 // ── Pod configuration ──────────────────────────────────
 
 const PODS: Pod[] = [
-  { name: 'calcium',    label: 'SHELTER',     color: '#90ee90', href: '#shelter'     },
-  { name: 'phosphorus', label: 'TASKS',       color: '#ff4500', href: '#tasks'       },
-  { name: 'oxygen',     label: 'ENVIRONMENT', color: '#87ceeb', href: '#environment' },
-  { name: 'nitrogen',   label: 'CREATION',    color: '#9370db', href: '#creation'    },
+  { name: 'calcium',    label: 'SHELTER',     color: '#FFFFFF', href: '#shelter'     },
+  { name: 'phosphorus', label: 'TASKS',       color: '#B080FF', href: '#tasks'       },
+  { name: 'oxygen',     label: 'ENVIRONMENT', color: '#FF3030', href: '#environment' },
+  { name: 'nitrogen',   label: 'CREATION',    color: '#4488FF', href: '#creation'    },
 ];
 
 const POD_MAP = Object.fromEntries(PODS.map(p => [p.name, p])) as Record<PodName, Pod>;
@@ -197,9 +197,10 @@ export function JitterbugNavigator() {
       }}
     >
       <style>{`
-        @keyframes jitter-pulse {
-          0%, 100% { stroke-opacity: 0.55; }
-          50%       { stroke-opacity: 1.0;  }
+        @keyframes organic-breathe {
+          0%, 100% { opacity: 0.12; }
+          35%      { opacity: 0.30; }
+          65%      { opacity: 0.22; }
         }
       `}</style>
 
@@ -226,11 +227,11 @@ export function JitterbugNavigator() {
               x1={ax} y1={ay}
               x2={bx} y2={by}
               stroke={color}
-              strokeWidth={0.04}
-              strokeDasharray="0.12 0.06"
+              strokeWidth={0.025}
+              opacity={0.25}
               style={{
-                animation: `jitter-pulse 0.863s ease-in-out infinite`,
-                animationDelay: `${((ai * 71) % 863) / 1000}s`,
+                animation: `organic-breathe 6s ease-in-out infinite`,
+                animationDelay: `${((ai * 71) % 6000) / 1000}s`,
               }}
             />
           );
@@ -251,11 +252,9 @@ export function JitterbugNavigator() {
             >
               <circle
                 cx={px} cy={py}
-                r={0.1}
+                r={0.06}
                 fill={pod.color}
-                fillOpacity={0.9}
-                stroke="rgba(0,0,0,0.3)"
-                strokeWidth={0.015}
+                fillOpacity={0.4}
               />
             </a>
           );
@@ -273,9 +272,9 @@ export function JitterbugNavigator() {
               x={lx}
               y={ly + 0.22}
               textAnchor="middle"
-              fontSize={0.15}
+              fontSize={0.12}
               fill={pod.color}
-              opacity={isCollapsed ? 1 : 0}
+              opacity={isCollapsed ? 0.5 : 0}
               style={{
                 transition: 'opacity 0.4s ease',
                 pointerEvents: 'none',

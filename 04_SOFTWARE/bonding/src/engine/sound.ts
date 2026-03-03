@@ -430,6 +430,121 @@ export function playSelectBlip(frequency: number): void {
 }
 
 /**
+ * Missing node tone — 172.35 Hz sine, the P31 frequency.
+ * Low, warm, unmistakable. Plays when the missing node is tapped.
+ */
+export function playMissingNodeTone(): void {
+  const ctx = getCtx();
+  if (!ctx) return;
+  const now = ctx.currentTime;
+
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+
+  osc.type = 'sine';
+  osc.frequency.setValueAtTime(172.35, now);
+
+  gain.gain.setValueAtTime(0, now);
+  gain.gain.linearRampToValueAtTime(0.25, now + 0.15);
+  gain.gain.setValueAtTime(0.25, now + 0.4);
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.8);
+
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+
+  osc.start(now);
+  osc.stop(now + 0.8);
+}
+
+/**
+ * Blood Moon ember toggle — deep rumble with two detuned oscillators.
+ * Ignite: slow attack crescendo (55Hz + 58Hz). Extinguish: short descending tone.
+ */
+export function playEmberToggle(igniting: boolean): void {
+  const ctx = getCtx();
+  if (!ctx) return;
+  const now = ctx.currentTime;
+  const gain = ctx.createGain();
+  gain.connect(ctx.destination);
+
+  if (igniting) {
+    // Two detuned sine waves create a slow beat/throb
+    const o1 = ctx.createOscillator();
+    const o2 = ctx.createOscillator();
+    o1.type = 'sine';
+    o2.type = 'sine';
+    o1.frequency.setValueAtTime(55, now);
+    o2.frequency.setValueAtTime(58, now);
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.linearRampToValueAtTime(0.2, now + 0.4);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 1.2);
+    o1.connect(gain);
+    o2.connect(gain);
+    o1.start(now);
+    o2.start(now);
+    o1.stop(now + 1.2);
+    o2.stop(now + 1.2);
+  } else {
+    const osc = ctx.createOscillator();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(65, now);
+    osc.frequency.exponentialRampToValueAtTime(35, now + 0.5);
+    gain.gain.setValueAtTime(0.15, now);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.5);
+    osc.connect(gain);
+    osc.start(now);
+    osc.stop(now + 0.5);
+  }
+}
+
+/**
+ * Molecular warp — ascending sweep of all element frequencies
+ * with sub-bass rumble. Fires on double-tap easter egg.
+ */
+export function playWarp(): void {
+  const ctx = getCtx();
+  if (!ctx) return;
+  const now = ctx.currentTime;
+
+  // Element frequencies sorted low→high: Ca, P, Na, S, N, C, O, H
+  const freqs = [147, 172, 196, 220, 247, 262, 330, 523];
+
+  // Ascending sweep — each element frequency staggered 40ms
+  freqs.forEach((freq, i) => {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    const start = now + i * 0.04;
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(freq, start);
+    osc.frequency.exponentialRampToValueAtTime(freq * 2, start + 0.6);
+
+    gain.gain.setValueAtTime(0, start);
+    gain.gain.linearRampToValueAtTime(0.06, start + 0.03);
+    gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.6);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(start);
+    osc.stop(start + 0.6);
+  });
+
+  // Sub-bass rumble underneath
+  const rumble = ctx.createOscillator();
+  const rumbleGain = ctx.createGain();
+  rumble.type = 'sine';
+  rumble.frequency.setValueAtTime(55, now);
+  rumble.frequency.exponentialRampToValueAtTime(110, now + 2);
+  rumbleGain.gain.setValueAtTime(0, now);
+  rumbleGain.gain.linearRampToValueAtTime(0.12, now + 0.3);
+  rumbleGain.gain.exponentialRampToValueAtTime(0.0001, now + 2.5);
+  rumble.connect(rumbleGain);
+  rumbleGain.connect(ctx.destination);
+  rumble.start(now);
+  rumble.stop(now + 2.5);
+}
+
+/**
  * Drag cancel whoosh — filtered noise burst.
  */
 export function playWhoosh(): void {

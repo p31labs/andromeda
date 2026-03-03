@@ -2,6 +2,9 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import './index.css';
 import App from './App';
+import { logBirthdayConsole } from './config/easterEggs';
+
+logBirthdayConsole();
 
 // Attempt portrait lock (fails silently on desktop / unsupported)
 try {

@@ -44,8 +44,8 @@ export function DiscoveryModal() {
   };
 
   return (
-    <div className="absolute inset-0 flex items-center justify-center z-50">
-      <div className="complete-enter bg-black/70 backdrop-blur-md p-8 rounded-3xl border border-white/15 text-center max-w-sm w-full mx-6">
+    <div className="absolute inset-0 flex items-center justify-center z-50 pointer-events-auto">
+      <div className="complete-enter bg-white/[0.07] backdrop-blur-[20px] p-8 rounded-3xl border border-white/[0.15] text-center max-w-sm w-full mx-6">
         {/* Icon */}
         <p className="text-4xl mb-3">{'\u{1F52C}'}</p>
 

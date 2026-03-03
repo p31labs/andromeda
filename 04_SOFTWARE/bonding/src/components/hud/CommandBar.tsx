@@ -74,7 +74,7 @@ export function CommandBar({
             }}
           />
         </div>
-        <span className="font-mono text-[10px] text-white/25 tracking-wider select-none">
+        <span className="font-mono text-[10px] text-white/40 tracking-wider select-none">
           {Math.round(stability)}% STABLE
         </span>
       </div>

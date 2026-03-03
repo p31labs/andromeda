@@ -117,7 +117,7 @@ export function RoomSidebar() {
       <button
         type="button"
         onClick={() => setExpanded(true)}
-        className="absolute top-20 right-6 bg-black/50 backdrop-blur-md px-3 py-2 rounded-full border border-white/10 text-xs text-white/40 cursor-pointer hover:text-white/60 transition-colors flex items-center gap-2"
+        className="absolute top-20 right-6 bg-white/[0.06] backdrop-blur-[20px] px-3 py-2 rounded-full border border-white/[0.12] text-xs text-white/40 cursor-pointer hover:text-white/60 transition-colors flex items-center gap-2"
         style={{ minHeight: 40, touchAction: 'manipulation' }}
       >
         <span className={`w-2 h-2 rounded-full ${statusColor}`} />
@@ -127,7 +127,7 @@ export function RoomSidebar() {
   }
 
   return (
-    <div className="absolute top-20 right-6 flex flex-col gap-2 z-10 max-w-[220px]">
+    <div className="absolute top-20 right-6 flex flex-col gap-2 z-10 max-w-[220px] pointer-events-auto">
       {/* Header: connection + collapse */}
       <div className="flex items-center justify-between">
         <span className={`w-2 h-2 rounded-full ${statusColor}`} />
@@ -150,7 +150,7 @@ export function RoomSidebar() {
         return (
           <div
             key={player.id}
-            className="bg-black/50 backdrop-blur-md p-3 rounded-xl border border-white/10 min-w-[180px]"
+            className="bg-white/[0.06] backdrop-blur-[20px] p-3 rounded-xl border border-white/[0.12] min-w-[180px]"
           >
             {/* Player info row */}
             <div className="flex items-center gap-2 mb-2">
@@ -252,7 +252,7 @@ export function RoomSidebar() {
 
       {/* Ping log */}
       {recentLog.length > 0 && (
-        <div className="bg-black/30 backdrop-blur-sm rounded-xl border border-white/5 px-3 py-2 max-h-32 overflow-y-auto">
+        <div className="bg-white/[0.04] backdrop-blur-[20px] rounded-xl border border-white/[0.08] px-3 py-2 max-h-32 overflow-y-auto">
           <p className="text-[10px] text-white/20 mb-1">Recent</p>
           {recentLog.map((entry) => (
             <p key={entry.id} className="text-[11px] text-white/40 leading-snug truncate">

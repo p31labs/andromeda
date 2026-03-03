@@ -46,6 +46,7 @@ import {
   playQuestStep,
   playQuestComplete,
   playModeSelect,
+  playWarp,
 } from '../engine/sound';
 import { haptic } from '../engine/haptic';
 import { logEventA } from '../engine/exhibitA';
@@ -58,6 +59,8 @@ import {
   initializeProgress,
   checkQuestProgress,
 } from '../engine/quests';
+import { BASHIUM } from '../config/bashium';
+import { WILLIUM } from '../config/willium';
 import type { Tutorial, TutorialState } from '../engine/tutorial';
 import {
   getTutorial,
@@ -170,6 +173,22 @@ interface GameStore {
   clearIncomingPings: () => void;
   setConnectionStatus: (status: 'connected' | 'reconnecting' | 'disconnected') => void;
   toggleBreathing: () => void;
+
+  // Ambient reward actions (shooting stars, missing node)
+  pushToast: (toast: Omit<ToastMessage, 'id' | 'createdAt'>) => void;
+  addLove: (amount: number) => void;
+
+  // Ghost site preview from palette tap
+  previewElement: ElementSymbol | null;
+  setPreviewElement: (el: ElementSymbol | null) => void;
+
+  // Blood Moon haze toggle
+  bloodMoonActive: boolean;
+  toggleBloodMoon: () => void;
+
+  // Molecular warp field (double-tap easter egg)
+  warpActive: boolean;
+  triggerWarp: () => void;
 }
 
 // ── Helpers ──
@@ -661,6 +680,30 @@ export const useGameStore = create<GameStore>()((set, get) => ({
             totalSteps: quest.steps.length,
             bonusLove: qReward,
           });
+
+          // Bashium unlock: show special toast when Genesis chain completes
+          if (quest.id === 'genesis') {
+            newToasts.push({
+              id: createToastId(),
+              icon: '\u{1F52E}',
+              text: BASHIUM.unlockToast.line1,
+              subtext: BASHIUM.unlockToast.line2,
+              duration: 5000,
+              createdAt: Date.now(),
+            });
+          }
+
+          // Willium unlock: show special toast when Kitchen chain completes
+          if (quest.id === 'kitchen') {
+            newToasts.push({
+              id: createToastId(),
+              icon: '\u{1F331}',
+              text: WILLIUM.unlockToast.line1,
+              subtext: WILLIUM.unlockToast.line2,
+              duration: 5000,
+              createdAt: Date.now(),
+            });
+          }
         } else {
           // Step advanced — show narrative
           const prevStep = quest.steps[progress.completedSteps - 1];
@@ -1177,4 +1220,35 @@ export const useGameStore = create<GameStore>()((set, get) => ({
   clearIncomingPings: () => set({ incomingPings: [] }),
   setConnectionStatus: (status) => set({ connectionStatus: status }),
   toggleBreathing: () => set({ breathing: !get().breathing }),
+
+  // Ambient reward actions
+  pushToast: (toast) => {
+    const t: ToastMessage = { ...toast, id: createToastId(), createdAt: Date.now() };
+    set({ toasts: [...get().toasts, t] });
+    setTimeout(() => {
+      set({ toasts: get().toasts.filter((x) => x.id !== t.id) });
+    }, t.duration);
+  },
+  addLove: (amount) => {
+    set({ loveTotal: get().loveTotal + amount });
+  },
+
+  previewElement: null,
+  setPreviewElement: (el) => {
+    set({ previewElement: el });
+  },
+
+  bloodMoonActive: false,
+  toggleBloodMoon: () => {
+    set({ bloodMoonActive: !get().bloodMoonActive });
+  },
+
+  warpActive: false,
+  triggerWarp: () => {
+    if (get().warpActive) return;
+    set({ warpActive: true });
+    playWarp();
+    haptic.snap();
+    setTimeout(() => set({ warpActive: false }), 2500);
+  },
 }));

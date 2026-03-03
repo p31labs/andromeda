@@ -85,7 +85,7 @@ export function TelemetryModal({ onClose }: TelemetryModalProps) {
     <div
       ref={backdropRef}
       onClick={handleBackdrop}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm pointer-events-auto"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm pointer-events-auto"
     >
       <GlassPanel className="w-[480px] max-w-[95vw] max-h-[80vh] flex flex-col">
         {/* Header */}

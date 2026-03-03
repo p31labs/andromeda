@@ -19,6 +19,7 @@ import {
   stopPolling,
 } from '../lib/gameSync';
 import { generateQRSvg } from '../engine/qrcode';
+import { Starfield } from './Starfield';
 
 type LobbyStep = 'choice' | 'create' | 'join' | 'waiting';
 
@@ -140,12 +141,13 @@ export function Lobby() {
 
   return (
     <div
-      className="relative w-full h-full bg-[#0a0a1a] flex flex-col items-center justify-center gap-6 select-none"
+      className="isolate relative w-full h-full flex flex-col items-center justify-center gap-6 select-none"
       style={{
         paddingTop: 'env(safe-area-inset-top, 0px)',
         paddingBottom: 'env(safe-area-inset-bottom, 0px)',
       }}
     >
+      <Starfield />
       {/* Title */}
       <div className="text-center">
         <h1 className="text-3xl font-black tracking-tighter text-white/90 mb-1">
@@ -166,10 +168,10 @@ export function Lobby() {
                 key={m.id}
                 type="button"
                 onClick={() => setMode(m.id)}
-                className={`flex items-center gap-1 px-3 py-2 rounded-xl border transition-all cursor-pointer ${
+                className={`flex items-center gap-1 px-3 py-2 rounded-xl border backdrop-blur-[20px] transition-all cursor-pointer ${
                   mode === m.id
-                    ? 'bg-white/10 border-white/20 text-white'
-                    : 'bg-white/3 border-white/8 text-white/40 hover:bg-white/5'
+                    ? 'bg-white/[0.10] border-white/[0.20] text-white'
+                    : 'bg-white/[0.04] border-white/[0.08] text-white/40 hover:bg-white/[0.06]'
                 }`}
                 style={{ minHeight: 44 }}
               >
@@ -184,7 +186,7 @@ export function Lobby() {
             <button
               type="button"
               onClick={() => setStep('create')}
-              className="flex flex-col items-center justify-center gap-2 p-6 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 transition-all active:scale-95 cursor-pointer"
+              className="flex flex-col items-center justify-center gap-2 p-6 rounded-2xl bg-white/[0.06] backdrop-blur-[20px] hover:bg-white/[0.10] border border-white/[0.12] hover:border-white/[0.20] transition-all active:scale-95 cursor-pointer"
               style={{ minWidth: 140, minHeight: 120, touchAction: 'manipulation' }}
             >
               <span className="text-3xl">+</span>
@@ -195,7 +197,7 @@ export function Lobby() {
             <button
               type="button"
               onClick={() => setStep('join')}
-              className="flex flex-col items-center justify-center gap-2 p-6 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 transition-all active:scale-95 cursor-pointer"
+              className="flex flex-col items-center justify-center gap-2 p-6 rounded-2xl bg-white/[0.06] backdrop-blur-[20px] hover:bg-white/[0.10] border border-white/[0.12] hover:border-white/[0.20] transition-all active:scale-95 cursor-pointer"
               style={{ minWidth: 140, minHeight: 120, touchAction: 'manipulation' }}
             >
               <span className="text-3xl">&rarr;</span>
@@ -215,7 +217,7 @@ export function Lobby() {
             value={name}
             onChange={(e) => setName(e.target.value)}
             maxLength={20}
-            className={`w-full px-4 py-3 bg-white/5 border rounded-xl text-white text-center font-medium placeholder:text-white/20 focus:outline-none focus:border-white/30 ${
+            className={`w-full px-4 py-3 bg-white/[0.06] backdrop-blur-[20px] border rounded-xl text-white text-center font-medium placeholder:text-white/20 focus:outline-none focus:border-white/30 ${
               error ? 'border-red-400/50' : 'border-white/10'
             }`}
             style={{ minHeight: 48 }}
@@ -293,7 +295,7 @@ export function Lobby() {
             value={code}
             onChange={(e) => setCode(e.target.value.toUpperCase().slice(0, 6))}
             maxLength={6}
-            className={`w-full px-4 py-3 bg-white/5 border rounded-xl text-white text-center font-mono text-2xl tracking-widest uppercase placeholder:text-white/15 focus:outline-none focus:border-white/30 ${
+            className={`w-full px-4 py-3 bg-white/[0.06] backdrop-blur-[20px] border rounded-xl text-white text-center font-mono text-2xl tracking-widest uppercase placeholder:text-white/15 focus:outline-none focus:border-white/30 ${
               error ? 'border-red-400/50' : 'border-white/10'
             }`}
             style={{ minHeight: 48 }}
@@ -305,7 +307,7 @@ export function Lobby() {
             value={name}
             onChange={(e) => setName(e.target.value)}
             maxLength={20}
-            className={`w-full px-4 py-3 bg-white/5 border rounded-xl text-white text-center font-medium placeholder:text-white/20 focus:outline-none focus:border-white/30 ${
+            className={`w-full px-4 py-3 bg-white/[0.06] backdrop-blur-[20px] border rounded-xl text-white text-center font-medium placeholder:text-white/20 focus:outline-none focus:border-white/30 ${
               error ? 'border-red-400/50' : 'border-white/10'
             }`}
             style={{ minHeight: 48 }}

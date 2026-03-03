@@ -14,6 +14,8 @@ import { useGameStore } from '../store/gameStore';
 import { getGallery, getGalleryCount, getTotalLove } from '../engine/gallery';
 import type { GalleryEntry } from '../engine/gallery';
 import { getQuestsForMode } from '../engine/quests';
+import { WONKY_FOOTER } from '../config/easterEggs';
+import { Starfield } from './Starfield';
 
 const MODE_EMOJI: Record<string, string> = {
   seed: '\u{1F331}',
@@ -40,7 +42,7 @@ function relativeTime(iso: string): string {
 
 function GalleryRow({ entry }: { entry: GalleryEntry }) {
   return (
-    <div className="flex items-center gap-3 px-3 py-2 rounded-lg bg-white/3 text-xs">
+    <div className="flex items-center gap-3 px-3 py-2 rounded-lg bg-white/[0.04] backdrop-blur-[16px] text-xs">
       <span className="text-white/70 font-mono font-bold min-w-[60px]">
         {entry.displayFormula}
       </span>
@@ -79,7 +81,7 @@ export function ModeSelect() {
 
     return (
       <div
-        className="relative w-full h-full bg-[#0a0a1a] flex flex-col items-center justify-center gap-6 select-none overflow-y-auto"
+        className="isolate relative w-full h-full flex flex-col items-center justify-center gap-6 select-none overflow-y-auto"
         style={{
           paddingTop: 'max(2rem, env(safe-area-inset-top, 0px))',
           paddingBottom: 'max(2rem, env(safe-area-inset-bottom, 0px))',
@@ -87,6 +89,7 @@ export function ModeSelect() {
           paddingRight: 'env(safe-area-inset-right, 0px)',
         }}
       >
+        <Starfield />
         {/* Back button */}
         <button
           type="button"
@@ -115,7 +118,7 @@ export function ModeSelect() {
               key={quest.id}
               type="button"
               onClick={() => setGameMode(pendingMode, quest.id)}
-              className="group flex items-center gap-4 p-4 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 transition-all active:scale-[0.98] cursor-pointer text-left"
+              className="group flex items-center gap-4 p-4 rounded-xl bg-white/[0.06] backdrop-blur-[20px] hover:bg-white/[0.10] border border-white/[0.12] hover:border-white/[0.20] transition-all active:scale-[0.98] cursor-pointer text-left"
               style={{ minHeight: 64, touchAction: 'manipulation' }}
             >
               <span className="text-2xl flex-shrink-0">{quest.icon}</span>
@@ -142,7 +145,7 @@ export function ModeSelect() {
           <button
             type="button"
             onClick={() => setGameMode(pendingMode, 'free_build')}
-            className="group flex items-center gap-4 p-4 rounded-xl bg-white/3 hover:bg-white/8 border border-white/5 hover:border-white/15 transition-all active:scale-[0.98] cursor-pointer text-left"
+            className="group flex items-center gap-4 p-4 rounded-xl bg-white/[0.04] backdrop-blur-[20px] hover:bg-white/[0.08] border border-white/[0.08] hover:border-white/[0.15] transition-all active:scale-[0.98] cursor-pointer text-left"
             style={{ minHeight: 64, touchAction: 'manipulation' }}
           >
             <span className="text-2xl flex-shrink-0">{'\u{1F3A8}'}</span>
@@ -163,7 +166,7 @@ export function ModeSelect() {
   // Phase 1: Mode selection
   return (
     <div
-      className="relative w-full h-full bg-[#0a0a1a] flex flex-col items-center justify-center gap-8 select-none overflow-y-auto"
+      className="isolate relative w-full h-full flex flex-col items-center justify-center gap-8 select-none overflow-y-auto"
       style={{
         paddingTop: 'max(2rem, env(safe-area-inset-top, 0px))',
         paddingBottom: 'max(2rem, env(safe-area-inset-bottom, 0px))',
@@ -171,6 +174,7 @@ export function ModeSelect() {
         paddingRight: 'env(safe-area-inset-right, 0px)',
       }}
     >
+      <Starfield />
       {/* Title */}
       <div className="text-center">
         <h1 className="text-4xl sm:text-5xl font-black tracking-[0.3em] text-white title-glow mb-2">
@@ -188,7 +192,7 @@ export function ModeSelect() {
             key={mode.id}
             type="button"
             onClick={() => setPendingMode(mode.id)}
-            className={`mode-card group flex flex-col items-center gap-3 p-5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 ${MODE_HOVER_BORDER[mode.id] ?? ''} transition-all active:scale-95 cursor-pointer flex-1`}
+            className={`mode-card group flex flex-col items-center gap-3 p-5 rounded-2xl bg-white/[0.06] backdrop-blur-[20px] hover:bg-white/[0.10] border border-white/[0.12] ${MODE_HOVER_BORDER[mode.id] ?? ''} transition-all active:scale-95 cursor-pointer flex-1`}
             style={{ minWidth: 100, maxWidth: 160, minHeight: 150, touchAction: 'manipulation' }}
           >
             <span className="text-5xl group-hover:scale-110 transition-transform">
@@ -211,7 +215,7 @@ export function ModeSelect() {
       <button
         type="button"
         onClick={() => setLobbyActive(true)}
-        className="text-sm text-white/50 hover:text-white/80 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full px-6 py-2 transition-all cursor-pointer font-medium"
+        className="text-sm text-white/50 hover:text-white/80 bg-white/[0.06] backdrop-blur-[20px] hover:bg-white/[0.10] border border-white/[0.12] rounded-full px-6 py-2 transition-all cursor-pointer font-medium"
         style={{ minHeight: 48, touchAction: 'manipulation' }}
       >
         {'\u{1F91D}'} Play Together
@@ -243,6 +247,11 @@ export function ModeSelect() {
           No molecules yet. Pick a mode and start building!
         </p>
       )}
+
+      {/* Wonky footer */}
+      <p className="fixed bottom-3 w-full text-center text-[11px] italic text-white/20 pointer-events-none">
+        {WONKY_FOOTER}
+      </p>
     </div>
   );
 }

@@ -27,9 +27,9 @@ export function GlassPanel({
   return (
     <div
       className={`
-        bg-black/40
-        backdrop-blur-[12px]
-        border border-white/[0.08]
+        bg-white/[0.06]
+        backdrop-blur-[20px]
+        border border-white/[0.12]
         rounded-2xl
         ${interactive ? 'pointer-events-auto' : 'pointer-events-none'}
         ${className}

@@ -5,7 +5,7 @@
 
 // ── Elements ──
 
-export type ElementSymbol = 'H' | 'C' | 'N' | 'O' | 'Na' | 'P' | 'Ca' | 'Cl' | 'S' | 'Fe' | 'Mn';
+export type ElementSymbol = 'H' | 'C' | 'N' | 'O' | 'Na' | 'P' | 'Ca' | 'Cl' | 'S' | 'Fe' | 'Mn' | 'Ba' | 'Wi';
 
 export interface ElementData {
   symbol: ElementSymbol;

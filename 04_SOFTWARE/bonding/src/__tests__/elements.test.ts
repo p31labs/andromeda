@@ -19,9 +19,9 @@ const ALL_SYMBOLS: ElementSymbol[] = ['H', 'C', 'N', 'O', 'Na', 'P', 'Ca', 'Cl',
 // âââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
 describe('Element definitions â structural integrity', () => {
-  it('palette contains exactly 11 elements', () => {
-    expect(Object.keys(ELEMENTS)).toHaveLength(11);
-    expect(ELEMENTS_ARRAY).toHaveLength(11);
+  it('palette contains exactly 13 elements', () => {
+    expect(Object.keys(ELEMENTS)).toHaveLength(13);
+    expect(ELEMENTS_ARRAY).toHaveLength(13);
   });
 
   it('every expected element is present', () => {
@@ -60,6 +60,8 @@ describe('Element valences', () => {
     S: 2,
     Fe: 3,
     Mn: 2,
+    Ba: 4,
+    Wi: 3,
   };
 
   for (const [sym, expected] of Object.entries(expectedValences)) {

@@ -130,6 +130,28 @@ export const ELEMENTS: Record<ElementSymbol, ElementData> = {
     size: 1.17,
     funFact: 'Element 25. The age your prefrontal cortex finishes compiling.',
   },
+  Ba: {
+    symbol: 'Ba',
+    name: 'Bashium',
+    valence: 4,
+    color: '#b44dff',
+    emissive: '#d88fff',
+    frequency: 345,
+    note: 'Ba',
+    size: 1.15,
+    funFact: 'Bashium first crashed into Earth\'s atmosphere on March 10, 2016. Refuses to react with broccoli.',
+  },
+  Wi: {
+    symbol: 'Wi',
+    name: 'Willium',
+    valence: 3,
+    color: '#4ade80',
+    emissive: '#86efac',
+    frequency: 432,
+    note: 'Wi',
+    size: 1.15,
+    funFact: 'First observed on August 8, 2019. Has three bonds because it always holds on to the people it loves.',
+  },
 };
 
 export const ELEMENTS_ARRAY: ElementData[] = Object.values(ELEMENTS);
@@ -147,4 +169,6 @@ export const ELEMENT_NAMES: Record<ElementSymbol, string> = {
   S: 'Sulfur',
   Fe: 'Iron',
   Mn: 'Manganese',
+  Ba: 'Bashium',
+  Wi: 'Willium',
 };

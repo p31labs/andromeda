@@ -32,7 +32,7 @@ export function FormulaDisplay({ formula, className }: { formula: string; classN
       sub += SUB_TO_DIGIT[formula[i]!];
       i++;
     }
-    if (sub) parts.push(<sub key={key++} className="text-[0.7em]">{sub}</sub>);
+    if (sub) parts.push(<sub key={key++} className="text-[0.8em] leading-none">{sub}</sub>);
   }
 
   return <span className={className}>{parts}</span>;

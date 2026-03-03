@@ -14,6 +14,7 @@
  */
 
 import { type ReactNode } from 'react';
+import { useGameStore } from '../../store/gameStore';
 
 interface CockpitLayoutProps {
   /** The R3F <Canvas> component — rendered at z-1, fills entire viewport */
@@ -38,6 +39,8 @@ export function CockpitLayout({
   toastLayer,
   children,
 }: CockpitLayoutProps) {
+  const bloodMoonActive = useGameStore((s) => s.bloodMoonActive);
+
   return (
     <div
       className="fixed inset-0 bg-[#050505] overflow-hidden"
@@ -47,6 +50,37 @@ export function CockpitLayout({
           Fills entire viewport. Renders behind everything. */}
       <div className="absolute inset-0 z-[1]">
         {viewport}
+      </div>
+
+      {/* ═══ Layer 1.5: Blood Moon Haze ═══
+          Two layers toggled by BloodMoonNode ember.
+          1. Vignette — dark crimson edges, clear center. Cinematic.
+          2. Warm wash — off-center glow, slow CSS breathe cycle.
+          Both pointer-events:none, 1.5s fade transition. */}
+      <div
+        className={`absolute inset-0 z-[5] pointer-events-none transition-opacity duration-[1500ms] ${
+          bloodMoonActive ? 'opacity-100' : 'opacity-0'
+        }`}
+        style={{
+          maskImage: 'linear-gradient(to bottom, black 50%, transparent 75%)',
+          WebkitMaskImage: 'linear-gradient(to bottom, black 50%, transparent 75%)',
+        }}
+      >
+        {/* Vignette: darkens top + side edges with warm crimson */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background: 'radial-gradient(ellipse at 50% 40%, transparent 25%, rgba(60,0,0,0.15) 55%, rgba(30,0,0,0.35) 100%)',
+          }}
+        />
+        {/* Warm wash: upper glow that breathes */}
+        <div
+          className="absolute inset-0 haze-breathe"
+          style={{
+            background: 'radial-gradient(circle at 35% 30%, rgba(120,20,0,0.12) 0%, transparent 45%)',
+            mixBlendMode: 'screen',
+          }}
+        />
       </div>
 
       {/* ═══ Layer 2: HUD Container ═══

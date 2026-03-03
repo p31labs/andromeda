@@ -32,13 +32,13 @@ export function AchievementToast() {
               key={toast.id}
               className={`
                 flex items-center gap-4
-                discovery-toast backdrop-blur-md
+                backdrop-blur-[20px]
                 px-6 py-4 rounded-xl
                 border border-[#FFD700]/25
                 max-w-[360px] w-full
                 ${isExiting ? 'toast-exit' : 'discovery-enter'}
               `}
-              style={{ background: 'linear-gradient(135deg, rgba(0,0,0,0.85) 0%, rgba(40,20,0,0.85) 100%)' }}
+              style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,200,0,0.04) 100%)' }}
             >
               <span className="text-2xl">{toast.icon}</span>
               <div className="flex flex-col gap-0.5">
@@ -67,13 +67,13 @@ export function AchievementToast() {
               key={toast.id}
               className={`
                 flex items-center gap-4
-                backdrop-blur-md
+                backdrop-blur-[20px]
                 px-6 py-5 rounded-xl
                 border border-[#FFD700]/40
                 max-w-[360px] w-full
                 ${isExiting ? 'toast-exit' : 'discovery-enter'}
               `}
-              style={{ background: 'linear-gradient(135deg, rgba(40,30,0,0.9) 0%, rgba(60,40,0,0.9) 100%)' }}
+              style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,200,0,0.06) 100%)' }}
             >
               <span className="text-3xl">{toast.icon}</span>
               <div className="flex flex-col gap-0.5">
@@ -102,9 +102,9 @@ export function AchievementToast() {
             key={toast.id}
             className={`
               flex items-center gap-3
-              bg-black/80 backdrop-blur-md
+              bg-white/[0.06] backdrop-blur-[20px]
               px-5 py-3 rounded-xl
-              border border-white/10
+              border border-white/[0.12]
               max-w-[360px] w-full
               achievement-shimmer
               ${isExiting ? 'toast-exit' : 'toast-enter-center'}

@@ -10,6 +10,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useGameStore } from '../store/gameStore';
 import { getCurrentStep, getQuestPercent } from '../engine/quests';
+import { getQuestNarrative } from '../config/questNarrative';
 
 export function QuestHUD() {
   const activeQuests = useGameStore((s) => s.activeQuests);
@@ -66,6 +67,7 @@ export function QuestHUD() {
 
   const percent = getQuestPercent(quest, progress);
   const currentStep = getCurrentStep(quest, progress);
+  const narrative = getQuestNarrative(quest.id);
 
   return (
     <div className="absolute left-6 z-10 pointer-events-none max-w-[200px]" style={{ top: 'calc(4rem + env(safe-area-inset-top, 0px))' }}>
@@ -79,15 +81,33 @@ export function QuestHUD() {
             <span className="text-emerald-400/60 text-[10px]">{'\u2713'}</span>
           )}
         </div>
+        {/* Narrative intro — shown when no atoms on canvas */}
+        {narrative && !formulaActive && progress.completedSteps === 0 && (
+          <p className="text-[10px] text-white/30 italic leading-tight mb-1">
+            {narrative.intro}
+          </p>
+        )}
         <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden mb-1">
           <div
-            className="h-full bg-white/20 rounded-full transition-all duration-500"
+            className="h-full bg-white/20 rounded-full transition-all duration-500 ease-out"
             style={{ width: `${percent}%` }}
           />
         </div>
+        {/* Step narrative — shows for last completed step */}
+        {narrative && progress.completedSteps > 0 && !progress.completed && (
+          <p className="text-[10px] text-white/25 italic leading-tight mb-0.5">
+            {narrative.stepNarratives[progress.completedSteps - 1]}
+          </p>
+        )}
         {currentStep && (
           <p className="text-[10px] text-white/25 leading-tight truncate">
             {currentStep.narrative}
+          </p>
+        )}
+        {/* Completion line */}
+        {progress.completed && narrative && (
+          <p className="text-[10px] text-emerald-400/50 font-semibold leading-tight mt-0.5">
+            {narrative.completionLine}
           </p>
         )}
         <p className="text-[9px] text-white/15 font-mono mt-0.5">

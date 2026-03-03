@@ -47,6 +47,16 @@ import { exportAsSummary, logEventA } from './engine/exhibitA';
 import { sendPing } from './lib/gameSync';
 import { eventBus, GameEventType } from './genesis/eventBus';
 import { initAudio } from './engine/sound';
+import { getFunFact } from './config/funFacts';
+import { getQuestMessage } from './config/questMessages';
+import { FIRST_MOLECULE, CONFETTI } from './config/easterEggs';
+import { BASHIUM } from './config/bashium';
+import { WILLIUM } from './config/willium';
+import { spawnConfetti } from './engine/confetti';
+import { BloodMoonOverlay } from './components/BloodMoonOverlay';
+import { BloodMoonNode } from './components/BloodMoonNode';
+import { ShootingStars } from './components/ShootingStars';
+import { MissingNode } from './components/MissingNode';
 
 function App() {
   const atoms = useGameStore((s) => s.atoms);
@@ -68,10 +78,45 @@ function App() {
   const pingNotification = useGameStore((s) => s.pingNotification);
   const playerName = useGameStore((s) => s.playerName);
   const remotePlayers = useGameStore((s) => s.remotePlayers);
+  const activeQuests = useGameStore((s) => s.activeQuests);
+  const questProgress = useGameStore((s) => s.questProgress);
 
   const [exportCopied, setExportCopied] = useState(false);
   const [telemetryOpen, setTelemetryOpen] = useState(false);
   const [bugReportOpen, setBugReportOpen] = useState(false);
+  const [firstMoleculeShown, setFirstMoleculeShown] = useState(false);
+  const prevPhaseRef = useRef<string>(gamePhase);
+
+  // Completion effects: first molecule check + confetti
+  useEffect(() => {
+    if (gamePhase === 'complete' && prevPhaseRef.current !== 'complete') {
+      // First molecule ever?
+      if (!localStorage.getItem(FIRST_MOLECULE.storageKey)) {
+        localStorage.setItem(FIRST_MOLECULE.storageKey, '1');
+        setFirstMoleculeShown(true);
+      }
+      // Confetti — scale by significance
+      const hasBa = atoms.some(a => a.element === 'Ba');
+      const hasWi = atoms.some(a => a.element === 'Wi');
+      const questJustCompleted = activeQuests.some(q => {
+        const p = questProgress[q.id];
+        return p?.completed && p.completedAt &&
+          Date.now() - new Date(p.completedAt).getTime() < 5000;
+      });
+      if (hasBa || hasWi) {
+        spawnConfetti(CONFETTI.bashiumCount);
+      } else if (questJustCompleted) {
+        spawnConfetti(CONFETTI.questCompleteCount);
+      } else {
+        spawnConfetti();
+      }
+    }
+    if (gamePhase !== 'complete') {
+      setFirstMoleculeShown(false);
+    }
+    prevPhaseRef.current = gamePhase;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gamePhase]);
 
   // WCD-29: Birthday boot sequence state
   const [showBoot, setShowBoot] = useState(false);
@@ -175,6 +220,23 @@ function App() {
       })()
     : null;
 
+  // Completion overlay: derived state
+  const funFact = gamePhase === 'complete' ? getFunFact(formula) : null;
+  const isBashiumMolecule = atoms.some(a => a.element === 'Ba');
+  const isWilliumMolecule = atoms.some(a => a.element === 'Wi');
+  const isSecretMolecule = isBashiumMolecule || isWilliumMolecule;
+  const questMessage = gamePhase === 'complete' ? (() => {
+    for (const quest of activeQuests) {
+      const progress = questProgress[quest.id];
+      if (!progress || progress.completedSteps === 0) continue;
+      const lastIdx = progress.completedSteps - 1;
+      if (quest.steps[lastIdx]?.target === formula) {
+        return getQuestMessage(quest.id, lastIdx);
+      }
+    }
+    return null;
+  })() : null;
+
   const handleModeExit = () => {
     if (isMultiplayer) {
       leaveMultiplayer();
@@ -233,9 +295,13 @@ function App() {
       }
       toastLayer={<AchievementToast />}
     >
-      {/* ── Floating overlays (z-20) — retained from pre-cockpit layout ──
-          These are positioned absolutely and will migrate to cockpit slots
-          in future WCD phases. */}
+      {/* ── Ambient layers — behind game UI ── */}
+      <BloodMoonOverlay />
+      <BloodMoonNode />
+      <ShootingStars />
+      <MissingNode />
+
+      {/* ── Floating overlays (z-20) — retained from pre-cockpit layout ── */}
 
       {/* Stability meter: formula + bar (top-right) */}
       <StabilityMeter />
@@ -273,7 +339,7 @@ function App() {
       {/* Ping notification overlay */}
       {pingNotification && (
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <div className="ping-enter bg-black/50 backdrop-blur-sm px-8 py-6 rounded-3xl border border-white/10 text-center">
+          <div className="ping-enter bg-white/[0.06] backdrop-blur-[20px] px-8 py-6 rounded-3xl border border-white/[0.12] text-center">
             <p className="text-6xl mb-2">{pingNotification.emoji}</p>
             <p className="text-sm text-white/50 font-mono">{pingNotification.senderName}</p>
           </div>
@@ -299,7 +365,7 @@ function App() {
       {/* Completion overlay */}
       {gamePhase === 'complete' && !pendingDiscovery && (
         <div className="absolute inset-0 flex items-center justify-center pointer-events-auto">
-          <div className="complete-enter bg-black/60 backdrop-blur-md p-10 rounded-3xl border border-white/15 text-center max-w-[420px]">
+          <div className="complete-enter bg-white/[0.06] backdrop-blur-[20px] p-10 rounded-3xl border border-white/[0.15] text-center max-w-[420px]">
             {/* Formula (WCD-50: HTML <sub> for universal rendering) */}
             <p className="text-5xl font-black text-white mb-2">
               <FormulaDisplay formula={dispFormula} />
@@ -311,8 +377,47 @@ function App() {
               <p className="text-sm text-green mb-2">Complete!</p>
             )}
 
-            {/* Personality */}
-            {personality && (
+            {/* Bashium special message */}
+            {isBashiumMolecule && (
+              <div className="mb-4">
+                <p className="text-sm text-purple-400 font-semibold mb-1">{BASHIUM.completionMessage.line1}</p>
+                <p className="text-lg text-white font-bold mb-1">{BASHIUM.completionMessage.line2}</p>
+                <p className="text-sm text-white/60 italic">{BASHIUM.completionMessage.line3}</p>
+              </div>
+            )}
+
+            {/* Willium special message */}
+            {isWilliumMolecule && (
+              <div className="mb-4">
+                <p className="text-sm text-green-400 font-semibold mb-1">{WILLIUM.completionMessage.line1}</p>
+                <p className="text-lg text-white font-bold mb-1">{WILLIUM.completionMessage.line2}</p>
+                <p className="text-sm text-white/60 italic">{WILLIUM.completionMessage.line3}</p>
+              </div>
+            )}
+
+            {/* First molecule ever */}
+            {firstMoleculeShown && !isSecretMolecule && (
+              <div className="mb-3">
+                <p className="text-base text-amber-400 font-bold">{FIRST_MOLECULE.line1}</p>
+                <p className="text-sm text-white/50">{FIRST_MOLECULE.line2}</p>
+              </div>
+            )}
+
+            {/* Quest step message */}
+            {questMessage && !isSecretMolecule && (
+              <div className="text-center mb-3">
+                <p className="text-base font-semibold text-green">{questMessage.congratsLine}</p>
+                <p className="text-sm text-white/40 mt-1">{questMessage.bridgeLine}</p>
+              </div>
+            )}
+
+            {/* Fun fact */}
+            {funFact && !isSecretMolecule && (
+              <p className="text-sm text-white/50 italic mb-3">{funFact}</p>
+            )}
+
+            {/* Personality — skip for secret element molecules */}
+            {personality && !isSecretMolecule && (
               <div className="mb-4">
                 <p className="text-lg mb-0.5">
                   {PERSONALITY_EMOJI[personality.type]} {personality.name}

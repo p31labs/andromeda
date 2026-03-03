@@ -36,7 +36,7 @@ export function TutorialOverlay() {
       <button
         type="button"
         onClick={() => setMinimized(false)}
-        className="fixed left-4 z-50 bg-black/50 backdrop-blur-md px-4 py-2 rounded-full border border-amber-400/30 text-sm text-amber-400/60 cursor-pointer hover:text-amber-400/80 transition-colors pointer-events-auto"
+        className="fixed left-4 z-50 bg-white/[0.06] backdrop-blur-[20px] px-4 py-2 rounded-full border border-amber-400/30 text-sm text-amber-400/60 cursor-pointer hover:text-amber-400/80 transition-colors pointer-events-auto"
         style={{ bottom: 'calc(160px + env(safe-area-inset-bottom, 0px))', minHeight: 40, touchAction: 'manipulation' }}
       >
         {step.emoji} Step {stepNum}/{totalSteps} — tap to show
@@ -64,7 +64,7 @@ export function TutorialOverlay() {
           maxWidth: 'min(70vw, 320px)',
         }}
       >
-        <div className="bg-black/60 backdrop-blur-md rounded-2xl border border-white/10 px-5 py-3 text-center relative">
+        <div className="bg-white/[0.06] backdrop-blur-[20px] rounded-2xl border border-white/[0.12] px-5 py-3 text-center relative">
           {/* Dismiss / minimize button */}
           <button
             type="button"
