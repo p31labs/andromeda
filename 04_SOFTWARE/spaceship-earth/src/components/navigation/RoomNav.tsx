@@ -38,6 +38,8 @@ export function RoomNav({ rooms, activeRoom, onRoomChange }: Props) {
               : '1px solid transparent',
             borderRadius: 8,
             padding: '8px 16px',
+            minHeight: 48,
+            minWidth: 72,
             color: activeRoom === room.id ? '#4ecdc4' : '#64748b',
             fontFamily: 'monospace',
             fontSize: 12,
@@ -45,6 +47,7 @@ export function RoomNav({ rooms, activeRoom, onRoomChange }: Props) {
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
+            justifyContent: 'center',
             gap: 2,
             transition: 'all 0.2s ease',
           }}
