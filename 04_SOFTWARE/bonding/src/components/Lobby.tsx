@@ -251,6 +251,7 @@ export function Lobby() {
           >
             {loading ? 'Creating...' : 'Create Room'}
           </button>
+          {error && <p className="text-sm text-red-400/80 font-medium">{error}</p>}
         </div>
       )}
 
@@ -261,9 +262,9 @@ export function Lobby() {
           <div className="flex items-center gap-6">
             <p
               className="text-5xl font-black font-mono tracking-widest text-white select-all"
-              style={{ letterSpacing: '0.2em' }}
+              style={{ letterSpacing: '0.15em' }}
             >
-              {roomCode}
+              {roomCode.slice(0, 3)}-{roomCode.slice(3)}
             </p>
             <div
               className="opacity-80"
@@ -276,11 +277,20 @@ export function Lobby() {
               }}
             />
           </div>
+          {/* WCD-CC03: Copy button */}
+          <button
+            type="button"
+            onClick={() => navigator.clipboard.writeText(roomCode).catch(() => {})}
+            className="text-xs text-white/40 hover:text-white/60 border border-white/[0.12] rounded-lg px-4 py-1.5 transition-colors cursor-pointer"
+            style={{ minHeight: 36 }}
+          >
+            Copy Code
+          </button>
           <p className="text-sm text-white/30">
             Share this code with your player
           </p>
           <div className="flex items-center gap-2 text-white/20 text-sm">
-            <span className="inline-block w-2 h-2 rounded-full bg-white/20 animate-pulse" />
+            <span className="inline-block w-2 h-2 rounded-full bg-green/40 animate-pulse" />
             <WaitingDots />
           </div>
         </div>
@@ -341,12 +351,8 @@ export function Lobby() {
           >
             {loading ? 'Joining...' : 'Join Room'}
           </button>
+          {error && <p className="text-sm text-red-400/80 font-medium">{error}</p>}
         </div>
-      )}
-
-      {/* Error display */}
-      {error && (
-        <p className="text-sm text-red-400/80 font-medium">{error}</p>
       )}
 
       {/* Back button */}

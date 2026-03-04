@@ -237,13 +237,28 @@ function App() {
     return null;
   })() : null;
 
+  // WCD-CC03: Persist last mode to sessionStorage for quick resume
+  useEffect(() => {
+    if (gameMode) sessionStorage.setItem('bonding-last-mode', gameMode);
+  }, [gameMode]);
+
+  // WCD-CC03: Confirm before exiting mid-build
   const handleModeExit = () => {
+    if (atoms.length > 0 && !window.confirm('Leave this molecule? Progress will be lost.')) return;
     if (isMultiplayer) {
       leaveMultiplayer();
     } else {
       setGameMode(null);
     }
   };
+
+  // WCD-CC03: Confirm before switching difficulty mid-build
+  const handleDifficultyChange = useCallback((d: DifficultyId) => {
+    if (useGameStore.getState().atoms.length > 0) {
+      if (!window.confirm('Switch mode? Current molecule will be cleared.')) return;
+    }
+    setGameMode(d);
+  }, [setGameMode]);
 
   const handleExportClipboard = async () => {
     const summary = exportAsSummary();
@@ -287,7 +302,7 @@ function App() {
             stability={stability}
             onPing={handleCommandBarPing}
             difficulty={gameMode as DifficultyId}
-            onDifficultyChange={setGameMode}
+            onDifficultyChange={handleDifficultyChange}
             canPing={isMultiplayer && remotePlayers.length > 0}
             onToggleTelemetry={() => setTelemetryOpen((v) => !v)}
           />

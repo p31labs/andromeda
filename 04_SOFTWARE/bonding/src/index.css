@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* ── WCD-CC03: Font @import removed — loaded via <link> in index.html
+   to avoid @import-after-rules CSS warning from Tailwind expansion ── */
+
 /* ═══════════════════════════════════════════════════════
    BONDING — P31 Labs
    Custom styles and animations beyond Tailwind utility
@@ -31,9 +34,6 @@
     100% { transform: translateY(100%) scale(0.95); opacity: 0; }
   }
 }
-
-/* ── Font import (JetBrains Mono + Inter for WCD-08) ── */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap');
 
 /* ── WCD-CC02: Global touch + focus styles ── */
 * {

@@ -67,7 +67,12 @@ export function ModeSelect() {
   const setGameMode = useGameStore((s) => s.setGameMode);
   const setLobbyActive = useGameStore((s) => s.setLobbyActive);
   const [showAll, setShowAll] = useState(false);
-  const [pendingMode, setPendingMode] = useState<DifficultyId | null>(null);
+  // WCD-CC03: Auto-restore last mode from sessionStorage → skip to Phase 2
+  const [pendingMode, setPendingMode] = useState<DifficultyId | null>(() => {
+    const saved = sessionStorage.getItem('bonding-last-mode') as DifficultyId | null;
+    if (saved && MODES.some(m => m.id === saved)) return saved;
+    return null;
+  });
 
   const gallery = getGallery();
   const count = getGalleryCount();
