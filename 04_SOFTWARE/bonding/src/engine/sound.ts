@@ -420,3 +420,30 @@ export function playWhoosh(): void {
   gain.connect(ctx.destination);
   source.start(now);
 }
+
+// Additional exports for compatibility
+export function initAudio(): void {
+  getCtx();
+}
+
+// @ts-ignore
+export function playEmberToggle(lit: boolean): void {
+  playModeSelect();
+}
+
+export function isMuted(): boolean {
+  return false;
+}
+
+// @ts-ignore
+export function setMuted(muted: boolean): void {
+  // No-op for now, could be implemented with a global gain node
+}
+
+export function playMissingNodeTone(): void {
+  playReject();
+}
+
+export function playWarp(): void {
+  playWhoosh();
+}
