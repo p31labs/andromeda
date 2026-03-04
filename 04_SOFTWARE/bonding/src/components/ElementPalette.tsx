@@ -226,7 +226,7 @@ export function ElementPalette() {
                 }}
               />
               {/* Symbol */}
-              <span className="relative z-[1] text-sm font-bold text-white/90 group-hover:text-white transition-colors"
+              <span className="relative z-[1] text-base font-bold text-white/90 group-hover:text-white transition-colors"
                 style={{ textShadow: `0 1px 4px rgba(0,0,0,0.9), 0 0 8px ${el.emissive}33` }}
               >
                 {el.symbol}

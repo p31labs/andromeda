@@ -16,7 +16,7 @@
 
 import { Suspense, useCallback, useMemo, useRef } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { OrbitControls, PerspectiveCamera, Environment } from '@react-three/drei';
+import { OrbitControls, PerspectiveCamera, Environment, Html } from '@react-three/drei';
 import * as THREE from 'three';
 // WCD-15: EffectComposer + Bloom removed — too heavy for tablet TBDR GPUs.
 // Glow now faked via AdditiveBlending on atom cores (see VoxelAtom.tsx).
@@ -242,7 +242,18 @@ export function MoleculeCanvas() {
       <Canvas flat onPointerMissed={handlePointerMissed}>
         {/* WCD-08: Y offset 0.3 centers molecule in the visual gap between TopBar and ElementDock */}
         <PerspectiveCamera makeDefault position={[0, 0.3, 5]} fov={50} />
-        <Suspense fallback={null}>
+        <Suspense fallback={
+          <Html center>
+            <div style={{
+              color: 'rgba(255,255,255,0.4)',
+              fontSize: 14,
+              letterSpacing: '0.1em',
+              fontFamily: 'JetBrains Mono, monospace',
+            }}>
+              BONDING
+            </div>
+          </Html>
+        }>
           <Scene />
         </Suspense>
       </Canvas>

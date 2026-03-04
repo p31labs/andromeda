@@ -20,7 +20,7 @@ export function AchievementToast() {
   if (toasts.length === 0) return null;
 
   return (
-    <div className="flex flex-col items-center gap-2 w-full max-w-[400px] pointer-events-none">
+    <div className="flex flex-col items-center gap-2 w-[min(360px,calc(100vw-32px))] pointer-events-none">
       {toasts.slice(0, 3).map((toast) => {
         const age = Date.now() - toast.createdAt;
         const isExiting = age > toast.duration - 300;
@@ -38,7 +38,7 @@ export function AchievementToast() {
                 max-w-[360px] w-full
                 ${isExiting ? 'toast-exit' : 'discovery-enter'}
               `}
-              style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,200,0,0.04) 100%)' }}
+              style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,200,0,0.04) 100%)', borderLeft: '3px solid #fbbf24' }}
             >
               <span className="text-2xl">{toast.icon}</span>
               <div className="flex flex-col gap-0.5">
@@ -73,7 +73,7 @@ export function AchievementToast() {
                 max-w-[360px] w-full
                 ${isExiting ? 'toast-exit' : 'discovery-enter'}
               `}
-              style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,200,0,0.06) 100%)' }}
+              style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,200,0,0.06) 100%)', borderLeft: '3px solid #a855f7' }}
             >
               <span className="text-3xl">{toast.icon}</span>
               <div className="flex flex-col gap-0.5">
@@ -109,6 +109,7 @@ export function AchievementToast() {
               achievement-shimmer
               ${isExiting ? 'toast-exit' : 'toast-enter-center'}
             `}
+            style={{ borderLeft: `3px solid ${toast.love ? '#fbbf24' : '#4ade80'}` }}
           >
             <span className="text-xl">{toast.icon}</span>
             <div className="flex flex-col">
@@ -116,7 +117,7 @@ export function AchievementToast() {
                 {toast.text}
               </span>
               {toast.subtext && (
-                <span className="text-[13px] text-white/40">
+                <span className="text-[13px] text-white/60">
                   {toast.subtext}
                 </span>
               )}

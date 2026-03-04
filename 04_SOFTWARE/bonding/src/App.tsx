@@ -429,7 +429,7 @@ function App() {
             )}
 
             {/* Stats */}
-            <div className="flex items-center justify-center gap-4 mb-6 text-xs text-white/30">
+            <div className="flex items-center justify-center gap-4 mb-6 text-xs text-white/50">
               <span>{atoms.length} atoms</span>
               <span>{'\u00B7'}</span>
               <span className="text-amber-400 font-semibold">
