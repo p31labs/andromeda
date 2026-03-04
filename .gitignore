@@ -37,3 +37,27 @@ build/
 *.elf
 *.bin
 .git-backup/
+04_SOFTWARE/docs/.astro/
+
+# Claude / AI agent artifacts
+.claude/
+04_SOFTWARE/.claude/
+roomodes
+
+# Google Drive numbered duplicates
+*\ (1).*
+*\ (2).*
+*\ (3).*
+*\ (7).*
+
+# Binary docs (keep in Google Drive, not git)
+*.docx
+
+# Research text files (Google Drive artifacts)
+-Gemini*.txt
+Gemini*.txt
+Quantum*.txt
+P31\ Data*.txt
+
+# Stale merge artifacts
+temp_merge_backup/
