@@ -28,7 +28,15 @@ function DriftingMolecules() {
 export function Starfield() {
   return (
     <div className="absolute inset-0 -z-10 pointer-events-none">
-      <Canvas gl={{ antialias: false, alpha: false }}>
+      <Canvas
+        dpr={[1, 1.5]}
+        gl={{
+          antialias: false,
+          alpha: false,
+          powerPreference: 'high-performance',
+          failIfMajorPerformanceCaveat: false,
+        }}
+      >
         <PerspectiveCamera makeDefault position={[0, 0, 5]} fov={60} />
         <color attach="background" args={['#050505']} />
         <DriftingMolecules />

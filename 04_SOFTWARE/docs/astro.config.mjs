@@ -13,18 +13,11 @@ export default defineConfig({
       sidebar: [
         {
           label: 'Getting Started',
-          items: [
-            { label: 'Overview', slug: 'getting-started' },
-            { label: 'Quickstart', slug: 'getting-started/quickstart' },
-          ],
+          autogenerate: { directory: 'getting-started' },
         },
         {
           label: 'Architecture',
-          items: [
-            { label: 'Overview', slug: 'architecture' },
-            { label: 'AI Mesh', slug: 'architecture/ai-mesh' },
-            { label: 'CRDT Sync', slug: 'architecture/crdt' },
-          ],
+          autogenerate: { directory: 'architecture' },
         },
       ],
     }),

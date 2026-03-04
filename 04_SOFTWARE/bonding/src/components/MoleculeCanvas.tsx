@@ -239,7 +239,27 @@ export function MoleculeCanvas() {
 
   return (
     <div style={{ width: '100%', height: '100%', touchAction: 'none', userSelect: 'none', WebkitUserSelect: 'none' }}>
-      <Canvas flat onPointerMissed={handlePointerMissed}>
+      <Canvas
+        flat
+        onPointerMissed={handlePointerMissed}
+        dpr={[1, 1.5]}
+        gl={{
+          antialias: false,
+          alpha: false,
+          powerPreference: 'high-performance',
+          failIfMajorPerformanceCaveat: false,
+        }}
+        onCreated={({ gl }) => {
+          const canvas = gl.domElement;
+          canvas.addEventListener('webglcontextlost', (e) => {
+            e.preventDefault();
+            console.warn('[BONDING] WebGL context lost — will restore');
+          });
+          canvas.addEventListener('webglcontextrestored', () => {
+            console.log('[BONDING] WebGL context restored');
+          });
+        }}
+      >
         {/* WCD-08: Y offset 0.3 centers molecule in the visual gap between TopBar and ElementDock */}
         <PerspectiveCamera makeDefault position={[0, 0.3, 5]} fov={50} />
         <Suspense fallback={

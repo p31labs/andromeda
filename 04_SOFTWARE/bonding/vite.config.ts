@@ -6,8 +6,8 @@ import path from 'path';
 
 export default defineConfig({
   plugins: [
-    tailwindcss(),
     react(),
+    tailwindcss(),
     // WCD-CC03: PWA — generates service worker for offline caching
     VitePWA({
       registerType: 'autoUpdate',
@@ -33,7 +33,7 @@ export default defineConfig({
     alias: {
       '@p31/shared': path.resolve(__dirname, '../packages/shared/src'),
     },
-    dedupe: ['three', '@react-three/fiber', '@react-three/drei'],
+    dedupe: ['three', '@react-three/fiber', '@react-three/drei', '@react-three/postprocessing'],
   },
   build: {
     // WCD-CC03: Split vendor chunks for better caching
@@ -41,16 +41,20 @@ export default defineConfig({
       output: {
         manualChunks: {
           three: ['three'],
-          r3f: ['@react-three/fiber', '@react-three/drei'],
+          r3f: ['@react-three/fiber', '@react-three/drei', '@react-three/postprocessing'],
           react: ['react', 'react-dom'],
         },
       },
     },
   },
-  test: {
-    environment: 'jsdom',
-    setupFiles: ['./src/__tests__/setup.ts'],
-    globals: true,
-    exclude: ['tests/e2e/**', 'node_modules/**'],
+  optimizeDeps: {
+    exclude: ['@react-three/postprocessing'],
+  },
+  server: {
+    port: 5188,
+    host: true,
+    hmr: {
+      port: 5188,
+    },
   },
 });
