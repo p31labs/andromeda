@@ -49,9 +49,12 @@ describe('Calcium Tracker Engine', () => {
 
     it('logDose increments streak on new day', () => {
         let state = initCalciumState();
-        state = logDose(state, new Date('2026-02-27T10:00:00Z').toISOString());
-        state = logDose(state, new Date('2026-02-28T10:00:00Z').toISOString());
-        // This test is tricky with `new Date()` in streak. Simplified.
+        const today = new Date();
+        const yesterday = new Date(today);
+        yesterday.setDate(yesterday.getDate() - 1);
+        state = logDose(state, yesterday.toISOString());
+        state = logDose(state, today.toISOString());
+        // Streak counts backwards from today — both today and yesterday have doses
         expect(calculateStreak(state.logs)).toBeGreaterThanOrEqual(1);
     });
 

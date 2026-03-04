@@ -1,3 +1,4 @@
+// @vitest-environment jsdom
 // ═══════════════════════════════════════════════════════
 // BONDING — P31 Labs
 // Discovery system tests

@@ -1,6 +1,6 @@
 // src/engine/expandedCheckpoints.test.ts
 
-import { describe, expect } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { expandedCheckpoints } from './expandedCheckpoints';
 
 describe('Expanded Checkpoints Registry', () => {
