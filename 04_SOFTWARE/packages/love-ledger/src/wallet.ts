@@ -20,7 +20,8 @@ import { DEFAULT_LEDGER_CONFIG } from "./types.js";
 export function computeWallet(
   transactions: readonly LoveTransaction[],
   careScore: number,
-  config: LedgerConfig = DEFAULT_LEDGER_CONFIG
+  config: LedgerConfig = DEFAULT_LEDGER_CONFIG,
+  totalSpent: number = 0
 ): LoveWallet {
   const totalEarned = transactions.reduce((sum, tx) => sum + tx.amount, 0);
   const sovereigntyPool = totalEarned * config.splitRatio;
@@ -28,8 +29,9 @@ export function computeWallet(
 
   const effectiveCS = Math.max(0, Math.min(1, careScore));
   const liquidFraction = effectiveCS >= config.minimumCareScore ? effectiveCS : 0;
-  const availableBalance = performancePool * liquidFraction;
-  const frozenBalance = performancePool - availableBalance;
+  const grossAvailable = performancePool * liquidFraction;
+  const availableBalance = Math.max(0, grossAvailable - totalSpent);
+  const frozenBalance = performancePool - grossAvailable;
 
   return {
     totalEarned,

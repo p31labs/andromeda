@@ -105,7 +105,9 @@ BONDING becomes a **module** inside Spaceship Earth. Not a route swap — a genu
 | `genesis/telemetryStore.ts` | Merge telemetry streams — BONDING + Buffer Agent sessions unified |
 | `engine/chemistry.ts` | Standalone module — import directly into Spaceship Earth |
 | `engine/sound.ts` | Merge into Spaceship Earth audio engine (element notes + breathing pacer) |
-| `data/elements.ts` | Promote to shared constants — used by both molecule builder and geodesic dome coloring |
+| `data/elements.ts` | Promote to shared constants — used by both molecule b
+
+uilder and geodesic dome coloring |
 | `Jitterbug.tsx` | Already lives in `Navigation/` — add BONDING node to the tetrahedron |
 
 ### Architecture Decisions for Phase 2

@@ -59,9 +59,12 @@ export function TopBar({ modeEmoji, onModeExit, onLobby, isInRoom, playerCount, 
           <button
             onClick={onModeExit}
             className="w-10 h-10 flex items-center justify-center
-                       rounded-xl border border-white/[0.08]
-                       hover:border-white/[0.15] active:scale-95
-                       transition-all duration-150 text-lg"
+                       rounded-2xl backdrop-blur-md
+                       border border-white/[0.12]
+                       hover:border-white/[0.25] hover:shadow-[0_0_12px_rgba(78,205,196,0.15)]
+                       active:scale-95
+                       transition-all duration-200 text-lg"
+            style={{ background: 'rgba(6,10,16,0.5)', boxShadow: '0 2px 8px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.05)' }}
             aria-label="Change mode"
             title="Tap to change mode"
           >
@@ -73,9 +76,12 @@ export function TopBar({ modeEmoji, onModeExit, onLobby, isInRoom, playerCount, 
           <button
             onClick={onLobby}
             className="w-10 h-10 flex items-center justify-center
-                       rounded-xl border border-white/[0.08]
-                       hover:border-white/[0.15] active:scale-95
-                       transition-all duration-150 text-base"
+                       rounded-2xl backdrop-blur-md
+                       border border-white/[0.12]
+                       hover:border-white/[0.25] hover:shadow-[0_0_12px_rgba(78,205,196,0.15)]
+                       active:scale-95
+                       transition-all duration-200 text-base"
+            style={{ background: 'rgba(6,10,16,0.5)', boxShadow: '0 2px 8px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.05)' }}
             aria-label={isInRoom ? 'Room status' : 'Play together'}
             title={isInRoom ? `${playerCount} players` : 'Play Together'}
           >
@@ -90,9 +96,12 @@ export function TopBar({ modeEmoji, onModeExit, onLobby, isInRoom, playerCount, 
             setMuted(next);
           }}
           className="w-10 h-10 flex items-center justify-center
-                     rounded-xl border border-white/[0.08]
-                     hover:border-white/[0.15] active:scale-95
-                     transition-all duration-150 text-base"
+                     rounded-2xl backdrop-blur-md
+                     border border-white/[0.12]
+                     hover:border-white/[0.25] hover:shadow-[0_0_12px_rgba(78,205,196,0.15)]
+                     active:scale-95
+                     transition-all duration-200 text-base"
+          style={{ background: 'rgba(6,10,16,0.5)', boxShadow: '0 2px 8px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.05)' }}
           aria-label={audioMuted ? 'Unmute sound' : 'Mute sound'}
         >
           {audioMuted ? '\u{1F507}' : '\u{1F50A}'}

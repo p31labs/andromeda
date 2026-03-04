@@ -9,6 +9,7 @@ export default defineConfig({
     alias: {
       '@p31/shared': path.resolve(__dirname, '../packages/shared/src'),
     },
+    dedupe: ['three', '@react-three/fiber', '@react-three/drei'],
   },
   test: {
     environment: 'jsdom',

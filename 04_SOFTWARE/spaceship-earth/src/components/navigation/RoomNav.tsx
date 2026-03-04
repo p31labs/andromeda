@@ -18,11 +18,12 @@ export function RoomNav({ rooms, activeRoom, onRoomChange }: Props) {
       zIndex: 11,
       display: 'flex',
       justifyContent: 'center',
-      gap: 4,
-      padding: '8px 16px',
-      background: 'rgba(15, 23, 42, 0.85)',
+      gap: 2,
+      padding: '6px 8px',
+      paddingBottom: 'max(6px, env(safe-area-inset-bottom))',
+      background: 'rgba(2, 4, 6, 0.9)',
       backdropFilter: 'blur(12px)',
-      borderTop: '1px solid rgba(100, 116, 139, 0.2)',
+      borderTop: '1px solid rgba(40, 60, 80, 0.2)',
       pointerEvents: 'auto',
     }}>
       {rooms.map(room => (
@@ -31,18 +32,20 @@ export function RoomNav({ rooms, activeRoom, onRoomChange }: Props) {
           onClick={() => onRoomChange(room.id)}
           style={{
             background: activeRoom === room.id
-              ? 'rgba(78, 205, 196, 0.15)'
+              ? 'rgba(78, 205, 196, 0.12)'
               : 'transparent',
             border: activeRoom === room.id
-              ? '1px solid rgba(78, 205, 196, 0.4)'
+              ? '1px solid rgba(78, 205, 196, 0.35)'
               : '1px solid transparent',
-            borderRadius: 8,
-            padding: '8px 16px',
-            minHeight: 48,
-            minWidth: 72,
-            color: activeRoom === room.id ? '#4ecdc4' : '#64748b',
-            fontFamily: 'monospace',
-            fontSize: 12,
+            borderRadius: 6,
+            padding: '5px 6px',
+            minHeight: 40,
+            flex: '1 1 0',
+            maxWidth: 72,
+            color: activeRoom === room.id ? '#4ecdc4' : '#3a4a5a',
+            fontFamily: "'JetBrains Mono', monospace",
+            fontSize: 8,
+            letterSpacing: 0.5,
             cursor: 'pointer',
             display: 'flex',
             flexDirection: 'column',
@@ -52,7 +55,7 @@ export function RoomNav({ rooms, activeRoom, onRoomChange }: Props) {
             transition: 'all 0.2s ease',
           }}
         >
-          <span style={{ fontSize: 20 }}>{room.icon}</span>
+          <span style={{ fontSize: 14 }}>{room.icon}</span>
           <span>{room.label}</span>
         </button>
       ))}

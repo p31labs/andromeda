@@ -148,7 +148,7 @@ export function ElementPalette() {
               key={el.symbol}
               type="button"
               onPointerDown={(e) => handlePointerDown(el.symbol, e)}
-              className={`group relative flex items-center justify-center rounded-full shrink-0 transition-transform duration-200 active:scale-95 touch-expand ${
+              className={`group relative flex items-center justify-center rounded-full shrink-0 transition-all duration-200 active:scale-95 touch-expand backdrop-blur-md ${
                 isDragging ? 'opacity-30 scale-90' : 'hover:scale-110'
               }`}
               style={{
@@ -158,23 +158,23 @@ export function ElementPalette() {
                 height: buttonSize,
                 minWidth: buttonSize,
                 minHeight: buttonSize,
+                background: `radial-gradient(circle at 40% 35%, ${el.emissive}18 0%, rgba(6,10,16,0.45) 60%)`,
+                border: `1.5px solid ${el.emissive}55`,
+                boxShadow: `0 2px 8px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.08), 0 0 14px ${el.emissive}30`,
               }}
             >
-              {/* Glass shell — bright Fresnel rim matching canvas atoms */}
+              {/* Color rim — element identity ring */}
               <div
-                className="absolute inset-0 rounded-full"
+                className="absolute inset-0 rounded-full pointer-events-none"
                 style={{
-                  background: `radial-gradient(circle at 30% 30%, transparent 20%, ${el.emissive}40 55%, ${el.emissive}aa 82%, ${el.emissive} 100%)`,
-                  border: `1.5px solid ${el.emissive}44`,
-                  boxShadow: `0 0 16px ${el.emissive}30, 0 0 4px ${el.emissive}18`,
+                  background: `radial-gradient(circle at 50% 50%, transparent 40%, ${el.emissive}25 70%, ${el.emissive}55 100%)`,
                 }}
               />
-              {/* Luminous core — white specular + emissive glow */}
+              {/* Core glow — inner luminance */}
               <div
-                className="absolute inset-[12%] rounded-full animate-pulse-core"
+                className="absolute inset-[15%] rounded-full pointer-events-none"
                 style={{
-                  background: `radial-gradient(circle at 38% 35%, rgba(255,255,255,0.5) 0%, ${el.emissive} 25%, ${el.emissive}66 50%, transparent 75%)`,
-                  boxShadow: `0 0 14px ${el.emissive}55, inset 0 0 12px ${el.emissive}44`,
+                  background: `radial-gradient(circle at 38% 35%, ${el.emissive}44 0%, ${el.emissive}15 40%, transparent 70%)`,
                 }}
               />
               {/* Symbol */}

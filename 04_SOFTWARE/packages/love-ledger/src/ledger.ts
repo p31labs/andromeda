@@ -27,6 +27,8 @@ import type {
   LedgerConfig,
   LedgerSnapshot,
   LedgerEventMap,
+  SpendType,
+  LoveSpend,
 } from "./types.js";
 import { LOVE_AMOUNTS, DEFAULT_LEDGER_CONFIG } from "./types.js";
 import { computeWallet, careRatio, bondStrength, lovePerDay } from "./wallet.js";
@@ -75,7 +77,9 @@ function eventToTransaction(eventType: string): TransactionType | null {
 
 export class LedgerEngine extends LedgerEmitter {
   private _transactions: LoveTransaction[] = [];
+  private _spends: LoveSpend[] = [];
   private _nextId = 1;
+  private _nextSpendId = 1;
   private _owner: string;
   private _careScore = 0.5;
   private _config: LedgerConfig;
@@ -93,7 +97,7 @@ export class LedgerEngine extends LedgerEmitter {
 
   get owner(): string { return this._owner; }
   get transactions(): readonly LoveTransaction[] { return this._transactions; }
-  get wallet(): LoveWallet { return computeWallet(this._transactions, this._careScore, this._config); }
+  get wallet(): LoveWallet { return computeWallet(this._transactions, this._careScore, this._config, this.totalSpent); }
   get careRatio(): number { return careRatio(this._transactions); }
   get lovePerDay(): number { return lovePerDay(this._transactions); }
 
@@ -152,6 +156,40 @@ export class LedgerEngine extends LedgerEmitter {
       "BLOCK_PLACED", LOVE_AMOUNTS.BLOCK_PLACED, undefined,
       "GAME_ENGINE", new Date().toISOString(), meta || {}
     );
+  }
+
+  // ── Spending ──────────────────────────────────────────────────
+
+  get spends(): readonly LoveSpend[] { return this._spends; }
+
+  get totalSpent(): number {
+    return this._spends.reduce((sum, s) => sum + s.amount, 0);
+  }
+
+  spend(type: SpendType, amount: number, meta?: Record<string, unknown>): LoveSpend | null {
+    const w = this.wallet;
+    if (amount <= 0 || amount > w.availableBalance) return null;
+
+    const s: LoveSpend = {
+      id: this._nextSpendId++,
+      type,
+      amount,
+      owner: this._owner,
+      recipient: meta?.recipient as string | undefined,
+      timestamp: new Date().toISOString(),
+      meta,
+    };
+    this._spends.push(s);
+    this.emit("LOVE_SPENT", s);
+
+    const updated = this.wallet;
+    this.emit("POOL_REBALANCED", {
+      careScore: this._careScore,
+      availableBalance: updated.availableBalance,
+      frozenBalance: updated.frozenBalance,
+    });
+
+    return s;
   }
 
   // ── Snapshot / Restore ──────────────────────────────────────────

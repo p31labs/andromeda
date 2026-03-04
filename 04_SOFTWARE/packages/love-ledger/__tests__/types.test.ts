@@ -107,10 +107,11 @@ describe("FOUNDING_NODES", () => {
     }
   });
 
-  it("each node has a valid ISO date of birth", () => {
+  it("each node has a valid birth year", () => {
     for (const node of FOUNDING_NODES) {
-      const d = new Date(node.dateOfBirth);
-      expect(d.getTime()).not.toBeNaN();
+      expect(typeof node.birthYear).toBe("number");
+      expect(node.birthYear).toBeGreaterThan(2000);
+      expect(node.birthYear).toBeLessThan(2030);
     }
   });
 });

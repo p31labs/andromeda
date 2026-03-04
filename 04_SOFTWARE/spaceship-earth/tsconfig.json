@@ -10,7 +10,13 @@
     "types": ["vite/client"],
     "paths": {
       "@p31/shared": ["../packages/shared/src"],
-      "@p31/shared/*": ["../packages/shared/src/*"]
+      "@p31/shared/*": ["../packages/shared/src/*"],
+      "@p31/node-zero": ["../packages/node-zero/src"],
+      "@p31/node-zero/*": ["../packages/node-zero/src/*"],
+      "@p31/love-ledger": ["../packages/love-ledger/src"],
+      "@p31/love-ledger/*": ["../packages/love-ledger/src/*"],
+      "@p31/game-engine": ["../packages/game-engine/src"],
+      "@p31/game-engine/*": ["../packages/game-engine/src/*"]
     }
   },
   "include": ["src"]

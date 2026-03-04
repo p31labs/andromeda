@@ -46,6 +46,30 @@ export const LOVE_AMOUNTS: Readonly<Record<TransactionType, number>> = {
   DONATION:          0.0,
 } as const;
 
+// ─── Spend Types ────────────────────────────────────────────────────
+
+export type SpendType =
+  | "PANEL_UNLOCK"
+  | "FOUNDING_GIFT"
+  | "SPOON_BOOST"
+  | "DONATION";
+
+export interface LoveSpend {
+  readonly id: number;
+  readonly type: SpendType;
+  readonly amount: number;
+  readonly owner: string;
+  readonly recipient?: string;
+  readonly timestamp: string;
+  readonly meta?: Record<string, unknown>;
+}
+
+export const SPEND_COSTS: Readonly<Record<Exclude<SpendType, 'DONATION'>, number>> = {
+  PANEL_UNLOCK: 5,
+  FOUNDING_GIFT: 10,
+  SPOON_BOOST: 3,
+} as const;
+
 // ─── Transaction Record ─────────────────────────────────────────────
 
 /**
@@ -93,7 +117,7 @@ export interface LoveWallet {
 export interface FoundingNode {
   readonly name: string;
   readonly initials: string;
-  readonly dateOfBirth: string;
+  readonly birthYear: number;
   readonly nodeId?: string;
 }
 
@@ -119,8 +143,8 @@ export const DEFAULT_VESTING_SCHEDULE: readonly VestingMilestone[] = [
 ] as const;
 
 export const FOUNDING_NODES: readonly FoundingNode[] = [
-  { name: "Sebastian", initials: "S.J.", dateOfBirth: "2016-03-10" },
-  { name: "Willow",    initials: "W.J.", dateOfBirth: "2019-08-08" },
+  { name: "Bashium", initials: "S.J.", birthYear: 2016 },
+  { name: "Willium", initials: "W.J.", birthYear: 2019 },
 ] as const;
 
 // ─── Ledger Configuration ───────────────────────────────────────────
@@ -147,6 +171,7 @@ export const DEFAULT_LEDGER_CONFIG: Readonly<LedgerConfig> = {
 
 export interface LedgerEventMap {
   "LOVE_EARNED": LoveTransaction;
+  "LOVE_SPENT": LoveSpend;
   "POOL_REBALANCED": {
     readonly careScore: number;
     readonly availableBalance: number;

@@ -14,7 +14,7 @@
  *   25 → 100%  Prefrontal cortex maturation
  *
  * All calculations are pure functions of the current date and the
- * founding node's date of birth.
+ * founding node's birth year.
  */
 
 import type { FoundingNode, VestingMilestone } from "./types.js";
@@ -38,11 +38,20 @@ export interface MilestoneStatus {
   readonly reachedDate: string | null;
 }
 
+/**
+ * Compute age from a birth year (number) or ISO date string.
+ * When given a number, uses Jan 1 of that year as the reference birthday.
+ */
 export function computeAge(
-  dateOfBirth: string,
+  birth: number | string,
   asOf: Date = new Date()
 ): { years: number; days: number } {
-  const [dobY, dobM, dobD] = dateOfBirth.split("-").map(Number) as [number, number, number];
+  let dobY: number, dobM: number, dobD: number;
+  if (typeof birth === "number") {
+    dobY = birth; dobM = 1; dobD = 1;
+  } else {
+    [dobY, dobM, dobD] = birth.split("-").map(Number) as [number, number, number];
+  }
   const dob = new Date(dobY, dobM - 1, dobD);
   const diffMs = asOf.getTime() - dob.getTime();
   const totalDays = Math.floor(diffMs / 86400000);
@@ -56,8 +65,17 @@ export function computeAge(
   return { years: Math.max(0, years), days: Math.max(0, totalDays) };
 }
 
-export function dateAtAge(dateOfBirth: string, ageYears: number): Date {
-  const [y, m, d] = dateOfBirth.split("-").map(Number) as [number, number, number];
+/**
+ * Compute the date when a person reaches a given age.
+ * Accepts birth year (number) or ISO date string.
+ */
+export function dateAtAge(birth: number | string, ageYears: number): Date {
+  let y: number, m: number, d: number;
+  if (typeof birth === "number") {
+    y = birth; m = 1; d = 1;
+  } else {
+    [y, m, d] = birth.split("-").map(Number) as [number, number, number];
+  }
   return new Date(y + ageYears, m - 1, d);
 }
 
@@ -80,7 +98,7 @@ export function computeVestingStatus(
   schedule: readonly VestingMilestone[] = DEFAULT_VESTING_SCHEDULE,
   asOf: Date = new Date()
 ): VestingStatus {
-  const age = computeAge(node.dateOfBirth, asOf);
+  const age = computeAge(node.birthYear, asOf);
   const vested = vestedPercent(age.years, schedule);
   const vestedAmt = sovereigntyPool * vested / 100;
   const lockedAmt = sovereigntyPool - vestedAmt;
@@ -95,12 +113,12 @@ export function computeVestingStatus(
 
   let daysUntilNext: number | null = null;
   if (nextMilestone) {
-    const nextDate = dateAtAge(node.dateOfBirth, nextMilestone.ageYears);
+    const nextDate = dateAtAge(node.birthYear, nextMilestone.ageYears);
     daysUntilNext = Math.max(0, Math.ceil((nextDate.getTime() - asOf.getTime()) / 86400000));
   }
 
   const milestones: MilestoneStatus[] = schedule.map(m => {
-    const d = dateAtAge(node.dateOfBirth, m.ageYears).toISOString().split("T")[0];
+    const d = dateAtAge(node.birthYear, m.ageYears).toISOString().split("T")[0];
     return {
       milestone: m,
       reached: age.years >= m.ageYears,

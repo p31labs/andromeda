@@ -88,13 +88,19 @@ export function CommandBar({
               key={d}
               onClick={() => onDifficultyChange(d)}
               className={`
-                w-9 h-9 rounded-lg flex items-center justify-center text-sm
-                border transition-all duration-150 active:scale-90 touch-expand
+                w-9 h-9 rounded-xl backdrop-blur-md flex items-center justify-center text-sm
+                border transition-all duration-200 active:scale-90 touch-expand
                 ${isActive
-                  ? 'border-[#FFD700]/30 bg-[#FFD700]/[0.12]'
-                  : 'border-white/[0.06] bg-transparent hover:border-white/10'
+                  ? 'border-[#FFD700]/30'
+                  : 'border-white/[0.12] hover:border-white/[0.25] hover:shadow-[0_0_12px_rgba(78,205,196,0.15)]'
                 }
               `}
+              style={{
+                background: isActive ? 'rgba(255,215,0,0.12)' : 'rgba(6,10,16,0.5)',
+                boxShadow: isActive
+                  ? '0 0 12px rgba(255,215,0,0.15), inset 0 1px 0 rgba(255,255,255,0.05)'
+                  : '0 2px 8px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.05)',
+              }}
               aria-label={`${d} difficulty`}
               aria-pressed={isActive}
             >
