@@ -1195,8 +1195,14 @@ export default function App() {
           </div>
         </div>
 
-        {/* ── Main area (transparent, clicks pass through) ── */}
-        <div style={{ gridArea: 'main' }} />
+        {/* ── Main area — SpoonTracker anchored bottom-left ── */}
+        <div style={{ gridArea: 'main', position: 'relative', display: 'flex', alignItems: 'flex-end' }}>
+          <SpoonTracker
+            spoons={spoons}
+            activity={activity}
+            voltageMap={voltageMapRef.current}
+          />
+        </div>
 
         {/* ── Sidebar ── */}
         <div className="hud-sidebar" style={{ opacity: hudOpacity, transition: 'opacity 0.8s ease-in-out' }}>
@@ -1233,12 +1239,6 @@ export default function App() {
         <NodeInspector node={selectedNode} voltage={selectedVoltage} />
         <ActivityFeed activity={activity} />
       </div>
-
-      <SpoonTracker
-        spoons={spoons}
-        activity={activity}
-        voltageMap={voltageMapRef.current}
-      />
 
       <GraphBrain
         open={activePanel === 'brain'}

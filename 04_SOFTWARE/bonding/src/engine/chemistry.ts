@@ -46,7 +46,7 @@ export function generateFormula(atoms: PlacedAtom[]): string {
   }
 
   // Hill system: C first, H second, rest alphabetical
-  const order = ['C', 'H', 'N', 'O', 'P', 'S', 'Na', 'Ca', 'Mn'];
+  const order = ['C', 'H', 'N', 'O', 'P', 'S', 'Na', 'Ca'];
   const elements = Object.keys(counts).sort((a, b) => {
     const idxA = order.indexOf(a);
     const idxB = order.indexOf(b);
@@ -157,10 +157,6 @@ export const MOLECULE_NAMES: Record<string, string> = {
   'HO\u2084PCa': 'Dicalcium Phosphate',
   'CCl\u2084': 'Carbon Tetrachloride',
   'P\u2084': 'White Phosphorus',
-  // Manganese compounds (Whitney's Element 25)
-  'OMn': 'Manganosite',
-  'SMn': 'Alabandite',
-  'Cl\u2082Mn': 'Manganese Chloride',
 };
 
 /**
@@ -213,10 +209,6 @@ const DISPLAY_FORMULAS: Record<string, string> = {
   'CH\u2084N\u2082O': 'CO(NH\u2082)\u2082',
   // Advanced phosphorus
   'O\u2081\u2080P\u2084': 'P\u2084O\u2081\u2080',
-  // Manganese compounds (Whitney's Element 25)
-  'OMn': 'MnO',
-  'SMn': 'MnS',
-  'Cl\u2082Mn': 'MnCl\u2082',
 };
 
 export function displayFormula(hill: string): string {
@@ -265,7 +257,6 @@ function getMolecularGeometry(element: ElementSymbol): string {
   switch (element) {
     case 'O':  return 'bent';            // 2 lone pairs → 104.5°
     case 'Ca': return 'linear';          // ionic coordination → 180°
-    case 'Mn': return 'linear';          // valence 2 → 180° (like Ca)
     case 'C':  return 'tetrahedral';     // sp3 → 109.47°
     case 'N':  return 'trigonal_planar'; // sp3 but simplified → 120°
     case 'P':  return 'trigonal_planar'; // sp2 simplified → 120°
