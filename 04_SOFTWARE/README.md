@@ -1,11 +1,41 @@
-# P31 EDE — Everything Development Environment
+# P31 Software — 04_SOFTWARE
 
 > The Centaur's cockpit. Three agents. One geometry. The mesh converges. 💜🔺💜
 
 **P31 Labs** builds open-source assistive technology for neurodivergent individuals.
-The EDE is our sovereign development ecosystem — a drop-in devcontainer that
-orchestrates hardware, firmware, AI mesh networking, and cognitive interface tools
-into a single coherent environment.
+
+This directory contains all active P31 software products.
+
+---
+
+## Products
+
+| Product | Path | Status | Description |
+|---------|------|--------|-------------|
+| **BONDING** | `bonding/` | **LIVE** — bonding.p31ca.org | Chemistry molecule-building game. Ships March 10, 2026. |
+| **P31 EDE** | `frontend/` + `backend/` | In progress | Spaceship Earth cognitive dashboard (React + Three.js + FastAPI) |
+| **Extensions** | `extensions/` | Functional | 4 VS Code extensions (Spoon Gauge, Cognitive Shield, Progressive Disclosure, Cockpit Panel) |
+
+---
+
+## BONDING — Active Ship
+
+```bash
+export PATH="/home/p31/.config/nvm/versions/node/v24.14.0/bin:$PATH"
+cd bonding && npm install
+npx tsc --noEmit    # type check
+npx vitest run      # 488/488 tests
+npx vite build && npx wrangler pages deploy dist --project-name=bonding
+```
+
+See [bonding/README.md](bonding/README.md) for full details.
+
+---
+
+## P31 EDE — Everything Development Environment
+
+The sovereign dev ecosystem: drop-in devcontainer that orchestrates hardware,
+firmware, AI mesh networking, and cognitive interface tools.
 
 ## Quick Start
 

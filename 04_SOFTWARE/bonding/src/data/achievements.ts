@@ -217,14 +217,27 @@ export const ACHIEVEMENTS: Achievement[] = [
     love: 40,
     icon: '🎨',
   },
+
+  // ── Whitney's Element 25 ──
+  {
+    id: 'version_one',
+    name: 'Version 1.0',
+    description: 'Build your first molecule with Manganese \u2014 Element 25',
+    trigger: { type: 'element_count', element: 'Mn', count: 1 },
+    love: 25,
+    icon: '\u{1F940}',
+    hidden: true,
+  },
 ];
 
 /** Set of known molecular formulas for novelty detection */
 export const KNOWN_MOLECULES: Set<string> = new Set([
+  // Seed (H, O)
   'H₂',
   'O₂',
   'H₂O',
   'H₂O₂',
+  // Sprout (H, C, N, O)
   'N₂',
   'H₃N',
   'CO₂',
@@ -234,6 +247,7 @@ export const KNOWN_MOLECULES: Set<string> = new Set([
   'C₂H₂',
   'C₃H₈',
   'C₆H₁₂O₆',
+  // Sapling (full palette)
   'NaCl',
   'HONa',
   'OCa',
@@ -253,4 +267,44 @@ export const KNOWN_MOLECULES: Set<string> = new Set([
   'OFe',
   'O₂S',
   'HNO₃',
+  // WCD-25: Expanded dictionary (sync with MOLECULE_NAMES)
+  // Note: CO and NO omitted — can't be built in our valence model
+  // (C has valence 4, always continues bonding past C+O intermediate)
+  'NO₂',
+  'N₂O',
+  'H₃P',
+  'O₃S',
+  'CS₂',
+  'CHN',
+  'H₂O₄S',    // Sulfuric Acid
+  'H₃O₄P',    // Phosphoric Acid
+  'CH₂O₃',    // Carbonic Acid
+  'CH₂O₂',    // Formic Acid
+  'C₂H₄O₂',  // Acetic Acid
+  'H₂O₃S',    // Sulfurous Acid
+  'HNO₂',     // Nitrous Acid
+  'CaCl₂',    // Calcium Chloride
+  'CO₃Na₂',   // Washing Soda
+  'CHO₃Na',   // Baking Soda
+  'SNa₂',     // Sodium Sulfide
+  'ONaCl',     // Bleach
+  'O₄SNa₂',   // Sodium Sulfate
+  'HNa',       // Sodium Hydride
+  'H₂Ca',      // Calcium Hydride
+  'CH₂O',     // Formaldehyde
+  'CH₄N₂O',   // Urea
+  'C₆H₆',     // Benzene
+  'C₆H₆O',    // Phenol
+  'O₄SFe',    // Iron(II) Sulfate
+  'O₄SCa',    // Gypsum
+  'O₄Fe₃',    // Magnetite
+  'Cl₂Fe',    // Iron(II) Chloride
+  'Cl₃Fe',    // Iron(III) Chloride
+  'HO₄PCa',   // Dicalcium Phosphate
+  'CCl₄',     // Carbon Tetrachloride
+  'P₄',        // White Phosphorus
+  // Manganese compounds (Whitney's Element 25)
+  'OMn',          // Manganosite
+  'SMn',          // Alabandite
+  'Cl₂Mn',       // Manganese Chloride
 ]);

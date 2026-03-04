@@ -1,0 +1,51 @@
+---
+/**
+ * BaseLayout.astro — P31 Command Center root layout.
+ *
+ * Enforces the dark-mode glassmorphism theme across all children.
+ * Void (#050505) baseline, Inter/JetBrains Mono dual font-stack.
+ * Google Fonts loaded via preconnect + display=swap for FOUT prevention.
+ */
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const {
+  title,
+  description = 'P31 Labs — Isostatically Rigid. Cognitively Sovereign.',
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#050505" />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- Fonts: Inter + JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <title>{title}</title>
+  </head>
+  <body class="bg-void min-h-screen text-white/85 font-sans antialiased">
+    <!-- Ambient grid background -->
+    <div
+      class="fixed inset-0 pointer-events-none opacity-[0.03]"
+      style="background-image: radial-gradient(rgba(255,255,255,0.3) 1px, transparent 1px); background-size: 32px 32px;"
+    >
+    </div>
+
+    <slot />
+  </body>
+</html>

@@ -1,10 +1,11 @@
 // ═══════════════════════════════════════════════════════
 // BONDING — P31 Labs
-// GhostSite: pulsing indicators showing where atoms CAN snap
+// GhostSite — Holographic ring invitations
 //
-// These appear during drag. When the drag preview is near
-// a ghost site, isSnapped becomes true and the ghost
-// scales up + brightens — the "magnetic pull" effect.
+// Big enough to see, bright enough to beckon.
+// Outer ring + inner dot so each site reads clearly
+// even at distance. Rotates, breathes, pulses.
+// When snapped: expands, goes green, unmissable.
 // ═══════════════════════════════════════════════════════
 
 import { useRef, memo } from 'react';
@@ -17,43 +18,68 @@ interface GhostSiteProps {
   isSnapped?: boolean;
 }
 
-// Lower detail icosahedron for ghost indicators
-const GHOST_GEOMETRY = new THREE.IcosahedronGeometry(0.3, 1);
+// Ring sized to be clearly visible next to atoms (0.5 scale)
+const RING_GEOMETRY = new THREE.TorusGeometry(0.25, 0.02, 8, 32);
+// Small dot at center so the site reads even head-on
+const DOT_GEOMETRY = new THREE.SphereGeometry(0.06, 12, 12);
 
 export const GhostSite = memo(function GhostSite({ position, color, isSnapped }: GhostSiteProps) {
-  const meshRef = useRef<THREE.Mesh>(null);
+  const groupRef = useRef<THREE.Group>(null);
+  const ringRef = useRef<THREE.Mesh>(null);
+  const dotRef = useRef<THREE.Mesh>(null);
 
   useFrame((state) => {
-    if (!meshRef.current) return;
+    if (!groupRef.current || !ringRef.current || !dotRef.current) return;
     const t = state.clock.elapsedTime;
 
-    // Pulse scale: larger when snapped (magnetic pull feel)
-    const targetScale = isSnapped ? 1.4 : 1.0;
-    const current = meshRef.current.scale.x;
-    meshRef.current.scale.setScalar(
-      current + (targetScale - current) * 0.15,
-    );
+    // Rotation: ring slowly spins + gentle wobble
+    ringRef.current.rotation.y += 0.025;
+    ringRef.current.rotation.x = Math.sin(t * 0.6) * 0.4;
 
-    // Pulse opacity
-    const mat = meshRef.current.material as THREE.MeshStandardMaterial;
-    if (mat) {
-      const pulse = Math.sin(t * 3) * 0.5 + 0.5;
-      mat.opacity = isSnapped ? 0.4 + pulse * 0.3 : 0.15 + pulse * 0.15;
-      mat.emissiveIntensity = isSnapped ? 1.5 : 0.5;
-    }
+    // Scale: expand when snapped, breathe when idle
+    const breathe = 1.0 + Math.sin(t * 2.5) * 0.12;
+    const targetScale = isSnapped ? 1.8 : breathe;
+    const current = groupRef.current.scale.x;
+    groupRef.current.scale.setScalar(current + (targetScale - current) * 0.12);
+
+    // Ring opacity: clearly visible idle, bright when snapped
+    const ringMat = ringRef.current.material as THREE.MeshBasicMaterial;
+    const pulse = 0.3 + Math.sin(t * 3) * 0.12;
+    ringMat.opacity = isSnapped ? 0.7 + Math.sin(t * 4) * 0.15 : pulse;
+
+    // Dot opacity: synced but slightly offset
+    const dotMat = dotRef.current.material as THREE.MeshBasicMaterial;
+    const dotPulse = 0.35 + Math.sin(t * 3 + 1) * 0.15;
+    dotMat.opacity = isSnapped ? 0.9 : dotPulse;
   });
 
+  const ringColor = isSnapped ? '#4ade80' : color;
+
   return (
-    <mesh ref={meshRef} position={position} geometry={GHOST_GEOMETRY}>
-      <meshStandardMaterial
-        color={color}
-        emissive={color}
-        emissiveIntensity={0.5}
-        transparent
-        opacity={0.2}
-        toneMapped={false}
-        flatShading
-      />
-    </mesh>
+    <group ref={groupRef} position={position}>
+      {/* Outer ring */}
+      <mesh ref={ringRef} geometry={RING_GEOMETRY}>
+        <meshBasicMaterial
+          color={ringColor}
+          transparent
+          opacity={0.3}
+          blending={THREE.AdditiveBlending}
+          depthWrite={false}
+          toneMapped={false}
+          side={THREE.DoubleSide}
+        />
+      </mesh>
+      {/* Center dot */}
+      <mesh ref={dotRef} geometry={DOT_GEOMETRY}>
+        <meshBasicMaterial
+          color={ringColor}
+          transparent
+          opacity={0.35}
+          blending={THREE.AdditiveBlending}
+          depthWrite={false}
+          toneMapped={false}
+        />
+      </mesh>
+    </group>
   );
 });

@@ -1,16 +1,16 @@
 @import "tailwindcss";
 
+/* ── WCD-CC03: Font @import removed — loaded via <link> in index.html
+   to avoid @import-after-rules CSS warning from Tailwind expansion ── */
+
 /* ═══════════════════════════════════════════════════════
    BONDING — P31 Labs
    Custom styles and animations beyond Tailwind utility
    ═══════════════════════════════════════════════════════ */
 
 @theme {
-  --color-void: #050510;
+  /* ── Legacy tokens (preserved) ── */
   --color-void-light: #0a0a1a;
-  --color-phosphor: #00ff88;
-  --color-cyan: #00d4ff;
-  --color-amber: #ffb800;
   --color-rose: #ff4466;
   --color-violet: #8844ff;
   --color-love: #FFB800;
@@ -18,28 +18,72 @@
   --color-seed: #4ADE80;
   --color-sprout: #22D3EE;
   --color-sapling: #A78BFA;
+
+  /* ── WCD-08: Cockpit design tokens ── */
+  --color-void: #050505;
+  --color-phosphor: #39FF14;
+  --color-amber: #FFD700;
+  --color-cyan: #06B6D4;
+
+  /* ── WCD-08: Toast animation ── */
+  --animate-toast-slide: toast-slide 3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  @keyframes toast-slide {
+    0%   { transform: translateY(100%) scale(0.95); opacity: 0; }
+    10%  { transform: translateY(0) scale(1); opacity: 1; }
+    85%  { transform: translateY(0) scale(1); opacity: 1; }
+    100% { transform: translateY(100%) scale(0.95); opacity: 0; }
+  }
 }
 
-/* ── Font import ── */
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap');
+/* ── WCD-CC02: Global touch + focus styles ── */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.6);
+  outline-offset: 2px;
+}
 
 /* ── Base ── */
 html, body, #root {
+  margin: 0;
+  padding: 0;
   width: 100%;
   height: 100%;
+  background: #050505;
+  color: #E0E0F0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   overflow: hidden;
   font-family: 'JetBrains Mono', ui-monospace, monospace;
   overscroll-behavior: none;
+  /* WCD-14: Prevent iOS long-press context menu + text selection on game UI */
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
-/* ── Prevent pull-to-refresh on Android Chrome ── */
+/* ── WCD-08 + WCD-09: Fixed cockpit viewport — prevents pull-to-refresh, mobile address bar resize,
+   and iOS rubber-banding. position:fixed on body ensures inset-0 respects dynamic viewport. ── */
 body {
+  position: fixed;
+  inset: 0;
+  touch-action: none;
   overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: none;
 }
 
 /* ── Global touch targets ── */
 button, [role="button"], input {
   min-height: 48px;
+}
+
+/* ── WCD-14: Re-enable text selection on form inputs (overrides global user-select: none) ── */
+input, textarea, [contenteditable] {
+  -webkit-user-select: text;
+  user-select: text;
+  -webkit-touch-callout: default;
 }
 
 /* ── Touch expansion: invisible hit area around element palette buttons ── */
@@ -84,7 +128,7 @@ button, [role="button"], input {
 }
 
 .toast-exit {
-  animation: toastSlideOut 0.3s ease-in forwards;
+  animation: toastSlideOut 0.15s ease-in forwards;
 }
 
 /* ── Stability bar pulse on completion ── */
@@ -205,5 +249,113 @@ button, [role="button"], input {
 }
 
 .ping-enter {
-  animation: pingPop 0.3s ease-out;
+  animation: pingPop 0.1s ease-out;
+}
+
+/* ── WCD-29: Boot sequence animations ── */
+@keyframes bootLineIn {
+  0% { opacity: 0; transform: translateY(4px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes bootButtonIn {
+  0% { opacity: 0; transform: scale(0.9); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* ── WCD-22: Network button pulse when connected ── */
+@keyframes networkPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(57, 255, 20, 0.3); }
+  50% { box-shadow: 0 0 8px 2px rgba(57, 255, 20, 0.15); }
+}
+
+.network-pulse {
+  animation: networkPulse 2s ease-in-out infinite;
+}
+
+/* ── WCD-23: Discovery toast styling (clear glass — background now inline) ── */
+
+@keyframes discoveryReveal {
+  0% { transform: translateY(-20px) scale(0.9); opacity: 0; }
+  50% { transform: translateY(2px) scale(1.02); opacity: 1; }
+  100% { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+.discovery-enter {
+  animation: discoveryReveal 0.4s ease-out;
+}
+
+/* ── WCD-29: Transparent HUD text-shadow for legibility over starfield ── */
+.hud-text {
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8), 0 0 8px rgba(0, 0, 0, 0.5);
+}
+
+/* ── WCD-08: Scrollbar hide for ElementDock horizontal scroll ── */
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* ── WCD-1: Miniature atom core pulse ── */
+@keyframes pulse-core {
+  0%   { opacity: 0.7; transform: scale(0.93); }
+  50%  { opacity: 1;   transform: scale(1.07); }
+  100% { opacity: 0.7; transform: scale(0.93); }
+}
+.animate-pulse-core {
+  animation: pulse-core 2.4s ease-in-out infinite;
+}
+
+/* ── Blood Moon: ember flicker — irregular, organic, CSS-only ── */
+@keyframes ember-flicker {
+  0%   { opacity: 0.06; transform: scale(0.85); }
+  12%  { opacity: 0.18; transform: scale(1.15); }
+  25%  { opacity: 0.04; transform: scale(0.80); }
+  38%  { opacity: 0.22; transform: scale(1.10); }
+  50%  { opacity: 0.08; transform: scale(0.90); }
+  63%  { opacity: 0.14; transform: scale(1.05); }
+  75%  { opacity: 0.03; transform: scale(0.75); }
+  88%  { opacity: 0.16; transform: scale(1.20); }
+  100% { opacity: 0.06; transform: scale(0.85); }
+}
+
+.ember-idle {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #cc1100;
+  box-shadow: 0 0 6px 2px rgba(204,17,0,0.3);
+  animation: ember-flicker 4s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.ember-lit {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ff3300;
+  opacity: 0.85;
+  box-shadow:
+    0 0 8px 3px rgba(255,51,0,0.5),
+    0 0 20px 8px rgba(255,51,0,0.2);
+  animation: ember-glow 3s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes ember-glow {
+  0%, 100% { opacity: 0.75; transform: scale(1); }
+  50% { opacity: 0.95; transform: scale(1.15); }
+}
+
+/* ── Blood Moon: haze warm wash breathing ── */
+@keyframes haze-breathe {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+.haze-breathe {
+  animation: haze-breathe 10s ease-in-out infinite;
 }

@@ -11,6 +11,7 @@
 // ═══════════════════════════════════════════════════════
 
 import { create } from 'zustand';
+import { eventBus, GameEventType } from '../genesis/eventBus';
 import type {
   PlacedAtom,
   Bond,
@@ -45,6 +46,7 @@ import {
   playQuestStep,
   playQuestComplete,
   playModeSelect,
+  playWarp,
 } from '../engine/sound';
 import { haptic } from '../engine/haptic';
 import { logEventA } from '../engine/exhibitA';
@@ -57,6 +59,8 @@ import {
   initializeProgress,
   checkQuestProgress,
 } from '../engine/quests';
+import { BASHIUM } from '../config/bashium';
+import { WILLIUM } from '../config/willium';
 import type { Tutorial, TutorialState } from '../engine/tutorial';
 import {
   getTutorial,
@@ -169,6 +173,22 @@ interface GameStore {
   clearIncomingPings: () => void;
   setConnectionStatus: (status: 'connected' | 'reconnecting' | 'disconnected') => void;
   toggleBreathing: () => void;
+
+  // Ambient reward actions (shooting stars, missing node)
+  pushToast: (toast: Omit<ToastMessage, 'id' | 'createdAt'>) => void;
+  addLove: (amount: number) => void;
+
+  // Ghost site preview from palette tap
+  previewElement: ElementSymbol | null;
+  setPreviewElement: (el: ElementSymbol | null) => void;
+
+  // Blood Moon haze toggle
+  bloodMoonActive: boolean;
+  toggleBloodMoon: () => void;
+
+  // Molecular warp field (double-tap easter egg)
+  warpActive: boolean;
+  triggerWarp: () => void;
 }
 
 // ── Helpers ──
@@ -238,11 +258,18 @@ export const useGameStore = create<GameStore>()((set, get) => ({
   // ── Mode selection ──
 
   setGameMode: (mode, questId) => {
+    const previousMode = get().gameMode;
+
     if (mode === null) {
       get().reset();
+      eventBus.emit(GameEventType.DIFFICULTY_CHANGED, { from: previousMode, to: null });
       set({ gameMode: null, activeQuests: [], questProgress: {}, activeTutorial: null, tutorialState: null });
       return;
     }
+
+    // WCD-16: Clear canvas state on mode switch (atoms, bonds, formula, stability)
+    // Preserves: loveBalance, achievements, completedMolecules, session
+    get().reset();
 
     // Initialize quests — filter by selected quest or free build
     let quests: Quest[];
@@ -255,7 +282,16 @@ export const useGameStore = create<GameStore>()((set, get) => ({
     } else {
       quests = getQuestsForMode(mode);
     }
-    const progress = initializeProgress(quests);
+    // WCD-21: Preserve quest progress across mode switches.
+    // Merge existing progress with fresh initialization so that
+    // switching Seed → Sprout → back to Seed keeps Genesis progress.
+    const freshProgress = initializeProgress(quests);
+    const existingProgress = get().questProgress;
+    const progress: Record<string, QuestProgress> = {};
+    for (const [qid, fresh] of Object.entries(freshProgress)) {
+      const existing = existingProgress[qid];
+      progress[qid] = existing && existing.completedSteps > 0 ? existing : fresh;
+    }
 
     // Tutorial: check if first time for this mode
     let activeTutorial: Tutorial | null = null;
@@ -278,6 +314,7 @@ export const useGameStore = create<GameStore>()((set, get) => ({
     }
 
     set({ gameMode: mode, activeQuests: quests, questProgress: progress, seenElements: [], activeTutorial, tutorialState });
+    eventBus.emit(GameEventType.DIFFICULTY_CHANGED, { from: previousMode, to: mode });
     playModeSelect();
 
     // Exhibit A: session started
@@ -332,6 +369,10 @@ export const useGameStore = create<GameStore>()((set, get) => ({
 
     if (!state.snappedSite) {
       playWhoosh();
+      eventBus.emit(GameEventType.ATOM_REJECTED, {
+        element: state.dragging,
+        reason: 'no_bond_site',
+      });
       set({ dragging: null, dragPointer: null, snappedSite: null });
       return;
     }
@@ -505,6 +546,13 @@ export const useGameStore = create<GameStore>()((set, get) => ({
         love: result.achievement.love,
         player: pName,
       });
+
+      // Genesis: ACHIEVEMENT_UNLOCKED
+      eventBus.emit(GameEventType.ACHIEVEMENT_UNLOCKED, {
+        achievementId: result.achievement.id,
+        achievementName: result.achievement.name,
+        loveReward: result.achievement.love,
+      });
     }
 
     // ── Checkpoint: known formula detection ──
@@ -522,6 +570,34 @@ export const useGameStore = create<GameStore>()((set, get) => ({
         subtext: `${dispFormula} \u2014 keep building or start fresh`,
         duration: 2000,
         createdAt: Date.now(),
+      });
+    }
+
+    // ── WCD-23/25: Discovery toast on known molecule completion ──
+    // High-contrast visual reward with molecule name + formula + LOVE.
+    // Hero goals (per-tier) get gold styling + double LOVE.
+    // Only fires once per formula per session (dedup via sessionCompletedFormulas).
+    if (complete && KNOWN_MOLECULES.has(formula) && !state.sessionCompletedFormulas.includes(formula)) {
+      const currentMode = state.gameMode ? getModeById(state.gameMode) : null;
+      const isHero = currentMode?.heroGoal === formula;
+      const discoveryLove = isHero ? LOVE_PER_MOLECULE * 2 : LOVE_PER_MOLECULE;
+
+      // Award bonus LOVE for hero goal
+      if (isHero) {
+        const heroResult = earnLove(loveTx, LOVE_PER_MOLECULE, 'molecule_completed');
+        loveTx = heroResult.transactions;
+        loveTotal = heroResult.total;
+      }
+
+      newToasts.push({
+        id: createToastId(),
+        icon: isHero ? '\u{1F451}' : '\u{2728}', // 👑 for hero, ✨ for standard
+        text: MOLECULE_NAMES[formula] ?? formula,
+        subtext: dispFormula,
+        love: discoveryLove,
+        duration: isHero ? 5000 : 4000,
+        createdAt: Date.now(),
+        variant: isHero ? 'hero' : 'discovery',
       });
     }
 
@@ -560,6 +636,13 @@ export const useGameStore = create<GameStore>()((set, get) => ({
           player: pName,
         });
 
+        // Genesis: QUEST_STEP_COMPLETED
+        eventBus.emit(GameEventType.QUEST_STEP_COMPLETED, {
+          questId: quest.id,
+          formula,
+          stepIndex: progress.completedSteps - 1,
+        });
+
         if (progress.completed) {
           // Quest completed!
           const qReward = quest.reward.love;
@@ -590,6 +673,37 @@ export const useGameStore = create<GameStore>()((set, get) => ({
             love: qReward,
             player: pName,
           });
+
+          // Genesis: QUEST_CHAIN_COMPLETED
+          eventBus.emit(GameEventType.QUEST_CHAIN_COMPLETED, {
+            questId: quest.id,
+            totalSteps: quest.steps.length,
+            bonusLove: qReward,
+          });
+
+          // Bashium unlock: show special toast when Genesis chain completes
+          if (quest.id === 'genesis') {
+            newToasts.push({
+              id: createToastId(),
+              icon: '\u{1F52E}',
+              text: BASHIUM.unlockToast.line1,
+              subtext: BASHIUM.unlockToast.line2,
+              duration: 5000,
+              createdAt: Date.now(),
+            });
+          }
+
+          // Willium unlock: show special toast when Kitchen chain completes
+          if (quest.id === 'kitchen') {
+            newToasts.push({
+              id: createToastId(),
+              icon: '\u{1F331}',
+              text: WILLIUM.unlockToast.line1,
+              subtext: WILLIUM.unlockToast.line2,
+              duration: 5000,
+              createdAt: Date.now(),
+            });
+          }
         } else {
           // Step advanced — show narrative
           const prevStep = quest.steps[progress.completedSteps - 1];
@@ -631,6 +745,14 @@ export const useGameStore = create<GameStore>()((set, get) => ({
     });
 
     // ── Post-commit effects ──
+
+    // Genesis: ATOM_PLACED
+    eventBus.emit(GameEventType.ATOM_PLACED, {
+      element,
+      moleculeId: formula,
+      position,
+      bondSiteIndex: bondToAtomId ?? -1,
+    });
 
     // Exhibit A logging
     logEventA({
@@ -687,6 +809,17 @@ export const useGameStore = create<GameStore>()((set, get) => ({
         love: LOVE_PER_MOLECULE,
         player: pName,
         mode: state.gameMode ?? 'seed',
+      });
+
+      // Genesis: MOLECULE_COMPLETED
+      eventBus.emit(GameEventType.MOLECULE_COMPLETED, {
+        moleculeId: formula,
+        formula,
+        displayName: moleculeName,
+        atomCount: updatedAtoms.length,
+        difficulty: state.gameMode ?? 'seed',
+        buildTimeMs: elapsed,
+        stability: 1,
       });
 
       const uniqueFreqs = [
@@ -920,9 +1053,15 @@ export const useGameStore = create<GameStore>()((set, get) => ({
     }, toast.duration);
   },
 
-  // ── WCD-48: Continue building after completion ──
+  // ── WCD-27 Option C: "Build Next" — clear canvas, start fresh ──
+  // Same as "Build Another" but fires a molecule fact toast first.
+  // Replaces WCD-26's broken extension-point approach.
 
-  continueBuilding: () => set({ gamePhase: 'placing', pendingDiscovery: null }),
+  continueBuilding: () => {
+    const formula = generateFormula(get().atoms);
+    get().reset();
+    get().showMoleculeFact(formula);
+  },
 
   // ── Multiplayer ──
 
@@ -1063,6 +1202,13 @@ export const useGameStore = create<GameStore>()((set, get) => ({
       });
     }
 
+    // Genesis: PING_RECEIVED
+    eventBus.emit(GameEventType.PING_RECEIVED, {
+      reaction: ping.reaction,
+      fromPlayerId: ping.from,
+      moleculeId: generateFormula(state.atoms),
+    });
+
     for (const t of pingToasts) {
       setTimeout(() => {
         const current = get().toasts;
@@ -1074,4 +1220,35 @@ export const useGameStore = create<GameStore>()((set, get) => ({
   clearIncomingPings: () => set({ incomingPings: [] }),
   setConnectionStatus: (status) => set({ connectionStatus: status }),
   toggleBreathing: () => set({ breathing: !get().breathing }),
+
+  // Ambient reward actions
+  pushToast: (toast) => {
+    const t: ToastMessage = { ...toast, id: createToastId(), createdAt: Date.now() };
+    set({ toasts: [...get().toasts, t] });
+    setTimeout(() => {
+      set({ toasts: get().toasts.filter((x) => x.id !== t.id) });
+    }, t.duration);
+  },
+  addLove: (amount) => {
+    set({ loveTotal: get().loveTotal + amount });
+  },
+
+  previewElement: null,
+  setPreviewElement: (el) => {
+    set({ previewElement: el });
+  },
+
+  bloodMoonActive: false,
+  toggleBloodMoon: () => {
+    set({ bloodMoonActive: !get().bloodMoonActive });
+  },
+
+  warpActive: false,
+  triggerWarp: () => {
+    if (get().warpActive) return;
+    set({ warpActive: true });
+    playWarp();
+    haptic.snap();
+    setTimeout(() => set({ warpActive: false }), 2500);
+  },
 }));

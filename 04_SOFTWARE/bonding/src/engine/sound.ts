@@ -10,8 +10,28 @@
 // ═══════════════════════════════════════════════════════
 
 let audioCtx: AudioContext | null = null;
+let muted = localStorage.getItem('bonding_muted') === 'true';
 
-function getCtx(): AudioContext {
+/**
+ * WCD-22: Initialize AudioContext on first user gesture.
+ * Must be called from a pointerdown/click handler.
+ */
+export function initAudio(): void {
+  if (audioCtx) return;
+  const Ctor = window.AudioContext
+    || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+  audioCtx = new Ctor();
+}
+
+export function isMuted(): boolean { return muted; }
+
+export function setMuted(value: boolean): void {
+  muted = value;
+  localStorage.setItem('bonding_muted', String(value));
+}
+
+function getCtx(): AudioContext | null {
+  if (muted) return null;
   if (!audioCtx) {
     const Ctor = window.AudioContext
       || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
@@ -29,6 +49,7 @@ function getCtx(): AudioContext {
  */
 export function playAtomNote(frequency: number): void {
   const ctx = getCtx();
+  if (!ctx) return;
   const now = ctx.currentTime;
   const osc = ctx.createOscillator();
   const gain = ctx.createGain();
@@ -54,6 +75,7 @@ export function playAtomNote(frequency: number): void {
  */
 export function playBondInterval(freq1: number, freq2: number): void {
   const ctx = getCtx();
+  if (!ctx) return;
   const now = ctx.currentTime;
 
   const playNote = (freq: number, startTime: number, type: OscillatorType) => {
@@ -86,6 +108,7 @@ export function playBondInterval(freq1: number, freq2: number): void {
  */
 export function playCompletionChord(frequencies: number[]): void {
   const ctx = getCtx();
+  if (!ctx) return;
   const now = ctx.currentTime;
 
   // Sort low→high for ascending arpeggio
@@ -142,6 +165,7 @@ export function playCompletionChord(frequencies: number[]): void {
  */
 export function playAchievementUnlock(): void {
   const ctx = getCtx();
+  if (!ctx) return;
   const now = ctx.currentTime;
   const notes = [523, 659, 784, 1047]; // C5, E5, G5, C6
 
@@ -169,6 +193,7 @@ export function playAchievementUnlock(): void {
  */
 export function playLoveChime(amount: number): void {
   const ctx = getCtx();
+  if (!ctx) return;
   const now = ctx.currentTime;
 
   // Higher pitch for larger amounts
@@ -195,6 +220,7 @@ export function playLoveChime(amount: number): void {
  */
 export function playPing(): void {
   const ctx = getCtx();
+  if (!ctx) return;
   const now = ctx.currentTime;
   const osc = ctx.createOscillator();
   const gain = ctx.createGain();
@@ -217,6 +243,7 @@ export function playPing(): void {
  */
 export function playPingEmoji(reaction: string): void {
   const ctx = getCtx();
+  if (!ctx) return;
   const now = ctx.currentTime;
 
   if (reaction === '\u{1F49A}') {
@@ -283,6 +310,7 @@ export function playPingEmoji(reaction: string): void {
  */
 export function playQuestStep(): void {
   const ctx = getCtx();
+  if (!ctx) return;
   const now = ctx.currentTime;
   const notes = [523, 659]; // C5, E5
 
@@ -310,6 +338,7 @@ export function playQuestStep(): void {
  */
 export function playQuestComplete(): void {
   const ctx = getCtx();
+  if (!ctx) return;
   const now = ctx.currentTime;
   const notes = [523, 659, 784, 1047, 1319]; // C5, E5, G5, C6, E6
 
@@ -338,6 +367,7 @@ export function playQuestComplete(): void {
  */
 export function playModeSelect(): void {
   const ctx = getCtx();
+  if (!ctx) return;
   const now = ctx.currentTime;
   const osc = ctx.createOscillator();
   const gain = ctx.createGain();
@@ -360,6 +390,7 @@ export function playModeSelect(): void {
  */
 export function playReject(): void {
   const ctx = getCtx();
+  if (!ctx) return;
   const now = ctx.currentTime;
   const osc = ctx.createOscillator();
   const gain = ctx.createGain();
@@ -381,6 +412,7 @@ export function playReject(): void {
  */
 export function playSelectBlip(frequency: number): void {
   const ctx = getCtx();
+  if (!ctx) return;
   const now = ctx.currentTime;
   const osc = ctx.createOscillator();
   const gain = ctx.createGain();
@@ -398,10 +430,126 @@ export function playSelectBlip(frequency: number): void {
 }
 
 /**
+ * Missing node tone — 172.35 Hz sine, the P31 frequency.
+ * Low, warm, unmistakable. Plays when the missing node is tapped.
+ */
+export function playMissingNodeTone(): void {
+  const ctx = getCtx();
+  if (!ctx) return;
+  const now = ctx.currentTime;
+
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+
+  osc.type = 'sine';
+  osc.frequency.setValueAtTime(172.35, now);
+
+  gain.gain.setValueAtTime(0, now);
+  gain.gain.linearRampToValueAtTime(0.25, now + 0.15);
+  gain.gain.setValueAtTime(0.25, now + 0.4);
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.8);
+
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+
+  osc.start(now);
+  osc.stop(now + 0.8);
+}
+
+/**
+ * Blood Moon ember toggle — deep rumble with two detuned oscillators.
+ * Ignite: slow attack crescendo (55Hz + 58Hz). Extinguish: short descending tone.
+ */
+export function playEmberToggle(igniting: boolean): void {
+  const ctx = getCtx();
+  if (!ctx) return;
+  const now = ctx.currentTime;
+  const gain = ctx.createGain();
+  gain.connect(ctx.destination);
+
+  if (igniting) {
+    // Two detuned sine waves create a slow beat/throb
+    const o1 = ctx.createOscillator();
+    const o2 = ctx.createOscillator();
+    o1.type = 'sine';
+    o2.type = 'sine';
+    o1.frequency.setValueAtTime(55, now);
+    o2.frequency.setValueAtTime(58, now);
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.linearRampToValueAtTime(0.2, now + 0.4);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 1.2);
+    o1.connect(gain);
+    o2.connect(gain);
+    o1.start(now);
+    o2.start(now);
+    o1.stop(now + 1.2);
+    o2.stop(now + 1.2);
+  } else {
+    const osc = ctx.createOscillator();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(65, now);
+    osc.frequency.exponentialRampToValueAtTime(35, now + 0.5);
+    gain.gain.setValueAtTime(0.15, now);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.5);
+    osc.connect(gain);
+    osc.start(now);
+    osc.stop(now + 0.5);
+  }
+}
+
+/**
+ * Molecular warp — ascending sweep of all element frequencies
+ * with sub-bass rumble. Fires on double-tap easter egg.
+ */
+export function playWarp(): void {
+  const ctx = getCtx();
+  if (!ctx) return;
+  const now = ctx.currentTime;
+
+  // Element frequencies sorted low→high: Ca, P, Na, S, N, C, O, H
+  const freqs = [147, 172, 196, 220, 247, 262, 330, 523];
+
+  // Ascending sweep — each element frequency staggered 40ms
+  freqs.forEach((freq, i) => {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    const start = now + i * 0.04;
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(freq, start);
+    osc.frequency.exponentialRampToValueAtTime(freq * 2, start + 0.6);
+
+    gain.gain.setValueAtTime(0, start);
+    gain.gain.linearRampToValueAtTime(0.06, start + 0.03);
+    gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.6);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(start);
+    osc.stop(start + 0.6);
+  });
+
+  // Sub-bass rumble underneath
+  const rumble = ctx.createOscillator();
+  const rumbleGain = ctx.createGain();
+  rumble.type = 'sine';
+  rumble.frequency.setValueAtTime(55, now);
+  rumble.frequency.exponentialRampToValueAtTime(110, now + 2);
+  rumbleGain.gain.setValueAtTime(0, now);
+  rumbleGain.gain.linearRampToValueAtTime(0.12, now + 0.3);
+  rumbleGain.gain.exponentialRampToValueAtTime(0.0001, now + 2.5);
+  rumble.connect(rumbleGain);
+  rumbleGain.connect(ctx.destination);
+  rumble.start(now);
+  rumble.stop(now + 2.5);
+}
+
+/**
  * Drag cancel whoosh — filtered noise burst.
  */
 export function playWhoosh(): void {
   const ctx = getCtx();
+  if (!ctx) return;
   const now = ctx.currentTime;
   const bufferSize = Math.floor(ctx.sampleRate * 0.1);
   const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);

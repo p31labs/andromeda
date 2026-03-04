@@ -12,16 +12,16 @@ import { describe, it, expect } from 'vitest';
 import { ELEMENTS, ELEMENTS_ARRAY, ELEMENT_NAMES } from '../data/elements';
 import type { ElementSymbol } from '../types';
 
-const ALL_SYMBOLS: ElementSymbol[] = ['H', 'C', 'N', 'O', 'Na', 'P', 'Ca', 'Cl', 'S', 'Fe'];
+const ALL_SYMBOLS: ElementSymbol[] = ['H', 'C', 'N', 'O', 'Na', 'P', 'Ca', 'Cl', 'S', 'Fe', 'Mn'];
 
 // âââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 // Structural integrity
 // âââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
 describe('Element definitions â structural integrity', () => {
-  it('palette contains exactly 10 elements', () => {
-    expect(Object.keys(ELEMENTS)).toHaveLength(10);
-    expect(ELEMENTS_ARRAY).toHaveLength(10);
+  it('palette contains exactly 13 elements', () => {
+    expect(Object.keys(ELEMENTS)).toHaveLength(13);
+    expect(ELEMENTS_ARRAY).toHaveLength(13);
   });
 
   it('every expected element is present', () => {
@@ -59,6 +59,9 @@ describe('Element valences', () => {
     Cl: 1,
     S: 2,
     Fe: 3,
+    Mn: 2,
+    Ba: 4,
+    Wi: 3,
   };
 
   for (const [sym, expected] of Object.entries(expectedValences)) {

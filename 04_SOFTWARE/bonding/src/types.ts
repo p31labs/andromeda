@@ -5,7 +5,7 @@
 
 // ── Elements ──
 
-export type ElementSymbol = 'H' | 'C' | 'N' | 'O' | 'Na' | 'P' | 'Ca' | 'Cl' | 'S' | 'Fe';
+export type ElementSymbol = 'H' | 'C' | 'N' | 'O' | 'Na' | 'P' | 'Ca' | 'Cl' | 'S' | 'Fe' | 'Mn' | 'Ba' | 'Wi';
 
 export interface ElementData {
   symbol: ElementSymbol;
@@ -92,6 +92,8 @@ export interface ToastMessage {
   love?: number;
   duration: number;
   createdAt: number;
+  /** WCD-23/25: Visual variant for special toasts. */
+  variant?: 'discovery' | 'hero';
 }
 
 // ── Engagement ledger ──

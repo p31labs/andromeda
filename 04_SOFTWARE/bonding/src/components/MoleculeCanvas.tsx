@@ -5,24 +5,26 @@
 // Contains:
 //   - R3F Canvas with PerspectiveCamera
 //   - CoherenceArc (background color shift over 37min)
-//   - Stars field
+//   - MolecularWarp (molecular particle field + warp)
 //   - All VoxelAtoms
 //   - All BondBeams
 //   - GhostSites (during drag)
 //   - DragPreview (during drag)
-//   - EffectComposer + Bloom (selective, luminance-threshold)
+//   - WCD-15: Bloom removed (AdditiveBlending on cores instead)
 //   - OrbitControls (auto-rotate when idle)
 // ═══════════════════════════════════════════════════════
 
-import { Suspense, useMemo } from 'react';
+import { Suspense, useCallback, useMemo, useRef } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { OrbitControls, Stars, PerspectiveCamera } from '@react-three/drei';
+import { OrbitControls, PerspectiveCamera, Environment, Html } from '@react-three/drei';
 import * as THREE from 'three';
-import { EffectComposer, Bloom } from '@react-three/postprocessing';
+// WCD-15: EffectComposer + Bloom removed — too heavy for tablet TBDR GPUs.
+// Glow now faked via AdditiveBlending on atom cores (see VoxelAtom.tsx).
 import { VoxelAtom } from './VoxelAtom';
 import { BondBeam } from './BondBeam';
 import { GhostSite } from './GhostSite';
 import { DragPreview } from './DragPreview';
+import { MolecularWarp } from './MolecularWarp';
 import { ELEMENTS } from '../data/elements';
 import { useGameStore } from '../store/gameStore';
 import { getAvailableBondSitePositions, generateFormula } from '../engine/chemistry';
@@ -30,13 +32,13 @@ import { getPersonality } from '../engine/personalities';
 import type { PersonalityAnimationHint } from './VoxelAtom';
 
 const COHERENCE_MS = 37 * 60 * 1000;
-const BG_START = new THREE.Color('#0a0a1a');
-const BG_END = new THREE.Color('#1a0a1a');
+const BG_START = new THREE.Color('#050505');
+const BG_END = new THREE.Color('#0a0508');
 
 /**
- * CoherenceArc: shifts background color from deep blue (#0a0a1a)
- * to warm purple (#1a0a1a) over the 37-minute coherence window.
- * This is a subtle ambient indicator of session depth.
+ * CoherenceArc: shifts background from true black (#050505)
+ * to a barely-warm tint (#0a0508) over the 37-minute coherence window.
+ * Subtle ambient indicator of session depth — no blue cast.
  */
 function CoherenceArc() {
   const sessionStartTime = useGameStore((s) => s.sessionStartTime);
@@ -59,6 +61,7 @@ function CoherenceArc() {
   return null;
 }
 
+
 /**
  * Scene: all 3D content. Separated from Canvas for Suspense boundary.
  */
@@ -68,58 +71,63 @@ function Scene() {
   const dragging = useGameStore((s) => s.dragging);
   const snappedSite = useGameStore((s) => s.snappedSite);
   const gamePhase = useGameStore((s) => s.gamePhase);
+  const previewElement = useGameStore((s) => s.previewElement);
 
-  // Compute ghost sites (available bond positions) during drag
+  // Compute ghost sites (available bond positions) during drag or palette preview
   const ghostSites = useMemo(() => {
-    if (!dragging || gamePhase === 'complete') return [];
+    if (gamePhase === 'complete') return [];
 
-    // No atoms yet — offer center position
-    if (atoms.length === 0) {
-      return [
-        {
-          atomId: null as number | null,
-          position: { x: 0, y: 0, z: 0 },
-        },
-      ];
-    }
-
-    const sites: {
-      atomId: number;
-      position: { x: number; y: number; z: number };
-    }[] = [];
-    for (const atom of atoms) {
-      const unfilled = getAvailableBondSitePositions(atom, atoms);
-      for (const pos of unfilled) {
-        sites.push({
-          atomId: atom.id,
-          position: { x: pos.x, y: pos.y, z: pos.z },
-        });
+    // Drag-based or preview-based sites
+    if (dragging || (previewElement && atoms.length > 0)) {
+      if (atoms.length === 0) {
+        return [
+          {
+            atomId: null as number | null,
+            position: { x: 0, y: 0, z: 0 },
+          },
+        ];
       }
-    }
-    return sites;
-  }, [atoms, dragging, gamePhase]);
 
-  const selectedColor = dragging ? ELEMENTS[dragging].color : '#ffffff';
+      const sites: {
+        atomId: number | null;
+        position: { x: number; y: number; z: number };
+      }[] = [];
+      for (const atom of atoms) {
+        const unfilled = getAvailableBondSitePositions(atom, atoms);
+        for (const pos of unfilled) {
+          sites.push({
+            atomId: atom.id,
+            position: { x: pos.x, y: pos.y, z: pos.z },
+          });
+        }
+      }
+      return sites;
+    }
+
+    return [];
+  }, [atoms, dragging, gamePhase, previewElement]);
+
+  const selectedColor = dragging
+    ? ELEMENTS[dragging].color
+    : previewElement
+      ? ELEMENTS[previewElement].color
+      : '#ffffff';
 
   return (
     <>
-      <color attach="background" args={['#0a0a1a']} />
+      <color attach="background" args={['#050505']} />
       <CoherenceArc />
 
       {/* Lighting */}
       <ambientLight intensity={0.2} />
       <pointLight position={[10, 10, 10]} intensity={1.5} color="#fffaf0" />
 
-      {/* Star field */}
-      <Stars
-        radius={100}
-        depth={50}
-        count={5000}
-        factor={4}
-        saturation={0}
-        fade
-        speed={1}
-      />
+      {/* WCD-15: Environment map — cheap cubemap for standard material reflections.
+          background={false} keeps our void/CoherenceArc background visible. */}
+      <Environment preset="city" background={false} />
+
+      {/* Molecular field — element-colored particles */}
+      <MolecularWarp />
 
       {/* Placed atoms — personality hints applied on completion */}
       {atoms.map((atom) => {
@@ -195,24 +203,16 @@ function Scene() {
       {/* Drag preview (follows pointer) */}
       <DragPreview />
 
-      {/* Post-processing: selective bloom */}
-      <EffectComposer>
-        <Bloom
-          mipmapBlur
-          luminanceThreshold={1.0}
-          luminanceSmoothing={0.3}
-          intensity={1.2}
-          resolutionX={256}
-          resolutionY={256}
-        />
-      </EffectComposer>
+      {/* WCD-15: Bloom removed. Glow faked via AdditiveBlending on cores. */}
 
-      {/* Camera controls */}
+      {/* Camera controls — WCD-19: zoom clamped to prevent giant/tiny atoms */}
       <OrbitControls
         enablePan={false}
         enabled={!dragging}
         autoRotate={!dragging && atoms.length > 0}
         autoRotateSpeed={0.5}
+        minDistance={3}
+        maxDistance={15}
         makeDefault
       />
     </>
@@ -221,14 +221,39 @@ function Scene() {
 
 /**
  * MoleculeCanvas: the R3F Canvas wrapper.
- * Full viewport, flat tone mapping, no antialiasing (bloom handles edges).
+ * Full viewport, flat tone mapping.
  */
 export function MoleculeCanvas() {
+  const triggerWarp = useGameStore((s) => s.triggerWarp);
+  const lastMissRef = useRef(0);
+
+  const handlePointerMissed = useCallback(() => {
+    const now = Date.now();
+    if (now - lastMissRef.current < 400) {
+      triggerWarp();
+      lastMissRef.current = 0;
+    } else {
+      lastMissRef.current = now;
+    }
+  }, [triggerWarp]);
+
   return (
-    <div style={{ width: '100vw', height: '100vh' }}>
-      <Canvas flat gl={{ antialias: false }}>
-        <PerspectiveCamera makeDefault position={[0, 0, 5]} fov={50} />
-        <Suspense fallback={null}>
+    <div style={{ width: '100%', height: '100%', touchAction: 'none', userSelect: 'none', WebkitUserSelect: 'none' }}>
+      <Canvas flat onPointerMissed={handlePointerMissed}>
+        {/* WCD-08: Y offset 0.3 centers molecule in the visual gap between TopBar and ElementDock */}
+        <PerspectiveCamera makeDefault position={[0, 0.3, 5]} fov={50} />
+        <Suspense fallback={
+          <Html center>
+            <div style={{
+              color: 'rgba(255,255,255,0.4)',
+              fontSize: 14,
+              letterSpacing: '0.1em',
+              fontFamily: 'JetBrains Mono, monospace',
+            }}>
+              BONDING
+            </div>
+          </Html>
+        }>
           <Scene />
         </Suspense>
       </Canvas>

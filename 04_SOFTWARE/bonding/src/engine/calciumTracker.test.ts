@@ -49,9 +49,13 @@ describe('Calcium Tracker Engine', () => {
 
     it('logDose increments streak on new day', () => {
         let state = initCalciumState();
-        state = logDose(state, new Date('2026-02-27T10:00:00Z').toISOString());
-        state = logDose(state, new Date('2026-02-28T10:00:00Z').toISOString());
-        // This test is tricky with `new Date()` in streak. Simplified.
+        // WCD-23: Use dynamic dates relative to today so the test passes
+        // regardless of the current date (fixes timezone-sensitive failure).
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        const today = new Date();
+        state = logDose(state, yesterday.toISOString());
+        state = logDose(state, today.toISOString());
         expect(calculateStreak(state.logs)).toBeGreaterThanOrEqual(1);
     });
 

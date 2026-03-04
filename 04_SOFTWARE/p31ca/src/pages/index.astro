@@ -1,0 +1,37 @@
+---
+/**
+ * WCD-24: P31CA.ORG — Institutional landing page.
+ *
+ * Four zones:
+ *   1. The Vault — Hero with "Isostatically Rigid" tagline
+ *   2. Centaur Methodology — HITL grid explanation
+ *   3. Genesis Block — Telemetry event pipeline visualization
+ *   4. Active Deployments — Status grid for BONDING + Spaceship Earth
+ */
+
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Vault from '../components/Vault.astro';
+import CentaurMethodology from '../components/CentaurMethodology.astro';
+import GenesisBlock from '../components/GenesisBlock.astro';
+import ActiveDeployments from '../components/ActiveDeployments.astro';
+import '../styles/global.css';
+---
+
+<BaseLayout title="P31 Labs — Isostatically Rigid">
+  <main>
+    <Vault />
+    <CentaurMethodology />
+    <GenesisBlock />
+    <ActiveDeployments />
+  </main>
+
+  <!-- Footer -->
+  <footer class="px-6 py-12 text-center border-t border-white/[0.04]">
+    <div class="max-w-5xl mx-auto flex flex-col items-center gap-4">
+      <span class="font-mono text-xs text-white/15 tracking-[0.2em] uppercase">P31 Labs</span>
+      <p class="text-xs text-white/10">
+        Cognitively sovereign infrastructure. Built in the open.
+      </p>
+    </div>
+  </footer>
+</BaseLayout>

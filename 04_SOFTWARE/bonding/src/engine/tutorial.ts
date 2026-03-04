@@ -46,6 +46,7 @@ export interface Tutorial {
   steps: TutorialStep[];
 }
 
+// WCD-23: Trimmed from 9 to 4 steps. Three popups before play, then done.
 export const WILLOW_TUTORIAL: Tutorial = {
   id: 'first_molecule',
   name: "Willow's First Molecule",
@@ -53,68 +54,31 @@ export const WILLOW_TUTORIAL: Tutorial = {
   steps: [
     {
       id: 'welcome',
-      message: 'Hi! Let\'s build something!',
-      emoji: '👋',
+      message: 'Drag an element up to build!',
+      emoji: '\u{1F44B}',
+      highlight: 'element_H',
+      waitFor: { type: 'atom_placed', element: 'H' },
+      celebration: '\u2728 Hydrogen!',
+    },
+    {
+      id: 'connect',
+      message: 'Drag H again to connect atoms!',
+      emoji: '\u26AA',
+      highlight: 'element_H',
+      waitFor: { type: 'atom_placed', element: 'H' },
+      celebration: '\u{1F389} You made a molecule!',
+    },
+    {
+      id: 'earn_love',
+      message: 'Complete molecules to earn LOVE!',
+      emoji: '\u{1F49B}',
       highlight: 'none',
       waitFor: { type: 'any_tap' },
     },
     {
-      id: 'pick_mode',
-      message: 'Tap the seed!',
-      emoji: '🌱',
-      highlight: 'mode_seed',
-      waitFor: { type: 'mode_selected', mode: 'seed' },
-      celebration: '🎉 Great pick!',
-    },
-    {
-      id: 'place_h1',
-      message: 'Tap the H!',
-      emoji: '⚪',
-      highlight: 'element_H',
-      waitFor: { type: 'atom_placed', element: 'H' },
-      celebration: '✨ Hydrogen!',
-    },
-    {
-      id: 'place_h2',
-      message: 'Tap H again!',
-      emoji: '⚪',
-      highlight: 'element_H',
-      waitFor: { type: 'atom_placed', element: 'H' },
-      celebration: '🎉 You made hydrogen gas!',
-    },
-    {
-      id: 'build_another',
-      message: 'Tap Build Another!',
-      emoji: '🔄',
-      highlight: 'build_another',
-      waitFor: { type: 'button_tapped', button: 'build_another' },
-    },
-    {
-      id: 'place_h3',
-      message: 'Now tap H!',
-      emoji: '⚪',
-      highlight: 'element_H',
-      waitFor: { type: 'atom_placed', element: 'H' },
-    },
-    {
-      id: 'place_h4',
-      message: 'Now tap H again!',
-      emoji: '⚪',
-      highlight: 'element_H',
-      waitFor: { type: 'atom_placed', element: 'H' },
-    },
-    {
-      id: 'place_o',
-      message: 'Now tap the red O!',
-      emoji: '🔴',
-      highlight: 'element_O',
-      waitFor: { type: 'atom_placed', element: 'O' },
-      celebration: '💧 You made WATER!!!',
-    },
-    {
       id: 'done',
       message: 'You\'re a scientist now!',
-      emoji: '🔬',
+      emoji: '\u{1F52C}',
       highlight: 'none',
       waitFor: { type: 'any_tap' },
     },

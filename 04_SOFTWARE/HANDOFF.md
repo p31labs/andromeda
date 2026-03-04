@@ -1,5 +1,12 @@
 # P31 Centaur IDE — Full Project Handoff
 
+> **ARCHIVE NOTE (March 3, 2026):** This document captures the state of the
+> **P31 Centaur IDE** (Spaceship Earth dashboard) as of 2026-02-24. The active
+> ship target is now **BONDING** (`04_SOFTWARE/bonding/`) — see
+> [bonding/README.md](bonding/README.md) for current state. The Centaur IDE
+> picks back up post-birthday (March 10+) when BONDING merges into Spaceship
+> Earth as a module.
+
 **Date:** 2026-02-24
 **Prepared by:** Claude Code (Opus 4.6), across 2 sessions
 **For:** Gemini (or any AI/developer picking this up)

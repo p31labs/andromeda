@@ -4,7 +4,7 @@
   "database": {
     "uri": "bolt://neo4j:7687",
     "default_user": "neo4j",
-    "default_password": "p31delta"
+    "default_password": "${NEO4J_PASSWORD}"
   },
   "node_labels": {
     "Node": {

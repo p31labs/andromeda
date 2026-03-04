@@ -66,21 +66,23 @@ describe('Tutorial Engine', () => {
   });
 
   it('checkStepComplete matches mode_selected condition', () => {
-    const step = WILLOW_TUTORIAL.steps[1] as TutorialStep;
-    const event = { type: 'mode_selected', mode: 'seed' };
+    // BASH_TUTORIAL.steps[1] is pick_mode (mode_selected)
+    const step = BASH_TUTORIAL.steps[1] as TutorialStep;
+    const event = { type: 'mode_selected', mode: 'sprout' };
     expect(checkStepComplete(step, event)).toBe(true);
-    const wrongEvent = { type: 'mode_selected', mode: 'sprout' };
+    const wrongEvent = { type: 'mode_selected', mode: 'seed' };
     expect(checkStepComplete(step, wrongEvent)).toBe(false);
   });
 
   it('checkStepComplete matches atom_placed with correct element', () => {
-    const step = WILLOW_TUTORIAL.steps[2] as TutorialStep;
+    // WILLOW_TUTORIAL.steps[0] is welcome (atom_placed H)
+    const step = WILLOW_TUTORIAL.steps[0] as TutorialStep;
     const event = { type: 'atom_placed', element: 'H' };
     expect(checkStepComplete(step, event)).toBe(true);
   });
 
   it('checkStepComplete returns false for wrong element', () => {
-    const step = WILLOW_TUTORIAL.steps[2] as TutorialStep;
+    const step = WILLOW_TUTORIAL.steps[0] as TutorialStep;
     const event = { type: 'atom_placed', element: 'O' };
     expect(checkStepComplete(step, event)).toBe(false);
   });
@@ -92,7 +94,8 @@ describe('Tutorial Engine', () => {
   });
 
   it('checkStepComplete matches any_tap', () => {
-    const step = WILLOW_TUTORIAL.steps[0] as TutorialStep;
+    // WILLOW_TUTORIAL.steps[2] is earn_love (any_tap)
+    const step = WILLOW_TUTORIAL.steps[2] as TutorialStep;
     const event = { type: 'any_tap' };
     expect(checkStepComplete(step, event)).toBe(true);
   });
@@ -132,8 +135,8 @@ describe('Tutorial Engine', () => {
     expect(shouldShowTutorial(true)).toBe(false);
   });
 
-  it('WILLOW_TUTORIAL has 9 steps', () => {
-    expect(WILLOW_TUTORIAL.steps).toHaveLength(9);
+  it('WILLOW_TUTORIAL has 4 steps', () => {
+    expect(WILLOW_TUTORIAL.steps).toHaveLength(4);
   });
 
   it('BASH_TUTORIAL has 4 steps', () => {

@@ -1,13 +1,14 @@
 // ═══════════════════════════════════════════════════════
 // BONDING — P31 Labs
-// DragPreview: 3D atom preview that follows pointer during drag
+// DragPreview — Ghost atom that follows the pointer
 //
-// Key engineering:
-//   - Raycasts screen coords onto z=0 plane every frame
-//   - Snap detection at 1.5 unit radius (Fitts's Law)
-//   - Unsnap hysteresis at 2.0 units (prevents jitter)
-//   - Delta-scaled lerp (frame-rate independent at 30/60/120fps)
-//   - Epsilon snap (prevents Zeno's paradox)
+// Matches VoxelAtom's visual character: smooth sphere,
+// additive glow, element emissive color. Not a faceted
+// icosahedron — a soft orb that looks like it belongs
+// in the same universe as the placed atoms.
+//
+// All snap/raycast/lerp mechanics preserved exactly.
+// Only the visual rendering changed.
 // ═══════════════════════════════════════════════════════
 
 import { useRef } from 'react';
@@ -30,8 +31,8 @@ const UNSNAP_RADIUS = 2.5;
 const LERP_DAMPING = 10.0;
 const EPSILON = 0.01;
 
-// Shared geometry matching VoxelAtom style
-const PREVIEW_GEOMETRY = new THREE.IcosahedronGeometry(0.5, 2);
+// Smooth sphere matching VoxelAtom
+const PREVIEW_GEOMETRY = new THREE.SphereGeometry(0.5, 24, 24);
 
 export function DragPreview() {
   const dragging = useGameStore((s) => s.dragging);
@@ -61,9 +62,7 @@ export function DragPreview() {
           targets.push({ atomId: atom.id, position: pos });
         }
       }
-      // WCD-48: When all bonds are filled (molecule complete), add a
-      // "new start" snap target offset from the existing molecule so
-      // the player can begin a new molecule alongside the completed one.
+      // WCD-48: When all bonds are filled, add a "new start" snap target
       if (targets.length === 0) {
         let cx = 0, cy = 0, cz = 0;
         for (const atom of atoms) {
@@ -104,7 +103,7 @@ export function DragPreview() {
       return;
     }
 
-    // Snap detection — 1.5 unit radius
+    // Snap detection — Fitts's Law radius
     if (hit && !snappedSite) {
       let nearestDist = Infinity;
       let nearest: (typeof snapTargetsRef.current)[number] | null = null;
@@ -124,7 +123,7 @@ export function DragPreview() {
       }
     }
 
-    // Unsnap with hysteresis — 2.0 units
+    // Unsnap with hysteresis
     if (hit && snappedSite) {
       _snappedPos.set(
         snappedSite.position.x,
@@ -154,18 +153,30 @@ export function DragPreview() {
 
   const element = ELEMENTS[dragging];
   const isSnapped = snappedSite != null;
+  const clampedSize = Math.min(0.65, element.size);
 
   return (
-    <group ref={groupRef} visible={false}>
-      <mesh geometry={PREVIEW_GEOMETRY} scale={element.size}>
-        <meshStandardMaterial
+    <group ref={groupRef} visible={false} scale={clampedSize}>
+      {/* Shell — ghostly outline, same character as VoxelAtom */}
+      <mesh geometry={PREVIEW_GEOMETRY}>
+        <meshBasicMaterial
           color={element.color}
-          emissive={element.emissive}
-          emissiveIntensity={isSnapped ? 1.8 : 0.8}
           transparent
-          opacity={isSnapped ? 1.0 : 0.6}
+          opacity={isSnapped ? 0.4 : 0.2}
+          blending={THREE.AdditiveBlending}
+          depthWrite={false}
           toneMapped={false}
-          flatShading
+        />
+      </mesh>
+      {/* Core — emissive center glow */}
+      <mesh geometry={PREVIEW_GEOMETRY} scale={0.7}>
+        <meshBasicMaterial
+          color={element.emissive}
+          transparent
+          opacity={isSnapped ? 0.8 : 0.5}
+          blending={THREE.AdditiveBlending}
+          depthWrite={false}
+          toneMapped={false}
         />
       </mesh>
     </group>
