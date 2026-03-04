@@ -15,6 +15,7 @@
 
 import { type ReactNode } from 'react';
 import { useGameStore } from '../../store/gameStore';
+import { WONKY_FOOTER } from '../../config/easterEggs';
 
 interface CockpitLayoutProps {
   /** The R3F <Canvas> component — rendered at z-1, fills entire viewport */
@@ -132,6 +133,25 @@ export function CockpitLayout({
           {toastLayer}
         </div>
       )}
+
+      {/* WCD-CC01: Wonky footer — visible in every mode */}
+      <div
+        style={{
+          position: 'fixed',
+          bottom: 8,
+          left: '50%',
+          transform: 'translateX(-50%)',
+          fontSize: 11,
+          opacity: 0.4,
+          color: 'white',
+          pointerEvents: 'none',
+          whiteSpace: 'nowrap',
+          zIndex: 5,
+          fontStyle: 'italic',
+        }}
+      >
+        {WONKY_FOOTER}
+      </div>
     </div>
   );
 }

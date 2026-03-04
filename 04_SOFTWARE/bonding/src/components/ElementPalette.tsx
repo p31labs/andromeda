@@ -7,11 +7,12 @@
 // at the window level to support drag-outside-element.
 // ═══════════════════════════════════════════════════════
 
-import { useMemo, useEffect, useRef, useCallback } from 'react';
+import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { ELEMENTS_ARRAY, ELEMENTS } from '../data/elements';
 import { useGameStore } from '../store/gameStore';
 import { getModeById } from '../data/modes';
 import { playSelectBlip } from '../engine/sound';
+import { BASHIUM } from '../config/bashium';
 import type { ElementSymbol } from '../types';
 
 const DRAG_THRESHOLD = 20;
@@ -30,8 +31,31 @@ export function ElementPalette() {
   const dragging = useGameStore((s) => s.dragging);
   const gamePhase = useGameStore((s) => s.gamePhase);
   const gameMode = useGameStore((s) => s.gameMode);
+  const pushToast = useGameStore((s) => s.pushToast);
   const genesisComplete = useGameStore((s) => s.questProgress['genesis']?.completed ?? false);
   const kitchenComplete = useGameStore((s) => s.questProgress['kitchen']?.completed ?? false);
+
+  // WCD-CC01: 3-tap hidden zone unlocks secret elements in Sapling mode
+  const [secretUnlocked, setSecretUnlocked] = useState(false);
+  const secretTapsRef = useRef(0);
+  const tapTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleSecretTap = useCallback(() => {
+    secretTapsRef.current += 1;
+    if (secretTapsRef.current >= 3) {
+      setSecretUnlocked(true);
+      secretTapsRef.current = 0;
+      pushToast({
+        icon: '\u{1F53A}',
+        text: BASHIUM.unlockToast.line1,
+        subtext: BASHIUM.unlockToast.line2,
+        duration: 3000,
+      });
+      return;
+    }
+    if (tapTimerRef.current) clearTimeout(tapTimerRef.current);
+    tapTimerRef.current = setTimeout(() => { secretTapsRef.current = 0; }, 2000);
+  }, [pushToast]);
 
   const visibleElements = useMemo(() => {
     if (!gameMode) return ELEMENTS_ARRAY;
@@ -45,8 +69,17 @@ export function ElementPalette() {
     if (kitchenComplete && gameMode === 'sprout' && ELEMENTS['Wi']) {
       modeElements.push(ELEMENTS['Wi']);
     }
+    // WCD-CC01: Secret elements unlocked via 3-tap hidden zone in Sapling mode
+    if (secretUnlocked && gameMode === 'sapling') {
+      if (ELEMENTS['Ba'] && !modeElements.some(el => el.symbol === 'Ba')) {
+        modeElements.push(ELEMENTS['Ba']);
+      }
+      if (ELEMENTS['Wi'] && !modeElements.some(el => el.symbol === 'Wi')) {
+        modeElements.push(ELEMENTS['Wi']);
+      }
+    }
     return modeElements;
-  }, [gameMode, genesisComplete, kitchenComplete]);
+  }, [gameMode, genesisComplete, kitchenComplete, secretUnlocked]);
   const pendingRef = useRef<{
     element: ElementSymbol;
     x: number;
@@ -139,6 +172,21 @@ export function ElementPalette() {
         className="h-full flex items-center justify-center gap-3 px-4 overflow-x-auto scrollbar-none"
         style={{ touchAction: 'pan-x', WebkitOverflowScrolling: 'touch' }}
       >
+        {/* WCD-CC01: Hidden 3-tap zone — bottom-right, Sapling only */}
+        {gameMode === 'sapling' && !secretUnlocked && (
+          <div
+            onClick={handleSecretTap}
+            style={{
+              position: 'absolute',
+              bottom: 0,
+              right: 0,
+              width: 48,
+              height: 48,
+              zIndex: 2,
+              cursor: 'default',
+            }}
+          />
+        )}
         {visibleElements.map((el) => {
           const isDragging = dragging === el.symbol;
           // Size buttons proportional to atom size (clamped 0.25–0.65 → 40–60px)
