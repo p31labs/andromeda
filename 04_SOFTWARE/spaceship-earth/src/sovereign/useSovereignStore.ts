@@ -37,11 +37,15 @@ export const useSovereignStore = create<SovereignState>((set, get) => ({
   // M18: Somatic Tether
   somaticTetherStatus: 'disconnected',
   fawnGuardActive: false,
+  somaticHr: 0,
+  somaticHrv: 0,
+  somaticWaveform: [],
 
   // M20: Spatial Mesh
   spatialNodes: 0,
   spatialTransport: 'none',
   handshakeCandidate: null,
+  spatialNodeList: [],
 
   // M21: K4 Handshake
   k4Graph: { nodes: [], edges: [] },
@@ -51,6 +55,9 @@ export const useSovereignStore = create<SovereignState>((set, get) => ({
   // M19: Reactor Core
   mintStatus: 'idle',
   lastMintNonce: null,
+
+  // Lock screen (boot sequence)
+  shipLocked: true,
 
   setPwaStatus: (status) => set({ pwaStatus: status }),
   toggleView: () => set((state) => ({ viewMode: state.viewMode === 'cockpit' ? 'classic' : 'cockpit' })),
@@ -62,11 +69,16 @@ export const useSovereignStore = create<SovereignState>((set, get) => ({
   },
 
   setOverlay: (roomId) => {
-    const current = get().openOverlay;
-    // Toggle: same room closes overlay; OBSERVATORY also closes (it's home)
-    if (roomId === current || roomId === 'OBSERVATORY') {
+    // null or OBSERVATORY → go home
+    if (roomId === null || roomId === 'OBSERVATORY') {
       set({ openOverlay: null });
-    } else if (roomId && ((SOVEREIGN_ROOMS as readonly string[]).includes(roomId) || (typeof roomId === 'string' && roomId.startsWith('SLOT_')))) {
+      return;
+    }
+    const current = get().openOverlay;
+    // Toggle: same room closes overlay
+    if (roomId === current) {
+      set({ openOverlay: null });
+    } else if ((SOVEREIGN_ROOMS as readonly string[]).includes(roomId) || (typeof roomId === 'string' && roomId.startsWith('SLOT_'))) {
       set({ openOverlay: roomId as SovereignRoom });
     }
   },
@@ -124,11 +136,15 @@ export const useSovereignStore = create<SovereignState>((set, get) => ({
   // M18: Somatic Tether actions
   setSomaticStatus: (status) => set({ somaticTetherStatus: status }),
   setFawnGuard: (active) => set({ fawnGuardActive: active }),
+  setSomaticHr: (hr) => set({ somaticHr: hr }),
+  setSomaticHrv: (hrv) => set({ somaticHrv: hrv }),
+  setSomaticWaveform: (buf) => set({ somaticWaveform: buf }),
 
   // M20: Spatial Mesh actions
   setSpatialNodes: (count) => set({ spatialNodes: count }),
   setSpatialTransport: (t) => set({ spatialTransport: t }),
   setHandshakeCandidate: (id) => set({ handshakeCandidate: id }),
+  setSpatialNodeList: (nodes) => set({ spatialNodeList: nodes }),
 
   // M21: K4 Handshake actions
   addK4Edge: (edge) => set((state) => {
@@ -148,4 +164,7 @@ export const useSovereignStore = create<SovereignState>((set, get) => ({
   // M19: Reactor Core actions
   setMintStatus: (status) => set({ mintStatus: status }),
   setLastMintNonce: (nonce) => set({ lastMintNonce: nonce }),
+
+  // Lock screen
+  unlockShip: () => set({ shipLocked: false }),
 }));

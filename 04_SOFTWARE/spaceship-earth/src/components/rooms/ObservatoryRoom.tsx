@@ -16,6 +16,7 @@ import {
   createLabelSystem, buildConnectionArc, disposeArc, getGlowTexture,
   type ArcMesh, type LabelSystem,
 } from './observatory-effects';
+import AttractorOverlay from './sovereign/overlays/AttractorOverlay';
 import type { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer.js';
 
 // ═══════════════════════════════════════════════════════════════
@@ -68,6 +69,12 @@ export default function ObservatoryRoom() {
   const [searchQuery, setSearchQuery] = useState('');
   const [stateFilters, setStateFilters] = useState<Set<string>>(new Set());
   const [busFilters, setBusFilters] = useState<Set<string>>(new Set());
+  const [showAttractor, setShowAttractor] = useState(false);
+  
+  // Mark 1 Attractor Simulator state
+  const [entropy, setEntropy] = useState(0.35);
+  const [magneticField, setMagneticField] = useState(50);
+  const [coherence, setCoherence] = useState(4.0);
 
   const connections = useMemo(() => selected ? getConnections(selected.id) : [], [selected]);
 
@@ -249,9 +256,9 @@ export default function ObservatoryRoom() {
     dotCanvas.width = 32; dotCanvas.height = 32;
     const dotCtx = dotCanvas.getContext('2d')!;
     const grad = dotCtx.createRadialGradient(16, 16, 0, 16, 16, 16);
-    grad.addColorStop(0, 'rgba(255,255,255,1)');
-    grad.addColorStop(0.4, 'rgba(255,255,255,0.6)');
-    grad.addColorStop(1, 'rgba(255,255,255,0)');
+    grad.addColorStop(0, 'rgba(0,255,255,1)');
+    grad.addColorStop(0.4, 'rgba(0,255,255,0.3)');
+    grad.addColorStop(1, 'rgba(0,255,255,0)');
     dotCtx.fillStyle = grad;
     dotCtx.fillRect(0, 0, 32, 32);
     const dotTex = new THREE.CanvasTexture(dotCanvas);
@@ -271,7 +278,7 @@ export default function ObservatoryRoom() {
       const pos = geo.faces[a.faceIdx].centroid.clone().normalize().multiplyScalar(SHELL_RADIUS * 1.1);
       const label = labelSystem.createLabel(
         `${a.node.label} ${countdown}`,
-        a.node.state === 'countdown' ? '#ff6633' : '#8899aa',
+        a.node.state === 'countdown' ? '#ff6633' : 'rgba(0,255,255,0.25)',
         pos,
       );
       scene.add(label);
@@ -618,27 +625,48 @@ export default function ObservatoryRoom() {
 
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%', background: 'transparent', overflow: 'hidden' }}>
-      <div ref={mountRef} style={{ width: '100%', height: '100%', cursor: 'grab', touchAction: 'none' }} />
+      <div ref={mountRef} style={{ width: '100%', height: 'calc(100% - 120px)', cursor: 'grab', touchAction: 'none', marginTop: 120 }} />
 
       {/* ── Top bar: axis filters ── */}
-      <div style={{ position: 'absolute', top: 12, left: 12, display: 'flex', gap: 8, zIndex: 10 }}>
+      <div style={{ position: 'absolute', top: 12, left: 12, display: 'flex', gap: 20, zIndex: 10 }}>
         {AXIS_KEYS.map(k => (
           <button key={k} onClick={() => setFilter(filter === k ? null : k)} style={{
             background: filter === k ? AXIS_CSS[k] + '22' : 'transparent',
-            border: '1px solid ' + (filter === k ? AXIS_CSS[k] : '#1a2a3a'),
-            color: AXIS_CSS[k], padding: '3px 10px', borderRadius: 3, fontSize: 10,
+            border: '1px solid ' + (filter === k ? AXIS_CSS[k] : 'rgba(0,255,255,0.1)'),
+            color: AXIS_CSS[k], padding: '16px 20px', borderRadius: 3, fontSize: 12,
             fontFamily: "'JetBrains Mono', monospace", cursor: 'pointer',
             letterSpacing: 1, textTransform: 'uppercase' as const, transition: 'all 0.2s',
+            minHeight: '48px',
+            minWidth: '48px',
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}>
             {AXIS_LABELS[k]}
           </button>
         ))}
+        <button onClick={() => setShowAttractor(!showAttractor)} style={{
+          background: showAttractor ? '#ff6633' + '22' : 'transparent',
+          border: '1px solid ' + (showAttractor ? '#ff6633' : 'rgba(0,255,255,0.1)'),
+          color: showAttractor ? '#ff6633' : 'rgba(0,255,255,0.25)',
+          padding: '16px 20px', borderRadius: 3, fontSize: 12,
+          fontFamily: "'JetBrains Mono', monospace", cursor: 'pointer',
+          letterSpacing: 1, textTransform: 'uppercase' as const, transition: 'all 0.2s',
+          minHeight: '48px',
+          minWidth: '48px',
+          display: 'inline-flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}>
+          {showAttractor ? 'ATTRACTOR ON' : 'ATTRACTOR OFF'}
+        </button>
       </div>
 
       {/* ── Count ── */}
       <div style={{
-        position: 'absolute', top: 12, right: 12, color: '#2a3a4a', fontSize: 9,
+        position: 'absolute', top: 12, right: 12, color: 'rgba(255,255,255,0.12)', fontSize: 11,
         fontFamily: "'JetBrains Mono', monospace", letterSpacing: 1, zIndex: 10,
+        textShadow: '0 0 8px rgba(0,255,255,0.05)',
       }}>
         {Object.keys(VERTICES).length} PANELS &middot; {EDGES.length} EDGES &middot; 80 FACES
       </div>
@@ -651,9 +679,9 @@ export default function ObservatoryRoom() {
           onChange={e => setSearchQuery(e.target.value)}
           placeholder="search nodes..."
           style={{
-            background: 'rgba(6,10,18,0.8)', border: '1px solid #1a2a3a',
-            borderRadius: 3, padding: '4px 8px', color: '#8899aa', width: 200,
-            fontSize: 10, fontFamily: "'JetBrains Mono', monospace",
+            background: 'rgba(0,0,0,0.8)', border: '1px solid rgba(0,255,255,0.1)',
+            borderRadius: 3, padding: '8px 12px', color: 'rgba(0,255,255,0.25)', width: 240,
+            fontSize: 12, fontFamily: "'JetBrains Mono', monospace",
             outline: 'none', letterSpacing: 0.5,
           }}
         />
@@ -663,13 +691,13 @@ export default function ObservatoryRoom() {
       <div style={{ position: 'absolute', top: 68, left: 12, display: 'flex', gap: 4, flexWrap: 'wrap', zIndex: 10, maxWidth: 320 }}>
         {STATE_FILTER_OPTS.map(s => {
           const active = stateFilters.has(s);
-          const col = s === 'countdown' ? '#ff6633' : s === 'complete' ? '#44cc77'
-            : s === 'missing' ? '#ff4466' : s === 'deployed' ? '#44ffaa' : '#8899aa';
+          const col = s === 'countdown' ? '#ff6633' : s === 'complete' ? '#00FFFF'
+            : s === 'missing' ? '#FF4444' : s === 'deployed' ? '#00FFFF' : 'rgba(0,255,255,0.25)';
           return (
             <button key={s} onClick={() => toggleStateFilter(s)} style={{
               background: active ? col + '22' : 'transparent',
-              border: '1px solid ' + (active ? col : '#111a22'),
-              color: col, padding: '2px 7px', borderRadius: 2, fontSize: 8,
+              border: '1px solid ' + (active ? col : 'rgba(0,255,255,0.04)'),
+              color: col, padding: '3px 8px', borderRadius: 2, fontSize: 10,
               fontFamily: "'JetBrains Mono', monospace", cursor: 'pointer',
               letterSpacing: 0.5, transition: 'all 0.2s',
             }}>
@@ -680,12 +708,12 @@ export default function ObservatoryRoom() {
         <span style={{ width: 4 }} />
         {BUS_FILTER_OPTS.map(b => {
           const active = busFilters.has(b);
-          const col = BUS_CSS[b] || '#8899aa';
+          const col = BUS_CSS[b] || 'rgba(0,255,255,0.25)';
           return (
             <button key={b} onClick={() => toggleBusFilter(b)} style={{
               background: active ? col + '22' : 'transparent',
-              border: '1px solid ' + (active ? col : '#111a22'),
-              color: col, padding: '2px 7px', borderRadius: 2, fontSize: 8,
+              border: '1px solid ' + (active ? col : 'rgba(0,255,255,0.04)'),
+              color: col, padding: '3px 8px', borderRadius: 2, fontSize: 10,
               fontFamily: "'JetBrains Mono', monospace", cursor: 'pointer',
               letterSpacing: 0.5, transition: 'all 0.2s',
             }}>
@@ -700,11 +728,11 @@ export default function ObservatoryRoom() {
         <div style={{
           position: 'absolute', bottom: 12, left: 12, right: 12, maxWidth: 420,
           background: 'rgba(6,10,18,0.92)', backdropFilter: 'blur(12px)',
-          border: '1px solid #1a2a3a', borderRadius: 6, padding: 14, zIndex: 20,
+          border: '1px solid rgba(0,255,255,0.1)', borderRadius: 6, padding: 14, zIndex: 20,
           fontFamily: "'JetBrains Mono', monospace",
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-            <span style={{ color: '#e8e8e8', fontSize: 13, fontWeight: 700, letterSpacing: 0.5 }}>
+            <span style={{ color: '#d8ffd8', fontSize: 13, fontWeight: 700, letterSpacing: 0.5 }}>
               {selected.label}
               {getCountdownLabel(selected.id) && (
                 <span style={{ color: '#ff6633', marginLeft: 8, fontSize: 11 }}>
@@ -713,20 +741,20 @@ export default function ObservatoryRoom() {
               )}
             </span>
             <button onClick={() => setSelected(null)} style={{
-              background: 'none', border: 'none', color: '#3a4a5a', cursor: 'pointer', fontSize: 14, padding: '0 4px',
+              background: 'none', border: 'none', color: 'rgba(0,255,255,0.18)', cursor: 'pointer', fontSize: 14, padding: '0 4px',
             }}>{'\u2715'}</button>
           </div>
-          <div style={{ display: 'flex', gap: 10, fontSize: 10, color: '#5a6a7a', marginBottom: 6 }}>
+          <div style={{ display: 'flex', gap: 10, fontSize: 10, color: 'rgba(0,255,255,0.18)', marginBottom: 6 }}>
             <span style={{ color: AXIS_CSS[getDominantAxis(selected.a, selected.b, selected.c, selected.d)] }}>
               {AXIS_LABELS[getDominantAxis(selected.a, selected.b, selected.c, selected.d)]}
             </span>
             <span style={{
-              color: selected.state === 'countdown' ? '#ff6633' : selected.state === 'complete' ? '#44cc77'
-                : selected.state === 'missing' ? '#ff4466' : selected.state === 'deployed' ? '#44ffaa' : '#8899aa',
+              color: selected.state === 'countdown' ? '#ff6633' : selected.state === 'complete' ? '#00FFFF'
+                : selected.state === 'missing' ? '#FF4444' : selected.state === 'deployed' ? '#00FFFF' : 'rgba(0,255,255,0.25)',
             }}>{selected.state}</span>
-            <span style={{ color: BUS_CSS[selected.bus] || '#8899aa' }}>{selected.bus}</span>
+            <span style={{ color: BUS_CSS[selected.bus] || 'rgba(0,255,255,0.25)' }}>{selected.bus}</span>
           </div>
-          {selected.notes && <div style={{ color: '#4a5a6a', fontSize: 9, marginBottom: 6 }}>{selected.notes}</div>}
+          {selected.notes && <div style={{ color: 'rgba(0,255,255,0.18)', fontSize: 9, marginBottom: 6 }}>{selected.notes}</div>}
           {connections.length > 0 && (
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
               {connections.map((c, i) => (
@@ -735,10 +763,10 @@ export default function ObservatoryRoom() {
                   if (d) setSelected({ id: c.id, label: d[0], a: d[1], b: d[2], c: d[3], d: d[4], state: d[5], bus: d[6], notes: d[7] });
                 }} style={{
                   fontSize: 8, padding: '2px 8px', borderRadius: 2, cursor: 'pointer',
-                  background: '#0a0e16', border: '1px solid #151e28',
+                  background: 'rgba(255,255,255,0.015)', border: '1px solid rgba(0,255,255,0.05)',
                   color: AXIS_CSS[c.axis], transition: 'all 0.15s', letterSpacing: 0.5,
                 }}>
-                  {c.label} <span style={{ color: '#2a3a4a', marginLeft: 2 }}>({c.type})</span>
+                  {c.label} <span style={{ color: 'rgba(255,255,255,0.12)', marginLeft: 2 }}>({c.type})</span>
                 </span>
               ))}
             </div>
@@ -748,7 +776,7 @@ export default function ObservatoryRoom() {
 
       {/* ── Instructions ── */}
       <div style={{
-        position: 'absolute', bottom: selected ? 180 : 12, right: 12, color: '#1a2838',
+        position: 'absolute', bottom: selected ? 180 : 12, right: 12, color: 'rgba(255,255,255,0.08)',
         fontSize: 8, textAlign: 'right' as const, letterSpacing: 1, transition: 'bottom 0.3s',
         lineHeight: 1.8, fontFamily: "'JetBrains Mono', monospace", zIndex: 5,
       }}>
@@ -756,6 +784,18 @@ export default function ObservatoryRoom() {
         <div>TAP PANEL</div>
         <div>SCROLL ZOOM</div>
       </div>
+
+      {/* ── Mark 1 Attractor Simulator Overlay ── */}
+      <AttractorOverlay
+        show={showAttractor}
+        entropy={entropy}
+        magneticField={magneticField}
+        coherence={coherence}
+        onEntropyChange={setEntropy}
+        onMagneticFieldChange={setMagneticField}
+        onCoherenceChange={setCoherence}
+        onClose={() => setShowAttractor(false)}
+      />
     </div>
   );
 }

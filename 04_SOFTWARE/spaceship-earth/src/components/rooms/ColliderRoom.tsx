@@ -7,15 +7,15 @@ import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 const FONT = "'Oxanium', sans-serif";
 const FONT_DATA = "'Space Mono', monospace";
 
-// P31 Brand palette
-const VIOLET = '#7A27FF';
-const MAGENTA = '#FF00CC';
-const CYAN = '#00D4FF';
-const GREEN = '#00FF88';
-const AMBER = '#FFB800';
-const CORAL = '#F08080';
-const TEXT = '#E0E0EE';
-const DIM = 'rgba(122,39,255,0.4)';
+// P31 Neon Phosphor palette
+const VIOLET = '#BF5FFF';
+const MAGENTA = '#FF00FF';
+const CYAN = '#00FFFF';
+const GREEN = '#00FFFF';
+const AMBER = '#FFD700';
+const CORAL = '#FF6B6B';
+const TEXT = '#d8ffd8';
+const DIM = 'rgba(0,255,255,0.18)';
 
 // ── Element Data ──
 
@@ -604,7 +604,7 @@ export function ColliderRoom() {
   return (
     <div ref={containerRef} style={{
       width: '100%', height: '100%', position: 'relative', overflow: 'hidden',
-      background: '#050510', fontFamily: FONT,
+      background: '#000000', fontFamily: FONT,
     }}>
       {/* Background canvas */}
       <canvas ref={canvasRef} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', zIndex: 0, pointerEvents: 'none' }} />
@@ -703,7 +703,7 @@ export function ColliderRoom() {
           {/* Energy bar */}
           <div style={{
             width: 200, height: 6, borderRadius: 3,
-            background: 'rgba(122,39,255,0.12)',
+            background: 'rgba(0,255,255,0.06)',
             border: `1px solid ${CYAN}22`,
             overflow: 'hidden',
           }}>
@@ -752,7 +752,7 @@ export function ColliderRoom() {
       }}>
         <div style={{
           padding: '8px 16px', borderRadius: 12,
-          background: 'rgba(255,255,255,0.03)', backdropFilter: 'blur(12px)',
+          background: 'rgba(255,255,255,0.015)', backdropFilter: 'blur(12px)',
           border: `1px solid ${VIOLET}22`,
         }}>
           <div style={{ fontSize: 10, color: DIM, fontFamily: FONT_DATA, letterSpacing: 1 }}>SCORE</div>
@@ -764,7 +764,7 @@ export function ColliderRoom() {
         {formula && (
           <div style={{
             padding: '6px 14px', borderRadius: 10,
-            background: matchedRecipe && stability.complete ? `${GREEN}12` : 'rgba(255,255,255,0.03)',
+            background: matchedRecipe && stability.complete ? `${GREEN}12` : 'rgba(255,255,255,0.015)',
             border: `1px solid ${matchedRecipe && stability.complete ? `${GREEN}66` : `${VIOLET}22`}`,
             backdropFilter: 'blur(12px)',
           }}>
@@ -783,14 +783,14 @@ export function ColliderRoom() {
         {atoms.length > 0 && (
           <div style={{
             padding: '6px 12px', borderRadius: 10,
-            background: 'rgba(255,255,255,0.03)', backdropFilter: 'blur(12px)',
+            background: 'rgba(255,255,255,0.015)', backdropFilter: 'blur(12px)',
             border: `1px solid ${VIOLET}22`, width: 140,
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, color: DIM, fontFamily: FONT_DATA, marginBottom: 4 }}>
               <span>Stability</span>
               <span style={{ color: stability.complete ? GREEN : AMBER }}>{(stability.pct * 100).toFixed(0)}%</span>
             </div>
-            <div style={{ height: 4, background: 'rgba(122,39,255,0.08)', borderRadius: 4 }}>
+            <div style={{ height: 4, background: 'rgba(0,255,255,0.04)', borderRadius: 4 }}>
               <div style={{
                 height: '100%', borderRadius: 4, transition: 'width 0.3s',
                 width: `${stability.pct * 100}%`,
@@ -817,8 +817,8 @@ export function ColliderRoom() {
           return (
             <div key={q.id} style={{
               padding: '6px 10px', borderRadius: 10,
-              background: done ? `${q.color}10` : 'rgba(255,255,255,0.03)',
-              border: `1px solid ${done ? `${q.color}44` : 'rgba(255,255,255,0.06)'}`,
+              background: done ? `${q.color}10` : 'rgba(255,255,255,0.015)',
+              border: `1px solid ${done ? `${q.color}44` : 'rgba(0,255,255,0.03)'}`,
               backdropFilter: 'blur(8px)',
             }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -833,7 +833,7 @@ export function ColliderRoom() {
                 {q.steps.map((step, i) => (
                   <div key={i} style={{
                     flex: 1, height: 3, borderRadius: 2,
-                    background: progress.has(step) ? q.color : 'rgba(122,39,255,0.08)',
+                    background: progress.has(step) ? q.color : 'rgba(0,255,255,0.04)',
                     boxShadow: progress.has(step) ? `0 0 4px ${q.color}` : 'none',
                     transition: 'background 0.3s',
                   }} />
@@ -852,7 +852,7 @@ export function ColliderRoom() {
         <div style={{
           position: 'absolute', bottom: 100, right: 16, zIndex: 100,
           padding: '10px 14px', borderRadius: 12,
-          background: 'rgba(255,255,255,0.03)', backdropFilter: 'blur(12px)',
+          background: 'rgba(255,255,255,0.015)', backdropFilter: 'blur(12px)',
           border: `1px solid ${VIOLET}22`, maxWidth: 180,
         }}>
           <div style={{ fontSize: 10, color: VIOLET, fontWeight: 600, marginBottom: 6, letterSpacing: 1 }}>
@@ -876,7 +876,7 @@ export function ColliderRoom() {
         display: 'flex', gap: 6, padding: '10px 20px', zIndex: 11,
         background: 'rgba(5,5,16,0.85)', borderRadius: 20,
         border: `1px solid ${VIOLET}33`,
-        boxShadow: '0 0 24px rgba(122,39,255,0.08)',
+        boxShadow: '0 0 24px rgba(0,255,255,0.04)',
         backdropFilter: 'blur(12px)',
       }}>
         {paletteElements.map(sym => {
@@ -943,13 +943,18 @@ export function ColliderRoom() {
 function modeBtn(active: boolean, color: string): React.CSSProperties {
   return {
     background: active ? `${color}18` : 'rgba(5,5,16,0.6)',
-    border: `1px solid ${active ? `${color}88` : 'rgba(122,39,255,0.15)'}`,
+    border: `1px solid ${active ? `${color}88` : 'rgba(0,255,255,0.08)'}`,
     color: active ? color : DIM,
-    padding: '6px 14px', borderRadius: 10, cursor: 'pointer',
+    padding: '12px 16px', borderRadius: 10, cursor: 'pointer',
     fontSize: 12, fontWeight: 600, fontFamily: "'Oxanium', sans-serif",
     letterSpacing: '0.04em',
     textShadow: active ? `0 0 8px ${color}44` : 'none',
     transition: 'all 0.2s ease',
     backdropFilter: 'blur(8px)',
+    minHeight: '48px',
+    minWidth: '48px',
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
   };
 }

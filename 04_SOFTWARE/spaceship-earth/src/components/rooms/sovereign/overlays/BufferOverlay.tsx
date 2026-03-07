@@ -5,7 +5,7 @@ import { BufferRoom } from '../../BufferRoom';
 const fullScreen: React.CSSProperties = {
   position: 'absolute',
   inset: 0,
-  overflow: 'auto',
+  overflow: 'hidden',
 };
 
 export function BufferOverlay() {

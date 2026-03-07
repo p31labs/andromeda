@@ -59,7 +59,7 @@ function LockIcon({ color, pulsing }: { color: string; pulsing?: boolean }) {
 
 function ChainLink({ from, to, color }: { from: string; to: string; color: string }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 8, color: 'rgba(255,255,255,0.12)' }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 8, color: 'rgba(255,255,255,0.06)' }}>
       <span style={{ color }}>{from}</span>
       <svg width={20} height={8} viewBox="0 0 20 8">
         <line x1={0} y1={4} x2={14} y2={4} stroke={color} strokeWidth={1} opacity={0.4} />
@@ -73,9 +73,9 @@ function ChainLink({ from, to, color }: { from: string; to: string; color: strin
 // ── Constants ──
 
 const LAYER_COLORS: Record<string, string> = {
-  telemetry: '#4ecdc4',
-  'love-ledger': '#c9b1ff',
-  bonds: '#44aaff',
+  telemetry: '#00FFFF',
+  'love-ledger': '#BF5FFF',
+  bonds: '#00FFFF',
   'game-state': '#f7dc6f',
 };
 
@@ -296,11 +296,11 @@ export function VaultRoom({ tier }: Props) {
         backgroundImage: 'linear-gradient(90deg, #ff4466, #ff9944)',
         animation: 'fadeInUp 0.4s ease-out both',
       }}>THE VAULT</h1>
-      <div style={{ fontSize: 8, color: 'rgba(255,255,255,0.2)', letterSpacing: 2, marginTop: -2, animation: 'fadeInUp 0.4s ease-out 0.1s both' }}>
+      <div style={{ fontSize: 8, color: 'rgba(255,255,255,0.1)', letterSpacing: 2, marginTop: -2, animation: 'fadeInUp 0.4s ease-out 0.1s both' }}>
         SOVEREIGN GROUND TRUTH
       </div>
       <div style={{
-        fontSize: 9, color: 'rgba(255,255,255,0.3)', maxWidth: 300, textAlign: 'center', lineHeight: 1.4,
+        fontSize: 9, color: 'rgba(0,255,255,0.15)', maxWidth: 300, textAlign: 'center', lineHeight: 1.4,
         animation: 'fadeInUp 0.4s ease-out 0.15s both',
       }}>
         Cryptographic identity, encrypted storage, Daubert-compliant chain of custody.
@@ -318,22 +318,22 @@ export function VaultRoom({ tier }: Props) {
               background: didInitialized ? '#7DDFB6' : '#F08080',
               boxShadow: didInitialized ? '0 0 6px #7DDFB6' : '0 0 6px #F08080',
             }} />
-            <span style={{ fontSize: 10, color: '#4ecdc4', letterSpacing: 1, textShadow: '0 0 8px rgba(78,205,196,0.15)' }}>
+            <span style={{ fontSize: 10, color: '#00FFFF', letterSpacing: 1, textShadow: '0 0 8px rgba(0,255,255,0.15)' }}>
               Ed25519 IDENTITY
             </span>
           </div>
           <button type="button" onClick={handleCopyDid} className="glass-btn" style={{
             padding: '2px 8px',
-            color: didCopied ? '#4ecdc4' : 'rgba(255,255,255,0.25)',
+            color: didCopied ? '#00FFFF' : 'rgba(0,255,255,0.25)',
             fontSize: 8, letterSpacing: 0.5,
           }}>
             {didCopied ? 'COPIED' : 'COPY DID'}
           </button>
         </div>
-        <div style={{
-          fontSize: 10, color: '#4ecdc4',
+        <div role="status" aria-label="DID key status" style={{
+          fontSize: 10, color: '#00FFFF',
           wordBreak: 'break-all', lineHeight: 1.4,
-          textShadow: '0 0 12px rgba(78,205,196,0.15)',
+          textShadow: '0 0 12px rgba(0,255,255,0.1)',
           fontFamily: "'JetBrains Mono', monospace",
           letterSpacing: 0.3, marginBottom: 8,
         }}>
@@ -347,8 +347,8 @@ export function VaultRoom({ tier }: Props) {
             className="glass-btn"
             style={{
               flex: 1, padding: '5px 8px', fontSize: 9, letterSpacing: 1,
-              color: didInitialized ? '#4ecdc4' : 'rgba(255,255,255,0.2)',
-              border: '1px solid rgba(78,205,196,0.2)',
+              color: didInitialized ? '#00FFFF' : 'rgba(0,255,255,0.2)',
+              border: '1px solid rgba(0,255,255,0.1)',
               opacity: didInitialized ? 1 : 0.4,
             }}
           >
@@ -371,11 +371,12 @@ export function VaultRoom({ tier }: Props) {
             type="file"
             accept=".json,.jwk"
             onChange={handleImportJWK}
+            aria-label="Import identity file"
             style={{ display: 'none' }}
           />
         </div>
         {identityStatus && (
-          <div style={{
+          <div role="status" style={{
             fontSize: 9, marginTop: 4,
             color: identityStatus.startsWith('Error') ? '#F08080' : '#7DDFB6',
           }}>
@@ -390,21 +391,21 @@ export function VaultRoom({ tier }: Props) {
         animation: 'fadeInUp 0.35s ease-out 0.24s both',
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
-          <div style={{ fontSize: 10, color: '#4ecdc4', letterSpacing: 1, textShadow: '0 0 8px rgba(78,205,196,0.15)' }}>
+          <div style={{ fontSize: 10, color: '#00FFFF', letterSpacing: 1, textShadow: '0 0 8px rgba(0,255,255,0.15)' }}>
             SESSION NODE
           </div>
           <button type="button" onClick={handleCopyId} className="glass-btn" style={{
             padding: '2px 8px',
-            color: copied ? '#4ecdc4' : 'rgba(255,255,255,0.25)',
+            color: copied ? '#00FFFF' : 'rgba(0,255,255,0.25)',
             fontSize: 8, letterSpacing: 0.5,
           }}>
             {copied ? 'COPIED' : 'COPY'}
           </button>
         </div>
-        <div style={{
-          fontSize: 11, color: '#4ecdc4',
+        <div role="status" aria-label="Session node hash" style={{
+          fontSize: 11, color: '#00FFFF',
           wordBreak: 'break-all', lineHeight: 1.4,
-          textShadow: '0 0 12px rgba(78,205,196,0.15)',
+          textShadow: '0 0 12px rgba(0,255,255,0.1)',
           fontFamily: "'JetBrains Mono', monospace",
           letterSpacing: 0.3,
         }}>
@@ -420,26 +421,26 @@ export function VaultRoom({ tier }: Props) {
         <div style={{ fontSize: 10, color: '#ff9944', marginBottom: 8, letterSpacing: 1, textShadow: '0 0 8px rgba(255,153,68,0.15)' }}>
           VAULT STATUS
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, fontSize: 12 }}>
+        <div role="status" aria-label="Vault statistics" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, fontSize: 12 }}>
           <div>
-            <div style={{ color: 'rgba(255,255,255,0.25)', fontSize: 9 }}>layers</div>
+            <div style={{ color: 'rgba(255,255,255,0.12)', fontSize: 9 }}>layers</div>
             <div style={{ color: '#ff9944', fontWeight: 600 }}>{vaultLayerCount}</div>
           </div>
           <div>
-            <div style={{ color: 'rgba(255,255,255,0.25)', fontSize: 9 }}>encryption</div>
+            <div style={{ color: 'rgba(255,255,255,0.12)', fontSize: 9 }}>encryption</div>
             <div style={{ color: '#44ffaa', fontSize: 10, fontWeight: 600, textShadow: '0 0 8px rgba(68,255,170,0.15)' }}>
               AES-256-GCM
             </div>
           </div>
           <div>
-            <div style={{ color: 'rgba(255,255,255,0.25)', fontSize: 9 }}>protocol LOVE</div>
-            <div style={{ color: '#c9b1ff', fontWeight: 600 }}>
+            <div style={{ color: 'rgba(255,255,255,0.12)', fontSize: 9 }}>protocol LOVE</div>
+            <div style={{ color: '#BF5FFF', fontWeight: 600 }}>
               {protocolWallet ? protocolWallet.totalEarned.toFixed(1) : '0.0'}
             </div>
           </div>
           <div>
-            <div style={{ color: 'rgba(255,255,255,0.25)', fontSize: 9 }}>transactions</div>
-            <div style={{ color: '#44aaff', fontWeight: 600 }}>{protocolTxCount}</div>
+            <div style={{ color: 'rgba(255,255,255,0.12)', fontSize: 9 }}>transactions</div>
+            <div style={{ color: '#00FFFF', fontWeight: 600 }}>{protocolTxCount}</div>
           </div>
         </div>
       </div>
@@ -456,28 +457,29 @@ export function VaultRoom({ tier }: Props) {
               background: llmKey ? '#7DDFB6' : '#F08080',
               boxShadow: llmKey ? '0 0 6px #7DDFB6' : '0 0 6px #F08080',
             }} />
-            <span style={{ fontSize: 10, color: '#c9b1ff', letterSpacing: 1, textShadow: '0 0 8px rgba(201,177,255,0.15)' }}>
+            <span style={{ fontSize: 10, color: '#BF5FFF', letterSpacing: 1, textShadow: '0 0 8px rgba(191,95,255,0.15)' }}>
               CENTAUR ENGINE
             </span>
           </div>
-          <button type="button" onClick={() => setShowKey(v => !v)} className="glass-btn" style={{
-            padding: '2px 8px', color: 'rgba(255,255,255,0.25)', fontSize: 8, letterSpacing: 0.5,
+          <button type="button" onClick={() => setShowKey(v => !v)} className="glass-btn" aria-label={showKey ? 'Hide API key' : 'Show API key'} style={{
+            padding: '2px 8px', color: 'rgba(255,255,255,0.12)', fontSize: 8, letterSpacing: 0.5,
           }}>
             {showKey ? 'HIDE' : 'SHOW'}
           </button>
         </div>
         {/* Engine selector */}
         <div style={{ marginBottom: 6 }}>
-          <div style={{ fontSize: 8, color: 'rgba(255,255,255,0.25)', marginBottom: 3 }}>ENGINE</div>
+          <div style={{ fontSize: 8, color: 'rgba(255,255,255,0.12)', marginBottom: 3 }}>ENGINE</div>
           <select
             value={llmEngine}
             onChange={handleEngineChange}
+            aria-label="AI engine selection"
             className="glass-input"
             style={{
               fontSize: 10, padding: '5px 8px', letterSpacing: 0.5,
               width: '100%', appearance: 'auto',
-              background: 'rgba(255,255,255,0.03)',
-              color: '#c9b1ff',
+              background: 'rgba(255,255,255,0.015)',
+              color: '#BF5FFF',
             }}
           >
             <option value="claude-sonnet">Claude 3.5 Sonnet</option>
@@ -485,7 +487,7 @@ export function VaultRoom({ tier }: Props) {
           </select>
         </div>
         {/* API key input */}
-        <div style={{ fontSize: 8, color: 'rgba(255,255,255,0.25)', marginBottom: 3 }}>API KEY</div>
+        <div style={{ fontSize: 8, color: 'rgba(255,255,255,0.12)', marginBottom: 3 }}>API KEY</div>
         <input
           type={showKey ? 'text' : 'password'}
           value={llmKey}
@@ -495,12 +497,13 @@ export function VaultRoom({ tier }: Props) {
             try { localStorage.setItem('p31_llm_key', v); } catch {}
           }}
           placeholder={llmEngine === 'claude-sonnet' ? 'sk-ant-...' : 'AI...'}
+          aria-label="API key"
           className="glass-input"
           style={{ fontSize: 10, padding: '6px 8px', letterSpacing: 0.5 }}
           autoComplete="off"
           spellCheck={false}
         />
-        <div style={{ fontSize: 8, color: 'rgba(255,255,255,0.2)', marginTop: 4, lineHeight: 1.4 }}>
+        <div style={{ fontSize: 8, color: 'rgba(255,255,255,0.1)', marginTop: 4, lineHeight: 1.4 }}>
           Stored in localStorage. Never proxied.
         </div>
       </div>
@@ -514,15 +517,15 @@ export function VaultRoom({ tier }: Props) {
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <span style={{
               width: 8, height: 8, borderRadius: '50%',
-              background: genesisSyncStatus === 'synced' ? '#7DDFB6' : genesisSyncStatus === 'syncing' ? '#44AAFF' : '#F08080',
-              boxShadow: `0 0 6px ${genesisSyncStatus === 'synced' ? '#7DDFB6' : '#44AAFF'}`,
+              background: genesisSyncStatus === 'synced' ? '#7DDFB6' : genesisSyncStatus === 'syncing' ? '#00FFFF' : '#F08080',
+              boxShadow: `0 0 6px ${genesisSyncStatus === 'synced' ? '#7DDFB6' : '#00FFFF'}`,
               animation: genesisSyncStatus === 'syncing' ? 'lockPulse 1.5s ease-in-out infinite' : 'none',
             }} />
-            <span style={{ fontSize: 10, color: '#44aaff', letterSpacing: 1, textShadow: '0 0 8px rgba(68,170,255,0.15)' }}>
+            <span style={{ fontSize: 10, color: '#00FFFF', letterSpacing: 1, textShadow: '0 0 8px rgba(0,255,255,0.15)' }}>
               GENESIS SYNC LOG
             </span>
           </div>
-          <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.3)' }}>
+          <span role="status" aria-label="Sync event count" style={{ fontSize: 9, color: 'rgba(0,255,255,0.15)' }}>
             {syncEvents.length} events
           </span>
         </div>
@@ -532,11 +535,11 @@ export function VaultRoom({ tier }: Props) {
             maxHeight: 120, overflow: 'auto', fontSize: 9,
             fontFamily: "'JetBrains Mono', monospace",
             background: 'rgba(0,0,0,0.3)', borderRadius: 4, padding: 6,
-            border: '1px solid rgba(68,170,255,0.08)',
+            border: '1px solid rgba(0,255,255,0.08)',
           }}
         >
           {syncEvents.length === 0 ? (
-            <div style={{ color: 'rgba(255,255,255,0.15)', textAlign: 'center', padding: 8 }}>
+            <div style={{ color: 'rgba(255,255,255,0.08)', textAlign: 'center', padding: 8 }}>
               No sync events yet
             </div>
           ) : (
@@ -547,12 +550,12 @@ export function VaultRoom({ tier }: Props) {
               return (
                 <div key={`${ev.timestamp}-${i}`} style={{
                   display: 'flex', gap: 4, lineHeight: 1.6,
-                  borderBottom: '1px solid rgba(255,255,255,0.03)',
+                  borderBottom: '1px solid rgba(255,255,255,0.015)',
                 }}>
-                  <span style={{ color: 'rgba(255,255,255,0.3)' }}>[{ts}]</span>
+                  <span style={{ color: 'rgba(0,255,255,0.15)' }}>[{ts}]</span>
                   <span style={{ color: dirColor, fontWeight: 600 }}>{ev.direction.toUpperCase()}</span>
-                  <span style={{ color: 'rgba(255,255,255,0.2)' }}>|</span>
-                  <span style={{ color: '#44aaff' }}>{hashShort}</span>
+                  <span style={{ color: 'rgba(255,255,255,0.1)' }}>|</span>
+                  <span style={{ color: '#00FFFF' }}>{hashShort}</span>
                 </div>
               );
             })
@@ -577,11 +580,11 @@ export function VaultRoom({ tier }: Props) {
             <div style={{
               display: 'flex', justifyContent: 'space-between', alignItems: 'center',
               fontSize: 11, padding: '5px 0',
-              borderBottom: '1px solid rgba(255,255,255,0.04)',
+              borderBottom: '1px solid rgba(255,255,255,0.02)',
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                 <LockIcon color={LAYER_COLORS[layer]} pulsing />
-                <span style={{ color: 'rgba(255,255,255,0.45)' }}>{layer}</span>
+                <span style={{ color: 'rgba(0,255,255,0.25)' }}>{layer}</span>
               </div>
               <span style={{
                 color: LAYER_COLORS[layer], fontSize: 9, letterSpacing: 1,
@@ -618,7 +621,7 @@ export function VaultRoom({ tier }: Props) {
             fontSize: 12,
             letterSpacing: 2,
             fontFamily: "'JetBrains Mono', monospace",
-            color: exporting ? 'rgba(255,255,255,0.3)' : '#ff4466',
+            color: exporting ? 'rgba(0,255,255,0.15)' : '#ff4466',
             textShadow: exporting ? 'none' : '0 0 12px rgba(255,68,102,0.2)',
             transition: isReflex ? 'none' : 'all 0.2s',
             backgroundSize: '200% 100%',
@@ -659,7 +662,7 @@ export function VaultRoom({ tier }: Props) {
       </div>
 
       {lastExport && (
-        <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)', animation: 'fadeInUp 0.3s ease-out' }}>
+        <div role="status" style={{ fontSize: 10, color: 'rgba(255,255,255,0.12)', animation: 'fadeInUp 0.3s ease-out' }}>
           Last exported: {new Date(lastExport).toLocaleString()}
         </div>
       )}

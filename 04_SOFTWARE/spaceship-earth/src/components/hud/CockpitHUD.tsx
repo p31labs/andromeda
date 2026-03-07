@@ -11,8 +11,8 @@ interface Props {
 
 export const CockpitHUD = memo(function CockpitHUD({ spoons, maxSpoons, love, tier }: Props) {
   return (
-    <div className="cockpit-hud">
+    <aside className="cockpit-hud" aria-label="Status gauges">
       <SpoonGauge spoons={spoons} maxSpoons={maxSpoons} love={love} tier={tier} />
-    </div>
+    </aside>
   );
 });

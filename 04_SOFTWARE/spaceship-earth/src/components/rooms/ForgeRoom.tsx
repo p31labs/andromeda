@@ -27,10 +27,10 @@ const STORAGE_KEY = 'p31:content-forge:seeds';
 const ACTIVE_KEY = 'p31:content-forge:active';
 
 const C = {
-  void: '#06060f', voidUp: '#0a0a1a', surface: '#0f0f24',
-  border: '#1a1a3a', borderB: '#2a2a5a',
-  dim: '#6a6a8a', muted: '#9898b0', text: '#c8c8e0', bright: '#e8e8f0',
-  green: '#2ecc71', cyan: '#00d4ff', amber: '#f59e0b', violet: '#a78bfa',
+  void: '#000000', voidUp: '#000000', surface: '#0a0a0a',
+  border: 'rgba(0,255,255,0.06)', borderB: 'rgba(0,255,255,0.1)',
+  dim: '#1a4a1a', muted: '#3a7a3a', text: '#d8ffd8', bright: '#e8ffe8',
+  green: '#00FFFF', cyan: '#00FFFF', amber: '#FFD700', violet: '#BF5FFF',
 };
 
 const MONO = "'Space Mono', 'Cascadia Code', monospace";
@@ -195,23 +195,23 @@ export function ForgeRoom() {
         padding: '10px 16px', borderBottom: `1px solid ${C.border}`, background: C.voidUp,
       }}>
         <div>
-          <div style={{ fontSize: 14, fontWeight: 600, color: C.bright }}>
+          <div style={{ fontSize: 18, fontWeight: 600, color: C.green, textShadow: `0 0 10px ${C.green}44` }}>
             <span style={{ color: C.green }}>&#9650;</span> Content Forge
           </div>
-          <div style={{ fontSize: 9, color: C.dim, fontFamily: MONO }}>
+          <div style={{ fontSize: 12, color: C.muted, fontFamily: MONO, textShadow: `0 0 4px ${C.green}22` }}>
             The Geodesic Self &middot; Substack Pipeline
           </div>
         </div>
         <div style={{ flex: 1 }} />
-        <div style={{ fontSize: 10, fontFamily: MONO, color: saveFlash ? C.green : C.dim }}>
+        <div style={{ fontSize: 12, fontFamily: MONO, color: saveFlash ? C.green : C.muted, textShadow: saveFlash ? `0 0 6px ${C.green}44` : 'none' }}>
           {saveFlash || 'Auto-saved'}
         </div>
       </div>
 
       {/* Sidebar — seed list + frameworks */}
-      <div style={{ borderRight: `1px solid ${C.border}`, overflowY: 'auto', background: C.voidUp }}>
+      <div style={{ borderRight: `1px solid ${C.border}`, overflowY: 'auto', overflowX: 'hidden', background: C.voidUp, minHeight: 0 }}>
         <div style={{ padding: 12, borderBottom: `1px solid ${C.border}` }}>
-          <div style={{ fontSize: 9, fontFamily: MONO, color: C.dim, letterSpacing: 1, marginBottom: 8, textTransform: 'uppercase' }}>
+          <div style={{ fontSize: 11, fontFamily: MONO, color: C.muted, letterSpacing: 1, marginBottom: 8, textTransform: 'uppercase', textShadow: `0 0 4px ${C.green}22` }}>
             Content Seeds
           </div>
           {seeds.map(s => (
@@ -227,12 +227,12 @@ export function ForgeRoom() {
               <div style={{ fontSize: 12, fontWeight: 500, color: C.bright, marginBottom: 2 }}>
                 {s.title || 'Untitled'}
               </div>
-              <div style={{ fontSize: 9, fontFamily: MONO, color: C.dim }}>
+              <div style={{ fontSize: 11, fontFamily: MONO, color: C.muted }}>
                 {new Date(s.created).toLocaleDateString()}
               </div>
               <span style={{
-                display: 'inline-block', fontSize: 8, fontFamily: MONO, padding: '1px 6px',
-                borderRadius: 2, marginTop: 3, letterSpacing: 0.5,
+                display: 'inline-block', fontSize: 10, fontFamily: MONO, padding: '2px 8px',
+                borderRadius: 4, marginTop: 4, letterSpacing: 0.5,
                 background: `${categoryColor(s.category)}18`, color: categoryColor(s.category),
               }}>
                 {s.status === 'published' ? 'PUBLISHED' : s.status === 'draft' ? 'DRAFT' : s.category.toUpperCase()}
@@ -240,16 +240,21 @@ export function ForgeRoom() {
             </div>
           ))}
           <button type="button" onClick={addSeed} style={{
-            width: '100%', padding: 8, background: 'transparent',
+            width: '100%', padding: '12px 16px', background: 'transparent',
             border: `1px dashed ${C.border}`, borderRadius: 4,
             color: C.dim, fontSize: 11, cursor: 'pointer', fontFamily: 'inherit',
+            minHeight: '48px',
+            minWidth: '48px',
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}>
             + New Seed
           </button>
         </div>
 
         <div style={{ padding: 12 }}>
-          <div style={{ fontSize: 9, fontFamily: MONO, color: C.dim, letterSpacing: 1, marginBottom: 8, textTransform: 'uppercase' }}>
+          <div style={{ fontSize: 11, fontFamily: MONO, color: C.muted, letterSpacing: 1, marginBottom: 8, textTransform: 'uppercase', textShadow: `0 0 4px ${C.green}22` }}>
             Framework Library
           </div>
           {DEFAULT_FRAMEWORKS.map(fw => (
@@ -261,9 +266,9 @@ export function ForgeRoom() {
                 border: `1px solid ${C.border}`,
               }}
             >
-              <div style={{ fontSize: 11, fontWeight: 500, color: C.bright }}>{fw.title}</div>
+              <div style={{ fontSize: 12, fontWeight: 500, color: C.bright }}>{fw.title}</div>
               <span style={{
-                fontSize: 8, fontFamily: MONO, color: categoryColor(fw.category),
+                fontSize: 10, fontFamily: MONO, color: categoryColor(fw.category),
               }}>
                 {fw.category.toUpperCase()}
               </span>
@@ -295,7 +300,7 @@ export function ForgeRoom() {
             </button>
           ))}
           <div style={{ flex: 1 }} />
-          <div style={{ fontSize: 9, fontFamily: MONO, color: C.dim }}>
+          <div style={{ fontSize: 11, fontFamily: MONO, color: C.muted }}>
             {wc} words &middot; {readMin} min read
           </div>
         </div>
@@ -308,7 +313,7 @@ export function ForgeRoom() {
           placeholder="Post title..."
           style={{
             width: '100%', padding: '14px 20px 6px', background: 'transparent',
-            border: 'none', outline: 'none', color: '#f0f0ff',
+            border: 'none', outline: '2px solid transparent', color: C.bright,
             fontSize: 22, fontWeight: 600, fontFamily: 'inherit',
           }}
         />
@@ -319,7 +324,7 @@ export function ForgeRoom() {
           placeholder="Subtitle — the hook..."
           style={{
             width: '100%', padding: '0 20px 10px', background: 'transparent',
-            border: 'none', outline: 'none', color: C.muted,
+            border: 'none', outline: '2px solid transparent', color: C.muted,
             fontSize: 14, fontWeight: 300, fontFamily: 'inherit',
           }}
         />
@@ -331,7 +336,7 @@ export function ForgeRoom() {
           placeholder="Start writing..."
           style={{
             flex: 1, padding: '10px 20px 24px', background: 'transparent',
-            border: 'none', outline: 'none', color: C.text,
+            border: 'none', outline: '2px solid transparent', color: C.text,
             fontSize: 13, lineHeight: 1.8, resize: 'none', overflow: 'auto',
             fontFamily: 'inherit',
           }}
@@ -339,15 +344,16 @@ export function ForgeRoom() {
       </div>
 
       {/* Right panel */}
-      <div style={{ borderLeft: `1px solid ${C.border}`, overflowY: 'auto', background: C.voidUp }}>
+      <div style={{ borderLeft: `1px solid ${C.border}`, overflowY: 'auto', overflowX: 'hidden', background: C.voidUp, minHeight: 0 }}>
         {/* Post settings */}
         <div style={{ padding: 12, borderBottom: `1px solid ${C.border}` }}>
-          <div style={{ fontSize: 9, fontFamily: MONO, color: C.dim, letterSpacing: 1, marginBottom: 8, textTransform: 'uppercase' }}>
+          <div style={{ fontSize: 11, fontFamily: MONO, color: C.muted, letterSpacing: 1, marginBottom: 8, textTransform: 'uppercase', textShadow: `0 0 4px ${C.green}22` }}>
             Post Settings
           </div>
           <select
             value={active?.status || 'seed'}
             onChange={e => updateActive('status', e.target.value)}
+            aria-label="Post status"
             style={{
               width: '100%', padding: 6, marginBottom: 6, background: C.surface,
               border: `1px solid ${C.border}`, borderRadius: 3, color: C.muted, fontSize: 11,
@@ -362,6 +368,7 @@ export function ForgeRoom() {
           <select
             value={active?.category || 'framework'}
             onChange={e => updateActive('category', e.target.value)}
+            aria-label="Post category"
             style={{
               width: '100%', padding: 6, background: C.surface,
               border: `1px solid ${C.border}`, borderRadius: 3, color: C.muted, fontSize: 11,
@@ -377,7 +384,7 @@ export function ForgeRoom() {
 
         {/* Checklist */}
         <div style={{ padding: 12, borderBottom: `1px solid ${C.border}` }}>
-          <div style={{ fontSize: 9, fontFamily: MONO, color: C.dim, letterSpacing: 1, marginBottom: 8, textTransform: 'uppercase' }}>
+          <div style={{ fontSize: 11, fontFamily: MONO, color: C.muted, letterSpacing: 1, marginBottom: 8, textTransform: 'uppercase', textShadow: `0 0 4px ${C.green}22` }}>
             Publishing Checklist
           </div>
           {CHECKLIST.map((item, i) => (
@@ -400,7 +407,7 @@ export function ForgeRoom() {
 
         {/* Cross-links */}
         <div style={{ padding: 12, borderBottom: `1px solid ${C.border}` }}>
-          <div style={{ fontSize: 9, fontFamily: MONO, color: C.dim, letterSpacing: 1, marginBottom: 8, textTransform: 'uppercase' }}>
+          <div style={{ fontSize: 11, fontFamily: MONO, color: C.muted, letterSpacing: 1, marginBottom: 8, textTransform: 'uppercase', textShadow: `0 0 4px ${C.green}22` }}>
             Cross-Link Ecosystem
           </div>
           {[
@@ -414,10 +421,12 @@ export function ForgeRoom() {
               target="_blank"
               rel="noopener noreferrer"
               style={{
-                display: 'block', padding: '4px 8px', margin: '3px 0',
-                border: `1px solid ${C.border}`, borderRadius: 3,
-                fontSize: 10, color: C.cyan, fontFamily: MONO,
+                display: 'block', padding: '8px 12px', margin: '4px 0',
+                border: `1px solid ${C.border}`, borderRadius: 6,
+                fontSize: 12, color: C.cyan, fontFamily: MONO,
                 textDecoration: 'none',
+                textShadow: `0 0 4px ${C.cyan}33`,
+                minHeight: '40px',
               }}
             >
               {link.label}
@@ -427,27 +436,30 @@ export function ForgeRoom() {
 
         {/* Actions */}
         <div style={{ padding: 12 }}>
-          <div style={{ fontSize: 9, fontFamily: MONO, color: C.dim, letterSpacing: 1, marginBottom: 8, textTransform: 'uppercase' }}>
+          <div style={{ fontSize: 11, fontFamily: MONO, color: C.muted, letterSpacing: 1, marginBottom: 8, textTransform: 'uppercase', textShadow: `0 0 4px ${C.green}22` }}>
             Actions
           </div>
           <button type="button" onClick={copyMarkdown} style={{
-            width: '100%', padding: 8, marginBottom: 6, borderRadius: 4,
+            width: '100%', padding: 12, marginBottom: 6, borderRadius: 6,
             background: C.surface, border: `1px solid ${C.border}`,
-            color: C.muted, fontSize: 11, cursor: 'pointer', fontFamily: 'inherit',
+            color: C.green, fontSize: 13, cursor: 'pointer', fontFamily: 'inherit',
+            minHeight: '48px', textShadow: `0 0 4px ${C.green}33`,
           }}>
             Copy as Markdown
           </button>
           <button type="button" onClick={exportAll} style={{
-            width: '100%', padding: 8, marginBottom: 6, borderRadius: 4,
+            width: '100%', padding: 12, marginBottom: 6, borderRadius: 6,
             background: C.surface, border: `1px solid ${C.border}`,
-            color: C.muted, fontSize: 11, cursor: 'pointer', fontFamily: 'inherit',
+            color: C.green, fontSize: 13, cursor: 'pointer', fontFamily: 'inherit',
+            minHeight: '48px', textShadow: `0 0 4px ${C.green}33`,
           }}>
             Export All Seeds (JSON)
           </button>
           <button type="button" onClick={deleteSeed} style={{
-            width: '100%', padding: 8, borderRadius: 4,
+            width: '100%', padding: 12, borderRadius: 6,
             background: 'transparent', border: `1px solid #4a1a1a`,
-            color: '#cc4444', fontSize: 11, cursor: 'pointer', fontFamily: 'inherit',
+            color: '#cc4444', fontSize: 13, cursor: 'pointer', fontFamily: 'inherit',
+            minHeight: '48px',
           }}>
             Delete Current Seed
           </button>

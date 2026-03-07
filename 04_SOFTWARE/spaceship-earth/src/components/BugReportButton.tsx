@@ -73,7 +73,8 @@ export function BugReportButton({ room, sessionId }: Props) {
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        aria-label="Report a bug"
+        aria-label={open ? "Close bug report" : "Report a bug"}
+        aria-expanded={open}
         className="glass-btn"
         style={{
           position: 'fixed',
@@ -85,11 +86,11 @@ export function BugReportButton({ room, sessionId }: Props) {
           borderRadius: '50%',
           border: open
             ? '1px solid rgba(255,68,102,0.5)'
-            : '1px solid rgba(255,255,255,0.08)',
+            : '1px solid rgba(255,255,255,0.06)',
           background: open
             ? 'rgba(255,68,102,0.12)'
-            : 'rgba(255,255,255,0.04)',
-          color: open ? '#ff4466' : 'rgba(255,255,255,0.3)',
+            : 'rgba(255,255,255,0.03)',
+          color: open ? '#ff4466' : 'rgba(0,255,255,0.3)',
           fontSize: 16,
           display: 'flex',
           alignItems: 'center',
@@ -122,7 +123,7 @@ export function BugReportButton({ room, sessionId }: Props) {
           }}>
             BUG REPORT
           </div>
-          <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.2)', marginBottom: 8 }}>
+          <div style={{ fontSize: 9, color: 'rgba(0,255,255,0.2)', marginBottom: 8 }}>
             room: {room}
           </div>
 
@@ -133,11 +134,12 @@ export function BugReportButton({ room, sessionId }: Props) {
             onKeyDown={handleKey}
             placeholder="What happened?"
             rows={4}
+            aria-label="Bug description"
             className="glass-input"
           />
 
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 }}>
-            <span style={{ fontSize: 8, color: 'rgba(255,255,255,0.15)' }}>
+            <span style={{ fontSize: 8, color: 'rgba(0,255,255,0.15)' }}>
               {flash === 'ok' ? 'sent!' : flash === 'err' ? 'failed' : '\u2318+Enter to send'}
             </span>
             <button
@@ -147,7 +149,7 @@ export function BugReportButton({ room, sessionId }: Props) {
               className="glass-btn"
               style={{
                 padding: '5px 12px',
-                color: flash === 'ok' ? '#4ecdc4' : flash === 'err' ? '#ff4466' : '#4ecdc4',
+                color: flash === 'ok' ? '#00FFFF' : flash === 'err' ? '#ff4466' : '#00FFFF',
                 fontSize: 10,
                 letterSpacing: 1,
                 opacity: sending || !text.trim() ? 0.4 : 1,

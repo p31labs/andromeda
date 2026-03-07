@@ -424,10 +424,10 @@ export function getGlowTexture(): THREE.CanvasTexture {
   c.width = sz; c.height = sz;
   const ctx = c.getContext('2d')!;
   const grad = ctx.createRadialGradient(sz / 2, sz / 2, 0, sz / 2, sz / 2, sz / 2);
-  grad.addColorStop(0, 'rgba(255,255,255,1)');
-  grad.addColorStop(0.2, 'rgba(255,255,255,0.6)');
-  grad.addColorStop(0.5, 'rgba(255,255,255,0.15)');
-  grad.addColorStop(1, 'rgba(255,255,255,0)');
+  grad.addColorStop(0, 'rgba(0,255,255,1)');
+  grad.addColorStop(0.2, 'rgba(0,255,255,0.3)');
+  grad.addColorStop(0.5, 'rgba(0,255,255,0.08)');
+  grad.addColorStop(1, 'rgba(0,255,255,0)');
   ctx.fillStyle = grad;
   ctx.fillRect(0, 0, sz, sz);
   _glowTex = new THREE.CanvasTexture(c);

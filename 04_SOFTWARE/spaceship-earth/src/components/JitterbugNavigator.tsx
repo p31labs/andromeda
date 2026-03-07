@@ -58,7 +58,7 @@ export function JitterbugNavigator({ vertices, spoonLevel, scale = 1.5 }: Props)
         const geometry = new THREE.BufferGeometry().setFromPoints(points);
         return (
           <lineSegments key={`edge-${i}`} geometry={geometry}>
-            <lineBasicMaterial color="#334155" opacity={0.5} transparent />
+            <lineBasicMaterial color="#1a4a1a" opacity={0.5} transparent />
           </lineSegments>
         );
       })}

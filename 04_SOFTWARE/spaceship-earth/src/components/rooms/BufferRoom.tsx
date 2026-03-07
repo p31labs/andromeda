@@ -4,21 +4,22 @@
 // + BLUF + PA detection + breathing + calibration + telemetry
 import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import { useNode } from '../../contexts/NodeContext';
+import { useSovereignStore } from '../../sovereign/useSovereignStore';
 
 // ── Design Tokens ────────────────────────────────────────────
 const FONT = "'Oxanium', sans-serif";
 const MONO = "'Space Mono', monospace";
 
 const C = {
-  bg: { deep: '#050510', base: '#0A0A1F', raised: '#111122', border: 'rgba(255,255,255,0.06)' },
-  text: { primary: '#E0E0EE', secondary: 'rgba(255,255,255,0.54)', dim: 'rgba(255,255,255,0.28)' },
-  amber: '#FFB800', coral: '#F08080', orange: '#FF8C42', mint: '#00FF88',
-  lavender: '#7A27FF', cyan: '#00D4FF', red: '#dc2626',
-  axis: { A: '#ff6b6b', B: '#4ecdc4', C: '#ffe66d', D: '#a29bfe' } as Record<string, string>,
-  state: { green: '#00E878', yellow: '#F0B547', orange: '#FF8C42', red: '#FF4444' },
+  bg: { deep: '#000000', base: '#000000', raised: '#0a0a0a', border: 'rgba(255,255,255,0.08)' },
+  text: { primary: '#ffffff', secondary: 'rgba(255,255,255,0.6)', dim: 'rgba(255,255,255,0.4)' },
+  amber: '#FFD700', coral: '#FF6B6B', orange: '#FF8C42', mint: '#00FFFF',
+  lavender: '#BF5FFF', cyan: '#00FFFF', red: '#FF4444',
+  axis: { A: '#ff6b6b', B: '#00FFFF', C: '#FFD700', D: '#BF5FFF' } as Record<string, string>,
+  state: { green: '#00FFFF', yellow: '#FFD700', orange: '#FF8C42', red: '#FF4444' },
 } as const;
 
-const DIM = 'rgba(122,39,255,0.4)';
+const DIM = 'rgba(255,255,255,0.35)';
 
 // ── Samson Constants ─────────────────────────────────────────
 const TARGET_H = Math.PI / 9; // 0.34906 — The Attractor
@@ -73,10 +74,10 @@ interface VoltageScore {
 }
 
 const GATES = {
-  GREEN: { label: 'CLEAR', color: C.mint, bg: '#052e16' },
-  YELLOW: { label: 'CAUTION', color: C.amber, bg: '#422006' },
-  RED: { label: 'HIGH VOLTAGE', color: C.coral, bg: '#450a0a' },
-  CRITICAL: { label: 'CRITICAL', color: C.red, bg: '#4c0519' },
+  GREEN: { label: 'CLEAR', color: C.mint, bg: '#001a00' },
+  YELLOW: { label: 'CAUTION', color: C.amber, bg: '#1a1000' },
+  RED: { label: 'HIGH VOLTAGE', color: C.coral, bg: '#1a0000' },
+  CRITICAL: { label: 'CRITICAL', color: C.red, bg: '#1a000a' },
 };
 
 function scoreAxis(text: string, high: RegExp[], med: RegExp[], low: RegExp[], extra?: (text: string, s: number) => number): number {
@@ -350,14 +351,19 @@ const btnBase = (active: boolean, color: string): React.CSSProperties => ({
   background: active ? `${color}11` : 'transparent', fontFamily: FONT,
   border: `1px solid ${active ? `${color}66` : C.bg.border}`,
   color: active ? color : DIM, cursor: active ? 'pointer' : 'default',
-  borderRadius: 10, fontSize: 12, letterSpacing: '0.04em', fontWeight: 600,
+  borderRadius: 10, fontSize: 13, letterSpacing: '0.04em', fontWeight: 600,
   boxShadow: active ? `0 0 12px ${color}22` : 'none',
   transition: 'all 0.2s ease',
+  minHeight: 48,
+  textShadow: active ? `0 0 6px ${color}44` : 'none',
 });
 
 const pillBtn = (active: boolean, color: string): React.CSSProperties => ({
   ...btnBase(active, color),
-  padding: '3px 10px', fontSize: 10, borderRadius: 20,
+  padding: '8px 14px', fontSize: 12, borderRadius: 20,
+  minHeight: 44, minWidth: 44,
+  display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+  textShadow: active ? `0 0 6px ${color}44` : 'none',
 });
 
 // ── Sub-Components ───────────────────────────────────────────
@@ -367,8 +373,11 @@ function BufferCard({ title, accent, children }: {
 }) {
   return (
     <div style={{
-      background: C.bg.base, border: `1px solid ${accent}22`, borderRadius: 16,
+      background: `linear-gradient(160deg, ${accent}05 0%, ${C.bg.base} 30%)`,
+      border: `1px solid ${accent}22`, borderRadius: 16,
       display: 'flex', flexDirection: 'column', minWidth: 0, minHeight: 0,
+      boxShadow: `0 0 20px ${accent}08, inset 0 1px 0 ${accent}11`,
+      transition: 'box-shadow 0.3s ease, border-color 0.3s ease',
     }}>
       <div style={{
         padding: '10px 16px', borderBottom: `1px solid ${accent}18`,
@@ -376,11 +385,13 @@ function BufferCard({ title, accent, children }: {
       }}>
         <span style={{
           width: 8, height: 8, borderRadius: '50%', background: accent,
-          boxShadow: `0 0 8px ${accent}`,
+          boxShadow: `0 0 8px ${accent}, 0 0 16px ${accent}66`,
+          animation: 'lockPulse 3s ease-in-out infinite',
         }} />
         <span style={{
           color: accent, fontSize: 13, fontWeight: 600, fontFamily: FONT,
-          letterSpacing: '0.04em', textShadow: `0 0 12px ${accent}66`,
+          letterSpacing: '0.06em', textShadow: `0 0 12px ${accent}66`,
+          textTransform: 'uppercase',
         }}>
           {title}
         </span>
@@ -394,21 +405,96 @@ function BufferCard({ title, accent, children }: {
 
 function SpoonGauge({ spoons, max }: { spoons: number; max: number }) {
   const pct = max > 0 ? (spoons / max) * 100 : 0;
-  const color = pct >= 80 ? C.state.green : pct >= 50 ? C.state.yellow : pct >= 25 ? C.state.orange : C.state.red;
+  const color = pct >= 80 ? C.mint : pct >= 50 ? C.state.yellow : pct >= 25 ? C.state.orange : C.state.red;
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
       <div style={{
-        width: 64, height: 6, background: 'rgba(255,255,255,0.06)',
-        borderRadius: 3, overflow: 'hidden',
+        width: 80, height: 6, background: 'rgba(255,255,255,0.06)',
+        borderRadius: 3, overflow: 'hidden', position: 'relative',
       }}>
         <div style={{
-          width: `${pct}%`, height: '100%', background: color,
+          width: `${pct}%`, height: '100%', background: `linear-gradient(90deg, ${color}88, ${color})`,
           borderRadius: 3, transition: 'width 0.5s ease, background 0.3s ease',
+          boxShadow: `0 0 6px ${color}66, 0 0 12px ${color}33`,
         }} />
       </div>
-      <span style={{ fontSize: 11, color, fontFamily: MONO, fontWeight: 600 }}>
+      <span style={{ fontSize: 11, color, fontFamily: MONO, fontWeight: 700, textShadow: `0 0 6px ${color}44` }}>
         {spoons.toFixed(1)}/{max}
       </span>
+    </div>
+  );
+}
+
+function SomaticWaveform({ waveform, hr, hrv, status }: {
+  waveform: number[]; hr: number; hrv: number; status: string;
+}) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas || waveform.length < 2) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const w = canvas.width;
+    const h = canvas.height;
+    ctx.clearRect(0, 0, w, h);
+
+    // Background
+    ctx.fillStyle = 'rgba(0,0,0,0.4)';
+    ctx.fillRect(0, 0, w, h);
+
+    // Grid lines
+    ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+    ctx.lineWidth = 1;
+    for (let y = h * 0.25; y < h; y += h * 0.25) {
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(w, y);
+      ctx.stroke();
+    }
+
+    // Determine range from data
+    const min = Math.min(...waveform) - 5;
+    const max = Math.max(...waveform) + 5;
+    const range = max - min || 1;
+
+    // Waveform line
+    const lineColor = status === 'stress' ? '#FF4444'
+      : status === 'calibrating' ? '#FFD700'
+      : '#00FFFF';
+
+    ctx.strokeStyle = lineColor;
+    ctx.lineWidth = 2;
+    ctx.shadowColor = lineColor;
+    ctx.shadowBlur = 6;
+    ctx.beginPath();
+    for (let i = 0; i < waveform.length; i++) {
+      const x = (i / (waveform.length - 1)) * w;
+      const y = h - ((waveform[i] - min) / range) * (h * 0.8) - h * 0.1;
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+  }, [waveform, status]);
+
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+      <canvas
+        ref={canvasRef}
+        width={200}
+        height={40}
+        style={{ width: 200, height: 40, borderRadius: 4, border: '1px solid rgba(0,255,255,0.12)' }}
+      />
+      <div style={{ fontFamily: MONO, fontSize: 10, lineHeight: 1.4 }}>
+        <div style={{ color: status === 'stress' ? '#FF4444' : '#00FFFF', fontWeight: 700, textShadow: '0 0 8px rgba(0,255,255,0.4)' }}>
+          HR {hr > 0 ? Math.round(hr) : '--'}
+        </div>
+        <div style={{ color: 'rgba(0,255,255,0.4)' }}>
+          HRV {hrv > 0 ? Math.round(hrv) : '--'}
+        </div>
+      </div>
     </div>
   );
 }
@@ -424,7 +510,7 @@ function MultiSelect({ options, selected, onChange, accent }: {
       {options.map(opt => (
         <button type="button" key={opt} onClick={() => toggle(opt)} style={{
           ...pillBtn(selected.includes(opt), accent),
-          fontSize: 9, padding: '2px 8px',
+          fontSize: 11, padding: '6px 12px',
         }}>
           {opt}
         </button>
@@ -438,6 +524,14 @@ function MultiSelect({ options, selected, onChange, accent }: {
 export function BufferRoom() {
   const { spoons, tier, updateState } = useNode();
   const maxSpoons = 12;
+
+  // M18: Somatic Tether — live biometric data from store
+  const somaticStatus = useSovereignStore((s) => s.somaticTetherStatus);
+  const somaticHr = useSovereignStore((s) => s.somaticHr);
+  const somaticHrv = useSovereignStore((s) => s.somaticHrv);
+  const somaticWaveform = useSovereignStore((s) => s.somaticWaveform);
+  const fawnGuardActive = useSovereignStore((s) => s.fawnGuardActive);
+  const tetherConnected = somaticStatus !== 'disconnected';
 
   // ── Panels ──
   const [showSamson, setShowSamson] = useState(false);
@@ -618,67 +712,158 @@ export function BufferRoom() {
   }, []);
 
   return (
-    <div style={{
-      display: 'flex', flexDirection: 'column',
-      height: '100%', color: C.text.primary, fontFamily: FONT,
-      gap: 0, overflow: 'hidden',
-      background: C.bg.deep,
-    }}>
-      {/* ══════════════ BREATHING OVERLAY ══════════════ */}
-      {breathing && (
+    <div
+      className={fawnGuardActive ? 'thermal-throttle-pulse' : undefined}
+      style={{
+        display: 'flex', flexDirection: 'column',
+        height: '100%', color: C.text.primary, fontFamily: FONT,
+        gap: 0, overflow: 'hidden',
+        background: C.bg.deep,
+        position: 'relative',
+      }}
+    >
+      {/* ══════════════ THERMAL THROTTLE OVERLAY ══════════════ */}
+      {fawnGuardActive && (
         <div style={{
-          position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.94)',
-          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-          zIndex: 200, gap: 16,
+          position: 'absolute', inset: 0, zIndex: 150,
+          background: 'rgba(0,0,0,0.88)',
+          display: 'flex', flexDirection: 'column',
+          alignItems: 'center', justifyContent: 'center',
+          fontFamily: MONO, textAlign: 'center', padding: 24,
         }}>
           <div style={{
-            width: 60 + breathProgress * 120, height: 60 + breathProgress * 120,
-            borderRadius: '50%',
-            background: `radial-gradient(circle, rgba(0,255,136,${breathProgress * 0.12}), transparent)`,
-            border: `1.5px solid rgba(0,255,136,${0.15 + breathProgress * 0.25})`,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            transition: 'width 1s ease, height 1s ease',
+            color: '#FFAA00', fontSize: 16, fontWeight: 700,
+            letterSpacing: '0.1em', lineHeight: 1.6,
+            textShadow: '0 0 20px rgba(255,170,0,0.6)',
           }}>
-            <span style={{ fontSize: 12, color: C.mint, letterSpacing: 3, fontWeight: 300, fontFamily: MONO }}>{breathLabel}</span>
+            SOMATIC OVERLOAD DETECTED
           </div>
-          <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.2)', fontFamily: MONO }}>{breathCycles + 1} / {MAX_CYCLES}</div>
-          <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.15)', fontFamily: MONO }}>
-            +0.5 energy per cycle
+          <div style={{
+            color: '#FFAA00', fontSize: 12, marginTop: 12, opacity: 0.7,
+            letterSpacing: '0.05em',
+          }}>
+            COMMUNICATION PROTOCOLS LOCKED FOR 180s
           </div>
-          <button type="button" onClick={() => { setBreathing(false); setBreathCycles(0); setBreathSec(0); }} style={{
-            background: 'transparent', border: '1px solid rgba(255,255,255,0.08)',
-            color: 'rgba(255,255,255,0.2)', borderRadius: 3, padding: '5px 14px',
-            fontSize: 9, cursor: 'pointer', fontFamily: FONT,
-          }}>Skip</button>
+          <div style={{
+            marginTop: 24, width: 60, height: 60, borderRadius: '50%',
+            border: '3px solid #FFAA00',
+            boxShadow: '0 0 30px rgba(255,170,0,0.4), inset 0 0 20px rgba(255,170,0,0.15)',
+            animation: 'thermalPulse 1.5s ease-in-out infinite',
+          }} />
         </div>
       )}
+
+      {/* ══════════════ BREATHING OVERLAY — Minimal ══════════════ */}
+      {breathing && (() => {
+        const phaseColor = breathLabel === 'BREATHE IN' ? C.cyan
+          : breathLabel === 'HOLD' ? C.lavender : C.amber;
+        const scale = 0.7 + breathProgress * 0.6;
+        const countdown = breathSec < BREATHE_IN ? Math.ceil(BREATHE_IN - breathSec)
+          : breathSec < BREATHE_IN + BREATHE_HOLD ? Math.ceil(BREATHE_IN + BREATHE_HOLD - breathSec)
+          : Math.ceil(BREATHE_TOTAL - breathSec);
+        return (
+        <div style={{
+          position: 'absolute', inset: 0, background: '#000',
+          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+          zIndex: 200,
+        }}>
+          {/* Single breathing circle */}
+          <div style={{
+            width: 200, height: 200,
+            borderRadius: '50%',
+            border: `2px solid ${phaseColor}`,
+            transform: `scale(${scale})`,
+            transition: 'transform 1s ease, border-color 0.8s ease',
+            display: 'flex', flexDirection: 'column',
+            alignItems: 'center', justifyContent: 'center', gap: 4,
+          }}>
+            <span style={{
+              fontSize: 16, color: phaseColor, letterSpacing: 6, fontWeight: 200, fontFamily: FONT,
+              transition: 'color 0.8s ease',
+            }}>
+              {breathLabel}
+            </span>
+            <span style={{
+              fontSize: 24, color: phaseColor, fontFamily: MONO, fontWeight: 300,
+              transition: 'color 0.8s ease',
+            }}>
+              {countdown}
+            </span>
+          </div>
+
+          {/* Cycle + progress */}
+          <div style={{
+            marginTop: 40, display: 'flex', flexDirection: 'column',
+            alignItems: 'center', gap: 10,
+          }}>
+            <span style={{ fontSize: 12, color: C.text.secondary, fontFamily: MONO, letterSpacing: 3 }}>
+              CYCLE {breathCycles + 1} OF {MAX_CYCLES}
+            </span>
+            <div style={{ display: 'flex', gap: 6 }}>
+              {Array.from({ length: MAX_CYCLES }, (_, i) => (
+                <div key={i} style={{
+                  width: 40, height: 3, borderRadius: 2,
+                  background: i <= breathCycles ? phaseColor : 'rgba(255,255,255,0.1)',
+                }} />
+              ))}
+            </div>
+            <span style={{ fontSize: 11, color: C.text.dim, fontFamily: MONO }}>
+              +0.5 spoons per cycle
+            </span>
+          </div>
+
+          <button type="button" onClick={() => { setBreathing(false); setBreathCycles(0); setBreathSec(0); }} style={{
+            background: 'transparent', border: `1px solid rgba(255,255,255,0.15)`,
+            color: C.text.secondary, borderRadius: 8, padding: '12px 24px',
+            fontSize: 12, cursor: 'pointer', fontFamily: MONO, minHeight: 48,
+            letterSpacing: 2, marginTop: 24,
+          }}>
+            SKIP
+          </button>
+        </div>
+        );
+      })()}
 
       {/* ══════════════ STATUS BAR ══════════════ */}
       <div style={{
         display: 'flex', alignItems: 'center', gap: 12,
-        padding: '8px 16px', borderBottom: `1px solid ${C.amber}18`,
-        fontSize: 12, flexShrink: 0, background: C.bg.base,
+        padding: '10px 16px',
+        borderBottom: `1px solid ${C.amber}22`,
+        fontSize: 12, flexShrink: 0,
+        background: `linear-gradient(90deg, ${C.amber}06 0%, transparent 40%, transparent 60%, ${C.lavender}04 100%)`,
         flexWrap: 'wrap',
+        position: 'relative',
       }}>
         <span style={{
-          color: C.amber, fontWeight: 700, letterSpacing: '0.08em', fontSize: 14,
-          textShadow: `0 0 12px ${C.amber}66`,
+          color: C.amber, fontWeight: 700, letterSpacing: '0.12em', fontSize: 14,
+          textShadow: `0 0 16px ${C.amber}88, 0 0 30px ${C.amber}33`,
+          fontFamily: FONT,
         }}>
           THE BUFFER
         </span>
-        <SpoonGauge spoons={spoons} max={maxSpoons} />
+        {tetherConnected ? (
+          <SomaticWaveform waveform={somaticWaveform} hr={somaticHr} hrv={somaticHrv} status={somaticStatus} />
+        ) : (
+          <SpoonGauge spoons={spoons} max={maxSpoons} />
+        )}
         <span style={{
-          color: tierColor, fontWeight: 600, fontSize: 10,
-          padding: '2px 8px', borderRadius: 6,
+          color: tierColor, fontWeight: 600, fontSize: 12,
+          padding: '6px 12px', borderRadius: 6,
           border: `1px solid ${tierColor}44`, background: `${tierColor}11`,
+          textShadow: `0 0 6px ${tierColor}44`,
         }}>{tier}</span>
         <span style={{ flex: 1 }} />
 
         {/* Samson badge */}
-        <button type="button" onClick={() => setShowSamson(!showSamson)} style={{
-          ...pillBtn(true, Math.abs(samson.error) > 0.1 ? C.amber : C.mint),
-          fontFamily: MONO, fontWeight: 700,
-        }}>
+          <button type="button" onClick={() => setShowSamson(!showSamson)} style={{
+            ...pillBtn(true, Math.abs(samson.error) > 0.1 ? C.amber : C.mint),
+            fontFamily: MONO, fontWeight: 700,
+            minHeight: '48px',
+            minWidth: '48px',
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
           H:{samson.H.toFixed(2)} T:{samson.tension.toFixed(1)}
         </button>
 
@@ -695,7 +880,7 @@ export function BufferRoom() {
         {/* Breathing */}
         {cal.breathingEnabled && (
           <button type="button" onClick={() => setBreathing(true)} style={{
-            ...pillBtn(true, C.mint), padding: '4px 12px',
+            ...pillBtn(true, C.mint),
           }}>4-2-6</button>
         )}
       </div>
@@ -703,17 +888,17 @@ export function BufferRoom() {
       {/* ══════════════ SAMSON V2 PANEL ══════════════ */}
       {showSamson && (
         <div style={{
-          padding: '12px 16px', background: `rgba(255,255,255,0.015)`,
+          padding: '12px 16px', background: `rgba(255,215,0,0.015)`,
           borderBottom: `1px solid ${C.bg.border}`, flexShrink: 0,
         }}>
-          <div style={{ fontSize: 8, letterSpacing: 2, color: C.text.dim, marginBottom: 8, fontWeight: 600, fontFamily: MONO }}>
+          <div style={{ fontSize: 11, letterSpacing: 2, color: C.text.dim, marginBottom: 8, fontWeight: 600, fontFamily: MONO, textShadow: '0 0 4px rgba(255,215,0,0.15)' }}>
             SAMSON V2 PID CONTROLLER — Shannon Entropy Regulator
           </div>
-          <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', fontSize: 10 }}>
+          <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', fontSize: 12 }}>
             <div>
               <span style={{ color: C.text.dim }}>H: </span>
               <span style={{ color: Math.abs(samson.error) < 0.05 ? C.mint : C.amber, fontWeight: 600 }}>{samson.H.toFixed(4)}</span>
-              <span style={{ color: C.text.dim, marginLeft: 4, fontSize: 9 }}>target {TARGET_H.toFixed(4)}</span>
+              <span style={{ color: C.text.dim, marginLeft: 4, fontSize: 11 }}>target {TARGET_H.toFixed(4)}</span>
             </div>
             <div>
               <span style={{ color: C.text.dim }}>Error: </span>
@@ -756,17 +941,17 @@ export function BufferRoom() {
           </div>
 
           {samson.drift === 'looping' && (
-            <div style={{ marginTop: 8, fontSize: 9, color: C.amber, padding: '4px 8px', borderRadius: 3, background: `${C.amber}06`, border: `1px solid ${C.amber}12` }}>
+            <div style={{ marginTop: 8, fontSize: 12, color: C.amber, padding: '8px 12px', borderRadius: 6, background: `${C.amber}06`, border: `1px solid ${C.amber}12`, textShadow: `0 0 6px ${C.amber}33` }}>
               Loop detected. Consider shifting to a different task or taking a break.
             </div>
           )}
           {samson.drift === 'stagnant' && (
-            <div style={{ marginTop: 8, fontSize: 9, color: C.cyan, padding: '4px 8px', borderRadius: 3, background: `${C.cyan}06`, border: `1px solid ${C.cyan}12` }}>
+            <div style={{ marginTop: 8, fontSize: 12, color: C.cyan, padding: '8px 12px', borderRadius: 6, background: `${C.cyan}06`, border: `1px solid ${C.cyan}12`, textShadow: `0 0 6px ${C.cyan}33` }}>
               Stagnation detected. System underloaded. Consider engaging a held message.
             </div>
           )}
           {samson.burnout === 'critical' && (
-            <div style={{ marginTop: 8, fontSize: 9, color: C.coral, padding: '4px 8px', borderRadius: 3, background: `${C.coral}06`, border: `1px solid ${C.coral}12` }}>
+            <div style={{ marginTop: 8, fontSize: 12, color: C.coral, padding: '8px 12px', borderRadius: 6, background: `${C.coral}06`, border: `1px solid ${C.coral}12`, textShadow: `0 0 6px ${C.coral}33` }}>
               Burnout velocity critical. Defer non-essential messages. Breathe.
             </div>
           )}
@@ -776,75 +961,75 @@ export function BufferRoom() {
       {/* ══════════════ CALIBRATION PANEL ══════════════ */}
       {showCalibration && (
         <div style={{
-          padding: '12px 16px', background: `rgba(255,255,255,0.015)`,
+          padding: '12px 16px', background: `rgba(255,215,0,0.015)`,
           borderBottom: `1px solid ${C.bg.border}`, flexShrink: 0,
           maxHeight: 320, overflow: 'auto',
         }}>
-          <div style={{ fontSize: 8, letterSpacing: 2, color: C.text.dim, marginBottom: 10, fontWeight: 600, fontFamily: MONO }}>
+          <div style={{ fontSize: 11, letterSpacing: 2, color: C.text.dim, marginBottom: 10, fontWeight: 600, fontFamily: MONO, textShadow: '0 0 4px rgba(255,215,0,0.15)' }}>
             CALIBRATION — Answer what feels right. Skip what doesn't.
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, fontSize: 11 }}>
             {/* Identity */}
             <div>
-              <div style={{ color: C.axis.A, fontWeight: 600, fontSize: 9, letterSpacing: 1, marginBottom: 4, fontFamily: MONO }}>IDENTITY</div>
+              <div style={{ color: C.axis.A, fontWeight: 600, fontSize: 11, letterSpacing: 1, marginBottom: 4, fontFamily: MONO, textShadow: `0 0 6px ${C.axis.A}44` }}>IDENTITY</div>
               <input type="text" value={cal.displayName} onChange={e => updateCal('displayName', e.target.value)}
-                placeholder="Name or handle" style={{ ...inputStyle, fontSize: 11, padding: '6px 8px', marginBottom: 4 }} />
+                placeholder="Name or handle" style={{ ...inputStyle, fontSize: 13, padding: '8px 10px', marginBottom: 4 }} />
               <select value={cal.role} onChange={e => updateCal('role', e.target.value)}
-                title="Primary role" style={{ ...inputStyle, fontSize: 11, padding: '6px 8px', marginBottom: 4 }}>
+                title="Primary role" style={{ ...inputStyle, fontSize: 13, padding: '8px 10px', marginBottom: 4 }}>
                 <option value="">Role...</option>
                 {ROLE_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
               </select>
-              <div style={{ fontSize: 9, color: C.text.dim, marginBottom: 2 }}>Neurotype</div>
+              <div style={{ fontSize: 11, color: C.text.dim, marginBottom: 2, textShadow: '0 0 4px rgba(255,255,255,0.08)' }}>Neurotype</div>
               <MultiSelect options={DIAGNOSIS_OPTIONS} selected={cal.diagnoses} onChange={v => updateCal('diagnoses', v)} accent={C.axis.A} />
             </div>
 
             {/* Energy & Health */}
             <div>
-              <div style={{ color: C.axis.B, fontWeight: 600, fontSize: 9, letterSpacing: 1, marginBottom: 4, fontFamily: MONO }}>ENERGY</div>
-              <label style={{ fontSize: 9, color: C.text.dim, marginBottom: 2, display: 'block' }}>Starting spoons: {cal.initialSpoons}
+              <div style={{ color: C.axis.B, fontWeight: 600, fontSize: 11, letterSpacing: 1, marginBottom: 4, fontFamily: MONO, textShadow: `0 0 6px ${C.axis.B}44` }}>ENERGY</div>
+              <label style={{ fontSize: 11, color: C.text.dim, marginBottom: 2, display: 'block', textShadow: '0 0 4px rgba(255,255,255,0.08)' }}>Starting spoons: {cal.initialSpoons}
               <input type="range" min={1} max={12} value={cal.initialSpoons}
                 onChange={e => updateCal('initialSpoons', Number(e.target.value))}
                 style={{ width: '100%', accentColor: C.axis.B, marginBottom: 4 }} />
               </label>
-              <label style={{ fontSize: 9, color: C.text.dim, marginBottom: 2, display: 'block' }}>Sleep quality: {cal.sleepQuality}/10
+              <label style={{ fontSize: 11, color: C.text.dim, marginBottom: 2, display: 'block', textShadow: '0 0 4px rgba(255,255,255,0.08)' }}>Sleep quality: {cal.sleepQuality}/10
               <input type="range" min={1} max={10} value={cal.sleepQuality}
                 onChange={e => updateCal('sleepQuality', Number(e.target.value))}
                 style={{ width: '100%', accentColor: C.axis.B, marginBottom: 4 }} />
               </label>
-              <div style={{ fontSize: 9, color: C.text.dim, marginBottom: 2 }}>Sensory</div>
+              <div style={{ fontSize: 11, color: C.text.dim, marginBottom: 2, textShadow: '0 0 4px rgba(255,255,255,0.08)' }}>Sensory</div>
               <MultiSelect options={SENSORY_OPTIONS} selected={cal.sensoryPrefs} onChange={v => updateCal('sensoryPrefs', v)} accent={C.axis.B} />
             </div>
 
             {/* Obligations */}
             <div>
-              <div style={{ color: C.axis.C, fontWeight: 600, fontSize: 9, letterSpacing: 1, marginBottom: 4, fontFamily: MONO }}>OBLIGATIONS</div>
-              <div style={{ fontSize: 9, color: C.text.dim, marginBottom: 2 }}>Active stressors</div>
+              <div style={{ color: C.axis.C, fontWeight: 600, fontSize: 11, letterSpacing: 1, marginBottom: 4, fontFamily: MONO, textShadow: `0 0 6px ${C.axis.C}44` }}>OBLIGATIONS</div>
+              <div style={{ fontSize: 11, color: C.text.dim, marginBottom: 2, textShadow: '0 0 4px rgba(255,255,255,0.08)' }}>Active stressors</div>
               <MultiSelect options={STRESSOR_OPTIONS} selected={cal.activeStressors} onChange={v => updateCal('activeStressors', v)} accent={C.axis.C} />
               <select value={cal.supportLevel} onChange={e => updateCal('supportLevel', e.target.value)}
-                title="Support level" style={{ ...inputStyle, fontSize: 11, padding: '6px 8px', marginTop: 4 }}>
+                title="Support level" style={{ ...inputStyle, fontSize: 13, padding: '8px 10px', marginTop: 4 }}>
                 {SUPPORT_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
               </select>
             </div>
 
             {/* Preferences */}
             <div>
-              <div style={{ color: C.axis.D, fontWeight: 600, fontSize: 9, letterSpacing: 1, marginBottom: 4, fontFamily: MONO }}>PREFERENCES</div>
-              <div style={{ fontSize: 9, color: C.text.dim, marginBottom: 2 }}>Comm style</div>
+              <div style={{ color: C.axis.D, fontWeight: 600, fontSize: 11, letterSpacing: 1, marginBottom: 4, fontFamily: MONO, textShadow: `0 0 6px ${C.axis.D}44` }}>PREFERENCES</div>
+              <div style={{ fontSize: 11, color: C.text.dim, marginBottom: 2, textShadow: '0 0 4px rgba(255,255,255,0.08)' }}>Comm style</div>
               <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 6 }}>
                 {COMM_OPTIONS.map(o => (
                   <button type="button" key={o} onClick={() => updateCal('commStyle', o)} style={{
-                    ...pillBtn(cal.commStyle === o, C.axis.D), fontSize: 9,
+                    ...pillBtn(cal.commStyle === o, C.axis.D),
                   }}>{o}</button>
                 ))}
               </div>
               <div style={{ display: 'flex', gap: 8 }}>
-                <label style={{ fontSize: 10, color: C.text.secondary, display: 'flex', alignItems: 'center', gap: 4 }}>
+                <label style={{ fontSize: 12, color: C.text.secondary, display: 'flex', alignItems: 'center', gap: 6, textShadow: '0 0 4px rgba(255,255,255,0.08)' }}>
                   <input type="checkbox" checked={cal.breathingEnabled}
                     onChange={e => updateCal('breathingEnabled', e.target.checked)} />
                   Breathing
                 </label>
-                <label style={{ fontSize: 10, color: C.text.secondary, display: 'flex', alignItems: 'center', gap: 4 }}>
+                <label style={{ fontSize: 12, color: C.text.secondary, display: 'flex', alignItems: 'center', gap: 6, textShadow: '0 0 4px rgba(255,255,255,0.08)' }}>
                   <input type="checkbox" checked={cal.deepLockEnabled}
                     onChange={e => updateCal('deepLockEnabled', e.target.checked)} />
                   Deep Lock
@@ -858,13 +1043,13 @@ export function BufferRoom() {
       {/* ══════════════ TELEMETRY DEBUG PANEL ══════════════ */}
       {showTelemetry && (
         <div style={{
-          padding: '10px 16px', background: 'rgba(0,212,255,0.02)',
+          padding: '10px 16px', background: 'rgba(255,215,0,0.02)',
           borderBottom: `1px solid ${C.cyan}18`, flexShrink: 0,
         }}>
-          <div style={{ fontSize: 8, letterSpacing: 2, color: C.cyan, marginBottom: 6, fontWeight: 600, fontFamily: MONO }}>
+          <div style={{ fontSize: 11, letterSpacing: 2, color: C.cyan, marginBottom: 6, fontWeight: 600, fontFamily: MONO, textShadow: `0 0 6px ${C.cyan}33` }}>
             IVM TELEMETRY (`)
           </div>
-          <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', fontSize: 10, fontFamily: MONO }}>
+          <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', fontSize: 12, fontFamily: MONO }}>
             <TRow label="Spoons" value={`${spoons.toFixed(1)} / ${maxSpoons}`} color={spoons / maxSpoons > 0.5 ? C.state.green : C.state.orange} />
             <TRow label="Tier" value={tier} color={tierColor} />
             <TRow label="Deep Lock" value={locked ? 'ACTIVE' : 'off'} color={locked ? C.state.red : C.text.dim} />
@@ -886,7 +1071,7 @@ export function BufferRoom() {
           {/* Voltage history sparkline */}
           {voltageHistory.length > 1 && (
             <div style={{ marginTop: 8 }}>
-              <div style={{ fontSize: 8, color: C.text.dim, marginBottom: 2 }}>VOLTAGE HISTORY</div>
+              <div style={{ fontSize: 11, color: C.text.dim, marginBottom: 2, textShadow: '0 0 4px rgba(255,215,0,0.15)' }}>VOLTAGE HISTORY</div>
               <div style={{ display: 'flex', alignItems: 'flex-end', gap: 1, height: 20 }}>
                 {voltageHistory.map((v, i) => {
                   const h = (v / 10) * 20;
@@ -904,7 +1089,7 @@ export function BufferRoom() {
         <div style={{
           flex: 1, display: 'flex', flexDirection: 'column',
           alignItems: 'center', justifyContent: 'center', gap: 20,
-          background: `rgba(240,128,128,0.02)`, padding: 24,
+          background: `rgba(255,68,68,0.02)`, padding: 24,
         }}>
           <div style={{
             width: 80, height: 80, borderRadius: '50%',
@@ -979,7 +1164,7 @@ export function BufferRoom() {
 
             {/* Pre-score hint */}
             {liveScore && !scoredResult && (
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 6, fontSize: 10, color: DIM }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 6, fontSize: 12, color: DIM }}>
                 <span>~{liveScore.v}/10</span>
                 <span style={{ color: GATES[liveScore.gate].color }}>{liveScore.gate}</span>
               </div>
@@ -1000,8 +1185,8 @@ export function BufferRoom() {
                 }}>
                   <div style={{ fontSize: 22, fontWeight: 700, color: gc.color }}>{scoredResult.v}</div>
                   <div>
-                    <div style={{ fontSize: 10, fontWeight: 700, color: gc.color, letterSpacing: 2 }}>{scoredResult.gate} {gc.label}</div>
-                    <div style={{ fontSize: 8, color: C.text.dim, fontFamily: MONO }}>U:{scoredResult.u} E:{scoredResult.e} C:{scoredResult.c}</div>
+                    <div style={{ fontSize: 12, fontWeight: 700, color: gc.color, letterSpacing: 2, textShadow: `0 0 6px ${gc.color}44` }}>{scoredResult.gate} {gc.label}</div>
+                    <div style={{ fontSize: 11, color: C.text.dim, fontFamily: MONO }}>U:{scoredResult.u} E:{scoredResult.e} C:{scoredResult.c}</div>
                   </div>
                 </div>
 
@@ -1012,7 +1197,7 @@ export function BufferRoom() {
                       <div style={{ height: 4, background: 'rgba(255,255,255,0.04)', borderRadius: 4 }}>
                         <div style={{ height: '100%', width: `${v * 10}%`, background: barColor, borderRadius: 4, transition: 'width 0.3s', boxShadow: `0 0 6px ${barColor}` }} />
                       </div>
-                      <div style={{ fontSize: 9, color: DIM, marginTop: 2, fontFamily: MONO }}>{l} {v}</div>
+                      <div style={{ fontSize: 11, color: DIM, marginTop: 2, fontFamily: MONO }}>{l} {v}</div>
                     </div>
                   ))}
                 </div>
@@ -1020,40 +1205,42 @@ export function BufferRoom() {
                 {/* PA patterns */}
                 {scoredResult.pa.length > 0 && (
                   <div style={{ padding: '6px 10px', borderRadius: 6, marginBottom: 8, background: `${C.lavender}05`, border: `1px solid ${C.lavender}12` }}>
-                    <div style={{ fontSize: 8, letterSpacing: 1.5, color: C.lavender, marginBottom: 4, fontWeight: 600, fontFamily: MONO }}>SUBTEXT DETECTED</div>
+                    <div style={{ fontSize: 11, letterSpacing: 1.5, color: C.lavender, marginBottom: 4, fontWeight: 600, fontFamily: MONO, textShadow: `0 0 6px ${C.lavender}33` }}>SUBTEXT DETECTED</div>
                     {scoredResult.pa.map((p, i) => (
-                      <div key={i} style={{ fontSize: 10, color: C.text.secondary, marginBottom: 1, lineHeight: 1.5 }}>{p.t}</div>
+                      <div key={i} style={{ fontSize: 12, color: C.text.secondary, marginBottom: 1, lineHeight: 1.5 }}>{p.t}</div>
                     ))}
                   </div>
                 )}
 
                 {/* BLUF */}
                 {bluf && (
-                  <div style={{ padding: '6px 10px', borderRadius: 6, marginBottom: 8, background: 'rgba(255,255,255,0.015)', border: `1px solid ${C.bg.border}` }}>
-                    <div style={{ fontSize: 8, letterSpacing: 1.5, color: C.text.dim, marginBottom: 4, fontWeight: 600, fontFamily: MONO }}>BLUF</div>
+                  <div style={{ padding: '6px 10px', borderRadius: 6, marginBottom: 8, background: 'rgba(255,215,0,0.015)', border: `1px solid ${C.bg.border}` }}>
+                    <div style={{ fontSize: 11, letterSpacing: 1.5, color: C.text.dim, marginBottom: 4, fontWeight: 600, fontFamily: MONO, textShadow: '0 0 4px rgba(255,215,0,0.15)' }}>BLUF</div>
                     <div style={{ fontSize: 11, color: C.text.secondary, lineHeight: 1.6 }}>{bluf.summary}</div>
                     {bluf.actions.length > 0 && (
                       <div style={{ marginTop: 4 }}>
                         {bluf.actions.slice(0, 3).map((a, i) => (
-                          <div key={i} style={{ fontSize: 10, color: C.text.secondary, paddingLeft: 8, borderLeft: `2px solid ${gc.color}33`, marginBottom: 2 }}>
+                          <div key={i} style={{ fontSize: 12, color: C.text.secondary, paddingLeft: 8, borderLeft: `2px solid ${gc.color}33`, marginBottom: 2 }}>
                             {a.substring(0, 100)}
                           </div>
                         ))}
                       </div>
                     )}
                     {bluf.questions > 0 && (
-                      <div style={{ fontSize: 9, color: C.cyan, marginTop: 4 }}>{bluf.questions} question{bluf.questions > 1 ? 's' : ''} detected</div>
+                      <div style={{ fontSize: 11, color: C.cyan, marginTop: 4, textShadow: `0 0 4px ${C.cyan}33` }}>{bluf.questions} question{bluf.questions > 1 ? 's' : ''} detected</div>
                     )}
                   </div>
                 )}
 
                 {/* Actions */}
                 <div style={{ display: 'flex', gap: 6 }}>
-                  <button type="button" onClick={handleIngest} style={{
-                    ...btnBase(true, scoredResult.v / 10 > threshold ? C.coral : C.mint),
+                  <button type="button" onClick={handleIngest} disabled={fawnGuardActive} style={{
+                    ...btnBase(true, fawnGuardActive ? DIM : scoredResult.v / 10 > threshold ? C.coral : C.mint),
                     flex: 1, padding: '8px',
+                    opacity: fawnGuardActive ? 0.3 : 1,
+                    cursor: fawnGuardActive ? 'not-allowed' : 'pointer',
                   }}>
-                    {scoredResult.v / 10 > threshold ? 'HOLD' : 'PROCESS'}
+                    {fawnGuardActive ? 'LOCKED' : scoredResult.v / 10 > threshold ? 'HOLD' : 'PROCESS'}
                   </button>
                   <button type="button" onClick={() => { setScoredResult(null); setBluf(null); setIngestText(''); }} style={{
                     ...btnBase(true, DIM), padding: '8px', width: 50,
@@ -1077,7 +1264,7 @@ export function BufferRoom() {
                       <div style={{ fontSize: 12, color: C.text.primary, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', opacity: 0.7 }}>
                         {msg.text.slice(0, 40)}
                       </div>
-                      <div style={{ display: 'flex', gap: 8, fontSize: 10, color: DIM }}>
+                      <div style={{ display: 'flex', gap: 8, fontSize: 12, color: DIM }}>
                         <span style={{ color: GATES[msg.gate as keyof typeof GATES]?.color ?? C.coral, fontWeight: 600 }}>{msg.gate} {msg.voltage}</span>
                         <span>{timeAgo(msg.ingestedAt)}</span>
                       </div>
@@ -1089,12 +1276,12 @@ export function BufferRoom() {
                   </div>
                 ))}
                 {heldActive.length > 5 && (
-                  <div style={{ fontSize: 9, color: DIM, marginTop: 4 }}>+{heldActive.length - 5} more held</div>
+                  <div style={{ fontSize: 11, color: DIM, marginTop: 4 }}>+{heldActive.length - 5} more held</div>
                 )}
               </div>
             )}
 
-            <div style={{ fontSize: 10, color: DIM, marginTop: 8, fontFamily: MONO }}>
+            <div style={{ fontSize: 12, color: DIM, marginTop: 8, fontFamily: MONO }}>
               {processedCount}P {deferredCount}D {held.filter(m => m.released).length}R
             </div>
           </BufferCard>
@@ -1124,7 +1311,7 @@ export function BufferRoom() {
                     borderRadius: 2, transition: 'width 0.3s',
                   }} />
                 </div>
-                <div style={{ fontSize: 9, color: C.text.dim, marginTop: 2, fontFamily: MONO }}>
+                <div style={{ fontSize: 11, color: C.text.dim, marginTop: 2, fontFamily: MONO, textShadow: '0 0 4px rgba(255,255,255,0.08)' }}>
                   fawn score: {(fawn.score * 100).toFixed(0)}%
                 </div>
               </div>
@@ -1157,9 +1344,10 @@ export function BufferRoom() {
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <span style={{ fontSize: 12, color: CATEGORY_COLOR[flag.category] ?? C.amber, fontWeight: 500 }}>"{flag.pattern}"</span>
                       <span style={{
-                        fontSize: 9, color: CATEGORY_COLOR[flag.category] ?? DIM,
+                        fontSize: 11, color: CATEGORY_COLOR[flag.category] ?? DIM,
                         border: `1px solid ${(CATEGORY_COLOR[flag.category] ?? DIM)}33`,
-                        borderRadius: 6, padding: '2px 6px', fontWeight: 600,
+                        borderRadius: 6, padding: '4px 8px', fontWeight: 600,
+                        textShadow: `0 0 4px ${(CATEGORY_COLOR[flag.category] ?? DIM)}33`,
                       }}>{flag.category}</span>
                     </div>
                     <div style={{ fontSize: 11, color: DIM, marginTop: 3, fontStyle: 'italic', lineHeight: 1.5 }}>{flag.guidance}</div>
@@ -1211,8 +1399,9 @@ export function BufferRoom() {
                       if (!count) return null;
                       return (
                         <span key={type} style={{
-                          fontSize: 9, padding: '2px 6px', borderRadius: 6,
+                          fontSize: 11, padding: '4px 8px', borderRadius: 6,
                           background: `${ITEM_COLOR[type]}15`, color: ITEM_COLOR[type], fontWeight: 600,
+                          textShadow: `0 0 4px ${ITEM_COLOR[type]}33`,
                         }}>
                           {ITEM_ICON[type]}{count}
                         </span>
@@ -1232,7 +1421,7 @@ export function BufferRoom() {
                       <div style={{ fontSize: 12, color: C.text.primary, lineHeight: 1.5, opacity: 0.8 }}>
                         {item.text.slice(0, 100)}{item.text.length > 100 ? '...' : ''}
                       </div>
-                      <div style={{ fontSize: 9, color: ITEM_COLOR[item.type], fontWeight: 600 }}>{item.type.toUpperCase()}</div>
+                      <div style={{ fontSize: 11, color: ITEM_COLOR[item.type], fontWeight: 600, textShadow: `0 0 4px ${ITEM_COLOR[item.type]}33` }}>{item.type.toUpperCase()}</div>
                     </div>
                   </div>
                 ))}
@@ -1255,24 +1444,25 @@ export function BufferRoom() {
       {/* ══════════════ TELEMETRY FOOTER ══════════════ */}
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '6px 16px', borderTop: `1px solid ${C.bg.border}`,
-        background: C.bg.base, flexShrink: 0, fontSize: 9, fontFamily: MONO,
+        padding: '8px 16px', borderTop: `1px solid rgba(255,255,255,0.06)`,
+        background: `linear-gradient(90deg, ${C.amber}04 0%, transparent 50%, ${C.cyan}04 100%)`,
+        flexShrink: 0, fontSize: 11, fontFamily: MONO,
         color: C.text.dim, gap: 8,
       }}>
-        <span>{cal.displayName || 'uncalibrated'}</span>
+        <span style={{ color: C.amber, fontWeight: 600, textShadow: `0 0 6px ${C.amber}33` }}>{cal.displayName || 'uncalibrated'}</span>
         <span style={{ color: C.text.dim }}>
           {processedCount}P {deferredCount}D {heldActive.length}H
         </span>
-        <span style={{ color: tensionColor }}>
+        <span style={{ color: tensionColor, fontWeight: 600, textShadow: `0 0 6px ${tensionColor}44` }}>
           T:{samson.tension.toFixed(2)}
         </span>
-        <span style={{ color: C.lavender }}>
+        <span style={{ color: C.lavender, textShadow: `0 0 6px ${C.lavender}33` }}>
           AI:{samson.aiTemp}
         </span>
-        <span>
+        <span style={{ color: C.text.secondary }}>
           {cal.commStyle}
         </span>
-        <span style={{ color: samson.drift !== 'nominal' ? C.amber : C.text.dim }}>
+        <span style={{ color: samson.drift !== 'nominal' ? C.amber : C.text.dim, fontWeight: samson.drift !== 'nominal' ? 700 : 400 }}>
           {samson.drift !== 'nominal' ? samson.drift.toUpperCase() : 'NOMINAL'}
         </span>
       </div>
@@ -1285,8 +1475,8 @@ export function BufferRoom() {
 function TRow({ label, value, color }: { label: string; value: string; color: string }) {
   return (
     <div style={{ display: 'flex', gap: 6, minWidth: 100 }}>
-      <span style={{ color: 'rgba(255,255,255,0.25)' }}>{label}:</span>
-      <span style={{ color, fontWeight: 600 }}>{value}</span>
+      <span style={{ color: 'rgba(255,255,255,0.3)' }}>{label}:</span>
+      <span style={{ color, fontWeight: 600, textShadow: `0 0 6px ${color}33` }}>{value}</span>
     </div>
   );
 }

@@ -10,7 +10,7 @@ interface Props {
 
 export const RoomNav = memo(function RoomNav({ rooms, activeRoom, onRoomChange }: Props) {
   return (
-    <nav className="glass-nav nav-bar">
+    <nav className="glass-nav nav-bar" aria-label="Room navigation">
       {rooms.map((room, idx) => {
         const active = activeRoom === room.id;
         return (
@@ -19,9 +19,10 @@ export const RoomNav = memo(function RoomNav({ rooms, activeRoom, onRoomChange }
             type="button"
             onClick={() => onRoomChange(room.id)}
             className={`nav-tab ${active ? 'nav-tab-active' : ''}`}
+            aria-current={active ? 'page' : undefined}
             style={{ '--delay': `${0.05 * idx}s` } as React.CSSProperties}
           >
-            <span className={`nav-tab-icon ${active ? 'nav-tab-icon-active' : ''}`}>{room.icon}</span>
+            <span className={`nav-tab-icon ${active ? 'nav-tab-icon-active' : ''}`} aria-hidden="true">{room.icon}</span>
             <span className={`nav-tab-label ${active ? 'nav-tab-label-active' : ''}`}>{room.label}</span>
           </button>
         );

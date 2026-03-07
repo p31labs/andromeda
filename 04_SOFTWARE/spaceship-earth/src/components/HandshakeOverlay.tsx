@@ -16,6 +16,8 @@ import {
   pollForPartnerLock,
   sendConfirmation,
 } from '../services/handshakeRelay';
+import { fromStore, isK4Complete, getK4Subgraph } from '../services/k4Graph';
+import { mintK4 } from '../services/mintK4';
 
 // ── Constants ──
 
@@ -29,6 +31,24 @@ const LOCK_WINDOW_MS = 2000;                      // simultaneity window
 const POLL_INTERVAL_MS = 1000;
 const POLL_TIMEOUT_MS = 30_000;
 
+// ── Audio click generator (Web Audio API) ──
+let audioCtx: AudioContext | null = null;
+
+function playClick(frequency = 800, duration = 0.04) {
+  if (!audioCtx) audioCtx = new AudioContext();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = 'sine';
+  osc.frequency.value = frequency;
+  gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+  osc.start();
+  osc.stop(audioCtx.currentTime + duration);
+}
+
 type Phase = 'tapping' | 'locked' | 'waiting' | 'bonded' | 'failed';
 
 export function HandshakeOverlay() {
@@ -40,17 +60,40 @@ export function HandshakeOverlay() {
   const [validTaps, setValidTaps] = useState(0);
   const [lastInterval, setLastInterval] = useState<number | null>(null);
   const [message, setMessage] = useState('TAP TO THE RHYTHM');
+  const [flashOn, setFlashOn] = useState(false);
+  const [metronomeBeat, setMetronomeBeat] = useState(false);
 
   const tapTimesRef = useRef<number[]>([]);
   const roomCodeRef = useRef<string | null>(null);
   const pollTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const lockTimeRef = useRef(0);
+  const metronomeRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Start visual metronome guide (86 BPM blink)
+  useEffect(() => {
+    if (phase === 'tapping' && handshakeCandidate && !fawnGuardActive && !openOverlay) {
+      metronomeRef.current = setInterval(() => {
+        setMetronomeBeat(true);
+        playClick(600, 0.03);
+        setTimeout(() => setMetronomeBeat(false), 120);
+      }, TARGET_INTERVAL_MS);
+      return () => {
+        if (metronomeRef.current) clearInterval(metronomeRef.current);
+      };
+    }
+    if (metronomeRef.current) clearInterval(metronomeRef.current);
+  }, [phase, handshakeCandidate, fawnGuardActive, openOverlay]);
 
   // Don't render if no candidate, fawn guard active, or overlay open
   if (!handshakeCandidate || fawnGuardActive || openOverlay) return null;
 
   const handleTap = useCallback(() => {
     if (phase !== 'tapping') return;
+
+    // Audio + visual flash
+    playClick(900, 0.05);
+    setFlashOn(true);
+    setTimeout(() => setFlashOn(false), 100);
 
     const now = performance.now();
     const taps = tapTimesRef.current;
@@ -157,12 +200,31 @@ export function HandshakeOverlay() {
         await sendConfirmation(code, 0, myDID, bondSigHex);
 
         // Record bond in K4 graph
-        useSovereignStore.getState().addK4Edge({
+        const store = useSovereignStore.getState();
+        store.addK4Edge({
           from: myDID,
           to: partnerLock.did,
           timestamp: canonicalTimestamp,
           signature: bondSigHex,
         });
+
+        // Check for K4 completion → auto-trigger mint
+        const graph = fromStore(useSovereignStore.getState().k4Graph);
+        if (isK4Complete(graph)) {
+          const k4Edges = getK4Subgraph(graph);
+          if (k4Edges && roomCodeRef.current) {
+            setPhase('bonded');
+            setMessage('K4 COMPLETE — INITIATING MINT...');
+            mintK4(k4Edges, roomCodeRef.current).then((result) => {
+              if (result.ok) {
+                setMessage('K4 MINTED — PRINT INITIATED');
+              } else {
+                setMessage(`MINT FAILED: ${result.error?.slice(0, 30) ?? 'UNKNOWN'}`);
+              }
+            });
+            return;
+          }
+        }
 
         setPhase('bonded');
         setMessage('COVALENT BOND FORMED');
@@ -194,21 +256,57 @@ export function HandshakeOverlay() {
   const pulseScale = phase === 'bonded' ? 1.3 : 1 + validTaps * 0.08;
 
   const phaseColor = {
-    tapping: '#00E5FF',
-    locked: '#00FF88',
-    waiting: '#FFB800',
-    bonded: '#FF69B4',
+    tapping: '#00FFFF',
+    locked: '#00FFFF',
+    waiting: '#FFD700',
+    bonded: '#FF00FF',
     failed: '#FF4444',
   }[phase];
 
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      handleTap();
+    }
+  }, [handleTap]);
+
   return (
     <div
-      onTouchStart={handleTap}
-      onMouseDown={handleTap}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Handshake ceremony"
       style={{
         position: 'fixed',
         inset: 0,
         zIndex: 60,
+      }}
+    >
+      {/* Dismiss button — outside tappable area to avoid nested interactive controls */}
+      <button
+        type="button"
+        aria-label="Close handshake overlay"
+        onClick={dismiss}
+        onTouchStart={(e) => { e.preventDefault(); dismiss(); }}
+        style={{
+          position: 'absolute', top: 16, right: 16, zIndex: 1,
+          background: 'none', border: '1px solid rgba(0,255,255,0.2)',
+          color: '#888', borderRadius: 8, padding: '6px 14px',
+          fontSize: 12, cursor: 'pointer',
+        }}
+      >
+        DISMISS
+      </button>
+
+    <div
+      role="button"
+      tabIndex={0}
+      aria-label="Tap to rhythm lock — tap 4 times at 86 BPM"
+      onTouchStart={handleTap}
+      onMouseDown={handleTap}
+      onKeyDown={handleKeyDown}
+      style={{
+        position: 'absolute',
+        inset: 0,
         background: 'rgba(5, 5, 16, 0.92)',
         display: 'flex',
         flexDirection: 'column',
@@ -219,28 +317,35 @@ export function HandshakeOverlay() {
         touchAction: 'none',
       }}
     >
-      {/* Dismiss button */}
-      <button
-        type="button"
-        onClick={(e) => { e.stopPropagation(); dismiss(); }}
-        onTouchStart={(e) => { e.stopPropagation(); dismiss(); }}
-        style={{
-          position: 'absolute', top: 16, right: 16,
-          background: 'none', border: '1px solid rgba(255,255,255,0.2)',
-          color: '#888', borderRadius: 8, padding: '6px 14px',
-          fontSize: 12, cursor: 'pointer',
-        }}
-      >
-        DISMISS
-      </button>
-
       {/* Target frequency label */}
       <div style={{
-        color: 'rgba(255,255,255,0.4)', fontSize: 14, letterSpacing: '0.1em',
+        color: 'rgba(0,255,255,0.4)', fontSize: 14, letterSpacing: '0.1em',
         marginBottom: 32,
       }}>
         ALIGN FREQUENCY: 172.35 Hz
       </div>
+
+      {/* Metronome guide ring — pulses at 86 BPM */}
+      <div style={{
+        position: 'absolute',
+        width: 260, height: 260, borderRadius: '50%',
+        border: `2px solid ${metronomeBeat ? 'rgba(0,255,255,0.3)' : 'rgba(255,255,255,0.06)'}`,
+        boxShadow: metronomeBeat ? '0 0 30px rgba(0,255,255,0.15), inset 0 0 20px rgba(0,255,255,0.05)' : 'none',
+        transition: 'all 0.08s ease-out',
+        pointerEvents: 'none',
+      }} />
+
+      {/* Tap flash ring */}
+      {flashOn && (
+        <div style={{
+          position: 'absolute',
+          width: 240, height: 240, borderRadius: '50%',
+          border: `4px solid ${phaseColor}`,
+          boxShadow: `0 0 60px ${phaseColor}, inset 0 0 40px ${phaseColor}40`,
+          pointerEvents: 'none',
+          opacity: 0.8,
+        }} />
+      )}
 
       {/* Pulsing circle */}
       <div style={{
@@ -260,18 +365,21 @@ export function HandshakeOverlay() {
       </div>
 
       {/* Status message */}
-      <div style={{
-        marginTop: 32, color: phaseColor, fontSize: 16,
-        fontWeight: 600, letterSpacing: '0.08em',
-        textShadow: `0 0 10px ${phaseColor}60`,
-      }}>
+      <div
+        aria-live="polite"
+        style={{
+          marginTop: 32, color: phaseColor, fontSize: 16,
+          fontWeight: 600, letterSpacing: '0.08em',
+          textShadow: `0 0 10px ${phaseColor}60`,
+        }}
+      >
         {message}
       </div>
 
       {/* Interval feedback */}
       {lastInterval !== null && phase === 'tapping' && (
         <div style={{
-          marginTop: 12, color: 'rgba(255,255,255,0.3)', fontSize: 12,
+          marginTop: 12, color: 'rgba(0,255,255,0.3)', fontSize: 12,
         }}>
           {lastInterval}ms (target: {Math.round(TARGET_INTERVAL_MS)}ms)
         </div>
@@ -279,7 +387,7 @@ export function HandshakeOverlay() {
 
       {/* BPM indicator */}
       <div style={{
-        marginTop: 8, color: 'rgba(255,255,255,0.2)', fontSize: 11,
+        marginTop: 8, color: 'rgba(0,255,255,0.2)', fontSize: 11,
       }}>
         86 BPM | {TOLERANCE_MS}ms tolerance
       </div>
@@ -287,6 +395,7 @@ export function HandshakeOverlay() {
       {/* Bonded: auto-dismiss after 3s */}
       {phase === 'bonded' && <AutoDismiss onDismiss={dismiss} delayMs={3000} />}
       {phase === 'failed' && <AutoDismiss onDismiss={dismiss} delayMs={4000} />}
+    </div>
     </div>
   );
 }

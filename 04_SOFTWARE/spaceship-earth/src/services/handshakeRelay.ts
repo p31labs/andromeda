@@ -32,7 +32,7 @@ export async function createHandshakeRoom(myDID: string): Promise<string> {
     body: JSON.stringify({
       code,
       playerName: myDID.slice(-8),
-      playerColor: '#00FF88',
+      playerColor: '#00FFFF',
     }),
   });
   if (!res.ok) throw new Error(`Failed to create handshake room: ${res.status}`);
@@ -46,7 +46,7 @@ export async function joinHandshakeRoom(code: string, myDID: string): Promise<vo
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       playerName: myDID.slice(-8),
-      playerColor: '#FFB800',
+      playerColor: '#FFD700',
     }),
   });
   if (!res.ok) throw new Error(`Failed to join handshake room: ${res.status}`);

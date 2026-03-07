@@ -148,7 +148,7 @@ export const ClassicDiagnosticUI = () => {
   const lbl: React.CSSProperties = { color: '#7878AA', fontSize: 'clamp(8px, 1.1vh, 10px)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 };
   const val = (c: string): React.CSSProperties => ({ color: c, fontWeight: 600, fontSize: 'clamp(10px, 1.3vh, 13px)' });
   const card: React.CSSProperties = {
-    background: '#0A0A1F', borderRadius: 10, padding: 'clamp(8px, 1.4vh, 16px)',
+    background: '#000000', borderRadius: 10, padding: 'clamp(8px, 1.4vh, 16px)',
     display: 'flex', flexDirection: 'column', overflow: 'hidden', minHeight: 0,
   };
   const cardHead = (c: string): React.CSSProperties => ({
@@ -163,8 +163,8 @@ export const ClassicDiagnosticUI = () => {
     letterSpacing: '0.03em', fontFamily: 'inherit', flexShrink: 0,
   });
   const infoBox: React.CSSProperties = {
-    background: '#050510', borderRadius: 6, padding: 'clamp(4px, 0.6vh, 8px)',
-    border: '1px solid rgba(122,39,255,0.08)',
+    background: '#000000', borderRadius: 6, padding: 'clamp(4px, 0.6vh, 8px)',
+    border: '1px solid rgba(0,255,255,0.08)',
   };
 
   const didShort = didKey.length > 32 ? didKey.slice(0, 16) + '...' + didKey.slice(-12) : didKey;
@@ -173,7 +173,7 @@ export const ClassicDiagnosticUI = () => {
   return (
     <div style={{
       position: 'absolute', inset: 0, zIndex: 10,
-      background: '#050510', color: '#E0E0EE',
+      background: '#000000', color: '#d8ffd8',
       fontFamily: "'Oxanium', sans-serif",
       marginTop: 44,
       display: 'flex', flexDirection: 'column',
@@ -183,7 +183,7 @@ export const ClassicDiagnosticUI = () => {
       {/* Header row */}
       <div style={{
         display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-        borderBottom: '1px solid rgba(122,39,255,0.2)',
+        borderBottom: '1px solid rgba(0,255,255,0.2)',
         paddingBottom: 'clamp(4px, 0.6vh, 10px)',
         marginBottom: 'clamp(4px, 0.8vh, 12px)',
         flexShrink: 0,
@@ -191,7 +191,7 @@ export const ClassicDiagnosticUI = () => {
         <div>
           <span style={{
             fontSize: 'clamp(14px, 2vh, 22px)', fontWeight: 700, letterSpacing: '0.04em',
-            background: 'linear-gradient(135deg, #FF00CC, #7A27FF, #00D4FF)',
+            background: 'linear-gradient(135deg, #FF00FF, #BF5FFF, #00FFFF)',
             WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
             backgroundClip: 'text',
           } as React.CSSProperties}>
@@ -206,13 +206,13 @@ export const ClassicDiagnosticUI = () => {
             type="button"
             onClick={initAudio}
             disabled={audioEnabled}
-            style={{ ...btn('#7A27FF'), opacity: audioEnabled ? 0.4 : 1 }}
+            style={{ ...btn('#BF5FFF'), opacity: audioEnabled ? 0.4 : 1 }}
           >
             {audioEnabled ? 'Sound On' : 'Enable Sound'}
           </button>
           <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 'clamp(9px, 1.1vh, 11px)' }}>
             <span style={dot(pwaStatus.includes('ACTIVE'))} />
-            <span style={{ color: pwaStatus.includes('ACTIVE') ? '#7DDFB6' : '#FFB800', fontWeight: 600 }}>
+            <span style={{ color: pwaStatus.includes('ACTIVE') ? '#7DDFB6' : '#FFD700', fontWeight: 600 }}>
               {pwaStatus.includes('ACTIVE') ? 'Offline Ready' : pwaStatus}
             </span>
           </div>
@@ -228,8 +228,8 @@ export const ClassicDiagnosticUI = () => {
         gap: 'clamp(4px, 0.6vh, 10px)',
       }}>
         {/* ── 1. Centaur Engine ── */}
-        <div style={{ ...card, border: '1px solid rgba(122,39,255,0.15)' }}>
-          <div style={cardHead('#7A27FF')}>Centaur Engine</div>
+        <div style={{ ...card, border: '1px solid rgba(0,255,255,0.15)' }}>
+          <div style={cardHead('#BF5FFF')}>Centaur Engine</div>
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 'clamp(3px, 0.5vh, 8px)', minHeight: 0 }}>
             <div style={{ display: 'flex', alignItems: 'center' }}>
               <span style={dot(!!llmKey)} />
@@ -244,8 +244,8 @@ export const ClassicDiagnosticUI = () => {
                 style={{
                   width: '100%', padding: 'clamp(3px, 0.4vh, 6px) 6px',
                   fontSize: 'clamp(10px, 1.2vh, 12px)',
-                  background: '#050510', color: '#7A27FF',
-                  border: '1px solid rgba(122,39,255,0.2)',
+                  background: '#000000', color: '#BF5FFF',
+                  border: '1px solid rgba(0,255,255,0.2)',
                   borderRadius: 5, fontFamily: 'inherit', appearance: 'auto',
                 }}
               >
@@ -275,8 +275,8 @@ export const ClassicDiagnosticUI = () => {
                 style={{
                   width: '100%', padding: 'clamp(3px, 0.4vh, 6px) 6px',
                   fontSize: 'clamp(10px, 1.2vh, 12px)',
-                  background: '#050510', color: '#E8E4F0',
-                  border: '1px solid rgba(122,39,255,0.15)',
+                  background: '#000000', color: '#d8ffd8',
+                  border: '1px solid rgba(0,255,255,0.15)',
                   borderRadius: 5, fontFamily: "'Space Mono', monospace",
                   boxSizing: 'border-box',
                 }}
@@ -290,7 +290,7 @@ export const ClassicDiagnosticUI = () => {
 
         {/* ── 2. Identity ── */}
         <div style={{ ...card, border: '1px solid rgba(255,105,180,0.15)' }}>
-          <div style={cardHead('#FF00CC')}>Identity</div>
+          <div style={cardHead('#FF00FF')}>Identity</div>
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 'clamp(2px, 0.4vh, 6px)', minHeight: 0 }}>
             <div style={{ display: 'flex', alignItems: 'center' }}>
               <span style={dot(didInitialized)} />
@@ -303,7 +303,7 @@ export const ClassicDiagnosticUI = () => {
             </div>
             <div style={{ ...infoBox, flex: 1, minHeight: 0, overflow: 'hidden' }}>
               <div style={lbl}>DID Key</div>
-              <div style={{ fontSize: 'clamp(8px, 1vh, 11px)', color: didInitialized ? '#7A27FF' : '#554466', wordBreak: 'break-all', lineHeight: 1.3 }}>
+              <div style={{ fontSize: 'clamp(8px, 1vh, 11px)', color: didInitialized ? '#BF5FFF' : '#554466', wordBreak: 'break-all', lineHeight: 1.3 }}>
                 {didShort}
               </div>
               {nodeId && (
@@ -319,9 +319,9 @@ export const ClassicDiagnosticUI = () => {
               </div>
             )}
             <div style={{ display: 'flex', gap: 4, flexShrink: 0 }}>
-              <button type="button" onClick={initIdentity} style={{ ...btn('#FF00CC'), flex: 1 }}>Create</button>
+              <button type="button" onClick={initIdentity} style={{ ...btn('#FF00FF'), flex: 1 }}>Create</button>
               <button type="button" onClick={handleExportJWK} disabled={!didInitialized} style={{ ...btn('#4ecdc4'), flex: 1, opacity: didInitialized ? 1 : 0.3 }}>Export</button>
-              <button type="button" onClick={() => importRef.current?.click()} style={{ ...btn('#FFB800'), flex: 1 }}>Import</button>
+              <button type="button" onClick={() => importRef.current?.click()} style={{ ...btn('#FFD700'), flex: 1 }}>Import</button>
               <input ref={importRef} type="file" accept=".json,.jwk" title="Import JWK identity file" onChange={handleImportJWK} style={{ display: 'none' }} />
             </div>
           </div>
@@ -329,26 +329,26 @@ export const ClassicDiagnosticUI = () => {
 
         {/* ── 3. Connections ── */}
         <div style={{ ...card, border: '1px solid rgba(0,229,255,0.15)' }}>
-          <div style={cardHead('#00D4FF')}>Connections</div>
+          <div style={cardHead('#00FFFF')}>Connections</div>
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 'clamp(3px, 0.5vh, 8px)', minHeight: 0 }}>
             <div style={infoBox}>
               <div style={lbl}>Bluetooth</div>
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <span style={dot(bleConnected)} />
-                <span style={val(bleConnected ? '#7DDFB6' : '#FFB800')}>{bleConnected ? 'Connected' : 'Disconnected'}</span>
+                <span style={val(bleConnected ? '#7DDFB6' : '#FFD700')}>{bleConnected ? 'Connected' : 'Disconnected'}</span>
               </div>
             </div>
             <div style={infoBox}>
               <div style={lbl}>Nearby Devices</div>
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <span style={dot(bleConnected)} />
-                <span style={val(bleConnected ? '#00D4FF' : '#554466')}>
+                <span style={val(bleConnected ? '#00FFFF' : '#554466')}>
                   {bleConnected ? `${loraNodes} found` : 'Searching...'}
                 </span>
               </div>
             </div>
             <div style={{ flex: 1 }} />
-            <button type="button" onClick={connectBLE} style={btn('#00D4FF')}>Connect Device</button>
+            <button type="button" onClick={connectBLE} style={btn('#00FFFF')}>Connect Device</button>
           </div>
         </div>
 
@@ -359,7 +359,7 @@ export const ClassicDiagnosticUI = () => {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(2px, 0.3vh, 6px)', fontSize: 'clamp(9px, 1.1vh, 11px)' }}>
               <div><span style={lbl}>Layers</span> <span style={val('#ff9944')}>{vaultLayerCount}</span></div>
               <div><span style={lbl}>Encryption</span> <span style={val('#44ffaa')}>AES-256</span></div>
-              <div><span style={lbl}>LOVE</span> <span style={val('#7A27FF')}>{protocolWallet ? protocolWallet.totalEarned.toFixed(1) : '0.0'}</span></div>
+              <div><span style={lbl}>LOVE</span> <span style={val('#BF5FFF')}>{protocolWallet ? protocolWallet.totalEarned.toFixed(1) : '0.0'}</span></div>
               <div><span style={lbl}>Tx</span> <span style={val('#44aaff')}>{protocolTxCount}</span></div>
             </div>
             <div style={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
@@ -369,7 +369,7 @@ export const ClassicDiagnosticUI = () => {
                   <div key={layer} style={{
                     display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                     fontSize: 'clamp(9px, 1vh, 11px)', padding: 'clamp(1px, 0.2vh, 3px) 0',
-                    borderBottom: '1px solid rgba(255,255,255,0.04)',
+                    borderBottom: '1px solid rgba(0,255,255,0.04)',
                   }}>
                     <span style={{ color: '#7878AA' }}>{layer}</span>
                     <span style={{ color: c[layer], fontSize: 'clamp(7px, 0.9vh, 9px)', fontWeight: 600, letterSpacing: 1 }}>LOCKED</span>
@@ -381,7 +381,7 @@ export const ClassicDiagnosticUI = () => {
               <button type="button" onClick={handleVaultExport} disabled={exporting || !nodeId} style={{ ...btn('#ff4466'), flex: 1, opacity: (exporting || !nodeId) ? 0.4 : 1 }}>
                 {exporting ? 'Exporting...' : 'Disclosure'}
               </button>
-              <button type="button" onClick={handleDaubertExport} style={{ ...btn('#FFB800'), flex: 1 }}>Daubert</button>
+              <button type="button" onClick={handleDaubertExport} style={{ ...btn('#FFD700'), flex: 1 }}>Daubert</button>
             </div>
             {lastExport && <div style={{ fontSize: 'clamp(7px, 0.8vh, 9px)', color: '#4A4A7A', textAlign: 'center' }}>Exported: {new Date(lastExport).toLocaleTimeString()}</div>}
           </div>
@@ -389,12 +389,12 @@ export const ClassicDiagnosticUI = () => {
 
         {/* ── 5. Data ── */}
         <div style={{ ...card, border: '1px solid rgba(255,170,0,0.15)' }}>
-          <div style={cardHead('#FFB800')}>Data</div>
+          <div style={cardHead('#FFD700')}>Data</div>
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 'clamp(2px, 0.4vh, 6px)', minHeight: 0 }}>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 4, fontSize: 'clamp(9px, 1.1vh, 11px)' }}>
-              <div><span style={lbl}>Engine</span> <span style={val('#7A27FF')}>Automerge</span></div>
-              <div><span style={lbl}>Storage</span> <span style={val('#7A27FF')}>Local</span></div>
-              <div><span style={lbl}>Version</span> <span style={val('#FFB800')}>v{crdtVersion}</span></div>
+              <div><span style={lbl}>Engine</span> <span style={val('#BF5FFF')}>Automerge</span></div>
+              <div><span style={lbl}>Storage</span> <span style={val('#BF5FFF')}>Local</span></div>
+              <div><span style={lbl}>Version</span> <span style={val('#FFD700')}>v{crdtVersion}</span></div>
             </div>
             <div style={{ ...infoBox, flex: 1, minHeight: 0, overflow: 'auto' }}>
               <div style={lbl}>Activity Log</div>
@@ -403,14 +403,14 @@ export const ClassicDiagnosticUI = () => {
               ) : (
                 <div style={{ fontSize: 'clamp(9px, 1vh, 11px)' }}>
                   {telemetryHashes.map((hash: string, i: number) => (
-                    <div key={i} style={{ color: i % 2 === 0 ? '#FFB800' : '#7A27FF', opacity: 1 - (i * 0.15) }}>{hash}...</div>
+                    <div key={i} style={{ color: i % 2 === 0 ? '#FFD700' : '#BF5FFF', opacity: 1 - (i * 0.15) }}>{hash}...</div>
                   ))}
                 </div>
               )}
             </div>
             <div style={{ display: 'flex', gap: 4, flexShrink: 0 }}>
-              <button type="button" onClick={appendTelemetry} style={{ ...btn('#FFB800'), flex: 1 }}>Record</button>
-              <button type="button" disabled={telemetryHashes.length === 0} onClick={exportLedger} style={{ ...btn('#7A27FF'), flex: 1, opacity: telemetryHashes.length === 0 ? 0.3 : 1 }}>Export</button>
+              <button type="button" onClick={appendTelemetry} style={{ ...btn('#FFD700'), flex: 1 }}>Record</button>
+              <button type="button" disabled={telemetryHashes.length === 0} onClick={exportLedger} style={{ ...btn('#BF5FFF'), flex: 1, opacity: telemetryHashes.length === 0 ? 0.3 : 1 }}>Export</button>
             </div>
           </div>
         </div>
@@ -438,7 +438,7 @@ export const ClassicDiagnosticUI = () => {
                 flex: 1, minHeight: 0, overflow: 'auto',
                 fontSize: 'clamp(8px, 1vh, 10px)',
                 fontFamily: "'Space Mono', monospace",
-                background: '#050510', borderRadius: 6, padding: 'clamp(4px, 0.5vh, 8px)',
+                background: '#000000', borderRadius: 6, padding: 'clamp(4px, 0.5vh, 8px)',
                 border: '1px solid rgba(68,170,255,0.1)',
               }}
             >
@@ -447,12 +447,12 @@ export const ClassicDiagnosticUI = () => {
               ) : (
                 syncEvents.map((ev, i) => {
                   const ts = ev.timestamp.split('T')[1]?.split('.')[0] ?? ev.timestamp;
-                  const dirColor = ev.direction === 'push' ? '#7DDFB6' : '#FFB800';
+                  const dirColor = ev.direction === 'push' ? '#7DDFB6' : '#FFD700';
                   const hashShort = ev.serverHash.length > 12 ? ev.serverHash.slice(0, 12) + '..' : ev.serverHash;
                   return (
                     <div key={`${ev.timestamp}-${i}`} style={{
                       display: 'flex', gap: 4, lineHeight: 1.6,
-                      borderBottom: '1px solid rgba(255,255,255,0.03)',
+                      borderBottom: '1px solid rgba(0,255,255,0.03)',
                     }}>
                       <span style={{ color: '#4A4A7A' }}>[{ts}]</span>
                       <span style={{ color: dirColor, fontWeight: 600 }}>{ev.direction.toUpperCase()}</span>

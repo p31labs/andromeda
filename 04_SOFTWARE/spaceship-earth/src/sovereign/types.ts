@@ -59,11 +59,15 @@ export interface SovereignState {
   // M18: Somatic Tether
   somaticTetherStatus: SomaticStatus;
   fawnGuardActive: boolean;
+  somaticHr: number;
+  somaticHrv: number;
+  somaticWaveform: number[];
 
   // M20: Spatial Mesh
   spatialNodes: number;
   spatialTransport: SpatialTransport;
   handshakeCandidate: string | null;
+  spatialNodeList: Array<{ id: string; rssi: number; valency: number; flags: number }>;
 
   // M21: K4 Handshake
   k4Graph: { nodes: string[]; edges: K4Edge[] };
@@ -73,6 +77,9 @@ export interface SovereignState {
   // M19: Reactor Core
   mintStatus: MintStatus;
   lastMintNonce: string | null;
+
+  // Lock screen (boot sequence)
+  shipLocked: boolean;
 
   // Actions (existing)
   setPwaStatus: (status: string) => void;
@@ -91,11 +98,15 @@ export interface SovereignState {
   // Actions (M18: Somatic Tether)
   setSomaticStatus: (status: SomaticStatus) => void;
   setFawnGuard: (active: boolean) => void;
+  setSomaticHr: (hr: number) => void;
+  setSomaticHrv: (hrv: number) => void;
+  setSomaticWaveform: (buf: number[]) => void;
 
   // Actions (M20: Spatial Mesh)
   setSpatialNodes: (count: number) => void;
   setSpatialTransport: (t: SpatialTransport) => void;
   setHandshakeCandidate: (id: string | null) => void;
+  setSpatialNodeList: (nodes: Array<{ id: string; rssi: number; valency: number; flags: number }>) => void;
 
   // Actions (M21: K4 Handshake)
   addK4Edge: (edge: K4Edge) => void;
@@ -105,4 +116,7 @@ export interface SovereignState {
   // Actions (M19: Reactor Core)
   setMintStatus: (status: MintStatus) => void;
   setLastMintNonce: (nonce: string | null) => void;
+
+  // Lock screen
+  unlockShip: () => void;
 }

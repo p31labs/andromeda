@@ -5,7 +5,7 @@ import { LandingRoom } from '../../LandingRoom';
 const fullScreen: React.CSSProperties = {
   position: 'absolute',
   inset: 0,
-  overflow: 'auto',
+  overflow: 'hidden',
 };
 
 export function LandingOverlay() {

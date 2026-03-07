@@ -14,14 +14,14 @@ interface Props {
 }
 
 const FONT = "'Oxanium', sans-serif";
-const PINK = '#FF00CC';
-const MINT = '#00FF88';
-const CORAL = '#F08080';
-const BLUE = '#00D4FF';
-const LAVENDER = '#7A27FF';
-const AMBER = '#FFB800';
-const WARM_WHITE = '#E0E0EE';
-const DIM = 'rgba(122,39,255,0.4)';
+const PINK = '#FF00FF';
+const MINT = '#00FFFF';
+const CORAL = '#FF6B6B';
+const BLUE = '#00FFFF';
+const LAVENDER = '#BF5FFF';
+const AMBER = '#FFD700';
+const WARM_WHITE = '#d8ffd8';
+const DIM = 'rgba(0,255,255,0.18)';
 
 type TabId = 'love' | 'wallet' | 'stealth' | 'ledger' | 'hardware';
 
@@ -69,7 +69,7 @@ function PulseRing({ color, size = 36, value, max, label }: {
   return (
     <svg width={size} height={size} style={{ display: 'block', flexShrink: 0 }}>
       <circle cx={size / 2} cy={size / 2} r={r} fill="none"
-        stroke="rgba(122,39,255,0.1)" strokeWidth={2.5} />
+        stroke="rgba(0,255,255,0.05)" strokeWidth={2.5} />
       <circle cx={size / 2} cy={size / 2} r={r} fill="none"
         stroke={color} strokeWidth={2.5}
         strokeDasharray={circ} strokeDashoffset={offset}
@@ -91,7 +91,7 @@ function PulseRing({ color, size = 36, value, max, label }: {
 function Bar({ value, max, color }: { value: number; max: number; color: string }) {
   const pct = max > 0 ? Math.min(100, (value / max) * 100) : 0;
   return (
-    <div style={{ height: 3, background: 'rgba(122,39,255,0.08)', borderRadius: 3 }}>
+    <div style={{ height: 3, background: 'rgba(0,255,255,0.04)', borderRadius: 3 }}>
       <div style={{
         height: '100%', borderRadius: 3, background: color,
         width: `${pct}%`, transition: 'width 0.6s ease-out',
@@ -106,7 +106,7 @@ function Card({ title, accent, children, style }: {
 }) {
   return (
     <div style={{
-      background: '#0A0A1F', border: `1px solid ${accent}22`, borderRadius: 10,
+      background: '#000000', border: `1px solid ${accent}22`, borderRadius: 10,
       display: 'flex', flexDirection: 'column', minHeight: 0, overflow: 'hidden', ...style,
     }}>
       <div style={{
@@ -170,7 +170,7 @@ function LoveTab({ love, spoons, maxSpoons, tier }: Props) {
         display: 'flex', alignItems: 'center', gap: 'clamp(6px, 1vw, 14px)',
         padding: 'clamp(4px, 0.5vh, 8px) clamp(8px, 1vw, 14px)',
         borderBottom: `1px solid ${PINK}18`, fontSize: fs.md, flexShrink: 0,
-        borderRadius: 8, background: '#0A0A1F',
+        borderRadius: 8, background: '#000000',
       }}>
         <span style={{ color: PINK, fontWeight: 700, letterSpacing: '0.08em', fontSize: fs.lg, textShadow: `0 0 10px ${PINK}66`, whiteSpace: 'nowrap' }}>
           Love Economy
@@ -233,7 +233,7 @@ function LoveTab({ love, spoons, maxSpoons, tier }: Props) {
               <div style={{ color: CORAL, fontWeight: 600 }}>{spent.toFixed(1)}</div>
             </div>
           </div>
-          <div style={{ fontSize: fs.xs, color: 'rgba(122,39,255,0.2)', marginTop: 'clamp(2px, 0.3vh, 6px)' }}>
+          <div style={{ fontSize: fs.xs, color: 'rgba(0,255,255,0.1)', marginTop: 'clamp(2px, 0.3vh, 6px)' }}>
             {protocolTxCount} tx
           </div>
         </Card>
@@ -248,16 +248,20 @@ function LoveTab({ love, spoons, maxSpoons, tier }: Props) {
             const canAfford = available >= item.cost;
             const flashing = spendFlash === item.label;
             return (
-              <div key={item.label}
+              <button type="button" key={item.label}
                 onClick={() => canAfford && handleSpend(item.label, item.cost)}
+                disabled={!canAfford}
+                aria-label={`${item.label}: ${item.desc}, costs ${item.cost} love`}
                 style={{
                   display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                   padding: 'clamp(3px, 0.4vh, 6px) 4px',
-                  borderBottom: '1px solid rgba(122,39,255,0.06)',
+                  borderBottom: '1px solid rgba(0,255,255,0.03)',
+                  border: 'none', width: '100%', textAlign: 'left',
                   cursor: canAfford ? 'pointer' : 'default',
                   opacity: canAfford ? 1 : 0.35,
                   borderRadius: 6, transition: 'background 0.15s',
                   background: flashing ? 'rgba(255,0,204,0.1)' : 'transparent',
+                  fontFamily: FONT,
                 }}
                 onMouseEnter={e => canAfford && (e.currentTarget.style.background = 'rgba(255,0,204,0.06)')}
                 onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
@@ -270,7 +274,7 @@ function LoveTab({ love, spoons, maxSpoons, tier }: Props) {
                   <span style={{ color: canAfford ? CORAL : DIM, fontSize: fs.md, fontWeight: 600 }}>{item.cost}</span>
                   <div style={{ fontSize: 'clamp(7px, 0.8vh, 8px)', color: DIM }}>LOVE</div>
                 </div>
-              </div>
+              </button>
             );
           })}
         </Card>
@@ -286,7 +290,7 @@ function LoveTab({ love, spoons, maxSpoons, tier }: Props) {
               <div style={{ fontSize: fs.xs, color: DIM, marginTop: 2, lineHeight: 1.4 }}>
                 Age {v.ageYears} — {v.vestedAmount.toFixed(1)} vested
                 {v.nextMilestone && (
-                  <span style={{ color: 'rgba(122,39,255,0.3)' }}>
+                  <span style={{ color: 'rgba(0,255,255,0.15)' }}>
                     {' '}— next at {v.nextMilestone.ageYears} ({v.daysUntilNext?.toLocaleString()}d)
                   </span>
                 )}
@@ -318,6 +322,7 @@ function WalletTab({ wallet }: { wallet: ReturnType<typeof usePhenixWallet> }) {
         <input
           type="password"
           placeholder="Vault password (8+ chars)"
+          aria-label="Password"
           value={pw}
           onChange={e => setPw(e.target.value)}
           style={inputStyle}
@@ -325,6 +330,7 @@ function WalletTab({ wallet }: { wallet: ReturnType<typeof usePhenixWallet> }) {
         <input
           type="password"
           placeholder="Confirm password"
+          aria-label="Confirm password"
           value={confirmPw}
           onChange={e => setConfirmPw(e.target.value)}
           style={{ ...inputStyle, marginTop: 6 }}
@@ -359,6 +365,7 @@ function WalletTab({ wallet }: { wallet: ReturnType<typeof usePhenixWallet> }) {
         <input
           type="password"
           placeholder="Vault password"
+          aria-label="Password"
           value={pw}
           onChange={e => setPw(e.target.value)}
           style={inputStyle}
@@ -401,17 +408,20 @@ function WalletTab({ wallet }: { wallet: ReturnType<typeof usePhenixWallet> }) {
 
       {/* Meta-address */}
       <Card title="Stealth Meta-Address" accent={BLUE}>
-        <div
+        <button
+          type="button"
           onClick={() => { if (state.metaAddress) navigator.clipboard.writeText(state.metaAddress); }}
+          aria-label="Copy stealth meta-address to clipboard"
           style={{
             fontSize: fs.xs, fontFamily: 'monospace', color: BLUE, cursor: 'pointer',
-            padding: '6px 8px', background: '#0D0D2A', borderRadius: 6,
+            padding: '6px 8px', background: '#000000', borderRadius: 6,
             border: `1px solid ${BLUE}22`, wordBreak: 'break-all',
+            width: '100%', textAlign: 'left',
           }}
           title="Click to copy"
         >
           st:eth:0x{metaHex.slice(0, 20)}...{metaHex.slice(-20)}
-        </div>
+        </button>
         <div style={{ fontSize: fs.xs, color: DIM, marginTop: 4 }}>Click to copy full meta-address</div>
       </Card>
 
@@ -451,7 +461,7 @@ function StealthTab({ wallet }: { wallet: ReturnType<typeof usePhenixWallet> }) 
           {state.stealthAddresses.map((sa, i) => (
             <div key={i} style={{
               display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-              padding: '6px 8px', background: '#0D0D2A', borderRadius: 6,
+              padding: '6px 8px', background: '#000000', borderRadius: 6,
               border: `1px solid ${BLUE}15`,
             }}>
               <div>
@@ -523,7 +533,8 @@ function LedgerTab({ wallet }: { wallet: ReturnType<typeof usePhenixWallet> }) {
           value={memoType}
           onChange={e => setMemoType(e.target.value as MemoEntry['type'])}
           title="Memo type"
-          style={{ ...inputStyle, marginBottom: 6, background: '#0D0D2A', color: WARM_WHITE }}
+          aria-label="Memo type"
+          style={{ ...inputStyle, marginBottom: 6, background: '#000000', color: WARM_WHITE }}
         >
           <option value="NOTE">Note</option>
           <option value="DONATION_RECEIVED">Donation Received</option>
@@ -537,11 +548,13 @@ function LedgerTab({ wallet }: { wallet: ReturnType<typeof usePhenixWallet> }) {
           onChange={e => setMemoText(e.target.value)}
           rows={2}
           title="Memo text"
+          aria-label="Memo text"
           style={{ ...inputStyle, resize: 'vertical', fontFamily: FONT }}
         />
         <input
           type="text"
           placeholder="Amount (optional)"
+          aria-label="Amount"
           value={memoAmount}
           onChange={e => setMemoAmount(e.target.value)}
           style={{ ...inputStyle, marginTop: 6 }}
@@ -592,7 +605,7 @@ function HardwareTab() {
 
       <div style={{
         display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px',
-        background: '#0D0D2A', borderRadius: 8, border: `1px solid ${CORAL}22`, marginBottom: 12,
+        background: '#000000', borderRadius: 8, border: `1px solid ${CORAL}22`, marginBottom: 12,
       }}>
         <div style={{
           width: 10, height: 10, borderRadius: '50%',
@@ -643,9 +656,9 @@ function Terminal({ logs }: { logs: LogLine[] }) {
 
   return (
     <div ref={termRef} style={{
-      background: '#050510', borderRadius: 6, padding: '6px 10px',
+      background: '#000000', borderRadius: 6, padding: '6px 10px',
       fontSize: fs.xs, fontFamily: 'monospace', maxHeight: 80,
-      overflow: 'auto', border: '1px solid rgba(122,39,255,0.1)',
+      overflow: 'auto', border: '1px solid rgba(0,255,255,0.05)',
       flexShrink: 0,
     }}>
       {logs.length === 0 && <div style={{ color: DIM }}>[ Phenix terminal ready ]</div>}
@@ -673,16 +686,21 @@ function LockedMessage() {
 
 const inputStyle: React.CSSProperties = {
   width: '100%', padding: '8px 10px', borderRadius: 6,
-  border: '1px solid rgba(122,39,255,0.2)', background: '#0D0D2A',
+  border: '1px solid rgba(0,255,255,0.1)', background: '#000000',
   color: WARM_WHITE, fontFamily: FONT, fontSize: 'clamp(10px, 1.3vh, 13px)',
-  outline: 'none', boxSizing: 'border-box',
+  outline: '2px solid transparent', boxSizing: 'border-box',
 };
 
 const btnStyle: React.CSSProperties = {
-  padding: '8px 12px', borderRadius: 6, fontFamily: FONT,
+  padding: '12px 16px', borderRadius: 6, fontFamily: FONT,
   fontSize: fs.sm, fontWeight: 600, cursor: 'pointer',
   border: '1px solid', background: 'transparent',
   letterSpacing: '0.04em', transition: 'opacity 0.15s',
+  minHeight: '48px',
+  minWidth: '48px',
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
 };
 
 // ── MAIN COMPONENT ─────────────────────────────────────────────
@@ -695,12 +713,12 @@ export function BridgeRoom({ love, spoons, maxSpoons, tier }: Props) {
     <div style={{
       display: 'flex', flexDirection: 'column',
       height: '100%', color: WARM_WHITE, fontFamily: FONT,
-      overflow: 'hidden', background: '#050510',
+      overflow: 'hidden', background: '#000000',
     }}>
       {/* Tab bar */}
       <div style={{
         display: 'flex', gap: 2, padding: '4px 8px',
-        borderBottom: '1px solid rgba(122,39,255,0.12)',
+        borderBottom: '1px solid rgba(0,255,255,0.06)',
         flexShrink: 0,
       }}>
         {TABS.map(tab => {

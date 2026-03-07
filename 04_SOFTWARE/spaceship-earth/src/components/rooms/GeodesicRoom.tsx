@@ -11,37 +11,42 @@ import type { PlacedPiece, PrimitiveType, Structure } from '@p31/game-engine';
 
 // ── P31 Sovereign Style Constants ──
 
-const GREEN = '#00FF88';
-const DIM = 'rgba(0, 255, 136, 0.4)';
-const BG = 'rgba(10, 10, 31, 0.85)';
-const BORDER = 'rgba(0, 255, 136, 0.2)';
+const GREEN = '#00FFFF';
+const DIM = 'rgba(0, 255, 255, 0.3)';
+const BG = 'rgba(0, 0, 0, 0.92)';
+const BORDER = 'rgba(0, 255, 255, 0.15)';
 const FONT = "'Space Mono', monospace";
 
 const cardStyle: React.CSSProperties = {
   background: BG,
   border: `1px solid ${BORDER}`,
   borderRadius: 4,
-  boxShadow: `0 0 12px rgba(0, 255, 136, 0.06), inset 0 0 20px rgba(0, 255, 136, 0.03)`,
+  boxShadow: `0 0 12px rgba(0, 255, 255, 0.06), inset 0 0 20px rgba(0, 255, 255, 0.03)`,
   fontFamily: FONT,
   color: GREEN,
 };
 
 const barTrack: React.CSSProperties = {
-  background: 'rgba(0, 255, 136, 0.08)',
+  background: 'rgba(0, 255, 255, 0.08)',
   borderRadius: 2,
   overflow: 'hidden',
   width: '100%',
 };
 
 const btnStyle = (active = false): React.CSSProperties => ({
-  background: active ? 'rgba(0, 255, 136, 0.15)' : 'rgba(0, 255, 136, 0.05)',
-  border: `1px solid ${active ? 'rgba(0, 255, 136, 0.5)' : BORDER}`,
+  background: active ? 'rgba(0, 255, 255, 0.15)' : 'rgba(0, 255, 255, 0.05)',
+  border: `1px solid ${active ? 'rgba(0, 255, 255, 0.5)' : BORDER}`,
   borderRadius: 4,
   cursor: 'pointer',
   fontFamily: FONT,
   color: GREEN,
-  boxShadow: active ? `0 0 10px rgba(0, 255, 136, 0.15)` : 'none',
+  boxShadow: active ? `0 0 10px rgba(0, 255, 255, 0.15)` : 'none',
   transition: 'all 0.15s',
+  minHeight: '48px',
+  minWidth: '48px',
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
 });
 
 // ── Placement particle burst ──
@@ -212,10 +217,10 @@ function ConnectionLines({ pieces }: { pieces: readonly PlacedPiece[] }) {
 function GlowGrid() {
   return (
     <group>
-      <gridHelper args={[12, 24, '#0a2a1a', '#050f10']} />
+      <gridHelper args={[12, 24, '#0a2a1a', '#050f05']} />
       <mesh rotation-x={-Math.PI / 2} position-y={-0.01}>
         <planeGeometry args={[12, 12]} />
-        <meshBasicMaterial color="#050510" transparent opacity={0.4} />
+        <meshBasicMaterial color="#000000" transparent opacity={0.4} />
       </mesh>
     </group>
   );
@@ -226,11 +231,11 @@ function GlowGrid() {
 function GeodesicScene({ structure }: { structure: Structure }) {
   return (
     <>
-      <ambientLight intensity={0.3} color="#0a1a1f" />
+      <ambientLight intensity={0.3} color="#0a1a0a" />
       <pointLight position={[5, 8, 5]} intensity={0.8} color={GREEN} />
       <pointLight position={[-5, -3, 5]} intensity={0.4} color={GREEN} />
       <pointLight position={[0, 6, -4]} intensity={0.2} color="#0a4428" />
-      <hemisphereLight args={['#0a1f14', '#050510', 0.3]} />
+      <hemisphereLight args={['#001a00', '#000000', 0.3]} />
       <OrbitControls enableDamping dampingFactor={0.05} />
       <GlowGrid />
       {structure.pieces.map(piece => (
@@ -248,7 +253,7 @@ const TIER_COLORS: Record<string, string> = {
   seedling: DIM,
   sprout: GREEN,
   sapling: '#cccc44',
-  oak: '#FFB800',
+  oak: '#FFD700',
   sequoia: '#ff3333',
 };
 
@@ -371,7 +376,7 @@ export function GeodesicRoom() {
           <span style={{
             color: rig.isRigid ? GREEN : '#cccc44',
             fontSize: 10, fontWeight: 600,
-            textShadow: rig.isRigid ? `0 0 8px rgba(0, 255, 136, 0.3)` : 'none',
+            textShadow: rig.isRigid ? `0 0 8px rgba(0, 255, 255, 0.3)` : 'none',
           }}>
             {rig.isRigid ? 'RIGID' : 'FLOPPY'}
           </span>
@@ -382,7 +387,7 @@ export function GeodesicRoom() {
             height: '100%', borderRadius: 2,
             background: rig.isRigid
               ? `linear-gradient(90deg, ${GREEN}, #44ffaa)`
-              : 'linear-gradient(90deg, #cccc44, #FFB800)',
+              : 'linear-gradient(90deg, #cccc44, #FFD700)',
             width: `${Math.min(100, rig.coherence * 100)}%`,
             transition: 'width 0.3s',
           }} />
@@ -420,10 +425,15 @@ export function GeodesicRoom() {
           onClick={handleUndo}
           style={{
             ...btnStyle(),
-            padding: '6px 10px',
+            padding: '12px 16px',
             fontSize: 9,
             borderColor: 'rgba(255, 51, 51, 0.2)',
             color: '#ff3333',
+            minHeight: '48px',
+            minWidth: '48px',
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
           Undo
@@ -491,7 +501,7 @@ export function GeodesicRoom() {
             >
               <span style={{ color: TIER_COLORS[c.tier] ?? DIM, fontWeight: 600 }}>{c.tier}</span>{' '}
               {c.title}{' '}
-              <span style={{ color: '#FF00CC' }}>+{c.rewardLove}L</span>
+              <span style={{ color: '#FF00FF' }}>+{c.rewardLove}L</span>
             </button>
           ))
         ) : (

@@ -69,6 +69,7 @@ export function useSpatialRadar(): SpatialRadarState & {
     store.setSpatialNodes(nodes.length);
     store.setSpatialTransport(transport);
     store.setHandshakeCandidate(candidate);
+    store.setSpatialNodeList(nodes.map((n) => ({ id: n.id, rssi: n.rssi, valency: n.valency, flags: n.flags })));
   }, []);
 
   const handleScanResults = useCallback((results: RawScanResult[]) => {

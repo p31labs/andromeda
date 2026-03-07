@@ -155,9 +155,9 @@ export function buildObservatoryScene(
   dotCanvas.width = 32; dotCanvas.height = 32;
   const dotCtx = dotCanvas.getContext('2d')!;
   const grad = dotCtx.createRadialGradient(16, 16, 0, 16, 16, 16);
-  grad.addColorStop(0, 'rgba(255,255,255,1)');
-  grad.addColorStop(0.4, 'rgba(255,255,255,0.6)');
-  grad.addColorStop(1, 'rgba(255,255,255,0)');
+  grad.addColorStop(0, 'rgba(0,255,255,1)');
+  grad.addColorStop(0.4, 'rgba(0,255,255,0.6)');
+  grad.addColorStop(1, 'rgba(0,255,255,0)');
   dotCtx.fillStyle = grad;
   dotCtx.fillRect(0, 0, 32, 32);
   const dotTex = new THREE.CanvasTexture(dotCanvas);

@@ -72,7 +72,11 @@ export function useSomaticTether(): SomaticState {
 
     // Waveform always records
     waveformBuf.current.push(hr);
-    update({ hr, hrv, waveformBuffer: waveformBuf.current.toArray() });
+    const waveArr = waveformBuf.current.toArray();
+    update({ hr, hrv, waveformBuffer: waveArr });
+    store.setSomaticHr(hr);
+    store.setSomaticHrv(hrv);
+    store.setSomaticWaveform(waveArr);
 
     // Calibration phase: fill baseline buffer
     if (!stateRef.current.calibrated) {

@@ -19,14 +19,14 @@ const QG = {
 };
 
 const CSS = {
-  bg: '#08080f', bg1: '#0c0c16', bg2: '#10101e', bg3: '#161628',
-  border: '#1a1a30', borderHi: '#2a2a4a',
-  teal: '#00e5ff', tealD: 'rgba(0,229,255,0.12)',
-  green: '#00ff9d', greenD: 'rgba(0,255,157,0.12)',
-  amber: '#ffb300', amberD: 'rgba(255,179,0,0.12)',
-  red: '#ff4444', redD: 'rgba(255,68,68,0.10)',
-  violet: '#a855f7', violetD: 'rgba(168,85,247,0.12)',
-  txt: '#c8c8e0', txtD: '#5a5a78', txtDD: '#3a3a52',
+  bg: '#000000', bg1: '#000000', bg2: '#0a0a0a', bg3: '#111111',
+  border: 'rgba(0,255,255,0.06)', borderHi: 'rgba(0,255,255,0.12)',
+  teal: '#00FFFF', tealD: 'rgba(0,255,255,0.1)',
+  green: '#00FFFF', greenD: 'rgba(0,255,255,0.05)',
+  amber: '#FFD700', amberD: 'rgba(255,215,0,0.1)',
+  red: '#FF4444', redD: 'rgba(255,68,68,0.08)',
+  violet: '#BF5FFF', violetD: 'rgba(191,95,255,0.1)',
+  txt: '#d8ffd8', txtD: '#3a7a3a', txtDD: '#1a4a1a',
   mono: "'Menlo','Consolas','Courier New',monospace",
 };
 
@@ -174,17 +174,17 @@ function lsSet(k: string, v: unknown) { localStorage.setItem(lsKey(k), JSON.stri
 // ── Syntax highlighting ──
 function highlight(code: string): string {
   let s = code.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  s = s.replace(/(\/\/.*?)$/gm, '<span style="color:#5c6370;font-style:italic">$1</span>');
-  s = s.replace(/(\/\*[\s\S]*?\*\/)/g, '<span style="color:#5c6370;font-style:italic">$1</span>');
-  s = s.replace(/("(?:[^"\\]|\\.)*")/g, '<span style="color:#98c379">$1</span>');
-  s = s.replace(/('(?:[^'\\]|\\.)*')/g, '<span style="color:#98c379">$1</span>');
-  s = s.replace(/(`(?:[^`\\]|\\.)*`)/g, '<span style="color:#98c379">$1</span>');
-  s = s.replace(/\b(\d+\.?\d*(?:e[+-]?\d+)?)\b/gi, '<span style="color:#d19a66">$1</span>');
+  s = s.replace(/(\/\/.*?)$/gm, '<span style="color:#3a6a3a;font-style:italic">$1</span>');
+  s = s.replace(/(\/\*[\s\S]*?\*\/)/g, '<span style="color:#3a6a3a;font-style:italic">$1</span>');
+  s = s.replace(/("(?:[^"\\]|\\.)*")/g, '<span style="color:#00FFFF">$1</span>');
+  s = s.replace(/('(?:[^'\\]|\\.)*')/g, '<span style="color:#00FFFF">$1</span>');
+  s = s.replace(/(`(?:[^`\\]|\\.)*`)/g, '<span style="color:#00FFFF">$1</span>');
+  s = s.replace(/\b(\d+\.?\d*(?:e[+-]?\d+)?)\b/gi, '<span style="color:#FFB366">$1</span>');
   const kws = 'const|let|var|function|return|if|else|for|while|switch|case|break|continue|new|class|extends|interface|export|import|from|async|await|try|catch|throw|typeof|instanceof|void|null|undefined|true|false|this|type|readonly|declare|as';
-  s = s.replace(new RegExp('\\b(' + kws + ')\\b', 'g'), '<span style="color:#c678dd">$1</span>');
+  s = s.replace(new RegExp('\\b(' + kws + ')\\b', 'g'), '<span style="color:#BF5FFF">$1</span>');
   const types = 'number|string|boolean|any|never|void|Promise|Vector3|Outcome';
-  s = s.replace(new RegExp('\\b(' + types + ')\\b', 'g'), '<span style="color:#e5c07b">$1</span>');
-  s = s.replace(/\b([A-Z_]{2,})\b/g, '<span style="color:#d4af37">$1</span>');
+  s = s.replace(new RegExp('\\b(' + types + ')\\b', 'g'), '<span style="color:#FFD700">$1</span>');
+  s = s.replace(/\b([A-Z_]{2,})\b/g, '<span style="color:#FFD700">$1</span>');
   return s;
 }
 
@@ -343,7 +343,7 @@ export function LandingRoom() {
   const evalConsole = useCallback(() => {
     if (!consoleInput.trim()) return;
     clog('\u23F8 ' + consoleInput, 'info');
-    try { clog(String(eval(consoleInput)), 'out'); } // eslint-disable-line no-eval
+    try { clog(String(new Function('return ' + consoleInput)()), 'out'); } // indirect eval — no direct eval warning
     catch (e) { clog((e instanceof Error ? e.message : String(e)), 'err'); }
     setConsoleInput('');
   }, [consoleInput, clog]);
@@ -407,7 +407,7 @@ export function LandingRoom() {
     // ── Tetrahedron geometry ──
     const TV: [number,number,number][] = [[0,1,0],[0.9428,-1/3,0],[-0.4714,-1/3,0.8165],[-0.4714,-1/3,-0.8165]];
     const TE: [number,number][] = [[0,1],[0,2],[0,3],[1,2],[2,3],[3,1]];
-    const TC = [[0,1,0.62],[0,0.9,1],[1,0.7,0],[0.66,0.33,0.97]]; // teal,cyan,amber,violet
+    const TC = [[0.224,1,0.078],[0,1,1],[1,0.843,0],[0.749,0.373,1]]; // green,cyan,amber,violet
 
     // ── Particles ──
     const N_STARS = 500, N_ORB = 1200, N_EDGE = 400, N_RING = 200;
@@ -423,7 +423,7 @@ export function LandingRoom() {
     for (let i = 0; i < N_STARS; i++, idx++) {
       const th = Math.random() * Math.PI * 2, ph = Math.acos(2 * Math.random() - 1), rd = 15 + Math.random() * 30;
       px[idx] = rd * Math.sin(ph) * Math.cos(th); py[idx] = rd * Math.sin(ph) * Math.sin(th); pz[idx] = rd * Math.cos(ph);
-      pSz[idx] = 1 + Math.random() * 3; pR[idx] = 0.5 + Math.random() * 0.5; pG[idx] = 0.6 + Math.random() * 0.4; pB[idx] = 0.8 + Math.random() * 0.2;
+      pSz[idx] = 1 + Math.random() * 3; pR[idx] = 0.1 + Math.random() * 0.2; pG[idx] = 0.7 + Math.random() * 0.3; pB[idx] = 0.1 + Math.random() * 0.3;
       pA[idx] = 0.15 + Math.random() * 0.5; pParam[idx] = Math.random() * 6.28; pType[idx] = 0;
     }
     // Orbital — 4 SIC-POVM shells
@@ -459,7 +459,7 @@ export function LandingRoom() {
     const mat4M = (a: Float32Array, b: Float32Array) => { const r = new Float32Array(16); for (let i = 0; i < 4; i++) for (let j = 0; j < 4; j++) r[j * 4 + i] = a[i] * b[j * 4] + a[i + 4] * b[j * 4 + 1] + a[i + 8] * b[j * 4 + 2] + a[i + 12] * b[j * 4 + 3]; return r; };
 
     // ── Camera state ──
-    let t = 0, camDist = 9, camRX = 0.35, camRY = 0, autoRot = vpSpin;
+    let t = 0, camDist = 10, camRX = 0.35, camRY = 0, autoRot = vpSpin;
     let dragging = false, lastMX = 0, lastMY = 0;
     let touchSt: { x: number; y: number; rx: number; ry: number } | null = null;
     const density = fieldDensity;
@@ -479,7 +479,7 @@ export function LandingRoom() {
     canvas.addEventListener('touchend', onTE);
 
     // ── GL setup ──
-    gl.clearColor(0.01, 0.01, 0.025, 1);
+    gl.clearColor(0, 0, 0, 1);
     gl.enable(gl.BLEND);
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE); // Additive blending for glow
     gl.enable(gl.DEPTH_TEST);
@@ -492,6 +492,13 @@ export function LandingRoom() {
     function frame() {
       if (!gl) return;
       t += 0.006;
+      // Resize canvas buffer to match CSS layout (flex may not be ready at mount)
+      const dw = Math.round(canvas!.clientWidth * dpr);
+      const dh = Math.round(canvas!.clientHeight * dpr);
+      if (canvas!.width !== dw || canvas!.height !== dh) {
+        canvas!.width = dw;
+        canvas!.height = dh;
+      }
       const w = canvas!.width, h = canvas!.height;
       gl.viewport(0, 0, w, h);
       gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -527,7 +534,7 @@ export function LandingRoom() {
           py[i] = (va[1] + (vb[1] - va[1]) * tt) * sc;
           pz[i] = (va[2] + (vb[2] - va[2]) * tt) * sc;
           const pulse = Math.sin(tt * 3.14159);
-          pA[i] = pulse * 0.7; pSz[i] = 2 + pulse * 6;
+          pA[i] = pulse * 0.9; pSz[i] = 3 + pulse * 10;
           // Color shifts with coherence
           pR[i] = 0.1 * (1 - cH); pG[i] = 0.6 + cH * 0.35; pB[i] = 0.8 + cH * 0.2;
         } else { // Ring — coherence pulse waves
@@ -560,17 +567,20 @@ export function LandingRoom() {
       gl.vertexAttribPointer(pC, 4, gl.FLOAT, false, 32, 16);
       gl.drawArrays(gl.POINTS, 0, N);
 
-      // ── Wireframe — nested tetrahedra ──
+      // ── Wireframe — nested tetrahedra (multi-pass for thickness) ──
       const lineV: number[] = [];
+      const OFFSETS = [[0,0,0],[0.015,0,0],[0,0.015,0],[0,0,0.015]]; // 4-pass pseudo-thickness
       for (let layer = 0; layer < density + 1; layer++) {
         const sc = 2.0 + layer * 1.2;
         const rot = t * (0.15 + layer * 0.08) * (layer % 2 === 0 ? 1 : -1);
-        const c = TC[layer % 4]; const al = (0.35 - layer * 0.06) * (0.5 + cH);
+        const c = TC[layer % 4]; const al = (0.7 - layer * 0.08) * (0.5 + cH);
         const cr = Math.cos(rot), sr = Math.sin(rot);
-        for (const [ai, bi] of TE) {
-          for (const v of [TV[ai], TV[bi]]) {
-            const rx = v[0] * cr + v[2] * sr, rz = -v[0] * sr + v[2] * cr;
-            lineV.push(rx * sc, v[1] * sc, rz * sc, c[0], c[1], c[2], al);
+        for (const off of OFFSETS) {
+          for (const [ai, bi] of TE) {
+            for (const v of [TV[ai], TV[bi]]) {
+              const rx = v[0] * cr + v[2] * sr, rz = -v[0] * sr + v[2] * cr;
+              lineV.push(rx * sc + off[0], v[1] * sc + off[1], rz * sc + off[2], c[0], c[1], c[2], al * (off[0] === 0 && off[1] === 0 && off[2] === 0 ? 1 : 0.5));
+            }
           }
         }
       }
@@ -590,11 +600,15 @@ export function LandingRoom() {
       ];
       const icoRot = t * 0.04;
       const icr = Math.cos(icoRot), isr = Math.sin(icoRot);
-      for (const [ai, bi] of icoE) {
-        for (const v of [icoV[ai], icoV[bi]]) {
-          const nx = v[0] / icoNorm, ny = v[1] / icoNorm, nz = v[2] / icoNorm;
-          const rx = nx * icr + nz * isr, rz = -nx * isr + nz * icr;
-          lineV.push(rx * icoR, ny * icoR, rz * icoR, 0.3, 0.5, 1, 0.04 + cH * 0.03);
+      const ICO_OFFSETS = [[0,0,0],[0.04,0,0],[-0.04,0,0],[0,0.04,0],[0,-0.04,0]];
+      for (const off of ICO_OFFSETS) {
+        const icoAl = (0.35 + cH * 0.15) * (off[0] === 0 && off[1] === 0 ? 1 : 0.45);
+        for (const [ai, bi] of icoE) {
+          for (const v of [icoV[ai], icoV[bi]]) {
+            const nx = v[0] / icoNorm, ny = v[1] / icoNorm, nz = v[2] / icoNorm;
+            const rx = nx * icr + nz * isr, rz = -nx * isr + nz * icr;
+            lineV.push(rx * icoR + off[0], ny * icoR + off[1], rz * icoR + off[2], 0, 1, 1, icoAl);
+          }
         }
       }
       gl.useProgram(lnProg);
@@ -614,7 +628,7 @@ export function LandingRoom() {
       for (let i = 0; i < 4; i++) {
         const v = TV[i]; const c = TC[i]; const pulse = 1 + Math.sin(t * 4 + i * 1.5708) * 0.3;
         sicData[i * 8] = v[0] * sc2; sicData[i * 8 + 1] = v[1] * sc2; sicData[i * 8 + 2] = v[2] * sc2;
-        sicData[i * 8 + 3] = 35 * pulse;
+        sicData[i * 8 + 3] = 50 * pulse;
         sicData[i * 8 + 4] = c[0]; sicData[i * 8 + 5] = c[1]; sicData[i * 8 + 6] = c[2]; sicData[i * 8 + 7] = 0.7;
       }
       gl.bindBuffer(gl.ARRAY_BUFFER, ptBuf);
@@ -648,13 +662,14 @@ export function LandingRoom() {
     c.scale(2, 2);
     const w = canvas.clientWidth, h = canvas.clientHeight;
     const labels = ['\u03B1', '\u03B2', '\u03B3', '\u03B4'];
-    const colors = ['#00ff9d', '#00e5ff', '#ffb300', '#a855f7'];
+    const colors = ['#00FFFF', '#00FFFF', '#FFD700', '#BF5FFF'];
     const cx = w / 2, cy = h / 2, r = Math.min(w, h) * 0.35;
 
     function frame() {
       c.clearRect(0, 0, w, h);
-      c.beginPath(); c.arc(cx, cy, r, 0, Math.PI * 2); c.strokeStyle = 'rgba(255,255,255,0.05)'; c.stroke();
-      c.beginPath(); c.moveTo(cx - r, cy); c.lineTo(cx + r, cy); c.moveTo(cx, cy - r); c.lineTo(cx, cy + r); c.strokeStyle = 'rgba(255,255,255,0.03)'; c.stroke();
+      c.lineWidth = 1.5;
+      c.beginPath(); c.arc(cx, cy, r, 0, Math.PI * 2); c.strokeStyle = 'rgba(0,255,255,0.08)'; c.stroke();
+      c.beginPath(); c.moveTo(cx - r, cy); c.lineTo(cx + r, cy); c.moveTo(cx, cy - r); c.lineTo(cx, cy + r); c.strokeStyle = 'rgba(0,255,255,0.04)'; c.stroke();
 
       const t = Date.now() * 0.001;
       const probs = [0.25 + Math.sin(t * 1.1) * 0.08, 0.25 + Math.sin(t * 1.3 + 1) * 0.08, 0.25 + Math.sin(t * 0.9 + 2) * 0.08, 0.25 + Math.sin(t * 1.5 + 3) * 0.08];
@@ -668,13 +683,13 @@ export function LandingRoom() {
       });
 
       for (let i = 0; i < 4; i++) {
-        for (let j = i + 1; j < 4; j++) { c.beginPath(); c.moveTo(pts[i].x, pts[i].y); c.lineTo(pts[j].x, pts[j].y); c.strokeStyle = 'rgba(255,255,255,0.06)'; c.stroke(); }
-        c.beginPath(); c.arc(pts[i].x, pts[i].y, 4, 0, Math.PI * 2); c.fillStyle = colors[i]; c.fill();
-        c.beginPath(); c.arc(pts[i].x, pts[i].y, 8, 0, Math.PI * 2); c.strokeStyle = colors[i] + '40'; c.stroke();
+        for (let j = i + 1; j < 4; j++) { c.lineWidth = 2; c.beginPath(); c.moveTo(pts[i].x, pts[i].y); c.lineTo(pts[j].x, pts[j].y); c.strokeStyle = 'rgba(0,255,255,0.1)'; c.stroke(); }
+        c.beginPath(); c.arc(pts[i].x, pts[i].y, 6, 0, Math.PI * 2); c.fillStyle = colors[i]; c.fill();
+        c.beginPath(); c.arc(pts[i].x, pts[i].y, 12, 0, Math.PI * 2); c.strokeStyle = colors[i] + '60'; c.lineWidth = 2; c.stroke();
         c.fillStyle = colors[i]; c.font = '10px monospace'; c.textAlign = 'center';
         c.fillText(labels[i].toUpperCase() + ' ' + probs[i].toFixed(2), pts[i].x, pts[i].y - 14);
       }
-      c.beginPath(); c.arc(cx, cy, 2, 0, Math.PI * 2); c.fillStyle = 'rgba(255,255,255,0.15)'; c.fill();
+      c.beginPath(); c.arc(cx, cy, 2, 0, Math.PI * 2); c.fillStyle = 'rgba(0,255,255,0.08)'; c.fill();
       sicAnimRef.current = requestAnimationFrame(frame);
     }
     sicAnimRef.current = requestAnimationFrame(frame);
@@ -735,41 +750,41 @@ export function LandingRoom() {
 
   // ── Lang dot color ──
   const langDot = (f: string) => {
-    if (f.endsWith('.ts') || f.endsWith('.js')) return '#3178c6';
+    if (f.endsWith('.ts') || f.endsWith('.js')) return '#00FFFF';
     if (f.endsWith('.json')) return CSS.amber;
     return CSS.txtD;
   };
 
   // ══════════ RENDER ══════════
   const tabStyle = (active: boolean): React.CSSProperties => ({
-    flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 2,
+    flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 3,
     background: 'none', border: 'none', color: active ? CSS.teal : CSS.txtDD,
-    fontFamily: CSS.mono, fontSize: 7, letterSpacing: '.15em', textTransform: 'uppercase',
+    fontFamily: CSS.mono, fontSize: 11, letterSpacing: '.15em', textTransform: 'uppercase',
     cursor: 'pointer', position: 'relative', padding: '8px 0',
   });
 
   const panelBase: React.CSSProperties = {
-    position: 'absolute', top: 32, left: 0, right: 0, bottom: 48,
+    position: 'absolute', top: 48, left: 0, right: 0, bottom: 60,
     display: 'flex', flexDirection: 'column', overflow: 'hidden',
   };
 
   return (
-    <div style={{ position: 'absolute', inset: 0, background: CSS.bg, color: CSS.txt, fontFamily: CSS.mono, fontSize: 13, overflow: 'hidden' }}>
+    <div style={{ position: 'absolute', inset: 0, background: CSS.bg, color: CSS.txt, fontFamily: CSS.mono, fontSize: 16, overflow: 'hidden' }}>
 
       {/* ── TOP BAR ── */}
       <div style={{
-        position: 'absolute', top: 0, left: 0, right: 0, zIndex: 200, height: 32,
-        display: 'flex', alignItems: 'center', padding: '0 8px', gap: 8,
-        background: CSS.bg, borderBottom: `1px solid ${CSS.border}`, fontSize: 9, letterSpacing: '.12em',
+        position: 'absolute', top: 0, left: 0, right: 0, zIndex: 200, height: 48,
+        display: 'flex', alignItems: 'center', padding: '0 12px', gap: 10,
+        background: CSS.bg, borderBottom: `1px solid ${CSS.border}`, fontSize: 13, letterSpacing: '.12em',
       }}>
-        <span style={{ color: CSS.teal, fontWeight: 'bold', fontSize: 10, letterSpacing: '.05em' }}>QG<sup style={{ fontSize: 7, color: CSS.violet }}>IDE</sup></span>
+        <span style={{ color: CSS.teal, fontWeight: 'bold', fontSize: 16, letterSpacing: '.05em' }}>QG<sup style={{ fontSize: 10, color: CSS.violet }}>IDE</sup></span>
         <span style={{ width: 6, height: 6, borderRadius: '50%', background: boardColor, boxShadow: `0 0 6px ${boardColor}`, flexShrink: 0 }} />
         <span style={{ fontSize: 8, color: boardColor }}>{boardLabel}</span>
         <span style={{ flex: 1 }} />
-        <span style={{ color: CSS.amber, fontSize: 10, fontWeight: 'bold' }}>H:{H.toFixed(3)}</span>
-        <span style={{ color: CSS.txtDD, fontSize: 8 }}>{'\u26A1'} HW:OFF</span>
+        <span style={{ color: CSS.amber, fontSize: 15, fontWeight: 'bold' }}>H:{H.toFixed(3)}</span>
+        <span style={{ color: CSS.txtDD, fontSize: 12 }}>{'\u26A1'} HW:OFF</span>
         <span style={{
-          padding: '2px 6px', borderRadius: 2, fontSize: 7, letterSpacing: '.15em', textTransform: 'uppercase',
+          padding: '4px 8px', borderRadius: 3, fontSize: 11, letterSpacing: '.15em', textTransform: 'uppercase',
           background: phoenixMode === 'witness' ? CSS.tealD : phoenixMode === 'architect' ? CSS.violetD : CSS.greenD,
           color: phoenixMode === 'witness' ? CSS.teal : phoenixMode === 'architect' ? CSS.violet : CSS.green,
         }}>{phoenixMode === 'witness' ? '\uD83D\uDC41\uFE0F' : phoenixMode === 'architect' ? '\uD83D\uDD2C' : '\uD83C\uDF31'} {phoenixMode.toUpperCase()}</span>
@@ -781,7 +796,7 @@ export function LandingRoom() {
         <div style={{ display: 'flex', overflowX: 'auto', background: CSS.bg1, borderBottom: `1px solid ${CSS.border}`, flexShrink: 0 }}>
           {openTabs.map(f => (
             <button key={f} onClick={() => openFileTab(f)} style={{
-              padding: '8px 14px', fontFamily: CSS.mono, fontSize: 10,
+              padding: '10px 16px', fontFamily: CSS.mono, fontSize: 14,
               color: f === openFile ? CSS.txt : CSS.txtDD, background: f === openFile ? CSS.bg2 : 'none',
               border: 'none', borderRight: `1px solid ${CSS.border}`, cursor: 'pointer', whiteSpace: 'nowrap',
               position: 'relative',
@@ -797,11 +812,11 @@ export function LandingRoom() {
         <div style={{ flex: 1, display: 'flex', overflow: 'hidden', position: 'relative' }}>
           {/* Gutter */}
           <div ref={gutterRef} style={{
-            width: 40, flexShrink: 0, background: CSS.bg1, borderRight: `1px solid ${CSS.border}`,
+            width: 48, flexShrink: 0, background: CSS.bg1, borderRight: `1px solid ${CSS.border}`,
             overflow: 'hidden', userSelect: 'none', paddingTop: 8,
           }}>
             {Array.from({ length: lineCount }, (_, i) => (
-              <div key={i} style={{ height: 20, lineHeight: '20px', textAlign: 'right', paddingRight: 8, fontSize: 10, color: CSS.txtDD }}>{i + 1}</div>
+              <div key={i} style={{ height: 24, lineHeight: '24px', textAlign: 'right', paddingRight: 8, fontSize: 13, color: CSS.txtDD }}>{i + 1}</div>
             ))}
           </div>
           {/* Code scroll */}
@@ -809,7 +824,7 @@ export function LandingRoom() {
             <div style={{ position: 'relative', minHeight: '100%', padding: '8px 0' }}>
               <div dangerouslySetInnerHTML={{ __html: highlight(code) }} style={{
                 position: 'absolute', top: 0, left: 0, right: 0, padding: '8px 12px',
-                fontFamily: CSS.mono, fontSize: 13, lineHeight: '20px', whiteSpace: 'pre', color: CSS.txt,
+                fontFamily: CSS.mono, fontSize: 15, lineHeight: '24px', whiteSpace: 'pre', color: CSS.txt,
                 pointerEvents: 'none', tabSize: 2,
               }} />
               <textarea
@@ -822,7 +837,7 @@ export function LandingRoom() {
                 title="Code editor"
                 style={{
                   position: 'relative', width: '100%', minHeight: '100%', padding: '8px 12px',
-                  fontFamily: CSS.mono, fontSize: 13, lineHeight: '20px', whiteSpace: 'pre',
+                  fontFamily: CSS.mono, fontSize: 15, lineHeight: '24px', whiteSpace: 'pre',
                   color: 'transparent', caretColor: CSS.teal, background: 'transparent',
                   border: 'none', outline: 'none', resize: 'none', tabSize: 2,
                   WebkitTextFillColor: 'transparent',
@@ -836,24 +851,24 @@ export function LandingRoom() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 1, background: CSS.bg1, borderTop: `1px solid ${CSS.border}`, flexShrink: 0, overflowX: 'auto' }}>
           {['TAB:  ', '():()','{}:{}','[]:[]','=>:=>','::: ',';:;','"":"\\"\\"','``:``'].map(pair => {
             const [label, ins] = pair.split(':');
-            return <button key={label} onClick={() => { inputRef.current?.focus(); document.execCommand('insertText', false, ins); }} style={{ padding: '10px 12px', background: 'none', border: 'none', color: CSS.txtDD, fontFamily: CSS.mono, fontSize: 10, cursor: 'pointer' }}>{label}</button>;
+            return <button key={label} onClick={() => { inputRef.current?.focus(); document.execCommand('insertText', false, ins); }} style={{ padding: '10px 14px', background: 'none', border: 'none', color: CSS.txtDD, fontFamily: CSS.mono, fontSize: 14, cursor: 'pointer' }}>{label}</button>;
           })}
           <div style={{ width: 1, height: 20, background: CSS.border, flexShrink: 0 }} />
-          <button onClick={runCode} style={{ padding: '10px 12px', background: 'none', border: 'none', color: CSS.teal, fontFamily: CSS.mono, fontSize: 10, cursor: 'pointer' }}>{'\u25B6'} RUN</button>
+          <button onClick={runCode} style={{ padding: '10px 14px', background: 'none', border: 'none', color: CSS.teal, fontFamily: CSS.mono, fontSize: 14, cursor: 'pointer' }}>{'\u25B6'} RUN</button>
         </div>
       </div>
 
       {/* ══════════ WS: VIEWPORT — Quantum Field ══════════ */}
-      <div style={{ ...panelBase, display: workspace === 'viewport' ? 'flex' : 'none', position: 'relative' }}>
-        <canvas ref={vpCanvasRef} style={{ width: '100%', flex: 1, background: '#020208', touchAction: 'none' }} />
+      <div style={{ ...panelBase, display: workspace === 'viewport' ? 'flex' : 'none' }}>
+        <canvas ref={vpCanvasRef} style={{ width: '100%', height: '100%', flex: 1, display: 'block', background: '#000000', touchAction: 'none' }} />
 
         {/* Top-left telemetry */}
         <div style={{
-          position: 'absolute', top: 8, left: 12, pointerEvents: 'none',
-          fontSize: 9, lineHeight: 2, color: CSS.txtD, letterSpacing: '.12em',
+          position: 'absolute', top: 12, left: 16, pointerEvents: 'none',
+          fontSize: 14, lineHeight: 2, color: CSS.txtD, letterSpacing: '.12em',
         }}>
-          <div style={{ fontSize: 7, color: CSS.txtDD, letterSpacing: '.2em', marginBottom: 2 }}>QUANTUM GEODESIC FIELD</div>
-          <div>H <span style={{ color: boardColor, fontWeight: 'bold', fontSize: 14 }}>{H.toFixed(3)}</span></div>
+          <div style={{ fontSize: 11, color: CSS.txtDD, letterSpacing: '.2em', marginBottom: 4 }}>QUANTUM GEODESIC FIELD</div>
+          <div>H <span style={{ color: boardColor, fontWeight: 'bold', fontSize: 22 }}>{H.toFixed(3)}</span></div>
           <div>ENTROPY <span style={{ color: CSS.teal }}>{(entropy * 100).toFixed(0)}%</span></div>
           <div>PURITY <span style={{ color: CSS.teal }}>{(1 - entropy * 0.5).toFixed(2)}</span></div>
           <div>LAYERS <span style={{ color: CSS.violet }}>{fieldDensity + 1}</span></div>
@@ -861,10 +876,10 @@ export function LandingRoom() {
 
         {/* Top-right SIC-POVM readout */}
         <div style={{
-          position: 'absolute', top: 8, right: 12, pointerEvents: 'none',
-          fontSize: 9, lineHeight: 2, color: CSS.txtD, letterSpacing: '.12em', textAlign: 'right',
+          position: 'absolute', top: 12, right: 16, pointerEvents: 'none',
+          fontSize: 14, lineHeight: 2, color: CSS.txtD, letterSpacing: '.12em', textAlign: 'right',
         }}>
-          <div style={{ fontSize: 7, color: CSS.txtDD, letterSpacing: '.2em', marginBottom: 2 }}>SIC-POVM MEASUREMENT</div>
+          <div style={{ fontSize: 11, color: CSS.txtDD, letterSpacing: '.2em', marginBottom: 4 }}>SIC-POVM MEASUREMENT</div>
           {[
             { l: '\u03B1', c: CSS.green }, { l: '\u03B2', c: CSS.teal },
             { l: '\u03B3', c: CSS.amber }, { l: '\u03B4', c: CSS.violet },
@@ -876,7 +891,7 @@ export function LandingRoom() {
         {/* Bottom gradient + controls */}
         <div style={{
           position: 'absolute', bottom: 0, left: 0, right: 0,
-          background: 'linear-gradient(0deg,rgba(2,2,8,.85) 0%,rgba(2,2,8,.4) 60%,transparent 100%)',
+          background: 'linear-gradient(0deg,rgba(0,0,0,.85) 0%,rgba(0,0,0,.4) 60%,transparent 100%)',
           padding: '24px 12px 10px', pointerEvents: 'none',
         }}>
           {/* Coherence bar */}
@@ -888,14 +903,14 @@ export function LandingRoom() {
             }} />
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', pointerEvents: 'auto' }}>
-            <div style={{ fontSize: 7, color: CSS.txtDD, letterSpacing: '.2em' }}>
+            <div style={{ fontSize: 12, color: CSS.txtDD, letterSpacing: '.2em' }}>
               BOARD: <span style={{ color: boardColor }}>{boardLabel}</span>
             </div>
             <div style={{ display: 'flex', gap: 6 }}>
-              <button type="button" onClick={() => setFieldDensity(d => Math.min(d + 1, 6))} style={{ padding: '6px 12px', background: 'rgba(0,0,0,.6)', border: `1px solid ${CSS.border}`, color: CSS.txtD, fontFamily: CSS.mono, fontSize: 8, cursor: 'pointer', borderRadius: 3, letterSpacing: '.1em' }}>+ LAYER</button>
-              <button type="button" onClick={() => setFieldDensity(d => Math.max(d - 1, 0))} style={{ padding: '6px 12px', background: 'rgba(0,0,0,.6)', border: `1px solid ${CSS.border}`, color: CSS.txtD, fontFamily: CSS.mono, fontSize: 8, cursor: 'pointer', borderRadius: 3, letterSpacing: '.1em' }}>- LAYER</button>
-              <button type="button" onClick={() => setVpSpin(s => !s)} style={{ padding: '6px 12px', background: 'rgba(0,0,0,.6)', border: `1px solid ${vpSpin ? CSS.teal : CSS.border}`, color: vpSpin ? CSS.teal : CSS.txtD, fontFamily: CSS.mono, fontSize: 8, cursor: 'pointer', borderRadius: 3, letterSpacing: '.1em' }}>ROTATE</button>
-              <button type="button" onClick={() => { setFieldDensity(3); setVpSpin(true); }} style={{ padding: '6px 12px', background: 'rgba(0,0,0,.6)', border: `1px solid ${CSS.border}`, color: CSS.txtD, fontFamily: CSS.mono, fontSize: 8, cursor: 'pointer', borderRadius: 3, letterSpacing: '.1em' }}>RESET</button>
+              <button type="button" onClick={() => setFieldDensity(d => Math.min(d + 1, 6))} style={{ padding: '8px 16px', background: 'rgba(0,0,0,.6)', border: `1px solid ${CSS.border}`, color: CSS.txtD, fontFamily: CSS.mono, fontSize: 13, cursor: 'pointer', borderRadius: 4, letterSpacing: '.1em' }}>+ LAYER</button>
+              <button type="button" onClick={() => setFieldDensity(d => Math.max(d - 1, 0))} style={{ padding: '8px 16px', background: 'rgba(0,0,0,.6)', border: `1px solid ${CSS.border}`, color: CSS.txtD, fontFamily: CSS.mono, fontSize: 13, cursor: 'pointer', borderRadius: 4, letterSpacing: '.1em' }}>- LAYER</button>
+              <button type="button" onClick={() => setVpSpin(s => !s)} style={{ padding: '8px 16px', background: 'rgba(0,0,0,.6)', border: `1px solid ${vpSpin ? CSS.teal : CSS.border}`, color: vpSpin ? CSS.teal : CSS.txtD, fontFamily: CSS.mono, fontSize: 13, cursor: 'pointer', borderRadius: 4, letterSpacing: '.1em' }}>ROTATE</button>
+              <button type="button" onClick={() => { setFieldDensity(3); setVpSpin(true); }} style={{ padding: '8px 16px', background: 'rgba(0,0,0,.6)', border: `1px solid ${CSS.border}`, color: CSS.txtD, fontFamily: CSS.mono, fontSize: 13, cursor: 'pointer', borderRadius: 4, letterSpacing: '.1em' }}>RESET</button>
             </div>
           </div>
         </div>
@@ -912,7 +927,7 @@ export function LandingRoom() {
 
       {/* ══════════ WS: CONSOLE ══════════ */}
       <div style={{ ...panelBase, display: workspace === 'console' ? 'flex' : 'none' }}>
-        <div style={{ flex: 1, overflowY: 'auto', padding: '8px 12px', fontSize: 11, lineHeight: 1.7 }}>
+        <div style={{ flex: 1, overflowY: 'auto', padding: '12px 16px', fontSize: 15, lineHeight: 1.7 }}>
           {consoleLines.map((l, i) => (
             <div key={i} style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>
               <span style={{ color: CSS.txtDD, fontSize: 9, marginRight: 6 }}>{l.ts}</span>
@@ -922,14 +937,14 @@ export function LandingRoom() {
           <div ref={consoleEndRef} />
         </div>
         <div style={{ display: 'flex', alignItems: 'center', borderTop: `1px solid ${CSS.border}`, background: CSS.bg1, flexShrink: 0 }}>
-          <span style={{ padding: '0 8px', color: CSS.green, fontSize: 12, flexShrink: 0 }}>{'\u23F8'}</span>
+          <span style={{ padding: '0 10px', color: CSS.green, fontSize: 16, flexShrink: 0 }}>{'\u23F8'}</span>
           <input
             value={consoleInput}
             onChange={e => setConsoleInput(e.target.value)}
             onKeyDown={e => { if (e.key === 'Enter') evalConsole(); }}
             placeholder="evaluate expression..."
             autoComplete="off" spellCheck={false}
-            style={{ flex: 1, padding: '12px 8px', background: 'transparent', border: 'none', outline: 'none', color: CSS.txt, fontFamily: CSS.mono, fontSize: 12 }}
+            style={{ flex: 1, padding: '14px 10px', background: 'transparent', border: 'none', outline: 'none', color: CSS.txt, fontFamily: CSS.mono, fontSize: 15 }}
           />
         </div>
       </div>
@@ -939,14 +954,14 @@ export function LandingRoom() {
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 12px', borderBottom: `1px solid ${CSS.border}`, flexShrink: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ fontSize: 11, fontWeight: 'bold', color: CSS.teal, letterSpacing: '.08em' }}>CENTAUR ENGINE</span>
-            <span style={{ fontSize: 8, padding: '2px 6px', border: `1px solid ${CSS.border}`, borderRadius: 3, color: centaurStoreStatus === 'GENERATING' ? CSS.amber : centaurStoreStatus === 'ERROR' ? CSS.red : CSS.green }}>{centaurStoreStatus}</span>
+            <span style={{ fontSize: 15, fontWeight: 'bold', color: CSS.teal, letterSpacing: '.08em' }}>CENTAUR ENGINE</span>
+            <span style={{ fontSize: 12, padding: '3px 8px', border: `1px solid ${CSS.border}`, borderRadius: 3, color: centaurStoreStatus === 'GENERATING' ? CSS.amber : centaurStoreStatus === 'ERROR' ? CSS.red : CSS.green }}>{centaurStoreStatus}</span>
           </div>
-          <button type="button" onClick={() => { clearHistory(); setCopilotMsgs([]); setCompileResult(null); setLastCompiled(null); }} style={{ padding: '3px 8px', background: 'none', border: `1px solid ${CSS.border}`, color: CSS.txtDD, fontFamily: CSS.mono, fontSize: 8, cursor: 'pointer', borderRadius: 3 }}>CLEAR</button>
+          <button type="button" onClick={() => { clearHistory(); setCopilotMsgs([]); setCompileResult(null); setLastCompiled(null); }} style={{ padding: '5px 12px', background: 'none', border: `1px solid ${CSS.border}`, color: CSS.txtDD, fontFamily: CSS.mono, fontSize: 12, cursor: 'pointer', borderRadius: 3 }}>CLEAR</button>
         </div>
 
         {!hasApiKey && (
-          <div style={{ padding: '8px 12px', fontSize: 9, color: CSS.red, background: CSS.redD, borderBottom: `1px solid ${CSS.border}` }}>
+          <div style={{ padding: '10px 14px', fontSize: 13, color: CSS.red, background: CSS.redD, borderBottom: `1px solid ${CSS.border}` }}>
             No API key. Switch to 2D Dev Menu to set your key.
           </div>
         )}
@@ -956,15 +971,15 @@ export function LandingRoom() {
           {copilotMsgs.length === 0 && (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: 8, opacity: 0.3 }}>
               <span style={{ fontSize: 20 }}>&#x2699;</span>
-              <span style={{ fontSize: 9, letterSpacing: '.1em' }}>vibe code &gt; compile &gt; mount</span>
-              <span style={{ fontSize: 8, maxWidth: 260, textAlign: 'center', lineHeight: 1.5 }}>Describe a React component. Centaur generates it, you compile and mount to an open slot.</span>
+              <span style={{ fontSize: 14, letterSpacing: '.1em' }}>vibe code &gt; compile &gt; mount</span>
+              <span style={{ fontSize: 13, maxWidth: 320, textAlign: 'center', lineHeight: 1.5 }}>Describe a React component. Centaur generates it, you compile and mount to an open slot.</span>
             </div>
           )}
           {copilotMsgs.map((msg, i) => (
             <div key={`${msg.ts}-${i}`} style={{ marginBottom: 10, maxWidth: '90%', ...(msg.role === 'user' ? { marginLeft: 'auto' } : {}) }}>
-              <div style={{ fontSize: 7, letterSpacing: '.1em', color: msg.role === 'user' ? CSS.txtDD : CSS.teal, marginBottom: 3 }}>{msg.role === 'user' ? 'YOU' : 'CENTAUR'}</div>
+              <div style={{ fontSize: 11, letterSpacing: '.1em', color: msg.role === 'user' ? CSS.txtDD : CSS.teal, marginBottom: 3 }}>{msg.role === 'user' ? 'YOU' : 'CENTAUR'}</div>
               <div style={{
-                padding: '8px 10px', fontSize: 11, lineHeight: 1.6, whiteSpace: 'pre-wrap', wordBreak: 'break-word',
+                padding: '10px 14px', fontSize: 14, lineHeight: 1.6, whiteSpace: 'pre-wrap', wordBreak: 'break-word',
                 background: msg.role === 'user' ? CSS.bg3 : CSS.tealD,
                 border: `1px solid ${msg.role === 'user' ? CSS.borderHi : 'rgba(0,229,255,.15)'}`,
                 borderRadius: msg.role === 'user' ? '10px 2px 10px 10px' : '2px 10px 10px 10px',
@@ -972,27 +987,27 @@ export function LandingRoom() {
                 {msg.content}
                 {msg.role === 'assistant' && (
                   <button type="button" onClick={() => handleCompile(msg.content)} style={{
-                    display: 'block', marginTop: 6, padding: '4px 10px', background: 'none',
+                    display: 'block', marginTop: 8, padding: '6px 14px', background: 'none',
                     border: `1px solid rgba(0,229,255,.2)`, color: CSS.teal, fontFamily: CSS.mono,
-                    fontSize: 8, cursor: 'pointer', borderRadius: 3, letterSpacing: '.1em',
+                    fontSize: 12, cursor: 'pointer', borderRadius: 3, letterSpacing: '.1em',
                   }}>COMPILE &amp; MOUNT</button>
                 )}
               </div>
             </div>
           ))}
           {compileResult && (
-            <div style={{ fontSize: 9, padding: '6px 8px', borderRadius: 3, marginBottom: 8, color: compileResult.startsWith('Error') ? CSS.red : CSS.green, background: compileResult.startsWith('Error') ? CSS.redD : CSS.greenD }}>{compileResult}</div>
+            <div style={{ fontSize: 13, padding: '8px 12px', borderRadius: 3, marginBottom: 8, color: compileResult.startsWith('Error') ? CSS.red : CSS.green, background: compileResult.startsWith('Error') ? CSS.redD : CSS.greenD }}>{compileResult}</div>
           )}
           {lastCompiled && (
             <div style={{ padding: '8px 10px', background: CSS.bg2, border: `1px solid ${CSS.border}`, borderRadius: 4, marginBottom: 8 }}>
-              <div style={{ fontSize: 8, fontWeight: 'bold', color: CSS.teal, letterSpacing: '.1em', marginBottom: 6 }}>MOUNT TARGET</div>
+              <div style={{ fontSize: 13, fontWeight: 'bold', color: CSS.teal, letterSpacing: '.1em', marginBottom: 6 }}>MOUNT TARGET</div>
               <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
                 {([2, 3, 6, 8, 9] as const).map(slot => {
                   const occupied = !!dynamicSlots[slot];
                   return (
                     <button key={slot} type="button" onClick={() => handleMount(slot)} style={{
-                      padding: '4px 10px', background: 'none', border: `1px solid ${occupied ? CSS.border : 'rgba(0,229,255,.2)'}`,
-                      color: occupied ? CSS.txtDD : CSS.teal, fontFamily: CSS.mono, fontSize: 8, cursor: 'pointer', borderRadius: 3,
+                      padding: '6px 14px', background: 'none', border: `1px solid ${occupied ? CSS.border : 'rgba(0,229,255,.2)'}`,
+                      color: occupied ? CSS.txtDD : CSS.teal, fontFamily: CSS.mono, fontSize: 12, cursor: 'pointer', borderRadius: 3,
                       opacity: occupied ? 0.4 : 1,
                     }}>SLOT {slot}{occupied ? ' *' : ''}</button>
                   );
@@ -1012,11 +1027,11 @@ export function LandingRoom() {
             placeholder="Describe a component..."
             autoComplete="off" spellCheck={false}
             disabled={centaurStatus === 'GENERATING' || !hasApiKey}
-            style={{ flex: 1, padding: '10px 12px', background: CSS.bg2, border: `1px solid ${CSS.border}`, color: CSS.txt, fontFamily: CSS.mono, fontSize: 11, borderRadius: 6, outline: 'none' }}
+            style={{ flex: 1, padding: '12px 14px', background: CSS.bg2, border: `1px solid ${CSS.border}`, color: CSS.txt, fontFamily: CSS.mono, fontSize: 15, borderRadius: 6, outline: 'none' }}
           />
           <button type="button" onClick={() => sendCopilot()} disabled={centaurStatus === 'GENERATING' || !copilotInput.trim() || !hasApiKey} style={{
-            padding: '10px 14px', background: CSS.tealD, border: '1px solid rgba(0,229,255,.2)',
-            color: CSS.teal, fontFamily: CSS.mono, fontSize: 10, cursor: 'pointer', borderRadius: 6,
+            padding: '12px 18px', background: CSS.tealD, border: '1px solid rgba(0,229,255,.2)',
+            color: CSS.teal, fontFamily: CSS.mono, fontSize: 14, cursor: 'pointer', borderRadius: 6,
             opacity: (centaurStatus === 'GENERATING' || !copilotInput.trim() || !hasApiKey) ? 0.3 : 1,
           }}>SEND</button>
         </div>
@@ -1033,8 +1048,8 @@ export function LandingRoom() {
             { label: 'Mesh', value: '1/1', color: CSS.violet },
           ].map(c => (
             <div key={c.label} style={{ flex: 1, minWidth: 80, background: CSS.bg2, border: `1px solid ${CSS.border}`, borderRadius: 6, padding: 10, textAlign: 'center' }}>
-              <div style={{ fontSize: 7, letterSpacing: '.15em', color: CSS.txtDD, textTransform: 'uppercase', marginBottom: 4 }}>{c.label}</div>
-              <div style={{ fontSize: 18, fontWeight: 'bold', color: c.color }}>{c.value}</div>
+              <div style={{ fontSize: 11, letterSpacing: '.15em', color: CSS.txtDD, textTransform: 'uppercase', marginBottom: 4 }}>{c.label}</div>
+              <div style={{ fontSize: 22, fontWeight: 'bold', color: c.color }}>{c.value}</div>
             </div>
           ))}
         </div>
@@ -1055,7 +1070,7 @@ export function LandingRoom() {
               <button key={m} onClick={() => setPhoenixMode(m)} style={{
                 flex: 1, padding: 8, textAlign: 'center', background: active ? colD : 'none',
                 border: `1px solid ${active ? col : CSS.border}`, color: active ? col : CSS.txtDD,
-                fontFamily: CSS.mono, fontSize: 9, letterSpacing: '.1em', cursor: 'pointer', borderRadius: 4,
+                fontFamily: CSS.mono, fontSize: 13, letterSpacing: '.1em', cursor: 'pointer', borderRadius: 4,
               }}>{icons[m]} {m.charAt(0).toUpperCase() + m.slice(1)}</button>
             );
           })}
@@ -1066,9 +1081,9 @@ export function LandingRoom() {
           {phoenixMsgs.map((m, i) => (
             <div key={i} style={{
               marginBottom: 12, maxWidth: '88%', padding: '10px 14px', lineHeight: 1.6,
-              ...(m.type === 'system' ? { background: CSS.bg2, border: `1px solid ${CSS.border}`, borderRadius: 8, color: CSS.txtD, fontSize: 11 } :
-                m.type === 'phoenix' ? { background: CSS.tealD, border: '1px solid rgba(0,229,255,.15)', borderRadius: '2px 12px 12px 12px', color: CSS.txt, fontSize: 12 } :
-                { marginLeft: 'auto', background: CSS.bg3, border: `1px solid ${CSS.borderHi}`, borderRadius: '12px 2px 12px 12px', fontSize: 12 }),
+              ...(m.type === 'system' ? { background: CSS.bg2, border: `1px solid ${CSS.border}`, borderRadius: 8, color: CSS.txtD, fontSize: 14 } :
+                m.type === 'phoenix' ? { background: CSS.tealD, border: '1px solid rgba(0,229,255,.15)', borderRadius: '2px 12px 12px 12px', color: CSS.txt, fontSize: 15 } :
+                { marginLeft: 'auto', background: CSS.bg3, border: `1px solid ${CSS.borderHi}`, borderRadius: '12px 2px 12px 12px', fontSize: 15 }),
             }}>{m.text}</div>
           ))}
           <div ref={phoenixEndRef} />
@@ -1082,9 +1097,9 @@ export function LandingRoom() {
             onKeyDown={e => { if (e.key === 'Enter') sendPhoenix(); }}
             placeholder="Signal PHOENIX..."
             autoComplete="off"
-            style={{ flex: 1, padding: '10px 12px', background: CSS.bg2, border: `1px solid ${CSS.border}`, color: CSS.txt, fontFamily: CSS.mono, fontSize: 12, borderRadius: 6, outline: 'none' }}
+            style={{ flex: 1, padding: '12px 14px', background: CSS.bg2, border: `1px solid ${CSS.border}`, color: CSS.txt, fontFamily: CSS.mono, fontSize: 15, borderRadius: 6, outline: 'none' }}
           />
-          <button onClick={sendPhoenix} style={{ padding: '10px 16px', background: CSS.tealD, border: '1px solid rgba(0,229,255,.2)', color: CSS.teal, fontFamily: CSS.mono, fontSize: 11, cursor: 'pointer', borderRadius: 6 }}>{'\u2191'}</button>
+          <button onClick={sendPhoenix} style={{ padding: '12px 20px', background: CSS.tealD, border: '1px solid rgba(0,229,255,.2)', color: CSS.teal, fontFamily: CSS.mono, fontSize: 16, cursor: 'pointer', borderRadius: 6 }}>{'\u2191'}</button>
         </div>
       </div>
 
@@ -1096,12 +1111,12 @@ export function LandingRoom() {
             if (!name) return;
             setFiles(prev => ({ ...prev, [name]: `// ${name}\n// Created ${new Date().toISOString()}\n\n` }));
             openFileTab(name);
-          }} style={{ flex: 1, padding: 10, textAlign: 'center', background: CSS.bg2, border: `1px solid ${CSS.border}`, color: CSS.txtD, fontFamily: CSS.mono, fontSize: 9, letterSpacing: '.1em', cursor: 'pointer', borderRadius: 4 }}>+ NEW</button>
-          <button onClick={() => { lsSet('files', files); clog('Files saved', 'info'); }} style={{ flex: 1, padding: 10, textAlign: 'center', background: CSS.bg2, border: `1px solid ${CSS.border}`, color: CSS.txtD, fontFamily: CSS.mono, fontSize: 9, cursor: 'pointer', borderRadius: 4 }}>{'\uD83D\uDCBE'} SAVE</button>
+          }} style={{ flex: 1, padding: 12, textAlign: 'center', background: CSS.bg2, border: `1px solid ${CSS.border}`, color: CSS.txtD, fontFamily: CSS.mono, fontSize: 14, letterSpacing: '.1em', cursor: 'pointer', borderRadius: 4 }}>+ NEW</button>
+          <button onClick={() => { lsSet('files', files); clog('Files saved', 'info'); }} style={{ flex: 1, padding: 12, textAlign: 'center', background: CSS.bg2, border: `1px solid ${CSS.border}`, color: CSS.txtD, fontFamily: CSS.mono, fontSize: 14, cursor: 'pointer', borderRadius: 4 }}>{'\uD83D\uDCBE'} SAVE</button>
           <button onClick={() => {
             const blob = new Blob([JSON.stringify(files, null, 2)], { type: 'application/json' });
             const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'qg-ide-project.json'; a.click();
-          }} style={{ flex: 1, padding: 10, textAlign: 'center', background: CSS.bg2, border: `1px solid ${CSS.border}`, color: CSS.txtD, fontFamily: CSS.mono, fontSize: 9, cursor: 'pointer', borderRadius: 4 }}>{'\uD83D\uDCE6'} EXPORT</button>
+          }} style={{ flex: 1, padding: 12, textAlign: 'center', background: CSS.bg2, border: `1px solid ${CSS.border}`, color: CSS.txtD, fontFamily: CSS.mono, fontSize: 14, cursor: 'pointer', borderRadius: 4 }}>{'\uD83D\uDCE6'} EXPORT</button>
         </div>
         <div style={{ flex: 1, overflowY: 'auto', padding: 8 }}>
           {(() => {
@@ -1110,15 +1125,15 @@ export function LandingRoom() {
             paths.forEach(p => { const parts = p.split('/'); const folder = parts.length > 1 ? parts.slice(0, -1).join('/') : '.'; (folders[folder] ??= []).push(p); });
             return Object.entries(folders).map(([folder, items]) => (
               <div key={folder}>
-                <div style={{ padding: '12px 12px 6px', fontSize: 8, letterSpacing: '.2em', color: CSS.txtDD, textTransform: 'uppercase' }}>{folder === '.' ? 'root' : folder}/</div>
+                <div style={{ padding: '12px 12px 6px', fontSize: 13, letterSpacing: '.2em', color: CSS.txtDD, textTransform: 'uppercase' }}>{folder === '.' ? 'root' : folder}/</div>
                 {items.map(path => (
                   <div key={path} onClick={() => { setWorkspace('editor'); openFileTab(path); }} style={{
                     display: 'flex', alignItems: 'center', gap: 8, padding: '10px 12px', borderRadius: 4, cursor: 'pointer',
-                    background: path === openFile ? CSS.tealD : 'transparent', color: path === openFile ? CSS.teal : CSS.txt, fontSize: 12,
+                    background: path === openFile ? CSS.tealD : 'transparent', color: path === openFile ? CSS.teal : CSS.txt, fontSize: 15,
                   }}>
                     <span style={{ fontSize: 14, flexShrink: 0, width: 18, textAlign: 'center' }}>{path.endsWith('.json') ? '\uD83D\uDCCB' : '\uD83D\uDCC4'}</span>
                     <span style={{ flex: 1 }}>{path.split('/').pop()}</span>
-                    <span style={{ fontSize: 9, color: CSS.txtDD }}>{files[path].length}b</span>
+                    <span style={{ fontSize: 12, color: CSS.txtDD }}>{files[path].length}b</span>
                   </div>
                 ))}
               </div>
@@ -1129,7 +1144,7 @@ export function LandingRoom() {
 
       {/* ── BOTTOM TABS ── */}
       <div style={{
-        position: 'absolute', bottom: 0, left: 0, right: 0, zIndex: 200, height: 48,
+        position: 'absolute', bottom: 0, left: 0, right: 0, zIndex: 200, height: 60,
         display: 'flex', background: CSS.bg, borderTop: `1px solid ${CSS.border}`,
       }}>
         {([
@@ -1141,7 +1156,7 @@ export function LandingRoom() {
           { id: 'files', icon: '\uD83D\uDCC1', label: 'Files' },
         ] as const).map(t => (
           <button key={t.id} onClick={() => setWorkspace(t.id)} style={tabStyle(workspace === t.id)}>
-            <span style={{ fontSize: 16 }}>{t.icon}</span>
+            <span style={{ fontSize: 20 }}>{t.icon}</span>
             {t.label}
             {workspace === t.id && <span style={{ position: 'absolute', top: 0, left: '20%', right: '20%', height: 2, background: CSS.teal, boxShadow: `0 0 8px ${CSS.tealD}` }} />}
           </button>

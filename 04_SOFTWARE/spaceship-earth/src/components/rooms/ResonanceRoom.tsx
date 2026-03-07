@@ -4,11 +4,11 @@
 
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 
-// ── Color palette ──
+// ── Neon Phosphor palette ──
 const B = {
-  void: '#050510', s1: '#0A0A1F', s3: '#1A1A3E',
-  green: '#00FF88', cyan: '#00D4FF', violet: '#7A27FF', amber: '#FFB800',
-  text: '#E0E0EE', muted: '#7878AA', dim: '#4A4A7A',
+  void: '#000000', s1: '#000000', s3: '#111111',
+  green: '#00FFFF', cyan: '#00FFFF', violet: '#BF5FFF', amber: '#FFD700',
+  text: '#d8ffd8', muted: '#3a7a3a', dim: '#1a4a1a',
 };
 
 // ── Music theory — phosphorus pentatonic scale ──
@@ -455,31 +455,32 @@ export function ResonanceRoom() {
         background: `radial-gradient(ellipse at 50% 40%, ${B.s1} 0%, ${B.void} 70%)`,
       }}>
         <SonicMolecule notes={[]} coherence={0.1} sz={180} />
-        <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 9, letterSpacing: 6, color: B.dim, marginBottom: 10 }}>
+        <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 12, letterSpacing: 6, color: B.muted, marginBottom: 12, textShadow: `0 0 4px ${B.green}22` }}>
           P31 LABS
         </div>
-        <div style={{ fontSize: 18, fontWeight: 200, color: B.green, letterSpacing: 2, textShadow: `0 0 20px ${B.green}33`, marginBottom: 6 }}>
+        <div style={{ fontSize: 22, fontWeight: 200, color: B.green, letterSpacing: 3, textShadow: `0 0 20px ${B.green}44, 0 0 40px ${B.green}22`, marginBottom: 8 }}>
           THE RESONANCE ENGINE
         </div>
-        <div style={{ fontSize: 11, color: B.muted, lineHeight: 1.8, maxWidth: 340, textAlign: 'center', margin: '0 auto 20px' }}>
+        <div style={{ fontSize: 14, color: B.muted, lineHeight: 1.8, maxWidth: 360, textAlign: 'center', margin: '0 auto 24px', textShadow: `0 0 4px ${B.green}22` }}>
           Your conversation becomes music.<br />
           Your music becomes a molecule.<br />
           Your molecule becomes your identity.
         </div>
         {!hasKey && (
-          <div style={{ fontSize: 9, color: B.dim, marginBottom: 10, maxWidth: 300, textAlign: 'center' }}>
+          <div style={{ fontSize: 12, color: B.muted, marginBottom: 12, maxWidth: 320, textAlign: 'center', textShadow: `0 0 4px ${B.green}22` }}>
             No API key set. You can still hear the music — set a key in 2D Dev Menu for phosphorus chat.
           </div>
         )}
         <button type="button" onClick={begin} style={{
           background: 'transparent', border: `1px solid ${B.green}44`, color: B.green,
-          fontFamily: "'Space Mono', monospace", fontSize: 10, letterSpacing: 3,
-          padding: '12px 32px', borderRadius: 6, cursor: 'pointer',
-          textShadow: `0 0 8px ${B.green}33`,
+          fontFamily: "'Space Mono', monospace", fontSize: 14, letterSpacing: 3,
+          padding: '14px 36px', borderRadius: 8, cursor: 'pointer',
+          textShadow: `0 0 8px ${B.green}44`,
+          minHeight: '48px',
         }}>
           BEGIN
         </button>
-        <div style={{ fontSize: 9, color: B.dim, marginTop: 10 }}>
+        <div style={{ fontSize: 12, color: B.muted, marginTop: 12, textShadow: `0 0 4px ${B.green}22` }}>
           Requires audio. Your words will be heard.
         </div>
       </div>
@@ -501,7 +502,7 @@ export function ResonanceRoom() {
         padding: '12px 16px', flex: 1, minHeight: 0,
       }}>
         {/* Header */}
-        <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 9, letterSpacing: 5, color: B.dim, marginBottom: 2 }}>
+        <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 12, letterSpacing: 5, color: B.muted, marginBottom: 4, textShadow: `0 0 4px ${B.green}22` }}>
           P31 RESONANCE ENGINE
         </div>
 
@@ -512,18 +513,18 @@ export function ResonanceRoom() {
         <Waveform notes={freqSig} width={460} height={36} />
 
         {/* Level + stats */}
-        <div style={{ display: 'flex', gap: 14, alignItems: 'center', margin: '4px 0 8px' }}>
-          <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 9, letterSpacing: 3, color: levelColor, textShadow: `0 0 6px ${levelColor}44` }}>
+        <div style={{ display: 'flex', gap: 14, alignItems: 'center', margin: '6px 0 10px' }}>
+          <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, letterSpacing: 3, color: levelColor, textShadow: `0 0 8px ${levelColor}44` }}>
             {level}
           </div>
-          <div style={{ width: 1, height: 12, background: B.s3 }} />
-          <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 8, color: B.dim }}>
+          <div style={{ width: 1, height: 14, background: B.s3 }} />
+          <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 12, color: B.muted, textShadow: `0 0 4px ${B.green}22` }}>
             {noteCount} NOTES
           </div>
           {moleculeHash && (
             <>
-              <div style={{ width: 1, height: 12, background: B.s3 }} />
-              <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 8, color: B.dim, letterSpacing: 1 }}>
+              <div style={{ width: 1, height: 14, background: B.s3 }} />
+              <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 11, color: B.muted, letterSpacing: 1, textShadow: `0 0 4px ${B.green}22` }}>
                 {moleculeHash.substring(0, 8)}...
               </div>
             </>
@@ -545,7 +546,7 @@ export function ResonanceRoom() {
                   borderRadius: m.from === 'u' ? '14px 14px 4px 14px' : '14px 14px 14px 4px',
                 }}>
                   {m.from === 'p' && (
-                    <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 7, letterSpacing: 3, color: B.cyan, marginBottom: 3, opacity: 0.5 }}>
+                    <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 10, letterSpacing: 3, color: B.cyan, marginBottom: 4, opacity: 0.6, textShadow: `0 0 6px ${B.cyan}33` }}>
                       31P
                     </div>
                   )}
@@ -593,9 +594,11 @@ export function ResonanceRoom() {
               disabled={typing || !input.trim() || engine.playing}
               style={{
                 background: 'transparent', border: `1px solid ${B.green}33`, color: B.green,
-                fontFamily: "'Space Mono', monospace", fontSize: 11, letterSpacing: 2,
-                padding: '10px 16px', borderRadius: 8, cursor: 'pointer',
+                fontFamily: "'Space Mono', monospace", fontSize: 14, letterSpacing: 2,
+                padding: '12px 20px', borderRadius: 8, cursor: 'pointer',
                 opacity: (typing || engine.playing) ? 0.3 : 1,
+                minHeight: '48px',
+                textShadow: `0 0 6px ${B.green}44`,
               }}
             >
               SEND
@@ -605,11 +608,11 @@ export function ResonanceRoom() {
 
         {/* Molecule hash */}
         {moleculeHash && (
-          <div style={{ marginTop: 10, textAlign: 'center' }}>
-            <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 7, letterSpacing: 2, color: B.dim, marginBottom: 2 }}>
+          <div style={{ marginTop: 12, textAlign: 'center' }}>
+            <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 10, letterSpacing: 2, color: B.muted, marginBottom: 4, textShadow: `0 0 4px ${B.green}22` }}>
               YOUR RESONANCE SIGNATURE
             </div>
-            <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 11, letterSpacing: 3, color: B.green, textShadow: `0 0 8px ${B.green}22` }}>
+            <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, letterSpacing: 3, color: B.green, textShadow: `0 0 8px ${B.green}33` }}>
               {moleculeHash}
             </div>
           </div>
