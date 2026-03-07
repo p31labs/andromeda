@@ -8,6 +8,7 @@
     "packages/node-zero",
     "packages/game-engine",
     "packages/love-ledger",
+    "packages/sovereign",
     "extensions/*"
   ]
 }

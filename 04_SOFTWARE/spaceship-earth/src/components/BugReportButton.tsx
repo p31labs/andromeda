@@ -71,8 +71,10 @@ export function BugReportButton({ room, sessionId }: Props) {
     <>
       {/* Floating trigger */}
       <button
+        type="button"
         onClick={() => setOpen(!open)}
         aria-label="Report a bug"
+        className="glass-btn"
         style={{
           position: 'fixed',
           bottom: 68,
@@ -82,20 +84,18 @@ export function BugReportButton({ room, sessionId }: Props) {
           height: 32,
           borderRadius: '50%',
           border: open
-            ? '1px solid rgba(255,68,102,0.6)'
-            : '1px solid rgba(40,60,80,0.3)',
+            ? '1px solid rgba(255,68,102,0.5)'
+            : '1px solid rgba(255,255,255,0.08)',
           background: open
-            ? 'rgba(255,68,102,0.15)'
-            : 'rgba(2,4,6,0.7)',
-          backdropFilter: 'blur(8px)',
-          color: open ? '#ff4466' : '#4a5a6a',
+            ? 'rgba(255,68,102,0.12)'
+            : 'rgba(255,255,255,0.04)',
+          color: open ? '#ff4466' : 'rgba(255,255,255,0.3)',
           fontSize: 16,
-          cursor: 'pointer',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           transition: 'all 0.2s',
-          boxShadow: open ? '0 0 12px rgba(255,68,102,0.2)' : 'none',
+          boxShadow: open ? '0 0 16px rgba(255,68,102,0.15)' : 'none',
         }}
       >
         {open ? '\u00d7' : '\u{1f41b}'}
@@ -103,31 +103,26 @@ export function BugReportButton({ room, sessionId }: Props) {
 
       {/* Report form */}
       {open && (
-        <div style={{
+        <div className="glass-card accent-red" style={{
           position: 'fixed',
           bottom: 110,
           right: 8,
           zIndex: 40,
           width: 240,
-          background: 'linear-gradient(135deg, rgba(2,4,6,0.95), rgba(6,10,16,0.92))',
-          backdropFilter: 'blur(16px)',
-          border: '1px solid rgba(40,60,80,0.3)',
-          borderRight: '3px solid #ff4466',
-          borderRadius: 8,
           padding: 12,
           fontFamily: "'JetBrains Mono', monospace",
-          boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
+          animation: 'fadeInUp 0.25s ease-out both',
         }}>
           <div style={{
             fontSize: 10,
             letterSpacing: 2,
             color: '#ff4466',
             marginBottom: 8,
-            textShadow: '0 0 8px rgba(255,68,102,0.3)',
+            textShadow: '0 0 8px rgba(255,68,102,0.2)',
           }}>
             BUG REPORT
           </div>
-          <div style={{ fontSize: 9, color: '#3a4a5a', marginBottom: 8 }}>
+          <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.2)', marginBottom: 8 }}>
             room: {room}
           </div>
 
@@ -138,48 +133,24 @@ export function BugReportButton({ room, sessionId }: Props) {
             onKeyDown={handleKey}
             placeholder="What happened?"
             rows={4}
-            style={{
-              width: '100%',
-              background: 'rgba(2,4,6,0.8)',
-              border: '1px solid rgba(40,60,80,0.3)',
-              borderRadius: 4,
-              padding: 8,
-              color: '#c8d0dc',
-              fontSize: 11,
-              fontFamily: "'JetBrains Mono', monospace",
-              resize: 'vertical',
-              outline: 'none',
-              boxSizing: 'border-box',
-            }}
+            className="glass-input"
           />
 
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 }}>
-            <span style={{ fontSize: 8, color: '#2a3a4a' }}>
+            <span style={{ fontSize: 8, color: 'rgba(255,255,255,0.15)' }}>
               {flash === 'ok' ? 'sent!' : flash === 'err' ? 'failed' : '\u2318+Enter to send'}
             </span>
             <button
+              type="button"
               onClick={submit}
               disabled={sending || !text.trim()}
+              className="glass-btn"
               style={{
-                background: flash === 'ok'
-                  ? 'rgba(78,205,196,0.15)'
-                  : flash === 'err'
-                  ? 'rgba(255,68,102,0.15)'
-                  : 'rgba(78,205,196,0.08)',
-                border: `1px solid ${
-                  flash === 'ok' ? 'rgba(78,205,196,0.5)'
-                  : flash === 'err' ? 'rgba(255,68,102,0.5)'
-                  : 'rgba(78,205,196,0.3)'
-                }`,
-                borderRadius: 4,
                 padding: '5px 12px',
                 color: flash === 'ok' ? '#4ecdc4' : flash === 'err' ? '#ff4466' : '#4ecdc4',
                 fontSize: 10,
-                fontFamily: "'JetBrains Mono', monospace",
-                cursor: sending || !text.trim() ? 'default' : 'pointer',
-                opacity: sending || !text.trim() ? 0.4 : 1,
-                transition: 'all 0.2s',
                 letterSpacing: 1,
+                opacity: sending || !text.trim() ? 0.4 : 1,
               }}
             >
               {sending ? 'SENDING...' : flash === 'ok' ? 'SENT' : 'SEND'}

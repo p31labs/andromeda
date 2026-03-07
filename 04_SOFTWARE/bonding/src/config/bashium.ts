@@ -9,8 +9,8 @@ export const BASHIUM = {
   name: 'Bashium',
   atomicNumber: 10,            // his age
   maxBonds: 4,
-  color: '#b44dff',            // purple — unique among all elements
-  emissive: '#d88fff',
+  color: '#CC55FF',            // purple — unique among all elements
+  emissive: '#DD88FF',
   radius: 1.15,                // slightly larger than standard atoms
   frequency: 345,              // octave of P31 (172.35 × 2)
   note: 'Ba',

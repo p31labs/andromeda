@@ -9,11 +9,20 @@
     "idb-keyval": "^6.2.1",
     "zustand": "^5.0.0"
   },
+  "peerDependencies": {
+    "react": ">=18"
+  },
+  "peerDependenciesMeta": {
+    "react": { "optional": true }
+  },
   "exports": {
     ".": "./src/index.ts",
     "./events": "./src/events/index.ts",
     "./economy": "./src/economy/index.ts",
     "./telemetry": "./src/telemetry/index.ts",
-    "./types": "./src/types/index.ts"
+    "./types": "./src/types/index.ts",
+    "./net": "./src/net/index.ts",
+    "./ui": "./src/ui/index.ts",
+    "./sovereign": "./src/sovereign/index.ts"
   }
 }

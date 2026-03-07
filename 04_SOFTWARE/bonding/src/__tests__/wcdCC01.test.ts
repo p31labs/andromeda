@@ -53,7 +53,7 @@ describe('bashium', () => {
     expect(BASHIUM.name).toBe('Bashium');
     expect(BASHIUM.atomicNumber).toBe(10);
     expect(BASHIUM.maxBonds).toBe(4);
-    expect(BASHIUM.color).toBe('#b44dff');
+    expect(BASHIUM.color).toBe('#CC55FF');
   });
 
   it('has unlock and completion messages', () => {
@@ -83,7 +83,7 @@ describe('willium', () => {
     expect(WILLIUM.name).toBe('Willium');
     expect(WILLIUM.atomicNumber).toBe(6);
     expect(WILLIUM.maxBonds).toBe(3);
-    expect(WILLIUM.color).toBe('#4ade80');
+    expect(WILLIUM.color).toBe('#44EE88');
   });
 
   it('has unlock and completion messages', () => {

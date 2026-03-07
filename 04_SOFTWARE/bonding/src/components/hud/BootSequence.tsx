@@ -66,7 +66,7 @@ export function BootSequence({ onAcknowledge }: BootSequenceProps) {
 
   return (
     <div
-      className={`fixed inset-0 z-[100] bg-[#050505] flex flex-col items-center justify-center px-8 transition-opacity duration-500 ${fadeOut ? 'opacity-0' : 'opacity-100'}`}
+      className={`fixed inset-0 z-[100] bg-black flex flex-col items-center justify-center px-8 transition-opacity duration-500 ${fadeOut ? 'opacity-0' : 'opacity-100'}`}
     >
       {/* Terminal output */}
       <div className="w-full max-w-md space-y-3">
@@ -75,7 +75,7 @@ export function BootSequence({ onAcknowledge }: BootSequenceProps) {
             key={i}
             className={`font-mono text-sm tracking-wider transition-opacity duration-700 ${
               line.text.includes('WELCOME') || line.text.includes('LEVEL 10')
-                ? 'text-[#39FF14]'
+                ? 'text-[#00FF88]'
                 : 'text-white/40'
             }`}
             style={{
@@ -96,9 +96,9 @@ export function BootSequence({ onAcknowledge }: BootSequenceProps) {
       {showButton && (
         <button
           onClick={handleAcknowledge}
-          className="mt-12 px-8 py-3 rounded-xl border border-[#39FF14]/30 bg-[#39FF14]/[0.08]
-                     text-[#39FF14] font-mono text-sm tracking-wider
-                     hover:bg-[#39FF14]/15 active:scale-95
+          className="mt-12 px-8 py-3 rounded-xl border border-[#00FF88]/30 bg-[#00FF88]/[0.08]
+                     text-[#00FF88] font-mono text-sm tracking-wider
+                     hover:bg-[#00FF88]/15 active:scale-95
                      transition-all duration-200
                      animate-pulse"
           style={{

@@ -1,8 +1,10 @@
 // spaceship-earth/src/hooks/useLoveSync.ts
 import { useState, useEffect } from 'react';
+import { fetchWithTimeout } from '@p31/shared/net';
 
 const RELAY_URL = 'https://bonding-relay.trimtab-signal.workers.dev';
-const POLL_INTERVAL = 10_000; // 10 seconds
+const POLL_INTERVAL = 10_000;
+const FETCH_TIMEOUT = 10_000;
 
 export function useLoveSync(sessionId: string | null) {
   const [love, setLove] = useState(0);
@@ -12,7 +14,11 @@ export function useLoveSync(sessionId: string | null) {
 
     const poll = async () => {
       try {
-        const res = await fetch(`${RELAY_URL}/love/${sessionId}`);
+        const res = await fetchWithTimeout(
+          `${RELAY_URL}/love/${sessionId}`,
+          undefined,
+          FETCH_TIMEOUT,
+        );
         if (res.ok) {
           const data = await res.json();
           setLove(data.love ?? 0);
@@ -22,7 +28,7 @@ export function useLoveSync(sessionId: string | null) {
       }
     };
 
-    poll(); // immediate
+    poll();
     const interval = setInterval(poll, POLL_INTERVAL);
     return () => clearInterval(interval);
   }, [sessionId]);

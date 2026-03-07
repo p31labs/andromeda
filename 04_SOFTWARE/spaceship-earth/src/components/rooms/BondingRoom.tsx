@@ -1,6 +1,4 @@
 // spaceship-earth/src/components/rooms/BondingRoom.tsx
-import React from 'react';
-
 interface Props {
   url: string;
 }
@@ -24,7 +22,7 @@ export function BondingRoom({ url }: Props) {
         width: '100%',
         height: '100%',
         border: 'none',
-        background: '#050505',
+        background: '#000000',
       }}
       allow="autoplay; fullscreen"
       sandbox="allow-scripts allow-same-origin allow-popups"

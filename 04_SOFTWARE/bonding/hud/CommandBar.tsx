@@ -29,7 +29,7 @@ interface CommandBarProps {
 }
 
 function stabilityColor(pct: number): string {
-  if (pct === 100) return '#39FF14';   // phosphor green — complete
+  if (pct === 100) return '#00FF88';   // phosphor green — complete
   if (pct > 60)   return '#FFD700';    // amber — progressing
   return '#EF4444';                     // red — unstable
 }

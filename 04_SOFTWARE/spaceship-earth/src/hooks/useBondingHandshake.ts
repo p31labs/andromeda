@@ -3,7 +3,9 @@
 // and extracts the sessionId + totalLove for LOVE sync.
 import { useState, useEffect } from 'react';
 
-const BONDING_ORIGIN = 'https://bonding.p31ca.org';
+const BONDING_ORIGIN = import.meta.env.DEV
+  ? 'http://localhost:5188'
+  : 'https://bonding.p31ca.org';
 
 interface BondingHandshake {
   sessionId: string | null;

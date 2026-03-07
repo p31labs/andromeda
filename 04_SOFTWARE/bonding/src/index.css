@@ -20,8 +20,8 @@
   --color-sapling: #A78BFA;
 
   /* ── WCD-08: Cockpit design tokens ── */
-  --color-void: #050505;
-  --color-phosphor: #39FF14;
+  --color-void: #050510;
+  --color-phosphor: #00FF88;
   --color-amber: #FFD700;
   --color-cyan: #06B6D4;
 
@@ -51,12 +51,12 @@ html, body, #root {
   padding: 0;
   width: 100%;
   height: 100%;
-  background: #050505;
+  background: #000000;
   color: #E0E0F0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow: hidden;
-  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-family: 'Space Mono', ui-monospace, monospace;
   overscroll-behavior: none;
   /* WCD-14: Prevent iOS long-press context menu + text selection on game UI */
   -webkit-touch-callout: none;
@@ -265,8 +265,8 @@ input, textarea, [contenteditable] {
 
 /* ── WCD-22: Network button pulse when connected ── */
 @keyframes networkPulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(57, 255, 20, 0.3); }
-  50% { box-shadow: 0 0 8px 2px rgba(57, 255, 20, 0.15); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.3); }
+  50% { box-shadow: 0 0 8px 2px rgba(0, 255, 136, 0.15); }
 }
 
 .network-pulse {
@@ -358,4 +358,239 @@ input, textarea, [contenteditable] {
 
 .haze-breathe {
   animation: haze-breathe 10s ease-in-out infinite;
+}
+
+/* ── Loading spinner (Lobby buttons) ── */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  vertical-align: middle;
+}
+
+/* ── Suspense loading pulse ── */
+@keyframes loadPulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.7; }
+}
+
+.load-pulse {
+  animation: loadPulse 1.5s ease-in-out infinite;
+}
+
+/* ═══════════════════════════════════════════════════════
+   VISUAL OVERHAUL — Full Send
+   ═══════════════════════════════════════════════════════ */
+
+/* ── Element palette breathing glow ── */
+@keyframes paletteBreath {
+  0%, 100% { box-shadow: 0 2px 8px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.05), 0 0 8px var(--glow-color, transparent); }
+  50% { box-shadow: 0 2px 8px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.05), 0 0 18px var(--glow-color, transparent); }
+}
+
+.palette-breath {
+  animation: paletteBreath 3s ease-in-out infinite;
+}
+
+/* ── Palette drag ripple ── */
+@keyframes paletteRipple {
+  0% { transform: scale(1); opacity: 0.4; }
+  100% { transform: scale(2.5); opacity: 0; }
+}
+
+.palette-ripple::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  animation: paletteRipple 0.4s ease-out forwards;
+  pointer-events: none;
+}
+
+/* ── Stability bar shimmer (80%+) ── */
+@keyframes stabilityShimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.stability-shimmer {
+  background-image: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.2) 50%, transparent 100%);
+  background-size: 200% 100%;
+  animation: stabilityShimmer 1.5s linear infinite;
+}
+
+/* ── Stability glow edge ── */
+@keyframes stabilityGlow {
+  0%, 100% { filter: drop-shadow(0 0 3px var(--bar-color, #4ade80)); }
+  50% { filter: drop-shadow(0 0 8px var(--bar-color, #4ade80)); }
+}
+
+.stability-glow {
+  animation: stabilityGlow 1.5s ease-in-out infinite;
+}
+
+/* ── Completion card shimmer border ── */
+@keyframes completionBorderShimmer {
+  0% { border-color: rgba(255,255,255,0.15); }
+  33% { border-color: rgba(201,177,255,0.3); }
+  66% { border-color: rgba(78,205,196,0.3); }
+  100% { border-color: rgba(255,255,255,0.15); }
+}
+
+.completion-shimmer-border {
+  animation: completionBorderShimmer 3s ease-in-out infinite;
+}
+
+/* ── Completion formula reveal ── */
+@keyframes formulaReveal {
+  0% { transform: scale(0.7); opacity: 0; filter: blur(8px); }
+  60% { transform: scale(1.05); opacity: 1; filter: blur(0); }
+  100% { transform: scale(1); opacity: 1; filter: blur(0); }
+}
+
+.formula-reveal {
+  animation: formulaReveal 0.6s ease-out;
+}
+
+/* ── Completion background pulse ── */
+@keyframes completionBgPulse {
+  0%, 100% { background-color: rgba(0,0,0,0.5); }
+  50% { background-color: rgba(20,10,30,0.6); }
+}
+
+.completion-bg-pulse {
+  animation: completionBgPulse 3s ease-in-out infinite;
+}
+
+/* ── Button glow pulse (Build Another) ── */
+@keyframes buttonGlow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(74,222,128,0.3); }
+  50% { box-shadow: 0 0 16px 4px rgba(74,222,128,0.2); }
+}
+
+.button-glow {
+  animation: buttonGlow 2s ease-in-out infinite;
+}
+
+/* ── Mode card stagger slide-up ── */
+@keyframes modeCardIn {
+  0% { opacity: 0; transform: translateY(20px) scale(0.95); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.mode-card-enter {
+  animation: modeCardIn 0.4s ease-out both;
+}
+
+/* ── Clear glass card — floating transparent panel ── */
+.glass-card {
+  background: linear-gradient(
+    160deg,
+    rgba(255, 255, 255, 0.08) 0%,
+    rgba(255, 255, 255, 0.02) 100%
+  );
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-top-color: rgba(255, 255, 255, 0.25);
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+.glass-card:hover {
+  background: linear-gradient(
+    160deg,
+    rgba(255, 255, 255, 0.12) 0%,
+    rgba(255, 255, 255, 0.04) 100%
+  );
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+/* ── Title letter reveal ── */
+@keyframes letterReveal {
+  0% { opacity: 0; transform: translateY(8px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Gallery slide-in ── */
+@keyframes gallerySlideIn {
+  0% { opacity: 0; transform: translateX(20px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+
+.gallery-slide {
+  animation: gallerySlideIn 0.3s ease-out both;
+}
+
+/* ── Lobby scanning underline ── */
+@keyframes scanLine {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.scan-underline {
+  background-image: linear-gradient(90deg, transparent 30%, rgba(0,255,136,0.6) 50%, transparent 70%);
+  background-size: 200% 2px;
+  background-repeat: no-repeat;
+  background-position-y: 100%;
+  animation: scanLine 2s linear infinite;
+}
+
+/* ── Lobby helix spinner ── */
+@keyframes helixSpin {
+  0% { transform: scaleX(1) rotate(0deg); }
+  25% { transform: scaleX(0.3) rotate(90deg); }
+  50% { transform: scaleX(1) rotate(180deg); }
+  75% { transform: scaleX(0.3) rotate(270deg); }
+  100% { transform: scaleX(1) rotate(360deg); }
+}
+
+.helix-spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+  animation: helixSpin 1.2s ease-in-out infinite;
+  vertical-align: middle;
+}
+
+/* ── Screen flash effects ── */
+@keyframes screenFlashGold {
+  0% { box-shadow: inset 0 0 0 0 rgba(255,184,0,0); }
+  30% { box-shadow: inset 0 0 60px 10px rgba(255,184,0,0.15); }
+  100% { box-shadow: inset 0 0 0 0 rgba(255,184,0,0); }
+}
+
+.screen-flash-gold {
+  animation: screenFlashGold 0.5s ease-out;
+}
+
+@keyframes screenFlashWhite {
+  0% { box-shadow: inset 0 0 0 0 rgba(255,255,255,0); }
+  20% { box-shadow: inset 0 0 80px 20px rgba(255,255,255,0.1); }
+  100% { box-shadow: inset 0 0 0 0 rgba(255,255,255,0); }
+}
+
+.screen-flash-white {
+  animation: screenFlashWhite 0.4s ease-out;
+}
+
+/* ── Play Together pulse ── */
+@keyframes playPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255,255,255,0.1); }
+  50% { box-shadow: 0 0 12px 3px rgba(255,255,255,0.08); }
+}
+
+.play-pulse {
+  animation: playPulse 2.5s ease-in-out infinite;
 }

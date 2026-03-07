@@ -10,8 +10,8 @@ export const WILLIUM = {
   name: 'Willium',
   atomicNumber: 6,             // Willow's age
   maxBonds: 3,                 // one for each: Will, Bash, Willow
-  color: '#4ade80',            // willow-green — growth, life, nature
-  emissive: '#86efac',
+  color: '#44EE88',            // willow-green — growth, life, nature
+  emissive: '#77FFAA',
   radius: 1.15,                // same generous size as Bashium
   frequency: 432,              // Larmor / 2 (863 / 2)
   note: 'Wi',

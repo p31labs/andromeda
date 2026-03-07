@@ -1,24 +1,23 @@
 // ═══════════════════════════════════════════════════════
 // BONDING — P31 Labs
-// VoxelAtom: WCD-15 → WCD-17 → WCD-18 → WCD-19 — Smoky Orbs
+// VoxelAtom — Living Wonky Energy Orbs
 //
-// Two-part mesh per atom:
-//   1. Shell: meshStandardMaterial + Fresnel rim + inner wash
-//      via onBeforeCompile. Sharp bright edges, soft diffuse
-//      center glow — volumetric glass illusion.
-//   2. Core: meshBasicMaterial + NormalBlending + smoothstep fade
-//      via onBeforeCompile. Dense smoky center, transparent
-//      edges — volumetric "contained matter" look.
-//   3. Label: drei Text — element symbol.
+// Three layers, each does one job:
+//   1. Body: MeshDistortMaterial — wobbly, semi-transparent,
+//      PBR lit. Depth from real light/shadow. See through it.
+//   2. Energy: meshBasicMaterial — additive inner glow,
+//      scaled down inside the body. The fire inside the glass.
+//   3. Rim: meshBasicMaterial + Fresnel — bright edge halo.
+//   4. Label: drei Text.
 //
-// Breathing, rotation drift, personality hints, and
-// excitement modulation all preserved.
+// Body is translucent glass. Energy burns inside.
+// Rim defines the edge. Together: depth + glow + wonk.
 // ═══════════════════════════════════════════════════════
 
-import { useRef, useMemo, memo } from 'react';
+import { useRef, memo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import type { ThreeEvent } from '@react-three/fiber';
-import { Billboard, Float, Text } from '@react-three/drei';
+import { Billboard, Float, Text, MeshDistortMaterial } from '@react-three/drei';
 import * as THREE from 'three';
 import type { ElementData } from '../types';
 import { playAtomNote } from '../engine/sound';
@@ -40,10 +39,40 @@ interface VoxelAtomProps {
   personalityHint?: PersonalityAnimationHint | null;
 }
 
-// Shared geometries — allocated once, reused by all atoms.
-// WCD-18: SphereGeometry for smooth normals (required for plasma fade shader).
-const SHELL_GEOMETRY = new THREE.SphereGeometry(0.5, 32, 32);
-const CORE_GEOMETRY = new THREE.SphereGeometry(0.5, 32, 32);
+// Shared geometries
+const ENERGY_GEOMETRY = new THREE.SphereGeometry(0.5, 24, 24);
+const RIM_GEOMETRY = new THREE.SphereGeometry(0.5, 32, 32);
+
+// Shared Fresnel rim shader — compiled once at module load, reused by all atoms
+const rimCompile = (shader: THREE.WebGLProgramParametersWithUniforms) => {
+  shader.vertexShader = shader.vertexShader
+    .replace(
+      '#include <common>',
+      `#include <common>
+       varying vec3 vRimNormal;
+       varying vec3 vRimView;`,
+    )
+    .replace(
+      '#include <project_vertex>',
+      `#include <project_vertex>
+       vRimNormal = normalize(normalMatrix * normal);
+       vRimView = normalize(-mvPosition.xyz);`,
+    );
+
+  shader.fragmentShader = shader.fragmentShader
+    .replace(
+      '#include <common>',
+      `#include <common>
+       varying vec3 vRimNormal;
+       varying vec3 vRimView;`,
+    )
+    .replace(
+      'vec4 diffuseColor = vec4( diffuse, opacity );',
+      `float facing = max(dot(normalize(vRimNormal), normalize(vRimView)), 0.0);
+       float rim = pow(1.0 - facing, 2.5);
+       vec4 diffuseColor = vec4( diffuse * (1.0 + rim * 4.0), opacity * rim );`,
+    );
+};
 
 export const VoxelAtom = memo(function VoxelAtom({
   element,
@@ -54,94 +83,21 @@ export const VoxelAtom = memo(function VoxelAtom({
   personalityHint,
 }: VoxelAtomProps) {
   const groupRef = useRef<THREE.Group>(null);
-  const coreRef = useRef<THREE.Mesh>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const bodyMatRef = useRef<any>(null);
+  const energyRef = useRef<THREE.Mesh>(null);
+  const rimRef = useRef<THREE.Mesh>(null);
   const breathing = useGameStore((s) => s.breathing);
 
-  // WCD-18: Ambient Glass Shell — Fresnel rim + soft inner wash.
-  // Memoized so the material doesn't recompile every render.
-  const shellCompile = useMemo(() => {
-    return (shader: THREE.WebGLProgramParametersWithUniforms) => {
-      shader.vertexShader = shader.vertexShader
-        .replace(
-          '#include <common>',
-          `#include <common>
-           varying vec3 vViewPos;
-           varying vec3 vWorldNormal;`,
-        )
-        .replace(
-          '#include <fog_vertex>',
-          `#include <fog_vertex>
-           vWorldNormal = normalize(transformedNormal);
-           vViewPos = -mvPosition.xyz;`,
-        );
-
-      shader.fragmentShader = shader.fragmentShader
-        .replace(
-          '#include <common>',
-          `#include <common>
-           varying vec3 vViewPos;
-           varying vec3 vWorldNormal;`,
-        )
-        .replace(
-          '#include <dithering_fragment>',
-          `#include <dithering_fragment>
-           vec3 sn = normalize(vWorldNormal);
-           vec3 sv = normalize(vViewPos);
-           float rimIntensity = 1.0 - max(dot(sv, sn), 0.0);
-           float rim = pow(rimIntensity, 3.0);
-           float innerWash = pow(max(dot(sv, sn), 0.0), 1.5) * 0.35;
-           gl_FragColor.a *= max(rim, innerWash);
-           gl_FragColor.rgb += gl_FragColor.rgb * rim * 2.0;
-           gl_FragColor.rgb += gl_FragColor.rgb * innerWash;`,
-        );
-    };
-  }, []);
-
-  // WCD-19: Smoky Core — dense center, transparent edges via smoothstep.
-  // NormalBlending makes it look like contained matter, not pure light.
-  const coreCompile = useMemo(() => {
-    return (shader: THREE.WebGLProgramParametersWithUniforms) => {
-      shader.vertexShader = shader.vertexShader
-        .replace(
-          '#include <common>',
-          `#include <common>
-           varying vec3 vCoreNormal;
-           varying vec3 vCoreViewPos;`,
-        )
-        .replace(
-          '#include <project_vertex>',
-          `#include <project_vertex>
-           vCoreNormal = normalize(normalMatrix * normal);
-           vCoreViewPos = -mvPosition.xyz;`,
-        );
-
-      shader.fragmentShader = shader.fragmentShader
-        .replace(
-          '#include <common>',
-          `#include <common>
-           varying vec3 vCoreNormal;
-           varying vec3 vCoreViewPos;`,
-        )
-        .replace(
-          'vec4 diffuseColor = vec4( diffuse, opacity );',
-          `vec3 cn = normalize(vCoreNormal);
-           vec3 cv = normalize(vCoreViewPos);
-           float smoke = smoothstep(0.0, 1.0, max(dot(cn, cv), 0.0));
-           vec4 diffuseColor = vec4( diffuse, opacity * smoke );`,
-        );
-    };
-  }, []);
-
-  // Deterministic per-atom phase from position — pure, no Math.random()
   const phaseOffset =
     (position[0] * 127.1 + position[1] * 311.7 + position[2] * 523.3) %
     (Math.PI * 2);
 
   const pHint = personalityHint;
-
-  // WCD-19: Cap visual size so largest atoms (Ca, Cl, S) are max ~2.5x H.
-  // Original sizes range 0.25 (H) → 1.26 (S). Clamped to [0.25, 0.65].
   const clampedSize = Math.min(0.65, element.size);
+
+  // Smaller atoms wobble more
+  const baseDistort = 0.3 + (1.0 - clampedSize) * 0.2;
 
   useFrame((state) => {
     if (!groupRef.current) return;
@@ -151,45 +107,55 @@ export const VoxelAtom = memo(function VoxelAtom({
     let breathe: number;
 
     if (breathing) {
-      // 4-4-6 breathing pacer: 14s cycle
       const cycle = 14;
       const bt = state.clock.elapsedTime % cycle;
       let breathScale = 1.0;
       if (bt < 4) {
-        breathScale = 1.0 + 0.1 * (bt / 4);              // inhale
+        breathScale = 1.0 + 0.1 * (bt / 4);
       } else if (bt < 8) {
-        breathScale = 1.1;                                  // hold
+        breathScale = 1.1;
       } else {
-        breathScale = 1.1 - 0.1 * ((bt - 8) / 6);        // exhale
+        breathScale = 1.1 - 0.1 * ((bt - 8) / 6);
       }
       scale = breathScale * clampedSize;
-      breathe = (breathScale - 1.0) / 0.1; // normalize to 0-1
+      breathe = (breathScale - 1.0) / 0.1;
     } else {
-      // Normal asymmetric breathing: 45% inhale, 55% exhale
       breathe = Math.pow(Math.sin(t * 0.8) * 0.5 + 0.5, 0.85);
-      const baseScale = 0.95 + breathe * 0.05; // ±2.5%
+      const baseScale = 0.95 + breathe * 0.05;
       const pScale = pHint ? pHint.scale : 1.0;
       scale = (baseScale + excitement * 0.1) * clampedSize * pScale;
     }
     groupRef.current.scale.setScalar(scale);
-
-    // Gentle rotation drift
     groupRef.current.rotation.y += 0.002 + excitement * 0.005;
 
-    // WCD-19: Core color modulation — NormalBlending, smoke volume.
-    if (coreRef.current) {
-      const mat = coreRef.current.material as THREE.MeshBasicMaterial;
-      const emissiveBase = 0.8 + breathe * 0.4;
-      const pulseBoost = pHint?.pulse ? 0.3 + Math.sin(t * 3.0) * 0.2 : 0;
-      const intensity = isHighlighted
-        ? 1.5
-        : emissiveBase * (1.0 + excitement * 0.5) + pulseBoost;
-      mat.color.set(element.emissive).multiplyScalar(intensity);
+    // Body: neon emissive breathing — glass lit from within
+    if (bodyMatRef.current) {
+      const mat = bodyMatRef.current;
+      mat.emissiveIntensity = isHighlighted
+        ? 1.0
+        : 0.5 + breathe * 0.35 + excitement * 0.3;
 
-      // Personality vibrate: rapid core oscillation
-      if (pHint?.vibrate) {
-        coreRef.current.scale.setScalar(0.95 + Math.sin(t * 20) * 0.02);
-      }
+      mat.distort = baseDistort + excitement * 0.15
+        + (pHint?.vibrate ? 0.12 + Math.sin(t * 15) * 0.06 : 0)
+        + (pHint?.pulse ? Math.sin(t * 3.0) * 0.1 : 0);
+    }
+
+    // Energy core: neon glow breathing inside the glass
+    if (energyRef.current) {
+      const coreBreath = 0.5 + breathe * 0.2 + Math.sin(t * 1.5) * 0.06;
+      energyRef.current.scale.setScalar(coreBreath);
+      const mat = energyRef.current.material as THREE.MeshBasicMaterial;
+      const pulse = 0.7 + breathe * 0.35 + Math.sin(t * 1.5) * 0.12;
+      mat.color.set(element.emissive).multiplyScalar(
+        Math.min(2.0, isHighlighted ? 1.8 : pulse * (1.4 + excitement * 0.4))
+      );
+      mat.opacity = isHighlighted ? 0.6 : 0.35 + breathe * 0.2;
+    }
+
+    // Rim: neon Fresnel edge glow
+    if (rimRef.current) {
+      const rimMat = rimRef.current.material as THREE.MeshBasicMaterial;
+      rimMat.opacity = isHighlighted ? 0.7 : 0.4 + breathe * 0.15;
     }
   });
 
@@ -216,36 +182,50 @@ export const VoxelAtom = memo(function VoxelAtom({
           document.body.style.cursor = 'auto';
         }}
       >
-        {/* WCD-18: Ambient Glass Shell — Fresnel rim + inner wash.
-            Sharp bright edges, soft diffuse center glow. */}
-        <mesh geometry={SHELL_GEOMETRY}>
-          <meshStandardMaterial
-            transparent
-            opacity={0.8}
-            depthWrite={false}
-            roughness={0.1}
-            metalness={0.8}
+        {/* Layer 1: Wobbly glass body — nearly clear, edge-lit */}
+        <mesh>
+          <icosahedronGeometry args={[0.5, 16]} />
+          <MeshDistortMaterial
+            ref={bodyMatRef}
             color={element.color}
-            blending={THREE.AdditiveBlending}
-            onBeforeCompile={shellCompile}
+            emissive={element.emissive}
+            emissiveIntensity={0.6}
+            roughness={0.08}
+            metalness={0.1}
+            distort={baseDistort}
+            speed={1.5 + (pHint?.speed ?? 0.5) * 2}
+            transparent
+            opacity={0.25}
+            depthWrite={false}
           />
         </mesh>
 
-        {/* WCD-19 revised: Smoky Core — scale 0.95 fills the shell.
-            AdditiveBlending restored for glow + visible breathing/pulse.
-            smoothstep shader softens edges into volumetric cloud. */}
-        <mesh ref={coreRef} geometry={CORE_GEOMETRY} scale={0.95}>
+        {/* Layer 2: Inner energy — additive glow visible through glass */}
+        <mesh ref={energyRef} geometry={ENERGY_GEOMETRY}>
           <meshBasicMaterial
             color={element.emissive}
             transparent
-            opacity={0.8}
+            opacity={0.6}
             blending={THREE.AdditiveBlending}
             depthWrite={false}
-            onBeforeCompile={coreCompile}
+            toneMapped={false}
           />
         </mesh>
 
-        {/* WCD-11 + WCD-28: Element label — billboarded to always face camera */}
+        {/* Layer 3: Fresnel rim — glass edge definition */}
+        <mesh ref={rimRef} geometry={RIM_GEOMETRY} scale={1.02}>
+          <meshBasicMaterial
+            color={element.emissive}
+            transparent
+            opacity={0.4}
+            blending={THREE.AdditiveBlending}
+            depthWrite={false}
+            toneMapped={false}
+            onBeforeCompile={rimCompile}
+          />
+        </mesh>
+
+        {/* Layer 4: Element label */}
         <Billboard follow position={[0, 0, 0.35]}>
           <Text
             fontSize={0.22}

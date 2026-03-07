@@ -21,6 +21,7 @@ import { Line } from '@react-three/drei';
 import * as THREE from 'three';
 import type { ElementSymbol } from '../types';
 import { ELEMENTS } from '../data/elements';
+import { useGameStore } from '../store/gameStore';
 
 interface BondBeamProps {
   start: { x: number; y: number; z: number };
@@ -36,6 +37,8 @@ export const BondBeam = memo(function BondBeam({ start, end, fromElement, toElem
   const lineRef = useRef<any>(null);
   const birthTime = useRef<number | null>(null);
   const blendingSet = useRef(false);
+  const gamePhase = useGameStore((s) => s.gamePhase);
+  const completionFlashRef = useRef<number | null>(null);
 
   const { surfaceFrom, surfaceTo, midpoint, perpendicular, color, phaseOffset, initialPoints } = useMemo(() => {
     const s = new THREE.Vector3(start.x, start.y, start.z);
@@ -121,13 +124,37 @@ export const BondBeam = memo(function BondBeam({ start, end, fromElement, toElem
       lineRef.current.geometry.setPositions(positions);
     }
 
+    // Completion flash: bonds go white then settle back
+    if (gamePhase === 'complete' && completionFlashRef.current === null) {
+      completionFlashRef.current = t;
+    }
+    let completionBoost = 0;
+    if (completionFlashRef.current !== null) {
+      const cAge = t - completionFlashRef.current;
+      if (cAge < 0.8) {
+        completionBoost = 2.0 * (1 - cAge / 0.8);
+      }
+    }
+
     // Birth flash + idle pulse → modulate opacity
     const age = t - (birthTime.current ?? t);
-    const flash = age < 0.8 ? 2.5 * (1 - age / 0.8) : 0;
+    const flash = age < 0.8 ? 3.5 * (1 - age / 0.8) : 0;
     const pulse = 0.7 + Math.sin(t * 2.0) * 0.3;
-    const intensity = Math.min(1, 0.4 * (pulse + flash));
+    const intensity = Math.min(1, 0.4 * (pulse + flash + completionBoost));
     if (lineRef.current.material) {
       lineRef.current.material.opacity = intensity;
+      // Width pulse on birth
+      if (age < 0.6) {
+        const widthT = age / 0.6;
+        lineRef.current.material.linewidth = 2.5 + 1.5 * Math.sin(widthT * Math.PI);
+      }
+      // Completion white flash
+      if (completionBoost > 0.1) {
+        const whiteAmount = completionBoost / 2.0;
+        const baseColor = color.clone();
+        baseColor.lerp(new THREE.Color('#ffffff'), whiteAmount * 0.7);
+        lineRef.current.material.color = baseColor;
+      }
     }
   });
 

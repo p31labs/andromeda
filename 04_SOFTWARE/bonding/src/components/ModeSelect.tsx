@@ -42,7 +42,7 @@ function relativeTime(iso: string): string {
 
 function GalleryRow({ entry }: { entry: GalleryEntry }) {
   return (
-    <div className="flex items-center gap-3 px-3 py-2 rounded-lg bg-white/[0.04] backdrop-blur-[16px] text-xs">
+    <div className="flex items-center gap-3 px-3 py-2 rounded-lg glass-card text-xs">
       <span className="text-white/70 font-mono font-bold min-w-[60px]">
         {entry.displayFormula}
       </span>
@@ -123,7 +123,7 @@ export function ModeSelect() {
               key={quest.id}
               type="button"
               onClick={() => setGameMode(pendingMode, quest.id)}
-              className="group flex items-center gap-4 p-4 rounded-xl bg-white/[0.06] backdrop-blur-[20px] hover:bg-white/[0.10] border border-white/[0.12] hover:border-white/[0.20] transition-all active:scale-[0.98] cursor-pointer text-left"
+              className="group glass-card flex items-center gap-4 p-4 rounded-xl transition-all active:scale-[0.98] cursor-pointer text-left"
               style={{ minHeight: 64, touchAction: 'manipulation' }}
             >
               <span className="text-2xl flex-shrink-0">{quest.icon}</span>
@@ -150,7 +150,7 @@ export function ModeSelect() {
           <button
             type="button"
             onClick={() => setGameMode(pendingMode, 'free_build')}
-            className="group flex items-center gap-4 p-4 rounded-xl bg-white/[0.04] backdrop-blur-[20px] hover:bg-white/[0.08] border border-white/[0.08] hover:border-white/[0.15] transition-all active:scale-[0.98] cursor-pointer text-left"
+            className="group glass-card flex items-center gap-4 p-4 rounded-xl transition-all active:scale-[0.98] cursor-pointer text-left"
             style={{ minHeight: 64, touchAction: 'manipulation' }}
           >
             <span className="text-2xl flex-shrink-0">{'\u{1F3A8}'}</span>
@@ -180,25 +180,35 @@ export function ModeSelect() {
       }}
     >
       <Starfield />
-      {/* Title */}
+      {/* Title — letter-by-letter reveal */}
       <div className="text-center">
         <h1 className="text-4xl sm:text-5xl font-black tracking-[0.3em] text-white title-glow mb-2">
-          BONDING
+          {'BONDING'.split('').map((letter, i) => (
+            <span
+              key={i}
+              className="inline-block"
+              style={{
+                animation: `letterReveal 0.3s ease-out ${i * 0.06}s both`,
+              }}
+            >
+              {letter}
+            </span>
+          ))}
         </h1>
-        <p className="text-sm text-white/50 font-mono">
+        <p className="text-sm text-white/50 font-mono" style={{ animation: 'letterReveal 0.4s ease-out 0.5s both' }}>
           Build molecules together
         </p>
       </div>
 
       {/* Mode cards — WCD-18: flex-wrap + constrained width for narrow screens */}
       <div className="flex flex-wrap items-stretch justify-center gap-4 px-6 max-w-lg">
-        {MODES.map((mode) => (
+        {MODES.map((mode, idx) => (
           <button
             key={mode.id}
             type="button"
             onClick={() => setPendingMode(mode.id)}
-            className={`mode-card group flex flex-col items-center gap-3 p-5 rounded-2xl bg-white/[0.06] backdrop-blur-[20px] hover:bg-white/[0.10] border border-white/[0.12] ${MODE_HOVER_BORDER[mode.id] ?? ''} transition-all active:scale-95 cursor-pointer flex-1`}
-            style={{ minWidth: 100, maxWidth: 160, minHeight: 150, touchAction: 'manipulation' }}
+            className={`mode-card mode-card-enter group glass-card flex flex-col items-center gap-3 p-5 rounded-2xl ${MODE_HOVER_BORDER[mode.id] ?? ''} transition-all active:scale-95 cursor-pointer flex-1`}
+            style={{ minWidth: 100, maxWidth: 160, minHeight: 150, touchAction: 'manipulation', animationDelay: `${0.6 + idx * 0.1}s` }}
           >
             <span className="text-5xl group-hover:scale-110 transition-transform">
               {mode.emoji}
@@ -220,7 +230,7 @@ export function ModeSelect() {
       <button
         type="button"
         onClick={() => setLobbyActive(true)}
-        className="text-sm text-white/50 hover:text-white/80 bg-white/[0.06] backdrop-blur-[20px] hover:bg-white/[0.10] border border-white/[0.12] rounded-full px-6 py-2 transition-all cursor-pointer font-medium"
+        className="text-sm text-white/50 hover:text-white/80 glass-card rounded-full px-6 py-2 transition-all cursor-pointer font-medium play-pulse"
         style={{ minHeight: 48, touchAction: 'manipulation' }}
       >
         {'\u{1F91D}'} Play Together
@@ -233,8 +243,10 @@ export function ModeSelect() {
             {'\u2500'.repeat(3)} Your Creations ({count} molecule{count !== 1 ? 's' : ''} {'\u00B7'} {'\u2665'} {totalLove} L.O.V.E.) {'\u2500'.repeat(3)}
           </div>
           <div className="flex flex-col gap-1">
-            {visible.map((entry) => (
-              <GalleryRow key={entry.id} entry={entry} />
+            {visible.map((entry, idx) => (
+              <div key={entry.id} className="gallery-slide" style={{ animationDelay: `${idx * 0.08}s` }}>
+                <GalleryRow entry={entry} />
+              </div>
             ))}
           </div>
           {gallery.length > 5 && (

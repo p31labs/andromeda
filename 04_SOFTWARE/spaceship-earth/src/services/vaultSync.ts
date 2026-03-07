@@ -37,6 +37,7 @@ export class VaultSync {
   private _node: NodeZero;
   private _initialized = false;
   private _bondRecords: Array<{ peerId: string; formedAt: string }> = [];
+  private _syncEvents: Array<{ type: string; did: string; serverHash: string; direction: string; timestamp: string }> = [];
   private _teardownFns: Array<() => void> = [];
 
   constructor(config: VaultSyncConfig) {
@@ -81,12 +82,13 @@ export class VaultSync {
     console.log('[VaultSync] initialized — 4 vault layers ready');
   }
 
-  // Write current telemetry buffer to vault
+  // Write current telemetry buffer to vault (includes sync events)
   async writeTelemetry(): Promise<void> {
     const events = telemetryGetBuffer();
     const sessionId = telemetryGetSessionId();
     await this._vault.write(LAYER_TELEMETRY, {
       events,
+      syncEvents: this._syncEvents.length > 0 ? [...this._syncEvents] : undefined,
       sessionId: sessionId ?? 'unknown',
       capturedAt: new Date().toISOString(),
     });
@@ -105,6 +107,21 @@ export class VaultSync {
       snapshot,
       capturedAt: new Date().toISOString(),
     });
+  }
+
+  // Log a Genesis Sync event for Daubert chain-of-custody
+  logSyncEvent(direction: 'push' | 'pull', did: string, serverHash: string): void {
+    this._syncEvents.push({
+      type: direction === 'push' ? 'GENESIS_SYNC_PUSH' : 'GENESIS_SYNC_PULL',
+      did,
+      serverHash,
+      direction,
+      timestamp: new Date().toISOString(),
+    });
+    // Append to telemetry layer immediately
+    this.writeTelemetry().catch(err =>
+      console.error('[VaultSync] sync event write failed:', err)
+    );
   }
 
   // Write all layers (call on session end)
@@ -147,6 +164,11 @@ export class VaultSync {
     bundle.storageUsage = usage;
 
     return bundle;
+  }
+
+  // Public accessor for sync events (used by VaultRoom telemetry log)
+  get syncEvents(): ReadonlyArray<{ type: string; did: string; serverHash: string; direction: string; timestamp: string }> {
+    return this._syncEvents;
   }
 
   teardown(): void {

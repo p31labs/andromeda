@@ -1,5 +1,5 @@
 // spaceship-earth/src/components/hud/SpoonGauge.tsx
-import React from 'react';
+import { memo, useMemo } from 'react';
 
 interface Props {
   spoons: number;
@@ -8,33 +8,30 @@ interface Props {
   tier: string;
 }
 
-export function SpoonGauge({ spoons, maxSpoons, love, tier }: Props) {
-  const pct = Math.round((spoons / maxSpoons) * 100);
+export const SpoonGauge = memo(function SpoonGauge({ spoons, maxSpoons, love, tier }: Props) {
   const tierColor = tier === 'REFLEX' ? '#ff6b6b' : tier === 'PATTERN' ? '#f7dc6f' : '#4ecdc4';
+  const pct = useMemo(() => `${Math.round((spoons / maxSpoons) * 100)}%`, [spoons, maxSpoons]);
+  const loveStr = useMemo(() => love.toLocaleString(), [love]);
 
   return (
-    <div style={{
-      background: 'rgba(2, 4, 6, 0.85)',
-      backdropFilter: 'blur(12px)',
-      border: '1px solid rgba(40, 60, 80, 0.3)',
-      borderRadius: 8,
-      padding: '8px 12px',
-      fontFamily: "'JetBrains Mono', monospace",
-      color: '#c8d0dc',
-      fontSize: 11,
-      pointerEvents: 'auto',
-      minWidth: 140,
-      maxWidth: 200,
-    }}>
-      <div style={{ marginBottom: 4 }}>
-        🥄 {spoons}/{maxSpoons} spoons
-        <span style={{ color: tierColor, fontWeight: 600, marginLeft: 4, letterSpacing: 1 }}>
+    <div className="glass-card spoon-gauge">
+      <div className="spoon-gauge-row">
+        <span className="spoon-gauge-label">spoons</span>
+        <span className="spoon-gauge-value">{spoons}/{maxSpoons}</span>
+        <span className="spoon-gauge-tier" style={{ color: tierColor, textShadow: `0 0 8px ${tierColor}44` }}>
           {tier}
         </span>
       </div>
-      <div style={{ color: '#c9b1ff', fontSize: 11 }}>
-        💜 {love.toLocaleString()} L.O.V.E.
+      <div className="progress-track spoon-gauge-track">
+        <div className="progress-fill" style={{
+          background: `linear-gradient(90deg, ${tierColor}, ${tierColor}88)`,
+          width: pct,
+        }} />
+      </div>
+      <div className="spoon-gauge-love">
+        <span className="spoon-gauge-love-label">LOVE</span>
+        <span className="spoon-gauge-love-value">{loveStr}</span>
       </div>
     </div>
   );
-}
+});

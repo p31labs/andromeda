@@ -8,14 +8,14 @@
 // Add to theme.extend.colors:
 const colors = {
   void: '#050505',
-  phosphor: '#39FF14',
+  phosphor: '#00FF88',
   amber: '#FFD700',
   cyan: '#06B6D4',
 };
 
 // Add to theme.extend.fontFamily:
 const fontFamily = {
-  mono: ['JetBrains Mono', 'ui-monospace', 'SFMono-Regular', 'monospace'],
+  mono: ['Space Mono', 'ui-monospace', 'SFMono-Regular', 'monospace'],
   sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
 };
 
@@ -44,12 +44,12 @@ const animation = {
  *       colors: {
  *         ...existingColors,
  *         void: '#050505',
- *         phosphor: '#39FF14',
+ *         phosphor: '#00FF88',
  *         amber: '#FFD700',
  *         cyan: '#06B6D4',
  *       },
  *       fontFamily: {
- *         mono: ['JetBrains Mono', 'ui-monospace', 'SFMono-Regular', 'monospace'],
+ *         mono: ['Space Mono', 'ui-monospace', 'SFMono-Regular', 'monospace'],
  *         sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
  *       },
  *       keyframes: {

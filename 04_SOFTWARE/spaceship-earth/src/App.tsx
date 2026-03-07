@@ -1,7 +1,14 @@
 // spaceship-earth/src/App.tsx
-import React from 'react';
-import { RoomShell } from './components/rooms/RoomShell';
+import { SovereignShell } from './components/rooms/sovereign/SovereignShell';
+import { ErrorBoundary } from './components/ErrorBoundary';
+import { NodeProvider } from './contexts/NodeContext';
 
 export default function App() {
-  return <RoomShell />;
+  return (
+    <ErrorBoundary>
+      <NodeProvider>
+        <SovereignShell />
+      </NodeProvider>
+    </ErrorBoundary>
+  );
 }

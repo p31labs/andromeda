@@ -84,6 +84,7 @@ export function ElementPalette() {
     element: ElementSymbol;
     x: number;
     y: number;
+    pointerType: string;
   } | null>(null);
   const activatedRef = useRef(false);
 
@@ -92,10 +93,11 @@ export function ElementPalette() {
 
   const handlePointerDown = useCallback(
     (element: ElementSymbol, e: React.PointerEvent) => {
-      e.preventDefault();
+      // Only preventDefault for mouse — touch needs native scroll
+      if (e.pointerType === 'mouse') e.preventDefault();
       // Dead zone: ignore drags starting near screen edges
       if (isInDeadZone(e.clientX, e.clientY)) return;
-      pendingRef.current = { element, x: e.clientX, y: e.clientY };
+      pendingRef.current = { element, x: e.clientX, y: e.clientY, pointerType: e.pointerType };
       activatedRef.current = false;
       playSelectBlip(ELEMENTS[element].frequency);
     },
@@ -114,7 +116,9 @@ export function ElementPalette() {
         if (dist >= DRAG_THRESHOLD) {
           // WCD-24: Only activate drag if movement is primarily vertical.
           // Horizontal movement → palette scroll (handled natively).
-          if (Math.abs(dy) > Math.abs(dx)) {
+          // Mouse: skip directional check — no scroll conflict with mouse.
+          const isMouse = pending.pointerType === 'mouse';
+          if (isMouse || Math.abs(dy) > Math.abs(dx)) {
             activatedRef.current = true;
             useGameStore.getState().startDrag(pending.element);
           } else {
@@ -189,45 +193,28 @@ export function ElementPalette() {
         )}
         {visibleElements.map((el) => {
           const isDragging = dragging === el.symbol;
-          // Size buttons proportional to atom size (clamped 0.25–0.65 → 40–60px)
-          const buttonSize = Math.round(40 + ((Math.min(0.65, el.size) - 0.25) / 0.4) * 20);
           return (
             <button
               key={el.symbol}
               type="button"
               onPointerDown={(e) => handlePointerDown(el.symbol, e)}
-              className={`group relative flex items-center justify-center rounded-full shrink-0 transition-all duration-200 active:scale-95 touch-expand backdrop-blur-md ${
-                isDragging ? 'opacity-30 scale-90' : 'hover:scale-110'
+              className={`flex items-center justify-center rounded-full shrink-0 transition-all duration-150 active:scale-90 ${
+                isDragging ? 'opacity-20 scale-75' : 'hover:scale-105'
               }`}
               style={{
                 cursor: 'grab',
                 touchAction: 'pan-x',
-                width: buttonSize,
-                height: buttonSize,
-                minWidth: buttonSize,
-                minHeight: buttonSize,
-                background: `radial-gradient(circle at 40% 35%, ${el.emissive}18 0%, rgba(6,10,16,0.45) 60%)`,
-                border: `1.5px solid ${el.emissive}55`,
-                boxShadow: `0 2px 8px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.08), 0 0 14px ${el.emissive}30`,
+                width: 40,
+                height: 40,
+                minWidth: 40,
+                minHeight: 40,
+                background: 'rgba(255,255,255,0.06)',
+                border: `1.5px solid ${el.emissive}88`,
+                boxShadow: `0 0 8px ${el.emissive}30`,
               }}
             >
-              {/* Color rim — element identity ring */}
-              <div
-                className="absolute inset-0 rounded-full pointer-events-none"
-                style={{
-                  background: `radial-gradient(circle at 50% 50%, transparent 40%, ${el.emissive}25 70%, ${el.emissive}55 100%)`,
-                }}
-              />
-              {/* Core glow — inner luminance */}
-              <div
-                className="absolute inset-[15%] rounded-full pointer-events-none"
-                style={{
-                  background: `radial-gradient(circle at 38% 35%, ${el.emissive}44 0%, ${el.emissive}15 40%, transparent 70%)`,
-                }}
-              />
-              {/* Symbol */}
-              <span className="relative z-[1] text-base font-bold text-white/90 group-hover:text-white transition-colors"
-                style={{ textShadow: `0 1px 4px rgba(0,0,0,0.9), 0 0 8px ${el.emissive}33` }}
+              <span className="text-sm font-bold text-white/90"
+                style={{ textShadow: `0 0 8px ${el.emissive}88` }}
               >
                 {el.symbol}
               </span>

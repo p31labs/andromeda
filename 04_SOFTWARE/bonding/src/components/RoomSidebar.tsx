@@ -117,7 +117,7 @@ export function RoomSidebar() {
       <button
         type="button"
         onClick={() => setExpanded(true)}
-        className="absolute top-20 right-6 bg-white/[0.06] backdrop-blur-[20px] px-3 py-2 rounded-full border border-white/[0.12] text-xs text-white/40 cursor-pointer hover:text-white/60 transition-colors flex items-center gap-2"
+        className="absolute top-20 right-6 glass-card px-3 py-2 rounded-full text-xs text-white/40 cursor-pointer hover:text-white/60 transition-colors flex items-center gap-2"
         style={{ minHeight: 40, touchAction: 'manipulation' }}
       >
         <span className={`w-2 h-2 rounded-full ${statusColor}`} />
@@ -150,7 +150,7 @@ export function RoomSidebar() {
         return (
           <div
             key={player.id}
-            className="bg-white/[0.06] backdrop-blur-[20px] p-3 rounded-xl border border-white/[0.12] min-w-[180px]"
+            className="glass-card p-3 rounded-xl min-w-[180px]"
           >
             {/* Player info row */}
             <div className="flex items-center gap-2 mb-2">

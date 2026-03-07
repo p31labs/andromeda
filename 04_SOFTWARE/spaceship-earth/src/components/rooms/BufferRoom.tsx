@@ -1,73 +1,132 @@
 // spaceship-earth/src/components/rooms/BufferRoom.tsx
-// The Buffer — sovereignty over when reality arrives.
-// Three zones: INGEST (voltage-scored intake), FAWN GUARD (draft checker),
-// CHAOS (raw text → structured extraction).
-import React, { useState, useCallback, useEffect } from 'react';
+// The Buffer v2 — Quantum/Classical Bridge
+// Samson V2 PID (Shannon entropy) + voltage scoring + fawn guard + chaos ingestion
+// + BLUF + PA detection + breathing + calibration + telemetry
+import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import { useNode } from '../../contexts/NodeContext';
 
-type BufferTab = 'ingest' | 'fawn' | 'chaos';
+// ── Design Tokens ────────────────────────────────────────────
+const FONT = "'Oxanium', sans-serif";
+const MONO = "'Space Mono', monospace";
 
-// ── Voltage scoring ─────────────────────────────────────────
+const C = {
+  bg: { deep: '#050510', base: '#0A0A1F', raised: '#111122', border: 'rgba(255,255,255,0.06)' },
+  text: { primary: '#E0E0EE', secondary: 'rgba(255,255,255,0.54)', dim: 'rgba(255,255,255,0.28)' },
+  amber: '#FFB800', coral: '#F08080', orange: '#FF8C42', mint: '#00FF88',
+  lavender: '#7A27FF', cyan: '#00D4FF', red: '#dc2626',
+  axis: { A: '#ff6b6b', B: '#4ecdc4', C: '#ffe66d', D: '#a29bfe' } as Record<string, string>,
+  state: { green: '#00E878', yellow: '#F0B547', orange: '#FF8C42', red: '#FF4444' },
+} as const;
 
-const URGENCY_RE = [
-  /\basap\b/i, /\burgent\b/i, /\bimmediately\b/i, /\bright now\b/i,
-  /\bdeadline\b/i, /\boverdue\b/i, /\bpast due\b/i, /\blast chance\b/i,
-  /\bfinal notice\b/i, /\bcritical\b/i, /!!+/,
-  /\bcourt\b/i, /\battorney\b/i, /\bhearing\b/i, /\bcustody\b/i,
+const DIM = 'rgba(122,39,255,0.4)';
+
+// ── Samson Constants ─────────────────────────────────────────
+const TARGET_H = Math.PI / 9; // 0.34906 — The Attractor
+const HISTORY_SIZE = 60;      // 60 samples at 1Hz = 1-minute window
+const Kp = 1.0, Ki = 0.1, Kd = 0.3;
+
+// ── Breathing Constants ──────────────────────────────────────
+const BREATHE_IN = 4;
+const BREATHE_HOLD = 2;
+const BREATHE_OUT = 6;
+const BREATHE_TOTAL = BREATHE_IN + BREATHE_HOLD + BREATHE_OUT;
+const MAX_CYCLES = 3;
+
+// ── Voltage Patterns ─────────────────────────────────────────
+
+const U_HIGH = [/\basap\b/i, /\burgent/i, /\bimmediately\b/i, /\bdeadline/i, /\bnow\b/i, /\bcritical/i, /\bemergency/i, /\bfinal notice/i, /\blast chance/i, /\btoday\b/i];
+const U_MED = [/\bsoon\b/i, /\bthis week/i, /\breminder/i, /\bfollow.?up/i, /\bpriority/i, /\bimportant/i];
+const U_LOW = [/\bfyi\b/i, /\bno rush/i, /\bwhen(ever)? you can/i, /\bjust wanted/i];
+
+const E_HIGH = [/\bdisappointed/i, /\bfrustrat/i, /\bangry/i, /per my last/i, /\bas I (already|previously)/i, /\bunaccept/i, /!{2,}/, /\bconcern(ed|ing)/i, /\bnot sure (why|how)/i];
+const E_MED = [/\bconfus/i, /\bworried/i, /\bupset/i, /\bneed to talk/i, /\bhonestly\b/i, /\bfrankly\b/i];
+const E_LOW = [/\bthanks?\b/i, /\bgreat\b/i, /\bappreciate/i, /\bno worries/i];
+
+const C_HIGH = [/\d+\s*(item|point|thing|step|question)/i, /\battach/i, /\bspreadsheet/i, /\breview (the|this)/i, /\bcomplex/i, /\blegal/i, /\bcontract/i];
+const C_MED = [/\bdecision/i, /\bchoose/i, /\boption/i, /\bschedul/i, /\bavailab/i];
+const C_LOW = [/\byes\b/i, /\bno\b/i, /\bok\b/i, /\bsounds good/i, /\bconfirm/i];
+
+// ── PA Detection ─────────────────────────────────────────────
+
+const PA_PATTERNS: { p: RegExp; t: string }[] = [
+  { p: /per my last (email|message)/i, t: 'Referencing a previous message you may have missed' },
+  { p: /as (previously|already) (stated|mentioned|discussed)/i, t: 'They believe this was covered before' },
+  { p: /going forward/i, t: 'They want to change the approach' },
+  { p: /just to clarify/i, t: 'They feel there\'s a misunderstanding' },
+  { p: /I('m| am) not sure (why|how|what)/i, t: 'Confused or disagrees' },
+  { p: /with all due respect/i, t: 'They disagree with you' },
+  { p: /please (advise|confirm|clarify)/i, t: 'They need a response' },
+  { p: /friendly reminder/i, t: 'They\'ve asked before and want action' },
+  { p: /I('ll| will) (just )?go ahead and/i, t: 'Planning to act without your input' },
+  { p: /correct me if I('m| am) wrong/i, t: 'They believe they are right' },
+  { p: /thanks in advance/i, t: 'They expect you to do this' },
+  { p: /not sure if you (saw|got|received)/i, t: 'They think you ignored them' },
+  { p: /as per (the |my )?(policy|handbook|agreement)/i, t: 'Citing rules to support their position' },
 ];
 
-const EMOTIONAL_RE = [
-  /\bdisappointed\b/i, /\bangry\b/i, /\bfurious\b/i, /\bscared\b/i,
-  /\bworried\b/i, /\bhurt\b/i, /\bbetrayed\b/i, /\bfault\b/i,
-  /\bblame\b/i, /\bshame\b/i, /\bguilty\b/i, /\bvisitation\b/i,
-  /\bnever\b/i, /\balways\b/i, /\beveryone knows\b/i, /\bno one\b/i,
-];
-
-const COGNITIVE_RE = [
-  /\d{3,}/, /\b(schedule|calendar|appointment|meeting)\b/i,
-  /\b(form|document|paperwork|filing)\b/i,
-  /\b(multiple|several|various)\b/i, /\b(moreover|furthermore|however)\b/i,
-];
+// ── Voltage Scoring ──────────────────────────────────────────
 
 interface VoltageScore {
-  voltage: number;
-  urgency: number;
-  emotional: number;
-  cognitive: number;
+  u: number; e: number; c: number; v: number;
+  gate: 'GREEN' | 'YELLOW' | 'RED' | 'CRITICAL';
+  pa: { p: RegExp; t: string }[];
+}
+
+const GATES = {
+  GREEN: { label: 'CLEAR', color: C.mint, bg: '#052e16' },
+  YELLOW: { label: 'CAUTION', color: C.amber, bg: '#422006' },
+  RED: { label: 'HIGH VOLTAGE', color: C.coral, bg: '#450a0a' },
+  CRITICAL: { label: 'CRITICAL', color: C.red, bg: '#4c0519' },
+};
+
+function scoreAxis(text: string, high: RegExp[], med: RegExp[], low: RegExp[], extra?: (text: string, s: number) => number): number {
+  let s = 5;
+  let h = 0, m = 0, l = 0;
+  high.forEach(r => { if (r.test(text)) h++; });
+  med.forEach(r => { if (r.test(text)) m++; });
+  low.forEach(r => { if (r.test(text)) l++; });
+  if (h > 0) s = Math.min(10, 7 + h);
+  else if (m > 0) s = Math.min(7, 4 + m);
+  else if (l > 0) s = Math.max(1, 3 - l);
+  if (extra) s = extra(text, s);
+  return Math.max(1, Math.min(10, s));
 }
 
 function scoreVoltage(text: string): VoltageScore {
-  const words = text.split(/\s+/).length;
-  const lengthLoad = Math.min(1, words / 200);
-
-  let urgency = 0;
-  for (const p of URGENCY_RE) if (p.test(text)) urgency += 0.15;
-  urgency = Math.min(1, urgency + lengthLoad * 0.1);
-
-  let emotional = 0;
-  for (const p of EMOTIONAL_RE) if (p.test(text)) emotional += 0.12;
-  // ALL CAPS words
-  const caps = text.split(/\s+/).filter(w => w.length > 2 && w === w.toUpperCase()).length;
-  emotional = Math.min(1, emotional + Math.min(0.3, caps * 0.05));
-
-  let cognitive = 0;
-  for (const p of COGNITIVE_RE) if (p.test(text)) cognitive += 0.12;
-  cognitive = Math.min(1, cognitive + lengthLoad * 0.3);
-
-  const voltage = Math.min(1,
-    (urgency + emotional * 0.7 + cognitive * 0.5) / 2.2
-  );
-
-  return { voltage, urgency, emotional, cognitive };
+  const u = scoreAxis(text, U_HIGH, U_MED, U_LOW);
+  const e = scoreAxis(text, E_HIGH, E_MED, E_LOW, (t, s) => {
+    const caps = (t.match(/\b[A-Z]{4,}\b/g) || []).length;
+    return caps > 2 ? s + 2 : s;
+  });
+  const c = scoreAxis(text, C_HIGH, C_MED, C_LOW, (t, s) => {
+    const w = t.split(/\s+/).length;
+    if (w > 300) s += 2; else if (w > 150) s += 1;
+    const q = (t.match(/\?/g) || []).length;
+    if (q > 3) s += 2; else if (q > 1) s += 1;
+    return s;
+  });
+  const v = +(u * 0.4 + e * 0.3 + c * 0.3).toFixed(1);
+  let gate: VoltageScore['gate'] = 'GREEN';
+  if (v >= 8) gate = 'CRITICAL';
+  else if (v >= 7) gate = 'RED';
+  else if (v >= 5) gate = 'YELLOW';
+  const pa = PA_PATTERNS.filter(x => x.p.test(text));
+  return { u, e, c, v, gate, pa };
 }
 
-const VOLTAGE_COLOR = (v: number) =>
-  v < 0.3 ? '#4ecdc4' : v < 0.6 ? '#f7dc6f' : '#ff6b6b';
+// ── BLUF Extraction ──────────────────────────────────────────
 
-const VOLTAGE_LABEL = (v: number) =>
-  v < 0.3 ? 'CALM' : v < 0.6 ? 'MODERATE' : 'HIGH';
+interface BlufResult { summary: string; actions: string[]; questions: number; }
 
-// ── Fawn Guard ──────────────────────────────────────────────
+function extractBluf(text: string): BlufResult {
+  const sents = text.match(/[^.!?]+[.!?]+/g) || [text];
+  const acts = sents.filter(s => /\b(need|please|can you|could you|should|must|send|submit|review|update|confirm|decide|approve|call|schedule|respond)\b/i.test(s));
+  const qs = sents.filter(s => /\?/.test(s));
+  const summary = (acts.length > 0 ? acts : qs.length > 0 ? qs : sents).slice(0, 2).map(s => s.trim()).join(' ');
+  return { summary, actions: acts.map(s => s.trim()), questions: qs.length };
+}
+
+// ── Fawn Guard ───────────────────────────────────────────────
 
 interface FawnFlag {
   pattern: string;
@@ -90,19 +149,14 @@ const FAWN_RULES: { re: RegExp; flag: FawnFlag }[] = [
   { re: /\bif that'?s? ok\b/gi, flag: { pattern: "if that's ok", category: 'seeking-validation', guidance: 'State your need. Don\'t pre-apologize for having one.' } },
 ];
 
-interface FawnResult {
-  flags: FawnFlag[];
-  matchCount: number;
-  score: number;
-}
+interface FawnResult { flags: FawnFlag[]; matchCount: number; score: number; }
 
 function analyzeFawn(text: string): FawnResult {
   const seen = new Map<string, FawnFlag>();
   let matchCount = 0;
   for (const { re, flag } of FAWN_RULES) {
     re.lastIndex = 0;
-    let m;
-    while ((m = re.exec(text)) !== null) {
+    while (re.exec(text) !== null) {
       matchCount++;
       if (!seen.has(flag.pattern)) seen.set(flag.pattern, flag);
     }
@@ -114,19 +168,13 @@ function analyzeFawn(text: string): FawnResult {
 }
 
 const CATEGORY_COLOR: Record<string, string> = {
-  apologizing: '#ff6b6b',
-  minimizing: '#f7dc6f',
-  'over-agreeing': '#c9b1ff',
-  'seeking-validation': '#f7dc6f',
-  'self-erasing': '#ff6b6b',
+  apologizing: C.coral, minimizing: C.amber, 'over-agreeing': C.mint,
+  'seeking-validation': C.amber, 'self-erasing': C.coral,
 };
 
-// ── Chaos Ingestion ─────────────────────────────────────────
+// ── Chaos Ingestion ──────────────────────────────────────────
 
-interface ExtractedItem {
-  type: 'action' | 'date' | 'emotion' | 'question';
-  text: string;
-}
+interface ExtractedItem { type: 'action' | 'date' | 'emotion' | 'question'; text: string; }
 
 function extractFromChaos(text: string): ExtractedItem[] {
   const items: ExtractedItem[] = [];
@@ -135,92 +183,283 @@ function extractFromChaos(text: string): ExtractedItem[] {
     const key = `${type}:${text}`;
     if (!seen.has(key)) { seen.add(key); items.push({ type, text }); }
   };
-
   for (const raw of text.split(/\n/)) {
     const line = raw.trim();
     if (!line) continue;
-    const clean = line.replace(/^[-*•]\s*/, '');
-
-    if (/\b(need to|have to|should|must|todo|to-do|follow up|remember to|don't forget)\b/i.test(line))
-      push('action', clean);
-    if (/\b(\d{1,2}\/\d{1,2}|\d{1,2}:\d{2}|monday|tuesday|wednesday|thursday|friday|saturday|sunday|tomorrow|next week|this week)\b/i.test(line))
-      push('date', clean);
-    if (/\?$/.test(line))
-      push('question', clean);
-    if (/\b(feel|felt|feeling|scared|angry|happy|sad|anxious|overwhelmed|frustrated|exhausted|grateful|hopeful)\b/i.test(line))
-      push('emotion', clean);
+    const clean = line.replace(/^[-*\u2022]\s*/, '');
+    if (/\b(need to|have to|should|must|todo|to-do|follow up|remember to|don't forget)\b/i.test(line)) push('action', clean);
+    if (/\b(\d{1,2}\/\d{1,2}|\d{1,2}:\d{2}|monday|tuesday|wednesday|thursday|friday|saturday|sunday|tomorrow|next week|this week)\b/i.test(line)) push('date', clean);
+    if (/\?$/.test(line)) push('question', clean);
+    if (/\b(feel|felt|feeling|scared|angry|happy|sad|anxious|overwhelmed|frustrated|exhausted|grateful|hopeful)\b/i.test(line)) push('emotion', clean);
   }
   return items;
 }
 
-const ITEM_COLOR: Record<string, string> = {
-  action: '#4ecdc4', date: '#f7dc6f', emotion: '#ff9944', question: '#44aaff',
-};
-const ITEM_ICON: Record<string, string> = {
-  action: '>', date: '@', emotion: '*', question: '?',
-};
+const ITEM_COLOR: Record<string, string> = { action: C.mint, date: C.amber, emotion: C.orange, question: C.cyan };
+const ITEM_ICON: Record<string, string> = { action: '>', date: '@', emotion: '*', question: '?' };
 
-// ── Held message ────────────────────────────────────────────
+// ── Samson V2 PID Controller (Shannon Entropy) ───────────────
 
-interface HeldMessage {
-  id: string;
-  text: string;
-  voltage: number;
-  ingestedAt: number;
-  released: boolean;
+interface SamsonState {
+  H: number;         // normalized Shannon entropy 0-1
+  error: number;     // H - target
+  pTerm: 'nominal' | 'overloaded' | 'underloaded';
+  drift: 'nominal' | 'looping' | 'stagnant';
+  burnout: 'ok' | 'warning' | 'critical';
+  tension: number;   // composite 0-1
+  aiTemp: number;    // suggested AI temperature
+  zScore: number;    // standard deviations from mean
 }
 
-// ── Styles ──────────────────────────────────────────────────
+function shannon(values: number[]): number {
+  if (values.length === 0) return 0;
+  const sum = values.reduce((a, b) => a + b, 0);
+  if (sum === 0) return 0;
+  const probs = values.map(v => v / sum).filter(p => p > 0);
+  return -probs.reduce((h, p) => h + p * Math.log2(p), 0);
+}
 
-const PANEL: React.CSSProperties = {
-  background: 'linear-gradient(135deg, rgba(6,10,16,0.8), rgba(6,10,16,0.6))',
-  border: '1px solid rgba(40, 60, 80, 0.25)',
-  borderRadius: 6,
-  padding: '12px 16px',
-  width: '100%',
-  maxWidth: 340,
+function useSamsonV2(spoonsVal: number, maxSpoons: number) {
+  const [state, setState] = useState<SamsonState>({
+    H: TARGET_H, error: 0, pTerm: 'nominal', drift: 'nominal',
+    burnout: 'ok', tension: 0, aiTemp: 0.7, zScore: 0,
+  });
+
+  const historyRef = useRef<number[]>([]);
+  const integralRef = useRef(0);
+  const prevErrorRef = useRef(0);
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      const history = historyRef.current;
+      const ratio = maxSpoons > 0 ? spoonsVal / maxSpoons : 1;
+
+      history.push(ratio);
+      if (history.length > HISTORY_SIZE) history.shift();
+
+      // Bin into 5 energy levels for entropy calculation
+      const bins = [0, 0, 0, 0, 0];
+      for (const v of history) {
+        const idx = Math.min(4, Math.floor(v * 5));
+        bins[idx]++;
+      }
+
+      const H = Math.min(1, shannon(bins) / Math.log2(5));
+      const error = H - TARGET_H;
+
+      // P — proportional
+      const pTerm: SamsonState['pTerm'] =
+        error > 0.15 ? 'overloaded' :
+        error < -0.15 ? 'underloaded' :
+        'nominal';
+
+      // I — integral (drift detection)
+      integralRef.current = integralRef.current * 0.95 + error * Ki;
+      const iVal = integralRef.current;
+      const drift: SamsonState['drift'] =
+        Math.abs(iVal) > 0.3 ? (iVal > 0 ? 'looping' : 'stagnant') :
+        'nominal';
+
+      // D — derivative (burnout detection)
+      const dVal = (error - prevErrorRef.current) * Kd;
+      prevErrorRef.current = error;
+      const burnout: SamsonState['burnout'] =
+        dVal > 0.15 ? 'critical' :
+        dVal > 0.05 ? 'warning' :
+        'ok';
+
+      // Composite tension: 0-1
+      const rawTension = Math.abs(error * Kp) + Math.abs(iVal) + Math.abs(dVal);
+      const tension = Math.min(1, Math.max(0, rawTension));
+
+      // AI temperature: calm = creative (0.9), stressed = precise (0.3)
+      const aiTemp = +(0.3 + (1 - tension) * 0.6).toFixed(2);
+
+      // Z-score
+      const mean = history.reduce((a, b) => a + b, 0) / history.length;
+      const variance = history.reduce((a, b) => a + (b - mean) ** 2, 0) / history.length;
+      const std = Math.sqrt(variance) || 0.001;
+      const zScore = +((ratio - mean) / std).toFixed(2);
+
+      setState({ H, error, pTerm, drift, burnout, tension, aiTemp, zScore });
+    }, 1000);
+
+    return () => clearInterval(id);
+  }, [spoonsVal, maxSpoons]);
+
+  return state;
+}
+
+// ── Calibration Schema ───────────────────────────────────────
+
+interface CalibrationData {
+  displayName: string;
+  role: string;
+  diagnoses: string[];
+  initialSpoons: number;
+  sensoryPrefs: string[];
+  sleepQuality: number;
+  activeStressors: string[];
+  supportLevel: string;
+  commStyle: string;
+  breathingEnabled: boolean;
+  deepLockEnabled: boolean;
+}
+
+const DEFAULT_CAL: CalibrationData = {
+  displayName: '', role: '', diagnoses: [], initialSpoons: 8,
+  sensoryPrefs: [], sleepQuality: 5, activeStressors: [],
+  supportLevel: 'Some support', commStyle: 'DIRECT',
+  breathingEnabled: true, deepLockEnabled: true,
 };
 
-const ACCENT_PANEL = (color: string): React.CSSProperties => ({
-  ...PANEL,
-  borderLeft: `3px solid ${color}`,
-});
+const ROLE_OPTIONS = ['Parent', 'Caregiver', 'Student', 'Professional', 'Advocate', 'Other'];
+const DIAGNOSIS_OPTIONS = ['ADHD', 'Autism', 'AuDHD', 'PTSD', 'C-PTSD', 'Anxiety', 'Depression', 'Bipolar', 'OCD', 'Other'];
+const SENSORY_OPTIONS = ['Light sensitivity', 'Sound sensitivity', 'Motion sensitivity', 'Reduce animations', 'High contrast needed', 'None / Low'];
+const STRESSOR_OPTIONS = ['Legal proceedings', 'Financial pressure', 'Housing instability', 'Caregiving demands', 'Employment issues', 'Relationship conflict', 'Health crisis', 'None currently'];
+const SUPPORT_OPTIONS = ['Strong support network', 'Some support', 'Limited support', 'Isolated'];
+const COMM_OPTIONS = ['PLAIN', 'TECHNICAL', 'GENTLE', 'DIRECT'];
 
-const tabStyle = (active: boolean): React.CSSProperties => ({
-  background: active ? 'rgba(78, 205, 196, 0.08)' : 'transparent',
-  border: `1px solid ${active ? 'rgba(78, 205, 196, 0.3)' : 'rgba(40, 60, 80, 0.2)'}`,
-  borderRadius: 4,
-  padding: '6px 14px',
-  color: active ? '#4ecdc4' : '#3a4a5a',
-  fontSize: 10,
-  letterSpacing: 1,
-  cursor: 'pointer',
-  fontFamily: "'JetBrains Mono', monospace",
-});
+// ── Helpers ──────────────────────────────────────────────────
 
-const INPUT_STYLE: React.CSSProperties = {
-  width: '100%',
-  background: 'rgba(2, 4, 6, 0.8)',
-  border: '1px solid rgba(40, 60, 80, 0.3)',
-  borderRadius: 4,
-  padding: '8px',
-  color: '#c8d0dc',
-  fontSize: 11,
-  fontFamily: "'JetBrains Mono', monospace",
-  resize: 'vertical' as const,
-  outline: 'none',
-  lineHeight: '1.6',
+function timeAgo(ts: number): string {
+  const diff = Date.now() - ts;
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return 'now';
+  if (mins < 60) return `${mins}m`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h`;
+  return `${Math.floor(hrs / 24)}d`;
+}
+
+interface HeldMessage {
+  id: string; text: string; voltage: number; gate: string;
+  ingestedAt: number; released: boolean;
+}
+
+// ── Shared Styles ────────────────────────────────────────────
+
+const inputStyle: React.CSSProperties = {
+  width: '100%', background: C.bg.deep, color: C.text.primary,
+  border: `1px solid ${C.bg.border}`, borderRadius: 10, padding: '10px 12px',
+  fontFamily: FONT, fontSize: 13, outline: 'none', resize: 'vertical',
+  letterSpacing: 0.3, boxSizing: 'border-box',
 };
 
-// ── Component ───────────────────────────────────────────────
+const btnBase = (active: boolean, color: string): React.CSSProperties => ({
+  background: active ? `${color}11` : 'transparent', fontFamily: FONT,
+  border: `1px solid ${active ? `${color}66` : C.bg.border}`,
+  color: active ? color : DIM, cursor: active ? 'pointer' : 'default',
+  borderRadius: 10, fontSize: 12, letterSpacing: '0.04em', fontWeight: 600,
+  boxShadow: active ? `0 0 12px ${color}22` : 'none',
+  transition: 'all 0.2s ease',
+});
+
+const pillBtn = (active: boolean, color: string): React.CSSProperties => ({
+  ...btnBase(active, color),
+  padding: '3px 10px', fontSize: 10, borderRadius: 20,
+});
+
+// ── Sub-Components ───────────────────────────────────────────
+
+function BufferCard({ title, accent, children }: {
+  title: string; accent: string; children: React.ReactNode;
+}) {
+  return (
+    <div style={{
+      background: C.bg.base, border: `1px solid ${accent}22`, borderRadius: 16,
+      display: 'flex', flexDirection: 'column', minWidth: 0, minHeight: 0,
+    }}>
+      <div style={{
+        padding: '10px 16px', borderBottom: `1px solid ${accent}18`,
+        display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0,
+      }}>
+        <span style={{
+          width: 8, height: 8, borderRadius: '50%', background: accent,
+          boxShadow: `0 0 8px ${accent}`,
+        }} />
+        <span style={{
+          color: accent, fontSize: 13, fontWeight: 600, fontFamily: FONT,
+          letterSpacing: '0.04em', textShadow: `0 0 12px ${accent}66`,
+        }}>
+          {title}
+        </span>
+      </div>
+      <div style={{ padding: '14px 16px', flex: 1, overflow: 'auto' }}>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function SpoonGauge({ spoons, max }: { spoons: number; max: number }) {
+  const pct = max > 0 ? (spoons / max) * 100 : 0;
+  const color = pct >= 80 ? C.state.green : pct >= 50 ? C.state.yellow : pct >= 25 ? C.state.orange : C.state.red;
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+      <div style={{
+        width: 64, height: 6, background: 'rgba(255,255,255,0.06)',
+        borderRadius: 3, overflow: 'hidden',
+      }}>
+        <div style={{
+          width: `${pct}%`, height: '100%', background: color,
+          borderRadius: 3, transition: 'width 0.5s ease, background 0.3s ease',
+        }} />
+      </div>
+      <span style={{ fontSize: 11, color, fontFamily: MONO, fontWeight: 600 }}>
+        {spoons.toFixed(1)}/{max}
+      </span>
+    </div>
+  );
+}
+
+function MultiSelect({ options, selected, onChange, accent }: {
+  options: string[]; selected: string[]; onChange: (v: string[]) => void; accent: string;
+}) {
+  const toggle = (opt: string) => onChange(
+    selected.includes(opt) ? selected.filter(x => x !== opt) : [...selected, opt]
+  );
+  return (
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+      {options.map(opt => (
+        <button type="button" key={opt} onClick={() => toggle(opt)} style={{
+          ...pillBtn(selected.includes(opt), accent),
+          fontSize: 9, padding: '2px 8px',
+        }}>
+          {opt}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+// ── Main Component ───────────────────────────────────────────
 
 export function BufferRoom() {
-  const { spoons, tier } = useNode();
-  const [tab, setTab] = useState<BufferTab>('ingest');
+  const { spoons, tier, updateState } = useNode();
+  const maxSpoons = 12;
+
+  // ── Panels ──
+  const [showSamson, setShowSamson] = useState(false);
+  const [showCalibration, setShowCalibration] = useState(false);
+  const [showTelemetry, setShowTelemetry] = useState(false);
+
+  // ── Calibration ──
+  const [cal, setCal] = useState<CalibrationData>(() => {
+    try {
+      const s = localStorage.getItem('p31-buffer-cal');
+      return s ? { ...DEFAULT_CAL, ...JSON.parse(s) } : DEFAULT_CAL;
+    } catch { return DEFAULT_CAL; }
+  });
+  useEffect(() => {
+    try { localStorage.setItem('p31-buffer-cal', JSON.stringify(cal)); } catch {}
+  }, [cal]);
+  const updateCal = useCallback(<K extends keyof CalibrationData>(key: K, value: CalibrationData[K]) => {
+    setCal(prev => ({ ...prev, [key]: value }));
+  }, []);
 
   // ── Ingest state ──
   const [ingestText, setIngestText] = useState('');
-  const [liveScore, setLiveScore] = useState<VoltageScore | null>(null);
   const [held, setHeld] = useState<HeldMessage[]>(() => {
     try {
       const s = localStorage.getItem('p31-buffer-held');
@@ -228,421 +467,826 @@ export function BufferRoom() {
     } catch { return []; }
   });
   const [processedCount, setProcessedCount] = useState(0);
+  const [deferredCount, setDeferredCount] = useState(0);
+  const [scoredResult, setScoredResult] = useState<VoltageScore | null>(null);
+  const [bluf, setBluf] = useState<BlufResult | null>(null);
 
   // ── Fawn state ──
   const [draftText, setDraftText] = useState('');
   const [fawn, setFawn] = useState<FawnResult | null>(null);
-  const [fawnAcks, setFawnAcks] = useState(0);
 
   // ── Chaos state ──
   const [chaosText, setChaosText] = useState('');
   const [extracted, setExtracted] = useState<ExtractedItem[]>([]);
+
+  // ── Breathing state ──
+  const [breathing, setBreathing] = useState(false);
+  const [breathSec, setBreathSec] = useState(0);
+  const [breathCycles, setBreathCycles] = useState(0);
+
+  // ── Samson V2 PID ──
+  const samson = useSamsonV2(spoons, maxSpoons);
+
+  // ── Voltage history for telemetry ──
+  const [voltageHistory, setVoltageHistory] = useState<number[]>([]);
+
+  // ── Tick for time-ago ──
+  const [, setTick] = useState(0);
+  useEffect(() => {
+    const iv = setInterval(() => setTick(t => t + 1), 30000);
+    return () => clearInterval(iv);
+  }, []);
 
   // Persist held queue
   useEffect(() => {
     try { localStorage.setItem('p31-buffer-held', JSON.stringify(held)); } catch {}
   }, [held]);
 
-  // Live voltage scoring
-  useEffect(() => {
-    setLiveScore(ingestText.trim().length > 10 ? scoreVoltage(ingestText) : null);
-  }, [ingestText]);
+  // Live scoring
+  const liveScore = useMemo(
+    () => ingestText.trim().length > 10 ? scoreVoltage(ingestText) : null,
+    [ingestText],
+  );
 
-  // Live fawn analysis
+  // Live fawn
   useEffect(() => {
     setFawn(draftText.trim().length > 5 ? analyzeFawn(draftText) : null);
   }, [draftText]);
 
-  // Voltage threshold adapts to operator's current tier
-  const threshold = tier === 'REFLEX' ? 0.2 : tier === 'PATTERN' ? 0.35 : 0.5;
+  // Breathing cycle
+  useEffect(() => {
+    if (!breathing) return;
+    const id = setInterval(() => {
+      setBreathSec(p => {
+        const next = p + 1;
+        if (next >= BREATHE_TOTAL) {
+          setBreathCycles(cc => cc + 1);
+          return 0;
+        }
+        return next;
+      });
+    }, 1000);
+    return () => clearInterval(id);
+  }, [breathing]);
+
+  // Auto-stop after MAX_CYCLES, restore spoons on each cycle
+  useEffect(() => {
+    if (breathCycles > 0) {
+      // Each cycle restores some energy via state update
+      updateState('valence' as Parameters<typeof updateState>[0], 0.5).catch(() => {});
+    }
+    if (breathCycles >= MAX_CYCLES && breathing) {
+      setBreathing(false);
+      setBreathCycles(0);
+      setBreathSec(0);
+    }
+  }, [breathCycles, breathing, updateState]);
+
+  const breathLabel = breathSec < BREATHE_IN ? 'BREATHE IN'
+    : breathSec < BREATHE_IN + BREATHE_HOLD ? 'HOLD' : 'BREATHE OUT';
+  const breathProgress = breathSec < BREATHE_IN
+    ? breathSec / BREATHE_IN
+    : breathSec < BREATHE_IN + BREATHE_HOLD ? 1
+    : 1 - ((breathSec - BREATHE_IN - BREATHE_HOLD) / BREATHE_OUT);
+
+  const threshold = tier === 'REFLEX' ? 0.3 : tier === 'PATTERN' ? 0.5 : 0.7;
+
+  const handleScore = useCallback(() => {
+    if (!ingestText.trim()) return;
+    const sc = scoreVoltage(ingestText);
+    const bl = extractBluf(ingestText);
+    setScoredResult(sc);
+    setBluf(bl);
+    setVoltageHistory(prev => [...prev.slice(-29), sc.v]);
+  }, [ingestText]);
 
   const handleIngest = useCallback(() => {
-    if (!ingestText.trim() || !liveScore) return;
-
-    if (liveScore.voltage > threshold) {
+    if (!scoredResult) return;
+    const normalizedV = scoredResult.v / 10;
+    if (normalizedV > threshold) {
       setHeld(prev => [{
         id: Date.now().toString(36),
         text: ingestText.trim().slice(0, 500),
-        voltage: liveScore.voltage,
+        voltage: scoredResult.v,
+        gate: scoredResult.gate,
         ingestedAt: Date.now(),
         released: false,
       }, ...prev]);
+      setDeferredCount(cc => cc + 1);
     } else {
-      setProcessedCount(c => c + 1);
+      setProcessedCount(cc => cc + 1);
     }
     setIngestText('');
-  }, [ingestText, liveScore, threshold]);
+    setScoredResult(null);
+    setBluf(null);
+  }, [ingestText, scoredResult, threshold]);
 
   const handleRelease = useCallback((id: string) => {
     setHeld(prev => prev.map(m => m.id === id ? { ...m, released: true } : m));
-    setProcessedCount(c => c + 1);
+    setProcessedCount(cc => cc + 1);
   }, []);
 
   const handleDismiss = useCallback((id: string) => {
     setHeld(prev => prev.filter(m => m.id !== id));
   }, []);
 
-  const handleFawnAck = useCallback(() => { setFawnAcks(c => c + 1); }, []);
-
   const handleExtract = useCallback(() => {
     if (chaosText.trim()) setExtracted(extractFromChaos(chaosText));
   }, [chaosText]);
 
   const heldActive = held.filter(m => !m.released);
+  const tierColor = tier === 'REFLEX' ? C.coral : tier === 'PATTERN' ? C.amber : C.mint;
+  const gc = scoredResult ? GATES[scoredResult.gate] : null;
+
+  const fawnSummary = useMemo(() => {
+    if (!fawn || fawn.flags.length === 0) return null;
+    const cats = new Map<string, number>();
+    for (const f of fawn.flags) cats.set(f.category, (cats.get(f.category) ?? 0) + 1);
+    return [...cats.entries()];
+  }, [fawn]);
+
+  const locked = cal.deepLockEnabled && spoons / maxSpoons < 0.25;
+  const tensionColor = samson.tension > 0.6 ? C.state.red : samson.tension > 0.3 ? C.state.yellow : C.state.green;
+
+  // Keyboard shortcut: backtick toggles telemetry
+  useEffect(() => {
+    const h = (e: KeyboardEvent) => {
+      if (e.key === '`') setShowTelemetry(p => !p);
+    };
+    window.addEventListener('keydown', h);
+    return () => window.removeEventListener('keydown', h);
+  }, []);
 
   return (
     <div style={{
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      height: '100%',
-      color: '#c8d0dc',
-      fontFamily: "'JetBrains Mono', monospace",
-      gap: 12,
-      overflow: 'auto',
-      padding: '20px 16px',
-      background: 'transparent',
+      display: 'flex', flexDirection: 'column',
+      height: '100%', color: C.text.primary, fontFamily: FONT,
+      gap: 0, overflow: 'hidden',
+      background: C.bg.deep,
     }}>
-      <h1 style={{
-        fontSize: 22, fontWeight: 300, letterSpacing: 6,
-        background: 'linear-gradient(90deg, #44aaff, #4ecdc4)',
-        WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+      {/* ══════════════ BREATHING OVERLAY ══════════════ */}
+      {breathing && (
+        <div style={{
+          position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.94)',
+          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+          zIndex: 200, gap: 16,
+        }}>
+          <div style={{
+            width: 60 + breathProgress * 120, height: 60 + breathProgress * 120,
+            borderRadius: '50%',
+            background: `radial-gradient(circle, rgba(0,255,136,${breathProgress * 0.12}), transparent)`,
+            border: `1.5px solid rgba(0,255,136,${0.15 + breathProgress * 0.25})`,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            transition: 'width 1s ease, height 1s ease',
+          }}>
+            <span style={{ fontSize: 12, color: C.mint, letterSpacing: 3, fontWeight: 300, fontFamily: MONO }}>{breathLabel}</span>
+          </div>
+          <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.2)', fontFamily: MONO }}>{breathCycles + 1} / {MAX_CYCLES}</div>
+          <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.15)', fontFamily: MONO }}>
+            +0.5 energy per cycle
+          </div>
+          <button type="button" onClick={() => { setBreathing(false); setBreathCycles(0); setBreathSec(0); }} style={{
+            background: 'transparent', border: '1px solid rgba(255,255,255,0.08)',
+            color: 'rgba(255,255,255,0.2)', borderRadius: 3, padding: '5px 14px',
+            fontSize: 9, cursor: 'pointer', fontFamily: FONT,
+          }}>Skip</button>
+        </div>
+      )}
+
+      {/* ══════════════ STATUS BAR ══════════════ */}
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: 12,
+        padding: '8px 16px', borderBottom: `1px solid ${C.amber}18`,
+        fontSize: 12, flexShrink: 0, background: C.bg.base,
+        flexWrap: 'wrap',
       }}>
-        THE BUFFER
-      </h1>
-      <div style={{ fontSize: 9, color: '#3a5a6a', textAlign: 'center', maxWidth: 280, lineHeight: 1.6, letterSpacing: 1 }}>
-        The space between stimulus and response.
+        <span style={{
+          color: C.amber, fontWeight: 700, letterSpacing: '0.08em', fontSize: 14,
+          textShadow: `0 0 12px ${C.amber}66`,
+        }}>
+          THE BUFFER
+        </span>
+        <SpoonGauge spoons={spoons} max={maxSpoons} />
+        <span style={{
+          color: tierColor, fontWeight: 600, fontSize: 10,
+          padding: '2px 8px', borderRadius: 6,
+          border: `1px solid ${tierColor}44`, background: `${tierColor}11`,
+        }}>{tier}</span>
+        <span style={{ flex: 1 }} />
+
+        {/* Samson badge */}
+        <button type="button" onClick={() => setShowSamson(!showSamson)} style={{
+          ...pillBtn(true, Math.abs(samson.error) > 0.1 ? C.amber : C.mint),
+          fontFamily: MONO, fontWeight: 700,
+        }}>
+          H:{samson.H.toFixed(2)} T:{samson.tension.toFixed(1)}
+        </button>
+
+        {/* Calibration */}
+        <button type="button" onClick={() => setShowCalibration(!showCalibration)} style={pillBtn(true, C.lavender)}>
+          CAL
+        </button>
+
+        {/* Telemetry */}
+        <button type="button" onClick={() => setShowTelemetry(!showTelemetry)} style={pillBtn(true, C.cyan)}>
+          DBG
+        </button>
+
+        {/* Breathing */}
+        {cal.breathingEnabled && (
+          <button type="button" onClick={() => setBreathing(true)} style={{
+            ...pillBtn(true, C.mint), padding: '4px 12px',
+          }}>4-2-6</button>
+        )}
       </div>
 
-      {/* Tab bar — each tab has its own color */}
-      <div style={{ display: 'flex', gap: 6 }}>
-        <button style={{
-          ...tabStyle(tab === 'ingest'),
-          borderColor: tab === 'ingest' ? '#f7dc6f' : undefined,
-          color: tab === 'ingest' ? '#f7dc6f' : '#3a4a5a',
-          background: tab === 'ingest' ? 'rgba(247,220,111,0.08)' : 'transparent',
-        }} onClick={() => setTab('ingest')}>
-          INGEST{heldActive.length > 0 ? ` (${heldActive.length})` : ''}
-        </button>
-        <button style={{
-          ...tabStyle(tab === 'fawn'),
-          borderColor: tab === 'fawn' ? '#ff6b6b' : undefined,
-          color: tab === 'fawn' ? '#ff6b6b' : '#3a4a5a',
-          background: tab === 'fawn' ? 'rgba(255,107,107,0.08)' : 'transparent',
-        }} onClick={() => setTab('fawn')}>
-          FAWN GUARD
-        </button>
-        <button style={{
-          ...tabStyle(tab === 'chaos'),
-          borderColor: tab === 'chaos' ? '#ff9944' : undefined,
-          color: tab === 'chaos' ? '#ff9944' : '#3a4a5a',
-          background: tab === 'chaos' ? 'rgba(255,153,68,0.08)' : 'transparent',
-        }} onClick={() => setTab('chaos')}>
-          CHAOS
-        </button>
-      </div>
-
-      {/* ════════════════ INGEST ════════════════ */}
-      {tab === 'ingest' && (
-        <>
-          {/* Threshold status */}
-          <div style={{ ...ACCENT_PANEL('#f7dc6f'), display: 'flex', justifyContent: 'space-between', fontSize: 10 }}>
+      {/* ══════════════ SAMSON V2 PANEL ══════════════ */}
+      {showSamson && (
+        <div style={{
+          padding: '12px 16px', background: `rgba(255,255,255,0.015)`,
+          borderBottom: `1px solid ${C.bg.border}`, flexShrink: 0,
+        }}>
+          <div style={{ fontSize: 8, letterSpacing: 2, color: C.text.dim, marginBottom: 8, fontWeight: 600, fontFamily: MONO }}>
+            SAMSON V2 PID CONTROLLER — Shannon Entropy Regulator
+          </div>
+          <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', fontSize: 10 }}>
             <div>
-              <span style={{ color: '#3a4a5a' }}>threshold </span>
-              <span style={{ color: VOLTAGE_COLOR(1 - threshold) }}>
-                {tier === 'REFLEX' ? 'LOW (protecting)' : tier === 'PATTERN' ? 'MEDIUM' : 'HIGH (open)'}
-              </span>
+              <span style={{ color: C.text.dim }}>H: </span>
+              <span style={{ color: Math.abs(samson.error) < 0.05 ? C.mint : C.amber, fontWeight: 600 }}>{samson.H.toFixed(4)}</span>
+              <span style={{ color: C.text.dim, marginLeft: 4, fontSize: 9 }}>target {TARGET_H.toFixed(4)}</span>
             </div>
             <div>
-              <span style={{ color: '#3a4a5a' }}>held </span>
-              <span style={{ color: heldActive.length > 0 ? '#ff6b6b' : '#4ecdc4' }}>
-                {heldActive.length}
-              </span>
+              <span style={{ color: C.text.dim }}>Error: </span>
+              <span style={{ color: Math.abs(samson.error) < 0.05 ? C.mint : C.amber }}>{samson.error > 0 ? '+' : ''}{samson.error.toFixed(4)}</span>
+            </div>
+            <div>
+              <span style={{ color: C.text.dim }}>P: </span>
+              <span style={{ color: samson.pTerm === 'nominal' ? C.mint : C.amber }}>{samson.pTerm}</span>
+            </div>
+            <div>
+              <span style={{ color: C.text.dim }}>I: </span>
+              <span style={{ color: samson.drift === 'nominal' ? C.mint : samson.drift === 'looping' ? C.amber : C.coral }}>{samson.drift}</span>
+            </div>
+            <div>
+              <span style={{ color: C.text.dim }}>D: </span>
+              <span style={{ color: samson.burnout === 'ok' ? C.mint : samson.burnout === 'warning' ? C.amber : C.coral }}>{samson.burnout}</span>
+            </div>
+            <div>
+              <span style={{ color: C.text.dim }}>Tension: </span>
+              <span style={{ color: tensionColor, fontWeight: 600 }}>{samson.tension.toFixed(3)}</span>
+            </div>
+            <div>
+              <span style={{ color: C.text.dim }}>AI temp: </span>
+              <span style={{ color: C.lavender, fontWeight: 600 }}>{samson.aiTemp}</span>
+            </div>
+            <div>
+              <span style={{ color: C.text.dim }}>Z: </span>
+              <span style={{ color: Math.abs(samson.zScore) > 2 ? C.coral : C.text.secondary }}>{samson.zScore}</span>
             </div>
           </div>
 
-          {/* Input */}
-          <div style={ACCENT_PANEL('#f7dc6f')}>
-            <div style={{ fontSize: 10, color: '#8a7733', marginBottom: 6, letterSpacing: 1 }}>
-              PASTE INCOMING
+          {/* Tension bar */}
+          <div style={{ marginTop: 8 }}>
+            <div style={{ height: 3, background: 'rgba(255,255,255,0.04)', borderRadius: 2 }}>
+              <div style={{
+                height: '100%', width: `${samson.tension * 100}%`,
+                background: tensionColor, borderRadius: 2, transition: 'width 1s ease',
+              }} />
             </div>
+          </div>
+
+          {samson.drift === 'looping' && (
+            <div style={{ marginTop: 8, fontSize: 9, color: C.amber, padding: '4px 8px', borderRadius: 3, background: `${C.amber}06`, border: `1px solid ${C.amber}12` }}>
+              Loop detected. Consider shifting to a different task or taking a break.
+            </div>
+          )}
+          {samson.drift === 'stagnant' && (
+            <div style={{ marginTop: 8, fontSize: 9, color: C.cyan, padding: '4px 8px', borderRadius: 3, background: `${C.cyan}06`, border: `1px solid ${C.cyan}12` }}>
+              Stagnation detected. System underloaded. Consider engaging a held message.
+            </div>
+          )}
+          {samson.burnout === 'critical' && (
+            <div style={{ marginTop: 8, fontSize: 9, color: C.coral, padding: '4px 8px', borderRadius: 3, background: `${C.coral}06`, border: `1px solid ${C.coral}12` }}>
+              Burnout velocity critical. Defer non-essential messages. Breathe.
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ══════════════ CALIBRATION PANEL ══════════════ */}
+      {showCalibration && (
+        <div style={{
+          padding: '12px 16px', background: `rgba(255,255,255,0.015)`,
+          borderBottom: `1px solid ${C.bg.border}`, flexShrink: 0,
+          maxHeight: 320, overflow: 'auto',
+        }}>
+          <div style={{ fontSize: 8, letterSpacing: 2, color: C.text.dim, marginBottom: 10, fontWeight: 600, fontFamily: MONO }}>
+            CALIBRATION — Answer what feels right. Skip what doesn't.
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, fontSize: 11 }}>
+            {/* Identity */}
+            <div>
+              <div style={{ color: C.axis.A, fontWeight: 600, fontSize: 9, letterSpacing: 1, marginBottom: 4, fontFamily: MONO }}>IDENTITY</div>
+              <input type="text" value={cal.displayName} onChange={e => updateCal('displayName', e.target.value)}
+                placeholder="Name or handle" style={{ ...inputStyle, fontSize: 11, padding: '6px 8px', marginBottom: 4 }} />
+              <select value={cal.role} onChange={e => updateCal('role', e.target.value)}
+                title="Primary role" style={{ ...inputStyle, fontSize: 11, padding: '6px 8px', marginBottom: 4 }}>
+                <option value="">Role...</option>
+                {ROLE_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
+              </select>
+              <div style={{ fontSize: 9, color: C.text.dim, marginBottom: 2 }}>Neurotype</div>
+              <MultiSelect options={DIAGNOSIS_OPTIONS} selected={cal.diagnoses} onChange={v => updateCal('diagnoses', v)} accent={C.axis.A} />
+            </div>
+
+            {/* Energy & Health */}
+            <div>
+              <div style={{ color: C.axis.B, fontWeight: 600, fontSize: 9, letterSpacing: 1, marginBottom: 4, fontFamily: MONO }}>ENERGY</div>
+              <label style={{ fontSize: 9, color: C.text.dim, marginBottom: 2, display: 'block' }}>Starting spoons: {cal.initialSpoons}
+              <input type="range" min={1} max={12} value={cal.initialSpoons}
+                onChange={e => updateCal('initialSpoons', Number(e.target.value))}
+                style={{ width: '100%', accentColor: C.axis.B, marginBottom: 4 }} />
+              </label>
+              <label style={{ fontSize: 9, color: C.text.dim, marginBottom: 2, display: 'block' }}>Sleep quality: {cal.sleepQuality}/10
+              <input type="range" min={1} max={10} value={cal.sleepQuality}
+                onChange={e => updateCal('sleepQuality', Number(e.target.value))}
+                style={{ width: '100%', accentColor: C.axis.B, marginBottom: 4 }} />
+              </label>
+              <div style={{ fontSize: 9, color: C.text.dim, marginBottom: 2 }}>Sensory</div>
+              <MultiSelect options={SENSORY_OPTIONS} selected={cal.sensoryPrefs} onChange={v => updateCal('sensoryPrefs', v)} accent={C.axis.B} />
+            </div>
+
+            {/* Obligations */}
+            <div>
+              <div style={{ color: C.axis.C, fontWeight: 600, fontSize: 9, letterSpacing: 1, marginBottom: 4, fontFamily: MONO }}>OBLIGATIONS</div>
+              <div style={{ fontSize: 9, color: C.text.dim, marginBottom: 2 }}>Active stressors</div>
+              <MultiSelect options={STRESSOR_OPTIONS} selected={cal.activeStressors} onChange={v => updateCal('activeStressors', v)} accent={C.axis.C} />
+              <select value={cal.supportLevel} onChange={e => updateCal('supportLevel', e.target.value)}
+                title="Support level" style={{ ...inputStyle, fontSize: 11, padding: '6px 8px', marginTop: 4 }}>
+                {SUPPORT_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
+              </select>
+            </div>
+
+            {/* Preferences */}
+            <div>
+              <div style={{ color: C.axis.D, fontWeight: 600, fontSize: 9, letterSpacing: 1, marginBottom: 4, fontFamily: MONO }}>PREFERENCES</div>
+              <div style={{ fontSize: 9, color: C.text.dim, marginBottom: 2 }}>Comm style</div>
+              <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 6 }}>
+                {COMM_OPTIONS.map(o => (
+                  <button type="button" key={o} onClick={() => updateCal('commStyle', o)} style={{
+                    ...pillBtn(cal.commStyle === o, C.axis.D), fontSize: 9,
+                  }}>{o}</button>
+                ))}
+              </div>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <label style={{ fontSize: 10, color: C.text.secondary, display: 'flex', alignItems: 'center', gap: 4 }}>
+                  <input type="checkbox" checked={cal.breathingEnabled}
+                    onChange={e => updateCal('breathingEnabled', e.target.checked)} />
+                  Breathing
+                </label>
+                <label style={{ fontSize: 10, color: C.text.secondary, display: 'flex', alignItems: 'center', gap: 4 }}>
+                  <input type="checkbox" checked={cal.deepLockEnabled}
+                    onChange={e => updateCal('deepLockEnabled', e.target.checked)} />
+                  Deep Lock
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ══════════════ TELEMETRY DEBUG PANEL ══════════════ */}
+      {showTelemetry && (
+        <div style={{
+          padding: '10px 16px', background: 'rgba(0,212,255,0.02)',
+          borderBottom: `1px solid ${C.cyan}18`, flexShrink: 0,
+        }}>
+          <div style={{ fontSize: 8, letterSpacing: 2, color: C.cyan, marginBottom: 6, fontWeight: 600, fontFamily: MONO }}>
+            IVM TELEMETRY (`)
+          </div>
+          <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', fontSize: 10, fontFamily: MONO }}>
+            <TRow label="Spoons" value={`${spoons.toFixed(1)} / ${maxSpoons}`} color={spoons / maxSpoons > 0.5 ? C.state.green : C.state.orange} />
+            <TRow label="Tier" value={tier} color={tierColor} />
+            <TRow label="Deep Lock" value={locked ? 'ACTIVE' : 'off'} color={locked ? C.state.red : C.text.dim} />
+            <TRow label="H" value={samson.H.toFixed(4)} color={Math.abs(samson.error) < 0.05 ? C.state.green : C.state.yellow} />
+            <TRow label="Tension" value={samson.tension.toFixed(3)} color={tensionColor} />
+            <TRow label="P" value={samson.pTerm} color={samson.pTerm === 'nominal' ? C.state.green : C.state.yellow} />
+            <TRow label="I" value={samson.drift} color={samson.drift === 'nominal' ? C.state.green : C.state.yellow} />
+            <TRow label="D" value={samson.burnout} color={samson.burnout === 'ok' ? C.state.green : C.state.red} />
+            <TRow label="AI Temp" value={String(samson.aiTemp)} color={C.lavender} />
+            <TRow label="Z-Score" value={String(samson.zScore)} color={Math.abs(samson.zScore) > 2 ? C.state.red : C.text.secondary} />
+            <TRow label="Processed" value={String(processedCount)} color={C.mint} />
+            <TRow label="Deferred" value={String(deferredCount)} color={C.coral} />
+            <TRow label="Held" value={String(heldActive.length)} color={heldActive.length > 0 ? C.coral : C.mint} />
+            <TRow label="Threshold" value={`${(threshold * 10).toFixed(0)}/10`} color={C.text.secondary} />
+            <TRow label="Cal" value={cal.displayName || '(uncalibrated)'} color={cal.displayName ? C.lavender : C.text.dim} />
+            <TRow label="Comm" value={cal.commStyle} color={C.axis.D} />
+          </div>
+
+          {/* Voltage history sparkline */}
+          {voltageHistory.length > 1 && (
+            <div style={{ marginTop: 8 }}>
+              <div style={{ fontSize: 8, color: C.text.dim, marginBottom: 2 }}>VOLTAGE HISTORY</div>
+              <div style={{ display: 'flex', alignItems: 'flex-end', gap: 1, height: 20 }}>
+                {voltageHistory.map((v, i) => {
+                  const h = (v / 10) * 20;
+                  const barColor = v >= 8 ? C.state.red : v >= 7 ? C.state.orange : v >= 5 ? C.state.yellow : C.state.green;
+                  return <div key={i} style={{ width: 4, height: h, background: barColor, borderRadius: 1 }} />;
+                })}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ══════════════ DEEP PROCESSING LOCK ══════════════ */}
+      {locked && (
+        <div style={{
+          flex: 1, display: 'flex', flexDirection: 'column',
+          alignItems: 'center', justifyContent: 'center', gap: 20,
+          background: `rgba(240,128,128,0.02)`, padding: 24,
+        }}>
+          <div style={{
+            width: 80, height: 80, borderRadius: '50%',
+            border: `2px solid ${C.coral}44`,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>
+            <span style={{ fontSize: 32 }}>&#x1F6E1;</span>
+          </div>
+          <div style={{ fontSize: 13, color: C.coral, fontWeight: 600, letterSpacing: 3, fontFamily: MONO }}>
+            DEEP PROCESSING LOCK
+          </div>
+          <div style={{ fontSize: 11, color: C.text.dim, maxWidth: 320, textAlign: 'center', lineHeight: 1.6 }}>
+            Energy below 25%. New inputs blocked to protect your capacity.
+          </div>
+          <div style={{ fontSize: 24, color: C.coral, fontFamily: MONO, fontWeight: 700 }}>
+            {spoons.toFixed(1)} / {maxSpoons}
+          </div>
+
+          {/* Recovery actions */}
+          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', justifyContent: 'center' }}>
+            {cal.breathingEnabled && (
+              <button type="button" onClick={() => setBreathing(true)} style={{
+                ...btnBase(true, C.mint), padding: '10px 20px',
+              }}>
+                BREATHE (4-2-6)
+              </button>
+            )}
+            <button type="button" onClick={() => {
+              updateState('valence' as Parameters<typeof updateState>[0], 2).catch(() => {});
+            }} style={{
+              ...btnBase(true, C.text.dim), padding: '10px 20px',
+            }}>
+              NAP (+2)
+            </button>
+            <button type="button" onClick={() => {
+              updateState('valence' as Parameters<typeof updateState>[0], 1).catch(() => {});
+            }} style={{
+              ...btnBase(true, C.text.dim), padding: '10px 20px',
+            }}>
+              HEAVY WORK (+1)
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ══════════════ MAIN 3-COLUMN GRID ══════════════ */}
+      {!locked && (
+        <div style={{
+          flex: 1, display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+          gap: 12, minHeight: 0, padding: '12px 16px', overflow: 'auto',
+        }}>
+          {/* ═══ INGEST ═══ */}
+          <BufferCard title="Incoming Messages" accent={C.amber}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+              <div style={{ fontSize: 12, color: C.amber }}>Paste and scan</div>
+              <div style={{ fontSize: 11, color: DIM }}>
+                held <span style={{ color: heldActive.length > 0 ? C.coral : C.mint, fontWeight: 600 }}>{heldActive.length}</span>
+              </div>
+            </div>
+
             <textarea
               value={ingestText}
-              onChange={e => setIngestText(e.target.value)}
-              placeholder="paste message, email, text..."
+              onChange={e => { setIngestText(e.target.value); setScoredResult(null); setBluf(null); }}
+              placeholder="Paste a message, email, or text to scan..."
               rows={4}
               style={{
-                ...INPUT_STYLE,
-                borderColor: liveScore
-                  ? `rgba(${liveScore.voltage > 0.5 ? '255,107,107' : liveScore.voltage > 0.3 ? '247,220,111' : '78,205,196'}, 0.3)`
-                  : 'rgba(40, 60, 80, 0.3)',
+                ...inputStyle,
+                borderColor: liveScore ? `${GATES[liveScore.gate].color}44` : C.bg.border,
               }}
             />
 
-            {/* Live voltage readout */}
-            {liveScore && (
-              <div style={{ marginTop: 8 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-                  <span style={{ fontSize: 10, color: '#3a4a5a' }}>VOLTAGE</span>
-                  <span style={{ fontSize: 12, fontWeight: 600, color: VOLTAGE_COLOR(liveScore.voltage) }}>
-                    {(liveScore.voltage * 100).toFixed(0)}% — {VOLTAGE_LABEL(liveScore.voltage)}
-                  </span>
+            {/* Pre-score hint */}
+            {liveScore && !scoredResult && (
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 6, fontSize: 10, color: DIM }}>
+                <span>~{liveScore.v}/10</span>
+                <span style={{ color: GATES[liveScore.gate].color }}>{liveScore.gate}</span>
+              </div>
+            )}
+
+            <button type="button" onClick={handleScore} disabled={!ingestText.trim()}
+              style={{ ...btnBase(!!ingestText.trim(), C.amber), width: '100%', marginTop: 8, padding: '8px' }}>
+              SCORE
+            </button>
+
+            {/* Scored result */}
+            {scoredResult && gc && (
+              <div style={{ marginTop: 10, borderTop: `1px solid ${C.bg.border}`, paddingTop: 10 }}>
+                {/* Voltage header */}
+                <div style={{
+                  display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10,
+                  padding: '8px 12px', borderRadius: 8, background: gc.bg, border: `1px solid ${gc.color}33`,
+                }}>
+                  <div style={{ fontSize: 22, fontWeight: 700, color: gc.color }}>{scoredResult.v}</div>
+                  <div>
+                    <div style={{ fontSize: 10, fontWeight: 700, color: gc.color, letterSpacing: 2 }}>{scoredResult.gate} {gc.label}</div>
+                    <div style={{ fontSize: 8, color: C.text.dim, fontFamily: MONO }}>U:{scoredResult.u} E:{scoredResult.e} C:{scoredResult.c}</div>
+                  </div>
                 </div>
-                <div style={{ height: 4, borderRadius: 2, background: '#0a1018', overflow: 'hidden', marginBottom: 6 }}>
-                  <div style={{
-                    height: '100%',
-                    width: `${liveScore.voltage * 100}%`,
-                    background: VOLTAGE_COLOR(liveScore.voltage),
-                    borderRadius: 2,
-                    transition: 'width 0.3s, background 0.3s',
-                  }} />
+
+                {/* Score bars */}
+                <div style={{ display: 'flex', gap: 6, marginBottom: 10 }}>
+                  {([['URG', scoredResult.u, C.cyan], ['EMO', scoredResult.e, C.lavender], ['COG', scoredResult.c, C.amber]] as const).map(([l, v, barColor]) => (
+                    <div key={l} style={{ flex: 1 }}>
+                      <div style={{ height: 4, background: 'rgba(255,255,255,0.04)', borderRadius: 4 }}>
+                        <div style={{ height: '100%', width: `${v * 10}%`, background: barColor, borderRadius: 4, transition: 'width 0.3s', boxShadow: `0 0 6px ${barColor}` }} />
+                      </div>
+                      <div style={{ fontSize: 9, color: DIM, marginTop: 2, fontFamily: MONO }}>{l} {v}</div>
+                    </div>
+                  ))}
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 4, fontSize: 9, color: '#3a4a5a' }}>
-                  <div>urgency <span style={{ color: VOLTAGE_COLOR(liveScore.urgency) }}>{(liveScore.urgency * 100).toFixed(0)}%</span></div>
-                  <div>emotional <span style={{ color: VOLTAGE_COLOR(liveScore.emotional) }}>{(liveScore.emotional * 100).toFixed(0)}%</span></div>
-                  <div>cognitive <span style={{ color: VOLTAGE_COLOR(liveScore.cognitive) }}>{(liveScore.cognitive * 100).toFixed(0)}%</span></div>
+
+                {/* PA patterns */}
+                {scoredResult.pa.length > 0 && (
+                  <div style={{ padding: '6px 10px', borderRadius: 6, marginBottom: 8, background: `${C.lavender}05`, border: `1px solid ${C.lavender}12` }}>
+                    <div style={{ fontSize: 8, letterSpacing: 1.5, color: C.lavender, marginBottom: 4, fontWeight: 600, fontFamily: MONO }}>SUBTEXT DETECTED</div>
+                    {scoredResult.pa.map((p, i) => (
+                      <div key={i} style={{ fontSize: 10, color: C.text.secondary, marginBottom: 1, lineHeight: 1.5 }}>{p.t}</div>
+                    ))}
+                  </div>
+                )}
+
+                {/* BLUF */}
+                {bluf && (
+                  <div style={{ padding: '6px 10px', borderRadius: 6, marginBottom: 8, background: 'rgba(255,255,255,0.015)', border: `1px solid ${C.bg.border}` }}>
+                    <div style={{ fontSize: 8, letterSpacing: 1.5, color: C.text.dim, marginBottom: 4, fontWeight: 600, fontFamily: MONO }}>BLUF</div>
+                    <div style={{ fontSize: 11, color: C.text.secondary, lineHeight: 1.6 }}>{bluf.summary}</div>
+                    {bluf.actions.length > 0 && (
+                      <div style={{ marginTop: 4 }}>
+                        {bluf.actions.slice(0, 3).map((a, i) => (
+                          <div key={i} style={{ fontSize: 10, color: C.text.secondary, paddingLeft: 8, borderLeft: `2px solid ${gc.color}33`, marginBottom: 2 }}>
+                            {a.substring(0, 100)}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    {bluf.questions > 0 && (
+                      <div style={{ fontSize: 9, color: C.cyan, marginTop: 4 }}>{bluf.questions} question{bluf.questions > 1 ? 's' : ''} detected</div>
+                    )}
+                  </div>
+                )}
+
+                {/* Actions */}
+                <div style={{ display: 'flex', gap: 6 }}>
+                  <button type="button" onClick={handleIngest} style={{
+                    ...btnBase(true, scoredResult.v / 10 > threshold ? C.coral : C.mint),
+                    flex: 1, padding: '8px',
+                  }}>
+                    {scoredResult.v / 10 > threshold ? 'HOLD' : 'PROCESS'}
+                  </button>
+                  <button type="button" onClick={() => { setScoredResult(null); setBluf(null); setIngestText(''); }} style={{
+                    ...btnBase(true, DIM), padding: '8px', width: 50,
+                  }}>CLR</button>
                 </div>
               </div>
             )}
 
-            <button
-              onClick={handleIngest}
-              disabled={!liveScore}
-              style={{
-                width: '100%',
-                marginTop: 8,
-                padding: '8px',
-                background: liveScore && liveScore.voltage > threshold
-                  ? 'rgba(255, 107, 107, 0.08)' : 'rgba(78, 205, 196, 0.08)',
-                border: `1px solid ${liveScore
-                  ? (liveScore.voltage > threshold ? 'rgba(255,107,107,0.3)' : 'rgba(78,205,196,0.3)')
-                  : 'rgba(40,60,80,0.2)'}`,
-                borderRadius: 4,
-                color: liveScore
-                  ? (liveScore.voltage > threshold ? '#ff6b6b' : '#4ecdc4')
-                  : '#2a3a4a',
-                fontSize: 11,
-                letterSpacing: 1,
-                cursor: liveScore ? 'pointer' : 'default',
-                fontFamily: "'JetBrains Mono', monospace",
-              }}
-            >
-              {liveScore && liveScore.voltage > threshold
-                ? 'HOLD — voltage too high'
-                : 'PROCESS — safe to read'}
-            </button>
-          </div>
-
-          {/* Held messages */}
-          {heldActive.length > 0 && (
-            <div style={ACCENT_PANEL('#ff6b6b')}>
-              <div style={{ fontSize: 10, color: '#ff6b6b', marginBottom: 6, letterSpacing: 1, textShadow: '0 0 8px rgba(255,107,107,0.3)' }}>
-                HOLDING ({heldActive.length})
+            {/* Held messages */}
+            {heldActive.length > 0 && (
+              <div style={{ marginTop: 10, borderTop: `1px solid ${C.bg.border}`, paddingTop: 10 }}>
+                <div style={{ fontSize: 11, color: C.coral, marginBottom: 6, fontWeight: 600 }}>
+                  Holding ({heldActive.length})
+                </div>
+                {heldActive.slice(0, 5).map(msg => (
+                  <div key={msg.id} style={{
+                    padding: '6px 0', borderBottom: `1px solid ${C.bg.border}`,
+                    display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 6,
+                  }}>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 12, color: C.text.primary, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', opacity: 0.7 }}>
+                        {msg.text.slice(0, 40)}
+                      </div>
+                      <div style={{ display: 'flex', gap: 8, fontSize: 10, color: DIM }}>
+                        <span style={{ color: GATES[msg.gate as keyof typeof GATES]?.color ?? C.coral, fontWeight: 600 }}>{msg.gate} {msg.voltage}</span>
+                        <span>{timeAgo(msg.ingestedAt)}</span>
+                      </div>
+                    </div>
+                    <div style={{ display: 'flex', gap: 4, flexShrink: 0 }}>
+                      <button type="button" onClick={() => handleRelease(msg.id)} style={{ ...pillBtn(true, C.mint) }}>ok</button>
+                      <button type="button" onClick={() => handleDismiss(msg.id)} style={{ ...pillBtn(true, C.coral) }}>x</button>
+                    </div>
+                  </div>
+                ))}
+                {heldActive.length > 5 && (
+                  <div style={{ fontSize: 9, color: DIM, marginTop: 4 }}>+{heldActive.length - 5} more held</div>
+                )}
               </div>
-              {heldActive.slice(0, 5).map(msg => (
-                <div key={msg.id} style={{
-                  padding: '6px 0',
-                  borderBottom: '1px solid rgba(40, 60, 80, 0.15)',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  gap: 8,
-                }}>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 10, color: '#5a6a7a', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {msg.text.slice(0, 50)}
-                    </div>
-                    <div style={{ fontSize: 9, color: '#2a3a4a' }}>
-                      {VOLTAGE_LABEL(msg.voltage)} — {new Date(msg.ingestedAt).toLocaleTimeString()}
-                    </div>
-                  </div>
-                  <div style={{ display: 'flex', gap: 4, flexShrink: 0 }}>
-                    <button onClick={() => handleRelease(msg.id)} style={{
-                      background: 'rgba(78, 205, 196, 0.08)',
-                      border: '1px solid rgba(78, 205, 196, 0.2)',
-                      borderRadius: 3, padding: '3px 8px',
-                      color: '#4ecdc4', fontSize: 9, cursor: 'pointer',
-                      fontFamily: "'JetBrains Mono', monospace",
-                    }}>release</button>
-                    <button onClick={() => handleDismiss(msg.id)} style={{
-                      background: 'none',
-                      border: '1px solid rgba(40, 60, 80, 0.2)',
-                      borderRadius: 3, padding: '3px 6px',
-                      color: '#3a4a5a', fontSize: 9, cursor: 'pointer',
-                      fontFamily: "'JetBrains Mono', monospace",
-                    }}>x</button>
-                  </div>
-                </div>
-              ))}
-              {heldActive.length > 5 && (
-                <div style={{ fontSize: 9, color: '#2a3a4a', marginTop: 4 }}>
-                  +{heldActive.length - 5} more held
-                </div>
-              )}
-            </div>
-          )}
+            )}
 
-          <div style={{ fontSize: 10, color: '#2a3a4a', display: 'flex', gap: 16 }}>
-            <span>processed: {processedCount}</span>
-            <span>released: {held.filter(m => m.released).length}</span>
-          </div>
-        </>
-      )}
-
-      {/* ════════════════ FAWN GUARD ════════════════ */}
-      {tab === 'fawn' && (
-        <>
-          <div style={ACCENT_PANEL('#ff6b6b')}>
-            <div style={{ fontSize: 10, color: '#8a3a3a', marginBottom: 6, letterSpacing: 1 }}>
-              CHECK OUTGOING DRAFT
+            <div style={{ fontSize: 10, color: DIM, marginTop: 8, fontFamily: MONO }}>
+              {processedCount}P {deferredCount}D {held.filter(m => m.released).length}R
             </div>
+          </BufferCard>
+
+          {/* ═══ FAWN GUARD ═══ */}
+          <BufferCard title="Fawn Guard" accent={C.coral}>
+            <div style={{ fontSize: 12, color: C.coral, marginBottom: 10 }}>Check before you send</div>
+
             <textarea
               value={draftText}
               onChange={e => setDraftText(e.target.value)}
-              placeholder="paste your reply before sending..."
+              placeholder="Paste your reply before sending..."
               rows={5}
               style={{
-                ...INPUT_STYLE,
-                borderColor: fawn && fawn.score > 0.3
-                  ? 'rgba(255, 107, 107, 0.3)' : 'rgba(40, 60, 80, 0.3)',
+                ...inputStyle,
+                borderColor: fawn && fawn.score > 0.3 ? `${C.coral}44` : C.bg.border,
               }}
             />
-          </div>
 
-          {fawn && fawn.flags.length > 0 && (
-            <div style={ACCENT_PANEL('#ff6b6b')}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                <div style={{ fontSize: 10, color: fawn.score > 0.4 ? '#ff6b6b' : '#f7dc6f', letterSpacing: 1 }}>
-                  FAWN PATTERNS DETECTED
+            {/* Fawn score bar */}
+            {fawn && fawn.matchCount > 0 && (
+              <div style={{ marginTop: 8 }}>
+                <div style={{ height: 3, background: 'rgba(255,255,255,0.04)', borderRadius: 2 }}>
+                  <div style={{
+                    height: '100%', width: `${fawn.score * 100}%`,
+                    background: fawn.score > 0.5 ? C.coral : C.amber,
+                    borderRadius: 2, transition: 'width 0.3s',
+                  }} />
                 </div>
-                <span style={{ fontSize: 12, fontWeight: 600, color: fawn.score > 0.4 ? '#ff6b6b' : '#f7dc6f' }}>
-                  {fawn.matchCount}
-                </span>
+                <div style={{ fontSize: 9, color: C.text.dim, marginTop: 2, fontFamily: MONO }}>
+                  fawn score: {(fawn.score * 100).toFixed(0)}%
+                </div>
               </div>
-              {fawn.flags.map((flag, i) => (
-                <div key={i} style={{ padding: '6px 0', borderBottom: '1px solid rgba(40, 60, 80, 0.12)' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontSize: 11, color: CATEGORY_COLOR[flag.category] ?? '#f7dc6f', fontWeight: 500 }}>
-                      "{flag.pattern}"
-                    </span>
-                    <span style={{
-                      fontSize: 8, color: '#3a4a5a',
-                      border: `1px solid ${(CATEGORY_COLOR[flag.category] ?? '#3a4a5a')}33`,
-                      borderRadius: 2, padding: '1px 5px',
-                    }}>
-                      {flag.category}
-                    </span>
+            )}
+
+            {/* Category summary */}
+            {fawnSummary && fawnSummary.length > 0 && (
+              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 10 }}>
+                {fawnSummary.map(([cat, count]) => (
+                  <div key={cat} style={{
+                    display: 'flex', alignItems: 'center', gap: 4,
+                    padding: '3px 8px', borderRadius: 8,
+                    background: `${CATEGORY_COLOR[cat] ?? DIM}11`,
+                    border: `1px solid ${(CATEGORY_COLOR[cat] ?? DIM)}33`,
+                  }}>
+                    <span style={{ fontSize: 11, color: CATEGORY_COLOR[cat], fontWeight: 600 }}>{cat} ({count})</span>
                   </div>
-                  <div style={{ fontSize: 9, color: '#5a6a7a', marginTop: 2, fontStyle: 'italic', lineHeight: 1.5 }}>
-                    {flag.guidance}
-                  </div>
+                ))}
+              </div>
+            )}
+
+            {fawn && fawn.flags.length > 0 && (
+              <div style={{ marginTop: 10, borderTop: `1px solid ${C.bg.border}`, paddingTop: 10 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+                  <div style={{ fontSize: 12, color: fawn.score > 0.4 ? C.coral : C.amber, fontWeight: 600 }}>Patterns Detected</div>
+                  <span style={{ fontSize: 14, fontWeight: 600, color: fawn.score > 0.4 ? C.coral : C.amber }}>{fawn.matchCount}</span>
                 </div>
-              ))}
-              <button onClick={handleFawnAck} style={{
-                width: '100%', marginTop: 10, padding: '8px',
-                background: 'rgba(78, 205, 196, 0.06)',
-                border: '1px solid rgba(78, 205, 196, 0.25)',
-                borderRadius: 4, color: '#4ecdc4',
-                fontSize: 10, letterSpacing: 1, cursor: 'pointer',
-                fontFamily: "'JetBrains Mono', monospace",
+                {fawn.flags.map((flag, i) => (
+                  <div key={i} style={{ padding: '6px 0', borderBottom: `1px solid ${C.bg.border}` }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontSize: 12, color: CATEGORY_COLOR[flag.category] ?? C.amber, fontWeight: 500 }}>"{flag.pattern}"</span>
+                      <span style={{
+                        fontSize: 9, color: CATEGORY_COLOR[flag.category] ?? DIM,
+                        border: `1px solid ${(CATEGORY_COLOR[flag.category] ?? DIM)}33`,
+                        borderRadius: 6, padding: '2px 6px', fontWeight: 600,
+                      }}>{flag.category}</span>
+                    </div>
+                    <div style={{ fontSize: 11, color: DIM, marginTop: 3, fontStyle: 'italic', lineHeight: 1.5 }}>{flag.guidance}</div>
+                  </div>
+                ))}
+                <button type="button" onClick={() => setDraftText('')} style={{
+                  ...btnBase(true, C.mint), width: '100%', marginTop: 10, padding: '8px',
+                }}>
+                  I see it — send with awareness
+                </button>
+              </div>
+            )}
+
+            {fawn && fawn.flags.length === 0 && draftText.trim().length > 10 && (
+              <div style={{
+                marginTop: 10, padding: '10px', borderRadius: 10,
+                border: `1px solid ${C.mint}33`, background: `${C.mint}08`,
               }}>
-                I SEE IT — SEND WITH AWARENESS
-              </button>
-            </div>
-          )}
-
-          {fawn && fawn.flags.length === 0 && draftText.trim().length > 10 && (
-            <div style={ACCENT_PANEL('#4ecdc4')}>
-              <div style={{ fontSize: 11, color: '#4ecdc4', textAlign: 'center' }}>
-                No fawn patterns detected. Your voice is clear.
+                <div style={{ fontSize: 13, color: C.mint, fontWeight: 500 }}>
+                  No fawn patterns detected. Your voice is clear.
+                </div>
               </div>
-            </div>
-          )}
+            )}
+          </BufferCard>
 
-          {fawnAcks > 0 && (
-            <div style={{ fontSize: 10, color: '#2a3a4a' }}>
-              patterns acknowledged: {fawnAcks}
-            </div>
-          )}
-        </>
-      )}
+          {/* ═══ CHAOS INGESTION ═══ */}
+          <BufferCard title="Chaos Ingestion" accent={C.orange}>
+            <div style={{ fontSize: 12, color: C.orange, marginBottom: 10 }}>Dump raw text, extract structure</div>
 
-      {/* ════════════════ CHAOS INGESTION ════════════════ */}
-      {tab === 'chaos' && (
-        <>
-          <div style={ACCENT_PANEL('#ff9944')}>
-            <div style={{ fontSize: 10, color: '#8a6633', marginBottom: 6, letterSpacing: 1 }}>
-              CHAOS INGESTION
-            </div>
-            <div style={{ fontSize: 9, color: '#5a4a3a', marginBottom: 6, lineHeight: 1.5 }}>
-              Dump raw text. The Buffer extracts structure.
-            </div>
             <textarea
               value={chaosText}
               onChange={e => setChaosText(e.target.value)}
-              placeholder="journal, notes, brain dump..."
+              placeholder="Journal, notes, brain dump, voice-to-text..."
               rows={6}
-              style={INPUT_STYLE}
+              style={inputStyle}
             />
-            <button
-              onClick={handleExtract}
-              disabled={!chaosText.trim()}
-              style={{
-                width: '100%', marginTop: 8, padding: '8px',
-                background: chaosText.trim() ? 'rgba(255, 153, 68, 0.06)' : 'transparent',
-                border: `1px solid ${chaosText.trim() ? 'rgba(255, 153, 68, 0.25)' : 'rgba(40, 60, 80, 0.2)'}`,
-                borderRadius: 4,
-                color: chaosText.trim() ? '#ff9944' : '#2a3a4a',
-                fontSize: 11, letterSpacing: 1,
-                cursor: chaosText.trim() ? 'pointer' : 'default',
-                fontFamily: "'JetBrains Mono', monospace",
-              }}
-            >
-              EXTRACT STRUCTURE
+            <button type="button" onClick={handleExtract} disabled={!chaosText.trim()}
+              style={{ ...btnBase(!!chaosText.trim(), C.orange), width: '100%', marginTop: 8, padding: '8px' }}>
+              Extract Structure
             </button>
-          </div>
 
-          {extracted.length > 0 && (
-            <div style={ACCENT_PANEL('#ff9944')}>
-              <div style={{ fontSize: 10, color: '#ff9944', marginBottom: 8, letterSpacing: 1, textShadow: '0 0 8px rgba(255,153,68,0.3)' }}>
-                EXTRACTED ({extracted.length})
-              </div>
-              {extracted.map((item, i) => (
-                <div key={i} style={{
-                  padding: '4px 0',
-                  borderBottom: '1px solid rgba(40, 60, 80, 0.1)',
-                  display: 'flex', gap: 6, alignItems: 'flex-start',
-                }}>
-                  <span style={{
-                    fontSize: 10, color: ITEM_COLOR[item.type],
-                    fontWeight: 600, flexShrink: 0, width: 12,
-                  }}>
-                    {ITEM_ICON[item.type]}
-                  </span>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 10, color: '#c8d0dc', lineHeight: 1.4 }}>
-                      {item.text.slice(0, 120)}{item.text.length > 120 ? '...' : ''}
-                    </div>
-                    <div style={{ fontSize: 8, color: ITEM_COLOR[item.type] }}>
-                      {item.type.toUpperCase()}
-                    </div>
+            {extracted.length > 0 && (
+              <div style={{ marginTop: 10, borderTop: `1px solid ${C.bg.border}`, paddingTop: 10 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                  <div style={{ fontSize: 12, color: C.orange, fontWeight: 600 }}>Extracted</div>
+                  <div style={{ display: 'flex', gap: 4 }}>
+                    {(['action', 'date', 'emotion', 'question'] as const).map(type => {
+                      const count = extracted.filter(e => e.type === type).length;
+                      if (!count) return null;
+                      return (
+                        <span key={type} style={{
+                          fontSize: 9, padding: '2px 6px', borderRadius: 6,
+                          background: `${ITEM_COLOR[type]}15`, color: ITEM_COLOR[type], fontWeight: 600,
+                        }}>
+                          {ITEM_ICON[type]}{count}
+                        </span>
+                      );
+                    })}
                   </div>
                 </div>
-              ))}
-            </div>
-          )}
-        </>
+                {extracted.map((item, i) => (
+                  <div key={i} style={{
+                    padding: '5px 0', borderBottom: `1px solid ${C.bg.border}`,
+                    display: 'flex', gap: 6, alignItems: 'flex-start',
+                  }}>
+                    <span style={{
+                      fontSize: 11, color: ITEM_COLOR[item.type], fontWeight: 600, flexShrink: 0, width: 14, textAlign: 'center',
+                    }}>{ITEM_ICON[item.type]}</span>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 12, color: C.text.primary, lineHeight: 1.5, opacity: 0.8 }}>
+                        {item.text.slice(0, 100)}{item.text.length > 100 ? '...' : ''}
+                      </div>
+                      <div style={{ fontSize: 9, color: ITEM_COLOR[item.type], fontWeight: 600 }}>{item.type.toUpperCase()}</div>
+                    </div>
+                  </div>
+                ))}
+
+                {/* Copy structured output */}
+                <button type="button" onClick={() => {
+                  const output = extracted.map(e => `[${e.type.toUpperCase()}] ${e.text}`).join('\n');
+                  navigator.clipboard.writeText(output).catch(() => {});
+                }} style={{
+                  ...btnBase(true, C.orange), width: '100%', marginTop: 8, padding: '8px',
+                }}>
+                  Copy to Clipboard
+                </button>
+              </div>
+            )}
+          </BufferCard>
+        </div>
       )}
 
-      {/* Bottom status */}
-      <div style={{ display: 'flex', gap: 16, fontSize: 10, color: '#2a3a4a', marginTop: 4 }}>
-        <span>{spoons}/12 spoons</span>
-        <span style={{
-          color: tier === 'REFLEX' ? '#ff6b6b' : tier === 'PATTERN' ? '#f7dc6f' : '#4ecdc4',
-          fontWeight: 600, letterSpacing: 1,
-        }}>{tier}</span>
+      {/* ══════════════ TELEMETRY FOOTER ══════════════ */}
+      <div style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        padding: '6px 16px', borderTop: `1px solid ${C.bg.border}`,
+        background: C.bg.base, flexShrink: 0, fontSize: 9, fontFamily: MONO,
+        color: C.text.dim, gap: 8,
+      }}>
+        <span>{cal.displayName || 'uncalibrated'}</span>
+        <span style={{ color: C.text.dim }}>
+          {processedCount}P {deferredCount}D {heldActive.length}H
+        </span>
+        <span style={{ color: tensionColor }}>
+          T:{samson.tension.toFixed(2)}
+        </span>
+        <span style={{ color: C.lavender }}>
+          AI:{samson.aiTemp}
+        </span>
+        <span>
+          {cal.commStyle}
+        </span>
+        <span style={{ color: samson.drift !== 'nominal' ? C.amber : C.text.dim }}>
+          {samson.drift !== 'nominal' ? samson.drift.toUpperCase() : 'NOMINAL'}
+        </span>
       </div>
+    </div>
+  );
+}
+
+// ── Telemetry Row Helper ─────────────────────────────────────
+
+function TRow({ label, value, color }: { label: string; value: string; color: string }) {
+  return (
+    <div style={{ display: 'flex', gap: 6, minWidth: 100 }}>
+      <span style={{ color: 'rgba(255,255,255,0.25)' }}>{label}:</span>
+      <span style={{ color, fontWeight: 600 }}>{value}</span>
     </div>
   );
 }

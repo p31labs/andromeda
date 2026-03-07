@@ -24,7 +24,7 @@ export function AchievementToast({ title, description, visible }: AchievementToa
   return (
     <div
       className="bg-black/60 backdrop-blur-[16px]
-                 border border-[#39FF14]/20
+                 border border-[#00FF88]/20
                  rounded-2xl px-5 py-3.5 max-w-[320px] w-full
                  animate-toast-slide"
       role="alert"

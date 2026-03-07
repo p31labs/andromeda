@@ -5,7 +5,7 @@ export default {
     extend: {
       colors: {
         void: '#050505',
-        phosphor: '#39FF14',
+        phosphor: '#00FF88',
         amber: '#FFD700',
         glass: {
           border: 'rgba(255, 255, 255, 0.08)',
@@ -14,7 +14,7 @@ export default {
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
-        mono: ['JetBrains Mono', 'Menlo', 'monospace'],
+        mono: ['Space Mono', 'Menlo', 'monospace'],
       },
       backdropBlur: {
         glass: '12px',

@@ -44,7 +44,7 @@ export function CockpitLayout({
 
   return (
     <div
-      className="fixed inset-0 bg-[#050505] overflow-hidden"
+      className="fixed inset-0 bg-black overflow-hidden"
       style={{ touchAction: 'none' }}
     >
       {/* ═══ Layer 1: R3F Canvas ═══
@@ -134,15 +134,15 @@ export function CockpitLayout({
         </div>
       )}
 
-      {/* WCD-CC01: Wonky footer — visible in every mode */}
+      {/* WCD-CC01: Wonky footer — above element dock */}
       <div
         style={{
           position: 'fixed',
-          bottom: 8,
+          bottom: 82,
           left: '50%',
           transform: 'translateX(-50%)',
-          fontSize: 11,
-          opacity: 0.4,
+          fontSize: 10,
+          opacity: 0.15,
           color: 'white',
           pointerEvents: 'none',
           whiteSpace: 'nowrap',

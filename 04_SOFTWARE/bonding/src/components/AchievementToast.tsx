@@ -25,34 +25,31 @@ export function AchievementToast() {
         const age = Date.now() - toast.createdAt;
         const isExiting = age > toast.duration - 300;
 
-        // WCD-23: Discovery variant — special high-contrast treatment
+        // WCD-23: Discovery variant — ephemeral floating text
         if (toast.variant === 'discovery') {
           return (
             <div
               key={toast.id}
               className={`
-                flex items-center gap-4
-                backdrop-blur-[20px]
-                px-6 py-4 rounded-xl
-                border border-[#FFD700]/25
+                flex items-center gap-3
+                px-4 py-2
                 max-w-[360px] w-full
                 ${isExiting ? 'toast-exit' : 'discovery-enter'}
               `}
-              style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,200,0,0.04) 100%)', borderLeft: '3px solid #fbbf24' }}
             >
-              <span className="text-2xl">{toast.icon}</span>
+              <span className="text-lg opacity-70">{toast.icon}</span>
               <div className="flex flex-col gap-0.5">
-                <span className="text-lg font-bold text-white" style={{ fontFamily: 'Inter, sans-serif' }}>
+                <span className="text-sm font-bold text-white/80">
                   {toast.text}
                 </span>
                 {toast.subtext && (
-                  <span className="text-sm text-[#FFD700]/70 font-mono">
+                  <span className="text-xs text-[#FFD700]/50 font-mono">
                     <FormulaDisplay formula={toast.subtext} />
                   </span>
                 )}
               </div>
               {toast.love != null && toast.love > 0 && (
-                <span className="text-sm font-bold text-[#FFD700] ml-auto whitespace-nowrap">
+                <span className="text-xs font-bold text-[#FFD700]/60 ml-auto whitespace-nowrap">
                   +{toast.love} LOVE
                 </span>
               )}
@@ -60,35 +57,32 @@ export function AchievementToast() {
           );
         }
 
-        // WCD-25: Hero goal variant — gold gradient, crown icon, double LOVE
+        // WCD-25: Hero goal variant — ephemeral floating text, slightly bigger
         if (toast.variant === 'hero') {
           return (
             <div
               key={toast.id}
               className={`
-                flex items-center gap-4
-                backdrop-blur-[20px]
-                px-6 py-5 rounded-xl
-                border border-[#FFD700]/40
+                flex items-center gap-3
+                px-4 py-2
                 max-w-[360px] w-full
                 ${isExiting ? 'toast-exit' : 'discovery-enter'}
               `}
-              style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,200,0,0.06) 100%)', borderLeft: '3px solid #a855f7' }}
             >
-              <span className="text-3xl">{toast.icon}</span>
+              <span className="text-xl opacity-70">{toast.icon}</span>
               <div className="flex flex-col gap-0.5">
-                <span className="text-xs font-mono text-[#FFD700]/50 uppercase tracking-wider">Hero Goal</span>
-                <span className="text-xl font-extrabold text-[#FFD700]" style={{ fontFamily: 'Inter, sans-serif' }}>
+                <span className="text-[9px] font-mono text-[#FFD700]/30 uppercase tracking-wider">Hero Goal</span>
+                <span className="text-base font-bold text-[#FFD700]/80">
                   {toast.text}
                 </span>
                 {toast.subtext && (
-                  <span className="text-sm text-[#FFD700]/60 font-mono">
+                  <span className="text-xs text-[#FFD700]/40 font-mono">
                     <FormulaDisplay formula={toast.subtext} />
                   </span>
                 )}
               </div>
               {toast.love != null && toast.love > 0 && (
-                <span className="text-lg font-extrabold text-[#FFD700] ml-auto whitespace-nowrap">
+                <span className="text-sm font-bold text-[#FFD700]/60 ml-auto whitespace-nowrap">
                   +{toast.love} LOVE
                 </span>
               )}
@@ -96,34 +90,30 @@ export function AchievementToast() {
           );
         }
 
-        // Standard toast
+        // Standard toast — ephemeral floating text
         return (
           <div
             key={toast.id}
             className={`
               flex items-center gap-3
-              bg-white/[0.06] backdrop-blur-[20px]
-              px-5 py-3 rounded-xl
-              border border-white/[0.12]
+              px-4 py-2
               max-w-[360px] w-full
-              achievement-shimmer
               ${isExiting ? 'toast-exit' : 'toast-enter-center'}
             `}
-            style={{ borderLeft: `3px solid ${toast.love ? '#fbbf24' : '#4ade80'}` }}
           >
-            <span className="text-xl">{toast.icon}</span>
+            <span className="text-lg opacity-60">{toast.icon}</span>
             <div className="flex flex-col">
-              <span className="text-base font-semibold text-white/90">
+              <span className="text-sm text-white/70">
                 {toast.text}
               </span>
               {toast.subtext && (
-                <span className="text-[13px] text-white/60">
+                <span className="text-xs text-white/40">
                   {toast.subtext}
                 </span>
               )}
             </div>
             {toast.love != null && toast.love > 0 && (
-              <span className="text-xs font-bold text-love ml-2">
+              <span className="text-xs font-bold text-amber-400/50 ml-auto">
                 +{toast.love} L.O.V.E.
               </span>
             )}

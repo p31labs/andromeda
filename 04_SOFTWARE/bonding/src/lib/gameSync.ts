@@ -10,6 +10,8 @@
 // The game NEVER blocks on network. Local play is sacred.
 // ═══════════════════════════════════════════════════════
 
+import { fetchWithTimeout } from '@p31/shared/net';
+
 // ── Relay types (WCD-07 contract) ──
 
 export interface PlayerState {
@@ -245,12 +247,18 @@ function mockPoll(): Room | null {
 
 // ── Real relay (fetch) ──
 
+const RELAY_TIMEOUT_MS = 10_000;
+
+function relayFetch(url: string, init?: RequestInit): Promise<Response> {
+  return fetchWithTimeout(url, init, RELAY_TIMEOUT_MS);
+}
+
 async function relayCreateRoom(
   playerName: string,
   playerColor: string,
   mode: string,
 ): Promise<{ code: string; room: Room; playerId: string }> {
-  const res = await fetch(`${RELAY_URL}/api/room`, {
+  const res = await relayFetch(`${RELAY_URL}/api/room`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ playerName, playerColor, mode }),
@@ -268,7 +276,7 @@ async function relayJoinRoom(
   mode: string,
 ): Promise<{ room: Room; playerId: string }> {
   const validCode = validateRoomCode(code);
-  const res = await fetch(`${RELAY_URL}/api/room/${validCode}/join`, {
+  const res = await relayFetch(`${RELAY_URL}/api/room/${validCode}/join`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ playerName, playerColor, mode }),
@@ -287,7 +295,7 @@ async function relayJoinRoom(
 
 async function relayFetchRoom(code: string): Promise<Room> {
   const validCode = validateRoomCode(code);
-  const res = await fetch(`${RELAY_URL}/api/room/${validCode}`);
+  const res = await relayFetch(`${RELAY_URL}/api/room/${validCode}`);
   if (res.status === 404) throw new Error('ROOM_EXPIRED');
   if (!res.ok) throw new Error('Room not found');
   const data = (await res.json()) as { room: Room };
@@ -297,7 +305,7 @@ async function relayFetchRoom(code: string): Promise<Room> {
 async function relayPushState(state: PlayerState): Promise<void> {
   if (!currentRoom || !myPlayerId) return;
   const validCode = validateRoomCode(currentRoom.code);
-  const res = await fetch(`${RELAY_URL}/api/room/${validCode}`, {
+  const res = await relayFetch(`${RELAY_URL}/api/room/${validCode}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ playerId: myPlayerId, ...state }),
@@ -308,7 +316,7 @@ async function relayPushState(state: PlayerState): Promise<void> {
 async function relaySendPing(to: string, reaction: string, message?: string): Promise<void> {
   if (!currentRoom || !myPlayerId) return;
   const validCode = validateRoomCode(currentRoom.code);
-  const res = await fetch(
+  const res = await relayFetch(
     `${RELAY_URL}/api/room/${validCode}/ping`,
     {
       method: 'POST',

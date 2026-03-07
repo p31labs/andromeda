@@ -14,7 +14,7 @@
 //   - OrbitControls (auto-rotate when idle)
 // ═══════════════════════════════════════════════════════
 
-import { Suspense, useCallback, useMemo, useRef } from 'react';
+import { Suspense, useCallback, useMemo, useRef, useEffect } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls, PerspectiveCamera, Environment, Html } from '@react-three/drei';
 import * as THREE from 'three';
@@ -25,6 +25,9 @@ import { BondBeam } from './BondBeam';
 import { GhostSite } from './GhostSite';
 import { DragPreview } from './DragPreview';
 import { MolecularWarp } from './MolecularWarp';
+import { CompletionBurst } from './CompletionBurst';
+import { BondSpark } from './BondSpark';
+import { PlacementRing } from './PlacementRing';
 import { ELEMENTS } from '../data/elements';
 import { useGameStore } from '../store/gameStore';
 import { getAvailableBondSitePositions, generateFormula } from '../engine/chemistry';
@@ -32,13 +35,13 @@ import { getPersonality } from '../engine/personalities';
 import type { PersonalityAnimationHint } from './VoxelAtom';
 
 const COHERENCE_MS = 37 * 60 * 1000;
-const BG_START = new THREE.Color('#050505');
-const BG_END = new THREE.Color('#0a0508');
+const BG_START = new THREE.Color('#000000');
+const BG_END = new THREE.Color('#050308');
 
 /**
  * CoherenceArc: shifts background from true black (#050505)
  * to a barely-warm tint (#0a0508) over the 37-minute coherence window.
- * Subtle ambient indicator of session depth — no blue cast.
+ * Also manages scene fog for atmospheric depth.
  */
 function CoherenceArc() {
   const sessionStartTime = useGameStore((s) => s.sessionStartTime);
@@ -61,6 +64,83 @@ function CoherenceArc() {
   return null;
 }
 
+/**
+ * CompletionZoom: brief camera zoom pulse on molecule completion.
+ * Distance shrinks 10% over 0.3s, eases back over 0.8s.
+ */
+function CompletionZoom() {
+  const gamePhase = useGameStore((s) => s.gamePhase);
+  const prevPhaseRef = useRef(gamePhase);
+  const zoomRef = useRef<{ startTime: number; active: boolean }>({ startTime: 0, active: false });
+  const { camera } = useThree();
+
+  useEffect(() => {
+    if (gamePhase === 'complete' && prevPhaseRef.current !== 'complete') {
+      zoomRef.current = { startTime: performance.now() / 1000, active: true };
+      // Also trigger warp
+      useGameStore.getState().triggerWarp();
+    }
+    prevPhaseRef.current = gamePhase;
+  }, [gamePhase]);
+
+  useFrame((state) => {
+    if (!zoomRef.current.active) return;
+    const t = state.clock.elapsedTime - zoomRef.current.startTime;
+    const baseDist = 5; // default camera Z
+
+    if (t < 0.3) {
+      // Zoom in
+      const ease = t / 0.3;
+      camera.position.z = baseDist - baseDist * 0.1 * ease;
+    } else if (t < 1.1) {
+      // Ease back
+      const ease = 1 - Math.pow(1 - (t - 0.3) / 0.8, 3);
+      camera.position.z = baseDist * 0.9 + baseDist * 0.1 * ease;
+    } else {
+      camera.position.z = baseDist;
+      zoomRef.current.active = false;
+    }
+  });
+
+  return null;
+}
+
+
+/**
+ * AtomsWithPersonality: computes personality hint ONCE on completion,
+ * then renders all VoxelAtoms with shared hint. Avoids N redundant
+ * getPersonality() calls per frame.
+ */
+function AtomsWithPersonality({ atoms, gamePhase }: { atoms: ReturnType<typeof useGameStore.getState>['atoms']; gamePhase: string }) {
+  const pHint = useMemo<PersonalityAnimationHint | null>(() => {
+    if (gamePhase !== 'complete' || atoms.length === 0) return null;
+    const counts: Record<string, number> = {};
+    for (const a of atoms) {
+      counts[a.element] = (counts[a.element] ?? 0) + 1;
+    }
+    const formula = generateFormula(atoms);
+    const p = getPersonality(formula, counts);
+    return { speed: p.animationHint.speed, pulse: p.animationHint.pulse, vibrate: p.animationHint.vibrate, scale: p.animationHint.scale };
+  }, [atoms, gamePhase]);
+
+  return (
+    <>
+      {atoms.map((atom) => {
+        const isNewest = atom.id === atoms[atoms.length - 1]?.id;
+        const excitement = gamePhase === 'complete' ? 0.8 : isNewest && atoms.length > 1 ? 0.4 : 0.0;
+        return (
+          <VoxelAtom
+            key={atom.id}
+            element={ELEMENTS[atom.element]}
+            position={[atom.position.x, atom.position.y, atom.position.z]}
+            excitement={excitement}
+            personalityHint={pHint}
+          />
+        );
+      })}
+    </>
+  );
+}
 
 /**
  * Scene: all 3D content. Separated from Canvas for Suspense boundary.
@@ -73,39 +153,34 @@ function Scene() {
   const gamePhase = useGameStore((s) => s.gamePhase);
   const previewElement = useGameStore((s) => s.previewElement);
 
-  // Compute ghost sites (available bond positions) during drag or palette preview
+  // Bond site positions — expensive chemistry calc, depends only on atoms
+  const bondSitePositions = useMemo(() => {
+    if (atoms.length === 0) return [];
+    const sites: {
+      atomId: number | null;
+      position: { x: number; y: number; z: number };
+    }[] = [];
+    for (const atom of atoms) {
+      const unfilled = getAvailableBondSitePositions(atom, atoms);
+      for (const pos of unfilled) {
+        sites.push({
+          atomId: atom.id,
+          position: { x: pos.x, y: pos.y, z: pos.z },
+        });
+      }
+    }
+    return sites;
+  }, [atoms]);
+
+  // Ghost sites visibility — cheap filter on top of cached positions
   const ghostSites = useMemo(() => {
     if (gamePhase === 'complete') return [];
-
-    // Drag-based or preview-based sites
-    if (dragging || (previewElement && atoms.length > 0)) {
-      if (atoms.length === 0) {
-        return [
-          {
-            atomId: null as number | null,
-            position: { x: 0, y: 0, z: 0 },
-          },
-        ];
-      }
-
-      const sites: {
-        atomId: number | null;
-        position: { x: number; y: number; z: number };
-      }[] = [];
-      for (const atom of atoms) {
-        const unfilled = getAvailableBondSitePositions(atom, atoms);
-        for (const pos of unfilled) {
-          sites.push({
-            atomId: atom.id,
-            position: { x: pos.x, y: pos.y, z: pos.z },
-          });
-        }
-      }
-      return sites;
+    if (!dragging && !(previewElement && atoms.length > 0)) return [];
+    if (atoms.length === 0) {
+      return [{ atomId: null as number | null, position: { x: 0, y: 0, z: 0 } }];
     }
-
-    return [];
-  }, [atoms, dragging, gamePhase, previewElement]);
+    return bondSitePositions;
+  }, [bondSitePositions, dragging, gamePhase, previewElement, atoms.length]);
 
   const selectedColor = dragging
     ? ELEMENTS[dragging].color
@@ -115,7 +190,7 @@ function Scene() {
 
   return (
     <>
-      <color attach="background" args={['#050505']} />
+      <color attach="background" args={['#000000']} />
       <CoherenceArc />
 
       {/* Lighting */}
@@ -129,43 +204,9 @@ function Scene() {
       {/* Molecular field — element-colored particles */}
       <MolecularWarp />
 
-      {/* Placed atoms — personality hints applied on completion */}
-      {atoms.map((atom) => {
-        const isNewest = atom.id === atoms[atoms.length - 1]?.id;
-        const excitement =
-          gamePhase === 'complete'
-            ? 0.8
-            : isNewest && atoms.length > 1
-              ? 0.4
-              : 0.0;
+      {/* Personality hint — computed ONCE on completion, shared across all atoms */}
+      <AtomsWithPersonality atoms={atoms} gamePhase={gamePhase} />
 
-        // Compute personality animation hint on completion
-        let pHint: PersonalityAnimationHint | null = null;
-        if (gamePhase === 'complete' && atoms.length > 0) {
-          const counts: Record<string, number> = {};
-          for (const a of atoms) {
-            counts[a.element] = (counts[a.element] ?? 0) + 1;
-          }
-          const formula = generateFormula(atoms);
-          const p = getPersonality(formula, counts);
-          pHint = {
-            speed: p.animationHint.speed,
-            pulse: p.animationHint.pulse,
-            vibrate: p.animationHint.vibrate,
-            scale: p.animationHint.scale,
-          };
-        }
-
-        return (
-          <VoxelAtom
-            key={atom.id}
-            element={ELEMENTS[atom.element]}
-            position={[atom.position.x, atom.position.y, atom.position.z]}
-            excitement={excitement}
-            personalityHint={pHint}
-          />
-        );
-      })}
 
       {/* Bond beams */}
       {bonds.map((bond) => {
@@ -190,12 +231,17 @@ function Scene() {
           Math.abs(snappedSite.position.x - site.position.x) < 0.01 &&
           Math.abs(snappedSite.position.y - site.position.y) < 0.01 &&
           Math.abs(snappedSite.position.z - site.position.z) < 0.01;
+        const parentAtom = site.atomId != null ? atoms.find((a) => a.id === site.atomId) : null;
+        const parentPos: [number, number, number] | undefined = parentAtom
+          ? [parentAtom.position.x, parentAtom.position.y, parentAtom.position.z]
+          : undefined;
         return (
           <GhostSite
             key={`ghost-${site.atomId ?? 'center'}-${i}`}
             position={[site.position.x, site.position.y, site.position.z]}
             color={selectedColor}
             isSnapped={isSnapped}
+            parentPosition={parentPos}
           />
         );
       })}
@@ -203,7 +249,17 @@ function Scene() {
       {/* Drag preview (follows pointer) */}
       <DragPreview />
 
-      {/* WCD-15: Bloom removed. Glow faked via AdditiveBlending on cores. */}
+      {/* Completion supernova — 3D particle burst */}
+      <CompletionBurst />
+
+      {/* Bond formation sparks */}
+      <BondSpark />
+
+      {/* Atom placement rings */}
+      <PlacementRing />
+
+      {/* Completion camera zoom */}
+      <CompletionZoom />
 
       {/* Camera controls — WCD-19: zoom clamped to prevent giant/tiny atoms */}
       <OrbitControls
@@ -264,12 +320,14 @@ export function MoleculeCanvas() {
         <PerspectiveCamera makeDefault position={[0, 0.3, 5]} fov={50} />
         <Suspense fallback={
           <Html center>
-            <div style={{
+            <div className="load-pulse" style={{
               color: 'rgba(255,255,255,0.4)',
               fontSize: 14,
               letterSpacing: '0.1em',
               fontFamily: 'JetBrains Mono, monospace',
+              textAlign: 'center',
             }}>
+              <div className="spinner" style={{ width: 24, height: 24, borderColor: 'rgba(255,255,255,0.3)', borderRightColor: 'transparent', marginBottom: 8, marginInline: 'auto' }} />
               BONDING
             </div>
           </Html>

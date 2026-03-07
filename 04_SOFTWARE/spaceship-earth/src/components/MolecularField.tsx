@@ -7,7 +7,7 @@ import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 
 const PARTICLE_COUNT = 800;
-const BG_COLOR = 0x020406;
+const BG_COLOR = 0x000000;
 
 export function MolecularField() {
   const mountRef = useRef<HTMLDivElement>(null);
@@ -20,7 +20,7 @@ export function MolecularField() {
 
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(BG_COLOR);
-    scene.fog = new THREE.FogExp2(BG_COLOR, 0.018);
+    // No fog — deep black void
 
     const camera = new THREE.PerspectiveCamera(60, W / H, 0.1, 200);
     camera.position.set(0, 0, 0);
@@ -65,23 +65,41 @@ export function MolecularField() {
     geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
     geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
 
+    // Circle texture so particles are round, not square
+    const dotCanvas = document.createElement('canvas');
+    dotCanvas.width = 32; dotCanvas.height = 32;
+    const dotCtx = dotCanvas.getContext('2d')!;
+    const grad = dotCtx.createRadialGradient(16, 16, 0, 16, 16, 16);
+    grad.addColorStop(0, 'rgba(255,255,255,1)');
+    grad.addColorStop(0.4, 'rgba(255,255,255,0.6)');
+    grad.addColorStop(1, 'rgba(255,255,255,0)');
+    dotCtx.fillStyle = grad;
+    dotCtx.fillRect(0, 0, 32, 32);
+    const dotTex = new THREE.CanvasTexture(dotCanvas);
+
     const mat = new THREE.PointsMaterial({
       vertexColors: true,
-      size: 0.08,
+      size: 0.15,
       sizeAttenuation: true,
       transparent: true,
       opacity: 0.7,
       blending: THREE.AdditiveBlending,
       depthWrite: false,
+      map: dotTex,
     });
 
     const points = new THREE.Points(geo, mat);
     scene.add(points);
 
     // ── Slow camera rotation for ambient motion ──
+    // Throttled to 30fps — background particles don't need 60/120Hz
     let angle = 0;
-    const animate = () => {
+    let lastTime = 0;
+    const MIN_DT = 1000 / 30;
+    const animate = (time: number) => {
       frameRef.current = requestAnimationFrame(animate);
+      if (time - lastTime < MIN_DT) return;
+      lastTime = time;
       angle += 0.0003;
 
       // Drift particles
@@ -111,7 +129,7 @@ export function MolecularField() {
 
       renderer.render(scene, camera);
     };
-    animate();
+    requestAnimationFrame(animate);
 
     const onResize = () => {
       const w = el.clientWidth, h = el.clientHeight;
@@ -127,6 +145,7 @@ export function MolecularField() {
       renderer.dispose();
       geo.dispose();
       mat.dispose();
+      dotTex.dispose();
       if (el.contains(renderer.domElement)) el.removeChild(renderer.domElement);
     };
   }, []);

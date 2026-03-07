@@ -10,7 +10,7 @@
 //   z-50: Toast layer (AchievementToast)
 // ═══════════════════════════════════════════════════════
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, lazy, Suspense } from 'react';
 import { genesisInit } from './genesis/genesis';
 import { MoleculeCanvas } from './components/MoleculeCanvas';
 import { ElementPalette } from './components/ElementPalette';
@@ -20,16 +20,17 @@ import { ModeSelect } from './components/ModeSelect';
 import { Lobby } from './components/Lobby';
 import { RoomSidebar } from './components/RoomSidebar';
 import { QuestHUD } from './components/QuestHUD';
-import { DiscoveryModal } from './components/DiscoveryModal';
-import { TutorialOverlay } from './components/TutorialOverlay';
 import { FormulaDisplay } from './components/FormulaDisplay';
 import { JitterbugNavigator } from './components/Navigation/Jitterbug';
 import { CockpitLayout } from './components/hud/CockpitLayout';
 import { TopBar } from './components/hud/TopBar';
 import { CommandBar } from './components/hud/CommandBar';
-import { TelemetryModal } from './components/hud/TelemetryModal';
 import { BootSequence, isBirthdayOrAfter, hasSeenBoot } from './components/hud/BootSequence';
-import { BugReport } from './components/BugReport';
+
+const TutorialOverlay = lazy(() => import('./components/TutorialOverlay').then(m => ({ default: m.TutorialOverlay })));
+const DiscoveryModal = lazy(() => import('./components/DiscoveryModal').then(m => ({ default: m.DiscoveryModal })));
+const TelemetryModal = lazy(() => import('./components/hud/TelemetryModal').then(m => ({ default: m.TelemetryModal })));
+const BugReport = lazy(() => import('./components/BugReport').then(m => ({ default: m.BugReport })));
 import { useGameStore } from './store/gameStore';
 import {
   calculateStability,
@@ -58,38 +59,62 @@ import { BloodMoonNode } from './components/BloodMoonNode';
 import { ShootingStars } from './components/ShootingStars';
 import { MissingNode } from './components/MissingNode';
 
+// Stable action references — never cause re-renders
+const useActions = () => useGameStore((s) => ({
+  reset: s.reset,
+  setGameMode: s.setGameMode,
+  setLobbyActive: s.setLobbyActive,
+  leaveMultiplayer: s.leaveMultiplayer,
+  fireTutorialEvent: s.fireTutorialEvent,
+  showMoleculeFact: s.showMoleculeFact,
+  continueBuilding: s.continueBuilding,
+}));
+
 function App() {
+  // Game state — grouped by change frequency
   const atoms = useGameStore((s) => s.atoms);
   const gamePhase = useGameStore((s) => s.gamePhase);
   const gameMode = useGameStore((s) => s.gameMode);
+  const lobbyActive = useGameStore((s) => s.lobbyActive);
+  const roomCode = useGameStore((s) => s.roomCode);
+  const pendingDiscovery = useGameStore((s) => s.pendingDiscovery);
+  const pingNotification = useGameStore((s) => s.pingNotification);
   const completedMolecules = useGameStore((s) => s.completedMolecules);
   const unlockedAchievements = useGameStore((s) => s.unlockedAchievements);
   const loveTotal = useGameStore((s) => s.loveTotal);
-  const reset = useGameStore((s) => s.reset);
-  const setGameMode = useGameStore((s) => s.setGameMode);
-  const lobbyActive = useGameStore((s) => s.lobbyActive);
-  const setLobbyActive = useGameStore((s) => s.setLobbyActive);
-  const roomCode = useGameStore((s) => s.roomCode);
-  const leaveMultiplayer = useGameStore((s) => s.leaveMultiplayer);
-  const pendingDiscovery = useGameStore((s) => s.pendingDiscovery);
-  const fireTutorialEvent = useGameStore((s) => s.fireTutorialEvent);
-  const showMoleculeFact = useGameStore((s) => s.showMoleculeFact);
-  const continueBuilding = useGameStore((s) => s.continueBuilding);
-  const pingNotification = useGameStore((s) => s.pingNotification);
   const playerName = useGameStore((s) => s.playerName);
   const remotePlayers = useGameStore((s) => s.remotePlayers);
   const activeQuests = useGameStore((s) => s.activeQuests);
   const questProgress = useGameStore((s) => s.questProgress);
+
+  // Stable action refs
+  const { reset, setGameMode, setLobbyActive, leaveMultiplayer, fireTutorialEvent, showMoleculeFact, continueBuilding } = useActions();
 
   const [exportCopied, setExportCopied] = useState(false);
   const [telemetryOpen, setTelemetryOpen] = useState(false);
   const [bugReportOpen, setBugReportOpen] = useState(false);
   const [firstMoleculeShown, setFirstMoleculeShown] = useState(false);
   const prevPhaseRef = useRef<string>(gamePhase);
+  const prevAchievementCountRef = useRef(unlockedAchievements.length);
 
-  // Completion effects: first molecule check + confetti
+  // Completion effects: first molecule check + confetti + screen flash
+  const [screenFlash, setScreenFlash] = useState<string | null>(null);
+
+  // Achievement unlock → gold screen flash
+  useEffect(() => {
+    if (unlockedAchievements.length > prevAchievementCountRef.current) {
+      setScreenFlash('screen-flash-gold');
+      setTimeout(() => setScreenFlash(null), 600);
+    }
+    prevAchievementCountRef.current = unlockedAchievements.length;
+  }, [unlockedAchievements.length]);
+
   useEffect(() => {
     if (gamePhase === 'complete' && prevPhaseRef.current !== 'complete') {
+      // Screen flash
+      setScreenFlash('screen-flash-white');
+      setTimeout(() => setScreenFlash(null), 500);
+
       // First molecule ever?
       if (!localStorage.getItem(FIRST_MOLECULE.storageKey)) {
         localStorage.setItem(FIRST_MOLECULE.storageKey, '1');
@@ -310,6 +335,11 @@ function App() {
       }
       toastLayer={<AchievementToast />}
     >
+      {/* ── Screen flash overlay ── */}
+      {screenFlash && (
+        <div className={`fixed inset-0 pointer-events-none z-[60] ${screenFlash}`} />
+      )}
+
       {/* ── Ambient layers — behind game UI ── */}
       <BloodMoonOverlay />
       <BloodMoonNode />
@@ -354,7 +384,7 @@ function App() {
       {/* Ping notification overlay */}
       {pingNotification && (
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <div className="ping-enter bg-white/[0.06] backdrop-blur-[20px] px-8 py-6 rounded-3xl border border-white/[0.12] text-center">
+          <div className="ping-enter glass-card px-8 py-6 rounded-3xl text-center">
             <p className="text-6xl mb-2">{pingNotification.emoji}</p>
             <p className="text-sm text-white/50 font-mono">{pingNotification.senderName}</p>
           </div>
@@ -362,27 +392,35 @@ function App() {
       )}
 
       {/* Tutorial overlay */}
-      <TutorialOverlay />
+      <Suspense fallback={null}>
+        <TutorialOverlay />
+      </Suspense>
 
       {/* WCD-11: Bug report overlay */}
-      <BugReport isOpen={bugReportOpen} onClose={() => setBugReportOpen(false)} />
+      <Suspense fallback={null}>
+        <BugReport isOpen={bugReportOpen} onClose={() => setBugReportOpen(false)} />
+      </Suspense>
 
       {/* WCD-26: Telemetry viewer (OQE log) */}
       {telemetryOpen && (
-        <TelemetryModal onClose={() => setTelemetryOpen(false)} />
+        <Suspense fallback={null}>
+          <TelemetryModal onClose={() => setTelemetryOpen(false)} />
+        </Suspense>
       )}
 
       {/* Discovery naming modal */}
       {gamePhase === 'complete' && pendingDiscovery && (
-        <DiscoveryModal />
+        <Suspense fallback={null}>
+          <DiscoveryModal />
+        </Suspense>
       )}
 
       {/* Completion overlay */}
       {gamePhase === 'complete' && !pendingDiscovery && (
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-auto">
-          <div className="complete-enter bg-white/[0.06] backdrop-blur-[20px] p-10 rounded-3xl border border-white/[0.15] text-center max-w-[420px]">
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-auto completion-bg-pulse">
+          <div className="complete-enter completion-shimmer-border glass-card p-6 sm:p-10 rounded-3xl text-center max-w-[420px] mx-4 max-h-[90vh] overflow-y-auto scrollbar-none">
             {/* Formula (WCD-50: HTML <sub> for universal rendering) */}
-            <p className="text-5xl font-black text-white mb-2">
+            <p className="text-5xl font-black text-white mb-2 formula-reveal">
               <FormulaDisplay formula={dispFormula} />
             </p>
             <p className="text-2xl text-white/70 mb-1">
@@ -471,7 +509,7 @@ function App() {
                   reset();
                   showMoleculeFact(completedFormula);
                 }}
-                className="px-7 py-3 bg-green hover:bg-green/90 text-void rounded-xl transition-all cursor-pointer text-sm font-semibold min-h-12"
+                className="px-7 py-3 bg-green hover:bg-green/90 text-void rounded-xl transition-all cursor-pointer text-sm font-semibold min-h-12 button-glow"
               >
                 Build Another
               </button>
