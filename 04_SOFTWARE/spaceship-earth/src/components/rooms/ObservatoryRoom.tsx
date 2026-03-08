@@ -29,7 +29,8 @@ const INSET = 0.92;
 const SHRINK = 0.88;
 const DEFAULT_DIST = 7.5;
 const FOCUS_DIST = 5.5;
-const DUST_COUNT = 200;
+const IS_MOBILE = typeof window !== 'undefined' && window.innerWidth < 768;
+const DUST_COUNT = IS_MOBILE ? 60 : 200;
 
 const STATE_FILTER_OPTS = ['countdown', 'active', 'deployed', 'complete', 'missing'] as const;
 const BUS_FILTER_OPTS = ['vital', 'ac', 'dc'] as const;
@@ -113,7 +114,7 @@ export default function ObservatoryRoom() {
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(W, H);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, IS_MOBILE ? 1.5 : 2));
     el.appendChild(renderer.domElement);
 
     // ── Bloom pipeline ──
@@ -229,7 +230,7 @@ export default function ObservatoryRoom() {
     scene.add(aurora.mesh);
 
     // ── Molecular starfield (same as MolecularField, rendered inside scene) ──
-    const FIELD_COUNT = 600;
+    const FIELD_COUNT = IS_MOBILE ? 150 : 600;
     const fieldPos = new Float32Array(FIELD_COUNT * 3);
     const fieldCol = new Float32Array(FIELD_COUNT * 3);
     const fieldVel = new Float32Array(FIELD_COUNT * 3);
@@ -445,6 +446,7 @@ export default function ObservatoryRoom() {
       onDown(e);
     };
     const onTouchMove2 = (e: TouchEvent) => {
+      e.preventDefault(); // prevent browser scroll/zoom
       if (e.touches.length === 2) {
         const dx = e.touches[0].clientX - e.touches[1].clientX;
         const dy = e.touches[0].clientY - e.touches[1].clientY;
@@ -460,14 +462,16 @@ export default function ObservatoryRoom() {
       onMove(e);
     };
 
+    const onTouchEnd = (e: TouchEvent) => { onUp(); onClick(e); };
+
     el.addEventListener('mousedown', onDown);
     el.addEventListener('mousemove', onMove);
     el.addEventListener('mouseup', onUp);
     el.addEventListener('click', onClick);
     el.addEventListener('wheel', onWheel, { passive: false });
-    el.addEventListener('touchstart', onTouchStart2, { passive: true });
-    el.addEventListener('touchmove', onTouchMove2, { passive: true });
-    el.addEventListener('touchend', (e: TouchEvent) => { onUp(); onClick(e); });
+    el.addEventListener('touchstart', onTouchStart2, { passive: false });
+    el.addEventListener('touchmove', onTouchMove2, { passive: false });
+    el.addEventListener('touchend', onTouchEnd);
 
     const onResize = () => {
       const w = el.clientWidth, h = el.clientHeight;
@@ -487,6 +491,9 @@ export default function ObservatoryRoom() {
       el.removeEventListener('mouseup', onUp);
       el.removeEventListener('click', onClick);
       el.removeEventListener('wheel', onWheel);
+      el.removeEventListener('touchstart', onTouchStart2);
+      el.removeEventListener('touchmove', onTouchMove2);
+      el.removeEventListener('touchend', onTouchEnd);
       window.removeEventListener('resize', onResize);
       edgePulse.dispose();
       dust.dispose();
@@ -624,20 +631,23 @@ export default function ObservatoryRoom() {
   // ══════════════════════════════════════════════════════════════
 
   return (
-    <div style={{ position: 'relative', width: '100%', height: '100%', background: 'transparent', overflow: 'hidden' }}>
-      <div ref={mountRef} style={{ width: '100%', height: 'calc(100% - 120px)', cursor: 'grab', touchAction: 'none', marginTop: 120 }} />
+    <div style={{ position: 'relative', width: '100%', height: '100%', background: 'transparent', overflow: 'hidden', touchAction: 'none' }}>
+      <div ref={mountRef} style={{ width: '100%', height: IS_MOBILE ? 'calc(100% - 56px)' : 'calc(100% - 120px)', cursor: 'grab', touchAction: 'none', marginTop: IS_MOBILE ? 56 : 120 }} />
 
       {/* ── Top bar: axis filters ── */}
-      <div style={{ position: 'absolute', top: 12, left: 12, display: 'flex', gap: 20, zIndex: 10 }}>
+      <div style={{
+        position: 'absolute', top: IS_MOBILE ? 4 : 12, left: IS_MOBILE ? 4 : 12, right: IS_MOBILE ? 4 : undefined,
+        display: 'flex', gap: IS_MOBILE ? 4 : 20, flexWrap: 'wrap', zIndex: 10,
+      }}>
         {AXIS_KEYS.map(k => (
           <button key={k} onClick={() => setFilter(filter === k ? null : k)} style={{
             background: filter === k ? AXIS_CSS[k] + '22' : 'transparent',
             border: '1px solid ' + (filter === k ? AXIS_CSS[k] : 'rgba(0,255,255,0.1)'),
-            color: AXIS_CSS[k], padding: '16px 20px', borderRadius: 3, fontSize: 12,
+            color: AXIS_CSS[k], padding: IS_MOBILE ? '6px 10px' : '16px 20px', borderRadius: 3, fontSize: IS_MOBILE ? 10 : 12,
             fontFamily: "'JetBrains Mono', monospace", cursor: 'pointer',
             letterSpacing: 1, textTransform: 'uppercase' as const, transition: 'all 0.2s',
-            minHeight: '48px',
-            minWidth: '48px',
+            minHeight: '44px',
+            minWidth: '44px',
             display: 'inline-flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -645,50 +655,56 @@ export default function ObservatoryRoom() {
             {AXIS_LABELS[k]}
           </button>
         ))}
-        <button onClick={() => setShowAttractor(!showAttractor)} style={{
-          background: showAttractor ? '#ff6633' + '22' : 'transparent',
-          border: '1px solid ' + (showAttractor ? '#ff6633' : 'rgba(0,255,255,0.1)'),
-          color: showAttractor ? '#ff6633' : 'rgba(0,255,255,0.25)',
-          padding: '16px 20px', borderRadius: 3, fontSize: 12,
-          fontFamily: "'JetBrains Mono', monospace", cursor: 'pointer',
-          letterSpacing: 1, textTransform: 'uppercase' as const, transition: 'all 0.2s',
-          minHeight: '48px',
-          minWidth: '48px',
-          display: 'inline-flex',
-          alignItems: 'center',
-          justifyContent: 'center',
+        {!IS_MOBILE && (
+          <button onClick={() => setShowAttractor(!showAttractor)} style={{
+            background: showAttractor ? '#ff6633' + '22' : 'transparent',
+            border: '1px solid ' + (showAttractor ? '#ff6633' : 'rgba(0,255,255,0.1)'),
+            color: showAttractor ? '#ff6633' : 'rgba(0,255,255,0.25)',
+            padding: '16px 20px', borderRadius: 3, fontSize: 12,
+            fontFamily: "'JetBrains Mono', monospace", cursor: 'pointer',
+            letterSpacing: 1, textTransform: 'uppercase' as const, transition: 'all 0.2s',
+            minHeight: '44px',
+            minWidth: '44px',
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
+            {showAttractor ? 'ATTRACTOR ON' : 'ATTRACTOR OFF'}
+          </button>
+        )}
+      </div>
+
+      {/* ── Count (hidden on mobile) ── */}
+      {!IS_MOBILE && (
+        <div style={{
+          position: 'absolute', top: 12, right: 12, color: 'rgba(255,255,255,0.12)', fontSize: 11,
+          fontFamily: "'JetBrains Mono', monospace", letterSpacing: 1, zIndex: 10,
+          textShadow: '0 0 8px rgba(0,255,255,0.05)',
         }}>
-          {showAttractor ? 'ATTRACTOR ON' : 'ATTRACTOR OFF'}
-        </button>
-      </div>
+          {Object.keys(VERTICES).length} PANELS &middot; {EDGES.length} EDGES &middot; 80 FACES
+        </div>
+      )}
 
-      {/* ── Count ── */}
-      <div style={{
-        position: 'absolute', top: 12, right: 12, color: 'rgba(255,255,255,0.12)', fontSize: 11,
-        fontFamily: "'JetBrains Mono', monospace", letterSpacing: 1, zIndex: 10,
-        textShadow: '0 0 8px rgba(0,255,255,0.05)',
-      }}>
-        {Object.keys(VERTICES).length} PANELS &middot; {EDGES.length} EDGES &middot; 80 FACES
-      </div>
+      {/* ── Search bar (hidden on mobile — use filters instead) ── */}
+      {!IS_MOBILE && (
+        <div style={{ position: 'absolute', top: 42, left: 12, zIndex: 10 }}>
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+            placeholder="search nodes..."
+            style={{
+              background: 'rgba(0,0,0,0.8)', border: '1px solid rgba(0,255,255,0.1)',
+              borderRadius: 3, padding: '8px 12px', color: 'rgba(0,255,255,0.25)', width: 240,
+              fontSize: 12, fontFamily: "'JetBrains Mono', monospace",
+              outline: 'none', letterSpacing: 0.5,
+            }}
+          />
+        </div>
+      )}
 
-      {/* ── Search bar ── */}
-      <div style={{ position: 'absolute', top: 42, left: 12, zIndex: 10 }}>
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={e => setSearchQuery(e.target.value)}
-          placeholder="search nodes..."
-          style={{
-            background: 'rgba(0,0,0,0.8)', border: '1px solid rgba(0,255,255,0.1)',
-            borderRadius: 3, padding: '8px 12px', color: 'rgba(0,255,255,0.25)', width: 240,
-            fontSize: 12, fontFamily: "'JetBrains Mono', monospace",
-            outline: 'none', letterSpacing: 0.5,
-          }}
-        />
-      </div>
-
-      {/* ── State + bus filters ── */}
-      <div style={{ position: 'absolute', top: 68, left: 12, display: 'flex', gap: 4, flexWrap: 'wrap', zIndex: 10, maxWidth: 320 }}>
+      {/* ── State + bus filters (compact on mobile) ── */}
+      <div style={{ position: 'absolute', top: IS_MOBILE ? 40 : 68, left: IS_MOBILE ? 4 : 12, display: 'flex', gap: 4, flexWrap: 'wrap', zIndex: 10, maxWidth: IS_MOBILE ? '100%' : 320 }}>
         {STATE_FILTER_OPTS.map(s => {
           const active = stateFilters.has(s);
           const col = s === 'countdown' ? '#ff6633' : s === 'complete' ? '#00FFFF'
@@ -697,7 +713,7 @@ export default function ObservatoryRoom() {
             <button key={s} onClick={() => toggleStateFilter(s)} style={{
               background: active ? col + '22' : 'transparent',
               border: '1px solid ' + (active ? col : 'rgba(0,255,255,0.04)'),
-              color: col, padding: '3px 8px', borderRadius: 2, fontSize: 10,
+              color: col, padding: '3px 8px', borderRadius: 2, fontSize: IS_MOBILE ? 9 : 10,
               fontFamily: "'JetBrains Mono', monospace", cursor: 'pointer',
               letterSpacing: 0.5, transition: 'all 0.2s',
             }}>
@@ -713,7 +729,7 @@ export default function ObservatoryRoom() {
             <button key={b} onClick={() => toggleBusFilter(b)} style={{
               background: active ? col + '22' : 'transparent',
               border: '1px solid ' + (active ? col : 'rgba(0,255,255,0.04)'),
-              color: col, padding: '3px 8px', borderRadius: 2, fontSize: 10,
+              color: col, padding: '3px 8px', borderRadius: 2, fontSize: IS_MOBILE ? 9 : 10,
               fontFamily: "'JetBrains Mono', monospace", cursor: 'pointer',
               letterSpacing: 0.5, transition: 'all 0.2s',
             }}>
@@ -780,9 +796,9 @@ export default function ObservatoryRoom() {
         fontSize: 8, textAlign: 'right' as const, letterSpacing: 1, transition: 'bottom 0.3s',
         lineHeight: 1.8, fontFamily: "'JetBrains Mono', monospace", zIndex: 5,
       }}>
-        <div>DRAG ROTATE</div>
+        <div>{IS_MOBILE ? 'DRAG ROTATE' : 'DRAG ROTATE'}</div>
         <div>TAP PANEL</div>
-        <div>SCROLL ZOOM</div>
+        <div>{IS_MOBILE ? 'PINCH ZOOM' : 'SCROLL ZOOM'}</div>
       </div>
 
       {/* ── Mark 1 Attractor Simulator Overlay ── */}

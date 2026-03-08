@@ -32,6 +32,12 @@ export function JitterbugNavigator({ vertices, spoonLevel, scale = 1.5 }: Props)
     [activeCount]
   );
 
+  const edgeGeometries = useMemo(() => {
+    return edges
+      .filter(([a, b]) => a < positions.length && b < positions.length)
+      .map(([a, b]) => new THREE.BufferGeometry().setFromPoints([positions[a], positions[b]]));
+  }, [edges, positions]);
+
   return (
     <group ref={groupRef} scale={scale}>
       {/* Vertex points */}
@@ -51,17 +57,12 @@ export function JitterbugNavigator({ vertices, spoonLevel, scale = 1.5 }: Props)
         );
       })}
 
-      {/* Edges as lines */}
-      {edges.map(([a, b], i) => {
-        if (a >= positions.length || b >= positions.length) return null;
-        const points = [positions[a], positions[b]];
-        const geometry = new THREE.BufferGeometry().setFromPoints(points);
-        return (
-          <lineSegments key={`edge-${i}`} geometry={geometry}>
-            <lineBasicMaterial color="#1a4a1a" opacity={0.5} transparent />
-          </lineSegments>
-        );
-      })}
+      {/* Edges as lines (geometries memoized via edgeGeometries) */}
+      {edgeGeometries.map((geo, i) => (
+        <lineSegments key={`edge-${i}`} geometry={geo}>
+          <lineBasicMaterial color="#1a4a1a" opacity={0.5} transparent />
+        </lineSegments>
+      ))}
     </group>
   );
 }

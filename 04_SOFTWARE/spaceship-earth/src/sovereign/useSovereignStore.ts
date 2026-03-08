@@ -56,6 +56,17 @@ export const useSovereignStore = create<SovereignState>((set, get) => ({
   mintStatus: 'idle',
   lastMintNonce: null,
 
+  // D1.1: Polymorphic Skin Engine
+  skinTheme: 'OPERATOR',
+
+  // D4.6: Sierpinski Progressive Disclosure
+  interactedSlots: [],
+  sierpinskiDepth: 0,
+
+  // D2.1: Tri-State Camera
+  cameraMode: 'free',
+  activeScreenIdx: 0,
+
   // Lock screen (boot sequence)
   shipLocked: true,
 
@@ -80,6 +91,15 @@ export const useSovereignStore = create<SovereignState>((set, get) => ({
       set({ openOverlay: null });
     } else if ((SOVEREIGN_ROOMS as readonly string[]).includes(roomId) || (typeof roomId === 'string' && roomId.startsWith('SLOT_'))) {
       set({ openOverlay: roomId as SovereignRoom });
+      // D4.6: Track slot interaction for progressive disclosure
+      const slotMap: Record<string, number> = {
+        OBSERVATORY: 1, COLLIDER: 2, BONDING: 3, BRIDGE: 4, BUFFER: 5,
+        COPILOT: 6, LANDING: 7, RESONANCE: 8, FORGE: 9,
+      };
+      const slot = slotMap[roomId];
+      if (slot !== undefined) {
+        get().markSlotInteracted(slot);
+      }
     }
   },
 
@@ -164,6 +184,27 @@ export const useSovereignStore = create<SovereignState>((set, get) => ({
   // M19: Reactor Core actions
   setMintStatus: (status) => set({ mintStatus: status }),
   setLastMintNonce: (nonce) => set({ lastMintNonce: nonce }),
+
+  // D1.1: Polymorphic Skin Engine
+  setSkinTheme: (theme) => {
+    set({ skinTheme: theme });
+    // D1.4: Sync DOM data-theme attribute
+    if (typeof document !== 'undefined') {
+      document.body.dataset.theme = theme.toLowerCase().replace('_', '-');
+    }
+  },
+
+  // D4.6: Sierpinski Progressive Disclosure
+  markSlotInteracted: (slot) => set((state) => ({
+    interactedSlots: state.interactedSlots.includes(slot)
+      ? state.interactedSlots
+      : [...state.interactedSlots, slot],
+  })),
+  setSierpinskiDepth: (depth) => set({ sierpinskiDepth: Math.max(0, Math.min(2, depth)) }),
+
+  // D2.1: Tri-State Camera
+  setCameraMode: (mode) => set({ cameraMode: mode }),
+  setActiveScreenIdx: (idx) => set({ activeScreenIdx: Math.max(0, Math.min(2, idx)) }),
 
   // Lock screen
   unlockShip: () => set({ shipLocked: false }),

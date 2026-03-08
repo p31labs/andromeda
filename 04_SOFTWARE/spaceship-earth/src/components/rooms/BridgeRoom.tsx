@@ -14,14 +14,14 @@ interface Props {
 }
 
 const FONT = "'Oxanium', sans-serif";
-const PINK = '#FF00FF';
-const MINT = '#00FFFF';
-const CORAL = '#FF6B6B';
-const BLUE = '#00FFFF';
-const LAVENDER = '#BF5FFF';
-const AMBER = '#FFD700';
-const WARM_WHITE = '#d8ffd8';
-const DIM = 'rgba(0,255,255,0.18)';
+const PINK = '#FF00CC';
+const MINT = '#00FF88';
+const CORAL = '#F08080';
+const BLUE = '#00D4FF';
+const LAVENDER = '#7A27FF';
+const AMBER = '#FFB800';
+const WARM_WHITE = '#E0E0EE';
+const DIM = 'rgba(122,39,255,0.4)';
 
 type TabId = 'love' | 'wallet' | 'stealth' | 'ledger' | 'hardware';
 
@@ -106,7 +106,7 @@ function Card({ title, accent, children, style }: {
 }) {
   return (
     <div style={{
-      background: '#000000', border: `1px solid ${accent}22`, borderRadius: 10,
+      background: '#0A0A1F', border: `1px solid ${accent}22`, borderRadius: 10,
       display: 'flex', flexDirection: 'column', minHeight: 0, overflow: 'hidden', ...style,
     }}>
       <div style={{
@@ -170,7 +170,7 @@ function LoveTab({ love, spoons, maxSpoons, tier }: Props) {
         display: 'flex', alignItems: 'center', gap: 'clamp(6px, 1vw, 14px)',
         padding: 'clamp(4px, 0.5vh, 8px) clamp(8px, 1vw, 14px)',
         borderBottom: `1px solid ${PINK}18`, fontSize: fs.md, flexShrink: 0,
-        borderRadius: 8, background: '#000000',
+        borderRadius: 8, background: '#0A0A1F',
       }}>
         <span style={{ color: PINK, fontWeight: 700, letterSpacing: '0.08em', fontSize: fs.lg, textShadow: `0 0 10px ${PINK}66`, whiteSpace: 'nowrap' }}>
           Love Economy
@@ -325,7 +325,7 @@ function WalletTab({ wallet }: { wallet: ReturnType<typeof usePhenixWallet> }) {
           aria-label="Password"
           value={pw}
           onChange={e => setPw(e.target.value)}
-          style={inputStyle}
+          style={{ ...inputStyle, background: '#0D0D2A' }}
         />
         <input
           type="password"
@@ -333,7 +333,7 @@ function WalletTab({ wallet }: { wallet: ReturnType<typeof usePhenixWallet> }) {
           aria-label="Confirm password"
           value={confirmPw}
           onChange={e => setConfirmPw(e.target.value)}
-          style={{ ...inputStyle, marginTop: 6 }}
+          style={{ ...inputStyle, marginTop: 6, background: '#0D0D2A' }}
           onKeyDown={e => {
             if (e.key === 'Enter' && pw.length >= 8 && pw === confirmPw) createWallet(pw);
           }}
@@ -656,9 +656,9 @@ function Terminal({ logs }: { logs: LogLine[] }) {
 
   return (
     <div ref={termRef} style={{
-      background: '#000000', borderRadius: 6, padding: '6px 10px',
+      background: '#050510', borderRadius: 6, padding: '6px 10px',
       fontSize: fs.xs, fontFamily: 'monospace', maxHeight: 80,
-      overflow: 'auto', border: '1px solid rgba(0,255,255,0.05)',
+      overflow: 'auto', border: '1px solid rgba(122,39,255,0.1)',
       flexShrink: 0,
     }}>
       {logs.length === 0 && <div style={{ color: DIM }}>[ Phenix terminal ready ]</div>}
@@ -686,9 +686,9 @@ function LockedMessage() {
 
 const inputStyle: React.CSSProperties = {
   width: '100%', padding: '8px 10px', borderRadius: 6,
-  border: '1px solid rgba(0,255,255,0.1)', background: '#000000',
+  border: '1px solid rgba(122,39,255,0.2)', background: '#0D0D2A',
   color: WARM_WHITE, fontFamily: FONT, fontSize: 'clamp(10px, 1.3vh, 13px)',
-  outline: '2px solid transparent', boxSizing: 'border-box',
+  outline: 'none', boxSizing: 'border-box',
 };
 
 const btnStyle: React.CSSProperties = {

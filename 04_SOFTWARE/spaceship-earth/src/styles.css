@@ -33,6 +33,63 @@
   --neon-ghost: rgba(0,255,255,0.03);
 }
 
+/* ── D1.4: Polymorphic Skin — data-theme CSS overrides ── */
+
+/* OPERATOR (default): neon bloom, data-dense, cyan-forward */
+[data-theme="operator"] {
+  --neon: #00FFFF;
+  --neon-dim: rgba(0,255,255,0.35);
+  --text: #e0e0e0;
+  --s1: #000000;
+}
+
+/* KIDS: bouncy, bright, warm tones, no scanlines */
+[data-theme="kids"] {
+  --neon: #FFD700;
+  --neon-dim: rgba(255,215,0,0.35);
+  --neon-faint: rgba(255,215,0,0.08);
+  --neon-ghost: rgba(255,215,0,0.03);
+  --text: #f5f0e0;
+  --cyan: #FFD700;
+  --s1: #0a0805;
+  --s2: #12100a;
+  --glow-green: 0 0 6px #FFD700, 0 0 20px rgba(255,215,0,0.3);
+  --glow-cyan: 0 0 6px #FFD700, 0 0 20px rgba(255,215,0,0.3);
+}
+
+/* GRAY_ROCK: sterile, zero-animation, flat monochrome */
+[data-theme="gray-rock"] {
+  --neon: #888888;
+  --neon-dim: rgba(136,136,136,0.25);
+  --neon-faint: rgba(136,136,136,0.05);
+  --neon-ghost: rgba(136,136,136,0.02);
+  --text: #aaaaaa;
+  --cyan: #888888;
+  --magenta: #888888;
+  --violet: #999999;
+  --amber: #999999;
+  --s1: #0a0a0a;
+  --s2: #111111;
+  --glow-green: none;
+  --glow-cyan: none;
+  --glow-magenta: none;
+  --glow-violet: none;
+  --glow-amber: none;
+}
+
+/* Gray Rock: kill all animations */
+[data-theme="gray-rock"] * {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.05s !important;
+}
+
+[data-theme="gray-rock"] .neon-flicker {
+  animation: none !important;
+  text-shadow: none !important;
+  box-shadow: none !important;
+}
+
 /* ── Glass card ─────────────────────────────────────── */
 
 .glass-card {
@@ -606,6 +663,38 @@
 .sov-btn[data-room="BRIDGE"]      { --neon: #00FFFF; }
 .sov-btn[data-room="BUFFER"]      { --neon: #FFD700; }
 .sov-btn[data-room="COPILOT"]     { --neon: #BF5FFF; }
+
+.nav-btn {
+  padding: 12px 16px;
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  border: 1px solid rgba(0, 255, 255, 0.25);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.5);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  color: rgba(0, 255, 255, 0.7);
+  cursor: pointer;
+  font-family: var(--font-data);
+  text-transform: uppercase;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  min-height: 40px;
+  min-width: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-shadow: 0 0 6px rgba(0, 255, 255, 0.3);
+  text-decoration: none;
+}
+
+.nav-btn:hover {
+  border-color: rgba(0, 255, 255, 0.5);
+  color: #00FFFF;
+  text-shadow: 0 0 8px rgba(0, 255, 255, 0.5);
+  background: rgba(0, 255, 255, 0.04);
+}
 
 .sov-btn-active {
   color: var(--neon);

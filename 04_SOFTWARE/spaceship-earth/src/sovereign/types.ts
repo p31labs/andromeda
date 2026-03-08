@@ -8,6 +8,12 @@ export type GenesisSyncStatus = 'offline' | 'syncing' | 'synced' | 'error';
 
 export type ViewMode = 'cockpit' | 'classic';
 
+// D2.1: Tri-State Camera
+export type CameraMode = 'free' | 'dome' | 'screen';
+
+// D1.1: Polymorphic Skin Engine
+export type SkinTheme = 'OPERATOR' | 'KIDS' | 'GRAY_ROCK';
+
 // M18: Somatic Tether
 export type SomaticStatus = 'disconnected' | 'calibrating' | 'active' | 'stress';
 
@@ -78,6 +84,17 @@ export interface SovereignState {
   mintStatus: MintStatus;
   lastMintNonce: string | null;
 
+  // D1.1: Polymorphic Skin Engine
+  skinTheme: SkinTheme;
+
+  // D4.6: Sierpinski Progressive Disclosure
+  interactedSlots: number[];  // slots user has visited (serializable)
+  sierpinskiDepth: number;    // current max fractal depth (0-2)
+
+  // D2.1: Tri-State Camera
+  cameraMode: CameraMode;
+  activeScreenIdx: number; // which screen is focused in Screen Mode (0-2)
+
   // Lock screen (boot sequence)
   shipLocked: boolean;
 
@@ -116,6 +133,17 @@ export interface SovereignState {
   // Actions (M19: Reactor Core)
   setMintStatus: (status: MintStatus) => void;
   setLastMintNonce: (nonce: string | null) => void;
+
+  // D1.1: Polymorphic Skin Engine
+  setSkinTheme: (theme: SkinTheme) => void;
+
+  // D4.6: Sierpinski Progressive Disclosure
+  markSlotInteracted: (slot: number) => void;
+  setSierpinskiDepth: (depth: number) => void;
+
+  // D2.1: Tri-State Camera
+  setCameraMode: (mode: CameraMode) => void;
+  setActiveScreenIdx: (idx: number) => void;
 
   // Lock screen
   unlockShip: () => void;

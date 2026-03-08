@@ -1,0 +1,14 @@
+---
+import Head from '../components/Head.astro';
+import Navbar from '../components/Navbar.jsx';
+import Footer from '../components/Footer.astro';
+---
+
+<html lang="en">
+  <Head />
+  <body class="min-h-screen flex flex-col relative selection:bg-teal-600 selection:text-white">
+    <Navbar client:load />
+    <slot />
+    <Footer />
+  </body>
+</html>

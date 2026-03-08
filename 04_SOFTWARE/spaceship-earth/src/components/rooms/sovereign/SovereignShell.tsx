@@ -5,7 +5,7 @@
 // z-50: OS TopBar (always visible above everything)
 import { useEffect, useState, useCallback } from 'react';
 import { useSovereignStore } from '../../../sovereign/useSovereignStore';
-import type { SovereignRoom } from '../../../sovereign/types';
+import type { SovereignRoom, SkinTheme } from '../../../sovereign/types';
 import { setupSovereignPWA } from '@p31/shared/sovereign';
 import { ImmersiveCockpitUI } from './ImmersiveCockpit';
 import { ClassicDiagnosticUI } from './ClassicDiagnostic';
@@ -30,6 +30,9 @@ import { moduleRegistry } from '../../../services/jitterbugCompiler';
 import { BrainOverlay } from './overlays/BrainOverlay';
 import GlassBoxRoom from '../GlassBoxRoom';
 import { HandshakeOverlay } from '../../HandshakeOverlay';
+import { OnboardingSequence } from './OnboardingSequence';
+import { CartridgeDrawer } from './CartridgeDrawer';
+import { SierpinskiOverlay } from './SierpinskiOverlay';
 
 import { ROOMS } from '../../../types/rooms.types';
 
@@ -52,9 +55,20 @@ export function SovereignShell() {
   const {
     viewMode, toggleView, setPwaStatus, openOverlay, setOverlay,
     dynamicSlots, shipLocked, unlockShip,
+    skinTheme, setSkinTheme,
   } = useSovereignStore();
 
   const [unlocking, setUnlocking] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(() => {
+    // Show onboarding only once — check localStorage
+    try { return !localStorage.getItem('p31-onboarded'); } catch { return true; }
+  });
+  const [cartridgeDrawerOpen, setCartridgeDrawerOpen] = useState(false);
+
+  const handleOnboardingComplete = useCallback(() => {
+    setShowOnboarding(false);
+    try { localStorage.setItem('p31-onboarded', '1'); } catch {}
+  }, []);
 
   const handleUnlock = useCallback(() => {
     setUnlocking(true);
@@ -176,6 +190,11 @@ export function SovereignShell() {
       {/* Skip navigation link */}
       <a href="#main-content" className="skip-nav">Skip to content</a>
 
+      {/* ══════════ D4.7: ONBOARDING (first visit only) ══════════ */}
+      {showOnboarding && !shipLocked && (
+        <OnboardingSequence onComplete={handleOnboardingComplete} />
+      )}
+
       {/* ══════════ LOCK SCREEN ══════════ */}
       {shipLocked && (
         <div style={{
@@ -225,6 +244,15 @@ export function SovereignShell() {
       <main id="main-content" role="main" aria-label={activeLabel ? `${activeLabel} room` : 'Observatory home'}>
         {!shipLocked && renderOverlay()}
       </main>
+
+      {/* z-25: D4.2 Sierpinski fractal overlay — visible when cockpit + home + unlocked */}
+      <SierpinskiOverlay visible={!shipLocked && viewMode === 'cockpit' && !openOverlay && !showOnboarding} />
+
+      {/* z-42: D3.5 Cartridge drawer — swipeable horizontal drawer */}
+      <CartridgeDrawer
+        visible={cartridgeDrawerOpen && !shipLocked}
+        onClose={() => setCartridgeDrawerOpen(false)}
+      />
 
       {/* z-60: K4 Handshake overlay (M21) */}
       {!shipLocked && <HandshakeOverlay />}
@@ -289,19 +317,42 @@ export function SovereignShell() {
         </div>
 
         {/* Right: back button (when in overlay) + view toggle + troll toll */}
-        <nav aria-label="Room controls" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+        <nav aria-label="Room controls" className="nav-dock" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           {openOverlay && (
             <button
               type="button"
               onClick={() => setOverlay(null)}
-              className="sov-btn"
+              className="nav-btn"
               aria-label={`Close ${activeLabel ?? 'overlay'} and return home`}
               style={{ padding: '12px 16px', fontSize: '14px' }}
             >
               BACK
             </button>
           )}
-          <button type="button" onClick={toggleView} className="sov-btn" aria-label={`Switch to ${viewMode === 'cockpit' ? '2D diagnostic' : '3D cockpit'} view`} style={{
+          <button type="button" onClick={() => setCartridgeDrawerOpen(o => !o)}
+            className="nav-btn" aria-label="Toggle cartridge drawer"
+            style={{
+              padding: '12px 16px', fontSize: '11px',
+              border: `1px solid ${cartridgeDrawerOpen ? 'rgba(0,255,255,0.5)' : 'rgba(0,255,255,0.15)'}`,
+              color: cartridgeDrawerOpen ? '#00FFFF' : 'rgba(0,255,255,0.5)',
+              flexShrink: 0, letterSpacing: '0.06em', fontWeight: 600,
+            }}>
+            CRT
+          </button>
+          <button type="button" onClick={() => {
+            const cycle: SkinTheme[] = ['OPERATOR', 'KIDS', 'GRAY_ROCK'];
+            const next = cycle[(cycle.indexOf(skinTheme) + 1) % 3];
+            setSkinTheme(next);
+          }} className="nav-btn" aria-label={`Switch skin theme (current: ${skinTheme})`} style={{
+            padding: '12px 16px', fontSize: '11px',
+            border: '1px solid rgba(0,255,255,0.25)',
+            color: skinTheme === 'GRAY_ROCK' ? '#888' : skinTheme === 'KIDS' ? '#FFD700' : '#00FFFF',
+            flexShrink: 0, letterSpacing: '0.06em', fontWeight: 600,
+            textShadow: skinTheme === 'GRAY_ROCK' ? 'none' : `0 0 6px currentColor`,
+          } as React.CSSProperties}>
+            {skinTheme === 'OPERATOR' ? 'OP' : skinTheme === 'KIDS' ? 'KID' : 'GR'}
+          </button>
+          <button type="button" onClick={toggleView} className="nav-btn" aria-label={`Switch to ${viewMode === 'cockpit' ? '2D diagnostic' : '3D cockpit'} view`} style={{
             '--neon': '#00FFFF',
             padding: '12px 16px', fontSize: '14px',
             border: '1px solid rgba(0,255,255,0.35)',
@@ -314,7 +365,7 @@ export function SovereignShell() {
             href="https://phosphorus31.org/donate"
             target="_blank"
             rel="noopener noreferrer"
-            className="sov-btn"
+            className="nav-btn"
             style={{
               padding: '12px 14px', fontSize: '11px',
               border: '1px solid rgba(0,255,255,0.15)',

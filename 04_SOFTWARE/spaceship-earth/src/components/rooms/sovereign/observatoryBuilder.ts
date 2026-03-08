@@ -27,6 +27,8 @@ const DUST_COUNT = 200;
 const FIELD_COUNT = 600;
 
 import type { OrbitState } from './ImmersiveCockpit';
+import { useSovereignStore } from '../../../sovereign/useSovereignStore';
+import { SKIN_PROFILES, SKIN_LERP_RATE } from '../../../sovereign/skinProfiles';
 
 export interface ObservatoryHandle {
   update: (dt: number, time: number) => void;
@@ -53,6 +55,8 @@ export function buildObservatoryScene(
 
   // ── Edge wireframe with pulse shader ──
   const edgePulse = createEdgePulse(geo);
+  edgePulse.lines.matrixAutoUpdate = false;
+  edgePulse.lines.updateMatrix();
   roomGroup.add(edgePulse.lines);
 
   // ── Face panels ──
@@ -101,6 +105,7 @@ export function buildObservatoryScene(
 
     const mesh = new THREE.Mesh(triGeo, mat);
     mesh.userData = { faceIdx: fi, assignment };
+    // Face meshes animate (breathing scale) — keep matrixAutoUpdate=true
     roomGroup.add(mesh);
     faceMeshes.push(mesh);
   }
@@ -118,6 +123,8 @@ export function buildObservatoryScene(
     const sprite = new THREE.Sprite(spriteMat);
     sprite.position.copy(pos);
     sprite.scale.setScalar(0.35);
+    sprite.matrixAutoUpdate = false; // D4.3: static glow
+    sprite.updateMatrix();
     roomGroup.add(sprite);
   }
 
@@ -127,6 +134,8 @@ export function buildObservatoryScene(
 
   // ── Aurora band ──
   const aurora = createAurora(SHELL_RADIUS);
+  aurora.mesh.matrixAutoUpdate = false; // D4.3: static aurora band
+  aurora.mesh.updateMatrix();
   roomGroup.add(aurora.mesh);
 
   // ── Molecular starfield ──
@@ -342,6 +351,26 @@ export function buildObservatoryScene(
       // Arc pulse
       for (const arc of arcs) {
         arc.material.uniforms.uTime.value += dt;
+      }
+
+      // ── D1.2-D1.3: Polymorphic skin interpolation (transient — no React re-render) ──
+      const skinTheme = useSovereignStore.getState().skinTheme;
+      const profile = SKIN_PROFILES[skinTheme];
+      const skinAlpha = 1 - Math.exp(-SKIN_LERP_RATE * dt);
+
+      // D1.5: Bloom intensity (never unmount — lerp to 0 for GRAY_ROCK)
+      bloom.bloomPass.strength += (profile.bloomStrength - bloom.bloomPass.strength) * skinAlpha;
+      bloom.bloomPass.threshold += (profile.bloomThreshold - bloom.bloomPass.threshold) * skinAlpha;
+
+      // D1.3: Face material roughness
+      for (const m of faceMeshes) {
+        const mat = m.material as THREE.MeshPhysicalMaterial;
+        mat.roughness += (profile.roughness - mat.roughness) * skinAlpha;
+      }
+
+      // Fog density
+      if (scene.fog && scene.fog instanceof THREE.FogExp2) {
+        scene.fog.density += (profile.fogDensity - scene.fog.density) * skinAlpha;
       }
     },
 

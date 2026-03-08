@@ -41,7 +41,7 @@ const DEFAULT_FRAMEWORKS: Framework[] = [
   { id: 'f-tetrahedron', title: 'The Tetrahedron Protocol', snippet: 'The simplest rigid structure in 3D space. Four points, six edges. Every P31 Labs decision is anchored to four points: Technical Feasibility, Legal Compliance, Medical Necessity, Operational Security.', category: 'framework' },
   { id: 'f-spoons', title: 'Spoon Theory (Quantified)', snippet: 'Every morning you wake with a finite number of spoons. Every task costs spoons. When they are gone, they are gone. P31 quantifies this: the Spoon Counter tracks energy, the Buffer measures voltage, the Scope shows the dashboard.', category: 'framework' },
   { id: 'f-centaur', title: 'The Centaur Protocol', snippet: 'Human + AI symbiosis. The human provides direction, context, values, judgment. The AI provides execution, memory, synthesis, tirelessness. Neither is complete alone.', category: 'framework' },
-  { id: 'f-love', title: 'L.O.V.E. Economy', snippet: 'Locally Operated Value Exchange. You earn L.O.V.E. tokens through documented parental engagement. Proof of Care = sum(T_prox * Q_res) + Tasks_verified. Time proximity with 24-hour half-life decay.', category: 'framework' },
+  { id: 'f-love', title: 'L.O.V.E. Economy', snippet: 'Ledger of Ontological Volume and Entropy. You earn L.O.V.E. tokens through documented parental engagement. Proof of Care = sum(T_prox * Q_res) + Tasks_verified. Time proximity with 24-hour half-life decay.', category: 'framework' },
 ];
 
 const DEFAULT_SEEDS: Seed[] = [

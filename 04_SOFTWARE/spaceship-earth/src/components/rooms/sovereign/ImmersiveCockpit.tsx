@@ -3,7 +3,8 @@ import * as THREE from 'three';
 import { useSovereignStore } from '../../../sovereign/useSovereignStore';
 import { disposeThreeNode, quantumVertexShader, quantumFragmentShader, audioEngine } from '@p31/shared/sovereign';
 import { buildObservatoryScene, type ObservatoryHandle } from './observatoryBuilder';
-import type { SovereignRoom } from '../../../sovereign/types';
+import type { SovereignRoom, CameraMode } from '../../../sovereign/types';
+import { SKIN_PROFILES, SKIN_LERP_RATE } from '../../../sovereign/skinProfiles';
 
 // ── Per-screen color themes ──
 interface ScreenTheme {
@@ -69,6 +70,10 @@ const SCREEN_ROOMS: RoomPanel[][] = [
 const LIGHT_PINK = new THREE.Color('#FF00FF');
 const LIGHT_AMBER = new THREE.Color('#FFD700');
 const LIGHT_CYAN = new THREE.Color('#00FFFF');
+// Waveform status colors (pre-allocated for GC prevention in animation loop)
+const WF_RED = new THREE.Color('#FF4444');
+const WF_AMBER = new THREE.Color('#FFD700');
+const WF_CYAN = new THREE.Color('#00FFFF');
 
 // ── Shared orbit state type ──
 export interface OrbitState {
@@ -83,8 +88,115 @@ export interface OrbitState {
 
 const OBSERVATORY_ORBIT_DIST = 7.5;
 
+// ── D2.1: Tri-State Camera constraints per mode ──
+const DOME_DIST_MIN = 4;
+const DOME_DIST_MAX = 10;
+const DOME_RY_MIN = -Math.PI / 6;
+const DOME_RY_MAX = Math.PI / 4;
+
+const SCREEN_VIEW_DIST = 14; // outside the cage (screens at r=8), looking IN — backed up for wider view
+const SCREEN_RY_LOCK = 0.05; // near eye-level, slight look-up
+
+// Screen center angles (midpoint of each screen arc)
+const SCREEN_CENTER_ANGLES = [
+  Math.PI * 0.055 + Math.PI * 0.28,   // Screen A center
+  Math.PI * 0.055 + (Math.PI * 0.56 + Math.PI * 0.11) + Math.PI * 0.28,  // Screen B center
+  Math.PI * 0.055 + 2 * (Math.PI * 0.56 + Math.PI * 0.11) + Math.PI * 0.28, // Screen C center
+];
+
+// ── D2.6: Camera mode dock buttons ──
+const CAMERA_MODES: { mode: CameraMode; label: string; icon: string }[] = [
+  { mode: 'free', label: 'Free', icon: '\u2B22' },
+  { mode: 'dome', label: 'Dome', icon: '\u2B21' },
+  { mode: 'screen', label: 'Screen', icon: '\u25A8' },
+];
+
+const CameraModeButtons = () => {
+  const cameraMode = useSovereignStore((s) => s.cameraMode);
+  const setCameraMode = useSovereignStore((s) => s.setCameraMode);
+  const activeScreenIdx = useSovereignStore((s) => s.activeScreenIdx);
+  const setActiveScreenIdx = useSovereignStore((s) => s.setActiveScreenIdx);
+  const shipLocked = useSovereignStore((s) => s.shipLocked);
+
+  // Hide camera mode dock on lock screen
+  if (shipLocked) return null;
+
+  const handleMode = (mode: CameraMode) => {
+    setCameraMode(mode);
+    // Screen mode: store triggers flyTo in animation loop via a custom event
+    if (mode === 'screen') {
+      window.dispatchEvent(new CustomEvent('camera-mode-change', { detail: { mode, screenIdx: activeScreenIdx } }));
+    } else if (mode === 'dome') {
+      window.dispatchEvent(new CustomEvent('camera-mode-change', { detail: { mode } }));
+    } else {
+      window.dispatchEvent(new CustomEvent('camera-mode-change', { detail: { mode } }));
+    }
+  };
+
+  return (
+    <div style={{
+      position: 'absolute', bottom: 'max(16px, env(safe-area-inset-bottom, 0px))',
+      left: '50%', transform: 'translateX(-50%)', zIndex: 40,
+      display: 'flex', gap: 4, padding: '4px 6px',
+      background: 'rgba(0,0,0,0.7)', borderRadius: 12,
+      backdropFilter: 'blur(8px)', border: '1px solid rgba(255,255,255,0.1)',
+    }}>
+      {CAMERA_MODES.map(({ mode, label, icon }) => (
+        <button
+          key={mode}
+          type="button"
+          onClick={() => handleMode(mode)}
+          style={{
+            background: cameraMode === mode ? 'rgba(0,255,255,0.2)' : 'transparent',
+            border: cameraMode === mode ? '1px solid rgba(0,255,255,0.5)' : '1px solid transparent',
+            color: cameraMode === mode ? '#00FFFF' : 'rgba(255,255,255,0.5)',
+            borderRadius: 8, padding: '6px 14px',
+            fontFamily: 'monospace', fontSize: 12, fontWeight: 600,
+            cursor: 'pointer', transition: 'all 0.2s',
+            display: 'flex', alignItems: 'center', gap: 4,
+          }}
+        >
+          <span style={{ fontSize: 14 }}>{icon}</span>
+          {label}
+        </button>
+      ))}
+      {/* Screen mode: prev/next screen arrows */}
+      {cameraMode === 'screen' && (
+        <div style={{ display: 'flex', gap: 2, marginLeft: 4, borderLeft: '1px solid rgba(255,255,255,0.15)', paddingLeft: 6 }}>
+          <button
+            onClick={() => {
+              const next = (activeScreenIdx + 2) % 3;
+              setActiveScreenIdx(next);
+              window.dispatchEvent(new CustomEvent('camera-mode-change', { detail: { mode: 'screen', screenIdx: next } }));
+            }}
+            style={{
+              background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.5)',
+              cursor: 'pointer', fontFamily: 'monospace', fontSize: 14, padding: '4px 8px',
+            }}
+          type="button">&larr;</button>
+          <span style={{ color: '#00FFFF', fontFamily: 'monospace', fontSize: 11, display: 'flex', alignItems: 'center' }}>
+            {activeScreenIdx + 1}/3
+          </span>
+          <button
+            onClick={() => {
+              const next = (activeScreenIdx + 1) % 3;
+              setActiveScreenIdx(next);
+              window.dispatchEvent(new CustomEvent('camera-mode-change', { detail: { mode: 'screen', screenIdx: next } }));
+            }}
+            style={{
+              background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.5)',
+              cursor: 'pointer', fontFamily: 'monospace', fontSize: 14, padding: '4px 8px',
+            }}
+          type="button">&rarr;</button>
+        </div>
+      )}
+    </div>
+  );
+};
+
 export const ImmersiveCockpitUI = () => {
   const mountRef = useRef<HTMLDivElement>(null);
+  const scanlineRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const mount = mountRef.current;
@@ -162,7 +274,7 @@ export const ImmersiveCockpitUI = () => {
     waveformLine.visible = false;
     scene.add(waveformLine);
 
-    // ── M20: Spatial Radar node orbs (up to 16) ──
+    // ── M20/D1.6: Spatial Radar — InstancedMesh (single draw call) ──
     const MAX_SPATIAL_NODES = 16;
     const VALENCY_COLORS = [
       new THREE.Color('#FFFFFF'), // 0: Hydrogen — white
@@ -172,21 +284,30 @@ export const ImmersiveCockpitUI = () => {
       new THREE.Color('#BF5FFF'), // 4: default — violet
     ];
     const spatialOrbGeo = new THREE.SphereGeometry(0.15, 16, 12);
-    const spatialOrbs: THREE.Mesh[] = [];
-    const spatialOrbMaterials: THREE.MeshBasicMaterial[] = [];
+    const spatialOrbMat = new THREE.MeshBasicMaterial({
+      color: 0xFFFFFF,
+      transparent: true,
+      opacity: 0.8,
+      blending: THREE.AdditiveBlending,
+    });
+    const spatialOrbInstanced = new THREE.InstancedMesh(spatialOrbGeo, spatialOrbMat, MAX_SPATIAL_NODES);
+    spatialOrbInstanced.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+    // Per-instance color via InstancedBufferAttribute
+    const spatialOrbColorAttr = new THREE.InstancedBufferAttribute(
+      new Float32Array(MAX_SPATIAL_NODES * 3), 3,
+    );
+    spatialOrbColorAttr.setUsage(THREE.DynamicDrawUsage);
+    spatialOrbInstanced.instanceColor = spatialOrbColorAttr;
+    // Pre-allocated dummy for matrix updates (D1.7: zero alloc in animation loop)
+    const _orbDummy = new THREE.Object3D();
     for (let i = 0; i < MAX_SPATIAL_NODES; i++) {
-      const mat = new THREE.MeshBasicMaterial({
-        color: 0xFFFFFF,
-        transparent: true,
-        opacity: 0,
-        blending: THREE.AdditiveBlending,
-      });
-      const mesh = new THREE.Mesh(spatialOrbGeo, mat);
-      mesh.visible = false;
-      scene.add(mesh);
-      spatialOrbs.push(mesh);
-      spatialOrbMaterials.push(mat);
+      _orbDummy.scale.setScalar(0);
+      _orbDummy.updateMatrix();
+      spatialOrbInstanced.setMatrixAt(i, _orbDummy.matrix);
     }
+    spatialOrbInstanced.count = MAX_SPATIAL_NODES;
+    spatialOrbInstanced.frustumCulled = false; // we manage visibility via scale=0
+    scene.add(spatialOrbInstanced);
 
     // ── M21: Bond line (camera → bonded orb) ──
     const bondLinePositions = new Float32Array(6); // 2 points × 3 components
@@ -285,6 +406,8 @@ export const ImmersiveCockpitUI = () => {
     const screenMeshes = screenGeometries.map((geo, i) => {
       const mesh = new THREE.Mesh(geo, screenMaterials[i]);
       mesh.position.set(0, 0, 0);
+      mesh.matrixAutoUpdate = false; // D4.3: static screen geometry
+      mesh.updateMatrix();
       roomGroup.add(mesh);
       return mesh;
     });
@@ -304,7 +427,11 @@ export const ImmersiveCockpitUI = () => {
         lastMoveTs = e.timeStamp;
         orbit.rx += drx;
         orbit.ry += dry;
-        orbit.ry = Math.max(-Math.PI / 3, Math.min(Math.PI / 3, orbit.ry));
+        // D2.1: Mode-aware ry clamp
+        const cm = useSovereignStore.getState().cameraMode;
+        const ryLo = cm === 'dome' ? DOME_RY_MIN : -Math.PI / 3;
+        const ryHi = cm === 'dome' ? DOME_RY_MAX : Math.PI / 3;
+        orbit.ry = Math.max(ryLo, Math.min(ryHi, orbit.ry));
         // Velocity stored as rad/s for frame-rate-independent inertia.
         orbit.vx = (drx / dtMove) * 0.85;
         orbit.vy = (dry / dtMove) * 0.85;
@@ -373,11 +500,27 @@ export const ImmersiveCockpitUI = () => {
     };
     const handleWheel = (e: WheelEvent) => {
       e.preventDefault();
+      const cm = useSovereignStore.getState().cameraMode;
+      // Screen mode: wheel scrolls between screens, not zoom
+      if (cm === 'screen') {
+        if (Math.abs(e.deltaY) > 20) {
+          const st = useSovereignStore.getState();
+          const dir = e.deltaY > 0 ? 1 : -1;
+          const nextIdx = (st.activeScreenIdx + dir + 3) % 3;
+          useSovereignStore.getState().setActiveScreenIdx(nextIdx);
+          orbit.flyFrom = { rx: orbit.rx, ry: orbit.ry, dist: orbit.dist };
+          orbit.flyTo = { rx: SCREEN_CENTER_ANGLES[nextIdx], ry: SCREEN_RY_LOCK, dist: SCREEN_VIEW_DIST };
+          orbit.flyT = 0;
+        }
+        return;
+      }
       const d = e.deltaY * 0.005;
       const dtWheel = Math.max(1 / 60, (e.timeStamp - lastWheelTs) / 1000);
       lastWheelTs = e.timeStamp;
       orbit.dist += d;
-      orbit.dist = Math.max(0.5, Math.min(200, orbit.dist));
+      const dMin = cm === 'dome' ? DOME_DIST_MIN : 0.5;
+      const dMax = cm === 'dome' ? DOME_DIST_MAX : 200;
+      orbit.dist = Math.max(dMin, Math.min(dMax, orbit.dist));
       orbit.vDist = (d / dtWheel) * 0.9;
       orbit.flyTo = null; orbit.flyFrom = null;
     };
@@ -387,27 +530,111 @@ export const ImmersiveCockpitUI = () => {
     canvas.addEventListener('click', handleClick);
     canvas.addEventListener('wheel', handleWheel, { passive: false });
 
-    // Touch support for Android tablets
+    // Touch support — drag-to-rotate + pinch-to-zoom + tap-to-click
     let touchStartX = 0, touchStartY = 0;
+    let touchLastX = 0, touchLastY = 0;
+    let touchMoved = false;
+    let lastPinchDist = 0;
+    let lastTouchMoveTs = 0;
+
     const handleTouchStart = (e: TouchEvent) => {
+      e.preventDefault();
       if (e.touches.length === 1) {
-        touchStartX = e.touches[0].clientX;
-        touchStartY = e.touches[0].clientY;
+        touchStartX = touchLastX = e.touches[0].clientX;
+        touchStartY = touchLastY = e.touches[0].clientY;
+        touchMoved = false;
+        orbit.down = true;
+        orbit.flyTo = null; orbit.flyFrom = null;
+        lastTouchMoveTs = e.timeStamp;
+      } else if (e.touches.length === 2) {
+        const dx = e.touches[0].clientX - e.touches[1].clientX;
+        const dy = e.touches[0].clientY - e.touches[1].clientY;
+        lastPinchDist = Math.sqrt(dx * dx + dy * dy);
       }
     };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      e.preventDefault();
+      const cm = useSovereignStore.getState().cameraMode;
+      if (e.touches.length === 2 && lastPinchDist > 0) {
+        // Screen mode: pinch disabled (dist locked)
+        if (cm === 'screen') { lastPinchDist = 0; return; }
+        // Pinch-to-zoom
+        const dx = e.touches[0].clientX - e.touches[1].clientX;
+        const dy = e.touches[0].clientY - e.touches[1].clientY;
+        const d = Math.sqrt(dx * dx + dy * dy);
+        const rawScale = lastPinchDist / d;
+        // Dampen pinch: lerp towards 1.0 so small finger jitter doesn't whip the zoom
+        const scale = 1.0 + (rawScale - 1.0) * 0.5;
+        orbit.dist *= scale;
+        const dMin = cm === 'dome' ? DOME_DIST_MIN : 0.5;
+        const dMax = cm === 'dome' ? DOME_DIST_MAX : 200;
+        orbit.dist = Math.max(dMin, Math.min(dMax, orbit.dist));
+        orbit.flyTo = null; orbit.flyFrom = null;
+        lastPinchDist = d;
+        touchMoved = true;
+        return;
+      }
+      if (e.touches.length === 1) {
+        const cx = e.touches[0].clientX, cy = e.touches[0].clientY;
+        const dx = cx - touchLastX, dy = cy - touchLastY;
+        if (Math.abs(cx - touchStartX) > 8 || Math.abs(cy - touchStartY) > 8) touchMoved = true;
+        // Touch uses softer coefficients than mouse to avoid jumpiness
+        const drx = -dx * 0.004, dry = dy * 0.003;
+        const dtMove = Math.max(1 / 240, (e.timeStamp - lastTouchMoveTs) / 1000);
+        lastTouchMoveTs = e.timeStamp;
+        orbit.rx += drx;
+        orbit.ry += dry;
+        // D2.1: Mode-aware ry clamp
+        const ryLo = cm === 'dome' ? DOME_RY_MIN : -Math.PI / 3;
+        const ryHi = cm === 'dome' ? DOME_RY_MAX : Math.PI / 3;
+        orbit.ry = Math.max(ryLo, Math.min(ryHi, orbit.ry));
+        // Lower velocity multiplier + cap for controlled inertia
+        const rawVx = (drx / dtMove) * 0.45;
+        const rawVy = (dry / dtMove) * 0.45;
+        const maxV = 3.0; // rad/s cap
+        orbit.vx = Math.max(-maxV, Math.min(maxV, rawVx));
+        orbit.vy = Math.max(-maxV, Math.min(maxV, rawVy));
+        touchLastX = cx; touchLastY = cy;
+      }
+    };
+
     const handleTouchEnd = (e: TouchEvent) => {
-      if (e.changedTouches.length === 1) {
-        const dx = e.changedTouches[0].clientX - touchStartX;
-        const dy = e.changedTouches[0].clientY - touchStartY;
-        // Only treat as tap if minimal movement
-        if (Math.abs(dx) < 15 && Math.abs(dy) < 15) {
-          orbit.vx = 0; orbit.vy = 0; orbit.vDist = 0;
-          handleScreenClick(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
-        }
+      orbit.down = false;
+      if (e.changedTouches.length === 1 && !touchMoved) {
+        orbit.vx = 0; orbit.vy = 0; orbit.vDist = 0;
+        handleScreenClick(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
+      } else if (!touchMoved || Math.hypot(orbit.vx, orbit.vy) < 0.15) {
+        orbit.vx = 0; orbit.vy = 0;
       }
+      lastPinchDist = 0;
     };
-    canvas.addEventListener('touchstart', handleTouchStart, { passive: true });
+
+    canvas.style.touchAction = 'none';
+    canvas.addEventListener('touchstart', handleTouchStart, { passive: false });
+    canvas.addEventListener('touchmove', handleTouchMove, { passive: false });
     canvas.addEventListener('touchend', handleTouchEnd);
+
+    // ── D2.6: Camera mode change listener (flyTo on mode switch) ──
+    const handleCameraModeChange = (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      const mode: CameraMode = detail.mode;
+      if (mode === 'dome') {
+        // Fly to dome orbit distance, centered
+        orbit.flyFrom = { rx: orbit.rx, ry: orbit.ry, dist: orbit.dist };
+        orbit.flyTo = { rx: orbit.rx, ry: 0.15, dist: OBSERVATORY_ORBIT_DIST };
+        orbit.flyT = 0;
+        orbit.vx = 0; orbit.vy = 0; orbit.vDist = 0;
+      } else if (mode === 'screen') {
+        const idx = detail.screenIdx ?? 0;
+        orbit.flyFrom = { rx: orbit.rx, ry: orbit.ry, dist: orbit.dist };
+        orbit.flyTo = { rx: SCREEN_CENTER_ANGLES[idx], ry: SCREEN_RY_LOCK, dist: SCREEN_VIEW_DIST };
+        orbit.flyT = 0;
+        orbit.vx = 0; orbit.vy = 0; orbit.vDist = 0;
+      }
+      // 'free' — no flyTo, just release constraints
+    };
+    window.addEventListener('camera-mode-change', handleCameraModeChange);
 
     // Hover detection — raycast on mousemove to highlight screen columns
     const hoverRaycaster = new THREE.Raycaster();
@@ -1130,6 +1357,24 @@ export const ImmersiveCockpitUI = () => {
       ctx.restore();
     };
 
+    // ── D4.5: On-demand rendering — idle detection ──
+    // After IDLE_TIMEOUT seconds of no interaction, drop to low-power mode (skip frames).
+    // Any interaction resets the idle timer via invalidate().
+    const IDLE_TIMEOUT = 5; // seconds before entering low-power mode
+    const IDLE_FRAME_SKIP = 3; // render every Nth frame when idle
+    let lastInteractionTime = performance.now() / 1000;
+    let frameCounter = 0;
+
+    const invalidateRender = () => { lastInteractionTime = performance.now() / 1000; };
+
+    // Wire invalidate to all interaction events
+    const invalidateEvents = ['mousedown', 'mousemove', 'wheel', 'touchstart', 'touchmove', 'keydown'];
+    for (const evt of invalidateEvents) {
+      window.addEventListener(evt, invalidateRender, { passive: true });
+    }
+    // Also invalidate on store changes (theme, overlay, camera mode)
+    const unsubInvalidate = useSovereignStore.subscribe(invalidateRender);
+
     // ── Animation loop ──
     const clock = new THREE.Clock();
     const SCREEN_UPDATE_HZ = 12;
@@ -1139,7 +1384,25 @@ export const ImmersiveCockpitUI = () => {
     renderer.setAnimationLoop(() => {
       const dt = Math.min(0.05, clock.getDelta());
       const time = clock.elapsedTime;
+
+      // ── D4.5: On-demand rendering — skip frames when idle ──
+      frameCounter++;
+      const nowSec = performance.now() / 1000;
+      const isIdle = (nowSec - lastInteractionTime) > IDLE_TIMEOUT
+        && !orbit.down && !orbit.flyTo
+        && Math.abs(orbit.vx) < 0.001 && Math.abs(orbit.vy) < 0.001;
+      if (isIdle && (frameCounter % IDLE_FRAME_SKIP !== 0)) {
+        return; // skip this frame — low-power mode
+      }
+
       const state = useSovereignStore.getState();
+
+      // ── D2.1: Mode-specific orbit bounds ──
+      const camMode = state.cameraMode;
+      const ryMin = camMode === 'dome' ? DOME_RY_MIN : -Math.PI / 3;
+      const ryMax = camMode === 'dome' ? DOME_RY_MAX : Math.PI / 3;
+      const distMin = camMode === 'dome' ? DOME_DIST_MIN : 0.5;
+      const distMax = camMode === 'dome' ? DOME_DIST_MAX : 200;
 
       // ── Fly-to animation (cockpit-level) ──
       if (orbit.flyTo && orbit.flyFrom) {
@@ -1156,21 +1419,27 @@ export const ImmersiveCockpitUI = () => {
         // Inertia: apply velocity and decay (organic drift on release)
         orbit.rx += orbit.vx * dt;
         orbit.ry += orbit.vy * dt;
-        orbit.ry = Math.max(-Math.PI / 3, Math.min(Math.PI / 3, orbit.ry));
+        orbit.ry = Math.max(ryMin, Math.min(ryMax, orbit.ry));
         orbit.dist += orbit.vDist * dt;
-        orbit.dist = Math.max(0.5, Math.min(200, orbit.dist));
-        const angFriction = Math.exp(-7.5 * dt);
-        const zoomFriction = Math.exp(-9.0 * dt);
+        orbit.dist = Math.max(distMin, Math.min(distMax, orbit.dist));
+        const angFriction = Math.exp(-10.0 * dt);
+        const zoomFriction = Math.exp(-12.0 * dt);
         orbit.vx *= angFriction;
         orbit.vy *= angFriction;
         orbit.vDist *= zoomFriction;
         if (Math.abs(orbit.vx) < 0.0005) orbit.vx = 0;
         if (Math.abs(orbit.vy) < 0.0005) orbit.vy = 0;
         if (Math.abs(orbit.vDist) < 0.001) orbit.vDist = 0;
+
+        // ── D2.4: Screen Mode — soft-lock ry toward eye level, dist toward reading distance ──
+        if (camMode === 'screen' && !orbit.flyTo) {
+          orbit.ry += (SCREEN_RY_LOCK - orbit.ry) * (1 - Math.exp(-6 * dt));
+          orbit.dist += (SCREEN_VIEW_DIST - orbit.dist) * (1 - Math.exp(-6 * dt));
+        }
       }
 
       // Camera follow: soft spring-like easing (less mechanical)
-      const k = orbit.down ? 22 : 10;
+      const k = orbit.down ? 14 : 8;
       const alpha = 1 - Math.exp(-k * dt);
       orbit.trx += (orbit.rx - orbit.trx) * alpha;
       orbit.try_ += (orbit.ry - orbit.try_) * alpha;
@@ -1187,6 +1456,16 @@ export const ImmersiveCockpitUI = () => {
       }
 
       stars.rotation.y = time * 0.01;
+
+      // ── D1.2: Polymorphic skin — starfield + scanline + waveform interpolation ──
+      const skinProfile = SKIN_PROFILES[state.skinTheme];
+      const skinA = 1 - Math.exp(-SKIN_LERP_RATE * dt);
+      const starMat = stars.material as THREE.PointsMaterial;
+      starMat.opacity += (skinProfile.starOpacity - starMat.opacity) * skinA;
+      if (scanlineRef.current) {
+        const cur = parseFloat(scanlineRef.current.style.opacity) || 0;
+        scanlineRef.current.style.opacity = String(cur + (skinProfile.scanlineOpacity - cur) * skinA);
+      }
 
       // ── M18: Update somatic waveform from store ──
       if (state.somaticTetherStatus !== 'disconnected') {
@@ -1206,59 +1485,68 @@ export const ImmersiveCockpitUI = () => {
         // Color shift: green=active, amber=calibrating, red=stress
         const wfMat = waveformLine.material as THREE.LineBasicMaterial;
         if (state.somaticTetherStatus === 'stress') {
-          wfMat.color.lerp(new THREE.Color('#FF4444'), 0.1);
+          wfMat.color.lerp(WF_RED, 0.1);
         } else if (state.somaticTetherStatus === 'calibrating') {
-          wfMat.color.lerp(new THREE.Color('#FFD700'), 0.1);
+          wfMat.color.lerp(WF_AMBER, 0.1);
         } else {
-          wfMat.color.lerp(new THREE.Color('#00FFFF'), 0.1);
+          wfMat.color.lerp(WF_CYAN, 0.1);
         }
       } else {
         waveformLine.visible = false;
       }
 
-      // ── M20: Update spatial radar orbs (RSSI-mapped) ──
+      // ── M20/D1.6: Update spatial radar InstancedMesh (RSSI-mapped) ──
       const nodeList = state.spatialNodeList;
       const spatialCount = nodeList.length;
+      let _bondTargetX = 0, _bondTargetY = 0, _bondTargetZ = 0;
       for (let i = 0; i < MAX_SPATIAL_NODES; i++) {
         if (i < spatialCount) {
           const node = nodeList[i];
-          spatialOrbs[i].visible = true;
 
           // Map RSSI to radius: strong (-50) → close (2), weak (-85) → far (8)
-          const rssiNorm = Math.max(0, Math.min(1, (node.rssi + 85) / 35)); // 0=far, 1=close
-          const radius = 8 - rssiNorm * 6; // 2 to 8
+          const rssiNorm = Math.max(0, Math.min(1, (node.rssi + 85) / 35));
+          const radius = 8 - rssiNorm * 6;
           const angle = (i / Math.max(spatialCount, 1)) * Math.PI * 2;
 
-          spatialOrbs[i].position.set(
-            Math.cos(angle + time * 0.1) * radius,
-            Math.sin(time * 0.5 + i) * 0.3,
-            Math.sin(angle + time * 0.1) * radius,
-          );
+          const px = Math.cos(angle + time * 0.1) * radius;
+          const py = Math.sin(time * 0.5 + i) * 0.3;
+          const pz = Math.sin(angle + time * 0.1) * radius;
 
-          // Scale by signal strength: strong → large (1.5), weak → small (0.4)
+          // Scale by signal strength
           const scale = 0.4 + rssiNorm * 1.1;
-          spatialOrbs[i].scale.setScalar(scale);
+          _orbDummy.position.set(px, py, pz);
+          _orbDummy.scale.setScalar(scale);
+          _orbDummy.updateMatrix();
+          spatialOrbInstanced.setMatrixAt(i, _orbDummy.matrix);
 
-          // Color by valency
+          // Per-instance color by valency
           const colorIdx = Math.min(node.valency, VALENCY_COLORS.length - 1);
-          spatialOrbMaterials[i].color.copy(VALENCY_COLORS[colorIdx]);
-          spatialOrbMaterials[i].opacity = 0.6 + 0.3 * Math.sin(time * 2 + i);
+          const vc = VALENCY_COLORS[colorIdx];
+          spatialOrbColorAttr.setXYZ(i, vc.r, vc.g, vc.b);
+
+          // Cache first orb position for bond line
+          if (i === 0) { _bondTargetX = px; _bondTargetY = py; _bondTargetZ = pz; }
         } else {
-          spatialOrbs[i].visible = false;
+          // Hidden: scale 0
+          _orbDummy.position.set(0, 0, 0);
+          _orbDummy.scale.setScalar(0);
+          _orbDummy.updateMatrix();
+          spatialOrbInstanced.setMatrixAt(i, _orbDummy.matrix);
         }
       }
+      spatialOrbInstanced.instanceMatrix.needsUpdate = true;
+      spatialOrbColorAttr.needsUpdate = true;
+      // Pulse global opacity
+      spatialOrbMat.opacity = spatialCount > 0 ? 0.6 + 0.3 * Math.sin(time * 2) : 0;
 
       // ── M21: Bond line (handshake active → glowing line to bonded orb) ──
       if (bondLine) {
         if (state.handshakeActive && spatialCount > 0) {
           bondLine.visible = true;
-          // Connect to nearest (first) orb
-          const targetPos = spatialOrbs[0].position;
           const posArr = bondLineGeo.attributes.position.array as Float32Array;
-          posArr[0] = 0; posArr[1] = 0; posArr[2] = 5; // camera-ish position
-          posArr[3] = targetPos.x; posArr[4] = targetPos.y; posArr[5] = targetPos.z;
+          posArr[0] = 0; posArr[1] = 0; posArr[2] = 5;
+          posArr[3] = _bondTargetX; posArr[4] = _bondTargetY; posArr[5] = _bondTargetZ;
           bondLineGeo.attributes.position.needsUpdate = true;
-          // Pulse opacity
           (bondLine.material as THREE.LineBasicMaterial).opacity = 0.5 + 0.4 * Math.sin(time * 4);
         } else {
           bondLine.visible = false;
@@ -1312,7 +1600,14 @@ export const ImmersiveCockpitUI = () => {
       canvas.removeEventListener('click', handleClick);
       canvas.removeEventListener('wheel', handleWheel);
       canvas.removeEventListener('touchstart', handleTouchStart);
+      canvas.removeEventListener('touchmove', handleTouchMove);
       canvas.removeEventListener('touchend', handleTouchEnd);
+      window.removeEventListener('camera-mode-change', handleCameraModeChange);
+      // D4.5: Clean up invalidate listeners
+      for (const evt of invalidateEvents) {
+        window.removeEventListener(evt, invalidateRender);
+      }
+      unsubInvalidate();
       renderer.domElement.remove();
       renderer.dispose();
       scene.clear();
@@ -1323,8 +1618,7 @@ export const ImmersiveCockpitUI = () => {
       for (const canvas of screenCanvases) { canvas.width = 0; canvas.height = 0; }
       waveformGeo.dispose(); (waveformLine.material as THREE.Material).dispose();
       bondLineGeo.dispose(); (bondLine.material as THREE.Material).dispose();
-      spatialOrbGeo.dispose();
-      for (const mat of spatialOrbMaterials) mat.dispose();
+      spatialOrbInstanced.dispose(); spatialOrbGeo.dispose(); spatialOrbMat.dispose();
       disposeThreeNode(roomGroup); p31Material.dispose(); starGeo.dispose();
     };
   }, []);
@@ -1332,7 +1626,7 @@ export const ImmersiveCockpitUI = () => {
   return (
     <>
       <div ref={mountRef} style={{ position: 'absolute', inset: 0, zIndex: 0 }} />
-      <div style={{
+      <div ref={scanlineRef} style={{
         pointerEvents: 'none', position: 'absolute', inset: 0, zIndex: 20, opacity: 0.3,
         background: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.15) 2px, rgba(0,0,0,0.15) 4px)',
       }} />
@@ -1340,6 +1634,8 @@ export const ImmersiveCockpitUI = () => {
         pointerEvents: 'none', position: 'absolute', inset: 0, zIndex: 30,
         boxShadow: 'inset 0 0 150px rgba(0,0,0,0.8)',
       }} />
+      {/* D2.6: Tri-State Camera mode buttons — bottom dock, thumb zone */}
+      <CameraModeButtons />
     </>
   );
 };

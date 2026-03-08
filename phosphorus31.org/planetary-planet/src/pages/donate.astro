@@ -1,0 +1,241 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout>
+  <main class="animate-[fadeIn_0.4s_ease-out] bg-white min-h-screen pb-24">
+    {/* Header */}
+    <div class="bg-espresso text-cloud pt-32 pb-20 px-6">
+      <div class="max-w-5xl mx-auto">
+        <div class="text-butter font-bold tracking-widest uppercase text-sm mb-4">Support P31 Labs</div>
+        <h1 class="text-5xl font-heading font-black mb-6">Every atom placed is a connection.</h1>
+        <p class="text-xl opacity-80 max-w-2xl">
+          Your donation directly funds free, open-source assistive technology for neurodivergent families. No middleman.
+        </p>
+      </div>
+    </div>
+
+    <div class="max-w-5xl mx-auto px-6 -mt-10">
+      {/* Primary Donation Card */}
+      <div class="bg-white p-8 md:p-12 rounded-2xl shadow-xl border border-cloud mb-16">
+        <div class="text-center mb-8">
+          <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-teal-600 via-coral-500 to-butter rounded-2xl mb-6">
+            <span class="text-4xl font-heading font-black text-white">P</span>
+          </div>
+          <h2 class="text-3xl font-heading font-black text-espresso mb-3">Donate to P31 Labs</h2>
+          <p class="text-espresso/60 max-w-lg mx-auto">
+            Choose an amount below. Payments processed securely via Stripe.
+          </p>
+        </div>
+
+        {/* Amount Selection */}
+        <div class="max-w-md mx-auto">
+          <div class="grid grid-cols-4 gap-3 mb-4" id="amountGrid">
+            <button data-amount="500" class="amount-btn active bg-teal-600 text-white font-bold py-3 rounded-xl text-center transition-all hover:scale-105 cursor-pointer border-2 border-teal-600">$5</button>
+            <button data-amount="1000" class="amount-btn bg-white text-espresso font-bold py-3 rounded-xl text-center transition-all hover:scale-105 cursor-pointer border-2 border-cloud hover:border-teal-600">$10</button>
+            <button data-amount="2500" class="amount-btn bg-white text-espresso font-bold py-3 rounded-xl text-center transition-all hover:scale-105 cursor-pointer border-2 border-cloud hover:border-teal-600">$25</button>
+            <button data-amount="5000" class="amount-btn bg-white text-espresso font-bold py-3 rounded-xl text-center transition-all hover:scale-105 cursor-pointer border-2 border-cloud hover:border-teal-600">$50</button>
+          </div>
+
+          <div class="relative mb-6">
+            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-espresso/40 font-bold text-lg">$</span>
+            <input
+              type="number"
+              id="customAmount"
+              min="1"
+              step="1"
+              placeholder="Custom amount"
+              class="w-full pl-9 pr-4 py-3 rounded-xl border-2 border-cloud focus:border-teal-600 focus:outline-none text-lg font-bold text-espresso transition-colors"
+            />
+          </div>
+
+          <button
+            id="donateBtn"
+            class="w-full bg-teal-600 text-white font-bold px-8 py-4 rounded-xl hover:bg-teal-700 transition-colors text-lg cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Donate $5
+          </button>
+
+          <p class="text-center text-sm text-espresso/40 mt-4">
+            Secure payment via Stripe. You will receive an email receipt.
+          </p>
+        </div>
+      </div>
+
+      {/* What Your Donation Funds */}
+      <div class="mb-16">
+        <h2 class="text-3xl font-heading font-black text-espresso mb-8">Where It Goes</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div class="glass-box p-8 rounded-2xl border-l-4 border-l-teal-600">
+            <div class="text-3xl mb-4">&#x1F9EA;</div>
+            <h3 class="font-heading font-bold text-xl text-espresso mb-3">BONDING</h3>
+            <p class="text-espresso/70">
+              A multiplayer chemistry game that lets separated parents play alongside their kids in real time. Every atom placed is a timestamped engagement record.
+            </p>
+          </div>
+          <div class="glass-box p-8 rounded-2xl border-l-4 border-l-coral-500">
+            <div class="text-3xl mb-4">&#x1F680;</div>
+            <h3 class="font-heading font-bold text-xl text-espresso mb-3">Spaceship Earth</h3>
+            <p class="text-espresso/70">
+              A somatic regulation cockpit for AuDHD adults. Spoon tracking, breathing pacer, sensory buffer zone, and executive function tools — all in one place.
+            </p>
+          </div>
+          <div class="glass-box p-8 rounded-2xl border-l-4 border-l-butter">
+            <div class="text-3xl mb-4">&#x1F4E1;</div>
+            <h3 class="font-heading font-bold text-xl text-espresso mb-3">Infrastructure</h3>
+            <p class="text-espresso/70">
+              Hosting, relay servers, domain costs, and development tools. Everything runs on Cloudflare Workers and costs less than a coffee subscription.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Organization Info */}
+      <div class="bg-cloud/50 rounded-3xl p-8 md:p-12 mb-16">
+        <h2 class="text-3xl font-heading font-black text-espresso mb-8">Organization</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="bg-white p-6 rounded-xl border border-cloud">
+            <div class="text-sm font-bold text-espresso/50 uppercase mb-2">Entity</div>
+            <div class="text-lg font-bold text-espresso">P31 Labs</div>
+            <div class="text-sm text-espresso/60 mt-1">SE Georgia</div>
+          </div>
+          <div class="bg-white p-6 rounded-xl border border-cloud">
+            <div class="text-sm font-bold text-espresso/50 uppercase mb-2">Receipt</div>
+            <div class="text-lg font-bold text-espresso">Automatic via Stripe</div>
+            <div class="text-sm text-espresso/60 mt-1">Email receipt sent immediately</div>
+          </div>
+          <div class="bg-white p-6 rounded-xl border border-cloud">
+            <div class="text-sm font-bold text-espresso/50 uppercase mb-2">Source Code</div>
+            <a href="https://github.com/p31labs" target="_blank" rel="noopener noreferrer" class="text-lg font-bold text-teal-600 hover:underline">github.com/p31labs</a>
+            <div class="text-sm text-espresso/60 mt-1">All repositories public</div>
+          </div>
+          <div class="bg-white p-6 rounded-xl border border-cloud">
+            <div class="text-sm font-bold text-espresso/50 uppercase mb-2">Transparency</div>
+            <a href="/transparency" class="text-lg font-bold text-teal-600 hover:underline">View Finances</a>
+            <div class="text-sm text-espresso/60 mt-1">Open books policy</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Other Ways */}
+      <div class="text-center mb-16">
+        <h2 class="text-2xl font-heading font-black text-espresso mb-4">Other Ways to Help</h2>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center text-espresso/70">
+          <div class="glass-box p-6 rounded-xl flex-1 max-w-xs">
+            <div class="text-2xl mb-2">&#x2B50;</div>
+            <h3 class="font-bold text-espresso mb-1">Star on GitHub</h3>
+            <p class="text-sm">Visibility helps us reach more families.</p>
+            <a href="https://github.com/p31labs" target="_blank" rel="noopener noreferrer" class="text-teal-600 font-bold text-sm hover:underline mt-2 inline-block">github.com/p31labs</a>
+          </div>
+          <div class="glass-box p-6 rounded-xl flex-1 max-w-xs">
+            <div class="text-2xl mb-2">&#x1F4AC;</div>
+            <h3 class="font-bold text-espresso mb-1">Spread the Word</h3>
+            <p class="text-sm">Tell a family who might need these tools.</p>
+          </div>
+          <div class="glass-box p-6 rounded-xl flex-1 max-w-xs">
+            <div class="text-2xl mb-2">&#x1F527;</div>
+            <h3 class="font-bold text-espresso mb-1">Contribute Code</h3>
+            <p class="text-sm">All repos are open source and accepting PRs.</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Contact */}
+      <div class="text-center">
+        <p class="text-espresso/50 text-sm">
+          Questions? <a href="mailto:will@p31ca.org" class="text-teal-600 font-bold hover:underline">will@p31ca.org</a>
+        </p>
+      </div>
+    </div>
+  </main>
+
+  <script src="https://js.stripe.com/v3/"></script>
+  <script is:inline>
+    const STRIPE_PK = 'pk_live_51T6z3U4Kt3K4WuBDDv6FjjDIygpXjRFMZ5ow28pDiVegBZNOaHffjJCtosLRdaVn0PBmO4rTCYNdoMONcIr5MAyp005FUET7VZ';
+    const API_URL = 'https://donate-api.phosphorus31.org';
+
+    let selectedAmount = 500; // cents
+    const stripe = Stripe(STRIPE_PK);
+
+    // Amount button selection
+    document.querySelectorAll('.amount-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const amount = parseInt(btn.dataset.amount);
+        selectedAmount = amount;
+        document.getElementById('customAmount').value = '';
+        updateUI();
+      });
+    });
+
+    // Custom amount input
+    document.getElementById('customAmount').addEventListener('input', (e) => {
+      const val = parseInt(e.target.value);
+      if (val > 0) {
+        selectedAmount = val * 100;
+        // Deselect preset buttons
+        document.querySelectorAll('.amount-btn').forEach(b => {
+          b.classList.remove('active', 'bg-teal-600', 'text-white', 'border-teal-600');
+          b.classList.add('bg-white', 'text-espresso', 'border-cloud');
+        });
+      }
+      updateDonateButton();
+    });
+
+    function updateUI() {
+      document.querySelectorAll('.amount-btn').forEach(b => {
+        const isActive = parseInt(b.dataset.amount) === selectedAmount;
+        b.classList.toggle('active', isActive);
+        b.classList.toggle('bg-teal-600', isActive);
+        b.classList.toggle('text-white', isActive);
+        b.classList.toggle('border-teal-600', isActive);
+        b.classList.toggle('bg-white', !isActive);
+        b.classList.toggle('text-espresso', !isActive);
+        b.classList.toggle('border-cloud', !isActive);
+      });
+      updateDonateButton();
+    }
+
+    function updateDonateButton() {
+      const btn = document.getElementById('donateBtn');
+      const dollars = (selectedAmount / 100).toFixed(selectedAmount % 100 === 0 ? 0 : 2);
+      btn.textContent = `Donate $${dollars}`;
+    }
+
+    // Checkout
+    document.getElementById('donateBtn').addEventListener('click', async () => {
+      const btn = document.getElementById('donateBtn');
+      btn.disabled = true;
+      btn.textContent = 'Redirecting to Stripe...';
+
+      try {
+        const res = await fetch(API_URL + '/create-checkout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            amount: selectedAmount,
+            currency: 'usd',
+            successUrl: window.location.origin + '/donate?success=1',
+            cancelUrl: window.location.origin + '/donate',
+          }),
+        });
+
+        if (!res.ok) throw new Error('Failed to create checkout session');
+        const { sessionId } = await res.json();
+        await stripe.redirectToCheckout({ sessionId });
+      } catch (err) {
+        btn.disabled = false;
+        updateDonateButton();
+        alert('Something went wrong. Please try again or contact will@p31ca.org.');
+      }
+    });
+
+    // Success message
+    if (new URLSearchParams(window.location.search).get('success') === '1') {
+      const card = document.querySelector('.shadow-xl');
+      const msg = document.createElement('div');
+      msg.className = 'bg-green-50 border border-green-200 text-green-800 rounded-xl p-6 text-center mb-8';
+      msg.innerHTML = '<p class="font-bold text-lg mb-1">Thank you!</p><p>Your donation has been received. A receipt has been sent to your email.</p>';
+      card.prepend(msg);
+    }
+  </script>
+</Layout>

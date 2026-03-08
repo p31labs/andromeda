@@ -106,7 +106,7 @@ export function ModeSelect() {
         </button>
 
         {/* Mode header */}
-        <div className="text-center">
+        <div className="relative z-10 text-center">
           <p className="text-4xl mb-2">{modeData?.emoji}</p>
           <h2 className="text-2xl font-black text-white mb-1">
             {modeData?.label}
@@ -117,7 +117,7 @@ export function ModeSelect() {
         </div>
 
         {/* Quest cards */}
-        <div className="flex flex-col gap-3 w-full max-w-sm px-6">
+        <div className="relative z-10 flex flex-col gap-3 w-full max-w-sm px-6">
           {quests.map((quest) => (
             <button
               key={quest.id}
@@ -181,7 +181,7 @@ export function ModeSelect() {
     >
       <Starfield />
       {/* Title — letter-by-letter reveal */}
-      <div className="text-center">
+      <div className="relative z-10 text-center">
         <h1 className="text-4xl sm:text-5xl font-black tracking-[0.3em] text-white title-glow mb-2">
           {'BONDING'.split('').map((letter, i) => (
             <span
@@ -201,7 +201,7 @@ export function ModeSelect() {
       </div>
 
       {/* Mode cards — WCD-18: flex-wrap + constrained width for narrow screens */}
-      <div className="flex flex-wrap items-stretch justify-center gap-4 px-6 max-w-lg">
+      <div className="relative z-10 flex flex-wrap items-stretch justify-center gap-4 px-6 max-w-lg">
         {MODES.map((mode, idx) => (
           <button
             key={mode.id}

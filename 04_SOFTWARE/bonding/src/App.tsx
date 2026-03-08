@@ -59,8 +59,9 @@ import { BloodMoonNode } from './components/BloodMoonNode';
 import { ShootingStars } from './components/ShootingStars';
 import { MissingNode } from './components/MissingNode';
 
-// Stable action references — never cause re-renders
-const useActions = () => useGameStore((s) => ({
+// Stable action references — useShallow prevents new-object re-renders
+import { useShallow } from 'zustand/react/shallow';
+const useActions = () => useGameStore(useShallow((s) => ({
   reset: s.reset,
   setGameMode: s.setGameMode,
   setLobbyActive: s.setLobbyActive,
@@ -68,7 +69,7 @@ const useActions = () => useGameStore((s) => ({
   fireTutorialEvent: s.fireTutorialEvent,
   showMoleculeFact: s.showMoleculeFact,
   continueBuilding: s.continueBuilding,
-}));
+})));
 
 function App() {
   // Game state — grouped by change frequency

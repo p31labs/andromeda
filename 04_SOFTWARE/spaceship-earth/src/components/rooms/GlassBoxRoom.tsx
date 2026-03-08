@@ -7,7 +7,7 @@ import * as THREE from 'three';
 const PHOSPHOR = '#00FFFF';
 const CALCIUM = '#00d4ff';
 const AMBER = '#FFD700';
-const CORAL = '#FF6B6B';
+// coral removed — unused
 
 interface GlassBoxProps {
   initialH?: number;
@@ -23,6 +23,8 @@ export default function GlassBoxRoom({ initialH = 0.35, initialB = 50, initialQ 
   const [bDisplay, setBDisplay] = useState(String(initialB));
   const [qDisplay, setQDisplay] = useState(initialQ.toFixed(1));
   const [liveH, setLiveH] = useState(initialH.toFixed(3));
+  const [slidersHidden, setSlidersHidden] = useState(false);
+  const [hoveredSlider, setHoveredSlider] = useState<'H' | 'B' | 'Q' | null>(null);
   const coherenceCallbackRef = useRef(onCoherenceAchieved);
   coherenceCallbackRef.current = onCoherenceAchieved;
   const coherenceFiredRef = useRef(false);
@@ -62,14 +64,15 @@ export default function GlassBoxRoom({ initialH = 0.35, initialB = 50, initialQ 
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(W, H);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    const isMobile = W < 768;
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2));
     container.appendChild(renderer.domElement);
 
     const group = new THREE.Group();
     scene.add(group);
 
-    // Particles
-    const particleCount = 2000;
+    // Particles — reduce on mobile for performance
+    const particleCount = isMobile ? 600 : 2000;
     const geometry = new THREE.BufferGeometry();
     const positions = new Float32Array(particleCount * 3);
     const originalPositions = new Float32Array(particleCount * 3);
@@ -132,19 +135,32 @@ export default function GlassBoxRoom({ initialH = 0.35, initialB = 50, initialQ 
     const particleSystem = new THREE.Points(geometry, material);
     group.add(particleSystem);
 
-    // Connection lines
-    const lineCount = 100;
+    // Connection lines — nuclear glow (magenta, restrained)
+    const lineCount = 80;
     const lineGeo = new THREE.BufferGeometry();
     const linePos = new Float32Array(lineCount * 6);
     lineGeo.setAttribute('position', new THREE.BufferAttribute(linePos, 3));
     const lineMat = new THREE.LineBasicMaterial({
-      color: 0x00FFFF,
+      color: 0xFF00FF,
       transparent: true,
-      opacity: 0.35,
+      opacity: 0.45,
       blending: THREE.AdditiveBlending,
     });
     const lines = new THREE.LineSegments(lineGeo, lineMat);
     group.add(lines);
+
+    // Second glow layer — wider, softer for bloom halo
+    const glowLineGeo = new THREE.BufferGeometry();
+    const glowLinePos = new Float32Array(lineCount * 6);
+    glowLineGeo.setAttribute('position', new THREE.BufferAttribute(glowLinePos, 3));
+    const glowLineMat = new THREE.LineBasicMaterial({
+      color: 0xFF44CC,
+      transparent: true,
+      opacity: 0.15,
+      blending: THREE.AdditiveBlending,
+    });
+    const glowLines = new THREE.LineSegments(glowLineGeo, glowLineMat);
+    group.add(glowLines);
 
     let time = 0;
     let animId: number;
@@ -184,19 +200,28 @@ export default function GlassBoxRoom({ initialH = 0.35, initialB = 50, initialQ 
       }
       geometry.attributes.position.needsUpdate = true;
 
+      // Core magenta lines
       const lp = lineGeo.attributes.position.array as Float32Array;
+      const gp = glowLineGeo.attributes.position.array as Float32Array;
       let pIdx = 0;
       for (let i = 0; i < lineCount; i++) {
-        lp[pIdx++] = (Math.random() - 0.5) * chaosLevel;
-        lp[pIdx++] = (Math.random() - 0.5) * chaosLevel;
-        lp[pIdx++] = (Math.random() - 0.5) * chaosLevel;
+        const cx = (Math.random() - 0.5) * chaosLevel * 0.5;
+        const cy = (Math.random() - 0.5) * chaosLevel * 0.5;
+        const cz = (Math.random() - 0.5) * chaosLevel * 0.5;
         const tIdx = Math.floor(Math.random() * particleCount) * 3;
-        lp[pIdx++] = pos[tIdx];
-        lp[pIdx++] = pos[tIdx + 1];
-        lp[pIdx++] = pos[tIdx + 2];
+        lp[pIdx] = cx;     gp[pIdx] = cx + (Math.random() - 0.5) * 0.3;
+        lp[pIdx+1] = cy;   gp[pIdx+1] = cy + (Math.random() - 0.5) * 0.3;
+        lp[pIdx+2] = cz;   gp[pIdx+2] = cz + (Math.random() - 0.5) * 0.3;
+        lp[pIdx+3] = pos[tIdx];     gp[pIdx+3] = pos[tIdx] + (Math.random() - 0.5) * 0.5;
+        lp[pIdx+4] = pos[tIdx+1];   gp[pIdx+4] = pos[tIdx+1] + (Math.random() - 0.5) * 0.5;
+        lp[pIdx+5] = pos[tIdx+2];   gp[pIdx+5] = pos[tIdx+2] + (Math.random() - 0.5) * 0.5;
+        pIdx += 6;
       }
       lineGeo.attributes.position.needsUpdate = true;
-      lineMat.opacity = Math.max(0.1, 0.5 - chaosLevel * 0.4);
+      glowLineGeo.attributes.position.needsUpdate = true;
+      // Brighter when coherent, still visible during chaos
+      lineMat.opacity = Math.max(0.15, 0.45 - chaosLevel * 0.2);
+      glowLineMat.opacity = Math.max(0.05, 0.15 - chaosLevel * 0.08);
 
       renderer.render(scene, camera);
 
@@ -233,25 +258,12 @@ export default function GlassBoxRoom({ initialH = 0.35, initialB = 50, initialQ 
       material.dispose();
       lineGeo.dispose();
       lineMat.dispose();
+      glowLineGeo.dispose();
+      glowLineMat.dispose();
       texture.dispose();
       container.removeChild(renderer.domElement);
     };
   }, []);
-
-  const glassPanel: React.CSSProperties = {
-    position: 'absolute',
-    background: 'rgba(0, 0, 0, 0.7)',
-    backdropFilter: 'blur(20px)',
-    WebkitBackdropFilter: 'blur(20px)',
-    border: '1px solid rgba(0, 255, 255, 0.08)',
-    borderRadius: 12,
-    padding: 24,
-    boxShadow: '0 20px 50px rgba(0,0,0,0.5), 0 0 12px rgba(0,255,255,0.02)',
-    maxWidth: 320,
-    fontFamily: "'JetBrains Mono', monospace",
-    color: PHOSPHOR,
-    zIndex: 10,
-  };
 
   const labelRow: React.CSSProperties = {
     display: 'flex',
@@ -269,89 +281,117 @@ export default function GlassBoxRoom({ initialH = 0.35, initialB = 50, initialQ 
     borderRadius: 2,
   };
 
+  const tooltipStyle: React.CSSProperties = {
+    position: 'absolute', bottom: '100%', left: 0, right: 0,
+    marginBottom: 6, padding: '8px 10px',
+    background: 'rgba(0,0,0,0.85)', border: '1px solid rgba(0,255,255,0.2)',
+    borderRadius: 8, fontSize: 9, lineHeight: 1.5,
+    color: 'rgba(255,255,255,0.7)', fontFamily: "'JetBrains Mono', monospace",
+    backdropFilter: 'blur(12px)', pointerEvents: 'none',
+    boxShadow: '0 4px 20px rgba(0,0,0,0.6), 0 0 8px rgba(0,255,255,0.05)',
+    zIndex: 30,
+  };
+
+  const panelBase: React.CSSProperties = {
+    background: 'rgba(0, 0, 0, 0.7)',
+    backdropFilter: 'blur(20px)',
+    WebkitBackdropFilter: 'blur(20px)',
+    border: '1px solid rgba(0, 255, 255, 0.08)',
+    borderRadius: 12,
+    padding: 16,
+    boxShadow: '0 20px 50px rgba(0,0,0,0.5), 0 0 12px rgba(0,255,255,0.02)',
+    fontFamily: "'JetBrains Mono', monospace",
+    color: PHOSPHOR,
+  };
+
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%', background: '#000000', overflow: 'hidden' }}>
       {/* Three.js canvas */}
       <div ref={mountRef} style={{ position: 'absolute', inset: 0 }} />
 
-      {/* Panel 1: Attractor */}
-      <div style={{ ...glassPanel, top: 40, left: 40 }}>
-        <div style={{ fontSize: 14, textTransform: 'uppercase', letterSpacing: 2, color: PHOSPHOR, marginBottom: 4, display: 'flex', alignItems: 'center', gap: 8, textShadow: '0 0 8px rgba(0,255,255,0.2)' }}>
-          <span>{'\u2B21'}</span> Mark 1 Attractor
-        </div>
-        <div style={{ fontSize: 11, color: 'rgba(0,255,255,0.2)', marginBottom: 24, fontWeight: 400 }}>
-          Self-Organized Criticality
-        </div>
-        <div style={{ background: 'rgba(0,0,0,0.3)', borderRadius: 6, padding: 12, marginBottom: 20, fontSize: 12, color: PHOSPHOR, borderLeft: `2px solid ${PHOSPHOR}` }}>
-          dH/dt = -k(<span style={{ color: CALCIUM, fontWeight: 'bold' }}>H</span> - 0.35)
-        </div>
-        <div style={{ marginBottom: 16 }}>
-          <div style={labelRow}>
-            <span>Entropy (H)</span>
-            <span>{hDisplay}</span>
+      {/* Compact control strip — bottom-left, doesn't obscure animation */}
+      <div style={{
+        position: 'absolute', bottom: 16, left: 16, zIndex: 10,
+        width: 'min(340px, calc(100% - 32px))',
+        opacity: slidersHidden ? 0 : 1,
+        transform: slidersHidden ? 'translateY(20px)' : 'translateY(0)',
+        transition: 'opacity 0.3s ease, transform 0.3s ease',
+        pointerEvents: slidersHidden ? 'none' : 'auto',
+      }}>
+        <div style={{
+          ...panelBase, padding: 12,
+          background: 'rgba(0, 0, 0, 0.55)',
+          border: '1px solid rgba(0, 255, 255, 0.1)',
+        }}>
+          <div style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: 2, color: PHOSPHOR, marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6, textShadow: '0 0 8px rgba(0,255,255,0.2)' }}>
+            <span>{'\u2B21'}</span> Attractor Controls
           </div>
-          <input type="range" min="0" max="1" step="0.01" defaultValue={initialH} onChange={onH} style={{ ...rangeStyle, accentColor: PHOSPHOR }} />
+          {/* H slider */}
+          <div style={{ marginBottom: 6, position: 'relative' }}
+            onMouseEnter={() => setHoveredSlider('H')} onMouseLeave={() => setHoveredSlider(null)}>
+            <div style={{ ...labelRow, marginBottom: 4, fontSize: 9 }}>
+              <span style={{ color: PHOSPHOR }}>H</span>
+              <span style={{ color: PHOSPHOR }}>{hDisplay}</span>
+            </div>
+            <input type="range" min="0" max="1" step="0.01" defaultValue={initialH} onChange={onH} aria-label="Entropy (H)" style={{ ...rangeStyle, accentColor: PHOSPHOR }} />
+            {hoveredSlider === 'H' && <div style={tooltipStyle}>
+              <strong>Entropy (H)</strong> &mdash; System disorder. 0 = frozen, 0.35 = sweet spot, 1 = chaos. Controls how much particles scatter from their lattice positions.
+            </div>}
+          </div>
+          {/* B slider */}
+          <div style={{ marginBottom: 6, position: 'relative' }}
+            onMouseEnter={() => setHoveredSlider('B')} onMouseLeave={() => setHoveredSlider(null)}>
+            <div style={{ ...labelRow, marginBottom: 4, fontSize: 9 }}>
+              <span style={{ color: CALCIUM }}>B</span>
+              <span style={{ color: CALCIUM }}>{bDisplay}</span>
+            </div>
+            <input type="range" min="0" max="200" step="1" defaultValue={initialB} onChange={onB} aria-label="Magnetic Field (B)" style={{ ...rangeStyle, accentColor: CALCIUM }} />
+            {hoveredSlider === 'B' && <div style={tooltipStyle}>
+              <strong>Larmor Field (B)</strong> &mdash; Magnetic field strength in microtesla. Controls nuclear spin precession speed &mdash; how fast the Posner molecule rotates. Earth&apos;s field is ~50&micro;T.
+            </div>}
+          </div>
+          {/* Q slider */}
+          <div style={{ position: 'relative' }}
+            onMouseEnter={() => setHoveredSlider('Q')} onMouseLeave={() => setHoveredSlider(null)}>
+            <div style={{ ...labelRow, marginBottom: 4, fontSize: 9 }}>
+              <span style={{ color: AMBER }}>Q</span>
+              <span style={{ color: AMBER }}>{qDisplay}</span>
+            </div>
+            <input type="range" min="0.1" max="5.0" step="0.1" defaultValue={initialQ} onChange={onQ} aria-label="Coherence (Q)" style={{ ...rangeStyle, accentColor: AMBER }} />
+            {hoveredSlider === 'Q' && <div style={tooltipStyle}>
+              <strong>Fisher-Escol&agrave; Q</strong> &mdash; Quantum coherence probability. High Q = sharp crystalline structure. Low Q = diffuse probability cloud. Target Q &ge; 4.0 to unlock.
+            </div>}
+          </div>
+          <div style={{ fontSize: 8, color: 'rgba(0,255,255,0.15)', marginTop: 6 }}>
+            H{'\u2192'}0.35 &middot; Q{'\u2192'}4.0
+          </div>
         </div>
-        <p style={{ fontSize: 10, color: 'rgba(0,255,255,0.18)', lineHeight: 1.4 }}>
-          <strong>0.00</strong> = Stasis (Frozen)<br />
-          <strong>0.35</strong> = The Sweet Spot (Life)<br />
-          <strong>1.00</strong> = Chaos (Noise)
-        </p>
       </div>
 
-      {/* Panel 2: Larmor Frequency — cyan accent */}
-      <div style={{ ...glassPanel, top: 40, right: 40, border: `1px solid rgba(0,212,255,0.15)`, color: CALCIUM }}>
-        <div style={{ fontSize: 14, textTransform: 'uppercase', letterSpacing: 2, color: CALCIUM, marginBottom: 4, display: 'flex', alignItems: 'center', gap: 8, textShadow: `0 0 8px rgba(0,212,255,0.4)` }}>
-          <span>{'\u26A1'}</span> Larmor Spin
-        </div>
-        <div style={{ fontSize: 11, color: 'rgba(0,212,255,0.4)', marginBottom: 24, fontWeight: 400 }}>
-          Nuclear Precession Dynamics
-        </div>
-        <div style={{ background: 'rgba(0,0,0,0.3)', borderRadius: 6, padding: 12, marginBottom: 20, fontSize: 12, color: CALCIUM, borderLeft: `2px solid ${CALCIUM}` }}>
-          {'\u03C9'} = {'\u03B3'}<span style={{ color: PHOSPHOR, fontWeight: 'bold' }}>B</span>
-        </div>
-        <div style={{ marginBottom: 16 }}>
-          <div style={labelRow}>
-            <span>Magnetic Field (B)</span>
-            <span>{bDisplay}</span>
-          </div>
-          <input type="range" min="0" max="200" step="1" defaultValue={initialB} onChange={onB} style={{ ...rangeStyle, accentColor: CALCIUM }} />
-        </div>
-        <p style={{ fontSize: 10, color: 'rgba(0,212,255,0.35)', lineHeight: 1.4 }}>
-          Controls the rotational velocity of the <sup>31</sup>P nuclear spins.
-          Aligned with Earth's magnetic field at ~50{'\u00B5'}T.
-        </p>
-      </div>
+      {/* Toggle button */}
+      <button
+        type="button"
+        onClick={() => setSlidersHidden(h => !h)}
+        aria-label={slidersHidden ? 'Show controls' : 'Hide controls'}
+        style={{
+          position: 'absolute', bottom: 16, left: slidersHidden ? 16 : 'min(364px, calc(100% - 24px))',
+          zIndex: 20, transition: 'left 0.3s ease',
+          background: 'rgba(0,0,0,0.6)', border: '1px solid rgba(0,255,255,0.25)',
+          borderRadius: 6, padding: '4px 10px', cursor: 'pointer',
+          color: 'rgba(0,255,255,0.7)', fontFamily: "'JetBrains Mono', monospace",
+          fontSize: 9, letterSpacing: 1, textTransform: 'uppercase',
+          backdropFilter: 'blur(8px)',
+        }}
+      >
+        {slidersHidden ? '\u25B6' : '\u25C0'}
+      </button>
 
-      {/* Panel 3: Coherence — amber accent */}
-      <div style={{ ...glassPanel, bottom: 40, left: 40, border: `1px solid rgba(255,215,0,0.15)`, color: AMBER }}>
-        <div style={{ fontSize: 14, textTransform: 'uppercase', letterSpacing: 2, color: AMBER, marginBottom: 4, display: 'flex', alignItems: 'center', gap: 8, textShadow: `0 0 8px rgba(255,215,0,0.4)` }}>
-          <span>{'\u25C8'}</span> Fisher-Escol&agrave; Q
-        </div>
-        <div style={{ fontSize: 11, color: 'rgba(255,215,0,0.4)', marginBottom: 24, fontWeight: 400 }}>
-          Quantum Coherence Probability
-        </div>
-        <div style={{ background: 'rgba(0,0,0,0.3)', borderRadius: 6, padding: 12, marginBottom: 20, fontSize: 12, color: AMBER, borderLeft: `2px solid ${AMBER}` }}>
-          Q ~ Beta(<span style={{ color: CORAL, fontWeight: 'bold' }}>{'\u03B1'}</span>, <span style={{ color: CORAL, fontWeight: 'bold' }}>{'\u03B2'}</span>)
-        </div>
-        <div style={{ marginBottom: 16 }}>
-          <div style={labelRow}>
-            <span>Coherence (Q)</span>
-            <span>{qDisplay}</span>
-          </div>
-          <input type="range" min="0.1" max="5.0" step="0.1" defaultValue={initialQ} onChange={onQ} style={{ ...rangeStyle, accentColor: AMBER }} />
-        </div>
-        <p style={{ fontSize: 10, color: 'rgba(255,215,0,0.35)', lineHeight: 1.4 }}>
-          Determines the "fuzziness" of the qubit state. High Q = Sharp Structure. Low Q = Probability Cloud.
-        </p>
-      </div>
-
-      {/* Status bar */}
-      <div style={{ position: 'absolute', bottom: 40, right: 40, textAlign: 'right', pointerEvents: 'none', zIndex: 10 }}>
-        <div style={{ fontSize: 48, fontWeight: 300, color: CALCIUM, lineHeight: 1, letterSpacing: -2, fontFamily: "'JetBrains Mono', monospace", textShadow: '0 0 20px rgba(0,212,255,0.5), 0 0 40px rgba(0,212,255,0.2)' }}>
+      {/* Live readout — bottom-right */}
+      <div style={{ position: 'absolute', bottom: 16, right: 16, zIndex: 10, pointerEvents: 'none', textAlign: 'right' }}>
+        <div style={{ fontSize: 28, fontWeight: 300, color: CALCIUM, lineHeight: 1, letterSpacing: -1, fontFamily: "'JetBrains Mono', monospace", textShadow: '0 0 20px rgba(0,212,255,0.5), 0 0 40px rgba(0,212,255,0.2)' }}>
           {liveH}
         </div>
-        <div style={{ fontSize: 10, color: PHOSPHOR, textTransform: 'uppercase', letterSpacing: 2, fontFamily: "'JetBrains Mono', monospace", textShadow: '0 0 6px rgba(0,255,255,0.15)' }}>
+        <div style={{ fontSize: 8, color: PHOSPHOR, textTransform: 'uppercase', letterSpacing: 2, fontFamily: "'JetBrains Mono', monospace", textShadow: '0 0 6px rgba(0,255,255,0.15)' }}>
           System Harmonic
         </div>
       </div>
