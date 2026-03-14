@@ -24,7 +24,7 @@ export async function signData(
   key: CryptoKey,
   data: Uint8Array
 ): Promise<Uint8Array> {
-  const sig = await crypto.subtle.sign("Ed25519", key, data as BufferSource);
+  const sig = await crypto.subtle.sign("Ed25519", key, data as unknown as BufferSource);
   return new Uint8Array(sig);
 }
 
@@ -33,5 +33,10 @@ export async function verifySignature(
   signature: Uint8Array,
   data: Uint8Array
 ): Promise<boolean> {
-  return crypto.subtle.verify("Ed25519", publicKey, signature, data as BufferSource);
+  return crypto.subtle.verify(
+    "Ed25519", 
+    publicKey, 
+    signature as unknown as BufferSource, 
+    data as unknown as BufferSource
+  );
 }

@@ -1,4 +1,13 @@
 // @p31/sovereign — Hardware command protocol (TLV) + BLE/WebSocket transports
+// Add Web Bluetooth type declarations
+declare global {
+  interface Navigator {
+    bluetooth: any;
+  }
+}
+type BluetoothDevice = any;
+type BluetoothRemoteGATTCharacteristic = any;
+
 import type { SignedUCAN, P31Capability } from './ucan';
 
 export interface HardwareTransport {
@@ -45,10 +54,10 @@ export function encodeCommand(cmd: number, payload: Uint8Array): Uint8Array {
 
 export function decodeCommand(data: Uint8Array): { cmd: number; payload: Uint8Array } | null {
   if (data.length < 3) return null;
-  const cmd = data[0];
-  const length = (data[1] << 8) | data[2];
+  // const _cmd = data[0];
+  const length = (data[1]! << 8) | data[2]!;
   if (data.length !== 3 + length) return null;
-  return { cmd, payload: data.slice(3) };
+  return { cmd: data[0]!, payload: data.slice(3) };
 }
 
 export function encodeHapticCommand(effect: HapticEffect, intensity: number = 100): Uint8Array {
@@ -77,12 +86,12 @@ export function encodeSyncDelta(delta: Uint8Array): Uint8Array {
 export function decodeStatusResponse(payload: Uint8Array): HardwareStatus | null {
   if (payload.length < 4) return null;
   return {
-    battery: payload[0],
-    rssi: (payload[1] << 24 >> 24),
-    meshNodes: payload[2],
-    uptime: (payload[3] << 24) | (payload[4] << 16) | (payload[5] << 8) | payload[6],
-    temperature: payload.length > 7 ? payload[7] - 40 : undefined,
-  };
+    battery: payload[0]!,
+    rssi: (payload[1]! << 24 >> 24),
+    meshNodes: payload[2]!,
+    uptime: (payload[3]! << 24) | (payload[4]! << 16) | (payload[5]! << 8) | payload[6]!,
+    temperature: payload.length > 7 ? payload[7]! - 40 : undefined,
+  } as HardwareStatus;
 }
 
 export function decodeSignatureResponse(payload: Uint8Array): Uint8Array | null {
@@ -111,7 +120,7 @@ export class WebBLETransport implements HardwareTransport {
     this.txChar = await service.getCharacteristic(WebBLETransport.NUS_TX);
     this.rxChar = await service.getCharacteristic(WebBLETransport.NUS_RX);
     await this.txChar.startNotifications();
-    this.txChar.addEventListener('characteristicvaluechanged', (event) => {
+    this.txChar.addEventListener('characteristicvaluechanged', (event: any) => {
       const value = (event.target as BluetoothRemoteGATTCharacteristic).value;
       if (value && this.receiveHandler) this.receiveHandler(new Uint8Array(value.buffer));
     });
