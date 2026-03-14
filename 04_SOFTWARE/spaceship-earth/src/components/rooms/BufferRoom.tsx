@@ -7,19 +7,19 @@ import { useNode } from '../../contexts/NodeContext';
 import { useSovereignStore } from '../../sovereign/useSovereignStore';
 
 // ── Design Tokens ────────────────────────────────────────────
-const FONT = "'Oxanium', sans-serif";
-const MONO = "'Space Mono', monospace";
+const FONT = "var(--font-display)";
+const MONO = "var(--font-data)";
 
 const C = {
-  bg: { deep: '#000000', base: '#000000', raised: '#0a0a0a', border: 'rgba(255,255,255,0.08)' },
-  text: { primary: '#ffffff', secondary: 'rgba(255,255,255,0.6)', dim: 'rgba(255,255,255,0.4)' },
-  amber: '#FFD700', coral: '#FF6B6B', orange: '#FF8C42', mint: '#00FFFF',
-  lavender: '#BF5FFF', cyan: '#00FFFF', red: '#FF4444',
-  axis: { A: '#ff6b6b', B: '#00FFFF', C: '#FFD700', D: '#BF5FFF' } as Record<string, string>,
-  state: { green: '#00FFFF', yellow: '#FFD700', orange: '#FF8C42', red: '#FF4444' },
+  bg: { deep: 'var(--s1)', base: 'var(--s1)', raised: 'var(--s2)', border: 'var(--neon-ghost)' },
+  text: { primary: 'var(--text)', secondary: 'var(--dim)', dim: 'var(--dim2)' },
+  amber: 'var(--amber)', coral: 'var(--coral)', orange: 'var(--orange)', mint: 'var(--mint)',
+  lavender: 'var(--lavender)', cyan: 'var(--cyan)', red: 'var(--coral)',
+  axis: { A: 'var(--coral)', B: 'var(--cyan)', C: 'var(--amber)', D: 'var(--lavender)' } as Record<string, string>,
+  state: { green: 'var(--mint)', yellow: 'var(--amber)', orange: 'var(--orange)', red: 'var(--coral)' },
 } as const;
 
-const DIM = 'rgba(255,255,255,0.35)';
+const DIM = 'var(--dim)';
 
 // ── Samson Constants ─────────────────────────────────────────
 const TARGET_H = Math.PI / 9; // 0.34906 — The Attractor
@@ -74,10 +74,10 @@ interface VoltageScore {
 }
 
 const GATES = {
-  GREEN: { label: 'CLEAR', color: C.mint, bg: '#001a00' },
-  YELLOW: { label: 'CAUTION', color: C.amber, bg: '#1a1000' },
-  RED: { label: 'HIGH VOLTAGE', color: C.coral, bg: '#1a0000' },
-  CRITICAL: { label: 'CRITICAL', color: C.red, bg: '#1a000a' },
+  GREEN: { label: 'CLEAR', color: C.mint, bg: 'rgba(0, 255, 136, 0.05)' },
+  YELLOW: { label: 'CAUTION', color: C.amber, bg: 'rgba(255, 215, 0, 0.05)' },
+  RED: { label: 'HIGH VOLTAGE', color: C.coral, bg: 'rgba(255, 107, 107, 0.05)' },
+  CRITICAL: { label: 'CRITICAL', color: C.red, bg: 'rgba(255, 107, 107, 0.1)' },
 };
 
 function scoreAxis(text: string, high: RegExp[], med: RegExp[], low: RegExp[], extra?: (text: string, s: number) => number): number {
@@ -372,12 +372,10 @@ function BufferCard({ title, accent, children }: {
   title: string; accent: string; children: React.ReactNode;
 }) {
   return (
-    <div style={{
-      background: `linear-gradient(160deg, ${accent}05 0%, ${C.bg.base} 30%)`,
-      border: `1px solid ${accent}22`, borderRadius: 16,
+    <div className="glass-card" style={{
+      border: `1px solid ${accent}33`, borderRadius: 'var(--radius-lg)',
       display: 'flex', flexDirection: 'column', minWidth: 0, minHeight: 0,
-      boxShadow: `0 0 20px ${accent}08, inset 0 1px 0 ${accent}11`,
-      transition: 'box-shadow 0.3s ease, border-color 0.3s ease',
+      transition: 'all var(--trans-base)',
     }}>
       <div style={{
         padding: '10px 16px', borderBottom: `1px solid ${accent}18`,
@@ -409,12 +407,12 @@ function SpoonGauge({ spoons, max }: { spoons: number; max: number }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
       <div style={{
-        width: 80, height: 6, background: 'rgba(255,255,255,0.06)',
+        width: 80, height: 6, background: 'var(--neon-faint)',
         borderRadius: 3, overflow: 'hidden', position: 'relative',
       }}>
         <div style={{
           width: `${pct}%`, height: '100%', background: `linear-gradient(90deg, ${color}88, ${color})`,
-          borderRadius: 3, transition: 'width 0.5s ease, background 0.3s ease',
+          borderRadius: 3, transition: 'width var(--trans-slow), background var(--trans-base)',
           boxShadow: `0 0 6px ${color}66, 0 0 12px ${color}33`,
         }} />
       </div>
@@ -445,7 +443,7 @@ function SomaticWaveform({ waveform, hr, hrv, status }: {
     ctx.fillRect(0, 0, w, h);
 
     // Grid lines
-    ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+    ctx.strokeStyle = 'var(--neon-faint)';
     ctx.lineWidth = 1;
     for (let y = h * 0.25; y < h; y += h * 0.25) {
       ctx.beginPath();
@@ -460,9 +458,9 @@ function SomaticWaveform({ waveform, hr, hrv, status }: {
     const range = max - min || 1;
 
     // Waveform line
-    const lineColor = status === 'stress' ? '#FF4444'
-      : status === 'calibrating' ? '#FFD700'
-      : '#00FFFF';
+    const lineColor = status === 'stress' ? 'var(--coral)'
+      : status === 'calibrating' ? 'var(--amber)'
+      : 'var(--cyan)';
 
     ctx.strokeStyle = lineColor;
     ctx.lineWidth = 2;
@@ -485,13 +483,13 @@ function SomaticWaveform({ waveform, hr, hrv, status }: {
         ref={canvasRef}
         width={200}
         height={40}
-        style={{ width: 200, height: 40, borderRadius: 4, border: '1px solid rgba(0,255,255,0.12)' }}
+        style={{ width: 200, height: 40, borderRadius: 'var(--radius-sm)', border: '1px solid var(--neon-ghost)' }}
       />
       <div style={{ fontFamily: MONO, fontSize: 10, lineHeight: 1.4 }}>
-        <div style={{ color: status === 'stress' ? '#FF4444' : '#00FFFF', fontWeight: 700, textShadow: '0 0 8px rgba(0,255,255,0.4)' }}>
+        <div style={{ color: status === 'stress' ? 'var(--coral)' : 'var(--cyan)', fontWeight: 700, textShadow: '0 0 8px var(--neon-dim)' }}>
           HR {hr > 0 ? Math.round(hr) : '--'}
         </div>
-        <div style={{ color: 'rgba(0,255,255,0.4)' }}>
+        <div style={{ color: 'var(--dim)' }}>
           HRV {hrv > 0 ? Math.round(hrv) : '--'}
         </div>
       </div>
@@ -507,14 +505,20 @@ function MultiSelect({ options, selected, onChange, accent }: {
   );
   return (
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-      {options.map(opt => (
-        <button type="button" key={opt} onClick={() => toggle(opt)} style={{
-          ...pillBtn(selected.includes(opt), accent),
-          fontSize: 11, padding: '6px 12px',
-        }}>
-          {opt}
-        </button>
-      ))}
+      {options.map(opt => {
+        const active = selected.includes(opt);
+        return (
+          <button type="button" key={opt} onClick={() => toggle(opt)} className="glass-btn" style={{
+            fontSize: 11, padding: '4px 10px', minHeight: 'auto', minWidth: 'auto',
+            background: active ? `${accent}22` : 'transparent',
+            color: active ? accent : 'var(--dim)',
+            borderColor: active ? `${accent}66` : 'transparent',
+            borderRadius: 'var(--radius-xl)',
+          }}>
+            {opt}
+          </button>
+        );
+      })}
     </div>
   );
 }
@@ -681,6 +685,7 @@ export function BufferRoom() {
   }, []);
 
   const handleDismiss = useCallback((id: string) => {
+    setHeld(prev => prev.map(m => m.id === id ? { ...m, released: true } : m)); // Logical dismissal
     setHeld(prev => prev.filter(m => m.id !== id));
   }, []);
 
@@ -722,37 +727,6 @@ export function BufferRoom() {
         position: 'relative',
       }}
     >
-      {/* ══════════════ THERMAL THROTTLE OVERLAY ══════════════ */}
-      {fawnGuardActive && (
-        <div style={{
-          position: 'absolute', inset: 0, zIndex: 150,
-          background: 'rgba(0,0,0,0.88)',
-          display: 'flex', flexDirection: 'column',
-          alignItems: 'center', justifyContent: 'center',
-          fontFamily: MONO, textAlign: 'center', padding: 24,
-        }}>
-          <div style={{
-            color: '#FFAA00', fontSize: 16, fontWeight: 700,
-            letterSpacing: '0.1em', lineHeight: 1.6,
-            textShadow: '0 0 20px rgba(255,170,0,0.6)',
-          }}>
-            SOMATIC OVERLOAD DETECTED
-          </div>
-          <div style={{
-            color: '#FFAA00', fontSize: 12, marginTop: 12, opacity: 0.7,
-            letterSpacing: '0.05em',
-          }}>
-            COMMUNICATION PROTOCOLS LOCKED FOR 180s
-          </div>
-          <div style={{
-            marginTop: 24, width: 60, height: 60, borderRadius: '50%',
-            border: '3px solid #FFAA00',
-            boxShadow: '0 0 30px rgba(255,170,0,0.4), inset 0 0 20px rgba(255,170,0,0.15)',
-            animation: 'thermalPulse 1.5s ease-in-out infinite',
-          }} />
-        </div>
-      )}
-
       {/* ══════════════ BREATHING OVERLAY — Minimal ══════════════ */}
       {breathing && (() => {
         const phaseColor = breathLabel === 'BREATHE IN' ? C.cyan
@@ -763,7 +737,7 @@ export function BufferRoom() {
           : Math.ceil(BREATHE_TOTAL - breathSec);
         return (
         <div style={{
-          position: 'absolute', inset: 0, background: '#000',
+          position: 'absolute', inset: 0, background: 'var(--void)',
           display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
           zIndex: 200,
         }}>
@@ -803,7 +777,7 @@ export function BufferRoom() {
               {Array.from({ length: MAX_CYCLES }, (_, i) => (
                 <div key={i} style={{
                   width: 40, height: 3, borderRadius: 2,
-                  background: i <= breathCycles ? phaseColor : 'rgba(255,255,255,0.1)',
+                  background: i <= breathCycles ? phaseColor : 'var(--neon-ghost)',
                 }} />
               ))}
             </div>
@@ -812,11 +786,10 @@ export function BufferRoom() {
             </span>
           </div>
 
-          <button type="button" onClick={() => { setBreathing(false); setBreathCycles(0); setBreathSec(0); }} style={{
-            background: 'transparent', border: `1px solid rgba(255,255,255,0.15)`,
-            color: C.text.secondary, borderRadius: 8, padding: '12px 24px',
-            fontSize: 12, cursor: 'pointer', fontFamily: MONO, minHeight: 48,
-            letterSpacing: 2, marginTop: 24,
+          <button type="button" onClick={() => { setBreathing(false); setBreathCycles(0); setBreathSec(0); }} 
+            className="glass-btn" style={{
+            color: C.text.secondary, borderRadius: 'var(--radius-md)', padding: '12px 24px',
+            fontSize: 12, letterSpacing: 2, marginTop: 24,
           }}>
             SKIP
           </button>
@@ -848,50 +821,48 @@ export function BufferRoom() {
         )}
         <span style={{
           color: tierColor, fontWeight: 600, fontSize: 12,
-          padding: '6px 12px', borderRadius: 6,
+          padding: '6px 12px', borderRadius: 'var(--radius-sm)',
           border: `1px solid ${tierColor}44`, background: `${tierColor}11`,
           textShadow: `0 0 6px ${tierColor}44`,
         }}>{tier}</span>
         <span style={{ flex: 1 }} />
 
         {/* Samson badge */}
-          <button type="button" onClick={() => setShowSamson(!showSamson)} style={{
-            ...pillBtn(true, Math.abs(samson.error) > 0.1 ? C.amber : C.mint),
+          <button type="button" onClick={() => setShowSamson(!showSamson)} className="glass-btn" style={{
+            borderColor: Math.abs(samson.error) > 0.1 ? 'var(--amber)' : 'var(--mint)',
+            color: Math.abs(samson.error) > 0.1 ? 'var(--amber)' : 'var(--mint)',
             fontFamily: MONO, fontWeight: 700,
-            minHeight: '48px',
-            minWidth: '48px',
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
+            minHeight: '40px', minWidth: '80px', padding: '0 8px'
           }}>
           H:{samson.H.toFixed(2)} T:{samson.tension.toFixed(1)}
         </button>
 
         {/* Calibration */}
-        <button type="button" onClick={() => setShowCalibration(!showCalibration)} style={pillBtn(true, C.lavender)}>
+        <button type="button" onClick={() => setShowCalibration(!showCalibration)} className="glass-btn" 
+          style={{ color: 'var(--lavender)', borderColor: 'var(--lavender)44', minHeight: '40px', minWidth: '40px', padding: 0 }}>
           CAL
         </button>
 
         {/* Telemetry */}
-        <button type="button" onClick={() => setShowTelemetry(!showTelemetry)} style={pillBtn(true, C.cyan)}>
+        <button type="button" onClick={() => setShowTelemetry(!showTelemetry)} className="glass-btn"
+          style={{ color: 'var(--cyan)', borderColor: 'var(--cyan)44', minHeight: '40px', minWidth: '40px', padding: 0 }}>
           DBG
         </button>
 
         {/* Breathing */}
         {cal.breathingEnabled && (
-          <button type="button" onClick={() => setBreathing(true)} style={{
-            ...pillBtn(true, C.mint),
-          }}>4-2-6</button>
+          <button type="button" onClick={() => setBreathing(true)} className="glass-btn"
+            style={{ color: 'var(--mint)', borderColor: 'var(--mint)44', minHeight: '40px', padding: '0 12px' }}>4-2-6</button>
         )}
       </div>
 
       {/* ══════════════ SAMSON V2 PANEL ══════════════ */}
       {showSamson && (
         <div style={{
-          padding: '12px 16px', background: `rgba(255,215,0,0.015)`,
-          borderBottom: `1px solid ${C.bg.border}`, flexShrink: 0,
+          padding: '12px 16px', background: `var(--neon-ghost)`,
+          borderBottom: `1px solid var(--neon-ghost)`, flexShrink: 0,
         }}>
-          <div style={{ fontSize: 11, letterSpacing: 2, color: C.text.dim, marginBottom: 8, fontWeight: 600, fontFamily: MONO, textShadow: '0 0 4px rgba(255,215,0,0.15)' }}>
+          <div style={{ fontSize: 11, letterSpacing: 2, color: C.text.dim, marginBottom: 8, fontWeight: 600, fontFamily: MONO, textShadow: '0 0 4px var(--neon-dim)' }}>
             SAMSON V2 PID CONTROLLER — Shannon Entropy Regulator
           </div>
           <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', fontSize: 12 }}>
@@ -932,7 +903,7 @@ export function BufferRoom() {
 
           {/* Tension bar */}
           <div style={{ marginTop: 8 }}>
-            <div style={{ height: 3, background: 'rgba(255,255,255,0.04)', borderRadius: 2 }}>
+            <div style={{ height: 3, background: 'var(--neon-faint)', borderRadius: 2 }}>
               <div style={{
                 height: '100%', width: `${samson.tension * 100}%`,
                 background: tensionColor, borderRadius: 2, transition: 'width 1s ease',
@@ -941,17 +912,17 @@ export function BufferRoom() {
           </div>
 
           {samson.drift === 'looping' && (
-            <div style={{ marginTop: 8, fontSize: 12, color: C.amber, padding: '8px 12px', borderRadius: 6, background: `${C.amber}06`, border: `1px solid ${C.amber}12`, textShadow: `0 0 6px ${C.amber}33` }}>
+            <div className="glass-card" style={{ marginTop: 8, fontSize: 12, color: C.amber, padding: '8px 12px', border: `1px solid ${C.amber}22`, background: 'var(--s2)' }}>
               Loop detected. Consider shifting to a different task or taking a break.
             </div>
           )}
           {samson.drift === 'stagnant' && (
-            <div style={{ marginTop: 8, fontSize: 12, color: C.cyan, padding: '8px 12px', borderRadius: 6, background: `${C.cyan}06`, border: `1px solid ${C.cyan}12`, textShadow: `0 0 6px ${C.cyan}33` }}>
+            <div className="glass-card" style={{ marginTop: 8, fontSize: 12, color: C.cyan, padding: '8px 12px', border: `1px solid ${C.cyan}22`, background: 'var(--s2)' }}>
               Stagnation detected. System underloaded. Consider engaging a held message.
             </div>
           )}
           {samson.burnout === 'critical' && (
-            <div style={{ marginTop: 8, fontSize: 12, color: C.coral, padding: '8px 12px', borderRadius: 6, background: `${C.coral}06`, border: `1px solid ${C.coral}12`, textShadow: `0 0 6px ${C.coral}33` }}>
+            <div className="glass-card" style={{ marginTop: 8, fontSize: 12, color: C.coral, padding: '8px 12px', border: `1px solid ${C.coral}22`, background: 'var(--s2)' }}>
               Burnout velocity critical. Defer non-essential messages. Breathe.
             </div>
           )}
@@ -961,53 +932,53 @@ export function BufferRoom() {
       {/* ══════════════ CALIBRATION PANEL ══════════════ */}
       {showCalibration && (
         <div style={{
-          padding: '12px 16px', background: `rgba(255,215,0,0.015)`,
-          borderBottom: `1px solid ${C.bg.border}`, flexShrink: 0,
+          padding: '12px 16px', background: `var(--neon-ghost)`,
+          borderBottom: `1px solid var(--neon-ghost)`, flexShrink: 0,
           maxHeight: 320, overflow: 'auto',
         }}>
-          <div style={{ fontSize: 11, letterSpacing: 2, color: C.text.dim, marginBottom: 10, fontWeight: 600, fontFamily: MONO, textShadow: '0 0 4px rgba(255,215,0,0.15)' }}>
+          <div style={{ fontSize: 11, letterSpacing: 2, color: C.text.dim, marginBottom: 10, fontWeight: 600, fontFamily: MONO, textShadow: '0 0 4px var(--neon-dim)' }}>
             CALIBRATION — Answer what feels right. Skip what doesn't.
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, fontSize: 11 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12, fontSize: 11 }}>
             {/* Identity */}
             <div>
               <div style={{ color: C.axis.A, fontWeight: 600, fontSize: 11, letterSpacing: 1, marginBottom: 4, fontFamily: MONO, textShadow: `0 0 6px ${C.axis.A}44` }}>IDENTITY</div>
               <input type="text" value={cal.displayName} onChange={e => updateCal('displayName', e.target.value)}
-                placeholder="Name or handle" style={{ ...inputStyle, fontSize: 13, padding: '8px 10px', marginBottom: 4 }} />
+                placeholder="Name or handle" className="glass-input" style={{ padding: '8px 10px', marginBottom: 4, minHeight: 'auto' }} />
               <select value={cal.role} onChange={e => updateCal('role', e.target.value)}
-                title="Primary role" style={{ ...inputStyle, fontSize: 13, padding: '8px 10px', marginBottom: 4 }}>
+                title="Primary role" className="glass-input" style={{ padding: '8px 10px', marginBottom: 4, minHeight: 'auto', background: 'var(--s1)' }}>
                 <option value="">Role...</option>
                 {ROLE_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
               </select>
-              <div style={{ fontSize: 11, color: C.text.dim, marginBottom: 2, textShadow: '0 0 4px rgba(255,255,255,0.08)' }}>Neurotype</div>
+              <div style={{ fontSize: 11, color: C.text.dim, marginBottom: 2 }}>Neurotype</div>
               <MultiSelect options={DIAGNOSIS_OPTIONS} selected={cal.diagnoses} onChange={v => updateCal('diagnoses', v)} accent={C.axis.A} />
             </div>
 
             {/* Energy & Health */}
             <div>
               <div style={{ color: C.axis.B, fontWeight: 600, fontSize: 11, letterSpacing: 1, marginBottom: 4, fontFamily: MONO, textShadow: `0 0 6px ${C.axis.B}44` }}>ENERGY</div>
-              <label style={{ fontSize: 11, color: C.text.dim, marginBottom: 2, display: 'block', textShadow: '0 0 4px rgba(255,255,255,0.08)' }}>Starting spoons: {cal.initialSpoons}
+              <label style={{ fontSize: 11, color: C.text.dim, marginBottom: 2, display: 'block' }}>Starting spoons: {cal.initialSpoons}
               <input type="range" min={1} max={12} value={cal.initialSpoons}
                 onChange={e => updateCal('initialSpoons', Number(e.target.value))}
                 style={{ width: '100%', accentColor: C.axis.B, marginBottom: 4 }} />
               </label>
-              <label style={{ fontSize: 11, color: C.text.dim, marginBottom: 2, display: 'block', textShadow: '0 0 4px rgba(255,255,255,0.08)' }}>Sleep quality: {cal.sleepQuality}/10
+              <label style={{ fontSize: 11, color: C.text.dim, marginBottom: 2, display: 'block' }}>Sleep quality: {cal.sleepQuality}/10
               <input type="range" min={1} max={10} value={cal.sleepQuality}
                 onChange={e => updateCal('sleepQuality', Number(e.target.value))}
                 style={{ width: '100%', accentColor: C.axis.B, marginBottom: 4 }} />
               </label>
-              <div style={{ fontSize: 11, color: C.text.dim, marginBottom: 2, textShadow: '0 0 4px rgba(255,255,255,0.08)' }}>Sensory</div>
+              <div style={{ fontSize: 11, color: C.text.dim, marginBottom: 2 }}>Sensory</div>
               <MultiSelect options={SENSORY_OPTIONS} selected={cal.sensoryPrefs} onChange={v => updateCal('sensoryPrefs', v)} accent={C.axis.B} />
             </div>
 
             {/* Obligations */}
             <div>
               <div style={{ color: C.axis.C, fontWeight: 600, fontSize: 11, letterSpacing: 1, marginBottom: 4, fontFamily: MONO, textShadow: `0 0 6px ${C.axis.C}44` }}>OBLIGATIONS</div>
-              <div style={{ fontSize: 11, color: C.text.dim, marginBottom: 2, textShadow: '0 0 4px rgba(255,255,255,0.08)' }}>Active stressors</div>
+              <div style={{ fontSize: 11, color: C.text.dim, marginBottom: 2 }}>Active stressors</div>
               <MultiSelect options={STRESSOR_OPTIONS} selected={cal.activeStressors} onChange={v => updateCal('activeStressors', v)} accent={C.axis.C} />
               <select value={cal.supportLevel} onChange={e => updateCal('supportLevel', e.target.value)}
-                title="Support level" style={{ ...inputStyle, fontSize: 13, padding: '8px 10px', marginTop: 4 }}>
+                title="Support level" className="glass-input" style={{ padding: '8px 10px', marginTop: 4, minHeight: 'auto', background: 'var(--s1)' }}>
                 {SUPPORT_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
               </select>
             </div>
@@ -1015,21 +986,24 @@ export function BufferRoom() {
             {/* Preferences */}
             <div>
               <div style={{ color: C.axis.D, fontWeight: 600, fontSize: 11, letterSpacing: 1, marginBottom: 4, fontFamily: MONO, textShadow: `0 0 6px ${C.axis.D}44` }}>PREFERENCES</div>
-              <div style={{ fontSize: 11, color: C.text.dim, marginBottom: 2, textShadow: '0 0 4px rgba(255,255,255,0.08)' }}>Comm style</div>
+              <div style={{ fontSize: 11, color: C.text.dim, marginBottom: 2 }}>Comm style</div>
               <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 6 }}>
                 {COMM_OPTIONS.map(o => (
-                  <button type="button" key={o} onClick={() => updateCal('commStyle', o)} style={{
-                    ...pillBtn(cal.commStyle === o, C.axis.D),
+                  <button type="button" key={o} onClick={() => updateCal('commStyle', o)} className="glass-btn" style={{
+                    minHeight: 'auto', minWidth: 'auto', padding: '4px 8px', fontSize: 10,
+                    borderColor: cal.commStyle === o ? C.axis.D : 'transparent',
+                    color: cal.commStyle === o ? C.axis.D : 'var(--dim)',
+                    background: cal.commStyle === o ? `${C.axis.D}22` : 'transparent',
                   }}>{o}</button>
                 ))}
               </div>
               <div style={{ display: 'flex', gap: 8 }}>
-                <label style={{ fontSize: 12, color: C.text.secondary, display: 'flex', alignItems: 'center', gap: 6, textShadow: '0 0 4px rgba(255,255,255,0.08)' }}>
+                <label style={{ fontSize: 12, color: C.text.secondary, display: 'flex', alignItems: 'center', gap: 6 }}>
                   <input type="checkbox" checked={cal.breathingEnabled}
                     onChange={e => updateCal('breathingEnabled', e.target.checked)} />
                   Breathing
                 </label>
-                <label style={{ fontSize: 12, color: C.text.secondary, display: 'flex', alignItems: 'center', gap: 6, textShadow: '0 0 4px rgba(255,255,255,0.08)' }}>
+                <label style={{ fontSize: 12, color: C.text.secondary, display: 'flex', alignItems: 'center', gap: 6 }}>
                   <input type="checkbox" checked={cal.deepLockEnabled}
                     onChange={e => updateCal('deepLockEnabled', e.target.checked)} />
                   Deep Lock
@@ -1043,8 +1017,8 @@ export function BufferRoom() {
       {/* ══════════════ TELEMETRY DEBUG PANEL ══════════════ */}
       {showTelemetry && (
         <div style={{
-          padding: '10px 16px', background: 'rgba(255,215,0,0.02)',
-          borderBottom: `1px solid ${C.cyan}18`, flexShrink: 0,
+          padding: '10px 16px', background: 'var(--neon-ghost)',
+          borderBottom: `1px solid var(--neon-ghost)`, flexShrink: 0,
         }}>
           <div style={{ fontSize: 11, letterSpacing: 2, color: C.cyan, marginBottom: 6, fontWeight: 600, fontFamily: MONO, textShadow: `0 0 6px ${C.cyan}33` }}>
             IVM TELEMETRY (`)
@@ -1071,7 +1045,7 @@ export function BufferRoom() {
           {/* Voltage history sparkline */}
           {voltageHistory.length > 1 && (
             <div style={{ marginTop: 8 }}>
-              <div style={{ fontSize: 11, color: C.text.dim, marginBottom: 2, textShadow: '0 0 4px rgba(255,215,0,0.15)' }}>VOLTAGE HISTORY</div>
+              <div style={{ fontSize: 11, color: C.text.dim, marginBottom: 2 }}>VOLTAGE HISTORY</div>
               <div style={{ display: 'flex', alignItems: 'flex-end', gap: 1, height: 20 }}>
                 {voltageHistory.map((v, i) => {
                   const h = (v / 10) * 20;
@@ -1089,45 +1063,45 @@ export function BufferRoom() {
         <div style={{
           flex: 1, display: 'flex', flexDirection: 'column',
           alignItems: 'center', justifyContent: 'center', gap: 20,
-          background: `rgba(255,68,68,0.02)`, padding: 24,
+          background: `rgba(255,107,107,0.02)`, padding: 24,
         }}>
           <div style={{
             width: 80, height: 80, borderRadius: '50%',
-            border: `2px solid ${C.coral}44`,
+            border: `2px solid var(--coral)44`,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
             <span style={{ fontSize: 32 }}>&#x1F6E1;</span>
           </div>
-          <div style={{ fontSize: 13, color: C.coral, fontWeight: 600, letterSpacing: 3, fontFamily: MONO }}>
+          <div style={{ fontSize: 13, color: 'var(--coral)', fontWeight: 600, letterSpacing: 3, fontFamily: MONO }}>
             DEEP PROCESSING LOCK
           </div>
-          <div style={{ fontSize: 11, color: C.text.dim, maxWidth: 320, textAlign: 'center', lineHeight: 1.6 }}>
+          <div style={{ fontSize: 11, color: 'var(--dim)', maxWidth: 320, textAlign: 'center', lineHeight: 1.6 }}>
             Energy below 25%. New inputs blocked to protect your capacity.
           </div>
-          <div style={{ fontSize: 24, color: C.coral, fontFamily: MONO, fontWeight: 700 }}>
+          <div style={{ fontSize: 24, color: 'var(--coral)', fontFamily: MONO, fontWeight: 700 }}>
             {spoons.toFixed(1)} / {maxSpoons}
           </div>
 
           {/* Recovery actions */}
           <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', justifyContent: 'center' }}>
             {cal.breathingEnabled && (
-              <button type="button" onClick={() => setBreathing(true)} style={{
-                ...btnBase(true, C.mint), padding: '10px 20px',
+              <button type="button" onClick={() => setBreathing(true)} className="glass-btn" style={{
+                color: 'var(--mint)', borderColor: 'var(--mint)44', padding: '10px 20px', minHeight: 'auto'
               }}>
                 BREATHE (4-2-6)
               </button>
             )}
             <button type="button" onClick={() => {
               updateState('valence' as Parameters<typeof updateState>[0], 2).catch(() => {});
-            }} style={{
-              ...btnBase(true, C.text.dim), padding: '10px 20px',
+            }} className="glass-btn" style={{
+              color: 'var(--dim)', padding: '10px 20px', minHeight: 'auto'
             }}>
               NAP (+2)
             </button>
             <button type="button" onClick={() => {
               updateState('valence' as Parameters<typeof updateState>[0], 1).catch(() => {});
-            }} style={{
-              ...btnBase(true, C.text.dim), padding: '10px 20px',
+            }} className="glass-btn" style={{
+              color: 'var(--dim)', padding: '10px 20px', minHeight: 'auto'
             }}>
               HEAVY WORK (+1)
             </button>
@@ -1139,14 +1113,14 @@ export function BufferRoom() {
       {!locked && (
         <div style={{
           flex: 1, display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
           gap: 12, minHeight: 0, padding: '12px 16px', overflow: 'auto',
         }}>
           {/* ═══ INGEST ═══ */}
           <BufferCard title="Incoming Messages" accent={C.amber}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
               <div style={{ fontSize: 12, color: C.amber }}>Paste and scan</div>
-              <div style={{ fontSize: 11, color: DIM }}>
+              <div style={{ fontSize: 11, color: 'var(--dim)' }}>
                 held <span style={{ color: heldActive.length > 0 ? C.coral : C.mint, fontWeight: 600 }}>{heldActive.length}</span>
               </div>
             </div>
@@ -1156,32 +1130,33 @@ export function BufferRoom() {
               onChange={e => { setIngestText(e.target.value); setScoredResult(null); setBluf(null); }}
               placeholder="Paste a message, email, or text to scan..."
               rows={4}
+              className="glass-input"
               style={{
-                ...inputStyle,
-                borderColor: liveScore ? `${GATES[liveScore.gate].color}44` : C.bg.border,
+                borderColor: liveScore ? `${GATES[liveScore.gate].color}44` : 'var(--neon-ghost)',
+                background: 'var(--s2)'
               }}
             />
 
             {/* Pre-score hint */}
             {liveScore && !scoredResult && (
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 6, fontSize: 12, color: DIM }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 6, fontSize: 12, color: 'var(--dim)' }}>
                 <span>~{liveScore.v}/10</span>
                 <span style={{ color: GATES[liveScore.gate].color }}>{liveScore.gate}</span>
               </div>
             )}
 
             <button type="button" onClick={handleScore} disabled={!ingestText.trim()}
-              style={{ ...btnBase(!!ingestText.trim(), C.amber), width: '100%', marginTop: 8, padding: '8px' }}>
+              className="glass-btn" style={{ width: '100%', marginTop: 8, padding: '8px', color: 'var(--amber)', borderColor: 'var(--amber)44' }}>
               SCORE
             </button>
 
             {/* Scored result */}
             {scoredResult && gc && (
-              <div style={{ marginTop: 10, borderTop: `1px solid ${C.bg.border}`, paddingTop: 10 }}>
+              <div style={{ marginTop: 10, borderTop: `1px solid var(--neon-ghost)`, paddingTop: 10 }}>
                 {/* Voltage header */}
-                <div style={{
+                <div className="glass-card" style={{
                   display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10,
-                  padding: '8px 12px', borderRadius: 8, background: gc.bg, border: `1px solid ${gc.color}33`,
+                  padding: '8px 12px', borderRadius: 'var(--radius-md)', background: gc.bg, border: `1px solid ${gc.color}33`,
                 }}>
                   <div style={{ fontSize: 22, fontWeight: 700, color: gc.color }}>{scoredResult.v}</div>
                   <div>
@@ -1194,17 +1169,17 @@ export function BufferRoom() {
                 <div style={{ display: 'flex', gap: 6, marginBottom: 10 }}>
                   {([['URG', scoredResult.u, C.cyan], ['EMO', scoredResult.e, C.lavender], ['COG', scoredResult.c, C.amber]] as const).map(([l, v, barColor]) => (
                     <div key={l} style={{ flex: 1 }}>
-                      <div style={{ height: 4, background: 'rgba(255,255,255,0.04)', borderRadius: 4 }}>
+                      <div style={{ height: 4, background: 'var(--neon-faint)', borderRadius: 4 }}>
                         <div style={{ height: '100%', width: `${v * 10}%`, background: barColor, borderRadius: 4, transition: 'width 0.3s', boxShadow: `0 0 6px ${barColor}` }} />
                       </div>
-                      <div style={{ fontSize: 11, color: DIM, marginTop: 2, fontFamily: MONO }}>{l} {v}</div>
+                      <div style={{ fontSize: 11, color: 'var(--dim)', marginTop: 2, fontFamily: MONO }}>{l} {v}</div>
                     </div>
                   ))}
                 </div>
 
                 {/* PA patterns */}
                 {scoredResult.pa.length > 0 && (
-                  <div style={{ padding: '6px 10px', borderRadius: 6, marginBottom: 8, background: `${C.lavender}05`, border: `1px solid ${C.lavender}12` }}>
+                  <div style={{ padding: '6px 10px', borderRadius: 'var(--radius-md)', marginBottom: 8, background: `var(--neon-ghost)`, border: `1px solid ${C.lavender}12` }}>
                     <div style={{ fontSize: 11, letterSpacing: 1.5, color: C.lavender, marginBottom: 4, fontWeight: 600, fontFamily: MONO, textShadow: `0 0 6px ${C.lavender}33` }}>SUBTEXT DETECTED</div>
                     {scoredResult.pa.map((p, i) => (
                       <div key={i} style={{ fontSize: 12, color: C.text.secondary, marginBottom: 1, lineHeight: 1.5 }}>{p.t}</div>
@@ -1214,8 +1189,8 @@ export function BufferRoom() {
 
                 {/* BLUF */}
                 {bluf && (
-                  <div style={{ padding: '6px 10px', borderRadius: 6, marginBottom: 8, background: 'rgba(255,215,0,0.015)', border: `1px solid ${C.bg.border}` }}>
-                    <div style={{ fontSize: 11, letterSpacing: 1.5, color: C.text.dim, marginBottom: 4, fontWeight: 600, fontFamily: MONO, textShadow: '0 0 4px rgba(255,215,0,0.15)' }}>BLUF</div>
+                  <div style={{ padding: '6px 10px', borderRadius: 'var(--radius-md)', marginBottom: 8, background: 'var(--neon-ghost)', border: `1px solid var(--neon-ghost)` }}>
+                    <div style={{ fontSize: 11, letterSpacing: 1.5, color: 'var(--dim)', marginBottom: 4, fontWeight: 600, fontFamily: MONO }}>BLUF</div>
                     <div style={{ fontSize: 11, color: C.text.secondary, lineHeight: 1.6 }}>{bluf.summary}</div>
                     {bluf.actions.length > 0 && (
                       <div style={{ marginTop: 4 }}>
@@ -1234,54 +1209,54 @@ export function BufferRoom() {
 
                 {/* Actions */}
                 <div style={{ display: 'flex', gap: 6 }}>
-                  <button type="button" onClick={handleIngest} disabled={fawnGuardActive} style={{
-                    ...btnBase(true, fawnGuardActive ? DIM : scoredResult.v / 10 > threshold ? C.coral : C.mint),
-                    flex: 1, padding: '8px',
-                    opacity: fawnGuardActive ? 0.3 : 1,
-                    cursor: fawnGuardActive ? 'not-allowed' : 'pointer',
+                  <button type="button" onClick={handleIngest} disabled={fawnGuardActive} 
+                    className="glass-btn"
+                    style={{
+                    color: fawnGuardActive ? 'var(--dim)' : scoredResult.v / 10 > threshold ? 'var(--coral)' : 'var(--mint)',
+                    borderColor: fawnGuardActive ? 'var(--neon-ghost)' : scoredResult.v / 10 > threshold ? 'var(--coral)44' : 'var(--mint)44',
+                    flex: 1, padding: '8px', minHeight: 'auto'
                   }}>
                     {fawnGuardActive ? 'LOCKED' : scoredResult.v / 10 > threshold ? 'HOLD' : 'PROCESS'}
                   </button>
-                  <button type="button" onClick={() => { setScoredResult(null); setBluf(null); setIngestText(''); }} style={{
-                    ...btnBase(true, DIM), padding: '8px', width: 50,
-                  }}>CLR</button>
+                  <button type="button" onClick={() => { setScoredResult(null); setBluf(null); setIngestText(''); }} 
+                    className="glass-btn" style={{ padding: '8px', width: 50, minHeight: 'auto', color: 'var(--dim)' }}>CLR</button>
                 </div>
               </div>
             )}
 
             {/* Held messages */}
             {heldActive.length > 0 && (
-              <div style={{ marginTop: 10, borderTop: `1px solid ${C.bg.border}`, paddingTop: 10 }}>
+              <div style={{ marginTop: 10, borderTop: `1px solid var(--neon-ghost)`, paddingTop: 10 }}>
                 <div style={{ fontSize: 11, color: C.coral, marginBottom: 6, fontWeight: 600 }}>
                   Holding ({heldActive.length})
                 </div>
                 {heldActive.slice(0, 5).map(msg => (
                   <div key={msg.id} style={{
-                    padding: '6px 0', borderBottom: `1px solid ${C.bg.border}`,
+                    padding: '6px 0', borderBottom: `1px solid var(--neon-ghost)`,
                     display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 6,
                   }}>
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 12, color: C.text.primary, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', opacity: 0.7 }}>
+                      <div style={{ fontSize: 12, color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', opacity: 0.7 }}>
                         {msg.text.slice(0, 40)}
                       </div>
-                      <div style={{ display: 'flex', gap: 8, fontSize: 12, color: DIM }}>
+                      <div style={{ display: 'flex', gap: 8, fontSize: 12, color: 'var(--dim)' }}>
                         <span style={{ color: GATES[msg.gate as keyof typeof GATES]?.color ?? C.coral, fontWeight: 600 }}>{msg.gate} {msg.voltage}</span>
                         <span>{timeAgo(msg.ingestedAt)}</span>
                       </div>
                     </div>
                     <div style={{ display: 'flex', gap: 4, flexShrink: 0 }}>
-                      <button type="button" onClick={() => handleRelease(msg.id)} style={{ ...pillBtn(true, C.mint) }}>ok</button>
-                      <button type="button" onClick={() => handleDismiss(msg.id)} style={{ ...pillBtn(true, C.coral) }}>x</button>
+                      <button type="button" onClick={() => handleRelease(msg.id)} className="glass-btn" style={{ minHeight: 'auto', minWidth: 'auto', padding: '2px 8px', color: 'var(--mint)' }}>ok</button>
+                      <button type="button" onClick={() => handleDismiss(msg.id)} className="glass-btn" style={{ minHeight: 'auto', minWidth: 'auto', padding: '2px 8px', color: 'var(--coral)' }}>x</button>
                     </div>
                   </div>
                 ))}
                 {heldActive.length > 5 && (
-                  <div style={{ fontSize: 11, color: DIM, marginTop: 4 }}>+{heldActive.length - 5} more held</div>
+                  <div style={{ fontSize: 11, color: 'var(--dim)', marginTop: 4 }}>+{heldActive.length - 5} more held</div>
                 )}
               </div>
             )}
 
-            <div style={{ fontSize: 12, color: DIM, marginTop: 8, fontFamily: MONO }}>
+            <div style={{ fontSize: 12, color: 'var(--dim)', marginTop: 8, fontFamily: MONO }}>
               {processedCount}P {deferredCount}D {held.filter(m => m.released).length}R
             </div>
           </BufferCard>
@@ -1295,23 +1270,24 @@ export function BufferRoom() {
               onChange={e => setDraftText(e.target.value)}
               placeholder="Paste your reply before sending..."
               rows={5}
+              className="glass-input"
               style={{
-                ...inputStyle,
-                borderColor: fawn && fawn.score > 0.3 ? `${C.coral}44` : C.bg.border,
+                borderColor: fawn && fawn.score > 0.3 ? `${C.coral}44` : 'var(--neon-ghost)',
+                background: 'var(--s2)'
               }}
             />
 
             {/* Fawn score bar */}
             {fawn && fawn.matchCount > 0 && (
               <div style={{ marginTop: 8 }}>
-                <div style={{ height: 3, background: 'rgba(255,255,255,0.04)', borderRadius: 2 }}>
+                <div style={{ height: 3, background: 'var(--neon-faint)', borderRadius: 2 }}>
                   <div style={{
                     height: '100%', width: `${fawn.score * 100}%`,
                     background: fawn.score > 0.5 ? C.coral : C.amber,
                     borderRadius: 2, transition: 'width 0.3s',
                   }} />
                 </div>
-                <div style={{ fontSize: 11, color: C.text.dim, marginTop: 2, fontFamily: MONO, textShadow: '0 0 4px rgba(255,255,255,0.08)' }}>
+                <div style={{ fontSize: 11, color: 'var(--dim)', marginTop: 2, fontFamily: MONO }}>
                   fawn score: {(fawn.score * 100).toFixed(0)}%
                 </div>
               </div>
@@ -1321,11 +1297,11 @@ export function BufferRoom() {
             {fawnSummary && fawnSummary.length > 0 && (
               <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 10 }}>
                 {fawnSummary.map(([cat, count]) => (
-                  <div key={cat} style={{
+                  <div key={cat} className="glass-card" style={{
                     display: 'flex', alignItems: 'center', gap: 4,
-                    padding: '3px 8px', borderRadius: 8,
-                    background: `${CATEGORY_COLOR[cat] ?? DIM}11`,
-                    border: `1px solid ${(CATEGORY_COLOR[cat] ?? DIM)}33`,
+                    padding: '3px 8px', borderRadius: 'var(--radius-md)',
+                    background: `${CATEGORY_COLOR[cat] ?? 'var(--dim)'}11`,
+                    border: `1px solid ${(CATEGORY_COLOR[cat] ?? 'var(--dim)')}33`,
                   }}>
                     <span style={{ fontSize: 11, color: CATEGORY_COLOR[cat], fontWeight: 600 }}>{cat} ({count})</span>
                   </div>
@@ -1334,37 +1310,35 @@ export function BufferRoom() {
             )}
 
             {fawn && fawn.flags.length > 0 && (
-              <div style={{ marginTop: 10, borderTop: `1px solid ${C.bg.border}`, paddingTop: 10 }}>
+              <div style={{ marginTop: 10, borderTop: `1px solid var(--neon-ghost)`, paddingTop: 10 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
                   <div style={{ fontSize: 12, color: fawn.score > 0.4 ? C.coral : C.amber, fontWeight: 600 }}>Patterns Detected</div>
                   <span style={{ fontSize: 14, fontWeight: 600, color: fawn.score > 0.4 ? C.coral : C.amber }}>{fawn.matchCount}</span>
                 </div>
                 {fawn.flags.map((flag, i) => (
-                  <div key={i} style={{ padding: '6px 0', borderBottom: `1px solid ${C.bg.border}` }}>
+                  <div key={i} style={{ padding: '6px 0', borderBottom: `1px solid var(--neon-ghost)` }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <span style={{ fontSize: 12, color: CATEGORY_COLOR[flag.category] ?? C.amber, fontWeight: 500 }}>"{flag.pattern}"</span>
-                      <span style={{
-                        fontSize: 11, color: CATEGORY_COLOR[flag.category] ?? DIM,
-                        border: `1px solid ${(CATEGORY_COLOR[flag.category] ?? DIM)}33`,
+                      <span className="glass-card" style={{
+                        fontSize: 11, color: CATEGORY_COLOR[flag.category] ?? 'var(--dim)',
+                        border: `1px solid ${(CATEGORY_COLOR[flag.category] ?? 'var(--dim)')}33`,
                         borderRadius: 6, padding: '4px 8px', fontWeight: 600,
-                        textShadow: `0 0 4px ${(CATEGORY_COLOR[flag.category] ?? DIM)}33`,
+                        background: 'var(--s1)'
                       }}>{flag.category}</span>
                     </div>
-                    <div style={{ fontSize: 11, color: DIM, marginTop: 3, fontStyle: 'italic', lineHeight: 1.5 }}>{flag.guidance}</div>
+                    <div style={{ fontSize: 11, color: 'var(--dim)', marginTop: 3, fontStyle: 'italic', lineHeight: 1.5 }}>{flag.guidance}</div>
                   </div>
                 ))}
-                <button type="button" onClick={() => setDraftText('')} style={{
-                  ...btnBase(true, C.mint), width: '100%', marginTop: 10, padding: '8px',
-                }}>
+                <button type="button" onClick={() => setDraftText('')} className="glass-btn" style={{ width: '100%', marginTop: 10, padding: '8px', color: 'var(--mint)', borderColor: 'var(--mint)44', minHeight: 'auto' }}>
                   I see it — send with awareness
                 </button>
               </div>
             )}
 
             {fawn && fawn.flags.length === 0 && draftText.trim().length > 10 && (
-              <div style={{
-                marginTop: 10, padding: '10px', borderRadius: 10,
-                border: `1px solid ${C.mint}33`, background: `${C.mint}08`,
+              <div className="glass-card" style={{
+                marginTop: 10, padding: '10px', borderRadius: 'var(--radius-md)',
+                border: `1px solid ${C.mint}33`, background: 'var(--s2)',
               }}>
                 <div style={{ fontSize: 13, color: C.mint, fontWeight: 500 }}>
                   No fawn patterns detected. Your voice is clear.
@@ -1382,15 +1356,16 @@ export function BufferRoom() {
               onChange={e => setChaosText(e.target.value)}
               placeholder="Journal, notes, brain dump, voice-to-text..."
               rows={6}
-              style={inputStyle}
+              className="glass-input"
+              style={{ background: 'var(--s2)' }}
             />
             <button type="button" onClick={handleExtract} disabled={!chaosText.trim()}
-              style={{ ...btnBase(!!chaosText.trim(), C.orange), width: '100%', marginTop: 8, padding: '8px' }}>
+              className="glass-btn" style={{ width: '100%', marginTop: 8, padding: '8px', color: 'var(--orange)', borderColor: 'var(--orange)44', minHeight: 'auto' }}>
               Extract Structure
             </button>
 
             {extracted.length > 0 && (
-              <div style={{ marginTop: 10, borderTop: `1px solid ${C.bg.border}`, paddingTop: 10 }}>
+              <div style={{ marginTop: 10, borderTop: `1px solid var(--neon-ghost)`, paddingTop: 10 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
                   <div style={{ fontSize: 12, color: C.orange, fontWeight: 600 }}>Extracted</div>
                   <div style={{ display: 'flex', gap: 4 }}>
@@ -1398,10 +1373,10 @@ export function BufferRoom() {
                       const count = extracted.filter(e => e.type === type).length;
                       if (!count) return null;
                       return (
-                        <span key={type} style={{
+                        <span key={type} className="glass-card" style={{
                           fontSize: 11, padding: '4px 8px', borderRadius: 6,
-                          background: `${ITEM_COLOR[type]}15`, color: ITEM_COLOR[type], fontWeight: 600,
-                          textShadow: `0 0 4px ${ITEM_COLOR[type]}33`,
+                          background: 'var(--s1)', color: ITEM_COLOR[type], fontWeight: 600,
+                          border: `1px solid ${ITEM_COLOR[type]}33`
                         }}>
                           {ITEM_ICON[type]}{count}
                         </span>
@@ -1411,17 +1386,17 @@ export function BufferRoom() {
                 </div>
                 {extracted.map((item, i) => (
                   <div key={i} style={{
-                    padding: '5px 0', borderBottom: `1px solid ${C.bg.border}`,
+                    padding: '5px 0', borderBottom: `1px solid var(--neon-ghost)`,
                     display: 'flex', gap: 6, alignItems: 'flex-start',
                   }}>
                     <span style={{
                       fontSize: 11, color: ITEM_COLOR[item.type], fontWeight: 600, flexShrink: 0, width: 14, textAlign: 'center',
                     }}>{ITEM_ICON[item.type]}</span>
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 12, color: C.text.primary, lineHeight: 1.5, opacity: 0.8 }}>
+                      <div style={{ fontSize: 12, color: 'var(--text)', lineHeight: 1.5, opacity: 0.8 }}>
                         {item.text.slice(0, 100)}{item.text.length > 100 ? '...' : ''}
                       </div>
-                      <div style={{ fontSize: 11, color: ITEM_COLOR[item.type], fontWeight: 600, textShadow: `0 0 4px ${ITEM_COLOR[item.type]}33` }}>{item.type.toUpperCase()}</div>
+                      <div style={{ fontSize: 11, color: ITEM_COLOR[item.type], fontWeight: 600 }}>{item.type.toUpperCase()}</div>
                     </div>
                   </div>
                 ))}
@@ -1430,9 +1405,7 @@ export function BufferRoom() {
                 <button type="button" onClick={() => {
                   const output = extracted.map(e => `[${e.type.toUpperCase()}] ${e.text}`).join('\n');
                   navigator.clipboard.writeText(output).catch(() => {});
-                }} style={{
-                  ...btnBase(true, C.orange), width: '100%', marginTop: 8, padding: '8px',
-                }}>
+                }} className="glass-btn" style={{ width: '100%', marginTop: 8, padding: '8px', color: 'var(--orange)', borderColor: 'var(--orange)44', minHeight: 'auto' }}>
                   Copy to Clipboard
                 </button>
               </div>
@@ -1444,25 +1417,25 @@ export function BufferRoom() {
       {/* ══════════════ TELEMETRY FOOTER ══════════════ */}
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '8px 16px', borderTop: `1px solid rgba(255,255,255,0.06)`,
+        padding: '8px 16px', borderTop: `1px solid var(--neon-ghost)`,
         background: `linear-gradient(90deg, ${C.amber}04 0%, transparent 50%, ${C.cyan}04 100%)`,
         flexShrink: 0, fontSize: 11, fontFamily: MONO,
-        color: C.text.dim, gap: 8,
+        color: 'var(--dim)', gap: 8,
       }}>
-        <span style={{ color: C.amber, fontWeight: 600, textShadow: `0 0 6px ${C.amber}33` }}>{cal.displayName || 'uncalibrated'}</span>
-        <span style={{ color: C.text.dim }}>
+        <span style={{ color: 'var(--amber)', fontWeight: 600, textShadow: `0 0 6px var(--neon-dim)` }}>{cal.displayName || 'uncalibrated'}</span>
+        <span style={{ color: 'var(--dim)' }}>
           {processedCount}P {deferredCount}D {heldActive.length}H
         </span>
-        <span style={{ color: tensionColor, fontWeight: 600, textShadow: `0 0 6px ${tensionColor}44` }}>
+        <span style={{ color: tensionColor, fontWeight: 600, textShadow: `0 0 6px var(--neon-dim)` }}>
           T:{samson.tension.toFixed(2)}
         </span>
-        <span style={{ color: C.lavender, textShadow: `0 0 6px ${C.lavender}33` }}>
+        <span style={{ color: 'var(--lavender)', textShadow: `0 0 6px var(--neon-dim)` }}>
           AI:{samson.aiTemp}
         </span>
-        <span style={{ color: C.text.secondary }}>
+        <span style={{ color: 'var(--dim)' }}>
           {cal.commStyle}
         </span>
-        <span style={{ color: samson.drift !== 'nominal' ? C.amber : C.text.dim, fontWeight: samson.drift !== 'nominal' ? 700 : 400 }}>
+        <span style={{ color: samson.drift !== 'nominal' ? 'var(--amber)' : 'var(--dim)', fontWeight: samson.drift !== 'nominal' ? 700 : 400 }}>
           {samson.drift !== 'nominal' ? samson.drift.toUpperCase() : 'NOMINAL'}
         </span>
       </div>
@@ -1475,8 +1448,9 @@ export function BufferRoom() {
 function TRow({ label, value, color }: { label: string; value: string; color: string }) {
   return (
     <div style={{ display: 'flex', gap: 6, minWidth: 100 }}>
-      <span style={{ color: 'rgba(255,255,255,0.3)' }}>{label}:</span>
-      <span style={{ color, fontWeight: 600, textShadow: `0 0 6px ${color}33` }}>{value}</span>
+      <span style={{ color: 'var(--dim)' }}>{label}:</span>
+      <span style={{ color, fontWeight: 600, textShadow: `0 0 6px var(--neon-dim)` }}>{value}</span>
     </div>
   );
 }
+

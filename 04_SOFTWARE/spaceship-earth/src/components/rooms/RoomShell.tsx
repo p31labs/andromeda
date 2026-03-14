@@ -1,23 +1,28 @@
 // spaceship-earth/src/components/rooms/RoomShell.tsx
-// Room orchestrator — crossfade transitions, room persistence, loading boundaries.
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+// Room orchestrator — dynamic loading, crossfade transitions, room persistence.
+import React, { useState, useEffect, useCallback, Suspense, lazy } from 'react';
 import type { RoomId } from '../../types/rooms.types';
 import { ROOMS } from '../../types/rooms.types';
-import { BondingRoom } from './BondingRoom';
-import ObservatoryRoom from './ObservatoryRoom';
-import { BridgeRoom } from './BridgeRoom';
-import { GeodesicRoom } from './GeodesicRoom';
-import { VaultRoom } from './VaultRoom';
-import { BufferRoom } from './BufferRoom';
-import { SovereignRoom } from './sovereign/SovereignRoom';
+
 import { RoomNav } from '../navigation/RoomNav';
 import { CockpitHUD } from '../hud/CockpitHUD';
 import { MolecularField } from '../MolecularField';
 import { BugReportButton } from '../BugReportButton';
+import { SomaticOverloadOverlay } from '../hud/SomaticOverloadOverlay';
 import { useLoveSync } from '../../hooks/useLoveSync';
 import { useBondingHandshake } from '../../hooks/useBondingHandshake';
 import { useProtocolLoveSync } from '../../hooks/useProtocolLoveSync';
 import { useNode } from '../../contexts/NodeContext';
+
+// ── Dynamic Imports (Code Splitting) ──
+
+const BondingRoom = lazy(() => import('./BondingRoom').then(m => ({ default: m.BondingRoom })));
+const ObservatoryRoom = lazy(() => import('./ObservatoryRoom'));
+const BridgeRoom = lazy(() => import('./BridgeRoom').then(m => ({ default: m.BridgeRoom })));
+const GeodesicRoom = lazy(() => import('./GeodesicRoom').then(m => ({ default: m.GeodesicRoom })));
+const VaultRoom = lazy(() => import('./VaultRoom').then(m => ({ default: m.VaultRoom })));
+const BufferRoom = lazy(() => import('./BufferRoom').then(m => ({ default: m.BufferRoom })));
+const SovereignRoom = lazy(() => import('./sovereign/SovereignRoom').then(m => ({ default: m.SovereignRoom })));
 
 // ── Room persistence ──
 
@@ -37,14 +42,13 @@ function persistRoom(id: RoomId) {
 
 // ── Transition wrapper ──
 
-function RoomTransition({ active, children }: { active: boolean; children: React.ReactNode }) {
+function RoomTransition({ active, children, label }: { active: boolean; children: React.ReactNode; label: string }) {
   const [mounted, setMounted] = useState(active);
   const [visible, setVisible] = useState(active);
 
   useEffect(() => {
     if (active) {
       setMounted(true);
-      // Delay visibility for fade-in
       requestAnimationFrame(() => {
         requestAnimationFrame(() => setVisible(true));
       });
@@ -64,7 +68,9 @@ function RoomTransition({ active, children }: { active: boolean; children: React
       transition: 'opacity 0.25s ease-in-out',
       pointerEvents: active ? 'auto' : 'none',
     }}>
-      {children}
+      <Suspense fallback={<RoomLoader label={label} />}>
+        {children}
+      </Suspense>
     </div>
   );
 }
@@ -75,17 +81,13 @@ function RoomLoader({ label }: { label: string }) {
   return (
     <div style={{
       display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-      gap: 12, height: '100%', color: '#3a4a5a', fontFamily: "'JetBrains Mono', monospace",
+      gap: 16, height: '100%', color: 'var(--cyan)', fontFamily: "var(--font-data)",
+      background: 'var(--s1)',
     }}>
-      <div style={{
-        width: 20, height: 20,
-        border: '2px solid #1a2a3a',
-        borderRightColor: 'transparent',
-        borderRadius: '50%',
-        animation: 'spin 0.6s linear infinite',
-      }} />
-      <span style={{ fontSize: 10, letterSpacing: 2 }}>{label}</span>
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+      <div className="helix-spinner" style={{ width: 32, height: 32, borderWidth: '3px' }} />
+      <span style={{ fontSize: 10, letterSpacing: 4, textTransform: 'uppercase', opacity: 0.6 }}>
+        Loading {label}...
+      </span>
     </div>
   );
 }
@@ -113,48 +115,54 @@ export function RoomShell() {
       inset: 0,
       width: '100%',
       height: '100%',
-      background: '#000000',
+      background: 'var(--void)',
       overflow: 'hidden',
     }}>
-      {/* Persistent molecular starfield background — always visible */}
+      {/* Persistent molecular starfield background */}
       <MolecularField />
 
-      {/* Room content — ALL rooms reserve 60px for nav */}
+      {/* Room content */}
       <div style={{
         position: 'absolute',
         inset: 0,
         bottom: 60,
         zIndex: 1,
       }}>
-        {/* Bonding gets no transition (iframe) */}
-        {activeRoom === 'bonding' && <BondingRoom url={bondingUrl} />}
+        {/* Bonding (iframe) */}
+        {activeRoom === 'bonding' && (
+          <Suspense fallback={<RoomLoader label="Bonding" />}>
+            <BondingRoom url={bondingUrl} />
+          </Suspense>
+        )}
 
-        {/* All other rooms get crossfade transitions */}
-        <RoomTransition active={activeRoom === 'observatory'}>
+        <RoomTransition active={activeRoom === 'observatory'} label="Observatory">
           <ObservatoryRoom />
         </RoomTransition>
 
-        <RoomTransition active={activeRoom === 'geodesic'}>
+        <RoomTransition active={activeRoom === 'geodesic'} label="Geodesic Nexus">
           <GeodesicRoom />
         </RoomTransition>
 
-        <RoomTransition active={activeRoom === 'bridge'}>
+        <RoomTransition active={activeRoom === 'bridge'} label="Bridge">
           <BridgeRoom love={love} spoons={spoons} maxSpoons={maxSpoons} tier={tier} />
         </RoomTransition>
 
-        <RoomTransition active={activeRoom === 'vault'}>
+        <RoomTransition active={activeRoom === 'vault'} label="Secure Vault">
           <VaultRoom tier={tier} />
         </RoomTransition>
 
-        <RoomTransition active={activeRoom === 'buffer'}>
+        <RoomTransition active={activeRoom === 'buffer'} label="Voltage Buffer">
           <BufferRoom />
         </RoomTransition>
 
-        {/* Sovereign OS — full immersive cockpit + diagnostic */}
-        {activeRoom === 'sovereign' && <SovereignRoom />}
+        {activeRoom === 'sovereign' && (
+          <Suspense fallback={<RoomLoader label="Sovereign OS" />}>
+            <SovereignRoom />
+          </Suspense>
+        )}
       </div>
 
-      {/* HUD — visible in all rooms except BONDING (which has its own) */}
+      {/* HUD */}
       {activeRoom !== 'bonding' && activeRoom !== 'sovereign' && (
         <CockpitHUD spoons={spoons} maxSpoons={maxSpoons} love={love} tier={tier} />
       )}
@@ -164,6 +172,10 @@ export function RoomShell() {
 
       {/* Navigation */}
       <RoomNav rooms={ROOMS} activeRoom={activeRoom} onRoomChange={handleRoomChange} />
+
+      {/* Global Somatic Overload Overlay */}
+      <SomaticOverloadOverlay />
     </div>
   );
 }
+

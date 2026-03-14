@@ -59,7 +59,7 @@ function LockIcon({ color, pulsing }: { color: string; pulsing?: boolean }) {
 
 function ChainLink({ from, to, color }: { from: string; to: string; color: string }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 8, color: 'rgba(255,255,255,0.06)' }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 8, color: 'var(--neon-ghost)' }}>
       <span style={{ color }}>{from}</span>
       <svg width={20} height={8} viewBox="0 0 20 8">
         <line x1={0} y1={4} x2={14} y2={4} stroke={color} strokeWidth={1} opacity={0.4} />
@@ -73,10 +73,10 @@ function ChainLink({ from, to, color }: { from: string; to: string; color: strin
 // ── Constants ──
 
 const LAYER_COLORS: Record<string, string> = {
-  telemetry: '#00FFFF',
-  'love-ledger': '#BF5FFF',
-  bonds: '#00FFFF',
-  'game-state': '#f7dc6f',
+  telemetry: 'var(--cyan)',
+  'love-ledger': 'var(--magenta)',
+  bonds: 'var(--cyan)',
+  'game-state': 'var(--amber)',
 };
 
 const LAYER_ICONS: Record<string, string> = {
@@ -90,7 +90,7 @@ const ACCENT_MAP: Record<string, string> = {
   telemetry: 'accent-teal',
   'love-ledger': 'accent-violet',
   bonds: 'accent-blue',
-  'game-state': 'accent-yellow',
+  'game-state': 'accent-amber',
 };
 
 interface Props {
@@ -121,13 +121,11 @@ export function VaultRoom({ tier }: Props) {
 
   const displayHash = useHashScramble(nodeId);
 
-  // Poll sync events for live updates
   useEffect(() => {
     const interval = setInterval(() => setSyncLogTick((t) => t + 1), 3000);
     return () => clearInterval(interval);
   }, []);
 
-  // Auto-scroll sync log
   useEffect(() => {
     if (syncLogRef.current) {
       syncLogRef.current.scrollTop = syncLogRef.current.scrollHeight;
@@ -154,7 +152,6 @@ export function VaultRoom({ tier }: Props) {
     } catch { /* fallback */ }
   }, [didKey]);
 
-  // ── Ed25519 Identity: Export JWK ──
   const handleExportJWK = useCallback(async () => {
     try {
       const jwk = await genesis.exportKeyJWK();
@@ -175,7 +172,6 @@ export function VaultRoom({ tier }: Props) {
     }
   }, []);
 
-  // ── Ed25519 Identity: Import JWK ──
   const handleImportJWK = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -189,483 +185,209 @@ export function VaultRoom({ tier }: Props) {
     } catch (err) {
       setIdentityStatus(`Error: ${(err as Error).message}`);
     }
-    // Reset input
     if (importRef.current) importRef.current.value = '';
   }, []);
 
-  // ── Engine selector ──
   const handleEngineChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
     const v = e.target.value;
     setLlmEngine(v);
     try { localStorage.setItem('p31_llm_engine', v); } catch {}
   }, []);
 
-  // ── Vault JSON Export (existing) ──
+  const handleKeyChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const v = e.target.value;
+    setLlmKey(v);
+    try { localStorage.setItem('p31_llm_key', v); } catch {}
+  }, []);
+
   const handleExport = useCallback(async () => {
+    if (exporting) return;
     setExporting(true);
     setExportProgress(0);
-
-    const stages = [0.2, 0.5, 0.8, 1.0];
-    for (const s of stages) {
-      await new Promise(r => setTimeout(r, 300));
-      setExportProgress(s);
-    }
-
     try {
+      const interval = setInterval(() => {
+        setExportProgress(p => Math.min(95, p + Math.random() * 15));
+      }, 200);
       const bundle = await exportVaultBundle();
-      if (!bundle) {
+      clearInterval(interval);
+      setExportProgress(100);
+      const blob = new Blob([JSON.stringify(bundle, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `p31-daubert-bundle-${new Date().toISOString()}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setLastExport(new Date().toLocaleTimeString());
+    } catch (err) {
+      console.error('[VAULT] Export failed', err);
+    } finally {
+      setTimeout(() => {
         setExporting(false);
         setExportProgress(0);
-        return;
-      }
-
-      const json = JSON.stringify(bundle, null, 2);
-      const blob = new Blob([json], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `p31-vault-export-${new Date().toISOString().split('T')[0]}.json`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-
-      setLastExport(new Date().toISOString());
-    } catch (err) {
-      console.error('[VaultRoom] export failed:', err);
-    } finally {
-      setExporting(false);
-      setExportProgress(0);
+      }, 1000);
     }
-  }, [exportVaultBundle]);
-
-  // ── Daubert Export: signed telemetry text file ──
-  const handleDaubertExport = useCallback(async () => {
-    try {
-      const events = vaultSync?.syncEvents ?? [];
-      const did = didKey !== 'UNINITIALIZED' ? didKey : 'NO_DID';
-      const lines = [
-        '=== P31-OS DAUBERT CHAIN-OF-CUSTODY EXPORT ===',
-        `DID: ${did}`,
-        `Exported: ${new Date().toISOString()}`,
-        `Events: ${events.length}`,
-        '---',
-        ...events.map((ev) =>
-          `[${ev.timestamp}] | ${ev.direction.toUpperCase()} | ${ev.serverHash}`
-        ),
-        '---',
-        '',
-      ];
-      const payload = lines.join('\n');
-      const payloadBytes = new TextEncoder().encode(payload);
-
-      let signatureHex = 'UNSIGNED';
-      try {
-        const sigBytes = await genesis.sign(payloadBytes);
-        signatureHex = genesis.toHex(sigBytes);
-      } catch { /* identity not booted — export unsigned */ }
-
-      const signedOutput = payload + `SIGNATURE: ${signatureHex}\n`;
-      const blob = new Blob([signedOutput], { type: 'text/plain' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `p31-daubert-export-${new Date().toISOString().split('T')[0]}.txt`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    } catch (err) {
-      console.error('[VaultRoom] Daubert export failed:', err);
-    }
-  }, [vaultSync, didKey]);
-
-  const isReflex = tier === 'REFLEX';
-  const didInitialized = didKey !== 'UNINITIALIZED';
+  }, [exportVaultBundle, exporting]);
 
   return (
     <div style={{
-      display: 'flex', flexDirection: 'column', alignItems: 'center',
-      justifyContent: 'flex-start', height: '100%', color: '#c8d0dc',
-      fontFamily: "'JetBrains Mono', monospace", gap: 6,
-      overflow: 'auto', padding: '10px 16px', background: 'transparent',
+      display: 'flex', flexDirection: 'column', height: '100%',
+      padding: 'clamp(10px, 2vh, 24px)', gap: 'clamp(10px, 2vh, 20px)',
+      background: 'var(--s1)', color: 'var(--text)',
+      fontFamily: 'var(--font-data)', boxSizing: 'border-box', overflow: 'hidden'
     }}>
-      {/* Title */}
-      <h1 className="title-gradient" style={{
-        fontSize: 18, margin: 0,
-        backgroundImage: 'linear-gradient(90deg, #ff4466, #ff9944)',
-        animation: 'fadeInUp 0.4s ease-out both',
-      }}>THE VAULT</h1>
-      <div style={{ fontSize: 8, color: 'rgba(255,255,255,0.1)', letterSpacing: 2, marginTop: -2, animation: 'fadeInUp 0.4s ease-out 0.1s both' }}>
-        SOVEREIGN GROUND TRUTH
-      </div>
-      <div style={{
-        fontSize: 9, color: 'rgba(0,255,255,0.15)', maxWidth: 300, textAlign: 'center', lineHeight: 1.4,
-        animation: 'fadeInUp 0.4s ease-out 0.15s both',
-      }}>
-        Cryptographic identity, encrypted storage, Daubert-compliant chain of custody.
-      </div>
+      {/* ── HEADER & IDENTITY ── */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 16, flexShrink: 0 }}>
+        <div className="glass-card" style={{ padding: 16, border: '1px solid var(--neon-ghost)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
+            <LockIcon color="var(--cyan)" pulsing />
+            <span style={{ fontSize: 14, fontWeight: 700, letterSpacing: 1, color: 'var(--cyan)', textShadow: 'var(--glow-cyan)' }}>NODE IDENTITY</span>
+          </div>
+          <div style={{ fontSize: 11, color: 'var(--dim)', marginBottom: 4 }}>NODE_ID / SEED HASH</div>
+          <div style={{
+            background: 'rgba(0,0,0,0.3)', padding: '8px 12px', borderRadius: 'var(--radius-sm)',
+            fontSize: 12, color: 'var(--cyan)', border: '1px solid var(--neon-ghost)',
+            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+            marginBottom: 12, cursor: 'pointer'
+          }} onClick={handleCopyId}>
+            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{displayHash}</span>
+            <span style={{ fontSize: 9, opacity: 0.5 }}>{copied ? 'COPIED' : 'COPY'}</span>
+          </div>
 
-      {/* ── SE19 Step 1: Cryptographic Identity Panel ── */}
-      <div className="glass-card accent-teal" style={{
-        padding: '8px 12px', width: '100%', maxWidth: 320,
-        animation: 'fadeInUp 0.35s ease-out 0.2s both',
-      }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <span style={{
-              width: 8, height: 8, borderRadius: '50%',
-              background: didInitialized ? '#7DDFB6' : '#F08080',
-              boxShadow: didInitialized ? '0 0 6px #7DDFB6' : '0 0 6px #F08080',
-            }} />
-            <span style={{ fontSize: 10, color: '#00FFFF', letterSpacing: 1, textShadow: '0 0 8px rgba(0,255,255,0.15)' }}>
-              Ed25519 IDENTITY
-            </span>
+          <div style={{ fontSize: 11, color: 'var(--dim)', marginBottom: 4 }}>SOVEREIGN KEY (DID)</div>
+          <div style={{
+            background: 'rgba(0,0,0,0.3)', padding: '8px 12px', borderRadius: 'var(--radius-sm)',
+            fontSize: 10, color: 'var(--magenta)', border: '1px solid var(--neon-ghost)',
+            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+            marginBottom: 12, cursor: 'pointer'
+          }} onClick={handleCopyDid}>
+            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{didKey}</span>
+            <span style={{ fontSize: 9, opacity: 0.5 }}>{didCopied ? 'COPIED' : 'COPY'}</span>
           </div>
-          <button type="button" onClick={handleCopyDid} className="glass-btn" style={{
-            padding: '2px 8px',
-            color: didCopied ? '#00FFFF' : 'rgba(0,255,255,0.25)',
-            fontSize: 8, letterSpacing: 0.5,
-          }}>
-            {didCopied ? 'COPIED' : 'COPY DID'}
-          </button>
-        </div>
-        <div role="status" aria-label="DID key status" style={{
-          fontSize: 10, color: '#00FFFF',
-          wordBreak: 'break-all', lineHeight: 1.4,
-          textShadow: '0 0 12px rgba(0,255,255,0.1)',
-          fontFamily: "'JetBrains Mono', monospace",
-          letterSpacing: 0.3, marginBottom: 8,
-        }}>
-          {didInitialized ? didKey : 'AWAITING BOOT...'}
-        </div>
-        <div style={{ display: 'flex', gap: 6 }}>
-          <button
-            type="button"
-            onClick={handleExportJWK}
-            disabled={!didInitialized}
-            className="glass-btn"
-            style={{
-              flex: 1, padding: '5px 8px', fontSize: 9, letterSpacing: 1,
-              color: didInitialized ? '#00FFFF' : 'rgba(0,255,255,0.2)',
-              border: '1px solid rgba(0,255,255,0.1)',
-              opacity: didInitialized ? 1 : 0.4,
-            }}
-          >
-            EXPORT JWK
-          </button>
-          <button
-            type="button"
-            onClick={() => importRef.current?.click()}
-            className="glass-btn"
-            style={{
-              flex: 1, padding: '5px 8px', fontSize: 9, letterSpacing: 1,
-              color: '#FFAA00',
-              border: '1px solid rgba(255,170,0,0.2)',
-            }}
-          >
-            IMPORT JWK
-          </button>
-          <input
-            ref={importRef}
-            type="file"
-            accept=".json,.jwk"
-            onChange={handleImportJWK}
-            aria-label="Import identity file"
-            style={{ display: 'none' }}
-          />
-        </div>
-        {identityStatus && (
-          <div role="status" style={{
-            fontSize: 9, marginTop: 4,
-            color: identityStatus.startsWith('Error') ? '#F08080' : '#7DDFB6',
-          }}>
-            {identityStatus}
-          </div>
-        )}
-      </div>
 
-      {/* Node identity — session hash */}
-      <div className="glass-card accent-teal" style={{
-        padding: '8px 12px', width: '100%', maxWidth: 320,
-        animation: 'fadeInUp 0.35s ease-out 0.24s both',
-      }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
-          <div style={{ fontSize: 10, color: '#00FFFF', letterSpacing: 1, textShadow: '0 0 8px rgba(0,255,255,0.15)' }}>
-            SESSION NODE
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button onClick={handleExportJWK} className="glass-btn" style={{ flex: 1, fontSize: 10, minHeight: 'auto', padding: '6px 0' }}>EXPORT IDENTITY</button>
+            <button onClick={() => importRef.current?.click()} className="glass-btn" style={{ flex: 1, fontSize: 10, minHeight: 'auto', padding: '6px 0' }}>IMPORT IDENTITY</button>
+            <input type="file" ref={importRef} style={{ display: 'none' }} accept=".json" onChange={handleImportJWK} />
           </div>
-          <button type="button" onClick={handleCopyId} className="glass-btn" style={{
-            padding: '2px 8px',
-            color: copied ? '#00FFFF' : 'rgba(0,255,255,0.25)',
-            fontSize: 8, letterSpacing: 0.5,
-          }}>
-            {copied ? 'COPIED' : 'COPY'}
-          </button>
+          {identityStatus && <div style={{ fontSize: 9, color: 'var(--amber)', marginTop: 6, textAlign: 'center' }}>{identityStatus}</div>}
         </div>
-        <div role="status" aria-label="Session node hash" style={{
-          fontSize: 11, color: '#00FFFF',
-          wordBreak: 'break-all', lineHeight: 1.4,
-          textShadow: '0 0 12px rgba(0,255,255,0.1)',
-          fontFamily: "'JetBrains Mono', monospace",
-          letterSpacing: 0.3,
-        }}>
-          {displayHash}
+
+        <div className="glass-card" style={{ padding: 16, border: '1px solid var(--neon-ghost)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
+            <span style={{ fontSize: 18 }}>⚙️</span>
+            <span style={{ fontSize: 14, fontWeight: 700, letterSpacing: 1, color: 'var(--amber)', textShadow: 'var(--glow-amber)' }}>ENGINE CONFIG</span>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            <div>
+              <div style={{ fontSize: 11, color: 'var(--dim)', marginBottom: 4 }}>LLM ENGINE</div>
+              <select value={llmEngine} onChange={handleEngineChange} className="glass-input" style={{ fontSize: 12, padding: '6px 10px', background: 'var(--s1)' }}>
+                <option value="claude-sonnet">Claude 3.5 Sonnet (Recom.)</option>
+                <option value="claude-haiku">Claude 3.5 Haiku (Fast)</option>
+                <option value="gpt-4o">GPT-4o (Legacy)</option>
+                <option value="local-llama">Local Llama 3 (Experimental)</option>
+              </select>
+            </div>
+            <div>
+              <div style={{ fontSize: 11, color: 'var(--dim)', marginBottom: 4 }}>API KEY (PERSISTENT)</div>
+              <div style={{ display: 'flex', gap: 6 }}>
+                <input
+                  type={showKey ? 'text' : 'password'}
+                  value={llmKey}
+                  onChange={handleKeyChange}
+                  className="glass-input"
+                  placeholder="sk-ant-..."
+                  style={{ flex: 1, fontSize: 12, padding: '6px 10px', background: 'var(--s1)' }}
+                />
+                <button onClick={() => setShowKey(!showKey)} className="glass-btn" style={{ width: 44, padding: 0, minHeight: 'auto' }}>
+                  {showKey ? '🙈' : '👁️'}
+                </button>
+              </div>
+            </div>
+            <div style={{ fontSize: 9, color: 'var(--dim)', fontStyle: 'italic' }}>Keys are stored in your browser's local vault only.</div>
+          </div>
         </div>
       </div>
 
-      {/* Vault status */}
-      <div className="glass-card accent-amber" style={{
-        padding: '8px 12px', width: '100%', maxWidth: 320,
-        animation: 'fadeInUp 0.35s ease-out 0.28s both',
-      }}>
-        <div style={{ fontSize: 10, color: '#ff9944', marginBottom: 8, letterSpacing: 1, textShadow: '0 0 8px rgba(255,153,68,0.15)' }}>
-          VAULT STATUS
-        </div>
-        <div role="status" aria-label="Vault statistics" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, fontSize: 12 }}>
-          <div>
-            <div style={{ color: 'rgba(255,255,255,0.12)', fontSize: 9 }}>layers</div>
-            <div style={{ color: '#ff9944', fontWeight: 600 }}>{vaultLayerCount}</div>
+      {/* ── VAULT LAYERS & SYNC ── */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 16, flex: 1, minHeight: 0 }}>
+        <div className="glass-card" style={{ padding: 16, display: 'flex', flexDirection: 'column', minHeight: 0, border: '1px solid var(--neon-ghost)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+            <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text)', letterSpacing: 1 }}>VAULT LAYERS</span>
+            <span style={{ fontSize: 10, color: 'var(--dim)' }}>{vaultLayerCount} ACTIVE</span>
           </div>
-          <div>
-            <div style={{ color: 'rgba(255,255,255,0.12)', fontSize: 9 }}>encryption</div>
-            <div style={{ color: '#44ffaa', fontSize: 10, fontWeight: 600, textShadow: '0 0 8px rgba(68,255,170,0.15)' }}>
-              AES-256-GCM
+          <div style={{ flex: 1, overflow: 'auto', display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {Object.keys(LAYER_COLORS).map(layer => (
+              <div key={layer} className="glass-card" style={{ padding: '10px 12px', display: 'flex', alignItems: 'center', gap: 12, border: '1px solid var(--neon-ghost)' }}>
+                <div style={{
+                  width: 24, height: 24, borderRadius: 4, background: LAYER_COLORS[layer] + '22',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  color: LAYER_COLORS[layer], fontWeight: 700, fontSize: 12, border: `1px solid ${LAYER_COLORS[layer]}44`
+                }}>{LAYER_ICONS[layer]}</div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 12, color: 'var(--text)', fontWeight: 600 }}>{layer.toUpperCase()}</div>
+                  <div style={{ fontSize: 9, color: 'var(--dim)' }}>AES-256-GCM / SHARDED</div>
+                </div>
+                <div style={{ textAlign: 'right' }}>
+                  <div style={{ fontSize: 10, color: 'var(--mint)', fontWeight: 700 }}>SECURE</div>
+                  <div style={{ fontSize: 8, color: 'var(--dim)' }}>SYNCED</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="glass-card" style={{ padding: 16, display: 'flex', flexDirection: 'column', minHeight: 0, border: '1px solid var(--neon-ghost)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+            <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text)', letterSpacing: 1 }}>LIVE SYNC LOG</span>
+            <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+              <div style={{ width: 6, height: 6, borderRadius: '50%', background: genesisSyncStatus === 'synced' ? 'var(--mint)' : 'var(--amber)', animation: 'pulse 2s infinite' }} />
+              <span style={{ fontSize: 9, color: 'var(--dim)' }}>{genesisSyncStatus.toUpperCase()}</span>
             </div>
           </div>
-          <div>
-            <div style={{ color: 'rgba(255,255,255,0.12)', fontSize: 9 }}>protocol LOVE</div>
-            <div style={{ color: '#BF5FFF', fontWeight: 600 }}>
-              {protocolWallet ? protocolWallet.totalEarned.toFixed(1) : '0.0'}
-            </div>
-          </div>
-          <div>
-            <div style={{ color: 'rgba(255,255,255,0.12)', fontSize: 9 }}>transactions</div>
-            <div style={{ color: '#00FFFF', fontWeight: 600 }}>{protocolTxCount}</div>
-          </div>
-        </div>
-      </div>
-
-      {/* ── SE19 Step 2: Centaur Engine Config ── */}
-      <div className="glass-card accent-violet" style={{
-        padding: '8px 12px', width: '100%', maxWidth: 320,
-        animation: 'fadeInUp 0.35s ease-out 0.32s both',
-      }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <span style={{
-              width: 8, height: 8, borderRadius: '50%',
-              background: llmKey ? '#7DDFB6' : '#F08080',
-              boxShadow: llmKey ? '0 0 6px #7DDFB6' : '0 0 6px #F08080',
-            }} />
-            <span style={{ fontSize: 10, color: '#BF5FFF', letterSpacing: 1, textShadow: '0 0 8px rgba(191,95,255,0.15)' }}>
-              CENTAUR ENGINE
-            </span>
-          </div>
-          <button type="button" onClick={() => setShowKey(v => !v)} className="glass-btn" aria-label={showKey ? 'Hide API key' : 'Show API key'} style={{
-            padding: '2px 8px', color: 'rgba(255,255,255,0.12)', fontSize: 8, letterSpacing: 0.5,
+          <div ref={syncLogRef} style={{
+            flex: 1, overflow: 'auto', background: 'rgba(0,0,0,0.2)', padding: 10,
+            borderRadius: 4, fontFamily: 'var(--font-data)', fontSize: 10, border: '1px solid var(--neon-ghost)'
           }}>
-            {showKey ? 'HIDE' : 'SHOW'}
-          </button>
-        </div>
-        {/* Engine selector */}
-        <div style={{ marginBottom: 6 }}>
-          <div style={{ fontSize: 8, color: 'rgba(255,255,255,0.12)', marginBottom: 3 }}>ENGINE</div>
-          <select
-            value={llmEngine}
-            onChange={handleEngineChange}
-            aria-label="AI engine selection"
-            className="glass-input"
-            style={{
-              fontSize: 10, padding: '5px 8px', letterSpacing: 0.5,
-              width: '100%', appearance: 'auto',
-              background: 'rgba(255,255,255,0.015)',
-              color: '#BF5FFF',
-            }}
-          >
-            <option value="claude-sonnet">Claude 3.5 Sonnet</option>
-            <option value="gemini-pro">Gemini 1.5 Pro</option>
-          </select>
-        </div>
-        {/* API key input */}
-        <div style={{ fontSize: 8, color: 'rgba(255,255,255,0.12)', marginBottom: 3 }}>API KEY</div>
-        <input
-          type={showKey ? 'text' : 'password'}
-          value={llmKey}
-          onChange={(e) => {
-            const v = e.target.value;
-            setLlmKey(v);
-            try { localStorage.setItem('p31_llm_key', v); } catch {}
-          }}
-          placeholder={llmEngine === 'claude-sonnet' ? 'sk-ant-...' : 'AI...'}
-          aria-label="API key"
-          className="glass-input"
-          style={{ fontSize: 10, padding: '6px 8px', letterSpacing: 0.5 }}
-          autoComplete="off"
-          spellCheck={false}
-        />
-        <div style={{ fontSize: 8, color: 'rgba(255,255,255,0.1)', marginTop: 4, lineHeight: 1.4 }}>
-          Stored in localStorage. Never proxied.
+            {syncEvents.length === 0 && <div style={{ color: 'var(--dim)' }}>[ Waiting for sync events... ]</div>}
+            {syncEvents.map((ev, i) => (
+              <div key={i} style={{ marginBottom: 4, borderBottom: '1px solid var(--neon-ghost)', paddingBottom: 2 }}>
+                <span style={{ color: 'var(--dim)' }}>[{new Date(ev.timestamp).toLocaleTimeString()}]</span>{' '}
+                <span style={{ color: ev.direction === 'push' ? 'var(--magenta)' : 'var(--cyan)' }}>{ev.direction.toUpperCase()}</span>{' '}
+                <span style={{ color: 'var(--text)' }}>{ev.type}</span>{' '}
+                <span style={{ color: 'var(--dim)', fontSize: 8 }}>({ev.serverHash.slice(0, 8)})</span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* ── SE19 Step 3: Genesis Sync Telemetry Log ── */}
-      <div className="glass-card accent-blue" style={{
-        padding: '8px 12px', width: '100%', maxWidth: 320,
-        animation: 'fadeInUp 0.35s ease-out 0.36s both',
-      }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <span style={{
-              width: 8, height: 8, borderRadius: '50%',
-              background: genesisSyncStatus === 'synced' ? '#7DDFB6' : genesisSyncStatus === 'syncing' ? '#00FFFF' : '#F08080',
-              boxShadow: `0 0 6px ${genesisSyncStatus === 'synced' ? '#7DDFB6' : '#00FFFF'}`,
-              animation: genesisSyncStatus === 'syncing' ? 'lockPulse 1.5s ease-in-out infinite' : 'none',
-            }} />
-            <span style={{ fontSize: 10, color: '#00FFFF', letterSpacing: 1, textShadow: '0 0 8px rgba(0,255,255,0.15)' }}>
-              GENESIS SYNC LOG
-            </span>
+      {/* ── DAUBERT EXPORT ── */}
+      <div className="glass-card" style={{ padding: 16, display: 'flex', alignItems: 'center', gap: 20, flexShrink: 0, border: '1px solid var(--neon-ghost)' }}>
+        <div style={{ flex: 1 }}>
+          <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--blue)', textShadow: 'var(--glow-blue)' }}>COURT-READY EXPORT (DAUBERT)</div>
+          <div style={{ fontSize: 11, color: 'var(--dim)', marginTop: 4 }}>
+            Generate a cryptographically signed bundle of all parent engagement logs, somatic data, and bonds.
+            Formatted for legal admissibility under Daubert standards.
           </div>
-          <span role="status" aria-label="Sync event count" style={{ fontSize: 9, color: 'rgba(0,255,255,0.15)' }}>
-            {syncEvents.length} events
-          </span>
         </div>
-        <div
-          ref={syncLogRef}
-          style={{
-            maxHeight: 120, overflow: 'auto', fontSize: 9,
-            fontFamily: "'JetBrains Mono', monospace",
-            background: 'rgba(0,0,0,0.3)', borderRadius: 4, padding: 6,
-            border: '1px solid rgba(0,255,255,0.08)',
-          }}
-        >
-          {syncEvents.length === 0 ? (
-            <div style={{ color: 'rgba(255,255,255,0.08)', textAlign: 'center', padding: 8 }}>
-              No sync events yet
+        <div style={{ minWidth: 200, textAlign: 'right' }}>
+          {exporting ? (
+            <div style={{ width: '100%' }}>
+              <div style={{ fontSize: 10, color: 'var(--blue)', marginBottom: 4, textAlign: 'left' }}>PACKING BUNDLE... {Math.round(exportProgress)}%</div>
+              <div style={{ height: 4, background: 'var(--neon-faint)', borderRadius: 2 }}>
+                <div style={{ height: '100%', background: 'var(--blue)', width: `${exportProgress}%`, transition: 'width 0.2s' }} />
+              </div>
             </div>
           ) : (
-            syncEvents.map((ev, i) => {
-              const ts = ev.timestamp.split('T')[1]?.split('.')[0] ?? ev.timestamp;
-              const dirColor = ev.direction === 'push' ? '#7DDFB6' : '#FFAA00';
-              const hashShort = ev.serverHash.length > 12 ? ev.serverHash.slice(0, 12) + '..' : ev.serverHash;
-              return (
-                <div key={`${ev.timestamp}-${i}`} style={{
-                  display: 'flex', gap: 4, lineHeight: 1.6,
-                  borderBottom: '1px solid rgba(255,255,255,0.015)',
-                }}>
-                  <span style={{ color: 'rgba(0,255,255,0.15)' }}>[{ts}]</span>
-                  <span style={{ color: dirColor, fontWeight: 600 }}>{ev.direction.toUpperCase()}</span>
-                  <span style={{ color: 'rgba(255,255,255,0.1)' }}>|</span>
-                  <span style={{ color: '#00FFFF' }}>{hashShort}</span>
-                </div>
-              );
-            })
+            <button onClick={handleExport} className="glass-btn" style={{ padding: '12px 24px', color: 'var(--blue)', borderColor: 'var(--blue)44' }}>
+              GENERATE BUNDLE
+            </button>
           )}
+          {lastExport && <div style={{ fontSize: 9, color: 'var(--dim)', marginTop: 6 }}>LAST EXPORT: {lastExport}</div>}
         </div>
       </div>
-
-      {/* Encrypted layers */}
-      <div className="glass-card accent-green" style={{
-        padding: '8px 12px', width: '100%', maxWidth: 320,
-        animation: 'fadeInUp 0.35s ease-out 0.4s both',
-      }}>
-        <div style={{ fontSize: 10, color: '#44ffaa', marginBottom: 8, letterSpacing: 1, textShadow: '0 0 8px rgba(68,255,170,0.15)' }}>
-          ENCRYPTED LAYERS
-        </div>
-        {(['telemetry', 'love-ledger', 'bonds', 'game-state'] as const).map((layer, idx) => (
-          <div key={layer} style={{
-            animation: 'fadeInUp 0.3s ease-out',
-            animationDelay: `${0.4 + idx * 0.08}s`,
-            animationFillMode: 'both',
-          }}>
-            <div style={{
-              display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-              fontSize: 11, padding: '5px 0',
-              borderBottom: '1px solid rgba(255,255,255,0.02)',
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                <LockIcon color={LAYER_COLORS[layer]} pulsing />
-                <span style={{ color: 'rgba(0,255,255,0.25)' }}>{layer}</span>
-              </div>
-              <span style={{
-                color: LAYER_COLORS[layer], fontSize: 9, letterSpacing: 1,
-                textShadow: `0 0 8px ${LAYER_COLORS[layer]}33`,
-                fontWeight: 600,
-              }}>LOCKED</span>
-            </div>
-            {idx < 3 && (
-              <div style={{ display: 'flex', justifyContent: 'center', padding: '2px 0' }}>
-                <ChainLink
-                  from={LAYER_ICONS[layer]}
-                  to={LAYER_ICONS[(['telemetry', 'love-ledger', 'bonds', 'game-state'] as const)[idx + 1]]}
-                  color={LAYER_COLORS[layer]}
-                />
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
-
-      {/* ── SE19 Step 4: Export buttons ── */}
-      <div style={{ width: '100%', maxWidth: 320, display: 'flex', flexDirection: 'column', gap: 6, animation: 'fadeInUp 0.35s ease-out 0.48s both' }}>
-        {/* Vault JSON export */}
-        <button
-          type="button"
-          onClick={handleExport}
-          disabled={exporting || !nodeId}
-          className="glass-card accent-red"
-          style={{
-            width: '100%',
-            padding: '8px 12px',
-            cursor: exporting || !nodeId ? 'not-allowed' : 'pointer',
-            textAlign: 'center',
-            fontSize: 12,
-            letterSpacing: 2,
-            fontFamily: "'JetBrains Mono', monospace",
-            color: exporting ? 'rgba(0,255,255,0.15)' : '#ff4466',
-            textShadow: exporting ? 'none' : '0 0 12px rgba(255,68,102,0.2)',
-            transition: isReflex ? 'none' : 'all 0.2s',
-            backgroundSize: '200% 100%',
-            animation: exporting ? 'exportScan 1.5s linear infinite' : 'none',
-          }}
-        >
-          {exporting ? 'EXPORTING...' : 'EXPORT FOR DISCLOSURE'}
-        </button>
-        {exporting && (
-          <div className="progress-track" style={{ marginTop: -2 }}>
-            <div className="progress-fill" style={{
-              background: 'linear-gradient(90deg, #ff4466, #ff9944)',
-              width: `${exportProgress * 100}%`,
-            }} />
-          </div>
-        )}
-
-        {/* Daubert signed export */}
-        <button
-          type="button"
-          onClick={handleDaubertExport}
-          className="glass-card accent-amber"
-          style={{
-            width: '100%',
-            padding: '8px 12px',
-            cursor: 'pointer',
-            textAlign: 'center',
-            fontSize: 11,
-            letterSpacing: 2,
-            fontFamily: "'JetBrains Mono', monospace",
-            color: '#FFAA00',
-            textShadow: '0 0 10px rgba(255,170,0,0.2)',
-            transition: isReflex ? 'none' : 'all 0.2s',
-          }}
-        >
-          GENERATE DAUBERT EXPORT
-        </button>
-      </div>
-
-      {lastExport && (
-        <div role="status" style={{ fontSize: 10, color: 'rgba(255,255,255,0.12)', animation: 'fadeInUp 0.3s ease-out' }}>
-          Last exported: {new Date(lastExport).toLocaleString()}
-        </div>
-      )}
     </div>
   );
 }

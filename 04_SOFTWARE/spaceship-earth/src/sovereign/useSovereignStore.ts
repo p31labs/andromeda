@@ -67,6 +67,9 @@ export const useSovereignStore = create<SovereignState>((set, get) => ({
   cameraMode: 'free',
   activeScreenIdx: 0,
 
+  // D2.1: Dual-Camera Matrix
+  viewPerspective: 'OBSERVER' as 'OBSERVER' | 'GODHEAD',
+
   // Lock screen (boot sequence)
   shipLocked: true,
 
@@ -205,6 +208,9 @@ export const useSovereignStore = create<SovereignState>((set, get) => ({
   // D2.1: Tri-State Camera
   setCameraMode: (mode) => set({ cameraMode: mode }),
   setActiveScreenIdx: (idx) => set({ activeScreenIdx: Math.max(0, Math.min(2, idx)) }),
+
+  // D2.1: Dual-Camera Matrix
+  setViewPerspective: (perspective) => set({ viewPerspective: perspective }),
 
   // Lock screen
   unlockShip: () => set({ shipLocked: false }),

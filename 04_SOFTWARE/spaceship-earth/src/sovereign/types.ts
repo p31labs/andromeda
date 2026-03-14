@@ -11,6 +11,9 @@ export type ViewMode = 'cockpit' | 'classic';
 // D2.1: Tri-State Camera
 export type CameraMode = 'free' | 'dome' | 'screen';
 
+// D2.1: Dual-Camera Matrix
+export type ViewPerspective = 'OBSERVER' | 'GODHEAD';
+
 // D1.1: Polymorphic Skin Engine
 export type SkinTheme = 'OPERATOR' | 'KIDS' | 'GRAY_ROCK';
 
@@ -95,6 +98,9 @@ export interface SovereignState {
   cameraMode: CameraMode;
   activeScreenIdx: number; // which screen is focused in Screen Mode (0-2)
 
+  // D2.1: Dual-Camera Matrix
+  viewPerspective: ViewPerspective;
+
   // Lock screen (boot sequence)
   shipLocked: boolean;
 
@@ -144,6 +150,9 @@ export interface SovereignState {
   // D2.1: Tri-State Camera
   setCameraMode: (mode: CameraMode) => void;
   setActiveScreenIdx: (idx: number) => void;
+
+  // D2.1: Dual-Camera Matrix
+  setViewPerspective: (perspective: ViewPerspective) => void;
 
   // Lock screen
   unlockShip: () => void;

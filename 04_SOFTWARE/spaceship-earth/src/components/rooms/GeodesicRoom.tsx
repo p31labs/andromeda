@@ -1,53 +1,13 @@
 // spaceship-earth/src/components/rooms/GeodesicRoom.tsx
 // B3: Geodesic building room — renders game-engine structures as R3F meshes.
 // Player progression, rigidity visualization, challenge panel, placement FX.
-// P31 Sovereign aesthetic: #00FF88 green on void, Space Mono, glow borders.
-import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import React, { useCallback, useMemo, useRef, useState, useEffect } from 'react';
+import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
 import { useNode } from '../../contexts/NodeContext';
+import { theme } from '../../lib/theme';
 import type { PlacedPiece, PrimitiveType, Structure } from '@p31/game-engine';
-
-// ── P31 Sovereign Style Constants ──
-
-const GREEN = '#00FFFF';
-const DIM = 'rgba(0, 255, 255, 0.3)';
-const BG = 'rgba(0, 0, 0, 0.92)';
-const BORDER = 'rgba(0, 255, 255, 0.15)';
-const FONT = "'Space Mono', monospace";
-
-const cardStyle: React.CSSProperties = {
-  background: BG,
-  border: `1px solid ${BORDER}`,
-  borderRadius: 4,
-  boxShadow: `0 0 12px rgba(0, 255, 255, 0.06), inset 0 0 20px rgba(0, 255, 255, 0.03)`,
-  fontFamily: FONT,
-  color: GREEN,
-};
-
-const barTrack: React.CSSProperties = {
-  background: 'rgba(0, 255, 255, 0.08)',
-  borderRadius: 2,
-  overflow: 'hidden',
-  width: '100%',
-};
-
-const btnStyle = (active = false): React.CSSProperties => ({
-  background: active ? 'rgba(0, 255, 255, 0.15)' : 'rgba(0, 255, 255, 0.05)',
-  border: `1px solid ${active ? 'rgba(0, 255, 255, 0.5)' : BORDER}`,
-  borderRadius: 4,
-  cursor: 'pointer',
-  fontFamily: FONT,
-  color: GREEN,
-  boxShadow: active ? `0 0 10px rgba(0, 255, 255, 0.15)` : 'none',
-  transition: 'all 0.15s',
-  minHeight: '48px',
-  minWidth: '48px',
-  display: 'inline-flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-});
 
 // ── Placement particle burst ──
 
@@ -96,7 +56,7 @@ function PlacementParticles() {
     geo.attributes.color.needsUpdate = true;
   });
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (ref.current) {
       (ref.current as any).burst = (pos: THREE.Vector3, color: THREE.Color) => {
         for (let i = 0; i < 12; i++) {
@@ -130,12 +90,24 @@ function PlacementParticles() {
 
 function PieceMesh({ piece }: { piece: PlacedPiece }) {
   const meshRef = useRef<THREE.Mesh>(null);
+  const matRef = useRef<THREE.MeshStandardMaterial>(null);
 
   useFrame(({ clock }) => {
     if (meshRef.current) {
       meshRef.current.rotation.y = clock.getElapsedTime() * 0.1 + piece.rotation.y;
     }
   });
+
+  useEffect(() => {
+    const onTheme = () => {
+      if (matRef.current) {
+        matRef.current.color.copy(theme.getColor('--cyan'));
+        matRef.current.emissive.copy(theme.getColor('--cyan'));
+      }
+    };
+    window.addEventListener('p31-theme-change', onTheme);
+    return () => window.removeEventListener('p31-theme-change', onTheme);
+  }, []);
 
   const geometry = useMemo(() => {
     switch (piece.type) {
@@ -159,11 +131,12 @@ function PieceMesh({ piece }: { piece: PlacedPiece }) {
       geometry={geometry}
     >
       <meshStandardMaterial
-        color={GREEN}
+        ref={matRef}
+        color={theme.getColor('--cyan')}
         transparent
         opacity={0.85}
         wireframe={piece.type !== 'hub'}
-        emissive={GREEN}
+        emissive={theme.getColor('--cyan')}
         emissiveIntensity={0.2}
       />
     </mesh>
@@ -173,6 +146,7 @@ function PieceMesh({ piece }: { piece: PlacedPiece }) {
 // ── Connection lines between pieces ──
 
 function ConnectionLines({ pieces }: { pieces: readonly PlacedPiece[] }) {
+  const matRef = useRef<THREE.LineBasicMaterial>(null);
   const points = useMemo(() => {
     const lines: [THREE.Vector3, THREE.Vector3][] = [];
     const seen = new Set<string>();
@@ -193,6 +167,14 @@ function ConnectionLines({ pieces }: { pieces: readonly PlacedPiece[] }) {
     return lines;
   }, [pieces]);
 
+  useEffect(() => {
+    const onTheme = () => {
+      if (matRef.current) matRef.current.color.copy(theme.getColor('--cyan'));
+    };
+    window.addEventListener('p31-theme-change', onTheme);
+    return () => window.removeEventListener('p31-theme-change', onTheme);
+  }, []);
+
   return (
     <>
       {points.map(([a, b], i) => (
@@ -205,7 +187,7 @@ function ConnectionLines({ pieces }: { pieces: readonly PlacedPiece[] }) {
               itemSize={3}
             />
           </bufferGeometry>
-          <lineBasicMaterial color={GREEN} opacity={0.4} transparent />
+          <lineBasicMaterial ref={matRef} color={theme.getColor('--cyan')} opacity={0.4} transparent />
         </line>
       ))}
     </>
@@ -215,9 +197,21 @@ function ConnectionLines({ pieces }: { pieces: readonly PlacedPiece[] }) {
 // ── P31 Grid ──
 
 function GlowGrid() {
+  const [colors, setColors] = useState({ grid: '#0a2a1a', sub: '#050f05' });
+
+  useEffect(() => {
+    const onTheme = () => {
+      // Approximate darker versions of cyan/mint for the grid
+      setColors({ grid: '#0a2a1a', sub: '#050f05' });
+    };
+    window.addEventListener('p31-theme-change', onTheme);
+    onTheme();
+    return () => window.removeEventListener('p31-theme-change', onTheme);
+  }, []);
+
   return (
     <group>
-      <gridHelper args={[12, 24, '#0a2a1a', '#050f05']} />
+      <gridHelper args={[12, 24, colors.grid, colors.sub]} />
       <mesh rotation-x={-Math.PI / 2} position-y={-0.01}>
         <planeGeometry args={[12, 12]} />
         <meshBasicMaterial color="#000000" transparent opacity={0.4} />
@@ -229,11 +223,12 @@ function GlowGrid() {
 // ── 3D Scene ──
 
 function GeodesicScene({ structure }: { structure: Structure }) {
+  const cyan = theme.getColor('--cyan');
   return (
     <>
       <ambientLight intensity={0.3} color="#0a1a0a" />
-      <pointLight position={[5, 8, 5]} intensity={0.8} color={GREEN} />
-      <pointLight position={[-5, -3, 5]} intensity={0.4} color={GREEN} />
+      <pointLight position={[5, 8, 5]} intensity={0.8} color={cyan} />
+      <pointLight position={[-5, -3, 5]} intensity={0.4} color={cyan} />
       <pointLight position={[0, 6, -4]} intensity={0.2} color="#0a4428" />
       <hemisphereLight args={['#001a00', '#000000', 0.3]} />
       <OrbitControls enableDamping dampingFactor={0.05} />
@@ -249,12 +244,15 @@ function GeodesicScene({ structure }: { structure: Structure }) {
 
 // ── Tier colors — sovereign palette ──
 
-const TIER_COLORS: Record<string, string> = {
-  seedling: DIM,
-  sprout: GREEN,
-  sapling: '#cccc44',
-  oak: '#FFD700',
-  sequoia: '#ff3333',
+const getTierColor = (tier: string) => {
+  const map: Record<string, string> = {
+    seedling: 'var(--dim)',
+    sprout: 'var(--mint)',
+    sapling: 'var(--amber)',
+    oak: 'var(--orange)',
+    sequoia: 'var(--coral)',
+  };
+  return map[tier] || 'var(--cyan)';
 };
 
 const PRIMITIVE_LABELS: Record<PrimitiveType, string> = {
@@ -300,224 +298,142 @@ export function GeodesicRoom() {
     game.undo(dome.id);
   }, [game, dome]);
 
-  const handleStartChallenge = useCallback((challengeId: string) => {
-    if (!game) return;
-    game.startChallenge(challengeId);
-  }, [game]);
+  if (!player || !dome) return null;
 
-  if (!player || !dome) {
-    return (
-      <div style={{
-        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-        gap: 12, height: '100%', color: DIM, fontFamily: FONT,
-      }}>
-        <span style={{ fontSize: 11, letterSpacing: 1 }}>GEODESIC</span>
-      </div>
-    );
-  }
+  const rigidPercent = Math.min(100, Math.max(0, dome.rigidity.coherence * 100));
+  const tColor = getTierColor(player.tier);
 
-  const rig = dome.rigidity;
+  const mainObjective = activeChallenge?.objectives[0];
 
   return (
-    <div style={{ position: 'relative', width: '100%', height: '100%' }}>
-      {/* 3D Canvas */}
-      <Canvas
-        camera={{ position: [3, 3, 5], fov: 55 }}
-        style={{ touchAction: 'none', background: 'transparent' }}
-        gl={{ alpha: true, antialias: true }}
-      >
-        <GeodesicScene structure={dome} />
-      </Canvas>
+    <div style={{
+      width: '100%', height: '100%', position: 'relative',
+      background: 'var(--void)', overflow: 'hidden',
+      color: 'var(--cyan)', fontFamily: 'var(--font-data)'
+    }}>
+      {/* 3D Viewport */}
+      <div style={{ position: 'absolute', inset: 0 }}>
+        <Canvas camera={{ position: [8, 8, 8], fov: 45 }}>
+          <GeodesicScene structure={dome} />
+        </Canvas>
+      </div>
 
-      {/* Top-left: Progression panel */}
-      <div style={{
-        ...cardStyle,
-        position: 'absolute', top: 8, left: 8,
-        width: 160, padding: '8px 10px', fontSize: 10,
+      {/* Header Overlay */}
+      <div className="glass-card" style={{
+        position: 'absolute', top: 16, left: 16, right: 16,
+        padding: '10px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+        background: 'var(--neon-ghost)', borderRadius: 'var(--radius-md)', border: '1px solid var(--neon-ghost)',
       }}>
-        <div style={{ fontSize: 9, color: DIM, letterSpacing: 1, marginBottom: 4 }}>
-          BUILDER
-        </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}>
-          <span>Lv {player.level}</span>
-          <span style={{
-            color: TIER_COLORS[player.tier] ?? DIM,
-            fontSize: 9, fontWeight: 600,
-            textShadow: `0 0 8px ${(TIER_COLORS[player.tier] ?? GREEN)}44`,
-          }}>
-            {player.tier.toUpperCase()}
-          </span>
-        </div>
-        <div style={{ ...barTrack, height: 4 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <div style={{
-            height: '100%', borderRadius: 2,
-            background: `linear-gradient(90deg, ${TIER_COLORS[player.tier] ?? GREEN}, ${TIER_COLORS[player.tier] ?? GREEN}88)`,
-            width: `${Math.min(100, (player.xp % 100))}%`,
-            transition: 'width 0.3s',
-          }} />
+            width: 32, height: 32, borderRadius: '50%', border: `2px solid ${tColor}`,
+            display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, color: tColor,
+            boxShadow: `0 0 10px ${tColor}44`,
+          }}>
+            {PRIMITIVE_ICONS.icosahedron}
+          </div>
+          <div>
+            <div style={{ fontSize: 14, fontWeight: 700, letterSpacing: 1, color: 'var(--cyan)' }}>GEODESIC NEXUS</div>
+            <div style={{ fontSize: 9, color: 'var(--dim)', textTransform: 'uppercase' }}>Structure ID: {dome.id.slice(0, 8)}</div>
+          </div>
         </div>
-        <div style={{ fontSize: 8, color: DIM, marginTop: 3, display: 'flex', justifyContent: 'space-between' }}>
-          <span>{player.xp}XP</span>
-          <span>{player.totalPiecesPlaced}pc</span>
-          <span>{player.buildStreak}d</span>
+
+        <div style={{ display: 'flex', gap: 20, textAlign: 'right' }}>
+          <div>
+            <div style={{ fontSize: 8, color: 'var(--dim)' }}>RIGIDITY</div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: rigidPercent > 80 ? 'var(--mint)' : rigidPercent > 40 ? 'var(--amber)' : 'var(--coral)' }}>
+              {rigidPercent.toFixed(1)}%
+            </div>
+          </div>
+          <div>
+            <div style={{ fontSize: 8, color: 'var(--dim)' }}>PIECES</div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--cyan)' }}>{dome.pieces.length}</div>
+          </div>
         </div>
       </div>
 
-      {/* Top-right: Rigidity panel */}
-      <div style={{
-        ...cardStyle,
-        position: 'absolute', top: 50, right: 8,
-        width: 155, padding: '8px 10px', fontSize: 10,
+      {/* Building Tools — Bottom Left */}
+      <div className="glass-card" style={{
+        position: 'absolute', bottom: 16, left: 16, width: 240,
+        padding: 12, background: 'var(--neon-ghost)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--neon-ghost)',
       }}>
-        <div style={{ fontSize: 9, color: DIM, letterSpacing: 1, marginBottom: 4 }}>
-          RIGIDITY
-        </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}>
-          <span style={{
-            color: rig.isRigid ? GREEN : '#cccc44',
-            fontSize: 10, fontWeight: 600,
-            textShadow: rig.isRigid ? `0 0 8px rgba(0, 255, 255, 0.3)` : 'none',
-          }}>
-            {rig.isRigid ? 'RIGID' : 'FLOPPY'}
-          </span>
-          <span style={{ fontSize: 10 }}>{(rig.coherence * 100).toFixed(0)}%</span>
-        </div>
-        <div style={{ ...barTrack, height: 4 }}>
-          <div style={{
-            height: '100%', borderRadius: 2,
-            background: rig.isRigid
-              ? `linear-gradient(90deg, ${GREEN}, #44ffaa)`
-              : 'linear-gradient(90deg, #cccc44, #FFD700)',
-            width: `${Math.min(100, rig.coherence * 100)}%`,
-            transition: 'width 0.3s',
-          }} />
-        </div>
-        <div style={{ fontSize: 8, color: DIM, marginTop: 3, display: 'flex', gap: 6 }}>
-          <span>E={rig.edges}</span>
-          <span>V={rig.vertices}</span>
-          <span>{rig.degreesOfFreedom}DOF</span>
-        </div>
-      </div>
-
-      {/* Bottom-left: Piece toolbar */}
-      <div style={{
-        position: 'absolute', bottom: 8, left: 8,
-        display: 'flex', gap: 4, flexWrap: 'wrap', maxWidth: '60%',
-      }}>
-        {(['tetrahedron', 'octahedron', 'icosahedron', 'strut', 'hub'] as PrimitiveType[]).map((type) => (
+        <div style={{ fontSize: 10, color: 'var(--dim)', marginBottom: 8, letterSpacing: 1 }}>PRIMITIVE INJECTION</div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 6 }}>
+          {(['tetrahedron', 'octahedron', 'icosahedron', 'strut', 'hub'] as PrimitiveType[]).map(type => (
+            <button
+              key={type}
+              onClick={() => handlePlace(type)}
+              className="glass-btn"
+              style={{
+                display: 'flex', flexDirection: 'column', gap: 2, padding: '8px 0',
+                fontSize: 9, color: lastPlaced === type ? 'var(--mint)' : 'var(--cyan)',
+                borderColor: lastPlaced === type ? 'var(--mint)' : 'var(--neon-ghost)',
+                background: lastPlaced === type ? 'var(--neon-faint)' : 'transparent',
+                minHeight: 'auto'
+              }}
+            >
+              <span style={{ fontSize: 14 }}>{PRIMITIVE_ICONS[type]}</span>
+              <span>{PRIMITIVE_LABELS[type]}</span>
+            </button>
+          ))}
           <button
-            key={type}
-            type="button"
-            onClick={() => handlePlace(type)}
-            style={{
-              ...btnStyle(lastPlaced === type),
-              padding: '6px 10px',
-              fontSize: 9,
-              display: 'flex', alignItems: 'center', gap: 4,
-            }}
+            onClick={handleUndo}
+            className="glass-btn"
+            style={{ fontSize: 9, color: 'var(--dim)', borderColor: 'var(--neon-ghost)', minHeight: 'auto' }}
           >
-            <span style={{ fontSize: 12 }}>{PRIMITIVE_ICONS[type]}</span>
-            {PRIMITIVE_LABELS[type]}
+            UNDO
           </button>
-        ))}
-        <button
-          type="button"
-          onClick={handleUndo}
-          style={{
-            ...btnStyle(),
-            padding: '12px 16px',
-            fontSize: 9,
-            borderColor: 'rgba(255, 51, 51, 0.2)',
-            color: '#ff3333',
-            minHeight: '48px',
-            minWidth: '48px',
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          Undo
-        </button>
+        </div>
       </div>
 
-      {/* Bottom-right: Challenge panel */}
-      <div style={{
-        ...cardStyle,
-        position: 'absolute', bottom: 8, right: 8,
-        width: 185, maxHeight: 160, overflow: 'auto', padding: '8px 10px',
-        fontSize: 11,
+      {/* Challenge Panel — Bottom Right */}
+      <div className="glass-card" style={{
+        position: 'absolute', bottom: 16, right: 16, width: 280,
+        padding: 12, background: 'var(--neon-ghost)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--neon-ghost)',
       }}>
-        <div style={{ color: DIM, letterSpacing: 1, marginBottom: 6 }}>
-          {activeChallenge ? 'ACTIVE CHALLENGE' : 'CHALLENGES'}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+          <div style={{ fontSize: 10, color: 'var(--dim)', letterSpacing: 1 }}>ACTIVE CHALLENGE</div>
+          {activeChallenge && (
+            <div style={{ fontSize: 9, color: 'var(--amber)', fontWeight: 700 }}>{activeChallenge.tier.toUpperCase()}</div>
+          )}
         </div>
+
         {activeChallenge ? (
           <div>
-            <div style={{ color: '#cccc44', marginBottom: 4, fontWeight: 600, textShadow: '0 0 8px rgba(204, 204, 68, 0.2)' }}>
-              {activeChallenge.title}
-            </div>
-            <div style={{ fontSize: 10, color: DIM, marginBottom: 6, lineHeight: 1.4 }}>
-              {activeChallenge.description}
-            </div>
-            {activeChallenge.objectives.map((obj, i) => (
-              <div key={i} style={{ fontSize: 10, marginBottom: 3 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                  <span style={{
-                    color: obj.current >= obj.target ? GREEN : DIM,
-                    fontWeight: obj.current >= obj.target ? 700 : 400,
-                  }}>
-                    {obj.current >= obj.target ? '\u2713' : '\u25cb'}
-                  </span>
-                  <span>{obj.description}</span>
-                </div>
-                <div style={{ ...barTrack, height: 2, marginTop: 2, marginLeft: 16 }}>
+            <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--cyan)', marginBottom: 4 }}>{activeChallenge.title}</div>
+            <div style={{ fontSize: 10, color: 'var(--text)', opacity: 0.8, lineHeight: 1.4, marginBottom: 10 }}>{activeChallenge.description}</div>
+            {mainObjective && (
+              <>
+                <div style={{ height: 4, background: 'var(--neon-faint)', borderRadius: 2, marginBottom: 4 }}>
                   <div style={{
-                    height: '100%', borderRadius: 2,
-                    background: obj.current >= obj.target ? GREEN : '#cccc44',
-                    width: `${Math.min(100, (obj.current / obj.target) * 100)}%`,
-                    transition: 'width 0.3s',
+                    height: '100%', background: 'var(--cyan)', borderRadius: 2,
+                    width: `${Math.min(100, (dome.pieces.length / mainObjective.target) * 100)}%`,
+                    boxShadow: 'var(--glow-cyan)', transition: 'width 0.5s ease'
                   }} />
                 </div>
-              </div>
-            ))}
-            <div style={{ fontSize: 9, color: DIM, marginTop: 6, fontStyle: 'italic', lineHeight: 1.4 }}>
-              "{activeChallenge.fullerPrinciple}"
+                <div style={{ fontSize: 8, color: 'var(--dim)', textAlign: 'right' }}>
+                  TARGET: {mainObjective.target} PIECES
+                </div>
+              </>
+            )}
+          </div>
+        ) : (
+          <div style={{ padding: '8px 0', textAlign: 'center' }}>
+            <div style={{ fontSize: 11, color: 'var(--dim)', marginBottom: 8 }}>No active challenge</div>
+            <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', justifyContent: 'center' }}>
+              {availableChallenges.slice(0, 2).map(c => (
+                <button
+                  key={c.id}
+                  onClick={() => game?.startChallenge(c.id)}
+                  className="glass-btn"
+                  style={{ fontSize: 9, padding: '4px 8px', color: 'var(--amber)', borderColor: 'var(--amber)44', minHeight: 'auto' }}
+                >
+                  START {c.title.split(' ')[0]}
+                </button>
+              ))}
             </div>
           </div>
-        ) : availableChallenges.length > 0 ? (
-          availableChallenges.map(c => (
-            <button
-              key={c.id}
-              type="button"
-              onClick={() => handleStartChallenge(c.id)}
-              style={{
-                display: 'block', width: '100%', textAlign: 'left',
-                background: 'transparent', border: 'none', color: DIM,
-                fontFamily: FONT, fontSize: 11, padding: '5px 0',
-                cursor: 'pointer', borderBottom: `1px solid ${BORDER}`,
-                transition: 'color 0.15s',
-              }}
-              onMouseEnter={e => (e.currentTarget.style.color = GREEN)}
-              onMouseLeave={e => (e.currentTarget.style.color = DIM)}
-            >
-              <span style={{ color: TIER_COLORS[c.tier] ?? DIM, fontWeight: 600 }}>{c.tier}</span>{' '}
-              {c.title}{' '}
-              <span style={{ color: '#FF00FF' }}>+{c.rewardLove}L</span>
-            </button>
-          ))
-        ) : (
-          <div style={{ fontSize: 10, color: DIM }}>
-            No challenges available yet.
-          </div>
         )}
-      </div>
-
-      {/* Piece count indicator */}
-      <div style={{
-        ...cardStyle,
-        position: 'absolute', top: 8, right: 8,
-        padding: '4px 10px', fontSize: 9, color: DIM,
-      }}>
-        {dome.pieces.length} pieces
       </div>
     </div>
   );

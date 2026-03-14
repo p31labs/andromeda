@@ -1,1641 +1,265 @@
-import { useRef, useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
 import { useSovereignStore } from '../../../sovereign/useSovereignStore';
-import { disposeThreeNode, quantumVertexShader, quantumFragmentShader, audioEngine } from '@p31/shared/sovereign';
-import { buildObservatoryScene, type ObservatoryHandle } from './observatoryBuilder';
-import type { SovereignRoom, CameraMode } from '../../../sovereign/types';
-import { SKIN_PROFILES, SKIN_LERP_RATE } from '../../../sovereign/skinProfiles';
 
-// ── Per-screen color themes ──
-interface ScreenTheme {
-  bg: string;
-  pri: string;
-  acc: string;
-  dim: string;
-  grid: string;
-  border: string;
-  divider: string;
-}
-
-const THEMES: Record<'BRIDGE' | 'BUFFER' | 'SYSTEM', ScreenTheme> = {
-  BRIDGE: {
-    bg: 'rgba(0, 0, 0, 0.92)',
-    pri: '#FF00FF',
-    acc: '#FFD700',
-    dim: 'rgba(255,0,255,0.35)',
-    grid: 'rgba(255,0,255,0.03)',
-    border: 'rgba(255,0,255,0.2)',
-    divider: 'rgba(255,0,255,0.15)',
-  },
-  BUFFER: {
-    bg: 'rgba(0, 0, 0, 0.92)',
-    pri: '#FFD700',
-    acc: '#FF4444',
-    dim: 'rgba(255,215,0,0.35)',
-    grid: 'rgba(255,215,0,0.03)',
-    border: 'rgba(255,215,0,0.2)',
-    divider: 'rgba(255,215,0,0.15)',
-  },
-  SYSTEM: {
-    bg: 'rgba(0, 0, 0, 0.92)',
-    pri: '#00FFFF',
-    acc: '#BF5FFF',
-    dim: 'rgba(0,255,255,0.35)',
-    grid: 'rgba(0,255,255,0.03)',
-    border: 'rgba(0,255,255,0.2)',
-    divider: 'rgba(0,255,255,0.15)',
-  },
-};
-
-// ── Room panel definitions for cockpit screens ──
-interface RoomPanel { id: SovereignRoom; label: string; desc: string; color: string; icon: string }
-const ROOM_PANELS: RoomPanel[] = [
-  { id: 'OBSERVATORY', label: 'Observatory', desc: 'Geodesic dome', color: '#00FFFF', icon: '\u2B21' },
-  { id: 'COLLIDER', label: 'Collider', desc: 'Particle physics', color: '#FF00FF', icon: '\u269B' },
-  { id: 'BONDING', label: 'Bonding', desc: 'Chemistry game', color: '#FFD700', icon: '\u2B22' },
-  { id: 'BRIDGE', label: 'Bridge', desc: 'LOVE economy', color: '#BF5FFF', icon: '\u2B23' },
-  { id: 'BUFFER', label: 'Buffer', desc: 'Voltage scoring', color: '#00FFFF', icon: '\u26A1' },
-  { id: 'COPILOT', label: 'Brain', desc: 'Quantum Brain', color: '#00FFFF', icon: '\u2B21' },
-  { id: 'LANDING', label: 'Quantum IDE', desc: 'QG + Copilot', color: '#00FFFF', icon: '\u269B' },
-  { id: 'RESONANCE', label: 'Resonance', desc: 'Sound engine', color: '#BF5FFF', icon: '\u266B' },
-  { id: 'FORGE', label: 'Forge', desc: 'Content pipeline', color: '#FFD700', icon: '\u2B06' },
-];
-const SCREEN_ROOMS: RoomPanel[][] = [
-  [ROOM_PANELS[0], ROOM_PANELS[1], ROOM_PANELS[2]], // Screen 0 (pink): Observatory, Collider, Bonding
-  [ROOM_PANELS[3], ROOM_PANELS[4], ROOM_PANELS[5]], // Screen 1 (cyan): Bridge, Buffer, Copilot
-  [ROOM_PANELS[6], ROOM_PANELS[7], ROOM_PANELS[8]], // Screen 2 (amber): Landing, Resonance, Forge
-];
-
-// Three.js color objects for key light blending
-const LIGHT_PINK = new THREE.Color('#FF00FF');
-const LIGHT_AMBER = new THREE.Color('#FFD700');
-const LIGHT_CYAN = new THREE.Color('#00FFFF');
-// Waveform status colors (pre-allocated for GC prevention in animation loop)
-const WF_RED = new THREE.Color('#FF4444');
-const WF_AMBER = new THREE.Color('#FFD700');
-const WF_CYAN = new THREE.Color('#00FFFF');
-
-// ── Shared orbit state type ──
 export interface OrbitState {
-  rx: number; ry: number; dist: number;
-  trx: number; try_: number; tDist: number;
-  vx: number; vy: number; vDist: number; // angular/zoom velocity for momentum
-  down: boolean; x: number; y: number; moved: boolean;
+  rx: number; ry: number;
+  trx: number; try_: number;
+  tDist: number;
   flyFrom: { rx: number; ry: number; dist: number } | null;
   flyTo: { rx: number; ry: number; dist: number } | null;
   flyT: number;
 }
 
-const OBSERVATORY_ORBIT_DIST = 7.5;
+// Module-scope scratch objects — reused every frame, never GC'd
+const _origin = new THREE.Vector3(0, 0, 0);
+const _defaultCam = new THREE.Vector3(6, 4, 10);
+const _scratch = new THREE.Vector3();
+const _colA = new THREE.Color();
+const _colB = new THREE.Color();
 
-// ── D2.1: Tri-State Camera constraints per mode ──
-const DOME_DIST_MIN = 4;
-const DOME_DIST_MAX = 10;
-const DOME_RY_MIN = -Math.PI / 6;
-const DOME_RY_MAX = Math.PI / 4;
-
-const SCREEN_VIEW_DIST = 14; // outside the cage (screens at r=8), looking IN — backed up for wider view
-const SCREEN_RY_LOCK = 0.05; // near eye-level, slight look-up
-
-// Screen center angles (midpoint of each screen arc)
-const SCREEN_CENTER_ANGLES = [
-  Math.PI * 0.055 + Math.PI * 0.28,   // Screen A center
-  Math.PI * 0.055 + (Math.PI * 0.56 + Math.PI * 0.11) + Math.PI * 0.28,  // Screen B center
-  Math.PI * 0.055 + 2 * (Math.PI * 0.56 + Math.PI * 0.11) + Math.PI * 0.28, // Screen C center
-];
-
-// ── D2.6: Camera mode dock buttons ──
-const CAMERA_MODES: { mode: CameraMode; label: string; icon: string }[] = [
-  { mode: 'free', label: 'Free', icon: '\u2B22' },
-  { mode: 'dome', label: 'Dome', icon: '\u2B21' },
-  { mode: 'screen', label: 'Screen', icon: '\u25A8' },
-];
-
-const CameraModeButtons = () => {
-  const cameraMode = useSovereignStore((s) => s.cameraMode);
-  const setCameraMode = useSovereignStore((s) => s.setCameraMode);
-  const activeScreenIdx = useSovereignStore((s) => s.activeScreenIdx);
-  const setActiveScreenIdx = useSovereignStore((s) => s.setActiveScreenIdx);
-  const shipLocked = useSovereignStore((s) => s.shipLocked);
-
-  // Hide camera mode dock on lock screen
-  if (shipLocked) return null;
-
-  const handleMode = (mode: CameraMode) => {
-    setCameraMode(mode);
-    // Screen mode: store triggers flyTo in animation loop via a custom event
-    if (mode === 'screen') {
-      window.dispatchEvent(new CustomEvent('camera-mode-change', { detail: { mode, screenIdx: activeScreenIdx } }));
-    } else if (mode === 'dome') {
-      window.dispatchEvent(new CustomEvent('camera-mode-change', { detail: { mode } }));
-    } else {
-      window.dispatchEvent(new CustomEvent('camera-mode-change', { detail: { mode } }));
-    }
-  };
-
-  return (
-    <div style={{
-      position: 'absolute', bottom: 'max(16px, env(safe-area-inset-bottom, 0px))',
-      left: '50%', transform: 'translateX(-50%)', zIndex: 40,
-      display: 'flex', gap: 4, padding: '4px 6px',
-      background: 'rgba(0,0,0,0.7)', borderRadius: 12,
-      backdropFilter: 'blur(8px)', border: '1px solid rgba(255,255,255,0.1)',
-    }}>
-      {CAMERA_MODES.map(({ mode, label, icon }) => (
-        <button
-          key={mode}
-          type="button"
-          onClick={() => handleMode(mode)}
-          style={{
-            background: cameraMode === mode ? 'rgba(0,255,255,0.2)' : 'transparent',
-            border: cameraMode === mode ? '1px solid rgba(0,255,255,0.5)' : '1px solid transparent',
-            color: cameraMode === mode ? '#00FFFF' : 'rgba(255,255,255,0.5)',
-            borderRadius: 8, padding: '6px 14px',
-            fontFamily: 'monospace', fontSize: 12, fontWeight: 600,
-            cursor: 'pointer', transition: 'all 0.2s',
-            display: 'flex', alignItems: 'center', gap: 4,
-          }}
-        >
-          <span style={{ fontSize: 14 }}>{icon}</span>
-          {label}
-        </button>
-      ))}
-      {/* Screen mode: prev/next screen arrows */}
-      {cameraMode === 'screen' && (
-        <div style={{ display: 'flex', gap: 2, marginLeft: 4, borderLeft: '1px solid rgba(255,255,255,0.15)', paddingLeft: 6 }}>
-          <button
-            onClick={() => {
-              const next = (activeScreenIdx + 2) % 3;
-              setActiveScreenIdx(next);
-              window.dispatchEvent(new CustomEvent('camera-mode-change', { detail: { mode: 'screen', screenIdx: next } }));
-            }}
-            style={{
-              background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.5)',
-              cursor: 'pointer', fontFamily: 'monospace', fontSize: 14, padding: '4px 8px',
-            }}
-          type="button">&larr;</button>
-          <span style={{ color: '#00FFFF', fontFamily: 'monospace', fontSize: 11, display: 'flex', alignItems: 'center' }}>
-            {activeScreenIdx + 1}/3
-          </span>
-          <button
-            onClick={() => {
-              const next = (activeScreenIdx + 1) % 3;
-              setActiveScreenIdx(next);
-              window.dispatchEvent(new CustomEvent('camera-mode-change', { detail: { mode: 'screen', screenIdx: next } }));
-            }}
-            style={{
-              background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.5)',
-              cursor: 'pointer', fontFamily: 'monospace', fontSize: 14, padding: '4px 8px',
-            }}
-          type="button">&rarr;</button>
-        </div>
-      )}
-    </div>
-  );
-};
-
-export const ImmersiveCockpitUI = () => {
+export function ImmersiveCockpitUI({ isIdle }: { isIdle?: boolean }) {
   const mountRef = useRef<HTMLDivElement>(null);
-  const scanlineRef = useRef<HTMLDivElement>(null);
+  
+  const ptrState = useRef({ isDragging: false, prevX: 0, prevY: 0 });
+  const timeRef = useRef(0);
 
   useEffect(() => {
-    const mount = mountRef.current;
-    if (!mount) return;
-    while (mount.firstChild) mount.removeChild(mount.firstChild);
-
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setClearColor(0x000000, 1);
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    mount.appendChild(renderer.domElement);
+    if (!mountRef.current) return;
 
     const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x000000, 0.035);
+    scene.fog = new THREE.FogExp2(0x030308, 0.035);
 
-    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 500);
-    camera.position.set(0, 2, 12);
-    camera.lookAt(0, 0, 0);
+    // 0.01 Near Clipping is critical for Godhead inside-out perspective
+    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.01, 1000);
+    camera.rotation.order = 'YXZ'; 
+    camera.position.set(6, 4, 10);
 
-    // Soft ambient — dark phosphor tint
-    scene.add(new THREE.AmbientLight(0x0A1A0A, 0.9));
-    // Key light — neutral white, dynamic blending shifts to screen colors
-    const keyLight = new THREE.PointLight(0xFFFFFF, 2.5, 50);
-    keyLight.position.set(0, 3, 5);
-    scene.add(keyLight);
-    const rimLight = new THREE.PointLight(0x00FFFF, 1.2, 30);
-    rimLight.position.set(0, -2, -5);
-    scene.add(rimLight);
+    const renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true, powerPreference: "high-performance" });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.toneMapping = THREE.ReinhardToneMapping;
+    mountRef.current.appendChild(renderer.domElement);
 
-    // Neon phosphor starfield — green/cyan/magenta/amber/violet
-    const starCount = 3000;
-    const starGeo = new THREE.BufferGeometry();
-    const starPos = new Float32Array(starCount * 3);
-    const starColors = new Float32Array(starCount * 3);
-    const starPalette = [
-      [0.0, 1.0, 1.0],      // #00FFFF cyan
-      [0.0, 1.0, 1.0],      // #00FFFF cyan
-      [1.0, 0.0, 1.0],      // #FF00FF magenta
-      [1.0, 0.843, 0.0],    // #FFD700 amber
-      [0.749, 0.373, 1.0],  // #BF5FFF violet
-    ];
-    for (let i = 0; i < starCount; i++) {
-      starPos[i * 3] = (Math.random() - 0.5) * 120;
-      starPos[i * 3 + 1] = (Math.random() - 0.5) * 120;
-      starPos[i * 3 + 2] = (Math.random() - 0.5) * 120;
-      const c = starPalette[i % starPalette.length];
-      starColors[i * 3] = c[0];
-      starColors[i * 3 + 1] = c[1];
-      starColors[i * 3 + 2] = c[2];
-    }
-    starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
-    starGeo.setAttribute('color', new THREE.BufferAttribute(starColors, 3));
-    const stars = new THREE.Points(starGeo, new THREE.PointsMaterial({
-      size: 0.07, transparent: true, opacity: 0.5, vertexColors: true,
-      blending: THREE.AdditiveBlending, depthWrite: false
-    }));
-    scene.add(stars);
+    const composer = new EffectComposer(renderer);
+    composer.addPass(new RenderPass(scene, camera));
+    const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.1);
+    composer.addPass(bloomPass);
 
-    // ── M18: Somatic Waveform line (120 points, green glow) ──
-    const WAVEFORM_POINTS = 120;
-    const waveformPositions = new Float32Array(WAVEFORM_POINTS * 3);
-    const waveformGeo = new THREE.BufferGeometry();
-    waveformGeo.setAttribute('position', new THREE.BufferAttribute(waveformPositions, 3));
-    const waveformLine = new THREE.Line(
-      waveformGeo,
-      new THREE.LineBasicMaterial({
-        color: 0x00FFFF,
-        transparent: true,
-        opacity: 0.7,
-        blending: THREE.AdditiveBlending,
-        linewidth: 2,
-      }),
-    );
-    waveformLine.position.set(-3, -2.5, 4.5); // bottom-left of view
-    waveformLine.visible = false;
-    scene.add(waveformLine);
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
 
-    // ── M20/D1.6: Spatial Radar — InstancedMesh (single draw call) ──
-    const MAX_SPATIAL_NODES = 16;
-    const VALENCY_COLORS = [
-      new THREE.Color('#FFFFFF'), // 0: Hydrogen — white
-      new THREE.Color('#FF4444'), // 1: Oxygen — red
-      new THREE.Color('#00FFFF'), // 2: Carbon — cyan
-      new THREE.Color('#FFD700'), // 3: Nitrogen — amber
-      new THREE.Color('#BF5FFF'), // 4: default — violet
-    ];
-    const spatialOrbGeo = new THREE.SphereGeometry(0.15, 16, 12);
-    const spatialOrbMat = new THREE.MeshBasicMaterial({
-      color: 0xFFFFFF,
-      transparent: true,
-      opacity: 0.8,
-      blending: THREE.AdditiveBlending,
-    });
-    const spatialOrbInstanced = new THREE.InstancedMesh(spatialOrbGeo, spatialOrbMat, MAX_SPATIAL_NODES);
-    spatialOrbInstanced.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
-    // Per-instance color via InstancedBufferAttribute
-    const spatialOrbColorAttr = new THREE.InstancedBufferAttribute(
-      new Float32Array(MAX_SPATIAL_NODES * 3), 3,
-    );
-    spatialOrbColorAttr.setUsage(THREE.DynamicDrawUsage);
-    spatialOrbInstanced.instanceColor = spatialOrbColorAttr;
-    // Pre-allocated dummy for matrix updates (D1.7: zero alloc in animation loop)
-    const _orbDummy = new THREE.Object3D();
-    for (let i = 0; i < MAX_SPATIAL_NODES; i++) {
-      _orbDummy.scale.setScalar(0);
-      _orbDummy.updateMatrix();
-      spatialOrbInstanced.setMatrixAt(i, _orbDummy.matrix);
-    }
-    spatialOrbInstanced.count = MAX_SPATIAL_NODES;
-    spatialOrbInstanced.frustumCulled = false; // we manage visibility via scale=0
-    scene.add(spatialOrbInstanced);
+    scene.add(new THREE.AmbientLight(0x222244, 2));
+    scene.add(new THREE.PointLight(0x00ffff, 5, 20));
 
-    // ── M21: Bond line (camera → bonded orb) ──
-    const bondLinePositions = new Float32Array(6); // 2 points × 3 components
-    const bondLineGeo = new THREE.BufferGeometry();
-    bondLineGeo.setAttribute('position', new THREE.BufferAttribute(bondLinePositions, 3));
-    const bondLine = new THREE.Line(
-      bondLineGeo,
-      new THREE.LineBasicMaterial({
-        color: 0x00FFFF,
-        transparent: true,
-        opacity: 0.8,
-        blending: THREE.AdditiveBlending,
-        linewidth: 2,
-      }),
-    );
-    bondLine.visible = false;
-    scene.add(bondLine);
-
-    // ── WCD-06: Calcium Cage — 3 symmetric screens around phosphorus dome ──
-    const SCREEN_ARC = Math.PI * 0.56;   // 100° per screen
-    const SCREEN_GAP = Math.PI * 0.11;   // 20° gap
-    const SCREEN_RADIUS = 8;
-    const SCREEN_HEIGHT = 5;
-
-    const screenStarts = [
-      Math.PI * 0.055, // Screen A (front-right)
-      Math.PI * 0.055 + (SCREEN_ARC + SCREEN_GAP), // Screen B (back)
-      Math.PI * 0.055 + 2 * (SCREEN_ARC + SCREEN_GAP), // Screen C (front-left)
-    ];
-
-    // ── Cockpit-level orbit state (shared with Observatory) ──
-    const orbit: OrbitState = {
-      rx: 0, ry: 0.15, dist: OBSERVATORY_ORBIT_DIST,
-      trx: 0, try_: 0.15, tDist: OBSERVATORY_ORBIT_DIST,
-      vx: 0, vy: 0, vDist: 0,
-      down: false, x: 0, y: 0, moved: false,
-      flyFrom: null, flyTo: null, flyT: 0,
-    };
-
-    const coreUniforms = {
-      uTime: { value: 0 }, uCoherence: { value: 1.0 },
-      uNoise: { value: 0.0 }, uOpacity: { value: 1.0 }
-    };
-    const p31Material = new THREE.ShaderMaterial({
-      vertexShader: quantumVertexShader, fragmentShader: quantumFragmentShader,
-      uniforms: coreUniforms, transparent: true, blending: THREE.AdditiveBlending
-    });
-
-    const roomGroup = new THREE.Group();
-    scene.add(roomGroup);
-
-    // ── STATIC SCENE: Always build Observatory dome + content screen together ──
-    let observatoryHandle: ObservatoryHandle | null = null;
-
-    // 1. Observatory dome
-    observatoryHandle = buildObservatoryScene(roomGroup, scene, camera, renderer, orbit);
-    observatoryHandle.mountLabels(mount);
-
-    // 2. Three identical cage screens (Bridge / Buffer / System)
-    const screenCanvases = screenStarts.map(() => {
-      const canvas = document.createElement('canvas');
-      canvas.width = 2048;
-      canvas.height = 1536;
-      return canvas;
-    });
-    const screenContexts = screenCanvases.map((c) => c.getContext('2d')!);
-    const screenTextures = screenCanvases.map((c) => {
-      const t = new THREE.CanvasTexture(c);
-      t.minFilter = THREE.LinearFilter;
-      t.colorSpace = THREE.SRGBColorSpace;
-      return t;
-    });
-
-    const screenGeometries = screenStarts.map((thetaStart) =>
-      new THREE.CylinderGeometry(
-        SCREEN_RADIUS,
-        SCREEN_RADIUS,
-        SCREEN_HEIGHT,
-        64,
-        1,
-        true,
-        thetaStart,
-        SCREEN_ARC,
-      )
-    );
-
-    const screenMaterials = screenTextures.map((map) => new THREE.MeshBasicMaterial({
-      map,
-      transparent: true,
-      opacity: 0.88,
-      side: THREE.DoubleSide,
-      depthWrite: false,
-      blending: THREE.NormalBlending,
-    }));
-
-    const screenMeshes = screenGeometries.map((geo, i) => {
-      const mesh = new THREE.Mesh(geo, screenMaterials[i]);
-      mesh.position.set(0, 0, 0);
-      mesh.matrixAutoUpdate = false; // D4.3: static screen geometry
-      mesh.updateMatrix();
-      roomGroup.add(mesh);
-      return mesh;
-    });
-
-    // No edge wireframes — screens are glassy
-
-    // ── Mouse handlers — orbit always active ──
-    let orbitDragMoved = false;
-    let lastMoveTs = 0;
-    let lastWheelTs = 0;
-    const handleMouseMove = (e: MouseEvent) => {
-      if (orbit.down) {
-        const dx = e.clientX - orbit.x, dy = e.clientY - orbit.y;
-        if (Math.abs(dx) > 2 || Math.abs(dy) > 2) orbit.moved = true;
-        const drx = -dx * 0.007, dry = dy * 0.0055;
-        const dtMove = Math.max(1 / 240, (e.timeStamp - lastMoveTs) / 1000);
-        lastMoveTs = e.timeStamp;
-        orbit.rx += drx;
-        orbit.ry += dry;
-        // D2.1: Mode-aware ry clamp
-        const cm = useSovereignStore.getState().cameraMode;
-        const ryLo = cm === 'dome' ? DOME_RY_MIN : -Math.PI / 3;
-        const ryHi = cm === 'dome' ? DOME_RY_MAX : Math.PI / 3;
-        orbit.ry = Math.max(ryLo, Math.min(ryHi, orbit.ry));
-        // Velocity stored as rad/s for frame-rate-independent inertia.
-        orbit.vx = (drx / dtMove) * 0.85;
-        orbit.vy = (dry / dtMove) * 0.85;
-        orbit.x = e.clientX; orbit.y = e.clientY;
-        orbitDragMoved = true;
+    // --- IVM LATTICE (INSTANCED MESH) ---
+    const ivmPositions: THREE.Vector3[] = [];
+    for (let x = -6; x <= 6; x++) {
+      for (let y = -6; y <= 6; y++) {
+        for (let z = -6; z <= 6; z++) {
+          if ((x + y + z) % 2 === 0) ivmPositions.push(new THREE.Vector3(x, y, z));
+        }
       }
-    };
-    window.addEventListener('mousemove', handleMouseMove);
-
-    const handleMouseDown = (e: MouseEvent) => {
-      orbit.down = true; orbit.x = e.clientX; orbit.y = e.clientY; orbit.moved = false;
-      orbit.flyTo = null; orbit.flyFrom = null;
-      orbitDragMoved = false;
-      lastMoveTs = e.timeStamp;
-    };
-    const handleMouseUp = () => {
-      orbit.down = false;
-      // If this was effectively a click, don't fling the camera.
-      if (!orbitDragMoved) {
-        orbit.vx = 0; orbit.vy = 0;
-      } else if (Math.hypot(orbit.vx, orbit.vy) < 0.15) {
-        orbit.vx = 0; orbit.vy = 0;
-      }
-    };
-    // ── Screen click detection via UV raycasting ──
-    const screenRaycaster = new THREE.Raycaster();
-
-    const handleScreenClick = (clientX: number, clientY: number) => {
-      const rect = renderer.domElement.getBoundingClientRect();
-      const mouse = new THREE.Vector2(
-        ((clientX - rect.left) / rect.width) * 2 - 1,
-        -((clientY - rect.top) / rect.height) * 2 + 1,
+    }
+    
+    const ivmGeo = new THREE.SphereGeometry(0.04, 8, 8);
+    const ivmMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.6, blending: THREE.AdditiveBlending });
+    
+    // Inject Chromatic Shaders
+    ivmMat.onBeforeCompile = (shader) => {
+      shader.uniforms.uTime = { value: 0 };
+      shader.uniforms.uEntropy = { value: 0 };
+      shader.vertexShader = `varying vec3 vWorldPos;\n` + shader.vertexShader.replace(
+        `#include <begin_vertex>`,
+        `#include <begin_vertex>\nvWorldPos = (instanceMatrix * vec4(position, 1.0)).xyz;`
       );
+      shader.fragmentShader = `
+        uniform float uTime;
+        uniform float uEntropy;
+        varying vec3 vWorldPos;
+        vec3 hsv2rgb(vec3 c) {
+            vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+            vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
+            return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
+        }
+      ` + shader.fragmentShader.replace(
+        `vec4 diffuseColor = vec4( diffuse, opacity );`,
+        `
+        float dist = length(vWorldPos);
+        vec3 cyberColor = hsv2rgb(vec3(fract(dist * 0.05 - uTime * 0.3), 1.0, 1.0));
+        vec3 faultColor = mix(vec3(1.0, 0.0, 0.3), vec3(1.0, 0.5, 0.0), fract(dist*0.1 - uTime));
+        vec3 finalColor = mix(cyberColor, faultColor, uEntropy);
+        vec4 diffuseColor = vec4(finalColor, opacity);
+        `
+      );
+    };
 
-      // Try observatory dome first (closer object wins)
-      if (observatoryHandle) {
-        observatoryHandle.handleClick(mouse, camera);
+    const ivmInstanced = new THREE.InstancedMesh(ivmGeo, ivmMat, ivmPositions.length);
+    const dummy = new THREE.Object3D();
+    ivmPositions.forEach((pos, i) => {
+      dummy.position.copy(pos).multiplyScalar(1.5);
+      dummy.updateMatrix();
+      ivmInstanced.setMatrixAt(i, dummy.matrix);
+    });
+    scene.add(ivmInstanced);
+
+    // --- JITTERBUG CORE ---
+    const C = 1/Math.sqrt(2); const T = 1/Math.sqrt(3);
+    const COORDS = {
+      cubo: [new THREE.Vector3(C,C,0), new THREE.Vector3(C,-C,0), new THREE.Vector3(-C,C,0), new THREE.Vector3(-C,-C,0), new THREE.Vector3(C,0,C), new THREE.Vector3(C,0,-C), new THREE.Vector3(-C,0,C), new THREE.Vector3(-C,0,-C), new THREE.Vector3(0,C,C), new THREE.Vector3(0,C,-C), new THREE.Vector3(0,-C,C), new THREE.Vector3(0,-C,-C)],
+      octa: [new THREE.Vector3(1,0,0), new THREE.Vector3(0,-1,0), new THREE.Vector3(0,1,0), new THREE.Vector3(-1,0,0), new THREE.Vector3(1,0,0), new THREE.Vector3(0,0,-1), new THREE.Vector3(-1,0,0), new THREE.Vector3(0,0,1), new THREE.Vector3(0,1,0), new THREE.Vector3(0,0,-1), new THREE.Vector3(0,-1,0), new THREE.Vector3(0,0,1)],
+      tetra: [new THREE.Vector3(T,T,T), new THREE.Vector3(T,-T,-T), new THREE.Vector3(-T,T,-T), new THREE.Vector3(-T,-T,T), new THREE.Vector3(0,0,0), new THREE.Vector3(0,0,0), new THREE.Vector3(0,0,0), new THREE.Vector3(0,0,0), new THREE.Vector3(0,0,0), new THREE.Vector3(0,0,0), new THREE.Vector3(0,0,0), new THREE.Vector3(0,0,0)]
+    };
+
+    const jGroup = new THREE.Group();
+    const jNodes: {mesh: THREE.Mesh, isCore: boolean}[] = [];
+    const jMat = new THREE.MeshBasicMaterial({ color: 0xffd700, side: THREE.DoubleSide });
+    for(let i=0; i<12; i++) {
+        const m = new THREE.Mesh(new THREE.SphereGeometry(0.08, 16, 16), jMat.clone());
+        jGroup.add(m); jNodes.push({mesh:m, isCore: i<4});
+    }
+
+    const jEdgeGeo = new THREE.BufferGeometry();
+    const jEPos = new Float32Array(66*6);
+    const jECol = new Float32Array(66*6);
+    jEdgeGeo.setAttribute('position', new THREE.BufferAttribute(jEPos, 3));
+    jEdgeGeo.setAttribute('color', new THREE.BufferAttribute(jECol, 3));
+    const jEdges = new THREE.LineSegments(jEdgeGeo, new THREE.LineBasicMaterial({ vertexColors:true, transparent:true, opacity:0.8, blending:THREE.AdditiveBlending }));
+    jGroup.add(jEdges);
+    scene.add(jGroup);
+
+    // --- GODHEAD PANORAMIC CONTROLS ---
+    const dom = renderer.domElement;
+    const handleStart = (e: PointerEvent) => { ptrState.current.isDragging = true; ptrState.current.prevX = e.clientX; ptrState.current.prevY = e.clientY; };
+    const handleMove = (e: PointerEvent) => {
+      if (!ptrState.current.isDragging || useSovereignStore.getState().viewPerspective !== 'GODHEAD') return;
+      camera.rotation.y -= (e.clientX - ptrState.current.prevX) * 0.005;
+      camera.rotation.x -= (e.clientY - ptrState.current.prevY) * 0.005;
+      camera.rotation.x = Math.max(-Math.PI/2, Math.min(Math.PI/2, camera.rotation.x));
+      ptrState.current.prevX = e.clientX; ptrState.current.prevY = e.clientY;
+    };
+    const handleEnd = () => { ptrState.current.isDragging = false; };
+
+    dom.addEventListener('pointerdown', handleStart);
+    window.addEventListener('pointermove', handleMove);
+    window.addEventListener('pointerup', handleEnd);
+
+    let animationId: number;
+    const animate = () => {
+      animationId = requestAnimationFrame(animate);
+      const state = useSovereignStore.getState();
+      
+      // Graceful degradation on idle
+      timeRef.current += isIdle ? 0.008 : 0.016; 
+      const t = timeRef.current;
+      const entropy = 0.5; // Default entropy value
+
+      if (ivmInstanced.material instanceof THREE.Material && (ivmInstanced.material as any).uniforms) {
+        (ivmInstanced.material as any).uniforms.uTime.value = t;
+        (ivmInstanced.material as any).uniforms.uEntropy.value = entropy;
       }
 
-      // Try screen panels
-      screenRaycaster.setFromCamera(mouse, camera);
-      const hits = screenRaycaster.intersectObjects(screenMeshes);
-      if (hits.length > 0) {
-        const hit = hits[0];
-        const screenIdx = screenMeshes.findIndex(m => m === hit.object);
-        if (screenIdx >= 0 && hit.uv) {
-          const canvasX = hit.uv.x * 2048;
-          const canvasY = (1 - hit.uv.y) * 1536;
-          const colIdx = getColumnFromCanvasX(canvasX);
-          if (colIdx >= 0 && canvasY >= SLOT_TOP && canvasY <= SLOT_BOTTOM) {
-            const room = SCREEN_ROOMS[screenIdx][colIdx];
-            // COPILOT now hosts Brain — allow navigation
-            useSovereignStore.getState().setOverlay(
-              room.id === 'OBSERVATORY' ? null : room.id
-            );
+      // Camera Mode Lerping
+      if (state.viewPerspective === 'GODHEAD') {
+        controls.enabled = false;
+        camera.position.lerp(_origin, 0.1);
+      } else {
+        controls.enabled = true;
+        camera.position.lerp(_defaultCam, 0.05);
+        controls.update();
+      }
+
+      // Jitterbug Kinematics
+      const prog = Math.max(0, Math.min(1, ((2026 - 2009) / 17))); // Default to current year
+      let phase=0, lerp=0, scale=0.6, heat=0;
+      if(prog<0.3) { phase=0; lerp=0; }
+      else if(prog<0.7) { phase=0; lerp=(prog-0.3)/0.4; heat=lerp; scale=0.6-lerp*0.15; }
+      else if(prog<0.95) { phase=1; lerp=(prog-0.7)/0.25; heat=1-lerp; scale=0.45-lerp*0.15; }
+      else { phase=2; lerp=1; scale=0.3; }
+
+      const sep = 0; // Default domain separation
+
+      jNodes.forEach((n, i) => {
+        _scratch.set(0, 0, 0);
+        if(phase===0) _scratch.lerpVectors(COORDS.cubo[i], COORDS.octa[i], lerp);
+        else if(phase===1) _scratch.lerpVectors(COORDS.octa[i], COORDS.tetra[i], lerp);
+        else _scratch.copy(COORDS.tetra[i]);
+        _scratch.multiplyScalar(scale * (1 + sep * 0.5));
+
+        if(heat>0) {
+          _scratch.x += (Math.random()-0.5)*0.2*heat;
+          _scratch.y += (Math.random()-0.5)*0.2*heat;
+          _scratch.z += (Math.random()-0.5)*0.2*heat;
+        }
+        n.mesh.position.copy(_scratch);
+        
+        if(prog<0.7) { 
+          (n.mesh.material as THREE.MeshBasicMaterial).opacity = 1; 
+          (n.mesh.material as THREE.MeshBasicMaterial).color.setHex(0xffd700); 
+        }
+        else if(prog<0.95) { 
+          if(n.isCore) n.mesh.scale.setScalar(1+lerp*0.5); 
+          else { 
+            (n.mesh.material as THREE.MeshBasicMaterial).color.setHex(0xff0055); 
+            (n.mesh.material as THREE.MeshBasicMaterial).opacity = 1-lerp; 
           }
         }
-      }
-    };
-
-    const handleClick = (e: MouseEvent) => {
-      if (!orbitDragMoved) {
-        orbit.vx = 0; orbit.vy = 0; orbit.vDist = 0;
-        handleScreenClick(e.clientX, e.clientY);
-      }
-    };
-    const handleWheel = (e: WheelEvent) => {
-      e.preventDefault();
-      const cm = useSovereignStore.getState().cameraMode;
-      // Screen mode: wheel scrolls between screens, not zoom
-      if (cm === 'screen') {
-        if (Math.abs(e.deltaY) > 20) {
-          const st = useSovereignStore.getState();
-          const dir = e.deltaY > 0 ? 1 : -1;
-          const nextIdx = (st.activeScreenIdx + dir + 3) % 3;
-          useSovereignStore.getState().setActiveScreenIdx(nextIdx);
-          orbit.flyFrom = { rx: orbit.rx, ry: orbit.ry, dist: orbit.dist };
-          orbit.flyTo = { rx: SCREEN_CENTER_ANGLES[nextIdx], ry: SCREEN_RY_LOCK, dist: SCREEN_VIEW_DIST };
-          orbit.flyT = 0;
+        else { 
+          (n.mesh.material as THREE.MeshBasicMaterial).opacity = n.isCore ? 1 : 0; 
+          if(n.isCore) (n.mesh.material as THREE.MeshBasicMaterial).color.setHex(0xffffff); 
         }
-        return;
-      }
-      const d = e.deltaY * 0.005;
-      const dtWheel = Math.max(1 / 60, (e.timeStamp - lastWheelTs) / 1000);
-      lastWheelTs = e.timeStamp;
-      orbit.dist += d;
-      const dMin = cm === 'dome' ? DOME_DIST_MIN : 0.5;
-      const dMax = cm === 'dome' ? DOME_DIST_MAX : 200;
-      orbit.dist = Math.max(dMin, Math.min(dMax, orbit.dist));
-      orbit.vDist = (d / dtWheel) * 0.9;
-      orbit.flyTo = null; orbit.flyFrom = null;
-    };
-    const canvas = renderer.domElement;
-    canvas.addEventListener('mousedown', handleMouseDown);
-    window.addEventListener('mouseup', handleMouseUp);
-    canvas.addEventListener('click', handleClick);
-    canvas.addEventListener('wheel', handleWheel, { passive: false });
+      });
 
-    // Touch support — drag-to-rotate + pinch-to-zoom + tap-to-click
-    let touchStartX = 0, touchStartY = 0;
-    let touchLastX = 0, touchLastY = 0;
-    let touchMoved = false;
-    let lastPinchDist = 0;
-    let lastTouchMoveTs = 0;
-
-    const handleTouchStart = (e: TouchEvent) => {
-      e.preventDefault();
-      if (e.touches.length === 1) {
-        touchStartX = touchLastX = e.touches[0].clientX;
-        touchStartY = touchLastY = e.touches[0].clientY;
-        touchMoved = false;
-        orbit.down = true;
-        orbit.flyTo = null; orbit.flyFrom = null;
-        lastTouchMoveTs = e.timeStamp;
-      } else if (e.touches.length === 2) {
-        const dx = e.touches[0].clientX - e.touches[1].clientX;
-        const dy = e.touches[0].clientY - e.touches[1].clientY;
-        lastPinchDist = Math.sqrt(dx * dx + dy * dy);
-      }
-    };
-
-    const handleTouchMove = (e: TouchEvent) => {
-      e.preventDefault();
-      const cm = useSovereignStore.getState().cameraMode;
-      if (e.touches.length === 2 && lastPinchDist > 0) {
-        // Screen mode: pinch disabled (dist locked)
-        if (cm === 'screen') { lastPinchDist = 0; return; }
-        // Pinch-to-zoom
-        const dx = e.touches[0].clientX - e.touches[1].clientX;
-        const dy = e.touches[0].clientY - e.touches[1].clientY;
-        const d = Math.sqrt(dx * dx + dy * dy);
-        const rawScale = lastPinchDist / d;
-        // Dampen pinch: lerp towards 1.0 so small finger jitter doesn't whip the zoom
-        const scale = 1.0 + (rawScale - 1.0) * 0.5;
-        orbit.dist *= scale;
-        const dMin = cm === 'dome' ? DOME_DIST_MIN : 0.5;
-        const dMax = cm === 'dome' ? DOME_DIST_MAX : 200;
-        orbit.dist = Math.max(dMin, Math.min(dMax, orbit.dist));
-        orbit.flyTo = null; orbit.flyFrom = null;
-        lastPinchDist = d;
-        touchMoved = true;
-        return;
-      }
-      if (e.touches.length === 1) {
-        const cx = e.touches[0].clientX, cy = e.touches[0].clientY;
-        const dx = cx - touchLastX, dy = cy - touchLastY;
-        if (Math.abs(cx - touchStartX) > 8 || Math.abs(cy - touchStartY) > 8) touchMoved = true;
-        // Touch uses softer coefficients than mouse to avoid jumpiness
-        const drx = -dx * 0.004, dry = dy * 0.003;
-        const dtMove = Math.max(1 / 240, (e.timeStamp - lastTouchMoveTs) / 1000);
-        lastTouchMoveTs = e.timeStamp;
-        orbit.rx += drx;
-        orbit.ry += dry;
-        // D2.1: Mode-aware ry clamp
-        const ryLo = cm === 'dome' ? DOME_RY_MIN : -Math.PI / 3;
-        const ryHi = cm === 'dome' ? DOME_RY_MAX : Math.PI / 3;
-        orbit.ry = Math.max(ryLo, Math.min(ryHi, orbit.ry));
-        // Lower velocity multiplier + cap for controlled inertia
-        const rawVx = (drx / dtMove) * 0.45;
-        const rawVy = (dry / dtMove) * 0.45;
-        const maxV = 3.0; // rad/s cap
-        orbit.vx = Math.max(-maxV, Math.min(maxV, rawVx));
-        orbit.vy = Math.max(-maxV, Math.min(maxV, rawVy));
-        touchLastX = cx; touchLastY = cy;
-      }
-    };
-
-    const handleTouchEnd = (e: TouchEvent) => {
-      orbit.down = false;
-      if (e.changedTouches.length === 1 && !touchMoved) {
-        orbit.vx = 0; orbit.vy = 0; orbit.vDist = 0;
-        handleScreenClick(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
-      } else if (!touchMoved || Math.hypot(orbit.vx, orbit.vy) < 0.15) {
-        orbit.vx = 0; orbit.vy = 0;
-      }
-      lastPinchDist = 0;
-    };
-
-    canvas.style.touchAction = 'none';
-    canvas.addEventListener('touchstart', handleTouchStart, { passive: false });
-    canvas.addEventListener('touchmove', handleTouchMove, { passive: false });
-    canvas.addEventListener('touchend', handleTouchEnd);
-
-    // ── D2.6: Camera mode change listener (flyTo on mode switch) ──
-    const handleCameraModeChange = (e: Event) => {
-      const detail = (e as CustomEvent).detail;
-      const mode: CameraMode = detail.mode;
-      if (mode === 'dome') {
-        // Fly to dome orbit distance, centered
-        orbit.flyFrom = { rx: orbit.rx, ry: orbit.ry, dist: orbit.dist };
-        orbit.flyTo = { rx: orbit.rx, ry: 0.15, dist: OBSERVATORY_ORBIT_DIST };
-        orbit.flyT = 0;
-        orbit.vx = 0; orbit.vy = 0; orbit.vDist = 0;
-      } else if (mode === 'screen') {
-        const idx = detail.screenIdx ?? 0;
-        orbit.flyFrom = { rx: orbit.rx, ry: orbit.ry, dist: orbit.dist };
-        orbit.flyTo = { rx: SCREEN_CENTER_ANGLES[idx], ry: SCREEN_RY_LOCK, dist: SCREEN_VIEW_DIST };
-        orbit.flyT = 0;
-        orbit.vx = 0; orbit.vy = 0; orbit.vDist = 0;
-      }
-      // 'free' — no flyTo, just release constraints
-    };
-    window.addEventListener('camera-mode-change', handleCameraModeChange);
-
-    // Hover detection — raycast on mousemove to highlight screen columns
-    const hoverRaycaster = new THREE.Raycaster();
-    const handleHoverCheck = (e: MouseEvent) => {
-      if (orbit.down) { hoveredScreen = -1; hoveredCol = -1; return; }
-      const rect = renderer.domElement.getBoundingClientRect();
-      const mouse = new THREE.Vector2(
-        ((e.clientX - rect.left) / rect.width) * 2 - 1,
-        -((e.clientY - rect.top) / rect.height) * 2 + 1,
-      );
-      hoverRaycaster.setFromCamera(mouse, camera);
-      const hits = hoverRaycaster.intersectObjects(screenMeshes);
-      if (hits.length > 0 && hits[0].uv) {
-        const screenIdx = screenMeshes.findIndex(m => m === hits[0].object);
-        const canvasX = hits[0].uv.x * 2048;
-        const canvasY = (1 - hits[0].uv.y) * 1536;
-        const colIdx = getColumnFromCanvasX(canvasX);
-        if (screenIdx >= 0 && colIdx >= 0 && canvasY >= SLOT_TOP && canvasY <= SLOT_BOTTOM) {
-          hoveredScreen = screenIdx;
-          hoveredCol = colIdx;
-          renderer.domElement.style.cursor = 'pointer';
-        } else {
-          hoveredScreen = -1; hoveredCol = -1;
-          renderer.domElement.style.cursor = '';
+      let idx=0;
+      for(let i=0; i<12; i++) {
+        if((jNodes[i].mesh.material as THREE.MeshBasicMaterial).opacity<0.1) continue;
+        for(let j=i+1; j<12; j++) {
+            if((jNodes[j].mesh.material as THREE.MeshBasicMaterial).opacity<0.1) continue;
+            const d = jNodes[i].mesh.position.distanceTo(jNodes[j].mesh.position);
+            if(d>0.05 && d<scale*1.8 * (1 + sep * 0.5)) {
+                jEPos.set([...jNodes[i].mesh.position.toArray(), ...jNodes[j].mesh.position.toArray()], idx*6);
+                const col = heat>0 ? _colA.set(0xffd700).lerp(_colB.set(0xff0055), heat) : _colA.set(prog>=0.95?0xffffff:0xffd700);
+                jECol.set([...col.toArray(), ...col.toArray()], idx*6); idx++;
+            }
         }
-      } else {
-        hoveredScreen = -1; hoveredCol = -1;
-        renderer.domElement.style.cursor = '';
       }
-    };
-    // Throttle hover check to every ~50ms
-    let lastHoverTs = 0;
-    const handleHoverThrottled = (e: MouseEvent) => {
-      if (e.timeStamp - lastHoverTs > 50) {
-        lastHoverTs = e.timeStamp;
-        handleHoverCheck(e);
+      for(let i=idx*6; i<66*6; i++) { jEPos[i]=0; jECol[i]=0; }
+      jEdges.geometry.attributes.position.needsUpdate = true; jEdges.geometry.attributes.color.needsUpdate = true;
+
+      jGroup.rotation.y += 0.005;
+      ivmInstanced.rotation.y -= 0.001;
+      
+      if (entropy > 0) {
+        const j = (Math.random()-0.5)*entropy*0.1;
+        jGroup.rotation.z += j;
       }
+
+      composer.render();
     };
-    window.addEventListener('mousemove', handleHoverThrottled);
+    animate();
 
     const handleResize = () => {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
-      if (observatoryHandle) {
-        observatoryHandle.resizeBloom(window.innerWidth, window.innerHeight);
-        observatoryHandle.resizeLabels(window.innerWidth, window.innerHeight);
-      }
+      composer.setSize(window.innerWidth, window.innerHeight);
     };
     window.addEventListener('resize', handleResize);
 
-    const drawScreenBase = (c: CanvasRenderingContext2D, w: number, h: number, time: number, theme: ScreenTheme, title: string, subtitle: string, slotOffset = 0, dynamicSlots: Record<number, { name: string } | null> = {}) => {
-      c.save();
-      c.clearRect(0, 0, w, h);
-
-      // No flip — text reads from the outside, live display style
-
-      // Glass background — clear black glass
-      const grad = c.createLinearGradient(0, 0, 0, h);
-      grad.addColorStop(0, 'rgba(0, 0, 0, 0.75)');
-      grad.addColorStop(0.15, 'rgba(0, 0, 0, 0.6)');
-      grad.addColorStop(0.85, 'rgba(0, 0, 0, 0.65)');
-      grad.addColorStop(1, 'rgba(0, 0, 0, 0.75)');
-      c.fillStyle = grad;
-      c.fillRect(0, 0, w, h);
-
-      // Glass highlight — subtle bright strip near top
-      const sheen = c.createLinearGradient(0, 0, 0, h * 0.2);
-      sheen.addColorStop(0, `rgba(255,255,255,0.04)`);
-      sheen.addColorStop(0.5, `rgba(255,255,255,0.015)`);
-      sheen.addColorStop(1, 'rgba(255,255,255,0)');
-      c.fillStyle = sheen;
-      c.fillRect(0, 0, w, h * 0.2);
-
-      // Subtle edge glow — very thin border
-      c.globalAlpha = 0.08;
-      c.strokeStyle = theme.pri;
-      c.lineWidth = 1;
-      c.strokeRect(10, 10, w - 20, h - 20);
-      c.globalAlpha = 1;
-
-      // Screen title header
-      c.shadowBlur = 10;
-      // Crisp neon title — tight glow + solid
-      c.font = 'bold 56px monospace';
-      c.globalAlpha = 0.5;
-      c.shadowColor = theme.pri; c.shadowBlur = 12; c.fillStyle = theme.pri;
-      c.fillText(title, 60, 95);
-      c.globalAlpha = 1;
-      c.shadowBlur = 4; c.fillStyle = theme.pri;
-      c.fillText(title, 60, 95);
-      c.shadowBlur = 4;
-      c.fillRect(60, 112, 240, 3);
-      c.shadowBlur = 0;
-      // Subtitle
-      c.globalAlpha = 0.7;
-      c.shadowColor = theme.dim; c.shadowBlur = 4; c.fillStyle = theme.dim;
-      c.font = '26px monospace';
-      c.fillText(subtitle, 60, 142);
-      c.globalAlpha = 1; c.shadowBlur = 0;
-      c.fillText(subtitle, 60, 142);
-
-      // Separator line under header
-      c.strokeStyle = theme.divider;
-      c.lineWidth = 1;
-      c.beginPath(); c.moveTo(40, 150); c.lineTo(w - 40, 150); c.stroke();
-
-      // ── 3-column slot geometry ──
-      const pad = 40;
-      const gap = 20;
-      const colW = Math.floor((w - 2 * pad - 2 * gap) / 3);
-      const cols = [pad, pad + colW + gap, pad + 2 * (colW + gap)];
-      const slotTop = 160;
-
-      // Vertical dividers between columns
-      c.strokeStyle = theme.divider;
-      c.lineWidth = 1;
-      c.setLineDash([8, 8]);
-      c.beginPath();
-      c.moveTo(cols[1] - gap / 2, slotTop);
-      c.lineTo(cols[1] - gap / 2, h - 60);
-      c.moveTo(cols[2] - gap / 2, slotTop);
-      c.lineTo(cols[2] - gap / 2, h - 60);
-      c.stroke();
-      c.setLineDash([]);
-
-      // Helper functions — crisp neon text (tight glow + solid core)
-      const text = (s: string, x: number, y: number, sz = 28, col = theme.pri) => {
-        c.font = `bold ${sz}px monospace`;
-        // Pass 1: tight glow halo
-        c.globalAlpha = 0.4;
-        c.shadowColor = col; c.shadowBlur = 10; c.fillStyle = col;
-        c.fillText(s, x, y);
-        // Pass 2: solid crisp text
-        c.globalAlpha = 1;
-        c.shadowBlur = 3;
-        c.fillStyle = col;
-        c.fillText(s, x, y);
-        c.shadowBlur = 0;
-      };
-      const dim = (s: string, x: number, y: number, sz = 22, col = theme.dim) => {
-        c.font = `${sz}px monospace`;
-        c.globalAlpha = 0.7;
-        c.shadowColor = col; c.shadowBlur = 4; c.fillStyle = col;
-        c.fillText(s, x, y);
-        c.globalAlpha = 1;
-        c.shadowBlur = 0;
-        c.fillText(s, x, y);
-      };
-      const bar = (x: number, y: number, bw: number, bh: number, ratio: number, col: string) => {
-        c.shadowBlur = 0;
-        c.strokeStyle = theme.dim; c.lineWidth = 1;
-        c.strokeRect(x, y, bw, bh);
-        c.fillStyle = col;
-        c.fillRect(x + 1, y + 1, (bw - 2) * Math.min(1, Math.max(0, ratio)), bh - 2);
-      };
-
-      // Slot header: plasma glow title bar at top of a column, returns content y
-      const slotHeader = (col: number, slotTitle: string, slotSub: string) => {
-        const cx = cols[col];
-        const sy = slotTop + 10;
-        c.font = 'bold 24px monospace';
-        // Tight glow + solid
-        c.globalAlpha = 0.45;
-        c.shadowColor = theme.pri; c.shadowBlur = 8; c.fillStyle = theme.pri;
-        c.fillText(slotTitle, cx + 8, sy + 24);
-        c.globalAlpha = 1;
-        c.shadowBlur = 2; c.fillStyle = theme.pri;
-        c.fillText(slotTitle, cx + 8, sy + 24);
-        c.shadowBlur = 0;
-        // Subtitle
-        c.globalAlpha = 0.7;
-        c.shadowColor = theme.dim; c.shadowBlur = 3; c.fillStyle = theme.dim;
-        c.font = '16px monospace';
-        c.fillText(slotSub, cx + 8, sy + 48);
-        c.globalAlpha = 1; c.shadowBlur = 0;
-        c.fillText(slotSub, cx + 8, sy + 48);
-        // Underline
-        c.globalAlpha = 0.4;
-        c.shadowColor = theme.pri; c.shadowBlur = 4;
-        c.strokeStyle = theme.pri; c.lineWidth = 2;
-        c.beginPath(); c.moveTo(cx + 8, sy + 56); c.lineTo(cx + colW - 8, sy + 56); c.stroke();
-        c.globalAlpha = 1; c.shadowBlur = 0;
-        return sy + 72;
-      };
-
-      // Slot renderer: checks dynamicSlots for occupied state, falls back to empty placeholder
-      const emptySlot = (col: number, t: number) => {
-        const globalSlotNum = slotOffset + col + 1;
-        const slotData = dynamicSlots[globalSlotNum];
-        const cx = cols[col];
-        const sy = slotTop + 10;
-        const sw = colW;
-        const sh = h - 80 - sy;
-        const inset = 12;
-
-        if (slotData) {
-          // ── Occupied slot: solid green border, ACTIVE label ──
-          const activePulse = 0.6 + 0.2 * ((Math.sin(t * 2 + col) + 1) / 2);
-          const activeColor = '#7DDFB6';
-
-          // Solid border — green glow
-          c.globalAlpha = activePulse;
-          c.shadowColor = activeColor;
-          c.shadowBlur = 12;
-          c.strokeStyle = activeColor;
-          c.lineWidth = 3;
-          c.strokeRect(cx + inset, sy + inset, sw - 2 * inset, sh - 2 * inset);
-          c.shadowBlur = 0;
-
-          // Corner brackets — green
-          c.globalAlpha = activePulse + 0.15;
-          c.strokeStyle = activeColor;
-          c.lineWidth = 4;
-          const bL = 30;
-          const x1 = cx + inset, y1 = sy + inset;
-          const x2 = cx + sw - inset, y2 = sy + sh - inset;
-          c.beginPath(); c.moveTo(x1, y1 + bL); c.lineTo(x1, y1); c.lineTo(x1 + bL, y1); c.stroke();
-          c.beginPath(); c.moveTo(x2 - bL, y1); c.lineTo(x2, y1); c.lineTo(x2, y1 + bL); c.stroke();
-          c.beginPath(); c.moveTo(x1, y2 - bL); c.lineTo(x1, y2); c.lineTo(x1 + bL, y2); c.stroke();
-          c.beginPath(); c.moveTo(x2 - bL, y2); c.lineTo(x2, y2); c.lineTo(x2, y2 - bL); c.stroke();
-
-          // Active indicator in center
-          const centerX = cx + sw / 2;
-          const centerY = sy + sh / 2 - 20;
-
-          // Pulsing dot
-          c.globalAlpha = activePulse;
-          c.fillStyle = activeColor;
-          c.shadowColor = activeColor;
-          c.shadowBlur = 16;
-          c.beginPath(); c.arc(centerX, centerY - 10, 8, 0, Math.PI * 2); c.fill();
-          c.shadowBlur = 0;
-
-          // Slot label + module name
-          c.font = 'bold 22px monospace';
-          c.textAlign = 'center';
-          c.globalAlpha = 0.9;
-          c.fillStyle = activeColor;
-          c.fillText(`[ SLOT ${globalSlotNum}: ACTIVE ]`, centerX, centerY + 40);
-          c.globalAlpha = 0.5;
-          c.font = '16px monospace';
-          const displayName = slotData.name.length > 24 ? slotData.name.slice(0, 24) + '..' : slotData.name;
-          c.fillText(displayName, centerX, centerY + 68);
-          c.textAlign = 'left';
-
-          // Slot number in corner
-          c.globalAlpha = 0.7;
-          c.fillStyle = activeColor;
-          c.font = 'bold 16px monospace';
-          c.fillText(`[ SLOT ${globalSlotNum} ]`, cx + inset + 8, sy + inset + 22);
-
-          c.globalAlpha = 1;
-          return;
-        }
-
-        // ── Empty slot: dashed border, crosshair, "DROP MODULE HERE" ──
-
-        // Dashed border — high visibility, breathing glow
-        const emptyPulse = 0.35 + 0.25 * ((Math.sin(t * 2 + col) + 1) / 2);
-        c.globalAlpha = emptyPulse;
-        c.shadowColor = theme.pri;
-        c.shadowBlur = 8;
-        c.strokeStyle = theme.pri;
-        c.lineWidth = 3;
-        c.setLineDash([16, 10]);
-        c.strokeRect(cx + inset, sy + inset, sw - 2 * inset, sh - 2 * inset);
-        c.setLineDash([]);
-        c.shadowBlur = 0;
-
-        // Corner brackets for emphasis
-        c.globalAlpha = emptyPulse + 0.15;
-        c.strokeStyle = theme.acc;
-        c.lineWidth = 4;
-        const bL = 30;
-        const x1 = cx + inset, y1 = sy + inset;
-        const x2 = cx + sw - inset, y2 = sy + sh - inset;
-        c.beginPath(); c.moveTo(x1, y1 + bL); c.lineTo(x1, y1); c.lineTo(x1 + bL, y1); c.stroke();
-        c.beginPath(); c.moveTo(x2 - bL, y1); c.lineTo(x2, y1); c.lineTo(x2, y1 + bL); c.stroke();
-        c.beginPath(); c.moveTo(x1, y2 - bL); c.lineTo(x1, y2); c.lineTo(x1 + bL, y2); c.stroke();
-        c.beginPath(); c.moveTo(x2 - bL, y2); c.lineTo(x2, y2); c.lineTo(x2, y2 - bL); c.stroke();
-
-        // Crosshair in center
-        const centerX = cx + sw / 2;
-        const centerY = sy + sh / 2 - 20;
-        const crossSize = 30;
-        c.globalAlpha = 0.4;
-        c.strokeStyle = theme.pri;
-        c.lineWidth = 2;
-        c.beginPath();
-        c.moveTo(centerX - crossSize, centerY); c.lineTo(centerX + crossSize, centerY);
-        c.moveTo(centerX, centerY - crossSize); c.lineTo(centerX, centerY + crossSize);
-        c.stroke();
-        // Circle around crosshair
-        c.beginPath(); c.arc(centerX, centerY, crossSize * 1.4, 0, Math.PI * 2); c.stroke();
-
-        // "DROP MODULE HERE" text
-        c.globalAlpha = 0.35 + 0.2 * ((Math.sin(t * 1.5 + col * 2) + 1) / 2);
-        c.fillStyle = theme.pri;
-        c.font = 'bold 22px monospace';
-        c.textAlign = 'center';
-        c.fillText(`[ SLOT ${globalSlotNum} ]`, centerX, centerY + 55);
-        c.fillText('DROP MODULE HERE', centerX, centerY + 85);
-        c.textAlign = 'left';
-
-        // Slot number in corner
-        c.globalAlpha = 0.5;
-        c.fillStyle = theme.acc;
-        c.font = 'bold 16px monospace';
-        c.fillText(`[ SLOT ${globalSlotNum} ]`, cx + inset + 8, sy + inset + 22);
-
-        c.globalAlpha = 1;
-      };
-
-      // Bottom ticker line
-      c.globalAlpha = 0.25;
-      c.shadowBlur = 0;
-      c.fillStyle = theme.dim;
-      c.font = '20px monospace';
-      const tickerTxt = `SYS_TICK:${time.toFixed(2)} // SOVEREIGN // COHERENCE:OK `.repeat(6);
-      c.fillText(tickerTxt, 30 - ((time * 50) % 500), h - 30);
-      c.globalAlpha = 1;
-
-      return { text, dim, bar, pad, colW, cols, slotTop, slotHeader, emptySlot, w, h, c };
-    };
-
-    // ── Hover state for screen panels ──
-    let hoveredScreen = -1;
-    let hoveredCol = -1;
-
-    // Column geometry constants (must match drawScreenBase)
-    const COL_PAD = 40, COL_GAP = 20;
-    const COL_W = Math.floor((2048 - 2 * COL_PAD - 2 * COL_GAP) / 3);
-    const COL_STARTS = [COL_PAD, COL_PAD + COL_W + COL_GAP, COL_PAD + 2 * (COL_W + COL_GAP)];
-    const SLOT_TOP = 160;
-    const SLOT_BOTTOM = 1536 - 60;
-
-    const getColumnFromCanvasX = (canvasX: number): number => {
-      for (let i = 0; i < 3; i++) {
-        if (canvasX >= COL_STARTS[i] && canvasX <= COL_STARTS[i] + COL_W) return i;
-      }
-      return -1;
-    };
-
-    // ── Live data readouts per room ──
-    type StoreState = ReturnType<typeof useSovereignStore.getState>;
-
-    const getRoomLiveData = (roomId: SovereignRoom, state: StoreState, time: number): Array<{ label: string; value: string; color: string }> => {
-      const didShort = state.didKey !== 'UNINITIALIZED' ? state.didKey.slice(0, 16) + '...' : 'NONE';
-      const spoonsR = state.maxSpoons > 0 ? state.spoons / state.maxSpoons : 1;
-      const spCol = spoonsR > 0.6 ? '#7DDFB6' : spoonsR > 0.3 ? '#FFD700' : '#FF4444';
-      const k4Nodes = state.k4Graph.nodes.length;
-      const k4Edges = state.k4Graph.edges.length;
-      const somaticCol = state.somaticTetherStatus === 'active' ? '#7DDFB6' : state.somaticTetherStatus === 'stress' ? '#FF4444' : state.somaticTetherStatus === 'calibrating' ? '#FFD700' : '#1a4a1a';
-
-      switch (roomId) {
-        case 'OBSERVATORY': return [
-          { label: 'PANELS', value: '58', color: '#00FFFF' },
-          { label: 'EDGES', value: '57', color: '#00FFFF' },
-          { label: 'FACES', value: '80', color: '#00FFFF' },
-          { label: 'COHERENCE', value: `${(state.coherence * 100).toFixed(0)}%`, color: state.coherence > 0.7 ? '#7DDFB6' : '#FFD700' },
-        ];
-        case 'COLLIDER': {
-          const particles = Math.floor(state.coherence * 2048);
-          return [
-            { label: 'PARTICLES', value: `${particles}`, color: '#FF00FF' },
-            { label: 'ENERGY', value: `${(state.coherence * 100).toFixed(0)}%`, color: '#FF00FF' },
-            { label: 'TIER', value: state.tier, color: '#FF00FF' },
-          ];
-        }
-        case 'BONDING': return [
-          { label: 'LOVE', value: `${state.love}`, color: state.love > 0 ? '#FFD700' : '#1a4a1a' },
-          { label: 'SESSION', value: state.didKey !== 'UNINITIALIZED' ? 'ACTIVE' : 'IDLE', color: state.didKey !== 'UNINITIALIZED' ? '#7DDFB6' : '#1a4a1a' },
-          { label: 'K4 NODES', value: `${k4Nodes}`, color: k4Nodes >= 4 ? '#7DDFB6' : '#FFD700' },
-          { label: 'K4 EDGES', value: `${k4Edges}/6`, color: k4Edges >= 6 ? '#7DDFB6' : '#FFD700' },
-        ];
-        case 'BRIDGE': {
-          const careScore = Math.max(0, Math.min(100, Math.round(state.coherence * 100)));
-          return [
-            { label: 'LOVE', value: `${state.love}`, color: '#BF5FFF' },
-            { label: 'SPOONS', value: `${state.spoons}/${state.maxSpoons}`, color: spCol },
-            { label: 'CARE', value: `${careScore}%`, color: careScore > 70 ? '#7DDFB6' : '#FFD700' },
-            { label: 'TIER', value: state.tier, color: '#BF5FFF' },
-            { label: 'DID', value: didShort, color: '#BF5FFF' },
-          ];
-        }
-        case 'BUFFER': {
-          const thresholdV = Math.round((0.35 + state.noiseFloor * 1.1) * 100) / 100;
-          const vCol = thresholdV >= 0.55 ? '#FFD700' : '#7DDFB6';
-          const fawnCol = state.fawnGuardActive ? '#FF4444' : '#7DDFB6';
-          return [
-            { label: 'V-THRESH', value: `${thresholdV.toFixed(2)}V`, color: vCol },
-            { label: 'NOISE', value: `${(state.noiseFloor * 100).toFixed(0)}%`, color: '#00FFFF' },
-            { label: 'FAWN GUARD', value: state.fawnGuardActive ? 'ACTIVE' : 'CLEAR', color: fawnCol },
-            { label: 'SOMATIC', value: state.somaticTetherStatus.toUpperCase(), color: somaticCol },
-          ];
-        }
-        case 'COPILOT': return [
-          { label: 'SPATIAL', value: `${state.spatialNodes} nodes`, color: state.spatialNodes > 0 ? '#7DDFB6' : '#1a4a1a' },
-          { label: 'TRANSPORT', value: state.spatialTransport.toUpperCase(), color: state.spatialTransport !== 'none' ? '#00FFFF' : '#1a4a1a' },
-          { label: 'HANDSHAKE', value: state.handshakeCandidate ? 'READY' : 'IDLE', color: state.handshakeCandidate ? '#FFD700' : '#1a4a1a' },
-          { label: 'MINT', value: state.mintStatus.toUpperCase(), color: state.mintStatus === 'success' ? '#7DDFB6' : state.mintStatus === 'error' ? '#FF4444' : '#00FFFF' },
-        ];
-        case 'LANDING': {
-          const st = state.centaurStatus ?? 'IDLE';
-          const STATUS_COLS: Record<string, string> = { IDLE: '#7DDFB6', GENERATING: '#FFD700', COMPILING: '#00FFFF', ERROR: '#FF4444', SUCCESS: '#7DDFB6' };
-          return [
-            { label: 'COPILOT', value: st, color: STATUS_COLS[st] ?? '#00FFFF' },
-            { label: 'SHANNON H', value: `${(state.coherence * 0.35).toFixed(3)}`, color: '#00FFFF' },
-            { label: 'STRUCT', value: `${state.structureCount}`, color: '#00FFFF' },
-            { label: 'MINT', value: state.mintStatus.toUpperCase(), color: state.mintStatus === 'success' ? '#7DDFB6' : state.mintStatus === 'error' ? '#FF4444' : '#00FFFF' },
-          ];
-        }
-        case 'RESONANCE': {
-          const syncStatus = state.genesisSyncStatus ?? 'offline';
-          const SYNC_COLS: Record<string, string> = { offline: '#FF4444', syncing: '#00FFFF', synced: '#7DDFB6', error: '#FFD700' };
-          return [
-            { label: 'COHERENCE', value: `${(state.coherence * 100).toFixed(0)}%`, color: state.coherence > 0.7 ? '#7DDFB6' : '#FFD700' },
-            { label: 'SYNC', value: syncStatus.toUpperCase(), color: SYNC_COLS[syncStatus] ?? '#FF4444' },
-            { label: 'AUDIO', value: state.audioEnabled ? 'ON' : 'OFF', color: state.audioEnabled ? '#7DDFB6' : '#1a4a1a' },
-          ];
-        }
-        case 'FORGE': {
-          const txCount = state.telemetryHashes.length;
-          return [
-            { label: 'LEDGER', value: `${txCount} TX`, color: '#FFD700' },
-            { label: 'CRDT', value: `v${state.crdtVersion}`, color: '#FFD700' },
-            { label: 'PWA', value: state.pwaStatus.slice(0, 12), color: '#FFD700' },
-          ];
-        }
-        default: return [];
-      }
-    };
-
-    const drawRoomCard = (
-      ctx: CanvasRenderingContext2D,
-      base: ReturnType<typeof drawScreenBase>,
-      col: number,
-      room: RoomPanel,
-      time: number,
-      theme: ScreenTheme,
-      isHovered: boolean,
-      liveData: Array<{ label: string; value: string; color: string }>,
-    ) => {
-      const cx = base.cols[col];
-      const sy = base.slotTop + 10;
-      const sw = base.colW;
-      const sh = base.h - 80 - sy;
-      const inset = 12;
-
-      // Card background — subtle fill on hover
-      if (isHovered) {
-        ctx.globalAlpha = 0.12;
-        ctx.fillStyle = room.color;
-        ctx.fillRect(cx + inset, sy + inset, sw - 2 * inset, sh - 2 * inset);
-        ctx.globalAlpha = 1;
-      }
-
-      // Border — glowing on hover, subtle pulse normally
-      const pulse = isHovered ? 0.7 : 0.25 + 0.15 * ((Math.sin(time * 1.5 + col * 2) + 1) / 2);
-      ctx.globalAlpha = pulse;
-      ctx.shadowColor = room.color;
-      ctx.shadowBlur = isHovered ? 16 : 6;
-      ctx.strokeStyle = room.color;
-      ctx.lineWidth = isHovered ? 3 : 2;
-      ctx.strokeRect(cx + inset, sy + inset, sw - 2 * inset, sh - 2 * inset);
-      ctx.shadowBlur = 0;
-
-      // Corner L-brackets
-      ctx.globalAlpha = pulse + 0.2;
-      ctx.strokeStyle = room.color;
-      ctx.lineWidth = 4;
-      const bL = 30;
-      const x1 = cx + inset, y1 = sy + inset;
-      const x2 = cx + sw - inset, y2 = sy + sh - inset;
-      ctx.beginPath(); ctx.moveTo(x1, y1 + bL); ctx.lineTo(x1, y1); ctx.lineTo(x1 + bL, y1); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(x2 - bL, y1); ctx.lineTo(x2, y1); ctx.lineTo(x2, y1 + bL); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(x1, y2 - bL); ctx.lineTo(x1, y2); ctx.lineTo(x1 + bL, y2); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(x2 - bL, y2); ctx.lineTo(x2, y2); ctx.lineTo(x2, y2 - bL); ctx.stroke();
-
-      // ── Top section: Icon + Label ──
-      const centerX = cx + sw / 2;
-      const iconY = sy + inset + 80;
-
-      // Icon — crisp neon glow
-      ctx.textAlign = 'center';
-      ctx.font = 'bold 96px monospace';
-      ctx.globalAlpha = 0.4;
-      ctx.shadowColor = room.color; ctx.shadowBlur = 16; ctx.fillStyle = room.color;
-      ctx.fillText(room.icon, centerX, iconY);
-      ctx.globalAlpha = 1; ctx.shadowBlur = 4;
-      ctx.fillStyle = room.color;
-      ctx.fillText(room.icon, centerX, iconY);
-      ctx.shadowBlur = 0;
-
-      // Label — crisp neon
-      ctx.font = 'bold 40px monospace';
-      ctx.globalAlpha = 0.45;
-      ctx.shadowColor = room.color; ctx.shadowBlur = 10; ctx.fillStyle = room.color;
-      ctx.fillText(room.label.toUpperCase(), centerX, iconY + 60);
-      ctx.globalAlpha = 1; ctx.shadowBlur = 3;
-      ctx.fillStyle = room.color;
-      ctx.fillText(room.label.toUpperCase(), centerX, iconY + 60);
-      ctx.shadowBlur = 0;
-
-      // Description
-      ctx.globalAlpha = 0.7;
-      ctx.shadowColor = theme.dim; ctx.shadowBlur = 3; ctx.fillStyle = theme.dim;
-      ctx.font = '24px monospace';
-      ctx.fillText(room.desc, centerX, iconY + 95);
-      ctx.globalAlpha = 1; ctx.shadowBlur = 0;
-      ctx.fillText(room.desc, centerX, iconY + 95);
-
-      // ── Divider line ──
-      const divY = iconY + 120;
-      ctx.globalAlpha = 0.2;
-      ctx.strokeStyle = room.color; ctx.lineWidth = 2;
-      ctx.beginPath(); ctx.moveTo(cx + inset + 20, divY); ctx.lineTo(cx + sw - inset - 20, divY); ctx.stroke();
-      ctx.globalAlpha = 1;
-
-      // ── Live data readouts ──
-      let dataY = divY + 50;
-      for (const d of liveData) {
-        // Label
-        ctx.globalAlpha = 0.65;
-        ctx.fillStyle = theme.dim;
-        ctx.font = '20px monospace';
-        ctx.shadowBlur = 0;
-        ctx.fillText(d.label, centerX, dataY);
-
-        // Value — crisp neon
-        dataY += 38;
-        ctx.font = 'bold 36px monospace';
-        ctx.globalAlpha = 0.45;
-        ctx.shadowColor = d.color; ctx.shadowBlur = 8; ctx.fillStyle = d.color;
-        ctx.fillText(d.value, centerX, dataY);
-        ctx.globalAlpha = 1; ctx.shadowBlur = 2;
-        ctx.fillStyle = d.color;
-        ctx.fillText(d.value, centerX, dataY);
-        ctx.shadowBlur = 0;
-
-        dataY += 46;
-      }
-
-      // ── "ENTER" hint at bottom ──
-      const hintPulse = 0.2 + 0.15 * ((Math.sin(time * 2 + col) + 1) / 2);
-      ctx.globalAlpha = isHovered ? 0.7 : hintPulse;
-      ctx.fillStyle = room.color;
-      ctx.font = 'bold 22px monospace';
-      ctx.fillText('[ ENTER ]', centerX, y2 - 24);
-
-      ctx.textAlign = 'left';
-      ctx.globalAlpha = 1;
-    };
-
-    // ── U03: Draw fabrication queue (replaces COPILOT card when mint active) ──
-    const drawFabricationQueue = (
-      ctx: CanvasRenderingContext2D,
-      base: ReturnType<typeof drawScreenBase>,
-      col: number,
-      time: number,
-      theme: ScreenTheme,
-      mintStatus: string,
-    ) => {
-      const cx = base.cols[col];
-      const sy = base.slotTop + 10;
-      const sw = base.colW;
-      const sh = base.h - 80 - sy;
-      const inset = 12;
-      const centerX = cx + sw / 2;
-
-      // Card border — pulsing cyan
-      const pulse = 0.4 + 0.3 * ((Math.sin(time * 2) + 1) / 2);
-      ctx.globalAlpha = pulse;
-      ctx.strokeStyle = '#00FFFF';
-      ctx.shadowColor = '#00FFFF';
-      ctx.shadowBlur = 12;
-      ctx.lineWidth = 3;
-      ctx.strokeRect(cx + inset, sy + inset, sw - 2 * inset, sh - 2 * inset);
-      ctx.shadowBlur = 0;
-
-      // Title
-      ctx.textAlign = 'center';
-      ctx.globalAlpha = 1;
-      ctx.font = 'bold 28px monospace';
-      ctx.shadowColor = '#00FFFF'; ctx.shadowBlur = 6;
-      ctx.fillStyle = '#00FFFF';
-      ctx.fillText('FABRICATION QUEUE', centerX, sy + 80);
-      ctx.shadowBlur = 0;
-
-      // Divider
-      ctx.globalAlpha = 0.3;
-      ctx.strokeStyle = '#00FFFF'; ctx.lineWidth = 1;
-      ctx.beginPath(); ctx.moveTo(cx + inset + 30, sy + 100); ctx.lineTo(cx + sw - inset - 30, sy + 100); ctx.stroke();
-      ctx.globalAlpha = 1;
-
-      // Status text
-      let statusText = '';
-      let statusColor = '#00FFFF';
-      if (mintStatus === 'collecting-signatures') {
-        statusText = 'K4 MESH ACHIEVED';
-        statusColor = '#FFD700';
-      } else if (mintStatus === 'minting') {
-        statusText = 'EXECUTING SMART CONTRACT...';
-        statusColor = '#BF5FFF';
-      } else if (mintStatus === 'success') {
-        statusText = 'WEBHOOK FIRED';
-        statusColor = '#00FFFF';
-      } else if (mintStatus === 'error') {
-        statusText = 'FABRICATION ERROR';
-        statusColor = '#FF4444';
-      }
-
-      ctx.font = 'bold 26px monospace';
-      ctx.shadowColor = statusColor; ctx.shadowBlur = 8;
-      ctx.fillStyle = statusColor;
-      ctx.fillText(statusText, centerX, sy + 160);
-      ctx.shadowBlur = 0;
-
-      // Sub-status
-      if (mintStatus === 'collecting-signatures') {
-        ctx.font = '22px monospace';
-        ctx.globalAlpha = 0.6;
-        ctx.fillStyle = '#FFD700';
-        ctx.fillText('COLLECTING SIGNATURES...', centerX, sy + 200);
-      } else if (mintStatus === 'success') {
-        ctx.font = '20px monospace';
-        ctx.globalAlpha = 0.7;
-        ctx.fillStyle = '#00FFFF';
-        ctx.fillText('-> PRINTER.P31CA.ORG', centerX, sy + 200);
-      }
-      ctx.globalAlpha = 1;
-
-      // Progress bar (animated during minting/success)
-      if (mintStatus === 'minting' || mintStatus === 'success') {
-        const barX = cx + inset + 40;
-        const barW = sw - 2 * inset - 80;
-        const barY = sy + 240;
-        const barH = 20;
-        const progress = mintStatus === 'success' ? 1.0
-          : (Math.sin(time * 0.8) * 0.5 + 0.5) * 0.85;
-
-        // Track
-        ctx.fillStyle = 'rgba(0,255,255,0.06)';
-        ctx.fillRect(barX, barY, barW, barH);
-        // Fill
-        ctx.fillStyle = mintStatus === 'success' ? '#00FFFF' : '#00FFFF';
-        ctx.shadowColor = ctx.fillStyle; ctx.shadowBlur = 8;
-        ctx.fillRect(barX, barY, barW * progress, barH);
-        ctx.shadowBlur = 0;
-
-        // Percentage
-        ctx.font = 'bold 18px monospace';
-        ctx.fillStyle = mintStatus === 'success' ? '#00FFFF' : '#00FFFF';
-        ctx.fillText(`${Math.round(progress * 100)}%`, centerX, barY + barH + 30);
-      }
-
-      // Rotating tetrahedron wireframe (during minting/success)
-      if (mintStatus === 'minting' || mintStatus === 'success') {
-        const tetCx = centerX;
-        const tetCy = sy + 370;
-        const tetR = 40;
-        const rot = time * 1.5;
-
-        // 4 vertices of tetrahedron projected to 2D
-        const verts = [
-          [0, -1, 0],
-          [0.943, 0.333, 0],
-          [-0.471, 0.333, 0.816],
-          [-0.471, 0.333, -0.816],
-        ].map(([vx, vy, vz]) => {
-          // Rotate around Y
-          const rx = vx * Math.cos(rot) - vz * Math.sin(rot);
-          const rz = vx * Math.sin(rot) + vz * Math.cos(rot);
-          return [tetCx + rx * tetR, tetCy + vy * tetR, rz];
-        });
-
-        ctx.strokeStyle = mintStatus === 'success' ? '#00FFFF' : '#BF5FFF';
-        ctx.lineWidth = 2;
-        ctx.globalAlpha = 0.8;
-        ctx.shadowColor = ctx.strokeStyle; ctx.shadowBlur = 6;
-
-        // Draw 6 edges
-        const edges = [[0,1],[0,2],[0,3],[1,2],[1,3],[2,3]];
-        for (const [a, b] of edges) {
-          ctx.beginPath();
-          ctx.moveTo(verts[a][0], verts[a][1]);
-          ctx.lineTo(verts[b][0], verts[b][1]);
-          ctx.stroke();
-        }
-        ctx.shadowBlur = 0;
-        ctx.globalAlpha = 1;
-      }
-
-      ctx.textAlign = 'left';
-      ctx.globalAlpha = 1;
-    };
-
-    const drawRoomScreen = (screenIdx: number, state: StoreState, time: number) => {
-      const ctx = screenContexts[screenIdx];
-      const w = screenCanvases[screenIdx].width;
-      const h = screenCanvases[screenIdx].height;
-      const themeKey = (['BRIDGE', 'SYSTEM', 'BUFFER'] as const)[screenIdx];
-      const T = THEMES[themeKey];
-      const titles = ['SCREEN A // ROOMS', 'SCREEN B // ROOMS', 'SCREEN C // ROOMS'];
-      const subs = ['observatory . collider . bonding', 'bridge . buffer . open slot', 'quantum ide . resonance . forge'];
-      const base = drawScreenBase(ctx, w, h, time, T, titles[screenIdx], subs[screenIdx], 0, {});
-
-      for (let col = 0; col < 3; col++) {
-        // U03: System Screen col 2 (COPILOT) → fabrication queue when mint active
-        if (screenIdx === 1 && col === 2 && state.mintStatus !== 'idle') {
-          drawFabricationQueue(ctx, base, col, time, T, state.mintStatus);
-          continue;
-        }
-        const room = SCREEN_ROOMS[screenIdx][col];
-        const isHov = hoveredScreen === screenIdx && hoveredCol === col;
-        const liveData = getRoomLiveData(room.id, state, time);
-        drawRoomCard(ctx, base, col, room, time, T, isHov, liveData);
-      }
-      ctx.restore();
-    };
-
-    // ── D4.5: On-demand rendering — idle detection ──
-    // After IDLE_TIMEOUT seconds of no interaction, drop to low-power mode (skip frames).
-    // Any interaction resets the idle timer via invalidate().
-    const IDLE_TIMEOUT = 5; // seconds before entering low-power mode
-    const IDLE_FRAME_SKIP = 3; // render every Nth frame when idle
-    let lastInteractionTime = performance.now() / 1000;
-    let frameCounter = 0;
-
-    const invalidateRender = () => { lastInteractionTime = performance.now() / 1000; };
-
-    // Wire invalidate to all interaction events
-    const invalidateEvents = ['mousedown', 'mousemove', 'wheel', 'touchstart', 'touchmove', 'keydown'];
-    for (const evt of invalidateEvents) {
-      window.addEventListener(evt, invalidateRender, { passive: true });
-    }
-    // Also invalidate on store changes (theme, overlay, camera mode)
-    const unsubInvalidate = useSovereignStore.subscribe(invalidateRender);
-
-    // ── Animation loop ──
-    const clock = new THREE.Clock();
-    const SCREEN_UPDATE_HZ = 12;
-    const SCREEN_UPDATE_DT = 1 / SCREEN_UPDATE_HZ;
-    let lastScreenDrawT = -Infinity;
-
-    renderer.setAnimationLoop(() => {
-      const dt = Math.min(0.05, clock.getDelta());
-      const time = clock.elapsedTime;
-
-      // ── D4.5: On-demand rendering — skip frames when idle ──
-      frameCounter++;
-      const nowSec = performance.now() / 1000;
-      const isIdle = (nowSec - lastInteractionTime) > IDLE_TIMEOUT
-        && !orbit.down && !orbit.flyTo
-        && Math.abs(orbit.vx) < 0.001 && Math.abs(orbit.vy) < 0.001;
-      if (isIdle && (frameCounter % IDLE_FRAME_SKIP !== 0)) {
-        return; // skip this frame — low-power mode
-      }
-
-      const state = useSovereignStore.getState();
-
-      // ── D2.1: Mode-specific orbit bounds ──
-      const camMode = state.cameraMode;
-      const ryMin = camMode === 'dome' ? DOME_RY_MIN : -Math.PI / 3;
-      const ryMax = camMode === 'dome' ? DOME_RY_MAX : Math.PI / 3;
-      const distMin = camMode === 'dome' ? DOME_DIST_MIN : 0.5;
-      const distMax = camMode === 'dome' ? DOME_DIST_MAX : 200;
-
-      // ── Fly-to animation (cockpit-level) ──
-      if (orbit.flyTo && orbit.flyFrom) {
-        orbit.flyT = Math.min(1, orbit.flyT + dt * 1.15);
-        const ease = 1 - Math.pow(1 - orbit.flyT, 3);
-        orbit.rx = orbit.flyFrom.rx + (orbit.flyTo.rx - orbit.flyFrom.rx) * ease;
-        orbit.ry = orbit.flyFrom.ry + (orbit.flyTo.ry - orbit.flyFrom.ry) * ease;
-        orbit.dist = orbit.flyFrom.dist + (orbit.flyTo.dist - orbit.flyFrom.dist) * ease;
-        if (orbit.flyT >= 1) {
-          orbit.flyTo = null; orbit.flyFrom = null;
-          orbit.vx = 0; orbit.vy = 0; orbit.vDist = 0;
-        }
-      } else if (!orbit.down) {
-        // Inertia: apply velocity and decay (organic drift on release)
-        orbit.rx += orbit.vx * dt;
-        orbit.ry += orbit.vy * dt;
-        orbit.ry = Math.max(ryMin, Math.min(ryMax, orbit.ry));
-        orbit.dist += orbit.vDist * dt;
-        orbit.dist = Math.max(distMin, Math.min(distMax, orbit.dist));
-        const angFriction = Math.exp(-10.0 * dt);
-        const zoomFriction = Math.exp(-12.0 * dt);
-        orbit.vx *= angFriction;
-        orbit.vy *= angFriction;
-        orbit.vDist *= zoomFriction;
-        if (Math.abs(orbit.vx) < 0.0005) orbit.vx = 0;
-        if (Math.abs(orbit.vy) < 0.0005) orbit.vy = 0;
-        if (Math.abs(orbit.vDist) < 0.001) orbit.vDist = 0;
-
-        // ── D2.4: Screen Mode — soft-lock ry toward eye level, dist toward reading distance ──
-        if (camMode === 'screen' && !orbit.flyTo) {
-          orbit.ry += (SCREEN_RY_LOCK - orbit.ry) * (1 - Math.exp(-6 * dt));
-          orbit.dist += (SCREEN_VIEW_DIST - orbit.dist) * (1 - Math.exp(-6 * dt));
-        }
-      }
-
-      // Camera follow: soft spring-like easing (less mechanical)
-      const k = orbit.down ? 14 : 8;
-      const alpha = 1 - Math.exp(-k * dt);
-      orbit.trx += (orbit.rx - orbit.trx) * alpha;
-      orbit.try_ += (orbit.ry - orbit.try_) * alpha;
-      orbit.tDist += (orbit.dist - orbit.tDist) * alpha;
-
-      const D = orbit.tDist;
-      camera.position.x = D * Math.sin(orbit.trx) * Math.cos(orbit.try_);
-      camera.position.y = D * Math.sin(orbit.try_) + 0.3;
-      camera.position.z = D * Math.cos(orbit.trx) * Math.cos(orbit.try_);
-      camera.lookAt(0, 0, 0);
-
-      if (state.audioEnabled) {
-        audioEngine.update(state.coherence, false, 'OBSERVATORY');
-      }
-
-      stars.rotation.y = time * 0.01;
-
-      // ── D1.2: Polymorphic skin — starfield + scanline + waveform interpolation ──
-      const skinProfile = SKIN_PROFILES[state.skinTheme];
-      const skinA = 1 - Math.exp(-SKIN_LERP_RATE * dt);
-      const starMat = stars.material as THREE.PointsMaterial;
-      starMat.opacity += (skinProfile.starOpacity - starMat.opacity) * skinA;
-      if (scanlineRef.current) {
-        const cur = parseFloat(scanlineRef.current.style.opacity) || 0;
-        scanlineRef.current.style.opacity = String(cur + (skinProfile.scanlineOpacity - cur) * skinA);
-      }
-
-      // ── M18: Update somatic waveform from store ──
-      if (state.somaticTetherStatus !== 'disconnected') {
-        waveformLine.visible = true;
-        // Read waveform buffer from store — stored by useSomaticTether hook
-        // We use a simple sine wave fallback when no real data (shows tether is active)
-        const posArr = waveformGeo.attributes.position.array as Float32Array;
-        const xSpan = 6; // total width
-        for (let i = 0; i < WAVEFORM_POINTS; i++) {
-          const t = i / (WAVEFORM_POINTS - 1);
-          posArr[i * 3] = t * xSpan;
-          posArr[i * 3 + 1] = Math.sin(time * 3 + t * 12) * 0.15
-            * (state.somaticTetherStatus === 'stress' ? 2.5 : 1.0);
-          posArr[i * 3 + 2] = 0;
-        }
-        waveformGeo.attributes.position.needsUpdate = true;
-        // Color shift: green=active, amber=calibrating, red=stress
-        const wfMat = waveformLine.material as THREE.LineBasicMaterial;
-        if (state.somaticTetherStatus === 'stress') {
-          wfMat.color.lerp(WF_RED, 0.1);
-        } else if (state.somaticTetherStatus === 'calibrating') {
-          wfMat.color.lerp(WF_AMBER, 0.1);
-        } else {
-          wfMat.color.lerp(WF_CYAN, 0.1);
-        }
-      } else {
-        waveformLine.visible = false;
-      }
-
-      // ── M20/D1.6: Update spatial radar InstancedMesh (RSSI-mapped) ──
-      const nodeList = state.spatialNodeList;
-      const spatialCount = nodeList.length;
-      let _bondTargetX = 0, _bondTargetY = 0, _bondTargetZ = 0;
-      for (let i = 0; i < MAX_SPATIAL_NODES; i++) {
-        if (i < spatialCount) {
-          const node = nodeList[i];
-
-          // Map RSSI to radius: strong (-50) → close (2), weak (-85) → far (8)
-          const rssiNorm = Math.max(0, Math.min(1, (node.rssi + 85) / 35));
-          const radius = 8 - rssiNorm * 6;
-          const angle = (i / Math.max(spatialCount, 1)) * Math.PI * 2;
-
-          const px = Math.cos(angle + time * 0.1) * radius;
-          const py = Math.sin(time * 0.5 + i) * 0.3;
-          const pz = Math.sin(angle + time * 0.1) * radius;
-
-          // Scale by signal strength
-          const scale = 0.4 + rssiNorm * 1.1;
-          _orbDummy.position.set(px, py, pz);
-          _orbDummy.scale.setScalar(scale);
-          _orbDummy.updateMatrix();
-          spatialOrbInstanced.setMatrixAt(i, _orbDummy.matrix);
-
-          // Per-instance color by valency
-          const colorIdx = Math.min(node.valency, VALENCY_COLORS.length - 1);
-          const vc = VALENCY_COLORS[colorIdx];
-          spatialOrbColorAttr.setXYZ(i, vc.r, vc.g, vc.b);
-
-          // Cache first orb position for bond line
-          if (i === 0) { _bondTargetX = px; _bondTargetY = py; _bondTargetZ = pz; }
-        } else {
-          // Hidden: scale 0
-          _orbDummy.position.set(0, 0, 0);
-          _orbDummy.scale.setScalar(0);
-          _orbDummy.updateMatrix();
-          spatialOrbInstanced.setMatrixAt(i, _orbDummy.matrix);
-        }
-      }
-      spatialOrbInstanced.instanceMatrix.needsUpdate = true;
-      spatialOrbColorAttr.needsUpdate = true;
-      // Pulse global opacity
-      spatialOrbMat.opacity = spatialCount > 0 ? 0.6 + 0.3 * Math.sin(time * 2) : 0;
-
-      // ── M21: Bond line (handshake active → glowing line to bonded orb) ──
-      if (bondLine) {
-        if (state.handshakeActive && spatialCount > 0) {
-          bondLine.visible = true;
-          const posArr = bondLineGeo.attributes.position.array as Float32Array;
-          posArr[0] = 0; posArr[1] = 0; posArr[2] = 5;
-          posArr[3] = _bondTargetX; posArr[4] = _bondTargetY; posArr[5] = _bondTargetZ;
-          bondLineGeo.attributes.position.needsUpdate = true;
-          (bondLine.material as THREE.LineBasicMaterial).opacity = 0.5 + 0.4 * Math.sin(time * 4);
-        } else {
-          bondLine.visible = false;
-        }
-      }
-
-      if (observatoryHandle) {
-        observatoryHandle.update(dt, time);
-      }
-
-      coreUniforms.uTime.value = time;
-      coreUniforms.uCoherence.value = THREE.MathUtils.lerp(coreUniforms.uCoherence.value, state.coherence, 0.1);
-      coreUniforms.uNoise.value = THREE.MathUtils.lerp(coreUniforms.uNoise.value, state.noiseFloor, 0.1);
-      keyLight.intensity = 2 + state.coherence * 2;
-      // Dynamic key light: blend pink/cyan/amber based on camera orbit angle
-      const normAngle = ((orbit.trx % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
-      let targetLight: THREE.Color;
-      if (normAngle < Math.PI * 0.67) {
-        targetLight = LIGHT_PINK; // Bridge screen zone (right)
-      } else if (normAngle < Math.PI * 1.33) {
-        targetLight = LIGHT_CYAN; // System screen zone (center)
-      } else {
-        targetLight = LIGHT_AMBER; // Buffer screen zone (left)
-      }
-      keyLight.color.lerp(targetLight, 0.05);
-
-      if (time - lastScreenDrawT >= SCREEN_UPDATE_DT) {
-        lastScreenDrawT = time;
-        drawRoomScreen(0, state, time);
-        drawRoomScreen(1, state, time);
-        drawRoomScreen(2, state, time);
-        for (const tex of screenTextures) tex.needsUpdate = true;
-      }
-
-      if (observatoryHandle) {
-        observatoryHandle.renderBloom();
-        observatoryHandle.renderLabels(scene, camera);
-      } else {
-        renderer.render(scene, camera);
-      }
-    });
-
     return () => {
-      if (observatoryHandle) { observatoryHandle.dispose(); observatoryHandle = null; }
-      renderer.setAnimationLoop(null);
       window.removeEventListener('resize', handleResize);
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mousemove', handleHoverThrottled);
-      canvas.removeEventListener('mousedown', handleMouseDown);
-      window.removeEventListener('mouseup', handleMouseUp);
-      canvas.removeEventListener('click', handleClick);
-      canvas.removeEventListener('wheel', handleWheel);
-      canvas.removeEventListener('touchstart', handleTouchStart);
-      canvas.removeEventListener('touchmove', handleTouchMove);
-      canvas.removeEventListener('touchend', handleTouchEnd);
-      window.removeEventListener('camera-mode-change', handleCameraModeChange);
-      // D4.5: Clean up invalidate listeners
-      for (const evt of invalidateEvents) {
-        window.removeEventListener(evt, invalidateRender);
-      }
-      unsubInvalidate();
-      renderer.domElement.remove();
-      renderer.dispose();
-      scene.clear();
-      for (const tex of screenTextures) tex.dispose();
-      for (const mat of screenMaterials) mat.dispose();
-      for (const geo of screenGeometries) geo.dispose();
-      // edge geometries removed (glassy screens)
-      for (const canvas of screenCanvases) { canvas.width = 0; canvas.height = 0; }
-      waveformGeo.dispose(); (waveformLine.material as THREE.Material).dispose();
-      bondLineGeo.dispose(); (bondLine.material as THREE.Material).dispose();
-      spatialOrbInstanced.dispose(); spatialOrbGeo.dispose(); spatialOrbMat.dispose();
-      disposeThreeNode(roomGroup); p31Material.dispose(); starGeo.dispose();
+      window.removeEventListener('pointermove', handleMove);
+      window.removeEventListener('pointerup', handleEnd);
+      dom.removeEventListener('pointerdown', handleStart);
+      cancelAnimationFrame(animationId);
+      ivmGeo.dispose(); ivmMat.dispose(); jEdgeGeo.dispose(); jMat.dispose();
+      renderer.dispose(); mountRef.current?.removeChild(renderer.domElement);
     };
-  }, []);
+  }, [isIdle]);
 
-  return (
-    <>
-      <div ref={mountRef} style={{ position: 'absolute', inset: 0, zIndex: 0 }} />
-      <div ref={scanlineRef} style={{
-        pointerEvents: 'none', position: 'absolute', inset: 0, zIndex: 20, opacity: 0.3,
-        background: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.15) 2px, rgba(0,0,0,0.15) 4px)',
-      }} />
-      <div style={{
-        pointerEvents: 'none', position: 'absolute', inset: 0, zIndex: 30,
-        boxShadow: 'inset 0 0 150px rgba(0,0,0,0.8)',
-      }} />
-      {/* D2.6: Tri-State Camera mode buttons — bottom dock, thumb zone */}
-      <CameraModeButtons />
-    </>
-  );
-};
+  return <div ref={mountRef} style={{ position: 'absolute', inset: 0, zIndex: 0, cursor: 'crosshair', background: '#030308' }} />;
+}

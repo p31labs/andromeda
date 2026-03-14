@@ -4,6 +4,8 @@
 
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import * as THREE from 'three';
+import { theme } from '../../lib/theme';
+import { disposeHierarchy } from '../../lib/three-utils';
 
 import {
   VERTICES, EDGES, AXIS_KEYS, AXIS_CSS, AXIS_LABELS, BUS_CSS,
@@ -127,11 +129,18 @@ export default function ObservatoryRoom() {
     labelSystemRef.current = labelSystem;
 
     // ── Lighting ──
-    scene.add(new THREE.AmbientLight(0x334455, 0.6));
-    const pt1 = new THREE.PointLight(0x6688cc, 1.0, 25);
+    const ambLight = new THREE.AmbientLight(0x334455, 0.6);
+    scene.add(ambLight);
+    const pt1 = new THREE.PointLight(theme.getColor('--blue'), 1.0, 25);
     pt1.position.set(3, 4, 5); scene.add(pt1);
-    const pt2 = new THREE.PointLight(0xff6644, 0.3, 18);
+    const pt2 = new THREE.PointLight(theme.getColor('--coral'), 0.3, 18);
     pt2.position.set(-4, -2, 3); scene.add(pt2);
+
+    const onTheme = () => {
+      pt1.color.copy(theme.getColor('--blue'));
+      pt2.color.copy(theme.getColor('--coral'));
+    };
+    window.addEventListener('p31-theme-change', onTheme);
 
     // ── Build geodesic dome ──
     const geo = buildGeodesic(SHELL_RADIUS, GEO_SUBDIVISIONS);
@@ -229,11 +238,10 @@ export default function ObservatoryRoom() {
     const aurora = createAurora(SHELL_RADIUS);
     scene.add(aurora.mesh);
 
-    // ── Molecular starfield (same as MolecularField, rendered inside scene) ──
+    // ── Molecular starfield ──
     const FIELD_COUNT = IS_MOBILE ? 150 : 600;
     const fieldPos = new Float32Array(FIELD_COUNT * 3);
     const fieldCol = new Float32Array(FIELD_COUNT * 3);
-    const fieldVel = new Float32Array(FIELD_COUNT * 3);
     for (let i = 0; i < FIELD_COUNT; i++) {
       const i3 = i * 3;
       const r = 6 + Math.random() * 50;
@@ -245,21 +253,18 @@ export default function ObservatoryRoom() {
       const hue = Math.random() < 0.7 ? 0.58 + Math.random() * 0.1 : 0.08 + Math.random() * 0.06;
       const c = new THREE.Color().setHSL(hue, 0.35, 0.12 + Math.random() * 0.08);
       fieldCol[i3] = c.r; fieldCol[i3 + 1] = c.g; fieldCol[i3 + 2] = c.b;
-      fieldVel[i3] = (Math.random() - 0.5) * 0.003;
-      fieldVel[i3 + 1] = (Math.random() - 0.5) * 0.003;
-      fieldVel[i3 + 2] = (Math.random() - 0.5) * 0.003;
     }
     const fieldGeo = new THREE.BufferGeometry();
     fieldGeo.setAttribute('position', new THREE.BufferAttribute(fieldPos, 3));
     fieldGeo.setAttribute('color', new THREE.BufferAttribute(fieldCol, 3));
-    // Circle texture so particles are round, not square
+    
     const dotCanvas = document.createElement('canvas');
     dotCanvas.width = 32; dotCanvas.height = 32;
     const dotCtx = dotCanvas.getContext('2d')!;
     const grad = dotCtx.createRadialGradient(16, 16, 0, 16, 16, 16);
-    grad.addColorStop(0, 'rgba(0,255,255,1)');
-    grad.addColorStop(0.4, 'rgba(0,255,255,0.3)');
-    grad.addColorStop(1, 'rgba(0,255,255,0)');
+    grad.addColorStop(0, 'rgba(255,255,255,1)');
+    grad.addColorStop(0.4, 'rgba(255,255,255,0.3)');
+    grad.addColorStop(1, 'rgba(0,0,0,0)');
     dotCtx.fillStyle = grad;
     dotCtx.fillRect(0, 0, 32, 32);
     const dotTex = new THREE.CanvasTexture(dotCanvas);
@@ -279,7 +284,7 @@ export default function ObservatoryRoom() {
       const pos = geo.faces[a.faceIdx].centroid.clone().normalize().multiplyScalar(SHELL_RADIUS * 1.1);
       const label = labelSystem.createLabel(
         `${a.node.label} ${countdown}`,
-        a.node.state === 'countdown' ? '#ff6633' : 'rgba(0,255,255,0.25)',
+        a.node.state === 'countdown' ? 'var(--orange)' : 'var(--neon-ghost)',
         pos,
       );
       scene.add(label);
@@ -292,186 +297,45 @@ export default function ObservatoryRoom() {
     let t = 0;
     const animate = () => {
       frameRef.current = requestAnimationFrame(animate);
-      const dt = 0.016; // ~60fps step
+      const dt = 0.016; 
       t += 0.002;
 
       // 1. Breathing
       const breath = 1.0 + 0.008 * Math.sin(t * 1.5);
       for (const m of faceMeshes) m.scale.setScalar(breath);
 
-      // 2. Countdown face pulse
-      for (const m of faceMeshes) {
-        const a = m.userData.assignment as FaceAssignment | undefined;
-        if (a && a.node.state === 'countdown') {
-          const pulse = 0.6 + 0.4 * Math.abs(Math.sin(t * 3.0 + a.faceIdx * 0.5));
-          (m.material as THREE.MeshStandardMaterial).emissiveIntensity = 1.5 * pulse;
-          (m.material as THREE.MeshStandardMaterial).opacity = 0.7 + 0.3 * pulse;
-        }
+      // 2. Camera momentum
+      const mr = mouseRef.current;
+      if (mr.flyTo) {
+        mr.flyT += 0.03;
+        const alpha = Math.min(1, mr.flyT);
+        const ease = 1 - Math.pow(1 - alpha, 3);
+        mr.trx = THREE.MathUtils.lerp(mr.flyFrom!.rx, mr.flyTo.rx, ease);
+        mr.try_ = THREE.MathUtils.lerp(mr.flyFrom!.ry, mr.flyTo.ry, ease);
+        mr.tDist = THREE.MathUtils.lerp(mr.flyFrom!.dist, mr.flyTo.dist, ease);
+        if (alpha >= 1) mr.flyTo = null;
       }
 
-      // 3. Camera fly-to interpolation
-      const m = mouseRef.current;
-      if (m.flyTo && m.flyFrom) {
-        m.flyT = Math.min(1, m.flyT + 0.018);
-        const ease = 1 - Math.pow(1 - m.flyT, 3); // ease-out cubic
-        m.rx = m.flyFrom.rx + (m.flyTo.rx - m.flyFrom.rx) * ease;
-        m.ry = m.flyFrom.ry + (m.flyTo.ry - m.flyFrom.ry) * ease;
-        m.dist = m.flyFrom.dist + (m.flyTo.dist - m.flyFrom.dist) * ease;
-        if (m.flyT >= 1) { m.flyTo = null; m.flyFrom = null; }
-      }
+      mr.rx += (mr.trx - mr.rx) * 0.1;
+      mr.ry += (mr.try_ - mr.ry) * 0.1;
+      mr.dist += (mr.tDist - mr.dist) * 0.1;
 
-      // 4. Camera orbit + zoom
-      m.trx += (m.rx - m.trx) * 0.06;
-      m.try_ += (m.ry - m.try_) * 0.06;
-      m.tDist += (m.dist - m.tDist) * 0.08;
-      const D = m.tDist;
-      camera.position.x = D * Math.sin(m.trx) * Math.cos(m.try_);
-      camera.position.y = D * Math.sin(m.try_) + 0.3;
-      camera.position.z = D * Math.cos(m.trx) * Math.cos(m.try_);
+      camera.position.x = mr.dist * Math.sin(mr.rx) * Math.cos(mr.ry);
+      camera.position.y = mr.dist * Math.sin(mr.ry);
+      camera.position.z = mr.dist * Math.cos(mr.rx) * Math.cos(mr.ry);
       camera.lookAt(0, 0, 0);
 
-      // 5. Update effects
+      // 3. Effects
       edgePulse.update(dt);
       dust.update(dt);
       aurora.update(dt);
+      aurora.mesh.rotation.y += 0.001;
 
-      // 5b. Drift molecular field
-      const fpos = fieldGeo.attributes.position as THREE.BufferAttribute;
-      for (let i = 0; i < FIELD_COUNT; i++) {
-        const i3 = i * 3;
-        fpos.array[i3] += fieldVel[i3];
-        fpos.array[i3 + 1] += fieldVel[i3 + 1];
-        fpos.array[i3 + 2] += fieldVel[i3 + 2];
-        const x = fpos.array[i3], y = fpos.array[i3 + 1], z = fpos.array[i3 + 2];
-        if (x * x + y * y + z * z > 60 * 60) {
-          const s = 8 / Math.sqrt(x * x + y * y + z * z);
-          fpos.array[i3] *= s; fpos.array[i3 + 1] *= s; fpos.array[i3 + 2] *= s;
-        }
-      }
-      fpos.needsUpdate = true;
-
-      // 6. Update arc pulse uniforms
-      for (const arc of arcsRef.current) {
-        arc.material.uniforms.uTime.value += dt;
-      }
-
-      // 7. Render
-      renderer.clear();
+      // 4. Render
       bloom.composer.render();
       labelSystem.render(scene, camera);
     };
     animate();
-
-    // ══════════════════════════════════════════════════════════════
-    // INPUT HANDLERS
-    // ══════════════════════════════════════════════════════════════
-
-    const getXY = (e: MouseEvent | TouchEvent) => {
-      if ('touches' in e && e.touches.length > 0) return { x: e.touches[0].clientX, y: e.touches[0].clientY };
-      if ('changedTouches' in e && e.changedTouches.length > 0) return { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
-      return { x: (e as MouseEvent).clientX, y: (e as MouseEvent).clientY };
-    };
-    const onDown = (e: MouseEvent | TouchEvent) => {
-      const { x, y } = getXY(e);
-      const rect = el.getBoundingClientRect();
-      const mr = mouseRef.current;
-      mr.down = true; mr.x = x - rect.left; mr.y = y - rect.top; mr.moved = false;
-      // Cancel fly-to on user drag
-      mr.flyTo = null; mr.flyFrom = null;
-    };
-    const onMove = (e: MouseEvent | TouchEvent) => {
-      const mr = mouseRef.current;
-      if (!mr.down) return;
-      const { x, y } = getXY(e);
-      const rect = el.getBoundingClientRect();
-      const nx = x - rect.left, ny = y - rect.top;
-      const dx = nx - mr.x, dy = ny - mr.y;
-      if (Math.abs(dx) > 2 || Math.abs(dy) > 2) mr.moved = true;
-      mr.rx -= dx * 0.005;
-      mr.ry += dy * 0.004;
-      mr.ry = Math.max(-Math.PI / 3, Math.min(Math.PI / 3, mr.ry));
-      mr.x = nx; mr.y = ny;
-    };
-    const onUp = () => { mouseRef.current.down = false; };
-    const onClick = (e: MouseEvent | TouchEvent) => {
-      if (mouseRef.current.moved) return;
-      const { x, y } = getXY(e);
-      const rect = el.getBoundingClientRect();
-      const mouse = new THREE.Vector2(
-        ((x - rect.left) / rect.width) * 2 - 1,
-        -((y - rect.top) / rect.height) * 2 + 1,
-      );
-      raycaster.current.setFromCamera(mouse, camera);
-
-      // Check arcs first (click to navigate)
-      const arcMeshes = arcsRef.current.map(a => a.mesh);
-      if (arcMeshes.length > 0) {
-        const arcHits = raycaster.current.intersectObjects(arcMeshes);
-        if (arcHits.length > 0) {
-          const targetId = arcHits[0].object.userData.targetNodeId as string;
-          const d = VERTICES[targetId];
-          if (d) {
-            setSelected({ id: targetId, label: d[0], a: d[1], b: d[2], c: d[3], d: d[4], state: d[5], bus: d[6], notes: d[7] });
-            return;
-          }
-        }
-      }
-
-      // Check face panels
-      const hits = raycaster.current.intersectObjects(faceMeshes);
-      if (hits.length > 0) {
-        const a = hits[0].object.userData.assignment as FaceAssignment | undefined;
-        if (a) setSelected(a.node);
-        else setSelected(null);
-      } else {
-        setSelected(null);
-      }
-    };
-
-    const onWheel = (e: WheelEvent) => {
-      e.preventDefault();
-      const mr = mouseRef.current;
-      mr.dist += e.deltaY * 0.003;
-      mr.dist = Math.max(3.5, Math.min(12, mr.dist));
-      mr.flyTo = null; mr.flyFrom = null;
-    };
-
-    let lastPinchDist = 0;
-    const onTouchStart2 = (e: TouchEvent) => {
-      if (e.touches.length === 2) {
-        const dx = e.touches[0].clientX - e.touches[1].clientX;
-        const dy = e.touches[0].clientY - e.touches[1].clientY;
-        lastPinchDist = Math.sqrt(dx * dx + dy * dy);
-      }
-      onDown(e);
-    };
-    const onTouchMove2 = (e: TouchEvent) => {
-      e.preventDefault(); // prevent browser scroll/zoom
-      if (e.touches.length === 2) {
-        const dx = e.touches[0].clientX - e.touches[1].clientX;
-        const dy = e.touches[0].clientY - e.touches[1].clientY;
-        const d = Math.sqrt(dx * dx + dy * dy);
-        if (lastPinchDist > 0) {
-          const mr = mouseRef.current;
-          mr.dist *= lastPinchDist / d;
-          mr.dist = Math.max(3.5, Math.min(12, mr.dist));
-        }
-        lastPinchDist = d;
-        return;
-      }
-      onMove(e);
-    };
-
-    const onTouchEnd = (e: TouchEvent) => { onUp(); onClick(e); };
-
-    el.addEventListener('mousedown', onDown);
-    el.addEventListener('mousemove', onMove);
-    el.addEventListener('mouseup', onUp);
-    el.addEventListener('click', onClick);
-    el.addEventListener('wheel', onWheel, { passive: false });
-    el.addEventListener('touchstart', onTouchStart2, { passive: false });
-    el.addEventListener('touchmove', onTouchMove2, { passive: false });
-    el.addEventListener('touchend', onTouchEnd);
 
     const onResize = () => {
       const w = el.clientWidth, h = el.clientHeight;
@@ -483,26 +347,64 @@ export default function ObservatoryRoom() {
     };
     window.addEventListener('resize', onResize);
 
-    // ── Cleanup ──
+    const mr = mouseRef.current;
+
+    const onPointerDown = (e: PointerEvent) => {
+      mr.down = true; mr.moved = false;
+      mr.x = e.clientX; mr.y = e.clientY;
+      mr.flyTo = null;
+    };
+    const onPointerMove = (e: PointerEvent) => {
+      if (!mr.down) return;
+      const dx = e.clientX - mr.x, dy = e.clientY - mr.y;
+      if (Math.abs(dx) > 3 || Math.abs(dy) > 3) mr.moved = true;
+      mr.trx -= dx * 0.005;
+      mr.try_ = Math.max(-1.5, Math.min(1.5, mr.try_ + dy * 0.005));
+      mr.x = e.clientX; mr.y = e.clientY;
+    };
+    const onPointerUp = (e: PointerEvent) => {
+      mr.down = false;
+      if (!mr.moved) {
+        const rect = renderer.domElement.getBoundingClientRect();
+        const px = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+        const py = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+        raycaster.current.setFromCamera(new THREE.Vector2(px, py), camera);
+        const hits = raycaster.current.intersectObjects(faceMeshes);
+        if (hits.length > 0) {
+          const ass = hits[0].object.userData.assignment as FaceAssignment | undefined;
+          if (ass) setSelected(ass.node);
+          else setSelected(null);
+        } else {
+          setSelected(null);
+        }
+      }
+    };
+    const onWheel = (e: WheelEvent) => {
+      mr.tDist = Math.max(4, Math.min(20, mr.tDist + e.deltaY * 0.005));
+      mr.flyTo = null;
+    };
+
+    renderer.domElement.addEventListener('pointerdown', onPointerDown);
+    window.addEventListener('pointermove', onPointerMove);
+    window.addEventListener('pointerup', onPointerUp);
+    renderer.domElement.addEventListener('wheel', onWheel, { passive: true });
+
     return () => {
       cancelAnimationFrame(frameRef.current);
-      el.removeEventListener('mousedown', onDown);
-      el.removeEventListener('mousemove', onMove);
-      el.removeEventListener('mouseup', onUp);
-      el.removeEventListener('click', onClick);
-      el.removeEventListener('wheel', onWheel);
-      el.removeEventListener('touchstart', onTouchStart2);
-      el.removeEventListener('touchmove', onTouchMove2);
-      el.removeEventListener('touchend', onTouchEnd);
       window.removeEventListener('resize', onResize);
-      edgePulse.dispose();
-      dust.dispose();
-      aurora.dispose();
-      fieldGeo.dispose();
-      fieldMat.dispose();
-      dotTex.dispose();
+      window.removeEventListener('p31-theme-change', onTheme);
+      window.removeEventListener('pointermove', onPointerMove);
+      window.removeEventListener('pointerup', onPointerUp);
+      
+      // M18 Performance: Recursive GPU memory reclamation
+      if (sceneRef.current) {
+        disposeHierarchy(sceneRef.current);
+      }
+
+      // Explicitly dispose of external resource managers
       bloom.dispose();
       labelSystem.dispose();
+
       renderer.dispose();
       if (el.contains(renderer.domElement)) el.removeChild(renderer.domElement);
     };
@@ -519,21 +421,18 @@ export default function ObservatoryRoom() {
     const labelSystem = labelSystemRef.current;
     if (!scene || !assignResult || !geo) return;
 
-    // Dispose previous arcs
     for (const arc of arcsRef.current) {
       scene.remove(arc.mesh);
       disposeArc(arc);
     }
     arcsRef.current = [];
 
-    // Dispose previous connection labels
     for (const lbl of labelsRef.current) {
       scene.remove(lbl);
     }
     labelsRef.current = [];
 
     if (!selected) {
-      // Fly back to default
       const mr = mouseRef.current;
       if (mr.tDist < DEFAULT_DIST - 0.5) {
         mr.flyFrom = { rx: mr.rx, ry: mr.ry, dist: mr.tDist };
@@ -549,7 +448,6 @@ export default function ObservatoryRoom() {
 
     const fromCentroid = geo.faces[selectedAssignment.faceIdx].centroid;
 
-    // Fly to selected node
     const mr = mouseRef.current;
     const targetRx = Math.atan2(fromCentroid.x, fromCentroid.z);
     const targetRy = Math.asin(Math.max(-1, Math.min(1, fromCentroid.y / fromCentroid.length())));
@@ -557,7 +455,6 @@ export default function ObservatoryRoom() {
     mr.flyTo = { rx: targetRx, ry: targetRy, dist: FOCUS_DIST };
     mr.flyT = 0;
 
-    // Build arcs to connected nodes
     const conns = getConnections(selected.id);
     const newArcs: ArcMesh[] = [];
 
@@ -574,7 +471,6 @@ export default function ObservatoryRoom() {
       scene.add(arc.mesh);
       newArcs.push(arc);
 
-      // Add label at arc midpoint
       if (labelSystem) {
         const mid = fromCentroid.clone().add(toCentroid).multiplyScalar(0.5);
         mid.normalize().multiplyScalar(SHELL_RADIUS * 1.18);
@@ -592,7 +488,7 @@ export default function ObservatoryRoom() {
   }, [selected]);
 
   // ══════════════════════════════════════════════════════════════
-  // FILTER LOGIC (axis + search + state + bus)
+  // FILTER LOGIC
   // ══════════════════════════════════════════════════════════════
 
   useEffect(() => {
@@ -614,7 +510,7 @@ export default function ObservatoryRoom() {
       if (stateFilters.size > 0 && !stateFilters.has(node.state)) visible = false;
       if (busFilters.size > 0 && !busFilters.has(node.bus)) visible = false;
 
-      m.visible = true; // keep shape
+      m.visible = true; 
       const mat = m.material as THREE.MeshPhysicalMaterial;
       if (visible) {
         mat.opacity = 0.8;
@@ -631,43 +527,30 @@ export default function ObservatoryRoom() {
   // ══════════════════════════════════════════════════════════════
 
   return (
-    <div style={{ position: 'relative', width: '100%', height: '100%', background: 'transparent', overflow: 'hidden', touchAction: 'none' }}>
+    <div style={{ position: 'relative', width: '100%', height: '100%', background: 'transparent', overflow: 'hidden', touchAction: 'none', fontFamily: 'var(--font-data)' }}>
       <div ref={mountRef} style={{ width: '100%', height: IS_MOBILE ? 'calc(100% - 56px)' : 'calc(100% - 120px)', cursor: 'grab', touchAction: 'none', marginTop: IS_MOBILE ? 56 : 120 }} />
 
       {/* ── Top bar: axis filters ── */}
       <div style={{
         position: 'absolute', top: IS_MOBILE ? 4 : 12, left: IS_MOBILE ? 4 : 12, right: IS_MOBILE ? 4 : undefined,
-        display: 'flex', gap: IS_MOBILE ? 4 : 20, flexWrap: 'wrap', zIndex: 10,
+        display: 'flex', gap: IS_MOBILE ? 4 : 12, flexWrap: 'wrap', zIndex: 10,
       }}>
         {AXIS_KEYS.map(k => (
-          <button key={k} onClick={() => setFilter(filter === k ? null : k)} style={{
+          <button key={k} onClick={() => setFilter(filter === k ? null : k)} className="glass-btn" style={{
             background: filter === k ? AXIS_CSS[k] + '22' : 'transparent',
-            border: '1px solid ' + (filter === k ? AXIS_CSS[k] : 'rgba(0,255,255,0.1)'),
-            color: AXIS_CSS[k], padding: IS_MOBILE ? '6px 10px' : '16px 20px', borderRadius: 3, fontSize: IS_MOBILE ? 10 : 12,
-            fontFamily: "'JetBrains Mono', monospace", cursor: 'pointer',
-            letterSpacing: 1, textTransform: 'uppercase' as const, transition: 'all 0.2s',
-            minHeight: '44px',
-            minWidth: '44px',
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
+            borderColor: filter === k ? AXIS_CSS[k] : 'var(--neon-ghost)',
+            color: AXIS_CSS[k], padding: IS_MOBILE ? '6px 10px' : '12px 16px', borderRadius: 'var(--radius-sm)', fontSize: IS_MOBILE ? 9 : 11,
+            minHeight: 'auto', minWidth: 'auto',
           }}>
             {AXIS_LABELS[k]}
           </button>
         ))}
         {!IS_MOBILE && (
-          <button onClick={() => setShowAttractor(!showAttractor)} style={{
-            background: showAttractor ? '#ff6633' + '22' : 'transparent',
-            border: '1px solid ' + (showAttractor ? '#ff6633' : 'rgba(0,255,255,0.1)'),
-            color: showAttractor ? '#ff6633' : 'rgba(0,255,255,0.25)',
-            padding: '16px 20px', borderRadius: 3, fontSize: 12,
-            fontFamily: "'JetBrains Mono', monospace", cursor: 'pointer',
-            letterSpacing: 1, textTransform: 'uppercase' as const, transition: 'all 0.2s',
-            minHeight: '44px',
-            minWidth: '44px',
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
+          <button onClick={() => setShowAttractor(!showAttractor)} className="glass-btn" style={{
+            background: showAttractor ? 'var(--orange)22' : 'transparent',
+            borderColor: showAttractor ? 'var(--orange)' : 'var(--neon-ghost)',
+            color: showAttractor ? 'var(--orange)' : 'var(--dim)',
+            padding: '12px 16px', borderRadius: 'var(--radius-sm)', fontSize: 11, minHeight: 'auto'
           }}>
             {showAttractor ? 'ATTRACTOR ON' : 'ATTRACTOR OFF'}
           </button>
@@ -677,45 +560,39 @@ export default function ObservatoryRoom() {
       {/* ── Count (hidden on mobile) ── */}
       {!IS_MOBILE && (
         <div style={{
-          position: 'absolute', top: 12, right: 12, color: 'rgba(255,255,255,0.12)', fontSize: 11,
-          fontFamily: "'JetBrains Mono', monospace", letterSpacing: 1, zIndex: 10,
-          textShadow: '0 0 8px rgba(0,255,255,0.05)',
+          position: 'absolute', top: 12, right: 12, color: 'var(--dim)', fontSize: 10,
+          letterSpacing: 1, zIndex: 10, textShadow: '0 0 8px var(--neon-ghost)',
         }}>
           {Object.keys(VERTICES).length} PANELS &middot; {EDGES.length} EDGES &middot; 80 FACES
         </div>
       )}
 
-      {/* ── Search bar (hidden on mobile — use filters instead) ── */}
+      {/* ── Search bar ── */}
       {!IS_MOBILE && (
-        <div style={{ position: 'absolute', top: 42, left: 12, zIndex: 10 }}>
+        <div style={{ position: 'absolute', top: 60, left: 12, zIndex: 10 }}>
           <input
             type="text"
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
             placeholder="search nodes..."
-            style={{
-              background: 'rgba(0,0,0,0.8)', border: '1px solid rgba(0,255,255,0.1)',
-              borderRadius: 3, padding: '8px 12px', color: 'rgba(0,255,255,0.25)', width: 240,
-              fontSize: 12, fontFamily: "'JetBrains Mono', monospace",
-              outline: 'none', letterSpacing: 0.5,
-            }}
+            className="glass-input"
+            style={{ width: 200, padding: '6px 10px', fontSize: 11, background: 'var(--s1)' }}
           />
         </div>
       )}
 
-      {/* ── State + bus filters (compact on mobile) ── */}
-      <div style={{ position: 'absolute', top: IS_MOBILE ? 40 : 68, left: IS_MOBILE ? 4 : 12, display: 'flex', gap: 4, flexWrap: 'wrap', zIndex: 10, maxWidth: IS_MOBILE ? '100%' : 320 }}>
+      {/* ── State + bus filters ── */}
+      <div style={{ position: 'absolute', top: IS_MOBILE ? 40 : 100, left: IS_MOBILE ? 4 : 12, display: 'flex', gap: 4, flexWrap: 'wrap', zIndex: 10, maxWidth: IS_MOBILE ? '100%' : 320 }}>
         {STATE_FILTER_OPTS.map(s => {
           const active = stateFilters.has(s);
-          const col = s === 'countdown' ? '#ff6633' : s === 'complete' ? '#00FFFF'
-            : s === 'missing' ? '#FF4444' : s === 'deployed' ? '#00FFFF' : 'rgba(0,255,255,0.25)';
+          const col = s === 'countdown' ? 'var(--orange)' : s === 'complete' ? 'var(--cyan)'
+            : s === 'missing' ? 'var(--coral)' : s === 'deployed' ? 'var(--cyan)' : 'var(--dim)';
           return (
-            <button key={s} onClick={() => toggleStateFilter(s)} style={{
+            <button key={s} onClick={() => toggleStateFilter(s)} className="glass-btn" style={{
               background: active ? col + '22' : 'transparent',
-              border: '1px solid ' + (active ? col : 'rgba(0,255,255,0.04)'),
-              color: col, padding: '3px 8px', borderRadius: 2, fontSize: IS_MOBILE ? 9 : 10,
-              fontFamily: "'JetBrains Mono', monospace", cursor: 'pointer',
-              letterSpacing: 0.5, transition: 'all 0.2s',
+              borderColor: active ? col : 'var(--neon-ghost)',
+              color: col, padding: '3px 8px', borderRadius: 2, fontSize: IS_MOBILE ? 8 : 9,
+              minHeight: 'auto', minWidth: 'auto',
             }}>
               {s}
             </button>
@@ -724,14 +601,13 @@ export default function ObservatoryRoom() {
         <span style={{ width: 4 }} />
         {BUS_FILTER_OPTS.map(b => {
           const active = busFilters.has(b);
-          const col = BUS_CSS[b] || 'rgba(0,255,255,0.25)';
+          const col = BUS_CSS[b] || 'var(--dim)';
           return (
-            <button key={b} onClick={() => toggleBusFilter(b)} style={{
+            <button key={b} onClick={() => toggleBusFilter(b)} className="glass-btn" style={{
               background: active ? col + '22' : 'transparent',
-              border: '1px solid ' + (active ? col : 'rgba(0,255,255,0.04)'),
-              color: col, padding: '3px 8px', borderRadius: 2, fontSize: IS_MOBILE ? 9 : 10,
-              fontFamily: "'JetBrains Mono', monospace", cursor: 'pointer',
-              letterSpacing: 0.5, transition: 'all 0.2s',
+              borderColor: active ? col : 'var(--neon-ghost)',
+              color: col, padding: '3px 8px', borderRadius: 2, fontSize: IS_MOBILE ? 8 : 9,
+              minHeight: 'auto', minWidth: 'auto',
             }}>
               {b}
             </button>
@@ -741,49 +617,47 @@ export default function ObservatoryRoom() {
 
       {/* ── Selected node panel ── */}
       {selected && (
-        <div style={{
-          position: 'absolute', bottom: 12, left: 12, right: 12, maxWidth: 420,
-          background: 'rgba(6,10,18,0.92)', backdropFilter: 'blur(12px)',
-          border: '1px solid rgba(0,255,255,0.1)', borderRadius: 6, padding: 14, zIndex: 20,
-          fontFamily: "'JetBrains Mono', monospace",
+        <div className="glass-card" style={{
+          position: 'absolute', bottom: 16, left: 16, right: 16, maxWidth: 400,
+          padding: 16, zIndex: 20, borderRadius: 'var(--radius-lg)', background: 'var(--s2)', border: '1px solid var(--neon-ghost)'
         }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-            <span style={{ color: '#d8ffd8', fontSize: 13, fontWeight: 700, letterSpacing: 0.5 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+            <span style={{ color: 'var(--text)', fontSize: 14, fontWeight: 700, letterSpacing: 0.5 }}>
               {selected.label}
               {getCountdownLabel(selected.id) && (
-                <span style={{ color: '#ff6633', marginLeft: 8, fontSize: 11 }}>
+                <span style={{ color: 'var(--orange)', marginLeft: 8, fontSize: 11 }}>
                   {getCountdownLabel(selected.id)}
                 </span>
               )}
             </span>
-            <button onClick={() => setSelected(null)} style={{
-              background: 'none', border: 'none', color: 'rgba(0,255,255,0.18)', cursor: 'pointer', fontSize: 14, padding: '0 4px',
+            <button onClick={() => setSelected(null)} className="glass-btn" style={{
+              border: 'none', color: 'var(--dim)', padding: '0 8px', minHeight: 'auto', minWidth: 'auto'
             }}>{'\u2715'}</button>
           </div>
-          <div style={{ display: 'flex', gap: 10, fontSize: 10, color: 'rgba(0,255,255,0.18)', marginBottom: 6 }}>
+          <div style={{ display: 'flex', gap: 10, fontSize: 10, color: 'var(--dim)', marginBottom: 8 }}>
             <span style={{ color: AXIS_CSS[getDominantAxis(selected.a, selected.b, selected.c, selected.d)] }}>
               {AXIS_LABELS[getDominantAxis(selected.a, selected.b, selected.c, selected.d)]}
             </span>
             <span style={{
-              color: selected.state === 'countdown' ? '#ff6633' : selected.state === 'complete' ? '#00FFFF'
-                : selected.state === 'missing' ? '#FF4444' : selected.state === 'deployed' ? '#00FFFF' : 'rgba(0,255,255,0.25)',
+              color: selected.state === 'countdown' ? 'var(--orange)' : selected.state === 'complete' ? 'var(--cyan)'
+                : selected.state === 'missing' ? 'var(--coral)' : selected.state === 'deployed' ? 'var(--cyan)' : 'var(--dim)',
             }}>{selected.state}</span>
-            <span style={{ color: BUS_CSS[selected.bus] || 'rgba(0,255,255,0.25)' }}>{selected.bus}</span>
+            <span style={{ color: BUS_CSS[selected.bus] || 'var(--dim)' }}>{selected.bus}</span>
           </div>
-          {selected.notes && <div style={{ color: 'rgba(0,255,255,0.18)', fontSize: 9, marginBottom: 6 }}>{selected.notes}</div>}
+          {selected.notes && <div style={{ color: 'var(--dim)', fontSize: 10, marginBottom: 10, lineHeight: 1.4 }}>{selected.notes}</div>}
           {connections.length > 0 && (
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
               {connections.map((c, i) => (
-                <span key={i} onClick={() => {
+                <button key={i} onClick={() => {
                   const d = VERTICES[c.id];
                   if (d) setSelected({ id: c.id, label: d[0], a: d[1], b: d[2], c: d[3], d: d[4], state: d[5], bus: d[6], notes: d[7] });
-                }} style={{
-                  fontSize: 8, padding: '2px 8px', borderRadius: 2, cursor: 'pointer',
-                  background: 'rgba(255,255,255,0.015)', border: '1px solid rgba(0,255,255,0.05)',
-                  color: AXIS_CSS[c.axis], transition: 'all 0.15s', letterSpacing: 0.5,
+                }} className="glass-btn" style={{
+                  fontSize: 9, padding: '4px 10px', borderRadius: 4,
+                  background: 'var(--s1)', borderColor: 'var(--neon-ghost)',
+                  color: AXIS_CSS[c.axis], minHeight: 'auto', minWidth: 'auto'
                 }}>
-                  {c.label} <span style={{ color: 'rgba(255,255,255,0.12)', marginLeft: 2 }}>({c.type})</span>
-                </span>
+                  {c.label} <span style={{ color: 'var(--dim)', marginLeft: 2 }}>({c.type})</span>
+                </button>
               ))}
             </div>
           )}
@@ -792,16 +666,16 @@ export default function ObservatoryRoom() {
 
       {/* ── Instructions ── */}
       <div style={{
-        position: 'absolute', bottom: selected ? 180 : 12, right: 12, color: 'rgba(255,255,255,0.08)',
-        fontSize: 8, textAlign: 'right' as const, letterSpacing: 1, transition: 'bottom 0.3s',
-        lineHeight: 1.8, fontFamily: "'JetBrains Mono', monospace", zIndex: 5,
+        position: 'absolute', bottom: selected ? 200 : 16, right: 16, color: 'var(--neon-faint)',
+        fontSize: 9, textAlign: 'right' as const, letterSpacing: 1, transition: 'bottom var(--trans-base)',
+        lineHeight: 1.8, zIndex: 5,
       }}>
-        <div>{IS_MOBILE ? 'DRAG ROTATE' : 'DRAG ROTATE'}</div>
+        <div>DRAG ROTATE</div>
         <div>TAP PANEL</div>
-        <div>{IS_MOBILE ? 'PINCH ZOOM' : 'SCROLL ZOOM'}</div>
+        <div>SCROLL ZOOM</div>
       </div>
 
-      {/* ── Mark 1 Attractor Simulator Overlay ── */}
+      {/* ── Attractor Overlay ── */}
       <AttractorOverlay
         show={showAttractor}
         entropy={entropy}
