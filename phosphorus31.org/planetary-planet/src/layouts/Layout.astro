@@ -2,12 +2,13 @@
 import Head from '../components/Head.astro';
 import Navbar from '../components/Navbar.jsx';
 import Footer from '../components/Footer.astro';
+const { hideNav = false, ...headProps } = Astro.props;
 ---
 
 <html lang="en">
-  <Head />
+  <Head {...headProps} />
   <body class="min-h-screen flex flex-col relative selection:bg-teal-600 selection:text-white">
-    <Navbar client:load />
+    {!hideNav && <Navbar client:load />}
     <slot />
     <Footer />
   </body>

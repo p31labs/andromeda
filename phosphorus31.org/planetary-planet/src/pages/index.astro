@@ -1,8 +1,23 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import HomeView from '../components/HomeView.astro';
+
+const ngoJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "NGO",
+  "name": "P31 Labs",
+  "legalName": "P31 Labs (fiscal project of The Hack Foundation)",
+  "url": "https://phosphorus31.org",
+  "logo": "https://phosphorus31.org/favicon.svg",
+  "description": "501(c)(3) nonprofit building free, open-source assistive technology for neurodivergent families.",
+  "taxID": "81-2908499",
+  "nonprofitStatus": "Nonprofit501c3",
+  "foundingDate": "2025",
+  "address": { "@type": "PostalAddress", "addressRegion": "GA", "addressCountry": "US" },
+  "sameAs": ["https://github.com/p31labs", "https://ko-fi.com/trimtab69420"]
+};
 ---
 
-<Layout>
+<Layout jsonLd={ngoJsonLd}>
 	<HomeView />
 </Layout>

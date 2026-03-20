@@ -2,7 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 ---
 
-<Layout>
+<Layout hideNav title="Donate | P31 Labs" description="Support P31 Labs — open-source assistive technology for neurodivergent families. Tax-deductible donations via Stripe. EIN 81-2908499.">
   <main class="animate-[fadeIn_0.4s_ease-out] bg-white min-h-screen pb-24">
     {/* Header */}
     <div class="bg-espresso text-cloud pt-32 pb-20 px-6">
@@ -30,14 +30,21 @@ import Layout from '../layouts/Layout.astro';
 
         {/* Amount Selection */}
         <div class="max-w-md mx-auto">
+
+          {/* Monthly / One-time toggle */}
+          <div class="flex rounded-xl border-2 border-cloud overflow-hidden mb-6 font-bold text-sm" id="modeToggle">
+            <button data-mode="monthly" class="flex-1 py-2.5 px-4 bg-teal-600 text-white transition-colors">Monthly</button>
+            <button data-mode="once" class="flex-1 py-2.5 px-4 bg-white text-espresso/60 transition-colors">One-time</button>
+          </div>
+
           <div class="grid grid-cols-4 gap-3 mb-4" id="amountGrid">
-            <button data-amount="500" class="amount-btn active bg-teal-600 text-white font-bold py-3 rounded-xl text-center transition-all hover:scale-105 cursor-pointer border-2 border-teal-600">$5</button>
+            <button data-amount="500" class="amount-btn bg-white text-espresso font-bold py-3 rounded-xl text-center transition-all hover:scale-105 cursor-pointer border-2 border-cloud hover:border-teal-600">$5</button>
             <button data-amount="1000" class="amount-btn bg-white text-espresso font-bold py-3 rounded-xl text-center transition-all hover:scale-105 cursor-pointer border-2 border-cloud hover:border-teal-600">$10</button>
-            <button data-amount="2500" class="amount-btn bg-white text-espresso font-bold py-3 rounded-xl text-center transition-all hover:scale-105 cursor-pointer border-2 border-cloud hover:border-teal-600">$25</button>
+            <button data-amount="2500" class="amount-btn active bg-teal-600 text-white font-bold py-3 rounded-xl text-center transition-all hover:scale-105 cursor-pointer border-2 border-teal-600">$25</button>
             <button data-amount="5000" class="amount-btn bg-white text-espresso font-bold py-3 rounded-xl text-center transition-all hover:scale-105 cursor-pointer border-2 border-cloud hover:border-teal-600">$50</button>
           </div>
 
-          <div class="relative mb-6">
+          <div class="relative mb-2">
             <span class="absolute left-4 top-1/2 -translate-y-1/2 text-espresso/40 font-bold text-lg">$</span>
             <input
               type="number"
@@ -49,16 +56,20 @@ import Layout from '../layouts/Layout.astro';
             />
           </div>
 
+          {/* Impact statement */}
+          <p id="impactMsg" class="text-center text-sm text-teal-600/80 font-medium mt-2 mb-1 min-h-[1.5rem]">Covers a full month of infrastructure for all 3 products.</p>
+
+          {/* Tax language */}
+          <p class="text-center text-xs text-espresso/40 mt-1 mb-4">
+            Tax-deductible under IRC §170(c) · EIN 81-2908499 (The Hack Foundation, fiscal sponsor) · Receipt emailed automatically
+          </p>
+
           <button
             id="donateBtn"
             class="w-full bg-teal-600 text-white font-bold px-8 py-4 rounded-xl hover:bg-teal-700 transition-colors text-lg cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Donate $5
+            Donate $25/mo
           </button>
-
-          <p class="text-center text-sm text-espresso/40 mt-4">
-            Secure payment via Stripe. You will receive an email receipt.
-          </p>
         </div>
       </div>
 
@@ -128,9 +139,10 @@ import Layout from '../layouts/Layout.astro';
             <a href="https://github.com/p31labs" target="_blank" rel="noopener noreferrer" class="text-teal-600 font-bold text-sm hover:underline mt-2 inline-block">github.com/p31labs</a>
           </div>
           <div class="glass-box p-6 rounded-xl flex-1 max-w-xs">
-            <div class="text-2xl mb-2">&#x1F4AC;</div>
-            <h3 class="font-bold text-espresso mb-1">Spread the Word</h3>
-            <p class="text-sm">Tell a family who might need these tools.</p>
+            <div class="text-2xl mb-2">&#x2615;</div>
+            <h3 class="font-bold text-espresso mb-1">Buy Us a Coffee</h3>
+            <p class="text-sm">Ko-fi is 0% fee — every cent reaches P31 Labs directly.</p>
+            <a href="https://ko-fi.com/trimtab69420" target="_blank" rel="noopener noreferrer" class="text-teal-600 font-bold text-sm hover:underline mt-2 inline-block">ko-fi.com/trimtab69420</a>
           </div>
           <div class="glass-box p-6 rounded-xl flex-1 max-w-xs">
             <div class="text-2xl mb-2">&#x1F527;</div>
@@ -154,8 +166,31 @@ import Layout from '../layouts/Layout.astro';
     const STRIPE_PK = 'pk_live_51T6z3U4Kt3K4WuBDDv6FjjDIygpXjRFMZ5ow28pDiVegBZNOaHffjJCtosLRdaVn0PBmO4rTCYNdoMONcIr5MAyp005FUET7VZ';
     const API_URL = 'https://donate-api.phosphorus31.org';
 
-    let selectedAmount = 500; // cents
+    const IMPACT = {
+      500:  'Covers 2 months of BONDING relay hosting costs.',
+      1000: 'Funds a week of development tooling for the team.',
+      2500: 'Covers a full month of infrastructure for all 3 products.',
+      5000: 'Funds an entire quarter of operating costs at current burn.',
+    };
+
+    let selectedAmount = 2500; // cents — default $25
+    let isMonthly = true;
     const stripe = Stripe(STRIPE_PK);
+
+    // Mode toggle
+    document.querySelectorAll('#modeToggle button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        isMonthly = btn.dataset.mode === 'monthly';
+        document.querySelectorAll('#modeToggle button').forEach(b => {
+          const active = b.dataset.mode === (isMonthly ? 'monthly' : 'once');
+          b.classList.toggle('bg-teal-600', active);
+          b.classList.toggle('text-white', active);
+          b.classList.toggle('bg-white', !active);
+          b.classList.toggle('text-espresso/60', !active);
+        });
+        updateDonateButton();
+      });
+    });
 
     // Amount button selection
     document.querySelectorAll('.amount-btn').forEach(btn => {
@@ -172,13 +207,13 @@ import Layout from '../layouts/Layout.astro';
       const val = parseInt(e.target.value);
       if (val > 0) {
         selectedAmount = val * 100;
-        // Deselect preset buttons
         document.querySelectorAll('.amount-btn').forEach(b => {
           b.classList.remove('active', 'bg-teal-600', 'text-white', 'border-teal-600');
           b.classList.add('bg-white', 'text-espresso', 'border-cloud');
         });
       }
       updateDonateButton();
+      updateImpact();
     });
 
     function updateUI() {
@@ -193,12 +228,23 @@ import Layout from '../layouts/Layout.astro';
         b.classList.toggle('border-cloud', !isActive);
       });
       updateDonateButton();
+      updateImpact();
     }
 
     function updateDonateButton() {
       const btn = document.getElementById('donateBtn');
       const dollars = (selectedAmount / 100).toFixed(selectedAmount % 100 === 0 ? 0 : 2);
-      btn.textContent = `Donate $${dollars}`;
+      btn.textContent = isMonthly ? `Donate $${dollars}/mo` : `Donate $${dollars}`;
+    }
+
+    function updateImpact() {
+      const msg = document.getElementById('impactMsg');
+      if (IMPACT[selectedAmount]) {
+        msg.textContent = IMPACT[selectedAmount];
+      } else {
+        const dollars = (selectedAmount / 100).toFixed(selectedAmount % 100 === 0 ? 0 : 2);
+        msg.textContent = `Your $${dollars} directly funds free assistive technology for neurodivergent families.`;
+      }
     }
 
     // Checkout
@@ -214,6 +260,7 @@ import Layout from '../layouts/Layout.astro';
           body: JSON.stringify({
             amount: selectedAmount,
             currency: 'usd',
+            mode: isMonthly ? 'monthly' : 'once',
             successUrl: window.location.origin + '/donate?success=1',
             cancelUrl: window.location.origin + '/donate',
           }),
