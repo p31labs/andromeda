@@ -1,0 +1,3 @@
+[submodule "05_FIRMWARE/maker-variant/components/radiolib"]
+	path = 05_FIRMWARE/maker-variant/components/radiolib
+	url = https://github.com/jgromes/RadioLib.git
