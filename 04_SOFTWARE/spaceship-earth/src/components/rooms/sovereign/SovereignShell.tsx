@@ -87,6 +87,16 @@ export function SovereignShell() {
     didKey: s.didKey,
   })));
 
+  const clearCelebration = useSovereignStore(s => s.clearCelebration);
+
+  // WCD-20: Clear celebration after animation completes (1.5s)
+  useEffect(() => {
+    if (celebrationPending) {
+      const timer = setTimeout(() => clearCelebration(), 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [celebrationPending, clearCelebration]);
+
   // ?demo=true bypasses onboarding and ship lock — kiosk/presentation mode
   const isDemoMode = new URLSearchParams(location.search).has('demo');
 

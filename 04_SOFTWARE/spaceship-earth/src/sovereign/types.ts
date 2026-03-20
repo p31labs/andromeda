@@ -47,7 +47,7 @@ export interface RemotePeer {
   room: string | null;
   lastSeen: number;
 }
-export type CelebrationEvent = 'coherence' | 'covenant';
+export type CelebrationEvent = 'coherence' | 'covenant' | { type: 'molecule_complete'; formula: string };
 
 export interface SovereignState {
   viewMode: ViewMode;

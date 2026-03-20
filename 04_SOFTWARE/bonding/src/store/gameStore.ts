@@ -746,6 +746,16 @@ export const useGameStore = create<GameStore>()((set, get) => ({
 
     // ── Post-commit effects ──
 
+    // WCD-20: Broadcast celebration to peers on molecule completion
+    if (complete) {
+      // Dynamically import to avoid circular dep - relay lives in spaceship-earth
+      import('../../spaceship-earth/src/services/sovereignRelay').then(({ sendCelebration }) => {
+        sendCelebration({ type: 'molecule_complete', formula });
+      }).catch(() => {
+        // Relay not available - no-op in standalone mode
+      });
+    }
+
     // Genesis: ATOM_PLACED
     eventBus.emit(GameEventType.ATOM_PLACED, {
       element,
