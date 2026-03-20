@@ -96,10 +96,14 @@ export function CartridgeDrawer({ visible, onClose, onLoadCartridge }: Cartridge
   }
 
   return (
-    <div style={{
-      position: 'absolute', bottom: 60, left: 0, right: 0, zIndex: 42,
-      pointerEvents: 'auto',
-    }}>
+    <div
+      role="complementary"
+      aria-label="Cartridge drive"
+      style={{
+        position: 'absolute', bottom: 60, left: 0, right: 0, zIndex: 42,
+        pointerEvents: 'auto',
+      }}
+    >
       {/* Header */}
       <div style={{
         display: 'flex', justifyContent: 'space-between', alignItems: 'center',
@@ -107,37 +111,60 @@ export function CartridgeDrawer({ visible, onClose, onLoadCartridge }: Cartridge
         background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(12px)',
         borderTop: '1px solid rgba(0,255,255,0.2)',
       }}>
-        <span style={{
-          color: '#00FFFF', fontFamily: 'monospace', fontSize: 12,
-          letterSpacing: '0.1em', fontWeight: 600,
-        }}>
+        <span
+          aria-live="polite"
+          aria-atomic="true"
+          style={{
+            color: 'var(--cyan)', fontFamily: 'monospace', fontSize: 12,
+            letterSpacing: '0.1em', fontWeight: 600,
+          }}
+        >
           CARTRIDGE DRIVE [{cartridges.length}/{MAX_SLOTS}]
         </span>
-        <span style={{
-          color: 'rgba(255,255,255,0.3)', fontFamily: 'monospace', fontSize: 10,
-        }}>
+        <span
+          aria-live="polite"
+          aria-atomic="true"
+          style={{
+            color: 'rgba(255,255,255,0.3)', fontFamily: 'monospace', fontSize: 10,
+          }}
+        >
           {status === 'ready' ? 'BABEL READY' : status.toUpperCase()}
         </span>
         <button
           type="button"
           onClick={onClose}
+          aria-label="Close cartridge drive"
           style={{
             background: 'transparent', border: 'none',
             color: 'rgba(255,255,255,0.5)', cursor: 'pointer',
             fontFamily: 'monospace', fontSize: 14, padding: '4px 8px',
+            minWidth: 44, minHeight: 44, display: 'inline-flex',
+            alignItems: 'center', justifyContent: 'center',
           }}
         >
-          X
+          ✕
         </button>
       </div>
 
-      {/* Scrollable drawer */}
+      {/* Scrollable drawer — role="list" with keyboard arrow-key navigation */}
       <div
         ref={scrollRef}
+        role="list"
+        aria-label="Cartridge slots"
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerUp}
+        onKeyDown={(e) => {
+          // Allow left/right arrow keys to scroll the slot list
+          if (e.key === 'ArrowRight') {
+            e.preventDefault();
+            scrollRef.current?.scrollBy({ left: 136, behavior: 'smooth' });
+          } else if (e.key === 'ArrowLeft') {
+            e.preventDefault();
+            scrollRef.current?.scrollBy({ left: -136, behavior: 'smooth' });
+          }
+        }}
         style={{
           display: 'flex', gap: 8, padding: '10px 16px',
           overflowX: 'auto', overflowY: 'hidden',
@@ -149,12 +176,13 @@ export function CartridgeDrawer({ visible, onClose, onLoadCartridge }: Cartridge
         }}
       >
         {slots.map((cart, i) => (
-          <CartridgeSlot
-            key={cart?.id ?? `empty-${i}`}
-            index={i}
-            cartridge={cart}
-            onLoad={onLoadCartridge}
-          />
+          <div key={cart?.id ?? `empty-${i}`} role="listitem">
+            <CartridgeSlot
+              index={i}
+              cartridge={cart}
+              onLoad={onLoadCartridge}
+            />
+          </div>
         ))}
       </div>
     </div>
@@ -174,16 +202,19 @@ function CartridgeSlot({
 
   if (!cartridge) {
     return (
-      <div style={{
-        flex: '0 0 120px', height: 80,
-        border: '1px dashed rgba(255,255,255,0.12)',
-        borderRadius: 8,
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        flexDirection: 'column', gap: 4,
-        color: 'rgba(255,255,255,0.15)',
-        fontFamily: 'monospace', fontSize: 10,
-      }}>
-        <span style={{ fontSize: 16, opacity: 0.3 }}>+</span>
+      <div
+        aria-label={`Slot ${index + 1} — empty`}
+        style={{
+          flex: '0 0 120px', height: 80,
+          border: '1px dashed rgba(255,255,255,0.12)',
+          borderRadius: 8,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          flexDirection: 'column', gap: 4,
+          color: 'rgba(255,255,255,0.15)',
+          fontFamily: 'monospace', fontSize: 10,
+        }}
+      >
+        <span aria-hidden="true" style={{ fontSize: 16, opacity: 0.3 }}>+</span>
         <span>SLOT {index + 1}</span>
       </div>
     );
@@ -193,6 +224,7 @@ function CartridgeSlot({
     <button
       type="button"
       onClick={() => onLoad?.(cartridge)}
+      aria-label={`Load cartridge: ${cartridge.name}, slot ${index + 1}`}
       onPointerEnter={() => setHovered(true)}
       onPointerLeave={() => setHovered(false)}
       style={{
@@ -208,7 +240,7 @@ function CartridgeSlot({
       }}
     >
       <span style={{
-        color: '#00FFFF', fontFamily: 'monospace', fontSize: 11,
+        color: 'var(--cyan)', fontFamily: 'monospace', fontSize: 11,
         fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden',
         textOverflow: 'ellipsis', maxWidth: '100%',
       }}>

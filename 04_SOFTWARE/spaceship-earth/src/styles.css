@@ -31,6 +31,7 @@
   --orange: #FF8C42;
   --blue: #00D4FF;
   --lavender: #7A27FF;
+  --pink: #FF00CC;
 
   /* Typography Scale (Fluid) */
   --fs-xs: clamp(8px, 1vh, 10px);
@@ -87,8 +88,23 @@
   --magenta: #FF6B6B;
   --s1: #0a0805;
   --s2: #12100a;
+  --pink: #FF8C42;
   --glow-cyan: 0 0 6px var(--amber), 0 0 20px rgba(255,215,0,0.3);
   --glow-magenta: 0 0 6px #FF6B6B, 0 0 20px rgba(255,107,107,0.3);
+}
+
+[data-theme="aurora"] {
+  --neon: var(--mint);
+  --neon-dim: rgba(0,255,136,0.35);
+  --neon-faint: rgba(0,255,136,0.08);
+  --neon-ghost: rgba(0,255,136,0.03);
+  --cyan: #00FF88;
+  --magenta: #7700ff;
+  --violet: #00ccff;
+  --amber: #00ff88;
+  --glow-cyan: 0 0 6px #00FF88, 0 0 20px rgba(0,255,136,0.3);
+  --glow-magenta: 0 0 6px #7700ff, 0 0 20px rgba(119,0,255,0.3);
+  --glow-violet: 0 0 6px #00ccff, 0 0 20px rgba(0,204,255,0.3);
 }
 
 [data-theme="gray-rock"] {
@@ -103,6 +119,7 @@
   --amber: #999999;
   --mint: #888888;
   --coral: #999999;
+  --pink: #888888;
   --s1: #0a0a0a;
   --s2: #111111;
   --glow-cyan: none;
@@ -130,8 +147,9 @@
 
 .glass-card {
   background: var(--neon-ghost);
-  -webkit-backdrop-filter: blur(20px);
-  backdrop-filter: blur(20px);
+  /* 12px max — 20px+ creates GPU memory pressure on Android tablets with shared VRAM */
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
   border: 1px solid var(--neon-faint);
   border-radius: var(--radius-lg);
   box-shadow: 0 8px 32px rgba(0,0,0,0.4);
@@ -148,8 +166,8 @@
 
 .glass-nav {
   background: rgba(0,0,0,0.45);
-  -webkit-backdrop-filter: blur(24px);
-  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(12px); /* reduced from 24px — Android GPU budget */
+  backdrop-filter: blur(12px);
   border-top: 1px solid var(--neon-faint);
   box-shadow: 0 -4px 24px rgba(0,0,0,0.3);
 }
@@ -191,7 +209,8 @@
   font-family: var(--font-display);
   cursor: pointer;
   transition: all var(--trans-fast);
-  min-height: 40px;
+  min-height: 44px;
+  min-width: 44px;
   padding: 8px 16px;
   display: inline-flex;
   align-items: center;
@@ -268,6 +287,10 @@
   0%, 100% { box-shadow: 0 0 4px 0 rgba(0,255,255,0.05); }
   50%      { box-shadow: 0 0 16px 4px rgba(0,255,255,0.2); }
 }
+@keyframes celebrationFlash {
+  0%   { opacity: 1; }
+  100% { opacity: 0; }
+}
 
 @keyframes lockPulse {
   0%, 100% { opacity: 0.6; filter: drop-shadow(0 0 0 transparent); }
@@ -309,9 +332,40 @@
   100% { left: 100%; }
 }
 
+/* exportScan: kept for backward compat but prefer .skeleton-shimmer (see below) */
 @keyframes exportScan {
   0%   { background-position: -200% 0; }
   100% { background-position: 200% 0; }
+}
+
+/* ── Skeleton shimmer — compositor-safe (transform, NOT background-position) ──
+   background-position animation triggers paint each frame and steals main-thread
+   budget from the R3F render loop. translateX() runs on the compositor thread. */
+.skeleton-shimmer {
+  position: relative;
+  overflow: hidden;
+  background: var(--s2);
+  border-radius: var(--radius-sm);
+  contain: layout paint; /* isolate repaint from WebGL canvas */
+}
+
+.skeleton-shimmer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.04) 50%,
+    transparent 100%
+  );
+  transform: translateX(-100%);
+  animation: shimmerSlide 1.5s ease-in-out infinite;
+  will-change: transform; /* promote to own layer — remove once loading ends */
+}
+
+@keyframes shimmerSlide {
+  to { transform: translateX(100%); }
 }
 
 @keyframes placePop {
@@ -438,6 +492,13 @@
   100% { filter: hue-rotate(0deg) brightness(1); }
 }
 
+/* ── Resonance Engine — typing dots ─────────────────── */
+
+@keyframes resPulse {
+  0%, 100% { opacity: 0.2; }
+  50%       { opacity: 0.6; }
+}
+
 /* ── Thermal throttle (Fawn Guard) ──────────────────── */
 
 .thermal-throttle-pulse {
@@ -545,7 +606,10 @@
   right: 0;
   z-index: 10;
   pointer-events: none;
-  padding: 8px;
+  /* max() fallback: env() returns 0px on most Android tablets today —
+     viewport-fit=cover is set in index.html but Chrome 135 edge-to-edge
+     currently excludes tablets. Always guarantee minimum 8px clearance. */
+  padding: max(8px, env(safe-area-inset-top, 0px)) 8px 8px 8px;
 }
 
 /* ── Spoon Gauge ───────────────────────────────────── */
@@ -629,6 +693,8 @@
 .nav-tab.nav-tab-active {
   background: var(--neon-ghost);
   border-color: var(--neon-dim);
+  /* 2px bottom indicator line — visible on any background */
+  border-bottom: 2px solid var(--neon);
   color: var(--cyan);
   box-shadow: 0 0 12px var(--neon-ghost);
   text-shadow: var(--glow-cyan);
@@ -749,6 +815,19 @@
   background: var(--void);
   display: flex;
   flex-direction: column;
+  /* ── Entrance animation (no setTimeout, no race conditions) ──────────────
+     @starting-style fires when element is inserted into the DOM (Chrome 117+,
+     Android Chrome 145+). Pairs with transition for zero-JS enter animation.
+     Exit: overlay unmounts instantly — accept for now; add onTransitionEnd
+     exit later if needed. */
+  opacity: 1;
+  transform: scale(1) translateZ(0);
+  transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+  contain: layout paint; /* isolate overlay repaint from WebGL canvas */
+  @starting-style {
+    opacity: 0;
+    transform: scale(0.97) translateZ(0);
+  }
 }
 
 .sov-overlay-header {
@@ -804,15 +883,24 @@
 }
 
 /* ── Focus-visible ring for all interactive elements ── */
+/* WCAG 2.4.7 / 2.4.11: Focus indicator must be perceivable on any background.
+   - Use full-opacity neon (not var(--neon-dim) at 35% — fails 3:1 on light glass)
+   - Double-ring: 2px neon inner + 4px dark outer halo = visible on OLED AND light bg
+   - :focus-visible suppresses ring on touch taps (Chrome 86+, stable on Android) */
 
 button:focus-visible,
-a:focus-visible,
+a[href]:focus-visible,
 select:focus-visible,
+input:not([type="hidden"]):focus-visible,
+textarea:focus-visible,
+summary:focus-visible,
 [role="button"]:focus-visible,
-[tabindex]:focus-visible {
-  outline: 2px solid var(--neon-dim);
-  outline-offset: 2px;
-  box-shadow: 0 0 8px var(--neon-ghost);
+[tabindex]:not([tabindex="-1"]):focus-visible {
+  outline: 2px solid var(--neon);          /* full opacity — was var(--neon-dim) at 35% */
+  outline-offset: 3px;
+  /* Dark outer ring ensures contrast on any glass/light surface */
+  box-shadow: 0 0 0 5px rgba(0, 0, 0, 0.85), 0 0 12px var(--neon-ghost);
+  -webkit-tap-highlight-color: transparent; /* suppress Android default tap highlight */
 }
 
 /* ── Reduced motion ────────────────────────────────── */
@@ -836,6 +924,52 @@ select:focus-visible,
     animation: none;
     box-shadow: 0 0 8px rgba(0,255,255,0.15);
   }
+
+  /* ── Lock screen: breathe text → static glow (no opacity pulse) ── */
+  .lock-breathe-text {
+    animation: none !important;
+    opacity: 1 !important;
+    text-shadow: var(--glow-cyan) !important;
+  }
+
+  /* ── Celebration flash → instant opacity instead of CSS animation ── */
+  .celebration-flash {
+    animation: none !important;
+    opacity: 0 !important;
+  }
+
+  /* ── Scanline sweep → freeze on first frame ── */
+  .scanline-sweep {
+    animation: none !important;
+  }
+
+  /* ── Neon flicker → steady glow ── */
+  .neon-flicker {
+    animation: none !important;
+    opacity: 1 !important;
+  }
+
+  /* ── Canvas overlay: hint to Three.js RAF via CSS custom property ──
+     ImmersiveCockpit reads --reduce-motion at startup to throttle RAF. */
+  :root {
+    --reduce-motion: 1;
+  }
+}
+
+/* ── Reduced transparency — replace glass with solid backgrounds ── */
+
+@media (prefers-reduced-transparency: reduce) {
+  .glass-card,
+  .glass-nav,
+  .glass-input,
+  .glass-btn,
+  .glass-panel,
+  .neon-flicker,
+  .sov-btn {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: var(--s2);
+  }
 }
 
 /* ── High contrast mode support ────────────────────── */
@@ -856,4 +990,22 @@ select:focus-visible,
     border-color: Highlight;
     color: Highlight;
   }
+}
+
+/* ── Glow Intensity Utilities ─────────────────────── */
+
+.glow-dim    { text-shadow: 0 0 4px currentColor; }
+.glow-medium { text-shadow: 0 0 8px currentColor, 0 0 16px var(--neon-faint); }
+.glow-bright { text-shadow: 0 0 8px currentColor, 0 0 24px var(--neon-dim); }
+
+/* ── Glass Panel Utility ──────────────────────────── */
+
+.glass-panel {
+  /* 70% opacity floor — WCAG contrast: blurred 3D scene creates mid-tone areas
+     where neither light nor dark text reliably hits 4.5:1 at lower opacity */
+  background: rgba(0,0,0,0.7);
+  border: 1px solid var(--neon-faint);
+  border-radius: var(--radius-md);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
 }

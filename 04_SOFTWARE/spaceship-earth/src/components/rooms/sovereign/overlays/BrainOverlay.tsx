@@ -3,6 +3,8 @@
 // Accessibility: large text, neon on pure black, zoomable/pannable brain, touch targets 48px+
 
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { streamChat, loadLLMConfig, buildSystemContext } from '../../../../services/llmClient';
+import { useSovereignStore } from '../../../../sovereign/useSovereignStore';
 
 const PHOSPHOR = '#00FFFF';
 const PHOSPHOR_DIM = 'rgba(0, 255, 255, 0.15)';
@@ -125,6 +127,7 @@ export function BrainOverlay() {
   const [isPanning, setIsPanning] = useState(false);
   const panStart = useRef({ x: 0, y: 0, panX: 0, panY: 0 });
   const brainRef = useRef<HTMLDivElement>(null);
+  const abortRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -233,17 +236,52 @@ export function BrainOverlay() {
 
   const handleEngage = async () => {
     if (!taskInput.trim() || !focusedRegion) return;
+
+    // Cancel any in-flight request
+    abortRef.current?.abort();
+    const abort = new AbortController();
+    abortRef.current = abort;
+
     setIsThinking(true);
     setErrorMsg(null);
-    setAiResponse(null);
+    setAiResponse('▋'); // streaming cursor
+
     const region = BRAIN_REGIONS.find(r => r.id === focusedRegion);
     try {
-      const responseText = await callGemini(taskInput, region!.prompt);
-      setAiResponse(responseText);
-    } catch {
-      setErrorMsg('Neural Link Unstable: Unable to connect.');
+      const config = await loadLLMConfig();
+      if (!config.endpoint) {
+        setErrorMsg('No LLM endpoint configured — open Bridge → LLM to set one.');
+        return;
+      }
+
+      // Inject sovereign context into the region's system prompt
+      const { coherence, dynamicSlots, openOverlay } = useSovereignStore.getState();
+      const systemPrompt = buildSystemContext(region!.prompt, {
+        activeRoom:  openOverlay ?? 'BRAIN',
+        entropy:     1.0 - (coherence ?? 0.99),
+        activeSlots: Object.values(dynamicSlots).filter(Boolean).length,
+      });
+
+      let accumulated = '';
+      for await (const chunk of streamChat(
+        [
+          { role: 'system',  content: systemPrompt },
+          { role: 'user',    content: taskInput },
+        ],
+        config,
+        abort.signal,
+      )) {
+        accumulated += chunk;
+        setAiResponse(accumulated + '▋');
+      }
+      setAiResponse(accumulated); // strip cursor when done
+    } catch (err: unknown) {
+      if (err instanceof Error && err.name === 'AbortError') return;
+      setErrorMsg(`Neural Link Unstable: ${err instanceof Error ? err.message : 'Connection failed'}`);
+      setAiResponse(null);
     } finally {
       setIsThinking(false);
+      if (abortRef.current === abort) abortRef.current = null;
     }
   };
 
@@ -353,7 +391,11 @@ export function BrainOverlay() {
             return (
               <div
                 key={api.id}
+                role="button"
+                tabIndex={0}
+                aria-pressed={connected}
                 onClick={() => toggleAPI(api.id)}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleAPI(api.id); } }}
                 onMouseEnter={() => setHoveredAPI(api.id)}
                 onMouseLeave={() => setHoveredAPI(null)}
                 style={{
@@ -518,7 +560,12 @@ export function BrainOverlay() {
               return (
                 <g
                   key={region.id}
+                  role={isActive ? 'button' : undefined}
+                  tabIndex={isActive ? 0 : undefined}
+                  aria-label={isActive ? `${region.label} — ${region.desc}` : undefined}
+                  {...(isActive ? { 'aria-pressed': isFocused } : {})}
                   onClick={() => isActive && enterFocus(region.id)}
+                  onKeyDown={isActive ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); enterFocus(region.id); } } : undefined}
                   onMouseEnter={() => setHoveredRegion(region.id)}
                   onMouseLeave={() => setHoveredRegion(null)}
                   style={{
@@ -589,24 +636,24 @@ export function BrainOverlay() {
 
           {/* Zoom controls — touch friendly */}
           <div style={{ position: 'absolute', bottom: 16, right: 16, display: 'flex', flexDirection: 'column', gap: 6, zIndex: 20 }}>
-            <button onClick={() => setZoom(z => Math.min(4, z * 1.3))} style={{
+            <button aria-label="Zoom in" onClick={() => setZoom(z => Math.min(4, z * 1.3))} style={{
               width: 48, height: 48, borderRadius: 8, border: `1px solid ${PHOSPHOR}33`,
               background: `${PHOSPHOR}11`, color: PHOSPHOR, fontSize: 24, cursor: 'pointer',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               textShadow: `0 0 8px ${PHOSPHOR_GLOW}`,
-            }}>+</button>
-            <button onClick={() => setZoom(z => Math.max(0.5, z / 1.3))} style={{
+            }} aria-hidden="false"><span aria-hidden="true">+</span></button>
+            <button aria-label="Zoom out" onClick={() => setZoom(z => Math.max(0.5, z / 1.3))} style={{
               width: 48, height: 48, borderRadius: 8, border: `1px solid ${PHOSPHOR}33`,
               background: `${PHOSPHOR}11`, color: PHOSPHOR, fontSize: 24, cursor: 'pointer',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               textShadow: `0 0 8px ${PHOSPHOR_GLOW}`,
-            }}>{'\u2212'}</button>
-            <button onClick={() => { setZoom(1); setPan({ x: 0, y: 0 }); }} style={{
+            }}><span aria-hidden="true">{'\u2212'}</span></button>
+            <button aria-label="Reset zoom to 1:1" onClick={() => { setZoom(1); setPan({ x: 0, y: 0 }); }} style={{
               width: 48, height: 48, borderRadius: 8, border: `1px solid ${PHOSPHOR}33`,
               background: `${PHOSPHOR}11`, color: PHOSPHOR, fontSize: 14, cursor: 'pointer',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               textShadow: `0 0 8px ${PHOSPHOR_GLOW}`, letterSpacing: 1,
-            }}>1:1</button>
+            }}><span aria-hidden="true">1:1</span></button>
           </div>
 
           {/* Focus mode task panel */}
@@ -709,28 +756,38 @@ export function BrainOverlay() {
                 </button>
               </div>
 
-              {(aiResponse || errorMsg) && (
-                <div style={{
-                  marginTop: 14,
+              {/* role="log" container must be in the DOM BEFORE content is injected
+                  so screen readers register the live region. Conditionally rendering
+                  it means ATs miss the first announcement. Collapse visually when empty. */}
+              <div
+                role="log"
+                aria-live="polite"
+                aria-relevant="additions"
+                aria-label="AI response"
+                style={{
+                  marginTop: aiResponse || errorMsg ? 14 : 0,
                   background: `${PHOSPHOR}06`,
                   borderRadius: 8,
                   border: `1px solid ${errorMsg ? ROSE : (focusedRegionData?.color || PHOSPHOR)}33`,
-                  padding: 16,
+                  padding: aiResponse || errorMsg ? 16 : 0,
                   overflowY: 'auto',
-                  flex: 1,
+                  flex: aiResponse || errorMsg ? 1 : 'none',
                   minHeight: 0,
-                }}>
-                  {errorMsg ? (
-                    <div style={{ color: ROSE, fontSize: 14, textShadow: `0 0 6px ${ROSE}44` }}>
-                      {errorMsg}
-                    </div>
-                  ) : (
-                    <div style={{ fontSize: 14, lineHeight: 1.7, color: PHOSPHOR, whiteSpace: 'pre-wrap', opacity: 0.9 }}>
-                      {aiResponse}
-                    </div>
-                  )}
-                </div>
-              )}
+                  transition: 'padding 0.15s ease-out, margin 0.15s ease-out',
+                  contain: 'layout paint',
+                }}
+              >
+                {errorMsg ? (
+                  /* role="alert" = assertive live region — announces error immediately */
+                  <div role="alert" style={{ color: ROSE, fontSize: 14, textShadow: `0 0 6px ${ROSE}44` }}>
+                    {errorMsg}
+                  </div>
+                ) : aiResponse ? (
+                  <div style={{ fontSize: 14, lineHeight: 1.7, color: PHOSPHOR, whiteSpace: 'pre-wrap', opacity: 0.9 }}>
+                    {aiResponse}
+                  </div>
+                ) : null}
+              </div>
             </div>
           )}
 
