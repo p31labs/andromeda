@@ -33,7 +33,7 @@
  *     const { a, b } = useSovereignStore(useShallow(s => ({ a: s.a, b: s.b })));
  */
 import { create } from 'zustand';
-import type { SovereignState, SovereignRoom, K4Edge, RelayPeer, RelayStatus } from './types';
+import type { SovereignState, SovereignRoom, RelayPeer, RelayStatus } from './types';
 import { SOVEREIGN_ROOMS } from './types';
 import { audioEngine, generateDID, hashTelemetry, exportLedgerJSON } from '@p31/shared/sovereign';
 import { trackEvent } from '../services/telemetry';

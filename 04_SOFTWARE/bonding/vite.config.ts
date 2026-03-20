@@ -1,14 +1,10 @@
-/// <reference types="vitest/config" />
-import { defineConfig } from 'vite';
+import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 import { VitePWA } from 'vite-plugin-pwa';
 import path from 'path';
 
 export default defineConfig({
-  test: {
-    exclude: ['tests/e2e/**', 'node_modules/**'],
-  },
   plugins: [
     react(),
     tailwindcss(),
@@ -43,10 +39,10 @@ export default defineConfig({
     // WCD-CC03: Split vendor chunks for better caching
     rollupOptions: {
       output: {
-        manualChunks: {
-          three: ['three'],
-          r3f: ['@react-three/fiber', '@react-three/drei', '@react-three/postprocessing'],
-          react: ['react', 'react-dom'],
+        manualChunks(id) {
+          if (id.includes('node_modules/three')) return 'three';
+          if (id.includes('node_modules/@react-three')) return 'r3f';
+          if (id.includes('node_modules/react-dom') || id.includes('node_modules/react/')) return 'react';
         },
       },
     },
