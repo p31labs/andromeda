@@ -1,6 +1,32 @@
-// genesisIdentity — Persistent Ed25519 identity backed by IndexedDB.
-// The local keypair is the absolute authority for Genesis Sync.
-// Keys are extractable for cross-device portability via JWK export.
+/**
+ * @file genesisIdentity — Persistent Ed25519 identity backed by IndexedDB.
+ *
+ * Key derivation:
+ *   Uses the Web Crypto API (`crypto.subtle`) with the Ed25519 algorithm.
+ *   - `generateKey()` — creates a new extractable Ed25519 keypair
+ *   - Private key is stored as JWK in IndexedDB (DB: "p31-genesis", store: "keys")
+ *   - Public key is exported as raw bytes and encoded as a DID
+ *
+ * DID format:
+ *   `did:key:z6Mk...` — W3C DID Key Method v0.7
+ *   Encoding: raw 32-byte Ed25519 public key prefixed with multicodec varint 0xed01,
+ *   then base58btc-encoded (bs58) and prefixed with `z` (multibase prefix for base58btc).
+ *   Example: did:key:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK
+ *
+ * bs58 implementation:
+ *   Inline minimal encoder/decoder (no external dependency) using the standard
+ *   Bitcoin base58 alphabet: 123456789ABC...XYZ abc...xyz (no 0, O, I, l).
+ *
+ * Cross-device portability:
+ *   `exportIdentityJWK()` — returns the private key as a JWK string for backup
+ *   `importIdentityJWK()` — restores a keypair from a JWK string
+ *   Workflow: operator exports JWK on device A → imports on device B → same DID
+ *
+ * Security note:
+ *   Keys are `extractable: true` by design — sovereignty requires portability.
+ *   IndexedDB is not encrypted at the OS level; the threat model assumes physical
+ *   device security (locked tablet). For higher assurance, see VaultRoom AES-256.
+ */
 
 // ── Minimal BS58 encoder/decoder (avoids external dep) ──
 

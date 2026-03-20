@@ -12,6 +12,7 @@ export const setupSovereignPWA = (setStatus: (s: string) => void) => {
   link.rel = 'manifest';
   link.href = URL.createObjectURL(new Blob([JSON.stringify(manifest)], { type: 'application/json' }));
   document.head.appendChild(link);
+  setTimeout(() => URL.revokeObjectURL(link.href), 100);
 
   const swCode = `
     const CACHE_NAME = 'p31-os-v4';
@@ -23,8 +24,9 @@ export const setupSovereignPWA = (setStatus: (s: string) => void) => {
     });
   `;
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register(URL.createObjectURL(new Blob([swCode], { type: 'application/javascript' })))
-      .then(() => setStatus('ACTIVE (OFFLINE READY)'))
-      .catch(() => setStatus('BLOCKED BY SANDBOX'));
+    const swUrl = URL.createObjectURL(new Blob([swCode], { type: 'application/javascript' }));
+    navigator.serviceWorker.register(swUrl)
+      .then(() => { URL.revokeObjectURL(swUrl); setStatus('ACTIVE (OFFLINE READY)'); })
+      .catch(() => { URL.revokeObjectURL(swUrl); setStatus('BLOCKED BY SANDBOX'); });
   } else setStatus('UNSUPPORTED');
 };

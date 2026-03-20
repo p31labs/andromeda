@@ -82,7 +82,11 @@ export function SierpinskiOverlay({ visible }: SierpinskiOverlayProps) {
         return (
           <div
             key={node.id}
+            role={isDepth0 ? 'button' : undefined}
+            tabIndex={isDepth0 ? 0 : undefined}
+            aria-label={isDepth0 ? node.label : undefined}
             onClick={() => handleNodeClick(node)}
+            onKeyDown={isDepth0 ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleNodeClick(node); } } : undefined}
             style={{
               position: 'absolute',
               left: cx - size / 2,

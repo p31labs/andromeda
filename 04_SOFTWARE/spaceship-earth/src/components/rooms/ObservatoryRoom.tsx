@@ -18,7 +18,6 @@ import {
   createLabelSystem, buildConnectionArc, disposeArc, getGlowTexture,
   type ArcMesh, type LabelSystem,
 } from './observatory-effects';
-import AttractorOverlay from './sovereign/overlays/AttractorOverlay';
 import type { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer.js';
 
 // ═══════════════════════════════════════════════════════════════
@@ -72,12 +71,6 @@ export default function ObservatoryRoom() {
   const [searchQuery, setSearchQuery] = useState('');
   const [stateFilters, setStateFilters] = useState<Set<string>>(new Set());
   const [busFilters, setBusFilters] = useState<Set<string>>(new Set());
-  const [showAttractor, setShowAttractor] = useState(false);
-  
-  // Mark 1 Attractor Simulator state
-  const [entropy, setEntropy] = useState(0.35);
-  const [magneticField, setMagneticField] = useState(50);
-  const [coherence, setCoherence] = useState(4.0);
 
   const connections = useMemo(() => selected ? getConnections(selected.id) : [], [selected]);
 
@@ -538,23 +531,16 @@ export default function ObservatoryRoom() {
         {AXIS_KEYS.map(k => (
           <button key={k} onClick={() => setFilter(filter === k ? null : k)} className="glass-btn" style={{
             background: filter === k ? AXIS_CSS[k] + '22' : 'transparent',
-            borderColor: filter === k ? AXIS_CSS[k] : 'var(--neon-ghost)',
-            color: AXIS_CSS[k], padding: IS_MOBILE ? '6px 10px' : '12px 16px', borderRadius: 'var(--radius-sm)', fontSize: IS_MOBILE ? 9 : 11,
+            border: '1px solid ' + (filter === k ? AXIS_CSS[k] : 'var(--bg-border, rgba(0,255,255,0.1))'),
+            color: AXIS_CSS[k], padding: IS_MOBILE ? '6px 10px' : '16px 20px', 
+            borderRadius: 'var(--radius-md)', fontSize: IS_MOBILE ? 10 : 12,
+            fontFamily: "var(--font-data)", cursor: 'pointer',
+            letterSpacing: 1, textTransform: 'uppercase' as const, transition: 'var(--trans-base)',
             minHeight: 'auto', minWidth: 'auto',
           }}>
             {AXIS_LABELS[k]}
           </button>
         ))}
-        {!IS_MOBILE && (
-          <button onClick={() => setShowAttractor(!showAttractor)} className="glass-btn" style={{
-            background: showAttractor ? 'var(--orange)22' : 'transparent',
-            borderColor: showAttractor ? 'var(--orange)' : 'var(--neon-ghost)',
-            color: showAttractor ? 'var(--orange)' : 'var(--dim)',
-            padding: '12px 16px', borderRadius: 'var(--radius-sm)', fontSize: 11, minHeight: 'auto'
-          }}>
-            {showAttractor ? 'ATTRACTOR ON' : 'ATTRACTOR OFF'}
-          </button>
-        )}
       </div>
 
       {/* ── Count (hidden on mobile) ── */}
@@ -674,18 +660,6 @@ export default function ObservatoryRoom() {
         <div>TAP PANEL</div>
         <div>SCROLL ZOOM</div>
       </div>
-
-      {/* ── Attractor Overlay ── */}
-      <AttractorOverlay
-        show={showAttractor}
-        entropy={entropy}
-        magneticField={magneticField}
-        coherence={coherence}
-        onEntropyChange={setEntropy}
-        onMagneticFieldChange={setMagneticField}
-        onCoherenceChange={setCoherence}
-        onClose={() => setShowAttractor(false)}
-      />
     </div>
   );
 }

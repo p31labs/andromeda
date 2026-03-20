@@ -7,7 +7,7 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "jsx": "react-jsx",
-    "types": ["vite/client"],
+    "types": ["vite/client", "vite-plugin-pwa/client"],
     "paths": {
       "@p31/shared": ["../packages/shared/src"],
       "@p31/shared/*": ["../packages/shared/src/*"],

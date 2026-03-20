@@ -110,8 +110,8 @@ class EventBus {
     this.listeners.get(type)?.forEach((handler) => {
       try {
         (handler as EventHandler<T>)(payload);
-      } catch {
-        // Never let a listener crash the game
+      } catch (err) {
+        console.warn('[EventBus] Listener error swallowed:', err);
       }
     });
   }

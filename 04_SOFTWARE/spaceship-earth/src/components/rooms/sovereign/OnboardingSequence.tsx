@@ -103,7 +103,7 @@ export function OnboardingSequence({ onComplete }: OnboardingProps) {
       onClick={handleTap}
       style={{
         position: 'absolute', inset: 0, zIndex: 35,
-        background: '#000000',
+        background: 'var(--void)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         flexDirection: 'column',
         cursor: 'pointer',
@@ -121,7 +121,7 @@ export function OnboardingSequence({ onComplete }: OnboardingProps) {
         {PHASES.map((p, i) => (
           <div key={p} style={{
             width: 6, height: 6, borderRadius: '50%',
-            background: i <= phaseIdx ? '#00FFFF' : 'rgba(255,255,255,0.15)',
+            background: i <= phaseIdx ? 'var(--cyan)' : 'rgba(255,255,255,0.15)',
             boxShadow: i === phaseIdx ? '0 0 8px #00FFFF' : 'none',
             transition: 'all 0.5s',
           }} />
@@ -146,7 +146,7 @@ export function OnboardingSequence({ onComplete }: OnboardingProps) {
           {/* Dim light */}
           <div style={{
             width: 4, height: 4, borderRadius: '50%',
-            background: '#00FFFF',
+            background: 'var(--cyan)',
             boxShadow: '0 0 20px rgba(0,255,255,0.3), 0 0 60px rgba(0,255,255,0.1)',
             animation: 'pulse-slow 4s ease-in-out infinite',
           }} />
@@ -176,7 +176,7 @@ export function OnboardingSequence({ onComplete }: OnboardingProps) {
           >
             <div style={{
               width: 8, height: 8, borderRadius: '50%',
-              background: '#00FFFF',
+              background: 'var(--cyan)',
               boxShadow: '0 0 12px #00FFFF',
             }} />
           </div>
@@ -192,7 +192,7 @@ export function OnboardingSequence({ onComplete }: OnboardingProps) {
             {[0, 1, 2].map(i => (
               <div key={i} style={{
                 width: 8, height: 8, borderRadius: '50%',
-                background: i < tapCount ? '#00FFFF' : 'rgba(255,255,255,0.1)',
+                background: i < tapCount ? 'var(--cyan)' : 'rgba(255,255,255,0.1)',
                 boxShadow: i < tapCount ? '0 0 8px #00FFFF' : 'none',
                 transition: 'all 0.3s',
               }} />
@@ -219,7 +219,7 @@ export function OnboardingSequence({ onComplete }: OnboardingProps) {
                 border: `1px solid ${i < phaseProgress ? 'rgba(0,255,255,0.6)' : 'rgba(255,255,255,0.08)'}`,
                 background: i < phaseProgress ? 'rgba(0,255,255,0.1)' : 'transparent',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: 9, color: i < phaseProgress ? '#00FFFF' : 'rgba(255,255,255,0.2)',
+                fontSize: 9, color: i < phaseProgress ? 'var(--cyan)' : 'rgba(255,255,255,0.2)',
                 fontFamily: 'monospace', textAlign: 'center',
                 transition: 'all 0.5s',
                 boxShadow: i < phaseProgress ? '0 0 12px rgba(0,255,255,0.2)' : 'none',
@@ -303,7 +303,7 @@ export function OnboardingSequence({ onComplete }: OnboardingProps) {
           ))}
           <div style={{
             marginTop: 16,
-            color: '#00FFFF', fontSize: 14,
+            color: 'var(--cyan)', fontSize: 14,
             letterSpacing: 4, fontWeight: 600,
             textShadow: '0 0 12px rgba(0,255,255,0.5)',
             animation: 'fadeIn 3s ease-out',

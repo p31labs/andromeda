@@ -15,7 +15,7 @@ export type CameraMode = 'free' | 'dome' | 'screen';
 export type ViewPerspective = 'OBSERVER' | 'GODHEAD';
 
 // D1.1: Polymorphic Skin Engine
-export type SkinTheme = 'OPERATOR' | 'KIDS' | 'GRAY_ROCK';
+export type SkinTheme = 'OPERATOR' | 'KIDS' | 'GRAY_ROCK' | 'AURORA';
 
 // M18: Somatic Tether
 export type SomaticStatus = 'disconnected' | 'calibrating' | 'active' | 'stress';
@@ -33,6 +33,21 @@ export interface K4Edge {
   timestamp: number;
   signature: string;
 }
+
+// WCD 15: Relay
+export type RelayStatus = 'disconnected' | 'connecting' | 'connected' | 'error';
+export interface RelayPeer {
+  did: string;
+  room: string | null;
+  lastSeen: number;
+}
+
+// WCD-20: Multiplayer presence
+export interface RemotePeer {
+  room: string | null;
+  lastSeen: number;
+}
+export type CelebrationEvent = 'coherence' | 'covenant';
 
 export interface SovereignState {
   viewMode: ViewMode;
@@ -89,6 +104,7 @@ export interface SovereignState {
 
   // D1.1: Polymorphic Skin Engine
   skinTheme: SkinTheme;
+  accentColor: string;     // CSS hex, e.g. '#00FFFF' — user-selectable primary accent
 
   // D4.6: Sierpinski Progressive Disclosure
   interactedSlots: number[];  // slots user has visited (serializable)
@@ -103,6 +119,20 @@ export interface SovereignState {
 
   // Lock screen (boot sequence)
   shipLocked: boolean;
+
+  // Relay (WCD 15)
+  relayStatus: RelayStatus;
+  relayPing: number;          // RTT in ms; 0 = no measurement yet
+  relayPeers: RelayPeer[];
+  offlineQueueSize: number;   // actions queued while disconnected
+
+  // WCD-20: Multiplayer presence
+  remotePeers: Record<string, RemotePeer>;
+  celebrationPending: boolean;
+
+  // Audio (WCD 18)
+  sfxEnabled: boolean;
+  masterVolume: number;       // 0–1
 
   // Actions (existing)
   setPwaStatus: (status: string) => void;
@@ -142,6 +172,7 @@ export interface SovereignState {
 
   // D1.1: Polymorphic Skin Engine
   setSkinTheme: (theme: SkinTheme) => void;
+  setAccentColor: (hex: string) => void;
 
   // D4.6: Sierpinski Progressive Disclosure
   markSlotInteracted: (slot: number) => void;
@@ -156,4 +187,19 @@ export interface SovereignState {
 
   // Lock screen
   unlockShip: () => void;
+
+  // Relay (WCD 15)
+  setRelayStatus: (status: RelayStatus) => void;
+  setRelayPing: (ms: number) => void;
+  setRelayPeers: (peers: RelayPeer[]) => void;
+  setOfflineQueueSize: (n: number) => void;
+
+  // WCD-20: Multiplayer presence
+  upsertRemotePeer: (did: string, room: string | null, lastSeen: number) => void;
+  triggerCelebration: () => void;
+  clearCelebration: () => void;
+
+  // Audio (WCD 18)
+  setSfxEnabled: (enabled: boolean) => void;
+  setMasterVolume: (v: number) => void;
 }

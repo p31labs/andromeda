@@ -1,6 +1,30 @@
-// D4.1-D4.6: Sierpinski Progressive Disclosure
-// 1:9 Posner topology — Phosphorus Hub (Slot 0) + 9 Calcium Slots
-// Fractal depth 0-2, progressive reveal based on engagement
+/**
+ * @file sierpinskiTopology — Progressive disclosure fractal for Spaceship Earth navigation.
+ *
+ * Posner 1:9 topology:
+ *   Inspired by Matthew Fisher's Posner cluster model (Ca₉(PO₄)₆ — 9 calcium ions
+ *   surrounding a phosphorus core). The UI mirrors this: one phosphorus hub (slot 0)
+ *   surrounded by 9 calcium room slots (slots 1-9).
+ *
+ *   Hub (slot 0) — immutable system controls (Observatory, Bridge, Landing, Copilot)
+ *   Slots 1-9    — one-to-one mapping to the 9 sovereign rooms
+ *
+ * Fractal depth levels:
+ *   Depth 0 — only hub + 9 calcium slots visible (first visit)
+ *   Depth 1 — each slot can expand: shows 3 sub-slots (IFS scale 1/3)
+ *   Depth 2 — full fractal: each sub-slot has 3 more (IFS scale 1/9)
+ *
+ * IFS (Iterated Function System) positioning:
+ *   Slots are placed on a unit circle at angular spacing 2π/9.
+ *   Each child node is positioned at 1/3 the parent's scale, offset by the same
+ *   angular grid. This creates a Sierpinski-triangle-like self-similar structure.
+ *   `SLOT_RADIUS = 0.38` keeps nodes within a normalized [−0.5, 0.5] viewport.
+ *
+ * Progressive reveal:
+ *   `computeRevealState(nodes, interactedSlots)` — sets `revealed = true` and
+ *   lerps `brightness` for slots the user has interacted with. Unvisited depth-2
+ *   slots start hidden (brightness 0) and fade in as neighbouring slots are explored.
+ */
 
 import type { SovereignRoom } from './types';
 

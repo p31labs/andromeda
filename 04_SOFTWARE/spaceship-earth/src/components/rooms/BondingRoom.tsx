@@ -22,7 +22,7 @@ export function BondingRoom({ url }: Props) {
         width: '100%',
         height: '100%',
         border: 'none',
-        background: '#000000',
+        background: 'var(--void)',
       }}
       allow="autoplay; fullscreen"
       sandbox="allow-scripts allow-same-origin allow-popups"

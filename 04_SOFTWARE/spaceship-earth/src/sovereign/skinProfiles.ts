@@ -50,6 +50,16 @@ export const SKIN_PROFILES: Record<SkinTheme, SkinProfile> = {
     scanlineOpacity: 0.0,
     waveformScale: 0.0,
   },
+  AURORA: {
+    emissiveIntensity: 3.5,
+    roughness: 0.1,
+    bloomStrength: 1.2,
+    bloomThreshold: 0.6,
+    fogDensity: 0.025,
+    starOpacity: 0.9,
+    scanlineOpacity: 0.0,
+    waveformScale: 1.5,
+  },
 };
 
 // Lerp speed per second (higher = faster transition)

@@ -1,6 +1,27 @@
-// jitterbugCompiler — Babel Standalone JSX → React component pipeline.
-// Takes raw JSX strings from the Centaur Engine, compiles them via Babel,
-// and mounts them into the dynamic module registry.
+/**
+ * @file jitterbugCompiler — Babel Standalone JSX → React component pipeline.
+ *
+ * Pipeline:
+ *   1. Centaur Engine (LLM) produces raw JSX string (may be wrapped in ```jsx fences)
+ *   2. `compileCentaurCode()` strips fences, transforms via Babel react preset
+ *   3. Transformed code is wrapped in a new Function + eval'd in a controlled scope
+ *      (React, useState, useEffect, etc. injected — no external imports allowed)
+ *   4. Resulting ComponentType is stored in `moduleRegistry` keyed by slot name
+ *   5. SovereignShell reads moduleRegistry to render dynamic slot overlays
+ *
+ * Sandboxing contract:
+ *   - Code runs in the main browser context (NOT an iframe sandbox). This is
+ *     intentional — Centaur-generated components need full DOM access for
+ *     Three.js hooks, AudioContext, etc.
+ *   - Security boundary: only operator-generated code is compiled (no relay input).
+ *   - For untrusted cartridges from external sources, use cartridgeSandbox.ts
+ *     which runs code in an srcdoc iframe with PostMessage telemetry.
+ *
+ * Babel CDN note:
+ *   @babel/standalone (~3MB) is loaded lazily from unpkg on first compilation.
+ *   It is NOT bundled — avoids adding 3MB to the main bundle for an optional feature.
+ *   `ensureBabel()` is idempotent; subsequent calls return immediately.
+ */
 
 import React, { useState } from 'react';
 

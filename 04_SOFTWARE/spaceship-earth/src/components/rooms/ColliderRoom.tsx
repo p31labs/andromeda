@@ -4,18 +4,18 @@
 // P31 brand: #00FF88 green, #00D4FF cyan, #FF00CC magenta, #7A27FF violet, #FFB800 amber.
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 
-const FONT = "'Oxanium', sans-serif";
-const FONT_DATA = "'Space Mono', monospace";
+const FONT = "var(--font-display)";
+const FONT_DATA = "var(--font-data)";
 
-// P31 Neon Phosphor palette
-const VIOLET = '#BF5FFF';
-const MAGENTA = '#FF00FF';
-const CYAN = '#00FFFF';
-const GREEN = '#00FFFF';
-const AMBER = '#FFD700';
-const CORAL = '#FF6B6B';
-const TEXT = '#d8ffd8';
-const DIM = 'rgba(0,255,255,0.18)';
+// P31 Neon Phosphor palette — theme-reactive via CSS variables
+const VIOLET = 'var(--violet)';
+const MAGENTA = 'var(--magenta)';
+const CYAN = 'var(--cyan)';
+const GREEN = 'var(--cyan)';
+const AMBER = 'var(--amber)';
+const CORAL = 'var(--coral)';
+const TEXT = 'var(--text)';
+const DIM = 'var(--neon-faint)';
 
 // ── Element Data ──
 
@@ -604,7 +604,7 @@ export function ColliderRoom() {
   return (
     <div ref={containerRef} style={{
       width: '100%', height: '100%', position: 'relative', overflow: 'hidden',
-      background: '#000000', fontFamily: FONT,
+      background: 'var(--void)', fontFamily: FONT,
     }}>
       {/* Background canvas */}
       <canvas ref={canvasRef} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', zIndex: 0, pointerEvents: 'none' }} />

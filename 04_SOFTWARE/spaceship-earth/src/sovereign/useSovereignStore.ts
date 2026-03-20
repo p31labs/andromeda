@@ -1,7 +1,43 @@
+/**
+ * @file useSovereignStore — Central Zustand v5 state machine for Spaceship Earth.
+ *
+ * Architecture: Single store, no middleware (middleware breaks Zustand v5 curried
+ * type inference). Curried form: `create<T>()((set, get) => ...)`.
+ *
+ * Slice groups (by subsystem milestone):
+ *   UI / Navigation    — viewMode, openOverlay, activeRoom, pwaStatus
+ *   Audio              — audioEnabled
+ *   Coherence / Signal — coherence, noiseFloor (drives Fawn Guard threshold)
+ *   Identity (M01)     — didKey, ucanStatus, isGeneratingIdentity
+ *   CRDT / Telemetry   — crdtVersion, telemetryHashes
+ *   Radio              — bleStatus, loraNodes
+ *   NodeContext bridge — spoons, maxSpoons, tier, love, nodeId (mirrored from NodeContext)
+ *   Centaur Engine     — centaurStatus, centaurLastOutput
+ *   Genesis Sync       — genesisSyncStatus
+ *   Dynamic Slots      — dynamicSlots (Cartridge Drive slot → name mapping)
+ *   Somatic (M18)      — somaticTetherStatus, fawnGuardActive, HR/HRV waveform
+ *   Spatial Mesh (M20) — spatialNodes, spatialTransport, handshake peer discovery
+ *   K4 Handshake (M21) — k4Graph (directed K4), handshakeActive, partnerDID
+ *   Reactor Core (M19) — mintStatus, lastMintNonce
+ *   Skin (D1.1)        — skinTheme (OPERATOR / KIDS / GRAY_ROCK)
+ *   Sierpinski (D4.6)  — interactedSlots, sierpinskiDepth (0-2)
+ *   Camera (D2.1)      — cameraMode, activeScreenIdx, viewPerspective
+ *   Lock Screen        — shipLocked (boot gate until attractor coherence achieved)
+ *
+ * Usage:
+ *   Atomic selectors (no re-render on unrelated state change):
+ *     const openOverlay = useSovereignStore(s => s.openOverlay);
+ *   Imperative read (RAF callbacks — no subscription, no re-render):
+ *     const state = useSovereignStore.getState();
+ *   Multi-value (wrap with useShallow to avoid reference churn):
+ *     const { a, b } = useSovereignStore(useShallow(s => ({ a: s.a, b: s.b })));
+ */
 import { create } from 'zustand';
-import type { SovereignState, SovereignRoom, K4Edge } from './types';
+import type { SovereignState, SovereignRoom, K4Edge, RelayPeer, RelayStatus } from './types';
 import { SOVEREIGN_ROOMS } from './types';
 import { audioEngine, generateDID, hashTelemetry, exportLedgerJSON } from '@p31/shared/sovereign';
+import { trackEvent } from '../services/telemetry';
+import { haptic } from '../services/haptic';
 
 export const useSovereignStore = create<SovereignState>((set, get) => ({
   viewMode: 'cockpit',
@@ -58,6 +94,7 @@ export const useSovereignStore = create<SovereignState>((set, get) => ({
 
   // D1.1: Polymorphic Skin Engine
   skinTheme: 'OPERATOR',
+  accentColor: (() => { try { return localStorage.getItem('p31-accent') ?? '#00FFFF'; } catch { return '#00FFFF'; } })(),
 
   // D4.6: Sierpinski Progressive Disclosure
   interactedSlots: [],
@@ -72,6 +109,20 @@ export const useSovereignStore = create<SovereignState>((set, get) => ({
 
   // Lock screen (boot sequence)
   shipLocked: true,
+
+  // Relay (WCD 15)
+  relayStatus: 'disconnected' as RelayStatus,
+  relayPing: 0,
+  relayPeers: [] as RelayPeer[],
+  offlineQueueSize: 0,
+
+  // WCD-20: Multiplayer presence
+  remotePeers: {},
+  celebrationPending: false,
+
+  // Audio (WCD 18) — persisted in localStorage
+  sfxEnabled: (() => { try { return localStorage.getItem('p31-sfx') !== '0'; } catch { return true; } })(),
+  masterVolume: (() => { try { return parseFloat(localStorage.getItem('p31-vol') ?? '0.6'); } catch { return 0.6; } })(),
 
   setPwaStatus: (status) => set({ pwaStatus: status }),
   toggleView: () => set((state) => ({ viewMode: state.viewMode === 'cockpit' ? 'classic' : 'cockpit' })),
@@ -146,9 +197,11 @@ export const useSovereignStore = create<SovereignState>((set, get) => ({
 
   setGenesisSyncStatus: (status) => set({ genesisSyncStatus: status }),
 
-  mountToSlot: (slot, name) => set((state) => ({
-    dynamicSlots: { ...state.dynamicSlots, [slot]: { name } },
-  })),
+  mountToSlot: (slot, name) => {
+    set((state) => ({ dynamicSlots: { ...state.dynamicSlots, [slot]: { name } } }));
+    trackEvent('cartridge_mount', { slot, name });
+    haptic.snap();
+  },
 
   unmountSlot: (slot) => set((state) => {
     const next = { ...state.dynamicSlots };
@@ -197,6 +250,22 @@ export const useSovereignStore = create<SovereignState>((set, get) => ({
     }
   },
 
+  setAccentColor: (hex) => {
+    set({ accentColor: hex });
+    try { localStorage.setItem('p31-accent', hex); } catch {}
+    if (typeof document === 'undefined') return;
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    const root = document.documentElement.style;
+    root.setProperty('--cyan',       hex);
+    root.setProperty('--neon',       hex);
+    root.setProperty('--neon-dim',   `rgba(${r},${g},${b},0.35)`);
+    root.setProperty('--neon-faint', `rgba(${r},${g},${b},0.08)`);
+    root.setProperty('--neon-ghost', `rgba(${r},${g},${b},0.03)`);
+    root.setProperty('--glow-cyan',  `0 0 6px ${hex}, 0 0 20px rgba(${r},${g},${b},0.3)`);
+  },
+
   // D4.6: Sierpinski Progressive Disclosure
   markSlotInteracted: (slot) => set((state) => ({
     interactedSlots: state.interactedSlots.includes(slot)
@@ -214,4 +283,41 @@ export const useSovereignStore = create<SovereignState>((set, get) => ({
 
   // Lock screen
   unlockShip: () => set({ shipLocked: false }),
+
+  // Relay (WCD 15)
+  setRelayStatus: (status) => set({ relayStatus: status }),
+  setRelayPing: (ms) => set({ relayPing: ms }),
+  setRelayPeers: (peers) => set({ relayPeers: peers }),
+  setOfflineQueueSize: (n) => set({ offlineQueueSize: n }),
+
+  // WCD-20: Multiplayer presence
+  upsertRemotePeer: (did, room, lastSeen) => set((state) => ({
+    remotePeers: { ...state.remotePeers, [did]: { room, lastSeen } },
+  })),
+  triggerCelebration: () => {
+    set({ celebrationPending: true });
+    setTimeout(() => set({ celebrationPending: false }), 2000);
+  },
+  clearCelebration: () => set({ celebrationPending: false }),
+
+  // Audio (WCD 18)
+  setSfxEnabled: (enabled) => {
+    set({ sfxEnabled: enabled });
+    try { localStorage.setItem('p31-sfx', enabled ? '1' : '0'); } catch {}
+  },
+  setMasterVolume: (v) => {
+    const clamped = Math.max(0, Math.min(1, v));
+    set({ masterVolume: clamped });
+    try { localStorage.setItem('p31-vol', String(clamped)); } catch {}
+  },
 }));
+
+/**
+ * Apply persisted theme + accent on first page load.
+ * Call once from main.tsx after the React root mounts.
+ */
+export function initTheme(): void {
+  const { skinTheme, accentColor, setSkinTheme, setAccentColor } = useSovereignStore.getState();
+  setSkinTheme(skinTheme);       // re-applies data-theme attribute
+  setAccentColor(accentColor);   // re-applies CSS vars for persisted accent
+}

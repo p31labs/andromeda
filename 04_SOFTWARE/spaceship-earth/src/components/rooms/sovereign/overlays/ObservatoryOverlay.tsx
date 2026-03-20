@@ -2,8 +2,9 @@
 // Floats at z-10 over the 3D cockpit. Reads/writes observatoryStore.
 // P31 Brand: #00FFFF green on void, Space Mono data font, glow borders.
 
-import { useState, useMemo } from 'react';
+import { useState, useEffect, useMemo, startTransition } from 'react';
 import { useObservatoryStore } from '../observatoryStore';
+import { fetchWeather, type WeatherData } from '../../../../services/weatherClient';
 import {
   VERTICES, EDGES, AXIS_KEYS, AXIS_CSS, AXIS_LABELS, BUS_CSS,
   getDominantAxis, getConnections, getCountdownLabel,
@@ -36,6 +37,17 @@ export function ObservatoryOverlay() {
   } = useObservatoryStore();
 
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [showWeather, setShowWeather] = useState(false);
+  const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
+  const [weatherLoading, setWeatherLoading] = useState(false);
+
+  useEffect(() => {
+    if (!showWeather) return;
+    setWeatherLoading(true);
+    fetchWeather()
+      .then(d => { setWeatherData(d); setWeatherLoading(false); })
+      .catch(() => setWeatherLoading(false));
+  }, [showWeather]);
 
   const connections = useMemo(
     () => selectedNode ? getConnections(selectedNode.id) : [],
@@ -100,7 +112,7 @@ export function ObservatoryOverlay() {
               <div style={{ fontSize: 11, color: DIM, letterSpacing: 1.5, marginBottom: 8, textTransform: 'uppercase' }}>AXIS</div>
               <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                 {AXIS_KEYS.map(k => (
-                  <button key={k} onClick={() => setFilter(filter === k ? null : k)} aria-pressed={filter === k ? 'true' : 'false'} style={{
+                  <button key={k} onClick={() => startTransition(() => setFilter(filter === k ? null : k))} aria-pressed={filter === k ? 'true' : 'false'} style={{
                     background: filter === k ? `${AXIS_CSS[k]}18` : 'rgba(0,0,0,0.4)',
                     border: '1px solid ' + (filter === k ? AXIS_CSS[k] : BORDER),
                     color: AXIS_CSS[k], padding: '10px 16px', borderRadius: 6, fontSize: 14,
@@ -124,7 +136,7 @@ export function ObservatoryOverlay() {
               <input
                 type="text"
                 value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
+                onChange={e => { const v = e.target.value; startTransition(() => setSearchQuery(v)); }}
                 placeholder="search nodes..."
                 aria-label="Search observatory nodes"
                 style={{
@@ -147,7 +159,7 @@ export function ObservatoryOverlay() {
                   const active = stateFilters.has(s);
                   const col = STATE_COLORS[s] ?? DIM;
                   return (
-                    <button key={s} onClick={() => toggleStateFilter(s)} aria-pressed={active ? 'true' : 'false'} style={{
+                    <button key={s} onClick={() => startTransition(() => toggleStateFilter(s))} aria-pressed={active ? 'true' : 'false'} style={{
                       background: active ? `${col}18` : 'rgba(0,0,0,0.4)',
                       border: '1px solid ' + (active ? col : BORDER),
                       color: col, padding: '8px 14px', borderRadius: 6, fontSize: 12,
@@ -173,7 +185,7 @@ export function ObservatoryOverlay() {
                   const active = busFilters.has(b);
                   const col = BUS_CSS[b] || DIM;
                   return (
-                    <button key={b} onClick={() => toggleBusFilter(b)} aria-pressed={active ? 'true' : 'false'} style={{
+                    <button key={b} onClick={() => startTransition(() => toggleBusFilter(b))} aria-pressed={active ? 'true' : 'false'} style={{
                       background: active ? `${col}18` : 'rgba(0,0,0,0.4)',
                       border: '1px solid ' + (active ? col : BORDER),
                       color: col, padding: '8px 14px', borderRadius: 6, fontSize: 12,
@@ -189,6 +201,46 @@ export function ObservatoryOverlay() {
                   );
                 })}
               </div>
+            </div>
+
+            {/* Weather */}
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                <div style={{ fontSize: 11, color: DIM, letterSpacing: 1.5, textTransform: 'uppercase' }}>WEATHER</div>
+                <button
+                  type="button"
+                  onClick={() => setShowWeather(v => !v)}
+                  aria-pressed={showWeather ? 'true' : 'false'}
+                  style={{
+                    background: showWeather ? 'rgba(0,255,255,0.08)' : 'rgba(0,0,0,0.4)',
+                    border: `1px solid ${showWeather ? GREEN : BORDER}`,
+                    color: showWeather ? GREEN : DIM, fontSize: 10, padding: '4px 10px',
+                    borderRadius: 4, cursor: 'pointer', fontFamily: FONT, letterSpacing: 1,
+                  }}
+                >
+                  {showWeather ? 'ON' : 'OFF'}
+                </button>
+              </div>
+              {showWeather && (
+                <div style={{ fontSize: 12, color: GREEN, fontFamily: FONT }}>
+                  {weatherLoading && <div style={{ color: DIM }}>FETCHING…</div>}
+                  {!weatherLoading && weatherData && (
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px 16px' }}>
+                      <div style={{ color: DIM, fontSize: 10, letterSpacing: 1 }}>TEMP</div>
+                      <div style={{ textAlign: 'right' }}>{weatherData.temperature}°F</div>
+                      <div style={{ color: DIM, fontSize: 10, letterSpacing: 1 }}>WIND</div>
+                      <div style={{ textAlign: 'right' }}>{weatherData.windSpeed} mph</div>
+                      <div style={{ color: DIM, fontSize: 10, letterSpacing: 1 }}>HUMIDITY</div>
+                      <div style={{ textAlign: 'right' }}>{weatherData.humidity}%</div>
+                      <div style={{ color: DIM, fontSize: 10, letterSpacing: 1 }}>CONDITIONS</div>
+                      <div style={{ textAlign: 'right', fontSize: 11 }}>{weatherData.condition}</div>
+                    </div>
+                  )}
+                  {!weatherLoading && !weatherData && (
+                    <div style={{ color: '#ff6633', fontSize: 11 }}>FETCH FAILED — CHECK CONNECTION</div>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -241,10 +293,21 @@ export function ObservatoryOverlay() {
           {connections.length > 0 && (
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
               {connections.map((c, i) => (
-                <span key={i} onClick={() => {
-                  const d = VERTICES[c.id];
-                  if (d) setSelected({ id: c.id, label: d[0], a: d[1], b: d[2], c: d[3], d: d[4], state: d[5], bus: d[6], notes: d[7] });
-                }} style={{
+                <span key={i}
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => {
+                    const d = VERTICES[c.id];
+                    if (d) setSelected({ id: c.id, label: d[0], a: d[1], b: d[2], c: d[3], d: d[4], state: d[5], bus: d[6], notes: d[7] });
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      const d = VERTICES[c.id];
+                      if (d) setSelected({ id: c.id, label: d[0], a: d[1], b: d[2], c: d[3], d: d[4], state: d[5], bus: d[6], notes: d[7] });
+                    }
+                  }}
+                  style={{
                   fontSize: 12, padding: '8px 12px', borderRadius: 6, cursor: 'pointer',
                   background: GLASS, backdropFilter: 'blur(12px)', border: `1px solid ${BORDER}`,
                   color: AXIS_CSS[c.axis], letterSpacing: 0.5,

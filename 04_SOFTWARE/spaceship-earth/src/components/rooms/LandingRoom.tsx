@@ -19,15 +19,15 @@ const QG = {
 };
 
 const CSS = {
-  bg: '#000000', bg1: '#000000', bg2: '#0a0a0a', bg3: '#111111',
-  border: 'rgba(0,255,255,0.06)', borderHi: 'rgba(0,255,255,0.12)',
-  teal: '#00FFFF', tealD: 'rgba(0,255,255,0.1)',
-  green: '#00FFFF', greenD: 'rgba(0,255,255,0.05)',
-  amber: '#FFD700', amberD: 'rgba(255,215,0,0.1)',
+  bg: 'var(--void)', bg1: 'var(--s1)', bg2: 'var(--s2)', bg3: 'var(--s3)',
+  border: 'var(--neon-faint)', borderHi: 'rgba(0,255,255,0.12)',
+  teal: 'var(--cyan)', tealD: 'rgba(0,255,255,0.1)',
+  green: 'var(--cyan)', greenD: 'rgba(0,255,255,0.05)',
+  amber: 'var(--amber)', amberD: 'rgba(255,215,0,0.1)',
   red: '#FF4444', redD: 'rgba(255,68,68,0.08)',
-  violet: '#BF5FFF', violetD: 'rgba(191,95,255,0.1)',
-  txt: '#d8ffd8', txtD: '#3a7a3a', txtDD: '#1a4a1a',
-  mono: "'Menlo','Consolas','Courier New',monospace",
+  violet: 'var(--violet)', violetD: 'rgba(191,95,255,0.1)',
+  txt: 'var(--text)', txtD: '#3a7a3a', txtDD: '#1a4a1a',
+  mono: "var(--font-data)",
 };
 
 // ── Default Files ──
@@ -662,7 +662,7 @@ export function LandingRoom() {
     c.scale(2, 2);
     const w = canvas.clientWidth, h = canvas.clientHeight;
     const labels = ['\u03B1', '\u03B2', '\u03B3', '\u03B4'];
-    const colors = ['#00FFFF', '#00FFFF', '#FFD700', '#BF5FFF'];
+    const colors = [CSS.teal, CSS.green, CSS.amber, CSS.violet];
     const cx = w / 2, cy = h / 2, r = Math.min(w, h) * 0.35;
 
     function frame() {
@@ -750,7 +750,7 @@ export function LandingRoom() {
 
   // ── Lang dot color ──
   const langDot = (f: string) => {
-    if (f.endsWith('.ts') || f.endsWith('.js')) return '#00FFFF';
+    if (f.endsWith('.ts') || f.endsWith('.js')) return CSS.teal;
     if (f.endsWith('.json')) return CSS.amber;
     return CSS.txtD;
   };
@@ -860,7 +860,7 @@ export function LandingRoom() {
 
       {/* ══════════ WS: VIEWPORT — Quantum Field ══════════ */}
       <div style={{ ...panelBase, display: workspace === 'viewport' ? 'flex' : 'none' }}>
-        <canvas ref={vpCanvasRef} style={{ width: '100%', height: '100%', flex: 1, display: 'block', background: '#000000', touchAction: 'none' }} />
+        <canvas ref={vpCanvasRef} style={{ width: '100%', height: '100%', flex: 1, display: 'block', background: CSS.bg, touchAction: 'none' }} />
 
         {/* Top-left telemetry */}
         <div style={{

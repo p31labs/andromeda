@@ -26,14 +26,14 @@ const SovereignRoom = lazy(() => import('./sovereign/SovereignRoom').then(m => (
 
 // ── Room persistence ──
 
-const STORAGE_KEY = 'p31-spaceship-room';
+const STORAGE_KEY = 'p31-spaceship-room-v2';
 
 function getPersistedRoom(): RoomId {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored && ROOMS.some(r => r.id === stored)) return stored as RoomId;
   } catch {}
-  return 'observatory';
+  return 'sovereign';
 }
 
 function persistRoom(id: RoomId) {

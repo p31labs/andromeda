@@ -1,14 +1,16 @@
 export async function generateDID(): Promise<string> {
   const rawBytes = crypto.getRandomValues(new Uint8Array(32));
-  const hex = Array.from(rawBytes).map(b => b.toString(16).padStart(2, '0')).join('').substring(0, 32);
+  const hex = Array.from(rawBytes).map(b => b.toString(16).padStart(2, '0')).join('');
   return `did:key:z6Mk${hex}`;
 }
 
 export async function hashTelemetry(didKey: string, activeRoom: string): Promise<string> {
-  const payload = Date.now().toString() + didKey + activeRoom;
+  const nonce = Array.from(crypto.getRandomValues(new Uint8Array(8)))
+    .map(b => b.toString(16).padStart(2, '0')).join('');
+  const payload = Date.now().toString() + nonce + didKey + activeRoom;
   const data = new TextEncoder().encode(payload);
   const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-  return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('').substring(0, 16);
+  return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('').substring(0, 32);
 }
 
 export function exportLedgerJSON(didKey: string, telemetryHashes: string[]) {
