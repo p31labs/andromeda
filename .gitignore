@@ -61,3 +61,68 @@ P31\ Data*.txt
 
 # Stale merge artifacts
 temp_merge_backup/
+
+# Binary tools - use package managers instead
+*.exe
+node.exe
+npm
+npm.cmd
+npm.ps1
+npx
+npx.cmd
+npx.ps1
+corepack
+corepack.cmd
+espefuse.exe
+espsecure.exe
+esptool.exe
+esp_rfc2217_server.exe
+
+# ESP-IDF and toolchains - clone separately
+esp-idf-v5.5.3/
+
+# Large firmware projects - use submodules
+GrokPhenix/
+05_FIRMWARE/maker-variant/
+05_FIRMWARE/nodezero-hal/
+
+# Node firmware variants
+node_one_firmware/
+phenix-xiaozhi-v2/
+
+# External SDKs
+p31-sovereign-sdk/
+p31-buffer/
+p31ca/
+/love-ledger/
+donation-wallet-v2/
+
+# WCD duplicates in root - keep in WCDs/ only
+/WCDs/eslint.config.mjs
+/WCDs/*_corrected*
+/WCDs/*_verified*
+/WCDs/compass_artifact*
+/WCDs/PHASE2_PATCH*
+
+# Cloudflare Workers
+phosphorus31.org/planetary-planet/wrangler.toml
+phosphorus31.org/planetary-planet/src/store/
+phosphorus31.org/planetary-planet/src/worker/
+
+# Malformed filenames (Windows copy-paste errors)
+*\ \&\ cp*
+
+# Package lock - use yarn/pnpm or commit intentionally
+package-lock.json
+
+# Research and documentation
+02_RESEARCH/
+LICENSE
+P31-OS-Sovereign-Stack-Spec.md
+P31-Operations/
+REVIEW_SHIFT_REPORT.md
+
+# ESP-IDF project config
+esp_idf_project_configuration.json
+install_tools.bat
+nodevars.bat

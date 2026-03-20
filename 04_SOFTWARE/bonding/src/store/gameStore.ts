@@ -1053,9 +1053,11 @@ export const useGameStore = create<GameStore>()((set, get) => ({
     }, toast.duration);
   },
 
-  // ── WCD-27 Option C: "Build Next" — clear canvas, start fresh ──
-  // Same as "Build Another" but fires a molecule fact toast first.
-  // Replaces WCD-26's broken extension-point approach.
+  // ── WCD-27 Option C: "Build Next" — clear canvas, start fresh molecule ──
+  // A saturated molecule has NO open bond sites. Keeping atoms on canvas causes
+  // new atoms to land disconnected (no ghost site → no bond → polluted formula).
+  // Option C (recommended for ship): identical to "Build Another" but fires a
+  // molecule fact toast so the transition feels intentional, not like a reset.
 
   continueBuilding: () => {
     const formula = generateFormula(get().atoms);
