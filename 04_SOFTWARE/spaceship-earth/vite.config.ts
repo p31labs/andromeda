@@ -15,7 +15,9 @@ export default defineConfig({
       brotliSize: true,
     }),
     VitePWA({
-      registerType: 'autoUpdate',
+      // 'prompt' — shows an in-app update toast instead of silently reloading.
+      // The PwaUpdateToast component (see src/components/PwaUpdateToast.tsx) handles it.
+      registerType: 'prompt',
       includeAssets: ['favicon.ico', 'icons/*.png'],
       manifest: {
         name: 'SPACESHIP EARTH — P31 Labs',
@@ -25,22 +27,10 @@ export default defineConfig({
         background_color: '#000000',
         display: 'standalone',
         icons: [
-          {
-            src: 'icons/icon-192.png',
-            sizes: '192x192',
-            type: 'image/png'
-          },
-          {
-            src: 'icons/icon-512.png',
-            sizes: '512x512',
-            type: 'image/png'
-          },
-          {
-            src: 'icons/icon-512.png',
-            sizes: '512x512',
-            type: 'image/png',
-            purpose: 'any maskable'
-          }
+          { src: 'icons/icon-192.png', sizes: '192x192', type: 'image/png' },
+          { src: 'icons/icon-512.png', sizes: '512x512', type: 'image/png' },
+          { src: 'icons/icon-maskable-192.png', sizes: '192x192', type: 'image/png', purpose: 'maskable' },
+          { src: 'icons/icon-maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
         ]
       },
       workbox: {
@@ -97,10 +87,10 @@ export default defineConfig({
     cssMinify: true,
     rollupOptions: {
       output: {
-        manualChunks: {
-          'vendor-react': ['react', 'react-dom'],
-          'vendor-three': ['three', '@react-three/fiber', '@react-three/drei'],
-          'vendor-utils': ['zustand'],
+        manualChunks(id) {
+          if (id.includes('node_modules/react/') || id.includes('node_modules/react-dom/')) return 'vendor-react';
+          if (id.includes('node_modules/three/') || id.includes('node_modules/@react-three/')) return 'vendor-three';
+          if (id.includes('node_modules/zustand/')) return 'vendor-utils';
         },
       },
     },
