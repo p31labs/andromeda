@@ -1,20 +1,26 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { useSovereignStore } from '../../../sovereign/useSovereignStore';
+import { useShallow } from 'zustand/shallow';
 import { useNode } from '../../../contexts/NodeContext';
 import * as genesis from '../../../services/genesisIdentity';
+import { loadLLMConfig, saveLLMConfig } from '../../../services/llmClient';
 
 export const ClassicDiagnosticUI = () => {
   const {
     didKey, ucanStatus, crdtVersion, telemetryHashes, bleStatus, loraNodes, pwaStatus, audioEnabled,
     activeRoom, initIdentity, connectBLE, appendTelemetry, initAudio, exportLedger,
     genesisSyncStatus,
-  } = useSovereignStore();
+  } = useSovereignStore(useShallow(s => ({
+    didKey: s.didKey, ucanStatus: s.ucanStatus, crdtVersion: s.crdtVersion,
+    telemetryHashes: s.telemetryHashes, bleStatus: s.bleStatus, loraNodes: s.loraNodes,
+    pwaStatus: s.pwaStatus, audioEnabled: s.audioEnabled, activeRoom: s.activeRoom,
+    initIdentity: s.initIdentity, connectBLE: s.connectBLE, appendTelemetry: s.appendTelemetry,
+    initAudio: s.initAudio, exportLedger: s.exportLedger, genesisSyncStatus: s.genesisSyncStatus,
+  })));
 
   const { nodeId, vaultLayerCount, exportVaultBundle, protocolWallet, protocolTxCount, vaultSync } = useNode();
 
-  const [llmKey, setLlmKey] = useState(() => {
-    try { return localStorage.getItem('p31_llm_key') ?? ''; } catch { return ''; }
-  });
+  const [llmKey, setLlmKey] = useState('');
   const [showKey, setShowKey] = useState(false);
   const [llmEngine, setLlmEngine] = useState(() => {
     try { return localStorage.getItem('p31_llm_engine') ?? 'claude-sonnet'; } catch { return 'claude-sonnet'; }
@@ -25,6 +31,11 @@ export const ClassicDiagnosticUI = () => {
   const [lastExport, setLastExport] = useState<string | null>(null);
   const [syncLogTick, setSyncLogTick] = useState(0);
   const syncLogRef = useRef<HTMLDivElement>(null);
+
+  // Load encrypted API key on mount (migrates legacy plaintext key if present)
+  useEffect(() => {
+    loadLLMConfig().then(cfg => { if (cfg.apiKey) setLlmKey(cfg.apiKey); }).catch(() => {});
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => setSyncLogTick((t) => t + 1), 3000);
@@ -145,10 +156,10 @@ export const ClassicDiagnosticUI = () => {
     background: on ? '#7DDFB6' : '#F08080',
     boxShadow: on ? '0 0 6px #7DDFB6' : 'none',
   });
-  const lbl: React.CSSProperties = { color: '#7878AA', fontSize: 'clamp(8px, 1.1vh, 10px)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 };
+  const lbl: React.CSSProperties = { color: 'var(--dim)', fontSize: 'clamp(8px, 1.1vh, 10px)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 };
   const val = (c: string): React.CSSProperties => ({ color: c, fontWeight: 600, fontSize: 'clamp(10px, 1.3vh, 13px)' });
   const card: React.CSSProperties = {
-    background: '#000000', borderRadius: 10, padding: 'clamp(8px, 1.4vh, 16px)',
+    background: 'var(--void)', borderRadius: 10, padding: 'clamp(8px, 1.4vh, 16px)',
     display: 'flex', flexDirection: 'column', overflow: 'hidden', minHeight: 0,
   };
   const cardHead = (c: string): React.CSSProperties => ({
@@ -163,7 +174,7 @@ export const ClassicDiagnosticUI = () => {
     letterSpacing: '0.03em', fontFamily: 'inherit', flexShrink: 0,
   });
   const infoBox: React.CSSProperties = {
-    background: '#000000', borderRadius: 6, padding: 'clamp(4px, 0.6vh, 8px)',
+    background: 'var(--void)', borderRadius: 6, padding: 'clamp(4px, 0.6vh, 8px)',
     border: '1px solid rgba(0,255,255,0.08)',
   };
 
@@ -173,7 +184,7 @@ export const ClassicDiagnosticUI = () => {
   return (
     <div style={{
       position: 'absolute', inset: 0, zIndex: 10,
-      background: '#000000', color: '#d8ffd8',
+      background: 'var(--void)', color: 'var(--text)',
       fontFamily: "'Oxanium', sans-serif",
       marginTop: 44,
       display: 'flex', flexDirection: 'column',
@@ -197,7 +208,7 @@ export const ClassicDiagnosticUI = () => {
           } as React.CSSProperties}>
             Dev Menu
           </span>
-          <span style={{ fontSize: 'clamp(9px, 1.1vh, 12px)', color: '#7878AA', marginLeft: 12 }}>
+          <span style={{ fontSize: 'clamp(9px, 1.1vh, 12px)', color: 'var(--dim)', marginLeft: 12 }}>
             P31-OS &middot; {activeRoom}
           </span>
         </div>
@@ -206,13 +217,13 @@ export const ClassicDiagnosticUI = () => {
             type="button"
             onClick={initAudio}
             disabled={audioEnabled}
-            style={{ ...btn('#BF5FFF'), opacity: audioEnabled ? 0.4 : 1 }}
+            style={{ ...btn('var(--violet)'), opacity: audioEnabled ? 0.4 : 1 }}
           >
             {audioEnabled ? 'Sound On' : 'Enable Sound'}
           </button>
           <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 'clamp(9px, 1.1vh, 11px)' }}>
             <span style={dot(pwaStatus.includes('ACTIVE'))} />
-            <span style={{ color: pwaStatus.includes('ACTIVE') ? '#7DDFB6' : '#FFD700', fontWeight: 600 }}>
+            <span style={{ color: pwaStatus.includes('ACTIVE') ? '#7DDFB6' : 'var(--amber)', fontWeight: 600 }}>
               {pwaStatus.includes('ACTIVE') ? 'Offline Ready' : pwaStatus}
             </span>
           </div>
@@ -229,7 +240,7 @@ export const ClassicDiagnosticUI = () => {
       }}>
         {/* ── 1. Centaur Engine ── */}
         <div style={{ ...card, border: '1px solid rgba(0,255,255,0.15)' }}>
-          <div style={cardHead('#BF5FFF')}>Centaur Engine</div>
+          <div style={cardHead('var(--violet)')}>Centaur Engine</div>
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 'clamp(3px, 0.5vh, 8px)', minHeight: 0 }}>
             <div style={{ display: 'flex', alignItems: 'center' }}>
               <span style={dot(!!llmKey)} />
@@ -244,7 +255,7 @@ export const ClassicDiagnosticUI = () => {
                 style={{
                   width: '100%', padding: 'clamp(3px, 0.4vh, 6px) 6px',
                   fontSize: 'clamp(10px, 1.2vh, 12px)',
-                  background: '#000000', color: '#BF5FFF',
+                  background: 'var(--void)', color: 'var(--violet)',
                   border: '1px solid rgba(0,255,255,0.2)',
                   borderRadius: 5, fontFamily: 'inherit', appearance: 'auto',
                 }}
@@ -258,7 +269,7 @@ export const ClassicDiagnosticUI = () => {
                 <span style={lbl}>API Key</span>
                 <button type="button" onClick={() => setShowKey(v => !v)} style={{
                   background: 'transparent', border: 'none', cursor: 'pointer',
-                  color: '#7878AA', fontSize: 'clamp(7px, 0.9vh, 9px)', letterSpacing: '0.06em',
+                  color: 'var(--dim)', fontSize: 'clamp(7px, 0.9vh, 9px)', letterSpacing: '0.06em',
                 }}>{showKey ? 'HIDE' : 'SHOW'}</button>
               </div>
               <input
@@ -267,7 +278,8 @@ export const ClassicDiagnosticUI = () => {
                 onChange={(e) => {
                   const v = e.target.value;
                   setLlmKey(v);
-                  try { localStorage.setItem('p31_llm_key', v); } catch {}
+                  // Persist via AES-GCM encrypted storage (key in IndexedDB)
+                  loadLLMConfig().then(cfg => saveLLMConfig({ ...cfg, apiKey: v })).catch(() => {});
                 }}
                 placeholder={llmEngine === 'claude-sonnet' ? 'sk-ant-...' : 'AI...'}
                 autoComplete="off"
@@ -275,7 +287,7 @@ export const ClassicDiagnosticUI = () => {
                 style={{
                   width: '100%', padding: 'clamp(3px, 0.4vh, 6px) 6px',
                   fontSize: 'clamp(10px, 1.2vh, 12px)',
-                  background: '#000000', color: '#d8ffd8',
+                  background: 'var(--void)', color: 'var(--text)',
                   border: '1px solid rgba(0,255,255,0.15)',
                   borderRadius: 5, fontFamily: "'Space Mono', monospace",
                   boxSizing: 'border-box',
@@ -290,7 +302,7 @@ export const ClassicDiagnosticUI = () => {
 
         {/* ── 2. Identity ── */}
         <div style={{ ...card, border: '1px solid rgba(255,105,180,0.15)' }}>
-          <div style={cardHead('#FF00FF')}>Identity</div>
+          <div style={cardHead('var(--magenta)')}>Identity</div>
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 'clamp(2px, 0.4vh, 6px)', minHeight: 0 }}>
             <div style={{ display: 'flex', alignItems: 'center' }}>
               <span style={dot(didInitialized)} />
@@ -303,7 +315,7 @@ export const ClassicDiagnosticUI = () => {
             </div>
             <div style={{ ...infoBox, flex: 1, minHeight: 0, overflow: 'hidden' }}>
               <div style={lbl}>DID Key</div>
-              <div style={{ fontSize: 'clamp(8px, 1vh, 11px)', color: didInitialized ? '#BF5FFF' : '#554466', wordBreak: 'break-all', lineHeight: 1.3 }}>
+              <div style={{ fontSize: 'clamp(8px, 1vh, 11px)', color: didInitialized ? 'var(--violet)' : '#554466', wordBreak: 'break-all', lineHeight: 1.3 }}>
                 {didShort}
               </div>
               {nodeId && (
@@ -319,9 +331,9 @@ export const ClassicDiagnosticUI = () => {
               </div>
             )}
             <div style={{ display: 'flex', gap: 4, flexShrink: 0 }}>
-              <button type="button" onClick={initIdentity} style={{ ...btn('#FF00FF'), flex: 1 }}>Create</button>
+              <button type="button" onClick={initIdentity} style={{ ...btn('var(--magenta)'), flex: 1 }}>Create</button>
               <button type="button" onClick={handleExportJWK} disabled={!didInitialized} style={{ ...btn('#4ecdc4'), flex: 1, opacity: didInitialized ? 1 : 0.3 }}>Export</button>
-              <button type="button" onClick={() => importRef.current?.click()} style={{ ...btn('#FFD700'), flex: 1 }}>Import</button>
+              <button type="button" onClick={() => importRef.current?.click()} style={{ ...btn('var(--amber)'), flex: 1 }}>Import</button>
               <input ref={importRef} type="file" accept=".json,.jwk" title="Import JWK identity file" onChange={handleImportJWK} style={{ display: 'none' }} />
             </div>
           </div>
@@ -329,26 +341,26 @@ export const ClassicDiagnosticUI = () => {
 
         {/* ── 3. Connections ── */}
         <div style={{ ...card, border: '1px solid rgba(0,229,255,0.15)' }}>
-          <div style={cardHead('#00FFFF')}>Connections</div>
+          <div style={cardHead('var(--cyan)')}>Connections</div>
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 'clamp(3px, 0.5vh, 8px)', minHeight: 0 }}>
             <div style={infoBox}>
               <div style={lbl}>Bluetooth</div>
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <span style={dot(bleConnected)} />
-                <span style={val(bleConnected ? '#7DDFB6' : '#FFD700')}>{bleConnected ? 'Connected' : 'Disconnected'}</span>
+                <span style={val(bleConnected ? '#7DDFB6' : 'var(--amber)')}>{bleConnected ? 'Connected' : 'Disconnected'}</span>
               </div>
             </div>
             <div style={infoBox}>
               <div style={lbl}>Nearby Devices</div>
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <span style={dot(bleConnected)} />
-                <span style={val(bleConnected ? '#00FFFF' : '#554466')}>
+                <span style={val(bleConnected ? 'var(--cyan)' : '#554466')}>
                   {bleConnected ? `${loraNodes} found` : 'Searching...'}
                 </span>
               </div>
             </div>
             <div style={{ flex: 1 }} />
-            <button type="button" onClick={connectBLE} style={btn('#00FFFF')}>Connect Device</button>
+            <button type="button" onClick={connectBLE} style={btn('var(--cyan)')}>Connect Device</button>
           </div>
         </div>
 
@@ -359,7 +371,7 @@ export const ClassicDiagnosticUI = () => {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(2px, 0.3vh, 6px)', fontSize: 'clamp(9px, 1.1vh, 11px)' }}>
               <div><span style={lbl}>Layers</span> <span style={val('#ff9944')}>{vaultLayerCount}</span></div>
               <div><span style={lbl}>Encryption</span> <span style={val('#44ffaa')}>AES-256</span></div>
-              <div><span style={lbl}>LOVE</span> <span style={val('#BF5FFF')}>{protocolWallet ? protocolWallet.totalEarned.toFixed(1) : '0.0'}</span></div>
+              <div><span style={lbl}>LOVE</span> <span style={val('var(--violet)')}>{protocolWallet ? protocolWallet.totalEarned.toFixed(1) : '0.0'}</span></div>
               <div><span style={lbl}>Tx</span> <span style={val('#44aaff')}>{protocolTxCount}</span></div>
             </div>
             <div style={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
@@ -371,7 +383,7 @@ export const ClassicDiagnosticUI = () => {
                     fontSize: 'clamp(9px, 1vh, 11px)', padding: 'clamp(1px, 0.2vh, 3px) 0',
                     borderBottom: '1px solid rgba(0,255,255,0.04)',
                   }}>
-                    <span style={{ color: '#7878AA' }}>{layer}</span>
+                    <span style={{ color: 'var(--dim)' }}>{layer}</span>
                     <span style={{ color: c[layer], fontSize: 'clamp(7px, 0.9vh, 9px)', fontWeight: 600, letterSpacing: 1 }}>LOCKED</span>
                   </div>
                 );
@@ -381,7 +393,7 @@ export const ClassicDiagnosticUI = () => {
               <button type="button" onClick={handleVaultExport} disabled={exporting || !nodeId} style={{ ...btn('#ff4466'), flex: 1, opacity: (exporting || !nodeId) ? 0.4 : 1 }}>
                 {exporting ? 'Exporting...' : 'Disclosure'}
               </button>
-              <button type="button" onClick={handleDaubertExport} style={{ ...btn('#FFD700'), flex: 1 }}>Daubert</button>
+              <button type="button" onClick={handleDaubertExport} style={{ ...btn('var(--amber)'), flex: 1 }}>Daubert</button>
             </div>
             {lastExport && <div style={{ fontSize: 'clamp(7px, 0.8vh, 9px)', color: '#4A4A7A', textAlign: 'center' }}>Exported: {new Date(lastExport).toLocaleTimeString()}</div>}
           </div>
@@ -389,12 +401,12 @@ export const ClassicDiagnosticUI = () => {
 
         {/* ── 5. Data ── */}
         <div style={{ ...card, border: '1px solid rgba(255,170,0,0.15)' }}>
-          <div style={cardHead('#FFD700')}>Data</div>
+          <div style={cardHead('var(--amber)')}>Data</div>
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 'clamp(2px, 0.4vh, 6px)', minHeight: 0 }}>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 4, fontSize: 'clamp(9px, 1.1vh, 11px)' }}>
-              <div><span style={lbl}>Engine</span> <span style={val('#BF5FFF')}>Automerge</span></div>
-              <div><span style={lbl}>Storage</span> <span style={val('#BF5FFF')}>Local</span></div>
-              <div><span style={lbl}>Version</span> <span style={val('#FFD700')}>v{crdtVersion}</span></div>
+              <div><span style={lbl}>Engine</span> <span style={val('var(--violet)')}>Automerge</span></div>
+              <div><span style={lbl}>Storage</span> <span style={val('var(--violet)')}>Local</span></div>
+              <div><span style={lbl}>Version</span> <span style={val('var(--amber)')}>v{crdtVersion}</span></div>
             </div>
             <div style={{ ...infoBox, flex: 1, minHeight: 0, overflow: 'auto' }}>
               <div style={lbl}>Activity Log</div>
@@ -403,14 +415,14 @@ export const ClassicDiagnosticUI = () => {
               ) : (
                 <div style={{ fontSize: 'clamp(9px, 1vh, 11px)' }}>
                   {telemetryHashes.map((hash: string, i: number) => (
-                    <div key={i} style={{ color: i % 2 === 0 ? '#FFD700' : '#BF5FFF', opacity: 1 - (i * 0.15) }}>{hash}...</div>
+                    <div key={i} style={{ color: i % 2 === 0 ? 'var(--amber)' : 'var(--violet)', opacity: 1 - (i * 0.15) }}>{hash}...</div>
                   ))}
                 </div>
               )}
             </div>
             <div style={{ display: 'flex', gap: 4, flexShrink: 0 }}>
-              <button type="button" onClick={appendTelemetry} style={{ ...btn('#FFD700'), flex: 1 }}>Record</button>
-              <button type="button" disabled={telemetryHashes.length === 0} onClick={exportLedger} style={{ ...btn('#BF5FFF'), flex: 1, opacity: telemetryHashes.length === 0 ? 0.3 : 1 }}>Export</button>
+              <button type="button" onClick={appendTelemetry} style={{ ...btn('var(--amber)'), flex: 1 }}>Record</button>
+              <button type="button" disabled={telemetryHashes.length === 0} onClick={exportLedger} style={{ ...btn('var(--violet)'), flex: 1, opacity: telemetryHashes.length === 0 ? 0.3 : 1 }}>Export</button>
             </div>
           </div>
         </div>
@@ -438,7 +450,7 @@ export const ClassicDiagnosticUI = () => {
                 flex: 1, minHeight: 0, overflow: 'auto',
                 fontSize: 'clamp(8px, 1vh, 10px)',
                 fontFamily: "'Space Mono', monospace",
-                background: '#000000', borderRadius: 6, padding: 'clamp(4px, 0.5vh, 8px)',
+                background: 'var(--void)', borderRadius: 6, padding: 'clamp(4px, 0.5vh, 8px)',
                 border: '1px solid rgba(68,170,255,0.1)',
               }}
             >
@@ -447,7 +459,7 @@ export const ClassicDiagnosticUI = () => {
               ) : (
                 syncEvents.map((ev, i) => {
                   const ts = ev.timestamp.split('T')[1]?.split('.')[0] ?? ev.timestamp;
-                  const dirColor = ev.direction === 'push' ? '#7DDFB6' : '#FFD700';
+                  const dirColor = ev.direction === 'push' ? '#7DDFB6' : 'var(--amber)';
                   const hashShort = ev.serverHash.length > 12 ? ev.serverHash.slice(0, 12) + '..' : ev.serverHash;
                   return (
                     <div key={`${ev.timestamp}-${i}`} style={{

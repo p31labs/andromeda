@@ -5,6 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <!--
+      Content Security Policy — WCD-30
+      Notes:
+        'unsafe-inline' (script): Vite module preload injections in production build.
+        'unsafe-eval'  (script): Babel standalone (Jitterbug cartridge compiler)
+                                  uses Function() internally to parse/transform code.
+        'unsafe-inline' (style): Inline styles throughout the component tree.
+        connect-src https: wss:: User-configured LLM endpoints + relay WebSocket.
+        frame-src blob::  Cartridge srcdoc iframes + Bonding overlay iframe.
+        frame-ancestors:  Must be set via HTTP header (Cloudflare Pages _headers),
+                          not meta tag — see public/_headers.
+    -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https: wss: blob: data:; worker-src 'self' blob:; frame-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self';" />
     <title>Spaceship Earth — P31 Labs</title>
     <style>
       * { margin: 0; padding: 0; box-sizing: border-box; }

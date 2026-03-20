@@ -5,6 +5,7 @@ import React, { useCallback, useState, useEffect, useRef } from 'react';
 import { useNode } from '../../contexts/NodeContext';
 import { useSovereignStore } from '../../sovereign/useSovereignStore';
 import * as genesis from '../../services/genesisIdentity';
+import { loadLLMConfig, saveLLMConfig } from '../../services/llmClient';
 
 type ScopeTier = 'REFLEX' | 'PATTERN' | 'FULL';
 
@@ -107,9 +108,7 @@ export function VaultRoom({ tier }: Props) {
   const [lastExport, setLastExport] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [didCopied, setDidCopied] = useState(false);
-  const [llmKey, setLlmKey] = useState(() => {
-    try { return localStorage.getItem('p31_llm_key') ?? ''; } catch { return ''; }
-  });
+  const [llmKey, setLlmKey] = useState('');
   const [showKey, setShowKey] = useState(false);
   const [llmEngine, setLlmEngine] = useState(() => {
     try { return localStorage.getItem('p31_llm_engine') ?? 'claude-sonnet'; } catch { return 'claude-sonnet'; }
@@ -120,6 +119,11 @@ export function VaultRoom({ tier }: Props) {
   const syncLogRef = useRef<HTMLDivElement>(null);
 
   const displayHash = useHashScramble(nodeId);
+
+  // Load encrypted API key on mount (migrates legacy plaintext key if present)
+  useEffect(() => {
+    loadLLMConfig().then(cfg => { if (cfg.apiKey) setLlmKey(cfg.apiKey); }).catch(() => {});
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => setSyncLogTick((t) => t + 1), 3000);
@@ -197,7 +201,8 @@ export function VaultRoom({ tier }: Props) {
   const handleKeyChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const v = e.target.value;
     setLlmKey(v);
-    try { localStorage.setItem('p31_llm_key', v); } catch {}
+    // Persist via AES-GCM encrypted storage (key in IndexedDB, cipher in localStorage)
+    loadLLMConfig().then(cfg => saveLLMConfig({ ...cfg, apiKey: v })).catch(() => {});
   }, []);
 
   const handleExport = useCallback(async () => {
@@ -269,7 +274,7 @@ export function VaultRoom({ tier }: Props) {
           <div style={{ display: 'flex', gap: 8 }}>
             <button onClick={handleExportJWK} className="glass-btn" style={{ flex: 1, fontSize: 10, minHeight: 'auto', padding: '6px 0' }}>EXPORT IDENTITY</button>
             <button onClick={() => importRef.current?.click()} className="glass-btn" style={{ flex: 1, fontSize: 10, minHeight: 'auto', padding: '6px 0' }}>IMPORT IDENTITY</button>
-            <input type="file" ref={importRef} style={{ display: 'none' }} accept=".json" onChange={handleImportJWK} />
+            <input type="file" ref={importRef} aria-label="Import identity JSON file" style={{ display: 'none' }} accept=".json" onChange={handleImportJWK} />
           </div>
           {identityStatus && <div style={{ fontSize: 9, color: 'var(--amber)', marginTop: 6, textAlign: 'center' }}>{identityStatus}</div>}
         </div>
@@ -282,7 +287,7 @@ export function VaultRoom({ tier }: Props) {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             <div>
               <div style={{ fontSize: 11, color: 'var(--dim)', marginBottom: 4 }}>LLM ENGINE</div>
-              <select value={llmEngine} onChange={handleEngineChange} className="glass-input" style={{ fontSize: 12, padding: '6px 10px', background: 'var(--s1)' }}>
+              <select aria-label="LLM engine" value={llmEngine} onChange={handleEngineChange} className="glass-input" style={{ fontSize: 12, padding: '6px 10px', background: 'var(--s1)' }}>
                 <option value="claude-sonnet">Claude 3.5 Sonnet (Recom.)</option>
                 <option value="claude-haiku">Claude 3.5 Haiku (Fast)</option>
                 <option value="gpt-4o">GPT-4o (Legacy)</option>

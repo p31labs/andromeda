@@ -6,6 +6,9 @@ import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { theme } from '../../lib/theme';
 import { useNode } from '../../contexts/NodeContext';
 import { useOnlineStatus } from '../../hooks/useOnlineStatus';
+import { playResonanceLock } from '../../services/audioManager';
+import { useSovereignStore } from '../../sovereign/useSovereignStore';
+import { loadLLMConfig } from '../../services/llmClient';
 
 // ── Music theory — phosphorus pentatonic scale ──
 const P31_BASE = 172.35; // Hz — derived from 17.235 MHz NMR, shifted to audible
@@ -367,12 +370,15 @@ export function ResonanceRoom() {
     };
   }, [engine]);
 
-  const getApiKey = useCallback((): string | null => {
-    try { return localStorage.getItem('p31_llm_key'); } catch { return null; }
+  const getApiKey = useCallback(async (): Promise<string | null> => {
+    try {
+      const cfg = await loadLLMConfig();
+      return cfg.apiKey || null;
+    } catch { return null; }
   }, []);
 
   const callLLM = useCallback(async (userMsg: string | null) => {
-    const key = getApiKey();
+    const key = await getApiKey();
     const h = [...history];
     if (userMsg) h.push({ role: 'user', content: userMsg });
 
@@ -473,6 +479,16 @@ export function ResonanceRoom() {
 
   const level = coherence < 0.2 ? 'VOID' : coherence < 0.4 ? 'PHOSPHORUS' :
     coherence < 0.65 ? 'CALCIUM' : coherence < 0.85 ? 'BONDED' : 'POSNER';
+
+  const prevLevelRef = useRef(level);
+  useEffect(() => {
+    if (level === 'POSNER' && prevLevelRef.current !== 'POSNER') {
+      const { sfxEnabled, masterVolume } = useSovereignStore.getState();
+      playResonanceLock(masterVolume, sfxEnabled);
+    }
+    prevLevelRef.current = level;
+  }, [level]);
+
   const levelColor = coherence < 0.2 ? 'var(--dim)' : coherence < 0.4 ? 'var(--mint)' :
     coherence < 0.65 ? 'var(--blue)' : coherence < 0.85 ? 'var(--violet)' : 'var(--amber)';
 
@@ -562,11 +578,28 @@ export function ResonanceRoom() {
           P31 RESONANCE ENGINE
         </div>
 
-        <SonicMolecule notes={freqSig} coherence={coherence} sz={200} />
+        {/* Resonance lock ring — glowPulse fires 3× when POSNER state achieved */}
+        <div style={{
+          position: 'relative',
+          animation: level === 'POSNER' ? 'glowPulse 1s ease-in-out 3' : 'none',
+          borderRadius: '50%',
+        }}>
+          <SonicMolecule notes={freqSig} coherence={coherence} sz={200} />
+        </div>
         <Waveform notes={freqSig} width={460} height={36} />
 
         <div style={{ display: 'flex', gap: 14, alignItems: 'center', margin: '6px 0 10px' }}>
-          <div style={{ fontFamily: "var(--font-data)", fontSize: 13, letterSpacing: 3, color: levelColor, textShadow: `0 0 8px ${levelColor}44` }}>
+          <div style={{
+            fontFamily: "var(--font-data)", fontSize: 13, letterSpacing: 3,
+            color: levelColor,
+            textShadow: `0 0 8px ${levelColor}44`,
+            // POSNER: sustained glow + letter spacing bump to signal lock
+            ...(level === 'POSNER' ? {
+              textShadow: `0 0 12px ${levelColor}, 0 0 24px ${levelColor}66`,
+              letterSpacing: 5,
+              transition: 'letter-spacing 0.4s ease-out, text-shadow 0.4s ease-out',
+            } : {}),
+          }}>
             {level}
           </div>
           <div style={{ width: 1, height: 14, background: 'var(--neon-ghost)' }} />
@@ -584,7 +617,15 @@ export function ResonanceRoom() {
         </div>
 
         <div style={{ width: '100%', flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
-          <div style={{ flex: 1, overflowY: 'auto', marginBottom: 8, minHeight: 120 }}>
+          {/* role="log" must be in DOM before messages arrive so ATs register the live region.
+              Presence-before-content is required; conditionally rendering this breaks screen readers. */}
+          <div
+            role="log"
+            aria-live="polite"
+            aria-relevant="additions"
+            aria-label="Resonance conversation"
+            style={{ flex: 1, overflowY: 'auto', marginBottom: 8, minHeight: 120 }}
+          >
             {msgs.map((m, i) => (
               <div key={i} style={{
                 display: 'flex', marginBottom: 10,
@@ -606,7 +647,7 @@ export function ResonanceRoom() {
               </div>
             ))}
             {typing && (
-              <div style={{ display: 'flex', marginBottom: 10 }}>
+              <div style={{ display: 'flex', marginBottom: 10 }} aria-label="Phosphorus is responding">
                 <div className="glass-card" style={{
                   padding: '10px 14px', background: 'var(--s1)',
                   borderColor: 'var(--mint)12', borderRadius: '14px 14px 14px 4px',
@@ -678,9 +719,7 @@ export function ResonanceRoom() {
         )}
       </div>
 
-      <style>{`
-        @keyframes resPulse { 0%,100% { opacity: 0.2; } 50% { opacity: 0.6; } }
-      `}</style>
+      {/* resPulse keyframe lives in styles.css — removed inline <style> tag */}
     </div>
   );
 }
