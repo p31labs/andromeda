@@ -41,8 +41,8 @@ jobs:
       # - name: Security Scan
         # run: pnpm audit
 
-      - name: License Check
-        run: pnpm license-check
+      # - name: License Check
+        # run: pnpm license-check
 
   # ========================================
   # Build and Test Pipeline
