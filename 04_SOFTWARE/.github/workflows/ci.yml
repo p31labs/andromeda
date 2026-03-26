@@ -41,8 +41,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Run ESLint
-        run: cd 04_SOFTWARE && pnpm eslint . --max-warnings 0 || true
+      # - name: Run ESLint
+        # run: cd 04_SOFTWARE && pnpm eslint . --max-warnings 0 || true
 
       - name: TypeScript check (spaceship-earth)
         run: cd 04_SOFTWARE/spaceship-earth && pnpm tsc --noEmit
