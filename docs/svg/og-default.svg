@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#264653"/>
+      <stop offset="50%" stop-color="#1a3340"/>
+      <stop offset="100%" stop-color="#0f2330"/>
+    </linearGradient>
+    <linearGradient id="tealLine" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2A9D8F"/>
+      <stop offset="100%" stop-color="#2A9D8F" stop-opacity="0.3"/>
+    </linearGradient>
+    <filter id="softGlow">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="textGlow">
+      <feGaussianBlur stdDeviation="2" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bgGrad)"/>
+  
+  <!-- Subtle grid pattern -->
+  <g stroke="#2A9D8F" stroke-width="0.5" opacity="0.08">
+    <line x1="0" y1="0" x2="1200" y2="630"/>
+    <line x1="400" y1="0" x2="1200" y2="420"/>
+    <line x1="800" y1="0" x2="1200" y2="210"/>
+    <line x1="0" y1="210" x2="800" y2="630"/>
+    <line x1="0" y1="420" x2="400" y2="630"/>
+    <line x1="1200" y1="0" x2="0" y2="630"/>
+    <line x1="800" y1="0" x2="0" y2="420"/>
+  </g>
+  
+  <!-- Large tetrahedron (right side, decorative) -->
+  <g transform="translate(780,50)" stroke-width="2.5" fill="none" opacity="0.25" filter="url(#softGlow)">
+    <line x1="200" y1="40" x2="60" y2="480" stroke="#2A9D8F"/>
+    <line x1="200" y1="40" x2="380" y2="480" stroke="#2A9D8F"/>
+    <line x1="60" y1="480" x2="380" y2="480" stroke="#2A9D8F"/>
+    <line x1="200" y1="40" x2="200" y2="300" stroke="#2A9D8F" opacity="0.5"/>
+    <line x1="60" y1="480" x2="200" y2="300" stroke="#2A9D8F" opacity="0.5"/>
+    <line x1="380" y1="480" x2="200" y2="300" stroke="#2A9D8F" opacity="0.5"/>
+    <circle cx="200" cy="280" r="50" stroke="#E76F51" stroke-width="2" opacity="0.4"/>
+  </g>
+  
+  <!-- Nucleus glow (right side) -->
+  <circle cx="980" cy="330" r="80" fill="#E76F51" opacity="0.04"/>
+  <circle cx="980" cy="330" r="50" fill="#E76F51" opacity="0.06"/>
+  
+  <!-- Content -->
+  <g filter="url(#textGlow)">
+    <!-- P31 -->
+    <text x="80" y="220" font-family="'Trebuchet MS', 'Helvetica Neue', sans-serif" font-size="120" fill="#F0EEE9" font-weight="700" letter-spacing="8">P31</text>
+    
+    <!-- LABS -->
+    <text x="85" y="290" font-family="'Trebuchet MS', 'Helvetica Neue', sans-serif" font-size="52" fill="#2A9D8F" font-weight="300" letter-spacing="18">LABS</text>
+  </g>
+  
+  <!-- Divider line -->
+  <line x1="80" y1="320" x2="520" y2="320" stroke="#E76F51" stroke-width="2" opacity="0.6"/>
+  
+  <!-- Tagline -->
+  <text x="80" y="370" font-family="'Georgia', serif" font-size="24" fill="#C9B1FF" letter-spacing="1">Open-Source Assistive Technology</text>
+  <text x="80" y="405" font-family="'Georgia', serif" font-size="20" fill="#F0EEE9" opacity="0.6" letter-spacing="0.5">for Neurodivergent Minds</text>
+  
+  <!-- Molecule formula -->
+  <text x="80" y="470" font-family="'Courier New', monospace" font-size="16" fill="#2A9D8F" opacity="0.5" letter-spacing="2">Ca₉(PO₄)₆ · Posner Molecule</text>
+  
+  <!-- URL -->
+  <text x="80" y="570" font-family="'Courier New', monospace" font-size="16" fill="#F0EEE9" opacity="0.4" letter-spacing="3">phosphorus31.org</text>
+  
+  <!-- 501(c)(3) badge -->
+  <rect x="80" y="584" width="120" height="24" rx="4" fill="#2A9D8F" opacity="0.2"/>
+  <text x="98" y="601" font-family="'Courier New', monospace" font-size="11" fill="#2A9D8F" letter-spacing="1">501(c)(3)</text>
+  
+  <!-- Bottom accent line -->
+  <rect x="0" y="624" width="1200" height="6" fill="#E76F51" opacity="0.8"/>
+</svg>

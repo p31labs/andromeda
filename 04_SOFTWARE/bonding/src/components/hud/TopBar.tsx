@@ -8,11 +8,17 @@
  * WCD-29: Glassmorphism removed. Text-shadow for legibility.
  * WCD-31: 🤝 multiplayer button restored between mode and mute.
  *         Shows 👥{n} when in an active room.
+ * 
+ * Phase 5: Voice controls added for pre-readers (mic button + voice toggle)
  */
 
 import { useState } from 'react';
 import { useEconomyStore } from '../../genesis/economyStore';
 import { isMuted, setMuted } from '../../engine/sound';
+import { VoiceControls } from '../VoiceControls';
+import { useGameStore } from '../../store/gameStore';
+import { useVoiceFeedback } from '../../engine/voiceFeedback';
+import type { ElementSymbol } from '../../types';
 
 // ─── Inline LoveCounter (stripped of absolute positioning) ──────
 
@@ -50,6 +56,31 @@ interface TopBarProps {
 
 export function TopBar({ modeEmoji, onModeExit, onLobby, isInRoom, playerCount, title = 'BONDING' }: TopBarProps) {
   const [audioMuted, setAudioMuted] = useState(isMuted());
+  const startDrag = useGameStore((s) => s.startDrag);
+  const endDrag = useGameStore((s) => s.endDrag);
+  const voiceFeedback = useVoiceFeedback();
+
+  // Handle voice element selection
+  const handleElementSelect = (element: ElementSymbol) => {
+    startDrag(element);
+    voiceFeedback.selectElement(element);
+  };
+
+  // Handle voice build action
+  const handleBuild = () => {
+    endDrag();
+    voiceFeedback.placeAtom();
+  };
+
+  // Handle voice help
+  const handleHelp = () => {
+    voiceFeedback.showHelp();
+  };
+
+  // Handle voice celebrate
+  const handleCelebrate = () => {
+    voiceFeedback.celebrate();
+  };
 
   return (
     <div className="h-full flex items-center justify-between px-4 gap-3 hud-text pointer-events-auto">
@@ -106,6 +137,14 @@ export function TopBar({ modeEmoji, onModeExit, onLobby, isInRoom, playerCount, 
         >
           {audioMuted ? '\u{1F507}' : '\u{1F50A}'}
         </button>
+        {/* Phase 5: Voice Controls for pre-readers */}
+        <VoiceControls
+          onElementSelect={handleElementSelect}
+          onBuild={handleBuild}
+          onHelp={handleHelp}
+          onCelebrate={handleCelebrate}
+          compact
+        />
       </div>
 
       <span className="font-mono text-xs font-medium text-white/30 tracking-[0.15em] uppercase select-none">

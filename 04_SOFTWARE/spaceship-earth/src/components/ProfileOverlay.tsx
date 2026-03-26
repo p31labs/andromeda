@@ -44,6 +44,7 @@ export function ProfileOverlay({ onClose }: ProfileOverlayProps) {
   const saved = loadProfile();
   const [displayName, setDisplayName] = useState(saved.displayName);
   const [bio,         setBio]         = useState(saved.bio);
+  const [isPublic,    setIsPublic]    = useState(saved.isPublic);
   const [copied,      setCopied]      = useState(false);
   const [jwkCopied,   setJwkCopied]   = useState(false);
   const [dirty,       setDirty]       = useState(false);
@@ -54,11 +55,11 @@ export function ProfileOverlay({ onClose }: ProfileOverlayProps) {
   useEffect(() => {
     if (!dirty) return;
     const tid = setTimeout(() => {
-      saveProfile({ displayName, bio });
+      saveProfile({ displayName, bio, isPublic });
       setDirty(false);
     }, 800);
     return () => clearTimeout(tid);
-  }, [displayName, bio, dirty]);
+  }, [displayName, bio, isPublic, dirty]);
 
   const handleCopyDID = useCallback(async () => {
     if (!hasDID) return;

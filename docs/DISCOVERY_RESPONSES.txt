@@ -1,0 +1,145 @@
+﻿IN THE SUPERIOR COURT OF CAMDEN COUNTY
+STATE OF GEORGIA
+CHRISTYN ELIZABETH JOHNSON,
+     Plaintiff,
+
+
+-vs-
+
+
+WILLIAM RODGER JOHNSON,
+     Defendant.
+	
+
+	
+
+
+
+Civil Action No. 2025CV936
+	
+
+DEFENDANT'S RESPONSES AND OBJECTIONS TO
+PLAINTIFF'S SECOND REQUEST FOR PRODUCTION OF DOCUMENTS
+COMES NOW Defendant, WILLIAM RODGER JOHNSON, pro se, and pursuant to O.C.G.A. § 9-11-34, serves the following Responses and Objections to Plaintiff’s Second Request for Production of Documents served February 12, 2026.
+GENERAL OBJECTIONS
+1. Defendant objects to these requests to the extent they seek information protected by the attorney-client privilege, the work product doctrine, or any other applicable privilege under Georgia or federal law. No inadvertent production of privileged material shall constitute a waiver.
+2. Defendant objects to these requests to the extent they seek trade secrets or confidential commercial information protected under O.C.G.A. § 9-11-26(c)(7) and the Georgia Trade Secrets Act, O.C.G.A. § 10-1-760 et seq. Defendant is the sole owner of Wonky Sprout Systems LLC, which holds proprietary firmware, algorithms, and hardware designs constituting trade secrets. Defendant will identify the existence of intellectual property as marital assets but objects to producing source code, algorithms, or technical specifications absent a protective order.
+3. Defendant objects to these requests to the extent they are overly broad, unduly burdensome, or not reasonably calculated to lead to the discovery of admissible evidence in a domestic relations proceeding.
+4. Defendant incorporates all responses and documents previously produced in response to Plaintiff’s First Request for Production of Documents, which were produced to Defendant’s former attorneys Joseph East and J. Alan Welch. Defendant is unable to duplicate those productions because Mr. Welch currently retains Defendant’s file and has not returned it despite request.
+SPECIFIC RESPONSES
+REQUEST NO. 1: Employment evaluations, reviews, disciplinary reports, commendations, and assessments for period of employment, January 1, 2020 to present.
+RESPONSE: Objection. Defendant’s employment records from the Department of Defense are federal personnel records governed by the Privacy Act, 5 U.S.C. § 552a. Defendant does not possess copies of performance evaluations. To the extent any such records exist in Defendant’s possession, Defendant will produce non-privileged documents. Defendant notes that his employment ended in approximately May 2025 due to disability, and he was a GS-12 Engineering Technician with 16 years of service. Defendant has no disciplinary history.
+REQUEST NO. 2: All bank statements, checking, savings, money market, joint, business, online, or credit union accounts, August 1, 2025 to present.
+RESPONSE: No objection. Defendant will produce all personal bank statements in his possession for the requested period. Defendant notes that business account records for Wonky Sprout Systems LLC are subject to the trade secret objection stated in General Objection No. 2 to the extent they reveal proprietary business operations, but financial transaction records will be produced.
+REQUEST NO. 3: Completed Financial Affidavit.
+RESPONSE: No objection. Defendant will provide a completed Financial Affidavit. Defendant notes he currently has zero monthly income, receives SNAP benefits and Medicaid for himself and both minor children, and has approximately $3,700 in liquid assets.
+REQUEST NO. 4: All records regarding any disability pension or income plan, including plan documents, balances, loans, lump sum payments, survivor benefit elections.
+RESPONSE: No objection. Defendant will produce all documents in his possession relating to his pending applications for (a) Social Security Disability Insurance (SSDI), (b) Supplemental Security Income (SSI), and (c) OPM Federal Disability Retirement. Defendant notes that the Thrift Savings Plan has been fully depleted; IRS Forms 1099-R documenting the distributions have been produced in Defendant’s filings with this Court.
+REQUEST NO. 5: Copies of all checks or evidence of payment for expenses listed in Financial Affidavit.
+RESPONSE: No objection to the extent such records exist. Defendant’s expenses are minimal due to indigence. Defendant will produce available records.
+REQUEST NO. 6: PayPal, Venmo, CashApp, Square, Zelle, Apple Pay, Samsung Pay, Google Pay, Xoom, Circle Pay statements, August 1, 2025 to present.
+RESPONSE: No objection. Defendant will produce transaction histories for any such accounts in his name for the requested period.
+REQUEST NO. 7: Credit card and charge account receipts or monthly statements, August 1, 2025 to present.
+RESPONSE: No objection. Defendant will produce all credit card and charge account statements in his possession for the requested period.
+REQUEST NO. 8: Complete prescription (RX) history for the past twelve months, including pharmacy printouts reflecting medication names, prescribing physicians, and fill dates.
+RESPONSE: Objection in part. Defendant will produce a pharmacy printout reflecting prescriptions related to the medical conditions he has placed at issue in this proceeding (Hypoparathyroidism, Autism Spectrum Disorder, and ADHD). Defendant objects to production of any records relating to mental health treatment or counseling to the extent protected by the mental health privilege recognized in Georgia. See Mincey v. Ga. Dep’t of Cmty. Affairs, 308 Ga. App. 740 (2011). Subject to this objection, Defendant will produce responsive records.
+REQUEST NO. 9: All documents relating to pending, approved, abandoned, or prepared trademark applications.
+RESPONSE: Objection in part. Defendant will identify all trademark applications and their current status (pending, approved, abandoned) as these may constitute marital assets subject to equitable division. Defendant objects to producing the underlying technical specifications, source code, or business strategies associated with any trademarks, as these constitute trade secrets of Wonky Sprout Systems LLC protected under O.C.G.A. § 10-1-760 et seq. and O.C.G.A. § 9-11-26(c)(7). Subject to this objection, Defendant will produce publicly available trademark filing documents.
+REQUEST NO. 10: All documents identifying trademarked or trademark-sought assets, logos, slogans, trade names, brand names, or marks.
+RESPONSE: See Response to Request No. 9. Defendant will identify all such assets and their estimated value for purposes of equitable division. Defendant objects to production of technical details constituting trade secrets.
+REQUEST NO. 11: All documents reflecting intellectual property currently being developed, including trademarks, copyrights, patents, proprietary software, business concepts, branding materials, or licensing agreements.
+RESPONSE: Objection. This request is overly broad and seeks the entirety of Defendant’s proprietary business operations and trade secrets. Defendant is the sole member of Wonky Sprout Systems LLC, which is developing assistive technology devices for neurodivergent individuals. Defendant will identify all intellectual property and provide good-faith valuations for purposes of equitable division. Defendant objects to producing source code, firmware, algorithms, circuit designs, or other proprietary technical information absent a Court-ordered protective order under O.C.G.A. § 9-11-26(c)(7) restricting disclosure to attorneys’ eyes only and prohibiting use for any purpose other than this litigation.
+REQUEST NO. 12: Full Google Gemini archive, September 1, 2025 to present.
+RESPONSE: Objection. This request is overly broad, unduly burdensome, and seeks information protected by multiple privileges. Defendant’s AI conversation history contains: (a) attorney-client privileged communications, including legal research and drafting of filings in this case conducted while represented by counsel and pro se; (b) trade secrets relating to Wonky Sprout Systems LLC proprietary technology development; (c) protected mental health processing and medical information; and (d) work product prepared in anticipation of litigation. Defendant further objects that the request seeks the entirety of Defendant’s private thoughts and research over a six-month period, which is not reasonably calculated to lead to the discovery of admissible evidence in a domestic relations proceeding. If Plaintiff identifies specific, narrowly tailored topics of relevance, Defendant will consider producing non-privileged, non-trade-secret responsive documents.
+REQUEST NO. 13: Full ChatGPT history, September 1, 2025 to present.
+RESPONSE: Objection. Same objections as Request No. 12. Additionally, Defendant does not maintain an active ChatGPT account and has no responsive documents.
+REQUEST NO. 14: All documents relating to cryptocurrency, digital assets, blockchain-based assets, or virtual currency, January 1, 2020 to present.
+RESPONSE: Defendant does not currently own, hold, or control any cryptocurrency, digital assets, NFTs, or blockchain-based assets. Defendant does not maintain accounts on Coinbase, Binance, Kraken, Gemini, Crypto.com, Robinhood, or any similar exchange. Defendant has no cryptocurrency wallets, hot or cold. To the extent Defendant’s business, Wonky Sprout Systems LLC, has explored blockchain technology as part of its product development, such exploration constitutes trade secret research and development, not personal financial assets. Defendant has no cryptocurrency to disclose.
+REQUEST NO. 15: All documents relating to applications for Social Security Disability benefits (SSDI and/or SSI), January 1, 2020 to present.
+RESPONSE: No objection. Defendant will produce all non-privileged documents relating to his pending SSDI/SSI applications, including the application, supporting documentation, and all correspondence from the Social Security Administration. Defendant notes that he has two SSA examinations currently scheduled: (1) February 20, 2026, telehealth psychiatric examination; and (2) February 26, 2026, in-person medical examination in Brunswick, Georgia. Defendant objects to producing attorney-client privileged communications with any disability representative, but will produce fee agreements and documents submitted to SSA.
+
+
+Respectfully submitted this ____ day of _____________, 2026.
+
+
+____________________________________
+WILLIAM RODGER JOHNSON, Pro Se
+401 Powder Horn Road
+St. Marys, Georgia 31558
+Telephone: (912) 227-4980
+Email: willyj1587@gmail.com
+
+
+CERTIFICATE OF SERVICE
+I hereby certify that I have this day served a copy of the foregoing upon Plaintiff’s counsel of record, Jennifer L. McGhan, Esq., McGhan Law, LLC, 575 E. King Avenue, Kingsland, Georgia 31548, via PeachCourt electronic filing and electronic mail to jenn@mcghanlaw.com.
+This ____ day of _____________, 2026.
+
+
+____________________________________
+William R. Johnson, Pro Se
+
+
+
+
+
+
+
+
+IN THE SUPERIOR COURT OF CAMDEN COUNTY
+STATE OF GEORGIA
+CHRISTYN ELIZABETH JOHNSON,
+     Plaintiff,
+
+
+-vs-
+
+
+WILLIAM RODGER JOHNSON,
+     Defendant.
+	
+
+	
+
+
+
+Civil Action No. 2025CV936
+	
+
+DEFENDANT'S FIRST REQUEST FOR PRODUCTION OF DOCUMENTS
+AND NOTICE TO PRODUCE TO PLAINTIFF
+The Defendant, WILLIAM RODGER JOHNSON, pro se, pursuant to O.C.G.A. § 9-11-34, serves this demand for production of documents upon Plaintiff, CHRISTYN ELIZABETH JOHNSON.
+You are required to produce all of the documents requested in the lists below. Such production is to be made to the undersigned at the address shown below, within no more than thirty (30) days from the date of service hereof or seventy-two (72) hours prior to any noticed hearings, whichever occurs first.
+DEFINITIONS AND INSTRUCTIONS
+1. “Document” shall have the broadest meaning permitted under O.C.G.A. § 9-11-34 and includes electronically stored information (ESI).
+2. The relevant time period shall be August 1, 2025 to present unless otherwise specified.
+3. If any responsive document is withheld based on privilege, produce a privilege log identifying the nature of the document, date, author, recipient, and basis for the claim of privilege.
+4. These requests are continuing in nature.
+REQUESTS FOR PRODUCTION
+REQUEST NO. 1: All bank statements, including checking, savings, money market, joint accounts, business accounts, online banks, or credit union accounts in Plaintiff’s name or to which Plaintiff has access, from August 1, 2025 to present.
+REQUEST NO. 2: A completed Financial Affidavit required by the Georgia Rules of Civil Procedure.
+REQUEST NO. 3: All documents reflecting Plaintiff’s current employment, including pay stubs, W-2 forms, 1099 forms, offer letters, and employment contracts from August 1, 2025 to present.
+REQUEST NO. 4: All documents reflecting Plaintiff’s current housing, including the lease or rental agreement for Plaintiff’s current residence, all rent payments made, utility bills in Plaintiff’s name, and any documents reflecting who is paying for Plaintiff’s housing.
+REQUEST NO. 5: All documents reflecting health insurance coverage for Plaintiff and/or the minor children, including insurance cards, policy documents, premium payment records, and enrollment confirmations. If Plaintiff does not currently maintain health insurance, state so in writing.
+REQUEST NO. 6: All documents reflecting automobile insurance coverage maintained by Plaintiff for any vehicle she operates, from August 1, 2025 to present, including any period of lapsed coverage.
+REQUEST NO. 7: All documents reflecting the receipt and disbursement of any funds from Defendant’s Thrift Savings Plan (TSP), including but not limited to: (a) all communications between Plaintiff’s counsel and the TSP administrator; (b) all documents reflecting the deposit of TSP funds into any attorney trust account or escrow account; (c) a complete accounting of all TSP-derived funds received by Plaintiff or Plaintiff’s counsel, including dates, amounts, and purposes of each disbursement; and (d) the current balance of any funds held in trust or escrow on behalf of either party.
+REQUEST NO. 8: All communications between Plaintiff and Plaintiff’s counsel, Jennifer L. McGhan, regarding the method of TSP distribution (hardship withdrawal vs. Retirement Benefits Court Order/RBCO), including but not limited to any discussion of the 10% early withdrawal penalty under 26 U.S.C. § 72(t) and any advice provided regarding the availability or unavailability of penalty exemptions.
+REQUEST NO. 9: All medical records for the minor children S.J. (born 2016) and W.J. (born 2019) from August 1, 2025 to present, including but not limited to records relating to W.J.’s encopresis diagnosis and treatment, any psychological or behavioral evaluations, and any records reflecting the children’s health insurance coverage and provider.
+REQUEST NO. 10: All Messenger Kids account records and logs for the minor children from January 1, 2026 to present, including call logs, message logs, and any parental control settings or restrictions applied to the children’s accounts.
+REQUEST NO. 11: All documents reflecting any communication between Plaintiff (or Plaintiff’s counsel) and the minor children’s school, daycare, or medical providers regarding Defendant, including but not limited to any instructions to restrict Defendant’s access to records or contact with providers.
+REQUEST NO. 12: All communications between Plaintiff’s counsel and Attorney Joseph East from September 1, 2025 through October 31, 2025, relating to the Thrift Savings Plan distribution, the October 23, 2025 Consent Order, or any other matter in this case.
+REQUEST NO. 13: A copy of the proposed Order from the February 5, 2026 hearing that Plaintiff’s counsel was directed to draft (Docket No. 57), including all drafts and the date each draft was prepared.
+REQUEST NO. 14: All documents reflecting any payment, gift, loan, or financial assistance provided to Plaintiff by any third party from August 1, 2025 to present, including but not limited to contributions from family members, friends, employers, or Plaintiff’s counsel.
+REQUEST NO. 15: All itemized statements and invoices from McGhan Law, LLC to Plaintiff from the inception of this case to present, including a breakdown of fees charged, payments received, and any outstanding balance. If any portion of Plaintiff’s legal fees has been paid by a third party, identify the payor and amount.
+
+
+CERTIFICATE OF SERVICE
+I certify that a copy of the foregoing Request for Production of Documents and Notice to Produce was served on the ____ day of _____________, 2026, on Plaintiff’s counsel, Jennifer L. McGhan, Esq., McGhan Law, LLC, 575 E. King Avenue, Kingsland, Georgia 31548, via PeachCourt electronic filing and electronic mail to jenn@mcghanlaw.com.
+Respectfully submitted,
+
+
+____________________________________
+WILLIAM RODGER JOHNSON, Pro Se
+401 Powder Horn Road
+St. Marys, Georgia 31558
+Telephone: (912) 227-4980
+Email: willyj1587@gmail.com

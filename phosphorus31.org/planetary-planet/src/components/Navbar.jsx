@@ -43,6 +43,7 @@ const Navbar = () => {
             {navLink('/products', 'Products')}
             {navLink('/about', 'About')}
             {navLink('/why', 'Why')}
+            {navLink('/quantum-security', 'Security')}
             {navLink('/transparency', 'Transparency')}
             {navLink('/donate', 'Donate')}
           </nav>
@@ -98,6 +99,7 @@ const Navbar = () => {
               ['/products', 'Products'],
               ['/about', 'About'],
               ['/why', 'Why We Exist'],
+              ['/quantum-security', 'Security'],
               ['/transparency', 'Transparency'],
               ['/donate', 'Donate'],
             ].map(([href, label]) => (

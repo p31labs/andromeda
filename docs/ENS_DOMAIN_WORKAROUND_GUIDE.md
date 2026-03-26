@@ -45,7 +45,7 @@ This guide provides step-by-step instructions for configuring your existing `cla
 1. **Create Subdomain Record**
    - Add TXT record for `andromeda.classicwilly.eth`:
      ```
-     Value: "dnslink=/ipns/your-ipns-hash"
+     Value: "dnslink=/ipns/your-ihpns-has"
      ```
 
 2. **IPNS Integration**

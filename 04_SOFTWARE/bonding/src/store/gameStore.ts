@@ -33,8 +33,11 @@ import type { DifficultyId } from '../data/modes';
 import { getModeById } from '../data/modes';
 import { saveToGallery } from '../engine/gallery';
 import { isDiscovery, lookupDiscovery, saveDiscovery } from '../engine/discovery';
+import { initAmbient, updateAmbient, stopAmbient } from '../engine/ambientEngine';
+import { initSpatial, playAtomPlacementSound, playBondSpatialSound } from '../engine/spatialAudio';
 import type { Player, Ping } from '../lib/gameSync';
 import { leaveRoom } from '../lib/gameSync';
+import { useProgressStore } from './progressStore';
 import {
   playAtomNote,
   playBondInterval,
@@ -148,8 +151,18 @@ interface GameStore {
   activeTutorial: Tutorial | null;
   tutorialState: TutorialState | null;
 
+  // UX Audit: Age-based UI scaling
+  ageGroup: 'child' | 'adult' | 'senior' | null;
+
+  // Kid Mode
+  simpleMode: boolean;
+
+  // Kid Mode actions
+  setSimpleMode: (enabled: boolean) => void;
+
   // Actions
   setGameMode: (mode: DifficultyId | null, questId?: string) => void;
+  setAgeGroup: (age: 'child' | 'adult' | 'senior') => void;
   setPlayerName: (name: string) => void;
   startDrag: (element: ElementSymbol) => void;
   updateDragPointer: (x: number, y: number) => void;
@@ -157,6 +170,7 @@ interface GameStore {
   unsnapFromSite: () => void;
   endDrag: () => void;
   reset: () => void;
+  initAudio: () => void;
   dismissToast: (id: string) => void;
   nameDiscovery: (name: string) => void;
   dismissDiscovery: () => void;
@@ -255,6 +269,12 @@ export const useGameStore = create<GameStore>()((set, get) => ({
   activeTutorial: null,
   tutorialState: null,
 
+  // UX Audit: Age-based UI scaling
+  ageGroup: null,
+
+  // Kid Mode
+  simpleMode: false,
+
   // ── Mode selection ──
 
   setGameMode: (mode, questId) => {
@@ -270,6 +290,8 @@ export const useGameStore = create<GameStore>()((set, get) => ({
     // WCD-16: Clear canvas state on mode switch (atoms, bonds, formula, stability)
     // Preserves: loveBalance, achievements, completedMolecules, session
     get().reset();
+
+    // ... rest unchanged ...
 
     // Initialize quests — filter by selected quest or free build
     let quests: Quest[];
@@ -328,6 +350,15 @@ export const useGameStore = create<GameStore>()((set, get) => ({
   },
 
   setPlayerName: (name) => set({ playerName: name }),
+
+  // UX Audit: Age group selection
+  setAgeGroup: (age) => {
+    // Update CSS custom properties on document for age-based styling
+    if (typeof document !== 'undefined') {
+      document.documentElement.setAttribute('data-age-group', age);
+    }
+    set({ ageGroup: age });
+  },
 
   // ── Drag lifecycle ──
 
@@ -418,15 +449,28 @@ export const useGameStore = create<GameStore>()((set, get) => ({
       });
       nextBondId++;
 
+      // ── Phase 4: Update progress store for badges ──
+      if (bondToAtomId != null) {
+        useProgressStore.getState().addBond();
+      }
+
       const parentAtom = state.atoms.find((a) => a.id === bondToAtomId);
       if (parentAtom) {
         playBondInterval(
           ELEMENTS[parentAtom.element].frequency,
           elementData.frequency,
         );
+        // WCD-22: Spatial audio for bond formation
+        playBondSpatialSound(
+          [parentAtom.position.x, parentAtom.position.y, parentAtom.position.z],
+          [position.x, position.y, position.z],
+          elementData.frequency,
+        );
       }
     } else {
       playAtomNote(elementData.frequency);
+      // WCD-22: Spatial audio for atom placement
+      playAtomPlacementSound(newAtom, elementData.frequency);
     }
 
     haptic.place();
@@ -472,12 +516,25 @@ export const useGameStore = create<GameStore>()((set, get) => ({
       };
       completedMolecules = [...completedMolecules, molecule];
 
+      // Phase 4: Update progress store for molecules
+      useProgressStore.getState().addMolecule(molecule.formula);
+
       // WCD-48: Only award completion LOVE if this formula hasn't been
       // completed already in the current build chain (dedup for "Keep Building")
       if (!state.sessionCompletedFormulas.includes(molecule.formula)) {
         const molResult = earnLove(loveTx, LOVE_PER_MOLECULE, 'molecule_completed');
         loveTx = molResult.transactions;
         loveTotal = molResult.total;
+      }
+
+      // WCD-22: Update ambient soundscape on molecule completion
+      const elements = updatedAtoms.map((a) => a.element);
+      updateAmbient(elements);
+    } else {
+      // WCD-22: Update ambient with current atoms
+      const elements = updatedAtoms.map((a) => a.element);
+      if (elements.length > 0) {
+        updateAmbient(elements);
       }
     }
 
@@ -899,7 +956,9 @@ export const useGameStore = create<GameStore>()((set, get) => ({
 
   // ── Reset ──
 
-  reset: () =>
+  reset: () => {
+    // WCD-22: Stop ambient on reset
+    stopAmbient();
     set({
       atoms: [],
       bonds: [],
@@ -916,7 +975,14 @@ export const useGameStore = create<GameStore>()((set, get) => ({
       dragCooldownUntil: 0,
       pendingDiscovery: null,
       sessionCompletedFormulas: [],
-    }),
+    });
+  },
+
+  // WCD-22: Initialize audio engines (must be called on user interaction)
+  initAudio: () => {
+    initAmbient();
+    initSpatial();
+  },
 
   // ── Toast management ──
 
@@ -1079,8 +1145,11 @@ export const useGameStore = create<GameStore>()((set, get) => ({
 
   setLobbyActive: (active) => set({ lobbyActive: active }),
 
-  setMultiplayer: (roomCode, playerId) =>
-    set({ roomCode, playerId, lobbyActive: false }),
+  setMultiplayer: (roomCode, playerId) => {
+    set({ roomCode, playerId, lobbyActive: false });
+    // Phase 4: Track family play when joining a room
+    useProgressStore.getState().addFamilyPlaySession();
+  },
 
   leaveMultiplayer: () => {
     leaveRoom();
@@ -1248,6 +1317,11 @@ export const useGameStore = create<GameStore>()((set, get) => ({
   previewElement: null,
   setPreviewElement: (el) => {
     set({ previewElement: el });
+  },
+
+  // Kid Mode - simplified UI for ages 6-8
+  setSimpleMode: (enabled) => {
+    set({ simpleMode: enabled });
   },
 
   bloodMoonActive: false,

@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>P31 Labs - Ultimate Quantum Presentation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+    <script>
+        // Global functions for navigation (accessible from HTML onclick attributes)
+        window.showSlide = function(id) {
+            document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+            document.getElementById('slide-' + id).classList.add('active');
+        };
+
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        p31: {
+                            bg: '#050510',
+                            surface: '#0B0F19',
+                            panel: '#111827',
+                            purple: '#9333ea',
+                            cyan: '#06b6d4',
+                            green: '#10b981',
+                            amber: '#f59e0b',
+                            red: '#ef4444'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --bg-color: #050510;
+            --text-color: #E8ECF4;
+            --accent-cyan: #00D4FF;
+            --accent-green: #00FF88;
+            --accent-violet: #7A27FF;
+            --accent-orange: #FF6600;
+            --grid-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        * { box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        .tab-btn.active { background: #9333ea; color: white; }
+        .slide { display: none; animation: fadeIn 0.4s; }
+        .slide.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .pulse-glow { animation: pulseGlow 3s infinite; }
+        @keyframes pulseGlow { 0%, 100% { box-shadow: 0 0 20px rgba(147, 51, 234, 0.3); } 50% { box-shadow: 0 0 40px rgba(147, 51, 234, 0.6); } }
+        .quantum-bg {
+            background: radial-gradient(ellipse at center, #1a1a2e 0%, #050510 70%);
+        }
+        
+        /* Three.js canvas styling */
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        
+        /* Card hover effects */
+        .card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        
+        /* Loading overlay */
+        #loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+        
+        .loader {
+            width: 50px;
+            height: 50px;
+            border: 3px solid var(--grid-color);
+            border-top: 3px solid var(--accent-cyan);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Highlight text styling */
+        .highlight {
+            color: var(--accent-cyan);
+            font-weight: bold;
+        }
+        
+        /* Stats styling */
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--accent-violet);
+        }
+        
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--accent-cyan);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body class="bg-p31-bg text-slate-200 min-h-screen overflow-x-hidden">
+
+    <!-- LOADING OVERLAY -->
+    <div id="loading">
+        <div class="loader"></div>
+    </div>
+
+    <!-- CANVAS FOR 3D BACKGROUND -->
+    <canvas id="quantum-canvas"></canvas>
+
+    <!-- NAVIGATION -->
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-p31-surface/90 backdrop-blur-md border-b border-purple-900/30">
+        <div class="max-w-6xl mx-auto px-4 py-2 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <span class="text-2xl">💜🔺💜</span>
+                <span class="font-bold text-white hidden sm:block">P31 Labs</span>
+            </div>
+            <div class="flex gap-1 overflow-x-auto">
+                <button onclick="showSlide('home')" class="nav-btn px-2 py-1 text-xs rounded hover:bg-purple-600">🏠</button>
+                <button onclick="showSlide('mission')" class="nav-btn px-2 py-1 text-xs rounded hover:bg-purple-600">🎯</button>
+                <button onclick="showSlide('hypo')" class="nav-btn px-2 py-1 text-xs rounded hover:bg-purple-600">🏥</button>
+                <button onclick="showSlide('security')" class="nav-btn px-2 py-1 text-xs rounded hover:bg-purple-600">🔐</button>
+                <button onclick="showSlide('quantum')" class="nav-btn px-2 py-1 text-xs rounded hover:bg-purple-600">⚛️</button>
+                <button onclick="showSlide('products')" class="nav-btn px-2 py-1 text-xs rounded hover:bg-purple-600">🚀</button>
+                <button onclick="showSlide('beliefs')" class="nav-btn px-2 py-1 text-xs rounded hover:bg-purple-600">💡</button>
+                <button onclick="showSlide('hiring')" class="nav-btn px-2 py-1 text-xs rounded hover:bg-purple-600">👥</button>
+                <button onclick="showSlide('ops')" class="nav-btn px-2 py-1 text-xs rounded hover:bg-purple-600">⚡</button>
+                <button onclick="showSlide('interactive')" class="nav-btn px-2 py-1 text-xs rounded hover:bg-purple-600">🎮</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="pt-14 pb-20">
+
+        <!-- SLIDE: HOME -->
+        <section id="slide-home" class="slide active quantum-bg min-h-screen flex flex-col items-center justify-center p-6 text-center">
+            <div class="pulse-glow rounded-full w-32 h-32 bg-gradient-to-br from-purple-600 to-cyan-500 flex items-center justify-center mb-8">
+                <span class="text-6xl">P31</span>
+            </div>
+            <h1 class="text-4xl md:text-6xl font-extrabold text-white mb-4">P31 Labs</h1>
+            <p class="text-xl text-purple-400 mb-2">NOT WANT — NECESSITY</p>
+            <p class="text-slate-400 max-w-lg">Open-source assistive technology for neurodivergent individuals</p>
+            <div class="mt-8 flex flex-wrap justify-center gap-4 text-sm">
+                <span class="bg-purple-900/50 text-purple-300 px-3 py-1 rounded-full">501(c)(3) Nonprofit</span>
+                <span class="bg-cyan-900/50 text-cyan-300 px-3 py-1 rounded-full">Open Source</span>
+                <span class="bg-green-900/50 text-green-300 px-3 py-1 rounded-full">Mission-Driven</span>
+            </div>
+            <div class="mt-12">
+                <button onclick="showSlide('mission')" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-8 rounded-full transition-all">
+                    Explore →
+                </button>
+            </div>
+            <div class="absolute bottom-8 text-xs text-slate-600">
+                Press ← → keys to navigate • Click nav dots
+            </div>
+        </section>
+
+        <!-- SLIDE: HYPO -->
+        <section id="slide-hypo" class="slide min-h-screen p-6 pt-20">
+            <div class="max-w-4xl mx-auto">
+                <h2 class="text-3xl font-bold text-white mb-8 text-center">🏥 Hypoparathyroidism</h2>
+                
+                <div class="bg-p31-panel rounded-xl p-6 border border-red-500/30 mb-6">
+                    <h3 class="text-xl font-bold text-red-400 mb-3">"Like diabetes but way worse"</h3>
+                    <p class="text-slate-300">~200K Americans affected. Zero public awareness. Zero monitoring technology. The body can't regulate calcium - affecting brain, muscles, and energy.</p>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-4 mb-6">
+                    <div class="bg-p31-panel rounded-xl p-5">
+                        <h4 class="font-bold text-amber-400 mb-2">⚠️ Symptoms</h4>
+                        <ul class="text-sm text-slate-300 space-y-1">
+                            <li>• Brain fog / memory issues</li>
+                            <li>• Muscle cramps / tetany</li>
+                            <li>• Paresthesia (tingling)</li>
+                            <li>• Fatigue / low energy</li>
+                            <li>• Depression / anxiety</li>
+                        </ul>
+                    </div>
+                    <div class="bg-p31-panel rounded-xl p-5">
+                        <h4 class="font-bold text-green-400 mb-2">💊 Current Treatment</h4>
+                        <ul class="text-sm text-slate-300 space-y-1">
+                            <li>• Calcium carbonate supplements</li>
+                            <li>• Vitamin D (calcitriol)</li>
+                            <li>• PTH replacement (if severe)</li>
+                            <li>• Monthly blood monitoring</li>
+                            <li>• Dietary management</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="bg-p31-panel rounded-xl p-6 border border-purple-500/30">
+                    <h4 class="font-bold text-purple-400 mb-3">🔬 The Science</h4>
+                    <div class="grid md:grid-cols-2 gap-4 text-sm">
+                        <div>
+                            <p class="text-slate-400 mb-2">Parathyroid hormone (PTH) regulates calcium. Without it:</p>
+                            <ul class="text-slate-300 space-y-1">
+                                <li>→ Bones release less calcium</li>
+                                <li>→ Kidneys excrete too much calcium</li>
+                                <li>→ Vitamin D activation fails</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <p class="text-slate-400 mb-2">Brain impact:</p>
+                            <ul class="text-slate-300 space-y-1">
+                                <li>→ Posner batteries don't charge</li>
+                                <li>→ NMDA receptor dysfunction</li>
+                                <li>→ Cognitive deficits (JCEM 2025)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-6 bg-amber-900/30 border border-amber-500/30 rounded-xl p-4 text-center">
+                    <p class="text-amber-400 font-bold">⚠️ Will's Stats</p>
+                    <p class="text-sm text-slate-300 mt-1">Ca: 7.8 mg/dL (low) • PTH: <6 pg/mL (undetectable) • Since 2003</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE: SECURITY -->
+        <section id="slide-security" class="slide min-h-screen p-6 pt-20 quantum-bg">
+            <div class="max-w-4xl mx-auto">
+                <h2 class="text-3xl font-bold text-white mb-8 text-center">🔐 Quantum Security</h2>
+                
+                <div class="space-y-4">
+                    <div class="bg-p31-panel/80 rounded-xl p-5 border border-cyan-500/30">
+                        <h3 class="font-bold text-cyan-400 mb-2">The Floating Neutral Hypothesis</h3>
+                        <p class="text-sm text-slate-300">Basal ganglia calcification + biological voltage failure. A new medical hypothesis connecting hypoparathyroidism to neurological decline through calcium-phosphate metabolism in the brain.</p>
+                    </div>
+
+                    <div class="bg-p31-panel/80 rounded-xl p-5 border border-purple-500/30">
+                        <h3 class="font-bold text-purple-400 mb-2">Defensive Publications</h3>
+                        <ul class="text-sm text-slate-300 space-y-2">
+                            <li>📄 <strong>Floating Neutral Hypothesis</strong> — Medical/physiological (Zenodo)</li>
+                            <li>📄 <strong>Mechanical Translation of Quantum States</strong> — Hardware/educational</li>
+                            <li>📄 <strong>Hardware-Accelerated Lattice Decoders</strong> — FPGA/algorithmic</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-p31-panel/80 rounded-xl p-5 border border-green-500/30">
+                        <h3 class="font-bold text-green-400 mb-2">SOULSAFE Protocol</h3>
+                        <p class="text-sm text-slate-300">Naval nuclear SUBSAFE principles applied to cognitive systems. OQE (Objective Quality Evidence) + WCD (Work Control Documents). No changes without verification.</p>
+                    </div>
+
+                    <div class="bg-p31-panel/80 rounded-xl p-5 border border-amber-500/30">
+                        <h3 class="font-bold text-amber-400 mb-2">🛡️ IP Protection</h3>
+                        <div class="grid grid-cols-2 gap-4 text-sm">
+                            <div>
+                                <p class="text-slate-400">Published:</p>
+                                <ul class="text-slate-300">
+                                    <li>• Zenodo DOI</li>
+                                    <li>• Internet Archive</li>
+                                    <li>• GitHub timestamps</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <p class="text-slate-400">Pending:</p>
+                                <ul class="text-slate-300">
+                                    <li>• 501(c)(3) incorporation</li>
+                                    <li>• Trademark filing</li>
+                                    <li>• SAM.gov registration</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-p31-panel/80 rounded-xl p-5">
+                        <h3 class="font-bold text-red-400 mb-2">⚠️ Legal Context</h3>
+                        <p class="text-sm text-slate-300">The "manic" label from Mar 18 hearing makes public-facing output vulnerable to misinterpretation. All technical work is legitimate — but lacks courtroom context. Psych eval (Mar 24) is the counterattack.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE: MISSION -->
+        <section id="slide-mission" class="slide min-h-screen p-6 pt-20">
+            <div class="max-w-4xl mx-auto">
+                <h2 class="text-3xl font-bold text-white mb-8 text-center">🎯 Our Mission</h2>
+                
+                <div class="grid md:grid-cols-2 gap-6 mb-8">
+                    <div class="bg-p31-panel rounded-xl p-6 border border-purple-500/30">
+                        <h3 class="text-xl font-bold text-purple-400 mb-3">The Problem</h3>
+                        <p class="text-slate-300">Hypoparathyroidism affects ~200K Americans. Zero monitoring technology. Zero public understanding. Like diabetes but way worse — and Will's got it.</p>
+                    </div>
+                    <div class="bg-p31-panel rounded-xl p-6 border border-cyan-500/30">
+                        <h3 class="text-xl font-bold text-cyan-400 mb-3">Our Solution</h3>
+                        <p class="text-slate-300">Open-source assistive tech built by neurodivergents for neurodivergents. Using quantum biology, geometric architecture, and community-driven development.</p>
+                    </div>
+                </div>
+
+                <div class="bg-p31-panel rounded-xl p-6 border border-green-500/30">
+                    <h3 class="text-xl font-bold text-green-400 mb-4">Core Beliefs</h3>
+                    <ul class="space-y-2 text-slate-300">
+                        <li>🔺 <strong>Geometry is invariant</strong> — only the medium changes</li>
+                        <li>💜 <strong>Context is cryptographic</strong> — with the right context, anything makes sense</li>
+                        <li>⚡ <strong>Delta over Wye</strong> — mesh over centralized</li>
+                        <li>🧠 <strong>AuDHD is ability</strong> — not disability</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE: QUANTUM -->
+        <section id="slide-quantum" class="slide min-h-screen p-6 pt-20 quantum-bg">
+            <div class="max-w-4xl mx-auto">
+                <h2 class="text-3xl font-bold text-white mb-8 text-center">⚛️ Quantum Foundations</h2>
+                
+                <div class="space-y-6">
+                    <div class="bg-p31-panel/80 rounded-xl p-6">
+                        <h3 class="text-lg font-bold text-cyan-400 mb-2">The Posner Molecule</h3>
+                        <p class="text-slate-300 text-sm">Ca₉(PO₄)₆ — Calcium phosphate cluster. The brain's quantum battery. 39 atoms. When calcium is low, these batteries don't charge properly.</p>
+                        <div class="mt-2 font-mono text-xs text-purple-400">39 = 9Ca + 6P + 24O</div>
+                    </div>
+
+                    <div class="bg-p31-panel/80 rounded-xl p-6">
+                        <h3 class="text-lg font-bold text-purple-400 mb-2">K₄ Complete Graph</h3>
+                        <p class="text-slate-300 text-sm">The strongest geometric structure in the universe. 4 nodes, 6 edges. Every point connected to every other point. This is the architecture of P31.</p>
+                    </div>
+
+                    <div class="bg-p31-panel/80 rounded-xl p-6">
+                        <h3 class="text-lg font-bold text-green-400 mb-2">L.O.V.E. Token Economy</h3>
+                        <p class="text-slate-300 text-sm">Ledger of Ontological Volume and Entropy. Earned through care, creation, consistency. Soulbound — can't be bought or sold. Spoons spent; LOVE earned.</p>
+                    </div>
+
+                    <div class="bg-p31-panel/80 rounded-xl p-6">
+                        <h3 class="text-lg font-bold text-amber-400 mb-2">Key Frequencies</h3>
+                        <div class="grid grid-cols-2 gap-4 text-sm font-mono">
+                            <div>
+                                <span class="text-slate-500">Larmor:</span>
+                                <span class="text-white">863 Hz</span>
+                            </div>
+                            <div>
+                                <span class="text-slate-500">P-31 NMR:</span>
+                                <span class="text-white">172.35 Hz</span>
+                            </div>
+                            <div>
+                                <span class="text-slate-500">Breathing:</span>
+                                <span class="text-white">4-4-6</span>
+                            </div>
+                            <div>
+                                <span class="text-slate-500">Nodes:</span>
+                                <span class="text-white">55 (2V icosahedron)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE: PRODUCTS -->
+        <section id="slide-products" class="slide min-h-screen p-6 pt-20">
+            <div class="max-w-4xl mx-auto">
+                <h2 class="text-3xl font-bold text-white mb-8 text-center">🚀 Products</h2>
+                
+                <div class="grid md:grid-cols-2 gap-4">
+                    <!-- BONDING -->
+                    <div class="bg-p31-panel rounded-xl p-5 border border-purple-500/30">
+                        <div class="flex items-center gap-3 mb-3">
+                            <span class="text-3xl">🧪</span>
+                            <div>
+                                <h3 class="font-bold text-white">BONDING</h3>
+                                <span class="text-xs text-green-400">✅ SHIPPED</span>
+                            </div>
+                        </div>
+                        <p class="text-sm text-slate-400 mb-2">Multiplayer chemistry game. Build molecules, earn LOVE. 511 tests, all green.</p>
+                        <a href="https://bonding.p31ca.org" class="text-purple-400 text-sm hover:underline">bonding.p31ca.org</a>
+                    </div>
+
+                    <!-- Spaceship Earth -->
+                    <div class="bg-p31-panel rounded-xl p-5 border border-cyan-500/30">
+                        <div class="flex items-center gap-3 mb-3">
+                            <span class="text-3xl">🌍</span>
+                            <div>
+                                <h3 class="font-bold text-white">Spaceship Earth</h3>
+                                <span class="text-xs text-amber-400">🚧 IN PROGRESS</span>
+                            </div>
+                        </div>
+                        <p class="text-sm text-slate-400 mb-2">Cognitive dashboard with rooms: Observatory (geodesic dome), Collider, BONDING, Buffer.</p>
+                    </div>
+
+                    <!-- Node One -->
+                    <div class="bg-p31-panel rounded-xl p-5 border border-green-500/30">
+                        <div class="flex items-center gap-3 mb-3">
+                            <span class="text-3xl">🤖</span>
+                            <div>
+                                <h3 class="font-bold text-white">Node One</h3>
+                                <span class="text-xs text-slate-400">📦 PROTOTYPE</span>
+                            </div>
+                        </div>
+                        <p class="text-sm text-slate-400 mb-2">ESP32-S3 palm device. Haptic feedback, LoRa mesh, BLE beacons.</p>
+                        <div class="text-xs text-slate-500">$37.50 BOM</div>
+                    </div>
+
+                    <!-- The Buffer -->
+                    <div class="bg-p31-panel rounded-xl p-5 border border-amber-500/30">
+                        <div class="flex items-center gap-3 mb-3">
+                            <span class="text-3xl">🧠</span>
+                            <div>
+                                <h3 class="font-bold text-white">The Buffer</h3>
+                                <span class="text-xs text-slate-400">📋 ~85%</span>
+                            </div>
+                        </div>
+                        <p class="text-sm text-slate-400 mb-2">Communication processing. Fawn Guard. Chaos ingestion. Cognitive load management.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE: BELIEFS (FOCUS MODE) -->
+        <section id="slide-beliefs" class="slide min-h-screen p-6 pt-20">
+            <div class="max-w-4xl mx-auto">
+                <h2 class="text-3xl font-bold text-white mb-8 text-center">💡 Belief Artifacts</h2>
+                
+                <p class="text-center text-slate-400 mb-6">Click any card to present in Focus Mode</p>
+                
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3" id="beliefs-grid"></div>
+            </div>
+
+            <!-- Focus Modal -->
+            <div id="focus-modal" class="hidden fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-4">
+                <button onclick="closeFocus()" class="absolute top-4 right-4 text-3xl text-slate-400 hover:text-white">&times;</button>
+                <div class="bg-p31-panel rounded-2xl p-8 max-w-lg w-full border border-purple-500/30" id="focus-content"></div>
+                <div class="fixed bottom-6 flex gap-4">
+                    <button onclick="prevBelief()" class="px-4 py-2 bg-slate-700 rounded-full text-sm">← Prev</button>
+                    <button onclick="nextBelief()" class="px-4 py-2 bg-purple-600 rounded-full text-sm">Next →</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE: HIRING -->
+        <section id="slide-hiring" class="slide min-h-screen p-6 pt-20">
+            <div class="max-w-4xl mx-auto">
+                <h2 class="text-3xl font-bold text-white mb-4 text-center">👥 Delta Hiring</h2>
+                <p class="text-center text-slate-400 mb-6">No resumes. Prove it with WCD challenges.</p>
+                
+                <div class="grid md:grid-cols-2 gap-4">
+                    <!-- HIGH PRIORITY -->
+                    <div class="bg-red-900/20 border border-red-500/30 rounded-xl p-4">
+                        <h3 class="font-bold text-red-400 mb-3">🔴 HIGH PRIORITY</h3>
+                        <div class="space-y-3">
+                            <div class="bg-p31-panel p-3 rounded-lg">
+                                <h4 class="font-bold text-white text-sm">React Frontend</h4>
+                                <p class="text-xs text-slate-400">WCD-FRONT-001 • +10 LOVE</p>
+                            </div>
+                            <div class="bg-p31-panel p-3 rounded-lg">
+                                <h4 class="font-bold text-white text-sm">3D Developer (R3F)</h4>
+                                <p class="text-xs text-slate-400">WCD-3D-001 • +25 LOVE</p>
+                            </div>
+                            <div class="bg-p31-panel p-3 rounded-lg">
+                                <h4 class="font-bold text-white text-sm">Grant Writer</h4>
+                                <p class="text-xs text-slate-400">WCD-GRANT-001 • +50 LOVE</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MEDIUM -->
+                    <div class="bg-amber-900/20 border border-amber-500/30 rounded-xl p-4">
+                        <h3 class="font-bold text-amber-400 mb-3">🟡 MEDIUM</h3>
+                        <div class="space-y-3">
+                            <div class="bg-p31-panel p-3 rounded-lg">
+                                <h4 class="font-bold text-white text-sm">Firmware (ESP32)</h4>
+                                <p class="text-xs text-slate-400">WCD-HW-001 • +30 LOVE</p>
+                            </div>
+                            <div class="bg-p31-panel p-3 rounded-lg">
+                                <h4 class="font-bold text-white text-sm">Backend</h4>
+                                <p class="text-xs text-slate-400">WCD-BE-001 • +20 LOVE</p>
+                            </div>
+                            <div class="bg-p31-panel p-3 rounded-lg">
+                                <h4 class="font-bold text-white text-sm">UI/UX Designer</h4>
+                                <p class="text-xs text-slate-400">WCD-DES-001 • +15 LOVE</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-6 text-center">
+                    <a href="docs/delta-job-board.html" class="inline-block bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-6 rounded-full">
+                        View Full Job Board →
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE: OPS -->
+        <section id="slide-ops" class="slide min-h-screen p-6 pt-20">
+            <div class="max-w-4xl mx-auto">
+                <h2 class="text-3xl font-bold text-white mb-8 text-center">⚡ Quick Actions</h2>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <a href="docs/dinner-dashboard.html" class="bg-p31-panel hover:bg-purple-900/30 rounded-xl p-4 border border-purple-500/30 transition-colors">
+                        <span class="text-2xl">🎯</span>
+                        <h3 class="font-bold text-white mt-2">Dinner Dashboard</h3>
+                        <p class="text-xs text-slate-400">Checklist & protocols</p>
+                    </a>
+                    
+                    <a href="docs/delta-architecture.html" class="bg-p31-panel hover:bg-cyan-900/30 rounded-xl p-4 border border-cyan-500/30 transition-colors">
+                        <span class="text-2xl">🌐</span>
+                        <h3 class="font-bold text-white mt-2">Delta Architecture</h3>
+                        <p class="text-xs text-slate-400">Hiring system overview</p>
+                    </a>
+                    
+                    <a href="docs/family-beliefs.html" class="bg-p31-panel hover:bg-green-900/30 rounded-xl p-4 border border-green-500/30 transition-colors">
+                        <span class="text-2xl">💡</span>
+                        <h3 class="font-bold text-white mt-2">Belief Artifacts</h3>
+                        <p class="text-xs text-slate-400">Visual presentation</p>
+                    </a>
+                    
+                    <a href="https://github.com/p31labs" target="_blank" rel="noopener" class="bg-p31-panel hover:bg-slate-800 rounded-xl p-4 border border-slate-600 transition-colors">
+                        <span class="text-2xl">🐙</span>
+                        <h3 class="font-bold text-white mt-2">GitHub</h3>
+                        <p class="text-xs text-slate-400">Source code</p>
+                    </a>
+                </div>
+
+                <div class="mt-8 bg-p31-panel rounded-xl p-4 border border-amber-500/30 text-center">
+                    <h3 class="font-bold text-amber-400 mb-2">⚠️ Upcoming Deadlines</h3>
+                    <ul class="text-sm space-y-1 text-slate-300">
+                        <li>Mar 24: Psychiatrist appointment (differential diagnosis)</li>
+                        <li>Mar 26: Discovery response deadline</li>
+                    </ul>
+                </div>
+
+                <div class="mt-8 text-center">
+                    <p class="text-slate-500 text-sm">Questions? will@p31ca.org</p>
+                    <p class="text-purple-400 mt-2">💜🔺💜</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE: INTERACTIVE QUANTUM -->
+        <section id="slide-interactive" class="slide min-h-screen p-6 pt-20">
+            <div class="max-w-6xl mx-auto">
+                <h2 class="text-3xl font-bold text-white mb-8 text-center">🎮 Interactive Quantum Tetrahedron</h2>
+                
+                <!-- Interactive Controls -->
+                <div class="bg-p31-panel rounded-xl p-6 mb-6 border border-cyan-500/30">
+                    <h3 class="text-lg font-bold text-cyan-400 mb-4">3D Visualization Controls</h3>
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        <button onclick="toggleRotation()" class="bg-slate-700 hover:bg-cyan-600 text-white px-4 py-2 rounded-full text-sm transition-colors">
+                            Toggle Rotation
+                        </button>
+                        <button onclick="explodeGeometry()" class="bg-slate-700 hover:bg-red-600 text-white px-4 py-2 rounded-full text-sm transition-colors">
+                            Explode
+                        </button>
+                        <button onclick="resetGeometry()" class="bg-slate-700 hover:bg-green-600 text-white px-4 py-2 rounded-full text-sm transition-colors">
+                            Reset
+                        </button>
+                        <button onclick="toggleWireframe()" class="bg-slate-700 hover:bg-purple-600 text-white px-4 py-2 rounded-full text-sm transition-colors">
+                            Wireframe
+                        </button>
+                    </div>
+                    
+                    <!-- Live Stats -->
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="bg-p31-surface rounded-lg p-4 text-center">
+                            <div class="stat-value" id="node-count">4</div>
+                            <div class="stat-label">Nodes</div>
+                        </div>
+                        <div class="bg-p31-surface rounded-lg p-4 text-center">
+                            <div class="stat-value" id="edge-count">6</div>
+                            <div class="stat-label">Edges</div>
+                        </div>
+                        <div class="bg-p31-surface rounded-lg p-4 text-center">
+                            <div class="stat-value" id="rigidity-score">100%</div>
+                            <div class="stat-label">Rigidity</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3D Container -->
+                <div class="bg-p31-panel rounded-xl p-6 border border-purple-500/30">
+                    <div id="tetrahedron-container" style="width: 100%; height: 400px; background: rgba(0,0,0,0.2); border-radius: 8px;"></div>
+                </div>
+
+                <!-- Mathematical Proof Section -->
+                <div class="grid md:grid-cols-2 gap-6 mt-6">
+                    <div class="bg-p31-panel rounded-xl p-6 border border-green-500/30">
+                        <h3 class="text-lg font-bold text-green-400 mb-4">📐 Mathematical Foundation</h3>
+                        <p class="text-sm text-slate-300 mb-3"><strong>Maxwell's Rigidity Condition (1864):</strong></p>
+                        <p class="highlight font-mono text-lg mb-3">|E| = 3|V| - 6</p>
+                        <p class="text-sm text-slate-300 mb-3">For tetrahedron: 6 = 3(4) - 6 ✓</p>
+                        
+                        <p class="text-sm text-slate-300 mb-3"><strong>Thomson's Problem (1904):</strong></p>
+                        <p class="text-sm text-slate-300">Four point charges on a sphere naturally form a regular tetrahedron - the energetic ground state.</p>
+                    </div>
+
+                    <div class="bg-p31-panel rounded-xl p-6 border border-cyan-500/30">
+                        <h3 class="text-lg font-bold text-cyan-400 mb-4">🔬 Real-World Applications</h3>
+                        <ul class="text-sm text-slate-300 space-y-2">
+                            <li><span class="highlight">Floating Neutral:</span> When centralized systems lose ground reference</li>
+                            <li><span class="highlight">Wye-to-Delta:</span> Engineering solution for mesh topology</li>
+                            <li><span class="highlight">Posner Molecules:</span> Ca₉(PO₄)₆ - brain's quantum batteries</li>
+                            <li><span class="highlight">Hypoparathyroidism:</span> Biological floating neutral</li>
+                            <li><span class="highlight">Quantum Security:</span> Geometric protection from shape of space</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Call to Action -->
+                <div class="bg-p31-panel rounded-xl p-6 mt-6 border border-purple-500/30">
+                    <h3 class="text-xl font-bold text-purple-400 mb-4">🚀 Join the Mesh</h3>
+                    <p class="text-slate-300 mb-4">Every supporter becomes a node in the Delta mesh. We're tracking progress toward key milestones:</p>
+                    <ul class="text-slate-300 space-y-2 mb-4">
+                        <li><span class="highlight">4 nodes:</span> First tetrahedron (structural rigidity)</li>
+                        <li><span class="highlight">39 nodes:</span> Posner number (quantum biology)</li>
+                        <li><span class="highlight">863 nodes:</span> Larmor frequency (resonance)</li>
+                    </ul>
+                    <p class="text-lg font-bold text-violet-400 mb-4">It's not a matter of wanting P31. They NEED P31.</p>
+                    <div class="flex flex-wrap gap-4">
+                        <a href="https://ko-fi.com/trimtab69420" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-6 rounded-full transition-colors" target="_blank" rel="noopener">
+                            Support P31 Labs
+                        </a>
+                        <a href="https://phosphorus31.org" class="bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-2 px-6 rounded-full transition-colors" target="_blank" rel="noopener">
+                            phosphorus31.org
+                        </a>
+                        <a href="https://bonding.p31ca.org" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-full transition-colors" target="_blank" rel="noopener">
+                            bonding.p31ca.org
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="fixed bottom-0 left-0 right-0 bg-p31-surface/90 backdrop-blur-md border-t border-purple-900/30 text-center py-2 text-xs text-slate-500">
+        💜🔺💜 P31 Labs | Open Source | Quantum Geometry | Neurodivergent Technology | Everything above is verifiable. Check the math. That's the point.
+    </footer>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+        // Initialize Three.js scene for interactive section
+        const container = document.getElementById('tetrahedron-container');
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x050510);
+        
+        const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 100);
+        camera.position.z = 5;
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        container.appendChild(renderer.domElement);
+
+        // Controls
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+
+        // Lighting
+        const ambientLight = new THREE.AmbientLight(0x404040, 2);
+        scene.add(ambientLight);
+
+        const pointLight = new THREE.PointLight(0x00d4ff, 2, 10);
+        pointLight.position.set(5, 5, 5);
+        scene.add(pointLight);
+
+        const pointLight2 = new THREE.PointLight(0x00ff88, 2, 10);
+        pointLight2.position.set(-5, -5, -5);
+        scene.add(pointLight2);
+
+        // Tetrahedron Geometry
+        const geometry = new THREE.TetrahedronGeometry(1.5);
+        const material = new THREE.MeshPhongMaterial({ 
+            color: 0x00d4ff,
+            wireframe: false,
+            transparent: true,
+            opacity: 0.8,
+            shininess: 100
+        });
+        
+        const tetrahedron = new THREE.Mesh(geometry, material);
+        scene.add(tetrahedron);
+
+        // Wireframe version
+        const wireframeMaterial = new THREE.MeshBasicMaterial({
+            color: 0x7a27ff,
+            wireframe: true,
+            transparent: true,
+            opacity: 0.3
+        });
+        
+        const wireframe = new THREE.Mesh(geometry, wireframeMaterial);
+        scene.add(wireframe);
+
+        // Animation state
+        let isRotating = true;
+        let isExploded = false;
+        let isWireframeVisible = false;
+
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+
+            if (isRotating) {
+                tetrahedron.rotation.x += 0.005;
+                tetrahedron.rotation.y += 0.01;
+                wireframe.rotation.x += 0.005;
+                wireframe.rotation.y += 0.01;
+            }
+
+            controls.update();
+            renderer.render(scene, camera);
+        }
+
+        // Interactive functions
+        window.toggleRotation = () => {
+            isRotating = !isRotating;
+        };
+
+        window.explodeGeometry = () => {
+            if (!isExploded) {
+                // Animate vertices outward
+                const positions = geometry.attributes.position;
+                for (let i = 0; i < positions.count; i++) {
+                    const x = positions.getX(i);
+                    const y = positions.getY(i);
+                    const z = positions.getZ(i);
+                    
+                    positions.setX(i, x * 1.5);
+                    positions.setY(i, y * 1.5);
+                    positions.setZ(i, z * 1.5);
+                }
+                positions.needsUpdate = true;
+                isExploded = true;
+            }
+        };
+
+        window.resetGeometry = () => {
+            const positions = geometry.attributes.position;
+            for (let i = 0; i < positions.count; i++) {
+                const x = positions.getX(i);
+                const y = positions.getY(i);
+                const z = positions.getZ(i);
+                
+                positions.setX(i, x / 1.5);
+                positions.setY(i, y / 1.5);
+                positions.setZ(i, z / 1.5);
+            }
+            positions.needsUpdate = true;
+            isExploded = false;
+        };
+
+        window.toggleWireframe = () => {
+            isWireframeVisible = !isWireframeVisible;
+            wireframe.visible = isWireframeVisible;
+        };
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            camera.aspect = container.clientWidth / container.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, container.clientHeight);
+        });
+
+        // BELIEF ARTIFACTS DATA
+        const beliefs = [
+            { icon: "🌡️", title: "Broken Thermostat", text: "My calcium 'thermostat' is broken. Like a house furnace that never kicks on in winter." },
+            { icon: "🔋", title: "Brain Battery", text: "Posner molecules are quantum batteries. Low calcium = uncharged batteries = brain fog." },
+            { icon: "☀️", title: "Solar Power", text: "Decentralized systems like solar panels instead of one big power plant." },
+            { icon: "🔺", title: "Tetrahedron", text: "The strongest shape in the universe. K4 complete graph. 4 nodes, 6 edges." },
+            { icon: "🚗", title: "Wye → Delta", text: "Traffic jam (Wye) vs. multiple highways (Delta). Direct routes." },
+            { icon: "🎮", title: "Video Game Progress", text: "Video game progress for real-life accomplishments. Earn LOVE for helping." },
+            { icon: "🧪", title: "BONDING Game", text: "BONDING game teaches real chemistry. Build real molecules." },
+            { icon: "🌊", title: "Ripple Effect", text: "Ripple effect. One solution creates waves of change." }
+        ];
+
+        let currentBelief = 0;
+
+        function renderBeliefs() {
+            const grid = document.getElementById('beliefs-grid');
+            grid.innerHTML = beliefs.map((b, i) => `
+                <div onclick="openFocus(${i})" class="bg-p31-panel hover:bg-purple-900/30 rounded-lg p-4 cursor-pointer border border-slate-700 hover:border-purple-500 transition-colors text-center">
+                    <div class="text-3xl mb-2">${b.icon}</div>
+                    <div class="font-bold text-white text-sm">${b.title || 'Concept'}</div>
+                </div>
+            `).join('');
+        }
+
+        function openFocus(index) {
+            currentBelief = index;
+            updateFocus();
+            document.getElementById('focus-modal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeFocus() {
+            document.getElementById('focus-modal').classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        function updateFocus() {
+            const b = beliefs[currentBelief];
+            document.getElementById('focus-content').innerHTML = `
+                <div class="text-center">
+                    <div class="text-6xl mb-4">${b.icon}</div>
+                    <h3 class="text-2xl font-bold text-white mb-4">${b.title || 'Concept'}</h3>
+                    <p class="text-lg text-slate-300 italic">"${b.text}"</p>
+                    <p class="text-xs text-slate-500 mt-4">${currentBelief + 1} of ${beliefs.length}</p>
+                </div>
+            `;
+        }
+
+        function nextBelief() {
+            currentBelief = (currentBelief + 1) % beliefs.length;
+            updateFocus();
+        }
+
+        function prevBelief() {
+            currentBelief = (currentBelief - 1 + beliefs.length) % beliefs.length;
+            updateFocus();
+        }
+
+        // SLIDE NAVIGATION
+        function showSlide(id) {
+            document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+            document.getElementById('slide-' + id).classList.add('active');
+        }
+
+        // KEYBOARD NAV
+        document.addEventListener('keydown', (e) => {
+            const slides = ['home', 'mission', 'quantum', 'products', 'beliefs', 'hiring', 'ops', 'interactive'];
+            const current = slides.findIndex(s => document.getElementById('slide-' + s).classList.contains('active'));
+            
+            if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+                showSlide(slides[(current + 1) % slides.length]);
+            } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                showSlide(slides[(current - 1 + slides.length) % slides.length]);
+            } else if (e.key === 'Escape') {
+                closeFocus();
+            }
+        });
+
+        // Remove loading overlay
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('loading').style.opacity = 0;
+                setTimeout(() => {
+                    document.getElementById('loading').style.display = 'none';
+                }, 500);
+            }, 1000);
+        });
+
+        // Start animation and render beliefs
+        animate();
+        renderBeliefs();
+
+        // Update stats periodically
+        let nodeCount = 0;
+        setInterval(() => {
+            nodeCount = (nodeCount + 1) % 5;
+            const nodeCountElement = document.getElementById('node-count-display');
+            if (nodeCountElement) {
+                nodeCountElement.textContent = nodeCount;
+            }
+        }, 1000);
+    </script>
+</body>
+</html>

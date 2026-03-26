@@ -17,6 +17,7 @@ interface Env {
 interface CheckoutRequest {
   amount: number;       // cents
   currency: string;     // "usd"
+  mode: 'monthly' | 'once';
   successUrl: string;
   cancelUrl: string;
 }
@@ -57,14 +58,23 @@ export default {
           return Response.json({ error: 'Amount too large' }, { status: 400, headers });
         }
 
+        // Determine payment mode (subscription for monthly, payment for one-time)
+        const paymentMode = body.mode === 'monthly' ? 'subscription' : 'payment';
+
         // Create Stripe Checkout Session via REST API (no SDK needed)
         const params = new URLSearchParams();
-        params.append('mode', 'payment');
+        params.append('mode', paymentMode);
         params.append('line_items[0][price_data][currency]', body.currency || 'usd');
         params.append('line_items[0][price_data][product_data][name]', 'Donation to P31 Labs');
         params.append('line_items[0][price_data][product_data][description]', 'Supporting free assistive technology for neurodivergent families');
         params.append('line_items[0][price_data][unit_amount]', String(body.amount));
         params.append('line_items[0][quantity]', '1');
+
+        // Add recurring interval for monthly donations
+        if (body.mode === 'monthly') {
+          params.append('line_items[0][price_data][recurring][interval]', 'month');
+        }
+
         params.append('success_url', body.successUrl || 'https://phosphorus31.org/donate?success=1');
         params.append('cancel_url', body.cancelUrl || 'https://phosphorus31.org/donate');
         params.append('submit_type', 'donate');
