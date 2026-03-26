@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180">
+  <defs>
+    <linearGradient id="abg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#264653"/>
+      <stop offset="100%" stop-color="#1a3340"/>
+    </linearGradient>
+  </defs>
+  
+  <rect width="180" height="180" rx="36" fill="url(#abg)"/>
+  
+  <!-- Tetrahedron -->
+  <g stroke="#2A9D8F" stroke-width="4" fill="none" stroke-linecap="round">
+    <line x1="90" y1="28" x2="28" y2="148"/>
+    <line x1="90" y1="28" x2="152" y2="148"/>
+    <line x1="28" y1="148" x2="152" y2="148"/>
+    <!-- Depth edges -->
+    <line x1="90" y1="28" x2="90" y2="105" opacity="0.3"/>
+    <line x1="28" y1="148" x2="90" y2="105" opacity="0.3"/>
+    <line x1="152" y1="148" x2="90" y2="105" opacity="0.3"/>
+  </g>
+  
+  <!-- Vertices -->
+  <circle cx="90" cy="28" r="6" fill="#2A9D8F"/>
+  <circle cx="28" cy="148" r="6" fill="#2A9D8F"/>
+  <circle cx="152" cy="148" r="6" fill="#2A9D8F"/>
+  
+  <!-- Nucleus -->
+  <circle cx="90" cy="95" r="28" fill="none" stroke="#E76F51" stroke-width="3" opacity="0.8"/>
+  <circle cx="90" cy="95" r="18" fill="#E76F51" opacity="0.1"/>
+  
+  <text x="74" y="88" font-family="monospace" font-size="14" fill="#E76F51" font-weight="bold">31</text>
+  <text x="80" y="108" font-family="serif" font-size="26" fill="#E76F51" font-weight="bold">P</text>
+</svg>

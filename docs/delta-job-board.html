@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>P31 Labs Delta Job Board</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        p31: {
+                            bg: '#0a0a0f',
+                            surface: '#14141f',
+                            border: '#2a2a3f',
+                            purple: '#9333ea',
+                            green: '#10b981',
+                            amber: '#f59e0b',
+                            cyan: '#06b6d4'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: ui-sans-serif, system-ui, sans-serif; }
+        .job-card { transition: all 0.2s; }
+        .job-card:hover { transform: translateY(-2px); border-color: #9333ea; }
+        .tag { @apply text-xs px-2 py-0.5 rounded-full; }
+    </style>
+</head>
+<body class="bg-p31-bg text-slate-200 min-h-screen pb-20">
+
+    <!-- Header -->
+    <header class="bg-p31-surface border-b border-p31-border sticky top-0 z-40">
+        <div class="max-w-3xl mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded bg-gradient-to-br from-p31-purple to-purple-800 flex items-center justify-center text-white font-bold text-xl">Δ</div>
+                    <div>
+                        <h1 class="text-xl font-bold text-white">P31 Labs</h1>
+                        <p class="text-xs text-slate-400">Delta Job Board • Open Roles</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <span class="bg-p31-green/20 text-p31-green text-xs px-2 py-1 rounded-full">8 OPEN</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-3xl mx-auto px-4 py-6 space-y-6">
+        
+        <!-- Intro -->
+        <div class="bg-p31-surface rounded-xl p-4 border border-p31-border">
+            <h2 class="text-lg font-bold text-white mb-2">How Delta Hiring Works</h2>
+            <p class="text-sm text-slate-400 mb-3">No resumes. No degrees. Prove your skills through real work challenges.</p>
+            <div class="flex flex-wrap gap-2 text-xs">
+                <span class="bg-slate-800 px-2 py-1 rounded">1. Browse open roles</span>
+                <span class="bg-slate-800 px-2 py-1 rounded">2. Complete WCD challenge</span>
+                <span class="bg-slate-800 px-2 py-1 rounded">3. Earn L.O.V.E. tokens</span>
+                <span class="bg-slate-800 px-2 py-1 rounded">4. Join as Guild Member</span>
+            </div>
+        </div>
+
+        <!-- Open Positions -->
+        <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wider">Open Positions</h3>
+
+        <!-- Role 1: React Frontend -->
+        <div class="job-card bg-p31-surface rounded-xl p-4 border border-p31-border">
+            <div class="flex items-start justify-between mb-3">
+                <div>
+                    <h4 class="text-lg font-bold text-white">React Frontend Developer</h4>
+                    <p class="text-sm text-p31-cyan">Guild: Frontend • Priority: HIGH</p>
+                </div>
+                <span class="bg-p31-purple/20 text-p31-purple text-xs px-2 py-1 rounded">REMOTE</span>
+            </div>
+            <p class="text-sm text-slate-400 mb-3">Build accessible React components for Spaceship Earth and BONDING game. Experience with TypeScript and state management required.</p>
+            <div class="flex flex-wrap gap-1 mb-3">
+                <span class="bg-slate-800 text-slate-300 text-xs px-2 py-0.5 rounded">React</span>
+                <span class="bg-slate-800 text-slate-300 text-xs px-2 py-0.5 rounded">TypeScript</span>
+                <span class="bg-slate-800 text-slate-300 text-xs px-2 py-0.5 rounded">Zustand</span>
+                <span class="bg-slate-800 text-slate-300 text-xs px-2 py-0.5 rounded">Tailwind</span>
+            </div>
+            <div class="bg-slate-900 rounded-lg p-3">
+                <p class="text-xs text-slate-400 mb-2">🎯 WCD Challenge:</p>
+                <p class="text-sm font-mono text-p31-green">WCD-FRONT-001: Build accessible modal component with animations</p>
+                <div class="flex justify-between mt-2 text-xs">
+                    <span class="text-slate-500">+10 L.O.V.E.</span>
+                    <span class="text-p31-amber">Difficulty: ★★☆☆☆</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Role 2: Three.js/R3F -->
+        <div class="job-card bg-p31-surface rounded-xl p-4 border border-p31-border">
+            <div class="flex items-start justify-between mb-3">
+                <div>
+                    <h4 class="text-lg font-bold text-white">3D Developer (Three.js/R3F)</h4>
+                    <p class="text-sm text-p31-cyan">Guild: Frontend • Priority: HIGH</p>
+                </div>
+                <span class="bg-p31-purple/20 text-p31-purple text-xs px-2 py-1 rounded">REMOTE</span>
+            </div>
+            <p class="text-sm text-slate-400 mb-3">Create immersive 3D experiences for Observatory Room (geodesic dome) and Collider Room (particle simulator).</p>
+            <div class="flex flex-wrap gap-1 mb-3">
+                <span class="bg-slate-800 text-slate-300 text-xs px-2 py-0.5 rounded">Three.js</span>
+                <span class="bg-slate-800 text-slate-300 text-xs px-2 py-0.5 rounded">R3F</span>
+                <span class="bg-slate-800 text-slate-300 text-xs px-2 py-0.5 rounded">WebGL</span>
+                <span class="bg-slate-800 text-slate-300 text-xs px-2 py-0.5 rounded">GLSL</span>
+            </div>
+            <div class="bg-slate-900 rounded-lg p-3">
+                <p class="text-xs text-slate-400 mb-2">🎯 WCD Challenge:</p>
+                <p class="text-sm font-mono text-p31-green">WCD-3D-001: Implement 2V icosahedron with 55 nodes</p>
+                <div class="flex justify-between mt-2 text-xs">
+                    <span class="text-slate-500">+25 L.O.V.E.</span>
+                    <span class="text-p31-amber">Difficulty: ★★★★☆</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Role 3: Hardware/Firmware -->
+        <div class="job-card bg-p31-surface rounded-xl p-4 border border-p31-border">
+            <div class="flex items-start justify-between mb-3">
+                <div>
+                    <h4 class="text-lg font-bold text-white">Firmware Engineer (ESP32)</h4>
+                    <p class="text-sm text-p31-cyan">Guild: Hardware • Priority: MEDIUM</p>
+                </div>
+                <span class="bg-p31-purple/20 text-p31-purple text-xs px-2 py-1 rounded">REMOTE</span>
+            </div>
+            <p class="text-sm text-slate-400 mb-3">Build firmware for Node One (ESP32-S3) with haptic feedback (DRV2605L), LoRa mesh, and BLE beacon support.</p>
+            <div class="flex flex-wrap gap-1 mb-3">
+                <span class="bg-slate-800 text-slate-300 text-xs px-2 py-0.5 rounded">ESP-IDF</span>
+                <span class="bg-slate-800 text-slate-300 text-xs px-2 py-0.5 rounded">C/C++</span>
+                <span class="bg-slate-800 text-slate-300 text-xs px-2 py-0.5 rounded">BLE</span>
+                <span class="bg-slate-800 text-slate-300 text-xs px-2 py-0.5 rounded">LoRa</span>
+            </div>
+            <div class="bg-slate-900 rounded-lg p-3">
+                <p class="text-xs text-slate-400 mb-2">🎯 WCD Challenge:</p>
+                <p class="text-sm font-mono text-p31-green">WCD-HW-001: Implement DRV2605L haptic pattern library</p>
+                <div class="flex justify-between mt-2 text-xs">
+                    <span class="text-slate-500">+30 L.O.V.E.</span>
+                    <span class="text-p31-amber">Difficulty: ★★★★☆</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Role 4: Backend/DevOps -->
+        <div class="job-card bg-p31-surface rounded-xl p-4 border border-p31-border">
+            <div class="flex items-start justify-between mb-3">
+                <div>
+                    <h4 class="text-lg font-bold text-white">Backend Engineer</h4>
+                    <p class="text-sm text-p31-cyan">Guild: Backend • Priority: MEDIUM</p>
+                </div>
+                <span class="bg-p31-purple/20 text-p31-purple text-xs px-2 py-1 rounded">REMOTE</span>
+            </div>
+            <p class="text-sm text-slate-400 mb-3">Extend Cloudflare Workers, design PostgreSQL schemas, implement CRDT sync for Spaceship Earth.</p>
+            <div class="flex flex-wrap gap-1 mb-3">
+                <span class="bg-slate-800 text-slate-300 text-xs px-2 py-0.5 rounded">Cloudflare</span>
+                <span class="bg-slate-800 text-slate-300 text-xs px-2 py-0.5 rounded">PostgreSQL</span>
+                <span class="bg-slate-800 text-slate-300 text-xs px-2 py-0.5 rounded">Workers</span>
+                <span class="bg-slate-800 text-slate-300 text-xs px-2 py-0.5 rounded">CRDT</span>
+            </div>
+            <div class="bg-slate-900 rounded-lg p-3">
+                <p class="text-xs text-slate-400 mb-2">🎯 WCD Challenge:</p>
+                <p class="text-sm font-mono text-p31-green">WCD-BE-001: Implement room presence API</p>
+                <div class="flex justify-between mt-2 text-xs">
+                    <span class="text-slate-500">+20 L.O.V.E.</span>
+                    <span class="text-p31-amber">Difficulty: ★★★☆☆</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Role 5: UI/UX Designer -->
+        <div class="job-card bg-p31-surface rounded-xl p-4 border border-p31-border">
+            <div class="flex items-start justify-between mb-3">
+                <div>
+                    <h4 class="text-lg font-bold text-white">UI/UX Designer</h4>
+                    <p class="text-sm text-p31-cyan">Guild: Design • Priority: MEDIUM</p>
+                </div>
+                <span class="bg-p31-purple/20 text-p31-purple text-xs px-2 py-1 rounded">REMOTE</span>
+            </div>
+            <p class="text-sm text-slate-400 mb-3">Design accessible interfaces for neurodivergent users. Focus on cognitive load reduction and clear visual hierarchy.</p>
+            <div class="flex flex-wrap gap-1 mb-3">
+                <span class="bg-slate-800 text-slate-300 text-xs px-2 py-0.5 rounded">Figma</span>
+                <span class="bg-slate-800 text-slate-300 text-xs px-2 py-0.5 rounded">Accessibility</span>
+                <span class="bg-slate-800 text-slate-300 text-xs px-2 py-0.5 rounded">Design Systems</span>
+            </div>
+            <div class="bg-slate-900 rounded-lg p-3">
+                <p class="text-xs text-slate-400 mb-2">🎯 WCD Challenge:</p>
+                <p class="text-sm font-mono text-p31-green">WCD-DES-001: Design accessible room navigation UI</p>
+                <div class="flex justify-between mt-2 text-xs">
+                    <span class="text-slate-500">+15 L.O.V.E.</span>
+                    <span class="text-p31-amber">Difficulty: ★★☆☆☆</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Role 6: Technical Writer -->
+        <div class="job-card bg-p31-surface rounded-xl p-4 border border-p31-border">
+            <div class="flex items-start justify-between mb-3">
+                <div>
+                    <h4 class="text-lg font-bold text-white">Technical Writer</h4>
+                    <p class="text-sm text-p31-cyan">Guild: Operations • Priority: LOW</p>
+                </div>
+                <span class="bg-p31-purple/20 text-p31-purple text-xs px-2 py-1 rounded">REMOTE</span>
+            </div>
+            <p class="text-sm text-slate-400 mb-3">Create documentation for API, firmware, and user guides. Experience with developer docs required.</p>
+            <div class="flex flex-wrap gap-1 mb-3">
+                <span class="bg-slate-800 text-slate-300 text-xs px-2 py-0.5 rounded">Markdown</span>
+                <span class="bg-slate-800 text-slate-300 text-xs px-2 py-0.5 rounded">API Docs</span>
+                <span class="bg-slate-800 text-slate-300 text-xs px-2 py-0.5 rounded">GitHub</span>
+            </div>
+            <div class="bg-slate-900 rounded-lg p-3">
+                <p class="text-xs text-slate-400 mb-2">🎯 WCD Challenge:</p>
+                <p class="text-sm font-mono text-p31-green">WCD-DOC-001: Write API reference for meshSync service</p>
+                <div class="flex justify-between mt-2 text-xs">
+                    <span class="text-slate-500">+10 L.O.V.E.</span>
+                    <span class="text-p31-amber">Difficulty: ★☆☆☆☆</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Role 7: Grant Writer -->
+        <div class="job-card bg-p31-surface rounded-xl p-4 border border-p31-border">
+            <div class="flex items-start justify-between mb-3">
+                <div>
+                    <h4 class="text-lg font-bold text-white">Grant Writer</h4>
+                    <p class="text-sm text-p31-cyan">Guild: Operations • Priority: HIGH</p>
+                </div>
+                <span class="bg-p31-purple/20 text-p31-purple text-xs px-2 py-1 rounded">REMOTE</span>
+            </div>
+            <p class="text-sm text-slate-400 mb-3">Research and write federal grant applications (NIDILRR, NSF, DOE). Must understand assistive technology landscape.</p>
+            <div class="flex flex-wrap gap-1 mb-3">
+                <span class="bg-slate-800 text-slate-300 text-xs px-2 py-0.5 rounded">NSF</span>
+                <span class="bg-slate-800 text-slate-300 text-xs px-2 py-0.5 rounded">NIDILRR</span>
+                <span class="bg-slate-800 text-slate-300 text-xs px-2 py-0.5 rounded">Grant Apps</span>
+            </div>
+            <div class="bg-slate-900 rounded-lg p-3">
+                <p class="text-xs text-slate-400 mb-2">🎯 WCD Challenge:</p>
+                <p class="text-sm font-mono text-p31-green">WCD-GRANT-001: Draft NIDILRR FIP concept paper</p>
+                <div class="flex justify-between mt-2 text-xs">
+                    <span class="text-slate-500">+50 L.O.V.E.</span>
+                    <span class="text-p31-amber">Difficulty: ★★★★★</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Role 8: Community Manager -->
+        <div class="job-card bg-p31-surface rounded-xl p-4 border border-p31-border">
+            <div class="flex items-start justify-between mb-3">
+                <div>
+                    <h4 class="text-lg font-bold text-white">Community Manager</h4>
+                    <p class="text-sm text-p31-cyan">Guild: Operations • Priority: MEDIUM</p>
+                </div>
+                <span class="bg-p31-purple/20 text-p31-purple text-xs px-2 py-1 rounded">REMOTE</span>
+            </div>
+            <p class="text-sm text-slate-400 mb-3">Grow P31 Labs community across Discord, GitHub, and events. Coordinate with beta testers and supporters.</p>
+            <div class="flex flex-wrap gap-1 mb-3">
+                <span class="bg-slate-800 text-slate-300 text-xs px-2 py-0.5 rounded">Discord</span>
+                <span class="bg-slate-800 text-slate-300 text-xs px-2 py-0.5 rounded">Social Media</span>
+                <span class="bg-slate-800 text-slate-300 text-xs px-2 py-0.5 rounded">Events</span>
+            </div>
+            <div class="bg-slate-900 rounded-lg p-3">
+                <p class="text-xs text-slate-400 mb-2">🎯 WCD Challenge:</p>
+                <p class="text-sm font-mono text-p31-green">WCD-COMM-001: Create onboarding flow for new Discord members</p>
+                <div class="flex justify-between mt-2 text-xs">
+                    <span class="text-slate-500">+10 L.O.V.E.</span>
+                    <span class="text-p31-amber">Difficulty: ★☆☆☆☆</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="bg-p31-surface rounded-xl p-4 border border-p31-border text-center">
+            <p class="text-sm text-slate-400 mb-2">Questions? Reach out on GitHub or Discord</p>
+            <div class="flex justify-center gap-3 text-sm">
+                <a href="https://github.com/p31labs" class="text-p31-purple hover:underline">GitHub</a>
+                <span class="text-slate-600">•</span>
+                <a href="https://phosphorus31.org" class="text-p31-purple hover:underline">Website</a>
+            </div>
+        </div>
+
+    </main>
+</body>
+</html>

@@ -1,0 +1,131 @@
+import express, { Request, Response, NextFunction } from 'express';
+import cors from 'cors';
+import { EventEmitter } from 'events';
+
+export interface WebhookEvent {
+  type: 'kofi' | 'node_one' | 'bonding';
+  payload: Record<string, unknown>;
+  timestamp: string;
+}
+
+export interface KoFiPayload {
+  [key: string]: unknown;
+  type: 'Donation' | 'Subscription' | 'ShopOrder';
+  amount: number;
+  currency: string;
+  message?: string;
+  supporterName?: string;
+}
+
+export interface NodeOnePayload {
+  [key: string]: unknown;
+  event: 'button_press' | 'haptic_feedback' | 'battery_status' | 'connection_status';
+  deviceId: string;
+  data: Record<string, unknown>;
+}
+
+export interface BondingPayload {
+  [key: string]: unknown;
+  event: 'game_start' | 'game_end' | 'molecule_created' | 'quest_complete' | 'love_earned';
+  roomCode: string;
+  userId: string;
+  data: Record<string, unknown>;
+}
+
+class WebhookHandler extends EventEmitter {
+  private app: express.Application;
+  private port: number;
+
+  constructor(port: number = 3000) {
+    super();
+    this.port = port;
+    this.app = express();
+    this.setupMiddleware();
+    this.setupRoutes();
+  }
+
+  private setupMiddleware(): void {
+    this.app.use(cors());
+    this.app.use(express.json());
+  }
+
+  private setupRoutes(): void {
+    // Ko-fi webhook endpoint
+    this.app.post('/webhook/kofi', (req: Request, res: Response) => {
+      try {
+        const payload = req.body as KoFiPayload;
+        const event: WebhookEvent = {
+          type: 'kofi',
+          payload,
+          timestamp: new Date().toISOString()
+        };
+        this.emit('kofi', event);
+        res.status(200).json({ success: true });
+      } catch (error) {
+        console.error('Error processing Ko-fi webhook:', error);
+        res.status(500).json({ error: 'Internal server error' });
+      }
+    });
+
+    // Node One webhook endpoint
+    this.app.post('/webhook/node-one', (req: Request, res: Response) => {
+      try {
+        const payload = req.body as NodeOnePayload;
+        const event: WebhookEvent = {
+          type: 'node_one',
+          payload,
+          timestamp: new Date().toISOString()
+        };
+        this.emit('node_one', event);
+        res.status(200).json({ success: true });
+      } catch (error) {
+        console.error('Error processing Node One webhook:', error);
+        res.status(500).json({ error: 'Internal server error' });
+      }
+    });
+
+    // BONDING webhook endpoint
+    this.app.post('/webhook/bonding', (req: Request, res: Response) => {
+      try {
+        const payload = req.body as BondingPayload;
+        const event: WebhookEvent = {
+          type: 'bonding',
+          payload,
+          timestamp: new Date().toISOString()
+        };
+        this.emit('bonding', event);
+        res.status(200).json({ success: true });
+      } catch (error) {
+        console.error('Error processing BONDING webhook:', error);
+        res.status(500).json({ error: 'Internal server error' });
+      }
+    });
+
+    // Health check endpoint
+    this.app.get('/health', (_req: Request, res: Response) => {
+      res.status(200).json({ status: 'ok', service: 'p31-webhook-handler' });
+    });
+
+    // Error handling middleware
+    this.app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
+      console.error('Unhandled error:', err);
+      res.status(500).json({ error: 'Internal server error' });
+    });
+  }
+
+  public start(): Promise<void> {
+    return new Promise((resolve) => {
+      this.app.listen(this.port, () => {
+        console.log(`Webhook handler listening on port ${this.port}`);
+        resolve();
+      });
+    });
+  }
+
+  public on(event: 'kofi' | 'node_one' | 'bonding', listener: (event: WebhookEvent) => void): this {
+    return super.on(event, listener);
+  }
+}
+
+export default WebhookHandler;
+export { WebhookHandler };

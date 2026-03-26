@@ -11,6 +11,7 @@ export * from './sovereign';
 export * from './rules';
 export * from './zui';
 export * from './ble';
+export * from './theme';
 
 // Re-export shared types to avoid conflicts
 export type { ZoneConfig, ZoneEnergy } from './zui/types';

@@ -21,10 +21,12 @@ interface SkinDef {
 }
 
 const SKINS: SkinDef[] = [
-  { id: 'OPERATOR', label: 'Operator',  accent: '#00FFFF', desc: 'Neon cyan — default' },
-  { id: 'AURORA',   label: 'Aurora',    accent: '#00FF88', desc: 'Phosphor green' },
-  { id: 'KIDS',     label: 'Solar',     accent: '#FFD700', desc: 'Warm amber tones' },
-  { id: 'GRAY_ROCK', label: 'Gray Rock', accent: '#888888', desc: 'Low-stimulation mono' },
+  { id: 'OPERATOR', label: 'Operator',  accent: '#22d3ee', desc: 'Neon cyan — default' },
+  { id: 'AURORA',   label: 'Aurora',    accent: '#a78bfa', desc: 'Violet-green gradient' },
+  { id: 'KIDS',     label: 'Solar',     accent: '#E9C46A', desc: 'Warm amber tones' },
+  { id: 'GRAY_ROCK', label: 'Gray Rock', accent: '#64748B', desc: 'Low-stimulation mono' },
+  { id: 'HIGH_CONTRAST', label: 'Hi-Contrast', accent: '#00FFFF', desc: 'Max contrast for accessibility' },
+  { id: 'LOW_MOTION', label: 'Low Motion', accent: '#22d3ee', desc: 'Reduced animations' },
 ];
 
 export function ThemePanel() {
@@ -113,6 +115,66 @@ export function ThemePanel() {
           }}
         >
           reset
+        </button>
+      </div>
+
+      {/* ── Import/Export ── */}
+      <div style={{ fontSize: 10, opacity: 0.45, letterSpacing: 2, marginTop: 24, marginBottom: 12 }}>
+        THEME DATA
+      </div>
+      <div style={{ display: 'flex', gap: 8 }}>
+        <button
+          type="button"
+          onClick={async () => {
+            try {
+              await navigator.clipboard.writeText(JSON.stringify({ skin: skinTheme, accent: accentColor }));
+              alert('Theme copied to clipboard');
+            } catch {
+              alert('Failed to copy');
+            }
+          }}
+          style={{
+            background: 'var(--s2)', border: '1px solid var(--dim2)',
+            borderRadius: 4, color: 'var(--text)', fontSize: 10,
+            padding: '6px 12px', cursor: 'pointer',
+          }}
+        >
+          Copy Theme
+        </button>
+        <button
+          type="button"
+          onClick={async () => {
+            try {
+              const text = await navigator.clipboard.readText();
+              const parsed = JSON.parse(text);
+              if (parsed.skin && parsed.accent) {
+                if (parsed.accent.match(/^#[0-9A-Fa-f]{6}$/)) {
+                  setAccentColor(parsed.accent);
+                  const validSkins = SKINS.map(s => s.id);
+                  if (validSkins.includes(parsed.skin)) {
+                    setSkinTheme(parsed.skin);
+                    alert('Theme applied');
+                  } else {
+                    setSkinTheme('OPERATOR');
+                    alert('Theme applied (skin was invalid, reset to default)');
+                  }
+                } else {
+                  alert('Invalid accent color format');
+                }
+              } else {
+                alert('Invalid theme format');
+              }
+            } catch {
+              alert('Failed to read clipboard');
+            }
+          }}
+          style={{
+            background: 'var(--s2)', border: '1px solid var(--dim2)',
+            borderRadius: 4, color: 'var(--text)', fontSize: 10,
+            padding: '6px 12px', cursor: 'pointer',
+          }}
+        >
+          Paste Theme
         </button>
       </div>
     </div>

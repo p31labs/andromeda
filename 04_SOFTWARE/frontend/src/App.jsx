@@ -43,6 +43,7 @@ import AiChat from './ui/AiChat';
 import GraphBrain from './ui/GraphBrain';
 import ExportPanel from './ui/ExportPanel';
 import BreathingPacer from './ui/BreathingPacer';
+import ParentDashboard from './ui/ParentDashboard';
 import { deductSpoons, restoreSpoons } from './api';
 import { useLit } from './hooks/useLit';
 import './styles.css';
@@ -420,6 +421,7 @@ export default function App() {
 
   const [showBreathing, setShowBreathing] = useState(false);
   const [showCommandMenu, setShowCommandMenu] = useState(false);
+  const [showParentDashboard, setShowParentDashboard] = useState(false);
   const [activePanel, setActivePanel] = useState(null); // 'ingest' | 'chat' | 'brain' | 'export' | null
   const [selectedNode, setSelectedNode] = useState(null);
   const [selectedVoltage, setSelectedVoltage] = useState(null);
@@ -510,8 +512,10 @@ export default function App() {
       }
 
       // Single-key shortcuts (only when no modal is open)
-      if (!showCommandMenu && !activePanel && !showBreathing) {
+      if (!showCommandMenu && !activePanel && !showBreathing && !showParentDashboard) {
         if (e.key === 'b' || e.key === 'B') setShowBreathing(true);
+        else if (e.key === 'k' || e.key === 'K') setShowCommandMenu(true);
+        else if (e.key === 'p' || e.key === 'P') setShowParentDashboard(true);
         if (e.key === 'i' || e.key === 'I') setActivePanel('ingest');
         if (e.key === 'c' || e.key === 'C') setActivePanel('chat');
         if (e.key === 'g' || e.key === 'G') setActivePanel('brain');
@@ -523,11 +527,12 @@ export default function App() {
         if (showBreathing) setShowBreathing(false);
         else if (activePanel) setActivePanel(null);
         else if (showCommandMenu) setShowCommandMenu(false);
+        else if (showParentDashboard) setShowParentDashboard(false);
       }
     }
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [showCommandMenu, activePanel, showBreathing]);
+  }, [showCommandMenu, activePanel, showBreathing, showParentDashboard]);
 
   function handleAction(actionId) {
     switch (actionId) {
@@ -1253,6 +1258,7 @@ export default function App() {
 
       {/* Command menu always rendered (not faded) */}
       <CommandMenu open={showCommandMenu} onClose={() => setShowCommandMenu(false)} onAction={handleAction} />
+      <ParentDashboard open={showParentDashboard} onClose={() => setShowParentDashboard(false)} />
 
     </div>
   );

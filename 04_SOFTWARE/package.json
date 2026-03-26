@@ -1,14 +1,22 @@
 {
   "name": "p31-software",
   "private": true,
+  "packageManager": "pnpm@10.32.1",
   "workspaces": [
     "bonding",
     "spaceship-earth",
-    "packages/shared",
-    "packages/node-zero",
-    "packages/game-engine",
-    "packages/love-ledger",
-    "packages/sovereign",
+    "packages/*",
     "extensions/*"
-  ]
+  ],
+  "scripts": {
+    "turbo": "turbo",
+    "typecheck": "turbo run typecheck",
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "dev": "turbo run dev --parallel",
+    "clean": "turbo run clean"
+  },
+  "devDependencies": {
+    "turbo": "^2.3.0"
+  }
 }

@@ -5,13 +5,27 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "main": "src/index.ts",
   "types": "src/index.ts",
   "dependencies": {
     "idb-keyval": "^6.2.1",
+    "pino": "^9.0.0",
+    "pino-pretty": "^11.0.0",
+    "react": "^18.2.0",
+    "three": "^0.170.0",
     "zustand": "^5.0.0"
+  },
+  "devDependencies": {
+    "@sentry/types": "^7.81.1",
+    "@types/node": "^20.0.0",
+    "@types/react": "^19.0.0",
+    "@types/three": "^0.170.0",
+    "vite": "^8.0.1",
+    "vitest": "^4.1.0"
   },
   "peerDependencies": {
     "react": ">=18"

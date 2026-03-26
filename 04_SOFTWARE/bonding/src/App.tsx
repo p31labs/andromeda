@@ -48,6 +48,9 @@ import { exportAsSummary, logEventA } from './engine/exhibitA';
 import { sendPing } from './lib/gameSync';
 import { eventBus, GameEventType } from './genesis/eventBus';
 import { initAudio } from './engine/sound';
+import { useHashRouter } from './hooks/useHashRouter';
+import { ColliderMode } from './components/ColliderMode';
+import { ElementManager } from './components/elements';
 import { getFunFact } from './config/funFacts';
 import { getQuestMessage } from './config/questMessages';
 import { FIRST_MOLECULE, CONFETTI } from './config/easterEggs';
@@ -97,6 +100,9 @@ function App() {
   const [firstMoleculeShown, setFirstMoleculeShown] = useState(false);
   const prevPhaseRef = useRef<string>(gamePhase);
   const prevAchievementCountRef = useRef(unlockedAchievements.length);
+
+  // Room router for hash-based navigation
+  const { currentRoom } = useHashRouter();
 
   // Completion effects: first molecule check + confetti + screen flash
   const [screenFlash, setScreenFlash] = useState<string | null>(null);
@@ -346,6 +352,9 @@ function App() {
       <BloodMoonNode />
       <ShootingStars />
       <MissingNode />
+
+      {/* Room router: ColliderMode takes full screen when #collider is active */}
+      {currentRoom === 'collider' && <ColliderMode />}
 
       {/* ── Floating overlays (z-20) — retained from pre-cockpit layout ── */}
 

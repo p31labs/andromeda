@@ -1,0 +1,30 @@
+{
+  "name": "@p31labs/quantum-core",
+  "version": "1.0.0",
+  "description": "Post-Quantum Cryptography primitives and IBM Quantum Runtime API client for P31 Labs",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "quantum",
+    "cryptography",
+    "pqc",
+    "ibm-quantum",
+    "post-quantum",
+    "sha512",
+    "shake256"
+  ],
+  "author": "P31 Labs",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

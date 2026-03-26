@@ -1,0 +1,9 @@
+packages:
+  - 'bonding'
+  - 'spaceship-earth'
+  - 'packages/*'
+  - 'extensions/*'
+
+onlyBuiltDependencies:
+  - '@react-three/fiber'
+  - three

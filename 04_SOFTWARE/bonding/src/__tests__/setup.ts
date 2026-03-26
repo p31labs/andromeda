@@ -1,13 +1,28 @@
-// ═══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════════
 // BONDING — Test Setup
 // Mocks for browser APIs and side-effect modules
-// ═══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════════
 
 import { vi } from 'vitest';
 
 // ── Browser API stubs ──
 Object.defineProperty(window, 'innerWidth', { value: 1024 });
 Object.defineProperty(window, 'innerHeight', { value: 768 });
+
+// ── matchMedia mock (required by some components) ──
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: vi.fn().mockImplementation((query) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  })),
+});
 
 // ── Side-effect module mocks ──
 // These modules produce sound/vibration/logging — pure side effects.
@@ -41,6 +56,15 @@ vi.mock('../engine/haptic', () => ({
     achievement: vi.fn(),
     ping: vi.fn(),
   },
+}));
+
+// ── idb-keyval mock (required by economy store) ──
+vi.mock('idb-keyval', () => ({
+  get: vi.fn(() => Promise.resolve(null)),
+  set: vi.fn(() => Promise.resolve()),
+  del: vi.fn(() => Promise.resolve()),
+  keys: vi.fn(() => Promise.resolve([])),
+  clear: vi.fn(() => Promise.resolve()),
 }));
 
 vi.mock('../engine/ledger', () => ({

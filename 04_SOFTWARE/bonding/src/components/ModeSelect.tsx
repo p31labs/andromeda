@@ -17,6 +17,13 @@ import { getQuestsForMode } from '../engine/quests';
 import { WONKY_FOOTER } from '../config/easterEggs';
 import { Starfield } from './Starfield';
 
+// UX Audit: Age group options with emoji for universal recognition
+const AGE_OPTIONS = [
+  { id: 'child' as const, emoji: '\u{1F476}', label: 'For Me', desc: 'ages 6-12' },
+  { id: 'adult' as const, emoji: '\u{1F464}', label: 'For Everyone', desc: 'ages 13-59' },
+  { id: 'senior' as const, emoji: '\u{1F474}', label: 'For Me', desc: 'ages 60-80' },
+];
+
 const MODE_EMOJI: Record<string, string> = {
   seed: '\u{1F331}',
   sprout: '\u{1F33F}',
@@ -66,6 +73,8 @@ function GalleryRow({ entry }: { entry: GalleryEntry }) {
 export function ModeSelect() {
   const setGameMode = useGameStore((s) => s.setGameMode);
   const setLobbyActive = useGameStore((s) => s.setLobbyActive);
+  const ageGroup = useGameStore((s) => s.ageGroup);
+  const setAgeGroup = useGameStore((s) => s.setAgeGroup);
   const [showAll, setShowAll] = useState(false);
   // WCD-CC03: Auto-restore last mode from sessionStorage → skip to Phase 2
   const [pendingMode, setPendingMode] = useState<DifficultyId | null>(() => {
@@ -200,31 +209,55 @@ export function ModeSelect() {
         </p>
       </div>
 
-      {/* Mode cards — WCD-18: flex-wrap + constrained width for narrow screens */}
-      <div className="relative z-10 flex flex-wrap items-stretch justify-center gap-4 px-6 max-w-lg">
-        {MODES.map((mode, idx) => (
-          <button
-            key={mode.id}
-            type="button"
-            onClick={() => setPendingMode(mode.id)}
-            className={`mode-card mode-card-enter group glass-card flex flex-col items-center gap-3 p-5 rounded-2xl ${MODE_HOVER_BORDER[mode.id] ?? ''} transition-all active:scale-95 cursor-pointer flex-1`}
-            style={{ minWidth: 100, maxWidth: 160, minHeight: 150, touchAction: 'manipulation', animationDelay: `${0.6 + idx * 0.1}s` }}
-          >
-            <span className="text-5xl group-hover:scale-110 transition-transform">
-              {mode.emoji}
-            </span>
-            <span className="text-base font-bold text-white/80 group-hover:text-white transition-colors">
-              {mode.label}
-            </span>
-            <span className="text-xs text-white/30 text-center leading-relaxed">
-              {mode.description}
-            </span>
-            <span className="text-[10px] text-white/15 font-mono mt-auto">
-              {mode.palette.join(' + ')}
-            </span>
-          </button>
-        ))}
-      </div>
+      {/* UX Audit: Age group selector — show only if not yet selected */}
+      {!ageGroup && (
+        <div className="relative z-10 flex flex-col items-center gap-4">
+          <p className="text-sm text-white/40 font-mono">Who is playing?</p>
+          <div className="flex gap-4">
+            {AGE_OPTIONS.map((age) => (
+              <button
+                key={age.id}
+                type="button"
+                onClick={() => setAgeGroup(age.id)}
+                className="flex flex-col items-center gap-2 p-4 rounded-2xl glass-card hover:border-[#00FF88] transition-all cursor-pointer"
+                style={{ minWidth: 80, minHeight: 80 }}
+              >
+                <span className="text-3xl">{age.emoji}</span>
+                <span className="text-xs font-bold text-white/80">{age.label}</span>
+                <span className="text-[10px] text-white/30">{age.desc}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Mode cards — only show after age is selected */}
+      {ageGroup && (
+        <div className="relative z-10 flex flex-wrap items-stretch justify-center gap-4 px-6 max-w-lg">
+          {MODES.map((mode, idx) => (
+            <button
+              key={mode.id}
+              type="button"
+              onClick={() => setPendingMode(mode.id)}
+              className={`mode-card mode-card-enter group glass-card flex flex-col items-center gap-3 p-5 rounded-2xl ${MODE_HOVER_BORDER[mode.id] ?? ''} transition-all active:scale-95 cursor-pointer flex-1`}
+              style={{ minWidth: 100, maxWidth: 160, minHeight: 150, touchAction: 'manipulation', animationDelay: `${0.6 + idx * 0.1}s` }}
+            >
+              <span className="text-5xl group-hover:scale-110 transition-transform">
+                {mode.emoji}
+              </span>
+              <span className="text-base font-bold text-white/80 group-hover:text-white transition-colors">
+                {mode.label}
+              </span>
+              <span className="text-xs text-white/30 text-center leading-relaxed">
+                {mode.description}
+              </span>
+              <span className="text-[10px] text-white/15 font-mono mt-auto">
+                {mode.palette.join(' + ')}
+              </span>
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* WCD-13: Play Together — un-gated now that relay endpoints are wired */}
       <button

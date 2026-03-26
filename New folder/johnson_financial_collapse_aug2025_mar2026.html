@@ -1,0 +1,88 @@
+
+<div style="padding: 1rem 0;">
+<div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-bottom: 1.5rem;">
+  <div style="background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 1rem;">
+    <div style="font-size: 13px; color: var(--color-text-secondary);">DFAS salary (total)</div>
+    <div style="font-size: 22px; font-weight: 500;">$14,395</div>
+  </div>
+  <div style="background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 1rem;">
+    <div style="font-size: 13px; color: var(--color-text-secondary);">Last paycheck</div>
+    <div style="font-size: 22px; font-weight: 500;">Oct 22</div>
+  </div>
+  <div style="background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 1rem;">
+    <div style="font-size: 13px; color: var(--color-text-secondary);">Current balance</div>
+    <div style="font-size: 22px; font-weight: 500; color: var(--color-text-danger);">$5.00</div>
+  </div>
+  <div style="background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 1rem;">
+    <div style="font-size: 13px; color: var(--color-text-secondary);">Total overdraft fees</div>
+    <div style="font-size: 22px; font-weight: 500; color: var(--color-text-danger);">$500+</div>
+  </div>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 8px; font-size: 12px; color: var(--color-text-secondary);">
+  <span style="display: flex; align-items: center; gap: 4px;"><span style="width: 10px; height: 10px; border-radius: 2px; background: #2E4057;"></span>Ending balance</span>
+  <span style="display: flex; align-items: center; gap: 4px;"><span style="width: 10px; height: 10px; border-radius: 2px; background: #4CAF50;"></span>DFAS salary</span>
+  <span style="display: flex; align-items: center; gap: 4px;"><span style="width: 10px; height: 10px; border-radius: 2px; background: #E24B4A;"></span>Overdraft fees</span>
+</div>
+<div style="position: relative; width: 100%; height: 340px;">
+  <canvas id="chart1"></canvas>
+</div>
+<div style="margin-top: 1.5rem; display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 8px; font-size: 12px; color: var(--color-text-secondary);">
+  <span style="display: flex; align-items: center; gap: 4px;"><span style="width: 10px; height: 10px; border-radius: 2px; background: #378ADD;"></span>Monthly income (excl. TSP)</span>
+</div>
+<div style="position: relative; width: 100%; height: 260px;">
+  <canvas id="chart2"></canvas>
+</div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const labels = ['Aug 25','Sep 25','Oct 25','Nov 25','Dec 25','Jan 26','Feb 26','Mar 26'];
+const isDark = matchMedia('(prefers-color-scheme: dark)').matches;
+const gridColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)';
+const tickColor = isDark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)';
+
+new Chart(document.getElementById('chart1'), {
+  type: 'bar',
+  data: {
+    labels,
+    datasets: [
+      { label: 'Ending balance', data: [1419,1157,1019,8129,12,-837,3355,5], backgroundColor: '#2E4057', order: 2 },
+      { label: 'DFAS salary', data: [4632,4632,2316,2815,0,0,0,0], backgroundColor: '#4CAF50', order: 3 },
+      { label: 'Overdraft fees', data: [-80,-120,-100,0,-20,-180,0,0], backgroundColor: '#E24B4A', order: 1 }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false },
+      annotation: {},
+      tooltip: { callbacks: { label: ctx => { const v = ctx.raw; return ctx.dataset.label + ': ' + (v<0?'-':'') + '$' + Math.abs(v).toLocaleString(); } } }
+    },
+    scales: {
+      x: { ticks: { autoSkip: false, color: tickColor }, grid: { display: false } },
+      y: { ticks: { color: tickColor, callback: v => (v<0?'-':'') + '$' + Math.abs(v/1000).toFixed(0) + 'k' }, grid: { color: gridColor } }
+    }
+  }
+});
+
+new Chart(document.getElementById('chart2'), {
+  type: 'line',
+  data: {
+    labels,
+    datasets: [{
+      label: 'Monthly income (excl. TSP)',
+      data: [4910, 4632, 2318, 2823, 47, 316, 5827, 2],
+      borderColor: '#378ADD', backgroundColor: 'rgba(55,138,221,0.1)',
+      fill: true, tension: 0.3, pointRadius: 5, pointBackgroundColor: '#378ADD'
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false },
+      tooltip: { callbacks: { label: ctx => '$' + ctx.raw.toLocaleString() } }
+    },
+    scales: {
+      x: { ticks: { autoSkip: false, color: tickColor }, grid: { display: false } },
+      y: { ticks: { color: tickColor, callback: v => '$' + (v/1000).toFixed(0) + 'k' }, grid: { color: gridColor }, min: 0 }
+    }
+  }
+});
+</script>
