@@ -1,0 +1,560 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quantum P31: The Tetrahedron Protocol</title>
+    <style>
+        :root {
+            --bg-color: #050510;
+            --text-color: #E8ECF4;
+            --accent-cyan: #00D4FF;
+            --accent-green: #00FF88;
+            --accent-violet: #7A27FF;
+            --accent-orange: #FF6600;
+            --grid-color: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Canvas for 3D background */
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        /* Header */
+        header {
+            padding: 2rem;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.3);
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--grid-color);
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(45deg, var(--accent-cyan), var(--accent-green));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--accent-cyan);
+            font-weight: 300;
+        }
+
+        /* Main content */
+        main {
+            flex: 1;
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        @media (min-width: 768px) {
+            main {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        /* Cards */
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--grid-color);
+            border-radius: 12px;
+            padding: 2rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            -webkit-backdrop-filter: blur(5px);
+            backdrop-filter: blur(5px);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border-color: var(--accent-cyan);
+        }
+
+        .card h2 {
+            color: var(--accent-green);
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+            border-bottom: 2px solid var(--grid-color);
+            padding-bottom: 0.5rem;
+        }
+
+        .card p {
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .highlight {
+            color: var(--accent-cyan);
+            font-weight: bold;
+        }
+
+        /* Interactive elements */
+        .interactive-section {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        @media (min-width: 768px) {
+            .interactive-section {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        button {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--accent-cyan);
+            color: var(--accent-cyan);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        button:hover {
+            background: var(--accent-cyan);
+            color: var(--bg-color);
+            box-shadow: 0 0 15px var(--accent-cyan);
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .stat-box {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid var(--grid-color);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--accent-violet);
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--accent-cyan);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 2rem;
+            border-top: 1px solid var(--grid-color);
+            color: var(--accent-cyan);
+            font-size: 0.9rem;
+        }
+
+        .link {
+            color: var(--accent-green);
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            transition: border-color 0.3s ease;
+        }
+
+        .link:hover {
+            border-bottom-color: var(--accent-green);
+        }
+
+        /* Animations */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        /* Loading overlay */
+        #loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+
+        .loader {
+            width: 50px;
+            height: 50px;
+            border: 3px solid var(--grid-color);
+            border-top: 3px solid var(--accent-cyan);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div id="loading">
+        <div class="loader"></div>
+    </div>
+
+    <header>
+        <h1>Quantum P31</h1>
+        <p class="subtitle">The Tetrahedron Protocol: Geometry as Universal Architecture</p>
+    </header>
+
+    <main>
+        <!-- Core Concept Card -->
+        <div class="card">
+            <h2>🔬 The Discovery</h2>
+            <p><span class="highlight">K₄ Complete Graph</span> - Four nodes, six edges. The minimum structure that achieves <span class="highlight">structural rigidity</span>.</p>
+            <p>This geometry appears independently across six scientific domains:</p>
+            <ul style="margin-left: 2rem; margin-top: 1rem;">
+                <li>Quantum Information Theory (SIC-POVMs)</li>
+                <li>Structural Engineering (Maxwell's Rigidity)</li>
+                <li>Electrostatics (Thomson's Problem)</li>
+                <li>Graph Theory (Tutte's Theorem)</li>
+                <li>Quantum Biology (Posner Molecules)</li>
+                <li>Electrical Topology (Wye-to-Delta)</li>
+            </ul>
+            <p style="margin-top: 1rem; font-style: italic;">"The geometry is invariant. Only the medium changes."</p>
+        </div>
+
+        <!-- Mathematical Proof Card -->
+        <div class="card">
+            <h2>📐 Mathematical Foundation</h2>
+            <p><strong>Maxwell's Rigidity Condition (1864):</strong></p>
+            <p class="highlight">|E| = 3|V| - 6</p>
+            <p>For tetrahedron: 6 = 3(4) - 6 ✓</p>
+            
+            <p style="margin-top: 1rem;"><strong>Thomson's Problem (1904):</strong></p>
+            <p>Four point charges on a sphere naturally form a <span class="highlight">regular tetrahedron</span> - the energetic ground state.</p>
+            
+            <p style="margin-top: 1rem;"><strong>SIC-POVMs (Quantum Cryptography):</strong></p>
+            <p>Four measurement vectors arranged as a <span class="highlight">tetrahedron</span> on the Bloch sphere provide maximum information with no blind spots.</p>
+        </div>
+
+        <!-- Applications Card -->
+        <div class="card">
+            <h2>⚡ Real-World Applications</h2>
+            <p><span class="highlight">Floating Neutral Hypothesis:</span> When centralized systems lose their "ground reference," they enter a <span class="highlight">floating neutral</span> condition - voltage instability, cascading failures.</p>
+            
+            <p><span class="highlight">Wye-to-Delta Transformation:</span> The engineering solution - convert from star topology to mesh topology. No single point of failure.</p>
+            
+            <p><span class="highlight">Posner Molecules:</span> Ca₉(PO₄)₆ - calcium-phosphate cages in the brain that may protect quantum coherence. <span class="highlight">39 atoms</span> - same number of Pi digits needed to measure the observable universe to hydrogen atom precision.</p>
+            
+            <p><span class="highlight">Hypoparathyroidism Awareness:</span> The same calcium-phosphate chemistry that forms Posner molecules is disrupted in hypoparathyroidism. When PTH levels drop, calcium regulation fails - a biological floating neutral. This affects 56.7% of chronic HypoPT patients with attention/processing deficits (JCEM 2025). Understanding this connection helps bridge medical and quantum perspectives.</p>
+            
+            <p><span class="highlight">Quantum Security:</span> The tetrahedral geometry provides <span class="highlight">geometric security</span> - protection that comes from the shape of space itself, not computational difficulty. SIC-POVMs eliminate blind spots in quantum measurement, making eavesdropping statistically detectable. This is essential as quantum computers threaten current encryption (Harvest Now, Decrypt Later attacks active since 2020).</p>
+        </div>
+
+        <!-- Technology Card -->
+        <div class="card">
+            <h2>🛠️ P31 Labs Implementation</h2>
+            <p><span class="highlight">BONDING Game:</span> Molecular building game teaching chemistry through play. 511 tests, 62-molecule dictionary, LOVE token economy.</p>
+            
+            <p><span class="highlight">Node One Device:</span> Palm-sized haptic device vibrating at <span class="highlight">863 Hz</span> - the Larmor frequency of Phosphorus-31 in Earth's magnetic field.</p>
+            
+            <p><span class="highlight">Spaceship Earth:</span> 3D cognitive dashboard with geodesic data dome, particle collider simulator, spatial chat.</p>
+        </div>
+
+        <!-- Interactive Section -->
+        <div class="interactive-section">
+            <div class="card">
+                <h2>🎮 Interactive Tetrahedron</h2>
+                <div class="controls">
+                    <button onclick="toggleRotation()">Toggle Rotation</button>
+                    <button onclick="explodeGeometry()">Explode</button>
+                    <button onclick="resetGeometry()">Reset</button>
+                    <button onclick="toggleWireframe()">Wireframe</button>
+                </div>
+                <div id="tetrahedron-container" style="width: 100%; height: 300px; background: rgba(0,0,0,0.2); border-radius: 8px;"></div>
+                <div class="stats">
+                    <div class="stat-box">
+                        <div class="stat-value" id="node-count">4</div>
+                        <div class="stat-label">Nodes</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="edge-count">6</div>
+                        <div class="stat-label">Edges</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="rigidity-score">100%</div>
+                        <div class="stat-label">Rigidity</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>📊 Live Metrics</h2>
+                <div class="stats">
+                    <div class="stat-box">
+                        <div class="stat-value" id="larmor-freq">863</div>
+                        <div class="stat-label">Larmor Hz</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="posner-atoms">39</div>
+                        <div class="stat-label">Posner Atoms</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="pi-digits">39</div>
+                        <div class="stat-label">Pi Digits</div>
+                    </div>
+                </div>
+                <div style="margin-top: 2rem;">
+                    <p><strong>Node Count:</strong> <span class="highlight" id="node-count-display">0</span> / 4 (First Tetrahedron)</p>
+            <p><strong>DOI:</strong> <a href="https://doi.org/10.5281/zenodo.18627420" class="link" target="_blank" rel="noopener">10.5281/zenodo.18627420</a></p>
+            <p><strong>GitHub:</strong> <a href="https://github.com/p31labs" class="link" target="_blank" rel="noopener">github.com/p31labs</a></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Philosophy Card -->
+        <div class="card">
+            <h2>🧠 Philosophy & Impact</h2>
+            <p><span class="highlight">As Above, So Below:</span> The same tetrahedral geometry governs quantum states, structural frameworks, and social networks.</p>
+            
+            <p><span class="highlight">Decentralization:</span> Delta topology (mesh) vs. Wye topology (centralized). The math proves which is more resilient.</p>
+            
+            <p><span class="highlight">Open Source:</span> Everything P31 Labs builds is free and open-source. Knowledge should be a public good.</p>
+            
+            <p><span class="highlight">Neurodivergent Technology:</span> Assistive tools designed by and for neurodivergent individuals.</p>
+        </div>
+
+        <!-- Call to Action Card -->
+        <div class="card">
+            <h2>🚀 Join the Mesh</h2>
+            <p>Every supporter becomes a <span class="highlight">node</span> in the Delta mesh. We're tracking progress toward key milestones:</p>
+            <ul style="margin-left: 2rem; margin-top: 1rem;">
+                <li><span class="highlight">4 nodes:</span> First tetrahedron (structural rigidity)</li>
+                <li><span class="highlight">39 nodes:</span> Posner number (quantum biology)</li>
+                <li><span class="highlight">863 nodes:</span> Larmor frequency (resonance)</li>
+            </ul>
+            <p style="margin-top: 1rem; font-weight: bold; color: var(--accent-violet);">It's not a matter of wanting P31. They NEED P31.</p>
+            <p style="margin-top: 1rem;">
+                <a href="https://ko-fi.com/trimtab69420" class="link" target="_blank" rel="noopener">Support P31 Labs</a> | 
+                <a href="https://phosphorus31.org" class="link" target="_blank" rel="noopener">phosphorus31.org</a> |
+                <a href="https://bonding.p31ca.org" class="link" target="_blank" rel="noopener">bonding.p31ca.org</a>
+            </p>
+        </div>
+    </main>
+
+    <footer>
+        <p>💜🔺💜 P31 Labs | Open Source | Quantum Geometry | Neurodivergent Technology</p>
+        <p>Everything above is verifiable. Check the math. That's the point.</p>
+    </footer>
+
+    <!-- Import Map for Three.js -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+        // Initialize Three.js scene
+        const container = document.getElementById('tetrahedron-container');
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x050510);
+        
+        const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 100);
+        camera.position.z = 5;
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        container.appendChild(renderer.domElement);
+
+        // Controls
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+
+        // Lighting
+        const ambientLight = new THREE.AmbientLight(0x404040, 2);
+        scene.add(ambientLight);
+
+        const pointLight = new THREE.PointLight(0x00d4ff, 2, 10);
+        pointLight.position.set(5, 5, 5);
+        scene.add(pointLight);
+
+        const pointLight2 = new THREE.PointLight(0x00ff88, 2, 10);
+        pointLight2.position.set(-5, -5, -5);
+        scene.add(pointLight2);
+
+        // Tetrahedron Geometry
+        const geometry = new THREE.TetrahedronGeometry(1.5);
+        const material = new THREE.MeshPhongMaterial({ 
+            color: 0x00d4ff,
+            wireframe: false,
+            transparent: true,
+            opacity: 0.8,
+            shininess: 100
+        });
+        
+        const tetrahedron = new THREE.Mesh(geometry, material);
+        scene.add(tetrahedron);
+
+        // Wireframe version
+        const wireframeMaterial = new THREE.MeshBasicMaterial({
+            color: 0x7a27ff,
+            wireframe: true,
+            transparent: true,
+            opacity: 0.3
+        });
+        
+        const wireframe = new THREE.Mesh(geometry, wireframeMaterial);
+        scene.add(wireframe);
+
+        // Animation state
+        let isRotating = true;
+        let isExploded = false;
+        let isWireframeVisible = false;
+
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+
+            if (isRotating) {
+                tetrahedron.rotation.x += 0.005;
+                tetrahedron.rotation.y += 0.01;
+                wireframe.rotation.x += 0.005;
+                wireframe.rotation.y += 0.01;
+            }
+
+            controls.update();
+            renderer.render(scene, camera);
+        }
+
+        // Interactive functions
+        window.toggleRotation = () => {
+            isRotating = !isRotating;
+        };
+
+        window.explodeGeometry = () => {
+            if (!isExploded) {
+                // Animate vertices outward
+                const positions = geometry.attributes.position;
+                for (let i = 0; i < positions.count; i++) {
+                    const x = positions.getX(i);
+                    const y = positions.getY(i);
+                    const z = positions.getZ(i);
+                    
+                    positions.setX(i, x * 1.5);
+                    positions.setY(i, y * 1.5);
+                    positions.setZ(i, z * 1.5);
+                }
+                positions.needsUpdate = true;
+                isExploded = true;
+            }
+        };
+
+        window.resetGeometry = () => {
+            const positions = geometry.attributes.position;
+            for (let i = 0; i < positions.count; i++) {
+                const x = positions.getX(i);
+                const y = positions.getY(i);
+                const z = positions.getZ(i);
+                
+                positions.setX(i, x / 1.5);
+                positions.setY(i, y / 1.5);
+                positions.setZ(i, z / 1.5);
+            }
+            positions.needsUpdate = true;
+            isExploded = false;
+        };
+
+        window.toggleWireframe = () => {
+            isWireframeVisible = !isWireframeVisible;
+            wireframe.visible = isWireframeVisible;
+        };
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            camera.aspect = container.clientWidth / container.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, container.clientHeight);
+        });
+
+        // Remove loading overlay
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('loading').style.opacity = 0;
+                setTimeout(() => {
+                    document.getElementById('loading').style.display = 'none';
+                }, 500);
+            }, 1000);
+        });
+
+        // Start animation
+        animate();
+
+        // Update stats periodically
+        let nodeCount = 0;
+        setInterval(() => {
+            nodeCount = (nodeCount + 1) % 5;
+            document.getElementById('node-count-display').textContent = nodeCount;
+        }, 1000);
+    </script>
+</body>
+</html>

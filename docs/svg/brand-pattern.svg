@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#264653"/>
+  
+  <!-- Depth 0: main triangle -->
+  <g stroke="#2A9D8F" stroke-width="1.5" fill="none" opacity="0.3">
+    <polygon points="200,20 20,380 380,380"/>
+  </g>
+  
+  <!-- Depth 1: three sub-triangles -->
+  <g stroke="#2A9D8F" stroke-width="1" fill="none" opacity="0.2">
+    <polygon points="200,20 110,200 290,200"/>
+    <polygon points="110,200 20,380 200,380"/>
+    <polygon points="290,200 200,380 380,380"/>
+  </g>
+  
+  <!-- Depth 2: nine sub-sub-triangles -->
+  <g stroke="#2A9D8F" stroke-width="0.5" fill="none" opacity="0.15">
+    <polygon points="200,20 155,110 245,110"/>
+    <polygon points="155,110 110,200 200,200"/>
+    <polygon points="245,110 200,200 290,200"/>
+    <polygon points="110,200 65,290 155,290"/>
+    <polygon points="65,290 20,380 110,380"/>
+    <polygon points="155,290 110,380 200,380"/>
+    <polygon points="290,200 245,290 335,290"/>
+    <polygon points="245,290 200,380 290,380"/>
+    <polygon points="335,290 290,380 380,380"/>
+  </g>
+  
+  <!-- Nucleus dots at centers -->
+  <g fill="#E76F51" opacity="0.3">
+    <circle cx="200" cy="200" r="4"/>
+    <circle cx="110" cy="290" r="3"/>
+    <circle cx="290" cy="290" r="3"/>
+    <circle cx="200" cy="110" r="3"/>
+  </g>
+</svg>

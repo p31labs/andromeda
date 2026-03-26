@@ -33,6 +33,16 @@
     85%  { transform: translateY(0) scale(1); opacity: 1; }
     100% { transform: translateY(100%) scale(0.95); opacity: 0; }
   }
+
+  /* ── Phase 3: Kid Mode celebration bounce ── */
+  --animate-bounce-kid: bounceKid 0.4s ease-out;
+  @keyframes bounceKid {
+    0%   { transform: scale(1); }
+    30%  { transform: scale(0.85); }
+    50%  { transform: scale(1.1); }
+    70%  { transform: scale(0.95); }
+    100% { transform: scale(1); }
+  }
 }
 
 /* ── WCD-CC02: Global touch + focus styles ── */
@@ -43,6 +53,42 @@
 :focus-visible {
   outline: 2px solid rgba(255, 255, 255, 0.6);
   outline-offset: 2px;
+}
+
+/* ── UX Audit Phase 1: Age-based font sizing ── */
+:root {
+  /* Default: ages 13-59 */
+  --font-size-base: clamp(12px, 1.5vh, 15px);
+  --font-size-lg: clamp(16px, 2vh, 20px);
+  --font-size-xl: clamp(20px, 2.5vh, 24px);
+  --touch-target-min: 48px;
+}
+
+/* Ages 6-12: Slightly larger, friendlier */
+[data-age-group="child"] {
+  --font-size-base: clamp(14px, 1.8vh, 16px);
+  --font-size-lg: clamp(18px, 2.2vh, 22px);
+  --font-size-xl: clamp(24px, 3vh, 28px);
+  --touch-target-min: 56px;
+}
+
+/* Ages 60-80: Maximum readability */
+[data-age-group="senior"] {
+  --font-size-base: clamp(16px, 2vh, 20px);
+  --font-size-lg: clamp(22px, 2.8vh, 26px);
+  --font-size-xl: clamp(28px, 3.5vh, 34px);
+  --touch-target-min: 64px;
+}
+
+/* Apply font sizes */
+body {
+  font-size: var(--font-size-base);
+}
+
+/* Age-based touch targets */
+button, [role="button"], input {
+  min-height: var(--touch-target-min);
+  font-size: var(--font-size-base);
 }
 
 /* ── Base ── */

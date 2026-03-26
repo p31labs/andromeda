@@ -2,6 +2,7 @@
 .env
 .env.local
 .env.*.local
+.env.production
 
 # OS artifacts
 .DS_Store
@@ -126,3 +127,4 @@ REVIEW_SHIFT_REPORT.md
 esp_idf_project_configuration.json
 install_tools.bat
 nodevars.bat
+".env.production" 

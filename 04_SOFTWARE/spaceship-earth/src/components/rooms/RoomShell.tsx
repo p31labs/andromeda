@@ -1,8 +1,10 @@
 // spaceship-earth/src/components/rooms/RoomShell.tsx
 // Room orchestrator — dynamic loading, crossfade transitions, room persistence.
+// Now uses hash-based routing per WCD-PASS-05
 import React, { useState, useEffect, useCallback, Suspense, lazy } from 'react';
 import type { RoomId } from '../../types/rooms.types';
 import { ROOMS } from '../../types/rooms.types';
+import { useRoomRouter } from '../../hooks/useRoomRouter';
 
 import { RoomNav } from '../navigation/RoomNav';
 import { CockpitHUD } from '../hud/CockpitHUD';
@@ -23,6 +25,7 @@ const GeodesicRoom = lazy(() => import('./GeodesicRoom').then(m => ({ default: m
 const VaultRoom = lazy(() => import('./VaultRoom').then(m => ({ default: m.VaultRoom })));
 const BufferRoom = lazy(() => import('./BufferRoom').then(m => ({ default: m.BufferRoom })));
 const SovereignRoom = lazy(() => import('./sovereign/SovereignRoom').then(m => ({ default: m.SovereignRoom })));
+const ColliderRoom = lazy(() => import('./ColliderRoom').then(m => ({ default: m.ColliderRoom })));
 
 // ── Room persistence ──
 
@@ -95,7 +98,10 @@ function RoomLoader({ label }: { label: string }) {
 // ── Main Shell ──
 
 export function RoomShell() {
-  const [activeRoom, setActiveRoom] = useState<RoomId>(getPersistedRoom);
+  // Use hash-based router (WCD-PASS-05)
+  const { activeRoom, rooms, navigateToRoom } = useRoomRouter();
+  const activeRoomId = activeRoom.id as RoomId;
+  
   const { spoons, maxSpoons, tier } = useNode();
   const { sessionId, totalLove: handshakeLove } = useBondingHandshake();
   const syncedLove = useLoveSync(sessionId);
@@ -104,10 +110,11 @@ export function RoomShell() {
 
   const bondingUrl = ROOMS.find(r => r.id === 'bonding')?.url ?? '';
 
+  // Wrap navigateToRoom to also persist
   const handleRoomChange = useCallback((id: RoomId) => {
-    setActiveRoom(id);
     persistRoom(id);
-  }, []);
+    navigateToRoom(id);
+  }, [navigateToRoom]);
 
   return (
     <div style={{
@@ -129,33 +136,37 @@ export function RoomShell() {
         zIndex: 1,
       }}>
         {/* Bonding (iframe) */}
-        {activeRoom === 'bonding' && (
+        {activeRoomId === 'bonding' && (
           <Suspense fallback={<RoomLoader label="Bonding" />}>
             <BondingRoom url={bondingUrl} />
           </Suspense>
         )}
 
-        <RoomTransition active={activeRoom === 'observatory'} label="Observatory">
+        <RoomTransition active={activeRoomId === 'observatory'} label="Observatory">
           <ObservatoryRoom />
         </RoomTransition>
 
-        <RoomTransition active={activeRoom === 'geodesic'} label="Geodesic Nexus">
+        <RoomTransition active={activeRoomId === 'collider'} label="Collider">
+          <ColliderRoom />
+        </RoomTransition>
+
+        <RoomTransition active={activeRoomId === 'geodesic'} label="Geodesic Nexus">
           <GeodesicRoom />
         </RoomTransition>
 
-        <RoomTransition active={activeRoom === 'bridge'} label="Bridge">
+        <RoomTransition active={activeRoomId === 'bridge'} label="Bridge">
           <BridgeRoom love={love} spoons={spoons} maxSpoons={maxSpoons} tier={tier} />
         </RoomTransition>
 
-        <RoomTransition active={activeRoom === 'vault'} label="Secure Vault">
+        <RoomTransition active={activeRoomId === 'vault'} label="Secure Vault">
           <VaultRoom tier={tier} />
         </RoomTransition>
 
-        <RoomTransition active={activeRoom === 'buffer'} label="Voltage Buffer">
+        <RoomTransition active={activeRoomId === 'buffer'} label="Voltage Buffer">
           <BufferRoom />
         </RoomTransition>
 
-        {activeRoom === 'sovereign' && (
+        {activeRoomId === 'sovereign' && (
           <Suspense fallback={<RoomLoader label="Sovereign OS" />}>
             <SovereignRoom />
           </Suspense>
@@ -163,15 +174,15 @@ export function RoomShell() {
       </div>
 
       {/* HUD */}
-      {activeRoom !== 'bonding' && activeRoom !== 'sovereign' && (
+      {activeRoomId !== 'bonding' && activeRoomId !== 'sovereign' && (
         <CockpitHUD spoons={spoons} maxSpoons={maxSpoons} love={love} tier={tier} />
       )}
 
       {/* Bug report */}
-      <BugReportButton room={activeRoom} sessionId={sessionId ?? undefined} />
+      <BugReportButton room={activeRoomId} sessionId={sessionId ?? undefined} />
 
       {/* Navigation */}
-      <RoomNav rooms={ROOMS} activeRoom={activeRoom} onRoomChange={handleRoomChange} />
+      <RoomNav rooms={ROOMS} activeRoom={activeRoomId} onRoomChange={handleRoomChange} />
 
       {/* Global Somatic Overload Overlay */}
       <SomaticOverloadOverlay />

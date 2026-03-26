@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 100">
+  <rect width="600" height="100" fill="#264653"/>
+  
+  <!-- Mini tetrahedron -->
+  <g transform="translate(15,8) scale(0.2)" stroke="#2A9D8F" stroke-width="5" fill="none">
+    <line x1="200" y1="60" x2="80" y2="320"/>
+    <line x1="200" y1="60" x2="320" y2="320"/>
+    <line x1="80" y1="320" x2="320" y2="320"/>
+    <circle cx="200" cy="200" r="40" stroke="#E76F51" stroke-width="4"/>
+  </g>
+  
+  <text x="105" y="42" font-family="'Trebuchet MS', sans-serif" font-size="28" fill="#F0EEE9" font-weight="700" letter-spacing="4">P31 LABS</text>
+  <text x="105" y="62" font-family="'Georgia', serif" font-size="12" fill="#C9B1FF" letter-spacing="1">Open-Source Assistive Technology</text>
+  <text x="105" y="82" font-family="'Courier New', monospace" font-size="10" fill="#2A9D8F" opacity="0.6" letter-spacing="2">phosphorus31.org · 501(c)(3)</text>
+  
+  <!-- Accent line -->
+  <rect x="0" y="96" width="600" height="4" fill="#E76F51" opacity="0.8"/>
+</svg>

@@ -32,10 +32,12 @@ export default defineConfig({
   resolve: {
     alias: {
       '@p31/shared': path.resolve(__dirname, '../packages/shared/src'),
+      '@p31/spaceship-earth': path.resolve(__dirname, '../spaceship-earth/src'),
     },
     dedupe: ['three', '@react-three/fiber', '@react-three/drei', '@react-three/postprocessing'],
   },
   build: {
+    sourcemap: 'hidden',
     // WCD-CC03: Split vendor chunks for better caching
     rollupOptions: {
       output: {

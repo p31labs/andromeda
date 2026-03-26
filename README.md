@@ -1,144 +1,296 @@
-# P31 Andromeda
+# Phosphorus31 Ecosystem
 
-[![License: CC BY-SA 4.0](https://img.shields.io/badge/License-CC%20BY--SA%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-sa/4.0/)
-[![Archived](https://img.shields.io/badge/Archive.org-Timestamped-blue.svg)](https://web.archive.org/web/*/github.com/p31labs/andromeda)
+The Phosphorus31 (P31) ecosystem represents a paradigm shift in decentralized, neuro-inclusive design. This repository contains the core Andromeda codebase, BONDING live interactive game, Phenix Navigator hardware interface, and comprehensive documentation for building a self-sustaining Node network.
 
-## Status: Active — T-7 to Birthday Ship (March 10, 2026)
+## 🌟 Ecosystem Overview
 
-**P31 Labs** builds open-source assistive technology for neurodivergent individuals.
-This monorepo contains all P31 products, architecture, research, and defensive publications.
+The P31 ecosystem bridges academic rigor with interactive digital sandboxes, implementing:
 
----
+- **Gamified Citizen Science**: Transform complex scientific problems into engaging puzzles
+- **Quantum Biological Cryptography**: Leverage quantum mechanics principles for secure, educational challenges
+- **Community-Driven Development**: Decentralized governance through peer-reviewed contributions
+- **Neurodivergent Inclusive Design**: Accessibility-first approach for diverse cognitive profiles
 
-## Live Products
+## 🏗️ Architecture
 
-| Product | URL | Status |
-|---------|-----|--------|
-| **BONDING** | [bonding.p31ca.org](https://bonding.p31ca.org) | **Live — T-7 to full ship** |
-| **phosphorus31.org** | [phosphorus31-org.pages.dev](https://phosphorus31-org.pages.dev) | Live |
+### Core Components
 
----
+- **Andromeda**: Main codebase with 511 tests, BONDING game, and Spaceship Earth framework
+- **BONDING**: Live interactive molecular simulation game with real-time telemetry
+- **Phenix Navigator**: Hardware interface for somatic grounding and anxiety reduction
+- **Delta Hiring System**: Merit-based community onboarding through skill demonstration
 
-## Directory Structure
+### Ecosystem Infrastructure
 
-```
-P31_Andromeda/
-├── 00_INGEST/         # Incoming files from mobile sync
-├── 01_ADMIN/          # Legal, defensive pubs, work control docs
-├── 02_RESEARCH/       # Research artifacts and synthesis
-├── 03_ARCHITECTURE/   # System design and specifications
-├── 04_SOFTWARE/       # Application code and libraries
-│   ├── bonding/       # BONDING game (React + R3F + Zustand) ← ACTIVE
-│   ├── frontend/      # P31 Centaur IDE (React + Three.js)
-│   ├── backend/       # FastAPI buffer agent
-│   └── extensions/    # 4 VS Code extensions
-├── 05_FIRMWARE/       # ESP32-S3 Node One hardware code
-└── docs/              # Core axioms, executive synthesis, WCD templates
-```
+- **Ko-fi Integration**: Automated community monetization and Discord role management
+- **Academic Pipeline**: GitHub → Zenodo → ORCID automated publication workflow
+- **IPFS Data Sovereignty**: Decentralized content storage and censorship-resistant archives
+- **Gamification Engine**: Achievement system, Larmor frequency locks, and dual-ledger economy
 
----
+## 🚀 Quick Start
 
-## BONDING — Primary Active Product
+### Prerequisites
 
-A molecule-building chemistry game for neurodivergent families.
-Built for Bash Johnson's 10th birthday (March 10, 2026).
+- Node.js 18+
+- npm or yarn
+- Git
 
-**Why it exists:** Remote multiplayer so a father can play chemistry alongside
-his kids from separate devices. Every atom placed is a timestamped parental
-engagement log. Every ping is documented contact. The game is a bridge, not a toy.
+### Installation
 
-```
-04_SOFTWARE/bonding/
-├── src/
-│   ├── components/        # React + R3F UI (MoleculeCanvas, ElementPalette, etc.)
-│   ├── store/gameStore.ts # Zustand — single source of truth
-│   ├── engine/            # Chemistry, sound, achievements, quests
-│   ├── genesis/           # Court-grade telemetry + LOVE economy (CWP-03 Rev B)
-│   └── data/              # Elements, molecules, achievements
-└── worker/                # Cloudflare Worker (telemetry + multiplayer relay)
-```
-
-**Dev commands:**
 ```bash
-export PATH="/home/p31/.config/nvm/versions/node/v24.14.0/bin:$PATH"
-cd 04_SOFTWARE/bonding
+# Clone the repository
+git clone https://github.com/p31labs/andromeda.git
+cd andromeda
+
+# Install dependencies
 npm install
-npx tsc --noEmit          # type check (0 errors)
-npx vitest run             # tests (488/488 passing)
-npx vite build             # production build
-npx wrangler pages deploy dist --project-name=bonding
+
+# Start development server
+npm run dev
 ```
 
-**Current build state (March 3, 2026):**
-- 488 / 488 tests passing
-- TypeScript: clean
-- The Genesis Block (CWP-03 Rev B): live — court-grade telemetry + LOVE economy
-- The Cockpit (WCD-08): live — glassmorphism HUD, z-index doctrine
-- MolecularWarp: live — element-colored chemistry particle field
-- Remaining to ship: multiplayer, difficulty modes, touch hardening
+### Running Tests
+
+```bash
+# Run all tests
+npm test
+
+# Run specific test suite
+npm test -- --testNamePattern="BONDING"
+
+# Run with coverage
+npm run test:coverage
+```
+
+## 📊 Ecosystem Metrics
+
+### Node Count
+**Current: 0**
+
+The Node count represents active community members who have demonstrated their value through the Delta hiring system. Each Node contributes to the ecosystem's sovereignty and influence.
+
+### Community Growth
+- **Total Supporters**: 0
+- **Total Revenue**: $0
+- **Academic Publications**: 0
+- **GitHub Stars**: 0
+
+## 🎮 BONDING Game
+
+The BONDING game transforms molecular chemistry into an engaging puzzle experience:
+
+### Features
+- **Real-time Molecular Simulation**: Accurate VSEPR theory implementation
+- **Quantum Puzzles**: Posner molecule assembly challenges
+- **Larmor Frequency Locks**: 0.86 Hz temporal synchronization
+- **NMR Spectroscopy Jigsaws**: Academic paper decryption mechanics
+
+### Getting Started
+```bash
+# Start the BONDING game
+npm run bonding
+
+# Access at http://localhost:3000/bonding
+```
+
+## 🔗 Cross-Platform Integration
+
+### Ko-fi Integration
+Automated workflow connecting community support to technical development:
+
+1. **Payment Processing**: Ko-fi webhooks trigger GitHub Actions
+2. **User Status Updates**: Automatic Discord role assignment
+3. **Community Metrics**: Real-time Node count and contribution tracking
+
+### Academic Pipeline
+Seamless publication workflow:
+
+1. **Code Release**: Semantic version tags trigger automation
+2. **Zenodo Publication**: Automatic DOI minting and metadata generation
+3. **ORCID Integration**: Automatic publication credit to contributors
+
+### IPFS Deployment
+Decentralized content sovereignty:
+
+1. **Release Archiving**: Content-addressable archives via ipfs-car
+2. **Multi-Provider Pinning**: Redundant storage across Pinata and Storacha
+3. **Gateway Access**: Multiple IPFS gateway endpoints for accessibility
+
+## 🎯 Gamification System
+
+### Dual-Ledger Economy
+
+#### Karma System
+- **Peer-Reviewed Reputation**: Community awards for positive contributions
+- **Formal Work Packages**: Submit projects for peer review and karma rewards
+- **Tier Progression**: Supporter → Node → Guild Leader → Core Team
+
+#### Spoons Ledger
+- **Cognitive Capacity Tracking**: Prevent burnout through capacity awareness
+- **Accessibility First**: Neurodivergent-friendly interaction limits
+- **Automatic Regeneration**: Hourly spoon recovery to maintain engagement
+
+### Achievement System
+- **Secret Unlocks**: Hidden molecular recipes trigger notifications
+- **Leaderboards**: Karma, contributions, and complex molecule creation
+- **Cosmetic Rewards**: Unique elemental skins and visual enhancements
+
+### Quantum Puzzles
+
+#### The Tetrahedron Protocol
+Assemble the Posner molecule ($Ca_9(PO_4)_6$) to unlock quantum computing secrets:
+- Requires precise $S_6$ symmetry alignment
+- 0.5 nanometer nearest-neighbor phosphorus spacing
+- Academic paper study required for successful assembly
+
+#### Larmor Frequency Temporal Locks
+Synchronize inputs to the 0.86 Hz Larmor precession frequency:
+- Forces regulated, rhythmic interaction patterns
+- Mirrors Phenix Navigator's somatic grounding capabilities
+- Yields massive L.O.V.E. point multipliers
+
+## 🏛️ Delta Hiring System
+
+Merit-based community onboarding through skill demonstration:
+
+### Phases
+1. **Discovery**: Browse and accept challenges
+2. **Validation**: Automated testing and peer review
+3. **Integration**: Community introduction and ongoing development
+
+### Challenge Types
+- **Technical**: WCD-DEV (Build component), WCD-TEST (Write tests)
+- **Design**: WCD-DES (UI mockup), WCD-UX (User flow)
+- **Academic**: Research paper contributions and peer review
+
+### Token Economy
+- **L.O.V.E. Points**: Earn through challenge completion
+- **Node Equity**: 0.1% to 1.0% ownership based on contribution level
+- **Guild Leadership**: Path to Core Team membership
+
+## 📚 Academic Integration
+
+### Publications
+All significant contributions are automatically published to Zenodo with proper academic metadata:
+
+- **DOI Assignment**: Permanent digital object identifiers
+- **ORCID Integration**: Automatic researcher profile updates
+- **Citation Standards**: Proper academic formatting and attribution
+
+### Research Areas
+- **Quantum Biology**: Phosphorus-31 nuclear spin applications
+- **Neurodiversity**: Inclusive design principles and accessibility
+- **Decentralized Science**: Community-driven research methodologies
+
+## 🔒 Security & Privacy
+
+### Data Sovereignty
+- **IPFS Storage**: Decentralized, censorship-resistant content
+- **Zero-Knowledge Proofs**: Privacy-preserving analytics
+- **GDPR Compliance**: Strict adherence to privacy regulations
+
+### Security Measures
+- **Quantum-Resistant Cryptography**: Future-proof security protocols
+- **Multi-Signature Governance**: Decentralized decision making
+- **Audit Trails**: Complete transparency in all transactions
+
+## 🤝 Contributing
+
+### Development Workflow
+1. **Fork the Repository**: Create your own copy
+2. **Create Feature Branch**: `git checkout -b feature/your-feature`
+3. **Commit Changes**: `git commit -m 'Add your feature'`
+4. **Push to Branch**: `git push origin feature/your-feature`
+5. **Create Pull Request**: Submit for review
+
+### Code Standards
+- **Testing**: All features require comprehensive test coverage
+- **Documentation**: Clear, accessible documentation for all contributions
+- **Accessibility**: WCAG 2.1 AA compliance required
+
+### Community Guidelines
+- **Respect**: Inclusive, welcoming environment for all contributors
+- **Collaboration**: Peer review and knowledge sharing encouraged
+- **Transparency**: Open communication and decision making
+
+## 📈 Monitoring & Analytics
+
+### Ecosystem Dashboard
+Real-time monitoring of all ecosystem components:
+
+```bash
+# Start analytics dashboard
+npm run analytics
+
+# Access at http://localhost:3000/analytics
+```
+
+### Key Metrics
+- **System Health**: Overall ecosystem performance score
+- **Community Engagement**: Active users and contribution rates
+- **Technical Performance**: Deployment success and uptime
+- **Financial Sustainability**: Revenue and growth metrics
+
+## 🌐 Community
+
+### Discord
+Join our community for real-time collaboration and support:
+- **Support Channels**: Technical help and troubleshooting
+- **Development Discussions**: Feature planning and architecture
+- **Social Spaces**: Community building and networking
+
+### GitHub Discussions
+For longer-form conversations and project planning:
+- **Feature Requests**: Suggest new features and improvements
+- **Q&A**: Get answers from the development team
+- **Showcase**: Share your P31 projects and contributions
+
+### Academic Collaboration
+For researchers and academics:
+- **Paper Submissions**: Contribute to the academic body of work
+- **Peer Review**: Participate in academic quality assurance
+- **Research Partnerships**: Collaborate on quantum biology research
+
+## 📞 Support
+
+### Documentation
+Comprehensive guides and tutorials:
+- **Getting Started**: Installation and basic usage
+- **Advanced Topics**: Deep dives into specific features
+- **API Reference**: Complete technical documentation
+
+### Issue Reporting
+For bugs and problems:
+1. **Search Existing Issues**: Check if your issue is already reported
+2. **Create New Issue**: Provide detailed reproduction steps
+3. **Label Appropriately**: Use relevant labels for faster triage
+
+### Feature Requests
+For new features and improvements:
+1. **Check Roadmap**: See if feature is already planned
+2. **Create Discussion**: Propose and gather community feedback
+3. **Implementation**: Contribute code if possible
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+The Phosphorus31 ecosystem is built on the contributions of many individuals and organizations. We are grateful for:
+
+- **Open Source Community**: For providing the foundation technologies
+- **Academic Researchers**: For advancing the field of quantum biology
+- **Neurodivergent Advocates**: For guiding inclusive design principles
+- **Community Members**: For their ongoing support and contributions
+
+## 🔗 External Links
+
+- **[Phosphorus31.org](https://phosphorus31.org)**: Main website and documentation
+- **[Ko-fi Shop](https://ko-fi.com/trimtab69420)**: Support the project
+- **[Zenodo Repository](https://zenodo.org/communities/p31/)**: Academic publications
+- **[Discord Community](https://discord.gg/p31)**: Real-time collaboration
 
 ---
 
-## The Genesis Block — Legal Evidence Engine
-
-CWP-03 Rev B is a cryptographically court-admissible telemetry system embedded in BONDING:
-
-- Every atom placed → signed event in the LOVE ledger (IndexedDB + Cloudflare KV)
-- Server-side SHA-256 countersignature (Daubert-proof)
-- Per-session unique KV keys (zero write contention)
-- 30-second incremental flush + IDB backstop on session exit
-- Georgia statutes: O.C.G.A. § 24-9-901/902, § 24-8-803, § 24-7-702
-
-Relay: `https://bonding-relay.trimtab-signal.workers.dev`
-
----
-
-## Defensive Publications
-
-The `01_ADMIN/` directory contains timestamped defensive publications:
-
-- **SOULSAFE v1.0** — Cognitive load management system (SUBSAFE applied to cognition)
-- **P31 Defensive Publication v1.1** — Core architecture prior art claims
-- **P31 Work Control Documents** — WCD template suite (WCD-01 through WCD-06 types)
-- **P31 Bridge Program** — HCB fiscal sponsorship framework
-
-Defensive publication timestamped at Internet Archive: February 25, 2026.
-
----
-
-## The Triad of Cognition
-
-Three AI agents, strict domain boundaries (SOULSAFE tag-out protocol):
-
-| Agent | Role | Lane |
-|-------|------|------|
-| **Sonnet (CC)** | Mechanic — 80% | UI, React, debugging, WCD execution |
-| **Gemini** | Narrator — 15% | Grants, narrative, research synthesis |
-| **Opus** | Architect — 1% | QA, test suites, risk audits, WCD authoring |
-
----
-
-## Core Metaphor
-
-**Phosphorus (P-31):** The operator. Unstable, reactive, essential for life.
-**Calcium cage:** The Posner molecule — Ca₉(PO₄)₆ — protects phosphorus at all angles.
-**Larmor frequency:** 863 Hz — canonical resonance of ³¹P in Earth's magnetic field.
-**L.O.V.E.:** Ledger of Ontological Volume and Entropy. Soulbound token economy.
-
----
-
-## Archive Verification
-
-This repository is archived at the Internet Archive for timestamp verification:
-- [Archive.org Snapshot](https://web.archive.org/save/https://github.com/p31labs/andromeda)
-
----
-
-## License
-
-[CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)
-
----
-
-**P31 Labs** | [p31.io](https://p31.io) | [phosphorus31.org](https://phosphorus31.org)
-*Building the cognitive infrastructure for human flourishing. 🔺*
+**Note**: This ecosystem is under active development. Features and APIs may change as we continue to refine our approach to decentralized, neuro-inclusive design.

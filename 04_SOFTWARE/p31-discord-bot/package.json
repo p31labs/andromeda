@@ -1,0 +1,37 @@
+{
+  "name": "p31-discord-bot",
+  "version": "1.0.0",
+  "description": "P31 Labs Discord Bot with cognitive accessibility features - Quantum Edge integration, Spoon economy, and Fawn detection",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node src/index.ts",
+    "lint": "eslint src --ext .ts"
+  },
+  "keywords": [
+    "discord",
+    "bot",
+    "p31",
+    "phosphorus31",
+    "cognitive",
+    "accessibility"
+  ],
+  "author": "P31 Labs",
+  "license": "MIT",
+  "dependencies": {
+    "discord.js": "^14.14.1",
+    "dotenv": "^16.3.1",
+    "node-fetch": "^2.7.0",
+    "express": "^4.18.2",
+    "cors": "^2.8.5"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@types/node-fetch": "^2.6.9",
+    "@types/express": "^4.17.21",
+    "@types/cors": "^2.8.17",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.2"
+  }
+}

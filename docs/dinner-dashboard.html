@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Dinner Operation Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        p31: {
+                            purple: '#9333ea',
+                            dark: '#0f172a',
+                            panel: '#1e293b',
+                            red: '#e11d48',
+                            green: '#10b981',
+                            amber: '#f59e0b'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * { -webkit-tap-highlight-color: transparent; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            touch-action: manipulation;
+        }
+        .checklist-item.checked { text-decoration: line-through; color: #64748b; }
+        .checklist-item.checked .checkbox-inner { background-color: #10b981; border-color: #10b981; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+    </style>
+</head>
+<body class="bg-p31-dark text-slate-200 min-h-screen pb-24">
+
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-p31-panel border-b border-slate-700 p-4 shadow-lg">
+        <div class="max-w-2xl mx-auto flex justify-between items-center">
+            <div>
+                <h1 class="text-xl font-bold flex items-center gap-2">
+                    <span>💜🔺💜</span> DINNER OPS
+                </h1>
+                <p class="text-xs text-slate-400 mt-1">Sun, Mar 22 • Mission: Connect</p>
+            </div>
+            <div id="clock" class="text-lg font-mono font-bold text-p31-purple"></div>
+        </div>
+    </header>
+
+    <main class="max-w-2xl mx-auto p-4 space-y-4">
+        
+        <!-- Status Banner -->
+        <div id="voltage-status" class="bg-p31-amber/20 border border-p31-amber rounded-lg p-3 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <span class="text-xl">⚡</span>
+                <span class="text-sm font-semibold text-p31-amber">VOLTAGE: STABLE</span>
+            </div>
+            <span id="time-remaining" class="text-xs font-mono text-slate-400"></span>
+        </div>
+
+        <!-- Checklist Section -->
+        <section class="bg-p31-panel rounded-xl p-4 border border-slate-700 shadow-md">
+            <h2 class="text-lg font-bold text-white mb-3 flex items-center gap-2">
+                <span>🎯</span> READY TO GO
+            </h2>
+            
+            <div class="space-y-3">
+                <div>
+                    <h3 class="font-semibold text-slate-400 mb-2 uppercase text-xs tracking-wider">Digital Prep ✅</h3>
+                    <div class="space-y-1">
+                        <label class="flex items-center gap-3 p-2 rounded hover:bg-slate-800 cursor-pointer checklist-item checked">
+                            <input type="checkbox" checked class="hidden">
+                            <div class="w-5 h-5 rounded border border-slate-500 flex items-center justify-center checkbox-inner text-white text-xs">✓</div>
+                            <span class="text-sm">KWAI TRACK docs ready</span>
+                        </label>
+                        <label class="flex items-center gap-3 p-2 rounded hover:bg-slate-800 cursor-pointer checklist-item checked">
+                            <input type="checkbox" checked class="hidden">
+                            <div class="w-5 h-5 rounded border border-slate-500 flex items-center justify-center checkbox-inner text-white text-xs">✓</div>
+                            <span class="text-sm">Belief artifacts prepared</span>
+                        </label>
+                        <label class="flex items-center gap-3 p-2 rounded hover:bg-slate-800 cursor-pointer checklist-item checked">
+                            <input type="checkbox" checked class="hidden">
+                            <div class="w-5 h-5 rounded border border-slate-500 flex items-center justify-center checkbox-inner text-white text-xs">✓</div>
+                            <span class="text-sm">Delta Architecture ready</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="font-semibold text-slate-400 mb-2 uppercase text-xs tracking-wider mt-4">Physical Actions</h3>
+                    <div class="space-y-1">
+                        <label class="flex items-center gap-3 p-2 rounded hover:bg-slate-800 cursor-pointer checklist-item">
+                            <input type="checkbox" class="hidden" onchange="toggleCheck(this)">
+                            <div class="w-5 h-5 rounded border border-slate-500 flex items-center justify-center checkbox-inner text-white text-xs"></div>
+                            <span class="text-sm">Load BONDING on phone</span>
+                        </label>
+                        <label class="flex items-center gap-3 p-2 rounded hover:bg-slate-800 cursor-pointer checklist-item">
+                            <input type="checkbox" class="hidden" onchange="toggleCheck(this)">
+                            <div class="w-5 h-5 rounded border border-slate-500 flex items-center justify-center checkbox-inner text-white text-xs"></div>
+                            <span class="text-sm">Take calcium if needed</span>
+                        </label>
+                        <label class="flex items-center gap-3 p-2 rounded hover:bg-slate-800 cursor-pointer checklist-item">
+                            <input type="checkbox" class="hidden" onchange="toggleCheck(this)">
+                            <div class="w-5 h-5 rounded border border-slate-500 flex items-center justify-center checkbox-inner text-white text-xs"></div>
+                            <span class="text-sm">Grounding intention set</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Conversation Toolkit -->
+        <section class="bg-p31-panel rounded-xl p-4 border border-slate-700 shadow-md">
+            <h2 class="text-lg font-bold text-white mb-3 flex items-center gap-2">
+                <span>🗣️</span> CONVERSATION FLOW
+            </h2>
+            
+            <div class="bg-slate-800 p-3 rounded-lg border border-slate-600 mb-3">
+                <h3 class="text-p31-purple font-bold text-sm mb-2">Opener</h3>
+                <p class="text-sm italic">"Let me show you something amazing I've been working on..."</p>
+            </div>
+
+            <div class="grid grid-cols-1 gap-2 text-sm">
+                <div class="flex items-center gap-2 bg-slate-800 p-2 rounded">
+                    <span class="w-5 h-5 rounded-full bg-blue-600 text-white text-xs flex items-center justify-center">1</span>
+                    <span class="text-slate-300">Start Familiar: "Broken thermostat..."</span>
+                </div>
+                <div class="flex items-center gap-2 bg-slate-800 p-2 rounded">
+                    <span class="w-5 h-5 rounded-full bg-blue-600 text-white text-xs flex items-center justify-center">2</span>
+                    <span class="text-slate-300">Connect Personal: "That's why I seem distracted"</span>
+                </div>
+                <div class="flex items-center gap-2 bg-slate-800 p-2 rounded">
+                    <span class="w-5 h-5 rounded-full bg-blue-600 text-white text-xs flex items-center justify-center">3</span>
+                    <span class="text-slate-300">Show Solution: "Here's what I built..."</span>
+                </div>
+                <div class="flex items-center gap-2 bg-slate-800 p-2 rounded">
+                    <span class="w-5 h-5 rounded-full bg-blue-600 text-white text-xs flex items-center justify-center">4</span>
+                    <span class="text-slate-300">Demo: BONDING game</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quick Visual Aids -->
+        <section class="bg-p31-panel rounded-xl p-4 border border-slate-700 shadow-md">
+            <h2 class="text-lg font-bold text-white mb-3 flex items-center gap-2">
+                <span>🎨</span> VISUAL AIDS
+            </h2>
+            <div class="grid grid-cols-2 gap-2 text-sm">
+                <div class="bg-slate-800 p-2 rounded flex items-center gap-2">
+                    <span>🌡️</span>
+                    <span>Thermostat</span>
+                </div>
+                <div class="bg-slate-800 p-2 rounded flex items-center gap-2">
+                    <span>🔋</span>
+                    <span>Brain Battery</span>
+                </div>
+                <div class="bg-slate-800 p-2 rounded flex items-center gap-2">
+                    <span>🔺</span>
+                    <span>Tetrahedron</span>
+                </div>
+                <div class="bg-slate-800 p-2 rounded flex items-center gap-2">
+                    <span>🧪</span>
+                    <span>BONDING Game</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAWN GUARD -->
+        <section class="bg-gradient-to-b from-slate-800 to-p31-panel rounded-xl p-4 border border-p31-purple shadow-lg shadow-purple-500/10">
+            <h2 class="text-lg font-bold text-white mb-3 flex items-center gap-2">
+                <span>🛡️</span> FAWN GUARD
+            </h2>
+            
+            <div class="space-y-2">
+                <div class="bg-slate-900/50 p-2 rounded text-sm">
+                    <h3 class="font-bold text-emerald-400 mb-1">5-4-3-2-1 Grounding</h3>
+                    <p class="text-slate-400 text-xs">5 see • 4 touch • 3 hear • 2 smell • 1 taste</p>
+                </div>
+                
+                <div class="bg-slate-900/50 p-2 rounded text-sm">
+                    <h3 class="font-bold text-p31-purple mb-1">Pause Phrases</h3>
+                    <ul class="space-y-1 text-slate-300 text-xs">
+                        <li class="border-l-2 border-p31-purple pl-2">"Let me think about that"</li>
+                        <li class="border-l-2 border-p31-purple pl-2">"I need to process that"</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- CRITICAL REMINDERS -->
+        <section class="bg-p31-panel rounded-xl p-4 border border-p31-red/30 shadow-md">
+            <h2 class="text-sm font-bold text-white mb-2 flex items-center gap-2">
+                <span>⚡</span> REMINDERS
+            </h2>
+            <ul class="space-y-2 text-xs">
+                <li class="flex items-start gap-2 bg-slate-800 p-2 rounded">
+                    <span>💊</span> <div><strong>Medical:</strong> Calcium if needed. Watch for paresthesia.</div>
+                </li>
+                <li class="flex items-start gap-2 bg-slate-800 p-2 rounded">
+                    <span>⚖️</span> <div><strong>Legal:</strong> NO case details. NO strategy.</div>
+                </li>
+            </ul>
+        </section>
+
+        <!-- EMERGENCY BUTTON -->
+        <button onclick="document.getElementById('emergency-modal').classList.remove('hidden')" class="w-full bg-p31-red hover:bg-red-700 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition-colors flex items-center justify-center gap-2">
+            <span>🚨</span> EMERGENCY
+        </button>
+
+    </main>
+
+    <!-- Emergency Modal -->
+    <div id="emergency-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-p31-red rounded-xl p-5 max-w-sm w-full shadow-2xl">
+            <h2 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                <span>📞</span> SUPPORT
+            </h2>
+            <div class="space-y-2 mb-5">
+                <a href="tel:911" class="flex items-center justify-between bg-slate-800 p-3 rounded-lg hover:bg-slate-700">
+                    <span class="font-bold text-p31-red">Medical</span>
+                    <span class="font-mono">911</span>
+                </a>
+                <a href="tel:211" class="flex items-center justify-between bg-slate-800 p-3 rounded-lg hover:bg-slate-700">
+                    <span class="font-bold text-blue-400">Housing Help</span>
+                    <span class="font-mono">211</span>
+                </a>
+            </div>
+            <button onclick="document.getElementById('emergency-modal').classList.add('hidden')" class="w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-2 px-4 rounded-lg">
+                Close
+            </button>
+        </div>
+    </div>
+
+    <script>
+        function toggleCheck(input) {
+            const label = input.closest('label');
+            const inner = label.querySelector('.checkbox-inner');
+            if (input.checked) {
+                label.classList.add('checked');
+                inner.innerHTML = '✓';
+            } else {
+                label.classList.remove('checked');
+                inner.innerHTML = '';
+            }
+        }
+
+        function updateClock() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            document.getElementById('clock').textContent = timeString;
+            
+            // Calculate dinner time (assuming 6 PM)
+            const dinnerHour = 18;
+            const hoursUntil = dinnerHour - now.getHours() - (now.getMinutes() > 0 ? 1 : 0);
+            const minsUntil = 60 - now.getMinutes();
+            if (hoursUntil > 0) {
+                document.getElementById('time-remaining').textContent = `${hoursUntil}h ${minsUntil}m to dinner`;
+            } else if (hoursUntil === 0 && minsUntil > 0) {
+                document.getElementById('time-remaining').textContent = `${minsUntil}m to dinner`;
+            } else {
+                document.getElementById('time-remaining').textContent = 'Dinner time!';
+            }
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+    </script>
+</body>
+</html>

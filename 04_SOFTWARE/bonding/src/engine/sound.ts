@@ -441,7 +441,27 @@ export function setMuted(muted: boolean): void {
 }
 
 export function playMissingNodeTone(): void {
-  playReject();
+  // 172.35 Hz — the P31 phosphorus NMR frequency
+  // The Missing Node plays its own frequency, not the reject buzz
+  const ctx = getCtx();
+  const now = ctx.currentTime;
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+
+  const soundDuration = 0.8; // matches MISSING_NODE.soundDuration
+
+  osc.type = 'sine';
+  osc.frequency.setValueAtTime(172.35, now);
+
+  gain.gain.setValueAtTime(0, now);
+  gain.gain.linearRampToValueAtTime(0.15, now + 0.1);
+  gain.gain.linearRampToValueAtTime(0.1, now + 0.3);
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + soundDuration);
+
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  osc.start(now);
+  osc.stop(now + soundDuration);
 }
 
 export function playWarp(): void {

@@ -23,6 +23,8 @@ import type { VestingStatus } from '@p31/love-ledger';
 import { GameEngine } from '@p31/game-engine';
 import type { LedgerAdapter, Structure, PlayerProgress, Challenge } from '@p31/game-engine';
 import { VaultSync } from '../services/vaultSync';
+import { trackEvent } from '../services/telemetry';
+import { haptic } from '../services/haptic';
 
 // ── Tier ordering for hysteresis comparison ──
 const TIER_RANK: Record<ScopeTier, number> = {
@@ -34,6 +36,12 @@ const TIER_RANK: Record<ScopeTier, number> = {
 // ── Hysteresis hold duration (ms) ──
 const DOWNGRADE_HOLD_MS = 30_000;
 
+// ── Performance monitoring constants ──
+const BOOT_TIMEOUT_MS = 10_000;
+const STATE_UPDATE_THROTTLE_MS = 16; // ~60fps
+const ERROR_RETRY_DELAY_MS = 2000;
+const MAX_RETRY_ATTEMPTS = 3;
+
 // ── Context value ──
 interface NodeContextValue {
   node: NodeZero | null;
@@ -43,6 +51,7 @@ interface NodeContextValue {
   tier: ScopeTier;
   voltage: number;
   booted: boolean;
+  bootError: string | null;
   updateState: (axis: Axis, value: number) => Promise<void>;
   // B2: Protocol economy
   ledger: LedgerEngine | null;
@@ -60,6 +69,13 @@ interface NodeContextValue {
   vaultSync: VaultSync | null;
   exportVaultBundle: () => Promise<Record<string, unknown> | null>;
   vaultLayerCount: number;
+  // Performance metrics
+  performance: {
+    bootTime: number;
+    lastStateUpdate: number;
+    errorCount: number;
+    retryCount: number;
+  };
 }
 
 const NodeContext = createContext<NodeContextValue>({
@@ -70,6 +86,7 @@ const NodeContext = createContext<NodeContextValue>({
   tier: 'FULL',
   voltage: 0,
   booted: false,
+  bootError: null,
   updateState: async () => {},
   ledger: null,
   protocolWallet: null,
@@ -84,6 +101,12 @@ const NodeContext = createContext<NodeContextValue>({
   vaultSync: null,
   exportVaultBundle: async () => null,
   vaultLayerCount: 0,
+  performance: {
+    bootTime: 0,
+    lastStateUpdate: 0,
+    errorCount: 0,
+    retryCount: 0,
+  },
 });
 
 export function useNode(): NodeContextValue {
@@ -98,6 +121,7 @@ export function NodeProvider({ children }: NodeProviderProps) {
   const nodeRef = useRef<NodeZero | null>(null);
   const ledgerRef = useRef<LedgerEngine | null>(null);
   const [booted, setBooted] = useState(false);
+  const [bootError, setBootError] = useState<string | null>(null);
   const [nodeId, setNodeId] = useState<string | null>(null);
   const [spoons, setSpoons] = useState(12);
   const [voltage, setVoltage] = useState(0);
@@ -118,10 +142,26 @@ export function NodeProvider({ children }: NodeProviderProps) {
   const vaultSyncRef = useRef<VaultSync | null>(null);
   const [vaultLayerCount, setVaultLayerCount] = useState(0);
 
+  // Performance metrics
+  const [performance, setPerformance] = useState({
+    bootTime: 0,
+    lastStateUpdate: 0,
+    errorCount: 0,
+    retryCount: 0,
+  });
+
   // Hysteresis state
   const [confirmedTier, setConfirmedTier] = useState<ScopeTier>('FULL');
   const pendingDowngradeRef = useRef<ScopeTier | null>(null);
   const downgradeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Throttling refs for performance
+  const lastStateUpdateRef = useRef(0);
+  const stateUpdateTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Retry mechanism
+  const retryCountRef = useRef(0);
+  const bootTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Apply a raw tier from the state engine, with hysteresis
   const applyTier = useCallback((rawTier: ScopeTier) => {
@@ -160,6 +200,8 @@ export function NodeProvider({ children }: NodeProviderProps) {
             setConfirmedTier(rawTier);
             pendingDowngradeRef.current = null;
             downgradeTimerRef.current = null;
+            // Haptic feedback for tier downgrade
+            haptic.tap();
           }
         }, DOWNGRADE_HOLD_MS);
       }
@@ -187,37 +229,130 @@ export function NodeProvider({ children }: NodeProviderProps) {
     setAvailableChallenges(game.availableChallenges);
   }, []);
 
-  // Boot NodeZero + LedgerEngine on mount
-  useEffect(() => {
-    const node = new NodeZero();
-    nodeRef.current = node;
+  // Enhanced error handling with retry logic
+  const handleBootError = useCallback((error: Error, attempt: number) => {
+    const errorMessage = error.message || 'Unknown NodeZero boot error';
+    setBootError(errorMessage);
+    setPerformance(prev => ({ ...prev, errorCount: prev.errorCount + 1 }));
+    
+    console.error('[NodeContext] Boot failed (attempt', attempt + 1, '):', errorMessage);
+    
+    // Telemetry for boot failures
+    trackEvent('node_boot_failed', {
+      error: errorMessage,
+      attempt,
+      maxAttempts: MAX_RETRY_ATTEMPTS,
+    });
 
-    let mounted = true;
+    if (attempt < MAX_RETRY_ATTEMPTS - 1) {
+      retryCountRef.current++;
+      setPerformance(prev => ({ ...prev, retryCount: prev.retryCount + 1 }));
+      
+      setTimeout(() => {
+        console.log('[NodeContext] Retrying NodeZero boot...');
+        bootNode(attempt + 1);
+      }, ERROR_RETRY_DELAY_MS * Math.pow(2, attempt)); // Exponential backoff
+    } else {
+      // Max retries reached, fallback to demo mode
+      console.log('[NodeContext] Max retries reached, switching to demo mode');
+      setNodeId('demo');
+      setBooted(true);
+      setBootError('Demo mode activated due to NodeZero initialization failure');
+      
+      // Telemetry for fallback
+      trackEvent('node_boot_fallback_demo', {
+        error: errorMessage,
+        retryAttempts: attempt + 1,
+      });
+    }
+  }, []);
 
-    node.boot().then((identity) => {
-      if (!mounted) return;
+  // Boot NodeZero with timeout and retry logic
+  const bootNode = useCallback(async (attempt = 0) => {
+    const startTime = globalThis.performance.now();
+    const mountedRef = { current: true }; // Track mount state for this boot attempt
+    
+    try {
+      // Clear any existing timeout
+      if (bootTimeoutRef.current) {
+        clearTimeout(bootTimeoutRef.current);
+      }
+
+      // Set boot timeout
+      bootTimeoutRef.current = setTimeout(() => {
+        if (!mountedRef.current) return;
+        handleBootError(new Error('NodeZero boot timeout'), attempt);
+      }, BOOT_TIMEOUT_MS);
+
+      const node = new NodeZero();
+      nodeRef.current = node;
+
+      const identity = await node.boot();
+      
+      // Clear timeout on success
+      if (bootTimeoutRef.current) {
+        clearTimeout(bootTimeoutRef.current);
+      }
+
+      const bootTime = globalThis.performance.now() - startTime;
+      setPerformance(prev => ({ ...prev, bootTime }));
+      
+      // Demo mode check: if no identity, treat as demo
+      if (!identity || !identity.nodeId) {
+        console.log('[NodeContext] Demo mode — auto-unlocking');
+        setNodeId('demo');
+        setBooted(true);
+        setBootError('Demo mode activated');
+        
+        // Telemetry for demo mode
+        trackEvent('node_boot_demo_mode', { bootTime });
+        return;
+      }
+      
       const id = identity.nodeId as string;
       setNodeId(id);
       setBooted(true);
-      console.log('[NodeContext] booted:', id);
+      setBootError(null);
+      console.log('[NodeContext] booted:', id, `(${bootTime.toFixed(2)}ms)`);
 
+      // Telemetry for successful boot
+      trackEvent('node_boot_success', { 
+        bootTime, 
+        nodeId: id,
+        attempt: attempt + 1 
+      });
+
+      // Initialize all subsystems
+      await initializeSubsystems(node, id, mountedRef);
+
+    } catch (error) {
+      if (bootTimeoutRef.current) {
+        clearTimeout(bootTimeoutRef.current);
+      }
+      handleBootError(error instanceof Error ? error : new Error('Unknown error'), attempt);
+    }
+  }, [handleBootError]);
+
+  // Initialize all NodeZero subsystems
+  const initializeSubsystems = useCallback(async (node: NodeZero, id: string, mountedRef: { current: boolean }) => {
+    try {
       // B2: Create LedgerEngine and wire events
       const ledger = new LedgerEngine(id);
       ledgerRef.current = ledger;
 
       // Ledger → React state: update wallet on every LOVE_EARNED
       ledger.on('LOVE_EARNED', (_tx: LoveTransaction) => {
-        if (!mounted) return;
+        if (!mountedRef.current) return;
         refreshLedgerState();
       });
 
       ledger.on('POOL_REBALANCED', () => {
-        if (!mounted) return;
+        if (!mountedRef.current) return;
         refreshLedgerState();
       });
 
       ledger.on('LOVE_SPENT', (_spend: LoveSpend) => {
-        if (!mounted) return;
+        if (!mountedRef.current) return;
         refreshLedgerState();
       });
 
@@ -262,12 +397,14 @@ export function NodeProvider({ children }: NodeProviderProps) {
       // B3: Create GameEngine with LedgerAdapter bridge
       const ledgerAdapter: LedgerAdapter = {
         blockPlaced(meta) {
+          if (!mountedRef.current) return;
           ledger.blockPlaced(meta);
-          if (mounted) refreshLedgerState();
+          refreshLedgerState();
         },
         challengeComplete(_challengeId, love) {
+          if (!mountedRef.current) return;
           ledger.donate(love, { source: 'challenge', challengeId: _challengeId });
-          if (mounted) refreshLedgerState();
+          refreshLedgerState();
         },
       };
 
@@ -275,12 +412,12 @@ export function NodeProvider({ children }: NodeProviderProps) {
       gameRef.current = game;
 
       // Game events → React state
-      game.on('PIECE_PLACED', () => { if (mounted) refreshGameState(); });
-      game.on('CHALLENGE_COMPLETE', () => { if (mounted) refreshGameState(); });
-      game.on('LEVEL_UP', () => { if (mounted) refreshGameState(); });
-      game.on('TIER_PROMOTED', () => { if (mounted) refreshGameState(); });
-      game.on('XP_EARNED', () => { if (mounted) refreshGameState(); });
-      game.on('QUEST_COMPLETE', () => { if (mounted) refreshGameState(); });
+      game.on('PIECE_PLACED', () => { if (!mountedRef.current) return; refreshGameState(); });
+      game.on('CHALLENGE_COMPLETE', () => { if (!mountedRef.current) return; refreshGameState(); });
+      game.on('LEVEL_UP', () => { if (!mountedRef.current) return; refreshGameState(); });
+      game.on('TIER_PROMOTED', () => { if (!mountedRef.current) return; refreshGameState(); });
+      game.on('XP_EARNED', () => { if (!mountedRef.current) return; refreshGameState(); });
+      game.on('QUEST_COMPLETE', () => { if (!mountedRef.current) return; refreshGameState(); });
 
       // Wire bond events → game engine
       node.onBondFormed((bond) => {
@@ -293,57 +430,105 @@ export function NodeProvider({ children }: NodeProviderProps) {
       // B4: Create VaultSync and initialize layers
       const vs = new VaultSync({ node, ledger, game });
       vaultSyncRef.current = vs;
-      vs.init().then(() => {
-        if (!mounted) return;
-        node.vault.listLayers().then(layers => {
-          if (mounted) setVaultLayerCount(layers.length);
-        });
-        console.log('[NodeContext] VaultSync initialized');
-      }).catch(err => {
-        console.error('[NodeContext] VaultSync init failed:', err);
-      });
-    }).catch((err) => {
-      console.error('[NodeContext] boot failed:', err);
-    });
+      await vs.init();
+      
+      const layers = await node.vault.listLayers();
+      setVaultLayerCount(layers.length);
+      console.log('[NodeContext] VaultSync initialized');
 
-    // B1: Subscribe to local state changes for spoons/tier
-    node.state.on('STATE_CHANGED', (event) => {
-      if (!mounted) return;
-      const { composite } = event.state;
-      setSpoons(composite.spoons);
-      setVoltage(composite.voltage as number);
-      applyTier(composite.tier);
-    });
+    } catch (error) {
+      console.error('[NodeContext] Subsystem initialization failed:', error);
+      throw error;
+    }
+  }, [refreshLedgerState, refreshGameState]);
 
-    node.state.on('SCOPE_TIER_CHANGED', (event) => {
-      if (!mounted) return;
-      setSpoons(event.spoons);
-      applyTier(event.currentTier);
-    });
+  // Throttled state update handler
+  const throttledUpdateState = useCallback(async (axis: Axis, value: number): Promise<void> => {
+    const now = globalThis.performance.now();
+    
+    if (now - lastStateUpdateRef.current < STATE_UPDATE_THROTTLE_MS) {
+      if (stateUpdateTimeoutRef.current) {
+        clearTimeout(stateUpdateTimeoutRef.current);
+      }
+      
+      stateUpdateTimeoutRef.current = setTimeout(() => {
+        lastStateUpdateRef.current = now;
+        setPerformance(prev => ({ ...prev, lastStateUpdate: now }));
+        
+        if (nodeRef.current) {
+          nodeRef.current.updateState(axis, value);
+        }
+      }, STATE_UPDATE_THROTTLE_MS - (now - lastStateUpdateRef.current));
+      
+      return;
+    }
+
+    lastStateUpdateRef.current = now;
+    setPerformance(prev => ({ ...prev, lastStateUpdate: now }));
+    
+    if (nodeRef.current) {
+      nodeRef.current.updateState(axis, value);
+    }
+  }, []);
+
+  // Boot on mount with retry logic
+  useEffect(() => {
+    bootNode();
 
     return () => {
-      mounted = false;
+      // Cleanup
       if (downgradeTimerRef.current) {
         clearTimeout(downgradeTimerRef.current);
       }
+      if (bootTimeoutRef.current) {
+        clearTimeout(bootTimeoutRef.current);
+      }
+      if (stateUpdateTimeoutRef.current) {
+        clearTimeout(stateUpdateTimeoutRef.current);
+      }
+      
       // B4: Write all vault layers on session end
       if (vaultSyncRef.current) {
         vaultSyncRef.current.writeAll().catch(() => {});
         vaultSyncRef.current.teardown();
         vaultSyncRef.current = null;
       }
-      node.shutdown();
-      nodeRef.current = null;
+      
+      if (nodeRef.current) {
+        nodeRef.current.shutdown();
+        nodeRef.current = null;
+      }
       ledgerRef.current = null;
       gameRef.current = null;
     };
-  }, [applyTier, refreshLedgerState, refreshGameState]);
+  }, [bootNode]);
 
-  const updateState = useCallback(async (axis: Axis, value: number) => {
-    if (nodeRef.current) {
-      await nodeRef.current.updateState(axis, value);
-    }
-  }, []);
+  // B1: Subscribe to local state changes for spoons/tier
+  useEffect(() => {
+    if (!nodeRef.current) return;
+
+    const node = nodeRef.current;
+    
+    const handleStateChanged = (event: any) => {
+      const { composite } = event.state;
+      setSpoons(composite.spoons);
+      setVoltage(composite.voltage as number);
+      applyTier(composite.tier);
+    };
+
+    const handleScopeTierChanged = (event: any) => {
+      setSpoons(event.spoons);
+      applyTier(event.currentTier);
+    };
+
+    node.state.on('STATE_CHANGED', handleStateChanged);
+    node.state.on('SCOPE_TIER_CHANGED', handleScopeTierChanged);
+
+    return () => {
+      node.state.off('STATE_CHANGED', handleStateChanged);
+      node.state.off('SCOPE_TIER_CHANGED', handleScopeTierChanged);
+    };
+  }, [applyTier]);
 
   // B4: Export vault bundle for court disclosure
   const exportVaultBundle = useCallback(async (): Promise<Record<string, unknown> | null> => {
@@ -367,7 +552,8 @@ export function NodeProvider({ children }: NodeProviderProps) {
     tier: confirmedTier,
     voltage,
     booted,
-    updateState,
+    bootError,
+    updateState: throttledUpdateState,
     ledger: ledgerRef.current,
     protocolWallet,
     vesting,
@@ -381,6 +567,7 @@ export function NodeProvider({ children }: NodeProviderProps) {
     vaultSync: vaultSyncRef.current,
     exportVaultBundle,
     vaultLayerCount,
+    performance,
   };
 
   return (

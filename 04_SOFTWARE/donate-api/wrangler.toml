@@ -4,6 +4,8 @@ compatibility_date = "2024-12-01"
 
 [vars]
 ALLOWED_ORIGIN = "https://phosphorus31.org"
+SUCCESS_URL = "https://phosphorus31.org/donate?success=1"
+CANCEL_URL = "https://phosphorus31.org/donate"
 
 # Set your Stripe secret key as a secret:
 #   npx wrangler secret put STRIPE_SECRET_KEY

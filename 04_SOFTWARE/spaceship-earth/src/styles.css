@@ -5,6 +5,44 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Oxanium:wght@200;300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
 
+/* @property registrations for animatable CSS custom properties (Chrome/Edge) */
+@property --p31-bg { syntax: '<color>'; inherits: true; initial-value: #020617; }
+@property --p31-primary { syntax: '<color>'; inherits: true; initial-value: #22d3ee; }
+@property --p31-secondary { syntax: '<color>'; inherits: true; initial-value: #d946ef; }
+@property --p31-accent { syntax: '<color>'; inherits: true; initial-value: #C9B1FF; }
+@property --p31-glass { syntax: '<number>'; inherits: true; initial-value: 0.15; }
+
+:root {
+  --p31-bg: #020617;
+  --p31-primary: #22d3ee;
+  --p31-secondary: #d946ef;
+  --p31-accent: #C9B1FF;
+  --p31-glass: 0.15;
+  transition: --p31-bg 0.3s ease, --p31-primary 0.3s ease, --p31-secondary 0.3s ease, --p31-accent 0.3s ease;
+}
+
+/* Fallback for Firefox: transition actual properties */
+[data-theme] * {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Theme overrides */
+[data-theme="operator"] { --p31-bg: #020617; --p31-primary: #22d3ee; --p31-secondary: #d946ef; --p31-accent: #C9B1FF; }
+[data-theme="kids"] { --p31-bg: #1e1b4b; --p31-primary: #E9C46A; --p31-secondary: #E76F51; --p31-accent: #2A9D8F; }
+[data-theme="gray_rock"] { --p31-bg: #1a1a2e; --p31-primary: #64748B; --p31-secondary: #475569; --p31-accent: #94a3b8; }
+[data-theme="aurora"] { --p31-bg: #0f172a; --p31-primary: #a78bfa; --p31-secondary: #34d399; --p31-accent: #f472b6; }
+[data-theme="high_contrast"] { --p31-bg: #000000; --p31-primary: #00FFFF; --p31-secondary: #FF00FF; --p31-accent: #FFFF00; }
+[data-theme="low_motion"] { --p31-bg: #020617; --p31-primary: #22d3ee; --p31-secondary: #d946ef; --p31-accent: #C9B1FF; }
+
+[data-theme="low_motion"],
+[data-theme="gray_rock"] {
+  * { animation-duration: 0s !important; transition-duration: 0s !important; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 0s !important; transition-duration: 0s !important; }
+}
+
 /* ── P31 Brand Tokens — Neon Phosphor Theme ──────── */
 /* OLED-black backgrounds + neon glow on all text/borders */
 :root {

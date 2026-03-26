@@ -1,0 +1,6 @@
+packages:
+  - 'apps/*'
+  - 'packages/*'
+  - 'extensions/*'
+  - '04_SOFTWARE/packages/*'
+  - 'p31labs/*'
