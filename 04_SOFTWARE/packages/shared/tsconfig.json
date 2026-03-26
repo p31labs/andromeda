@@ -11,8 +11,7 @@
     "sourceMap": true,
     "outDir": "dist",
     "rootDir": "src",
-    "jsx": "react-jsx",
-    "types": ["vite/client"]
+    "jsx": "react-jsx"
   },
   "include": ["src"]
 }
