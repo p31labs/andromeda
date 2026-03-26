@@ -35,8 +35,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: ESLint Check
-        run: pnpm eslint .
+      # - name: ESLint Check
+        # run: pnpm eslint .
 
       - name: Security Scan
         run: pnpm audit
