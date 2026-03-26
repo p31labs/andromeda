@@ -12,4 +12,5 @@ export { default as AiChat } from './AiChat';
 export { default as GraphBrain } from './GraphBrain';
 export { default as ExportPanel } from './ExportPanel';
 export { default as BreathingPacer } from './BreathingPacer';
+export { default as ParentDashboard } from './ParentDashboard';
 export { ToastProvider, useToast } from './Toast';

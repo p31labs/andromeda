@@ -7,6 +7,7 @@ import { useEffect, useState, useCallback, useRef } from 'react';
 import { useSovereignStore } from '../../../sovereign/useSovereignStore';
 import { useShallow } from 'zustand/shallow';
 import type { SovereignRoom } from '../../../sovereign/types';
+import { useRoomRouter } from '../../../hooks/useRoomRouter';
 import { setupSovereignPWA } from '@p31/shared/sovereign';
 import { ImmersiveCockpitUI } from './ImmersiveCockpit';
 import { ClassicDiagnosticUI } from './ClassicDiagnostic';
@@ -162,6 +163,31 @@ export function SovereignShell() {
 
   // Bridge: NodeContext → useSovereignStore (feeds HUD arc)
   useSovereignBridge(love);
+
+  // Hash router integration - connect URL hash to SovereignShell overlays
+  const { activeRoom: hashRoom, navigateToRoom } = useRoomRouter();
+
+  // Sync hash router with SovereignShell overlay state
+  useEffect(() => {
+    if (hashRoom && hashRoom.id) {
+      // Map hash room to SovereignShell overlay format
+      const roomMap: Record<string, string> = {
+        'collider': 'COLLIDER',
+        'bonding': 'BONDING',
+        'bridge': 'BRIDGE',
+        'buffer': 'BUFFER',
+        'observatory': 'OBSERVATORY',
+        'sovereign': 'COPILOT',
+      };
+      
+      const sovereignRoom = roomMap[hashRoom.id.toLowerCase()];
+      if (sovereignRoom && sovereignRoom !== 'OBSERVATORY') {
+        setOverlay(sovereignRoom);
+      } else if (hashRoom.id.toLowerCase() === 'observatory') {
+        setOverlay(null);
+      }
+    }
+  }, [hashRoom, setOverlay]);
 
   // PWA bootstrap
   useEffect(() => { setupSovereignPWA(setPwaStatus); }, [setPwaStatus]);
@@ -375,7 +401,7 @@ export function SovereignShell() {
           keys meant for overlays. React 19 supports inert as boolean attr. */}
       <div
         {...(openOverlay && openOverlay !== 'OBSERVATORY' ? { inert: '' } : {})}
-        aria-hidden={!!(openOverlay && openOverlay !== 'OBSERVATORY') ? 'true' : undefined}
+        aria-hidden={openOverlay && openOverlay !== 'OBSERVATORY'}
         style={{ position: 'absolute', inset: 0 }}
       >
         {viewMode === 'cockpit' ? <ImmersiveCockpitUI /> : <ClassicDiagnosticUI />}

@@ -20,6 +20,7 @@ export default [
       '@typescript-eslint': tseslint,
     },
     rules: {
+      'no-console': ['warn', { allow: ['warn', 'error'] }],
       '@typescript-eslint/no-unused-vars': ['error', {
         argsIgnorePattern: '^_',
         varsIgnorePattern: '^_',

@@ -7,6 +7,7 @@ import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPa
 import { useSovereignStore } from '../../../sovereign/useSovereignStore';
 import { setGpuMs } from '../../../services/perfMonitor';
 import { prefersReducedMotion } from '../../../hooks/useReducedMotion';
+import { WebGPUCameraSystem } from '../../../camera/WebGPUCameraSystem';
 
 export interface OrbitState {
   rx: number; ry: number;
@@ -64,6 +65,7 @@ export function ImmersiveCockpitUI({ isIdle }: { isIdle?: boolean }) {
   
   const ptrState = useRef({ isDragging: false, prevX: 0, prevY: 0 });
   const timeRef = useRef(0);
+  const resizeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (!mountRef.current) return;
@@ -600,17 +602,28 @@ export function ImmersiveCockpitUI({ isIdle }: { isIdle?: boolean }) {
     animate();
 
     const handleResize = () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      composer.setSize(
-        Math.round(window.innerWidth * bloomScale),
-        Math.round(window.innerHeight * bloomScale)
-      );
+      // Debounce resize events to prevent rapid re-renders during orientation change
+      // This prevents the "screen flickering" issue on mobile devices
+      if (resizeTimeoutRef.current) {
+        clearTimeout(resizeTimeoutRef.current);
+      }
+      resizeTimeoutRef.current = setTimeout(() => {
+        if (!camera || !renderer || !composer) return;
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        composer.setSize(
+          Math.round(window.innerWidth * bloomScale),
+          Math.round(window.innerHeight * bloomScale)
+        );
+      }, 100); // 100ms debounce - sufficient for orientation changes
     };
     window.addEventListener('resize', handleResize);
 
     return () => {
+      if (resizeTimeoutRef.current) {
+        clearTimeout(resizeTimeoutRef.current);
+      }
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('pointermove', handleMove);
       window.removeEventListener('pointerup', handleEnd);

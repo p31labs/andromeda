@@ -15,7 +15,7 @@ export type CameraMode = 'free' | 'dome' | 'screen';
 export type ViewPerspective = 'OBSERVER' | 'GODHEAD';
 
 // D1.1: Polymorphic Skin Engine
-export type SkinTheme = 'OPERATOR' | 'KIDS' | 'GRAY_ROCK' | 'AURORA';
+export type SkinTheme = 'OPERATOR' | 'KIDS' | 'GRAY_ROCK' | 'AURORA' | 'HIGH_CONTRAST' | 'LOW_MOTION';
 
 // M18: Somatic Tether
 export type SomaticStatus = 'disconnected' | 'calibrating' | 'active' | 'stress';
@@ -134,6 +134,11 @@ export interface SovereignState {
   sfxEnabled: boolean;
   masterVolume: number;       // 0–1
 
+  // WebGPU Rules Engine
+  rulesEngine: any | null;
+  constitution: any;
+  ruleEvaluationResult: any | null;
+
   // Actions (existing)
   setPwaStatus: (status: string) => void;
   toggleView: () => void;
@@ -202,4 +207,9 @@ export interface SovereignState {
   // Audio (WCD 18)
   setSfxEnabled: (enabled: boolean) => void;
   setMasterVolume: (v: number) => void;
+
+  // WebGPU Rules Engine methods
+  initRulesEngine: () => Promise<boolean>;
+  evaluateRules: (context: any, zoneId?: string) => Promise<any | null>;
+  addCreatorRule: (rule: any) => void;
 }

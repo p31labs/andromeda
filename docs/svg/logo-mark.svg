@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <defs>
+    <linearGradient id="tealGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2A9D8F"/>
+      <stop offset="100%" stop-color="#264653"/>
+    </linearGradient>
+    <linearGradient id="coralGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E76F51"/>
+      <stop offset="100%" stop-color="#E76F51" stop-opacity="0.7"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Tetrahedron wireframe (K₄ graph — 4 vertices, 6 edges) -->
+  <!-- Vertices: top(200,60), bottom-left(80,320), bottom-right(320,320), depth(200,220) -->
+  <g stroke-width="3" stroke-linecap="round" fill="none" filter="url(#glow)">
+    <!-- Back edges (lighter) -->
+    <line x1="200" y1="60" x2="200" y2="220" stroke="#2A9D8F" opacity="0.4"/>
+    <line x1="80" y1="320" x2="200" y2="220" stroke="#2A9D8F" opacity="0.4"/>
+    <line x1="320" y1="320" x2="200" y2="220" stroke="#2A9D8F" opacity="0.4"/>
+    
+    <!-- Front edges (full opacity) -->
+    <line x1="200" y1="60" x2="80" y2="320" stroke="url(#tealGrad)" stroke-width="3.5"/>
+    <line x1="200" y1="60" x2="320" y2="320" stroke="url(#tealGrad)" stroke-width="3.5"/>
+    <line x1="80" y1="320" x2="320" y2="320" stroke="url(#tealGrad)" stroke-width="3.5"/>
+  </g>
+  
+  <!-- Vertex nodes (calcium positions) -->
+  <circle cx="200" cy="60" r="8" fill="#2A9D8F"/>
+  <circle cx="80" cy="320" r="8" fill="#2A9D8F"/>
+  <circle cx="320" cy="320" r="8" fill="#2A9D8F"/>
+  <circle cx="200" cy="220" r="6" fill="#2A9D8F" opacity="0.5"/>
+  
+  <!-- Central nucleus — Phosphorus-31 -->
+  <circle cx="200" cy="200" r="36" fill="none" stroke="#E76F51" stroke-width="2.5" opacity="0.8"/>
+  <circle cx="200" cy="200" r="24" fill="#E76F51" opacity="0.15"/>
+  
+  <!-- ³¹P label -->
+  <text x="184" y="192" font-family="'Courier New', monospace" font-size="14" fill="#E76F51" font-weight="bold">31</text>
+  <text x="189" y="214" font-family="'Georgia', serif" font-size="28" fill="#E76F51" font-weight="bold">P</text>
+</svg>

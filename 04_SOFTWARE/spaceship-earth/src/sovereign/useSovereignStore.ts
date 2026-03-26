@@ -38,6 +38,7 @@ import { SOVEREIGN_ROOMS } from './types';
 import { audioEngine, generateDID, hashTelemetry, exportLedgerJSON } from '@p31/shared/sovereign';
 import { trackEvent } from '../services/telemetry';
 import { haptic } from '../services/haptic';
+import { SimpleWebGPURulesEngine, createExampleConstitution } from '../services/webgpu/SimpleWebGPURulesEngine';
 
 export const useSovereignStore = create<SovereignState>((set, get) => ({
   viewMode: 'cockpit',
@@ -123,6 +124,11 @@ export const useSovereignStore = create<SovereignState>((set, get) => ({
   // Audio (WCD 18) — persisted in localStorage
   sfxEnabled: (() => { try { return localStorage.getItem('p31-sfx') !== '0'; } catch { return true; } })(),
   masterVolume: (() => { try { return parseFloat(localStorage.getItem('p31-vol') ?? '0.6'); } catch { return 0.6; } })(),
+
+  // WebGPU Rules Engine
+  rulesEngine: null as SimpleWebGPURulesEngine | null,
+  constitution: createExampleConstitution(),
+  ruleEvaluationResult: null as any,
 
   setPwaStatus: (status) => set({ pwaStatus: status }),
   toggleView: () => set((state) => ({ viewMode: state.viewMode === 'cockpit' ? 'classic' : 'cockpit' })),
@@ -309,6 +315,40 @@ export const useSovereignStore = create<SovereignState>((set, get) => ({
     const clamped = Math.max(0, Math.min(1, v));
     set({ masterVolume: clamped });
     try { localStorage.setItem('p31-vol', String(clamped)); } catch {}
+  },
+
+  // WebGPU Rules Engine methods
+  initRulesEngine: async () => {
+    const engine = new SimpleWebGPURulesEngine();
+    const initialized = await engine.initialize();
+    set({ rulesEngine: engine });
+    return initialized;
+  },
+
+  evaluateRules: async (context: any, zoneId?: string) => {
+    const state = get();
+    if (!state.rulesEngine) {
+      // Initialize if not present
+      await get().initRulesEngine();
+    }
+    const engine = get().rulesEngine;
+    if (engine) {
+      const result = await engine.evaluateRules(state.constitution, context, zoneId);
+      set({ ruleEvaluationResult: result });
+      return result;
+    }
+    return null;
+  },
+
+  addCreatorRule: (rule: any) => {
+    set((state) => {
+      const newConstitution = { ...state.constitution };
+      if (!newConstitution.creatorRules.has(rule.zoneId)) {
+        newConstitution.creatorRules.set(rule.zoneId, []);
+      }
+      newConstitution.creatorRules.get(rule.zoneId)!.push(rule);
+      return { constitution: newConstitution };
+    });
   },
 }));
 

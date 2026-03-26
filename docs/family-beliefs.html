@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Family Belief Artifacts</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        artifact: {
+                            bg: '#18181b',
+                            card: '#27272a',
+                            text: '#f4f4f5',
+                            purple: '#a855f7',
+                            red: '#f43f5e'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        .card-hover:hover { transform: translateY(-2px); box-shadow: 0 8px 20px -4px rgba(0, 0, 0, 0.5); border-color: #a855f7; }
+        #focus-modal.active { display: flex; animation: fadein 0.2s; }
+        @keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body class="bg-artifact-bg text-artifact-text min-h-screen pb-20">
+
+    <header class="py-6 px-4 text-center">
+        <h1 class="text-2xl font-extrabold mb-2 tracking-tight">Belief Artifacts <span class="text-xl align-middle">💜🔺💜</span></h1>
+        <p class="text-sm text-zinc-400">Click any card to present</p>
+    </header>
+
+    <main class="max-w-2xl mx-auto px-4 pb-8">
+        <div id="artifacts-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+    </main>
+
+    <!-- Focus Modal -->
+    <div id="focus-modal" class="hidden fixed inset-0 bg-black/95 z-50 flex-col items-center justify-center p-4">
+        <button onclick="closeFocus()" class="absolute top-4 right-4 text-zinc-400 hover:text-white text-3xl leading-none">&times;</button>
+        
+        <div id="focus-content" class="w-full max-w-lg bg-artifact-card rounded-2xl p-6 border border-zinc-700 overflow-y-auto max-h-[80vh]"></div>
+        
+        <div class="fixed bottom-6 flex gap-4">
+            <button onclick="prevCard()" class="px-5 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-full text-white font-semibold text-sm">← Prev</button>
+            <button onclick="nextCard()" class="px-5 py-2 bg-artifact-purple hover:bg-purple-600 rounded-full text-white font-semibold text-sm">Next →</button>
+        </div>
+    </div>
+
+    <script>
+        const artifacts = [
+            {
+                id: 1,
+                title: "The Calcium Crisis",
+                icon: "🌡️",
+                concept: "Broken Thermostat",
+                explanation: "Imagine your house thermostat breaks in winter. The temperature drops, but the furnace never kicks on. My 'calcium thermostat' is broken - I can't release calcium when I need it.",
+                action: "Show thermostat analogy"
+            },
+            {
+                id: 2,
+                title: "The Posner Molecule",
+                icon: "🔋",
+                concept: "Brain Battery",
+                explanation: "Our brains run on tiny quantum batteries made from calcium and phosphate. When my calcium is low, these batteries don't charge properly - affecting thinking and memory.",
+                action: "Show battery comparison"
+            },
+            {
+                id: 3,
+                title: "The Sovereignty System",
+                icon: "☀️",
+                concept: "Power Grid vs. Solar",
+                explanation: "I'm building a system where everyone can be independent - like having solar panels instead of relying on one big power plant. This protects people from being cut off.",
+                action: "Show independence"
+            },
+            {
+                id: 4,
+                title: "The K₄ Complete Graph",
+                icon: "🔷",
+                concept: "Strongest Shape",
+                explanation: "I use the strongest geometric shape in the universe - the tetrahedron (pyramid with triangle base). It's the most stable structure possible.",
+                action: "Show paper tetrahedron"
+            },
+            {
+                id: 5,
+                title: "Wye-to-Delta",
+                icon: "🚗",
+                concept: "Traffic Pattern",
+                explanation: "Imagine if every car had to go through downtown. That's the old system. My new system lets everyone connect directly - multiple highways instead of one crowded road.",
+                action: "Show faster routes"
+            },
+            {
+                id: 6,
+                title: "L.O.V.E. Tokens",
+                icon: "🎮",
+                concept: "Progress Points",
+                explanation: "I created a system that rewards what really matters - helping others, creating useful things, being consistent. Like a video game for real-life accomplishments.",
+                action: "Show game analogy"
+            },
+            {
+                id: 7,
+                title: "The BONDING Game",
+                icon: "🧪",
+                concept: "Molecule Building",
+                explanation: "I built a video game that teaches real chemistry. You build water, salt, molecules that make your blood work. Real scientists use it!",
+                action: "Load game demo"
+            },
+            {
+                id: 8,
+                title: "The Impact Map",
+                icon: "🌊",
+                concept: "Ripple Effect",
+                explanation: "What I'm building doesn't just help me - it creates ripples. When one person solves their problems and shares the solution, it makes the whole world better.",
+                action: "Show ripple visual"
+            }
+        ];
+
+        let currentIndex = 0;
+
+        function renderGrid() {
+            const grid = document.getElementById('artifacts-grid');
+            grid.innerHTML = artifacts.map((art, index) => `
+                <div onclick="openFocus(${index})" class="bg-artifact-card border border-zinc-700 rounded-xl p-4 cursor-pointer transition-all duration-200 card-hover flex flex-col h-full">
+                    <div class="flex items-start justify-between mb-3">
+                        <div class="text-3xl bg-zinc-900 w-12 h-12 rounded-lg flex items-center justify-center border border-zinc-700">${art.icon}</div>
+                        <span class="text-xs font-bold text-zinc-500">#${art.id}</span>
+                    </div>
+                    <h2 class="text-lg font-bold text-white mb-1">${art.title}</h2>
+                    <p class="text-artifact-purple text-sm font-semibold mb-2">${art.concept}</p>
+                    <p class="text-zinc-400 text-sm line-clamp-2">${art.explanation}</p>
+                </div>
+            `).join('');
+        }
+
+        function openFocus(index) {
+            currentIndex = index;
+            updateFocusModal();
+            document.getElementById('focus-modal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeFocus() {
+            document.getElementById('focus-modal').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        function updateFocusModal() {
+            const art = artifacts[currentIndex];
+            const content = document.getElementById('focus-content');
+            content.innerHTML = `
+                <div class="text-center mb-6">
+                    <div class="text-5xl mb-3">${art.icon}</div>
+                    <h2 class="text-2xl font-extrabold text-white mb-1">${art.title}</h2>
+                    <p class="text-artifact-purple font-semibold">${art.concept}</p>
+                </div>
+                
+                <div class="bg-zinc-900 border-l-4 border-artifact-purple p-4 rounded-r-lg mb-4">
+                    <p class="text-base text-zinc-300 leading-relaxed italic">"${art.explanation}"</p>
+                </div>
+
+                <div class="text-center">
+                    <span class="inline-block bg-zinc-800 text-emerald-400 font-mono text-sm px-4 py-2 rounded-full">
+                        💡 ${art.action}
+                    </span>
+                </div>
+                
+                <div class="text-center mt-4 text-xs text-zinc-500">
+                    ${currentIndex + 1} of ${artifacts.length}
+                </div>
+            `;
+        }
+
+        function nextCard() {
+            currentIndex = (currentIndex + 1) % artifacts.length;
+            updateFocusModal();
+        }
+
+        function prevCard() {
+            currentIndex = (currentIndex - 1 + artifacts.length) % artifacts.length;
+            updateFocusModal();
+        }
+
+        renderGrid();
+
+        document.addEventListener('keydown', (e) => {
+            if (!document.getElementById('focus-modal').classList.contains('active')) return;
+            if (e.key === 'Escape') closeFocus();
+            if (e.key === 'ArrowRight') nextCard();
+            if (e.key === 'ArrowLeft') prevCard();
+        });
+    </script>
+</body>
+</html>
