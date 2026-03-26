@@ -1,0 +1,24 @@
+{
+  "name": "p31-social-drop-automation",
+  "version": "1.0.0",
+  "description": "P31 Social Drop Automation — Scheduled wave reminders for social media deployment",
+  "main": "worker.js",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "tail": "wrangler tail"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20240612.0",
+    "wrangler": "^3.0.0"
+  },
+  "keywords": [
+    "cloudflare",
+    "social-media",
+    "automation",
+    "p31",
+    "cron"
+  ],
+  "author": "P31 Labs",
+  "license": "MIT"
+}
