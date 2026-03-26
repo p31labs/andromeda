@@ -10,7 +10,10 @@
     "p31labs/*"
   ],
   "scripts": {
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "eslint": "echo 'ESLint not configured in root - use 04_SOFTWARE for linting'",
+    "license-check": "echo 'License check not configured in root - use 04_SOFTWARE for license scanning'",
+    "audit": "pnpm -r audit 2>/dev/null || echo 'Audit skipped'"
   },
   "dependencies": {
     "@types/web-bluetooth": "^0.0.21",

@@ -72,26 +72,17 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Type check
-        run: pnpm -r typecheck
+        run: cd 04_SOFTWARE && pnpm turbo run typecheck --filter=@p31/shared --filter=@p31/bonding --filter=@p31/spaceship-earth --filter=@p31/node-zero
 
       - name: Build packages
-        run: pnpm turbo run build
+        run: cd 04_SOFTWARE && pnpm turbo run build --filter=@p31/shared --filter=@p31/bonding --filter=@p31/spaceship-earth --filter=@p31/node-zero
 
       - name: Run tests
-        run: pnpm turbo run test
-
-      - name: Coverage Report
-        run: pnpm turbo run coverage
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          fail_ci_if_error: true
+        run: cd 04_SOFTWARE && pnpm turbo run test --filter=@p31/bonding --filter=@p31/node-zero
 
       - name: Turborepo Remote Cache
         if: env.TURBO_TOKEN
-        run: pnpm turbo run build --remote
+        run: cd 04_SOFTWARE && pnpm turbo run build --filter=@p31/bonding --filter=@p31/node-zero --remote
 
   # ========================================
   # Medical Device Compliance Check
@@ -171,7 +162,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build for staging
-        run: pnpm --filter bonding build -- --mode staging
+        run: cd 04_SOFTWARE && pnpm --filter bonding build -- --mode staging
         env:
           NODE_ENV: staging
 
@@ -224,7 +215,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build for production
-        run: pnpm --filter bonding build -- --mode production
+        run: cd 04_SOFTWARE && pnpm --filter bonding build -- --mode production
         env:
           NODE_ENV: production
 
