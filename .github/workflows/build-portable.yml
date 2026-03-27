@@ -1,0 +1,30 @@
+name: Build Portable Sovereign Node
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Prep Portable Directory
+        run: |
+          mkdir p31-sovereign-node
+          cp -r 04_SOFTWARE p31-sovereign-node/04_SOFTWARE
+          cp docker-compose.yml p31-sovereign-node/
+          cp -r scripts p31-sovereign-node/scripts
+          cp README_PORTABLE.md p31-sovereign-node/README.md
+          
+      - name: Create ZIP Archive
+        run: zip -r p31-sovereign-node-${{ github.ref_name }}.zip p31-sovereign-node/
+
+      - name: Upload Release Asset
+        uses: softprops/action-gh-release@v1
+        with:
+          files: p31-sovereign-node-${{ github.ref_name }}.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
