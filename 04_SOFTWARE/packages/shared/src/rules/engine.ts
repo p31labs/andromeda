@@ -109,15 +109,17 @@ function evaluateCondition(c: RuleCondition, ctx: RuleContext): boolean {
     case 'LESS_THAN':
       return (actual as number) < (c.value as number);
     case 'CONTAINS':
-      return (actual as string)?.includes?.(c.value) ?? false;
+      return (actual as string)?.includes?.(c.value as string) ?? false;
     case 'IN':
-      return (c.value as any[]).includes(actual);
-    case 'BETWEEN':
-      return (actual as number) >= c.value[0] && (actual as number) <= c.value[1];
+      return (c.value as string[]).includes(actual as string);
+    case 'BETWEEN': {
+      const [lo, hi] = c.value as [number, number];
+      return (actual as number) >= lo && (actual as number) <= hi;
+    }
     case 'TIME_RANGE': {
-      const now = new Date();
-      const hour = now.getHours();
-      return hour >= c.value[0] && hour < c.value[1];
+      const [start, end] = c.value as [number, number];
+      const hour = new Date().getHours();
+      return hour >= start && hour < end;
     }
     default:
       return false;

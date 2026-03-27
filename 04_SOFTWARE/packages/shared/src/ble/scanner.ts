@@ -60,6 +60,12 @@ export class SpaceshipBLEScanner {
       throw new Error('Web Bluetooth not supported or experimental flag not enabled');
     }
 
+    // Guard: clean up any existing listener before registering a new one.
+    // Without this, a double-call overwrites this.advListener, leaking the first listener permanently.
+    if (this.state.isScanning) {
+      await this.stopScan();
+    }
+
     try {
       this.transitionCallback = onTransition;
       this.state.isScanning = true;

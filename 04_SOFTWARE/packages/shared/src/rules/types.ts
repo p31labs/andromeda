@@ -24,7 +24,7 @@ export type RuleOperator =
 export interface RuleCondition {
   field: string;           // 'time' | 'spoonBalance' | 'karma' | 'zoneEnergy' | ...
   operator: RuleOperator;
-  value: any;              // Type depends on field
+  value: string | number | boolean | [number, number] | string[];
   description: string;     // Human-readable explanation
 }
 

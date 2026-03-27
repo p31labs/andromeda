@@ -158,15 +158,16 @@ export class CognitiveShield {
     }
 
     // Try WebGPU LLM first (Tier 1)
+    // Use sanitizedText so control characters and length are bounded before hitting the LLM.
     if (this.config.webllmEnabled) {
       try {
-        const rewritten = await this.rewriteWithWebLLM(originalText);
+        const rewritten = await this.rewriteWithWebLLM(sanitizedText);
         if (rewritten) {
           return {
             original: originalText,
             rewritten,
             conflictLevel: analysis.conflictLevel,
-            blufSummary: generateBlufSummary(originalText),
+            blufSummary: generateBlufSummary(sanitizedText),
             showOriginal: true,
             shieldTier: 1,
           };
@@ -179,13 +180,13 @@ export class CognitiveShield {
     // Try Ollama LAN fallback (Tier 2)
     if (this.config.ollamaEndpoint) {
       try {
-        const rewritten = await this.rewriteWithOllama(originalText);
+        const rewritten = await this.rewriteWithOllama(sanitizedText);
         if (rewritten) {
           return {
             original: originalText,
             rewritten,
             conflictLevel: analysis.conflictLevel,
-            blufSummary: generateBlufSummary(originalText),
+            blufSummary: generateBlufSummary(sanitizedText),
             showOriginal: true,
             shieldTier: 2,
           };
@@ -197,7 +198,7 @@ export class CognitiveShield {
 
     // Template-based rewriting (Tier 3)
     try {
-      const rewritten = rewriteMessage(originalText);
+      const rewritten = rewriteMessage(sanitizedText);
       return {
         original: originalText,
         rewritten,

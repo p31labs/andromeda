@@ -10,9 +10,11 @@ export const setupSovereignPWA = (setStatus: (s: string) => void) => {
   };
   const link = document.createElement('link');
   link.rel = 'manifest';
-  link.href = URL.createObjectURL(new Blob([JSON.stringify(manifest)], { type: 'application/json' }));
+  // Use a data URI instead of a Blob URL so the browser can always fetch it —
+  // a Blob URL revoked too early (before the browser fetches the manifest) causes
+  // a silent install failure. Data URIs have no lifetime issue.
+  link.href = `data:application/json;charset=utf-8,${encodeURIComponent(JSON.stringify(manifest))}`;
   document.head.appendChild(link);
-  setTimeout(() => URL.revokeObjectURL(link.href), 100);
 
   const swCode = `
     const CACHE_NAME = 'p31-os-v4';
