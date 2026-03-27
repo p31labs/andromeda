@@ -62,6 +62,15 @@
       font-size: 14px;
     }
 
+    .forge-ref {
+      color: #7A27FF;
+    }
+
+    .forge-cmd {
+      font-size: 12px;
+      color: #94a3b8;
+    }
+
     /* Layout */
     .main-grid {
       display: grid;
@@ -532,7 +541,7 @@
         <div class="logo">🔧</div>
         <h1>P31 Environment Generator</h1>
       </div>
-      <p class="subtitle">Zero-friction environment variable configuration with validation and best practices</p>
+      <p class="subtitle">Zero-friction environment variable configuration with validation and best practices &nbsp;·&nbsp; <span class="forge-ref">The Forge</span>: <code class="forge-cmd">python p31_forge.py input.md</code> → branded HTML</p>
     </header>
 
     <div class="main-grid">
@@ -547,6 +556,8 @@
               <option value="donate_api">💎 Donate API</option>
               <option value="discord_bot">🤖 Discord Bot</option>
               <option value="social_dispatch">🔺 Social Dispatch (Operation Trimtab)</option>
+              <option value="ai_inference">🧠 AI Inference Keys</option>
+              <option value="oracle_terminal">🔮 Oracle Terminal</option>
             </optgroup>
             <optgroup label="Generic Frameworks">
               <option value="nodejs" selected>🟢 Node.js / Express</option>
@@ -714,23 +725,72 @@
       },
       social_dispatch: {
         name: 'Social Dispatch (Operation Trimtab)',
-        description: 'Quantum Egg Hunt wave automation — GitHub Actions + social platform API keys',
+        description: 'Quantum Egg Hunt wave automation — GitHub Actions + all social platform API keys including Substack, Mastodon, Bluesky, and Nostr',
         variables: [
-          { key: 'DISCORD_WEBHOOK', description: 'Discord webhook URL for bot announcements and wave dispatches', example: 'https://discord.com/api/webhooks/...', required: true, category: 'services', format: 'url', getUrl: 'https://discord.com/developers/applications', getLabel: 'Server Settings → Integrations → Webhooks' },
-          { key: 'KOFI_WEBHOOK', description: 'Ko-fi webhook URL for donation notifications', example: 'https://ko-fi.com/...', required: false, category: 'services', format: 'url', getUrl: 'https://ko-fi.com/manage/webhooks', getLabel: 'Ko-fi Dashboard → Webhooks' },
-          { key: 'TWITTER_API_KEY', description: 'Twitter/X API key (OAuth 1.0a)', example: 'abc123...', required: false, category: 'api_keys', minLength: 20, getUrl: 'https://developer.twitter.com/en/portal/dashboard', getLabel: 'Twitter Developer Portal' },
+          // Discord
+          { key: 'DISCORD_WEBHOOK', description: 'Discord webhook URL for wave dispatches and announcements', example: 'https://discord.com/api/webhooks/...', required: true, category: 'services', format: 'url', getUrl: 'https://discord.com/developers/applications', getLabel: 'Server Settings → Integrations → Webhooks' },
+          // Ko-fi
+          { key: 'KOFI_WEBHOOK', description: 'Ko-fi webhook URL for donation event notifications (ko-fi.com/trimtab69420)', example: 'https://ko-fi.com/...', required: false, category: 'services', format: 'url', getUrl: 'https://ko-fi.com/manage/webhooks', getLabel: 'Ko-fi Dashboard → Webhooks' },
+          // Twitter/X
+          { key: 'TWITTER_BEARER_TOKEN', description: 'Twitter/X Bearer token for read API access (broadcast.yml uses this for WCD auto-tweets)', example: 'AAAA...', required: false, category: 'api_keys', minLength: 80, getUrl: 'https://developer.twitter.com/en/portal/dashboard', getLabel: 'Twitter Developer Portal' },
+          { key: 'TWITTER_API_KEY', description: 'Twitter/X API key (OAuth 1.0a — required for posting)', example: 'abc123...', required: false, category: 'api_keys', minLength: 20, getUrl: 'https://developer.twitter.com/en/portal/dashboard', getLabel: 'Twitter Developer Portal' },
           { key: 'TWITTER_API_SECRET', description: 'Twitter/X API secret key', example: 'xyz456...', required: false, category: 'api_keys', minLength: 20 },
           { key: 'TWITTER_ACCESS_TOKEN', description: 'Twitter/X OAuth access token', example: '...', required: false, category: 'api_keys', minLength: 20 },
           { key: 'TWITTER_ACCESS_TOKEN_SECRET', description: 'Twitter/X OAuth access token secret', example: '...', required: false, category: 'api_keys', minLength: 20 },
+          // Reddit
           { key: 'REDDIT_CLIENT_ID', description: 'Reddit OAuth2 client ID', example: 'abc123', required: false, category: 'api_keys', getUrl: 'https://www.reddit.com/prefs/apps', getLabel: 'Reddit App Preferences' },
           { key: 'REDDIT_CLIENT_SECRET', description: 'Reddit OAuth2 client secret', example: 'xyz456...', required: false, category: 'api_keys' },
           { key: 'REDDIT_USERNAME', description: 'Reddit account username for posting', example: 'trimtab_p31', required: false, category: 'app_config' },
           { key: 'REDDIT_PASSWORD', description: 'Reddit account password', example: '...', required: false, category: 'api_keys', minLength: 8 },
-          { key: 'LINKEDIN_ACCESS_TOKEN', description: 'LinkedIn OAuth2 access token for org page posts', example: 'AQX...', required: false, category: 'api_keys', minLength: 20, getUrl: 'https://www.linkedin.com/developers/apps', getLabel: 'LinkedIn Developer Apps' },
-          { key: 'CLOUDFLARE_API_TOKEN', description: 'Cloudflare API token for Worker deployment', example: '...', required: false, category: 'api_keys', minLength: 40, getUrl: 'https://dash.cloudflare.com/profile/api-tokens', getLabel: 'Cloudflare API Tokens' },
+          // LinkedIn
+          { key: 'LINKEDIN_ACCESS_TOKEN', description: 'LinkedIn OAuth2 access token for org page posts (Wave 3)', example: 'AQX...', required: false, category: 'api_keys', minLength: 20, getUrl: 'https://www.linkedin.com/developers/apps', getLabel: 'LinkedIn Developer Apps' },
+          // Substack — no public write API; posts via email or Zapier automation
+          { key: 'SUBSTACK_EMAIL', description: 'Substack publication email for Zapier/IFTTT automation (thegeodesicself.substack.com). No write API exists — use this for webhook-based triggers only.', example: 'trimtab.signal@proton.me', required: false, category: 'services' },
+          // Mastodon
+          { key: 'MASTODON_ACCESS_TOKEN', description: 'Mastodon API access token for federated posting (p31_social_broadcast_worker.js)', example: '...', required: false, category: 'api_keys', minLength: 40, getUrl: 'https://mastodon.social/settings/applications', getLabel: 'Mastodon → Settings → Applications' },
+          { key: 'MASTODON_INSTANCE_URL', description: 'Mastodon instance base URL', example: 'https://mastodon.social', required: false, category: 'services', format: 'url' },
+          // Bluesky
+          { key: 'BLUESKY_IDENTIFIER', description: 'Bluesky handle or DID for AT Protocol posting', example: 'trimtab.bsky.social', required: false, category: 'api_keys', getUrl: 'https://bsky.app/settings/app-passwords', getLabel: 'Bluesky → Settings → App Passwords' },
+          { key: 'BLUESKY_APP_PASSWORD', description: 'Bluesky app-specific password (not your account password)', example: 'xxxx-xxxx-xxxx-xxxx', required: false, category: 'api_keys', minLength: 19 },
+          // Nostr
+          { key: 'NOSTR_PRIVATE_KEY', description: 'Nostr nsec private key for decentralized publishing (hex or bech32)', example: 'nsec1...', required: false, category: 'security', minLength: 63 },
+          { key: 'NOSTR_RELAY_URLS', description: 'Comma-separated Nostr relay WebSocket URLs', example: 'wss://relay.damus.io,wss://nos.lol,wss://relay.nostr.band', required: false, category: 'services' },
+          // Zenodo
+          { key: 'ZENODO_ACCESS_TOKEN', description: 'Zenodo API token for DOI publishing and record updates (DOI: 10.5281/zenodo.18627420)', example: '...', required: false, category: 'api_keys', minLength: 40, getUrl: 'https://zenodo.org/account/settings/applications/tokens/new/', getLabel: 'Zenodo → Account → Applications' },
+          // Slack
+          { key: 'SLACK_WEBHOOK_URL', description: 'Slack incoming webhook for P31 team notifications', example: 'https://hooks.slack.com/services/...', required: false, category: 'services', format: 'url', getUrl: 'https://api.slack.com/apps', getLabel: 'Slack API → Incoming Webhooks' },
+          // Cloudflare
+          { key: 'CLOUDFLARE_API_TOKEN', description: 'Cloudflare API token for Worker deployment (social-drop-automation, broadcast worker)', example: '...', required: false, category: 'api_keys', minLength: 40, getUrl: 'https://dash.cloudflare.com/profile/api-tokens', getLabel: 'Cloudflare API Tokens' },
           { key: 'CLOUDFLARE_ACCOUNT_ID', description: 'Cloudflare account ID', example: 'abc123...', required: false, category: 'services', getUrl: 'https://dash.cloudflare.com', getLabel: 'Cloudflare Dashboard → Account ID' },
+          // Runtime control
           { key: 'WAVE_SELECTOR', description: 'Default wave to dispatch (1-6 or "all"). Overridden by GitHub Actions input at runtime.', example: '1', required: false, category: 'app_config' },
           { key: 'DRY_RUN', description: 'Preview payload without posting to live platforms', example: 'true', required: false, category: 'dev', format: 'boolean' },
+        ]
+      },
+      ai_inference: {
+        name: 'AI Inference Keys',
+        description: 'API keys for all AI models used across P31 — Claude, Gemini, OpenAI, DeepSeek',
+        variables: [
+          { key: 'ANTHROPIC_API_KEY', description: 'Anthropic Claude API key (primary AI — Claude Sonnet/Opus for WCD execution, debugging, UI)', example: 'sk-ant-api03-...', required: true, category: 'api_keys', minLength: 40, getUrl: 'https://console.anthropic.com/settings/keys', getLabel: 'Anthropic Console' },
+          { key: 'GEMINI_API_KEY', description: 'Google Gemini API key (Gemini agent — grants, narrative, research synthesis, Substack generation)', example: 'AIzaSy...', required: false, category: 'api_keys', minLength: 30, getUrl: 'https://aistudio.google.com/app/apikey', getLabel: 'Google AI Studio' },
+          { key: 'OPENAI_API_KEY', description: 'OpenAI API key (fallback / comparative analysis)', example: 'sk-proj-...', required: false, category: 'api_keys', minLength: 40, getUrl: 'https://platform.openai.com/api-keys', getLabel: 'OpenAI Platform' },
+          { key: 'DEEPSEEK_API_KEY', description: 'DeepSeek API key (ESP32 firmware only — Node Zero tag-out)', example: 'sk-...', required: false, category: 'api_keys', minLength: 30, getUrl: 'https://platform.deepseek.com', getLabel: 'DeepSeek Platform' },
+        ]
+      },
+      oracle_terminal: {
+        name: 'Oracle Terminal',
+        description: 'packages/oracle-terminal — Upstash Redis vector store + Ollama local inference',
+        variables: [
+          { key: 'PORT', description: 'Oracle Terminal server port', example: '3002', required: true, category: 'app_config', format: 'number' },
+          { key: 'NODE_ENV', description: 'Environment mode', example: 'development', required: true, category: 'app_config' },
+          { key: 'UPSTASH_REDIS_URL', description: 'Upstash Redis REST URL for vector embeddings', example: 'https://....upstash.io', required: true, category: 'database', format: 'url', getUrl: 'https://console.upstash.com', getLabel: 'Upstash Console' },
+          { key: 'UPSTASH_VECTOR_REST_TOKEN', description: 'Upstash Vector REST auth token', example: '...', required: true, category: 'api_keys', minLength: 20 },
+          { key: 'CHAT_MODEL', description: 'Ollama chat model name', example: 'llama3.2', required: false, category: 'app_config' },
+          { key: 'EMBEDDING_MODEL', description: 'Ollama embedding model name', example: 'nomic-embed-text', required: false, category: 'app_config' },
+          { key: 'DISCORD_WEBHOOK_URL', description: 'Discord webhook for Oracle Terminal notifications', example: 'https://discord.com/api/webhooks/...', required: false, category: 'services', format: 'url' },
+          { key: 'DISCORD_BOT_TOKEN', description: 'Discord bot token for Oracle Terminal integration', example: '...', required: false, category: 'api_keys', minLength: 50 },
+          { key: 'CLINICAL_SAFETY_MODE', description: 'Enable clinical safety guardrails for medical advice filtering', example: 'true', required: false, category: 'security', format: 'boolean' },
+          { key: 'DAILY_SPOON_LIMIT', description: 'Max cognitive load units per day for AuDHD protection', example: '10', required: false, category: 'app_config', format: 'number' },
         ]
       },
       nodejs: {
