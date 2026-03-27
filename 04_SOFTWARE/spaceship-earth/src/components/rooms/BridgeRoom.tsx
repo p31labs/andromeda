@@ -288,25 +288,126 @@ function LoveTab({ love, spoons, maxSpoons, tier }: Props) {
 
         <Card title="Vesting" accent={BLUE}>
           {vesting.map((v) => (
-            <div key={v.node.initials} style={{ marginBottom: 'clamp(4px, 0.6vh, 8px)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: fs.sm }}>
-                <span style={{ color: WARM_WHITE, fontWeight: 500 }}>{v.node.initials}</span>
-                <span style={{ color: BLUE, fontWeight: 600 }}>{v.vestedPercent}%</span>
+            <div key={v.node.initials} style={{ marginBottom: 'clamp(8px, 1vh, 12px)' }}>
+              {/* Kid-friendly header with avatar */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 'clamp(6px, 0.8vw, 8px)', marginBottom: 'clamp(4px, 0.5vh, 6px)' }}>
+                <span style={{ 
+                  fontSize: 'clamp(16px, 2vw, 20px)', 
+                  lineHeight: 1,
+                  filter: v.vestedPercent >= 100 ? 'drop-shadow(0 0 4px var(--mint))' : 'none'
+                }}>
+                  {v.node.name === 'Bashium' ? '🧬' : v.node.name === 'Willium' ? '🌱' : '⭐'}
+                </span>
+                <span style={{ color: WARM_WHITE, fontWeight: 600, fontSize: fs.md }}>{v.node.name}</span>
+                <span style={{ color: DIM, fontSize: fs.xs }}>({v.node.initials})</span>
               </div>
-              <Bar value={v.vestedPercent} max={100} color={BLUE} />
-              <div style={{ fontSize: fs.xs, color: DIM, marginTop: 2, lineHeight: 1.4 }}>
-                Age {v.ageYears} — {v.vestedAmount.toFixed(1)} vested
-                {v.nextMilestone && (
-                  <span style={{ color: 'var(--neon-ghost)' }}>
-                    {' '}— next at {v.nextMilestone.ageYears} ({v.daysUntilNext?.toLocaleString()}d)
-                  </span>
+              
+              {/* Progress bar with milestone markers */}
+              <div style={{ position: 'relative', height: 'clamp(16px, 2vh, 20px)', marginBottom: 'clamp(2px, 0.3vh, 4px)' }}>
+                <Bar value={v.vestedPercent} max={100} color={BLUE} />
+                {/* All 5 milestone markers */}
+                <div style={{ 
+                  position: 'absolute', 
+                  top: 0, 
+                  left: 0, 
+                  right: 0, 
+                  height: '100%', 
+                  pointerEvents: 'none' 
+                }}>
+                  {v.milestones.map((m, i) => {
+                    const pos = m.milestone.cumulativePercent;
+                    return (
+                      <div
+                        key={m.milestone.ageYears}
+                        style={{
+                          position: 'absolute',
+                          left: `${pos}%`,
+                          top: '50%',
+                          transform: 'translate(-50%, -50%)',
+                          width: 'clamp(8px, 1vw, 10px)',
+                          height: 'clamp(8px, 1vw, 10px)',
+                          borderRadius: '50%',
+                          backgroundColor: m.reached ? (i === v.milestones.length - 1 ? 'var(--mint)' : 'var(--phosphor)') : 'var(--bg)',
+                          border: `2px solid ${m.reached ? 'transparent' : DIM}`,
+                          boxShadow: m.reached ? `0 0 6px var(--phosphor)` : 'none',
+                          zIndex: 1,
+                        }}
+                        title={`Age ${m.milestone.ageYears}: ${m.milestone.cumulativePercent}% - ${m.milestone.description}`}
+                      />
+                    );
+                  })}
+                </div>
+              </div>
+              
+              {/* Age and vesting info */}
+              <div style={{ fontSize: fs.sm, color: DIM, lineHeight: 1.4 }}>
+                <span style={{ color: BLUE, fontWeight: 600 }}>{v.vestedPercent.toFixed(0)}%</span>
+                {' '}vested — Age {v.ageYears}
+                {v.vestedAmount > 0 && (
+                  <span style={{ color: 'var(--mint)' }}> • {v.vestedAmount.toFixed(1)} LOVE</span>
                 )}
               </div>
+              
+              {/* Next milestone countdown */}
+              {v.nextMilestone && v.daysUntilNext !== null && (
+                <div style={{ 
+                  fontSize: fs.xs, 
+                  color: v.daysUntilNext <= 30 ? CORAL : 'var(--neon-ghost)', 
+                  marginTop: 2 
+                }}>
+                  🎯 {v.nextMilestone.description} at age {v.nextMilestone.ageYears}
+                  {v.daysUntilNext > 0 ? ` (${v.daysUntilNext.toLocaleString()} days)` : ' — TODAY!'}
+                </div>
+              )}
+              
+              {/* Celebration for fully vested */}
+              {v.vestedPercent >= 100 && (
+                <div style={{ 
+                  fontSize: fs.sm, 
+                  color: 'var(--mint)', 
+                  marginTop: 4,
+                  animation: 'pulse 1s ease-in-out infinite'
+                }}>
+                  ✨ Fully Vested! ✨
+                </div>
+              )}
             </div>
           ))}
           {vesting.length === 0 && (
             <div style={{ fontSize: fs.sm, color: DIM, fontStyle: 'italic' }}>No vesting schedules yet.</div>
           )}
+          
+          {/* Legend for all milestones */}
+          <div style={{ 
+            marginTop: 'clamp(8px, 1vh, 10px)', 
+            paddingTop: 'clamp(6px, 0.8vh, 8px)', 
+            borderTop: '1px solid var(--border)', 
+            display: 'flex', 
+            flexWrap: 'wrap', 
+            gap: 'clamp(4px, 0.5vw, 6px)' 
+          }}>
+            {[
+              { age: 13, desc: 'First device' },
+              { age: 16, desc: 'Expanded autonomy' },
+              { age: 18, desc: 'Legal majority' },
+              { age: 21, desc: 'Full adult' },
+              { age: 25, desc: 'Full sovereignty' },
+            ].map((m) => (
+              <div 
+                key={m.age} 
+                style={{ 
+                  fontSize: fs.xs - 1, 
+                  color: DIM,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 2,
+                }}
+              >
+                <span style={{ color: BLUE, fontWeight: 600 }}>{m.age}</span>
+                <span>{m.desc}</span>
+              </div>
+            ))}
+          </div>
         </Card>
       </div>
     </div>

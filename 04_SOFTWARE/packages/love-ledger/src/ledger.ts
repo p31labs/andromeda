@@ -199,6 +199,7 @@ export class LedgerEngine extends LedgerEmitter {
       version: 1,
       owner: this._owner,
       transactions: [...this._transactions],
+      spends: [...this._spends],
       wallet: this.wallet,
       snapshotAt: new Date().toISOString(),
     };
@@ -214,6 +215,10 @@ export class LedgerEngine extends LedgerEmitter {
     this._transactions = [...snapshot.transactions];
     this._nextId = this._transactions.length > 0
       ? Math.max(...this._transactions.map(tx => tx.id)) + 1
+      : 1;
+    this._spends = snapshot.spends ? [...snapshot.spends] : [];
+    this._nextSpendId = this._spends.length > 0
+      ? Math.max(...this._spends.map(s => s.id)) + 1
       : 1;
     this._careScore = snapshot.wallet.careScore;
 
@@ -255,7 +260,7 @@ export class LedgerEngine extends LedgerEmitter {
 
     if (this._coherenceAbove && !wasAbove) {
       const elapsed = Date.now() - this._lastCoherenceGift;
-      if (elapsed > 60000) {
+      if (elapsed > this._config.coherenceGiftCooldownMs) {
         this._lastCoherenceGift = Date.now();
         return this._record(
           "COHERENCE_GIFT", LOVE_AMOUNTS.COHERENCE_GIFT, undefined,
@@ -279,7 +284,7 @@ export class LedgerEngine extends LedgerEmitter {
 
     if (this._voltageBelow && !wasBelow) {
       const elapsed = Date.now() - this._lastVoltageCalmed;
-      if (elapsed > 300000) {
+      if (elapsed > this._config.voltageCalmCooldownMs) {
         this._lastVoltageCalmed = Date.now();
         return this._record(
           "VOLTAGE_CALMED", LOVE_AMOUNTS.VOLTAGE_CALMED, undefined,

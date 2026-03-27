@@ -369,4 +369,90 @@ describe("LedgerEngine", () => {
       expect(tx!.counterparty).toBeUndefined();
     });
   });
+
+  describe("spend()", () => {
+    it("deducts from availableBalance", () => {
+      ledger.ingest("BOND_FORMED", { peerId: "p1" }); // 15 LOVE → performancePool=7.5, at cs=0.5 → 3.75 available
+      const result = ledger.spend("PANEL_UNLOCK", 3);
+      expect(result).not.toBeNull();
+      expect(result!.type).toBe("PANEL_UNLOCK");
+      expect(result!.amount).toBe(3);
+      expect(ledger.wallet.availableBalance).toBeCloseTo(0.75);
+    });
+
+    it("returns null when amount exceeds availableBalance", () => {
+      ledger.ingest("BOND_FORMED", { peerId: "p1" }); // 3.75 available at cs=0.5
+      const result = ledger.spend("PANEL_UNLOCK", 100);
+      expect(result).toBeNull();
+    });
+
+    it("returns null for zero or negative amount", () => {
+      expect(ledger.spend("PANEL_UNLOCK", 0)).toBeNull();
+      expect(ledger.spend("PANEL_UNLOCK", -5)).toBeNull();
+    });
+
+    it("emits LOVE_SPENT", () => {
+      const spy = vi.fn();
+      ledger.on("LOVE_SPENT", spy);
+      ledger.ingest("BOND_FORMED", { peerId: "p1" });
+      ledger.spend("PANEL_UNLOCK", 3);
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith(expect.objectContaining({ type: "PANEL_UNLOCK", amount: 3 }));
+    });
+
+    it("spend IDs are monotonically increasing", () => {
+      ledger.ingest("BOND_FORMED", { peerId: "p1" });
+      ledger.ingest("BOND_FORMED", { peerId: "p2" });
+      const a = ledger.spend("PANEL_UNLOCK", 1)!;
+      const b = ledger.spend("PANEL_UNLOCK", 1)!;
+      expect(a.id).toBe(1);
+      expect(b.id).toBe(2);
+    });
+  });
+
+  describe("spend preservation across export/import", () => {
+    it("exported snapshot includes spends", () => {
+      ledger.ingest("BOND_FORMED", { peerId: "p1" });
+      ledger.spend("PANEL_UNLOCK", 3);
+      const snap = ledger.export();
+      expect(snap.spends).toHaveLength(1);
+      expect(snap.spends[0]!.type).toBe("PANEL_UNLOCK");
+    });
+
+    it("import restores spends — availableBalance reflects prior spending", () => {
+      ledger.ingest("BOND_FORMED", { peerId: "p1" }); // performancePool=7.5, at cs=0.5 → 3.75 available
+      ledger.spend("PANEL_UNLOCK", 3);                 // 0.75 remaining
+      const snap = ledger.export();
+
+      const fresh = new LedgerEngine(OWNER);
+      fresh.import(snap);
+      expect(fresh.spends).toHaveLength(1);
+      expect(fresh.wallet.availableBalance).toBeCloseTo(0.75);
+    });
+
+    it("spend IDs after import continue from restored max ID", () => {
+      ledger.ingest("BOND_FORMED", { peerId: "p1" });
+      ledger.spend("PANEL_UNLOCK", 1); // id=1
+      ledger.spend("PANEL_UNLOCK", 1); // id=2
+      const snap = ledger.export();
+
+      const fresh = new LedgerEngine(OWNER);
+      fresh.import(snap);
+      // earn more to have available balance
+      fresh.ingest("BOND_FORMED", { peerId: "p2" });
+      const next = fresh.spend("PANEL_UNLOCK", 1)!;
+      expect(next.id).toBe(3);
+    });
+
+    it("import with no prior spends starts spend IDs at 1", () => {
+      ledger.ingest("BOND_FORMED", { peerId: "p1" });
+      const snap = ledger.export();
+
+      const fresh = new LedgerEngine(OWNER);
+      fresh.import(snap);
+      fresh.ingest("BOND_FORMED", { peerId: "p2" });
+      const s = fresh.spend("PANEL_UNLOCK", 1)!;
+      expect(s.id).toBe(1);
+    });
+  });
 });

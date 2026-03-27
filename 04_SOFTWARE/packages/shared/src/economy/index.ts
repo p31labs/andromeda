@@ -1,1 +1,1 @@
-export { useEconomyStore } from './economyStore';
+export { useEconomyStore, initLoveSync } from './economyStore';

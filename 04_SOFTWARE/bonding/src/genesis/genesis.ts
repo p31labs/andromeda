@@ -14,7 +14,7 @@
 // ═══════════════════════════════════════════════════════
 
 import { eventBus, GameEventType } from './eventBus';
-import { useEconomyStore } from './economyStore';
+import { useEconomyStore, initLoveSync } from './economyStore';
 import {
   telemetryInit,
   telemetryAttachLifecycleHandlers,
@@ -43,6 +43,16 @@ function getRelayUrl(): string {
 export async function genesisInit(config: GenesisConfig): Promise<() => void> {
   const { playerId, playerName, roomCode = null, difficulty = null } = config;
 
+  // Stable device ID persists across sessions — used as LOVE worker userId
+  const stableDeviceId = (() => {
+    const key = 'p31-device-id';
+    const existing = localStorage.getItem(key);
+    if (existing) return existing;
+    const id = crypto.randomUUID();
+    localStorage.setItem(key, id);
+    return id;
+  })();
+
   // ── PATCH 1: Request persistent IDB storage ──
   if (navigator.storage?.persist) {
     const granted = await navigator.storage.persist();
@@ -54,6 +64,15 @@ export async function genesisInit(config: GenesisConfig): Promise<() => void> {
 
   // ── Hydrate economy from IDB ──
   await useEconomyStore.getState()._hydrate();
+
+  // Wire LOVE cloud sync (no-op if VITE_LOVE_LEDGER_URL not set)
+  const loveWorkerUrl = (() => {
+    try {
+      const env = (import.meta as unknown as { env?: Record<string, string> }).env;
+      return env?.VITE_LOVE_LEDGER_URL ?? '';
+    } catch { return ''; }
+  })();
+  initLoveSync({ workerUrl: loveWorkerUrl, userId: stableDeviceId });
 
   // ── Init telemetry session ──
   const sessionId = `${playerId}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
@@ -104,6 +123,7 @@ export async function genesisInit(config: GenesisConfig): Promise<() => void> {
   });
 
   const unsubPingSent = eventBus.on(GameEventType.PING_SENT, (p) => {
+    useEconomyStore.getState().earnLove('ping_sent');
     void telemetryAddEvent('ping_sent', {
       reaction: p.reaction,
       targetPlayerId: p.targetPlayerId,
@@ -112,6 +132,7 @@ export async function genesisInit(config: GenesisConfig): Promise<() => void> {
   });
 
   const unsubPingReceived = eventBus.on(GameEventType.PING_RECEIVED, (p) => {
+    useEconomyStore.getState().earnLove('ping_received');
     void telemetryAddEvent('ping_received', {
       reaction: p.reaction,
       fromPlayerId: p.fromPlayerId,

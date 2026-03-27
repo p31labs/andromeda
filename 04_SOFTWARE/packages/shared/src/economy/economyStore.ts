@@ -9,10 +9,35 @@
 // Streak: consecutive days played — resets if you miss a day.
 //
 // Promoted from bonding/src/genesis/economyStore.ts (WCD-M02).
+//
+// PATCH 2 (2026-03-27): Cloud sync to love-ledger worker.
 // ═══════════════════════════════════════════════════════
 
 import { create } from 'zustand';
 import { get as idbGet, set as idbSet } from 'idb-keyval';
+
+// ── Cloud sync (fire-and-forget, no-op when unconfigured) ──
+
+let _syncConfig: { workerUrl: string; userId: string } | null = null;
+
+export function initLoveSync(config: { workerUrl: string; userId: string }): void {
+  if (!config.workerUrl) return;
+  _syncConfig = config;
+  void fetch(`${config.workerUrl}/api/love/register`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ userId: config.userId }),
+  }).catch(() => {});
+}
+
+function syncEarn(transactionType: string): void {
+  if (!_syncConfig) return;
+  void fetch(`${_syncConfig.workerUrl}/api/love/earn`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ userId: _syncConfig.userId, transactionType }),
+  }).catch(() => {});
+}
 
 // ── LOVE Source Registry (WCD-M05) ──
 
@@ -43,6 +68,7 @@ const IDB_KEY = 'p31-love-economy';
 const DAILY_ATOM_CAP = 50;
 const LOVE_PER_ATOM = 1;
 const LOVE_PER_MOLECULE = 10;
+const SPOONS_MAX = 12;
 
 // ── Persisted shape (what lives in IDB) ──
 
@@ -64,6 +90,7 @@ interface EconomyStore extends EconomyPersisted {
   _onAtomPlaced: () => void;
   _onMoleculeCompleted: () => void;
   _onAchievementUnlocked: (loveReward: number) => void;
+  earnLove: (source: LoveSource) => void;
 }
 
 // ── Helpers ──
@@ -76,7 +103,7 @@ function updatedStreak(lastActiveDate: string | null, streak: number): number {
   const today = todayIso();
   if (!lastActiveDate) return 1;
   if (lastActiveDate === today) return streak;
-  const diffDays = Math.round(
+  const diffDays = Math.floor(
     (new Date(today).getTime() - new Date(lastActiveDate).getTime()) / 86_400_000,
   );
   return diffDays === 1 ? streak + 1 : 1;
@@ -94,8 +121,8 @@ export const useEconomyStore = create<EconomyStore>()((set, get) => ({
   lastActiveDate: null,
   dailyAtomCount: 0,
   _hasHydrated: false,
-  spoons: 12,
-  setSpoons: (n: number) => set({ spoons: Math.min(12, Math.max(0, n)) }),
+  spoons: SPOONS_MAX,
+  setSpoons: (n: number) => set({ spoons: Math.min(SPOONS_MAX, Math.max(0, n)) }),
 
   _hydrate: async () => {
     try {
@@ -134,6 +161,7 @@ export const useEconomyStore = create<EconomyStore>()((set, get) => ({
 
     set({ totalLove, dailyAtomCount, lastActiveDate, currentStreak });
     persist({ totalLove, currentStreak, lastActiveDate, dailyAtomCount });
+    syncEarn('BLOCK_PLACED');
   },
 
   _onMoleculeCompleted: () => {
@@ -141,6 +169,7 @@ export const useEconomyStore = create<EconomyStore>()((set, get) => ({
     const totalLove = s.totalLove + LOVE_PER_MOLECULE;
     set({ totalLove });
     persist({ totalLove, currentStreak: s.currentStreak, lastActiveDate: s.lastActiveDate, dailyAtomCount: s.dailyAtomCount });
+    syncEarn('ARTIFACT_CREATED');
   },
 
   _onAchievementUnlocked: (loveReward: number) => {
@@ -148,5 +177,27 @@ export const useEconomyStore = create<EconomyStore>()((set, get) => ({
     const totalLove = s.totalLove + loveReward;
     set({ totalLove });
     persist({ totalLove, currentStreak: s.currentStreak, lastActiveDate: s.lastActiveDate, dailyAtomCount: s.dailyAtomCount });
+    syncEarn('MILESTONE_REACHED');
+  },
+
+  earnLove: (source: LoveSource) => {
+    const loveReward = LOVE_VALUES[source];
+    const s = get();
+    const totalLove = s.totalLove + loveReward;
+    set({ totalLove });
+    persist({ totalLove, currentStreak: s.currentStreak, lastActiveDate: s.lastActiveDate, dailyAtomCount: s.dailyAtomCount });
+    // Map LoveSource to worker transaction type
+    const SOURCE_TO_TX: Record<LoveSource, string> = {
+      molecule_complete: 'ARTIFACT_CREATED',
+      ping_sent: 'CARE_GIVEN',
+      ping_received: 'CARE_RECEIVED',
+      quest_complete: 'MILESTONE_REACHED',
+      buffer_processed: 'COHERENCE_GIFT',
+      fawn_guard_ack: 'VOLTAGE_CALMED',
+      calcium_logged: 'VOLTAGE_CALMED',
+      wcd_complete: 'MILESTONE_REACHED',
+      meditation_session: 'COHERENCE_GIFT',
+    };
+    syncEarn(SOURCE_TO_TX[source]);
   },
 }));

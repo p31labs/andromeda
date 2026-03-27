@@ -101,18 +101,4 @@ vi.mock('../engine/achievementEngine', () => ({
   evaluateAchievements: vi.fn(() => []),
 }));
 
-vi.mock('../lib/gameSync', () => ({
-  createRoom: vi.fn(() => Promise.resolve({ code: 'TEST01', room: {}, playerId: 'p_0' })),
-  joinRoom: vi.fn(() => Promise.resolve({ room: {}, playerId: 'p_1' })),
-  leaveRoom: vi.fn(),
-  pushState: vi.fn(() => Promise.resolve()),
-  sendPing: vi.fn(() => Promise.resolve()),
-  startPolling: vi.fn(),
-  stopPolling: vi.fn(),
-  getCurrentRoom: vi.fn(() => null),
-  getMyPlayerId: vi.fn(() => null),
-  isConnected: vi.fn(() => false),
-  getConnectionStatus: vi.fn(() => 'disconnected'),
-  onSyncEvent: vi.fn(() => () => {}),
-  _resetForTest: vi.fn(),
-}));
+

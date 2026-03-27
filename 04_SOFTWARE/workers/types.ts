@@ -81,9 +81,15 @@ export interface DurableObjectStub {
   fetch(request: Request | string, init?: RequestInit): Promise<Response>;
 }
 
+// Base Durable Object interface (implement this in your DO class)
+export interface DurableObject {
+  fetch(request: Request): Promise<Response>;
+}
+
 export interface DurableObjectState {
   waitUntil(promise: Promise<unknown>): void;
   storage: DurableObjectStorage;
+  readonly id: DurableObjectId;
 }
 
 export interface DurableObjectStorage {

@@ -1,4 +1,4 @@
-import type { D1Database, DurableObjectNamespace, PubSub } from './types';
+import type { D1Database, DurableObjectNamespace, DurableObject, DurableObjectState, PubSub } from './types';
 
 /**
  * P31 L.O.V.E. Token Ledger
@@ -6,16 +6,22 @@ import type { D1Database, DurableObjectNamespace, PubSub } from './types';
  * Distributed ledger for the LOVE (Ledger of Ontological Volume and Entropy) currency
  * using D1 for persistence and Durable Objects for atomic transactions.
  * 
- * LOVE tokens are soulbound - non-transferable, earned through care/creation/consistency
+ * LOVE tokens are soulbound by convention (no transfer endpoint exists).
+ * Cryptographic enforcement requires per-user auth — tracked, not yet implemented.
+ *
+ * @version 1.3.0
+ * @date March 27, 2026
  * 
- * @version 1.0.0
- * @date March 24, 2026
+ * Two-Pool Model:
+ * - sovereignty_pool: 50% of all earned LOVE, immutable
+ * - performance_pool: 50% of all earned LOVE, liquid based on care_score
+ * - care_score: 0-1, modulates available balance from performance pool
  */
 
 export interface Env {
   LOVE_D1: D1Database;
   LOVE_TRANSACTION: DurableObjectNamespace;
-  LOVE_PUB_SUB: PubSub;
+  LOVE_PUB_SUB?: PubSub;
 }
 
 export interface User {
@@ -43,6 +49,16 @@ export interface Balance {
   updated_at: number;
 }
 
+// Two-pool balance interface
+export interface TwoPoolBalance {
+  user_id: string;
+  total_earned: number;
+  sovereignty_pool: number;
+  performance_pool: number;
+  care_score: number;
+  updated_at: number;
+}
+
 export interface TransactionRequest {
   userId: string;
   type: 'earn' | 'spend' | 'bonus';
@@ -51,22 +67,56 @@ export interface TransactionRequest {
   metadata?: Record<string, unknown>;
 }
 
-// D1 SQL Schema (for reference - run these to create tables)
+// Care-type transactions boost care_score more than passive ones.
+// CARE_GIVEN/RECEIVED represent direct peer interaction — highest signal.
+const CARE_TYPE_BUMP = 0.03;
+const PASSIVE_TYPE_BUMP = 0.005;
+const CARE_TYPES = new Set(['CARE_GIVEN', 'CARE_RECEIVED', 'COHERENCE_GIFT', 'TETRAHEDRON_BOND']);
+
+// Care score decay: after 7-day grace period, decays 0.005/day, floor 0.1.
+// Computed dynamically on balance read — no extra write required.
+const CARE_SCORE_GRACE_DAYS = 7;
+const CARE_SCORE_DECAY_PER_DAY = 0.005;
+const CARE_SCORE_MIN = 0.1;
+const CARE_SCORE_MAX = 1.0;
+
+function computeEffectiveCareScore(storedScore: number, updatedAt: number): number {
+  const daysSince = (Date.now() - updatedAt) / 86_400_000;
+  if (daysSince <= CARE_SCORE_GRACE_DAYS) return storedScore;
+  const decay = (daysSince - CARE_SCORE_GRACE_DAYS) * CARE_SCORE_DECAY_PER_DAY;
+  return Math.max(CARE_SCORE_MIN, storedScore - decay);
+}
+
+// Canonical LOVE amounts — earn endpoint validates against this.
+// Matches packages/love-ledger/src/types.ts LOVE_AMOUNTS.
+const LOVE_AMOUNTS: Record<string, number> = {
+  BLOCK_PLACED:      1.0,
+  COHERENCE_GIFT:    5.0,
+  ARTIFACT_CREATED: 10.0,
+  CARE_RECEIVED:     3.0,
+  CARE_GIVEN:        2.0,
+  TETRAHEDRON_BOND: 15.0,
+  VOLTAGE_CALMED:    2.0,
+  MILESTONE_REACHED: 25.0,
+  PING:              1.0,
+};
+
+// D1 SQL Schema (v1.2 - two-pool model)
 /*
 CREATE TABLE users (
   id TEXT PRIMARY KEY,
   wallet_address TEXT UNIQUE,
   created_at INTEGER NOT NULL,
   updated_at INTEGER NOT NULL,
-  total_love_earned INTEGER DEFAULT 0,
-  total_spoons_spent INTEGER DEFAULT 0
+  total_love_earned REAL DEFAULT 0,
+  total_spoons_spent REAL DEFAULT 0
 );
 
 CREATE TABLE transactions (
   id TEXT PRIMARY KEY,
   user_id TEXT NOT NULL,
   type TEXT NOT NULL,
-  amount INTEGER NOT NULL,
+  amount REAL NOT NULL,
   description TEXT,
   metadata TEXT,
   created_at INTEGER NOT NULL,
@@ -78,14 +128,43 @@ CREATE INDEX idx_transactions_created ON transactions(created_at DESC);
 
 CREATE TABLE balances (
   user_id TEXT PRIMARY KEY,
-  balance INTEGER NOT NULL DEFAULT 0,
+  total_earned REAL NOT NULL DEFAULT 0,
+  sovereignty_pool REAL NOT NULL DEFAULT 0,
+  performance_pool REAL NOT NULL DEFAULT 0,
+  care_score REAL NOT NULL DEFAULT 0.5,
   updated_at INTEGER NOT NULL,
   FOREIGN KEY (user_id) REFERENCES users(id)
 );
 */
 
+// ── CORS ────────────────────────────────────────────────────────────
+
+const CORS_HEADERS = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type',
+} as const;
+
+function json(body: unknown, status = 200): Response {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },
+  });
+}
+
+function err(message: string, status: number): Response {
+  return new Response(message, { status, headers: CORS_HEADERS });
+}
+
+// ── Worker ──────────────────────────────────────────────────────────
+
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
+    // Preflight
+    if (request.method === 'OPTIONS') {
+      return new Response(null, { status: 204, headers: CORS_HEADERS });
+    }
+
     const url = new URL(request.url);
     const pathParts = url.pathname.split('/').filter(Boolean);
 
@@ -108,14 +187,24 @@ export default {
     // Route: POST /api/love/earn
     if (pathParts[0] === 'api' && pathParts[1] === 'love' && pathParts[2] === 'earn') {
       if (request.method === 'POST') {
-        return this.handleTransaction(request, env, 'earn');
+        return this.handleEarn(request, env);
       }
     }
 
-    // Route: POST /api/love/spend
+    // Route: POST /api/love/spend → Route to DO for atomic transaction
     if (pathParts[0] === 'api' && pathParts[1] === 'love' && pathParts[2] === 'spend') {
       if (request.method === 'POST') {
-        return this.handleTransaction(request, env, 'spend');
+        const body = await request.json() as { userId: string; amount: number; description?: string; metadata?: unknown };
+        // Route to Durable Object for atomic processing
+        const id = env.LOVE_TRANSACTION.idFromName(body.userId);
+        const stub = env.LOVE_TRANSACTION.get(id);
+        const doUrl = new URL(request.url);
+        doUrl.searchParams.set('action', 'spend');
+        return stub.fetch(new Request(doUrl.href, {
+          method: 'POST',
+          body: JSON.stringify(body),
+          headers: { 'Content-Type': 'application/json' },
+        }));
       }
     }
 
@@ -133,40 +222,59 @@ export default {
       }
     }
 
-    return new Response('Not found', { status: 404 });
+    // Route: POST /api/love/care-score
+    if (pathParts[0] === 'api' && pathParts[1] === 'love' && pathParts[2] === 'care-score') {
+      if (request.method === 'POST') {
+        return this.handleCareScore(request, env);
+      }
+    }
+
+    return err('Not found', 404);
   },
 
   async getBalance(userId: string, env: Env): Promise<Response> {
     if (!userId) {
-      return new Response('Missing userId', { status: 400 });
+      return err('Missing userId', 400);
     }
 
+    // Query two-pool balance
     const result = await env.LOVE_D1.prepare(`
-      SELECT balance, updated_at FROM balances WHERE user_id = ?
-    `).bind(userId).first<Balance>();
+      SELECT total_earned, sovereignty_pool, performance_pool, care_score, updated_at 
+      FROM balances WHERE user_id = ?
+    `).bind(userId).first<TwoPoolBalance>();
 
     if (!result) {
-      return new Response(JSON.stringify({
-        userId,
-        balance: 0,
-        updatedAt: null,
-      }), {
-        headers: { 'Content-Type': 'application/json' },
+      return json({ 
+        userId, 
+        totalEarned: 0, 
+        sovereigntyPool: 0, 
+        performancePool: 0, 
+        careScore: 0.5,
+        availableBalance: 0,
+        frozenBalance: 0,
+        updatedAt: null 
       });
     }
 
-    return new Response(JSON.stringify({
+    const effectiveCareScore = computeEffectiveCareScore(result.care_score, result.updated_at);
+    const availableBalance = result.performance_pool * effectiveCareScore;
+    const frozenBalance = result.performance_pool * (1 - effectiveCareScore);
+
+    return json({
       userId,
-      balance: result.balance,
+      totalEarned: result.total_earned,
+      sovereigntyPool: result.sovereignty_pool,
+      performancePool: result.performance_pool,
+      careScore: effectiveCareScore,
+      availableBalance,
+      frozenBalance,
       updatedAt: result.updated_at,
-    }), {
-      headers: { 'Content-Type': 'application/json' },
     });
   },
 
   async getTransactions(userId: string, env: Env): Promise<Response> {
     if (!userId) {
-      return new Response('Missing userId', { status: 400 });
+      return err('Missing userId', 400);
     }
 
     const limit = 50;
@@ -177,34 +285,151 @@ export default {
       LIMIT ?
     `).bind(userId, limit).all<Transaction>();
 
-    return new Response(JSON.stringify({
+    return json({
       userId,
       transactions: result.results || [],
       count: result.results?.length || 0,
-    }), {
-      headers: { 'Content-Type': 'application/json' },
+    });
+  },
+
+  // Earn endpoint validates transactionType against canonical LOVE_AMOUNTS.
+  // Rejects requests with unknown types or amounts that don't match the protocol.
+  async handleEarn(request: Request, env: Env): Promise<Response> {
+    const body = await request.json() as TransactionRequest & { transactionType?: string };
+
+    if (!body.userId) {
+      return err('Missing userId', 400);
+    }
+
+    let amount: number;
+
+    if (body.transactionType) {
+      const canonical = LOVE_AMOUNTS[body.transactionType];
+      if (canonical === undefined) {
+        return err(`Unknown transactionType: ${body.transactionType}`, 400);
+      }
+      amount = canonical;
+    } else if (body.amount && body.amount > 0) {
+      // Legacy path: accept explicit amount only for DONATION type
+      if (body.description !== 'EXTERNAL_DONATION') {
+        return err('Earn requests must include transactionType', 400);
+      }
+      amount = body.amount;
+    } else {
+      return err('Missing transactionType or amount', 400);
+    }
+
+    // Split 50/50 between pools
+    const sovereigntyAmount = amount * 0.5;
+    const performanceAmount = amount * 0.5;
+    const timestamp = Date.now();
+
+    // Care score bump: care-type transactions earn more trust signal
+    const careBump = CARE_TYPES.has(body.transactionType ?? '') ? CARE_TYPE_BUMP : PASSIVE_TYPE_BUMP;
+
+    // Update with two-pool split + care score bump
+    await env.LOVE_D1.prepare(`
+      INSERT INTO balances (user_id, total_earned, sovereignty_pool, performance_pool, care_score, updated_at)
+      VALUES (?, ?, ?, ?, 0.5, ?)
+      ON CONFLICT(user_id) DO UPDATE SET
+        total_earned = total_earned + ?,
+        sovereignty_pool = sovereignty_pool + ?,
+        performance_pool = performance_pool + ?,
+        care_score = MIN(?, care_score + ?),
+        updated_at = ?
+    `).bind(
+      body.userId,
+      amount,
+      sovereigntyAmount,
+      performanceAmount,
+      timestamp,
+      amount,
+      sovereigntyAmount,
+      performanceAmount,
+      CARE_SCORE_MAX,
+      careBump,
+      timestamp
+    ).run();
+
+    // Log transaction
+    const transactionId = crypto.randomUUID();
+    await env.LOVE_D1.prepare(`
+      INSERT INTO transactions (id, user_id, type, amount, description, metadata, created_at)
+      VALUES (?, ?, 'earn', ?, ?, ?, ?)
+    `).bind(
+      transactionId,
+      body.userId,
+      amount,
+      body.description || body.transactionType || 'EARN',
+      '{}',
+      timestamp
+    ).run();
+
+    // Get new balance
+    const newBalance = await env.LOVE_D1.prepare(`
+      SELECT total_earned, sovereignty_pool, performance_pool, care_score FROM balances WHERE user_id = ?
+    `).bind(body.userId).first<{ total_earned: number; sovereignty_pool: number; performance_pool: number; care_score: number }>();
+
+    // Broadcast via Pub/Sub (optional binding)
+    if (env.LOVE_PUB_SUB) {
+      try {
+        await env.LOVE_PUB_SUB.publish(
+          `love:${body.userId}`,
+          JSON.stringify({
+            type: 'balance_update',
+            userId: body.userId,
+            amount,
+            transactionId,
+          })
+        );
+
+        await env.LOVE_PUB_SUB.publish(
+          'love:global',
+          JSON.stringify({
+            type: 'transaction',
+            userId: body.userId,
+            transactionType: 'earn',
+            amount,
+          })
+        );
+      } catch (e) {
+        console.log('Pub/Sub publish failed:', e);
+      }
+    }
+
+    return json({
+      success: true,
+      transactionId,
+      userId: body.userId,
+      type: 'earn',
+      amount,
+      newTotalEarned: newBalance?.total_earned || 0,
+      sovereigntyPool: newBalance?.sovereignty_pool || 0,
+      performancePool: newBalance?.performance_pool || 0,
+      timestamp,
     });
   },
 
   async handleTransaction(request: Request, env: Env, type: 'earn' | 'spend' | 'bonus'): Promise<Response> {
+    // This is now only used for non-spend transactions (bonus, legacy earn)
     const body = await request.json() as TransactionRequest;
 
     if (!body.userId || !body.amount || body.amount <= 0) {
-      return new Response('Invalid transaction', { status: 400 });
+      return err('Invalid transaction', 400);
     }
 
-    // For spend transactions, check balance first
+    // For spend transactions via this path (should be handled by DO), check balance first
     if (type === 'spend') {
       const balance = await env.LOVE_D1.prepare(`
         SELECT balance FROM balances WHERE user_id = ?
       `).bind(body.userId).first<{ balance: number }>();
 
       if (!balance || balance.balance < body.amount) {
-        return new Response(JSON.stringify({
+        return json({
           error: 'Insufficient balance',
           currentBalance: balance?.balance || 0,
           requestedAmount: body.amount,
-        }), { status: 400 });
+        }, 400);
       }
     }
 
@@ -225,7 +450,7 @@ export default {
       timestamp
     ).run();
 
-    // Update balance
+    // Update balance (legacy path - for bonus transactions)
     const balanceChange = type === 'spend' ? -body.amount : body.amount;
     await env.LOVE_D1.prepare(`
       INSERT INTO balances (user_id, balance, updated_at)
@@ -257,36 +482,7 @@ export default {
       SELECT balance FROM balances WHERE user_id = ?
     `).bind(body.userId).first<{ balance: number }>();
 
-    // Broadcast via Pub/Sub
-    try {
-      await env.LOVE_PUB_SUB.publish(
-        `love:${body.userId}`,
-        JSON.stringify({
-          type: 'balance_update',
-          userId: body.userId,
-          amount: body.amount,
-          newBalance: newBalance?.balance || 0,
-          transactionId,
-        })
-      );
-
-      // Also broadcast to global channel
-      await env.LOVE_PUB_SUB.publish(
-        'love:global',
-        JSON.stringify({
-          type: 'transaction',
-          userId: body.userId,
-          transactionType: type,
-          amount: body.amount,
-          description: body.description,
-        })
-      );
-    } catch (e) {
-      // Pub/Sub may not be configured, continue without broadcasting
-      console.log('Pub/Sub not configured, skipping broadcast');
-    }
-
-    return new Response(JSON.stringify({
+    return json({
       success: true,
       transactionId,
       userId: body.userId,
@@ -294,25 +490,21 @@ export default {
       amount: body.amount,
       newBalance: newBalance?.balance || 0,
       timestamp,
-    }), {
-      headers: { 'Content-Type': 'application/json' },
     });
   },
 
   async getLeaderboard(env: Env): Promise<Response> {
     const result = await env.LOVE_D1.prepare(`
-      SELECT u.id, u.total_love_earned, b.balance
+      SELECT u.id, u.total_love_earned, b.total_earned, b.sovereignty_pool, b.performance_pool
       FROM users u
       LEFT JOIN balances b ON u.id = b.user_id
-      ORDER BY b.balance DESC
+      ORDER BY b.total_earned DESC
       LIMIT 20
-    `).all<{ id: string; total_love_earned: number; balance: number }>();
+    `).all<{ id: string; total_love_earned: number; total_earned: number; sovereignty_pool: number; performance_pool: number }>();
 
-    return new Response(JSON.stringify({
+    return json({
       leaderboard: result.results || [],
       count: result.results?.length || 0,
-    }), {
-      headers: { 'Content-Type': 'application/json' },
     });
   },
 
@@ -320,7 +512,7 @@ export default {
     const body = await request.json() as { userId: string; walletAddress?: string };
 
     if (!body.userId) {
-      return new Response('Missing userId', { status: 400 });
+      return err('Missing userId', 400);
     }
 
     const timestamp = Date.now();
@@ -337,29 +529,214 @@ export default {
       timestamp
     ).run();
 
-    // Initialize balance
+    // Initialize balance with two-pool schema
     await env.LOVE_D1.prepare(`
-      INSERT INTO balances (user_id, balance, updated_at)
-      VALUES (?, 0, ?)
+      INSERT INTO balances (user_id, total_earned, sovereignty_pool, performance_pool, care_score, updated_at)
+      VALUES (?, 0, 0, 0, 0.5, ?)
       ON CONFLICT(user_id) DO NOTHING
     `).bind(body.userId, timestamp).run();
 
-    return new Response(JSON.stringify({
+    return json({
       success: true,
       userId: body.userId,
       walletAddress: body.walletAddress || null,
       createdAt: timestamp,
-    }), {
-      headers: { 'Content-Type': 'application/json' },
+    });
+  },
+
+  async handleCareScore(request: Request, env: Env): Promise<Response> {
+    const body = await request.json() as { userId: string; careScore: number };
+
+    if (!body.userId || typeof body.careScore !== 'number') {
+      return err('Invalid request', 400);
+    }
+
+    const score = Math.max(0, Math.min(1, body.careScore));
+    const timestamp = Date.now();
+
+    await env.LOVE_D1.prepare(`
+      UPDATE balances SET care_score = ?, updated_at = ? WHERE user_id = ?
+    `).bind(score, timestamp, body.userId).run();
+
+    // Get updated balance to return new available amount
+    const balance = await env.LOVE_D1.prepare(`
+      SELECT performance_pool, care_score FROM balances WHERE user_id = ?
+    `).bind(body.userId).first<{ performance_pool: number; care_score: number }>();
+
+    const availableBalance = balance ? balance.performance_pool * score : 0;
+
+    return json({
+      success: true,
+      userId: body.userId,
+      careScore: score,
+      availableBalance,
+      updatedAt: timestamp,
     });
   },
 };
 
-// Durable Object for atomic transactions (future enhancement)
-export class LoveTransactionDO {
+// ── Durable Object for atomic spend transactions ─────────────────────
+
+export class LoveTransactionDO implements DurableObject {
+  constructor(private state: DurableObjectState, private env: Env) {}
+
   async fetch(request: Request): Promise<Response> {
-    // This would handle more complex atomic transactions
-    // For now, the worker handles transactions directly
-    return new Response('Not implemented', { status: 501 });
+    const url = new URL(request.url);
+    const action = url.searchParams.get('action');
+
+    if (action === 'spend') {
+      return this.handleSpend(request);
+    }
+    if (action === 'balance') {
+      return this.handleBalance(request);
+    }
+
+    return new Response('Not found', { status: 404 });
+  }
+
+  private async handleSpend(request: Request): Promise<Response> {
+    const body = await request.json() as { userId: string; amount: number; description?: string; metadata?: unknown };
+    const transactionId = crypto.randomUUID();
+    const timestamp = Date.now();
+
+    if (!body.userId || !body.amount || body.amount <= 0) {
+      return json({ error: 'Invalid request' }, 400);
+    }
+
+    // DO serializes per-user — safe to use 2-step: compute effective score, then atomic deduct.
+    // This is necessary because care score decay uses wall-clock time (can't compute in SQL).
+    const current = await this.env.LOVE_D1.prepare(`
+      SELECT performance_pool, sovereignty_pool, total_earned, care_score, updated_at
+      FROM balances WHERE user_id = ?
+    `).bind(body.userId).first<{
+      performance_pool: number; sovereignty_pool: number; total_earned: number;
+      care_score: number; updated_at: number;
+    }>();
+
+    if (!current) {
+      return json({ error: 'User not found' }, 400);
+    }
+
+    const effectiveCareScore = computeEffectiveCareScore(current.care_score, current.updated_at);
+    const availableBalance = current.performance_pool * effectiveCareScore;
+
+    if (availableBalance < body.amount) {
+      return json({
+        error: 'Insufficient available balance',
+        availableBalance,
+        requestedAmount: body.amount,
+      }, 400);
+    }
+
+    // Persist effective care score if decay reduced it, then deduct
+    if (effectiveCareScore < current.care_score) {
+      await this.env.LOVE_D1.prepare(`
+        UPDATE balances SET care_score = ? WHERE user_id = ?
+      `).bind(effectiveCareScore, body.userId).run();
+    }
+
+    const result = await this.env.LOVE_D1.prepare(`
+      UPDATE balances
+      SET performance_pool = performance_pool - ?,
+          updated_at = ?
+      WHERE user_id = ?
+      RETURNING performance_pool, sovereignty_pool, care_score, total_earned
+    `).bind(body.amount, timestamp, body.userId)
+      .first<{ performance_pool: number; sovereignty_pool: number; care_score: number; total_earned: number }>();
+
+    if (!result) {
+      return json({ error: 'Spend failed — balance state inconsistent' }, 500);
+    }
+
+    // Log the spend transaction
+    await this.env.LOVE_D1.prepare(`
+      INSERT INTO transactions (id, user_id, type, amount, description, metadata, created_at)
+      VALUES (?, ?, 'spend', ?, ?, ?, ?)
+    `).bind(
+      transactionId,
+      body.userId,
+      body.amount,
+      body.description || 'SPEND',
+      JSON.stringify(body.metadata || {}),
+      timestamp
+    ).run();
+
+    // Update user total spent
+    await this.env.LOVE_D1.prepare(`
+      UPDATE users SET total_spoons_spent = total_spoons_spent + ? WHERE id = ?
+    `).bind(body.amount, body.userId).run();
+
+    // Broadcast via Pub/Sub (optional binding)
+    if (this.env.LOVE_PUB_SUB) {
+      try {
+        await this.env.LOVE_PUB_SUB.publish(
+          `love:${body.userId}`,
+          JSON.stringify({
+            type: 'spend',
+            userId: body.userId,
+            amount: body.amount,
+            transactionId,
+          })
+        );
+      } catch (e) {
+        // Ignore Pub/Sub errors
+      }
+    }
+
+    const postSpendAvailable = result.performance_pool * effectiveCareScore;
+    const postSpendFrozen = result.performance_pool * (1 - effectiveCareScore);
+
+    return json({
+      success: true,
+      transactionId,
+      userId: body.userId,
+      amount: body.amount,
+      newTotalEarned: result.total_earned,
+      sovereigntyPool: result.sovereignty_pool,
+      performancePool: result.performance_pool,
+      careScore: effectiveCareScore,
+      availableBalance: postSpendAvailable,
+      frozenBalance: postSpendFrozen,
+      timestamp,
+    });
+  }
+
+  private async handleBalance(request: Request): Promise<Response> {
+    const url = new URL(request.url);
+    const userId = url.searchParams.get('userId') ?? '';
+
+    if (!userId) {
+      return json({ error: 'Missing userId' }, 400);
+    }
+
+    const row = await this.env.LOVE_D1.prepare(
+      `SELECT total_earned, sovereignty_pool, performance_pool, care_score, updated_at FROM balances WHERE user_id = ?`
+    ).bind(userId).first<{ total_earned: number; sovereignty_pool: number; performance_pool: number; care_score: number; updated_at: number }>();
+
+    if (!row) {
+      return json({
+        userId,
+        totalEarned: 0,
+        sovereigntyPool: 0,
+        performancePool: 0,
+        careScore: 0.5,
+        availableBalance: 0,
+        frozenBalance: 0,
+      });
+    }
+
+    const effectiveCareScore = computeEffectiveCareScore(row.care_score, row.updated_at);
+    const availableBalance = row.performance_pool * effectiveCareScore;
+    const frozenBalance = row.performance_pool * (1 - effectiveCareScore);
+
+    return json({
+      userId,
+      totalEarned: row.total_earned,
+      sovereigntyPool: row.sovereignty_pool,
+      performancePool: row.performance_pool,
+      careScore: effectiveCareScore,
+      availableBalance,
+      frozenBalance,
+    });
   }
 }

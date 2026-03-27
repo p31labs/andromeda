@@ -153,7 +153,9 @@ export interface LedgerConfig {
   readonly splitRatio: number;
   readonly minimumCareScore: number;
   readonly coherenceGiftThreshold: number;
+  readonly coherenceGiftCooldownMs: number;
   readonly voltageCalmThreshold: number;
+  readonly voltageCalmCooldownMs: number;
   readonly vestingSchedule: readonly VestingMilestone[];
   readonly foundingNodes: readonly FoundingNode[];
 }
@@ -162,7 +164,9 @@ export const DEFAULT_LEDGER_CONFIG: Readonly<LedgerConfig> = {
   splitRatio: 0.5,
   minimumCareScore: 0.1,
   coherenceGiftThreshold: 0.65,
+  coherenceGiftCooldownMs: 60_000,
   voltageCalmThreshold: 0.3,
+  voltageCalmCooldownMs: 300_000,
   vestingSchedule: DEFAULT_VESTING_SCHEDULE,
   foundingNodes: FOUNDING_NODES,
 } as const;
@@ -194,6 +198,7 @@ export interface LedgerSnapshot {
   readonly version: 1;
   readonly owner: string;
   readonly transactions: readonly LoveTransaction[];
+  readonly spends: readonly LoveSpend[];
   readonly wallet: LoveWallet;
   readonly snapshotAt: string;
 }
