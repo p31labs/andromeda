@@ -48,6 +48,7 @@ import { exportAsSummary, logEventA } from './engine/exhibitA';
 import { sendPing } from './lib/gameSync';
 import { eventBus, GameEventType } from './genesis/eventBus';
 import { initAudio } from './engine/sound';
+import { useConsoleEgg } from './hooks/useConsoleEgg';
 import { useHashRouter } from './hooks/useHashRouter';
 import { ColliderMode } from './components/ColliderMode';
 import { ElementManager } from './components/elements';
@@ -75,6 +76,10 @@ const useActions = () => useGameStore(useShallow((s) => ({
 })));
 
 function App() {
+  // Console Easter Egg - "Zero Samples" verification
+  // Triggers on DevTools open - displays ASCII tetrahedron
+  useConsoleEgg();
+
   // Game state — grouped by change frequency
   const atoms = useGameStore((s) => s.atoms);
   const gamePhase = useGameStore((s) => s.gamePhase);

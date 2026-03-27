@@ -1,0 +1,58 @@
+# P31 Social Drop Automation Worker
+# Scheduled reminders for social media deployment waves
+name = "p31-social-drop-automation"
+main = "worker.js"
+compatibility_date = "2024-06-12"
+
+# Environment Variables
+[vars]
+ENVIRONMENT = "production"
+
+# Discord webhook for notifications - set as secret:
+# npx wrangler secret put DISCORD_WEBHOOK_URL
+
+# Routes
+routes = [
+  { pattern = "social-drop.p31ca.org/*", zone_name = "p31ca.org" }
+]
+
+# Cron Triggers — one-time scheduled events
+# Each triggers at a specific UTC time on March 26, 2026
+# Will's timezone: EDT = UTC-4
+# Current UTC time at build: 2026-03-26T17:14:00Z
+
+[triggers]
+crons = [
+  # Pre-flight: immediate (next minute)
+  "17 17 26 3 *",    # 17:17 UTC = 1:17 PM EDT — Pre-flight link check
+
+  # Wave 1: Ko-fi (immediate after preflight)
+  "20 17 26 3 *",    # 17:20 UTC = 1:20 PM EDT — Wave 1 Ko-fi
+
+  # Wave 2: X/Twitter (+15 min from Wave 1)
+  "35 17 26 3 *",    # 17:35 UTC = 1:35 PM EDT — Wave 2 Twitter
+
+  # Wave 3: LinkedIn (+30 min from Wave 1)
+  "50 17 26 3 *",    # 17:50 UTC = 1:50 PM EDT — Wave 3 LinkedIn
+
+  # Wave 4: Reddit (+60 min from Wave 1)
+  "20 18 26 3 *",    # 18:20 UTC = 2:20 PM EDT — Wave 4 Reddit
+
+  # Wave 5: Facebook/DMs (+120 min from Wave 1)
+  "20 19 26 3 *",    # 19:20 UTC = 3:20 PM EDT — Wave 5 Personal
+
+  # Wave 6: SuperStonk (+240 min from Wave 1)
+  "20 21 26 3 *",    # 21:20 UTC = 5:20 PM EDT — Wave 6 SuperStonk
+
+  # Zenodo uploads
+  "0 13 27 3 *",     # Mar 27, 9:00 AM EDT — DP-5 + DP-1
+  "0 13 28 3 *",     # Mar 28, 9:00 AM EDT — DP-4 + DP-2
+  "0 13 31 3 *",     # Mar 31, 9:00 AM EDT — DP-3
+
+  # +24hr analytics reminder
+  "20 17 27 3 *",    # Mar 27, 1:20 PM EDT — 24hr post-drop analytics
+]
+
+# Build configuration
+[build]
+command = "echo 'No build step required'"
