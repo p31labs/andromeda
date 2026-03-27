@@ -9,7 +9,7 @@
 // ═══════════════════════════════════════════════════════
 
 import { Vector3, Quaternion, MathUtils } from 'three';
-import type { PlacedAtom, ElementSymbol } from '../types';
+import type { PlacedAtom, ElementSymbol, Bond } from '../types';
 
 // ── Utility functions ──
 
@@ -31,6 +31,21 @@ export function calculateStability(atoms: PlacedAtom[]): number {
 export function isMoleculeComplete(atoms: PlacedAtom[]): boolean {
   if (atoms.length === 0) return false;
   return atoms.every((atom) => getAvailableBondSites(atom) === 0);
+}
+
+/**
+ * Returns true if atoms + bonds form a K4 complete graph (regular tetrahedron).
+ * Enforces Maxwell's counting condition for isostatic rigidity: E = 3V − 6.
+ * For V = 4: exactly 6 unique undirected bonds required (3·4 − 6 = 6).
+ */
+export function isK4(atoms: PlacedAtom[], bonds: Bond[]): boolean {
+  if (atoms.length !== 4) return false;
+  const edgeSet = new Set<string>();
+  for (const bond of bonds) {
+    const key = [bond.from, bond.to].sort((a, b) => a - b).join('-');
+    edgeSet.add(key);
+  }
+  return edgeSet.size === 6;
 }
 
 /**

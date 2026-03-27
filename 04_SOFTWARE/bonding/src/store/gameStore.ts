@@ -27,6 +27,7 @@ import {
   generateFormula,
   displayFormula,
   MOLECULE_NAMES,
+  isK4,
 } from '../engine/chemistry';
 import { KNOWN_MOLECULES } from '../data/achievements';
 import type { DifficultyId } from '../data/modes';
@@ -203,6 +204,9 @@ interface GameStore {
   // Molecular warp field (double-tap easter egg)
   warpActive: boolean;
   triggerWarp: () => void;
+
+  // K4 tetrahedron detection — fires once per session
+  k4Detected: boolean;
 }
 
 // ── Helpers ──
@@ -274,6 +278,8 @@ export const useGameStore = create<GameStore>()((set, get) => ({
 
   // Kid Mode
   simpleMode: false,
+
+  k4Detected: false,
 
   // ── Mode selection ──
 
@@ -569,6 +575,19 @@ export const useGameStore = create<GameStore>()((set, get) => ({
     const formula = generateFormula(updatedAtoms);
     const dispFormula = displayFormula(formula);
 
+    // ── K4 detection — First Tetrahedron egg ──
+    const k4Fired = bondToAtomId != null && !state.k4Detected && isK4(updatedAtoms, newBonds);
+    if (k4Fired) {
+      newToasts.push({
+        id: createToastId(),
+        icon: '🔺',
+        text: 'K4 TETRAHEDRON DETECTED',
+        subtext: 'E = 3V − 6  ·  4 vertices  ·  6 edges — post this in #showcase to claim your egg',
+        duration: 6000,
+        createdAt: Date.now(),
+      });
+    }
+
     for (const result of newAchievements) {
       const achResult = earnLove(
         loveTx,
@@ -799,6 +818,7 @@ export const useGameStore = create<GameStore>()((set, get) => ({
       sessionCompletedFormulas: complete
         ? [...state.sessionCompletedFormulas, formula]
         : state.sessionCompletedFormulas,
+      k4Detected: k4Fired ? true : state.k4Detected,
     });
 
     // ── Post-commit effects ──
@@ -810,6 +830,15 @@ export const useGameStore = create<GameStore>()((set, get) => ({
         sendCelebration({ type: 'molecule_complete', formula });
       }).catch(() => {
         // Relay not available - no-op in standalone mode
+      });
+    }
+
+    // K4_DETECTED
+    if (k4Fired) {
+      eventBus.emit(GameEventType.K4_DETECTED, {
+        atomCount: updatedAtoms.length,
+        bondCount: newBonds.length,
+        formula,
       });
     }
 
@@ -975,6 +1004,7 @@ export const useGameStore = create<GameStore>()((set, get) => ({
       dragCooldownUntil: 0,
       pendingDiscovery: null,
       sessionCompletedFormulas: [],
+      k4Detected: false,
     });
   },
 

@@ -25,6 +25,7 @@ export enum GameEventType {
   QUEST_CHAIN_COMPLETED = 'QUEST_CHAIN_COMPLETED',
   NAV_SELECT          = 'NAV_SELECT',
   BUG_REPORT          = 'BUG_REPORT',
+  K4_DETECTED         = 'K4_DETECTED',
 }
 
 export interface GameEventMap {
@@ -86,6 +87,11 @@ export interface GameEventMap {
     reportId: string;
     testerName: string;
     descriptionLength: number;
+  };
+  [GameEventType.K4_DETECTED]: {
+    atomCount: number;
+    bondCount: number;
+    formula: string;
   };
 }
 

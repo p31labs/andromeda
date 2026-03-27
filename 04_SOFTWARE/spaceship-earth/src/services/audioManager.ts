@@ -447,6 +447,31 @@ export function playResonanceLock(masterVol: number, sfxEnabled: boolean): void 
   });
 }
 
+/**
+ * Missing Node pulse — 172.35 Hz sine for the specified duration.
+ * Triggered by the ghost signal in ColliderRoom. Not gated by
+ * reducedMotion since it is an explicit user-triggered one-shot.
+ */
+export function playMissingNodePulse(durationMs: number): void {
+  const c = ctx();
+  if (!c) return;
+  if (c.state === 'suspended') { c.resume().catch(() => {}); }
+  const dur = durationMs / 1000;
+  const g = c.createGain();
+  g.gain.setValueAtTime(0, c.currentTime);
+  g.gain.linearRampToValueAtTime(0.18, c.currentTime + 0.15);
+  g.gain.setValueAtTime(0.18, c.currentTime + Math.max(0, dur - 0.3));
+  g.gain.linearRampToValueAtTime(0, c.currentTime + dur);
+  g.connect(c.destination);
+  const osc = c.createOscillator();
+  osc.type = 'sine';
+  osc.frequency.value = 172.35;
+  osc.connect(g);
+  osc.start(c.currentTime);
+  osc.stop(c.currentTime + dur);
+  osc.onended = () => cleanup([osc, g]);
+}
+
 // ── Background suspension ─────────────────────────────────────────────────
 
 /** Call once at app init. Suspends AudioContext when tab is hidden. */

@@ -3,6 +3,7 @@
 // Cyclotron mode: accelerate atoms in a ring, launch them to collide and fuse.
 // P31 brand: #00FF88 green, #00D4FF cyan, #FF00CC magenta, #7A27FF violet, #FFB800 amber.
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import { playMissingNodePulse } from '../../services/audioManager';
 
 const FONT = "var(--font-display)";
 const FONT_DATA = "var(--font-data)";
@@ -195,6 +196,7 @@ export function ColliderRoom() {
   const [cyclotronEnergy, setCyclotronEnergy] = useState(0);
   const [toast, setToast] = useState('');
   const [collisionFlashes, setCollisionFlashes] = useState<FlashParticle[]>([]);
+  const [missingNodeRevealed, setMissingNodeRevealed] = useState(false);
 
   // Refs for physics loop
   const atomsRef = useRef(atoms);
@@ -913,6 +915,41 @@ export function ColliderRoom() {
         </div>
       </div>
 
+      {/* ═══ Ghost Signal — 172.35 Hz Missing Node egg ═══ */}
+      <div
+        onClick={(e) => {
+          e.stopPropagation();
+          if (missingNodeRevealed) return;
+          playMissingNodePulse(6000);
+          setMissingNodeRevealed(true);
+          setTimeout(() => setMissingNodeRevealed(false), 6000);
+        }}
+        style={{
+          position: 'absolute', top: '31%', left: '73%',
+          width: 36, height: 36, borderRadius: '50%',
+          background: `radial-gradient(circle, ${CYAN}44 0%, transparent 70%)`,
+          border: `1px solid ${CYAN}30`,
+          opacity: missingNodeRevealed ? 0 : 1,
+          animation: 'ghost-pulse 2.8s ease-in-out infinite',
+          cursor: 'pointer', zIndex: 5, pointerEvents: 'auto',
+          transition: 'opacity 0.3s',
+        }}
+      />
+      {missingNodeRevealed && (
+        <div style={{
+          position: 'absolute', top: '18%', left: '50%',
+          transform: 'translateX(-50%)',
+          color: CYAN, fontFamily: FONT_DATA, fontSize: '1.1rem',
+          fontWeight: 600, letterSpacing: '0.08em',
+          textShadow: `0 0 12px ${CYAN}88, 0 0 24px ${CYAN}44`,
+          zIndex: 200, pointerEvents: 'none',
+          animation: 'forgeToast 0.3s ease-out',
+          whiteSpace: 'nowrap',
+        }}>
+          172.35 Hz — ³¹P MISSING NODE DETECTED
+        </div>
+      )}
+
       {/* Toast */}
       {toast && (
         <div style={{
@@ -932,6 +969,10 @@ export function ColliderRoom() {
         @keyframes forgeToast {
           0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0; }
           100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+        @keyframes ghost-pulse {
+          0%, 100% { transform: scale(1); opacity: 0.12; }
+          50% { transform: scale(1.35); opacity: 0.22; }
         }
       `}</style>
     </div>
