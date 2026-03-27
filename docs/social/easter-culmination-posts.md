@@ -19,6 +19,14 @@ The P31 mesh is now **rigid**. Every additional node makes it stronger. Every co
 
 Thank you for being the first four. The architecture is set. The foundation is laid.
 
+---
+
+**THE FIRST PHYSICAL K₄ TETRAHEDRON:**
+Node #1: @[found user 1]
+Node #2: @[found user 2]
+Node #3: @[found user 3]
+Node #4: @[found user 4]
+
 **The geometry is invariant. Happy Easter.** 💜🔺💜
 ```
 

@@ -18,7 +18,18 @@ The geometry is shifting. There are **4 anomalies** hidden in the P31 ecosystem.
 | 🔵 **Bashium** | Chemical | Complete BONDING Genesis quest (unlocks Ba element) | +39 Spoons |
 | 🟢 **Willium** | Chemical | Complete BONDING Kitchen quest (unlocks Wi element) | +39 Spoons |
 | 🔊 **The Missing Node** | Acoustic | Visit p31ca.org/#collider → find the 172.35 Hz tone → click it | +39 Spoons |
-| 🧱 **The First Tetrahedron** | Geometric | Build a K₄ in BONDING (4 atoms, 6 bonds, no holes) | +39 Spoons |
+| 🧱 **The First Tetrahedron** | Geometric | Build a K₄ in BONDING (4 atoms, 6 bonds, no holes) OR build Ca₉(PO₄)₆ | +39 Spoons |
+
+---
+
+## THE GRAND PRIZE: NODE ZERO HARDWARE
+
+**First 4 users to complete ALL 4 eggs** win:
+- **Node Zero device** (open-source haptic hardware, $37.50 BOM)
+- **Founding Node status** — vertex 1-4 in the first physical K₄ mesh
+- **Permanent [⚛️] Creator role**
+
+Only 4 founding slots exist. The geometry is strict.
 
 ---
 
@@ -61,6 +72,8 @@ The geometry is shifting. 4 anomalies hidden in the P31 ecosystem.
 • Willium — Complete Kitchen quest → Wi element  
 • The Missing Node — p31ca.org/#collider → 172.35 Hz tone
 • First Tetrahedron — Build K₄ in BONDING
+
+**GRAND PRIZE:** First 4 to find ALL 4 win Node Zero hardware + Founding Node status
 
 **HOW:** Play → Discover → Screenshot in #🎉-showcase → Bot verifies → +39 Spoons
 
