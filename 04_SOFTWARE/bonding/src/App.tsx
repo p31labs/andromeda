@@ -10,23 +10,25 @@
 //   z-50: Toast layer (AchievementToast)
 // ═══════════════════════════════════════════════════════
 
-import { useState, useEffect, useRef, useCallback, lazy, Suspense } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo, lazy, Suspense } from 'react';
 import { genesisInit } from './genesis/genesis';
 import { MoleculeCanvas } from './components/MoleculeCanvas';
 import { ElementPalette } from './components/ElementPalette';
 import { StabilityMeter } from './components/StabilityMeter';
 import { AchievementToast } from './components/AchievementToast';
 import { ModeSelect } from './components/ModeSelect';
-import { Lobby } from './components/Lobby';
-import { RoomSidebar } from './components/RoomSidebar';
 import { QuestHUD } from './components/QuestHUD';
 import { FormulaDisplay } from './components/FormulaDisplay';
 import { JitterbugNavigator } from './components/Navigation/Jitterbug';
 import { CockpitLayout } from './components/hud/CockpitLayout';
 import { TopBar } from './components/hud/TopBar';
 import { CommandBar } from './components/hud/CommandBar';
-import { BootSequence, isBirthdayOrAfter, hasSeenBoot } from './components/hud/BootSequence';
+import { isBirthdayOrAfter, hasSeenBoot } from './components/hud/bootHelpers';
 
+// Lazy-loaded: only fetched when their conditional render triggers
+const Lobby = lazy(() => import('./components/Lobby').then(m => ({ default: m.Lobby })));
+const RoomSidebar = lazy(() => import('./components/RoomSidebar').then(m => ({ default: m.RoomSidebar })));
+const BootSequence = lazy(() => import('./components/hud/BootSequence').then(m => ({ default: m.BootSequence })));
 const TutorialOverlay = lazy(() => import('./components/TutorialOverlay').then(m => ({ default: m.TutorialOverlay })));
 const DiscoveryModal = lazy(() => import('./components/DiscoveryModal').then(m => ({ default: m.DiscoveryModal })));
 const TelemetryModal = lazy(() => import('./components/hud/TelemetryModal').then(m => ({ default: m.TelemetryModal })));
@@ -241,39 +243,41 @@ function App() {
   }, [setGameMode]);
 
   // WCD-29: Genesis Fire boot sequence (before anything else)
-  if (showBoot) return <BootSequence onAcknowledge={() => setShowBoot(false)} />;
+  if (showBoot) return <Suspense fallback={null}><BootSequence onAcknowledge={() => setShowBoot(false)} /></Suspense>;
 
   // Wait for boot check before showing UI (prevents flash)
   if (!bootChecked) return null;
 
   // Layer 0a: Lobby (multiplayer create/join)
-  if (lobbyActive) return <Lobby />;
+  if (lobbyActive) return <Suspense fallback={null}><Lobby /></Suspense>;
 
   // Layer 0b: Mode selection
   if (!gameMode) return <ModeSelect />;
 
   const mode = getModeById(gameMode);
   const isMultiplayer = roomCode !== null;
-  const formula = generateFormula(atoms);
-  const dispFormula = displayFormula(formula);
+  const formula = useMemo(() => generateFormula(atoms), [atoms]);
+  const dispFormula = useMemo(() => displayFormula(formula), [formula]);
   const moleculeName = MOLECULE_NAMES[formula] ?? dispFormula;
-  const stability = Math.round(calculateStability(atoms) * 100);
+  const stability = useMemo(() => Math.round(calculateStability(atoms) * 100), [atoms]);
 
   // Compute personality for completed molecules
-  const personality = gamePhase === 'complete' && atoms.length > 0
-    ? (() => {
-        const counts: Record<string, number> = {};
-        for (const a of atoms) {
-          counts[a.element] = (counts[a.element] ?? 0) + 1;
-        }
-        return getPersonality(formula, counts);
-      })()
-    : null;
+  const personality = useMemo(() => {
+    if (gamePhase !== 'complete' || atoms.length === 0) return null;
+    const counts: Record<string, number> = {};
+    for (const a of atoms) {
+      counts[a.element] = (counts[a.element] ?? 0) + 1;
+    }
+    return getPersonality(formula, counts);
+  }, [gamePhase, atoms, formula]);
 
   // Completion overlay: derived state
-  const funFact = gamePhase === 'complete' ? getFunFact(formula) : null;
-  const isBashiumMolecule = atoms.some(a => a.element === 'Ba');
-  const isWilliumMolecule = atoms.some(a => a.element === 'Wi');
+  const funFact = useMemo(
+    () => gamePhase === 'complete' ? getFunFact(formula) : null,
+    [gamePhase, formula],
+  );
+  const isBashiumMolecule = useMemo(() => atoms.some(a => a.element === 'Ba'), [atoms]);
+  const isWilliumMolecule = useMemo(() => atoms.some(a => a.element === 'Wi'), [atoms]);
   const isSecretMolecule = isBashiumMolecule || isWilliumMolecule;
   const questMessage = gamePhase === 'complete' ? (() => {
     for (const quest of activeQuests) {
@@ -394,7 +398,7 @@ function App() {
       )}
 
       {/* Room sidebar (multiplayer only) */}
-      {isMultiplayer && <RoomSidebar />}
+      {isMultiplayer && <Suspense fallback={null}><RoomSidebar /></Suspense>}
 
       {/* Ping notification overlay */}
       {pingNotification && (
