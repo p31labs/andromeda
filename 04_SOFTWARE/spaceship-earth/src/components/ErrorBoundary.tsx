@@ -1,7 +1,13 @@
 // spaceship-earth/src/components/ErrorBoundary.tsx
 // Thin wrapper around @p31/shared ErrorBoundary with project-specific styling.
-import type { ReactNode } from 'react';
-import { ErrorBoundary as SharedErrorBoundary } from '@p31/shared/ui';
+import type { ComponentType, ReactNode } from 'react';
+import { ErrorBoundary as SharedErrorBoundaryImpl } from '@p31/shared/ui';
+
+// React 19 strict typing requires `refs` on class components; cast to functional-compatible type.
+const SharedErrorBoundary = SharedErrorBoundaryImpl as unknown as ComponentType<{
+  fallback: (error: Error) => ReactNode;
+  children: ReactNode;
+}>;
 
 function ErrorFallback(error: Error) {
   return (

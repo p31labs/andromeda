@@ -396,7 +396,7 @@ function LoveTab({ love, spoons, maxSpoons, tier }: Props) {
               <div 
                 key={m.age} 
                 style={{ 
-                  fontSize: fs.xs - 1, 
+                  fontSize: fs.xs,
                   color: DIM,
                   display: 'flex',
                   alignItems: 'center',
