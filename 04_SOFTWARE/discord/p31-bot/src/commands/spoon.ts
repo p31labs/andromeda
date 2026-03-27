@@ -25,6 +25,11 @@ export class SpoonCommand implements P31Command {
       return this.showLeaderboard(message);
     }
 
+    // p31 spoon link <kofi_name> — merge Ko-fi spoons into caller's Discord account
+    if (args[0] === 'link' && args[1]) {
+      return this.linkKofi(message, args.slice(1).join(' '));
+    }
+
     // p31 spoon @user — show a specific user's balance
     const mentionedUser = message.mentions.users.first();
     if (mentionedUser) {
@@ -99,6 +104,34 @@ export class SpoonCommand implements P31Command {
       const rows = top.map((e, i) => `${i + 1}. <@${e.userId}> — **${e.balance}** (${e.totalEarned} earned)`);
       embed.setDescription(rows.join('\n'));
     }
+    await message.reply({ embeds: [embed] });
+  }
+
+  private async linkKofi(message: Message, kofiName: string): Promise<void> {
+    const kofiKey = `kofi:${kofiName}`;
+    const kofiEntry = spoonLedger.getEntry(kofiKey);
+
+    if (!kofiEntry || kofiEntry.balance === 0) {
+      await message.reply(
+        `No pending Ko-fi spoons found for **${kofiName}**. ` +
+        `Make sure the name matches exactly what you used on Ko-fi.`
+      );
+      return;
+    }
+
+    const transferred = spoonLedger.transferAll(kofiKey, message.author.id);
+    const newBalance = spoonLedger.getBalance(message.author.id);
+
+    const embed = new EmbedBuilder()
+      .setColor(0x00FF88)
+      .setTitle('🥄 Ko-fi Account Linked')
+      .addFields(
+        { name: 'Ko-fi Name',    value: kofiName,               inline: true },
+        { name: 'Transferred',   value: `+${transferred} spoons`, inline: true },
+        { name: 'New Balance',   value: `${newBalance} spoons`,  inline: true },
+      )
+      .setFooter({ text: 'P31 Labs · Thank you for keeping the mesh alive. 💜🔺💜' });
+
     await message.reply({ embeds: [embed] });
   }
 

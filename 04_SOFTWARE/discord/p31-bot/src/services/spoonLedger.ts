@@ -98,3 +98,17 @@ export function getLeaderboard(limit = 10): Array<{ userId: string } & LedgerEnt
 export function getGlobalTotal(): number {
   return Object.values(ledger).reduce((sum, e) => sum + e.totalEarned, 0);
 }
+
+/**
+ * Merge all spoons from fromKey into toKey, then delete fromKey.
+ * Returns the amount transferred, or 0 if fromKey doesn't exist.
+ */
+export function transferAll(fromKey: string, toKey: string): number {
+  const source = ledger[fromKey];
+  if (!source || source.balance === 0) return 0;
+  const transferred = source.balance;
+  award(toKey, transferred);
+  delete ledger[fromKey];
+  flush(ledger);
+  return transferred;
+}
