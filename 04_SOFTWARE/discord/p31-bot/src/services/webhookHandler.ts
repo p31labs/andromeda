@@ -47,13 +47,20 @@ class WebhookHandler extends EventEmitter {
   private setupMiddleware(): void {
     this.app.use(cors());
     this.app.use(express.json());
+    this.app.use(express.urlencoded({ extended: true }));
   }
 
   private setupRoutes(): void {
     // Ko-fi webhook endpoint
     this.app.post('/webhook/kofi', (req: Request, res: Response) => {
       try {
-        const payload = req.body as KoFiPayload;
+        // Ko-fi sends application/x-www-form-urlencoded with a nested JSON string in `data`
+        let payload: KoFiPayload;
+        if (req.body?.data && typeof req.body.data === 'string') {
+          payload = JSON.parse(req.body.data) as KoFiPayload;
+        } else {
+          payload = req.body as KoFiPayload;
+        }
         const event: WebhookEvent = {
           type: 'kofi',
           payload,

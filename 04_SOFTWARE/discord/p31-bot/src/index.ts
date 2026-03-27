@@ -78,13 +78,16 @@ webhookHandler.on('kofi', async (event) => {
   const channel = getChannel(announcementsChannelId);
   if (channel) {
     const p = event.payload;
+    // Ko-fi uses from_name, amount (string), currency
+    const fromName = String(p.from_name || p.supporterName || 'Anonymous');
+    const amount = p.amount ? `${p.amount} ${p.currency || ''}`.trim() : 'N/A';
     const embed = new EmbedBuilder()
       .setColor(0xF59E0B)
       .setTitle('💖 Ko-fi Support Received')
       .addFields(
-        { name: 'From',   value: String(p.supporterName || 'Anonymous'),           inline: true },
-        { name: 'Amount', value: `${p.amount} ${p.currency}`,                      inline: true },
-        { name: 'Type',   value: String(p.type || 'Donation'),                     inline: true },
+        { name: 'From',   value: fromName,                      inline: true },
+        { name: 'Amount', value: amount,                         inline: true },
+        { name: 'Type',   value: String(p.type || 'Donation'),  inline: true },
       )
       .setFooter({ text: 'P31 Labs — Thank you for keeping the mesh alive. 💜🔺💜' });
     if (p.message) embed.addFields({ name: 'Message', value: String(p.message) });
