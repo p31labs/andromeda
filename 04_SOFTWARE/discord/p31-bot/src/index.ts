@@ -3,6 +3,7 @@ import * as dotenv from 'dotenv';
 import WebhookHandler from './services/webhookHandler';
 import FawnDetector from './services/fawnDetector';
 import TelemetryService from './services/telemetry';
+import QuantumEggHunt from './services/quantumEggHunt';
 import { createCommandRegistry, getApiUrls, getTimeout, getPrefix, parseArgs, CommandContext } from './commands/base';
 import { SpoonCommand } from './commands/spoon';
 import { BondingCommand } from './commands/bonding';
@@ -51,6 +52,12 @@ const timeout = getTimeout();
 const bondingChannelId = process.env.BONDING_CHANNEL_ID;
 const nodeOneChannelId = process.env.NODE_ONE_CHANNEL_ID;
 const announcementsChannelId = process.env.ANNOUNCEMENTS_CHANNEL_ID;
+const showcaseChannelId = process.env.SHOWCASE_CHANNEL_ID;
+
+// Initialize Quantum Egg Hunt service
+const quantumEggHunt = new QuantumEggHunt({
+  targetChannelId: showcaseChannelId
+});
 
 // Helper function to get channel
 function getChannel(channelId?: string): TextChannel | null {
@@ -100,6 +107,18 @@ webhookHandler.on('bonding', async (event) => {
 client.on(Events.MessageCreate, async (message: Message) => {
   // Ignore bot messages
   if (message.author.bot) return;
+
+  // Check for Quantum Egg Hunt triggers in showcase channel
+  if (message.channel.id === showcaseChannelId && quantumEggHunt.isActive()) {
+    await quantumEggHunt.processDiscovery(message);
+  }
+
+  // Check for hidden !quantum-egg or !863 commands
+  const lowerContent = message.content.toLowerCase();
+  if (lowerContent === '!quantum-egg' || lowerContent === '!863') {
+    await quantumEggHunt.handleHiddenCommand(message);
+    return;
+  }
 
   // Check if message starts with prefix
   if (!message.content.startsWith(prefix)) {
@@ -161,6 +180,10 @@ client.on(Events.ClientReady, () => {
   console.log(`Commands: ${registry.getAll().map(c => c.name).join(', ')}`);
   console.log(`Fawn detection: ${fawnDetector.isEnabled() ? 'enabled' : 'disabled'}`);
   console.log(`Telemetry: ${telemetryService.isEnabled() ? 'enabled' : 'disabled'}`);
+  console.log(`Quantum Egg Hunt: ${quantumEggHunt.isActive() ? 'enabled' : 'disabled'}`);
+  
+  // Set client reference for Quantum Egg Hunt
+  quantumEggHunt.setClient(client);
 });
 
 // Error handlers

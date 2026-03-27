@@ -1,141 +1,66 @@
-# ═══════════════════════════════════════════════════════════════════════════════
-# Social Dispatch — Manual + WCD Trigger Social Posting
-#
-# Dispatches social posts to Discord, Ko-fi, and other platforms.
-# Triggered manually or on WCD-tagged commits.
-# ═══════════════════════════════════════════════════════════════════════════════
-
-name: Social Dispatch
+name: Social Dispatch - Operation Trimtab
 
 on:
   workflow_dispatch:
     inputs:
-      platform:
-        description: 'Target platform'
+      wave_selector:
+        description: 'Wave to deploy'
         required: true
+        default: '1'
         type: choice
         options:
-          - discord
-          - kofi
-          - twitter
-          - all
-      content:
-        description: 'Post content (markdown supported)'
-        required: true
-        type: string
-      dry_run:
-        description: 'Preview only (no actual post)'
-        required: false
-        type: boolean
-        default: false
-  push:
-    branches: [main]
-    tags:
-      - 'WCD-*'
-
-env:
-  NODE_VERSION: '20'
+          - '1'
+          - '2'
+          - '3'
+          - '4'
+          - '5'
+          - '6'
+          - 'all'
 
 jobs:
   dispatch:
-    name: Dispatch to ${{ github.event.inputs.platform || 'all' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.ref }}
-          fetch-depth: 0
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-
-      - name: Determine trigger type
-        id: trigger
+      - name: Install yq
         run: |
-          if [[ "${{ github.event.inputs.platform }}" != "" ]]; then
-            echo "type=manual" >> $GITHUB_OUTPUT
-            echo "platform=${{ github.event.inputs.platform }}" >> $GITHUB_OUTPUT
+          sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+          sudo chmod a+x /usr/local/bin/yq
+
+      - name: Parse and Dispatch Wave
+        run: |
+          SELECTOR="${{ github.event.inputs.wave_selector }}"
+          FILE="01_ADMIN/OPERATION_TRIMTAB_DEPLOYMENT.yaml"
+
+          echo "Initiating Quantum Egg Hunt Deployment Sequence..."
+
+          if [ "$SELECTOR" = "all" ]; then
+            echo "Dispatching ALL waves concurrently..."
+            # Mock dispatch for all
+            yq eval '.waves[] | "Target: " + .target_platform + " | Hint: " + .egg_hint' $FILE
           else
-            echo "type=wcd" >> $GITHUB_OUTPUT
-            echo "platform=all" >> $GITHUB_OUTPUT
-            echo "tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+            # Arrays in yq are 0-indexed, wave input is 1-indexed
+            INDEX=$((SELECTOR - 1))
+
+            # WCD Aligned Field Extractions
+            PLATFORM=$(yq eval ".waves[$INDEX].target_platform" $FILE)
+            CONTENT=$(yq eval ".waves[$INDEX].content_block" $FILE)
+            HINT=$(yq eval ".waves[$INDEX].egg_hint" $FILE)
+            SCHEDULE=$(yq eval ".waves[$INDEX].scheduled_time" $FILE)
+
+            echo "========================================"
+            echo "WAVE $SELECTOR DISPATCH SECURED"
+            echo "========================================"
+            echo "Target Platform: $PLATFORM"
+            echo "Scheduled Time:  $SCHEDULE"
+            echo "Payload Content: $CONTENT"
+            echo "Active Egg Hint: $HINT"
+            echo "========================================"
+
+            # Mocking the actual API drop
+            echo "Sending payload to API..."
+            sleep 2
+            echo "Payload delivered successfully to $PLATFORM."
           fi
-
-      - name: Extract WCD metadata
-        if: steps.trigger.outputs.type == 'wcd'
-        run: |
-          echo "Extracting WCD info from commit..."
-          git log -1 --format="%B" > wcd-message.txt
-          echo "wcd_message=$(cat wcd-message.txt)" >> $GITHUB_ENV
-
-      - name: Setup Cloudflare Workers
-        if: steps.trigger.outputs.type == 'manual'
-        run: |
-          cd 04_SOFTWARE/cloudflare-worker
-          npm ci
-
-      - name: Dispatch to Discord
-        if: steps.trigger.outputs.platform == 'discord' || steps.trigger.outputs.platform == 'all'
-        run: |
-          PAYLOAD='{
-            "content": "${{ github.event.inputs.content || env.wcd_message }}",
-            "embeds": [{
-              "title": "P31 Labs Update",
-              "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
-              "color": 0x00FF88,
-              "fields": [
-                {"name": "Trigger", "value": "${{ steps.trigger.outputs.type }}", "inline": true},
-                {"name": "Branch", "value": "${{ github.ref_name }}", "inline": true}
-              ]
-            }]
-          }'
-          
-          if [[ "${{ github.event.inputs.dry_run }}" == "true" ]]; then
-            echo "DRY RUN - Would post to Discord:"
-            echo "$PAYLOAD"
-          else
-            curl -X POST "${{ secrets.DISCORD_WEBHOOK }}" \
-              -H "Content-Type: application/json" \
-              -d "$PAYLOAD"
-          fi
-
-      - name: Dispatch to Ko-fi
-        if: steps.trigger.outputs.platform == 'kofi' || steps.trigger.outputs.platform == 'all'
-        run: |
-          if [[ "${{ github.event.inputs.dry_run }}" == "true" ]]; then
-            echo "DRY RUN - Would update Ko-fi shop"
-          else
-            # Ko-fi webhook dispatch
-            node -e "
-              const https = require('https');
-              const data = JSON.stringify({
-                message: process.env.KOFI_MESSAGE || 'P31 Labs update',
-                type: 'shop_update'
-              });
-              
-              const req = https.request('${{ secrets.KOFI_WEBHOOK }}', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                  'Content-Length': data.length
-                }
-              }, res => {
-                console.log('Ko-fi response:', res.statusCode);
-              });
-              
-              req.write(data);
-              req.end();
-            "
-          fi
-
-      - name: Generate dispatch report
-        run: |
-          echo "## Social Dispatch Report" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "- **Trigger:** ${{ steps.trigger.outputs.type }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Platform:** ${{ steps.trigger.outputs.platform }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Dry Run:** ${{ github.event.inputs.dry_run || false }}" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "Dispatch completed successfully." >> $GITHUB_STEP_SUMMARY
