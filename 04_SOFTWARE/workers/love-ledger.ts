@@ -79,6 +79,7 @@ const CARE_SCORE_GRACE_DAYS = 7;
 const CARE_SCORE_DECAY_PER_DAY = 0.005;
 const CARE_SCORE_MIN = 0.1;
 const CARE_SCORE_MAX = 1.0;
+const WORKER_SPOONS_MAX = 12; // mirrors client SPOONS_MAX
 
 function computeEffectiveCareScore(storedScore: number, updatedAt: number): number {
   const daysSince = (Date.now() - updatedAt) / 86_400_000;
@@ -237,22 +238,30 @@ export default {
       return err('Missing userId', 400);
     }
 
-    // Query two-pool balance
-    const result = await env.LOVE_D1.prepare(`
-      SELECT total_earned, sovereignty_pool, performance_pool, care_score, updated_at 
-      FROM balances WHERE user_id = ?
-    `).bind(userId).first<TwoPoolBalance>();
+    // Query two-pool balance + spoon debt in parallel
+    const [result, userRow] = await Promise.all([
+      env.LOVE_D1.prepare(`
+        SELECT total_earned, sovereignty_pool, performance_pool, care_score, updated_at
+        FROM balances WHERE user_id = ?
+      `).bind(userId).first<TwoPoolBalance>(),
+      env.LOVE_D1.prepare(`
+        SELECT total_spoons_spent FROM users WHERE id = ?
+      `).bind(userId).first<{ total_spoons_spent: number }>(),
+    ]);
+
+    const totalSpoonDebt = userRow?.total_spoons_spent ?? 0;
 
     if (!result) {
-      return json({ 
-        userId, 
-        totalEarned: 0, 
-        sovereigntyPool: 0, 
-        performancePool: 0, 
+      return json({
+        userId,
+        totalEarned: 0,
+        sovereigntyPool: 0,
+        performancePool: 0,
         careScore: 0.5,
         availableBalance: 0,
         frozenBalance: 0,
-        updatedAt: null 
+        totalSpoonDebt,
+        updatedAt: null
       });
     }
 
@@ -268,6 +277,7 @@ export default {
       careScore: effectiveCareScore,
       availableBalance,
       frozenBalance,
+      totalSpoonDebt,
       updatedAt: result.updated_at,
     });
   },
@@ -351,7 +361,11 @@ export default {
       timestamp
     ).run();
 
-    // Log transaction
+    // Extract spoon level from metadata — record cognitive state at time of earn
+    const spoonsAtEarn = typeof body.metadata?.spoons === 'number' ? body.metadata.spoons : null;
+    const spoonDebt = spoonsAtEarn !== null ? WORKER_SPOONS_MAX - spoonsAtEarn : 0;
+
+    // Log transaction (preserve spoon metadata for future care_score calculations)
     const transactionId = crypto.randomUUID();
     await env.LOVE_D1.prepare(`
       INSERT INTO transactions (id, user_id, type, amount, description, metadata, created_at)
@@ -361,9 +375,16 @@ export default {
       body.userId,
       amount,
       body.description || body.transactionType || 'EARN',
-      '{}',
+      JSON.stringify(body.metadata || {}),
       timestamp
     ).run();
+
+    // Accumulate spoon debt — high value = consistently depleted when earning
+    if (spoonDebt > 0) {
+      await env.LOVE_D1.prepare(`
+        UPDATE users SET total_spoons_spent = total_spoons_spent + ? WHERE id = ?
+      `).bind(spoonDebt, body.userId).run();
+    }
 
     // Get new balance
     const newBalance = await env.LOVE_D1.prepare(`

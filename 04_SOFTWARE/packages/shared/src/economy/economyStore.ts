@@ -30,12 +30,16 @@ export function initLoveSync(config: { workerUrl: string; userId: string }): voi
   }).catch(() => {});
 }
 
-function syncEarn(transactionType: string): void {
+function syncEarn(transactionType: string, spoonsAtEarn?: number): void {
   if (!_syncConfig) return;
   void fetch(`${_syncConfig.workerUrl}/api/love/earn`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ userId: _syncConfig.userId, transactionType }),
+    body: JSON.stringify({
+      userId: _syncConfig.userId,
+      transactionType,
+      metadata: spoonsAtEarn !== undefined ? { spoons: spoonsAtEarn } : undefined,
+    }),
   }).catch(() => {});
 }
 
@@ -69,6 +73,18 @@ const DAILY_ATOM_CAP = 50;
 const LOVE_PER_ATOM = 1;
 const LOVE_PER_MOLECULE = 10;
 const SPOONS_MAX = 12;
+
+// Spoon restoration per LoveSource — receiving care restores energy.
+// Values intentionally small: spoons are metabolic, not a reward system.
+const SPOON_RESTORE: Partial<Record<LoveSource, number>> = {
+  ping_received:      0.5,  // Someone thought of you
+  meditation_session: 2.0,  // Rest literally restores
+  fawn_guard_ack:     1.0,  // Breaking a trauma pattern = freed energy
+  calcium_logged:     0.5,  // Taking care of your body
+  quest_complete:     1.0,  // Completion gives energy
+  wcd_complete:       1.5,  // Big achievement
+  molecule_complete:  0.5,  // Creation is sustaining
+};
 
 // ── Persisted shape (what lives in IDB) ──
 
@@ -182,22 +198,23 @@ export const useEconomyStore = create<EconomyStore>()((set, get) => ({
 
   earnLove: (source: LoveSource) => {
     const loveReward = LOVE_VALUES[source];
+    const spoonRestore = SPOON_RESTORE[source] ?? 0;
     const s = get();
     const totalLove = s.totalLove + loveReward;
-    set({ totalLove });
+    const spoons = spoonRestore > 0 ? Math.min(SPOONS_MAX, s.spoons + spoonRestore) : s.spoons;
+    set({ totalLove, spoons });
     persist({ totalLove, currentStreak: s.currentStreak, lastActiveDate: s.lastActiveDate, dailyAtomCount: s.dailyAtomCount });
-    // Map LoveSource to worker transaction type
     const SOURCE_TO_TX: Record<LoveSource, string> = {
       molecule_complete: 'ARTIFACT_CREATED',
-      ping_sent: 'CARE_GIVEN',
-      ping_received: 'CARE_RECEIVED',
-      quest_complete: 'MILESTONE_REACHED',
-      buffer_processed: 'COHERENCE_GIFT',
-      fawn_guard_ack: 'VOLTAGE_CALMED',
-      calcium_logged: 'VOLTAGE_CALMED',
-      wcd_complete: 'MILESTONE_REACHED',
-      meditation_session: 'COHERENCE_GIFT',
+      ping_sent:         'CARE_GIVEN',
+      ping_received:     'CARE_RECEIVED',
+      quest_complete:    'MILESTONE_REACHED',
+      buffer_processed:  'COHERENCE_GIFT',
+      fawn_guard_ack:    'VOLTAGE_CALMED',
+      calcium_logged:    'VOLTAGE_CALMED',
+      wcd_complete:      'MILESTONE_REACHED',
+      meditation_session:'COHERENCE_GIFT',
     };
-    syncEarn(SOURCE_TO_TX[source]);
+    syncEarn(SOURCE_TO_TX[source], s.spoons);
   },
 }));
