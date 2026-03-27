@@ -165,3 +165,9 @@ The system functions as a **"Living Web Document"** utilizing CRDTs:
 ### OAuth Forensics
 
 Before deployment, the system executes rigorous OAuth Forensics using the Admin SDK Reports API, building a comprehensive **Token Manifest** to identify high-risk data exfiltration vectors and "Ghost Apps." A **"Token Shred"** policy systematically revokes all non-allowlisted tokens, sealing the workspace's attack surface.
+
+---
+
+*Operational runbook extracted to `P31_DEPLOYMENT_RUNBOOK.md`. Architecture reference in `P31_ARCHITECTURE.md`.*
+
+---
