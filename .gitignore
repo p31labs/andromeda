@@ -4,6 +4,10 @@
 .env.*.local
 .env.production
 .env.canonical
+.env.unified
+
+# Legal discovery — never commit
+Discovery_Production_*/
 
 # OS artifacts
 .DS_Store
