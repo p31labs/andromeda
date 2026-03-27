@@ -26,6 +26,7 @@
 
 export interface Env {
   TELEMETRY_KV: KVNamespace;
+  DISCORD_WEBHOOK_URL?: string;
 }
 
 // ── CORS ──
@@ -180,6 +181,15 @@ async function handleTelemetryFlush(req: Request, env: Env): Promise<Response> {
   // PATCH 2: register session ID under room namespace (unique key per session)
   if (roomCode) {
     await env.TELEMETRY_KV.put(sessionRoomKey(roomCode, sessionId), sessionId, { expirationTtl: 7 * 86400 });
+  }
+
+  // Fire Discord webhook for high-signal events
+  for (const ev of events) {
+    if (ev.type === 'quest_chain_completed') {
+      await fireDiscordWebhook(env, 'quest_complete', roomCode ?? 'solo', playerId, ev.payload);
+    } else if (ev.type === 'achievement_unlocked') {
+      await fireDiscordWebhook(env, 'love_earned', roomCode ?? 'solo', playerId, ev.payload);
+    }
   }
 
   return corsResponse(JSON.stringify({ ok: true, received: events.length }));
@@ -483,11 +493,20 @@ async function handleRoomJoin(req: Request, env: Env, code: string): Promise<Res
     state: { formula: '', displayFormula: '', atoms: 0, love: 0, stability: 0, completed: false, achievements: [], updatedAt: now },
   };
 
+  const wasWaiting = room.status === 'waiting';
   room.players.push(player);
   room.updatedAt = now;
-  if (room.status === 'waiting') room.status = 'active';
+  if (wasWaiting) room.status = 'active';
 
   await env.TELEMETRY_KV.put(roomKey(code), JSON.stringify(room), { expirationTtl: ROOM_TTL });
+
+  if (wasWaiting) {
+    await fireDiscordWebhook(env, 'game_start', code, playerId, {
+      playerCount: room.players.length,
+      players: room.players.map(p => ({ id: p.id, name: p.name, mode: p.mode })),
+    });
+  }
+
   return corsResponse(JSON.stringify({ room }));
 }
 
@@ -520,6 +539,7 @@ async function handleRoomUpdate(req: Request, env: Env, code: string): Promise<R
 
   // Update player state fields
   const now = new Date().toISOString();
+  const wasCompleted = player.state.completed;
   if (body.formula !== undefined) player.state.formula = body.formula;
   if (body.displayFormula !== undefined) player.state.displayFormula = body.displayFormula;
   if (body.atoms !== undefined) player.state.atoms = body.atoms;
@@ -532,6 +552,16 @@ async function handleRoomUpdate(req: Request, env: Env, code: string): Promise<R
   room.updatedAt = now;
 
   await env.TELEMETRY_KV.put(roomKey(code), JSON.stringify(room), { expirationTtl: ROOM_TTL });
+
+  if (!wasCompleted && player.state.completed) {
+    await fireDiscordWebhook(env, 'molecule_created', code, body.playerId, {
+      formula: player.state.formula,
+      displayFormula: player.state.displayFormula,
+      love: player.state.love,
+      stability: player.state.stability,
+    });
+  }
+
   return corsResponse(JSON.stringify({ room }));
 }
 
@@ -570,6 +600,29 @@ async function handleRoomPing(req: Request, env: Env, code: string): Promise<Res
 
   await env.TELEMETRY_KV.put(roomKey(code), JSON.stringify(room), { expirationTtl: ROOM_TTL });
   return corsResponse(JSON.stringify({ success: true }));
+}
+
+// ── Discord webhook (best-effort, never blocks relay response) ──
+
+const DISCORD_BONDING_WEBHOOK = 'https://webhook.p31ca.org/webhook/bonding';
+
+async function fireDiscordWebhook(
+  env: Env,
+  event: string,
+  roomCode: string,
+  userId: string,
+  data: Record<string, unknown>,
+): Promise<void> {
+  const url = env.DISCORD_WEBHOOK_URL ?? DISCORD_BONDING_WEBHOOK;
+  try {
+    await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ event, roomCode, userId, data }),
+    });
+  } catch {
+    // best-effort — never block the relay response
+  }
 }
 
 // ── Merge helper: deduplicate by seq number ──

@@ -11,6 +11,7 @@
  */
 
 import { Message, GuildMember, EmbedBuilder } from 'discord.js';
+import * as spoonLedger from './spoonLedger';
 
 interface QuantumEggConfig {
   targetChannelId: string;
@@ -120,15 +121,10 @@ export class QuantumEggHunt {
     if (!member || !(member instanceof GuildMember)) return;
 
     try {
-      // Award Spoons via the spoon service
-      // Note: This would integrate with the existing spoon economy
-      await this.awardSpoons(member, result.reward);
+      const newBalance = this.awardSpoons(member, result.reward);
 
-      // Grant Creator role
       await this.grantCreatorRole(member);
-
-      // Send confirmation embed
-      await this.sendConfirmationEmbed(message, result);
+      await this.sendConfirmationEmbed(message, result, newBalance);
       
       console.log(`[QuantumEggHunt] Processed discovery for ${member.user.tag}: ${result.trigger}`);
     } catch (error) {
@@ -137,15 +133,13 @@ export class QuantumEggHunt {
   }
 
   /**
-   * Award spoons to a member
+   * Award spoons to a member via the local ledger.
+   * Returns the member's new balance.
    */
-  private async awardSpoons(member: GuildMember, amount: number): Promise<void> {
-    // Integration point with existing spoon economy
-    // For now, we log the action - the actual implementation would call spoon service
-    console.log(`[QuantumEggHunt] Would award ${amount} spoons to ${member.user.tag}`);
-    
-    // TODO: Integrate with existing SpoonCommand or spoon economy service
-    // This could be done via HTTP call to a spoon API or direct database access
+  private awardSpoons(member: GuildMember, amount: number): number {
+    const newBalance = spoonLedger.award(member.id, amount);
+    console.log(`[QuantumEggHunt] Awarded ${amount} spoons to ${member.user.tag} — balance: ${newBalance}`);
+    return newBalance;
   }
 
   /**
@@ -170,15 +164,15 @@ export class QuantumEggHunt {
   /**
    * Send confirmation embed to the showcase channel
    */
-  private async sendConfirmationEmbed(message: Message, result: QuantumEggResult): Promise<void> {
+  private async sendConfirmationEmbed(message: Message, result: QuantumEggResult, newBalance: number): Promise<void> {
     const embed = new EmbedBuilder()
-      .setColor(0x00FF88) // Phosphor Green
+      .setColor(0x00FF88)
       .setTitle('🔺 GEOMETRY VERIFIED: THE POSNER NODE')
       .setDescription('You have successfully synthesized the minimum enclosing structure. The floating neutral is bypassed.')
       .addFields(
         {
           name: 'Reward',
-          value: `${result.reward} Spoons added to your balance. (The exact number of atoms in the Posner molecule).`
+          value: `+${result.reward} Spoons — balance now **${newBalance}** (Posner number: 39 atoms).`
         },
         {
           name: 'Status',
