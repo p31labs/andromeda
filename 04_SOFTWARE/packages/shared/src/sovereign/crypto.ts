@@ -5,7 +5,8 @@ export async function generateDID(): Promise<string> {
 }
 
 export async function hashTelemetry(didKey: string, activeRoom: string): Promise<string> {
-  const nonce = Array.from(crypto.getRandomValues(new Uint8Array(8)))
+  // 16 bytes = 128 bits — above the 96-bit minimum for nonce collision safety
+  const nonce = Array.from(crypto.getRandomValues(new Uint8Array(16)))
     .map(b => b.toString(16).padStart(2, '0')).join('');
   const payload = Date.now().toString() + nonce + didKey + activeRoom;
   const data = new TextEncoder().encode(payload);

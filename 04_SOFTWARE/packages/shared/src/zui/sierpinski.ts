@@ -24,8 +24,10 @@ const IVM_E1 = new THREE.Vector3(1, 0, 0);
 const IVM_E2 = new THREE.Vector3(0.5, Math.sqrt(3) / 2, 0);
 const IVM_E3 = new THREE.Vector3(0.5, Math.sqrt(3) / 6, Math.sqrt(6) / 3);
 
-// Reusable temp for generateInstanceMatrices
+// Reusable scratch objects — hoisted to eliminate per-call GC pressure
 const _tempPos = new THREE.Vector3();
+const _tempMatrix = new THREE.Matrix4();
+const _tempColor = new THREE.Color();
 
 // Cached GPU tier (doesn't change during session)
 let cachedGPUTier: 'low' | 'medium' | 'high' | null = null;
@@ -137,8 +139,10 @@ function getGPUTier(): 'low' | 'medium' | 'high' {
   const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
   
   if (!gl) { cachedGPUTier = 'low'; return cachedGPUTier; }
-  
+
   const renderer = (gl as WebGLRenderingContext).getParameter((gl as WebGLRenderingContext).RENDERER);
+  // Release the context immediately — browsers cap WebGL contexts at ~16; leaking one per page load can exhaust the pool.
+  (gl as WebGLRenderingContext).getExtension('WEBGL_lose_context')?.loseContext();
   const isMobile = /Mobile|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
   
   if (deviceMemory >= 8 && !isMobile) {
@@ -156,14 +160,11 @@ function getGPUTier(): 'low' | 'medium' | 'high' {
  */
 export function generateInstanceMatrices(nodes: MacroNode[]): THREE.Matrix4[] {
   return nodes.map(node => {
-    const matrix = new THREE.Matrix4();
     _tempPos.set(node.worldPosition[0], node.worldPosition[1], node.worldPosition[2]);
-    const scale = 0.1 + (node.health * 0.2); // Scale based on health
-
-    matrix.makeScale(scale, scale, scale);
-    matrix.setPosition(_tempPos);
-
-    return matrix;
+    const scale = 0.1 + (node.health * 0.2);
+    _tempMatrix.makeScale(scale, scale, scale);
+    _tempMatrix.setPosition(_tempPos);
+    return _tempMatrix.clone(); // clone once per node; scratch is reused each iteration
   });
 }
 
@@ -171,26 +172,23 @@ export function generateInstanceMatrices(nodes: MacroNode[]): THREE.Matrix4[] {
  * Create color based on zone health and energy.
  */
 export function getNodeColor(health: number, energy: string): THREE.Color {
-  const color = new THREE.Color();
-  
   switch (energy) {
     case 'kinetic':
-      color.setHSL(0.05, 1, 0.5 + (health * 0.3)); // Orange-red
+      _tempColor.setHSL(0.05, 1, 0.5 + (health * 0.3)); // Orange-red
       break;
     case 'balanced':
-      color.setHSL(0.33, 1, 0.5 + (health * 0.3)); // Green
+      _tempColor.setHSL(0.33, 1, 0.5 + (health * 0.3)); // Green
       break;
     case 'ordered':
-      color.setHSL(0.6, 1, 0.5 + (health * 0.3)); // Blue
+      _tempColor.setHSL(0.6, 1, 0.5 + (health * 0.3)); // Blue
       break;
     case 'still':
-      color.setHSL(0.8, 1, 0.5 + (health * 0.3)); // Purple
+      _tempColor.setHSL(0.8, 1, 0.5 + (health * 0.3)); // Purple
       break;
     default:
-      color.setHSL(0.5, 0.5, 0.5 + (health * 0.3)); // Gray
+      _tempColor.setHSL(0.5, 0.5, 0.5 + (health * 0.3)); // Gray
   }
-  
-  return color;
+  return _tempColor.clone();
 }
 
 /**
