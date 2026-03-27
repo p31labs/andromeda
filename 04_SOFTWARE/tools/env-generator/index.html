@@ -685,7 +685,7 @@
         description: 'Sovereign Mesh interface with WebGPU and cognitive shielding',
         variables: [
           { key: 'VITE_NODE_ZERO_URL', description: 'Node Zero mesh endpoint', example: 'wss://node-zero.local:8080', required: true, category: 'services', format: 'url' },
-          { key: 'VITE_SOVREIGN_KEY', description: 'Sovereign identity private key', example: '0x...', required: true, category: 'security', minLength: 64 },
+          { key: 'VITE_SOVEREIGN_KEY', description: 'Sovereign identity private key', example: '0x...', required: true, category: 'security', minLength: 64 },
           { key: 'VITE_TELEMETRY_ENDPOINT', description: 'Telemetry collection endpoint', example: 'https://telemetry.p31.workers.dev', required: false, category: 'services', format: 'url' },
           { key: 'VITE_COGNITIVE_SHIELD_ENABLED', description: 'Enable cognitive shield', example: 'true', required: false, category: 'security', format: 'boolean' },
         ]
@@ -707,6 +707,8 @@
         description: 'P31 Discord Bot for cognitive assistance and Spoon economy integration',
         variables: [
           { key: 'DISCORD_TOKEN', description: 'Discord bot token for authentication', example: 'your_discord_bot_token', required: true, category: 'api_keys', minLength: 50, getUrl: 'https://discord.com/developers/applications', getLabel: 'Discord Developer Portal' },
+          { key: 'DISCORD_CLIENT_ID', description: 'Discord application client ID — required to register slash commands (/quantum-egg, /863) via the REST API', example: '1234567890123456789', required: false, category: 'app_config', getUrl: 'https://discord.com/developers/applications', getLabel: 'Developer Portal → General Information' },
+          { key: 'DISCORD_GUILD_ID', description: 'Guild (server) ID for instant slash command deployment to WYE-Delta during dev — skips the 1-hour global cache', example: '9876543210987654321', required: false, category: 'dev', getUrl: 'https://discord.com/developers/applications', getLabel: 'Right-click server → Copy Server ID' },
           { key: 'BOT_PREFIX', description: 'Command prefix for the bot', example: 'p31', required: true, category: 'app_config' },
           { key: 'BONDING_API_URL', description: 'API endpoint for BONDING game integration', example: 'https://bonding.p31ca.org/api', required: true, category: 'services', format: 'url' },
           { key: 'NODE_ONE_API_URL', description: 'API endpoint for Node One hardware', example: 'http://localhost:3001/api', required: false, category: 'services', format: 'url' },
@@ -763,6 +765,7 @@
           { key: 'CLOUDFLARE_API_TOKEN', description: 'Cloudflare API token for Worker deployment (social-drop-automation, broadcast worker)', example: '...', required: false, category: 'api_keys', minLength: 40, getUrl: 'https://dash.cloudflare.com/profile/api-tokens', getLabel: 'Cloudflare API Tokens' },
           { key: 'CLOUDFLARE_ACCOUNT_ID', description: 'Cloudflare account ID', example: 'abc123...', required: false, category: 'services', getUrl: 'https://dash.cloudflare.com', getLabel: 'Cloudflare Dashboard → Account ID' },
           // Runtime control
+          { key: 'GITHUB_PAT', description: 'Fine-grained GitHub Personal Access Token — needed when Cloudflare Workers (social-drop-automation) trigger social-dispatch.yml externally via the GitHub API. Internal Actions runs use secrets.GITHUB_TOKEN automatically.', example: 'github_pat_...', required: false, category: 'api_keys', minLength: 40, getUrl: 'https://github.com/settings/tokens?type=beta', getLabel: 'GitHub → Settings → Fine-grained tokens' },
           { key: 'WAVE_SELECTOR', description: 'Default wave to dispatch (1-6 or "all"). Overridden by GitHub Actions input at runtime.', example: '1', required: false, category: 'app_config' },
           { key: 'DRY_RUN', description: 'Preview payload without posting to live platforms', example: 'true', required: false, category: 'dev', format: 'boolean' },
         ]
