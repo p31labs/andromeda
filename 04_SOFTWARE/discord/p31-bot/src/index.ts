@@ -1,4 +1,4 @@
-import { Client, GatewayIntentBits, Message, TextChannel, Events } from 'discord.js';
+import { Client, GatewayIntentBits, Message, TextChannel, Events, ChannelType } from 'discord.js';
 import * as dotenv from 'dotenv';
 import WebhookHandler from './services/webhookHandler';
 import FawnDetector from './services/fawnDetector';
@@ -52,10 +52,10 @@ const timeout = getTimeout();
 const bondingChannelId = process.env.BONDING_CHANNEL_ID;
 const nodeOneChannelId = process.env.NODE_ONE_CHANNEL_ID;
 const announcementsChannelId = process.env.ANNOUNCEMENTS_CHANNEL_ID;
-const showcaseChannelId = process.env.SHOWCASE_CHANNEL_ID;
+let showcaseChannelId = process.env.SHOWCASE_CHANNEL_ID;
 
-// Initialize Quantum Egg Hunt service
-const quantumEggHunt = new QuantumEggHunt({
+// Initialize Quantum Egg Hunt service (may be rebound after scaffold)
+let quantumEggHunt = new QuantumEggHunt({
   targetChannelId: showcaseChannelId
 });
 
@@ -174,16 +174,44 @@ client.on(Events.MessageCreate, async (message: Message) => {
 });
 
 // Bot ready handler
-client.on(Events.ClientReady, () => {
+client.on(Events.ClientReady, async () => {
   console.log(`P31 Bot logged in as ${client.user?.tag}`);
   console.log(`Prefix: ${prefix}`);
   console.log(`Commands: ${registry.getAll().map(c => c.name).join(', ')}`);
   console.log(`Fawn detection: ${fawnDetector.isEnabled() ? 'enabled' : 'disabled'}`);
   console.log(`Telemetry: ${telemetryService.isEnabled() ? 'enabled' : 'disabled'}`);
-  console.log(`Quantum Egg Hunt: ${quantumEggHunt.isActive() ? 'enabled' : 'disabled'}`);
-  
-  // Set client reference for Quantum Egg Hunt
+
+  // Auto-scaffold #showcase channel across connected guilds
+  for (const [, guild] of client.guilds.cache) {
+    let showcase = guild.channels.cache.find(c => c.name === 'showcase');
+
+    if (!showcase) {
+      console.log(`[SCAFFOLD] Creating #showcase in ${guild.name}...`);
+      try {
+        showcase = await guild.channels.create({
+          name: 'showcase',
+          type: ChannelType.GuildText,
+          topic: 'Quantum Egg Hunt: Chemical Egg Verification. Post Bashium, Willium, or Posner formulas here.',
+        });
+        console.log(`[SCAFFOLD] #showcase created in ${guild.name} (${showcase.id})`);
+      } catch (err) {
+        console.error(`[SCAFFOLD] Missing Manage Channels permission in ${guild.name} — grant it to the bot role.`);
+        continue;
+      }
+    } else {
+      console.log(`[SCAFFOLD] #showcase found in ${guild.name} (${showcase.id})`);
+    }
+
+    // Dynamically bind showcase ID — last guild wins if multi-guild
+    showcaseChannelId = showcase.id;
+    process.env.SHOWCASE_CHANNEL_ID = showcase.id;
+  }
+
+  // Rebind Quantum Egg Hunt with discovered channel ID
+  quantumEggHunt = new QuantumEggHunt({ targetChannelId: showcaseChannelId });
   quantumEggHunt.setClient(client);
+
+  console.log(`[BOT] Quantum Egg Hunt: ${quantumEggHunt.isActive() ? `armed on channel ${showcaseChannelId}` : 'inactive (no showcase channel found)'}`);
 });
 
 // Error handlers
