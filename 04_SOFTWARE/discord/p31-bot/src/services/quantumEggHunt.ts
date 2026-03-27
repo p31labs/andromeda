@@ -8,7 +8,7 @@
 
 import { Message, EmbedBuilder, Client } from 'discord.js';
 import * as spoonLedger from './spoonLedger';
-import { eggTracker, EggId, ALL_EGGS } from './eggTracker';
+import { eggTracker, EggId, ALL_EGGS, FOUNDING_SLOTS } from './eggTracker';
 
 const EGG_TRIGGERS: Record<string, EggId> = {
   // Egg 1: Bashium (chemical - Genesis quest in BONDING)
@@ -51,16 +51,19 @@ const EGG_ICONS: Record<EggId, string> = {
 
 export class QuantumEggHunt {
   private targetChannelId: string;
+  private announcementsChannelId: string;
   private rewardSpoons: number;
   private rewardRole: string;
   private client: Client | null = null;
 
   constructor(config: {
     targetChannelId?: string;
+    announcementsChannelId?: string;
     rewardSpoons?: number;
     rewardRole?: string;
   }) {
     this.targetChannelId = config.targetChannelId ?? '';
+    this.announcementsChannelId = config.announcementsChannelId ?? '';
     this.rewardSpoons = config.rewardSpoons || 39;
     this.rewardRole = config.rewardRole || '[⚛️] Creator';
   }
@@ -194,6 +197,9 @@ export class QuantumEggHunt {
 
       await message.reply({ embeds: [embed] });
 
+      // Broadcast to #announcements
+      await this.broadcastFoundingNode(message, slotNumber, userId);
+
       // DM operator
       await this.dmOperator(`🔺 **TETRAHEDRON ALERT:** ${message.author.tag} (${message.author.id}) just claimed Founding Slot #${slotNumber}!`);
     } else {
@@ -210,6 +216,45 @@ export class QuantumEggHunt {
         .setFooter({ text: 'You are verified. The geometry is strict. 💜🔺💜' });
 
       await message.reply({ embeds: [embed] });
+    }
+  }
+
+  /**
+   * Broadcast founding node claim to #announcements
+   */
+  private async broadcastFoundingNode(message: Message, slotNumber: number, userId: string): Promise<void> {
+    if (!this.announcementsChannelId || !this.client) return;
+    try {
+      const channel = this.client.channels.cache.get(this.announcementsChannelId);
+      if (!channel || !(channel instanceof (await import('discord.js')).TextChannel)) return;
+
+      const allNodes = eggTracker.getFoundingNodes();
+      const isK4Complete = allNodes.length >= FOUNDING_SLOTS;
+      const nodeIcons = ['🔺', '🔻', '🔷', '🔶'];
+
+      const embed = new EmbedBuilder()
+        .setColor(isK4Complete ? 0x22c55e : 0x9c27b0)
+        .setTitle(
+          isK4Complete
+            ? '🔺 K₄ COMPLETE — THE FIRST TETRAHEDRON IS LOCKED 🔺'
+            : `${nodeIcons[slotNumber - 1]} FOUNDING NODE #${slotNumber} CLAIMED`
+        )
+        .setDescription(
+          isK4Complete
+            ? `The first physical K₄ mesh is locked.\n\n<@${userId}> sealed the tetrahedron as **Founding Node #${slotNumber}**.\n\nThe geometry is invariant. The shape holds at every scale.`
+            : `<@${userId}> found all 4 eggs and claimed **Founding Node #${slotNumber}** of ${FOUNDING_SLOTS}.\n\n${FOUNDING_SLOTS - allNodes.length} slot${FOUNDING_SLOTS - allNodes.length !== 1 ? 's' : ''} remaining.`
+        )
+        .addFields({
+          name: 'K₄ Progress',
+          value: allNodes.map((id, i) => `${nodeIcons[i]} Node #${i + 1}: <@${id}>`).join('\n') +
+            (allNodes.length < FOUNDING_SLOTS ? `\n${'⬜ '.repeat(FOUNDING_SLOTS - allNodes.length).trim()} — open` : ''),
+          inline: false,
+        })
+        .setFooter({ text: '💜🔺💜 The math is the same at every scale.' });
+
+      await (channel as import('discord.js').TextChannel).send({ embeds: [embed] });
+    } catch (e) {
+      console.error('[QuantumEggHunt] Failed to broadcast founding node:', e);
     }
   }
 

@@ -12,6 +12,7 @@ import { StatusCommand } from './commands/status';
 import { HelpCommand } from './commands/help';
 import { DeployCommand } from './commands/deploy';
 import { EggsCommand } from './commands/eggs';
+import { NodesCommand } from './commands/nodes';
 import * as spoonLedger from './services/spoonLedger';
 
 // Load environment variables
@@ -47,6 +48,7 @@ registry.register(new BondingCommand());
 registry.register(new StatusCommand());
 registry.register(new DeployCommand());
 registry.register(new EggsCommand());
+registry.register(new NodesCommand());
 registry.register(new HelpCommand(registry));
 
 // Get configuration
@@ -62,7 +64,8 @@ let showcaseChannelId = process.env.SHOWCASE_CHANNEL_ID;
 
 // Initialize Quantum Egg Hunt service (may be rebound after scaffold)
 let quantumEggHunt = new QuantumEggHunt({
-  targetChannelId: showcaseChannelId
+  targetChannelId: showcaseChannelId,
+  announcementsChannelId,
 });
 
 // Helper function to get channel
@@ -253,7 +256,7 @@ client.on(Events.MessageCreate, async (message: Message) => {
     await handleScaffoldCommand(message, (newShowcaseId) => {
       showcaseChannelId = newShowcaseId;
       process.env.SHOWCASE_CHANNEL_ID = newShowcaseId;
-      quantumEggHunt = new QuantumEggHunt({ targetChannelId: newShowcaseId });
+      quantumEggHunt = new QuantumEggHunt({ targetChannelId: newShowcaseId, announcementsChannelId });
       quantumEggHunt.setClient(client);
       console.log(`[SCAFFOLD] QuantumEggHunt rebound to #showcase (${newShowcaseId})`);
     });
@@ -355,7 +358,7 @@ client.on(Events.ClientReady, async () => {
   }
 
   // Rebind Quantum Egg Hunt with discovered channel ID
-  quantumEggHunt = new QuantumEggHunt({ targetChannelId: showcaseChannelId });
+  quantumEggHunt = new QuantumEggHunt({ targetChannelId: showcaseChannelId, announcementsChannelId });
   quantumEggHunt.setClient(client);
 
   console.log(`[BOT] Quantum Egg Hunt: ${quantumEggHunt.isActive() ? `armed on channel ${showcaseChannelId}` : 'inactive (no showcase channel found)'}`);

@@ -61,6 +61,15 @@ class WebhookHandler extends EventEmitter {
         } else {
           payload = req.body as KoFiPayload;
         }
+
+        // Verify Ko-fi token if configured
+        const kofiToken = process.env.KOFI_VERIFICATION_TOKEN;
+        if (kofiToken && payload.verification_token !== kofiToken) {
+          console.warn('[Ko-fi] Invalid verification token — rejected');
+          res.status(401).json({ error: 'Unauthorized' });
+          return;
+        }
+
         const event: WebhookEvent = {
           type: 'kofi',
           payload,
