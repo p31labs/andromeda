@@ -11,6 +11,8 @@
 
 interface Env {
   STRIPE_SECRET_KEY: string;
+  STRIPE_WEBHOOK_SECRET: string;
+  DISCORD_WEBHOOK_URL: string;  // https://webhook.p31ca.org/webhook/stripe
   ALLOWED_ORIGIN: string;
 }
 
@@ -103,6 +105,86 @@ export default {
       }
     }
 
+    if (url.pathname === '/stripe-webhook' && request.method === 'POST') {
+      return handleStripeWebhook(request, env);
+    }
+
     return Response.json({ error: 'Not found' }, { status: 404, headers });
   },
 };
+
+// ── Stripe webhook handler ──────────────────────────────────────────────────
+
+async function handleStripeWebhook(request: Request, env: Env): Promise<Response> {
+  const sig = request.headers.get('stripe-signature');
+  if (!sig || !env.STRIPE_WEBHOOK_SECRET) {
+    return new Response('Webhook secret not configured', { status: 400 });
+  }
+
+  const rawBody = await request.text();
+
+  // Verify HMAC-SHA256 signature (no SDK — Web Crypto API)
+  const isValid = await verifyStripeSignature(rawBody, sig, env.STRIPE_WEBHOOK_SECRET);
+  if (!isValid) {
+    return new Response('Invalid signature', { status: 400 });
+  }
+
+  let event: Record<string, unknown>;
+  try {
+    event = JSON.parse(rawBody) as Record<string, unknown>;
+  } catch {
+    return new Response('Invalid JSON', { status: 400 });
+  }
+
+  // Forward checkout.session.completed to the Discord bot webhook (best-effort)
+  if (event.type === 'checkout.session.completed' && env.DISCORD_WEBHOOK_URL) {
+    try {
+      await fetch(env.DISCORD_WEBHOOK_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(event),
+      });
+    } catch (e) {
+      console.error('Failed to forward to Discord bot:', e);
+      // Don't fail the Stripe webhook — just log
+    }
+  }
+
+  return new Response(JSON.stringify({ received: true }), {
+    status: 200,
+    headers: { 'Content-Type': 'application/json' },
+  });
+}
+
+async function verifyStripeSignature(
+  payload: string,
+  sigHeader: string,
+  secret: string,
+): Promise<boolean> {
+  try {
+    // Parse t= and v1= from the Stripe-Signature header
+    const parts = Object.fromEntries(
+      sigHeader.split(',').map(p => p.split('=') as [string, string])
+    );
+    const timestamp = parts['t'];
+    const v1 = parts['v1'];
+    if (!timestamp || !v1) return false;
+
+    const signedPayload = `${timestamp}.${payload}`;
+    const key = await crypto.subtle.importKey(
+      'raw',
+      new TextEncoder().encode(secret),
+      { name: 'HMAC', hash: 'SHA-256' },
+      false,
+      ['sign'],
+    );
+    const sig = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(signedPayload));
+    const computed = Array.from(new Uint8Array(sig))
+      .map(b => b.toString(16).padStart(2, '0'))
+      .join('');
+
+    return computed === v1;
+  } catch {
+    return false;
+  }
+}

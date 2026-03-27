@@ -7,6 +7,10 @@ ALLOWED_ORIGIN = "https://phosphorus31.org"
 SUCCESS_URL = "https://phosphorus31.org/donate?success=1"
 CANCEL_URL = "https://phosphorus31.org/donate"
 
-# Set your Stripe secret key as a secret:
-#   npx wrangler secret put STRIPE_SECRET_KEY
-# Then paste your sk_live_... key when prompted.
+# Secrets (set via wrangler CLI):
+#   npx wrangler secret put STRIPE_SECRET_KEY     → sk_live_...
+#   npx wrangler secret put STRIPE_WEBHOOK_SECRET → whsec_... (Stripe Dashboard → Webhooks)
+#   npx wrangler secret put DISCORD_WEBHOOK_URL   → https://webhook.p31ca.org/webhook/stripe
+#
+# Stripe Dashboard: add endpoint https://donate-api.phosphorus31.org/stripe-webhook
+# Events to subscribe: checkout.session.completed
