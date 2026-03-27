@@ -546,6 +546,7 @@
               <option value="spaceship_earth">🚀 Spaceship Earth</option>
               <option value="donate_api">💎 Donate API</option>
               <option value="discord_bot">🤖 Discord Bot</option>
+              <option value="social_dispatch">🔺 Social Dispatch (Operation Trimtab)</option>
             </optgroup>
             <optgroup label="Generic Frameworks">
               <option value="nodejs" selected>🟢 Node.js / Express</option>
@@ -705,9 +706,31 @@
           { key: 'BONDING_CHANNEL_ID', description: 'Discord channel ID for BONDING commands', example: '', required: false, category: 'app_config' },
           { key: 'NODE_ONE_CHANNEL_ID', description: 'Discord channel ID for Node One commands', example: '', required: false, category: 'app_config' },
           { key: 'ANNOUNCEMENTS_CHANNEL_ID', description: 'Discord channel ID for announcements', example: '', required: false, category: 'app_config' },
+          { key: 'SHOWCASE_CHANNEL_ID', description: 'Discord channel ID for Quantum Egg Hunt Chemical Egg listener. Auto-scaffolded on bot boot if left blank — bot will create #showcase and bind this dynamically.', example: '', required: false, category: 'app_config', getUrl: 'https://discord.com/developers/applications', getLabel: 'Right-click channel → Copy ID' },
           { key: 'ENABLE_FAWN_DETECTION', description: 'Enable fawn response detection for cognitive safety', example: 'true', required: false, category: 'security', format: 'boolean' },
           { key: 'MAX_SPOON_DISPLAY', description: 'Maximum number of spoons to display in embed', example: '12', required: false, category: 'app_config', format: 'number' },
           { key: 'NODE_ONE_WEBHOOK_PORT', description: 'Port for Node One webhook server', example: '3000', required: false, category: 'services', format: 'number' },
+        ]
+      },
+      social_dispatch: {
+        name: 'Social Dispatch (Operation Trimtab)',
+        description: 'Quantum Egg Hunt wave automation — GitHub Actions + social platform API keys',
+        variables: [
+          { key: 'DISCORD_WEBHOOK', description: 'Discord webhook URL for bot announcements and wave dispatches', example: 'https://discord.com/api/webhooks/...', required: true, category: 'services', format: 'url', getUrl: 'https://discord.com/developers/applications', getLabel: 'Server Settings → Integrations → Webhooks' },
+          { key: 'KOFI_WEBHOOK', description: 'Ko-fi webhook URL for donation notifications', example: 'https://ko-fi.com/...', required: false, category: 'services', format: 'url', getUrl: 'https://ko-fi.com/manage/webhooks', getLabel: 'Ko-fi Dashboard → Webhooks' },
+          { key: 'TWITTER_API_KEY', description: 'Twitter/X API key (OAuth 1.0a)', example: 'abc123...', required: false, category: 'api_keys', minLength: 20, getUrl: 'https://developer.twitter.com/en/portal/dashboard', getLabel: 'Twitter Developer Portal' },
+          { key: 'TWITTER_API_SECRET', description: 'Twitter/X API secret key', example: 'xyz456...', required: false, category: 'api_keys', minLength: 20 },
+          { key: 'TWITTER_ACCESS_TOKEN', description: 'Twitter/X OAuth access token', example: '...', required: false, category: 'api_keys', minLength: 20 },
+          { key: 'TWITTER_ACCESS_TOKEN_SECRET', description: 'Twitter/X OAuth access token secret', example: '...', required: false, category: 'api_keys', minLength: 20 },
+          { key: 'REDDIT_CLIENT_ID', description: 'Reddit OAuth2 client ID', example: 'abc123', required: false, category: 'api_keys', getUrl: 'https://www.reddit.com/prefs/apps', getLabel: 'Reddit App Preferences' },
+          { key: 'REDDIT_CLIENT_SECRET', description: 'Reddit OAuth2 client secret', example: 'xyz456...', required: false, category: 'api_keys' },
+          { key: 'REDDIT_USERNAME', description: 'Reddit account username for posting', example: 'trimtab_p31', required: false, category: 'app_config' },
+          { key: 'REDDIT_PASSWORD', description: 'Reddit account password', example: '...', required: false, category: 'api_keys', minLength: 8 },
+          { key: 'LINKEDIN_ACCESS_TOKEN', description: 'LinkedIn OAuth2 access token for org page posts', example: 'AQX...', required: false, category: 'api_keys', minLength: 20, getUrl: 'https://www.linkedin.com/developers/apps', getLabel: 'LinkedIn Developer Apps' },
+          { key: 'CLOUDFLARE_API_TOKEN', description: 'Cloudflare API token for Worker deployment', example: '...', required: false, category: 'api_keys', minLength: 40, getUrl: 'https://dash.cloudflare.com/profile/api-tokens', getLabel: 'Cloudflare API Tokens' },
+          { key: 'CLOUDFLARE_ACCOUNT_ID', description: 'Cloudflare account ID', example: 'abc123...', required: false, category: 'services', getUrl: 'https://dash.cloudflare.com', getLabel: 'Cloudflare Dashboard → Account ID' },
+          { key: 'WAVE_SELECTOR', description: 'Default wave to dispatch (1-6 or "all"). Overridden by GitHub Actions input at runtime.', example: '1', required: false, category: 'app_config' },
+          { key: 'DRY_RUN', description: 'Preview payload without posting to live platforms', example: 'true', required: false, category: 'dev', format: 'boolean' },
         ]
       },
       nodejs: {
