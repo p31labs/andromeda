@@ -1,4 +1,4 @@
-import { Client, GatewayIntentBits, Message, TextChannel, Events, ChannelType } from 'discord.js';
+import { Client, GatewayIntentBits, Message, TextChannel, Events, ChannelType, EmbedBuilder } from 'discord.js';
 import * as dotenv from 'dotenv';
 import WebhookHandler from './services/webhookHandler';
 import FawnDetector from './services/fawnDetector';
@@ -10,6 +10,7 @@ import { SpoonCommand } from './commands/spoon';
 import { BondingCommand } from './commands/bonding';
 import { StatusCommand } from './commands/status';
 import { HelpCommand } from './commands/help';
+import { DeployCommand } from './commands/deploy';
 
 // Load environment variables
 dotenv.config();
@@ -42,6 +43,7 @@ const registry = createCommandRegistry();
 registry.register(new SpoonCommand());
 registry.register(new BondingCommand());
 registry.register(new StatusCommand());
+registry.register(new DeployCommand());
 registry.register(new HelpCommand(registry));
 
 // Get configuration
@@ -75,9 +77,18 @@ webhookHandler.on('kofi', async (event) => {
   console.log('Ko-fi webhook received:', event);
   const channel = getChannel(announcementsChannelId);
   if (channel) {
-    await channel.send({
-      content: `💖 Ko-fi donation received! Thank you for supporting P31 Labs!`
-    });
+    const p = event.payload;
+    const embed = new EmbedBuilder()
+      .setColor(0xF59E0B)
+      .setTitle('💖 Ko-fi Support Received')
+      .addFields(
+        { name: 'From',   value: String(p.supporterName || 'Anonymous'),           inline: true },
+        { name: 'Amount', value: `${p.amount} ${p.currency}`,                      inline: true },
+        { name: 'Type',   value: String(p.type || 'Donation'),                     inline: true },
+      )
+      .setFooter({ text: 'P31 Labs — Thank you for keeping the mesh alive. 💜🔺💜' });
+    if (p.message) embed.addFields({ name: 'Message', value: String(p.message) });
+    await channel.send({ embeds: [embed] });
   }
   await telemetryService.trackWebhook('kofi', event.payload.type as string);
 });
@@ -97,11 +108,59 @@ webhookHandler.on('bonding', async (event) => {
   console.log('BONDING webhook received:', event);
   const channel = getChannel(bondingChannelId);
   if (channel) {
-    await channel.send({
-      content: `🧬 BONDING event: ${event.payload.event}`
-    });
+    const evt = event.payload.event as string;
+    const room = String(event.payload.roomCode || 'unknown');
+    const evtMeta: Record<string, { emoji: string; title: string; color: number }> = {
+      game_start:       { emoji: '🧬', title: 'New Session Started',   color: 0x3b82f6 },
+      game_end:         { emoji: '🏁', title: 'Session Complete',       color: 0x64748b },
+      molecule_created: { emoji: '⚛️', title: 'Molecule Synthesized',  color: 0x00FF88 },
+      quest_complete:   { emoji: '🔺', title: 'Quest Complete',         color: 0x9c27b0 },
+      love_earned:      { emoji: '💜', title: 'L.O.V.E. Earned',        color: 0xFF69B4 },
+    };
+    const meta = evtMeta[evt] ?? { emoji: '🔘', title: evt, color: 0x06b6d4 };
+    const embed = new EmbedBuilder()
+      .setColor(meta.color)
+      .setTitle(`${meta.emoji} BONDING: ${meta.title}`)
+      .addFields({ name: 'Room', value: room, inline: true })
+      .setFooter({ text: 'BONDING Game — Bridge the distance.' });
+    await channel.send({ embeds: [embed] });
   }
   await telemetryService.trackWebhook('bonding', event.payload.event as string);
+});
+
+webhookHandler.on('github', async (event) => {
+  console.log('GitHub webhook received:', event.payload.githubEvent);
+  const channel = getChannel(announcementsChannelId);
+  if (!channel) return;
+  const ghEvent = event.payload.githubEvent as string;
+  const repo = (event.payload.repository as Record<string, unknown>)?.full_name as string || 'p31labs/andromeda';
+  if (ghEvent === 'push') {
+    const pusher = (event.payload.pusher as Record<string, string>)?.name || 'unknown';
+    const branch = (event.payload.ref as string)?.replace('refs/heads/', '') || 'unknown';
+    const commits = ((event.payload.commits as unknown[]) || []).length;
+    const embed = new EmbedBuilder()
+      .setColor(0x06b6d4)
+      .setTitle('🔀 Push to Andromeda')
+      .addFields(
+        { name: 'Branch',  value: `\`${branch}\``,    inline: true },
+        { name: 'Commits', value: String(commits),     inline: true },
+        { name: 'Pusher',  value: pusher,              inline: true },
+      )
+      .setFooter({ text: repo });
+    await channel.send({ embeds: [embed] });
+  } else if (ghEvent === 'pull_request') {
+    const pr = event.payload.pull_request as Record<string, unknown>;
+    const action = event.payload.action as string;
+    if (action === 'closed' && pr.merged) {
+      const embed = new EmbedBuilder()
+        .setColor(0x9c27b0)
+        .setTitle(`✅ PR Merged: ${pr.title}`)
+        .setURL(pr.html_url as string)
+        .addFields({ name: 'Author', value: (pr.user as Record<string, string>)?.login || 'unknown', inline: true })
+        .setFooter({ text: repo });
+      await channel.send({ embeds: [embed] });
+    }
+  }
 });
 
 // Discord message handler

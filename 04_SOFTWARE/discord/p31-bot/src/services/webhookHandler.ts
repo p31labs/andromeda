@@ -3,7 +3,7 @@ import cors from 'cors';
 import { EventEmitter } from 'events';
 
 export interface WebhookEvent {
-  type: 'kofi' | 'node_one' | 'bonding';
+  type: 'kofi' | 'node_one' | 'bonding' | 'github';
   payload: Record<string, unknown>;
   timestamp: string;
 }
@@ -101,6 +101,23 @@ class WebhookHandler extends EventEmitter {
       }
     });
 
+    // GitHub webhook endpoint
+    this.app.post('/webhook/github', (req: Request, res: Response) => {
+      try {
+        const githubEvent = req.headers['x-github-event'] as string;
+        const event: WebhookEvent = {
+          type: 'github',
+          payload: { ...req.body, githubEvent },
+          timestamp: new Date().toISOString()
+        };
+        this.emit('github', event);
+        res.status(200).json({ success: true });
+      } catch (error) {
+        console.error('Error processing GitHub webhook:', error);
+        res.status(500).json({ error: 'Internal server error' });
+      }
+    });
+
     // Health check endpoint
     this.app.get('/health', (_req: Request, res: Response) => {
       res.status(200).json({ status: 'ok', service: 'p31-webhook-handler' });
@@ -122,7 +139,7 @@ class WebhookHandler extends EventEmitter {
     });
   }
 
-  public on(event: 'kofi' | 'node_one' | 'bonding', listener: (event: WebhookEvent) => void): this {
+  public on(event: 'kofi' | 'node_one' | 'bonding' | 'github', listener: (event: WebhookEvent) => void): this {
     return super.on(event, listener);
   }
 }
