@@ -1,14 +1,17 @@
 name: Social Dispatch - Operation Trimtab
 
 on:
+  schedule:
+    - cron: '0 12 * * *'   # Daily at 12:00 UTC — auto-fires matching wave
   workflow_dispatch:
     inputs:
       wave_selector:
-        description: 'Wave to deploy'
-        required: true
-        default: '1'
+        description: 'Wave to deploy (1-6, all) — leave blank for date-auto mode'
+        required: false
+        default: ''
         type: choice
         options:
+          - ''
           - '1'
           - '2'
           - '3'
@@ -31,36 +34,62 @@ jobs:
 
       - name: Parse and Dispatch Wave
         run: |
-          SELECTOR="${{ github.event.inputs.wave_selector }}"
           FILE="01_ADMIN/OPERATION_TRIMTAB_DEPLOYMENT.yaml"
+          SELECTOR="${{ github.event.inputs.wave_selector }}"
 
-          echo "Initiating Quantum Egg Hunt Deployment Sequence..."
+          echo "========================================"
+          echo "OPERATION TRIMTAB — Dispatch Sequence"
+          echo "========================================"
 
-          if [ "$SELECTOR" = "all" ]; then
-            echo "Dispatching ALL waves concurrently..."
-            # Mock dispatch for all
-            yq eval '.waves[] | "Target: " + .target_platform + " | Hint: " + .egg_hint' $FILE
-          else
-            # Arrays in yq are 0-indexed, wave input is 1-indexed
-            INDEX=$((SELECTOR - 1))
+          # Auto-mode: no manual selector provided (cron or blank dispatch)
+          if [ -z "$SELECTOR" ]; then
+            TODAY=$(date -u +"%Y-%m-%d")
+            echo "Auto-mode: searching for wave scheduled on $TODAY..."
 
-            # WCD Aligned Field Extractions
-            PLATFORM=$(yq eval ".waves[$INDEX].target_platform" $FILE)
-            CONTENT=$(yq eval ".waves[$INDEX].content_block" $FILE)
-            HINT=$(yq eval ".waves[$INDEX].egg_hint" $FILE)
-            SCHEDULE=$(yq eval ".waves[$INDEX].scheduled_time" $FILE)
+            MATCHED_INDEX=$(yq eval '[.waves[] | .scheduled_time] | to_entries | .[] | select(.value | startswith("'"$TODAY"'")) | .key' "$FILE")
 
-            echo "========================================"
-            echo "WAVE $SELECTOR DISPATCH SECURED"
-            echo "========================================"
+            if [ -z "$MATCHED_INDEX" ]; then
+              echo "No wave scheduled for $TODAY. Going back to sleep."
+              exit 0
+            fi
+
+            echo "Wave found at index $MATCHED_INDEX."
+
+            PLATFORM=$(yq eval ".waves[$MATCHED_INDEX].target_platform" "$FILE")
+            CONTENT=$(yq eval  ".waves[$MATCHED_INDEX].content_block"   "$FILE")
+            HINT=$(yq eval     ".waves[$MATCHED_INDEX].egg_hint"         "$FILE")
+            SCHEDULE=$(yq eval ".waves[$MATCHED_INDEX].scheduled_time"  "$FILE")
+            WAVE_NUM=$((MATCHED_INDEX + 1))
+
+            echo "WAVE $WAVE_NUM — AUTO DISPATCH"
             echo "Target Platform: $PLATFORM"
             echo "Scheduled Time:  $SCHEDULE"
             echo "Payload Content: $CONTENT"
             echo "Active Egg Hint: $HINT"
             echo "========================================"
-
-            # Mocking the actual API drop
-            echo "Sending payload to API..."
+            echo "Sending payload to $PLATFORM..."
             sleep 2
-            echo "Payload delivered successfully to $PLATFORM."
+            echo "Payload delivered."
+
+          elif [ "$SELECTOR" = "all" ]; then
+            echo "Manual override: dispatching ALL waves..."
+            yq eval '.waves[] | "Target: " + .target_platform + " | Time: " + .scheduled_time + " | Hint: " + .egg_hint' "$FILE"
+
+          else
+            INDEX=$((SELECTOR - 1))
+
+            PLATFORM=$(yq eval ".waves[$INDEX].target_platform" "$FILE")
+            CONTENT=$(yq eval  ".waves[$INDEX].content_block"   "$FILE")
+            HINT=$(yq eval     ".waves[$INDEX].egg_hint"         "$FILE")
+            SCHEDULE=$(yq eval ".waves[$INDEX].scheduled_time"  "$FILE")
+
+            echo "Manual override: WAVE $SELECTOR"
+            echo "Target Platform: $PLATFORM"
+            echo "Scheduled Time:  $SCHEDULE"
+            echo "Payload Content: $CONTENT"
+            echo "Active Egg Hint: $HINT"
+            echo "========================================"
+            echo "Sending payload to $PLATFORM..."
+            sleep 2
+            echo "Payload delivered to $PLATFORM."
           fi

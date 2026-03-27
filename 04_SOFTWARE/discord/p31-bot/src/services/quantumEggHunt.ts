@@ -30,7 +30,7 @@ interface QuantumEggResult {
 const DEFAULT_CONFIG: QuantumEggConfig = {
   targetChannelId: process.env.SHOWCASE_CHANNEL_ID || '',
   rewardSpoons: 39, // The Posner number
-  rewardRole: 'Creator',
+  rewardRole: '[⚛️] Creator',
   keywordTriggers: [
     'Bashium',
     'Willium', 

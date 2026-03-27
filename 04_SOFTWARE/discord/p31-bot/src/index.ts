@@ -5,6 +5,7 @@ import FawnDetector from './services/fawnDetector';
 import TelemetryService from './services/telemetry';
 import QuantumEggHunt from './services/quantumEggHunt';
 import { createCommandRegistry, getApiUrls, getTimeout, getPrefix, parseArgs, CommandContext } from './commands/base';
+import { handleScaffoldCommand } from './services/serverScaffold';
 import { SpoonCommand } from './commands/spoon';
 import { BondingCommand } from './commands/bonding';
 import { StatusCommand } from './commands/status';
@@ -111,6 +112,18 @@ client.on(Events.MessageCreate, async (message: Message) => {
   // Check for Quantum Egg Hunt triggers in showcase channel
   if (message.channel.id === showcaseChannelId && quantumEggHunt.isActive()) {
     await quantumEggHunt.processDiscovery(message);
+  }
+
+  // Scaffold command
+  if (message.content === '!scaffold-p31') {
+    await handleScaffoldCommand(message, (newShowcaseId) => {
+      showcaseChannelId = newShowcaseId;
+      process.env.SHOWCASE_CHANNEL_ID = newShowcaseId;
+      quantumEggHunt = new QuantumEggHunt({ targetChannelId: newShowcaseId });
+      quantumEggHunt.setClient(client);
+      console.log(`[SCAFFOLD] QuantumEggHunt rebound to #showcase (${newShowcaseId})`);
+    });
+    return;
   }
 
   // Check for hidden !quantum-egg or !863 commands

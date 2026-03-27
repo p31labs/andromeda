@@ -3,6 +3,7 @@
 .env.local
 .env.*.local
 .env.production
+.env.canonical
 
 # OS artifacts
 .DS_Store
