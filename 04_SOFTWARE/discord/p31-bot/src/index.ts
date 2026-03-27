@@ -117,6 +117,13 @@ webhookHandler.on('node_one', async (event) => {
   await telemetryService.trackWebhook('node_one', event.payload.event as string);
 });
 
+// Egg-indicative formulas from BONDING (display names that hint at hunt eggs)
+const EGG_FORMULA_HINTS: Array<{ match: RegExp; egg: string; label: string }> = [
+  { match: /bashium|bash/i,            egg: 'bashium',      label: 'Bashium Element' },
+  { match: /willium|will/i,            egg: 'willium',      label: 'Willium Element' },
+  { match: /ca9|ca₉|posner/i,         egg: 'tetrahedron',  label: 'Posner Molecule (K₄)' },
+];
+
 webhookHandler.on('bonding', async (event) => {
   console.log('BONDING webhook received:', event);
   const channel = getChannel(bondingChannelId);
@@ -136,9 +143,64 @@ webhookHandler.on('bonding', async (event) => {
       .setTitle(`${meta.emoji} BONDING: ${meta.title}`)
       .addFields({ name: 'Room', value: room, inline: true })
       .setFooter({ text: 'BONDING Game — Bridge the distance.' });
+
+    // If molecule_created matches an egg formula, add a hunt hint
+    if (evt === 'molecule_created') {
+      const data = event.payload.data as Record<string, unknown> | undefined;
+      const formula = String(data?.formula ?? data?.displayFormula ?? '');
+      const hit = EGG_FORMULA_HINTS.find(h => h.match.test(formula));
+      if (hit) {
+        embed.addFields({
+          name: `🔺 Egg Detected: ${hit.label}`,
+          value: `Post the formula in #showcase and run \`p31 eggs\` to claim your discovery.`,
+          inline: false,
+        });
+      }
+      if (data?.love) embed.addFields({ name: 'LOVE', value: String(data.love), inline: true });
+    }
+
     await channel.send({ embeds: [embed] });
   }
   await telemetryService.trackWebhook('bonding', event.payload.event as string);
+});
+
+// Stripe donate webhook → #announcements embed + spoon award
+webhookHandler.on('stripe', async (event) => {
+  console.log('Stripe webhook received:', event.payload.type);
+  const channel = getChannel(announcementsChannelId);
+  const stripeType = event.payload.type as string;
+
+  // Only handle completed checkout sessions
+  if (stripeType !== 'checkout.session.completed') return;
+
+  const session = event.payload.data as Record<string, unknown>;
+  const obj = (session?.object as Record<string, unknown>) ?? session;
+  const amount = typeof obj.amount_total === 'number' ? (obj.amount_total / 100).toFixed(2) : '?';
+  const currency = String(obj.currency ?? 'usd').toUpperCase();
+  const customerEmail = String(
+    (obj.customer_details as Record<string, unknown>)?.email ?? obj.customer_email ?? 'Anonymous'
+  );
+  const name = String(
+    (obj.customer_details as Record<string, unknown>)?.name ?? customerEmail
+  );
+
+  const STRIPE_SPOONS = 39;
+  const stripeKey = `stripe:${customerEmail}`;
+  const newBalance = spoonLedger.award(stripeKey, STRIPE_SPOONS);
+
+  if (channel) {
+    const embed = new EmbedBuilder()
+      .setColor(0x6366f1)
+      .setTitle('💜 Stripe Donation Received')
+      .addFields(
+        { name: 'From',     value: name,                        inline: true },
+        { name: 'Amount',   value: `${amount} ${currency}`,     inline: true },
+        { name: 'Spoons',   value: `+${STRIPE_SPOONS} → ${newBalance} total (run \`p31 spoon link ${name}\` to link Discord)`, inline: false },
+      )
+      .setFooter({ text: 'P31 Labs — Thank you for keeping the mesh alive. 💜🔺💜' });
+    await channel.send({ embeds: [embed] });
+  }
+  await telemetryService.trackWebhook('stripe', stripeType);
 });
 
 webhookHandler.on('github', async (event) => {

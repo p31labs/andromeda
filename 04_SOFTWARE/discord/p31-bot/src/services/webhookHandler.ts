@@ -3,7 +3,7 @@ import cors from 'cors';
 import { EventEmitter } from 'events';
 
 export interface WebhookEvent {
-  type: 'kofi' | 'node_one' | 'bonding' | 'github';
+  type: 'kofi' | 'stripe' | 'node_one' | 'bonding' | 'github';
   payload: Record<string, unknown>;
   timestamp: string;
 }
@@ -125,6 +125,23 @@ class WebhookHandler extends EventEmitter {
       }
     });
 
+    // Stripe webhook endpoint
+    this.app.post('/webhook/stripe', (req: Request, res: Response) => {
+      try {
+        const stripeEvent = req.headers['stripe-signature'] ? req.body : req.body;
+        const event: WebhookEvent = {
+          type: 'stripe',
+          payload: stripeEvent as Record<string, unknown>,
+          timestamp: new Date().toISOString(),
+        };
+        this.emit('stripe', event);
+        res.status(200).json({ received: true });
+      } catch (error) {
+        console.error('Error processing Stripe webhook:', error);
+        res.status(500).json({ error: 'Internal server error' });
+      }
+    });
+
     // Health check endpoint
     this.app.get('/health', (_req: Request, res: Response) => {
       res.status(200).json({ status: 'ok', service: 'p31-webhook-handler' });
@@ -146,7 +163,7 @@ class WebhookHandler extends EventEmitter {
     });
   }
 
-  public on(event: 'kofi' | 'node_one' | 'bonding' | 'github', listener: (event: WebhookEvent) => void): this {
+  public on(event: 'kofi' | 'stripe' | 'node_one' | 'bonding' | 'github', listener: (event: WebhookEvent) => void): this {
     return super.on(event, listener);
   }
 }

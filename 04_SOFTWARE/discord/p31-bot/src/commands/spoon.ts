@@ -92,14 +92,19 @@ export class SpoonCommand implements P31Command {
   }
 
   private async showLeaderboard(message: Message): Promise<void> {
-    const top = spoonLedger.getLeaderboard(10);
+    // Filter out unlinked external keys (kofi:, stripe:) — only Discord IDs on the board
+    const all = spoonLedger.getLeaderboard(50);
+    const top = all
+      .filter(e => !e.userId.startsWith('kofi:') && !e.userId.startsWith('stripe:'))
+      .slice(0, 10);
+
     const embed = new EmbedBuilder()
       .setTitle('🥄 Spoon Leaderboard')
       .setColor(0x00FF88)
       .setFooter({ text: `Total distributed: ${spoonLedger.getGlobalTotal()} spoons` });
 
     if (top.length === 0) {
-      embed.setDescription('No spoons distributed yet.');
+      embed.setDescription('No spoons distributed yet. Synthesize a molecule or support on Ko-fi to earn some.');
     } else {
       const rows = top.map((e, i) => `${i + 1}. <@${e.userId}> — **${e.balance}** (${e.totalEarned} earned)`);
       embed.setDescription(rows.join('\n'));
