@@ -173,7 +173,7 @@ client.on(Events.MessageCreate, async (message: Message) => {
 
   // Check for Quantum Egg Hunt triggers in showcase channel
   if (message.channel.id === showcaseChannelId && quantumEggHunt.isActive()) {
-    await quantumEggHunt.processDiscovery(message);
+    await quantumEggHunt.processMessage(message);
   }
 
   // Scaffold command

@@ -6,8 +6,8 @@
  * Grand prize: First 4 to complete all 4 eggs get Node Zero hardware devices.
  */
 
-import { Message, EmbedBuilder, Client, GuildMember } from 'discord.js';
-import { spoonLedger } from './spoonLedger';
+import { Message, EmbedBuilder, Client } from 'discord.js';
+import * as spoonLedger from './spoonLedger';
 import { eggTracker, EggId, ALL_EGGS } from './eggTracker';
 
 const EGG_TRIGGERS: Record<string, EggId> = {
@@ -56,17 +56,21 @@ export class QuantumEggHunt {
   private client: Client | null = null;
 
   constructor(config: {
-    targetChannelId: string;
+    targetChannelId?: string;
     rewardSpoons?: number;
     rewardRole?: string;
   }) {
-    this.targetChannelId = config.targetChannelId;
+    this.targetChannelId = config.targetChannelId ?? '';
     this.rewardSpoons = config.rewardSpoons || 39;
     this.rewardRole = config.rewardRole || '[⚛️] Creator';
   }
 
   setClient(client: Client) {
     this.client = client;
+  }
+
+  isActive(): boolean {
+    return !!this.targetChannelId;
   }
 
   /**
@@ -106,10 +110,10 @@ export class QuantumEggHunt {
     // Fuzzy string matching: normalize text
     const normalizedText = message.content.toLowerCase().replace(/\s+/g, '');
     
-    // Find which egg was discovered
+    // Find which egg was discovered (normalize trigger too — strips spaces for multi-word phrases)
     let foundEggId: EggId | null = null;
     for (const [trigger, eggId] of Object.entries(EGG_TRIGGERS)) {
-      if (normalizedText.includes(trigger)) {
+      if (normalizedText.includes(trigger.replace(/\s+/g, ''))) {
         foundEggId = eggId;
         break;
       }
