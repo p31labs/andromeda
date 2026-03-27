@@ -11,6 +11,8 @@ import { BondingCommand } from './commands/bonding';
 import { StatusCommand } from './commands/status';
 import { HelpCommand } from './commands/help';
 import { DeployCommand } from './commands/deploy';
+import { EggsCommand } from './commands/eggs';
+import * as spoonLedger from './services/spoonLedger';
 
 // Load environment variables
 dotenv.config();
@@ -44,6 +46,7 @@ registry.register(new SpoonCommand());
 registry.register(new BondingCommand());
 registry.register(new StatusCommand());
 registry.register(new DeployCommand());
+registry.register(new EggsCommand());
 registry.register(new HelpCommand(registry));
 
 // Get configuration
@@ -91,6 +94,13 @@ webhookHandler.on('kofi', async (event) => {
       )
       .setFooter({ text: 'P31 Labs — Thank you for keeping the mesh alive. 💜🔺💜' });
     if (p.message) embed.addFields({ name: 'Message', value: String(p.message) });
+
+    // Award spoons keyed by Ko-fi name (Discord account linking is a future step)
+    const kofiKey = `kofi:${fromName}`;
+    const KOFI_SPOONS = 39;
+    const newBalance = spoonLedger.award(kofiKey, KOFI_SPOONS);
+    embed.addFields({ name: 'Spoons', value: `+${KOFI_SPOONS} → ${newBalance} total (run \`p31 spoon link ${fromName}\` to link your Discord account)`, inline: false });
+
     await channel.send({ embeds: [embed] });
   }
   await telemetryService.trackWebhook('kofi', event.payload.type as string);
