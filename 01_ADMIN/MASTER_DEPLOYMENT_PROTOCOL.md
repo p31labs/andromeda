@@ -284,7 +284,7 @@ The only defense is a topology that doesn't depend on a center. A mesh where eve
 Everything above is documented, peer-reviewed where applicable, and published:
 - **Tetrahedron Protocol GUT** — Zenodo DOI: 10.5281/zenodo.18627420
 - **P31 Labs** — github.com/p31labs | Georgia 501(c)(3) nonprofit building open-source assistive technology
-- **BONDING** — bonding.p31ca.org — shipped PWA, 511 tests green, live since March 10, 2026
+- **BONDING** — bonding.p31ca.org — shipped PWA, 558 tests green, live since March 10, 2026
 - **ORCID**: 0009-0002-2492-9079
 
 Check my math. Geometric security means the proof is in the shape, not in my authority. If the tetrahedron holds under your scrutiny, it holds everywhere.
