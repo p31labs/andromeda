@@ -169,10 +169,15 @@ NODE COUNT — THE MILESTONES ARE PHYSICS
 
 ## QUICK START CHECKLIST
 
-- [ ] Update About section with bio above
-- [ ] Update Main Bio with full content
-- [ ] Create 4 shop items with names/descriptions above
-- [ ] Upload PNG images for each item (400x400 recommended)
+- [x] Update About section with bio above
+- [x] Update Main Bio with full content  
+- [x] Create 4 shop items with names/descriptions above
+- [x] Upload SVG images for each item (400x400 recommended)
+  - `docs/png/kofi-spaceship-earth.svg`
+  - `docs/png/kofi-sic-povm.svg`
+  - `docs/png/kofi-posner-shield.svg`
+  - `docs/png/kofi-node-count.svg`
+- [ ] Convert SVGs to PNG (use https://svgtopng.com or browser canvas)
 - [ ] Add "Node Count" to bio or create pinned post
 - [ ] Verify all links work: phosphorus31.org, github.com/p31labs, bonding.p31ca.org
 - [ ] Check DOI link: https://doi.org/10.5281/zenodo.18627420
