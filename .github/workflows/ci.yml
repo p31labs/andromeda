@@ -71,6 +71,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Install 04_SOFTWARE workspace
+        run: cd 04_SOFTWARE && pnpm install --frozen-lockfile
+
       - name: Type check
         run: cd 04_SOFTWARE && pnpm turbo run typecheck --filter=@p31/shared --filter=@p31/bonding --filter=@p31/spaceship-earth --filter=@p31/node-zero
 
