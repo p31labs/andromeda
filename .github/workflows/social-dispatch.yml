@@ -46,7 +46,8 @@ jobs:
             TODAY=$(date -u +"%Y-%m-%d")
             echo "Auto-mode: searching for wave scheduled on $TODAY..."
 
-            MATCHED_INDEX=$(yq eval '[.waves[] | .scheduled_time] | to_entries | .[] | select(.value | startswith("'"$TODAY"'")) | .key' "$FILE")
+            MATCHED_INDEX=$(yq eval '.waves[].scheduled_time' "$FILE" | grep -n "^$TODAY" | head -1 | cut -d: -f1)
+            [ -n "$MATCHED_INDEX" ] && MATCHED_INDEX=$((MATCHED_INDEX - 1)) || MATCHED_INDEX=""
 
             if [ -z "$MATCHED_INDEX" ]; then
               echo "No wave scheduled for $TODAY. Going back to sleep."
