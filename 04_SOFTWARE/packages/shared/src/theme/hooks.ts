@@ -1,9 +1,18 @@
 // packages/shared/src/theme/hooks.ts
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useThemeStore } from './store';
 import type { ThemeConfig, ThemeMode, SkinPreset, ContrastLevel, DensityLevel } from './types';
-import { THEME_PRESETS, type ThemePresetKey } from './presets';
+import {
+  THEME_PRESETS,
+  type ThemePresetKey,
+  OPERATOR_THEME,
+  KIDS_THEME,
+  GRAY_ROCK_THEME,
+  AURORA_THEME,
+  HIGH_CONTRAST_THEME,
+  LOW_MOTION_THEME,
+} from './presets';
 
 /**
  * Hook to access the current theme configuration
@@ -166,117 +175,42 @@ export const useComputedThemeTokens = () => {
  * Lazy load a theme preset on demand
  * Useful for reducing initial bundle size
  */
+// Presets are statically imported — this map resolves synchronously.
+const PRESET_MAP: Record<ThemePresetKey, ThemeConfig> = {
+  OPERATOR: OPERATOR_THEME,
+  KIDS: KIDS_THEME,
+  GRAY_ROCK: GRAY_ROCK_THEME,
+  AURORA: AURORA_THEME,
+  HIGH_CONTRAST: HIGH_CONTRAST_THEME,
+  LOW_MOTION: LOW_MOTION_THEME,
+};
+
 export const useLazyThemePreset = (presetKey: ThemePresetKey) => {
-  const [preset, setPreset] = useState<ThemeConfig | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
+  const preset = PRESET_MAP[presetKey] ?? null;
 
   const loadPreset = useCallback(async () => {
-    if (preset) return preset;
-    
-    setIsLoading(true);
-    setError(null);
-    
-    try {
-      // Map preset keys to their dynamic import paths
-      const presetLoaders: Record<ThemePresetKey, () => Promise<ThemeConfig>> = {
-        OPERATOR: async () => {
-          const module = await import('./presets/operator');
-          return (module as any).OPERATOR_THEME;
-        },
-        KIDS: async () => {
-          const module = await import('./presets/kids');
-          return (module as any).KIDS_THEME;
-        },
-        GRAY_ROCK: async () => {
-          const module = await import('./presets/grayRock');
-          return (module as any).GRAY_ROCK_THEME;
-        },
-        AURORA: async () => {
-          const module = await import('./presets/aurora');
-          return (module as any).AURORA_THEME;
-        },
-        HIGH_CONTRAST: async () => {
-          const module = await import('./presets/highContrast');
-          return (module as any).HIGH_CONTRAST_THEME;
-        },
-        LOW_MOTION: async () => {
-          const module = await import('./presets/lowMotion');
-          return (module as any).LOW_MOTION_THEME;
-        },
-      };
-      
-      const loader = presetLoaders[presetKey];
-      if (loader) {
-        const loaded = await loader();
-        setPreset(loaded);
-        return loaded;
-      }
-      throw new Error(`Unknown preset: ${presetKey}`);
-    } catch (err) {
-      const error = err instanceof Error ? err : new Error(String(err));
-      setError(error);
-      throw error;
-    } finally {
-      setIsLoading(false);
-    }
+    if (!preset) throw new Error(`Unknown preset: ${presetKey}`);
+    return preset;
   }, [presetKey, preset]);
 
   return useMemo(() => ({
     preset,
-    isLoading,
-    error,
+    isLoading: false,
+    error: preset ? null : new Error(`Unknown preset: ${presetKey}`),
     loadPreset,
-  }), [preset, isLoading, error, loadPreset]);
+  }), [preset, presetKey, loadPreset]);
 };
 
 /**
  * Preload multiple theme presets in background
  * Does not block rendering
  */
+// Presets are statically imported — preloading is a no-op.
 export const usePreloadThemePresets = (presetKeys: ThemePresetKey[]) => {
-  const [loadedPresets, setLoadedPresets] = useState<Set<ThemePresetKey>>(new Set());
-  const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-    let cancelled = false;
-    
-    const loadPresets = async () => {
-      setIsLoading(true);
-      const loaded = new Set<ThemePresetKey>();
-      
-      for (const key of presetKeys) {
-        if (cancelled) break;
-        
-        try {
-          const presets = await import('./presets');
-          // Preload all theme configs
-          await Promise.all([
-            import('./presets/operator'),
-            import('./presets/kids'),
-            import('./presets/grayRock'),
-            import('./presets/aurora'),
-            import('./presets/highContrast'),
-            import('./presets/lowMotion'),
-          ]);
-          loaded.add(key);
-        } catch {
-          // Silent fail for preload
-        }
-      }
-      
-      if (!cancelled) {
-        setLoadedPresets(loaded);
-        setIsLoading(false);
-      }
-    };
-
-    loadPresets();
-    
-    return () => {
-      cancelled = true;
-    };
-  }, [presetKeys]);
-
-  return { loadedPresets, isLoading };
+  const loadedPresets = useMemo(
+    () => new Set(presetKeys.filter(k => k in PRESET_MAP)),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
+  return { loadedPresets, isLoading: false };
 };
