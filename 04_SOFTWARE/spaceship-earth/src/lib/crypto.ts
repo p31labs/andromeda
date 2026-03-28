@@ -7,7 +7,7 @@
 // Brand: Phosphor Green #00FF88, Void #050510
 // ═══════════════════════════════════════════════════════════════════
 
-import { get, set } from 'idb-keyval';
+import { get, set, del } from 'idb-keyval';
 
 // ─────────────────────────────────────────────────────────────────
 // IndexedDB Keys
@@ -364,8 +364,6 @@ export const PassportCrypto = {
    * Clear all passport data (for reset/genesis regeneration)
    */
   async clearPassport(): Promise<void> {
-    // Use delete instead of setting null to properly remove from IndexedDB
-    const { del } = await import('idb-keyval');
     await del(P31_KEYS_STORE);
     await del(P31_PASSPORT_STORE);
   },

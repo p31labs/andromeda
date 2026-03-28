@@ -1,8 +1,28 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
+import * as Sentry from '@sentry/react';
 import './styles.css';
 import App from './App';
 import { initTheme } from './sovereign/useSovereignStore';
+
+// Initialize Sentry — no-op if VITE_SENTRY_DSN is not set
+const sentryDsn = import.meta.env.VITE_SENTRY_DSN;
+if (sentryDsn) {
+  try {
+    Sentry.init({
+      dsn: sentryDsn,
+      integrations: [Sentry.browserTracingIntegration()],
+      tracesSampleRate: 0.1,
+      environment: import.meta.env.MODE,
+      beforeSend(event) {
+        event.tags = { ...event.tags, app: 'spaceship-earth' };
+        return event;
+      },
+    });
+  } catch (error) {
+    console.warn('[Sentry] Failed to initialize:', error);
+  }
+}
 
 // ── Dev-only stats overlay (never ships in prod bundle) ──────────────────────
 // Run: import.meta.env.DEV is false in `vite build`, so this branch is
