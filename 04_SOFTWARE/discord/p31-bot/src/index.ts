@@ -31,6 +31,7 @@ import { EggsCommand } from "./commands/eggs";
 import { NodesCommand } from "./commands/nodes";
 import { ClaimCommand } from "./commands/claim";
 import { CortexCommand } from "./commands/cortex";
+import { HealthCommand } from "./commands/health";
 import * as spoonLedger from "./services/spoonLedger";
 
 // Load environment variables
@@ -74,6 +75,7 @@ registry.register(new EggsCommand());
 registry.register(new ClaimCommand());
 registry.register(new NodesCommand());
 registry.register(new CortexCommand());
+registry.register(new HealthCommand());
 registry.register(new HelpCommand(registry));
 
 // Get configuration
@@ -164,6 +166,11 @@ const EGG_FORMULA_HINTS: Array<{ match: RegExp; egg: string; label: string }> =
       match: /ca9|ca₉|posner/i,
       egg: "tetrahedron",
       label: "Posner Molecule (K₄)",
+    },
+    {
+      match: /172\.?35/i,
+      egg: "missing_node",
+      label: "The Missing Node (172.35Hz)",
     },
   ];
 
@@ -322,7 +329,7 @@ client.on(Events.MessageCreate, async (message: Message) => {
   if (message.author.bot) return;
 
   // Check for Quantum Egg Hunt triggers in showcase channel
-  if (message.channel.id === showcaseChannelId && quantumEggHunt.isActive()) {
+  if (showcaseChannelId && message.channel.id === showcaseChannelId && quantumEggHunt.isActive()) {
     await quantumEggHunt.processMessage(message);
   }
 
@@ -343,8 +350,8 @@ client.on(Events.MessageCreate, async (message: Message) => {
     return;
   }
 
-  // Check for hidden !quantum-egg or !863 commands
-  const lowerContent = message.content.toLowerCase();
+  // Check for hidden !quantum-egg or !863 commands (case-insensitive)
+  const lowerContent = message.content.toLowerCase().trim();
   if (lowerContent === "!quantum-egg" || lowerContent === "!863") {
     await quantumEggHunt.handleHiddenCommand(message);
     return;

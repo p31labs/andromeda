@@ -1,6 +1,7 @@
 import { Message, EmbedBuilder } from "discord.js";
 import fetch from "node-fetch";
-import { CommandContext, P31Command } from "./base";
+import { CommandContext, P31Command, getApiUrls } from "./base";
+import { defaultRetryableFetch } from "../services/retryUtility";
 
 interface CortexStatus {
   status: string;
@@ -41,40 +42,39 @@ export class CortexCommand implements P31Command {
   aliases = ["ops", "deadlines", "alert"];
   usage = "cortex [status|deadlines|run|agent <name>]";
 
-  private cortexUrl =
-    process.env.CORTEX_API_URL || "https://p31-cortex.workers.dev";
-
   async execute(context: CommandContext): Promise<void> {
-    const { message, args } = context;
+    const { message, args, apiUrls } = context;
+    const cortexUrl = apiUrls.cortex;
     const subcommand = args[0]?.toLowerCase();
 
     switch (subcommand) {
       case "status":
       case "health":
-        await this.showStatus(message);
+        await this.showStatus(message, cortexUrl);
         break;
       case "deadlines":
       case "dl":
-        await this.showDeadlines(message, args.slice(1));
+        await this.showDeadlines(message, cortexUrl, args.slice(1));
         break;
       case "run":
-        await this.runOrchestrator(message);
+        await this.runOrchestrator(message, cortexUrl);
         break;
       case "agent":
-        await this.runAgent(message, args[1]);
+        await this.runAgent(message, cortexUrl, args[1]);
         break;
       case "overdue":
-        await this.showOverdue(message);
+        await this.showOverdue(message, cortexUrl);
         break;
       default:
-        await this.showDashboard(message);
+        await this.showDashboard(message, cortexUrl);
     }
   }
 
-  private async showDashboard(message: Message): Promise<void> {
+  private async showDashboard(message: Message, cortexUrl: string): Promise<void> {
     try {
-      const status = await this.fetchCortex<CortexStatus>("/api/status");
+      const status = await this.fetchCortex<CortexStatus>(cortexUrl, "/api/status");
       const deadlines = await this.fetchCortex<{ deadlines: Deadline[] }>(
+        cortexUrl,
         "/api/deadlines",
       );
 
@@ -137,13 +137,13 @@ export class CortexCommand implements P31Command {
 
       await message.reply({ embeds: [embed] });
     } catch {
-      await this.replyOffline(message);
+      await this.replyOffline(message, cortexUrl);
     }
   }
 
-  private async showStatus(message: Message): Promise<void> {
+  private async showStatus(message: Message, cortexUrl: string): Promise<void> {
     try {
-      const status = await this.fetchCortex<CortexStatus>("/api/status");
+      const status = await this.fetchCortex<CortexStatus>(cortexUrl, "/api/status");
 
       const embed = new EmbedBuilder()
         .setTitle("🧠 P31 Cortex Status")
@@ -170,18 +170,20 @@ export class CortexCommand implements P31Command {
 
       await message.reply({ embeds: [embed] });
     } catch {
-      await this.replyOffline(message);
+      await this.replyOffline(message, cortexUrl);
     }
   }
 
   private async showDeadlines(
     message: Message,
+    cortexUrl: string,
     filters: string[],
   ): Promise<void> {
     try {
       const category = filters[0];
       const query = category ? `?category=${category}` : "";
       const data = await this.fetchCortex<{ deadlines: Deadline[] }>(
+        cortexUrl,
         `/api/deadlines${query}`,
       );
 
@@ -218,13 +220,14 @@ export class CortexCommand implements P31Command {
 
       await message.reply({ embeds: [embed] });
     } catch {
-      await this.replyOffline(message);
+      await this.replyOffline(message, cortexUrl);
     }
   }
 
-  private async showOverdue(message: Message): Promise<void> {
+  private async showOverdue(message: Message, cortexUrl: string): Promise<void> {
     try {
       const data = await this.fetchCortex<{ deadlines: Deadline[] }>(
+        cortexUrl,
         "/api/deadlines?status=overdue",
       );
 
@@ -246,15 +249,16 @@ export class CortexCommand implements P31Command {
 
       await message.reply({ embeds: [embed] });
     } catch {
-      await this.replyOffline(message);
+      await this.replyOffline(message, cortexUrl);
     }
   }
 
-  private async runOrchestrator(message: Message): Promise<void> {
+  private async runOrchestrator(message: Message, cortexUrl: string): Promise<void> {
     await message.reply("⚡ Running all agents...");
 
     try {
       const result = await this.fetchCortex<OrchestratorResult>(
+        cortexUrl,
         "/api/orchestrator/run",
         "POST",
       );
@@ -284,11 +288,11 @@ export class CortexCommand implements P31Command {
 
       await message.reply({ embeds: [embed] });
     } catch {
-      await this.replyOffline(message);
+      await this.replyOffline(message, cortexUrl);
     }
   }
 
-  private async runAgent(message: Message, agentName?: string): Promise<void> {
+  private async runAgent(message: Message, cortexUrl: string, agentName?: string): Promise<void> {
     const validAgents = [
       "legal",
       "grant",
@@ -327,22 +331,27 @@ export class CortexCommand implements P31Command {
 
       await message.reply({ embeds: [embed] });
     } catch {
-      await this.replyOffline(message);
+      await this.replyOffline(message, cortexUrl);
     }
   }
 
   private async fetchCortex<T>(
+    cortexUrl: string,
     path: string,
     method: string = "GET",
   ): Promise<T> {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 10000);
 
-    const response = await fetch(`${this.cortexUrl}${path}`, {
-      method,
-      signal: controller.signal,
-      headers: { "Content-Type": "application/json" },
-    });
+    const response = await defaultRetryableFetch.fetchWithRetry(
+      `${cortexUrl}${path}`,
+      {
+        method,
+        signal: controller.signal,
+        headers: { "Content-Type": "application/json" },
+      },
+      "cortex"
+    );
 
     clearTimeout(timeoutId);
 
@@ -353,14 +362,14 @@ export class CortexCommand implements P31Command {
     return (await response.json()) as T;
   }
 
-  private async replyOffline(message: Message): Promise<void> {
+  private async replyOffline(message: Message, cortexUrl: string): Promise<void> {
     const embed = new EmbedBuilder()
       .setTitle("⚠️ P31 Cortex Unreachable")
       .setColor(0xef4444)
       .setDescription(
         "Could not connect to P31 Cortex. The operations layer may be down.",
       )
-      .addFields({ name: "URL", value: this.cortexUrl });
+      .addFields({ name: "URL", value: cortexUrl });
 
     await message.reply({ embeds: [embed] });
   }
