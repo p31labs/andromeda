@@ -4,6 +4,7 @@
 name = "p31-kofi-webhook"
 main = "p31_kofi_webhook_worker.js"
 compatibility_date = "2024-06-12"
+workers_dev = true
 
 # Environment Variables
 [vars]

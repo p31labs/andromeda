@@ -33,26 +33,27 @@ export interface BondingPayload {
 }
 
 class WebhookHandler extends EventEmitter {
-  private app: express.Application;
+  private _app: express.Application;
+  public get app(): express.Application { return this._app; }
   private port: number;
 
   constructor(port: number = 3000) {
     super();
     this.port = port;
-    this.app = express();
+    this._app = express();
     this.setupMiddleware();
     this.setupRoutes();
   }
 
   private setupMiddleware(): void {
-    this.app.use(cors());
-    this.app.use(express.json());
-    this.app.use(express.urlencoded({ extended: true }));
+    this._app.use(cors());
+    this._app.use(express.json());
+    this._app.use(express.urlencoded({ extended: true }));
   }
 
   private setupRoutes(): void {
     // Ko-fi webhook endpoint
-    this.app.post('/webhook/kofi', (req: Request, res: Response) => {
+    this._app.post('/webhook/kofi', (req: Request, res: Response) => {
       try {
         // Ko-fi sends application/x-www-form-urlencoded with a nested JSON string in `data`
         let payload: KoFiPayload;
@@ -84,7 +85,7 @@ class WebhookHandler extends EventEmitter {
     });
 
     // Node One webhook endpoint
-    this.app.post('/webhook/node-one', (req: Request, res: Response) => {
+    this._app.post('/webhook/node-one', (req: Request, res: Response) => {
       try {
         const payload = req.body as NodeOnePayload;
         const event: WebhookEvent = {
@@ -101,7 +102,7 @@ class WebhookHandler extends EventEmitter {
     });
 
     // BONDING webhook endpoint
-    this.app.post('/webhook/bonding', (req: Request, res: Response) => {
+    this._app.post('/webhook/bonding', (req: Request, res: Response) => {
       try {
         const payload = req.body as BondingPayload;
         const event: WebhookEvent = {
@@ -118,7 +119,7 @@ class WebhookHandler extends EventEmitter {
     });
 
     // GitHub webhook endpoint
-    this.app.post('/webhook/github', (req: Request, res: Response) => {
+    this._app.post('/webhook/github', (req: Request, res: Response) => {
       try {
         const githubEvent = req.headers['x-github-event'] as string;
         const event: WebhookEvent = {
@@ -135,7 +136,7 @@ class WebhookHandler extends EventEmitter {
     });
 
     // Stripe webhook endpoint
-    this.app.post('/webhook/stripe', (req: Request, res: Response) => {
+    this._app.post('/webhook/stripe', (req: Request, res: Response) => {
       try {
         const stripeEvent = req.headers['stripe-signature'] ? req.body : req.body;
         const event: WebhookEvent = {
@@ -152,12 +153,12 @@ class WebhookHandler extends EventEmitter {
     });
 
     // Health check endpoint
-    this.app.get('/health', (_req: Request, res: Response) => {
+    this._app.get('/health', (_req: Request, res: Response) => {
       res.status(200).json({ status: 'ok', service: 'p31-webhook-handler' });
     });
 
     // Error handling middleware
-    this.app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
+    this._app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
       console.error('Unhandled error:', err);
       res.status(500).json({ error: 'Internal server error' });
     });
@@ -165,7 +166,7 @@ class WebhookHandler extends EventEmitter {
 
   public start(): Promise<void> {
     return new Promise((resolve) => {
-      this.app.listen(this.port, () => {
+      this._app.listen(this.port, () => {
         console.log(`Webhook handler listening on port ${this.port}`);
         resolve();
       });
