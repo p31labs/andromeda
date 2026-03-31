@@ -154,6 +154,6 @@ BLUF FORMAT:
     expect(prompt).toContain('BLUF');
     expect(prompt).toContain('Bottom Line Up Front');
     expect(prompt).toContain('neutral');
-    expect(prompt).toContain('operational');
+    expect(prompt).toContain('OPERATIONAL');
   });
 });

@@ -1,51 +1,56 @@
 /**
  * WebGPU Components Test Suite
- * 
+ *
  * Tests for the WebGPU implementations including Rules Engine and BLE Processor.
  */
 
-import { SimpleWebGPURulesEngine, createExampleConstitution } from '../SimpleWebGPURulesEngine';
-import { WebGPUBLEProcessor } from '../WebGPUBLEProcessor';
+import { describe, it, expect } from "vitest";
+import {
+  SimpleWebGPURulesEngine,
+  createExampleConstitution,
+} from "../SimpleWebGPURulesEngine";
+import { WebGPUBLEProcessor } from "../WebGPUBLEProcessor";
 
-// Simple test functions that can be called during build
-export async function testWebGPUComponents() {
-  // Test SimpleWebGPURulesEngine
-  const engine = new SimpleWebGPURulesEngine();
-  const constitution = createExampleConstitution();
-  
-  const context = {
-    spoonBalance: 5,
-    karma: 100,
-    timeOfDay: 14,
-    zoneId: 'test-zone',
-    userId: 'user1',
-    action: 'enter_zone',
-    target: 'test-zone',
-    timestamp: Date.now()
-  };
+describe("WebGPU Components", () => {
+  it("SimpleWebGPURulesEngine should evaluate rules correctly", async () => {
+    const engine = new SimpleWebGPURulesEngine();
+    const constitution = createExampleConstitution();
 
-  const result = await engine.evaluateRules(constitution, context, 'test-zone');
-  
-  if (!result || typeof result.allowed !== 'boolean') {
-    throw new Error('Rules engine test failed');
-  }
+    const context = {
+      spoonBalance: 5,
+      karma: 100,
+      timeOfDay: 14,
+      zoneId: "test-zone",
+      userId: "user1",
+      action: "enter_zone",
+      target: "test-zone",
+      timestamp: Date.now(),
+    };
 
-  // Test WebGPUBLEProcessor
-  const processor = new WebGPUBLEProcessor();
-  const beacons = [
-    {
-      position: [0, 0, 0] as [number, number, number],
-      rssi: -50,
-      txPower: -59,
-      timestamp: Date.now()
-    }
-  ];
+    const result = await engine.evaluateRules(
+      constitution,
+      context,
+      "test-zone",
+    );
 
-  const bleResult = await processor.processBeaconData(beacons);
-  
-  if (!bleResult || !Array.isArray(bleResult.userPosition)) {
-    throw new Error('BLE processor test failed');
-  }
+    expect(result).toBeDefined();
+    expect(typeof result.allowed).toBe("boolean");
+  });
 
-  return true;
-}
+  it("WebGPUBLEProcessor should process beacon data", async () => {
+    const processor = new WebGPUBLEProcessor();
+    const beacons = [
+      {
+        position: [0, 0, 0] as [number, number, number],
+        rssi: -50,
+        txPower: -59,
+        timestamp: Date.now(),
+      },
+    ];
+
+    const bleResult = await processor.processBeaconData(beacons);
+
+    expect(bleResult).toBeDefined();
+    expect(Array.isArray(bleResult.userPosition)).toBe(true);
+  });
+});

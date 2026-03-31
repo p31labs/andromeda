@@ -1,35 +1,43 @@
-# P31 Social Drop Automation — Deployment Guide
+# P31 Unified Social Worker — Deployment Guide
 
 ## What This Does
 
-Cloudflare Worker with **11 scheduled cron triggers** that fire Discord webhook notifications with copy-paste-ready social media content at staggered times on March 26–31, 2026.
+Cloudflare Worker that handles all social media automation for P31 Labs:
+- **Scheduled posting**: Weekly waves auto-post to Twitter, Mastodon, Bluesky
+- **Discord notifications**: All waves + daily Ko-fi digest + monthly Zenodo reminders
+- **Manual broadcast**: HTTP API for on-demand multi-platform posting
+- **Link health checks**: Preflight verification of all P31 URLs
 
 ## Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│  Cloudflare Worker: p31-social-drop-automation          │
+│  Cloudflare Worker: p31-social-worker                   │
+│  Routed to: social.p31ca.org                            │
 │                                                         │
 │  HTTP Endpoints:                                        │
-│    GET  /          → Health check + wave list           │
-│    POST /preflight → Manual link check                 │
-│    POST /trigger   → Manual wave fire (testing)        │
-│    GET  /waves     → List all available waves          │
+│    GET  /           → Health check + documentation      │
+│    GET  /status     → Platform configuration check      │
+│    GET  /waves      → List available content waves      │
+│    POST /broadcast  → Post to platforms { content }     │
+│    POST /trigger    → Fire named wave { wave }          │
+│    POST /preflight  → Run link health check             │
 │                                                         │
-│  Scheduled Events (Cron Triggers):                      │
-│    Mar 26 17:17 UTC → Pre-flight link check            │
-│    Mar 26 17:20 UTC → Wave 1: Ko-fi                    │
-│    Mar 26 17:35 UTC → Wave 2: X/Twitter                │
-│    Mar 26 17:50 UTC → Wave 3: LinkedIn                 │
-│    Mar 26 18:20 UTC → Wave 4: Reddit                   │
-│    Mar 26 19:20 UTC → Wave 5: Personal/DMs            │
-│    Mar 26 21:20 UTC → Wave 6: SuperStonk               │
-│    Mar 27 13:00 UTC → Zenodo DP-5 + DP-1              │
-│    Mar 27 17:20 UTC → 24hr analytics check             │
-│    Mar 28 13:00 UTC → Zenodo DP-4 + DP-2              │
-│    Mar 31 13:00 UTC → Zenodo DP-3                      │
+│  Cron Triggers (recurring):                             │
+│    Mon 17:00 UTC    → Weekly wave (+ platform posts)    │
+│    Wed 17:00 UTC    → Mid-week update (+ posts)         │
+│    Fri 17:00 UTC    → Weekend recap (+ posts)           │
+│    Daily 17:20 UTC  → Ko-fi digest (Discord only)       │
+│    1st 13:00 UTC    → Zenodo reminder (Discord only)    │
 │                                                         │
-│  Output: Discord webhook → #social-drop channel        │
+│  Platforms:                                             │
+│    Twitter/X  — OAuth 1.0a (crypto.subtle, no npm)      │
+│    Reddit     — OAuth2 script app flow                  │
+│    Bluesky    — AT Protocol (REST)                      │
+│    Mastodon   — Status API (Bearer token)               │
+│    Nostr      — Stub (needs nostr-tools)                │
+│    Substack   — Newsletter API                          │
+│    Discord    — Webhook notifications                   │
 └─────────────────────────────────────────────────────────┘
 ```
 
@@ -42,11 +50,34 @@ cd 04_SOFTWARE/cloudflare-worker/social-drop-automation
 npm install
 ```
 
-### 2. Set Discord webhook secret
+### 2. Set secrets
 
+At minimum, set Discord webhook:
 ```bash
 npx wrangler secret put DISCORD_WEBHOOK_URL
-# Paste your Discord webhook URL when prompted
+```
+
+For platform posting, set the relevant credentials:
+```bash
+# Twitter/X
+npx wrangler secret put TWITTER_API_KEY
+npx wrangler secret put TWITTER_API_SECRET
+npx wrangler secret put TWITTER_ACCESS_TOKEN
+npx wrangler secret put TWITTER_ACCESS_TOKEN_SECRET
+
+# Reddit
+npx wrangler secret put REDDIT_CLIENT_ID
+npx wrangler secret put REDDIT_CLIENT_SECRET
+npx wrangler secret put REDDIT_USERNAME
+npx wrangler secret put REDDIT_PASSWORD
+
+# Bluesky
+npx wrangler secret put BLUESKY_HANDLE
+npx wrangler secret put BLUESKY_APP_PASSWORD
+
+# Mastodon
+npx wrangler secret put MASTODON_INSTANCE
+npx wrangler secret put MASTODON_ACCESS_TOKEN
 ```
 
 ### 3. Deploy
@@ -55,96 +86,66 @@ npx wrangler secret put DISCORD_WEBHOOK_URL
 npx wrangler deploy
 ```
 
-### 4. Verify cron triggers
+### 4. Verify
 
 ```bash
-npx wrangler deployments list
+# Health check
+curl https://social.p31ca.org/
+
+# Check platform status
+curl https://social.p31ca.org/status
+
+# List available waves
+curl https://social.p31ca.org/waves
 ```
 
-## Manual Testing
+## Manual Operations
 
-### Test pre-flight link check
+### Test a specific wave
 ```bash
-curl -X POST https://social-drop.p31ca.org/preflight
-```
-
-### Fire a specific wave manually
-```bash
-curl -X POST https://social-drop.p31ca.org/trigger \
+curl -X POST https://social.p31ca.org/trigger \
   -H "Content-Type: application/json" \
-  -d '{"wave": "wave1_kofi"}'
+  -d '{"wave": "weekly_update"}'
 ```
 
-### List available waves
+### Post custom content
 ```bash
-curl https://social-drop.p31ca.org/waves
+curl -X POST https://social.p31ca.org/broadcast \
+  -H "Content-Type: application/json" \
+  -d '{"content": "Hello from P31 Labs!", "platforms": ["twitter", "mastodon"]}'
 ```
 
-### Health check
+### Run link health check
 ```bash
-curl https://social-drop.p31ca.org/
+curl -X POST https://social.p31ca.org/preflight
 ```
 
 ## Available Wave IDs
 
-| Wave ID | Content |
-|---------|---------|
-| `preflight` | Link check for all 5 URLs |
-| `wave1_kofi` | Ko-fi post (copy-paste ready) |
-| `wave2_twitter` | 5-tweet thread |
-| `wave3_linkedin` | LinkedIn post |
-| `wave4_reddit` | Reddit post (r/opensource) |
-| `wave5_personal` | Festival family / personal DMs |
-| `wave6_superstonk` | SuperStonk DD checklist |
-| `zenodo_dp5_dp1` | Zenodo upload reminder |
-| `zenodo_dp4_dp2` | Zenodo upload reminder |
-| `zenodo_dp3` | Zenodo upload reminder |
-| `analytics_24hr` | 24hr post-drop analytics checklist |
+| Wave ID | Schedule | Platforms |
+|---------|----------|-----------|
+| `weekly_update` | Monday 17:00 UTC | twitter, mastodon, bluesky |
+| `midweek` | Wednesday 17:00 UTC | twitter, mastodon |
+| `weekend_recap` | Friday 17:00 UTC | twitter, mastodon, bluesky |
+| `kofi_digest` | Daily 17:20 UTC | discord only |
+| `zenodo_reminder` | 1st of month 13:00 UTC | discord only |
+| `wave1_kofi` | Manual only | ko-fi |
+| `wave2_twitter` | Manual only | twitter |
+| `wave3_linkedin` | Manual only | linkedin |
 
-## Cron Schedule (EDT = UTC-4)
+## Superseded Workers
 
-| Time (EDT) | Time (UTC) | Event |
-|------------|-----------|-------|
-| 1:17 PM | 17:17 | Pre-flight link check |
-| 1:20 PM | 17:20 | Wave 1: Ko-fi |
-| 1:35 PM | 17:35 | Wave 2: X/Twitter |
-| 1:50 PM | 17:50 | Wave 3: LinkedIn |
-| 2:20 PM | 18:20 | Wave 4: Reddit |
-| 3:20 PM | 19:20 | Wave 5: Personal |
-| 5:20 PM | 21:20 | Wave 6: SuperStonk |
-| Mar 27 9:00 AM | 13:00 | Zenodo DP-5 + DP-1 |
-| Mar 27 1:20 PM | 17:20 | 24hr analytics |
-| Mar 28 9:00 AM | 13:00 | Zenodo DP-4 + DP-2 |
-| Mar 31 9:00 AM | 13:00 | Zenodo DP-3 |
+These workers are now consolidated into `p31-social-worker`:
+- `social-drop-automation/worker.js` (v1) — one-shot March 26-31 crons
+- `p31_social_broadcast_worker.js` — stub multi-platform poster
 
-## If Discord Webhook Not Set
-
-The worker logs all content to the Cloudflare Worker console logs instead. View with:
-
-```bash
-npx wrangler tail
-```
+The Ko-fi webhook worker (`p31_kofi_webhook_worker.js`) remains separate at `kofi.p31ca.org`.
 
 ## Route Configuration
 
-The worker is routed to `social-drop.p31ca.org`. To change the route, edit `wrangler.toml`:
-
+Default route: `social.p31ca.org/*`. To change, edit `wrangler.toml`:
 ```toml
 routes = [
-  { pattern = "social-drop.p31ca.org/*", zone_name = "p31ca.org" }
+  { pattern = "your-route.p31ca.org/*", zone_name = "p31ca.org" }
 ]
 ```
-
-## Source Files
-
-- `worker.js` — All wave content + scheduled handler + HTTP handler
-- `wrangler.toml` — Cron triggers + route config
-- `package.json` — Dependencies
-- `DEPLOY.md` — This file
-
-## Content Source
-
-All copy-paste content sourced from:
-- [`docs/SOCIAL_DROP_LIVE.md`](../../../docs/SOCIAL_DROP_LIVE.md) — Waves 1-5
-- [`docs/superstonk_post.md`](../../../docs/superstonk_post.md) — Wave 6
-- [`docs/P31_Sprint_Deployment_Queue.md`](../../../docs/P31_Sprint_Deployment_Queue.md) — Zenodo schedule

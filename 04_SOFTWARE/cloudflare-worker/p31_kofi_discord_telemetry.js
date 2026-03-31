@@ -1,4 +1,13 @@
 /**
+ * DEPRECATED — Consolidated into p31_kofi_webhook_worker.js
+ * ---------------------------------------------------------
+ * This worker's functionality (Ko-fi → Discord payment telemetry)
+ * is now merged into the Ko-fi webhook worker at kofi.p31ca.org.
+ * The webhook worker handles: donation tracking, node count,
+ * milestone alerts, AND Discord notifications.
+ *
+ * This file is kept for reference only. Do not deploy.
+ *
  * P31 Labs: Ko-fi to Discord Payment Telemetry
  * ---------------------------------------------------------
  * Receives Ko-fi payment webhooks and forwards formatted

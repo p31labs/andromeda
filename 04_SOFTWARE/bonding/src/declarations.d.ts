@@ -46,3 +46,7 @@ declare module './components/ColliderMode' {
 declare module '@p31/spaceship-earth/services/sovereignRelay' {
   export function sendCelebration(payload: { type: string; formula: string }): Promise<void>;
 }
+// WebGPU type stub — prevents tsc errors when spaceship-earth files are transitively checked
+// spaceship-earth has @webgpu/types; bonding does not, but imports SE dynamically
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+interface Navigator { readonly gpu?: any; }

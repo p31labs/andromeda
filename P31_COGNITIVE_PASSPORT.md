@@ -1,4 +1,5 @@
 # P31 COGNITIVE PASSPORT — v2.0
+
 ## Last Updated: 2026-03-03 (T-7 to Genesis Fire)
 
 ---
@@ -14,10 +15,12 @@
 **Phone:** (912) 227-4980
 
 ### Diagnoses
+
 - **AuDHD** (Autism + ADHD) — diagnosed 2025, age 39-40
 - **Hypoparathyroidism** — since 2003, following a seizure (calcium regulation disorder; wife was aware throughout relationship)
 
 ### Cognitive Profile
+
 - High-bandwidth thinker. Sees systems, isomorphisms, and connections across domains instantly.
 - **Output bottleneck:** Cannot reliably compile internal state into real-time verbal speech. The thoughts are correct — the serialization layer drops packets.
 - Writing (by hand, iPad) is the highest-fidelity capture method. Typing disrupts flow. Speech is lossy.
@@ -28,12 +31,14 @@
 - **Impulse management:** Neurodivergence drives urges to fix small things immediately. Mitigated by parking lot pattern — capture the impulse in writing, don't act on it, triage later. Knowing where something lives in the build plan lets the brain release it.
 
 ### Communication Style
+
 - Direct. No corporate pleasantries.
 - Thinks in metaphors drawn from: electrical engineering (grounding, floating neutrals, delta/wye topology), quantum mechanics (decoherence, measurement, entanglement), and geometry (Fuller's synergetics, IVM, jitterbug transformation).
 - **NEVER use submarine, naval, or military metaphors.** Will was a DoD CIVILIAN engineer, not military. His estranged wife's father was Navy — it's a trigger in the legal context.
 - Curses when emphasis is needed. It's punctuation, not aggression.
 
 ### Professional Background
+
 - 16 years as a DoD civilian submarine electrician
 - **Position:** Engineering Technician (Electrical), GS-0802-12
 - **Activity:** TRIDENT Refit Facility (TRIREFFAC), Kings Bay, GA
@@ -46,11 +51,11 @@
 
 ## 2. THE FAMILY
 
-| Person | DOB | Notes |
-|--------|-----|-------|
-| **Sebastian "Bash" Johnson** | 3/10/2016 | Son. Turning 10 on March 10, 2026. BONDING ships on his birthday. |
-| **Willow Marie Johnson** | 8/8/2019 | Daughter, age 6. Has encopresis. Pre-reader — needs big visual feedback, fast wins. |
-| **Christyn Elizabeth Johnson** (née Francis) | 3/14/1987 | Estranged wife. Active family court proceedings. |
+| Person                                       | DOB       | Notes                                                                               |
+| -------------------------------------------- | --------- | ----------------------------------------------------------------------------------- |
+| **Sebastian "Bash" Johnson**                 | 3/10/2016 | Son. Turning 10 on March 10, 2026. BONDING ships on his birthday.                   |
+| **Willow Marie Johnson**                     | 8/8/2019  | Daughter, age 6. Has encopresis. Pre-reader — needs big visual feedback, fast wins. |
+| **Christyn Elizabeth Johnson** (née Francis) | 3/14/1987 | Estranged wife. Active family court proceedings.                                    |
 
 **Custody status:** Will has not seen his children in 29+ days (as of March 3, 2026). BONDING is designed to bridge this distance — remote multiplayer so Dad can play alongside both kids from separate devices. Every atom placed is a timestamped parental engagement log. Every ping is documented contact. The game is a bridge, not a toy.
 
@@ -68,6 +73,7 @@
 **Domain:** p31.io (root brand), phosphorus31.org (public site, live at phosphorus31-org.pages.dev), p31ca.org (app, BONDING deployed here)
 
 ### The Metaphor (This Is Not Decoration — It's Architecture)
+
 - **Phosphorus (P-31):** The operator. Unstable, reactive, essential for life. Phosphorus alone burns.
 - **Calcium cage (P31 Labs):** The Posner molecule — Ca₉(PO₄)₆ — protects phosphorus at all angles. The organization insulates the operator from entropy.
 - **Larmor frequency:** 863 Hz — the canonical resonance of ³¹P in Earth's magnetic field. This is the system's heartbeat.
@@ -75,18 +81,19 @@
 
 ### Products
 
-| Product | Type | Status | Description |
-|---------|------|--------|-------------|
-| **Node One (The Totem)** | Hardware | Prototype | ESP32-S3 palm device. Haptic feedback (DRV2605L + LRA), LoRa mesh, hardware security module (NXP SE050). |
-| **The Buffer** | Software | ~85% | Communication processing. Fawn Guard detects people-pleasing patterns. Chaos ingestion converts journal → structured data. |
-| **Spaceship Earth (EPCP Dashboard)** | Software | In progress | React/Three.js cognitive dashboard. 3D geodesic dome. Real-time Q-Factor coherence. BONDING merges into this post-birthday. Jitterbug Navigator (WCD-07) integrated. WCD-08 Cockpit HUD authored. |
-| **BONDING** | Game | **DEPLOYED at bonding.p31ca.org** | Molecule builder. See §4 for full status. |
-| **Whale Channel** | Comms | Planned | Low-frequency, high-context communication channel for deep connections. |
-| **Thick Click** | Hardware/UX | Concept | Kailh Choc Navy switches (60gf) — proprioceptive feedback as medical necessity for dissociation/anxiety. |
-| **Ping** | Protocol | In BONDING | Reaction system. 💚🤔😂🔺. One ping = one documented connection. Max 3 per molecule. Every ping = LOVE for both sender and receiver. |
-| **The Centaur** | Protocol | Active | Human-AI collaboration model. Will (biological intent) + AI stack (silicon execution) = Homo syntheticus. |
+| Product                              | Type        | Status                            | Description                                                                                                                                                                                       |
+| ------------------------------------ | ----------- | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Node One (The Totem)**             | Hardware    | Prototype                         | ESP32-S3 palm device. Haptic feedback (DRV2605L + LRA), LoRa mesh, hardware security module (NXP SE050).                                                                                          |
+| **The Buffer**                       | Software    | ~85%                              | Communication processing. Fawn Guard detects people-pleasing patterns. Chaos ingestion converts journal → structured data.                                                                        |
+| **Spaceship Earth (EPCP Dashboard)** | Software    | In progress                       | React/Three.js cognitive dashboard. 3D geodesic dome. Real-time Q-Factor coherence. BONDING merges into this post-birthday. Jitterbug Navigator (WCD-07) integrated. WCD-08 Cockpit HUD authored. |
+| **BONDING**                          | Game        | **DEPLOYED at bonding.p31ca.org** | Molecule builder. See §4 for full status.                                                                                                                                                         |
+| **Whale Channel**                    | Comms       | Planned                           | Low-frequency, high-context communication channel for deep connections.                                                                                                                           |
+| **Thick Click**                      | Hardware/UX | Concept                           | Kailh Choc Navy switches (60gf) — proprioceptive feedback as medical necessity for dissociation/anxiety.                                                                                          |
+| **Ping**                             | Protocol    | In BONDING                        | Reaction system. 💚🤔😂🔺. One ping = one documented connection. Max 3 per molecule. Every ping = LOVE for both sender and receiver.                                                              |
+| **The Centaur**                      | Protocol    | Active                            | Human-AI collaboration model. Will (biological intent) + AI stack (silicon execution) = Homo syntheticus.                                                                                         |
 
 ### Tech Stack
+
 - **Frontend:** React + TypeScript + Vite + Three.js (@react-three/fiber + drei) + Tailwind + Zustand
 - **Backend:** Cloudflare Workers + KV (BONDING relay + telemetry); FastAPI + PostgreSQL + Redis (planned for Buffer)
 - **Hardware:** ESP32-S3 + DRV2605L + LoRa SX1262 + NXP SE050
@@ -94,27 +101,29 @@
 - **State sync:** CRDT + WebSocket relay (Spaceship Earth); Cloudflare KV polling (BONDING multiplayer)
 - **Persistence:** IndexedDB via idb-keyval (LOVE economy + telemetry backstop); navigator.storage.persist() for eviction defense
 - **Cryptography:** Browser-native crypto.subtle SHA-256 (client) + Cloudflare Workers crypto.subtle (server-side countersignature)
-- **Testing:** Vitest + jsdom + @vitest/coverage-v8 — **488 tests, all green**
+
 - **Repo structure:** `pwa/` (original Buffer, BondingView) and `apps/web/` (Spaceship Earth, IVM, wallet, onboarding)
 - **BONDING standalone:** `04_SOFTWARE/bonding/` — Vite + React + R3F + Zustand + Vitest
 - **ESLint:** v10 flat config
 
 ### Hardware
+
 - **Dev machine:** Acer Chromebook Spin 713 (MrChromebox Linux conversion evaluated, currently ChromeOS 145 beta)
 - **Desktop (heavy compute):** AMD RX 6600 XT + Intel i3-12100 (Ollama local inference capable with ROCm HSA_OVERRIDE_GFX_VERSION=10.3.0)
 
 ### The Triad of Cognition (AI Tag-Out System)
 
-| Agent | Role | Allocation | Tagged IN | Tagged OUT |
-|-------|------|-----------|-----------|------------|
-| **Sonnet (CC)** | Mechanic | 80% | UI, React, Python, debugging, WCD execution | Architecture, firmware |
-| **Gemini** | Narrator | 15% | Grants, narrative, HAAT framing, technical specs, research synthesis | Code implementation (uses [V: claim, source] markers) |
-| **DeepSeek** | Firmware | 4% | ESP32 C/C++, hardware registers | UI, architecture |
-| **Opus** | Architect | 1% | QA, architecture verification, test suites, WCD authoring/closeout, risk audits | Minor coding tasks |
+| Agent           | Role      | Allocation | Tagged IN                                                                       | Tagged OUT                                            |
+| --------------- | --------- | ---------- | ------------------------------------------------------------------------------- | ----------------------------------------------------- |
+| **Sonnet (CC)** | Mechanic  | 80%        | UI, React, Python, debugging, WCD execution                                     | Architecture, firmware                                |
+| **Gemini**      | Narrator  | 15%        | Grants, narrative, HAAT framing, technical specs, research synthesis            | Code implementation (uses [V: claim, source] markers) |
+| **DeepSeek**    | Firmware  | 4%         | ESP32 C/C++, hardware registers                                                 | UI, architecture                                      |
+| **Opus**        | Architect | 1%         | QA, architecture verification, test suites, WCD authoring/closeout, risk audits | Minor coding tasks                                    |
 
 **Proven pattern (Feb 27-Mar 1):** Gemini wrote the Affective Chemistry technical spec. Opus wrote the test suite (109 → 484 tests). Sonnet executed the WCDs. Opus deep-researched 5 critical risk vectors. Gemini synthesized the findings into a directive. Opus baked the patches into production TypeScript. Each agent in their lane, each catching what the others missed. The Triad works.
 
 **Failure modes documented in SOULSAFE v1.0:**
+
 - Gemini: "The Chaplain" — refuses task, redirects to wellness advice, under-intervenes (accelerant)
 - Opus: Over-intervention — can break flow with excessive QA
 - Sonnet: Hallucination during patch application — mitigated by pre-patched code delivery
@@ -142,18 +151,19 @@ Mar 2-3  ██████████  MolecularWarp field, warp easter egg, E
 
 Court-grade telemetry and L.O.V.E. economy engine. All four Opus-audited patches applied:
 
-| Patch | Threat | Defense |
-|-------|--------|---------|
-| PATCH 1 | Chrome evicts localStorage, destroying hash chain | IndexedDB via idb-keyval + navigator.storage.persist() + custom merge function |
-| PATCH 2 | KV shared index loses sessions during concurrent writes | Per-session unique keys + KV.list() for discovery — zero write contention |
-| PATCH 3 | sendBeacon drops 5-15% of mobile sessions on exit | 30s incremental flush + IDB backstop on visibilitychange/freeze + orphan recovery |
-| PATCH 4 | Client-side SHA-256 vulnerable to Daubert challenge | Server-side independent hash + serverVerified flag + forensic metadata (cf-ray, TLS, UA) |
+| Patch   | Threat                                                  | Defense                                                                                  |
+| ------- | ------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| PATCH 1 | Chrome evicts localStorage, destroying hash chain       | IndexedDB via idb-keyval + navigator.storage.persist() + custom merge function           |
+| PATCH 2 | KV shared index loses sessions during concurrent writes | Per-session unique keys + KV.list() for discovery — zero write contention                |
+| PATCH 3 | sendBeacon drops 5-15% of mobile sessions on exit       | 30s incremental flush + IDB backstop on visibilitychange/freeze + orphan recovery        |
+| PATCH 4 | Client-side SHA-256 vulnerable to Daubert challenge     | Server-side independent hash + serverVerified flag + forensic metadata (cf-ray, TLS, UA) |
 
 **Architecture:** eventBus.ts (typed pub/sub) → economyStore.ts (L.O.V.E. ledger, IndexedDB-persisted) + telemetryStore.ts (Exhibit A, 30s flush) → worker-telemetry.ts (6 Cloudflare endpoints, server SHA-256) → genesis.ts (async bootstrap, persist(), orphan recovery)
 
 **Relay:** https://bonding-relay.trimtab-signal.workers.dev
 
 **Legal basis (Georgia):**
+
 - O.C.G.A. § 24-9-901(b)(9): Authentication via process/system description
 - O.C.G.A. § 24-9-902(11): Self-authentication via custodian certification
 - O.C.G.A. § 24-8-803(6): Business records hearsay exception
@@ -161,13 +171,13 @@ Court-grade telemetry and L.O.V.E. economy engine. All four Opus-audited patches
 
 ### What Ships March 10 (Remaining Tracks)
 
-| Track | Est | Description | Status |
-|-------|-----|-------------|--------|
-| **1. Difficulty Modes** | 0.5 day | Seed 🌱 (H+O, Willow), Sprout 🌿 (H+C+N+O, Bash), Sapling 🌳 (full palette) | Ready |
-| **2. Multiplayer** | 2 days | Cloudflare Worker + KV relay. Side-by-side remote play. PING reactions. 6-char room codes. | In progress |
-| **3. Touch Hardening** | 0.5 day | touch-action:none, 48px targets, viewport lock | In WCD-08 |
-| **4. The Cockpit (WCD-08)** | 1 day | Spatial Doctrine, glassmorphism HUD, z-index contract | ✅ Executed and deployed |
-| **5. Quest Chains** | 1 day (stretch) | Genesis (Seed), The Kitchen (Sprout), The Posner Quest (Sapling) | Stretch |
+| Track                       | Est             | Description                                                                                | Status                   |
+| --------------------------- | --------------- | ------------------------------------------------------------------------------------------ | ------------------------ |
+| **1. Difficulty Modes**     | 0.5 day         | Seed 🌱 (H+O, Willow), Sprout 🌿 (H+C+N+O, Bash), Sapling 🌳 (full palette)                | Ready                    |
+| **2. Multiplayer**          | 2 days          | Cloudflare Worker + KV relay. Side-by-side remote play. PING reactions. 6-char room codes. | In progress              |
+| **3. Touch Hardening**      | 0.5 day         | touch-action:none, 48px targets, viewport lock                                             | In WCD-08                |
+| **4. The Cockpit (WCD-08)** | 1 day           | Spatial Doctrine, glassmorphism HUD, z-index contract                                      | ✅ Executed and deployed |
+| **5. Quest Chains**         | 1 day (stretch) | Genesis (Seed), The Kitchen (Sprout), The Posner Quest (Sapling)                           | Stretch                  |
 
 ### Architecture Decisions
 
@@ -176,6 +186,7 @@ Court-grade telemetry and L.O.V.E. economy engine. All four Opus-audited patches
 **Difficulty modes are palette restriction + target filtering.** One codebase, one game loop. The mode controls which elements appear and which achievements are visible.
 
 **The Cockpit (WCD-08) z-index contract:**
+
 ```
 Layer  z-index   Owner                   pointer-events
 ─────  ────────  ──────────────────────  ──────────────
@@ -219,9 +230,11 @@ BONDING merges into Spaceship Earth as a module. Planned features (none blocking
 ## 5. ACTIVE WORKSTREAMS
 
 ### 🔴 CRITICAL — BONDING Full Ship (March 10, 2026)
+
 T-7 days. Genesis Block live. Cockpit HUD deployed. MolecularWarp shipped. Multiplayer, difficulty modes, and touch hardening remain. See §4.
 
 ### 🟡 LEGAL — Family Court
+
 - Case continued to **March 12, 2026** (Chief Judge Scarlett)
 - Judge Green recusal pending — Feb 5 order unsigned
 - Key evidence: Messenger Kids logs (children initiated all contact), TSP withdrawal timeline ($70,793.85 gross, Oct 2025), neither attorney converted to RBCO
@@ -233,6 +246,7 @@ T-7 days. Genesis Block live. Cockpit HUD deployed. MolecularWarp shipped. Multi
 - **Genesis Block Daubert defense:** Server-side SHA-256 countersignature, per-session unique KV keys, forensic metadata (cf-ray, TLS version, user agent), Georgia statutes § 24-9-901/902, § 24-8-803, § 24-7-702
 
 ### 🟡 FERS Disability Retirement
+
 - **Official separation:** ~September 30, 2025 from TRIREFFAC Kings Bay, GA
 - **Filing deadline:** ~September 30, 2026 (5 CFR § 844.201)
 - **Contact:** Eric Violette (OCHR Norfolk, 202-913-3720) responded Feb 25
@@ -245,11 +259,13 @@ T-7 days. Genesis Block live. Cockpit HUD deployed. MolecularWarp shipped. Multi
 - **Mail to:** U.S. Office of Personnel Management, Retirement Operations Center, P.O. Box 45, Boyers, PA 16017-0045
 
 ### 🟢 SSA Disability
+
 - Both exams complete (Feb 20 telehealth psych, Feb 26 in-person medical/physical/ROM)
 - Positive results reported from both
 - Awaiting determination. Ball in SSA's court.
 
 ### 🟢 P31 Infrastructure
+
 - HCB fiscal sponsorship pending (ref 4XDUXX)
 - phosphorus31.org live at phosphorus31-org.pages.dev
 - bonding.p31ca.org deployed and serving
@@ -280,47 +296,47 @@ T-7 days. Genesis Block live. Cockpit HUD deployed. MolecularWarp shipped. Multi
 
 These are not metaphors. They are the operator's native conceptual framework.
 
-| Term | Meaning |
-|------|---------|
-| **Delta topology** | Mesh/rigid network. Resilient. P31 target architecture. |
-| **Wye topology** | Centralized/fragile star network. Legacy. What we're replacing. |
-| **Ground the floating neutral** | Triangulate truth, code, and law. Don't rely on external validation. |
-| **Decoherence** | Loss of authentic internal state under external pressure. The fawn response. |
-| **Spoons** | Cognitive/physical energy units (spent). From spoon theory. |
-| **LOVE** | Regulation credits (earned). Syntropy side of the entropy equation. |
-| **SOULSAFE** | SUBSAFE principles applied to cognitive systems. OQE + WCD. |
-| **OQE** | Objective Quality Evidence. Proof it works. |
-| **WCD** | Work Control Document. Authorization to modify critical systems. |
-| **Tag-out** | Lockout/tagout for AI agents. Stay in your lane. |
-| **Jitterbug transformation** | Fuller's concept: Vector Equilibrium (potential) → Tetrahedron (structure). The moment of creation. |
-| **IVM** | Isotropic Vector Matrix. Fuller's coordinate system. How the operator thinks about space. |
-| **Posner molecule** | Ca₉(PO₄)₆. The calcium cage that protects phosphorus. P31 Labs protecting the operator. |
-| **Fisher-Escolà Q-Factor** | Cognitive coherence score across four tetrahedral vertices: energy, tasks, environment, creation. |
-| **The Centaur** | Human + AI > either alone. The operational model. |
-| **Hill system** | Formula ordering convention used internally by BONDING chemistry engine. C first, H second, then alphabetical. Display layer translates to conventional notation. |
-| **Parking lot** | Impulse capture file. One line per idea. No editing, no prioritizing, just capture. Triaged at phase gates. |
-| **The Soup** | Spatial chat world. Molecules drift, cluster, react. Messages orbit molecules. Future home of all P31 features as "rooms." |
-| **The Cockpit** | WCD-08 spatial doctrine. R3F canvas fills viewport; glassmorphism HUD panels tile the perimeter. Nothing crosses the glass. |
-| **Genesis Block** | CWP-03 Rev B. The cryptographic, court-admissible, server-verified telemetry engine. Fires March 10. |
-| **The Chaplain** | Gemini failure mode: refuses task, redirects to wellness advice instead of executing. |
-| **Quantum Brain Dump** | Workflow: Google Keep capture → Google Docs organization (Gemini) → Deep Research synthesis with citations. |
-| **MolecularWarp** | Chemistry-native particle field. 200 LineSegment particles colored by element emissive values. Replaced generic drei Stars everywhere. Idle drift; warp speed on double-tap. |
-| **Double-tap warp** | Easter egg. Double-tap empty canvas within 400ms → warp speed effect (element-colored streaks + ascending frequency sweep). WMP DNA in a chem game. |
+| Term                            | Meaning                                                                                                                                                                      |
+| ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Delta topology**              | Mesh/rigid network. Resilient. P31 target architecture.                                                                                                                      |
+| **Wye topology**                | Centralized/fragile star network. Legacy. What we're replacing.                                                                                                              |
+| **Ground the floating neutral** | Triangulate truth, code, and law. Don't rely on external validation.                                                                                                         |
+| **Decoherence**                 | Loss of authentic internal state under external pressure. The fawn response.                                                                                                 |
+| **Spoons**                      | Cognitive/physical energy units (spent). From spoon theory.                                                                                                                  |
+| **LOVE**                        | Regulation credits (earned). Syntropy side of the entropy equation.                                                                                                          |
+| **SOULSAFE**                    | SUBSAFE principles applied to cognitive systems. OQE + WCD.                                                                                                                  |
+| **OQE**                         | Objective Quality Evidence. Proof it works.                                                                                                                                  |
+| **WCD**                         | Work Control Document. Authorization to modify critical systems.                                                                                                             |
+| **Tag-out**                     | Lockout/tagout for AI agents. Stay in your lane.                                                                                                                             |
+| **Jitterbug transformation**    | Fuller's concept: Vector Equilibrium (potential) → Tetrahedron (structure). The moment of creation.                                                                          |
+| **IVM**                         | Isotropic Vector Matrix. Fuller's coordinate system. How the operator thinks about space.                                                                                    |
+| **Posner molecule**             | Ca₉(PO₄)₆. The calcium cage that protects phosphorus. P31 Labs protecting the operator.                                                                                      |
+| **Fisher-Escolà Q-Factor**      | Cognitive coherence score across four tetrahedral vertices: energy, tasks, environment, creation.                                                                            |
+| **The Centaur**                 | Human + AI > either alone. The operational model.                                                                                                                            |
+| **Hill system**                 | Formula ordering convention used internally by BONDING chemistry engine. C first, H second, then alphabetical. Display layer translates to conventional notation.            |
+| **Parking lot**                 | Impulse capture file. One line per idea. No editing, no prioritizing, just capture. Triaged at phase gates.                                                                  |
+| **The Soup**                    | Spatial chat world. Molecules drift, cluster, react. Messages orbit molecules. Future home of all P31 features as "rooms."                                                   |
+| **The Cockpit**                 | WCD-08 spatial doctrine. R3F canvas fills viewport; glassmorphism HUD panels tile the perimeter. Nothing crosses the glass.                                                  |
+| **Genesis Block**               | CWP-03 Rev B. The cryptographic, court-admissible, server-verified telemetry engine. Fires March 10.                                                                         |
+| **The Chaplain**                | Gemini failure mode: refuses task, redirects to wellness advice instead of executing.                                                                                        |
+| **Quantum Brain Dump**          | Workflow: Google Keep capture → Google Docs organization (Gemini) → Deep Research synthesis with citations.                                                                  |
+| **MolecularWarp**               | Chemistry-native particle field. 200 LineSegment particles colored by element emissive values. Replaced generic drei Stars everywhere. Idle drift; warp speed on double-tap. |
+| **Double-tap warp**             | Easter egg. Double-tap empty canvas within 400ms → warp speed effect (element-colored streaks + ascending frequency sweep). WMP DNA in a chem game.                          |
 
 ---
 
 ## 8. DAILY SCHEDULE (The Buffer Schedule)
 
-| Block | Time | Task |
-|-------|------|------|
-| Morning Flow | 7:00–8:30 | Handwrite on iPad. Brain dump. Music: Einaudi, Daniel Jang, French Fuse. |
-| Process | 8:30–9:30 | OCR → AI processing. Brain dump → action items. Quantum Brain Dump workflow. |
-| Deep Work 1 | 9:30–12:00 | Priority #1 deliverable |
-| Midday Reset | 12:00–1:00 | Lunch. House. Movement. |
-| Admin Block | 1:00–2:30 | Legal, FERS, emails, filings |
-| Deep Work 2 | 2:30–4:30 | Secondary priority |
-| Kids Block | 4:30–7:00 | Bash and Willow. Present. Off-system. (When custody allows.) |
-| Evening Review | 8:00–9:00 | Update context file. Stage tomorrow. |
+| Block          | Time       | Task                                                                         |
+| -------------- | ---------- | ---------------------------------------------------------------------------- |
+| Morning Flow   | 7:00–8:30  | Handwrite on iPad. Brain dump. Music: Einaudi, Daniel Jang, French Fuse.     |
+| Process        | 8:30–9:30  | OCR → AI processing. Brain dump → action items. Quantum Brain Dump workflow. |
+| Deep Work 1    | 9:30–12:00 | Priority #1 deliverable                                                      |
+| Midday Reset   | 12:00–1:00 | Lunch. House. Movement.                                                      |
+| Admin Block    | 1:00–2:30  | Legal, FERS, emails, filings                                                 |
+| Deep Work 2    | 2:30–4:30  | Secondary priority                                                           |
+| Kids Block     | 4:30–7:00  | Bash and Willow. Present. Off-system. (When custody allows.)                 |
+| Evening Review | 8:00–9:00  | Update context file. Stage tomorrow.                                         |
 
 ---
 
@@ -340,17 +356,17 @@ These are not metaphors. They are the operator's native conceptual framework.
 
 ## 10. KEY PEOPLE
 
-| Person | Role | Contact / Notes |
-|--------|------|-----------------|
-| **Tyler** | Beta tester | Tailscale mesh. BONDING multiplayer stress test partner. Family: Ashley, Link, Judah. |
-| **Robby Allen** | Former supervisor | Signed SF 3112B (FERS disability) |
-| **Eric Violette** | OCHR Norfolk | 202-913-3720. Responded Feb 25 re: FERS forms. |
-| **Amber Antoine** | OCHR Stennis | Handled separation processing. Cannot help with benefits (wrong office). |
-| **Chief Judge Scarlett** | Family court | Continued case to March 12, 2026. |
-| **Judge Green** | Family court | Pending recusal. Feb 5 order unsigned. |
-| **McGhan** | Opposing counsel | Filed despite knowing East was terminated. |
-| **East** | Former attorney | Terminated. Signed Oct 23, 2025 order three days post-TSP withdrawal. |
-| **Hunter McFeron** | Georgia Tools for Life | hunter.mcferon@gatfl.gatech.edu — AT Lending Library contact |
+| Person                   | Role                   | Contact / Notes                                                                       |
+| ------------------------ | ---------------------- | ------------------------------------------------------------------------------------- |
+| **Tyler**                | Beta tester            | Tailscale mesh. BONDING multiplayer stress test partner. Family: Ashley, Link, Judah. |
+| **Robby Allen**          | Former supervisor      | Signed SF 3112B (FERS disability)                                                     |
+| **Eric Violette**        | OCHR Norfolk           | 202-913-3720. Responded Feb 25 re: FERS forms.                                        |
+| **Amber Antoine**        | OCHR Stennis           | Handled separation processing. Cannot help with benefits (wrong office).              |
+| **Chief Judge Scarlett** | Family court           | Continued case to March 12, 2026.                                                     |
+| **Judge Green**          | Family court           | Pending recusal. Feb 5 order unsigned.                                                |
+| **McGhan**               | Opposing counsel       | Filed despite knowing East was terminated.                                            |
+| **East**                 | Former attorney        | Terminated. Signed Oct 23, 2025 order three days post-TSP withdrawal.                 |
+| **Hunter McFeron**       | Georgia Tools for Life | hunter.mcferon@gatfl.gatech.edu — AT Lending Library contact                          |
 
 ---
 
@@ -366,24 +382,24 @@ These are not metaphors. They are the operator's native conceptual framework.
 
 ## 12. WCD HISTORY (Executed)
 
-| WCD | Date | Scope | Status |
-|-----|------|-------|--------|
-| WCD-01 — WCD-03 | Feb 25-26 | Days 1-3 core build (builder, palette, drag, atoms, VSEPR, bloom, achievements, sound) | ✅ Complete |
-| WCD-04A | Feb 27 | Day 4 bug fixes + checkpoint system | ✅ Complete |
-| WCD-05 | Feb 27 | Formula mismatch (11 entries) + test suite (109 tests) | ✅ Complete |
-| CWP-03 Rev A | Feb 28 | Genesis Block v1 (eventBus, economyStore, telemetryStore, worker-telemetry, genesis) | ⚠️ Superseded |
-| CWP-03 Rev B | Mar 1 | Genesis Block v2 — 4 Opus-audited patches (IndexedDB, KV race fix, 30s flush, server SHA-256) | ✅ Deployed |
-| WCD-07 | Feb 28 | Jitterbug Navigator (SVG, cuboctahedron→tetrahedron based on spoons) | ✅ Complete |
-| WCD-08 Phase A | Mar 1 | The Cockpit — Spatial Doctrine, glassmorphism HUD, z-index contract (6 components + config) | ✅ Executed and deployed |
-| WCD-41 | Mar 1 | Stress test: 488 tests, 500 concurrent events, zero packet loss | ✅ Passed |
-| Mar 2-3 Visual Session | Mar 2-3 | MolecularWarp (element-colored particle field), double-tap warp easter egg, Lobby/ModeSelect CSS stacking fix (`isolate` + `-z-10`), ElementPalette emissive revamp, Jitterbug organic breathing | ✅ Deployed — 488/488 tests |
+| WCD                    | Date      | Scope                                                                                                                                                                                            | Status                      |
+| ---------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------- |
+| WCD-01 — WCD-03        | Feb 25-26 | Days 1-3 core build (builder, palette, drag, atoms, VSEPR, bloom, achievements, sound)                                                                                                           | ✅ Complete                 |
+| WCD-04A                | Feb 27    | Day 4 bug fixes + checkpoint system                                                                                                                                                              | ✅ Complete                 |
+| WCD-05                 | Feb 27    | Formula mismatch (11 entries) + test suite (109 tests)                                                                                                                                           | ✅ Complete                 |
+| CWP-03 Rev A           | Feb 28    | Genesis Block v1 (eventBus, economyStore, telemetryStore, worker-telemetry, genesis)                                                                                                             | ⚠️ Superseded               |
+| CWP-03 Rev B           | Mar 1     | Genesis Block v2 — 4 Opus-audited patches (IndexedDB, KV race fix, 30s flush, server SHA-256)                                                                                                    | ✅ Deployed                 |
+| WCD-07                 | Feb 28    | Jitterbug Navigator (SVG, cuboctahedron→tetrahedron based on spoons)                                                                                                                             | ✅ Complete                 |
+| WCD-08 Phase A         | Mar 1     | The Cockpit — Spatial Doctrine, glassmorphism HUD, z-index contract (6 components + config)                                                                                                      | ✅ Executed and deployed    |
+| WCD-41                 | Mar 1     | Stress test: 488 tests, 500 concurrent events, zero packet loss                                                                                                                                  | ✅ Passed                   |
+| Mar 2-3 Visual Session | Mar 2-3   | MolecularWarp (element-colored particle field), double-tap warp easter egg, Lobby/ModeSelect CSS stacking fix (`isolate` + `-z-10`), ElementPalette emissive revamp, Jitterbug organic breathing | ✅ Deployed — 488/488 tests |
 
 ---
 
-*This document is the operator's cognitive passport. Attach it to any AI interaction for instant context. Without it, words are nothing. With it, a small model becomes extremely powerful.*
+_This document is the operator's cognitive passport. Attach it to any AI interaction for instant context. Without it, words are nothing. With it, a small model becomes extremely powerful._
 
-*"With the right context I'm an absolute genius. With the wrong context I'm a hallucinating conspiracy theorist."*
+_"With the right context I'm an absolute genius. With the wrong context I'm a hallucinating conspiracy theorist."_
 
-*— P31 Cognitive Passport v2.1*
-*— March 3, 2026*
-*— 🔺*
+_— P31 Cognitive Passport v2.1_
+_— March 3, 2026_
+_— 🔺_

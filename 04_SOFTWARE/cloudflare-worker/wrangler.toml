@@ -1,6 +1,6 @@
 # Cloudflare Worker Configuration
-name = "p31-mesh-discord-worker"
-main = "worker.js"
+name = "p31-social-broadcast"
+main = "p31_social_broadcast_worker.js"
 compatibility_date = "2024-06-12"
 
 # Environment Variables

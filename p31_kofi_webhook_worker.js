@@ -2,14 +2,13 @@
  * P31 Ko-fi Webhook Worker
  * Listens for Ko-fi webhooks and tracks node count for the Delta mesh
  * Includes Discord webhook integration for automated donation notifications
- * 
+ *
  * Deploy: wrangler deploy p31_kofi_webhook_worker.js
- * Environment: KOFI_SECRET, NODE_COUNT_KV, DISCORD_WEBHOOK_URL
+ * Environment secrets: KOFI_SECRET, DISCORD_WEBHOOK_URL
+ * KV binding: NODE_COUNT_KV
+ *
+ * Merges functionality from p31_kofi_discord_telemetry.js
  */
-
-const KOFI_SECRET = KOFI_SECRET || '';
-const NODE_COUNT_KV = NODE_COUNT_KV || null;
-const DISCORD_WEBHOOK_URL = DISCORD_WEBHOOK_URL || '';
 
 // Node milestones from Cognitive Passport
 const NODE_MILESTONES = [4, 39, 69, 150, 420, 863, 1776];
@@ -27,70 +26,117 @@ export default {
       });
     }
 
-  // GET endpoint for node count and milestone status
-  if (request.method === 'GET') {
-    const nodeCount = await getNodeCount(env);
-    const nextMilestone = getNextMilestone(nodeCount);
-    const rewards = getAvailableRewards(nodeCount);
-    
-    return jsonResponse({
-      node_count: nodeCount,
-      next_milestone: nextMilestone,
-      rewards: rewards,
-      milestone_meaning: getMilestoneMeaning(nodeCount),
-      progress: getProgressToNext(nodeCount)
-    });
-  }
+    const url = new URL(request.url);
+    const path = url.pathname;
 
-  if (request.method !== 'POST') {
-    return jsonResponse({ error: 'Method not allowed' }, 405);
-  }
+    // GET endpoint for node count and milestone status
+    if (request.method === 'GET') {
+      if (path === '/health' || path === '/') {
+        return jsonResponse({
+          service: 'p31-kofi-webhook',
+          status: 'operational',
+          node_count: await getNodeCount(env),
+        });
+      }
 
-  try {
-    // Verify webhook secret
-    const webhookSecret = request.headers.get('x-kofi-webhook-secret');
-    if (KOFI_SECRET && webhookSecret !== KOFI_SECRET) {
-      return jsonResponse({ error: 'Unauthorized' }, 401);
-    }
+      const nodeCount = await getNodeCount(env);
+      const nextMilestone = getNextMilestone(nodeCount);
+      const rewards = getAvailableRewards(nodeCount);
 
-    // Parse Ko-fi webhook payload
-    const payload = await request.json();
-    const event = parseWebhookEvent(payload);
-
-    if (!event) {
-      return jsonResponse({ 
-        node_count: await getNodeCount(env),
-        status: 'ignored',
-        message: 'Non-donation event'
+      return jsonResponse({
+        node_count: nodeCount,
+        next_milestone: nextMilestone,
+        rewards: rewards,
+        milestone_meaning: getMilestoneMeaning(nodeCount),
+        progress: getProgressToNext(nodeCount),
       });
     }
 
-    // Process the donation/purchase
-    const result = await processEvent(event, env, ctx);
+    if (request.method !== 'POST') {
+      return jsonResponse({ error: 'Method not allowed' }, 405);
+    }
 
-    return jsonResponse({
-      node_count: await getNodeCount(env),
-      status: 'processed',
-      event_type: event.type,
-      amount: event.amount,
-      message: result.message,
-      milestone_reached: result.milestone
-    });
+    try {
+      // Verify webhook secret (supports both header and Ko-fi verification token)
+      const webhookSecret = request.headers.get('x-kofi-webhook-secret');
+      const kofiSecret = env.KOFI_SECRET || '';
+      if (kofiSecret && webhookSecret !== kofiSecret) {
+        return jsonResponse({ error: 'Unauthorized' }, 401);
+      }
 
-  } catch (error) {
-    return jsonResponse({ 
-      error: 'Internal server error',
-      details: error.message 
-    }, 500);
-  }
-},
+      // Parse Ko-fi webhook payload (supports both JSON and form-encoded)
+      let payload;
+      const contentType = request.headers.get('content-type') || '';
+      if (contentType.includes('application/x-www-form-urlencoded')) {
+        const formData = await request.formData();
+        const dataField = formData.get('data');
+        payload = dataField ? JSON.parse(dataField) : {};
+      } else {
+        payload = await request.json();
+      }
 
-  // Scheduled: Update node count from Ko-fi API daily
+      const event = parseWebhookEvent(payload);
+
+      if (!event) {
+        return jsonResponse({
+          node_count: await getNodeCount(env),
+          status: 'ignored',
+          message: 'Non-donation event',
+        });
+      }
+
+      // Process the donation/purchase
+      const result = await processEvent(event, env, ctx);
+
+      return jsonResponse({
+        node_count: await getNodeCount(env),
+        status: 'processed',
+        event_type: event.type,
+        amount: event.amount,
+        message: result.message,
+        milestone_reached: result.milestone,
+      });
+    } catch (error) {
+      return jsonResponse({
+        error: 'Internal server error',
+        details: error.message,
+      }, 500);
+    }
+  },
+
+  // Scheduled: daily node count digest to Discord
   async scheduled(event, env, ctx) {
-    console.log('Running daily node count sync...');
-    // This would fetch from Ko-fi API to get accurate totals
-    // For now, KV-based counting handles real-time updates
-  }
+    const nodeCount = await getNodeCount(env);
+    const nextMilestone = getNextMilestone(nodeCount);
+    const webhookUrl = env.DISCORD_WEBHOOK_URL;
+
+    if (!webhookUrl) return;
+
+    const embed = {
+      embeds: [{
+        title: '📊 Daily Node Count Digest',
+        color: 0x00D4FF,
+        fields: [
+          { name: 'Total Nodes', value: `${nodeCount}`, inline: true },
+          {
+            name: 'Next Milestone',
+            value: nextMilestone
+              ? `${nextMilestone.target} (${nextMilestone.remaining} to go)`
+              : 'All milestones reached!',
+            inline: true,
+          },
+        ],
+        footer: { text: 'P31 Labs | Daily Ko-fi Digest' },
+        timestamp: new Date().toISOString(),
+      }],
+    };
+
+    await fetch(webhookUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(embed),
+    });
+  },
 };
 
 function parseWebhookEvent(payload) {
@@ -116,13 +162,13 @@ function parseWebhookEvent(payload) {
 async function processEvent(event, env, ctx) {
   let nodeCount = await getNodeCount(env);
   const previousCount = nodeCount;
-  
+
   // Increment node count (each supporter = 1 node)
   nodeCount++;
-  
+
   // Save to KV
   await saveNodeCount(env, nodeCount);
-  
+
   // Log the support
   await logSupport(env, event);
 
@@ -131,45 +177,45 @@ async function processEvent(event, env, ctx) {
   if (NODE_MILESTONES.includes(nodeCount) && nodeCount > previousCount) {
     milestone = {
       reached: nodeCount,
-      milestone: getMilestoneMeaning(nodeCount)
+      milestone: getMilestoneMeaning(nodeCount),
     };
-    console.log(`🎉 Node milestone reached: ${nodeCount}`);
+    console.log(`Node milestone reached: ${nodeCount}`);
   }
 
   // Send Discord notification
-  if (DISCORD_WEBHOOK_URL) {
-    await sendDiscordNotification(event, nodeCount, milestone);
+  if (env.DISCORD_WEBHOOK_URL) {
+    await sendDiscordNotification(event, nodeCount, milestone, env);
   }
 
   return {
     message: `Thank you, ${event.name}! Node ${nodeCount} in the Delta mesh.`,
-    milestone: milestone
+    milestone: milestone,
   };
 }
 
-async function sendDiscordNotification(event, nodeCount, milestone) {
+async function sendDiscordNotification(event, nodeCount, milestone, env) {
   const embed = {
     embeds: [{
-      title: milestone 
-        ? `🎉 MILESTONE: Node ${nodeCount}!`
-        : '💚 New Node Added to Delta Mesh',
+      title: milestone
+        ? `MILESTONE: Node ${nodeCount}!`
+        : 'New Node Added to Delta Mesh',
       description: `**${event.name}** just supported P31 Labs!`,
-      color: milestone ? 0xF59E0B : 0x00FF88, // Amber for milestone, Green for normal
+      color: milestone ? 0xF59E0B : 0x00FF88,
       fields: [
         { name: 'Amount', value: `${event.amount} ${event.currency}`, inline: true },
         { name: 'Total Nodes', value: `${nodeCount}`, inline: true },
-        { name: 'Message', value: event.message || '_No message_', inline: false }
+        { name: 'Message', value: event.message || '_No message_', inline: false },
       ],
-      footer: { text: 'P31 Labs | The Delta is rigid. The mesh holds. 🔺' },
-      timestamp: new Date().toISOString()
-    }]
+      footer: { text: 'P31 Labs | The Delta is rigid. The mesh holds.' },
+      timestamp: new Date().toISOString(),
+    }],
   };
 
   try {
-    await fetch(DISCORD_WEBHOOK_URL, {
+    await fetch(env.DISCORD_WEBHOOK_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(embed)
+      body: JSON.stringify(embed),
     });
   } catch (error) {
     console.error('Discord notification failed:', error);
@@ -178,38 +224,26 @@ async function sendDiscordNotification(event, nodeCount, milestone) {
 
 async function getNodeCount(env) {
   if (!env.NODE_COUNT_KV) {
-    // Fallback: use in-memory for local dev
-    return global.nodeCount || 0;
+    return 0;
   }
-  
   const count = await env.NODE_COUNT_KV.get('node_count');
   return parseInt(count) || 0;
 }
 
 async function saveNodeCount(env, count) {
-  if (!env.NODE_COUNT_KV) {
-    global.nodeCount = count;
-    return;
-  }
-  
+  if (!env.NODE_COUNT_KV) return;
   await env.NODE_COUNT_KV.put('node_count', count.toString());
 }
 
 async function logSupport(env, event) {
+  if (!env.NODE_COUNT_KV) return;
   const log = {
     timestamp: event.timestamp,
     type: event.type,
     amount: event.amount,
     name: event.name,
-    message: event.message
+    message: event.message,
   };
-  
-  if (!env.NODE_COUNT_KV) {
-    global.supportLog = global.supportLog || [];
-    global.supportLog.push(log);
-    return;
-  }
-
   const timestamp = Date.now();
   await env.NODE_COUNT_KV.put(`support_${timestamp}`, JSON.stringify(log));
 }

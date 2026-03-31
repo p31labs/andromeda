@@ -79,7 +79,10 @@ export default {
 
         params.append('success_url', body.successUrl || 'https://phosphorus31.org/donate?success=1');
         params.append('cancel_url', body.cancelUrl || 'https://phosphorus31.org/donate');
-        params.append('submit_type', 'donate');
+        // submit_type only valid for mode=payment (not subscription)
+        if (body.mode !== 'monthly') {
+          params.append('submit_type', 'donate');
+        }
 
         const stripeRes = await fetch('https://api.stripe.com/v1/checkout/sessions', {
           method: 'POST',

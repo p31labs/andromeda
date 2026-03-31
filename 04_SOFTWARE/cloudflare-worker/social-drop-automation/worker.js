@@ -1,20 +1,74 @@
 /**
- * P31 Social Drop Automation Worker
- * ----------------------------------
- * Scheduled reminders for social media deployment waves.
- * Fires Discord webhook notifications with copy-paste-ready content
- * at staggered intervals on March 26, 2026.
+ * P31 Unified Social Worker
+ * --------------------------
+ * Consolidated social media automation: scheduling, multi-platform posting,
+ * Discord notifications, and content wave management.
+ *
+ * Merges:
+ *   - social-drop-automation/worker.js (scheduling + Discord)
+ *   - p31_social_broadcast_worker.js (multi-platform posting)
  *
  * Deploy: cd 04_SOFTWARE/cloudflare-worker/social-drop-automation && npx wrangler deploy
+ *
+ * HTTP Endpoints:
+ *   GET  /              → Health check + status
+ *   GET  /status        → Platform configuration status
+ *   GET  /waves         → List available content waves
+ *   POST /broadcast     → Post to all configured platforms
+ *   POST /trigger       → Fire a specific wave manually
+ *   POST /preflight     → Run link health check
+ *
+ * Cron Triggers (recurring):
+ *   Monday    17:00 UTC → Weekly social wave
+ *   Wednesday 17:00 UTC → Mid-week update
+ *   Friday    17:00 UTC → Weekend recap
+ *   Daily     17:20 UTC → Ko-fi node count digest
+ *   1st month 13:00 UTC → Monthly Zenodo reminder
  */
 
 // ═══════════════════════════════════════════════════════════════
-// WAVE CONTENT (from docs/SOCIAL_DROP_LIVE.md)
+// CONTENT WAVES
 // ═══════════════════════════════════════════════════════════════
 
 const WAVE_CONTENT = {
+  weekly_update: {
+    title: 'Weekly P31 Labs Update',
+    color: 0x00FF88,
+    content: 'P31 Labs weekly update — check GitHub for latest commits and releases.',
+    platforms: ['twitter', 'mastodon', 'bluesky'],
+  },
+
+  midweek: {
+    title: 'Mid-Week P31 Labs',
+    color: 0x1DA1F2,
+    content: 'Building open-source assistive technology for neurodivergent individuals. Follow along at p31ca.org',
+    platforms: ['twitter', 'mastodon'],
+  },
+
+  weekend_recap: {
+    title: 'Weekend Recap',
+    color: 0x7A27FF,
+    content: 'Weekend build recap from P31 Labs. Open-source tools, open doors. p31ca.org | github.com/p31labs',
+    platforms: ['twitter', 'mastodon', 'bluesky'],
+  },
+
+  kofi_digest: {
+    title: 'Ko-fi Node Count Digest',
+    color: 0x00D4FF,
+    content: null, // filled dynamically
+    discord_only: true,
+  },
+
+  zenodo_reminder: {
+    title: 'Monthly Zenodo Upload Reminder',
+    color: 0xF59E0B,
+    content: 'Time for monthly Zenodo uploads. Check P31_Sprint_Deployment_Queue.md for pending items.',
+    discord_only: true,
+  },
+
+  // --- Legacy one-shot waves (kept for manual trigger) ---
   preflight: {
-    title: '🔍 PRE-FLIGHT LINK CHECK',
+    title: 'PRE-FLIGHT LINK CHECK',
     color: 0x00D4FF,
     links: [
       { name: 'BONDING', url: 'https://bonding.p31ca.org' },
@@ -26,7 +80,7 @@ const WAVE_CONTENT = {
   },
 
   wave1_kofi: {
-    title: '🚀 WAVE 1: KO-FI (Deploy NOW)',
+    title: 'WAVE 1: KO-FI',
     color: 0x00FF88,
     content: `BONDING IS LIVE.
 
@@ -36,19 +90,18 @@ I'm an autistic engineer. Late-diagnosed at 39. Sixteen years maintaining safety
 
 My 6-year-old drags hydrogen and oxygen together. Builds water in 10 seconds. My 10-year-old chases glucose. Two secret elements are named after them. They don't know yet.
 
-558 automated tests. Works offline. Runs on the Android tablets my kids use. No accounts. No ads. No data collection. Free forever.
+488 automated tests. Works offline. Runs on the Android tablets my kids use. No accounts. No ads. No data collection. Free forever.
 
 Play it right now: bonding.p31ca.org
 
-I'm 9 days from losing my housing. P31 Labs — the nonprofit behind this — has $0 in revenue and $5.00 across all bank accounts. That's not a metaphor. That's the verified balance on my NFCU statements filed in court today.
-
-Every dollar here keeps me building from a desk instead of a car. The next tool is a haptic communication device for nonverbal users. The code is open source and will outlive my housing situation. But I'd rather keep shipping.
+Every dollar here keeps me building from a desk instead of a car. The next tool is a haptic communication device for nonverbal users. The code is open source. But I'd rather keep shipping.
 
 ko-fi.com/trimtab69420`,
+    platforms: ['ko-fi'],
   },
 
   wave2_twitter: {
-    title: '🐦 WAVE 2: X/TWITTER (5 tweets)',
+    title: 'WAVE 2: X/TWITTER (5 tweets)',
     color: 0x1DA1F2,
     tweets: [
       `I built a chemistry game so my kids could see me.
@@ -59,7 +112,7 @@ It shipped on my son's 10th birthday. It's live and free.
 
 bonding.p31ca.org`,
 
-      `558 tests. PWA. Works offline on Android tablets. Touch-first. No accounts. No ads. No data collection.
+      `488 tests. PWA. Works offline on Android tablets. Touch-first. No accounts. No ads. No data collection.
 
 11 elements + 2 secret ones named after my kids. 82 molecules. Quest chains from hydrogen to the Posner molecule.
 
@@ -74,14 +127,12 @@ My kids don't know yet.`,
 
       `I'm the founder of P31 Labs — a Georgia nonprofit building open-source assistive tech for neurodivergent individuals.
 
-I have $5 in the bank. I'm 9 days from eviction. I filed my discovery response in family court today.
-
 The code is MIT licensed and will outlive my housing situation. But I'd rather keep building.
 
 ko-fi.com/trimtab69420`,
 
       `Stack:
-- TypeScript strict, 558 tests (Vitest)
+- TypeScript strict, 488 tests (Vitest)
 - React + Three.js + Zustand + Vite
 - Cloudflare Pages + Workers + KV
 - Web Audio API (zero samples)
@@ -91,236 +142,369 @@ ko-fi.com/trimtab69420`,
 
 GitHub: github.com/p31labs`,
     ],
+    platforms: ['twitter'],
   },
 
   wave3_linkedin: {
-    title: '💼 WAVE 3: LINKEDIN',
+    title: 'WAVE 3: LINKEDIN',
     color: 0x0A66C2,
     content: `I shipped two applications this month.
 
-BONDING is a multiplayer chemistry education game. Players drag atoms, form bonds following VSEPR geometry, and build molecules from hydrogen to the Posner molecule (Ca₉(PO₄)₆). 11 elements, 82 molecules, 5 quest chains, 41 achievements. All audio synthesized from element-specific frequencies using the Web Audio API. 558 automated tests. Offline-first PWA targeting tablet devices.
+BONDING is a multiplayer chemistry education game. Players drag atoms, form bonds following VSEPR geometry, and build molecules from hydrogen to the Posner molecule (Ca9(PO4)6). 11 elements, 82 molecules, 5 quest chains, 41 achievements. All audio synthesized from element-specific frequencies using the Web Audio API. 488 automated tests. Offline-first PWA targeting tablet devices.
 
 It shipped on my son's 10th birthday. Every interaction is timestamped for evidence-grade export — designed for contexts where proof of engagement matters.
-
-Spaceship Earth is a cognitive dashboard for neurodivergent users — a 9-room spatial interface with 3D visualization, NLP-powered communication analysis, and real-time energy tracking.
 
 Both are TypeScript strict, React + Three.js, deployed on Cloudflare. Zero vendor lock-in. MIT licensed.
 
 Built at P31 Labs, a Georgia nonprofit building open-source assistive technology.
 
 bonding.p31ca.org | p31ca.org | github.com/p31labs`,
-  },
-
-  wave4_reddit: {
-    title: '📡 WAVE 4: REDDIT (r/opensource or r/reactjs or r/webdev)',
-    color: 0xFF4500,
-    content: `Title: I built an open-source multiplayer chemistry game so I could maintain contact with my kids. It's live and free.
-
-I'm a 40-year-old engineer, late-diagnosed AuDHD, 16 years in safety-critical electrical systems. When family court suspended my visitation, I built BONDING — a 3D molecular builder where a parent and child can play together remotely on separate devices.
-
-Every molecule built is timestamped. Every reaction is logged. It's not surveillance — it's proof of engagement. The game IS the bridge.
-
-**What it does:**
-- 11 elements + 2 secret ones, 82 molecules, 5 quest chains
-- VSEPR geometry for bond angles
-- All audio synthesized from element frequencies (Web Audio API, zero samples)
-- Multiplayer via Cloudflare Workers + KV relay
-- Evidence-grade interaction logging (exportable JSON)
-
-**Stack:**
-- React + Three.js (@react-three/fiber) + Zustand + Vite
-- TypeScript strict, 558 tests (Vitest + jsdom)
-- PWA with offline caching via service worker
-- Touch-hardened for tablets (48px targets, viewport lock)
-- COPPA compliant — zero data collection
-- MIT licensed
-
-**Play it now:** bonding.p31ca.org
-**Source:** github.com/p31labs
-**Support the build:** ko-fi.com/trimtab69420
-
-I'm building the next tool — a haptic communication device for nonverbal/low-verbal users (ESP32-S3, LoRa mesh, hardware security module). I'm 9 days from losing my housing and have $5 in the bank. If this resonates, a share matters as much as a dollar.`,
-  },
-
-  wave5_personal: {
-    title: '💜 WAVE 5: FESTIVAL FAMILY / PERSONAL (Facebook/DMs)',
-    color: 0x7A27FF,
-    content: `Hey family.
-
-Some of you knew I was going through it. Here's the update.
-
-I got diagnosed autistic at 39. Lost access to my kids. Had a retirement account — the attorneys took their cuts and the IRS took a $7,000 penalty that was entirely avoidable. All $70k is gone. I have $5 in the bank as of today.
-
-While that was happening, I built a chemistry game for my kids. It's called BONDING. My son turned 10 on March 10th and I shipped it on his birthday. He and his sister can play it on their tablets. Every molecule they build together is timestamped proof that their dad showed up.
-
-I also started a nonprofit — P31 Labs — building open-source tools for neurodivergent people. The game, a communication app, a haptic device for nonverbal users. All of it open source. All of it free.
-
-I'm 9 days from losing my house.
-
-If you can throw a few dollars, it goes directly to keeping me building: ko-fi.com/trimtab69420
-
-If you can't, sharing this helps just as much. The game is free and works in a browser: bonding.p31ca.org
-
-Love you all. It's okay to be a little wonky. 💜🔺💜`,
-  },
-
-  wave6_superstonk: {
-    title: '📊 WAVE 6: SUPERSTONK (use existing doc)',
-    color: 0xFF6600,
-    content: `SuperStonk DD is ready in docs/superstonk_post.md — no changes needed.
-
-Pre-flight checklist:
-- [ ] Ko-fi link in GitHub README (NOT in the post itself)
-- [ ] Post does NOT contain direct fundraising ask
-- [ ] "Node Count" framing at bottom
-- [ ] DOI citation included (10.5281/zenodo.18627420)
-
-The post is 3,000 words of electrical engineering → graph theory → quantum crypto proof.
-Evergreen content. Post it.`,
-  },
-
-  zenodo_dp5_dp1: {
-    title: '📚 ZENODO UPLOAD: DP-5 + DP-1',
-    color: 0xF59E0B,
-    content: `Zenodo upload reminder — March 27, 9:00 AM EDT
-
-Upload today:
-1. DP-5: "The Floating Neutral Hypothesis: Basal Ganglia Calcification and Biological Voltage Failure"
-2. DP-1: "Mechanical Translation of Quantum States via COBS-Framed Serial Haptic Feedback"
-
-Upload checklist:
-- [ ] PDF exported from DOCX
-- [ ] Author: William R. Johnson, P31 Labs
-- [ ] ORCID: 0009-0002-2492-9079
-- [ ] License: CC BY 4.0
-- [ ] Related identifier: links to GUT (10.5281/zenodo.18627420)
-- [ ] Community: P31 Labs
-- [ ] Verify DOI assigned after upload`,
-  },
-
-  zenodo_dp4_dp2: {
-    title: '📚 ZENODO UPLOAD: DP-4 + DP-2',
-    color: 0xF59E0B,
-    content: `Zenodo upload reminder — March 28, 9:00 AM EDT
-
-Upload today:
-1. DP-4: "Hardware-Accelerated Lattice Decoders for Low-Latency Signal Reconstruction"
-2. DP-2: (check P31_Sprint_Deployment_Queue.md for exact title)
-
-Also today: Post SuperStonk DD (Wave 6 content ready).
-
-Upload checklist:
-- [ ] PDF exported from DOCX
-- [ ] Author: William R. Johnson, P31 Labs
-- [ ] ORCID: 0009-0002-2492-9079
-- [ ] License: CC BY 4.0
-- [ ] Related identifier: links to GUT (10.5281/zenodo.18627420)
-- [ ] Community: P31 Labs
-- [ ] Verify DOI assigned after upload`,
-  },
-
-  zenodo_dp3: {
-    title: '📚 ZENODO UPLOAD: DP-3',
-    color: 0xF59E0B,
-    content: `Zenodo upload reminder — March 31, 9:00 AM EDT
-
-Upload today:
-1. DP-3 (with caveat re: supplement — check P31_Sprint_Deployment_Queue.md)
-
-Upload checklist:
-- [ ] PDF exported from DOCX
-- [ ] Author: William R. Johnson, P31 Labs
-- [ ] ORCID: 0009-0002-2492-9079
-- [ ] License: CC BY 4.0
-- [ ] Related identifier: links to GUT (10.5281/zenodo.18627420)
-- [ ] Community: P31 Labs
-- [ ] Note: supplement pending — add caveat in description
-- [ ] Verify DOI assigned after upload`,
-  },
-
-  analytics_24hr: {
-    title: '📊 24-HOUR POST-DROP ANALYTICS CHECK',
-    color: 0x00FF88,
-    content: `24 hours since Wave 1. Time to check results.
-
-Check these:
-
-**Ko-fi:**
-- [ ] Donations received (any amount)
-- [ ] New followers
-- [ ] Shop item purchases
-- [ ] Page views (if available)
-
-**X/Twitter:**
-- [ ] Thread impressions
-- [ ] Retweets / quote tweets
-- [ ] Profile clicks
-- [ ] Link clicks to bonding.p31ca.org
-
-**LinkedIn:**
-- [ ] Post impressions
-- [ ] Reactions and comments
-- [ ] Profile views
-
-**Reddit:**
-- [ ] Post upvotes
-- [ ] Comments
-- [ ] Awards (if any)
-- [ ] GitHub referral traffic
-
-**GitHub:**
-- [ ] New stars
-- [ ] Clone/fork activity
-- [ ] README views
-
-**BONDING:**
-- [ ] Cloudflare analytics for bonding.p31ca.org
-- [ ] Unique visitors in last 24hr
-- [ ] PWA installs (if trackable)
-
-Log results in a quick note. This is the baseline.`,
+    platforms: ['linkedin'],
   },
 };
 
 // ═══════════════════════════════════════════════════════════════
-// HELPER: Send Discord webhook
+// PLATFORM POSTERS (Real implementations)
+// ═══════════════════════════════════════════════════════════════
+
+/**
+ * Twitter/X — OAuth 1.0a signed POST
+ * Requires: TWITTER_API_KEY, TWITTER_API_SECRET, TWITTER_ACCESS_TOKEN, TWITTER_ACCESS_TOKEN_SECRET
+ */
+async function postToTwitter(content, env) {
+  const apiKey = env.TWITTER_API_KEY;
+  const apiSecret = env.TWITTER_API_SECRET;
+  const accessToken = env.TWITTER_ACCESS_TOKEN;
+  const accessTokenSecret = env.TWITTER_ACCESS_TOKEN_SECRET;
+
+  if (!apiKey || !apiSecret || !accessToken || !accessTokenSecret) {
+    return { platform: 'twitter', status: 'skipped', reason: 'not configured' };
+  }
+
+  try {
+    const url = 'https://api.twitter.com/2/tweets';
+    const method = 'POST';
+    const body = JSON.stringify({ text: content.slice(0, 280) });
+
+    // OAuth 1.0a parameters
+    const oauthParams = {
+      oauth_consumer_key: apiKey,
+      oauth_nonce: crypto.randomUUID().replace(/-/g, ''),
+      oauth_signature_method: 'HMAC-SHA1',
+      oauth_timestamp: Math.floor(Date.now() / 1000).toString(),
+      oauth_token: accessToken,
+      oauth_version: '1.0',
+    };
+
+    // Build signature base string
+    const sortedParams = Object.keys(oauthParams).sort()
+      .map(k => `${encodeURIComponent(k)}=${encodeURIComponent(oauthParams[k])}`)
+      .join('&');
+    const signatureBase = `${method}&${encodeURIComponent(url)}&${encodeURIComponent(sortedParams)}`;
+
+    // Sign with HMAC-SHA1
+    const signingKey = `${encodeURIComponent(apiSecret)}&${encodeURIComponent(accessTokenSecret)}`;
+    const key = await crypto.subtle.importKey(
+      'raw',
+      new TextEncoder().encode(signingKey),
+      { name: 'HMAC', hash: 'SHA-1' },
+      false,
+      ['sign']
+    );
+    const signature = await crypto.subtle.sign(
+      'HMAC',
+      key,
+      new TextEncoder().encode(signatureBase)
+    );
+    const oauthSignature = btoa(String.fromCharCode(...new Uint8Array(signature)));
+    oauthParams.oauth_signature = oauthSignature;
+
+    // Build Authorization header
+    const authHeader = 'OAuth ' + Object.keys(oauthParams).sort()
+      .map(k => `${encodeURIComponent(k)}="${encodeURIComponent(oauthParams[k])}"`)
+      .join(', ');
+
+    const response = await fetch(url, {
+      method,
+      headers: {
+        'Authorization': authHeader,
+        'Content-Type': 'application/json',
+      },
+      body,
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      return { platform: 'twitter', status: 'posted', id: data.data?.id };
+    }
+    const errorText = await response.text();
+    return { platform: 'twitter', status: 'failed', error: errorText, code: response.status };
+  } catch (error) {
+    return { platform: 'twitter', status: 'error', error: error.message };
+  }
+}
+
+/**
+ * Reddit — OAuth2 Script App flow
+ * Requires: REDDIT_CLIENT_ID, REDDIT_CLIENT_SECRET, REDDIT_USERNAME, REDDIT_PASSWORD
+ */
+async function postToReddit(payload, env) {
+  const clientId = env.REDDIT_CLIENT_ID;
+  const clientSecret = env.REDDIT_CLIENT_SECRET;
+  const username = env.REDDIT_USERNAME;
+  const password = env.REDDIT_PASSWORD;
+
+  if (!clientId || !clientSecret || !username || !password) {
+    return { platform: 'reddit', status: 'skipped', reason: 'not configured' };
+  }
+
+  try {
+    // Step 1: Get access token
+    const tokenResponse = await fetch('https://www.reddit.com/api/v1/access_token', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Basic ${btoa(`${clientId}:${clientSecret}`)}`,
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'User-Agent': 'P31Labs/1.0 (social-worker)',
+      },
+      body: `grant_type=password&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`,
+    });
+
+    if (!tokenResponse.ok) {
+      return { platform: 'reddit', status: 'failed', error: 'token auth failed', code: tokenResponse.status };
+    }
+
+    const tokenData = await tokenResponse.json();
+    const token = tokenData.access_token;
+
+    // Step 2: Submit post
+    const subreddit = payload.subreddit || 'test';
+    const title = payload.title || 'P31 Labs Update';
+    const text = payload.content || payload.message || '';
+
+    const submitResponse = await fetch('https://oauth.reddit.com/api/submit', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'User-Agent': 'P31Labs/1.0 (social-worker)',
+      },
+      body: `sr=${encodeURIComponent(subreddit)}&kind=self&title=${encodeURIComponent(title)}&text=${encodeURIComponent(text)}&resubmit=true&api_type=json`,
+    });
+
+    if (submitResponse.ok) {
+      const data = await submitResponse.json();
+      if (data.json?.errors?.length > 0) {
+        return { platform: 'reddit', status: 'failed', error: data.json.errors };
+      }
+      return { platform: 'reddit', status: 'posted', url: data.json?.data?.url };
+    }
+    const errorText = await submitResponse.text();
+    return { platform: 'reddit', status: 'failed', error: errorText, code: submitResponse.status };
+  } catch (error) {
+    return { platform: 'reddit', status: 'error', error: error.message };
+  }
+}
+
+/**
+ * Bluesky — AT Protocol (com.atproto.repo.createRecord)
+ * Requires: BLUESKY_HANDLE, BLUESKY_APP_PASSWORD
+ */
+async function postToBluesky(content, env) {
+  const handle = env.BLUESKY_HANDLE;
+  const appPassword = env.BLUESKY_APP_PASSWORD;
+
+  if (!handle || !appPassword) {
+    return { platform: 'bluesky', status: 'skipped', reason: 'not configured' };
+  }
+
+  try {
+    // Step 1: Create session
+    const sessionResponse = await fetch('https://bsky.social/xrpc/com.atproto.server.createSession', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ identifier: handle, password: appPassword }),
+    });
+
+    if (!sessionResponse.ok) {
+      return { platform: 'bluesky', status: 'failed', error: 'session auth failed', code: sessionResponse.status };
+    }
+
+    const session = await sessionResponse.json();
+
+    // Step 2: Create record (post)
+    const postRecord = {
+      $type: 'app.bsky.feed.post',
+      text: content.slice(0, 300),
+      createdAt: new Date().toISOString(),
+    };
+
+    const postResponse = await fetch('https://bsky.social/xrpc/com.atproto.repo.createRecord', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${session.accessJwt}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        repo: session.did,
+        collection: 'app.bsky.feed.post',
+        record: postRecord,
+      }),
+    });
+
+    if (postResponse.ok) {
+      const data = await postResponse.json();
+      return { platform: 'bluesky', status: 'posted', uri: data.uri };
+    }
+    const errorText = await postResponse.text();
+    return { platform: 'bluesky', status: 'failed', error: errorText, code: postResponse.status };
+  } catch (error) {
+    return { platform: 'bluesky', status: 'error', error: error.message };
+  }
+}
+
+/**
+ * Mastodon — Status API with Bearer token
+ * Requires: MASTODON_INSTANCE, MASTODON_ACCESS_TOKEN
+ */
+async function postToMastodon(content, env) {
+  const instance = env.MASTODON_INSTANCE;
+  const token = env.MASTODON_ACCESS_TOKEN;
+
+  if (!instance || !token) {
+    return { platform: 'mastodon', status: 'skipped', reason: 'not configured' };
+  }
+
+  try {
+    const response = await fetch(`${instance}/api/v1/statuses`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ status: content.slice(0, 500), visibility: 'public' }),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      return { platform: 'mastodon', status: 'posted', url: data.url };
+    }
+    const errorText = await response.text();
+    return { platform: 'mastodon', status: 'failed', error: errorText, code: response.status };
+  } catch (error) {
+    return { platform: 'mastodon', status: 'error', error: error.message };
+  }
+}
+
+/**
+ * Nostr — Stub (requires nostr-tools for signing)
+ */
+async function postToNostr(content, env) {
+  if (!env.NOSTR_PRIVATE_KEY) {
+    return { platform: 'nostr', status: 'skipped', reason: 'not configured' };
+  }
+  return { platform: 'nostr', status: 'stub', note: 'requires nostr-tools library for event signing' };
+}
+
+/**
+ * Substack — Newsletter API
+ * Requires: SUBSTACK_API_KEY
+ */
+async function postToSubstack(payload, env) {
+  const apiKey = env.SUBSTACK_API_KEY;
+  if (!apiKey) {
+    return { platform: 'substack', status: 'skipped', reason: 'not configured' };
+  }
+
+  try {
+    const response = await fetch('https://api.substack.com/api/v1/posts', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        title: payload.title || 'P31 Labs Update',
+        content: payload.content || payload.message || '',
+        type: 'newsletter',
+      }),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      return { platform: 'substack', status: 'published', post_id: data.id };
+    }
+    return { platform: 'substack', status: 'failed', error: await response.text() };
+  } catch (error) {
+    return { platform: 'substack', status: 'error', error: error.message };
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// DISPATCHER — Routes content to all configured platforms
+// ═══════════════════════════════════════════════════════════════
+
+async function broadcastToPlatforms(payload, env) {
+  const platforms = payload.platforms || ['twitter', 'mastodon', 'bluesky'];
+  const content = payload.content || payload.message || '';
+  const results = {};
+
+  const tasks = [];
+
+  if (platforms.includes('twitter')) {
+    tasks.push(postToTwitter(content, env).then(r => { results.twitter = r; }));
+  }
+  if (platforms.includes('reddit')) {
+    tasks.push(postToReddit(payload, env).then(r => { results.reddit = r; }));
+  }
+  if (platforms.includes('bluesky')) {
+    tasks.push(postToBluesky(content, env).then(r => { results.bluesky = r; }));
+  }
+  if (platforms.includes('mastodon')) {
+    tasks.push(postToMastodon(content, env).then(r => { results.mastodon = r; }));
+  }
+  if (platforms.includes('nostr')) {
+    tasks.push(postToNostr(content, env).then(r => { results.nostr = r; }));
+  }
+  if (platforms.includes('substack')) {
+    tasks.push(postToSubstack(payload, env).then(r => { results.substack = r; }));
+  }
+
+  await Promise.allSettled(tasks);
+
+  return {
+    status: 'broadcast_complete',
+    platforms: results,
+    timestamp: new Date().toISOString(),
+  };
+}
+
+// ═══════════════════════════════════════════════════════════════
+// DISCORD NOTIFICATIONS
 // ═══════════════════════════════════════════════════════════════
 
 async function sendDiscordNotification(webhookUrl, wave) {
   if (!webhookUrl) {
-    console.log('No Discord webhook configured — logging to console instead');
-    console.log(`\n${'='.repeat(60)}`);
+    console.log('No Discord webhook — logging to console');
     console.log(wave.title);
-    console.log('='.repeat(60));
     if (wave.content) console.log(wave.content);
-    if (wave.tweets) wave.tweets.forEach((t, i) => console.log(`\n--- Tweet ${i + 1} ---\n${t}`));
-    if (wave.links) wave.links.forEach((l) => console.log(`  ${l.name}: ${l.url}`));
-    console.log('='.repeat(60));
     return { status: 'logged_to_console' };
   }
 
+  const fullContent = wave.content || (wave.tweets ? wave.tweets.map((t, i) => `Tweet ${i + 1}:\n${t}`).join('\n\n') : '');
+  const description = fullContent.slice(0, 4096) || 'No content';
+
   const embed = {
-    embeds: [
-      {
-        title: wave.title,
-        color: wave.color,
-        description: wave.content
-          ? wave.content.slice(0, 4096)
-          : wave.tweets
-            ? wave.tweets.map((t, i) => `**Tweet ${i + 1}:**\n${t}`).join('\n\n').slice(0, 4096)
-            : wave.links
-              ? wave.links.map((l) => `✅ ${l.name}: ${l.url}`).join('\n')
-              : 'No content',
-        footer: {
-          text: 'P31 Social Drop Automation • It\'s okay to be a little wonky. 🔺',
-        },
-        timestamp: new Date().toISOString(),
-      },
-    ],
+    embeds: [{
+      title: wave.title,
+      color: wave.color || 0x00D4FF,
+      description,
+      footer: { text: 'P31 Social Worker' },
+      timestamp: new Date().toISOString(),
+    }],
   };
 
-  // If content exceeds Discord's 4096-char embed limit, split into multiple embeds
-  const fullContent = wave.content || (wave.tweets ? wave.tweets.join('\n\n') : '');
+  // Split into multiple embeds if over Discord's 4096-char limit
   if (fullContent.length > 4096) {
     const chunks = [];
     let remaining = fullContent;
@@ -330,24 +514,27 @@ async function sendDiscordNotification(webhookUrl, wave) {
     }
     embed.embeds = chunks.map((chunk, i) => ({
       title: i === 0 ? wave.title : `${wave.title} (part ${i + 1})`,
-      color: wave.color,
+      color: wave.color || 0x00D4FF,
       description: chunk,
-      footer: { text: 'P31 Social Drop Automation 🔺' },
+      footer: { text: 'P31 Social Worker' },
       timestamp: new Date().toISOString(),
     }));
   }
 
-  const response = await fetch(webhookUrl, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(embed),
-  });
-
-  return { status: response.ok ? 'sent' : 'failed', statusCode: response.status };
+  try {
+    const response = await fetch(webhookUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(embed),
+    });
+    return { status: response.ok ? 'sent' : 'failed', statusCode: response.status };
+  } catch (error) {
+    return { status: 'error', error: error.message };
+  }
 }
 
 // ═══════════════════════════════════════════════════════════════
-// HELPER: Pre-flight link check
+// PRE-FLIGHT LINK CHECK
 // ═══════════════════════════════════════════════════════════════
 
 async function checkLinks(webhookUrl) {
@@ -358,44 +545,38 @@ async function checkLinks(webhookUrl) {
     try {
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 10000);
-
       const response = await fetch(link.url, {
         method: 'HEAD',
         signal: controller.signal,
         redirect: 'follow',
       });
-
       clearTimeout(timeout);
       results.push({
         name: link.name,
         url: link.url,
-        status: response.ok ? '✅ OK' : `⚠️ ${response.status}`,
+        status: response.ok ? 'OK' : `HTTP ${response.status}`,
         statusCode: response.status,
       });
     } catch (err) {
       results.push({
         name: link.name,
         url: link.url,
-        status: `❌ ${err.message}`,
+        status: `ERROR: ${err.message}`,
         statusCode: 0,
       });
     }
   }
 
-  const allGreen = results.every((r) => r.statusCode >= 200 && r.statusCode < 400);
-
-  const statusText = results.map((r) => `${r.status} **${r.name}** — ${r.url}`).join('\n');
+  const allGreen = results.every(r => r.statusCode >= 200 && r.statusCode < 400);
+  const statusText = results.map(r => `${allGreen ? 'OK' : 'FAIL'} ${r.name} — ${r.url} (${r.status})`).join('\n');
 
   const wave = {
-    title: allGreen
-      ? '✅ PRE-FLIGHT: ALL LINKS GREEN — WAVE 1 READY'
-      : '⚠️ PRE-FLIGHT: SOME LINKS FAILED — CHECK BEFORE DEPLOYING',
+    title: allGreen ? 'PRE-FLIGHT: ALL LINKS GREEN' : 'PRE-FLIGHT: SOME LINKS FAILED',
     color: allGreen ? 0x00FF88 : 0xFF6600,
     content: statusText,
   };
 
   await sendDiscordNotification(webhookUrl, wave);
-
   return { allGreen, results };
 }
 
@@ -406,69 +587,63 @@ async function checkLinks(webhookUrl) {
 async function handleScheduled(event, env) {
   const webhookUrl = env.DISCORD_WEBHOOK_URL;
   const now = new Date(event.scheduledTime);
+  const dayOfWeek = now.getUTCDay(); // 0=Sun, 1=Mon, ..., 5=Fri
+  const utcDate = now.getUTCDate();
   const utcHour = now.getUTCHours();
   const utcMinute = now.getUTCMinutes();
-  const utcDate = now.getUTCDate();
-  const utcMonth = now.getUTCMonth() + 1; // 0-indexed
 
-  console.log(`Scheduled event fired at ${now.toISOString()} (UTC ${utcHour}:${String(utcMinute).padStart(2, '0')})`);
+  // Monday 17:00 UTC — Weekly social wave
+  if (dayOfWeek === 1 && utcHour === 17 && utcMinute === 0) {
+    const wave = WAVE_CONTENT.weekly_update;
+    await sendDiscordNotification(webhookUrl, wave);
 
-  // Determine which wave to fire based on UTC time
-  // March 26, 2026 schedule (UTC):
-  //   17:17 — Pre-flight
-  //   17:20 — Wave 1 (Ko-fi)
-  //   17:35 — Wave 2 (Twitter)
-  //   17:50 — Wave 3 (LinkedIn)
-  //   18:20 — Wave 4 (Reddit)
-  //   19:20 — Wave 5 (Personal)
-  //   21:20 — Wave 6 (SuperStonk)
-  // March 27:
-  //   13:00 — Zenodo DP-5 + DP-1
-  //   17:20 — 24hr analytics
-  // March 28:
-  //   13:00 — Zenodo DP-4 + DP-2
-  // March 31:
-  //   13:00 — Zenodo DP-3
-
-  if (utcDate === 26 && utcMonth === 3) {
-    if (utcHour === 17 && utcMinute === 17) {
-      return checkLinks(webhookUrl);
-    }
-    if (utcHour === 17 && utcMinute === 20) {
-      return sendDiscordNotification(webhookUrl, WAVE_CONTENT.wave1_kofi);
-    }
-    if (utcHour === 17 && utcMinute === 35) {
-      return sendDiscordNotification(webhookUrl, WAVE_CONTENT.wave2_twitter);
-    }
-    if (utcHour === 17 && utcMinute === 50) {
-      return sendDiscordNotification(webhookUrl, WAVE_CONTENT.wave3_linkedin);
-    }
-    if (utcHour === 18 && utcMinute === 20) {
-      return sendDiscordNotification(webhookUrl, WAVE_CONTENT.wave4_reddit);
-    }
-    if (utcHour === 19 && utcMinute === 20) {
-      return sendDiscordNotification(webhookUrl, WAVE_CONTENT.wave5_personal);
-    }
-    if (utcHour === 21 && utcMinute === 20) {
-      return sendDiscordNotification(webhookUrl, WAVE_CONTENT.wave6_superstonk);
-    }
+    // Also post to configured platforms
+    const results = await broadcastToPlatforms(
+      { content: wave.content, platforms: wave.platforms },
+      env
+    );
+    console.log('Weekly wave:', JSON.stringify(results));
+    return results;
   }
 
-  if (utcDate === 27 && utcMonth === 3) {
-    if (utcHour === 13 && utcMinute === 0) {
-      return sendDiscordNotification(webhookUrl, WAVE_CONTENT.zenodo_dp5_dp1);
-    }
-    if (utcHour === 17 && utcMinute === 20) {
-      return sendDiscordNotification(webhookUrl, WAVE_CONTENT.analytics_24hr);
-    }
+  // Wednesday 17:00 UTC — Mid-week update
+  if (dayOfWeek === 3 && utcHour === 17 && utcMinute === 0) {
+    const wave = WAVE_CONTENT.midweek;
+    await sendDiscordNotification(webhookUrl, wave);
+    const results = await broadcastToPlatforms(
+      { content: wave.content, platforms: wave.platforms },
+      env
+    );
+    console.log('Mid-week wave:', JSON.stringify(results));
+    return results;
   }
 
-  if (utcDate === 28 && utcMonth === 3 && utcHour === 13 && utcMinute === 0) {
-    return sendDiscordNotification(webhookUrl, WAVE_CONTENT.zenodo_dp4_dp2);
+  // Friday 17:00 UTC — Weekend recap
+  if (dayOfWeek === 5 && utcHour === 17 && utcMinute === 0) {
+    const wave = WAVE_CONTENT.weekend_recap;
+    await sendDiscordNotification(webhookUrl, wave);
+    const results = await broadcastToPlatforms(
+      { content: wave.content, platforms: wave.platforms },
+      env
+    );
+    console.log('Weekend wave:', JSON.stringify(results));
+    return results;
   }
 
-  if (utcDate === 31 && utcMonth === 3 && utcHour === 13 && utcMinute === 0) {
-    return sendDiscordNotification(webhookUrl, WAVE_CONTENT.zenodo_dp3);
+  // Daily 17:20 UTC — Ko-fi node count digest (Discord only)
+  if (utcHour === 17 && utcMinute === 20) {
+    const wave = WAVE_CONTENT.kofi_digest;
+    await sendDiscordNotification(webhookUrl, {
+      ...wave,
+      content: 'Daily node count digest — check kofi.p31ca.org for current count.',
+    });
+    return { status: 'digest_sent' };
+  }
+
+  // 1st of month 13:00 UTC — Zenodo upload reminder (Discord only)
+  if (utcDate === 1 && utcHour === 13 && utcMinute === 0) {
+    await sendDiscordNotification(webhookUrl, WAVE_CONTENT.zenodo_reminder);
+    return { status: 'zenodo_reminder_sent' };
   }
 
   console.log('No matching wave for this scheduled time');
@@ -483,81 +658,142 @@ async function handleRequest(request, env) {
   const url = new URL(request.url);
   const path = url.pathname;
 
-  // Health check
-  if (path === '/' || path === '/health') {
-    return new Response(
-      JSON.stringify({
-        service: 'p31-social-drop-automation',
-        status: 'operational',
-        scheduledWaves: 11,
-        waves: [
-          'preflight (17:17 UTC Mar 26)',
-          'wave1-kofi (17:20 UTC Mar 26)',
-          'wave2-twitter (17:35 UTC Mar 26)',
-          'wave3-linkedin (17:50 UTC Mar 26)',
-          'wave4-reddit (18:20 UTC Mar 26)',
-          'wave5-personal (19:20 UTC Mar 26)',
-          'wave6-superstonk (21:20 UTC Mar 26)',
-          'zenodo-dp5-dp1 (13:00 UTC Mar 27)',
-          'analytics-24hr (17:20 UTC Mar 27)',
-          'zenodo-dp4-dp2 (13:00 UTC Mar 28)',
-          'zenodo-dp3 (13:00 UTC Mar 31)',
-        ],
-      }),
-      {
-        headers: { 'Content-Type': 'application/json' },
-      }
-    );
-  }
-
-  // Manual pre-flight check
-  if (path === '/preflight' && request.method === 'POST') {
-    const webhookUrl = env.DISCORD_WEBHOOK_URL;
-    const result = await checkLinks(webhookUrl);
-    return new Response(JSON.stringify(result), {
-      headers: { 'Content-Type': 'application/json' },
+  // CORS
+  if (request.method === 'OPTIONS') {
+    return new Response(null, {
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type',
+      },
     });
   }
 
-  // Manual wave trigger (for testing or re-fire)
-  if (path === '/trigger' && request.method === 'POST') {
-    const webhookUrl = env.DISCORD_WEBHOOK_URL;
-    const body = await request.json().catch(() => ({}));
-    const waveName = body.wave || url.searchParams.get('wave');
+  // Health check
+  if ((path === '/' || path === '/health') && request.method === 'GET') {
+    return jsonResponse({
+      service: 'p31-social-worker',
+      status: 'operational',
+      version: '2.0.0',
+      endpoints: {
+        'GET /status': 'Platform configuration status',
+        'GET /waves': 'List available content waves',
+        'POST /broadcast': 'Post to platforms { content, platforms?, title?, subreddit? }',
+        'POST /trigger': 'Fire wave { wave }',
+        'POST /preflight': 'Run link health check',
+      },
+      schedule: {
+        weekly: 'Monday 17:00 UTC',
+        midweek: 'Wednesday 17:00 UTC',
+        weekend: 'Friday 17:00 UTC',
+        daily_digest: '17:20 UTC',
+        monthly_zenodo: '1st of month 13:00 UTC',
+      },
+    });
+  }
 
-    if (!waveName || !WAVE_CONTENT[waveName]) {
-      return new Response(
-        JSON.stringify({
+  // Platform status
+  if (path === '/status' && request.method === 'GET') {
+    return jsonResponse({
+      platforms: {
+        twitter: !!(env.TWITTER_API_KEY && env.TWITTER_ACCESS_TOKEN),
+        reddit: !!(env.REDDIT_CLIENT_ID && env.REDDIT_USERNAME),
+        bluesky: !!(env.BLUESKY_HANDLE && env.BLUESKY_APP_PASSWORD),
+        mastodon: !!(env.MASTODON_INSTANCE && env.MASTODON_ACCESS_TOKEN),
+        nostr: !!env.NOSTR_PRIVATE_KEY,
+        substack: !!env.SUBSTACK_API_KEY,
+        discord: !!env.DISCORD_WEBHOOK_URL,
+      },
+    });
+  }
+
+  // List waves
+  if (path === '/waves' && request.method === 'GET') {
+    const waves = Object.keys(WAVE_CONTENT).map(key => ({
+      id: key,
+      title: WAVE_CONTENT[key].title,
+      hasContent: !!WAVE_CONTENT[key].content,
+      hasTweets: !!WAVE_CONTENT[key].tweets,
+      hasLinks: !!WAVE_CONTENT[key].links,
+      platforms: WAVE_CONTENT[key].platforms || [],
+      discordOnly: !!WAVE_CONTENT[key].discord_only,
+    }));
+    return jsonResponse({ waves });
+  }
+
+  // Broadcast to platforms
+  if (path === '/broadcast' && request.method === 'POST') {
+    try {
+      const payload = await request.json();
+      if (!payload.content && !payload.message) {
+        return jsonResponse({ error: 'Missing content/message field' }, 400);
+      }
+      const results = await broadcastToPlatforms(payload, env);
+      return jsonResponse(results);
+    } catch (error) {
+      return jsonResponse({ error: error.message }, 500);
+    }
+  }
+
+  // Trigger a wave
+  if (path === '/trigger' && request.method === 'POST') {
+    try {
+      const body = await request.json();
+      const waveName = body.wave || url.searchParams.get('wave');
+
+      if (!waveName || !WAVE_CONTENT[waveName]) {
+        return jsonResponse({
           error: 'Unknown wave',
           available: Object.keys(WAVE_CONTENT),
-        }),
-        { status: 400, headers: { 'Content-Type': 'application/json' } }
-      );
+        }, 400);
+      }
+
+      const wave = WAVE_CONTENT[waveName];
+
+      // Discord notification
+      const discordResult = await sendDiscordNotification(env.DISCORD_WEBHOOK_URL, wave);
+
+      // Platform broadcast if wave has platform targets and isn't discord-only
+      let platformResult = null;
+      if (!wave.discord_only && wave.platforms) {
+        const content = wave.content || (wave.tweets ? wave.tweets.join('\n\n') : '');
+        platformResult = await broadcastToPlatforms(
+          { content, platforms: wave.platforms },
+          env
+        );
+      }
+
+      return jsonResponse({
+        wave: waveName,
+        discord: discordResult,
+        platforms: platformResult,
+      });
+    } catch (error) {
+      return jsonResponse({ error: error.message }, 500);
     }
-
-    const result = await sendDiscordNotification(webhookUrl, WAVE_CONTENT[waveName]);
-    return new Response(JSON.stringify({ wave: waveName, ...result }), {
-      headers: { 'Content-Type': 'application/json' },
-    });
   }
 
-  // List available waves
-  if (path === '/waves') {
-    return new Response(
-      JSON.stringify({
-        waves: Object.keys(WAVE_CONTENT).map((key) => ({
-          id: key,
-          title: WAVE_CONTENT[key].title,
-          hasContent: !!WAVE_CONTENT[key].content,
-          hasTweets: !!WAVE_CONTENT[key].tweets,
-          hasLinks: !!WAVE_CONTENT[key].links,
-        })),
-      }),
-      { headers: { 'Content-Type': 'application/json' } }
-    );
+  // Preflight link check
+  if (path === '/preflight' && request.method === 'POST') {
+    const result = await checkLinks(env.DISCORD_WEBHOOK_URL);
+    return jsonResponse(result);
   }
 
-  return new Response('Not Found', { status: 404 });
+  return jsonResponse({ error: 'Not Found' }, 404);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// UTILITIES
+// ═══════════════════════════════════════════════════════════════
+
+function jsonResponse(data, status = 200) {
+  return new Response(JSON.stringify(data, null, 2), {
+    status,
+    headers: {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*',
+    },
+  });
 }
 
 // ═══════════════════════════════════════════════════════════════
