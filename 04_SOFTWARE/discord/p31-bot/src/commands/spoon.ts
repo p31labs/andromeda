@@ -1,6 +1,6 @@
 import { Message, EmbedBuilder } from 'discord.js';
-import fetch from 'node-fetch';
 import { CommandContext, P31Command, getApiUrls, getTimeout } from './base';
+import { defaultRetryableFetch } from '../services/retryUtility';
 import * as spoonLedger from '../services/spoonLedger';
 
 interface SpoonData {
@@ -58,7 +58,11 @@ export class SpoonCommand implements P31Command {
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), timeout);
-      const response = await fetch(apiUrls.spoon, { signal: controller.signal });
+      const response = await defaultRetryableFetch.fetchWithRetry(
+        apiUrls.spoon,
+        { signal: controller.signal },
+        'spoon'
+      );
       clearTimeout(timeoutId);
       if (response.ok) {
         const data = await response.json() as SpoonData;
