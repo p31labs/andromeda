@@ -15,7 +15,6 @@ compatibility_flags = ["nodejs_compat"]
 
 [observability]
 enabled = true
-logging_rate_limit = 100
 
 # ═══════════════════════════════════════════════════════════════
 # EDGE COMPUTE - Smart placement for global latency optimization
@@ -62,6 +61,10 @@ preview_id = "preview_alerts_001"
 name = "NODE_ONE_COORDINATOR"
 class_name = "NodeOneCoordinator"
 
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["NodeOneCoordinator"]
+
 # ═══════════════════════════════════════════════════════════════
 # ENVIRONMENT VARIABLES - Production secrets
 # ═══════════════════════════════════════════════════════════════
@@ -74,13 +77,8 @@ CRASH_WARNING_THRESHOLD = 0.25
 ATTENTION_THRESHOLD = 0.50
 
 # ═══════════════════════════════════════════════════════════════
-# CORS - Cross-origin configuration for browser clients
+# CORS - Handled in worker.ts code
 # ═══════════════════════════════════════════════════════════════
-
-[ cors_origins ]
-origin = "*"
-methods = [ "POST", "OPTIONS" ]
-headers = [ "Content-Type", "Authorization", "X-Device-ID" ]
 
 # ═══════════════════════════════════════════════════════════════
 # ROUTES - Production domain binding
@@ -123,16 +121,27 @@ name = "p31-quantum-edge-staging"
 
 [[env.staging.kv_namespaces]]
 binding = "TELEMETRY_KV"
-id = "staging_telemetry_001"
+id = "d195fd7aa1fe4260ba9abf54ccbe3d84"
 
 [[env.staging.kv_namespaces]]
 binding = "STATE_KV"
-id = "staging_state_001"
+id = "04d9792308f64b90a37efad1a4d9c9a3"
 
 [[env.staging.kv_namespaces]]
 binding = "ALERTS_KV"
-id = "staging_alerts_001"
+id = "e205d8134f714216b124d22a1f6987af"
 
 [env.staging.vars]
 P31_ENVIRONMENT = "staging"
 EDGE_VERSION = "1.0.0-staging"
+DEFAULT_STATUS = "OPTIMAL"
+CRASH_WARNING_THRESHOLD = 0.25
+ATTENTION_THRESHOLD = 0.50
+
+[[env.staging.durable_objects.bindings]]
+name = "NODE_ONE_COORDINATOR"
+class_name = "NodeOneCoordinator"
+
+[[env.staging.migrations]]
+tag = "v1"
+new_sqlite_classes = ["NodeOneCoordinator"]
