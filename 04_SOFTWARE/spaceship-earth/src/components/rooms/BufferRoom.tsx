@@ -2,9 +2,12 @@
 // The Buffer v2 — Quantum/Classical Bridge
 // Samson V2 PID (Shannon entropy) + voltage scoring + fawn guard + chaos ingestion
 // + BLUF + PA detection + breathing + calibration + telemetry
+// + IndexedDB persistence + unified fawn patterns + backend POST
 import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import { useNode } from '../../contexts/NodeContext';
 import { useSovereignStore } from '../../sovereign/useSovereignStore';
+import { loadCalibration, saveCalibration, loadHeldMessages, saveHeldMessages } from '../../utils/bufferStorage';
+import { analyzeFawn as analyzeFawnShared } from '../../utils/fawnPatterns';
 
 // ── Design Tokens ────────────────────────────────────────────
 const FONT = "var(--font-display)";
@@ -127,46 +130,10 @@ function extractBluf(text: string): BlufResult {
   return { summary, actions: acts.map(s => s.trim()), questions: qs.length };
 }
 
-// ── Fawn Guard ───────────────────────────────────────────────
-
-interface FawnFlag {
-  pattern: string;
-  category: 'apologizing' | 'minimizing' | 'over-agreeing' | 'seeking-validation' | 'self-erasing';
-  guidance: string;
-}
-
-const FAWN_RULES: { re: RegExp; flag: FawnFlag }[] = [
-  { re: /\bi'?m sorry\b/gi, flag: { pattern: "I'm sorry", category: 'apologizing', guidance: 'Is this your fault? If not, you don\'t owe an apology.' } },
-  { re: /\bjust\b/gi, flag: { pattern: 'just', category: 'minimizing', guidance: '"Just" minimizes your request. Your needs aren\'t small.' } },
-  { re: /\bit'?s fine\b/gi, flag: { pattern: "it's fine", category: 'self-erasing', guidance: 'Is it actually fine, or are you suppressing a boundary?' } },
-  { re: /\bno worries\b/gi, flag: { pattern: 'no worries', category: 'self-erasing', guidance: 'If there ARE worries, name them.' } },
-  { re: /\bi don'?t mind\b/gi, flag: { pattern: "I don't mind", category: 'self-erasing', guidance: 'Do you mind? Check before answering.' } },
-  { re: /\bwhatever you (want|need|think)\b/gi, flag: { pattern: 'whatever you...', category: 'self-erasing', guidance: 'What do YOU want? State it.' } },
-  { re: /\bdoes that make sense\b/gi, flag: { pattern: 'does that make sense?', category: 'seeking-validation', guidance: 'You made sense. Trust your communication.' } },
-  { re: /\bi (hope|think|feel like) (that'?s?|it'?s?|this is) ok/gi, flag: { pattern: "I hope that's ok", category: 'seeking-validation', guidance: 'You don\'t need permission for your truth.' } },
-  { re: /\btotally\b/gi, flag: { pattern: 'totally', category: 'over-agreeing', guidance: 'Do you actually fully agree, or are you performing agreement?' } },
-  { re: /!{2,}/g, flag: { pattern: '!!', category: 'over-agreeing', guidance: 'Excessive exclamation can mask real feelings.' } },
-  { re: /\bi don'?t want to (bother|burden|trouble)\b/gi, flag: { pattern: "I don't want to bother", category: 'self-erasing', guidance: 'Your needs are not a burden.' } },
-  { re: /\bif that'?s? ok\b/gi, flag: { pattern: "if that's ok", category: 'seeking-validation', guidance: 'State your need. Don\'t pre-apologize for having one.' } },
-];
-
-interface FawnResult { flags: FawnFlag[]; matchCount: number; score: number; }
-
-function analyzeFawn(text: string): FawnResult {
-  const seen = new Map<string, FawnFlag>();
-  let matchCount = 0;
-  for (const { re, flag } of FAWN_RULES) {
-    re.lastIndex = 0;
-    while (re.exec(text) !== null) {
-      matchCount++;
-      if (!seen.has(flag.pattern)) seen.set(flag.pattern, flag);
-    }
-  }
-  const flags = [...seen.values()];
-  const categories = new Set(flags.map(f => f.category));
-  const score = Math.min(1, matchCount * 0.12 + categories.size * 0.1);
-  return { flags, matchCount, score };
-}
+// ── Fawn Guard (unified via shared module) ──────────────────
+import type { FawnFlag, FawnResult } from '../../utils/fawnPatterns';
+// analyzeFawn is imported as analyzeFawnShared from '../../utils/fawnPatterns'
+const analyzeFawn = analyzeFawnShared;
 
 const CATEGORY_COLOR: Record<string, string> = {
   apologizing: C.coral, minimizing: C.amber, 'over-agreeing': C.mint,
@@ -542,15 +509,13 @@ export function BufferRoom() {
   const [showCalibration, setShowCalibration] = useState(false);
   const [showTelemetry, setShowTelemetry] = useState(false);
 
-  // ── Calibration ──
-  const [cal, setCal] = useState<CalibrationData>(() => {
-    try {
-      const s = localStorage.getItem('p31-buffer-cal');
-      return s ? { ...DEFAULT_CAL, ...JSON.parse(s) } : DEFAULT_CAL;
-    } catch { return DEFAULT_CAL; }
-  });
+  // ── Calibration (IndexedDB) ──
+  const [cal, setCal] = useState<CalibrationData>(DEFAULT_CAL);
   useEffect(() => {
-    try { localStorage.setItem('p31-buffer-cal', JSON.stringify(cal)); } catch {}
+    loadCalibration<CalibrationData>(DEFAULT_CAL).then(loaded => setCal(loaded));
+  }, []);
+  useEffect(() => {
+    saveCalibration(cal);
   }, [cal]);
   const updateCal = useCallback(<K extends keyof CalibrationData>(key: K, value: CalibrationData[K]) => {
     setCal(prev => ({ ...prev, [key]: value }));
@@ -558,12 +523,10 @@ export function BufferRoom() {
 
   // ── Ingest state ──
   const [ingestText, setIngestText] = useState('');
-  const [held, setHeld] = useState<HeldMessage[]>(() => {
-    try {
-      const s = localStorage.getItem('p31-buffer-held');
-      return s ? JSON.parse(s) : [];
-    } catch { return []; }
-  });
+  const [held, setHeld] = useState<HeldMessage[]>([]);
+  useEffect(() => {
+    loadHeldMessages<HeldMessage>().then(loaded => setHeld(loaded));
+  }, []);
   const [processedCount, setProcessedCount] = useState(0);
   const [deferredCount, setDeferredCount] = useState(0);
   const [scoredResult, setScoredResult] = useState<VoltageScore | null>(null);
@@ -595,9 +558,9 @@ export function BufferRoom() {
     return () => clearInterval(iv);
   }, []);
 
-  // Persist held queue
+  // Persist held queue (IndexedDB)
   useEffect(() => {
-    try { localStorage.setItem('p31-buffer-held', JSON.stringify(held)); } catch {}
+    saveHeldMessages(held);
   }, [held]);
 
   // Live scoring
@@ -690,7 +653,25 @@ export function BufferRoom() {
   }, []);
 
   const handleExtract = useCallback(() => {
-    if (chaosText.trim()) setExtracted(extractFromChaos(chaosText));
+    if (chaosText.trim()) {
+      const items = extractFromChaos(chaosText);
+      setExtracted(items);
+
+      // POST extracted items to backend for persistence
+      const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000';
+      for (const item of items) {
+        fetch(`${backendUrl}/ingest`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            text: item.text,
+            type: item.type,
+            source: 'chaos-ingestion',
+            timestamp: new Date().toISOString(),
+          }),
+        }).catch(() => { /* backend may be offline */ });
+      }
+    }
   }, [chaosText]);
 
   const heldActive = held.filter(m => !m.released);
