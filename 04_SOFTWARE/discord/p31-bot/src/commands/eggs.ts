@@ -66,7 +66,7 @@ export class EggsCommand implements P31Command {
       .setTitle(`🔺 Quantum Egg Hunt — ${userEggs.length}/${ALL_EGGS.length} eggs found`)
       .addFields(...eggFields)
       .addFields({ name: '⬡ Founding Nodes', value: foundingValue, inline: false })
-      .setFooter({ text: 'P31 Labs · 💜🔺💜 · Eggs active through March 31' });
+      .setFooter({ text: 'P31 Labs · 💜🔺💜 · Deadline: Easter Sunday, April 5' });
 
     await message.reply({ embeds: [embed] });
   }

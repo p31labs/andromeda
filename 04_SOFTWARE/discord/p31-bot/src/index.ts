@@ -29,6 +29,7 @@ import { HelpCommand } from "./commands/help";
 import { DeployCommand } from "./commands/deploy";
 import { EggsCommand } from "./commands/eggs";
 import { NodesCommand } from "./commands/nodes";
+import { ClaimCommand } from "./commands/claim";
 import { CortexCommand } from "./commands/cortex";
 import * as spoonLedger from "./services/spoonLedger";
 
@@ -70,6 +71,7 @@ registry.register(new BondingCommand());
 registry.register(new StatusCommand());
 registry.register(new DeployCommand());
 registry.register(new EggsCommand());
+registry.register(new ClaimCommand());
 registry.register(new NodesCommand());
 registry.register(new CortexCommand());
 registry.register(new HelpCommand(registry));
