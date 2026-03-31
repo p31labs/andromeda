@@ -39,7 +39,9 @@ class WebhookHandler extends EventEmitter {
 
   constructor(port: number = 3000) {
     super();
-    this.port = port;
+    // Port can be overridden via PORT env var at runtime
+    const envPort = process.env.PORT ? parseInt(process.env.PORT, 10) : NaN;
+    this.port = Number.isFinite(envPort) ? envPort : port;
     this._app = express();
     this.setupMiddleware();
     this.setupRoutes();
