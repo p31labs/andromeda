@@ -32,6 +32,7 @@ import { NodesCommand } from "./commands/nodes";
 import { ClaimCommand } from "./commands/claim";
 import { CortexCommand } from "./commands/cortex";
 import { HealthCommand } from "./commands/health";
+import { SocialCommand } from "./commands/social";
 import * as spoonLedger from "./services/spoonLedger";
 
 // Load environment variables
@@ -76,6 +77,7 @@ registry.register(new ClaimCommand());
 registry.register(new NodesCommand());
 registry.register(new CortexCommand());
 registry.register(new HealthCommand());
+registry.register(new SocialCommand());
 registry.register(new HelpCommand(registry));
 
 // Get configuration

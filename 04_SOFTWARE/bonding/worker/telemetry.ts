@@ -631,12 +631,37 @@ function mergeEvents(existing: TelemetryEvent[], incoming: TelemetryEvent[]): Te
   const seen = new Set(existing.map((e) => e.seq));
   const merged = [...existing];
   for (const ev of incoming) {
-    if (!seen.has(ev.seq)) {
+    if (!seen.has(ev)) {
       merged.push(ev);
-      seen.add(ev.seq);
+      seen.add(ev);
     }
   }
   return merged.sort((a, b) => a.seq - b.seq);
+}
+
+// ── SCE Cross-post: Social Content Engine announcement to game ──
+
+async function handleSCEAnnounce(request: Request, env: Env): Promise<Response> {
+  try {
+    const body = await request.json() as {
+      title: string;
+      message: string;
+      pillar: string;
+      platforms: string[];
+    };
+
+    // Fire to Discord for public announcement
+    await fireDiscordWebhook(env, 'social_announce', 'SCE', 'system', {
+      title: body.title,
+      message: body.message,
+      pillar: body.pillar,
+      platforms: body.platforms
+    });
+
+    return corsResponse(JSON.stringify({ success: true, event: 'social_announce' }));
+  } catch (e) {
+    return corsResponse(JSON.stringify({ error: String(e) }), 400);
+  }
 }
 
 // ── Router ──
@@ -752,9 +777,16 @@ export default {
           'POST /api/room/:code/ping',
           'PUT  /api/room/:code',
           'GET  /api/room/:code',
-          'GET  /health'
+          'GET  /health',
+          'POST /api/social/announce'
         ]
       }), 200);
+    }
+
+    // SCE Cross-post: Announce social content to BONDING game
+    const sceMatch = path.match(/^\/api\/social\/announce$/i);
+    if (method === 'POST' && sceMatch) {
+      return handleSCEAnnounce(request, env);
     }
 
     return corsResponse(JSON.stringify({ error: 'Not found' }), 404);
