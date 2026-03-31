@@ -34,13 +34,11 @@ routes = [
 ]
 
 # Recurring cron triggers
+# Single daily trigger at 1:00 PM EDT — worker determines day and fires appropriate wave
+# Ko-fi digest lives in wrangler-kofi.toml (separate worker, separate cron budget)
 [triggers]
 crons = [
-  "0 17 * * 1",    # Monday    1:00 PM EDT — Weekly social wave (auto-posts to platforms)
-  "0 17 * * 3",    # Wednesday 1:00 PM EDT — Mid-week update
-  "0 17 * * 5",    # Friday    1:00 PM EDT — Weekend recap
-  "20 17 * * *",   # Daily     1:20 PM EDT — Ko-fi node count digest (Discord)
-  "0 13 1 * *",    # 1st       9:00 AM EDT — Monthly Zenodo reminder (Discord)
+  "0 17 * * *",    # Daily 1:00 PM EDT — Mon=weekly wave, Wed=midweek, Fri=weekend, 1st=Zenodo
 ]
 
 # Build configuration
