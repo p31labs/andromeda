@@ -40,6 +40,10 @@ import { trackEvent } from '../services/telemetry';
 import { haptic } from '../services/haptic';
 import { SimpleWebGPURulesEngine, createExampleConstitution } from '../services/webgpu/SimpleWebGPURulesEngine';
 
+// Refs for timers to prevent race conditions
+const coherenceTimerRef = { current: null as ReturnType<typeof setTimeout> | null };
+const initTimerRef = { current: null as ReturnType<typeof setTimeout> | null };
+
 export const useSovereignStore = create<SovereignState>((set, get) => ({
   viewMode: 'cockpit',
   activeRoom: 'OBSERVATORY',
@@ -182,13 +186,15 @@ export const useSovereignStore = create<SovereignState>((set, get) => ({
 
   appendTelemetry: async () => {
     if (get().didKey === 'UNINITIALIZED') {
+      if (initTimerRef.current) clearTimeout(initTimerRef.current);
       set({ coherence: 0.2, noiseFloor: 0.8 });
-      setTimeout(() => set({ coherence: 0.99, noiseFloor: 0.05 }), 1000);
+      initTimerRef.current = setTimeout(() => set({ coherence: 0.99, noiseFloor: 0.05 }), 1000);
       return;
     }
     const hashHex = await hashTelemetry(get().didKey, get().activeRoom);
+    if (coherenceTimerRef.current) clearTimeout(coherenceTimerRef.current);
     set((state) => ({ crdtVersion: state.crdtVersion + 1, telemetryHashes: [hashHex, ...state.telemetryHashes].slice(0, 8), coherence: 0.8 }));
-    setTimeout(() => set({ coherence: 1.0 }), 200);
+    coherenceTimerRef.current = setTimeout(() => set({ coherence: 1.0 }), 200);
   },
 
   exportLedger: () => {

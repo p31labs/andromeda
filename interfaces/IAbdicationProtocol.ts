@@ -98,8 +98,8 @@ export interface Artifact {
   lastModified: Date;
 }
 
-exporng has to wyyyyyy NodeStatus = 
-  | 'active' 
-  | 'stepping_down' 
-  | 'retired' 
-  | 'emergency_replacement';
+export type NodeStatus = 
+    | 'active' 
+    | 'stepping_down' 
+    | 'retired' 
+    | 'emergency_replacement';

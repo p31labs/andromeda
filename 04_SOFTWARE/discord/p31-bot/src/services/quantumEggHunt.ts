@@ -9,6 +9,7 @@
 import { Message, EmbedBuilder, Client } from 'discord.js';
 import * as spoonLedger from './spoonLedger';
 import { eggTracker, EggId, ALL_EGGS, FOUNDING_SLOTS } from './eggTracker';
+import TelemetryService from './telemetry';
 
 const EGG_TRIGGERS: Record<string, EggId> = {
   // Egg 1: Bashium (chemical - Genesis quest in BONDING)
@@ -55,17 +56,22 @@ export class QuantumEggHunt {
   private rewardSpoons: number;
   private rewardRole: string;
   private client: Client | null = null;
+  private lastDiscovery: Map<string, number> = new Map(); // userId -> timestamp
+  private discoveryCooldown = 60000; // 1 minute
+  private telemetry: TelemetryService;
 
   constructor(config: {
     targetChannelId?: string;
     announcementsChannelId?: string;
     rewardSpoons?: number;
     rewardRole?: string;
+    telemetry?: TelemetryService;
   }) {
     this.targetChannelId = config.targetChannelId ?? '';
     this.announcementsChannelId = config.announcementsChannelId ?? '';
     this.rewardSpoons = config.rewardSpoons || 39;
     this.rewardRole = config.rewardRole || '[⚛️] Creator';
+    this.telemetry = config.telemetry || new TelemetryService('', false, 5000);
   }
 
   setClient(client: Client) {
@@ -110,6 +116,18 @@ export class QuantumEggHunt {
     // Must have attachment (image proof required)
     if (message.attachments.size === 0) return;
 
+    // Must be an image
+    if (!message.attachments.some(att => att.contentType?.startsWith('image/'))) return;
+
+    // Rate limit: one discovery per user per minute
+    const userId = message.author.id;
+    const now = Date.now();
+    const last = this.lastDiscovery.get(userId) || 0;
+    if (now - last < this.discoveryCooldown) {
+      await message.reply('⏳ Please wait before submitting another discovery.');
+      return;
+    }
+
     // Fuzzy string matching: normalize text
     const normalizedText = message.content.toLowerCase().replace(/\s+/g, '');
     
@@ -136,6 +154,11 @@ export class QuantumEggHunt {
     // 1. Record discovery - returns true only if NEW
     const isNewDiscovery = eggTracker.recordDiscovery(userId, eggId);
 
+    // Send telemetry
+    if (isNewDiscovery) {
+      this.telemetry.trackEggDiscovery(userId, eggId);
+    }
+
     if (!isNewDiscovery) {
       // Already found this specific egg
       await message.reply(`✅ Already verified. You claimed ${EGG_ICONS[eggId]} ${EGG_NAMES[eggId]} earlier.`);
@@ -146,6 +169,12 @@ export class QuantumEggHunt {
     const newBalance = spoonLedger.award(userId, this.rewardSpoons);
     const progress = eggTracker.getUserProgress(userId);
     const isComplete = progress.length === 4;
+
+    // Update rate limit
+    this.lastDiscovery.set(userId, Date.now());
+
+    // DM user about their discovery
+    await this.dmUser(userId, eggId, newBalance, progress.length);
 
     // Build progress visualization
     const progressVisual = ALL_EGGS.map(e => progress.includes(e) ? '🟩' : '⬛').join(' ');
@@ -255,6 +284,30 @@ export class QuantumEggHunt {
       await (channel as import('discord.js').TextChannel).send({ embeds: [embed] });
     } catch (e) {
       console.error('[QuantumEggHunt] Failed to broadcast founding node:', e);
+    }
+  }
+
+  /**
+   * DM the user about their discovery
+   */
+  private async dmUser(userId: string, eggId: EggId, balance: number, progressCount: number): Promise<void> {
+    if (!this.client) return;
+
+    try {
+      const user = await this.client.users.fetch(userId);
+      const embed = new EmbedBuilder()
+        .setColor(0x06b6d4)
+        .setTitle(`🎉 Egg Discovered: ${EGG_NAMES[eggId]}`)
+        .setDescription(`You found ${EGG_ICONS[eggId]} **${EGG_NAMES[eggId]}**!`)
+        .addFields(
+          { name: 'Reward', value: `+${this.rewardSpoons} Spoons — balance: **${balance}**` },
+          { name: 'Progress', value: `${progressCount}/4 eggs found` }
+        )
+        .setFooter({ text: 'Keep hunting! 💜🔺💜' });
+
+      await user.send({ embeds: [embed] });
+    } catch (e) {
+      console.error('[QuantumEggHunt] Failed to DM user:', e);
     }
   }
 

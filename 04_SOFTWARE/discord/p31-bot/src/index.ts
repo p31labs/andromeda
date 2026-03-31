@@ -33,6 +33,12 @@ import { ClaimCommand } from "./commands/claim";
 import { CortexCommand } from "./commands/cortex";
 import { HealthCommand } from "./commands/health";
 import { SocialCommand } from "./commands/social";
+import { LeaderboardCommand } from "./commands/leaderboard";
+import { EasterCommand } from "./commands/easter";
+import { HousingCommand } from "./commands/housing";
+import { TelemetryCommand } from "./commands/telemetry";
+import { EsgCommand } from "./commands/esg";
+import { RehousedCommand } from "./commands/rehoused";
 import * as spoonLedger from "./services/spoonLedger";
 
 // Load environment variables
@@ -78,6 +84,12 @@ registry.register(new NodesCommand());
 registry.register(new CortexCommand());
 registry.register(new HealthCommand());
 registry.register(new SocialCommand());
+registry.register(new LeaderboardCommand());
+registry.register(new EasterCommand());
+registry.register(new HousingCommand());
+registry.register(new TelemetryCommand());
+registry.register(new EsgCommand());
+registry.register(new RehousedCommand());
 registry.register(new HelpCommand(registry));
 
 // Get configuration
@@ -95,6 +107,7 @@ let showcaseChannelId = process.env.SHOWCASE_CHANNEL_ID;
 let quantumEggHunt = new QuantumEggHunt({
   targetChannelId: showcaseChannelId,
   announcementsChannelId,
+  telemetry: telemetryService,
 });
 
 // Helper function to get channel
