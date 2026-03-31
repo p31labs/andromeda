@@ -730,6 +730,33 @@ export default {
       return handleRoomState(env, stateMatch[1].toUpperCase());
     }
 
+    // Health check endpoint
+    if (method === 'GET' && path === '/health') {
+      return corsResponse(JSON.stringify({
+        status: 'ok',
+        worker: 'telemetry',
+        version: '1.3.0',
+        timestamp: new Date().toISOString(),
+        routes: [
+          'POST /telemetry',
+          'POST /telemetry/seal',
+          'POST /telemetry/orphan',
+          'GET  /telemetry/sessions/:roomCode',
+          'GET  /telemetry/seal/:sessionId',
+          'GET  /telemetry/entries/:sessionId',
+          'GET  /love/:sessionId',
+          'POST /bug-report',
+          'GET  /bug-reports',
+          'POST /api/room',
+          'POST /api/room/:code/join',
+          'POST /api/room/:code/ping',
+          'PUT  /api/room/:code',
+          'GET  /api/room/:code',
+          'GET  /health'
+        ]
+      }), 200);
+    }
+
     return corsResponse(JSON.stringify({ error: 'Not found' }), 404);
   },
 };

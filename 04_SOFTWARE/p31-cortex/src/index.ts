@@ -77,6 +77,7 @@ const app = {
           "POST /api/benefits/run",
           "POST /api/kofi/init",
           "POST /api/kofi/run",
+          "GET  /health",
         ],
         message: "It's okay to be a little wonky. 🔺",
       }),
@@ -84,6 +85,20 @@ const app = {
         headers: { "Content-Type": "application/json" },
       },
     );
+
+    // Health check endpoint
+    if (path === "/health" && request.method === "GET") {
+      return new Response(
+        JSON.stringify({
+          status: "ok",
+          worker: "p31-cortex",
+          version: "0.1.0",
+          agents: AGENT_BINDINGS.map(a => a.key),
+          timestamp: new Date().toISOString()
+        }),
+        { headers: { "Content-Type": "application/json" } }
+      );
+    }
   },
 
   async scheduled(_event: ScheduledEvent, env: CortexEnv): Promise<void> {

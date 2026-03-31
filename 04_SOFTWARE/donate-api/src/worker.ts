@@ -112,6 +112,16 @@ export default {
       return handleStripeWebhook(request, env);
     }
 
+    // Health check endpoint
+    if (url.pathname === '/health' && request.method === 'GET') {
+      return Response.json({
+        status: 'ok',
+        worker: 'donate-api',
+        version: '1.0.0',
+        timestamp: new Date().toISOString()
+      }, { headers });
+    }
+
     return Response.json({ error: 'Not found' }, { status: 404, headers });
   },
 };
