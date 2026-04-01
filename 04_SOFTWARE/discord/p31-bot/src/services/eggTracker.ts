@@ -5,8 +5,12 @@ export type EggId = 'bashium' | 'willium' | 'missing_node' | 'tetrahedron';
 export const ALL_EGGS: EggId[] = ['bashium', 'willium', 'missing_node', 'tetrahedron'];
 export const FOUNDING_SLOTS = 4;
 
-const PROGRESS_FILE = path.join(process.cwd(), 'egg-progress.json');
-const FOUNDING_FILE = path.join(process.cwd(), 'founding-nodes.json');
+const PROGRESS_FILE = process.env.RAILWAY
+  ? '/tmp/egg-progress.json'
+  : path.join(process.cwd(), 'egg-progress.json');
+const FOUNDING_FILE = process.env.RAILWAY
+  ? '/tmp/founding-nodes.json'
+  : path.join(process.cwd(), 'founding-nodes.json');
 
 // Initialize files if they don't exist
 if (!fs.existsSync(PROGRESS_FILE)) fs.writeFileSync(PROGRESS_FILE, JSON.stringify({}));
