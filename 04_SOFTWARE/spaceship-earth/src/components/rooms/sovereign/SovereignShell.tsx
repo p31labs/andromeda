@@ -564,7 +564,7 @@ export function SovereignShell() {
         <div style={{ flex: 1 }} />
 
         {/* Right: Actions */}
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: 16, alignItems: 'center', flexWrap: 'nowrap' }}>
           {/* Theme switcher */}
           <select
             value={skinTheme}
@@ -671,7 +671,7 @@ export function SovereignShell() {
             type="button"
             onClick={() => setCartridgeDrawerOpen(true)}
             className="glass-btn"
-            style={{ padding: '8px 16px', fontSize: 12, color: 'var(--amber)', borderColor: 'var(--amber)44', minHeight: 'auto' }}
+            style={{ padding: '8px 16px', fontSize: 12, color: 'var(--amber)', borderColor: 'var(--amber)44', minHeight: 'auto', whiteSpace: 'nowrap', flexShrink: 0 }}
           >
             CARTRIDGES
           </button>
@@ -679,7 +679,7 @@ export function SovereignShell() {
           <button
             onClick={toggleView}
             className="glass-btn"
-            style={{ padding: '8px 16px', fontSize: 12, color: 'var(--violet)', borderColor: 'var(--violet)44', minHeight: 'auto' }}
+            style={{ padding: '8px 16px', fontSize: 12, color: 'var(--violet)', borderColor: 'var(--violet)44', minHeight: 'auto', whiteSpace: 'nowrap', flexShrink: 0 }}
           >
             {viewMode === 'cockpit' ? 'DIAGNOSTIC' : 'COCKPIT'}
           </button>
