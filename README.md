@@ -275,6 +275,17 @@ For new features and improvements:
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
+## 7. REGULATORY COMPLIANCE & FDA TAXONOMY
+
+**The P31 Cognitive Prosthetic operates strictly under FDA Enforcement Discretion for General Wellness and Non-Device Clinical Decision Support (CDS) software.**
+
+* **Hardware (Node One / Phenix Navigator):** Categorized under 21 CFR §890.3710 (Powered Communication Systems). The device is utilized strictly as a productivity, focus, and somatic regulation tool for neurodivergent operators, falling under the FDA's General Wellness policy.
+* **Software (The Fawn Guard & SIC-POVM Mesh):** The AI routing architecture is legally classified as **Non-Device Clinical Decision Support (CDS)** under the January 2026 FDA guidance. 
+    * It does *not* process continuous biometric signals (avoiding the Signal Trap).
+    * It provides single, clinically appropriate recommendations and cognitive translations.
+    * It features complete algorithmic transparency.
+    * **Crucially: The software supports, but does not direct, the user.** The human operator retains ultimate executive control at all times.
+
 ## 🙏 Acknowledgments
 
 The Phosphorus31 ecosystem is built on the contributions of many individuals and organizations. We are grateful for:

@@ -1,0 +1,46 @@
+name = "kenosis-mesh"
+type = "javascript"
+account_id = "<CF_ACCOUNT_ID>"
+compatibility_date = "2026-04-01"
+workers_dev = true
+
+[build]
+command = ""
+
+[[bindings]]
+name = "R_NODE"
+type = "durable_object"
+class_name = "RNode"
+
+[[bindings]]
+name = "ANODE"
+type = "durable_object"
+class_name = "ANODE"
+
+[[bindings]]
+name = "BNODE"
+type = "durable_object"
+class_name = "BNODE"
+
+[[bindings]]
+name = "CNODE"
+type = "durable_object"
+class_name = "CNODE"
+
+[[bindings]]
+name = "DNODE"
+type = "durable_object"
+class_name = "DNODE"
+
+[[bindings]]
+name = "ENODE"
+type = "durable_object"
+class_name = "ENODE"
+
+[[bindings]]
+name = "FNODE"
+type = "durable_object"
+class_name = "FNODE"
+
+[vars]
+ROOT_BEARER_TOKEN = "<ROOT_BEARER_TOKEN>"

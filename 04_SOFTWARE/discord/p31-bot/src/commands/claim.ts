@@ -3,6 +3,8 @@ import { CommandContext, P31Command } from './base';
 import { eggTracker, ALL_EGGS, FOUNDING_SLOTS } from '../services/eggTracker';
 import * as spoonLedger from '../services/spoonLedger';
 import type { EggId } from '../services/eggTracker';
+import fs from 'fs';
+import path from 'path';
 
 const VALID_EGGS: EggId[] = ALL_EGGS;
 
@@ -94,8 +96,12 @@ export class ClaimCommand implements P31Command {
     const allComplete = eggTracker.hasCompletedAll(userId);
 
     let foundingSlot: number | null = null;
+    let shippingRecorded = false;
     if (allComplete) {
       foundingSlot = eggTracker.claimFoundingNode(userId);
+      if (foundingSlot !== null) {
+        shippingRecorded = this.recordShippingManifest(userId, message.author.tag, foundingSlot);
+      }
     }
 
     const embed = new EmbedBuilder()
@@ -116,10 +122,13 @@ export class ClaimCommand implements P31Command {
       );
 
     if (foundingSlot !== null) {
+      const shippingStatus = shippingRecorded ? '✅ Shipping manifest updated' : '⚠️ Shipping manifest update pending';
       embed.addFields({
         name: '⬡ FOUNDING NODE CLAIMED!',
         value: `You are **Vertex #${foundingSlot}** of ${FOUNDING_SLOTS} in the first physical K₄ mesh!\n` +
-               `**Node Zero hardware reserved** for you.`,
+               `**Node Zero hardware reserved** for you.\n` +
+               `${shippingStatus}\n` +
+               `*DM your shipping address to claim your Node Zero device.*`,
         inline: false,
       });
       embed.setColor(0x9c27b0);
@@ -166,6 +175,28 @@ export class ClaimCommand implements P31Command {
       'first': 'tetrahedron',
     };
     return aliases[input] ?? null;
+  }
+
+  private recordShippingManifest(userId: string, username: string, slot: number): boolean {
+    try {
+      const manifestPath = path.join(process.cwd(), 'shipping-manifest.json');
+      const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf-8'));
+
+      const nodeSlot = manifest.foundingNodes.find((n: any) => n.slot === slot);
+      if (!nodeSlot || nodeSlot.discordId) return false;
+
+      nodeSlot.discordId = userId;
+      nodeSlot.discordUsername = username;
+      nodeSlot.claimDate = new Date().toISOString();
+      nodeSlot.status = 'awaiting_address';
+
+      fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
+      console.log(`[WCD-53] Founding Node #${slot} recorded in shipping manifest: ${username} (${userId})`);
+      return true;
+    } catch (error) {
+      console.error('[WCD-53] Error recording shipping manifest:', error);
+      return false;
+    }
   }
 }
 

@@ -678,13 +678,24 @@ export function ColliderRoom() {
           PARTICLE COLLIDER
         </div>
         <div style={{ display: 'flex', gap: 6 }}>
-          <button type="button" onClick={() => setCyclotronMode(false)} style={modeBtn(!cyclotronMode, GREEN)}>
+          <button type="button" onClick={() => setCyclotronMode(false)} style={modeBtn(!cyclotronMode, GREEN)}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = `${GREEN}28`; (e.currentTarget as HTMLButtonElement).style.borderColor = `${GREEN}aa`; (e.currentTarget as HTMLButtonElement).style.color = GREEN; }}
+            onMouseLeave={(e) => { const a = !cyclotronMode; (e.currentTarget as HTMLButtonElement).style.background = a ? `${GREEN}18` : 'rgba(5,5,16,0.6)'; (e.currentTarget as HTMLButtonElement).style.borderColor = a ? `${GREEN}88` : 'rgba(0,255,255,0.08)'; (e.currentTarget as HTMLButtonElement).style.color = a ? GREEN : DIM; }}>
             Free Drift
           </button>
-          <button type="button" onClick={() => setCyclotronMode(true)} style={modeBtn(cyclotronMode, MAGENTA)}>
+          <button type="button" onClick={() => setCyclotronMode(true)} style={modeBtn(cyclotronMode, MAGENTA)}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = `${MAGENTA}28`; (e.currentTarget as HTMLButtonElement).style.borderColor = `${MAGENTA}aa`; (e.currentTarget as HTMLButtonElement).style.color = MAGENTA; }}
+            onMouseLeave={(e) => { const a = cyclotronMode; (e.currentTarget as HTMLButtonElement).style.background = a ? `${MAGENTA}18` : 'rgba(5,5,16,0.6)'; (e.currentTarget as HTMLButtonElement).style.borderColor = a ? `${MAGENTA}88` : 'rgba(0,255,255,0.08)'; (e.currentTarget as HTMLButtonElement).style.color = a ? MAGENTA : DIM; }}>
             Cyclotron
           </button>
-          <button type="button" onClick={clearField} style={modeBtn(false, CORAL)}>
+          <button type="button" onClick={clearField} style={{
+            ...modeBtn(false, CORAL),
+            background: 'rgba(31,41,55,0.4)',
+            border: '1px solid rgba(55,65,81,1)',
+            color: 'rgba(156,163,175,1)',
+          }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(127,29,29,0.4)'; (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(239,68,68,0.5)'; (e.currentTarget as HTMLButtonElement).style.color = 'rgba(248,113,113,1)'; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(31,41,55,0.4)'; (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(55,65,81,1)'; (e.currentTarget as HTMLButtonElement).style.color = 'rgba(156,163,175,1)'; }}>
             Purge
           </button>
         </div>
@@ -702,31 +713,39 @@ export function ColliderRoom() {
           left: '50%', top: '55%', transform: 'translateX(-50%)',
           display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8,
         }}>
-          {/* Energy bar */}
+          {/* Energy bar — glassmorphic housing */}
           <div style={{
-            width: 200, height: 6, borderRadius: 3,
-            background: 'rgba(0,255,255,0.06)',
-            border: `1px solid ${CYAN}22`,
-            overflow: 'hidden',
+            padding: '10px 16px', borderRadius: 12,
+            background: 'rgba(17,24,39,0.5)', backdropFilter: 'blur(12px)',
+            border: '1px solid rgba(255,255,255,0.1)',
+            display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
+            boxShadow: '0 4px 24px rgba(0,0,0,0.4)',
           }}>
             <div style={{
-              height: '100%', borderRadius: 3,
-              width: `${cyclotronEnergy * 100}%`,
-              background: `linear-gradient(90deg, ${VIOLET}, ${CYAN}, ${MAGENTA})`,
-              boxShadow: `0 0 8px ${CYAN}66`,
-              transition: 'width 0.05s linear',
-            }} />
-          </div>
-          <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
-            <span style={{
-              fontSize: 10, color: CYAN, fontFamily: FONT_DATA,
-              letterSpacing: 1,
+              width: 200, height: 8, borderRadius: 4,
+              background: 'rgba(0,255,255,0.06)',
+              border: `1px solid ${CYAN}22`,
+              overflow: 'hidden',
             }}>
-              {(cyclotronEnergy * 100).toFixed(0)}% GeV
-            </span>
-            <span style={{ fontSize: 10, color: DIM, fontFamily: FONT_DATA }}>
-              {ringAtomCount} in ring
-            </span>
+              <div style={{
+                height: '100%', borderRadius: 4,
+                width: `${cyclotronEnergy * 100}%`,
+                background: `linear-gradient(90deg, ${VIOLET}, ${CYAN}, ${MAGENTA})`,
+                boxShadow: `0 0 12px ${CYAN}66`,
+                transition: 'width 0.05s linear',
+              }} />
+            </div>
+            <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+              <span style={{
+                fontSize: 11, color: CYAN, fontFamily: FONT_DATA,
+                letterSpacing: 1, fontWeight: 600,
+              }}>
+                {(cyclotronEnergy * 100).toFixed(0)}% GeV
+              </span>
+              <span style={{ fontSize: 10, color: DIM, fontFamily: FONT_DATA }}>
+                {ringAtomCount} in ring
+              </span>
+            </div>
           </div>
           <button
             type="button"
@@ -754,8 +773,9 @@ export function ColliderRoom() {
       }}>
         <div style={{
           padding: '8px 16px', borderRadius: 12,
-          background: 'rgba(255,255,255,0.015)', backdropFilter: 'blur(12px)',
-          border: `1px solid ${VIOLET}22`,
+          background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(12px)',
+          border: '1px solid rgba(34,211,238,0.3)',
+          boxShadow: '0 0 16px rgba(34,211,238,0.1)',
         }}>
           <div style={{ fontSize: 10, color: DIM, fontFamily: FONT_DATA, letterSpacing: 1 }}>SCORE</div>
           <div style={{ fontSize: 26, fontWeight: 300, color: CYAN, fontFamily: FONT_DATA, textShadow: `0 0 16px ${CYAN}44` }}>
@@ -766,11 +786,12 @@ export function ColliderRoom() {
         {formula && (
           <div style={{
             padding: '6px 14px', borderRadius: 10,
-            background: matchedRecipe && stability.complete ? `${GREEN}12` : 'rgba(255,255,255,0.015)',
+            background: matchedRecipe && stability.complete ? `${GREEN}12` : 'rgba(0,0,0,0.6)',
             border: `1px solid ${matchedRecipe && stability.complete ? `${GREEN}66` : `${VIOLET}22`}`,
             backdropFilter: 'blur(12px)',
+            maxWidth: 200,
           }}>
-            <div style={{ fontSize: 18, color: matchedRecipe && stability.complete ? GREEN : TEXT, fontWeight: 600, fontFamily: FONT_DATA }}>
+            <div style={{ fontSize: 18, color: matchedRecipe && stability.complete ? GREEN : TEXT, fontWeight: 600, fontFamily: FONT_DATA, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {matchedRecipe?.display ?? formula}
             </div>
             {matchedRecipe && stability.complete && (
@@ -785,19 +806,19 @@ export function ColliderRoom() {
         {atoms.length > 0 && (
           <div style={{
             padding: '6px 12px', borderRadius: 10,
-            background: 'rgba(255,255,255,0.015)', backdropFilter: 'blur(12px)',
-            border: `1px solid ${VIOLET}22`, width: 140,
+            background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(12px)',
+            border: '1px solid rgba(34,211,238,0.3)', width: 140,
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, color: DIM, fontFamily: FONT_DATA, marginBottom: 4 }}>
               <span>Stability</span>
-              <span style={{ color: stability.complete ? GREEN : AMBER }}>{(stability.pct * 100).toFixed(0)}%</span>
+              <span style={{ color: stability.pct > 0.7 ? GREEN : stability.pct > 0.3 ? AMBER : CORAL, fontWeight: 600 }}>{(stability.pct * 100).toFixed(0)}%</span>
             </div>
             <div style={{ height: 4, background: 'rgba(0,255,255,0.04)', borderRadius: 4 }}>
               <div style={{
-                height: '100%', borderRadius: 4, transition: 'width 0.3s',
+                height: '100%', borderRadius: 4, transition: 'width 0.3s, background 0.3s',
                 width: `${stability.pct * 100}%`,
-                background: stability.complete ? GREEN : stability.pct > 0.5 ? AMBER : CORAL,
-                boxShadow: `0 0 6px ${stability.complete ? GREEN : AMBER}`,
+                background: stability.pct > 0.7 ? GREEN : stability.pct > 0.3 ? AMBER : CORAL,
+                boxShadow: `0 0 6px ${stability.pct > 0.7 ? GREEN : stability.pct > 0.3 ? AMBER : CORAL}`,
               }} />
             </div>
             <div style={{ fontSize: 9, color: DIM, fontFamily: FONT_DATA, marginTop: 3 }}>
@@ -822,12 +843,23 @@ export function ColliderRoom() {
               background: done ? `${q.color}10` : 'rgba(255,255,255,0.015)',
               border: `1px solid ${done ? `${q.color}44` : 'rgba(0,255,255,0.03)'}`,
               backdropFilter: 'blur(8px)',
-            }}>
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+            }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLDivElement).style.background = `${q.color}10`;
+                (e.currentTarget as HTMLDivElement).style.borderColor = `${q.color}30`;
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLDivElement).style.background = done ? `${q.color}10` : 'rgba(255,255,255,0.015)';
+                (e.currentTarget as HTMLDivElement).style.borderColor = done ? `${q.color}44` : 'rgba(0,255,255,0.03)';
+              }}
+            >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: 11, color: done ? q.color : TEXT, fontWeight: 600 }}>
+                <span style={{ fontSize: 12, color: done ? q.color : 'rgba(209,213,219,1)', fontWeight: 600 }}>
                   {q.name}
                 </span>
-                <span style={{ fontSize: 10, color: done ? GREEN : DIM, fontFamily: FONT_DATA }}>
+                <span style={{ fontSize: 10, color: done ? GREEN : 'rgba(107,114,128,1)', fontFamily: FONT_DATA }}>
                   {progress.size}/{q.steps.length}
                 </span>
               </div>
@@ -841,7 +873,7 @@ export function ColliderRoom() {
                   }} />
                 ))}
               </div>
-              <div style={{ fontSize: 9, color: DIM, fontFamily: FONT_DATA, marginTop: 2 }}>
+              <div style={{ fontSize: 9, color: 'rgba(107,114,128,1)', fontFamily: FONT_DATA, marginTop: 2 }}>
                 {q.description} — {q.reward} pts
               </div>
             </div>
@@ -888,6 +920,23 @@ export function ColliderRoom() {
           return (
             <div key={sym}
               onClick={(e) => { e.stopPropagation(); setSelectedElement(sym); }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLDivElement).style.transform = 'scale(1.1)';
+                (e.currentTarget as HTMLDivElement).style.boxShadow = `0 0 24px ${el.color}cc, 0 0 48px ${el.color}44`;
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLDivElement).style.transform = isSelected ? 'scale(1.1)' : 'scale(1)';
+                (e.currentTarget as HTMLDivElement).style.boxShadow = isSelected
+                  ? `0 0 20px ${el.color}aa, 0 0 4px ${TEXT}88`
+                  : `0 0 12px ${el.color}44`;
+              }}
+              onMouseDown={(e) => {
+                (e.currentTarget as HTMLDivElement).style.transform = 'scale(0.95)';
+              }}
+              onMouseUp={(e) => {
+                (e.currentTarget as HTMLDivElement).style.transform = 'scale(1.1)';
+                (e.currentTarget as HTMLDivElement).style.boxShadow = `0 0 24px ${el.color}cc, 0 0 48px ${el.color}44`;
+              }}
               style={{
                 width: 44, height: 44, borderRadius: '50%',
                 background: `radial-gradient(circle at 35% 35%, ${el.color}cc 0%, ${el.color}44 80%)`,
@@ -899,6 +948,7 @@ export function ColliderRoom() {
                 textShadow: `0 0 8px ${el.color}`,
                 transform: isSelected ? 'scale(1.1)' : 'scale(1)',
                 transition: 'transform 0.15s ease, box-shadow 0.15s ease',
+                animation: isSelected ? 'element-pulse 2s ease-in-out infinite' : 'none',
               }}
               title={`${el.name} (valence ${el.valence})`}
             >
@@ -973,6 +1023,10 @@ export function ColliderRoom() {
         @keyframes ghost-pulse {
           0%, 100% { transform: scale(1); opacity: 0.12; }
           50% { transform: scale(1.35); opacity: 0.22; }
+        }
+        @keyframes element-pulse {
+          0%, 100% { border-color: rgba(255,255,255,0.6); }
+          50% { border-color: rgba(255,255,255,1); }
         }
       `}</style>
     </div>

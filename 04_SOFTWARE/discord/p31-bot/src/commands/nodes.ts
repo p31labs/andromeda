@@ -1,7 +1,8 @@
 import { EmbedBuilder } from 'discord.js';
 import type { CommandContext, P31Command } from './base';
-import { eggTracker, ALL_EGGS, FOUNDING_SLOTS } from '../services/eggTracker';
+import { eggTracker, ALL_EGGS, FOUNDING_SLOTS, PROGRESS_FILE } from '../services/eggTracker';
 import * as spoonLedger from '../services/spoonLedger';
+import fs from 'fs';
 
 // Mesh milestone targets
 const MILESTONES = [
@@ -31,7 +32,7 @@ export class NodesCommand implements P31Command {
 
     // Unique hunters (anyone with ≥1 egg)
     const progress: Record<string, string[]> = JSON.parse(
-      require('fs').readFileSync(require('path').join(process.cwd(), 'egg-progress.json'), 'utf-8')
+      fs.readFileSync(PROGRESS_FILE, 'utf-8')
     );
     const hunterCount = Object.keys(progress).length;
 
