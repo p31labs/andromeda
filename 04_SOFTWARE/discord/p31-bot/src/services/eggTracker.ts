@@ -12,16 +12,30 @@ export const EGG_META: Record<EggId, { label: string; icon: string; hint: string
   tetrahedron:  { label: 'First Tetrahedron (K₄)',   icon: '🧱', hint: 'K4 rigidity / Posner molecule' },
 };
 
+// Use env var or detect writable location at runtime
 function getWritablePath(basePath: string): string {
-  const testPath = process.cwd();
-  if (testPath.startsWith('/app')) {
-    return basePath.replace('/app', '/tmp');
+  if (process.env.EGG_PROGRESS_PATH) {
+    return process.env.EGG_PROGRESS_PATH;
   }
-  return basePath;
+  // Try to write test file to determine if base path is writable
+  const testFile = path.join(path.dirname(basePath), '.write-test');
+  try {
+    fs.writeFileSync(testFile, 'test', { flag: 'wx' });
+    fs.unlinkSync(testFile);
+    return basePath;
+  } catch {
+    // Not writable, use tmp
+    const dir = path.dirname(basePath);
+    const name = path.basename(basePath);
+    return path.join('/tmp', name);
+  }
 }
 
-export const PROGRESS_FILE = getWritablePath(process.env.EGG_PROGRESS_PATH || '/app/egg-progress.json');
-export const FOUNDING_FILE = getWritablePath(process.env.EGG_FOUNDING_PATH || '/app/founding-nodes.json');
+export const PROGRESS_FILE = getWritablePath(process.env.EGG_PROGRESS_PATH || './egg-progress.json');
+export const FOUNDING_FILE = getWritablePath(process.env.EGG_FOUNDING_PATH || './founding-nodes.json');
+
+console.log(`[EggTracker] Using progress file: ${PROGRESS_FILE}`);
+console.log(`[EggTracker] Using founding file: ${FOUNDING_FILE}`);
 
 // Initialize files if they don't exist
 if (!fs.existsSync(PROGRESS_FILE)) fs.writeFileSync(PROGRESS_FILE, JSON.stringify({}));
