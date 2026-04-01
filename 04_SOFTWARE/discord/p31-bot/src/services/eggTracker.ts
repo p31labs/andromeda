@@ -5,10 +5,11 @@ export type EggId = 'bashium' | 'willium' | 'missing_node' | 'tetrahedron';
 export const ALL_EGGS: EggId[] = ['bashium', 'willium', 'missing_node', 'tetrahedron'];
 export const FOUNDING_SLOTS = 4;
 
-const PROGRESS_FILE = process.env.RAILWAY
+const isRailway = process.env.RAILWAY || process.env.RAILWAY_STATIC_URL || process.env.RAILWAY_ENVIRONMENT;
+const PROGRESS_FILE = isRailway || process.cwd().startsWith('/app')
   ? '/tmp/egg-progress.json'
   : path.join(process.cwd(), 'egg-progress.json');
-const FOUNDING_FILE = process.env.RAILWAY
+const FOUNDING_FILE = isRailway || process.cwd().startsWith('/app')
   ? '/tmp/founding-nodes.json'
   : path.join(process.cwd(), 'founding-nodes.json');
 
