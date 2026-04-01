@@ -5,9 +5,15 @@ export type EggId = 'bashium' | 'willium' | 'missing_node' | 'tetrahedron';
 export const ALL_EGGS: EggId[] = ['bashium', 'willium', 'missing_node', 'tetrahedron'];
 export const FOUNDING_SLOTS = 4;
 
-// Always use /tmp - Railway mounts /app as read-only
-const PROGRESS_FILE = '/tmp/egg-progress.json';
-const FOUNDING_FILE = '/tmp/founding-nodes.json';
+export const EGG_META: Record<EggId, { label: string; icon: string; hint: string }> = {
+  bashium:      { label: 'Bashium Element',          icon: '🟣', hint: 'Genesis quest in BONDING' },
+  willium:      { label: 'Willium Element',           icon: '🟢', hint: 'Kitchen quest in BONDING' },
+  missing_node: { label: 'The Missing Node (172.35Hz)', icon: '🔊', hint: 'lockTone() at p31ca.org/#collider' },
+  tetrahedron:  { label: 'First Tetrahedron (K₄)',   icon: '🧱', hint: 'K4 rigidity / Posner molecule' },
+};
+
+export const PROGRESS_FILE = '/tmp/egg-progress.json';
+export const FOUNDING_FILE = '/tmp/founding-nodes.json';
 
 // Initialize files if they don't exist
 if (!fs.existsSync(PROGRESS_FILE)) fs.writeFileSync(PROGRESS_FILE, JSON.stringify({}));

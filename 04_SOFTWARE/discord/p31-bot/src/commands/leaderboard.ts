@@ -1,7 +1,8 @@
 import { EmbedBuilder } from 'discord.js';
 import type { CommandContext, P31Command } from './base';
-import { eggTracker, ALL_EGGS } from '../services/eggTracker';
+import { eggTracker, ALL_EGGS, PROGRESS_FILE } from '../services/eggTracker';
 import type { EggId } from '../services/eggTracker';
+import fs from 'fs';
 
 export class LeaderboardCommand implements P31Command {
   name = 'leaderboard';
@@ -13,9 +14,9 @@ export class LeaderboardCommand implements P31Command {
     const { message } = context;
 
     try {
-      const progress: Record<string, EggId[]> = JSON.parse(
-        require('fs').readFileSync(require('path').join(process.cwd(), 'egg-progress.json'), 'utf-8')
-      );
+      const progress = JSON.parse(
+        fs.readFileSync(PROGRESS_FILE, 'utf-8')
+      ) as Record<string, EggId[]>;
 
       const hunters = Object.entries(progress).map(([userId, eggs]) => ({
         userId,
