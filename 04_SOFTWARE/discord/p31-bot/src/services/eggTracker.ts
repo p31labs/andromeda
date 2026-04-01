@@ -82,5 +82,14 @@ export const eggTracker = {
       console.error('[EggTracker] Error getting founding nodes:', error);
       return [];
     }
+  },
+
+  getAvailableSlots(): number {
+    try {
+      const nodes = JSON.parse(fs.readFileSync(FOUNDING_FILE, 'utf-8'));
+      return Math.max(0, FOUNDING_SLOTS - nodes.length);
+    } catch (error) {
+      return FOUNDING_SLOTS;
+    }
   }
 };
