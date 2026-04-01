@@ -12,8 +12,16 @@ export const EGG_META: Record<EggId, { label: string; icon: string; hint: string
   tetrahedron:  { label: 'First Tetrahedron (K₄)',   icon: '🧱', hint: 'K4 rigidity / Posner molecule' },
 };
 
-export const PROGRESS_FILE = '/tmp/egg-progress.json';
-export const FOUNDING_FILE = '/tmp/founding-nodes.json';
+function getWritablePath(basePath: string): string {
+  const testPath = process.cwd();
+  if (testPath.startsWith('/app')) {
+    return basePath.replace('/app', '/tmp');
+  }
+  return basePath;
+}
+
+export const PROGRESS_FILE = getWritablePath(process.env.EGG_PROGRESS_PATH || '/app/egg-progress.json');
+export const FOUNDING_FILE = getWritablePath(process.env.EGG_FOUNDING_PATH || '/app/founding-nodes.json');
 
 // Initialize files if they don't exist
 if (!fs.existsSync(PROGRESS_FILE)) fs.writeFileSync(PROGRESS_FILE, JSON.stringify({}));
