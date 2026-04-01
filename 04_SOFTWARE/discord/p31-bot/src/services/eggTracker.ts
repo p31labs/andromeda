@@ -5,13 +5,9 @@ export type EggId = 'bashium' | 'willium' | 'missing_node' | 'tetrahedron';
 export const ALL_EGGS: EggId[] = ['bashium', 'willium', 'missing_node', 'tetrahedron'];
 export const FOUNDING_SLOTS = 4;
 
-const isRailway = process.env.RAILWAY || process.env.RAILWAY_STATIC_URL || process.env.RAILWAY_ENVIRONMENT;
-const PROGRESS_FILE = isRailway || process.cwd().startsWith('/app')
-  ? '/tmp/egg-progress.json'
-  : path.join(process.cwd(), 'egg-progress.json');
-const FOUNDING_FILE = isRailway || process.cwd().startsWith('/app')
-  ? '/tmp/founding-nodes.json'
-  : path.join(process.cwd(), 'founding-nodes.json');
+// Always use /tmp - Railway mounts /app as read-only
+const PROGRESS_FILE = '/tmp/egg-progress.json';
+const FOUNDING_FILE = '/tmp/founding-nodes.json';
 
 // Initialize files if they don't exist
 if (!fs.existsSync(PROGRESS_FILE)) fs.writeFileSync(PROGRESS_FILE, JSON.stringify({}));
