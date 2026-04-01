@@ -24,6 +24,7 @@ contract GODConstitution {
 
     mapping(uint256 => MetabolicEvent) public somaticLedger;
     uint256 public eventCount;
+    bool public isAutopoietic = false;
 
     event AutopoiesisInitiated(address indexed deadAddress, uint256 timestamp);
     event SpoonsCommodified(uint256 indexed id, bytes32 entropyHash, uint8 voltage);
@@ -55,7 +56,27 @@ contract GODConstitution {
      * @dev Abdication Protocol: Permanently transfers administrative control to an unrecoverable address.
      */
     function abdicatePower() external onlyArchitect {
+        require(architect != ZERO_ADDRESS, "Already renounced");
         architect = ZERO_ADDRESS; 
+        isAutopoietic = true;
         emit AutopoiesisInitiated(ZERO_ADDRESS, block.timestamp);
+    }
+
+    /**
+     * @dev Renounce Ownership: Irreversible transfer to 0x00...dead Zero Address.
+     *      Enforces cryptographic Kenosis — complete emptying of human control.
+     */
+    function renounceOwnership() external onlyArchitect {
+        require(architect != ZERO_ADDRESS, "Already renounced");
+        architect = ZERO_ADDRESS;
+        isAutopoietic = true;
+        emit AutopoiesisInitiated(ZERO_ADDRESS, block.timestamp);
+    }
+
+    /**
+     * @dev Query whether the contract has achieved autopoiesis (self-governance).
+     */
+    function checkAutopoiesis() external view returns (bool) {
+        return isAutopoietic && architect == ZERO_ADDRESS;
     }
 }
