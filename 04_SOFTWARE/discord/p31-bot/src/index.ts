@@ -39,7 +39,10 @@ import { HousingCommand } from "./commands/housing";
 import { TelemetryCommand } from "./commands/telemetry";
 import { EsgCommand } from "./commands/esg";
 import { RehousedCommand } from "./commands/rehoused";
+import { GrantsCommand } from "./commands/grants";
+import { BookCommand } from "./commands/book";
 import * as spoonLedger from "./services/spoonLedger";
+import { startSubstackIntegration, initSubstackPoller } from "./services/substackPoller";
 
 // Load environment variables
 dotenv.config();
@@ -90,6 +93,8 @@ registry.register(new HousingCommand());
 registry.register(new TelemetryCommand());
 registry.register(new EsgCommand());
 registry.register(new RehousedCommand());
+registry.register(new GrantsCommand());
+registry.register(new BookCommand());
 registry.register(new HelpCommand(registry));
 
 // Get configuration
@@ -497,9 +502,17 @@ client.on(Events.ClientReady, async () => {
   });
   quantumEggHunt.setClient(client);
 
-  console.log(
-    `[BOT] Quantum Egg Hunt: ${quantumEggHunt.isActive() ? `armed on channel ${showcaseChannelId}` : "inactive (no showcase channel found)"}`,
-  );
+  // Start spoon economy regeneration cron
+  spoonLedger.startSpoonRegeneration();
+
+  // Start Substack RSS poller for Content Forge
+  const substackWebhook = process.env.SUBSTACK_WEBHOOK_URL;
+  if (substackWebhook) {
+    initSubstackPoller(substackWebhook);
+    startSubstackIntegration();
+  } else {
+    console.log('[BOT] Substack poller not configured (SUBSTACK_WEBHOOK_URL missing)');
+  }
 });
 
 // Error handlers
