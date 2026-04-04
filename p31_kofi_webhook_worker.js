@@ -88,6 +88,20 @@ export default {
       // Process the donation/purchase
       const result = await processEvent(event, env, ctx);
 
+      // R09: Emit kofi_donation to Genesis Gate (fire-and-forget, no PII)
+      const genesisUrl = (env.GENESIS_GATE_URL || 'https://genesis.p31ca.org') + '/event';
+      ctx.waitUntil(fetch(genesisUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          source: 'p31-kofi-webhook',
+          type: 'kofi_donation',
+          payload: { event_type: event.type, milestone_reached: result.milestone },
+          timestamp: new Date().toISOString(),
+          session_id: 'kofi-' + Math.random().toString(36).slice(2, 8),
+        }),
+      }).catch(() => {}));
+
       return jsonResponse({
         node_count: await getNodeCount(env),
         status: 'processed',

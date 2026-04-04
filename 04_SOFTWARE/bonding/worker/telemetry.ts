@@ -27,6 +27,23 @@
 export interface Env {
   TELEMETRY_KV: KVNamespace;
   DISCORD_WEBHOOK_URL?: string;
+  GENESIS_GATE_URL?: string;  // R09: https://genesis.p31ca.org
+}
+
+// R09: Emit event to Genesis Gate — fire-and-forget, never throws
+function emitToGenesis(env: Env, type: string, payload: Record<string, unknown>): void {
+  const url = (env.GENESIS_GATE_URL ?? 'https://genesis.p31ca.org') + '/event';
+  fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      source: 'bonding-relay',
+      type,
+      payload,
+      timestamp: new Date().toISOString(),
+      session_id: 'relay-' + Math.random().toString(36).slice(2, 8),
+    }),
+  }).catch(() => { /* never block */ });
 }
 
 // ── CORS ──
@@ -599,6 +616,10 @@ async function handleRoomPing(req: Request, env: Env, code: string): Promise<Res
   room.updatedAt = new Date().toISOString();
 
   await env.TELEMETRY_KV.put(roomKey(code), JSON.stringify(room), { expirationTtl: ROOM_TTL });
+
+  // R09: emit relay_message to Genesis Gate
+  emitToGenesis(env, 'relay_message', { room_code: code, reaction: body.reaction });
+
   return corsResponse(JSON.stringify({ success: true }));
 }
 

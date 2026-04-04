@@ -14,6 +14,23 @@ interface Env {
   STRIPE_WEBHOOK_SECRET: string;
   DISCORD_WEBHOOK_URL: string;  // https://webhook.p31ca.org/webhook/stripe
   ALLOWED_ORIGIN: string;
+  GENESIS_GATE_URL?: string;    // https://genesis.p31ca.org (R09)
+}
+
+// R09: Emit telemetry to Genesis Gate (fire-and-forget, never throws)
+function emitEvent(env: Env, type: string, payload: Record<string, unknown>): void {
+  const url = env.GENESIS_GATE_URL ?? 'https://genesis.p31ca.org';
+  fetch(url + '/event', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      source: 'donate-api',
+      type,
+      payload,
+      timestamp: new Date().toISOString(),
+      session_id: 'worker-' + Math.random().toString(36).slice(2, 8),
+    }),
+  }).catch(() => { /* never block the response */ });
 }
 
 interface CheckoutRequest {
@@ -147,6 +164,11 @@ async function handleStripeWebhook(request: Request, env: Env): Promise<Response
     event = JSON.parse(rawBody) as Record<string, unknown>;
   } catch {
     return new Response('Invalid JSON', { status: 400 });
+  }
+
+  // R09: Emit donation_processed to Genesis Gate (no amount — privacy)
+  if (event.type === 'checkout.session.completed') {
+    emitEvent(env, 'donation_processed', { source: 'stripe', mode: (event.data as Record<string, unknown>)?.mode ?? 'unknown' });
   }
 
   // Forward checkout.session.completed to the Discord bot webhook (best-effort)
