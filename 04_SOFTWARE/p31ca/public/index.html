@@ -9,26 +9,39 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['"Atkinson Hyperlegible"', 'sans-serif'],
-                        mono: ['"JetBrains Mono"', 'monospace'],
-                    },
-                    colors: {
-                        void: '#0f1115', surface: '#161920', coral: '#cc6247',
-                        teal: '#25897d', cyan: '#4db8a8', cloud: '#d8d6d0',
-                        butter: '#cda852', lavender: '#8b7cc9', phosphorus: '#3ba372',
-                        paper: '#f4f4f5', ink: '#1e293b'
-                    }
-                }
-            }
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@3.4.17/dist/tailwind.min.css">
+    <style>
+        /* Custom P31 color tokens — extends Tailwind's palette */
+        :root {
+            --p31-teal: #25897d;
+            --p31-phosphorus: #3ba372;
+            --p31-coral: #cc6247;
+            --p31-cloud: #d8d6d0;
+            --p31-butter: #cda852;
+            --p31-lavender: #8b7cc9;
+            --p31-cyan: #4db8a8;
+            --p31-void: #0f1115;
+            --p31-surface: #161920;
+            --p31-paper: #f4f4f5;
+            --p31-ink: #1e293b;
         }
-    </script>
+        .text-teal      { color: var(--p31-teal); }
+        .text-phosphorus { color: var(--p31-phosphorus); }
+        .text-coral     { color: var(--p31-coral); }
+        .text-cloud     { color: var(--p31-cloud); }
+        .text-butter    { color: var(--p31-butter); }
+        .text-lavender  { color: var(--p31-lavender); }
+        .text-cyan      { color: var(--p31-cyan); }
+        .bg-teal        { background-color: var(--p31-teal); }
+        .bg-teal\/10    { background-color: color-mix(in srgb, var(--p31-teal) 10%, transparent); }
+        .bg-teal\/20    { background-color: color-mix(in srgb, var(--p31-teal) 20%, transparent); }
+        .bg-teal\/30    { background-color: color-mix(in srgb, var(--p31-teal) 30%, transparent); }
+        .hover\:bg-teal\/30:hover { background-color: color-mix(in srgb, var(--p31-teal) 30%, transparent); }
+        .border-teal\/40 { border-color: color-mix(in srgb, var(--p31-teal) 40%, transparent); }
+        .text-teal\/40  { color: color-mix(in srgb, var(--p31-teal) 40%, transparent); }
+        .font-sans      { font-family: 'Atkinson Hyperlegible', sans-serif; }
+        .font-mono      { font-family: 'JetBrains Mono', monospace; }
+    </style>
     <style>
         :root { color-scheme: dark; }
         body {
@@ -284,7 +297,7 @@ const mvpData = [
         id: 'echo', title: 'ECHO', tagline: 'Vocal Looper & Scripting Sandbox', status: 'prototype', statusLabel: '🔵 IN DEV',
         icon: '🗣️', tech: ['Web Audio API', 'Pitch-Shift', 'Offline'],
         link: 'echo.html',
-        description: "Private loop station for vocal stimming and situational script practice. Real-time pitch-shifting abstracts the user's voice, removing "cringe" from rehearsal and enabling regulating echolalia.",
+        description: 'Private loop station for vocal stimming and situational script practice. Real-time pitch-shifting abstracts the user\'s voice, removing \u201ccringe\u201d from rehearsal and enabling regulating echolalia.',
         accent: '#8b7cc9'
     },
     {
