@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run",
+    "test": "vitest run --passWithNoTests",
     "test:watch": "vitest"
   },
   "main": "src/index.ts",
@@ -24,7 +24,7 @@
     "@types/node": "^20.0.0",
     "@types/react": "^19.0.0",
     "@types/three": "^0.170.0",
-    "@vitest/coverage-v8": "^4.1.0",
+    "@vitest/coverage-v8": "4.1.1",
     "vite": "^8.0.1",
     "vitest": "^4.1.0"
   },

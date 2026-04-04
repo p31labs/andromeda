@@ -1,24 +1,30 @@
-# Phosphorus31 Ecosystem
+# Phosphorus31 Ecosystem — P31 Labs, Inc.
 
-The Phosphorus31 (P31) ecosystem represents a paradigm shift in decentralized, neuro-inclusive design. This repository contains the core Andromeda codebase, BONDING live interactive game, Phenix Navigator hardware interface, and comprehensive documentation for building a self-sustaining Node network.
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18627420.svg)](https://doi.org/10.5281/zenodo.18627420)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19411363.svg)](https://doi.org/10.5281/zenodo.19411363)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-## 🌟 Ecosystem Overview
+Open-source assistive technology for neurodivergent individuals and families. Georgia nonprofit corporation — incorporated April 3, 2026. 501(c)(3) pending.
 
-The P31 ecosystem bridges academic rigor with interactive digital sandboxes, implementing:
+**670+ automated tests. 22 Cloudflare Workers. 12 deployed products. 2 Zenodo DOIs. One operator.**
 
-- **Gamified Citizen Science**: Transform complex scientific problems into engaging puzzles
-- **Quantum Biological Cryptography**: Leverage quantum mechanics principles for secure, educational challenges
-- **Community-Driven Development**: Decentralized governance through peer-reviewed contributions
-- **Neurodivergent Inclusive Design**: Accessibility-first approach for diverse cognitive profiles
+| Product | URL | Status |
+|---------|-----|--------|
+| BONDING | bonding.p31ca.org | LIVE |
+| EDE | p31ca.org/ede | LIVE |
+| Larmor | phosphorus31.org | LIVE |
+| Spaceship Earth | spaceship-earth.pages.dev | LIVE |
+| phosphorus31.org | phosphorus31.org | LIVE |
 
-## 🏗️ Architecture
+## Architecture
 
-### Core Components
+### Core Products
 
-- **Andromeda**: Main codebase with 511 tests, BONDING game, and Spaceship Earth framework
-- **BONDING**: Live interactive molecular simulation game with real-time telemetry
-- **Phenix Navigator**: Hardware interface for somatic grounding and anxiety reduction
-- **Delta Hiring System**: Merit-based community onboarding through skill demonstration
+- **BONDING**: Multiplayer molecular chemistry game — 413 tests, parental engagement logger, R3F + Zustand + Vitest
+- **EDE**: Zero-dependency IDE — cognitive prosthetic for executive dysfunction
+- **Larmor**: 863 Hz somatic regulation — calcium resonance frequency
+- **Node Zero**: Open-source haptic feedback device (FDA Class II exempt — 21 CFR §882.5050)
+- **Spaceship Earth**: Sovereign mesh dashboard — ImmersiveCockpit, 185 tests
 
 ### Ecosystem Infrastructure
 
@@ -62,18 +68,20 @@ npm test -- --testNamePattern="BONDING"
 npm run test:coverage
 ```
 
-## 📊 Ecosystem Metrics
+## Ecosystem Metrics
 
 ### Node Count
-**Current: 0**
+**Current: tracking toward 39 (Posner threshold)**
 
-The Node count represents active community members who have demonstrated their value through the Delta hiring system. Each Node contributes to the ecosystem's sovereignty and influence.
+A node is a unique individual who has engaged with P31 Labs — Discord join, Ko-fi support, BONDING session, egg claim, or Zenodo download. 39 nodes = Posner molecule (Ca₉(PO₄)₆) — the calcium cage.
 
-### Community Growth
-- **Total Supporters**: 0
-- **Total Revenue**: $0
-- **Academic Publications**: 0
-- **GitHub Stars**: 0
+### Current Numbers (April 2026)
+- **Automated Tests**: 670+ (413 BONDING, 185 SE, 43 Discord bot, 25 frontend, 4 Genesis Gate)
+- **Cloudflare Workers**: 22 deployed
+- **Zenodo DOIs**: 2 published (280+ views, 240+ downloads combined)
+- **Products deployed**: 12
+- **Revenue streams**: Stripe (donate.phosphorus31.org) + Ko-fi (ko-fi.com/trimtab69420)
+- **EIN**: 81-2908499 | **ORCID**: 0009-0002-2492-9079
 
 ## 🎮 BONDING Game
 
@@ -144,7 +152,7 @@ Assemble the Posner molecule ($Ca_9(PO_4)_6$) to unlock quantum computing secret
 - Academic paper study required for successful assembly
 
 #### Larmor Frequency Temporal Locks
-Synchronize inputs to the 0.86 Hz Larmor precession frequency:
+Synchronize inputs to the 863 Hz Larmor precession frequency (³¹P in Earth's magnetic field):
 - Forces regulated, rhythmic interaction patterns
 - Mirrors Phenix Navigator's somatic grounding capabilities
 - Yields massive L.O.V.E. point multipliers
@@ -300,7 +308,7 @@ The Phosphorus31 ecosystem is built on the contributions of many individuals and
 - **[Phosphorus31.org](https://phosphorus31.org)**: Main website and documentation
 - **[Ko-fi Shop](https://ko-fi.com/trimtab69420)**: Support the project
 - **[Zenodo Repository](https://zenodo.org/communities/p31/)**: Academic publications
-- **[Discord Community](https://discord.gg/p31)**: Real-time collaboration
+- **[Discord Community](https://discord.gg/uYW5rTCuZ)**: Real-time collaboration
 
 ---
 
