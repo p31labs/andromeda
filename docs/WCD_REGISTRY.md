@@ -1,6 +1,6 @@
-# WCD Registry — CWP-2026-003 Baseline
+# WCD Registry — CWP-2026-011 Consolidation Update
 
-Last Updated: 2026-04-01 | Gate Zero Authorization
+Last Updated: 2026-04-05 | CWP-011 G04 — 121+ WCDs tracked
 
 ## CWP-2026-001: BONDING (CLOSED)
 
@@ -174,4 +174,88 @@ Last Updated: 2026-04-01 | Gate Zero Authorization
 
 ---
 
-**Total: 88 WCDs tracked | 63 CLOSED | 12 IN PROGRESS | 1 BLOCKED | 12 PENDING**
+## CWP-2026-007: SIC-POVM (CLOSED)
+
+| WCD | System | Status | Agent | Notes |
+|-----|--------|--------|-------|-------|
+| WCD-S01 | SIC-POVM Geometry | ✅ CLOSED | Sonnet | 34-vector system derived |
+| WCD-S02 | POVM Measurement Engine | ✅ CLOSED | Sonnet | Quantum state tomography |
+| WCD-S03 | Kenosis Mesh Integration | ✅ CLOSED | Sonnet | 7-node topology + POVM |
+| WCD-S04 | Genesis Whitepaper v1.1 | ✅ CLOSED | Sonnet | Zenodo DOI 10.5281/zenodo.19411363 |
+| WCD-S05 | SIC-POVM Deployment | ✅ CLOSED | Sonnet | April 2026 — 34 measurement vectors live |
+
+## CWP-2026-008: Measurement (CLOSED)
+
+| WCD | System | Status | Agent | Notes |
+|-----|--------|--------|-------|-------|
+| WCD-M01 | Fisher-Escolà Q-Factor | ✅ CLOSED | Sonnet | Cognitive coherence scoring |
+| WCD-M02 | Somatic Tether v2 | ✅ CLOSED | Sonnet | HR/HRV integration |
+| WCD-M03 | Calcium Logging | ✅ CLOSED | Sonnet | BONDING session logging |
+| WCD-M04 | Exhibit A Logger v2 | ✅ CLOSED | Sonnet | Court-admissible engagement log |
+| WCD-M05 | Spoon Economy Ledger | ✅ CLOSED | Sonnet | Discord bot + store |
+| WCD-M06 | LOVE Token Engine | ✅ CLOSED | Sonnet | Syntropy credits |
+| WCD-M07 | Telemetry Passthrough | ✅ CLOSED | Sonnet | Genesis Gate integration |
+| WCD-M08 | Measurement Validation | ✅ CLOSED | Opus | QA pass — all vectors verified |
+
+## CWP-2026-009: Centaur (CLOSED)
+
+| WCD | System | Status | Agent | Notes |
+|-----|--------|--------|-------|-------|
+| WCD-E01 | Spaceship Earth Rebuild | ✅ CLOSED | Sonnet | Centaur architecture. spaceship-earth.pages.dev |
+| WCD-E02 | ImmersiveCockpit | ✅ CLOSED | Sonnet | Skin profiles, camera modes |
+| WCD-E03 | Jitterbug Cartridge Drive | ✅ CLOSED | Sonnet | srcdoc sandbox, PostMessage telemetry |
+| WCD-E04 | Sierpinski Progressive Disclosure | ✅ CLOSED | Sonnet | 1:9 Posner topology, AABB culling |
+| WCD-E05 | BONDING P06 Wave | ✅ CLOSED | Sonnet | Soundtracks, breathing 4-4-6, 5 quest chains |
+| WCD-E06 | EDE Deployment | ✅ CLOSED | Sonnet | Zero-dependency IDE — p31ca.org/ede |
+| WCD-E07 | p31ca.org MVP Hub | ✅ CLOSED | Sonnet | 33 vectors, 11 apps, status badges |
+| WCD-E08 | Centaur Integration QA | ✅ CLOSED | Opus | 185 SE tests + 413 BONDING tests verified |
+
+## CWP-2026-010: Lattice (CLOSED)
+
+| WCD | System | Status | Agent | Notes |
+|-----|--------|--------|-------|-------|
+| WCD-W01 | phosphorus31.org Rebuild | ✅ CLOSED | Sonnet | Astro 5, full rebuild |
+| WCD-W02 | About / Transparency Pages | ✅ CLOSED | Sonnet | Real EIN, board, products |
+| WCD-W03 | Donate Pipeline | ✅ CLOSED | Sonnet | Stripe Checkout — donate.phosphorus31.org |
+| WCD-W04 | Research Page | ✅ CLOSED | Sonnet | Zenodo DOIs, white papers |
+| WCD-W05 | Products Page | ✅ CLOSED | Sonnet | 12 products, status badges |
+| WCD-W06 | Larmor Integration | ✅ CLOSED | Sonnet | 863 Hz, calcium resonance |
+| WCD-W07 | Lattice QA | ✅ CLOSED | Opus | Build clean, all pages verified |
+
+## CWP-2026-011: Consolidation (ACTIVE)
+
+| WCD | System | Status | Agent | Notes |
+|-----|--------|--------|-------|-------|
+| WCD-G01 | Git Audit + Commit | ✅ CLOSED | Sonnet | 182 files committed (b31bc85), v0.5.0-consolidation tag |
+| WCD-G02 | CogPass v3.2 Publication | ✅ CLOSED | Sonnet | This registry. CogPass at .kilocode/rules/ |
+| WCD-G03 | CWP Closure Documents | ✅ CLOSED | Sonnet | CWP-003/004 SUSPENDED; 005/006 ACTIVE |
+| WCD-G04 | WCD Registry Update | ✅ CLOSED | Sonnet | 88 → 121+ entries |
+| WCD-G05 | GOD Ground Truth Pass | 🟡 IN PROGRESS | Sonnet | Adding EDE/TACTILE/Larmor/SE, Stripe live, DOI #2 |
+
+## CWP-2026-012: Grant Cascade (ACTIVE)
+
+| WCD | System | Status | Agent | Notes |
+|-----|--------|--------|-------|-------|
+| WCD-F01 | HCB Fiscal Sponsor Follow-up | ⏳ OPERATOR | Will | Email ref 4XDUXX. PPF backup. |
+| WCD-F02 | Ko-fi Phase 2 Post | ⏳ PENDING | Gemini | Post when HCB resolved + ESG filed |
+| WCD-F03 | NIDILRR Outreach | ⏳ OPERATOR | Will | Linda Vo, Radha Holavanahalli emails |
+| WCD-F04 | NDEP Eligibility + Application | 🟡 IN PROGRESS | Gemini | Deadline April 15 |
+| WCD-F05 | Microsoft AI for Accessibility | 🟡 IN PROGRESS | Gemini | $75K rolling — drafting |
+| WCD-F06 | Traction Package v3 | ✅ CLOSED | Sonnet | docs/grants/TRACTION_PACKAGE_V3.md |
+
+## CWP-2026-013: The Signal (ACTIVE — through May 19)
+
+| WCD | System | Status | Agent | Notes |
+|-----|--------|--------|-------|-------|
+| WCD-N01 | Node Definition + Public Counter | ⏳ PENDING | Sonnet | Public counter on site |
+| WCD-N02 | Kenosis Mesh Expansion | ⏳ PENDING | Sonnet | 7 → 20 → 39 nodes |
+| WCD-N03 | Founding Nodes Fulfillment | ⏳ PENDING | Will | Hardware production + shipping |
+| WCD-N04 | Discord Community Activation | 🟡 IN PROGRESS | Sonnet | Ko-fi + Discord growth |
+| WCD-N05 | April 30 GA Tech Summit | ⏳ PENDING | Will | Demo + connections |
+| WCD-N06 | Node Zero Hardware Push | ⏳ PENDING | DeepSeek | Firmware build env unblock |
+| WCD-N07 | Poster / Talk Prep (May 19) | ⏳ PENDING | Gemini | Neurotech Frontiers Summit |
+| WCD-N08 | DOI Badges on GitHub | ⏳ PENDING | Sonnet | Badge all repos with Zenodo DOIs |
+
+---
+
+**Total: 121 WCDs tracked | 85 CLOSED | 7 IN PROGRESS | 1 BLOCKED | 28 PENDING**
