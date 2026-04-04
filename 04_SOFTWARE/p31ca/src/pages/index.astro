@@ -1,0 +1,225 @@
+---
+/**
+ * WCD-R14: P31CA.ORG — 39-vector hub landing page.
+ * Rebuilt after Chromebook session lost the source.
+ * Static SSG rendering — no client-side fetch, no JSON dependency.
+ * Filter toggles via vanilla JS data-status attributes.
+ */
+
+import BaseLayout from '../layouts/BaseLayout.astro';
+import '../styles/global.css';
+
+interface Vector {
+  id: string;
+  title: string;
+  subtitle: string;
+  status: 'live' | 'dev' | 'research';
+  url: string;
+  icon: string;
+  stack: string[];
+}
+
+const vectors: Vector[] = [
+  { id: 'bonding',            title: 'BONDING',             subtitle: 'Molecular Social Protocol',          status: 'live',     url: 'https://bonding.p31ca.org',                                icon: '⚛️',  stack: ['React 19', 'Three.js r183', 'Zustand v5'] },
+  { id: 'spaceship-earth',    title: 'Spaceship Earth',     subtitle: 'Immersive Cockpit Dashboard',        status: 'live',     url: 'https://spaceship-earth.pages.dev',                        icon: '🌐',  stack: ['React 19', 'Three.js', 'R3F'] },
+  { id: 'ede',                title: 'EDE',                 subtitle: 'Everything Development Environment', status: 'live',     url: '/app/ede',                                                  icon: '⬡',   stack: ['Babel', 'IndexedDB', 'Service Worker'] },
+  { id: 'larmor',             title: 'Larmor',              subtitle: '863 Hz ³¹P Somatic Regulation',     status: 'live',     url: '/app/larmor',                                               icon: '🔬',  stack: ['Web Audio', 'SIC-POVM', 'Bloch Sphere'] },
+  { id: 'buffer',             title: 'The Buffer',          subtitle: 'Message Guardian & Fawn Guard',     status: 'live',     url: '/app/buffer',                                               icon: '🛡️',  stack: ['Voltage Scoring', 'Fawn Guard', 'BLUF Extraction'] },
+  { id: 'genesis-gate',       title: 'Genesis Gate',        subtitle: 'Central Telemetry Event Bus',       status: 'live',     url: 'https://genesis.p31ca.org',                                icon: '🔬',  stack: ['CF Workers', 'KV', 'TypeScript'] },
+  { id: 'kenosis',            title: 'Project Kenosis',     subtitle: '7-Node K₄ Mesh Network',           status: 'live',     url: 'https://kenosis-mesh.trimtab-signal.workers.dev',          icon: '🕸️',  stack: ['CF Workers', 'K₄ Topology'] },
+  { id: 'donate',             title: 'Donate Pipeline',     subtitle: 'Ko-fi + Stripe Infrastructure',    status: 'live',     url: '/phosphorus/support',                                       icon: '💚',  stack: ['Stripe Checkout', 'CF Worker', 'Ko-fi Webhooks'] },
+  { id: 'discord-bot',        title: 'p31-bot',             subtitle: 'Discord Community Engine',         status: 'live',     url: 'https://discord.gg/uYW5rTCuZ',                             icon: '🤖',  stack: ['Discord.js', 'Railway', 'TypeScript'] },
+  { id: 'attractor',          title: 'NANO-07 Attractor',   subtitle: '863 Hz Larmor Attractor',         status: 'live',     url: '/larmor.html',                                              icon: '🌀',  stack: ['Web Audio', 'Canvas'] },
+  { id: 'cortex',             title: 'p31-cortex',          subtitle: 'AI Agent Orchestration',           status: 'live',     url: 'https://p31ca.org/health',                                  icon: '🧠',  stack: ['CF Workers', 'KV', 'TypeScript'] },
+  { id: 'the-quantum-family', title: 'THE QUANTUM FAMILY',  subtitle: 'Sovereign Family OS',              status: 'live',     url: '/phosphorus',                                               icon: '🔺',  stack: ['Astro 5', 'P31 Ecosystem'] },
+  { id: 'node-one',           title: 'Node One (Totem)',    subtitle: 'ESP32-S3 Haptic Device',           status: 'dev',      url: 'https://github.com/p31labs/andromeda',                     icon: '📟',  stack: ['ESP-IDF', 'DRV2605L', 'SX1262', 'SE050'] },
+  { id: 'node-zero',          title: 'Node Zero',           subtitle: 'Open-Source Haptic Hardware',      status: 'dev',      url: 'https://github.com/p31labs/andromeda',                     icon: '📡',  stack: ['ESP32-S3', 'LVGL', 'QSPI'] },
+  { id: 'axiom',              title: 'AXIOM',               subtitle: 'Axiom Reasoning Engine',          status: 'dev',      url: '#',                                                         icon: '⚗️',  stack: ['Research'] },
+  { id: 'liminal',            title: 'LIMINAL',             subtitle: 'Threshold Cognitive State Tool',  status: 'dev',      url: '#',                                                         icon: '🌙',  stack: ['Research'] },
+  { id: 'signal',             title: 'SIGNAL',              subtitle: 'Sensory Signal Processing',       status: 'dev',      url: '#',                                                         icon: '🎮',  stack: ['Research'] },
+  { id: 'echo',               title: 'ECHO',                subtitle: 'Communication Replay System',     status: 'dev',      url: '#',                                                         icon: '🗣️',  stack: ['Research'] },
+  { id: 'tether',             title: 'TETHER',              subtitle: 'Somatic Grounding Protocol',      status: 'dev',      url: '#',                                                         icon: '🪐',  stack: ['Research'] },
+  { id: 'prism',              title: 'PRISM',               subtitle: 'Spectrum Analysis Tool',          status: 'dev',      url: '#',                                                         icon: '🌈',  stack: ['Research'] },
+  { id: 'kinematics',         title: 'KINEMATICS',          subtitle: 'Movement Pattern Tracking',       status: 'dev',      url: '#',                                                         icon: '🕺',  stack: ['Research'] },
+  { id: 'forge',              title: 'FORGE',               subtitle: 'Data Forge Pipeline',             status: 'dev',      url: '#',                                                         icon: '🗄️',  stack: ['Research'] },
+  { id: 'tactile',            title: 'TACTILE',             subtitle: 'Haptic Keyboard Builder',         status: 'dev',      url: '#',                                                         icon: '⌨️',  stack: ['750+ lines', '4 tabs'] },
+  { id: 'observatory',        title: 'OBSERVATORY',         subtitle: 'Data Observation Platform',       status: 'dev',      url: '#',                                                         icon: '🔭',  stack: ['Research'] },
+  { id: 'collider',           title: 'COLLIDER',            subtitle: 'Concept Collision Engine',        status: 'dev',      url: '#',                                                         icon: '💥',  stack: ['Research'] },
+  { id: 'geodesic',           title: 'GEODESIC',            subtitle: 'Geodesic Topology Tool',          status: 'dev',      url: '#',                                                         icon: '🔷',  stack: ['Research'] },
+  { id: 'bridge',             title: 'BRIDGE',              subtitle: 'Cross-System Bridge',             status: 'dev',      url: '#',                                                         icon: '🌉',  stack: ['Research'] },
+  { id: 'vault',              title: 'VAULT',               subtitle: 'Secure Credential Vault',         status: 'dev',      url: '#',                                                         icon: '🔐',  stack: ['Research'] },
+  { id: 'sovereign',          title: 'SOVEREIGN',           subtitle: 'Sovereignty Layer',               status: 'dev',      url: '#',                                                         icon: '🔑',  stack: ['Research'] },
+  { id: 'k4market',           title: 'K4 MARKET',           subtitle: 'K₄ Topology Exchange',           status: 'dev',      url: '#',                                                         icon: '📊',  stack: ['Research'] },
+  { id: 'content-forge',      title: 'CONTENT FORGE',       subtitle: 'Content Generation Pipeline',     status: 'dev',      url: '#',                                                         icon: '✍️',  stack: ['Research'] },
+  { id: 'resonance',          title: 'RESONANCE',           subtitle: 'Frequency Resonance System',      status: 'dev',      url: '#',                                                         icon: '🎵',  stack: ['Research'] },
+  { id: 'qg-ide',             title: 'QG-IDE',              subtitle: 'Quantum-Gated IDE',               status: 'dev',      url: '#',                                                         icon: '💻',  stack: ['Research'] },
+  { id: 'phenix-os',          title: 'Phenix OS',           subtitle: 'Cognitive Operating System',      status: 'dev',      url: '#',                                                         icon: '◈',   stack: ['Research'] },
+  { id: 'quantum-family',     title: 'Quantum Family',      subtitle: 'Family Sovereign System',         status: 'dev',      url: '#',                                                         icon: '🔺',  stack: ['Research'] },
+  { id: 'simple-sovereignty', title: 'Simple Sovereignty',  subtitle: 'Sovereignty Primer',              status: 'dev',      url: '#',                                                         icon: '▲',   stack: ['Research'] },
+  { id: 'mission-control',    title: 'Mission Control',     subtitle: 'Ecosystem Control Center',        status: 'dev',      url: '#',                                                         icon: '🚀',  stack: ['Research'] },
+  { id: 'quantum-life-os',    title: 'Quantum Life OS',     subtitle: 'Full-Stack Life OS',              status: 'dev',      url: '#',                                                         icon: '✨',  stack: ['Research'] },
+  { id: 'quantum-core',       title: 'Quantum Core',        subtitle: 'QM Computation Substrate',        status: 'research', url: '#',                                                         icon: '🔮',  stack: ['Published'] },
+  { id: 'alchemy',            title: 'Alchemy',             subtitle: 'Geometric Market Embeddings',     status: 'research', url: 'https://doi.org/10.5281/zenodo.18627420',                  icon: '📐',  stack: ['Zenodo', 'Published'] },
+];
+
+const liveCount = vectors.filter(v => v.status === 'live').length;
+const devCount = vectors.filter(v => v.status === 'dev').length;
+const researchCount = vectors.filter(v => v.status === 'research').length;
+---
+
+<BaseLayout title="P31 Labs | Neurodivergent Cognitive Infrastructure">
+  <!-- Navbar -->
+  <nav style="position:sticky;top:0;z-index:50;background:rgba(5,5,5,0.85);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,0.05);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <svg width="28" height="28" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+        <rect width="512" height="512" rx="112" fill="#25897d"/>
+        <circle cx="390" cy="120" r="48" fill="#cc6247"/>
+        <text x="256" y="340" font-family="system-ui" font-weight="900" font-size="220" fill="#f0eee9" text-anchor="middle">P31</text>
+        <rect x="156" y="380" width="200" height="16" rx="8" fill="#cda852"/>
+      </svg>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:0.1em;text-transform:uppercase;opacity:0.8;">P31 Labs</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:20px;font-family:'JetBrains Mono',monospace;font-size:12px;">
+      <a href="/lattice.html" style="color:#25897d;text-decoration:none;opacity:0.7;transition:opacity 0.15s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'">Lattice View</a>
+      <a href="https://github.com/p31labs/andromeda" target="_blank" rel="noopener noreferrer" style="color:#d8d6d0;text-decoration:none;opacity:0.5;transition:opacity 0.15s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.5'">GitHub</a>
+      <a href="/phosphorus/support" style="color:#d8d6d0;text-decoration:none;opacity:0.5;transition:opacity 0.15s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.5'">Support</a>
+    </div>
+  </nav>
+
+  <main style="max-width:72rem;margin:0 auto;padding:2rem 1.5rem 4rem;">
+    <!-- Hero -->
+    <div style="padding:3rem 0 2rem;">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:#25897d;margin-bottom:1rem;opacity:0.8;">
+        P31 Labs / EIN 81-2908499
+      </div>
+      <h1 style="font-size:clamp(2rem,5vw,3.5rem);font-weight:800;line-height:1.1;color:#f0eee9;margin-bottom:1rem;">
+        Autonomous Cognitive<br/>Infrastructure.
+      </h1>
+      <p style="font-size:1rem;color:rgba(240,238,233,0.55);max-width:540px;line-height:1.6;margin-bottom:1.5rem;">
+        Building sovereign tools for neurodivergent survival. Every system is edge-deployed, offline-capable, and legally armored. No cloud dependency. No floating neutral.
+      </p>
+      <div style="display:flex;align-items:center;gap:1.5rem;font-family:'JetBrains Mono',monospace;font-size:12px;color:rgba(255,255,255,0.4);">
+        <span>{vectors.length} vectors / {liveCount} live deployments</span>
+        <a href="/lattice.html" style="color:#25897d;text-decoration:none;">View lattice →</a>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:1.5rem;flex-wrap:wrap;">
+      <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(255,255,255,0.3);margin-right:0.25rem;text-transform:uppercase;letter-spacing:0.1em;">Filter:</span>
+      <button data-filter="all" class="filter-btn active" onclick="setFilter('all')">All ({vectors.length})</button>
+      <button data-filter="live" class="filter-btn" onclick="setFilter('live')">Live ({liveCount})</button>
+      <button data-filter="dev" class="filter-btn" onclick="setFilter('dev')">In Dev ({devCount})</button>
+      <button data-filter="research" class="filter-btn" onclick="setFilter('research')">Research ({researchCount})</button>
+    </div>
+
+    <!-- Vector Grid -->
+    <div id="vector-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem;">
+      {vectors.map((v) => (
+        <a
+          href={v.url}
+          data-status={v.status}
+          class="vector-card"
+          target={v.url.startsWith('http') ? '_blank' : undefined}
+          rel={v.url.startsWith('http') ? 'noopener noreferrer' : undefined}
+        >
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:0.5rem;">
+            <span style="font-size:1.5rem;line-height:1;">{v.icon}</span>
+            <span class:list={['status-dot', `status-dot-${v.status}`]}></span>
+          </div>
+          <h3 style="font-family:'JetBrains Mono',monospace;font-size:0.8rem;font-weight:700;letter-spacing:0.05em;color:#f0eee9;margin-bottom:0.25rem;">{v.title}</h3>
+          <p style="font-size:0.8rem;color:rgba(240,238,233,0.45);margin-bottom:0.75rem;line-height:1.4;">{v.subtitle}</p>
+          <div style="display:flex;flex-wrap:wrap;gap:0.25rem;">
+            {v.stack.map((tag) => (
+              <span class="stack-tag">{tag}</span>
+            ))}
+          </div>
+        </a>
+      ))}
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer style="border-top:1px solid rgba(255,255,255,0.04);padding:2rem 1.5rem;text-align:center;">
+    <div style="max-width:72rem;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:0.5rem;">
+      <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(255,255,255,0.15);letter-spacing:0.2em;text-transform:uppercase;">P31 Labs, Inc.</span>
+      <p style="font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(255,255,255,0.1);">
+        Georgia nonprofit corporation · EIN 81-2908499 · SE Georgia · AGPL-3.0
+      </p>
+    </div>
+  </footer>
+</BaseLayout>
+
+<style>
+  .filter-btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 4px 12px;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 4px;
+    background: transparent;
+    color: rgba(255,255,255,0.4);
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.05em;
+  }
+  .filter-btn:hover {
+    border-color: rgba(255,255,255,0.25);
+    color: rgba(255,255,255,0.7);
+  }
+  .filter-btn.active {
+    border-color: #25897d;
+    color: #25897d;
+    background: rgba(37,137,125,0.08);
+  }
+
+  .vector-card {
+    display: block;
+    padding: 1rem;
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 8px;
+    background: rgba(255,255,255,0.02);
+    color: inherit;
+    text-decoration: none;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .vector-card:hover {
+    border-color: rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.04);
+  }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 4px;
+  }
+  .status-dot-live     { background: #3ba372; box-shadow: 0 0 6px rgba(59,163,114,0.6); }
+  .status-dot-dev      { background: #cda852; }
+  .status-dot-research { background: #4db8a8; }
+
+  .stack-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    background: rgba(255,255,255,0.05);
+    color: rgba(255,255,255,0.3);
+    letter-spacing: 0.03em;
+  }
+</style>
+
+<script>
+  function setFilter(filter: string) {
+    const btns = document.querySelectorAll<HTMLButtonElement>('.filter-btn');
+    const cards = document.querySelectorAll<HTMLElement>('.vector-card');
+    btns.forEach(b => b.classList.remove('active'));
+    const active = document.querySelector<HTMLButtonElement>(`[data-filter="${filter}"]`);
+    if (active) active.classList.add('active');
+    cards.forEach(card => {
+      const status = card.dataset.status;
+      card.style.display = (filter === 'all' || status === filter) ? '' : 'none';
+    });
+  }
+</script>
