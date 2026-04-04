@@ -514,6 +514,26 @@ export default {
       if (method === 'GET') return handleStateGet(env, did);
     }
 
+    // R05: Health endpoint — CWP-2026-014
+    if (method === 'GET' && path === '/health') {
+      return corsResponse(JSON.stringify({
+        service: 'spaceship-relay',
+        status: 'ok',
+        version: '1.0.0',
+        timestamp: new Date().toISOString(),
+        bindings: ['SPACESHIP_TELEMETRY'],
+        routes: [
+          'POST /session/start',
+          'POST /session/heartbeat',
+          'POST /session/end',
+          'POST /api/mint-k4',
+          'POST /state/:did',
+          'GET  /state/:did',
+          'GET  /health',
+        ],
+      }));
+    }
+
     return corsResponse(JSON.stringify({ error: 'Not found' }), 404);
   },
 };

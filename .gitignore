@@ -96,12 +96,12 @@ GrokPhenix/
 node_one_firmware/
 phenix-xiaozhi-v2/
 
-# External SDKs
-p31-sovereign-sdk/
-p31-buffer/
-p31ca/
+# External SDKs (root-level only — not 04_SOFTWARE/p31ca/)
+/p31-sovereign-sdk/
+/p31-buffer/
+/p31ca/
 /love-ledger/
-donation-wallet-v2/
+/donation-wallet-v2/
 
 # WCD duplicates in root - keep in WCDs/ only
 /WCDs/eslint.config.mjs
@@ -132,4 +132,11 @@ REVIEW_SHIFT_REPORT.md
 esp_idf_project_configuration.json
 install_tools.bat
 nodevars.bat
-".env.production" 
+".env.production"
+
+# Sensitive credentials — NEVER COMMIT
+stripe_backup_code.txt
+*.backup_code.txt
+
+# Wrangler local state
+.wrangler/

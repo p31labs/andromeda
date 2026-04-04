@@ -109,6 +109,22 @@ export default {
       return Response.json({ ok: true, note: 'Events buffered client-side' }, { headers });
     }
 
+    // R05: Health endpoint — CWP-2026-014
+    if (url.pathname === '/health' && request.method === 'GET') {
+      return Response.json({
+        service: 'p31-telemetry',
+        status: 'ok',
+        version: '1.0.0',
+        timestamp: new Date().toISOString(),
+        bindings: ['TELEMETRY_KV'],
+        routes: [
+          'POST /api/telemetry/perf',
+          'POST /api/telemetry',
+          'GET  /health',
+        ],
+      }, { headers });
+    }
+
     return Response.json({ error: 'Not found' }, { status: 404, headers });
   },
 };
