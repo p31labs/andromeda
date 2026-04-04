@@ -59,6 +59,8 @@ export function TopBar({ modeEmoji, onModeExit, onLobby, isInRoom, playerCount, 
   const startDrag = useGameStore((s) => s.startDrag);
   const endDrag = useGameStore((s) => s.endDrag);
   const voiceFeedback = useVoiceFeedback();
+  const calciumLogged = useGameStore(s => s.calciumLogged);
+  const toggleCalciumLogged = useGameStore(s => s.toggleCalciumLogged);
 
   // Handle voice element selection
   const handleElementSelect = (element: ElementSymbol) => {
@@ -136,6 +138,23 @@ export function TopBar({ modeEmoji, onModeExit, onLobby, isInRoom, playerCount, 
           aria-label={audioMuted ? 'Unmute sound' : 'Mute sound'}
         >
           {audioMuted ? '\u{1F507}' : '\u{1F50A}'}
+        </button>
+        {/* Calcium logging */}
+        <button
+          onClick={toggleCalciumLogged}
+          className="w-10 h-10 flex items-center justify-center
+                     rounded-2xl backdrop-blur-md
+                     border border-white/[0.12]
+                     hover:border-white/[0.25] hover:shadow-[0_0_12px_rgba(78,205,196,0.15)]
+                     active:scale-95
+                     transition-all duration-200 text-base"
+          style={{
+            background: calciumLogged ? 'rgba(45, 255, 160, 0.2)' : 'rgba(6,10,16,0.5)',
+            boxShadow: calciumLogged ? '0 2px 8px rgba(45,255,160,0.3), inset 0 1px 0 rgba(255,255,255,0.05)' : '0 2px 8px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.05)'
+          }}
+          aria-label={calciumLogged ? 'Calcium logged today' : 'Log calcium intake'}
+        >
+          🦴
         </button>
         {/* Phase 5: Voice Controls for pre-readers */}
         <VoiceControls

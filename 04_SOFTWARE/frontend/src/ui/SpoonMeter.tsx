@@ -5,9 +5,8 @@
  * Displays current spoons with visual state management
  */
 
-import React, { useEffect, useRef, useState } from 'react';
-import { useCockpitStore, useMetabolicPercentage } from '../hooks/useCockpitStore';
-import { COCKPIT_COLORS, SPOON_CONFIG } from '../types/contracts';
+import { useCockpitStore } from '../hooks/useCockpitStore';
+import { COCKPIT_COLORS, SPOON_CONFIG, getSpoonPercentage } from '../types/contracts';
 
 // ═══════════════════════════════════════════════════════════════════
 // Spoon Meter Component
@@ -33,8 +32,24 @@ export default function SpoonMeter({
   size = 'md',
   hideLabel = false 
 }: SpoonMeterProps) {
-  const { spoons, maxSpoons, deductSpoon, restoreSpoon } = useCockpitStore();
-  const percentage = useMetabolicPercentage();
+  const metabolicState = useCockpitStore(s => s.metabolicState);
+  const updateMetabolicState = useCockpitStore(s => s.updateMetabolicState);
+  const spoons = metabolicState.current_spoons;
+  const maxSpoons = metabolicState.max_spoons;
+  const percentage = getSpoonPercentage(spoons, maxSpoons);
+
+  const deductSpoon = (amount: number) => {
+    updateMetabolicState({
+      ...metabolicState,
+      current_spoons: Math.max(0, spoons - amount),
+    });
+  };
+  const restoreSpoon = (amount: number) => {
+    updateMetabolicState({
+      ...metabolicState,
+      current_spoons: Math.min(maxSpoons, spoons + amount),
+    });
+  };
   
   // Determine state based on percentage
   const getState = () => {

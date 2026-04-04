@@ -58,8 +58,8 @@ export class DeploymentManager {
     } catch (error) {
       return {
         success: false,
-        platforms: [],
-        environments: [],
+        platform: 'none',
+        environment: 'none',
         errors: [error instanceof Error ? error.message : 'Unknown deployment error'],
       };
     }

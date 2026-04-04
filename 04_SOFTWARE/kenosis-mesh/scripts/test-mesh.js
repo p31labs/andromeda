@@ -5,8 +5,8 @@ const fetch = typeof globalThis.fetch === 'function'
   ? globalThis.fetch
   : require('node-fetch');
 
-const WORKER_URL = "https://kenosis-mesh.YOUR_SUBDOMAIN.workers.dev"; // Replace with your deployed URL
-const ROOT_BEARER_TOKEN = "<ROOT_BEARER_TOKEN>"; // Replace with the deployed root bearer token
+const WORKER_URL = "https://kenosis-mesh.trimtab-signal.workers.dev";
+const ROOT_BEARER_TOKEN = "kenosis-1743586400";
 
 async function testMesh() {
   console.log("🟢 INITIATING KENOSIS MESH TEST...");

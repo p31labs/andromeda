@@ -1,11 +1,25 @@
 ---
 import Layout from '../layouts/Layout.astro';
+
+const donateJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "Donate to P31 Labs",
+  "description": "Support P31 Labs — open-source assistive technology for neurodivergent families. Tax-deductible donations via Stripe.",
+  "url": "https://phosphorus31.org/donate",
+  "mainEntity": {
+    "@type": "DonateAction",
+    "recipient": { "@type": "NGO", "name": "P31 Labs" },
+    "price": "0",
+    "priceCurrency": "USD"
+  }
+};
 ---
 
-<Layout hideNav title="Donate | P31 Labs" description="Support P31 Labs — open-source assistive technology for neurodivergent families. Tax-deductible donations via Stripe. EIN 81-2908499.">
-  <main class="animate-[fadeIn_0.4s_ease-out] bg-white min-h-screen pb-24">
+<Layout hideNav title="Donate | P31 Labs" description="Support P31 Labs — open-source assistive technology for neurodivergent families. Tax-deductible donations via Stripe. EIN 81-2908499." jsonLd={donateJsonLd}>
+  <main class="animate-[fadeIn_0.4s_ease-out] bg-gray-950 text-white min-h-screen pb-24">
     {/* Header */}
-    <div class="bg-espresso text-cloud pt-32 pb-20 px-6">
+    <div class="bg-gray-900 text-white pt-32 pb-20 px-6">
       <div class="max-w-5xl mx-auto">
         <div class="text-butter font-bold tracking-widest uppercase text-sm mb-4">Support P31 Labs</div>
         <h1 class="text-5xl font-heading font-black mb-6">Every atom placed is a connection.</h1>
@@ -33,15 +47,15 @@ import Layout from '../layouts/Layout.astro';
 
           {/* Monthly / One-time toggle */}
           <div class="flex rounded-xl border-2 border-cloud overflow-hidden mb-6 font-bold text-sm" id="modeToggle">
-            <button data-mode="monthly" class="flex-1 py-2.5 px-4 bg-teal-600 text-white transition-colors">Monthly</button>
-            <button data-mode="once" class="flex-1 py-2.5 px-4 bg-white text-espresso/60 transition-colors">One-time</button>
+            <button data-mode="monthly" class="flex-1 py-2.5 px-4 bg-cyan-400 text-black transition-colors">Monthly</button>
+            <button data-mode="once" class="flex-1 py-2.5 px-4 bg-gray-800 text-cyan-400 transition-colors">One-time</button>
           </div>
 
           <div class="grid grid-cols-4 gap-3 mb-4" id="amountGrid">
-            <button data-amount="500" class="amount-btn bg-white text-espresso font-bold py-3 rounded-xl text-center transition-all hover:scale-105 cursor-pointer border-2 border-cloud hover:border-teal-600">$5</button>
-            <button data-amount="1000" class="amount-btn bg-white text-espresso font-bold py-3 rounded-xl text-center transition-all hover:scale-105 cursor-pointer border-2 border-cloud hover:border-teal-600">$10</button>
-            <button data-amount="2500" class="amount-btn active bg-teal-600 text-white font-bold py-3 rounded-xl text-center transition-all hover:scale-105 cursor-pointer border-2 border-teal-600">$25</button>
-            <button data-amount="5000" class="amount-btn bg-white text-espresso font-bold py-3 rounded-xl text-center transition-all hover:scale-105 cursor-pointer border-2 border-cloud hover:border-teal-600">$50</button>
+            <button data-amount="500" class="amount-btn bg-gray-800 text-cyan-400 font-bold py-3 rounded-xl text-center transition-all hover:scale-105 cursor-pointer border-2 border-gray-600 hover:border-cyan-400">$5</button>
+            <button data-amount="1000" class="amount-btn bg-gray-800 text-cyan-400 font-bold py-3 rounded-xl text-center transition-all hover:scale-105 cursor-pointer border-2 border-gray-600 hover:border-cyan-400">$10</button>
+            <button data-amount="2500" class="amount-btn active bg-cyan-400 text-black font-bold py-3 rounded-xl text-center transition-all hover:scale-105 cursor-pointer border-2 border-cyan-400">$25</button>
+            <button data-amount="5000" class="amount-btn bg-gray-800 text-cyan-400 font-bold py-3 rounded-xl text-center transition-all hover:scale-105 cursor-pointer border-2 border-gray-600 hover:border-cyan-400">$50</button>
           </div>
 
           <div class="relative mb-2">
@@ -52,7 +66,7 @@ import Layout from '../layouts/Layout.astro';
               min="1"
               step="1"
               placeholder="Custom amount"
-              class="w-full pl-9 pr-4 py-3 rounded-xl border-2 border-cloud focus:border-teal-600 focus:outline-none text-lg font-bold text-espresso transition-colors"
+              class="w-full pl-9 pr-4 py-3 rounded-xl border-2 border-gray-600 focus:border-cyan-400 focus:outline-none text-lg font-bold text-cyan-400 bg-gray-800 transition-colors"
             />
           </div>
 
@@ -61,12 +75,12 @@ import Layout from '../layouts/Layout.astro';
 
           {/* Tax language */}
           <p class="text-center text-xs text-espresso/40 mt-1 mb-4">
-            Tax-deductible under IRC §170(c) · EIN 81-2908499 (The Hack Foundation, fiscal sponsor) · Receipt emailed automatically
+            P31 Labs, Inc. &middot; Georgia Nonprofit Corporation &middot; 501(c)(3) application pending IRS determination &middot; Receipt emailed automatically
           </p>
 
           <button
             id="donateBtn"
-            class="w-full bg-teal-600 text-white font-bold px-8 py-4 rounded-xl hover:bg-teal-700 transition-colors text-lg cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            class="w-full bg-cyan-400 text-black font-bold px-8 py-4 rounded-xl hover:bg-cyan-300 transition-colors text-lg cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Donate $25/mo
           </button>
@@ -107,8 +121,8 @@ import Layout from '../layouts/Layout.astro';
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div class="bg-white p-6 rounded-xl border border-cloud">
             <div class="text-sm font-bold text-espresso/50 uppercase mb-2">Entity</div>
-            <div class="text-lg font-bold text-espresso">P31 Labs</div>
-            <div class="text-sm text-espresso/60 mt-1">SE Georgia</div>
+            <div class="text-lg font-bold text-espresso">P31 Labs, Inc.</div>
+            <div class="text-sm text-espresso/60 mt-1">Georgia Nonprofit Corporation &middot; 501(c)(3) pending</div>
           </div>
           <div class="bg-white p-6 rounded-xl border border-cloud">
             <div class="text-sm font-bold text-espresso/50 uppercase mb-2">Receipt</div>
@@ -149,6 +163,12 @@ import Layout from '../layouts/Layout.astro';
             <h3 class="font-bold text-espresso mb-1">Contribute Code</h3>
             <p class="text-sm">All repos are open source and accepting PRs.</p>
           </div>
+          <div class="glass-box p-6 rounded-xl flex-1 max-w-xs crypto-box">
+            <div class="text-2xl mb-2">&#x1FA99;</div>
+            <h3 class="font-bold text-espresso mb-1">Crypto Donation</h3>
+            <p class="text-sm">Donate ETH, DAI, or USDC via Giveth. GIV token rewards for donors.</p>
+            <a href="https://giveth.io/cause/01j8vs0k8" target="_blank" rel="noopener noreferrer" class="text-teal-600 font-bold text-sm hover:underline mt-2 inline-block">giveth.io/cause/p31labs</a>
+          </div>
         </div>
       </div>
 
@@ -158,131 +178,179 @@ import Layout from '../layouts/Layout.astro';
           Questions? <a href="mailto:will@p31ca.org" class="text-teal-600 font-bold hover:underline">will@p31ca.org</a>
         </p>
       </div>
+
+      {/* Newsletter */}
+      <div class="mt-16 bg-gradient-to-r from-teal-600/10 via-coral-500/10 to-butter/10 rounded-3xl p-8 md:p-12">
+        <div class="text-center mb-6">
+          <h2 class="text-2xl font-heading font-black text-espresso mb-2">Stay Connected</h2>
+          <p class="text-espresso/70 max-w-lg mx-auto">
+            Get updates on new features, research, and opportunities. No spam, just atoms.
+          </p>
+        </div>
+        
+        <div class="flex flex-col sm:flex-row gap-4 justify-center items-center max-w-xl mx-auto">
+          <a 
+            href="https://thegeodesicself.substack.com" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            class="flex items-center gap-2 bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-6 rounded-xl transition-colors"
+          >
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M6 12c0-3.3 2.7-6 6-6s6 2.7 6 6v6H6v-6zm0 0v6h12v-6c0-3.3-2.7-6-6-6s-6 2.7-6 6z"/></svg>
+            Subscribe on Substack
+          </a>
+          <span class="text-espresso/40">or</span>
+          <div class="flex gap-2">
+            <input 
+              type="email" 
+              placeholder="your@email.com"
+              class="px-4 py-3 rounded-xl border-2 border-cloud focus:border-teal-600 focus:outline-none bg-white text-espresso"
+            />
+            <button class="bg-coral-500 hover:bg-coral-600 text-white font-bold py-3 px-6 rounded-xl transition-colors">
+              Join
+            </button>
+          </div>
+        </div>
+        
+        <p class="text-center text-xs text-espresso/40 mt-4">
+          39 subscribers · Unsubscribe anytime
+        </p>
+      </div>
     </div>
   </main>
 
-  <script src="https://js.stripe.com/v3/"></script>
   <script is:inline>
-    const STRIPE_PK = 'pk_live_51T6z3U4Kt3K4WuBDDv6FjjDIygpXjRFMZ5ow28pDiVegBZNOaHffjJCtosLRdaVn0PBmO4rTCYNdoMONcIr5MAyp005FUET7VZ';
-    const API_URL = 'https://donate-api.phosphorus31.org';
+    (function() {
+      const STRIPE_PK = 'pk_live_51T6z3U4Kt3K4WuBDDv6FjjDIygpXjRFMZ5ow28pDiVegBZNOaHffjJCtosLRdaVn0PBmO4rTCYNdoMONcIr5MAyp005FUET7VZ';
+      const API_URL = 'https://donate-api.phosphorus31.org';
 
-    const IMPACT = {
-      500:  'Covers 2 months of BONDING relay hosting costs.',
-      1000: 'Funds a week of development tooling for the team.',
-      2500: 'Covers a full month of infrastructure for all 3 products.',
-      5000: 'Funds an entire quarter of operating costs at current burn.',
-    };
+      const IMPACT = {
+        500:  'Covers 2 months of BONDING relay hosting costs.',
+        1000: 'Funds a week of development tooling for the team.',
+        2500: 'Covers a full month of infrastructure for all 3 products.',
+        5000: 'Funds an entire quarter of operating costs at current burn.',
+      };
 
-    let selectedAmount = 2500; // cents — default $25
-    let isMonthly = true;
-    const stripe = Stripe(STRIPE_PK);
+      let selectedAmount = 2500; // cents — default $25
+      let isMonthly = true;
+      let stripe = null;
 
-    // Mode toggle
-    document.querySelectorAll('#modeToggle button').forEach(btn => {
-      btn.addEventListener('click', () => {
-        isMonthly = btn.dataset.mode === 'monthly';
-        document.querySelectorAll('#modeToggle button').forEach(b => {
-          const active = b.dataset.mode === (isMonthly ? 'monthly' : 'once');
-          b.classList.toggle('bg-teal-600', active);
-          b.classList.toggle('text-white', active);
-          b.classList.toggle('bg-white', !active);
-          b.classList.toggle('text-espresso/60', !active);
+      function init() {
+        stripe = Stripe(STRIPE_PK);
+
+        // Mode toggle
+        document.querySelectorAll('#modeToggle button').forEach(btn => {
+          btn.addEventListener('click', () => {
+            isMonthly = btn.dataset.mode === 'monthly';
+            document.querySelectorAll('#modeToggle button').forEach(b => {
+              const active = b.dataset.mode === (isMonthly ? 'monthly' : 'once');
+              b.classList.toggle('bg-teal-600', active);
+              b.classList.toggle('text-white', active);
+              b.classList.toggle('bg-white', !active);
+              b.classList.toggle('text-espresso/60', !active);
+            });
+            updateDonateButton();
+          });
         });
-        updateDonateButton();
-      });
-    });
 
-    // Amount button selection
-    document.querySelectorAll('.amount-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const amount = parseInt(btn.dataset.amount);
-        selectedAmount = amount;
-        document.getElementById('customAmount').value = '';
-        updateUI();
-      });
-    });
+        // Amount button selection
+        document.querySelectorAll('.amount-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const amount = parseInt(btn.dataset.amount);
+            selectedAmount = amount;
+            document.getElementById('customAmount').value = '';
+            updateUI();
+          });
+        });
 
-    // Custom amount input
-    document.getElementById('customAmount').addEventListener('input', (e) => {
-      const val = parseInt(e.target.value);
-      if (val > 0) {
-        selectedAmount = val * 100;
+        // Custom amount input
+        document.getElementById('customAmount').addEventListener('input', (e) => {
+          const val = parseInt(e.target.value);
+          if (val > 0) {
+            selectedAmount = val * 100;
+            document.querySelectorAll('.amount-btn').forEach(b => {
+              b.classList.remove('active', 'bg-teal-600', 'text-white', 'border-teal-600');
+              b.classList.add('bg-white', 'text-espresso', 'border-cloud');
+            });
+          }
+          updateDonateButton();
+          updateImpact();
+        });
+
+        // Checkout
+        document.getElementById('donateBtn').addEventListener('click', async () => {
+          const btn = document.getElementById('donateBtn');
+          btn.disabled = true;
+          btn.textContent = 'Redirecting to Stripe...';
+
+          try {
+            const res = await fetch(API_URL + '/create-checkout', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                amount: selectedAmount,
+                currency: 'usd',
+                mode: isMonthly ? 'monthly' : 'once',
+                successUrl: window.location.origin + '/donate?success=1',
+                cancelUrl: window.location.origin + '/donate',
+              }),
+            });
+
+            if (!res.ok) throw new Error('Failed to create checkout session');
+            const { sessionId } = await res.json();
+            await stripe.redirectToCheckout({ sessionId });
+          } catch (err) {
+            btn.disabled = false;
+            updateDonateButton();
+            alert('Something went wrong. Please try again or contact will@p31ca.org.');
+          }
+        });
+
+        // Success message
+        if (new URLSearchParams(window.location.search).get('success') === '1') {
+          const card = document.querySelector('.shadow-xl');
+          const msg = document.createElement('div');
+          msg.className = 'bg-green-50 border border-green-200 text-green-800 rounded-xl p-6 text-center mb-8';
+          msg.innerHTML = '<p class="font-bold text-lg mb-1">Thank you!</p><p>Your donation has been received. A receipt has been sent to your email.</p>';
+          card.prepend(msg);
+        }
+      }
+
+      function updateUI() {
         document.querySelectorAll('.amount-btn').forEach(b => {
-          b.classList.remove('active', 'bg-teal-600', 'text-white', 'border-teal-600');
-          b.classList.add('bg-white', 'text-espresso', 'border-cloud');
+          const isActive = parseInt(b.dataset.amount) === selectedAmount;
+          b.classList.toggle('active', isActive);
+          b.classList.toggle('bg-teal-600', isActive);
+          b.classList.toggle('text-white', isActive);
+          b.classList.toggle('border-teal-600', isActive);
+          b.classList.toggle('bg-white', !isActive);
+          b.classList.toggle('text-espresso', !isActive);
+          b.classList.toggle('border-cloud', !isActive);
         });
-      }
-      updateDonateButton();
-      updateImpact();
-    });
-
-    function updateUI() {
-      document.querySelectorAll('.amount-btn').forEach(b => {
-        const isActive = parseInt(b.dataset.amount) === selectedAmount;
-        b.classList.toggle('active', isActive);
-        b.classList.toggle('bg-teal-600', isActive);
-        b.classList.toggle('text-white', isActive);
-        b.classList.toggle('border-teal-600', isActive);
-        b.classList.toggle('bg-white', !isActive);
-        b.classList.toggle('text-espresso', !isActive);
-        b.classList.toggle('border-cloud', !isActive);
-      });
-      updateDonateButton();
-      updateImpact();
-    }
-
-    function updateDonateButton() {
-      const btn = document.getElementById('donateBtn');
-      const dollars = (selectedAmount / 100).toFixed(selectedAmount % 100 === 0 ? 0 : 2);
-      btn.textContent = isMonthly ? `Donate $${dollars}/mo` : `Donate $${dollars}`;
-    }
-
-    function updateImpact() {
-      const msg = document.getElementById('impactMsg');
-      if (IMPACT[selectedAmount]) {
-        msg.textContent = IMPACT[selectedAmount];
-      } else {
-        const dollars = (selectedAmount / 100).toFixed(selectedAmount % 100 === 0 ? 0 : 2);
-        msg.textContent = `Your $${dollars} directly funds free assistive technology for neurodivergent families.`;
-      }
-    }
-
-    // Checkout
-    document.getElementById('donateBtn').addEventListener('click', async () => {
-      const btn = document.getElementById('donateBtn');
-      btn.disabled = true;
-      btn.textContent = 'Redirecting to Stripe...';
-
-      try {
-        const res = await fetch(API_URL + '/create-checkout', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            amount: selectedAmount,
-            currency: 'usd',
-            mode: isMonthly ? 'monthly' : 'once',
-            successUrl: window.location.origin + '/donate?success=1',
-            cancelUrl: window.location.origin + '/donate',
-          }),
-        });
-
-        if (!res.ok) throw new Error('Failed to create checkout session');
-        const { sessionId } = await res.json();
-        await stripe.redirectToCheckout({ sessionId });
-      } catch (err) {
-        btn.disabled = false;
         updateDonateButton();
-        alert('Something went wrong. Please try again or contact will@p31ca.org.');
+        updateImpact();
       }
-    });
 
-    // Success message
-    if (new URLSearchParams(window.location.search).get('success') === '1') {
-      const card = document.querySelector('.shadow-xl');
-      const msg = document.createElement('div');
-      msg.className = 'bg-green-50 border border-green-200 text-green-800 rounded-xl p-6 text-center mb-8';
-      msg.innerHTML = '<p class="font-bold text-lg mb-1">Thank you!</p><p>Your donation has been received. A receipt has been sent to your email.</p>';
-      card.prepend(msg);
-    }
+      function updateDonateButton() {
+        const btn = document.getElementById('donateBtn');
+        const dollars = (selectedAmount / 100).toFixed(selectedAmount % 100 === 0 ? 0 : 2);
+        btn.textContent = isMonthly ? `Donate $${dollars}/mo` : `Donate $${dollars}`;
+      }
+
+      function updateImpact() {
+        const msg = document.getElementById('impactMsg');
+        if (IMPACT[selectedAmount]) {
+          msg.textContent = IMPACT[selectedAmount];
+        } else {
+          const dollars = (selectedAmount / 100).toFixed(selectedAmount % 100 === 0 ? 0 : 2);
+          msg.textContent = `Your $${dollars} directly funds free assistive technology for neurodivergent families.`;
+        }
+      }
+
+      // Dynamically load Stripe SDK, then init
+      var s = document.createElement('script');
+      s.src = 'https://js.stripe.com/v3/';
+      s.onload = init;
+      document.head.appendChild(s);
+    })();
   </script>
 </Layout>

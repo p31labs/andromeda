@@ -94,6 +94,7 @@ export interface CockpitActions {
   updateVoltage: (level: number) => void;
   addVoltageLog: (log: VoltageLogPayload) => void;
   updateMetabolicState: (state: MetabolicState) => void;
+  drainSpoons: (taskCost: number, lambda?: number) => void;
   
   // Fawn Guard Actions
   activateFawnGuard: (signal: CatchersMittSignal) => void;

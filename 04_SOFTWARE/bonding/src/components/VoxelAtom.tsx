@@ -22,6 +22,7 @@ import * as THREE from 'three';
 import type { ElementData } from '../types';
 import { playAtomNote } from '../engine/sound';
 import { useGameStore } from '../store/gameStore';
+import { BREATHING_PATTERN } from '../config/breathing';
 
 export interface PersonalityAnimationHint {
   speed: number;      // 0–1
@@ -88,6 +89,7 @@ export const VoxelAtom = memo(function VoxelAtom({
   const energyRef = useRef<THREE.Mesh>(null);
   const rimRef = useRef<THREE.Mesh>(null);
   const breathing = useGameStore((s) => s.breathing);
+  const calciumLogged = useGameStore((s) => s.calciumLogged);
 
   const phaseOffset =
     (position[0] * 127.1 + position[1] * 311.7 + position[2] * 523.3) %
@@ -125,6 +127,7 @@ export const VoxelAtom = memo(function VoxelAtom({
       const pScale = pHint ? pHint.scale : 1.0;
       scale = (baseScale + excitement * 0.1) * clampedSize * pScale;
     }
+    if (calciumLogged) scale *= 1.2; // Brighten when calcium logged
     groupRef.current.scale.setScalar(scale);
     groupRef.current.rotation.y += 0.002 + excitement * 0.005;
 

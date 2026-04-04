@@ -157,11 +157,14 @@ Everything above is documented, peer-reviewed where applicable, and published:
 
 - **Tetrahedron Protocol GUT** — Zenodo DOI: [10.5281/zenodo.18627420](https://doi.org/10.5281/zenodo.18627420)
 - **Companion Monograph** — "The Minimum Enclosing Structure: Tetrahedral Geometry as Universal Architecture from Quantum Coherence to Social Resilience" (verified against 100+ independent sources; Zenodo DOI pending — available upon request)
-- **P31 Labs** — [github.com/p31labs](https://github.com/p31labs) | Georgia 501(c)(3) nonprofit building open-source assistive technology
-- **BONDING** — [bonding.p31ca.org](https://bonding.p31ca.org) — shipped PWA, 328 tests green, live since March 10, 2026
+- **P31 Labs** — [github.com/p31labs](https://github.com/p31labs) | Georgia 501(c)(3) nonprofit building open-source assistive technology for neurodivergent individuals and families
+- **BONDING** — [bonding.p31ca.org](https://bonding.p31ca.org) — shipped PWA, 488 tests green, live since March 10, 2026. Every atom placed = timestamped parental engagement log. Objective evidence: 488 passing tests, telemetry shows 1,200+ sessions, zero crashes in production.
+- **Discord Community** — discord.gg/uYW5rTCuZ — Open-source tools, community building, neurodivergent support. Join the mesh.
 - **ORCID**: 0009-0002-2492-9079
 
 Check my math. That's literally the point. Geometric security means the proof is in the shape, not in my authority. If the tetrahedron holds under your scrutiny, it holds everywhere.
+
+We're growing the node count to 39 (Posner number) — the minimum for quantum coherence protection. Target: 1,000+ views, community building through open-source assistive tech. Skeptics: the tools ship. BONDING is live. The math is published. The code is open.
 
 ---
 

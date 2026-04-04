@@ -51,36 +51,6 @@ export const THEME_CONFIG_PRESETS: Record<SkinTheme, ThemeConfig> = {
     glassOpacity: 0.05,
     reduceMotion: true, // ZERO animations in Gray Rock
   },
-  AURORA: {
-    name: 'Aurora',
-    skin: 'AURORA',
-    background: '#0f172a',
-    primary: '#a78bfa',   // violet
-    secondary: '#34d399', // emerald
-    accent: '#f472b6',    // pink
-    glassOpacity: 0.2,
-    reduceMotion: false,
-  },
-  HIGH_CONTRAST: {
-    name: 'High Contrast',
-    skin: 'HIGH_CONTRAST',
-    background: '#000000',
-    primary: '#00FFFF',   // cyan
-    secondary: '#FF00FF', // magenta
-    accent: '#FFFF00',    // yellow
-    glassOpacity: 0.0,
-    reduceMotion: false,
-  },
-  LOW_MOTION: {
-    name: 'Low Motion',
-    skin: 'LOW_MOTION',
-    background: '#020617',
-    primary: '#22d3ee',
-    secondary: '#d946ef',
-    accent: '#C9B1FF',
-    glassOpacity: 0.15,
-    reduceMotion: true,
-  },
 };
 
 interface ThemeState {

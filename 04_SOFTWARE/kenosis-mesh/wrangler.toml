@@ -1,46 +1,43 @@
 name = "kenosis-mesh"
-type = "javascript"
-account_id = "<CF_ACCOUNT_ID>"
-compatibility_date = "2026-04-01"
+main = "src/index.js"
+account_id = "ee05f70c889cb6f876b9925257e3a2fa"
+compatibility_date = "2026-03-17"
 workers_dev = true
+
+[vars]
+AUTH_TOKEN = "kenosis-1743586400"
 
 [build]
 command = ""
 
-[[bindings]]
+[[durable_objects.bindings]]
 name = "R_NODE"
-type = "durable_object"
 class_name = "RNode"
 
-[[bindings]]
+[[durable_objects.bindings]]
 name = "ANODE"
-type = "durable_object"
 class_name = "ANODE"
 
-[[bindings]]
+[[durable_objects.bindings]]
 name = "BNODE"
-type = "durable_object"
 class_name = "BNODE"
 
-[[bindings]]
+[[durable_objects.bindings]]
 name = "CNODE"
-type = "durable_object"
 class_name = "CNODE"
 
-[[bindings]]
+[[durable_objects.bindings]]
 name = "DNODE"
-type = "durable_object"
 class_name = "DNODE"
 
-[[bindings]]
+[[durable_objects.bindings]]
 name = "ENODE"
-type = "durable_object"
 class_name = "ENODE"
 
-[[bindings]]
+[[durable_objects.bindings]]
 name = "FNODE"
-type = "durable_object"
 class_name = "FNODE"
 
-[vars]
-ROOT_BEARER_TOKEN = "<ROOT_BEARER_TOKEN>"
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = [ "RNode", "ANODE", "BNODE", "CNODE", "DNODE", "ENODE", "FNODE" ]

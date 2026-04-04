@@ -29,6 +29,7 @@ import {
   MOLECULE_NAMES,
   isK4,
 } from '../engine/chemistry';
+import { playMoleculeChord } from '../engine/audio';
 import { KNOWN_MOLECULES } from '../data/achievements';
 import type { DifficultyId } from '../data/modes';
 import { getModeById } from '../data/modes';
@@ -135,6 +136,9 @@ interface GameStore {
   // Breathing pacer
   breathing: boolean;
 
+  // Calcium logging
+  calciumLogged: boolean;
+
   // Fun facts / social tracking
   seenElements: string[];
   pingsReceived: number;
@@ -188,6 +192,9 @@ interface GameStore {
   clearIncomingPings: () => void;
   setConnectionStatus: (status: 'connected' | 'reconnecting' | 'disconnected') => void;
   toggleBreathing: () => void;
+
+  // Calcium logging
+  toggleCalciumLogged: () => void;
 
   // Ambient reward actions (shooting stars, missing node)
   pushToast: (toast: Omit<ToastMessage, 'id' | 'createdAt'>) => void;
@@ -263,8 +270,9 @@ export const useGameStore = create<GameStore>()((set, get) => ({
   remotePlayers: [],
   incomingPings: [],
   lobbyActive: false,
-  connectionStatus: 'connected',
-  breathing: false,
+   connectionStatus: 'connected',
+   breathing: false,
+   calciumLogged: false,
   seenElements: [],
   pingsReceived: 0,
   pendingDiscovery: null,
@@ -519,8 +527,12 @@ export const useGameStore = create<GameStore>()((set, get) => ({
         completedAt: new Date().toISOString(),
         sessionElapsedMs: elapsed,
         coherencePhase,
+        elements: updatedAtoms.map(a => a.element),
       };
       completedMolecules = [...completedMolecules, molecule];
+
+      // P06.1: Play molecule chord on completion
+      playMoleculeChord(molecule.elements);
 
       // Phase 4: Update progress store for molecules
       useProgressStore.getState().addMolecule(molecule.formula);
@@ -1331,6 +1343,7 @@ export const useGameStore = create<GameStore>()((set, get) => ({
   clearIncomingPings: () => set({ incomingPings: [] }),
   setConnectionStatus: (status) => set({ connectionStatus: status }),
   toggleBreathing: () => set({ breathing: !get().breathing }),
+  toggleCalciumLogged: () => set({ calciumLogged: !get().calciumLogged }),
 
   // Ambient reward actions
   pushToast: (toast) => {

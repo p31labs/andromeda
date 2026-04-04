@@ -108,7 +108,7 @@ export function useAlignmentGuard() {
 /**
  * Handle alignment violation - return refusal message
  */
-export function handleAlignmentViolation(originalText: string): { allowed: boolean; response: string } {
+export function handleAlignmentViolation(_originalText: string): { allowed: boolean; response: string } {
   return {
     allowed: false,
     response: `I cannot process this request. The message contains instructions to override immutable constraints that are pinned in Register P. 

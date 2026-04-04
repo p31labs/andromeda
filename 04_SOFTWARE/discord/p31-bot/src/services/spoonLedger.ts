@@ -12,6 +12,11 @@ import path from 'path';
 
 const LEDGER_PATH = path.join(process.cwd(), 'spoon-ledger.json');
 
+const REGEN_AMOUNT = 25;
+const REGEN_INTERVAL_MS = 6 * 60 * 60 * 1000; // 6 hours
+const MAX_BALANCE_CAP = 200; // Prevent inflation
+let regenInterval: ReturnType<typeof setInterval> | null = null;
+
 interface LedgerEntry {
   balance: number;
   totalEarned: number;
@@ -111,4 +116,68 @@ export function transferAll(fromKey: string, toKey: string): number {
   delete ledger[fromKey];
   flush(ledger);
   return transferred;
+}
+
+/**
+ * Regenerate spoons for all users.
+ * Adds REGEN_AMOUNT to each user's balance, capped at MAX_BALANCE_CAP.
+ * Returns the total amount regenerated.
+ */
+export function regenerateAll(): number {
+  let totalRegenned = 0;
+  const now = new Date().toISOString();
+  
+  for (const [userId, entry] of Object.entries(ledger)) {
+    // Skip external keys (kofi:, stripe:)
+    if (userId.includes(':')) continue;
+    
+    const headroom = MAX_BALANCE_CAP - entry.balance;
+    if (headroom <= 0) continue;
+    
+    const amount = Math.min(REGEN_AMOUNT, headroom);
+    entry.balance += amount;
+    entry.lastUpdated = now;
+    totalRegenned += amount;
+  }
+  
+  if (totalRegenned > 0) {
+    flush(ledger);
+  }
+  
+  return totalRegenned;
+}
+
+/**
+ * Start the spoon regeneration cron.
+ * Call this once on bot ready.
+ */
+export function startSpoonRegeneration(): void {
+  if (regenInterval !== null) {
+    console.log('[SpoonLedger] Regeneration already running');
+    return;
+  }
+  
+  // Run immediately on start
+  console.log('[SpoonLedger] Running initial spoon regeneration...');
+  const initialRegen = regenerateAll();
+  console.log(`[Economy] Initial spoon regeneration: +${initialRegen} spoons`);
+  
+  // Schedule every 6 hours
+  regenInterval = setInterval(() => {
+    const regenned = regenerateAll();
+    console.log(`[Economy] Executed 6-hour spoon regeneration: +${regenned} spoons`);
+  }, REGEN_INTERVAL_MS);
+  
+  console.log(`[SpoonLedger] Spoon regeneration started (every ${REGEN_INTERVAL_MS / 3600000} hours)`);
+}
+
+/**
+ * Stop the regeneration cron (for graceful shutdown).
+ */
+export function stopSpoonRegeneration(): void {
+  if (regenInterval) {
+    clearInterval(regenInterval);
+    regenInterval = null;
+    console.log('[SpoonLedger] Spoon regeneration stopped');
+  }
 }

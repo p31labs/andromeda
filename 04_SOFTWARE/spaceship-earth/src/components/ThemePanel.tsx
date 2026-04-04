@@ -22,11 +22,8 @@ interface SkinDef {
 
 const SKINS: SkinDef[] = [
   { id: 'OPERATOR', label: 'Operator',  accent: '#22d3ee', desc: 'Neon cyan — default' },
-  { id: 'AURORA',   label: 'Aurora',    accent: '#a78bfa', desc: 'Violet-green gradient' },
   { id: 'KIDS',     label: 'Solar',     accent: '#E9C46A', desc: 'Warm amber tones' },
   { id: 'GRAY_ROCK', label: 'Gray Rock', accent: '#64748B', desc: 'Low-stimulation mono' },
-  { id: 'HIGH_CONTRAST', label: 'Hi-Contrast', accent: '#00FFFF', desc: 'Max contrast for accessibility' },
-  { id: 'LOW_MOTION', label: 'Low Motion', accent: '#22d3ee', desc: 'Reduced animations' },
 ];
 
 export function ThemePanel() {

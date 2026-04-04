@@ -9,6 +9,7 @@ import { get, set } from 'idb-keyval';
 
 const CAL_KEY = 'p31-buffer-cal';
 const HELD_KEY = 'p31-buffer-held';
+const CHAOS_KEY = 'p31-buffer-chaos';
 
 /**
  * Load calibration data from IndexedDB.
@@ -57,4 +58,60 @@ export async function saveHeldMessages<T>(held: T[]): Promise<void> {
   } catch {
     // silently fail
   }
+}
+
+/**
+ * Load chaos ingestion history from IndexedDB.
+ */
+export async function loadChaosHistory<T>(): Promise<T[]> {
+  try {
+    const stored = await get<T[]>(CHAOS_KEY);
+    if (stored && Array.isArray(stored)) return stored;
+  } catch {
+    // IndexedDB unavailable
+  }
+  return [];
+}
+
+/**
+ * Save chaos ingestion item to IndexedDB.
+ */
+export async function saveChaosItem<T>(item: T): Promise<void> {
+  try {
+    const existing = await loadChaosHistory<T>();
+    existing.unshift(item);
+    await set(CHAOS_KEY, existing.slice(0, 200)); // Keep last 200
+  } catch {
+    // silently fail
+  }
+}
+
+/**
+ * Request persistent storage permission.
+ * Returns true if granted, false otherwise.
+ */
+export async function requestPersistentStorage(): Promise<boolean> {
+  if (navigator.storage && navigator.storage.persist) {
+    try {
+      const granted = await navigator.storage.persist();
+      return granted;
+    } catch {
+      return false;
+    }
+  }
+  return false;
+}
+
+/**
+ * Check if persistent storage is currently active.
+ */
+export async function isStoragePersistent(): Promise<boolean> {
+  if (navigator.storage && navigator.storage.persisted) {
+    try {
+      return await navigator.storage.persisted();
+    } catch {
+      return false;
+    }
+  }
+  return false;
 }

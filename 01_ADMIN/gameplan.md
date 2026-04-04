@@ -57,7 +57,7 @@
 - [ ] Annuity: Yr1 ~60% high-3 minus SSDI offset; Yr2+ ~40% high-3 minus 60% SSDI
 
 ### 2.2 🟡 NODE ZERO FIRMWARE SPRINT
-- [ ] AXS15231B display: vendor init sequence (32 commands, `0xBB` gate). Working approach: chunked memcpy staging buffer (CHUNK_LINES=20, two 19,200-byte DMA buffers, full_refresh=1, 20MHz QSPI)
+- [ ] AXS15231B display: vendor init sequence (7 commands, `0xBB` gate). Working approach: chunked memcpy staging buffer (CHUNK_LINES=20, two 19,200-byte DMA buffers, full_refresh=1, 40MHz QSPI, SPI mode 0)
 - [ ] Root cause confirmed: missing `lv_init()` before `lv_disp_drv_register()` — fix applied
 - [ ] **DO NOT SWAP PINS.** GPIO 1–4 are ES8311 audio codec. GPIO 9–14 are QSPI display.
 - [ ] Haptic patterns: Critical Alert, Attention, Optimal

@@ -8,7 +8,6 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import {
   SerialBridge,
-  CMD_HEARTBEAT,
   CMD_CLICK_EVENT,
   CMD_SPOON_REPORT,
 } from '../lib/serial';
@@ -48,7 +47,7 @@ export function useThickClick(
       }
 
       if (cmd === CMD_SPOON_REPORT && payload.length >= 2) {
-        const spoonValue = ((payload[0] << 8) | payload[1]) / 10;
+        const spoonValue = (((payload[0]! << 8) | payload[1]!)) / 10;
         onSpoonReport?.(spoonValue);
       }
     },

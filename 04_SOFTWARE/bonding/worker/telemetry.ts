@@ -639,6 +639,42 @@ function mergeEvents(existing: TelemetryEvent[], incoming: TelemetryEvent[]): Te
   return merged.sort((a, b) => a.seq - b.seq);
 }
 
+// ── CWP-BOOK-002: Book session event handler ──
+
+interface BookEvent {
+  sessionId: string;
+  readerId: string;
+  pageId: number;
+  event: 'page_view' | 'session_start' | 'session_complete';
+  timestamp: number;
+  bookVersion: '1.0';
+}
+
+function bookSessionKey(sessionId: string): string {
+  return `book_session:${sessionId}`;
+}
+
+async function handleBookSession(req: Request, env: Env): Promise<Response> {
+  let body: BookEvent;
+  try {
+    body = await req.json() as BookEvent;
+  } catch {
+    return corsResponse(JSON.stringify({ error: 'Invalid JSON' }), 400);
+  }
+
+  const { sessionId, readerId, pageId, event, timestamp, bookVersion } = body;
+  if (!sessionId || !readerId || typeof pageId !== 'number' || !event || !timestamp) {
+    return corsResponse(JSON.stringify({ error: 'Missing fields' }), 400);
+  }
+
+  const key = bookSessionKey(sessionId);
+  const existing = await env.TELEMETRY_KV.get<BookEvent[]>(key, 'json') ?? [];
+  existing.push({ sessionId, readerId, pageId, event, timestamp, bookVersion });
+  await env.TELEMETRY_KV.put(key, JSON.stringify(existing), { expirationTtl: 365 * 86400 });
+
+  return corsResponse(JSON.stringify({ ok: true }));
+}
+
 // ── SCE Cross-post: Social Content Engine announcement to game ──
 
 async function handleSCEAnnounce(request: Request, env: Env): Promise<Response> {
@@ -778,9 +814,15 @@ export default {
           'PUT  /api/room/:code',
           'GET  /api/room/:code',
           'GET  /health',
+          'POST /book-session',
           'POST /api/social/announce'
         ]
       }), 200);
+    }
+
+    // CWP-BOOK-002: POST /book-session — book engagement event
+    if (method === 'POST' && path === '/book-session') {
+      return handleBookSession(request, env);
     }
 
     // SCE Cross-post: Announce social content to BONDING game

@@ -39,26 +39,17 @@ kenosis-mesh/
 
 Replace placeholders:
 - `<CF_ACCOUNT_ID>` — your Cloudflare account ID
-- `<ROOT_BEARER_TOKEN>` — will be set via secret
+- `<AUTH_TOKEN>` — set via [vars] in wrangler.toml
 
-### 2. Set the secret
+### 2. Deploy
 
 ```bash
 cd kenosis-mesh
 npx wrangler login
-npx wrangler secret put ROOT_BEARER_TOKEN
-# Enter your secret when prompted
-```
-
-### 3. Deploy
-
-```bash
 npx wrangler deploy
 ```
 
-### 4. Test
-
-Update `scripts/test-mesh.js` with your deployed URL and token, then:
+### 3. Test
 
 ```bash
 node scripts/test-mesh.js
@@ -69,10 +60,88 @@ Expected response:
 { "ack": true, "session": "init-..." }
 ```
 
+## Endpoints
+
+### GET /health
+
+Returns mesh health and topology info.
+
+```json
+{
+  "status": "kenosis-mesh-edge-healthy",
+  "topology": "K4 Complete Graph",
+  "nodes": ["R","A","B","C","D","E","F"]
+}
+```
+
+### POST /message
+
+Send an envelope to the mesh. Requires Bearer token authentication.
+
+```json
+{
+  "id": "session-123",
+  "from": "OPERATOR",
+  "to": "R",
+  "type": "init",
+  "payload": { "command": "VERIFY_K4_INTEGRITY" },
+  "timestamp": 1743586400000
+}
+```
+
+Response:
+```json
+{ "ack": true, "session": "session-123" }
+```
+
+### GET /session?id={sessionId}
+
+Query session status and leaf results.
+
+```json
+{
+  "session": "session-123",
+  "leaf_results": {
+    "D": "D_proc:1775051952520",
+    "E": "E_proc:1775051952522",
+    "F": "F_proc:1775051952485"
+  },
+  "final": {
+    "D": "D_proc:1775051952520",
+    "E": "E_proc:1775051952522",
+    "F": "F_proc:1775051952485"
+  }
+}
+```
+
+## Message Flow
+
+1. **Init**: External POST → RNode → forwards to A, B, C (parallel)
+2. **Inner Trinity**: 
+   - A → D, E
+   - B → E, F
+   - C → D, F
+3. **Leaves**: D, E, F process and return results to R
+4. **Aggregation**: R collects all 3 leaf results, stores final state
+
 ## Security
 
-- **Public**: RNode (`/message` endpoint) — protected by Bearer token
-- **Internal**: A, B, C, D, E, F — only callable via DO bindings within the worker
+- **Public**: `/message` endpoint — protected by Bearer token (`AUTH_TOKEN` env var)
+- **Internal**: DO-to-DO calls use `http://internal/` URLs, bypass auth
+- **Health**: `/health` and `/session` endpoints are public (read-only)
+
+## Auth Token
+
+Set in `wrangler.toml`:
+```toml
+[vars]
+AUTH_TOKEN = "your-secret-token"
+```
+
+All POST requests to `/message` must include:
+```
+Authorization: Bearer your-secret-token
+```
 
 ## License
 

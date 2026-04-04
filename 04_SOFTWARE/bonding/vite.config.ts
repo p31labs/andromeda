@@ -11,6 +11,7 @@ export default defineConfig({
     // WCD-CC03: PWA — generates service worker for offline caching
     VitePWA({
       registerType: 'autoUpdate',
+      injectRegister: 'inline',
       workbox: {
         globPatterns: ['**/*.{js,css,html,png,svg,ico,woff2}'],
         runtimeCaching: [
@@ -34,7 +35,7 @@ export default defineConfig({
       '@p31/shared': path.resolve(__dirname, '../packages/shared/src'),
       '@p31/spaceship-earth': path.resolve(__dirname, '../spaceship-earth/src'),
     },
-    dedupe: ['three', '@react-three/fiber', '@react-three/drei', '@react-three/postprocessing'],
+    dedupe: ['react', 'react-dom', 'three', '@react-three/fiber', '@react-three/drei', '@react-three/postprocessing'],
   },
   build: {
     sourcemap: 'hidden',

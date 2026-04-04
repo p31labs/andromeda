@@ -497,7 +497,7 @@ export class SkillTreeEngine {
     const now = Date.now();
 
     // Check cooldown (simplified - would need proper cooldown tracking)
-    if (definition.cooldown > 0) {
+    if ((definition.cooldown ?? 0) > 0) {
       // Cooldown logic would go here
     }
 
@@ -655,18 +655,18 @@ interface SkillUnlockResult {
 
 interface SkillTrainingResult {
   success: boolean;
-  skillId: string;
-  currentProgress: number;
-  levelUp: boolean;
-  trainingTime: number;
+  skillId?: string;
+  currentProgress?: number;
+  levelUp?: boolean;
+  trainingTime?: number;
   error?: string;
 }
 
 interface SkillUseResult {
   success: boolean;
-  skillId: string;
-  result: any;
-  cooldownRemaining: number;
+  skillId?: string;
+  result?: unknown;
+  cooldownRemaining?: number;
   error?: string;
 }
 
