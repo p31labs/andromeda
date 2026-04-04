@@ -1,15 +1,14 @@
 name = "p31-state"
 main = "src/index.ts"
 compatibility_date = "2026-04-04"
+workers_dev = true
 
-# Route: state.p31ca.org → p31-state worker
-# Set via Cloudflare dashboard → Workers & Pages → p31-state → Custom Domains
+[[custom_domains]]
+hostname = "state.p31ca.org"
 
 [[kv_namespaces]]
 binding = "USER_STATE_KV"
-id = "REPLACE_WITH_KV_NAMESPACE_ID"
-# Create: npx wrangler kv namespace create P31_USER_STATE
-# Then replace id above
+id = "a78748591c814cbf9869621724db2df7"
 
 [vars]
 ALLOWED_ORIGINS = "https://p31ca.org,https://phosphorus31.org,https://bonding.p31ca.org,https://spaceship-earth.pages.dev"

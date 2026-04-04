@@ -97,6 +97,7 @@ const WORKERS = [
   { name: 'bonding-relay',      url: 'https://bonding-relay.trimtab-signal.workers.dev/health',  purpose: 'BONDING multiplayer relay' },
   { name: 'spaceship-relay',    url: 'https://spaceship-relay.trimtab-signal.workers.dev/health', purpose: 'Spaceship Earth telemetry' },
   { name: 'genesis-gate',       url: 'https://genesis.p31ca.org/health',                          purpose: 'Central event bus' },
+  { name: 'p31-state',          url: 'https://state.p31ca.org/health',                            purpose: 'Shared spoon state (KV)' },
   { name: 'p31-cortex',         url: 'https://p31-cortex.trimtab-signal.workers.dev/health',      purpose: 'AI multi-agent cortex' },
   { name: 'kenosis-mesh',       url: 'https://kenosis-mesh.trimtab-signal.workers.dev/health',    purpose: 'K4 7-node mesh' },
   { name: 'p31-telemetry',      url: 'https://p31-telemetry.trimtab-signal.workers.dev/health',   purpose: 'Performance telemetry' },
@@ -172,6 +173,7 @@ async function runChecks() {
 
 runChecks();
 setInterval(runChecks, 60_000);
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});
 </script>
 </body>
 </html>

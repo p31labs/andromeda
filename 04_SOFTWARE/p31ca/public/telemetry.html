@@ -303,6 +303,7 @@ async function refresh() {
 
 refresh();
 setInterval(refresh, 10_000);
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});
 </script>
 </body>
 </html>

@@ -1,0 +1,41 @@
+---
+/**
+ * P31 Labs Hub — index.astro
+ * CWP-2026-014 R11 — hub cards wired with ?from=hub deep links
+ *
+ * Components used:
+ *   Vault              — hero section ("Isostatically Rigid")
+ *   CentaurMethodology — 4-panel HITL methodology grid
+ *   GenesisBlock       — terminal-style event bus visualization
+ *   ActiveDeployments  — clickable app cards with deep links + ops nav
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Vault from '../components/Vault.astro';
+import CentaurMethodology from '../components/CentaurMethodology.astro';
+import GenesisBlock from '../components/GenesisBlock.astro';
+import ActiveDeployments from '../components/ActiveDeployments.astro';
+---
+
+<BaseLayout
+  title="P31 Labs — Isostatically Rigid"
+  description="P31 Labs — Cognitively sovereign infrastructure for the neurodivergent builder."
+>
+  <!-- P31 telemetry — fire-and-forget -->
+  <script src="/p31-telemetry.js" defer></script>
+
+  <main>
+    <Vault />
+    <CentaurMethodology />
+    <GenesisBlock />
+    <ActiveDeployments />
+  </main>
+
+  <footer class="px-6 py-12 text-center border-t border-white/[0.04]">
+    <div class="max-w-5xl mx-auto flex flex-col items-center gap-4">
+      <span class="font-mono text-xs text-white/15 tracking-[0.2em] uppercase">P31 Labs</span>
+      <p class="text-xs text-white/10">
+        Cognitively sovereign infrastructure. Built in the open.
+      </p>
+    </div>
+  </footer>
+</BaseLayout>

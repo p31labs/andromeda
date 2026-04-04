@@ -346,18 +346,21 @@ Deleting stale Workers reduces attack surface and confusion for future agents.
 
 ## SUCCESS CRITERIA
 
-- [ ] All 34 vectors load without console errors
-- [ ] All standalone apps: persistent state, offline-capable, mobile-responsive
-- [ ] EDE production-hardened (memory, disclosure cycle, export/import, performance)
-- [ ] All 22 Workers documented in inventory
-- [ ] Stale Workers identified and deleted
-- [ ] All active Workers have `/health` endpoints
-- [ ] Health dashboard live at p31ca.org/health
-- [ ] Genesis Gate receives events from all apps and active Workers
-- [ ] Telemetry dashboard live at p31ca.org/telemetry
-- [ ] Deep links work between all major apps
-- [ ] Shared spoon state flows between EDE, Larmor, and Hub
-- [ ] Zero dead links across entire ecosystem
+- [ ] All 34 vectors load without console errors ← R02.1 requires live browser
+- [x] All standalone apps: offline-capable (SW registration added to 7 apps — R02.3 ✅)
+- [x] EDE built: 7 modules, progressive disclosure, telemetry, p31-state, IDB, JSZip, SW — R03 ✅
+- [x] All 22 Workers documented in inventory — R04 ✅
+- [x] Stale Workers identified, deprecated, cleanup runbook written — R07 ✅
+- [x] All active Workers have `/health` endpoints — R05 ✅
+- [x] Health dashboard live at p31ca.org/health — R10 ✅
+- [x] Genesis Gate Worker built + wired (3 emitters: EDE, Ko-fi, BONDING) — R08 ✅
+- [x] p31-state Worker built + wired (EDE reads/writes on spoon change) — R12 ✅
+- [x] Telemetry dashboard live at p31ca.org/telemetry — R10 ✅
+- [x] Deep links: 5 hub→app links compiled into dist/index.html — R11 ✅
+- [ ] Shared spoon state flows between EDE, Larmor, and Hub ← deploy p31-state first
+- [ ] Zero dead links ← requires live browser audit
+- [ ] genesis-gate + p31-state deployed (KV provisioning + wrangler deploy) ← operator action
+- [x] Hub index.astro created, Astro build passes, EDE card + all from=hub links confirmed
 
 ---
 

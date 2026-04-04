@@ -1,4 +1,16 @@
-# Cloudflare Worker Configuration
+# ⚠️  DEPRECATED — DO NOT DEPLOY — CWP-2026-014 R07
+#
+# This Worker (p31-social-broadcast) has been superseded by p31-social-worker
+# located at 04_SOFTWARE/cloudflare-worker/social-drop-automation/.
+#
+# All functionality (Twitter, Reddit, Bluesky, Mastodon, Nostr, Substack,
+# wave scheduling, Zenodo drops) is live in p31-social-worker.
+# This file uses mock API implementations only.
+#
+# Disposition: DELETE from Cloudflare dashboard.
+# Delete command: npx wrangler delete p31-social-broadcast
+# See: docs/WORKER_CLEANUP_RUNBOOK.md
+#
 name = "p31-social-broadcast"
 main = "p31_social_broadcast_worker.js"
 compatibility_date = "2024-06-12"

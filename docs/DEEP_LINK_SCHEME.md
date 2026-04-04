@@ -61,11 +61,13 @@ p31ca.org?from=phosphorus31
 | hub → health dashboard | ✅ Live (`/health.html`) |
 | hub → telemetry dashboard | ✅ Live (`/telemetry.html`) |
 | health ↔ telemetry cross-link | ✅ Live |
-| EDE → Larmor | ⏳ Awaiting Larmor (CWP-2026-006) |
-| EDE → BONDING | ⏳ Awaiting EDE (future CWP) |
-| Larmor → EDE | ⏳ Awaiting both apps |
+| hub → EDE | ✅ Wired (`/ede.html?from=hub`) |
+| hub → BONDING | ✅ Wired (`bonding.p31ca.org?from=hub`) |
+| hub → Spaceship Earth | ✅ Wired (`spaceship-earth.pages.dev?from=hub`) |
+| EDE → Larmor (fawn guard) | ⚡ Partial — console emit live; Larmor not yet deployed (CWP-2026-006) |
+| EDE → BONDING | ⏳ Awaiting BONDING "Test this molecule" button |
+| Larmor → EDE | ⏳ Awaiting Larmor (CWP-2026-006) |
 | BONDING → Ko-fi | ⏳ Add to bonding/src when ready |
-| All hub cards with `from=hub` | ⏳ Awaiting hub index.astro |
 
 ## Session Continuity via p31-state
 

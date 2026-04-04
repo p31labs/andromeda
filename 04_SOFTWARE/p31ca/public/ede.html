@@ -1,0 +1,1950 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0f1115">
+<title>EDE | Everything Development Environment</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<!-- P31 telemetry — fire-and-forget, never blocks -->
+<script src="/p31-telemetry.js" defer></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --void:       #0f1115;
+  --surface:    #161920;
+  --surface2:   #1c2028;
+  --coral:      #cc6247;
+  --phosphorus: #3ba372;
+  --cloud:      #d8d6d0;
+  --muted:      #6b7280;
+  --border:     rgba(255,255,255,0.07);
+  --font-ui:    'Atkinson Hyperlegible', sans-serif;
+  --font-mono:  'Courier New', 'Courier', monospace;
+}
+html, body { height: 100%; overflow: hidden; background: var(--void); color: var(--cloud); font-family: var(--font-ui); }
+button { cursor: pointer; font-family: var(--font-ui); border: none; background: none; color: var(--cloud); }
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+
+/* ── APP SHELL ── */
+#app { display: grid; grid-template-rows: 42px 1fr; height: 100vh; }
+
+/* ── HEADER ── */
+#header {
+  display: flex; align-items: center; gap: 10px;
+  padding: 0 14px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+#header .logo { font-size: 15px; font-weight: 700; color: var(--coral); letter-spacing: 1.5px; white-space: nowrap; }
+#header .logo span { color: var(--muted); font-weight: 400; font-size: 11px; margin-left: 6px; letter-spacing: 0.5px; }
+.h-sep { width: 1px; height: 20px; background: var(--border); flex-shrink: 0; }
+.spacer { flex: 1; }
+
+/* Spoon gauge */
+#spoon-wrap { display: flex; align-items: center; gap: 7px; font-size: 11px; font-family: var(--font-mono); color: var(--muted); white-space: nowrap; }
+#spoon-bar-outer { width: 72px; height: 5px; background: var(--surface2); border-radius: 3px; overflow: hidden; }
+#spoon-bar-fill { height: 100%; width: 73%; background: var(--coral); border-radius: 3px; transition: width 0.4s; }
+#spoon-pct { color: var(--coral); font-weight: 700; }
+
+/* Tier badge */
+#tier-badge { font-size: 10px; font-weight: 700; letter-spacing: 1px; padding: 2px 8px; border-radius: 3px; background: rgba(204,98,71,0.15); color: var(--coral); border: 1px solid rgba(204,98,71,0.3); }
+
+/* Trimtab rotary encoder */
+#trimtab { display: flex; align-items: center; gap: 5px; user-select: none; }
+#trimtab-canvas { width: 34px; height: 34px; cursor: grab; touch-action: none; flex-shrink: 0; }
+#trimtab-canvas:active { cursor: grabbing; }
+#trimtab-freq   { font-size: 10px; font-family: var(--font-mono); color: var(--coral); font-weight: 700; }
+#trimtab-active { font-size: 10px; font-family: var(--font-mono); color: var(--muted); margin-left: 2px; }
+
+/* Refresh button */
+#btn-refresh {
+  width: 26px; height: 26px; border-radius: 4px; font-size: 14px;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid var(--border); color: var(--muted);
+  transition: all 0.15s;
+}
+#btn-refresh:hover { color: var(--coral); border-color: var(--coral); }
+
+/* ── MAIN GRID ── */
+#main {
+  display: grid;
+  grid-template-columns: 60fr 40fr;
+  grid-template-rows: 1fr;
+  overflow: hidden;
+}
+
+/* Left column: editor + output stacked */
+#left-col { display: grid; grid-template-rows: 1fr 200px; overflow: hidden; border-right: 1px solid var(--border); }
+
+/* Right column: shield + entropy + status stacked */
+#right-col {
+  display: grid;
+  grid-template-rows: 1fr 1fr 100px;
+  overflow: hidden;
+  transition: all 0.2s;
+}
+#right-col.hidden { display: none; }
+
+/* ── EDITOR PANEL ── */
+#editor-panel { display: flex; flex-direction: column; overflow: hidden; }
+
+/* File tab bar */
+#filetabs {
+  display: flex; align-items: stretch;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  overflow-x: auto;
+  min-height: 34px;
+}
+#filetabs::-webkit-scrollbar { height: 0; }
+.ftab {
+  display: flex; align-items: center; gap: 5px;
+  padding: 0 12px 0 12px; min-width: 80px; max-width: 140px;
+  font-size: 12px; font-family: var(--font-mono);
+  border-right: 1px solid var(--border);
+  cursor: pointer; user-select: none; white-space: nowrap;
+  color: var(--muted);
+  border-bottom: 2px solid transparent;
+  transition: all 0.12s;
+  position: relative;
+}
+.ftab:hover { background: rgba(255,255,255,0.03); color: var(--cloud); }
+.ftab.active { color: var(--coral); border-bottom-color: var(--coral); background: rgba(204,98,71,0.06); }
+.ftab .tab-name { flex: 1; overflow: hidden; text-overflow: ellipsis; }
+.ftab .tab-close { font-size: 14px; line-height: 1; color: var(--muted); padding: 0 1px; border-radius: 2px; flex-shrink: 0; }
+.ftab .tab-close:hover { color: var(--coral); background: rgba(204,98,71,0.15); }
+#tab-new {
+  padding: 0 12px; font-size: 18px; line-height: 1;
+  color: var(--muted); align-self: center;
+  flex-shrink: 0;
+}
+#tab-new:hover { color: var(--coral); }
+
+/* Editor toolbar */
+#editor-toolbar {
+  display: flex; align-items: center; gap: 6px;
+  padding: 5px 10px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.tbtn {
+  font-size: 11px; font-family: var(--font-mono);
+  padding: 3px 10px; border-radius: 3px;
+  border: 1px solid var(--border);
+  color: var(--cloud); background: rgba(255,255,255,0.03);
+  transition: all 0.12s; white-space: nowrap;
+}
+.tbtn:hover { border-color: var(--coral); background: rgba(204,98,71,0.1); color: var(--coral); }
+.tbtn.run { background: var(--coral); color: var(--void); border-color: var(--coral); font-weight: 700; }
+.tbtn.run:hover { filter: brightness(1.15); }
+#editor-filename { font-size: 11px; font-family: var(--font-mono); color: var(--muted); }
+#save-indicator { font-size: 10px; font-family: var(--font-mono); color: var(--phosphorus); opacity: 0; transition: opacity 0.3s; }
+
+/* Code area with line numbers */
+#code-wrap { display: flex; flex: 1; overflow: hidden; }
+#line-numbers {
+  width: 44px; flex-shrink: 0;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  font-family: var(--font-mono); font-size: 13px; line-height: 20px;
+  padding: 10px 0;
+  color: #3a3f4a;
+  text-align: right;
+  overflow: hidden; user-select: none;
+}
+.ln { padding-right: 10px; display: block; }
+#code-area {
+  flex: 1; resize: none;
+  background: var(--void); color: var(--cloud);
+  font-family: var(--font-mono); font-size: 13px; line-height: 20px;
+  padding: 10px 12px;
+  border: none; outline: none;
+  tab-size: 2; white-space: pre;
+  overflow: auto;
+  caret-color: var(--coral);
+}
+
+/* ── OUTPUT PANEL ── */
+#output-panel {
+  display: flex; flex-direction: column;
+  border-top: 1px solid var(--border);
+  overflow: hidden;
+}
+#output-tabs {
+  display: flex; align-items: stretch;
+  background: var(--surface); border-bottom: 1px solid var(--border);
+  flex-shrink: 0; min-height: 30px;
+}
+.otab {
+  padding: 0 14px; font-size: 11px; font-family: var(--font-mono);
+  cursor: pointer; color: var(--muted);
+  border-bottom: 2px solid transparent;
+  display: flex; align-items: center;
+  transition: all 0.12s;
+}
+.otab:hover { color: var(--cloud); }
+.otab.active { color: var(--phosphorus); border-bottom-color: var(--phosphorus); }
+#btn-clear-console {
+  margin-left: auto; padding: 0 10px; font-size: 10px; font-family: var(--font-mono);
+  color: var(--muted);
+}
+#btn-clear-console:hover { color: var(--coral); }
+
+#console-pane, #preview-pane { flex: 1; overflow: hidden; display: none; }
+#console-pane.active { display: flex; flex-direction: column; }
+#preview-pane.active { display: block; }
+
+#console-log {
+  flex: 1; overflow-y: auto;
+  padding: 8px 12px;
+  font-family: var(--font-mono); font-size: 12px; line-height: 1.6;
+}
+.log-line { white-space: pre-wrap; word-break: break-all; padding: 1px 0; }
+.log-line.log { color: var(--cloud); }
+.log-line.warn { color: #cda852; }
+.log-line.error { color: var(--coral); }
+.log-line.sys { color: var(--muted); font-style: italic; }
+
+#preview-iframe {
+  width: 100%; height: 100%;
+  border: none; background: #fff;
+}
+
+/* ── SIDE PANELS (right column) ── */
+.side-panel {
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  border-bottom: 1px solid var(--border);
+}
+.side-panel:last-child { border-bottom: none; }
+
+.panel-header {
+  display: flex; align-items: center;
+  padding: 7px 12px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  font-size: 10px; font-family: var(--font-mono);
+  letter-spacing: 1.5px; text-transform: uppercase;
+  flex-shrink: 0;
+}
+.panel-header.coral     { color: var(--coral);      border-left: 3px solid var(--coral); }
+.panel-header.phosphorus{ color: var(--phosphorus);  border-left: 3px solid var(--phosphorus); }
+.panel-header.muted     { color: var(--muted);       border-left: 3px solid var(--muted); }
+
+.panel-body {
+  flex: 1; overflow-y: auto;
+  padding: 10px 12px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+
+.metric-block { display: flex; flex-direction: column; gap: 4px; }
+.metric-label {
+  font-size: 9px; font-family: var(--font-mono);
+  color: var(--muted); letter-spacing: 1px; text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.metric-row {
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 12px; font-family: var(--font-mono);
+}
+.dim-label { font-size: 10px; color: var(--muted); }
+.metrics-grid-2 {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 5px 10px;
+  font-size: 12px; font-family: var(--font-mono);
+}
+
+/* Shield */
+.voltage-bar-outer { height: 6px; background: var(--surface2); border-radius: 3px; overflow: hidden; margin: 5px 0 3px; }
+.voltage-bar-fill  { height: 100%; width: 0; border-radius: 3px; transition: width 0.4s, background 0.4s; }
+.tier-chip { font-size: 9px; font-weight: 700; letter-spacing: 0.8px; padding: 1px 6px; border-radius: 2px; }
+.tier-chip.LOW  { background: rgba(59,163,114,0.2);  color: var(--phosphorus); }
+.tier-chip.MED  { background: rgba(205,168,82,0.2);  color: #cda852; }
+.tier-chip.HIGH { background: rgba(204,98,71,0.2);   color: var(--coral); }
+.status-indicator {
+  font-size: 10px; font-family: var(--font-mono); font-weight: 700; letter-spacing: 1.5px;
+  padding: 3px 9px; border-radius: 3px; display: inline-block;
+}
+.status-indicator.inactive { background: rgba(107,114,128,0.1); color: var(--muted);  border: 1px solid rgba(107,114,128,0.2); }
+.status-indicator.active   { background: rgba(204,98,71,0.15);  color: var(--coral);  border: 1px solid rgba(204,98,71,0.3); }
+.signal-list { max-height: 90px; overflow-y: auto; font-size: 10px; font-family: var(--font-mono); }
+.signal-item { padding: 3px 0; border-bottom: 1px solid rgba(255,255,255,0.04); display: flex; justify-content: space-between; gap: 6px; }
+.sig-tier       { font-weight: 700; }
+.sig-tier.LOW   { color: var(--phosphorus); }
+.sig-tier.MED   { color: #cda852; }
+.sig-tier.HIGH  { color: var(--coral); }
+
+/* Entropy */
+.correction-display { font-size: 11px; font-family: var(--font-mono); color: var(--muted); }
+.correction-display.negative { color: var(--coral); }
+.correction-display.positive { color: var(--phosphorus); }
+.gov-alert {
+  background: rgba(204,98,71,0.1); border: 1px solid rgba(204,98,71,0.3);
+  border-radius: 3px; padding: 5px 9px;
+  font-size: 10px; color: var(--coral); font-family: var(--font-mono);
+}
+.gov-alert.hidden { display: none; }
+
+/* Status */
+.tier-display { font-size: 14px; font-weight: 700; font-family: var(--font-mono); letter-spacing: 2px; padding: 4px 0; }
+.tier-display.tier-full       { color: var(--phosphorus); }
+.tier-display.tier-moderate   { color: var(--coral); }
+.tier-display.tier-simplified { color: #cda852; }
+.tier-display.tier-minimal    { color: var(--muted); }
+
+/* ── E05: PROGRESSIVE DISCLOSURE ── */
+#right-col,
+#entropy,
+#status,
+#left-col,
+.side-panel { transition: opacity 300ms ease, transform 300ms ease; }
+
+/* Shield summary-mode: collapses body, shows inline voltage */
+.side-panel.summary-mode { flex-direction: row; align-items: center; max-height: 36px; flex-shrink: 0; }
+.side-panel.summary-mode .panel-header { border-bottom: none; border-right: 1px solid var(--border); flex-shrink: 0; }
+.side-panel.summary-mode .panel-body   { display: none; }
+#sh-summary-inline { display: none; flex: 1; align-items: center; gap: 8px; padding: 0 12px; font-size: 11px; font-family: var(--font-mono); }
+.side-panel.summary-mode #sh-summary-inline { display: flex; }
+
+/* Override dropdown */
+#pd-override-wrap { display: flex; align-items: center; gap: 5px; font-size: 10px; font-family: var(--font-mono); color: var(--muted); white-space: nowrap; }
+#pd-override { background: var(--surface2); color: var(--cloud); border: 1px solid var(--border); border-radius: 3px; font-size: 10px; font-family: var(--font-mono); padding: 2px 4px; cursor: pointer; }
+#pd-override-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--muted); flex-shrink: 0; transition: background 0.2s; }
+#pd-override-dot.overridden { background: var(--coral); }
+
+/* ── LAYER 0 — Somatic mode ── */
+#layer0 {
+  position: fixed; inset: 0; z-index: 900;
+  background: var(--void);
+  display: none;
+  flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 16px;
+}
+#layer0.active { display: flex; }
+#l0-spoons { font-size: 10px; font-family: var(--font-mono); color: var(--muted); letter-spacing: 1px; position: absolute; top: 14px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 8px; }
+#l0-spoon-bar-outer { width: 60px; height: 4px; background: var(--surface2); border-radius: 2px; overflow: hidden; }
+#l0-spoon-bar-fill  { height: 100%; background: var(--coral); border-radius: 2px; transition: width 0.4s; }
+#l0-dot {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--coral); opacity: 0.4; transform: scale(0.7);
+}
+@keyframes l0-inhale { to { transform: scale(1.25); opacity: 1; } }
+@keyframes l0-hold   { from { transform: scale(1.25); opacity: 1; } to { transform: scale(1.25); opacity: 1; } }
+@keyframes l0-exhale { to { transform: scale(0.65); opacity: 0.3; } }
+#l0-phase  { font-size: 13px; font-family: var(--font-mono); color: var(--coral); letter-spacing: 2px; text-transform: uppercase; min-width: 80px; text-align: center; }
+#l0-hint   { font-size: 9px;  font-family: var(--font-mono); color: rgba(107,114,128,0.45); letter-spacing: 1px; margin-top: 6px; }
+#l0-escape-wrap { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+#l0-escape-bar  { width: 100px; height: 2px; background: var(--surface2); border-radius: 2px; overflow: hidden; }
+#l0-escape-fill { height: 100%; width: 0; background: var(--coral); border-radius: 2px; }
+#l0-escape-label { font-size: 9px; font-family: var(--font-mono); color: rgba(107,114,128,0.35); letter-spacing: 0.5px; }
+
+/* hidden sandbox iframe */
+#sandbox { display: none; }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- HEADER -->
+  <header id="header">
+    <div class="logo">⬡ EDE<span>Everything Development Environment</span></div>
+    <div class="h-sep"></div>
+
+    <!-- Spoon gauge -->
+    <div id="spoon-wrap">
+      <span>SPOONS</span>
+      <div id="spoon-bar-outer"><div id="spoon-bar-fill"></div></div>
+      <span id="spoon-pct">73%</span>
+    </div>
+
+    <div class="h-sep"></div>
+    <div id="tier-badge">FULL</div>
+    <div class="h-sep"></div>
+
+    <!-- Trimtab rotary (E06) -->
+    <div id="trimtab">
+      <canvas id="trimtab-canvas" width="34" height="34" title="Trimtab — drag to tune · click to toggle · hold for Layer 0"></canvas>
+      <span id="trimtab-freq">863Hz</span><span id="trimtab-active">○</span>
+    </div>
+
+    <div class="spacer"></div>
+
+    <!-- E05: Manual tier override -->
+    <div id="pd-override-wrap">
+      <div id="pd-override-dot"></div>
+      <select id="pd-override" title="Override cognitive tier">
+        <option value="auto">auto</option>
+        <option value="FULL">FULL</option>
+        <option value="MODERATE">MOD</option>
+        <option value="SIMPLIFIED">SIMP</option>
+        <option value="MINIMAL">MIN</option>
+      </select>
+    </div>
+
+    <div class="h-sep"></div>
+    <button id="btn-settings" title="Settings" style="width:26px;height:26px;border-radius:4px;font-size:13px;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);color:var(--muted);transition:all 0.15s">⚙</button>
+    <button id="btn-refresh" title="Clear output + refresh (Ctrl+B toggles panels)" style="width:26px;height:26px;border-radius:4px;font-size:14px;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);color:var(--muted);transition:all 0.15s">&#8635;</button>
+  </header>
+
+  <!-- MAIN -->
+  <div id="main">
+
+    <!-- LEFT COLUMN -->
+    <div id="left-col">
+
+      <!-- EDITOR PANEL -->
+      <div id="editor-panel">
+        <!-- File tabs bar -->
+        <div id="filetabs">
+          <!-- tabs rendered by JS -->
+          <button id="tab-new" title="New file (Ctrl+N)">+</button>
+        </div>
+
+        <!-- Editor toolbar -->
+        <div id="editor-toolbar">
+          <button class="tbtn run" id="run-btn" title="Run (Ctrl+Enter)">&#9654; RUN</button>
+          <div class="h-sep"></div>
+          <span id="editor-filename">main.jsx</span>
+          <span id="save-indicator">saved</span>
+          <div class="spacer"></div>
+          <span style="font-size:10px;font-family:var(--font-mono);color:var(--muted)">Ctrl+S save &nbsp; Ctrl+N new &nbsp; Ctrl+B panels</span>
+        </div>
+
+        <!-- Code editor with line numbers -->
+        <div id="code-wrap">
+          <div id="line-numbers"></div>
+          <textarea id="code-area" spellcheck="false" autocorrect="off" autocapitalize="off"></textarea>
+        </div>
+      </div>
+
+      <!-- OUTPUT PANEL -->
+      <div id="output-panel">
+        <div id="output-tabs">
+          <div class="otab active" data-otab="console">CONSOLE</div>
+          <div class="otab" data-otab="preview">PREVIEW</div>
+          <button id="btn-clear-console" title="Clear console">CLR</button>
+        </div>
+
+        <div id="console-pane" class="active">
+          <div id="console-log"></div>
+        </div>
+        <div id="preview-pane">
+          <iframe id="preview-iframe" sandbox="allow-scripts"></iframe>
+        </div>
+      </div>
+
+    </div><!-- /left-col -->
+
+    <!-- RIGHT COLUMN (placeholder panels) -->
+    <div id="right-col">
+
+      <!-- E02: SHIELD PANEL -->
+      <div class="side-panel" id="shield">
+        <div class="panel-header coral">⬡ Shield<span id="sh-summary-inline"></span></div>
+        <div class="panel-body">
+          <div class="metric-block">
+            <div class="metric-label">Voltage Score</div>
+            <div class="voltage-bar-outer"><div id="sh-voltage-bar" class="voltage-bar-fill"></div></div>
+            <div class="metric-row">
+              <span style="font-size:16px;font-family:var(--font-mono);font-weight:700" id="sh-voltage-val">--</span>
+              <span id="sh-voltage-tier" class="tier-chip">--</span>
+            </div>
+          </div>
+          <div class="metric-block">
+            <div class="metric-label">Fawn Guard</div>
+            <div id="sh-fawn-status" class="status-indicator inactive">INACTIVE</div>
+          </div>
+          <div class="metric-block">
+            <div class="metric-label">Catcher's Mitt</div>
+            <div class="metric-row"><span class="dim-label">Queue depth</span><span id="sh-queue-depth">0</span></div>
+            <div class="metric-row"><span class="dim-label">Last signal</span><span id="sh-last-signal" style="color:var(--muted)">—</span></div>
+          </div>
+          <div class="metric-block">
+            <div class="metric-label">Signal History</div>
+            <div id="sh-signal-list" class="signal-list"></div>
+          </div>
+          <div class="metric-block">
+            <button class="tbtn" id="sh-simulate-btn" style="width:100%">⚡ Simulate Signal</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- E03: ENTROPY PANEL -->
+      <div class="side-panel" id="entropy">
+        <div class="panel-header phosphorus">◈ Entropy</div>
+        <div class="panel-body">
+          <div class="metric-block">
+            <div class="metric-label">Code Entropy (H)</div>
+            <div style="display:flex;align-items:center;gap:10px">
+              <canvas id="en-gauge" width="100" height="58"></canvas>
+              <div>
+                <div style="font-size:22px;font-family:var(--font-mono);font-weight:700" id="en-entropy-val">—</div>
+                <div id="en-pid-correction" class="correction-display">correction: —</div>
+              </div>
+            </div>
+          </div>
+          <div class="metric-block">
+            <div class="metrics-grid-2">
+              <div><div class="dim-label">Halstead V</div><div id="en-halstead">—</div></div>
+              <div><div class="dim-label">Cyclomatic</div><div id="en-cyclomatic">—</div></div>
+              <div><div class="dim-label">LOC</div><div id="en-loc">—</div></div>
+              <div><div class="dim-label">Attractor</div><div style="color:var(--phosphorus)">π/9</div></div>
+            </div>
+          </div>
+          <div class="metric-block">
+            <div class="metric-label">Entropy History</div>
+            <canvas id="en-sparkline" width="200" height="36" style="width:100%"></canvas>
+          </div>
+          <div id="en-gov-alert" class="gov-alert hidden">⚠ High entropy — consider refactor</div>
+        </div>
+      </div>
+
+      <!-- E04: STATUS PANEL -->
+      <div class="side-panel" id="status">
+        <div class="panel-header muted">· Status</div>
+        <div class="panel-body">
+          <div class="metric-block">
+            <div class="metric-label">Q Distribution</div>
+            <canvas id="st-q-curve" width="200" height="44" style="width:100%"></canvas>
+            <div class="metric-row" style="margin-top:3px">
+              <span id="st-spoon-val" style="font-family:var(--font-mono);font-weight:700">—</span>
+              <span class="dim-label">/ 200 spoons</span>
+            </div>
+          </div>
+          <div class="metric-block">
+            <div class="metrics-grid-2">
+              <div><div class="dim-label">Runs</div><div id="st-runs">0</div></div>
+              <div><div class="dim-label">Errors</div><div id="st-errors">0</div></div>
+              <div><div class="dim-label">Uptime</div><div id="st-uptime">0s</div></div>
+              <div><div class="dim-label">Idle regen</div><div id="st-regen" style="color:var(--phosphorus)">—</div></div>
+            </div>
+          </div>
+          <div class="metric-block">
+            <div class="metric-label">Cognitive Tier</div>
+            <div id="st-tier-display" class="tier-display tier-full">FULL</div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /right-col -->
+
+  </div><!-- /main -->
+
+</div><!-- /app -->
+
+<!-- E05: LAYER 0 — Somatic mode -->
+<div id="layer0">
+  <div id="l0-spoons">
+    SPOONS
+    <div id="l0-spoon-bar-outer"><div id="l0-spoon-bar-fill" style="width:73%"></div></div>
+    <span id="l0-spoon-pct">73%</span>
+  </div>
+  <div id="l0-dot"></div>
+  <div id="l0-phase">INHALE</div>
+  <div id="l0-escape-wrap">
+    <div id="l0-escape-bar"><div id="l0-escape-fill"></div></div>
+    <div id="l0-escape-label">hold ESC 3s to exit · spoons &gt; 20% auto-exits</div>
+  </div>
+  <div id="l0-hint">LAYER 0 · MINIMAL COGNITIVE LOAD MODE</div>
+</div>
+
+<!-- WASI SANDBOX — NEVER add allow-same-origin: that would give the iframe access to localStorage and parent DOM -->
+<iframe id="sandbox" sandbox="allow-scripts"></iframe>
+
+<script>
+// ─────────────────────────────────────────────
+//  EDE — Everything Development Environment
+//  Core Shell v0.1
+// ─────────────────────────────────────────────
+
+const STORAGE_KEY = 'ede:files';
+const ACTIVE_KEY  = 'ede:active';
+
+// ── p31-state integration ──────────────────────────────────────────────────
+const P31_STATE_URL = 'https://state.p31ca.org/state';
+let p31UserId = localStorage.getItem('p31-user-id');
+if (!p31UserId) { p31UserId = crypto.randomUUID(); localStorage.setItem('p31-user-id', p31UserId); }
+
+let _stateWriteTimer = null;
+function syncStateDebounced() {
+  clearTimeout(_stateWriteTimer);
+  _stateWriteTimer = setTimeout(async () => {
+    try {
+      await fetch(`${P31_STATE_URL}/${p31UserId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ spoons: Math.round(sessionSpoons * 12), activeApp: 'ede' }),
+      });
+    } catch(e) {}
+  }, 2000);
+}
+
+async function loadStateFromP31() {
+  try {
+    const res = await fetch(`${P31_STATE_URL}/${p31UserId}`);
+    if (!res.ok) return;
+    const { state } = await res.json();
+    if (typeof state?.spoons === 'number' && state.spoons >= 0 && state.spoons <= 12) {
+      sessionSpoons = state.spoons / 12;
+      updateStatusPanel();
+    }
+  } catch(e) {}
+}
+
+// ── Telemetry helpers ──────────────────────────────────────────────────────
+function track(type, payload) {
+  try { window.p31?.track(type, { ...payload, app: 'ede', userId: p31UserId }); } catch(e) {}
+}
+
+const STARTER_JSX = `// P31 EDE — Hello World
+// Press Ctrl+Enter to run
+
+function App() {
+  return (
+    <div style={{color: '#3ba372', fontFamily: 'monospace', padding: '20px'}}>
+      <h1>⬡ EDE Online</h1>
+      <p>The Centaur has the watch.</p>
+    </div>
+  );
+}
+`;
+
+// ── State ──
+let files  = {};   // { filename: content }
+let active = 'main.jsx';
+let rightVisible = true;
+
+// ── DOM refs ──
+const $filetabs    = document.getElementById('filetabs');
+const $tabNew      = document.getElementById('tab-new');
+const $codeArea    = document.getElementById('code-area');
+const $lineNums    = document.getElementById('line-numbers');
+const $editorFname = document.getElementById('editor-filename');
+const $saveInd     = document.getElementById('save-indicator');
+const $runBtn      = document.getElementById('run-btn');
+const $consoleLog  = document.getElementById('console-log');
+const $rightCol    = document.getElementById('right-col');
+const $sandbox     = document.getElementById('sandbox');
+const $previewIframe = document.getElementById('preview-iframe');
+const $btnRefresh  = document.getElementById('btn-refresh');
+const $btnClearCon = document.getElementById('btn-clear-console');
+const $spoonBarFill = document.getElementById('spoon-bar-fill');
+const $spoonPct    = document.getElementById('spoon-pct');
+const $tierBadge   = document.getElementById('tier-badge');
+
+// ── Bootstrap ──
+function init() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    files = raw ? JSON.parse(raw) : {};
+  } catch { files = {}; }
+
+  if (!Object.keys(files).length) {
+    files['main.jsx'] = STARTER_JSX;
+  }
+
+  active = localStorage.getItem(ACTIVE_KEY) || Object.keys(files)[0];
+  if (!files[active]) active = Object.keys(files)[0];
+
+  initSandbox();
+  renderTabs();
+  loadFile(active);
+  logSys('EDE v0.1 — Ctrl+Enter to run, Ctrl+S to save');
+  loadStateFromP31(); // async — best-effort spoon restore from p31-state
+  track('page_view', { path: '/ede' });
+}
+
+// ── Persist ──
+function persist() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(files));
+  localStorage.setItem(ACTIVE_KEY, active);
+}
+
+// ── File tabs ──
+function renderTabs() {
+  // Remove all existing tabs (not the + button)
+  [...$filetabs.querySelectorAll('.ftab')].forEach(t => t.remove());
+
+  Object.keys(files).forEach(fname => {
+    const tab = document.createElement('div');
+    tab.className = 'ftab' + (fname === active ? ' active' : '');
+    tab.dataset.file = fname;
+
+    const nameEl = document.createElement('span');
+    nameEl.className = 'tab-name';
+    nameEl.textContent = fname;
+    nameEl.title = fname;
+    nameEl.ondblclick = (e) => { e.stopPropagation(); renameFile(fname); };
+
+    const closeBtn = document.createElement('button');
+    closeBtn.className = 'tab-close';
+    closeBtn.innerHTML = '&times;';
+    closeBtn.title = 'Close';
+    closeBtn.onclick = (e) => { e.stopPropagation(); closeFile(fname); };
+
+    tab.appendChild(nameEl);
+    tab.appendChild(closeBtn);
+    tab.onclick = () => switchFile(fname);
+
+    $filetabs.insertBefore(tab, $tabNew);
+  });
+}
+
+function switchFile(fname) {
+  // Save current before switching
+  files[active] = $codeArea.value;
+  persist();
+  active = fname;
+  loadFile(fname);
+  renderTabs();
+}
+
+function loadFile(fname) {
+  $codeArea.value = files[fname] || '';
+  $editorFname.textContent = fname;
+  updateLineNumbers();
+}
+
+function newFile() {
+  const name = prompt('New file name:', 'untitled.jsx');
+  if (!name || !name.trim()) return;
+  const fname = name.trim();
+  if (files[fname] !== undefined) { alert('File already exists.'); return; }
+  files[active] = $codeArea.value; // save current
+  files[fname] = '';
+  active = fname;
+  persist();
+  renderTabs();
+  loadFile(fname);
+  $codeArea.focus();
+}
+
+function closeFile(fname) {
+  if (Object.keys(files).length <= 1) { logSys('Cannot close last file.'); return; }
+  if (!confirm(`Close "${fname}"?`)) return;
+  const names = Object.keys(files);
+  const idx = names.indexOf(fname);
+  delete files[fname];
+  if (active === fname) {
+    active = names[idx > 0 ? idx - 1 : 1] || Object.keys(files)[0];
+  }
+  persist();
+  renderTabs();
+  loadFile(active);
+}
+
+function renameFile(oldName) {
+  const newName = prompt('Rename file:', oldName);
+  if (!newName || !newName.trim() || newName.trim() === oldName) return;
+  const trimmed = newName.trim();
+  if (files[trimmed] !== undefined) { alert('File already exists.'); return; }
+  files[trimmed] = files[oldName];
+  delete files[oldName];
+  if (active === oldName) active = trimmed;
+  persist();
+  renderTabs();
+  loadFile(active);
+}
+
+// ── Line numbers ──
+function updateLineNumbers() {
+  const lines = ($codeArea.value.match(/\n/g) || []).length + 1;
+  $lineNums.innerHTML = Array.from({length: lines}, (_, i) =>
+    `<span class="ln">${i + 1}</span>`
+  ).join('');
+}
+
+// Sync line numbers scroll with textarea scroll
+$codeArea.addEventListener('scroll', () => {
+  $lineNums.scrollTop = $codeArea.scrollTop;
+});
+
+$codeArea.addEventListener('input', () => {
+  updateLineNumbers();
+  files[active] = $codeArea.value;
+  // debounced auto-save
+  clearTimeout($codeArea._saveTimer);
+  $codeArea._saveTimer = setTimeout(() => {
+    persist();
+    flashSaved();
+  }, 800);
+});
+
+// Tab key → indent
+$codeArea.addEventListener('keydown', (e) => {
+  if (e.key === 'Tab') {
+    e.preventDefault();
+    const s = $codeArea.selectionStart;
+    const v = $codeArea.value;
+    $codeArea.value = v.slice(0, s) + '  ' + v.slice($codeArea.selectionEnd);
+    $codeArea.selectionStart = $codeArea.selectionEnd = s + 2;
+    updateLineNumbers();
+  }
+});
+
+function flashSaved() {
+  $saveInd.style.opacity = '1';
+  clearTimeout($saveInd._timer);
+  $saveInd._timer = setTimeout(() => { $saveInd.style.opacity = '0'; }, 1200);
+}
+
+// ── Output tabs ──
+document.querySelectorAll('.otab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.otab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    const which = tab.dataset.otab;
+    document.getElementById('console-pane').classList.toggle('active', which === 'console');
+    document.getElementById('preview-pane').classList.toggle('active', which === 'preview');
+  });
+});
+
+$btnClearCon.addEventListener('click', () => { $consoleLog.innerHTML = ''; });
+
+// ── Console logging ──
+function logLine(text, cls) {
+  const line = document.createElement('div');
+  line.className = 'log-line ' + cls;
+  line.textContent = text;
+  $consoleLog.appendChild(line);
+  $consoleLog.scrollTop = $consoleLog.scrollHeight;
+}
+function logSys(msg)  { logLine('› ' + msg, 'sys'); }
+function logLog(msg)  { logLine(msg, 'log'); }
+function logWarn(msg) { logLine('⚠ ' + msg, 'warn'); }
+function logErr(msg)  { logLine('✖ ' + msg, 'error'); }
+
+// ── WASI Sandbox iframe ──
+// SECURITY: sandbox="allow-scripts" only — NO allow-same-origin
+const SANDBOX_SRCDOC = `<!DOCTYPE html>
+<html>
+<head>
+<script>
+(function() {
+  var send = function(type, level, args) {
+    try {
+      window.parent.postMessage({type: type, level: level, args: args}, '*');
+    } catch(ex) {}
+  };
+  var fmtArgs = function(args) {
+    return Array.prototype.slice.call(args).map(function(a) {
+      try { return typeof a === 'object' ? JSON.stringify(a) : String(a); }
+      catch(e) { return String(a); }
+    }).join(' ');
+  };
+  console.log   = function() { send('log', 'log',  fmtArgs(arguments)); };
+  console.warn  = function() { send('log', 'warn', fmtArgs(arguments)); };
+  console.error = function() { send('log', 'error',fmtArgs(arguments)); };
+  console.info  = function() { send('log', 'log',  fmtArgs(arguments)); };
+
+  window.addEventListener('error', function(e) {
+    send('error', 'error', e.message + (e.filename ? ' (' + e.filename + ':' + e.lineno + ')' : ''));
+  });
+
+  window.addEventListener('message', function(e) {
+    if (!e.data || e.data.type !== 'exec') return;
+    try {
+      new Function(e.data.code)();
+    } catch(err) {
+      send('error', 'error', err.message);
+    }
+  });
+})();
+<\/script>
+</head>
+<body style="margin:0;background:#0f1115;color:#d8d6d0;font-family:monospace">
+</body>
+</html>`;
+
+function initSandbox() {
+  $sandbox.srcdoc = SANDBOX_SRCDOC;
+}
+
+// Message handler from sandbox
+window.addEventListener('message', (e) => {
+  if (!e.data) return;
+  const { type, level, args } = e.data;
+  if (type === 'log') {
+    if (level === 'warn')       logWarn(args);
+    else if (level === 'error') logErr(args);
+    else                        logLog(args);
+  } else if (type === 'error') {
+    logErr(args || 'Unknown error');
+  }
+});
+
+// ── Jitterbug Compiler (Babel) ──
+function runCode() {
+  const src = $codeArea.value;
+  if (!src.trim()) { logSys('Nothing to run.'); return; }
+
+  logSys('Compiling…');
+
+  let transpiled;
+  try {
+    transpiled = Babel.transform(src, {
+      presets: ['react'],
+      filename: active,
+    }).code;
+  } catch (err) {
+    logErr('Babel: ' + err.message);
+    return;
+  }
+
+  // Wrap transpiled code so React renders into the sandbox body
+  // We ship React + ReactDOM UMD builds into the sandbox via the exec payload
+  const reactBundle = buildReactPayload(transpiled);
+
+  // Send to sandbox
+  $sandbox.contentWindow.postMessage({ type: 'exec', code: reactBundle }, '*');
+
+  // Also update preview iframe with full HTML
+  updatePreview(reactBundle);
+
+  logSys('▶ Running ' + active);
+
+  // E04: session tracking + spoon drain
+  sessionRuns++;
+  track('code_run', { file: active, loc: $codeArea.value.split('\n').length });
+  drainSpoons(1.0);
+  updateStatusPanel();
+  setTimeout(analyzeCurrentCode, 600);
+
+  // Switch to console tab
+  document.querySelector('[data-otab="console"]').click();
+}
+
+function buildReactPayload(transpiledCode) {
+  // We embed React via CDN script tags in the preview iframe
+  // For the exec sandbox we dynamically load React then run the code
+  return `
+(function() {
+  if (typeof React !== 'undefined') {
+    runApp();
+    return;
+  }
+  var s1 = document.createElement('script');
+  s1.src = 'https://unpkg.com/react@18/umd/react.development.js';
+  s1.onload = function() {
+    var s2 = document.createElement('script');
+    s2.src = 'https://unpkg.com/react-dom@18/umd/react-dom.development.js';
+    s2.onload = function() { runApp(); };
+    document.head.appendChild(s2);
+  };
+  document.head.appendChild(s1);
+
+  function runApp() {
+    try {
+      var container = document.getElementById('ede-root');
+      if (!container) {
+        container = document.createElement('div');
+        container.id = 'ede-root';
+        document.body.appendChild(container);
+      }
+      ${transpiledCode}
+      if (typeof App !== 'undefined') {
+        var root = ReactDOM.createRoot ? ReactDOM.createRoot(container) : null;
+        if (root) {
+          root.render(React.createElement(App));
+        } else {
+          ReactDOM.render(React.createElement(App), container);
+        }
+        console.log('App rendered.');
+      } else {
+        console.log('Code executed (no App component found).');
+      }
+    } catch(err) {
+      console.error('Runtime: ' + err.message);
+    }
+  }
+})();
+`;
+}
+
+function updatePreview(reactBundle) {
+  const html = `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+body { margin: 0; background: #0f1115; color: #d8d6d0; font-family: monospace; }
+</style>
+</head>
+<body>
+<div id="ede-root"></div>
+<script src="https://unpkg.com/react@18/umd/react.development.js"><\/script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"><\/script>
+<script>
+window.onerror = function(msg, src, line) {
+  document.body.innerHTML = '<pre style="color:#cc6247;padding:16px">Error: ' + msg + '\\n' + src + ':' + line + '</pre>';
+};
+<\/script>
+<script>
+try {
+${reactBundle.replace(/<\/script>/g, '<\\/script>')}
+} catch(e) {
+  document.body.innerHTML = '<pre style="color:#cc6247;padding:16px">Error: ' + e.message + '</pre>';
+}
+<\/script>
+</body>
+</html>`;
+
+  $previewIframe.srcdoc = html;
+  // Switch to preview
+  document.querySelector('[data-otab="preview"]').click();
+}
+
+// ── Keyboard shortcuts ──
+document.addEventListener('keydown', (e) => {
+  const ctrl = e.ctrlKey || e.metaKey;
+
+  if (ctrl && e.key === 'Enter') {
+    e.preventDefault();
+    files[active] = $codeArea.value;
+    persist();
+    runCode();
+    return;
+  }
+  if (ctrl && e.key === 's') {
+    e.preventDefault();
+    files[active] = $codeArea.value;
+    persist();
+    flashSaved();
+    return;
+  }
+  if (ctrl && e.key === 'n') {
+    e.preventDefault();
+    newFile();
+    return;
+  }
+  if (ctrl && e.key === 'b') {
+    e.preventDefault();
+    rightVisible = !rightVisible;
+    $rightCol.classList.toggle('hidden', !rightVisible);
+    return;
+  }
+});
+
+// ── Button wiring ──
+$runBtn.addEventListener('click', () => {
+  files[active] = $codeArea.value;
+  persist();
+  runCode();
+});
+
+$tabNew.addEventListener('click', () => newFile());
+
+$btnRefresh.addEventListener('click', () => {
+  $consoleLog.innerHTML = '';
+  $previewIframe.srcdoc = '';
+  logSys('Output cleared.');
+});
+
+// ─────────────────────────────────────────────
+//  E04: Q Distribution (inline, zero deps)
+// ─────────────────────────────────────────────
+const QDist = (() => {
+  function randn() {
+    let u, v, s;
+    do { u = Math.random()*2-1; v = Math.random()*2-1; s = u*u+v*v; } while (s>=1||s===0);
+    return u * Math.sqrt(-2*Math.log(s)/s);
+  }
+  function randGamma(shape) {
+    if (shape < 1) return randGamma(1+shape) * Math.pow(Math.random(), 1/shape);
+    const d = shape - 1/3, c = 1/Math.sqrt(9*d);
+    for (;;) {
+      let x, v;
+      do { x = randn(); v = 1+c*x; } while (v <= 0);
+      v = v*v*v;
+      const u = Math.random();
+      if (u < 1 - 0.0331*(x*x)*(x*x)) return d*v;
+      if (Math.log(u) < 0.5*x*x + d*(1-v+Math.log(v))) return d*v;
+    }
+  }
+  function randBeta(a, b) { const x = randGamma(a); return x / (x + randGamma(b)); }
+  return {
+    sample:  ()            => 0.0385 + 0.7398 * randBeta(21.6165, 46.4970),
+    decay:   (c, cost, lam=0.1) => c * Math.exp(-lam * cost),
+    tier:    (s)           => s > 0.7 ? 'FULL' : s > 0.4 ? 'MODERATE' : s > 0.15 ? 'SIMPLIFIED' : 'MINIMAL',
+    opacity: (s, p)        => Math.max(0, Math.min(1, (s - p*0.3)/0.3))
+  };
+})();
+
+// ─────────────────────────────────────────────
+//  E04: Status Panel
+// ─────────────────────────────────────────────
+let sessionSpoons = QDist.sample();
+let sessionRuns = 0, sessionErrors = 0;
+const sessionStart = Date.now();
+let idleRegenTimer = null;
+
+const $stSpoonVal    = document.getElementById('st-spoon-val');
+const $stRuns        = document.getElementById('st-runs');
+const $stErrors      = document.getElementById('st-errors');
+const $stUptime      = document.getElementById('st-uptime');
+const $stRegen       = document.getElementById('st-regen');
+const $stTierDisplay = document.getElementById('st-tier-display');
+const $stQCurve      = document.getElementById('st-q-curve');
+
+function updateStatusPanel() {
+  const tier = QDist.tier(sessionSpoons);
+  const pct  = Math.round(sessionSpoons * 100);
+
+  // Header spoon bar
+  $spoonBarFill.style.width = pct + '%';
+  $spoonBarFill.style.background = tier === 'FULL' ? 'var(--phosphorus)' :
+                                   tier === 'MODERATE' ? 'var(--coral)' :
+                                   tier === 'SIMPLIFIED' ? '#cda852' : 'var(--muted)';
+  $spoonPct.textContent = pct + '%';
+  $tierBadge.textContent = tier;
+
+  if ($stSpoonVal)    $stSpoonVal.textContent = Math.round(sessionSpoons * 200);
+  if ($stTierDisplay) { $stTierDisplay.textContent = tier; $stTierDisplay.className = 'tier-display tier-' + tier.toLowerCase(); }
+  if ($stRuns)        $stRuns.textContent = sessionRuns;
+  if ($stErrors)      $stErrors.textContent = sessionErrors;
+  if ($stUptime)      {
+    const sec = Math.floor((Date.now() - sessionStart) / 1000);
+    $stUptime.textContent = sec < 60 ? sec + 's' : Math.floor(sec/60) + 'm ' + (sec%60) + 's';
+  }
+  drawQCurve();
+}
+
+function drawQCurve() {
+  if (!$stQCurve) return;
+  const W = $stQCurve.offsetWidth || 200, H = 44;
+  $stQCurve.width = W; $stQCurve.height = H;
+  const ctx = $stQCurve.getContext('2d');
+  ctx.clearRect(0, 0, W, H);
+
+  const a = 21.6165, b = 46.4970;
+  const logMode = (a-1)*Math.log((a-1)/(a+b-2)) + (b-1)*Math.log((b-1)/(a+b-2));
+
+  ctx.strokeStyle = 'rgba(59,163,114,0.35)';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  let started = false;
+  for (let i = 0; i <= W; i++) {
+    const t = i / W;
+    if (t <= 0.001 || t >= 0.999) continue;
+    const logp = (a-1)*Math.log(t) + (b-1)*Math.log(1-t);
+    const p = Math.exp(logp - logMode);
+    const y = H - p * H * 0.88;
+    if (!started) { ctx.moveTo(i, y); started = true; } else { ctx.lineTo(i, y); }
+  }
+  ctx.stroke();
+
+  // Current spoon marker — map sessionSpoons back to Beta t: (spoons-0.0385)/0.7398
+  const t = Math.max(0, Math.min(1, (sessionSpoons - 0.0385) / 0.7398));
+  const markerX = t * W;
+  ctx.strokeStyle = 'var(--coral)';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(markerX, 0); ctx.lineTo(markerX, H); ctx.stroke();
+}
+
+function drainSpoons(taskCost) {
+  const prevTier = QDist.tier(sessionSpoons);
+  sessionSpoons = QDist.decay(sessionSpoons, taskCost);
+  const newTier  = QDist.tier(sessionSpoons);
+  if (idleRegenTimer) clearTimeout(idleRegenTimer);
+  if ($stRegen) $stRegen.textContent = '—';
+  idleRegenTimer = setTimeout(regenCycle, 30000);
+  updateStatusPanel();
+  track('spoon_decay', { spoons: Math.round(sessionSpoons * 12), tier: newTier, cost: taskCost });
+  syncStateDebounced();
+  if (newTier !== prevTier) {
+    track('tier_transition', { from: prevTier, to: newTier });
+  }
+}
+
+function regenCycle() {
+  sessionSpoons = Math.min(1, sessionSpoons + 0.05);
+  if ($stRegen) $stRegen.textContent = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+  updateStatusPanel();
+  if (sessionSpoons < 0.9) idleRegenTimer = setTimeout(regenCycle, 60000);
+}
+
+setInterval(updateStatusPanel, 5000); // uptime ticker
+
+// ─────────────────────────────────────────────
+//  E02: Shield Panel
+// ─────────────────────────────────────────────
+let shieldVoltage = 50;
+let shieldHistory = [];
+
+const $shVoltageBar  = document.getElementById('sh-voltage-bar');
+const $shVoltageVal  = document.getElementById('sh-voltage-val');
+const $shVoltageTier = document.getElementById('sh-voltage-tier');
+const $shFawnStatus  = document.getElementById('sh-fawn-status');
+const $shQueueDepth  = document.getElementById('sh-queue-depth');
+const $shLastSignal  = document.getElementById('sh-last-signal');
+const $shSignalList  = document.getElementById('sh-signal-list');
+const $shSimBtn      = document.getElementById('sh-simulate-btn');
+
+function voltageToTier(v) { return v > 70 ? 'LOW' : v > 40 ? 'MED' : 'HIGH'; }
+function voltageToColor(v){ return v > 70 ? 'var(--phosphorus)' : v > 40 ? '#cda852' : 'var(--coral)'; }
+
+function updateShieldPanel(signal) {
+  if (!$shVoltageBar) return;
+  const v = signal ? Math.round(signal.voltage_score ?? shieldVoltage) : shieldVoltage;
+  shieldVoltage = v;
+  $shVoltageBar.style.width = v + '%';
+  $shVoltageBar.style.background = voltageToColor(v);
+  $shVoltageVal.textContent = v;
+  const tier = voltageToTier(v);
+  $shVoltageTier.textContent = tier;
+  $shVoltageTier.className = 'tier-chip ' + tier;
+
+  if (signal) {
+    shieldHistory = [{...signal, receivedAt: Date.now()}, ...shieldHistory].slice(0, 12);
+    $shQueueDepth.textContent = shieldHistory.length;
+    $shLastSignal.textContent = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    renderSignalHistory();
+    if (tier === 'HIGH') { activateFawnGuard(); playLarmorTone(); }
+  }
+}
+
+function activateFawnGuard() {
+  if ($shFawnStatus) { $shFawnStatus.textContent = 'ACTIVE'; $shFawnStatus.className = 'status-indicator active'; }
+  track('fawn_guard_trigger', { voltage: shieldVoltage, spoons: Math.round(sessionSpoons * 12) });
+  // Deep link: offer Larmor (4-4-6 breathing)
+  logSys('Fawn Guard active — consider p31ca.org/larmor?from=ede&mode=breathing&session=' + (window.p31?.sessionId ?? ''));
+  setTimeout(() => {
+    if ($shFawnStatus) { $shFawnStatus.textContent = 'INACTIVE'; $shFawnStatus.className = 'status-indicator inactive'; }
+  }, 8000);
+}
+
+function playLarmorTone() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator(), gain = ctx.createGain();
+    osc.frequency.setValueAtTime(172.35, ctx.currentTime);
+    osc.type = 'sine';
+    gain.gain.setValueAtTime(0.12, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 3);
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.start(); osc.stop(ctx.currentTime + 3);
+    if ('vibrate' in navigator) navigator.vibrate([150, 75, 150]);
+  } catch(e) {}
+}
+
+function renderSignalHistory() {
+  if (!$shSignalList) return;
+  $shSignalList.innerHTML = shieldHistory.slice(0, 8).map(s => {
+    const tier = voltageToTier(s.voltage_score ?? 50);
+    const t = new Date(s.receivedAt).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    return `<div class="signal-item">
+      <span class="sig-tier ${tier}">${tier}</span>
+      <span style="color:var(--cloud)">${Math.round(s.voltage_score ?? 50)}</span>
+      <span style="color:var(--muted);font-size:9px">${t}</span>
+    </div>`;
+  }).join('');
+}
+
+function simulateSignal() {
+  const urgency  = Math.random() * 10;
+  const emotional = Math.random() * 10;
+  const cognitive = Math.random() * 10;
+  const stateBoost = Math.random() * 5;
+  const raw = (Math.max(urgency, stateBoost) * 0.4 + emotional * 0.3 + cognitive * 0.3) * 10;
+  const voltage_score = Math.max(0, Math.min(100, Math.round(raw)));
+  const tier = voltageToTier(voltage_score);
+  updateShieldPanel({ voltage_score, tier, id: Date.now() });
+  logSys('Shield: simulated V=' + voltage_score + ' tier=' + tier);
+  drainSpoons(0.5);
+}
+
+if ($shSimBtn) $shSimBtn.addEventListener('click', simulateSignal);
+updateShieldPanel(null);
+
+// ─────────────────────────────────────────────
+//  E03: Entropy Panel (Acorn from CDN)
+// ─────────────────────────────────────────────
+const ENTROPY_SETPOINT = Math.PI / 9; // ≈ 0.349
+let pidIntegral = 0, pidPrevErr = 0;
+let entropyHistory = [];
+let acornModule = null;
+
+const $enEntropyVal = document.getElementById('en-entropy-val');
+const $enCorrection = document.getElementById('en-pid-correction');
+const $enHalstead   = document.getElementById('en-halstead');
+const $enCyclomatic = document.getElementById('en-cyclomatic');
+const $enLoc        = document.getElementById('en-loc');
+const $enSparkline  = document.getElementById('en-sparkline');
+const $enGovAlert   = document.getElementById('en-gov-alert');
+
+async function getAcorn() {
+  if (acornModule) return acornModule;
+  try {
+    acornModule = await import('https://cdn.jsdelivr.net/npm/acorn@8.14.0/dist/acorn.mjs');
+    return acornModule;
+  } catch(e) { return null; }
+}
+
+function walkAST(node, counts) {
+  if (!node || typeof node !== 'object') return;
+  const OPS  = new Set(['BinaryExpression','LogicalExpression','UnaryExpression',
+    'AssignmentExpression','UpdateExpression','ConditionalExpression',
+    'MemberExpression','CallExpression','NewExpression',
+    'FunctionDeclaration','FunctionExpression','ArrowFunctionExpression']);
+  const ANDS = new Set(['Identifier','Literal','TemplateLiteral']);
+  const CC   = new Set(['IfStatement','ForStatement','WhileStatement',
+    'DoWhileStatement','SwitchCase','CatchClause']);
+  if (OPS.has(node.type))  { const k = node.operator||node.type; counts.ops[k]=(counts.ops[k]||0)+1; }
+  if (ANDS.has(node.type)) { const k = node.name||String(node.value)||node.type; counts.ands[k]=(counts.ands[k]||0)+1; }
+  if (CC.has(node.type))   counts.cc++;
+  if (node.type === 'LogicalExpression' || node.type === 'ConditionalExpression') counts.cc++;
+  for (const key of Object.keys(node)) {
+    if (key === 'type') continue;
+    const c = node[key];
+    if (Array.isArray(c)) c.forEach(ch => walkAST(ch, counts));
+    else if (c && typeof c === 'object' && c.type) walkAST(c, counts);
+  }
+}
+
+async function analyzeCurrentCode() {
+  const src = $codeArea.value;
+  if (!src.trim() || src.length < 30) return;
+  const acorn = await getAcorn();
+  if (!acorn) return;
+  let ast;
+  try      { ast = acorn.parse(src, { ecmaVersion: 2022, sourceType: 'module' }); }
+  catch(e) { try { ast = acorn.parse(src, { ecmaVersion: 2022, sourceType: 'script' }); } catch(e2) { return; } }
+
+  const counts = { ops: {}, ands: {}, cc: 1 };
+  walkAST(ast, counts);
+  const n1 = Object.keys(counts.ops).length,  n2 = Object.keys(counts.ands).length;
+  const N1 = Object.values(counts.ops).reduce((a,b)=>a+b,0);
+  const N2 = Object.values(counts.ands).reduce((a,b)=>a+b,0);
+  const CC = counts.cc;
+  const LOC = src.split('\n').filter(l=>l.trim()).length;
+  const n = n1+n2, N = N1+N2;
+  const V = n > 0 ? N * Math.log2(Math.max(n, 2)) : 0;
+  const H = Math.min(1, (V/2000)*0.4 + ((CC-1)/39)*0.35 + (LOC/500)*0.25);
+
+  // PID
+  const err = ENTROPY_SETPOINT - H;
+  pidIntegral = Math.max(-5, Math.min(5, pidIntegral + err));
+  const correction = 1.0*err + 0.05*pidIntegral + 0.02*(err - pidPrevErr);
+  pidPrevErr = err;
+
+  entropyHistory = [...entropyHistory, H].slice(-20);
+
+  if ($enEntropyVal) $enEntropyVal.textContent = H.toFixed(3);
+  if ($enHalstead)   $enHalstead.textContent   = Math.round(V);
+  if ($enCyclomatic) $enCyclomatic.textContent  = CC;
+  if ($enLoc)        $enLoc.textContent         = LOC;
+  if ($enCorrection) {
+    $enCorrection.textContent = 'correction: ' + (correction >= 0 ? '+' : '') + correction.toFixed(3);
+    $enCorrection.className   = 'correction-display ' + (correction < 0 ? 'negative' : 'positive');
+  }
+  if ($enGovAlert) $enGovAlert.classList.toggle('hidden', correction >= -0.5);
+
+  drawEntropyGauge(H);
+  drawSparkline();
+  drainSpoons(H * 1.5);
+}
+
+function drawEntropyGauge(H) {
+  const canvas = document.getElementById('en-gauge');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = 100, Ht = 58, cx = W/2, cy = Ht - 6, r = 42;
+  ctx.clearRect(0, 0, W, Ht);
+  // Track
+  ctx.strokeStyle = 'rgba(255,255,255,0.07)'; ctx.lineWidth = 5; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.arc(cx, cy, r, Math.PI, 0); ctx.stroke();
+  // Fill
+  const fillEnd = Math.PI - Math.PI * H;
+  ctx.strokeStyle = H < 0.3 ? 'var(--phosphorus)' : H < 0.6 ? '#cda852' : 'var(--coral)';
+  ctx.lineWidth = 5;
+  ctx.beginPath(); ctx.arc(cx, cy, r, Math.PI, fillEnd, true); ctx.stroke();
+  // π/9 attractor tick
+  const aAngle = Math.PI - Math.PI * ENTROPY_SETPOINT;
+  ctx.strokeStyle = 'rgba(59,163,114,0.7)'; ctx.lineWidth = 1.5; ctx.setLineDash([2,2]);
+  ctx.beginPath();
+  ctx.moveTo(cx + (r-7)*Math.cos(aAngle), cy - (r-7)*Math.sin(aAngle));
+  ctx.lineTo(cx + (r+5)*Math.cos(aAngle), cy - (r+5)*Math.sin(aAngle));
+  ctx.stroke(); ctx.setLineDash([]);
+}
+
+function drawSparkline() {
+  if (!$enSparkline || entropyHistory.length < 2) return;
+  const W = $enSparkline.offsetWidth || 200, H = 36;
+  $enSparkline.width = W; $enSparkline.height = H;
+  const ctx = $enSparkline.getContext('2d');
+  ctx.clearRect(0, 0, W, H);
+  const max = Math.max(...entropyHistory, ENTROPY_SETPOINT + 0.05);
+  // Setpoint line
+  ctx.strokeStyle = 'rgba(59,163,114,0.3)'; ctx.lineWidth = 1; ctx.setLineDash([3,3]);
+  const spY = H - (ENTROPY_SETPOINT / max) * H;
+  ctx.beginPath(); ctx.moveTo(0, spY); ctx.lineTo(W, spY); ctx.stroke(); ctx.setLineDash([]);
+  // History
+  ctx.strokeStyle = 'var(--coral)'; ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  entropyHistory.forEach((v, i) => {
+    const x = (i / (entropyHistory.length-1)) * W;
+    const y = H - (v / max) * H;
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
+  ctx.stroke();
+}
+
+// Wire entropy to code edits (1.2s debounce after typing stops)
+let analyzeTimer = null;
+$codeArea.addEventListener('input', () => {
+  clearTimeout(analyzeTimer);
+  analyzeTimer = setTimeout(analyzeCurrentCode, 1200);
+});
+
+// ─────────────────────────────────────────────
+//  E06: Trimtab Rotary Encoder
+// ─────────────────────────────────────────────
+const $trimCanvas = document.getElementById('trimtab-canvas');
+const $trimFreq   = document.getElementById('trimtab-freq');
+const $trimActive = document.getElementById('trimtab-active');
+
+const TR_SIZE  = 34, TR_CX = 17, TR_CY = 17, TR_R = 12;
+const TR_START = 3 * Math.PI / 4;      // 7:30 o'clock in canvas coords
+const TR_SWEEP = 3 * Math.PI / 2;      // 270° arc
+
+let trimValue = 1.0;   // normalized [0,1] — default 863 Hz (max)
+let trimOn    = false;
+let trimAudioCtx = null, trimOsc = null, trimGain = null;
+
+let _trimAngle  = null;   // last pointer angle for delta calc
+let _trimIsDown = false;
+let _trimT0     = 0;
+let _trimMoved  = false;
+let _trimLongTimer = null;
+
+function trimFreq() {
+  // Logarithmic 3-decade sweep: 0.86 * 10^(3t) → [0.86 Hz, 860 Hz]
+  return 0.86 * Math.pow(1000, trimValue);
+}
+
+function drawTrimtab() {
+  if (!$trimCanvas) return;
+  const ctx = $trimCanvas.getContext('2d');
+  ctx.clearRect(0, 0, TR_SIZE, TR_SIZE);
+
+  // Track
+  ctx.strokeStyle = 'rgba(255,255,255,0.09)';
+  ctx.lineWidth = 3; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.arc(TR_CX, TR_CY, TR_R, TR_START, TR_START + TR_SWEEP); ctx.stroke();
+
+  // Value arc
+  const valEnd = TR_START + trimValue * TR_SWEEP;
+  ctx.strokeStyle = trimOn ? 'var(--coral)' : 'rgba(204,98,71,0.4)';
+  ctx.lineWidth = 3;
+  ctx.beginPath(); ctx.arc(TR_CX, TR_CY, TR_R, TR_START, valEnd); ctx.stroke();
+
+  // Pointer dot at current angle
+  ctx.fillStyle = trimOn ? 'var(--coral)' : 'rgba(204,98,71,0.55)';
+  ctx.beginPath();
+  ctx.arc(TR_CX + TR_R * Math.cos(valEnd), TR_CY + TR_R * Math.sin(valEnd), 2.5, 0, Math.PI*2);
+  ctx.fill();
+
+  // Centre dot
+  ctx.fillStyle = trimOn ? 'rgba(204,98,71,0.35)' : 'rgba(107,114,128,0.25)';
+  ctx.beginPath(); ctx.arc(TR_CX, TR_CY, 2.5, 0, Math.PI*2); ctx.fill();
+
+  // Frequency label
+  const f = trimFreq();
+  const label = f >= 1000 ? (f/1000).toFixed(2)+'k' : f >= 10 ? Math.round(f)+'' : f.toFixed(1);
+  if ($trimFreq) $trimFreq.textContent = label + 'Hz';
+  if ($trimActive) $trimActive.textContent = trimOn ? ' ●' : ' ○';
+}
+
+function trimToggleAudio() {
+  trimOn = !trimOn;
+  if (trimOn) {
+    try {
+      if (!trimAudioCtx) trimAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      trimOsc  = trimAudioCtx.createOscillator();
+      trimGain = trimAudioCtx.createGain();
+      trimOsc.type = 'sine';
+      trimOsc.frequency.setValueAtTime(trimFreq(), trimAudioCtx.currentTime);
+      trimGain.gain.setValueAtTime(0, trimAudioCtx.currentTime);
+      trimGain.gain.linearRampToValueAtTime(0.08, trimAudioCtx.currentTime + 0.12);
+      trimOsc.connect(trimGain); trimGain.connect(trimAudioCtx.destination);
+      trimOsc.start();
+    } catch(e) { trimOn = false; }
+  } else {
+    if (trimOsc) {
+      try { trimGain.gain.linearRampToValueAtTime(0, trimAudioCtx.currentTime + 0.1); trimOsc.stop(trimAudioCtx.currentTime + 0.12); } catch(e){}
+      trimOsc = null; trimGain = null;
+    }
+  }
+  drawTrimtab();
+}
+
+function trimSetValue(v) {
+  trimValue = Math.max(0, Math.min(1, v));
+  if (trimOn && trimOsc && trimAudioCtx) {
+    try { trimOsc.frequency.setValueAtTime(trimFreq(), trimAudioCtx.currentTime); } catch(e){}
+  }
+  drawTrimtab();
+}
+
+if ($trimCanvas) {
+  $trimCanvas.addEventListener('pointerdown', e => {
+    e.preventDefault();
+    $trimCanvas.setPointerCapture(e.pointerId);
+    _trimIsDown = true; _trimT0 = Date.now(); _trimMoved = false;
+    const r = $trimCanvas.getBoundingClientRect();
+    _trimAngle = Math.atan2(e.clientY - r.top - TR_CY, e.clientX - r.left - TR_CX);
+    _trimLongTimer = setTimeout(() => {
+      if (_trimIsDown && !_trimMoved) {
+        pdOverride = 'MINIMAL';
+        if ($pdOverrideSel) $pdOverrideSel.value = 'MINIMAL';
+        if ($pdOverrideDot) $pdOverrideDot.classList.add('overridden');
+        applyTier('MINIMAL');
+      }
+    }, 650);
+  });
+
+  $trimCanvas.addEventListener('pointermove', e => {
+    if (!_trimIsDown) return;
+    const r = $trimCanvas.getBoundingClientRect();
+    const a = Math.atan2(e.clientY - r.top - TR_CY, e.clientX - r.left - TR_CX);
+    let d = a - _trimAngle;
+    if (d >  Math.PI) d -= 2 * Math.PI;
+    if (d < -Math.PI) d += 2 * Math.PI;
+    if (Math.abs(d) > 0.008) _trimMoved = true;
+    trimSetValue(trimValue + d / TR_SWEEP);
+    _trimAngle = a;
+  });
+
+  const _trimUp = () => {
+    if (_trimLongTimer) { clearTimeout(_trimLongTimer); _trimLongTimer = null; }
+    if (_trimIsDown && !_trimMoved && Date.now() - _trimT0 < 350) trimToggleAudio();
+    _trimIsDown = false; _trimAngle = null;
+  };
+  $trimCanvas.addEventListener('pointerup',     _trimUp);
+  $trimCanvas.addEventListener('pointercancel', _trimUp);
+}
+
+drawTrimtab();
+
+// ─────────────────────────────────────────────
+//  E05: Progressive Disclosure
+// ─────────────────────────────────────────────
+let pdOverride = null; // null = auto-tier
+
+const $layer0        = document.getElementById('layer0');
+const $l0Dot         = document.getElementById('l0-dot');
+const $l0Phase       = document.getElementById('l0-phase');
+const $l0EscapeFill  = document.getElementById('l0-escape-fill');
+const $l0SpoonFill   = document.getElementById('l0-spoon-bar-fill');
+const $l0SpoonPct    = document.getElementById('l0-spoon-pct');
+const $pdOverrideSel = document.getElementById('pd-override');
+const $pdOverrideDot = document.getElementById('pd-override-dot');
+const $shieldPanel   = document.getElementById('shield');
+const $entropyPanel  = document.getElementById('entropy');
+const $statusPanel   = document.getElementById('status');
+
+let l0BreathTimer = null;
+let l0AudioCtx    = null;
+let escHoldTimer  = null;
+let escHoldStart  = null;
+let currentTier   = 'FULL';
+
+function applyTier(tier) {
+  currentTier = tier;
+
+  if (tier === 'MINIMAL') {
+    activateLayer0();
+    return;
+  }
+  deactivateLayer0();
+
+  if (tier === 'FULL') {
+    $rightCol.classList.remove('hidden');
+    $rightCol.style.gridTemplateRows = '1fr 1fr 100px';
+    $shieldPanel.classList.remove('summary-mode');
+    $entropyPanel.style.display = '';
+    $statusPanel.style.display  = '';
+  } else if (tier === 'MODERATE') {
+    $rightCol.classList.remove('hidden');
+    $rightCol.style.gridTemplateRows = 'auto';
+    $shieldPanel.classList.add('summary-mode');
+    $entropyPanel.style.display = 'none';
+    $statusPanel.style.display  = 'none';
+    // Inline voltage summary
+    const t = voltageToTier(shieldVoltage);
+    const si = document.getElementById('sh-summary-inline');
+    if (si) si.innerHTML =
+      `<span style="color:${voltageToColor(shieldVoltage)};font-weight:700">${shieldVoltage}</span>` +
+      `<span class="tier-chip ${t}" style="margin-left:4px">${t}</span>`;
+  } else if (tier === 'SIMPLIFIED') {
+    $rightCol.classList.add('hidden');
+    $shieldPanel.classList.remove('summary-mode');
+    $entropyPanel.style.display = '';
+    $statusPanel.style.display  = '';
+    $rightCol.style.gridTemplateRows = '1fr 1fr 100px';
+  }
+}
+
+function checkTierTransition() {
+  if (pdOverride) return;
+  const tier = QDist.tier(sessionSpoons);
+  if (tier !== currentTier) applyTier(tier);
+  // Auto-exit Layer 0 if spoons recovered above 0.2
+  if ($layer0 && $layer0.classList.contains('active') && sessionSpoons > 0.2) {
+    pdOverride = null;
+    applyTier(QDist.tier(sessionSpoons));
+    if ($pdOverrideSel) $pdOverrideSel.value = 'auto';
+    if ($pdOverrideDot) $pdOverrideDot.classList.remove('overridden');
+  }
+}
+
+// Patch updateStatusPanel to trigger tier check
+const _origUpdateStatus = updateStatusPanel;
+updateStatusPanel = function() {
+  _origUpdateStatus();
+  checkTierTransition();
+  // Sync Layer 0 spoon indicator
+  if ($l0SpoonFill) $l0SpoonFill.style.width = Math.round(sessionSpoons*100)+'%';
+  if ($l0SpoonPct)  $l0SpoonPct.textContent = Math.round(sessionSpoons*100)+'%';
+};
+
+// Override dropdown
+if ($pdOverrideSel) {
+  $pdOverrideSel.addEventListener('change', (e) => {
+    const val = e.target.value;
+    if (val === 'auto') {
+      pdOverride = null;
+      if ($pdOverrideDot) $pdOverrideDot.classList.remove('overridden');
+      applyTier(QDist.tier(sessionSpoons));
+    } else {
+      pdOverride = val;
+      if ($pdOverrideDot) $pdOverrideDot.classList.add('overridden');
+      applyTier(val);
+    }
+  });
+}
+
+// ── Layer 0: Breathing Engine ──
+function activateLayer0() {
+  if (!$layer0) return;
+  $layer0.classList.add('active');
+  track('larmor_activation', { spoons: Math.round(sessionSpoons * 12), trigger: 'layer0' });
+  if (!l0BreathTimer) runBreathCycle();
+}
+
+function deactivateLayer0() {
+  if (!$layer0) return;
+  $layer0.classList.remove('active');
+  if (l0BreathTimer) { clearTimeout(l0BreathTimer); l0BreathTimer = null; }
+  if (l0AudioCtx)    { try { l0AudioCtx.close(); } catch(e){} l0AudioCtx = null; }
+}
+
+function runBreathCycle() {
+  // 4s inhale (172.35 Hz) → 4s hold (silence) → 6s exhale (86.3 Hz)
+  playBreathPhase('INHALE', 4000, 172.35);
+  l0BreathTimer = setTimeout(() => {
+    playBreathPhase('HOLD', 4000, null);
+    l0BreathTimer = setTimeout(() => {
+      playBreathPhase('EXHALE', 6000, 86.3);
+      l0BreathTimer = setTimeout(runBreathCycle, 6000);
+    }, 4000);
+  }, 4000);
+}
+
+function playBreathPhase(phase, durationMs, freq) {
+  if ($l0Phase) $l0Phase.textContent = phase;
+  if ($l0Dot) {
+    $l0Dot.style.animation = 'none';
+    void $l0Dot.offsetWidth;
+    const anim = phase === 'INHALE' ? 'l0-inhale' : phase === 'HOLD' ? 'l0-hold' : 'l0-exhale';
+    $l0Dot.style.animation = `${anim} ${durationMs}ms ease-in-out forwards`;
+  }
+  if (!freq) return;
+  try {
+    if (!l0AudioCtx) l0AudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = l0AudioCtx.createOscillator(), gain = l0AudioCtx.createGain();
+    const dur = durationMs / 1000;
+    osc.frequency.setValueAtTime(freq, l0AudioCtx.currentTime);
+    osc.type = 'sine';
+    gain.gain.setValueAtTime(0, l0AudioCtx.currentTime);
+    gain.gain.linearRampToValueAtTime(0.07, l0AudioCtx.currentTime + 0.4);
+    gain.gain.linearRampToValueAtTime(0, l0AudioCtx.currentTime + dur - 0.4);
+    osc.connect(gain); gain.connect(l0AudioCtx.destination);
+    osc.start(); osc.stop(l0AudioCtx.currentTime + dur);
+  } catch(e) {}
+}
+
+// Escape hold (3s) to exit Layer 0
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'Escape') return;
+  if (!$layer0 || !$layer0.classList.contains('active')) return;
+  e.preventDefault();
+  if (escHoldStart) return; // already holding
+  escHoldStart = Date.now();
+  if ($l0EscapeFill) {
+    $l0EscapeFill.style.transition = 'width 3s linear';
+    $l0EscapeFill.style.width = '100%';
+  }
+  escHoldTimer = setTimeout(() => {
+    escHoldStart = null;
+    pdOverride = 'SIMPLIFIED';
+    if ($pdOverrideSel) $pdOverrideSel.value = 'SIMPLIFIED';
+    if ($pdOverrideDot) $pdOverrideDot.classList.add('overridden');
+    applyTier('SIMPLIFIED');
+  }, 3000);
+});
+
+document.addEventListener('keyup', (e) => {
+  if (e.key !== 'Escape') return;
+  if (escHoldTimer)  { clearTimeout(escHoldTimer); escHoldTimer = null; }
+  escHoldStart = null;
+  if ($l0EscapeFill) {
+    $l0EscapeFill.style.transition = 'width 0.15s linear';
+    $l0EscapeFill.style.width = '0%';
+  }
+});
+
+// ─────────────────────────────────────────────
+//  E07: IndexedDB + Export/Import + Settings
+// ─────────────────────────────────────────────
+
+// ── IndexedDB ──
+const IDB_NAME = 'ede_db', IDB_STORE = 'kv';
+let idb = null;
+
+function openIDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(IDB_NAME, 1);
+    req.onupgradeneeded = e => e.target.result.createObjectStore(IDB_STORE);
+    req.onsuccess = e => { idb = e.target.result; resolve(idb); };
+    req.onerror   = () => reject(req.error);
+  });
+}
+function idbSet(key, val) {
+  if (!idb) return Promise.resolve();
+  return new Promise(r => {
+    const tx = idb.transaction(IDB_STORE, 'readwrite');
+    tx.objectStore(IDB_STORE).put(val, key);
+    tx.oncomplete = r;
+  });
+}
+function idbGet(key) {
+  if (!idb) return Promise.resolve(undefined);
+  return new Promise(r => {
+    const req = idb.transaction(IDB_STORE, 'readonly').objectStore(IDB_STORE).get(key);
+    req.onsuccess = () => r(req.result);
+    req.onerror   = () => r(undefined);
+  });
+}
+
+async function persistIDB() {
+  await idbSet('files',  JSON.stringify(files));
+  await idbSet('active', active);
+  await idbSet('spoons', sessionSpoons);
+}
+
+// Patch persist() to also write IDB
+const _origPersist = persist;
+persist = function() { _origPersist(); persistIDB().catch(() => {}); };
+
+// Boot IDB and restore (overrides localStorage data if IDB has newer content)
+openIDB().then(async () => {
+  const raw = await idbGet('files');
+  if (raw) {
+    try {
+      const parsed = JSON.parse(raw);
+      if (Object.keys(parsed).length) {
+        files = parsed;
+        active = (await idbGet('active')) || Object.keys(files)[0];
+        if (!files[active]) active = Object.keys(files)[0];
+        const sp = await idbGet('spoons');
+        if (typeof sp === 'number' && sp > 0 && sp <= 1) {
+          sessionSpoons = sp; updateStatusPanel();
+        }
+        renderTabs(); loadFile(active);
+        logSys('Restored from IndexedDB (' + Object.keys(files).length + ' files).');
+      } else { await persistIDB(); }
+    } catch(e) { await persistIDB(); }
+  } else {
+    await persistIDB();
+    logSys('IndexedDB initialised.');
+  }
+  document.getElementById('settings-idb-status').textContent = 'IDB: active ✓';
+  document.getElementById('settings-idb-status').style.color = 'var(--phosphorus)';
+}).catch(() => {
+  document.getElementById('settings-idb-status').textContent = 'IDB: unavailable';
+});
+
+// ── JSZip (lazy CDN load) ──
+let _jszip = null;
+function loadJSZip() {
+  if (_jszip) return Promise.resolve(_jszip);
+  return new Promise((resolve, reject) => {
+    const s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js';
+    s.onload = () => { _jszip = window.JSZip; resolve(_jszip); };
+    s.onerror = reject;
+    document.head.appendChild(s);
+  });
+}
+
+async function exportZip() {
+  try {
+    const JSZip = await loadJSZip();
+    const zip = new JSZip();
+    Object.entries(files).forEach(([n, c]) => zip.file(n, c));
+    const blob = await zip.generateAsync({ type: 'blob' });
+    const a = Object.assign(document.createElement('a'), {
+      href: URL.createObjectURL(blob),
+      download: 'ede-' + new Date().toISOString().slice(0,10) + '.zip'
+    });
+    a.click(); URL.revokeObjectURL(a.href);
+    logSys('Exported ' + Object.keys(files).length + ' files.');
+  } catch(e) { logErr('Export failed: ' + e.message); }
+}
+
+async function importZip(file) {
+  const JSZip = await loadJSZip();
+  const zip   = await JSZip.loadAsync(file);
+  const TEXT_EXT = new Set(['js','jsx','ts','tsx','html','css','md','json','txt','py']);
+  let n = 0;
+  for (const [name, entry] of Object.entries(zip.files)) {
+    if (entry.dir) continue;
+    const ext = name.split('.').pop().toLowerCase();
+    if (TEXT_EXT.has(ext)) { files[name] = await entry.async('string'); n++; }
+  }
+  persist(); renderTabs();
+  logSys('Imported ' + n + ' files from zip.');
+}
+
+function importTextFile(f) {
+  const reader = new FileReader();
+  reader.onload = e => {
+    files[f.name] = e.target.result;
+    active = f.name;
+    persist(); renderTabs(); loadFile(f.name);
+    logSys('Imported: ' + f.name);
+  };
+  reader.readAsText(f);
+}
+
+// Drag-drop onto the editor
+const $editorPanel = document.getElementById('editor-panel');
+$editorPanel.addEventListener('dragover', e => { e.preventDefault(); $codeArea.style.outline = '2px dashed var(--coral)'; });
+$editorPanel.addEventListener('dragleave', () => { $codeArea.style.outline = ''; });
+$editorPanel.addEventListener('drop', async e => {
+  e.preventDefault(); $codeArea.style.outline = '';
+  for (const f of [...e.dataTransfer.files]) {
+    if (f.name.endsWith('.zip')) await importZip(f).catch(err => logErr(err.message));
+    else importTextFile(f);
+  }
+});
+
+// ── Settings flyout (injected) ──
+document.body.insertAdjacentHTML('beforeend', `
+<div id="settings-flyout" style="
+  position:fixed;top:42px;right:0;width:230px;bottom:0;z-index:800;
+  background:var(--surface);border-left:1px solid var(--border);
+  display:flex;flex-direction:column;
+  transform:translateX(100%);transition:transform 0.22s ease;
+">
+  <div style="padding:9px 13px;border-bottom:1px solid var(--border);font-size:9px;font-family:var(--font-mono);letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;display:flex;justify-content:space-between;align-items:center">
+    Settings <button id="settings-close" style="font-size:15px;color:var(--muted);line-height:1;background:none;border:none;cursor:pointer">×</button>
+  </div>
+  <div style="padding:12px 13px;display:flex;flex-direction:column;gap:14px;overflow-y:auto;flex:1;font-family:var(--font-mono)">
+    <div>
+      <div style="font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px">Font Size</div>
+      <div style="display:flex;gap:3px">${[11,12,13,14,15].map(s=>`<button class="tbtn fs-btn" data-size="${s}" style="flex:1;padding:3px 0;font-size:10px">${s}</button>`).join('')}</div>
+    </div>
+    <div>
+      <div style="font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px">Files</div>
+      <button class="tbtn" id="settings-export" style="width:100%;margin-bottom:4px;font-size:11px">⬇ Export .zip</button>
+      <label class="tbtn" style="width:100%;display:block;text-align:center;cursor:pointer;padding:4px 0;font-size:11px">⬆ Import files<input type="file" id="settings-import" multiple accept=".js,.jsx,.ts,.tsx,.html,.css,.md,.json,.txt,.zip" style="display:none"></label>
+    </div>
+    <div>
+      <div style="font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px">Storage</div>
+      <div id="settings-sw-status"  style="font-size:11px;color:var(--muted);margin-bottom:3px">SW: checking…</div>
+      <div id="settings-idb-status" style="font-size:11px;color:var(--muted)">IDB: initialising…</div>
+    </div>
+    <div>
+      <div style="font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px">Session</div>
+      <div id="settings-session" style="font-size:11px;color:var(--muted);line-height:1.7"></div>
+    </div>
+  </div>
+</div>`);
+
+let settingsOpen = false;
+function toggleSettings(force) {
+  settingsOpen = force !== undefined ? force : !settingsOpen;
+  document.getElementById('settings-flyout').style.transform = settingsOpen ? 'translateX(0)' : 'translateX(100%)';
+  if (settingsOpen) {
+    // SW status
+    navigator.serviceWorker?.getRegistration?.().then(reg => {
+      const el = document.getElementById('settings-sw-status');
+      el.textContent = reg ? 'SW: active ✓' : 'SW: not registered';
+      el.style.color = reg ? 'var(--phosphorus)' : 'var(--muted)';
+    }).catch(() => {});
+    // Session summary
+    const el = document.getElementById('settings-session');
+    if (el) el.innerHTML =
+      `Spoons: ${Math.round(sessionSpoons*200)}/200<br>` +
+      `Tier: ${QDist.tier(sessionSpoons)}<br>` +
+      `Runs: ${sessionRuns} &nbsp; Errors: ${sessionErrors}<br>` +
+      `Files: ${Object.keys(files).length}`;
+    // Active font size
+    const curSize = parseInt($codeArea.style.fontSize) || 13;
+    document.querySelectorAll('.fs-btn').forEach(b => {
+      b.style.background = parseInt(b.dataset.size) === curSize ? 'rgba(204,98,71,0.2)' : '';
+    });
+  }
+}
+
+document.getElementById('btn-settings').addEventListener('click', () => toggleSettings());
+document.getElementById('settings-close').addEventListener('click', () => toggleSettings(false));
+document.getElementById('settings-export').addEventListener('click', exportZip);
+document.getElementById('settings-import').addEventListener('change', async e => {
+  for (const f of [...e.target.files]) {
+    if (f.name.endsWith('.zip')) await importZip(f).catch(err => logErr(err.message));
+    else importTextFile(f);
+  }
+  e.target.value = '';
+});
+document.querySelectorAll('.fs-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const sz = btn.dataset.size;
+    $codeArea.style.fontSize = sz + 'px';
+    document.getElementById('line-numbers').style.fontSize = sz + 'px';
+    $consoleLog.style.fontSize = (parseInt(sz)-1) + 'px';
+    localStorage.setItem('ede:fontSize', sz);
+    document.querySelectorAll('.fs-btn').forEach(b => b.style.background = '');
+    btn.style.background = 'rgba(204,98,71,0.2)';
+  });
+});
+
+// Restore saved font size
+const _savedSize = localStorage.getItem('ede:fontSize');
+if (_savedSize) {
+  $codeArea.style.fontSize = _savedSize + 'px';
+  document.getElementById('line-numbers').style.fontSize = _savedSize + 'px';
+  $consoleLog.style.fontSize = (parseInt(_savedSize)-1) + 'px';
+}
+
+// ── Boot ──
+init();
+
+// ── Service Worker ──
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/ede-sw.js').catch(() => {});
+}
+</script>
+</body>
+</html>

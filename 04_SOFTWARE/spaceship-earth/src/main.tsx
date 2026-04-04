@@ -15,3 +15,8 @@ if (root) {
     </React.StrictMode>
   );
 }
+
+// R02.3: Service Worker registration (offline-capable)
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js').catch(() => {});
+}

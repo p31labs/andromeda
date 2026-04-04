@@ -9,6 +9,7 @@ workers_dev = true
 # Environment Variables
 [vars]
 ENVIRONMENT = "production"
+GENESIS_GATE_URL = "https://genesis.p31ca.org"
 
 # KV namespace for node count tracking
 [[kv_namespaces]]
@@ -18,6 +19,7 @@ id = "ee153bbfc8c5427288ab9dddf9a1c9a9"
 # Secrets (set via wrangler):
 #   npx wrangler secret put KOFI_SECRET --config wrangler-kofi.toml
 #   npx wrangler secret put DISCORD_WEBHOOK_URL --config wrangler-kofi.toml
+# Note: GENESIS_GATE_URL is set in [vars] above (not a secret — public endpoint)
 
 # Custom Domains (add via Cloudflare dashboard):
 #   webhook.p31ca.org → p31-kofi-webhook

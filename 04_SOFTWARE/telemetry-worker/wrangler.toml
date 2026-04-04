@@ -7,4 +7,4 @@ vars = { ALLOWED_ORIGIN = "https://p31ca.org" }
 
 [[kv_namespaces]]
 binding = "TELEMETRY_KV"
-id = "telemetry-kv-namespace-id"
+id = "60a6817aed314eb0bc988d0ac5296f2c"

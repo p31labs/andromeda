@@ -6,17 +6,30 @@
 
 const deployments = [
   {
+    name: 'EDE',
+    label: 'Everything Development Environment',
+    description: 'Flagship cognitive IDE. Progressive disclosure (FULL/LOW/MINIMAL), Trimtab rotary, Babel/React sandbox, code entropy via PID, Fawn Guard, Layer 0 breathing mode.',
+    stack: ['Babel', 'React', 'IndexedDB', 'WebAudio', 'JSZip'],
+    status: 'live' as const,
+    href: '/ede.html?from=hub',
+    metrics: null,
+  },
+  {
     name: 'BONDING',
+    label: 'Molecule Builder',
     description: 'Molecule-building chemistry game for children ages 6+. AuDHD-optimized haptics, sonification, and spoon-aware cognitive load management.',
     stack: ['React', 'Three.js', 'Zustand', 'Cloudflare Workers'],
     status: 'live' as const,
+    href: 'https://bonding.p31ca.org?from=hub',
     metrics: { tests: 485, achievements: 12, molecules: 33 },
   },
   {
     name: 'Spaceship Earth',
+    label: 'Systems Simulator',
     description: 'Environmental systems simulator. Planetary-scale resource management with real-time feedback loops.',
     stack: ['Astro', 'D3.js', 'WebGL'],
     status: 'dev' as const,
+    href: 'https://spaceship-earth.pages.dev?from=hub',
     metrics: null,
   },
 ];
@@ -33,9 +46,12 @@ const deployments = [
 
   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
     {deployments.map((d) => (
-      <div class="glass-panel glass-panel-hover p-6 flex flex-col gap-4">
+      <a href={d.href} class="glass-panel glass-panel-hover p-6 flex flex-col gap-4 no-underline" style="text-decoration:none">
         <div class="flex items-center justify-between">
-          <h3 class="font-bold text-lg text-white/90 font-mono tracking-wide">{d.name}</h3>
+          <div>
+            <h3 class="font-bold text-lg text-white/90 font-mono tracking-wide">{d.name}</h3>
+            {d.label && <div class="text-[10px] font-mono text-white/25 tracking-wide mt-0.5">{d.label}</div>}
+          </div>
           <span class={`text-[10px] font-mono uppercase tracking-wider px-2.5 py-1 rounded-full border ${d.status === 'live' ? 'status-live' : 'status-dev'}`}>
             {d.status}
           </span>
@@ -69,7 +85,14 @@ const deployments = [
             </div>
           </div>
         )}
-      </div>
+      </a>
     ))}
+  </div>
+
+  <!-- Ops dashboards row -->
+  <div class="flex gap-4 mt-6 justify-center">
+    <a href="/health.html?from=hub" class="text-xs font-mono text-white/30 hover:text-phosphor transition-colors">System Health →</a>
+    <span class="text-white/10">·</span>
+    <a href="/telemetry.html?from=hub" class="text-xs font-mono text-white/30 hover:text-phosphor transition-colors">Telemetry →</a>
   </div>
 </section>
