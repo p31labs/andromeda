@@ -306,7 +306,7 @@ export class PersonalityEngine {
       // Default based on communication style
     switch (communicationStyle) {
       case 'formal': return 'professional';
-      case 'casual': return 'friendly';
+      case 'casual': return 'warm';
       case 'professional': return 'professional';
       case 'friendly': return 'warm';
       case 'technical': return 'precise';
@@ -320,12 +320,12 @@ export class PersonalityEngine {
    * Calculate response complexity based on mood and empathy
    */
   private calculateComplexity(currentMood: MoodState, empathy: number): Complexity {
-    if (currentMood.type === 'anxious' || currentMood.type === 'overwhelmed') {
+    if (currentMood.type === 'anxious') {
       return 'simple';
     } else if (currentMood.type === 'focused' && empathy > 70) {
       return 'detailed';
     } else if (currentMood.type === 'tired') {
-      return 'concise';
+      return 'simple';
     }
     
     return empathy > 70 ? 'balanced' : 'direct';

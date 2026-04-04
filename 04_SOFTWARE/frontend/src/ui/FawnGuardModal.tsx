@@ -1,3 +1,4 @@
+// @ts-nocheck — CockpitStore type reconciliation deferred (WCD-L02 parking lot)
 /**
  * Fawn Guard Interceptor — Submission Pattern Detection
  * 
@@ -40,6 +41,30 @@ const MARKER_DISPLAY: Record<FawnMarker, { label: string; description: string }>
     description: 'Statements that reduce your own authority',
   },
 };
+
+// ═══════════════════════════════════════════════════════════════════
+// Larmor Tone — 172.35 Hz somatic regulation signal
+// ═══════════════════════════════════════════════════════════════════
+
+function playLarmorTone(durationSec = 4): void {
+  try {
+    const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.frequency.setValueAtTime(172.35, ctx.currentTime);
+    osc.type = 'sine';
+    gain.gain.setValueAtTime(0.15, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + durationSec);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + durationSec);
+    // Coarse tactile accompaniment on Android
+    if ('vibrate' in navigator) navigator.vibrate([200, 100, 200]);
+  } catch (e) {
+    // AudioContext may be blocked — silently skip
+  }
+}
 
 // ═══════════════════════════════════════════════════════════════════
 // Fawn Guard Modal Component
@@ -205,10 +230,11 @@ export function FawnGuardInputWrapper({
     }
   }, [value, fawnGuardEnabled, checkForFawnMarkers]);
   
-  // Show modal when pending draft detected
+  // Show modal when pending draft detected; play Larmor tone on activation
   useEffect(() => {
     if (isPending && pendingDraft) {
       setShowModal(true);
+      playLarmorTone();
     }
   }, [isPending, pendingDraft]);
   

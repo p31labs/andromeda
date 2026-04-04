@@ -181,6 +181,105 @@
   box-shadow: none !important;
 }
 
+/* P04.6: Matte Cockpit — warm void, desaturated palette, sensory-safe */
+[data-theme="matte-cockpit"] {
+  --void: #0f1115;
+  --s1: #0f1115;
+  --s2: #161920;
+  --s3: #1c2028;
+  --s4: #242830;
+  --text: #b0b0b0;
+  --dim: #666666;
+  --dim2: #444444;
+  --cyan: #7a8a9a;
+  --magenta: #8a7a8a;
+  --violet: #7a7a9a;
+  --amber: #9a8a6a;
+  --mint: #6a9a8a;
+  --coral: #9a7a6a;
+  --orange: #9a8060;
+  --blue: #6a7a9a;
+  --lavender: #7a6a8a;
+  --pink: #8a6a7a;
+  --neon: #7a8a9a;
+  --neon-dim: rgba(122,138,154,0.25);
+  --neon-faint: rgba(122,138,154,0.05);
+  --neon-ghost: rgba(122,138,154,0.02);
+  --glow-cyan: none;
+  --glow-magenta: none;
+  --glow-violet: none;
+  --glow-amber: none;
+  --glow-mint: none;
+  --glow-coral: none;
+}
+
+/* Matte Cockpit: kill all animations — sensory-safe */
+[data-theme="matte-cockpit"] * {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.05s !important;
+}
+
+[data-theme="matte-cockpit"] .neon-flicker {
+  animation: none !important;
+  text-shadow: none !important;
+  box-shadow: none !important;
+}
+
+/* P04.7: Light mode — sensory toggle */
+[data-theme="light"] {
+  --void: #f0f2f5;
+  --s1: #ffffff;
+  --s2: #f5f5f5;
+  --s3: #e8eaed;
+  --s4: #dcdfe3;
+  --text: #1a1a2e;
+  --dim: #6b7280;
+  --dim2: #9ca3af;
+  --cyan: #0891b2;
+  --magenta: #a21caf;
+  --violet: #7c3aed;
+  --amber: #d97706;
+  --mint: #059669;
+  --coral: #dc2626;
+  --orange: #ea580c;
+  --blue: #2563eb;
+  --lavender: #7c3aed;
+  --pink: #db2777;
+  --neon: #0891b2;
+  --neon-dim: rgba(8,145,178,0.3);
+  --neon-faint: rgba(8,145,178,0.08);
+  --neon-ghost: rgba(8,145,178,0.04);
+  --glow-cyan: none;
+  --glow-magenta: none;
+  --glow-violet: none;
+  --glow-amber: none;
+  --glow-mint: none;
+  --glow-coral: none;
+}
+
+/* Light mode: kill all animations — clean, professional */
+[data-theme="light"] * {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.15s ease !important;
+}
+
+[data-theme="light"] .neon-flicker {
+  animation: none !important;
+  text-shadow: none !important;
+  box-shadow: none !important;
+}
+
+/* P04.7: Smooth transition between dark/light — no flash */
+:root {
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+html, body, #root {
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
 /* ── Glass card ─────────────────────────────────────── */
 
 .glass-card {

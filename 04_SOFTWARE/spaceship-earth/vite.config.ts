@@ -86,6 +86,12 @@ export default defineConfig({
     minify: 'terser',
     cssMinify: true,
     rollupOptions: {
+      onwarn(warning, defaultHandler) {
+        // sovereignRelay is intentionally lazy-loaded by BONDING as an optional dep.
+        // When built inside SE the module is already in the bundle — expected non-issue.
+        if (warning.code === 'INEFFECTIVE_DYNAMIC_IMPORT' && warning.message.includes('sovereignRelay')) return;
+        defaultHandler(warning);
+      },
       output: {
         manualChunks(id) {
           if (id.includes('node_modules/react/') || id.includes('node_modules/react-dom/')) return 'vendor-react';

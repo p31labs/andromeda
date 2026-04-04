@@ -1,0 +1,244 @@
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+
+// ── Types matching the worker ──────────────────────────────────────────────
+interface Env {
+  STRIPE_SECRET_KEY: string;
+  STRIPE_WEBHOOK_SECRET: string;
+  DISCORD_WEBHOOK_URL: string;
+  ALLOWED_ORIGIN: string;
+}
+
+const env: Env = {
+  STRIPE_SECRET_KEY: 'sk_test_fake',
+  STRIPE_WEBHOOK_SECRET: 'whsec_test_fake',
+  DISCORD_WEBHOOK_URL: 'https://example.com/webhook',
+  ALLOWED_ORIGIN: 'https://phosphorus31.org',
+};
+
+// ── Import worker after mocking global fetch ───────────────────────────────
+// The worker uses the global fetch for Stripe API calls, so we mock it.
+const mockFetch = vi.fn();
+
+beforeEach(() => {
+  vi.stubGlobal('fetch', mockFetch);
+  mockFetch.mockReset();
+});
+
+// Lazy import so vi.stubGlobal runs first
+async function getWorker() {
+  const mod = await import('../worker');
+  return mod.default;
+}
+
+// ── CORS preflight ─────────────────────────────────────────────────────────
+describe('OPTIONS preflight', () => {
+  it('returns 204 with CORS headers', async () => {
+    const worker = await getWorker();
+    const req = new Request('https://example.com/create-checkout', {
+      method: 'OPTIONS',
+      headers: { Origin: 'https://phosphorus31.org' },
+    });
+    const res = await worker.fetch(req, env);
+    expect(res.status).toBe(204);
+    expect(res.headers.get('Access-Control-Allow-Methods')).toContain('POST');
+  });
+});
+
+// ── 404 for unknown routes ─────────────────────────────────────────────────
+describe('unknown routes', () => {
+  it('returns 404 for GET /', async () => {
+    const worker = await getWorker();
+    const req = new Request('https://example.com/', { method: 'GET' });
+    const res = await worker.fetch(req, env);
+    expect(res.status).toBe(404);
+  });
+
+  it('returns 404 for unknown path', async () => {
+    const worker = await getWorker();
+    const req = new Request('https://example.com/unknown', { method: 'POST' });
+    const res = await worker.fetch(req, env);
+    expect(res.status).toBe(404);
+  });
+});
+
+// ── POST /create-checkout validation ──────────────────────────────────────
+describe('POST /create-checkout — validation', () => {
+  it('rejects amount below minimum ($1 = 100 cents)', async () => {
+    const worker = await getWorker();
+    const req = new Request('https://example.com/create-checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ amount: 50, currency: 'usd', mode: 'once',
+        successUrl: 'https://example.com/success',
+        cancelUrl: 'https://example.com/cancel' }),
+    });
+    const res = await worker.fetch(req, env);
+    expect(res.status).toBe(400);
+    const body = await res.json() as { error: string };
+    expect(body.error).toMatch(/minimum/i);
+  });
+
+  it('rejects amount above maximum', async () => {
+    const worker = await getWorker();
+    const req = new Request('https://example.com/create-checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ amount: 100_000_000, currency: 'usd', mode: 'once',
+        successUrl: 'https://example.com/success',
+        cancelUrl: 'https://example.com/cancel' }),
+    });
+    const res = await worker.fetch(req, env);
+    expect(res.status).toBe(400);
+  });
+
+  it('rejects missing amount', async () => {
+    const worker = await getWorker();
+    const req = new Request('https://example.com/create-checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ currency: 'usd', mode: 'once' }),
+    });
+    const res = await worker.fetch(req, env);
+    expect(res.status).toBe(400);
+  });
+});
+
+// ── POST /create-checkout — Stripe integration ────────────────────────────
+describe('POST /create-checkout — Stripe call', () => {
+  it('creates one-time checkout session and returns sessionId', async () => {
+    mockFetch.mockResolvedValueOnce(
+      new Response(JSON.stringify({ id: 'cs_test_abc123' }), { status: 200 }),
+    );
+
+    const worker = await getWorker();
+    const req = new Request('https://example.com/create-checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ amount: 500, currency: 'usd', mode: 'once',
+        successUrl: 'https://example.com/success',
+        cancelUrl: 'https://example.com/cancel' }),
+    });
+    const res = await worker.fetch(req, env);
+    expect(res.status).toBe(200);
+    const body = await res.json() as { sessionId: string };
+    expect(body.sessionId).toBe('cs_test_abc123');
+  });
+
+  it('sends monthly mode as subscription to Stripe', async () => {
+    mockFetch.mockResolvedValueOnce(
+      new Response(JSON.stringify({ id: 'cs_test_monthly' }), { status: 200 }),
+    );
+
+    const worker = await getWorker();
+    const req = new Request('https://example.com/create-checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ amount: 1000, currency: 'usd', mode: 'monthly',
+        successUrl: 'https://example.com/success',
+        cancelUrl: 'https://example.com/cancel' }),
+    });
+    await worker.fetch(req, env);
+
+    const callArgs = mockFetch.mock.calls[0];
+    const body = callArgs[1].body as string;
+    expect(body).toContain('mode=subscription');
+    expect(body).toContain('recurring%5D%5Binterval%5D=month');
+  });
+
+  it('returns 500 if Stripe API fails', async () => {
+    mockFetch.mockResolvedValueOnce(
+      new Response('{"error": {"message": "invalid key"}}', { status: 401 }),
+    );
+
+    const worker = await getWorker();
+    const req = new Request('https://example.com/create-checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ amount: 500, currency: 'usd', mode: 'once',
+        successUrl: 'https://example.com/success',
+        cancelUrl: 'https://example.com/cancel' }),
+    });
+    const res = await worker.fetch(req, env);
+    expect(res.status).toBe(500);
+  });
+});
+
+// ── POST /stripe-webhook ───────────────────────────────────────────────────
+describe('POST /stripe-webhook', () => {
+  it('rejects request with no stripe-signature header', async () => {
+    const worker = await getWorker();
+    const req = new Request('https://example.com/stripe-webhook', {
+      method: 'POST',
+      body: JSON.stringify({ type: 'checkout.session.completed' }),
+    });
+    const res = await worker.fetch(req, env);
+    expect(res.status).toBe(400);
+  });
+
+  it('rejects invalid signature', async () => {
+    const worker = await getWorker();
+    const req = new Request('https://example.com/stripe-webhook', {
+      method: 'POST',
+      headers: { 'stripe-signature': 't=1234,v1=badhash' },
+      body: JSON.stringify({ type: 'checkout.session.completed' }),
+    });
+    const res = await worker.fetch(req, env);
+    expect(res.status).toBe(400);
+  });
+
+  it('accepts a valid HMAC-SHA256 signature and returns 200', async () => {
+    // Build a real Stripe-Signature header using Web Crypto
+    const secret = 'whsec_test_valid';
+    const localEnv = { ...env, STRIPE_WEBHOOK_SECRET: secret };
+    const payload = JSON.stringify({ type: 'checkout.session.completed', data: {} });
+    const timestamp = Math.floor(Date.now() / 1000).toString();
+    const signedPayload = `${timestamp}.${payload}`;
+
+    const key = await crypto.subtle.importKey(
+      'raw',
+      new TextEncoder().encode(secret),
+      { name: 'HMAC', hash: 'SHA-256' },
+      false,
+      ['sign'],
+    );
+    const sig = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(signedPayload));
+    const v1 = Array.from(new Uint8Array(sig))
+      .map(b => b.toString(16).padStart(2, '0'))
+      .join('');
+
+    // Mock Discord webhook call (best-effort forward)
+    mockFetch.mockResolvedValueOnce(new Response('ok', { status: 200 }));
+
+    const worker = await getWorker();
+    const req = new Request('https://example.com/stripe-webhook', {
+      method: 'POST',
+      headers: { 'stripe-signature': `t=${timestamp},v1=${v1}` },
+      body: payload,
+    });
+    const res = await worker.fetch(req, localEnv);
+    expect(res.status).toBe(200);
+    const body = await res.json() as { received: boolean };
+    expect(body.received).toBe(true);
+  });
+});
+
+// ── CORS origin handling ───────────────────────────────────────────────────
+describe('CORS origin', () => {
+  it('allows localhost dev origin', async () => {
+    mockFetch.mockResolvedValueOnce(
+      new Response(JSON.stringify({ id: 'cs_test' }), { status: 200 }),
+    );
+    const worker = await getWorker();
+    const req = new Request('https://example.com/create-checkout', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Origin: 'http://localhost:4321',
+      },
+      body: JSON.stringify({ amount: 200, currency: 'usd', mode: 'once',
+        successUrl: 'https://example.com/s', cancelUrl: 'https://example.com/c' }),
+    });
+    const res = await worker.fetch(req, env);
+    expect(res.headers.get('Access-Control-Allow-Origin')).toBe('http://localhost:4321');
+  });
+});

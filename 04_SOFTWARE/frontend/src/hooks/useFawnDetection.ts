@@ -92,7 +92,6 @@ export function analyzeFawnPatterns(text: string): { markers: FawnMarker[]; conf
     diminished_agency: 0,
   };
 
-  const totalMatches = 0;
   let matchCount = 0;
 
   // Check each pattern category

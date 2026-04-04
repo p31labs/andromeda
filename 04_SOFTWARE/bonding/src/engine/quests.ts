@@ -49,7 +49,7 @@ export interface QuestProgress {
  * Sapling: all quests.
  */
 export function getQuestsForMode(mode: 'seed' | 'sprout' | 'sapling'): Quest[] {
-  const allQuests = [GENESIS_QUEST, KITCHEN_QUEST, POSNER_QUEST, FORGE_QUEST, LAB_QUEST];
+  const allQuests = [GENESIS_QUEST, KITCHEN_QUEST, POSNER_QUEST, FORGE_QUEST, LAB_QUEST, NEURO_QUEST];
 
   if (mode === 'seed') {
     return allQuests.filter(q => q.mode === 'seed');
@@ -220,4 +220,20 @@ export const LAB_QUEST: Quest = {
     { target: 'HNO\u2083', narrative: 'Nitric acid. Respect the chemistry.' },
   ],
   reward: { love: 125, achievementId: 'the_lab' },
+};
+
+export const NEURO_QUEST: Quest = {
+  id: 'neurotransmitters',
+  name: 'Neurotransmitters',
+  icon: '\u{1F9E0}',
+  description: 'Brain chemistry. Build the molecules that power thought.',
+  mode: 'sapling',
+  steps: [
+    { target: 'C\u2088H\u2081\u2081NO\u2082', narrative: 'Dopamine. The reward molecule.' },
+    { target: 'C\u2081\u2080H\u2081\u2082N\u2082O', narrative: 'Serotonin. Mood stabilizer.' },
+    { target: 'C\u2084H\u2089NO\u2082', narrative: 'GABA. The calm signal.' },
+    { target: 'C\u2083H\u2087NO\u2084', narrative: 'Glutamate. The excite signal.' },
+    { target: 'C\u2089H\u2081\u2083NO\u2082', narrative: 'Norepinephrine. Alertness.' },
+  ],
+  reward: { love: 150, achievementId: 'neurotransmitters' },
 };

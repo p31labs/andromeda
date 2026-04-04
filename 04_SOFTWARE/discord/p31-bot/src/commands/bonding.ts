@@ -1,6 +1,6 @@
 import { Message, EmbedBuilder } from 'discord.js';
-import fetch from 'node-fetch';
 import { CommandContext, P31Command, getApiUrls, getTimeout } from './base';
+import { defaultRetryableFetch } from '../services/retryUtility';
 
 interface BondingStats {
   gamesPlayed: number;
@@ -69,9 +69,11 @@ export class BondingCommand implements P31Command {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), timeout);
 
-      const response = await fetch(`${apiUrls.bonding}/stats`, {
-        signal: controller.signal
-      });
+      const response = await defaultRetryableFetch.fetchWithRetry(
+        `${apiUrls.bonding}/stats`,
+        { signal: controller.signal },
+        'bonding'
+      );
 
       clearTimeout(timeoutId);
 

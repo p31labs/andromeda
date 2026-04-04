@@ -6,7 +6,7 @@
  * Higher Z values always supersede lower Z values
  */
 
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Z_LAYERS, Z_LAYER_NAMES } from '../types/contracts';
 
 // ═══════════════════════════════════════════════════════════════════

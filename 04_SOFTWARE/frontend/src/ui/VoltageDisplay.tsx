@@ -5,8 +5,8 @@
  * Handles LOW (0-30%), MODERATE (30-70%), HIGH (70-100%) thresholds
  */
 
-import React, { useState, useEffect, useRef } from 'react';
-import { useCockpitStore, useVoltageTier } from '../hooks/useCockpitStore';
+import { useState, useEffect } from 'react';
+import { useCockpitStore } from '../hooks/useCockpitStore';
 import { 
   COCKPIT_COLORS, 
   VOLTAGE_THRESHOLDS, 
@@ -70,10 +70,12 @@ export default function VoltageDisplay({
   compact = false,
   showLog = false 
 }: VoltageDisplayProps) {
-  const { currentVoltage, voltageTier, voltageLog, processVoltageSignal } = useCockpitStore();
+  const voltageLevel = useCockpitStore(s => s.voltageLevel);
+  const voltageLogs = useCockpitStore(s => s.voltageLogs);
+  const voltageTier = getVoltageTier(voltageLevel);
   const config = TIER_CONFIG[voltageTier];
   
-  const percentage = currentVoltage;
+  const percentage = voltageLevel;
   
   // Get voltage color based on level
   const getVoltageColor = () => {
@@ -119,14 +121,14 @@ export default function VoltageDisplay({
           {config.label}
         </span>
         <span className="voltage-value" style={{ color: config.color }}>
-          {currentVoltage}%
+          {voltageLevel}%
         </span>
       </div>
       
       {showLog && (
         <div className="voltage-log">
           <span className="voltage-log-label">Recent:</span>
-          {voltageLog.slice(-5).map((entry, i) => (
+          {voltageLogs.slice(-5).map((entry) => (
             <span 
               key={entry.id} 
               className="voltage-log-entry"
@@ -164,10 +166,9 @@ export function VoltageWarningModal({ signal, onAccept, onDecline }: VoltageWarn
   const [countdown, setCountdown] = useState(5);
   
   useEffect(() => {
-    if (countdown > 0) {
-      const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
-      return () => clearTimeout(timer);
-    }
+    if (countdown <= 0) return;
+    const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+    return () => clearTimeout(timer);
   }, [countdown]);
   
   return (
@@ -284,7 +285,9 @@ export function VoltageSequester({ signal, onRelease }: VoltageSequesterProps) {
  * Hook to process incoming voltage signals from backend
  */
 export function useVoltageSignalProcessor() {
-  const { processVoltageSignal, currentVoltage, voltageTier } = useCockpitStore();
+  const processVoltageSignal = useCockpitStore(s => s.processVoltageSignal);
+  const voltageLevel = useCockpitStore(s => s.voltageLevel);
+  const voltageTier = getVoltageTier(voltageLevel);
   const [pendingSignal, setPendingSignal] = useState<CatchersMittSignal | null>(null);
   const [showWarning, setShowWarning] = useState(false);
   const [showSequester, setShowSequester] = useState(false);
@@ -334,7 +337,7 @@ export function useVoltageSignalProcessor() {
   };
   
   return {
-    currentVoltage,
+    currentVoltage: voltageLevel,
     voltageTier,
     pendingSignal,
     showWarning,

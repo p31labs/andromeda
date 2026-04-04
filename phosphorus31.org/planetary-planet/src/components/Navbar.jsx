@@ -33,19 +33,29 @@ const Navbar = () => {
               </svg>
             </div>
             <div>
-              <div className="font-heading font-bold text-espresso text-lg leading-none">Labs</div>
-              <div className="text-teal-600 text-xs font-medium tracking-wide">501(c)(3) Nonprofit</div>
+              <div className="font-heading font-bold text-espresso text-lg leading-none">Labs, Inc.</div>
+              <div className="text-teal-600 text-xs font-medium tracking-wide">Georgia Nonprofit &middot; 501(c)(3) pending</div>
             </div>
           </a>
 
           <nav className="hidden md:flex items-center gap-8 font-medium text-sm text-espresso/80">
             {navLink('/', 'Home')}
             {navLink('/products', 'Products')}
+            {navLink('/research', 'Research')}
             {navLink('/about', 'About')}
             {navLink('/why', 'Why')}
             {navLink('/quantum-security', 'Security')}
             {navLink('/transparency', 'Transparency')}
             {navLink('/donate', 'Donate')}
+            <a 
+              href="https://thegeodesicself.substack.com" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-teal-600 hover:text-teal-700 font-bold"
+              style={{ textDecoration: 'none' }}
+            >
+              Newsletter
+            </a>
           </nav>
 
           <div className="flex items-center gap-4">
@@ -86,6 +96,16 @@ const Navbar = () => {
             >
               Launch BONDING ↗
             </a>
+
+            <a
+              href="https://spaceship-earth.pages.dev/#observatory"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden sm:block ml-2 px-4 py-2 rounded-xl border-2 border-cyan-400 text-cyan-400 hover:bg-cyan-400/10 transition-colors font-mono text-sm tracking-wider"
+              style={{ textDecoration: 'none' }}
+            >
+              Launch S.E. ↗
+            </a>
           </div>
         </div>
       </header>
@@ -97,6 +117,7 @@ const Navbar = () => {
             {[
               ['/', 'Home'],
               ['/products', 'Products'],
+              ['/research', 'Research'],
               ['/about', 'About'],
               ['/why', 'Why We Exist'],
               ['/quantum-security', 'Security'],
@@ -121,6 +142,15 @@ const Navbar = () => {
               style={{ textDecoration: 'none' }}
             >
               Launch BONDING ↗
+            </a>
+            <a
+              href="https://spaceship-earth.pages.dev/#observatory"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-2 px-4 py-3 rounded-xl border-2 border-cyan-400 text-cyan-400 text-center font-mono text-sm"
+              style={{ textDecoration: 'none' }}
+            >
+              Launch S.E. ↗
             </a>
           </nav>
         </div>

@@ -1,6 +1,6 @@
 import { Message, EmbedBuilder } from 'discord.js';
-import fetch from 'node-fetch';
 import { CommandContext, P31Command, getApiUrls, getTimeout } from './base';
+import { defaultRetryableFetch } from '../services/retryUtility';
 
 interface ServiceStatus {
   name: string;
@@ -67,10 +67,14 @@ export class StatusCommand implements P31Command {
       const timeoutId = setTimeout(() => controller.abort(), timeout);
 
       const start = Date.now();
-      const response = await fetch(service.url, {
-        signal: controller.signal,
-        method: 'HEAD'
-      });
+      const response = await defaultRetryableFetch.fetchWithRetry(
+        service.url,
+        {
+          signal: controller.signal,
+          method: 'HEAD'
+        },
+        service.name.toLowerCase().replace(/\s+/g, '-')
+      );
       const responseTime = Date.now() - start;
 
       clearTimeout(timeoutId);

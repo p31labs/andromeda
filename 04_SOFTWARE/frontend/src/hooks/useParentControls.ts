@@ -30,7 +30,7 @@ function generateFamilyCode(): string {
 
 // Get today's date string
 function getTodayDate(): string {
-  return new Date().toISOString().split('T')[0];
+  return new Date().toISOString().split('T')[0] ?? '';
 }
 
 // Default time settings for a child
@@ -166,9 +166,10 @@ export default function useParentControls(): UseParentControlsReturn {
       const updated = { ...prev };
       let changed = false;
       Object.keys(updated).forEach(childId => {
-        if (updated[childId].lastResetDate !== today) {
+        const s = updated[childId];
+        if (s && s.lastResetDate !== today) {
           updated[childId] = {
-            ...updated[childId],
+            ...s,
             usedToday: 0,
             lastResetDate: today,
           };
@@ -389,8 +390,8 @@ export default function useParentControls(): UseParentControlsReturn {
     if (settings.schedule.enabled) {
       const now = new Date();
       const currentMinutes = now.getHours() * 60 + now.getMinutes();
-      const [startH, startM] = settings.schedule.allowedStart.split(':').map(Number);
-      const [endH, endM] = settings.schedule.allowedEnd.split(':').map(Number);
+      const [startH = 0, startM = 0] = settings.schedule.allowedStart.split(':').map(Number);
+      const [endH = 0, endM = 0] = settings.schedule.allowedEnd.split(':').map(Number);
       const startMinutes = startH * 60 + startM;
       const endMinutes = endH * 60 + endM;
       

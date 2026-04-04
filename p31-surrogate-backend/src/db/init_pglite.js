@@ -18,7 +18,8 @@ class SovereignVault {
       console.log('🔧 Initializing P31 Sovereign Vault...');
       
       // Initialize serverless, local-first WASM PostgreSQL
-      this.db = new PGlite('./data/pglite_vault');
+      // Locked to IndexedDB for browser-only operation (Kenosis: April 4 displacement)
+      this.db = new PGlite('idb://p31-sovereign-vault');
       
       // Enable pgvector for Semantic Memory
       await this.db.exec('CREATE EXTENSION IF NOT EXISTS vector;');
@@ -235,10 +236,11 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   sovereignVault.initialize()
     .then(() => {
       console.log('🎯 PGLite Sovereign Vault Ready for Operations');
-      console.log('📍 Database Path: ./data/pglite_vault');
+      console.log('📍 Database Path: idb://p31-sovereign-vault (IndexedDB)');
       console.log('📊 Memory Tiers: Episodic | Semantic | Procedural');
       console.log('⚡ Voltage Monitoring: Active');
       console.log('📝 Scratchpad: Self-Evolving');
+      console.log('🔒 Storage: Browser-only, no filesystem dependency (Kenosis)');
     })
     .catch(error => {
       console.error('💥 Initialization Failed:', error);

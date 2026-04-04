@@ -10,6 +10,7 @@ export interface CommandContext {
     spoon: string;
     telemetry: string;
     nodeOneStatus: string;
+    cortex: string;
   };
   timeout: number;
 }
@@ -72,13 +73,15 @@ export function getApiUrls(): {
   spoon: string;
   telemetry: string;
   nodeOneStatus: string;
+  cortex: string;
 } {
   return {
     bonding: process.env.BONDING_API_URL || 'https://bonding.p31ca.org/api',
     nodeOne: process.env.NODE_ONE_API_URL || 'http://localhost:3001/api',
     spoon: process.env.SPOON_API_URL || 'https://phosphorus31.org/api/spoons',
     telemetry: process.env.TELEMETRY_API_URL || '',
-    nodeOneStatus: process.env.NODE_ONE_STATUS_URL || 'http://localhost:3001/status'
+    nodeOneStatus: process.env.NODE_ONE_STATUS_URL || 'http://localhost:3001/status',
+    cortex: process.env.CORTEX_API_URL || 'https://p31-cortex.workers.dev'
   };
 }
 

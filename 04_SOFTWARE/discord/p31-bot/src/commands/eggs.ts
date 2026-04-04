@@ -1,14 +1,8 @@
 import { EmbedBuilder } from 'discord.js';
 import type { CommandContext, P31Command } from './base';
-import { eggTracker, ALL_EGGS, FOUNDING_SLOTS } from '../services/eggTracker';
+import { eggTracker, ALL_EGGS, FOUNDING_SLOTS, EGG_META, PROGRESS_FILE } from '../services/eggTracker';
 import type { EggId } from '../services/eggTracker';
-
-const EGG_META: Record<EggId, { label: string; icon: string; hint: string }> = {
-  bashium:      { label: 'Bashium Element',          icon: '🟣', hint: 'Genesis quest in BONDING' },
-  willium:      { label: 'Willium Element',           icon: '🟢', hint: 'Kitchen quest in BONDING' },
-  missing_node: { label: 'The Missing Node (172.35Hz)', icon: '🔊', hint: 'lockTone() at p31ca.org/#collider' },
-  tetrahedron:  { label: 'First Tetrahedron (K₄)',   icon: '🧱', hint: 'K4 rigidity / Posner molecule' },
-};
+import fs from 'fs';
 
 export class EggsCommand implements P31Command {
   name = 'eggs';
@@ -26,7 +20,7 @@ export class EggsCommand implements P31Command {
 
     // Global discovery counts per egg
     const progress: Record<string, unknown> = JSON.parse(
-      require('fs').readFileSync(require('path').join(process.cwd(), 'egg-progress.json'), 'utf-8')
+      fs.readFileSync(PROGRESS_FILE, 'utf-8')
     );
     const globalCounts: Record<EggId, number> = {
       bashium: 0, willium: 0, missing_node: 0, tetrahedron: 0,
@@ -66,7 +60,7 @@ export class EggsCommand implements P31Command {
       .setTitle(`🔺 Quantum Egg Hunt — ${userEggs.length}/${ALL_EGGS.length} eggs found`)
       .addFields(...eggFields)
       .addFields({ name: '⬡ Founding Nodes', value: foundingValue, inline: false })
-      .setFooter({ text: 'P31 Labs · 💜🔺💜 · Eggs active through March 31' });
+      .setFooter({ text: 'P31 Labs · 💜🔺💜 · Deadline: Easter Sunday, April 5' });
 
     await message.reply({ embeds: [embed] });
   }

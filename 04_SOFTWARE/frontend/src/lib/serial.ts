@@ -44,7 +44,7 @@ export function crc8(data: Uint8Array): number {
   let crc = CRC8_INIT;
 
   for (let i = 0; i < data.length; i++) {
-    crc ^= data[i];
+    crc ^= data[i]!;
     for (let bit = 0; bit < 8; bit++) {
       if (crc & 0x80) {
         crc = ((crc << 1) ^ CRC8_POLY) & 0xff;
@@ -79,7 +79,7 @@ export function cobsEncode(data: Uint8Array): Uint8Array {
       codeIndex = output.length;
       output.push(0); // placeholder
     } else {
-      output.push(data[i]);
+      output.push(data[i]!);
       code++;
       if (code === 0xff) {
         output[codeIndex] = code;
@@ -102,12 +102,12 @@ export function cobsDecode(data: Uint8Array): Uint8Array {
   let i = 0;
 
   while (i < data.length) {
-    const code = data[i];
+    const code = data[i]!;
     if (code === 0) break; // end of frame
 
     i++;
     for (let j = 1; j < code && i < data.length; j++) {
-      output.push(data[i]);
+      output.push(data[i]!);
       i++;
     }
 
@@ -170,12 +170,12 @@ export function parseFrame(cobsFrame: Uint8Array): { cmd: number; payload: Uint8
 
   // Verify CRC8
   const rawWithoutCrc = decoded.slice(0, -1);
-  const receivedCrc = decoded[decoded.length - 1];
+  const receivedCrc = decoded[decoded.length - 1]!;
   const computedCrc = crc8(rawWithoutCrc);
   if (receivedCrc !== computedCrc) return null;
 
   return {
-    cmd: decoded[1],
+    cmd: decoded[1]!,
     payload: decoded.slice(2, -1),
   };
 }
@@ -239,11 +239,12 @@ export class SerialBridge {
   private async readLoop(): Promise<void> {
     if (!this.port?.readable) return;
 
-    this.reader = this.port.readable.getReader();
+    const reader = this.port.readable.getReader();
+    this.reader = reader;
 
     try {
       while (this.running) {
-        const { value, done } = await this.reader.read();
+        const { value, done } = await reader.read();
         if (done) break;
 
         for (const byte of value) {
@@ -263,7 +264,7 @@ export class SerialBridge {
     } catch (e) {
       if (this.running) console.error('Serial read error:', e);
     } finally {
-      this.reader.releaseLock();
+      reader.releaseLock();
     }
   }
 }

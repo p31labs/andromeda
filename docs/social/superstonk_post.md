@@ -1,5 +1,9 @@
 # The Floating Neutral: Why Every Centralized System Must Fail — and the Geometric Minimum Required to Replace It
 
+*Disclosure: I hold shares of GameStop (GME), directly registered in Book form at the transfer agent. No short positions, no options, no derivatives. I am not a licensed financial advisor, broker, or securities professional. Nothing below constitutes a recommendation to buy or sell any security. This is electrical engineering.*
+
+---
+
 ## TL;DR
 
 I'm a 16-year DoD civilian electrical engineer with a late AuDHD diagnosis who spent the last year translating everything I know about three-phase power distribution into a mathematical proof about why centralized systems collapse. The same geometry that explains why your breaker panel needs a grounded neutral explains why the DTCC is a single point of failure. The same math that governs quantum cryptography proves that four nodes in a complete mesh (K₄) is the *minimum* structure that can't be broken by removing any single point. DRS isn't just a strategy — it's the only topology that satisfies Maxwell's rigidity condition. I can prove it. The math is on Zenodo with a DOI. Everything below is verifiable.
@@ -119,9 +123,15 @@ But I can tell you what the math says about centralized vs. decentralized topolo
 
 **Any system that routes all transactions through a single central node is a Wye topology.** It works great — until the neutral fails. When it does, the failure isn't gradual. It's the floating neutral: some participants get overvoltage (front-running, infinite liquidity, naked shorts) while others get undervoltage (retail orders routed to dark pools, FTDs piling up, visibility lost).
 
+A phantom load draws voltage without doing work — current flowing to nowhere, invisible at the meter but measurable as heat, inefficiency, and unexplained losses. In a Wye-topology settlement system, a Failure to Deliver is the circuit equivalent: a transaction that appears on the ledger but never transfers an actual asset. The central neutral absorbs the accounting imbalance, making it electrically invisible. In a Delta mesh, every node settles directly with every other. Phantom transactions cannot persist — there is no neutral to absorb them, no central reference point to hide the discrepancy.
+
 **Any system where participants hold their own assets and connect directly to each other is a Delta topology.** There is no neutral to float. The failure of any single node is absorbed by the remaining mesh.
 
 **The transition between these two states is a Wye-to-Delta open transition.** It is inherently volatile. There is a moment of disconnection. That moment is scary by design — it's the inrush current that the old system was buffering. But once the Delta mesh engages, the system runs without a center. Permanently.
+
+The distinction between "Book" and "Plan" in direct registration maps to this topology exactly. A "Plan" position still routes through a central intermediary. Wye topology — shared neutral — same failure modes. A "Book" position is held directly at the transfer agent with no intermediary in the chain. Delta topology. No shared neutral. No phantom delivery risk. The topology is the security model.
+
+When every node in a Delta mesh holds its assets in Book form, no assets exist in the intermediary pool. The reservoir from which lending, re-hypothecation, and dark-pool routing all draw approaches zero — not through regulation, not through enforcement, but through geometry. You cannot borrow from a pool that doesn't exist.
 
 Maxwell's condition tells you the minimum mesh size: 4 nodes, 6 edges. Anything less and the structure is floppy. Anything more and you've got redundancy (which is fine, but not required). The tetrahedron is the **minimum viable trust unit**.
 
@@ -146,12 +156,15 @@ The only defense is a topology that doesn't depend on a center. A mesh where eve
 Everything above is documented, peer-reviewed where applicable, and published:
 
 - **Tetrahedron Protocol GUT** — Zenodo DOI: [10.5281/zenodo.18627420](https://doi.org/10.5281/zenodo.18627420)
-- **Companion Monograph** — "The Minimum Enclosing Structure: Tetrahedral Geometry as Universal Architecture from Quantum Coherence to Social Resilience" (verified against 100+ independent sources, Zenodo upload in progress)
-- **P31 Labs** — [github.com/p31labs](https://github.com/p31labs) | Georgia 501(c)(3) nonprofit building open-source assistive technology
-- **BONDING** — [bonding.p31ca.org](https://bonding.p31ca.org) — shipped PWA, 511 tests green, live since March 10, 2026
+- **Companion Monograph** — "The Minimum Enclosing Structure: Tetrahedral Geometry as Universal Architecture from Quantum Coherence to Social Resilience" (verified against 100+ independent sources; Zenodo DOI pending — available upon request)
+- **P31 Labs** — [github.com/p31labs](https://github.com/p31labs) | Georgia 501(c)(3) nonprofit building open-source assistive technology for neurodivergent individuals and families
+- **BONDING** — [bonding.p31ca.org](https://bonding.p31ca.org) — shipped PWA, 488 tests green, live since March 10, 2026. Every atom placed = timestamped parental engagement log. Objective evidence: 488 passing tests, telemetry shows 1,200+ sessions, zero crashes in production.
+- **Discord Community** — discord.gg/uYW5rTCuZ — Open-source tools, community building, neurodivergent support. Join the mesh.
 - **ORCID**: 0009-0002-2492-9079
 
 Check my math. That's literally the point. Geometric security means the proof is in the shape, not in my authority. If the tetrahedron holds under your scrutiny, it holds everywhere.
+
+We're growing the node count to 39 (Posner number) — the minimum for quantum coherence protection. Target: 1,000+ views, community building through open-source assistive tech. Skeptics: the tools ship. BONDING is live. The math is published. The code is open.
 
 ---
 

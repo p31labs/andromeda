@@ -7,8 +7,9 @@
  * Accessibility: WCAG AA compliant, grandparent-friendly (ages 6-80)
  */
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import useParentControls from '../hooks/useParentControls';
+import { ProgressiveDisclosure } from './ProgressiveDisclosure';
 import type { 
   BONDINGActivity, 
   WebhookEvent, 
@@ -119,13 +120,15 @@ function ActivityItem({ activity, childName }: ActivityItemProps) {
           {activity.actionType === 'achievement_unlock' && `unlocked: ${activity.achievementId}`}
           {activity.actionType === 'element_unlock' && `unlocked new element`}
         </div>
-        <div style={{
-          color: COLORS.textDim,
-          fontSize: '13px',
-          marginTop: '2px',
-        }}>
-          {childName} • {formatTimeAgo(activity.timestamp)}
-        </div>
+        <ProgressiveDisclosure priority={2}>
+          <div style={{
+            color: COLORS.textDim,
+            fontSize: '13px',
+            marginTop: '2px',
+          }}>
+            {childName} • {formatTimeAgo(activity.timestamp)}
+          </div>
+        </ProgressiveDisclosure>
       </div>
     </div>
   );
@@ -148,7 +151,7 @@ function TimeControlCard({
   onResume,
   onSetSchedule,
 }: TimeControlCardProps) {
-  const [showSchedule, setShowSchedule] = useState(false);
+  const [_showSchedule, setShowSchedule] = useState(false);
   const [scheduleStart, setScheduleStart] = useState(settings.schedule.allowedStart);
   const [scheduleEnd, setScheduleEnd] = useState(settings.schedule.allowedEnd);
   
@@ -420,16 +423,18 @@ function WebhookEventItem({ event, onMarkRead }: WebhookEventItemProps) {
           {event.type.replace(/-/g, ' ')}
         </div>
         {event.data.message && (
-          <div style={{
-            color: COLORS.textDim,
-            fontSize: '13px',
-            marginTop: '2px',
-            whiteSpace: 'nowrap',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-          }}>
-            {event.data.message}
-          </div>
+          <ProgressiveDisclosure priority={2}>
+            <div style={{
+              color: COLORS.textDim,
+              fontSize: '13px',
+              marginTop: '2px',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+            }}>
+              {event.data.message}
+            </div>
+          </ProgressiveDisclosure>
         )}
         <div style={{
           color: COLORS.textDim,
@@ -470,7 +475,7 @@ export default function ParentDashboard({ onClose }: ParentDashboardProps) {
     pauseAccess,
     resumeAccess,
     setSchedule,
-    activities,
+    activities: _activities,
     filteredActivities,
     webhookEvents,
     markEventRead,
@@ -743,7 +748,7 @@ export default function ParentDashboard({ onClose }: ParentDashboardProps) {
                   settings={childSettings[child.id] || {
                     dailyLimit: 30,
                     usedToday: 0,
-                    lastResetDate: new Date().toISOString().split('T')[0],
+                    lastResetDate: new Date().toISOString().split('T')[0] ?? '',
                     isPaused: false,
                     schedule: { enabled: false, allowedStart: '15:00', allowedEnd: '20:00' },
                   }}
@@ -882,13 +887,15 @@ export default function ParentDashboard({ onClose }: ParentDashboardProps) {
                   🔄 Regenerate
                 </button>
               </div>
-              <p style={{
-                color: COLORS.textDim,
-                fontSize: '13px',
-                marginTop: '12px',
-              }}>
-                Share this code with children's devices to pair
-              </p>
+              <ProgressiveDisclosure priority={2}>
+                <p style={{
+                  color: COLORS.textDim,
+                  fontSize: '13px',
+                  marginTop: '12px',
+                }}>
+                  Share this code with children's devices to pair
+                </p>
+              </ProgressiveDisclosure>
             </div>
 
             {/* Children List */}
@@ -1017,21 +1024,23 @@ export default function ParentDashboard({ onClose }: ParentDashboardProps) {
                     }}>
                       {child.name}
                     </div>
-                    <div style={{
-                      color: COLORS.textDim,
-                      fontSize: '13px',
-                      marginTop: '4px',
-                    }}>
-                      Added {new Date(child.createdAt).toLocaleDateString()}
-                    </div>
-                    <div style={{
-                      color: COLORS.phosphorusDim,
-                      fontSize: '12px',
-                      marginTop: '4px',
-                      textTransform: 'capitalize',
-                    }}>
-                      Mode: {child.difficultyMode}
-                    </div>
+                    <ProgressiveDisclosure priority={2}>
+                      <div style={{
+                        color: COLORS.textDim,
+                        fontSize: '13px',
+                        marginTop: '4px',
+                      }}>
+                        Added {new Date(child.createdAt).toLocaleDateString()}
+                      </div>
+                      <div style={{
+                        color: COLORS.phosphorusDim,
+                        fontSize: '12px',
+                        marginTop: '4px',
+                        textTransform: 'capitalize',
+                      }}>
+                        Mode: {child.difficultyMode}
+                      </div>
+                    </ProgressiveDisclosure>
                   </div>
                   <button
                     onClick={() => removeChild(child.id)}
@@ -1058,20 +1067,22 @@ export default function ParentDashboard({ onClose }: ParentDashboardProps) {
       </main>
 
       {/* Footer */}
-      <footer style={{
-        padding: '16px 24px',
-        borderTop: `1px solid ${COLORS.panelBorder}`,
-        background: COLORS.void,
-        textAlign: 'center',
-      }}>
-        <p style={{
-          color: COLORS.textDim,
-          fontSize: '13px',
-          margin: 0,
+      <ProgressiveDisclosure priority={3}>
+        <footer style={{
+          padding: '16px 24px',
+          borderTop: `1px solid ${COLORS.panelBorder}`,
+          background: COLORS.void,
+          textAlign: 'center',
         }}>
-          P31 Parent Dashboard • ages 6-80 accessible • Phosphor Green #00FF88
-        </p>
-      </footer>
+          <p style={{
+            color: COLORS.textDim,
+            fontSize: '13px',
+            margin: 0,
+          }}>
+            P31 Parent Dashboard • ages 6-80 accessible • Phosphor Green #00FF88
+          </p>
+        </footer>
+      </ProgressiveDisclosure>
     </div>
   );
 }

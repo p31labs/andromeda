@@ -124,4 +124,5 @@ export interface CompletedMolecule {
   completedAt: string;
   sessionElapsedMs: number;
   coherencePhase: number;
+  elements: string[];
 }

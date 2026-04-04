@@ -50,12 +50,11 @@ export default function SecureInput({
   const [detectionConfidence, setDetectionConfidence] = useState(0);
 
   // Zustand store for Fawn Guard state
-  const fawnGuard = useCockpitStore((state) => state.fawnGuard);
   const activateFawnGuard = useCockpitStore((state) => state.activateFawnGuard);
   const deactivateFawnGuard = useCockpitStore((state) => state.deactivateFawnGuard);
 
   // Use the Fawn Guard detection hook
-  const { analyzeText, checkText } = useFawnGuard();
+  const { analyzeText, checkText: _checkText } = useFawnGuard();
   const { checkText: checkAlignment } = useAlignmentGuard();
 
   // Auto-analyze on text change

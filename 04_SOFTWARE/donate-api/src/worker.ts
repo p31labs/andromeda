@@ -79,7 +79,10 @@ export default {
 
         params.append('success_url', body.successUrl || 'https://phosphorus31.org/donate?success=1');
         params.append('cancel_url', body.cancelUrl || 'https://phosphorus31.org/donate');
-        params.append('submit_type', 'donate');
+        // submit_type only valid for mode=payment (not subscription)
+        if (body.mode !== 'monthly') {
+          params.append('submit_type', 'donate');
+        }
 
         const stripeRes = await fetch('https://api.stripe.com/v1/checkout/sessions', {
           method: 'POST',
@@ -107,6 +110,16 @@ export default {
 
     if (url.pathname === '/stripe-webhook' && request.method === 'POST') {
       return handleStripeWebhook(request, env);
+    }
+
+    // Health check endpoint
+    if (url.pathname === '/health' && request.method === 'GET') {
+      return Response.json({
+        status: 'ok',
+        worker: 'donate-api',
+        version: '1.0.0',
+        timestamp: new Date().toISOString()
+      }, { headers });
     }
 
     return Response.json({ error: 'Not found' }, { status: 404, headers });

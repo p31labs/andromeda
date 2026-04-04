@@ -1,7 +1,7 @@
 import fetch from 'node-fetch';
 
 export interface TelemetryEvent {
-  type: 'command_used' | 'webhook_received' | 'error' | 'fawn_detected';
+  type: 'command_used' | 'webhook_received' | 'error' | 'fawn_detected' | 'egg_discovery';
   service: string;
   data: Record<string, unknown>;
   timestamp: string;
@@ -100,6 +100,18 @@ class TelemetryService {
         userId: this.hashUserId(userId),
         confidence,
         patterns
+      },
+      timestamp: new Date().toISOString()
+    });
+  }
+
+  public async trackEggDiscovery(userId: string, eggId: string): Promise<boolean> {
+    return this.track({
+      type: 'egg_discovery',
+      service: 'quantum-egg-hunt',
+      data: {
+        userId: this.hashUserId(userId),
+        eggId
       },
       timestamp: new Date().toISOString()
     });

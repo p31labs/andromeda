@@ -211,7 +211,8 @@ export class AgentEngine {
    * Update personality based on feedback
    */
   updatePersonality(feedback: PersonalityFeedback): void {
-    this.personalityEngine.updatePersonality(feedback);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    this.personalityEngine.updatePersonality(feedback as any);
   }
 
   /**
@@ -269,7 +270,7 @@ export class AgentEngine {
    * Get agent health status
    */
   getHealthStatus(): AgentHealth {
-    const uptime = Date.now() - this.runtime.lastError?.timestamp.getTime() || 0;
+    const uptime = Date.now() - (this.runtime.lastError?.timestamp.getTime() ?? 0);
     
     return {
       status: this.state.isActive ? 'healthy' : 'inactive',
@@ -372,24 +373,26 @@ interface AgentResponse {
 
 interface SkillTrainingResult {
   success: boolean;
-  skillId: string;
-  currentProgress: number;
-  levelUp: boolean;
-  trainingTime: number;
+  skillId?: string;
+  currentProgress?: number;
+  levelUp?: boolean;
+  trainingTime?: number;
   error?: string;
 }
 
 interface SkillUseResult {
   success: boolean;
-  skillId: string;
-  result: any;
-  cooldownRemaining: number;
+  skillId?: string;
+  result?: unknown;
+  cooldownRemaining?: number;
   error?: string;
 }
 
 interface DeploymentResult {
   success: boolean;
-  platforms: string[];
+  platform: string;
+  environment: string;
+  url?: string;
   errors?: string[];
 }
 

@@ -1,7 +1,7 @@
 {
-  "name": "p31-social-drop-automation",
-  "version": "1.0.0",
-  "description": "P31 Social Drop Automation — Scheduled wave reminders for social media deployment",
+  "name": "p31-social-worker",
+  "version": "2.0.0",
+  "description": "P31 Unified Social Worker — Multi-platform posting, scheduling, and Discord notifications",
   "main": "worker.js",
   "scripts": {
     "dev": "wrangler dev",
@@ -17,6 +17,10 @@
     "social-media",
     "automation",
     "p31",
+    "twitter",
+    "reddit",
+    "bluesky",
+    "mastodon",
     "cron"
   ],
   "author": "P31 Labs",

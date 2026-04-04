@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { useEffect, useRef } from 'react';
 import { CockpitState, CockpitActions, CockpitStore } from '../types/cockpit';
 import { CatchersMittSignal, MetabolicState, VoltageLogPayload } from '../types/contracts';
+import { sampleInitialCapacity, decaySpoons, getUITier, type UITier } from '../../../packages/q-distribution/index.ts';
 
 /**
  * P31 Z-Index Cockpit Store
@@ -26,10 +27,9 @@ const initialState: CockpitState = {
   // Voltage & Metabolic State
   voltageLevel: 50,
   metabolicState: {
-    spoons: 100,
-    depletionRate: 0,
-    recoveryRate: 0,
-    lastUpdate: Date.now()
+    current_spoons: Math.round(sampleInitialCapacity() * 200), // Beta(21.6165, 46.4970) × max
+    max_spoons: 200,
+    heartbeat_lockout_active: false,
   },
   voltageLogs: [],
   
@@ -102,7 +102,6 @@ export const useCockpitStore = create<CockpitStore>((set, get) => ({
   
   // Voltage Management
   updateVoltage: (level: number) => {
-    const state = get();
     const newVoltage = Math.max(0, Math.min(100, level));
     
     set(state => ({
@@ -111,11 +110,10 @@ export const useCockpitStore = create<CockpitStore>((set, get) => ({
       voltageLogs: [
         ...state.voltageLogs,
         {
-          id: `voltage-${Date.now()}`,
-          timestamp: Date.now(),
+          id: Date.now(),
+          timestamp: new Date().toISOString(),
           voltage_level: newVoltage,
           entropy_hash: `hash-${Math.random().toString(36).substr(2, 9)}`,
-          source: 'manual'
         }
       ].slice(-50) // Keep last 50 logs
     }));
@@ -146,6 +144,20 @@ export const useCockpitStore = create<CockpitStore>((set, get) => ({
     }));
   },
   
+  drainSpoons: (taskCost: number, lambda = 0.1) => {
+    set(state => {
+      const currentNormalized = state.metabolicState.current_spoons / state.metabolicState.max_spoons;
+      const decayed = decaySpoons(currentNormalized, taskCost, lambda);
+      return {
+        ...state,
+        metabolicState: {
+          ...state.metabolicState,
+          current_spoons: Math.round(decayed * state.metabolicState.max_spoons)
+        }
+      };
+    });
+  },
+
   // Fawn Guard Actions
   activateFawnGuard: (signal: CatchersMittSignal) => {
     set(state => ({
@@ -352,6 +364,10 @@ export const useCockpitStore = create<CockpitStore>((set, get) => ({
   }
 }));
 
+// Derived selectors
+export const selectUITier = (state: CockpitStore): UITier =>
+  getUITier(state.metabolicState.current_spoons / state.metabolicState.max_spoons);
+
 // WebSocket Integration Hook - Vertex 3 Patch
 // Connects to Redis-to-WebSocket bridge at ws://localhost:8031/ws
 // Forwards incoming voltage signals to Zustand store's processVoltageSignal()
@@ -365,9 +381,11 @@ export function useVoltageSignalProcessor(): typeof useCockpitStore {
   useEffect(() => {
     // Connect to WebSocket bridge on mount
     const connectWebSocket = () => {
-      console.log('🔌 Connecting to P31 WebSocket Bridge at ws://localhost:8031/ws');
-      
-      const ws = new WebSocket('ws://localhost:8031/ws');
+      const wsToken = import.meta.env.VITE_WS_AUTH_TOKEN ?? '';
+      const wsUrl = `ws://localhost:8031/ws${wsToken ? `?token=${wsToken}` : ''}`;
+      console.log('🔌 Connecting to P31 WebSocket Bridge at', wsUrl);
+
+      const ws = new WebSocket(wsUrl);
       wsRef.current = ws;
 
       ws.onopen = () => {
@@ -383,9 +401,9 @@ export function useVoltageSignalProcessor(): typeof useCockpitStore {
       ws.onmessage = (event) => {
         try {
           const payload = JSON.parse(event.data);
-          // Parse incoming JSON payloads from Redis stream bridge
-          // Payload should match CatchersMittSignal interface
-          processVoltageSignal(payload as CatchersMittSignal);
+          // Unwrap bridge envelope: { type, data, timestamp, message_id }
+          const signal = payload.data ?? payload;
+          processVoltageSignal(signal as CatchersMittSignal);
         } catch (e) {
           console.error('❌ Failed to parse Cockpit signal:', e);
           incrementErrorCount();

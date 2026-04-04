@@ -6,6 +6,7 @@ export default {
       colors: {
         void: '#050505',
         phosphor: '#00FF88',
+        coral: '#cc6247',
         amber: '#FFD700',
         glass: {
           border: 'rgba(255, 255, 255, 0.08)',

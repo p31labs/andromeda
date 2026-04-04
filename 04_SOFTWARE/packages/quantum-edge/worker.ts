@@ -105,7 +105,7 @@ class EdgeSovereignIdentity {
     private async hashString(input: string): Promise<string> {
         const encoder = new TextEncoder();
         const data = encoder.encode(input);
-        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+        const hashBuffer = await crypto.subtle.digest('SHA-512', data);
         const hashArray = Array.from(new Uint8Array(hashBuffer));
         return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
     }
@@ -265,7 +265,9 @@ export default {
         const corsHeaders = {
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Methods': 'POST, OPTIONS',
-            'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Device-ID'
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Device-ID',
+            'X-PQC-Algorithm': 'ML-KEM-768',
+            'X-PQC-Secured': 'true'
         };
 
         // Handle CORS preflight
@@ -447,4 +449,48 @@ function handleHealthCheck(corsHeaders: Record<string, string>): Response {
         status: 200,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     });
+}
+
+// ═══════════════════════════════════════════════════════════════
+// DURABLE OBJECTS
+// ═══════════════════════════════════════════════════════════════
+
+export class NodeOneCoordinator implements DurableObject {
+    private state: DurableObjectState;
+    private deviceSessions: Map<string, { lastSeen: number; deviceId: string }> = new Map();
+
+    constructor(state: DurableObjectState, env: Env) {
+        this.state = state;
+    }
+
+    async fetch(request: Request): Promise<Response> {
+        const url = new URL(request.url);
+        const path = url.pathname;
+
+        if (path === '/register' && request.method === 'POST') {
+            const { deviceId } = await request.json();
+            this.deviceSessions.set(deviceId, { lastSeen: Date.now(), deviceId });
+            return new Response(JSON.stringify({ registered: deviceId, count: this.deviceSessions.size }), {
+                headers: { 'Content-Type': 'application/json' }
+            });
+        }
+
+        if (path === '/status') {
+            return new Response(JSON.stringify({
+                activeDevices: this.deviceSessions.size,
+                devices: Array.from(this.deviceSessions.keys())
+            }), { headers: { 'Content-Type': 'application/json' } });
+        }
+
+        return new Response('Not found', { status: 404 });
+    }
+
+    async alarm(): Promise<void> {
+        const stale = Date.now() - 5 * 60 * 1000;
+        for (const [deviceId, session] of this.deviceSessions) {
+            if (session.lastSeen < stale) {
+                this.deviceSessions.delete(deviceId);
+            }
+        }
+    }
 }

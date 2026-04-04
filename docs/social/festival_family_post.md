@@ -34,7 +34,12 @@ The tetrahedron needs four nodes to achieve structural rigidity. That's not a me
 
 I need four.
 
-If any of this resonates — if you remember those 4am conversations — I'm at ko-fi.com/trimtab69420. Every supporter is a node in the mesh. The milestones are physics: 4 nodes = first tetrahedron. 39 = the Posner number. 863 = Larmor frequency.
+If any of this resonates — if you remember those 4am conversations — come find me:
+
+Discord: https://discord.gg/uYW5rTCuZ
+Ko-fi: ko-fi.com/trimtab69420
+
+Every supporter is a node in the mesh. The milestones are physics: 4 nodes = first tetrahedron. 39 = the Posner number. 863 = Larmor frequency.
 
 Everything I build is free and open source. You're not buying a product. You're joining a geometry.
 
@@ -62,7 +67,7 @@ I built a nonprofit called P31 Labs. Open-source assistive tech for neurodiverge
 
 As above, so below. Except now there's a DOI on it.
 
-I'm broke and I need my people. ko-fi.com/trimtab69420
+I'm broke and I need my people. Discord: https://discord.gg/uYW5rTCuZ | Ko-fi: ko-fi.com/trimtab69420
 
 💜🔺💜
 
