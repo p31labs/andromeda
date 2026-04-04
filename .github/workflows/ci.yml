@@ -52,7 +52,7 @@ jobs:
     needs: code-quality
     strategy:
       matrix:
-        node-version: [20]
+        node-version: [18, 20]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -78,8 +78,10 @@ jobs:
         run: cd 04_SOFTWARE && pnpm turbo run typecheck --filter=@p31/shared --filter=@p31/bonding --filter=@p31/spaceship-earth --filter=@p31/node-zero
 
       - name: Build packages
-        # spaceship-earth excluded: vite-plugin-pwa@0.19.8 incompatible with Vite 8/Rolldown (bundle assignment).
+        # Node 18: Vite 8 requires Node 20+ (CustomEvent, Rolldown). Skip Vite build on Node 18.
+        # spaceship-earth excluded on all nodes: vite-plugin-pwa@0.19.8 assigns to bundle (Rolldown error).
         # SE deploys via Cloudflare Pages. Typecheck above still covers SE TypeScript.
+        if: matrix.node-version != 18
         run: cd 04_SOFTWARE && pnpm turbo run build --filter=@p31/shared --filter=@p31/bonding --filter=@p31/node-zero
 
       - name: Run tests
