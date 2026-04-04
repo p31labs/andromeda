@@ -75,6 +75,7 @@
 **Discord:** discord.gg/uYW5rTCuZ
 **Zenodo DOI #1:** 10.5281/zenodo.18627420 (Tetrahedron Protocol — 280+ views, 240+ downloads)
 **Zenodo DOI #2:** 10.5281/zenodo.19411363 (Genesis Whitepaper v1.1)
+**Zenodo DOI #3:** 10.5281/zenodo.19416491 (Consciousness, Memory, and the Architecture of Self-Preservation)
 **Fiscal sponsor:** Mission.Earth — DEAD (closed to new projects April 2026). HCB application 4XDUXX (Feb 18) — no response, follow-up pending. Going direct where possible.
 
 ### Board of Directors (current)

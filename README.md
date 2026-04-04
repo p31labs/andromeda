@@ -2,11 +2,12 @@
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18627420.svg)](https://doi.org/10.5281/zenodo.18627420)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19411363.svg)](https://doi.org/10.5281/zenodo.19411363)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19416491.svg)](https://doi.org/10.5281/zenodo.19416491)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 Open-source assistive technology for neurodivergent individuals and families. Georgia nonprofit corporation — incorporated April 3, 2026. 501(c)(3) pending.
 
-**670+ automated tests. 22 Cloudflare Workers. 12 deployed products. 2 Zenodo DOIs. One operator.**
+**670+ automated tests. 22 Cloudflare Workers. 12 deployed products. 3 Zenodo DOIs. One operator.**
 
 | Product | URL | Status |
 |---------|-----|--------|

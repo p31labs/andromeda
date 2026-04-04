@@ -84,6 +84,7 @@ Last Updated: 2026-04-05 | CWP-2026-011 G05 — Consolidation Pass
 
 - Zenodo DOI #1: 10.5281/zenodo.18627420 — Tetrahedron Protocol (CC BY 4.0)
 - Zenodo DOI #2: 10.5281/zenodo.19411363 — Genesis Whitepaper v1.1
+- Zenodo DOI #3: 10.5281/zenodo.19416491 — Consciousness, Memory, and the Architecture of Self-Preservation (CC BY 4.0)
 - Combined views: 280+ | Downloads: 240+
 - White papers: 5 finalized (March 17, 2026)
 - Defensive publication: Internet Archive (February 25, 2026)

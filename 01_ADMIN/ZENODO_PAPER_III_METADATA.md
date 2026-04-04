@@ -133,4 +133,4 @@ After the DOI is minted:
 |---|-------|-----|-------|
 | I | Tetrahedron Protocol | 10.5281/zenodo.18627420 | Mathematical optimality (geometry, graph theory, QM) |
 | II | Genesis Whitepaper | 10.5281/zenodo.19411363 | Applied implementation (6 deployed systems) |
-| III | Consciousness & Memory | **PENDING** | Neuroscientific foundation (why this architecture is correct) |
+| III | Consciousness & Memory | **10.5281/zenodo.19416491** | Neuroscientific foundation (why this architecture is correct) |
