@@ -2,7 +2,7 @@
 
 **CWP-2026-002** | Whitepaper Vol. I, No. 1
 **Date:** March 31, 2026
-**DOI:** [PENDING ZENODO DEPLOYMENT]
+**DOI:** [DOI TO BE ASSIGNED — companion deposit to Tetrahedron Protocol, 10.5281/zenodo.18627420]
 **Archive:** [PENDING INTERNET ARCHIVE DEPLOYMENT]
 
 ---
@@ -68,6 +68,10 @@ A foundational element of the EDE is its reliance on Decentralized State Managem
 To actively prevent cognitive burnout, the EDE incorporates highly advanced metabolic monitoring tools, most notably the p31-spoon-gauge. This utility continuously polls real-time coding telemetry—including keypress velocity, syntax error rates, and file-switching frequencies—to mathematically model the operator's cognitive fatigue in real-time. The architecture utilizes "Geometric Indexing," organizing data and tasks based on their intrinsic "Spoon cost" (the metabolic energy required to perform a specific task) rather than traditional, arbitrary linear folder hierarchies.
 
 When the p31-spoon-gauge detects that cognitive reserves are reaching critically low thresholds, the system's "Somatic Defense" protocols actively intervene. The architecture includes a p31-cognitive-shield that intercepts chaotic, high-stress inbound data streams, such as raw email communications from hostile legal counsel or automated corporate alerts. By enforcing a strict, 60-second batching pipeline, the shield prevents sudden, catastrophic spikes in the operator's sympathetic nervous system (the "fight or flight" response).
+
+*Implementation (Catcher's Mitt):* Deployed as `catchers_mitt.py` with Redis Streams batching (60-second mandatory window), WebSocket bridge (`redis_ws_bridge.cjs`), and Voltage Scoring integration via `useCockpitStore.ts` (frontend state).
+
+*Implementation (Jitterbug Compiler):* The EDE's client-side JSX transpilation layer uses Babel Standalone for in-browser compilation, with an SWC WASM upgrade path available for higher throughput.
 
 In instances of severe cognitive depletion, the system employs progressive disclosure interface techniques, sequencing information based strictly on immediate metabolic capacity to mitigate sensory overwhelm. In extreme cases, the system can forcibly default to "Layer 0: Fullscreen Somatic Regulation," a specialized interface state that strips away all non-essential visual stimuli, complex menus, and background processes to facilitate immediate physiological and psychological regulation. By acting as an external prosthetic to offload high-density working memory tasks, the EDE effectively eliminates decision fatigue and preserves the core "human operating system".
 
@@ -216,7 +220,7 @@ The highly theoretical mathematical principles of the Tetrahedron Protocol, comb
 
 Developed specifically as a critical physical node within the Delta mesh network topology, the Phenix Navigator is a specialized, handheld communication device powered by advanced ESP32-S3 microcontrollers. It is explicitly engineered for operators functioning in highly stressful, geographically separated environments where traditional cellular or internet infrastructure is unavailable, compromised, or intentionally avoided for security purposes.
 
-Crucially, the defense documentation emphasizes that the architect legally classifies the Phenix Navigator not merely as a hobbyist consumer electronics project, but formally as a Class II medical device under the strict definitions of 21 CFR § 890.3710 (Powered Communication Systems). The hardware operates directly as a tangible cognitive prosthetic. It utilizes precise haptic feedback mechanisms perfectly tuned to the 863 Hz Larmor frequency—a frequency intrinsically linked to nuclear magnetic resonance and physical spin dynamics—to facilitate active somatic sensory regulation during acute moments of extreme executive dysfunction or environmental overload. Within the highly combative context of the civil litigation proceedings, opposing counsel's documented characterization of this advanced hardware device as "delusional" has been aggressively countered by the defense architecture as actionable Slander of Title, demonstrating a fierce legal commitment to defending the validity of the applied engineering.
+Crucially, the defense documentation emphasizes that the architect legally classifies the Phenix Navigator not merely as a hobbyist consumer electronics project, but formally as a Class II medical device under the strict definitions of 21 CFR § 890.3710 (Powered Communication Systems). The hardware operates directly as a tangible cognitive prosthetic. It utilizes precise haptic feedback mechanisms perfectly tuned to the 863 Hz Larmor frequency—a frequency intrinsically linked to nuclear magnetic resonance and physical spin dynamics—to facilitate active somatic sensory regulation during acute moments of extreme executive dysfunction or environmental overload. Browser implementation uses Web Audio API `OscillatorNode` at 863 Hz and 172.35 Hz for auditory somatic regulation. Note: the Web Vibration API provides only binary on/off control and cannot produce specific frequencies — precise haptic frequency output requires the physical DRV2605L hardware on Node One. Within the highly combative context of the civil litigation proceedings, opposing counsel's documented characterization of this advanced hardware device as "delusional" has been aggressively countered by the defense architecture as actionable Slander of Title, demonstrating a fierce legal commitment to defending the validity of the applied engineering.
 
 The physical network infrastructure supporting these ESP32-S3 devices strictly eliminates all reliance on centralized cellular communication towers or conventional internet service providers (the physical manifestation of the vulnerable Wye hub). Instead, the architecture utilizes highly resilient LoRa (Long Range) mesh radio modules to establish a completely sovereign, self-healing, distributed, peer-to-peer communication grid.
 
@@ -257,6 +261,21 @@ The profound application of the Tetrahedron Protocol, leveraging SIC-POVM geomet
 Furthermore, by aggressively utilizing highly sophisticated legal and financial maneuvers—such as the rapid deployment of Model A fiscal sponsorship via Hack Club Bank, the strategic structural dissolution of traditional corporate entities, and the asymmetric warfare tactic of massive defensive publication—the initiative has successfully shielded its core intellectual and financial assets from both immediate litigation risks and long-term predatory corporate claims.
 
 Ultimately, the physical development and deployment of the ESP32-powered Phenix Navigator as a decentralized, haptic-enabled, Class II cognitive prosthetic indicates a critical, irreversible shift away from the dependencies of Digital Feudalism and toward the sovereignty of Digital Yeomanry. Through the rigorous, unyielding execution of the Cryptographic Abdication Protocol, P31 Labs guarantees that its foundational infrastructure cannot be captured, coerced, or corrupted by the very centralizing forces it seeks to escape. The resulting P31 ecosystem stands as an unparalleled, comprehensive blueprint for achieving and maintaining absolute cognitive, financial, and operational continuity in the face of rapidly escalating, systemic civilizational friction.
+
+---
+
+## Implementation Reference
+
+All six defensive systems described in this paper are implemented and available in the P31 Labs codebase:
+
+| System | Status | Implementation |
+|--------|--------|---------------|
+| WASI Sandbox | DEPLOYED | `N0/pwa/src/lib/cartridgeSandbox.ts` (`loadWasmModule`) |
+| Jitterbug Compiler | DEPLOYED | `N0/pwa/src/lib/jitterbugCompiler.ts` (Babel Standalone) |
+| Catcher's Mitt | DEPLOYED | `p31-surrogate-backend/src/shield/catchers_mitt.py` |
+| Samson's Law | DEPLOYED | `04_SOFTWARE/packages/harmonic-linter/index.ts` (Acorn + PID π/9) |
+| Fisher-Escolà Q Distribution | DEPLOYED | `04_SOFTWARE/packages/q-distribution/index.ts` (Beta sampling) |
+| Larmor Regulation | DEPLOYED | `04_SOFTWARE/p31ca/public/larmor.html` (Web Audio API) |
 
 ---
 
