@@ -132,4 +132,11 @@ REVIEW_SHIFT_REPORT.md
 esp_idf_project_configuration.json
 install_tools.bat
 nodevars.bat
-".env.production" 
+".env.production"
+
+# Sensitive credentials — NEVER COMMIT
+stripe_backup_code.txt
+*.backup_code.txt
+
+# Wrangler local state
+.wrangler/
