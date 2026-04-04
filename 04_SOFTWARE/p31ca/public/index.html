@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0f1115">
+    <title>P31 Labs | Autonomous Cognitive Infrastructure</title>
+    <meta name="description" content="P31 Labs — building autonomous cognitive infrastructure for neurodivergent sovereignty. 39 vectors, 10 live deployments.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Atkinson Hyperlegible"', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'monospace'],
+                    },
+                    colors: {
+                        void: '#0f1115', surface: '#161920', coral: '#cc6247',
+                        teal: '#25897d', cyan: '#4db8a8', cloud: '#d8d6d0',
+                        butter: '#cda852', lavender: '#8b7cc9', phosphorus: '#3ba372',
+                        paper: '#f4f4f5', ink: '#1e293b'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root { color-scheme: dark; }
+        body {
+            background-color: #0f1115;
+            color: #d8d6d0;
+        }
+        body.dark {
+            background-color: #0f1115;
+            color: #d8d6d0;
+        }
+        body.light {
+            background-color: #f4f4f5;
+            color: #1e293b;
+        }
+        .ambient-grid-dark {
+            background-image: linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+        .ambient-grid-light {
+            background-image: linear-gradient(rgba(0,0,0,0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,0,0,0.04) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+        .matte-panel-dark { background-color: #161920; border: 1px solid rgba(255,255,255,0.04); }
+        .matte-panel-light { background-color: #ffffff; border: 1px solid rgba(0,0,0,0.08); box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+        .logo-text { fill: #d8d6d0; }
+        .light .logo-text { fill: #1e293b; }
+        .card-hover { transition: transform 0.15s ease, border-color 0.15s ease; }
+        .card-hover:hover { transform: translateY(-2px); }
+        .status-badge { font-size: 0.7rem; padding: 2px 8px; border-radius: 9999px; font-family: 'JetBrains Mono', monospace; }
+    </style>
+</head>
+<body class="dark min-h-screen flex flex-col ambient-grid-dark" id="body">
+
+<!-- Nav -->
+<nav id="navbar" class="sticky top-0 z-50 border-b border-white/5 backdrop-blur-sm" style="background:rgba(15,17,21,0.92)">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+        <a href="/" class="flex items-center gap-3">
+            <svg width="28" height="28" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+                <rect width="512" height="512" rx="112" fill="#25897d"/>
+                <circle cx="390" cy="120" r="48" fill="#cc6247"/>
+                <text x="256" y="340" font-family="system-ui" font-weight="900" font-size="220" class="logo-text" text-anchor="middle">P31</text>
+                <rect x="156" y="380" width="200" height="16" rx="8" fill="#cda852"/>
+            </svg>
+            <span class="font-mono font-bold text-sm tracking-widest uppercase opacity-80">P31 Labs</span>
+        </a>
+        <div class="flex items-center gap-6">
+            <a href="lattice.html" class="font-mono text-xs opacity-60 hover:opacity-100 transition-opacity">Lattice View ⬡</a>
+            <a href="https://github.com/p31labs/andromeda" target="_blank" class="font-mono text-xs opacity-60 hover:opacity-100 transition-opacity">GitHub</a>
+            <a href="https://phosphorus31.org/donate" target="_blank" class="font-mono text-xs bg-teal/20 text-teal px-3 py-1.5 rounded hover:bg-teal/30 transition-colors">Support</a>
+            <button id="themeToggle" onclick="toggleTheme()" class="font-mono text-xs opacity-60 hover:opacity-100 transition-opacity px-2 py-1 border border-current/20 rounded" title="Toggle theme">
+                <span id="themeIcon">☀</span>
+            </button>
+        </div>
+    </div>
+</nav>
+
+<!-- Hero -->
+<section class="max-w-7xl mx-auto px-6 pt-24 pb-16">
+    <div class="max-w-3xl">
+        <div class="font-mono text-xs tracking-widest uppercase mb-4 opacity-40">P31 Labs / EIN 81-2908499</div>
+        <h1 class="text-5xl md:text-6xl font-bold leading-tight mb-6">
+            <span id="heroSpan" class="text-teal">Autonomous Cognitive</span><br>Infrastructure.
+        </h1>
+        <p class="text-lg opacity-70 leading-relaxed max-w-2xl mb-8">
+            Building sovereign tools for neurodivergent survival. Every system is edge-deployed, offline-capable, and legally armored. No cloud dependency. No floating neutral.
+        </p>
+        <div class="flex items-center gap-6">
+            <div class="font-mono text-sm">
+                <span id="vectorCount" class="text-teal font-bold">39 vectors</span>
+                <span class="opacity-40 mx-2">/</span>
+                <span id="liveCount" class="text-phosphorus font-bold">12 live deployments</span>
+            </div>
+            <a href="lattice.html" class="font-mono text-xs opacity-50 hover:opacity-80 transition-opacity">View lattice →</a>
+        </div>
+    </div>
+</section>
+
+<!-- Filter Bar -->
+<section class="max-w-7xl mx-auto px-6 pb-8">
+    <div class="flex items-center gap-3 flex-wrap">
+        <span class="font-mono text-xs opacity-40 mr-2">FILTER:</span>
+        <button onclick="filterCards('all')" id="filter-all" class="filter-btn active font-mono text-xs px-3 py-1.5 rounded border border-teal/40 text-teal bg-teal/10 transition-all">All (39)</button>
+        <button onclick="filterCards('live')" id="filter-live" class="filter-btn font-mono text-xs px-3 py-1.5 rounded border border-white/10 opacity-60 hover:opacity-100 transition-all">Live (12)</button>
+        <button onclick="filterCards('prototype')" id="filter-prototype" class="filter-btn font-mono text-xs px-3 py-1.5 rounded border border-white/10 opacity-60 hover:opacity-100 transition-all">In Dev (25)</button>
+        <button onclick="filterCards('research')" id="filter-research" class="filter-btn font-mono text-xs px-3 py-1.5 rounded border border-white/10 opacity-60 hover:opacity-100 transition-all">Research (2)</button>
+    </div>
+</section>
+
+<!-- App Grid -->
+<main class="max-w-7xl mx-auto px-6 pb-24">
+    <div id="cardGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+    </div>
+</main>
+
+<!-- Footer -->
+<footer id="footer" class="border-t border-white/5 mt-auto">
+    <div class="max-w-7xl mx-auto px-6 py-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        <div class="flex items-center gap-3">
+            <svg width="20" height="20" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+                <rect width="512" height="512" rx="112" fill="#25897d"/>
+                <circle cx="390" cy="120" r="48" fill="#cc6247"/>
+                <text x="256" y="340" font-family="system-ui" font-weight="900" font-size="220" class="logo-text" text-anchor="middle">P31</text>
+                <rect x="156" y="380" width="200" height="16" rx="8" fill="#cda852"/>
+            </svg>
+            <div>
+                <div class="font-mono text-xs font-bold">P31 Labs</div>
+                <div class="font-mono text-xs opacity-40">EIN 81-2908499 &mdash; SE Georgia</div>
+            </div>
+        </div>
+        <div class="flex gap-8 font-mono text-xs opacity-50">
+            <a href="https://phosphorus31.org" target="_blank" class="hover:opacity-100 transition-opacity">phosphorus31.org</a>
+            <a href="https://github.com/p31labs/andromeda" target="_blank" class="hover:opacity-100 transition-opacity">GitHub</a>
+            <a href="https://ko-fi.com/trimtab69420" target="_blank" class="hover:opacity-100 transition-opacity">Ko-fi</a>
+            <a href="lattice.html" class="hover:opacity-100 transition-opacity">Lattice</a>
+        </div>
+        <div class="font-mono text-xs opacity-30">Built on Earth. Deployed to the edge.</div>
+    </div>
+</footer>
+
+<script>
+const mvpData = [
+    // ── LIVE ─────────────────────────────────────────────────────────
+    {
+        id: 'ede', title: 'EDE', tagline: 'Everything Development Environment', status: 'live', statusLabel: '🟢 LIVE',
+        icon: '💻', tech: ['Babel', 'React', 'IndexedDB', 'WebAudio', 'JSZip'],
+        link: 'ede.html',
+        description: 'Flagship cognitive IDE. Progressive disclosure (FULL→MINIMAL), Trimtab rotary encoder, code entropy PID vs π/9 attractor, Fawn Guard protection, Layer 0 breathing mode. Spoon-aware development environment wired to shared state.',
+        accent: '#3ba372'
+    },
+    {
+        id: 'bonding', title: 'BONDING', tagline: 'Molecular Social Protocol', status: 'live', statusLabel: '🟢 LIVE',
+        icon: '⚛️', tech: ['React 19', 'Three.js r183', 'Zustand v5'],
+        link: 'bonding.html',
+        description: 'A multiplayer chemistry game applying K₄ impedance matching to human relationships. Every bond formed is timestamped engagement evidence.',
+        accent: '#3ba372'
+    },
+    {
+        id: 'buffer', title: 'The Buffer', tagline: 'Message Guardian & Fawn Guard', status: 'live', statusLabel: '🟢 LIVE',
+        icon: '🛡️', tech: ['Voltage Scoring', 'Fawn Guard', 'BLUF Extraction'],
+        link: 'guardian.html',
+        description: 'Paste any message for live voltage scoring (urgency, emotional charge, cognitive load). Fawn guard detects codependency patterns in your drafts. BLUF extraction pulls action items. 4-2-6 breathing exercise.',
+        accent: '#cda852'
+    },
+    {
+        id: 'donate', title: 'Donate Pipeline', tagline: 'Ko-fi + Stripe Infrastructure', status: 'live', statusLabel: '🟢 LIVE',
+        icon: '💚', tech: ['Stripe Checkout', 'CF Worker', 'Ko-fi Webhooks'],
+        link: 'donate.html',
+        description: 'Every contribution is classified as node-building, not donation. Stripe Checkout + Ko-fi webhook loop closes the funding circuit automatically.',
+        accent: '#3ba372'
+    },
+    {
+        id: 'genesis-gate', title: 'Genesis Gate', tagline: 'Central Telemetry Event Bus', status: 'live', statusLabel: '🟢 LIVE',
+        icon: '🔬', tech: ['CF Workers', 'KV', 'TypeScript'],
+        link: 'genesis-gate.html',
+        description: 'Canonical event bus for the P31 ecosystem. Receives structured telemetry from all apps and workers, persists to KV with 30-day TTL, fires governance hooks on error/fawn events.',
+        accent: '#3ba372'
+    },
+    {
+        id: 'cortex', title: 'p31-cortex', tagline: 'AI Agent Orchestration', status: 'live', statusLabel: '🟢 LIVE',
+        icon: '🧠', tech: ['CF Durable Objects', 'D1', 'AI Bindings'],
+        link: 'cortex.html',
+        description: 'Six autonomous agents (benefits, finance, grant, legal, content, kofi) orchestrated via Cloudflare Durable Objects with D1 persistence.',
+        accent: '#3ba372'
+    },
+    {
+        id: 'the-quantum-family', title: 'The Quantum Family', tagline: 'Dependent-Facing Tablet OS', status: 'live', statusLabel: '🟢 LIVE',
+        icon: '🔺', tech: ['Three.js', 'Web Audio', 'PWA', 'IndexedDB'],
+        link: 'quantum-family-about.html',
+        description: "Touch-native tablet OS for neurodivergent kids. Calm Engine, Grounding Games (5-4-3-2-1), Sound Garden, drawing canvas, Posner molecule visualizer, love notes jar. Distance doesn't break geometry.",
+        accent: '#8b7cc9'
+    },
+    {
+        id: 'kenosis', title: 'Project Kenosis', tagline: 'Autopoietic Edge Network', status: 'live', statusLabel: '🟢 EDGE-LIVE',
+        icon: '🕸️', tech: ['Cloudflare Workers', 'SIC-POVM', '7-node mesh'],
+        link: 'kenosis.html',
+        description: "A serverless vector equilibrium. Shifts architecture from hub-and-spoke Wye into a self-braced Delta mesh across Cloudflare's global edge.",
+        accent: '#3ba372'
+    },
+    {
+        id: 'spaceship-earth', title: 'Spaceship Earth', tagline: 'Sovereign Command Center', status: 'live', statusLabel: '🟢 LIVE',
+        icon: '🌐', tech: ['PWA', 'PGlite', 'Three.js R3F'],
+        link: 'spaceship-earth.html',
+        description: 'Offline-capable command dashboard. WebAssembly PostgreSQL persists via IndexedDB — cognitive sovereignty guaranteed even when disconnected.',
+        accent: '#3ba372'
+    },
+    {
+        id: 'discord-bot', title: 'p31-bot', tagline: 'Community Command Plane', status: 'live', statusLabel: '🟢 LIVE',
+        icon: '🤖', tech: ['Discord.js', 'TypeScript', 'Railway'],
+        link: 'discord-bot.html',
+        description: '20+ slash commands: spoon ledger, egg tracker, quantum egg hunt, founding nodes, telemetry relay, and book announcement.',
+        accent: '#3ba372'
+    },
+    {
+        id: 'book', title: 'Mother Nature & Father Time', tagline: "Children's Picture Book", status: 'live', statusLabel: '🟢 LIVE',
+        icon: '📖', tech: ['Vite 8', 'React 19', 'CF Pages'],
+        link: 'book.html',
+        description: 'A 14-page illustrated digital reader dedicated to Bash and Willow. Touch-native navigation, dark-mode native, bilingual-ready architecture.',
+        accent: '#3ba372'
+    },
+    {
+        id: 'attractor', title: 'NANO-07 Attractor', tagline: 'Kenosis Mesh Visualizer', status: 'live', statusLabel: '🟢 LIVE',
+        icon: '🌀', tech: ['Three.js', 'SIC-POVM', 'Byzantine Fault'],
+        link: 'attractor.html',
+        description: 'Live socio-thermodynamic simulation of the 7-node Kenosis mesh. 1500 human VFD agents tether to nearest online CF Worker node. Kill nodes, inject chaos, trigger Cosmic Snapshot recalibration.',
+        accent: '#00ffff'
+    },
+    // ── IN DEV ───────────────────────────────────────────────────────
+    {
+        id: 'node-one', title: 'Node One (The Totem)', tagline: 'Physical Haptic Anchor', status: 'prototype', statusLabel: '🟡 IN DEV',
+        icon: '📟', tech: ['863 Hz Larmor', 'Kailh Choc Navy', 'NXP SE050'],
+        link: 'node-one.html',
+        description: 'Legally armored FDA Class II exempt device. The Miller Shield classifies its entire value as non-transferable Personal Goodwill.',
+        accent: '#cda852'
+    },
+    {
+        id: 'axiom', title: 'AXIOM', tagline: 'Physics & Chemistry Lab', status: 'prototype', statusLabel: '🔵 IN DEV',
+        icon: '⚛️', tech: ['Rapier.js', 'Three.js', 'NIST ASD'],
+        link: 'axiom.html',
+        description: 'Posner molecule explorer, Larmor precession visualizer, spectral emission sandbox, K₄ topology builder, wave lab. Offline-first. AuDHD pedagogy — no timed tests, no failure states.',
+        accent: '#3ba372'
+    },
+    {
+        id: 'tactile', title: 'TACTILE', tagline: 'Keyboard Builder & Typing Sim', status: 'prototype', statusLabel: '🔵 IN DEV',
+        icon: '⌨️', tech: ['Web Audio', 'Haptics', 'Keyboard Builder', 'Typing Games'],
+        link: 'switches.html',
+        description: 'Mechanical keyboard builder with per-key switch assignment, 4 keycap themes, educational typing tests (no timers, no failure states), and 3 typing games. AuDHD-accommodating design.',
+        accent: '#cda852'
+    },
+    {
+        id: 'signal', title: 'SIGNAL', tagline: 'Stim Room & Mini Games', status: 'prototype', statusLabel: '🔵 IN DEV',
+        icon: '🎮', tech: ['WebGL Shaders', 'Cellular Automaton', 'Rapier.js'],
+        link: 'signal.html',
+        description: 'WebGL fluid pool, cellular sand mandala, spoon physics jar. 4 mini games: Kenosis Hop, Element Match, Resonance Catch, Sierpinski Builder. Zero dopamine traps. 12-spoon budget.',
+        accent: '#cda852'
+    },
+    {
+        id: 'forge', title: 'FORGE', tagline: 'Special Interest Vault', status: 'prototype', statusLabel: '🔵 IN DEV',
+        icon: '🗄️', tech: ['SQLite WASM', 'D3.js', 'Local-First'],
+        link: 'forge.html',
+        description: 'Strictly offline, visually-rich node-based database for cataloging hyperfixations and SpIns. Looks like an RPG skill-tree. Zero social sharing to prevent comparison — purely for the joy of archiving.',
+        accent: '#3ba372'
+    },
+    {
+        id: 'tether', title: 'TETHER', tagline: 'Spatial Executive Function Map', status: 'prototype', statusLabel: '🔵 IN DEV',
+        icon: '🪐', tech: ['Matter.js', 'Canvas API', 'IndexedDB'],
+        link: 'tether.html',
+        description: 'Task management mapped as physical planets orbiting a sun. Replaces linear to-do lists — which trigger PDA — with physics-based spatial grouping based on cognitive energy gravity.',
+        accent: '#cda852'
+    },
+    {
+        id: 'echo', title: 'ECHO', tagline: 'Vocal Looper & Scripting Sandbox', status: 'prototype', statusLabel: '🔵 IN DEV',
+        icon: '🗣️', tech: ['Web Audio API', 'Pitch-Shift', 'Offline'],
+        link: 'echo.html',
+        description: "Private loop station for vocal stimming and situational script practice. Real-time pitch-shifting abstracts the user's voice, removing "cringe" from rehearsal and enabling regulating echolalia.",
+        accent: '#8b7cc9'
+    },
+    {
+        id: 'liminal', title: 'LIMINAL', tagline: 'Poetry · Astrology · Drawing', status: 'prototype', statusLabel: '🔵 IN DEV',
+        icon: '🌙', tech: ['Perfect Freehand', 'SwissEph-JS', 'Web Speech API'],
+        link: 'liminal.html',
+        description: 'Wabi-sabi canvas (strokes fade over time), voice-to-poem transcription, offline ephemeris pattern finder, constellation drawing. Breath-locked session start. No grades, no scores.',
+        accent: '#8b7cc9'
+    },
+    {
+        id: 'prism', title: 'PRISM', tagline: 'Sensory Diet Synthesizer', status: 'prototype', statusLabel: '🔵 IN DEV',
+        icon: '🌈', tech: ['Generative Audio', 'WebGL', 'PWA'],
+        link: 'prism.html',
+        description: 'Locally generated brown/pink noise and binaural beats paired with a slow-breathing color bath. No streaming required. Calibrates to over-stimulated or under-stimulated states offline.',
+        accent: '#4db8a8'
+    },
+    {
+        id: 'kinematics', title: 'KINEMATICS', tagline: 'Proprioceptive Movement Node', status: 'prototype', statusLabel: '🔵 IN DEV',
+        icon: '🕺', tech: ['Device Orientation', 'Tone.js', 'Screen-Free'],
+        link: 'kinematics.html',
+        description: 'Phone goes in pocket. Accelerometer data shapes a live generative soundscape, encouraging full-body gross motor movement away from the screen. Occupational therapy gamification.',
+        accent: '#cc6247'
+    },
+    {
+        id: 'observatory', title: 'OBSERVATORY', tagline: 'Geodesic Data Dome', status: 'prototype', statusLabel: '🔵 IN DEV',
+        icon: '🔺', tech: ['Three.js r183', 'WebGL Bloom', 'ES Modules'],
+        link: 'observatory.html',
+        description: 'Each triangular panel on the geodesic dome IS a data node. Click panels to inspect. Search and filter by axis, state, bus type. Bloom pipeline, dust motes, aurora band.',
+        accent: '#25897d'
+    },
+    {
+        id: 'collider', title: 'COLLIDER', tagline: 'Particle Collider Sandbox', status: 'prototype', statusLabel: '🔵 IN DEV',
+        icon: '⚛️', tech: ['Canvas 2D', 'Physics Engine', 'Zero Dependencies'],
+        link: 'collider.html',
+        description: 'Atoms drift with realistic physics and bond automatically on proximity by valence rules. Cyclotron accelerator mode for collision fusion. 20+ molecule recipes, 3 quest chains.',
+        accent: '#cc6247'
+    },
+    {
+        id: 'geodesic', title: 'GEODESIC', tagline: 'Structure Builder', status: 'prototype', statusLabel: '🔵 IN DEV',
+        icon: '🔷', tech: ['Three.js r183', 'OrbitControls', 'Snap Grid'],
+        link: 'geodesic.html',
+        description: 'Place tetrahedra, octahedra, icosahedra, struts, and hubs in 3D space. Real-time rigidity scoring tracks structural integrity. Challenge system with tier progression.',
+        accent: '#3ba372'
+    },
+    {
+        id: 'sovereign', title: 'SOVEREIGN', tagline: 'Sovereign OS Cockpit', status: 'prototype', statusLabel: '🔵 IN DEV',
+        icon: '🔑', tech: ['Three.js r183', 'Bloom', 'Jitterbug Transform'],
+        link: 'sovereign.html',
+        description: 'Interactive 3D cockpit: Tetrix Group, SIC-POVM vectors, Bloch sphere, Isotropic Vector Matrix, and the Jitterbug cuboctahedron-to-octahedron transformation. Bloom postprocessing.',
+        accent: '#4db8a8'
+    },
+    {
+        id: 'qg-ide', title: 'QG-IDE', tagline: 'Quantum Geodesic IDE', status: 'prototype', statusLabel: '🔵 IN DEV',
+        icon: '💻', tech: ['Code Editor', 'SVG Tetrahedron', 'Centaur Copilot'],
+        link: 'qg-ide.html',
+        description: '6-workspace IDE: Code editor, tetrahedron visualizer, terminal, Centaur AI copilot, PHX coherence companion, file browser. Pre-seeded with SIC-POVM measurement code.',
+        accent: '#4db8a8'
+    },
+    {
+        id: 'bridge', title: 'BRIDGE', tagline: 'LOVE Economy Dashboard', status: 'prototype', statusLabel: '🔵 IN DEV',
+        icon: '🌐', tech: ['SVG Gauges', 'Phenix Wallet', 'Vesting Schedules'],
+        link: 'bridge.html',
+        description: 'Multi-tabbed dashboard for the LOVE token economy. Circular gauges, vesting schedules for Bash and Willow, stealth addresses, and a full transaction ledger with export.',
+        accent: '#cda852'
+    },
+    {
+        id: 'k4market', title: 'K4 MARKET', tagline: 'Tetrahedron Market Tomography', status: 'prototype', statusLabel: '🔵 IN DEV',
+        icon: '📐', tech: ['Three.js r183', 'OHLCV Mapping', 'Larmor Ring'],
+        link: 'k4market.html',
+        description: 'Maps OHLCV price data into K4 tetrahedral coordinate space. Support/resistance/volume nodes color-coded. Larmor ring overlay at 0.86 Hz. Demo data seeded by symbol string.',
+        accent: '#3ba372'
+    },
+    {
+        id: 'vault', title: 'VAULT', tagline: 'Ground Truth Identity', status: 'prototype', statusLabel: '🔵 IN DEV',
+        icon: '🔐', tech: ['Web Crypto API', 'AES-GCM', 'Daubert Export'],
+        link: 'vault-room.html',
+        description: 'Ed25519-equivalent keypair generation, encrypted API key storage, vault layer management, and Daubert-standard court-ready evidence export. Zero cloud dependency.',
+        accent: '#8b7cc9'
+    },
+    {
+        id: 'node-zero', title: 'Node Zero', tagline: 'Cryptographic Mesh Node', status: 'prototype', statusLabel: '🔵 IN DEV',
+        icon: '📡', tech: ['WebCrypto API', 'WebSocket', 'IndexedDB Vault'],
+        link: 'node-zero.html',
+        description: 'Pure TypeScript mesh node primitives: WebCrypto identity, channel management, transport adapters, and an encrypted IndexedDB vault.',
+        accent: '#cda852'
+    },
+    {
+        id: 'content-forge', title: 'CONTENT FORGE', tagline: 'Editorial Suite', status: 'prototype', statusLabel: '🔵 IN DEV',
+        icon: '✍️', tech: ['Markdown Editor', 'Seed Bank', 'Publishing Checklist'],
+        link: 'content-forge.html',
+        description: 'Substack publishing pipeline. Seed bank organizes ideas through draft/review/publish lifecycle. 6 framework templates, 8-point publishing checklist, live word count. All localStorage.',
+        accent: '#cc6247'
+    },
+    {
+        id: 'resonance', title: 'RESONANCE', tagline: 'Conversation-to-Music Engine', status: 'prototype', statusLabel: '🔵 IN DEV',
+        icon: '🎵', tech: ['Web Audio API', 'Pentatonic Synthesis', 'SVG Molecule'],
+        link: 'resonance.html',
+        description: 'Your words become music. Each word hashed to a pentatonic note at 172.35 Hz (P31 NMR). Mood detection shapes synthesis. Sonic molecule SVG visualization. Coherence tracking across 5 states.',
+        accent: '#8b7cc9'
+    },
+    {
+        id: 'phenix-os', title: 'Phenix OS', tagline: 'Neurodivergent Command Console', status: 'prototype', statusLabel: '🔵 IN DEV',
+        icon: '◈', tech: ['Three.js', 'SIC-POVM', 'Fawn Guard', 'Web Audio'],
+        link: 'phenix.html',
+        description: 'AuDHD operator dashboard. SIC-POVM tetrahedron navigator, Fawn Guard comm shield, Chaos Ingestion engine, Focus Timer, Medication Tracker, Calcium Monitor, and Encrypted Bottles.',
+        accent: '#4db8a8'
+    },
+    {
+        id: 'simple-sovereignty', title: 'Simple Sovereignty', tagline: 'Sovereign Stack Home Portal', status: 'prototype', statusLabel: '🔵 IN DEV',
+        icon: '▲', tech: ['Portal Hub', 'Terminal', 'Dark/Light Mode'],
+        link: 'sovereignty.html',
+        description: 'Sovereign stack landing hub. Portal grid linking Phenix OS, The Quantum Family, Vault, and Guardian. Live terminal manifest. Sovereignty level tracker. Dark/light mode.',
+        accent: '#4db8a8'
+    },
+    {
+        id: 'mission-control', title: 'Mission Control', tagline: 'Wonky Sprout Token Economy', status: 'prototype', statusLabel: '🔵 IN DEV',
+        icon: '🚀', tech: ['Pixel RPG', 'Token Economy', 'Press Start 2P'],
+        link: 'wonky.html',
+        description: 'Gamified kids mission app. Willow (CCO) and Bash (CSO) character cards. Genesis token economy with mission completion. Secret base rewards grid. Zero alert() — custom toast.',
+        accent: '#ff00ff'
+    },
+    {
+        id: 'quantum-life-os', title: 'Quantum Life OS', tagline: 'Quantum-Coherent Life System', status: 'prototype', statusLabel: '🔵 IN DEV',
+        icon: '✨', tech: ['Quantum Stats', 'Consciousness Engine', 'Dark/Light'],
+        link: 'quantum-os.html',
+        description: 'Quantum-coherent life operating system. Coherence/Life Force/Consciousness stat cards. Control panel with heal/meditate/emergency actions. Quantum insight generator. Terminal log. Dark/light mode.',
+        accent: '#00ffff'
+    },
+    // ── RESEARCH ─────────────────────────────────────────────────────
+    {
+        id: 'quantum-core', title: 'Quantum Core', tagline: 'PQC & Algorithm Primitives', status: 'research', statusLabel: '🔵 RESEARCH',
+        icon: '🌀', tech: ['FIPS-203/204', 'SIC-POVM Swarm', 'IBM Quantum'],
+        link: 'quantum-core.html',
+        description: 'Post-quantum cryptography primitives and SIC-POVM swarm management. IBM Quantum bridge enables live circuit execution against real hardware.',
+        accent: '#4db8a8'
+    },
+    {
+        id: 'alchemy', title: 'Neuro-Cognition Alchemy', tagline: 'Theoretical Research Framework', status: 'research', statusLabel: '🔵 PUBLISHED',
+        icon: '📐', tech: ['Thermodynamics', 'Periodic Mapping', 'K₄ Graph Theory'],
+        link: 'alchemy.html',
+        description: 'Bridges the epistemic gap between neurobiological reality and sociological interaction through chemical thermodynamics and tetrahedral geometry.',
+        accent: '#4db8a8'
+    },
+];
+
+let currentFilter = 'all';
+let isDark = true;
+
+function toggleTheme() {
+    isDark = !isDark;
+    const body = document.getElementById('body');
+    const navbar = document.getElementById('navbar');
+    const footer = document.getElementById('footer');
+    const icon = document.getElementById('themeIcon');
+    const heroSpan = document.getElementById('heroSpan');
+
+    if (isDark) {
+        body.classList.remove('light');
+        body.classList.add('dark', 'ambient-grid-dark');
+        body.classList.remove('ambient-grid-light');
+        body.style.backgroundColor = '#0f1115';
+        body.style.color = '#d8d6d0';
+        navbar.style.background = 'rgba(15,17,21,0.92)';
+        navbar.className = navbar.className.replace('border-black/5', 'border-white/5');
+        icon.textContent = '☀';
+        heroSpan.className = 'text-teal';
+    } else {
+        body.classList.remove('dark', 'ambient-grid-dark');
+        body.classList.add('light', 'ambient-grid-light');
+        body.style.backgroundColor = '#f4f4f5';
+        body.style.color = '#1e293b';
+        navbar.style.background = 'rgba(244,244,245,0.95)';
+        icon.textContent = '🌙';
+        heroSpan.className = 'text-teal';
+    }
+    renderCards();
+}
+
+function filterCards(type) {
+    currentFilter = type;
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.remove('border-teal/40', 'text-teal', 'bg-teal/10');
+        btn.classList.add('border-white/10', 'opacity-60');
+    });
+    const active = document.getElementById('filter-' + type);
+    active.classList.add('border-teal/40', 'text-teal', 'bg-teal/10');
+    active.classList.remove('border-white/10', 'opacity-60');
+    renderCards();
+}
+
+function renderCards() {
+    const grid = document.getElementById('cardGrid');
+    const filtered = currentFilter === 'all' ? mvpData : mvpData.filter(d => d.status === currentFilter);
+
+    const count = filtered.length;
+    const rem3 = count % 3;
+
+    grid.innerHTML = filtered.map((item, i) => {
+        const panelClass = isDark ? 'matte-panel-dark' : 'matte-panel-light';
+        const textClass = isDark ? 'text-cloud/90' : 'text-ink';
+        const descClass = isDark ? 'text-cloud/50' : 'text-ink/60';
+        const tagClass = isDark ? 'bg-white/5 text-cloud/50' : 'bg-black/5 text-ink/50';
+        const borderHover = isDark ? 'hover:border-white/10' : 'hover:border-black/10';
+
+        // Center a lone last card so it doesn't float at col-1 with two dead slots to the right.
+        // A trailing pair (rem3===2) at cols 1+2 is visually acceptable — leave it.
+        let extraStyle = '';
+        if (rem3 === 1 && i === count - 1) {
+            extraStyle = 'style="grid-column: 2 / span 1"';
+        }
+
+        return `<a href="${item.link}" class="block card-hover" ${extraStyle}>
+            <div class="${panelClass} rounded-xl p-6 h-full flex flex-col gap-4 ${borderHover}">
+                <div class="flex items-start justify-between">
+                    <div class="flex items-center gap-3">
+                        <span class="text-2xl">${item.icon}</span>
+                        <div>
+                            <div class="font-mono font-bold text-sm ${textClass}">${item.title}</div>
+                            <div class="font-mono text-xs opacity-40">${item.tagline}</div>
+                        </div>
+                    </div>
+                    <span class="status-badge" style="background:${item.accent}15;color:${item.accent};border:1px solid ${item.accent}30">${item.statusLabel}</span>
+                </div>
+                <p class="text-sm leading-relaxed ${descClass} flex-1">${item.description}</p>
+                <div class="flex gap-2 flex-wrap">
+                    ${item.tech.map(t => `<span class="font-mono text-xs px-2 py-0.5 rounded ${tagClass}">${t}</span>`).join('')}
+                </div>
+            </div>
+        </a>`;
+    }).join('');
+}
+
+renderCards();
+</script>
+</body>
+</html>
