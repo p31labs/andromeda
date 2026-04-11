@@ -19,6 +19,7 @@ import { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Float, Text } from '@react-three/drei';
 import * as THREE from 'three';
+import { RicciMath } from '../../lib/engine/ricci';
 
 export interface DeltaMeshNode {
   id: string;
@@ -118,18 +119,26 @@ export function DeltaMesh({
     const t = clock.getElapsedTime();
     curvatureRef.current = calculateRicciCurvature(t, networkStress);
     
-    // Apply dRfge scale oscillation (visual representation of Ricci flow)
+    // Apply dRfge scale oscillation using RicciMath
     if (groupRef.current) {
-      const scale = 0.8 + (curvatureRef.current - 1) * 0.3;
+      const scale = RicciMath.getScaleFactor(curvatureRef.current);
       groupRef.current.scale.setScalar(scale);
     }
   });
 
-  // Color scheme
-  const gatewayColor = '#00FF88';   // Green for gateway
-  const nodeColor = '#00D4FF';      // Cyan for regular nodes
-  const edgeColor = '#1f2937';     // Dark gray for edges
-  const edgeHighlightColor = '#4db8a8'; // Teal for active edges
+  // Curvature-based color scheme: κ maps to color
+  // κ > 0.9 = green (healthy), κ 0.7-0.9 = cyan (stable), κ < 0.7 = red (degraded)
+  const curvatureColor = useMemo(() => {
+    const k = curvatureRef.current;
+    if (k >= 0.9) return '#00FF88';      // Green - isostatic
+    if (k >= 0.7) return '#00D4FF';     // Cyan - stable
+    return '#EF4444';                   // Red - degraded
+  }, []);
+  
+  const gatewayColor = curvatureColor;   // Gateway reflects health
+  const nodeColor = '#00D4FF';           // Cyan for regular nodes
+  const edgeColor = curvatureRef.current >= 0.8 ? '#1f2937' : '#7A27FF'; // Purple edge on stress
+  const edgeHighlightColor = curvatureRef.current >= 0.8 ? '#4db8a8' : '#EF4444';
 
   return (
     <group ref={groupRef}>
