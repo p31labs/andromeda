@@ -1,32 +1,47 @@
-import { useEffect, useState } from 'react';
-import { mesh } from '../lib/engine/kenosisMesh';
+import { useEffect, useState, useCallback } from 'react';
+import { mesh, getKenosisMesh, type MeshConnectionState } from '../lib/engine/kenosisMesh';
 import { useSovereignStore } from '../sovereign/useSovereignStore';
 
-/**
- * P31 Hook: Snaps a React component into the Kenosis CRDT Mesh
- */
 export function useMesh(roomName: string) {
   const [isMeshActive, setIsMeshActive] = useState(false);
+  const [connectionState, setConnectionState] = useState<MeshConnectionState>('disconnected');
+
+  const broadcast = useCallback((key: string, value: unknown) => {
+    return mesh.broadcastState(key, value);
+  }, []);
 
   useEffect(() => {
-    mesh.ignite(roomName);
-    setIsMeshActive(true);
+    const meshInstance = getKenosisMesh();
+    
+    async function init() {
+      const success = await meshInstance.ignite({ persistenceKey: roomName });
+      setIsMeshActive(success);
+      setConnectionState(meshInstance.getConnectionState());
+    }
+
+    init();
 
     const unsubscribe = useSovereignStore.subscribe((state, prevState) => {
       if (state.spoons !== prevState.spoons) {
-        mesh.broadcastState('spoons', state.spoons);
+        meshInstance.broadcastSpoons(state.spoons);
       }
       if (state.genesisSyncStatus !== prevState.genesisSyncStatus) {
-        mesh.broadcastState('genesisSyncStatus', state.genesisSyncStatus);
+        meshInstance.broadcastGenesisStatus(state.genesisSyncStatus);
       }
     });
 
+    const stateInterval = setInterval(() => {
+      setConnectionState(meshInstance.getConnectionState());
+    }, 5000);
+
     return () => {
+      clearInterval(stateInterval);
       unsubscribe();
-      mesh.halt();
+      meshInstance.halt();
       setIsMeshActive(false);
+      setConnectionState('disconnected');
     };
   }, [roomName]);
 
-  return { isMeshActive, broadcast: mesh.broadcastState.bind(mesh) };
+  return { isMeshActive, connectionState, broadcast };
 }
