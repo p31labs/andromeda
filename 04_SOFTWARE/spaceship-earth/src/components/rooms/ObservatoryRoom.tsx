@@ -402,7 +402,7 @@ export default function ObservatoryRoom() {
 
     // ── Axis vertex markers ──
     for (let i = 0; i < 4; i++) {
-      const geo = new THREE.SphereBufferGeometry(0.07, 14, 14);
+      const geo = new THREE.SphereGeometry(0.07, 14, 14);
       const mat = new THREE.MeshBasicMaterial({ color: AXIS_COLORS[AXIS_KEYS[i]], transparent: true, opacity: 0.7 });
       const mesh = new THREE.Mesh(geo, mat);
       mesh.position.copy(tv[i]);
@@ -410,7 +410,7 @@ export default function ObservatoryRoom() {
     }
 
     // ── Graph nodes ──
-    const sphereGeo = new THREE.SphereBufferGeometry(0.06, 12, 12);
+    const sphereGeo = new THREE.SphereGeometry(0.06, 12, 12);
     const spheres: THREE.Mesh[] = [];
     for (const [id, data] of Object.entries(VERTICES)) {
       const [label, a, b, c, d, state, bus, notes] = data;
