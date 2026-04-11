@@ -2,70 +2,69 @@
 
 ## Acceptance of Contributed Property and Equipment
 
-## P31 LABS, INC.
+## P31 LABS, INC
 
-**Date:** April 11, 2026
+**(A Georgia Domestic Nonprofit Corporation)**
 
----
+**Date:** April 11, 2026  
+**Location:** 401 Powderhorn Road, Saint Marys, Georgia 31558 (Principal Office)
 
-### WHEREAS
-
-1. **P31 Labs, Inc.** (the "Organization") requires physical equipment and infrastructure to conduct its charitable operations at its principal office; and
-
-2. **William R. Johnson**, the Organization's Founder, has offered to contribute certain personal property and equipment as a charitable donation; and
-
-3. The opposing party in the pending domestic relations proceeding (**Civil Action No. 2025CV936**) has expressly disclaimed interest in said property through court filings; and
-
-4. The Board has determined that acceptance is in the best interest of the Organization;
+**PRESENT:** William R. Johnson (Founder/Director), Brenda O'Dell (Director), Joseph Tyler Cisco (Independent Director)
 
 ---
 
-### NOW, THEREFORE, BE IT RESOLVED
+## RECITALS
 
-that the Board of Directors hereby accepts the contribution of the following property from **William R. Johnson**:
+**WHEREAS,** P31 Labs, Inc. (the "Organization") was incorporated as a Georgia Domestic Nonprofit Corporation on April 3, 2026, with the charitable mission of developing and distributing open-source assistive technology for neurodivergent individuals; and
 
-| Item | Description |
-|------|-------------|
-| Acer Chromebook Spin 713 | Primary development machine |
-| AMD RX 6600 XT + i3-12100 Desktop | Local AI/ML compilation |
-| Waveshare ESP32-S3-Touch-LCD-3.5B | Node Zero dev hardware |
-| ESP32-S3 development boards & components | Development tooling |
-| Soldering equipment & electronics tools | Hardware assembly |
-| iPad | Cognitive prosthetic / handwriting input device |
-| Office furniture | Desk, chair, shelving |
+**WHEREAS,** the Organization requires physical equipment, furnishings, and infrastructure to conduct its charitable operations at its principal office located at 401 Powderhorn Road, Saint Marys, Georgia 31558; and
 
----
+**WHEREAS,** William R. Johnson, the Organization's Founder, has offered to contribute certain personal property and equipment to the Organization as a charitable donation in furtherance of its mission; and
 
-### BE IT FURTHER RESOLVED
+**WHEREAS,** the contributed property includes items that the opposing party in the pending domestic relations proceeding (Civil Action No. 2025CV936, Camden County Superior Court) has expressly disclaimed interest in through court filings, characterizing said property as unwanted; and
 
-that the contributed property shall become the sole property of **P31 Labs, Inc.**, to be used exclusively in furtherance of its charitable mission, and shall not be considered the personal property of any individual director or officer.
+**WHEREAS,** Director Brenda O'Dell has confirmed that the Organization has operational need for this equipment and furnishings and that accepting the contribution serves the Organization's charitable mission; and
+
+**WHEREAS,** the Board has reviewed the proposed contribution and determined that acceptance is in the best interest of the Organization;
 
 ---
 
-### BE IT FURTHER RESOLVED
+## RESOLUTION
 
-that any and all intellectual property, software, documentation, research data, and digital assets stored on the contributed computing equipment are and shall remain the exclusive property of **P31 Labs, Inc.**
+**NOW, THEREFORE, BE IT RESOLVED,** that the Board of Directors of P31 Labs, Inc. hereby accepts the contribution of the following property and equipment from William R. Johnson:
+
+| Item | Category | Est. FMV | Organizational Use |
+|------|----------|----------|-------------------|
+| Acer Chromebook Spin 713 | Computing | — | Primary development machine |
+| AMD RX 6600 XT + i3-12100 Desktop | Computing | — | Local AI/ML (Ollama/ROCm), firmware compilation |
+| Waveshare ESP32-S3-Touch-LCD-3.5B | Hardware Dev | — | Firmware development & testing |
+| ESP32-S3 dev boards & components | Hardware Dev | — | Node One/Totem prototyping |
+| Soldering equipment & tools | Hardware Dev | — | Hardware assembly & repair |
+| iPad (handwriting input device) | Assistive Tech | — | Cognitive prosthetic — primary brain dump capture |
+| Office furniture (desk, chair, shelving) | Operations | — | Principal office furnishings |
+| General household furnishings | Operational space | — | Operational space furnishings |
+
+**BE IT FURTHER RESOLVED,** that the contributed property shall become the sole property of P31 Labs, Inc. upon acceptance, to be used exclusively in furtherance of the Organization's charitable mission;
+
+**BE IT FURTHER RESOLVED,** that the Organization shall maintain an inventory of all contributed assets in accordance with standard nonprofit accounting practices;
+
+**BE IT FURTHER RESOLVED,** that the Founder's contribution is made voluntarily and without expectation of return, and that the contributed property shall not be considered the personal property of any individual director, officer, or member of the Organization;
+
+**BE IT FURTHER RESOLVED,** that the Organization acknowledges the contribution and shall provide an appropriate written acknowledgment to the Contributor for tax purposes upon obtaining 501(c)(3) determination from the Internal Revenue Service;
+
+**BE IT FURTHER RESOLVED,** that any and all intellectual property, software, documentation, research data, and digital assets stored on the contributed computing equipment are and shall remain the exclusive property of P31 Labs, Inc., having been developed in furtherance of the Organization's charitable mission. The physical hardware and the digital contents thereon are separately categorized: hardware is contributed tangible property; software, code, data, and documentation are organizational intellectual property developed by or assigned to the Organization.
 
 ---
 
 ## CERTIFICATION
 
-The undersigned Directors hereby certify that this Resolution was duly adopted.
+The undersigned Directors hereby certify that this Resolution was duly adopted by the Board of Directors of P31 Labs, Inc. on the date first written above.
 
----
+_______________________________  
+**William R. Johnson**, Director
 
-**WILLIAM R. JOHNSON**
-Director
-P31 Labs, Inc.
+_______________________________  
+**Brenda O'Dell**, Director
 
-**BRENDA O'DELL**
-Director
-P31 Labs, Inc.
-
-**JOSEPH TYLER CISCO**
-Independent Director
-P31 Labs, Inc.
-
----
-
-*Executed and binding as of April 11, 2026.*
+_______________________________  
+**Joseph Tyler Cisco**, Independent Director
