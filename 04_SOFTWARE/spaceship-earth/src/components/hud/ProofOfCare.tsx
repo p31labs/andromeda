@@ -11,6 +11,7 @@
  */
 import { useState, useEffect, useMemo } from 'react';
 import { useSovereignStore } from '../../sovereign/useSovereignStore';
+import { haptic } from '../../services/haptic';
 import {
   calculateCareScore,
   createEmptyPoCState,
@@ -45,6 +46,13 @@ export function ProofOfCare({ userAge = 25 }: ProofOfCareProps) {
     
     const calculated = calculateCareScore(updatedState);
     setPocState(calculated);
+    
+    // Trigger haptic on green coherence (0.1 Hz)
+    const wasCoherent = Math.abs(pocState.respirationRate - 6) <= 0.5;
+    const isCoherent = Math.abs(calculated.respirationRate - 6) <= 0.5;
+    if (isCoherent && !wasCoherent) {
+      haptic.coherence();
+    }
   }, [somaticHrv, somaticHr, simulatedRespiration]);
 
   // Growth Ring calculation

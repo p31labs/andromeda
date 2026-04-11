@@ -11,6 +11,7 @@ import { create } from 'zustand';
 import * as THREE from 'three';
 
 import { useMesh } from './hooks/useMesh';
+import { haptic } from './services/haptic';
 import { getLarmorEngine } from './lib/engine/larmor';
 import { RicciMath, getAnimatedCurvature } from './lib/engine/ricci';
 import { FawnGuard } from './lib/engine/fawn';
@@ -48,8 +49,12 @@ export default function App() {
 
   useFrame(({ clock }) => setCurvature(getAnimatedCurvature(1.0, clock.getElapsedTime())));
 
-  const toggleLarmor = () => {
-    isLarmorActive ? larmorEngine.stop() : larmorEngine.start();
+  const toggleLarmor = async () => {
+    if (isLarmorActive) {
+      await larmorEngine.stop();
+    } else {
+      await larmorEngine.start();
+    }
     setIsLarmorActive(!isLarmorActive);
   };
 
@@ -115,7 +120,7 @@ export default function App() {
           <textarea value={input} onChange={handleInput} className="w-full bg-[#030308] text-[#E8ECF4] border border-[#1f2937] rounded p-3 font-mono text-[11px] resize-none h-24 mb-3" placeholder="Prepare transmission..." />
           {warning && <div className="bg-[#F59E0B]/10 border border-[#F59E0B] p-3 rounded text-[#F59E0B] font-mono text-[10px] mb-3">{warning}</div>}
           <div className="flex justify-end">
-            <button onClick={() => { setInput(''); setSpoons(Math.max(0, spoons - 1)); }} disabled={!!warning || !input.trim()} className={`px-6 py-2 rounded font-mono text-xs font-bold ${warning || !input.trim() ? 'bg-[#1f2937] text-gray-600' : 'bg-[#00D4FF]/20 text-[#00D4FF]'}`}>
+            <button onClick={() => { haptic.transmit(); setInput(''); setSpoons(Math.max(0, spoons - 1)); }} disabled={!!warning || !input.trim()} className={`px-6 py-2 rounded font-mono text-xs font-bold ${warning || !input.trim() ? 'bg-[#1f2937] text-gray-600' : 'bg-[#00D4FF]/20 text-[#00D4FF]'}`}>
               {warning ? 'INTERCEPTED' : 'TRANSMIT'}
             </button>
           </div>
