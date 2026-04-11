@@ -25,9 +25,10 @@
 // ═══════════════════════════════════════════════════════
 
 export interface Env {
+  DB: D1Database;
   TELEMETRY_KV: KVNamespace;
   DISCORD_WEBHOOK_URL?: string;
-  GENESIS_GATE_URL?: string;  // R09: https://genesis.p31ca.org
+  GENESIS_GATE_URL?: string;
 }
 
 // R09: Emit event to Genesis Gate — fire-and-forget, never throws
@@ -660,6 +661,114 @@ function mergeEvents(existing: TelemetryEvent[], incoming: TelemetryEvent[]): Te
   return merged.sort((a, b) => a.seq - b.seq);
 }
 
+// ═══════════════════════════════════════════════════════
+// WCD-46: D1-backed Genesis Telemetry (100K writes/day)
+// ═══════════════════════════════════════════════════════
+
+interface D1TelemetryBody {
+  sessionId: string;
+  playerId: string;
+  eventType: string;
+  payload: Record<string, unknown>;
+}
+
+async function handleD1Telemetry(req: Request, env: Env): Promise<Response> {
+  let body: D1TelemetryBody;
+  try {
+    body = await req.json() as D1TelemetryBody;
+  } catch {
+    return corsResponse(JSON.stringify({ error: 'Invalid JSON' }), 400);
+  }
+
+  const { sessionId, playerId, eventType, payload } = body;
+  if (!sessionId || !playerId || !eventType) {
+    return corsResponse(JSON.stringify({ error: 'Missing fields' }), 400);
+  }
+
+  const cfRay = req.headers.get('cf-ray') || 'unknown';
+  const tlsVersion = req.cf?.tlsVersion || 'unknown';
+  const hashChain = await sha256(JSON.stringify(payload) + Date.now().toString());
+
+  try {
+    await env.DB.prepare(`
+      INSERT INTO genesis_telemetry (session_id, player_id, event_type, payload, cf_ray, tls_version, hash_chain)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `).bind(sessionId, playerId, eventType, JSON.stringify(payload), cfRay, tlsVersion, hashChain).run();
+
+    return corsResponse(JSON.stringify({ status: 'logged', cfRay }), 200);
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error(`D1 Telemetry Error: ${msg}`);
+    return corsResponse(JSON.stringify({ error: msg, queue_locally: true }), 500);
+  }
+}
+
+async function handleD1GetTelemetry(sessionId: string, env: Env): Promise<Response> {
+  try {
+    const results = await env.DB.prepare(`
+      SELECT * FROM genesis_telemetry WHERE session_id = ? ORDER BY created_at DESC LIMIT 100
+    `).bind(sessionId).all();
+
+    return corsResponse(JSON.stringify({ sessionId, events: results.results, count: results.results?.length ?? 0 }), 200);
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    return corsResponse(JSON.stringify({ error: msg }), 500);
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// WCD-51: D1-backed Multiplayer State Sync (Replaces KV)
+// ═══════════════════════════════════════════════════════
+
+interface D1SyncBody {
+  roomId: string;
+  playerId: string;
+  playerState: Record<string, unknown>;
+  roomState: Record<string, unknown>;
+}
+
+async function handleD1Sync(req: Request, env: Env): Promise<Response> {
+  let body: D1SyncBody;
+  try {
+    body = await req.json() as D1SyncBody;
+  } catch {
+    return corsResponse(JSON.stringify({ error: 'Invalid JSON' }), 400);
+  }
+
+  const { roomId, playerId, playerState, roomState } = body;
+  if (!roomId || !playerId) {
+    return corsResponse(JSON.stringify({ error: 'Missing roomId or playerId' }), 400);
+  }
+
+  try {
+    // Use db.batch() for atomic operations
+    await env.DB.batch([
+      env.DB.prepare(`
+        INSERT INTO bonding_rooms (room_id, state_json, last_active)
+        VALUES (?, ?, CURRENT_TIMESTAMP)
+        ON CONFLICT(room_id) DO UPDATE SET state_json=excluded.state_json, last_active=CURRENT_TIMESTAMP
+      `).bind(roomId, JSON.stringify(roomState ?? {})),
+
+      env.DB.prepare(`
+        INSERT INTO bonding_players (player_id, room_id, state_json, last_ping)
+        VALUES (?, ?, ?, CURRENT_TIMESTAMP)
+        ON CONFLICT(player_id) DO UPDATE SET state_json=excluded.state_json, last_ping=CURRENT_TIMESTAMP
+      `).bind(playerId, roomId, JSON.stringify(playerState ?? {}))
+    ]);
+
+    // Fetch current peers
+    const peers = await env.DB.prepare(`
+      SELECT * FROM bonding_players WHERE room_id = ?
+    `).bind(roomId).all();
+
+    return corsResponse(JSON.stringify({ synced: true, peers: peers.results }), 200);
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error(`D1 Sync Error: ${msg}`);
+    return corsResponse(JSON.stringify({ error: msg }), 500);
+  }
+}
+
 // ── CWP-BOOK-002: Book session event handler ──
 
 interface BookEvent {
@@ -850,6 +959,22 @@ export default {
     const sceMatch = path.match(/^\/api\/social\/announce$/i);
     if (method === 'POST' && sceMatch) {
       return handleSCEAnnounce(request, env);
+    }
+
+    // WCD-46: POST /d1/telemetry — D1-backed telemetry ingestion
+    if (method === 'POST' && path === '/d1/telemetry') {
+      return handleD1Telemetry(request, env);
+    }
+
+    // WCD-51: POST /d1/sync — D1-backed multiplayer state sync
+    if (method === 'POST' && path === '/d1/sync') {
+      return handleD1Sync(request, env);
+    }
+
+    // WCD-46: GET /d1/telemetry/:sessionId — retrieve telemetry
+    const d1TelemetryMatch = path.match(/^\/d1\/telemetry\/(.+)$/);
+    if (method === 'GET' && d1TelemetryMatch) {
+      return handleD1GetTelemetry(d1TelemetryMatch[1], env);
     }
 
     return corsResponse(JSON.stringify({ error: 'Not found' }), 404);
