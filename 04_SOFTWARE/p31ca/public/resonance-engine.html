@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>P31 Resonance Engine</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --void: #0f1115;
+    --surface: #161920;
+    --cloud: #d8d6d0;
+    --lavender: #8b7cc9;
+    --dim: #555;
+    --phosphorus: #3ba372;
+    --calcium: #25897d;
+    --bonded: #4db8a8;
+    --posner: #cda852;
+    --font-display: 'Atkinson Hyperlegible', sans-serif;
+    --font-data: 'JetBrains Mono', monospace;
+  }
+
+  body {
+    background: var(--void);
+    color: var(--cloud);
+    font-family: var(--font-display);
+    height: 100vh;
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Start screen */
+  #start-screen {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    background: radial-gradient(ellipse at 50% 40%, var(--surface) 0%, var(--void) 70%);
+    z-index: 100;
+  }
+  #start-screen .subtitle {
+    font-family: var(--font-data); font-size: 11px;
+    letter-spacing: 6px; color: var(--dim); margin-bottom: 12px;
+    text-shadow: 0 0 4px rgba(139,124,201,0.15);
+  }
+  #start-screen .title {
+    font-size: 22px; font-weight: 200; color: var(--phosphorus);
+    letter-spacing: 3px; text-shadow: 0 0 20px rgba(59,163,114,0.2);
+    margin-bottom: 8px;
+  }
+  #start-screen .desc {
+    font-size: 14px; color: var(--dim); line-height: 1.8;
+    max-width: 360; text-align: center; margin-bottom: 28px;
+  }
+  #start-screen .note {
+    font-size: 12px; color: var(--dim); margin-top: 24px;
+  }
+
+  .glass-btn {
+    background: rgba(22,25,32,0.7);
+    border: 1px solid rgba(139,124,201,0.25);
+    border-radius: 8px; color: var(--phosphorus);
+    font-family: var(--font-data); font-size: 14px;
+    letter-spacing: 3px; padding: 14px 36px;
+    cursor: pointer; transition: all 0.2s;
+    backdrop-filter: blur(6px);
+  }
+  .glass-btn:hover { background: rgba(22,25,32,0.9); border-color: rgba(139,124,201,0.45); }
+  .glass-btn:active { transform: scale(0.97); }
+
+  /* Main layout */
+  #app {
+    display: none; height: 100vh;
+    flex-direction: column; overflow: hidden;
+  }
+  #app.active { display: flex; }
+
+  /* Top bar */
+  .top-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 20px; border-bottom: 1px solid rgba(139,124,201,0.08);
+    flex-shrink: 0;
+  }
+  .top-bar .left { display: flex; align-items: center; gap: 16px; }
+  .top-bar a {
+    font-family: var(--font-data); font-size: 11px;
+    color: var(--dim); text-decoration: none; letter-spacing: 1px;
+  }
+  .top-bar a:hover { color: var(--cloud); }
+  .top-bar .engine-title {
+    font-family: var(--font-data); font-size: 13px;
+    letter-spacing: 5px; color: var(--lavender);
+  }
+  .coherence-badge {
+    font-family: var(--font-data); font-size: 12px;
+    letter-spacing: 3px; padding: 4px 12px;
+    border-radius: 4px; border: 1px solid;
+    transition: all 0.4s;
+  }
+
+  /* Panels */
+  .panels {
+    display: flex; flex: 1; min-height: 0; overflow: hidden;
+  }
+  .left-panel {
+    width: 40%; display: flex; flex-direction: column;
+    border-right: 1px solid rgba(139,124,201,0.08);
+    min-height: 0;
+  }
+  .right-panel {
+    width: 60%; display: flex; flex-direction: column;
+    align-items: center; padding: 20px;
+    overflow-y: auto;
+  }
+
+  /* Message history */
+  .msg-list {
+    flex: 1; overflow-y: auto; padding: 16px;
+    min-height: 0;
+  }
+  .msg-list::-webkit-scrollbar { width: 4px; }
+  .msg-list::-webkit-scrollbar-thumb { background: rgba(139,124,201,0.15); border-radius: 2px; }
+
+  .msg-item {
+    display: flex; margin-bottom: 10px; gap: 8px;
+    align-items: flex-start;
+  }
+  .msg-mood {
+    font-family: var(--font-data); font-size: 9px;
+    letter-spacing: 1px; padding: 2px 6px;
+    border-radius: 3px; flex-shrink: 0;
+    margin-top: 3px; text-transform: uppercase;
+    border: 1px solid;
+  }
+  .msg-text {
+    font-size: 13px; line-height: 1.6; font-weight: 300;
+    padding: 8px 12px; border-radius: 10px;
+    background: var(--surface);
+    border: 1px solid rgba(139,124,201,0.06);
+    max-width: 85%;
+  }
+
+  /* Input area */
+  .input-area {
+    display: flex; gap: 8px; padding: 12px 16px;
+    border-top: 1px solid rgba(139,124,201,0.08);
+    flex-shrink: 0;
+  }
+  .input-area input {
+    flex: 1; background: var(--surface);
+    border: 1px solid rgba(139,124,201,0.12);
+    border-radius: 8px; padding: 10px 14px;
+    color: var(--cloud); font-family: var(--font-display);
+    font-size: 14px; outline: none;
+    transition: border-color 0.2s;
+  }
+  .input-area input:focus { border-color: rgba(139,124,201,0.3); }
+  .input-area input::placeholder { color: var(--dim); }
+  .send-btn {
+    background: rgba(22,25,32,0.7);
+    border: 1px solid rgba(59,163,114,0.25);
+    border-radius: 8px; color: var(--phosphorus);
+    font-family: var(--font-data); font-size: 11px;
+    letter-spacing: 2px; padding: 0 18px;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .send-btn:hover { border-color: rgba(59,163,114,0.5); }
+  .send-btn:disabled { opacity: 0.3; cursor: default; }
+
+  /* Right panel sections */
+  .molecule-container {
+    position: relative; margin-bottom: 16px;
+  }
+  .waveform-container { width: 100%; max-width: 500px; margin-bottom: 16px; }
+  .hash-display {
+    font-family: var(--font-data); text-align: center;
+  }
+  .hash-label {
+    font-size: 10px; letter-spacing: 2px; color: var(--dim); margin-bottom: 4px;
+  }
+  .hash-value {
+    font-size: 13px; letter-spacing: 3px; color: var(--phosphorus);
+    text-shadow: 0 0 8px rgba(59,163,114,0.2);
+  }
+
+  /* Coherence bar */
+  .coherence-section {
+    width: 100%; max-width: 340px; margin: 16px 0;
+  }
+  .coherence-bar-track {
+    width: 100%; height: 6px; background: rgba(85,85,85,0.2);
+    border-radius: 3px; overflow: hidden; position: relative;
+  }
+  .coherence-bar-fill {
+    height: 100%; border-radius: 3px;
+    transition: width 0.6s ease, background 0.6s ease, box-shadow 0.6s ease;
+  }
+  .coherence-label {
+    display: flex; justify-content: space-between; margin-top: 6px;
+    font-family: var(--font-data); font-size: 10px; letter-spacing: 1px;
+  }
+
+  /* Center coherence overlay */
+  .coherence-overlay {
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: var(--font-data); font-size: 28px;
+    letter-spacing: 6px; pointer-events: none;
+    opacity: 0.08; transition: all 0.6s;
+    white-space: nowrap;
+  }
+
+  /* Note count */
+  .stats-row {
+    display: flex; gap: 16px; align-items: center;
+    font-family: var(--font-data); font-size: 11px;
+    color: var(--dim); margin: 8px 0;
+  }
+  .stats-row .sep { width: 1px; height: 12px; background: rgba(139,124,201,0.15); }
+
+  @keyframes glowPulse {
+    0%, 100% { filter: drop-shadow(0 0 4px rgba(205,168,82,0.2)); }
+    50% { filter: drop-shadow(0 0 20px rgba(205,168,82,0.6)); }
+  }
+
+  @media (max-width: 700px) {
+    .panels { flex-direction: column; }
+    .left-panel, .right-panel { width: 100%; }
+    .left-panel { height: 45%; border-right: none; border-bottom: 1px solid rgba(139,124,201,0.08); }
+    .right-panel { height: 55%; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Start screen -->
+<div id="start-screen">
+  <svg width="160" height="160" viewBox="0 0 160 160" style="margin-bottom: 16px;">
+    <defs>
+      <radialGradient id="start-glow">
+        <stop offset="0%" stop-color="#3ba372" stop-opacity="0.08"/>
+        <stop offset="100%" stop-color="#3ba372" stop-opacity="0"/>
+      </radialGradient>
+    </defs>
+    <circle cx="80" cy="80" r="60" fill="url(#start-glow)"/>
+    <circle cx="80" cy="80" r="4" fill="#3ba372" opacity="0.8">
+      <animate attributeName="opacity" values="0.6;1;0.6" dur="2.5s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="80" cy="80" r="50" fill="none" stroke="#3ba372" stroke-width="0.5" opacity="0.12" stroke-dasharray="2 3"/>
+  </svg>
+  <div class="subtitle">P31 LABS</div>
+  <div class="title">THE RESONANCE ENGINE</div>
+  <div class="desc">
+    Your words become notes.<br>
+    Your notes become a molecule.<br>
+    Your molecule becomes your identity.
+  </div>
+  <button class="glass-btn" id="begin-btn">BEGIN</button>
+  <div class="note">Requires audio. Your words will be heard.</div>
+</div>
+
+<!-- Main app -->
+<div id="app">
+  <div class="top-bar">
+    <div class="left">
+      <a href="resonance.html">&larr; BACK</a>
+      <span class="engine-title">RESONANCE</span>
+    </div>
+    <div class="coherence-badge" id="coherence-badge">VOID</div>
+  </div>
+
+  <div class="panels">
+    <div class="left-panel">
+      <div class="msg-list" id="msg-list" role="log" aria-live="polite" aria-label="Resonance conversation"></div>
+      <div class="input-area">
+        <input type="text" id="text-input" placeholder="speak... and listen" autocomplete="off">
+        <button class="send-btn" id="send-btn">SEND</button>
+      </div>
+    </div>
+
+    <div class="right-panel">
+      <div class="molecule-container" id="molecule-container">
+        <svg id="molecule-svg" width="280" height="280" viewBox="0 0 280 280"></svg>
+        <div class="coherence-overlay" id="coherence-overlay">VOID</div>
+      </div>
+
+      <div class="waveform-container">
+        <svg id="waveform-svg" width="100%" height="50" viewBox="0 0 500 50" preserveAspectRatio="none"></svg>
+      </div>
+
+      <div class="coherence-section">
+        <div class="coherence-bar-track">
+          <div class="coherence-bar-fill" id="coherence-fill" style="width: 0%;"></div>
+        </div>
+        <div class="coherence-label">
+          <span id="coherence-state-label">VOID</span>
+          <span id="coherence-value">0.00</span>
+        </div>
+      </div>
+
+      <div class="stats-row">
+        <span id="note-count">0 NOTES</span>
+        <span class="sep"></span>
+        <span id="msg-count">0 MESSAGES</span>
+      </div>
+
+      <div class="hash-display" id="hash-display" style="display:none;">
+        <div class="hash-label">RESONANCE SIGNATURE</div>
+        <div class="hash-value" id="hash-value">0000000000000000</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Constants ──
+const P31_BASE = 172.35;
+const PENTA = [0, 2, 4, 7, 9];
+
+const MOOD_KEYWORDS = {
+  warm:       ['love','care','kind','gentle','safe'],
+  curious:    ['why','how','what if','wonder','explore'],
+  vulnerable: ['afraid','scared','alone','lost','help'],
+  pain:       ['hurt','broken','grief','ache','tired'],
+  joyful:     ['happy','joy','laugh','celebrate','light'],
+  urgent:     ['now','must','need','please',"can't"],
+};
+
+const MOOD_SYNTH = {
+  warm:       { type: 'sine',     octaveShift: 0,  sustain: 0.5, tempo: 1.0  },
+  curious:    { type: 'triangle', octaveShift: 0,  sustain: 0.1, tempo: 0.7  },
+  vulnerable: { type: 'sine',     octaveShift: 0,  sustain: 0.3, tempo: 1.2  },
+  pain:       { type: 'sawtooth', octaveShift: -1, sustain: 0.3, tempo: 1.0  },
+  joyful:     { type: 'triangle', octaveShift: 1,  sustain: 0.3, tempo: 0.6  },
+  urgent:     { type: 'square',   octaveShift: 0,  sustain: 0.2, tempo: 0.5  },
+  calm:       { type: 'sine',     octaveShift: 0,  sustain: 0.3, tempo: 1.0  },
+};
+
+const LEVEL_CONFIG = {
+  VOID:       { min: 0,   color: '#555555', glow: 'none' },
+  PHOSPHORUS: { min: 0.2, color: '#3ba372', glow: '0 0 8px rgba(59,163,114,0.3)' },
+  CALCIUM:    { min: 0.4, color: '#25897d', glow: '0 0 12px rgba(37,137,125,0.4)' },
+  BONDED:     { min: 0.6, color: '#4db8a8', glow: '0 0 16px rgba(77,184,168,0.5)' },
+  POSNER:     { min: 0.8, color: '#cda852', glow: '0 0 24px rgba(205,168,82,0.6)' },
+};
+
+const MOOD_COLORS = {
+  warm: '#e8a87c', curious: '#8b7cc9', vulnerable: '#6c8cbf',
+  pain: '#c75050', joyful: '#cda852', urgent: '#d46a6a', calm: '#4db8a8'
+};
+
+// ── Scale builder ──
+function buildScale(base, octaves) {
+  const notes = [];
+  for (let oct = 0; oct < octaves; oct++) {
+    for (const interval of PENTA) {
+      notes.push(base * Math.pow(2, oct + interval / 12));
+    }
+  }
+  return notes;
+}
+const SCALE = buildScale(P31_BASE, 3);
+
+// ── Hash (djb2) ──
+function djb2(str) {
+  let h = 5381;
+  for (let i = 0; i < str.length; i++) {
+    h = ((h << 5) + h + str.charCodeAt(i)) | 0;
+  }
+  return Math.abs(h);
+}
+
+// ── Mood detection ──
+function detectMood(text) {
+  const lower = text.toLowerCase();
+  let best = 'calm';
+  let bestCount = 0;
+  for (const [mood, keywords] of Object.entries(MOOD_KEYWORDS)) {
+    let count = 0;
+    for (const kw of keywords) {
+      if (lower.includes(kw)) count++;
+    }
+    if (count > bestCount) { bestCount = count; best = mood; }
+  }
+  return best;
+}
+
+// ── Text to notes ──
+function textToNotes(text, coherence) {
+  const words = text.split(/\s+/).filter(Boolean);
+  if (words.length === 0) return [];
+  const mood = detectMood(text);
+  const synthCfg = MOOD_SYNTH[mood];
+  const notes = [];
+
+  words.forEach((word, i) => {
+    const h = djb2(word.toLowerCase().replace(/[^a-z]/g, ''));
+    const scaleIdx = h % SCALE.length;
+    let freq = SCALE[scaleIdx];
+
+    // Octave shift from mood
+    freq *= Math.pow(2, synthCfg.octaveShift);
+
+    // Word length drives duration
+    const baseDur = word.length <= 3 ? 0.12 : word.length <= 6 ? 0.2 : 0.35;
+    const duration = baseDur * (1 + synthCfg.sustain) * synthCfg.tempo;
+
+    // Velocity rises through sentence
+    const pos = i / Math.max(words.length - 1, 1);
+    const velocity = 0.25 + pos * 0.2 + coherence * 0.15;
+
+    // Trailing punctuation adds rest
+    const hasTrail = /[,;:.\!\?]$/.test(word);
+
+    notes.push({
+      freq, duration,
+      velocity: Math.min(0.8, velocity),
+      restAfter: hasTrail ? 0.15 : 0.04,
+      word, mood,
+      oscType: synthCfg.type,
+      reverbMix: mood === 'vulnerable' ? 0.6 : 0.25,
+    });
+  });
+
+  // Chord tones at sentence boundaries when coherence > 0.5
+  if (coherence > 0.5) {
+    words.forEach((w, idx) => {
+      if (/[.!?]$/.test(w) && notes[idx]) {
+        notes[idx].chord = true;
+        notes[idx].chordFreqs = [notes[idx].freq, notes[idx].freq * 1.25, notes[idx].freq * 1.5];
+      }
+    });
+  }
+
+  return notes;
+}
+
+// ── Synth engine ──
+class ResonanceSynth {
+  constructor() {
+    this.ctx = null;
+    this.reverb = null;
+    this.reverbWet = null;
+    this.noteHistory = [];
+    this.playing = false;
+    this.onNote = null;
+  }
+
+  async init() {
+    if (this.ctx) return;
+    this.ctx = new AudioContext();
+    // Generate impulse response for reverb
+    const sr = this.ctx.sampleRate;
+    const len = sr * 2.5;
+    const impulse = this.ctx.createBuffer(2, len, sr);
+    for (let ch = 0; ch < 2; ch++) {
+      const data = impulse.getChannelData(ch);
+      for (let i = 0; i < len; i++) {
+        data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 2.2);
+      }
+    }
+    this.reverb = this.ctx.createConvolver();
+    this.reverb.buffer = impulse;
+    this.reverbWet = this.ctx.createGain();
+    this.reverbWet.gain.value = 0.25;
+    this.reverb.connect(this.reverbWet).connect(this.ctx.destination);
+  }
+
+  playTone(freq, dur, vel, startTime, type, reverbMix) {
+    if (!this.ctx) return;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    osc.type = type || 'sine';
+    osc.frequency.value = freq;
+
+    // ADSR: attack 0.02, decay 0.1, sustain 0.3*vel, release 0.2
+    const a = startTime;
+    const peak = vel * 0.15;
+    const sustainLevel = peak * 0.3;
+    gain.gain.setValueAtTime(0, a);
+    gain.gain.linearRampToValueAtTime(peak, a + 0.02);
+    gain.gain.linearRampToValueAtTime(sustainLevel, a + 0.02 + 0.1);
+    gain.gain.setValueAtTime(sustainLevel, a + dur - 0.2);
+    gain.gain.linearRampToValueAtTime(0, a + dur + 0.2);
+
+    osc.connect(gain).connect(this.ctx.destination);
+    if (this.reverb) {
+      const send = this.ctx.createGain();
+      send.gain.value = reverbMix || 0.25;
+      gain.connect(send).connect(this.reverb);
+    }
+    osc.start(startTime);
+    osc.stop(startTime + dur + 0.5);
+  }
+
+  async playPhrase(text, coherence) {
+    if (!this.ctx) await this.init();
+    if (!this.ctx) return 0;
+    const notes = textToNotes(text, coherence);
+    if (notes.length === 0) return 0;
+
+    this.playing = true;
+    let elapsed = 0;
+    const now = this.ctx.currentTime;
+
+    for (let i = 0; i < notes.length; i++) {
+      const n = notes[i];
+      const time = now + elapsed;
+
+      this.playTone(n.freq, n.duration, n.velocity, time, n.oscType, n.reverbMix);
+
+      // Sub bass on downbeats
+      if (i % 4 === 0 && coherence < 0.6) {
+        this.playTone(n.freq / 4, n.duration * 2, 0.04, time, 'sine', 0.1);
+      }
+
+      // Chord tones
+      if (n.chord && n.chordFreqs) {
+        for (const cf of n.chordFreqs) {
+          this.playTone(cf, n.duration * 2.5, 0.06, time, 'triangle', 0.3);
+        }
+      }
+
+      const record = {
+        freq: n.freq, duration: n.duration,
+        velocity: n.velocity, mood: n.mood, word: n.word,
+      };
+      this.noteHistory.push(record);
+
+      const delay = elapsed;
+      setTimeout(() => { if (this.onNote) this.onNote(record); }, delay * 1000);
+      elapsed += n.duration + n.restAfter;
+    }
+
+    setTimeout(() => { this.playing = false; }, elapsed * 1000);
+    return elapsed;
+  }
+
+  getMoleculeHash() {
+    if (this.noteHistory.length === 0) return '0000000000000000';
+    const str = this.noteHistory.map(n =>
+      n.freq.toFixed(2) + ':' + n.duration.toFixed(3) + ':' + n.mood
+    ).join('|');
+    let h1 = 5381, h2 = 0;
+    for (let i = 0; i < str.length; i++) {
+      h1 = ((h1 << 5) + h1 + str.charCodeAt(i)) | 0;
+      h2 = ((h2 << 7) - h2 + str.charCodeAt(i)) | 0;
+    }
+    return (Math.abs(h1).toString(16).padStart(8, '0')
+      + Math.abs(h2).toString(16).padStart(8, '0')).toUpperCase();
+  }
+}
+
+// ── State ──
+const synth = new ResonanceSynth();
+let coherence = 0.0;
+let messages = []; // { text, mood }
+let allNotes = []; // { freq, duration, velocity, mood, word, angle, radius }
+let totalNoteCount = 0;
+
+// ── DOM refs ──
+const $start = document.getElementById('start-screen');
+const $app = document.getElementById('app');
+const $beginBtn = document.getElementById('begin-btn');
+const $input = document.getElementById('text-input');
+const $sendBtn = document.getElementById('send-btn');
+const $msgList = document.getElementById('msg-list');
+const $moleculeSvg = document.getElementById('molecule-svg');
+const $waveformSvg = document.getElementById('waveform-svg');
+const $coherenceBadge = document.getElementById('coherence-badge');
+const $coherenceOverlay = document.getElementById('coherence-overlay');
+const $coherenceFill = document.getElementById('coherence-fill');
+const $coherenceStateLabel = document.getElementById('coherence-state-label');
+const $coherenceValue = document.getElementById('coherence-value');
+const $noteCount = document.getElementById('note-count');
+const $msgCount = document.getElementById('msg-count');
+const $hashDisplay = document.getElementById('hash-display');
+const $hashValue = document.getElementById('hash-value');
+
+// ── Coherence calculation ──
+function computeCoherence() {
+  if (messages.length === 0) return 0;
+
+  // Mood consistency: how uniform are the moods?
+  const moodCounts = {};
+  messages.forEach(m => { moodCounts[m.mood] = (moodCounts[m.mood] || 0) + 1; });
+  const totalMoods = messages.length;
+  const moodEntries = Object.values(moodCounts);
+  const maxMood = Math.max(...moodEntries);
+  const moodConsistency = maxMood / totalMoods;
+
+  // Word diversity: unique words / total words
+  const allWords = messages.map(m => m.text.toLowerCase().split(/\s+/)).flat().filter(Boolean);
+  const uniqueWords = new Set(allWords).size;
+  const diversity = Math.min(1, uniqueWords / Math.max(allWords.length, 1));
+
+  // Combine: consistency helps, diversity helps, more messages help
+  const msgFactor = Math.min(1, messages.length / 10);
+  const raw = (moodConsistency * 0.4 + diversity * 0.4 + msgFactor * 0.2);
+
+  return Math.max(0, Math.min(1, raw));
+}
+
+function getLevel(c) {
+  if (c >= 0.8) return 'POSNER';
+  if (c >= 0.6) return 'BONDED';
+  if (c >= 0.4) return 'CALCIUM';
+  if (c >= 0.2) return 'PHOSPHORUS';
+  return 'VOID';
+}
+
+function getLevelColor(level) {
+  return LEVEL_CONFIG[level]?.color || '#555';
+}
+
+// ── Render functions ──
+function renderCoherence() {
+  const level = getLevel(coherence);
+  const color = getLevelColor(level);
+  const glow = LEVEL_CONFIG[level]?.glow || 'none';
+
+  $coherenceBadge.textContent = level;
+  $coherenceBadge.style.color = color;
+  $coherenceBadge.style.borderColor = color + '44';
+  $coherenceBadge.style.textShadow = glow;
+
+  $coherenceOverlay.textContent = level;
+  $coherenceOverlay.style.color = color;
+  $coherenceOverlay.style.opacity = level === 'POSNER' ? '0.15' : '0.06';
+  $coherenceOverlay.style.textShadow = glow;
+
+  $coherenceFill.style.width = (coherence * 100) + '%';
+  $coherenceFill.style.background = color;
+  $coherenceFill.style.boxShadow = glow;
+
+  $coherenceStateLabel.textContent = level;
+  $coherenceStateLabel.style.color = color;
+  $coherenceValue.textContent = coherence.toFixed(2);
+  $coherenceValue.style.color = color;
+}
+
+function addMessage(text, mood) {
+  messages.push({ text, mood });
+
+  const item = document.createElement('div');
+  item.className = 'msg-item';
+
+  const moodTag = document.createElement('span');
+  moodTag.className = 'msg-mood';
+  moodTag.textContent = mood;
+  const mc = MOOD_COLORS[mood] || MOOD_COLORS.calm;
+  moodTag.style.color = mc;
+  moodTag.style.borderColor = mc + '44';
+
+  const textEl = document.createElement('span');
+  textEl.className = 'msg-text';
+  textEl.textContent = text;
+
+  item.appendChild(moodTag);
+  item.appendChild(textEl);
+  $msgList.appendChild(item);
+  $msgList.scrollTop = $msgList.scrollHeight;
+
+  $msgCount.textContent = messages.length + ' MESSAGES';
+}
+
+function renderMolecule() {
+  const sz = 280;
+  const c = sz / 2;
+  const recent = allNotes.slice(-60);
+  if (recent.length === 0) {
+    $moleculeSvg.innerHTML = `
+      <defs><radialGradient id="mg"><stop offset="0%" stop-color="#3ba372" stop-opacity="0.06"/>
+      <stop offset="100%" stop-color="#3ba372" stop-opacity="0"/></radialGradient></defs>
+      <circle cx="${c}" cy="${c}" r="${sz*0.4}" fill="url(#mg)"/>
+      <circle cx="${c}" cy="${c}" r="4" fill="#3ba372" opacity="0.8">
+        <animate attributeName="opacity" values="0.6;1;0.6" dur="2.5s" repeatCount="indefinite"/>
+      </circle>`;
+    return;
+  }
+
+  // Compute atom positions on radial layout
+  const atoms = recent.map((n, i) => {
+    const angle = (i / recent.length) * Math.PI * 2 - Math.PI / 2;
+    const normFreq = (n.freq - 100) / 800; // rough normalization
+    const radius = (0.2 + Math.min(1, Math.abs(normFreq)) * 0.6) * (sz * 0.38);
+    return {
+      x: c + Math.cos(angle) * radius,
+      y: c + Math.sin(angle) * radius,
+      r: 2 + n.duration * 6,
+      color: MOOD_COLORS[n.mood] || MOOD_COLORS.calm,
+      opacity: 0.3 + coherence * 0.5,
+    };
+  });
+
+  let svg = `<defs><radialGradient id="mg">
+    <stop offset="0%" stop-color="#3ba372" stop-opacity="${(0.06 + coherence * 0.06).toFixed(3)}"/>
+    <stop offset="100%" stop-color="#3ba372" stop-opacity="0"/></radialGradient></defs>`;
+  svg += `<circle cx="${c}" cy="${c}" r="${sz*0.4}" fill="url(#mg)"/>`;
+
+  // Sequential lines (molecule bonds)
+  for (let i = 0; i < atoms.length - 1; i++) {
+    const a = atoms[i], b = atoms[i+1];
+    svg += `<line x1="${a.x.toFixed(1)}" y1="${a.y.toFixed(1)}" x2="${b.x.toFixed(1)}" y2="${b.y.toFixed(1)}" stroke="${a.color}" stroke-width="0.6" opacity="${(0.15 + coherence * 0.2).toFixed(2)}"/>`;
+  }
+  // Close the loop if enough notes
+  if (atoms.length > 3) {
+    const first = atoms[0], last = atoms[atoms.length - 1];
+    svg += `<line x1="${last.x.toFixed(1)}" y1="${last.y.toFixed(1)}" x2="${first.x.toFixed(1)}" y2="${first.y.toFixed(1)}" stroke="${last.color}" stroke-width="0.4" opacity="${(0.08 + coherence * 0.1).toFixed(2)}"/>`;
+  }
+
+  // Entanglement lines between nearby nodes
+  for (let i = 0; i < atoms.length; i++) {
+    for (let j = i + 2; j < atoms.length; j++) {
+      if ((i + j) % 5 !== 0) continue;
+      const a = atoms[i], b = atoms[j];
+      const dist = Math.sqrt((a.x - b.x) ** 2 + (a.y - b.y) ** 2);
+      if (dist < sz * 0.2) {
+        svg += `<line x1="${a.x.toFixed(1)}" y1="${a.y.toFixed(1)}" x2="${b.x.toFixed(1)}" y2="${b.y.toFixed(1)}" stroke="#8b7cc9" stroke-width="0.4" opacity="${(0.04 + coherence * 0.06).toFixed(3)}"/>`;
+      }
+    }
+  }
+
+  // Atom circles
+  atoms.forEach(a => {
+    svg += `<circle cx="${a.x.toFixed(1)}" cy="${a.y.toFixed(1)}" r="${a.r.toFixed(1)}" fill="${a.color}" opacity="${(a.opacity * 0.7).toFixed(2)}"/>`;
+  });
+
+  // Center nucleus
+  svg += `<circle cx="${c}" cy="${c}" r="4" fill="#3ba372" opacity="0.9">
+    <animate attributeName="opacity" values="0.7;1;0.7" dur="2.5s" repeatCount="indefinite"/>
+  </circle>`;
+
+  // Coherence ring
+  svg += `<circle cx="${c}" cy="${c}" r="${(sz * 0.38 * coherence).toFixed(1)}" fill="none" stroke="#3ba372" stroke-width="0.5" opacity="${(0.1 + coherence * 0.15).toFixed(2)}" stroke-dasharray="2 3"/>`;
+
+  $moleculeSvg.innerHTML = svg;
+}
+
+function renderWaveform() {
+  const recent = allNotes.slice(-100);
+  if (recent.length < 2) {
+    $waveformSvg.innerHTML = '';
+    return;
+  }
+
+  const w = 500, h = 50, pad = 4;
+  const freqs = recent.map(n => n.freq);
+  const maxF = Math.max(...freqs), minF = Math.min(...freqs);
+  const range = maxF - minF || 1;
+
+  const points = recent.map((n, i) => {
+    const x = pad + (i / (recent.length - 1)) * (w - pad * 2);
+    const y = pad + (1 - (n.freq - minF) / range) * (h - pad * 2) * 0.7 + n.velocity * (h - pad * 2) * 0.2;
+    return x.toFixed(1) + ',' + y.toFixed(1);
+  }).join(' ');
+
+  let svg = `<polyline points="${points}" fill="none" stroke="#3ba372" stroke-width="1" opacity="0.4"/>`;
+
+  // Recent dot highlights
+  const tail = recent.slice(-20);
+  const offset = recent.length - tail.length;
+  tail.forEach((n, i) => {
+    const idx = offset + i;
+    const x = pad + (idx / (recent.length - 1)) * (w - pad * 2);
+    const y = pad + (1 - (n.freq - minF) / range) * (h - pad * 2) * 0.7 + n.velocity * (h - pad * 2) * 0.2;
+    const color = MOOD_COLORS[n.mood] || MOOD_COLORS.calm;
+    svg += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="1.8" fill="${color}" opacity="0.6"/>`;
+  });
+
+  $waveformSvg.innerHTML = svg;
+}
+
+function renderHash() {
+  const hash = synth.getMoleculeHash();
+  if (hash === '0000000000000000') {
+    $hashDisplay.style.display = 'none';
+    return;
+  }
+  $hashDisplay.style.display = 'block';
+  $hashValue.textContent = hash;
+}
+
+function renderAll() {
+  renderCoherence();
+  renderMolecule();
+  renderWaveform();
+  renderHash();
+  $noteCount.textContent = totalNoteCount + ' NOTES';
+}
+
+// ── Note callback ──
+synth.onNote = function(record) {
+  totalNoteCount = synth.noteHistory.length;
+  allNotes = synth.noteHistory.slice();
+  renderAll();
+};
+
+// ── Send message ──
+async function sendMessage() {
+  const text = $input.value.trim();
+  if (!text || synth.playing) return;
+
+  $input.value = '';
+  $input.disabled = true;
+  $sendBtn.disabled = true;
+
+  const mood = detectMood(text);
+  addMessage(text, mood);
+
+  // Recompute coherence
+  coherence = computeCoherence();
+
+  // Play the phrase
+  await synth.playPhrase(text, coherence);
+
+  // Update all visuals
+  totalNoteCount = synth.noteHistory.length;
+  allNotes = synth.noteHistory.slice();
+  renderAll();
+
+  $input.disabled = false;
+  $sendBtn.disabled = false;
+  $input.focus();
+}
+
+// ── Begin ──
+$beginBtn.addEventListener('click', async () => {
+  await synth.init();
+  $start.style.display = 'none';
+  $app.classList.add('active');
+  renderAll();
+  $input.focus();
+});
+
+$sendBtn.addEventListener('click', sendMessage);
+$input.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') sendMessage();
+});
+
+// Initial render
+renderMolecule();
+</script>
+</body>
+</html>

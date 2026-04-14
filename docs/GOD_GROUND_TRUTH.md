@@ -1,13 +1,13 @@
 # GOD Ground Truth
 
-Last Updated: 2026-04-05 | CWP-2026-011 G05 — Consolidation Pass
+Last Updated: 2026-04-14 | CWP corrections sync pass
 
 ## Infrastructure
 
 - 7-node Kenosis mesh: ✅ DEPLOYED — kenosis-mesh.trimtab-signal.workers.dev, 6 tests
 - CF Workers deployed: 22 total — p31-sce-broadcaster, p31-social-worker, p31-kofi-webhook, bonding-relay, api.phosphorus31.org + 17 others
 - Cron trigger limit: 🔴 5/5 — GitHub Actions pacemaker used instead
-- GitHub Actions pacemaker: ✅ sce-pacemaker.yml — cron 30 7,19 UTC → /trigger
+- GitHub Actions pacemaker: ✅ sce-pacemaker.yml — cron 5 17 UTC → /trigger
 - Genesis Gate v4.1.0: ✅ REBUILT — `packages/genesis-gate/` created with 4 tests passing, TelemetryModule, InterceptModule, GovernanceHook, GenesisOrchestrator
 
 ## Social Content Engine
@@ -43,7 +43,7 @@ Last Updated: 2026-04-05 | CWP-2026-011 G05 — Consolidation Pass
 - Node Zero: 🔴 Firmware debugging — display freeze RESOLVED, build env blocked.
 - Node One (The Totem): 🟡 Prototype — ESP32-S3, DRV2605L, SX1262, SE050.
 - phosphorus31.org: ✅ LIVE — full rebuild (Astro 5, About/Products/Transparency/Research/Donate).
-- p31ca.org: ✅ LIVE — 33 vectors, 11 standalone apps, MVP hub.
+- p31ca.org: ✅ LIVE — 40 vectors, 11 standalone apps, MVP hub.
 
 ## Frontend
 
@@ -62,7 +62,7 @@ Last Updated: 2026-04-05 | CWP-2026-011 G05 — Consolidation Pass
 - SE050 lifecycle: ✅ PLANNED — docs/SE050_KEY_LIFECYCLE.md
 - Secret inventory: ✅ COMPLETE — docs/SECRET_INVENTORY.md
 - License reconciliation: ✅ RESOLVED — docs/LICENSE_RECONCILIATION.md
-- FDA CDS classification: ✅ COMMITTED — Node Zero = Class II exempt (21 CFR §882.5050)
+- FDA classification: ✅ RESOLVED — No classification claimed. Node Zero = general wellness device (pre-market prototype). Buffer = communication support software (pre-market, ~85% complete). 513(g) RFI to be filed before market entry.
 - Miller Doctrine shield: ✅ COMMITTED
 - GODConstitution.sol: ⬜ DESIGNS — committed, no chain selected, not deployed
 - Discovery response: ✅ FILED March 26
@@ -75,9 +75,15 @@ Last Updated: 2026-04-05 | CWP-2026-011 G05 — Consolidation Pass
 - Ko-fi: ✅ LIVE — ko-fi.com/trimtab69420
 - Fidelity deposit: ✅ RECEIVED — $530 (spent: $110 GA inc, $40 newspaper pending, $275 held IRS, ~$105 buffer)
 - Ko-fi Phase 2: $863 target confirmed — post ready to publish (CWP-012 F02)
-- ESG housing grant: ⏳ OPENS April 13 — apply within 48 hours
+- ESG housing grant: ❌ KILLED — removed from active pipeline (not viable)
 - Grants pending: Pollination Project ($500) + Awesome Foundation ($1,000) since March 10
-- Grant pipeline: $550K+ (ESG, NIDILRR, NDEP, Microsoft AI, GA Tools for Life)
+- Shuttleworth Fellowship: ❌ KILLED — defunct since 2024, no longer accepting applications
+- NDEP: ❌ KILLED — removed from pipeline
+- Microsoft AI for Accessibility: ❌ KILLED — removed from pipeline
+- ASAN Teighlor McGee: ✅ LIVE — $6,250 ceiling, opens May 15, deadline Jul 31
+- Gates Grand Challenges AI: ✅ LIVE — $150K, deadline Apr 28
+- NLnet Commons: ✅ LIVE — €5–50K, deadline Jun 1
+- Grant pipeline: active (Gates $150K, NLnet €50K, ASAN $6,250, NIDILRR, GA Tools for Life)
 - Fiscal sponsor: Mission.Earth DEAD. HCB 4XDUXX (Feb 18) — no response.
 
 ## Research
@@ -92,9 +98,11 @@ Last Updated: 2026-04-05 | CWP-2026-011 G05 — Consolidation Pass
 ## Entity
 
 - P31 Labs, Inc.: ✅ INCORPORATED — Georgia nonprofit corporation, April 3, 2026
-- EIN: 81-2908499
+- Articles refile: ✅ SUBMITTED April 14 — 5 deficiencies corrected (SoS notice 31332327, examiner Denette Voundy). Filing date preserved as April 3 per O.C.G.A. § 14-3-120. Acceptance expected within expedite window.
+- EIN: 42-1888158 (assigned April 13, 2026 — CP 575E on file)
 - 501(c)(3): Pending — 1023-EZ filing ~April 17, IRS determination June–July 2026
-- Board: Will Johnson (President), Tyler Cisco (Independent Director), Brenda O'Dell (Director)
+- Georgia charitable registration: C-100 form, $35 filing fee (post-SoS-acceptance)
+- Board: Will Johnson (President), Joseph Tyler Cisco (Independent Director), Brenda O'Dell (Director)
 
 ## Firmware
 

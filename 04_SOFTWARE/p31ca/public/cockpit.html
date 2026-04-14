@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOVEREIGN OS // Cockpit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0f1115;
+    color: #d8d6d0;
+    font-family: 'Atkinson Hyperlegible', sans-serif;
+    overflow: hidden;
+    width: 100vw; height: 100vh;
+  }
+  canvas { display: block; }
+
+  .glass {
+    background: rgba(22, 25, 32, 0.75);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(77, 184, 168, 0.15);
+    border-radius: 8px;
+  }
+
+  #back-link {
+    position: fixed; top: 16px; left: 20px; z-index: 10;
+    font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 500;
+    color: #4db8a8; text-decoration: none; letter-spacing: 0.5px;
+    opacity: 0.8; transition: opacity 0.2s;
+  }
+  #back-link:hover { opacity: 1; }
+
+  #info-panel {
+    position: fixed; top: 16px; right: 20px; z-index: 10;
+    padding: 14px 18px; min-width: 220px;
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    line-height: 1.7; letter-spacing: 0.3px;
+  }
+  #info-panel .label { color: #666; }
+  #info-panel .val { color: #4db8a8; }
+  #info-panel .val-off { color: #555; }
+  #info-panel h3 {
+    font-size: 10px; letter-spacing: 1.5px; color: #888;
+    margin-bottom: 6px; font-weight: 500;
+  }
+
+  #control-panel {
+    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 10;
+    padding: 10px 14px; display: flex; gap: 8px; align-items: center;
+  }
+  .ctrl-btn {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 500;
+    letter-spacing: 0.5px;
+    padding: 7px 14px; border-radius: 5px; border: 1px solid rgba(77, 184, 168, 0.2);
+    background: rgba(22, 25, 32, 0.6); color: #888; cursor: pointer;
+    transition: all 0.25s;
+  }
+  .ctrl-btn.active { color: #d8d6d0; border-color: rgba(77, 184, 168, 0.5); background: rgba(77, 184, 168, 0.1); }
+  .ctrl-btn:hover { border-color: rgba(77, 184, 168, 0.4); }
+
+  #brand {
+    position: fixed; bottom: 20px; right: 20px; z-index: 10;
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    letter-spacing: 2px; color: #444;
+  }
+</style>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.183.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.183.0/examples/jsm/"
+  }
+}
+</script>
+</head>
+<body>
+
+<a id="back-link" href="sovereign.html">&larr; SOVEREIGN</a>
+
+<div id="info-panel" class="glass">
+  <h3>SOVEREIGN OS</h3>
+  <div id="info-content"></div>
+</div>
+
+<div id="control-panel" class="glass"></div>
+
+<div id="brand">P31 SOVEREIGN OS</div>
+
+<div id="scene-container" style="width:100vw;height:100vh;"></div>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+
+// ── Constants ──
+const VOID = 0x0f1115;
+const CYAN = 0x4db8a8;
+const CORAL = 0xff7766;
+const BUTTER = 0xe8d44d;
+const LAVENDER = 0x8b7cc9;
+const BLOCH_COL = 0x25897d;
+const IVM_COL = 0x555555;
+const R = 1.5; // geometry radius
+
+// ── Geometry Data ──
+// Tetrahedron vertices (normalized to radius R)
+const tetVerts = [
+  new THREE.Vector3( 1, 1, 1),
+  new THREE.Vector3( 1,-1,-1),
+  new THREE.Vector3(-1, 1,-1),
+  new THREE.Vector3(-1,-1, 1),
+].map(v => v.normalize().multiplyScalar(R));
+
+const tetEdges = [[0,1],[0,2],[0,3],[1,2],[1,3],[2,3]];
+
+// SIC-POVM directions (same as tet verts, unit)
+const sicDirs = tetVerts.map(v => v.clone().normalize());
+const sicColors = [CYAN, CORAL, BUTTER, LAVENDER];
+const sicLabels = ['|0>', '|1>', '|2>', '|3>'];
+
+// Cuboctahedron vertices (permutations of (0, +/-1, +/-1) normalized to R)
+function buildCuboctahedron() {
+  const verts = [];
+  const axes = [0, 1, 2];
+  for (const zeroAxis of axes) {
+    for (const s1 of [-1, 1]) {
+      for (const s2 of [-1, 1]) {
+        const v = [0, 0, 0];
+        const others = axes.filter(a => a !== zeroAxis);
+        v[zeroAxis] = 0;
+        v[others[0]] = s1;
+        v[others[1]] = s2;
+        verts.push(new THREE.Vector3(v[0], v[1], v[2]).normalize().multiplyScalar(R));
+      }
+    }
+  }
+  return verts;
+}
+
+// Octahedron vertices (permutations of (+/-1, 0, 0) normalized to R)
+function buildOctahedron() {
+  const verts = [];
+  for (const axis of [0, 1, 2]) {
+    for (const s of [-1, 1]) {
+      const v = [0, 0, 0];
+      v[axis] = s;
+      verts.push(new THREE.Vector3(v[0], v[1], v[2]).normalize().multiplyScalar(R));
+    }
+  }
+  return verts;
+}
+
+const cuboVerts = buildCuboctahedron();
+const octaVerts = buildOctahedron();
+
+// Map each cuboctahedron vertex to nearest octahedron vertex index
+const cuboToOcta = cuboVerts.map(cv => {
+  let best = 0, bestDist = Infinity;
+  octaVerts.forEach((ov, i) => {
+    const d = cv.distanceTo(ov);
+    if (d < bestDist) { bestDist = d; best = i; }
+  });
+  return best;
+});
+
+// ── Scene Setup ──
+const container = document.getElementById('scene-container');
+const W = window.innerWidth, H = window.innerHeight;
+
+const scene = new THREE.Scene();
+scene.fog = new THREE.FogExp2(VOID, 0.025);
+
+const camera = new THREE.PerspectiveCamera(50, W / H, 0.1, 200);
+camera.position.set(4, 3, 6);
+
+const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
+renderer.setSize(W, H);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.toneMapping = THREE.ReinhardToneMapping;
+renderer.toneMappingExposure = 1.2;
+container.appendChild(renderer.domElement);
+
+// Bloom
+const composer = new EffectComposer(renderer);
+composer.addPass(new RenderPass(scene, camera));
+const bloomPass = new UnrealBloomPass(new THREE.Vector2(W, H), 0.8, 0.4, 0.6);
+composer.addPass(bloomPass);
+
+// Controls
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.06;
+controls.maxDistance = 30;
+controls.minDistance = 1.5;
+
+// Lights
+scene.add(new THREE.AmbientLight(0x223344, 1.5));
+const ptLight = new THREE.PointLight(0x4db8a8, 4, 25);
+ptLight.position.set(2, 3, 2);
+scene.add(ptLight);
+
+// ── Groups ──
+const groups = {
+  tetrix:    new THREE.Group(),
+  sicpovm:   new THREE.Group(),
+  bloch:     new THREE.Group(),
+  ivm:       new THREE.Group(),
+  jitterbug: new THREE.Group(),
+  dust:      new THREE.Group(),
+};
+Object.values(groups).forEach(g => scene.add(g));
+
+// ── Visibility State ──
+const visible = { tetrix: true, sicpovm: true, bloch: true, ivm: false, jitterbug: true, dust: true };
+
+// ── Build Tetrix ──
+function buildTetrix() {
+  const grp = groups.tetrix;
+  // Vertices as glowing spheres
+  const sphereGeo = new THREE.SphereGeometry(0.06, 16, 16);
+  tetVerts.forEach(v => {
+    const mat = new THREE.MeshStandardMaterial({ color: CYAN, emissive: CYAN, emissiveIntensity: 2, toneMapped: false });
+    const mesh = new THREE.Mesh(sphereGeo, mat);
+    mesh.position.copy(v);
+    grp.add(mesh);
+  });
+  // Edges as glowing lines
+  const positions = [];
+  tetEdges.forEach(([a, b]) => {
+    positions.push(tetVerts[a].x, tetVerts[a].y, tetVerts[a].z);
+    positions.push(tetVerts[b].x, tetVerts[b].y, tetVerts[b].z);
+  });
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+  const mat = new THREE.LineBasicMaterial({ color: CYAN, transparent: true, opacity: 0.7 });
+  grp.add(new THREE.LineSegments(geo, mat));
+}
+buildTetrix();
+
+// ── Build SIC-POVM Vectors ──
+function buildSICPOVM() {
+  const grp = groups.sicpovm;
+  sicDirs.forEach((dir, i) => {
+    const len = R * 1.3;
+    const arrowDir = dir.clone();
+    const arrow = new THREE.ArrowHelper(arrowDir, new THREE.Vector3(0,0,0), len, sicColors[i], 0.12, 0.08);
+    grp.add(arrow);
+
+    // Label sprite
+    const canvas = document.createElement('canvas');
+    canvas.width = 64; canvas.height = 32;
+    const ctx = canvas.getContext('2d');
+    ctx.font = '18px JetBrains Mono';
+    ctx.fillStyle = '#' + sicColors[i].toString(16).padStart(6, '0');
+    ctx.textAlign = 'center';
+    ctx.fillText(sicLabels[i], 32, 22);
+    const tex = new THREE.CanvasTexture(canvas);
+    const spriteMat = new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: false });
+    const sprite = new THREE.Sprite(spriteMat);
+    sprite.position.copy(dir.clone().multiplyScalar(len + 0.25));
+    sprite.scale.set(0.5, 0.25, 1);
+    grp.add(sprite);
+  });
+}
+buildSICPOVM();
+
+// ── Build Bloch Sphere ──
+function buildBloch() {
+  const grp = groups.bloch;
+  // Wireframe sphere
+  const sphereGeo = new THREE.SphereGeometry(R, 32, 32);
+  const sphereMat = new THREE.MeshBasicMaterial({ color: BLOCH_COL, wireframe: true, transparent: true, opacity: 0.08 });
+  grp.add(new THREE.Mesh(sphereGeo, sphereMat));
+
+  // Equator ring
+  const eqGeo = new THREE.RingGeometry(R - 0.005, R + 0.005, 64);
+  const eqMat = new THREE.MeshBasicMaterial({ color: BLOCH_COL, transparent: true, opacity: 0.3, side: THREE.DoubleSide });
+  const eq = new THREE.Mesh(eqGeo, eqMat);
+  eq.rotation.x = -Math.PI / 2;
+  grp.add(eq);
+
+  // Prime meridian ring
+  const pmGeo = new THREE.RingGeometry(R - 0.005, R + 0.005, 64);
+  const pmMat = new THREE.MeshBasicMaterial({ color: BLOCH_COL, transparent: true, opacity: 0.2, side: THREE.DoubleSide });
+  grp.add(new THREE.Mesh(pmGeo, pmMat));
+}
+buildBloch();
+
+// ── Build IVM (cuboctahedron vectors from origin) ──
+function buildIVM() {
+  const grp = groups.ivm;
+  const positions = [];
+  cuboVerts.forEach(v => {
+    positions.push(0, 0, 0);
+    positions.push(v.x, v.y, v.z);
+  });
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+  const mat = new THREE.LineBasicMaterial({ color: IVM_COL, transparent: true, opacity: 0.4 });
+  grp.add(new THREE.LineSegments(geo, mat));
+
+  // Vertex dots
+  const dotGeo = new THREE.SphereGeometry(0.03, 8, 8);
+  const dotMat = new THREE.MeshBasicMaterial({ color: IVM_COL });
+  cuboVerts.forEach(v => {
+    const m = new THREE.Mesh(dotGeo, dotMat);
+    m.position.copy(v);
+    grp.add(m);
+  });
+}
+buildIVM();
+
+// ── Build Jitterbug ──
+const jitterbugPositions = new Float32Array(cuboVerts.length * 3);
+const jitterbugDots = [];
+
+function buildJitterbug() {
+  const grp = groups.jitterbug;
+
+  // Animated dots
+  const dotGeo = new THREE.SphereGeometry(0.05, 12, 12);
+  cuboVerts.forEach((v, i) => {
+    const mat = new THREE.MeshStandardMaterial({ color: LAVENDER, emissive: LAVENDER, emissiveIntensity: 1.2, toneMapped: false });
+    const mesh = new THREE.Mesh(dotGeo, mat);
+    mesh.position.copy(v);
+    grp.add(mesh);
+    jitterbugDots.push(mesh);
+  });
+
+  // Edges: connect adjacent cuboctahedron vertices (distance ~ sqrt(2)*R/norm)
+  // For simplicity, connect all pairs within a threshold
+  const threshold = R * 1.05;
+  const edgePositions = [];
+  const edgePairs = [];
+  for (let i = 0; i < cuboVerts.length; i++) {
+    for (let j = i + 1; j < cuboVerts.length; j++) {
+      if (cuboVerts[i].distanceTo(cuboVerts[j]) < threshold) {
+        edgePairs.push([i, j]);
+        edgePositions.push(0, 0, 0, 0, 0, 0);
+      }
+    }
+  }
+  const edgeGeo = new THREE.BufferGeometry();
+  edgeGeo.setAttribute('position', new THREE.Float32BufferAttribute(new Float32Array(edgePairs.length * 6), 3));
+  const edgeMat = new THREE.LineBasicMaterial({ color: LAVENDER, transparent: true, opacity: 0.5 });
+  const edgeLines = new THREE.LineSegments(edgeGeo, edgeMat);
+  grp.add(edgeLines);
+
+  grp.userData = { edgePairs, edgeLines };
+}
+buildJitterbug();
+
+// ── Dust Particles ──
+function buildDust() {
+  const grp = groups.dust;
+  const count = 200;
+  const geo = new THREE.BufferGeometry();
+  const pos = new Float32Array(count * 3);
+  for (let i = 0; i < count * 3; i++) {
+    pos[i] = (Math.random() - 0.5) * 16;
+  }
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  const mat = new THREE.PointsMaterial({ color: 0x445566, size: 0.03, transparent: true, opacity: 0.6 });
+  grp.add(new THREE.Points(geo, mat));
+}
+buildDust();
+
+// ── Mirror Floor ──
+function buildMirror() {
+  const geo = new THREE.PlaneGeometry(20, 20);
+  const mat = new THREE.MeshStandardMaterial({
+    color: 0x111518, metalness: 0.9, roughness: 0.1,
+    transparent: true, opacity: 0.3,
+  });
+  const floor = new THREE.Mesh(geo, mat);
+  floor.rotation.x = -Math.PI / 2;
+  floor.position.y = -2.2;
+  floor.receiveShadow = true;
+  scene.add(floor);
+}
+buildMirror();
+
+// ── UI: Control Panel ──
+const groupDefs = [
+  { key: 'tetrix',    label: 'TETRIX' },
+  { key: 'sicpovm',   label: 'SIC-POVM' },
+  { key: 'bloch',     label: 'BLOCH' },
+  { key: 'ivm',       label: 'IVM' },
+  { key: 'jitterbug', label: 'JITTERBUG' },
+  { key: 'dust',      label: 'DUST' },
+];
+
+const ctrlPanel = document.getElementById('control-panel');
+const buttons = {};
+
+groupDefs.forEach(({ key, label }) => {
+  const btn = document.createElement('button');
+  btn.className = 'ctrl-btn' + (visible[key] ? ' active' : '');
+  btn.textContent = label;
+  btn.addEventListener('click', () => {
+    visible[key] = !visible[key];
+    groups[key].visible = visible[key];
+    btn.classList.toggle('active', visible[key]);
+    updateInfo();
+  });
+  ctrlPanel.appendChild(btn);
+  buttons[key] = btn;
+});
+
+// Sync initial visibility
+Object.keys(visible).forEach(k => { groups[k].visible = visible[k]; });
+
+// ── UI: Info Panel ──
+const infoContent = document.getElementById('info-content');
+let jitterbugPhase = 0;
+
+function updateInfo() {
+  const lines = groupDefs.map(({ key, label }) => {
+    const on = visible[key];
+    return `<span class="label">${label}</span> <span class="${on ? 'val' : 'val-off'}">${on ? 'ON' : 'OFF'}</span>`;
+  });
+  lines.push('');
+  lines.push(`<span class="label">JB PHASE</span> <span class="val">${jitterbugPhase.toFixed(3)}</span>`);
+
+  // SIC-POVM readout (simulated measurement probabilities)
+  const probs = sicDirs.map((d, i) => {
+    const p = (0.25 + 0.15 * Math.sin(performance.now() * 0.001 + i * 1.5)).toFixed(2);
+    return p;
+  });
+  lines.push(`<span class="label">SIC-POVM</span> <span class="val">[${probs.join(', ')}]</span>`);
+
+  infoContent.innerHTML = lines.join('<br>');
+}
+updateInfo();
+
+// ── Animation Loop ──
+const clock = new THREE.Clock();
+
+function animate() {
+  requestAnimationFrame(animate);
+  const dt = clock.getDelta();
+  const t = clock.getElapsedTime();
+
+  // Rotate tetrix slowly
+  groups.tetrix.rotation.y += dt * 0.15;
+  groups.tetrix.rotation.x += dt * 0.05;
+
+  // SIC-POVM subtle pulse
+  groups.sicpovm.rotation.y = Math.sin(t * 0.3) * 0.05;
+
+  // Jitterbug: 10-second cycle, triangle wave 0->1->0
+  const cycleT = (t % 10) / 10; // 0..1
+  jitterbugPhase = cycleT < 0.5 ? cycleT * 2 : 2 - cycleT * 2; // triangle 0->1->0
+
+  // Interpolate cuboctahedron -> octahedron
+  cuboVerts.forEach((cv, i) => {
+    const target = octaVerts[cuboToOcta[i]];
+    const x = cv.x + (target.x - cv.x) * jitterbugPhase;
+    const y = cv.y + (target.y - cv.y) * jitterbugPhase;
+    const z = cv.z + (target.z - cv.z) * jitterbugPhase;
+    jitterbugDots[i].position.set(x, y, z);
+  });
+
+  // Update jitterbug edges
+  const { edgePairs, edgeLines } = groups.jitterbug.userData;
+  const edgePos = edgeLines.geometry.attributes.position.array;
+  edgePairs.forEach(([a, b], idx) => {
+    const pa = jitterbugDots[a].position;
+    const pb = jitterbugDots[b].position;
+    const off = idx * 6;
+    edgePos[off]     = pa.x; edgePos[off + 1] = pa.y; edgePos[off + 2] = pa.z;
+    edgePos[off + 3] = pb.x; edgePos[off + 4] = pb.y; edgePos[off + 5] = pb.z;
+  });
+  edgeLines.geometry.attributes.position.needsUpdate = true;
+
+  // Dust drift
+  if (groups.dust.children[0]) {
+    const pts = groups.dust.children[0];
+    const arr = pts.geometry.attributes.position.array;
+    for (let i = 0; i < arr.length; i += 3) {
+      arr[i]     += Math.sin(t + i) * 0.0003;
+      arr[i + 1] += Math.cos(t + i * 0.7) * 0.0004;
+      arr[i + 2] += Math.sin(t * 0.5 + i * 0.3) * 0.0002;
+    }
+    pts.geometry.attributes.position.needsUpdate = true;
+  }
+
+  // Update info every ~10 frames
+  if (Math.floor(t * 60) % 10 === 0) updateInfo();
+
+  controls.update();
+  composer.render();
+}
+
+animate();
+
+// ── Resize ──
+window.addEventListener('resize', () => {
+  const w = window.innerWidth, h = window.innerHeight;
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+  renderer.setSize(w, h);
+  composer.setSize(w, h);
+});
+</script>
+</body>
+</html>

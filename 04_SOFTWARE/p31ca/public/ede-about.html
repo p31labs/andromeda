@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0f1115">
+<title>EDE &mdash; Everything Development Environment | P31 Labs</title>
+<meta name="description" content="Browser-native cognitive prosthetic IDE. JSX transpilation, Q Distribution spoon tracking, Samson's Law entropy linter. Zero npm. Works offline.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --void: #0f1115;
+  --surface: #161920;
+  --surface2: #1c2028;
+  --coral: #cc6247;
+  --teal: #25897d;
+  --cyan: #4db8a8;
+  --phosphorus: #3ba372;
+  --cloud: #d8d6d0;
+  --muted: #6b7280;
+  --butter: #cda852;
+  --border: rgba(255,255,255,0.06);
+  --font: 'Atkinson Hyperlegible', sans-serif;
+  --mono: 'JetBrains Mono', 'Courier New', monospace;
+}
+html, body { min-height: 100%; background: var(--void); color: var(--cloud); font-family: var(--font); line-height: 1.6; }
+a { color: var(--coral); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* Nav */
+.nav {
+  position: sticky; top: 0; z-index: 50;
+  background: rgba(15,17,21,0.92);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.nav-inner {
+  max-width: 900px; margin: 0 auto;
+  padding: 14px 24px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.nav-brand {
+  display: flex; align-items: center; gap: 10px;
+  text-decoration: none; color: var(--cloud);
+}
+.nav-brand:hover { text-decoration: none; }
+.nav-brand-label {
+  font-family: var(--mono); font-weight: 700; font-size: 11px;
+  letter-spacing: 2px; text-transform: uppercase; opacity: 0.8;
+}
+.nav-links { display: flex; align-items: center; gap: 20px; }
+.nav-link {
+  font-family: var(--mono); font-size: 11px; color: var(--muted);
+  text-decoration: none; transition: color 0.15s;
+}
+.nav-link:hover { color: var(--cloud); text-decoration: none; }
+.nav-cta {
+  font-family: var(--mono); font-size: 11px; font-weight: 700;
+  background: rgba(204,98,71,0.15); color: var(--coral);
+  padding: 6px 14px; border-radius: 4px; border: 1px solid rgba(204,98,71,0.3);
+  text-decoration: none; transition: background 0.15s;
+}
+.nav-cta:hover { background: rgba(204,98,71,0.25); text-decoration: none; }
+
+/* Layout */
+.container { max-width: 720px; margin: 0 auto; padding: 56px 24px 96px; }
+
+/* Hero */
+.hero {
+  text-align: center;
+  padding: 56px 0 48px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 48px;
+}
+.hero-mark {
+  font-size: 52px; line-height: 1; margin-bottom: 20px;
+  color: var(--coral);
+}
+.hero h1 {
+  font-size: 32px; font-weight: 700; color: var(--coral);
+  letter-spacing: 3px; text-transform: uppercase;
+  font-family: var(--mono); margin-bottom: 8px;
+}
+.hero .subtitle {
+  font-size: 11px; font-family: var(--mono); color: var(--muted);
+  letter-spacing: 2px; text-transform: uppercase; margin-bottom: 20px;
+}
+.hero .tagline {
+  font-size: 17px; color: rgba(216,214,208,0.85);
+  max-width: 500px; margin: 0 auto; line-height: 1.65;
+}
+.hero .badge {
+  display: inline-block; margin-top: 16px;
+  font-family: var(--mono); font-size: 10px; font-weight: 700;
+  background: rgba(59,163,114,0.12); color: var(--phosphorus);
+  border: 1px solid rgba(59,163,114,0.3);
+  padding: 3px 10px; border-radius: 9999px; letter-spacing: 1px;
+}
+
+/* CTA */
+.cta-wrap { text-align: center; margin: 36px 0; display: flex; align-items: center; justify-content: center; gap: 16px; flex-wrap: wrap; }
+.cta-btn {
+  display: inline-block; background: var(--coral); color: var(--void);
+  font-family: var(--mono); font-weight: 700; font-size: 13px; letter-spacing: 1px;
+  padding: 13px 36px; border-radius: 5px; text-decoration: none; transition: filter 0.15s;
+}
+.cta-btn:hover { filter: brightness(1.1); text-decoration: none; }
+.cta-secondary {
+  font-family: var(--mono); font-size: 12px; color: var(--muted);
+  text-decoration: none; transition: color 0.15s;
+}
+.cta-secondary:hover { color: var(--cloud); text-decoration: none; }
+
+/* Section headings */
+h2 {
+  font-size: 10px; font-family: var(--mono);
+  letter-spacing: 3px; text-transform: uppercase;
+  color: var(--muted); margin: 40px 0 16px;
+  padding-bottom: 10px; border-bottom: 1px solid var(--border);
+}
+p { font-size: 15px; color: rgba(216,214,208,0.82); margin-bottom: 14px; line-height: 1.7; }
+
+/* Feature grid */
+.features { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 4px 0 32px; }
+@media (max-width: 520px) { .features { grid-template-columns: 1fr; } }
+.feat {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 8px; padding: 16px 18px;
+  transition: border-color 0.15s;
+}
+.feat:hover { border-color: rgba(255,255,255,0.12); }
+.feat-icon { font-size: 20px; margin-bottom: 8px; }
+.feat-title {
+  font-size: 11px; font-family: var(--mono); font-weight: 700;
+  color: var(--cloud); margin-bottom: 5px; letter-spacing: 0.5px;
+}
+.feat-desc { font-size: 12px; color: var(--muted); line-height: 1.55; }
+
+/* Stack table */
+.stack { width: 100%; border-collapse: collapse; font-size: 13px; margin: 4px 0 32px; }
+.stack th {
+  font-family: var(--mono); font-size: 9px; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--muted);
+  padding: 8px 12px; text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+.stack td {
+  padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,0.03);
+  vertical-align: top;
+}
+.stack td:first-child {
+  font-family: var(--mono); font-size: 12px; color: var(--coral);
+  white-space: nowrap; width: 140px;
+}
+.stack tr:last-child td { border-bottom: none; }
+.stack tr:hover td { background: rgba(255,255,255,0.015); }
+
+/* Tiers */
+.tiers { display: flex; flex-direction: column; gap: 8px; margin: 4px 0 32px; }
+.tier-row {
+  display: flex; align-items: baseline; gap: 14px;
+  padding: 12px 16px; border-radius: 6px;
+  background: var(--surface); border-left: 3px solid var(--border);
+}
+.tier-row.full       { border-left-color: var(--phosphorus); }
+.tier-row.moderate   { border-left-color: var(--coral); }
+.tier-row.simplified { border-left-color: var(--butter); }
+.tier-row.minimal    { border-left-color: var(--muted); }
+.tier-name {
+  font-family: var(--mono); font-size: 11px; font-weight: 700;
+  letter-spacing: 0.5px; min-width: 140px; flex-shrink: 0;
+}
+.tier-row.full       .tier-name { color: var(--phosphorus); }
+.tier-row.moderate   .tier-name { color: var(--coral); }
+.tier-row.simplified .tier-name { color: var(--butter); }
+.tier-row.minimal    .tier-name { color: var(--muted); }
+.tier-desc { font-size: 13px; color: rgba(216,214,208,0.68); }
+
+/* Footer */
+.footer {
+  margin-top: 64px; padding-top: 24px;
+  border-top: 1px solid var(--border);
+  display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px;
+  font-size: 11px; font-family: var(--mono); color: var(--muted);
+}
+.footer a { color: var(--muted); text-decoration: none; transition: color 0.15s; }
+.footer a:hover { color: var(--cloud); text-decoration: none; }
+.footer-links { display: flex; gap: 20px; flex-wrap: wrap; }
+</style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-brand">
+      <svg width="24" height="24" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+        <rect width="512" height="512" rx="112" fill="#25897d"/>
+        <circle cx="390" cy="120" r="48" fill="#cc6247"/>
+        <text x="256" y="340" font-family="system-ui" font-weight="900" font-size="220" fill="#d8d6d0" text-anchor="middle">P31</text>
+        <rect x="156" y="380" width="200" height="16" rx="8" fill="#cda852"/>
+      </svg>
+      <span class="nav-brand-label">P31 Labs</span>
+    </a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">&larr; Hub</a>
+      <a href="lattice.html" class="nav-link">Lattice &#x2B21;</a>
+      <a href="https://github.com/p31labs/andromeda" target="_blank" rel="noopener" class="nav-link">GitHub</a>
+      <a href="ede.html" class="nav-cta">&#x2B21; Launch EDE</a>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-mark">&#x2B21;</div>
+    <h1>EDE</h1>
+    <div class="subtitle">Everything Development Environment &middot; CWP-2026-009 THE CENTAUR</div>
+    <p class="tagline">A browser-native cognitive prosthetic IDE built for neurodivergent developers. No install. No build step. Runs entirely in your browser, works offline.</p>
+    <span class="badge">LIVE &mdash; DEPLOYED</span>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-wrap">
+    <a href="ede.html" class="cta-btn">&#x2B21; Launch EDE</a>
+    <a href="https://zenodo.org/records/19411363" class="cta-secondary" target="_blank" rel="noopener">Genesis Whitepaper &nearr;</a>
+  </div>
+
+  <h2>What is it?</h2>
+  <p>EDE is the Centaur: half-editor, half-cognitive monitor. It transpiles JSX with Babel, executes code in a sandboxed iframe, and simultaneously tracks your cognitive load via the Q Distribution spoon model and Samson&rsquo;s Law entropy analysis. When your capacity drops, the interface adapts &mdash; hiding complexity, slowing the pace, or entering full somatic breathing mode.</p>
+  <p>It is not just a code editor. It is a cognitive prosthetic that treats the developer&rsquo;s mental state as a first-class input.</p>
+
+  <h2>Features</h2>
+  <div class="features">
+    <div class="feat">
+      <div class="feat-icon">&#x1F527;</div>
+      <div class="feat-title">Jitterbug Compiler</div>
+      <div class="feat-desc">Babel Standalone transpiles JSX/ES2022 in-browser. Ctrl+Enter to run. No npm install, no webpack, no waiting.</div>
+    </div>
+    <div class="feat">
+      <div class="feat-icon">&#x25C8;</div>
+      <div class="feat-title">Samson&rsquo;s Law</div>
+      <div class="feat-desc">Acorn AST analysis computes Halstead Volume + Cyclomatic Complexity in real time. PID controller targets the &pi;/9 entropy attractor.</div>
+    </div>
+    <div class="feat">
+      <div class="feat-icon">&#x2B21;</div>
+      <div class="feat-title">Q Distribution</div>
+      <div class="feat-desc">Cognitive capacity sampled from Beta(21.6165, 46.4970). Spoons decay on each run, regenerate on idle. Four UI tiers adapt automatically.</div>
+    </div>
+    <div class="feat">
+      <div class="feat-icon">&#x1F6E1;</div>
+      <div class="feat-title">Catcher&rsquo;s Mitt Shield</div>
+      <div class="feat-desc">Voltage scoring for incoming signals. Fawn Guard activates on HIGH tier with 172.35 Hz Larmor tone. Simulate or wire to live Redis stream.</div>
+    </div>
+    <div class="feat">
+      <div class="feat-icon">&#x1F3DB;</div>
+      <div class="feat-title">Trimtab Rotary</div>
+      <div class="feat-desc">Drag to tune from 0.86 Hz to 863 Hz (logarithmic). Click to toggle tone. Long-press enters Layer 0 breathing mode.</div>
+    </div>
+    <div class="feat">
+      <div class="feat-icon">&#x1F4BE;</div>
+      <div class="feat-title">Offline-First</div>
+      <div class="feat-desc">IndexedDB persists all files across sessions. Service Worker caches Babel + React from CDN. Export to .zip, import via drag-drop.</div>
+    </div>
+  </div>
+
+  <h2>Progressive Disclosure Tiers</h2>
+  <div class="tiers">
+    <div class="tier-row full">
+      <span class="tier-name">FULL (&gt;70%)</span>
+      <span class="tier-desc">All panels visible &mdash; editor, output, shield, entropy, status.</span>
+    </div>
+    <div class="tier-row moderate">
+      <span class="tier-name">MODERATE (40&ndash;70%)</span>
+      <span class="tier-desc">Editor + output + shield summary bar. Entropy and status panels collapse.</span>
+    </div>
+    <div class="tier-row simplified">
+      <span class="tier-name">SIMPLIFIED (15&ndash;40%)</span>
+      <span class="tier-desc">Editor and output only. Right column hidden. Focus on the work.</span>
+    </div>
+    <div class="tier-row minimal">
+      <span class="tier-name">MINIMAL (&lt;15%)</span>
+      <span class="tier-desc">Layer 0: fullscreen breathing mode. 4-4-6 pattern. 172.35 Hz inhale, 86.3 Hz exhale. Hold Esc 3s or recover spoons to exit.</span>
+    </div>
+  </div>
+
+  <h2>Technical Stack</h2>
+  <table class="stack">
+    <thead><tr><th>Component</th><th>Technology</th></tr></thead>
+    <tbody>
+      <tr><td>Transpiler</td><td>Babel Standalone from unpkg CDN &mdash; JSX + ES2022, zero config</td></tr>
+      <tr><td>Execution</td><td>Sandboxed iframe &mdash; <code>sandbox="allow-scripts"</code>, no allow-same-origin</td></tr>
+      <tr><td>Entropy analysis</td><td>Acorn 8.14 from jsDelivr &mdash; single-pass AST walk, inline PID</td></tr>
+      <tr><td>Q Distribution</td><td>Box-Muller &rarr; Marsaglia-Tsang &rarr; Beta(21.6165, 46.4970), inline JS</td></tr>
+      <tr><td>Audio</td><td>Web Audio API &mdash; OscillatorNode at Larmor frequencies (172.35 Hz / 86.3 Hz)</td></tr>
+      <tr><td>Persistence</td><td>IndexedDB (primary) + localStorage (fallback)</td></tr>
+      <tr><td>Offline</td><td>Service Worker v2 &mdash; cache-first for CDN assets, network-first for dynamic</td></tr>
+      <tr><td>Export</td><td>JSZip 3.10 from jsDelivr &mdash; lazy-loaded on first export</td></tr>
+      <tr><td>Dependencies</td><td><strong>Zero npm packages</strong> &mdash; single HTML file, all CDN or inline</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Research Foundation</h2>
+  <p>EDE is the executable form of the P31 Genesis Whitepaper (DOI: <a href="https://doi.org/10.5281/zenodo.19411363" target="_blank" rel="noopener">10.5281/zenodo.19411363</a>). Every panel implements a system described in that paper: the Jitterbug Compiler, SIC-POVM Catcher&rsquo;s Mitt, Samson&rsquo;s Law harmonic linter, Q Distribution, and Larmor frequency regulation.</p>
+  <p>The EDE is the demo. The whitepaper is the manual. The grant application points here.</p>
+
+  <div class="cta-wrap" style="margin-top:40px">
+    <a href="ede.html" class="cta-btn">&#x2B21; Launch EDE</a>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <span>P31 Labs, Inc. &middot; CWP-2026-009 THE CENTAUR &middot; EIN 42-1888158</span>
+    <div class="footer-links">
+      <a href="index.html">Hub</a>
+      <a href="ede.html">EDE</a>
+      <a href="larmor.html">Larmor</a>
+      <a href="https://doi.org/10.5281/zenodo.19411363" target="_blank" rel="noopener">Whitepaper</a>
+      <a href="https://phosphorus31.org/donate" target="_blank" rel="noopener">Support</a>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

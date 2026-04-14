@@ -22,7 +22,7 @@ You are writing documentation for P31 Labs. Read `context.md` for full project a
 ## Key Facts for Grant Writing
 - P31 Labs is a Georgia 501(c)(3) nonprofit
 - Fiscal sponsor: HCB (ref 4XDUXX)
-- Node One: FDA 21 CFR §890.3710, Class II exempt
-- The Buffer: Non-device CDS under 21st Century Cures Act §3060(a)
+- Node One: No FDA classification claimed. General wellness device (stress resilience, relaxation, focus support). Pre-market prototype.
+- The Buffer: No FDA classification claimed. Communication support software. Pre-market development (~85% complete).
 - Founder has AuDHD + hypoparathyroidism, 16 years DoD civilian engineering experience
 - Target users: neurodivergent individuals needing executive function support

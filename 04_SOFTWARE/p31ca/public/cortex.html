@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0f1115">
+    <title>p31-cortex | AI Agent Orchestration | P31 Labs</title>
+    <meta name="description" content="Six autonomous agents orchestrated via Cloudflare Durable Objects with D1 persistence. Benefits, finance, grant, legal, content, and kofi agents.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Atkinson Hyperlegible"', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'monospace'],
+                    },
+                    colors: {
+                        void: '#0f1115', surface: '#161920', coral: '#cc6247',
+                        teal: '#25897d', cyan: '#4db8a8', cloud: '#d8d6d0',
+                        butter: '#cda852', lavender: '#8b7cc9', phosphorus: '#3ba372',
+                        paper: '#f4f4f5', ink: '#1e293b'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #0f1115;
+            color: #d8d6d0;
+            background-image: linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+        .matte-panel { background-color: #161920; border: 1px solid rgba(255,255,255,0.04); }
+        .logo-text { fill: #d8d6d0; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col text-cloud/90">
+
+<nav class="sticky top-0 z-50 border-b border-white/5 backdrop-blur-sm" style="background:rgba(15,17,21,0.92)">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+        <a href="index.html" class="flex items-center gap-3">
+            <svg width="24" height="24" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+                <rect width="512" height="512" rx="112" fill="#25897d"/>
+                <circle cx="390" cy="120" r="48" fill="#cc6247"/>
+                <text x="256" y="340" font-family="system-ui" font-weight="900" font-size="220" class="logo-text" text-anchor="middle">P31</text>
+                <rect x="156" y="380" width="200" height="16" rx="8" fill="#cda852"/>
+            </svg>
+            <span class="font-mono text-xs tracking-widest uppercase opacity-60">P31 Labs</span>
+        </a>
+        <a href="index.html" class="font-mono text-xs opacity-50 hover:opacity-100 transition-opacity">← Hub</a>
+    </div>
+</nav>
+
+<main class="max-w-6xl mx-auto px-6 py-16 flex flex-col gap-12 flex-1">
+
+    <header class="border-b border-white/5 pb-10">
+        <div class="flex items-start gap-6 mb-6">
+            <div class="text-5xl">🧠</div>
+            <div class="flex-1">
+                <div class="flex items-center gap-3 mb-3 flex-wrap">
+                    <span class="font-mono text-xs px-2 py-1 rounded" style="background:#3ba37215;color:#3ba372;border:1px solid #3ba37230">🟢 LIVE</span>
+                    <span class="font-mono text-xs opacity-30">Cloudflare Durable Objects</span>
+                </div>
+                <h1 class="text-4xl md:text-5xl font-bold mb-3">p31-cortex</h1>
+                <p class="text-xl text-teal/80 font-mono">AI Agent Orchestration</p>
+            </div>
+        </div>
+        <p class="text-base text-cloud/60 leading-relaxed max-w-3xl">
+            The limbic system of the P31 mesh. Six autonomous agents — benefits, finance, grant, legal, content, and kofi — run as Cloudflare Durable Objects with D1 SQLite persistence. Cortex provides proactive decision support without requiring operator availability.
+        </p>
+    </header>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+        <div class="lg:col-span-2 flex flex-col gap-8">
+
+            <section class="matte-panel rounded-xl p-8">
+                <h2 class="font-mono text-xs tracking-widest uppercase text-teal/60 mb-6">01. Architecture</h2>
+                <div class="flex flex-col gap-4">
+                    <p class="text-sm text-cloud/70 leading-relaxed">
+                        Each agent is a Cloudflare Durable Object — stateful, addressable, persistent. The Orchestrator DO coordinates multi-agent workflows; individual agents own their own state and lifecycle.
+                    </p>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 my-2">
+                        <div class="matte-panel rounded-lg p-3 border border-teal/10">
+                            <div class="font-mono text-xs text-teal/70 mb-1">BenefitsAgent</div>
+                            <div class="text-xs text-cloud/40">Tracks benefit programs, deadlines, eligibility windows</div>
+                        </div>
+                        <div class="matte-panel rounded-lg p-3 border border-teal/10">
+                            <div class="font-mono text-xs text-teal/70 mb-1">FinanceAgent</div>
+                            <div class="text-xs text-cloud/40">Budget tracking, expense categorisation, cashflow alerts</div>
+                        </div>
+                        <div class="matte-panel rounded-lg p-3 border border-teal/10">
+                            <div class="font-mono text-xs text-teal/70 mb-1">GrantAgent</div>
+                            <div class="text-xs text-cloud/40">ARPA-H, ESG, and other funding deadlines + draft assistance</div>
+                        </div>
+                        <div class="matte-panel rounded-lg p-3 border border-teal/10">
+                            <div class="font-mono text-xs text-teal/70 mb-1">LegalAgent</div>
+                            <div class="text-xs text-cloud/40">501(c)(3) compliance requirements, legal deadline surfacing</div>
+                        </div>
+                        <div class="matte-panel rounded-lg p-3 border border-teal/10">
+                            <div class="font-mono text-xs text-teal/70 mb-1">ContentAgent</div>
+                            <div class="text-xs text-cloud/40">Drafts social posts for Kenosis dispatch pipeline</div>
+                        </div>
+                        <div class="matte-panel rounded-lg p-3 border border-teal/10">
+                            <div class="font-mono text-xs text-teal/70 mb-1">KofiAgent</div>
+                            <div class="text-xs text-cloud/40">Processes Ko-fi webhooks, classifies contributions, fires telemetry</div>
+                        </div>
+                    </div>
+
+                    <ul class="flex flex-col gap-3 mt-2">
+                        <li class="flex gap-3 text-sm">
+                            <span class="text-teal mt-0.5 flex-shrink-0">▸</span>
+                            <span><span class="font-mono text-phosphorus">BaseAgent class</span> — common lifecycle: wake, process, sleep. Each agent extends BaseAgent and overrides the process method.</span>
+                        </li>
+                        <li class="flex gap-3 text-sm">
+                            <span class="text-teal mt-0.5 flex-shrink-0">▸</span>
+                            <span><span class="font-mono text-phosphorus">D1 SQLite database</span> — <code class="font-mono text-xs bg-white/5 px-1 rounded">0001_initial.sql</code> schema + <code class="font-mono text-xs bg-white/5 px-1 rounded">0002_seed_legal_deadlines.sql</code> pre-loads critical compliance dates at deploy time.</span>
+                        </li>
+                        <li class="flex gap-3 text-sm">
+                            <span class="text-teal mt-0.5 flex-shrink-0">▸</span>
+                            <span><span class="font-mono text-phosphorus">Orchestrator DO</span> — coordinates multi-agent workflows, manages agent wake/sleep scheduling, routes inter-agent messages.</span>
+                        </li>
+                        <li class="flex gap-3 text-sm">
+                            <span class="text-teal mt-0.5 flex-shrink-0">▸</span>
+                            <span><span class="font-mono text-phosphorus">Discord notification pipeline</span> — <code class="font-mono text-xs bg-white/5 px-1 rounded">src/notify/discord.ts</code> routes agent outputs to Discord channels via webhook.</span>
+                        </li>
+                        <li class="flex gap-3 text-sm">
+                            <span class="text-teal mt-0.5 flex-shrink-0">▸</span>
+                            <span><span class="font-mono text-phosphorus">Structured telemetry</span> — all agents emit structured telemetry events consumed by Genesis Gate's governance pipeline.</span>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <section class="matte-panel rounded-xl p-8">
+                <h2 class="font-mono text-xs tracking-widest uppercase text-teal/60 mb-6">02. Operational Role</h2>
+                <div class="flex flex-col gap-4 text-sm text-cloud/70 leading-relaxed">
+                    <p>
+                        Cortex is the "limbic system" of the P31 mesh — the layer that handles autonomic functions so the operator's cognitive bandwidth is reserved for higher-order decisions. It does not require the operator to be present or even aware of routine operations.
+                    </p>
+                    <div class="matte-panel rounded-lg p-4 border-l-2 border-lavender/40 my-2">
+                        <div class="font-mono text-xs text-lavender/60 mb-2">GRANT PIPELINE — APRIL 13, 2026</div>
+                        <p class="text-xs text-cloud/60">
+                            ESG grant window opens April 13, 2026. GrantAgent has this deadline pre-seeded in D1. It will surface preparation requirements, draft summaries, and alert via Discord as the date approaches — without operator prompting.
+                        </p>
+                    </div>
+                    <p>
+                        LegalAgent surfaces 501(c)(3) compliance requirements proactively — annual report deadlines, state registration renewals, and IRS filing windows are pre-loaded from <code class="font-mono text-xs bg-white/5 px-1 rounded">0002_seed_legal_deadlines.sql</code>.
+                    </p>
+                    <p>
+                        ContentAgent drafts social content for the Kenosis dispatch pipeline. The content does not post directly — it enters the Kenosis mesh where it is subject to governance hook clearance before dispatch.
+                    </p>
+                </div>
+            </section>
+
+        </div>
+
+        <div class="flex flex-col gap-6">
+
+            <div class="matte-panel rounded-xl p-6">
+                <div class="font-mono text-xs text-teal/60 mb-4 tracking-widest uppercase">Deployment</div>
+                <div class="flex flex-col gap-3 text-sm">
+                    <div class="flex justify-between">
+                        <span class="opacity-50">Status</span>
+                        <span class="font-mono text-phosphorus text-xs">🟢 LIVE</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="opacity-50">Platform</span>
+                        <span class="font-mono text-xs">CF Durable Objects</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="opacity-50">Database</span>
+                        <span class="font-mono text-xs">D1 SQLite</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="opacity-50">Agents</span>
+                        <span class="font-mono text-xs">6 active</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="matte-panel rounded-xl p-6">
+                <div class="font-mono text-xs text-teal/60 mb-4 tracking-widest uppercase">Repository</div>
+                <a href="https://github.com/p31labs/andromeda/tree/main/04_SOFTWARE/p31-cortex" target="_blank" class="font-mono text-xs text-cloud/50 hover:text-teal transition-colors break-all">
+                    github.com/p31labs/andromeda<br>/04_SOFTWARE/p31-cortex ↗
+                </a>
+            </div>
+
+            <div class="matte-panel rounded-xl p-6">
+                <div class="font-mono text-xs text-teal/60 mb-4 tracking-widest uppercase">Ecosystem</div>
+                <div class="flex flex-col gap-3">
+                    <a href="genesis-gate.html" class="flex items-center gap-2 text-sm hover:text-teal transition-colors">
+                        <span>🔬</span><span class="text-xs">Genesis Gate <span class="opacity-40">— governance layer</span></span>
+                    </a>
+                    <a href="kenosis.html" class="flex items-center gap-2 text-sm hover:text-teal transition-colors">
+                        <span>🕸️</span><span class="text-xs">Kenosis <span class="opacity-40">— content dispatch</span></span>
+                    </a>
+                    <a href="discord-bot.html" class="flex items-center gap-2 text-sm hover:text-teal transition-colors">
+                        <span>🤖</span><span class="text-xs">p31-bot <span class="opacity-40">— notification sink</span></span>
+                    </a>
+                    <a href="donate.html" class="flex items-center gap-2 text-sm hover:text-teal transition-colors">
+                        <span>💚</span><span class="text-xs">Donate Pipeline <span class="opacity-40">— KofiAgent source</span></span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="matte-panel rounded-xl p-6">
+                <div class="font-mono text-xs text-teal/60 mb-3 tracking-widest uppercase">Tech Stack</div>
+                <div class="flex flex-wrap gap-2">
+                    <span class="font-mono text-xs bg-white/5 px-2 py-1 rounded">CF Durable Objects</span>
+                    <span class="font-mono text-xs bg-white/5 px-2 py-1 rounded">D1 SQLite</span>
+                    <span class="font-mono text-xs bg-white/5 px-2 py-1 rounded">AI Bindings</span>
+                    <span class="font-mono text-xs bg-white/5 px-2 py-1 rounded">TypeScript</span>
+                    <span class="font-mono text-xs bg-white/5 px-2 py-1 rounded">Wrangler</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</main>
+
+<footer class="border-t border-white/5 mt-auto">
+    <div class="max-w-6xl mx-auto px-6 py-8 flex items-center justify-between">
+        <div class="font-mono text-xs opacity-30">P31 Labs — EIN 42-1888158</div>
+        <a href="index.html" class="font-mono text-xs opacity-40 hover:opacity-80 transition-opacity">← Back to Hub</a>
+    </div>
+</footer>
+
+</body>
+</html>

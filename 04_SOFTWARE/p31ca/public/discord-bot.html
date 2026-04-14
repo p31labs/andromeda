@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0f1115">
+    <title>p31-bot | Community Command Plane | P31 Labs</title>
+    <meta name="description" content="20+ slash commands: spoon ledger, egg tracker, quantum egg hunt, founding nodes, telemetry relay, and book announcement.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Atkinson Hyperlegible"', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'monospace'],
+                    },
+                    colors: {
+                        void: '#0f1115', surface: '#161920', coral: '#cc6247',
+                        teal: '#25897d', cyan: '#4db8a8', cloud: '#d8d6d0',
+                        butter: '#cda852', lavender: '#8b7cc9', phosphorus: '#3ba372',
+                        paper: '#f4f4f5', ink: '#1e293b'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #0f1115;
+            color: #d8d6d0;
+            background-image: linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+        .matte-panel { background-color: #161920; border: 1px solid rgba(255,255,255,0.04); }
+        .logo-text { fill: #d8d6d0; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col text-cloud/90">
+
+<nav class="sticky top-0 z-50 border-b border-white/5 backdrop-blur-sm" style="background:rgba(15,17,21,0.92)">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+        <a href="index.html" class="flex items-center gap-3">
+            <svg width="24" height="24" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+                <rect width="512" height="512" rx="112" fill="#25897d"/>
+                <circle cx="390" cy="120" r="48" fill="#cc6247"/>
+                <text x="256" y="340" font-family="system-ui" font-weight="900" font-size="220" class="logo-text" text-anchor="middle">P31</text>
+                <rect x="156" y="380" width="200" height="16" rx="8" fill="#cda852"/>
+            </svg>
+            <span class="font-mono text-xs tracking-widest uppercase opacity-60">P31 Labs</span>
+        </a>
+        <a href="index.html" class="font-mono text-xs opacity-50 hover:opacity-100 transition-opacity">← Hub</a>
+    </div>
+</nav>
+
+<main class="max-w-6xl mx-auto px-6 py-16 flex flex-col gap-12 flex-1">
+
+    <header class="border-b border-white/5 pb-10">
+        <div class="flex items-start gap-6 mb-6">
+            <div class="text-5xl">🤖</div>
+            <div class="flex-1">
+                <div class="flex items-center gap-3 mb-3 flex-wrap">
+                    <span class="font-mono text-xs px-2 py-1 rounded" style="background:#3ba37215;color:#3ba372;border:1px solid #3ba37230">🟢 LIVE</span>
+                    <span class="font-mono text-xs opacity-30">Railway deployment</span>
+                </div>
+                <h1 class="text-4xl md:text-5xl font-bold mb-3">p31-bot</h1>
+                <p class="text-xl text-teal/80 font-mono">Community Command Plane</p>
+            </div>
+        </div>
+        <p class="text-base text-cloud/60 leading-relaxed max-w-3xl">
+            20+ slash commands serving the P31 Labs Discord community. Spoon ledger, egg tracker, quantum egg hunt, founding nodes registry, telemetry relay, and book announcement — all wired into the broader P31 mesh.
+        </p>
+    </header>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+        <div class="lg:col-span-2 flex flex-col gap-8">
+
+            <section class="matte-panel rounded-xl p-8">
+                <h2 class="font-mono text-xs tracking-widest uppercase text-teal/60 mb-6">01. Architecture</h2>
+                <div class="flex flex-col gap-4">
+                    <p class="text-sm text-cloud/70 leading-relaxed">
+                        Discord.js v14 + TypeScript, deployed to Railway. Every command follows the <code class="font-mono text-xs bg-white/5 px-1 rounded">P31Command</code> interface pattern with auto-registration and graceful help generation.
+                    </p>
+                    <ul class="flex flex-col gap-3 mt-2">
+                        <li class="flex gap-3 text-sm">
+                            <span class="text-teal mt-0.5 flex-shrink-0">▸</span>
+                            <span><span class="font-mono text-phosphorus">P31Command interface</span> — <code class="font-mono text-xs bg-white/5 px-1 rounded">{"{ data: SlashCommandBuilder, execute(interaction) }"}</code>. All commands implement this pattern; the registry handles auto-registration with Discord API.</span>
+                        </li>
+                        <li class="flex gap-3 text-sm">
+                            <span class="text-teal mt-0.5 flex-shrink-0">▸</span>
+                            <span><span class="font-mono text-phosphorus">Services layer</span> — SpoonLedger, EggTracker, FawnDetector, QuantumEggHunt, CortexWebhook, WebhookHandler, TelemetryService. Each service is independently testable.</span>
+                        </li>
+                        <li class="flex gap-3 text-sm">
+                            <span class="text-teal mt-0.5 flex-shrink-0">▸</span>
+                            <span><span class="font-mono text-phosphorus">Vitest test suite</span> — 4 test files: <code class="font-mono text-xs bg-white/5 px-1 rounded">base.test.ts</code>, <code class="font-mono text-xs bg-white/5 px-1 rounded">claim.test.ts</code>, <code class="font-mono text-xs bg-white/5 px-1 rounded">eggTracker.test.ts</code>, <code class="font-mono text-xs bg-white/5 px-1 rounded">spoonLedger.test.ts</code>.</span>
+                        </li>
+                        <li class="flex gap-3 text-sm">
+                            <span class="text-teal mt-0.5 flex-shrink-0">▸</span>
+                            <span><span class="font-mono text-phosphorus">Docker + Railway</span> — Dockerfile + docker-compose for local dev; Railway handles production deployment with automatic restarts.</span>
+                        </li>
+                        <li class="flex gap-3 text-sm">
+                            <span class="text-teal mt-0.5 flex-shrink-0">▸</span>
+                            <span><span class="font-mono text-phosphorus">CortexWebhook service</span> — pipes significant community events back to p31-cortex for agent processing and Genesis Gate telemetry.</span>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <section class="matte-panel rounded-xl p-8">
+                <h2 class="font-mono text-xs tracking-widest uppercase text-teal/60 mb-6">02. Command Surface</h2>
+                <div class="flex flex-col gap-6 text-sm text-cloud/70">
+                    <div>
+                        <div class="font-mono text-xs text-teal/60 mb-3">CORE COMMANDS (20+)</div>
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                            {['/bonding','/base','/claim','/cortex','/deploy','/easter','/eggs','/esg','/health','/help','/housing','/leaderboard','/nodes','/rehoused','/social','/spoon','/status','/telemetry','/book'].map(cmd =>
+                                `<span class="font-mono text-xs bg-white/5 px-2 py-1 rounded text-cloud/60">${cmd}</span>`
+                            ).join('')}
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="matte-panel rounded-lg p-4 border border-teal/10">
+                            <div class="font-mono text-xs text-teal/70 mb-2">Spoon Ledger</div>
+                            <div class="text-xs text-cloud/50 leading-relaxed">Tracks cognitive energy units across the community. Spoons are earned, spent, and transferred. The ledger persists across sessions and feeds into community health metrics.</div>
+                        </div>
+                        <div class="matte-panel rounded-lg p-4 border border-teal/10">
+                            <div class="font-mono text-xs text-teal/70 mb-2">Quantum Egg Hunt</div>
+                            <div class="text-xs text-cloud/50 leading-relaxed">Seasonal engagement game mapped to SIC-POVM measurement events. Eggs are hidden across the mesh; discovery events fire telemetry. Tracked in <code class="font-mono bg-white/5 px-1 rounded">egg-progress.json</code>.</div>
+                        </div>
+                        <div class="matte-panel rounded-lg p-4 border border-teal/10">
+                            <div class="font-mono text-xs text-teal/70 mb-2">Founding Nodes</div>
+                            <div class="text-xs text-cloud/50 leading-relaxed">150-slot Dunbar's number registry in <code class="font-mono bg-white/5 px-1 rounded">founding-nodes.json</code>. First 150 community members to claim a node are founding members of the mesh.</div>
+                        </div>
+                        <div class="matte-panel rounded-lg p-4 border border-teal/10">
+                            <div class="font-mono text-xs text-teal/70 mb-2">FawnDetector</div>
+                            <div class="text-xs text-cloud/50 leading-relaxed">Identifies trauma freeze/fawn response patterns in community interactions — over-apologising, compulsive agreeableness, self-silencing. Surfaces patterns without diagnosis.</div>
+                        </div>
+                    </div>
+
+                    <div class="matte-panel rounded-lg p-4 border-l-2 border-phosphorus/30">
+                        <div class="font-mono text-xs text-phosphorus/60 mb-2">/book COMMAND</div>
+                        <div class="text-xs text-cloud/60 leading-relaxed">Announces the children's book with a rich Discord embed — title, dedication, and a direct link to <code class="font-mono bg-white/5 px-1 rounded">mother-nature-book.pages.dev</code>. Wired to the book deployment event.</div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+
+        <div class="flex flex-col gap-6">
+
+            <div class="matte-panel rounded-xl p-6">
+                <div class="font-mono text-xs text-teal/60 mb-4 tracking-widest uppercase">Deployment</div>
+                <div class="flex flex-col gap-3 text-sm">
+                    <div class="flex justify-between">
+                        <span class="opacity-50">Status</span>
+                        <span class="font-mono text-phosphorus text-xs">🟢 LIVE</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="opacity-50">Platform</span>
+                        <span class="font-mono text-xs">Railway</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="opacity-50">Commands</span>
+                        <span class="font-mono text-xs">20+</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="opacity-50">Library</span>
+                        <span class="font-mono text-xs">Discord.js v14</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="matte-panel rounded-xl p-6">
+                <div class="font-mono text-xs text-teal/60 mb-4 tracking-widest uppercase">Repository</div>
+                <a href="https://github.com/p31labs/andromeda/tree/main/04_SOFTWARE/discord/p31-bot" target="_blank" class="font-mono text-xs text-cloud/50 hover:text-teal transition-colors break-all">
+                    github.com/p31labs/andromeda<br>/discord/p31-bot ↗
+                </a>
+            </div>
+
+            <div class="matte-panel rounded-xl p-6">
+                <div class="font-mono text-xs text-teal/60 mb-4 tracking-widest uppercase">Ecosystem</div>
+                <div class="flex flex-col gap-3">
+                    <a href="cortex.html" class="flex items-center gap-2 text-sm hover:text-teal transition-colors">
+                        <span>🧠</span><span class="text-xs">p31-cortex <span class="opacity-40">— CortexWebhook sink</span></span>
+                    </a>
+                    <a href="donate.html" class="flex items-center gap-2 text-sm hover:text-teal transition-colors">
+                        <span>💚</span><span class="text-xs">Donate Pipeline <span class="opacity-40">— contribution alerts</span></span>
+                    </a>
+                    <a href="bonding.html" class="flex items-center gap-2 text-sm hover:text-teal transition-colors">
+                        <span>⚛️</span><span class="text-xs">BONDING <span class="opacity-40">— game event relay</span></span>
+                    </a>
+                    <a href="book.html" class="flex items-center gap-2 text-sm hover:text-teal transition-colors">
+                        <span>📖</span><span class="text-xs">Book <span class="opacity-40">— /book announcement</span></span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="matte-panel rounded-xl p-6">
+                <div class="font-mono text-xs text-teal/60 mb-3 tracking-widest uppercase">Tech Stack</div>
+                <div class="flex flex-wrap gap-2">
+                    <span class="font-mono text-xs bg-white/5 px-2 py-1 rounded">Discord.js v14</span>
+                    <span class="font-mono text-xs bg-white/5 px-2 py-1 rounded">TypeScript</span>
+                    <span class="font-mono text-xs bg-white/5 px-2 py-1 rounded">Railway</span>
+                    <span class="font-mono text-xs bg-white/5 px-2 py-1 rounded">Docker</span>
+                    <span class="font-mono text-xs bg-white/5 px-2 py-1 rounded">Vitest</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</main>
+
+<footer class="border-t border-white/5 mt-auto">
+    <div class="max-w-6xl mx-auto px-6 py-8 flex items-center justify-between">
+        <div class="font-mono text-xs opacity-30">P31 Labs — EIN 42-1888158</div>
+        <a href="index.html" class="font-mono text-xs opacity-40 hover:opacity-80 transition-opacity">← Back to Hub</a>
+    </div>
+</footer>
+
+<script>
+// Render command badges
+document.querySelectorAll('.grid.grid-cols-2.sm\\:grid-cols-3.gap-2').forEach(grid => {
+    const cmds = ['/bonding','/base','/claim','/cortex','/deploy','/easter','/eggs','/esg','/health','/help','/housing','/leaderboard','/nodes','/rehoused','/social','/spoon','/status','/telemetry','/book'];
+    grid.innerHTML = cmds.map(cmd => `<span class="font-mono text-xs bg-white/5 px-2 py-1 rounded text-cloud/60">${cmd}</span>`).join('');
+});
+</script>
+
+</body>
+</html>

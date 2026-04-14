@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0f1115">
+    <title>SIGNAL | Stim Room & Mini Games | P31 Labs</title>
+    <meta name="description" content="Stim room calibrated for the 12-spoon budget. WebGL fluid, cellular sand mandala, spoon physics jar. 4 mini games. Zero dopamine traps. Kapp et al. Ayres Sensory Integration.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['"Atkinson Hyperlegible"', 'sans-serif'], mono: ['"JetBrains Mono"', 'monospace'] },
+                    colors: { void: '#0f1115', surface: '#161920', coral: '#cc6247', teal: '#25897d', cyan: '#4db8a8', cloud: '#d8d6d0', butter: '#cda852', lavender: '#8b7cc9', phosphorus: '#3ba372' }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #0f1115; color: #d8d6d0; background-image: linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px); background-size: 40px 40px; }
+        .matte-panel { background-color: #161920; border: 1px solid rgba(255,255,255,0.04); }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col text-cloud/90">
+
+    <header class="w-full border-b border-white/5 bg-void/95 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="/" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
+                <svg width="28" height="28" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="512" height="512" rx="112" fill="#25897d"/>
+                    <circle cx="390" cy="120" r="48" fill="#cc6247"/>
+                    <text x="256" y="340" font-family="system-ui" font-weight="900" font-size="220" fill="#d8d6d0" text-anchor="middle">P31</text>
+                    <rect x="156" y="380" width="200" height="16" rx="8" fill="#cda852"/>
+                </svg>
+                <span class="font-bold text-lg tracking-tight">P31 Labs</span>
+            </a>
+            <nav class="flex gap-4 font-mono text-sm">
+                <a href="/" class="text-cloud/50 hover:text-cloud transition-colors flex items-center gap-2">← Hub</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl mx-auto px-6 py-12 w-full flex flex-col gap-12">
+
+        <header class="border-b border-white/10 pb-8">
+            <div class="flex items-center gap-4 mb-4">
+                <div class="text-3xl bg-surface w-12 h-12 rounded flex items-center justify-center border border-white/5">🎮</div>
+                <div class="px-2 py-0.5 rounded border text-[10px] font-mono tracking-wide text-butter/80 border-butter/20 bg-butter/5">🔵 PROTOTYPE</div>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-bold mb-4 text-cloud">SIGNAL</h1>
+            <p class="text-xl text-butter/70 font-mono">Stim Room & Mini Games — Sensory Regulation Architecture</p>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+            <div class="lg:col-span-2 flex flex-col gap-8">
+
+                <section class="matte-panel rounded-lg p-8">
+                    <h2 class="text-2xl font-bold mb-4 flex items-center gap-3">
+                        <span class="text-butter">01.</span> Sensory Integration Framework
+                    </h2>
+                    <p class="text-cloud/70 leading-relaxed mb-6">
+                        SIGNAL is rooted in Ayres Sensory Integration theory and Kapp et al.'s (2019) research demonstrating that stimming is a primary mechanism for autistic self-regulation — not a behavior to be extinguished. Crucially, all activities adhere to Csikszentmihalyi's <strong class="text-cloud/85">Autotelic Flow</strong> — they have no external goals, no high scores, and no failure states. The value is strictly in the doing of the activity.
+                    </p>
+                    <div class="space-y-3">
+                        <div class="bg-void border border-butter/10 rounded p-5">
+                            <p class="text-butter/80 font-mono text-xs mb-2 uppercase tracking-widest">Anti-Pattern Audit</p>
+                            <ul class="text-cloud/70 text-sm space-y-1">
+                                <li>→ No "cookie clicker" infinite dopamine loops — these exploit ADHD hyperfocus and cause burnout.</li>
+                                <li>→ No high-contrast or strobing visuals — low-albedo palette only (pastel/neon on deep black).</li>
+                                <li>→ The UI must not turn red, flash, or look "angry" when spoons reach zero.</li>
+                                <li>→ No auto-playing audio. Every sound is user-initiated.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="matte-panel rounded-lg p-8">
+                    <h2 class="text-2xl font-bold mb-4 flex items-center gap-3">
+                        <span class="text-butter">02.</span> Stim Bank
+                    </h2>
+                    <p class="text-sm text-cloud/50 mb-6 font-mono">All stim tools cost 0 spoons. Always available regardless of spoon state.</p>
+                    <div class="space-y-6">
+                        <div>
+                            <h3 class="font-bold text-cloud mb-2 flex items-center gap-2">
+                                <span class="text-xs font-mono px-2 py-0.5 rounded bg-butter/10 border border-butter/20 text-butter">WebGL FBO</span>
+                                Viscoelastic Haptic Fluid
+                            </h3>
+                            <p class="text-cloud/65 text-sm leading-relaxed">Navier-Stokes fluid via FBO (Framebuffer Object) ping-ponging — the only technique that achieves 60fps on a Snapdragon 680 for fluid simulation. Swirling the fluid rapidly triggers <code class="font-mono text-xs text-butter/60">navigator.vibrate([30, 20, 30, 20])</code> — a low rolling haptic rumble matching visual intensity. Batched to avoid Android OS thermal throttling.</p>
+                        </div>
+                        <div class="border-t border-white/5 pt-6">
+                            <h3 class="font-bold text-cloud mb-2 flex items-center gap-2">
+                                <span class="text-xs font-mono px-2 py-0.5 rounded bg-butter/10 border border-butter/20 text-butter">Uint8Array · Web Worker</span>
+                                Infinite Cellular Sand
+                            </h3>
+                            <p class="text-cloud/65 text-sm leading-relaxed">1D typed array cellular automaton executing in a Web Worker — keeping the UI thread completely unblocked. Features vertically looping boundaries so the falling sand never fills the screen, enabling infinite continuous stimming. Materials: sand, water, neon gas. The grid loops; the stim never ends.</p>
+                        </div>
+                        <div class="border-t border-white/5 pt-6">
+                            <h3 class="font-bold text-cloud mb-2 flex items-center gap-2">
+                                <span class="text-xs font-mono px-2 py-0.5 rounded bg-butter/10 border border-butter/20 text-butter">Canvas 2D</span>
+                                Fiber Optics Drag + Bubble Wrap
+                            </h3>
+                            <p class="text-cloud/65 text-sm leading-relaxed">Touch-drag glowing strands that follow with elastic lag. Bubble wrap: infinite grid, each tap pops one with a soft audio + <code class="font-mono text-xs text-butter/60">navigator.vibrate([30])</code>. Bubbles regenerate slowly. No counter, no progress bar — just the infinite satisfying grid.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="matte-panel rounded-lg p-8">
+                    <h2 class="text-2xl font-bold mb-4 flex items-center gap-3">
+                        <span class="text-butter">03.</span> The Spoon Reservoir
+                    </h2>
+                    <p class="text-cloud/70 leading-relaxed mb-4">
+                        Miserandino's Spoon Theory visualized as a physics object. 12 glowing orbs in a glass jar, rendered with Rapier.js. Dragging one out shatters it into sand particles — satisfying, irreversible, non-judgmental. When the jar empties, the interface shifts to a soft ambient "Rest Mode" palette. No warnings. No red. No "Game Over." The UI neutrally reflects the user's current energy state and the stim bank remains fully available.
+                    </p>
+                </section>
+
+                <section class="matte-panel rounded-lg p-8">
+                    <h2 class="text-2xl font-bold mb-4 flex items-center gap-3">
+                        <span class="text-butter">04.</span> Mini Games
+                    </h2>
+                    <p class="text-sm text-cloud/50 mb-6 font-mono">Each costs 1 spoon. Short sessions with defined endpoints.</p>
+                    <div class="space-y-4">
+                        <div class="bg-void border border-white/5 rounded p-4">
+                            <div class="font-bold text-cloud text-sm mb-1">Kenosis Hop</div>
+                            <p class="text-cloud/60 text-sm">7-platform 2D platformer — each platform is one NANO-07 mesh node. If a node is "offline" (randomly selected), reroute. No timer. Win by landing on all active nodes.</p>
+                        </div>
+                        <div class="bg-void border border-white/5 rounded p-4">
+                            <div class="font-bold text-cloud text-sm mb-1">Element Match</div>
+                            <p class="text-cloud/60 text-sm">Flip cards to match element symbols to 3D atom models. Uses BONDING's elements.ts. 8-card grid. No timer, no move count.</p>
+                        </div>
+                        <div class="bg-void border border-white/5 rounded p-4">
+                            <div class="font-bold text-cloud text-sm mb-1">Resonance Catch</div>
+                            <p class="text-cloud/60 text-sm">Balls bounce at 863 Hz timing intervals. Catch with palm-press. The ³¹P Larmor tone plays on catch. Slow-moving, no fail state for missing.</p>
+                        </div>
+                        <div class="bg-void border border-white/5 rounded p-4">
+                            <div class="font-bold text-cloud text-sm mb-1">Sierpinski Builder</div>
+                            <p class="text-cloud/60 text-sm">Tap any triangle to subdivide. Fractal grows recursively. No win condition. No depth limit displayed. Exit any time.</p>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+
+            <div class="flex flex-col gap-6">
+
+                <div class="matte-panel rounded-lg p-6">
+                    <h3 class="text-sm font-mono text-cloud/40 uppercase tracking-widest mb-4">Status</h3>
+                    <div class="p-4 bg-void border border-butter/20 rounded text-center mb-3">
+                        <div class="text-2xl mb-2">🎮</div>
+                        <div class="font-bold text-sm text-butter mb-1">In Design</div>
+                        <div class="text-xs text-cloud/40 font-mono">Post-research phase</div>
+                    </div>
+                    <p class="text-xs text-cloud/40 font-mono leading-relaxed">Dynamic devicePixelRatio scaling if FPS drops below 55. Haptic batched to prevent Android suppression.</p>
+                </div>
+
+                <div class="matte-panel rounded-lg p-6">
+                    <h3 class="text-sm font-mono text-cloud/40 uppercase tracking-widest mb-4">Spoon Costs</h3>
+                    <div class="space-y-3 text-sm font-mono">
+                        <div class="flex justify-between"><span class="text-cloud/50">Fluid Pool</span><span class="text-butter/70">0</span></div>
+                        <div class="flex justify-between"><span class="text-cloud/50">Sand Mandala</span><span class="text-butter/70">0</span></div>
+                        <div class="flex justify-between"><span class="text-cloud/50">Bubble Wrap</span><span class="text-butter/70">0</span></div>
+                        <div class="flex justify-between"><span class="text-cloud/50">Fiber Optics</span><span class="text-butter/70">0</span></div>
+                        <div class="border-t border-white/5 pt-3 flex justify-between"><span class="text-cloud/50">Kenosis Hop</span><span class="text-cloud/40">1</span></div>
+                        <div class="flex justify-between"><span class="text-cloud/50">Element Match</span><span class="text-cloud/40">1</span></div>
+                        <div class="flex justify-between"><span class="text-cloud/50">Resonance Catch</span><span class="text-cloud/40">1</span></div>
+                        <div class="flex justify-between"><span class="text-cloud/50">Sierpinski Builder</span><span class="text-cloud/40">1</span></div>
+                    </div>
+                </div>
+
+                <div class="matte-panel rounded-lg p-6">
+                    <h3 class="text-sm font-mono text-cloud/40 uppercase tracking-widest mb-4">Technical Stack</h3>
+                    <div class="space-y-3 text-sm">
+                        <div><div class="text-cloud font-bold mb-1">Fluids</div><div class="text-cloud/60">Raw WebGL Shaders — FBO ping-pong, GPU-only</div></div>
+                        <div><div class="text-cloud font-bold mb-1">Sand Automaton</div><div class="text-cloud/60">Uint8Array in Web Worker → Canvas ImageData</div></div>
+                        <div><div class="text-cloud font-bold mb-1">Spoon Physics</div><div class="text-cloud/60">Rapier.js (WASM) — physical orb objects</div></div>
+                        <div><div class="text-cloud font-bold mb-1">Haptics</div><div class="text-cloud/60">navigator.vibrate() — batched pattern arrays</div></div>
+                        <div><div class="text-cloud font-bold mb-1">Perf Guard</div><div class="text-cloud/60">Dynamic devicePixelRatio scaling below 55fps</div></div>
+                    </div>
+                </div>
+
+                <div class="matte-panel rounded-lg p-6">
+                    <h3 class="text-sm font-mono text-cloud/40 uppercase tracking-widest mb-4">Launch</h3>
+                    <a href="fluid.html" class="block p-5 bg-void border border-butter/30 rounded hover:border-butter/70 transition-colors group text-center mb-3">
+                        <div class="text-2xl mb-2">🎮</div>
+                        <div class="font-bold text-sm text-butter mb-1 group-hover:text-butter transition-colors">Kinetic Fluid Stim</div>
+                        <div class="text-xs text-cloud/40 font-mono">Particle field + haptics · Canvas 2D</div>
+                    </a>
+                    <a href="switches.html" class="block p-5 bg-void border border-butter/30 rounded hover:border-butter/70 transition-colors group text-center">
+                        <div class="text-2xl mb-2">⌨️</div>
+                        <div class="font-bold text-sm text-butter mb-1 group-hover:text-butter transition-colors">Keyboard Builder & Typing Sim</div>
+                        <div class="text-xs text-cloud/40 font-mono">Builder · Typing · Games · Web Audio</div>
+                    </a>
+                </div>
+
+                <div class="matte-panel rounded-lg p-6">
+                    <h3 class="text-sm font-mono text-cloud/40 uppercase tracking-widest mb-4">Ecosystem Ties</h3>
+                    <a href="attractor.html" class="block p-4 bg-void border border-white/5 rounded hover:border-butter/30 transition-colors group mb-3">
+                        <div class="font-bold text-sm text-cloud group-hover:text-butter transition-colors mb-1">NANO-07 Attractor</div>
+                        <div class="text-xs text-cloud/50">Kenosis Hop's 7 platforms = the 7 mesh nodes.</div>
+                    </a>
+                    <a href="bonding.html" class="block p-4 bg-void border border-white/5 rounded hover:border-teal/30 transition-colors group mb-3">
+                        <div class="font-bold text-sm text-cloud group-hover:text-teal transition-colors mb-1">BONDING</div>
+                        <div class="text-xs text-cloud/50">Element Match uses elements.ts + sound.ts.</div>
+                    </a>
+                    <a href="axiom.html" class="block p-4 bg-void border border-white/5 rounded hover:border-phosphorus/30 transition-colors group">
+                        <div class="font-bold text-sm text-cloud group-hover:text-phosphorus transition-colors mb-1">AXIOM</div>
+                        <div class="text-xs text-cloud/50">Resonance Catch uses the same 863 Hz Larmor frequency.</div>
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <footer class="border-t border-white/5 mt-12 py-6">
+        <div class="max-w-7xl mx-auto px-6 flex justify-between items-center text-xs text-cloud/30 font-mono">
+            <span>P31 Labs · 501(c)(3) · EIN 42-1888158</span>
+            <a href="/" class="hover:text-cloud/60 transition-colors">← Back to Hub</a>
+        </div>
+    </footer>
+
+</body>
+</html>

@@ -66,7 +66,7 @@
 **Full name:** P31 Labs, Inc.
 **Type:** Georgia nonprofit corporation — incorporated April 3, 2026 (Georgia Secretary of State)
 **501(c)(3) status:** Pending — 1023-EZ filing ~Day 14 (April 17), IRS determination June–July 2026
-**EIN:** 81-2908499
+**EIN:** 42-1888158 (assigned April 13, 2026)
 **Stripe:** acct_1T6z3U4Kt3K4WuBD (live — donate.phosphorus31.org)
 **Ko-fi:** ko-fi.com/trimtab69420 (live)
 **GitHub:** github.com/p31labs (7 public repos)
@@ -82,7 +82,7 @@
 | Name | Role | Relationship to Org |
 |------|------|---------------------|
 | William R. Johnson | President / Founder | Interested party |
-| Tyler Cisco | Independent Director | Unrelated — qualifies for 501(c)(3) independence test |
+| Joseph Tyler Cisco | Independent Director | Unrelated — qualifies for 501(c)(3) independence test |
 | Brenda O'Dell | Director | Will's mother — related party |
 
 **Note:** Ashley and Carrie are excluded from the 501(c)(3) board composition — both are related parties. Hunter McFeron (GA Tools for Life) is the target for the 4th seat before 1023-EZ filing.
@@ -262,7 +262,7 @@
 - **Georgia statutes:** O.C.G.A. §§ 24-9-901(b)(9), 24-9-902(11), 24-8-803(6), 24-7-702 Daubert
 - **Implementation:** Server-side SHA-256 + forensic metadata (cf-ray, TLS, UA)
 - **BONDING integration:** Every session timestamped. Every atom placed = parental engagement log.
-- **Regulatory:** Node Zero = FDA Class II exempt (21 CFR §882.5050 — biofeedback); Buffer = non-device CDS under 21st Century Cures Act.
+- **Regulatory:** Node Zero = general-purpose communication device with haptic feedback; Buffer = communication processing tool. Grant applications use assistive technology framing only.
 
 ---
 
@@ -324,7 +324,7 @@
 
 | Version | Date | Changes |
 |---------|------|---------|
-| v3.2 | 2026-04-05 | Entity: P31 Labs Inc incorporated Apr 3; Stripe acct live; Mission.Earth dead; Board updated (Tyler Cisco independent, Ashley/Carrie excluded, Hunter McFeron target); Housing framing corrected (contested, not determined); Products: EDE/TACTILE/Larmor added, Buffer 92%, product count 12; Firmware: SPI 0, QSPI 40MHz, 7-cmd init; Section 15 CWP Architecture added; CWP-011/012/013 workstreams added |
+| v3.2 | 2026-04-05 | Entity: P31 Labs Inc incorporated Apr 3; Stripe acct live; Mission.Earth dead; Board updated (Joseph Tyler Cisco independent, Ashley/Carrie excluded, Hunter McFeron target); Housing framing corrected (contested, not determined); Products: EDE/TACTILE/Larmor added, Buffer 92%, product count 12; Firmware: SPI 0, QSPI 40MHz, 7-cmd init; Section 15 CWP Architecture added; CWP-011/012/013 workstreams added |
 | v3.1 | 2026-03-30 | Firmware corrections (SPI mode, QSPI, init), CWP-003/004 status, housing urgency |
 | v3.0 | 2026-03-27 | Initial v3 — CWP-2026-002 baseline |
 
