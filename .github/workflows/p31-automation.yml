@@ -85,12 +85,17 @@ jobs:
         run: cd 04_SOFTWARE/cloudflare-worker/bouncer && npm install
 
       - name: Push BOUNCER_GATE_TOKEN from GitHub secret → Cloudflare Workers
-        if: ${{ secrets.BOUNCER_GATE_TOKEN != '' }}
         working-directory: 04_SOFTWARE/cloudflare-worker/bouncer
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-        run: printf '%s' "${{ secrets.BOUNCER_GATE_TOKEN }}" | npx wrangler secret put BOUNCER_GATE_TOKEN
+          BOUNCER_GATE_TOKEN: ${{ secrets.BOUNCER_GATE_TOKEN }}
+        run: |
+          if [ -z "$BOUNCER_GATE_TOKEN" ]; then
+            echo "No BOUNCER_GATE_TOKEN in GitHub secrets — skipping wrangler secret put"
+            exit 0
+          fi
+          printf '%s' "$BOUNCER_GATE_TOKEN" | npx wrangler secret put BOUNCER_GATE_TOKEN
 
       - name: Deploy p31-bouncer
         uses: cloudflare/wrangler-action@v3
