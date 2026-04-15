@@ -32,10 +32,11 @@ The operator is Will Johnson — AuDHD, direct communication style, no fluff. Pr
 - **501(c)(3):** Not yet filed. Form 1023-EZ ($275 on pay.gov) — eligible now
 
 ### Infrastructure (ALL LIVE)
-14 Cloudflare endpoints deployed:
+15 Cloudflare endpoints deployed:
 - bonding.p31ca.org — BONDING chemistry game (413 tests / 30 suites)
 - phosphorus31.org — Institutional research site (dark-warm redesign deployed tonight)
 - p31ca.org — Technical hub (redesigned tonight)
+- ops.p31ca.org — Hearing Ops PWA (offline contempt prep; `04_SOFTWARE/p31-hearing-ops`, `npm run deploy`)
 - p31-vault.pages.dev — Interactive component gallery
 - p31-mesh.pages.dev — WebRTC P2P vagal sync
 - command-center.trimtab-signal.workers.dev — KV-backed dashboard with health pinger (*/5 cron)
@@ -93,8 +94,10 @@ P31_Andromeda/
 ├── 04_SOFTWARE/
 │   ├── bonding/               # BONDING game (Vite + React + R3F + Zustand + Vitest)
 │   ├── p31ca/                 # p31ca.org Astro site
+│   ├── p31-hearing-ops/       # ops.p31ca.org — Vite PWA (hearing prep)
 │   ├── spaceship-earth/       # Dashboard (React Three Fiber)
-│   ├── cloudflare-worker/     # Workers: command-center, carrie-agent, etc.
+│   ├── cloudflare-worker/     # Workers (command-center, …) + status push scripts
+│   │   └── command-center/    # status.json, update-status.ps1 (Win), update-status.sh (Bash)
 │   └── cloudflare-pages/      # Pages: p31-mesh, p31-vault
 ├── 05_FIRMWARE/               # GOD doc, DeepSeek prompts, MCD
 ├── Discovery_Production_2025CV936/  # Legal discovery documents
@@ -104,8 +107,7 @@ P31_Andromeda/
 ├── phosphorus31.org/          # phosphorus31.org Astro site
 │   └── planetary-planet/      # Astro project root
 ├── zenodo_batch/              # Zenodo upload metadata + batch script
-├── .env.master                # All secrets (NEVER commit)
-└── status.json                # Command center status (push via update-status.sh)
+└── .env.master                # All secrets (NEVER commit)
 ```
 
 ---
@@ -167,12 +169,12 @@ P31_Andromeda/
 
 ## STATUS.JSON UPDATE PROTOCOL
 
-After completing significant work, update status.json and push:
+After completing significant work, edit `04_SOFTWARE/cloudflare-worker/command-center/status.json` and push:
 ```powershell
-cd C:\Users\sandra\Documents\P31_Andromeda
-# Edit status.json with new data
-.\update-status.sh
-# Dashboard updates live at command-center.trimtab-signal.workers.dev
+cd C:\Users\sandra\Documents\P31_Andromeda\04_SOFTWARE\cloudflare-worker\command-center
+.\update-status.ps1
+# Or from Git Bash: ./update-status.sh
+# Dashboard: https://command-center.trimtab-signal.workers.dev
 ```
 
 ---
@@ -400,6 +402,7 @@ Superseded by the K₄ Cage but still running:
 
 ## HEARING — APRIL 16, 11:00 AM, WOODBINE
 
+- **PWA (offline):** https://ops.p31ca.org — `04_SOFTWARE/p31-hearing-ops`; ship with `npm run deploy` (must target production branch for `ops` on git-connected Pages)
 - Judge: Chief Judge Scarlett
 - McGhan via WebEx
 - ADA support: Brenda O'Dell

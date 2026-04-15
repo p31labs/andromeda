@@ -1,8 +1,9 @@
 {
-  "updated": "2026-04-14T20:00:00Z",
+  "updated": "2026-04-15T18:00:00Z",
   "workers": [
     { "name": "phosphorus31-org", "status": "online", "url": "https://phosphorus31.org" },
     { "name": "p31ca-org", "status": "online", "url": "https://p31ca.org" },
+    { "name": "ops-p31ca-org", "status": "online", "url": "https://ops.p31ca.org" },
     { "name": "bonding-p31ca-org", "status": "online", "url": "https://bonding.p31ca.org" },
     { "name": "command-center", "status": "online", "url": "https://command-center.trimtab-signal.workers.dev" },
     { "name": "carrie-agent", "status": "online", "url": "https://carrie-agent.trimtab-signal.workers.dev" },
@@ -43,11 +44,12 @@
   "research": {
     "paper_xii": "Sovereign Stack — 11pp, triple-gated, Zenodo-ready",
     "bonding_tests": "413 / 30 suites",
-    "deployed_workers": 24,
+    "deployed_workers": 25,
     "k4_phase": 3,
     "k4_viz_url": "https://k4-cage.trimtab-signal.workers.dev/viz",
     "k4_api_url": "https://k4-cage.trimtab-signal.workers.dev/api",
-    "phenix_url": "https://p31-phenix.pages.dev"
+    "phenix_url": "https://p31-phenix.pages.dev",
+    "hearing_ops_url": "https://ops.p31ca.org"
   },
   "dates": [
     { "date": "Apr 13", "event": "EIN 42-1888158 assigned by IRS (CP 575E)" },
@@ -55,6 +57,7 @@
     { "date": "Apr 14", "event": "Discovery sent to McGhan (3 docs)" },
     { "date": "Apr 14", "event": "K4 Phase 3 + Phenix Weave (p31-phenix.pages.dev) woven into fleet" },
     { "date": "Apr 15", "event": "Quantum Weave refactor: p31ca ABOUT pages + hub/lattice; phosphorus31 Layout strip + footer" },
+    { "date": "Apr 15", "event": "Hearing Ops PWA — ops.p31ca.org (04_SOFTWARE/p31-hearing-ops; npm run deploy → production branch)" },
     { "date": "Apr 14", "event": "P31 Technical Library (Starlight) — build fixed, Pages project created, first deploy" },
     { "date": "Apr 16", "event": "CONTEMPT HEARING 11AM — Woodbine" },
     { "date": "Apr 17", "event": "McGhan deadline" },
