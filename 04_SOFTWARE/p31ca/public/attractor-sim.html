@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#000000">
+    <title>NANO-07 Attractor | P31 Labs</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #000; color: #d8d6d0; font-family: 'JetBrains Mono', monospace; overflow: hidden; height: 100dvh; }
+
+        #navbar {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            background: rgba(0,0,0,0.7); backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(0,255,255,0.1);
+            padding: 10px 20px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        #navbar a { text-decoration: none; color: rgba(0,255,255,0.6); font-size: 11px; letter-spacing: 0.08em; transition: color 0.15s; }
+        #navbar a:hover { color: rgba(0,255,255,1); }
+        .nav-logo { display: flex; align-items: center; gap: 10px; }
+        .nav-title { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.4); }
+
+        #sim { position: fixed; top: 0; left: 0; right: 0; bottom: 0; }
+
+        /* Controls strip */
+        #controls {
+            position: fixed; bottom: 16px; left: 16px; z-index: 10;
+            width: min(340px, calc(100% - 32px));
+            transition: opacity 0.3s, transform 0.3s;
+        }
+        #controls.hidden { opacity: 0; pointer-events: none; transform: translateY(20px); }
+        .ctrl-panel {
+            padding: 12px;
+            background: rgba(10,10,15,0.75); border: 1px solid rgba(0,255,255,0.2);
+            border-radius: 12px; backdrop-filter: blur(10px);
+        }
+        .ctrl-header { font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: #00ffff; margin-bottom: 8px; }
+        .slider-row { margin-bottom: 6px; }
+        .slider-label { display: flex; justify-content: space-between; font-size: 9px; margin-bottom: 3px; }
+        input[type=range] { width: 100%; height: 2px; outline: none; border-radius: 2px; padding: 0; cursor: pointer; }
+        .btn-row { display: flex; gap: 6px; margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.1); }
+        .btn { flex: 1; font-family: monospace; font-size: 8px; padding: 6px 4px; border-radius: 4px; cursor: pointer; transition: opacity 0.15s; }
+        .btn:hover { opacity: 0.8; }
+        .btn-chaos { background: rgba(255,0,0,0.1); border: 1px solid #ff3333; color: #ff3333; }
+        .btn-rigid { background: rgba(255,170,0,0.1); border: 1px solid #ffaa00; color: #ffaa00; }
+        .btn-snap { width: 100%; font-family: monospace; font-size: 10px; padding: 8px; background: rgba(255,255,255,0.15); border: 1px solid #fff; color: #fff; border-radius: 4px; text-shadow: 0 0 8px #fff; margin-top: 6px; cursor: pointer; transition: opacity 0.15s; }
+        .btn-snap:hover { opacity: 0.8; }
+
+        #toggle-btn {
+            position: fixed; bottom: 16px; z-index: 20;
+            background: rgba(10,10,15,0.85); border: 1px solid #00ffff;
+            border-radius: 4px; padding: 4px 10px; color: #00ffff; font-size: 9px;
+            font-family: monospace; cursor: pointer; transition: left 0.3s;
+        }
+
+        /* Telemetry right */
+        #telemetry {
+            position: fixed; bottom: 16px; right: 16px; z-index: 10;
+            text-align: right; font-family: monospace;
+        }
+        #live-h { font-size: 28px; font-weight: 300; color: #00ffff; letter-spacing: -1px; text-shadow: 0 0 10px rgba(0,255,255,0.5); line-height: 1; }
+        #harmonic-label { font-size: 8px; color: #00ffff; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 12px; }
+        .byz-controls { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+        #mesh-integrity { font-size: 9px; color: #00ffaa; }
+        .btn-kill { font-family: monospace; font-size: 9px; padding: 6px 10px; background: rgba(255,0,0,0.1); border: 1px solid #ff0055; color: #ff0055; border-radius: 4px; cursor: pointer; }
+        .btn-reboot { font-family: monospace; font-size: 9px; padding: 6px 10px; background: rgba(0,255,170,0.1); border: 1px solid #00ffaa; color: #00ffaa; border-radius: 4px; cursor: pointer; display: none; }
+    </style>
+</head>
+<body>
+
+<nav id="navbar">
+    <a href="attractor.html" class="nav-logo">
+        <svg width="20" height="20" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+            <rect width="512" height="512" rx="112" fill="#25897d"/>
+            <circle cx="390" cy="120" r="48" fill="#cc6247"/>
+            <text x="256" y="340" font-family="system-ui" font-weight="900" font-size="220" fill="#d8d6d0" text-anchor="middle">P31</text>
+            <rect x="156" y="380" width="200" height="16" rx="8" fill="#cda852"/>
+        </svg>
+        <span class="nav-title">NANO-07 Attractor</span>
+    </a>
+    <a href="attractor.html">← About</a>
+</nav>
+
+<div id="sim"></div>
+
+<!-- Controls Strip (bottom left) -->
+<div id="controls">
+    <div class="ctrl-panel">
+        <div class="ctrl-header">⬡ Kenosis Mesh Controls</div>
+
+        <div class="slider-row">
+            <div class="slider-label">
+                <span style="color:#00ffff">H</span>
+                <span id="h-display" style="color:#fff">0.35</span>
+            </div>
+            <input type="range" id="h-slider" min="0" max="1" step="0.01" value="0.35" style="accent-color:#00ffff"
+                oninput="state.H=parseFloat(this.value); document.getElementById('h-display').textContent=state.H.toFixed(2); document.getElementById('live-h').textContent=state.H.toFixed(3);">
+        </div>
+
+        <div class="slider-row">
+            <div class="slider-label">
+                <span style="color:#4488ff">B</span>
+                <span id="b-display" style="color:#fff">50 µT</span>
+            </div>
+            <input type="range" id="b-slider" min="0" max="200" step="1" value="50" style="accent-color:#4488ff"
+                oninput="state.B=parseFloat(this.value); document.getElementById('b-display').textContent=Math.round(state.B)+' µT';">
+        </div>
+
+        <div class="slider-row">
+            <div class="slider-label">
+                <span style="color:#ffaa00">Q</span>
+                <span id="q-display" style="color:#fff">4.0</span>
+            </div>
+            <input type="range" id="q-slider" min="0.1" max="5.0" step="0.1" value="4.0" style="accent-color:#ffaa00"
+                oninput="state.Q=parseFloat(this.value); document.getElementById('q-display').textContent=state.Q.toFixed(1);">
+        </div>
+
+        <div class="btn-row">
+            <button class="btn btn-chaos" onclick="triggerFloatingNeutral()">FORCE CHAOS<br>(H→0.85)</button>
+            <button class="btn btn-rigid" onclick="triggerDeltaShunt()">FORCE RIGID<br>(H→0.10)</button>
+        </div>
+        <button class="btn-snap" onclick="triggerCosmicSnapshot()">⚡ INJECT COSMIC SNAPSHOT</button>
+    </div>
+</div>
+
+<button id="toggle-btn" style="left:364px" onclick="toggleControls()">HIDE</button>
+
+<!-- Telemetry (bottom right) -->
+<div id="telemetry">
+    <div id="live-h">0.350</div>
+    <div id="harmonic-label">System Harmonic</div>
+    <div class="byz-controls">
+        <div id="mesh-integrity">MESH INTEGRITY: 7/7</div>
+        <button class="btn-kill" onclick="killRandomNode()">✕ EXECUTE K-NODE</button>
+        <button class="btn-reboot" id="reboot-btn" onclick="reviveAllNodes()">REBOOT MESH</button>
+    </div>
+</div>
+
+<script>
+// ── State ──────────────────────────────────────────────────────────────────
+const state = { H: 0.35, B: 50, Q: 4.0 };
+let snapshotActive = false;
+let snapshotIntensity = 0.0;
+
+// ── Workers (golden angle distribution across sphere) ──────────────────────
+const GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5));
+const workers = Array.from({length: 7}, (_, i) => ({
+    id: `NANO-07-AXIS-${i}`,
+    theta: i * GOLDEN_ANGLE,
+    phi: Math.acos(2 * ((i + 0.5) / 7) - 1),
+    isOnline: true,
+    radius: 12,
+}));
+
+// ── UI helpers ─────────────────────────────────────────────────────────────
+function updateMeshUI() {
+    const onlineCount = workers.filter(w => w.isOnline).length;
+    const mi = document.getElementById('mesh-integrity');
+    mi.textContent = `MESH INTEGRITY: ${onlineCount}/7`;
+    mi.style.color = onlineCount < 7 ? '#ffaa00' : '#00ffaa';
+    document.getElementById('reboot-btn').style.display = onlineCount < 7 ? 'block' : 'none';
+}
+
+function setSliders(H, B, Q) {
+    document.getElementById('h-slider').value = H;
+    document.getElementById('b-slider').value = B;
+    document.getElementById('q-slider').value = Q;
+    document.getElementById('h-display').textContent = parseFloat(H).toFixed(2);
+    document.getElementById('b-display').textContent = Math.round(B) + ' µT';
+    document.getElementById('q-display').textContent = parseFloat(Q).toFixed(1);
+    document.getElementById('live-h').textContent = parseFloat(H).toFixed(3);
+}
+
+// ── Scenario injectors ─────────────────────────────────────────────────────
+function triggerFloatingNeutral() { state.H = 0.85; setSliders(0.85, state.B, state.Q); }
+function triggerDeltaShunt()      { state.H = 0.10; setSliders(0.10, state.B, state.Q); }
+function triggerCosmicSnapshot() {
+    snapshotActive = true; snapshotIntensity = 1.0;
+    state.H = 0.35; state.B = 200; state.Q = 4.5;
+    setSliders(0.35, 200, 4.5);
+}
+function killRandomNode() {
+    const online = workers.filter(w => w.isOnline);
+    if (online.length > 0) { online[Math.floor(Math.random() * online.length)].isOnline = false; updateMeshUI(); }
+}
+function reviveAllNodes() { workers.forEach(w => w.isOnline = true); updateMeshUI(); }
+
+// ── Controls toggle ────────────────────────────────────────────────────────
+let ctrlHidden = false;
+function toggleControls() {
+    ctrlHidden = !ctrlHidden;
+    document.getElementById('controls').classList.toggle('hidden', ctrlHidden);
+    const btn = document.getElementById('toggle-btn');
+    btn.textContent = ctrlHidden ? 'SHOW' : 'HIDE';
+    btn.style.left = ctrlHidden ? '16px' : 'min(364px, calc(100% - 24px))';
+}
+
+// ── Three.js simulation ────────────────────────────────────────────────────
+(function initSim() {
+    const container = document.getElementById('sim');
+    const isMobile = window.innerWidth < 768;
+
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0x000000, 0.012);
+
+    const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
+    camera.position.z = 35;
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(container.clientWidth, container.clientHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2));
+    container.appendChild(renderer.domElement);
+
+    const group = new THREE.Group();
+    scene.add(group);
+
+    // ── Particle system (Human VFDs) ────────────────────────────────────────
+    const particleCount = isMobile ? 800 : 1500;
+    const lineCount = isMobile ? 150 : 300;
+
+    const geo = new THREE.BufferGeometry();
+    const positions = new Float32Array(particleCount * 3);
+    const colors = new Float32Array(particleCount * 3);
+
+    const agents = Array.from({length: particleCount}, (_, i) => {
+        const theta = Math.random() * Math.PI * 2;
+        const phi = Math.acos(2 * Math.random() - 1);
+        const r = 18 + (Math.random() - 0.5) * 4;
+        const x = r * Math.sin(phi) * Math.cos(theta);
+        const y = r * Math.sin(phi) * Math.sin(theta);
+        const z = r * Math.cos(phi);
+        positions[i*3]=x; positions[i*3+1]=y; positions[i*3+2]=z;
+        return { baseX:x, baseY:y, baseZ:z, phase: Math.random()*Math.PI*2, driftX:0, driftY:0, driftZ:0 };
+    });
+
+    geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    geo.setAttribute('color',    new THREE.BufferAttribute(colors, 3));
+
+    // Radial gradient texture for particles
+    const texCanvas = document.createElement('canvas');
+    texCanvas.width = texCanvas.height = 32;
+    const ctx = texCanvas.getContext('2d');
+    const grad = ctx.createRadialGradient(16,16,0, 16,16,16);
+    grad.addColorStop(0,   'rgba(255,255,255,1)');
+    grad.addColorStop(0.2, 'rgba(255,255,255,0.8)');
+    grad.addColorStop(1,   'rgba(0,0,0,0)');
+    ctx.fillStyle = grad; ctx.fillRect(0,0,32,32);
+    const texture = new THREE.Texture(texCanvas);
+    texture.needsUpdate = true;
+
+    const particleMat = new THREE.PointsMaterial({
+        size: 0.6, map: texture, transparent: true, opacity: 0.8,
+        blending: THREE.AdditiveBlending, depthWrite: false, color: 0x88ccff
+    });
+    group.add(new THREE.Points(geo, particleMat));
+
+    // ── Agent tethers ───────────────────────────────────────────────────────
+    const agentLineGeo = new THREE.BufferGeometry();
+    const agentLinePos = new Float32Array(lineCount * 6);
+    agentLineGeo.setAttribute('position', new THREE.BufferAttribute(agentLinePos, 3));
+    const agentLineMat = new THREE.LineBasicMaterial({
+        color: 0xff00ff, transparent: true, opacity: 0.4, blending: THREE.AdditiveBlending
+    });
+    const agentLines = new THREE.LineSegments(agentLineGeo, agentLineMat);
+    group.add(agentLines);
+
+    // ── Mesh service bindings ───────────────────────────────────────────────
+    const meshLineGeo = new THREE.BufferGeometry();
+    const meshLineMat = new THREE.LineBasicMaterial({
+        color: 0x00ffff, linewidth: 2, transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending
+    });
+    group.add(new THREE.LineSegments(meshLineGeo, meshLineMat));
+
+    // ── RAF loop ────────────────────────────────────────────────────────────
+    let time = 0;
+    let animId;
+
+    function animate() {
+        animId = requestAnimationFrame(animate);
+        time += 0.01;
+
+        // Snapshot decay
+        if (snapshotActive) {
+            snapshotIntensity -= 0.015;
+            state.B = 50 + (150 * snapshotIntensity);
+            document.getElementById('b-slider').value = Math.round(state.B);
+            document.getElementById('b-display').textContent = Math.round(state.B) + ' µT';
+            if (snapshotIntensity <= 0) {
+                snapshotActive = false;
+                state.B = 50;
+                document.getElementById('b-slider').value = 50;
+                document.getElementById('b-display').textContent = '50 µT';
+            }
+        }
+
+        const spinSpeed = state.B * 0.0002;
+        group.rotation.y += spinSpeed;
+        group.rotation.z += spinSpeed * 0.2;
+
+        const pos = geo.attributes.position.array;
+        const alp = agentLineGeo.attributes.position.array;
+        let pIdx = 0;
+
+        const isRigid   = state.H < 0.2;
+        const isChaotic = state.H > 0.6;
+        const isHealthy = !isRigid && !isChaotic;
+        const isFlashing = snapshotActive;
+
+        // Pacemaker pulse (5s interval)
+        const isPulse = (time % 5.0) < 0.15;
+        meshLineMat.color.setHex((isPulse || isFlashing) ? 0xffffff : 0x00aaff);
+        meshLineMat.opacity = (isPulse || isFlashing) ? 1.0 : 0.6;
+
+        // Node world positions
+        const workerPositions = [];
+        for (const w of workers) {
+            if (!w.isOnline) continue;
+            workerPositions.push({
+                x: w.radius * Math.sin(w.phi) * Math.cos(w.theta),
+                y: w.radius * Math.sin(w.phi) * Math.sin(w.theta),
+                z: w.radius * Math.cos(w.phi),
+            });
+        }
+
+        // Service binding lines (all pairs)
+        const mlp = [];
+        for (let i = 0; i < workerPositions.length; i++) {
+            for (let j = i+1; j < workerPositions.length; j++) {
+                mlp.push(workerPositions[i].x, workerPositions[i].y, workerPositions[i].z);
+                mlp.push(workerPositions[j].x, workerPositions[j].y, workerPositions[j].z);
+            }
+        }
+        meshLineGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(mlp), 3));
+
+        const meshIsDead = workerPositions.length === 0;
+
+        // Agent loop
+        for (let i = 0; i < particleCount; i++) {
+            const agent = agents[i];
+            const ix = i * 3;
+
+            // Nearest node
+            let nearestNode = workerPositions[0];
+            let minDist = Infinity;
+            if (!meshIsDead) {
+                for (const w of workerPositions) {
+                    const d = Math.hypot(w.x - pos[ix], w.y - pos[ix+1], w.z - pos[ix+2]);
+                    if (d < minDist) { minDist = d; nearestNode = w; }
+                }
+            }
+
+            let tx = agent.baseX, ty = agent.baseY, tz = agent.baseZ;
+
+            if (isFlashing && !meshIsDead) {
+                // Snapshot: yank toward node
+                agent.driftX *= 0.5; agent.driftY *= 0.5; agent.driftZ *= 0.5;
+                tx += agent.driftX; ty += agent.driftY; tz += agent.driftZ;
+                if (i < lineCount) {
+                    alp[pIdx]=nearestNode.x; alp[pIdx+1]=nearestNode.y; alp[pIdx+2]=nearestNode.z;
+                    alp[pIdx+3]=pos[ix]; alp[pIdx+4]=pos[ix+1]; alp[pIdx+5]=pos[ix+2];
+                }
+            } else if (isHealthy && !meshIsDead) {
+                // 7 Days: breathing lattice + magenta tethers
+                const breath = 1 + Math.sin(time*2 + agent.phase) * 0.05;
+                tx *= breath; ty *= breath; tz *= breath;
+                agent.driftX *= 0.95; agent.driftY *= 0.95; agent.driftZ *= 0.95;
+                if (i < lineCount) {
+                    alp[pIdx]=nearestNode.x; alp[pIdx+1]=nearestNode.y; alp[pIdx+2]=nearestNode.z;
+                    alp[pIdx+3]=pos[ix]; alp[pIdx+4]=pos[ix+1]; alp[pIdx+5]=pos[ix+2];
+                }
+            } else if (isChaotic || meshIsDead) {
+                // Floating Neutral: random walk, tethers snap
+                agent.driftX += (Math.random()-0.5)*0.6;
+                agent.driftY += (Math.random()-0.5)*0.6;
+                agent.driftZ += (Math.random()-0.5)*0.6;
+                tx += agent.driftX; ty += agent.driftY; tz += agent.driftZ;
+                if (i < lineCount) { alp[pIdx]=alp[pIdx+1]=alp[pIdx+2]=alp[pIdx+3]=alp[pIdx+4]=alp[pIdx+5]=0; }
+            } else if (isRigid) {
+                // Delta Shunt: freeze agents, amber tethers
+                tx = pos[ix]; ty = pos[ix+1]; tz = pos[ix+2];
+                if (i < lineCount && nearestNode) {
+                    alp[pIdx]=nearestNode.x; alp[pIdx+1]=nearestNode.y; alp[pIdx+2]=nearestNode.z;
+                    alp[pIdx+3]=pos[ix]; alp[pIdx+4]=pos[ix+1]; alp[pIdx+5]=pos[ix+2];
+                }
+            }
+
+            const smooth = isFlashing ? 0.3 : 0.05;
+            pos[ix]   += (tx - pos[ix])   * smooth;
+            pos[ix+1] += (ty - pos[ix+1]) * smooth;
+            pos[ix+2] += (tz - pos[ix+2]) * smooth;
+
+            if (i < lineCount) pIdx += 6;
+        }
+
+        // Tether visuals
+        if (isFlashing) {
+            agentLineMat.opacity = snapshotIntensity;
+            agentLineMat.color.setHex(0xffffff);
+        } else {
+            agentLineMat.opacity = (isChaotic || meshIsDead) ? 0.0 : (isRigid ? 0.6 : 0.3);
+            agentLineMat.color.setHex(isRigid ? 0xffaa00 : 0xff00aa);
+        }
+
+        geo.attributes.position.needsUpdate = true;
+        agentLineGeo.attributes.position.needsUpdate = true;
+        renderer.render(scene, camera);
+    }
+    animate();
+
+    // Resize
+    window.addEventListener('resize', () => {
+        camera.aspect = container.clientWidth / container.clientHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(container.clientWidth, container.clientHeight);
+    });
+})();
+</script>
+</body>
+</html>

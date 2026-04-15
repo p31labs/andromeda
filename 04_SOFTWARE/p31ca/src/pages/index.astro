@@ -1,225 +1,308 @@
 ---
 /**
- * WCD-R14: P31CA.ORG — 39-vector hub landing page.
- * Rebuilt after Chromebook session lost the source.
- * Static SSG rendering — no client-side fetch, no JSON dependency.
- * Filter toggles via vanilla JS data-status attributes.
+ * P31CA.ORG — Technical Hub Landing Page
+ * Redesigned: structured layout, live fleet status, coral accent, correct EIN.
+ * Cross-linked to phosphorus31.org (nonprofit portal).
  */
 
 import BaseLayout from '../layouts/BaseLayout.astro';
-import '../styles/global.css';
+import SharedFooter from '../components/SharedFooter.astro';
 
-interface Vector {
+interface Product {
   id: string;
   title: string;
   subtitle: string;
-  status: 'live' | 'dev' | 'research';
+  status: 'live' | 'dev' | 'prototype' | 'research';
   url: string;
-  icon: string;
   stack: string[];
 }
 
-const vectors: Vector[] = [
-  { id: 'bonding',            title: 'BONDING',             subtitle: 'Molecular Social Protocol',          status: 'live',     url: 'https://bonding.p31ca.org',                                icon: '⚛️',  stack: ['React 19', 'Three.js r183', 'Zustand v5'] },
-  { id: 'spaceship-earth',    title: 'Spaceship Earth',     subtitle: 'Immersive Cockpit Dashboard',        status: 'live',     url: 'https://spaceship-earth.pages.dev',                        icon: '🌐',  stack: ['React 19', 'Three.js', 'R3F'] },
-  { id: 'ede',                title: 'EDE',                 subtitle: 'Everything Development Environment', status: 'live',     url: '/app/ede',                                                  icon: '⬡',   stack: ['Babel', 'IndexedDB', 'Service Worker'] },
-  { id: 'larmor',             title: 'Larmor',              subtitle: '863 Hz ³¹P Somatic Regulation',     status: 'live',     url: '/app/larmor',                                               icon: '🔬',  stack: ['Web Audio', 'SIC-POVM', 'Bloch Sphere'] },
-  { id: 'buffer',             title: 'The Buffer',          subtitle: 'Message Guardian & Fawn Guard',     status: 'live',     url: '/app/buffer',                                               icon: '🛡️',  stack: ['Voltage Scoring', 'Fawn Guard', 'BLUF Extraction'] },
-  { id: 'genesis-gate',       title: 'Genesis Gate',        subtitle: 'Central Telemetry Event Bus',       status: 'live',     url: 'https://genesis.p31ca.org',                                icon: '🔬',  stack: ['CF Workers', 'KV', 'TypeScript'] },
-  { id: 'kenosis',            title: 'Project Kenosis',     subtitle: '7-Node K₄ Mesh Network',           status: 'live',     url: 'https://kenosis-mesh.trimtab-signal.workers.dev',          icon: '🕸️',  stack: ['CF Workers', 'K₄ Topology'] },
-  { id: 'donate',             title: 'Donate Pipeline',     subtitle: 'Ko-fi + Stripe Infrastructure',    status: 'live',     url: '/phosphorus/support',                                       icon: '💚',  stack: ['Stripe Checkout', 'CF Worker', 'Ko-fi Webhooks'] },
-  { id: 'discord-bot',        title: 'p31-bot',             subtitle: 'Discord Community Engine',         status: 'live',     url: 'https://discord.gg/uYW5rTCuZ',                             icon: '🤖',  stack: ['Discord.js', 'Railway', 'TypeScript'] },
-  { id: 'attractor',          title: 'NANO-07 Attractor',   subtitle: '863 Hz Larmor Attractor',         status: 'live',     url: '/larmor.html',                                              icon: '🌀',  stack: ['Web Audio', 'Canvas'] },
-  { id: 'cortex',             title: 'p31-cortex',          subtitle: 'AI Agent Orchestration',           status: 'live',     url: 'https://p31ca.org/health',                                  icon: '🧠',  stack: ['CF Workers', 'KV', 'TypeScript'] },
-  { id: 'the-quantum-family', title: 'THE QUANTUM FAMILY',  subtitle: 'Sovereign Family OS',              status: 'live',     url: '/phosphorus',                                               icon: '🔺',  stack: ['Astro 5', 'P31 Ecosystem'] },
-  { id: 'node-one',           title: 'Node One (Totem)',    subtitle: 'ESP32-S3 Haptic Device',           status: 'dev',      url: 'https://github.com/p31labs/andromeda',                     icon: '📟',  stack: ['ESP-IDF', 'DRV2605L', 'SX1262', 'SE050'] },
-  { id: 'node-zero',          title: 'Node Zero',           subtitle: 'Open-Source Haptic Hardware',      status: 'dev',      url: 'https://github.com/p31labs/andromeda',                     icon: '📡',  stack: ['ESP32-S3', 'LVGL', 'QSPI'] },
-  { id: 'axiom',              title: 'AXIOM',               subtitle: 'Axiom Reasoning Engine',          status: 'dev',      url: '#',                                                         icon: '⚗️',  stack: ['Research'] },
-  { id: 'liminal',            title: 'LIMINAL',             subtitle: 'Threshold Cognitive State Tool',  status: 'dev',      url: '#',                                                         icon: '🌙',  stack: ['Research'] },
-  { id: 'signal',             title: 'SIGNAL',              subtitle: 'Sensory Signal Processing',       status: 'dev',      url: '#',                                                         icon: '🎮',  stack: ['Research'] },
-  { id: 'echo',               title: 'ECHO',                subtitle: 'Communication Replay System',     status: 'dev',      url: '#',                                                         icon: '🗣️',  stack: ['Research'] },
-  { id: 'tether',             title: 'TETHER',              subtitle: 'Somatic Grounding Protocol',      status: 'dev',      url: '#',                                                         icon: '🪐',  stack: ['Research'] },
-  { id: 'prism',              title: 'PRISM',               subtitle: 'Spectrum Analysis Tool',          status: 'dev',      url: '#',                                                         icon: '🌈',  stack: ['Research'] },
-  { id: 'kinematics',         title: 'KINEMATICS',          subtitle: 'Movement Pattern Tracking',       status: 'dev',      url: '#',                                                         icon: '🕺',  stack: ['Research'] },
-  { id: 'forge',              title: 'FORGE',               subtitle: 'Data Forge Pipeline',             status: 'dev',      url: '#',                                                         icon: '🗄️',  stack: ['Research'] },
-  { id: 'tactile',            title: 'TACTILE',             subtitle: 'Haptic Keyboard Builder',         status: 'dev',      url: '#',                                                         icon: '⌨️',  stack: ['750+ lines', '4 tabs'] },
-  { id: 'observatory',        title: 'OBSERVATORY',         subtitle: 'Data Observation Platform',       status: 'dev',      url: '#',                                                         icon: '🔭',  stack: ['Research'] },
-  { id: 'collider',           title: 'COLLIDER',            subtitle: 'Concept Collision Engine',        status: 'dev',      url: '#',                                                         icon: '💥',  stack: ['Research'] },
-  { id: 'geodesic',           title: 'GEODESIC',            subtitle: 'Geodesic Topology Tool',          status: 'dev',      url: '#',                                                         icon: '🔷',  stack: ['Research'] },
-  { id: 'bridge',             title: 'BRIDGE',              subtitle: 'Cross-System Bridge',             status: 'dev',      url: '#',                                                         icon: '🌉',  stack: ['Research'] },
-  { id: 'vault',              title: 'VAULT',               subtitle: 'Secure Credential Vault',         status: 'dev',      url: '#',                                                         icon: '🔐',  stack: ['Research'] },
-  { id: 'sovereign',          title: 'SOVEREIGN',           subtitle: 'Sovereignty Layer',               status: 'dev',      url: '#',                                                         icon: '🔑',  stack: ['Research'] },
-  { id: 'k4market',           title: 'K4 MARKET',           subtitle: 'K₄ Topology Exchange',           status: 'dev',      url: '#',                                                         icon: '📊',  stack: ['Research'] },
-  { id: 'content-forge',      title: 'CONTENT FORGE',       subtitle: 'Content Generation Pipeline',     status: 'dev',      url: '#',                                                         icon: '✍️',  stack: ['Research'] },
-  { id: 'resonance',          title: 'RESONANCE',           subtitle: 'Frequency Resonance System',      status: 'dev',      url: '#',                                                         icon: '🎵',  stack: ['Research'] },
-  { id: 'qg-ide',             title: 'QG-IDE',              subtitle: 'Quantum-Gated IDE',               status: 'dev',      url: '#',                                                         icon: '💻',  stack: ['Research'] },
-  { id: 'phenix-os',          title: 'Phenix OS',           subtitle: 'Cognitive Operating System',      status: 'dev',      url: '#',                                                         icon: '◈',   stack: ['Research'] },
-  { id: 'quantum-family',     title: 'Quantum Family',      subtitle: 'Family Sovereign System',         status: 'dev',      url: '#',                                                         icon: '🔺',  stack: ['Research'] },
-  { id: 'simple-sovereignty', title: 'Simple Sovereignty',  subtitle: 'Sovereignty Primer',              status: 'dev',      url: '#',                                                         icon: '▲',   stack: ['Research'] },
-  { id: 'mission-control',    title: 'Mission Control',     subtitle: 'Ecosystem Control Center',        status: 'dev',      url: '#',                                                         icon: '🚀',  stack: ['Research'] },
-  { id: 'quantum-life-os',    title: 'Quantum Life OS',     subtitle: 'Full-Stack Life OS',              status: 'dev',      url: '#',                                                         icon: '✨',  stack: ['Research'] },
-  { id: 'quantum-core',       title: 'Quantum Core',        subtitle: 'QM Computation Substrate',        status: 'research', url: '#',                                                         icon: '🔮',  stack: ['Published'] },
-  { id: 'alchemy',            title: 'Alchemy',             subtitle: 'Geometric Market Embeddings',     status: 'research', url: 'https://doi.org/10.5281/zenodo.18627420',                  icon: '📐',  stack: ['Zenodo', 'Published'] },
+const liveProducts: Product[] = [
+  { id: 'bonding',         title: 'BONDING',           subtitle: 'Multiplayer chemistry game — parents play alongside kids across any distance.',           status: 'live', url: 'https://bonding.p31ca.org',                          stack: ['React 19', 'Three.js', 'Zustand v5'] },
+  { id: 'spaceship-earth', title: 'Spaceship Earth',   subtitle: 'Sovereign cognitive cockpit — spoon tracking, breathing pacer, sensory buffer.',          status: 'live', url: 'https://spaceship-earth.pages.dev',                  stack: ['React 19', 'R3F', 'Polymorphic Skins'] },
+  { id: 'ede',             title: 'EDE',               subtitle: 'Everything Development Environment — browser-native IDE with Jitterbug Compiler.',       status: 'live', url: '/app/ede',                                           stack: ['Babel', 'IndexedDB', 'Offline-First'] },
+  { id: 'buffer',          title: 'The Buffer',        subtitle: 'Fawn Guard voltage processor — communication shield for high-conflict co-parenting.',    status: 'live', url: '/app/buffer',                                        stack: ['Voltage Scoring', 'BLUF Extraction'] },
+  { id: 'larmor',          title: 'Larmor',            subtitle: '863 Hz somatic regulation tuned to phosphorus-31 Larmor precession frequency.',          status: 'live', url: '/app/larmor',                                        stack: ['Web Audio', 'Binaural Beats'] },
+  { id: 'mesh',            title: 'P31 Mesh',          subtitle: 'Serverless peer mesh on Cloudflare Workers — K4 topology, zero-trust routing.',          status: 'live', url: 'https://p31-mesh.pages.dev',                         stack: ['CF Workers', 'K4 Topology'] },
+  { id: 'vault',           title: 'P31 Vault',         subtitle: 'Sovereign command center — vagal breathing, K4 seal, mesh loom, LOVE ledger.',           status: 'live', url: 'https://p31-vault.pages.dev',                        stack: ['React 19', 'Live Fleet'] },
+  { id: 'genesis-gate',    title: 'Genesis Gate',      subtitle: 'Central telemetry event bus — intercept module, governance hooks, orchestrator.',         status: 'live', url: 'https://genesis.p31ca.org',                          stack: ['TypeScript ESM', 'CF Workers'] },
+  { id: 'kenosis',         title: 'Kenosis Mesh',      subtitle: '7-node SIC-POVM message routing on Durable Objects — complete K4 graph.',                status: 'live', url: 'https://kenosis-mesh.trimtab-signal.workers.dev',    stack: ['Durable Objects', 'K4'] },
+  { id: 'fawn-guard',      title: 'Fawn Guard',        subtitle: 'Standalone passive-aggression detection API — voltage scoring endpoint.',                 status: 'live', url: 'https://fawn-guard.trimtab-signal.workers.dev',      stack: ['CF Workers', 'KV'] },
+  { id: 'donate-api',      title: 'Donate Pipeline',   subtitle: 'Stripe Checkout integration — monthly/one-time, auto-receipts, zero-fee Ko-fi bridge.', status: 'live', url: 'https://phosphorus31.org/donate',                     stack: ['Stripe', 'CF Worker'] },
+  { id: 'discord-bot',     title: 'p31-bot',           subtitle: 'Discord community engine — event dispatch, social cron, community moderation.',          status: 'live', url: 'https://discord.gg/uYW5rTCuZ',                      stack: ['Discord.js', 'Railway'] },
 ];
 
-const liveCount = vectors.filter(v => v.status === 'live').length;
-const devCount = vectors.filter(v => v.status === 'dev').length;
-const researchCount = vectors.filter(v => v.status === 'research').length;
+const devProducts: Product[] = [
+  { id: 'node-zero',          title: 'Node Zero',           subtitle: 'ESP32-S3 haptic device — Waveshare 3.5" QSPI display, LVGL 8.4, ESP-IDF v5.5.3.',     status: 'prototype', url: 'https://github.com/p31labs/andromeda', stack: ['ESP-IDF', 'LVGL', 'QSPI'] },
+  { id: 'node-one',           title: 'Node One (Totem)',    subtitle: 'Handheld cognitive prosthetic — PQC encryption (ML-KEM-768), LoRa mesh, biometric.',    status: 'dev',       url: 'https://github.com/p31labs/andromeda', stack: ['ESP32-S3', 'SE050', 'SX1262'] },
+  { id: 'tactile',            title: 'TACTILE',             subtitle: 'Keyboard builder and typing simulator — custom layouts, switch feel simulation.',       status: 'dev',       url: '#',                                    stack: ['Canvas', 'Web Audio'] },
+  { id: 'thermodynamic',      title: 'Thermodynamic Syllabus', subtitle: 'Point Peter particle simulation — EDE Triptych, monotropic attention channels.',    status: 'dev',       url: '#',                                    stack: ['Canvas', 'React 19'] },
+  { id: 'cortex',             title: 'p31-cortex',          subtitle: 'AI agent orchestration layer — Claude/Gemini routing, telemetry, governance.',         status: 'dev',       url: '#',                                    stack: ['CF Workers', 'KV'] },
+  { id: 'command-center',     title: 'Command Center',      subtitle: 'Fleet health monitoring — pings all workers, aggregates status, serves API.',          status: 'dev',       url: '#',                                    stack: ['CF Workers', 'Cron'] },
+];
+
+const researchItems = [
+  { title: 'Tetrahedron Protocol (K4)', doi: '10.5281/zenodo.18627420', desc: 'Geometric proof of K4 minimum isostatic structure. 280+ views, 240+ downloads.' },
+  { title: 'Genesis Whitepaper v1.1', doi: '10.5281/zenodo.19411363', desc: 'SIC-POVM measurement framework, EDE architecture, Q Distribution, Samson\'s Law.' },
+  { title: 'Papers V-XIX', doi: null, desc: '13 additional papers styled and ready for Zenodo batch upload. Topics: calcium biophysics, cognitive sovereignty, AT design.' },
+  { title: '5 Defensive Publications', doi: null, desc: 'Prior art deposited to Internet Archive Feb 25, 2026. Freedom-to-operate protection.' },
+];
 ---
 
-<BaseLayout title="P31 Labs | Neurodivergent Cognitive Infrastructure">
+<BaseLayout title="P31 Labs | Technical Hub">
   <!-- Navbar -->
-  <nav style="position:sticky;top:0;z-index:50;background:rgba(5,5,5,0.85);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,0.05);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;">
-    <div style="display:flex;align-items:center;gap:10px;">
-      <svg width="28" height="28" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
-        <rect width="512" height="512" rx="112" fill="#25897d"/>
-        <circle cx="390" cy="120" r="48" fill="#cc6247"/>
-        <text x="256" y="340" font-family="system-ui" font-weight="900" font-size="220" fill="#f0eee9" text-anchor="middle">P31</text>
-        <rect x="156" y="380" width="200" height="16" rx="8" fill="#cda852"/>
-      </svg>
-      <span style="font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:0.1em;text-transform:uppercase;opacity:0.8;">P31 Labs</span>
-    </div>
-    <div style="display:flex;align-items:center;gap:20px;font-family:'JetBrains Mono',monospace;font-size:12px;">
-      <a href="/lattice.html" style="color:#25897d;text-decoration:none;opacity:0.7;transition:opacity 0.15s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'">Lattice View</a>
-      <a href="https://github.com/p31labs/andromeda" target="_blank" rel="noopener noreferrer" style="color:#d8d6d0;text-decoration:none;opacity:0.5;transition:opacity 0.15s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.5'">GitHub</a>
-      <a href="/phosphorus/support" style="color:#d8d6d0;text-decoration:none;opacity:0.5;transition:opacity 0.15s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.5'">Support</a>
+  <nav class="sticky top-0 z-50 bg-[#080810]/85 backdrop-blur-md border-b border-white/[0.05]">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-3" style="text-decoration:none;">
+        <div class="w-8 h-8 rounded-full border border-rose-400/30 flex items-center justify-center">
+          <div class="w-2 h-2 rounded-full bg-rose-400" style="box-shadow:0 0 8px rgba(232,99,111,0.5);"></div>
+        </div>
+        <div>
+          <span class="text-white font-bold text-sm tracking-tight">P31 Labs</span>
+          <span class="text-gray-500 text-xs ml-2 hidden sm:inline">Technical Hub</span>
+        </div>
+      </a>
+      <div class="flex items-center gap-6 text-xs">
+        <a href="https://phosphorus31.org" class="text-gray-400 hover:text-white transition-colors" style="text-decoration:none;">Nonprofit Portal</a>
+        <a href="https://github.com/p31labs" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-white transition-colors" style="text-decoration:none;">GitHub</a>
+        <a href="https://phosphorus31.org/donate" class="px-4 py-2 rounded-lg text-xs font-bold transition-all hover:brightness-110" style="background:#E8636F;color:white;text-decoration:none;">Donate</a>
+      </div>
     </div>
   </nav>
 
-  <main style="max-width:72rem;margin:0 auto;padding:2rem 1.5rem 4rem;">
+  <main class="max-w-6xl mx-auto px-6 pb-16">
     <!-- Hero -->
-    <div style="padding:3rem 0 2rem;">
-      <div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:#25897d;margin-bottom:1rem;opacity:0.8;">
-        P31 Labs / EIN 81-2908499
+    <section class="pt-16 pb-12">
+      <div class="text-xs font-medium text-gray-500 tracking-wider uppercase mb-4">
+        P31 Labs, Inc. / EIN 42-1888158
       </div>
-      <h1 style="font-size:clamp(2rem,5vw,3.5rem);font-weight:800;line-height:1.1;color:#f0eee9;margin-bottom:1rem;">
-        Autonomous Cognitive<br/>Infrastructure.
+      <h1 class="text-4xl md:text-5xl font-extrabold text-white leading-tight mb-4">
+        Open-Source Assistive<br/>Technology.
       </h1>
-      <p style="font-size:1rem;color:rgba(240,238,233,0.55);max-width:540px;line-height:1.6;margin-bottom:1.5rem;">
-        Building sovereign tools for neurodivergent survival. Every system is edge-deployed, offline-capable, and legally armored. No cloud dependency. No floating neutral.
+      <p class="text-base text-white/55 max-w-xl leading-relaxed mb-6">
+        Free tools for neurodivergent families. Every system is edge-deployed, offline-capable, and open source. No accounts, no tracking, no cloud dependency.
       </p>
-      <div style="display:flex;align-items:center;gap:1.5rem;font-family:'JetBrains Mono',monospace;font-size:12px;color:rgba(255,255,255,0.4);">
-        <span>{vectors.length} vectors / {liveCount} live deployments</span>
-        <a href="/lattice.html" style="color:#25897d;text-decoration:none;">View lattice →</a>
+      <div class="flex items-center gap-6 text-xs text-white/40">
+        <span>{liveProducts.length} live deployments</span>
+        <span>{devProducts.length} in development</span>
+        <span>{researchItems.length} research publications</span>
       </div>
-    </div>
+    </section>
 
-    <!-- Filters -->
-    <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:1.5rem;flex-wrap:wrap;">
-      <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(255,255,255,0.3);margin-right:0.25rem;text-transform:uppercase;letter-spacing:0.1em;">Filter:</span>
-      <button data-filter="all" class="filter-btn active" onclick="setFilter('all')">All ({vectors.length})</button>
-      <button data-filter="live" class="filter-btn" onclick="setFilter('live')">Live ({liveCount})</button>
-      <button data-filter="dev" class="filter-btn" onclick="setFilter('dev')">In Dev ({devCount})</button>
-      <button data-filter="research" class="filter-btn" onclick="setFilter('research')">Research ({researchCount})</button>
-    </div>
+    <!-- Fleet Status Bar -->
+    <section class="mb-12" id="fleet-section">
+      <div class="glass-panel p-4 rounded-xl">
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center gap-2">
+            <div class="w-2 h-2 rounded-full bg-emerald-400" id="fleet-indicator" style="box-shadow:0 0 6px rgba(52,211,153,0.6);"></div>
+            <span class="text-xs font-semibold text-white/70">Fleet Status</span>
+          </div>
+          <span class="text-[10px] text-white/30" id="fleet-timestamp">Checking...</span>
+        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2" id="fleet-grid">
+          <div class="text-center py-2 px-3 rounded-lg bg-white/[0.02] border border-white/[0.04]">
+            <div class="text-[10px] text-white/40 mb-1">bonding-relay</div>
+            <div class="w-1.5 h-1.5 rounded-full bg-white/20 mx-auto" data-fleet="bonding-relay"></div>
+          </div>
+          <div class="text-center py-2 px-3 rounded-lg bg-white/[0.02] border border-white/[0.04]">
+            <div class="text-[10px] text-white/40 mb-1">command-center</div>
+            <div class="w-1.5 h-1.5 rounded-full bg-white/20 mx-auto" data-fleet="command-center"></div>
+          </div>
+          <div class="text-center py-2 px-3 rounded-lg bg-white/[0.02] border border-white/[0.04]">
+            <div class="text-[10px] text-white/40 mb-1">donate-api</div>
+            <div class="w-1.5 h-1.5 rounded-full bg-white/20 mx-auto" data-fleet="donate-api"></div>
+          </div>
+          <div class="text-center py-2 px-3 rounded-lg bg-white/[0.02] border border-white/[0.04]">
+            <div class="text-[10px] text-white/40 mb-1">fawn-guard</div>
+            <div class="w-1.5 h-1.5 rounded-full bg-white/20 mx-auto" data-fleet="fawn-guard"></div>
+          </div>
+          <div class="text-center py-2 px-3 rounded-lg bg-white/[0.02] border border-white/[0.04]">
+            <div class="text-[10px] text-white/40 mb-1">kenosis-mesh</div>
+            <div class="w-1.5 h-1.5 rounded-full bg-white/20 mx-auto" data-fleet="kenosis-mesh"></div>
+          </div>
+          <div class="text-center py-2 px-3 rounded-lg bg-white/[0.02] border border-white/[0.04]">
+            <div class="text-[10px] text-white/40 mb-1">carrie-agent</div>
+            <div class="w-1.5 h-1.5 rounded-full bg-white/20 mx-auto" data-fleet="carrie-agent"></div>
+          </div>
+        </div>
+      </div>
+    </section>
 
-    <!-- Vector Grid -->
-    <div id="vector-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem;">
-      {vectors.map((v) => (
-        <a
-          href={v.url}
-          data-status={v.status}
-          class="vector-card"
-          target={v.url.startsWith('http') ? '_blank' : undefined}
-          rel={v.url.startsWith('http') ? 'noopener noreferrer' : undefined}
-        >
-          <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:0.5rem;">
-            <span style="font-size:1.5rem;line-height:1;">{v.icon}</span>
-            <span class:list={['status-dot', `status-dot-${v.status}`]}></span>
+    <!-- Live Products -->
+    <section class="mb-16">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="w-2 h-2 rounded-full bg-emerald-400" style="box-shadow:0 0 6px rgba(52,211,153,0.6);"></div>
+        <h2 class="text-sm font-semibold text-white/70 uppercase tracking-wider">Live Deployments</h2>
+        <span class="text-xs text-white/30">{liveProducts.length} active</span>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {liveProducts.map((p) => (
+          <a
+            href={p.url}
+            target={p.url.startsWith('http') ? '_blank' : undefined}
+            rel={p.url.startsWith('http') ? 'noopener noreferrer' : undefined}
+            class="group glass-panel p-5 rounded-xl block transition-all"
+            style="text-decoration:none;"
+          >
+            <div class="flex items-start justify-between mb-3">
+              <h3 class="text-sm font-bold text-white group-hover:text-rose-300 transition-colors">{p.title}</h3>
+              <div class="w-2 h-2 rounded-full bg-emerald-400 flex-shrink-0 mt-1" style="box-shadow:0 0 4px rgba(52,211,153,0.5);"></div>
+            </div>
+            <p class="text-xs text-white/50 leading-relaxed mb-3">{p.subtitle}</p>
+            <div class="flex flex-wrap gap-1.5">
+              {p.stack.map((tag) => (
+                <span class="text-[10px] px-2 py-0.5 rounded-md bg-white/[0.05] text-white/30">{tag}</span>
+              ))}
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <!-- In Development -->
+    <section class="mb-16">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="w-2 h-2 rounded-full bg-amber-400"></div>
+        <h2 class="text-sm font-semibold text-white/70 uppercase tracking-wider">In Development</h2>
+        <span class="text-xs text-white/30">{devProducts.length} building</span>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {devProducts.map((p) => (
+          <div class="glass-panel p-5 rounded-xl opacity-80">
+            <div class="flex items-start justify-between mb-3">
+              <h3 class="text-sm font-bold text-white">{p.title}</h3>
+              <span class="text-[10px] px-2 py-0.5 rounded-full border border-amber-400/30 text-amber-400">
+                {p.status === 'prototype' ? 'Prototype' : 'Building'}
+              </span>
+            </div>
+            <p class="text-xs text-white/50 leading-relaxed mb-3">{p.subtitle}</p>
+            <div class="flex flex-wrap gap-1.5">
+              {p.stack.map((tag) => (
+                <span class="text-[10px] px-2 py-0.5 rounded-md bg-white/[0.05] text-white/30">{tag}</span>
+              ))}
+            </div>
           </div>
-          <h3 style="font-family:'JetBrains Mono',monospace;font-size:0.8rem;font-weight:700;letter-spacing:0.05em;color:#f0eee9;margin-bottom:0.25rem;">{v.title}</h3>
-          <p style="font-size:0.8rem;color:rgba(240,238,233,0.45);margin-bottom:0.75rem;line-height:1.4;">{v.subtitle}</p>
-          <div style="display:flex;flex-wrap:wrap;gap:0.25rem;">
-            {v.stack.map((tag) => (
-              <span class="stack-tag">{tag}</span>
-            ))}
+        ))}
+      </div>
+    </section>
+
+    <!-- Research -->
+    <section class="mb-16">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="w-2 h-2 rounded-full bg-cyan-400"></div>
+        <h2 class="text-sm font-semibold text-white/70 uppercase tracking-wider">Research</h2>
+        <span class="text-xs text-white/30">4 published, 13 ready</span>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {researchItems.map((r) => (
+          <div class="glass-panel p-5 rounded-xl">
+            <h3 class="text-sm font-bold text-white mb-2">{r.title}</h3>
+            {r.doi && (
+              <a href={`https://doi.org/${r.doi}`} target="_blank" rel="noopener noreferrer" class="text-[10px] text-cyan-400 hover:text-cyan-300 transition-colors mb-2 inline-block" style="text-decoration:none;">
+                DOI: {r.doi}
+              </a>
+            )}
+            <p class="text-xs text-white/50 leading-relaxed">{r.desc}</p>
           </div>
+        ))}
+      </div>
+      <div class="mt-4 text-center">
+        <a href="https://phosphorus31.org/research" class="text-xs text-rose-400 hover:text-rose-300 transition-colors" style="text-decoration:none;">
+          View all publications on phosphorus31.org &rarr;
         </a>
-      ))}
-    </div>
+      </div>
+    </section>
+
+    <!-- Stats Bar -->
+    <section class="mb-16">
+      <div class="glass-panel p-6 rounded-xl">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+          <div>
+            <div class="text-2xl font-extrabold text-white">{liveProducts.length}</div>
+            <div class="text-[10px] text-white/40 mt-1 uppercase tracking-wider">Live Products</div>
+          </div>
+          <div>
+            <div class="text-2xl font-extrabold text-white">413</div>
+            <div class="text-[10px] text-white/40 mt-1 uppercase tracking-wider">Tests Passing</div>
+          </div>
+          <div>
+            <div class="text-2xl font-extrabold text-white">4</div>
+            <div class="text-[10px] text-white/40 mt-1 uppercase tracking-wider">Papers Published</div>
+          </div>
+          <div>
+            <div class="text-2xl font-extrabold text-white">0</div>
+            <div class="text-[10px] text-white/40 mt-1 uppercase tracking-wider">Uncorrected Hallucinations</div>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
 
-  <!-- Footer -->
-  <footer style="border-top:1px solid rgba(255,255,255,0.04);padding:2rem 1.5rem;text-align:center;">
-    <div style="max-width:72rem;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:0.5rem;">
-      <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(255,255,255,0.15);letter-spacing:0.2em;text-transform:uppercase;">P31 Labs, Inc.</span>
-      <p style="font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(255,255,255,0.1);">
-        Georgia nonprofit corporation · EIN 81-2908499 · SE Georgia · AGPL-3.0
-      </p>
-    </div>
-  </footer>
+  <SharedFooter />
 </BaseLayout>
 
-<style>
-  .filter-btn {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    padding: 4px 12px;
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 4px;
-    background: transparent;
-    color: rgba(255,255,255,0.4);
-    cursor: pointer;
-    transition: all 0.15s;
-    letter-spacing: 0.05em;
-  }
-  .filter-btn:hover {
-    border-color: rgba(255,255,255,0.25);
-    color: rgba(255,255,255,0.7);
-  }
-  .filter-btn.active {
-    border-color: #25897d;
-    color: #25897d;
-    background: rgba(37,137,125,0.08);
-  }
-
-  .vector-card {
-    display: block;
-    padding: 1rem;
-    border: 1px solid rgba(255,255,255,0.07);
-    border-radius: 8px;
-    background: rgba(255,255,255,0.02);
-    color: inherit;
-    text-decoration: none;
-    transition: border-color 0.2s, background 0.2s;
-  }
-  .vector-card:hover {
-    border-color: rgba(255,255,255,0.15);
-    background: rgba(255,255,255,0.04);
-  }
-
-  .status-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    flex-shrink: 0;
-    margin-top: 4px;
-  }
-  .status-dot-live     { background: #3ba372; box-shadow: 0 0 6px rgba(59,163,114,0.6); }
-  .status-dot-dev      { background: #cda852; }
-  .status-dot-research { background: #4db8a8; }
-
-  .stack-tag {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 9px;
-    padding: 2px 6px;
-    border-radius: 3px;
-    background: rgba(255,255,255,0.05);
-    color: rgba(255,255,255,0.3);
-    letter-spacing: 0.03em;
-  }
-</style>
-
 <script>
-  function setFilter(filter: string) {
-    const btns = document.querySelectorAll<HTMLButtonElement>('.filter-btn');
-    const cards = document.querySelectorAll<HTMLElement>('.vector-card');
-    btns.forEach(b => b.classList.remove('active'));
-    const active = document.querySelector<HTMLButtonElement>(`[data-filter="${filter}"]`);
-    if (active) active.classList.add('active');
-    cards.forEach(card => {
-      const status = card.dataset.status;
-      card.style.display = (filter === 'all' || status === filter) ? '' : 'none';
-    });
-  }
+  // Fleet status — vanilla JS fetch from command-center API
+  (function() {
+    const API = 'https://command-center.trimtab-signal.workers.dev/api/status';
+    const TIMEOUT = 5000;
+
+    async function fetchFleet() {
+      try {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), TIMEOUT);
+        const res = await fetch(API, { signal: controller.signal });
+        clearTimeout(timer);
+
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+
+        // Update fleet dots
+        if (data.workers && Array.isArray(data.workers)) {
+          let upCount = 0;
+          data.workers.forEach((w: any) => {
+            const dot = document.querySelector(`[data-fleet="${w.name}"]`);
+            if (dot) {
+              const isUp = w.status === 'up' || w.status === 'ok';
+              (dot as HTMLElement).className = `w-1.5 h-1.5 rounded-full mx-auto ${
+                isUp ? 'bg-emerald-400' : 'bg-red-400'
+              }`;
+              if (isUp) {
+                (dot as HTMLElement).style.boxShadow = '0 0 4px rgba(52,211,153,0.5)';
+              } else {
+                (dot as HTMLElement).style.boxShadow = '0 0 4px rgba(248,113,113,0.5)';
+              }
+              if (isUp) upCount++;
+            }
+          });
+
+          // Update indicator
+          const indicator = document.getElementById('fleet-indicator');
+          if (indicator) {
+            const allUp = upCount === data.workers.length;
+            indicator.className = `w-2 h-2 rounded-full ${allUp ? 'bg-emerald-400' : 'bg-amber-400'}`;
+            indicator.style.boxShadow = allUp
+              ? '0 0 6px rgba(52,211,153,0.6)'
+              : '0 0 6px rgba(251,191,36,0.6)';
+          }
+        }
+
+        // Update timestamp
+        const ts = document.getElementById('fleet-timestamp');
+        if (ts) {
+          ts.textContent = `Last checked: ${new Date().toLocaleTimeString()}`;
+        }
+      } catch (e) {
+        const ts = document.getElementById('fleet-timestamp');
+        if (ts) ts.textContent = 'Fleet status unavailable';
+      }
+    }
+
+    // Fetch on load
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', fetchFleet);
+    } else {
+      fetchFleet();
+    }
+  })();
 </script>

@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0f1115">
+    <title>Mother Nature & Father Time | Children's Book | P31 Labs</title>
+    <meta name="description" content="A 14-page illustrated digital reader dedicated to Bash and Willow. Touch-native navigation, dark-mode native, bilingual-ready architecture.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Atkinson Hyperlegible"', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'monospace'],
+                    },
+                    colors: {
+                        void: '#0f1115', surface: '#161920', coral: '#cc6247',
+                        teal: '#25897d', cyan: '#4db8a8', cloud: '#d8d6d0',
+                        butter: '#cda852', lavender: '#8b7cc9', phosphorus: '#3ba372',
+                        paper: '#f4f4f5', ink: '#1e293b'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #0f1115;
+            color: #d8d6d0;
+            background-image: linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+        .matte-panel { background-color: #161920; border: 1px solid rgba(255,255,255,0.04); }
+        .logo-text { fill: #d8d6d0; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col text-cloud/90">
+
+<nav class="sticky top-0 z-50 border-b border-white/5 backdrop-blur-sm" style="background:rgba(15,17,21,0.92)">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+        <a href="index.html" class="flex items-center gap-3">
+            <svg width="24" height="24" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+                <rect width="512" height="512" rx="112" fill="#25897d"/>
+                <circle cx="390" cy="120" r="48" fill="#cc6247"/>
+                <text x="256" y="340" font-family="system-ui" font-weight="900" font-size="220" class="logo-text" text-anchor="middle">P31</text>
+                <rect x="156" y="380" width="200" height="16" rx="8" fill="#cda852"/>
+            </svg>
+            <span class="font-mono text-xs tracking-widest uppercase opacity-60">P31 Labs</span>
+        </a>
+        <a href="index.html" class="font-mono text-xs opacity-50 hover:opacity-100 transition-opacity">← Hub</a>
+    </div>
+</nav>
+
+<main class="max-w-6xl mx-auto px-6 py-16 flex flex-col gap-12 flex-1">
+
+    <header class="border-b border-white/5 pb-10">
+        <div class="flex items-start gap-6 mb-6">
+            <div class="text-5xl">📖</div>
+            <div class="flex-1">
+                <div class="flex items-center gap-3 mb-3 flex-wrap">
+                    <span class="font-mono text-xs px-2 py-1 rounded" style="background:#3ba37215;color:#3ba372;border:1px solid #3ba37230">🟢 LIVE</span>
+                    <span class="font-mono text-xs opacity-30">deployed 2026-04-02</span>
+                </div>
+                <h1 class="text-4xl md:text-5xl font-bold mb-3">Mother Nature &amp; Father Time</h1>
+                <p class="text-xl text-teal/80 font-mono">Children's Picture Book</p>
+            </div>
+        </div>
+        <p class="text-base text-cloud/60 leading-relaxed max-w-3xl">
+            A 14-page illustrated digital reader dedicated to Bash and Willow, with love from Dad. Touch-native navigation, dark-mode native, bilingual-ready architecture. Built on Vite 8 + React 19, deployed to Cloudflare Pages.
+        </p>
+    </header>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+        <div class="lg:col-span-2 flex flex-col gap-8">
+
+            <section class="matte-panel rounded-xl p-8">
+                <h2 class="font-mono text-xs tracking-widest uppercase text-teal/60 mb-6">01. Architecture</h2>
+                <div class="flex flex-col gap-4">
+                    <p class="text-sm text-cloud/70 leading-relaxed">
+                        A purpose-built digital reader optimised for children's tablets. Layout, typography, and interaction model are derived from the original PDF spec — scaled to screen using CSS <code class="font-mono text-xs bg-white/5 px-1 rounded">clamp()</code> functions throughout.
+                    </p>
+                    <ul class="flex flex-col gap-3 mt-2">
+                        <li class="flex gap-3 text-sm">
+                            <span class="text-teal mt-0.5 flex-shrink-0">▸</span>
+                            <span><span class="font-mono text-phosphorus">Vite 8 + React 19 + TypeScript</span> — strict mode, deployed to Cloudflare Pages</span>
+                        </li>
+                        <li class="flex gap-3 text-sm">
+                            <span class="text-teal mt-0.5 flex-shrink-0">▸</span>
+                            <span><span class="font-mono text-phosphorus">14 pages</span> — cover, dedication, 10 story pages, author note, back matter. Each page is a self-contained React component.</span>
+                        </li>
+                        <li class="flex gap-3 text-sm">
+                            <span class="text-teal mt-0.5 flex-shrink-0">▸</span>
+                            <span><span class="font-mono text-phosphorus">Fluid layout</span> — image panel <code class="font-mono text-xs bg-white/5 px-1 rounded">flex: 0 0 52%</code>, text panel <code class="font-mono text-xs bg-white/5 px-1 rounded">flex: 1</code>. Responsive breakpoints collapse to vertical stack on mobile.</span>
+                        </li>
+                        <li class="flex gap-3 text-sm">
+                            <span class="text-teal mt-0.5 flex-shrink-0">▸</span>
+                            <span><span class="font-mono text-phosphorus">clamp() font scaling</span> — PDF spec range 9–26px mapped to screen 15–52px. All typography scales continuously with viewport width.</span>
+                        </li>
+                        <li class="flex gap-3 text-sm">
+                            <span class="text-teal mt-0.5 flex-shrink-0">▸</span>
+                            <span><span class="font-mono text-phosphorus">Touch + swipe navigation</span> — ‹ › arrow overlay, swipe gesture detection, progress bar showing current page. Optimised for 10" Android tablets.</span>
+                        </li>
+                        <li class="flex gap-3 text-sm">
+                            <span class="text-teal mt-0.5 flex-shrink-0">▸</span>
+                            <span><span class="font-mono text-phosphorus">AI illustrations</span> — 2000×848px images, <code class="font-mono text-xs bg-white/5 px-1 rounded">objectFit: cover</code> + <code class="font-mono text-xs bg-white/5 px-1 rounded">objectPosition: center 30%</code> for consistent focal framing</span>
+                        </li>
+                        <li class="flex gap-3 text-sm">
+                            <span class="text-teal mt-0.5 flex-shrink-0">▸</span>
+                            <span><span class="font-mono text-phosphorus">Reader selector</span> — Bash / Willow / Dad / Guest, shown on cover page. Personalises the reading experience per reader identity.</span>
+                        </li>
+                        <li class="flex gap-3 text-sm">
+                            <span class="text-teal mt-0.5 flex-shrink-0">▸</span>
+                            <span><span class="font-mono text-phosphorus">Dark-native</span> — no pure blacks, warm dark palette. Bilingual-ready: text content fully separated from layout for future translation.</span>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <section class="matte-panel rounded-xl p-8">
+                <h2 class="font-mono text-xs tracking-widest uppercase text-teal/60 mb-6">02. Story &amp; Dedication</h2>
+                <div class="flex flex-col gap-4 text-sm text-cloud/70 leading-relaxed">
+                    <div class="matte-panel rounded-lg p-5 border-l-2 border-butter/40">
+                        <div class="font-mono text-xs text-butter/60 mb-2">THE STORY</div>
+                        <p class="italic text-cloud/80">"The Spark and the Cage"</p>
+                        <p class="mt-2 text-cloud/60">Mother Nature covers her ears while Father Time builds a fortress. A story about the tension between wildness and structure, freedom and protection — told for children who live in the space between both.</p>
+                    </div>
+                    <p>
+                        Dedicated to Bash and Willow. The dedication page is the first spread the reader encounters after the cover — before the story begins, the purpose is declared.
+                    </p>
+                    <p>
+                        The author note (page 13) identifies Will Johnson, AuDHD, P31 Labs — establishing provenance and connecting the book to the broader ecosystem of evidence.
+                    </p>
+                    <p>
+                        The bilingual-ready architecture means all text content is stored in a single data structure separate from the layout components. Adding a Spanish or ASL-gloss layer requires no layout changes — only a new content object.
+                    </p>
+                    <div class="grid grid-cols-4 gap-3 mt-2">
+                        <div class="matte-panel rounded-lg p-3 text-center">
+                            <div class="text-lg mb-1">👦</div>
+                            <div class="font-mono text-xs opacity-50">Bash</div>
+                        </div>
+                        <div class="matte-panel rounded-lg p-3 text-center">
+                            <div class="text-lg mb-1">👧</div>
+                            <div class="font-mono text-xs opacity-50">Willow</div>
+                        </div>
+                        <div class="matte-panel rounded-lg p-3 text-center">
+                            <div class="text-lg mb-1">👨</div>
+                            <div class="font-mono text-xs opacity-50">Dad</div>
+                        </div>
+                        <div class="matte-panel rounded-lg p-3 text-center">
+                            <div class="text-lg mb-1">🫂</div>
+                            <div class="font-mono text-xs opacity-50">Guest</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+
+        <div class="flex flex-col gap-6">
+
+            <div class="matte-panel rounded-xl p-6">
+                <div class="font-mono text-xs text-teal/60 mb-4 tracking-widest uppercase">Deployment</div>
+                <div class="flex flex-col gap-3 text-sm">
+                    <div class="flex justify-between">
+                        <span class="opacity-50">Status</span>
+                        <span class="font-mono text-phosphorus text-xs">🟢 LIVE</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="opacity-50">Deployed</span>
+                        <span class="font-mono text-xs">2026-04-02</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="opacity-50">Pages</span>
+                        <span class="font-mono text-xs">14</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="opacity-50">Platform</span>
+                        <span class="font-mono text-xs">CF Pages</span>
+                    </div>
+                    <div class="border-t border-white/5 pt-3 mt-1">
+                        <a href="https://mother-nature-book.pages.dev" target="_blank" class="font-mono text-xs text-teal hover:text-cyan transition-colors block">mother-nature-book.pages.dev ↗</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="matte-panel rounded-xl p-6">
+                <div class="font-mono text-xs text-teal/60 mb-4 tracking-widest uppercase">Repository</div>
+                <a href="https://github.com/p31labs/andromeda/tree/main/apps/book" target="_blank" class="font-mono text-xs text-cloud/50 hover:text-teal transition-colors break-all">
+                    github.com/p31labs/andromeda<br>/apps/book ↗
+                </a>
+            </div>
+
+            <div class="matte-panel rounded-xl p-6">
+                <div class="font-mono text-xs text-teal/60 mb-4 tracking-widest uppercase">Ecosystem</div>
+                <div class="flex flex-col gap-3">
+                    <a href="bonding.html" class="flex items-center gap-2 text-sm hover:text-teal transition-colors">
+                        <span>⚛️</span><span class="text-xs">BONDING <span class="opacity-40">— sibling app</span></span>
+                    </a>
+                    <a href="discord-bot.html" class="flex items-center gap-2 text-sm hover:text-teal transition-colors">
+                        <span>🤖</span><span class="text-xs">p31-bot <span class="opacity-40">— /book announcement command</span></span>
+                    </a>
+                    <a href="spaceship-earth.html" class="flex items-center gap-2 text-sm hover:text-teal transition-colors">
+                        <span>🌐</span><span class="text-xs">Spaceship Earth <span class="opacity-40">— operator dashboard</span></span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="matte-panel rounded-xl p-6">
+                <div class="font-mono text-xs text-teal/60 mb-3 tracking-widest uppercase">Tech Stack</div>
+                <div class="flex flex-wrap gap-2">
+                    <span class="font-mono text-xs bg-white/5 px-2 py-1 rounded">Vite 8</span>
+                    <span class="font-mono text-xs bg-white/5 px-2 py-1 rounded">React 19</span>
+                    <span class="font-mono text-xs bg-white/5 px-2 py-1 rounded">TypeScript</span>
+                    <span class="font-mono text-xs bg-white/5 px-2 py-1 rounded">CF Pages</span>
+                    <span class="font-mono text-xs bg-white/5 px-2 py-1 rounded">clamp() layout</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</main>
+
+<footer class="border-t border-white/5 mt-auto">
+    <div class="max-w-6xl mx-auto px-6 py-8 flex items-center justify-between">
+        <div class="font-mono text-xs opacity-30">P31 Labs — EIN 42-1888158</div>
+        <a href="index.html" class="font-mono text-xs opacity-40 hover:opacity-80 transition-opacity">← Back to Hub</a>
+    </div>
+</footer>
+
+</body>
+</html>

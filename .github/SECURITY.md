@@ -2,7 +2,7 @@
 
 ## Supported Versions
 
-The Phosphorus31 (P31) Andromeda Ecosystem is an actively maintained, 21 CFR §890.3710 classified powered communication system.
+The Phosphorus31 (P31) Andromeda Ecosystem is an actively maintained open-source assistive technology platform.
 
 | Version | Supported |
 |---------|-----------|
@@ -27,11 +27,7 @@ P31 Labs strongly supports independent security research. We will not pursue leg
 2. Do not expose, delete, or alter user data (specifically Spoons, Karma, or Genesis Identities).
 3. Provide us a reasonable amount of time (minimum 30 days) to patch the vulnerability before public disclosure.
 
-## Medical Device Regulatory Compliance
-
-This repository contains software for a Class I Exempt medical device under 21 CFR §890.3710 (Powered Communication System). Security vulnerabilities in medical device software could impact patient safety. We treat such vulnerabilities with the highest priority.
-
-### Vulnerability Classification
+## Vulnerability Classification
 
 | Severity | Response Time | Public Disclosure |
 |----------|---------------|-------------------|

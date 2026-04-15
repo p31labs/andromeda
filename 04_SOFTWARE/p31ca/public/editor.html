@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0f1115">
+    <title>CONTENT FORGE | Editor | P31 Labs</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['"Atkinson Hyperlegible"', 'sans-serif'], mono: ['"JetBrains Mono"', 'monospace'] },
+                    colors: { void: '#0f1115', surface: '#161920', coral: '#cc6247', teal: '#25897d', cyan: '#4db8a8', cloud: '#d8d6d0', butter: '#cda852', lavender: '#8b7cc9', phosphorus: '#3ba372' }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background: #0f1115; color: #d8d6d0; margin: 0; font-family: 'Atkinson Hyperlegible', sans-serif; }
+        .mono { font-family: 'JetBrains Mono', monospace; }
+        .panel { background: #161920; border: 1px solid rgba(255,255,255,0.06); }
+        .seed-item { padding: 8px 10px; margin-bottom: 4px; border-radius: 6px; cursor: pointer; border: 1px solid transparent; transition: all 0.15s; }
+        .seed-item:hover { background: rgba(255,255,255,0.03); }
+        .seed-item.active { border-color: #cc6247; background: rgba(204,98,71,0.08); }
+        .badge { display: inline-block; font-size: 9px; padding: 1px 6px; border-radius: 4px; letter-spacing: 0.5px; text-transform: uppercase; }
+        .toolbar-btn { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); color: #d8d6d0; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 11px; font-family: 'JetBrains Mono', monospace; transition: all 0.15s; }
+        .toolbar-btn:hover { background: rgba(204,98,71,0.15); border-color: #cc6247; }
+        .action-btn { width: 100%; padding: 8px; border-radius: 6px; cursor: pointer; font-size: 12px; font-family: 'Atkinson Hyperlegible', sans-serif; border: 1px solid; transition: all 0.15s; margin-bottom: 6px; }
+        .action-btn:hover { filter: brightness(1.2); }
+        .fw-card { padding: 6px 10px; margin-bottom: 4px; border-radius: 6px; cursor: pointer; border: 1px solid rgba(255,255,255,0.06); background: rgba(255,255,255,0.02); transition: all 0.15s; }
+        .fw-card:hover { border-color: #cc6247; background: rgba(204,98,71,0.06); }
+        select, input, textarea { background: transparent; color: #d8d6d0; border: 1px solid rgba(255,255,255,0.08); border-radius: 4px; outline: none; font-family: 'Atkinson Hyperlegible', sans-serif; }
+        select option { background: #161920; color: #d8d6d0; }
+        input:focus, textarea:focus, select:focus { border-color: #cc6247; }
+        ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+        .checklist-item { display: flex; align-items: flex-start; gap: 8px; padding: 3px 0; font-size: 11px; cursor: pointer; color: rgba(216,214,208,0.5); transition: color 0.15s; }
+        .checklist-item.checked { color: #3ba372; text-decoration: line-through; }
+        .checklist-item input { accent-color: #3ba372; margin-top: 2px; cursor: pointer; }
+        .section-label { font-size: 10px; font-family: 'JetBrains Mono', monospace; color: rgba(216,214,208,0.35); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+        @media (max-width: 768px) {
+            #app { flex-direction: column !important; }
+            #left-panel, #right-panel { width: 100% !important; max-height: 40vh; border: none !important; border-bottom: 1px solid rgba(255,255,255,0.06) !important; }
+            #center-panel { min-height: 50vh; }
+        }
+    </style>
+</head>
+<body class="h-screen overflow-hidden flex flex-col">
+    <!-- Top Bar -->
+    <header class="flex items-center gap-3 px-4 py-2 border-b border-white/5" style="background:#161920">
+        <a href="content-forge.html" class="mono text-xs text-coral hover:text-cloud transition" style="text-decoration:none">&larr; CONTENT FORGE</a>
+        <div class="flex-1"></div>
+        <span class="text-lg font-bold text-coral tracking-wide">CONTENT FORGE</span>
+        <div class="flex-1"></div>
+        <button onclick="exportJSON()" class="toolbar-btn text-phosphorus" style="border-color:rgba(59,163,114,0.3)">Export JSON</button>
+        <button onclick="exportMarkdown()" class="toolbar-btn text-cyan" style="border-color:rgba(77,184,168,0.3)">Export MD</button>
+    </header>
+
+    <!-- 3-Column Layout -->
+    <div id="app" class="flex flex-1 overflow-hidden">
+        <!-- Left Panel: Seed Bank -->
+        <div id="left-panel" class="panel flex flex-col overflow-hidden" style="width:250px;border-top:none;border-bottom:none;border-left:none;border-radius:0">
+            <div class="p-3 border-b border-white/5">
+                <input id="search" type="text" placeholder="Search seeds..." class="w-full px-2 py-1 text-xs mono" oninput="renderSeedList()">
+            </div>
+            <div class="p-3 border-b border-white/5">
+                <select id="filter-status" class="w-full px-2 py-1 text-xs mono mb-2" onchange="renderSeedList()">
+                    <option value="all">All statuses</option>
+                    <option value="seed">Seed</option>
+                    <option value="draft">Draft</option>
+                    <option value="review">Review</option>
+                    <option value="published">Published</option>
+                </select>
+                <select id="filter-category" class="w-full px-2 py-1 text-xs mono" onchange="renderSeedList()">
+                    <option value="all">All categories</option>
+                    <option value="framework">Framework</option>
+                    <option value="personal">Personal</option>
+                    <option value="technical">Technical</option>
+                    <option value="research">Research</option>
+                </select>
+            </div>
+            <div id="seed-list" class="flex-1 overflow-y-auto p-2"></div>
+            <div class="p-2 border-t border-white/5">
+                <button onclick="addSeed()" class="action-btn text-cloud/50" style="background:transparent;border-style:dashed;border-color:rgba(255,255,255,0.1)">+ New Seed</button>
+            </div>
+        </div>
+
+        <!-- Center Panel: Editor -->
+        <div id="center-panel" class="flex flex-col flex-1 overflow-hidden" style="background:#0f1115">
+            <!-- Toolbar -->
+            <div class="flex items-center gap-1 px-3 py-2 border-b border-white/5" style="background:#161920">
+                <button class="toolbar-btn" onclick="insertMD('# ','')">H1</button>
+                <button class="toolbar-btn" onclick="insertMD('## ','')">H2</button>
+                <button class="toolbar-btn" onclick="insertMD('### ','')">H3</button>
+                <div class="w-px h-4 bg-white/10 mx-1"></div>
+                <button class="toolbar-btn" onclick="insertMD('**','**')">B</button>
+                <button class="toolbar-btn" onclick="insertMD('*','*')"><i>I</i></button>
+                <div class="w-px h-4 bg-white/10 mx-1"></div>
+                <button class="toolbar-btn" onclick="insertMD('> ','')">&#8220;</button>
+                <button class="toolbar-btn" onclick="insertMD('- ','')">&#8226;</button>
+                <button class="toolbar-btn" onclick="insertMD('1. ','')">1.</button>
+                <button class="toolbar-btn" onclick="insertMD('```\n','\n```')">{ }</button>
+                <button class="toolbar-btn" onclick="insertMD('\n---\n','')">&#8212;</button>
+                <div class="flex-1"></div>
+                <span id="word-count" class="mono text-xs text-cloud/30">0 words | 0 min</span>
+            </div>
+            <!-- Title -->
+            <input id="ed-title" type="text" placeholder="Post title..." class="px-5 pt-4 pb-1 text-xl font-bold" style="border:none;border-radius:0;font-size:22px" oninput="onFieldChange()">
+            <!-- Subtitle -->
+            <input id="ed-subtitle" type="text" placeholder="Subtitle -- the hook..." class="px-5 pb-3 text-sm" style="border:none;border-radius:0;color:rgba(216,214,208,0.5);font-weight:300;border-bottom:1px solid rgba(255,255,255,0.06)" oninput="onFieldChange()">
+            <!-- Body -->
+            <textarea id="ed-body" placeholder="Start writing..." class="flex-1 px-5 py-4 mono" style="border:none;border-radius:0;font-size:13px;line-height:1.8;resize:none;overflow:auto" oninput="onFieldChange()"></textarea>
+        </div>
+
+        <!-- Right Panel: Settings/Actions -->
+        <div id="right-panel" class="panel flex flex-col overflow-y-auto" style="width:280px;border-top:none;border-bottom:none;border-right:none;border-radius:0">
+            <!-- Status & Category -->
+            <div class="p-3 border-b border-white/5">
+                <div class="section-label">Status</div>
+                <select id="ed-status" class="w-full px-2 py-1 text-xs mono mb-3" onchange="onFieldChange()">
+                    <option value="seed">Seed</option>
+                    <option value="draft">Draft</option>
+                    <option value="review">Review</option>
+                    <option value="published">Published</option>
+                </select>
+                <div class="section-label">Category</div>
+                <select id="ed-category" class="w-full px-2 py-1 text-xs mono" onchange="onFieldChange()">
+                    <option value="framework">Framework</option>
+                    <option value="personal">Personal</option>
+                    <option value="technical">Technical</option>
+                    <option value="research">Research</option>
+                </select>
+            </div>
+
+            <!-- Framework Library -->
+            <div class="p-3 border-b border-white/5">
+                <div class="section-label">Framework Library</div>
+                <div id="fw-list"></div>
+            </div>
+
+            <!-- Publishing Checklist -->
+            <div class="p-3 border-b border-white/5">
+                <div class="section-label">Publishing Checklist</div>
+                <div id="checklist"></div>
+            </div>
+
+            <!-- Word Count Panel -->
+            <div class="p-3 border-b border-white/5">
+                <div class="section-label">Metrics</div>
+                <div id="metrics" class="mono text-xs text-cloud/40 space-y-1"></div>
+            </div>
+
+            <!-- Actions -->
+            <div class="p-3">
+                <div class="section-label">Actions</div>
+                <button onclick="deleteSeed()" class="action-btn text-coral" style="background:transparent;border-color:rgba(204,98,71,0.3)">Delete Seed</button>
+            </div>
+        </div>
+    </div>
+
+<script>
+// ── Constants ──
+const STORAGE_KEY = 'p31:content-forge:seeds';
+const ACTIVE_KEY = 'p31:content-forge:active';
+
+const STATUS_COLORS = { seed: '#4db8a8', draft: '#cda852', review: '#8b7cc9', published: '#3ba372' };
+const CAT_COLORS = { framework: '#4db8a8', personal: '#cda852', technical: '#8b7cc9', research: '#3ba372' };
+
+const FRAMEWORKS = [
+    { id: 'f-posner', title: 'Posner Molecule', snippet: 'Ca\u2089(PO\u2084)\u2086 -- the hypothesized substrate for quantum cognition. Phosphorus-31 (spin 1/2, NMR-active) bound with calcium forms the molecular bridge between quantum physics and biological thought. Matthew Fisher proposed in 2015 that these molecules could be the basis for quantum processing in the brain.', category: 'research' },
+    { id: 'f-delta', title: 'Wye-Delta Transformation', snippet: 'A Wye (Y) topology routes everything through a single hub -- one point of failure. A Delta topology is a mesh where every node connects to every other. The transformation from Wye to Delta is the shift from fragile hierarchy to antifragile distributed network. No center. No single point of failure.', category: 'framework' },
+    { id: 'f-tetra', title: 'Tetrahedron Protocol', snippet: 'K\u2084 -- the complete graph on four vertices. The simplest rigid structure in 3D space. Four points, six edges. In P31, every decision is anchored to four vertices: Technical Feasibility, Legal Compliance, Medical Necessity, Operational Security. If any edge breaks, the structure collapses.', category: 'framework' },
+    { id: 'f-fuller', title: 'Buckminster Fuller', snippet: 'Tensegrity: structures that maintain integrity through tension, not compression. Synergetics: the geometry of thinking. Trim tab: the smallest intervention that changes the course of the largest system. "You never change things by fighting the existing reality. Build a new model that makes the existing model obsolete."', category: 'framework' },
+    { id: 'f-sic', title: 'SIC-POVM', snippet: 'Symmetric Informationally Complete Positive Operator-Valued Measures. In quantum measurement theory, a SIC-POVM is a set of d\u00b2 vectors in d-dimensional Hilbert space that form a regular simplex. They represent the most efficient way to extract complete information from a quantum state -- maximum knowledge from minimum measurement.', category: 'research' },
+    { id: 'f-spoons', title: 'Spoon Theory', snippet: 'Christine Miserandino\'s framework for chronic illness energy management. Every morning you wake with a finite number of spoons. Every task costs spoons. When they\'re gone, they\'re gone -- no overdraft, no credit. P31 quantifies this: track energy expenditure, measure recovery rates, budget capacity across the day.', category: 'framework' },
+];
+
+const CHECKLIST_ITEMS = [
+    'Opening hook -- first 2 sentences compelling?',
+    'Vulnerability present -- authentic self-disclosure?',
+    'Technical analogy -- complex idea made accessible?',
+    'P31 reference -- connected to broader mission?',
+    'Cross-linking -- links to other P31 content?',
+    'Call to action -- reader knows what to do next?',
+    'Word count -- 800-2500 sweet spot?',
+    'Subtitle quality -- specific, not generic?',
+];
+
+const DEFAULT_SEEDS = [
+    { id: 's-1', title: 'Why I Named It After a Molecule', subtitle: 'The origin story nobody asked for but everyone needs', body: 'Phosphorus-31 is the only stable isotope of phosphorus. It has a nuclear spin of 1/2, which makes it NMR-active.\n\nCombine it with calcium and you get the Posner molecule. Matthew Fisher proposed in 2015 that these molecules might be the substrate for quantum cognition.\n\nI didn\'t name P31 Labs after a molecule because it sounded cool. I named it because it IS what we\'re building: the bridge between quantum physics and how neurodivergent brains actually think.\n\nEvery system we ship -- BONDING, Spaceship Earth, the Node Zero firmware -- is an experiment in whether computation can model the way a brain like mine actually processes information. Not neurotypical information processing. Mine.', status: 'draft', category: 'personal', created: Date.now() - 86400000 },
+    { id: 's-2', title: 'The Floating Neutral', subtitle: 'What electricians know about losing your ground', body: 'In electrical engineering, a floating neutral is when the return path loses its reference to ground. Voltage becomes unpredictable. Lights flicker. Equipment burns out.\n\nIn family law, a floating neutral is when the co-parent who was supposed to be your ground reference disappears. The kids oscillate between two ungrounded systems.', status: 'seed', category: 'framework', created: Date.now() - 172800000 },
+    { id: 's-3', title: 'Spoon Accounting for Engineers', subtitle: 'Why your project management tool will never work for me', body: '', status: 'seed', category: 'technical', created: Date.now() - 259200000 },
+];
+
+// ── State ──
+let seeds = [];
+let activeId = null;
+let checks = new Array(CHECKLIST_ITEMS.length).fill(false);
+
+// ── Init ──
+function init() {
+    try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        seeds = raw ? JSON.parse(raw) : [...DEFAULT_SEEDS];
+    } catch { seeds = [...DEFAULT_SEEDS]; }
+    activeId = localStorage.getItem(ACTIVE_KEY) || seeds[0]?.id || null;
+    renderAll();
+}
+
+function persist() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(seeds));
+    if (activeId) localStorage.setItem(ACTIVE_KEY, activeId);
+}
+
+function getActive() { return seeds.find(s => s.id === activeId) || null; }
+
+// ── Rendering ──
+function renderAll() {
+    renderSeedList();
+    renderEditor();
+    renderFrameworks();
+    renderChecklist();
+    updateMetrics();
+}
+
+function renderSeedList() {
+    const list = document.getElementById('seed-list');
+    const query = document.getElementById('search').value.toLowerCase();
+    const statusFilter = document.getElementById('filter-status').value;
+    const catFilter = document.getElementById('filter-category').value;
+
+    const filtered = seeds.filter(s => {
+        if (query && !s.title.toLowerCase().includes(query) && !s.subtitle.toLowerCase().includes(query)) return false;
+        if (statusFilter !== 'all' && s.status !== statusFilter) return false;
+        if (catFilter !== 'all' && s.category !== catFilter) return false;
+        return true;
+    });
+
+    list.innerHTML = filtered.map(s => {
+        const sc = STATUS_COLORS[s.status];
+        const cc = CAT_COLORS[s.category];
+        const isActive = s.id === activeId;
+        return `<div class="seed-item ${isActive ? 'active' : ''}" onclick="selectSeed('${s.id}')">
+            <div style="font-size:12px;font-weight:${isActive ? 600 : 400};margin-bottom:2px">${s.title || 'Untitled'}</div>
+            <div class="mono" style="font-size:9px;color:rgba(216,214,208,0.3);margin-bottom:4px">${new Date(s.created).toLocaleDateString()}</div>
+            <span class="badge" style="background:${sc}18;color:${sc};border:1px solid ${sc}33">${s.status}</span>
+            <span class="badge" style="background:${cc}18;color:${cc};border:1px solid ${cc}33;margin-left:4px">${s.category}</span>
+        </div>`;
+    }).join('');
+}
+
+function renderEditor() {
+    const s = getActive();
+    document.getElementById('ed-title').value = s?.title || '';
+    document.getElementById('ed-subtitle').value = s?.subtitle || '';
+    document.getElementById('ed-body').value = s?.body || '';
+    document.getElementById('ed-status').value = s?.status || 'seed';
+    document.getElementById('ed-category').value = s?.category || 'framework';
+    updateMetrics();
+}
+
+function renderFrameworks() {
+    const el = document.getElementById('fw-list');
+    el.innerHTML = FRAMEWORKS.map(fw => {
+        const cc = CAT_COLORS[fw.category] || '#4db8a8';
+        return `<div class="fw-card" onclick="insertFramework('${fw.id}')">
+            <div style="font-size:11px;font-weight:500">${fw.title}</div>
+            <span class="mono" style="font-size:9px;color:${cc}">${fw.category.toUpperCase()}</span>
+        </div>`;
+    }).join('');
+}
+
+function renderChecklist() {
+    const el = document.getElementById('checklist');
+    el.innerHTML = CHECKLIST_ITEMS.map((item, i) =>
+        `<label class="checklist-item ${checks[i] ? 'checked' : ''}" onclick="toggleCheck(${i})">
+            <input type="checkbox" ${checks[i] ? 'checked' : ''} onclick="event.stopPropagation();toggleCheck(${i})">
+            <span>${item}</span>
+        </label>`
+    ).join('');
+}
+
+function updateMetrics() {
+    const body = document.getElementById('ed-body').value;
+    const wc = body.trim() ? body.trim().split(/\s+/).length : 0;
+    const readMin = Math.max(1, Math.ceil(wc / 250));
+    document.getElementById('word-count').textContent = `${wc} words | ${readMin} min`;
+
+    const inRange = wc >= 800 && wc <= 2500;
+    const rangeColor = wc === 0 ? 'rgba(216,214,208,0.3)' : inRange ? '#3ba372' : wc < 800 ? '#cda852' : '#cc6247';
+
+    document.getElementById('metrics').innerHTML = `
+        <div>Words: <span style="color:${rangeColor}">${wc}</span></div>
+        <div>Reading time: ${readMin} min</div>
+        <div>Characters: ${body.length}</div>
+        <div>Paragraphs: ${body.trim() ? body.trim().split(/\n\s*\n/).length : 0}</div>
+        <div style="color:${rangeColor};margin-top:4px">${wc === 0 ? 'Empty' : inRange ? 'Sweet spot (800-2500)' : wc < 800 ? 'Below sweet spot' : 'Above sweet spot'}</div>
+    `;
+}
+
+// ── Actions ──
+function selectSeed(id) {
+    activeId = id;
+    localStorage.setItem(ACTIVE_KEY, id);
+    checks = new Array(CHECKLIST_ITEMS.length).fill(false);
+    renderAll();
+}
+
+function addSeed() {
+    const id = 's-' + Date.now();
+    const s = { id, title: '', subtitle: '', body: '', status: 'seed', category: 'framework', created: Date.now() };
+    seeds.unshift(s);
+    activeId = id;
+    checks = new Array(CHECKLIST_ITEMS.length).fill(false);
+    persist();
+    renderAll();
+    document.getElementById('ed-title').focus();
+}
+
+function deleteSeed() {
+    const s = getActive();
+    if (!s || !confirm('Delete "' + (s.title || 'Untitled') + '"?')) return;
+    seeds = seeds.filter(x => x.id !== activeId);
+    activeId = seeds[0]?.id || null;
+    persist();
+    renderAll();
+}
+
+function onFieldChange() {
+    const s = getActive();
+    if (!s) return;
+    s.title = document.getElementById('ed-title').value;
+    s.subtitle = document.getElementById('ed-subtitle').value;
+    s.body = document.getElementById('ed-body').value;
+    s.status = document.getElementById('ed-status').value;
+    s.category = document.getElementById('ed-category').value;
+    persist();
+    renderSeedList();
+    updateMetrics();
+}
+
+function toggleCheck(i) {
+    checks[i] = !checks[i];
+    renderChecklist();
+}
+
+function insertMD(before, after) {
+    const el = document.getElementById('ed-body');
+    const start = el.selectionStart;
+    const end = el.selectionEnd;
+    const text = el.value;
+    const selected = text.slice(start, end);
+    const insertion = before + selected + after;
+    el.value = text.slice(0, start) + insertion + text.slice(end);
+    el.selectionStart = start + before.length;
+    el.selectionEnd = start + before.length + selected.length;
+    el.focus();
+    onFieldChange();
+}
+
+function insertFramework(fwId) {
+    const fw = FRAMEWORKS.find(f => f.id === fwId);
+    if (!fw) return;
+    const el = document.getElementById('ed-body');
+    const pos = el.selectionStart;
+    const insert = '\n\n---\n\n**' + fw.title + '**\n\n' + fw.snippet + '\n\n---\n\n';
+    el.value = el.value.slice(0, pos) + insert + el.value.slice(pos);
+    el.selectionStart = el.selectionEnd = pos + insert.length;
+    el.focus();
+    onFieldChange();
+}
+
+function exportJSON() {
+    const blob = new Blob([JSON.stringify(seeds, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'p31-content-forge-seeds.json';
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+function exportMarkdown() {
+    const s = getActive();
+    if (!s) return;
+    const md = '# ' + s.title + '\n\n*' + s.subtitle + '*\n\n' + s.body;
+    const blob = new Blob([md], { type: 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = (s.title || 'untitled').replace(/[^a-z0-9]+/gi, '-').toLowerCase() + '.md';
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+// ── Boot ──
+init();
+</script>
+</body>
+</html>

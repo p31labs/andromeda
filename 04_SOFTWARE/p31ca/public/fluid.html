@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SIGNAL | Kinetic Fluid Stim</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { overflow: hidden; background: #000; touch-action: none; font-family: 'JetBrains Mono', monospace; }
+        canvas { display: block; width: 100vw; height: 100vh; }
+        #info { position: absolute; top: 16px; left: 16px; color: rgba(255,255,255,0.2); font-family: monospace; font-size: 11px; pointer-events: none; letter-spacing: 0.06em; }
+        #back { position: absolute; top: 16px; right: 16px; color: rgba(205,168,82,0.5); font-family: monospace; font-size: 11px; text-decoration: none; letter-spacing: 0.08em; background: rgba(22,25,32,0.7); padding: 5px 12px; border-radius: 99px; border: 1px solid rgba(205,168,82,0.15); }
+        #back:hover { color: #cda852; }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <div id="info">SIGNAL · Kinetic Fluid · Touch rapidly for haptics</div>
+    <a href="signal.html" id="back">← SIGNAL</a>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        let width, height;
+        // Scale particle count to device capability
+        const numParticles = Math.min(Math.floor(window.innerWidth * 1.8), 2400);
+        const particles = [];
+        const pointer = { x: -2000, y: -2000, vx: 0, vy: 0, lx: -2000, ly: -2000, down: false };
+        let lastHaptic = 0;
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+
+        class Particle {
+            constructor() { this.reset(); }
+            reset() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.vx = (Math.random() - 0.5) * 1.5;
+                this.vy = (Math.random() - 0.5) * 1.5;
+                this.hue = Math.random() > 0.55 ? 42 : (Math.random() > 0.5 ? 164 : 270); // butter / phosphorus / lavender
+            }
+            update() {
+                const dx = pointer.x - this.x, dy = pointer.y - this.y;
+                const d2 = dx * dx + dy * dy;
+                if (d2 < 22500) { // 150px radius
+                    const d = Math.sqrt(d2);
+                    const f = (150 - d) / 150;
+                    this.vx -= (dx / d) * f * 1.8 + pointer.vx * f * 0.08;
+                    this.vy -= (dy / d) * f * 1.8 + pointer.vy * f * 0.08;
+                }
+                this.vx *= 0.965;
+                this.vy *= 0.965;
+                this.vx += (Math.random() - 0.5) * 0.18;
+                this.vy += (Math.random() - 0.5) * 0.18;
+                this.x += this.vx;
+                this.y += this.vy;
+                if (this.x < 0) this.x = width;
+                if (this.x > width) this.x = 0;
+                if (this.y < 0) this.y = height;
+                if (this.y > height) this.y = 0;
+            }
+            draw() {
+                const spd = Math.hypot(this.vx, this.vy);
+                const alpha = Math.min(spd * 0.09 + 0.08, 0.85);
+                const r = Math.min(spd * 0.5 + 1, 4.5);
+                ctx.globalAlpha = alpha;
+                ctx.fillStyle = `hsl(${this.hue}, 65%, 60%)`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, r, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function updatePointer(e) {
+            const src = e.touches ? e.touches[0] : e;
+            pointer.lx = pointer.x; pointer.ly = pointer.y;
+            pointer.x = src.clientX; pointer.y = src.clientY;
+            pointer.vx = pointer.x - pointer.lx;
+            pointer.vy = pointer.y - pointer.ly;
+
+            const v2 = pointer.vx * pointer.vx + pointer.vy * pointer.vy;
+            const now = Date.now();
+            if (v2 > 1800 && now - lastHaptic > 55 && navigator.vibrate) {
+                navigator.vibrate(12);
+                lastHaptic = now;
+            }
+        }
+
+        window.addEventListener('pointermove', updatePointer);
+        window.addEventListener('pointerdown', e => { pointer.down = true; updatePointer(e); });
+        window.addEventListener('pointerup', () => { pointer.down = false; pointer.vx = 0; pointer.vy = 0; });
+        window.addEventListener('touchmove', updatePointer, { passive: false });
+        window.addEventListener('resize', resize);
+
+        function animate() {
+            ctx.globalCompositeOperation = 'source-over';
+            ctx.globalAlpha = 1;
+            ctx.fillStyle = 'rgba(0,0,0,0.13)';
+            ctx.fillRect(0, 0, width, height);
+
+            ctx.globalCompositeOperation = 'lighter';
+            particles.forEach(p => { p.update(); p.draw(); });
+
+            // Pointer glow
+            if (pointer.x > -100) {
+                const spd = Math.hypot(pointer.vx, pointer.vy);
+                const r = 90 + spd * 2.5;
+                const grd = ctx.createRadialGradient(pointer.x, pointer.y, 0, pointer.x, pointer.y, r);
+                grd.addColorStop(0, 'rgba(205,168,82,0.18)');
+                grd.addColorStop(1, 'rgba(205,168,82,0)');
+                ctx.globalAlpha = 1;
+                ctx.fillStyle = grd;
+                ctx.beginPath();
+                ctx.arc(pointer.x, pointer.y, r, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            requestAnimationFrame(animate);
+        }
+
+        resize();
+        for (let i = 0; i < numParticles; i++) particles.push(new Particle());
+        animate();
+    </script>
+</body>
+</html>

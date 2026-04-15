@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>BRIDGE — LOVE Economy</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script>
+tailwind.config={theme:{extend:{colors:{void:'#0f1115',surface:'#161920',cloud:'#d8d6d0',butter:'#cda852',coral:'#cc6247',phosphorus:'#3ba372',dim:'#555860',faint:'#262a33'},fontFamily:{display:['Atkinson Hyperlegible','sans-serif'],mono:['JetBrains Mono','monospace']}}}}
+</script>
+<style>
+html,body{margin:0;height:100%;background:#0f1115;color:#d8d6d0;font-family:'Atkinson Hyperlegible',sans-serif}
+*{box-sizing:border-box;scrollbar-width:thin;scrollbar-color:#262a33 transparent}
+.tab-btn{cursor:pointer;padding:8px 18px;font-weight:700;letter-spacing:.06em;font-size:13px;border:none;background:none;color:#555860;border-bottom:2px solid transparent;transition:all .2s}
+.tab-btn.active{color:#cda852;border-bottom-color:#cda852}
+.tab-btn:hover:not(.active){color:#d8d6d0}
+.card{background:#161920;border:1px solid #262a33;border-radius:10px;padding:16px}
+.card-title{font-size:11px;letter-spacing:.08em;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.btn{cursor:pointer;border:none;border-radius:8px;padding:8px 16px;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;transition:all .15s}
+.btn:active{transform:scale(.96)}
+.btn-spend{background:#cc624722;color:#cc6247;border:1px solid #cc624744}
+.btn-spend:hover{background:#cc624733}
+.btn-primary{background:#cda85222;color:#cda852;border:1px solid #cda85244}
+.btn-primary:hover{background:#cda85233}
+.btn-mint{background:#3ba37222;color:#3ba372;border:1px solid #3ba37244}
+.btn-mint:hover{background:#3ba37233}
+.flash{animation:flashPulse .6s ease-out}
+@keyframes flashPulse{0%{box-shadow:0 0 20px #cc624788}100%{box-shadow:none}}
+.gauge-anim{transition:stroke-dashoffset .8s cubic-bezier(.4,0,.2,1)}
+input[type=text],input[type=number]{background:#0f1115;border:1px solid #262a33;border-radius:6px;color:#d8d6d0;padding:6px 10px;font-family:'JetBrains Mono',monospace;font-size:12px;outline:none}
+input:focus{border-color:#cda852}
+select{background:#0f1115;border:1px solid #262a33;border-radius:6px;color:#d8d6d0;padding:6px 10px;font-size:12px;outline:none}
+</style>
+</head>
+<body class="flex flex-col h-screen overflow-hidden">
+
+<!-- Top Bar -->
+<header class="flex items-center justify-between px-5 py-3 border-b border-faint flex-shrink-0">
+  <div class="flex items-center gap-4">
+    <a href="bridge.html" class="text-dim hover:text-cloud text-sm font-mono">&larr; bridge</a>
+    <span class="text-butter font-bold tracking-widest text-lg">BRIDGE</span>
+  </div>
+  <div class="flex items-center gap-2 bg-surface border border-faint rounded-lg px-3 py-1">
+    <span class="text-coral font-bold font-mono text-sm" id="topLove">250</span>
+    <span class="text-dim text-xs">LOVE</span>
+  </div>
+</header>
+
+<!-- Tabs -->
+<nav class="flex border-b border-faint flex-shrink-0 px-4" id="tabBar">
+  <button class="tab-btn active" data-tab="love">LOVE</button>
+  <button class="tab-btn" data-tab="wallet">WALLET</button>
+  <button class="tab-btn" data-tab="stealth">STEALTH</button>
+  <button class="tab-btn" data-tab="ledger">LEDGER</button>
+</nav>
+
+<!-- Content -->
+<main class="flex-1 overflow-y-auto p-4" id="content"></main>
+
+<script>
+// ── State ──────────────────────────────────────────────────────
+const LS_PREFIX = 'p31:bridge:';
+function load(k, def) { try { const v = localStorage.getItem(LS_PREFIX + k); return v !== null ? JSON.parse(v) : def; } catch { return def; } }
+function save(k, v) { localStorage.setItem(LS_PREFIX + k, JSON.stringify(v)); }
+
+const state = {
+  love: load('love', 250),
+  spoons: load('spoons', 8),
+  protocolLove: load('protocolLove', 0),
+  genesisInit: load('genesisInit', false),
+  ethBalance: load('ethBalance', '0.000'),
+  donationCount: load('donationCount', 0),
+  stealthAddrs: load('stealthAddrs', []),
+  ledger: load('ledger', []),
+};
+
+function persist() {
+  for (const k of Object.keys(state)) save(k, state[k]);
+}
+
+function addLedgerEntry(type, amount, desc) {
+  state.ledger.unshift({ ts: new Date().toISOString(), type, amount, desc });
+  persist();
+}
+
+// ── Tab Routing ────────────────────────────────────────────────
+let activeTab = 'love';
+const content = document.getElementById('content');
+const tabBar = document.getElementById('tabBar');
+
+tabBar.addEventListener('click', e => {
+  const btn = e.target.closest('[data-tab]');
+  if (!btn) return;
+  activeTab = btn.dataset.tab;
+  tabBar.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === activeTab));
+  render();
+});
+
+// ── SVG Gauge Helper ───────────────────────────────────────────
+function circGauge(id, value, max, size, color, label, sub) {
+  const r = (size - 8) / 2;
+  const circ = 2 * Math.PI * r;
+  const pct = Math.min(1, max > 0 ? value / max : 0);
+  const offset = circ * (1 - pct);
+  return `<div class="flex flex-col items-center gap-1">
+    <svg width="${size}" height="${size}">
+      <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="#262a33" stroke-width="3"/>
+      <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${color}" stroke-width="3"
+        stroke-dasharray="${circ}" stroke-dashoffset="${offset}" stroke-linecap="round"
+        transform="rotate(-90 ${size/2} ${size/2})" class="gauge-anim"
+        style="filter:drop-shadow(0 0 6px ${color})"/>
+      <text x="${size/2}" y="${size/2 - 4}" text-anchor="middle" dominant-baseline="middle"
+        fill="${color}" font-size="${size > 80 ? 20 : 14}" font-weight="700" font-family="JetBrains Mono,monospace">${typeof value==='number'?(value<100?value.toFixed(1):Math.round(value)):value}</text>
+      <text x="${size/2}" y="${size/2 + 12}" text-anchor="middle" dominant-baseline="middle"
+        fill="#555860" font-size="9" letter-spacing=".06em" font-family="Atkinson Hyperlegible,sans-serif">${label}</text>
+    </svg>
+    ${sub ? `<span class="text-dim text-xs">${sub}</span>` : ''}
+  </div>`;
+}
+
+// ── Spoon color gradient ───────────────────────────────────────
+function spoonColor(spoons) {
+  if (spoons >= 8) return '#3ba372';
+  if (spoons >= 5) return '#cda852';
+  if (spoons >= 3) return '#cc6247';
+  return '#cc3333';
+}
+
+// ── Vesting milestones ─────────────────────────────────────────
+const MILESTONES = [13, 16, 18, 21, 25];
+const VESTING = [
+  { name: 'Bash', born: 2016, color: '#cc6247' },
+  { name: 'Willow', born: 2019, color: '#cda852' },
+];
+const CURRENT_YEAR = 2026;
+
+function vestingRow(v) {
+  const age = CURRENT_YEAR - v.born;
+  return `<div class="flex items-center gap-3 py-2">
+    <span class="text-sm font-bold w-16" style="color:${v.color}">${v.name}</span>
+    <div class="flex-1 relative h-6 flex items-center">
+      <div class="absolute inset-y-0 left-0 right-0 flex items-center"><div class="w-full h-0.5 bg-faint rounded"></div></div>
+      <div class="relative flex justify-between w-full">
+        ${MILESTONES.map(m => {
+          const unlocked = age >= m;
+          return `<div class="flex flex-col items-center gap-1 z-10">
+            <div class="w-5 h-5 rounded-full border-2 flex items-center justify-center text-[9px] font-mono font-bold"
+              style="border-color:${unlocked ? v.color : '#262a33'};background:${unlocked ? v.color+'22' : '#0f1115'};color:${unlocked ? v.color : '#555860'}">${m}</div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+  </div>`;
+}
+
+// ── LOVE Tab ───────────────────────────────────────────────────
+function renderLove() {
+  const sc = spoonColor(state.spoons);
+  return `
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+    ${circGauge('g1', state.love, 1000, 110, '#cc6247', 'LOVE', `${state.love} / 1000`)}
+    ${circGauge('g2', state.spoons, 12, 110, sc, 'SPOONS', `${state.spoons} / 12`)}
+    ${circGauge('g3', state.protocolLove, Math.max(100, state.protocolLove), 110, '#3ba372', 'PROTOCOL', `cumulative`)}
+  </div>
+
+  <div class="card mb-4">
+    <div class="card-title"><span class="w-2 h-2 rounded-full bg-coral inline-block"></span><span class="text-coral">SPEND LOVE</span></div>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      ${[['Mint Resonance', 5], ['Boost Node', 10], ['Gift LOVE', 25]].map(([label, cost]) =>
+        `<div class="bg-void rounded-lg p-3 flex flex-col items-center gap-2 border border-faint">
+          <span class="text-cloud text-sm font-bold">${label}</span>
+          <span class="text-coral font-mono text-xs">${cost} LOVE</span>
+          <button class="btn btn-spend w-full" onclick="spendLove('${label}',${cost})">Spend</button>
+        </div>`
+      ).join('')}
+    </div>
+  </div>
+
+  <div class="card mb-4">
+    <div class="card-title"><span class="w-2 h-2 rounded-full bg-phosphorus inline-block"></span><span class="text-phosphorus">EARN LOVE</span></div>
+    <div class="space-y-2 text-sm font-mono">
+      <div class="flex justify-between"><span class="text-cloud">Molecule bonded</span><span class="text-phosphorus">+1 LOVE</span></div>
+      <div class="flex justify-between"><span class="text-cloud">Quest completed</span><span class="text-phosphorus">+2 LOVE</span></div>
+      <div class="flex justify-between"><span class="text-cloud">Resonance minted</span><span class="text-phosphorus">+5 LOVE</span></div>
+    </div>
+    <div class="flex gap-2 mt-3">
+      <button class="btn btn-mint text-xs" onclick="earnLove(1,'Molecule bonded')">+1 Bond</button>
+      <button class="btn btn-mint text-xs" onclick="earnLove(2,'Quest completed')">+2 Quest</button>
+      <button class="btn btn-mint text-xs" onclick="earnLove(5,'Resonance minted')">+5 Mint</button>
+    </div>
+  </div>
+
+  <div class="card mb-4">
+    <div class="card-title"><span class="w-2 h-2 rounded-full bg-butter inline-block"></span><span class="text-butter">SPOON GAUGE</span></div>
+    <div class="flex items-center gap-3">
+      <div class="flex-1 h-3 bg-faint rounded-full overflow-hidden">
+        <div class="h-full rounded-full transition-all duration-500" style="width:${(state.spoons/12)*100}%;background:${sc}"></div>
+      </div>
+      <span class="font-mono text-sm" style="color:${sc}">${state.spoons}/12</span>
+    </div>
+    <div class="flex gap-2 mt-2">
+      <button class="btn btn-spend text-xs" onclick="adjustSpoons(-1)">-1</button>
+      <button class="btn btn-mint text-xs" onclick="adjustSpoons(1)">+1</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="w-2 h-2 rounded-full bg-butter inline-block"></span><span class="text-butter">VESTING SCHEDULES</span></div>
+    ${VESTING.map(v => vestingRow(v)).join('')}
+    <p class="text-dim text-xs mt-2 font-mono">Milestones unlock at age thresholds. Green = unlocked.</p>
+  </div>`;
+}
+
+// ── WALLET Tab ─────────────────────────────────────────────────
+function renderWallet() {
+  const initDot = state.genesisInit ? '#3ba372' : '#555860';
+  const initLabel = state.genesisInit ? 'INITIALIZED' : 'NOT INITIALIZED';
+  return `
+  <div class="card mb-4">
+    <div class="card-title"><span class="w-2 h-2 rounded-full inline-block" style="background:${initDot}"></span><span class="text-phosphorus">GENESIS GATE</span></div>
+    <div class="flex items-center gap-3 mb-3">
+      <span class="w-3 h-3 rounded-full" style="background:${initDot};box-shadow:0 0 8px ${initDot}"></span>
+      <span class="font-mono text-sm" style="color:${state.genesisInit?'#3ba372':'#555860'}">${initLabel}</span>
+    </div>
+    ${!state.genesisInit ? `<button class="btn btn-primary" onclick="initGenesis()">Initialize Genesis Gate</button>` :
+      `<p class="text-dim text-xs font-mono">Key: ${load('genesisKey','')?.slice(0,16)}...</p>`}
+  </div>
+
+  <div class="card mb-4">
+    <div class="card-title"><span class="w-2 h-2 rounded-full bg-butter inline-block"></span><span class="text-butter">BALANCE</span></div>
+    <div class="flex items-center gap-3 mb-3">
+      <input type="text" value="${state.ethBalance}" class="w-32" onchange="updateEth(this.value)" />
+      <span class="text-dim text-sm">ETH</span>
+    </div>
+    <div class="flex items-center gap-2">
+      <span class="text-dim text-xs">Donations:</span>
+      <span class="text-cloud font-mono font-bold">${state.donationCount}</span>
+      <button class="btn btn-primary text-xs ml-2" onclick="addDonation()">+ Donation</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="w-2 h-2 rounded-full bg-dim inline-block"></span><span class="text-dim">TRANSACTIONS</span></div>
+    <div class="text-dim text-sm font-mono py-4 text-center" id="walletTxList">
+      ${state.ledger.filter(e=>e.type==='transfer').length === 0 ? 'No transactions yet' :
+        state.ledger.filter(e=>e.type==='transfer').map(e =>
+          `<div class="flex justify-between py-1 border-b border-faint text-xs">
+            <span class="text-dim">${new Date(e.ts).toLocaleString()}</span>
+            <span class="text-cloud">${e.desc}</span>
+            <span class="text-butter">${e.amount}</span>
+          </div>`
+        ).join('')}
+    </div>
+  </div>`;
+}
+
+// ── STEALTH Tab ────────────────────────────────────────────────
+function renderStealth() {
+  return `
+  <div class="card mb-4">
+    <div class="card-title"><span class="w-2 h-2 rounded-full bg-butter inline-block"></span><span class="text-butter">STEALTH ADDRESSES</span></div>
+    <p class="text-dim text-xs mb-3">Stealth addresses provide receiver privacy. Each address is single-use; the sender can verify delivery without revealing the recipient on-chain.</p>
+    <button class="btn btn-primary mb-4" onclick="genStealth()">Generate Stealth Address</button>
+    <div class="space-y-2" id="stealthList">
+      ${state.stealthAddrs.length === 0 ? '<p class="text-dim text-sm font-mono text-center py-4">No stealth addresses generated</p>' :
+        state.stealthAddrs.map((a, i) =>
+          `<div class="flex items-center gap-2 bg-void rounded-lg p-2 border border-faint">
+            <span class="font-mono text-xs text-cloud flex-1 truncate">0x${a.hex}</span>
+            <button class="btn btn-primary text-[10px] py-1 px-2" onclick="copyAddr(${i})">Copy</button>
+            <span class="text-dim text-[10px] flex-shrink-0">${new Date(a.ts).toLocaleDateString()}</span>
+          </div>`
+        ).join('')}
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title"><span class="w-2 h-2 rounded-full bg-dim inline-block"></span><span class="text-dim">PRIVACY NOTES</span></div>
+    <ul class="text-dim text-xs space-y-1 list-disc list-inside font-mono">
+      <li>Each stealth address should only be used once</li>
+      <li>Addresses are derived from a shared secret between sender and receiver</li>
+      <li>On-chain observers cannot link stealth addresses to the receiver's main address</li>
+      <li>Store generated addresses securely; they are persisted in localStorage for this demo</li>
+    </ul>
+  </div>`;
+}
+
+// ── LEDGER Tab ─────────────────────────────────────────────────
+function renderLedger() {
+  const types = ['all', 'earn', 'spend', 'transfer'];
+  const filtered = activeFilter === 'all' ? state.ledger : state.ledger.filter(e => e.type === activeFilter);
+  const totals = { earn: 0, spend: 0, transfer: 0 };
+  state.ledger.forEach(e => { if (totals[e.type] !== undefined) totals[e.type] += e.amount; });
+
+  return `
+  <div class="flex gap-3 mb-4 flex-wrap items-center">
+    <div class="flex gap-1">
+      ${types.map(t => `<button class="btn text-xs ${activeFilter===t?'btn-primary':'text-dim border border-faint bg-void'}" onclick="setFilter('${t}')">${t.toUpperCase()}</button>`).join('')}
+    </div>
+    <button class="btn btn-primary text-xs ml-auto" onclick="exportLedger()">Export JSON</button>
+  </div>
+
+  <div class="grid grid-cols-3 gap-3 mb-4">
+    <div class="card text-center">
+      <div class="text-phosphorus font-mono font-bold text-lg">${totals.earn}</div>
+      <div class="text-dim text-xs">Earned</div>
+    </div>
+    <div class="card text-center">
+      <div class="text-coral font-mono font-bold text-lg">${totals.spend}</div>
+      <div class="text-dim text-xs">Spent</div>
+    </div>
+    <div class="card text-center">
+      <div class="text-butter font-mono font-bold text-lg">${totals.transfer}</div>
+      <div class="text-dim text-xs">Transferred</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <table class="w-full text-xs font-mono">
+      <thead>
+        <tr class="text-dim border-b border-faint">
+          <th class="text-left py-2 pr-2">Timestamp</th>
+          <th class="text-left py-2 pr-2">Type</th>
+          <th class="text-right py-2 pr-2">Amount</th>
+          <th class="text-left py-2">Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${filtered.length === 0 ? `<tr><td colspan="4" class="text-dim text-center py-6">No entries</td></tr>` :
+          filtered.map(e => {
+            const tc = e.type === 'earn' ? '#3ba372' : e.type === 'spend' ? '#cc6247' : '#cda852';
+            return `<tr class="border-b border-faint">
+              <td class="text-dim py-1.5 pr-2 whitespace-nowrap">${new Date(e.ts).toLocaleString()}</td>
+              <td class="py-1.5 pr-2"><span style="color:${tc}">${e.type.toUpperCase()}</span></td>
+              <td class="text-right py-1.5 pr-2" style="color:${tc}">${e.type==='spend'?'-':''}${e.amount}</td>
+              <td class="text-cloud py-1.5">${e.desc}</td>
+            </tr>`;
+          }).join('')}
+      </tbody>
+    </table>
+  </div>`;
+}
+
+// ── Actions ────────────────────────────────────────────────────
+let activeFilter = 'all';
+
+function spendLove(label, cost) {
+  if (state.love < cost) return;
+  state.love -= cost;
+  addLedgerEntry('spend', cost, label);
+  render();
+}
+
+function earnLove(amount, desc) {
+  state.love = Math.min(1000, state.love + amount);
+  state.protocolLove += amount;
+  addLedgerEntry('earn', amount, desc);
+  render();
+}
+
+function adjustSpoons(delta) {
+  state.spoons = Math.max(0, Math.min(12, state.spoons + delta));
+  persist();
+  render();
+}
+
+function initGenesis() {
+  const key = Array.from(crypto.getRandomValues(new Uint8Array(32))).map(b=>b.toString(16).padStart(2,'0')).join('');
+  save('genesisKey', key);
+  state.genesisInit = true;
+  addLedgerEntry('transfer', 0, 'Genesis Gate initialized');
+  render();
+}
+
+function updateEth(val) {
+  state.ethBalance = val;
+  persist();
+}
+
+function addDonation() {
+  state.donationCount++;
+  addLedgerEntry('transfer', 0, 'Donation received');
+  render();
+}
+
+function genStealth() {
+  const hex = Array.from(crypto.getRandomValues(new Uint8Array(20))).map(b=>b.toString(16).padStart(2,'0')).join('');
+  state.stealthAddrs.unshift({ hex, ts: new Date().toISOString() });
+  persist();
+  render();
+}
+
+function copyAddr(i) {
+  const addr = '0x' + state.stealthAddrs[i].hex;
+  navigator.clipboard.writeText(addr).catch(()=>{});
+}
+
+function setFilter(f) {
+  activeFilter = f;
+  render();
+}
+
+function exportLedger() {
+  const blob = new Blob([JSON.stringify(state.ledger, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'p31-bridge-ledger.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+// ── Render ─────────────────────────────────────────────────────
+function render() {
+  document.getElementById('topLove').textContent = state.love;
+  const renderers = { love: renderLove, wallet: renderWallet, stealth: renderStealth, ledger: renderLedger };
+  content.innerHTML = renderers[activeTab]();
+}
+
+render();
+</script>
+</body>
+</html>

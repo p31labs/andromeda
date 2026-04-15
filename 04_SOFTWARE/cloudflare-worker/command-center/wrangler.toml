@@ -1,0 +1,18 @@
+# Command Center — P31 Labs Operator Dashboard
+name = "command-center"
+main = "src/index.js"
+compatibility_date = "2026-04-13"
+
+[[kv_namespaces]]
+binding = "STATUS_KV"
+id = "ff890e80e7e64ae8b8afb59870f1a0f6"
+
+[triggers]
+crons = ["*/5 * * * *"]
+
+[vars]
+ENVIRONMENT = "production"
+# Public account id (same as Cloudflare dashboard URL)
+CF_ACCOUNT_ID = "ee05f70c889cb6f876b9925257e3a2fa"
+# STATUS_TOKEN: set via `wrangler secret put STATUS_TOKEN`
+# CF_API_TOKEN: set via `wrangler secret put CF_API_TOKEN` — see CLOUD_HUB.md

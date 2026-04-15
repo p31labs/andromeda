@@ -23,5 +23,5 @@
     }
   },
   "include": ["src", "src/types/**/*.d.ts"],
-  "exclude": ["src/services/webgpu/**/*"]
+  "exclude": ["src/services/webgpu/**/*", "src/__tests__/**/*"]
 }

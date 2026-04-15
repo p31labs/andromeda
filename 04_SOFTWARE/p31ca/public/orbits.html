@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TETHER | Spatial Task Map</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { overflow: hidden; background: #0f1115; color: #d8d6d0; font-family: 'Atkinson Hyperlegible', sans-serif; }
+        #canvas-container { position: absolute; inset: 0; z-index: 1; }
+        #ui { position: absolute; top: 0; left: 0; width: 100%; z-index: 10; pointer-events: none; padding: 1.25rem; display: flex; flex-direction: column; align-items: center; gap: 0.6rem; }
+        .glass { background: rgba(22,25,32,0.85); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; pointer-events: auto; }
+        .panel { display: flex; gap: 0.5rem; width: 100%; max-width: 560px; padding: 0.85rem; }
+        input, select { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #d8d6d0; padding: 0.65rem 0.9rem; border-radius: 8px; outline: none; font-family: 'Atkinson Hyperlegible', sans-serif; }
+        input { flex: 1; min-width: 0; }
+        input::placeholder { color: rgba(216,214,208,0.35); }
+        select option { background: #161920; }
+        .spawn-btn { background: #cda852; color: #0f1115; font-weight: 700; border: none; padding: 0.65rem 1.1rem; border-radius: 8px; cursor: pointer; font-family: 'Atkinson Hyperlegible', sans-serif; transition: 0.15s; white-space: nowrap; }
+        .spawn-btn:hover { background: #e0be6c; }
+        .hint { font-size: 10px; color: rgba(216,214,208,0.3); font-family: 'JetBrains Mono', monospace; letter-spacing: 0.1em; text-transform: uppercase; pointer-events: none; }
+        .back { color: rgba(205,168,82,0.55); font-family: 'JetBrains Mono', monospace; font-size: 11px; text-decoration: none; padding: 5px 12px; border-radius: 99px; border: 1px solid rgba(205,168,82,0.15); background: rgba(22,25,32,0.7); }
+    </style>
+</head>
+<body>
+    <div id="canvas-container"></div>
+    <div id="ui">
+        <div class="flex w-full max-w-560px items-center gap-3" style="max-width:560px">
+            <form id="form" class="glass panel" style="flex:1">
+                <input type="text" id="task-name" placeholder="Add a responsibility..." required autocomplete="off">
+                <select id="task-energy">
+                    <option value="1">1–3 spoons</option>
+                    <option value="2" selected>4–7 spoons</option>
+                    <option value="3">8–12 spoons</option>
+                </select>
+                <button class="spawn-btn" type="submit">Orbit</button>
+            </form>
+            <a href="tether.html" class="back glass">← TETHER</a>
+        </div>
+        <div class="hint">Drag to rearrange · Fling off screen to release</div>
+    </div>
+
+    <script>
+        const { Engine, Runner, Bodies, Composite, Mouse, MouseConstraint, Events, Body, Vector } = Matter;
+
+        const engine = Engine.create({ gravity: { x: 0, y: 0 } });
+        const container = document.getElementById('canvas-container');
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        container.appendChild(canvas);
+
+        let W = window.innerWidth, H = window.innerHeight;
+        let tasks = [];
+        const SUN_R = 38;
+
+        // Sun body
+        const sun = Bodies.circle(W / 2, H / 2, SUN_R, { isStatic: true });
+        Composite.add(engine.world, sun);
+
+        function resize() {
+            W = window.innerWidth; H = window.innerHeight;
+            canvas.width = W; canvas.height = H;
+            Body.setPosition(sun, { x: W / 2, y: H / 2 });
+        }
+
+        const mouse = Mouse.create(canvas);
+        const mc = MouseConstraint.create(engine, { mouse, constraint: { stiffness: 0.18, render: { visible: false } } });
+        Composite.add(engine.world, mc);
+        canvas.addEventListener('touchstart', e => e.preventDefault(), { passive: false });
+
+        document.getElementById('form').addEventListener('submit', e => {
+            e.preventDefault();
+            const name = document.getElementById('task-name').value.trim();
+            if (!name) return;
+            const energy = parseInt(document.getElementById('task-energy').value);
+            const radius = 28 + energy * 14;
+            const side = Math.random() > 0.5;
+            const x = side ? 40 : W - 40;
+            const y = 80 + Math.random() * (H - 160);
+
+            const body = Bodies.circle(x, y, radius, { restitution: 0.45, frictionAir: 0.04 });
+            body.taskName = name;
+            body.radius = radius;
+            body.energy = energy;
+            tasks.push(body);
+            Composite.add(engine.world, body);
+            document.getElementById('task-name').value = '';
+        });
+
+        // Central gravity
+        Events.on(engine, 'beforeUpdate', () => {
+            tasks.forEach((b, i) => {
+                const p = b.position;
+                if (p.x < -120 || p.x > W + 120 || p.y < -120 || p.y > H + 120) {
+                    Composite.remove(engine.world, b);
+                    tasks.splice(i, 1);
+                    return;
+                }
+                const f = Vector.sub(sun.position, p);
+                const dist = Math.max(Vector.magnitude(f), 1);
+                if (dist > SUN_R + b.radius) {
+                    const mag = (0.00009 * b.mass) / Math.max(dist, 80);
+                    Body.applyForce(b, p, Vector.mult(Vector.normalise(f), mag));
+                }
+            });
+        });
+
+        const energyColors = ['', '#3ba372', '#cda852', '#cc6247'];
+
+        function draw() {
+            ctx.fillStyle = '#0f1115';
+            ctx.fillRect(0, 0, W, H);
+
+            // Sun glow
+            const sg = ctx.createRadialGradient(sun.position.x, sun.position.y, 0, sun.position.x, sun.position.y, 160);
+            sg.addColorStop(0, 'rgba(205,168,82,0.18)');
+            sg.addColorStop(1, 'rgba(205,168,82,0)');
+            ctx.fillStyle = sg;
+            ctx.beginPath(); ctx.arc(sun.position.x, sun.position.y, 160, 0, Math.PI * 2); ctx.fill();
+
+            // Sun
+            ctx.fillStyle = '#cda852';
+            ctx.beginPath(); ctx.arc(sun.position.x, sun.position.y, SUN_R, 0, Math.PI * 2); ctx.fill();
+
+            // Tasks
+            tasks.forEach(b => {
+                const p = b.position;
+                // Gravity line
+                ctx.beginPath();
+                ctx.moveTo(p.x, p.y);
+                ctx.lineTo(sun.position.x, sun.position.y);
+                ctx.strokeStyle = `${energyColors[b.energy]}18`;
+                ctx.lineWidth = 1;
+                ctx.stroke();
+
+                // Node
+                ctx.save();
+                ctx.translate(p.x, p.y);
+                ctx.rotate(b.angle);
+                ctx.beginPath(); ctx.arc(0, 0, b.radius, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(22,25,32,0.92)';
+                ctx.fill();
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = energyColors[b.energy];
+                ctx.stroke();
+
+                // Label
+                ctx.fillStyle = '#d8d6d0';
+                ctx.font = `${Math.max(10, b.radius * 0.38)}px 'Atkinson Hyperlegible'`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                const label = b.taskName.length > 11 ? b.taskName.slice(0, 9) + '…' : b.taskName;
+                ctx.fillText(label, 0, 0);
+                ctx.restore();
+            });
+
+            requestAnimationFrame(draw);
+        }
+
+        window.addEventListener('resize', resize);
+        resize();
+        Runner.run(Runner.create(), engine);
+        draw();
+
+        // Seed
+        setTimeout(() => {
+            document.getElementById('task-name').value = 'This week';
+            document.getElementById('form').dispatchEvent(new Event('submit'));
+        }, 600);
+    </script>
+</body>
+</html>

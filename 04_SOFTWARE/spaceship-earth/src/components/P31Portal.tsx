@@ -15,6 +15,7 @@ const APPS = [
   { icon: '✨', title: 'Quantum Life OS', path: 'quantum-os.html', status: 'prototype' },
   { icon: '🕸️', title: 'Project Kenosis', path: 'kenosis.html', status: 'live' },
   { icon: '🧬', title: 'Posner Lab', path: 'posner.html', status: 'live' },
+  { icon: '🔐', title: 'The Vault (OQE)', path: 'vault-room.html', status: 'live' },
 ] as const;
 
 const SKINS: Array<{ id: SkinTheme; label: string; accent: string }> = [

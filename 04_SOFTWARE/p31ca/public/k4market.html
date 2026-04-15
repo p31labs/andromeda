@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0f1115">
+    <title>K4 MARKET | P31 Labs</title>
+    <meta name="description" content="Tetrahedron Market Tomography — Maps OHLCV market data into K4 tetrahedral coordinate space for 3D price visualization.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Atkinson Hyperlegible"', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'monospace'],
+                    },
+                    colors: {
+                        void: '#0f1115', surface: '#161920', coral: '#cc6247',
+                        teal: '#25897d', cyan: '#4db8a8', cloud: '#d8d6d0',
+                        butter: '#cda852', lavender: '#8b7cc9', phosphorus: '#3ba372',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #0f1115;
+            color: #d8d6d0;
+            background-image: linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+        .matte-panel { background-color: #161920; border: 1px solid rgba(255,255,255,0.04); }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col text-cloud/90">
+
+    <header class="w-full border-b border-white/5 bg-void/95 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="/" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
+                <svg width="28" height="28" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="512" height="512" rx="112" fill="#25897d"/>
+                    <circle cx="390" cy="120" r="48" fill="#cc6247"/>
+                    <text x="256" y="340" font-family="system-ui" font-weight="900" font-size="220" fill="#d8d6d0" text-anchor="middle">P31</text>
+                    <rect x="156" y="380" width="200" height="16" rx="8" fill="#cda852"/>
+                </svg>
+                <span class="font-bold text-lg tracking-tight">P31 Labs</span>
+            </a>
+            <nav class="flex gap-4 font-mono text-sm">
+                <a href="/" class="text-cloud/50 hover:text-cloud transition-colors flex items-center gap-2">&larr; Hub</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl mx-auto px-6 py-12 w-full flex flex-col gap-12">
+
+        <header class="border-b border-white/10 pb-8">
+            <div class="flex items-center gap-4 mb-4">
+                <div class="text-3xl bg-surface w-12 h-12 rounded flex items-center justify-center border border-white/5">&#x1F4D0;</div>
+                <div class="px-2 py-0.5 rounded border text-[10px] font-mono tracking-wide text-phosphorus/80 border-phosphorus/20 bg-phosphorus/5">&#x1F535; PROTOTYPE</div>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-bold mb-4 text-cloud">K4 MARKET</h1>
+            <p class="text-xl text-phosphorus/70 font-mono">Tetrahedron Market Tomography &mdash; Price Visualization</p>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+            <div class="lg:col-span-2 flex flex-col gap-8">
+
+                <section class="matte-panel rounded-lg p-8">
+                    <h2 class="text-2xl font-bold mb-4 flex items-center gap-3">
+                        <span class="text-phosphorus">01.</span> What It Does
+                    </h2>
+                    <p class="text-cloud/70 leading-relaxed mb-6">
+                        Maps <strong class="text-cloud/85">OHLCV market data</strong> into K4 tetrahedral coordinate space. Each data point becomes a node positioned by interpolating between Open, High, Low, Close vertices. <strong class="text-cloud/85">Volume clusters</strong>, support/resistance nodes, and a <strong class="text-cloud/85">Larmor ring overlay</strong> complete the visualization.
+                    </p>
+                    <div class="space-y-3">
+                        <div class="flex items-start gap-3 bg-void border border-phosphorus/10 rounded p-4">
+                            <span class="text-phosphorus/60 font-mono text-xs mt-0.5">&#9654;</span>
+                            <span class="text-cloud/70 text-sm">Symbol input with demo data generation</span>
+                        </div>
+                        <div class="flex items-start gap-3 bg-void border border-phosphorus/10 rounded p-4">
+                            <span class="text-phosphorus/60 font-mono text-xs mt-0.5">&#9654;</span>
+                            <span class="text-cloud/70 text-sm">4 timeframes (1H / 1D / 1W / 1M)</span>
+                        </div>
+                        <div class="flex items-start gap-3 bg-void border border-phosphorus/10 rounded p-4">
+                            <span class="text-phosphorus/60 font-mono text-xs mt-0.5">&#9654;</span>
+                            <span class="text-cloud/70 text-sm">Support / Resistance / Volume node coloring</span>
+                        </div>
+                        <div class="flex items-start gap-3 bg-void border border-phosphorus/10 rounded p-4">
+                            <span class="text-phosphorus/60 font-mono text-xs mt-0.5">&#9654;</span>
+                            <span class="text-cloud/70 text-sm">Larmor ring overlay (0.86 Hz)</span>
+                        </div>
+                        <div class="flex items-start gap-3 bg-void border border-phosphorus/10 rounded p-4">
+                            <span class="text-phosphorus/60 font-mono text-xs mt-0.5">&#9654;</span>
+                            <span class="text-cloud/70 text-sm">Auto-rotation toggle</span>
+                        </div>
+                        <div class="flex items-start gap-3 bg-void border border-phosphorus/10 rounded p-4">
+                            <span class="text-phosphorus/60 font-mono text-xs mt-0.5">&#9654;</span>
+                            <span class="text-cloud/70 text-sm">Wireframe toggle</span>
+                        </div>
+                        <div class="flex items-start gap-3 bg-void border border-phosphorus/10 rounded p-4">
+                            <span class="text-phosphorus/60 font-mono text-xs mt-0.5">&#9654;</span>
+                            <span class="text-cloud/70 text-sm">OrbitControls for 3D navigation</span>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="matte-panel rounded-lg p-8">
+                    <h2 class="text-2xl font-bold mb-4 flex items-center gap-3">
+                        <span class="text-phosphorus">02.</span> How It Works
+                    </h2>
+                    <p class="text-cloud/70 leading-relaxed mb-4">
+                        A Three.js tetrahedron with 4 labeled vertices (Open, High, Low, Close). Random-walk data generation seeded by the symbol string produces deterministic demo datasets for any ticker.
+                    </p>
+                    <p class="text-cloud/70 leading-relaxed">
+                        Color-coded nodes map market structure: <span class="text-green-400">green = support</span>, <span class="text-red-400">red = resistance</span>, <span class="text-blue-400">blue = volume clusters</span>. The Larmor ring rotates at 0.86 Hz, providing a temporal reference frame for the tetrahedral coordinate space.
+                    </p>
+                </section>
+
+            </div>
+
+            <div class="flex flex-col gap-6">
+
+                <div class="matte-panel rounded-lg p-6">
+                    <h3 class="text-sm font-mono text-cloud/40 uppercase tracking-widest mb-4">Launch Tomography</h3>
+                    <a href="tomography.html"
+                       class="block p-5 bg-void border border-phosphorus/30 rounded hover:border-phosphorus/60 transition-colors group mb-3 text-center">
+                        <div class="text-2xl mb-2">&#x1F4D0;</div>
+                        <div class="font-bold text-sm text-phosphorus group-hover:text-phosphorus transition-colors mb-1">Open Market Tomography</div>
+                        <div class="text-xs text-cloud/40 font-mono">tomography.html</div>
+                    </a>
+                </div>
+
+                <div class="matte-panel rounded-lg p-6">
+                    <h3 class="text-sm font-mono text-cloud/40 uppercase tracking-widest mb-4">Technical Stack</h3>
+                    <div class="space-y-3 text-sm">
+                        <div>
+                            <div class="text-cloud font-bold mb-1">Renderer</div>
+                            <div class="text-cloud/60">Three.js r183</div>
+                        </div>
+                        <div>
+                            <div class="text-cloud font-bold mb-1">Camera</div>
+                            <div class="text-cloud/60">OrbitControls</div>
+                        </div>
+                        <div>
+                            <div class="text-cloud font-bold mb-1">Data</div>
+                            <div class="text-cloud/60">Random Walk Generator (symbol-seeded)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="matte-panel rounded-lg p-6">
+                    <h3 class="text-sm font-mono text-cloud/40 uppercase tracking-widest mb-4">Ecosystem Ties</h3>
+                    <a href="spaceship-earth.html" class="block p-4 bg-void border border-white/5 rounded hover:border-teal/30 transition-colors group mb-3">
+                        <div class="font-bold text-sm text-cloud group-hover:text-teal transition-colors mb-1">Spaceship Earth</div>
+                        <div class="text-xs text-cloud/50">The React app hosting market visualization.</div>
+                    </a>
+                    <a href="alchemy.html" class="block p-4 bg-void border border-white/5 rounded hover:border-cyan/30 transition-colors group mb-3">
+                        <div class="font-bold text-sm text-cloud group-hover:text-cyan transition-colors mb-1">Neuro-Cognition Alchemy</div>
+                        <div class="text-xs text-cloud/50">K4 tetrahedral geometry foundations.</div>
+                    </a>
+                    <a href="bridge.html" class="block p-4 bg-void border border-white/5 rounded hover:border-teal/30 transition-colors group">
+                        <div class="font-bold text-sm text-cloud group-hover:text-teal transition-colors mb-1">Bridge</div>
+                        <div class="text-xs text-cloud/50">Cross-system data federation layer.</div>
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <footer class="border-t border-white/5 mt-12 py-6">
+        <div class="max-w-7xl mx-auto px-6 flex justify-between items-center text-xs text-cloud/30 font-mono">
+            <span>P31 Labs &middot; 501(c)(3) &middot; EIN 42-1888158</span>
+            <a href="/" class="hover:text-cloud/60 transition-colors">&larr; Back to Hub</a>
+        </div>
+    </footer>
+
+</body>
+</html>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0f1115">
+<title>OBSERVATORY &mdash; Geodesic Data Dome | P31 Labs</title>
+<meta name="description" content="Each triangular panel on the geodesic dome IS a data node. Click panels to inspect. Search and filter by axis, state, bus type. Bloom pipeline, dust motes, aurora band.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --void: #0f1115; --surface: #161920; --surface2: #1c2028;
+  --coral: #cc6247; --teal: #25897d; --cyan: #4db8a8;
+  --phosphorus: #3ba372; --cloud: #d8d6d0; --muted: #6b7280;
+  --butter: #cda852; --border: rgba(255,255,255,0.06);
+  --accent: #25897d;
+  --font: 'Atkinson Hyperlegible', sans-serif;
+  --mono: 'JetBrains Mono', 'Courier New', monospace;
+}
+html, body { min-height: 100%; background: var(--void); color: var(--cloud); font-family: var(--font); line-height: 1.6; }
+a { color: var(--coral); text-decoration: none; }
+a:hover { text-decoration: underline; }
+.nav { position: sticky; top: 0; z-index: 50; background: rgba(15,17,21,0.92); border-bottom: 1px solid var(--border); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+.nav-inner { max-width: 900px; margin: 0 auto; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; }
+.nav-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--cloud); }
+.nav-brand:hover { text-decoration: none; }
+.nav-brand-label { font-family: var(--mono); font-weight: 700; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; opacity: 0.8; }
+.nav-links { display: flex; align-items: center; gap: 20px; }
+.nav-link { font-family: var(--mono); font-size: 11px; color: var(--muted); text-decoration: none; transition: color 0.15s; }
+.nav-link:hover { color: var(--cloud); text-decoration: none; }
+.nav-cta { font-family: var(--mono); font-size: 11px; font-weight: 700; background: rgba(204,98,71,0.15); color: var(--coral); padding: 6px 14px; border-radius: 4px; border: 1px solid rgba(204,98,71,0.3); text-decoration: none; transition: background 0.15s; }
+.nav-cta:hover { background: rgba(204,98,71,0.25); text-decoration: none; }
+.container { max-width: 720px; margin: 0 auto; padding: 56px 24px 96px; }
+.hero { text-align: center; padding: 56px 0 48px; border-bottom: 1px solid var(--border); margin-bottom: 48px; }
+.hero-mark { font-size: 52px; line-height: 1; margin-bottom: 20px; color: var(--accent); }
+.hero h1 { font-size: 32px; font-weight: 700; color: var(--accent); letter-spacing: 3px; text-transform: uppercase; font-family: var(--mono); margin-bottom: 8px; }
+.hero .subtitle { font-size: 11px; font-family: var(--mono); color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 20px; }
+.hero .tagline { font-size: 17px; color: rgba(216,214,208,0.85); max-width: 520px; margin: 0 auto; line-height: 1.65; }
+.hero .badge { display: inline-block; margin-top: 16px; font-family: var(--mono); font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: 9999px; letter-spacing: 1px; background:rgba(77,184,168,0.12);color:#4db8a8;border:1px solid rgba(77,184,168,0.3); }
+.cta-wrap { text-align: center; margin: 36px 0; display: flex; align-items: center; justify-content: center; gap: 16px; flex-wrap: wrap; }
+.cta-btn { display: inline-block; background: var(--accent); color: var(--void); font-family: var(--mono); font-weight: 700; font-size: 13px; letter-spacing: 1px; padding: 13px 36px; border-radius: 5px; text-decoration: none; transition: filter 0.15s; }
+.cta-btn:hover { filter: brightness(1.1); text-decoration: none; }
+.cta-secondary { font-family: var(--mono); font-size: 12px; color: var(--muted); text-decoration: none; transition: color 0.15s; }
+.cta-secondary:hover { color: var(--cloud); text-decoration: none; }
+h2 { font-size: 10px; font-family: var(--mono); letter-spacing: 3px; text-transform: uppercase; color: var(--muted); margin: 40px 0 16px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+p { font-size: 15px; color: rgba(216,214,208,0.82); margin-bottom: 14px; line-height: 1.7; }
+.stack { width: 100%; border-collapse: collapse; font-size: 13px; margin: 4px 0 32px; }
+.stack th { font-family: var(--mono); font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); padding: 8px 12px; text-align: left; border-bottom: 1px solid var(--border); }
+.stack td { padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,0.03); vertical-align: top; }
+.stack td:first-child { font-family: var(--mono); font-size: 12px; color: var(--accent); white-space: nowrap; width: 100px; }
+.stack tr:last-child td { border-bottom: none; }
+.stack tr:hover td { background: rgba(255,255,255,0.015); }
+.footer { margin-top: 64px; padding-top: 24px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; font-size: 11px; font-family: var(--mono); color: var(--muted); }
+.footer a { color: var(--muted); text-decoration: none; transition: color 0.15s; }
+.footer a:hover { color: var(--cloud); text-decoration: none; }
+.footer-links { display: flex; gap: 20px; flex-wrap: wrap; }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-brand">
+      <svg width="24" height="24" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"><rect width="512" height="512" rx="112" fill="#25897d"/><circle cx="390" cy="120" r="48" fill="#cc6247"/><text x="256" y="340" font-family="system-ui" font-weight="900" font-size="220" fill="#d8d6d0" text-anchor="middle">P31</text><rect x="156" y="380" width="200" height="16" rx="8" fill="#cda852"/></svg>
+      <span class="nav-brand-label">P31 Labs</span>
+    </a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">&larr; Hub</a>
+      <a href="lattice.html" class="nav-link">Lattice &#x2B21;</a>
+      <a href="https://github.com/p31labs/andromeda" target="_blank" rel="noopener" class="nav-link">GitHub</a>
+      <a href="observatory.html" class="nav-cta">&#x2B21; Launch OBSERVATORY</a>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+
+  <div class="hero">
+    <div class="hero-mark">🔺</div>
+    <h1>OBSERVATORY</h1>
+    <div class="subtitle">Geodesic Data Dome</div>
+    <p class="tagline">Each triangular panel on the geodesic dome IS a data node. Click panels to inspect. Search and filter by axis, state, bus type. Bloom pipeline, dust motes, aurora band.</p>
+    <span class="badge">PROTOTYPE</span>
+  </div>
+
+  <div class="cta-wrap">
+    <a href="observatory.html" class="cta-btn">&#x2B21; Launch OBSERVATORY</a>
+    <a href="index.html" class="cta-secondary">&larr; Back to Hub</a>
+  </div>
+
+  <h2>What is it?</h2>
+  <p>Each triangular panel on the geodesic dome IS a data node. Click panels to inspect. Search and filter by axis, state, bus type. Bloom pipeline, dust motes, aurora band.</p>
+
+  <h2>Technical Stack</h2>
+  <table class="stack">
+    <thead><tr><th>Component</th><th>Technology</th></tr></thead>
+    <tbody>
+      <tr><td>Layer 1</td><td>Three.js r183</td></tr>
+      <tr><td>Layer 2</td><td>WebGL Bloom</td></tr>
+      <tr><td>Layer 3</td><td>ES Modules</td></tr>
+      <tr><td>Layer 4</td><td>Dust Motes</td></tr>
+    </tbody>
+  </table>
+
+  <div class="cta-wrap" style="margin-top:40px">
+    <a href="observatory.html" class="cta-btn">&#x2B21; Launch OBSERVATORY</a>
+  </div>
+
+  <div class="footer">
+    <span>P31 Labs, Inc. &middot; OBSERVATORY</span>
+    <div class="footer-links">
+      <a href="index.html">Hub</a>
+      <a href="observatory.html">OBSERVATORY</a>
+      <a href="lattice.html">Lattice</a>
+      <a href="https://phosphorus31.org/donate" target="_blank" rel="noopener">Support</a>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

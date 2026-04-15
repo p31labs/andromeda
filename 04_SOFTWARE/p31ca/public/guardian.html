@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0f1115">
+    <title>Guardian | The Buffer | P31 Labs</title>
+    <meta name="description" content="Message guardian and fawn guard. Voltage scoring, BLUF extraction, breathing exercises, and codependency pattern detection.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Atkinson Hyperlegible"', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'monospace'],
+                    },
+                    colors: {
+                        void: '#0f1115', surface: '#161920', coral: '#cc6247',
+                        teal: '#25897d', cyan: '#4db8a8', cloud: '#d8d6d0',
+                        butter: '#cda852', lavender: '#8b7cc9', phosphorus: '#3ba372',
+                        critical: '#ff0040',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #0f1115;
+            color: #d8d6d0;
+            background-image: linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+        .glass { background: rgba(22,25,32,0.85); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.06); }
+        textarea, input, select { background: rgba(15,17,21,0.7); border: 1px solid rgba(255,255,255,0.08); color: #d8d6d0; }
+        textarea:focus, input:focus, select:focus { outline: none; border-color: #cda852; }
+        .bar-fill { transition: width 0.4s ease, background-color 0.4s ease; }
+        .badge { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; padding: 2px 10px; border-radius: 4px; }
+        .fawn-match { background: rgba(204,98,71,0.15); border-left: 2px solid #cc6247; padding: 4px 8px; margin: 2px 0; font-size: 0.8rem; }
+        @keyframes breathe-in { from { transform: scale(0.4); opacity: 0.4; } to { transform: scale(1); opacity: 1; } }
+        @keyframes breathe-hold { from { transform: scale(1); } to { transform: scale(1); } }
+        @keyframes breathe-out { from { transform: scale(1); opacity: 1; } to { transform: scale(0.4); opacity: 0.4; } }
+        .breathe-circle { width: 100px; height: 100px; border-radius: 50%; margin: 0 auto; }
+        .collapsible-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+        .collapsible-content.open { max-height: 2000px; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0f1115; }
+        ::-webkit-scrollbar-thumb { background: rgba(205,168,82,0.3); border-radius: 3px; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col text-cloud/90">
+
+<!-- Top Bar -->
+<header class="w-full border-b border-white/5 bg-void/95 sticky top-0 z-50">
+    <div class="max-w-[1600px] mx-auto px-4 py-3 flex justify-between items-center">
+        <div class="flex items-center gap-4">
+            <a href="buffer.html" class="font-mono text-sm text-butter hover:text-cloud transition-colors">&larr; BUFFER</a>
+            <h1 class="font-bold text-lg tracking-wide">GUARDIAN</h1>
+        </div>
+        <div class="flex items-center gap-3">
+            <span id="gateBadgeTop" class="badge" style="background:rgba(59,163,114,0.2);color:#3ba372;">GREEN</span>
+            <span id="voltageTop" class="font-mono text-xs text-cloud/50">V: 0.0</span>
+        </div>
+    </div>
+</header>
+
+<!-- Main Grid -->
+<main class="flex-1 max-w-[1600px] mx-auto w-full p-4 grid grid-cols-1 lg:grid-cols-12 gap-4">
+
+    <!-- LEFT PANEL: Ingest + Voltage -->
+    <section class="lg:col-span-4 flex flex-col gap-4">
+        <div class="glass rounded-lg p-4">
+            <label class="block font-mono text-xs text-butter/80 mb-2 tracking-wider">INCOMING MESSAGE</label>
+            <textarea id="msgInput" class="w-full h-48 rounded p-3 font-sans text-sm resize-y" placeholder="Paste email or message here..."></textarea>
+        </div>
+
+        <div class="glass rounded-lg p-4">
+            <div class="font-mono text-xs text-butter/80 mb-3 tracking-wider">VOLTAGE</div>
+            <div class="space-y-3">
+                <div>
+                    <div class="flex justify-between font-mono text-xs mb-1"><span>U &mdash; Urgency</span><span id="uVal">0</span></div>
+                    <div class="h-2 rounded-full bg-void"><div id="uBar" class="h-full rounded-full bar-fill" style="width:0%;background:#3ba372;"></div></div>
+                </div>
+                <div>
+                    <div class="flex justify-between font-mono text-xs mb-1"><span>E &mdash; Emotional</span><span id="eVal">0</span></div>
+                    <div class="h-2 rounded-full bg-void"><div id="eBar" class="h-full rounded-full bar-fill" style="width:0%;background:#3ba372;"></div></div>
+                </div>
+                <div>
+                    <div class="flex justify-between font-mono text-xs mb-1"><span>C &mdash; Cognitive</span><span id="cVal">0</span></div>
+                    <div class="h-2 rounded-full bg-void"><div id="cBar" class="h-full rounded-full bar-fill" style="width:0%;background:#3ba372;"></div></div>
+                </div>
+            </div>
+            <div class="mt-4 flex items-center gap-3">
+                <span id="gateBadge" class="badge" style="background:rgba(59,163,114,0.2);color:#3ba372;">GREEN</span>
+                <span class="font-mono text-xs text-cloud/40">Total: <span id="totalScore">0</span> / 30</span>
+            </div>
+            <div id="paList" class="mt-3 hidden">
+                <div class="font-mono text-xs text-coral/80 mb-1">PASSIVE-AGGRESSIVE DETECTED</div>
+                <div id="paItems" class="space-y-1"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CENTER PANEL: BLUF + Response Composer -->
+    <section class="lg:col-span-5 flex flex-col gap-4">
+        <div class="glass rounded-lg p-4">
+            <div class="font-mono text-xs text-butter/80 mb-3 tracking-wider">BLUF EXTRACTION</div>
+            <div class="mb-3">
+                <div class="font-mono text-xs text-cloud/50 mb-1">SUMMARY</div>
+                <div id="blufSummary" class="text-sm text-cloud/70 italic min-h-[2rem]">Paste a message to extract.</div>
+            </div>
+            <div class="mb-3">
+                <div class="font-mono text-xs text-cloud/50 mb-1">ACTION ITEMS</div>
+                <ul id="blufActions" class="text-sm space-y-1 list-none"></ul>
+            </div>
+            <div>
+                <div class="font-mono text-xs text-cloud/50 mb-1">QUESTIONS</div>
+                <ul id="blufQuestions" class="text-sm space-y-1 list-none"></ul>
+            </div>
+        </div>
+
+        <div class="glass rounded-lg p-4 flex-1 flex flex-col">
+            <div class="flex justify-between items-center mb-2">
+                <label class="font-mono text-xs text-butter/80 tracking-wider">RESPONSE COMPOSER</label>
+                <span id="fawnScore" class="badge hidden" style="background:rgba(204,98,71,0.2);color:#cc6247;">FAWN: 0</span>
+            </div>
+            <textarea id="responseInput" class="w-full flex-1 min-h-[140px] rounded p-3 font-sans text-sm resize-y" placeholder="Draft your response here. Fawn guard watches as you type..."></textarea>
+            <div id="fawnFlags" class="mt-2 space-y-1"></div>
+            <div id="fawnSuggestion" class="mt-2 text-sm text-butter/70 italic hidden"></div>
+            <div class="mt-3 flex gap-2">
+                <button id="holdBtn" class="px-4 py-2 rounded font-mono text-xs bg-butter/20 text-butter hover:bg-butter/30 transition-colors">HOLD MESSAGE</button>
+                <button id="clearResponseBtn" class="px-4 py-2 rounded font-mono text-xs bg-white/5 text-cloud/50 hover:bg-white/10 transition-colors">CLEAR</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- RIGHT PANEL: Queue + Breathing + Calibration -->
+    <section class="lg:col-span-3 flex flex-col gap-4">
+
+        <!-- Held Queue -->
+        <div class="glass rounded-lg p-4">
+            <div class="font-mono text-xs text-butter/80 mb-3 tracking-wider">HELD QUEUE <span id="queueCount" class="text-cloud/40">(0)</span></div>
+            <div id="queueList" class="space-y-2 max-h-48 overflow-y-auto">
+                <div class="text-xs text-cloud/30 italic">No held messages.</div>
+            </div>
+        </div>
+
+        <!-- Breathing -->
+        <div class="glass rounded-lg p-4 text-center">
+            <div class="font-mono text-xs text-butter/80 mb-3 tracking-wider">BREATHING 4-2-6</div>
+            <div class="breathe-circle bg-phosphorus/30 border-2 border-phosphorus/50 flex items-center justify-center mx-auto" id="breatheCircle">
+                <span id="breatheLabel" class="font-mono text-sm text-phosphorus">START</span>
+            </div>
+            <div class="mt-2 font-mono text-xs text-cloud/40">Cycle <span id="breatheCycle">0</span> / 3</div>
+            <button id="breatheBtn" class="mt-2 px-4 py-1.5 rounded font-mono text-xs bg-phosphorus/20 text-phosphorus hover:bg-phosphorus/30 transition-colors">BEGIN</button>
+        </div>
+
+        <!-- Calibration -->
+        <div class="glass rounded-lg p-4">
+            <button id="calToggle" class="w-full flex justify-between items-center font-mono text-xs text-butter/80 tracking-wider">
+                <span>CALIBRATION</span>
+                <span id="calArrow" class="transition-transform">&#9660;</span>
+            </button>
+            <div id="calPanel" class="collapsible-content mt-3">
+                <div class="space-y-3">
+                    <div>
+                        <label class="font-mono text-[10px] text-cloud/50">ROLE</label>
+                        <select id="calRole" class="w-full rounded p-1.5 text-sm mt-1">
+                            <option value="">Select...</option>
+                            <option>Parent</option><option>Caregiver</option><option>Student</option>
+                            <option>Professional</option><option>Advocate</option><option>Other</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="font-mono text-[10px] text-cloud/50">DIAGNOSES</label>
+                        <div id="calDiagnoses" class="flex flex-wrap gap-1.5 mt-1"></div>
+                    </div>
+                    <div>
+                        <label class="font-mono text-[10px] text-cloud/50">SENSORY</label>
+                        <div id="calSensory" class="flex flex-wrap gap-1.5 mt-1"></div>
+                    </div>
+                    <div>
+                        <label class="font-mono text-[10px] text-cloud/50">ACTIVE STRESSORS</label>
+                        <div id="calStressors" class="flex flex-wrap gap-1.5 mt-1"></div>
+                    </div>
+                    <div>
+                        <label class="font-mono text-[10px] text-cloud/50">SUPPORT LEVEL</label>
+                        <select id="calSupport" class="w-full rounded p-1.5 text-sm mt-1">
+                            <option>Strong support network</option><option>Some support</option>
+                            <option>Limited support</option><option>Isolated</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="font-mono text-[10px] text-cloud/50">COMM STYLE</label>
+                        <select id="calComm" class="w-full rounded p-1.5 text-sm mt-1">
+                            <option>PLAIN</option><option>TECHNICAL</option><option>GENTLE</option><option>DIRECT</option>
+                        </select>
+                    </div>
+                    <button id="calSave" class="w-full py-1.5 rounded font-mono text-xs bg-butter/20 text-butter hover:bg-butter/30 transition-colors">SAVE CALIBRATION</button>
+                    <div id="calStatus" class="font-mono text-[10px] text-phosphorus hidden">Saved.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<script>
+// ── IndexedDB Wrapper ────────────────────────────────────────
+const DB_NAME = 'guardian_db';
+const DB_VER = 1;
+let db = null;
+
+function openDB() {
+    return new Promise((resolve, reject) => {
+        const req = indexedDB.open(DB_NAME, DB_VER);
+        req.onupgradeneeded = (e) => {
+            const d = e.target.result;
+            if (!d.objectStoreNames.contains('calibration')) d.createObjectStore('calibration');
+            if (!d.objectStoreNames.contains('held')) d.createObjectStore('held', { keyPath: 'id' });
+        };
+        req.onsuccess = (e) => { db = e.target.result; resolve(db); };
+        req.onerror = () => reject(req.error);
+    });
+}
+
+function dbPut(store, key, val) {
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction(store, 'readwrite');
+        if (key !== null) tx.objectStore(store).put(val, key);
+        else tx.objectStore(store).put(val);
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+    });
+}
+
+function dbGet(store, key) {
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction(store, 'readonly');
+        const req = key !== undefined ? tx.objectStore(store).get(key) : tx.objectStore(store).getAll();
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject(req.error);
+    });
+}
+
+function dbDelete(store, key) {
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction(store, 'readwrite');
+        tx.objectStore(store).delete(key);
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+    });
+}
+
+// ── Voltage Scoring ──────────────────────────────────────────
+
+const U_HIGH = [/\basap\b/i, /\burgent/i, /\bimmediately\b/i, /\bdeadline/i, /\bright now\b/i, /\bcritical/i, /\bemergency/i, /\bfinal notice/i, /\blast chance/i, /\bby end of day/i, /\btime.sensitive/i, /\bcan'?t wait/i];
+const U_MED = [/\bsoon\b/i, /\bthis week/i, /\breminder/i, /\bfollow.?up/i, /\bpriority/i, /\bimportant/i];
+const U_LOW = [/\bwhenever\b/i, /\bno rush/i, /\bat your convenience/i, /\bfyi\b/i];
+
+const E_HIGH = [/\bdisappointed/i, /\bfrustrat/i, /\bangry/i, /\bhurt\b/i, /\bupset\b/i, /\bunaccept/i, /per my last/i, /\bconcern(ed|ing)/i];
+const E_MED = [/\bconfus/i, /\bworried/i, /\bneed to talk/i, /\bhonestly\b/i];
+const E_LOW = [/\bthanks?\b/i, /\bgreat\b/i, /\bappreciate/i, /\bno worries/i];
+
+const C_HIGH = [/\battach/i, /\bspreadsheet/i, /\breview (the|this)/i, /\blegal/i, /\bcontract/i, /\bfinancial/i, /\bcompliance/i];
+const C_MED = [/\bdecision/i, /\bchoose/i, /\boption/i, /\bschedul/i];
+const C_LOW = [/\byes\b/i, /\bno\b/i, /\bok\b/i, /\bsounds good/i, /\bconfirm/i];
+
+const PA_PATTERNS = [
+    { p: /per my last (email|message)/i, t: 'Referencing a previous message you may have missed' },
+    { p: /as (previously|already) (stated|mentioned|discussed)/i, t: 'They believe this was covered before' },
+    { p: /going forward/i, t: 'They want to change the approach' },
+    { p: /just to clarify/i, t: 'They feel there\'s a misunderstanding' },
+    { p: /friendly reminder/i, t: 'They\'ve asked before and want action' },
+    { p: /thanks in advance/i, t: 'They expect you to do this' },
+    { p: /not sure if you (saw|got|received)/i, t: 'They think you ignored them' },
+    { p: /correct me if I'?m wrong/i, t: 'They believe they are right' },
+    { p: /with all due respect/i, t: 'They disagree with you' },
+];
+
+function scoreAxis(text, high, med, low, extra) {
+    let s = 5, h = 0, m = 0, l = 0;
+    high.forEach(r => { if (r.test(text)) h++; });
+    med.forEach(r => { if (r.test(text)) m++; });
+    low.forEach(r => { if (r.test(text)) l++; });
+    if (h > 0) s = Math.min(10, 7 + h);
+    else if (m > 0) s = Math.min(7, 4 + m);
+    else if (l > 0) s = Math.max(1, 3 - l);
+    if (extra) s = extra(text, s);
+    return Math.max(1, Math.min(10, s));
+}
+
+function scoreVoltage(text) {
+    if (!text.trim()) return { u: 0, e: 0, c: 0, total: 0, gate: 'GREEN', pa: [] };
+    const u = scoreAxis(text, U_HIGH, U_MED, U_LOW);
+    const e = scoreAxis(text, E_HIGH, E_MED, E_LOW, (t, s) => {
+        const caps = (t.match(/\b[A-Z]{4,}\b/g) || []).length;
+        if (caps > 2) s += 2;
+        const bangs = (t.match(/!{3,}/g) || []).length;
+        if (bangs > 0) s += 1;
+        return s;
+    });
+    const c = scoreAxis(text, C_HIGH, C_MED, C_LOW, (t, s) => {
+        const w = t.split(/\s+/).length;
+        if (w > 100) s += 2;
+        const q = (t.match(/\?/g) || []).length;
+        if (q > 3) s += 2; else if (q > 1) s += 1;
+        const topics = (t.match(/\b(also|another thing|additionally|by the way|separately)\b/gi) || []).length;
+        s += Math.min(3, topics);
+        const ambiguous = (t.match(/\b(they|them|it|this|that)\b/gi) || []).length;
+        if (ambiguous > 8) s += 1;
+        return s;
+    });
+    const total = u + e + c;
+    let gate = 'GREEN';
+    if (total > 24) gate = 'CRITICAL';
+    else if (total >= 18) gate = 'RED';
+    else if (total >= 10) gate = 'YELLOW';
+    const pa = PA_PATTERNS.filter(x => x.p.test(text));
+    return { u, e, c, total, gate, pa };
+}
+
+// ── BLUF Extraction ──────────────────────────────────────────
+
+function extractBluf(text) {
+    if (!text.trim()) return { summary: '', actions: [], questions: [] };
+    const sents = text.match(/[^.!?\n]+[.!?]*/g) || [text];
+    const cleaned = sents.map(s => s.trim()).filter(s => s.length > 3);
+    const actions = cleaned.filter(s =>
+        /\b(need|please|can you|could you|should|must|send|submit|review|update|confirm|decide|approve|call|schedule|respond|complete|provide|prepare|deliver|follow up)\b/i.test(s)
+    );
+    const questions = cleaned.filter(s => /\?/.test(s));
+    const summarySource = actions.length > 0 ? actions : questions.length > 0 ? questions : cleaned;
+    const summary = summarySource.slice(0, 2).join(' ').substring(0, 200);
+    return { summary, actions, questions };
+}
+
+// ── Fawn Guard ───────────────────────────────────────────────
+
+const FAWN_RULES = [
+    { re: /\bi'?m sorry\b/gi, pattern: "I'm sorry", cat: 'apologizing', guide: "Is this your fault? If not, you don't owe an apology.", w: 0.3 },
+    { re: /\bsorry (to bother|for asking)\b/gi, pattern: 'sorry to bother', cat: 'apologizing', guide: 'Your needs are not a bother.', w: 0.25 },
+    { re: /\bit'?s not a big deal\b/gi, pattern: "it's not a big deal", cat: 'minimizing', guide: "If it's worth saying, it's a deal.", w: 0.2 },
+    { re: /\bjust\b/gi, pattern: 'just', cat: 'minimizing', guide: '"Just" minimizes your request. Your needs aren\'t small.', w: 0.12 },
+    { re: /\bi'?m probably overreacting\b/gi, pattern: "I'm probably overreacting", cat: 'minimizing', guide: 'Your reaction is valid. Trust your response.', w: 0.25 },
+    { re: /\bwhenever you get a chance\b/gi, pattern: 'whenever you get a chance', cat: 'minimizing', guide: 'If it matters, say when you need it.', w: 0.15 },
+    { re: /\babsolutely\b/gi, pattern: 'absolutely!', cat: 'over-agreeing', guide: 'Do you actually fully agree, or performing agreement?', w: 0.1 },
+    { re: /\bof course\b/gi, pattern: 'of course!', cat: 'over-agreeing', guide: 'Check: are you agreeing because you want to, or to avoid conflict?', w: 0.1 },
+    { re: /\bno problem at all\b/gi, pattern: 'no problem at all', cat: 'over-agreeing', guide: 'Is there actually a problem you\'re suppressing?', w: 0.15 },
+    { re: /!{2,}/g, pattern: '!!', cat: 'over-agreeing', guide: 'Excessive exclamation can mask real feelings.', w: 0.1 },
+    { re: /\bdoes that make sense\b/gi, pattern: 'does that make sense?', cat: 'seeking-validation', guide: 'You made sense. Trust your communication.', w: 0.2 },
+    { re: /\bis that ok(ay)?\b/gi, pattern: 'is that okay?', cat: 'seeking-validation', guide: "State your need. Don't pre-apologize for having one.", w: 0.2 },
+    { re: /\bif that'?s? ok\b/gi, pattern: "if that's ok", cat: 'seeking-validation', guide: "State your position without seeking permission.", w: 0.2 },
+    { re: /\?{2,}/g, pattern: '??', cat: 'seeking-validation', guide: 'One question mark is enough.', w: 0.15 },
+    { re: /\bnever ?mind\b/gi, pattern: 'never mind', cat: 'self-erasing', guide: 'If it mattered enough to type, finish the thought.', w: 0.25 },
+    { re: /\bforget I asked\b/gi, pattern: 'forget I asked', cat: 'self-erasing', guide: 'Your question was valid. Keep it.', w: 0.25 },
+    { re: /\bit doesn'?t matter\b/gi, pattern: "it doesn't matter", cat: 'self-erasing', guide: 'It does matter. Say what you need.', w: 0.2 },
+    { re: /\bit'?s fine\b/gi, pattern: "it's fine", cat: 'self-erasing', guide: 'Is it actually fine, or are you suppressing a boundary?', w: 0.2 },
+    { re: /\bi don'?t (want to )?(bother|burden|trouble)\b/gi, pattern: "I don't want to bother", cat: 'self-erasing', guide: 'Your needs are not a burden.', w: 0.25 },
+    { re: /\bwhatever you (want|need|think)\b/gi, pattern: 'whatever you...', cat: 'self-erasing', guide: 'What do YOU want? State it.', w: 0.2 },
+    { re: /\bi'?m (bad|terrible|awful|useless|stupid)\b/gi, pattern: "I'm [negative]", cat: 'self-deprecation', guide: 'Would you speak to a friend this way?', w: 0.35 },
+];
+
+const CAT_COLORS = {
+    apologizing: '#cc6247', minimizing: '#cda852', 'over-agreeing': '#3ba372',
+    'seeking-validation': '#cda852', 'self-erasing': '#cc6247', 'self-deprecation': '#ff0040',
+};
+
+function analyzeFawn(text) {
+    if (!text.trim()) return { flags: [], count: 0, score: 0, suggestion: null };
+    const seen = new Map();
+    let count = 0;
+    for (const rule of FAWN_RULES) {
+        rule.re.lastIndex = 0;
+        while (rule.re.exec(text) !== null) {
+            count++;
+            if (!seen.has(rule.pattern)) seen.set(rule.pattern, rule);
+        }
+    }
+    const flags = [...seen.values()];
+    const cats = new Set(flags.map(f => f.cat));
+    const score = Math.min(1, count * 0.12 + cats.size * 0.1);
+    const suggestion = flags.length > 0
+        ? flags.reduce((a, b) => a.w > b.w ? a : b).guide
+        : null;
+    return { flags, count, score, suggestion };
+}
+
+// ── Gate Colors ──────────────────────────────────────────────
+
+const GATE_STYLE = {
+    GREEN:    { bg: 'rgba(59,163,114,0.2)',  color: '#3ba372' },
+    YELLOW:   { bg: 'rgba(205,168,82,0.2)',  color: '#cda852' },
+    RED:      { bg: 'rgba(204,98,71,0.2)',   color: '#cc6247' },
+    CRITICAL: { bg: 'rgba(255,0,64,0.25)',   color: '#ff0040' },
+};
+
+function barColor(val) {
+    if (val <= 3) return '#3ba372';
+    if (val <= 6) return '#cda852';
+    if (val <= 8) return '#cc6247';
+    return '#ff0040';
+}
+
+// ── DOM References ───────────────────────────────────────────
+
+const $ = id => document.getElementById(id);
+
+// ── Voltage UI Update ────────────────────────────────────────
+
+function updateVoltage() {
+    const text = $('msgInput').value;
+    const v = scoreVoltage(text);
+    const bluf = extractBluf(text);
+
+    // Bars
+    $('uVal').textContent = v.u;
+    $('eVal').textContent = v.e;
+    $('cVal').textContent = v.c;
+    $('uBar').style.width = (v.u * 10) + '%';
+    $('eBar').style.width = (v.e * 10) + '%';
+    $('cBar').style.width = (v.c * 10) + '%';
+    $('uBar').style.background = barColor(v.u);
+    $('eBar').style.background = barColor(v.e);
+    $('cBar').style.background = barColor(v.c);
+    $('totalScore').textContent = v.total;
+
+    // Gate badges
+    const gs = GATE_STYLE[v.gate];
+    for (const el of [$('gateBadge'), $('gateBadgeTop')]) {
+        el.textContent = v.gate;
+        el.style.background = gs.bg;
+        el.style.color = gs.color;
+    }
+    $('voltageTop').textContent = 'V: ' + v.total;
+
+    // PA
+    if (v.pa.length > 0) {
+        $('paList').classList.remove('hidden');
+        $('paItems').innerHTML = v.pa.map(p =>
+            '<div class="text-xs text-coral/80 pl-2 border-l border-coral/30">' + esc(p.t) + '</div>'
+        ).join('');
+    } else {
+        $('paList').classList.add('hidden');
+    }
+
+    // BLUF
+    $('blufSummary').textContent = bluf.summary || 'Paste a message to extract.';
+    $('blufSummary').classList.toggle('italic', !bluf.summary);
+    $('blufActions').innerHTML = bluf.actions.length
+        ? bluf.actions.map(a => '<li class="text-phosphorus/80 pl-3 border-l border-phosphorus/30 text-xs">' + esc(a) + '</li>').join('')
+        : '<li class="text-cloud/30 text-xs italic">No action items detected.</li>';
+    $('blufQuestions').innerHTML = bluf.questions.length
+        ? bluf.questions.map(q => '<li class="text-cyan/80 pl-3 border-l border-cyan/30 text-xs">' + esc(q) + '</li>').join('')
+        : '<li class="text-cloud/30 text-xs italic">No questions detected.</li>';
+}
+
+// ── Fawn UI Update ───────────────────────────────────────────
+
+function updateFawn() {
+    const text = $('responseInput').value;
+    const r = analyzeFawn(text);
+
+    if (r.count > 0) {
+        $('fawnScore').classList.remove('hidden');
+        $('fawnScore').textContent = 'FAWN: ' + r.count;
+        const intensity = Math.min(1, r.score);
+        $('fawnScore').style.background = `rgba(204,98,71,${0.15 + intensity * 0.2})`;
+    } else {
+        $('fawnScore').classList.add('hidden');
+    }
+
+    $('fawnFlags').innerHTML = r.flags.map(f => {
+        const c = CAT_COLORS[f.cat] || '#cc6247';
+        return `<div class="fawn-match" style="border-color:${c}">
+            <span class="font-mono text-[10px]" style="color:${c}">${f.cat.toUpperCase()}</span>
+            <span class="text-cloud/60 ml-2">"${esc(f.pattern)}"</span>
+            <span class="text-cloud/40 ml-2">${esc(f.guide)}</span>
+        </div>`;
+    }).join('');
+
+    if (r.suggestion) {
+        $('fawnSuggestion').classList.remove('hidden');
+        $('fawnSuggestion').textContent = r.suggestion;
+    } else {
+        $('fawnSuggestion').classList.add('hidden');
+    }
+}
+
+// ── Held Queue ───────────────────────────────────────────────
+
+let heldMessages = [];
+
+async function loadQueue() {
+    try { heldMessages = await dbGet('held') || []; } catch { heldMessages = []; }
+    renderQueue();
+}
+
+function renderQueue() {
+    $('queueCount').textContent = '(' + heldMessages.length + ')';
+    if (heldMessages.length === 0) {
+        $('queueList').innerHTML = '<div class="text-xs text-cloud/30 italic">No held messages.</div>';
+        return;
+    }
+    $('queueList').innerHTML = heldMessages.map(m => {
+        const gs = GATE_STYLE[m.gate] || GATE_STYLE.GREEN;
+        const ago = timeAgo(m.ts);
+        return `<div class="p-2 rounded bg-void/50 border border-white/5">
+            <div class="flex justify-between items-center mb-1">
+                <span class="badge" style="background:${gs.bg};color:${gs.color}">${m.gate}</span>
+                <span class="font-mono text-[10px] text-cloud/40">${ago}</span>
+            </div>
+            <div class="text-xs text-cloud/60 truncate mb-1">${esc(m.preview)}</div>
+            <div class="flex gap-1">
+                <button onclick="releaseMsg('${m.id}')" class="text-[10px] font-mono px-2 py-0.5 rounded bg-phosphorus/20 text-phosphorus hover:bg-phosphorus/30">RELEASE</button>
+                <button onclick="deleteMsg('${m.id}')" class="text-[10px] font-mono px-2 py-0.5 rounded bg-coral/20 text-coral hover:bg-coral/30">DISCARD</button>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+async function holdMessage() {
+    const text = $('responseInput').value.trim();
+    if (!text) return;
+    const v = scoreVoltage($('msgInput').value);
+    const msg = {
+        id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+        text, preview: text.substring(0, 80), gate: v.gate, voltage: v.total, ts: Date.now()
+    };
+    heldMessages.push(msg);
+    try { await dbPut('held', null, msg); } catch {}
+    $('responseInput').value = '';
+    updateFawn();
+    renderQueue();
+}
+
+async function releaseMsg(id) {
+    const msg = heldMessages.find(m => m.id === id);
+    if (msg) {
+        await navigator.clipboard.writeText(msg.text).catch(() => {});
+        heldMessages = heldMessages.filter(m => m.id !== id);
+        try { await dbDelete('held', id); } catch {}
+        renderQueue();
+    }
+}
+
+async function deleteMsg(id) {
+    heldMessages = heldMessages.filter(m => m.id !== id);
+    try { await dbDelete('held', id); } catch {}
+    renderQueue();
+}
+
+function timeAgo(ts) {
+    const diff = Date.now() - ts;
+    const mins = Math.floor(diff / 60000);
+    if (mins < 1) return 'now';
+    if (mins < 60) return mins + 'm';
+    const hrs = Math.floor(mins / 60);
+    return hrs + 'h';
+}
+
+// ── Breathing ────────────────────────────────────────────────
+
+let breatheActive = false;
+let breatheTimer = null;
+let breatheCycle = 0;
+
+function startBreathing() {
+    if (breatheActive) { stopBreathing(); return; }
+    breatheActive = true;
+    breatheCycle = 0;
+    $('breatheBtn').textContent = 'STOP';
+    runBreatheCycle();
+}
+
+function runBreatheCycle() {
+    if (!breatheActive || breatheCycle >= 3) { stopBreathing(); return; }
+    breatheCycle++;
+    $('breatheCycle').textContent = breatheCycle;
+    const circle = $('breatheCircle');
+    const label = $('breatheLabel');
+
+    // Inhale
+    label.textContent = 'IN';
+    circle.style.transition = 'transform 4s ease-in-out, opacity 4s ease-in-out';
+    circle.style.transform = 'scale(1)';
+    circle.style.opacity = '1';
+
+    breatheTimer = setTimeout(() => {
+        // Hold
+        label.textContent = 'HOLD';
+        circle.style.transition = 'none';
+
+        breatheTimer = setTimeout(() => {
+            // Exhale
+            label.textContent = 'OUT';
+            circle.style.transition = 'transform 6s ease-in-out, opacity 6s ease-in-out';
+            circle.style.transform = 'scale(0.4)';
+            circle.style.opacity = '0.4';
+
+            breatheTimer = setTimeout(() => runBreatheCycle(), 6000);
+        }, 2000);
+    }, 4000);
+}
+
+function stopBreathing() {
+    breatheActive = false;
+    clearTimeout(breatheTimer);
+    $('breatheBtn').textContent = 'BEGIN';
+    $('breatheLabel').textContent = 'START';
+    $('breatheCycle').textContent = '0';
+    const circle = $('breatheCircle');
+    circle.style.transition = 'transform 0.5s, opacity 0.5s';
+    circle.style.transform = 'scale(0.7)';
+    circle.style.opacity = '0.7';
+}
+
+// ── Calibration ──────────────────────────────────────────────
+
+const DIAG_OPTS = ['ADHD','Autism','AuDHD','PTSD','C-PTSD','Anxiety','Depression','Bipolar','OCD','Other'];
+const SENSORY_OPTS = ['Light sensitivity','Sound sensitivity','Motion sensitivity','Reduce animations','High contrast','None / Low'];
+const STRESSOR_OPTS = ['Legal proceedings','Financial pressure','Housing instability','Caregiving demands','Employment issues','Relationship conflict','Health crisis','None currently'];
+
+let calData = { role: '', diagnoses: [], sensory: [], stressors: [], support: 'Some support', comm: 'DIRECT' };
+
+function buildChips(containerId, options, selectedArr, field) {
+    const el = $(containerId);
+    el.innerHTML = options.map(opt => {
+        const active = selectedArr.includes(opt);
+        return `<button data-field="${field}" data-val="${opt}"
+            class="text-[10px] font-mono px-2 py-1 rounded border transition-colors
+            ${active ? 'bg-butter/20 border-butter/40 text-butter' : 'bg-void/50 border-white/10 text-cloud/40 hover:border-white/20'}"
+            onclick="toggleChip(this,'${field}')">${opt}</button>`;
+    }).join('');
+}
+
+function toggleChip(btn, field) {
+    const val = btn.dataset.val;
+    const arr = calData[field];
+    const idx = arr.indexOf(val);
+    if (idx >= 0) arr.splice(idx, 1); else arr.push(val);
+    buildChips(
+        field === 'diagnoses' ? 'calDiagnoses' : field === 'sensory' ? 'calSensory' : 'calStressors',
+        field === 'diagnoses' ? DIAG_OPTS : field === 'sensory' ? SENSORY_OPTS : STRESSOR_OPTS,
+        arr, field
+    );
+}
+
+async function loadCalibration() {
+    try {
+        const saved = await dbGet('calibration', 'main');
+        if (saved) calData = saved;
+    } catch {}
+    $('calRole').value = calData.role || '';
+    $('calSupport').value = calData.support || 'Some support';
+    $('calComm').value = calData.comm || 'DIRECT';
+    buildChips('calDiagnoses', DIAG_OPTS, calData.diagnoses || [], 'diagnoses');
+    buildChips('calSensory', SENSORY_OPTS, calData.sensory || [], 'sensory');
+    buildChips('calStressors', STRESSOR_OPTS, calData.stressors || [], 'stressors');
+}
+
+async function saveCalibration() {
+    calData.role = $('calRole').value;
+    calData.support = $('calSupport').value;
+    calData.comm = $('calComm').value;
+    try { await dbPut('calibration', 'main', calData); } catch {}
+    $('calStatus').classList.remove('hidden');
+    setTimeout(() => $('calStatus').classList.add('hidden'), 2000);
+}
+
+// ── Escape HTML ──────────────────────────────────────────────
+
+function esc(s) {
+    const d = document.createElement('div');
+    d.textContent = s;
+    return d.innerHTML;
+}
+
+// ── Wire Events ──────────────────────────────────────────────
+
+document.addEventListener('DOMContentLoaded', async () => {
+    await openDB();
+    await loadCalibration();
+    await loadQueue();
+
+    $('msgInput').addEventListener('input', updateVoltage);
+    $('msgInput').addEventListener('paste', () => setTimeout(updateVoltage, 50));
+    $('responseInput').addEventListener('input', updateFawn);
+    $('responseInput').addEventListener('keyup', updateFawn);
+    $('holdBtn').addEventListener('click', holdMessage);
+    $('clearResponseBtn').addEventListener('click', () => {
+        $('responseInput').value = '';
+        updateFawn();
+    });
+    $('breatheBtn').addEventListener('click', startBreathing);
+    $('calToggle').addEventListener('click', () => {
+        $('calPanel').classList.toggle('open');
+        $('calArrow').style.transform = $('calPanel').classList.contains('open') ? 'rotate(180deg)' : '';
+    });
+    $('calSave').addEventListener('click', saveCalibration);
+
+    // Init breathing circle
+    const circle = $('breatheCircle');
+    circle.style.transform = 'scale(0.7)';
+    circle.style.opacity = '0.7';
+});
+</script>
+</body>
+</html>

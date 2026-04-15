@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0a0a1a">
+    <title>Mission Control | P31 Labs</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Space Grotesk"', 'sans-serif'],
+                        pixel: ['"Press Start 2P"', 'cursive'],
+                    },
+                    colors: {
+                        void: '#0a0a1a', card: '#1a1a2e',
+                        npink: '#ff00ff', ngreen: '#00ff41',
+                        nblue: '#00ffff', ngold: '#ffd700',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root { color-scheme: dark; }
+        body {
+            background-color: #0a0a1a;
+            color: #ffffff;
+            background-image:
+                radial-gradient(circle at 10% 20%, rgba(255, 0, 255, 0.05) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(0, 255, 65, 0.05) 0%, transparent 20%);
+        }
+        .flicker { animation: flicker 2s infinite; }
+        @keyframes flicker { 0%, 100% { opacity: 1; } 92% { opacity: 1; } 93% { opacity: 0.8; } 94% { opacity: 1; } }
+        .bounce { animation: bounce 1s infinite alternate; }
+        @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-10px); } }
+        .char-card { transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .char-card:hover { transform: scale(1.05) rotate(1deg); }
+        .mission-btn { transition: all 0.2s; box-shadow: 0 4px 0 #4b0082; }
+        .mission-btn:active { transform: translateY(4px); box-shadow: 0 0 0 #4b0082; }
+        .mission-btn:hover:not(:disabled) { box-shadow: 0 6px 0 #4b0082, 0 0 20px rgba(255, 0, 255, 0.5); }
+        .mission-btn:disabled {
+            background: linear-gradient(135deg, #00ff41, #00cc33) !important;
+            box-shadow: 0 4px 0 #008020;
+            transform: scale(0.98);
+            opacity: 0.9;
+        }
+        #toast {
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px);
+            background: #00ff41; color: #0a0a1a; padding: 1rem 2rem; border-radius: 99px;
+            font-family: 'Press Start 2P', cursive; font-size: 0.7rem; text-align: center;
+            box-shadow: 0 0 30px rgba(0, 255, 65, 0.5); z-index: 1000;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        #toast.show { transform: translateX(-50%) translateY(0); }
+        @keyframes floatUp { to { transform: translateY(-100vh) rotate(360deg); opacity: 0; } }
+        .particle { position: fixed; pointer-events: none; animation: floatUp 3s forwards; z-index: 900; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <div id="toast">MISSION COMPLETE!</div>
+
+    <header class="text-center p-8 bg-gradient-to-b from-[#1a1a2e]/90 to-transparent backdrop-blur-md sticky top-0 z-50 border-b border-white/5">
+        <div class="flex items-center justify-center gap-6 mb-4">
+            <a href="wonky.html" class="font-pixel text-[9px] text-white/30 hover:text-white/70 transition-colors">← About</a>
+            <div class="font-pixel text-2xl md:text-4xl bg-gradient-to-r from-[#ff00ff] to-[#00ffff] bg-clip-text text-transparent flicker" style="text-shadow: 0 0 20px rgba(255, 0, 255, 0.5);">
+                🚀 WONKY SPROUT
+            </div>
+            <a href="simple-sovereignty.html" class="font-pixel text-[9px] text-[#00ffff]/40 hover:text-[#00ffff]/80 transition-colors">Hub →</a>
+        </div>
+        <div class="text-[#00ff41] font-pixel text-xs tracking-widest">
+            &gt;&gt;&gt; MISSION CONTROL &lt;&lt;&lt;
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-5xl mx-auto px-6 py-8 w-full flex flex-col items-center">
+
+        <!-- Token Banner -->
+        <div class="bg-gradient-to-br from-[#2a1a3e] to-[#1a2a4e] border-4 border-dashed border-[#ffd700] rounded-3xl p-8 text-center max-w-sm w-full shadow-[0_0_30px_rgba(255,215,0,0.2)] mb-12">
+            <div class="font-pixel text-4xl text-[#ffd700] drop-shadow-[0_0_10px_rgba(255,215,0,0.5)]" id="token-display">10,000</div>
+            <div class="text-gray-400 text-sm mt-3 font-pixel tracking-wider">🪙 GENESIS TOKENS</div>
+        </div>
+
+        <!-- Characters -->
+        <section class="flex flex-wrap justify-center gap-8 w-full mb-12">
+            <div class="char-card bg-[#1a1a2e] border-4 border-[#ff00ff] rounded-2xl p-6 w-full max-w-[320px] text-center shadow-[0_0_20px_rgba(255,0,255,0.3)] cursor-pointer">
+                <div class="text-6xl mb-4 bounce">🦄</div>
+                <div class="font-pixel text-sm text-[#ff00ff] mb-2">WILLOW</div>
+                <div class="text-[#00ffff] text-sm mb-6 font-bold">Chief Creative Officer</div>
+                <div class="bg-black/30 p-4 rounded-xl text-left font-pixel text-[10px] leading-relaxed">
+                    <div class="flex justify-between mb-2"><span>Creativity</span><span class="text-[#ff00ff]">100%</span></div>
+                    <div class="h-2 bg-gray-800 rounded-full mb-4"><div class="h-full bg-[#ff00ff] rounded-full" style="width: 100%"></div></div>
+                    <div class="flex justify-between mb-2"><span>Vision</span><span class="text-[#00ffff]">90%</span></div>
+                    <div class="h-2 bg-gray-800 rounded-full mb-4"><div class="h-full bg-[#ff00ff] rounded-full" style="width: 90%"></div></div>
+                    <div class="flex justify-between mt-4 text-[#ff00ff]"><span>✨ Special</span><span>Vibe Check</span></div>
+                </div>
+            </div>
+            <div class="char-card bg-[#1a1a2e] border-4 border-[#00ff41] rounded-2xl p-6 w-full max-w-[320px] text-center shadow-[0_0_20px_rgba(0,255,65,0.3)] cursor-pointer">
+                <div class="text-6xl mb-4 bounce" style="animation-delay: 0.5s">⚡</div>
+                <div class="font-pixel text-sm text-[#00ff41] mb-2">BASH</div>
+                <div class="text-[#00ffff] text-sm mb-6 font-bold">Chief Spark Officer</div>
+                <div class="bg-black/30 p-4 rounded-xl text-left font-pixel text-[10px] leading-relaxed">
+                    <div class="flex justify-between mb-2"><span>Energy</span><span class="text-[#00ff41]">∞%</span></div>
+                    <div class="h-2 bg-gray-800 rounded-full mb-4"><div class="h-full bg-[#00ff41] rounded-full" style="width: 100%"></div></div>
+                    <div class="flex justify-between mb-2"><span>Speed</span><span class="text-[#00ffff]">100%</span></div>
+                    <div class="h-2 bg-gray-800 rounded-full mb-4"><div class="h-full bg-[#00ff41] rounded-full" style="width: 100%"></div></div>
+                    <div class="flex justify-between mt-4 text-[#ffd700]"><span>⚡ Special</span><span>Hyper Boost</span></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Missions -->
+        <section class="w-full max-w-2xl mb-12">
+            <div class="font-pixel text-[#00ffff] text-center mb-8 text-sm leading-relaxed">📋 CURRENT MISSIONS</div>
+            <button class="mission-btn w-full bg-gradient-to-br from-[#ff00ff] to-[#8b00ff] border-none rounded-xl p-5 mb-4 text-white font-pixel text-[10px] md:text-xs text-left" onclick="completeMission(this, 500)">
+                <span>🔋 Charge Dad's Brain</span><span class="float-right text-[#ffd700]">+500 🪙</span>
+            </button>
+            <button class="mission-btn w-full bg-gradient-to-br from-[#ff00ff] to-[#8b00ff] border-none rounded-xl p-5 mb-4 text-white font-pixel text-[10px] md:text-xs text-left" onclick="completeMission(this, 300)">
+                <span>✨ Spread Good Vibes</span><span class="float-right text-[#ffd700]">+300 🪙</span>
+            </button>
+            <button class="mission-btn w-full bg-gradient-to-br from-[#ff00ff] to-[#8b00ff] border-none rounded-xl p-5 mb-4 text-white font-pixel text-[10px] md:text-xs text-left" onclick="completeMission(this, 400)">
+                <span>🧘 Practice Patience</span><span class="float-right text-[#ffd700]">+400 🪙</span>
+            </button>
+            <button class="mission-btn w-full bg-gradient-to-br from-[#ff00ff] to-[#8b00ff] border-none rounded-xl p-5 mb-4 text-white font-pixel text-[10px] md:text-xs text-left" onclick="completeMission(this, 600)">
+                <span>🤝 Help with Chores</span><span class="float-right text-[#ffd700]">+600 🪙</span>
+            </button>
+        </section>
+
+        <!-- Secret Base -->
+        <section class="bg-black/50 rounded-2xl p-8 max-w-lg w-full text-center mb-12">
+            <div class="font-pixel text-[#00ff41] mb-6 text-[10px] leading-relaxed">🎮 YOUR SECRET BASE</div>
+            <div class="grid grid-cols-3 gap-4">
+                <div class="bg-white/10 rounded-xl p-4 text-3xl cursor-pointer hover:scale-110 hover:bg-white/20 transition-all" title="Robux Shop">🪙</div>
+                <div class="bg-white/10 rounded-xl p-4 text-3xl cursor-pointer hover:scale-110 hover:bg-white/20 transition-all" title="Pizza Place">🍕</div>
+                <div class="bg-white/10 rounded-xl p-4 text-3xl cursor-pointer hover:scale-110 hover:bg-white/20 transition-all" title="Lego Set">🧱</div>
+                <div class="bg-white/10 rounded-xl p-4 text-3xl cursor-pointer hover:scale-110 hover:bg-white/20 transition-all" title="Gaming Zone">🎮</div>
+                <div class="bg-white/10 rounded-xl p-4 text-3xl cursor-pointer hover:scale-110 hover:bg-white/20 transition-all" title="Movie Night">🎬</div>
+                <div class="bg-white/10 rounded-xl p-4 text-3xl cursor-pointer hover:scale-110 hover:bg-white/20 transition-all" title="Ice Cream">🍦</div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="text-center p-8 text-gray-500 text-sm">
+        <p>Welcome to the company, Founding Nodes! 🌟</p>
+        <p class="mt-2 text-gray-600">Built with 💜 by Dad</p>
+        <div class="text-[#00ff41] font-pixel text-[8px] md:text-[10px] mt-6 leading-relaxed flicker">
+            ★ IT'S OKAY TO BE A LITTLE WONKY ★
+        </div>
+    </footer>
+
+    <script>
+        let tokens = 10000;
+        const display = document.getElementById('token-display');
+        const toast = document.getElementById('toast');
+
+        function completeMission(btn, reward) {
+            if (btn.disabled) return;
+            tokens += reward;
+            display.textContent = tokens.toLocaleString();
+            btn.innerHTML = `<span>✅ DONE!</span><span class="float-right">+${reward} 🪙</span>`;
+            btn.disabled = true;
+            toast.textContent = `🎉 EARNED ${reward} TOKENS!`;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+            for(let i=0; i<5; i++) { setTimeout(createParticle, i * 200); }
+        }
+
+        function createParticle() {
+            const particle = document.createElement('div');
+            particle.className = 'particle text-2xl';
+            particle.textContent = ['✨', '🌟', '💫', '⭐', '🪙'][Math.floor(Math.random() * 5)];
+            particle.style.left = (Math.random() * 80 + 10) + 'vw';
+            particle.style.top = '100vh';
+            document.body.appendChild(particle);
+            setTimeout(() => particle.remove(), 3000);
+        }
+
+        setInterval(createParticle, 3000);
+    </script>
+</body>
+</html>
