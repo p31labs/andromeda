@@ -26,8 +26,17 @@ This page is the **integration index** for the monorepo: the same links appear a
 | Carrie (public, universal) | [carrie-wellness…](https://carrie-wellness.trimtab-signal.workers.dev) — `wrangler deploy --env public` from `cloudflare-worker/carrie-agent` |
 | API gateway | Entry **`api-phosphorus31-org`** on **[Cloud Hub](https://command-center.trimtab-signal.workers.dev/cloud)** (JSON fleet list + ping). The bare `workers.dev` root may return 404 — use Cloud Hub or repo `docs/WORKER_INVENTORY.md` for the live route map. |
 | **P31 Bouncer** (secrets index + gate check) | [p31-bouncer…](https://p31-bouncer.trimtab-signal.workers.dev) — `GET /v1/secrets-index` · [Security manifest](/operations/security-manifest/) · `04_SOFTWARE/cloudflare-worker/bouncer/` |
+| **P31 Agent Hub** (Workers AI + service bindings → K₄ trio) | Deploy `p31-agent-hub` from `04_SOFTWARE/p31-agent-hub/` — `GET /api/health` · `POST /api/chat` (optional `AGENT_HUB_SECRET`; session store uses a **SQLite-backed** Durable Object). Carrie calls **`POST /api/agent-chat`** on `carrie-agent` / `carrie-wellness`, which proxies to the hub and can attach `AGENT_HUB_SECRET` server-side — set `AGENT_HUB_URL` (+ optional secret) in `carrie-agent/wrangler.toml`. |
 
-Worker sources: `04_SOFTWARE/cloudflare-worker/` — full inventory in repo `docs/WORKER_INVENTORY.md` when present.
+Worker sources: `04_SOFTWARE/cloudflare-worker/` — **generated Wrangler map:** `docs/WORKER_PAGES_MANIFEST.md` (all `wrangler.toml` under `04_SOFTWARE/` + `phosphorus31.org/`, plus repo-root `wrangler-kofi.toml` and `k4-worker/wrangler.toml`; regenerate: `pnpm run manifest:workers` from `04_SOFTWARE/`). Older narrative inventory: `docs/WORKER_INVENTORY.md` when present.
+
+### K₄ layout in this repo (canonical)
+
+- **`04_SOFTWARE/k4-cage/`** — production **family** cage (Wrangler name `k4-cage`, KV `K4_MESH`). Imports **root** `verticesForScope('')` / `edgesForScope('')` from **`packages/k4-mesh-core/scopes.js`** so topology matches personal/hubs; deploy source of truth for `k4-cage.trimtab-signal.workers.dev`.
+- **`04_SOFTWARE/k4-personal/`** and **`04_SOFTWARE/k4-hubs/`** — additional Workers built on **`04_SOFTWARE/packages/k4-mesh-core/`** (handlers + viz).
+- **Repo root `k4-worker/`** — legacy minimal prototype; Wrangler name **`k4-legacy-prototype`** (sandbox). See `k4-worker/README.md`.
+
+In-repo 3D tetrahedron mesh UI (BONDING / Spaceship stack): `04_SOFTWARE/spaceship-earth/src/components/mesh/DeltaMesh.tsx`.
 
 ## Pages (static edge)
 

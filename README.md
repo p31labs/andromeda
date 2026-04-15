@@ -6,7 +6,7 @@
 
 Open-source assistive technology for neurodivergent individuals and families. Georgia nonprofit corporation — incorporated April 3, 2026. 501(c)(3) pending.
 
-**670+ automated tests. 22 Cloudflare Workers. 12 deployed products. 2 Zenodo DOIs. One operator.**
+**650+ automated tests** across packages (**BONDING:** **413 tests / 30 suites** — OQE). **46** Wrangler-defined **Workers + Pages** units in-repo ([`docs/WORKER_PAGES_MANIFEST.md`](docs/WORKER_PAGES_MANIFEST.md)). **12** deployed products (public-facing). **2** Zenodo DOIs. One operator.
 
 | Product | URL | Status |
 |---------|-----|--------|
@@ -43,17 +43,14 @@ Open-source assistive technology for neurodivergent individuals and families. Ge
 
 ### Installation
 
+See **[CONTRIBUTING.md](CONTRIBUTING.md)** for the `04_SOFTWARE/` entry path. Quick clone:
+
 ```bash
-# Clone the repository
 git clone https://github.com/p31labs/andromeda.git
 cd andromeda
-
-# Install dependencies
-npm install
-
-# Start development server
-npm run dev
 ```
+
+Then follow **[CONTRIBUTING.md](CONTRIBUTING.md)** for `04_SOFTWARE/` install, manifests, and CI.
 
 ### Running Tests
 
@@ -76,8 +73,8 @@ npm run test:coverage
 A node is a unique individual who has engaged with P31 Labs — Discord join, Ko-fi support, BONDING session, egg claim, or Zenodo download. 39 nodes = Posner molecule (Ca₉(PO₄)₆) — the calcium cage.
 
 ### Current Numbers (April 2026)
-- **Automated Tests**: 670+ (413 BONDING, 185 SE, 43 Discord bot, 25 frontend, 4 Genesis Gate)
-- **Cloudflare Workers**: 22 deployed
+- **Automated Tests**: 650+ aggregate (BONDING alone: **413 / 30 suites**; other suites vary by package)
+- **Cloudflare**: **39** Worker-style + **7** Pages-style `wrangler.toml` configs in-tree (**46** total) — see [`docs/WORKER_PAGES_MANIFEST.md`](docs/WORKER_PAGES_MANIFEST.md) (regenerate: `pnpm run manifest:workers` from `04_SOFTWARE/`)
 - **Zenodo DOIs**: 2 published (280+ views, 240+ downloads combined)
 - **Products deployed**: 12
 - **Revenue streams**: Stripe (donate.phosphorus31.org) + Ko-fi (ko-fi.com/trimtab69420)
@@ -90,7 +87,7 @@ The BONDING game transforms molecular chemistry into an engaging puzzle experien
 ### Features
 - **Real-time Molecular Simulation**: Accurate VSEPR theory implementation
 - **Quantum Puzzles**: Posner molecule assembly challenges
-- **Larmor Frequency Locks**: 0.86 Hz temporal synchronization
+- **Larmor Frequency Locks**: ~863 Hz (³¹P Earth-field Larmor) temporal anchor in product copy
 - **NMR Spectroscopy Jigsaws**: Academic paper decryption mechanics
 
 ### Getting Started
