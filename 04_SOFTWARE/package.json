@@ -9,6 +9,7 @@
     "extensions/*"
   ],
   "scripts": {
+    "manifest:workers": "node scripts/generate-worker-manifest.mjs",
     "turbo": "turbo",
     "typecheck": "turbo run typecheck",
     "build": "turbo run build",

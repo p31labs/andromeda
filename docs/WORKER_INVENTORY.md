@@ -3,13 +3,28 @@
 **Auditor:** Claude (Explore agent + Sonnet 4.6)
 **Scan scope:** Full `/home/p31/andromeda/` tree via wrangler.toml enumeration
 
+> **Update:** For an auto-generated table of every `wrangler.toml` under `04_SOFTWARE/` and `phosphorus31.org/`, see **[`WORKER_PAGES_MANIFEST.md`](WORKER_PAGES_MANIFEST.md)** (`pnpm run manifest:workers` from `04_SOFTWARE/`). This document remains a dated narrative + purpose audit.
+
 ---
 
 ## Summary
-- **Total Workers found in codebase:** 14 (12 in `04_SOFTWARE/`, 2 at root)
+- **Total Workers found in codebase:** 14+ (12 in `04_SOFTWARE/`, 2 at root) — **plus K₄ line:** `k4-cage`, `k4-personal`, `k4-hubs` under `04_SOFTWARE/` (see K₄ stack below)
 - **Cross-referenced with dashboard:** 10 matched
 - **Dashboard-only (no local code):** 4 (see below)
 - **ACTIVE:** 9 | **DORMANT:** 4 | **STALE:** 1
+
+---
+
+## K₄ stack (April 2026 integration note)
+
+| Worker name | Repo path | Notes |
+|-------------|-----------|--------|
+| `k4-cage` | `04_SOFTWARE/k4-cage/` | **Canonical** family cage; KV `K4_MESH`; `GET /api/health`. Command Center pinger + dashboard links target this host. |
+| `k4-personal` | `04_SOFTWARE/k4-personal/` | Personal mesh only; uses `packages/k4-mesh-core`. |
+| `k4-hubs` | `04_SOFTWARE/k4-hubs/` | Hub/dock layer; uses `packages/k4-mesh-core`. |
+| _(deprecated)_ | `k4-worker/` (repo root) | **Sandbox only:** Wrangler name `k4-legacy-prototype` (distinct from production `k4-cage`). Different KV/API — see `k4-worker/README.md`. |
+
+Shared library: `04_SOFTWARE/packages/k4-mesh-core/` (`@p31/k4-mesh-core`, private).
 
 ---
 
