@@ -190,6 +190,18 @@ p { font-size: 15px; color: rgba(216,214,208,0.82); margin-bottom: 14px; line-he
 .footer a { color: var(--muted); text-decoration: none; transition: color 0.15s; }
 .footer a:hover { color: var(--cloud); text-decoration: none; }
 .footer-links { display: flex; gap: 20px; flex-wrap: wrap; }
+
+.detail-grid { display: grid; gap: 20px; margin: 28px 0; }
+@media (min-width: 640px) { .detail-grid { grid-template-columns: 1fr 1fr; } }
+.detail-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 20px 22px; }
+.detail-card h3 { font-family: var(--mono); font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); margin: 0 0 12px; border: none; padding: 0; }
+.detail-card p { font-size: 14px; margin-bottom: 10px; }
+.detail-card p:last-child { margin-bottom: 0; }
+.detail-card ul { margin: 0; padding-left: 18px; color: rgba(216,214,208,0.88); font-size: 14px; line-height: 1.65; }
+.detail-card li { margin-bottom: 8px; }
+.callout-p31 { font-size: 13px; color: rgba(216,214,208,0.78); border-left: 3px solid var(--teal); padding: 14px 18px; margin: 28px 0; background: rgba(37,137,125,0.08); border-radius: 0 10px 10px 0; line-height: 1.65; }
+.callout-p31 a { color: var(--cyan); }
+
 </style>
 </head>
 <body>
@@ -306,13 +318,39 @@ p { font-size: 15px; color: rgba(216,214,208,0.82); margin-bottom: 14px; line-he
     </tbody>
   </table>
 
+  <div id="mvp-enriched" class="detail-grid">
+    <div class="detail-card">
+      <h3>What you can do</h3>
+      <p>Browser-native cognitive prosthetic IDE.</p>
+      <p>JSX transpilation, sandboxed execution, Samson's Law entropy linter, Q Distribution spoon tracking, and 4-tier progressive disclosure.</p>
+      <p>Zero npm.</p>
+      <p>Works offline.</p>
+    </div>
+    <div class="detail-card">
+      <h3>Build surface</h3>
+      <p>Hub card stack for <strong>EDE</strong> (Everything Development Environment). Ships as static HTML on <code>p31ca.org</code>; live app may live on Pages, Workers, or a sibling route.</p>
+      <ul>
+      <li>Jitterbug Compiler</li>
+      <li>Q Distribution</li>
+      <li>&quot;Samson's Law&quot;</li>
+      <li>Offline-First</li>
+      </ul>
+    </div>
+  </div>
+
+  <p class="callout-p31"><strong>P31 Labs, Inc.</strong> (Georgia nonprofit, EIN 42-1888158) builds open tools for cognitive load, communication clarity, and family coordination. This page is technical documentation, not medical or legal advice. Mission and donations: <a href="https://phosphorus31.org" target="_blank" rel="noopener">phosphorus31.org</a>.</p>
+
+  <div class="cta-wrap">
+    <a href="ede.html" class="cta-btn">&#x2B21; Launch EDE</a>
+    <a href="index.html" class="cta-secondary">&larr; Back to Hub</a>
+  </div>
+
+
   <h2>Research Foundation</h2>
   <p>EDE is the executable form of the P31 Genesis Whitepaper (DOI: <a href="https://doi.org/10.5281/zenodo.19411363" target="_blank" rel="noopener">10.5281/zenodo.19411363</a>). Every panel implements a system described in that paper: the Jitterbug Compiler, SIC-POVM Catcher&rsquo;s Mitt, Samson&rsquo;s Law harmonic linter, Q Distribution, and Larmor frequency regulation.</p>
   <p>The EDE is the demo. The whitepaper is the manual. The grant application points here.</p>
 
-  <div class="cta-wrap" style="margin-top:40px">
-    <a href="ede.html" class="cta-btn">&#x2B21; Launch EDE</a>
-  </div>
+  
 
   <!-- Footer -->
   <div class="footer">

@@ -34,7 +34,7 @@ const liveProducts: Product[] = [
 
 const devProducts: Product[] = [
   { id: 'node-zero',          title: 'Node Zero',           subtitle: 'ESP32-S3 haptic device — Waveshare 3.5" QSPI display, LVGL 8.4, ESP-IDF v5.5.3.',     status: 'prototype', url: 'https://github.com/p31labs/andromeda', stack: ['ESP-IDF', 'LVGL', 'QSPI'] },
-  { id: 'node-one',           title: 'Node One (Totem)',    subtitle: 'Handheld cognitive prosthetic — PQC encryption (ML-KEM-768), LoRa mesh, biometric.',    status: 'dev',       url: 'https://github.com/p31labs/andromeda', stack: ['ESP32-S3', 'SE050', 'SX1262'] },
+  { id: 'node-one',           title: 'Node One (Totem)',    subtitle: 'Handheld haptic anchor — ESP32-S3, LoRa, secure element; general wellness / communication support (pre-market).',    status: 'dev',       url: 'https://github.com/p31labs/andromeda', stack: ['ESP32-S3', 'SE050', 'SX1262'] },
   { id: 'tactile',            title: 'TACTILE',             subtitle: 'Keyboard builder and typing simulator — custom layouts, switch feel simulation.',       status: 'dev',       url: '#',                                    stack: ['Canvas', 'Web Audio'] },
   { id: 'thermodynamic',      title: 'Thermodynamic Syllabus', subtitle: 'Point Peter particle simulation — EDE Triptych, monotropic attention channels.',    status: 'dev',       url: '#',                                    stack: ['Canvas', 'React 19'] },
   { id: 'cortex',             title: 'p31-cortex',          subtitle: 'AI agent orchestration layer — Claude/Gemini routing, telemetry, governance.',         status: 'dev',       url: '#',                                    stack: ['CF Workers', 'KV'] },
@@ -263,7 +263,8 @@ const researchItems = [
           data.workers.forEach((w: any) => {
             const dot = document.querySelector(`[data-fleet="${w.name}"]`);
             if (dot) {
-              const isUp = w.status === 'up' || w.status === 'ok';
+              const isUp =
+              w.status === 'up' || w.status === 'ok' || w.status === 'online';
               (dot as HTMLElement).className = `w-1.5 h-1.5 rounded-full mx-auto ${
                 isUp ? 'bg-emerald-400' : 'bg-red-400'
               }`;
