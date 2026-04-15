@@ -6,7 +6,7 @@
 
 Open-source assistive technology for neurodivergent individuals and families. Georgia nonprofit corporation — incorporated April 3, 2026. 501(c)(3) pending.
 
-**650+ automated tests** across packages (**BONDING:** **413 tests / 30 suites** — OQE). **46** Wrangler-defined **Workers + Pages** units in-repo ([`docs/WORKER_PAGES_MANIFEST.md`](docs/WORKER_PAGES_MANIFEST.md)). **12** deployed products (public-facing). **2** Zenodo DOIs. One operator.
+**650+ automated tests** across packages (**BONDING:** **413 tests / 30 suites** — OQE). **19** Wrangler-defined **Workers + Pages** units in-repo ([`docs/WORKER_PAGES_MANIFEST.md`](docs/WORKER_PAGES_MANIFEST.md)). **12** deployed products (public-facing). **2** Zenodo DOIs. One operator.
 
 | Product | URL | Status |
 |---------|-----|--------|
@@ -74,7 +74,7 @@ A node is a unique individual who has engaged with P31 Labs — Discord join, Ko
 
 ### Current Numbers (April 2026)
 - **Automated Tests**: 650+ aggregate (BONDING alone: **413 / 30 suites**; other suites vary by package)
-- **Cloudflare**: **39** Worker-style + **7** Pages-style `wrangler.toml` configs in-tree (**46** total) — see [`docs/WORKER_PAGES_MANIFEST.md`](docs/WORKER_PAGES_MANIFEST.md) (regenerate: `pnpm run manifest:workers` from `04_SOFTWARE/`)
+- **Cloudflare**: **16** Worker-style + **3** Pages-style `wrangler.toml` configs in-tree (**19** total) — see [`docs/WORKER_PAGES_MANIFEST.md`](docs/WORKER_PAGES_MANIFEST.md) (regenerate: `pnpm run manifest:workers` from `04_SOFTWARE/`)
 - **Zenodo DOIs**: 2 published (280+ views, 240+ downloads combined)
 - **Products deployed**: 12
 - **Revenue streams**: Stripe (donate.phosphorus31.org) + Ko-fi (ko-fi.com/trimtab69420)
