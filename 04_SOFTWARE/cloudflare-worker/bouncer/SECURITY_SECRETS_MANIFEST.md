@@ -111,7 +111,7 @@ Use `/v1/gate` to verify automation or sibling Workers have the correct token **
 | **Bootstrap GitHub secrets from laptop** | One-time: `gh auth login`, then from repo root `pnpm run automate:bootstrap` (reads `.env.master` → `gh secret set` for `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`, `BOUNCER_GATE_TOKEN` when present). Script: `04_SOFTWARE/scripts/sync-github-secrets.mjs`. |
 | `.github/workflows/p31-automation.yml` | PR/push: tests + docs build + link check (**optional** fleet URLs warn-only — no manual ignore-list cleanup). Deploy jobs: optional step **pipes `secrets.BOUNCER_GATE_TOKEN` → `wrangler secret put`** before `deploy` so the gate token stays synced without local wrangler. Requires `CLOUDFLARE_*` in GitHub; `BOUNCER_GATE_TOKEN` there is optional but recommended for hands-off deploys. |
 | `04_SOFTWARE/scripts/automate-all.mjs` | `verify` / `deploy-edge` / `deploy-docs` — `pnpm run automate:*` from `04_SOFTWARE`. |
-| `command-center/update-status.sh` | Pushes `status.json` to KV (`COMMAND_CENTER_STATUS_TOKEN` in `.env.master` — not synced by bootstrap script unless you extend `sync-github-secrets.mjs`). |
+| `command-center/update-status.ps1` / `update-status.sh` | Pushes `status.json` to KV (`COMMAND_CENTER_STATUS_TOKEN` in repo-root `.env.master` — not synced by bootstrap script unless you extend `sync-github-secrets.mjs`). |
 
 ---
 
