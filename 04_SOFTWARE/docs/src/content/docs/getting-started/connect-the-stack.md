@@ -55,7 +55,8 @@ Custom domain **docs.phosphorus31.org** maps to the same Starlight build as the 
 |---------|-----|--------|
 | BONDING | [bonding.p31ca.org](https://bonding.p31ca.org) | `04_SOFTWARE/bonding/` — 413 tests / 30 suites (verified) |
 | Spaceship Earth | [spaceship-earth](https://spaceship-earth.pages.dev) (see fleet) | `04_SOFTWARE/spaceship-earth/` |
-| Lattice (52 vectors) | [p31ca.org/lattice.html](https://p31ca.org/lattice.html) | Hub view of MVPs |
+| Lattice (Fibonacci sphere) | [p31ca.org/lattice.html](https://p31ca.org/lattice.html) | 39 MVP nodes in `04_SOFTWARE/p31ca/public/lattice.html` |
+| Observatory / dome lattice | [p31ca.org/observatory.html](https://p31ca.org/observatory.html) → [dome.html](https://p31ca.org/dome.html) | Geodesic dome viz: search, axis/state filters, node detail (`public/dome.html`) |
 
 ## Long-form repo docs
 

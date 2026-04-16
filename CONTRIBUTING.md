@@ -2,16 +2,18 @@
 
 ## Where the software lives
 
-Most applications, Workers, Pages projects, and shared packages live under **`04_SOFTWARE/`**. That directory uses **pnpm** and **Turbo** (`04_SOFTWARE/package.json`). Install and run tests there unless a package README says otherwise.
+Most applications, Workers, Pages projects, and shared packages live under **`04_SOFTWARE/`**, registered in the **root** `pnpm-workspace.yaml`. Use **one** install at the repository root:
 
 ```bash
-cd 04_SOFTWARE
 pnpm install
+pnpm run quality   # deploy-target guard (Pages project names)
 pnpm run build
 pnpm run test
 ```
 
-The repository root has its own `package.json` (additional workspaces); it is not the primary dev entry for BONDING or Spaceship Earth.
+Turbo scripts are defined in `04_SOFTWARE/package.json` (`build`, `test`, `dev`, etc.); the root `package.json` delegates to `pnpm --dir 04_SOFTWARE` for convenience.
+
+**Production quality bar:** [`docs/ENTERPRISE_QUALITY.md`](docs/ENTERPRISE_QUALITY.md). PRs should keep **Monorepo verify** (GitHub Actions) green.
 
 ## Fleet map and edge deployables
 

@@ -2,12 +2,6 @@
   "name": "p31-software",
   "private": true,
   "packageManager": "pnpm@10.32.1",
-  "workspaces": [
-    "bonding",
-    "spaceship-earth",
-    "packages/*",
-    "extensions/*"
-  ],
   "scripts": {
     "manifest:workers": "node scripts/generate-worker-manifest.mjs",
     "turbo": "turbo",

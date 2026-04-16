@@ -1,0 +1,4 @@
+# Legacy /app/* paths used to collide with an SPA deploy. Send users to real static assets.
+/app/ede    /ede-about.html   302
+/app/buffer /buffer-about.html 302
+/app/larmor /larmor.html      302

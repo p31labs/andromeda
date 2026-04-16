@@ -1,118 +1,59 @@
-# P31 Software — 04_SOFTWARE
+# 04_SOFTWARE — Active engineering tree
 
-> The Centaur's cockpit. Three agents. One geometry. The mesh converges. 💜🔺💜
-
-**P31 Labs** builds open-source assistive technology for neurodivergent individuals.
-
-This directory contains all active P31 software products.
-
----
-
-## Products
-
-| Product | Path | Status | Description |
-|---------|------|--------|-------------|
-| **BONDING** | `bonding/` | **LIVE** — bonding.p31ca.org | Chemistry molecule-building game. Ships March 10, 2026. |
-| **P31 EDE** | `frontend/` + `backend/` | In progress | Spaceship Earth cognitive dashboard (React + Three.js + FastAPI) |
-| **Extensions** | `extensions/` | Functional | 4 VS Code extensions (Spoon Gauge, Cognitive Shield, Progressive Disclosure, Cockpit Panel) |
-
----
-
-## BONDING — Active Ship
+Install **from the repository root** (single workspace — see root `pnpm-workspace.yaml`):
 
 ```bash
-export PATH="/home/p31/.config/nvm/versions/node/v24.14.0/bin:$PATH"
-cd bonding && npm install
-npx tsc --noEmit    # type check
-npx vitest run      # 488/488 tests
-npx vite build && npx wrangler pages deploy dist --project-name=bonding
+cd ..   # repo root
+pnpm install
 ```
 
-See [bonding/README.md](bonding/README.md) for full details.
-
----
-
-## P31 EDE — Everything Development Environment
-
-The sovereign dev ecosystem: drop-in devcontainer that orchestrates hardware,
-firmware, AI mesh networking, and cognitive interface tools.
-
-## Quick Start
+Then from repo root, or with `pnpm --dir 04_SOFTWARE`:
 
 ```bash
-git clone https://github.com/p31labs/p31.git
-cd p31
-cp .env.example .env    # Fill in your API keys
-just setup
-just dev
+pnpm --dir 04_SOFTWARE run build
+pnpm --dir 04_SOFTWARE run test
 ```
 
-Then open in VS Code → **Reopen in Container** → full stack running.
+Use project-local scripts per package as documented in each project README.
 
-## Architecture
+## Applications and sites
 
-```
-┌─────────────────────────────────────────────────┐
-│                  Caddy (Reverse Proxy)           │
-│                  :80 / :443                      │
-├────────────────┬────────────────┬────────────────┤
-│ Frontend :3031 │ Backend :8031  │ Docs :4321     │
-│ React + Three  │ FastAPI + WS   │ Astro Starlight│
-├────────────────┴────────────────┴────────────────┤
-│              AI Mesh (LiteLLM :4000)             │
-│  Claude (reasoning) │ DeepSeek (code) │ Ollama   │
-├──────────────────────────────────────────────────┤
-│           Neo4j Knowledge Graph :7474            │
-├──────────────────────────────────────────────────┤
-│        ESP32-S3 Firmware (Thick Click)           │
-│        WebSerial ↔ COBS/CRC8 @ 115200           │
-└──────────────────────────────────────────────────┘
-```
+| Project | Stack | Notes |
+|---------|--------|--------|
+| `bonding/` | Vite + React + R3F | BONDING game; Vitest. |
+| `p31ca/` | Astro | p31ca.org technical hub. |
+| `p31-hearing-ops/` | Vite + React PWA | ops.p31ca.org — Pages project **`p31-hearing-ops`** (never `p31ca`). |
+| `spaceship-earth/` | Vite + R3F | Dashboard. |
+| `frontend/` | Vite | Legacy/aux UI. |
+| `sovereign-command-center/` | Next | Command UI (check env). |
+| `spoon-calculator/` | Vite | Utility. |
+| `docs/` | Astro | Internal docs site if used. |
 
-## Services
+## Cloudflare Workers / edge
 
-| Service | Port | Purpose |
-|---------|------|---------|
-| Frontend (Vite) | 3031 | Spaceship Earth dashboard |
-| Backend (FastAPI) | 8031 | Buffer agent, WebSocket, ingestion |
-| Neo4j | 7474 / 7687 | Knowledge graph |
-| LiteLLM | 4000 | AI model routing proxy |
-| Ollama | 11434 | Local model inference |
-| Astro Docs | 4321 | Documentation site |
+| Path | Role |
+|------|------|
+| `cloudflare-worker/` | Multiple Workers (command-center, bouncer, social-drop, etc.). |
+| `k4-cage/` | K₄ graph Worker (canonical). |
+| `p31-forge/` | Forge + Worker + crons. |
+| `telemetry-worker/` | Telemetry. |
+| `donate-api/` | Donation API. |
+| `kenosis-mesh/` | Mesh / edge. |
+| `p31-cortex/` | Cortex worker. |
 
-## Cognitive Layer
+## Shared packages
 
-The EDE includes four VS Code extensions designed for neurodivergent operators:
+`packages/` — `shared`, `game-engine`, `k4-mesh-core`, `node-zero`, `love-ledger`, `sovereign-sdk`, `quantum-core`, etc.
 
-- **Spoon Gauge** — real-time energy/capacity tracking (12 spoon baseline)
-- **Cognitive Shield** — email voltage scoring with 60s batching
-- **Progressive Disclosure** — UI complexity adapts to spoon level (Layers 0-3)
-- **Cockpit Panel** — unified status dashboard
+## Extensions
 
-## Protocol
+`extensions/` — VS Code / tooling extensions (p31ca, progressive disclosure, cognitive shield, cockpit, spoon gauge).
 
-All hardware communication uses the P31 serial protocol:
+## Other
 
-- Magic byte: `0x31` (Phosphorus-31)
-- CRC8-MAXIM polynomial: `0x31`, init: `0xFF`
-- Frame encoding: COBS with `0x00` delimiter
-- Baud: 115200 over USB CDC (GPIO19/20)
+| Path | Role |
+|------|------|
+| `discord/p31-bot/` | Discord bot. |
+| `workers/` | Additional worker sources (see each folder). |
 
-## AI Mesh (Delta Topology)
-
-The `.continue/config.yaml` routes queries to the optimal model:
-
-- **Claude** → reasoning, architecture, integration
-- **DeepSeek** → code generation, firmware, tests
-- **Gemini** → vision, documentation, long context
-- **Ollama (local)** → offline summarization, privacy-sensitive tasks
-
-## Contributing
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
-
-## License
-
-[AGPL-3.0](LICENSE) — P31 Labs (phosphorus31.org)
-
-Built with 💜 by the Centaur.
+For the **full monorepo** (research, firmware, legal handoff), see `docs/REPOSITORY_LAYOUT.md`.
