@@ -87,6 +87,8 @@ The operator is Will Johnson — AuDHD, direct communication style, no fluff. Pr
 
 ## REPO STRUCTURE
 
+**Canonical map:** `docs/REPOSITORY_LAYOUT.md` — **Software index:** `04_SOFTWARE/README.md` — **Engineering standards:** `docs/ENGINEERING.md` — **Production merge bar:** `docs/ENTERPRISE_QUALITY.md`
+
 ```
 P31_Andromeda/
 ├── 02_RESEARCH/               # Paper shells, expanded markdowns, convert_papers.py
@@ -100,7 +102,7 @@ P31_Andromeda/
 │   │   └── command-center/    # status.json, update-status.ps1 (Win), update-status.sh (Bash)
 │   └── cloudflare-pages/      # Pages: p31-mesh, p31-vault
 ├── 05_FIRMWARE/               # GOD doc, DeepSeek prompts, MCD
-├── Discovery_Production_2025CV936/  # Legal discovery documents
+├── Discovery_Production_2025CV936/  # Legal discovery (local tree; root .gitignore `Discovery_Production_*/`) — README inside
 ├── WCDs/                      # Court template, CWP docs
 ├── docs/social/               # Social media content, strategy docs
 ├── donation-wallet-v2/        # Phenix Wallet Chrome Extension
@@ -402,7 +404,7 @@ Superseded by the K₄ Cage but still running:
 
 ## HEARING — APRIL 16, 11:00 AM, WOODBINE
 
-- **PWA (offline):** https://ops.p31ca.org — `04_SOFTWARE/p31-hearing-ops`; ship with `npm run deploy` (must target production branch for `ops` on git-connected Pages)
+- **PWA (offline):** https://ops.p31ca.org — `04_SOFTWARE/p31-hearing-ops`; Cloudflare Pages project **`p31-hearing-ops`** (not `p31ca`). `npm run deploy` (production branch must match dashboard)
 - Judge: Chief Judge Scarlett
 - McGhan via WebEx
 - ADA support: Brenda O'Dell

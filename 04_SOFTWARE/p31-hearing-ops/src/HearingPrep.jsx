@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import P31OmnibusVault from './P31OmnibusVault.jsx'
 
 const CORAL = '#FF6B4A'
 const DARK = '#0A0A0F'
@@ -20,6 +21,7 @@ const tabs = [
   { id: 'law', label: 'LAW', icon: '⚖️' },
   { id: 'rules', label: 'RULES', icon: '🛡️' },
   { id: 'folder', label: 'FOLDER', icon: '📁' },
+  { id: 'omnibus', label: 'VAULT', icon: '💎' },
 ]
 
 const scenarios = [
@@ -32,7 +34,8 @@ const scenarios = [
       "State for the record: 'Plaintiff's counsel filed a Motion to Appear via WebEx on April 7, 2026. No order granting that motion appears on the docket. Counsel is not present.'",
       'Move to dismiss Third Complaint for Contempt for failure to prosecute.',
       "State: 'The movant scheduled this hearing, the movant bears the burden of proof, and the movant is not present to carry that burden.'",
-      'If judge continues instead of dismissing: state for the record that you have been separated from your children for 71 days based on an oral pronouncement never reduced to a signed order, and any further delay extends that harm.',
+      'If judge continues instead of dismissing: note 70 days separated from children; ask to exercise paragraph 6 supervised visitation this Saturday.',
+      'Carrie may be in the gallery — do not address her; stay focused on the Court.',
     ],
   },
   {
@@ -45,7 +48,8 @@ const scenarios = [
       "State grounds: 'I am pro se. I face potential incarceration. The movant bears the burden of proof. Turner v. Rogers, 564 U.S. 431, requires enhanced procedural safeguards when there is a represented/unrepresented asymmetry. Remote prosecution of contempt while I stand in person deepens that asymmetry.'",
       'Request ruling on the record before proceeding.',
       "If overruled: 'I note my objection for the record and preserve it for appeal.'",
-      'Proceed to inchoate judgment argument.',
+      'Deliver timeline: Third Complaint (Entry 92, April 4) predates signed Order on Pending Motions (Entry 104, April 14) by ten days — nunc pro tunc cannot create retroactive contempt liability. Del-Cook Timber, 248 Ga. App. 734.',
+      'Regardless of outcome, ask to exercise paragraph 6 visitation this Saturday.',
     ],
   },
   {
@@ -55,10 +59,10 @@ const scenarios = [
     color: CORAL,
     steps: [
       'Announce audio recording under USCR 22(D)(1).',
-      'Deliver opening statement (see SCRIPT tab — under 2 minutes).',
-      'Primary defense: The order cited in the Third Complaint does not exist.',
-      'If court asks about substance: secondary defenses (unauthorized entry, Messenger Kids logs).',
-      "If court attempts to rule on substance without addressing threshold issue: 'Your Honor, respectfully, the threshold question must be resolved first. If the order does not exist, the contempt cannot stand regardless of the underlying facts.'",
+      'Deliver opening + timeline from SCRIPT (under 2 minutes).',
+      'Primary defense: Entry 92 (April 4) cites an order that was not signed until Entry 104 (April 14). Contempt cannot rest on an order that postdates the complaint by ten days.',
+      'Secondary (only if asked): unauthorized entry April 4; Messenger Kids logs (child-initiated contact).',
+      'Regardless of outcome, ask to exercise paragraph 6 supervised visitation this Saturday. Carrie may be present as support — address the Court only.',
     ],
   },
   {
@@ -67,10 +71,10 @@ const scenarios = [
     subtitle: 'Postponement for any reason',
     color: BLUE,
     steps: [
-      'Do not object to continuance — more time benefits you.',
-      "State for the record: 'Your Honor, I do not oppose a continuance, but I ask the Court to note that I have been separated from my children for 71 days based on an oral pronouncement that was never reduced to a signed order. I ask that the Court address the visitation issue today regardless of whether the contempt hearing is continued.'",
-      'Request the court enter a written order restoring some form of contact pending the next hearing.',
-      'Reference Emergency Motion to Restore Visitation (if filed).',
+      'Do not oppose continuance — more time helps retained counsel.',
+      "State: 'Your Honor, I do not oppose a continuance, but I have been separated from my children for 70 days. I ask the Court to address visitation today regardless — specifically paragraph 6 supervised visitation this Saturday.'",
+      'Request a written order on contact if the contempt hearing is continued.',
+      'Regardless of outcome, repeat request for Saturday paragraph 6 visitation.',
     ],
   },
   {
@@ -83,24 +87,70 @@ const scenarios = [
       "State inability to pay purge conditions: 'I have $5 in total assets, zero income, and am enrolled in SNAP and Medicaid. Any purge condition requiring payment would constitute imprisonment for inability to pay, which violates the Fourteenth Amendment.'",
       "Request appointment of counsel before any incarceration: 'Under Miller v. Deal, 295 Ga. 560, due process may require appointment of counsel for indigent parents facing incarceration in civil contempt.'",
       "State clearly: 'I am not refusing to comply. I am unable to comply. There is a constitutional difference.'",
+      'Hand clerk Documents 13–14 immediately if contempt found: Supersedeas + Notice of Appeal. Still ask for paragraph 6 visitation when safe to do so.',
     ],
   },
 ]
 
 const openingScript = [
   {
-    label: 'AUDIO RECORDING',
-    text: 'Your Honor, before we begin, I wish to inform the Court and all parties that I am making an audio recording of this proceeding pursuant to Uniform Superior Court Rule 22(D)(1), which permits self-represented parties to make audio recordings in a nondisruptive manner.',
+    label: 'OPENING (SAY EXACTLY)',
+    text: "Your Honor, I wish to inform the Court and all parties that I am making an audio recording of this proceeding under Uniform Superior Court Rule 22(D)(1). I am a person with documented disabilities — Autism Spectrum Disorder, ADHD, and chronic Hypoparathyroidism — and I have my disability support person, Brenda O'Dell, present at counsel table pursuant to my ADA accommodation requests at Docket Entries 23, 78, and 103.",
   },
   {
-    label: 'ADA STATUS',
-    text: "Your Honor, I am a person with documented disabilities — Autism Spectrum Disorder, ADHD, and chronic Hypoparathyroidism — and I have filed ADA accommodation requests at Docket Entries 23, 78, and most recently in April 2026. I have my disability support person, Brenda O'Dell, present at counsel table pursuant to those requests.",
-  },
-  {
-    label: 'THRESHOLD MOTION — THE KILL SHOT',
-    text: "Your Honor, before addressing the substance of the Third Complaint for Contempt, I raise a threshold jurisdictional issue that is dispositive.\n\nThe Third Complaint for Contempt, filed as Docket Entry 92 on April 4, 2026, alleges I violated an 'Order on Pending Motions, entered on March 18, 2026.'\n\nNo such order exists on the docket.\n\nI confirmed this by telephone with the Camden County Clerk of Superior Court on April 10, 2026. Docket Entry 90 — the final entry from the March 18 hearing — is classified as a Calendar entry, not an Order. It concludes with the notation: 'McGhan to Draft Order.'\n\nPlaintiff's counsel was twice directed to draft orders following hearings — after February 5 and after March 18. She drafted neither.\n\nUnder O.C.G.A. § 9-11-58(b), no judgment is effective for any purpose until set forth in writing, signed by the judge, and filed with the clerk. Under Bloodworth v. Thompson, 230 Ga. 628, an oral ruling is 'inchoate and of no effect.' Under Shirley v. Abshire, 288 Ga. App. 819, a contempt finding based on a verbal order that was never reduced to writing was reversed.\n\nYou cannot be held in contempt of an order that does not exist. I respectfully move to dismiss the Third Complaint for Contempt.",
+    label: 'TIMELINE STATEMENT (UNDER 90 SECONDS)',
+    text: "Your Honor, I'd like to present a brief timeline.\n\nOn March 18, this Court heard pending motions and directed Plaintiff's counsel to draft an order. That order was not signed until April 14 — twenty-seven days later and two days before this hearing.\n\nThe Third Complaint for Contempt was filed on April 4. The order it references did not exist as a signed document on that date. It did not exist on April 7 when the hearing was noticed. It was signed nunc pro tunc on April 14.\n\nA party cannot be held in contempt for violating an order that was not signed until ten days after the complaint was filed. Nunc pro tunc corrects the record of what was ordered — it does not create retroactive contempt liability. Del-Cook Timber, 248 Ga. App. 734.\n\nAdditionally, the order contains factual errors. Paragraph 10 states I earned $97,000 annually. My W-2 reflects $74,627.59. It states I voluntarily resigned under DOGE initiatives. I am a DoD civilian engineering technician with FERS Disability Retirement pending — not military, not a voluntary resignation.\n\nI have complied with every evaluation this Court directed. Dr. Maughon confirmed autism and ADHD on March 24. No bipolar disorder. No mania. I produced discovery on March 26 and supplemented it on April 14. I have zero income and receive SNAP and Medicaid.\n\nI am not asking this Court to set aside the April 14 order. I am asking this Court to dismiss the Third Complaint for Contempt because it predates the order it cites. And I am asking to exercise the supervised visitation provided in paragraph 6 of that order this Saturday. My mother is available to supervise. I am asking to see my children.",
   },
 ]
+
+const scriptResponses = [
+  {
+    label: 'WHEN MCGHAN PRESENTS',
+    text: 'Say NOTHING. Write notes. No reactions. Brenda hand on arm = grounding.',
+  },
+  {
+    label: 'THREE ANCHORS',
+    text: '(1) "The documentary record shows..." (2) "I am complying with the orders of this Court." (3) "I respectfully refer the Court to [specific document]."',
+  },
+  {
+    label: 'HOUSE / VACATE',
+    text: 'The order was signed April 14 with a vacate date of April 4. I received it at 3:58 PM on April 14. I am working to comply. I cannot comply with a date that had already passed before I received the order.',
+  },
+  {
+    label: 'MORTGAGE / MONEY',
+    text: 'I have $5 in total assets and zero income. I did not willfully refuse — I lack the present ability.',
+  },
+  {
+    label: 'P31 / RESEARCH / AI',
+    text: 'P31 Labs, Inc. is a Georgia domestic nonprofit corporation incorporated April 3, 2026, with an EIN assigned April 13. It has zero revenue.',
+  },
+  {
+    label: '"FIVE MILLION DOLLARS"',
+    text: 'That is not an accurate characterization. I respectfully ask the Court to refer to the transcript, which I paid for on March 19 and have not received.',
+  },
+  {
+    label: 'SIGNATURE PAGE (IF RELEVANT)',
+    text: "The signature page of Entry 104 reflects a correction from 'March' to 'April,' indicating the order was originally drafted with a March signing date. The order was actually signed April 14.",
+  },
+  {
+    label: 'COMPOSURE BREAK',
+    text: "Your Honor, I'd like a moment to collect my thoughts. I have a documented disability that affects my ability to process information under pressure.",
+  },
+  {
+    label: 'TRANSCRIPT',
+    text: 'I paid $75.80 for the March 18 transcript on March 19. Two written requests made. No delivery. I proceed without it through no fault of my own.',
+  },
+]
+
+const scriptClose = {
+  label: 'THE CLOSE (IF GIVEN THE OPPORTUNITY)',
+  text: "Your Honor, I have been separated from my children for seventy days. My son turned ten without hearing from his father. My daughter has a medical condition that is worsened by exactly this kind of disruption. The children called me on Messenger Kids — every contact was initiated by them. I answered.\n\nI am not a danger to my children. I am their father. I built them a game for Bash's birthday. I filed for disability because I wanted to get better for them. The Secretary of State certified my nonprofit yesterday. Dr. Maughon cleared me last month.\n\nThe April 14 order provides for supervised visitation at paragraph 6. I am prepared to comply immediately. I am asking this Court to let me see my children this Saturday.",
+}
+
+const scriptContemptFound = {
+  label: 'IF CONTEMPT FOUND',
+  text: 'Hand clerk Documents 13–14 IMMEDIATELY: Supersedeas Application + Notice of Intent to Appeal. Do not leave without filing.',
+}
 
 const secondaryDefenses = [
   {
@@ -126,8 +176,25 @@ const docketEntries = [
   { num: '89', date: 'Mar 18, 2026', desc: "Clerk's Note", status: 'neutral' },
   { num: '90', date: 'Mar 18, 2026', desc: "Calendar — 'MCGHAN TO DRAFT ORDER' — NOT an Order", status: 'inchoate' },
   { num: '91', date: 'Mar 26, 2026', desc: "Certificate of Service (Will's discovery response)", status: 'neutral' },
-  { num: '92', date: 'Apr 4, 2026', desc: 'Third Complaint for Contempt — cites non-existent order', status: 'defective' },
-  { num: '—', date: 'Apr 7, 2026', desc: 'Notice of Hearing + Motion to Appear via WebEx (unruled)', status: 'inchoate' },
+  { num: '92', date: 'Apr 4, 2026', desc: 'Third Complaint for Contempt — predates signed Entry 104', status: 'defective' },
+  { num: '93', date: 'Apr 7, 2026', desc: 'Notice of Hearing (McGhan)', status: 'neutral' },
+  { num: '94', date: 'Apr 7, 2026', desc: 'Motion to Appear via WebEx — not ruled / proposed order unsigned', status: 'defective' },
+  { num: '95', date: 'Apr 7, 2026', desc: 'Proposed Order (WebEx) — unsigned', status: 'defective' },
+  { num: '96', date: 'Apr 10, 2026', desc: 'Response to Third Contempt (Will)', status: 'neutral' },
+  { num: '97', date: 'Apr 10, 2026', desc: 'Motion for Continuance (Will)', status: 'neutral' },
+  { num: '98', date: 'Apr 10, 2026', desc: 'Motion for Protective Order — Discovery (Will)', status: 'neutral' },
+  { num: '99', date: 'Apr 10, 2026', desc: 'Cross-Motion for Contempt Against Plaintiff (Will)', status: 'neutral' },
+  { num: '100', date: 'Apr 10, 2026', desc: 'Motion to Strike Paragraph 9 (Will)', status: 'neutral' },
+  { num: '101', date: 'Apr 10, 2026', desc: 'Notice of POA and Supported Decision-Making (Will)', status: 'neutral' },
+  { num: '102', date: 'Apr 10, 2026', desc: 'Motion to Dismiss Third Contempt (Will)', status: 'neutral' },
+  { num: '103', date: 'Apr 10, 2026', desc: 'ADA Accommodation Request (Will)', status: 'no-response' },
+  {
+    num: '104',
+    date: 'Apr 14, 2026',
+    desc: 'Order on Pending Motions — signed, nunc pro tunc to Mar 18 — KEY ORDER',
+    status: 'key',
+  },
+  { num: '105', date: 'Apr 16, 2026', desc: 'Calendar — PER NOH - JM', status: 'neutral' },
 ]
 
 const legalCitations = [
@@ -135,12 +202,33 @@ const legalCitations = [
   { case: 'Bloodworth v. Thompson, 230 Ga. 628 (1973)', holding: "Oral ruling is 'inchoate and of no effect for any purpose.'", category: 'INCHOATE' },
   { case: 'Shirley v. Abshire, 288 Ga. App. 819 (2007)', holding: 'Contempt reversed — based on verbal order never reduced to writing.', category: 'INCHOATE' },
   { case: 'Tate v. Tate, 340 Ga. App. 361 (2017)', holding: 'No contempt authority without proper written consent order.', category: 'INCHOATE' },
+  {
+    case: 'Del-Cook Timber Co. v. Herndon, 248 Ga. App. 734 (2001)',
+    holding:
+      'Nunc pro tunc cannot create new substantive obligations retroactively beyond correcting the record of what was decided.',
+    category: 'NUNC PRO TUNC',
+  },
+  {
+    case: 'Adams v. Payne, 219 Ga. 638 (1964)',
+    holding: 'Nunc pro tunc cannot supply an action the court failed to take.',
+    category: 'NUNC PRO TUNC',
+  },
+  {
+    case: 'Floyd v. Floyd, 247 Ga. 551 (1981)',
+    holding: 'Ability to pay child support and willful refusal are both essential to civil contempt — inability to pay is a defense.',
+    category: 'CONTEMPT',
+  },
+  { case: 'O.C.G.A. § 19-9-3(d)', holding: 'Express Georgia policy favoring continuing contact with both parents.', category: 'VISITATION' },
+  {
+    case: 'Troxel v. Granville, 530 U.S. 57 (2000)',
+    holding: 'Parental rights are among the oldest fundamental liberty interests recognized by the Court.',
+    category: 'PARENTAL RIGHTS',
+  },
   { case: 'Turner v. Rogers, 564 U.S. 431 (2011)', holding: 'Enhanced procedural safeguards required when represented party seeks incarceration of unrepresented party.', category: 'DUE PROCESS' },
   { case: 'Miller v. Deal, 295 Ga. 560 (2014)', holding: 'Due process may require counsel for indigent parents facing incarceration in civil contempt.', category: 'DUE PROCESS' },
   { case: 'USCR 9.2(F)(2)', holding: 'Court must sustain or overrule objection to remote proceeding before conducting it.', category: 'WEBEX' },
   { case: 'USCR 22(D)(1)', holding: 'Self-represented parties may make audio recordings in nondisruptive manner.', category: 'RECORDING' },
   { case: 'Lewis v. Uselton, 202 Ga. App. 875 (1992)', holding: "Discharged attorney's authority severed; presumption rebutted with actual knowledge.", category: 'CONSENT ORDER' },
-  { case: 'O.C.G.A. § 19-9-3(d)', holding: 'Express Georgia policy favoring continuing contact with both parents.', category: 'VISITATION' },
 ]
 
 const rules = {
@@ -148,6 +236,7 @@ const rules = {
     'Announce audio recording at the start (USCR 22(D)(1))',
     'Be brief — opening under 2 minutes',
     'Let the docket speak — it IS the evidence',
+    'Ask about paragraph 6 visitation regardless of contempt outcome',
     'Stay seated when possible (ADA, calm optics)',
     'Refer to documents by docket entry number',
     "Say 'respectfully' before every request",
@@ -155,11 +244,12 @@ const rules = {
     "If you don't understand a question, say 'Could you rephrase that, Your Honor?'",
     'Have Brenda at counsel table as ADA support',
     'Bring 3 copies of everything (judge, McGhan, you)',
+    "If asked about DOGE or resignation: 'I used VERA to pursue disability testing. FERS Disability Retirement is pending.'",
   ],
   dont: [
     'DO NOT mention Camden County corruption, GBI, spaceport, Aldridge, Ashe',
     "DO NOT say 'kangaroo court,' 'making shit up,' or 'appellate court's wet dream'",
-    'DO NOT mention quantum mechanics, Posner molecules, or P31 Labs',
+    'DO NOT mention quantum mechanics, Posner molecules, K₄, or P31 Labs mission',
     'DO NOT explain your research methodology or AI tools',
     'DO NOT argue with McGhan directly — address the Court',
     'DO NOT raise your voice or speak rapidly',
@@ -167,21 +257,31 @@ const rules = {
     'DO NOT introduce the text messages unless directly asked about visitation',
     'DO NOT volunteer information beyond what is asked',
     'DO NOT apologize for exercising your legal rights',
+    "DO NOT say 'funny business' about the signature page — state the correction plainly",
+    'DO NOT mention the isomorphism analysis or institutional pattern research',
   ],
 }
 
 const folderChecklist = [
-  { item: 'Docket printout showing Entries 88–92 (no signed order)', checked: false },
-  { item: 'Consent Temporary Order (Entry 29) — ¶4 exclusive possession', checked: false },
-  { item: 'Response to Third Complaint for Contempt', checked: false },
-  { item: 'Motion to Dismiss Third Contempt (inchoate judgment)', checked: false },
+  { item: 'Docket printout (Entries 88–105; Entry 104 key)', checked: false },
+  { item: 'Order on Pending Motions (Entry 104, 7 pages — note signature page correction)', checked: false },
+  { item: 'Consent Temporary Order (Entry 29, ¶4 exclusive possession)', checked: false },
+  { item: 'Response to Third Complaint for Contempt (Entry 96)', checked: false },
+  { item: 'Motion to Dismiss Third Contempt (Entry 102)', checked: false },
   { item: 'Affidavit re: April 4, 2026 events', checked: false },
   { item: 'Financial Affidavit ($5 total assets, $0 income)', checked: false },
-  { item: 'Maughon letter (March 23 — no bipolar, AuDHD confirmed)', checked: false },
-  { item: 'ADA Accommodation Requests (Entries 23, 78)', checked: false },
-  { item: 'Cross-Motion for Contempt (if filed)', checked: false },
-  { item: 'McGhan WebEx Motion (unruled — no judge signature)', checked: false },
-  { item: 'Notice of Hearing (April 7, 2026)', checked: false },
+  { item: 'Maughon letter (March 23/24 — no bipolar, AuDHD confirmed)', checked: false },
+  { item: 'ADA Accommodation Requests (Entries 23, 78, 103)', checked: false },
+  { item: 'Cross-Motion for Contempt Against Plaintiff (Entry 99)', checked: false },
+  { item: 'Motion to Strike Paragraph 9 (Entry 100)', checked: false },
+  { item: 'Notice of POA and Supported Decision-Making (Entry 101)', checked: false },
+  { item: 'Supersedeas Application (clerk only if contempt found)', checked: false },
+  { item: 'Notice of Intent to Appeal (clerk only if contempt found)', checked: false },
+  { item: 'W-2 ($74,627.59 — rebuts ¶10 $97,000)', checked: false },
+  { item: 'P31 Labs Certificate of Incorporation (April 15, 2026)', checked: false },
+  { item: 'CP 575E — EIN 42-1888158', checked: false },
+  { item: 'Transcript invoice #000031 — $75.80 paid March 19', checked: false },
+  { item: 'Gmail screenshot — April 14 service email (3:58 PM)', checked: false },
   { item: 'Phone/tablet for audio recording', checked: false },
   { item: 'Pen and notepad for handwritten notes', checked: false },
   { item: 'Water bottle', checked: false },
@@ -198,6 +298,7 @@ function StatusBadge({ status }) {
     inchoate: { bg: `${GOLD}22`, text: GOLD, label: 'INCHOATE' },
     defective: { bg: `${RED}22`, text: RED, label: 'DEFECTIVE' },
     'no-response': { bg: `${CORAL}22`, text: CORAL, label: 'NO RESPONSE' },
+    key: { bg: `${GREEN}22`, text: GREEN, label: 'KEY ORDER' },
     neutral: { bg: `${TEXT_DIM}22`, text: TEXT_DIM, label: '—' },
   }
   const c = colors[status] || colors.neutral
@@ -277,8 +378,22 @@ function MissionTab() {
       >
         <StatBox label="DAYS WITHOUT KIDS" value={daysSince} color={RED} />
         <StatBox label="TOTAL ASSETS" value="$5" color={GOLD} />
-        <StatBox label="SIGNED ORDERS" value="0" color={GREEN} />
+        <StatBox label="SIGNED ORDERS" value="2" color={GREEN} />
         <StatBox label="ADA RESPONSES" value="0" color={CORAL} />
+      </div>
+      <div
+        style={{
+          fontSize: 10,
+          color: TEXT_DIM,
+          textAlign: 'center',
+          marginTop: -12,
+          marginBottom: 16,
+          lineHeight: 1.4,
+          fontFamily: fontMono,
+        }}
+      >
+        Two substantive signed orders on the docket (Entries 29 and 104); both
+        have documented defects — see DOCKET + LAW.
       </div>
       <div
         style={{
@@ -302,12 +417,15 @@ function MissionTab() {
           PRIMARY DEFENSE
         </div>
         <div style={{ fontSize: 15, color: TEXT, lineHeight: 1.5 }}>
-          The Third Complaint for Contempt cites an &quot;Order on Pending Motions,
-          entered March 18, 2026.&quot;{' '}
-          <strong style={{ color: CORAL }}>That order does not exist.</strong> Entry
-          90 is a Calendar entry ending with &quot;MCGHAN TO DRAFT ORDER.&quot;
-          Under O.C.G.A. § 9-11-58(b), an unsigned oral ruling is void. You cannot
-          be held in contempt of an order that does not exist.
+          Entry 92 (April 4) prosecuted contempt of an &quot;Order on Pending
+          Motions&quot; that was not signed until Entry 104 (April 14).{' '}
+          <strong style={{ color: CORAL }}>
+            The complaint predates the signed order by ten days.
+          </strong>{' '}
+          Nunc pro tunc corrects the record of what was ordered; it does not create
+          retroactive contempt liability. Del-Cook Timber, 248 Ga. App. 734. You
+          are not asking to vacate Entry 104 — you are asking to dismiss the Third
+          Contempt and to exercise paragraph 6 visitation.
         </div>
       </div>
       <div
@@ -499,6 +617,7 @@ function ScenariosTab() {
 
 function ScriptTab() {
   const [showSecondary, setShowSecondary] = useState(false)
+  const [showResponses, setShowResponses] = useState(true)
   return (
     <div style={{ padding: '20px 16px' }}>
       <div
@@ -511,7 +630,7 @@ function ScriptTab() {
           fontFamily: fontMono,
         }}
       >
-        OPENING SEQUENCE — READ EXACTLY
+        OPENING + TIMELINE — READ EXACTLY
       </div>
       {openingScript.map((block, i) => (
         <div
@@ -521,7 +640,7 @@ function ScriptTab() {
             padding: '14px 16px',
             borderRadius: 10,
             background: SURFACE,
-            border: `1px solid ${i === 2 ? `${CORAL}44` : SURFACE_LIGHT}`,
+            border: `1px solid ${i === 1 ? `${CORAL}44` : SURFACE_LIGHT}`,
           }}
         >
           <div
@@ -529,7 +648,7 @@ function ScriptTab() {
               fontSize: 10,
               fontWeight: 700,
               letterSpacing: '0.12em',
-              color: i === 2 ? CORAL : GOLD,
+              color: i === 1 ? CORAL : GOLD,
               marginBottom: 8,
               fontFamily: fontMono,
             }}
@@ -548,6 +667,131 @@ function ScriptTab() {
           </div>
         </div>
       ))}
+      <button
+        type="button"
+        onClick={() => setShowResponses(!showResponses)}
+        style={{
+          padding: '14px 16px',
+          borderRadius: 10,
+          background: SURFACE,
+          border: `1px solid ${GOLD}33`,
+          cursor: 'pointer',
+          marginTop: 12,
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          width: '100%',
+          color: 'inherit',
+          font: 'inherit',
+          textAlign: 'left',
+        }}
+      >
+        <div>
+          <div
+            style={{
+              fontSize: 11,
+              fontWeight: 700,
+              letterSpacing: '0.1em',
+              color: GOLD,
+              fontFamily: fontMono,
+            }}
+          >
+            RESPONSE TEMPLATES
+          </div>
+          <div style={{ fontSize: 11, color: TEXT_DIM, marginTop: 2 }}>
+            Tap lines to collapse when seated
+          </div>
+        </div>
+        <div
+          style={{
+            color: TEXT_DIM,
+            fontSize: 18,
+            transform: showResponses ? 'rotate(90deg)' : 'none',
+            transition: 'transform 0.2s',
+          }}
+        >
+          ›
+        </div>
+      </button>
+      {showResponses &&
+        scriptResponses.map((d, i) => (
+          <div
+            key={i}
+            style={{
+              marginTop: 10,
+              padding: '14px 16px',
+              borderRadius: 10,
+              background: `${GOLD}08`,
+              border: `1px solid ${GOLD}22`,
+            }}
+          >
+            <div
+              style={{
+                fontSize: 10,
+                fontWeight: 700,
+                letterSpacing: '0.1em',
+                color: GOLD,
+                marginBottom: 6,
+                fontFamily: fontMono,
+              }}
+            >
+              {d.label}
+            </div>
+            <div style={{ fontSize: 13, color: TEXT, lineHeight: 1.6 }}>
+              {d.text}
+            </div>
+          </div>
+        ))}
+      <div
+        style={{
+          marginTop: 14,
+          padding: '14px 16px',
+          borderRadius: 10,
+          background: `${GREEN}0A`,
+          border: `1px solid ${GREEN}33`,
+        }}
+      >
+        <div
+          style={{
+            fontSize: 10,
+            fontWeight: 700,
+            letterSpacing: '0.1em',
+            color: GREEN,
+            marginBottom: 8,
+            fontFamily: fontMono,
+          }}
+        >
+          {scriptClose.label}
+        </div>
+        <div style={{ fontSize: 13, color: TEXT, lineHeight: 1.65, whiteSpace: 'pre-wrap' }}>
+          {scriptClose.text}
+        </div>
+      </div>
+      <div
+        style={{
+          marginTop: 12,
+          padding: '14px 16px',
+          borderRadius: 10,
+          background: `${RED}10`,
+          border: `1px solid ${RED}44`,
+        }}
+      >
+        <div
+          style={{
+            fontSize: 10,
+            fontWeight: 700,
+            letterSpacing: '0.1em',
+            color: RED,
+            marginBottom: 8,
+            fontFamily: fontMono,
+          }}
+        >
+          {scriptContemptFound.label}
+        </div>
+        <div style={{ fontSize: 13, color: TEXT, lineHeight: 1.6 }}>
+          {scriptContemptFound.text}
+        </div>
+      </div>
       <button
         type="button"
         onClick={() => setShowSecondary(!showSecondary)}
@@ -652,7 +896,9 @@ function DocketTab() {
             marginBottom: 6,
             borderRadius: 8,
             background:
-              e.status === 'inchoate' || e.status === 'defective'
+              e.status === 'inchoate' ||
+              e.status === 'defective' ||
+              e.status === 'key'
                 ? SURFACE
                 : 'transparent',
             border: `1px solid ${
@@ -660,7 +906,9 @@ function DocketTab() {
                 ? `${GOLD}22`
                 : e.status === 'defective'
                   ? `${RED}22`
-                  : 'transparent'
+                  : e.status === 'key'
+                    ? `${GREEN}33`
+                    : 'transparent'
             }`,
           }}
         >
@@ -673,7 +921,9 @@ function DocketTab() {
                   ? GOLD
                   : e.status === 'defective'
                     ? RED
-                    : TEXT_DIM,
+                    : e.status === 'key'
+                      ? GREEN
+                      : TEXT_DIM,
               fontFamily: fontMono,
               minWidth: 28,
             }}
@@ -719,10 +969,11 @@ function DocketTab() {
           THE GAP
         </div>
         <div style={{ fontSize: 13, color: TEXT, lineHeight: 1.5 }}>
-          Between Entry 90 (&quot;MCGHAN TO DRAFT ORDER&quot;) and Entry 92
-          (Third Complaint for Contempt), there is exactly ONE intervening entry —
-          Entry 91, Will&apos;s Certificate of Service. No order was ever filed. The
-          Third Complaint cites an order that does not exist in this gap.
+          The Third Complaint for Contempt (Entry 92, April 4) predates the signed
+          Order on Pending Motions (Entry 104, April 14) by{' '}
+          <strong style={{ color: GOLD }}>TEN DAYS</strong>. Nunc pro tunc records
+          what was ordered; it does not create retroactive contempt liability for
+          conduct before a signed order existed. Del-Cook Timber, 248 Ga. App. 734.
         </div>
       </div>
     </div>
@@ -733,11 +984,14 @@ function LawTab() {
   const categories = [...new Set(legalCitations.map((c) => c.category))]
   const catColors = {
     INCHOATE: CORAL,
+    'NUNC PRO TUNC': GOLD,
+    CONTEMPT: RED,
+    'PARENTAL RIGHTS': BLUE,
     'DUE PROCESS': BLUE,
     WEBEX: GOLD,
     RECORDING: GREEN,
     'CONSENT ORDER': RED,
-    VISITATION: TEXT_DIM,
+    VISITATION: GREEN,
   }
   return (
     <div style={{ padding: '20px 16px' }}>
@@ -985,6 +1239,7 @@ const tabComponents = {
   law: LawTab,
   rules: RulesTab,
   folder: FolderTab,
+  omnibus: P31OmnibusVault,
 }
 
 export default function HearingPrep() {

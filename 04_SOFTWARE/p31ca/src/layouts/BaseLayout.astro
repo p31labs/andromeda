@@ -47,5 +47,19 @@ const {
     </div>
 
     <slot />
+    <!--
+      If another app (e.g. Hearing Ops PWA) was ever deployed to the same Pages project + domain,
+      browsers may keep a service worker that serves the wrong shell. Hub is static Astro — no hub SW.
+      Unregister so the current deployment’s HTML is what users see.
+    -->
+    <script is:inline>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function (regs) {
+          regs.forEach(function (reg) {
+            reg.unregister();
+          });
+        });
+      }
+    </script>
   </body>
 </html>

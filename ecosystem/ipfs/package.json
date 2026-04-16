@@ -19,7 +19,7 @@
   "author": "P31 Labs",
   "license": "MIT",
   "dependencies": {
-    "ipfs-http-client": "^62.0.3",
+    "ipfs-http-client": "^60.0.1",
     "ipns": "^0.1.0",
     "axios": "^1.6.0",
     "dotenv": "^16.4.5",

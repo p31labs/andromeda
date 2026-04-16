@@ -4,6 +4,8 @@
 
 This guide provides the exact terminal commands and folder tree structure that Kilo should generate first to prepare your VS Code workspace for parallel agentic development.
 
+**Canonical layout (current repo):** Application packages live under `04_SOFTWARE/` (for example `04_SOFTWARE/bonding`, `04_SOFTWARE/spaceship-earth`). Do not recreate obsolete root-level `BONDING/` or `SPACESHIP-EARTH/` stub folders. Install dependencies from the monorepo root with `pnpm install`. See `docs/REPOSITORY_LAYOUT.md` and `docs/ENGINEERING.md`.
+
 ## 📁 Complete Folder Tree Structure
 
 ```

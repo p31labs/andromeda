@@ -35,7 +35,7 @@
   "scripts": {
     "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\"",
     "build": "tsc",
-    "test": "vitest run",
+    "test": "vitest run --passWithNoTests",
     "prepublishOnly": "npm run clean && npm run build && npm run test"
   },
   "keywords": [

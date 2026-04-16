@@ -35,9 +35,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Install 04_SOFTWARE workspace
-        run: cd 04_SOFTWARE && pnpm install --frozen-lockfile
-
       - name: ESLint Check
         run: cd 04_SOFTWARE && pnpm turbo run lint --filter=@p31/bonding --filter=@p31/shared || true
 
@@ -50,10 +47,6 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
     needs: code-quality
-    strategy:
-      fail-fast: false
-      matrix:
-        node-version: [18, 20]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -63,35 +56,26 @@ jobs:
         with:
           version: ${{ env.PNPM_VERSION }}
 
-      - name: Setup Node ${{ matrix.node-version }}
+      - name: Setup Node 20
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: '20'
           cache: 'pnpm'
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Install 04_SOFTWARE workspace
-        run: cd 04_SOFTWARE && pnpm install --frozen-lockfile
-
-      - name: Type check
+      - name: Type check (core packages)
         run: cd 04_SOFTWARE && pnpm turbo run typecheck --filter=@p31/shared --filter=@p31/bonding --filter=@p31/spaceship-earth --filter=@p31/node-zero
 
       - name: Build packages
-        # Node 18: Vite 8 requires Node 20+ (CustomEvent, Rolldown). Skip Vite build on Node 18.
-        # spaceship-earth excluded on all nodes: vite-plugin-pwa@0.19.8 assigns to bundle (Rolldown error).
-        # SE deploys via Cloudflare Pages. Typecheck above still covers SE TypeScript.
-        if: matrix.node-version != 18
         run: cd 04_SOFTWARE && pnpm turbo run build --filter=@p31/shared --filter=@p31/bonding --filter=@p31/node-zero
 
       - name: Run tests
-        # Vitest 4 requires Node 20+. Node 18 only runs typecheck.
-        if: matrix.node-version != 18
         run: cd 04_SOFTWARE && pnpm turbo run test --filter=@p31/bonding --filter=@p31/node-zero
 
       - name: Turborepo Remote Cache
-        if: env.TURBO_TOKEN
+        if: env.TURBO_TOKEN != ''
         run: cd 04_SOFTWARE && pnpm turbo run build --filter=@p31/bonding --filter=@p31/node-zero --remote
 
   # ========================================
@@ -143,7 +127,8 @@ jobs:
   deploy-staging:
     runs-on: ubuntu-latest
     needs: [build-and-test, compliance-check]
-    if: github.ref == 'refs/heads/develop'
+    # Disabled: legacy template targeted staging.p31labs.org / p31-pwa — do not auto-deploy from CI until pipeline is revalidated.
+    if: false
     environment:
       name: staging
       url: https://staging.p31labs.org
@@ -196,7 +181,8 @@ jobs:
   deploy-production:
     runs-on: ubuntu-latest
     needs: [build-and-test, compliance-check]
-    if: github.ref == 'refs/heads/main'
+    # Disabled: production deploy must be explicit (wrangler, Pages project, domain review). Use manual deploy from docs; do not auto-push from this workflow.
+    if: false
     environment:
       name: production
       url: https://p31labs.org

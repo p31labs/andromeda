@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#0f1115">
     <title>Lattice View | P31 Labs</title>
-    <meta name="description" content="Interactive 3D lattice of all 38 P31 Labs vectors — rotating Fibonacci sphere topology.">
+    <meta name="description" content="Interactive 3D lattice of 39 P31 Labs MVP nodes — rotating Fibonacci sphere. For the geodesic dome lattice (search, filters, detail), see observatory.html → dome.html.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -69,7 +69,7 @@
 </head>
 <body>
 <nav id="navbar">
-    <a href="index.html" class="nav-logo">
+    <a href="/" class="nav-logo">
         <svg width="24" height="24" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
             <rect width="512" height="512" rx="112" fill="#25897d"/>
             <circle cx="390" cy="120" r="48" fill="#cc6247"/>
@@ -78,7 +78,10 @@
         </svg>
         <span class="nav-mono">P31 Labs</span>
     </a>
-    <a href="index.html" class="nav-back">← Hub</a>
+    <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap;justify-content:flex-end">
+        <a href="/observatory.html" class="nav-back">Observatory dome</a>
+        <a href="/" class="nav-back">← Hub</a>
+    </div>
 </nav>
 
 <div id="hint">Drag to rotate &nbsp;·&nbsp; Click node to open</div>

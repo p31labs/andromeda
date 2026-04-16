@@ -2,6 +2,8 @@
 
 This document contains the terminal commands and folder tree structure that Kilo (Systems Architect) should generate to scaffold the P31 Labs ecosystem for parallel agentic work.
 
+**Canonical paths:** The BONDING game and Spaceship Earth app are maintained under `04_SOFTWARE/bonding` and `04_SOFTWARE/spaceship-earth`, not a root-level `BONDING/` folder. See `docs/REPOSITORY_LAYOUT.md`.
+
 ---
 
 ## 1. Folder Tree Structure
@@ -16,7 +18,7 @@ p31labs-andromeda/
 │   ├── ABDICATION_PROTOCOL.md
 │   ├── KNOWN_TRUTHS.md
 │   └── NODE_ROSTER.md
-├── BONDING/                     # BONDING game (existing)
+├── 04_SOFTWARE/bonding/         # BONDING game (canonical)
 │   └── ...
 ├── P31-SOVEREIGN-SDK/           # SDK for sovereign identity
 │   ├── src/

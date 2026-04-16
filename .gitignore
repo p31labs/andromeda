@@ -5,9 +5,13 @@
 .env.production
 .env.canonical
 .env.unified
+.admin-token.local
 
 # Legal discovery — never commit
 Discovery_Production_*/
+
+# Nested clone (not a submodule; do not commit as gitlink)
+public-release/cognitive-prosthetic/
 
 # OS artifacts
 .DS_Store

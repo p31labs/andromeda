@@ -1,0 +1,41 @@
+# Canonical CI: single install at repo root, Turbo build + test, deploy guards.
+# Requires: root pnpm-lock.yaml committed and in sync.
+name: Monorepo verify
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: monorepo-verify-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Deploy target guard (Pages)
+        run: node scripts/enterprise-deploy-guard.mjs
+
+      - name: Build (Turbo)
+        run: pnpm run build
+
+      - name: Test (Turbo)
+        run: pnpm run test

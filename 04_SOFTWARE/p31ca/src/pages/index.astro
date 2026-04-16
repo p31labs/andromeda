@@ -17,19 +17,20 @@ interface Product {
   stack: string[];
 }
 
+/** Hub cards → onboarding / about pages first; each about page links out to production. Never use /app/* (reserved; was colliding with a SPA deploy). */
 const liveProducts: Product[] = [
-  { id: 'bonding',         title: 'BONDING',           subtitle: 'Multiplayer chemistry game — parents play alongside kids across any distance.',           status: 'live', url: 'https://bonding.p31ca.org',                          stack: ['React 19', 'Three.js', 'Zustand v5'] },
-  { id: 'spaceship-earth', title: 'Spaceship Earth',   subtitle: 'Sovereign cognitive cockpit — spoon tracking, breathing pacer, sensory buffer.',          status: 'live', url: 'https://spaceship-earth.pages.dev',                  stack: ['React 19', 'R3F', 'Polymorphic Skins'] },
-  { id: 'ede',             title: 'EDE',               subtitle: 'Everything Development Environment — browser-native IDE with Jitterbug Compiler.',       status: 'live', url: '/app/ede',                                           stack: ['Babel', 'IndexedDB', 'Offline-First'] },
-  { id: 'buffer',          title: 'The Buffer',        subtitle: 'Fawn Guard voltage processor — communication shield for high-conflict co-parenting.',    status: 'live', url: '/app/buffer',                                        stack: ['Voltage Scoring', 'BLUF Extraction'] },
-  { id: 'larmor',          title: 'Larmor',            subtitle: '863 Hz somatic regulation tuned to phosphorus-31 Larmor precession frequency.',          status: 'live', url: '/app/larmor',                                        stack: ['Web Audio', 'Binaural Beats'] },
+  { id: 'bonding',         title: 'BONDING',           subtitle: 'Multiplayer chemistry game — parents play alongside kids across any distance.',           status: 'live', url: '/bonding-about.html',                                stack: ['React 19', 'Three.js', 'Zustand v5'] },
+  { id: 'spaceship-earth', title: 'Spaceship Earth',   subtitle: 'Sovereign cognitive cockpit — spoon tracking, breathing pacer, sensory buffer.',          status: 'live', url: '/spaceship-earth-about.html',                      stack: ['React 19', 'R3F', 'Polymorphic Skins'] },
+  { id: 'ede',             title: 'EDE',               subtitle: 'Everything Development Environment — browser-native IDE with Jitterbug Compiler.',       status: 'live', url: '/ede-about.html',                                    stack: ['Babel', 'IndexedDB', 'Offline-First'] },
+  { id: 'buffer',          title: 'The Buffer',        subtitle: 'Fawn Guard voltage processor — communication shield for high-conflict co-parenting.',    status: 'live', url: '/buffer-about.html',                                 stack: ['Voltage Scoring', 'BLUF Extraction'] },
+  { id: 'larmor',          title: 'Larmor',            subtitle: '863 Hz somatic regulation tuned to phosphorus-31 Larmor precession frequency.',          status: 'live', url: '/larmor.html',                                       stack: ['Web Audio', 'Binaural Beats'] },
   { id: 'mesh',            title: 'P31 Mesh',          subtitle: 'Serverless peer mesh on Cloudflare Workers — K4 topology, zero-trust routing.',          status: 'live', url: 'https://p31-mesh.pages.dev',                         stack: ['CF Workers', 'K4 Topology'] },
-  { id: 'vault',           title: 'P31 Vault',         subtitle: 'Sovereign command center — vagal breathing, K4 seal, mesh loom, LOVE ledger.',           status: 'live', url: 'https://p31-vault.pages.dev',                        stack: ['React 19', 'Live Fleet'] },
-  { id: 'genesis-gate',    title: 'Genesis Gate',      subtitle: 'Central telemetry event bus — intercept module, governance hooks, orchestrator.',         status: 'live', url: 'https://genesis.p31ca.org',                          stack: ['TypeScript ESM', 'CF Workers'] },
-  { id: 'kenosis',         title: 'Kenosis Mesh',      subtitle: '7-node SIC-POVM message routing on Durable Objects — complete K4 graph.',                status: 'live', url: 'https://kenosis-mesh.trimtab-signal.workers.dev',    stack: ['Durable Objects', 'K4'] },
+  { id: 'vault',           title: 'P31 Vault',         subtitle: 'Sovereign command center — vagal breathing, K4 seal, mesh loom, LOVE ledger.',           status: 'live', url: '/vault-about.html',                                  stack: ['React 19', 'Live Fleet'] },
+  { id: 'genesis-gate',    title: 'Genesis Gate',      subtitle: 'Central telemetry event bus — intercept module, governance hooks, orchestrator.',         status: 'live', url: '/genesis-gate-about.html',                           stack: ['TypeScript ESM', 'CF Workers'] },
+  { id: 'kenosis',         title: 'Kenosis Mesh',      subtitle: '7-node SIC-POVM message routing on Durable Objects — complete K4 graph.',                status: 'live', url: '/kenosis-about.html',                                stack: ['Durable Objects', 'K4'] },
   { id: 'fawn-guard',      title: 'Fawn Guard',        subtitle: 'Standalone passive-aggression detection API — voltage scoring endpoint.',                 status: 'live', url: 'https://fawn-guard.trimtab-signal.workers.dev',      stack: ['CF Workers', 'KV'] },
-  { id: 'donate-api',      title: 'Donate Pipeline',   subtitle: 'Stripe Checkout integration — monthly/one-time, auto-receipts, zero-fee Ko-fi bridge.', status: 'live', url: 'https://phosphorus31.org/donate',                     stack: ['Stripe', 'CF Worker'] },
-  { id: 'discord-bot',     title: 'p31-bot',           subtitle: 'Discord community engine — event dispatch, social cron, community moderation.',          status: 'live', url: 'https://discord.gg/uYW5rTCuZ',                      stack: ['Discord.js', 'Railway'] },
+  { id: 'donate-api',      title: 'Donate Pipeline',   subtitle: 'Stripe Checkout integration — monthly/one-time, auto-receipts, zero-fee Ko-fi bridge.', status: 'live', url: '/donate-about.html',                                   stack: ['Stripe', 'CF Worker'] },
+  { id: 'discord-bot',     title: 'p31-bot',           subtitle: 'Discord community engine — event dispatch, social cron, community moderation.',          status: 'live', url: '/discord-bot-about.html',                            stack: ['Discord.js', 'Railway'] },
 ];
 
 const devProducts: Product[] = [
@@ -82,10 +83,14 @@ const researchItems = [
       <p class="text-base text-white/55 max-w-xl leading-relaxed mb-6">
         Free tools for neurodivergent families. Every system is edge-deployed, offline-capable, and open source. No accounts, no tracking, no cloud dependency.
       </p>
-      <div class="flex items-center gap-6 text-xs text-white/40">
+      <div class="flex flex-wrap items-center gap-4 text-xs text-white/40">
         <span>{liveProducts.length} live deployments</span>
         <span>{devProducts.length} in development</span>
         <span>{researchItems.length} research publications</span>
+        <span class="text-white/25">|</span>
+        <a href="/lattice.html" class="text-rose-400/90 hover:text-rose-300 font-medium transition-colors" style="text-decoration:none;">Lattice (sphere)</a>
+        <span class="text-white/25">·</span>
+        <a href="/observatory.html" class="text-cyan-400/90 hover:text-cyan-300 font-medium transition-colors" style="text-decoration:none;">Observatory (dome)</a>
       </div>
     </section>
 
