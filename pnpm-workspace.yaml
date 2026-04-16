@@ -2,6 +2,8 @@
 # All install/build/test for JS/TS runs from repository root unless a package README says otherwise.
 
 packages:
+  # Turbo orchestrator (must be listed — 04_SOFTWARE/* does not match this folder)
+  - '04_SOFTWARE'
   # Core applications & services (04_SOFTWARE top-level packages)
   - '04_SOFTWARE/*'
   # Shared libraries & VS Code extensions
