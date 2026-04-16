@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-15T21:30:00Z",
+  "updated": "2026-04-17T04:00:00Z",
   "workers": [
     { "name": "phosphorus31-org", "status": "online", "url": "https://phosphorus31.org" },
     { "name": "p31ca-org", "status": "online", "url": "https://p31ca.org" },
@@ -60,6 +60,7 @@
     { "date": "Apr 15", "event": "Hearing Ops PWA — build + wrangler pages deploy (project p31-hearing-ops, branch main → ops.p31ca.org)" },
     { "date": "Apr 14", "event": "P31 Technical Library (Starlight) — build fixed, Pages project created, first deploy" },
     { "date": "Apr 16", "event": "CONTEMPT HEARING 11AM — Woodbine" },
+    { "date": "Apr 17", "event": "Pages production deploy: p31ca hub (p31ca Pages main) + Hearing Ops PWA (p31-hearing-ops → ops.p31ca.org)" },
     { "date": "Apr 17", "event": "McGhan deadline" },
     { "date": "Apr 30", "event": "Camden County wellness baseline" },
     { "date": "Apr 30", "event": "Georgia Tech Summit" },
