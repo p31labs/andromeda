@@ -503,6 +503,9 @@ importers:
       '@types/node':
         specifier: ^20.14.0
         version: 20.19.37
+      '@types/uuid':
+        specifier: ^10.0.0
+        version: 10.0.0
       typescript:
         specifier: ^5.7.0
         version: 5.9.3
