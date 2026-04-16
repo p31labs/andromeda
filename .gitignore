@@ -43,6 +43,11 @@ npm-debug.log*
 # Build artifacts
 dist/
 build/
+# TypeScript incremental + Next.js (never commit)
+*.tsbuildinfo
+.tsbuildinfo
+**/.next/
+
 *.o
 *.elf
 *.bin
