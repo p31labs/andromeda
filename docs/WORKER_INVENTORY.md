@@ -19,7 +19,7 @@
 
 | Worker name | Repo path | Notes |
 |-------------|-----------|--------|
-| `k4-cage` | `04_SOFTWARE/k4-cage/` | **Canonical** family cage; KV `K4_MESH`; `GET /api/health`. Command Center pinger + dashboard links target this host. |
+| `k4-cage` | `04_SOFTWARE/k4-cage/` | **Unified (CWP-30):** `K4Topology` + `FamilyMeshRoom` DOs; optional D1 `telemetry` chain; KV `K4_MESH` fallback. Spec + copy source: `04_SOFTWARE/unified-k4-cage/`. Set `database_id` + `ADMIN_TOKEN` before deploy. |
 | `k4-personal` | `04_SOFTWARE/k4-personal/` | Personal mesh only; uses `packages/k4-mesh-core`. |
 | `k4-hubs` | `04_SOFTWARE/k4-hubs/` | Hub/dock layer; uses `packages/k4-mesh-core`. |
 | _(deprecated)_ | `k4-worker/` (repo root) | **Sandbox only:** Wrangler name `k4-legacy-prototype` (distinct from production `k4-cage`). Different KV/API — see `k4-worker/README.md`. |
