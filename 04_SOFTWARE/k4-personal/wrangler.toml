@@ -1,0 +1,26 @@
+name = "k4-personal"
+main = "src/index.js"
+compatibility_date = "2026-04-04"
+compatibility_flags = ["nodejs_compat"]
+
+# Workers AI for personal agent chat
+[ai]
+binding = "AI"
+
+# Durable Objects for per-user PersonalAgent
+[[durable_objects.bindings]]
+name = "PERSONAL_AGENT"
+class_name = "PersonalAgent"
+
+[[migrations]]
+tag = "v2-personal-agent"
+new_sqlite_classes = ["PersonalAgent"]
+
+# D1 for telemetry flush (same as p31-agent-hub)
+[[d1_databases]]
+binding = "DB"
+database_name = "p31-telemetry"
+database_id = "fc3b2ffb-4de4-4843-88b1-50e5c788dc50"
+
+[vars]
+FLUSH_INTERVAL_MS = "30000"

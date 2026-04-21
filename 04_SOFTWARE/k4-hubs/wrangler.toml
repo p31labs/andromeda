@@ -1,0 +1,19 @@
+name = "k4-hubs"
+main = "src/index.js"
+compatibility_date = "2026-04-04"
+compatibility_flags = ["nodejs_compat"]
+
+# Service Bindings to other workers
+[[services]]
+binding = "K4_CAGE"
+service = "k4-cage"
+
+[[services]]
+binding = "K4_PERSONAL"
+service = "k4-personal"
+
+# D1 for telemetry (same as others)
+[[d1_databases]]
+binding = "DB"
+database_name = "p31-telemetry"
+database_id = "fc3b2ffb-4de4-4843-88b1-50e5c788dc50"

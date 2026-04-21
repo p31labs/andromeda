@@ -1,0 +1,20 @@
+name = "k4-cage"
+main = "src/index.js"
+compatibility_date = "2026-04-04"
+compatibility_flags = ["nodejs_compat"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "p31-telemetry"
+database_id = "fc3b2ffb-4de4-4843-88b1-50e5c788dc50"
+
+[[durable_objects.bindings]]
+name = "FAMILY_MESH_ROOM"
+class_name = "FamilyMeshRoom"
+
+[[migrations]]
+tag = "v2-hibernation"
+new_sqlite_classes = ["FamilyMeshRoom"]
+
+[vars]
+FLUSH_INTERVAL_MS = "30000"

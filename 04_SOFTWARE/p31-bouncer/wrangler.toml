@@ -1,0 +1,7 @@
+name = "p31-bouncer"
+main = "src/index.js"
+compatibility_date = "2026-04-04"
+compatibility_flags = ["nodejs_compat"]
+
+# JWT secret for cryptographic auth
+# npx wrangler secret put P31_JWT_SECRET
