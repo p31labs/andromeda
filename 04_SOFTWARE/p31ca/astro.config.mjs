@@ -5,4 +5,9 @@ import tailwind from '@astrojs/tailwind';
 export default defineConfig({
   integrations: [tailwind()],
   site: 'https://p31ca.org',
+  vite: {
+    build: {
+      sourcemap: false
+    }
+  }
 });
