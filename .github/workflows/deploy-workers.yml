@@ -63,14 +63,19 @@ jobs:
 
       # ── 5. Post-deploy verification ──────────────────────────────────
       - name: Wait for propagation
-        run: sleep 10
+        run: sleep 30
 
       - name: Health checks
         run: |
           fail=0
           check() {
             local name=$1 url=$2
-            code=$(curl -sf -o /dev/null -w "%{http_code}" --max-time 15 "$url" 2>/dev/null || echo 000)
+            local code attempt
+            for attempt in 1 2 3; do
+              code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 "$url" 2>/dev/null || echo 000)
+              [[ "$code" == "200" ]] && break
+              [[ $attempt -lt 3 ]] && sleep 10
+            done
             if [[ "$code" == "200" ]]; then
               echo "✅ $name"
             else
