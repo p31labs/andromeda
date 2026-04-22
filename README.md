@@ -1,4 +1,6 @@
-# Phosphorus31 Ecosystem — P31 Labs, Inc.
+# P31 Andromeda
+
+**Phosphorus31 / P31 Labs** — open-source assistive-technology and research software. Georgia nonprofit (**P31 Labs, Inc.**). 501(c)(3) pending.
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18627420.svg)](https://doi.org/10.5281/zenodo.18627420)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19411363.svg)](https://doi.org/10.5281/zenodo.19411363)
@@ -34,20 +36,21 @@ Open-source assistive technology for neurodivergent individuals and families. Ge
 - **Gamification Engine**: Achievement system, Larmor frequency locks, and dual-ledger economy
 
 ## 🚀 Quick Start
+| | |
+|---|---|
+| **Tests (BONDING)** | **413 tests / 30 suites** (canonical — see `CLAUDE.md`) |
+| **Edge / Pages** | Inventory: [`docs/WORKER_PAGES_MANIFEST.md`](docs/WORKER_PAGES_MANIFEST.md) |
+| **Layout** | [`docs/REPOSITORY_LAYOUT.md`](docs/REPOSITORY_LAYOUT.md) |
+| **Engineering** | [`docs/ENGINEERING.md`](docs/ENGINEERING.md) |
 
-### Prerequisites
+## Quick start (developers)
 
-- Node.js 18+
-- npm or yarn
-- Git
-
-### Installation
-
-See **[CONTRIBUTING.md](CONTRIBUTING.md)** for the `04_SOFTWARE/` entry path. Quick clone:
+**Prerequisites:** Node **20** (see `.nvmrc`), **pnpm** 8+.
 
 ```bash
 git clone https://github.com/p31labs/andromeda.git
 cd andromeda
+pnpm install
 ```
 
 Then follow **[CONTRIBUTING.md](CONTRIBUTING.md)** for `04_SOFTWARE/` install, manifests, and CI.
@@ -222,80 +225,29 @@ All significant contributions are automatically published to Zenodo with proper 
 
 ### Ecosystem Dashboard
 Real-time monitoring of all ecosystem components:
+Build and test the main software tree (Turbo under `04_SOFTWARE`):
 
 ```bash
-# Start analytics dashboard
-npm run analytics
-
-# Access at http://localhost:3000/analytics
+pnpm --dir 04_SOFTWARE run build
+pnpm --dir 04_SOFTWARE run test
 ```
 
-### Key Metrics
-- **System Health**: Overall ecosystem performance score
-- **Community Engagement**: Active users and contribution rates
-- **Technical Performance**: Deployment success and uptime
-- **Financial Sustainability**: Revenue and growth metrics
+Individual apps (BONDING, p31ca, hearing-ops, etc.) live under **`04_SOFTWARE/`** — see [`04_SOFTWARE/README.md`](04_SOFTWARE/README.md).
 
-## 🌐 Community
+## Repository structure
 
-### Discord
-Join our community for real-time collaboration and support:
-- **Support Channels**: Technical help and troubleshooting
-- **Development Discussions**: Feature planning and architecture
-- **Social Spaces**: Community building and networking
+- **`04_SOFTWARE/`** — Primary applications, Cloudflare Workers, shared packages, VS Code extensions.
+- **`05_FIRMWARE/`** — ESP32 / embedded documentation and prompts.
+- **`02_RESEARCH/`**, **`zenodo_batch/`** — Papers and publication tooling.
+- **`docs/`** — Engineering layout, worker manifest, tutorials.
+- **`Legal_Instruments/`**, **`Discovery_Production_*`** (gitignored) — legal drafts and production; not reviewed here.
 
-### GitHub Discussions
-For longer-form conversations and project planning:
-- **Feature Requests**: Suggest new features and improvements
-- **Q&A**: Get answers from the development team
-- **Showcase**: Share your P31 projects and contributions
+Extended product narrative: [`docs/ECOSYSTEM_OVERVIEW.md`](docs/ECOSYSTEM_OVERVIEW.md).
 
-### Academic Collaboration
-For researchers and academics:
-- **Paper Submissions**: Contribute to the academic body of work
-- **Peer Review**: Participate in academic quality assurance
-- **Research Partnerships**: Collaborate on quantum biology research
+## Contributing
 
-## 📞 Support
+See **[CONTRIBUTING.md](CONTRIBUTING.md)** (CI, secrets, Pages deploy safety).
 
-### Documentation
-Comprehensive guides and tutorials:
-- **Getting Started**: Installation and basic usage
-- **Advanced Topics**: Deep dives into specific features
-- **API Reference**: Complete technical documentation
+## License
 
-### Issue Reporting
-For bugs and problems:
-1. **Search Existing Issues**: Check if your issue is already reported
-2. **Create New Issue**: Provide detailed reproduction steps
-3. **Label Appropriately**: Use relevant labels for faster triage
-
-### Feature Requests
-For new features and improvements:
-1. **Check Roadmap**: See if feature is already planned
-2. **Create Discussion**: Propose and gather community feedback
-3. **Implementation**: Contribute code if possible
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-The Phosphorus31 ecosystem is built on the contributions of many individuals and organizations. We are grateful for:
-
-- **Open Source Community**: For providing the foundation technologies
-- **Academic Researchers**: For advancing the field of quantum biology
-- **Neurodivergent Advocates**: For guiding inclusive design principles
-- **Community Members**: For their ongoing support and contributions
-
-## 🔗 External Links
-
-- **[Phosphorus31.org](https://phosphorus31.org)**: Main website and documentation
-- **[Ko-fi Shop](https://ko-fi.com/trimtab69420)**: Support the project
-- **[Zenodo Repository](https://zenodo.org/communities/p31/)**: Academic publications
-- **[Discord Community](https://discord.gg/uYW5rTCuZ)**: Real-time collaboration
-
----
-
-**Note**: This ecosystem is under active development. All hardware products are general-purpose communication devices. Software products are general-purpose cognitive tools. Features and APIs may change as we continue to refine our approach to decentralized, neuro-inclusive design.
+[MIT](LICENSE)

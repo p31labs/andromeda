@@ -1434,12 +1434,12 @@ cd 04_SOFTWARE/spaceship-earth
 npx tsc --noEmit
 npx vite build
 
-# Deploy
-npx wrangler pages deploy dist --project-name=p31ca
+# Deploy (use the Spaceship Earth Pages project — not `p31ca`, which is the Astro hub at 04_SOFTWARE/p31ca)
+npx wrangler pages deploy dist --project-name=spaceship-earth
 
 # Verify
-curl -s https://p31ca.org | head -5
-# MUST: return HTML with "Spaceship Earth"
+curl -sI https://spaceship-earth.pages.dev | head -5
+# NOTE: p31ca.org is the technical hub (Astro). Spaceship Earth has its own hostname/Pages project.
 ```
 
 ### Post-deploy verification

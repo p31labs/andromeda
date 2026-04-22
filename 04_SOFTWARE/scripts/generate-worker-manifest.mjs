@@ -93,9 +93,9 @@ lines.push('');
 lines.push('## Pages deploy note (p31ca.org vs ops.p31ca.org)');
 lines.push('');
 lines.push(
-  'The Cloudflare Pages project **`p31ca`** can serve **multiple custom domains** on the **same** production deployment. ' +
-    'Deploying a new `dist/` (e.g. from `p31-hearing-ops`) replaces the **artifact for that project/branch**—so verify the target project and branch before `wrangler pages deploy`. ' +
-    'Prefer **preview uploads** or a **dedicated Pages project** for experiments if the hub must stay unchanged.',
+  '**Use separate Pages project names:** hub `04_SOFTWARE/p31ca/` → project **`p31ca`** (domains: `p31ca.org`). ' +
+    'Hearing Ops `04_SOFTWARE/p31-hearing-ops/` → project **`p31-hearing-ops`** (domain: `ops.p31ca.org`). ' +
+    'Deploying two different apps to the **same** `--project-name` overwrites the single production bundle for **all** domains on that project.',
 );
 lines.push('');
 

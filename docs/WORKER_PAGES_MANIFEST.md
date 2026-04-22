@@ -1,6 +1,7 @@
 # Worker & Pages manifest (generated)
 
 > **Generated:** 2026-04-15T08:32:19.967Z (UTC) · **Source:** `04_SOFTWARE/scripts/generate-worker-manifest.mjs`
+> **Generated:** 2026-04-16T00:58:08.494Z (UTC) · **Source:** `04_SOFTWARE/scripts/generate-worker-manifest.mjs`
 
 This file lists every `wrangler.toml` found under `04_SOFTWARE/` and `phosphorus31.org/`.
 It is the in-repo complement to the older snapshot `docs/WORKER_INVENTORY.md` (manual narrative + dashboard cross-check).
@@ -19,7 +20,9 @@ It is the in-repo complement to the older snapshot `docs/WORKER_INVENTORY.md` (m
 | Worker | `p31-cortex` | `04_SOFTWARE/p31-cortex/wrangler.toml` | `src/index.ts` |
 | Worker | `p31-forge` | `04_SOFTWARE/p31-forge/wrangler.toml` | `worker/index.js` |
 | Pages | `p31ca` | `04_SOFTWARE/p31-hearing-ops/wrangler.toml` | `dist` (Pages build dir) |
+| Pages | `p31-hearing-ops` | `04_SOFTWARE/p31-hearing-ops/wrangler.toml` | `dist` (Pages build dir) |
 | Worker | `p31-state` | `04_SOFTWARE/p31-state/wrangler.toml` | `src/index.ts` |
+| Pages | `p31ca` | `04_SOFTWARE/p31ca/wrangler.toml` | `dist` (Pages build dir) |
 | Pages | `p31-pwa` | `04_SOFTWARE/packages/node-zero/pwa/wrangler.toml` | `dist` (Pages build dir) |
 | Worker | `p31-quantum-edge` | `04_SOFTWARE/packages/quantum-edge/wrangler.toml` | `worker.ts` |
 | Pages | `p31-command-center` | `04_SOFTWARE/sovereign-command-center/wrangler.toml` | `.next` (Pages build dir) |
@@ -32,7 +35,10 @@ It is the in-repo complement to the older snapshot `docs/WORKER_INVENTORY.md` (m
 - **Worker-style** configs (no `pages_build_output_dir`): **16**
 - **Pages-style** configs: **3**
 - **Total `wrangler.toml` files:** **19**
+- **Worker-style** configs (no `pages_build_output_dir`): **18**
+- **Pages-style** configs: **4**
+- **Total `wrangler.toml` files:** **22**
 
 ## Pages deploy note (p31ca.org vs ops.p31ca.org)
 
-The Cloudflare Pages project **`p31ca`** can serve **multiple custom domains** on the **same** production deployment. Deploying a new `dist/` (e.g. from `p31-hearing-ops`) replaces the **artifact for that project/branch**—so verify the target project and branch before `wrangler pages deploy`. Prefer **preview uploads** or a **dedicated Pages project** for experiments if the hub must stay unchanged.
+**Use separate Pages project names:** hub `04_SOFTWARE/p31ca/` → project **`p31ca`** (domains: `p31ca.org`). Hearing Ops `04_SOFTWARE/p31-hearing-ops/` → project **`p31-hearing-ops`** (domain: `ops.p31ca.org`). Deploying two different apps to the **same** `--project-name` overwrites the single production bundle for **all** domains on that project.

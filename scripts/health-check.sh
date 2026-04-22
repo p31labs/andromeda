@@ -9,6 +9,12 @@ JSON_MODE=false
 [[ "${1:-}" == "--json" ]] && JSON_MODE=true
 
 declare -A WORKERS=(
+  # K4 mesh workers (workers-april22 / CWP-30)
+  ["k4-cage"]="https://k4-cage.trimtab-signal.workers.dev/health"
+  ["k4-personal"]="https://k4-personal.trimtab-signal.workers.dev/health"
+  ["k4-hubs"]="https://k4-hubs.trimtab-signal.workers.dev/health"
+  ["p31-agent-hub"]="https://p31-agent-hub.trimtab-signal.workers.dev/health"
+  # Legacy workers
   ["bonding-relay"]="https://bonding-relay.trimtab-signal.workers.dev/health"
   ["spaceship-relay"]="https://spaceship-relay.trimtab-signal.workers.dev/health"
   ["p31-cortex"]="https://p31-cortex.trimtab-signal.workers.dev/health"

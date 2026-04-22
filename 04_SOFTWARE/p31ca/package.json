@@ -5,8 +5,11 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
+    "deploy": "npm run build && npx wrangler pages deploy dist --project-name p31ca --branch=main --commit-dirty=true",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "hub:about:enrich": "node scripts/enrich-mvp-about-pages.mjs",
+    "hub:about:fix-hrefs": "node scripts/fix-about-enriched-hrefs.mjs"
   },
   "dependencies": {
     "@astrojs/tailwind": "^6.0.2",

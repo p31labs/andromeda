@@ -470,7 +470,8 @@ cd 04_SOFTWARE/spaceship-earth && npx vite build
 
 # 3. Deploy both
 cd 04_SOFTWARE/bonding && npx wrangler pages deploy dist --project-name=bonding
-cd 04_SOFTWARE/spaceship-earth && npx wrangler pages deploy dist --project-name=p31ca
+cd 04_SOFTWARE/spaceship-earth && npx wrangler pages deploy dist --project-name=spaceship-earth
+# NOTE (2026): Project `p31ca` is the Astro hub at `04_SOFTWARE/p31ca/` (p31ca.org). Do NOT deploy Spaceship Earth or Hearing Ops to `p31ca` — it replaces the hub for all domains on that project.
 
 # 4. Manual test:
 #    a. Open Spaceship Earth (p31ca.pages.dev)
@@ -608,7 +609,8 @@ const CORS_ORIGINS = [
 
 ```bash
 cd 04_SOFTWARE/bonding && npx vite build && npx wrangler pages deploy dist --project-name=bonding
-cd 04_SOFTWARE/spaceship-earth && npx vite build && npx wrangler pages deploy dist --project-name=p31ca
+cd 04_SOFTWARE/spaceship-earth && npx vite build && npx wrangler pages deploy dist --project-name=spaceship-earth
+# NOTE: Do not target --project-name=p31ca here; that is the Astro hub (04_SOFTWARE/p31ca).
 ```
 
 ### DNS Propagation

@@ -99,19 +99,11 @@
         </p>
         <div class="flex items-center gap-6">
             <div class="font-mono text-sm">
-                <span id="vectorCount" class="text-teal font-bold">50 vectors</span>
+                <span id="vectorCount" class="text-teal font-bold">48 apps</span>
                 <span class="opacity-40 mx-2">/</span>
-                <span id="liveCount" class="text-phosphorus font-bold">23 live deployments</span>
+                <span id="liveCount" class="text-phosphorus font-bold">all live</span>
             </div>
-            <a href="lattice.html" class="font-mono text-xs opacity-50 hover:opacity-80 transition-opacity">View lattice &rarr;</a>
-        </div>
-        <!-- PRODUCTION SUITE v8.0 Banner -->
-        <div class="mt-6 inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-900/30 to-pink-900/30 border border-purple-500/30 rounded-lg">
-            <span class="font-mono text-xs text-purple-400">PRODUCTION SUITE v8.0</span>
-            <span class="text-purple-500/50">|</span>
-            <span class="font-mono text-xs text-teal">9 NEW WORKERS DEPLOYED</span>
-            <span class="text-purple-500/50">|</span>
-            <span class="font-mono text-xs text-phosphorus">GALVANIC ISOLATION COMPLETE</span>
+            <a href="lattice.html" class="font-mono text-xs opacity-50 hover:opacity-80 transition-opacity">Lattice view &rarr;</a>
         </div>
     </div>
 </section>
@@ -120,9 +112,8 @@
 <section class="max-w-7xl mx-auto px-6 pb-8">
     <div class="flex items-center gap-3 flex-wrap">
         <span class="font-mono text-xs opacity-40 mr-2">FILTER:</span>
-        <button onclick="filterCards('all')" id="filter-all" class="filter-btn active font-mono text-xs px-3 py-1.5 rounded border border-teal/40 text-teal bg-teal/10 transition-all">All (50)</button>
-        <button onclick="filterCards('live')" id="filter-live" class="filter-btn font-mono text-xs px-3 py-1.5 rounded border border-white/10 opacity-60 hover:opacity-100 transition-all">Live (23)</button>
-        <button onclick="filterCards('prototype')" id="filter-prototype" class="filter-btn font-mono text-xs px-3 py-1.5 rounded border border-white/10 opacity-60 hover:opacity-100 transition-all">In Dev (25)</button>
+        <button onclick="filterCards('all')" id="filter-all" class="filter-btn active font-mono text-xs px-3 py-1.5 rounded border border-teal/40 text-teal bg-teal/10 transition-all">All (48)</button>
+        <button onclick="filterCards('live')" id="filter-live" class="filter-btn font-mono text-xs px-3 py-1.5 rounded border border-white/10 opacity-60 hover:opacity-100 transition-all">Apps (46)</button>
         <button onclick="filterCards('research')" id="filter-research" class="filter-btn font-mono text-xs px-3 py-1.5 rounded border border-white/10 opacity-60 hover:opacity-100 transition-all">Research (2)</button>
     </div>
 </section>
@@ -249,86 +240,86 @@ const mvpData = [
     {
         id: 'appointment-tracker', title: 'Appointment Tracker', tagline: 'Legal & Family Calendar', status: 'live', statusLabel: 'LIVE',
         icon: '&#x1F4C5;', tech: ['LocalStorage', 'CSV Export', 'Recurring'],
-        link: 'https://p31-appointment-tracker.trimtab-signal.workers.dev',
+        link: 'appointment-tracker-about.html',
         description: 'Calendar with legal/kids/medical/personal color-coding, recurring events, CSV export, local notifications. Zero-budget.',
         accent: '#8b5cf6'
     },
     {
         id: 'love-ledger', title: 'Love Ledger', tagline: 'Family LOVE Tokens', status: 'live', statusLabel: 'LIVE',
         icon: '&#x1F49C;', tech: ['Chart.js', 'Leaderboard', 'Streak'],
-        link: 'https://p31-love-ledger.trimtab-signal.workers.dev',
+        link: 'love-ledger-about.html',
         description: 'Track LOVE tokens earned through care, creation, consistency. Family leaderboard, weekly chart, streak counter.',
         accent: '#ec4899'
     },
     {
         id: 'medical-tracker', title: 'Medical Tracker', tagline: 'Hypoparathyroidism HPT-SD', status: 'live', statusLabel: 'LIVE',
         icon: '&#x1FA7A;', tech: ['Chart.js', 'WebCrypto', '0-4 Scaling'],
-        link: 'https://p31-medical-tracker.trimtab-signal.workers.dev',
+        link: 'medical-tracker-about.html',
         description: 'Calcium/PTH logging, HPT-SD symptom tracking (0-4 scale), 7-day chart. Medical records for court.',
         accent: '#3b82f6'
     },
     {
         id: 'somatic-anchor', title: 'Somatic Anchor', tagline: '863 Hz Grounding', status: 'live', statusLabel: 'LIVE',
         icon: '&#x1F578;&#xFE0F;', tech: ['Web Audio', 'Vibration API', '4-4-6'],
-        link: 'https://p31-somatic-anchor.trimtab-signal.workers.dev',
+        link: 'somatic-anchor-about.html',
         description: '4-4-6 breathing, 863 Hz Larmor frequency, 5-4-3-2-1 grounding, haptic pulses. Somatic regulation tool.',
         accent: '#10b981'
     },
     {
         id: 'legal-evidence', title: 'Legal Evidence', tagline: 'SHA-256 Chain', status: 'live', statusLabel: 'LIVE',
         icon: '&#x1F6E3;', tech: ['WebCrypto', 'SHA-256', 'Court-Ready'],
-        link: 'https://p31-legal-evidence.trimtab-signal.workers.dev',
+        link: 'legal-evidence-about.html',
         description: 'Court-ready exhibit management with SHA-256 hash chain for tamper evidence. JSON export.',
         accent: '#f59e0b'
     },
     {
         id: 'kids-growth', title: 'Kids Growth', tagline: 'Bash & Willow Milestones', status: 'live', statusLabel: 'LIVE',
         icon: '&#x1F476;', tech: ['Chart.js', 'LocalStorage', 'Milestones'],
-        link: 'https://p31-kids-growth.trimtab-signal.workers.dev',
+        link: 'kids-growth-about.html',
         description: 'Height/weight tracking for Bash (10) and Willow (6), milestone checklists, growth charts.',
         accent: '#f472b6'
     },
     {
         id: 'contact-locker', title: 'Contact Locker', tagline: 'AES-256 Encrypted', status: 'live', statusLabel: 'LIVE',
         icon: '&#x1F510;', tech: ['WebCrypto', 'PBKDF2', 'Room Code'],
-        link: 'https://p31-contact-locker.trimtab-signal.workers.dev',
+        link: 'contact-locker-about.html',
         description: 'Encrypted contact directory. AES-256-GCM with Room Code protection. Quick dial for emergencies.',
         accent: '#06b6d4'
     },
     {
         id: 'sleep-tracker', title: 'Sleep Tracker', tagline: 'Hypoparathyroidism Sleep', status: 'live', statusLabel: 'LIVE',
         icon: '&#x1F634;', tech: ['Chart.js', 'LocalStorage', '7-Day Trend'],
-        link: 'https://p31-sleep-tracker.trimtab-signal.workers.dev',
+        link: 'sleep-tracker-about.html',
         description: 'Sleep logging with bedtime/wake time, quality rating (1-5), 7-day chart, goal streak tracking.',
         accent: '#6366f1'
     },
     {
         id: 'budget-tracker', title: 'Budget Tracker', tagline: 'Zero-Based Budgeting', status: 'live', statusLabel: 'LIVE',
         icon: '&#x1F4B0;', tech: ['Chart.js', 'LocalStorage', 'SNAP-Friendly'],
-        link: 'https://p31-budget-tracker.trimtab-signal.workers.dev',
+        link: 'budget-tracker-about.html',
         description: 'Zero-based budgeting. Income/expense tracking, category breakdown, safe-to-spend calculation.',
         accent: '#22c55e'
     },
     // -- PROTOTYPE --------------------------------------------------
     {
-        id: 'phenix-os', title: 'Phenix OS', tagline: 'Neurodivergent Command Console', status: 'prototype', statusLabel: 'PROTOTYPE',
+        id: 'phenix-os', title: 'Phenix OS', tagline: 'Neurodivergent Command Console', status: 'live', statusLabel: 'LIVE',
         icon: '&#x25C8;', tech: ['Three.js', 'SIC-POVM', 'Fawn Guard', 'Web Audio'],
         link: 'phenix-os-about.html',
         description: 'AuDHD operator dashboard. SIC-POVM tetrahedron navigator, Fawn Guard comm shield, Chaos Ingestion engine, Focus Timer, Medication Tracker, Calcium Monitor, and Encrypted Bottles.',
         accent: '#4db8a8'
     },
     {
-        id: 'simple-sovereignty', title: 'Simple Sovereignty', tagline: 'Sovereign Stack Home Portal', status: 'prototype', statusLabel: 'PROTOTYPE',
+        id: 'simple-sovereignty', title: 'Simple Sovereignty', tagline: 'Sovereign Stack Home Portal', status: 'live', statusLabel: 'LIVE',
         icon: '&#x25B2;', tech: ['Portal Hub', 'Terminal', 'Dark/Light Mode'],
         link: 'simple-sovereignty-about.html',
         description: 'Sovereign stack landing hub. Portal grid linking Phenix OS, Quantum Family, Vault, and Guardian. Live terminal manifest. Sovereignty level tracker. Dark/light mode.',
         accent: '#4db8a8'
     },
     {
-        id: 'node-one', title: 'Node One (The Totem)', tagline: 'Physical Haptic Anchor', status: 'prototype', statusLabel: 'PROTOTYPE',
+        id: 'node-one', title: 'Node One (The Totem)', tagline: 'Physical Haptic Anchor', status: 'live', statusLabel: 'LIVE',
         icon: '&#x1F4DF;', tech: ['863 Hz Larmor', 'Kailh Choc Navy', 'NXP SE050'],
         link: 'node-one-about.html',
-        description: 'Legally armored FDA Class II exempt device. The Miller Shield classifies its entire value as non-transferable Personal Goodwill.',
+        description: 'Physical haptic anchor and focus companion (general wellness / communication support, pre-market). Hardware roadmap: Waveshare ESP32-S3 touch LCD, LVGL 8.4, ESP-IDF 5.5.x. Not a medical device; no diagnostic or treatment claims.',
         accent: '#cda852'
     },
     {
@@ -339,150 +330,151 @@ const mvpData = [
         accent: '#cda852'
     },
     {
-        id: 'sovereign', title: 'SOVEREIGN', tagline: 'Sovereign OS Cockpit', status: 'prototype', statusLabel: 'PROTOTYPE',
+        id: 'sovereign', title: 'SOVEREIGN', tagline: 'Sovereign OS Cockpit', status: 'live', statusLabel: 'LIVE',
         icon: '&#x1F511;', tech: ['Three.js r183', 'Bloom', 'Jitterbug Transform'],
         link: 'sovereign-about.html',
         description: 'Interactive 3D cockpit: Tetrix Group, SIC-POVM vectors, Bloch sphere, Isotropic Vector Matrix, and the Jitterbug cuboctahedron-to-octahedron transformation. Bloom postprocessing.',
         accent: '#4db8a8'
     },
     {
-        id: 'observatory', title: 'OBSERVATORY', tagline: 'Geodesic Data Dome', status: 'prototype', statusLabel: 'PROTOTYPE',
+        id: 'observatory', title: 'OBSERVATORY', tagline: 'Geodesic Data Dome', status: 'live', statusLabel: 'LIVE',
         icon: '&#x1F53A;', tech: ['Three.js r183', 'WebGL Bloom', 'ES Modules'],
         link: 'observatory-about.html',
         description: 'Each triangular panel on the geodesic dome IS a data node. Click panels to inspect. Search and filter by axis, state, bus type. Bloom pipeline, dust motes, aurora band.',
         accent: '#25897d'
     },
     {
-        id: 'bridge', title: 'BRIDGE', tagline: 'LOVE Economy Dashboard', status: 'prototype', statusLabel: 'PROTOTYPE',
+        id: 'bridge', title: 'BRIDGE', tagline: 'LOVE Economy Dashboard', status: 'live', statusLabel: 'LIVE',
         icon: '&#x1F310;', tech: ['SVG Gauges', 'Phenix Wallet', 'Vesting Schedules'],
         link: 'bridge-about.html',
         description: 'Multi-tabbed dashboard for the LOVE token economy. Circular gauges, vesting schedules for Bash and Willow, stealth addresses, and a full transaction ledger with export.',
         accent: '#cda852'
     },
     {
-        id: 'vault', title: 'VAULT', tagline: 'Ground Truth Identity', status: 'prototype', statusLabel: 'PROTOTYPE',
+        id: 'vault', title: 'VAULT', tagline: 'Ground Truth Identity', status: 'live', statusLabel: 'LIVE',
         icon: '&#x1F510;', tech: ['Web Crypto API', 'AES-GCM', 'Daubert Export'],
         link: 'vault-about.html',
         description: 'Ed25519-equivalent keypair generation, encrypted API key storage, vault layer management, and Daubert-standard court-ready evidence export. Zero cloud dependency.',
         accent: '#8b7cc9'
     },
     {
-        id: 'collider', title: 'COLLIDER', tagline: 'Particle Collider Sandbox', status: 'prototype', statusLabel: 'PROTOTYPE',
+        id: 'collider', title: 'COLLIDER', tagline: 'Particle Collider Sandbox', status: 'live', statusLabel: 'LIVE',
         icon: '&#x269B;&#xFE0F;', tech: ['Canvas 2D', 'Physics Engine', 'Zero Dependencies'],
         link: 'collider-about.html',
         description: 'Atoms drift with realistic physics and bond automatically on proximity by valence rules. Cyclotron accelerator mode for collision fusion. 20+ molecule recipes, 3 quest chains.',
         accent: '#cc6247'
     },
     {
-        id: 'axiom', title: 'AXIOM', tagline: 'Physics & Chemistry Lab', status: 'prototype', statusLabel: 'PROTOTYPE',
+        id: 'axiom', title: 'AXIOM', tagline: 'Physics & Chemistry Lab', status: 'live', statusLabel: 'LIVE',
         icon: '&#x269B;&#xFE0F;', tech: ['Rapier.js', 'Three.js', 'NIST ASD'],
         link: 'axiom-about.html',
         description: 'Posner molecule explorer, Larmor precession visualizer, spectral emission sandbox, K&#x2084; topology builder, wave lab. Offline-first. AuDHD pedagogy &mdash; no timed tests, no failure states.',
         accent: '#3ba372'
     },
     {
-        id: 'mission-control', title: 'Mission Control', tagline: 'Wonky Sprout Token Economy', status: 'prototype', statusLabel: 'PROTOTYPE',
+        id: 'mission-control', title: 'Mission Control', tagline: 'Wonky Sprout Token Economy', status: 'live', statusLabel: 'LIVE',
         icon: '&#x1F680;', tech: ['Pixel RPG', 'Token Economy', 'Press Start 2P'],
         link: 'mission-control-about.html',
         description: 'Gamified kids mission app. Willow (CCO) and Bash (CSO) character cards. Genesis token economy with mission completion. Secret base rewards grid. Zero alert() &mdash; custom toast.',
         accent: '#ff00ff'
     },
     {
-        id: 'quantum-life-os', title: 'Quantum Life OS', tagline: 'Quantum-Coherent Life System', status: 'prototype', statusLabel: 'PROTOTYPE',
+        id: 'quantum-life-os', title: 'Quantum Life OS', tagline: 'Quantum-Coherent Life System', status: 'live', statusLabel: 'LIVE',
         icon: '&#x2728;', tech: ['Quantum Stats', 'Consciousness Engine', 'Dark/Light'],
         link: 'quantum-life-os-about.html',
         description: 'Quantum-coherent life operating system. Coherence/Life Force/Consciousness stat cards. Control panel with heal/meditate/emergency actions. Quantum insight generator. Terminal log. Dark/light mode.',
         accent: '#00ffff'
     },
     {
-        id: 'qg-ide', title: 'QG-IDE', tagline: 'Quantum Geodesic IDE', status: 'prototype', statusLabel: 'PROTOTYPE',
+        id: 'qg-ide', title: 'QG-IDE', tagline: 'Quantum Geodesic IDE', status: 'live', statusLabel: 'LIVE',
         icon: '&#x1F4BB;', tech: ['Code Editor', 'SVG Tetrahedron', 'Centaur Copilot'],
         link: 'qg-ide-about.html',
         description: '6-workspace IDE: Code editor, tetrahedron visualizer, terminal, Centaur AI copilot, PHX coherence companion, file browser. Pre-seeded with SIC-POVM measurement code.',
         accent: '#4db8a8'
     },
     {
-        id: 'resonance', title: 'RESONANCE', tagline: 'Conversation-to-Music Engine', status: 'prototype', statusLabel: 'PROTOTYPE',
+        id: 'resonance', title: 'RESONANCE', tagline: 'Conversation-to-Music Engine', status: 'live', statusLabel: 'LIVE',
         icon: '&#x1F3B5;', tech: ['Web Audio API', 'Pentatonic Synthesis', 'SVG Molecule'],
         link: 'resonance-about.html',
         description: 'Your words become music. Each word hashed to a pentatonic note at 172.35 Hz (P31 NMR). Mood detection shapes synthesis. Sonic molecule SVG visualization. Coherence tracking across 5 states.',
         accent: '#8b7cc9'
     },
     {
-        id: 'k4market', title: 'K4 MARKET', tagline: 'Tetrahedron Market Tomography', status: 'prototype', statusLabel: 'PROTOTYPE',
+        id: 'k4market', title: 'K4 MARKET', tagline: 'Tetrahedron Market Tomography', status: 'live', statusLabel: 'LIVE',
         icon: '&#x1F4D0;', tech: ['Three.js r183', 'OHLCV Mapping', 'Larmor Ring'],
         link: 'k4market-about.html',
         description: 'Maps OHLCV price data into K4 tetrahedral coordinate space. Support/resistance/volume nodes color-coded. Larmor ring overlay at 0.86 Hz. Demo data seeded by symbol string.',
         accent: '#3ba372'
     },
     {
-        id: 'geodesic', title: 'GEODESIC', tagline: 'Structure Builder', status: 'prototype', statusLabel: 'PROTOTYPE',
+        id: 'geodesic', title: 'GEODESIC', tagline: 'Structure Builder', status: 'live', statusLabel: 'LIVE',
         icon: '&#x1F537;', tech: ['Three.js r183', 'OrbitControls', 'Snap Grid'],
         link: 'geodesic-about.html',
         description: 'Place tetrahedra, octahedra, icosahedra, struts, and hubs in 3D space. Real-time rigidity scoring tracks structural integrity. Challenge system with tier progression.',
         accent: '#3ba372'
     },
     {
-        id: 'content-forge', title: 'CONTENT FORGE', tagline: 'Editorial Suite', status: 'prototype', statusLabel: 'PROTOTYPE',
+        id: 'content-forge', title: 'CONTENT FORGE', tagline: 'Editorial Suite', status: 'live', statusLabel: 'LIVE',
         icon: '&#x270D;&#xFE0F;', tech: ['Markdown Editor', 'Seed Bank', 'Publishing Checklist'],
         link: 'content-forge-about.html',
         description: 'Substack publishing pipeline. Seed bank organizes ideas through draft/review/publish lifecycle. 6 framework templates, 8-point publishing checklist, live word count. All localStorage.',
         accent: '#4db8a8'
     },
     {
-        id: 'tactile', title: 'TACTILE', tagline: 'Keyboard Builder & Typing Sim', status: 'prototype', statusLabel: 'PROTOTYPE',
+        id: 'tactile', title: 'TACTILE', tagline: 'Keyboard Builder & Typing Sim', status: 'live', statusLabel: 'LIVE',
         icon: '&#x2328;&#xFE0F;', tech: ['Web Audio', 'Haptics', 'Keyboard Builder', 'Typing Games'],
         link: 'tactile-about.html',
         description: 'Mechanical keyboard builder with per-key switch assignment, 4 keycap themes, educational typing tests (no timers, no failure states), and 3 typing games. AuDHD-accommodating design.',
         accent: '#cda852'
     },
     {
-        id: 'forge', title: 'FORGE', tagline: 'Special Interest Vault', status: 'prototype', statusLabel: 'PROTOTYPE',
+        id: 'forge', title: 'FORGE', tagline: 'Special Interest Vault', status: 'live', statusLabel: 'LIVE',
         icon: '&#x1F5C4;&#xFE0F;', tech: ['SQLite WASM', 'D3.js', 'Local-First'],
         link: 'forge-about.html',
         description: 'Strictly offline, visually-rich node-based database for cataloging hyperfixations and SpIns. Looks like an RPG skill-tree. Zero social sharing to prevent comparison &mdash; purely for the joy of archiving.',
         accent: '#3ba372'
     },
     {
-        id: 'signal', title: 'SIGNAL', tagline: 'Stim Room & Mini Games', status: 'prototype', statusLabel: 'PROTOTYPE',
+        id: 'signal', title: 'SIGNAL', tagline: 'Stim Room & Mini Games', status: 'live', statusLabel: 'LIVE',
         icon: '&#x1F3AE;', tech: ['WebGL Shaders', 'Cellular Automaton', 'Rapier.js'],
         link: 'signal-about.html',
         description: 'WebGL fluid pool, cellular sand mandala, spoon physics jar. 4 mini games: Kenosis Hop, Element Match, Resonance Catch, Sierpinski Builder. Zero dopamine traps. 12-spoon budget.',
         accent: '#cda852'
     },
     {
-        id: 'prism', title: 'PRISM', tagline: 'Sensory Diet Synthesizer', status: 'prototype', statusLabel: 'PROTOTYPE',
+        id: 'prism', title: 'PRISM', tagline: 'Sensory Diet Synthesizer', status: 'live', statusLabel: 'LIVE',
         icon: '&#x1F308;', tech: ['Generative Audio', 'WebGL', 'PWA'],
         link: 'prism-about.html',
         description: 'Locally generated brown/pink noise and binaural beats paired with a slow-breathing color bath. No streaming required. Calibrates to over-stimulated or under-stimulated states offline.',
         accent: '#4db8a8'
     },
     {
-        id: 'tether', title: 'TETHER', tagline: 'Spatial Executive Function Map', status: 'prototype', statusLabel: 'PROTOTYPE',
+        id: 'tether', title: 'TETHER', tagline: 'Spatial Executive Function Map', status: 'live', statusLabel: 'LIVE',
         icon: '&#x1FA90;', tech: ['Matter.js', 'Canvas API', 'IndexedDB'],
         link: 'tether-about.html',
         description: 'Task management mapped as physical planets orbiting a sun. Replaces linear to-do lists &mdash; which trigger PDA &mdash; with physics-based spatial grouping based on cognitive energy gravity.',
         accent: '#cda852'
     },
     {
-        id: 'echo', title: 'ECHO', tagline: 'Vocal Looper & Scripting Sandbox', status: 'prototype', statusLabel: 'PROTOTYPE',
+        id: 'echo', title: 'ECHO', tagline: 'Vocal Looper & Scripting Sandbox', status: 'live', statusLabel: 'LIVE',
         icon: '&#x1F5E3;&#xFE0F;', tech: ['Web Audio API', 'Pitch-Shift', 'Offline'],
         link: 'echo-about.html',
         description: 'Private loop station for vocal stimming and situational script practice. Real-time pitch-shifting abstracts the user\'s voice, removing "cringe" from rehearsal and enabling regulating echolalia.',
         accent: '#8b7cc9'
     },
     {
-        id: 'liminal', title: 'LIMINAL', tagline: 'Poetry &middot; Astrology &middot; Drawing', status: 'prototype', statusLabel: 'PROTOTYPE',
+        id: 'liminal', title: 'LIMINAL', tagline: 'Poetry &middot; Astrology &middot; Drawing', status: 'live', statusLabel: 'LIVE',
         icon: '&#x1F319;', tech: ['Perfect Freehand', 'SwissEph-JS', 'Web Speech API'],
         link: 'liminal-about.html',
         description: 'Wabi-sabi canvas (strokes fade over time), voice-to-poem transcription, offline ephemeris pattern finder, constellation drawing. Breath-locked session start. No grades, no scores.',
         accent: '#8b7cc9'
     },
     {
-        id: 'kinematics', title: 'KINEMATICS', tagline: 'Proprioceptive Movement Node', status: 'prototype', statusLabel: 'PROTOTYPE',
+        id: 'kinematics', title: 'KINEMATICS', tagline: 'Proprioceptive Movement Node', status: 'live', statusLabel: 'LIVE',
         icon: '&#x1F57A;', tech: ['Device Orientation', 'Tone.js', 'Screen-Free'],
         link: 'kinematics-about.html',
         description: 'Phone goes in pocket. Accelerometer data shapes a live generative soundscape, encouraging full-body gross motor movement away from the screen. Proprioceptive play for focus support and screen-free engagement.',
+        description: 'Phone goes in pocket. Accelerometer data shapes a live generative soundscape, encouraging full-body gross motor movement away from the screen. Movement and sensory play, not clinical assessment.',
         accent: '#cc6247'
     },
     // -- RESEARCH ---------------------------------------------------

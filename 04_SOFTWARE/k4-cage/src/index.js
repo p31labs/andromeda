@@ -1,50 +1,39 @@
 /**
- * K₄ UNIFIED WORKER — The Calcium Cage
- * ======================================
+ * Unified k4-cage — CWP-30
+ * K4Topology DO (family graph) + FamilyMeshRoom DO (WebSocket hibernation + D1 flush).
  * P31 Labs, Inc. | EIN 42-1888158
  *
- * One worker. Four vertices. Six edges. Volumetric enclosure (β₂=1).
+ * REST topology: /api/mesh, /api/vertex/:id, /api/presence/:id, /api/ping/:from/:to, /api/edge/:a/:b
+ * WebSocket: /ws/:roomId?node=<id>
+ * Room stats: /room-stats/:roomId
+ * Telemetry: GET/POST /api/telemetry (D1 when DB bound; else KV chain like legacy)
  *
- * The complete graph K₄ is the minimum rigid structure in 3-space.
- * This worker IS the Posner molecule: Ca₉(PO₄)₆
- * Phosphorus alone burns. Inside the cage, it's stable.
- *
- * Vertices: will, sj, wj, christyn
- * Edges: will↔sj, will↔wj, will↔christyn, sj↔wj, sj↔christyn, wj↔christyn
- *
- * Telemetry: WCD-46 SHA-256 chain-of-custody (Daubert-grade)
- * Auth: Admin token for write ops, public read for mesh state
- *
- * Deploy: wrangler deploy
- * KV Namespace: K4_MESH
+ * Deploy: set database_id in wrangler.toml, run schema.sql, wrangler secret put ADMIN_TOKEN, deploy.
  */
+import { DurableObject } from 'cloudflare:workers';
 
-// ─── K₄ TOPOLOGY CONSTANTS ───────────────────────────────────────────
 const VERTICES = ['will', 'sj', 'wj', 'christyn'];
 const EDGES = [
-  ['will', 'sj'],      // Dad ↔ Son
-  ['will', 'wj'],      // Dad ↔ Daughter
-  ['will', 'christyn'], // Co-parent channel
-  ['sj', 'wj'],        // Sibling bond
-  ['sj', 'christyn'],  // Son ↔ Mom
-  ['wj', 'christyn'],  // Daughter ↔ Mom
+  ['will', 'sj'],
+  ['will', 'wj'],
+  ['will', 'christyn'],
+  ['sj', 'wj'],
+  ['sj', 'christyn'],
+  ['wj', 'christyn'],
 ];
 
 const VERTEX_NAMES = {
   will: 'Will',
   sj: 'S.J.',
   wj: 'W.J.',
-  christyn: 'Christyn'
+  christyn: 'Christyn',
 };
 
-const ADMIN_TOKEN = 'p31-dad-2026';
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
   'Access-Control-Allow-Headers': 'Content-Type, Authorization',
 };
-
-// ─── HELPERS ──────────────────────────────────────────────────────────
 
 function edgeKey(v1, v2) {
   return [v1, v2].sort().join('-');
@@ -53,7 +42,7 @@ function edgeKey(v1, v2) {
 function json(data, status = 200) {
   return new Response(JSON.stringify(data, null, 2), {
     status,
-    headers: { 'Content-Type': 'application/json', ...CORS_HEADERS }
+    headers: { 'Content-Type': 'application/json; charset=utf-8', ...CORS_HEADERS },
   });
 }
 
@@ -69,30 +58,27 @@ function isValidEdge(v1, v2) {
   return isValidVertex(v1) && isValidVertex(v2) && v1 !== v2;
 }
 
-function isAdmin(request) {
+function isAdmin(request, env) {
+  const token = env.ADMIN_TOKEN;
+  if (!token) return false;
   const auth = request.headers.get('Authorization');
   const url = new URL(request.url);
-  const token = url.searchParams.get('token');
-  return auth === `Bearer ${ADMIN_TOKEN}` || token === ADMIN_TOKEN;
+  const q = url.searchParams.get('token');
+  return auth === `Bearer ${token}` || q === token;
 }
 
-// ─── SHA-256 CHAIN OF CUSTODY (WCD-46) ───────────────────────────────
-// Every telemetry event is hashed with the previous hash.
-// Altering any record invalidates all subsequent hashes.
-// Daubert-grade: O.C.G.A. §§ 24-9-901, 24-9-902, 24-7-702
-
-async function sha256(message) {
-  const msgBuffer = new TextEncoder().encode(message);
-  const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+async function sha256Hex(input) {
+  const msg =
+    typeof input === 'string' ? input : JSON.stringify(input);
+  const buf = new TextEncoder().encode(msg);
+  const hash = await crypto.subtle.digest('SHA-256', buf);
+  return [...new Uint8Array(hash)].map((b) => b.toString(16).padStart(2, '0')).join('');
 }
 
-async function appendTelemetry(env, event) {
-  // Get current chain head
+// ─── KV telemetry (fallback / legacy WCD-46) ─────────────────────────
+async function appendTelemetryKv(env, event) {
   const headRaw = await env.K4_MESH.get('telemetry:head');
   const head = headRaw ? JSON.parse(headRaw) : { index: 0, hash: '0'.repeat(64) };
-
   const newIndex = head.index + 1;
   const payload = {
     index: newIndex,
@@ -100,206 +86,22 @@ async function appendTelemetry(env, event) {
     timestamp: new Date().toISOString(),
     prevHash: head.hash,
   };
-
-  // H_n = SHA256(P_n + H_{n-1})
-  const newHash = await sha256(JSON.stringify(payload) + head.hash);
+  const newHash = await sha256Hex(JSON.stringify(payload) + head.hash);
   payload.hash = newHash;
-
-  // Write the event
   await env.K4_MESH.put(`telemetry:${newIndex}`, JSON.stringify(payload));
-
-  // Update the head
   await env.K4_MESH.put('telemetry:head', JSON.stringify({ index: newIndex, hash: newHash }));
-
   return payload;
 }
 
-// ─── KV OPERATIONS ───────────────────────────────────────────────────
-
-async function getVertex(env, id) {
-  const raw = await env.K4_MESH.get(`vertex:${id}`);
-  if (!raw) {
-    return {
-      id,
-      name: VERTEX_NAMES[id],
-      love: 0,
-      status: 'offline',
-      lastSeen: null,
-      heartbeat: null,
-      metadata: {}
-    };
-  }
-  return JSON.parse(raw);
-}
-
-async function setVertex(env, id, data) {
-  await env.K4_MESH.put(`vertex:${id}`, JSON.stringify(data));
-}
-
-async function getEdge(env, v1, v2) {
-  const key = edgeKey(v1, v2);
-  const raw = await env.K4_MESH.get(`edge:${key}`);
-  if (!raw) {
-    return {
-      vertices: [v1, v2],
-      key,
-      love: 0,
-      pings: [],
-      lastActivity: null,
-      messageCount: 0
-    };
-  }
-  return JSON.parse(raw);
-}
-
-async function setEdge(env, v1, v2, data) {
-  const key = edgeKey(v1, v2);
-  await env.K4_MESH.put(`edge:${key}`, JSON.stringify(data));
-}
-
-// ─── ROUTE HANDLERS ──────────────────────────────────────────────────
-
-async function handleMeshState(env) {
-  const vertices = {};
-  const edges = {};
-  let totalLove = 0;
-
-  for (const v of VERTICES) {
-    vertices[v] = await getVertex(env, v);
-    totalLove += vertices[v].love;
-  }
-
-  for (const [v1, v2] of EDGES) {
-    const key = edgeKey(v1, v2);
-    edges[key] = await getEdge(env, v1, v2);
-    totalLove += edges[key].love;
-  }
-
-  return json({
-    topology: 'K4',
-    vertices: 4,
-    edges: 6,
-    rigidity: 'isostatic',
-    betti_2: 1, // volumetric enclosure
-    mesh: { vertices, edges },
-    totalLove,
-    timestamp: new Date().toISOString(),
-    signature: 'Ca₉(PO₄)₆'
-  });
-}
-
-async function handleVertexGet(env, id) {
-  if (!isValidVertex(id)) return err(`Unknown vertex: ${id}. Valid: ${VERTICES.join(', ')}`);
-  const vertex = await getVertex(env, id);
-
-  // Get all edges touching this vertex
-  const connectedEdges = {};
-  for (const [v1, v2] of EDGES) {
-    if (v1 === id || v2 === id) {
-      const key = edgeKey(v1, v2);
-      connectedEdges[key] = await getEdge(env, v1, v2);
-    }
-  }
-
-  return json({ vertex, edges: connectedEdges });
-}
-
-async function handlePresence(env, request, id) {
-  if (!isValidVertex(id)) return err(`Unknown vertex: ${id}`);
-
-  const body = await request.json().catch(() => ({}));
-  const vertex = await getVertex(env, id);
-
-  vertex.status = body.status || 'online';
-  vertex.lastSeen = new Date().toISOString();
-  vertex.heartbeat = Date.now();
-  if (body.metadata) vertex.metadata = { ...vertex.metadata, ...body.metadata };
-
-  await setVertex(env, id, vertex);
-
-  // Log telemetry
-  await appendTelemetry(env, {
-    type: 'presence',
-    vertex: id,
-    status: vertex.status
-  });
-
-  return json({ vertex, recorded: true });
-}
-
-async function handlePing(env, request, from, to) {
-  if (!isValidEdge(from, to)) return err(`Invalid edge: ${from} ↔ ${to}`);
-
-  const body = await request.json().catch(() => ({}));
-  const emoji = body.emoji || '💚';
-  const edge = await getEdge(env, from, to);
-  const fromVertex = await getVertex(env, from);
-  const toVertex = await getVertex(env, to);
-
-  // Create ping
-  const ping = {
-    from,
-    to,
-    emoji,
-    timestamp: new Date().toISOString(),
-    id: crypto.randomUUID()
-  };
-
-  // Add to edge (keep last 50 pings)
-  edge.pings = [ping, ...edge.pings].slice(0, 50);
-  edge.love += 1;
-  edge.lastActivity = ping.timestamp;
-  edge.messageCount += 1;
-
-  // LOVE flows to both vertices
-  fromVertex.love += 1;
-  toVertex.love += 1;
-
-  await setEdge(env, from, to, edge);
-  await setVertex(env, from, fromVertex);
-  await setVertex(env, to, toVertex);
-
-  // Chain-of-custody telemetry
-  const telemetry = await appendTelemetry(env, {
-    type: 'ping',
-    edge: edgeKey(from, to),
-    from,
-    to,
-    emoji,
-    pingId: ping.id
-  });
-
-  return json({
-    ping,
-    edge: { love: edge.love, lastActivity: edge.lastActivity },
-    fromLove: fromVertex.love,
-    toLove: toVertex.love,
-    telemetry: { index: telemetry.index, hash: telemetry.hash }
-  });
-}
-
-async function handleEdgeGet(env, v1, v2) {
-  if (!isValidEdge(v1, v2)) return err(`Invalid edge: ${v1} ↔ ${v2}`);
-  return json(await getEdge(env, v1, v2));
-}
-
-async function handleTelemetryGet(env, request) {
-  const url = new URL(request.url);
-  const count = Math.min(parseInt(url.searchParams.get('count') || '20'), 100);
-
+async function getTelemetryKvChain(env, count) {
   const headRaw = await env.K4_MESH.get('telemetry:head');
-  if (!headRaw) return json({ chain: [], head: null, verified: true });
-
+  if (!headRaw) return { chain: [], head: null, verified: true };
   const head = JSON.parse(headRaw);
   const chain = [];
-
-  // Walk backwards from head
   for (let i = head.index; i > Math.max(0, head.index - count); i--) {
     const raw = await env.K4_MESH.get(`telemetry:${i}`);
     if (raw) chain.push(JSON.parse(raw));
   }
-
-  // Verify chain integrity
   let verified = true;
   for (let i = 0; i < chain.length - 1; i++) {
     if (chain[i].prevHash !== chain[i + 1].hash) {
@@ -307,159 +109,426 @@ async function handleTelemetryGet(env, request) {
       break;
     }
   }
-
-  return json({
-    chain,
-    head,
-    verified,
-    chainLength: head.index,
-    standard: 'WCD-46 SHA-256 Chain-of-Custody',
-    compliance: ['O.C.G.A. § 24-9-901', 'O.C.G.A. § 24-9-902', 'O.C.G.A. § 24-7-702']
-  });
+  return { chain, head, verified, chainLength: head.index, source: 'kv' };
 }
 
-async function handleTelemetryPost(env, request) {
-  const body = await request.json().catch(() => null);
-  if (!body || !body.event) return err('Missing event payload');
-
-  const telemetry = await appendTelemetry(env, body.event);
-  return json({ recorded: true, telemetry });
+async function appendTelemetryD1(env, event) {
+  const row = await env.DB.prepare(
+    'SELECT hash FROM telemetry ORDER BY id DESC LIMIT 1',
+  ).first();
+  const prevHash = row?.hash ?? '0'.repeat(64);
+  const base = {
+    room_id: 'k4-cage',
+    node_id: 'system',
+    kind: 'event',
+    payload: JSON.stringify(event),
+    ts: Date.now(),
+    prev_hash: prevHash,
+  };
+  const hash = await sha256Hex({ ...base, prevHash });
+  const flushed_at = Date.now();
+  await env.DB.prepare(
+    `INSERT INTO telemetry (room_id, node_id, kind, payload, ts, hash, prev_hash, flushed_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+  )
+    .bind(
+      base.room_id,
+      base.node_id,
+      base.kind,
+      base.payload,
+      base.ts,
+      hash,
+      prevHash,
+      flushed_at,
+    )
+    .run();
+  return { hash, prevHash, source: 'd1' };
 }
 
-async function handleAdminDashboard(env) {
-  const mesh = {};
+/** @param {import('./index.js').Env} env */
+async function broadcastPingToRooms(env, pingPayload) {
+  const token = env.INTERNAL_FANOUT_TOKEN;
+  if (!token) return;
+  const rooms = (env.MESH_ROOM_IDS || 'family-mesh').split(',').map((s) => s.trim()).filter(Boolean);
+  const headers = {
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${token}`,
+  };
+  for (const roomId of rooms) {
+    const id = env.FAMILY_MESH_ROOM.idFromName(roomId);
+    const stub = env.FAMILY_MESH_ROOM.get(id);
+    try {
+      await stub.fetch(
+        new Request('https://internal/broadcast', {
+          method: 'POST',
+          headers,
+          body: JSON.stringify(pingPayload),
+        }),
+      );
+    } catch {
+      /* non-fatal */
+    }
+  }
+}
 
-  // Collect all vertex states
-  for (const v of VERTICES) {
-    mesh[v] = await getVertex(env, v);
+// ═══ K4Topology DO ═══════════════════════════════════════════════════
+export class K4Topology extends DurableObject {
+  /** @param {DurableObjectState} ctx @param {Env} env */
+  constructor(ctx, env) {
+    super(ctx, env);
+    this.ctx = ctx;
+    this.env = env;
   }
 
-  // Collect all edge states
-  const edgeStates = {};
-  for (const [v1, v2] of EDGES) {
+  defaultVertex(id) {
+    return {
+      id,
+      name: VERTEX_NAMES[id] || id,
+      love: 0,
+      status: 'offline',
+      lastSeen: null,
+      heartbeat: null,
+      metadata: {},
+    };
+  }
+
+  defaultEdge(v1, v2) {
     const key = edgeKey(v1, v2);
-    edgeStates[key] = await getEdge(env, v1, v2);
+    return {
+      vertices: [v1, v2],
+      key,
+      love: 0,
+      pings: [],
+      lastActivity: null,
+      messageCount: 0,
+    };
   }
 
-  // Chain stats
-  const headRaw = await env.K4_MESH.get('telemetry:head');
-  const head = headRaw ? JSON.parse(headRaw) : { index: 0, hash: null };
+  async fetch(request) {
+    const url = new URL(request.url);
+    const path = url.pathname;
+    const method = request.method;
 
-  return json({
-    operator: 'William R. Johnson',
-    org: 'P31 Labs, Inc.',
-    ein: '42-1888158',
-    topology: {
-      type: 'K₄ Complete Graph',
-      vertices: 4,
-      edges: 6,
-      rigidity: 'Isostatic (Maxwell: E = 3V - 6 → 6 = 6)',
-      betti_2: 1,
-      enclosure: 'Volumetric'
-    },
-    vertices: mesh,
-    edges: edgeStates,
-    telemetry: {
-      chainLength: head.index,
-      headHash: head.hash,
-      standard: 'WCD-46',
-      compliance: 'Daubert'
-    },
-    infrastructure: {
-      worker: 'k4-cage.trimtab-signal.workers.dev',
-      kv: 'K4_MESH',
-      architecture: 'Single worker, zero Wye dependency'
-    },
-    generated: new Date().toISOString()
-  });
+    if (path === '/mesh' && method === 'GET') {
+      const vertices = {};
+      const edges = {};
+      let totalLove = 0;
+      for (const v of VERTICES) {
+        const raw = await this.ctx.storage.get(`vertex:${v}`);
+        vertices[v] = raw ? JSON.parse(raw) : this.defaultVertex(v);
+        totalLove += vertices[v].love || 0;
+      }
+      for (const [a, b] of EDGES) {
+        const k = edgeKey(a, b);
+        const raw = await this.ctx.storage.get(`edge:${k}`);
+        edges[k] = raw ? JSON.parse(raw) : this.defaultEdge(a, b);
+        totalLove += edges[k].love || 0;
+      }
+      return Response.json({
+        topology: 'K4',
+        vertices: 4,
+        edges: 6,
+        rigidity: 'isostatic',
+        betti_2: 1,
+        mesh: { vertices, edges },
+        totalLove,
+        timestamp: new Date().toISOString(),
+        signature: 'Ca₉(PO₄)₆',
+      });
+    }
+
+    const vertexGet = path.match(/^\/vertex\/(\w+)$/);
+    if (vertexGet && method === 'GET') {
+      const id = vertexGet[1];
+      if (!isValidVertex(id)) return Response.json({ error: 'Unknown vertex' }, { status: 404 });
+      const raw = await this.ctx.storage.get(`vertex:${id}`);
+      const vertex = raw ? JSON.parse(raw) : this.defaultVertex(id);
+      const connectedEdges = {};
+      for (const [v1, v2] of EDGES) {
+        if (v1 === id || v2 === id) {
+          const k = edgeKey(v1, v2);
+          const er = await this.ctx.storage.get(`edge:${k}`);
+          connectedEdges[k] = er ? JSON.parse(er) : this.defaultEdge(v1, v2);
+        }
+      }
+      return Response.json({ vertex, edges: connectedEdges });
+    }
+
+    const presence = path.match(/^\/presence\/(\w+)$/);
+    if (presence && method === 'POST') {
+      const id = presence[1];
+      if (!isValidVertex(id)) return Response.json({ error: 'Unknown vertex' }, { status: 404 });
+      const body = await request.json().catch(() => ({}));
+      const raw = await this.ctx.storage.get(`vertex:${id}`);
+      const vertex = raw ? JSON.parse(raw) : this.defaultVertex(id);
+      vertex.status = body.status || 'online';
+      vertex.lastSeen = new Date().toISOString();
+      vertex.heartbeat = Date.now();
+      if (body.metadata) vertex.metadata = { ...vertex.metadata, ...body.metadata };
+      await this.ctx.storage.put(`vertex:${id}`, JSON.stringify(vertex));
+      return Response.json({ vertex, recorded: true });
+    }
+
+    const ping = path.match(/^\/ping\/(\w+)\/(\w+)$/);
+    if (ping && method === 'POST') {
+      const from = ping[1];
+      const to = ping[2];
+      if (!isValidEdge(from, to)) return Response.json({ error: 'Invalid edge' }, { status: 400 });
+      const body = await request.json().catch(() => ({}));
+      const emoji = typeof body.emoji === 'string' && body.emoji.length < 32 ? body.emoji : '💚';
+      const k = edgeKey(from, to);
+      const eraw = await this.ctx.storage.get(`edge:${k}`);
+      const edge = eraw ? JSON.parse(eraw) : this.defaultEdge(from, to);
+      const pingObj = {
+        from,
+        to,
+        emoji,
+        timestamp: new Date().toISOString(),
+        id: crypto.randomUUID(),
+      };
+      edge.pings = [pingObj, ...(edge.pings || [])].slice(0, 50);
+      edge.love = (edge.love || 0) + 1;
+      edge.lastActivity = pingObj.timestamp;
+      edge.messageCount = (edge.messageCount || 0) + 1;
+
+      const fromRaw = await this.ctx.storage.get(`vertex:${from}`);
+      const toRaw = await this.ctx.storage.get(`vertex:${to}`);
+      const fromV = fromRaw ? JSON.parse(fromRaw) : this.defaultVertex(from);
+      const toV = toRaw ? JSON.parse(toRaw) : this.defaultVertex(to);
+      fromV.love = (fromV.love || 0) + 1;
+      toV.love = (toV.love || 0) + 1;
+
+      await this.ctx.storage.put(`edge:${k}`, JSON.stringify(edge));
+      await this.ctx.storage.put(`vertex:${from}`, JSON.stringify(fromV));
+      await this.ctx.storage.put(`vertex:${to}`, JSON.stringify(toV));
+
+      return Response.json({
+        ping: pingObj,
+        edge: { love: edge.love, lastActivity: edge.lastActivity },
+        fromLove: fromV.love,
+        toLove: toV.love,
+      });
+    }
+
+    const edgeGet = path.match(/^\/edge\/(\w+)\/(\w+)$/);
+    if (edgeGet && method === 'GET') {
+      const v1 = edgeGet[1];
+      const v2 = edgeGet[2];
+      if (!isValidEdge(v1, v2)) return Response.json({ error: 'Invalid edge' }, { status: 400 });
+      const k = edgeKey(v1, v2);
+      const eraw = await this.ctx.storage.get(`edge:${k}`);
+      return Response.json(eraw ? JSON.parse(eraw) : this.defaultEdge(v1, v2));
+    }
+
+    return Response.json({ error: 'Unknown topology route' }, { status: 404 });
+  }
 }
 
-// ─── STATUS PAGE (HTML) ──────────────────────────────────────────────
+// ═══ FamilyMeshRoom DO ═══════════════════════════════════════════════
+export class FamilyMeshRoom extends DurableObject {
+  /** @param {DurableObjectState} ctx @param {Env} env */
+  constructor(ctx, env) {
+    super(ctx, env);
+    this.ctx = ctx;
+    this.env = env;
+    this.pendingTelemetry = [];
+    this.flushBatchSize = 100;
+    this.flushIntervalMs = 30_000;
+    this.roomId = 'family-mesh';
+  }
 
-function statusPage() {
-  return new Response(`<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>K₄ Cage — P31 Labs</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      background: #0a0a0a; color: #e0e0e0;
-      font-family: 'SF Mono', 'Fira Code', monospace;
-      padding: 2rem; min-height: 100vh;
+  scheduleFlush() {
+    void this.ctx.storage.getAlarm().then((t) => {
+      if (t == null) {
+        void this.ctx.storage.setAlarm(Date.now() + this.flushIntervalMs);
+      }
+    });
+  }
+
+  broadcastJson(obj, excludeTags) {
+    const msg = JSON.stringify(obj);
+    for (const ws of this.ctx.getWebSockets()) {
+      const tags = this.ctx.getTags(ws);
+      const nodeId = tags[0];
+      if (excludeTags && nodeId === excludeTags) continue;
+      try {
+        ws.send(msg);
+      } catch {
+        try {
+          this.ctx.deleteWebSocket(ws);
+        } catch {
+          /* ignore */
+        }
+      }
     }
-    .header { text-align: center; margin-bottom: 2rem; }
-    .header h1 {
-      font-size: 2rem; color: #ff6b4a;
-      text-shadow: 0 0 20px rgba(255,107,74,0.3);
+  }
+
+  async fetch(request) {
+    const url = new URL(request.url);
+    const path = url.pathname;
+    this.roomId = url.searchParams.get('room') || this.roomId;
+
+    if (path === '/stats' && request.method === 'GET') {
+      const sockets = this.ctx.getWebSockets();
+      return Response.json({
+        connections: sockets.length,
+        pendingTelemetry: this.pendingTelemetry.length,
+        roomId: this.roomId,
+      });
     }
-    .header .sub { color: #888; font-size: 0.85rem; margin-top: 0.5rem; }
-    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; max-width: 800px; margin: 0 auto; }
-    .card {
-      background: #111; border: 1px solid #222; border-radius: 8px;
-      padding: 1rem; transition: border-color 0.3s;
+
+    if (path === '/broadcast' && request.method === 'POST') {
+      const token = this.env.INTERNAL_FANOUT_TOKEN;
+      const auth = request.headers.get('Authorization');
+      if (token && auth !== `Bearer ${token}`) {
+        return Response.json({ error: 'Unauthorized' }, { status: 401 });
+      }
+      const body = await request.json().catch(() => ({}));
+      this.broadcastJson(body, null);
+      return Response.json({ ok: true, broadcast: true });
     }
-    .card:hover { border-color: #ff6b4a; }
-    .card h3 { color: #ff6b4a; font-size: 0.9rem; margin-bottom: 0.5rem; }
-    .endpoint { color: #4ecdc4; font-size: 0.8rem; margin: 0.25rem 0; }
-    .meta { color: #666; font-size: 0.75rem; }
-    @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }
-  </style>
-</head>
-<body>
-  <div class="header">
-    <h1>K₄ CAGE</h1>
-    <div class="sub">P31 Labs, Inc. | One Worker. Four Vertices. Six Edges.</div>
-    <div class="sub">Ca₉(PO₄)₆ — The Posner Molecule as Infrastructure</div>
-  </div>
-  <div class="grid">
-    <div class="card">
-      <h3>MESH STATE</h3>
-      <div class="endpoint">GET /api/mesh</div>
-      <div class="meta">Full topology: all vertices + edges + LOVE</div>
-    </div>
-    <div class="card">
-      <h3>VERTEX</h3>
-      <div class="endpoint">GET /api/vertex/:id</div>
-      <div class="endpoint">POST /api/presence/:id</div>
-      <div class="meta">will | sj | wj | christyn</div>
-    </div>
-    <div class="card">
-      <h3>EDGES</h3>
-      <div class="endpoint">GET /api/edge/:v1/:v2</div>
-      <div class="endpoint">POST /api/ping/:from/:to</div>
-      <div class="meta">6 edges, each carrying pings + LOVE</div>
-    </div>
-    <div class="card">
-      <h3>TELEMETRY (WCD-46)</h3>
-      <div class="endpoint">GET /api/telemetry</div>
-      <div class="endpoint">POST /api/telemetry</div>
-      <div class="meta">SHA-256 chain-of-custody, Daubert-grade</div>
-    </div>
-    <div class="card">
-      <h3>ADMIN</h3>
-      <div class="endpoint">GET /api/admin/dashboard?token=***</div>
-      <div class="meta">Full mesh overview, chain stats</div>
-    </div>
-    <div class="card">
-      <h3>TOPOLOGY</h3>
-      <div class="meta">K₄ = 4 vertices, 6 edges</div>
-      <div class="meta">Maxwell rigidity: E = 3V - 6 → 6 = 6 ✓</div>
-      <div class="meta">β₂ = 1 (volumetric enclosure) ✓</div>
-      <div class="meta">Isostatic: minimum rigid in ℝ³ ✓</div>
-    </div>
-  </div>
-</body>
-</html>`, {
-    headers: { 'Content-Type': 'text/html', ...CORS_HEADERS }
-  });
+
+    if (request.headers.get('Upgrade') !== 'websocket') {
+      return Response.json({ error: 'Expected WebSocket upgrade' }, { status: 400 });
+    }
+
+    const nodeId =
+      url.searchParams.get('node')?.replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 64) ||
+      `anon-${crypto.randomUUID().slice(0, 8)}`;
+
+    const sockets = this.ctx.getWebSockets();
+    if (sockets.length >= 32) {
+      return new Response('Room full', { status: 503 });
+    }
+
+    const pair = new WebSocketPair();
+    const [client, server] = Object.values(pair);
+    this.ctx.acceptWebSocket(server, [nodeId]);
+
+    server.send(
+      JSON.stringify({
+        type: 'joined',
+        userId: nodeId,
+        room: this.roomId,
+        ts: Date.now(),
+      }),
+    );
+    this.broadcastJson({ type: 'user_joined', userId: nodeId, ts: Date.now() }, nodeId);
+    this.scheduleFlush();
+
+    return new Response(null, { status: 101, webSocket: client });
+  }
+
+  /** @param {WebSocket} ws @param {string | ArrayBuffer} message */
+  async webSocketMessage(ws, message) {
+    const tags = this.ctx.getTags(ws);
+    const nodeId = tags[0] || 'unknown';
+    let data;
+    const text = typeof message === 'string' ? message : new TextDecoder().decode(message);
+    try {
+      data = JSON.parse(text);
+    } catch {
+      data = { type: 'raw', content: text };
+    }
+
+    if (data.type === 'ping' && data.content === 'ping') {
+      ws.send(JSON.stringify({ type: 'pong', ts: Date.now() }));
+      return;
+    }
+
+    const payload = { ...data, sender: nodeId, ts: Date.now() };
+    this.broadcastJson(payload, nodeId);
+    if (this.env.DB) {
+      this.pendingTelemetry.push({
+        room_id: this.roomId,
+        node_id: nodeId,
+        kind: String(data.type || 'message').slice(0, 64),
+        payload: JSON.stringify(payload),
+        ts: Date.now(),
+      });
+      this.scheduleFlush();
+    }
+  }
+
+  /** @param {WebSocket} ws */
+  async webSocketClose(ws) {
+    const tags = this.ctx.getTags(ws);
+    const nodeId = tags[0] || 'unknown';
+    this.broadcastJson({ type: 'user_left', userId: nodeId, ts: Date.now() }, null);
+  }
+
+  async alarm() {
+    const db = this.env.DB;
+    if (this.pendingTelemetry.length > 0 && db) {
+      const batch = this.pendingTelemetry.splice(0, this.flushBatchSize);
+      let prevRow = await this.ctx.storage.get('d1_chain_head');
+      let prevHash = typeof prevRow === 'string' ? prevRow : '0'.repeat(64);
+
+      const statements = [];
+      for (const row of batch) {
+        const hashInput = { ...row, prevHash };
+        const hash = await sha256Hex(hashInput);
+        const flushed_at = Date.now();
+        statements.push(
+          db
+            .prepare(
+              `INSERT INTO telemetry (room_id, node_id, kind, payload, ts, hash, prev_hash, flushed_at)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+            )
+            .bind(
+              row.room_id,
+              row.node_id,
+              row.kind,
+              row.payload,
+              row.ts,
+              hash,
+              prevHash,
+              flushed_at,
+            ),
+        );
+        prevHash = hash;
+      }
+      try {
+        await db.batch(statements);
+        await this.ctx.storage.put('d1_chain_head', prevHash);
+      } catch {
+        this.pendingTelemetry.unshift(...batch);
+      }
+    }
+
+    if (this.pendingTelemetry.length > 0 || this.ctx.getWebSockets().length > 0) {
+      await this.ctx.storage.setAlarm(Date.now() + this.flushIntervalMs);
+    }
+  }
 }
 
-// ─── ROUTER ──────────────────────────────────────────────────────────
+// ═══ Worker router ═════════════════════════════════════════════════════
+/** @typedef {{ K4_TOPOLOGY: DurableObjectNamespace, FAMILY_MESH_ROOM: DurableObjectNamespace, K4_MESH: KVNamespace, DB?: D1Database, ADMIN_TOKEN?: string, INTERNAL_FANOUT_TOKEN?: string, MESH_ROOM_IDS?: string, WORKER_VERSION?: string, TOPOLOGY?: string, ENVIRONMENT?: string }} Env */
+
+/**
+ * @param {Request} request
+ * @param {Env} env
+ * @param {string} path e.g. /api/mesh
+ * @param {string} method
+ */
+async function topologyFetch(request, env, path, method) {
+  if (!env.K4_TOPOLOGY) {
+    return new Response(JSON.stringify({ error: 'DO not configured', code: 'NO_DO' }), { status: 503 });
+  }
+  const id = env.K4_TOPOLOGY.idFromName('family');
+  const stub = env.K4_TOPOLOGY.get(id);
+  const internalPath = path.replace(/^\/api/, '') || '/';
+  return stub.fetch(
+    new Request(`https://topology${internalPath}`, {
+      method,
+      headers: request.headers,
+      body: method !== 'GET' && method !== 'HEAD' ? request.body : undefined,
+    }),
+  );
+}
 
 export default {
+  /** @param {Request} request @param {Env} env */
   async fetch(request, env) {
     if (request.method === 'OPTIONS') {
       return new Response(null, { headers: CORS_HEADERS });
@@ -469,50 +538,212 @@ export default {
     const path = url.pathname;
     const method = request.method;
 
-    // Route table
     try {
-      // Root → status page
-      if (path === '/' || path === '') return statusPage();
+      if (path === '/' || path === '') {
+        return new Response(
+          `<!DOCTYPE html><html><head><meta charset="utf-8"><title>K4 Cage</title></head><body><pre>k4-cage unified\nGET /api/mesh\nWS /ws/family-mesh?node=…\n</pre></body></html>`,
+          { headers: { 'Content-Type': 'text/html; charset=utf-8' } },
+        );
+      }
 
-      // Mesh state (public read)
-      if (path === '/api/mesh' && method === 'GET') return await handleMeshState(env);
+      if (path === '/health' || path === '/api/health') {
+        const meshR = await topologyFetch(request, env, '/api/mesh', 'GET').catch(() => null);
+        let topologySummary = null;
+        if (meshR && meshR.ok) topologySummary = await meshR.json();
+        return json({
+          ok: true,
+          service: 'k4-cage-unified',
+          workerVersion: env.WORKER_VERSION || '2.0.0',
+          topology: topologySummary,
+          ts: new Date().toISOString(),
+        });
+      }
 
-      // Vertex operations
-      const vertexMatch = path.match(/^\/api\/vertex\/(\w+)$/);
-      if (vertexMatch && method === 'GET') return await handleVertexGet(env, vertexMatch[1]);
+      if (path === '/api/mesh' && method === 'GET') {
+        if (!env.K4_TOPOLOGY) {
+          return json({
+            vertices: VERTICES.map(v => ({ id: v, name: VERTEX_NAMES[v] })),
+            edges: EDGES.map(([a, b]) => ({ source: a, target: b })),
+            topology: 'K4',
+            timestamp: new Date().toISOString(),
+          });
+        }
+        const r = await topologyFetch(request, env, '/api/mesh', 'GET');
+        return new Response(r.body, { status: r.status, headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' } });
+      }
 
-      // Presence update
-      const presenceMatch = path.match(/^\/api\/presence\/(\w+)$/);
-      if (presenceMatch && method === 'POST') return await handlePresence(env, request, presenceMatch[1]);
+      const vMatch = path.match(/^\/api\/vertex\/(\w+)$/);
+      if (vMatch && method === 'GET') {
+        const r = await topologyFetch(request, env, `/api/vertex/${vMatch[1]}`, 'GET');
+        return new Response(r.body, { status: r.status, headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' } });
+      }
 
-      // Ping (send LOVE along an edge)
+      const pMatch = path.match(/^\/api\/presence\/(\w+)$/);
+      if (pMatch && method === 'POST') {
+        const r = await topologyFetch(request, env, `/api/presence/${pMatch[1]}`, 'POST');
+        const out = await r.text();
+        if (r.ok && env.FAMILY_MESH_ROOM) {
+          try {
+            const body = JSON.parse(out);
+            await broadcastPingToRooms(env, {
+              type: 'presence',
+              vertex: pMatch[1],
+              vertexRecord: body.vertex,
+              ts: Date.now(),
+            });
+          } catch {
+            /* ignore */
+          }
+        }
+        return new Response(out, { status: r.status, headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' } });
+      }
+
       const pingMatch = path.match(/^\/api\/ping\/(\w+)\/(\w+)$/);
-      if (pingMatch && method === 'POST') return await handlePing(env, request, pingMatch[1], pingMatch[2]);
+      if (pingMatch && method === 'POST') {
+        if (!env.K4_TOPOLOGY) {
+          const [from, to] = pingMatch.slice(1);
+          const edgeKey = [from, to].sort().join('-');
+          const edgeCountKey = `edge:${edgeKey}:count`;
+          const currentCount = await env.K4_MESH.get(edgeCountKey);
+          const newCount = (parseInt(currentCount || '0', 10) + 1).toString();
+          await env.K4_MESH.put(edgeCountKey, newCount);
+          return json({ ok: true, from, to, love: parseInt(newCount, 10), ts: new Date().toISOString() });
+        }
+        const r = await topologyFetch(
+          request,
+          env,
+          `/api/ping/${pingMatch[1]}/${pingMatch[2]}`,
+          'POST',
+        );
+        const out = await r.text();
+        if (r.ok) {
+          let parsed;
+          try {
+            parsed = JSON.parse(out);
+          } catch {
+            parsed = null;
+          }
+          if (env.DB) {
+            try {
+              await appendTelemetryD1(env, {
+                type: 'ping',
+                from: pingMatch[1],
+                to: pingMatch[2],
+                ping: parsed?.ping,
+              });
+            } catch {
+              /* optional */
+            }
+          } else {
+            await appendTelemetryKv(env, {
+              type: 'ping',
+              from: pingMatch[1],
+              to: pingMatch[2],
+              ping: parsed?.ping,
+            });
+          }
+          if (parsed?.ping) {
+            await broadcastPingToRooms(env, {
+              type: 'ping',
+              ...parsed.ping,
+              fromLove: parsed.fromLove,
+              toLove: parsed.toLove,
+            });
+          }
+        }
+        return new Response(out, { status: r.status, headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' } });
+      }
 
-      // Edge state
-      const edgeMatch = path.match(/^\/api\/edge\/(\w+)\/(\w+)$/);
-      if (edgeMatch && method === 'GET') return await handleEdgeGet(env, edgeMatch[1], edgeMatch[2]);
+      const eMatch = path.match(/^\/api\/edge\/(\w+)\/(\w+)$/);
+      if (eMatch && method === 'GET') {
+        const r = await topologyFetch(request, env, `/api/edge/${eMatch[1]}/${eMatch[2]}`, 'GET');
+        return new Response(r.body, { status: r.status, headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' } });
+      }
 
-      // Telemetry
-      if (path === '/api/telemetry' && method === 'GET') return await handleTelemetryGet(env, request);
+      if (path === '/api/telemetry' && method === 'GET') {
+        const limit = Math.min(parseInt(url.searchParams.get('limit') || url.searchParams.get('count') || '50', 10) || 50, 200);
+        if (env.DB) {
+          const res = await env.DB.prepare(
+            'SELECT * FROM telemetry ORDER BY id DESC LIMIT ?',
+          )
+            .bind(limit)
+            .all();
+          const rows = res.results || [];
+          let verified = true;
+          for (let i = 0; i < rows.length - 1; i++) {
+            if (rows[i].prev_hash !== rows[i + 1].hash) {
+              verified = false;
+              break;
+            }
+          }
+          return json({
+            source: 'd1',
+            chain: rows,
+            count: rows.length,
+            verified,
+            standard: 'WCD-46 SHA-256 chain (D1)',
+          });
+        }
+        const kv = await getTelemetryKvChain(env, limit);
+        return json({
+          ...kv,
+          standard: 'WCD-46 SHA-256 Chain-of-Custody',
+        });
+      }
+
       if (path === '/api/telemetry' && method === 'POST') {
-        if (!isAdmin(request)) return err('Unauthorized', 401);
-        return await handleTelemetryPost(env, request);
+        if (!isAdmin(request, env)) return err('Unauthorized', 401);
+        const body = await request.json().catch(() => null);
+        if (!body || !body.event) return err('Missing event payload');
+        if (env.DB) {
+          const t = await appendTelemetryD1(env, body.event);
+          return json({ recorded: true, telemetry: t });
+        }
+        const t = await appendTelemetryKv(env, body.event);
+        return json({ recorded: true, telemetry: t });
       }
 
-      // Admin dashboard
-      if (path === '/api/admin/dashboard') {
-        if (!isAdmin(request)) return err('Unauthorized', 401);
-        return await handleAdminDashboard(env);
+      const rs = path.match(/^\/room-stats\/([^/]+)$/);
+      if (rs && method === 'GET') {
+        const roomId = rs[1];
+        const stub = env.FAMILY_MESH_ROOM.get(env.FAMILY_MESH_ROOM.idFromName(roomId));
+        const r = await stub.fetch(new Request('https://room/stats', { method: 'GET' }));
+        return new Response(r.body, { status: r.status, headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' } });
       }
 
-      // Health check
-      if (path === '/api/health') return json({ status: 'rigid', topology: 'K4', uptime: Date.now() });
+      if (path.startsWith('/ws/')) {
+        const parts = path.split('/').filter(Boolean);
+        const roomId = parts[1] || 'family-mesh';
+        const stub = env.FAMILY_MESH_ROOM.get(env.FAMILY_MESH_ROOM.idFromName(roomId));
+        const internal = new URL(request.url);
+        internal.pathname = '/';
+        internal.searchParams.set('room', roomId);
+        return stub.fetch(
+          new Request(internal.toString(), {
+            method: request.method,
+            headers: request.headers,
+            body: request.body,
+          }),
+        );
+      }
 
-      return err('Not found. Try /api/mesh', 404);
+      if (path === '/api/admin/dashboard' && method === 'GET') {
+        if (!isAdmin(request, env)) return err('Unauthorized', 401);
+        const meshR = await topologyFetch(request, env, '/api/mesh', 'GET');
+        const mesh = meshR.ok ? await meshR.json() : null;
+        const roomStub = env.FAMILY_MESH_ROOM.get(env.FAMILY_MESH_ROOM.idFromName('family-mesh'));
+        const statsR = await roomStub.fetch(new Request('https://room/stats'));
+        const room = statsR.ok ? await statsR.json() : null;
+        return json({
+          mesh,
+          room,
+          generated: new Date().toISOString(),
+        });
+      }
 
+      return err('Not found. Try GET /api/mesh', 404);
     } catch (e) {
       return err(`Internal error: ${e.message}`, 500);
     }
-  }
+  },
 };

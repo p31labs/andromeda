@@ -2,19 +2,21 @@
   "name": "p31-andromeda",
   "version": "1.0.0",
   "private": true,
-  "workspaces": [
-    "apps/*",
-    "packages/*",
-    "extensions/*",
-    "04_SOFTWARE/packages/*",
-    "p31labs/*"
-  ],
-  "scripts": {
-    "typecheck": "tsc --noEmit",
-    "eslint": "echo 'ESLint not configured in root - use 04_SOFTWARE for linting'",
-    "license-check": "echo 'License check not configured in root - use 04_SOFTWARE for license scanning'",
-    "audit": "pnpm -r audit 2>/dev/null || echo 'Audit skipped'"
+  "description": "P31 Labs monorepo — software, research tooling, and infrastructure",
+  "license": "MIT",
+  "packageManager": "pnpm@10.32.1",
+  "engines": {
+    "node": ">=20.0.0"
   },
+  "scripts": {
+    "install:all": "pnpm install",
+    "build": "pnpm --dir 04_SOFTWARE run build",
+    "test": "pnpm --dir 04_SOFTWARE run test",
+    "quality": "node scripts/enterprise-deploy-guard.mjs",
+    "lint": "echo \"Lint per package: cd 04_SOFTWARE/<project> && pnpm run lint (if defined)\"",
+    "audit": "pnpm audit"
+  },
+  "devDependencies": {},
   "dependencies": {
     "@types/web-bluetooth": "^0.0.21",
     "@upstash/redis": "^1.37.0",

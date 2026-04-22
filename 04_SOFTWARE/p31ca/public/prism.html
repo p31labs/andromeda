@@ -1,180 +1,287 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#0f1115">
-    <title>PRISM | Sensory Diet Synthesizer | P31 Labs</title>
-    <meta name="description" content="Locally generated brown/pink noise and binaural beats paired with a slow-breathing color bath. No streaming. Calibrates to over-stimulated or under-stimulated states. Offline-first.">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: { sans: ['"Atkinson Hyperlegible"', 'sans-serif'], mono: ['"JetBrains Mono"', 'monospace'] },
-                    colors: { void: '#0f1115', surface: '#161920', coral: '#cc6247', teal: '#25897d', cyan: '#4db8a8', cloud: '#d8d6d0', butter: '#cda852', lavender: '#8b7cc9', phosphorus: '#3ba372' }
-                }
-            }
-        }
-    </script>
+    <title>PRISM | Binaural Noise Bath | P31 Labs</title>
+    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
-        body { background-color: #0f1115; color: #d8d6d0; background-image: linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px); background-size: 40px 40px; }
-        .matte-panel { background-color: #161920; border: 1px solid rgba(255,255,255,0.04); }
+        *{margin:0;padding:0;box-sizing:border-box}
+        :root{--void:#0f1115;--surface:#161920;--teal:#25897d;--cyan:#4db8a8;--cloud:#d8d6d0;--butter:#cda852;--lav:#8b7cc9;--coral:#cc6247;--phos:#3ba372}
+        body{background:var(--void);color:var(--cloud);font-family:'Atkinson Hyperlegible',sans-serif;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+        header{padding:12px 20px;background:rgba(15,17,21,0.95);border-bottom:1px solid rgba(255,255,255,0.05);display:flex;justify-content:space-between;align-items:center;flex-shrink:0;z-index:10}
+        .logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--cloud);font-weight:700}
+        a.back{color:rgba(216,214,208,0.4);font-family:'JetBrains Mono',monospace;font-size:12px;text-decoration:none}
+        a.back:hover{color:var(--cloud)}
+        #bath{flex:1;position:relative;overflow:hidden}
+        canvas#color-canvas{position:absolute;inset:0;width:100%;height:100%}
+        .controls{position:absolute;bottom:0;left:0;right:0;padding:20px;background:linear-gradient(transparent,rgba(15,17,21,0.95));z-index:5}
+        .ctrl-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;max-width:900px;margin:0 auto}
+        .ctrl-box{background:rgba(22,25,32,0.8);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:14px}
+        .ctrl-label{font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(216,214,208,0.4);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px;display:flex;justify-content:space-between}
+        .ctrl-val{color:var(--butter)}
+        input[type=range]{width:100%;height:4px;background:rgba(255,255,255,0.08);border-radius:2px;outline:none;-webkit-appearance:none;cursor:pointer;margin-bottom:8px}
+        input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--teal);cursor:pointer}
+        .toggle-row{display:flex;gap:8px;flex-wrap:wrap}
+        .tog{padding:5px 12px;border:1px solid rgba(255,255,255,0.1);border-radius:20px;font-family:'JetBrains Mono',monospace;font-size:11px;cursor:pointer;background:transparent;color:rgba(216,214,208,0.5);transition:all 0.2s}
+        .tog.on{background:rgba(37,137,125,0.2);border-color:var(--teal);color:var(--teal)}
+        #play-btn{display:block;margin:0 auto 16px;padding:12px 32px;background:rgba(37,137,125,0.15);border:1px solid var(--teal);color:var(--teal);border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:14px;cursor:pointer;transition:all 0.2s;letter-spacing:0.05em}
+        #play-btn:hover{background:rgba(37,137,125,0.3)}
+        #play-btn.running{background:rgba(204,98,71,0.15);border-color:var(--coral);color:var(--coral)}
+        .state-badge{position:absolute;top:16px;left:50%;transform:translateX(-50%);font-family:'JetBrains Mono',monospace;font-size:11px;padding:4px 12px;border-radius:20px;background:rgba(22,25,32,0.8);border:1px solid rgba(255,255,255,0.06);color:rgba(216,214,208,0.3);z-index:5;white-space:nowrap}
     </style>
 </head>
-<body class="min-h-screen flex flex-col text-cloud/90">
+<body>
+<header>
+    <a href="/" class="logo">
+        <svg width="24" height="24" viewBox="0 0 512 512"><rect width="512" height="512" rx="112" fill="#25897d"/><circle cx="390" cy="120" r="48" fill="#cc6247"/><text x="256" y="340" font-family="system-ui" font-weight="900" font-size="220" fill="#d8d6d0" text-anchor="middle">P31</text><rect x="156" y="380" width="200" height="16" rx="8" fill="#cda852"/></svg>
+        PRISM
+    </a>
+    <a href="/" class="back">← Hub</a>
+</header>
 
-    <header class="w-full border-b border-white/5 bg-void/95 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-            <a href="/" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
-                <svg width="28" height="28" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
-                    <rect width="512" height="512" rx="112" fill="#25897d"/>
-                    <circle cx="390" cy="120" r="48" fill="#cc6247"/>
-                    <text x="256" y="340" font-family="system-ui" font-weight="900" font-size="220" fill="#d8d6d0" text-anchor="middle">P31</text>
-                    <rect x="156" y="380" width="200" height="16" rx="8" fill="#cda852"/>
-                </svg>
-                <span class="font-bold text-lg tracking-tight">P31 Labs</span>
-            </a>
-            <nav class="flex gap-4 font-mono text-sm">
-                <a href="/" class="text-cloud/50 hover:text-cloud transition-colors flex items-center gap-2">← Hub</a>
-            </nav>
-        </div>
-    </header>
-
-    <main class="flex-grow max-w-7xl mx-auto px-6 py-12 w-full flex flex-col gap-12">
-
-        <header class="border-b border-white/10 pb-8">
-            <div class="flex items-center gap-4 mb-4">
-                <div class="text-3xl bg-surface w-12 h-12 rounded flex items-center justify-center border border-white/5">🌈</div>
-                <div class="px-2 py-0.5 rounded border text-[10px] font-mono tracking-wide text-cyan/80 border-cyan/20 bg-cyan/5">🔵 PROTOTYPE</div>
+<div id="bath">
+    <canvas id="color-canvas"></canvas>
+    <div class="state-badge" id="state-badge">Stopped · Click Play to begin</div>
+    <div class="controls">
+        <button id="play-btn">▶ Play</button>
+        <div class="ctrl-grid">
+            <div class="ctrl-box">
+                <div class="ctrl-label">Carrier Hz <span class="ctrl-val" id="val-carrier">200</span></div>
+                <input type="range" id="sl-carrier" min="100" max="500" value="200">
+                <div class="ctrl-label">Binaural Beat <span class="ctrl-val" id="val-binaural">10 Hz</span></div>
+                <input type="range" id="sl-binaural" min="1" max="40" value="10">
             </div>
-            <h1 class="text-4xl md:text-5xl font-bold mb-4 text-cloud">PRISM</h1>
-            <p class="text-xl text-cyan/70 font-mono">Sensory Diet Synthesizer — Offline Ambient Regulation</p>
-        </header>
-
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
-            <div class="lg:col-span-2 flex flex-col gap-8">
-
-                <section class="matte-panel rounded-lg p-8">
-                    <h2 class="text-2xl font-bold mb-4 flex items-center gap-3">
-                        <span class="text-cyan">01.</span> What It Is
-                    </h2>
-                    <p class="text-cloud/70 leading-relaxed mb-6">
-                        PRISM is a generative ambient environment that adapts to two distinct dysregulation states. <strong class="text-cloud/85">Over-stimulated</strong> (sensory overload, meltdown approaching): cool tones, slower color gradient, brown noise, slower breathing pace. <strong class="text-cloud/85">Under-stimulated</strong> (shutdown, flatline, task paralysis): warmer tones, higher frequency noise, slightly faster pace. The user selects their current state. PRISM adjusts without asking for more.
-                    </p>
-                    <div class="space-y-3">
-                        <div class="bg-void border border-cyan/10 rounded p-5">
-                            <p class="text-cyan/80 font-mono text-xs mb-2 uppercase tracking-widest">Design Principle</p>
-                            <p class="text-cloud/70 text-sm leading-relaxed">No streaming. No account. No ads. No notifications. PRISM generates everything locally via the Web Audio API — noise synthesis, binaural beat tone generation, breath pacing oscillators. The entire experience is offline, private, and runs on a 5-year-old mid-range phone. The regulatory tool must be available when regulation is needed most — when connectivity is disrupted, when data is depleted, when the environment is already hostile.</p>
-                        </div>
-                    </div>
-                </section>
-
-                <section class="matte-panel rounded-lg p-8">
-                    <h2 class="text-2xl font-bold mb-4 flex items-center gap-3">
-                        <span class="text-cyan">02.</span> Features
-                    </h2>
-                    <div class="space-y-6">
-                        <div>
-                            <h3 class="font-bold text-cloud mb-2 flex items-center gap-2">
-                                <span class="text-xs font-mono px-2 py-0.5 rounded bg-cyan/10 border border-cyan/20 text-cyan">Web Audio API</span>
-                                Generative Noise Synthesis
-                            </h3>
-                            <p class="text-cloud/65 text-sm leading-relaxed">Brown noise, pink noise, white noise, and binaural beat tones (1–40 Hz differential) synthesized locally via AudioWorklet nodes. No audio files bundled. No streaming. The synthesis is procedural — it runs continuously, adapting frequency distribution based on the selected arousal state. CPU usage is negligible.</p>
-                        </div>
-                        <div class="border-t border-white/5 pt-6">
-                            <h3 class="font-bold text-cloud mb-2 flex items-center gap-2">
-                                <span class="text-xs font-mono px-2 py-0.5 rounded bg-cyan/10 border border-cyan/20 text-cyan">WebGL Gradient</span>
-                                Slow-Breathing Color Bath
-                            </h3>
-                            <p class="text-cloud/65 text-sm leading-relaxed">A full-screen WebGL fragment shader renders a slowly morphing gradient that breathes — expanding and contracting on a pace matched to the selected state. Over-stimulated: 4-second expand, 8-second contract (down-regulation). Under-stimulated: 3-second expand, 4-second contract (light activation). Never flashes. Always below 30fps. Thermal-safe.</p>
-                        </div>
-                        <div class="border-t border-white/5 pt-6">
-                            <h3 class="font-bold text-cloud mb-2 flex items-center gap-2">
-                                <span class="text-xs font-mono px-2 py-0.5 rounded bg-cyan/10 border border-cyan/20 text-cyan">One-Tap State</span>
-                                Arousal Dial
-                            </h3>
-                            <p class="text-cloud/65 text-sm leading-relaxed">A single vertical slider — bottom is "depleted / shutdown," top is "overwhelmed / overloaded," center is regulated. Drag once. PRISM adjusts everything: noise type, binaural beat frequency, gradient speed, breathing pace. No menus. No settings screens. One gesture to enter the correct environment.</p>
-                        </div>
-                        <div class="border-t border-white/5 pt-6">
-                            <h3 class="font-bold text-cloud mb-2 flex items-center gap-2">
-                                <span class="text-xs font-mono px-2 py-0.5 rounded bg-cyan/10 border border-cyan/20 text-cyan">Timer</span>
-                                Soft Session End
-                            </h3>
-                            <p class="text-cloud/65 text-sm leading-relaxed">Optional session timer (5 / 10 / 20 minutes). As the timer approaches zero, the gradient very slowly brightens and the noise gently fades — a physiological "waking up" rather than a jarring alarm. No buzz. No popup. The environment breathes you back out.</p>
-                        </div>
-                    </div>
-                </section>
-
+            <div class="ctrl-box">
+                <div class="ctrl-label">Noise Level <span class="ctrl-val" id="val-noise">40%</span></div>
+                <input type="range" id="sl-noise" min="0" max="100" value="40">
+                <div class="ctrl-label">Noise Type</div>
+                <div class="toggle-row">
+                    <button class="tog on" data-noise="pink">Pink</button>
+                    <button class="tog" data-noise="brown">Brown</button>
+                    <button class="tog" data-noise="white">White</button>
+                </div>
             </div>
-
-            <div class="flex flex-col gap-6">
-
-                <div class="matte-panel rounded-lg p-6">
-                    <h3 class="text-sm font-mono text-cloud/40 uppercase tracking-widest mb-4">Status</h3>
-                    <div class="p-4 bg-void border border-cyan/20 rounded text-center">
-                        <div class="text-2xl mb-2">🌈</div>
-                        <div class="font-bold text-sm text-cyan mb-1">In Design</div>
-                        <div class="text-xs text-cloud/40 font-mono">Post-research phase</div>
-                    </div>
+            <div class="ctrl-box">
+                <div class="ctrl-label">Color Temperature <span class="ctrl-val" id="val-temp">Neutral</span></div>
+                <input type="range" id="sl-temp" min="0" max="100" value="50">
+                <div class="ctrl-label">Breath Pace</div>
+                <div class="toggle-row">
+                    <button class="tog" data-breath="4">4s</button>
+                    <button class="tog on" data-breath="6">6s</button>
+                    <button class="tog" data-breath="8">8s</button>
+                    <button class="tog" data-breath="none">Off</button>
                 </div>
-
-                <div class="matte-panel rounded-lg p-6">
-                    <h3 class="text-sm font-mono text-cloud/40 uppercase tracking-widest mb-4">Noise Modes</h3>
-                    <div class="space-y-3 text-sm font-mono">
-                        <div class="flex justify-between"><span class="text-cloud/50">Brown noise</span><span class="text-cyan/70">over-stimulated</span></div>
-                        <div class="flex justify-between"><span class="text-cloud/50">Pink noise</span><span class="text-cyan/70">balanced</span></div>
-                        <div class="flex justify-between"><span class="text-cloud/50">White noise</span><span class="text-cyan/70">under-stimulated</span></div>
-                        <div class="border-t border-white/5 pt-3 flex justify-between"><span class="text-cloud/50">Binaural beats</span><span class="text-cloud/40">1–40 Hz delta</span></div>
-                        <div class="flex justify-between"><span class="text-cloud/50">Session timer</span><span class="text-cloud/40">optional</span></div>
-                    </div>
+            </div>
+            <div class="ctrl-box">
+                <div class="ctrl-label">State Target</div>
+                <div class="toggle-row" style="margin-bottom:8px">
+                    <button class="tog" data-preset="calm">Calm</button>
+                    <button class="tog" data-preset="focus">Focus</button>
+                    <button class="tog" data-preset="sleep">Sleep</button>
+                    <button class="tog" data-preset="stim">Stim</button>
                 </div>
-
-                <div class="matte-panel rounded-lg p-6">
-                    <h3 class="text-sm font-mono text-cloud/40 uppercase tracking-widest mb-4">Technical Stack</h3>
-                    <div class="space-y-3 text-sm">
-                        <div><div class="text-cloud font-bold mb-1">Audio Synthesis</div><div class="text-cloud/60">Web Audio API — AudioWorklet procedural noise</div></div>
-                        <div><div class="text-cloud font-bold mb-1">Visuals</div><div class="text-cloud/60">WebGL fragment shader — breathing gradient, ≤30fps</div></div>
-                        <div><div class="text-cloud font-bold mb-1">Offline</div><div class="text-cloud/60">100% local — no assets, no streaming, no CDN</div></div>
-                        <div><div class="text-cloud font-bold mb-1">Battery</div><div class="text-cloud/60">RAF throttled to 20fps during sessions; audio is CPU-minimal</div></div>
-                    </div>
-                </div>
-
-                <div class="matte-panel rounded-lg p-6">
-                    <h3 class="text-sm font-mono text-cloud/40 uppercase tracking-widest mb-4">Launch</h3>
-                    <a href="synth.html" class="block p-5 bg-void border border-cyan/30 rounded hover:border-cyan/70 transition-colors group text-center mb-3">
-                        <div class="text-2xl mb-2">🎛️</div>
-                        <div class="font-bold text-sm text-cyan mb-1 group-hover:text-cyan transition-colors">Sensory Diet Synthesizer</div>
-                        <div class="text-xs text-cloud/40 font-mono">Brown noise + binaural · Web Audio</div>
-                    </a>
-                </div>
-
-                <div class="matte-panel rounded-lg p-6">
-                    <h3 class="text-sm font-mono text-cloud/40 uppercase tracking-widest mb-4">Ecosystem Ties</h3>
-                    <a href="signal.html" class="block p-4 bg-void border border-white/5 rounded hover:border-butter/30 transition-colors group mb-3">
-                        <div class="font-bold text-sm text-cloud group-hover:text-butter transition-colors mb-1">SIGNAL</div>
-                        <div class="text-xs text-cloud/50">Complementary stim tools — PRISM for ambient, SIGNAL for active.</div>
-                    </a>
-                    <a href="liminal.html" class="block p-4 bg-void border border-white/5 rounded hover:border-lavender/30 transition-colors group">
-                        <div class="font-bold text-sm text-cloud group-hover:text-lavender transition-colors mb-1">LIMINAL</div>
-                        <div class="text-xs text-cloud/50">Breath gate pattern shared with PRISM's breathing pacer.</div>
-                    </a>
-                </div>
-
+                <div style="font-size:11px;color:rgba(216,214,208,0.3);font-family:'JetBrains Mono',monospace" id="preset-desc">Adjust manually above</div>
             </div>
         </div>
-    </main>
+    </div>
+</div>
 
-    <footer class="border-t border-white/5 mt-12 py-6">
-        <div class="max-w-7xl mx-auto px-6 flex justify-between items-center text-xs text-cloud/30 font-mono">
-            <span>P31 Labs · 501(c)(3) · EIN 42-1888158</span>
-            <a href="/" class="hover:text-cloud/60 transition-colors">← Back to Hub</a>
-        </div>
-    </footer>
+<script>
+const canvas = document.getElementById('color-canvas');
+const ctx = canvas.getContext('2d');
+let W, H;
 
+function resize() {
+    W = canvas.width = canvas.offsetWidth;
+    H = canvas.height = canvas.offsetHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+let audioCtx = null;
+let running = false;
+let oscL = null, oscR = null, gainL = null, gainR = null;
+let noiseNode = null, noiseGain = null;
+let noiseType = 'pink';
+let breathPace = 6;
+
+let hue = 220, saturation = 40;
+let colorTarget = {h:220, s:40};
+let breathPhase = 0;
+let temp = 50;
+let blobT = 0;
+
+const slCarrier = document.getElementById('sl-carrier');
+const slBinaural = document.getElementById('sl-binaural');
+const slNoise = document.getElementById('sl-noise');
+const slTemp = document.getElementById('sl-temp');
+
+function updateLabel(id, val) { document.getElementById(id).textContent = val; }
+
+slCarrier.addEventListener('input', () => {
+    updateLabel('val-carrier', slCarrier.value);
+    if (running) updateBinaural();
+});
+slBinaural.addEventListener('input', () => {
+    updateLabel('val-binaural', slBinaural.value + ' Hz');
+    if (running) updateBinaural();
+});
+slNoise.addEventListener('input', () => {
+    updateLabel('val-noise', slNoise.value + '%');
+    if (running && noiseGain) noiseGain.gain.setTargetAtTime(slNoise.value / 100 * 0.3, audioCtx.currentTime, 0.1);
+});
+slTemp.addEventListener('input', () => {
+    const v = parseInt(slTemp.value);
+    const labels = ['Cool Blue','Cool','Neutral','Warm','Amber'];
+    updateLabel('val-temp', labels[Math.min(Math.floor(v/25),4)]);
+    temp = v;
+    updateColorFromTemp();
+});
+
+function updateColorFromTemp() {
+    if (temp < 25) { colorTarget.h = 210; colorTarget.s = 60; }
+    else if (temp < 50) { colorTarget.h = 220; colorTarget.s = 40; }
+    else if (temp < 75) { colorTarget.h = 200; colorTarget.s = 25; }
+    else { colorTarget.h = 30; colorTarget.s = 50; }
+}
+updateColorFromTemp();
+
+document.querySelectorAll('[data-noise]').forEach(b => b.addEventListener('click', () => {
+    document.querySelectorAll('[data-noise]').forEach(x => x.classList.remove('on'));
+    b.classList.add('on');
+    noiseType = b.dataset.noise;
+    if (running) restartNoise();
+}));
+
+document.querySelectorAll('[data-breath]').forEach(b => b.addEventListener('click', () => {
+    document.querySelectorAll('[data-breath]').forEach(x => x.classList.remove('on'));
+    b.classList.add('on');
+    breathPace = b.dataset.breath === 'none' ? 0 : parseInt(b.dataset.breath);
+}));
+
+const presets = {
+    calm: {carrier:200,binaural:8,noise:30,temp:40,desc:'Delta/Theta — deep relaxation'},
+    focus: {carrier:300,binaural:14,noise:20,temp:55,desc:'Beta — alert focus'},
+    sleep: {carrier:130,binaural:4,noise:50,temp:15,desc:'Delta — sleep onset'},
+    stim: {carrier:250,binaural:20,noise:15,temp:70,desc:'Gamma — sensory engagement'}
+};
+document.querySelectorAll('[data-preset]').forEach(b => b.addEventListener('click', () => {
+    document.querySelectorAll('[data-preset]').forEach(x => x.classList.remove('on'));
+    b.classList.add('on');
+    const p = presets[b.dataset.preset];
+    slCarrier.value = p.carrier; updateLabel('val-carrier', p.carrier);
+    slBinaural.value = p.binaural; updateLabel('val-binaural', p.binaural + ' Hz');
+    slNoise.value = p.noise; updateLabel('val-noise', p.noise + '%');
+    slTemp.value = p.temp; temp = p.temp; updateColorFromTemp();
+    document.getElementById('preset-desc').textContent = p.desc;
+    if (running) { updateBinaural(); if(noiseGain) noiseGain.gain.setTargetAtTime(p.noise/100*0.3, audioCtx.currentTime, 0.1); }
+}));
+
+function createNoise() {
+    const sr = audioCtx.sampleRate;
+    const bufSize = sr * 2;
+    const buf = audioCtx.createBuffer(1, bufSize, sr);
+    const data = buf.getChannelData(0);
+    if (noiseType === 'white') {
+        for (let i=0;i<bufSize;i++) data[i] = Math.random()*2-1;
+    } else if (noiseType === 'pink') {
+        let b0=0,b1=0,b2=0,b3=0,b4=0,b5=0;
+        for (let i=0;i<bufSize;i++) {
+            const w=Math.random()*2-1;
+            b0=0.99886*b0+w*0.0555179;b1=0.99332*b1+w*0.0750759;
+            b2=0.96900*b2+w*0.1538520;b3=0.86650*b3+w*0.3104856;
+            b4=0.55000*b4+w*0.5329522;b5=-0.7616*b5-w*0.0168980;
+            data[i]=(b0+b1+b2+b3+b4+b5+w*0.5362)*0.11;
+        }
+    } else {
+        let last=0;
+        for(let i=0;i<bufSize;i++){last=(Math.random()*2-1)*0.02+last*0.98;data[i]=last*5;}
+    }
+    const src = audioCtx.createBufferSource();
+    src.buffer=buf;src.loop=true;src.start();
+    return src;
+}
+
+function restartNoise() {
+    if (noiseNode){noiseNode.stop();noiseNode.disconnect();}
+    noiseNode=createNoise();noiseNode.connect(noiseGain);
+}
+
+function updateBinaural() {
+    const carrier=parseFloat(slCarrier.value);
+    const beat=parseFloat(slBinaural.value);
+    oscL.frequency.setTargetAtTime(carrier,audioCtx.currentTime,0.1);
+    oscR.frequency.setTargetAtTime(carrier+beat,audioCtx.currentTime,0.1);
+}
+
+const playBtn=document.getElementById('play-btn');
+const badge=document.getElementById('state-badge');
+
+playBtn.addEventListener('click',()=>{
+    if(running){
+        running=false;
+        audioCtx.suspend();
+        playBtn.textContent='▶ Play';playBtn.classList.remove('running');
+        badge.textContent='Paused';
+    } else {
+        if(!audioCtx){
+            audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+            const carrier=parseFloat(slCarrier.value);
+            const beat=parseFloat(slBinaural.value);
+            const merger=audioCtx.createChannelMerger(2);
+            merger.connect(audioCtx.destination);
+            gainL=audioCtx.createGain();gainL.gain.value=0.25;gainL.connect(merger,0,0);
+            gainR=audioCtx.createGain();gainR.gain.value=0.25;gainR.connect(merger,0,1);
+            oscL=audioCtx.createOscillator();oscL.type='sine';oscL.frequency.value=carrier;oscL.connect(gainL);oscL.start();
+            oscR=audioCtx.createOscillator();oscR.type='sine';oscR.frequency.value=carrier+beat;oscR.connect(gainR);oscR.start();
+            noiseGain=audioCtx.createGain();noiseGain.gain.value=slNoise.value/100*0.3;
+            noiseGain.connect(merger,0,0);noiseGain.connect(merger,0,1);
+            noiseNode=createNoise();noiseNode.connect(noiseGain);
+        } else {
+            audioCtx.resume();
+        }
+        running=true;
+        playBtn.textContent='■ Stop';playBtn.classList.add('running');
+        badge.textContent='Running · Binaural active · Use headphones';
+    }
+});
+
+function drawBath(){
+    blobT+=0.005;
+    breathPhase+=breathPace>0?(Math.PI*2)/(breathPace*60):0;
+    const bm=breathPace>0?(Math.sin(breathPhase)+1)/2:0.5;
+
+    hue+=(colorTarget.h-hue)*0.01;
+    saturation+=(colorTarget.s-saturation)*0.01;
+
+    const bL=4+bm*10;
+    ctx.fillStyle=`hsl(${hue},${saturation}%,${bL}%)`;
+    ctx.fillRect(0,0,W,H);
+
+    for(let i=0;i<4;i++){
+        const bx=W*(0.2+0.6*((Math.sin(blobT*0.3+i*2.1)+1)/2));
+        const by=H*(0.2+0.6*((Math.cos(blobT*0.2+i*1.7)+1)/2));
+        const br=Math.min(W,H)*(0.18+0.12*Math.sin(blobT*0.15+i));
+        const g=ctx.createRadialGradient(bx,by,0,bx,by,br);
+        const alpha=0.03+bm*0.04;
+        g.addColorStop(0,`hsla(${hue+i*30},60%,40%,${alpha})`);
+        g.addColorStop(1,'transparent');
+        ctx.beginPath();ctx.arc(bx,by,br,0,Math.PI*2);
+        ctx.fillStyle=g;ctx.fill();
+    }
+
+    if(running&&breathPace>0){
+        const breathState=Math.sin(breathPhase)>0?'Inhale ↑':'Exhale ↓';
+        ctx.fillStyle=`rgba(216,214,208,${0.08+bm*0.12})`;
+        ctx.font='16px "JetBrains Mono"';
+        ctx.textAlign='center';
+        ctx.fillText(breathState,W/2,60);
+    }
+    requestAnimationFrame(drawBath);
+}
+drawBath();
+</script>
 </body>
 </html>
