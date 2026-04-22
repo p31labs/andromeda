@@ -1,11 +1,19 @@
-# k4-cage — CWP-30 unified (K4Topology + FamilyMeshRoom DOs, optional D1 telemetry chain)
+# k4-cage — CWP-30 unified (K4Topology + FamilyMeshRoom DOs, D1 telemetry)
 # P31 Labs, Inc. | EIN 42-1888158
 #
-# First-time: npx wrangler d1 create p31-telemetry → paste database_id below
-#             npx wrangler d1 execute p31-telemetry --remote --file=../unified-k4-cage/schema.sql
-#             npx wrangler secret put ADMIN_TOKEN
-# Optional:   npx wrangler secret put INTERNAL_FANOUT_TOKEN
-#             [vars] MESH_ROOM_IDS = "family-mesh" (comma-separated room names for ping fan-out)
+# Free-plan note: Cloudflare free tier requires new_sqlite_classes (code 10097).
+# K4Topology + FamilyMeshRoom use ctx.storage.get/put — fully compatible.
+#
+# DO migration history (as-applied in Cloudflare):
+#   v2-hibernation — created FamilyMeshRoom (already exists)
+#   v3-production  — creates K4Topology (does not yet exist)
+#
+# First-time D1 setup (optional telemetry chain):
+#   npx wrangler d1 create p31-telemetry  → paste database_id below
+#   npx wrangler d1 execute p31-telemetry --remote --file=../unified-k4-cage/schema.sql
+#   npx wrangler secret put ADMIN_TOKEN
+# Optional:
+#   npx wrangler secret put INTERNAL_FANOUT_TOKEN
 
 name = "k4-cage"
 main = "src/index.js"
@@ -13,18 +21,24 @@ compatibility_date = "2025-10-01"
 
 [durable_objects]
 bindings = [
-  { name = "K4_TOPOLOGY", class_name = "K4Topology" },
+  { name = "K4_TOPOLOGY",      class_name = "K4Topology" },
   { name = "FAMILY_MESH_ROOM", class_name = "FamilyMeshRoom" },
 ]
 
+# FamilyMeshRoom was created under this tag — already applied, wrangler skips it.
 [[migrations]]
-tag = "unified-k4-v1"
-new_classes = ["K4Topology", "FamilyMeshRoom"]
+tag = "v2-hibernation"
+new_sqlite_classes = ["FamilyMeshRoom"]
 
-[[d1_databases]]
-binding = "DB"
-database_name = "p31-telemetry"
-database_id = "REPLACE_WITH_YOUR_D1_DATABASE_ID"
+# K4Topology was never created — this migration adds it.
+[[migrations]]
+tag = "v3-production"
+new_sqlite_classes = ["K4Topology"]
+
+# [[d1_databases]]
+# binding = "DB"
+# database_name = "p31-telemetry"
+# database_id = "REPLACE_WITH_YOUR_D1_DATABASE_ID"
 
 [[kv_namespaces]]
 binding = "K4_MESH"
