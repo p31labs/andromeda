@@ -10,7 +10,7 @@ enabled = true
 
 [[kv_namespaces]]
 binding = "EVENTS_KV"
-id = "REPLACE_WITH_KV_NAMESPACE_ID"
+id = "51b6a114acd8497d8b9091fd238c11e4"
 # Create: npx wrangler kv namespace create EVENTS_KV
 # Then replace the id above with the output id
 

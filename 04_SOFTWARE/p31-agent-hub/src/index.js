@@ -477,6 +477,58 @@ var index_default = {
         writes_enabled: isInternalWrites(env)
       });
     }
+    if (path === "/api/alignment" && request.method === "GET") {
+      const err = authError(request, env);
+      if (err) return err;
+      let meshStatus = "unknown";
+      try {
+        const mesh = await k4Fetch(env.K4_CAGE, "/api/mesh", trace);
+        const verts = mesh?.mesh?.vertices ? Object.keys(mesh.mesh.vertices) : [];
+        const hasWill = verts.includes("will");
+        meshStatus = hasWill ? "online" : "degraded";
+      } catch {
+        meshStatus = "offline";
+      }
+      const systemContext = `# P31 ANDROMEDA: SYSTEM CONTEXT & ALIGNMENT
+**Timestamp:** ${new Date().toISOString()}
+**Mesh Status:** ${meshStatus}
+
+## 1. THE OPERATOR (W.JOHNSON-001)
+- **Condition:** Hypoparathyroidism (ICD-10 E20.9). Critical Ca limits: 8.0-9.0 mg/dL.
+- **Cognitive Envelope:** AuDHD (late diagnosis 2025). Executive dysfunction is a serialization bottleneck, not an intelligence limit.
+- **Communication:** Direct. Action over explanation. No submarine metaphors.
+- **Location:** I-95 corridor / VW Golf / Camden County. Cell service via mesh.
+
+## 2. THE TOPOLOGY (K₄ MESH)
+- **Architecture:** Zero-budget, serverless edge infrastructure.
+- **Backbone:** Cloudflare Workers, Durable Objects (SQLite), KV, R2.
+- **Constraints:** 10ms CPU limit, 1000 internal subrequests max.
+- **Family Vertices:** will, S.J., W.J., christyn (cage)
+- **Personal Pillars:** a, b, c, d (isolated personal scope)
+
+## 3. LEGAL & OPERATIONAL GROUND TRUTH
+- **Case 2025CV936:** Johnson v. Johnson. Post-April 16 status unknown in repo.
+- **P31 Labs:** GA nonprofit 2026. EIN 42-1888158. 501(c)(3) pending.
+- **Mission:** Build, Create, Connect. Establish decentralized family mesh.
+
+## 4. AGENT DIRECTIVES
+- You are a node in the P31 network.
+- Do not hallucinate network state — use service bindings to fetch live data.
+- Maintain isostatic rigidity: if a constraint fails, fallback to local caching.
+- If the operator is in a "Spoon deficit", output terminal commands and code blocks only.
+- Never ask open-ended questions when you can execute.
+- Use initials (S.J., W.J.) for children; never full names.
+- Current time: ${new Date().toISOString()}
+
+## 5. TOOL SCHEMA (Reference)
+${toolsForEnv(env)
+  .map((t) => `- ${t.function.name}: ${t.function.description}`)
+  .join("\n")}
+`;
+      return new Response(systemContext, {
+        headers: { "Content-Type": "text/markdown; charset=utf-8", ...CORS }
+      });
+    }
     if (path === "/api/tools" && request.method === "GET") {
       const err = authError(request, env);
       if (err) return err;
@@ -541,7 +593,7 @@ Rules:
     return json(
       {
         service: "p31-agent-hub",
-        routes: ["GET /api/health", "GET /api/tools", "POST /api/chat"],
+        routes: ["GET /api/health", "GET /api/tools", "GET /api/alignment", "POST /api/chat"],
         docs: "04_SOFTWARE/p31-agent-hub/README.md"
       },
       404
