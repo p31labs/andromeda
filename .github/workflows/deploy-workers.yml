@@ -3,13 +3,13 @@ name: Deploy K4 Workers
 on:
   push:
     branches:
-      - workers-april22
       - main
     paths:
       - '04_SOFTWARE/k4-cage/**'
       - '04_SOFTWARE/k4-personal/**'
       - '04_SOFTWARE/k4-hubs/**'
       - '04_SOFTWARE/p31-agent-hub/**'
+      - '.github/workflows/deploy-workers.yml'
   workflow_dispatch:
 
 concurrency:
@@ -23,7 +23,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # ── 1. k4-cage (no deps, KV-only fallback) ─────────────────────
+      # Pre-install wrangler globally so wrangler-action finds it without
+      # running npm install inside the pnpm workspace (workspace:* protocol
+      # causes EUNSUPPORTEDPROTOCOL on plain npm).
+      - name: Install wrangler globally
+        run: npm install -g wrangler@3.114.17
+
+      # ── 1. k4-cage (no deps) ────────────────────────────────────────
       - name: Deploy k4-cage
         uses: cloudflare/wrangler-action@v3
         with:
@@ -39,7 +45,7 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: 04_SOFTWARE/k4-personal
 
-      # ── 3. k4-hubs (binds to k4-cage + k4-personal) ─────────────────
+      # ── 3. k4-hubs (binds → k4-cage, k4-personal) ───────────────────
       - name: Deploy k4-hubs
         uses: cloudflare/wrangler-action@v3
         with:
@@ -47,7 +53,7 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: 04_SOFTWARE/k4-hubs
 
-      # ── 4. p31-agent-hub (binds to all three above) ─────────────────
+      # ── 4. p31-agent-hub (binds → all three above) ──────────────────
       - name: Deploy p31-agent-hub
         uses: cloudflare/wrangler-action@v3
         with:
@@ -57,14 +63,14 @@ jobs:
 
       # ── 5. Post-deploy verification ──────────────────────────────────
       - name: Wait for propagation
-        run: sleep 8
+        run: sleep 10
 
       - name: Health checks
         run: |
           fail=0
           check() {
             local name=$1 url=$2
-            code=$(curl -sf -o /dev/null -w "%{http_code}" --max-time 10 "$url" 2>/dev/null || echo 000)
+            code=$(curl -sf -o /dev/null -w "%{http_code}" --max-time 15 "$url" 2>/dev/null || echo 000)
             if [[ "$code" == "200" ]]; then
               echo "✅ $name"
             else
@@ -72,33 +78,32 @@ jobs:
               fail=1
             fi
           }
-          check k4-cage     https://k4-cage.trimtab-signal.workers.dev/health
-          check k4-personal https://k4-personal.trimtab-signal.workers.dev/health
-          check k4-hubs     https://k4-hubs.trimtab-signal.workers.dev/health
+          check k4-cage       https://k4-cage.trimtab-signal.workers.dev/health
+          check k4-personal   https://k4-personal.trimtab-signal.workers.dev/health
+          check k4-hubs       https://k4-hubs.trimtab-signal.workers.dev/health
           check p31-agent-hub https://p31-agent-hub.trimtab-signal.workers.dev/health
           exit $fail
 
       - name: Verify K4 mesh topology
         run: |
-          MESH=$(curl -sf --max-time 10 https://k4-cage.trimtab-signal.workers.dev/api/mesh)
+          MESH=$(curl -sf --max-time 15 https://k4-cage.trimtab-signal.workers.dev/api/mesh)
           echo "$MESH"
-          python3 - <<'PY'
+          echo "$MESH" | python3 -c "
           import json, sys
-          d = json.loads("""$MESH""")
-          assert d.get('topology') == 'K4', f"Expected K4, got {d.get('topology')}"
-          assert len(d.get('vertices', [])) == 4, f"Expected 4 vertices, got {len(d.get('vertices', []))}"
-          assert len(d.get('edges', [])) == 6,   f"Expected 6 edges, got {len(d.get('edges', []))}"
-          print("✅ K4 mesh: 4 vertices, 6 edges, topology verified")
-          PY
-        env:
-          MESH: ${{ env.MESH }}
+          d = json.load(sys.stdin)
+          assert d.get('topology') == 'K4', f'topology={d.get(\"topology\")}'
+          v = d.get('vertices'); assert v == 4 or (isinstance(v, list) and len(v) == 4), f'vertices={v}'
+          e = d.get('edges');   assert e == 6 or (isinstance(e, list) and len(e) == 6), f'edges={e}'
+          print('✅ K4 mesh verified')"
 
       - name: Verify ping (will → sj)
         run: |
-          RESULT=$(curl -sf -X POST --max-time 10 https://k4-cage.trimtab-signal.workers.dev/api/ping/will/sj)
+          RESULT=$(curl -sf -X POST --max-time 15 https://k4-cage.trimtab-signal.workers.dev/api/ping/will/sj)
           echo "$RESULT"
           echo "$RESULT" | python3 -c "
           import json, sys
           d = json.load(sys.stdin)
-          assert d.get('ok') == True, f'Ping failed: {d}'
-          print(f'✅ Ping ok — love: {d.get(\"love\")}')"
+          # DO response: {ping:{...}, edge:{...}, fromLove:N, toLove:N}
+          # KV fallback: {ok:true, from:..., to:..., love:N}
+          assert 'ping' in d or d.get('ok') == True, f'unexpected ping response: {d}'
+          print('✅ Ping verified')"
