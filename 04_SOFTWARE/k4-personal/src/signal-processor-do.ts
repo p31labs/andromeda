@@ -110,10 +110,18 @@ export class SignalProcessorDO implements DurableObject {
     await this.state.storage.put(`msg:${message.id}`, message);
 
     // Add to timeline via hub B->C
-    await this.env.K4_HUBS.post('/hub/signal-context', {
-      type: 'message-metadata',
-      payload: { message }
-    });
+    try {
+      await fetch(`${this.env.K4_HUBS}/hub/signal-context`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'message-metadata',
+          payload: { message }
+        }),
+      });
+    } catch {
+      // Hub communication is best-effort
+    }
 
     return Response.json(message, { status: 201 });
   }
