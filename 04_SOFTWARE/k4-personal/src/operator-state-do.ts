@@ -30,23 +30,23 @@ export class OperatorStateDO implements DurableObject {
     const url = new URL(request.url);
     const path = url.pathname;
 
-    // Routes
-    if (path === '/agent/:id/energy' && request.method === 'GET') {
+    // Routes - accept any agent ID
+    if (path.includes('/energy') && request.method === 'GET') {
       return this.getEnergyState();
     }
-    if (path === '/agent/:id/energy' && request.method === 'PUT') {
+    if (path.includes('/energy') && request.method === 'PUT') {
       return this.updateEnergyState(await request.json());
     }
-    if (path === '/agent/:id/bio' && request.method === 'POST') {
+    if (path.includes('/bio') && request.method === 'POST') {
       return this.submitBioReading(await request.json());
     }
-    if (path === '/agent/:id/reminders' && request.method === 'GET') {
+    if (path.includes('/reminders') && request.method === 'GET') {
       return this.getReminders();
     }
-    if (path === '/agent/:id/reminders' && request.method === 'POST') {
+    if (path.includes('/reminders') && request.method === 'POST') {
       return this.createReminder(await request.json());
     }
-    if (path === '/agent/:id/voltage' && request.method === 'GET') {
+    if (path.includes('/voltage') && request.method === 'GET') {
       return this.getCognitiveLoad();
     }
 

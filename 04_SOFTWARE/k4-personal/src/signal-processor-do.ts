@@ -30,23 +30,23 @@ export class SignalProcessorDO implements DurableObject {
     const url = new URL(request.url);
     const path = url.pathname;
 
-    // Routes
-    if (path === '/agent/:id/message' && request.method === 'POST') {
+    // Routes - accept any agent ID
+    if (path.includes('/message') && request.method === 'POST') {
       return this.submitMessage(await request.json());
     }
-    if (path === '/agent/:id/queue' && request.method === 'GET') {
+    if (path.includes('/queue') && request.method === 'GET') {
       return this.getMessageQueue();
     }
-    if (path === '/agent/:id/draft' && request.method === 'POST') {
+    if (path.includes('/draft') && request.method === 'POST') {
       return this.scoreDraft(await request.json());
     }
-    if (path === '/agent/:id/fawn' && request.method === 'GET') {
+    if (path.includes('/fawn') && request.method === 'GET') {
       return this.getFawnBaseline();
     }
-    if (path === '/agent/:id/fortress' && request.method === 'POST') {
+    if (path.includes('/fortress') && request.method === 'POST') {
       return this.activateFortress();
     }
-    if (path === '/agent/:id/fortress' && request.method === 'DELETE') {
+    if (path.includes('/fortress') && request.method === 'DELETE') {
       return this.deactivateFortress();
     }
 

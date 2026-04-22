@@ -30,26 +30,26 @@ export class ContextEngineDO implements DurableObject {
     const url = new URL(request.url);
     const path = url.pathname;
 
-    // Routes
-    if (path === '/agent/:id/state' && request.method === 'GET') {
+    // Routes - accept any agent ID
+    if (path.includes('/state') && request.method === 'GET') {
       return this.getArbitraryState();
     }
-    if (path === '/agent/:id/state' && request.method === 'PUT') {
+    if (path.includes('/state') && request.method === 'PUT') {
       return this.setArbitraryState(await request.json());
     }
-    if (path === '/agent/:id/timeline' && request.method === 'GET') {
+    if (path.includes('/timeline') && request.method === 'GET') {
       return this.getTimeline();
     }
-    if (path === '/agent/:id/timeline' && request.method === 'POST') {
+    if (path.includes('/timeline') && request.method === 'POST') {
       return this.addTimelineEvent(await request.json());
     }
-    if (path === '/agent/:id/deadlines' && request.method === 'GET') {
+    if (path.includes('/deadlines') && request.method === 'GET') {
       return this.getDeadlines();
     }
-    if (path === '/agent/:id/context' && request.method === 'GET') {
+    if (path.includes('/context') && request.method === 'GET') {
       return this.getContextDocument();
     }
-    if (path === '/agent/:id/health' && request.method === 'GET') {
+    if (path.includes('/health') && request.method === 'GET') {
       return this.getHealth();
     }
 

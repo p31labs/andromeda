@@ -52,7 +52,7 @@ export default {
       return new Response('Invalid endpoint', { status: 404 });
     }
 
-    // Forward request to Durable Object
+    // Forward request directly to Durable Object - DOs receive full original path
     const stub = doNamespace.get(doId);
     return stub.fetch(request);
   },

@@ -27,20 +27,20 @@ export class ShieldEngineDO implements DurableObject {
     const url = new URL(request.url);
     const path = url.pathname;
 
-    // Routes
-    if (path === '/agent/:id/chat' && request.method === 'POST') {
+    // Routes - accept any agent ID
+    if (path.includes('/chat') && request.method === 'POST') {
       return this.handleChat(await request.json());
     }
-    if (path === '/agent/:id/synthesis' && request.method === 'GET') {
+    if (path.includes('/synthesis') && request.method === 'GET') {
       return this.getSynthesis();
     }
-    if (path === '/agent/:id/synthesize' && request.method === 'POST') {
+    if (path.includes('/synthesize') && request.method === 'POST') {
       return this.triggerSynthesis();
     }
-    if (path === '/agent/:id/shield' && request.method === 'GET') {
+    if (path.includes('/shield') && request.method === 'GET') {
       return this.getShieldConfig();
     }
-    if (path === '/agent/:id/shield' && request.method === 'PUT') {
+    if (path.includes('/shield') && request.method === 'PUT') {
       return this.updateShieldConfig(await request.json());
     }
 
