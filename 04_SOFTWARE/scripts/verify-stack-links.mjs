@@ -42,6 +42,9 @@ const ignore = new Set(
 const defaultOptional = [
   'https://docs.phosphorus31.org',
   'https://p31-bouncer.trimtab-signal.workers.dev',
+  'https://k4-hubs.trimtab-signal.workers.dev',
+  'https://k4-hubs.trimtab-signal.workers.dev/viz',
+  'https://k4-personal.trimtab-signal.workers.dev',
 ];
 const optional = new Set([
   ...defaultOptional,

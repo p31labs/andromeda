@@ -1,314 +1,697 @@
 ---
 /**
- * P31CA.ORG — Technical Hub Landing Page
- * Redesigned: structured layout, live fleet status, coral accent, correct EIN.
- * Cross-linked to phosphorus31.org (nonprofit portal).
+ * P31 Labs Unified Landing Page
+ * Quantum Overhaul: Spaceship Earth + Sovereign Cockpit
+ * Isostatically Rigid. Cognitively Sovereign.
  */
-
 import BaseLayout from '../layouts/BaseLayout.astro';
-import SharedFooter from '../components/SharedFooter.astro';
 
-interface Product {
-  id: string;
-  title: string;
-  subtitle: string;
-  status: 'live' | 'dev' | 'prototype' | 'research';
-  url: string;
-  stack: string[];
-}
+const coreProducts = [
+  { title: "BONDING", status: "LIVE", desc: "WebRTC peer-to-peer visual communicator", tags: ["React", "WebRTC", "Three.js"], url: "/bonding-about.html" },
+  { title: "Spaceship Earth", status: "LIVE", desc: "Observatory dome visualization of the K4 mesh", tags: ["R3F", "WebGL", "Zustand"], url: "/spaceship-earth-about.html" },
+  { title: "EDE", status: "LIVE", desc: "Everything Development Environment browser IDE", tags: ["Monaco", "WebContainer"], url: "/ede-about.html" },
+  { title: "The Buffer", status: "LIVE", desc: "Passive-aggression filter and emotional voltage gate", tags: ["Protocol", "Edge Workers"], url: "/buffer-about.html" },
+  { title: "Larmor", status: "LIVE", desc: "Decentralized offline-first credential vault", tags: ["WebCrypto", "IndexedDB"], url: "/larmor-about.html" },
+  { title: "Alchemy", status: "LIVE", desc: "Particle simulation engine", tags: ["Three.js", "Physics"], url: "/alchemy-about.html" },
+  { title: "Attractor", status: "LIVE", desc: "Chaos theory visualization", tags: ["Canvas", "Math"], url: "/attractor-about.html" },
+  { title: "Axiom", status: "LIVE", desc: "Post-quantum logic system", tags: ["Logic", "Formal"], url: "/axiom-about.html" },
+  { title: "BONDING", status: "LIVE", desc: "WebRTC peer-to-peer visual communicator", tags: ["React", "WebRTC", "Three.js"], url: "/bonding-about.html" },
+  { title: "Collider", status: "LIVE", desc: "Physics particle system", tags: ["Canvas", "Physics"], url: "/collider-about.html" },
+  { title: "Content Forge", status: "LIVE", desc: "Multimodal editor", tags: ["Editor", "Markdown"], url: "/content-forge-about.html" },
+  { title: "EDE", status: "LIVE", desc: "Everything Development Environment browser IDE", tags: ["Monaco", "WebContainer"], url: "/ede-about.html" },
+  { title: "Fawn Guard", status: "LIVE", desc: "Trauma-response interceptor and AI rewrite", tags: ["LLM", "NLP"], url: "/fawn-guard-about.html" },
+  { title: "Geodesic", status: "LIVE", desc: "3D structure builder", tags: ["Three.js", "Geometry"], url: "/geodesic-about.html" },
+  { title: "Genesis Gate", status: "BUILDING", desc: "Authentication and entry node", tags: ["JWT", "WebAuthn"], url: "/genesis-gate-about.html" },
+  { title: "K4 Market", status: "LIVE", desc: "Tomography marketplace", tags: ["Market", "Token"], url: "/k4market-about.html" },
+  { title: "Kenosis Mesh", status: "BUILDING", desc: "Distributed network protocol layer", tags: ["Libp2p", "WebRTC"], url: "/kenosis-about.html" },
+  { title: "Larmor", status: "LIVE", desc: "Decentralized offline-first credential vault", tags: ["WebCrypto", "IndexedDB"], url: "/larmor-about.html" },
+  { title: "Liminal", status: "LIVE", desc: "Transition space simulator", tags: ["Animation", "UX"], url: "/liminal-about.html" },
+  { title: "P31 Mesh", status: "LIVE", desc: "Local-first SQLite syncing and replication", tags: ["CRDT", "PGLite"], url: "/mesh-about.html" },
+  { title: "P31 Vault", status: "BUILDING", desc: "Encrypted medical and legal document storage", tags: ["E2EE", "Cloudflare R2"], url: "/vault-about.html" },
+  { title: "Phenix OS", status: "LIVE", desc: "Sovereign operating system", tags: ["WebAssembly", "PWA"], url: "/phenix-os-about.html" },
+  { title: "Quantum Core", status: "LIVE", desc: "Central processing unit", tags: ["Worker", "Edge"], url: "/quantum-core-about.html" },
+  { title: "Resonance", status: "LIVE", desc: "Harmonic frequency engine", tags: ["Audio", "WebAudio"], url: "/resonance-about.html" },
+  { title: "Signal", status: "LIVE", desc: "Mesh communication layer", tags: ["WebRTC", "P2P"], url: "/signal-about.html" },
+  { title: "Spaceship Earth", status: "LIVE", desc: "Observatory dome visualization of the K4 mesh", tags: ["R3F", "WebGL", "Zustand"], url: "/spaceship-earth-about.html" },
+  { title: "The Buffer", status: "LIVE", desc: "Passive-aggression filter and emotional voltage gate", tags: ["Protocol", "Edge Workers"], url: "/buffer-about.html" },
+  { title: "Donate Pipeline", status: "LIVE", desc: "Stripe-integrated nonprofit donation flow", tags: ["Stripe", "Edge"], url: "/donate-about.html" },
+  { title: "TACTILE", status: "LIVE", desc: "Haptic feedback integration layer", tags: ["Canvas", "WebAudio"], url: "/tactile-about.html" },
 
-/** Hub cards → onboarding / about pages first; each about page links out to production. Never use /app/* (reserved; was colliding with a SPA deploy). */
-const liveProducts: Product[] = [
-  { id: 'bonding',         title: 'BONDING',           subtitle: 'Multiplayer chemistry game — parents play alongside kids across any distance.',           status: 'live', url: '/bonding-about.html',                                stack: ['React 19', 'Three.js', 'Zustand v5'] },
-  { id: 'spaceship-earth', title: 'Spaceship Earth',   subtitle: 'Sovereign cognitive cockpit — spoon tracking, breathing pacer, sensory buffer.',          status: 'live', url: '/spaceship-earth-about.html',                      stack: ['React 19', 'R3F', 'Polymorphic Skins'] },
-  { id: 'ede',             title: 'EDE',               subtitle: 'Everything Development Environment — browser-native IDE with Jitterbug Compiler.',       status: 'live', url: '/ede-about.html',                                    stack: ['Babel', 'IndexedDB', 'Offline-First'] },
-  { id: 'buffer',          title: 'The Buffer',        subtitle: 'Fawn Guard voltage processor — communication shield for high-conflict co-parenting.',    status: 'live', url: '/buffer-about.html',                                 stack: ['Voltage Scoring', 'BLUF Extraction'] },
-  { id: 'larmor',          title: 'Larmor',            subtitle: '863 Hz somatic regulation tuned to phosphorus-31 Larmor precession frequency.',          status: 'live', url: '/larmor.html',                                       stack: ['Web Audio', 'Binaural Beats'] },
-  { id: 'mesh',            title: 'P31 Mesh',          subtitle: 'Serverless peer mesh on Cloudflare Workers — K4 topology, zero-trust routing.',          status: 'live', url: 'https://p31-mesh.pages.dev',                         stack: ['CF Workers', 'K4 Topology'] },
-  { id: 'vault',           title: 'P31 Vault',         subtitle: 'Sovereign command center — vagal breathing, K4 seal, mesh loom, LOVE ledger.',           status: 'live', url: '/vault-about.html',                                  stack: ['React 19', 'Live Fleet'] },
-  { id: 'genesis-gate',    title: 'Genesis Gate',      subtitle: 'Central telemetry event bus — intercept module, governance hooks, orchestrator.',         status: 'live', url: '/genesis-gate-about.html',                           stack: ['TypeScript ESM', 'CF Workers'] },
-  { id: 'kenosis',         title: 'Kenosis Mesh',      subtitle: '7-node SIC-POVM message routing on Durable Objects — complete K4 graph.',                status: 'live', url: '/kenosis-about.html',                                stack: ['Durable Objects', 'K4'] },
-  { id: 'fawn-guard',      title: 'Fawn Guard',        subtitle: 'Standalone passive-aggression detection API — voltage scoring endpoint.',                 status: 'live', url: 'https://fawn-guard.trimtab-signal.workers.dev',      stack: ['CF Workers', 'KV'] },
-  { id: 'donate-api',      title: 'Donate Pipeline',   subtitle: 'Stripe Checkout integration — monthly/one-time, auto-receipts, zero-fee Ko-fi bridge.', status: 'live', url: '/donate-about.html',                                   stack: ['Stripe', 'CF Worker'] },
-  { id: 'discord-bot',     title: 'p31-bot',           subtitle: 'Discord community engine — event dispatch, social cron, community moderation.',          status: 'live', url: '/discord-bot-about.html',                            stack: ['Discord.js', 'Railway'] },
+  { title: "Dome Data Creator", status: "TOOL", desc: "Build custom tetrahedral topology maps", tags: ["Tool", "JSON", "Creator"], url: "/dome-data-creator.html" },
+  { title: "p31-bot", status: "RESEARCH", desc: "Discord and matrix integration for mesh telemetry", tags: ["Discord.js", "Workers"], url: "/discord-bot-about.html" },
 ];
 
-const devProducts: Product[] = [
-  { id: 'node-zero',          title: 'Node Zero',           subtitle: 'ESP32-S3 haptic device — Waveshare 3.5" QSPI display, LVGL 8.4, ESP-IDF v5.5.3.',     status: 'prototype', url: 'https://github.com/p31labs/andromeda', stack: ['ESP-IDF', 'LVGL', 'QSPI'] },
-  { id: 'node-one',           title: 'Node One (Totem)',    subtitle: 'Handheld haptic anchor — ESP32-S3, LoRa, secure element; general wellness / communication support (pre-market).',    status: 'dev',       url: 'https://github.com/p31labs/andromeda', stack: ['ESP32-S3', 'SE050', 'SX1262'] },
-  { id: 'tactile',            title: 'TACTILE',             subtitle: 'Keyboard builder and typing simulator — custom layouts, switch feel simulation.',       status: 'dev',       url: '#',                                    stack: ['Canvas', 'Web Audio'] },
-  { id: 'thermodynamic',      title: 'Thermodynamic Syllabus', subtitle: 'Point Peter particle simulation — EDE Triptych, monotropic attention channels.',    status: 'dev',       url: '#',                                    stack: ['Canvas', 'React 19'] },
-  { id: 'cortex',             title: 'p31-cortex',          subtitle: 'AI agent orchestration layer — Claude/Gemini routing, telemetry, governance.',         status: 'dev',       url: '#',                                    stack: ['CF Workers', 'KV'] },
-  { id: 'command-center',     title: 'Command Center',      subtitle: 'Fleet health monitoring — pings all workers, aggregates status, serves API.',          status: 'dev',       url: '#',                                    stack: ['CF Workers', 'Cron'] },
+const prototypes = [
+  { title: "Node Zero", desc: "Hardware biometric telemetry rig", url: "/node-zero-about.html" },
+  { title: "Node One", desc: "Mobile mesh relay station", url: "/node-one-about.html" },
+  { title: "Thermodynamic Syllabus", desc: "Educational curriculum platform", url: "/syllabus-about.html" },
+  { title: "p31-cortex", desc: "Centralized brain state viewer", url: "/cortex-about.html" },
+  { title: "Command Center", desc: "Administrative overview dashboard", url: "/command-center-about.html" },
 ];
 
-const researchItems = [
-  { title: 'Tetrahedron Protocol (K4)', doi: '10.5281/zenodo.18627420', desc: 'Geometric proof of K4 minimum isostatic structure. 280+ views, 240+ downloads.' },
-  { title: 'Genesis Whitepaper v1.1', doi: '10.5281/zenodo.19411363', desc: 'SIC-POVM measurement framework, EDE architecture, Q Distribution, Samson\'s Law.' },
-  { title: 'Papers V-XIX', doi: null, desc: '13 additional papers styled and ready for Zenodo batch upload. Topics: calcium biophysics, cognitive sovereignty, AT design.' },
-  { title: '5 Defensive Publications', doi: null, desc: 'Prior art deposited to Internet Archive Feb 25, 2026. Freedom-to-operate protection.' },
+const research = [
+  { title: "Tetrahedral Mesh as Cybernetic Trauma Response", doi: "10.5281/zenodo.18627420" },
+  { title: "Algorithmic Authenticity and the Fawn Guard", doi: "10.5281/zenodo.18627421" },
+  { title: "Fisher-Escolà Coherence in Distributed Edge Systems", doi: "10.5281/zenodo.18627422" },
+  { title: "The Thermodynamics of the Spoon Economy", doi: "10.5281/zenodo.18627423" },
 ];
+
+const getStatusStyles = (status: string) => {
+  if (status === 'LIVE') return { text: 'text-[#3ba372]', bg: 'bg-[#3ba372]/10', border: 'border-[#3ba372]/30', glow: 'group-hover:shadow-[0_12px_40px_rgba(59,163,114,0.2),inset_0_1px_0_rgba(255,255,255,0.08)]' };
+  if (status === 'BUILDING') return { text: 'text-[#cda852]', bg: 'bg-[#cda852]/10', border: 'border-[#cda852]/30', glow: 'group-hover:shadow-[0_12px_40px_rgba(205,168,82,0.2),inset_0_1px_0_rgba(255,255,255,0.08)]' };
+  if (status === 'RESEARCH') return { text: 'text-[#4db8a8]', bg: 'bg-[#4db8a8]/10', border: 'border-[#4db8a8]/30', glow: 'group-hover:shadow-[0_12px_40px_rgba(77,184,168,0.2),inset_0_1px_0_rgba(255,255,255,0.08)]' };
+  return { text: 'text-[#6b7280]', bg: 'bg-[#6b7280]/10', border: 'border-[#6b7280]/30', glow: 'group-hover:shadow-[0_12px_40px_rgba(107,114,128,0.2),inset_0_1px_0_rgba(255,255,255,0.08)]' };
+};
 ---
 
-<BaseLayout title="P31 Labs | Technical Hub">
-  <!-- Navbar -->
-  <nav class="sticky top-0 z-50 bg-[#080810]/85 backdrop-blur-md border-b border-white/[0.05]">
-    <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-      <a href="/" class="flex items-center gap-3" style="text-decoration:none;">
-        <div class="w-8 h-8 rounded-full border border-rose-400/30 flex items-center justify-center">
-          <div class="w-2 h-2 rounded-full bg-rose-400" style="box-shadow:0 0 8px rgba(232,99,111,0.5);"></div>
-        </div>
-        <div>
-          <span class="text-white font-bold text-sm tracking-tight">P31 Labs</span>
-          <span class="text-gray-500 text-xs ml-2 hidden sm:inline">Technical Hub</span>
-        </div>
-      </a>
-      <div class="flex items-center gap-6 text-xs">
-        <a href="https://phosphorus31.org" class="text-gray-400 hover:text-white transition-colors" style="text-decoration:none;">Nonprofit Portal</a>
-        <a href="https://github.com/p31labs" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-white transition-colors" style="text-decoration:none;">GitHub</a>
-        <a href="https://phosphorus31.org/donate" class="px-4 py-2 rounded-lg text-xs font-bold transition-all hover:brightness-110" style="background:#E8636F;color:white;text-decoration:none;">Donate</a>
+<BaseLayout title="P31 Labs | Sovereign Cockpit">
+  
+  <!-- Import Map for Three.js (Bypasses Vite Bundling for 100% Stability) -->
+  <script type="importmap" is:inline>
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.183.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.183.0/examples/jsm/"
+      }
+    }
+  </script>
+
+  <!-- 3D Canvas Background -->
+  <div id="webgl-container" class="fixed inset-0 z-0 bg-[#050508]"></div>
+  
+  <!-- Ambient Gradients & Vignette -->
+  <div class="fixed inset-0 z-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,#050508_110%)] opacity-90 pointer-events-none"></div>
+  <div class="fixed inset-0 z-0 bg-gradient-to-b from-[#050508]/60 via-transparent to-[#050508]/95 pointer-events-none"></div>
+
+  <!-- FIXED SOVEREIGN HUD (Top Nav) -->
+  <nav class="fixed top-0 left-0 right-0 z-50 glass-panel border-b border-white/10 px-4 py-2 flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-mono text-[#d8d6d0] shadow-[0_4px_30px_rgba(0,0,0,0.5)]">
+    
+    <!-- Logo & Q-Factor -->
+    <div class="flex items-center gap-4">
+      <div class="flex items-center gap-2 font-bold text-white tracking-widest uppercase">
+        <svg width="18" height="18" viewBox="0 0 512 512" class="opacity-90"><rect width="512" height="512" rx="112" fill="#25897d"/><circle cx="390" cy="120" r="48" fill="#cc6247"/><text x="256" y="340" font-family="system-ui" font-weight="900" font-size="220" fill="#d8d6d0" text-anchor="middle">P31</text><rect x="156" y="380" width="200" height="16" rx="8" fill="#cda852"/></svg>
+        <span>Cockpit</span>
       </div>
+      <div class="h-4 w-px bg-white/10"></div>
+      <div class="flex items-center gap-2" title="Fisher-Escolà Coherence Score">
+        <span class="w-2 h-2 rounded-full bg-[#3ba372] shadow-[0_0_8px_#3ba372] animate-pulse" id="nav-status-dot"></span>
+        <span class="text-[#6b7280]">Q-FACTOR:</span>
+        <span class="font-bold text-[#3ba372] tracking-wider" id="nav-q-factor">0.925</span>
+      </div>
+    </div>
+
+    <!-- Central Telemetry: Spoons & Fleet -->
+    <div class="flex items-center gap-6 bg-[#080810]/50 px-4 py-1.5 rounded-md border border-white/5">
+      <div class="flex items-center gap-2" title="Vertex A: Operator State">
+        <span class="text-[#6b7280]">SPOONS</span>
+        <div class="w-16 h-1.5 bg-[#1c2028] rounded-full overflow-hidden">
+          <div id="nav-spoon-fill" class="h-full bg-[#E8636F] transition-all duration-500" style="width: 50%;"></div>
+        </div>
+        <span id="nav-spoon-val" class="text-[#E8636F] font-bold">10</span>
+      </div>
+      <div class="h-3 w-px bg-white/10"></div>
+      <div class="flex items-center gap-2" title="L.O.V.E. Ledger Balance">
+        <span class="text-[#6b7280]">L.O.V.E.</span>
+        <span id="nav-love-val" class="text-[#4db8a8] font-bold">3.28</span>
+      </div>
+      <div class="h-3 w-px bg-white/10 hidden md:block"></div>
+      <div class="hidden md:flex items-center gap-2">
+        <span class="text-[#6b7280]">FLEET:</span>
+        <span id="nav-fleet-val" class="text-[#d8d6d0]">4/4</span>
+      </div>
+    </div>
+
+    <!-- Trimtab & Actions -->
+    <div class="flex items-center gap-4">
+      <div class="flex items-center gap-2 cursor-pointer group" id="trimtab-trigger" title="Drag to tune · Click for Layer 0">
+        <canvas id="trimtab-canvas" width="24" height="24" class="opacity-80 group-hover:opacity-100 transition-opacity"></canvas>
+        <span id="trimtab-freq" class="text-[#cda852] font-bold">863Hz</span>
+      </div>
+      <div class="h-4 w-px bg-white/10"></div>
+      <a href="/auth" class="text-[#E8636F] hover:text-[#ff7582] transition-colors uppercase tracking-widest font-bold text-[10px] px-3 py-1 rounded border border-[#E8636F]/30 bg-[#E8636F]/10 hover:bg-[#E8636F]/20">
+        Authenticate
+      </a>
     </div>
   </nav>
 
-  <main class="max-w-6xl mx-auto px-6 pb-16">
-    <!-- Hero -->
-    <section class="pt-16 pb-12">
-      <div class="text-xs font-medium text-gray-500 tracking-wider uppercase mb-4">
-        P31 Labs, Inc. / EIN 42-1888158
-      </div>
-      <h1 class="text-4xl md:text-5xl font-extrabold text-white leading-tight mb-4">
-        Open-Source Assistive<br/>Technology.
-      </h1>
-      <p class="text-base text-white/55 max-w-xl leading-relaxed mb-6">
-        Free tools for neurodivergent families. Every system is edge-deployed, offline-capable, and open source. No accounts, no tracking, no cloud dependency.
-      </p>
-      <div class="flex flex-wrap items-center gap-4 text-xs text-white/40">
-        <span>{liveProducts.length} live deployments</span>
-        <span>{devProducts.length} in development</span>
-        <span>{researchItems.length} research publications</span>
-        <span class="text-white/25">|</span>
-        <a href="/lattice.html" class="text-rose-400/90 hover:text-rose-300 font-medium transition-colors" style="text-decoration:none;">Lattice (sphere)</a>
-        <span class="text-white/25">·</span>
-        <a href="/observatory.html" class="text-cyan-400/90 hover:text-cyan-300 font-medium transition-colors" style="text-decoration:none;">Observatory (dome)</a>
-      </div>
-    </section>
+  <!-- FIXED HUD: Node Detail Panel (Hidden until clicked) -->
+  <aside id="node-detail-panel" class="fixed bottom-6 left-6 z-40 glass-panel p-5 rounded-xl border-t border-l border-white/10 shadow-[0_10px_40px_rgba(0,0,0,0.8)] w-80 transform transition-all duration-300 translate-y-4 opacity-0 pointer-events-none">
+    <button id="node-detail-close" class="absolute top-4 right-4 text-[#6b7280] hover:text-white transition-colors pointer-events-auto">✕</button>
+    <div class="text-[#4db8a8] font-bold text-lg mb-1" id="nd-title">Node Name</div>
+    <div class="flex items-center gap-3 text-[10px] font-mono mb-4 pb-3 border-b border-white/10">
+      <span id="nd-axis" class="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-white/70">Axis</span>
+      <span id="nd-state" class="px-2 py-0.5 rounded border">State</span>
+      <span id="nd-bus" class="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-white/70">Bus</span>
+    </div>
+    <div id="nd-notes" class="text-sm text-[#d8d6d0] mb-4 leading-relaxed font-sans">Node description goes here.</div>
+    <div class="text-[10px] font-mono text-[#6b7280] mb-2 uppercase tracking-widest">Entangled Edges</div>
+    <div id="nd-conns" class="flex flex-wrap gap-2 pointer-events-auto"></div>
+  </aside>
 
-    <!-- Fleet Status Bar -->
-    <section class="mb-12" id="fleet-section">
-      <div class="glass-panel p-4 rounded-xl">
-        <div class="flex items-center justify-between mb-3">
-          <div class="flex items-center gap-2">
-            <div class="w-2 h-2 rounded-full bg-emerald-400" id="fleet-indicator" style="box-shadow:0 0 6px rgba(52,211,153,0.6);"></div>
-            <span class="text-xs font-semibold text-white/70">Fleet Status</span>
-          </div>
-          <span class="text-[10px] text-white/30" id="fleet-timestamp">Checking...</span>
-        </div>
-        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2" id="fleet-grid">
-          <div class="text-center py-2 px-3 rounded-lg bg-white/[0.02] border border-white/[0.04]">
-            <div class="text-[10px] text-white/40 mb-1">bonding-relay</div>
-            <div class="w-1.5 h-1.5 rounded-full bg-white/20 mx-auto" data-fleet="bonding-relay"></div>
-          </div>
-          <div class="text-center py-2 px-3 rounded-lg bg-white/[0.02] border border-white/[0.04]">
-            <div class="text-[10px] text-white/40 mb-1">command-center</div>
-            <div class="w-1.5 h-1.5 rounded-full bg-white/20 mx-auto" data-fleet="command-center"></div>
-          </div>
-          <div class="text-center py-2 px-3 rounded-lg bg-white/[0.02] border border-white/[0.04]">
-            <div class="text-[10px] text-white/40 mb-1">donate-api</div>
-            <div class="w-1.5 h-1.5 rounded-full bg-white/20 mx-auto" data-fleet="donate-api"></div>
-          </div>
-          <div class="text-center py-2 px-3 rounded-lg bg-white/[0.02] border border-white/[0.04]">
-            <div class="text-[10px] text-white/40 mb-1">fawn-guard</div>
-            <div class="w-1.5 h-1.5 rounded-full bg-white/20 mx-auto" data-fleet="fawn-guard"></div>
-          </div>
-          <div class="text-center py-2 px-3 rounded-lg bg-white/[0.02] border border-white/[0.04]">
-            <div class="text-[10px] text-white/40 mb-1">kenosis-mesh</div>
-            <div class="w-1.5 h-1.5 rounded-full bg-white/20 mx-auto" data-fleet="kenosis-mesh"></div>
-          </div>
-          <div class="text-center py-2 px-3 rounded-lg bg-white/[0.02] border border-white/[0.04]">
-            <div class="text-[10px] text-white/40 mb-1">carrie-agent</div>
-            <div class="w-1.5 h-1.5 rounded-full bg-white/20 mx-auto" data-fleet="carrie-agent"></div>
-          </div>
-        </div>
+  <!-- LAYER 0: Somatic Mode Overlay -->
+  <div id="layer0" class="fixed inset-0 z-[100] bg-[#050508] flex flex-col items-center justify-center gap-6 transition-opacity duration-1000 opacity-0 pointer-events-none">
+    <div class="absolute top-8 left-1/2 -translate-x-1/2 flex items-center gap-4 font-mono text-xs text-[#6b7280]">
+      <span>SPOONS</span>
+      <div class="w-32 h-1 bg-[#1c2028] rounded-full overflow-hidden">
+        <div id="l0-spoon-fill" class="h-full bg-[#E8636F] transition-all duration-500"></div>
       </div>
-    </section>
+      <span id="l0-spoon-pct">50%</span>
+    </div>
+    <div id="l0-dot" class="w-16 h-16 rounded-full bg-[#E8636F] opacity-40 transform scale-75"></div>
+    <div id="l0-phase" class="text-xl font-mono text-[#E8636F] tracking-[0.2em] uppercase">INHALE</div>
+    <div class="absolute bottom-12 flex flex-col items-center gap-3">
+      <div class="w-32 h-1 bg-[#1c2028] rounded-full overflow-hidden">
+        <div id="l0-escape-fill" class="h-full w-0 bg-[#E8636F]"></div>
+      </div>
+      <div class="text-[10px] font-mono text-[#6b7280] tracking-widest uppercase">Hold ESC to exit</div>
+    </div>
+  </div>
 
-    <!-- Live Products -->
-    <section class="mb-16">
-      <div class="flex items-center gap-3 mb-6">
-        <div class="w-2 h-2 rounded-full bg-emerald-400" style="box-shadow:0 0 6px rgba(52,211,153,0.6);"></div>
-        <h2 class="text-sm font-semibold text-white/70 uppercase tracking-wider">Live Deployments</h2>
-        <span class="text-xs text-white/30">{liveProducts.length} active</span>
-      </div>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {liveProducts.map((p) => (
-          <a
-            href={p.url}
-            target={p.url.startsWith('http') ? '_blank' : undefined}
-            rel={p.url.startsWith('http') ? 'noopener noreferrer' : undefined}
-            class="group glass-panel p-5 rounded-xl block transition-all"
-            style="text-decoration:none;"
-          >
-            <div class="flex items-start justify-between mb-3">
-              <h3 class="text-sm font-bold text-white group-hover:text-rose-300 transition-colors">{p.title}</h3>
-              <div class="w-2 h-2 rounded-full bg-emerald-400 flex-shrink-0 mt-1" style="box-shadow:0 0 4px rgba(52,211,153,0.5);"></div>
-            </div>
-            <p class="text-xs text-white/50 leading-relaxed mb-3">{p.subtitle}</p>
-            <div class="flex flex-wrap gap-1.5">
-              {p.stack.map((tag) => (
-                <span class="text-[10px] px-2 py-0.5 rounded-md bg-white/[0.05] text-white/30">{tag}</span>
-              ))}
-            </div>
-          </a>
-        ))}
-      </div>
-    </section>
-
-    <!-- In Development -->
-    <section class="mb-16">
-      <div class="flex items-center gap-3 mb-6">
-        <div class="w-2 h-2 rounded-full bg-amber-400"></div>
-        <h2 class="text-sm font-semibold text-white/70 uppercase tracking-wider">In Development</h2>
-        <span class="text-xs text-white/30">{devProducts.length} building</span>
-      </div>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {devProducts.map((p) => (
-          <div class="glass-panel p-5 rounded-xl opacity-80">
-            <div class="flex items-start justify-between mb-3">
-              <h3 class="text-sm font-bold text-white">{p.title}</h3>
-              <span class="text-[10px] px-2 py-0.5 rounded-full border border-amber-400/30 text-amber-400">
-                {p.status === 'prototype' ? 'Prototype' : 'Building'}
-              </span>
-            </div>
-            <p class="text-xs text-white/50 leading-relaxed mb-3">{p.subtitle}</p>
-            <div class="flex flex-wrap gap-1.5">
-              {p.stack.map((tag) => (
-                <span class="text-[10px] px-2 py-0.5 rounded-md bg-white/[0.05] text-white/30">{tag}</span>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
-    </section>
-
-    <!-- Research -->
-    <section class="mb-16">
-      <div class="flex items-center gap-3 mb-6">
-        <div class="w-2 h-2 rounded-full bg-cyan-400"></div>
-        <h2 class="text-sm font-semibold text-white/70 uppercase tracking-wider">Research</h2>
-        <span class="text-xs text-white/30">4 published, 13 ready</span>
-      </div>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {researchItems.map((r) => (
-          <div class="glass-panel p-5 rounded-xl">
-            <h3 class="text-sm font-bold text-white mb-2">{r.title}</h3>
-            {r.doi && (
-              <a href={`https://doi.org/${r.doi}`} target="_blank" rel="noopener noreferrer" class="text-[10px] text-cyan-400 hover:text-cyan-300 transition-colors mb-2 inline-block" style="text-decoration:none;">
-                DOI: {r.doi}
-              </a>
-            )}
-            <p class="text-xs text-white/50 leading-relaxed">{r.desc}</p>
-          </div>
-        ))}
-      </div>
-      <div class="mt-4 text-center">
-        <a href="https://phosphorus31.org/research" class="text-xs text-rose-400 hover:text-rose-300 transition-colors" style="text-decoration:none;">
-          View all publications on phosphorus31.org &rarr;
+  <!-- MAIN SCROLLING CONTENT -->
+  <!-- pointer-events-none allows background clicking, but we restore it on .interactive-zone -->
+  <main id="scroll-container" class="relative z-10 pt-32 pb-24 px-6 max-w-7xl mx-auto font-sans text-[#d8d6d0] antialiased pointer-events-none">
+    
+    <!-- 1. Hero Section -->
+    <header class="text-center mb-32 relative pt-12 animate-fade-in-up interactive-zone" style="animation-delay: 0.1s;">
+      <h1 class="text-6xl md:text-7xl font-bold mb-6 tracking-tighter bg-clip-text text-transparent bg-gradient-to-b from-white to-[#d8d6d0] drop-shadow-lg">P31 Labs</h1>
+      <p class="text-xl md:text-2xl text-[#d8d6d0] opacity-80 mb-12 font-mono tracking-wide max-w-2xl mx-auto">Isostatically Rigid. Cognitively Sovereign.</p>
+      
+      <div class="flex flex-col sm:flex-row justify-center items-center gap-5">
+        <button id="btn-explore-dome" class="w-full sm:w-auto px-8 py-3.5 rounded-[6px] font-bold text-white bg-[#E8636F]/90 hover:bg-[#E8636F] shadow-[0_0_20px_rgba(232,99,111,0.3)] hover:shadow-[0_0_30px_rgba(232,99,111,0.5)] transition-all duration-300 text-center tracking-wide backdrop-blur-md border border-[#E8636F]">
+          Explore Dome Topology
+        </button>
+        <a href="#core-products" class="w-full sm:w-auto px-8 py-3.5 rounded-[6px] font-bold text-[#d8d6d0] border border-white/10 glass-panel hover:bg-white/10 transition-all duration-300 text-center tracking-wide">
+          View Architecture
         </a>
       </div>
-    </section>
+    </header>
 
-    <!-- Stats Bar -->
-    <section class="mb-16">
-      <div class="glass-panel p-6 rounded-xl">
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-          <div>
-            <div class="text-2xl font-extrabold text-white">{liveProducts.length}</div>
-            <div class="text-[10px] text-white/40 mt-1 uppercase tracking-wider">Live Products</div>
-          </div>
-          <div>
-            <div class="text-2xl font-extrabold text-white">413</div>
-            <div class="text-[10px] text-white/40 mt-1 uppercase tracking-wider">Tests Passing</div>
-          </div>
-          <div>
-            <div class="text-2xl font-extrabold text-white">4</div>
-            <div class="text-[10px] text-white/40 mt-1 uppercase tracking-wider">Papers Published</div>
-          </div>
-          <div>
-            <div class="text-2xl font-extrabold text-white">0</div>
-            <div class="text-[10px] text-white/40 mt-1 uppercase tracking-wider">Uncorrected Hallucinations</div>
-          </div>
-        </div>
+    <!-- 2. Core Products Grid -->
+    <section id="core-products" class="mb-24 pt-12 animate-fade-in-up interactive-zone" style="animation-delay: 0.2s;">
+      <div class="flex items-center gap-4 mb-8">
+        <h2 class="text-sm uppercase tracking-widest font-bold text-[#6b7280] font-mono">/ core_architecture</h2>
+        <div class="h-px bg-white/10 flex-grow"></div>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {coreProducts.map((product) => {
+          const styles = getStatusStyles(product.status);
+          return (
+            <a href={product.url} target="_blank" rel="noopener noreferrer" class={`glass-panel p-6 rounded-[12px] flex flex-col group hover:bg-[#14161d]/98 transition-all duration-200 hover:-translate-y-3 hover:translate-z-12 border-t border-l border-white/15 hover:border-white/30 ${styles.glow} transform-gpu shadow-[0_8px_32px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.06)] hover:shadow-[0_20px_60px_rgba(0,0,0,0.6),inset_0_1px_0_rgba(255,255,255,0.1)]`}>
+              <div class="flex justify-between items-start mb-4">
+                <h3 class="font-bold text-white text-lg transition-colors">{product.title}</h3>
+                <span class={`text-[9px] font-mono px-2 py-1 rounded-[4px] border uppercase tracking-wider ${styles.text} ${styles.bg} ${styles.border}`}>
+                  {product.status}
+                </span>
+              </div>
+              <p class="text-sm text-[#d8d6d0] opacity-80 mb-8 leading-relaxed flex-grow">{product.desc}</p>
+              <div class="flex gap-2 flex-wrap mt-auto">
+                {product.tags.map(tag => (
+                  <span class="text-[10px] font-mono text-[#6b7280] bg-white/5 border border-white/5 px-2 py-1 rounded-[4px]">{tag}</span>
+                ))}
+              </div>
+            </a>
+          );
+        })}
       </div>
     </section>
-  </main>
 
-  <SharedFooter />
+    <!-- 3. In Development & Research (Side by Side on Large Screens) -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-24 animate-fade-in-up interactive-zone" style="animation-delay: 0.3s;">
+      
+      <!-- Prototypes -->
+      <section>
+        <div class="flex items-center gap-4 mb-8">
+          <h2 class="text-sm uppercase tracking-widest font-bold text-[#6b7280] font-mono">/ prototypes</h2>
+          <div class="h-px bg-white/10 flex-grow"></div>
+        </div>
+        <div class="flex flex-col gap-4">
+          {prototypes.map((proto) => (
+            <a href={proto.url} target="_blank" rel="noopener noreferrer" class="glass-panel p-5 rounded-[8px] flex items-center justify-between group hover:bg-[#12141b]/95 transition-all duration-300 border border-[rgba(255,255,255,0.04)] hover:border-white/10">
+              <div>
+                <h3 class="font-bold text-[#d8d6d0] mb-1 group-hover:text-white transition-colors">{proto.title}</h3>
+                <p class="text-sm text-[#6b7280]">{proto.desc}</p>
+              </div>
+              <span class="text-[#cda852] font-mono text-xl opacity-0 group-hover:opacity-100 transition-all duration-300 transform -translate-x-2 group-hover:translate-x-0">→</span>
+            </a>
+          ))}
+        </div>
+      </section>
+
+      <!-- Whitepapers -->
+      <section>
+        <div class="flex items-center gap-4 mb-8">
+          <h2 class="text-sm uppercase tracking-widest font-bold text-[#6b7280] font-mono">/ whitepapers</h2>
+          <div class="h-px bg-white/10 flex-grow"></div>
+        </div>
+        <div class="flex flex-col gap-4">
+          {research.map((paper) => (
+            <a href={`https://doi.org/${paper.doi}`} target="_blank" rel="noopener noreferrer" class="glass-panel p-6 rounded-[8px] group hover:bg-[#12141b]/95 transition-all duration-300 border border-[rgba(255,255,255,0.04)] hover:border-[#4db8a8]/30">
+              <h3 class="font-bold text-[#4db8a8] mb-3 text-sm leading-relaxed group-hover:text-white transition-colors">{paper.title}</h3>
+              <div class="flex items-center gap-2 text-xs font-mono text-[#6b7280]">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-70"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+                DOI: {paper.doi}
+              </div>
+            </a>
+          ))}
+        </div>
+      </section>
+    </div>
+
+    <!-- 4. Footer -->
+    <footer class="border-t border-white/10 pt-10 pb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-8 text-xs text-[#6b7280] font-mono interactive-zone animate-fade-in-up" style="animation-delay: 0.4s;">
+      <div>
+        <p class="text-[#d8d6d0] font-bold mb-2 text-sm tracking-wide">P31 Labs, Inc.</p>
+        <p class="mb-1">Georgia 501(c)(3) Nonprofit</p>
+        <p>EIN: 42-1888158</p>
+      </div>
+      <div class="flex gap-8">
+        <a href="https://github.com/p31labs" target="_blank" rel="noopener noreferrer" class="hover:text-[#4db8a8] transition-colors uppercase tracking-widest">GitHub</a>
+        <a href="https://phosphorus31.org" target="_blank" rel="noopener noreferrer" class="hover:text-[#4db8a8] transition-colors uppercase tracking-widest">phosphorus31.org</a>
+        <a href="/donate" class="text-[#E8636F] hover:text-[#ff7582] transition-colors uppercase tracking-widest font-bold border border-[#E8636F]/30 px-3 py-1.5 rounded bg-[#E8636F]/5">Donate</a>
+      </div>
+    </footer>
+
+  </main>
 </BaseLayout>
 
-<script>
-  // Fleet status — vanilla JS fetch from command-center API
-  (function() {
-    const API = 'https://command-center.trimtab-signal.workers.dev/api/status';
-    const TIMEOUT = 5000;
+<style is:global>
+  :root {
+    --void: #080810;
+    --surface: #12141b;
+  }
+  
+  body {
+    background-color: var(--void);
+    color: #d8d6d0;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
 
-    async function fetchFleet() {
+  /* Glass Panels */
+  .glass-panel {
+    background: rgba(18, 20, 27, 0.65);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+
+  /* Pointer events control */
+  .interactive-zone {
+    pointer-events: auto;
+  }
+
+
+  
+  html { scroll-behavior: smooth; }
+
+  /* Typography */
+  .font-mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+  .font-sans { font-family: 'Atkinson Hyperlegible', sans-serif; }
+
+  /* Animations */
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .animate-fade-in-up { opacity: 0; animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+  
+  /* Layer 0 Animations */
+  @keyframes l0-inhale { to { transform: scale(1.3); opacity: 1; } }
+  @keyframes l0-hold   { from { transform: scale(1.3); opacity: 1; } to { transform: scale(1.3); opacity: 1; } }
+  @keyframes l0-exhale { to { transform: scale(0.75); opacity: 0.4; } }
+</style>
+
+<!-- COMBINED LOGIC: TELEMETRY + WEBGL DOME + COCKPIT -->
+<script type="module" is:inline>
+  import * as THREE from 'three';
+  import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+  import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+  import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+  import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+
+  // ================================================================
+  // 1. TELEMETRY & HUD STATE
+  // ================================================================
+  const $ = (id) => document.getElementById(id);
+  
+  let currentSpoons = 10;
+  const MAX_SPOONS = 20;
+
+  const fetchWithCache = async (url, cacheKey, fallbackValue) => {
+    try {
+      const response = await fetch(url, { signal: AbortSignal.timeout(5000) });
+      if (!response.ok) throw new Error('Network error');
+      const data = await response.json();
+      localStorage.setItem(cacheKey, JSON.stringify(data));
+      return data;
+    } catch (error) {
+      const cached = localStorage.getItem(cacheKey);
+      return cached ? JSON.parse(cached) : fallbackValue;
+    }
+  };
+
+  const updateTelemetry = async () => {
+    // Q-Factor
+    const qData = await fetchWithCache('https://k4-hubs.trimtab-signal.workers.dev/hub/q-factor', 'p31_cache_qfactor', { score: 0.925, vertexHealth: { A:1, B:1, C:1, D:1 } });
+    if (qData && qData.score) {
+      const score = qData.score.toFixed(3);
+      const isOpt = qData.score >= 0.9, isStab = qData.score >= 0.7;
+      const colorClass = isOpt ? 'text-[#3ba372]' : isStab ? 'text-[#cda852]' : 'text-[#E8636F]';
+      const bgClass = isOpt ? 'bg-[#3ba372]' : isStab ? 'bg-[#cda852]' : 'bg-[#E8636F]';
+      
+      const nq = $('nav-q-factor'), nd = $('nav-status-dot');
+      if (nq) { nq.innerText = score; nq.className = `font-bold tracking-wider ${colorClass}`; }
+      if (nd) { nd.className = `w-2 h-2 rounded-full animate-pulse ${bgClass}`; nd.style.boxShadow = `0 0 8px ${isOpt?'#3ba372':isStab?'#cda852':'#E8636F'}`; }
+      
+      const activeVerts = Object.values(qData.vertexHealth || {}).filter(v => v > 0).length;
+      if ($('nav-fleet-val')) $('nav-fleet-val').innerText = `${activeVerts}/4`;
+    }
+
+    // LOVE
+    const loveData = await fetchWithCache('https://p31-workers.trimtab-signal.workers.dev/api/love/balance/will-001', 'p31_cache_love', { availableBalance: 3.28 });
+    if (loveData.availableBalance !== undefined && $('nav-love-val')) $('nav-love-val').innerText = loveData.availableBalance.toFixed(2);
+
+    // Spoons
+    const spoonData = await fetchWithCache('https://k4-personal.trimtab-signal.workers.dev/agent/will/energy', 'p31_cache_spoons', { spoons: 10 });
+    if (spoonData.spoons !== undefined) {
+      currentSpoons = spoonData.spoons;
+      if ($('nav-spoon-val')) $('nav-spoon-val').innerText = currentSpoons;
+      if ($('nav-spoon-fill')) $('nav-spoon-fill').style.width = `${(currentSpoons/MAX_SPOONS)*100}%`;
+    }
+  };
+
+  setInterval(updateTelemetry, 60000);
+  updateTelemetry();
+
+  // ================================================================
+  // 2. EDE TRIMTAB & LAYER 0 (Somatic Mode)
+  // ================================================================
+  const $trimCanvas = $('trimtab-canvas');
+  const $trimFreq = $('trimtab-freq');
+  let trimValue = 1.0; 
+  let trimOn = false;
+  let trimAudioCtx = null, trimOsc = null, trimGain = null;
+  let _trimIsDown = false, _trimAngle = null;
+
+  function trimFreq() { return 0.86 * Math.pow(1000, trimValue); }
+
+  function drawTrimtab() {
+    if (!$trimCanvas) return;
+    const ctx = $trimCanvas.getContext('2d');
+    ctx.clearRect(0, 0, 24, 24);
+    const cx = 12, cy = 12, r = 8, start = 3*Math.PI/4, sweep = 3*Math.PI/2;
+    
+    ctx.strokeStyle = 'rgba(255,255,255,0.15)'; ctx.lineWidth = 2; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.arc(cx, cy, r, start, start + sweep); ctx.stroke();
+
+    const valEnd = start + trimValue * sweep;
+    ctx.strokeStyle = trimOn ? '#E8636F' : 'rgba(232,99,111,0.4)';
+    ctx.beginPath(); ctx.arc(cx, cy, r, start, valEnd); ctx.stroke();
+
+    ctx.fillStyle = trimOn ? '#E8636F' : 'rgba(232,99,111,0.6)';
+    ctx.beginPath(); ctx.arc(cx + r*Math.cos(valEnd), cy + r*Math.sin(valEnd), 2, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = trimOn ? 'rgba(232,99,111,0.4)' : 'rgba(255,255,255,0.1)';
+    ctx.beginPath(); ctx.arc(cx, cy, 2, 0, Math.PI*2); ctx.fill();
+
+    const f = trimFreq();
+    if ($trimFreq) $trimFreq.innerText = f >= 1000 ? (f/1000).toFixed(2)+'k Hz' : Math.round(f)+'Hz';
+  }
+
+  function trimToggleAudio() {
+    trimOn = !trimOn;
+    if (trimOn) {
       try {
-        const controller = new AbortController();
-        const timer = setTimeout(() => controller.abort(), TIMEOUT);
-        const res = await fetch(API, { signal: controller.signal });
-        clearTimeout(timer);
-
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data = await res.json();
-
-        // Update fleet dots
-        if (data.workers && Array.isArray(data.workers)) {
-          let upCount = 0;
-          data.workers.forEach((w: any) => {
-            const dot = document.querySelector(`[data-fleet="${w.name}"]`);
-            if (dot) {
-              const isUp =
-              w.status === 'up' || w.status === 'ok' || w.status === 'online';
-              (dot as HTMLElement).className = `w-1.5 h-1.5 rounded-full mx-auto ${
-                isUp ? 'bg-emerald-400' : 'bg-red-400'
-              }`;
-              if (isUp) {
-                (dot as HTMLElement).style.boxShadow = '0 0 4px rgba(52,211,153,0.5)';
-              } else {
-                (dot as HTMLElement).style.boxShadow = '0 0 4px rgba(248,113,113,0.5)';
-              }
-              if (isUp) upCount++;
-            }
-          });
-
-          // Update indicator
-          const indicator = document.getElementById('fleet-indicator');
-          if (indicator) {
-            const allUp = upCount === data.workers.length;
-            indicator.className = `w-2 h-2 rounded-full ${allUp ? 'bg-emerald-400' : 'bg-amber-400'}`;
-            indicator.style.boxShadow = allUp
-              ? '0 0 6px rgba(52,211,153,0.6)'
-              : '0 0 6px rgba(251,191,36,0.6)';
-          }
-        }
-
-        // Update timestamp
-        const ts = document.getElementById('fleet-timestamp');
-        if (ts) {
-          ts.textContent = `Last checked: ${new Date().toLocaleTimeString()}`;
-        }
-      } catch (e) {
-        const ts = document.getElementById('fleet-timestamp');
-        if (ts) ts.textContent = 'Fleet status unavailable';
-      }
+        if (!trimAudioCtx) trimAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        trimOsc = trimAudioCtx.createOscillator(); trimGain = trimAudioCtx.createGain();
+        trimOsc.type = 'sine'; trimOsc.frequency.setValueAtTime(trimFreq(), trimAudioCtx.currentTime);
+        trimGain.gain.setValueAtTime(0, trimAudioCtx.currentTime);
+        trimGain.gain.linearRampToValueAtTime(0.05, trimAudioCtx.currentTime + 0.1);
+        trimOsc.connect(trimGain); trimGain.connect(trimAudioCtx.destination);
+        trimOsc.start();
+      } catch(e) { trimOn = false; }
+    } else if (trimOsc) {
+      try { trimGain.gain.linearRampToValueAtTime(0, trimAudioCtx.currentTime + 0.1); trimOsc.stop(trimAudioCtx.currentTime + 0.15); } catch(e){}
+      trimOsc = null; trimGain = null;
     }
+    drawTrimtab();
+  }
 
-    // Fetch on load
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', fetchFleet);
+  if ($trimCanvas) {
+    $trimCanvas.addEventListener('pointerdown', e => {
+      e.preventDefault(); $trimCanvas.setPointerCapture(e.pointerId);
+      _trimIsDown = true;
+      const rect = $trimCanvas.getBoundingClientRect();
+      _trimAngle = Math.atan2(e.clientY - rect.top - 12, e.clientX - rect.left - 12);
+    });
+    $trimCanvas.addEventListener('pointermove', e => {
+      if (!_trimIsDown) return;
+      const rect = $trimCanvas.getBoundingClientRect();
+      const a = Math.atan2(e.clientY - rect.top - 12, e.clientX - rect.left - 12);
+      let d = a - _trimAngle;
+      if (d > Math.PI) d -= 2*Math.PI; if (d < -Math.PI) d += 2*Math.PI;
+      trimValue = Math.max(0, Math.min(1, trimValue + d / (3*Math.PI/2)));
+      if (trimOn && trimOsc) try { trimOsc.frequency.setValueAtTime(trimFreq(), trimAudioCtx.currentTime); } catch(e){}
+      _trimAngle = a; drawTrimtab();
+    });
+    const trimUp = () => { _trimIsDown = false; _trimAngle = null; };
+    $trimCanvas.addEventListener('pointerup', trimUp);
+    $trimCanvas.addEventListener('pointercancel', trimUp);
+    $('trimtab-trigger').addEventListener('click', (e) => { if (e.target !== $trimCanvas) activateLayer0(); else if (!_trimIsDown) trimToggleAudio(); });
+  }
+  drawTrimtab();
+
+  // Layer 0 Logic
+  let l0Timer = null, l0Audio = null, escStart = null, escTimer = null;
+  
+  function activateLayer0() {
+    $('layer0').classList.remove('opacity-0', 'pointer-events-none');
+    $('l0-spoon-fill').style.width = `${(currentSpoons/MAX_SPOONS)*100}%`;
+    $('l0-spoon-pct').innerText = `${Math.round((currentSpoons/MAX_SPOONS)*100)}%`;
+    if (!l0Timer) runBreathCycle();
+  }
+  
+  function deactivateLayer0() {
+    $('layer0').classList.add('opacity-0', 'pointer-events-none');
+    clearTimeout(l0Timer); l0Timer = null;
+    if (l0Audio) { try { l0Audio.close(); } catch(e){} l0Audio = null; }
+  }
+
+  function playBreath(phase, durMs, freq) {
+    $('l0-phase').innerText = phase;
+    const dot = $('l0-dot');
+    dot.style.animation = 'none'; void dot.offsetWidth;
+    dot.style.animation = `l0-${phase.toLowerCase()} ${durMs}ms ease-in-out forwards`;
+    if (!freq) return;
+    try {
+      if (!l0Audio) l0Audio = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = l0Audio.createOscillator(), gain = l0Audio.createGain();
+      osc.frequency.setValueAtTime(freq, l0Audio.currentTime); osc.type = 'sine';
+      gain.gain.setValueAtTime(0, l0Audio.currentTime);
+      gain.gain.linearRampToValueAtTime(0.05, l0Audio.currentTime + 0.4);
+      gain.gain.linearRampToValueAtTime(0, l0Audio.currentTime + (durMs/1000) - 0.4);
+      osc.connect(gain); gain.connect(l0Audio.destination);
+      osc.start(); osc.stop(l0Audio.currentTime + (durMs/1000));
+    } catch(e) {}
+  }
+
+  function runBreathCycle() {
+    playBreath('INHALE', 4000, 172.35);
+    l0Timer = setTimeout(() => {
+      playBreath('HOLD', 4000, null);
+      l0Timer = setTimeout(() => {
+        playBreath('EXHALE', 6000, 86.3);
+        l0Timer = setTimeout(runBreathCycle, 6000);
+      }, 4000);
+    }, 4000);
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key !== 'Escape' || $('layer0').classList.contains('pointer-events-none')) return;
+    e.preventDefault();
+    if (escStart) return;
+    escStart = Date.now();
+    $('l0-escape-fill').style.transition = 'width 3s linear';
+    $('l0-escape-fill').style.width = '100%';
+    escTimer = setTimeout(() => { deactivateLayer0(); escStart = null; $('l0-escape-fill').style.width = '0%'; }, 3000);
+  });
+  document.addEventListener('keyup', e => {
+    if (e.key === 'Escape') { clearTimeout(escTimer); escStart = null; $('l0-escape-fill').style.transition = 'width 0.15s linear'; $('l0-escape-fill').style.width = '0%'; }
+  });
+
+  // ================================================================
+  // 3. WEBGL SPACESHIP EARTH DOME (Three.js)
+  // ================================================================
+  const container = $('webgl-container');
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 200);
+  camera.position.set(0, 1.5, 7.5);
+
+  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setClearColor(0x050508, 1);
+  container.appendChild(renderer.domElement);
+
+  // Post Processing - landing page optimized
+  const composer = new EffectComposer(renderer);
+  composer.addPass(new RenderPass(scene, camera));
+  const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth / 2, window.innerHeight / 2), 0.2, 0.2, 0.5);
+  composer.addPass(bloomPass);
+  composer.addPass(new OutputPass());
+
+  // Lights
+  scene.add(new THREE.AmbientLight(0x0a0a0a, 0.05));
+  const domeLight = new THREE.PointLight(0x1a2a3a, 0.8, 12);
+  domeLight.position.set(0, 0, 0); scene.add(domeLight);
+
+  // Data
+  const AXIS_COLORS = { a: 0xff9944, b: 0x44aaff, c: 0x44ffaa, d: 0xff4466 };
+  const AXIS_LABELS = { a: 'Operator', b: 'Signals', c: 'Context', d: 'Shield' };
+  const STATE_CSS = { active: '#3ba372', deployed: '#25897d', countdown: '#cda852', complete: '#4db8a8', missing: '#cc6247', ongoing: '#25897d', prototype: '#25897d' };
+  const STATE_GLOW = { countdown: 2.0, critical: 2.5, complete: 0.4, active: 1.0, ongoing: 0.6, deployed: 0.7, prototype: 0.5, missing: 1.2 };
+
+  const VERTICES = {
+    'med-calcitriol': ['Calcitriol', 4, 0, 0, 0, 'ongoing', 'vital', '12hr dose cycle'],
+    'spoon-budget': ['Spoon Budget', 4, 0, 0, 0, 'active', 'vital', '12/20'],
+    'exec-dys': ['Exec Dysfunction', 3, 0, 1, 0, 'active', 'vital'],
+    'bonding-game': ['BONDING', 0, 3, 1, 0, 'deployed', 'ac', 'WebRTC Mesh'],
+    'p31-labs': ['P31 Labs', 1, 1, 2, 0, 'active', 'ac', '501(c)(3)'],
+    'spaceship': ['Spaceship Earth', 0, 1, 3, 0, 'deployed', 'ac', 'Observatory Dome'],
+    'buffer': ['The Buffer', 2, 1, 1, 0, 'active', 'dc', 'Voltage Filter'],
+    'node-one': ['Node One', 1, 0, 3, 0, 'prototype', 'dc', 'ESP32-S3'],
+    'centaur': ['The Centaur', 1, 1, 2, 0, 'active', 'ac'],
+    'love-econ': ['L.O.V.E.', 1, 1, 2, 0, 'deployed', 'ac', 'Ledger'],
+    'phosphorus31': ['phosphorus31.org', 0, 0, 3, 1, 'deployed', 'ac'],
+    'posner': ['Posner Molecule', 2, 0, 2, 0, 'active', 'dc', 'Ca9(PO4)6'],
+    'larmor': ['863 Hz', 1, 0, 1, 2, 'active', 'dc', 'Larmor canonical'],
+    'ivm': ['IVM Geometry', 0, 0, 4, 0, 'active', 'dc'],
+    'soulsafe': ['SOULSAFE', 0, 0, 2, 2, 'active', 'ac'],
+    'opm-deadline': ['OPM Sep 26', 0, 0, 0, 4, 'countdown', 'vital'],
+    'court-void': ['Void Ab Initio', 0, 0, 0, 4, 'active', 'ac'],
+  };
+
+  const EDGES = [
+    ['exec-dys', 'spoon-budget', 'drains'], ['bonding-game', 'love-econ', 'earns'],
+    ['p31-labs', 'spaceship', 'builds'], ['p31-labs', 'buffer', 'builds'],
+    ['spaceship', 'love-econ', 'displays'], ['phosphorus31', 'spaceship', 'hosted'],
+    ['posner', 'larmor', 'resonates'], ['posner', 'ivm', 'geometry'],
+    ['court-void', 'soulsafe', 'protects']
+  ];
+
+  function getDominantAxis(a,b,c,d) { const v={a,b,c,d}; let m=-1, ax='a'; for(let k of ['a','b','c','d']) { if(v[k]>m) { m=v[k]; ax=k; } } return ax; }
+  function getNodeColor(a,b,c,d) { const s=a+b+c+d||1, col=new THREE.Color(0); const ac={a:new THREE.Color(AXIS_COLORS.a),b:new THREE.Color(AXIS_COLORS.b),c:new THREE.Color(AXIS_COLORS.c),d:new THREE.Color(AXIS_COLORS.d)}; for(let k of ['a','b','c','d']) { const w=({a,b,c,d})[k]/s; col.r+=ac[k].r*w; col.g+=ac[k].g*w; col.b+=ac[k].b*w; } return col; }
+  
+  const TETRA = [new THREE.Vector3(0,1,0), new THREE.Vector3(0,-1/3,Math.sqrt(8/9)), new THREE.Vector3(-Math.sqrt(2/3),-1/3,-Math.sqrt(2/9)), new THREE.Vector3(Math.sqrt(2/3),-1/3,-Math.sqrt(2/9))];
+  function nodeDir(a,b,c,d) { const s=a+b+c+d||1, dir=new THREE.Vector3(0,0,0); dir.addScaledVector(TETRA[0],a/s); dir.addScaledVector(TETRA[1],b/s); dir.addScaledVector(TETRA[2],c/s); dir.addScaledVector(TETRA[3],d/s); return dir.normalize(); }
+
+  // Build Geodesic
+  function buildGeo(rad, subs) {
+    const PHI = (1+Math.sqrt(5))/2;
+    const raw = [[-1,PHI,0],[1,PHI,0],[-1,-PHI,0],[1,-PHI,0],[0,-1,PHI],[0,1,PHI],[0,-1,-PHI],[0,1,-PHI],[PHI,0,-1],[PHI,0,1],[-PHI,0,-1],[-PHI,0,1]];
+    let verts = raw.map(([x,y,z]) => { const l=Math.sqrt(x*x+y*y+z*z); return new THREE.Vector3(x/l*rad, y/l*rad, z/l*rad); });
+    let faces = [[0,11,5],[0,5,1],[0,1,7],[0,7,10],[0,10,11],[1,5,9],[5,11,4],[11,10,2],[10,7,6],[7,1,8],[3,9,4],[3,4,2],[3,2,6],[3,6,8],[3,8,9],[4,9,5],[2,4,11],[6,2,10],[8,6,7],[9,8,1]];
+    for(let s=0; s<subs; s++) {
+      const cache={}, getMid=(i,j)=>{ const k=Math.min(i,j)+'_'+Math.max(i,j); if(cache[k]!==undefined) return cache[k]; const idx=verts.length; verts.push(verts[i].clone().add(verts[j]).normalize().multiplyScalar(rad)); cache[k]=idx; return idx; };
+      const nf=[]; for(const [a,b,c] of faces) { const ab=getMid(a,b), bc=getMid(b,c), ca=getMid(c,a); nf.push([a,ab,ca],[b,bc,ab],[c,ca,bc],[ab,bc,ca]); } faces=nf;
+    }
+    const es=new Set(); for(const [a,b,c] of faces) { es.add(Math.min(a,b)+'_'+Math.max(a,b)); es.add(Math.min(b,c)+'_'+Math.max(b,c)); es.add(Math.min(c,a)+'_'+Math.max(c,a)); }
+    const edges=[]; es.forEach(e => edges.push(e.split('_').map(Number)));
+    const gFaces=faces.map(f => ({ indices: f, centroid: new THREE.Vector3().add(verts[f[0]]).add(verts[f[1]]).add(verts[f[2]]).divideScalar(3) }));
+    return { verts, edges, faces: gFaces };
+  }
+
+  const RADIUS = 3.0;
+  const geo = buildGeo(RADIUS, 2);
+  const faceMeshes = [];
+  const nodeToFace = new Map();
+
+  // Assign nodes
+  const sorted = Object.entries(VERTICES).map(([id,d])=>({id, label:d[0], a:d[1], b:d[2], c:d[3], d:d[4], state:d[5], bus:d[6], notes:d[7], dir:nodeDir(d[1],d[2],d[3],d[4]), p:d[5]==='countdown'?0:1})).sort((x,y)=>x.p-y.p);
+  const used = new Set();
+  const assignments = [];
+  for(const n of sorted) {
+    let best=-1, bd=-2;
+    for(let i=0; i<geo.faces.length; i++) { if(used.has(i)) continue; const dot=geo.faces[i].centroid.clone().normalize().dot(n.dir); if(dot>bd) {bd=dot; best=i;} }
+    if(best>=0) { used.add(best); const a={faceIdx:best, node:n, color:getNodeColor(n.a,n.b,n.c,n.d), glow:STATE_GLOW[n.state]||0.5}; assignments.push(a); nodeToFace.set(n.id, a); geo.faces[best].assignment = a; }
+  }
+
+  // Draw wireframe
+  const wPos=[], eProg=[];
+  for(let i=0; i<geo.edges.length; i++) { const [a,b]=geo.edges[i]; wPos.push(geo.verts[a].x, geo.verts[a].y, geo.verts[a].z, geo.verts[b].x, geo.verts[b].y, geo.verts[b].z); eProg.push(i/geo.edges.length, i/geo.edges.length); }
+  const wGeo=new THREE.BufferGeometry(); wGeo.setAttribute('position', new THREE.Float32BufferAttribute(wPos, 3)); wGeo.setAttribute('edgeProgress', new THREE.Float32BufferAttribute(eProg, 1));
+  const wMat=new THREE.ShaderMaterial({ uniforms:{uTime:{value:0}}, vertexShader:`attribute float edgeProgress; varying float vP; void main(){vP=edgeProgress; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`, fragmentShader:`uniform float uTime; varying float vP; void main(){ float p=smoothstep(0.,0.05,fract(vP-uTime*0.08))*(1.-smoothstep(0.05,0.1,fract(vP-uTime*0.08))); gl_FragColor=vec4(0.1,0.18,0.28,0.18+p*0.55); }`, transparent:true, depthWrite:false });
+  scene.add(new THREE.LineSegments(wGeo, wMat));
+
+  // Draw faces
+  const domeGroup = new THREE.Group();
+  for(let i=0; i<geo.faces.length; i++) {
+    const f=geo.faces[i], a=f.assignment, [ai,bi,ci]=f.indices;
+    const va=geo.verts[ai].clone().multiplyScalar(0.92), vb=geo.verts[bi].clone().multiplyScalar(0.92), vc=geo.verts[ci].clone().multiplyScalar(0.92);
+    const cent = new THREE.Vector3().add(va).add(vb).add(vc).divideScalar(3);
+    va.lerp(cent, 0.12); vb.lerp(cent, 0.12); vc.lerp(cent, 0.12);
+    const tGeo=new THREE.BufferGeometry(); tGeo.setAttribute('position', new THREE.Float32BufferAttribute([va.x,va.y,va.z,vb.x,vb.y,vb.z,vc.x,vc.y,vc.z],3)); tGeo.computeVertexNormals();
+    
+    let mat;
+    if(a) {
+      const hot=a.glow>=1.2;
+      mat=new THREE.MeshPhysicalMaterial({ color:a.color, emissive:a.color.clone().multiplyScalar(hot?0.6:0.25*a.glow), emissiveIntensity:hot?2.5*a.glow:1.4, roughness:0.02, metalness:0.3, transmission:0.1, thickness:0.5, side:THREE.DoubleSide, transparent:true, opacity:0.92, toneMapped:!hot });
     } else {
-      fetchFleet();
+      mat=new THREE.MeshPhysicalMaterial({ color:0x050508, emissive:0x000000, roughness:0.01, metalness:0.1, transmission:0.3, thickness:0.2, side:THREE.DoubleSide, transparent:true, opacity:0.15 });
     }
-  })();
+    const mesh=new THREE.Mesh(tGeo, mat); mesh.userData = { a };
+    domeGroup.add(mesh); faceMeshes.push(mesh);
+  }
+  scene.add(domeGroup);
+
+  // Landing page dome - pure geometry only, no particles
+  // Deep black background, dome only for maximum contrast and performance
+
+  // Landing page: Disable raycaster interaction to save CPU
+  // Dome is purely decorative on landing page. Full interaction is on dedicated /dome.html
+
+  document.getElementById('btn-explore-dome').addEventListener('click', () => {
+    window.location.href = '/dome.html';
+  });
+
+  let time = 0;
+  let isVisible = true;
+  let lastFrame = 0;
+  const minFrameTime = 1000 / 30; // 30 FPS cap on landing page
+
+  // Pause rendering when page is hidden or scrolled out of view
+  document.addEventListener('visibilitychange', () => {
+    isVisible = !document.hidden;
+  });
+  
+  function animate(timestamp) {
+    requestAnimationFrame(animate);
+    
+    if (!isVisible) return;
+    
+    // FPS throttling
+    if (timestamp - lastFrame < minFrameTime) return;
+    lastFrame = timestamp;
+    
+    const dt = 0.016; time += 0.002;
+    
+    // Auto-rotate dome slowly to feel alive
+    domeGroup.rotation.y += 0.0003;
+    domeGroup.rotation.x = Math.sin(time) * 0.02;
+
+    wMat.uniforms.uTime.value += dt;
+
+    // Dome pulse
+    const breath = 1.0 + 0.005 * Math.sin(time * 1.5); // Smaller pulse
+    for(const m of faceMeshes) m.scale.setScalar(breath);
+
+    composer.render();
+  }
+  animate(0);
+
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    composer.setSize(window.innerWidth, window.innerHeight);
+    bloomPass.resolution.set(window.innerWidth, window.innerHeight);
+  });
 </script>
