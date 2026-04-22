@@ -263,12 +263,12 @@ var PersonalAgent = class {
     return Response.json({ ok: true, record });
   }
   _getState(key) {
-    const row = this.ctx.storage.sql.exec("SELECT value FROM state WHERE key = ?", key).one();
-    if (!row) return null;
+    const rows = this.ctx.storage.sql.exec("SELECT value FROM state WHERE key = ?", key).toArray();
+    if (rows.length === 0) return null;
     try {
-      return JSON.parse(row.value);
+      return JSON.parse(rows[0].value);
     } catch {
-      return row.value;
+      return rows[0].value;
     }
   }
   _scrubPII(text, rules) {
