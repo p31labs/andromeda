@@ -115,10 +115,18 @@ export class ContextEngineDO implements DurableObject {
     await this.state.storage.put(`timeline:${newEvent.id}`, newEvent);
     
     // Notify shield via hub C->D
-    await this.env.K4_HUBS.post('/hub/context-shield', {
-      type: 'timeline-update',
-      payload: { timeline: [newEvent] }
-    });
+    try {
+      await fetch(`${this.env.K4_HUBS}/hub/context-shield`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'timeline-update',
+          payload: { timeline: [newEvent] }
+        }),
+      });
+    } catch {
+      // Hub communication is best-effort
+    }
 
     return Response.json(newEvent, { status: 201 });
   }
@@ -171,10 +179,18 @@ export class ContextEngineDO implements DurableObject {
     await this.state.storage.put('alignment:current', alignment);
 
     // Notify shield via hub C->D
-    await this.env.K4_HUBS.post('/hub/context-shield', {
-      type: 'alignment-update',
-      payload: { alignment }
-    });
+    try {
+      await fetch(`${this.env.K4_HUBS}/hub/context-shield`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'alignment-update',
+          payload: { alignment }
+        }),
+      });
+    } catch {
+      // Hub communication is best-effort
+    }
   }
 
   private async getHealth(): Promise<Response> {

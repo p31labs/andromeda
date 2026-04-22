@@ -64,13 +64,21 @@ export class SignalProcessorDO implements DurableObject {
         msg.held = false;
         await this.state.storage.put(key, msg);
         
-        // Forward to shield for analysis if high voltage
-        if (msg.voltage > 8) {
-          await this.env.K4_HUBS.post('/hub/signal-shield', {
-            type: 'high-voltage-message',
-            payload: { message: msg }
+      // Forward to shield for analysis if high voltage
+      if (msg.voltage > 8) {
+        try {
+          await fetch(`${this.env.K4_HUBS}/hub/signal-shield`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              type: 'high-voltage-message',
+              payload: { message: msg }
+            }),
           });
+        } catch {
+          // Hub communication is best-effort
         }
+      }
       }
     }
 
@@ -151,10 +159,18 @@ export class SignalProcessorDO implements DurableObject {
 
     // Offer AI rewrite if fawn score high
     if (fawnScore > 1.5) {
-      await this.env.K4_HUBS.post('/hub/signal-shield', {
-        type: 'fawn-flagged-draft',
-        payload: { draft }
-      });
+      try {
+        await fetch(`${this.env.K4_HUBS}/hub/signal-shield`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'fawn-flagged-draft',
+            payload: { draft }
+          }),
+        });
+      } catch {
+        // Hub communication is best-effort
+      }
     }
 
     return Response.json(draft);
@@ -174,10 +190,18 @@ export class SignalProcessorDO implements DurableObject {
     await this.state.storage.put('fortress:active', true);
     
     // Notify all hubs
-    await this.env.K4_HUBS.post('/hub/energy-voltage', {
-      type: 'fortress-toggle',
-      payload: { fortressActive: true }
-    });
+    try {
+      await fetch(`${this.env.K4_HUBS}/hub/energy-voltage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'fortress-toggle',
+          payload: { fortressActive: true }
+        }),
+      });
+    } catch {
+      // Hub communication is best-effort
+    }
 
     return Response.json({ active: true, since: Date.now() });
   }
@@ -185,10 +209,18 @@ export class SignalProcessorDO implements DurableObject {
   private async deactivateFortress(): Promise<Response> {
     await this.state.storage.delete('fortress:active');
     
-    await this.env.K4_HUBS.post('/hub/energy-voltage', {
-      type: 'fortress-toggle',
-      payload: { fortressActive: false }
-    });
+    try {
+      await fetch(`${this.env.K4_HUBS}/hub/energy-voltage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'fortress-toggle',
+          payload: { fortressActive: false }
+        }),
+      });
+    } catch {
+      // Hub communication is best-effort
+    }
 
     // Release all held messages
     const queue = await this.state.storage.list<QueuedMessage>({ prefix: 'msg:' });

@@ -119,10 +119,18 @@ export class OperatorStateDO implements DurableObject {
     await this.state.storage.put(`energy:${Date.now()}`, updated);
 
     // Notify hubs of energy change
-    await this.env.K4_HUBS.post('/hub/energy-voltage', {
-      type: 'energy-update',
-      payload: { energy: updated }
-    });
+    try {
+      await fetch(`${this.env.K4_HUBS}/hub/energy-voltage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'energy-update',
+          payload: { energy: updated }
+        }),
+      });
+    } catch {
+      // Hub communication is best-effort - don't fail the request
+    }
 
     return Response.json(updated);
   }
@@ -138,17 +146,33 @@ export class OperatorStateDO implements DurableObject {
     // Check for critical calcium levels
     if (reading.type === 'calcium_serum' && reading.value < 7.6) {
       // Auto-activate Fortress Mode via hub
-      await this.env.K4_HUBS.post('/hub/energy-voltage', {
-        type: 'bio-alert',
-        payload: { bioAlert: bioReading }
-      });
+      try {
+        await fetch(`${this.env.K4_HUBS}/hub/energy-voltage`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'bio-alert',
+            payload: { bioAlert: bioReading }
+          }),
+        });
+      } catch {
+        // Hub communication is best-effort
+      }
     }
 
     // Add to timeline via hub A->C
-    await this.env.K4_HUBS.post('/hub/energy-context', {
-      type: 'bio-event',
-      payload: { bioEvent: bioReading }
-    });
+    try {
+      await fetch(`${this.env.K4_HUBS}/hub/energy-context`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'bio-event',
+          payload: { bioEvent: bioReading }
+        }),
+      });
+    } catch {
+      // Hub communication is best-effort
+    }
 
     return Response.json(bioReading, { status: 201 });
   }

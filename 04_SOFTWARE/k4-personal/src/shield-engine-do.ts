@@ -161,15 +161,27 @@ export class ShieldEngineDO implements DurableObject {
     await this.state.storage.put('synthesis:lastRun', Date.now());
 
     // Notify hub D->A and D->C
-    await this.env.K4_HUBS.post('/hub/energy-shield', {
-      type: 'synthesis-output',
-      payload: { synthesis },
-    });
+    try {
+      await fetch(`${this.env.K4_HUBS}/hub/energy-shield`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'synthesis-output',
+          payload: { synthesis },
+        }),
+      });
 
-    await this.env.K4_HUBS.post('/hub/context-shield', {
-      type: 'synthesis-complete',
-      payload: { synthesis },
-    });
+      await fetch(`${this.env.K4_HUBS}/hub/context-shield`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'synthesis-complete',
+          payload: { synthesis },
+        }),
+      });
+    } catch {
+      // Hub communication is best-effort
+    }
 
     return synthesis;
   }
@@ -196,10 +208,18 @@ export class ShieldEngineDO implements DurableObject {
     await this.state.storage.put('shield:config', updated);
     
     // Notify hub D->B
-    await this.env.K4_HUBS.post('/hub/signal-shield', {
-      type: 'shield-update',
-      payload: { config: updated },
-    });
+    try {
+      await fetch(`${this.env.K4_HUBS}/hub/signal-shield`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'shield-update',
+          payload: { config: updated },
+        }),
+      });
+    } catch {
+      // Hub communication is best-effort
+    }
 
     return Response.json(updated);
   }
