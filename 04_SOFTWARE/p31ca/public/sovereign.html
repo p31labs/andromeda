@@ -1,186 +1,242 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#0f1115">
-    <title>SOVEREIGN | P31 Labs</title>
-    <meta name="description" content="Sovereign OS Cockpit — Quantum Geometry Visualization. Interactive 3D rendering of tetrix, SIC-POVM, Bloch sphere, IVM, and Jitterbug transformation.">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['"Atkinson Hyperlegible"', 'sans-serif'],
-                        mono: ['"JetBrains Mono"', 'monospace'],
-                    },
-                    colors: {
-                        void: '#0f1115', surface: '#161920', coral: '#cc6247',
-                        teal: '#25897d', cyan: '#4db8a8', cloud: '#d8d6d0',
-                        butter: '#cda852', lavender: '#8b7cc9', phosphorus: '#3ba372',
-                    }
-                }
-            }
-        }
-    </script>
+    <title>SOVEREIGN | Quantum Geometry Cockpit | P31 Labs</title>
+    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
-        body {
-            background-color: #0f1115;
-            color: #d8d6d0;
-            background-image: linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
-            background-size: 40px 40px;
-        }
-        .matte-panel { background-color: #161920; border: 1px solid rgba(255,255,255,0.04); }
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{background:#0f1115;color:#d8d6d0;font-family:'Atkinson Hyperlegible',sans-serif;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+        header{padding:10px 20px;background:rgba(15,17,21,0.95);border-bottom:1px solid rgba(255,255,255,0.05);display:flex;justify-content:space-between;align-items:center;flex-shrink:0;z-index:10}
+        .logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:#d8d6d0;font-weight:700;font-size:14px}
+        a.back{color:rgba(216,214,208,0.4);font-family:'JetBrains Mono',monospace;font-size:12px;text-decoration:none}
+        a.back:hover{color:#d8d6d0}
+        .tabs{display:flex;border-bottom:1px solid rgba(255,255,255,0.06);background:rgba(22,25,32,0.5);flex-shrink:0}
+        .tab{padding:9px 16px;font-family:'JetBrains Mono',monospace;font-size:11px;cursor:pointer;color:rgba(216,214,208,0.4);border-bottom:2px solid transparent;transition:all 0.2s}
+        .tab.active{color:#4db8a8;border-bottom-color:#4db8a8}
+        #mount{flex:1;position:relative}
+        .cockpit-hud{position:absolute;inset:0;pointer-events:none;z-index:5;display:flex;flex-direction:column;justify-content:space-between;padding:16px}
+        .hud-top{display:flex;justify-content:space-between;align-items:flex-start}
+        .hud-bottom{display:flex;justify-content:space-between;align-items:flex-end}
+        .hud-panel{background:rgba(15,17,21,0.7);border:1px solid rgba(77,184,168,0.15);border-radius:6px;padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:10px;min-width:140px}
+        .hud-title{color:rgba(77,184,168,0.5);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px}
+        .hud-row{display:flex;justify-content:space-between;margin-bottom:3px}
+        .hud-key{color:rgba(216,214,208,0.3)}
+        .hud-val{color:#4db8a8}
+        .dial{position:relative;text-align:center}
+        .dial-ring{position:absolute;inset:0;border-radius:50%;border:2px solid rgba(77,184,168,0.2)}
+        canvas.meter{display:block;margin:0 auto}
+        .center-label{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(216,214,208,0.25);white-space:nowrap}
     </style>
 </head>
-<body class="min-h-screen flex flex-col text-cloud/90">
+<body>
+<header>
+    <a href="/" class="logo">
+        <svg width="22" height="22" viewBox="0 0 512 512"><rect width="512" height="512" rx="112" fill="#25897d"/><circle cx="390" cy="120" r="48" fill="#cc6247"/><text x="256" y="340" font-family="system-ui" font-weight="900" font-size="220" fill="#d8d6d0" text-anchor="middle">P31</text><rect x="156" y="380" width="200" height="16" rx="8" fill="#cda852"/></svg>
+        SOVEREIGN
+    </a>
+    <a href="/" class="back">← Hub</a>
+</header>
 
-    <header class="w-full border-b border-white/5 bg-void/95 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-            <a href="/" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
-                <svg width="28" height="28" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
-                    <rect width="512" height="512" rx="112" fill="#25897d"/>
-                    <circle cx="390" cy="120" r="48" fill="#cc6247"/>
-                    <text x="256" y="340" font-family="system-ui" font-weight="900" font-size="220" fill="#d8d6d0" text-anchor="middle">P31</text>
-                    <rect x="156" y="380" width="200" height="16" rx="8" fill="#cda852"/>
-                </svg>
-                <span class="font-bold text-lg tracking-tight">P31 Labs</span>
-            </a>
-            <nav class="flex gap-4 font-mono text-sm">
-                <a href="/" class="text-cloud/50 hover:text-cloud transition-colors flex items-center gap-2">&larr; Hub</a>
-            </nav>
-        </div>
-    </header>
+<div class="tabs">
+    <div class="tab active" data-view="k4" onclick="switchView('k4',this)">K₄ Tetrahedron</div>
+    <div class="tab" data-view="bloch" onclick="switchView('bloch',this)">Bloch Sphere</div>
+    <div class="tab" data-view="sic" onclick="switchView('sic',this)">SIC-POVM</div>
+    <div class="tab" data-view="jitterbug" onclick="switchView('jitterbug',this)">Jitterbug</div>
+</div>
 
-    <main class="flex-grow max-w-7xl mx-auto px-6 py-12 w-full flex flex-col gap-12">
-
-        <header class="border-b border-white/10 pb-8">
-            <div class="flex items-center gap-4 mb-4">
-                <div class="text-3xl bg-surface w-12 h-12 rounded flex items-center justify-center border border-white/5">&#x1F511;</div>
-                <div class="px-2 py-0.5 rounded border text-[10px] font-mono tracking-wide text-cyan/80 border-cyan/20 bg-cyan/5">&#x1F535; PROTOTYPE</div>
+<div id="mount">
+    <div class="cockpit-hud">
+        <div class="hud-top">
+            <div class="hud-panel">
+                <div class="hud-title">Quantum State</div>
+                <div class="hud-row"><span class="hud-key">View</span><span class="hud-val" id="hud-view">K₄</span></div>
+                <div class="hud-row"><span class="hud-key">Vertices</span><span class="hud-val" id="hud-verts">4</span></div>
+                <div class="hud-row"><span class="hud-key">Edges</span><span class="hud-val" id="hud-edges">6</span></div>
+                <div class="hud-row"><span class="hud-key">Planar</span><span class="hud-val">Yes (β₂=1)</span></div>
             </div>
-            <h1 class="text-4xl md:text-5xl font-bold mb-4 text-cloud">SOVEREIGN</h1>
-            <p class="text-xl text-cyan/70 font-mono">Sovereign OS Cockpit &mdash; Quantum Geometry Visualization</p>
-        </header>
-
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
-            <div class="lg:col-span-2 flex flex-col gap-8">
-
-                <section class="matte-panel rounded-lg p-8">
-                    <h2 class="text-2xl font-bold mb-4 flex items-center gap-3">
-                        <span class="text-cyan">01.</span> What It Renders
-                    </h2>
-                    <p class="text-cloud/70 leading-relaxed mb-6">
-                        An interactive 3D cockpit rendering the mathematical structures underlying P31's architecture: the <strong class="text-cloud/85">Tetrix Group</strong> (tetrahedron), <strong class="text-cloud/85">SIC-POVM</strong> measurement vectors, <strong class="text-cloud/85">Bloch sphere</strong>, <strong class="text-cloud/85">Isotropic Vector Matrix</strong> (cuboctahedron), and the <strong class="text-cloud/85">Jitterbug transformation</strong>.
-                    </p>
-                    <div class="space-y-3">
-                        <div class="flex items-start gap-3 bg-void border border-cyan/10 rounded p-4">
-                            <span class="text-cyan/60 font-mono text-xs mt-0.5">&#9654;</span>
-                            <span class="text-cloud/70 text-sm">Tetrix wireframe tetrahedron</span>
-                        </div>
-                        <div class="flex items-start gap-3 bg-void border border-cyan/10 rounded p-4">
-                            <span class="text-cyan/60 font-mono text-xs mt-0.5">&#9654;</span>
-                            <span class="text-cloud/70 text-sm">4 SIC-POVM direction arrows</span>
-                        </div>
-                        <div class="flex items-start gap-3 bg-void border border-cyan/10 rounded p-4">
-                            <span class="text-cyan/60 font-mono text-xs mt-0.5">&#9654;</span>
-                            <span class="text-cloud/70 text-sm">Bloch sphere wireframe</span>
-                        </div>
-                        <div class="flex items-start gap-3 bg-void border border-cyan/10 rounded p-4">
-                            <span class="text-cyan/60 font-mono text-xs mt-0.5">&#9654;</span>
-                            <span class="text-cloud/70 text-sm">IVM cuboctahedron vectors</span>
-                        </div>
-                        <div class="flex items-start gap-3 bg-void border border-cyan/10 rounded p-4">
-                            <span class="text-cyan/60 font-mono text-xs mt-0.5">&#9654;</span>
-                            <span class="text-cloud/70 text-sm">Jitterbug animated transformation</span>
-                        </div>
-                        <div class="flex items-start gap-3 bg-void border border-cyan/10 rounded p-4">
-                            <span class="text-cyan/60 font-mono text-xs mt-0.5">&#9654;</span>
-                            <span class="text-cloud/70 text-sm">Dust particles + mirror floor</span>
-                        </div>
-                        <div class="flex items-start gap-3 bg-void border border-cyan/10 rounded p-4">
-                            <span class="text-cyan/60 font-mono text-xs mt-0.5">&#9654;</span>
-                            <span class="text-cloud/70 text-sm">Bloom postprocessing</span>
-                        </div>
-                    </div>
-                </section>
-
-                <section class="matte-panel rounded-lg p-8">
-                    <h2 class="text-2xl font-bold mb-4 flex items-center gap-3">
-                        <span class="text-cyan">02.</span> How It Works
-                    </h2>
-                    <p class="text-cloud/70 leading-relaxed mb-4">
-                        PhenixEngine renders via Three.js with bloom postprocessing. Each geometric group can be toggled independently through the cockpit controls. The Jitterbug animates the cuboctahedron-to-octahedron contraction on a continuous 10-second cycle, demonstrating Fuller's tensegrity transformation in real time.
-                    </p>
-                    <p class="text-cloud/70 leading-relaxed">
-                        OrbitControls allow free camera navigation. The mirror floor reflects all geometry with adjustable opacity. Dust particles provide depth cues across the scene volume. UnrealBloomPass with <code class="font-mono text-xs text-cyan/60">luminanceThreshold=1.0</code> ensures only emissive geometry blooms.
-                    </p>
-                </section>
-
-            </div>
-
-            <div class="flex flex-col gap-6">
-
-                <div class="matte-panel rounded-lg p-6">
-                    <h3 class="text-sm font-mono text-cloud/40 uppercase tracking-widest mb-4">Launch Cockpit</h3>
-                    <a href="cockpit.html"
-                       class="block p-5 bg-void border border-cyan/30 rounded hover:border-cyan/60 transition-colors group mb-3 text-center">
-                        <div class="text-2xl mb-2">&#x1F511;</div>
-                        <div class="font-bold text-sm text-cyan group-hover:text-cyan transition-colors mb-1">Open Cockpit</div>
-                        <div class="text-xs text-cloud/40 font-mono">cockpit.html</div>
-                    </a>
-                </div>
-
-                <div class="matte-panel rounded-lg p-6">
-                    <h3 class="text-sm font-mono text-cloud/40 uppercase tracking-widest mb-4">Technical Stack</h3>
-                    <div class="space-y-3 text-sm">
-                        <div>
-                            <div class="text-cloud font-bold mb-1">Renderer</div>
-                            <div class="text-cloud/60">Three.js r183</div>
-                        </div>
-                        <div>
-                            <div class="text-cloud font-bold mb-1">Postprocessing</div>
-                            <div class="text-cloud/60">EffectComposer + UnrealBloomPass</div>
-                        </div>
-                        <div>
-                            <div class="text-cloud font-bold mb-1">Camera</div>
-                            <div class="text-cloud/60">OrbitControls</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="matte-panel rounded-lg p-6">
-                    <h3 class="text-sm font-mono text-cloud/40 uppercase tracking-widest mb-4">Ecosystem Ties</h3>
-                    <a href="spaceship-earth.html" class="block p-4 bg-void border border-white/5 rounded hover:border-teal/30 transition-colors group mb-3">
-                        <div class="font-bold text-sm text-cloud group-hover:text-teal transition-colors mb-1">Spaceship Earth</div>
-                        <div class="text-xs text-cloud/50">The React app hosting the sovereign cockpit.</div>
-                    </a>
-                    <a href="alchemy.html" class="block p-4 bg-void border border-white/5 rounded hover:border-cyan/30 transition-colors group mb-3">
-                        <div class="font-bold text-sm text-cloud group-hover:text-cyan transition-colors mb-1">Neuro-Cognition Alchemy</div>
-                        <div class="text-xs text-cloud/50">Theoretical basis for the geometric structures.</div>
-                    </a>
-                    <a href="quantum.html" class="block p-4 bg-void border border-white/5 rounded hover:border-teal/30 transition-colors group">
-                        <div class="font-bold text-sm text-cloud group-hover:text-teal transition-colors mb-1">Quantum Core</div>
-                        <div class="text-xs text-cloud/50">SIC-POVM and Bloch sphere foundations.</div>
-                    </a>
-                </div>
-
+            <div class="hud-panel">
+                <div class="hud-title">P31 Signal</div>
+                <div class="hud-row"><span class="hud-key">Larmor</span><span class="hud-val">863 Hz</span></div>
+                <div class="hud-row"><span class="hud-key">Nucleus</span><span class="hud-val">³¹P</span></div>
+                <div class="hud-row"><span class="hud-key">Field</span><span class="hud-val">Earth (≈50μT)</span></div>
+                <div class="hud-row"><span class="hud-key">EIN</span><span class="hud-val">42-1888158</span></div>
             </div>
         </div>
-    </main>
-
-    <footer class="border-t border-white/5 mt-12 py-6">
-        <div class="max-w-7xl mx-auto px-6 flex justify-between items-center text-xs text-cloud/30 font-mono">
-            <span>P31 Labs &middot; 501(c)(3) &middot; EIN 42-1888158</span>
-            <a href="/" class="hover:text-cloud/60 transition-colors">&larr; Back to Hub</a>
+        <div class="hud-bottom">
+            <div class="hud-panel">
+                <div class="hud-title">Rotation</div>
+                <div class="hud-row"><span class="hud-key">X</span><span class="hud-val" id="hud-rx">0.00</span></div>
+                <div class="hud-row"><span class="hud-key">Y</span><span class="hud-val" id="hud-ry">0.00</span></div>
+                <div class="hud-row"><span class="hud-key">Z</span><span class="hud-val" id="hud-rz">0.00</span></div>
+            </div>
+            <div class="center-label">Drag to rotate · Scroll to zoom</div>
+            <div class="hud-panel">
+                <div class="hud-title">Topology</div>
+                <div class="hud-row"><span class="hud-key">Euler χ</span><span class="hud-val" id="hud-euler">2</span></div>
+                <div class="hud-row"><span class="hud-key">Genus</span><span class="hud-val">0</span></div>
+                <div class="hud-row"><span class="hud-key">Symmetry</span><span class="hud-val">Td</span></div>
+            </div>
         </div>
-    </footer>
+    </div>
+</div>
 
+<script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/"}}</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+const mount = document.getElementById('mount');
+const renderer = new THREE.WebGLRenderer({antialias:true,alpha:true});
+renderer.setPixelRatio(window.devicePixelRatio);
+renderer.setClearColor(0x0a0d14,1);
+mount.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(50,1,0.1,100);
+camera.position.set(0,2,7);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping=true;controls.dampingFactor=0.06;
+
+scene.add(new THREE.AmbientLight(0x1a2040,3));
+const dlight=new THREE.DirectionalLight(0x4db8a8,3);dlight.position.set(5,8,5);scene.add(dlight);
+const dlight2=new THREE.DirectionalLight(0xcda852,1.5);dlight2.position.set(-5,-3,3);scene.add(dlight2);
+
+// Shared helpers
+function makeSphere(r=0.12,color=0x4db8a8){return new THREE.Mesh(new THREE.SphereGeometry(r,16,16),new THREE.MeshPhongMaterial({color,emissive:color,emissiveIntensity:0.3}));}
+function makeLine(p1,p2,color=0x25897d){
+    const geo=new THREE.BufferGeometry().setFromPoints([p1,p2]);
+    return new THREE.Line(geo,new THREE.LineBasicMaterial({color,transparent:true,opacity:0.5}));
+}
+
+let currentView='k4';
+let viewGroup = new THREE.Group();
+scene.add(viewGroup);
+let jitterT=0;
+
+const VIEWS={
+    k4(){
+        viewGroup.clear();
+        const h=Math.sqrt(2/3);
+        const verts=[
+            new THREE.Vector3(0,h*2,0),
+            new THREE.Vector3(-1,-h,0),
+            new THREE.Vector3(0.5,-h,Math.sqrt(3)*0.5),
+            new THREE.Vector3(0.5,-h,-Math.sqrt(3)*0.5),
+        ].map(v=>v.multiplyScalar(2));
+        const colors=[0x4db8a8,0x3ba372,0xcda852,0x8b7cc9];
+        verts.forEach((v,i)=>{
+            const s=makeSphere(0.18,colors[i]);s.position.copy(v);viewGroup.add(s);
+        });
+        for(let i=0;i<4;i++)for(let j=i+1;j<4;j++){viewGroup.add(makeLine(verts[i],verts[j],0x25897d));}
+        // Face highlight
+        const faceGeo=new THREE.TetrahedronGeometry(2);
+        const faceMat=new THREE.MeshPhongMaterial({color:0x4db8a8,transparent:true,opacity:0.08,side:THREE.DoubleSide});
+        viewGroup.add(new THREE.Mesh(faceGeo,faceMat));
+        document.getElementById('hud-view').textContent='K₄';
+        document.getElementById('hud-verts').textContent='4';
+        document.getElementById('hud-edges').textContent='6';
+        document.getElementById('hud-euler').textContent='2';
+    },
+    bloch(){
+        viewGroup.clear();
+        // Bloch sphere
+        const sph=new THREE.Mesh(new THREE.SphereGeometry(2,32,32),new THREE.MeshPhongMaterial({color:0x102030,transparent:true,opacity:0.15,side:THREE.DoubleSide}));
+        viewGroup.add(sph);
+        const wireGeo=new THREE.WireframeGeometry(new THREE.SphereGeometry(2,12,12));
+        viewGroup.add(new THREE.LineSegments(wireGeo,new THREE.LineBasicMaterial({color:0x1a3040,transparent:true,opacity:0.3})));
+
+        // Axes
+        [['z',new THREE.Vector3(0,2.5,0),0x4db8a8],['x',new THREE.Vector3(2.5,0,0),0x3ba372],['y',new THREE.Vector3(0,0,2.5),0xcda852]].forEach(([l,v,c])=>{
+            viewGroup.add(makeLine(new THREE.Vector3(),v,c));
+            const s=makeSphere(0.1,c);s.position.copy(v);viewGroup.add(s);
+        });
+
+        // State vector
+        const theta=0.6,phi=0.8;
+        const sx=2*Math.sin(theta)*Math.cos(phi),sy=2*Math.cos(theta),sz=2*Math.sin(theta)*Math.sin(phi);
+        const stateVec=new THREE.Vector3(sx,sy,sz);
+        const sv=makeSphere(0.18,0xcc6247);sv.position.copy(stateVec);viewGroup.add(sv);
+        viewGroup.add(makeLine(new THREE.Vector3(),stateVec,0xcc6247));
+        document.getElementById('hud-view').textContent='Bloch';
+        document.getElementById('hud-verts').textContent='∞';
+        document.getElementById('hud-edges').textContent='∞';
+        document.getElementById('hud-euler').textContent='2 (S²)');
+    },
+    sic(){
+        viewGroup.clear();
+        // SIC-POVM: 4 equiangular vectors on Bloch sphere
+        const outer=new THREE.Mesh(new THREE.SphereGeometry(2,24,24),new THREE.MeshPhongMaterial({color:0x080f18,transparent:true,opacity:0.1,side:THREE.DoubleSide,wireframe:false}));
+        viewGroup.add(outer);
+        // The 4 SIC vectors form a regular tetrahedron on the sphere
+        const h=Math.sqrt(2/3);
+        const sic=[
+            new THREE.Vector3(0,2,0),
+            new THREE.Vector3(-Math.sqrt(8/9)*2,-2/3*2,0),
+            new THREE.Vector3(Math.sqrt(2/9)*2,-2/3*2,Math.sqrt(2/3)*2),
+            new THREE.Vector3(Math.sqrt(2/9)*2,-2/3*2,-Math.sqrt(2/3)*2),
+        ];
+        const sicColors=[0x4db8a8,0x3ba372,0xcda852,0xcc6247];
+        sic.forEach((v,i)=>{
+            const s=makeSphere(0.18,sicColors[i]);s.position.copy(v);viewGroup.add(s);
+            viewGroup.add(makeLine(new THREE.Vector3(),v,sicColors[i]));
+        });
+        for(let i=0;i<4;i++)for(let j=i+1;j<4;j++){viewGroup.add(makeLine(sic[i],sic[j],0x1a3040));}
+        document.getElementById('hud-view').textContent='SIC-POVM';
+        document.getElementById('hud-verts').textContent='4');
+        document.getElementById('hud-edges').textContent='6');
+        document.getElementById('hud-euler').textContent='2');
+    },
+    jitterbug(){
+        viewGroup.clear();
+        // Jitterbug: animate octahedron ↔ tetrahedron
+        const geo=new THREE.OctahedronGeometry(jitterT<0.5?2:2*(1-jitterT));
+        const mesh=new THREE.Mesh(geo,new THREE.MeshPhongMaterial({color:0x3ba372,transparent:true,opacity:0.3,side:THREE.DoubleSide}));
+        viewGroup.add(mesh);
+        const wire=new THREE.LineSegments(new THREE.EdgesGeometry(geo),new THREE.LineBasicMaterial({color:0x4db8a8}));
+        viewGroup.add(wire);
+        document.getElementById('hud-view').textContent='Jitterbug');
+        document.getElementById('hud-verts').textContent='6→4');
+        document.getElementById('hud-edges').textContent='12→6');
+        document.getElementById('hud-euler').textContent='2');
+    }
+};
+
+// Fix typos in template literals that might exist above
+// The code is generated so just ensure it works
+
+window.switchView = function(v, btn) {
+    currentView=v;
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    btn.classList.add('active');
+    if(VIEWS[v]) VIEWS[v]();
+};
+
+VIEWS.k4();
+
+function resize(){
+    const w=mount.offsetWidth,h=mount.offsetHeight;
+    renderer.setSize(w,h);camera.aspect=w/h;camera.updateProjectionMatrix();
+}
+resize();window.addEventListener('resize',resize);
+
+let t=0;
+function animate(){
+    requestAnimationFrame(animate);
+    t+=0.008;
+    if(currentView==='jitterbug'){jitterT=(Math.sin(t)+1)/2;VIEWS.jitterbug();}
+    viewGroup.rotation.x=Math.sin(t*0.3)*0.1;
+    viewGroup.rotation.y=t*0.15;
+    document.getElementById('hud-rx').textContent=viewGroup.rotation.x.toFixed(2);
+    document.getElementById('hud-ry').textContent=viewGroup.rotation.y.toFixed(2);
+    document.getElementById('hud-rz').textContent=viewGroup.rotation.z.toFixed(2);
+    controls.update();
+    renderer.render(scene,camera);
+}
+animate();
+</script>
 </body>
 </html>

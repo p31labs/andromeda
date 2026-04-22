@@ -1,179 +1,344 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#0f1115">
-    <title>RESONANCE | P31 Labs</title>
-    <meta name="description" content="Conversation-to-Music Engine. Words become pentatonic notes anchored to phosphorus-31 NMR frequency. Mood-driven Web Audio synthesis generates a unique sonic molecule.">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['"Atkinson Hyperlegible"', 'sans-serif'],
-                        mono: ['"JetBrains Mono"', 'monospace'],
-                    },
-                    colors: {
-                        void: '#0f1115', surface: '#161920', coral: '#cc6247',
-                        teal: '#25897d', cyan: '#4db8a8', cloud: '#d8d6d0',
-                        butter: '#cda852', lavender: '#8b7cc9', phosphorus: '#3ba372',
-                    }
-                }
-            }
-        }
-    </script>
+    <title>RESONANCE | Conversation-to-Music | P31 Labs</title>
+    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
-        body {
-            background-color: #0f1115;
-            color: #d8d6d0;
-            background-image: linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
-            background-size: 40px 40px;
-        }
-        .matte-panel { background-color: #161920; border: 1px solid rgba(255,255,255,0.04); }
+        *{margin:0;padding:0;box-sizing:border-box}
+        :root{--void:#0f1115;--surface:#161920;--teal:#25897d;--cyan:#4db8a8;--cloud:#d8d6d0;--butter:#cda852;--lav:#8b7cc9;--coral:#cc6247;--phos:#3ba372}
+        body{background:var(--void);color:var(--cloud);font-family:'Atkinson Hyperlegible',sans-serif;min-height:100vh;display:flex;flex-direction:column}
+        header{padding:12px 20px;background:rgba(15,17,21,0.95);border-bottom:1px solid rgba(255,255,255,0.05);display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
+        .logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--cloud);font-weight:700}
+        a.back{color:rgba(216,214,208,0.4);font-family:'JetBrains Mono',monospace;font-size:12px;text-decoration:none}
+        a.back:hover{color:var(--cloud)}
+        main{flex:1;display:grid;grid-template-columns:1fr 340px;gap:0;max-height:calc(100vh - 53px)}
+        .left{padding:24px;display:flex;flex-direction:column;gap:16px;overflow-y:auto}
+        .right{background:var(--surface);border-left:1px solid rgba(255,255,255,0.06);padding:20px;display:flex;flex-direction:column;gap:16px;overflow-y:auto}
+        h1{font-size:26px}
+        .sub{color:var(--butter);font-family:'JetBrains Mono',monospace;font-size:12px}
+        #text-input{width:100%;min-height:120px;background:var(--surface);border:1px solid rgba(255,255,255,0.08);color:var(--cloud);padding:16px;border-radius:8px;font-family:'Atkinson Hyperlegible',sans-serif;font-size:16px;outline:none;resize:vertical;line-height:1.6}
+        #text-input:focus{border-color:var(--teal)}
+        #text-input::placeholder{color:rgba(216,214,208,0.2)}
+        .controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+        button{font-family:'JetBrains Mono',monospace;font-size:12px;padding:8px 16px;border-radius:6px;cursor:pointer;border:1px solid rgba(255,255,255,0.1);background:var(--surface);color:var(--cloud);transition:all 0.2s}
+        button:hover{border-color:var(--teal);color:var(--teal)}
+        .btn-play{border-color:var(--teal);color:var(--teal);background:rgba(37,137,125,0.1)}
+        .btn-play.active{background:rgba(37,137,125,0.25)}
+        canvas#viz{width:100%;height:120px;background:var(--surface);border:1px solid rgba(255,255,255,0.06);border-radius:8px;display:block}
+        .note-display{display:flex;gap:4px;flex-wrap:wrap;min-height:40px}
+        .note-pill{padding:4px 10px;border-radius:20px;font-family:'JetBrains Mono',monospace;font-size:11px;border:1px solid transparent;transition:all 0.1s;cursor:default}
+        .note-pill.active{transform:scale(1.1)}
+        .ctrl-row{display:flex;align-items:center;gap:10px}
+        .ctrl-lbl{font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(216,214,208,0.4);text-transform:uppercase;width:80px;flex-shrink:0}
+        input[type=range]{flex:1;height:4px;background:rgba(255,255,255,0.08);border-radius:2px;outline:none;-webkit-appearance:none;cursor:pointer}
+        input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;border-radius:50%;background:var(--teal);cursor:pointer}
+        .val{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--butter);width:36px;text-align:right}
+        .tog-row{display:flex;gap:6px;flex-wrap:wrap}
+        .tog{padding:4px 10px;border:1px solid rgba(255,255,255,0.1);border-radius:20px;font-family:'JetBrains Mono',monospace;font-size:10px;cursor:pointer;background:transparent;color:rgba(216,214,208,0.5);transition:all 0.2s}
+        .tog.on{background:rgba(37,137,125,0.2);border-color:var(--teal);color:var(--teal)}
+        .panel-title{font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(216,214,208,0.4);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px}
+        .history-item{font-size:12px;color:rgba(216,214,208,0.5);padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer;font-family:'JetBrains Mono',monospace}
+        .history-item:hover{color:var(--cloud)}
+        @media(max-width:680px){main{grid-template-columns:1fr}.right{display:none}}
     </style>
 </head>
-<body class="min-h-screen flex flex-col text-cloud/90">
+<body>
+<header>
+    <a href="/" class="logo">
+        <svg width="24" height="24" viewBox="0 0 512 512"><rect width="512" height="512" rx="112" fill="#25897d"/><circle cx="390" cy="120" r="48" fill="#cc6247"/><text x="256" y="340" font-family="system-ui" font-weight="900" font-size="220" fill="#d8d6d0" text-anchor="middle">P31</text><rect x="156" y="380" width="200" height="16" rx="8" fill="#cda852"/></svg>
+        RESONANCE
+    </a>
+    <a href="/" class="back">← Hub</a>
+</header>
 
-    <header class="w-full border-b border-white/5 bg-void/95 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-            <a href="/" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
-                <svg width="28" height="28" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
-                    <rect width="512" height="512" rx="112" fill="#25897d"/>
-                    <circle cx="390" cy="120" r="48" fill="#cc6247"/>
-                    <text x="256" y="340" font-family="system-ui" font-weight="900" font-size="220" fill="#d8d6d0" text-anchor="middle">P31</text>
-                    <rect x="156" y="380" width="200" height="16" rx="8" fill="#cda852"/>
-                </svg>
-                <span class="font-bold text-lg tracking-tight">P31 Labs</span>
-            </a>
-            <nav class="flex gap-4 font-mono text-sm">
-                <a href="/" class="text-cloud/50 hover:text-cloud transition-colors flex items-center gap-2">&larr; Hub</a>
-            </nav>
+<main>
+    <div class="left">
+        <h1>RESONANCE</h1>
+        <div class="sub">Words → Pentatonic Music · ³¹P Larmor Anchor</div>
+
+        <textarea id="text-input" placeholder="Type anything. Each word becomes a note in the P31 pentatonic scale…"></textarea>
+
+        <div class="controls">
+            <button class="btn-play" id="btn-play">▶ Play</button>
+            <button id="btn-stop">■ Stop</button>
+            <button id="btn-chord">Chord Mode</button>
+            <button id="btn-loop">Loop</button>
+            <button id="btn-clear-text">Clear</button>
         </div>
-    </header>
 
-    <main class="flex-grow max-w-7xl mx-auto px-6 py-12 w-full flex flex-col gap-12">
+        <canvas id="viz"></canvas>
 
-        <header class="border-b border-white/10 pb-8">
-            <div class="flex items-center gap-4 mb-4">
-                <div class="text-3xl bg-surface w-12 h-12 rounded flex items-center justify-center border border-white/5">&#127925;</div>
-                <div class="px-2 py-0.5 rounded border text-[10px] font-mono tracking-wide text-lavender/80 border-lavender/20 bg-lavender/5">&#128309; PROTOTYPE</div>
-            </div>
-            <h1 class="text-4xl md:text-5xl font-bold mb-4 text-cloud">RESONANCE</h1>
-            <p class="text-xl text-lavender/70 font-mono">Conversation-to-Music Engine &mdash; Sonic Identity</p>
-        </header>
+        <div class="note-display" id="note-display"></div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
-            <div class="lg:col-span-2 flex flex-col gap-8">
-
-                <section class="matte-panel rounded-lg p-8">
-                    <h2 class="text-2xl font-bold mb-4 flex items-center gap-3">
-                        <span class="text-lavender">01.</span> What It Does
-                    </h2>
-                    <p class="text-cloud/70 leading-relaxed mb-6">
-                        Your words become music. Each word is hashed to a pentatonic note anchored to <strong class="text-cloud/85">172.35 Hz</strong> &mdash; the phosphorus-31 NMR resonance frequency. Mood detection shapes synthesis parameters in real time. The conversation generates a unique <strong class="text-cloud/85">sonic molecule</strong> &mdash; your identity fingerprint rendered as sound.
-                    </p>
-                    <ul class="space-y-2 text-sm text-cloud/65">
-                        <li class="flex items-start gap-2"><span class="text-lavender mt-0.5">&#9679;</span> Word-to-note hashing (pentatonic scale)</li>
-                        <li class="flex items-start gap-2"><span class="text-lavender mt-0.5">&#9679;</span> 6 mood categories with synthesis parameters</li>
-                        <li class="flex items-start gap-2"><span class="text-lavender mt-0.5">&#9679;</span> Sonic molecule SVG visualization</li>
-                        <li class="flex items-start gap-2"><span class="text-lavender mt-0.5">&#9679;</span> Waveform display</li>
-                        <li class="flex items-start gap-2"><span class="text-lavender mt-0.5">&#9679;</span> Coherence tracking (5 states)</li>
-                        <li class="flex items-start gap-2"><span class="text-lavender mt-0.5">&#9679;</span> 16-char hex molecule fingerprint</li>
-                        <li class="flex items-start gap-2"><span class="text-lavender mt-0.5">&#9679;</span> Message history with mood tags</li>
-                        <li class="flex items-start gap-2"><span class="text-lavender mt-0.5">&#9679;</span> Zero cloud dependency (all local synthesis)</li>
-                    </ul>
-                </section>
-
-                <section class="matte-panel rounded-lg p-8">
-                    <h2 class="text-2xl font-bold mb-4 flex items-center gap-3">
-                        <span class="text-lavender">02.</span> Synthesis Architecture
-                    </h2>
-                    <p class="text-cloud/70 leading-relaxed mb-6">
-                        Web Audio API synthesis chain: <code class="font-mono text-xs text-lavender/60">OscillatorNode</code> &rarr; <code class="font-mono text-xs text-lavender/60">GainNode</code> (ADSR envelope) &rarr; <code class="font-mono text-xs text-lavender/60">ConvolverNode</code> (reverb). Mood detection drives waveform and envelope selection.
-                    </p>
-                    <div class="space-y-4">
-                        <div class="bg-void border border-lavender/10 rounded p-5">
-                            <p class="text-lavender/80 font-mono text-xs mb-2 uppercase tracking-widest">Mood &rarr; Synthesis Map</p>
-                            <div class="text-cloud/70 text-sm leading-relaxed space-y-1 font-mono">
-                                <p><span class="text-cloud/50">warm</span> &mdash; sine + long sustain</p>
-                                <p><span class="text-cloud/50">curious</span> &mdash; triangle + staccato</p>
-                                <p><span class="text-cloud/50">vulnerable</span> &mdash; sine + heavy reverb</p>
-                                <p><span class="text-cloud/50">pain</span> &mdash; sawtooth + low octave</p>
-                                <p><span class="text-cloud/50">joyful</span> &mdash; triangle + high octave</p>
-                            </div>
-                        </div>
-                        <div class="bg-void border border-lavender/10 rounded p-5">
-                            <p class="text-lavender/80 font-mono text-xs mb-2 uppercase tracking-widest">Coherence States</p>
-                            <p class="text-cloud/70 text-sm leading-relaxed">Five-stage progression tracked across the conversation: <code class="font-mono text-xs text-lavender/60">VOID &rarr; PHOSPHORUS &rarr; CALCIUM &rarr; BONDED &rarr; POSNER</code>. Each state unlocks deeper synthesis complexity and richer harmonic layering.</p>
-                        </div>
-                    </div>
-                </section>
-
-            </div>
-
-            <div class="flex flex-col gap-6">
-
-                <div class="matte-panel rounded-lg p-6">
-                    <h3 class="text-sm font-mono text-cloud/40 uppercase tracking-widest mb-4">Launch</h3>
-                    <a href="resonance-engine.html"
-                       class="block p-5 bg-void border border-lavender/30 rounded hover:border-lavender/60 transition-colors group mb-3 text-center">
-                        <div class="text-2xl mb-2">&#127925;</div>
-                        <div class="font-bold text-sm text-lavender group-hover:text-lavender transition-colors mb-1">Open Resonance Engine</div>
-                        <div class="text-xs text-cloud/40 font-mono">resonance-engine.html</div>
-                    </a>
-                </div>
-
-                <div class="matte-panel rounded-lg p-6">
-                    <h3 class="text-sm font-mono text-cloud/40 uppercase tracking-widest mb-4">Technical Stack</h3>
-                    <div class="space-y-3 text-sm">
-                        <div>
-                            <div class="text-cloud font-bold mb-1">Web Audio API</div>
-                            <div class="text-cloud/60">OscillatorNode, GainNode ADSR, ConvolverNode reverb</div>
-                        </div>
-                        <div>
-                            <div class="text-cloud font-bold mb-1">SVG Visualization</div>
-                            <div class="text-cloud/60">Sonic molecule geometry + waveform rendering</div>
-                        </div>
-                        <div>
-                            <div class="text-cloud font-bold mb-1">Pentatonic Synthesis</div>
-                            <div class="text-cloud/60">172.35 Hz base &mdash; P-31 NMR anchor frequency</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="matte-panel rounded-lg p-6">
-                    <h3 class="text-sm font-mono text-cloud/40 uppercase tracking-widest mb-4">Ecosystem Ties</h3>
-                    <a href="spaceship-earth.html" class="block p-4 bg-void border border-white/5 rounded hover:border-teal/30 transition-colors group mb-3">
-                        <div class="font-bold text-sm text-cloud group-hover:text-teal transition-colors mb-1">Spaceship Earth</div>
-                        <div class="text-xs text-cloud/50">Host application for sovereign mesh tools.</div>
-                    </a>
-                    <a href="echo.html" class="block p-4 bg-void border border-white/5 rounded hover:border-lavender/30 transition-colors group mb-3">
-                        <div class="font-bold text-sm text-cloud group-hover:text-lavender transition-colors mb-1">ECHO</div>
-                        <div class="text-xs text-cloud/50">Companion journaling &mdash; mood data feeds synthesis.</div>
-                    </a>
-                    <a href="bonding.html" class="block p-4 bg-void border border-white/5 rounded hover:border-cyan/30 transition-colors group">
-                        <div class="font-bold text-sm text-cloud group-hover:text-cyan transition-colors mb-1">BONDING</div>
-                        <div class="text-xs text-cloud/50">Element tones and bond chords from the same audio engine.</div>
-                    </a>
-                </div>
-
-            </div>
+        <div class="ctrl-row">
+            <span class="ctrl-lbl">Tempo</span>
+            <input type="range" id="sl-tempo" min="40" max="240" value="120">
+            <span class="val" id="val-tempo">120</span>
         </div>
-    </main>
-
-    <footer class="border-t border-white/5 mt-12 py-6">
-        <div class="max-w-7xl mx-auto px-6 flex justify-between items-center text-xs text-cloud/30 font-mono">
-            <span>P31 Labs &middot; 501(c)(3) &middot; EIN 42-1888158</span>
-            <a href="/" class="hover:text-cloud/60 transition-colors">&larr; Back to Hub</a>
+        <div class="ctrl-row">
+            <span class="ctrl-lbl">Octave</span>
+            <input type="range" id="sl-octave" min="2" max="6" value="4" step="1">
+            <span class="val" id="val-octave">4</span>
         </div>
-    </footer>
+        <div class="ctrl-row">
+            <span class="ctrl-lbl">Volume</span>
+            <input type="range" id="sl-vol" min="0" max="100" value="60">
+            <span class="val" id="val-vol">60%</span>
+        </div>
 
+        <div class="tog-row">
+            <button class="tog on" data-wave="sine">Sine</button>
+            <button class="tog" data-wave="triangle">Triangle</button>
+            <button class="tog" data-wave="sawtooth">Saw</button>
+            <button class="tog" data-wave="square">Square</button>
+        </div>
+    </div>
+
+    <div class="right">
+        <div class="panel-title">Scale Info</div>
+        <div style="font-size:12px;color:rgba(216,214,208,0.5);font-family:'JetBrains Mono',monospace;line-height:1.8" id="scale-info">
+            P31 Pentatonic<br>Anchor: 863 Hz (³¹P Larmor)<br>
+        </div>
+        <div id="scale-notes"></div>
+
+        <div class="panel-title">Mapping</div>
+        <div style="font-size:11px;color:rgba(216,214,208,0.4);font-family:'JetBrains Mono',monospace;line-height:2">
+            Word length → note<br>
+            Vowel count → octave shift<br>
+            Consonant ratio → timbre<br>
+            Punctuation → rest
+        </div>
+
+        <div class="panel-title">History</div>
+        <div id="history"></div>
+    </div>
+</main>
+
+<script>
+const vizCanvas = document.getElementById('viz');
+const vizCtx = vizCanvas.getContext('2d');
+let vizW, vizH;
+function resizeViz(){vizW=vizCanvas.width=vizCanvas.offsetWidth;vizH=vizCanvas.height=vizCanvas.offsetHeight;}
+resizeViz();
+window.addEventListener('resize',resizeViz);
+
+let audioCtx = null;
+let masterGain = null;
+let playing = false;
+let chordMode = false;
+let loopMode = false;
+let currentNoteIdx = 0;
+let playTimeout = null;
+let waveType = 'sine';
+let analyser = null;
+let analyserData = null;
+
+// P31 pentatonic scale built around 863 Hz (³¹P Larmor in Earth's field)
+// Pentatonic ratios from 863: 1, 9/8, 6/5, 3/2, 5/3
+const P31_BASE = 863;
+const PENTA_RATIOS = [1, 9/8, 6/5, 3/2, 5/3, 2, 9/4, 12/5, 3, 10/3];
+
+const NOTE_COLORS = ['#3ba372','#4db8a8','#25897d','#cda852','#cc6247','#8b7cc9','#d8d6d0','#3ba372','#4db8a8','#25897d'];
+const NOTE_NAMES = ['P31','α','β','γ','δ','ε','ζ','P31↑','α↑','β↑'];
+
+function getFreq(semitone, octave) {
+    const octaveShift = octave - 4;
+    return P31_BASE * PENTA_RATIOS[semitone % PENTA_RATIOS.length] * Math.pow(2, octaveShift + Math.floor(semitone / PENTA_RATIOS.length));
+}
+
+function wordToNote(word) {
+    const clean = word.toLowerCase().replace(/[^a-z]/g,'');
+    if (!clean) return null;
+    const len = clean.length;
+    const vowels = (clean.match(/[aeiou]/g)||[]).length;
+    const noteIdx = ((len-1) % PENTA_RATIOS.length + PENTA_RATIOS.length) % PENTA_RATIOS.length;
+    const octShift = vowels >= 3 ? 1 : vowels === 0 ? -1 : 0;
+    return {noteIdx, octShift, word, color: NOTE_COLORS[noteIdx], name: NOTE_NAMES[noteIdx]};
+}
+
+function getWords() {
+    return document.getElementById('text-input').value.trim().split(/\s+/).filter(w=>w);
+}
+
+function buildNotes() {
+    const words = getWords();
+    const notes = words.map(wordToNote).filter(Boolean);
+    renderNotePills(notes);
+    return notes;
+}
+
+function renderNotePills(notes) {
+    const disp = document.getElementById('note-display');
+    disp.innerHTML = '';
+    notes.forEach((n,i) => {
+        const pill = document.createElement('span');
+        pill.className = 'note-pill';
+        pill.id = 'pill-'+i;
+        pill.textContent = n.word;
+        pill.style.background = n.color + '22';
+        pill.style.borderColor = n.color + '44';
+        pill.style.color = n.color;
+        disp.appendChild(pill);
+    });
+}
+
+function initAudio() {
+    if (audioCtx) return;
+    audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+    masterGain = audioCtx.createGain();
+    analyser = audioCtx.createAnalyser();
+    analyser.fftSize = 256;
+    analyserData = new Uint8Array(analyser.frequencyBinCount);
+    masterGain.connect(analyser);
+    analyser.connect(audioCtx.destination);
+    masterGain.gain.value = document.getElementById('sl-vol').value / 100;
+}
+
+function playNote(freq, duration, detune=0) {
+    const osc = audioCtx.createOscillator();
+    const env = audioCtx.createGain();
+    osc.type = waveType;
+    osc.frequency.value = freq;
+    osc.detune.value = detune;
+    env.gain.setValueAtTime(0, audioCtx.currentTime);
+    env.gain.linearRampToValueAtTime(0.6, audioCtx.currentTime + 0.01);
+    env.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration * 0.9);
+    osc.connect(env); env.connect(masterGain);
+    osc.start(); osc.stop(audioCtx.currentTime + duration);
+}
+
+let notes = [];
+let noteIdx = 0;
+
+function scheduleNext() {
+    if (!playing) return;
+    if (noteIdx >= notes.length) {
+        if (loopMode) { noteIdx = 0; }
+        else { playing = false; document.getElementById('btn-play').classList.remove('active'); return; }
+    }
+    const n = notes[noteIdx];
+    const octave = parseInt(document.getElementById('sl-octave').value) + n.octShift;
+    const freq = getFreq(n.noteIdx, Math.max(2,Math.min(8,octave)));
+    const bpm = parseInt(document.getElementById('sl-tempo').value);
+    const duration = 60/bpm * 0.8;
+
+    if (chordMode) {
+        playNote(freq, duration);
+        playNote(freq * 1.25, duration, 0);
+        playNote(freq * 1.5, duration, 0);
+    } else {
+        playNote(freq, duration);
+    }
+
+    // Highlight pill
+    document.querySelectorAll('.note-pill').forEach((p,i) => {
+        p.classList.toggle('active', i === noteIdx);
+        p.style.transform = i === noteIdx ? 'scale(1.1)' : 'scale(1)';
+    });
+
+    noteIdx++;
+    playTimeout = setTimeout(scheduleNext, (60/bpm)*1000);
+}
+
+document.getElementById('btn-play').addEventListener('click', () => {
+    initAudio();
+    notes = buildNotes();
+    if (!notes.length) return;
+    addToHistory(document.getElementById('text-input').value.trim().slice(0,40));
+    playing = true;
+    noteIdx = 0;
+    document.getElementById('btn-play').classList.add('active');
+    scheduleNext();
+});
+
+document.getElementById('btn-stop').addEventListener('click', () => {
+    playing = false;
+    clearTimeout(playTimeout);
+    document.getElementById('btn-play').classList.remove('active');
+    document.querySelectorAll('.note-pill').forEach(p => { p.classList.remove('active'); p.style.transform=''; });
+});
+
+document.getElementById('btn-chord').addEventListener('click', function() {
+    chordMode = !chordMode;
+    this.style.borderColor = chordMode ? 'var(--lav)' : '';
+    this.style.color = chordMode ? 'var(--lav)' : '';
+});
+
+document.getElementById('btn-loop').addEventListener('click', function() {
+    loopMode = !loopMode;
+    this.style.borderColor = loopMode ? 'var(--butter)' : '';
+    this.style.color = loopMode ? 'var(--butter)' : '';
+});
+
+document.getElementById('btn-clear-text').addEventListener('click', () => {
+    document.getElementById('text-input').value = '';
+    document.getElementById('note-display').innerHTML = '';
+    playing = false; clearTimeout(playTimeout);
+});
+
+document.getElementById('sl-tempo').addEventListener('input', function(){ document.getElementById('val-tempo').textContent = this.value; });
+document.getElementById('sl-octave').addEventListener('input', function(){ document.getElementById('val-octave').textContent = this.value; });
+document.getElementById('sl-vol').addEventListener('input', function(){
+    document.getElementById('val-vol').textContent = this.value + '%';
+    if (masterGain) masterGain.gain.setTargetAtTime(this.value/100, audioCtx.currentTime, 0.05);
+});
+
+document.querySelectorAll('[data-wave]').forEach(b => b.addEventListener('click', () => {
+    document.querySelectorAll('[data-wave]').forEach(x => x.classList.remove('on'));
+    b.classList.add('on');
+    waveType = b.dataset.wave;
+}));
+
+document.getElementById('text-input').addEventListener('input', () => {
+    if (!playing) buildNotes();
+});
+
+const history = [];
+function addToHistory(text) {
+    if (!text) return;
+    history.unshift(text);
+    if (history.length > 8) history.pop();
+    const el = document.getElementById('history');
+    el.innerHTML = '';
+    history.forEach((h,i) => {
+        const d = document.createElement('div');
+        d.className = 'history-item';
+        d.textContent = (i===0?'→ ':'')+h;
+        d.onclick = () => { document.getElementById('text-input').value = h; buildNotes(); };
+        el.appendChild(d);
+    });
+}
+
+// Scale info
+const scaleInfo = document.getElementById('scale-notes');
+scaleInfo.innerHTML = PENTA_RATIOS.slice(0,5).map((r,i) =>
+    `<div style="display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:11px;color:${NOTE_COLORS[i]};margin-bottom:4px"><span>${NOTE_NAMES[i]}</span><span>${(P31_BASE*r).toFixed(1)} Hz</span></div>`
+).join('');
+
+function drawViz() {
+    requestAnimationFrame(drawViz);
+    vizCtx.fillStyle = '#161920';
+    vizCtx.fillRect(0,0,vizW,vizH);
+    if (!analyser||!analyserData) {
+        vizCtx.strokeStyle = 'rgba(37,137,125,0.3)';
+        vizCtx.lineWidth=1;vizCtx.beginPath();
+        for(let x=0;x<vizW;x++){const y=vizH/2+Math.sin(Date.now()*0.001+x*0.05)*4;if(x===0)vizCtx.moveTo(x,y);else vizCtx.lineTo(x,y);}
+        vizCtx.stroke();return;
+    }
+    analyser.getByteFrequencyData(analyserData);
+    const bw = vizW/analyserData.length;
+    for(let i=0;i<analyserData.length;i++){
+        const v=analyserData[i]/255;
+        const h=v*vizH;
+        const hue=120+i*2;
+        vizCtx.fillStyle=`hsla(${hue},70%,50%,${v})`;
+        vizCtx.fillRect(i*bw,vizH-h,bw-1,h);
+    }
+}
+drawViz();
+</script>
 </body>
 </html>

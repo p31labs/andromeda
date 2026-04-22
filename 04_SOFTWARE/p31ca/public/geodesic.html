@@ -1,168 +1,216 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#0f1115">
-    <title>GEODESIC | P31 Labs</title>
-    <meta name="description" content="Place tetrahedra, octahedra, icosahedra, struts, and hubs in 3D space. Rigidity scoring tracks structural integrity. Challenge system with tier progression.">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['"Atkinson Hyperlegible"', 'sans-serif'],
-                        mono: ['"JetBrains Mono"', 'monospace'],
-                    },
-                    colors: {
-                        void: '#0f1115', surface: '#161920', coral: '#cc6247',
-                        teal: '#25897d', cyan: '#4db8a8', cloud: '#d8d6d0',
-                        butter: '#cda852', lavender: '#8b7cc9', phosphorus: '#3ba372',
-                    }
-                }
-            }
-        }
-    </script>
+    <title>GEODESIC | 3D Structure Builder | P31 Labs</title>
+    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
-        body {
-            background-color: #0f1115;
-            color: #d8d6d0;
-            background-image: linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
-            background-size: 40px 40px;
-        }
-        .matte-panel { background-color: #161920; border: 1px solid rgba(255,255,255,0.04); }
+        *{margin:0;padding:0;box-sizing:border-box}
+        :root{--void:#0f1115;--surface:#161920;--teal:#25897d;--cyan:#4db8a8;--cloud:#d8d6d0;--butter:#cda852;--lav:#8b7cc9;--coral:#cc6247;--phos:#3ba372}
+        body{background:var(--void);color:var(--cloud);font-family:'Atkinson Hyperlegible',sans-serif;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+        header{padding:10px 20px;background:rgba(15,17,21,0.95);border-bottom:1px solid rgba(255,255,255,0.05);display:flex;justify-content:space-between;align-items:center;flex-shrink:0;z-index:10}
+        .logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--cloud);font-weight:700;font-size:14px}
+        a.back{color:rgba(216,214,208,0.4);font-family:'JetBrains Mono',monospace;font-size:12px;text-decoration:none}
+        a.back:hover{color:var(--cloud)}
+        .toolbar{display:flex;gap:8px;align-items:center;padding:10px 20px;background:rgba(22,25,32,0.8);border-bottom:1px solid rgba(255,255,255,0.04);flex-shrink:0;flex-wrap:wrap}
+        button{font-family:'JetBrains Mono',monospace;font-size:11px;padding:6px 12px;border-radius:6px;cursor:pointer;border:1px solid rgba(255,255,255,0.1);background:rgba(22,25,32,0.8);color:rgba(216,214,208,0.6);transition:all 0.2s}
+        button:hover{border-color:var(--teal);color:var(--teal)}
+        button.active{border-color:var(--teal);color:var(--teal);background:rgba(37,137,125,0.15)}
+        #three-mount{flex:1;position:relative}
+        .info-panel{position:absolute;top:12px;right:12px;background:rgba(22,25,32,0.9);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:14px;font-family:'JetBrains Mono',monospace;font-size:11px;z-index:5;min-width:180px}
+        .info-row{display:flex;justify-content:space-between;gap:16px;margin-bottom:6px}
+        .info-key{color:rgba(216,214,208,0.4)}
+        .info-val{color:var(--teal)}
+        .hud{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(216,214,208,0.3);pointer-events:none;white-space:nowrap}
     </style>
 </head>
-<body class="min-h-screen flex flex-col text-cloud/90">
+<body>
+<header>
+    <a href="/" class="logo">
+        <svg width="22" height="22" viewBox="0 0 512 512"><rect width="512" height="512" rx="112" fill="#25897d"/><circle cx="390" cy="120" r="48" fill="#cc6247"/><text x="256" y="340" font-family="system-ui" font-weight="900" font-size="220" fill="#d8d6d0" text-anchor="middle">P31</text><rect x="156" y="380" width="200" height="16" rx="8" fill="#cda852"/></svg>
+        GEODESIC
+    </a>
+    <a href="/" class="back">← Hub</a>
+</header>
 
-    <header class="w-full border-b border-white/5 bg-void/95 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-            <a href="/" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
-                <svg width="28" height="28" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
-                    <rect width="512" height="512" rx="112" fill="#25897d"/>
-                    <circle cx="390" cy="120" r="48" fill="#cc6247"/>
-                    <text x="256" y="340" font-family="system-ui" font-weight="900" font-size="220" fill="#d8d6d0" text-anchor="middle">P31</text>
-                    <rect x="156" y="380" width="200" height="16" rx="8" fill="#cda852"/>
-                </svg>
-                <span class="font-bold text-lg tracking-tight">P31 Labs</span>
-            </a>
-            <nav class="flex gap-4 font-mono text-sm">
-                <a href="/" class="text-cloud/50 hover:text-cloud transition-colors flex items-center gap-2">&larr; Hub</a>
-            </nav>
-        </div>
-    </header>
+<div class="toolbar">
+    <button class="active" id="btn-tet" onclick="addShape('tet',this)">Tetrahedron</button>
+    <button id="btn-oct" onclick="addShape('oct',this)">Octahedron</button>
+    <button id="btn-ico" onclick="addShape('ico',this)">Icosahedron</button>
+    <button id="btn-cube" onclick="addShape('cube',this)">Cube</button>
+    <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(216,214,208,0.3);margin-left:4px">Display:</span>
+    <button id="btn-wire" onclick="toggleWire()" class="active">Wire</button>
+    <button id="btn-solid" onclick="toggleSolid()">Solid</button>
+    <button onclick="resetScene()">Reset</button>
+    <button onclick="autoArrange()">Auto Arrange</button>
+    <span id="rigidity-score" style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--butter);margin-left:8px"></span>
+</div>
 
-    <main class="flex-grow max-w-7xl mx-auto px-6 py-12 w-full flex flex-col gap-12">
+<div id="three-mount">
+    <div class="info-panel" id="info-panel">
+        <div class="info-row"><span class="info-key">Shapes</span><span class="info-val" id="inf-shapes">0</span></div>
+        <div class="info-row"><span class="info-key">Vertices</span><span class="info-val" id="inf-verts">0</span></div>
+        <div class="info-row"><span class="info-key">Edges</span><span class="info-val" id="inf-edges">0</span></div>
+        <div class="info-row"><span class="info-key">Faces</span><span class="info-val" id="inf-faces">0</span></div>
+        <div class="info-row"><span class="info-key">Rigidity</span><span class="info-val" id="inf-rig">—</span></div>
+        <div style="font-size:9px;color:rgba(216,214,208,0.2);margin-top:8px;line-height:1.5">Drag to rotate<br>Scroll to zoom<br>Click shape to select</div>
+    </div>
+    <div class="hud">Click toolbar to add shapes · Drag canvas to orbit</div>
+</div>
 
-        <header class="border-b border-white/10 pb-8">
-            <div class="flex items-center gap-4 mb-4">
-                <div class="text-3xl bg-surface w-12 h-12 rounded flex items-center justify-center border border-white/5">&#x1F537;</div>
-                <div class="px-2 py-0.5 rounded border text-[10px] font-mono tracking-wide text-phosphorus/80 border-phosphorus/20 bg-phosphorus/5">&#x1F535; PROTOTYPE</div>
-            </div>
-            <h1 class="text-4xl md:text-5xl font-bold mb-4 text-cloud">GEODESIC</h1>
-            <p class="text-xl text-phosphorus/70 font-mono">Structure Builder &mdash; 3D Geometric Construction</p>
-        </header>
+<script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/"}}</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+const mount = document.getElementById('three-mount');
+const renderer = new THREE.WebGLRenderer({antialias:true,alpha:true});
+renderer.setPixelRatio(window.devicePixelRatio);
+renderer.setClearColor(0x0f1115,1);
+mount.appendChild(renderer.domElement);
 
-            <div class="lg:col-span-2 flex flex-col gap-8">
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(50,1,0.1,1000);
+camera.position.set(0,4,12);
 
-                <section class="matte-panel rounded-lg p-8">
-                    <h2 class="text-2xl font-bold mb-4 flex items-center gap-3">
-                        <span class="text-phosphorus">01.</span> What It Does
-                    </h2>
-                    <p class="text-cloud/70 leading-relaxed">
-                        Build geodesic structures from 5 primitive types. Snap-to-grid placement with real-time rigidity scoring lets you construct stable geometric forms and test structural integrity. Complete challenges to unlock tier rewards and progress through increasingly complex builds.
-                    </p>
-                </section>
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping=true;controls.dampingFactor=0.08;
 
-                <section class="matte-panel rounded-lg p-8">
-                    <h2 class="text-2xl font-bold mb-4 flex items-center gap-3">
-                        <span class="text-phosphorus">02.</span> How It Works
-                    </h2>
-                    <p class="text-cloud/70 leading-relaxed">
-                        A Three.js scene with OrbitControls provides the 3D workspace. Primitives are placed via raycasting onto a snap-to-grid surface. Connection detection within a 1.5-unit radius automatically links nearby hubs and struts. A rigidity algorithm scores your structure in real time. Challenge tracking with tier rewards persists progress to localStorage.
-                    </p>
-                </section>
+// Lights
+scene.add(new THREE.AmbientLight(0x404060,2));
+const dir=new THREE.DirectionalLight(0x4db8a8,3);dir.position.set(5,10,5);scene.add(dir);
+const dir2=new THREE.DirectionalLight(0xcda852,1.5);dir2.position.set(-5,-5,5);scene.add(dir2);
 
-                <section class="matte-panel rounded-lg p-8">
-                    <h2 class="text-2xl font-bold mb-4 flex items-center gap-3">
-                        <span class="text-phosphorus">03.</span> Key Features
-                    </h2>
-                    <ul class="space-y-3 text-cloud/70">
-                        <li class="flex items-start gap-3"><span class="text-phosphorus font-mono text-sm mt-0.5">&bull;</span> 5 building primitives (Tetra / Octa / Ico / Strut / Hub)</li>
-                        <li class="flex items-start gap-3"><span class="text-phosphorus font-mono text-sm mt-0.5">&bull;</span> Snap-to-grid placement</li>
-                        <li class="flex items-start gap-3"><span class="text-phosphorus font-mono text-sm mt-0.5">&bull;</span> Real-time rigidity scoring</li>
-                        <li class="flex items-start gap-3"><span class="text-phosphorus font-mono text-sm mt-0.5">&bull;</span> 3 challenges (Triangle / Tower / Dome)</li>
-                        <li class="flex items-start gap-3"><span class="text-phosphorus font-mono text-sm mt-0.5">&bull;</span> Undo + Clear</li>
-                        <li class="flex items-start gap-3"><span class="text-phosphorus font-mono text-sm mt-0.5">&bull;</span> localStorage persistence</li>
-                        <li class="flex items-start gap-3"><span class="text-phosphorus font-mono text-sm mt-0.5">&bull;</span> Dynamic lighting + wireframe overlays</li>
-                    </ul>
-                </section>
+// Grid
+const grid=new THREE.GridHelper(20,20,0x1e2630,0x1a1f26);scene.add(grid);
 
-            </div>
+const COLORS={tet:0x3ba372,oct:0x4db8a8,ico:0x8b7cc9,cube:0xcda852};
+const SHAPE_INFO={
+    tet:{verts:4,edges:6,faces:4},
+    oct:{verts:6,edges:12,faces:8},
+    ico:{verts:12,edges:30,faces:20},
+    cube:{verts:8,edges:12,faces:6}
+};
 
-            <div class="flex flex-col gap-6">
+let shapes=[];
+let wireMode=true, solidMode=false;
+let selectedShape='tet';
+let shapeCount={tet:0,oct:0,ico:0,cube:0};
 
-                <div class="matte-panel rounded-lg p-6">
-                    <h3 class="text-sm font-mono text-cloud/40 uppercase tracking-widest mb-4">Launch</h3>
-                    <a href="builder.html"
-                       class="block p-5 bg-void border border-phosphorus/30 rounded hover:border-phosphorus/60 transition-colors group mb-3 text-center">
-                        <div class="text-2xl mb-2">&#x1F537;</div>
-                        <div class="font-bold text-sm text-phosphorus group-hover:text-phosphorus transition-colors mb-1">Open Structure Builder</div>
-                        <div class="text-xs text-cloud/40 font-mono">builder.html</div>
-                    </a>
-                </div>
+function makeGeom(type) {
+    switch(type){
+        case 'tet': return new THREE.TetrahedronGeometry(1);
+        case 'oct': return new THREE.OctahedronGeometry(1);
+        case 'ico': return new THREE.IcosahedronGeometry(1);
+        case 'cube': return new THREE.BoxGeometry(1.5,1.5,1.5);
+    }
+}
 
-                <div class="matte-panel rounded-lg p-6">
-                    <h3 class="text-sm font-mono text-cloud/40 uppercase tracking-widest mb-4">Technical Stack</h3>
-                    <div class="space-y-3 text-sm">
-                        <div>
-                            <div class="text-cloud font-bold mb-1">Renderer</div>
-                            <div class="text-cloud/60">Three.js r183 &mdash; parametric geometry, wireframe overlays</div>
-                        </div>
-                        <div>
-                            <div class="text-cloud font-bold mb-1">Controls</div>
-                            <div class="text-cloud/60">OrbitControls &mdash; rotate, zoom, pan</div>
-                        </div>
-                        <div>
-                            <div class="text-cloud font-bold mb-1">Architecture</div>
-                            <div class="text-cloud/60">ES Modules, zero bundler, vanilla JS</div>
-                        </div>
-                    </div>
-                </div>
+window.addShape = function(type, btn) {
+    selectedShape=type;
+    document.querySelectorAll('.toolbar button').forEach(b=>{
+        if(['btn-tet','btn-oct','btn-ico','btn-cube'].includes(b.id))b.classList.remove('active');
+    });
+    if(btn)btn.classList.add('active');
 
-                <div class="matte-panel rounded-lg p-6">
-                    <h3 class="text-sm font-mono text-cloud/40 uppercase tracking-widest mb-4">Ecosystem Ties</h3>
-                    <a href="spaceship-earth.html" class="block p-4 bg-void border border-white/5 rounded hover:border-teal/30 transition-colors group mb-3">
-                        <div class="font-bold text-sm text-cloud group-hover:text-teal transition-colors mb-1">Spaceship Earth</div>
-                        <div class="text-xs text-cloud/50">The sovereign cockpit that hosts all P31 apps.</div>
-                    </a>
-                    <a href="axiom.html" class="block p-4 bg-void border border-white/5 rounded hover:border-phosphorus/30 transition-colors group mb-3">
-                        <div class="font-bold text-sm text-cloud group-hover:text-phosphorus transition-colors mb-1">AXIOM</div>
-                        <div class="text-xs text-cloud/50">Formal ontology for geometric primitives and rigidity.</div>
-                    </a>
-                    <a href="alchemy.html" class="block p-4 bg-void border border-white/5 rounded hover:border-cyan/30 transition-colors group">
-                        <div class="font-bold text-sm text-cloud group-hover:text-cyan transition-colors mb-1">Neuro-Cognition Alchemy</div>
-                        <div class="text-xs text-cloud/50">K4 rigidity theory underlying structural scoring.</div>
-                    </a>
-                </div>
+    const color=COLORS[type];
+    const geom=makeGeom(type);
+    const group=new THREE.Group();
 
-            </div>
-        </div>
-    </main>
+    if(solidMode||!wireMode) {
+        const mat=new THREE.MeshPhongMaterial({color,transparent:true,opacity:0.4,side:THREE.DoubleSide});
+        const mesh=new THREE.Mesh(geom,mat);
+        group.add(mesh);
+    }
+    if(wireMode) {
+        const wireMat=new THREE.LineBasicMaterial({color});
+        const wireGeo=new THREE.WireframeGeometry(geom);
+        const wire=new THREE.LineSegments(wireGeo,wireMat);
+        group.add(wire);
+    }
 
-    <footer class="border-t border-white/5 mt-12 py-6">
-        <div class="max-w-7xl mx-auto px-6 flex justify-between items-center text-xs text-cloud/30 font-mono">
-            <span>P31 Labs &middot; 501(c)(3) &middot; EIN 42-1888158</span>
-            <a href="/" class="hover:text-cloud/60 transition-colors">&larr; Back to Hub</a>
-        </div>
-    </footer>
+    const x=(Math.random()-0.5)*6, y=0.5, z=(Math.random()-0.5)*6;
+    group.position.set(x,y,z);
+    group.userData={type,id:Date.now()};
+    scene.add(group);
+    shapes.push(group);
+    updateInfo();
+};
 
+window.toggleWire=function(){
+    wireMode=!wireMode;
+    document.getElementById('btn-wire').classList.toggle('active',wireMode);
+    rebuildAll();
+};
+window.toggleSolid=function(){
+    solidMode=!solidMode;
+    document.getElementById('btn-solid').classList.toggle('active',solidMode);
+    rebuildAll();
+};
+
+function rebuildAll(){
+    const types=shapes.map(s=>s.userData.type);
+    shapes.forEach(s=>scene.remove(s));
+    shapes=[];
+    types.forEach(t=>addShape(t,null));
+}
+
+window.resetScene=function(){
+    shapes.forEach(s=>scene.remove(s));
+    shapes=[];
+    updateInfo();
+};
+
+window.autoArrange=function(){
+    shapes.forEach((s,i)=>{
+        const angle=i*(Math.PI*2/shapes.length);
+        const r=Math.max(2,shapes.length*0.8);
+        s.position.set(Math.cos(angle)*r,0.5,Math.sin(angle)*r);
+    });
+};
+
+function calcRigidity() {
+    let E=0,V=0,F=0;
+    shapes.forEach(s=>{const info=SHAPE_INFO[s.userData.type];V+=info.verts;E+=info.edges;F+=info.faces;});
+    if(V===0)return{E,V,F,r:'—'};
+    const euler=V-E+F;
+    const rig=E>=3*V-6?'Rigid ✓':'Flexible';
+    return{E,V,F,r:rig};
+}
+
+function updateInfo(){
+    const {E,V,F,r}=calcRigidity();
+    document.getElementById('inf-shapes').textContent=shapes.length;
+    document.getElementById('inf-verts').textContent=V;
+    document.getElementById('inf-edges').textContent=E;
+    document.getElementById('inf-faces').textContent=F;
+    document.getElementById('inf-rig').textContent=r;
+    document.getElementById('rigidity-score').textContent=shapes.length?`Maxwell: ${E}≥${3*V-6}?`:'' ;
+}
+
+function resize(){
+    const w=mount.offsetWidth,h=mount.offsetHeight;
+    renderer.setSize(w,h);
+    camera.aspect=w/h;camera.updateProjectionMatrix();
+}
+resize();window.addEventListener('resize',resize);
+
+// Rotate selected shapes gently
+let t=0;
+function animate(){
+    requestAnimationFrame(animate);
+    t+=0.005;
+    shapes.forEach((s,i)=>{s.rotation.y=t*0.3+i*0.5;s.rotation.x=Math.sin(t*0.2+i)*0.15;});
+    controls.update();
+    renderer.render(scene,camera);
+}
+animate();
+
+// Seed with K4 tetrahedron
+window.addShape('tet',null);
+updateInfo();
+</script>
 </body>
 </html>

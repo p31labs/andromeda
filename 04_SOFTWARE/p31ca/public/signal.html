@@ -1,227 +1,530 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#0f1115">
-    <title>SIGNAL | Stim Room & Mini Games | P31 Labs</title>
-    <meta name="description" content="Stim room calibrated for the 12-spoon budget. WebGL fluid, cellular sand mandala, spoon physics jar. 4 mini games. Zero dopamine traps. Kapp et al. Ayres Sensory Integration.">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: { sans: ['"Atkinson Hyperlegible"', 'sans-serif'], mono: ['"JetBrains Mono"', 'monospace'] },
-                    colors: { void: '#0f1115', surface: '#161920', coral: '#cc6247', teal: '#25897d', cyan: '#4db8a8', cloud: '#d8d6d0', butter: '#cda852', lavender: '#8b7cc9', phosphorus: '#3ba372' }
-                }
-            }
-        }
-    </script>
+    <title>SIGNAL | Stim Room | P31 Labs</title>
+    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
-        body { background-color: #0f1115; color: #d8d6d0; background-image: linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px); background-size: 40px 40px; }
-        .matte-panel { background-color: #161920; border: 1px solid rgba(255,255,255,0.04); }
+        *{margin:0;padding:0;box-sizing:border-box}
+        :root{--void:#0f1115;--surface:#161920;--teal:#25897d;--cyan:#4db8a8;--cloud:#d8d6d0;--butter:#cda852;--lav:#8b7cc9;--coral:#cc6247;--phos:#3ba372}
+        body{background:var(--void);color:var(--cloud);font-family:'Atkinson Hyperlegible',sans-serif;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+        header{padding:10px 20px;background:rgba(15,17,21,0.95);border-bottom:1px solid rgba(255,255,255,0.05);display:flex;justify-content:space-between;align-items:center;flex-shrink:0;z-index:10}
+        .logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--cloud);font-weight:700;font-size:14px}
+        a.back{color:rgba(216,214,208,0.4);font-family:'JetBrains Mono',monospace;font-size:12px;text-decoration:none}
+        a.back:hover{color:var(--cloud)}
+        .spoon-bar{display:flex;align-items:center;gap:6px;padding:8px 20px;background:rgba(22,25,32,0.9);border-bottom:1px solid rgba(255,255,255,0.04);flex-shrink:0}
+        .spoon-label{font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(216,214,208,0.3);margin-right:4px}
+        .spoon{width:18px;height:18px;border-radius:50%;background:var(--butter);opacity:0.85;cursor:pointer;transition:all 0.3s;flex-shrink:0}
+        .spoon.spent{background:transparent;border:1px solid rgba(205,168,82,0.2);opacity:0.4}
+        .spoon:hover{transform:scale(1.2)}
+        .stim-tabs{display:flex;border-bottom:1px solid rgba(255,255,255,0.06);background:rgba(22,25,32,0.5);flex-shrink:0}
+        .stim-tab{padding:10px 16px;font-family:'JetBrains Mono',monospace;font-size:11px;cursor:pointer;color:rgba(216,214,208,0.4);border-bottom:2px solid transparent;transition:all 0.2s;white-space:nowrap}
+        .stim-tab.active{color:var(--teal);border-bottom-color:var(--teal)}
+        .stim-panel{display:none;flex:1;position:relative;overflow:hidden}
+        .stim-panel.active{display:flex;flex-direction:column}
+        canvas{display:block;flex:1;cursor:crosshair}
+        .panel-controls{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);display:flex;gap:8px;z-index:5}
+        button.ctrl{padding:6px 14px;border:1px solid rgba(255,255,255,0.1);background:rgba(22,25,32,0.85);color:rgba(216,214,208,0.6);border-radius:20px;font-family:'JetBrains Mono',monospace;font-size:11px;cursor:pointer;transition:all 0.2s}
+        button.ctrl:hover{border-color:var(--teal);color:var(--teal)}
+        button.ctrl.on{border-color:var(--teal);color:var(--teal);background:rgba(37,137,125,0.15)}
+        #bubble-grid{flex:1;display:grid;overflow:auto;padding:16px;gap:4px;justify-content:center;align-content:start}
+        .bubble{width:32px;height:32px;border-radius:50%;cursor:pointer;transition:transform 0.1s,opacity 0.3s;display:flex;align-items:center;justify-content:center;font-size:10px;user-select:none}
+        .bubble.intact{background:rgba(77,184,168,0.25);border:1px solid rgba(77,184,168,0.4)}
+        .bubble.popped{background:transparent;border:1px dashed rgba(255,255,255,0.08);opacity:0.3}
+        .bubble.intact:hover{transform:scale(1.1)}
+        .games-grid{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:20px;overflow-y:auto}
+        .game-card{background:var(--surface);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:20px;display:flex;flex-direction:column;align-items:center;gap:12px;cursor:pointer;transition:all 0.2s}
+        .game-card:hover{border-color:var(--teal)}
+        .game-icon{font-size:36px}
+        .game-name{font-weight:700;font-size:15px}
+        .game-desc{font-size:12px;color:rgba(216,214,208,0.5);text-align:center;line-height:1.5}
+        .game-cost{font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(216,214,208,0.3)}
+        #game-overlay{display:none;position:fixed;inset:0;background:rgba(15,17,21,0.95);z-index:200;flex-direction:column;align-items:center;justify-content:center;gap:16px}
+        #game-overlay.show{display:flex}
+        #game-canvas{border:1px solid rgba(255,255,255,0.08);border-radius:8px;max-width:90vw;max-height:70vh}
+        .game-exit{padding:8px 20px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:rgba(216,214,208,0.5);border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:12px;cursor:pointer}
+        .game-exit:hover{color:var(--coral);border-color:var(--coral)}
+        .fiber-canvas{cursor:none}
     </style>
 </head>
-<body class="min-h-screen flex flex-col text-cloud/90">
+<body>
+<header>
+    <a href="/" class="logo">
+        <svg width="22" height="22" viewBox="0 0 512 512"><rect width="512" height="512" rx="112" fill="#25897d"/><circle cx="390" cy="120" r="48" fill="#cc6247"/><text x="256" y="340" font-family="system-ui" font-weight="900" font-size="220" fill="#d8d6d0" text-anchor="middle">P31</text><rect x="156" y="380" width="200" height="16" rx="8" fill="#cda852"/></svg>
+        SIGNAL
+    </a>
+    <div style="display:flex;align-items:center;gap:12px">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(216,214,208,0.3)" id="rest-mode-label"></span>
+        <a href="/" class="back">← Hub</a>
+    </div>
+</header>
 
-    <header class="w-full border-b border-white/5 bg-void/95 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-            <a href="/" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
-                <svg width="28" height="28" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
-                    <rect width="512" height="512" rx="112" fill="#25897d"/>
-                    <circle cx="390" cy="120" r="48" fill="#cc6247"/>
-                    <text x="256" y="340" font-family="system-ui" font-weight="900" font-size="220" fill="#d8d6d0" text-anchor="middle">P31</text>
-                    <rect x="156" y="380" width="200" height="16" rx="8" fill="#cda852"/>
-                </svg>
-                <span class="font-bold text-lg tracking-tight">P31 Labs</span>
-            </a>
-            <nav class="flex gap-4 font-mono text-sm">
-                <a href="/" class="text-cloud/50 hover:text-cloud transition-colors flex items-center gap-2">← Hub</a>
-            </nav>
+<div class="spoon-bar">
+    <span class="spoon-label">Spoons</span>
+    <div id="spoon-jars"></div>
+</div>
+
+<div class="stim-tabs">
+    <div class="stim-tab active" data-stim="sand">🏜 Sand</div>
+    <div class="stim-tab" data-stim="bubbles">🫧 Bubbles</div>
+    <div class="stim-tab" data-stim="fiber">✨ Fiber</div>
+    <div class="stim-tab" data-stim="games">🎮 Games</div>
+</div>
+
+<div class="stim-panel active" id="panel-sand">
+    <canvas id="sand-canvas"></canvas>
+    <div class="panel-controls">
+        <button class="ctrl on" data-mat="sand" onclick="setSandMat('sand',this)">Sand</button>
+        <button class="ctrl" data-mat="water" onclick="setSandMat('water',this)">Water</button>
+        <button class="ctrl" data-mat="neon" onclick="setSandMat('neon',this)">Neon</button>
+        <button class="ctrl" onclick="clearSand()">Clear</button>
+    </div>
+</div>
+
+<div class="stim-panel" id="panel-bubbles">
+    <div id="bubble-grid"></div>
+</div>
+
+<div class="stim-panel" id="panel-fiber">
+    <canvas id="fiber-canvas" class="fiber-canvas"></canvas>
+    <div class="panel-controls">
+        <button class="ctrl" onclick="clearFiber()">Clear Trails</button>
+    </div>
+</div>
+
+<div class="stim-panel" id="panel-games">
+    <div class="games-grid">
+        <div class="game-card" onclick="launchGame('sierpinski')">
+            <div class="game-icon">🔺</div>
+            <div class="game-name">Sierpinski Builder</div>
+            <div class="game-desc">Tap any triangle to subdivide. Fractal grows recursively. No win condition.</div>
+            <div class="game-cost">1 spoon</div>
         </div>
-    </header>
-
-    <main class="flex-grow max-w-7xl mx-auto px-6 py-12 w-full flex flex-col gap-12">
-
-        <header class="border-b border-white/10 pb-8">
-            <div class="flex items-center gap-4 mb-4">
-                <div class="text-3xl bg-surface w-12 h-12 rounded flex items-center justify-center border border-white/5">🎮</div>
-                <div class="px-2 py-0.5 rounded border text-[10px] font-mono tracking-wide text-butter/80 border-butter/20 bg-butter/5">🔵 PROTOTYPE</div>
-            </div>
-            <h1 class="text-4xl md:text-5xl font-bold mb-4 text-cloud">SIGNAL</h1>
-            <p class="text-xl text-butter/70 font-mono">Stim Room & Mini Games — Sensory Regulation Architecture</p>
-        </header>
-
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
-            <div class="lg:col-span-2 flex flex-col gap-8">
-
-                <section class="matte-panel rounded-lg p-8">
-                    <h2 class="text-2xl font-bold mb-4 flex items-center gap-3">
-                        <span class="text-butter">01.</span> Sensory Integration Framework
-                    </h2>
-                    <p class="text-cloud/70 leading-relaxed mb-6">
-                        SIGNAL is rooted in Ayres Sensory Integration theory and Kapp et al.'s (2019) research demonstrating that stimming is a primary mechanism for autistic self-regulation — not a behavior to be extinguished. Crucially, all activities adhere to Csikszentmihalyi's <strong class="text-cloud/85">Autotelic Flow</strong> — they have no external goals, no high scores, and no failure states. The value is strictly in the doing of the activity.
-                    </p>
-                    <div class="space-y-3">
-                        <div class="bg-void border border-butter/10 rounded p-5">
-                            <p class="text-butter/80 font-mono text-xs mb-2 uppercase tracking-widest">Anti-Pattern Audit</p>
-                            <ul class="text-cloud/70 text-sm space-y-1">
-                                <li>→ No "cookie clicker" infinite dopamine loops — these exploit ADHD hyperfocus and cause burnout.</li>
-                                <li>→ No high-contrast or strobing visuals — low-albedo palette only (pastel/neon on deep black).</li>
-                                <li>→ The UI must not turn red, flash, or look "angry" when spoons reach zero.</li>
-                                <li>→ No auto-playing audio. Every sound is user-initiated.</li>
-                            </ul>
-                        </div>
-                    </div>
-                </section>
-
-                <section class="matte-panel rounded-lg p-8">
-                    <h2 class="text-2xl font-bold mb-4 flex items-center gap-3">
-                        <span class="text-butter">02.</span> Stim Bank
-                    </h2>
-                    <p class="text-sm text-cloud/50 mb-6 font-mono">All stim tools cost 0 spoons. Always available regardless of spoon state.</p>
-                    <div class="space-y-6">
-                        <div>
-                            <h3 class="font-bold text-cloud mb-2 flex items-center gap-2">
-                                <span class="text-xs font-mono px-2 py-0.5 rounded bg-butter/10 border border-butter/20 text-butter">WebGL FBO</span>
-                                Viscoelastic Haptic Fluid
-                            </h3>
-                            <p class="text-cloud/65 text-sm leading-relaxed">Navier-Stokes fluid via FBO (Framebuffer Object) ping-ponging — the only technique that achieves 60fps on a Snapdragon 680 for fluid simulation. Swirling the fluid rapidly triggers <code class="font-mono text-xs text-butter/60">navigator.vibrate([30, 20, 30, 20])</code> — a low rolling haptic rumble matching visual intensity. Batched to avoid Android OS thermal throttling.</p>
-                        </div>
-                        <div class="border-t border-white/5 pt-6">
-                            <h3 class="font-bold text-cloud mb-2 flex items-center gap-2">
-                                <span class="text-xs font-mono px-2 py-0.5 rounded bg-butter/10 border border-butter/20 text-butter">Uint8Array · Web Worker</span>
-                                Infinite Cellular Sand
-                            </h3>
-                            <p class="text-cloud/65 text-sm leading-relaxed">1D typed array cellular automaton executing in a Web Worker — keeping the UI thread completely unblocked. Features vertically looping boundaries so the falling sand never fills the screen, enabling infinite continuous stimming. Materials: sand, water, neon gas. The grid loops; the stim never ends.</p>
-                        </div>
-                        <div class="border-t border-white/5 pt-6">
-                            <h3 class="font-bold text-cloud mb-2 flex items-center gap-2">
-                                <span class="text-xs font-mono px-2 py-0.5 rounded bg-butter/10 border border-butter/20 text-butter">Canvas 2D</span>
-                                Fiber Optics Drag + Bubble Wrap
-                            </h3>
-                            <p class="text-cloud/65 text-sm leading-relaxed">Touch-drag glowing strands that follow with elastic lag. Bubble wrap: infinite grid, each tap pops one with a soft audio + <code class="font-mono text-xs text-butter/60">navigator.vibrate([30])</code>. Bubbles regenerate slowly. No counter, no progress bar — just the infinite satisfying grid.</p>
-                        </div>
-                    </div>
-                </section>
-
-                <section class="matte-panel rounded-lg p-8">
-                    <h2 class="text-2xl font-bold mb-4 flex items-center gap-3">
-                        <span class="text-butter">03.</span> The Spoon Reservoir
-                    </h2>
-                    <p class="text-cloud/70 leading-relaxed mb-4">
-                        Miserandino's Spoon Theory visualized as a physics object. 12 glowing orbs in a glass jar, rendered with Rapier.js. Dragging one out shatters it into sand particles — satisfying, irreversible, non-judgmental. When the jar empties, the interface shifts to a soft ambient "Rest Mode" palette. No warnings. No red. No "Game Over." The UI neutrally reflects the user's current energy state and the stim bank remains fully available.
-                    </p>
-                </section>
-
-                <section class="matte-panel rounded-lg p-8">
-                    <h2 class="text-2xl font-bold mb-4 flex items-center gap-3">
-                        <span class="text-butter">04.</span> Mini Games
-                    </h2>
-                    <p class="text-sm text-cloud/50 mb-6 font-mono">Each costs 1 spoon. Short sessions with defined endpoints.</p>
-                    <div class="space-y-4">
-                        <div class="bg-void border border-white/5 rounded p-4">
-                            <div class="font-bold text-cloud text-sm mb-1">Kenosis Hop</div>
-                            <p class="text-cloud/60 text-sm">7-platform 2D platformer — each platform is one NANO-07 mesh node. If a node is "offline" (randomly selected), reroute. No timer. Win by landing on all active nodes.</p>
-                        </div>
-                        <div class="bg-void border border-white/5 rounded p-4">
-                            <div class="font-bold text-cloud text-sm mb-1">Element Match</div>
-                            <p class="text-cloud/60 text-sm">Flip cards to match element symbols to 3D atom models. Uses BONDING's elements.ts. 8-card grid. No timer, no move count.</p>
-                        </div>
-                        <div class="bg-void border border-white/5 rounded p-4">
-                            <div class="font-bold text-cloud text-sm mb-1">Resonance Catch</div>
-                            <p class="text-cloud/60 text-sm">Balls bounce at 863 Hz timing intervals. Catch with palm-press. The ³¹P Larmor tone plays on catch. Slow-moving, no fail state for missing.</p>
-                        </div>
-                        <div class="bg-void border border-white/5 rounded p-4">
-                            <div class="font-bold text-cloud text-sm mb-1">Sierpinski Builder</div>
-                            <p class="text-cloud/60 text-sm">Tap any triangle to subdivide. Fractal grows recursively. No win condition. No depth limit displayed. Exit any time.</p>
-                        </div>
-                    </div>
-                </section>
-
-            </div>
-
-            <div class="flex flex-col gap-6">
-
-                <div class="matte-panel rounded-lg p-6">
-                    <h3 class="text-sm font-mono text-cloud/40 uppercase tracking-widest mb-4">Status</h3>
-                    <div class="p-4 bg-void border border-butter/20 rounded text-center mb-3">
-                        <div class="text-2xl mb-2">🎮</div>
-                        <div class="font-bold text-sm text-butter mb-1">In Design</div>
-                        <div class="text-xs text-cloud/40 font-mono">Post-research phase</div>
-                    </div>
-                    <p class="text-xs text-cloud/40 font-mono leading-relaxed">Dynamic devicePixelRatio scaling if FPS drops below 55. Haptic batched to prevent Android suppression.</p>
-                </div>
-
-                <div class="matte-panel rounded-lg p-6">
-                    <h3 class="text-sm font-mono text-cloud/40 uppercase tracking-widest mb-4">Spoon Costs</h3>
-                    <div class="space-y-3 text-sm font-mono">
-                        <div class="flex justify-between"><span class="text-cloud/50">Fluid Pool</span><span class="text-butter/70">0</span></div>
-                        <div class="flex justify-between"><span class="text-cloud/50">Sand Mandala</span><span class="text-butter/70">0</span></div>
-                        <div class="flex justify-between"><span class="text-cloud/50">Bubble Wrap</span><span class="text-butter/70">0</span></div>
-                        <div class="flex justify-between"><span class="text-cloud/50">Fiber Optics</span><span class="text-butter/70">0</span></div>
-                        <div class="border-t border-white/5 pt-3 flex justify-between"><span class="text-cloud/50">Kenosis Hop</span><span class="text-cloud/40">1</span></div>
-                        <div class="flex justify-between"><span class="text-cloud/50">Element Match</span><span class="text-cloud/40">1</span></div>
-                        <div class="flex justify-between"><span class="text-cloud/50">Resonance Catch</span><span class="text-cloud/40">1</span></div>
-                        <div class="flex justify-between"><span class="text-cloud/50">Sierpinski Builder</span><span class="text-cloud/40">1</span></div>
-                    </div>
-                </div>
-
-                <div class="matte-panel rounded-lg p-6">
-                    <h3 class="text-sm font-mono text-cloud/40 uppercase tracking-widest mb-4">Technical Stack</h3>
-                    <div class="space-y-3 text-sm">
-                        <div><div class="text-cloud font-bold mb-1">Fluids</div><div class="text-cloud/60">Raw WebGL Shaders — FBO ping-pong, GPU-only</div></div>
-                        <div><div class="text-cloud font-bold mb-1">Sand Automaton</div><div class="text-cloud/60">Uint8Array in Web Worker → Canvas ImageData</div></div>
-                        <div><div class="text-cloud font-bold mb-1">Spoon Physics</div><div class="text-cloud/60">Rapier.js (WASM) — physical orb objects</div></div>
-                        <div><div class="text-cloud font-bold mb-1">Haptics</div><div class="text-cloud/60">navigator.vibrate() — batched pattern arrays</div></div>
-                        <div><div class="text-cloud font-bold mb-1">Perf Guard</div><div class="text-cloud/60">Dynamic devicePixelRatio scaling below 55fps</div></div>
-                    </div>
-                </div>
-
-                <div class="matte-panel rounded-lg p-6">
-                    <h3 class="text-sm font-mono text-cloud/40 uppercase tracking-widest mb-4">Launch</h3>
-                    <a href="fluid.html" class="block p-5 bg-void border border-butter/30 rounded hover:border-butter/70 transition-colors group text-center mb-3">
-                        <div class="text-2xl mb-2">🎮</div>
-                        <div class="font-bold text-sm text-butter mb-1 group-hover:text-butter transition-colors">Kinetic Fluid Stim</div>
-                        <div class="text-xs text-cloud/40 font-mono">Particle field + haptics · Canvas 2D</div>
-                    </a>
-                    <a href="switches.html" class="block p-5 bg-void border border-butter/30 rounded hover:border-butter/70 transition-colors group text-center">
-                        <div class="text-2xl mb-2">⌨️</div>
-                        <div class="font-bold text-sm text-butter mb-1 group-hover:text-butter transition-colors">Keyboard Builder & Typing Sim</div>
-                        <div class="text-xs text-cloud/40 font-mono">Builder · Typing · Games · Web Audio</div>
-                    </a>
-                </div>
-
-                <div class="matte-panel rounded-lg p-6">
-                    <h3 class="text-sm font-mono text-cloud/40 uppercase tracking-widest mb-4">Ecosystem Ties</h3>
-                    <a href="attractor.html" class="block p-4 bg-void border border-white/5 rounded hover:border-butter/30 transition-colors group mb-3">
-                        <div class="font-bold text-sm text-cloud group-hover:text-butter transition-colors mb-1">NANO-07 Attractor</div>
-                        <div class="text-xs text-cloud/50">Kenosis Hop's 7 platforms = the 7 mesh nodes.</div>
-                    </a>
-                    <a href="bonding.html" class="block p-4 bg-void border border-white/5 rounded hover:border-teal/30 transition-colors group mb-3">
-                        <div class="font-bold text-sm text-cloud group-hover:text-teal transition-colors mb-1">BONDING</div>
-                        <div class="text-xs text-cloud/50">Element Match uses elements.ts + sound.ts.</div>
-                    </a>
-                    <a href="axiom.html" class="block p-4 bg-void border border-white/5 rounded hover:border-phosphorus/30 transition-colors group">
-                        <div class="font-bold text-sm text-cloud group-hover:text-phosphorus transition-colors mb-1">AXIOM</div>
-                        <div class="text-xs text-cloud/50">Resonance Catch uses the same 863 Hz Larmor frequency.</div>
-                    </a>
-                </div>
-
-            </div>
+        <div class="game-card" onclick="launchGame('resonance')">
+            <div class="game-icon">🔵</div>
+            <div class="game-name">Resonance Catch</div>
+            <div class="game-desc">Balls bounce at 863 Hz intervals. Tap to catch. The ³¹P Larmor tone plays on catch.</div>
+            <div class="game-cost">1 spoon</div>
         </div>
-    </main>
-
-    <footer class="border-t border-white/5 mt-12 py-6">
-        <div class="max-w-7xl mx-auto px-6 flex justify-between items-center text-xs text-cloud/30 font-mono">
-            <span>P31 Labs · 501(c)(3) · EIN 42-1888158</span>
-            <a href="/" class="hover:text-cloud/60 transition-colors">← Back to Hub</a>
+        <div class="game-card" onclick="launchGame('element')">
+            <div class="game-icon">⚛️</div>
+            <div class="game-name">Element Match</div>
+            <div class="game-desc">Flip cards to match element symbols. No timer. No move count.</div>
+            <div class="game-cost">1 spoon</div>
         </div>
-    </footer>
+        <div class="game-card" onclick="launchGame('kenosis')">
+            <div class="game-icon">🕹️</div>
+            <div class="game-name">Kenosis Hop</div>
+            <div class="game-desc">7-node platformer. Jump across mesh nodes. Reroute around offline nodes.</div>
+            <div class="game-cost">1 spoon</div>
+        </div>
+    </div>
+</div>
 
+<div id="game-overlay">
+    <canvas id="game-canvas" width="600" height="400"></canvas>
+    <div style="display:flex;gap:12px;align-items:center">
+        <span id="game-status" style="font-family:'JetBrains Mono',monospace;font-size:12px;color:rgba(216,214,208,0.5)"></span>
+        <button class="game-exit" onclick="closeGame()">Exit Game</button>
+    </div>
+</div>
+
+<script>
+// ---- SPOON SYSTEM ----
+let spoons = parseInt(localStorage.getItem('signal-spoons')||'12');
+function renderSpoons() {
+    const jar = document.getElementById('spoon-jars');
+    jar.innerHTML = '';
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;gap:5px;flex-wrap:wrap';
+    for (let i=0;i<12;i++) {
+        const sp = document.createElement('div');
+        sp.className = 'spoon'+(i>=spoons?' spent':'');
+        sp.title = 'Click to spend a spoon';
+        sp.onclick = () => { if(spoons>0){spoons--;localStorage.setItem('signal-spoons',spoons);renderSpoons();checkRestMode();} };
+        row.appendChild(sp);
+    }
+    jar.appendChild(row);
+}
+function checkRestMode() {
+    document.getElementById('rest-mode-label').textContent = spoons === 0 ? 'Rest Mode · Stims always free' : '';
+}
+function spendSpoon() { if(spoons>0){spoons--;localStorage.setItem('signal-spoons',spoons);renderSpoons();checkRestMode();} }
+function refillSpoons() { spoons=12;localStorage.setItem('signal-spoons',12);renderSpoons();checkRestMode(); }
+renderSpoons();
+
+// ---- TABS ----
+document.querySelectorAll('.stim-tab').forEach(tab => tab.addEventListener('click', () => {
+    document.querySelectorAll('.stim-tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.stim-panel').forEach(p=>p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('panel-'+tab.dataset.stim).classList.add('active');
+    if (tab.dataset.stim==='bubbles') initBubbles();
+    if (tab.dataset.stim==='sand') initSand();
+    if (tab.dataset.stim==='fiber') initFiber();
+}));
+
+// ---- SAND ----
+const sandCanvas = document.getElementById('sand-canvas');
+const sandCtx = sandCanvas.getContext('2d');
+const GRID_W = 200, GRID_H = 150;
+let sandGrid = new Uint8Array(GRID_W*GRID_H);
+let sandMat = 1; // 1=sand, 2=water, 3=neon
+let sandRunning = false;
+const MAT_COLORS = {0:'#0f1115',1:'#cda852',2:'#4db8a8',3:'#8b7cc9'};
+
+function initSand() {
+    sandCanvas.width = sandCanvas.offsetWidth;
+    sandCanvas.height = sandCanvas.offsetHeight;
+    if (sandRunning) return;
+    sandRunning = true;
+    runSand();
+}
+
+function setSandMat(m, btn) {
+    const matMap = {sand:1,water:2,neon:3};
+    sandMat = matMap[m]||1;
+    document.querySelectorAll('[data-mat]').forEach(b=>b.classList.remove('on'));
+    btn.classList.add('on');
+}
+function clearSand() { sandGrid.fill(0); }
+
+function runSand() {
+    // Simple cellular automaton
+    const next = new Uint8Array(sandGrid);
+    for (let y=GRID_H-2;y>=0;y--) {
+        for (let x=0;x<GRID_W;x++) {
+            const i=y*GRID_W+x;
+            const mat=sandGrid[i];
+            if (!mat) continue;
+            const below=i+GRID_W;
+            if (sandGrid[below]===0) { next[i]=0;next[below]=mat; }
+            else if (mat===2||mat===3) {
+                const lr=Math.random()<0.5?-1:1;
+                if (x+lr>=0&&x+lr<GRID_W&&sandGrid[below+lr]===0){next[i]=0;next[below+lr]=mat;}
+                else if (x-lr>=0&&x-lr<GRID_W&&sandGrid[below-lr]===0){next[i]=0;next[below-lr]=mat;}
+            } else {
+                const lr=Math.random()<0.5?-1:1;
+                if (x+lr>=0&&x+lr<GRID_W&&sandGrid[below+lr]===0){next[i]=0;next[below+lr]=mat;}
+            }
+        }
+    }
+    // Vertical loop for infinite sand
+    for (let x=0;x<GRID_W;x++) {
+        if (next[(GRID_H-1)*GRID_W+x]) { next[(GRID_H-1)*GRID_W+x]=0; next[x]||(next[x]=0); }
+    }
+    sandGrid = next;
+    drawSand();
+    setTimeout(runSand, 30);
+}
+
+function drawSand() {
+    const cw=sandCanvas.offsetWidth, ch=sandCanvas.offsetHeight;
+    if (cw!==sandCanvas.width||ch!==sandCanvas.height){sandCanvas.width=cw;sandCanvas.height=ch;}
+    const cellW=cw/GRID_W, cellH=ch/GRID_H;
+    sandCtx.fillStyle='#0f1115';sandCtx.fillRect(0,0,cw,ch);
+    for (let i=0;i<GRID_W*GRID_H;i++) {
+        if (!sandGrid[i]) continue;
+        const x=i%GRID_W, y=Math.floor(i/GRID_W);
+        sandCtx.fillStyle=MAT_COLORS[sandGrid[i]];
+        sandCtx.fillRect(x*cellW,y*cellH,cellW+0.5,cellH+0.5);
+    }
+}
+
+// Sand drawing
+let sandDrawing=false, lastSandX=-1, lastSandY=-1;
+function posSand(e) {
+    const r=sandCanvas.getBoundingClientRect();
+    const cx=(e.clientX||e.touches[0].clientX)-r.left;
+    const cy=(e.clientY||e.touches[0].clientY)-r.top;
+    return {gx:Math.floor(cx/r.width*GRID_W),gy:Math.floor(cy/r.height*GRID_H)};
+}
+function placeSand(gx,gy) {
+    const r=3;
+    for(let dx=-r;dx<=r;dx++)for(let dy=-r;dy<=r;dy++){
+        const nx=gx+dx,ny=gy+dy;
+        if(nx>=0&&nx<GRID_W&&ny>=0&&ny<GRID_H&&Math.random()<0.6){sandGrid[ny*GRID_W+nx]=sandMat;}
+    }
+}
+sandCanvas.addEventListener('mousedown',e=>{sandDrawing=true;const {gx,gy}=posSand(e);placeSand(gx,gy);});
+sandCanvas.addEventListener('mousemove',e=>{if(!sandDrawing)return;const {gx,gy}=posSand(e);placeSand(gx,gy);});
+sandCanvas.addEventListener('mouseup',()=>sandDrawing=false);
+sandCanvas.addEventListener('touchstart',e=>{e.preventDefault();sandDrawing=true;const {gx,gy}=posSand(e);placeSand(gx,gy);},{passive:false});
+sandCanvas.addEventListener('touchmove',e=>{e.preventDefault();const {gx,gy}=posSand(e);placeSand(gx,gy);},{passive:false});
+sandCanvas.addEventListener('touchend',()=>sandDrawing=false);
+initSand();
+
+// ---- BUBBLES ----
+const BUBBLE_COLS = 16, BUBBLE_ROWS = 12;
+let bubbles = [];
+function initBubbles() {
+    const grid = document.getElementById('bubble-grid');
+    grid.style.gridTemplateColumns = `repeat(${BUBBLE_COLS},36px)`;
+    grid.innerHTML = '';
+    bubbles = [];
+    for (let i=0;i<BUBBLE_COLS*BUBBLE_ROWS;i++) {
+        const b = document.createElement('div');
+        b.className = 'bubble intact';
+        b.dataset.idx = i;
+        b.onclick = () => popBubble(i, b);
+        grid.appendChild(b);
+        bubbles.push({el:b,popped:false,regenTimer:0});
+    }
+}
+function popBubble(i, el) {
+    if (bubbles[i].popped) return;
+    bubbles[i].popped = true;
+    el.className = 'bubble popped';
+    el.textContent = '';
+    // Regen after random delay
+    const delay = 5000+Math.random()*15000;
+    setTimeout(()=>{if(bubbles[i]){bubbles[i].popped=false;el.className='bubble intact';}},delay);
+}
+
+// ---- FIBER OPTICS ----
+const fiberCanvas = document.getElementById('fiber-canvas');
+const fiberCtx = fiberCanvas.getContext('2d');
+let strands = [];
+let mouseX=0, mouseY=0;
+
+function initFiber() {
+    fiberCanvas.width = fiberCanvas.offsetWidth;
+    fiberCanvas.height = fiberCanvas.offsetHeight;
+    if (strands.length===0) runFiber();
+}
+function clearFiber() { strands=[]; fiberCtx.clearRect(0,0,fiberCanvas.width,fiberCanvas.height); }
+
+fiberCanvas.addEventListener('mousemove',e=>{
+    const r=fiberCanvas.getBoundingClientRect();
+    mouseX=e.clientX-r.left; mouseY=e.clientY-r.top;
+    strands.push({x:mouseX,y:mouseY,vx:(Math.random()-0.5)*3,vy:(Math.random()-0.5)*3-1,life:1,hue:Math.random()*60+160});
+    if(strands.length>800) strands.shift();
+});
+fiberCanvas.addEventListener('touchmove',e=>{
+    e.preventDefault();
+    const r=fiberCanvas.getBoundingClientRect();
+    const t=e.touches[0];
+    mouseX=t.clientX-r.left;mouseY=t.clientY-r.top;
+    strands.push({x:mouseX,y:mouseY,vx:(Math.random()-0.5)*3,vy:(Math.random()-0.5)*3-1,life:1,hue:Math.random()*60+160});
+    if(strands.length>800) strands.shift();
+},{passive:false});
+
+function runFiber() {
+    if (!fiberCanvas.parentElement.classList.contains('active')) { requestAnimationFrame(runFiber); return; }
+    fiberCtx.fillStyle='rgba(15,17,21,0.08)';
+    fiberCtx.fillRect(0,0,fiberCanvas.width,fiberCanvas.height);
+    strands = strands.filter(s=>s.life>0);
+    strands.forEach(s=>{
+        s.x+=s.vx;s.y+=s.vy;s.vy+=0.05;s.vx*=0.98;s.life-=0.012;
+        fiberCtx.globalAlpha=s.life;
+        fiberCtx.fillStyle=`hsl(${s.hue},80%,60%)`;
+        fiberCtx.beginPath();fiberCtx.arc(s.x,s.y,1.5,0,Math.PI*2);fiberCtx.fill();
+    });
+    fiberCtx.globalAlpha=1;
+    requestAnimationFrame(runFiber);
+}
+
+// ---- GAMES ----
+let gameRunning=false, gameAF=null, currentGame=null;
+const gameCanvas=document.getElementById('game-canvas');
+const gameCtx=gameCanvas.getContext('2d');
+let audioCtx=null;
+
+function initGameAudio(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();}
+function playTone(freq,dur=0.2){
+    if(!audioCtx)return;
+    const o=audioCtx.createOscillator(),g=audioCtx.createGain();
+    o.frequency.value=freq;o.type='sine';g.gain.value=0.2;
+    g.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+dur);
+    o.connect(g);g.connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+dur);
+}
+
+function launchGame(name) {
+    initGameAudio();
+    spendSpoon();
+    document.getElementById('game-overlay').classList.add('show');
+    gameRunning=true;
+    currentGame=name;
+    if(name==='sierpinski') runSierpinski();
+    else if(name==='resonance') runResonanceCatch();
+    else if(name==='element') runElementMatch();
+    else if(name==='kenosis') runKenosisHop();
+}
+
+function closeGame() {
+    gameRunning=false;
+    cancelAnimationFrame(gameAF);
+    document.getElementById('game-overlay').classList.remove('show');
+    gameCtx.clearRect(0,0,gameCanvas.width,gameCanvas.height);
+    currentGame=null;
+}
+
+// SIERPINSKI
+let triList=[];
+function runSierpinski(){
+    gameCanvas.width=600;gameCanvas.height=400;
+    gameCtx.fillStyle='#0f1115';gameCtx.fillRect(0,0,600,400);
+    triList=[{ax:300,ay:20,bx:560,by:380,cx:40,cy:380,depth:0}];
+    drawSierpinski();
+    gameCanvas.onclick=e=>{
+        if(currentGame!=='sierpinski')return;
+        const r=gameCanvas.getBoundingClientRect();
+        const mx=(e.clientX-r.left)*(600/r.width),my=(e.clientY-r.top)*(400/r.height);
+        triList.forEach((t,i)=>{
+            if(pointInTri(mx,my,t)&&t.depth<6){
+                playTone(440+t.depth*110,0.15);
+                const sub=subdivide(t);
+                triList.splice(i,1,...sub);
+                gameCtx.fillStyle='#0f1115';gameCtx.fillRect(0,0,600,400);
+                triList.forEach(tr=>drawTri(tr));
+            }
+        });
+    };
+}
+function pointInTri(px,py,t){
+    const d1=sign(px,py,t.ax,t.ay,t.bx,t.by),d2=sign(px,py,t.bx,t.by,t.cx,t.cy),d3=sign(px,py,t.cx,t.cy,t.ax,t.ay);
+    return !((d1<0||d2<0||d3<0)&&(d1>0||d2>0||d3>0));
+}
+function sign(x1,y1,x2,y2,x3,y3){return(x1-x3)*(y2-y3)-(x2-x3)*(y1-y3);}
+function subdivide(t){
+    const mx1=(t.ax+t.bx)/2,my1=(t.ay+t.by)/2;
+    const mx2=(t.bx+t.cx)/2,my2=(t.by+t.cy)/2;
+    const mx3=(t.ax+t.cx)/2,my3=(t.ay+t.cy)/2;
+    const d=t.depth+1;
+    return [{ax:t.ax,ay:t.ay,bx:mx1,by:my1,cx:mx3,cy:my3,depth:d},
+            {ax:mx1,ay:my1,bx:t.bx,by:t.by,cx:mx2,cy:my2,depth:d},
+            {ax:mx3,ay:my3,bx:mx2,by:my2,cx:t.cx,cy:t.cy,depth:d}];
+}
+function drawTri(t){
+    const colors=['#3ba372','#25897d','#4db8a8','#cda852','#cc6247','#8b7cc9','#d8d6d0'];
+    gameCtx.strokeStyle=colors[t.depth%colors.length];gameCtx.lineWidth=1;
+    gameCtx.beginPath();gameCtx.moveTo(t.ax,t.ay);gameCtx.lineTo(t.bx,t.by);gameCtx.lineTo(t.cx,t.cy);gameCtx.closePath();gameCtx.stroke();
+}
+function drawSierpinski(){triList.forEach(t=>drawTri(t));}
+
+// RESONANCE CATCH
+let balls=[];
+function runResonanceCatch(){
+    gameCanvas.width=600;gameCanvas.height=400;
+    document.getElementById('game-status').textContent='Tap balls to catch · 863 Hz on catch';
+    for(let i=0;i<5;i++) spawnBall();
+    function loop(){
+        if(!gameRunning||currentGame!=='resonance')return;
+        gameCtx.fillStyle='rgba(15,17,21,0.15)';gameCtx.fillRect(0,0,600,400);
+        balls.forEach(b=>{b.x+=b.vx;b.y+=b.vy;if(b.x<b.r||b.x>600-b.r)b.vx*=-1;if(b.y<b.r)b.vy*=-1;if(b.y>400-b.r){b.vy=-(2+Math.random()*2);b.y=400-b.r;}
+            gameCtx.beginPath();gameCtx.arc(b.x,b.y,b.r,0,Math.PI*2);gameCtx.fillStyle=b.color+'44';gameCtx.fill();
+            gameCtx.strokeStyle=b.color;gameCtx.lineWidth=1.5;gameCtx.stroke();
+        });
+        gameAF=requestAnimationFrame(loop);
+    }
+    loop();
+    gameCanvas.onclick=e=>{
+        const r=gameCanvas.getBoundingClientRect();
+        const mx=(e.clientX-r.left)*(600/r.width),my=(e.clientY-r.top)*(400/r.height);
+        balls=balls.filter(b=>{
+            if(Math.hypot(mx-b.x,my-b.y)<b.r+8){playTone(863,0.4);setTimeout(spawnBall,1000);return false;}
+            return true;
+        });
+    };
+}
+function spawnBall(){balls.push({x:100+Math.random()*400,y:50+Math.random()*200,vx:(Math.random()-0.5)*4,vy:1+Math.random()*2,r:18+Math.random()*14,color:['#4db8a8','#8b7cc9','#cda852','#3ba372'][Math.floor(Math.random()*4)]});}
+
+// ELEMENT MATCH
+const ELEMENTS=['H','He','Li','Be','C','N','O','F'];
+let cards=[],flipped=[],matched=[];
+function runElementMatch(){
+    gameCanvas.width=600;gameCanvas.height=400;
+    document.getElementById('game-status').textContent='Match element symbols · No timer · No pressure';
+    const pairs=[...ELEMENTS,...ELEMENTS].sort(()=>Math.random()-0.5);
+    cards=pairs.map((e,i)=>({sym:e,x:40+(i%8)*68,y:100+Math.floor(i/8)*110,face:false,matched:false}));
+    drawCards();
+    gameCanvas.onclick=e=>{
+        if(!gameRunning||currentGame!=='element')return;
+        const r=gameCanvas.getBoundingClientRect();
+        const mx=(e.clientX-r.left)*(600/r.width),my=(e.clientY-r.top)*(400/r.height);
+        cards.forEach((c,i)=>{
+            if(c.matched||flipped.includes(i))return;
+            if(mx>c.x&&mx<c.x+56&&my>c.y&&my<c.y+80){
+                c.face=true;flipped.push(i);drawCards();
+                if(flipped.length===2){
+                    const [a,b]=flipped;
+                    if(cards[a].sym===cards[b].sym){
+                        playTone(660,0.3);cards[a].matched=cards[b].matched=true;matched.push(a,b);flipped=[];
+                        if(matched.length===16)document.getElementById('game-status').textContent='✓ All matched · Well done';
+                    } else {
+                        setTimeout(()=>{cards[a].face=cards[b].face=false;flipped=[];drawCards();},900);
+                    }
+                    drawCards();
+                }
+            }
+        });
+    };
+}
+function drawCards(){
+    gameCtx.fillStyle='#0f1115';gameCtx.fillRect(0,0,600,400);
+    gameCtx.font='bold 15px "JetBrains Mono"';gameCtx.textAlign='center';gameCtx.textBaseline='middle';
+    cards.forEach(c=>{
+        if(c.matched){gameCtx.fillStyle='rgba(59,163,114,0.2)';gameCtx.strokeStyle='#3ba372';}
+        else if(c.face){gameCtx.fillStyle='rgba(37,137,125,0.2)';gameCtx.strokeStyle='#25897d';}
+        else{gameCtx.fillStyle='rgba(22,25,32,0.9)';gameCtx.strokeStyle='rgba(255,255,255,0.1)';}
+        gameCtx.lineWidth=1.5;
+        gameCtx.beginPath();gameCtx.roundRect(c.x,c.y,56,80,6);gameCtx.fill();gameCtx.stroke();
+        if(c.face||c.matched){gameCtx.fillStyle=c.matched?'#3ba372':'#4db8a8';gameCtx.fillText(c.sym,c.x+28,c.y+40);}
+        else{gameCtx.fillStyle='rgba(216,214,208,0.1)';gameCtx.fillText('?',c.x+28,c.y+40);}
+    });
+}
+
+// KENOSIS HOP
+let player={x:50,y:340,vx:0,vy:0},platforms=[],offlineNodes=[],onGround=false,keys={};
+function runKenosisHop(){
+    gameCanvas.width=600;gameCanvas.height=400;
+    offlineNodes=[Math.floor(Math.random()*7)];
+    platforms=[{x:0,y:380,w:100},{x:120,y:320,w:80},{x:240,y:280,w:80},{x:360,y:240,w:80},{x:480,y:200,w:80},{x:380,y:150,w:80},{x:260,y:110,w:80}];
+    player={x:50,y:340,vx:0,vy:0};
+    document.getElementById('game-status').textContent='← → to move · Space to jump · Avoid offline nodes';
+    document.addEventListener('keydown',kd);document.addEventListener('keyup',ku);
+    function hoopLoop(){
+        if(!gameRunning||currentGame!=='kenosis')return;
+        if(keys['ArrowLeft']||keys['a'])player.vx=-3;
+        else if(keys['ArrowRight']||keys['d'])player.vx=3;
+        else player.vx*=0.8;
+        player.vy+=0.4;player.x+=player.vx;player.y+=player.vy;
+        onGround=false;
+        platforms.forEach((p,i)=>{
+            if(player.x+12>p.x&&player.x-12<p.x+p.w&&player.y+12>p.y&&player.y+12<p.y+20&&player.vy>0){
+                player.y=p.y-12;player.vy=0;onGround=true;
+                if(offlineNodes.includes(i)){player.x=50;player.y=340;player.vy=0;}
+            }
+        });
+        if(player.x<12)player.x=12;if(player.x>588)player.x=588;
+        if(player.y>420){player.x=50;player.y=340;player.vy=0;}
+        drawHop();
+        gameAF=requestAnimationFrame(hoopLoop);
+    }
+    hoopLoop();
+}
+function kd(e){keys[e.key]=true;if((e.key===' '||e.key==='ArrowUp'||e.key==='w')&&onGround){player.vy=-10;playTone(330,0.1);}}
+function ku(e){delete keys[e.key];}
+function drawHop(){
+    gameCtx.fillStyle='#0f1115';gameCtx.fillRect(0,0,600,400);
+    const nodeColors=['#3ba372','#4db8a8','#25897d','#cda852','#cc6247','#8b7cc9','#d8d6d0'];
+    platforms.forEach((p,i)=>{
+        const offline=offlineNodes.includes(i);
+        gameCtx.fillStyle=offline?'rgba(204,98,71,0.3)':'rgba(37,137,125,0.3)';
+        gameCtx.strokeStyle=offline?'#cc6247':nodeColors[i%nodeColors.length];
+        gameCtx.lineWidth=1.5;
+        gameCtx.beginPath();gameCtx.roundRect(p.x,p.y,p.w,16,4);gameCtx.fill();gameCtx.stroke();
+        gameCtx.fillStyle=offline?'#cc6247':nodeColors[i%nodeColors.length];
+        gameCtx.font='9px "JetBrains Mono"';gameCtx.textAlign='center';
+        gameCtx.fillText(offline?'OFFLINE':'NODE-'+i,p.x+p.w/2,p.y+10);
+    });
+    gameCtx.fillStyle='#4db8a8';
+    gameCtx.beginPath();gameCtx.arc(player.x,player.y,12,0,Math.PI*2);gameCtx.fill();
+}
+
+window.addEventListener('beforeunload',()=>{document.removeEventListener('keydown',kd);document.removeEventListener('keyup',ku);});
+</script>
 </body>
 </html>
