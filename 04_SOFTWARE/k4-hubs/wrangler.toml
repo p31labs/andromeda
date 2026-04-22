@@ -3,15 +3,31 @@
 # Requires: same account bindings to k4-cage and k4-personal.
 
 name = "k4-hubs"
-main = "src/index.js"
-compatibility_date = "2025-10-01"
+main = "src/index.ts"
+compatibility_date = "2026-03-01"
 
 [vars]
 ENVIRONMENT = "production"
-WORKER_VERSION = "1.0.0"
+WORKER_VERSION = "2.0.0"
 PERSONAL_MESH_URL = "https://k4-personal.trimtab-signal.workers.dev"
 
 # Same-account Worker-to-Worker bindings.
+[[services]]
+binding = "OPERATOR_STATE"
+service = "k4-personal"
+
+[[services]]
+binding = "SIGNAL_PROCESSOR"
+service = "k4-personal"
+
+[[services]]
+binding = "CONTEXT_ENGINE"
+service = "k4-personal"
+
+[[services]]
+binding = "SHIELD_ENGINE"
+service = "k4-personal"
+
 [[services]]
 binding = "K4_CAGE"
 service = "k4-cage"
