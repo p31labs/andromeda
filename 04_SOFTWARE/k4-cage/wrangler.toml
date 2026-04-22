@@ -1,27 +1,39 @@
-# k4-cage — CWP-30 unified (K4Topology + FamilyMeshRoom DOs, optional D1 telemetry chain)
+# k4-cage — CWP-30 unified (K4Topology + FamilyMeshRoom DOs, D1 telemetry)
 # P31 Labs, Inc. | EIN 42-1888158
 #
-# DO bindings are commented out — deployed in KV-only mode (see migration conflict w/ v2-hibernation tag).
-# To re-enable DOs: resolve migration tag conflict in Cloudflare dashboard, then uncomment below
-# and run: npx wrangler d1 create p31-telemetry → paste database_id, run schema.sql, deploy.
+# Free-plan note: Cloudflare free tier requires new_sqlite_classes (code 10097).
+# K4Topology + FamilyMeshRoom use ctx.storage.get/put — fully compatible.
 #
-# First-time: npx wrangler secret put ADMIN_TOKEN
-# Optional:   npx wrangler secret put INTERNAL_FANOUT_TOKEN
-#             [vars] MESH_ROOM_IDS = "family-mesh" (comma-separated room names for ping fan-out)
+# DO migration history (as-applied in Cloudflare):
+#   v2-hibernation — created FamilyMeshRoom (already exists)
+#   v3-production  — creates K4Topology (does not yet exist)
+#
+# First-time D1 setup (optional telemetry chain):
+#   npx wrangler d1 create p31-telemetry  → paste database_id below
+#   npx wrangler d1 execute p31-telemetry --remote --file=../unified-k4-cage/schema.sql
+#   npx wrangler secret put ADMIN_TOKEN
+# Optional:
+#   npx wrangler secret put INTERNAL_FANOUT_TOKEN
 
 name = "k4-cage"
 main = "src/index.js"
 compatibility_date = "2025-10-01"
 
-# [durable_objects]
-# bindings = [
-#   { name = "K4_TOPOLOGY", class_name = "K4Topology" },
-#   { name = "FAMILY_MESH_ROOM", class_name = "FamilyMeshRoom" },
-# ]
+[durable_objects]
+bindings = [
+  { name = "K4_TOPOLOGY",      class_name = "K4Topology" },
+  { name = "FAMILY_MESH_ROOM", class_name = "FamilyMeshRoom" },
+]
 
-# [[migrations]]
-# tag = "unified-k4-v1"
-# new_sqlite_classes = ["K4Topology", "FamilyMeshRoom"]
+# FamilyMeshRoom was created under this tag — already applied, wrangler skips it.
+[[migrations]]
+tag = "v2-hibernation"
+new_sqlite_classes = ["FamilyMeshRoom"]
+
+# K4Topology was never created — this migration adds it.
+[[migrations]]
+tag = "v3-production"
+new_sqlite_classes = ["K4Topology"]
 
 # [[d1_databases]]
 # binding = "DB"
