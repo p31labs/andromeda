@@ -28,7 +28,7 @@ WCD-12 establishes the governance migration vector for the P31 Labs ecosystem. T
 
 - P31_Genesis_Whitepaper_v1.md (Section VI, Section IX)
 - Tetrahedron Protocol v2 (Zenodo DOI 10.5281/zenodo.18627420)
-- Hack Club Bank fiscal sponsorship (EIN: 81-2908499)
+- P31 Labs, Inc. (EIN: 42-1888158) — incorporated April 3, 2026; supersedes HCB fiscal sponsorship
 
 ## Execution Mode
 
