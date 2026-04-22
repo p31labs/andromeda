@@ -512,6 +512,9 @@ export class FamilyMeshRoom extends DurableObject {
  * @param {string} method
  */
 async function topologyFetch(request, env, path, method) {
+  if (!env.K4_TOPOLOGY) {
+    return new Response(JSON.stringify({ error: 'DO not configured', code: 'NO_DO' }), { status: 503 });
+  }
   const id = env.K4_TOPOLOGY.idFromName('family');
   const stub = env.K4_TOPOLOGY.get(id);
   const internalPath = path.replace(/^\/api/, '') || '/';
@@ -557,6 +560,14 @@ export default {
       }
 
       if (path === '/api/mesh' && method === 'GET') {
+        if (!env.K4_TOPOLOGY) {
+          return json({
+            vertices: VERTICES.map(v => ({ id: v, name: VERTEX_NAMES[v] })),
+            edges: EDGES.map(([a, b]) => ({ source: a, target: b })),
+            topology: 'K4',
+            timestamp: new Date().toISOString(),
+          });
+        }
         const r = await topologyFetch(request, env, '/api/mesh', 'GET');
         return new Response(r.body, { status: r.status, headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' } });
       }
@@ -589,6 +600,15 @@ export default {
 
       const pingMatch = path.match(/^\/api\/ping\/(\w+)\/(\w+)$/);
       if (pingMatch && method === 'POST') {
+        if (!env.K4_TOPOLOGY) {
+          const [from, to] = pingMatch.slice(1);
+          const edgeKey = [from, to].sort().join('-');
+          const edgeCountKey = `edge:${edgeKey}:count`;
+          const currentCount = await env.K4_MESH.get(edgeCountKey);
+          const newCount = (parseInt(currentCount || '0', 10) + 1).toString();
+          await env.K4_MESH.put(edgeCountKey, newCount);
+          return json({ ok: true, from, to, love: parseInt(newCount, 10), ts: new Date().toISOString() });
+        }
         const r = await topologyFetch(
           request,
           env,
