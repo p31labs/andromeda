@@ -461,7 +461,7 @@ var index_default = {
     const trace = request.headers.get("X-P31-Trace") || crypto.randomUUID();
     const url = new URL(request.url);
     const path = url.pathname.replace(/\/$/, "") || "/";
-    if (path === "/api/health" && request.method === "GET") {
+    if ((path === "/health" || path === "/api/health") && request.method === "GET") {
       return json({
         ok: true,
         service: "p31-agent-hub",

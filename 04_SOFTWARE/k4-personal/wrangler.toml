@@ -19,6 +19,10 @@ bindings = [{ name = "PERSONAL_AGENT", class_name = "PersonalAgent" }]
 # [[migrations]]
 # tag = "v1"
 # new_sqlite_classes = ["PersonalAgent"]
+# v2-personal-agent is the tag applied in Cloudflare (free plan: new_sqlite_classes required).
+[[migrations]]
+tag = "v2-personal-agent"
+new_sqlite_classes = ["PersonalAgent"]
 
 # D1 for telemetry flush (optional)
 # [[d1_databases]]

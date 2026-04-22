@@ -189,7 +189,7 @@ Parallel to the development of cognitive and software shields, the project requi
 
 Initially, the operator established a traditional corporate entity, a retail gardening business registered in Georgia as The Wonky Sprout LLC (Georgia Control Number 25174472), formed on August 29, 2025. However, this centralized entity structure was deemed highly vulnerable. Consequently, The Wonky Sprout LLC was intentionally subjected to administrative dissolution in February 2026 by purposefully withholding the payment of its annual state registration fees. Financial audits confirmed the entity generated absolutely zero revenue, acquired zero tangible assets, completely lacked a separate business bank account, and legally reported a fair market value of zero in all related legal filings. The brand identity of "The Wonky Sprout" was subsequently philosophically repurposed to describe a conceptual "Neurodivergent Life Operating System (NDL-SOP)" rather than a fiat-generating corporate entity, facilitating a transition from the vulnerable "Fiat Economy" into a protected, internal "Love Economy".
 
-In place of a vulnerable traditional LLC, P31 Labs executed highly specific research to secure a comprehensive Model A fiscal sponsorship, ultimately partnering with Hack Club Bank (HCB). Under this specific legal arrangement, P31 Labs legally operates as a formal program of The Hack Foundation, fully utilizing HCB's established Employer Identification Number (EIN: 81-2908499) to legally accept tax-deductible public donations and securely manage project funds via distributed debit cards.
+In place of a vulnerable traditional LLC, P31 Labs executed highly specific research to secure a comprehensive Model A fiscal sponsorship, ultimately partnering with Hack Club Bank (HCB). Under this specific legal arrangement, P31 Labs operated as a formal program of The Hack Foundation, utilizing HCB's EIN for interim operations. P31 Labs, Inc. was subsequently incorporated as a Georgia Domestic Nonprofit Corporation (April 3, 2026) and assigned its own Employer Identification Number (EIN: 42-1888158), superseding the HCB fiscal sponsorship arrangement.
 
 | Evaluated Fiscal Sponsorship Alternative | Financial Fee Structure | Mission & Technical Alignment | Operational Viability & Deployment Status for P31 Labs |
 |-----------------------------------------|------------------------|-------------------------------|--------------------------------------------------------|
@@ -286,7 +286,7 @@ All six defensive systems described in this paper are implemented and available 
 - Maxwell, J.C. "On the Calculation of the Equilibrium and Stiffness of Frames." *Philosophical Magazine*. (Isostatic Rigidity)
 - Fuchs, C.A. "QBism, the Perimeter of Quantum Mechanics." (SIC-POVM Geometry)
 - Ollivier, Y. "Ricci Curvature of Metric Spaces." *Journal of Functional Analysis*. (Ricci Network Curvature)
-- Hack Club Bank / The Hack Foundation. Fiscal Sponsorship ID: 81-2908499.
+- P31 Labs, Inc. EIN: 42-1888158 (Georgia Domestic Nonprofit, incorporated April 3, 2026; formerly operated under HCB fiscal sponsorship).
 - *Christyn Johnson vs. William Johnson*. Civil Action No. 2025CV936. Superior Court of Camden County, GA.
 
 ---
