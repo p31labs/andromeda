@@ -15,6 +15,10 @@ binding = "AI"
 [durable_objects]
 bindings = [{ name = "PERSONAL_AGENT", class_name = "PersonalAgent" }]
 
+# Migration v1 already applied
+# [[migrations]]
+# tag = "v1"
+# new_sqlite_classes = ["PersonalAgent"]
 # v2-personal-agent is the tag applied in Cloudflare (free plan: new_sqlite_classes required).
 [[migrations]]
 tag = "v2-personal-agent"

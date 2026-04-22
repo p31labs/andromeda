@@ -1,179 +1,423 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#0f1115">
-    <title>TETHER | Spatial Executive Function Map | P31 Labs</title>
-    <meta name="description" content="Task management mapped as physical planets orbiting a sun. Replaces linear to-do lists (PDA trigger) with physics-based spatial grouping based on cognitive energy gravity.">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: { sans: ['"Atkinson Hyperlegible"', 'sans-serif'], mono: ['"JetBrains Mono"', 'monospace'] },
-                    colors: { void: '#0f1115', surface: '#161920', coral: '#cc6247', teal: '#25897d', cyan: '#4db8a8', cloud: '#d8d6d0', butter: '#cda852', lavender: '#8b7cc9', phosphorus: '#3ba372' }
-                }
-            }
-        }
-    </script>
+    <title>TETHER | Spatial Task Map | P31 Labs</title>
+    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
     <style>
-        body { background-color: #0f1115; color: #d8d6d0; background-image: linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px); background-size: 40px 40px; }
-        .matte-panel { background-color: #161920; border: 1px solid rgba(255,255,255,0.04); }
+        *{margin:0;padding:0;box-sizing:border-box}
+        :root{--void:#0f1115;--surface:#161920;--coral:#cc6247;--teal:#25897d;--cyan:#4db8a8;--cloud:#d8d6d0;--butter:#cda852;--lav:#8b7cc9;--phos:#3ba372}
+        body{background:var(--void);color:var(--cloud);font-family:'Atkinson Hyperlegible',sans-serif;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+        header{padding:12px 20px;background:rgba(15,17,21,0.95);border-bottom:1px solid rgba(255,255,255,0.05);display:flex;justify-content:space-between;align-items:center;z-index:100;flex-shrink:0}
+        .logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--cloud);font-weight:700}
+        .toolbar{display:flex;gap:8px;align-items:center}
+        button{background:rgba(22,25,32,0.9);border:1px solid rgba(255,255,255,0.1);color:var(--cloud);padding:6px 14px;border-radius:6px;cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:12px;transition:all 0.2s}
+        button:hover{border-color:var(--butter);color:var(--butter)}
+        button.active{border-color:var(--teal);color:var(--teal);background:rgba(37,137,125,0.1)}
+        #canvas{flex:1;cursor:crosshair;display:block}
+        #modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:200;align-items:center;justify-content:center}
+        #modal.show{display:flex}
+        .modal-box{background:var(--surface);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:28px;width:360px;max-width:90vw}
+        .modal-box h3{font-size:16px;margin-bottom:16px;color:var(--butter)}
+        .modal-box input,textarea{width:100%;background:var(--void);border:1px solid rgba(255,255,255,0.1);color:var(--cloud);padding:10px;border-radius:6px;font-family:inherit;font-size:14px;outline:none;margin-bottom:12px}
+        .modal-box input:focus,textarea:focus{border-color:var(--teal)}
+        .spoon-row{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+        .spoon-btn{width:32px;height:32px;border-radius:50%;background:var(--void);border:1px solid rgba(255,255,255,0.15);color:var(--cloud);cursor:pointer;font-size:12px;transition:all 0.15s;display:flex;align-items:center;justify-content:center}
+        .spoon-btn.sel{background:var(--butter);border-color:var(--butter);color:var(--void)}
+        .modal-actions{display:flex;gap:8px;justify-content:flex-end}
+        .btn-cancel{background:transparent;border-color:rgba(255,255,255,0.1)}
+        .btn-add{background:rgba(37,137,125,0.2);border-color:var(--teal);color:var(--teal)}
+        .btn-add:hover{background:rgba(37,137,125,0.35)}
+        #hud{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:rgba(22,25,32,0.9);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:8px 16px;font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(216,214,208,0.4);pointer-events:none;z-index:50}
+        #tooltip{position:fixed;display:none;background:rgba(22,25,32,0.95);border:1px solid rgba(255,255,255,0.08);border-radius:6px;padding:8px 12px;font-size:11px;font-family:'JetBrains Mono',monospace;pointer-events:none;z-index:150;max-width:200px}
+        a.back{color:rgba(216,214,208,0.4);font-family:'JetBrains Mono',monospace;font-size:12px;text-decoration:none}
+        a.back:hover{color:var(--cloud)}
     </style>
 </head>
-<body class="min-h-screen flex flex-col text-cloud/90">
+<body>
+<header>
+    <a href="/" class="logo">
+        <svg width="24" height="24" viewBox="0 0 512 512"><rect width="512" height="512" rx="112" fill="#25897d"/><circle cx="390" cy="120" r="48" fill="#cc6247"/><text x="256" y="340" font-family="system-ui" font-weight="900" font-size="220" fill="#d8d6d0" text-anchor="middle">P31</text><rect x="156" y="380" width="200" height="16" rx="8" fill="#cda852"/></svg>
+        TETHER
+    </a>
+    <div class="toolbar">
+        <span id="task-count" style="font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(216,214,208,0.4)">0 tasks</span>
+        <button id="btn-add">+ Add Task</button>
+        <button id="btn-clear-done">Clear Done</button>
+        <a href="/" class="back">← Hub</a>
+    </div>
+</header>
+<canvas id="canvas"></canvas>
+<div id="hud">Click canvas to add task · Drag to move · Long-press to complete</div>
+<div id="tooltip"></div>
 
-    <header class="w-full border-b border-white/5 bg-void/95 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-            <a href="/" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
-                <svg width="28" height="28" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
-                    <rect width="512" height="512" rx="112" fill="#25897d"/>
-                    <circle cx="390" cy="120" r="48" fill="#cc6247"/>
-                    <text x="256" y="340" font-family="system-ui" font-weight="900" font-size="220" fill="#d8d6d0" text-anchor="middle">P31</text>
-                    <rect x="156" y="380" width="200" height="16" rx="8" fill="#cda852"/>
-                </svg>
-                <span class="font-bold text-lg tracking-tight">P31 Labs</span>
-            </a>
-            <nav class="flex gap-4 font-mono text-sm">
-                <a href="/" class="text-cloud/50 hover:text-cloud transition-colors flex items-center gap-2">← Hub</a>
-            </nav>
+<div id="modal">
+    <div class="modal-box">
+        <h3>🪐 New Task</h3>
+        <input id="task-text" type="text" placeholder="What needs doing?" maxlength="60">
+        <div style="font-size:11px;color:rgba(216,214,208,0.4);font-family:'JetBrains Mono',monospace;margin-bottom:8px">Cognitive weight (spoons):</div>
+        <div class="spoon-row" id="spoon-row"></div>
+        <div class="modal-actions">
+            <button class="btn-cancel" id="btn-cancel">Cancel</button>
+            <button class="btn-add" id="btn-confirm">Launch Orbit</button>
         </div>
-    </header>
+    </div>
+</div>
 
-    <main class="flex-grow max-w-7xl mx-auto px-6 py-12 w-full flex flex-col gap-12">
+<script>
+const { Engine, Render, Runner, Bodies, Body, Events, Mouse, MouseConstraint, World, Constraint } = Matter;
 
-        <header class="border-b border-white/10 pb-8">
-            <div class="flex items-center gap-4 mb-4">
-                <div class="text-3xl bg-surface w-12 h-12 rounded flex items-center justify-center border border-white/5">🪐</div>
-                <div class="px-2 py-0.5 rounded border text-[10px] font-mono tracking-wide text-butter/80 border-butter/20 bg-butter/5">🔵 PROTOTYPE</div>
-            </div>
-            <h1 class="text-4xl md:text-5xl font-bold mb-4 text-cloud">TETHER</h1>
-            <p class="text-xl text-butter/70 font-mono">Spatial Executive Function Map — Anti-PDA Architecture</p>
-        </header>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const modal = document.getElementById('modal');
+const taskInput = document.getElementById('task-text');
+const tooltip = document.getElementById('tooltip');
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+let W, H, sunX, sunY;
+let tasks = [];
+let spoons = 6;
+let selectedSpoons = 6;
+let pressTimer = null;
+let pressTarget = null;
+let pendingClick = null;
 
-            <div class="lg:col-span-2 flex flex-col gap-8">
+function resize() {
+    W = canvas.width = canvas.offsetWidth;
+    H = canvas.height = canvas.offsetHeight;
+    sunX = W / 2;
+    sunY = H / 2;
+}
+resize();
+window.addEventListener('resize', resize);
 
-                <section class="matte-panel rounded-lg p-8">
-                    <h2 class="text-2xl font-bold mb-4 flex items-center gap-3">
-                        <span class="text-butter">01.</span> The Problem with To-Do Lists
-                    </h2>
-                    <p class="text-cloud/70 leading-relaxed mb-6">
-                        Linear to-do lists are one of the most common Pathological Demand Avoidance (PDA) triggers in AuDHD adults. The format itself communicates: <em class="text-cloud/85">here is what you must do, in order, and you haven't started yet</em>. For brains with chronic demand avoidance and executive dysfunction, this isn't motivating — it's paralyzing. TETHER eradicates the list format entirely.
-                    </p>
-                    <div class="bg-void border border-butter/10 rounded p-5">
-                        <p class="text-butter/80 font-mono text-xs mb-2 uppercase tracking-widest">The Reframe</p>
-                        <p class="text-cloud/70 text-sm leading-relaxed">Tasks are not items to be checked. They are physical objects with mass — orbiting planets in a gravitational field. Their "orbit" (distance from the sun) represents cognitive energy required, not deadline urgency. A task that requires 3 spoons orbits closer; a task that would take all 12 orbits at the edge. You interact with them spatially: touch, drag, fling, cluster. The relationship to the work changes when it has physical weight.</p>
-                    </div>
-                </section>
+// Spoon picker
+const spoonRow = document.getElementById('spoon-row');
+for (let i = 1; i <= 12; i++) {
+    const b = document.createElement('button');
+    b.className = 'spoon-btn' + (i === 6 ? ' sel' : '');
+    b.textContent = i;
+    b.dataset.v = i;
+    b.onclick = () => {
+        document.querySelectorAll('.spoon-btn').forEach(x => x.classList.remove('sel'));
+        b.classList.add('sel');
+        selectedSpoons = i;
+    };
+    spoonRow.appendChild(b);
+}
 
-                <section class="matte-panel rounded-lg p-8">
-                    <h2 class="text-2xl font-bold mb-4 flex items-center gap-3">
-                        <span class="text-butter">02.</span> Features
-                    </h2>
-                    <div class="space-y-6">
-                        <div>
-                            <h3 class="font-bold text-cloud mb-2 flex items-center gap-2">
-                                <span class="text-xs font-mono px-2 py-0.5 rounded bg-butter/10 border border-butter/20 text-butter">Matter.js</span>
-                                Physics Task Canvas
-                            </h3>
-                            <p class="text-cloud/65 text-sm leading-relaxed">Tasks are circular bodies with real 2D physics — mass, velocity, collision. A central glowing body (the "sun") exerts gravitational pull. Tasks placed close to the center drift inward; tasks flung outward drift to the periphery. Drag and toss them. Cluster related tasks by collision. The spatial arrangement is the organization system.</p>
-                        </div>
-                        <div class="border-t border-white/5 pt-6">
-                            <h3 class="font-bold text-cloud mb-2 flex items-center gap-2">
-                                <span class="text-xs font-mono px-2 py-0.5 rounded bg-butter/10 border border-butter/20 text-butter">Gravity Slider</span>
-                                Energy-Based Sorting
-                            </h3>
-                            <p class="text-cloud/65 text-sm leading-relaxed">When adding a task, one input: "How heavy does this feel? (1–12 spoons)." That's it. No due date required. No priority ranking. No project category. The spoon estimate sets the orbital radius. The task floats into its natural position. Deadlines can be added as optional metadata but don't affect the physics.</p>
-                        </div>
-                        <div class="border-t border-white/5 pt-6">
-                            <h3 class="font-bold text-cloud mb-2 flex items-center gap-2">
-                                <span class="text-xs font-mono px-2 py-0.5 rounded bg-butter/10 border border-butter/20 text-butter">IndexedDB</span>
-                                Persistent Orbital State
-                            </h3>
-                            <p class="text-cloud/65 text-sm leading-relaxed">The entire canvas state — position, velocity, task text, spoon weight — is saved to IndexedDB on every frame pause. Reopen the app and your solar system is exactly where you left it. No accounts. No sync. No cloud. Local first, always.</p>
-                        </div>
-                        <div class="border-t border-white/5 pt-6">
-                            <h3 class="font-bold text-cloud mb-2 flex items-center gap-2">
-                                <span class="text-xs font-mono px-2 py-0.5 rounded bg-butter/10 border border-butter/20 text-butter">Completion</span>
-                                Task Dissolution
-                            </h3>
-                            <p class="text-cloud/65 text-sm leading-relaxed">Completed tasks don't get a checkmark. They dissolve — a slow particle implosion that pulls the task toward the sun and disperses it. No streak counter. No "you did it!" banner. The solar system simply has one less orbital body. The completion is spatial and physical.</p>
-                        </div>
-                    </div>
-                </section>
+function openModal(x, y) {
+    pendingClick = {x, y};
+    taskInput.value = '';
+    modal.classList.add('show');
+    setTimeout(() => taskInput.focus(), 50);
+}
 
-            </div>
+document.getElementById('btn-add').onclick = () => openModal(sunX + (Math.random()-0.5)*200, sunY + (Math.random()-0.5)*200);
+document.getElementById('btn-cancel').onclick = () => modal.classList.remove('show');
+document.getElementById('btn-confirm').onclick = addTask;
+taskInput.addEventListener('keydown', e => { if (e.key === 'Enter') addTask(); if (e.key === 'Escape') modal.classList.remove('show'); });
 
-            <div class="flex flex-col gap-6">
+const COLORS = {1:'#3ba372',2:'#3ba372',3:'#4db8a8',4:'#4db8a8',5:'#cda852',6:'#cda852',7:'#cc6247',8:'#cc6247',9:'#cc6247',10:'#8b7cc9',11:'#8b7cc9',12:'#8b7cc9'};
 
-                <div class="matte-panel rounded-lg p-6">
-                    <h3 class="text-sm font-mono text-cloud/40 uppercase tracking-widest mb-4">Status</h3>
-                    <div class="p-4 bg-void border border-butter/20 rounded text-center">
-                        <div class="text-2xl mb-2">🪐</div>
-                        <div class="font-bold text-sm text-butter mb-1">In Design</div>
-                        <div class="text-xs text-cloud/40 font-mono">Post-research phase</div>
-                    </div>
-                </div>
+function addTask() {
+    const text = taskInput.value.trim();
+    if (!text) return;
+    modal.classList.remove('show');
 
-                <div class="matte-panel rounded-lg p-6">
-                    <h3 class="text-sm font-mono text-cloud/40 uppercase tracking-widest mb-4">Interaction Model</h3>
-                    <div class="space-y-3 text-sm font-mono">
-                        <div class="flex justify-between"><span class="text-cloud/50">Add task</span><span class="text-butter/70">tap + type</span></div>
-                        <div class="flex justify-between"><span class="text-cloud/50">Move task</span><span class="text-butter/70">drag</span></div>
-                        <div class="flex justify-between"><span class="text-cloud/50">Fling task</span><span class="text-butter/70">swipe + release</span></div>
-                        <div class="flex justify-between"><span class="text-cloud/50">Complete task</span><span class="text-butter/70">long press</span></div>
-                        <div class="flex justify-between"><span class="text-cloud/50">Edit task</span><span class="text-butter/70">double tap</span></div>
-                        <div class="border-t border-white/5 pt-3 flex justify-between"><span class="text-cloud/50">Due dates</span><span class="text-cloud/40">optional</span></div>
-                    </div>
-                </div>
+    const angle = Math.random() * Math.PI * 2;
+    const minR = 80, maxR = Math.min(W, H) * 0.42;
+    const r = minR + (selectedSpoons / 12) * (maxR - minR);
+    const x = pendingClick ? pendingClick.x : sunX + Math.cos(angle) * r;
+    const y = pendingClick ? pendingClick.y : sunY + Math.sin(angle) * r;
 
-                <div class="matte-panel rounded-lg p-6">
-                    <h3 class="text-sm font-mono text-cloud/40 uppercase tracking-widest mb-4">Technical Stack</h3>
-                    <div class="space-y-3 text-sm">
-                        <div><div class="text-cloud font-bold mb-1">Physics Engine</div><div class="text-cloud/60">Matter.js — 2D rigid body, gravity, collision</div></div>
-                        <div><div class="text-cloud font-bold mb-1">Renderer</div><div class="text-cloud/60">Canvas 2D — lightweight, mobile-safe</div></div>
-                        <div><div class="text-cloud font-bold mb-1">Storage</div><div class="text-cloud/60">IndexedDB — orbital state persisted on pause</div></div>
-                        <div><div class="text-cloud font-bold mb-1">Input</div><div class="text-cloud/60">Pointer API — touch + mouse unified</div></div>
-                    </div>
-                </div>
+    tasks.push({
+        id: Date.now(),
+        text,
+        spoons: selectedSpoons,
+        x, y,
+        vx: (Math.random()-0.5)*1.5,
+        vy: (Math.random()-0.5)*1.5,
+        radius: 22 + selectedSpoons * 2,
+        color: COLORS[selectedSpoons],
+        done: false,
+        dissolve: 0,
+        age: 0
+    });
+    saveTasks();
+    updateCount();
+    pendingClick = null;
+}
 
-                <div class="matte-panel rounded-lg p-6">
-                    <h3 class="text-sm font-mono text-cloud/40 uppercase tracking-widest mb-4">Launch</h3>
-                    <a href="orbits.html" class="block p-5 bg-void border border-butter/30 rounded hover:border-butter/70 transition-colors group text-center mb-3">
-                        <div class="text-2xl mb-2">🪐</div>
-                        <div class="font-bold text-sm text-butter mb-1 group-hover:text-butter transition-colors">Spatial Task Map</div>
-                        <div class="text-xs text-cloud/40 font-mono">Orbital gravity physics · Matter.js</div>
-                    </a>
-                </div>
+function saveTasks() {
+    localStorage.setItem('tether-tasks', JSON.stringify(tasks.map(t => ({
+        id: t.id, text: t.text, spoons: t.spoons, x: t.x, y: t.y, done: t.done
+    }))));
+}
 
-                <div class="matte-panel rounded-lg p-6">
-                    <h3 class="text-sm font-mono text-cloud/40 uppercase tracking-widest mb-4">Ecosystem Ties</h3>
-                    <a href="signal.html" class="block p-4 bg-void border border-white/5 rounded hover:border-butter/30 transition-colors group mb-3">
-                        <div class="font-bold text-sm text-cloud group-hover:text-butter transition-colors mb-1">SIGNAL</div>
-                        <div class="text-xs text-cloud/50">Spoon Reservoir syncs with TETHER's orbital energy model.</div>
-                    </a>
-                    <a href="attractor.html" class="block p-4 bg-void border border-white/5 rounded hover:border-cyan/30 transition-colors group">
-                        <div class="font-bold text-sm text-cloud group-hover:text-cyan transition-colors mb-1">NANO-07 Attractor</div>
-                        <div class="text-xs text-cloud/50">Orbital topology is the same K₄ metaphor as the mesh.</div>
-                    </a>
-                </div>
+function loadTasks() {
+    try {
+        const saved = JSON.parse(localStorage.getItem('tether-tasks') || '[]');
+        tasks = saved.filter(t => !t.done).map(t => ({
+            ...t,
+            vx: (Math.random()-0.5)*0.5,
+            vy: (Math.random()-0.5)*0.5,
+            radius: 22 + t.spoons * 2,
+            color: COLORS[t.spoons],
+            dissolve: 0,
+            age: 0
+        }));
+    } catch(e) { tasks = []; }
+    updateCount();
+}
 
-            </div>
-        </div>
-    </main>
+function updateCount() {
+    document.getElementById('task-count').textContent = tasks.filter(t => !t.done).length + ' tasks';
+}
 
-    <footer class="border-t border-white/5 mt-12 py-6">
-        <div class="max-w-7xl mx-auto px-6 flex justify-between items-center text-xs text-cloud/30 font-mono">
-            <span>P31 Labs · 501(c)(3) · EIN 42-1888158</span>
-            <a href="/" class="hover:text-cloud/60 transition-colors">← Back to Hub</a>
-        </div>
-    </footer>
+document.getElementById('btn-clear-done').onclick = () => {
+    tasks = tasks.filter(t => !t.done);
+    saveTasks();
+    updateCount();
+};
 
+// Interaction
+let drag = null, dragOffX = 0, dragOffY = 0;
+let lastTap = 0;
+
+canvas.addEventListener('mousedown', e => {
+    const {x, y} = pos(e);
+    const task = hitTest(x, y);
+    if (task) {
+        drag = task;
+        dragOffX = x - task.x;
+        dragOffY = y - task.y;
+        // Long press to complete
+        pressTarget = task;
+        pressTimer = setTimeout(() => completeTask(task), 700);
+    } else {
+        openModal(x, y);
+    }
+});
+
+canvas.addEventListener('mousemove', e => {
+    const {x, y} = pos(e);
+    if (drag) {
+        clearTimeout(pressTimer);
+        pressTimer = null;
+        drag.x = x - dragOffX;
+        drag.y = y - dragOffY;
+        drag.vx = 0; drag.vy = 0;
+    }
+    const task = hitTest(x, y);
+    if (task) {
+        tooltip.style.display = 'block';
+        tooltip.style.left = (e.clientX + 14) + 'px';
+        tooltip.style.top = (e.clientY - 10) + 'px';
+        tooltip.textContent = `${task.text}\n⚡ ${task.spoons} spoons`;
+    } else {
+        tooltip.style.display = 'none';
+    }
+});
+
+canvas.addEventListener('mouseup', () => {
+    clearTimeout(pressTimer);
+    pressTimer = null;
+    drag = null;
+});
+
+function pos(e) {
+    const r = canvas.getBoundingClientRect();
+    return {x: e.clientX - r.left, y: e.clientY - r.top};
+}
+
+function hitTest(x, y) {
+    return tasks.slice().reverse().find(t => !t.done && Math.hypot(x - t.x, y - t.y) < t.radius);
+}
+
+function completeTask(task) {
+    task.done = true;
+    task.dissolve = 1;
+    saveTasks();
+    updateCount();
+}
+
+const G = 0.08;
+const DAMPING = 0.995;
+const BOUNCE = 0.85;
+let sunPulse = 0;
+let particles = [];
+
+function tick() {
+    sunPulse += 0.03;
+
+    tasks.forEach(t => {
+        if (t.done) {
+            t.dissolve -= 0.025;
+            // emit particles on dissolve
+            if (Math.random() < 0.3) {
+                particles.push({
+                    x: t.x + (Math.random()-0.5)*t.radius,
+                    y: t.y + (Math.random()-0.5)*t.radius,
+                    vx: (Math.random()-0.5)*3,
+                    vy: (Math.random()-0.5)*3 - 1,
+                    life: 1,
+                    color: t.color
+                });
+            }
+            return;
+        }
+        t.age += 1;
+
+        // Gravity toward sun
+        const dx = sunX - t.x, dy = sunY - t.y;
+        const dist = Math.max(Math.hypot(dx, dy), 10);
+        const force = G / (dist * 0.01 + 1);
+        t.vx += (dx / dist) * force;
+        t.vy += (dy / dist) * force;
+
+        // Orbital tangential nudge
+        const targetDist = 90 + (t.spoons / 12) * (Math.min(W,H)*0.38 - 90);
+        const orbitError = dist - targetDist;
+        const tx = -dy/dist, ty = dx/dist;
+        t.vx += tx * 0.01 + (dx/dist) * orbitError * -0.002;
+        t.vy += ty * 0.01 + (dy/dist) * orbitError * -0.002;
+
+        // Inter-task repulsion
+        tasks.forEach(other => {
+            if (other === t || other.done) return;
+            const ex = t.x - other.x, ey = t.y - other.y;
+            const ed = Math.hypot(ex, ey);
+            const minD = t.radius + other.radius + 8;
+            if (ed < minD && ed > 0.1) {
+                const f = (minD - ed) / minD * 0.4;
+                t.vx += (ex/ed)*f; t.vy += (ey/ed)*f;
+            }
+        });
+
+        // Wall bounce
+        if (t.x - t.radius < 0) { t.x = t.radius; t.vx *= -BOUNCE; }
+        if (t.x + t.radius > W) { t.x = W - t.radius; t.vx *= -BOUNCE; }
+        if (t.y - t.radius < 0) { t.y = t.radius; t.vy *= -BOUNCE; }
+        if (t.y + t.radius > H) { t.y = H - t.radius; t.vy *= -BOUNCE; }
+
+        t.vx *= DAMPING; t.vy *= DAMPING;
+        if (drag !== t) { t.x += t.vx; t.y += t.vy; }
+    });
+
+    // Update particles
+    particles = particles.filter(p => p.life > 0);
+    particles.forEach(p => {
+        p.x += p.vx; p.y += p.vy;
+        p.vx *= 0.96; p.vy += 0.08;
+        p.life -= 0.035;
+    });
+
+    tasks = tasks.filter(t => t.dissolve > -0.1 || !t.done);
+}
+
+function draw() {
+    ctx.clearRect(0, 0, W, H);
+
+    // Orbit rings
+    tasks.forEach(t => {
+        if (t.done) return;
+        const dist = Math.hypot(t.x - sunX, t.y - sunY);
+        ctx.beginPath();
+        ctx.arc(sunX, sunY, dist, 0, Math.PI*2);
+        ctx.strokeStyle = 'rgba(205,168,82,0.04)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+    });
+
+    // Gravity lines from sun to tasks
+    tasks.forEach(t => {
+        if (t.done) return;
+        ctx.beginPath();
+        ctx.moveTo(sunX, sunY);
+        ctx.lineTo(t.x, t.y);
+        ctx.strokeStyle = 'rgba(205,168,82,0.06)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+    });
+
+    // Sun
+    const pulse = Math.sin(sunPulse) * 0.3 + 0.7;
+    const rOuter = 28 + pulse * 6;
+    const grad = ctx.createRadialGradient(sunX, sunY, 0, sunX, sunY, rOuter);
+    grad.addColorStop(0, 'rgba(205,168,82,0.9)');
+    grad.addColorStop(0.4, 'rgba(205,168,82,0.4)');
+    grad.addColorStop(1, 'rgba(205,168,82,0)');
+    ctx.beginPath(); ctx.arc(sunX, sunY, rOuter, 0, Math.PI*2);
+    ctx.fillStyle = grad; ctx.fill();
+    ctx.beginPath(); ctx.arc(sunX, sunY, 14, 0, Math.PI*2);
+    ctx.fillStyle = '#cda852'; ctx.fill();
+
+    // Particles
+    particles.forEach(p => {
+        ctx.globalAlpha = p.life;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 2, 0, Math.PI*2);
+        ctx.fillStyle = p.color;
+        ctx.fill();
+    });
+    ctx.globalAlpha = 1;
+
+    // Tasks
+    tasks.forEach(t => {
+        if (t.dissolve < 0) return;
+        const alpha = t.done ? Math.max(0, t.dissolve) : 1;
+        ctx.globalAlpha = alpha;
+
+        // Shadow glow
+        ctx.beginPath();
+        ctx.arc(t.x, t.y, t.radius + 6, 0, Math.PI*2);
+        const glow = ctx.createRadialGradient(t.x, t.y, t.radius*0.3, t.x, t.y, t.radius+6);
+        glow.addColorStop(0, t.color + '44');
+        glow.addColorStop(1, t.color + '00');
+        ctx.fillStyle = glow; ctx.fill();
+
+        // Planet body
+        ctx.beginPath();
+        ctx.arc(t.x, t.y, t.radius, 0, Math.PI*2);
+        ctx.fillStyle = '#161920';
+        ctx.fill();
+        ctx.strokeStyle = t.color;
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // Text
+        ctx.fillStyle = t.color;
+        ctx.font = `bold ${Math.min(11, t.radius*0.45)}px 'JetBrains Mono'`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        const words = t.text.split(' ');
+        if (words.length === 1 || t.radius < 30) {
+            const short = t.text.length > 10 ? t.text.slice(0,9)+'…' : t.text;
+            ctx.fillText(short, t.x, t.y);
+        } else {
+            const line1 = words.slice(0, Math.ceil(words.length/2)).join(' ');
+            const line2 = words.slice(Math.ceil(words.length/2)).join(' ');
+            const l1 = line1.length > 10 ? line1.slice(0,9)+'…' : line1;
+            const l2 = line2.length > 10 ? line2.slice(0,9)+'…' : line2;
+            ctx.fillText(l1, t.x, t.y - 6);
+            ctx.fillText(l2, t.x, t.y + 6);
+        }
+
+        ctx.globalAlpha = 1;
+    });
+}
+
+function loop() {
+    tick();
+    draw();
+    requestAnimationFrame(loop);
+}
+
+loadTasks();
+loop();
+</script>
 </body>
 </html>

@@ -1,190 +1,264 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#0f1115">
-    <title>CONTENT FORGE | P31 Labs</title>
-    <meta name="description" content="Editorial Suite — Substack Publishing Pipeline. Seed lifecycle, markdown editor, framework templates, publishing checklist, and auto-save.">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['"Atkinson Hyperlegible"', 'sans-serif'],
-                        mono: ['"JetBrains Mono"', 'monospace'],
-                    },
-                    colors: {
-                        void: '#0f1115', surface: '#161920', coral: '#cc6247',
-                        teal: '#25897d', cyan: '#4db8a8', cloud: '#d8d6d0',
-                        butter: '#cda852', lavender: '#8b7cc9', phosphorus: '#3ba372',
-                    }
-                }
-            }
-        }
-    </script>
+    <title>CONTENT FORGE | Editorial Suite | P31 Labs</title>
+    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
-        body {
-            background-color: #0f1115;
-            color: #d8d6d0;
-            background-image: linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
-            background-size: 40px 40px;
-        }
-        .matte-panel { background-color: #161920; border: 1px solid rgba(255,255,255,0.04); }
+        *{margin:0;padding:0;box-sizing:border-box}
+        :root{--void:#0f1115;--surface:#161920;--teal:#25897d;--cyan:#4db8a8;--cloud:#d8d6d0;--butter:#cda852;--lav:#8b7cc9;--coral:#cc6247;--phos:#3ba372}
+        body{background:var(--void);color:var(--cloud);font-family:'Atkinson Hyperlegible',sans-serif;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+        header{padding:10px 20px;background:rgba(15,17,21,0.95);border-bottom:1px solid rgba(255,255,255,0.05);display:flex;justify-content:space-between;align-items:center;flex-shrink:0;z-index:10}
+        .logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--cloud);font-weight:700;font-size:14px}
+        a.back{color:rgba(216,214,208,0.4);font-family:'JetBrains Mono',monospace;font-size:12px;text-decoration:none}
+        a.back:hover{color:var(--cloud)}
+        .toolbar{display:flex;gap:6px;align-items:center;padding:8px 16px;background:rgba(22,25,32,0.9);border-bottom:1px solid rgba(255,255,255,0.04);flex-shrink:0;flex-wrap:wrap}
+        button{font-family:'JetBrains Mono',monospace;font-size:11px;padding:5px 10px;border-radius:5px;cursor:pointer;border:1px solid rgba(255,255,255,0.1);background:transparent;color:rgba(216,214,208,0.6);transition:all 0.15s}
+        button:hover{border-color:var(--teal);color:var(--teal)}
+        button.active{border-color:var(--teal);color:var(--teal);background:rgba(37,137,125,0.1)}
+        .sep{width:1px;height:20px;background:rgba(255,255,255,0.06);margin:0 4px}
+        select{font-family:'JetBrains Mono',monospace;font-size:11px;background:transparent;border:1px solid rgba(255,255,255,0.1);color:rgba(216,214,208,0.6);padding:4px 8px;border-radius:5px;cursor:pointer}
+        select option{background:#161920}
+        .editor-layout{flex:1;display:grid;grid-template-columns:220px 1fr 1fr;min-height:0}
+        @media(max-width:800px){.editor-layout{grid-template-columns:1fr}.sidebar,.preview-pane{display:none}}
+        .sidebar{background:rgba(15,17,21,0.5);border-right:1px solid rgba(255,255,255,0.05);display:flex;flex-direction:column;overflow-y:auto}
+        .sidebar-section{padding:12px;border-bottom:1px solid rgba(255,255,255,0.04)}
+        .sidebar-title{font-family:'JetBrains Mono',monospace;font-size:9px;color:rgba(216,214,208,0.3);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px}
+        .seed-item{padding:7px 10px;border-radius:5px;cursor:pointer;font-size:12px;color:rgba(216,214,208,0.6);margin-bottom:2px;transition:all 0.15s;display:flex;justify-content:space-between;align-items:center}
+        .seed-item:hover,.seed-item.active{background:rgba(255,255,255,0.04);color:var(--cloud)}
+        .seed-stage{font-family:'JetBrains Mono',monospace;font-size:9px;padding:2px 5px;border-radius:3px}
+        .stage-seed{background:rgba(59,163,114,0.15);color:var(--phos);border:1px solid rgba(59,163,114,0.2)}
+        .stage-draft{background:rgba(205,168,82,0.15);color:var(--butter);border:1px solid rgba(205,168,82,0.2)}
+        .stage-done{background:rgba(139,124,201,0.15);color:var(--lav);border:1px solid rgba(139,124,201,0.2)}
+        .template-btn{display:block;width:100%;text-align:left;padding:7px 10px;font-size:11px;font-family:'JetBrains Mono',monospace;border:none;background:transparent;color:rgba(216,214,208,0.5);cursor:pointer;border-radius:4px;margin-bottom:2px;transition:all 0.15s}
+        .template-btn:hover{background:rgba(255,255,255,0.04);color:var(--cloud)}
+        .editor-pane{display:flex;flex-direction:column;border-right:1px solid rgba(255,255,255,0.05)}
+        .pane-header{padding:8px 14px;background:rgba(22,25,32,0.5);border-bottom:1px solid rgba(255,255,255,0.04);font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(216,214,208,0.3);display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
+        #editor{flex:1;background:var(--void);border:none;color:var(--cloud);padding:20px;font-family:'Atkinson Hyperlegible',sans-serif;font-size:15px;line-height:1.8;resize:none;outline:none;overflow-y:auto}
+        .preview-pane{display:flex;flex-direction:column;overflow-y:auto}
+        #preview{flex:1;padding:20px 28px;overflow-y:auto;line-height:1.75;font-size:15px}
+        #preview h1{font-size:26px;margin-bottom:16px;color:var(--cloud)}
+        #preview h2{font-size:20px;margin:20px 0 10px;color:var(--cloud)}
+        #preview h3{font-size:16px;margin:16px 0 8px;color:var(--cloud)}
+        #preview p{margin-bottom:12px;color:rgba(216,214,208,0.85)}
+        #preview blockquote{border-left:3px solid var(--teal);padding-left:14px;color:rgba(216,214,208,0.6);margin:12px 0}
+        #preview code{font-family:'JetBrains Mono',monospace;font-size:12px;background:rgba(255,255,255,0.05);padding:2px 5px;border-radius:3px;color:var(--cyan)}
+        #preview pre{background:rgba(22,25,32,0.8);border:1px solid rgba(255,255,255,0.06);border-radius:6px;padding:14px;overflow-x:auto;margin:12px 0}
+        #preview pre code{background:none;padding:0}
+        #preview strong{color:var(--cloud)}
+        #preview em{color:rgba(216,214,208,0.7)}
+        #preview ul,#preview ol{padding-left:20px;margin-bottom:12px;color:rgba(216,214,208,0.8)}
+        #preview li{margin-bottom:4px}
+        #preview hr{border:none;border-top:1px solid rgba(255,255,255,0.08);margin:20px 0}
+        .word-count{font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(216,214,208,0.25)}
+        .autosave-badge{font-family:'JetBrains Mono',monospace;font-size:9px;color:rgba(59,163,114,0.5)}
     </style>
 </head>
-<body class="min-h-screen flex flex-col text-cloud/90">
+<body>
+<header>
+    <a href="/" class="logo">
+        <svg width="22" height="22" viewBox="0 0 512 512"><rect width="512" height="512" rx="112" fill="#25897d"/><circle cx="390" cy="120" r="48" fill="#cc6247"/><text x="256" y="340" font-family="system-ui" font-weight="900" font-size="220" fill="#d8d6d0" text-anchor="middle">P31</text><rect x="156" y="380" width="200" height="16" rx="8" fill="#cda852"/></svg>
+        CONTENT FORGE
+    </a>
+    <a href="/" class="back">← Hub</a>
+</header>
 
-    <header class="w-full border-b border-white/5 bg-void/95 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-            <a href="/" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
-                <svg width="28" height="28" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
-                    <rect width="512" height="512" rx="112" fill="#25897d"/>
-                    <circle cx="390" cy="120" r="48" fill="#cc6247"/>
-                    <text x="256" y="340" font-family="system-ui" font-weight="900" font-size="220" fill="#d8d6d0" text-anchor="middle">P31</text>
-                    <rect x="156" y="380" width="200" height="16" rx="8" fill="#cda852"/>
-                </svg>
-                <span class="font-bold text-lg tracking-tight">P31 Labs</span>
-            </a>
-            <nav class="flex gap-4 font-mono text-sm">
-                <a href="/" class="text-cloud/50 hover:text-cloud transition-colors flex items-center gap-2">&larr; Hub</a>
-            </nav>
+<div class="toolbar">
+    <button onclick="insertMd('**','**')"><b>B</b></button>
+    <button onclick="insertMd('*','*')"><i>I</i></button>
+    <button onclick="insertMd('`','`')">Code</button>
+    <button onclick="insertBlock('# ')">H1</button>
+    <button onclick="insertBlock('## ')">H2</button>
+    <button onclick="insertBlock('### ')">H3</button>
+    <div class="sep"></div>
+    <button onclick="insertBlock('> ')">Quote</button>
+    <button onclick="insertBlock('- ')">List</button>
+    <button onclick="insertMd('```\n','\n```')">Block</button>
+    <button onclick="insertBlock('---')">HR</button>
+    <div class="sep"></div>
+    <button onclick="newDoc()">New</button>
+    <button onclick="saveDoc()">Save</button>
+    <button onclick="exportMd()">Export .md</button>
+    <button onclick="copyHtml()">Copy HTML</button>
+    <div class="sep"></div>
+    <select id="doc-select" onchange="loadDoc(this.value)"></select>
+    <span class="autosave-badge" id="autosave-badge">auto-saved</span>
+</div>
+
+<div class="editor-layout">
+    <div class="sidebar">
+        <div class="sidebar-section">
+            <div class="sidebar-title">Content Seeds</div>
+            <div id="seed-list"></div>
+            <button onclick="addSeed()" style="width:100%;margin-top:8px;font-size:10px;padding:5px">+ Add Seed</button>
         </div>
-    </header>
-
-    <main class="flex-grow max-w-7xl mx-auto px-6 py-12 w-full flex flex-col gap-12">
-
-        <header class="border-b border-white/10 pb-8">
-            <div class="flex items-center gap-4 mb-4">
-                <div class="text-3xl bg-surface w-12 h-12 rounded flex items-center justify-center border border-white/5">&#x270D;&#xFE0F;</div>
-                <div class="px-2 py-0.5 rounded border text-[10px] font-mono tracking-wide text-coral/80 border-coral/20 bg-coral/5">&#x1F535; PROTOTYPE</div>
-            </div>
-            <h1 class="text-4xl md:text-5xl font-bold mb-4 text-cloud">CONTENT FORGE</h1>
-            <p class="text-xl text-coral/70 font-mono">Editorial Suite &mdash; Substack Publishing Pipeline</p>
-        </header>
-
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
-            <div class="lg:col-span-2 flex flex-col gap-8">
-
-                <section class="matte-panel rounded-lg p-8">
-                    <h2 class="text-2xl font-bold mb-4 flex items-center gap-3">
-                        <span class="text-coral">01.</span> What It Does
-                    </h2>
-                    <p class="text-cloud/70 leading-relaxed mb-6">
-                        A complete content creation and publishing system. Organize ideas as <strong class="text-cloud/85">seeds</strong>, grow them through the <strong class="text-cloud/85">draft/review/publish lifecycle</strong>, and validate with an 8-point publishing checklist before shipping.
-                    </p>
-                    <div class="space-y-3">
-                        <div class="flex items-start gap-3 bg-void border border-coral/10 rounded p-4">
-                            <span class="text-coral/60 font-mono text-xs mt-0.5">&#9654;</span>
-                            <span class="text-cloud/70 text-sm">Seed lifecycle (seed &rarr; draft &rarr; review &rarr; published)</span>
-                        </div>
-                        <div class="flex items-start gap-3 bg-void border border-coral/10 rounded p-4">
-                            <span class="text-coral/60 font-mono text-xs mt-0.5">&#9654;</span>
-                            <span class="text-cloud/70 text-sm">Markdown editor with toolbar</span>
-                        </div>
-                        <div class="flex items-start gap-3 bg-void border border-coral/10 rounded p-4">
-                            <span class="text-coral/60 font-mono text-xs mt-0.5">&#9654;</span>
-                            <span class="text-cloud/70 text-sm">6 framework templates (Posner / Wye-Delta / Tetrahedron / Fuller / SIC-POVM / Spoon Theory)</span>
-                        </div>
-                        <div class="flex items-start gap-3 bg-void border border-coral/10 rounded p-4">
-                            <span class="text-coral/60 font-mono text-xs mt-0.5">&#9654;</span>
-                            <span class="text-cloud/70 text-sm">8-point publishing checklist</span>
-                        </div>
-                        <div class="flex items-start gap-3 bg-void border border-coral/10 rounded p-4">
-                            <span class="text-coral/60 font-mono text-xs mt-0.5">&#9654;</span>
-                            <span class="text-cloud/70 text-sm">Live word count + reading time</span>
-                        </div>
-                        <div class="flex items-start gap-3 bg-void border border-coral/10 rounded p-4">
-                            <span class="text-coral/60 font-mono text-xs mt-0.5">&#9654;</span>
-                            <span class="text-cloud/70 text-sm">Category tagging</span>
-                        </div>
-                        <div class="flex items-start gap-3 bg-void border border-coral/10 rounded p-4">
-                            <span class="text-coral/60 font-mono text-xs mt-0.5">&#9654;</span>
-                            <span class="text-cloud/70 text-sm">JSON + Markdown export</span>
-                        </div>
-                        <div class="flex items-start gap-3 bg-void border border-coral/10 rounded p-4">
-                            <span class="text-coral/60 font-mono text-xs mt-0.5">&#9654;</span>
-                            <span class="text-cloud/70 text-sm">Auto-save to localStorage</span>
-                        </div>
-                    </div>
-                </section>
-
-                <section class="matte-panel rounded-lg p-8">
-                    <h2 class="text-2xl font-bold mb-4 flex items-center gap-3">
-                        <span class="text-coral">02.</span> How It Works
-                    </h2>
-                    <p class="text-cloud/70 leading-relaxed mb-4">
-                        3-column layout: seed bank on the left, editor in the center, settings on the right. The markdown toolbar inserts formatting at cursor position. A framework library provides quick-insert P31 research concepts for consistent terminology.
-                    </p>
-                    <p class="text-cloud/70 leading-relaxed">
-                        Auto-save fires to localStorage on every keystroke, so nothing is lost. The publishing checklist enforces quality gates: title, subtitle, category, tags, featured image, SEO description, proofread status, and final review sign-off.
-                    </p>
-                </section>
-
-            </div>
-
-            <div class="flex flex-col gap-6">
-
-                <div class="matte-panel rounded-lg p-6">
-                    <h3 class="text-sm font-mono text-cloud/40 uppercase tracking-widest mb-4">Launch Editor</h3>
-                    <a href="editor.html"
-                       class="block p-5 bg-void border border-coral/30 rounded hover:border-coral/60 transition-colors group mb-3 text-center">
-                        <div class="text-2xl mb-2">&#x270D;&#xFE0F;</div>
-                        <div class="font-bold text-sm text-coral group-hover:text-coral transition-colors mb-1">Open Content Forge</div>
-                        <div class="text-xs text-cloud/40 font-mono">editor.html</div>
-                    </a>
-                </div>
-
-                <div class="matte-panel rounded-lg p-6">
-                    <h3 class="text-sm font-mono text-cloud/40 uppercase tracking-widest mb-4">Technical Stack</h3>
-                    <div class="space-y-3 text-sm">
-                        <div>
-                            <div class="text-cloud font-bold mb-1">Editor</div>
-                            <div class="text-cloud/60">Markdown Editor with toolbar</div>
-                        </div>
-                        <div>
-                            <div class="text-cloud font-bold mb-1">Persistence</div>
-                            <div class="text-cloud/60">localStorage (auto-save on keystroke)</div>
-                        </div>
-                        <div>
-                            <div class="text-cloud font-bold mb-1">Styling</div>
-                            <div class="text-cloud/60">Tailwind CSS</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="matte-panel rounded-lg p-6">
-                    <h3 class="text-sm font-mono text-cloud/40 uppercase tracking-widest mb-4">Ecosystem Ties</h3>
-                    <a href="spaceship-earth.html" class="block p-4 bg-void border border-white/5 rounded hover:border-teal/30 transition-colors group mb-3">
-                        <div class="font-bold text-sm text-cloud group-hover:text-teal transition-colors mb-1">Spaceship Earth</div>
-                        <div class="text-xs text-cloud/50">The React app hosting the editorial suite.</div>
-                    </a>
-                    <a href="/" class="block p-4 bg-void border border-white/5 rounded hover:border-coral/30 transition-colors group mb-3">
-                        <div class="font-bold text-sm text-cloud group-hover:text-coral transition-colors mb-1">phosphorus31.org</div>
-                        <div class="text-xs text-cloud/50">Primary publishing destination.</div>
-                    </a>
-                    <a href="kofi.html" class="block p-4 bg-void border border-white/5 rounded hover:border-teal/30 transition-colors group">
-                        <div class="font-bold text-sm text-cloud group-hover:text-teal transition-colors mb-1">Ko-fi</div>
-                        <div class="text-xs text-cloud/50">Supporter-funded content pipeline.</div>
-                    </a>
-                </div>
-
-            </div>
+        <div class="sidebar-section">
+            <div class="sidebar-title">Templates</div>
+            <button class="template-btn" onclick="applyTemplate('substack')">Substack Post</button>
+            <button class="template-btn" onclick="applyTemplate('research')">Research Note</button>
+            <button class="template-btn" onclick="applyTemplate('thread')">Thread Script</button>
+            <button class="template-btn" onclick="applyTemplate('grant')">Grant Narrative</button>
         </div>
-    </main>
-
-    <footer class="border-t border-white/5 mt-12 py-6">
-        <div class="max-w-7xl mx-auto px-6 flex justify-between items-center text-xs text-cloud/30 font-mono">
-            <span>P31 Labs &middot; 501(c)(3) &middot; EIN 42-1888158</span>
-            <a href="/" class="hover:text-cloud/60 transition-colors">&larr; Back to Hub</a>
+        <div class="sidebar-section">
+            <div class="sidebar-title">Publishing Checklist</div>
+            <div id="checklist"></div>
         </div>
-    </footer>
+    </div>
 
+    <div class="editor-pane">
+        <div class="pane-header">
+            <span>Markdown Editor</span>
+            <span class="word-count" id="word-count">0 words</span>
+        </div>
+        <textarea id="editor" placeholder="Start writing… Markdown supported.&#10;&#10;# Title&#10;&#10;Your content here."></textarea>
+    </div>
+
+    <div class="preview-pane">
+        <div class="pane-header"><span>Preview</span></div>
+        <div id="preview"></div>
+    </div>
+</div>
+
+<script>
+const editor = document.getElementById('editor');
+const preview = document.getElementById('preview');
+
+// Simple Markdown parser
+function parseMarkdown(md) {
+    let html = md
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+        .replace(/```([\s\S]*?)```/g,'<pre><code>$1</code></pre>')
+        .replace(/`([^`]+)`/g,'<code>$1</code>')
+        .replace(/^#{3} (.+)$/gm,'<h3>$1</h3>')
+        .replace(/^#{2} (.+)$/gm,'<h2>$1</h2>')
+        .replace(/^# (.+)$/gm,'<h1>$1</h1>')
+        .replace(/^\> (.+)$/gm,'<blockquote>$1</blockquote>')
+        .replace(/^---$/gm,'<hr>')
+        .replace(/^\- (.+)$/gm,'<li>$1</li>')
+        .replace(/(<li>.*<\/li>)/gs,'<ul>$1</ul>')
+        .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+        .replace(/\*(.+?)\*/g,'<em>$1</em>')
+        .replace(/\n\n/g,'</p><p>')
+        .replace(/^(?!<[h|u|p|b|l|h])/gm,'');
+    return '<p>'+html+'</p>';
+}
+
+function updatePreview() {
+    preview.innerHTML = parseMarkdown(editor.value);
+    const words = editor.value.trim().split(/\s+/).filter(Boolean).length;
+    document.getElementById('word-count').textContent = words + ' words';
+}
+
+editor.addEventListener('input', () => {
+    updatePreview();
+    debouncedSave();
+});
+
+// Toolbar actions
+window.insertMd = function(before, after) {
+    const start=editor.selectionStart, end=editor.selectionEnd;
+    const sel=editor.value.slice(start,end);
+    editor.value=editor.value.slice(0,start)+before+sel+after+editor.value.slice(end);
+    editor.selectionStart=start+before.length;
+    editor.selectionEnd=start+before.length+sel.length;
+    editor.focus(); updatePreview(); debouncedSave();
+};
+window.insertBlock = function(prefix) {
+    const start=editor.selectionStart;
+    const lineStart=editor.value.lastIndexOf('\n',start-1)+1;
+    editor.value=editor.value.slice(0,lineStart)+prefix+editor.value.slice(lineStart);
+    editor.focus(); updatePreview(); debouncedSave();
+};
+
+// Document management
+let docs = {};
+let currentDoc = 'default';
+function loadDocs() {
+    try { docs=JSON.parse(localStorage.getItem('cf-docs')||'{}'); }
+    catch(e){docs={};}
+    if(!docs.default) docs.default={title:'My First Post',content:'# My First Post\n\nStart writing…'};
+}
+function saveDocs(){localStorage.setItem('cf-docs',JSON.stringify(docs));}
+function refreshDocSelect(){
+    const sel=document.getElementById('doc-select');
+    sel.innerHTML=Object.keys(docs).map(k=>`<option value="${k}"${k===currentDoc?' selected':''}>${docs[k].title||k}</option>`).join('');
+}
+window.loadDoc=function(key){currentDoc=key;editor.value=docs[key].content||'';updatePreview();};
+window.newDoc=function(){
+    const title=prompt('Document title:');
+    if(!title)return;
+    const key='doc-'+Date.now();
+    docs[key]={title,content:'# '+title+'\n\n'};
+    currentDoc=key;editor.value=docs[key].content;
+    saveDocs();refreshDocSelect();updatePreview();
+};
+window.saveDoc=function(){
+    if(!docs[currentDoc])docs[currentDoc]={title:'Untitled'};
+    docs[currentDoc].content=editor.value;
+    const firstLine=editor.value.split('\n')[0].replace(/^#+\s*/,'').trim();
+    if(firstLine)docs[currentDoc].title=firstLine;
+    saveDocs();refreshDocSelect();
+    const badge=document.getElementById('autosave-badge');
+    badge.textContent='saved ✓';setTimeout(()=>badge.textContent='auto-saved',2000);
+};
+let saveTimer;
+function debouncedSave(){clearTimeout(saveTimer);saveTimer=setTimeout(saveDoc,1500);}
+
+window.exportMd=function(){
+    const blob=new Blob([editor.value],{type:'text/markdown'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+    a.download=(docs[currentDoc]?.title||'post').replace(/\s+/g,'-').toLowerCase()+'.md';a.click();
+};
+window.copyHtml=function(){
+    navigator.clipboard.writeText(parseMarkdown(editor.value));
+    const btn=event.target;btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy HTML',2000);
+};
+
+// Templates
+const templates = {
+    substack:`# Post Title\n\nSubheading / hook sentence.\n\n---\n\n## The Problem\n\n## The Insight\n\n## What This Means\n\n---\n\n*P31 Labs · EIN 42-1888158 · [p31ca.org](https://p31ca.org)*`,
+    research:`# Research Note: [Topic]\n\n**Date:** ${new Date().toISOString().slice(0,10)}\n\n## Hypothesis\n\n## Evidence\n\n## Open Questions\n\n## References\n\n1. `,
+    thread:`# Thread: [Topic]\n\n**Tweet 1 (Hook)**\n\n---\n\n**Tweet 2**\n\n---\n\n**Tweet 3**\n\n---\n\n**Tweet 4 (CTA)**\n`,
+    grant:`# Grant Narrative: [Program]\n\n## Problem Statement\n\n## Our Approach\n\n## Impact\n\n## Budget Justification\n\n## Team\n\nP31 Labs, Inc. — EIN 42-1888158`
+};
+window.applyTemplate=function(t){
+    editor.value=templates[t]||'';updatePreview();debouncedSave();
+};
+
+// Seeds
+let seeds=[];
+function loadSeeds(){try{seeds=JSON.parse(localStorage.getItem('cf-seeds')||'[]');}catch(e){seeds=[];}}
+function saveSeeds(){localStorage.setItem('cf-seeds',JSON.stringify(seeds));}
+function renderSeeds(){
+    const list=document.getElementById('seed-list');
+    list.innerHTML=seeds.map((s,i)=>`<div class="seed-item" onclick="openSeed(${i})"><span>${s.title}</span><span class="seed-stage stage-${s.stage}">${s.stage}</span></div>`).join('');
+}
+window.addSeed=function(){
+    const title=prompt('Seed title:');if(!title)return;
+    seeds.unshift({title,stage:'seed',note:''});saveSeeds();renderSeeds();
+};
+window.openSeed=function(i){
+    const s=seeds[i];
+    editor.value=`# ${s.title}\n\n${s.note||''}`;
+    updatePreview();
+};
+
+// Checklist
+const checklistItems=['Headline hooks in first 5 words','No jargon without definition','CTA in last paragraph','EIN footer present','Links tested','Accessibility: alt text for images','Substack preview text set','Cross-posted to Bluesky / Mastodon'];
+function renderChecklist(){
+    const el=document.getElementById('checklist');
+    el.innerHTML=checklistItems.map((item,i)=>`
+        <label style="display:flex;gap:6px;align-items:flex-start;margin-bottom:6px;cursor:pointer;font-size:11px;color:rgba(216,214,208,0.5)">
+            <input type="checkbox" style="margin-top:2px;accent-color:#25897d"> ${item}
+        </label>`).join('');
+}
+
+// Init
+loadDocs();loadSeeds();renderSeeds();renderChecklist();refreshDocSelect();
+editor.value=docs[currentDoc].content||'';
+updatePreview();
+</script>
 </body>
 </html>

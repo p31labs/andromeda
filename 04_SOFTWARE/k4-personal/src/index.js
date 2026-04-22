@@ -1,3 +1,8 @@
+/**
+ * K4-Personal — Per-user PersonalAgent with SQLite-backed state, reminders, energy.
+ * DO-based for per-user sessions.
+ */
+var PersonalAgent = class PersonalAgent {
 import { DurableObject } from 'cloudflare:workers';
 
 export class PersonalAgent extends DurableObject {
@@ -159,8 +164,24 @@ export class PersonalAgent extends DurableObject {
 
   async _energy(request) {
     if (request.method === "GET") {
-      const e = this._getState("energy") || { spoons: 10, max: 12, lastUpdate: Date.now() };
-      return Response.json(e);
+      const current = this._getState("energy") || { spoons: 10, max: 12, lastUpdate: Date.now() };
+      const { spoons, max, lastUpdate } = current;
+      const elapsedHours = (Date.now() - (lastUpdate || Date.now())) / 3600000;
+      const regenned = Math.min(max, spoons + Math.floor(elapsedHours * 1.5));
+      return Response.json({ spoons: regenned, max, lastUpdate, regenned: elapsedHours > 0.5 && regenned > spoons });
+    }
+    if (request.method === "PUT") {
+      const update = await request.json();
+      const current = this._getState("energy") || { spoons: 10, max: 12 };
+      let merged = { ...current, ...update, lastUpdate: Date.now() };
+      merged.spoons = Math.max(0, Math.min(merged.spoons, merged.max));
+      this.ctx.storage.sql.exec(
+        "INSERT OR REPLACE INTO state (key, value, updated_at) VALUES (?, ?, ?)",
+        "energy",
+        JSON.stringify(merged),
+        Date.now()
+      );
+      return Response.json(merged);
     }
     const update = await request.json();
     const current = this._getState("energy") || { spoons: 10, max: 12 };
