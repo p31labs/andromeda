@@ -20,6 +20,14 @@ on:
         description: Build + deploy Starlight docs to Pages (p31-technical-library)
         type: boolean
         default: false
+      deploy_p31ca:
+        description: Build + deploy p31ca.org Astro hub to Pages (p31ca)
+        type: boolean
+        default: false
+      deploy_phosphorus31:
+        description: Build + deploy phosphorus31.org Astro site to Pages (phosphorus31-org)
+        type: boolean
+        default: false
 
 concurrency:
   group: p31-automation-${{ github.ref }}
@@ -52,6 +60,8 @@ jobs:
       bouncer: ${{ steps.filter.outputs.bouncer }}
       command_center: ${{ steps.filter.outputs.command_center }}
       docs: ${{ steps.filter.outputs.docs }}
+      p31ca: ${{ steps.filter.outputs.p31ca }}
+      phosphorus31: ${{ steps.filter.outputs.phosphorus31 }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -67,6 +77,10 @@ jobs:
               - '04_SOFTWARE/cloudflare-worker/command-center/**'
             docs:
               - '04_SOFTWARE/docs/**'
+            p31ca:
+              - '04_SOFTWARE/p31ca/**'
+            phosphorus31:
+              - 'phosphorus31.org/**'
 
   deploy-bouncer:
     needs: paths
@@ -145,3 +159,51 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: 04_SOFTWARE/docs
           command: pages deploy dist --project-name=p31-technical-library
+
+  deploy-p31ca:
+    needs: paths
+    if: |
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.deploy_p31ca == 'true') ||
+      (github.event_name == 'push' && needs.paths.outputs.p31ca == 'true')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Build p31ca.org
+        run: cd 04_SOFTWARE/p31ca && npm install && npm run build
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: 04_SOFTWARE/p31ca
+          command: pages deploy dist --project-name=p31ca
+
+  deploy-phosphorus31:
+    needs: paths
+    if: |
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.deploy_phosphorus31 == 'true') ||
+      (github.event_name == 'push' && needs.paths.outputs.phosphorus31 == 'true')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Build phosphorus31.org
+        run: cd phosphorus31.org/planetary-planet && npm install && npm run build
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: phosphorus31.org/planetary-planet
+          command: pages deploy dist --project-name=phosphorus31-org
