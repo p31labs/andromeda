@@ -1,0 +1,60 @@
+---
+/**
+ * P31 Labs: P31 Mesh About Page
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="P31 Mesh | P31 Labs">
+  <div class="fixed inset-0 z-[-1] bg-[#080810]"></div>
+  
+  <nav class="fixed top-0 left-0 right-0 z-50 glass-panel border-b border-white/5 px-6 py-3 flex justify-between items-center bg-[#080810]/80 backdrop-blur-md">
+    <div class="flex items-center gap-3">
+      <div class="w-6 h-6 rounded bg-[#25897d] flex items-center justify-center text-white font-bold text-xs">P31</div>
+      <span class="font-mono text-sm tracking-widest text-[#d8d6d0] uppercase opacity-80">P31 Labs</span>
+    </div>
+    <div class="flex items-center gap-6 text-xs font-mono text-[#d8d6d0]/70">
+      <a href="/" class="hover:text-white transition-colors">← Hub</a>
+    </div>
+  </nav>
+
+  <main class="max-w-5xl mx-auto px-6 pt-32 pb-24 font-sans text-[#d8d6d0] antialiased">
+    <div class="flex items-center gap-4 mb-8">
+      <span class="text-5xl">🔗</span>
+      <div>
+        <div class="text-xs font-mono text-[#6b7280] uppercase tracking-widest mb-1">P31 Labs — LIVE</div>
+        <h1 class="text-4xl md:text-5xl font-bold text-[#4db8a8] tracking-tight">P31 Mesh</h1>
+      </div>
+    </div>
+
+    <p class="text-xl text-[#d8d6d0]/80 mb-6 font-mono">Local-first SQLite syncing and replication</p>
+    
+    <div class="flex gap-2 flex-wrap mb-10">
+      <span class="text-xs font-mono text-[#3ba372] bg-[#3ba372]/10 border border-[#3ba372]/30 px-3 py-1 rounded">LIVE</span>
+      <span class="text-xs font-mono text-[#6b7280] bg-white/5 border border-white/10 px-3 py-1 rounded">CRDT</span>
+      <span class="text-xs font-mono text-[#6b7280] bg-white/5 border border-white/10 px-3 py-1 rounded">PGLite</span>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+      <div class="lg:col-span-2 space-y-12">
+        <section>
+          <h2 class="text-sm font-mono text-[#6b7280] uppercase tracking-widest mb-4 border-b border-white/10 pb-2">What is it</h2>
+          <p class="text-[#d8d6d0]/80 leading-relaxed mb-4">
+            P31 Mesh is the foundational data replication layer ensuring cognitive sovereignty. It utilizes Conflict-free Replicated Data Types (CRDTs) to sync state across the K4 tetrahedron without relying on a centralized cloud database.
+          </p>
+        </section>
+      </div>
+      <div class="space-y-6">
+        <div class="bg-[#12141b] border border-white/5 p-6 rounded-xl">
+          <h3 class="text-xs font-mono text-[#6b7280] uppercase tracking-widest mb-3">Status</h3>
+          <span class="inline-block text-xs font-mono text-[#3ba372] bg-[#3ba372]/10 border border-[#3ba372]/30 px-2 py-1 rounded mb-3">LIVE</span>
+          <p class="text-xs text-[#d8d6d0]/60 leading-relaxed">Integrated into SUPER-CENTAUR edge mesh.</p>
+        </div>
+      </div>
+    </div>
+  </main>
+</BaseLayout>
+
+<style is:global>
+  .glass-panel { background: rgba(8, 8, 16, 0.8); backdrop-filter: blur(12px); }
+</style>

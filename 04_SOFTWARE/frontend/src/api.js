@@ -51,6 +51,23 @@ export const routeQuery = (query) =>
 export const getGraphData = () =>
   request('/graph').catch(() => ({ nodes: [], edges: [] }));
 
+// LOVE Economy API
+export const getLoveBalance = (userId = 'will-001') =>
+  fetch(`https://p31-workers.trimtab-signal.workers.dev/api/love/balance/${userId}`)
+    .then(res => res.json())
+    .catch(() => ({ availableBalance: 0, careScore: 0.5, totalEarned: 0 }));
+
+export const earnLove = (transactionType, metadata = {}) =>
+  fetch(`https://p31-workers.trimtab-signal.workers.dev/api/love/earn`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      userId: 'will-001',
+      transactionType,
+      metadata
+    })
+  }).then(res => res.json());
+
 /**
  * Server-side AI chat — single round trip.
  * Backend routes query, enriches context, proxies to LiteLLM, streams back.

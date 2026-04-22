@@ -8,11 +8,11 @@
 <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-  html, body { width: 100%; height: 100%; overflow: hidden; background: #0f1115; color: #d8d6d0; font-family: 'Atkinson Hyperlegible', sans-serif; }
+  html, body { width: 100%; height: 100%; overflow: hidden; background: #050508; color: #d8d6d0; font-family: 'Atkinson Hyperlegible', sans-serif; }
   canvas { display: block; }
   #app { position: relative; width: 100%; height: 100%; }
 
-  .glass { background: rgba(22,25,32,0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.06); border-radius: 6px; }
+  .glass { background: rgba(8,8,16,0.75); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.06); border-radius: 6px; }
 
   #back-link { position: absolute; top: 14px; left: 16px; z-index: 20; color: #25897d; text-decoration: none; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 1px; opacity: 0.8; transition: opacity 0.2s; }
   #back-link:hover { opacity: 1; }
@@ -360,7 +360,7 @@ camera.position.set(0, 1.5, 7.5);
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-renderer.setClearColor(0x0f1115, 1);
+  renderer.setClearColor(0x050508, 1);
 container.insertBefore(renderer.domElement, container.firstChild);
 
 // OrbitControls
@@ -375,7 +375,7 @@ controls.update();
 // Bloom pipeline
 const composer = new EffectComposer(renderer);
 composer.addPass(new RenderPass(scene, camera));
-const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 0.7, 0.4, 0.8);
+const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 0.3, 0.25, 0.6);
 composer.addPass(bloomPass);
 composer.addPass(new OutputPass());
 
@@ -460,18 +460,18 @@ for (let fi = 0; fi < geo.faces.length; fi++) {
     const isHot = glow >= 1.2;
     mat = new THREE.MeshPhysicalMaterial({
       color: assignment.color,
-      emissive: assignment.color.clone().multiplyScalar(isHot ? 0.4 : 0.15 * glow),
-      emissiveIntensity: isHot ? 1.5 * glow : 1.0,
-      roughness: 0.08, metalness: 0.0,
-      transmission: 0.3, thickness: 0.5,
-      side: THREE.DoubleSide, transparent: true, opacity: 0.8,
+      emissive: assignment.color.clone().multiplyScalar(isHot ? 0.6 : 0.25 * glow),
+      emissiveIntensity: isHot ? 2.5 * glow : 1.4,
+      roughness: 0.02, metalness: 0.3,
+      transmission: 0.1, thickness: 0.5,
+      side: THREE.DoubleSide, transparent: true, opacity: 0.92,
       toneMapped: !isHot,
     });
   } else {
     mat = new THREE.MeshPhysicalMaterial({
-      color: 0x111111, emissive: new THREE.Color(0x000000),
-      roughness: 0.05, metalness: 0.0,
-      transmission: 0.9, thickness: 0.2,
+      color: 0x050508, emissive: new THREE.Color(0x000000),
+      roughness: 0.01, metalness: 0.1,
+      transmission: 0.3, thickness: 0.2,
       side: THREE.DoubleSide, transparent: true, opacity: 0.08,
     });
   }
@@ -607,25 +607,27 @@ for (let i = 0; i < STAR_COUNT; i++) {
   const c = new THREE.Color().setHSL(hue, 0.35, 0.12 + Math.random() * 0.08);
   starCol[i*3] = c.r; starCol[i*3+1] = c.g; starCol[i*3+2] = c.b;
 }
-const starGeo = new THREE.BufferGeometry();
-starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
-starGeo.setAttribute('color', new THREE.BufferAttribute(starCol, 3));
 
-const dotCanvas = document.createElement('canvas');
-dotCanvas.width = 32; dotCanvas.height = 32;
-const dotCtx = dotCanvas.getContext('2d');
-const dotGrad = dotCtx.createRadialGradient(16, 16, 0, 16, 16, 16);
-dotGrad.addColorStop(0, 'rgba(255,255,255,1)');
-dotGrad.addColorStop(0.4, 'rgba(255,255,255,0.3)');
-dotGrad.addColorStop(1, 'rgba(0,0,0,0)');
-dotCtx.fillStyle = dotGrad;
-dotCtx.fillRect(0, 0, 32, 32);
-const dotTex = new THREE.CanvasTexture(dotCanvas);
-
-scene.add(new THREE.Points(starGeo, new THREE.PointsMaterial({
-  vertexColors: true, size: 0.15, sizeAttenuation: true,
-  transparent: true, opacity: 0.7, blending: THREE.AdditiveBlending, depthWrite: false, map: dotTex,
-})));
+// Star field removed - pure deep black background
+// const starGeo = new THREE.BufferGeometry();
+// starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+// starGeo.setAttribute('color', new THREE.BufferAttribute(starCol, 3));
+// 
+// const dotCanvas = document.createElement('canvas');
+// dotCanvas.width = 32; dotCanvas.height = 32;
+// const dotCtx = dotCanvas.getContext('2d');
+// const dotGrad = dotCtx.createRadialGradient(16, 16, 0, 16, 16, 16);
+// dotGrad.addColorStop(0, 'rgba(255,255,255,1)');
+// dotGrad.addColorStop(0.4, 'rgba(255,255,255,0.3)');
+// dotGrad.addColorStop(1, 'rgba(0,0,0,0)');
+// dotCtx.fillStyle = dotGrad;
+// dotCtx.fillRect(0, 0, 32, 32);
+// const dotTex = new THREE.CanvasTexture(dotCanvas);
+// 
+// scene.add(new THREE.Points(starGeo, new THREE.PointsMaterial({
+//   vertexColors: true, size: 0.15, sizeAttenuation: true,
+//   transparent: true, opacity: 0.7, blending: THREE.AdditiveBlending, depthWrite: false, map: dotTex,
+// })));
 
 // ================================================================
 // UI STATE + INTERACTION

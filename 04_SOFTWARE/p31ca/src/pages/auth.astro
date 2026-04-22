@@ -1,0 +1,117 @@
+---
+/**
+ * Gate 2: Bouncer Authentication
+ * Enterprise-grade security checkpoint with frictionless UX
+ */
+
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const BOUNCER_URL = 'https://p31-bouncer.trimtab-signal.workers.dev';
+---
+
+<BaseLayout title="P31 Labs | Authentication">
+  <main class="min-h-screen flex items-center justify-center bg-[#080810] px-6">
+    <div class="max-w-md w-full">
+      <div class="glass-panel p-8 rounded-2xl">
+        <div class="text-center mb-8">
+          <div class="w-16 h-16 mx-auto mb-4 rounded-full border border-rose-400/30 flex items-center justify-center">
+            <div class="w-4 h-4 rounded-full bg-rose-400" style="box-shadow:0 0 12px rgba(232,99,111,0.6);"></div>
+          </div>
+          <h1 class="text-xl font-bold text-white mb-2">Initialize Sovereign Node</h1>
+          <p class="text-sm text-white/50">Enter your Gate Token to establish a secure connection to the mesh</p>
+        </div>
+
+        <form id="auth-form" class="space-y-6">
+          <div>
+            <label class="block text-xs font-medium text-white/70 mb-2 uppercase tracking-wider">Gate Token</label>
+            <input 
+              type="password" 
+              id="gate-token" 
+              class="w-full px-4 py-3 rounded-lg bg-white/[0.05] border border-white/[0.08] text-white placeholder-white/30 focus:outline-none focus:border-rose-400/50 transition-colors"
+              placeholder="Enter your token"
+              autocomplete="off"
+            >
+            <p id="auth-error" class="text-xs text-rose-400 mt-2 hidden">Authentication failed. Check your token.</p>
+          </div>
+
+          <button 
+            type="submit" 
+            id="auth-submit"
+            class="w-full py-3 rounded-lg font-bold text-sm transition-all hover:brightness-110 disabled:opacity-50"
+            style="background:#E8636F;color:white;"
+          >
+            <span id="auth-text">Connect to Mesh</span>
+            <span id="auth-loading" class="hidden">Authenticating...</span>
+          </button>
+        </form>
+
+        <div id="auth-success" class="hidden text-center mt-8">
+          <div class="text-emerald-400 text-2xl mb-4">✓</div>
+          <p class="text-white mb-2">Authentication successful</p>
+          <p class="text-sm text-white/50 mb-6">Establishing secure channel to your Sovereign Node</p>
+          <a href="/dome" class="inline-block px-6 py-3 rounded-lg font-bold text-sm" style="background:#3ba372;color:white;">
+            Enter Cockpit →
+          </a>
+        </div>
+      </div>
+
+      <p class="text-center text-xs text-white/30 mt-8">
+        Gate 2 Security Checkpoint · All credentials are verified locally and never leave your device
+      </p>
+    </div>
+  </main>
+
+  <script>
+    const BOUNCER_URL = 'https://p31-bouncer.trimtab-signal.workers.dev';
+    
+    const form = document.getElementById('auth-form');
+    const tokenInput = document.getElementById('gate-token');
+    const errorText = document.getElementById('auth-error');
+    const submitBtn = document.getElementById('auth-submit');
+    const authText = document.getElementById('auth-text');
+    const authLoading = document.getElementById('auth-loading');
+    const authSuccess = document.getElementById('auth-success');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const token = tokenInput.value.trim();
+      if (!token) return;
+
+      // Show loading state
+      errorText.classList.add('hidden');
+      authText.classList.add('hidden');
+      authLoading.classList.remove('hidden');
+      submitBtn.disabled = true;
+
+      try {
+        const res = await fetch(`${BOUNCER_URL}/v1/gate`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (res.ok) {
+          // Store auth token in localStorage
+          localStorage.setItem('p31_gate_token', token);
+          
+          // Show success state
+          form.classList.add('hidden');
+          authSuccess.classList.remove('hidden');
+        } else {
+          throw new Error('Unauthorized');
+        }
+      } catch (err) {
+        errorText.classList.remove('hidden');
+        authText.classList.remove('hidden');
+        authLoading.classList.add('hidden');
+        submitBtn.disabled = false;
+      }
+    });
+
+    // Check if already authenticated
+    if (localStorage.getItem('p31_gate_token')) {
+      form.innerHTML = '<div class="text-center"><p class="text-white mb-4">Already authenticated</p><a href="/dome" class="inline-block px-6 py-3 rounded-lg font-bold text-sm" style="background:#3ba372;color:white;">Enter Cockpit →</a></div>';
+    }
+  </script>
+</BaseLayout>
