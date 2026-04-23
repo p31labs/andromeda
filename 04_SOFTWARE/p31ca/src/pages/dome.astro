@@ -6,116 +6,236 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 ---
 
-<BaseLayout title="P31 Labs | Sovereign Cockpit">
-  <!-- Three.js Import Map -->
-  <script type="importmap" is:inline>
-    {
-      "imports": {
-        "three": "https://unpkg.com/three@0.183.0/build/three.module.js",
-        "three/addons/": "https://unpkg.com/three@0.183.0/examples/jsm/"
-      }
-    }
-  </script>
+<BaseLayout title="P31 Labs | Sovereign Cockpit" data-i18n-title="page.title">
+  <!-- Noscript fallback for JS-disabled users -->
+  <noscript>
+    <div class="fixed inset-0 bg-black/90 flex flex-col items-center justify-center z-50 p-6 text-center">
+      <h2 class="text-2xl font-bold text-white mb-4" data-i18n="noscript.title">JavaScript Required</h2>
+      <p class="text-white/80 mb-6" data-i18n="noscript.description">
+        The Sovereign Cockpit Dome requires JavaScript to render the 3D visualization 
+        and interactive elements. Please enable JavaScript in your browser settings.
+      </p>
+      <a href="/mesh" class="px-6 py-3 bg-white/20 hover:bg-white/30 text-white rounded transition-colors" data-i18n="noscript.backLink">Back to Mesh Network</a>
+    </div>
+    <!-- CSS-only rotating tetrahedron SVG fallback -->
+    <div class="fixed inset-0 flex items-center justify-center bg-void" aria-label="Fallback loading animation">
+      <svg class="w-48 h-48 animate-spin text-cyan" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M50 15 L85 85 L15 85 Z"/>
+      </svg>
+    </div>
+  </noscript>
+
+    <!-- Three.js Import Map -->
+   <script type="importmap" is:inline>
+     {
+       "imports": {
+         "three": "https://unpkg.com/three@0.183.0/build/three.module.js",
+         "three/addons/": "https://unpkg.com/three@0.183.0/examples/jsm/"
+       }
+     }
+   </script>
+   
+   <!-- Dev-only: axe-core for accessibility testing -->
+   <script>
+    (function() {
+      const isDev = location.hostname === 'localhost' || location.search.includes('dev=true');
+      if (!isDev) return;
+      
+      const script = document.createElement('script');
+      script.src = 'https://cdnjs.cloudflare.com/ajax/libs/axe-core/4.10.2/axe.min.js';
+      script.integrity = 'sha512-7pGz0H1ggXYz8Y4lUYj3G01+n2xK4FukK4nYg9B1Dk+X3t0cE6zYjv3n4Ml+CKc+FL5Y5nBepzr8+fL0p5T+XQ==';
+      script.crossOrigin = 'anonymous';
+      script.referrerPolicy = 'no-referrer';
+      document.head.appendChild(script);
+    })();
+   </script>
 
   <!-- 3D Canvas -->
   <div id="webgl-container"></div>
   <div class="ambient-grid fixed inset-0 z-0 pointer-events-none"></div>
 
-  <!-- Boot Sequence -->
-  <div id="loading-screen" class="fixed inset-0 z-[200] bg-void flex flex-col items-center justify-center font-mono text-cyan">
-    <svg width="64" height="64" viewBox="0 0 512 512" class="mb-8 animate-pulse"><rect width="512" height="512" rx="112" fill="#25897d"/><circle cx="390" cy="120" r="48" fill="#cc6247"/><text x="256" y="340" font-family="system-ui" font-weight="900" font-size="220" fill="#d8d6d0" text-anchor="middle">P31</text><rect x="156" y="380" width="200" height="16" rx="8" fill="#cda852"/></svg>
-    <div class="text-xs tracking-[0.3em] uppercase">Materializing K4 Tetrahedron</div>
-    <div class="w-48 h-1 bg-surface mt-4 overflow-hidden rounded-full">
-      <div id="loading-bar" class="h-full bg-cyan w-0 transition-all duration-100"></div>
-    </div>
-  </div>
+   <!-- Boot Sequence -->
+   <div id="loading-screen" class="fixed inset-0 z-[200] bg-void flex flex-col items-center justify-center font-mono text-cyan" role="status" aria-live="polite">
+     <svg width="64" height="64" viewBox="0 0 512 512" class="mb-8 animate-pulse"><rect width="512" height="512" rx="112" fill="#25897d"/><circle cx="390" cy="120" r="48" fill="#cc6247"/><text x="256" y="340" font-family="system-ui" font-weight="900" font-size="220" fill="#d8d6d0" text-anchor="middle">P31</text><rect x="156" y="380" width="200" height="16" rx="8" fill="#cda852"/></svg>
+     <div class="text-xs tracking-[0.3em] uppercase" data-i18n="loading.title">Materializing K4 Tetrahedron</div>
+     <div class="w-48 h-1 bg-surface mt-4 overflow-hidden rounded-full">
+       <div id="loading-bar" class="h-full bg-cyan w-0 transition-all duration-100"></div>
+     </div>
+     <div id="loading-text" class="text-xs mt-2 text-cloud" data-i18n="loading.initializing">Initializing...</div>
+     <div id="loading-details" class="text-xs mt-1 text-muted/60" data-i18n="loading.details">Loading 3D scene</div>
+     <!-- Skeleton loader for tetrahedron wireframe -->
+     <div id="skeleton-loader" class="mt-6 w-48 h-48 opacity-30">
+       <svg class="w-full h-full" viewBox="0 0 100 100" stroke="currentColor" stroke-width="1" fill="none">
+         <path d="M50 10 L90 80 L10 80 Z" stroke-dasharray="200" stroke-dashoffset="0">
+           <animate attributeName="stroke-dashoffset" from="200" to="0" dur="2s" repeatCount="indefinite"/>
+         </path>
+       </svg>
+     </div>
+   </div>
 
-  <!-- TOP HUD: System Telemetry -->
-  <nav class="fixed top-0 left-0 right-0 z-50 glass-panel border-b border-white/5 px-4 py-2 flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-mono text-cloud transition-transform duration-500 transform translate-y-0" id="top-hud">
+   <!-- Keyboard Shortcuts Overlay -->
+   <div id="keyboard-shortcuts-overlay" class="fixed inset-0 z-[900] bg-black/80 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-200" role="dialog" aria-label="Keyboard shortcuts" aria-modal="true">
+     <div class="glass-panel p-6 rounded-xl max-w-md w-full mx-4">
+       <div class="flex justify-between items-center mb-4">
+         <h2 class="text-lg font-bold text-white" data-i18n="shortcuts.title">Keyboard Shortcuts</h2>
+         <button id="close-shortcuts" class="text-muted hover:text-white p-1" data-i18n-aria-label="shortcuts.close" aria-label="Close shortcuts">✕</button>
+       </div>
+       <div class="space-y-3 text-sm font-mono">
+         <div class="flex justify-between">
+           <span class="text-cloud/70" data-i18n="shortcuts.focusSearch">Focus search</span>
+           <kbd class="px-2 py-1 bg-void/50 border border-white/20 rounded">/</kbd>
+         </div>
+         <div class="flex justify-between">
+           <span class="text-cloud/70" data-i18n="shortcuts.toggleUI">Toggle HUD</span>
+           <kbd class="px-2 py-1 bg-void/50 border border-white/20 rounded">Tab</kbd>
+         </div>
+         <div class="flex justify-between">
+           <span class="text-cloud/70" data-i18n="shortcuts.activateLayer0">Activate Layer 0</span>
+           <kbd class="px-2 py-1 bg-void/50 border border-white/20 rounded">Esc</kbd>
+         </div>
+       </div>
+       <div class="mt-4 text-xs text-muted/60" data-i18n="shorttips.prompt">Press any key to close</div>
+     </div>
+   </div>
 
-    <!-- Logo & Q-Factor -->
-    <div class="flex items-center gap-4">
-      <div class="flex items-center gap-2 font-bold text-white tracking-widest uppercase">
-        <svg width="18" height="18" viewBox="0 0 512 512" class="opacity-90"><rect width="512" height="512" rx="112" fill="#25897d"/><circle cx="390" cy="120" r="48" fill="#cc6247"/><text x="256" y="340" font-family="system-ui" font-weight="900" font-size="220" fill="#d8d6d0" text-anchor="middle">P31</text><rect x="156" y="380" width="200" height="16" rx="8" fill="#cda852"/></svg>
-        <span>Cockpit</span>
-      </div>
-      <div class="h-4 w-px bg-white/10"></div>
-      <div class="flex items-center gap-2 cursor-help" title="Fisher-Escolà Coherence Score">
-        <span class="w-2 h-2 rounded-full bg-emerald shadow-[0_0_8px_#3ba372] animate-pulse" id="hud-q-dot"></span>
-        <span class="text-muted">Q-FACTOR:</span>
-        <span class="font-bold text-emerald tracking-wider" id="hud-q-val">0.925</span>
-      </div>
-    </div>
+   <!-- TOP HUD: System Telemetry -->
+   <nav class="fixed top-0 left-0 right-0 z-50 glass-panel border-b border-white/5 px-4 py-2 flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-mono text-cloud transition-all duration-300 transform translate-y-0" id="top-hud" aria-label="System telemetry and controls">
+     <!-- HUD Header -->
+     <div class="flex items-center justify-between w-full">
+       <!-- Left: Logo & Q-Factor -->
+       <div class="flex items-center gap-4">
+         <div class="flex items-center gap-2 font-bold text-white tracking-widest uppercase">
+            <svg width="18" height="18" viewBox="0 0 512 512" class="opacity-90"><rect width="512" height="512" rx="112" fill="#25897d"/><circle cx="390" cy="120" r="48" fill="#cc6247"/><text x="256" y="340" font-family="system-ui" font-weight="900" font-size="220" fill="#d8d6d0" text-anchor="middle">P31</text><rect x="156" y="380" width="200" height="16" rx="8" fill="#cda852"/></svg>
+            <span data-i18n="hud.cockpit">Cockpit</span>
+         </div>
+         <div class="h-4 w-px bg-white/10"></div>
+          <div class="flex items-center gap-2 cursor-help" title="Fisher-Escolà Coherence Score" data-i18n-title="hud.qFactor.title">
+            <span class="w-2 h-2 rounded-full bg-emerald shadow-[0_0_8px_#3ba372] animate-pulse" id="hud-q-dot"></span>
+            <span class="text-muted" data-i18n="hud.qFactor.label">Q-FACTOR:</span>
+            <span class="font-bold text-emerald tracking-wider" id="hud-q-val" data-i18n="hud.qFactor.value">0.925</span>
+          </div>
+       </div>
+       
+       <!-- Right: Volume Control & Status -->
+       <div class="flex items-center gap-4">
+          <!-- Volume Control with Mute Toggle -->
+          <div class="flex items-center gap-2" data-i18n-title="hud.volume.title" title="Ambient Volume">
+            <button id="volume-mute-btn" class="text-muted hover:text-white transition-colors p-1" aria-label="Toggle mute" data-i18n-aria-label="hud.volume.mute" type="button">
+             <svg id="volume-icon" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+               <path d="M11 5L6 9H2v6h4l5 4V5z"/>
+               <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
+             </svg>
+             <svg id="mute-icon" class="w-4 h-4 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+               <path d="M11 5L6 9H2v6h4l5 4V5z"/>
+               <line x1="23" y1="9" x2="17" y2="15"/>
+             </svg>
+           </button>
+            <div class="relative" data-i18n-title="hud.volume.title">
+              <button id="volume-slider-container" class="w-20 h-6 bg-void/50 border border-white/20 rounded-lg overflow-hidden hover:bg-void/70 transition-colors focus:outline-none focus:ring-2 focus:ring-cyan focus:ring-offset-2 focus:ring-offset-void" type="button" aria-label="Volume control" data-i18n-aria-label="hud.volume.sliderLabel">
+                <div class="flex items-center h-full relative">
+                  <div id="volume-track" class="h-1 bg-surface rounded-full absolute inset-y-1 left-1 right-1"></div>
+                  <div id="volume-fill" class="h-1 bg-cyan rounded-full absolute inset-y-1 left-1 transition-all duration-100"></div>
+                  <div id="volume-thumb" class="w-3 h-3 bg-cyan rounded-full absolute top-1.5 transition-transform duration-100" style="left: calc(1px + 70% * 0.85);"></div>
+                </div>
+              </button>
+              <div id="volume-tooltip" class="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 bg-black/90 text-white text-xs px-2 py-1 rounded opacity-0 pointer-events-none transition-opacity duration-100" data-i18n="hud.volume.tooltip">
+                70%
+              </div>
+            </div>
+         </div>
+         
+          <!-- Connection Status -->
+          <div class="flex items-center gap-1">
+            <div id="connection-status" class="w-2 h-2 rounded-full bg-emerald" title="Connection status" aria-label="Connected" data-i18n-title="hud.connection.status.title" data-i18n-aria-label="hud.connection.status.connected"></div>
+            <span class="text-muted text-xs hidden sm:inline" data-i18n="hud.connection.label">SYNC</span>
+          </div>
+         
+          <!-- Dev Mode Performance Indicators -->
+          <div id="performance-indicators" class="hidden md:flex items-center gap-2 text-xs text-cloud/60">
+            <span data-i18n="perf.render">Render: <span id="render-time">0</span>ms</span>
+            <span data-i18n="perf.fps">FPS: <span id="fps-counter">60</span></span>
+            <span id="webgl-status" class="text-emerald">✓</span>
+            <!-- Accessibility Scan Button (dev only) -->
+            <button id="a11y-scan-btn" class="ml-2 px-2 py-1 bg-white/5 hover:bg-white/10 rounded text-xs" data-i18n="a11y.scanButton" type="button">A11y Scan</button>
+            <!-- Theme Variant Switcher (A/B test) -->
+            <button id="theme-toggle-btn" class="ml-2 px-2 py-1 bg-white/5 hover:bg-white/10 rounded text-xs" data-i18n="theme.toggle" type="button">Theme: A</button>
+          </div>
 
-    <!-- Thermodynamics & Economy -->
-    <div class="flex items-center gap-6 bg-void/50 px-5 py-1.5 rounded-md border border-white/5 shadow-inner">
-      <div class="flex items-center gap-2 cursor-help" title="Vertex A: Operator State">
-        <span class="text-muted">SPOONS</span>
-        <div class="w-20 h-1.5 bg-surface rounded-full overflow-hidden">
-          <div id="hud-spoon-fill" class="h-full bg-coral transition-all duration-500" style="width: 75%;"></div>
-        </div>
-        <span id="hud-spoon-val" class="text-coral font-bold w-4 text-right">15</span>
-      </div>
-      <div class="h-3 w-px bg-white/10"></div>
-      <div class="flex items-center gap-2 cursor-help" title="L.O.V.E. Ledger Balance">
-        <span class="text-muted">L.O.V.E.</span>
-        <span class="text-cyan font-bold">3.28</span>
-      </div>
-      <div class="h-3 w-px bg-white/10 hidden md:block"></div>
-      <div class="hidden md:flex items-center gap-2 cursor-help" title="Active K4 Vertices">
-        <span class="text-muted">FLEET:</span>
-        <span class="text-cloud font-bold">4/4</span>
-      </div>
-    </div>
+          <!-- UI Toggle -->
+          <button id="ui-toggle-btn" class="text-muted hover:text-white transition-colors p-1" aria-label="Toggle heads-up display" data-i18n-aria-label="hud.toggleUI" type="button">[UI]</button>
+       </div>
+     </div>
+     
+     <!-- Collapsible HUD Content -->
+     <div id="hud-content" class="w-full mt-2 space-y-2 opacity-100 transition-opacity duration-300">
+       <!-- Thermodynamics & Economy -->
+       <div class="flex items-center gap-6 bg-void/50 px-5 py-1.5 rounded-md border border-white/5 shadow-center">
+          <div class="flex items-center gap-2 cursor-help" title="Vertex A: Operator State" data-i18n-title="hud.spoons.title">
+            <span class="text-muted" data-i18n="hud.spoons.label">SPOONS</span>
+            <div class="w-20 h-1.5 bg-surface rounded-full overflow-hidden">
+              <div id="hud-spoon-fill" class="h-full bg-coral transition-all duration-500" style="width: 75%;"></div>
+            </div>
+            <span id="hud-spoon-val" class="text-coral font-bold w-4 text-right" data-i18n="hud.spoons.value">15</span>
+          </div>
+          <div class="h-3 w-px bg-white/10"></div>
+          <div class="flex items-center gap-2 cursor-help" title="L.O.V.E. Ledger Balance" data-i18n-title="hud.love.title">
+            <span class="text-muted" data-i18n="hud.love.label">L.O.V.E.</span>
+            <span class="text-cyan font-bold" data-i18n="hud.love.value">3.28</span>
+          </div>
+          <div class="h-3 w-px bg-white/10 hidden md:block"></div>
+          <div class="hidden md:flex items-center gap-2 cursor-help" title="Active K4 Vertices" data-i18n-title="hud.fleet.title">
+            <span class="text-muted" data-i18n="hud.fleet.label">FLEET:</span>
+            <span class="text-cloud font-bold" data-i18n="hud.fleet.value">4/4</span>
+          </div>
+       </div>
 
-    <!-- Trimtab & Actions -->
-    <div class="flex items-center gap-4">
-      <div class="flex items-center gap-2 cursor-pointer group" id="trimtab-trigger" title="Drag to tune frequency · Click for Layer 0 Somatic Mode">
-        <canvas id="trimtab-canvas" width="24" height="24" class="opacity-70 group-hover:opacity-100 transition-opacity"></canvas>
-        <span id="trimtab-freq" class="text-amber font-bold w-12">863Hz</span>
-      </div>
-      <div class="h-4 w-px bg-white/10"></div>
-      <button onclick="toggleUI()" class="text-muted hover:text-white transition-colors" title="Toggle HUD (Tab)">[UI]</button>
-    </div>
-  </nav>
+      <!-- Trimtab & Actions -->
+        <div class="flex items-center gap-4">
+         <div class="flex items-center gap-2 cursor-pointer group" id="trimtab-trigger" title="Drag to tune frequency · Click for Layer 0 Somatic Mode" role="slider" aria-label="Trimtab frequency control" data-i18n-aria-label="hud.trimtab.label" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50" tabindex="0">
+           <canvas id="trimtab-canvas" width="24" height="24" class="opacity-70 group-hover:opacity-100 transition-opacity" aria-hidden="true"></canvas>
+           <span id="trimtab-freq" class="text-amber font-bold w-12" data-i18n="hud.trimtab.frequency">863Hz</span>
+         </div>
+       </div>
+     </div>
+   </nav>
 
-  <!-- LEFT HUD: Filters & Legend -->
-  <aside class="fixed bottom-6 left-6 z-40 flex flex-col gap-4 hud-element" id="left-hud">
-    <!-- Controls -->
-    <div class="glass-panel p-4 rounded-xl flex flex-col gap-3">
-      <input type="text" id="search-input" placeholder="Search topology..." class="bg-void/80 border border-white/10 rounded-md px-3 py-1.5 text-xs font-mono text-cloud outline-none focus:border-cyan transition-colors w-full placeholder-muted">
+   <!-- LEFT HUD: Filters & Legend -->
+   <aside class="fixed bottom-6 left-6 z-40 flex flex-col gap-4 hud-element" id="left-hud" aria-label="Topology filters">
+     <!-- Controls -->
+     <div class="glass-panel p-4 rounded-xl flex flex-col gap-3">
+       <input type="text" id="search-input" placeholder="Search topology..." data-i18n-placeholder="search.placeholder" class="bg-void/80 border border-white/10 rounded-md px-3 py-1.5 text-xs font-mono text-cloud outline-none focus:border-cyan transition-colors w-full placeholder-muted" aria-label="Search topology nodes" data-i18n-aria-label="search.ariaLabel">
 
-      <div class="flex flex-wrap gap-1.5 max-w-[220px]" id="axis-filters">
-        <button class="px-2 py-1 text-[9px] font-mono tracking-wider uppercase rounded bg-white/10 border border-white/20 text-white" data-axis="all">ALL</button>
-        <button class="px-2 py-1 text-[9px] font-mono tracking-wider uppercase rounded bg-void border border-white/5 text-[#ff9944] hover:bg-white/5" data-axis="a">Body</button>
-        <button class="px-2 py-1 text-[9px] font-mono tracking-wider uppercase rounded bg-void border border-white/5 text-[#44aaff] hover:bg-white/5" data-axis="b">Mesh</button>
-        <button class="px-2 py-1 text-[9px] font-mono tracking-wider uppercase rounded bg-void border border-white/5 text-[#44ffaa] hover:bg-white/5" data-axis="c">Forge</button>
-        <button class="px-2 py-1 text-[9px] font-mono tracking-wider uppercase rounded bg-void border border-white/5 text-[#ff4466] hover:bg-white/5" data-axis="d">Shield</button>
+      <div class="flex flex-wrap gap-1.5 max-w-[220px]" id="axis-filters" role="group" aria-label="Filter by axis" data-i18n-aria-label="filters.groupLabel">
+        <button class="px-2 py-1 text-[9px] font-mono tracking-wider uppercase rounded bg-white/10 border border-white/20 text-white" data-axis="all" aria-label="Show all axes" aria-pressed="true" data-i18n="filters.all" data-i18n-aria-label="filters.allAria">ALL</button>
+        <button class="px-2 py-1 text-[9px] font-mono tracking-wider uppercase rounded bg-void border border-white/5 text-[#ff9944] hover:bg-white/5" data-axis="a" aria-label="Show Body axis only" aria-pressed="false" data-i18n="filters.body" data-i18n-aria-label="filters.bodyAria">Body</button>
+        <button class="px-2 py-1 text-[9px] font-mono tracking-wider uppercase rounded bg-void border border-white/5 text-[#44aaff] hover:bg-white/5" data-axis="b" aria-label="Show Mesh axis only" aria-pressed="false" data-i18n="filters.mesh" data-i18n-aria-label="filters.meshAria">Mesh</button>
+        <button class="px-2 py-1 text-[9px] font-mono tracking-wider uppercase rounded bg-void border border-white/5 text-[#44ffaa] hover:bg-white/5" data-axis="c" aria-label="Show Forge axis only" aria-pressed="false" data-i18n="filters.forge" data-i18n-aria-label="filters.forgeAria">Forge</button>
+        <button class="px-2 py-1 text-[9px] font-mono tracking-wider uppercase rounded bg-void border border-white/5 text-[#ff4466] hover:bg-white/5" data-axis="d" aria-label="Show Shield axis only" aria-pressed="false" data-i18n="filters.shield" data-i18n-aria-label="filters.shieldAria">Shield</button>
       </div>
-    </div>
+     </div>
 
-    <!-- Legend -->
-    <div class="glass-panel p-4 rounded-xl text-[10px] font-mono">
-      <div class="text-muted mb-2 pb-2 border-b border-white/10" id="node-count">-- NODES</div>
-      <div class="flex flex-col gap-1.5">
-        <div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-emerald"></div><span>Active</span></div>
-        <div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-[#25897d]"></div><span>Deployed</span></div>
-        <div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-amber"></div><span>Countdown</span></div>
-        <div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-cyan"></div><span>Research</span></div>
-        <div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-coral"></div><span>Missing</span></div>
-      </div>
-    </div>
+     <!-- Legend -->
+     <div class="glass-panel p-4 rounded-xl text-[10px] font-mono">
+       <div class="text-muted mb-2 pb-2 border-b border-white/10" id="node-count" data-i18n="stats.nodes">-- NODES</div>
+       <div class="flex flex-col gap-1.5">
+         <div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-emerald"></div><span data-i18n="legend.active">Active</span></div>
+         <div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-[#25897d]"></div><span data-i18n="legend.deployed">Deployed</span></div>
+         <div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-amber"></div><span data-i18n="legend.countdown">Countdown</span></div>
+         <div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-cyan"></div><span data-i18n="legend.research">Research</span></div>
+         <div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-coral"></div><span data-i18n="legend.missing">Missing</span></div>
+       </div>
+     </div>
   </aside>
 
   <!-- RIGHT HUD: Node Inspector -->
   <aside id="node-detail-panel" class="fixed top-16 right-6 z-40 glass-panel p-5 rounded-xl border-t border-l border-white/10 shadow-[0_10px_40px_rgba(0,0,0,0.8)] w-80 transform transition-all duration-300 translate-x-10 opacity-0 pointer-events-none hud-element">
-    <button id="node-detail-close" class="absolute top-4 right-4 text-muted hover:text-white transition-colors pointer-events-auto">✕</button>
-    <div class="text-cyan font-bold text-lg mb-1 tracking-tight" id="nd-title">Node Name</div>
-    <div class="flex items-center gap-2 text-[10px] font-mono mb-4 pb-3 border-b border-white/10">
-      <span id="nd-axis" class="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-white/70">Axis</span>
-      <span id="nd-state" class="px-2 py-0.5 rounded border uppercase">State</span>
-      <span id="nd-bus" class="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-white/70 uppercase">Bus</span>
-    </div>
+     <button id="node-detail-close" class="absolute top-4 right-4 text-muted hover:text-white transition-colors pointer-events-auto" data-i18n-aria-label="nodeDetail.close" aria-label="Close node details">✕</button>
+     <div class="text-cyan font-bold text-lg mb-1 tracking-tight" id="nd-title" data-i18n="nodeDetail.title">Node Name</div>
+     <div class="flex items-center gap-2 text-[10px] font-mono mb-4 pb-3 border-b border-white/10">
+       <span id="nd-axis" class="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-white/70" data-i18n="nodeDetail.axis">Axis</span>
+       <span id="nd-state" class="px-2 py-0.5 rounded border uppercase" data-i18n="nodeDetail.state">State</span>
+       <span id="nd-bus" class="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-white/70 uppercase" data-i18n="nodeDetail.bus">Bus</span>
+     </div>
     <div id="nd-notes" class="text-sm text-cloud/80 mb-5 leading-relaxed font-sans">Select a node in the geodesic dome to inspect its architectural state and entangled edges.</div>
     <div class="text-[10px] font-mono text-muted mb-2 uppercase tracking-widest">Entangled Edges</div>
     <div id="nd-conns" class="flex flex-wrap gap-2 pointer-events-auto">
@@ -123,28 +243,28 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     </div>
   </aside>
 
-  <!-- LAYER 0: Somatic Breathing Mode (Full Screen Takeover) -->
-  <div id="layer0" class="fixed inset-0 z-[100] bg-void/95 backdrop-blur-md flex flex-col items-center justify-center gap-6 transition-all duration-1000 opacity-0 pointer-events-none">
-    <div class="absolute top-12 left-1/2 -translate-x-1/2 flex items-center gap-4 font-mono text-xs text-muted glass-panel px-6 py-3 rounded-full">
-      <span>SPOONS</span>
-      <div class="w-48 h-1 bg-surface rounded-full overflow-hidden">
-        <div id="l0-spoon-fill" class="h-full bg-coral transition-all duration-500"></div>
-      </div>
-      <span id="l0-spoon-pct" class="text-coral font-bold">75%</span>
-    </div>
+   <!-- LAYER 0: Somatic Breathing Mode (Full Screen Takeover) -->
+   <div id="layer0" class="fixed inset-0 z-[100] bg-void/95 backdrop-blur-md flex flex-col items-center justify-center gap-6 transition-all duration-1000 opacity-0 pointer-events-none">
+     <div class="absolute top-12 left-1/2 -translate-x-1/2 flex items-center gap-4 font-mono text-xs text-muted glass-panel px-6 py-3 rounded-full">
+       <span data-i18n="layer0.spoonsLabel">SPOONS</span>
+       <div class="w-48 h-1 bg-surface rounded-full overflow-hidden">
+         <div id="l0-spoon-fill" class="h-full bg-coral transition-all duration-500"></div>
+       </div>
+       <span id="l0-spoon-pct" class="text-coral font-bold">75%</span>
+     </div>
 
-    <!-- Central Breathing Dot -->
-    <div id="l0-dot" class="w-24 h-24 rounded-full bg-coral opacity-40 transform scale-75 shadow-[0_0_60px_rgba(232,99,111,0.3)]"></div>
-    <div id="l0-phase" class="text-3xl font-mono font-bold text-coral tracking-[0.3em] uppercase mt-8">INHALE</div>
+     <!-- Central Breathing Dot -->
+     <div id="l0-dot" class="w-24 h-24 rounded-full bg-coral opacity-40 transform scale-75 shadow-[0_0_60px_rgba(232,99,111,0.3)]"></div>
+     <div id="l0-phase" class="text-3xl font-mono font-bold text-coral tracking-[0.3em] uppercase mt-8" data-i18n="layer0.inhale">INHALE</div>
 
-    <div class="absolute bottom-16 flex flex-col items-center gap-4 glass-panel px-8 py-4 rounded-xl">
-      <div class="w-40 h-1.5 bg-surface rounded-full overflow-hidden">
-        <div id="l0-escape-fill" class="h-full w-0 bg-coral shadow-[0_0_10px_#E8636F]"></div>
-      </div>
-      <div class="text-[10px] font-mono text-muted tracking-widest uppercase">Hold ESC for 3 seconds to disengage</div>
-      <div class="text-[9px] font-mono text-cyan tracking-widest uppercase opacity-50 mt-2">Larmor Frequency: 863Hz Active</div>
-    </div>
-  </div>
+     <div class="absolute bottom-16 flex flex-col items-center gap-4 glass-panel px-8 py-4 rounded-xl">
+       <div class="w-40 h-1.5 bg-surface rounded-full overflow-hidden">
+         <div id="l0-escape-fill" class="h-full w-0 bg-coral shadow-[0_0_10px_#E8636F]"></div>
+       </div>
+       <div class="text-[10px] font-mono text-muted tracking-widest uppercase" data-i18n="layer0.escapeHint">Hold ESC for 3 seconds to disengage</div>
+       <div class="text-[9px] font-mono text-cyan tracking-widest uppercase opacity-50 mt-2" data-i18n="layer0.larmorFreq">Larmor Frequency: 863Hz Active</div>
+     </div>
+   </div>
 </BaseLayout>
 
 <style is:global>
@@ -165,10 +285,41 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     opacity: 0.1;
   }
 
-  /* Custom Scrollbar */
-  ::-webkit-scrollbar { width: 4px; height: 4px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255,0.2); border-radius: 2px; }
+   /* Custom Scrollbar */
+   ::-webkit-scrollbar { width: 4px; height: 4px; }
+   ::-webkit-scrollbar-track { background: transparent; }
+   ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255,0.2); border-radius: 2px; }
+   
+   /* Reduced motion */
+   @media (prefers-reduced-motion: reduce) {
+     *, *::before, *::after {
+       animation-duration: 0.01ms !important;
+       animation-iteration-count: 1 !important;
+       transition-duration: 0.01ms !important;
+       scroll-behavior: auto !important;
+     }
+     .animate-spin {
+       animation: none !important;
+     }
+   }
+   
+   /* Focus-visible styling */
+   :focus-visible {
+     outline: 2px solid #06b6d4;
+     outline-offset: 2px;
+   }
+   
+   /* Keyboard shortcuts overlay */
+   #keyboard-shortcuts-overlay {
+     backdrop-filter: blur(4px);
+     -webkit-backdrop-filter: blur(4px);
+   }
+   
+   #keyboard-shortcuts-overlay kbd {
+     font-family: 'JetBrains Mono', monospace;
+     background: rgba(12, 14, 20, 0.8);
+     border-color: rgba(255, 255, 255, 0.2);
+   }
 
   /* Layer 0 Animations */
   @keyframes l0-inhale { to { transform: scale(1.4); opacity: 1; } }
@@ -179,28 +330,388 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     transition: opacity 1s ease-in-out;
   }
 
-  .hud-element {
-    transition: all 0.3s ease;
-  }
-</style>
+   .hud-element {
+     transition: all 0.3s ease;
+   }
+   
+    /* Entrance animation: fade + upshift */
+    body:not(.loaded) #webgl-container,
+    body:not(.loaded) .hud-element,
+    body:not(.loaded) .glass-panel {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    
+    body.loaded #webgl-container,
+    body.loaded .hud-element,
+    body.loaded .glass-panel {
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity 600ms ease-out, transform 600ms ease-out;
+    }
+    
+    /* ===============================================
+       A/B ACCENT PALETTES
+       Variant "tm" (teal-magenta, default) - current
+       Variant "cv" (cyan-violet) - alternate
+       =============================================== */
+    [data-palette="cv"] .text-cyan {
+      color: #8b5cf6 !important; /* violet */
+    }
+    [data-palette="cv"] .bg-cyan {
+      background-color: #8b5cf6 !important;
+    }
+    [data-palette="cv"] .border-cyan {
+      border-color: #8b5cf6 !important;
+    }
+    [data-palette="cv"] #volume-fill {
+      background-color: #ec4899 !important; /* magenta for volume */
+    }
+    [data-palette="cv"] #volume-thumb {
+      background-color: #ec4899 !important;
+    }
+    [data-palette="cv"] .text-emerald {
+      color: #a855f7 !important; /* violet alternative */
+    }
+    [data-palette="cv"] .bg-emerald {
+      background-color: #a855f7 !important;
+    }
+    /* Swap amber to magenta for trimtab */
+    [data-palette="cv"] #trimtab-freq,
+    [data-palette="cv"] #volume-icon path[stroke="currentColor"] {
+      color: #d946ef !important;
+    }
+    [data-palette="cv"] #trimtab-canvas {
+      stroke: #d946ef !important;
+    }
+  </style>
 
 <!-- COMBINED LOGIC: TELEMETRY + WEBGL DOME + COCKPIT -->
 <script type="module" is:inline>
-  import * as THREE from 'three';
-  import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
-  import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
-  import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
-  import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+   import * as THREE from 'three';
+   import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+   import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+   import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+   import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+   import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 
-  // ================================================================
-  // 1. TELEMETRY & HUD STATE
-  // ================================================================
-  const $ = (id) => document.getElementById(id);
-  
-  let currentSpoons = 10;
-  const MAX_SPOONS = 20;
+   // ================================================================
+   // 1. TELEMETRY & HUD STATE
+   // ================================================================
+   const $ = (id) => document.getElementById(id);
+   
+   let currentSpoons = 10;
+   const MAX_SPOONS = 20;
+   
+   // ================================================================
+   // 1a. INTERNATIONALIZATION (i18n)
+   // ================================================================
+   // Simple keyed translation system for future expansion
+   const i18n = {
+     currentLang: 'en',
+     messages: {
+       en: {
+         // Loading
+         'loading.title': 'Materializing K4 Tetrahedron',
+         'loading.initializing': 'Initializing...',
+         'loading.details': 'Loading 3D scene',
+         'loading.eta': 'ETA: ',
+         // HUD
+         'hud.cockpit': 'Cockpit',
+         'hud.qFactor.label': 'Q-FACTOR:',
+         'hud.qFactor.title': 'Fisher-Escolà Coherence Score',
+         'hud.volume.title': 'Ambient Volume',
+         'hud.volume.mute': 'Toggle mute',
+         'hud.volume.sliderLabel': 'Volume control',
+         'hud.volume.tooltip': '70%',
+         'hud.connection.label': 'SYNC',
+         'hud.connection.status.title': 'Connection status',
+         'hud.connection.status.connected': 'Connected',
+         'hud.connection.status.reconnecting': 'Reconnecting...',
+         'hud.connection.status.failed': 'Connection failed',
+         'hud.toggleUI': 'Toggle heads-up display',
+         'hud.spoons.label': 'SPOONS',
+         'hud.spoons.title': 'Vertex A: Operator State',
+         'hud.love.label': 'L.O.V.E.',
+         'hud.love.title': 'L.O.V.E. Ledger Balance',
+         'hud.fleet.label': 'FLEET:',
+         'hud.fleet.title': 'Active K4 Vertices',
+         'hud.trimtab.label': 'Trimtab frequency control',
+         'hud.trimtab.frequency': '863Hz',
+         // Filters
+         'filters.all': 'ALL',
+         'filters.allAria': 'Show all axes',
+         'filters.body': 'Body',
+         'filters.bodyAria': 'Show Body axis only',
+         'filters.mesh': 'Mesh',
+         'filters.meshAria': 'Show Mesh axis only',
+         'filters.forge': 'Forge',
+         'filters.forgeAria': 'Show Forge axis only',
+         'filters.shield': 'Shield',
+         'filters.shieldAria': 'Show Shield axis only',
+         'filters.groupLabel': 'Filter by axis',
+         // Search
+         'search.placeholder': 'Search topology...',
+         'search.ariaLabel': 'Search topology nodes',
+         // Stats & Legend
+         'stats.nodes': 'NODES IDENTIFIED',
+         'legend.active': 'Active',
+         'legend.deployed': 'Deployed',
+         'legend.countdown': 'Countdown',
+         'legend.research': 'Research',
+         'legend.missing': 'Missing',
+         // Node Detail
+         'nodeDetail.title': 'Node Name',
+         'nodeDetail.axis': 'Axis',
+         'nodeDetail.state': 'State',
+         'nodeDetail.bus': 'Bus',
+         'nodeDetail.close': 'Close node details',
+         // Noscript
+         'noscript.title': 'JavaScript Required',
+         'noscript.description': 'The Sovereign Cockpit Dome requires JavaScript to render the 3D visualization and interactive elements. Please enable JavaScript in your browser settings.',
+         'noscript.backLink': 'Back to Mesh Network',
+         // Performance
+         'perf.render': 'Render:',
+         'perf.fps': 'FPS:',
+         // Shortcuts
+         'shortcuts.title': 'Keyboard Shortcuts',
+         'shortcuts.close': 'Close shortcuts',
+         'shortcuts.focusSearch': 'Focus search',
+         'shortcuts.toggleUI': 'Toggle HUD',
+         'shortcuts.activateLayer0': 'Activate Layer 0',
+         'shortcuts.prompt': 'Press any key to close',
+         // A11y scan
+         'a11y.scanButton': 'A11y Scan',
+         'a11y.violationsTitle': 'Accessibility violations found',
+         'a11y.noViolations': 'No accessibility violations detected',
+         // Errors
+         'error.webgl.title': 'WebGL Not Supported',
+         'error.webgl.message': 'Your browser or device does not support WebGL, which is required for the 3D visualization. Please try a modern browser like Chrome, Firefox, or Edge.',
+         'error.loading.title': 'Loading Failed',
+         'error.loading.message': 'Failed to load 3D resources. Please check your connection and try again.',
+         'error.retry': 'Retry',
+         // Layer 0
+         'layer0.spoonsLabel': 'SPOONS',
+         'layer0.inhale': 'INHALE',
+         'layer0.escapeHint': 'Hold ESC for 3 seconds to disengage',
+         'layer0.larmorFreq': 'Larmor Frequency: 863Hz Active',
+         // Theme
+         'theme.toggle': 'Theme: A'
+       }
+     },
+     t(key) {
+       return this.messages[this.currentLang][key] || key;
+     },
+     // Apply translations to DOM elements with data-i18n attributes
+     apply() {
+       document.querySelectorAll('[data-i18n]').forEach(el => {
+         const key = el.getAttribute('data-i18n');
+         el.textContent = this.t(key);
+       });
+       document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+         const key = el.getAttribute('data-i18n-placeholder');
+         el.placeholder = this.t(key);
+       });
+       document.querySelectorAll('[data-i18n-aria-label]').forEach(el => {
+         const key = el.getAttribute('data-i18n-aria-label');
+         el.setAttribute('aria-label', this.t(key));
+       });
+       document.querySelectorAll('[data-i18n-title]').forEach(el => {
+         const key = el.getAttribute('data-i18n-title');
+         el.title = this.t(key);
+       });
+     }
+   };
+   
+   // Apply i18n on load
+   i18n.apply();
+   
+   // Audio system singleton
+   let audioContext = null;
+   let masterGain = null;
+   let ambientOscillator = null;
+   let isAudioInitialized = false;
+   
+   // Load volume from localStorage or default to 70%
+   const savedVolume = localStorage.getItem('p31:dome:volume') || '70';
+   const volumeSlider = $("hud-volume-slider");
+   if (volumeSlider) volumeSlider.value = savedVolume;
+   const volumeValue = $("hud-volume-value");
+   if (volumeValue) volumeValue.textContent = `${savedVolume}%`;
+   
+    // Initialize audio on first user interaction (browser requirement)
+    function initAudio() {
+      if (isAudioInitialized || prefersReducedMotion) return;
+      
+      try {
+       audioContext = new (window.AudioContext || window.webkitAudioContext)();
+       masterGain = audioContext.createGain();
+       
+       // Create ambient music oscillator (sine wave at 110Hz - A2 harmonic)
+       ambientOscillator = audioContext.createOscillator();
+       ambientOscillator.type = 'sine';
+       ambientOscillator.frequency.setValueAtTime(110, audioContext.currentTime);
+       
+       // Connect: oscillator -> masterGain -> destination
+       ambientOscillator.connect(masterGain);
+       masterGain.connect(audioContext.destination);
+       
+       // Set initial volume from saved setting, fade in over 2 seconds
+       const volume = parseInt(savedVolume);
+       const gain = Math.pow(volume / 100, 2) * 0.3; // Max gain 0.3 at 100%
+       masterGain.gain.setValueAtTime(0, audioContext.currentTime);
+       masterGain.gain.exponentialRampToValueAtTime(gain, audioContext.currentTime + 2.0);
+       
+       ambientOscillator.start();
+       isAudioInitialized = true;
+     } catch (e) {
+       console.warn('Failed to initialize audio:', e);
+     }
+   }
+   
+   function initAudioOnInteraction() {
+     if (isAudioInitialized) return;
+     
+     const initOnce = () => {
+       initAudio();
+       document.removeEventListener('click', initOnce);
+       document.removeEventListener('keydown', initOnce);
+       document.removeEventListener('touchstart', initOnce);
+     };
+     
+     document.addEventListener('click', initOnce);
+     document.addEventListener('keydown', initOnce);
+     document.addEventListener('touchstart', initOnce);
+   }
+   
+   // Custom Volume Slider State
+   let isMuted = localStorage.getItem('p31:dome:muted') === 'true';
+   const volumeSliderContainer = document.getElementById('volume-slider-container');
+   const volumeFill = document.getElementById('volume-fill');
+   const volumeThumb = document.getElementById('volume-thumb');
+   const volumeTooltip = document.getElementById('volume-tooltip');
+   const volumeMuteBtn = document.getElementById('volume-mute-btn');
+   const volumeIcon = document.getElementById('volume-icon');
+   const muteIcon = document.getElementById('mute-icon');
+   let currentVolume = parseInt(savedVolume);
+   
+   function updateVolumeUI(vol, isMute = false) {
+     const percent = isMute ? 0 : vol;
+     if (volumeFill) volumeFill.style.width = `${percent}%`;
+     if (volumeThumb) {
+       const containerWidth = volumeSliderContainer ? volumeSliderContainer.offsetWidth : 80;
+       const thumbLeft = Math.max(0, (percent / 100) * (containerWidth - 12));
+       volumeThumb.style.left = `${thumbLeft}px`;
+     }
+     if (volumeValue) volumeValue.textContent = `${isMute ? 0 : vol}%`;
+     if (volumeTooltip) volumeTooltip.textContent = `${isMute ? 0 : vol}%`;
+     if (volumeIcon && muteIcon) {
+       volumeIcon.classList.toggle('hidden', isMute);
+       muteIcon.classList.toggle('hidden', !isMute);
+     }
+   }
+   
+   // Initialize volume UI
+   updateVolumeUI(currentVolume, isMuted);
+   
+   // Set up volume slider (custom implementation)
+   if (volumeSliderContainer) {
+     // Disable if reduced motion is preferred (audio disabled)
+     if (prefersReducedMotion) {
+       volumeSliderContainer.disabled = true;
+       volumeSliderContainer.title = "Ambient audio disabled (prefers-reduced-motion)";
+     }
+     
+     let isDragging = false;
+     
+     function handleVolumeInteraction(e) {
+       e.preventDefault();
+       const rect = volumeSliderContainer.getBoundingClientRect();
+       const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+       let percent = Math.max(0, Math.min(100, ((clientX - rect.left) / rect.width) * 100));
+       
+       currentVolume = Math.round(percent);
+       updateVolumeUI(currentVolume, isMuted);
+       
+       // Show tooltip
+       if (volumeTooltip) {
+         volumeTooltip.style.opacity = '1';
+         volumeTooltip.style.left = `${percent}%`;
+       }
+       
+       // Update audio
+       localStorage.setItem('p31:dome:volume', currentVolume.toString());
+       if (masterGain && audioContext && !isMuted) {
+         const gain = Math.pow(currentVolume / 100, 2) * 0.3;
+         masterGain.gain.cancelScheduledValues(audioContext.currentTime);
+         masterGain.gain.setTargetAtTime(gain, audioContext.currentTime, 0.01);
+       }
+       
+       // Haptic feedback if supported and not reduced motion
+       if (navigator.vibrate && !prefersReducedMotion) {
+         navigator.vibrate(10);
+       }
+     }
+     
+     volumeSliderContainer.addEventListener('mousedown', (e) => {
+       isDragging = true;
+       handleVolumeInteraction(e);
+     });
+     
+     volumeSliderContainer.addEventListener('touchstart', (e) => {
+       isDragging = true;
+       handleVolumeInteraction(e);
+     }, { passive: false });
+     
+     document.addEventListener('mousemove', (e) => {
+       if (isDragging) handleVolumeInteraction(e);
+     });
+     
+     document.addEventListener('touchmove', (e) => {
+       if (isDragging) handleVolumeInteraction(e);
+     }, { passive: false });
+     
+     const stopDrag = () => {
+       isDragging = false;
+       if (volumeTooltip) volumeTooltip.style.opacity = '0';
+     };
+     
+     document.addEventListener('mouseup', stopDrag);
+     document.addEventListener('touchend', stopDrag);
+   }
+   
+   // Mute toggle
+   if (volumeMuteBtn) {
+     volumeMuteBtn.addEventListener('click', () => {
+       isMuted = !isMuted;
+       localStorage.setItem('p31:dome:muted', isMuted.toString());
+       updateVolumeUI(currentVolume, isMuted);
+       
+       if (masterGain && audioContext) {
+         if (isMuted) {
+           masterGain.gain.cancelScheduledValues(audioContext.currentTime);
+           masterGain.gain.setTargetAtTime(0.001, audioContext.currentTime, 0.01);
+         } else {
+           const gain = Math.pow(currentVolume / 100, 2) * 0.3;
+           masterGain.gain.cancelScheduledValues(audioContext.currentTime);
+           masterGain.gain.setTargetAtTime(gain, audioContext.currentTime, 0.01);
+         }
+       }
+       
+       // Haptic feedback
+       if (navigator.vibrate && !prefersReducedMotion) {
+         navigator.vibrate(20);
+       }
+     });
+   }
+   
+   // Check for prefers-reduced-motion
+   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+   
+   // Initialize audio on first user interaction
+   initAudioOnInteraction();
 
-  const fetchWithCache = async (url, cacheKey, fallbackValue) => {
+   const fetchWithCache = async (url, cacheKey, fallbackValue) => {
     try {
       const response = await fetch(url, { signal: AbortSignal.timeout(5000) });
       if (!response.ok) throw new Error("Network error");
@@ -401,10 +912,81 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     if(e.key === "Tab") { e.preventDefault(); window.toggleUI(); }
   });
 
-  // ================================================================
-  // 3. WEBGL SPACESHIP EARTH DOME (Three.js)
-  // ================================================================
-  const container = $("webgl-container");
+   // ================================================================
+   // 3. WEBGL SPACESHIP EARTH DOME (Three.js)
+   // ================================================================
+   
+   // Loading manager for progress tracking and error handling
+   const loadingManager = new THREE.LoadingManager();
+   
+   loadingManager.onStart = (url, itemsLoaded, itemsTotal) => {
+     console.log(`Started loading: ${url} (${itemsLoaded}/${itemsTotal})`);
+   };
+   
+   loadingManager.onLoad = () => {
+     console.log('All resources loaded');
+     // Hide loading screen with smooth transition
+     const loadingScreen = $('loading-screen');
+     if (loadingScreen) {
+       loadingScreen.style.opacity = '0';
+       setTimeout(() => {
+         loadingScreen.style.display = 'none';
+       }, 1000);
+     }
+     // Audio will initialize on first user interaction (initAudioOnInteraction)
+   };
+   
+    // Track time for ETA calculation
+    let loadStartTime = Date.now();
+    let estimatedTotalTime = 0;
+    
+    loadingManager.onProgress = (url, itemsLoaded, itemsTotal) => {
+      const progress = itemsLoaded / itemsTotal;
+      const progressBar = $('loading-bar');
+      const loadingText = $('loading-text');
+      const loadingDetails = $('loading-details');
+      const loadingETA = $('loading-eta');
+      
+      if (progressBar) progressBar.style.width = `${progress * 100}%`;
+      if (loadingText) loadingText.textContent = `Loading... ${Math.round(progress * 100)}%`;
+      if (loadingDetails) loadingDetails.textContent = `${itemsLoaded} of ${itemsTotal} resources`;
+      
+      // Calculate ETA
+      if (loadingETA && progress > 0) {
+        const elapsedTime = Date.now() - loadStartTime;
+        const estimatedTotal = elapsedTime / progress;
+        const remainingTime = estimatedTotal - elapsedTime;
+        if (remainingTime > 0 && !isNaN(remainingTime)) {
+          const seconds = Math.max(0, Math.floor(remainingTime / 1000));
+          loadingETA.textContent = `${i18n.t('loading.eta')}${seconds}s`;
+        }
+      }
+    };
+   
+   loadingManager.onError = (url) => {
+     console.error(`Failed to load: ${url}`);
+     showLoadingError();
+   };
+   
+   // Set as global default
+   THREE.DefaultLoadingManager = loadingManager;
+   
+   // Check WebGL support before proceeding
+   let webglSupported = true;
+   try {
+     const testCanvas = document.createElement('canvas');
+     const gl = testCanvas.getContext('webgl') || testCanvas.getContext('experimental-webgl');
+     if (!gl) webglSupported = false;
+   } catch (e) {
+     webglSupported = false;
+   }
+   
+   if (!webglSupported) {
+     showWebGLError();
+     return;
+   }
+   
+   const container = $("webgl-container");
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0x050508);
 
@@ -414,10 +996,31 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  container.appendChild(renderer.domElement);
+   renderer.toneMapping = THREE.ACESFilmicToneMapping;
+   container.appendChild(renderer.domElement);
+   
+   // Camera Controls (Orbit)
+   const controls = new OrbitControls(camera, renderer.domElement);
+   controls.enableDamping = true;
+   controls.dampingFactor = 0.05;
+   controls.maxPolarAngle = Math.PI / 2 - 0.1; // Prevent going below ground
+   controls.minDistance = 3;
+   controls.maxDistance = 10;
+   controls.enablePan = false;
+   
+   // Respect user's motion preferences
+   if (prefersReducedMotion) {
+     controls.autoRotate = false;
+     controls.enableZoom = false;
+   } else {
+     controls.autoRotate = true;
+     controls.autoRotateSpeed = 0.5;
+   }
+   
+   // Touch gestures: OrbitControls handles pinch zoom and single-finger rotate by default
+   // No additional configuration needed
 
-  // Post Processing
+   // Post Processing
   const composer = new EffectComposer(renderer);
   composer.addPass(new RenderPass(scene, camera));
   const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 0.6, 0.4, 0.6);
@@ -468,7 +1071,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     ['vault', 'operator-state', 'protects']
   ];
 
-  $("node-count").innerText = `${Object.keys(VERTICES).length} NODES IDENTIFIED`;
+  $("node-count").innerText = `${Object.keys(VERTICES).length} ${i18n.t('stats.nodes')}`;
 
   function getDominantAxis(a,b,c,d) { const v={a,b,c,d}; let m=-1, ax='a'; for(let k of ['a','b','c','d']) { if(v[k]>m) { m=v[k]; ax=k; } } return ax; }
   function getNodeColor(a,b,c,d) { const s=a+b+c+d||1, col=new THREE.Color(0); const ac={a:new THREE.Color(AXIS_COLORS.a),b:new THREE.Color(AXIS_COLORS.b),c:new THREE.Color(AXIS_COLORS.c),d:new THREE.Color(AXIS_COLORS.d)}; for(let k of ['a','b','c','d']) { const w=({a,b,c,d})[k]/s; col.r+=ac[k].r*w; col.g+=ac[k].g*w; col.b+=ac[k].b*w; } return col; }
@@ -783,32 +1386,87 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     }
   });
 
-  $('node-detail-close').addEventListener('click', () => {
-    selectedNode = null;
-    $('node-detail-panel').classList.add('opacity-0', 'translate-x-10', 'pointer-events-none');
-    for(const m of faceMeshes) {
-      const a = m.userData.a;
-      if(a) {
-        m.material.emissiveIntensity = a.glow >= 1.0 ? 3.0 : 1.2;
-        m.material.opacity = 0.9;
+   $('node-detail-close').addEventListener('click', () => {
+     selectedNode = null;
+     $('node-detail-panel').classList.add('opacity-0', 'translate-x-10', 'pointer-events-none');
+     for(const m of faceMeshes) {
+       const a = m.userData.a;
+       if(a) {
+         m.material.emissiveIntensity = a.glow >= 1.0 ? 3.0 : 1.2;
+         m.material.opacity = 0.9;
+       }
+       m.userData.targetOffset = 0.0;
+     }
+   });
+
+   // ================================================================
+   // 5. ERROR HANDLING
+   // ================================================================
+    function showWebGLError() {
+      const container = $("webgl-container");
+      if (container) {
+        container.innerHTML = `
+          <div class="flex flex-col items-center justify-center h-full text-center p-6">
+            <svg width="64" height="64" viewBox="0 0 512 512" class="mb-6"><rect width="512" height="512" rx="112" fill="#25897d"/><circle cx="390" cy="120" r="48" fill="#cc6247"/><text x="256" y="340" font-family="system-ui" font-weight="900" font-size="220" fill="#d8d6d0" text-anchor="middle">P31</text><rect x="156" y="380" width="200" height="16" rx="8" fill="#cda852"/></svg>
+            <h2 class="text-2xl font-bold text-red-400 mb-3" data-i18n="error.webgl.title">WebGL Not Supported</h2>
+            <p class="text-cloud mb-6" data-i18n="error.webgl.message">Your browser or device does not support WebGL, which is required for the 3D visualization. Please try a modern browser like Chrome, Firefox, or Edge.</p>
+            <button onclick="location.reload()" class="px-6 py-3 bg-white/20 hover:bg-white/30 text-white rounded transition-colors" data-i18n="error.retry">Retry</button>
+          </div>
+        `;
+        // Apply i18n to the error message
+        i18n.apply();
       }
-      m.userData.targetOffset = 0.0;
     }
-  });
-
-  // ================================================================
-  // 5. ANIMATION & RENDER LOOP
-  // ================================================================
-  let time = 0;
-  function animate() {
-    requestAnimationFrame(animate);
-    const dt = 0.016; time += 0.002;
-
-    // Auto-rotate
-    if(!selectedNode) {
-      domeGroup.rotation.y += 0.0008;
-      domeGroup.rotation.x = Math.sin(time) * 0.05;
+   
+    function showLoadingError() {
+      const loadingScreen = $("loading-screen");
+      if (!loadingScreen) return;
+      
+      loadingScreen.innerHTML = `
+        <div class="flex flex-col items-center justify-center text-center">
+          <svg width="64" height="64" viewBox="0 0 512 512" class="mb-8"><rect width="512" height="512" rx="112" fill="#25897d"/><circle cx="390" cy="120" r="48" fill="#cc6247"/><text x="256" y="340" font-family="system-ui" font-weight="900" font-size="220" fill="#d8d6d0" text-anchor="middle">P31</text><rect x="156" y="380" width="200" height="16" rx="8" fill="#cda852"/></svg>
+          <div class="text-red-400 font-bold mb-4" data-i18n="error.loading.title">Loading Failed</div>
+          <div class="text-cloud mb-6" data-i18n="error.loading.message">Failed to load 3D resources. Please check your connection and try again.</div>
+          <button onclick="location.reload()" class="px-6 py-3 bg-white/20 hover:bg-white/30 text-white rounded transition-colors" data-i18n="error.retry">Retry</button>
+        </div>
+      `;
+      i18n.apply();
     }
+
+   // ================================================================
+   // 5. ANIMATION & RENDER LOOP
+   // ================================================================
+   let time = 0;
+   let animationFrameId = null;
+   const FPS_LIMIT = 60;
+   const FRAME_TIME = 1000 / FPS_LIMIT;
+   let lastTime = performance.now();
+   
+   // Time scale multiplier based on hardware concurrency (1x to 2x)
+   const timeScale = Math.min(navigator.hardwareConcurrency || 4, 8) / 4;
+   
+   function animate(timestamp = 0) {
+     // Handle hidden tabs: use setTimeout to reduce power consumption
+     if (document.hidden) {
+       animationFrameId = setTimeout(animate, FRAME_TIME);
+       const dt = FRAME_TIME / 1000;
+       time += dt * 0.1 * timeScale; // Slow-motion when hidden
+     } else {
+       animationFrameId = requestAnimationFrame(animate);
+       const dt = (timestamp - lastTime) / 1000 || 0.016;
+       lastTime = timestamp;
+       time += dt * timeScale;
+     }
+
+   // Auto-rotate with smooth lerp (respects prefers-reduced-motion)
+   if(!selectedNode && !controls.isDragging && !prefersReducedMotion) {
+     const targetY = Math.sin(time * 0.5) * 0.1;
+     const targetX = Math.sin(time * 0.3) * 0.05;
+     
+     // Smoothly interpolate towards target rotation
+     domeGroup.rotation.y = THREE.MathUtils.lerp(domeGroup.rotation.y, targetY, 0.02);
+     domeGroup.rotation.x = THREE.MathUtils.lerp(domeGroup.rotation.x, targetX, 0.02);
+   }
 
     molField.rotation.y += 0.0003;
     molField.rotation.x += Math.sin(time*0.3) * 0.0001;
@@ -839,19 +1497,405 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   }
   animate();
 
-  window.addEventListener('resize', () => {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    composer.setSize(window.innerWidth, window.innerHeight);
-    bloomPass.resolution.set(window.innerWidth, window.innerHeight);
-  });
+   window.addEventListener('resize', () => {
+     camera.aspect = window.innerWidth / window.innerHeight;
+     camera.updateProjectionMatrix();
+     renderer.setSize(window.innerWidth, window.innerHeight);
+     composer.setSize(window.innerWidth, window.innerHeight);
+     bloomPass.resolution.set(window.innerWidth, window.innerHeight);
+   });
 
-  // Hide loading screen when ready
-  setTimeout(() => {
-    $('loading-screen').style.opacity = '0';
+    // Fallback: hide loading screen after 10 seconds even if resources stall
     setTimeout(() => {
-      $('loading-screen').style.display = 'none';
-    }, 1000);
-  }, 2000);
-</script>
+      const loadingScreen = $('loading-screen');
+      if (loadingScreen && loadingScreen.style.display !== 'none') {
+        loadingScreen.style.opacity = '0';
+        setTimeout(() => {
+          loadingScreen.style.display = 'none';
+        }, 1000);
+      }
+    }, 10000);
+    
+    // ================================================================
+    // 6. HUD AUTO-HIDE & LATENCY TRACKING
+    // ================================================================
+    
+    // HUD Auto-hide after 3s of inactivity
+    let hudTimer = null;
+    const hud = $('top-hud');
+    const hudContent = $('hud-content');
+    let isHudHidden = false;
+    
+    function showHUD() {
+      if (!hud) return;
+      isHudHidden = false;
+      hud.classList.remove('translate-y-[-100%]');
+      hud.classList.remove('opacity-0');
+      if (hudContent) hudContent.classList.remove('hidden');
+    }
+    
+    function hideHUD() {
+      if (!hud) return;
+      isHudHidden = true;
+      hud.classList.add('translate-y-[-100%]');
+      hud.classList.add('opacity-0');
+      if (hudContent) hudContent.classList.add('hidden');
+    }
+    
+    function resetHUDTimer() {
+      if (hudTimer) clearTimeout(hudTimer);
+      if (isHudHidden) showHUD();
+      hudTimer = setTimeout(() => {
+        if (!isHudHidden) hideHUD();
+      }, 3000);
+    }
+    
+    // Show HUD on hover/touch/focus
+    if (hud) {
+      hud.addEventListener('mouseenter', resetHUDTimer);
+      hud.addEventListener('mousemove', resetHUDTimer);
+      hud.addEventListener('touchstart', resetHUDTimer);
+      hud.addEventListener('focusin', resetHUDTimer);
+      hud.addEventListener('mouseleave', () => {
+        if (hudTimer) clearTimeout(hudTimer);
+        hudTimer = setTimeout(() => {
+          if (!isHudHidden) hideHUD();
+        }, 3000);
+      });
+    }
+    
+    // Initialize HUD timer
+    resetHUDTimer();
+    
+    // Performance Monitoring (Dev Mode)
+    const perfIndicators = $('performance-indicators');
+    const renderTimeEl = $('render-time');
+    const fpsCounterEl = $('fps-counter');
+    const webglStatusEl = $('webgl-status');
+    const connectionStatusEl = $('connection-status');
+    
+    // Only show in dev mode (localhost or dev query param)
+    const isDevMode = window.location.hostname === 'localhost' || window.location.search.includes('dev=true');
+    if (perfIndicators) {
+      perfIndicators.classList.toggle('hidden', !isDevMode);
+    }
+    
+    // Render time tracking
+    let frameCount = 0;
+    let lastFpsTime = performance.now();
+    let fpsValues = [];
+    
+    function updatePerformanceMetrics(dt) {
+      if (!isDevMode) return;
+      
+      // Render time
+      if (renderTimeEl) renderTimeEl.textContent = (dt * 1000).toFixed(1);
+      
+      // FPS calculation (2s average)
+      frameCount++;
+      const now = performance.now();
+      if (now - lastFpsTime >= 2000) {
+        const fps = (frameCount / ((now - lastFpsTime) / 1000));
+        fpsValues.push(fps);
+        if (fpsValues.length > 10) fpsValues.shift();
+        const avgFps = fpsValues.reduce((a, b) => a + b, 0) / fpsValues.length;
+        if (fpsCounterEl) fpsCounterEl.textContent = Math.round(avgFps);
+        frameCount = 0;
+        lastFpsTime = now;
+      }
+      
+      // WebGL status
+      if (webglStatusEl) {
+        webglStatusEl.textContent = renderer.getContext().isContextLost() ? '✗' : '✓';
+        webglStatusEl.className = renderer.getContext().isContextLost() ? 'text-red-400' : 'text-emerald';
+      }
+    }
+    
+    // Connection status simulation (replace with real WebSocket in production)
+    let connectionState = 'connected'; // connected, reconnecting, failed
+    function updateConnectionStatus() {
+      if (!connectionStatusEl) return;
+      
+      const statusConfig = {
+        connected: { color: 'bg-emerald', title: 'Connected', ariaLabel: 'Connected' },
+        reconnecting: { color: 'bg-amber', title: 'Reconnecting...', ariaLabel: 'Reconnecting' },
+        failed: { color: 'bg-red-400', title: 'Connection failed', ariaLabel: 'Failed' }
+      };
+      
+      const config = statusConfig[connectionState] || statusConfig.connected;
+      connectionStatusEl.className = `w-2 h-2 rounded-full ${config.color}`;
+      connectionStatusEl.title = config.title;
+      connectionStatusEl.setAttribute('aria-label', config.ariaLabel);
+    }
+    
+    // Simulate connection state changes (for demo)
+    setInterval(() => {
+      // In real implementation, update based on WebSocket/EventBus events
+      updateConnectionStatus();
+    }, 5000);
+    
+    updateConnectionStatus();
+    
+    // Modify animate function to track performance
+    const originalAnimate = animate;
+    
+    // Hook into animation loop to measure performance
+    let animationStartTime = 0;
+    function measureFramePerformance(timestamp) {
+      if (animationStartTime === 0) animationStartTime = timestamp;
+      const dt = (timestamp - animationStartTime) / 1000 || 0.016;
+      animationStartTime = timestamp;
+      updatePerformanceMetrics(dt);
+    }
+    
+    // Override composer.render to measure frame time
+    const originalRender = composer.render.bind(composer);
+    composer.render = function() {
+      const start = performance.now();
+      originalRender();
+      const end = performance.now();
+      measureFramePerformance(end);
+    };
+    
+    // Focus-visible styles via JS (for browsers that don't support :focus-visible)
+    document.addEventListener('focusin', (e) => {
+      if (e.target.matches('button, [role="button"], input, [tabindex]')) {
+        e.target.classList.add('focus-visible');
+      }
+    });
+    
+    document.addEventListener('focusout', (e) => {
+      if (e.target.matches('button, [role="button"], input, [tabindex]')) {
+        e.target.classList.remove('focus-visible');
+      }
+    });
+    
+    // Add focus-visible styles to head
+    const focusStyle = document.createElement('style');
+    focusStyle.textContent = `
+       .focus-visible {
+         outline: 2px solid #06b6d4;
+         outline-offset: 2px;
+         transition: outline 0.15s ease;
+       }
+       /* Ensure touch targets are at least 44x44px */
+       button, [role="button"], input[type="range"] {
+         min-width: 44px;
+         min-height: 44px;
+         display: inline-flex;
+         align-items: center;
+         justify-content: center;
+       }
+       #volume-slider-container {
+         min-width: 80px;
+         min-height: 44px;
+         padding: 0;
+       }
+       #volume-slider-container > div {
+         height: 100%;
+         align-items: center;
+       }
+    `;
+    document.head.appendChild(focusStyle);
+    
+     // UI Toggle Button functionality
+     const uiToggleBtn = $('ui-toggle-btn');
+     if (uiToggleBtn) {
+       uiToggleBtn.addEventListener('click', () => {
+         const isCurrentlyHidden = hud.classList.contains('translate-y-[-100%]');
+         if (isCurrentlyHidden) {
+           showHUD();
+           resetHUDTimer();
+         } else {
+           hideHUD();
+         }
+         
+         // Haptic feedback
+         if (navigator.vibrate && !prefersReducedMotion) {
+           navigator.vibrate(10);
+         }
+       });
+     }
+     
+     // ================================================================
+     // 7b. A/B THEME VARIANT SWITCHER
+     // ================================================================
+     const themeToggleBtn = $('theme-toggle-btn');
+     const THEME_KEY = 'p31:dome:themeVariant';
+     const defaultVariant = 'tm'; // teal-magenta
+     const variants = { tm: 'A (teal-magenta)', cv: 'B (cyan-violet)' };
+     
+     function applyTheme(variant) {
+       document.documentElement.setAttribute('data-palette', variant);
+       if (themeToggleBtn) {
+         themeToggleBtn.textContent = `Theme: ${variants[variant]}`;
+         themeToggleBtn.title = `Current: ${variants[variant]}`;
+       }
+       localStorage.setItem(THEME_KEY, variant);
+     }
+     
+     // Load saved theme
+     const savedVariant = localStorage.getItem(THEME_KEY) || defaultVariant;
+     applyTheme(savedVariant);
+     
+     if (themeToggleBtn) {
+       themeToggleBtn.addEventListener('click', () => {
+         const current = document.documentElement.getAttribute('data-palette') || defaultVariant;
+         const next = current === 'tm' ? 'cv' : 'tm';
+         applyTheme(next);
+         
+         // Haptic feedback
+         if (navigator.vibrate && !prefersReducedMotion) {
+           navigator.vibrate(5);
+         }
+       });
+     }
+     
+     // ================================================================
+     // 7. KEYBOARD SHORTCUTS OVERLAY
+     // ================================================================
+     const shortcutsOverlay = $('keyboard-shortcuts-overlay');
+     const closeShortcutsBtn = $('close-shortcuts');
+     let shortcutsVisible = false;
+     let shortcutsTimeout = null;
+     
+     function showShortcuts(autoClose = true) {
+       if (!shortcutsOverlay) return;
+       shortcutsOverlay.classList.remove('opacity-0', 'pointer-events-none');
+       shortcutsVisible = true;
+       
+       if (autoClose) {
+         // Auto-close after 2.5 seconds and then focus search
+         shortcutsTimeout = setTimeout(() => {
+           hideShortcuts();
+           // Focus the search input after overlay closes
+           const searchInput = $('search-input');
+           if (searchInput) searchInput.focus();
+         }, 2500);
+       }
+     }
+     
+     function hideShortcuts() {
+       if (!shortcutsOverlay) return;
+       shortcutsOverlay.classList.add('opacity-0', 'pointer-events-none');
+       shortcutsVisible = false;
+       if (shortcutsTimeout) {
+         clearTimeout(shortcutsTimeout);
+         shortcutsTimeout = null;
+       }
+     }
+     
+     // Toggle with "/" key
+     document.addEventListener('keydown', (e) => {
+       // Ignore if typing in input
+       if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+       
+       if (e.key === '/' && !shortcutsVisible) {
+         e.preventDefault();
+         showShortcuts(true);
+       } else if (shortcutsVisible && e.key !== 'Escape') {
+         // Any key (except Escape which is handled separately) dismisses overlay immediately
+         e.preventDefault();
+         hideShortcuts();
+         // If the key is a letter/digit, could focus appropriate control; but focus search after brief
+         setTimeout(() => {
+           const searchInput = $('search-input');
+           if (searchInput && document.activeElement !== searchInput) searchInput.focus();
+         }, 50);
+       }
+     });
+     
+     // Also allow Escape to close
+     document.addEventListener('keydown', (e) => {
+       if (e.key === 'Escape' && shortcutsVisible) {
+         hideShortcuts();
+       }
+     });
+     
+     if (closeShortcutsBtn) {
+       closeShortcutsBtn.addEventListener('click', hideShortcuts);
+     }
+     
+     // Close on backdrop click
+     if (shortcutsOverlay) {
+       shortcutsOverlay.addEventListener('click', (e) => {
+         if (e.target === shortcutsOverlay) hideShortcuts();
+       });
+     }
+     
+     // ================================================================
+     // 8. AXE-CORE ACCESSIBILITY SCANNER (DEV ONLY)
+     // ================================================================
+     const a11yScanBtn = $('a11y-scan-btn');
+     
+     if (a11yScanBtn) {
+       a11yScanBtn.addEventListener('click', async () => {
+         if (typeof axe === 'undefined') {
+           alert('axe-core not loaded. Please refresh to load the accessibility scanner.');
+           return;
+         }
+         
+         try {
+           const results = await axe.run({
+             runOnly: {
+               type: 'tag',
+               values: ['wcag2aa']
+             }
+           });
+           
+           if (results.violations.length === 0) {
+             alert(i18n.t('a11y.noViolations'));
+           } else {
+             const msg = `${i18n.t('a11y.violationsTitle')}\n\n` +
+               results.violations.map(v => `${v.impact.toUpperCase()}: ${v.id} - ${v.description}`).join('\n');
+             alert(msg);
+             console.group('Accessibility Violations');
+             console.table(results.violations);
+             console.groupEnd();
+           }
+         } catch (error) {
+           console.error('Axe scan failed:', error);
+           alert('Accessibility scan failed. Check console.');
+         }
+       });
+     }
+     
+     // ================================================================
+     // 9. REDUCED MOTION ENFORCEMENT
+     // ================================================================
+     // Already detected at top via: const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+     // CSS handles transitions/animations; JS handles non-css motion in animate loop
+     
+     // Apply reduced-motion class to html for CSS overrides
+     if (prefersReducedMotion) {
+       document.documentElement.classList.add('reduced-motion');
+     }
+     
+     // Watch for changes
+     const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+     motionQuery.addEventListener('change', (e) => {
+       if (e.matches) {
+         document.documentElement.classList.add('reduced-motion');
+       } else {
+         document.documentElement.classList.remove('reduced-motion');
+       }
+     });
+     
+     // ================================================================
+     // 10. ENTRANCE ANIMATION
+     // ================================================================
+     // Fade-up entrance for main content when loading screen hides
+     const hideLoading = () => {
+       try {
+         const loadingScreen = $('loading-screen');
+         if (loadingScreen) {
+           loadingScreen.style.opacity = '0';
+           setTimeout(() => {
+             loadingScreen.style.display = 'none';
+             // Trigger entrance animation
+             document.body.classList.add('loaded');
+           }, 1000);
+         }
+       } catch(e) {}
+     };
+   </script>

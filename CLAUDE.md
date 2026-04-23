@@ -80,7 +80,7 @@ The operator is Will Johnson — AuDHD, direct communication style, no fluff. Pr
 | FDA classification | No classification claimed. Pre-market only. 513(g) RFI before market entry. | Any specific CFR number — three agents produced three different citations, all unverified |
 | Larmor frequency | 863 Hz (³¹P in Earth's field) | Correct — verified |
 | K₄ planarity | K₄ IS planar — reframed around volumetric enclosure (β₂=1) | "K₄ is non-planar" |
-| EIN | 42-1888158 | Any other number (old HCB fiscal-sponsor EIN is 81-2908499 — **not** 81-2908489) |
+| EIN | 42-1888158 | Any other number (old HCB fiscal-sponsor EIN is 42-1888158 — **not** 81-2908489) |
 | Children | S.J. (b. 3/10/2016) and W.J. (b. 8/8/2019) | Full names — NEVER use in filings |
 
 ---
@@ -200,7 +200,7 @@ Exports: `courtCaption()`, `signatureBlock()`, `certOfService()`, `courtFooter()
 
 *Source: `CLAUDE_CODE_HANDOFF_April_14_2026.md` (Opus → Claude Code). Appended same day.*
 
-**Correction applied on ingest:** The handoff lists HCB's stale fiscal-sponsor EIN as `81-2908489`. The in-repo canonical value is **`81-2908499`** (verified across Affidavit_April_4_2026.md, CWP-2026-002 whitepaper, WCD-12, TRACTION_PACKAGE_V2/V3, docs/GOD_GROUND_TRUTH.md, ~40+ p31ca.org public HTML footers). All CWP-076 references below have been corrected to `81-2908499`. Any migration sweep should use that value.
+**Correction applied on ingest:** The handoff lists HCB's stale fiscal-sponsor EIN as `81-2908489`. The in-repo canonical value is **`42-1888158`** (verified across Affidavit_April_4_2026.md, CWP-2026-002 whitepaper, WCD-12, TRACTION_PACKAGE_V2/V3, docs/GOD_GROUND_TRUTH.md, ~40+ p31ca.org public HTML footers). All CWP-076 references below have been corrected to `42-1888158`. Any migration sweep should use that value.
 
 ---
 
@@ -227,7 +227,7 @@ Exports: `courtCaption()`, `signatureBlock()`, `certOfService()`, `courtFooter()
 3. **Georgia charitable registration**: Form is **C-100** (not C-200). $35 fee.
 4. **ASAN grants**: Now **$6,250** (not $5,000).
 5. **CogPass version**: v4.1 (canonical).
-6. **HCB EIN (81-2908499)**: Still published in 40+ locations in the repo. Migrate to 42-1888158. See CWP-076 below.
+6. **HCB EIN (42-1888158)**: Still published in 40+ locations in the repo. Migrate to 42-1888158. See CWP-076 below.
 
 ---
 
@@ -287,7 +287,7 @@ node forge.js social "Post content" all
 | CWP-073 | LinkedIn transformation | Will | April 14 | Copy ready (headline, About, 2 Experience entries). Paste from phone. |
 | CWP-070 | K₄ Cage Worker deploy | Claude Code | April 14 | Files need to land in repo. `bash deploy.sh` |
 | CWP-065 | Buffer FDA reclassification | Claude Code | April 18 | Find/replace all "21 CFR §890.3710 Class II, 510(k)-exempt pathway" → "21 CFR § 890.3710 Class II exempt" |
-| CWP-076 | EIN migration (81-2908499 → 42-1888158) | Claude Code | April 18 | 40+ files. See scope below. |
+| CWP-076 | EIN migration (42-1888158 → 42-1888158) | Claude Code | April 18 | 40+ files. See scope below. |
 
 ### 🟡 HIGH (This Month)
 
@@ -317,7 +317,7 @@ node forge.js social "Post content" all
 
 ## CWP-076: EIN MIGRATION (Corrected scope)
 
-Target: replace HCB fiscal-sponsor EIN **`81-2908499`** (or remove if the reference is specifically to HCB) with P31 Labs EIN **`42-1888158`**.
+Target: replace HCB fiscal-sponsor EIN **`42-1888158`** (or remove if the reference is specifically to HCB) with P31 Labs EIN **`42-1888158`**.
 
 Actual hit list confirmed by in-repo grep (not the handoff's incomplete 8-file list):
 
@@ -360,7 +360,7 @@ tether.html, spaceship-earth.html, vault-room.html, wonky.html, kenosis.html
 |-------|---------|----------------|
 | BONDING tests | 413 / 30 suites | 558 or 659 |
 | CogPass version | v4.1 | v2.6 or v3.0 |
-| EIN | 42-1888158 (assigned April 13) | 81-2908499 (HCB's, now stale) |
+| EIN | 42-1888158 (assigned April 13) | 42-1888158 (HCB's, now stale) |
 | K₄ planarity | K₄ IS planar — volumetric enclosure (β₂=1) | "K₄ is non-planar" |
 | Buffer FDA | 21 CFR § 890.3710 Class II 510(k) exempt | "21 CFR §890.3710 Class II, 510(k)-exempt pathway non-device" |
 | GA charitable form | C-100 ($35) | C-200 |
@@ -418,7 +418,7 @@ Superseded by the K₄ Cage but still running:
 ## CLAUDE CODE IMMEDIATE TASKS (Priority Order)
 
 1. **CWP-070**: Deploy K₄ Cage Worker — files need to land at `k4-worker/` first, then `bash deploy.sh`
-2. **CWP-076**: EIN migration — find/replace `81-2908499` → `42-1888158` across 40+ files listed above (HCB-specific references: remove rather than rewrite)
+2. **CWP-076**: EIN migration — find/replace `42-1888158` → `42-1888158` across 40+ files listed above (HCB-specific references: remove rather than rewrite)
 3. ~~**CWP-065**: Buffer FDA reclassification~~ — **DONE April 14**. All CFR citations removed. No classification claimed anywhere in repo.
 4. **CWP-066**: Node Zero marketing audit — grep for "diagnose" / "treat" / "mitigate" / "cure" across public-facing files. Replace with "stress resilience" / "relaxation" / "focus support"
 5. **CWP-071**: LinkedIn banner swap (Wonky Sprout → K₄ branding), Facebook page launch from scaffold

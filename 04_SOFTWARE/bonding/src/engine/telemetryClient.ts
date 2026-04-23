@@ -4,13 +4,16 @@
 const RELAY_URL = 'https://bonding-relay.trimtab-signal.workers.dev';
 
 export interface TelemetryEvent {
-  eventType: 'atom_placed' | 'bond_formed' | 'session_start' | 'fawn_guard_trigger' | 'ping_sent';
+  eventType: 'atom_placed' | 'bond_formed' | 'session_start' | 'fawn_guard_trigger' | 'ping_sent' | 'spoons:update';
   payload: Record<string, any>;
 }
 
 class TelemetryClient {
   private sessionId: string;
   private playerId: string;
+  private qFactor: number = 0.925;
+  private quaternionVariance: number = 0;
+  private angularMomentum: number = 0;
 
   constructor() {
     this.sessionId = crypto.randomUUID();
@@ -52,6 +55,19 @@ class TelemetryClient {
   
   public getSessionId() {
     return this.sessionId;
+  }
+
+  public updateQFactor(quaternionVariance: number, angularMomentum: number) {
+    this.quaternionVariance = quaternionVariance;
+    this.angularMomentum = angularMomentum;
+    // Compute qFactor: monotonic decay from 0.925 as noise increases
+    const noise = Math.max(0, quaternionVariance) + Math.max(0, angularMomentum);
+    this.qFactor = Math.max(0, Math.min(1, 0.925 - noise * 0.0375)); // 0.0375 * 25 = 0.9375, so at noise=25, qFactor=0
+    this.log({eventType: 'spoons:update', payload: {qFactor: this.qFactor}});
+  }
+
+  public getQFactor(): number {
+    return this.qFactor;
   }
 }
 

@@ -1,0 +1,660 @@
+---
+/**
+ * Sovereign Cockpit Dome Page
+ * Full 3D interactive K4 topology visualization
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="P31 Labs | Sovereign Cockpit">
+  <!-- Three.js Import Map -->
+  <script type="importmap" is:inline>
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.183.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.183.0/examples/jsm/"
+      }
+    }
+  </script>
+
+  <!-- 3D Canvas -->
+  <div id="webgl-container" class="fixed inset-0 z-5"></div>
+  <div class="ambient-grid fixed inset-0 z-0 pointer-events-none"></div>
+
+  <!-- Boot Sequence -->
+  <div id="loading-screen" class="fixed inset-0 z-[200] bg-void flex flex-col items-center justify-center font-mono text-cyan">
+    <svg width="64" height="64" viewBox="0 0 512 512" class="mb-8 animate-pulse"><rect width="512" height="512" rx="112" fill="#25897d"/><circle cx="390" cy="120" r="48" fill="#cc6247"/><text x="256" y="340" font-family="system-ui" font-weight="900" font-size="220" fill="#d8d6d0" text-anchor="middle">P31</text><rect x="156" y="380" width="200" height="16" rx="8" fill="#cda852"/></svg>
+    <div class="text-xs tracking-[0.3em] uppercase">Materializing K4 Tetrahedron</div>
+    <div class="w-48 h-1 bg-surface mt-4 overflow-hidden rounded-full">
+      <div id="loading-bar" class="h-full bg-cyan w-0 transition-all duration-100"></div>
+    </div>
+  </div>
+
+  <!-- TOP HUD: System Telemetry -->
+  <nav class="fixed top-0 left-0 right-0 z-50 glass-panel border-b border-white/5 px-4 py-2 flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-mono text-cloud transition-transform duration-500 transform translate-y-0" id="top-hud">
+
+    <!-- Logo & Q-Factor -->
+    <div class="flex items-center gap-4">
+      <div class="flex items-center gap-2 font-bold text-white tracking-widest uppercase">
+        <svg width="18" height="18" viewBox="0 0 512 512" class="opacity-90"><rect width="512" height="512" rx="112" fill="#25897d"/><circle cx="390" cy="120" r="48" fill="#cc6247"/><text x="256" y="340" font-family="system-ui" font-weight="900" font-size="220" fill="#d8d6d0" text-anchor="middle">P31</text><rect x="156" y="380" width="200" height="16" rx="8" fill="#cda852"/></svg>
+        <span>Cockpit</span>
+      </div>
+      <div class="h-4 w-px bg-white/10"></div>
+      <div class="flex items-center gap-2 cursor-help" title="Fisher-Escolà Coherence Score">
+        <span class="w-2 h-2 rounded-full bg-emerald shadow-[0_0_8px_#3ba372] animate-pulse" id="hud-q-dot"></span>
+        <span class="text-muted">Q-FACTOR:</span>
+        <span class="font-bold text-emerald tracking-wider" id="hud-q-val">0.925</span>
+      </div>
+    </div>
+
+    <!-- Thermodynamics & Economy -->
+    <div class="flex items-center gap-6 bg-void/50 px-5 py-1.5 rounded-md border border-white/5 shadow-inner">
+      <div class="flex items-center gap-2 cursor-help" title="Vertex A: Operator State">
+        <span class="text-muted">SPOONS</span>
+        <div class="w-20 h-1.5 bg-surface rounded-full overflow-hidden">
+          <div id="hud-spoon-fill" class="h-full bg-coral transition-all duration-500" style="width: 75%;"></div>
+        </div>
+        <span id="hud-spoon-val" class="text-coral font-bold w-4 text-right">15</span>
+      </div>
+      <div class="h-3 w-px bg-white/10"></div>
+      <div class="flex items-center gap-2 cursor-help" title="L.O.V.E. Ledger Balance">
+        <span class="text-muted">L.O.V.E.</span>
+        <span class="text-cyan font-bold">3.28</span>
+      </div>
+      <div class="h-3 w-px bg-white/10 hidden md:block"></div>
+      <div class="hidden md:flex items-center gap-2 cursor-help" title="Active K4 Vertices">
+        <span class="text-muted">FLEET:</span>
+        <span class="text-cloud font-bold">4/4</span>
+      </div>
+    </div>
+
+    <!-- Trimtab & Actions -->
+    <div class="flex items-center gap-4">
+      <div class="flex items-center gap-2 cursor-pointer group" id="trimtab-trigger" title="Drag to tune frequency · Click for Layer 0 Somatic Mode">
+        <canvas id="trimtab-canvas" width="24" height="24" class="opacity-70 group-hover:opacity-100 transition-opacity"></canvas>
+        <span id="trimtab-freq" class="text-amber font-bold w-12">863Hz</span>
+      </div>
+      <div class="h-4 w-px bg-white/10"></div>
+      <button onclick="toggleUI()" class="text-muted hover:text-white transition-colors" title="Toggle HUD (Tab)">[UI]</button>
+    </div>
+  </nav>
+
+  <!-- LEFT HUD: Filters & Legend -->
+  <aside class="fixed bottom-6 left-6 z-40 flex flex-col gap-4 hud-element" id="left-hud">
+    <!-- Controls -->
+    <div class="glass-panel p-4 rounded-xl flex flex-col gap-3">
+      <input type="text" id="search-input" placeholder="Search topology..." class="bg-void/80 border border-white/10 rounded-md px-3 py-1.5 text-xs font-mono text-cloud outline-none focus:border-cyan transition-colors w-full placeholder-muted">
+
+      <div class="flex flex-wrap gap-1.5 max-w-[220px]" id="axis-filters">
+        <button class="px-2 py-1 text-[9px] font-mono tracking-wider uppercase rounded bg-white/10 border border-white/20 text-white" data-axis="all">ALL</button>
+        <button class="px-2 py-1 text-[9px] font-mono tracking-wider uppercase rounded bg-void border border-white/5 text-[#ff9944] hover:bg-white/5" data-axis="a">Body</button>
+        <button class="px-2 py-1 text-[9px] font-mono tracking-wider uppercase rounded bg-void border border-white/5 text-[#44aaff] hover:bg-white/5" data-axis="b">Mesh</button>
+        <button class="px-2 py-1 text-[9px] font-mono tracking-wider uppercase rounded bg-void border border-white/5 text-[#44ffaa] hover:bg-white/5" data-axis="c">Forge</button>
+        <button class="px-2 py-1 text-[9px] font-mono tracking-wider uppercase rounded bg-void border border-white/5 text-[#ff4466] hover:bg-white/5" data-axis="d">Shield</button>
+      </div>
+    </div>
+
+    <!-- Legend -->
+    <div class="glass-panel p-4 rounded-xl text-[10px] font-mono">
+      <div class="text-muted mb-2 pb-2 border-b border-white/10" id="node-count">-- NODES</div>
+      <div class="flex flex-col gap-1.5">
+        <div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-emerald"></div><span>Active</span></div>
+        <div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-[#25897d]"></div><span>Deployed</span></div>
+        <div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-amber"></div><span>Countdown</span></div>
+        <div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-cyan"></div><span>Research</span></div>
+        <div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-coral"></div><span>Missing</span></div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- RIGHT HUD: Node Inspector -->
+  <aside id="node-detail-panel" class="fixed top-16 right-6 z-40 glass-panel p-5 rounded-xl border-t border-l border-white/10 shadow-[0_10px_40px_rgba(0,0,0,0.8)] w-80 transform transition-all duration-300 translate-x-10 opacity-0 pointer-events-none hud-element">
+    <button id="node-detail-close" class="absolute top-4 right-4 text-muted hover:text-white transition-colors pointer-events-auto">✕</button>
+    <div class="text-cyan font-bold text-lg mb-1 tracking-tight" id="nd-title">Node Name</div>
+    <div class="flex items-center gap-2 text-[10px] font-mono mb-4 pb-3 border-b border-white/10">
+      <span id="nd-axis" class="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-white/70">Axis</span>
+      <span id="nd-state" class="px-2 py-0.5 rounded border uppercase">State</span>
+      <span id="nd-bus" class="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-white/70 uppercase">Bus</span>
+    </div>
+    <div id="nd-notes" class="text-sm text-cloud/80 mb-5 leading-relaxed font-sans">Select a node in the geodesic dome to inspect its architectural state and entangled edges.</div>
+    <div class="text-[10px] font-mono text-muted mb-2 uppercase tracking-widest">Entangled Edges</div>
+    <div id="nd-conns" class="flex flex-wrap gap-2 pointer-events-auto">
+      <span class="text-xs text-muted/50 italic">No node selected</span>
+    </div>
+  </aside>
+
+  <!-- LAYER 0: Somatic Breathing Mode (Full Screen Takeover) -->
+  <div id="layer0" class="fixed inset-0 z-[100] bg-void/95 backdrop-blur-md flex flex-col items-center justify-center gap-6 transition-all duration-1000 opacity-0 pointer-events-none">
+    <div class="absolute top-12 left-1/2 -translate-x-1/2 flex items-center gap-4 font-mono text-xs text-muted glass-panel px-6 py-3 rounded-full">
+      <span>SPOONS</span>
+      <div class="w-48 h-1 bg-surface rounded-full overflow-hidden">
+        <div id="l0-spoon-fill" class="h-full bg-coral transition-all duration-500"></div>
+      </div>
+      <span id="l0-spoon-pct" class="text-coral font-bold">75%</span>
+    </div>
+
+    <!-- Central Breathing Dot -->
+    <div id="l0-dot" class="w-24 h-24 rounded-full bg-coral opacity-40 transform scale-75 shadow-[0_0_60px_rgba(232,99,111,0.3)]"></div>
+    <div id="l0-phase" class="text-3xl font-mono font-bold text-coral tracking-[0.3em] uppercase mt-8">INHALE</div>
+
+    <div class="absolute bottom-16 flex flex-col items-center gap-4 glass-panel px-8 py-4 rounded-xl">
+      <div class="w-40 h-1.5 bg-surface rounded-full overflow-hidden">
+        <div id="l0-escape-fill" class="h-full w-0 bg-coral shadow-[0_0_10px_#E8636F]"></div>
+      </div>
+      <div class="text-[10px] font-mono text-muted tracking-widest uppercase">Hold ESC for 3 seconds to disengage</div>
+      <div class="text-[9px] font-mono text-cyan tracking-widest uppercase opacity-50 mt-2">Larmor Frequency: 863Hz Active</div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style is:global>
+  body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #050508; color: #d8d6d0; }
+  #webgl-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
+
+  .glass-panel {
+    background: rgba(12, 14, 20, 0.65);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  }
+
+  .ambient-grid {
+    background-image: radial-gradient(rgba(255, 255, 255, 0.2) 1px, transparent 1px);
+    background-size: 32px 32px;
+    opacity: 0.1;
+  }
+
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255,0.2); border-radius: 2px; }
+
+  /* Layer 0 Animations */
+  @keyframes l0-inhale { to { transform: scale(1.4); opacity: 1; } }
+  @keyframes l0-hold   { from { transform: scale(1.4); opacity: 1; } to { transform: scale(1.4); opacity: 1; } }
+  @keyframes l0-exhale { to { transform: scale(0.6); opacity: 0.3; } }
+
+  #loading-screen {
+    transition: opacity 1s ease-in-out;
+  }
+
+  .hud-element {
+    transition: all 0.3s ease;
+  }
+</style>
+
+<!-- COMBINED LOGIC: TELEMETRY + WEBGL DOME + COCKPIT -->
+<script type="module" is:inline>
+  import * as THREE from 'three';
+  import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+  import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+  import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+  import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+  import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+
+  // ================================================================
+  // 1. TELEMETRY & HUD STATE
+  // ================================================================
+  const $ = (id) => document.getElementById(id);
+  
+  let currentSpoons = 10;
+  const MAX_SPOONS = 20;
+
+  const fetchWithCache = async (url, cacheKey, fallbackValue) => {
+    try {
+      const response = await fetch(url, { signal: AbortSignal.timeout(5000) });
+      if (!response.ok) throw new Error("Network error");
+      const data = await response.json();
+      localStorage.setItem(cacheKey, JSON.stringify(data));
+      return data;
+    } catch (error) {
+      const cached = localStorage.getItem(cacheKey);
+      return cached ? JSON.parse(cached) : fallbackValue;
+    }
+  };
+
+  const updateTelemetry = async () => {
+    // Q-Factor
+    const qData = await fetchWithCache("https://k4-hubs.trimtab-signal.workers.dev/hub/q-factor", "p31_cache_qfactor", { score: 0.925, vertexHealth: { A:1, B:1, C:1, D:1 } });
+    if (qData && qData.score) {
+      const score = qData.score.toFixed(3);
+      const isOpt = qData.score >= 0.9, isStab = qData.score >= 0.7;
+      const colorClass = isOpt ? "text-[#3ba372]" : isStab ? "text-[#cda852]" : "text-[#E8636F]";
+      const bgClass = isOpt ? "bg-[#3ba372]" : isStab ? "bg-[#cda852]" : "bg-[#E8636F]";
+      
+      const nq = $("hud-q-val"), nd = $("hud-q-dot");
+      if (nq) { nq.innerText = score; nq.className = `font-bold tracking-wider ${colorClass}`; }
+      if (nd) { nd.className = `w-2 h-2 rounded-full animate-pulse ${bgClass}`; nd.style.boxShadow = `0 0 8px ${isOpt?"#3ba372":isStab?"#cda852":"#E8636F"}`; }
+    }
+
+    // LOVE
+    const loveData = await fetchWithCache("https://p31-workers.trimtab-signal.workers.dev/api/love/balance/will-001", "p31_cache_love", { availableBalance: 3.28 });
+    // Update UI if needed
+
+    // Spoons
+    const spoonData = await fetchWithCache("https://k4-personal.trimtab-signal.workers.dev/agent/will/energy", "p31_cache_spoons", { spoons: 10 });
+    if (spoonData.spoons !== undefined) {
+      currentSpoons = spoonData.spoons;
+      if ($("hud-spoon-val")) $("hud-spoon-val").innerText = currentSpoons;
+      if ($("hud-spoon-fill")) $("hud-spoon-fill").style.width = `${(currentSpoons/MAX_SPOONS)*100}%`;
+    }
+  };
+
+  setInterval(updateTelemetry, 60000);
+  updateTelemetry();
+
+  // ================================================================
+  // 2. EDE TRIMTAB & LAYER 0 (Somatic Breathing)
+  // ================================================================
+  const $trimCanvas = $("trimtab-canvas");
+  const $trimFreq = $("trimtab-freq");
+  let trimValue = 1.0; 
+  let trimOn = false;
+  let trimAudioCtx = null, trimOsc = null, trimGain = null;
+  let _trimIsDown = false, _trimAngle = null;
+
+  function trimFreq() { return 0.86 * Math.pow(1000, trimValue); }
+
+  function drawTrimtab() {
+    const ctx = $trimCanvas.getContext("2d");
+    ctx.clearRect(0, 0, 24, 24);
+    const cx = 12, cy = 12, r = 8, start = 3*Math.PI/4, sweep = 3*Math.PI/2;
+    
+    ctx.strokeStyle = "rgba(255,255,255,0.15)"; ctx.lineWidth = 2; ctx.lineCap = "round";
+    ctx.beginPath(); ctx.arc(cx, cy, r, start, start + sweep); ctx.stroke();
+
+    const valEnd = start + trimValue * sweep;
+    ctx.strokeStyle = trimOn ? "#cda852" : "rgba(205,168,82,0.4)";
+    ctx.beginPath(); ctx.arc(cx, cy, r, start, valEnd); ctx.stroke();
+
+    ctx.fillStyle = trimOn ? "#cda852" : "rgba(205,168,82,0.6)";
+    ctx.beginPath(); ctx.arc(cx + r*Math.cos(valEnd), cy + r*Math.sin(valEnd), 2.5, 0, Math.PI*2); ctx.fill();
+
+    const f = trimFreq();
+    if ($trimFreq) $trimFreq.innerText = f >= 1000 ? (f/1000).toFixed(2)+"k Hz" : Math.round(f)+"Hz";
+  }
+
+  function trimToggleAudio() {
+    trimOn = !trimOn;
+    if (trimOn) {
+      try {
+        if (!trimAudioCtx) trimAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if(trimAudioCtx.state === "suspended") trimAudioCtx.resume();
+        trimOsc = trimAudioCtx.createOscillator(); trimGain = trimAudioCtx.createGain();
+        trimOsc.type = "sine"; trimOsc.frequency.setValueAtTime(trimFreq(), trimAudioCtx.currentTime);
+        trimGain.gain.setValueAtTime(0, trimAudioCtx.currentTime);
+        trimGain.gain.linearRampToValueAtTime(0.05, trimAudioCtx.currentTime + 0.1);
+        trimOsc.connect(trimGain); trimGain.connect(trimAudioCtx.destination);
+        trimOsc.start();
+      } catch(e) { trimOn = false; }
+    } else if (trimOsc) {
+      try { trimGain.gain.linearRampToValueAtTime(0, trimAudioCtx.currentTime + 0.1); trimOsc.stop(trimAudioCtx.currentTime + 0.15); } catch(e){}
+      trimOsc = null; trimGain = null;
+    }
+    drawTrimtab();
+  }
+
+  $trimCanvas.addEventListener("pointerdown", e => {
+    e.preventDefault(); $trimCanvas.setPointerCapture(e.pointerId);
+    _trimIsDown = true;
+    const rect = $trimCanvas.getBoundingClientRect();
+    _trimAngle = Math.atan2(e.clientY - rect.top - 12, e.clientX - rect.left - 12);
+  });
+  $trimCanvas.addEventListener("pointermove", e => {
+    if (!_trimIsDown) return;
+    const rect = $trimCanvas.getBoundingClientRect();
+    const a = Math.atan2(e.clientY - rect.top - 12, e.clientX - rect.left - 12);
+    let d = a - _trimAngle;
+    if (d > Math.PI) d -= 2*Math.PI; if (d < -Math.PI) d += 2*Math.PI;
+    trimValue = Math.max(0, Math.min(1, trimValue + d / (3*Math.PI/2)));
+    if (trimOn && trimOsc) try { trimOsc.frequency.setValueAtTime(trimFreq(), trimAudioCtx.currentTime); } catch(e){}
+    _trimAngle = a; drawTrimtab();
+  });
+  const trimUp = () => { _trimIsDown = false; _trimAngle = null; };
+  $trimCanvas.addEventListener("pointerup", trimUp);
+  $trimCanvas.addEventListener("pointercancel", trimUp);
+  
+  $("trimtab-trigger").addEventListener("click", (e) => { 
+    if (e.target !== $trimCanvas) activateLayer0(); 
+    else if (!_trimIsDown) trimToggleAudio(); 
+  });
+  
+  drawTrimtab();
+
+  // Layer 0 Logic
+  let l0Timer = null, l0Audio = null, escStart = null, escTimer = null, spoons = 15;
+  
+  function activateLayer0() {
+    $("layer0").classList.remove("opacity-0", "pointer-events-none");
+    if (!l0Timer) runBreathCycle();
+    if (!trimOn) trimToggleAudio(); // start hum
+  }
+  
+  function deactivateLayer0() {
+    $("layer0").classList.add("opacity-0", "pointer-events-none");
+    clearTimeout(l0Timer); l0Timer = null;
+    if (l0Audio) { try { l0Audio.close(); } catch(e){} l0Audio = null; }
+  }
+
+  function playBreath(phase, durMs, freq) {
+    $("l0-phase").innerText = phase;
+    const dot = $("l0-dot");
+    dot.style.animation = "none"; void dot.offsetWidth;
+    dot.style.animation = `l0-${phase.toLowerCase()} ${durMs}ms ease-in-out forwards`;
+    
+    // Regen spoons slowly
+    if(phase === "INHALE" && spoons < 20) {
+      spoons += 0.5;
+      $("l0-spoon-fill").style.width = `${(spoons/20)*100}%`;
+      $("l0-spoon-pct").innerText = `${Math.round((spoons/20)*100)}%`;
+      $("hud-spoon-fill").style.width = `${(spoons/20)*100}%`;
+      $("hud-spoon-val").innerText = Math.floor(spoons);
+    }
+
+    if (!freq) return;
+    try {
+      if (!l0Audio) l0Audio = new (window.AudioContext || window.webkitAudioContext)();
+      if(l0Audio.state === "suspended") l0Audio.resume();
+      const osc = l0Audio.createOscillator(), gain = l0Audio.createGain();
+      osc.frequency.setValueAtTime(freq, l0Audio.currentTime); osc.type = "sine";
+      gain.gain.setValueAtTime(0, l0Audio.currentTime);
+      gain.gain.linearRampToValueAtTime(0.04, l0Audio.currentTime + 0.4);
+      gain.gain.linearRampToValueAtTime(0, l0Audio.currentTime + (durMs/1000) - 0.4);
+      osc.connect(gain); gain.connect(l0Audio.destination);
+      osc.start(); osc.stop(l0Audio.currentTime + (durMs/1000));
+    } catch(e) {}
+  }
+
+  function runBreathCycle() {
+    playBreath("INHALE", 4000, 172.35); // P31 NMR
+    l0Timer = setTimeout(() => {
+      playBreath("HOLD", 4000, null);
+      l0Timer = setTimeout(() => {
+        playBreath("EXHALE", 6000, 86.3);
+        l0Timer = setTimeout(runBreathCycle, 6000);
+      }, 4000);
+    }, 4000);
+  }
+
+  document.addEventListener("keydown", e => {
+    if (e.key !== "Escape" || $("layer0").classList.contains("pointer-events-none")) return;
+    e.preventDefault();
+    if (escStart) return;
+    escStart = Date.now();
+    $("l0-escape-fill").style.transition = "width 3s linear";
+    $("l0-escape-fill").style.width = "100%";
+    escTimer = setTimeout(() => { deactivateLayer0(); escStart = null; $("l0-escape-fill").style.width = "0%"; }, 3000);
+  });
+  document.addEventListener("keyup", e => {
+    if (e.key === "Escape") { clearTimeout(escTimer); escStart = null; $("l0-escape-fill").style.transition = "width 0.15s linear"; $("l0-escape-fill").style.width = "0%"; }
+  });
+
+  // Global toggle UI
+  window.toggleUI = () => {
+    const isHidden = $("top-hud").classList.contains("-translate-y-full");
+    $("top-hud").classList.toggle("-translate-y-full", !isHidden);
+    $("left-hud").classList.toggle("opacity-0", !isHidden);
+    $("left-hud").classList.toggle("pointer-events-none", !isHidden);
+  };
+
+  document.addEventListener("keydown", (e) => {
+    if(e.key === "Tab") { e.preventDefault(); window.toggleUI(); }
+  });
+
+  // ================================================================
+  // 3. WEBGL SPACESHIP EARTH DOME (Three.js)
+  // ================================================================
+    tGeo.setAttribute('position', new THREE.Float32BufferAttribute([va.x,va.y,va.z, vb.x,vb.y,vb.z, vc.x,vc.y,vc.z], 3));
+    tGeo.computeVertexNormals();
+    innerShell.add(new THREE.Mesh(tGeo, iMat.clone()));
+  }
+
+  const domeGroup = new THREE.Group();
+  // Add layered shells
+  domeGroup.add(outerShell);
+  domeGroup.add(innerShell);
+  scene.add(domeGroup);
+
+  // Base Ring Frame - always visible
+  const baseGeo = new THREE.BufferGeometry();
+  const basePoints = [];
+  for(let i=0; i<geo.verts.length; i++) {
+    if(geo.verts[i].y < 0.1) { // only lower hemisphere vertices
+      basePoints.push(geo.verts[i].x, -0.3, geo.verts[i].z);
+      basePoints.push(0, -0.3, 0);
+    }
+  }
+  baseGeo.setAttribute('position', new THREE.Float32BufferAttribute(basePoints, 3));
+  const baseMat = new THREE.LineBasicMaterial({ color: 0x225566, opacity: 0.7, transparent: true });
+  const baseFrame = new THREE.LineSegments(baseGeo, baseMat);
+  scene.add(baseFrame);
+
+  // Deep Molecular Soup
+  const pCount = 12000;
+  const pGeo = new THREE.BufferGeometry();
+  const pPos = new Float32Array(pCount*3), pSiz = new Float32Array(pCount), pCol = new Float32Array(pCount*3);
+  for(let i=0; i<pCount; i++) {
+    const r=4+Math.random()*30, th=Math.random()*Math.PI*2, ph=Math.acos(2*Math.random()-1);
+    pPos[i*3]=r*Math.sin(ph)*Math.cos(th); pPos[i*3+1]=r*Math.sin(ph)*Math.sin(th); pPos[i*3+2]=r*Math.cos(ph);
+    pSiz[i]=0.01+Math.random()*0.04;
+    const cBase = r>15 ? 0x15151a : 0x1a201f;
+    pCol[i*3]=(cBase>>16)/255; pCol[i*3+1]=((cBase>>8)&0xff)/255; pCol[i*3+2]=(cBase&0xff)/255;
+  }
+  pGeo.setAttribute('position', new THREE.BufferAttribute(pPos,3));
+  pGeo.setAttribute('size', new THREE.BufferAttribute(pSiz,1));
+  pGeo.setAttribute('color', new THREE.BufferAttribute(pCol,3));
+
+  const pMat = new THREE.PointsMaterial({ color:0xffffff, vertexColors:true, size:0.03, transparent:true, opacity:0.5, sizeAttenuation:true, depthWrite:false });
+  const molField = new THREE.Points(pGeo, pMat);
+  scene.add(molField);
+
+  // ================================================================
+  // 4. INTERACTION & RAYCASTING
+  // ================================================================
+  const raycaster = new THREE.Raycaster();
+  const pointer = new THREE.Vector2();
+  let selectedNode = null;
+  let activeAxis = 'all';
+
+  // Filter Logic
+  document.querySelectorAll('#axis-filters button').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      document.querySelectorAll('#axis-filters button').forEach(b => {
+        b.classList.remove('bg-white/10', 'border-white/20');
+        b.classList.add('bg-void', 'border-white/5');
+      });
+      e.target.classList.add('bg-white/10', 'border-white/20');
+      e.target.classList.remove('bg-void', 'border-white/5');
+
+      activeAxis = e.target.dataset.axis;
+      applyFilters();
+    });
+  });
+
+  $('search-input').addEventListener('input', applyFilters);
+
+  function applyFilters() {
+    const q = $('search-input').value.toLowerCase().trim();
+
+    for(const m of faceMeshes) {
+      const a = m.userData.a;
+      if(!a) { m.visible = !(q || activeAxis !== 'all'); continue; }
+
+      const n = a.node;
+      let visible = true;
+      if(activeAxis !== 'all' && getDominantAxis(n.a, n.b, n.c, n.d) !== activeAxis) visible = false;
+      if(q && ![n.label, n.id, n.notes||'', n.state].some(s => s.toLowerCase().includes(q))) visible = false;
+
+      m.visible = true;
+      if(visible) {
+        m.material.opacity = 0.9;
+        m.material.emissiveIntensity = a.glow >= 1.0 ? 3.0 : 1.2;
+      } else {
+        m.material.opacity = 0.05;
+        m.material.emissiveIntensity = 0;
+      }
+    }
+  }
+
+  // Hover & Click
+  window.addEventListener('pointermove', e => {
+    pointer.x = (e.clientX / window.innerWidth) * 2 - 1;
+    pointer.y = -(e.clientY / window.innerHeight) * 2 + 1;
+
+    if(e.target.tagName !== 'CANVAS') { document.body.style.cursor = 'default'; return; }
+
+    raycaster.setFromCamera(pointer, camera);
+    const hits = raycaster.intersectObjects(faceMeshes);
+    document.body.style.cursor = (hits.length && hits[0].object.userData.a) ? 'pointer' : 'grab';
+  });
+
+  window.addEventListener('click', e => {
+    if(e.target.tagName !== 'CANVAS') return;
+
+    raycaster.setFromCamera(pointer, camera);
+    const hits = raycaster.intersectObjects(faceMeshes);
+    const panel = $('node-detail-panel');
+
+    if (hits.length && hits[0].object.userData.a) {
+      const n = hits[0].object.userData.a.node;
+      selectedNode = n;
+      $('nd-title').innerText = n.label;
+
+      const ax = getDominantAxis(n.a, n.b, n.c, n.d);
+      $('nd-axis').innerText = AXIS_LABELS[ax];
+      $('nd-axis').style.color = '#' + AXIS_COLORS[ax].toString(16);
+
+      $('nd-state').innerText = n.state;
+      $('nd-state').style.color = STATE_CSS[n.state] || '#d8d6d0';
+      $('nd-state').style.borderColor = STATE_CSS[n.state] || '#d8d6d0';
+
+      $('nd-bus').innerText = n.bus;
+      $('nd-notes').innerText = n.notes || 'Core topology node verified by K4 edge network.';
+
+      const edges = EDGES.filter(e => e[0] === n.id || e[1] === n.id);
+      $('nd-conns').innerHTML = edges.length ? edges.map(e => {
+        const otherId = e[0] === n.id ? e[1] : e[0];
+        const other = VERTICES[otherId];
+        return other ? `<span class="px-2 py-1 bg-white/5 border border-white/10 rounded text-[9px] hover:bg-white/10 transition-colors">${other[0]}</span>` : '';
+      }).join('') : '<span class="text-xs text-muted/50 italic">Isolated Node</span>';
+
+      panel.classList.remove('opacity-0', 'translate-x-10', 'pointer-events-none');
+
+      // Fly camera
+      const targetPos = hits[0].object.userData.centroidDir.clone().multiplyScalar(7);
+      camera.position.lerp(targetPos, 0.1);
+    } else {
+      selectedNode = null;
+      panel.classList.add('opacity-0', 'translate-x-10', 'pointer-events-none');
+    }
+
+    // Interaction State Update
+    for(const m of faceMeshes) {
+      const a = m.userData.a;
+      if(!a) continue;
+      if(selectedNode && a.node.id === selectedNode.id) {
+        m.material.emissiveIntensity = 4.0;
+        m.material.opacity = 1.0;
+        m.userData.targetOffset = 0.5; // POP OUT the selected block
+      } else {
+        m.material.emissiveIntensity = a.glow >= 1.0 ? 2.5 : 0.8;
+        m.material.opacity = selectedNode ? 0.2 : 0.9;
+        m.userData.targetOffset = 0.0;
+      }
+    }
+  });
+
+  $('node-detail-close').addEventListener('click', () => {
+    selectedNode = null;
+    $('node-detail-panel').classList.add('opacity-0', 'translate-x-10', 'pointer-events-none');
+    for(const m of faceMeshes) {
+      const a = m.userData.a;
+      if(a) {
+        m.material.emissiveIntensity = a.glow >= 1.0 ? 3.0 : 1.2;
+        m.material.opacity = 0.9;
+      }
+      m.userData.targetOffset = 0.0;
+    }
+  });
+
+  // ================================================================
+  // 5. ANIMATION & RENDER LOOP
+  // ================================================================
+  let time = 0;
+  function animate() {
+    requestAnimationFrame(animate);
+    const dt = 0.016; time += 0.002;
+
+    // Update camera controls
+    controls.update();
+
+    // Auto-rotate
+    if(!selectedNode && !controls.isDragging) {
+      domeGroup.rotation.y += 0.0008;
+      domeGroup.rotation.x = Math.sin(time) * 0.05;
+    }
+
+    molField.rotation.y += 0.0003;
+    molField.rotation.x += Math.sin(time*0.3) * 0.0001;
+
+    wMat.uniforms.uTime.value += dt;
+
+    // Breathing & Displacement effect on blocks
+    const breath = 1.0 + 0.005 * Math.sin(time * 1.5);
+
+    for(const m of faceMeshes) {
+      // Organic floating per block
+      const floatOffset = Math.sin(time * 2.5 + Math.random() * 10) * 0.04;
+
+      // Smoothly lerp towards target offset (interaction)
+      if(!m.userData.targetOffset) m.userData.targetOffset = 0;
+      if(!m.userData.currentOffset) m.userData.currentOffset = 0;
+      
+      m.userData.currentOffset += (m.userData.targetOffset - m.userData.currentOffset) * 0.1;
+
+      // Block insertion animation
+      m.userData.insertProgress += (m.userData.insertTarget - m.userData.insertProgress) * 0.08;
+      const insertOffset = (1.0 - m.userData.insertProgress) * 1.5;
+
+      // Apply final displacement along the node's outward centroid direction
+      const totalOffset = floatOffset + m.userData.currentOffset + insertOffset;
+      m.position.copy(m.userData.centroidDir).multiplyScalar(totalOffset);
+
+      m.scale.setScalar(breath);
+      m.material.opacity = 0.3 + m.userData.insertProgress * 0.6;
+    }
+
+    composer.render();
+  }
+  animate();
+
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    composer.setSize(window.innerWidth, window.innerHeight);
+    bloomPass.resolution.set(window.innerWidth, window.innerHeight);
+  });
+
+  // GUARANTEED loading screen removal
+  const hideLoading = () => {
+    try {
+      $('loading-screen').style.opacity = '0';
+      setTimeout(() => {
+        $('loading-screen').style.display = 'none';
+      }, 1000);
+    } catch(e) {}
+  };
+  
+  // Start first render immediately
+  requestAnimationFrame(animate);
+  
+  // Hide loading after first frame renders
+  requestAnimationFrame(() => {
+    requestAnimationFrame(hideLoading);
+  });
+  
+  // Fallback hard timeout
+  setTimeout(hideLoading, 3000);
+</script>

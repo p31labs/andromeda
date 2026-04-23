@@ -21,20 +21,13 @@ from typing import Dict, Optional, Tuple, Any
 
 import redis.asyncio as redis
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, Field
+ from fastapi.middleware.cors import CORSMiddleware
+ from pydantic import BaseModel, Field
 
-# Import exceptions directly from redis.asyncio
-from redis.asyncio import exceptions as redis_exceptions
+ # Import exceptions directly from redis.asyncio
+ from redis.asyncio import exceptions as redis_exceptions
 
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger(__name__)
-
-# Configuration
+ # Configuration
 REDIS_URL = os.getenv('UPSTASH_REDIS_URL', 'redis://localhost:6379')
 IDEMPOTENCY_TTL = 5  # seconds
 SPOONS_BASELINE = 12.0
@@ -168,8 +161,87 @@ async def get_spoons(fingerprint_hash: str) -> SpoonsState:
         logger.error(f"Error getting spoons for {fingerprint_hash}: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
 
+@app.get("/api/spoons/current")
+async def get_current_spoons(request: Request) -> dict:
+    """Get current spoons for the operator (hardcoded to 'will' for now)."""
+    try:
+        # For Phase 1, operator is hardcoded to 'will'
+        fingerprint_hash = "will"
+        user_key = f"user:{fingerprint_hash}"
+        
+        # Include version for ETag/If-Match support
+        spoons = await redis_client.hget(user_key, "spoons")
+        version = await redis_client.get(f"version:{user_key}")
+        
+        if spoons is None:
+            spoons = SPOONS_BASELINE
+            version = 0
+        else:
+            spoons = float(spoons)
+            version = int(version) if version else 0
+        
+        # Compute guardrail level
+        level = 4
+        if spoons >= 8:
+            level = 0
+        elif spoons >= 5:
+            level = 1
+        elif spoons >= 3:
+            level = 2
+        elif spoons >= 1:
+            level = 3
+        
+        # Determine if level changed (for hysteresis tracking)
+        level_changed = False
+        if request.state.etag:
+            previous_version = int(request.state.etag)
+            level_changed = (level != previous_version) if previous_version != version else False
+        
+        response = {
+            "spoons": round(spoons, 1),
+            "level": level,
+            "userId": fingerprint_hash,
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "version": version,
+            "levelChanged": level_changed
+        }
+        
+        # Add ETag header for If-Match support
+        request.state.etag = str(version)
+        return response
+    except Exception as e:
+        logger.error(f"Error getting current spoons: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+@app.get("/api/spoons/{fingerprint_hash}")
+async def get_spoons(fingerprint_hash: str, request: Request) -> SpoonsState:
+    """Get current spoons for a user."""
+    try:
+        user_key = f"user:{fingerprint_hash}"
+        spoons = await redis_client.hget(user_key, "spoons")
+        version = await redis_client.get(f"version:{user_key}")
+        
+        if spoons is None:
+            # Initialize user with baseline spoons
+            await redis_client.hset(user_key, mapping={
+                "spoons": str(SPOONS_BASELINE),
+                "last_updated": datetime.now(timezone.utc).isoformat()
+            })
+            spoons = str(SPOONS_BASELINE)
+            version = "0"
+        
+        request.state.etag = version
+        return SpoonsState(
+            spoons=float(spoons),
+            last_updated=await redis_client.hget(user_key, "last_updated")
+        )
+    except Exception as e:
+        logger.error(f"Error getting spoons for {fingerprint_hash}: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+
 @app.patch("/api/shelter/brain/expend")
-async def expend_spoons(request: ExpendRequest) -> ExpendResponse:
+async def expend_spoons(request: ExpendRequest, if_match: Optional[str] = Header(None)) -> ExpendResponse:
     """
     Expend spoons for a user action.
     
@@ -177,6 +249,7 @@ async def expend_spoons(request: ExpendRequest) -> ExpendResponse:
     1. Atomic Lua script execution in Redis
     2. Idempotency keys to prevent double-spending
     3. Hard stop at 0 spoons (medical safety requirement)
+    4. ETag/version checking to prevent stale reads
     """
     global script_sha
     try:
@@ -185,12 +258,36 @@ async def expend_spoons(request: ExpendRequest) -> ExpendResponse:
         user_key = f"user:{request.fingerprint_hash}"
         full_idempotency_key = f"idempotency:{request.fingerprint_hash}:{idempotency_key}"
         
-        # Execute atomic Lua script
+        # Get current version for If-Match check
+        current_version = await redis_client.get(f"version:{user_key}")
+        expected_version = int(current_version) if current_version else 0
+        
+        # If client provided If-Match, validate against current version
+        if if_match is not None:
+            try:
+                if_match_version = int(if_match)
+                if if_match_version != expected_version:
+                    # Version mismatch - stale read detected
+                    current_spoons = float(await redis_client.hget(user_key, "spoons") or SPOONS_BASELINE)
+                    return ExpendResponse(
+                        status="RETRY",
+                        spoons_remaining=current_spoons,
+                        message="Stale data detected. Please refresh and retry."
+                    )
+            except ValueError:
+                return ExpendResponse(
+                    status="RETRY",
+                    spoons_remaining=0.0,
+                    message="Invalid version token."
+                )
+        
+        # Execute atomic Lua script with version check
         result = await redis_client.evalsha(
             script_sha,
-            2,  # Number of keys
+            3,  # Number of keys (user_key, idempotency_key, version_key)
             user_key,
             full_idempotency_key,
+            f"version:{user_key}",  # version key
             request.action_type,
             request.fingerprint_hash,
             str(IDEMPOTENCY_TTL),
@@ -222,6 +319,14 @@ async def expend_spoons(request: ExpendRequest) -> ExpendResponse:
             return ExpendResponse(
                 status="APPROVED",
                 spoons_remaining=spoons_remaining
+            )
+        elif err_code == "VERSION_MISMATCH":
+            returned_version = int(result[1])
+            current_spoons = float(result[2])
+            return ExpendResponse(
+                status="RETRY",
+                spoons_remaining=current_spoons,
+                message=f"Version mismatch (expected {returned_version}). Data changed during processing."
             )
         else:
             logger.error(f"Unexpected result from Lua script: {result}")

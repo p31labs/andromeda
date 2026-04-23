@@ -1,11 +1,12 @@
-import type { D1Database, KVNamespace } from './types';
+import type { D1Database, KVNamespace, DurableObjectNamespace } from './types';
+import { getCurrentSafetyLevel, createSpoonsUpdateEvent } from '../src/guardrails.js';
 
 /**
  * P31 Cognitive Load API
- * 
+ *
  * Edge-based API that receives spoon expenditure data from the Buffer,
  * aggregates across sessions, and provides real-time cognitive load dashboards.
- * 
+ *
  * @version 1.0.0
  * @date March 24, 2026
  */
@@ -13,6 +14,7 @@ import type { D1Database, KVNamespace } from './types';
 export interface Env {
   SPOONS_KV: KVNamespace;
   SPOONS_D1: D1Database;
+  ORCHESTRATOR_DO?: DurableObjectNamespace; // Optional binding for event publishing
 }
 
 export interface SpoonEvent {
@@ -88,6 +90,14 @@ export default {
       }
     }
 
+    // Route: GET /api/spoons/current/{userId}
+    if (pathParts[0] === 'api' && pathParts[1] === 'spoons' && pathParts[2] === 'current') {
+      const userId = pathParts[3];
+      if (request.method === 'GET') {
+        return this.handleCurrent(userId, env);
+      }
+    }
+
     // Route: GET /api/spoons/debt/{userId}
     if (pathParts[0] === 'api' && pathParts[1] === 'spoons' && pathParts[2] === 'debt') {
       const userId = pathParts[3];
@@ -145,6 +155,34 @@ export default {
       JSON.stringify(newEvent.metadata || {}),
       newEvent.timestamp
     ).run();
+
+    // Publish spoons:update event to orchestrator for guardrail recalculation
+    if (env.ORCHESTRATOR_DO) {
+      // Compute net spoons balance from all events
+      const netChange = events.reduce((sum: number, e: any) => sum + e.amount, 0);
+      const currentSpoons = Math.max(0, Math.min(20, 12 + netChange));
+      const previousNet = netChange - newEvent.amount;
+      const previousSpoons = Math.max(0, Math.min(20, 12 + previousNet));
+
+      const updateEvent = createSpoonsUpdateEvent(
+        event.userId,
+        currentSpoons,
+        previousSpoons
+      );
+
+      try {
+        const stub = env.ORCHESTRATOR_DO.idFromName('singleton');
+        await env.ORCHESTRATOR_DO.get(stub).fetch(
+          new Request('http://localhost/api/orchestrator/spoons-update', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(updateEvent)
+          })
+        );
+      } catch (err) {
+        console.error('Failed to publish spoons update to orchestrator:', err);
+      }
+    }
 
     return new Response(JSON.stringify({
       success: true,
@@ -239,6 +277,41 @@ export default {
       },
     }), {
       headers: { 'Content-Type': 'application/json' },
+    });
+  },
+
+  async handleCurrent(userId: string, env: Env): Promise<Response> {
+    if (!userId) {
+      return new Response('Missing userId', { status: 400 });
+    }
+
+    // Use today's spoon balance
+    const today = new Date().toISOString().split('T')[0];
+    const key = `spoons:${userId}:${today}`;
+    const eventsJson = await env.SPOONS_KV.get(key);
+
+    let spoons = 12; // baseline
+    if (eventsJson) {
+      const events = JSON.parse(eventsJson) as SpoonEvent[];
+      const totalSpent = events
+        .filter(e => e.amount < 0)
+        .reduce((sum, e) => sum + Math.abs(e.amount), 0);
+      const totalEarned = events
+        .filter(e => e.amount > 0)
+        .reduce((sum, e) => sum + e.amount, 0);
+      spoons = Math.max(0, Math.min(20, 12 + totalEarned - totalSpent));
+    }
+
+    const level = getCurrentSafetyLevel(spoons);
+
+    return new Response(JSON.stringify({
+      userId,
+      spoons,
+      level,
+      date: today,
+      timestamp: Date.now()
+    }), {
+      headers: { 'Content-Type': 'application/json' }
     });
   },
 

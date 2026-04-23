@@ -31,6 +31,38 @@ export default {
       });
     }
 
+    // K4 Cage webhook endpoint for presence events
+    if (pathParts[0] === 'api' && pathParts[1] === 'webhook' && pathParts[2] === 'k4-cage') {
+      if (request.method === 'POST') {
+        const event = await request.json().catch(() => null);
+        if (event && event.type === 'presence') {
+          // Forward to Event Bus
+          const id = env.ORCHESTRATOR_DO.idFromName('singleton');
+          const stub = env.ORCHESTRATOR_DO.get(id);
+          
+          return stub.fetch(new Request('http://localhost/api/orchestrator/trigger', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              id: crypto.randomUUID(),
+              type: 'state_change',
+              source: 'k4-cage',
+              action: event.vertex === 'will' ? 'system:mesh_presence_change' : 'family:presence_online',
+              priority: event.vertex === 'will' ? 8 : 4,
+              safetyLevel: 2,
+              baseDelayMs: 0,
+              payload: event,
+              timestamp: Date.now()
+            })
+          }));
+        }
+        return new Response(JSON.stringify({ ok: true }), { 
+          status: 200,
+          headers: { 'Content-Type': 'application/json' }
+        });
+      }
+    }
+
     // Route all /api/orchestrator requests to the singleton DO
     if (pathParts[0] === 'api' && pathParts[1] === 'orchestrator') {
       const id = env.ORCHESTRATOR_DO.idFromName('singleton');

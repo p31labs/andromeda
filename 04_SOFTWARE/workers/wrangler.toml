@@ -12,9 +12,9 @@ new_sqlite_classes = [ "LoveTransactionDO" ]
 # binding = "PASSPORT_KV"
 # id = "your-passport-kv-id"
 
-# [[kv_namespaces]]
-# binding = "SPOONS_KV"
-# id = "your-spoons-kv-id"
+[[kv_namespaces]]
+binding = "SPOONS_KV"
+id = "ff890e80e7e64ae8b8afb59870f1a0f1"
 
 # [[kv_namespaces]]
 # binding = "THRESHOLDS_KV"
@@ -59,6 +59,15 @@ database_id = "592e3e2e-3203-4e0a-8342-9e85215ec8a6"
 [[durable_objects.bindings]]
 name = "LOVE_TRANSACTION"
 class_name = "LoveTransactionDO"
+
+[[durable_objects.bindings]]
+name = "ORCHESTRATOR_DO"
+class_name = "EventBusDO"
+
+# [[d1_databases]]
+# binding = "ORCHESTRATOR_D1"
+# database_name = "orchestrator-db"
+# database_id = "your-orchestrator-d1-id"
 
 # Queues - commented out until implemented
 # [[queues.bindings]]

@@ -40,49 +40,129 @@ All bindings are defined in [`wrangler.toml`](wrangler.toml):
 - **Durable Objects:** LOVE_TRANSACTION, GAME_ROOM, ROOM_STATE
 - **Queues:** TELEMETRY_QUEUE
 
+## Guardrails System
+
+The P31 Orchestrator includes a spoons-economy-driven guardrails system that automatically throttles automation based on cognitive capacity.
+
+### Guardrails Flowchart
+
+```text
+┌──────────────┐
+│ Spoons       │
+│ Update Event │
+└──────┬───────┘
+       │
+       ▼
+┌─────────────────────┐
+│ Recompute Target    │
+│ Level (no hysteresis)│
+└──────┬──────────────┘
+       │
+       ▼
+┌─────────────────────┐
+│ Check Pending Level │
+│ & Hysteresis Count  │
+└──────┬──────────────┘
+       │
+       ▼
+┌─────────────────────┐
+│ 2 Consecutive?      │
+└──────┬───────┬──────┘
+       │       │
+      NO      YES
+       │       │
+       ▼       ▼
+   ┌───────┐  ┌───────────────┐
+   │ Keep  │  │ Transition to │
+   │ Current│ │ New Level     │
+   └───────┘  └───────┬───────┘
+                   │
+                   ▼
+         ┌─────────────────────┐
+         │ Broadcast           │
+         │ guardrails:         │
+         │ levelChanged Event  │
+         └───────┬─────────────┘
+                 │
+                 ▼
+         ┌─────────────────────┐
+         │ Update Command      │
+         │ Center Status       │
+         └─────────────────────┘
+```
+
+### Safety Levels
+
+| Level | Spoons Range | Automation Mode | Throttle Multiplier |
+|-------|--------------|-----------------|---------------------|
+| LEVEL_0 | ≥ 8 | Full automation | 1x |
+| LEVEL_1 | 5–7 | Standard | 1.5x |
+| LEVEL_2 | 3–4 | Reduced | 3x |
+| LEVEL_3 | 1–2 | Minimal | 10x |
+| LEVEL_4 | 0 | Emergency halt | ∞ (all non-critical blocked) |
+
+### Spoons-to-Automation Matrix
+
+| Action Type | Risk Level | Level 0 | Level 1 | Level 2 | Level 3 | Level 4 |
+|-------------|------------|---------|---------|---------|---------|---------|
+| System: throttle_all | 0 | ✅ | ✅ | ✅ | ✅ | ❌ |
+| Health: calcium_alert | 1 | ✅ | ✅ | ✅ | ✅ | ❌ |
+| K4: presence_update | 2 | ✅ | ✅ | ✅ | ❌ | ❌ |
+| Grant: scan | 2 | ✅ | ✅ | ✅ | ❌ | ❌ |
+| Command-center: update | 2 | ✅ | ✅ | ✅ | ❌ | ❌ |
+| Forge: generate_document | 3 | ✅ | ✅ | ❌ | ❌ | ❌ |
+| Social: publish | 3 | ✅ | ✅ | ❌ | ❌ | ❌ |
+| Grant: new_match | 3 | ✅ | ✅ | ❌ | ❌ | ❌ |
+| Legal: court_deadline | 3 | ✅ | ✅ | ❌ | ❌ | ❌ |
+
+**Key**
+- ✅ Automatically approved
+- ❌ Requires manual approval (queue indefinitely)
+- ❌❌ Blocked entirely (except Priority 10 critical events)
+
+### Hysteresis
+
+To prevent oscillation around threshold boundaries, the guardrail level requires **2 consecutive readings** in a new zone before transitioning. This prevents rapid thrashing when spoons hover near 5 or 3.
+
+### Event Flow
+
+1. **Spoons change** → `spoons-api` logs event → publishes `spoons:update` to Orchestrator DO
+2. **Orchestrator** recalculates guardrail level with hysteresis, persists state
+3. **Level change** → broadcasts `guardrails:levelChanged` event, updates Command Center
+4. **Action evaluation** → all triggers checked against current level before queueing
+
+### Integration Points
+
+- **spoons-api.ts**: Exposes `/api/spoons/current/{userId}`; publishes `spoons:update` events
+- **orchestrator-event-bus.ts**: Listens for `spoons:update`; updates guardrail state; broadcasts changes
+- **action-registry.ts**: All actions declare `safetyLevel`; executed only if permitted by guardrails
+
+### Exponential Backoff
+
+Failed actions are retried with exponential backoff: `retryDelay = base * 2^attempts` (capped at 5 minutes).
+
+---
+
 ## API Endpoints
 
-### Passport Cache
+### Orchestrator (Event Bus DO)
 ```
-GET  /api/passport/{userId}     - Get cached passport
-POST /api/passport/{userId}     - Update passport (admin)
-HEAD /api/passport/{userId}     - Get version
-```
-
-### L.O.V.E. Ledger
-```
-GET  /api/love/balance/{userId}        - Get balance
-GET  /api/love/transactions/{userId}  - Get transaction history
-POST /api/love/earn                    - Earn LOVE
-POST /api/love/spend                   - Spend LOVE
-GET  /api/love/leaderboard              - Top earners
-POST /api/love/register                - Register user
+POST /api/orchestrator/trigger      - Submit trigger event
+GET  /api/orchestrator/status       - Current guardrail level + state
+GET  /api/orchestrator/queue        - View pending action queue
+GET  /api/orchestrator/audit-log    - Immutable audit trail
+POST /api/orchestrator/spoons-update- Internal: spoons change notification
 ```
 
-### Emergency Broadcast
+### Spoons API Worker
 ```
-POST /api/emergency/trigger       - Trigger alert
-POST /api/emergency/acknowledge   - Acknowledge alert
-GET  /api/emergency/status        - Current status
-GET  /api/emergency/contacts      - Emergency contacts
-```
-
-### Spoon API
-```
-POST /api/spoons/log              - Log spoon event
-GET  /api/spoons/summary/{userId}  - Daily summary
-GET  /api/spoons/trends/{userId}  - Weekly trends
-GET  /api/spoons/debt/{userId}    - Spoon debt warning
+POST /api/spoons/log                - Log spoon expenditure
+GET  /api/spoons/summary/{userId}    - Daily summary
+GET  /api/spoons/trends/{userId}    - 7-day trends
+GET  /api/spoons/current/{userId}   - Current spoons + guardrail level
+GET  /api/spoons/debt/{userId}      - Spoon debt warning (30d)
 ```
 
-### Legal Versioning
-```
-POST /api/legal/upload              - Upload document
-GET  /api/legal/document/{id}       - Get document
-GET  /api/legal/verify/{id}         - Verify hash chain
-GET  /api/legal/history/{id}       - Version history
-GET  /api/legal/list                - List documents
-```
 
 ## Type Definitions
 
