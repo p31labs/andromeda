@@ -1,4 +1,4 @@
-import {
+ import {
   fetchCfFull,
   dashWorkersUrl,
   dashPagesUrl,
@@ -13,6 +13,7 @@ import {
   dashAccessUrl,
 } from './cf.js';
 import { buildCloudHubHtml } from './cloud-hub-html.js';
+import { buildEpcpDashboardHtml } from './epcp-dashboard.js';
 
 // ── Cloudflare Access JWT helpers ──
 const JWKS_CACHE = new Map();
@@ -363,157 +364,30 @@ const DEFAULT_STATUS = {
 };
 
 async function serveDashboard(env) {
-  let status = DEFAULT_STATUS;
-  try {
-    const raw = await env.STATUS_KV.get('status');
-    if (raw) status = JSON.parse(raw);
-  } catch (e) { /* use defaults */ }
-
-  const workersHtml = status.workers.map(w => {
-    const color = w.status === 'online' ? '#22c55e' : w.status === 'debug' ? '#eab308' : '#ef4444';
-    const pingAgo = w.ts ? (() => {
-      const secs = Math.floor((Date.now() - new Date(w.ts).getTime()) / 1000);
-      if (secs < 60) return `${secs}s ago`;
-      if (secs < 3600) return `${Math.floor(secs/60)}m ago`;
-      return `${Math.floor(secs/3600)}h ago`;
-    })() : '';
-    return `<div class="wk"><span class="dot" style="background:${color}"></span><div style="flex:1"><a href="${w.url}" target="_blank">${w.name}</a><span class="wk-status">${w.status.toUpperCase()}${pingAgo ? ` · ${pingAgo}` : ''}</span></div></div>`;
-  }).join('');
-
-  const now = Date.now();
-  const r = status.research || {};
-  const k4Phase = r.k4_phase ?? 4;
-  const k4Viz = r.k4_viz_url || 'https://k4-cage.trimtab-signal.workers.dev/viz';
-  const k4Api = r.k4_api_url || 'https://k4-cage.trimtab-signal.workers.dev/api';
-  const phenixUrl = r.phenix_url || 'https://p31-phenix.pages.dev';
-
-  const datesHtml = status.dates.map(d => {
-    // Parse date like "Apr 16" against current year
-    const parsed = new Date(`${d.date} 2026`).getTime();
-    const diff = parsed - now;
-    const days = diff / 86400000;
-    const urgency = days < 2 ? 'red' : days < 7 ? 'yellow' : 'green';
-    return `<div class="dt dt-${urgency}"><span class="dt-date">${d.date}</span><span>${d.event}</span></div>`;
-  }).join('');
-
-  const html = `<!DOCTYPE html><html lang="en"><head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<title>P31 Command Center</title>
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:system-ui,sans-serif;background:#0a0a14;color:#e2e8f0;padding:12px}
-h1{font-size:20px;color:#06b6d4;margin-bottom:2px}
-.sub{font-size:11px;color:#64748b;margin-bottom:16px}
-.card{background:#111827;border:1px solid #1e293b;border-radius:10px;padding:14px;margin-bottom:10px}
-.card-title{font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;
-  display:flex;align-items:center;gap:6px}
-.card-title svg{width:14px;height:14px;fill:currentColor}
-.wk{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #1e293b}
-.wk:last-child{border-bottom:none}
-.wk .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.wk a{color:#06b6d4;text-decoration:none;font-size:13px;font-weight:600}
-.wk-status{display:block;font-size:10px;color:#64748b}
-.kv{display:flex;justify-content:space-between;padding:4px 0;font-size:13px}
-.kv-key{color:#94a3b8}.kv-val{color:#e2e8f0;font-weight:600;text-align:right;max-width:60%}
-.kv-val.green{color:#22c55e}.kv-val.red{color:#ef4444}.kv-val.yellow{color:#eab308}
-.dt{display:flex;gap:10px;padding:5px 6px;font-size:13px;border-bottom:1px solid #1e293b;border-radius:4px}
-.dt:last-child{border-bottom:none}
-.dt-date{font-weight:700;min-width:52px;font-size:12px}
-.dt-red{background:#7f1d1d22}.dt-red .dt-date{color:#ef4444}
-.dt-yellow{background:#78350f22}.dt-yellow .dt-date{color:#eab308}
-.dt-green .dt-date{color:#22c55e}
-.refresh-btn{width:100%;padding:10px;background:transparent;border:1px solid #1e293b;border-radius:8px;
-  color:#64748b;font-size:12px;cursor:pointer;margin-bottom:10px;min-height:44px}
-.refresh-btn:active{background:#1e293b;color:#e2e8f0}
-.updated{text-align:center;font-size:10px;color:#475569;margin-top:12px}
-.accent{height:3px;background:#e8636f;width:100%;position:fixed;top:0;left:0;z-index:99}
-.links{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px}
-.links a{display:block;background:#06b6d410;border:1px solid #06b6d430;border-radius:8px;
-  padding:10px;text-align:center;color:#06b6d4;text-decoration:none;font-size:12px;font-weight:600}
-.links a:active{background:#06b6d420}
-.cloud-cta{display:block;text-align:center;padding:12px;margin-bottom:12px;background:linear-gradient(90deg,#6366f118,#22d3ee18);
-  border:1px solid #6366f144;border-radius:10px;color:#a5b4fc;text-decoration:none;font-size:12px;font-weight:700}
-.cloud-cta:active{opacity:0.9}
-</style></head><body>
-<div class="accent"></div>
-<h1>COMMAND CENTER</h1>
-<div class="sub">P31 Labs — Delta Topology — Live Status</div>
-<a href="/cloud" class="cloud-cta">☁ P31 CLOUD HUB — full account API (Workers, Pages, KV, R2, D1, zones, …)</a>
-<button class="refresh-btn" onclick="refreshStatus()">↻ REFRESH</button>
-
-<div class="card">
-<div class="card-title">Fleet Status (${status.workers.length} nodes)</div>
-${workersHtml}
-</div>
-
-<div class="card">
-<div class="card-title">Legal — ${status.legal.case}</div>
-<div class="kv"><span class="kv-key">Next Hearing</span><span class="kv-val red">${status.legal.next_hearing}</span></div>
-<div class="kv"><span class="kv-key">Judge</span><span class="kv-val">${status.legal.judge}</span></div>
-<div class="kv"><span class="kv-key">Status</span><span class="kv-val yellow">${status.legal.status}</span></div>
-<div class="kv"><span class="kv-key">McGhan Deadline</span><span class="kv-val">${status.legal.mcghan_deadline}</span></div>
-</div>
-
-<div class="card">
-<div class="card-title">Financial</div>
-<div class="kv"><span class="kv-key">Operating Buffer</span><span class="kv-val red">${status.financial.operating_buffer}</span></div>
-<div class="kv"><span class="kv-key">Active Grants</span><span class="kv-val yellow">${status.financial.grants_active}</span></div>
-<div class="kv"><span class="kv-key">Pending</span><span class="kv-val">${status.financial.grants_pending}</span></div>
-<div class="kv"><span class="kv-key">Corp Status</span><span class="kv-val">${status.financial.corp_status}</span></div>
-</div>
-
-<div class="card">
-<div class="card-title">Research & Engineering</div>
-<div class="kv"><span class="kv-key">K₄ Cage</span><span class="kv-val green">Phase ${k4Phase} · <a href="${k4Viz}" target="_blank" rel="noopener" style="color:#86efac;text-decoration:underline">viz</a> · <a href="${k4Api}" target="_blank" rel="noopener" style="color:#86efac;text-decoration:underline">routes</a></span></div>
-<div class="kv"><span class="kv-key">Weave</span><span class="kv-val green"><a href="${phenixUrl}" target="_blank" rel="noopener" style="color:#86efac;text-decoration:underline">Phenix wallet</a> · vault · mesh · Carrie (family / <a href="https://carrie-wellness.trimtab-signal.workers.dev" target="_blank" rel="noopener" style="color:#86efac;text-decoration:underline">public</a>)</span></div>
-<div class="kv"><span class="kv-key">Paper XII</span><span class="kv-val green">${status.research.paper_xii}</span></div>
-<div class="kv"><span class="kv-key">BONDING Tests</span><span class="kv-val green">${status.research.bonding_tests}</span></div>
-<div class="kv"><span class="kv-key">Deployed Workers</span><span class="kv-val green">${status.research.deployed_workers}</span></div>
-</div>
-
-<div class="card">
-<div class="card-title">Key Dates</div>
-${datesHtml}
-</div>
-
-<div class="links">
-<a href="https://bonding.p31ca.org" target="_blank">BONDING</a>
-<a href="https://p31-mesh.pages.dev" target="_blank">MESH</a>
-<a href="https://p31-vault.pages.dev" target="_blank">VAULT</a>
-<a href="https://k4-cage.trimtab-signal.workers.dev/viz" target="_blank" rel="noopener">K₄ VIZ</a>
-<a href="https://k4-personal.trimtab-signal.workers.dev/viz" target="_blank" rel="noopener">K₄ PERSONAL</a>
-<a href="https://k4-hubs.trimtab-signal.workers.dev/viz" target="_blank" rel="noopener">K₄ HUBS</a>
-<a href="https://p31-phenix.pages.dev" target="_blank" rel="noopener">PHENIX</a>
-<a href="https://carrie-agent.trimtab-signal.workers.dev" target="_blank">CARRIE</a>
-<a href="https://carrie-wellness.trimtab-signal.workers.dev" target="_blank">CARRIE·PUB</a>
-<a href="https://phosphorus31.org" target="_blank">P31.ORG</a>
-</div>
-
-<div class="updated" id="last-update">Last update: ${status.updated || 'default values'}</div>
-<script>
-async function refreshStatus() {
-  const btn = document.querySelector('.refresh-btn');
-  btn.textContent = '↻ REFRESHING...';
-  btn.disabled = true;
-  try {
-    const r = await fetch('/api/status');
-    const s = await r.json();
-    // Reload page with fresh data (simplest, no state management)
-    location.reload();
-  } catch(e) {
-    btn.textContent = '✗ FAILED — retry';
-    btn.disabled = false;
-  }
-}
-</script>
-</body></html>`;
+  const html = buildEpcpDashboardHtml();
+  
+  // Re-use the strict CSP you already built
+  const CSP = [
+    "default-src 'self'",
+    "script-src 'self' 'unsafe-inline'",
+    "style-src 'self' 'unsafe-inline'",
+    "img-src 'self' data: blob:",
+    "connect-src 'self' https:",
+    "frame-ancestors 'none'"
+  ].join('; ');
 
   return new Response(html, {
-    headers: { 'content-type': 'text/html;charset=UTF-8', 'x-robots-tag': 'noindex' }
+    status: 200,
+    headers: {
+      'Content-Type': 'text/html; charset=UTF-8',
+      'x-robots-tag': 'noindex',
+      'Content-Security-Policy': CSP,
+      'X-Frame-Options': 'DENY',
+      'Referrer-Policy': 'strict-origin-when-cross-origin'
+    }
   });
 }
 
-// ── CWP-042: Health Pinger (runs every 5 min via cron) ──
 async function pingFleet(env) {
   const endpoints = [
     { name: "phosphorus31-org", url: "https://phosphorus31.org" },
