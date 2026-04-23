@@ -14,6 +14,132 @@ import {
 } from './cf.js';
 import { buildCloudHubHtml } from './cloud-hub-html.js';
 
+// ── Cloudflare Access JWT helpers ──
+const JWKS_CACHE = new Map();
+let jwksFetchTime = 0;
+const JWKS_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+async function getCfPublicKey(kid, teamDomain) {
+  const now = Date.now();
+  if (now - jwksFetchTime > JWKS_CACHE_TTL || !JWKS_CACHE.has(kid)) {
+    const resp = await fetch(`https://${teamDomain}.cloudflareaccess.com/cdn-cgi/access/certs`);
+    const jwks = await resp.json();
+    for (const key of jwks.keys) {
+      JWKS_CACHE.set(key.kid, key.x5c[0]); // PEM cert
+    }
+    jwksFetchTime = now;
+  }
+  return JWKS_CACHE.get(kid);
+}
+
+function base64urlToUint8Array(b64url) {
+  const b64 = b64url.replace(/-/g, '+').replace(/_/g, '/');
+  const bin = atob(b64);
+  return Uint8Array.from(bin, c => c.charCodeAt(0));
+}
+
+function pemToDer(pem) {
+  const b64 = pem.replace(/-----BEGIN CERTIFICATE-----|-----END CERTIFICATE-----|\n/g, '');
+  return base64urlToUint8Array(b64).buffer;
+}
+
+function parseJwtPayload(jwt) {
+  const [headerB64, payloadB64, sigB64] = jwt.split('.');
+  try {
+    return JSON.parse(atob(payloadB64));
+  } catch {
+    return null;
+  }
+}
+
+async function validateAccessJwt(request, env) {
+  const jwt = request.headers.get('CF-Access-Jwt-Assertion') || '';
+  if (!jwt) return null;
+
+  try {
+    const [headerB64, payloadB64, sigB64] = jwt.split('.');
+    const header = JSON.parse(atob(headerB64));
+    const payload = JSON.parse(atob(payloadB64));
+
+    if (!header.kid) return null;
+    const teamDomain = env.CF_TEAM_DOMAIN || 'trimtab-signal';
+    const publicKeyPem = await getCfPublicKey(header.kid, teamDomain);
+    if (!publicKeyPem) return null;
+
+    const isValid = await crypto.subtle.verify(
+      { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' },
+      await crypto.subtle.importKey('spki', pemToDer(publicKeyPem), { name: 'RSASSA-PKCS1-v1_5' }, false, ['verify']),
+      base64urlToUint8Array(sigB64),
+      new TextEncoder().encode(`${headerB64}.${payloadB64}`)
+    );
+
+    if (!isValid) return null;
+    if (payload.exp * 1000 < Date.now()) return null;
+    return payload;
+  } catch {
+    return null;
+  }
+}
+
+// ── Role definitions ──
+function getRoleFromGroups(groups) {
+  if (!groups) return 'none';
+  if (groups.includes('p31-admin@phosphorus31.org')) return 'admin';
+  if (groups.includes('p31-legal@phosphorus31.org')) return 'legal';
+  if (groups.includes('p31-operator@phosphorus31.org')) return 'operator';
+  if (groups.includes('p31-reader@phosphorus31.org')) return 'reader';
+  return 'none';
+}
+
+// ── Authentication (Cloudflare Access + legacy token fallback) ──
+async function authenticate(request, env) {
+  // Try Cloudflare Access JWT first
+  const accessToken = await validateAccessJwt(request, env);
+  if (accessToken) {
+    return {
+      sub: accessToken.sub,
+      email: accessToken.email,
+      name: accessToken.name,
+      role: getRoleFromGroups(accessToken.groups),
+      groups: accessToken.groups,
+      source: 'cloudflare-access'
+    };
+  }
+
+  // Fallback: legacy STATUS_TOKEN
+  const auth = request.headers.get('Authorization') || '';
+  const token = auth.replace('Bearer ', '');
+  if (token && token === env.STATUS_TOKEN) {
+    return {
+      sub: 'system:legacy-token',
+      email: 'system@p31labs',
+      name: 'Legacy Token',
+      role: 'admin',
+      groups: [],
+      source: 'legacy-token'
+    };
+  }
+
+  return null;
+}
+
+// ── RBAC middleware ──
+const ROLE_LEVEL = { none: 0, reader: 1, operator: 2, legal: 2, admin: 3 };
+
+async function withAccess(request, env, requiredRole, handler) {
+  const auth = await authenticate(request, env);
+  if (!auth) {
+    return new Response('Unauthorized', {
+      status: 401,
+      headers: { 'WWW-Authenticate': 'Bearer realm="EPCP"' }
+    });
+  }
+  if ((ROLE_LEVEL[auth.role] || 0) < (ROLE_LEVEL[requiredRole] || 99)) {
+    return new Response('Forbidden', { status: 403 });
+  }
+  return handler(auth);
+}
+
 export default {
   async scheduled(event, env, ctx) {
     ctx.waitUntil(pingFleet(env));
@@ -24,18 +150,35 @@ export default {
 
     // ── API Routes ──
     if (url.pathname === '/api/status' && request.method === 'POST') {
-      return handleStatusWrite(request, env);
+      return withAccess(request, env, 'operator', async (auth) => {
+        return handleStatusWrite(request, env, auth);
+      });
     }
     if (url.pathname === '/api/status' && request.method === 'GET') {
-      return handleStatusRead(env);
+      return withAccess(request, env, 'reader', async (auth) => {
+        return handleStatusRead(env);
+      });
     }
     if (url.pathname === '/api/cf/summary' && request.method === 'GET') {
-      return handleCfSummary(request, env, url);
+      return withAccess(request, env, 'reader', async (auth) => {
+        return handleCfSummary(request, env, url);
+      });
+    }
+    if (url.pathname === '/api/whoami') {
+      const auth = await authenticate(request, env);
+      if (!auth) return jsonResponse({ authenticated: false }, 401);
+      return jsonResponse({
+        authenticated: true,
+        sub: auth.sub,
+        email: auth.email,
+        name: auth.name,
+        role: auth.role,
+        groups: auth.groups,
+        source: auth.source,
+      });
     }
     if (url.pathname === '/api/health') {
-      return new Response(JSON.stringify({ ok: true, ts: new Date().toISOString() }), {
-        headers: { 'content-type': 'application/json' }
-      });
+      return jsonResponse({ ok: true, ts: new Date().toISOString() });
     }
 
     if (url.pathname === '/cloud' || url.pathname === '/cloud/') {
@@ -49,21 +192,20 @@ export default {
   }
 };
 
-async function handleStatusWrite(request, env) {
-  const auth = request.headers.get('Authorization') || '';
-  const token = auth.replace('Bearer ', '');
-  if (!token || token !== env.STATUS_TOKEN) {
-    return new Response(null, { status: 401 });
-  }
+async function handleStatusWrite(request, env, auth) {
   try {
     const body = await request.text();
     JSON.parse(body); // validate JSON
     await env.STATUS_KV.put('status', body);
-    return new Response(JSON.stringify({ ok: true }), {
-      headers: { 'content-type': 'application/json' }
-    });
+    // Log event to D1 if available
+    if (env.EPCP_DB) {
+      await env.EPCP_DB.prepare(
+        'INSERT INTO fleet_status (key, value, updated) VALUES (?, ?, ?)'
+      ).bind('status.json', body, new Date().toISOString()).run();
+    }
+    return jsonResponse({ ok: true, actor: auth.sub });
   } catch (e) {
-    return new Response(null, { status: 400 });
+    return jsonResponse({ ok: false, error: String(e) }, 400);
   }
 }
 
@@ -132,10 +274,26 @@ async function handleCfSummary(request, env, url) {
   });
 }
 
-function jsonResponse(obj, status = 200) {
+function jsonResponse(obj, status = 200, extraHeaders = {}) {
+  const CSP = [
+    "default-src 'self'",
+    "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net",
+    "style-src 'self' 'unsafe-inline'",
+    "img-src 'self' data: blob:",
+    "connect-src 'self' https:",
+    "frame-ancestors 'none'",
+  ].join('; ');
+
   return new Response(JSON.stringify(obj), {
     status,
-    headers: { 'content-type': 'application/json', 'access-control-allow-origin': '*' },
+    headers: {
+      'content-type': 'application/json',
+      'access-control-allow-origin': '*',
+      'Content-Security-Policy': CSP,
+      'X-Frame-Options': 'DENY',
+      'Referrer-Policy': 'strict-origin-when-cross-origin',
+      ...extraHeaders,
+    },
   });
 }
 

@@ -7,6 +7,12 @@ compatibility_date = "2026-04-13"
 binding = "STATUS_KV"
 id = "ff890e80e7e64ae8b8afb59870f1a0f6"
 
+# D1 database for EPCP audit trail
+# Uncomment after creating D1: wrangler d1 create "epcp-audit" --yes
+# [[d1_databases]]
+# binding = "EPCP_DB"
+# database_id = ""  # Fill after creation
+
 [triggers]
 crons = ["*/5 * * * *"]
 
@@ -14,5 +20,7 @@ crons = ["*/5 * * * *"]
 ENVIRONMENT = "production"
 # Public account id (same as Cloudflare dashboard URL)
 CF_ACCOUNT_ID = "ee05f70c889cb6f876b9925257e3a2fa"
+# Team domain for Cloudflare Access JWT validation
+CF_TEAM_DOMAIN = "trimtab-signal"
 # STATUS_TOKEN: set via `wrangler secret put STATUS_TOKEN`
 # CF_API_TOKEN: set via `wrangler secret put CF_API_TOKEN` — see CLOUD_HUB.md
