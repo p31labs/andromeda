@@ -31,8 +31,8 @@ All infrastructure live and verified.
 - **UUID:** 12ce6570-839e-431d-a14d-bb6002dc89e8
 - **Tables:** events, budgets, fleet_status, forensic_artifacts
 - **Indexes:** idx_events_ts, idx_events_action, idx_events_target
-- **Schema:** ✅ Applied (8 queries executed on remote)
-- **Records:** Live event logging active
+- **Schema:** ✅ Applied (automated via migrations.js)
+- **Migrations:** Version-tracked, idempotent
 
 ### R2 Storage (4 buckets)
 | Bucket | Status | Purpose |
