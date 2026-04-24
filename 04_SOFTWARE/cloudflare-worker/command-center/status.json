@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-17T04:00:00Z",
+  "updated": "2026-04-24T19:30:56-04:00",
   "workers": [
     { "name": "phosphorus31-org", "status": "online", "url": "https://phosphorus31.org" },
     { "name": "p31ca-org", "status": "online", "url": "https://p31ca.org" },
@@ -29,16 +29,16 @@
   ],
   "legal": {
     "case": "Johnson v. Johnson, 2025CV936",
-    "next_hearing": "April 16, 2026 — 11:00 AM",
+    "next_hearing": "AWAITING WRITTEN ORDER per O.C.G.A. § 9-11-58(b)",
     "judge": "Chief Judge Scarlett",
-    "status": "Contempt hearing — discovery sent Apr 14",
-    "mcghan_deadline": "April 17, 2026"
+    "status": "Post-hearing — April 16 hearing completed, written order pending",
+    "mcghan_deadline": "PASSED (April 17, 2026)"
   },
   "financial": {
-    "operating_buffer": "$530 (Ko-fi + Stripe) + Mercury account in review",
+    "operating_buffer": "$530 (Ko-fi + Stripe) + Mercury bank account ACTIVE (approved 4/20/2026)",
     "grants_active": "Awesome Foundation $1K (April deliberation)",
     "grants_pending": "NIDILRR Switzer $80K, FIP $250K/yr (inquiries sent, no response)",
-    "grants_dead": "ESG, Microsoft AI, Pollination, NDEP, Mission.Earth",
+    "grants_dead": "ESG, Microsoft AI, Pollination, NDEP, Mission.Earth, Shuttleworth",
     "corp_status": "P31 Labs Inc — Active (GA SoS). EIN: 42-1888158 (assigned Apr 13, 2026). 501(c)(3) not filed."
   },
   "research": {
@@ -52,20 +52,23 @@
     "hearing_ops_url": "https://ops.p31ca.org"
   },
   "dates": [
-    { "date": "Apr 13", "event": "EIN 42-1888158 assigned by IRS (CP 575E)" },
-    { "date": "Apr 14", "event": "Mercury business bank account submitted (P31 Labs — in review, ~1 day)" },
-    { "date": "Apr 14", "event": "Discovery sent to McGhan (3 docs)" },
-    { "date": "Apr 14", "event": "K4 Phase 3 + Phenix Weave (p31-phenix.pages.dev) woven into fleet" },
-    { "date": "Apr 15", "event": "Quantum Weave refactor: p31ca ABOUT pages + hub/lattice; phosphorus31 Layout strip + footer" },
-    { "date": "Apr 15", "event": "Hearing Ops PWA — build + wrangler pages deploy (project p31-hearing-ops, branch main → ops.p31ca.org)" },
-    { "date": "Apr 14", "event": "P31 Technical Library (Starlight) — build fixed, Pages project created, first deploy" },
-    { "date": "Apr 16", "event": "CONTEMPT HEARING 11AM — Woodbine" },
-    { "date": "Apr 17", "event": "Pages production deploy: p31ca hub (p31ca Pages main) + Hearing Ops PWA (p31-hearing-ops → ops.p31ca.org)" },
-    { "date": "Apr 17", "event": "McGhan deadline" },
-    { "date": "Apr 30", "event": "Camden County wellness baseline" },
-    { "date": "Apr 30", "event": "Georgia Tech Summit" },
-    { "date": "May 19", "event": "Neurotech Frontiers Summit" },
-    { "date": "Jun 1", "event": "Stimpunks $3K opens" },
-    { "date": "Sep 30", "event": "FERS filing deadline" }
+    { "date": "2026-04-13", "event": "EIN 42-1888158 assigned by IRS (CP 575E)" },
+    { "date": "2026-04-14", "event": "Discovery sent to McGhan (3 docs)" },
+    { "date": "2026-04-14", "event": "K4 Phase 3 + Phenix Weave woven into fleet" },
+    { "date": "2026-04-15", "event": "Quantum Weave refactor: p31ca ABOUT + hub/lattice; phosphorus31 Layout strip + footer" },
+    { "date": "2026-04-15", "event": "Hearing Ops PWA build + deploy (p31-hearing-ops → ops.p31ca.org)" },
+    { "date": "2026-04-15", "event": "P31 Technical Library (Starlight) first deploy" },
+    { "date": "2026-04-16", "event": "CONTEMPT HEARING — Woodbine (11AM)" },
+    { "date": "2026-04-17", "event": "Pages deploy: p31ca hub + Hearing Ops PWA" },
+    { "date": "2026-04-18", "event": "UF Health Jax ER — hypocalcemia event (Ca 7.5, Phos 5.8)" },
+    { "date": "2026-04-20", "event": "Mercury bank account APPROVED & ACTIVE" },
+    { "date": "2026-04-24", "event": "Temporal sync — Command Center state grounded" },
+    { "date": "2026-04-24", "event": "Routing fix deployed: CRDT Session WebSocket + Cloudflare Resources API" },
+    { "date": "2026-04-30", "event": "Camden County wellness baseline" },
+    { "date": "2026-04-30", "event": "Georgia Tech Summit" },
+    { "date": "2026-05-17", "event": "SSDI Reconsideration appeal deadline (using April 18 ER visit as evidence)" },
+    { "date": "2026-05-19", "event": "Neurotech Frontiers Summit" },
+    { "date": "2026-06-01", "event": "Stimpunks $3K opens" },
+    { "date": "2026-09-30", "event": "FERS filing deadline" }
   ]
 }
