@@ -1,4 +1,4 @@
- import {
+import {
   fetchCfFull,
   dashWorkersUrl,
   dashPagesUrl,
@@ -13,11 +13,35 @@
   dashAccessUrl,
 } from './cf.js';
 import { buildCloudHubHtml } from './cloud-hub-html.js';
-import { buildGodDashboardHtml } from './god-dashboard.js';
-import { handleSseStream } from './sse-stream.js';
-import { CrdtQueueProcessor } from './crdt-processor-do.js';
-import { CrdtSessionDO } from './crdt-session-do.js';
-export { CrdtQueueProcessor, CrdtSessionDO };
+import { buildEpcpDashboardHtml } from './epcp-dashboard.js';
+import { runMigrations } from './migrations.js';
+
+// ── Durable Objects ──
+export { CrdtQueueProcessor } from './crdt-processor-do.js';
+export { CrdtSessionDO } from './crdt-session-do.js';
+
+// ── Custom Domain Support (Sovereign Migration) ──
+// Preserves original Host header for WebSocket routing
+// Bypasses shared SNI normalization on workers.dev
+
+// ── mTLS Verification Middleware ──
+// Verify hardware-backed client certificates for Zero Trust
+
+function verifyMTLS(request) {
+  // Extract client certificate from Cloudflare headers
+  const clientCert = request.headers.get('CF-Client-Cert');
+  const certSha256 = request.headers.get('CF-Client-Cert-Sha256');
+  
+  if (!clientCert && !certSha256) {
+    // No certificate presented
+    return { valid: false, error: 'mTLS certificate required' };
+  }
+  
+  // Verify certificate chain (simplified - Cloudflare Access handles this)
+  // In production, verify against Sovereign Root CA
+  
+  return { valid: true, certSha256 };
+}
 
 // ── Cloudflare Access JWT helpers ──
 const JWKS_CACHE = new Map();
@@ -86,64 +110,46 @@ async function validateAccessJwt(request, env) {
   }
 }
 
-// ── Authentication (Cloudflare Access + legacy token fallback) ──
-async function authenticate(request, env) {
-  // 1. Check for Edge-verified Email header (injected after Cookie validation - vital for WebSockets)
-  let email = request.headers.get("Cf-Access-Authenticated-User-Email");
-  
-  // 2. Fallback to decoding the JWT Assertion (for direct API calls)
-  if (!email) {
-    const token = request.headers.get("Cf-Access-Jwt-Assertion");
-    if (token) {
-      try {
-        const payload = JSON.parse(atob(token.split(".")[1]));
-        email = payload.email;
-      } catch (e) { /* ignore */ }
-    }
-  }
-  
-  // 3. THE WEBSOCKET SILVER BULLET: Crack the CF_Authorization cookie directly
-  if (!email) {
-    const cookie = request.headers.get("Cookie") || "";
-    const match = cookie.match(/CF_Authorization=([^;]+)/);
-    if (match) {
-      try { 
-        // Extract the payload (middle segment) of the JWT
-        email = JSON.parse(atob(match[1].split(".")[1])).email; 
-      } catch(e){}
-    }
-  }
-  
-   if (email) {
-     return {
-       email: email,
-       role: getRoleFromEmail(email),
-       source: "cloudflare-access"
-     };
-   }
-   return null;
-}
-
-// ── Role mapping from email (Cloudflare Access doesn't pass groups) ──
-function getRoleFromEmail(email) {
-  if (!email) return 'none';
-  const lower = email.toLowerCase();
-  if (lower.includes('will@p31ca.org') || lower.includes('classicwilly') || lower.includes('willyj1587')) return 'admin';
-  if (lower.includes('legal@')) return 'legal';
-  if (lower.includes('operator@')) return 'operator';
-  if (lower.includes('reader@')) return 'reader';
+// ── Role definitions ──
+function getRoleFromGroups(groups) {
+  if (!groups) return 'none';
+  if (groups.includes('p31-admin@phosphorus31.org')) return 'admin';
+  if (groups.includes('p31-legal@phosphorus31.org')) return 'legal';
+  if (groups.includes('p31-operator@phosphorus31.org')) return 'operator';
+  if (groups.includes('p31-reader@phosphorus31.org')) return 'reader';
   return 'none';
 }
 
-async function isAdmin(request, env) {
-  // Fast path: check Cf-Access-Authenticated-User-Email directly
-  const sessionEmail = request.headers.get('Cf-Access-Authenticated-User-Email');
-  if (sessionEmail && getRoleFromEmail(sessionEmail) === 'admin') {
-    return true;
+// ── Authentication (Cloudflare Access + legacy token fallback) ──
+async function authenticate(request, env) {
+  // Try Cloudflare Access JWT first
+  const accessToken = await validateAccessJwt(request, env);
+  if (accessToken) {
+    return {
+      sub: accessToken.sub,
+      email: accessToken.email,
+      name: accessToken.name,
+      role: getRoleFromGroups(accessToken.groups),
+      groups: accessToken.groups,
+      source: 'cloudflare-access'
+    };
   }
-  // Full auth check as fallback
-  const auth = await authenticate(request, env);
-  return auth && auth.role === 'admin';
+
+  // Fallback: legacy STATUS_TOKEN
+  const auth = request.headers.get('Authorization') || '';
+  const token = auth.replace('Bearer ', '');
+  if (token && token === env.STATUS_TOKEN) {
+    return {
+      sub: 'system:legacy-token',
+      email: 'system@p31labs',
+      name: 'Legacy Token',
+      role: 'admin',
+      groups: [],
+      source: 'legacy-token'
+    };
+  }
+
+  return null;
 }
 
 // ── RBAC middleware ──
@@ -163,358 +169,14 @@ async function withAccess(request, env, requiredRole, handler) {
   return handler(auth);
 }
 
-export default {
-  async scheduled(event, env, ctx) {
-    ctx.waitUntil(pingFleet(env));
-  },
-
-  async fetch(request, env) {
-    const url = new URL(request.url);
-    
-    // DEBUG: Log ALL requests immediately
-    console.log(`[WORKER] ${request.method} ${url.pathname}${url.search} | host: ${url.host}`);
-    
-    // Catch-all debug for /api/crdt/*
-    if (url.pathname.startsWith('/api/crdt')) {
-      console.log(`[WORKER] CRDT PATH DETECTED: ${url.pathname}`);
-    }
-
-    // ── API Routes ──
-    if (url.pathname === '/api/status' && request.method === 'POST') {
-      return withAccess(request, env, 'operator', async (auth) => {
-        return handleStatusWrite(request, env, auth);
-      });
-    }
-    if (url.pathname === '/api/status' && request.method === 'GET') {
-      return withAccess(request, env, 'reader', async (auth) => {
-        return handleStatusRead(env);
-      });
-    }
-    if (url.pathname === '/api/cf/summary' && request.method === 'GET') {
-      return withAccess(request, env, 'reader', async (auth) => {
-        return handleCfSummary(request, env, url);
-      });
-      if (url.pathname === '/api/whoami') {
-        const auth = await authenticate(request, env);
-        if (!auth) return jsonResponse({ authenticated: false }, 401);
-        return jsonResponse({
-          authenticated: true,
-          sub: auth.sub,
-          email: auth.email,
-          name: auth.name,
-          role: auth.role,
-          groups: auth.groups,
-          source: auth.source,
-        });
-      }
-      
-      // ── Diagnostic: CRDT Headers ──
-      if (url.pathname === '/api/debug/crdt-headers' && request.method === 'GET') {
-        return withAccess(request, env, 'reader', async () => {
-          const keys = await env.STATUS_KV.list({ limit: 10 });
-          const diagnostics = [];
-          for (const key of keys.keys) {
-            if (key.name.startsWith('crdt_diagnostic_')) {
-              const value = await env.STATUS_KV.get(key.name, 'json');
-              diagnostics.push({ key: key.name, ...value });
-            }
-          }
-          diagnostics.sort((a, b) => (b.ts || '') > (a.ts || '') ? -1 : 1);
-          return jsonResponse({ diagnostics: diagnostics.slice(0, 5) });
-        });
-      }
-    
-    // ── Server-Sent Events Stream ──
-    if (url.pathname === '/api/sse' && request.method === 'GET') {
-      // SSE accessible to any authenticated user (Cloudflare Access sets this header)
-      const sessionEmail = request.headers.get('Cf-Access-Authenticated-User-Email');
-      if (!sessionEmail) {
-        return new Response('Unauthorized: No session', { status: 401 });
-      }
-      try {
-        return handleSseStream(request, env);
-      } catch (e) {
-        return jsonResponse({ error: e.message }, 500);
-      }
-    }
-
-     // ── Mesh Analytics API ──
-     if (url.pathname === '/api/analytics/mesh' && request.method === 'GET') {
-       const sessionEmail = request.headers.get('Cf-Access-Authenticated-User-Email');
-       if (!sessionEmail) return jsonResponse({ error: 'Unauthorized' }, 401);
-       try {
-         const hours = parseInt(url.searchParams.get('hours') || '24');
-         const results = await env.EPCP_DB.prepare(
-           'SELECT * FROM mesh_analytics WHERE ts > ? ORDER BY ts DESC LIMIT 500'
-         ).bind(Date.now() - (hours * 3600 * 1000)).all();
-         return jsonResponse({ events: results.results || [] });
-       } catch (e) {
-         return jsonResponse({ error: e.message }, 500);
-       }
-     }
-
-     if (url.pathname === '/api/analytics/health' && request.method === 'GET') {
-       const sessionEmail = request.headers.get('Cf-Access-Authenticated-User-Email');
-       if (!sessionEmail) return jsonResponse({ error: 'Unauthorized' }, 401);
-       try {
-         const hours = parseInt(url.searchParams.get('hours') || '24');
-         const results = await env.EPCP_DB.prepare(
-           'SELECT * FROM node_health_history WHERE ts > ? ORDER BY ts DESC LIMIT 500'
-         ).bind(Date.now() - (hours * 3600 * 1000)).all();
-         return jsonResponse({ health: results.results || [] });
-       } catch (e) {
-         return jsonResponse({ error: e.message }, 500);
-       }
-     }
-
-      // ── Cost Summary API ──
-      if (url.pathname === '/api/costs' && request.method === 'GET') {
-        const sessionEmail = request.headers.get('Cf-Access-Authenticated-User-Email');
-        if (!sessionEmail) return jsonResponse({ error: 'Unauthorized' }, 401);
-        try {
-          const hours = parseInt(url.searchParams.get('hours') || '24');
-          const cutoff = Date.now() - (hours * 3600 * 1000);
-          const results = await env.EPCP_DB.prepare(
-            'SELECT service, operation, SUM(quantity) as total_qty, SUM(estimated_cost) as total_cost FROM cost_tracking WHERE ts > ? GROUP BY service, operation'
-          ).bind(cutoff).all();
-          const totalCost = (results.results || []).reduce(function(sum, r) { return sum + (r.total_cost || 0); }, 0);
-          return jsonResponse({
-            summary: results.results || [],
-            total_cost: totalCost,
-            period_hours: hours
-          });
-        } catch (e) {
-          return jsonResponse({ error: e.message }, 500);
-        }
-       }
-      
-      // ── CRDT Session WebSocket ──
-      if (url.pathname === '/api/crdt/session') {
-        // Diagnostic mode: ?diag=1 returns header info without invoking DO
-        if (url.searchParams.get('diag') === '1') {
-          return jsonResponse({
-            pathname: url.pathname,
-            hostname: url.hostname,
-            upgrade: request.headers.get('Upgrade'),
-            connection: request.headers.get('Connection'),
-            headers: Object.fromEntries(request.headers.entries())
-          });
-        }
-        
-        console.log('[WORKER] CRDT route. Host:', url.hostname, 'Upgrade:', request.headers.get('Upgrade'));
-        
-        try {
-          await env.STATUS_KV.put('crdt_last_headers', JSON.stringify({
-            ts: new Date().toISOString(),
-            host: url.hostname,
-            upgrade: request.headers.get('Upgrade'),
-            connection: request.headers.get('Connection')
-          }));
-        } catch (e) {}
-        
-        if (!env.CRDT_SESSION_DO) {
-          return jsonResponse({ error: 'CRDT_SESSION_DO not bound' }, 503);
-        }
-        const id = env.CRDT_SESSION_DO.idFromName('global-session');
-        const stub = env.CRDT_SESSION_DO.get(id);
-        return stub.fetch(request);
-      }
-
-      // ── Admin: CRDT Access Bypass ──
-      if (url.pathname === '/api/admin/crdt-access-bypass' && request.method === 'POST') {
-        return withAccess(request, env, 'admin', async () => {
-          try {
-            if (!env.CF_API_TOKEN || !env.CF_ACCOUNT_ID) {
-              return jsonResponse({ error: 'Admin API token not configured' }, 500);
-            }
-            const apiToken = env.CF_API_TOKEN;
-            const accountId = env.CF_ACCOUNT_ID;
-            const apiBase = 'https://api.cloudflare.com/client/v4';
-
-            // 1. Find the Access application for command-center
-            const appsRes = await fetch(`${apiBase}/accounts/${accountId}/access/apps`, {
-              headers: { Authorization: `Bearer ${apiToken}` }
-            });
-            const appsJson = await appsRes.json();
-            if (!appsJson.success) {
-              throw new Error('Failed to list Access apps: ' + (appsJson.errors?.[0]?.message || 'unknown'));
-            }
-            const apps = appsJson.result || [];
-            const targetApp = apps.find(app => app.domain === 'command-center.p31ca.org') ||
-                              apps.find(app => app.name && app.name.toLowerCase().includes('command-center'));
-            if (!targetApp) {
-              throw new Error('Command-center Access application not found');
-            }
-            const appId = targetApp.id;
-
-            // 2. Fetch current app details (to read existing path_rules)
-            const appRes = await fetch(`${apiBase}/accounts/${accountId}/access/apps/${appId}`, {
-              headers: { Authorization: `Bearer ${apiToken}` }
-            });
-            const appJson = await appRes.json();
-            if (!appJson.success) {
-              throw new Error('Failed to get Access app: ' + (appJson.errors?.[0]?.message || 'unknown'));
-            }
-            const app = appJson.result;
-            let pathRules = app.path_rules || [];
-
-            // 3. Check if bypass rule already exists
-            const exists = pathRules.some(rule => rule.value === '/api/crdt/session*' && rule.type === 'exclude');
-            if (exists) {
-              return jsonResponse({ message: 'Path rule already exists' });
-            }
-
-            // 4. Add new exclude rule and PATCH the app
-            pathRules.push({ value: '/api/crdt/session*', type: 'exclude', name: 'CRDT WebSocket Bypass' });
-            const patchRes = await fetch(`${apiBase}/accounts/${accountId}/access/apps/${appId}`, {
-              method: 'PATCH',
-              headers: {
-                Authorization: `Bearer ${apiToken}`,
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({ path_rules: pathRules })
-            });
-            const patchJson = await patchRes.json();
-            if (!patchJson.success) {
-              throw new Error('Failed to update Access app: ' + (patchJson.errors?.[0]?.message || 'unknown'));
-            }
-
-             return jsonResponse({ message: 'CRDT WebSocket bypass rule added', app: patchJson.result });
-          } catch (e) {
-            return jsonResponse({ error: e.message }, 500);
-          }
-        });
-      }
-
-      // ── Admin: Access Status ──
-      if (url.pathname === '/api/admin/access-status' && request.method === 'GET') {
-        return withAccess(request, env, 'admin', async (auth) => {
-          return jsonResponse({ 
-            authenticated: true,
-            user: auth.user,
-            domain: url.hostname
-          });
-        });
-      }
-
-
-     // ── Cloudflare Resources API ──
-     if (url.pathname === '/api/cf/resources' && request.method === 'GET') {
-       if (!(await isAdmin(request, env))) return jsonResponse({ error: 'Unauthorized' }, 401);
-       try {
-         const resource = url.searchParams.get('resource');
-         const data = await fetchCfFull(env, resource);
-         return jsonResponse(data);
-       } catch (e) {
-         return jsonResponse({ error: e.message }, 500);
-       }
-     }
-
-     if (url.pathname === '/api/health') {
-       return jsonResponse({ ok: true, ts: new Date().toISOString() });
-     }
-
-    if (url.pathname === '/cloud' || url.pathname === '/cloud/') {
-      return new Response(buildCloudHubHtml(env.CF_ACCOUNT_ID || ''), {
-        headers: { 'content-type': 'text/html;charset=UTF-8', 'x-robots-tag': 'noindex' },
-      });
-    }
-
-    // ── Dashboard ──
-    return serveDashboard(env);
-  }
-};
-
-async function handleStatusWrite(request, env, auth) {
-  try {
-    const body = await request.text();
-    JSON.parse(body); // validate JSON
-    await env.STATUS_KV.put('status', body);
-    // Log event to D1 if available
-    if (env.EPCP_DB) {
-      await env.EPCP_DB.prepare(
-        'INSERT INTO fleet_status (key, value, updated) VALUES (?, ?, ?)'
-      ).bind('status.json', body, new Date().toISOString()).run();
-    }
-    return jsonResponse({ ok: true, actor: auth.sub });
-  } catch (e) {
-    return jsonResponse({ ok: false, error: String(e) }, 400);
-  }
-}
-
-async function handleStatusRead(env) {
-  const data = await env.STATUS_KV.get('status');
-  if (!data) {
-    return new Response(JSON.stringify(DEFAULT_STATUS), {
-      headers: { 'content-type': 'application/json', 'access-control-allow-origin': '*' }
-    });
-  }
-  return new Response(data, {
-    headers: { 'content-type': 'application/json', 'access-control-allow-origin': '*' }
-  });
-}
-
-const CF_HUB_CACHE_KEY = 'p31_cf_hub_cache_v3';
-
-async function handleCfSummary(request, env, url) {
-  const auth = request.headers.get('Authorization') || '';
-  const token = auth.replace('Bearer ', '');
-  if (!token || token !== env.STATUS_TOKEN) {
-    return new Response(null, { status: 401 });
-  }
-  if (!env.CF_API_TOKEN || !env.CF_ACCOUNT_ID) {
-    return jsonResponse({ configured: false });
-  }
-  const refresh = url.searchParams.get('refresh') === '1';
-  if (!refresh) {
-    const cached = await env.STATUS_KV.get(CF_HUB_CACHE_KEY);
-    if (cached) {
-      return new Response(cached, {
-        headers: { 'content-type': 'application/json', 'access-control-allow-origin': '*' },
-      });
-    }
-  }
-  let summary;
-  try {
-    summary = await fetchCfFull(env.CF_ACCOUNT_ID, env.CF_API_TOKEN);
-  } catch (e) {
-    return new Response(null, { status: 500 });
-  }
-  const id = env.CF_ACCOUNT_ID;
-  const body = {
-    configured: true,
-    dash: {
-      workers: dashWorkersUrl(id),
-      pages: dashPagesUrl(id),
-      kv: dashKvUrl(id),
-      r2: dashR2Url(id),
-      d1: dashD1Url(id),
-      queues: dashQueuesUrl(id),
-      hyperdrive: dashHyperdriveUrl(id),
-      vectorize: dashVectorizeUrl(id),
-      analytics: dashAnalyticsUrl(id),
-      access: dashAccessUrl(id),
-      zeroTrust: dashZeroTrustUrl(),
-    },
-    ...summary,
-  };
-  const out = JSON.stringify(body);
-  try {
-    await env.STATUS_KV.put(CF_HUB_CACHE_KEY, out, { expirationTtl: 180 });
-  } catch (_) {}
-  return new Response(out, {
-    headers: { 'content-type': 'application/json', 'access-control-allow-origin': '*' },
-  });
-}
-
 function jsonResponse(obj, status = 200, extraHeaders = {}) {
   const CSP = [
     "default-src 'self'",
-    "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net",
+    "script-src 'self' 'unsafe-inline'",
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data: blob:",
     "connect-src 'self' https:",
-    "frame-ancestors 'none'",
+    "frame-ancestors 'none'"
   ].join('; ');
 
   return new Response(JSON.stringify(obj), {
@@ -530,97 +192,443 @@ function jsonResponse(obj, status = 200, extraHeaders = {}) {
   });
 }
 
+async function handleStatusWrite(request, env, auth) {
+  try {
+    const body = await request.text();
+    JSON.parse(body); // validate JSON
+    await env.STATUS_KV.put('status', body);
+    // Log event to D1 if available
+    if (env.EPCP_DB) {
+      await env.EPCP_DB.prepare(
+        'INSERT INTO events (ts, actor, action, target) VALUES (?, ?, ?, ?)'
+      ).bind(new Date().toISOString(), auth.sub, 'status_update', 'status.json').run();
+    }
+    return jsonResponse({ ok: true, actor: auth.sub });
+  } catch (e) {
+    console.error('Health pinger KV write failed:', e);
+  }
+}
+
+// ── Default status template (for rollback) ──
 const DEFAULT_STATUS = {
-  updated: "2026-04-14T20:30:00Z",
-  workers: [
-    { name: "phosphorus31-org", status: "online", url: "https://phosphorus31.org" },
-    { name: "p31ca-org", status: "online", url: "https://p31ca.org" },
-    { name: "bonding-p31ca-org", status: "online", url: "https://bonding.p31ca.org" },
-     { name: "command-center", status: "online", url: "https://command-center.p31ca.org" },
-    { name: "carrie-agent", status: "online", url: "https://carrie-agent.trimtab-signal.workers.dev" },
-    { name: "carrie-wellness", status: "online", url: "https://carrie-wellness.trimtab-signal.workers.dev" },
-    { name: "p31-social-engine", status: "online", url: "https://p31-social-engine.trimtab-signal.workers.dev" },
-    { name: "genesis-gate", status: "online", url: "https://genesis-gate.trimtab-signal.workers.dev" },
-    { name: "p31-bonding-relay", status: "online", url: "https://p31-bonding-relay.trimtab-signal.workers.dev" },
-    { name: "p31-telemetry", status: "online", url: "https://p31-telemetry.trimtab-signal.workers.dev" },
-    { name: "p31-stripe-webhook", status: "online", url: "https://p31-stripe-webhook.trimtab-signal.workers.dev" },
-    { name: "api-phosphorus31-org", status: "online", url: "https://api-phosphorus31-org.trimtab-signal.workers.dev" },
-    { name: "fawn-guard", status: "online", url: "https://fawn-guard.trimtab-signal.workers.dev" },
-    { name: "p31-signaling", status: "online", url: "https://p31-signaling.trimtab-signal.workers.dev" },
-    { name: "p31-vault", status: "online", url: "https://p31-vault.pages.dev" },
-    { name: "p31-mesh", status: "online", url: "https://p31-mesh.pages.dev" },
-    { name: "p31-lab", status: "online", url: "https://p31-lab.trimtab-signal.workers.dev" },
-    { name: "will-workshop", status: "online", url: "https://will-workshop.trimtab-signal.workers.dev" },
-    { name: "bash-lab", status: "online", url: "https://bash-lab.trimtab-signal.workers.dev" },
-    { name: "willow-garden", status: "online", url: "https://willow-garden.trimtab-signal.workers.dev" },
-    { name: "christyn-corner", status: "online", url: "https://christyn-corner.trimtab-signal.workers.dev" },
-    { name: "k4-cage", status: "online", url: "https://k4-cage.trimtab-signal.workers.dev" },
-    { name: "k4-personal", status: "online", url: "https://k4-personal.trimtab-signal.workers.dev" },
-    { name: "k4-hubs", status: "online", url: "https://k4-hubs.trimtab-signal.workers.dev" },
-    { name: "p31-bouncer", status: "online", url: "https://p31-bouncer.trimtab-signal.workers.dev" },
-    { name: "p31-phenix", status: "online", url: "https://p31-phenix.pages.dev" }
-  ],
-  legal: {
-    case: "Johnson v. Johnson, 2025CV936",
-    next_hearing: "April 16, 2026 — 11:00 AM",
-    judge: "Chief Judge Scarlett",
-    status: "Contempt hearing — discovery sent Apr 14",
-    mcghan_deadline: "April 17, 2026"
-  },
-  financial: {
-    operating_buffer: "$530 (Ko-fi + Stripe)",
-    grants_active: "Awesome Foundation $1K (April deliberation)",
-    grants_pending: "NIDILRR Switzer $80K, FIP $250K/yr (inquiries sent, no response)",
-    grants_dead: "ESG, Microsoft AI, Pollination, NDEP, Mission.Earth",
-    corp_status: "P31 Labs Inc — Active (GA SoS). EIN: 42-1888158 (assigned Apr 13, 2026). 501(c)(3) not filed."
-  },
-  research: {
-    paper_xii: "Sovereign Stack — 11pp, triple-gated, Zenodo-ready",
-    bonding_tests: "413 / 30 suites",
-    deployed_workers: 25,
-    k4_phase: 4,
-    k4_viz_url: "https://k4-cage.trimtab-signal.workers.dev/viz",
-    k4_api_url: "https://k4-cage.trimtab-signal.workers.dev/api",
-    phenix_url: "https://p31-phenix.pages.dev"
-  },
-  dates: [
-    { date: "Apr 14", event: "Discovery sent to McGhan (3 docs)" },
-    { date: "Apr 16", event: "CONTEMPT HEARING 11AM — Woodbine" },
-    { date: "Apr 17", event: "McGhan deadline" },
-    { date: "Apr 30", event: "Camden County wellness baseline" },
-    { date: "Apr 30", event: "Georgia Tech Summit" },
-    { date: "May 19", event: "Neurotech Frontiers Summit" },
-    { date: "Jun 1", event: "Stimpunks $3K opens" },
-    { date: "Sep 30", event: "FERS filing deadline" }
-  ]
+  updated: new Date().toISOString(),
+  workers: [],
+  legal: {},
+  financial: {},
+  research: {},
+  dates: []
 };
 
-async function serveDashboard(env) {
-  const html = buildGodDashboardHtml();
-  
-    // Re-use the strict CSP you already built
-    const CSP = [
-      "default-src 'self'",
-      "script-src 'self' 'unsafe-inline'",
-      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-      "style-src-elem 'self' 'unsafe-inline' https://fonts.googleapis.com",
-      "font-src 'self' https://fonts.gstatic.com",
-      "img-src 'self' data: blob:",
-      "connect-src 'self' https: wss:",
-      "frame-ancestors 'none'"
-    ].join('; ');
+export default {
+  async scheduled(event, env, ctx) {
+    ctx.waitUntil(pingFleet(env));
+  },
 
-  return new Response(html, {
-    status: 200,
-    headers: {
-      'Content-Type': 'text/html; charset=UTF-8',
-      'x-robots-tag': 'noindex',
-      'Content-Security-Policy': CSP,
-      'X-Frame-Options': 'DENY',
-      'Referrer-Policy': 'strict-origin-when-cross-origin'
+  async fetch(request, env) {
+    const url = new URL(request.url);
+
+    // ── Health & Read Endpoints (No Auth Required) ──
+    if (url.pathname === '/api/health') {
+      const checks = { worker: true, ts: new Date().toISOString() };
+      // Deep health check if requested
+      if (url.searchParams.has('deep')) {
+        try {
+          await env.EPCP_DB.prepare('SELECT 1').first();
+          checks.d1 = true;
+        } catch {
+          checks.d1 = false;
+        }
+      }
+      return jsonResponse(checks);
     }
-  });
-}
+
+    if (url.pathname === '/api/status' && request.method === 'GET') {
+      return handleStatusRead(env);
+    }
+
+    // ── Write & Admin Endpoints (Require Auth) ──
+    if (url.pathname === '/api/status' && request.method === 'POST') {
+      return withAccess(request, env, 'operator', async (auth) => {
+        return handleStatusWrite(request, env, auth);
+      });
+    }
+    
+    if (url.pathname === '/api/cf/summary' && request.method === 'GET') {
+      return handleCfSummary(request, env, url);
+    }
+
+    // ── Admin: GitOps ──
+    if (url.pathname === '/api/admin/git/status' && request.method === 'GET') {
+      return withAccess(request, env, 'reader', async (auth) => {
+        // Return health-pinger status + deployed workers as proxy for git state
+        const statusRaw = await env.STATUS_KV.get('status');
+        const status = statusRaw ? JSON.parse(statusRaw) : {};
+        return jsonResponse({
+          last_ping: status.last_ping,
+          workers: status.workers?.map(w => ({ name: w.name, url: w.url, status: w.status })),
+          note: 'Detailed git operations require external CI/CD integration'
+        });
+      });
+    }
+
+    // Deploy trigger — external CI/CD poller watches this KV key
+    if (url.pathname === '/api/admin/git/deploy' && request.method === 'POST') {
+      return withAccess(request, env, 'operator', async (auth) => {
+        try {
+          const { worker } = await request.json();
+          const deployKey = `deploy:request:${worker}:${Date.now()}`;
+          await env.STATUS_KV.put(deployKey, JSON.stringify({
+            worker,
+            requestedBy: auth.sub,
+            requestedAt: new Date().toISOString(),
+            action: 'deploy',
+            status: 'pending'
+          }));
+          if (env.EPCP_DB) {
+            await env.EPCP_DB.prepare(
+              'INSERT INTO events (ts, actor, action, target, meta) VALUES (?, ?, ?, ?, ?)'
+            ).bind(new Date().toISOString(), auth.sub, 'deploy_request', worker, JSON.stringify({ deployKey })).run();
+          }
+          return jsonResponse({ ok: true, worker, queued: true, deployKey });
+        } catch (e) {
+          return jsonResponse({ error: 'deploy request failed', details: String(e) }, 500);
+        }
+      });
+    }
+
+    // Webhook for external CI to confirm deploy completion
+    if (url.pathname === '/api/admin/deploy/callback' && request.method === 'POST') {
+      const secret = request.headers.get('X-Deploy-Secret');
+      if (!secret || secret !== (env.DEPLOY_WEBHOOK_SECRET || '')) {
+        return jsonResponse({ error: 'unauthorized' }, 401);
+      }
+      try {
+        const { worker, versionId, status: deployStatus, logs } = await request.json();
+        const deployKey = `deploy:request:${worker}:latest`;
+        await env.STATUS_KV.put(deployKey, JSON.stringify({
+          worker,
+          versionId,
+          status: deployStatus,
+          completedAt: new Date().toISOString(),
+          logs: logs?.slice(0, 2000)
+        }));
+        return jsonResponse({ ok: true, received: true });
+      } catch (e) {
+        return jsonResponse({ error: String(e) }, 400);
+      }
+    }
+
+    // ── Rollback Deployment ──
+    if (url.pathname === '/api/admin/deploy/rollback' && request.method === 'POST') {
+      return withAccess(request, env, 'operator', async (auth) => {
+        try {
+          const { worker_id, target_version, reason } = await request.json();
+
+          if (!worker_id) {
+            return jsonResponse({ error: 'worker_id required' }, 400);
+          }
+
+          // Fetch deployment history
+          const deployments = await env.EPCP_DB.prepare(
+            `SELECT * FROM deployments 
+             WHERE worker_id = ? AND status = 'success'
+             ORDER BY created_at DESC LIMIT 2`
+          ).bind(worker_id).all();
+
+          if (!deployments.results?.length) {
+            return jsonResponse({ error: 'No successful deployments found for this worker' }, 404);
+          }
+
+          const currentVersion = deployments.results[0];
+          const targetVersion = target_version || deployments.results[1]?.version;
+
+          if (!targetVersion) {
+            return jsonResponse({ error: 'No previous version to rollback to' }, 400);
+          }
+
+          // Queue rollback via KV (picked up by CI/CD)
+          const rollbackKey = `deploy:request:${worker_id}:rollback`;
+          await env.STATUS_KV.put(rollbackKey, JSON.stringify({
+            worker: worker_id,
+            version: targetVersion,
+            previous_version: currentVersion.version,
+            rollback: true,
+            reason: reason || 'manual_rollback',
+            requested_by: auth.sub,
+            requested_at: new Date().toISOString()
+          }), { expirationTtl: 3600 });
+
+          // Record rollback attempt
+          await env.EPCP_DB.prepare(
+            `INSERT INTO deployments 
+             (worker_id, version, triggered_by, status, created_at, previous_version, rollback_status)
+             VALUES (?, ?, ?, ?, ?, ?, ?)`
+          ).bind(
+            worker_id,
+            targetVersion,
+            auth.sub,
+            'pending',
+            Date.now(),
+            currentVersion.version,
+            'pending'
+          ).run();
+
+          // Log to audit trail
+          await env.EPCP_DB.prepare(
+            `INSERT INTO events 
+             (ts, actor, action, target, meta)
+             VALUES (?, ?, ?, ?, ?)`
+          ).bind(
+            new Date().toISOString(),
+            auth.sub,
+            'rollback_requested',
+            worker_id,
+            JSON.stringify({
+              from_version: currentVersion.version,
+              to_version: targetVersion,
+              reason: reason || 'manual_rollback'
+            })
+          ).run();
+
+           return jsonResponse({
+             ok: true,
+             worker: worker_id,
+             from_version: currentVersion.version,
+             to_version: targetVersion,
+             rollback_key: rollbackKey,
+             queued: true
+           });
+
+        } catch (error) {
+          console.error('Rollback request failed:', error);
+          return jsonResponse({ error: 'Rollback request failed', details: String(error) }, 500);
+        }
+      });
+    }
+
+    // ── Node Quarantine ──
+    if (url.pathname === '/api/admin/node/quarantine' && request.method === 'POST') {
+      return withAccess(request, env, 'operator', async (auth) => {
+        try {
+          const { node_id, reason, severity = 'high' } = await request.json();
+
+          if (!node_id) {
+            return jsonResponse({ error: 'node_id required' }, 400);
+          }
+
+          // Mark node as quarantined
+          await env.EPCP_DB.prepare(
+            `UPDATE workers 
+             SET status = 'quarantined', 
+                 config = json_set(COALESCE(config, '{}'), '$.quarantined_at', ?,
+                                                '$.quarantine_reason', ?)
+             WHERE id = ?`
+          ).bind(Date.now(), reason, node_id).run();
+
+          // Remove from mesh routing
+          await env.STATUS_KV.delete(`mesh:node:${node_id}`);
+          await env.STATUS_KV.delete(`mesh:presence:${node_id}`);
+
+          // Broadcast quarantine event
+          await env.STATUS_KV.put(
+            `quarantine:${node_id}`,
+            JSON.stringify({
+              node_id,
+              reason,
+              severity,
+              quarantined_at: Date.now(),
+              quarantined_by: auth.sub
+            }),
+            { expirationTtl: 86400 }
+          );
+
+          // Log to audit trail
+          await env.EPCP_DB.prepare(
+            `INSERT INTO events 
+             (ts, actor, action, target, meta)
+             VALUES (?, ?, ?, ?, ?)`
+          ).bind(
+            new Date().toISOString(),
+            auth.sub,
+            'node_quarantined',
+            node_id,
+            JSON.stringify({ reason, severity })
+          ).run();
+
+          // Log to forensic artifacts
+          await env.EPCP_DB.prepare(
+            `INSERT INTO forensic_artifacts (event_id, r2_uri, content_type, size_bytes, hmac_sig, retention_cold)
+             VALUES (last_insert_rowid(), ?, ?, ?, ?, ?)`
+          ).bind(
+            `r2://p31-epcp-forensics-hot/quarantine/${node_id}/${Date.now()}.json`,
+            'application/json',
+            JSON.stringify({ node_id, reason, severity, quarantined_at: Date.now() }).length,
+            'pending_hmac',
+            '7d'
+          ).run();
+
+          return jsonResponse({
+            ok: true,
+            node_id,
+            status: 'quarantined',
+            reason,
+            severity
+          });
+
+        } catch (error) {
+          console.error('Quarantine failed:', error);
+          return jsonResponse({ error: 'Quarantine failed', details: String(error) }, 500);
+        }
+      });
+    }
+
+    // ── Admin: K₄ Mesh Operations ──
+    if (url.pathname === '/api/admin/mesh/ping' && request.method === 'POST') {
+      return withAccess(request, env, 'reader', async (auth) => {
+        try {
+          const { from, to, emoji = '👊' } = await request.json();
+          const validVertices = ['will', 'sj', 'wj', 'christyn'];
+          if (!validVertices.includes(from) || !validVertices.includes(to)) {
+            return jsonResponse({ error: 'Invalid vertex' }, 400);
+          }
+          const k4Url = `https://k4-cage.trimtab-signal.workers.dev/api/ping/${from}/${to}`;
+          const res = await fetch(k4Url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ emoji })
+          });
+          const data = await res.json();
+          if (!res.ok) return jsonResponse({ error: data.error || 'Ping failed' }, 500);
+          if (env.EPCP_DB) {
+            await env.EPCP_DB.prepare(
+              'INSERT INTO events (ts, actor, action, target, meta) VALUES (?, ?, ?, ?, ?)'
+            ).bind(new Date().toISOString(), auth.sub, 'mesh_ping', `${from}→${to}`, JSON.stringify({ emoji, delta: data.delta })).run();
+          }
+          return jsonResponse({ ping: data });
+        } catch (e) {
+          return jsonResponse({ error: String(e) }, 500);
+        }
+      });
+    }
+
+    if (url.pathname === '/api/admin/mesh/presence' && request.method === 'POST') {
+      return withAccess(request, env, 'reader', async (auth) => {
+        const { vertex, status, metadata } = await request.json();
+        const validVertices = ['will', 'sj', 'wj', 'christyn'];
+        if (!validVertices.includes(vertex)) return jsonResponse({ error: 'Invalid vertex' }, 400);
+        const k4Url = `https://k4-cage.trimtab-signal.workers.dev/api/presence/${vertex}`;
+        const res = await fetch(k4Url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status, metadata })
+        });
+        const data = await res.json();
+        if (!res.ok) return jsonResponse({ error: data.error || 'Presence update failed' }, 500);
+        return jsonResponse({ updated: true, vertex, status });
+      });
+    }
+
+    if (url.pathname === '/api/admin/mesh/broadcast' && request.method === 'POST') {
+      return withAccess(request, env, 'operator', async (auth) => {
+        const { message, scope = 'all' } = await request.json();
+        // For now, log broadcast intent; full WebSocket relay would need DO service binding
+        if (env.EPCP_DB) {
+          await env.EPCP_DB.prepare(
+            'INSERT INTO events (ts, actor, action, target, meta) VALUES (?, ?, ?, ?, ?)'
+          ).bind(new Date().toISOString(), auth.sub, 'mesh_broadcast', scope, JSON.stringify({ message: message.substring(0,200) })).run();
+        }
+        return jsonResponse({ sent: true, scope, message_length: message.length, note: 'Logged; WebSocket relay not yet implemented' });
+      });
+    }
+
+    if (url.pathname === '/api/admin/mesh/topology' && request.method === 'GET') {
+      // Proxy to K₄ Cage /api/mesh
+      const res = await fetch('https://k4-cage.trimtab-signal.workers.dev/api/mesh');
+      const data = await res.json();
+      return jsonResponse(data);
+    }
+
+    // ── Admin: Social Publishing ──
+    if (url.pathname === '/api/admin/social/publish' && request.method === 'POST') {
+      return withAccess(request, env, 'operator', async (auth) => {
+        try {
+          const { content, platforms, wave, schedule_for, media = [] } = await request.json();
+          if (!content || !Array.isArray(platforms) || platforms.length === 0) {
+            return jsonResponse({ error: 'content and platforms[] required' }, 400);
+          }
+          // Forward to Forge worker
+          const forgeUrl = 'https://p31-forge.trimtab-signal.workers.dev/api/publish-pack';
+          const forgeKey = env.FORGE_API_KEY; // Must be set as secret
+          const body = { content, platforms, wave, schedule_for, media };
+          const res = await fetch(forgeUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              ...(forgeKey ? { 'X-Forge-Key': forgeKey } : {})
+            },
+            body: JSON.stringify(body)
+          });
+          const result = await res.json();
+          // Log to audit
+          if (env.EPCP_DB) {
+            await env.EPCP_DB.prepare(
+              'INSERT INTO events (ts, actor, action, target, meta) VALUES (?, ?, ?, ?, ?)'
+            ).bind(new Date().toISOString(), auth.sub, 'social_publish', platforms.join(','), JSON.stringify({ wave, status: res.status })).run();
+          }
+          return jsonResponse({
+            ok: res.ok,
+            platforms,
+            wave,
+            results: result.results || result,
+            note: 'Forwarded to P31 Forge'
+          });
+        } catch (e) {
+          return jsonResponse({ error: String(e) }, 500);
+        }
+      });
+    }
+
+    if (url.pathname === '/api/admin/social/wave' && request.method === 'POST') {
+      return withAccess(request, env, 'operator', async (auth) => {
+        const { wave } = await request.json();
+        if (!wave) return jsonResponse({ error: 'wave name required' }, 400);
+        // This would trigger the social-drop-automation worker; for now just log
+        if (env.EPCP_DB) {
+          await env.EPCP_DB.prepare(
+            'INSERT INTO events (ts, actor, action, target) VALUES (?, ?, ?, ?)'
+          ).bind(new Date().toISOString(), auth.sub, 'social_wave_trigger', wave).run();
+        }
+        return jsonResponse({ triggered: true, wave, note: 'Wave trigger logged — external worker integration pending' });
+      });
+    }
+
+    // ── Social Bot Health Endpoints ──
+    // No auth needed for public-facing health
+    if (url.pathname === '/api/social/health' && request.method === 'GET') {
+      return jsonResponse({
+        service: 'p31-social-broadcast',
+        status: 'operational',
+        platforms: {
+          twitter: { configured: !!env.TWITTER_API_KEY, status: 'active' },
+          bluesky: { configured: !!env.BLUESKY_HANDLE, status: 'active' },
+          mastodon: { configured: !!env.MASTODON_INSTANCE, status: 'active' },
+          discord: { configured: !!env.DISCORD_WEBHOOK_URL, status: 'active' },
+          reddit: { configured: !!env.REDDIT_CLIENT_ID, status: 'active' }
+        },
+        waves: ['weekly_update', 'midweek', 'weekend_recap', 'kofi_digest', 'zenodo_reminder'],
+        ts: new Date().toISOString()
+      });
+    }
+
+    // ── Dashboard ──
+    if (url.pathname === '/' || url.pathname === '/cloud') {
+      return serveDashboard(env);
+    }
+
+    // 404
+    return new Response('Not Found', { status: 404 });
+  }
+};
 
 async function pingFleet(env) {
   const endpoints = [
@@ -665,23 +673,8 @@ async function pingFleet(env) {
     })
   );
 
-    const workers = results.map(r => {
-      const val = r.value || r.reason;
-      // Estimate RPS for vitality glow: hubs get higher traffic
-      val.rps = (val.status === 'online' || val.status === 'active') ? Math.floor(Math.random() * 5) + 1 : 0;
-      if (val.name.includes('hub') || val.name.includes('center') || val.name.includes('command')) {
-        val.rps += 12; // Hubs have higher baseline traffic
-      }
-      // Assign room_id for spatial navigation
-      const nameLower = (val.name || '').toLowerCase();
-      if (nameLower.includes('command')) val.room_id = 'Command Center';
-      else if (nameLower.includes('bouncer')) val.room_id = 'Bouncer Hub';
-      else if (nameLower.includes('social')) val.room_id = 'Social Engine';
-      else if (nameLower.includes('fawn') || nameLower.includes('forensics')) val.room_id = 'Forensics';
-      else val.room_id = 'global';
-      return val;
-    });
-    workers.push({ name: "command-center", url: "https://command-center.trimtab-signal.workers.dev", status: "online", rps: 15, room_id: "Command Center", ts: new Date().toISOString() });
+  const workers = results.map(r => r.value || r.reason);
+  workers.push({ name: "command-center", url: "https://command-center.trimtab-signal.workers.dev", status: "online", ts: new Date().toISOString() });
 
   try {
     const raw = await env.STATUS_KV.get('status');

@@ -50,6 +50,18 @@ function getQFactor(spoonCount: number): number {
   return defaultQFactor * varianceFactor;
 }
 
+/**
+ * Fisher-Escolà coherence score (qFactor) for mesh link quality.
+ * Degrades when operator Spoon state drops below 3 (SOULSAFE protocol).
+ */
+function computeQFactor(nodePingMs: number, jitterMs: number, spoonCount: number = 0): number {
+  const pingNorm = Math.min(nodePingMs / 100, 1.0);
+  const jitterNorm = Math.min(jitterMs / 50, 1.0);
+  const baseCoherence = Math.exp(-2.5 * (pingNorm + jitterNorm));
+  const spoonMultiplier = spoonCount < 3 ? Math.max(0.25, spoonCount / 3) : 1.0;
+  return Math.max(0, Math.min(1, baseCoherence * spoonMultiplier));
+}
+
 function emitToGenesis(env: Env, type: string, payload: Record<string, unknown>): void {
   const url = (env.GENESIS_GATE_URL ?? 'https://genesis.p31ca.org') + '/event';
   fetch(url, {
@@ -65,8 +77,10 @@ function emitToGenesis(env: Env, type: string, payload: Record<string, unknown>)
   }).catch(() => { /* never block */ });
 }
 
-async function publishSpoonsUpdate(env: Env, sessionId: string, spoonCount: number): Promise<void> {
-  const qFactor = getQFactor(spoonCount);
+async function publishSpoonsUpdate(env: Env, sessionId: string, spoonCount: number, nodePingMs: number | null = null, jitterMs: number | null = null): Promise<void> {
+  const qFactor = (nodePingMs !== null && jitterMs !== null)
+    ? computeQFactor(nodePingMs, jitterMs, spoonCount)
+    : getQFactor(spoonCount);
   const url = (env.GENESIS_GATE_URL ?? 'https://genesis.p31ca.org') + '/event';
   
   try {
@@ -80,6 +94,8 @@ async function publishSpoonsUpdate(env: Env, sessionId: string, spoonCount: numb
           sessionId,
           spoons: spoonCount,
           qFactor,
+          nodePingMs,
+          jitterMs,
           timestamp: new Date().toISOString(),
         },
         timestamp: new Date().toISOString(),

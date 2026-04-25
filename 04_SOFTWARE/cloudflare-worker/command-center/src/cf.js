@@ -28,7 +28,7 @@ export async function cfGet(url, headers) {
 	}
 }
 
-async function fetchAllWorkerScripts(accountId, headers) {
+export async function fetchAllWorkerScripts(accountId, headers) {
 	const all = [];
 	let cursor = null;
 	let pagesFetched = 0;
@@ -49,9 +49,74 @@ async function fetchAllWorkerScripts(accountId, headers) {
 	return {
 		ok: true,
 		result: all,
-		errors: [],
-		result_info: { total_fetched: all.length, pages: pagesFetched },
-	};
+		pages_fetched: pagesFetched,
+	}
+}
+
+export async function fetchAllKVs(accountId, headers) {
+	const url = `${API}/accounts/${accountId}/storage/kv/namespaces?per_page=100`;
+	const r = await cfGet(url, headers);
+	return r;
+}
+
+export async function fetchAllR2Buckets(accountId, headers, zoneId = null) {
+	const r = await cfGet(`${API}/accounts/${accountId}/r2/buckets?per_page=100`, headers);
+	return r;
+}
+
+export async function fetchAllD1Dbs(accountId, headers) {
+	const r = await cfGet(`${API}/accounts/${accountId}/d1/databases?per_page=100`, headers);
+	return r;
+}
+
+export async function fetchAllQueues(accountId, headers) {
+	const r = await cfGet(`${API}/accounts/${accountId}/queues?per_page=100`, headers);
+	return r;
+}
+
+export async function fetchAllPages(accountId, headers) {
+	const r = await cfGet(`${API}/accounts/${accountId}/pages/projects?per_page=50`, headers);
+	return r;
+}
+
+export async function fetchAllHyperdrives(accountId, headers) {
+	const r = await cfGet(`${API}/accounts/${accountId}/hyperdrive?per_page=50`, headers);
+	return r;
+}
+
+export async function fetchAllVectorize(accountId, headers) {
+	const r = await cfGet(`${API}/accounts/${accountId}/vectorize/indexes?per_page=50`, headers);
+	return r;
+}
+
+export async function fetchAllDO(env, headers) {
+	const r = await cfGet(`${API}/accounts/${env.CF_ACCOUNT_ID}/workers/durable_objects/namespaces?per_page=50`, headers);
+	return r;
+}
+
+export async function fetchAllZones(accountId, headers) {
+	const r = await cfGet(`${API}/accounts/${accountId}/zones?per_page=50&status=active`, headers);
+	return r;
+}
+
+export async function fetchZoneDNS(accountId, zoneId, headers) {
+	const r = await cfGet(`${API}/zones/${zoneId}/dns_records?per_page=100`, headers);
+	return r;
+}
+
+export async function fetchAllAccessGroups(accountId, headers) {
+	const r = await cfGet(`${API}/accounts/${accountId}/access/groups?per_page=50`, headers);
+	return r;
+}
+
+export async function fetchAllTunnels(accountId, headers) {
+	const r = await cfGet(`${API}/accounts/${accountId}/tunnels?per_page=50`, headers);
+	return r;
+}
+
+export async function fetchAllTurnstile(accountId, headers) {
+	const r = await cfGet(`${API}/accounts/${accountId}/turnstile/widgets?per_page=50`, headers);
+	return r;
 }
 
 async function mapInBatches(items, batchSize, fn) {

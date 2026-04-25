@@ -16,3 +16,17 @@ export {
 } from './logger';
 export { makeBrowserOfflineTransport, makeIndexedDBOfflineTransport } from './offlineTransport';
 export type { TelemetryEvent, TelemetryConfig } from './telemetryStore';
+export {
+  QFactorGPU,
+  getQFactorEngine,
+  computeQFactor,
+  type QFactorComputeResult,
+} from './webgpuCompute';
+export {
+  computeQFactorFromBiometrics,
+  computeBatchQFactor,
+  isWebGPUAvailable,
+  warmupWebGPU,
+  type QFactorResult,
+  type BiometricInput,
+} from './qFactorEngine';

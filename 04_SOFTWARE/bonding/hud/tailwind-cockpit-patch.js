@@ -3,6 +3,10 @@
  * 
  * Sonnet: MERGE these additions into the existing tailwind.config.js.
  * Do NOT replace the entire config. Add to theme.extend.
+ * 
+ * WCD-GUARDRAIL: HITL supervision for vertices 'S.J.' and 'W.J.'
+ * Restricted actions (mesh_broadcast, external_api_call) require 
+ * operator approval when S.J. or W.J. supervision constraint active.
  */
 
 // Add to theme.extend.colors:
@@ -34,8 +38,20 @@ const animation = {
   'toast-slide': 'toast-slide 3s cubic-bezier(0.16, 1, 0.3, 1) forwards',
 };
 
-/**
- * Example merged config:
+// ── WCD-GUARDRAIL: HITL supervision for S.J. and W.J. vertices ──
+// Restricted actions return { allowed: false, reason: 'SOULSAFE: Supervision constraint active' }
+function checkGuardrailCompliance(action, user) {
+  const restrictedActions = ['mesh_broadcast', 'external_api_call', 'mesh_reconfig', 'kv_bulk_write'];
+  if (!restrictedActions.includes(action)) return { allowed: true };
+  if (user.isWJ || user.isSJ) {
+    if (!user.hasSupervisorOverride) {
+      return { allowed: false, reason: 'SOULSAFE: Supervision constraint active — W.J./S.J. operation requires supervisor approval' };
+    }
+  }
+  return { allowed: true };
+}
+
+// Example merged config:
  * 
  * export default {
  *   content: ['./src/** /*.{ts,tsx}'],

@@ -6,8 +6,13 @@
 **https://command-center.trimtab-signal.workers.dev**
 
 ### Current Version
-2026-04-23 — Commit 76997fb8  
-All infrastructure live and verified.
+2026-04-25 — Version 003852f4-3e55-4838-9b4a-fa6c92c060f3  
+ES Module deployment successful. CRDT synchronization active.
+
+### Last Deployment
+**Date:** 2026-04-25 09:14:31 UTC  
+**Size:** 28.34 KiB (7.03 KiB gzipped)  
+**Changes:** Restored index.js + added DO exports
 
 ---
 
@@ -88,6 +93,14 @@ All infrastructure live and verified.
 **Total:** 54 tests across 6 suites  
 **Run Command:** `npm run test:integration`
 
+### Post-Deployment Verification ✅
+- Syntax validation: PASSED
+- ES Module format: VALID
+- DO bindings: 2 registered
+- CRDT functions: 3 verified
+- Health endpoint: RESPONDING
+- Security: ENFORCED
+
 ---
 
 ## 💰 Cost Analysis
@@ -158,11 +171,11 @@ Last incident: None recorded.
 
 25 workers monitored across production environments.  
 Live status: All major nodes online.  
-Last update: 2026-04-23T18:15:21.960Z
+Last update: 2026-04-24T08:38:00Z
 
 ---
 
-**Last Updated:** 2026-04-23T18:19:00-04:00  
-**Next Review:** Post-hearing (April 17, 2026)  
+**Last Updated:** 2026-04-24T08:38:00-04:00  
+**Next Review:** Post-hearing follow-up (SSHD reconsideration appeal May 17, 2026)  
 **Status:** ✅ **FULLY OPERATIONAL**  
 

@@ -46,6 +46,7 @@ import { startSubstackIntegration, initSubstackPoller } from "./services/substac
 
 // Load environment variables
 dotenv.config();
+console.log('[BOT] DISCORD_TOKEN after dotenv:', process.env.DISCORD_TOKEN ? 'SET' : 'NOT SET');
 
 // Initialize services
 const webhookPort = parseInt(process.env.NODE_ONE_WEBHOOK_PORT || "3000", 10);

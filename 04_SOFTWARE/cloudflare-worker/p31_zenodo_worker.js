@@ -85,35 +85,35 @@ export default {
 
 async function createDeposition(metadata, env) {
   // Step 1: Create empty deposition
-  const createResponse = await fetch(`${BASE_URL}/depositions`, {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${ZENODO_API_TOKEN}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      metadata: {
-        title: metadata.title || 'P31 Labs Research Deposit',
-        description: metadata.description || 'Research deposit from P31 Labs ecosystem',
-        upload_type: metadata.upload_type || 'software',
-        publication_date: metadata.publication_date || new Date().toISOString().split('T')[0],
-        creators: metadata.creators || [
-          { name: 'Johnson, Will', orcid: '0009-0002-2492-9079' }
-        ],
-        keywords: metadata.keywords || ['p31', 'neurodiversity', 'assistive technology'],
-        license: metadata.license || 'mit',
-        access_right: 'open',
-        version: metadata.version || '1.0.0'
+      const response = await fetch(`${BASE_URL}/depositions`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${ZENODO_API_TOKEN}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          metadata: {
+            title: metadata.title || 'P31 Labs Research Deposit',
+            description: metadata.description || 'Research deposit from P31 Labs ecosystem',
+            upload_type: metadata.upload_type || 'software',
+            publication_date: metadata.publication_date || new Date().toISOString().split('T')[0],
+            creators: metadata.creators || [
+              { name: 'Johnson, Will', orcid: '0009-0002-2492-9079' }
+            ],
+            keywords: metadata.keywords || ['p31', 'neurodiversity', 'assistive technology'],
+            license: metadata.license || 'mit',
+            access_right: 'open',
+            version: metadata.version || '1.0.0'
+          }
+        })
+      });
+
+      if (!createResponse.ok) {
+        const errorText = await createResponse.text();
+        throw new Error(`Failed to create deposition: ${createResponse.status} - ${errorText}`);
       }
-    })
-  });
 
-  if (!createResponse.ok) {
-    const error = await createResponse.text();
-    throw new Error(`Failed to create deposition: ${error}`);
-  }
-
-  const deposition = await createResponse.json();
+      const deposition = await createResponse.json();
   
   // Step 2: Upload file if provided
   if (metadata.file_url) {

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#0f1115">
     <title>P31 Labs | Autonomous Cognitive Infrastructure</title>
-    <meta name="description" content="P31 Labs — autonomous cognitive infrastructure. 48 vectors, 21 live deployments including Production Suite v8.0. Zero-budget, offline-first, legally armored.">
+    <meta name="description" content="P31 Labs — autonomous cognitive infrastructure. 49 vectors: apps, in-dev, and research. Zero-budget, offline-first, legally armored.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -99,7 +99,7 @@
         </p>
         <div class="flex items-center gap-6">
             <div class="font-mono text-sm">
-                <span id="vectorCount" class="text-teal font-bold">48 apps</span>
+                <span id="vectorCount" class="text-teal font-bold">49 apps</span>
                 <span class="opacity-40 mx-2">/</span>
                 <span id="liveCount" class="text-phosphorus font-bold">all live</span>
             </div>
@@ -112,8 +112,8 @@
 <section class="max-w-7xl mx-auto px-6 pb-8">
     <div class="flex items-center gap-3 flex-wrap">
         <span class="font-mono text-xs opacity-40 mr-2">FILTER:</span>
-        <button onclick="filterCards('all')" id="filter-all" class="filter-btn active font-mono text-xs px-3 py-1.5 rounded border border-teal/40 text-teal bg-teal/10 transition-all">All (48)</button>
-        <button onclick="filterCards('live')" id="filter-live" class="filter-btn font-mono text-xs px-3 py-1.5 rounded border border-white/10 opacity-60 hover:opacity-100 transition-all">Apps (46)</button>
+        <button onclick="filterCards('all')" id="filter-all" class="filter-btn active font-mono text-xs px-3 py-1.5 rounded border border-teal/40 text-teal bg-teal/10 transition-all">All (49)</button>
+        <button onclick="filterCards('live')" id="filter-live" class="filter-btn font-mono text-xs px-3 py-1.5 rounded border border-white/10 opacity-60 hover:opacity-100 transition-all">Live (46)</button>
         <button onclick="filterCards('research')" id="filter-research" class="filter-btn font-mono text-xs px-3 py-1.5 rounded border border-white/10 opacity-60 hover:opacity-100 transition-all">Research (2)</button>
     </div>
 </section>
@@ -207,6 +207,13 @@ const mvpData = [
         link: 'cortex-about.html',
         description: 'Six autonomous agents (benefits, finance, grant, legal, content, kofi) orchestrated via Cloudflare Durable Objects with D1 persistence.',
         accent: '#3ba372'
+    },
+    {
+        id: 'cognitive-passport', title: 'Cognitive Passport', tagline: 'AI / operator context (MD + JSON)', status: 'live', statusLabel: 'LIVE',
+        icon: '&#x1F6C2;', tech: ['Static', 'localStorage', 'p31.cognitivePassport/1.0.0'],
+        link: 'passport-generator.html',
+        description: 'Browser tool: compact markdown slice, versioned JSON schema, and short agent block for IDEs and assistants. Pairs with the full v5 life document; no server required.',
+        accent: '#4db8a8'
     },
     {
         id: 'attractor', title: 'NANO-07 Attractor', tagline: 'Kenosis Mesh Visualizer', status: 'live', statusLabel: 'LIVE',

@@ -320,6 +320,12 @@
 
 ---
 
+## 16. Machine slice generator (repo tool)
+
+Long-form operator context in this rule and in `P31 COGNITIVE PASSPORT — v5.md` (repo root) stays authoritative. For a paste-safe **Markdown** + **JSON** (`p31.cognitivePassport/1.0.0`) + short **agent block**, use the static HTML tool: `cognitive-passport/index.html` in the P31 workspace; the same build is served as `p31ca/public/passport-generator.html` and is listed on the p31ca hub (`public/index.html`). No server or Worker is required.
+
+---
+
 ## Changelog
 
 | Version | Date | Changes |

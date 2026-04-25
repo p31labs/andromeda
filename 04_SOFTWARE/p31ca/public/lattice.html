@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#0f1115">
     <title>Lattice View | P31 Labs</title>
-    <meta name="description" content="Interactive 3D lattice of 39 P31 Labs MVP nodes — rotating Fibonacci sphere. For the geodesic dome lattice (search, filters, detail), see observatory.html → dome.html.">
+    <meta name="description" content="Interactive 3D lattice of 40 P31 Labs MVP nodes — rotating Fibonacci sphere. For the geodesic dome lattice (search, filters, detail), see observatory.html → dome.html.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -99,12 +99,12 @@
     <div class="legend-row"><div class="legend-dot" style="background:#4db8a8"></div>Research</div>
 </div>
 
-<div id="counter">39 vectors<br>11 live</div>
+<div id="counter">40 vectors<br>12 live</div>
 
 <canvas id="c"></canvas>
 
 <script>
-const N = 39;
+const N = 40;
 
 const mvpNodes = [
     { id: 'bonding',           title: 'BONDING',           icon: '⚛️',  url: 'bonding.html',           color: '#3ba372', status: '🟢 LIVE' },
@@ -113,6 +113,7 @@ const mvpNodes = [
     { id: 'kenosis',           title: 'Project Kenosis',   icon: '🕸️',  url: 'kenosis.html',           color: '#3ba372', status: '🟢 EDGE-LIVE' },
     { id: 'genesis-gate',      title: 'Genesis Gate',      icon: '🔬',  url: 'genesis-gate.html',      color: '#3ba372', status: '🟢 LIVE' },
     { id: 'cortex',            title: 'p31-cortex',        icon: '🧠',  url: 'cortex.html',            color: '#3ba372', status: '🟢 LIVE' },
+    { id: 'cognitive-passport', title: 'Cognitive Passport', icon: '🛂',  url: 'passport-generator.html', color: '#3ba372', status: '🟢 LIVE' },
     { id: 'donate',            title: 'Donate Pipeline',   icon: '💚',  url: 'donate.html',            color: '#3ba372', status: '🟢 LIVE' },
     { id: 'discord-bot',       title: 'p31-bot',           icon: '🤖',  url: 'discord-bot.html',       color: '#3ba372', status: '🟢 LIVE' },
     { id: 'buffer',            title: 'The Buffer',        icon: '🛡️',  url: 'guardian.html',          color: '#3ba372', status: '🟢 LIVE' },

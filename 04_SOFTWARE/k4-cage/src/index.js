@@ -3,8 +3,11 @@
  * K4Topology DO (family graph) + FamilyMeshRoom DO (WebSocket hibernation + D1 flush).
  * P31 Labs, Inc. | EIN 42-1888158
  *
+ * NEW: WebTransport ingress on `/events` — sub-100ms telemetry path (Blueprint PHASE-1).
+ *
  * REST topology: /api/mesh, /api/vertex/:id, /api/presence/:id, /api/ping/:from/:to, /api/edge/:a/:b
- * WebSocket: /ws/:roomId?node=<id>
+ * WebSocket: /ws/:roomId?node=<id> (legacy + FamilyMeshRoom DO)
+ * WebTransport: /events (node=<id> query, datagram telemetry)
  * Room stats: /room-stats/:roomId
  * Telemetry: GET/POST /api/telemetry (D1 when DB bound; else KV chain like legacy)
  *
@@ -68,8 +71,7 @@ function isAdmin(request, env) {
 }
 
 async function sha256Hex(input) {
-  const msg =
-    typeof input === 'string' ? input : JSON.stringify(input);
+  const msg = typeof input === 'string' ? input : JSON.stringify(input);
   const buf = new TextEncoder().encode(msg);
   const hash = await crypto.subtle.digest('SHA-256', buf);
   return [...new Uint8Array(hash)].map((b) => b.toString(16).padStart(2, '0')).join('');
@@ -324,7 +326,7 @@ export class K4Topology extends DurableObject {
   }
 }
 
-// ═══ FamilyMeshRoom DO ═══════════════════════════════════════════════
+// ═══ FamilyMeshRoom DO ═══════════════════════════════════════════════════
 export class FamilyMeshRoom extends DurableObject {
   /** @param {DurableObjectState} ctx @param {Env} env */
   constructor(ctx, env) {
@@ -356,9 +358,7 @@ export class FamilyMeshRoom extends DurableObject {
       } catch {
         try {
           this.ctx.deleteWebSocket(ws);
-        } catch {
-          /* ignore */
-        }
+        } catch { /* ignore */ }
       }
     }
   }
@@ -374,6 +374,7 @@ export class FamilyMeshRoom extends DurableObject {
         connections: sockets.length,
         pendingTelemetry: this.pendingTelemetry.length,
         roomId: this.roomId,
+        transport: 'websocket',
       });
     }
 
@@ -388,35 +389,38 @@ export class FamilyMeshRoom extends DurableObject {
       return Response.json({ ok: true, broadcast: true });
     }
 
-    if (request.headers.get('Upgrade') !== 'websocket') {
-      return Response.json({ error: 'Expected WebSocket upgrade' }, { status: 400 });
+    // ── WebSocket legacy room connections ───────────────────────────────────
+    if (request.headers.get('Upgrade') === 'websocket') {
+      const nodeId =
+        url.searchParams.get('node')?.replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 64) ||
+        `anon-${crypto.randomUUID().slice(0, 8)}`;
+
+      const sockets = this.ctx.getWebSockets();
+      if (sockets.length >= 32) {
+        return new Response('Room full', { status: 503 });
+      }
+
+      const pair = new WebSocketPair();
+      const [client, server] = Object.values(pair);
+      this.ctx.acceptWebSocket(server, [nodeId]);
+
+      server.send(
+        JSON.stringify({
+          type: 'joined',
+          userId: nodeId,
+          room: this.roomId,
+          transport: 'websocket',
+          ts: Date.now(),
+        }),
+      );
+      this.broadcastJson({ type: 'user_joined', userId: nodeId, ts: Date.now() }, nodeId);
+      this.scheduleFlush();
+
+      return new Response(null, { status: 101, webSocket: client });
     }
 
-    const nodeId =
-      url.searchParams.get('node')?.replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 64) ||
-      `anon-${crypto.randomUUID().slice(0, 8)}`;
-
-    const sockets = this.ctx.getWebSockets();
-    if (sockets.length >= 32) {
-      return new Response('Room full', { status: 503 });
-    }
-
-    const pair = new WebSocketPair();
-    const [client, server] = Object.values(pair);
-    this.ctx.acceptWebSocket(server, [nodeId]);
-
-    server.send(
-      JSON.stringify({
-        type: 'joined',
-        userId: nodeId,
-        room: this.roomId,
-        ts: Date.now(),
-      }),
-    );
-    this.broadcastJson({ type: 'user_joined', userId: nodeId, ts: Date.now() }, nodeId);
-    this.scheduleFlush();
-
-    return new Response(null, { status: 101, webSocket: client });
+    // WebTransport currently not available within DOs (connect via main Worker)
+    return Response.json({ error: 'Expected WebSocket upgrade' }, { status: 400 });
   }
 
   /** @param {WebSocket} ws @param {string | ArrayBuffer} message */
@@ -505,30 +509,7 @@ export class FamilyMeshRoom extends DurableObject {
 // ═══ Worker router ═════════════════════════════════════════════════════
 /** @typedef {{ K4_TOPOLOGY: DurableObjectNamespace, FAMILY_MESH_ROOM: DurableObjectNamespace, K4_MESH: KVNamespace, DB?: D1Database, ADMIN_TOKEN?: string, INTERNAL_FANOUT_TOKEN?: string, MESH_ROOM_IDS?: string, WORKER_VERSION?: string, TOPOLOGY?: string, ENVIRONMENT?: string }} Env */
 
-/**
- * @param {Request} request
- * @param {Env} env
- * @param {string} path e.g. /api/mesh
- * @param {string} method
- */
-async function topologyFetch(request, env, path, method) {
-  if (!env.K4_TOPOLOGY) {
-    return new Response(JSON.stringify({ error: 'DO not configured', code: 'NO_DO' }), { status: 503 });
-  }
-  const id = env.K4_TOPOLOGY.idFromName('family');
-  const stub = env.K4_TOPOLOGY.get(id);
-  const internalPath = path.replace(/^\/api/, '') || '/';
-  return stub.fetch(
-    new Request(`https://topology${internalPath}`, {
-      method,
-      headers: request.headers,
-      body: method !== 'GET' && method !== 'HEAD' ? request.body : undefined,
-    }),
-  );
-}
-
-export default {
-  /** @param {Request} request @param {Env} env */
+class K4CageWorker {
   async fetch(request, env) {
     if (request.method === 'OPTIONS') {
       return new Response(null, { headers: CORS_HEADERS });
@@ -539,9 +520,15 @@ export default {
     const method = request.method;
 
     try {
+      // ── WebTransport telemetry ingress ──────────────────────────────────────
+      // Preferred path for high-frequency edge node telemetry (sub-100ms latency, no HOL blocking)
+      if ((request.headers.get('Upgrade') === 'webtransport' || request.transport) && path === '/events') {
+        return this.handleWebTransportIngress(request, env);
+      }
+
       if (path === '/' || path === '') {
         return new Response(
-          `<!DOCTYPE html><html><head><meta charset="utf-8"><title>K4 Cage</title></head><body><pre>k4-cage unified\nGET /api/mesh\nWS /ws/family-mesh?node=…\n</pre></body></html>`,
+          `<!DOCTYPE html><html><head><meta charset="utf-8"><title>K4 Cage</title></head><body><pre>k4-cage unified\nGET /api/mesh\nWS /ws/family-mesh?node=…\nWebTransport /events?node=<id>\n</pre></body></html>`,
           { headers: { 'Content-Type': 'text/html; charset=utf-8' } },
         );
       }
@@ -556,6 +543,7 @@ export default {
           workerVersion: env.WORKER_VERSION || '2.0.0',
           topology: topologySummary,
           ts: new Date().toISOString(),
+          transports: ['websocket', 'webtransport'],
         });
       }
 
@@ -578,45 +566,41 @@ export default {
         return new Response(r.body, { status: r.status, headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' } });
       }
 
-       const pMatch = path.match(/^\/api\/presence\/(\w+)$/);
-       if (pMatch && method === 'POST') {
-         const r = await topologyFetch(request, env, `/api/presence/${pMatch[1]}`, 'POST');
-         const out = await r.text();
-         if (r.ok && env.FAMILY_MESH_ROOM) {
-           try {
-             const body = JSON.parse(out);
-             await broadcastPingToRooms(env, {
-               type: 'presence',
-               vertex: pMatch[1],
-               vertexRecord: body.vertex,
-               ts: Date.now(),
-             });
-           } catch {
-             /* ignore */
-           }
-         }
+      const pMatch = path.match(/^\/api\/presence\/(\w+)$/);
+      if (pMatch && method === 'POST') {
+        const r = await topologyFetch(request, env, `/api/presence/${pMatch[1]}`, 'POST');
+        const out = await r.text();
+        if (r.ok && env.FAMILY_MESH_ROOM) {
+          try {
+            const body = JSON.parse(out);
+            await broadcastPingToRooms(env, {
+              type: 'presence',
+              vertex: pMatch[1],
+              vertexRecord: body.vertex,
+              ts: Date.now(),
+            });
+          } catch { /* ignore */ }
+        }
 
-         // Forward presence event to orchestrator webhook
-         if (r.ok && env.ORCHESTRATOR_WEBHOOK) {
-           try {
-             const body = JSON.parse(out);
-             await fetch(env.ORCHESTRATOR_WEBHOOK, {
-               method: 'POST',
-               headers: { 'Content-Type': 'application/json' },
-               body: JSON.stringify({
-                 type: 'presence',
-                 vertex: pMatch[1],
-                 vertexRecord: body.vertex,
-                 ts: Date.now()
-               })
-             }).catch(() => { /* optional, non-fatal */ });
-           } catch {
-             /* ignore */
-           }
-         }
+        // Forward presence event to orchestrator webhook
+        if (r.ok && env.ORCHESTRATOR_WEBHOOK) {
+          try {
+            const body = JSON.parse(out);
+            await fetch(env.ORCHESTRATOR_WEBHOOK, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                type: 'presence',
+                vertex: pMatch[1],
+                vertexRecord: body.vertex,
+                ts: Date.now()
+              })
+            }).catch(() => { /* optional, non-fatal */ });
+          } catch { /* ignore */ }
+        }
 
-         return new Response(out, { status: r.status, headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' } });
-       }
+        return new Response(out, { status: r.status, headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' } });
+      }
 
       const pingMatch = path.match(/^\/api\/ping\/(\w+)\/(\w+)$/);
       if (pingMatch && method === 'POST') {
@@ -651,9 +635,7 @@ export default {
                 to: pingMatch[2],
                 ping: parsed?.ping,
               });
-            } catch {
-              /* optional */
-            }
+            } catch { /* optional */ }
           } else {
             await appendTelemetryKv(env, {
               type: 'ping',
@@ -747,7 +729,7 @@ export default {
         );
       }
 
-      if (path === '/api/admin/dashboard' && method === 'GET') {
+       if (path === '/api/admin/dashboard' && method === 'GET') {
         if (!isAdmin(request, env)) return err('Unauthorized', 401);
         const meshR = await topologyFetch(request, env, '/api/mesh', 'GET');
         const mesh = meshR.ok ? await meshR.json() : null;
@@ -761,9 +743,146 @@ export default {
         });
       }
 
+      // ── Family Messaging API (E2EE) ────────────────────────────────────────
+      if (env.FAMILY_MESSAGING) {
+        const parts = path.split("/").filter(Boolean);
+        if (parts[0] === "api" && parts[1] === "family-messaging") {
+          const internal = new URL(request.url);
+          internal.pathname = `/${parts.slice(2).join("/")}`;
+          return env.FAMILY_MESSAGING.get(env.FAMILY_MESSAGING.idFromName("default")).fetch(new Request(internal, request));
+        }
+      }
+
+      // ── MLS E2EE Commit & Group State Endpoints ──────────────────────────
+      if (env.FAMILY_MESSAGING) {
+        const parts = path.split("/").filter(Boolean);
+        
+        // POST /api/epoch/commit — submit a Commit message
+        if (parts[0] === "api" && parts[1] === "epoch" && parts[2] === "commit" && method === "POST") {
+          const internal = new URL(request.url);
+          internal.pathname = "/commit";
+          return env.FAMILY_MESSAGING.get(env.FAMILY_MESSAGING.idFromName("default")).fetch(new Request(internal, request));
+        }
+
+        // GET /api/group/state — get current group state (epoch, tree)
+        if (parts[0] === "api" && parts[1] === "group" && parts[2] === "state" && method === "GET") {
+          const internal = new URL(request.url);
+          internal.pathname = "/group/state";
+          return env.FAMILY_MESSAGING.get(env.FAMILY_MESSAGING.idFromName("default")).fetch(new Request(internal, request));
+        }
+      }
+
       return err('Not found. Try GET /api/mesh', 404);
     } catch (e) {
       return err(`Internal error: ${e.message}`, 500);
     }
-  },
-};
+  }
+
+  // ── WebTransport ingress handler ────────────────────────────────────────────
+  /**
+   * Handle incoming WebTransport connection on /events.
+   * Accepts datagram-based telemetry with sub-100ms latency, zero HOL blocking.
+   *
+   * Client connects with:
+   *   const transport = new WebTransport('https://k4-cage.trimtab-signal.workers.dev/events?node=<id>');
+   *   await transport.ready;
+   *
+   * Datagram format (server ← client):
+   *   { type: 'telemetry', node: string, spoons: number, qfactor: number, ts: number }
+   *   { type: 'ping',      node: string, seq: number,    ts: number }
+   *
+   * Server replies on reliable stream (client → server → client):
+   *   { type: 'pong', seq: number }
+   */
+  async handleWebTransportIngress(request, env) {
+    const transport = request.transport;
+    if (!transport) {
+      return Response.json({ error: 'WebTransport missing' }, { status: 400 });
+    }
+
+    const nodeId = new URL(request.url).searchParams.get('node')?.replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 64) ||
+                   `wt-${crypto.randomUUID().slice(0, 8)}`;
+
+    // Accept the transport — this establishes the bidirectional QUIC session
+    try {
+      transport.accept();
+    } catch (e) {
+      return Response.json({ error: 'Transport accept failed: ' + e.message }, { status: 500 });
+    }
+
+    // Fire-and-forget datagram processing loop
+    void (async () => {
+      const reader = transport.datagrams.readable.getReader();
+      if (!reader) return;
+
+      try {
+        for await (const { value, done } of reader) {
+          if (done) break;
+          if (!value) continue;
+
+          let msg;
+          try { msg = JSON.parse(new TextDecoder().decode(value)); }
+          catch { continue; }
+
+          // ── High-frequency telemetry path ───────────────────────────────────
+          if (msg.type === 'telemetry') {
+            const event = {
+              node_id:   msg.node ?? nodeId,
+              spoons:    msg.spoons  ?? 0,
+              qfactor:   msg.qfactor ?? 0,
+              ts:        msg.ts ?? Date.now(),
+              payload:   JSON.stringify(msg),
+            };
+
+            try {
+              if (env.DB) {
+                await appendTelemetryD1(env, { type: 'telemetry', ...event });
+              } else {
+                await appendTelemetryKv(env, { type: 'telemetry', ...event });
+              }
+            } catch {
+              // D1 quota exceeded or other error — KV fallback handled inside appendTelemetryD1
+            }
+          }
+
+          // ── Ping/pong RTT measurement ───────────────────────────────────────
+          if (msg.type === 'ping' && typeof msg.seq === 'number') {
+            // Echo pong back over datagram (low-latency, unreliable)
+            const pong = JSON.stringify({ type: 'pong', seq: msg.seq, ts: Date.now() });
+            try {
+              transport.datagrams.writable.writeDatagram(new TextEncoder().encode(pong));
+            } catch { /* transport unusable */ }
+          }
+        }
+      } catch (e) {
+        // Session closed or network error — exit silently
+      } finally {
+        reader.releaseLock();
+      }
+    })();
+
+    return Response.json({ ok: true, nodeId, transport: 'webtransport', ts: Date.now() });
+  }
+}
+
+// ─── Helper wrappers for DO namespace calls ────────────────────────────────────
+
+async function topologyFetch(request, env, path, method) {
+  if (!env.K4_TOPOLOGY) {
+    return new Response(JSON.stringify({ error: 'DO not configured', code: 'NO_DO' }), { status: 503 });
+  }
+  const id = env.K4_TOPOLOGY.idFromName('family');
+  const stub = env.K4_TOPOLOGY.get(id);
+  const internalPath = path.replace(/^\/api/, '') || '/';
+  return stub.fetch(
+    new Request(`https://topology${internalPath}`, {
+      method,
+      headers: request.headers,
+      body: method !== 'GET' && method !== 'HEAD' ? request.body : undefined,
+    }),
+  );
+}
+
+export { FamilyMessagingDO } from './family-messaging-do.js';
+
+export default new K4CageWorker();

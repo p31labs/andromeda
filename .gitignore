@@ -149,3 +149,17 @@ stripe_backup_code.txt
 
 # Wrangler local state
 .wrangler/
+
+# Legal/confidential docs - DO NOT COMMIT (exclude from public repos)
+Astrology_*.txt
+A_ruff_*.txt
+*Universal*Quantum*Drop*
+*Kenosis*
+*Abdication*
+**/kenosis-*
+**/kenosis_*
+*SOULSAFE_*
+*Cognitive_Passport_Sensitive*
+*CONFIDENTIAL*
+*Legal_Landmine*
+**/01_ADMIN/*confidential*

@@ -31,6 +31,14 @@ function bearer(request) {
   return m ? m[1].trim() : null;
 }
 
+async function secureCompare(a, b) {
+  const encoder = new TextEncoder();
+  const aBuf = encoder.encode(a);
+  const bBuf = encoder.encode(b);
+  if (aBuf.byteLength !== bBuf.byteLength) return false;
+  return crypto.subtle.timingSafeEqual(aBuf, bBuf);
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -64,19 +72,19 @@ export default {
       return json(manifest, 200, env);
     }
 
-    if (request.method === 'GET' && url.pathname === '/v1/gate') {
-      const token = bearer(request);
-      const expected = env.BOUNCER_GATE_TOKEN;
-      if (!expected) {
-        return json(
-          { error: 'not_configured', hint: 'wrangler secret put BOUNCER_GATE_TOKEN' },
-          503,
-          env,
-        );
-      }
-      if (!token || token !== expected) {
-        return json({ error: 'unauthorized' }, 401, env);
-      }
+  if (request.method === 'GET' && url.pathname === '/v1/gate') {
+    const token = bearer(request);
+    const expected = env.BOUNCER_GATE_TOKEN;
+    if (!expected) {
+      return json(
+        { error: 'not_configured', hint: 'wrangler secret put BOUNCER_GATE_TOKEN' },
+        503,
+        env,
+      );
+    }
+    if (!token || !(await secureCompare(token, expected))) {
+      return json({ error: 'unauthorized' }, 401, env);
+    }
       return json(
         {
           ok: true,

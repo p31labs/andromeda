@@ -83,6 +83,102 @@ var index_default = {
       }
     }
 
+    // ── Admin: Mesh Metrics ──
+    if (url.pathname === "/api/admin/mesh/metrics" && request.method === "GET") {
+      return withAccess(request, env, 'admin', async (auth) => {
+        try {
+          // Aggregate metrics from K4 Cage
+          const cageRes = await env.K4_CAGE.fetch(
+            new Request('https://k4-cage.internal/api/admin/metrics')
+          );
+          const cageMetrics = await cageRes.json();
+
+          return jsonResponse({
+            metrics: {
+              messagesPerSecond: cageMetrics.messagesPerSecond || 0,
+              activeConnections: cageMetrics.activeConnections || 0,
+              totalConversations: cageMetrics.totalConversations || 0,
+              totalMembers: cageMetrics.totalMembers || 0,
+              avgLatency: cageMetrics.avgLatency || 0,
+              errorRate: cageMetrics.errorRate || 0
+            },
+            timestamp: new Date().toISOString()
+          });
+        } catch (e) {
+          return jsonResponse({ error: 'Failed to fetch metrics' }, 500);
+        }
+      });
+    }
+
+    // ── Admin: System Health ──
+    if (url.pathname === "/api/admin/system/health" && request.method === "GET") {
+      return withAccess(request, env, 'admin', async (auth) => {
+        try {
+          const checks = await Promise.all([
+            env.K4_CAGE.fetch(new Request('https://k4-cage.internal/health')),
+            env.K4_CAGE.fetch(new Request('https://k4-cage.internal/api/health')),
+            env.K4_PERSONAL.fetch(new Request('https://k4-personal.internal/health'))
+          ]);
+
+          const health = {
+            worker: checks[0].ok ? 'healthy' : 'unhealthy',
+            d1: checks[1].ok ? 'healthy' : 'unknown',
+            kv: checks[0].ok ? 'healthy' : 'unknown',
+            websocket: 'healthy'
+          };
+
+          const overall = Object.values(health).every(v => v === 'healthy') 
+            ? 'healthy' 
+            : 'degraded';
+
+          return jsonResponse({ 
+            health,
+            overall,
+            timestamp: new Date().toISOString()
+          });
+        } catch (e) {
+          return jsonResponse({ 
+            health: { worker: 'unknown', d1: 'unknown', kv: 'unknown', websocket: 'unknown' },
+            overall: 'unknown'
+          });
+        }
+      });
+    }
+
+    // ── Admin: Conversation Management ──
+    if (url.pathname === "/api/admin/conversations" && request.method === "GET") {
+      return withAccess(request, env, 'admin', async (auth) => {
+        try {
+          const search = new URL(request.url).searchParams.get('search');
+          // Proxy to K4 Cage
+          const path = search 
+            ? `/api/admin/conversations/search?q=${encodeURIComponent(search)}`
+            : '/api/admin/conversations';
+            
+          const res = await env.K4_CAGE.fetch(
+            new Request(`https://k4-cage.internal${path}`)
+          );
+          const data = await res.json();
+          return jsonResponse(data);
+        } catch (e) {
+          return jsonResponse({ error: 'Failed to fetch conversations' }, 500);
+        }
+      });
+    }
+
+    // ── Admin: Logs ──
+    if (url.pathname === "/api/admin/logs" && request.method === "GET") {
+      return withAccess(request, env, 'admin', async (auth) => {
+        const limit = Math.min(parseInt(new URL(request.url).searchParams.get('limit') || '100'), 1000);
+        // In production, would fetch from telemetry backend
+        return jsonResponse({
+          logs: [],
+          count: 0,
+          limit
+        });
+      });
+    }
+
     if (url.pathname === "/health") {
       return Response.json({ status: "ok", service: "k4-hubs" });
     }

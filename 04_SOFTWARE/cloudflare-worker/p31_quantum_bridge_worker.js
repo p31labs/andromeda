@@ -43,22 +43,32 @@ export default {
       }
     }
 
-    // 2. Job Result Route
-    if (request.method === "GET" && url.pathname.startsWith("/result/")) {
-      const jobId = url.pathname.split("/").pop();
-      try {
-        const response = await fetch(`${IBM_BASE_URL}/jobs/${jobId}`, {
-          method: "GET",
-          headers: { "Authorization": `Bearer ${IBM_API_TOKEN}` }
-        });
-        const data = await response.json();
-        return new Response(JSON.stringify(data), {
-          headers: { "Content-Type": "application/json" }
-        });
-      } catch (err) {
-        return new Response(err.message, { status: 500 });
+  // 2. Job Result Route
+  if (request.method === "GET" && url.pathname.startsWith("/result/")) {
+    const jobId = url.pathname.split("/").pop();
+    try {
+      const response = await fetch(`${IBM_BASE_URL}/jobs/${jobId}`, {
+        method: "GET",
+        headers: { "Authorization": `Bearer ${IBM_API_TOKEN}` }
+      });
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        return new Response(JSON.stringify({ 
+          error: "job_fetch_failed", 
+          status: response.status,
+          details: errorText 
+        }), { status: 502, headers: { "Content-Type": "application/json" } });
       }
+      
+      const data = await response.json();
+      return new Response(JSON.stringify(data), {
+        headers: { "Content-Type": "application/json" }
+      });
+    } catch (err) {
+      return new Response(err.message, { status: 500 });
     }
+  }
 
     return new Response("🔺 P31 Quantum Bridge: Online.", { status: 200 });
   }

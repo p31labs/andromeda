@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import P31OmnibusVault from './P31OmnibusVault.jsx'
+import { K4MeshDashboard } from './components/mesh/K4MeshDashboard.jsx'
+import { CoherenceProvider } from './CoherenceContext.jsx'
 
 const CORAL = '#FF6B4A'
 const DARK = '#0A0A0F'
@@ -22,6 +24,7 @@ const tabs = [
   { id: 'rules', label: 'RULES', icon: '🛡️' },
   { id: 'folder', label: 'FOLDER', icon: '📁' },
   { id: 'omnibus', label: 'VAULT', icon: '💎' },
+  { id: 'mesh', label: 'MESH', icon: '◈' },
 ]
 
 const scenarios = [
@@ -1240,6 +1243,7 @@ const tabComponents = {
   rules: RulesTab,
   folder: FolderTab,
   omnibus: P31OmnibusVault,
+  mesh: MeshDashboard,
 }
 
 export default function HearingPrep() {

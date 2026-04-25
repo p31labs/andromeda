@@ -21,8 +21,9 @@ compatibility_date = "2025-10-01"
 
 [durable_objects]
 bindings = [
-  { name = "K4_TOPOLOGY",      class_name = "K4Topology" },
-  { name = "FAMILY_MESH_ROOM", class_name = "FamilyMeshRoom" },
+  { name = "K4_TOPOLOGY",          class_name = "K4Topology" },
+  { name = "FAMILY_MESH_ROOM",     class_name = "FamilyMeshRoom" },
+  { name = "FAMILY_MESSAGING",     class_name = "FamilyMessagingDO" },
 ]
 
 # FamilyMeshRoom was created under this tag — already applied, wrangler skips it.
@@ -34,6 +35,11 @@ new_sqlite_classes = ["FamilyMeshRoom"]
 [[migrations]]
 tag = "v3-production"
 new_sqlite_classes = ["K4Topology"]
+
+# FamilyMessagingDO for persistent family messaging
+[[migrations]]
+tag = "v4-messaging"
+new_sqlite_classes = ["FamilyMessagingDO"]
 
 # [[d1_databases]]
 # binding = "DB"

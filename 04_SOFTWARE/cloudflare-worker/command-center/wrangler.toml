@@ -1,17 +1,67 @@
-# Command Center — P31 Labs Operator Dashboard
 name = "command-center"
 main = "src/index.js"
 compatibility_date = "2026-04-13"
 
+# Custom Domain Configuration for Sovereign Migration
+[env.production]
+name = "command-center"
+routes = [
+  { pattern = "god.p31ca.org/*", zone_name = "p31ca.org" }
+]
+
+# Durable Objects Configuration
+[[durable_objects.bindings]]
+name = "CRDT_PROCESSOR_DO"
+class_name = "CrdtQueueProcessor"
+
+[[durable_objects.bindings]]
+name = "CRDT_SESSION_DO"
+class_name = "CrdtSessionDO"
+
+# Autonomous Agent Durable Objects
+[[durable_objects.bindings]]
+name = "MECHANIC_AGENT_DO"
+class_name = "MechanicAgentDO"
+
+[[durable_objects.bindings]]
+name = "AUDIT_AGENT_DO"
+class_name = "AuditAgentDO"
+
+[[durable_objects.bindings]]
+name = "PR_AGENT_DO"
+class_name = "PullRequestAgentDO"
+
+# Migrations
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["CrdtQueueProcessor"]
+
+[[migrations]]
+tag = "v2"
+new_sqlite_classes = ["CrdtSessionDO"]
+
+# Triggers
+[triggers]
+crons = ["*/5 * * * *"]
+
+# Variables
+[vars]
+ENVIRONMENT = "production"
+CF_ACCESS_AUDIENCE = "64f8277875bdf0056197f67e375a0063ebb549b0f7f194f61b973fbbb02b3071"
+CF_ACCESS_TEAM_DOMAIN = "p31ca"
+
+# KV Namespaces
 [[kv_namespaces]]
 binding = "STATUS_KV"
 id = "ff890e80e7e64ae8b8afb59870f1a0f6"
 
+# D1 Databases
 [[d1_databases]]
 binding = "EPCP_DB"
 database_name = "epcp-audit"
 database_id = "12ce6570-839e-431d-a14d-bb6002dc89e8"
 
+# R2 Buckets
 [[r2_buckets]]
 binding = "FORENSICS_HOT"
 bucket_name = "p31-epcp-forensics-hot"
@@ -28,14 +78,12 @@ bucket_name = "p31-epcp-artifacts"
 binding = "AUDIT_EXPORTS"
 bucket_name = "p31-epcp-audit-exports"
 
-[triggers]
-crons = ["*/5 * * * *"]
+# AI Bindings for Autonomous Agents
+[[ai_bindings]]
+binding = "AI"
+staging_compatible = true
 
-[vars]
-ENVIRONMENT = "production"
-# Public account id (same as Cloudflare dashboard URL)
-CF_ACCOUNT_ID = "ee05f70c889cb6f876b9925257e3a2fa"
-# Team domain for Cloudflare Access JWT validation
-CF_TEAM_DOMAIN = "trimtab-signal"
-# STATUS_TOKEN: set via `wrangler secret put STATUS_TOKEN`
-# CF_API_TOKEN: set via `wrangler secret put CF_API_TOKEN` — see CLOUD_HUB.md
+# Vector Database for Anomaly Detection
+[[vectorize_bindings]]
+binding = "VECTORIZE_INDEX"
+index_name = "p31-maintenance-embeddings"
