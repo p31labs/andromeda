@@ -5,7 +5,10 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "deploy": "npm run build && npx wrangler pages deploy dist --project-name p31ca --branch=main --commit-dirty=true",
+    "passport:verify": "node scripts/verify-passport.mjs",
+    "passport:sync": "node ../../../scripts/sync-passport-to-p31ca.mjs",
+    "predeploy": "npm run passport:verify",
+    "deploy": "npm run predeploy && npm run build && wrangler pages deploy dist --project-name p31ca --branch=main --commit-dirty=true",
     "preview": "astro preview",
     "astro": "astro",
     "hub:about:enrich": "node scripts/enrich-mvp-about-pages.mjs",
@@ -16,5 +19,8 @@
     "astro": "^5.17.1",
     "tailwindcss": "^3.4.19",
     "three": "^0.183.0"
+  },
+  "devDependencies": {
+    "wrangler": "^4.85.0"
   }
 }

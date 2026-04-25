@@ -28,6 +28,10 @@ on:
         description: Build + deploy phosphorus31.org Astro site to Pages (phosphorus31-org)
         type: boolean
         default: false
+      p31ca_strict_passport:
+        description: p31ca deploy only — require cognitive-passport in tree (P31_STRICT_PASSPORT)
+        type: boolean
+        default: false
 
 concurrency:
   group: p31-automation-${{ github.ref }}
@@ -118,6 +122,7 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: 04_SOFTWARE/cloudflare-worker/bouncer
           command: deploy
+          wranglerVersion: "4.85.0"
 
   deploy-command-center:
     needs: paths
@@ -135,6 +140,7 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: 04_SOFTWARE/cloudflare-worker/command-center
           command: deploy
+          wranglerVersion: "4.85.0"
 
   deploy-docs:
     needs: paths
@@ -159,6 +165,7 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: 04_SOFTWARE/docs
           command: pages deploy dist --project-name=p31-technical-library
+          wranglerVersion: "4.85.0"
 
   deploy-p31ca:
     needs: paths
@@ -173,8 +180,17 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Install p31ca
+        run: cd 04_SOFTWARE/p31ca && npm install
+
+      - name: Verify passport mirror
+        env:
+          P31_STRICT_PASSPORT: ${{ (github.event_name == 'workflow_dispatch' && github.event.inputs.p31ca_strict_passport == 'true') && '1' || '0' }}
+          P31_WORKSPACE_ROOT: ${{ github.workspace }}
+        run: cd 04_SOFTWARE/p31ca && npm run passport:verify
+
       - name: Build p31ca.org
-        run: cd 04_SOFTWARE/p31ca && npm install && npm run build
+        run: cd 04_SOFTWARE/p31ca && npm run build
 
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
@@ -183,6 +199,7 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: 04_SOFTWARE/p31ca
           command: pages deploy dist --project-name=p31ca
+          wranglerVersion: "4.85.0"
 
   deploy-phosphorus31:
     needs: paths
@@ -207,3 +224,4 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: phosphorus31.org/planetary-planet
           command: pages deploy dist --project-name=phosphorus31-org
+          wranglerVersion: "4.85.0"

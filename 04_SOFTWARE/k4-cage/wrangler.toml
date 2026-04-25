@@ -35,6 +35,11 @@ new_sqlite_classes = ["FamilyMeshRoom"]
 tag = "v3-production"
 new_sqlite_classes = ["K4Topology"]
 
+# Present on the published k4-cage worker in Cloudflare; include so wrangler’s
+# migration list matches the script (avoids "tag not in wrangler" + API 10074 drift).
+[[migrations]]
+tag = "v4-messaging"
+
 # [[d1_databases]]
 # binding = "DB"
 # database_name = "p31-telemetry"
