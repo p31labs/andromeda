@@ -13,6 +13,7 @@
     "install:all": "pnpm install",
     "build": "pnpm --dir 04_SOFTWARE run build",
     "test": "pnpm --dir 04_SOFTWARE run test",
+    "cf:verify": "node scripts/verify-cloudflare-token.mjs",
     "quality": "node scripts/enterprise-deploy-guard.mjs",
     "lint": "echo \"Lint per package: cd 04_SOFTWARE/<project> && pnpm run lint (if defined)\"",
     "audit": "pnpm audit"
