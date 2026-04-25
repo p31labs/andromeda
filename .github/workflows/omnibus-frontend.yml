@@ -35,6 +35,9 @@ jobs:
     name: Forge + Vite + DOI health
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    permissions:
+      contents: read
+      deployments: write
     steps:
       - uses: actions/checkout@v4
 
@@ -66,3 +69,16 @@ jobs:
           path: 04_SOFTWARE/frontend/dist
           retention-days: 14
           if-no-files-found: error
+
+      # Production only: PRs and feat/* builds above — do not ship to the edge.
+      - name: Deploy to Cloudflare Pages
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: andromeda-ui
+          directory: 04_SOFTWARE/frontend/dist
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          wranglerVersion: '3'
+          branch: main
