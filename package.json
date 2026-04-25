@@ -15,6 +15,7 @@
     "test": "pnpm --dir 04_SOFTWARE run test",
     "cf:verify": "node scripts/verify-cloudflare-token.mjs",
     "lockfile:check": "pnpm install --frozen-lockfile && pnpm install --frozen-lockfile --dir 04_SOFTWARE",
+    "ship:pr": "node scripts/ship-pr.mjs",
     "quality": "node scripts/enterprise-deploy-guard.mjs",
     "lint": "echo \"Lint per package: cd 04_SOFTWARE/<project> && pnpm run lint (if defined)\"",
     "audit": "pnpm audit"
