@@ -1,0 +1,104 @@
+# Alert Rules for P31 Andromeda Social Media Engine
+
+groups:
+  - name: social_engine_alerts
+    rules:
+      # High error rate alert
+      - alert: HighErrorRate
+        expr: rate(http_requests_total{status=~"5.."}[5m]) > 0.05
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High error rate detected"
+          description: "Error rate is above 5% for more than 5 minutes"
+
+      # Worker down alert
+      - alert: SocialWorkerDown
+        expr: up{job="social-worker"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Social Worker is down"
+          description: "Social Worker has been down for more than 2 minutes"
+
+      # Discord bot offline
+      - alert: DiscordBotOffline
+        expr: up{job="discord-bot"} == 0
+        for: 3m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Discord Bot is offline"
+          description: "Discord Bot has been offline for more than 3 minutes"
+
+      # High response time
+      - alert: HighResponseTime
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High response time detected"
+          description: "95th percentile response time is above 1 second"
+
+      # Rate limit approaching
+      - alert: RateLimitWarning
+        expr: rate(twitter_api_requests_total[1h]) > 250
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Twitter rate limit approaching"
+          description: "Twitter API requests approaching rate limit"
+
+      # Failed posts increasing
+      - alert: FailedPostsIncreasing
+        expr: increase(posts_failed_total[1h]) > 10
+        for: 15m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Failed posts increasing"
+          description: "Number of failed posts has increased significantly"
+
+      # Low success rate
+      - alert: LowSuccessRate
+        expr: rate(posts_successful_total[1h]) / rate(posts_total[1h]) < 0.9
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Low post success rate"
+          description: "Post success rate has dropped below 90%"
+
+      # Memory usage high
+      - alert: HighMemoryUsage
+        expr: process_resident_memory_bytes / 1024 / 1024 > 500
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High memory usage detected"
+          description: "Memory usage is above 500MB"
+
+      # CPU usage high
+      - alert: HighCPUUsage
+        expr: rate(process_cpu_seconds_total[5m]) * 100 > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage detected"
+          description: "CPU usage is above 80%"
+
+      # Queue backlog growing
+      - alert: QueueBacklogGrowing
+        expr: increase(post_queue_length[1h]) > 50
+        for: 15m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Post queue backlog growing"
+          description: "Number of queued posts is increasing rapidly"

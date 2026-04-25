@@ -1,0 +1,21 @@
+{
+  "name": "k4-cage",
+  "version": "1.0.0",
+  "description": "The K⁴ Cage is a unified Cloudflare Worker that implements the K⁴ mesh topology for family and friends communication. It extends the existing FamilyMeshRoom Durable Object with persistent messaging capabilities.",
+  "main": "test-e2e.js",
+  "directories": {
+    "test": "tests"
+  },
+  "devDependencies": {
+    "jest": "^30.3.0",
+    "jest-environment-node": "^30.3.0",
+    "wrangler": "^4.85.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
+}

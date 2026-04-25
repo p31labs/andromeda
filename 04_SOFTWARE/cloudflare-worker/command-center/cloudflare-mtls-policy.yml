@@ -1,0 +1,84 @@
+# Cloudflare Zero Trust mTLS Policy for P31 Sovereign Mesh
+# Apply via: cloudflare zero-trust policies create --file cloudflare-mtls-policy.yml
+
+policies:
+  - name: "P31 Sovereign Device Authentication"
+    description: "Hardware-backed mTLS for G.O.D. Dashboard mesh access"
+    precedence: 1
+    action: allow
+    enabled: true
+    
+    include:
+      - email:
+          domain: p31ca.org
+      - certificate:
+          trusted_issuer: "CN=P31 Sovereign Root CA"
+    
+    require:
+      - certificate:
+          trusted_issuer: "CN=P31 Sovereign Root CA"
+          valid: true
+        device_posture:
+          - se050_present: true
+          - firmware_version: ">= 5.5.3"
+    
+    duration: 24h
+    
+    settings:
+      session_duration: 86400
+      require_mtls: true
+      mtls_certificate_issuer: "CN=P31 Sovereign Root CA"
+      mtls_certificate_skip_verify: false
+      
+  - name: "P31 Mesh WebSocket Access"
+    description: "Allow WebSocket connections from authenticated devices"
+    precedence: 2
+    action: allow
+    enabled: true
+    
+    include:
+      - certificate:
+          trusted_issuer: "CN=P31 Sovereign Root CA"
+    
+    require:
+      - hostname: "god.p31ca.org"
+    
+    duration: 24h
+    
+  - name: "Block Unauthenticated Access"
+    description: "Deny all access without valid mTLS certificate"
+    precedence: 3
+    action: block
+    enabled: true
+    
+    include:
+      - everyone
+    
+    except:
+      - ip:
+          - "192.168.0.0/16"
+          - "10.0.0.0/8"
+
+# mTLS Configuration
+mtls_settings:
+  enabled: true
+  certificate_lifetime: 365d
+  auto_rotate: true
+  rotation_window: 30d
+  
+# Device Posture Checks
+device_posture:
+  rules:
+    - name: "SE050 Secure Element Check"
+      key: "se050_present"
+      operator: "=="
+      value: true
+      description: "Verify NXP SE050 secure element is present"
+      remediation: "Install P31 hardware token"
+      
+    - name: "Firmware Version Check"
+      key: "firmware_version"
+      operator: ">="
+      value: "5.5.3"
+      description: "Verify SE050 firmware is up to date"
+      remediation: "Update SE050 firmware"

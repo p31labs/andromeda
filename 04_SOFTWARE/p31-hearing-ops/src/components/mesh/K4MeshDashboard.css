@@ -1,0 +1,26 @@
+.k4-dashboard {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  background: #050505;
+  overflow: hidden;
+  font-family: 'JetBrains Mono', monospace;
+}
+.k4-canvas-container {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+.k4-canvas-container canvas {
+  outline: none;
+}
+.k4-canvas-container canvas:focus { outline: none; }
+@media (max-width: 768px) {
+  .k4-dashboard { height: 100vh; }
+}
+@media (prefers-contrast: high) {
+  .k4-dashboard { background: #000; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .k4-dashboard * { animation: none !important; transition: none !important; }
+}

@@ -1,0 +1,261 @@
+/**
+ * P31 Andromeda - Lightweight Monitoring System
+ * Real-time metrics collection and alerting
+ */
+
+const express = require('express');
+const http = require('http');
+const WebSocket = require('ws');
+const fs = require('fs');
+const path = require('path');
+
+const app = express();
+const server = http.createServer(app);
+const wss = new WebSocket.Server({ server });
+
+// Metrics storage
+const metrics = {
+  socialWorker: {
+    requests: 0,
+    errors: 0,
+    responseTime: [],
+    lastCheck: Date.now(),
+    status: 'unknown'
+  },
+  discordBot: {
+    messages: 0,
+    commands: 0,
+    errors: 0,
+    lastHeartbeat: Date.now(),
+    status: 'unknown'
+  },
+  commandCenter: {
+    visits: 0,
+    broadcasts: 0,
+    preflightChecks: 0,
+    lastActivity: Date.now(),
+    status: 'unknown'
+  },
+  system: {
+    memory: 0,
+    cpu: 0,
+    uptime: process.uptime()
+  }
+};
+
+// Alert thresholds
+const ALERTS = {
+  errorRate: 0.05, // 5%
+  responseTime: 1000, // 1 second
+  memoryLimit: 500 * 1024 * 1024, // 500MB
+  heartbeatTimeout: 300000 // 5 minutes
+};
+
+// Active alerts
+const activeAlerts = [];
+
+// Middleware
+app.use(express.json());
+app.use(express.static('public'));
+
+// Metrics endpoints
+app.get('/metrics', (req, res) => {
+  res.json(metrics);
+});
+
+app.get('/metrics/:service', (req, res) => {
+  const service = req.params.service;
+  if (metrics[service]) {
+    res.json(metrics[service]);
+  } else {
+    res.status(404).json({ error: 'Service not found' });
+  }
+});
+
+// Health check
+app.get('/health', (req, res) => {
+  const health = {
+    status: 'healthy',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    services: {
+      socialWorker: metrics.socialWorker.status,
+      discordBot: metrics.discordBot.status,
+      commandCenter: metrics.commandCenter.status
+    },
+    alerts: activeAlerts.length
+  };
+  
+  // Check if any service is down
+  if (metrics.socialWorker.status === 'down' ||
+      metrics.discordBot.status === 'down' ||
+      metrics.commandCenter.status === 'down') {
+    health.status = 'degraded';
+  }
+  
+  res.json(health);
+});
+
+// Alert endpoint
+app.post('/alerts', (req, res) => {
+  const alert = {
+    id: Date.now(),
+    severity: req.body.severity || 'warning',
+    message: req.body.message,
+    service: req.body.service,
+    timestamp: new Date().toISOString()
+  };
+  
+  activeAlerts.push(alert);
+  
+  // Broadcast to WebSocket clients
+  broadcastAlert(alert);
+  
+  res.json({ success: true, alert });
+});
+
+// Metrics update endpoint
+app.post('/metrics/:service', (req, res) => {
+  const service = req.params.service;
+  if (metrics[service]) {
+    Object.assign(metrics[service], req.body);
+    metrics[service].lastUpdate = Date.now();
+    res.json({ success: true });
+  } else {
+    res.status(404).json({ error: 'Service not found' });
+  }
+});
+
+// Dashboard
+app.get('/dashboard', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
+});
+
+// WebSocket connection
+wss.on('connection', (ws) => {
+  console.log('WebSocket client connected');
+  
+  // Send current metrics
+  ws.send(JSON.stringify({
+    type: 'metrics',
+    data: metrics
+  }));
+  
+  // Send active alerts
+  ws.send(JSON.stringify({
+    type: 'alerts',
+    data: activeAlerts
+  }));
+  
+  ws.on('close', () => {
+    console.log('WebSocket client disconnected');
+  });
+});
+
+function broadcastAlert(alert) {
+  const message = JSON.stringify({
+    type: 'alert',
+    data: alert
+  });
+  
+  wss.clients.forEach((client) => {
+    if (client.readyState === WebSocket.OPEN) {
+      client.send(message);
+    }
+  });
+}
+
+// Periodic health checks
+setInterval(() => {
+  // Update system metrics
+  const usage = process.memoryUsage();
+  metrics.system.memory = usage.heapUsed;
+  metrics.system.uptime = process.uptime();
+  
+  // Check service heartbeats
+  const now = Date.now();
+  
+  // Social Worker
+  if (now - metrics.socialWorker.lastCheck > ALERTS.heartbeatTimeout) {
+    if (metrics.socialWorker.status !== 'down') {
+      const alert = {
+        severity: 'critical',
+        message: 'Social Worker heartbeat timeout',
+        service: 'socialWorker',
+        timestamp: new Date().toISOString()
+      };
+      activeAlerts.push(alert);
+      broadcastAlert(alert);
+    }
+    metrics.socialWorker.status = 'down';
+  }
+  
+  // Discord Bot
+  if (now - metrics.discordBot.lastHeartbeat > ALERTS.heartbeatTimeout) {
+    if (metrics.discordBot.status !== 'down') {
+      const alert = {
+        severity: 'critical',
+        message: 'Discord Bot heartbeat timeout',
+        service: 'discordBot',
+        timestamp: new Date().toISOString()
+      };
+      activeAlerts.push(alert);
+      broadcastAlert(alert);
+    }
+    metrics.discordBot.status = 'down';
+  }
+  
+  // Check error rates
+  if (metrics.socialWorker.requests > 0) {
+    const errorRate = metrics.socialWorker.errors / metrics.socialWorker.requests;
+    if (errorRate > ALERTS.errorRate) {
+      const alert = {
+        severity: 'warning',
+        message: `High error rate: ${(errorRate * 100).toFixed(2)}%`,
+        service: 'socialWorker',
+        timestamp: new Date().toISOString()
+      };
+      activeAlerts.push(alert);
+      broadcastAlert(alert);
+    }
+  }
+  
+  // Check response time
+  if (metrics.socialWorker.responseTime.length > 0) {
+    const avgResponseTime = metrics.socialWorker.responseTime.reduce((a, b) => a + b, 0) / metrics.socialWorker.responseTime.length;
+    if (avgResponseTime > ALERTS.responseTime) {
+      const alert = {
+        severity: 'warning',
+        message: `High response time: ${avgResponseTime.toFixed(0)}ms`,
+        service: 'socialWorker',
+        timestamp: new Date().toISOString()
+      };
+      activeAlerts.push(alert);
+      broadcastAlert(alert);
+    }
+  }
+  
+  // Check memory
+  if (metrics.system.memory > ALERTS.memoryLimit) {
+    const alert = {
+      severity: 'warning',
+      message: `High memory usage: ${(metrics.system.memory / 1024 / 1024).toFixed(0)}MB`,
+      service: 'system',
+      timestamp: new Date().toISOString()
+    };
+    activeAlerts.push(alert);
+    broadcastAlert(alert);
+  }
+  
+}, 10000); // Check every 10 seconds
+
+// Start server
+const PORT = process.env.PORT || 9090;
+server.listen(PORT, () => {
+  console.log(`P31 Monitoring System running on port ${PORT}`);
+  console.log(`Dashboard: http://localhost:${PORT}/dashboard`);
+  console.log(`Metrics: http://localhost:${PORT}/metrics`);
+  console.log(`Health: http://localhost:${PORT}/health`);
+});
+
+module.exports = { app, metrics, activeAlerts };

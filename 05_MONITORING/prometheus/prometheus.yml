@@ -1,0 +1,38 @@
+# Prometheus Configuration for P31 Andromeda
+# Monitoring social media engine metrics
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+rule_files:
+  - "alert_rules.yml"
+
+scrape_configs:
+  # Cloudflare Workers metrics
+  - job_name: 'social-worker'
+    static_configs:
+      - targets: ['localhost:9090']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+
+  # Discord Bot metrics
+  - job_name: 'discord-bot'
+    static_configs:
+      - targets: ['localhost:9091']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+
+  # Command Center metrics
+  - job_name: 'command-center'
+    static_configs:
+      - targets: ['localhost:9092']
+    metrics_path: '/metrics'
+    scrape_interval: 15s
+
+  # Node.js application metrics
+  - job_name: 'node-apps'
+    static_configs:
+      - targets: ['localhost:9229']
+    metrics_path: '/metrics'
+    scrape_interval: 15s

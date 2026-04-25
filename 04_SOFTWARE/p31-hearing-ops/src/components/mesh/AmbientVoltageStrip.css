@@ -1,0 +1,28 @@
+.ambient-strip-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  z-index: 10;
+  pointer-events: none;
+}
+.ambient-strip {
+  width: 100%;
+  height: 100%;
+  transition: background 0.5s ease, box-shadow 0.5s ease;
+}
+.ambient-strip-label {
+  position: absolute;
+  top: 6px;
+  left: 16px;
+  font-size: 9px;
+  font-family: 'JetBrains Mono', monospace;
+  color: #06b6d488;
+  letter-spacing: 0.1em;
+  pointer-events: none;
+  z-index: 10;
+}
+@media (max-width: 768px) {
+  .ambient-strip-label { font-size: 8px; top: 4px; left: 8px; }
+}

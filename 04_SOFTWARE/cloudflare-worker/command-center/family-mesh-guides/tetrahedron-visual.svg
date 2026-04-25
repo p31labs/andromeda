@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="400" height="350" viewBox="0 0 400 350" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0a0c10"/>
+      <stop offset="100%" style="stop-color:#12151c"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="400" height="350" fill="url(#bg)"/>
+  
+  <!-- Grid pattern -->
+  <g opacity="0.1">
+    <line x1="0" y1="50" x2="400" y2="50" stroke="#3dd6c5" stroke-width="1"/>
+    <line x1="0" y1="100" x2="400" y2="100" stroke="#3dd6c5" stroke-width="1"/>
+    <line x1="0" y1="150" x2="400" y2="150" stroke="#3dd6c5" stroke-width="1"/>
+    <line x1="0" y1="200" x2="400" y2="200" stroke="#3dd6c5" stroke-width="1"/>
+    <line x1="0" y1="250" x2="400" y2="250" stroke="#3dd6c5" stroke-width="1"/>
+    <line x1="0" y1="300" x2="400" y2="300" stroke="#3dd6c5" stroke-width="1"/>
+  </g>
+  
+  <!-- Title -->
+  <text x="200" y="30" text-anchor="middle" fill="#d8d6d0" font-family="Space Grotesk, sans-serif" font-size="16" font-weight="700">TETRAHEDRON FAMILY MESH</text>
+  <text x="200" y="50" text-anchor="middle" fill="#5a5f69" font-family="JetBrains Mono, monospace" font-size="10">CONNECTION DIAGRAM</text>
+  
+  <!-- Tetrahedron - 3D Isometric View -->
+  <g transform="translate(200, 180)">
+    <!-- Back edges (lighter) -->
+    <line x1="-80" y1="40" x2="0" y2="-60" stroke="#3dd6c5" stroke-width="2" opacity="0.4"/>
+    <line x1="80" y1="40" x2="0" y2="-60" stroke="#3dd6c5" stroke-width="2" opacity="0.4"/>
+    <line x1="-80" y1="40" x2="80" y2="40" stroke="#3dd6c5" stroke-width="2" opacity="0.4"/>
+    
+    <!-- Front edges (brighter) -->
+    <line x1="0" y1="-60" x2="-80" y2="40" stroke="#3dd6c5" stroke-width="3" filter="url(#glow)"/>
+    <line x1="0" y1="-60" x2="80" y2="40" stroke="#3dd6c5" stroke-width="3" filter="url(#glow)"/>
+    <line x1="-80" y1="40" x2="80" y2="40" stroke="#3dd6c5" stroke-width="3" filter="url(#glow)"/>
+    
+    <!-- Vertex circles - TOP -->
+    <circle cx="0" cy="-60" r="18" fill="#0a0c10" stroke="#e8636f" stroke-width="3" filter="url(#glow)"/>
+    <text x="0" y="-55" text-anchor="middle" fill="#e8636f" font-family="JetBrains Mono" font-size="11" font-weight="700">TOP</text>
+    
+    <!-- Vertex circles - FRONT-LEFT -->
+    <circle cx="-80" cy="40" r="16" fill="#0a0c10" stroke="#4069ff" stroke-width="3" filter="url(#glow)"/>
+    <text x="-80" y="44" text-anchor="middle" fill="#4069ff" font-family="JetBrains Mono" font-size="10" font-weight="700">FRONT</text>
+    
+    <!-- Vertex circles - FRONT-RIGHT -->
+    <circle cx="80" cy="40" r="16" fill="#0a0c10" stroke="#cda852" stroke-width="3" filter="url(#glow)"/>
+    <text x="80" y="44" text-anchor="middle" fill="#cda852" font-family="JetBrains Mono" font-size="10" font-weight="700">RIGHT</text>
+    
+    <!-- Vertex circles - BACK -->
+    <circle cx="0" cy="65" r="16" fill="#0a0c10" stroke="#3dd6c5" stroke-width="3" filter="url(#glow)"/>
+    <text x="0" y="69" text-anchor="middle" fill="#3dd6c5" font-family="JetBrains Mono" font-size="10" font-weight="700">BACK</text>
+  </g>
+  
+  <!-- Legend Box -->
+  <rect x="20" y="280" width="360" height="60" fill="#12151c" stroke="#3dd6c5" stroke-width="1" opacity="0.5" rx="4"/>
+  
+  <!-- Legend Title -->
+  <text x="40" y="300" fill="#d8d6d0" font-family="Space Grotesk, sans-serif" font-size="12" font-weight="700">VERTEX NAMES (For Login):</text>
+  
+  <!-- Legend Items -->
+  <g font-family="JetBrains Mono" font-size="10">
+    <circle cx="40" cy="318" r="5" fill="#e8636f"/>
+    <text x="50" y="322" fill="#d8d6d0">TOP = "will" (Dad)</text>
+    
+    <circle cx="160" cy="318" r="5" fill="#4069ff"/>
+    <text x="170" y="322" fill="#d8d6d0">FRONT = "sj" (S.J.)</text>
+    
+    <circle cx="260" cy="318" r="5" fill="#cda852"/>
+    <text x="270" y="322" fill="#d8d6d0">RIGHT = "wj" (W.J.)</text>
+    
+    <circle cx="360" cy="318" r="5" fill="#3dd6c5"/>
+    <text x="370" y="322" fill="#d8d6d0">BACK = "christyn" (Mom)</text>
+  </g>
+  
+  <!-- Status Indicator -->
+  <g transform="translate(320, 40)">
+    <circle cx="0" cy="0" r="8" fill="#3dd6c5">
+      <animate attributeName="opacity" values="1;0.5;1" dur="2s" repeatCount="indefinite"/>
+    </circle>
+    <text x="15" y="4" fill="#d8d6d0" font-family="JetBrains Mono" font-size="9">LIVE</text>
+  </g>
+  
+  <!-- Connection lines pulsing -->
+  <g opacity="0.3">
+    <line x1="200" y1="120" x2="120" y2="220" stroke="#3dd6c5" stroke-width="1">
+      <animate attributeName="opacity" values="0.3;0.8;0.3" dur="3s" repeatCount="indefinite"/>
+    </line>
+    <line x1="200" y1="120" x2="280" y2="220" stroke="#3dd6c5" stroke-width="1">
+      <animate attributeName="opacity" values="0.3;0.8;0.3" dur="3s" repeatCount="indefinite" begin="0.5s"/>
+    </line>
+    <line x1="120" y1="220" x2="280" y2="220" stroke="#3dd6c5" stroke-width="1">
+      <animate attributeName="opacity" values="0.3;0.8;0.3" dur="3s" repeatCount="indefinite" begin="1s"/>
+    </line>
+  </g>
+</svg>

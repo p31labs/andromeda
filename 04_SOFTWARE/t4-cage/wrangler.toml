@@ -1,0 +1,47 @@
+# t4-cage — T4 Topology (Tyler's Family Mesh)
+# P31 Labs, Inc. | EIN 42-1888158
+#
+# Sovereign isolated mesh for Tyler, Ashley, Lincoln, Judah
+# 
+
+name = "t4-cage"
+main = "src/index.js"
+compatibility_date = "2025-10-01"
+
+[durable_objects]
+bindings = [
+  { name = "T4_TOPOLOGY",          class_name = "K4Topology" },
+  { name = "FAMILY_MESH_ROOM_T4", class_name = "FamilyMeshRoom" },
+  { name = "FAMILY_MESSAGING_T4", class_name = "FamilyMessagingDO" },
+]
+
+# T4 DO migrations
+[[migrations]]
+tag = "v2-hibernation-t4"
+new_sqlite_classes = ["FamilyMeshRoom"]
+
+[[migrations]]
+tag = "v3-production-t4"
+new_sqlite_classes = ["K4Topology"]
+
+[[migrations]]
+tag = "v4-messaging-t4"
+new_sqlite_classes = ["FamilyMessagingDO"]
+
+# T4 D1 Database
+[[d1_databases]]
+binding = "DB_T4"
+database_name = "t4-telemetry"
+database_id = "c0dfdde4-1c4b-40be-90ac-35563adfe7cd"
+
+# T4 KV Namespace
+[[kv_namespaces]]
+binding = "T4_MESH"
+id = "d2cd591890af432a97c75889b092a926"
+
+[vars]
+WORKER_VERSION = "2.0.0-t4"
+TOPOLOGY = "T4"
+ENVIRONMENT = "production"
+MESH_ROOM_IDS = "family-mesh-t4"
+ORCHESTRATOR_WEBHOOK = "https://p31-orchestrator.trimtab-signal.workers.dev/api/webhook/k4-cage"

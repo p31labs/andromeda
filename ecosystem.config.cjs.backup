@@ -1,0 +1,28 @@
+module.exports = {
+  apps: [
+    {
+      name: 'p31-discord-bot',
+      script: '/home/p31/andromeda/04_SOFTWARE/discord/p31-bot/dist/index.js',
+      instances: 1,
+      autorestart: true,
+      max_memory_restart: '200M',
+      env: {
+        NODE_ENV: 'production',
+        DISCORD_TOKEN: process.env.DISCORD_TOKEN,
+        BOT_PREFIX: 'p31'
+      }
+    },
+    {
+      name: 'p31-monitor',
+      script: '/home/p31/andromeda/05_MONITORing/monitor.js',
+      instances: 1,
+      autorestart: true,
+      max_memory_restart: '100M',
+      exp_backoff_restart_delay: 100,
+      env: {
+        NODE_ENV: 'production',
+        PORT: '9090'
+      }
+    }
+  ]
+};

@@ -1,0 +1,3620 @@
+﻿p31-agent-hub-internal
+
+var __defProp = Object.defineProperty;
+var __name = (target, value) => __defProp(target, "name", { value, configurable: true });
+
+
+// src/index.js
+import { DurableObject } from "cloudflare:workers";
+var CORS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization, X-P31-Trace, X-P31-Session",
+  "Access-Control-Max-Age": "86400"
+};
+var READ_TOOLS = [
+  {
+    type: "function",
+    function: {
+      name: "get_family_mesh",
+      description: "Read the family K\u2084 cage mesh (vertices will/sj/wj/christyn, edges, love totals). Source of truth: k4-cage KV.",
+      parameters: { type: "object", properties: {} }
+    }
+  },
+  {
+    type: "function",
+    function: {
+      name: "get_personal_mesh",
+      description: "Read the personal K\u2084 mesh (pillars a\u2013d). Isolated KV. Same JSON shape as cage personal scope.",
+      parameters: { type: "object", properties: {} }
+    }
+  },
+  {
+    type: "function",
+    function: {
+      name: "list_hubs",
+      description: "List life-context K\u2084 hubs (docks, bind modes). Read-only GET /api/hubs.",
+      parameters: { type: "object", properties: {} }
+    }
+  }
+];
+var WRITE_TOOLS = [
+  {
+    type: "function",
+    function: {
+      name: "hubs_create",
+      description: "Create a new life-context K\u2084 hub (UUID manifest, default dock labels). Uses POST /api/hubs on k4-hubs with write token.",
+      parameters: {
+        type: "object",
+        properties: {
+          kind: { type: "string", description: "Hub kind (default general)" },
+          title: { type: "string", description: "Title (optional)" },
+          dockLabels: {
+            type: "object",
+            description: "Optional { a, b, c, d } string labels"
+          }
+        }
+      }
+    }
+  },
+  {
+    type: "function",
+    function: {
+      name: "hub_dock_bind",
+      description: "Bind a hub dock (a\u2013d) to a personal mesh ref with mode mirror, live, or vault. POST /api/hubs/{hubId}/dock/{dock}/bind",
+      parameters: {
+        type: "object",
+        properties: {
+          hubId: { type: "string", description: "Hub UUID" },
+          dockId: { type: "string", description: "Dock letter a, b, c, or d" },
+          personalRef: { type: "string", description: "Default personal:default" },
+          mode: { type: "string", description: "mirror | live | vault" }
+        },
+        required: ["hubId", "dockId"]
+      }
+    }
+  },
+  {
+    type: "function",
+    function: {
+      name: "hub_dock_unbind",
+      description: "Remove binding from a hub dock. POST /api/hubs/{hubId}/dock/{dock}/unbind",
+      parameters: {
+        type: "object",
+        properties: {
+          hubId: { type: "string" },
+          dockId: { type: "string" }
+        },
+        required: ["hubId", "dockId"]
+      }
+    }
+  },
+  {
+    type: "function",
+    function: {
+      name: "hub_presence",
+      description: "Update presence on a hub dock vertex. POST /api/hubs/{hubId}/presence/{dock}",
+      parameters: {
+        type: "object",
+        properties: {
+          hubId: { type: "string" },
+          dockId: { type: "string" },
+          status: { type: "string", description: "e.g. online, offline" },
+          metadata: { type: "object", description: "Optional small JSON object" }
+        },
+        required: ["hubId", "dockId", "status"]
+      }
+    }
+  },
+  {
+    type: "function",
+    function: {
+      name: "hub_ping",
+      description: "Send a ping (emoji) along a valid hub edge between docks. POST /api/hubs/{hubId}/ping/{from}/{to}",
+      parameters: {
+        type: "object",
+        properties: {
+          hubId: { type: "string" },
+          from: { type: "string", description: "Dock a\u2013d" },
+          to: { type: "string", description: "Dock a\u2013d" },
+          emoji: { type: "string" }
+        },
+        required: ["hubId", "from", "to", "emoji"]
+      }
+    }
+  }
+];
+function isInternalWrites(env) {
+  const ch = String(env.RELEASE_CHANNEL || "public").toLowerCase();
+  if (ch === "public") return false;
+  const tok = env.HUBS_WRITE_TOKEN;
+  return tok != null && String(tok).length > 0;
+}
+__name(isInternalWrites, "isInternalWrites");
+function toolsForEnv(env) {
+  if (!isInternalWrites(env)) return READ_TOOLS;
+  return [...READ_TOOLS, ...WRITE_TOOLS];
+}
+__name(toolsForEnv, "toolsForEnv");
+function hubsWriteHeaders(env) {
+  const h = {};
+  const tok = env.HUBS_WRITE_TOKEN;
+  if (tok != null && String(tok) !== "") {
+    h.Authorization = `Bearer ${String(tok)}`;
+  }
+  return h;
+}
+__name(hubsWriteHeaders, "hubsWriteHeaders");
+function json(data, status = 200, extra = {}) {
+  return new Response(JSON.stringify(data, null, 2), {
+    status,
+    headers: { "content-type": "application/json; charset=utf-8", ...CORS, ...extra }
+  });
+}
+__name(json, "json");
+function scrubForLlm(text) {
+  let s = String(text);
+  s = s.replace(/Bearer\s+[A-Za-z0-9._\-+/=]{8,}/gi, "Bearer [redacted]");
+  s = s.replace(/p31-dad-[\w-]+/gi, "[redacted-admin]");
+  s = s.replace(/p31-delta-[A-Za-z0-9]+/gi, "[redacted-token]");
+  return s;
+}
+__name(scrubForLlm, "scrubForLlm");
+function truncate(s, max) {
+  const t = String(s);
+  if (t.length <= max) return t;
+  return `${t.slice(0, max)}
+\u2026[truncated ${t.length - max} chars]`;
+}
+__name(truncate, "truncate");
+function authError(request, env) {
+  const need = env.AGENT_HUB_SECRET;
+  if (!need) return null;
+  const h = request.headers.get("Authorization") || "";
+  if (h !== `Bearer ${need}`) {
+    return json({ error: "unauthorized", hint: "Send Authorization: Bearer <AGENT_HUB_SECRET>" }, 401);
+  }
+  return null;
+}
+__name(authError, "authError");
+var UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+function assertHubId(id) {
+  const s = String(id || "").trim();
+  if (!UUID_RE.test(s)) return { error: "invalid_hub_id", hint: "Expected UUID" };
+  return s;
+}
+__name(assertHubId, "assertHubId");
+function assertDock(d) {
+  const x = String(d || "").trim().toLowerCase();
+  if (!"abcd".includes(x)) return { error: "invalid_dock", hint: "Use a, b, c, or d" };
+  return x;
+}
+__name(assertDock, "assertDock");
+async function k4BindingJson(service, path, init, trace) {
+  if (!service) {
+    return { error: "service_binding_missing", path };
+  }
+  const method = init.method || "GET";
+  const headers = {
+    Accept: "application/json",
+    ...trace ? { "X-P31-Trace": trace } : {},
+    ...init.headers || {}
+  };
+  let bodyStr;
+  if (init.body !== void 0 && init.body !== null) {
+    bodyStr = typeof init.body === "string" ? init.body : JSON.stringify(init.body);
+    if (!headers["Content-Type"] && !headers["content-type"]) {
+      headers["Content-Type"] = "application/json";
+    }
+  }
+  const req = new Request(`https://k4-bind${path}`, {
+    method,
+    headers,
+    body: bodyStr
+  });
+  const res = await service.fetch(req);
+  const text = await res.text();
+  let body;
+  try {
+    body = JSON.parse(text);
+  } catch {
+    body = { _raw: truncate(text, 2e3), status: res.status };
+  }
+  if (!res.ok) {
+    return { error: "upstream_http", status: res.status, body };
+  }
+  return body;
+}
+__name(k4BindingJson, "k4BindingJson");
+async function k4Fetch(service, path, trace) {
+  return await k4BindingJson(service, path, { method: "GET" }, trace);
+}
+__name(k4Fetch, "k4Fetch");
+async function executeTool(name, argsJson, env, trace) {
+  const args = argsJson || {};
+  switch (name) {
+    case "get_family_mesh":
+      return await k4Fetch(env.K4_CAGE, "/api/mesh", trace);
+    case "get_personal_mesh":
+      return await k4Fetch(env.K4_PERSONAL, "/api/mesh", trace);
+    case "list_hubs":
+      return await k4Fetch(env.K4_HUBS, "/api/hubs", trace);
+    case "hubs_create": {
+      if (!isInternalWrites(env)) return { error: "writes_disabled" };
+      const payload = {};
+      if (typeof args.kind === "string" && args.kind.trim()) payload.kind = args.kind.trim().slice(0, 64);
+      if (typeof args.title === "string") payload.title = args.title.trim().slice(0, 200);
+      if (args.dockLabels && typeof args.dockLabels === "object" && !Array.isArray(args.dockLabels)) {
+        payload.dockLabels = args.dockLabels;
+      }
+      return await k4BindingJson(env.K4_HUBS, "/api/hubs", { method: "POST", body: payload, headers: hubsWriteHeaders(env) }, trace);
+    }
+    case "hub_dock_bind": {
+      if (!isInternalWrites(env)) return { error: "writes_disabled" };
+      const hid = assertHubId(args.hubId);
+      if (typeof hid === "object") return hid;
+      const dock = assertDock(args.dockId);
+      if (typeof dock === "object") return dock;
+      const body = {
+        personalRef: typeof args.personalRef === "string" && args.personalRef.trim() ? args.personalRef.trim().slice(0, 512) : "personal:default",
+        mode: typeof args.mode === "string" ? args.mode.trim().toLowerCase() : "mirror"
+      };
+      return await k4BindingJson(
+        env.K4_HUBS,
+        `/api/hubs/${hid}/dock/${dock}/bind`,
+        { method: "POST", body, headers: hubsWriteHeaders(env) },
+        trace
+      );
+    }
+    case "hub_dock_unbind": {
+      if (!isInternalWrites(env)) return { error: "writes_disabled" };
+      const hid = assertHubId(args.hubId);
+      if (typeof hid === "object") return hid;
+      const dock = assertDock(args.dockId);
+      if (typeof dock === "object") return dock;
+      return await k4BindingJson(
+        env.K4_HUBS,
+        `/api/hubs/${hid}/dock/${dock}/unbind`,
+        { method: "POST", body: {}, headers: hubsWriteHeaders(env) },
+        trace
+      );
+    }
+    case "hub_presence": {
+      if (!isInternalWrites(env)) return { error: "writes_disabled" };
+      const hid = assertHubId(args.hubId);
+      if (typeof hid === "object") return hid;
+      const dock = assertDock(args.dockId);
+      if (typeof dock === "object") return dock;
+      const body = { status: String(args.status || "").slice(0, 64) };
+      if (args.metadata && typeof args.metadata === "object" && !Array.isArray(args.metadata)) {
+        body.metadata = args.metadata;
+      }
+      return await k4BindingJson(
+        env.K4_HUBS,
+        `/api/hubs/${hid}/presence/${dock}`,
+        { method: "POST", body, headers: hubsWriteHeaders(env) },
+        trace
+      );
+    }
+    case "hub_ping": {
+      if (!isInternalWrites(env)) return { error: "writes_disabled" };
+      const hid = assertHubId(args.hubId);
+      if (typeof hid === "object") return hid;
+      const from = assertDock(args.from);
+      if (typeof from === "object") return from;
+      const to = assertDock(args.to);
+      if (typeof to === "object") return to;
+      const body = { emoji: typeof args.emoji === "string" ? args.emoji : "\u{1F49A}" };
+      return await k4BindingJson(
+        env.K4_HUBS,
+        `/api/hubs/${hid}/ping/${from}/${to}`,
+        { method: "POST", body, headers: hubsWriteHeaders(env) },
+        trace
+      );
+    }
+    default:
+      return { error: "unknown_tool", name };
+  }
+}
+__name(executeTool, "executeTool");
+async function handleToolCalls(out, env, trace, messages, model) {
+  const toolCalls = out?.tool_calls || out?.response?.tool_calls;
+  if (!Array.isArray(toolCalls) || toolCalls.length === 0) return null;
+  const assistantMsg = {
+    role: "assistant",
+    content: typeof out?.response === "string" ? out.response : typeof out?.content === "string" ? out.content : "",
+    tool_calls: toolCalls.map((tc) => ({
+      id: tc.id,
+      type: "function",
+      function: {
+        name: tc.function?.name ?? tc.name,
+        arguments: tc.function?.arguments ?? tc.arguments ?? "{}"
+      }
+    }))
+  };
+  messages.push(assistantMsg);
+  for (const tc of toolCalls) {
+    const fn = tc.function || tc;
+    const name = fn.name || tc.name;
+    let argStr = fn.arguments || tc.arguments || "{}";
+    if (typeof argStr !== "string") argStr = JSON.stringify(argStr);
+    let parsed = {};
+    try {
+      parsed = JSON.parse(argStr);
+    } catch {
+      parsed = {};
+    }
+    const result = await executeTool(name, parsed, env, trace);
+    const content = scrubForLlm(JSON.stringify(result));
+    messages.push({
+      role: "tool",
+      tool_call_id: tc.id,
+      content: truncate(content, 12e3)
+    });
+  }
+  return await env.AI.run(model, { messages, tools: toolsForEnv(env) });
+}
+__name(handleToolCalls, "handleToolCalls");
+async function meshPack(env, trace) {
+  const [family, personal, hubs] = await Promise.all([
+    k4Fetch(env.K4_CAGE, "/api/mesh", trace),
+    k4Fetch(env.K4_PERSONAL, "/api/mesh", trace),
+    k4Fetch(env.K4_HUBS, "/api/hubs", trace)
+  ]);
+  return { family, personal, hubs };
+}
+__name(meshPack, "meshPack");
+async function runAgent(messages, model, env, trace) {
+  let out;
+  try {
+    out = await env.AI.run(model, { messages, tools: toolsForEnv(env) });
+  } catch {
+    let pack;
+    try {
+      pack = await meshPack(env, trace);
+    } catch {
+      pack = { error: "mesh_pack_failed" };
+    }
+    const packStr = scrubForLlm(truncate(JSON.stringify(pack), 1e4));
+    const sys = messages[0];
+    const rest = messages.slice(1);
+    const boosted = [
+      {
+        role: "system",
+        content: `${sys.content}
+
+
+[Mesh snapshot \u2014 use as facts; do not invent beyond this JSON]
+${packStr}`
+      },
+      ...rest
+    ];
+    out = await env.AI.run(model, { messages: boosted });
+  }
+  for (let i = 0; i < 5; i++) {
+    const next = await handleToolCalls(out, env, trace, messages, model);
+    if (!next) break;
+    out = next;
+  }
+  if (typeof out === "string") return { text: out, raw: null };
+  const text = out?.response ?? out?.result?.response ?? (typeof out?.content === "string" ? out.content : JSON.stringify(out));
+  return { text: scrubForLlm(String(text)), raw: out };
+}
+__name(runAgent, "runAgent");
+var AgentSession = class extends DurableObject {
+  static {
+    __name(this, "AgentSession");
+  }
+  /**
+   * @param {DurableObjectState} ctx
+   * @param {Record<string, unknown>} env
+   */
+  constructor(ctx, env) {
+    super(ctx, env);
+    this.ctx = ctx;
+  }
+  async fetch(request) {
+    const url = new URL(request.url);
+    const storage = this.ctx.storage;
+    if (request.method === "GET" && url.pathname === "/messages") {
+      const raw = await storage.get("messages");
+      return json(JSON.parse(raw || "[]"));
+    }
+    if (request.method === "POST" && url.pathname === "/messages") {
+      const body = (
+        /** @type {{ add?: { role: string; content: string }[] }} */
+        await request.json()
+      );
+      const list = JSON.parse(await storage.get("messages") || "[]");
+      const add = body.add || [];
+      for (const m of add) {
+        if (m && typeof m.content === "string" && m.content.length < 32e3) {
+          list.push({ role: m.role || "user", content: m.content });
+        }
+      }
+      while (list.length > 40) list.shift();
+      await storage.put("messages", JSON.stringify(list));
+      return json({ ok: true, count: list.length });
+    }
+    if (request.method === "POST" && url.pathname === "/reset") {
+      await storage.delete("messages");
+      return json({ ok: true });
+    }
+    return new Response("not found", { status: 404 });
+  }
+};
+async function loadMessages(env, sessionKey) {
+  const id = env.AGENT_SESSION.idFromName(sessionKey);
+  const stub = env.AGENT_SESSION.get(id);
+  const r = await stub.fetch(new Request("https://do/messages", { method: "GET" }));
+  return await r.json();
+}
+__name(loadMessages, "loadMessages");
+async function appendMessages(env, sessionKey, add) {
+  const id = env.AGENT_SESSION.idFromName(sessionKey);
+  const stub = env.AGENT_SESSION.get(id);
+  await stub.fetch(
+    new Request("https://do/messages", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ add })
+    })
+  );
+}
+__name(appendMessages, "appendMessages");
+var index_default = {
+  /**
+   * @param {Request} request
+   * @param {Record<string, unknown>} env
+   */
+  async fetch(request, env) {
+    if (request.method === "OPTIONS") {
+      return new Response(null, { status: 204, headers: CORS });
+    }
+    const trace = request.headers.get("X-P31-Trace") || crypto.randomUUID();
+    const url = new URL(request.url);
+    const path = url.pathname.replace(/\/$/, "") || "/";
+    if (path === "/api/health" && request.method === "GET") {
+      return json({
+        ok: true,
+        service: "p31-agent-hub",
+        ts: (/* @__PURE__ */ new Date()).toISOString(),
+        release: env.RELEASE_CHANNEL || "public",
+        model: env.WORKERS_AI_MODEL || "@cf/meta/llama-3.1-8b-instruct",
+        bindings: {
+          k4_cage: Boolean(env.K4_CAGE),
+          k4_personal: Boolean(env.K4_PERSONAL),
+          k4_hubs: Boolean(env.K4_HUBS),
+          ai: Boolean(env.AI)
+        },
+        writes_enabled: isInternalWrites(env)
+      });
+    }
+    if (path === "/api/tools" && request.method === "GET") {
+      const err = authError(request, env);
+      if (err) return err;
+      return json({
+        release: env.RELEASE_CHANNEL || "public",
+        writes_enabled: isInternalWrites(env),
+        tools: toolsForEnv(env).map((t) => t.function.name)
+      });
+    }
+    if (path === "/api/chat" && request.method === "POST") {
+      const err = authError(request, env);
+      if (err) return err;
+      let body;
+      try {
+        body = await request.json();
+      } catch {
+        return json({ error: "invalid_json" }, 400);
+      }
+      const message = typeof body.message === "string" ? body.message.trim() : "";
+      if (!message) return json({ error: "message_required" }, 400);
+      const sessionKey = typeof body.session === "string" && body.session.length < 200 ? body.session : "anon";
+      const model = env.WORKERS_AI_MODEL || "@cf/meta/llama-3.1-8b-instruct";
+      let history = [];
+      try {
+        history = await loadMessages(env, sessionKey);
+      } catch {
+        history = [];
+      }
+      const system = {
+        role: "system",
+        content: scrubForLlm(`You are the P31 edge agent for the K\u2084 mesh fleet.
+Rules:
+- Use tools to fetch live mesh data when answering factual questions about topology, hubs, or presence.
+- Never invent vertex names beyond family cage (will, sj, wj, christyn) and personal pillars (a, b, c, d).
+- Do not print long raw JSON unless the user asks; summarize clearly.
+- Children's names: use initials S.J. and W.J. only if needed; do not use full names.
+- Release channel: ${env.RELEASE_CHANNEL || "public"}.${isInternalWrites(env) ? " Write tools to k4-hubs (create hub, bind/unbind docks, presence, ping) are enabled; use only when the operator asked for a mutation." : " Read-only mesh/hubs tools only; do not claim you changed hub state."}`)
+      };
+      const userMsg = { role: "user", content: scrubForLlm(message) };
+      const messages = [system, ...history.map((m) => ({ role: m.role, content: m.content })), userMsg];
+      let result;
+      try {
+        result = await runAgent(messages, model, env, trace);
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : String(e);
+        return json({ error: "ai_failed", message: msg, trace }, 502);
+      }
+      try {
+        await appendMessages(env, sessionKey, [
+          userMsg,
+          { role: "assistant", content: result.text }
+        ]);
+      } catch {
+      }
+      return json({
+        reply: result.text,
+        trace,
+        session: sessionKey,
+        model
+      });
+    }
+    return json(
+      {
+        service: "p31-agent-hub",
+        routes: ["GET /api/health", "GET /api/tools", "POST /api/chat"],
+        docs: "04_SOFTWARE/p31-agent-hub/README.md"
+      },
+      404
+    );
+  }
+};
+export {
+  AgentSession,
+  index_default as default
+};
+//# sourceMappingURL=index.js.map
+
+P31-agent-hub
+
+var __defProp = Object.defineProperty;
+var __name = (target, value) => __defProp(target, "name", { value, configurable: true });
+
+
+// src/index.js
+import { DurableObject } from "cloudflare:workers";
+var CORS = {
+ "Access-Control-Allow-Origin": "*",
+ "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+ "Access-Control-Allow-Headers": "Content-Type, Authorization, X-P31-Trace, X-P31-Session",
+ "Access-Control-Max-Age": "86400"
+};
+var READ_TOOLS = [
+ {
+   type: "function",
+   function: {
+     name: "get_family_mesh",
+     description: "Read the family K\u2084 cage mesh (vertices will/sj/wj/christyn, edges, love totals). Source of truth: k4-cage KV.",
+     parameters: { type: "object", properties: {} }
+   }
+ },
+ {
+   type: "function",
+   function: {
+     name: "get_personal_mesh",
+     description: "Read the personal K\u2084 mesh (pillars a\u2013d). Isolated KV. Same JSON shape as cage personal scope.",
+     parameters: { type: "object", properties: {} }
+   }
+ },
+ {
+   type: "function",
+   function: {
+     name: "list_hubs",
+     description: "List life-context K\u2084 hubs (docks, bind modes). Read-only GET /api/hubs.",
+     parameters: { type: "object", properties: {} }
+   }
+ }
+];
+var WRITE_TOOLS = [
+ {
+   type: "function",
+   function: {
+     name: "hubs_create",
+     description: "Create a new life-context K\u2084 hub (UUID manifest, default dock labels). Uses POST /api/hubs on k4-hubs with write token.",
+     parameters: {
+       type: "object",
+       properties: {
+         kind: { type: "string", description: "Hub kind (default general)" },
+         title: { type: "string", description: "Title (optional)" },
+         dockLabels: {
+           type: "object",
+           description: "Optional { a, b, c, d } string labels"
+         }
+       }
+     }
+   }
+ },
+ {
+   type: "function",
+   function: {
+     name: "hub_dock_bind",
+     description: "Bind a hub dock (a\u2013d) to a personal mesh ref with mode mirror, live, or vault. POST /api/hubs/{hubId}/dock/{dock}/bind",
+     parameters: {
+       type: "object",
+       properties: {
+         hubId: { type: "string", description: "Hub UUID" },
+         dockId: { type: "string", description: "Dock letter a, b, c, or d" },
+         personalRef: { type: "string", description: "Default personal:default" },
+         mode: { type: "string", description: "mirror | live | vault" }
+       },
+       required: ["hubId", "dockId"]
+     }
+   }
+ },
+ {
+   type: "function",
+   function: {
+     name: "hub_dock_unbind",
+     description: "Remove binding from a hub dock. POST /api/hubs/{hubId}/dock/{dock}/unbind",
+     parameters: {
+       type: "object",
+       properties: {
+         hubId: { type: "string" },
+         dockId: { type: "string" }
+       },
+       required: ["hubId", "dockId"]
+     }
+   }
+ },
+ {
+   type: "function",
+   function: {
+     name: "hub_presence",
+     description: "Update presence on a hub dock vertex. POST /api/hubs/{hubId}/presence/{dock}",
+     parameters: {
+       type: "object",
+       properties: {
+         hubId: { type: "string" },
+         dockId: { type: "string" },
+         status: { type: "string", description: "e.g. online, offline" },
+         metadata: { type: "object", description: "Optional small JSON object" }
+       },
+       required: ["hubId", "dockId", "status"]
+     }
+   }
+ },
+ {
+   type: "function",
+   function: {
+     name: "hub_ping",
+     description: "Send a ping (emoji) along a valid hub edge between docks. POST /api/hubs/{hubId}/ping/{from}/{to}",
+     parameters: {
+       type: "object",
+       properties: {
+         hubId: { type: "string" },
+         from: { type: "string", description: "Dock a\u2013d" },
+         to: { type: "string", description: "Dock a\u2013d" },
+         emoji: { type: "string" }
+       },
+       required: ["hubId", "from", "to", "emoji"]
+     }
+   }
+ }
+];
+function isInternalWrites(env) {
+ const ch = String(env.RELEASE_CHANNEL || "public").toLowerCase();
+ if (ch === "public") return false;
+ const tok = env.HUBS_WRITE_TOKEN;
+ return tok != null && String(tok).length > 0;
+}
+__name(isInternalWrites, "isInternalWrites");
+function toolsForEnv(env) {
+ if (!isInternalWrites(env)) return READ_TOOLS;
+ return [...READ_TOOLS, ...WRITE_TOOLS];
+}
+__name(toolsForEnv, "toolsForEnv");
+function hubsWriteHeaders(env) {
+ const h = {};
+ const tok = env.HUBS_WRITE_TOKEN;
+ if (tok != null && String(tok) !== "") {
+   h.Authorization = `Bearer ${String(tok)}`;
+ }
+ return h;
+}
+__name(hubsWriteHeaders, "hubsWriteHeaders");
+function json(data, status = 200, extra = {}) {
+ return new Response(JSON.stringify(data, null, 2), {
+   status,
+   headers: { "content-type": "application/json; charset=utf-8", ...CORS, ...extra }
+ });
+}
+__name(json, "json");
+function scrubForLlm(text) {
+ let s = String(text);
+ s = s.replace(/Bearer\s+[A-Za-z0-9._\-+/=]{8,}/gi, "Bearer [redacted]");
+ s = s.replace(/p31-dad-[\w-]+/gi, "[redacted-admin]");
+ s = s.replace(/p31-delta-[A-Za-z0-9]+/gi, "[redacted-token]");
+ return s;
+}
+__name(scrubForLlm, "scrubForLlm");
+function truncate(s, max) {
+ const t = String(s);
+ if (t.length <= max) return t;
+ return `${t.slice(0, max)}
+\u2026[truncated ${t.length - max} chars]`;
+}
+__name(truncate, "truncate");
+function authError(request, env) {
+ const need = env.AGENT_HUB_SECRET;
+ if (!need) return null;
+ const h = request.headers.get("Authorization") || "";
+ if (h !== `Bearer ${need}`) {
+   return json({ error: "unauthorized", hint: "Send Authorization: Bearer <AGENT_HUB_SECRET>" }, 401);
+ }
+ return null;
+}
+__name(authError, "authError");
+var UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+function assertHubId(id) {
+ const s = String(id || "").trim();
+ if (!UUID_RE.test(s)) return { error: "invalid_hub_id", hint: "Expected UUID" };
+ return s;
+}
+__name(assertHubId, "assertHubId");
+function assertDock(d) {
+ const x = String(d || "").trim().toLowerCase();
+ if (!"abcd".includes(x)) return { error: "invalid_dock", hint: "Use a, b, c, or d" };
+ return x;
+}
+__name(assertDock, "assertDock");
+async function k4BindingJson(service, path, init, trace) {
+ if (!service) {
+   return { error: "service_binding_missing", path };
+ }
+ const method = init.method || "GET";
+ const headers = {
+   Accept: "application/json",
+   ...trace ? { "X-P31-Trace": trace } : {},
+   ...init.headers || {}
+ };
+ let bodyStr;
+ if (init.body !== void 0 && init.body !== null) {
+   bodyStr = typeof init.body === "string" ? init.body : JSON.stringify(init.body);
+   if (!headers["Content-Type"] && !headers["content-type"]) {
+     headers["Content-Type"] = "application/json";
+   }
+ }
+ const req = new Request(`https://k4-bind${path}`, {
+   method,
+   headers,
+   body: bodyStr
+ });
+ const res = await service.fetch(req);
+ const text = await res.text();
+ let body;
+ try {
+   body = JSON.parse(text);
+ } catch {
+   body = { _raw: truncate(text, 2e3), status: res.status };
+ }
+ if (!res.ok) {
+   return { error: "upstream_http", status: res.status, body };
+ }
+ return body;
+}
+__name(k4BindingJson, "k4BindingJson");
+async function k4Fetch(service, path, trace) {
+ return await k4BindingJson(service, path, { method: "GET" }, trace);
+}
+__name(k4Fetch, "k4Fetch");
+async function executeTool(name, argsJson, env, trace) {
+ const args = argsJson || {};
+ switch (name) {
+   case "get_family_mesh":
+     return await k4Fetch(env.K4_CAGE, "/api/mesh", trace);
+   case "get_personal_mesh":
+     return await k4Fetch(env.K4_PERSONAL, "/api/mesh", trace);
+   case "list_hubs":
+     return await k4Fetch(env.K4_HUBS, "/api/hubs", trace);
+   case "hubs_create": {
+     if (!isInternalWrites(env)) return { error: "writes_disabled" };
+     const payload = {};
+     if (typeof args.kind === "string" && args.kind.trim()) payload.kind = args.kind.trim().slice(0, 64);
+     if (typeof args.title === "string") payload.title = args.title.trim().slice(0, 200);
+     if (args.dockLabels && typeof args.dockLabels === "object" && !Array.isArray(args.dockLabels)) {
+       payload.dockLabels = args.dockLabels;
+     }
+     return await k4BindingJson(env.K4_HUBS, "/api/hubs", { method: "POST", body: payload, headers: hubsWriteHeaders(env) }, trace);
+   }
+   case "hub_dock_bind": {
+     if (!isInternalWrites(env)) return { error: "writes_disabled" };
+     const hid = assertHubId(args.hubId);
+     if (typeof hid === "object") return hid;
+     const dock = assertDock(args.dockId);
+     if (typeof dock === "object") return dock;
+     const body = {
+       personalRef: typeof args.personalRef === "string" && args.personalRef.trim() ? args.personalRef.trim().slice(0, 512) : "personal:default",
+       mode: typeof args.mode === "string" ? args.mode.trim().toLowerCase() : "mirror"
+     };
+     return await k4BindingJson(
+       env.K4_HUBS,
+       `/api/hubs/${hid}/dock/${dock}/bind`,
+       { method: "POST", body, headers: hubsWriteHeaders(env) },
+       trace
+     );
+   }
+   case "hub_dock_unbind": {
+     if (!isInternalWrites(env)) return { error: "writes_disabled" };
+     const hid = assertHubId(args.hubId);
+     if (typeof hid === "object") return hid;
+     const dock = assertDock(args.dockId);
+     if (typeof dock === "object") return dock;
+     return await k4BindingJson(
+       env.K4_HUBS,
+       `/api/hubs/${hid}/dock/${dock}/unbind`,
+       { method: "POST", body: {}, headers: hubsWriteHeaders(env) },
+       trace
+     );
+   }
+   case "hub_presence": {
+     if (!isInternalWrites(env)) return { error: "writes_disabled" };
+     const hid = assertHubId(args.hubId);
+     if (typeof hid === "object") return hid;
+     const dock = assertDock(args.dockId);
+     if (typeof dock === "object") return dock;
+     const body = { status: String(args.status || "").slice(0, 64) };
+     if (args.metadata && typeof args.metadata === "object" && !Array.isArray(args.metadata)) {
+       body.metadata = args.metadata;
+     }
+     return await k4BindingJson(
+       env.K4_HUBS,
+       `/api/hubs/${hid}/presence/${dock}`,
+       { method: "POST", body, headers: hubsWriteHeaders(env) },
+       trace
+     );
+   }
+   case "hub_ping": {
+     if (!isInternalWrites(env)) return { error: "writes_disabled" };
+     const hid = assertHubId(args.hubId);
+     if (typeof hid === "object") return hid;
+     const from = assertDock(args.from);
+     if (typeof from === "object") return from;
+     const to = assertDock(args.to);
+     if (typeof to === "object") return to;
+     const body = { emoji: typeof args.emoji === "string" ? args.emoji : "\u{1F49A}" };
+     return await k4BindingJson(
+       env.K4_HUBS,
+       `/api/hubs/${hid}/ping/${from}/${to}`,
+       { method: "POST", body, headers: hubsWriteHeaders(env) },
+       trace
+     );
+   }
+   default:
+     return { error: "unknown_tool", name };
+ }
+}
+__name(executeTool, "executeTool");
+async function handleToolCalls(out, env, trace, messages, model) {
+ const toolCalls = out?.tool_calls || out?.response?.tool_calls;
+ if (!Array.isArray(toolCalls) || toolCalls.length === 0) return null;
+ const assistantMsg = {
+   role: "assistant",
+   content: typeof out?.response === "string" ? out.response : typeof out?.content === "string" ? out.content : "",
+   tool_calls: toolCalls.map((tc) => ({
+     id: tc.id,
+     type: "function",
+     function: {
+       name: tc.function?.name ?? tc.name,
+       arguments: tc.function?.arguments ?? tc.arguments ?? "{}"
+     }
+   }))
+ };
+ messages.push(assistantMsg);
+ for (const tc of toolCalls) {
+   const fn = tc.function || tc;
+   const name = fn.name || tc.name;
+   let argStr = fn.arguments || tc.arguments || "{}";
+   if (typeof argStr !== "string") argStr = JSON.stringify(argStr);
+   let parsed = {};
+   try {
+     parsed = JSON.parse(argStr);
+   } catch {
+     parsed = {};
+   }
+   const result = await executeTool(name, parsed, env, trace);
+   const content = scrubForLlm(JSON.stringify(result));
+   messages.push({
+     role: "tool",
+     tool_call_id: tc.id,
+     content: truncate(content, 12e3)
+   });
+ }
+ return await env.AI.run(model, { messages, tools: toolsForEnv(env) });
+}
+__name(handleToolCalls, "handleToolCalls");
+async function meshPack(env, trace) {
+ const [family, personal, hubs] = await Promise.all([
+   k4Fetch(env.K4_CAGE, "/api/mesh", trace),
+   k4Fetch(env.K4_PERSONAL, "/api/mesh", trace),
+   k4Fetch(env.K4_HUBS, "/api/hubs", trace)
+ ]);
+ return { family, personal, hubs };
+}
+__name(meshPack, "meshPack");
+async function runAgent(messages, model, env, trace) {
+ let out;
+ try {
+   out = await env.AI.run(model, { messages, tools: toolsForEnv(env) });
+ } catch {
+   let pack;
+   try {
+     pack = await meshPack(env, trace);
+   } catch {
+     pack = { error: "mesh_pack_failed" };
+   }
+   const packStr = scrubForLlm(truncate(JSON.stringify(pack), 1e4));
+   const sys = messages[0];
+   const rest = messages.slice(1);
+   const boosted = [
+     {
+       role: "system",
+       content: `${sys.content}
+
+
+[Mesh snapshot \u2014 use as facts; do not invent beyond this JSON]
+${packStr}`
+     },
+     ...rest
+   ];
+   out = await env.AI.run(model, { messages: boosted });
+ }
+ for (let i = 0; i < 5; i++) {
+   const next = await handleToolCalls(out, env, trace, messages, model);
+   if (!next) break;
+   out = next;
+ }
+ if (typeof out === "string") return { text: out, raw: null };
+ const text = out?.response ?? out?.result?.response ?? (typeof out?.content === "string" ? out.content : JSON.stringify(out));
+ return { text: scrubForLlm(String(text)), raw: out };
+}
+__name(runAgent, "runAgent");
+var AgentSession = class extends DurableObject {
+ static {
+   __name(this, "AgentSession");
+ }
+ /**
+  * @param {DurableObjectState} ctx
+  * @param {Record<string, unknown>} env
+  */
+ constructor(ctx, env) {
+   super(ctx, env);
+   this.ctx = ctx;
+ }
+ async fetch(request) {
+   const url = new URL(request.url);
+   const storage = this.ctx.storage;
+   if (request.method === "GET" && url.pathname === "/messages") {
+     const raw = await storage.get("messages");
+     return json(JSON.parse(raw || "[]"));
+   }
+   if (request.method === "POST" && url.pathname === "/messages") {
+     const body = (
+       /** @type {{ add?: { role: string; content: string }[] }} */
+       await request.json()
+     );
+     const list = JSON.parse(await storage.get("messages") || "[]");
+     const add = body.add || [];
+     for (const m of add) {
+       if (m && typeof m.content === "string" && m.content.length < 32e3) {
+         list.push({ role: m.role || "user", content: m.content });
+       }
+     }
+     while (list.length > 40) list.shift();
+     await storage.put("messages", JSON.stringify(list));
+     return json({ ok: true, count: list.length });
+   }
+   if (request.method === "POST" && url.pathname === "/reset") {
+     await storage.delete("messages");
+     return json({ ok: true });
+   }
+   return new Response("not found", { status: 404 });
+ }
+};
+async function loadMessages(env, sessionKey) {
+ const id = env.AGENT_SESSION.idFromName(sessionKey);
+ const stub = env.AGENT_SESSION.get(id);
+ const r = await stub.fetch(new Request("https://do/messages", { method: "GET" }));
+ return await r.json();
+}
+__name(loadMessages, "loadMessages");
+async function appendMessages(env, sessionKey, add) {
+ const id = env.AGENT_SESSION.idFromName(sessionKey);
+ const stub = env.AGENT_SESSION.get(id);
+ await stub.fetch(
+   new Request("https://do/messages", {
+     method: "POST",
+     headers: { "content-type": "application/json" },
+     body: JSON.stringify({ add })
+   })
+ );
+}
+__name(appendMessages, "appendMessages");
+var index_default = {
+ /**
+  * @param {Request} request
+  * @param {Record<string, unknown>} env
+  */
+ async fetch(request, env) {
+   if (request.method === "OPTIONS") {
+     return new Response(null, { status: 204, headers: CORS });
+   }
+   const trace = request.headers.get("X-P31-Trace") || crypto.randomUUID();
+   const url = new URL(request.url);
+   const path = url.pathname.replace(/\/$/, "") || "/";
+   if (path === "/api/health" && request.method === "GET") {
+     return json({
+       ok: true,
+       service: "p31-agent-hub",
+       ts: (/* @__PURE__ */ new Date()).toISOString(),
+       release: env.RELEASE_CHANNEL || "public",
+       model: env.WORKERS_AI_MODEL || "@cf/meta/llama-3.1-8b-instruct",
+       bindings: {
+         k4_cage: Boolean(env.K4_CAGE),
+         k4_personal: Boolean(env.K4_PERSONAL),
+         k4_hubs: Boolean(env.K4_HUBS),
+         ai: Boolean(env.AI)
+       },
+       writes_enabled: isInternalWrites(env)
+     });
+   }
+   if (path === "/api/tools" && request.method === "GET") {
+     const err = authError(request, env);
+     if (err) return err;
+     return json({
+       release: env.RELEASE_CHANNEL || "public",
+       writes_enabled: isInternalWrites(env),
+       tools: toolsForEnv(env).map((t) => t.function.name)
+     });
+   }
+   if (path === "/api/chat" && request.method === "POST") {
+     const err = authError(request, env);
+     if (err) return err;
+     let body;
+     try {
+       body = await request.json();
+     } catch {
+       return json({ error: "invalid_json" }, 400);
+     }
+     const message = typeof body.message === "string" ? body.message.trim() : "";
+     if (!message) return json({ error: "message_required" }, 400);
+     const sessionKey = typeof body.session === "string" && body.session.length < 200 ? body.session : "anon";
+     const model = env.WORKERS_AI_MODEL || "@cf/meta/llama-3.1-8b-instruct";
+     let history = [];
+     try {
+       history = await loadMessages(env, sessionKey);
+     } catch {
+       history = [];
+     }
+     const system = {
+       role: "system",
+       content: scrubForLlm(`You are the P31 edge agent for the K\u2084 mesh fleet.
+Rules:
+- Use tools to fetch live mesh data when answering factual questions about topology, hubs, or presence.
+- Never invent vertex names beyond family cage (will, sj, wj, christyn) and personal pillars (a, b, c, d).
+- Do not print long raw JSON unless the user asks; summarize clearly.
+- Children's names: use initials S.J. and W.J. only if needed; do not use full names.
+- Release channel: ${env.RELEASE_CHANNEL || "public"}.${isInternalWrites(env) ? " Write tools to k4-hubs (create hub, bind/unbind docks, presence, ping) are enabled; use only when the operator asked for a mutation." : " Read-only mesh/hubs tools only; do not claim you changed hub state."}`)
+     };
+     const userMsg = { role: "user", content: scrubForLlm(message) };
+     const messages = [system, ...history.map((m) => ({ role: m.role, content: m.content })), userMsg];
+     let result;
+     try {
+       result = await runAgent(messages, model, env, trace);
+     } catch (e) {
+       const msg = e instanceof Error ? e.message : String(e);
+       return json({ error: "ai_failed", message: msg, trace }, 502);
+     }
+     try {
+       await appendMessages(env, sessionKey, [
+         userMsg,
+         { role: "assistant", content: result.text }
+       ]);
+     } catch {
+     }
+     return json({
+       reply: result.text,
+       trace,
+       session: sessionKey,
+       model
+     });
+   }
+   return json(
+     {
+       service: "p31-agent-hub",
+       routes: ["GET /api/health", "GET /api/tools", "POST /api/chat"],
+       docs: "04_SOFTWARE/p31-agent-hub/README.md"
+     },
+     404
+   );
+ }
+};
+export {
+ AgentSession,
+ index_default as default
+};
+//# sourceMappingURL=index.js.map
+
+
+P31-bouncer
+
+var __defProp = Object.defineProperty;
+var __name = (target, value) => __defProp(target, "name", { value, configurable: true });
+
+
+// src/secrets-index.json
+var secrets_index_default = {
+ version: "1.0.0",
+ repo: "p31labs/andromeda",
+ updated: "2026-04-15",
+ policy: {
+   no_plaintext_in_git: [
+     ".env",
+     ".env.local",
+     ".env.production",
+     ".env.master",
+     ".dev.vars",
+     "wrangler.toml [vars] for secrets"
+   ],
+   workers_bind_secrets: "wrangler secret put NAME",
+   local_dev: "copy .dev.vars.example to .dev.vars (gitignored)"
+ },
+ env_files_in_repo: [
+   { path: "04_SOFTWARE/.env.example", purpose: "EDE monorepo template" },
+   { path: "04_SOFTWARE/backend/.env.example", purpose: "FastAPI backend" },
+   { path: "04_SOFTWARE/bonding/.env.test", purpose: "Vitest only (no prod secrets)" },
+   { path: "04_SOFTWARE/discord/p31-bot/.env.example", purpose: "Discord bot" },
+   { path: "04_SOFTWARE/discord/p31-bot/.env.test", purpose: "Tests" },
+   { path: "04_SOFTWARE/packages/oracle-terminal/.env.example", purpose: "Oracle terminal" },
+   { path: "04_SOFTWARE/spaceship-earth/.env.example", purpose: "Spaceship Earth" },
+   { path: "04_SOFTWARE/spaceship-earth/astro-landing/.env.sample", purpose: "Astro landing" },
+   { path: "ecosystem/discord/.env.example", purpose: "Ecosystem Discord" },
+   { path: "p31labs/social-content-engine/.env.example", purpose: "Social engine" }
+ ],
+ workers: [
+   { package: "04_SOFTWARE/p31-forge", secrets: ["FORGE_API_KEY", "GITHUB_WEBHOOK_SECRET", "DISCORD_PUBLIC_KEY", "DISCORD_WEBHOOK_SECRET", "KOFI_SECRET", "BLUESKY_HANDLE", "BLUESKY_APP_PASSWORD", "MASTODON_INSTANCE", "MASTODON_ACCESS_TOKEN", "DEVTO_API_KEY", "HASHNODE_TOKEN", "HASHNODE_PUBLICATION_ID", "ZENODO_TOKEN", "TWITTER_API_KEY", "TWITTER_API_SECRET", "TWITTER_ACCESS_TOKEN", "TWITTER_ACCESS_TOKEN_SECRET", "DISCORD_WEBHOOK_URL", "DISCORD_PAYMENT_WEBHOOK_URL", "DISCORD_ACTIVITY_WEBHOOK_URL"] },
+   { package: "04_SOFTWARE/donate-api", secrets: ["STRIPE_SECRET_KEY", "STRIPE_WEBHOOK_SECRET", "DISCORD_WEBHOOK_URL"] },
+   { package: "04_SOFTWARE/k4-cage", secrets: ["ADMIN_TOKEN"] },
+   { package: "04_SOFTWARE/k4-hubs", secrets: ["HUBS_WRITE_TOKEN", "HUB_LIVE_RELAY_SECRET"] },
+   { package: "04_SOFTWARE/genesis-gate", secrets: ["ADMIN_TOKEN"] },
+   { package: "04_SOFTWARE/cloudflare-worker/command-center", secrets: ["STATUS_TOKEN", "CF_API_TOKEN"] },
+   { package: "04_SOFTWARE/cloudflare-worker/bash-agent", secrets: ["ADMIN_TOKEN"] },
+   { package: "04_SOFTWARE/cloudflare-worker/will-agent", secrets: ["ADMIN_TOKEN"] },
+   { package: "04_SOFTWARE/cloudflare-worker/willow-agent", secrets: ["ADMIN_TOKEN"] },
+   { package: "04_SOFTWARE/cloudflare-worker/christyn-agent", secrets: ["ADMIN_TOKEN"] },
+   { package: "04_SOFTWARE/cloudflare-worker/social-drop-automation", secrets: ["DISCORD_WEBHOOK_URL", "TWITTER_API_KEY", "TWITTER_API_SECRET", "TWITTER_ACCESS_TOKEN", "TWITTER_ACCESS_TOKEN_SECRET", "REDDIT_CLIENT_ID", "REDDIT_CLIENT_SECRET", "REDDIT_USERNAME", "REDDIT_PASSWORD", "BLUESKY_HANDLE", "BLUESKY_APP_PASSWORD", "MASTODON_INSTANCE", "MASTODON_ACCESS_TOKEN", "NOSTR_PRIVATE_KEY", "SUBSTACK_API_KEY"] },
+   { package: "04_SOFTWARE/cloudflare-worker/p31-social-engine", secrets: ["DISCORD_WEBHOOK_URL", "REDDIT_CLIENT_ID", "REDDIT_CLIENT_SECRET", "REDDIT_USERNAME", "REDDIT_PASSWORD", "BLUESKY_HANDLE", "BLUESKY_APP_PASSWORD", "MASTODON_INSTANCE", "MASTODON_ACCESS_TOKEN"] },
+   { package: "04_SOFTWARE/cloudflare-worker/p31-sce-broadcaster", secrets: ["TWITTER_APP_KEY", "TWITTER_APP_SECRET", "TWITTER_ACCESS_TOKEN", "TWITTER_ACCESS_SECRET", "TWITTER_BEARER_TOKEN"] },
+   { package: "04_SOFTWARE/cloudflare-worker", secrets: ["UPSTASH_TOKEN"] },
+   { package: "04_SOFTWARE/p31-state", secrets: ["SESSION_SECRET"] },
+   { package: "04_SOFTWARE/kenosis-mesh", secrets: ["AUTH_TOKEN"] },
+   { package: "04_SOFTWARE/cloudflare-worker/bouncer", secrets: ["BOUNCER_GATE_TOKEN"] }
+ ],
+ vite_public_prefix: "VITE_",
+ vite_vars_documented: [
+   "VITE_SENTRY_DSN",
+   "VITE_RELAY_URL",
+   "VITE_WS_AUTH_TOKEN"
+ ],
+ node_and_tools: [
+   { context: "04_SOFTWARE/.env.example", names: ["ANTHROPIC_API_KEY", "DEEPSEEK_API_KEY", "GOOGLE_API_KEY", "NEO4J_PASSWORD", "IMAP_PASS", "THICK_CLICK_SECRET", "WAKATIME_API_KEY", "GITHUB_TOKEN", "SLACK_WEBHOOK_URL", "VITE_SENTRY_DSN", "TURBO_TOKEN"] },
+   { context: "oracle-terminal", names: ["UPSTASH_REDIS_URL", "OLLAMA_BASE_URL", "CHAT_MODEL", "EMBEDDING_MODEL"] },
+   { context: "discord/p31-bot", names: ["DISCORD_TOKEN", "CORTEX_WEBHOOK_SECRET", "ANNOUNCEMENTS_CHANNEL_ID"] },
+   { context: "node-verification", names: ["ZENODO_API_KEY", "KOFI_API_KEY"] }
+ ],
+ oauth_login_surfaces: {
+   note: "No unified OAuth2 user-login provider in-repo; auth is per-app Bearer tokens, Discord bot token, Stripe/ Ko-fi webhooks, and platform API keys (Twitter, Reddit, Bluesky, Mastodon).",
+   discord_interactions: "Ed25519 via DISCORD_PUBLIC_KEY (p31-forge worker; cloudflare-worker legacy worker.js)",
+   github_webhooks: "HMAC SHA-256 via GITHUB_WEBHOOK_SECRET (p31-forge)",
+   stripe: "Webhook signature via STRIPE_WEBHOOK_SECRET (donate-api)"
+ },
+ incidents_to_fix: [
+   { id: "kenosis-2026-04", detail: "AUTH_TOKEN was in wrangler.toml [vars]; removed \u2014 use wrangler secret put AUTH_TOKEN and rotate" },
+   { id: "docs-shift-report-kofi", detail: "docs/SHIFT_REPORT_2026-03-31_HANDOFF.md \u2014 value redacted Apr 2026; rotate Ko-fi verification token if it was ever exposed" },
+   { id: "claude-md-tokens", detail: "CLAUDE.md may list operator tokens \u2014 treat as sensitive; rotate if repo is shared; never copy into new docs" }
+ ]
+};
+
+
+// src/index.js
+var JSON_HDR = { "content-type": "application/json; charset=utf-8" };
+function cors(env) {
+ const raw = env.ALLOWED_ORIGINS || "*";
+ const allow = raw.split(",").map((s) => s.trim()).filter(Boolean);
+ const origin = allow.includes("*") ? "*" : allow.join(", ");
+ return {
+   "Access-Control-Allow-Origin": origin,
+   "Access-Control-Allow-Methods": "GET, OPTIONS",
+   "Access-Control-Allow-Headers": "Authorization, Content-Type",
+   "Access-Control-Max-Age": "86400"
+ };
+}
+__name(cors, "cors");
+function json(data, status, env, extra = {}) {
+ return new Response(JSON.stringify(data, null, 2), {
+   status: status || 200,
+   headers: { ...JSON_HDR, ...cors(env), ...extra }
+ });
+}
+__name(json, "json");
+function bearer(request) {
+ const h = request.headers.get("Authorization") || "";
+ const m = /^Bearer\s+(.+)$/i.exec(h);
+ return m ? m[1].trim() : null;
+}
+__name(bearer, "bearer");
+var src_default = {
+ async fetch(request, env) {
+   const url = new URL(request.url);
+   if (request.method === "OPTIONS") {
+     return new Response(null, { status: 204, headers: cors(env) });
+   }
+   if (request.method === "GET" && url.pathname === "/health") {
+     return json(
+       { ok: true, service: "p31-bouncer", ts: (/* @__PURE__ */ new Date()).toISOString() },
+       200,
+       env
+     );
+   }
+   if (request.method === "GET" && url.pathname === "/") {
+     return json(
+       {
+         service: "P31 Bouncer",
+         version: secrets_index_default.version || "1.0.0",
+         docs: "SECURITY_SECRETS_MANIFEST.md in repo",
+         routes: ["GET /health", "GET /v1/secrets-index", "GET /v1/gate (Bearer)"]
+       },
+       200,
+       env
+     );
+   }
+   if (request.method === "GET" && url.pathname === "/v1/secrets-index") {
+     return json(secrets_index_default, 200, env);
+   }
+   if (request.method === "GET" && url.pathname === "/v1/gate") {
+     const token = bearer(request);
+     const expected = env.BOUNCER_GATE_TOKEN;
+     if (!expected) {
+       return json(
+         { error: "not_configured", hint: "wrangler secret put BOUNCER_GATE_TOKEN" },
+         503,
+         env
+       );
+     }
+     if (!token || token !== expected) {
+       return json({ error: "unauthorized" }, 401, env);
+     }
+     return json(
+       {
+         ok: true,
+         authorized: true,
+         ts: (/* @__PURE__ */ new Date()).toISOString()
+       },
+       200,
+       env
+     );
+   }
+   return json({ error: "not_found", path: url.pathname }, 404, env);
+ }
+};
+export {
+ src_default as default
+};
+//# sourceMappingURL=index.js.map
+
+
+K4-hubs
+
+var __defProp = Object.defineProperty;
+var __name = (target, value) => __defProp(target, "name", { value, configurable: true });
+
+
+// ../packages/k4-mesh-core/http.js
+var CORS_HEADERS = {
+ "Access-Control-Allow-Origin": "*",
+ "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS",
+ "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Request-ID, X-P31-Token"
+};
+function json(data, status = 200, extraHeaders = {}) {
+ return new Response(JSON.stringify(data, null, 2), {
+   status,
+   headers: { "Content-Type": "application/json", ...CORS_HEADERS, ...extraHeaders }
+ });
+}
+__name(json, "json");
+function err(message, status = 400, opts = {}) {
+ const ts = (/* @__PURE__ */ new Date()).toISOString();
+ const code = opts.code ?? "HTTP_ERROR";
+ const payload = opts.requestId != null || opts.code != null ? {
+   error: { code, message },
+   ...opts.requestId != null ? { requestId: opts.requestId } : {},
+   timestamp: ts
+ } : { error: message, timestamp: ts };
+ const xh = opts.requestId != null ? { "X-Request-ID": opts.requestId } : {};
+ return json(payload, status, xh);
+}
+__name(err, "err");
+
+
+// ../packages/k4-mesh-core/personal-body.js
+var DEFAULT_MAX_JSON_BYTES = 32 * 1024;
+var MAX_METADATA_KEYS = 32;
+var MAX_KEY_LEN = 64;
+var MAX_STRING_LEN = 2048;
+async function parseJsonObjectBody(request, maxBytes = DEFAULT_MAX_JSON_BYTES) {
+ const cl = request.headers.get("Content-Length");
+ if (cl != null && cl !== "" && Number(cl) > maxBytes) {
+   return { ok: false, status: 413, message: "Request body too large" };
+ }
+ const buf = await request.arrayBuffer();
+ if (buf.byteLength > maxBytes) {
+   return { ok: false, status: 413, message: "Request body too large" };
+ }
+ if (buf.byteLength === 0) {
+   return { ok: true, value: {} };
+ }
+ let value;
+ try {
+   value = JSON.parse(new TextDecoder().decode(buf));
+ } catch {
+   return { ok: false, status: 400, message: "Invalid JSON" };
+ }
+ if (value === null || typeof value !== "object" || Array.isArray(value)) {
+   return { ok: false, status: 400, message: "JSON body must be a single object" };
+ }
+ return { ok: true, value };
+}
+__name(parseJsonObjectBody, "parseJsonObjectBody");
+function sanitizeMetadata(raw) {
+ if (raw == null || typeof raw !== "object" || Array.isArray(raw)) return void 0;
+ const out = {};
+ let n = 0;
+ for (const [k, v] of Object.entries(raw)) {
+   if (n >= MAX_METADATA_KEYS) break;
+   if (typeof k !== "string" || k.length === 0 || k.length > MAX_KEY_LEN) continue;
+   if (typeof v === "string") {
+     const t = v.length > MAX_STRING_LEN ? v.slice(0, MAX_STRING_LEN) : v;
+     out[k] = t;
+     n++;
+   } else if (typeof v === "number" && Number.isFinite(v)) {
+     out[k] = v;
+     n++;
+   } else if (typeof v === "boolean") {
+     out[k] = v;
+     n++;
+   }
+ }
+ return Object.keys(out).length ? out : void 0;
+}
+__name(sanitizeMetadata, "sanitizeMetadata");
+var MAX_STATUS_LEN = 32;
+function sanitizeStatus(s) {
+ if (typeof s !== "string") return "online";
+ const t = s.trim().slice(0, MAX_STATUS_LEN);
+ const allowed = /* @__PURE__ */ new Set(["online", "offline", "away", "busy", "dnd"]);
+ if (allowed.has(t)) return t;
+ return "online";
+}
+__name(sanitizeStatus, "sanitizeStatus");
+var MAX_EMOJI_GLYPHS = 8;
+function sanitizeEmoji(raw) {
+ if (raw == null) return "\u{1F49A}";
+ const s = String(raw).trim();
+ if (!s) return "\u{1F49A}";
+ const chars = [...s];
+ return chars.slice(0, MAX_EMOJI_GLYPHS).join("") || "\u{1F49A}";
+}
+__name(sanitizeEmoji, "sanitizeEmoji");
+
+
+// ../packages/k4-mesh-core/scopes.js
+var PHASE_SIERPINSKI = 4;
+var MAX_DEPTH = 5;
+var EDGES_SUB = [
+ ["a", "b"],
+ ["a", "c"],
+ ["a", "d"],
+ ["b", "c"],
+ ["b", "d"],
+ ["c", "d"]
+];
+function edgeKeySub(v1, v2) {
+ return [v1, v2].sort().join("-");
+}
+__name(edgeKeySub, "edgeKeySub");
+var STALE_MS = 5 * 60 * 1e3;
+
+
+// ../packages/k4-mesh-core/hub-store.js
+var HUB_REGISTRY_KEY = "meta:hubs";
+var HUB_DOCK_IDS = ["a", "b", "c", "d"];
+var STALE_MS2 = 5 * 60 * 1e3;
+function hubManifestKey(hubId) {
+ return `k4s:hub:${hubId}:manifest`;
+}
+__name(hubManifestKey, "hubManifestKey");
+function hubVertexKey(hubId, dockId) {
+ return `k4s:hub:${hubId}:v:${dockId}`;
+}
+__name(hubVertexKey, "hubVertexKey");
+function hubEdgeKey(hubId, v1, v2) {
+ return `k4s:hub:${hubId}:e:${edgeKeySub(v1, v2)}`;
+}
+__name(hubEdgeKey, "hubEdgeKey");
+function hubBindingKey(hubId, dockId) {
+ return `k4s:hub:${hubId}:dock:${dockId}`;
+}
+__name(hubBindingKey, "hubBindingKey");
+async function listHubIds(env) {
+ const raw = await env.K4_HUBS.get(HUB_REGISTRY_KEY);
+ if (!raw) return [];
+ try {
+   const arr = JSON.parse(raw);
+   return Array.isArray(arr) ? arr : [];
+ } catch {
+   return [];
+ }
+}
+__name(listHubIds, "listHubIds");
+async function registerHubId(env, hubId) {
+ const ids = new Set(await listHubIds(env));
+ ids.add(hubId);
+ await env.K4_HUBS.put(HUB_REGISTRY_KEY, JSON.stringify([...ids].sort()));
+}
+__name(registerHubId, "registerHubId");
+async function getManifest(env, hubId) {
+ const raw = await env.K4_HUBS.get(hubManifestKey(hubId));
+ if (!raw) return null;
+ try {
+   return JSON.parse(raw);
+ } catch {
+   return null;
+ }
+}
+__name(getManifest, "getManifest");
+async function putManifest(env, hubId, manifest) {
+ await env.K4_HUBS.put(hubManifestKey(hubId), JSON.stringify(manifest));
+ await registerHubId(env, hubId);
+}
+__name(putManifest, "putManifest");
+async function getVertexHub(env, hubId, id) {
+ const raw = await env.K4_HUBS.get(hubVertexKey(hubId, id));
+ if (!raw) {
+   return {
+     id,
+     name: id,
+     scope: `hub:${hubId}`,
+     love: 0,
+     status: "offline",
+     lastSeen: null,
+     heartbeat: null,
+     metadata: {}
+   };
+ }
+ try {
+   return JSON.parse(raw);
+ } catch {
+   return {
+     id,
+     name: id,
+     scope: `hub:${hubId}`,
+     love: 0,
+     status: "offline",
+     lastSeen: null,
+     heartbeat: null,
+     metadata: {}
+   };
+ }
+}
+__name(getVertexHub, "getVertexHub");
+async function setVertexHub(env, hubId, id, data) {
+ await env.K4_HUBS.put(hubVertexKey(hubId, id), JSON.stringify(data));
+}
+__name(setVertexHub, "setVertexHub");
+async function getEdgeHub(env, hubId, v1, v2) {
+ const raw = await env.K4_HUBS.get(hubEdgeKey(hubId, v1, v2));
+ const ek = edgeKeySub(v1, v2);
+ if (!raw) {
+   return {
+     vertices: [v1, v2],
+     key: ek,
+     love: 0,
+     pings: [],
+     lastActivity: null,
+     messageCount: 0
+   };
+ }
+ try {
+   return JSON.parse(raw);
+ } catch {
+   return {
+     vertices: [v1, v2],
+     key: ek,
+     love: 0,
+     pings: [],
+     lastActivity: null,
+     messageCount: 0
+   };
+ }
+}
+__name(getEdgeHub, "getEdgeHub");
+async function setEdgeHub(env, hubId, v1, v2, data) {
+ await env.K4_HUBS.put(hubEdgeKey(hubId, v1, v2), JSON.stringify(data));
+}
+__name(setEdgeHub, "setEdgeHub");
+async function getBinding(env, hubId, dockId) {
+ const raw = await env.K4_HUBS.get(hubBindingKey(hubId, dockId));
+ if (!raw) return null;
+ try {
+   return JSON.parse(raw);
+ } catch {
+   return null;
+ }
+}
+__name(getBinding, "getBinding");
+async function putBinding(env, hubId, dockId, binding) {
+ await env.K4_HUBS.put(hubBindingKey(hubId, dockId), JSON.stringify(binding));
+}
+__name(putBinding, "putBinding");
+async function deleteBinding(env, hubId, dockId) {
+ await env.K4_HUBS.delete(hubBindingKey(hubId, dockId));
+}
+__name(deleteBinding, "deleteBinding");
+async function sweepStaleHub(env, hubId) {
+ const now = Date.now();
+ const swept = [];
+ for (const id of HUB_DOCK_IDS) {
+   const v = await getVertexHub(env, hubId, id);
+   if (v.heartbeat == null) continue;
+   if (now - v.heartbeat <= STALE_MS2) continue;
+   if (v.status !== "online" && v.status !== "away") continue;
+   const previousStatus = v.status;
+   v.status = "offline";
+   await setVertexHub(env, hubId, id, v);
+   swept.push({ id, previousStatus });
+ }
+ return { swept: swept.length, vertices: swept.map((s) => s.id) };
+}
+__name(sweepStaleHub, "sweepStaleHub");
+function isValidDockId(id) {
+ return HUB_DOCK_IDS.includes(id);
+}
+__name(isValidDockId, "isValidDockId");
+function isValidHubEdge(v1, v2) {
+ if (!isValidDockId(v1) || !isValidDockId(v2) || v1 === v2) return false;
+ return EDGES_SUB.some(([a, b]) => a === v1 && b === v2 || a === v2 && b === v1);
+}
+__name(isValidHubEdge, "isValidHubEdge");
+function dockbackKeyForRef(personalRef) {
+ const s = String(personalRef || "").slice(0, 512);
+ return `idx:dockback:${s}`;
+}
+__name(dockbackKeyForRef, "dockbackKeyForRef");
+async function getDockbackList(env, personalRef) {
+ const raw = await env.K4_HUBS.get(dockbackKeyForRef(personalRef));
+ if (!raw) return [];
+ try {
+   const v = JSON.parse(raw);
+   return Array.isArray(v) ? v : [];
+ } catch {
+   return [];
+ }
+}
+__name(getDockbackList, "getDockbackList");
+async function upsertDockbackEntry(env, personalRef, entry) {
+ const list = await getDockbackList(env, personalRef);
+ const next = list.filter((x) => !(x.hubId === entry.hubId && x.dockId === entry.dockId));
+ next.push(entry);
+ await env.K4_HUBS.put(dockbackKeyForRef(personalRef), JSON.stringify(next));
+}
+__name(upsertDockbackEntry, "upsertDockbackEntry");
+async function removeDockbackEntry(env, personalRef, hubId, dockId) {
+ const list = await getDockbackList(env, personalRef);
+ const next = list.filter((x) => !(x.hubId === hubId && x.dockId === dockId));
+ const key = dockbackKeyForRef(personalRef);
+ if (next.length === 0) await env.K4_HUBS.delete(key);
+ else await env.K4_HUBS.put(key, JSON.stringify(next));
+}
+__name(removeDockbackEntry, "removeDockbackEntry");
+async function unregisterHubId(env, hubId) {
+ const ids = await listHubIds(env);
+ const next = ids.filter((id) => id !== hubId);
+ await env.K4_HUBS.put(HUB_REGISTRY_KEY, JSON.stringify(next));
+}
+__name(unregisterHubId, "unregisterHubId");
+async function deleteHubCompletely(env, hubId) {
+ for (const dockId of HUB_DOCK_IDS) {
+   const b = await getBinding(env, hubId, dockId);
+   if (b?.personalRef) {
+     await removeDockbackEntry(env, b.personalRef, hubId, dockId);
+   }
+ }
+ await env.K4_HUBS.delete(hubManifestKey(hubId));
+ for (const d of HUB_DOCK_IDS) {
+   await env.K4_HUBS.delete(hubVertexKey(hubId, d));
+   await env.K4_HUBS.delete(hubBindingKey(hubId, d));
+ }
+ for (const [v1, v2] of EDGES_SUB) {
+   await env.K4_HUBS.delete(hubEdgeKey(hubId, v1, v2));
+ }
+ await unregisterHubId(env, hubId);
+}
+__name(deleteHubCompletely, "deleteHubCompletely");
+
+
+// ../packages/k4-mesh-core/hub-mesh.js
+var STALE_MS3 = 5 * 60 * 1e3;
+async function buildHubMeshPayload(env, hubId, requestUrl, opts = {}) {
+ const { fetchPersonalMirror } = opts;
+ await sweepStaleHub(env, hubId);
+ const o = new URL(requestUrl);
+ const origin = o.origin;
+ const vertices = {};
+ const edgesOut = {};
+ let totalLove = 0;
+ let onlineCount = 0;
+ let edgesWithRecentPing = 0;
+ const activityHorizon = Date.now() - 24 * 60 * 60 * 1e3;
+ for (const v of HUB_DOCK_IDS) {
+   vertices[v] = await getVertexHub(env, hubId, v);
+   totalLove += vertices[v].love || 0;
+   if (vertices[v].status === "online" || vertices[v].status === "away") onlineCount += 1;
+ }
+ for (const [v1, v2] of EDGES_SUB) {
+   const key = [v1, v2].sort().join("-");
+   edgesOut[key] = await getEdgeHub(env, hubId, v1, v2);
+   totalLove += edgesOut[key].love || 0;
+   const la = edgesOut[key].lastActivity;
+   if (la && new Date(la).getTime() > activityHorizon) edgesWithRecentPing += 1;
+ }
+ const docks = {};
+ for (const dockId of HUB_DOCK_IDS) {
+   const binding = await getBinding(env, hubId, dockId);
+   let personalSummary = null;
+   if (binding && fetchPersonalMirror) {
+     const mode = binding.mode;
+     const ref = binding.personalRef;
+     if (mode === "mirror" || mode === "live") {
+       personalSummary = await fetchPersonalMirror(ref);
+     } else if (mode === "vault") {
+       personalSummary = { mode: "vault", opaque: true };
+     }
+   }
+   docks[dockId] = {
+     binding,
+     personalSummary
+   };
+ }
+ return {
+   phase: PHASE_SIERPINSKI,
+   topology: "K4",
+   layer: "hub",
+   hubId,
+   scopeMode: "hub",
+   depth: 1,
+   maxDepth: MAX_DEPTH,
+   vertices: 4,
+   edges: 6,
+   rigidity: "isostatic",
+   betti_2: 1,
+   mesh: { vertices, edges: edgesOut },
+   docks,
+   connect: {
+     service: "k4-hubs",
+     self: `${origin}/api/hubs/${hubId}`,
+     mesh: `${origin}/api/hubs/${hubId}/mesh`,
+     hubs_list: `${origin}/api/hubs`,
+     hubs_viz: `${origin}/viz`,
+     personal_worker: "https://k4-personal.trimtab-signal.workers.dev",
+     personal_viz: "https://k4-personal.trimtab-signal.workers.dev/viz",
+     cage: "https://k4-cage.trimtab-signal.workers.dev",
+     cage_viz: "https://k4-cage.trimtab-signal.workers.dev/viz"
+   },
+   totalLove,
+   onlineCount,
+   edgeActivity24h: edgesWithRecentPing,
+   staleThresholdMs: STALE_MS3,
+   timestamp: (/* @__PURE__ */ new Date()).toISOString(),
+   signature: "Ca\u2089(PO\u2084)\u2086",
+   sierpinski: true
+ };
+}
+__name(buildHubMeshPayload, "buildHubMeshPayload");
+
+
+// ../packages/k4-mesh-core/hub-handlers.js
+var BIND_MODES = /* @__PURE__ */ new Set(["mirror", "live", "vault"]);
+function reqHeaders(ctx) {
+ return ctx?.requestId ? { "X-Request-ID": ctx.requestId } : {};
+}
+__name(reqHeaders, "reqHeaders");
+function createPersonalMirrorFetcher(env) {
+ const base = String(env.PERSONAL_MESH_URL || "https://k4-personal.trimtab-signal.workers.dev").replace(
+   /\/$/,
+   ""
+ );
+ return async (ref) => {
+   const s = String(ref || "");
+   if (s.startsWith("vault:")) return { mode: "vault", opaque: true };
+   if (!(s === "personal:default" || s === "personal" || s.startsWith("personal:"))) {
+     return null;
+   }
+   try {
+     const res = await fetch(`${base}/api/mesh`, {
+       headers: { Accept: "application/json" }
+     });
+     if (!res.ok) return { upstreamStatus: res.status };
+     return await res.json();
+   } catch (e) {
+     return { fetchError: e instanceof Error ? e.message : String(e) };
+   }
+ };
+}
+__name(createPersonalMirrorFetcher, "createPersonalMirrorFetcher");
+async function hubsListGet(env, requestUrl, ctx = {}) {
+ const ids = await listHubIds(env);
+ const o = new URL(requestUrl);
+ const origin = o.origin;
+ const hubs = [];
+ for (const id of ids) {
+   const m = await getManifest(env, id);
+   if (m) {
+     hubs.push({
+       hubId: id,
+       kind: m.kind,
+       title: m.title,
+       created: m.created
+     });
+   }
+ }
+ return json({ service: "k4-hubs", count: hubs.length, hubs, index: `${origin}/api/hubs` }, 200, reqHeaders(ctx));
+}
+__name(hubsListGet, "hubsListGet");
+async function hubsCreatePost(env, request, ctx = {}) {
+ const rid = ctx.requestId;
+ const parsed = await parseJsonObjectBody(request);
+ if (!parsed.ok) {
+   return err(parsed.message, parsed.status, { code: "INVALID_BODY", requestId: rid });
+ }
+ const body = parsed.value;
+ const kind = typeof body.kind === "string" && body.kind.trim() ? body.kind.trim().slice(0, 64) : "general";
+ const title = typeof body.title === "string" ? body.title.trim().slice(0, 200) : "";
+ const dl = body.dockLabels && typeof body.dockLabels === "object" && !Array.isArray(body.dockLabels) ? body.dockLabels : {};
+ const hubId = crypto.randomUUID();
+ const manifest = {
+   hubId,
+   kind,
+   title,
+   created: (/* @__PURE__ */ new Date()).toISOString(),
+   dockLabels: {
+     a: typeof dl.a === "string" ? dl.a.slice(0, 64) : "a",
+     b: typeof dl.b === "string" ? dl.b.slice(0, 64) : "b",
+     c: typeof dl.c === "string" ? dl.c.slice(0, 64) : "c",
+     d: typeof dl.d === "string" ? dl.d.slice(0, 64) : "d"
+   },
+   policyVersion: 1
+ };
+ await putManifest(env, hubId, manifest);
+ return json({ hub: manifest, created: true }, 201, reqHeaders(ctx));
+}
+__name(hubsCreatePost, "hubsCreatePost");
+async function hubDeleteDelete(env, hubId, ctx = {}) {
+ const rid = ctx.requestId;
+ const m = await getManifest(env, hubId);
+ if (!m) return err("Hub not found", 404, { code: "NOT_FOUND", requestId: rid });
+ await deleteHubCompletely(env, hubId);
+ return json({ hubId, deleted: true }, 200, reqHeaders(ctx));
+}
+__name(hubDeleteDelete, "hubDeleteDelete");
+async function hubDockbackGet(env, personalRefQuery, ctx = {}) {
+ const rid = ctx.requestId;
+ const ref = String(personalRefQuery || "").trim().slice(0, 512);
+ if (!ref) {
+   return err("Query parameter ref is required", 400, { code: "MISSING_REF", requestId: rid });
+ }
+ const dockbacks = await getDockbackList(env, ref);
+ return json({ personalRef: ref, count: dockbacks.length, dockbacks }, 200, reqHeaders(ctx));
+}
+__name(hubDockbackGet, "hubDockbackGet");
+async function hubManifestGet(env, hubId, ctx = {}) {
+ const rid = ctx.requestId;
+ const m = await getManifest(env, hubId);
+ if (!m) return err("Hub not found", 404, { code: "NOT_FOUND", requestId: rid });
+ const bindings = {};
+ for (const dock of ["a", "b", "c", "d"]) {
+   bindings[dock] = await getBinding(env, hubId, dock);
+ }
+ return json({ manifest: m, bindings }, 200, reqHeaders(ctx));
+}
+__name(hubManifestGet, "hubManifestGet");
+async function hubMeshGet(env, hubId, requestUrl, ctx = {}) {
+ const rid = ctx.requestId;
+ const m = await getManifest(env, hubId);
+ if (!m) return err("Hub not found", 404, { code: "NOT_FOUND", requestId: rid });
+ const fetchPersonalMirror = createPersonalMirrorFetcher(env);
+ const payload = await buildHubMeshPayload(env, hubId, requestUrl, {
+   fetchPersonalMirror
+ });
+ payload.manifest = { kind: m.kind, title: m.title, dockLabels: m.dockLabels };
+ return json(payload, 200, reqHeaders(ctx));
+}
+__name(hubMeshGet, "hubMeshGet");
+async function hubDockBindPost(env, request, hubId, dockId, ctx = {}) {
+ const rid = ctx.requestId;
+ if (!await getManifest(env, hubId)) {
+   return err("Hub not found", 404, { code: "NOT_FOUND", requestId: rid });
+ }
+ if (!isValidDockId(dockId)) {
+   return err("Invalid dock (use a, b, c, d)", 400, { code: "INVALID_DOCK", requestId: rid });
+ }
+ const parsed = await parseJsonObjectBody(request);
+ if (!parsed.ok) {
+   return err(parsed.message, parsed.status, { code: "INVALID_BODY", requestId: rid });
+ }
+ const body = parsed.value;
+ const personalRef = typeof body.personalRef === "string" && body.personalRef.trim() ? body.personalRef.trim().slice(0, 512) : "personal:default";
+ const mode = typeof body.mode === "string" ? body.mode.trim().toLowerCase() : "mirror";
+ if (!BIND_MODES.has(mode)) {
+   return err("Invalid mode (mirror, live, vault)", 400, { code: "INVALID_MODE", requestId: rid });
+ }
+ const binding = {
+   personalRef,
+   mode,
+   boundAt: (/* @__PURE__ */ new Date()).toISOString()
+ };
+ await putBinding(env, hubId, dockId, binding);
+ await upsertDockbackEntry(env, personalRef, {
+   hubId,
+   dockId,
+   mode,
+   boundAt: binding.boundAt
+ });
+ return json({ hubId, dockId, binding }, 200, reqHeaders(ctx));
+}
+__name(hubDockBindPost, "hubDockBindPost");
+async function hubDockUnbindPost(env, hubId, dockId, ctx = {}) {
+ const rid = ctx.requestId;
+ if (!await getManifest(env, hubId)) {
+   return err("Hub not found", 404, { code: "NOT_FOUND", requestId: rid });
+ }
+ if (!isValidDockId(dockId)) {
+   return err("Invalid dock (use a, b, c, d)", 400, { code: "INVALID_DOCK", requestId: rid });
+ }
+ const prev = await getBinding(env, hubId, dockId);
+ await deleteBinding(env, hubId, dockId);
+ if (prev?.personalRef) {
+   await removeDockbackEntry(env, prev.personalRef, hubId, dockId);
+ }
+ return json({ hubId, dockId, unbound: true }, 200, reqHeaders(ctx));
+}
+__name(hubDockUnbindPost, "hubDockUnbindPost");
+async function hubPresencePost(env, request, hubId, dockId, ctx = {}) {
+ const rid = ctx.requestId;
+ if (!await getManifest(env, hubId)) {
+   return err("Hub not found", 404, { code: "NOT_FOUND", requestId: rid });
+ }
+ if (!isValidDockId(dockId)) {
+   return err("Invalid dock", 400, { code: "INVALID_DOCK", requestId: rid });
+ }
+ const parsed = await parseJsonObjectBody(request);
+ if (!parsed.ok) {
+   return err(parsed.message, parsed.status, { code: "INVALID_BODY", requestId: rid });
+ }
+ const body = parsed.value;
+ const vertex = await getVertexHub(env, hubId, dockId);
+ vertex.status = sanitizeStatus(body.status);
+ vertex.lastSeen = (/* @__PURE__ */ new Date()).toISOString();
+ vertex.heartbeat = Date.now();
+ const meta = sanitizeMetadata(body.metadata);
+ if (meta) vertex.metadata = { ...vertex.metadata || {}, ...meta };
+ await setVertexHub(env, hubId, dockId, vertex);
+ return json({ vertex, scope: "hub", hubId, dockId }, 200, reqHeaders(ctx));
+}
+__name(hubPresencePost, "hubPresencePost");
+async function hubPingPost(env, request, hubId, from, to, ctx = {}, executionCtx = null) {
+ const rid = ctx.requestId;
+ if (!await getManifest(env, hubId)) {
+   return err("Hub not found", 404, { code: "NOT_FOUND", requestId: rid });
+ }
+ if (!isValidHubEdge(from, to)) {
+   return err("Invalid hub edge", 400, { code: "INVALID_EDGE", requestId: rid });
+ }
+ const parsed = await parseJsonObjectBody(request);
+ if (!parsed.ok) {
+   return err(parsed.message, parsed.status, { code: "INVALID_BODY", requestId: rid });
+ }
+ const body = parsed.value;
+ const emoji = sanitizeEmoji(body.emoji);
+ const edge = await getEdgeHub(env, hubId, from, to);
+ const fromVertex = await getVertexHub(env, hubId, from);
+ const toVertex = await getVertexHub(env, hubId, to);
+ const ping = {
+   from,
+   to,
+   emoji,
+   timestamp: (/* @__PURE__ */ new Date()).toISOString(),
+   id: crypto.randomUUID()
+ };
+ edge.pings = [ping, ...edge.pings || []].slice(0, 50);
+ edge.love = (edge.love || 0) + 1;
+ edge.lastActivity = ping.timestamp;
+ edge.messageCount = (edge.messageCount || 0) + 1;
+ fromVertex.love = (fromVertex.love || 0) + 1;
+ toVertex.love = (toVertex.love || 0) + 1;
+ await setEdgeHub(env, hubId, from, to, edge);
+ await setVertexHub(env, hubId, from, fromVertex);
+ await setVertexHub(env, hubId, to, toVertex);
+ const relayUrl = env.HUB_LIVE_RELAY_URL;
+ if (relayUrl && String(relayUrl).trim().length > 8 && executionCtx?.waitUntil) {
+   const bf = await getBinding(env, hubId, from);
+   const bt = await getBinding(env, hubId, to);
+   if (bf?.mode === "live" || bt?.mode === "live") {
+     const secret = env.HUB_LIVE_RELAY_SECRET;
+     const payload = {
+       event: "hub_ping",
+       hubId,
+       ping,
+       edge: { love: edge.love, lastActivity: edge.lastActivity }
+     };
+     executionCtx.waitUntil(
+       fetch(String(relayUrl).trim(), {
+         method: "POST",
+         headers: {
+           "Content-Type": "application/json",
+           ...secret ? { "X-P31-Relay-Secret": String(secret) } : {}
+         },
+         body: JSON.stringify(payload)
+       }).catch(() => {
+       })
+     );
+   }
+ }
+ return json(
+   {
+     ping,
+     edge: { love: edge.love, lastActivity: edge.lastActivity },
+     hubId,
+     scope: "hub"
+   },
+   200,
+   reqHeaders(ctx)
+ );
+}
+__name(hubPingPost, "hubPingPost");
+async function hubHealthGet(env, ctx = {}) {
+ let kv = "ok";
+ try {
+   await env.K4_HUBS.get(HUB_REGISTRY_KEY);
+ } catch {
+   kv = "error";
+ }
+ const ok = kv === "ok";
+ const writeAuth = env.HUBS_WRITE_TOKEN != null && String(env.HUBS_WRITE_TOKEN).length > 0 ? "required" : "open";
+ const rlRaw = env.RATE_LIMIT_POST_PER_MIN;
+ const rateLimitWritesPerMin = rlRaw === void 0 || rlRaw === "" ? 240 : Number(rlRaw);
+ return json(
+   {
+     ok,
+     service: "k4-hubs",
+     workerVersion: env.WORKER_VERSION || "1.0.0",
+     checks: { kv },
+     auth: { write: writeAuth },
+     integrations: {
+       personal_mesh_url: String(
+         env.PERSONAL_MESH_URL || "https://k4-personal.trimtab-signal.workers.dev"
+       ).replace(/\/$/, "")
+     },
+     features: {
+       live_ping_relay: Boolean(
+         env.HUB_LIVE_RELAY_URL && String(env.HUB_LIVE_RELAY_URL).trim().length > 8
+       )
+     },
+     limits: {
+       write_requests_per_ip_per_minute: Number.isFinite(rateLimitWritesPerMin) ? rateLimitWritesPerMin : 240
+     },
+     timestamp: (/* @__PURE__ */ new Date()).toISOString()
+   },
+   ok ? 200 : 503,
+   reqHeaders(ctx)
+ );
+}
+__name(hubHealthGet, "hubHealthGet");
+function hubRouteIndex(ctx = {}) {
+ return json(
+   {
+     service: "k4-hubs",
+     package: "@p31/k4-mesh-core",
+     routes: [
+       { method: "GET", path: "/api", desc: "This index" },
+       { method: "GET", path: "/api/health", desc: "Liveness + KV + auth mode" },
+       { method: "GET", path: "/viz", desc: "Hub list (add ?id=hubUuid for one hub viz)" },
+       { method: "GET", path: "/api/dockback", desc: "Reverse index: ?ref=personal:default" },
+       { method: "GET", path: "/api/hubs", desc: "List hubs" },
+       { method: "POST", path: "/api/hubs", desc: "Create hub (needs write token if HUBS_WRITE_TOKEN set)" },
+       { method: "GET", path: "/api/hubs/:id", desc: "Manifest + bindings" },
+       { method: "GET", path: "/api/hubs/:id/mesh", desc: "Hub K\u2084 + docks (mirror fetch to personal when bound)" },
+       { method: "POST", path: "/api/hubs/:id/dock/:dockId/bind", desc: "Bind dock (auth if token set)" },
+       { method: "POST", path: "/api/hubs/:id/dock/:dockId/unbind", desc: "Unbind dock (auth if token set)" },
+       { method: "POST", path: "/api/hubs/:id/presence/:dockId", desc: "Hub dock presence (auth if token set)" },
+       { method: "POST", path: "/api/hubs/:id/ping/:from/:to", desc: "Hub edge ping; live relay if HUB_LIVE_RELAY_URL + live dock" },
+       { method: "DELETE", path: "/api/hubs/:id", desc: "Delete hub (dockbacks + KV; auth + rate limit if configured)" }
+     ]
+   },
+   200,
+   reqHeaders(ctx)
+ );
+}
+__name(hubRouteIndex, "hubRouteIndex");
+
+
+// ../packages/k4-mesh-core/hub-viz.js
+function hubVizListResponse(extraHeaders = {}) {
+ const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+ <meta charset="UTF-8" />
+ <meta name="viewport" content="width=device-width, initial-scale=1" />
+ <title>K\u2084 Hubs</title>
+ <style>
+   body { font-family: system-ui, sans-serif; background: #0c1222; color: #cbd5e1; margin: 0; padding: 1.25rem; line-height: 1.5; max-width: 28rem; margin-inline: auto; }
+   h1 { color: #4ecdc4; font-size: 1.15rem; }
+   ul { list-style: none; padding: 0; }
+   li { margin: 0.5rem 0; padding: 0.6rem 0.75rem; background: #111827; border: 1px solid #1e293b; border-radius: 8px; }
+   a { color: #4ecdc4; text-decoration: none; }
+   a:hover { text-decoration: underline; }
+   .meta { font-size: 0.72rem; color: #64748b; }
+   #err { color: #f87171; font-size: 0.8rem; min-height: 1.2em; }
+ </style>
+</head>
+<body>
+ <h1>Hubs</h1>
+ <p class="meta">Pick a life-context tetrahedron. <a href="/api">API</a></p>
+ <div id="err"></div>
+ <ul id="list"></ul>
+ <script>
+ (function(){
+   fetch('/api/hubs', { cache: 'no-store' })
+     .then(function(r){ return r.json(); })
+     .then(function(d){
+       var el = document.getElementById('list');
+       if (!d.hubs || !d.hubs.length) {
+         el.innerHTML = '<li class="meta">No hubs yet \u2014 POST /api/hubs</li>';
+         return;
+       }
+       el.innerHTML = d.hubs.map(function(h){
+         return '<li><a href="/viz?id=' + encodeURIComponent(h.hubId) + '">' + (h.title || h.kind || 'hub') + '</a>'
+           + '<div class="meta">' + h.kind + ' \xB7 ' + h.hubId.slice(0,8) + '\u2026</div></li>';
+       }).join('');
+     })
+     .catch(function(){ document.getElementById('err').textContent = 'Could not load hubs'; });
+ })();
+ <\/script>
+</body>
+</html>`;
+ return new Response(html, {
+   headers: {
+     "Content-Type": "text/html;charset=UTF-8",
+     "Cache-Control": "no-store",
+     ...CORS_HEADERS,
+     ...extraHeaders
+   }
+ });
+}
+__name(hubVizListResponse, "hubVizListResponse");
+function hubVizHubResponse(hubId, extraHeaders = {}) {
+ const hid = JSON.stringify(hubId);
+ const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+ <meta charset="UTF-8" />
+ <meta name="viewport" content="width=device-width, initial-scale=1" />
+ <title>Hub \u2014 K\u2084</title>
+ <style>
+   body { font-family: system-ui, sans-serif; background: #0f172a; color: #e2e8f0; margin: 0; padding: 1rem; }
+   h1 { font-size: 1rem; color: #4ecdc4; text-align: center; }
+   .sub { text-align: center; color: #64748b; font-size: 0.72rem; margin-bottom: 0.75rem; }
+   .stats { display: flex; flex-wrap: wrap; gap: 0.6rem; justify-content: center; margin-bottom: 0.75rem; font-size: 0.75rem; color: #94a3b8; }
+   .stats strong { color: #4ecdc4; }
+   .wrap { max-width: 420px; margin: 0 auto; }
+   svg { width: 100%; height: auto; display: block; filter: drop-shadow(0 0 10px rgba(78,205,196,0.1)); }
+   .edge { stroke: #334155; stroke-width: 1.5; }
+   .node { stroke: #0f172a; stroke-width: 1.5; }
+   .dock-ring { fill: none; stroke-width: 1.2; opacity: 0.85; }
+   .lbl { fill: #94a3b8; font-size: 7px; font-family: inherit; }
+   .mini { opacity: 0.35; }
+   #err { color: #f87171; text-align: center; font-size: 0.72rem; min-height: 1.2em; }
+   a.back { display: block; text-align: center; margin-top: 0.75rem; color: #4ecdc4; font-size: 0.72rem; }
+ </style>
+</head>
+<body>
+ <div class="wrap">
+   <h1 id="title">Hub</h1>
+   <div class="sub" id="subtitle">docks \xB7 personal bindings</div>
+   <div class="stats" id="stats">
+     <span>LOVE <strong id="love">\u2014</strong></span>
+     <span>Online <strong id="on">\u2014</strong>/4</span>
+     <span>Bound <strong id="bd">\u2014</strong>/4</span>
+   </div>
+   <div id="err"></div>
+   <svg viewBox="0 0 200 130" xmlns="http://www.w3.org/2000/svg" aria-label="Hub K4">
+     <line class="edge" x1="100" y1="12" x2="32" y2="102"/>
+     <line class="edge" x1="100" y1="12" x2="168" y2="102"/>
+     <line class="edge" x1="100" y1="12" x2="100" y2="78"/>
+     <line class="edge" x1="32" y1="102" x2="168" y2="102"/>
+     <line class="edge" x1="32" y1="102" x2="100" y2="78"/>
+     <line class="edge" x1="168" y1="102" x2="100" y2="78"/>
+     <circle class="dock-ring" id="ring-a" cx="100" cy="12" r="11" stroke="#64748b"/>
+     <circle class="dock-ring" id="ring-b" cx="32" cy="102" r="11" stroke="#64748b"/>
+     <circle class="dock-ring" id="ring-c" cx="168" cy="102" r="11" stroke="#64748b"/>
+     <circle class="dock-ring" id="ring-d" cx="100" cy="78" r="11" stroke="#64748b"/>
+     <circle class="node" id="v-a" cx="100" cy="12" r="7" fill="#475569"/>
+     <circle class="node" id="v-b" cx="32" cy="102" r="7" fill="#475569"/>
+     <circle class="node" id="v-c" cx="168" cy="102" r="7" fill="#475569"/>
+     <circle class="node" id="v-d" cx="100" cy="78" r="7" fill="#475569"/>
+     <text class="lbl" x="100" y="8" text-anchor="middle">a</text>
+     <text class="lbl" x="32" y="118" text-anchor="middle">b</text>
+     <text class="lbl" x="168" y="118" text-anchor="middle">c</text>
+     <text class="lbl" x="100" y="94" text-anchor="middle">d</text>
+   </svg>
+   <a class="back" href="/viz">All hubs</a>
+ </div>
+ <script>
+ (function(){
+   var HID = ${hid};
+   var map = { a: 'v-a', b: 'v-b', c: 'v-c', d: 'v-d' };
+   var rings = { a: 'ring-a', b: 'ring-b', c: 'ring-c', d: 'ring-d' };
+   function fillColor(st) {
+     if (st === 'online') return '#22c55e';
+     if (st === 'away') return '#eab308';
+     return '#475569';
+   }
+   function tick() {
+     fetch('/api/hubs/' + encodeURIComponent(HID) + '/mesh', { cache: 'no-store' })
+       .then(function(r){ if (!r.ok) throw new Error('mesh ' + r.status); return r.json(); })
+       .then(function(d){
+         document.getElementById('err').textContent = '';
+         if (d.manifest) {
+           document.getElementById('title').textContent = d.manifest.title || d.manifest.kind || 'Hub';
+           document.getElementById('subtitle').textContent = d.manifest.kind + ' \xB7 ' + HID.slice(0,8) + '\u2026';
+         }
+         document.getElementById('love').textContent = d.totalLove != null ? d.totalLove : '0';
+         document.getElementById('on').textContent = d.onlineCount != null ? d.onlineCount : '0';
+         var mv = d.mesh && d.mesh.vertices;
+         var dk = d.docks || {};
+         var bound = 0;
+         ['a','b','c','d'].forEach(function(id) {
+           var b = dk[id] && dk[id].binding;
+           if (b) bound++;
+           var ring = document.getElementById(rings[id]);
+           if (ring) {
+             ring.setAttribute('stroke', b ? '#4ecdc4' : '#334155');
+             ring.setAttribute('stroke-dasharray', b ? 'none' : '3 2');
+           }
+         });
+         document.getElementById('bd').textContent = String(bound);
+         if (!mv) return;
+         Object.keys(map).forEach(function(id) {
+           var el = document.getElementById(map[id]);
+           var vtx = mv[id];
+           if (el && vtx) el.setAttribute('fill', fillColor(vtx.status));
+         });
+       })
+       .catch(function(e){ document.getElementById('err').textContent = e.message || 'Mesh unreachable'; });
+   }
+   tick();
+   setInterval(tick, 4000);
+ })();
+ <\/script>
+</body>
+</html>`;
+ return new Response(html, {
+   headers: {
+     "Content-Type": "text/html;charset=UTF-8",
+     "Cache-Control": "no-store",
+     ...CORS_HEADERS,
+     ...extraHeaders
+   }
+ });
+}
+__name(hubVizHubResponse, "hubVizHubResponse");
+
+
+// src/production.js
+function mergeHeadersIntoResponse(response, extra) {
+ const h = new Headers(response.headers);
+ for (const [k, v] of Object.entries(extra)) {
+   if (v != null && v !== "") h.set(k, v);
+ }
+ return new Response(response.body, {
+   status: response.status,
+   statusText: response.statusText,
+   headers: h
+ });
+}
+__name(mergeHeadersIntoResponse, "mergeHeadersIntoResponse");
+function baseHeaders(requestId) {
+ return {
+   "X-Request-ID": requestId,
+   "X-Content-Type-Options": "nosniff",
+   "Referrer-Policy": "strict-origin-when-cross-origin"
+ };
+}
+__name(baseHeaders, "baseHeaders");
+function htmlHeadersViz(requestId) {
+ return {
+   ...baseHeaders(requestId),
+   "Content-Security-Policy": "default-src 'self'; base-uri 'self'; frame-ancestors 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:;"
+ };
+}
+__name(htmlHeadersViz, "htmlHeadersViz");
+function getClientIp(request) {
+ return request.headers.get("CF-Connecting-IP") || request.headers.get("X-Forwarded-For")?.split(",")[0]?.trim() || "unknown";
+}
+__name(getClientIp, "getClientIp");
+async function checkWriteRateLimit(env, ip, requestId) {
+ const raw = env.RATE_LIMIT_POST_PER_MIN;
+ const max = raw === void 0 || raw === "" ? 240 : Number(raw);
+ if (!Number.isFinite(max) || max <= 0) return null;
+ const bucket = Math.floor(Date.now() / 6e4);
+ const key = `rl:hubs:write:${ip}:${bucket}`;
+ const curRaw = await env.K4_HUBS.get(key);
+ const n = curRaw ? parseInt(curRaw, 10) : 0;
+ if (!Number.isFinite(n) || n >= max) {
+   return json(
+     {
+       error: { code: "RATE_LIMITED", message: "Too many write requests from this client" },
+       requestId,
+       timestamp: (/* @__PURE__ */ new Date()).toISOString()
+     },
+     429,
+     { "Retry-After": "60", "X-Request-ID": requestId }
+   );
+ }
+ await env.K4_HUBS.put(key, String(n + 1), { expirationTtl: 120 });
+ return null;
+}
+__name(checkWriteRateLimit, "checkWriteRateLimit");
+
+
+// src/auth.js
+function checkWriteAuth(request, env, requestId) {
+ const secret = env.HUBS_WRITE_TOKEN;
+ if (secret == null || String(secret) === "") return null;
+ const auth = request.headers.get("Authorization");
+ const x = request.headers.get("X-P31-Token");
+ const bearer = auth?.startsWith("Bearer ") ? auth.slice(7).trim() : null;
+ const tok = bearer || x?.trim();
+ if (tok !== String(secret)) {
+   return err("Unauthorized", 401, { code: "UNAUTHORIZED", requestId });
+ }
+ return null;
+}
+__name(checkWriteAuth, "checkWriteAuth");
+
+
+// src/index.js
+function withBase(res, requestId) {
+ return mergeHeadersIntoResponse(res, baseHeaders(requestId));
+}
+__name(withBase, "withBase");
+async function gateWrite(request, env, requestId) {
+ const denied = checkWriteAuth(request, env, requestId);
+ if (denied) return denied;
+ return await checkWriteRateLimit(env, getClientIp(request), requestId);
+}
+__name(gateWrite, "gateWrite");
+var index_default = {
+ /**
+  * @param {Request} request
+  * @param {Record<string, unknown>} env
+  */
+ /**
+  * @param {Request} request
+  * @param {Record<string, unknown>} env
+  * @param {{ waitUntil?: (p: Promise<unknown>) => void }} [executionCtx]
+  */
+ async fetch(request, env, executionCtx) {
+   const requestId = crypto.randomUUID();
+   if (request.method === "OPTIONS") {
+     return new Response(null, {
+       status: 204,
+       headers: {
+         ...CORS_HEADERS,
+         ...baseHeaders(requestId),
+         "Access-Control-Max-Age": "86400"
+       }
+     });
+   }
+   const allowed = /* @__PURE__ */ new Set(["GET", "POST", "DELETE"]);
+   if (!allowed.has(request.method)) {
+     return withBase(err("Method not allowed", 405, { code: "METHOD_NOT_ALLOWED", requestId }), requestId);
+   }
+   const url = new URL(request.url);
+   const path = url.pathname.replace(/\/$/, "") || "/";
+   const method = request.method;
+   const ctx = { requestId };
+   try {
+     if (path === "/" && method === "GET") {
+       return withBase(
+         new Response(
+           `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><title>k4-hubs</title></head><body style="font-family:system-ui;padding:2rem;background:#0c1222;color:#cbd5e1"><h1 style="color:#4ecdc4">k4-hubs</h1><p>Life-context K\u2084 meshes \u2014 <a href="/viz" style="color:#4ecdc4">Viz</a> \xB7 <a href="/api" style="color:#4ecdc4">API</a></p></body></html>`,
+           { headers: { "Content-Type": "text/html;charset=UTF-8", "Cache-Control": "no-store" } }
+         ),
+         requestId
+       );
+     }
+     if (path === "/viz" && method === "GET") {
+       const hubId = url.searchParams.get("id");
+       const h = htmlHeadersViz(requestId);
+       if (hubId) {
+         return withBase(hubVizHubResponse(hubId, h), requestId);
+       }
+       return withBase(hubVizListResponse(h), requestId);
+     }
+     if (path === "/api" && method === "GET") return withBase(hubRouteIndex(ctx), requestId);
+     if (path === "/api/health" && method === "GET") return withBase(await hubHealthGet(env, ctx), requestId);
+     if (path === "/api/dockback" && method === "GET") {
+       const ref = url.searchParams.get("ref");
+       return withBase(await hubDockbackGet(env, ref, ctx), requestId);
+     }
+     if (path === "/api/hubs" && method === "GET") {
+       return withBase(await hubsListGet(env, request.url, ctx), requestId);
+     }
+     if (path === "/api/hubs" && method === "POST") {
+       const gate = await gateWrite(request, env, requestId);
+       if (gate) return withBase(gate, requestId);
+       return withBase(await hubsCreatePost(env, request, ctx), requestId);
+     }
+     const meshM = path.match(/^\/api\/hubs\/([^/]+)\/mesh$/);
+     if (meshM && method === "GET") {
+       return withBase(await hubMeshGet(env, meshM[1], request.url, ctx), requestId);
+     }
+     const hubIdOnly = path.match(/^\/api\/hubs\/([^/]+)$/);
+     if (hubIdOnly && method === "DELETE") {
+       const gate = await gateWrite(request, env, requestId);
+       if (gate) return withBase(gate, requestId);
+       return withBase(await hubDeleteDelete(env, hubIdOnly[1], ctx), requestId);
+     }
+     const bindM = path.match(/^\/api\/hubs\/([^/]+)\/dock\/([abcd])\/bind$/);
+     if (bindM && method === "POST") {
+       const gate = await gateWrite(request, env, requestId);
+       if (gate) return withBase(gate, requestId);
+       return withBase(await hubDockBindPost(env, request, bindM[1], bindM[2], ctx), requestId);
+     }
+     const unbindM = path.match(/^\/api\/hubs\/([^/]+)\/dock\/([abcd])\/unbind$/);
+     if (unbindM && method === "POST") {
+       const gate = await gateWrite(request, env, requestId);
+       if (gate) return withBase(gate, requestId);
+       return withBase(await hubDockUnbindPost(env, unbindM[1], unbindM[2], ctx), requestId);
+     }
+     const presM = path.match(/^\/api\/hubs\/([^/]+)\/presence\/([abcd])$/);
+     if (presM && method === "POST") {
+       const gate = await gateWrite(request, env, requestId);
+       if (gate) return withBase(gate, requestId);
+       return withBase(await hubPresencePost(env, request, presM[1], presM[2], ctx), requestId);
+     }
+     const pingM = path.match(/^\/api\/hubs\/([^/]+)\/ping\/(\w+)\/(\w+)$/);
+     if (pingM && method === "POST") {
+       const gate = await gateWrite(request, env, requestId);
+       if (gate) return withBase(gate, requestId);
+       return withBase(
+         await hubPingPost(env, request, pingM[1], pingM[2], pingM[3], ctx, executionCtx ?? null),
+         requestId
+       );
+     }
+     if (hubIdOnly && method === "GET") {
+       return withBase(await hubManifestGet(env, hubIdOnly[1], ctx), requestId);
+     }
+     return withBase(err("Not found", 404, { code: "NOT_FOUND", requestId }), requestId);
+   } catch (e) {
+     const msg = e instanceof Error ? e.message : String(e);
+     return withBase(err(msg, 500, { code: "INTERNAL", requestId }), requestId);
+   }
+ }
+};
+export {
+ index_default as default
+};
+//# sourceMappingURL=index.js.map
+
+
+K4-cage
+
+var __defProp = Object.defineProperty;
+var __name = (target, value) => __defProp(target, "name", { value, configurable: true });
+
+
+// ../packages/k4-mesh-core/scopes.js
+var PHASE_SIERPINSKI = 4;
+var MAX_DEPTH = 5;
+var SUB_VERTICES = ["a", "b", "c", "d"];
+var FAMILY = /* @__PURE__ */ new Set(["will", "sj", "wj", "christyn"]);
+var EDGES_SUB = [
+ ["a", "b"],
+ ["a", "c"],
+ ["a", "d"],
+ ["b", "c"],
+ ["b", "d"],
+ ["c", "d"]
+];
+function edgeKeySub(v1, v2) {
+ return [v1, v2].sort().join("-");
+}
+__name(edgeKeySub, "edgeKeySub");
+function normalizeScopePath(raw) {
+ if (raw == null || raw === "") return "";
+ let s = String(raw).trim().replace(/^\/+|\/+$/g, "");
+ if (s === "root" || s === "family") return "";
+ if (s === "personal") return "personal";
+ const parts = s.split("/").filter(Boolean);
+ if (parts.length === 0) return "";
+ if (parts.length > MAX_DEPTH) return null;
+ if (parts[0] === "personal") {
+   if (parts.length > 1) return null;
+   return "personal";
+ }
+ if (!FAMILY.has(parts[0])) return null;
+ for (let i = 1; i < parts.length; i++) {
+   if (!SUB_VERTICES.includes(parts[i])) return null;
+ }
+ return parts.join("/");
+}
+__name(normalizeScopePath, "normalizeScopePath");
+function scopeDepth(path) {
+ if (path === "" || path === null) return 0;
+ if (path === "personal") return 1;
+ return path.split("/").length;
+}
+__name(scopeDepth, "scopeDepth");
+function verticesForScope(path) {
+ if (path === "" || path === null) {
+   return { labels: ["will", "sj", "wj", "christyn"], mode: "family" };
+ }
+ return { labels: [...SUB_VERTICES], mode: path === "personal" ? "personal" : "nested" };
+}
+__name(verticesForScope, "verticesForScope");
+function edgesForScope(path) {
+ if (path === "" || path === null) {
+   return [
+     ["will", "sj"],
+     ["will", "wj"],
+     ["will", "christyn"],
+     ["sj", "wj"],
+     ["sj", "christyn"],
+     ["wj", "christyn"]
+   ];
+ }
+ return EDGES_SUB;
+}
+__name(edgesForScope, "edgesForScope");
+function scopedVertexKey(scopePath, id) {
+ const s = scopePath === "" ? "root" : scopePath.replace(/\//g, ":");
+ return `k4s:${s}:v:${id}`;
+}
+__name(scopedVertexKey, "scopedVertexKey");
+function scopedEdgeKey(scopePath, v1, v2) {
+ const s = scopePath === "" ? "root" : scopePath.replace(/\//g, ":");
+ const ek = edgeKeySub(v1, v2);
+ return `k4s:${s}:e:${ek}`;
+}
+__name(scopedEdgeKey, "scopedEdgeKey");
+function registryKey() {
+ return "meta:scope_registry";
+}
+__name(registryKey, "registryKey");
+async function registerScope(env, scopePath) {
+ const key = registryKey();
+ const raw = await env.K4_MESH.get(key);
+ const set = raw ? new Set(JSON.parse(raw)) : /* @__PURE__ */ new Set();
+ const tag = scopePath === "" ? "root" : scopePath;
+ if (!set.has(tag)) {
+   set.add(tag);
+   await env.K4_MESH.put(key, JSON.stringify([...set].sort()));
+ }
+}
+__name(registerScope, "registerScope");
+async function getVertexScoped(env, scopePath, id, { legacyFamily = false } = {}) {
+ const sk = scopedVertexKey(scopePath, id);
+ let raw = await env.K4_MESH.get(sk);
+ if (!raw && legacyFamily && scopePath === "") {
+   raw = await env.K4_MESH.get(`vertex:${id}`);
+ }
+ const { labels, mode } = verticesForScope(scopePath);
+ const defaultName = mode === "family" ? id : id;
+ if (!raw) {
+   return {
+     id,
+     name: defaultName,
+     scope: scopePath === "" ? "family" : scopePath,
+     love: 0,
+     status: "offline",
+     lastSeen: null,
+     heartbeat: null,
+     metadata: {}
+   };
+ }
+ return JSON.parse(raw);
+}
+__name(getVertexScoped, "getVertexScoped");
+async function setVertexScoped(env, scopePath, id, data) {
+ await env.K4_MESH.put(scopedVertexKey(scopePath, id), JSON.stringify(data));
+ await registerScope(env, scopePath);
+}
+__name(setVertexScoped, "setVertexScoped");
+async function getEdgeScoped(env, scopePath, v1, v2) {
+ const raw = await env.K4_MESH.get(scopedEdgeKey(scopePath, v1, v2));
+ const ek = edgeKeySub(v1, v2);
+ if (!raw) {
+   return {
+     vertices: [v1, v2],
+     key: ek,
+     love: 0,
+     pings: [],
+     lastActivity: null,
+     messageCount: 0
+   };
+ }
+ return JSON.parse(raw);
+}
+__name(getEdgeScoped, "getEdgeScoped");
+async function setEdgeScoped(env, scopePath, v1, v2, data) {
+ await env.K4_MESH.put(scopedEdgeKey(scopePath, v1, v2), JSON.stringify(data));
+ await registerScope(env, scopePath);
+}
+__name(setEdgeScoped, "setEdgeScoped");
+function isValidVertexScoped(scopePath, id) {
+ const { labels } = verticesForScope(scopePath);
+ return labels.includes(id);
+}
+__name(isValidVertexScoped, "isValidVertexScoped");
+function isValidEdgeScoped(scopePath, v1, v2) {
+ if (!isValidVertexScoped(scopePath, v1) || !isValidVertexScoped(scopePath, v2) || v1 === v2) return false;
+ const edges = edgesForScope(scopePath);
+ return edges.some(([a, b]) => a === v1 && b === v2 || a === v2 && b === v1);
+}
+__name(isValidEdgeScoped, "isValidEdgeScoped");
+var STALE_MS = 5 * 60 * 1e3;
+async function sweepStaleScoped(env, scopePath) {
+ const { labels } = verticesForScope(scopePath);
+ const now = Date.now();
+ const swept = [];
+ for (const id of labels) {
+   const v = await getVertexScoped(env, scopePath, id, { legacyFamily: scopePath === "" });
+   if (v.heartbeat == null) continue;
+   if (now - v.heartbeat <= STALE_MS) continue;
+   if (v.status !== "online" && v.status !== "away") continue;
+   const previousStatus = v.status;
+   v.status = "offline";
+   await setVertexScoped(env, scopePath, id, v);
+   swept.push({ id, previousStatus });
+ }
+ return { swept: swept.length, vertices: swept.map((s) => s.id) };
+}
+__name(sweepStaleScoped, "sweepStaleScoped");
+async function buildMeshPayload(env, scopePath, { connectHub } = {}) {
+ const { labels, mode } = verticesForScope(scopePath);
+ const edges = edgesForScope(scopePath);
+ const vertices = {};
+ const edgesOut = {};
+ let totalLove = 0;
+ let onlineCount = 0;
+ let edgesWithRecentPing = 0;
+ const activityHorizon = Date.now() - 24 * 60 * 60 * 1e3;
+ await sweepStaleScoped(env, scopePath);
+ for (const v of labels) {
+   vertices[v] = await getVertexScoped(env, scopePath, v, { legacyFamily: scopePath === "" });
+   totalLove += vertices[v].love || 0;
+   if (vertices[v].status === "online" || vertices[v].status === "away") onlineCount += 1;
+ }
+ for (const [v1, v2] of edges) {
+   const key = edgeKeySub(v1, v2);
+   edgesOut[key] = await getEdgeScoped(env, scopePath, v1, v2);
+   totalLove += edgesOut[key].love || 0;
+   const la = edgesOut[key].lastActivity;
+   if (la && new Date(la).getTime() > activityHorizon) edgesWithRecentPing += 1;
+ }
+ const depth = scopeDepth(scopePath);
+ return {
+   phase: PHASE_SIERPINSKI,
+   topology: "K4",
+   scope: scopePath === "" ? "family" : scopePath,
+   scopeMode: mode,
+   depth,
+   maxDepth: MAX_DEPTH,
+   vertices: 4,
+   edges: 6,
+   rigidity: "isostatic",
+   betti_2: 1,
+   mesh: { vertices, edges: edgesOut },
+   connect: connectHub || {},
+   totalLove,
+   onlineCount,
+   edgeActivity24h: edgesWithRecentPing,
+   staleThresholdMs: STALE_MS,
+   timestamp: (/* @__PURE__ */ new Date()).toISOString(),
+   signature: "Ca\u2089(PO\u2084)\u2086",
+   sierpinski: true
+ };
+}
+__name(buildMeshPayload, "buildMeshPayload");
+async function listScopes(env) {
+ const raw = await env.K4_MESH.get(registryKey());
+ const tags = raw ? JSON.parse(raw) : ["root"];
+ return { scopes: tags, count: tags.length };
+}
+__name(listScopes, "listScopes");
+
+
+// src/index.js
+var PHASE = 4;
+var STALE_MS2 = 5 * 60 * 1e3;
+var CONNECT_HUB = {
+ mantra: "Create & Connect",
+ weave: "https://p31-phenix.pages.dev",
+ viz: "https://k4-cage.trimtab-signal.workers.dev/viz",
+ routes: "https://k4-cage.trimtab-signal.workers.dev/api",
+ command_center: "https://command-center.trimtab-signal.workers.dev",
+ carrie: "https://carrie-agent.trimtab-signal.workers.dev",
+ carrie_public: "https://carrie-wellness.trimtab-signal.workers.dev",
+ mesh_p2p: "https://p31-mesh.pages.dev",
+ vault: "https://p31-vault.pages.dev",
+ phenix_wallet: "https://p31-phenix.pages.dev",
+ support: "https://phosphorus31.org/support",
+ hub: "https://p31ca.org",
+ personal_worker: "https://k4-personal.trimtab-signal.workers.dev",
+ hubs: "https://k4-hubs.trimtab-signal.workers.dev",
+ hubs_viz: "https://k4-hubs.trimtab-signal.workers.dev/viz",
+ hubs_api: "https://k4-hubs.trimtab-signal.workers.dev/api"
+};
+var VERTICES = ["will", "sj", "wj", "christyn"];
+var EDGES = [
+ ["will", "sj"],
+ // Dad ↔ Son
+ ["will", "wj"],
+ // Dad ↔ Daughter
+ ["will", "christyn"],
+ // Co-parent channel
+ ["sj", "wj"],
+ // Sibling bond
+ ["sj", "christyn"],
+ // Son ↔ Mom
+ ["wj", "christyn"]
+ // Daughter ↔ Mom
+];
+var VERTEX_NAMES = {
+ will: "Will",
+ sj: "S.J.",
+ wj: "W.J.",
+ christyn: "Christyn"
+};
+var CORS_HEADERS = {
+ "Access-Control-Allow-Origin": "*",
+ "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+ "Access-Control-Allow-Headers": "Content-Type, Authorization"
+};
+function edgeKey(v1, v2) {
+ return [v1, v2].sort().join("-");
+}
+__name(edgeKey, "edgeKey");
+function json(data, status = 200) {
+ return new Response(JSON.stringify(data, null, 2), {
+   status,
+   headers: { "Content-Type": "application/json", ...CORS_HEADERS }
+ });
+}
+__name(json, "json");
+function err(message, status = 400) {
+ return json({ error: message, timestamp: (/* @__PURE__ */ new Date()).toISOString() }, status);
+}
+__name(err, "err");
+function isValidVertex(v) {
+ return VERTICES.includes(v);
+}
+__name(isValidVertex, "isValidVertex");
+function isValidEdge(v1, v2) {
+ return isValidVertex(v1) && isValidVertex(v2) && v1 !== v2;
+}
+__name(isValidEdge, "isValidEdge");
+function isAdmin(request, env) {
+ const admin = env && env.ADMIN_TOKEN;
+ if (!admin || typeof admin !== "string") return false;
+ const auth = request.headers.get("Authorization");
+ const url = new URL(request.url);
+ const q = url.searchParams.get("token");
+ return auth === `Bearer ${admin}` || q === admin;
+}
+__name(isAdmin, "isAdmin");
+async function sha256(message) {
+ const msgBuffer = new TextEncoder().encode(message);
+ const hashBuffer = await crypto.subtle.digest("SHA-256", msgBuffer);
+ const hashArray = Array.from(new Uint8Array(hashBuffer));
+ return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+__name(sha256, "sha256");
+async function appendTelemetry(env, event) {
+ const headRaw = await env.K4_MESH.get("telemetry:head");
+ const head = headRaw ? JSON.parse(headRaw) : { index: 0, hash: "0".repeat(64) };
+ const newIndex = head.index + 1;
+ const payload = {
+   index: newIndex,
+   event,
+   timestamp: (/* @__PURE__ */ new Date()).toISOString(),
+   prevHash: head.hash
+ };
+ const newHash = await sha256(JSON.stringify(payload) + head.hash);
+ payload.hash = newHash;
+ await env.K4_MESH.put(`telemetry:${newIndex}`, JSON.stringify(payload));
+ await env.K4_MESH.put("telemetry:head", JSON.stringify({ index: newIndex, hash: newHash }));
+ return payload;
+}
+__name(appendTelemetry, "appendTelemetry");
+async function getVertex(env, id) {
+ const raw = await env.K4_MESH.get(`vertex:${id}`);
+ if (!raw) {
+   return {
+     id,
+     name: VERTEX_NAMES[id],
+     love: 0,
+     status: "offline",
+     lastSeen: null,
+     heartbeat: null,
+     metadata: {}
+   };
+ }
+ return JSON.parse(raw);
+}
+__name(getVertex, "getVertex");
+async function setVertex(env, id, data) {
+ await env.K4_MESH.put(`vertex:${id}`, JSON.stringify(data));
+}
+__name(setVertex, "setVertex");
+async function getEdge(env, v1, v2) {
+ const key = edgeKey(v1, v2);
+ const raw = await env.K4_MESH.get(`edge:${key}`);
+ if (!raw) {
+   return {
+     vertices: [v1, v2],
+     key,
+     love: 0,
+     pings: [],
+     lastActivity: null,
+     messageCount: 0
+   };
+ }
+ return JSON.parse(raw);
+}
+__name(getEdge, "getEdge");
+async function setEdge(env, v1, v2, data) {
+ const key = edgeKey(v1, v2);
+ await env.K4_MESH.put(`edge:${key}`, JSON.stringify(data));
+}
+__name(setEdge, "setEdge");
+async function maybeSweepStale(env) {
+ const raw = await env.K4_MESH.get("meta:lastSweep");
+ const now = Date.now();
+ if (!raw) {
+   await sweepStaleVertices(env);
+   return;
+ }
+ try {
+   const { at } = JSON.parse(raw);
+   if (!at || now - new Date(at).getTime() > STALE_MS2) {
+     await sweepStaleVertices(env);
+   }
+ } catch {
+   await sweepStaleVertices(env);
+ }
+}
+__name(maybeSweepStale, "maybeSweepStale");
+async function sweepStaleVertices(env, sweepTrigger = "lazy_mesh") {
+ const now = Date.now();
+ const swept = [];
+ for (const id of VERTICES) {
+   const v = await getVertex(env, id);
+   if (v.heartbeat == null) continue;
+   if (now - v.heartbeat <= STALE_MS2) continue;
+   if (v.status !== "online" && v.status !== "away") continue;
+   const previousStatus = v.status;
+   v.status = "offline";
+   await setVertex(env, id, v);
+   swept.push({ id, previousStatus });
+   await appendTelemetry(env, {
+     type: "stale_sweep",
+     vertex: id,
+     previousStatus,
+     staleMs: now - v.heartbeat,
+     sweepTrigger
+   });
+ }
+ await env.K4_MESH.put(
+   "meta:lastSweep",
+   JSON.stringify({
+     at: (/* @__PURE__ */ new Date()).toISOString(),
+     swept,
+     staleThresholdMs: STALE_MS2,
+     trigger: sweepTrigger
+   })
+ );
+ return { swept: swept.length, vertices: swept.map((s) => s.id), sweepTrigger };
+}
+__name(sweepStaleVertices, "sweepStaleVertices");
+async function handleMeshState(env) {
+ await maybeSweepStale(env);
+ const vertices = {};
+ const edges = {};
+ let totalLove = 0;
+ let onlineCount = 0;
+ let edgesWithRecentPing = 0;
+ const activityHorizon = Date.now() - 24 * 60 * 60 * 1e3;
+ for (const v of VERTICES) {
+   vertices[v] = await getVertex(env, v);
+   totalLove += vertices[v].love;
+   if (vertices[v].status === "online" || vertices[v].status === "away") onlineCount += 1;
+ }
+ for (const [v1, v2] of EDGES) {
+   const key = edgeKey(v1, v2);
+   edges[key] = await getEdge(env, v1, v2);
+   totalLove += edges[key].love;
+   const la = edges[key].lastActivity;
+   if (la && new Date(la).getTime() > activityHorizon) edgesWithRecentPing += 1;
+ }
+ return json({
+   phase: PHASE,
+   sierpinski: { maxDepth: MAX_DEPTH, phaseNested: PHASE_SIERPINSKI },
+   topology: "K4",
+   vertices: 4,
+   edges: 6,
+   rigidity: "isostatic",
+   betti_2: 1,
+   mesh: { vertices, edges },
+   connect: CONNECT_HUB,
+   totalLove,
+   onlineCount,
+   edgeActivity24h: edgesWithRecentPing,
+   staleThresholdMs: STALE_MS2,
+   timestamp: (/* @__PURE__ */ new Date()).toISOString(),
+   signature: "Ca\u2089(PO\u2084)\u2086"
+ });
+}
+__name(handleMeshState, "handleMeshState");
+async function handleMeta(env) {
+ const lastSweepRaw = await env.K4_MESH.get("meta:lastSweep");
+ return json({
+   phase: PHASE,
+   workerVersion: "2.2.0",
+   staleThresholdMs: STALE_MS2,
+   sweepTrigger: "lazy_on_mesh_read",
+   lastSweep: lastSweepRaw ? JSON.parse(lastSweepRaw) : null
+ });
+}
+__name(handleMeta, "handleMeta");
+async function handleRouteIndex() {
+ return json({
+   service: "k4-cage",
+   phase: PHASE,
+   workerVersion: "2.2.0",
+   routes: [
+     { method: "GET", path: "/", desc: "HTML API reference" },
+     { method: "GET", path: "/viz", desc: "Live SVG tetrahedron + mesh poll" },
+     { method: "GET", path: "/api", desc: "This route index (JSON)" },
+     { method: "GET", path: "/api/mesh", desc: "Full mesh + connect hub URLs + lazy sweep if due" },
+     { method: "GET", path: "/api/meta", desc: "Worker meta + lastSweep" },
+     { method: "GET", path: "/api/health", desc: "Liveness + features" },
+     { method: "GET", path: "/api/vertex/:id", desc: "Vertex + incident edges" },
+     { method: "POST", path: "/api/presence/:id", desc: "Heartbeat / status" },
+     { method: "GET", path: "/api/edge/:v1/:v2", desc: "Edge state" },
+     { method: "POST", path: "/api/ping/:from/:to", desc: "LOVE ping along edge" },
+     { method: "GET", path: "/api/telemetry", desc: "Telemetry chain (read)" },
+     { method: "POST", path: "/api/telemetry", desc: "Append telemetry (admin)" },
+     { method: "GET", path: "/api/admin/dashboard", desc: "Full dashboard (admin)" },
+     { method: "POST", path: "/api/admin/sweep", desc: "Force stale sweep (admin)" },
+     { method: "GET", path: "/api/v4/mesh", desc: "Scoped K\u2084 mesh (query ?scope= \u2014 personal | will | will/a/... depth\u22644)" },
+     { method: "GET", path: "/api/v4/scopes", desc: "Registered scope paths (KV registry)" },
+     { method: "GET", path: "/api/v4/vertex/:id", desc: "Vertex in scope (?scope=)" },
+     { method: "POST", path: "/api/v4/presence/:id", desc: "Presence (?scope=)" },
+     { method: "POST", path: "/api/v4/ping/:from/:to", desc: "Ping edge (?scope=)" },
+     { method: "GET", path: "/api/v4/health", desc: "V4 capability probe" }
+   ]
+ });
+}
+__name(handleRouteIndex, "handleRouteIndex");
+async function handleAdminSweep(env) {
+ const result = await sweepStaleVertices(env, "admin_post");
+ const metaRaw = await env.K4_MESH.get("meta:lastSweep");
+ return json({
+   ok: true,
+   phase: PHASE,
+   sweptCount: result.swept,
+   vertexIds: result.vertices,
+   sweepTrigger: result.sweepTrigger,
+   lastSweep: metaRaw ? JSON.parse(metaRaw) : null,
+   timestamp: (/* @__PURE__ */ new Date()).toISOString()
+ });
+}
+__name(handleAdminSweep, "handleAdminSweep");
+function scopeFromRequest(request) {
+ const url = new URL(request.url);
+ const raw = url.searchParams.get("scope");
+ if (raw == null || raw === "") return "";
+ return normalizeScopePath(raw);
+}
+__name(scopeFromRequest, "scopeFromRequest");
+async function handleV4Mesh(env, request) {
+ const path = scopeFromRequest(request);
+ if (path === null) return err("Invalid scope path", 400);
+ return json(await buildMeshPayload(env, path, { connectHub: CONNECT_HUB }));
+}
+__name(handleV4Mesh, "handleV4Mesh");
+async function handleV4Presence(env, request, id) {
+ const scopePath = scopeFromRequest(request);
+ if (scopePath === null) return err("Invalid scope path", 400);
+ if (!isValidVertexScoped(scopePath, id)) return err("Unknown vertex for this scope", 400);
+ const body = await request.json().catch(() => ({}));
+ const vertex = await getVertexScoped(env, scopePath, id, { legacyFamily: scopePath === "" });
+ vertex.status = body.status || "online";
+ vertex.lastSeen = (/* @__PURE__ */ new Date()).toISOString();
+ vertex.heartbeat = Date.now();
+ if (body.metadata) vertex.metadata = { ...vertex.metadata, ...body.metadata };
+ await setVertexScoped(env, scopePath, id, vertex);
+ await appendTelemetry(env, {
+   type: "presence",
+   scope: scopePath || "family",
+   vertex: id,
+   status: vertex.status
+ });
+ return json({ vertex, recorded: true, scope: scopePath || "family" });
+}
+__name(handleV4Presence, "handleV4Presence");
+async function handleV4Ping(env, request, from, to) {
+ const scopePath = scopeFromRequest(request);
+ if (scopePath === null) return err("Invalid scope path", 400);
+ if (!isValidEdgeScoped(scopePath, from, to)) return err("Invalid edge for this scope", 400);
+ const body = await request.json().catch(() => ({}));
+ const emoji = body.emoji || "\u{1F49A}";
+ const edge = await getEdgeScoped(env, scopePath, from, to);
+ const fromVertex = await getVertexScoped(env, scopePath, from, { legacyFamily: scopePath === "" });
+ const toVertex = await getVertexScoped(env, scopePath, to, { legacyFamily: scopePath === "" });
+ const ping = {
+   from,
+   to,
+   emoji,
+   timestamp: (/* @__PURE__ */ new Date()).toISOString(),
+   id: crypto.randomUUID()
+ };
+ edge.pings = [ping, ...edge.pings || []].slice(0, 50);
+ edge.love = (edge.love || 0) + 1;
+ edge.lastActivity = ping.timestamp;
+ edge.messageCount = (edge.messageCount || 0) + 1;
+ fromVertex.love = (fromVertex.love || 0) + 1;
+ toVertex.love = (toVertex.love || 0) + 1;
+ await setEdgeScoped(env, scopePath, from, to, edge);
+ await setVertexScoped(env, scopePath, from, fromVertex);
+ await setVertexScoped(env, scopePath, to, toVertex);
+ const telemetry = await appendTelemetry(env, {
+   type: "ping",
+   scope: scopePath || "family",
+   edge: edgeKeySub(from, to),
+   from,
+   to,
+   emoji,
+   pingId: ping.id
+ });
+ return json({
+   ping,
+   edge: { love: edge.love, lastActivity: edge.lastActivity },
+   fromLove: fromVertex.love,
+   toLove: toVertex.love,
+   scope: scopePath || "family",
+   telemetry: { index: telemetry.index, hash: telemetry.hash }
+ });
+}
+__name(handleV4Ping, "handleV4Ping");
+async function handleV4VertexGet(env, request, id) {
+ const scopePath = scopeFromRequest(request);
+ if (scopePath === null) return err("Invalid scope path", 400);
+ if (!isValidVertexScoped(scopePath, id)) return err("Unknown vertex for this scope", 400);
+ const vertex = await getVertexScoped(env, scopePath, id, { legacyFamily: scopePath === "" });
+ const connectedEdges = {};
+ for (const [v1, v2] of edgesForScope(scopePath)) {
+   if (v1 === id || v2 === id) {
+     const key = edgeKeySub(v1, v2);
+     connectedEdges[key] = await getEdgeScoped(env, scopePath, v1, v2);
+   }
+ }
+ return json({ vertex, edges: connectedEdges, scope: scopePath || "family" });
+}
+__name(handleV4VertexGet, "handleV4VertexGet");
+function handleV4Health() {
+ return json({
+   ok: true,
+   phase: PHASE,
+   v4: true,
+   nestedK4: true,
+   maxDepth: MAX_DEPTH,
+   phaseNested: PHASE_SIERPINSKI,
+   scopeExamples: ["", "personal", "will", "will/a", "will/a/b", "will/a/b/c", "will/a/b/c/d"],
+   query: "Use ?scope= on /api/v4/* (encode slashes as %2F)",
+   timestamp: (/* @__PURE__ */ new Date()).toISOString()
+ });
+}
+__name(handleV4Health, "handleV4Health");
+async function handleVertexGet(env, id) {
+ if (!isValidVertex(id)) return err(`Unknown vertex: ${id}. Valid: ${VERTICES.join(", ")}`);
+ const vertex = await getVertex(env, id);
+ const connectedEdges = {};
+ for (const [v1, v2] of EDGES) {
+   if (v1 === id || v2 === id) {
+     const key = edgeKey(v1, v2);
+     connectedEdges[key] = await getEdge(env, v1, v2);
+   }
+ }
+ return json({ vertex, edges: connectedEdges });
+}
+__name(handleVertexGet, "handleVertexGet");
+async function handlePresence(env, request, id) {
+ if (!isValidVertex(id)) return err(`Unknown vertex: ${id}`);
+ const body = await request.json().catch(() => ({}));
+ const vertex = await getVertex(env, id);
+ vertex.status = body.status || "online";
+ vertex.lastSeen = (/* @__PURE__ */ new Date()).toISOString();
+ vertex.heartbeat = Date.now();
+ if (body.metadata) vertex.metadata = { ...vertex.metadata, ...body.metadata };
+ await setVertex(env, id, vertex);
+ await appendTelemetry(env, {
+   type: "presence",
+   vertex: id,
+   status: vertex.status
+ });
+ return json({ vertex, recorded: true });
+}
+__name(handlePresence, "handlePresence");
+async function handlePing(env, request, from, to) {
+ if (!isValidEdge(from, to)) return err(`Invalid edge: ${from} \u2194 ${to}`);
+ const body = await request.json().catch(() => ({}));
+ const emoji = body.emoji || "\u{1F49A}";
+ const edge = await getEdge(env, from, to);
+ const fromVertex = await getVertex(env, from);
+ const toVertex = await getVertex(env, to);
+ const ping = {
+   from,
+   to,
+   emoji,
+   timestamp: (/* @__PURE__ */ new Date()).toISOString(),
+   id: crypto.randomUUID()
+ };
+ edge.pings = [ping, ...edge.pings].slice(0, 50);
+ edge.love += 1;
+ edge.lastActivity = ping.timestamp;
+ edge.messageCount += 1;
+ fromVertex.love += 1;
+ toVertex.love += 1;
+ await setEdge(env, from, to, edge);
+ await setVertex(env, from, fromVertex);
+ await setVertex(env, to, toVertex);
+ const telemetry = await appendTelemetry(env, {
+   type: "ping",
+   edge: edgeKey(from, to),
+   from,
+   to,
+   emoji,
+   pingId: ping.id
+ });
+ return json({
+   ping,
+   edge: { love: edge.love, lastActivity: edge.lastActivity },
+   fromLove: fromVertex.love,
+   toLove: toVertex.love,
+   telemetry: { index: telemetry.index, hash: telemetry.hash }
+ });
+}
+__name(handlePing, "handlePing");
+async function handleEdgeGet(env, v1, v2) {
+ if (!isValidEdge(v1, v2)) return err(`Invalid edge: ${v1} \u2194 ${v2}`);
+ return json(await getEdge(env, v1, v2));
+}
+__name(handleEdgeGet, "handleEdgeGet");
+async function handleTelemetryGet(env, request) {
+ const url = new URL(request.url);
+ const count = Math.min(parseInt(url.searchParams.get("count") || "20"), 100);
+ const headRaw = await env.K4_MESH.get("telemetry:head");
+ if (!headRaw) return json({ chain: [], head: null, verified: true });
+ const head = JSON.parse(headRaw);
+ const chain = [];
+ for (let i = head.index; i > Math.max(0, head.index - count); i--) {
+   const raw = await env.K4_MESH.get(`telemetry:${i}`);
+   if (raw) chain.push(JSON.parse(raw));
+ }
+ let verified = true;
+ for (let i = 0; i < chain.length - 1; i++) {
+   if (chain[i].prevHash !== chain[i + 1].hash) {
+     verified = false;
+     break;
+   }
+ }
+ return json({
+   chain,
+   head,
+   verified,
+   chainLength: head.index,
+   standard: "WCD-46 SHA-256 Chain-of-Custody",
+   compliance: ["O.C.G.A. \xA7 24-9-901", "O.C.G.A. \xA7 24-9-902", "O.C.G.A. \xA7 24-7-702"]
+ });
+}
+__name(handleTelemetryGet, "handleTelemetryGet");
+async function handleTelemetryPost(env, request) {
+ const body = await request.json().catch(() => null);
+ if (!body || !body.event) return err("Missing event payload");
+ const telemetry = await appendTelemetry(env, body.event);
+ return json({ recorded: true, telemetry });
+}
+__name(handleTelemetryPost, "handleTelemetryPost");
+async function handleAdminDashboard(env) {
+ const mesh = {};
+ for (const v of VERTICES) {
+   mesh[v] = await getVertex(env, v);
+ }
+ const edgeStates = {};
+ for (const [v1, v2] of EDGES) {
+   const key = edgeKey(v1, v2);
+   edgeStates[key] = await getEdge(env, v1, v2);
+ }
+ const headRaw = await env.K4_MESH.get("telemetry:head");
+ const head = headRaw ? JSON.parse(headRaw) : { index: 0, hash: null };
+ const lastSweepRaw = await env.K4_MESH.get("meta:lastSweep");
+ return json({
+   phase: PHASE,
+   operator: "William R. Johnson",
+   org: "P31 Labs, Inc.",
+   ein: "42-1888158",
+   lastSweep: lastSweepRaw ? JSON.parse(lastSweepRaw) : null,
+   staleThresholdMs: STALE_MS2,
+   topology: {
+     type: "K\u2084 Complete Graph",
+     vertices: 4,
+     edges: 6,
+     rigidity: "Isostatic (Maxwell: E = 3V - 6 \u2192 6 = 6)",
+     betti_2: 1,
+     enclosure: "Volumetric"
+   },
+   vertices: mesh,
+   edges: edgeStates,
+   telemetry: {
+     chainLength: head.index,
+     headHash: head.hash,
+     standard: "WCD-46",
+     compliance: "Daubert"
+   },
+   infrastructure: {
+     worker: "k4-cage.trimtab-signal.workers.dev",
+     kv: "K4_MESH",
+     architecture: "Single worker, zero Wye dependency",
+     sweep: "lazy on GET /api/mesh when last sweep > 5m ago"
+   },
+   generated: (/* @__PURE__ */ new Date()).toISOString()
+ });
+}
+__name(handleAdminDashboard, "handleAdminDashboard");
+function statusPage() {
+ return new Response(`<!DOCTYPE html>
+<html lang="en">
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>K\u2084 Cage \u2014 P31 Labs</title>
+ <style>
+   * { margin: 0; padding: 0; box-sizing: border-box; }
+   body {
+     background: #0a0a0a; color: #e0e0e0;
+     font-family: 'SF Mono', 'Fira Code', monospace;
+     padding: 2rem; min-height: 100vh;
+   }
+   .header { text-align: center; margin-bottom: 2rem; }
+   .header h1 {
+     font-size: 2rem; color: #ff6b4a;
+     text-shadow: 0 0 20px rgba(255,107,74,0.3);
+   }
+   .header .sub { color: #888; font-size: 0.85rem; margin-top: 0.5rem; }
+   .mantra { color: #f472b6; font-size: 1.15rem; margin-top: 1rem; letter-spacing: 0.04em; }
+   .live { color: #4ecdc4; font-size: 0.85rem; margin-top: 0.75rem; min-height: 1.25em; }
+   .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; max-width: 800px; margin: 0 auto; }
+   .card {
+     background: #111; border: 1px solid #222; border-radius: 8px;
+     padding: 1rem; transition: border-color 0.3s;
+   }
+   .card:hover { border-color: #ff6b4a; }
+   .card h3 { color: #ff6b4a; font-size: 0.9rem; margin-bottom: 0.5rem; }
+   .endpoint { color: #4ecdc4; font-size: 0.8rem; margin: 0.25rem 0; }
+   .meta { color: #666; font-size: 0.75rem; }
+   @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }
+ </style>
+</head>
+<body>
+ <div class="header">
+   <h1>K\u2084 CAGE</h1>
+   <div class="sub">P31 Labs, Inc. | One Worker. Four Vertices. Six Edges.</div>
+   <div class="sub">Ca\u2089(PO\u2084)\u2086 \u2014 The Posner Molecule as Infrastructure</div>
+   <div class="mantra">Create &amp; Connect &#x2665;</div>
+   <div id="live" class="live">Connecting to mesh&#8230;</div>
+ </div>
+   <div class="grid">
+   <div class="card">
+     <h3>PHASE 4</h3>
+     <div class="endpoint">GET /api</div>
+     <div class="endpoint">GET /api/v4/mesh?scope=\u2026</div>
+     <div class="endpoint">GET /viz</div>
+     <div class="endpoint">POST /api/admin/sweep</div>
+     <div class="meta">Sierpi\u0144ski scopes \xB7 route index \xB7 viz \xB7 sweep (admin)</div>
+   </div>
+   <div class="card">
+     <h3>MESH STATE</h3>
+     <div class="endpoint">GET /api/mesh</div>
+     <div class="meta">Full topology: all vertices + edges + LOVE</div>
+   </div>
+   <div class="card">
+     <h3>VERTEX</h3>
+     <div class="endpoint">GET /api/vertex/:id</div>
+     <div class="endpoint">POST /api/presence/:id</div>
+     <div class="meta">will | sj | wj | christyn</div>
+   </div>
+   <div class="card">
+     <h3>EDGES</h3>
+     <div class="endpoint">GET /api/edge/:v1/:v2</div>
+     <div class="endpoint">POST /api/ping/:from/:to</div>
+     <div class="meta">6 edges, each carrying pings + LOVE</div>
+   </div>
+   <div class="card">
+     <h3>TELEMETRY (WCD-46)</h3>
+     <div class="endpoint">GET /api/telemetry</div>
+     <div class="endpoint">POST /api/telemetry</div>
+     <div class="meta">SHA-256 chain-of-custody, Daubert-grade</div>
+   </div>
+   <div class="card">
+     <h3>ADMIN</h3>
+     <div class="endpoint">GET /api/admin/dashboard?token=***</div>
+     <div class="meta">Full mesh overview, chain stats</div>
+   </div>
+   <div class="card">
+     <h3>TOPOLOGY</h3>
+     <div class="meta">K\u2084 = 4 vertices, 6 edges</div>
+     <div class="meta">Maxwell rigidity: E = 3V - 6 \u2192 6 = 6 \u2713</div>
+     <div class="meta">\u03B2\u2082 = 1 (volumetric enclosure) \u2713</div>
+     <div class="meta">Isostatic: minimum rigid in \u211D\xB3 \u2713</div>
+   </div>
+ </div>
+ <script>
+ (function(){
+   var el = document.getElementById('live');
+   fetch('/api/mesh', { credentials: 'omit' })
+     .then(function(r){ return r.json(); })
+     .then(function(d){
+       var love = typeof d.totalLove === 'number' ? d.totalLove : 0;
+       var t = d.timestamp ? new Date(d.timestamp).toLocaleString() : '';
+       el.textContent = 'Connected \u2014 ' + love + ' LOVE \u2014 ' + (t || 'live');
+     })
+     .catch(function(){ el.textContent = 'Mesh unreachable'; });
+ })();
+ <\/script>
+</body>
+</html>`, {
+   headers: { "Content-Type": "text/html", ...CORS_HEADERS }
+ });
+}
+__name(statusPage, "statusPage");
+function vizPage() {
+ return new Response(`<!DOCTYPE html>
+<html lang="en">
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>K\u2084 Live \u2014 Phase 3</title>
+ <style>
+   * { margin: 0; padding: 0; box-sizing: border-box; }
+   body {
+     background: radial-gradient(ellipse at top, #1a1a2e 0%, #0a0a0a 55%);
+     color: #e0e0e0;
+     font-family: system-ui, -apple-system, sans-serif;
+     min-height: 100vh;
+     padding: 1.25rem;
+   }
+   h1 {
+     font-size: 1.35rem;
+     color: #ff6b4a;
+     text-align: center;
+     margin-bottom: 0.25rem;
+   }
+   .sub { text-align: center; color: #64748b; font-size: 0.75rem; margin-bottom: 1rem; }
+   .badge {
+     display: inline-block;
+     background: #22c55e22;
+     color: #4ade80;
+     font-size: 0.65rem;
+     padding: 0.2rem 0.5rem;
+     border-radius: 4px;
+     margin-left: 0.35rem;
+     vertical-align: middle;
+   }
+   .stats {
+     display: flex;
+     flex-wrap: wrap;
+     gap: 0.75rem;
+     justify-content: center;
+     margin-bottom: 1rem;
+     font-size: 0.8rem;
+     color: #94a3b8;
+   }
+   .stats strong { color: #4ecdc4; }
+   .wrap { max-width: 420px; margin: 0 auto; }
+   svg { width: 100%; height: auto; display: block; filter: drop-shadow(0 0 12px rgba(255,107,74,0.15)); }
+   .edge { stroke: #334155; stroke-width: 1.5; }
+   .node { stroke: #0f172a; stroke-width: 1.5; }
+   .lbl { fill: #94a3b8; font-size: 8px; font-family: inherit; }
+   .legend { margin-top: 1rem; font-size: 0.7rem; color: #64748b; text-align: center; line-height: 1.6; }
+   .legend span { display: inline-block; margin: 0 0.5rem; }
+   .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px; vertical-align: -1px; }
+   .edges-panel {
+     margin-top: 1rem;
+     background: #111827;
+     border: 1px solid #1e293b;
+     border-radius: 8px;
+     padding: 0.75rem;
+     font-size: 0.72rem;
+     color: #94a3b8;
+   }
+   .edges-panel h3 { color: #ff6b4a; font-size: 0.7rem; margin-bottom: 0.5rem; }
+   .edge-row { padding: 0.25rem 0; border-bottom: 1px solid #1e293b; display: flex; justify-content: space-between; }
+   .edge-row:last-child { border-bottom: none; }
+   #err { color: #f87171; text-align: center; font-size: 0.75rem; min-height: 1.2em; }
+   a.back { display: block; text-align: center; margin-top: 1rem; color: #4ecdc4; font-size: 0.75rem; }
+ </style>
+</head>
+<body>
+ <div class="wrap">
+   <h1>K\u2084 Live <span class="badge">Phase 4</span></h1>
+   <div class="sub">Vertices pulse by presence \xB7 Edges hold LOVE</div>
+   <div class="stats" id="stats">
+     <span>LOVE <strong id="love">\u2014</strong></span>
+     <span>Online <strong id="on">\u2014</strong>/4</span>
+     <span>Edges 24h <strong id="e24">\u2014</strong>/6</span>
+   </div>
+   <div id="err"></div>
+   <svg viewBox="0 0 200 130" xmlns="http://www.w3.org/2000/svg" aria-label="K4 graph">
+     <line class="edge" x1="100" y1="12" x2="32" y2="102"/>
+     <line class="edge" x1="100" y1="12" x2="168" y2="102"/>
+     <line class="edge" x1="100" y1="12" x2="100" y2="78"/>
+     <line class="edge" x1="32" y1="102" x2="168" y2="102"/>
+     <line class="edge" x1="32" y1="102" x2="100" y2="78"/>
+     <line class="edge" x1="168" y1="102" x2="100" y2="78"/>
+     <circle class="node" id="v-will" cx="100" cy="12" r="7" fill="#475569"/>
+     <circle class="node" id="v-sj" cx="32" cy="102" r="7" fill="#475569"/>
+     <circle class="node" id="v-wj" cx="168" cy="102" r="7" fill="#475569"/>
+     <circle class="node" id="v-christyn" cx="100" cy="78" r="7" fill="#475569"/>
+     <text class="lbl" x="100" y="8" text-anchor="middle">Will</text>
+     <text class="lbl" x="32" y="118" text-anchor="middle">S.J.</text>
+     <text class="lbl" x="168" y="118" text-anchor="middle">W.J.</text>
+     <text class="lbl" x="100" y="94" text-anchor="middle">Christyn</text>
+   </svg>
+   <div class="legend">
+     <span><i class="dot" style="background:#22c55e"></i>online</span>
+     <span><i class="dot" style="background:#eab308"></i>away</span>
+     <span><i class="dot" style="background:#475569"></i>offline</span>
+   </div>
+   <div class="edges-panel" id="edges"></div>
+   <a class="back" href="/">API reference</a>
+ </div>
+ <script>
+ (function(){
+   var map = { will: 'v-will', sj: 'v-sj', wj: 'v-wj', christyn: 'v-christyn' };
+   function fillColor(st) {
+     if (st === 'online') return '#22c55e';
+     if (st === 'away') return '#eab308';
+     return '#475569';
+   }
+   function tick() {
+     fetch('/api/mesh', { cache: 'no-store' })
+       .then(function(r){ return r.json(); })
+       .then(function(d){
+         document.getElementById('err').textContent = '';
+         document.getElementById('love').textContent = d.totalLove != null ? d.totalLove : '0';
+         document.getElementById('on').textContent = d.onlineCount != null ? d.onlineCount : '0';
+         document.getElementById('e24').textContent = d.edgeActivity24h != null ? d.edgeActivity24h : '0';
+         var mv = d.mesh && d.mesh.vertices;
+         if (!mv) return;
+         Object.keys(map).forEach(function(id) {
+           var el = document.getElementById(map[id]);
+           var vtx = mv[id];
+           if (el && vtx) el.setAttribute('fill', fillColor(vtx.status));
+         });
+         var edges = d.mesh.edges;
+         var html = '<h3>Edges (LOVE)</h3>';
+         if (edges) {
+           Object.keys(edges).sort().forEach(function(k) {
+             var e = edges[k];
+             var love = e.love != null ? e.love : 0;
+             var la = e.lastActivity ? '<span style="color:#64748b">' + e.lastActivity.slice(0,16) + '</span>' : '\u2014';
+             html += '<div class="edge-row"><span>' + k.replace(/-/g,' \u2194 ') + '</span><span>' + love + ' \xB7 ' + la + '</span></div>';
+           });
+         }
+         document.getElementById('edges').innerHTML = html;
+       })
+       .catch(function(e){ document.getElementById('err').textContent = 'Mesh unreachable'; });
+   }
+   tick();
+   setInterval(tick, 4000);
+ })();
+ <\/script>
+</body>
+</html>`, {
+   headers: { "Content-Type": "text/html", ...CORS_HEADERS }
+ });
+}
+__name(vizPage, "vizPage");
+var index_default = {
+ async fetch(request, env) {
+   if (request.method === "OPTIONS") {
+     return new Response(null, { headers: CORS_HEADERS });
+   }
+   const url = new URL(request.url);
+   const path = url.pathname;
+   const method = request.method;
+   try {
+     if (path === "/" || path === "") return statusPage();
+     if (path === "/viz" || path === "/viz/") return vizPage();
+     if (path === "/api" && method === "GET") return handleRouteIndex();
+     if (path === "/api/mesh" && method === "GET") return await handleMeshState(env);
+     if (path === "/api/meta" && method === "GET") return await handleMeta(env);
+     const vertexMatch = path.match(/^\/api\/vertex\/(\w+)$/);
+     if (vertexMatch && method === "GET") return await handleVertexGet(env, vertexMatch[1]);
+     const presenceMatch = path.match(/^\/api\/presence\/(\w+)$/);
+     if (presenceMatch && method === "POST") return await handlePresence(env, request, presenceMatch[1]);
+     const pingMatch = path.match(/^\/api\/ping\/(\w+)\/(\w+)$/);
+     if (pingMatch && method === "POST") return await handlePing(env, request, pingMatch[1], pingMatch[2]);
+     const edgeMatch = path.match(/^\/api\/edge\/(\w+)\/(\w+)$/);
+     if (edgeMatch && method === "GET") return await handleEdgeGet(env, edgeMatch[1], edgeMatch[2]);
+     if (path === "/api/telemetry" && method === "GET") return await handleTelemetryGet(env, request);
+     if (path === "/api/telemetry" && method === "POST") {
+       if (!isAdmin(request, env)) return err("Unauthorized", 401);
+       return await handleTelemetryPost(env, request);
+     }
+     if (path === "/api/admin/dashboard") {
+       if (!isAdmin(request, env)) return err("Unauthorized", 401);
+       return await handleAdminDashboard(env);
+     }
+     if (path === "/api/admin/sweep" && method === "POST") {
+       if (!isAdmin(request, env)) return err("Unauthorized", 401);
+       return await handleAdminSweep(env);
+     }
+     if (path === "/api/v4/mesh" && method === "GET") return await handleV4Mesh(env, request);
+     if (path === "/api/v4/scopes" && method === "GET") return json(await listScopes(env));
+     if (path === "/api/v4/health" && method === "GET") return handleV4Health();
+     const v4vx = path.match(/^\/api\/v4\/vertex\/(\w+)$/);
+     if (v4vx && method === "GET") return await handleV4VertexGet(env, request, v4vx[1]);
+     const v4pr = path.match(/^\/api\/v4\/presence\/(\w+)$/);
+     if (v4pr && method === "POST") return await handleV4Presence(env, request, v4pr[1]);
+     const v4pg = path.match(/^\/api\/v4\/ping\/(\w+)\/(\w+)$/);
+     if (v4pg && method === "POST") return await handleV4Ping(env, request, v4pg[1], v4pg[2]);
+     if (path === "/api/health") {
+       return json({
+         status: "rigid",
+         topology: "K4",
+         phase: PHASE,
+         mantra: "Create & Connect",
+         features: [
+           "lazy_stale_sweep",
+           "viz",
+           "mesh_enriched",
+           "mesh_connect_hub",
+           "meta",
+           "route_index",
+           "admin_sweep",
+           "v4_sierpinski_scopes",
+           "nested_k4_depth_gt_3"
+         ],
+         uptime: Date.now()
+       });
+     }
+     return err("Not found. Try GET /api, /api/mesh, or /viz", 404);
+   } catch (e) {
+     return err(`Internal error: ${e.message}`, 500);
+   }
+ }
+};
+export {
+ index_default as default
+};
+//# sourceMappingURL=index.js.map
+
+
+P31-status-agent
+
+var __defProp = Object.defineProperty;
+var __name = (target, value) => __defProp(target, "name", { value, configurable: true });
+
+
+// src/index.js
+function getStatus() {
+ return {
+   lastUpdated: (/* @__PURE__ */ new Date()).toISOString(),
+   infrastructure: [
+     { name: "Command Center", url: "https://command-center.trimtab-signal.workers.dev", status: "LIVE" },
+     { name: "P31 Mesh", url: "https://a7e99914.p31-pwa.pages.dev", status: "LIVE" },
+     { name: "Carrie Agent", url: "https://carrie-agent.trimtab-signal.workers.dev", status: "LIVE" },
+     { name: "Carrie (public)", url: "https://carrie-wellness.trimtab-signal.workers.dev", status: "LIVE" },
+     { name: "Telemetry (WCD-46)", url: "https://p31-telemetry.trimtab-signal.workers.dev", status: "LIVE" },
+     { name: "Genesis Gate", url: "https://genesis-gate.trimtab-signal.workers.dev", status: "LIVE" },
+     { name: "BONDING", url: "https://bonding.p31ca.org", status: "LIVE" },
+     { name: "P31 Portal", url: "https://p31ca.org", status: "LIVE" },
+     { name: "P31.org", url: "https://phosphorus31.org", status: "LIVE" },
+     { name: "Larmor", url: "https://p31ca.org/larmor", status: "LIVE" }
+   ],
+   legal: {
+     caseNumber: "2025CV936",
+     evictionStatus: "CONTESTED",
+     psychEval: "COMPLETED Mar 24",
+     discoveryFiled: "Mar 26",
+     custodyStatus: "2 calls/week supervised"
+   },
+   financial: {
+     operatingBuffer: 105,
+     housingGrant: "ESG opens Apr 13",
+     grantPipeline: "550K+ pending",
+     c3Status: "filed Apr 3 - pending IRS"
+   },
+   workstreams: [
+     { cwp: "CWP-2026-011", status: "ACTIVE", action: "CogPass sync" },
+     { cwp: "CWP-2026-012", status: "ACTIVE", action: "ESG grant apply", due: "Apr 15" },
+     { cwp: "CWP-2026-013", status: "ACTIVE", action: "Community growth", due: "May 19" },
+     { cwp: "CWP-2026-014", status: "COMPLETE", action: "Carrie Agent deployed" },
+     { cwp: "CWP-2026-015", status: "COMPLETE", action: "Command Center + Mesh deployed" }
+   ],
+   nodeZero: {
+     status: "DEBUGGING",
+     display: "INIT CONFIRMED",
+     rootCause: "Missing lv_init() before driver",
+     spiMode: 0,
+     qspiClock: "40MHz"
+   },
+   keyDates: [
+     { date: "2026-04-13", event: "ESG portal OPENS" },
+     { date: "2026-04-15", event: "ESG DEADLINE" },
+     { date: "2026-04-30", event: "GA Tech Summit" },
+     { date: "2026-05-19", event: "Neurotech Frontiers Summit" },
+     { date: "2026-09-30", event: "FERS disability deadline" }
+   ],
+   agents: [
+     { name: "Sonnet", role: "Mechanic", allocation: "80%", status: "ACTIVE" },
+     { name: "Gemini", role: "Narrator", allocation: "15%", status: "AVAILABLE" },
+     { name: "DeepSeek", role: "Firmware", allocation: "4%", status: "SUSPENDED" },
+     { name: "Opus", role: "Architect", allocation: "1%", status: "AVAILABLE" },
+     { name: "KwaiPilot", role: "FW Execution", allocation: "ON-DEMAND", status: "AVAILABLE" }
+   ]
+ };
+}
+__name(getStatus, "getStatus");
+var src_default = {
+ async fetch(request) {
+   const url = new URL(request.url);
+   if (url.pathname === "/status" || url.pathname === "/") {
+     return new Response(JSON.stringify(getStatus(), null, 2), {
+       headers: {
+         "content-type": "application/json",
+         "Access-Control-Allow-Origin": "*"
+       }
+     });
+   }
+   if (url.pathname === "/health") {
+     return new Response(JSON.stringify({
+       service: "p31-status-agent",
+       status: "ok",
+       timestamp: (/* @__PURE__ */ new Date()).toISOString()
+     }), {
+       headers: { "content-type": "application/json" }
+     });
+   }
+   return new Response("Not Found", { status: 404 });
+ }
+};
+export {
+ src_default as default
+};
+//# sourceMappingURL=index.js.map

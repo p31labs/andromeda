@@ -1,0 +1,66 @@
+{
+  "name": "command-center",
+  "main": "src/index.js",
+  "compatibility_date": "2026-04-13",
+  "kv_namespaces": [
+    {
+      "binding": "STATUS_KV",
+      "id": "ff890e80e7e64ae8b8afb59870f1a0f6"
+    }
+  ],
+  "d1_databases": [
+    {
+      "binding": "EPCP_DB",
+      "database_name": "epcp-audit",
+      "database_id": "12ce6570-839e-431d-a14d-bb6002dc89e8"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "FORENSICS_HOT",
+      "bucket_name": "p31-epcp-forensics-hot"
+    },
+    {
+      "binding": "FORENSICS_COLD",
+      "bucket_name": "p31-epcp-forensics-cold"
+    },
+    {
+      "binding": "ARTIFACTS",
+      "bucket_name": "p31-epcp-artifacts"
+    },
+    {
+      "binding": "AUDIT_EXPORTS",
+      "bucket_name": "p31-epcp-audit-exports"
+    }
+  ],
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "CRDT_PROCESSOR_DO",
+        "class_name": "CrdtQueueProcessor"
+      },
+      {
+        "name": "CRDT_SESSION_DO",
+        "class_name": "CrdtSessionDO"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": ["CrdtQueueProcessor"]
+    },
+    {
+      "tag": "v2",
+      "new_sqlite_classes": ["CrdtSessionDO"]
+    }
+  ],
+  "triggers": {
+    "crons": ["*/5 * * * *"]
+  },
+  "vars": {
+    "ENVIRONMENT": "production",
+    "CF_ACCESS_AUDIENCE": "64f8277875bdf0056197f67e375a0063ebb549b0f7f194f61b973fbbb02b3071",
+    "CF_ACCESS_TEAM_DOMAIN": "p31ca"
+  }
+}
