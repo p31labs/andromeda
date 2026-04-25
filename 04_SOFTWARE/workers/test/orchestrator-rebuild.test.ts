@@ -3,13 +3,23 @@
  * Run with: cd /home/p31/andromeda/04_SOFTWARE/workers && npx vitest run
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
+
+/** Constructor schedules work in blockConcurrencyWhile; allow that async init to finish. */
+async function drainDOInit() {
+  for (let i = 0; i < 20; i++) {
+    await new Promise<void>((r) => setImmediate(r));
+  }
+}
 
 // Mock DurableObjectState and Env
 function createMockDO() {
   const storage = new Map<string, any>();
   const state = {
-    blockConcurrencyWhile: async (fn: () => Promise<void>) => fn(),
+    // Must await — real DO waits for storage; otherwise meshState stays default in CI.
+    blockConcurrencyWhile: async (fn: () => Promise<void>) => {
+      await fn();
+    },
     storage: {
       get: vi.fn((key: string) => Promise.resolve(storage.get(key))),
       put: vi.fn((key: string, value: any) => {
@@ -66,9 +76,10 @@ describe('Orchestrator State Rebuild', () => {
       // Import and instantiate DO
       const { EventBusDO } = await import('../orchestrator-event-bus.js');
       const doInstance = new EventBusDO(state as any, env as any);
+      await drainDOInit();
 
-      // Verify cold start flag is set
-      expect(doInstance.meshState.lastMeshSync).toBe(staleSync);
+      // Stale sync triggers rebuild; implementation sets lastMeshSync to "now" (see rebuildStateFromKV)
+      expect(doInstance.meshState.lastMeshSync).toBeGreaterThan(staleSync);
     });
 
     it('skips rebuild when lastSync is fresh (< 5 min)', async () => {
@@ -92,8 +103,9 @@ describe('Orchestrator State Rebuild', () => {
 
       const { EventBusDO } = await import('../orchestrator-event-bus.js');
       const doInstance = new EventBusDO(state as any, env as any);
+      await drainDOInit();
 
-      // Should NOT rebuild (fresh sync)
+      // Should NOT rebuild (fresh sync) — lastMeshSync stays loaded from DO storage
       expect(doInstance.meshState.lastMeshSync).toBe(freshSync);
     });
   });
@@ -176,6 +188,7 @@ describe('Orchestrator State Rebuild', () => {
       // Simulate restart - new DO instance
       const { EventBusDO: DO2 } = await import('../orchestrator-event-bus.js');
       const do2 = new DO2(state as any, env as any);
+      await drainDOInit();
 
       // State should be restored
       expect(do2.currentGuardrailLevel).toBe(2);
