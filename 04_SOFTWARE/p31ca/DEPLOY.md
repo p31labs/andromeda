@@ -9,6 +9,8 @@
 
 Deploying **any other app’s `dist/`** to project **`p31ca`** replaces the hub for **every** domain on that project.
 
+**Passport + CI** — `npm run deploy` runs `predeploy` → `passport:verify` (then build → Pages). Canonical transform: `scripts/passport-p31ca-transform.mjs` in this package. From full P31 home, sync first: `npm run sync:passport` at home root, or `npm run passport:sync` from here. **GitHub Actions** (`P31 Automation` → `deploy_p31ca`): `passport:verify` runs with `P31_WORKSPACE_ROOT` set; it **skips** if `cognitive-passport/` is missing (Andromeda-only clone). For a **strict** check, run workflow **manually** and enable **`p31ca_strict_passport`** (fails if no authoring file). **Wrangler** for Pages is pinned in `package.json` (dev dependency).
+
 ## Recover if the apex shows Hearing Ops (or any wrong app)
 
 1. **Redeploy the hub** (from this directory):

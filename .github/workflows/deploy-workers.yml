@@ -27,7 +27,7 @@ jobs:
       # running npm install inside the pnpm workspace (workspace:* protocol
       # causes EUNSUPPORTEDPROTOCOL on plain npm).
       - name: Install wrangler globally
-        run: npm install -g wrangler@3.114.17
+        run: npm install -g wrangler@4.85.0
 
       # ── 1. k4-cage (no deps) ────────────────────────────────────────
       - name: Deploy k4-cage
@@ -36,6 +36,7 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: 04_SOFTWARE/k4-cage
+          wranglerVersion: "4.85.0"
 
       # ── 2. k4-personal (no deps) ────────────────────────────────────
       - name: Deploy k4-personal
@@ -44,6 +45,7 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: 04_SOFTWARE/k4-personal
+          wranglerVersion: "4.85.0"
 
       # ── 3. k4-hubs (binds → k4-cage, k4-personal) ───────────────────
       - name: Deploy k4-hubs
@@ -52,6 +54,7 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: 04_SOFTWARE/k4-hubs
+          wranglerVersion: "4.85.0"
 
       # ── 4. p31-agent-hub (binds → all three above) ──────────────────
       - name: Deploy p31-agent-hub
@@ -60,6 +63,7 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: 04_SOFTWARE/p31-agent-hub
+          wranglerVersion: "4.85.0"
 
       # ── 5. Post-deploy verification ──────────────────────────────────
       - name: Wait for propagation
@@ -86,8 +90,29 @@ jobs:
           check k4-cage       https://k4-cage.trimtab-signal.workers.dev/health
           check k4-personal   https://k4-personal.trimtab-signal.workers.dev/health
           check k4-hubs       https://k4-hubs.trimtab-signal.workers.dev/health
-          check p31-agent-hub https://p31-agent-hub.trimtab-signal.workers.dev/health
+          check p31-agent-hub https://p31-agent-hub.trimtab-signal.workers.dev/api/health
           exit $fail
+
+      - name: Health JSON body shape
+        run: |
+          set -e
+          python3 <<'PY'
+          import json, urllib.request, sys
+          def load(url: str) -> object:
+            with urllib.request.urlopen(url, timeout=15) as r:
+              return json.load(r)
+          d = load("https://k4-cage.trimtab-signal.workers.dev/health")
+          assert d.get("ok") is True, f"k4-cage: expected ok: true, got {d!r}"
+          t = d.get("topology", {})
+          assert t.get("topology") == "K4", f"k4-cage: expected topology K4, got {t!r}"
+          d = load("https://k4-personal.trimtab-signal.workers.dev/health")
+          assert d.get("status") == "healthy" and d.get("vertices") == 4, f"k4-personal: {d!r}"
+          d = load("https://k4-hubs.trimtab-signal.workers.dev/health")
+          assert d.get("status") == "healthy" and d.get("edges") == 6 and d.get("vertices") == 4, f"k4-hubs: {d!r}"
+          d = load("https://p31-agent-hub.trimtab-signal.workers.dev/api/health")
+          assert d.get("ok") is True and d.get("service") == "p31-agent-hub", f"p31-agent-hub: {d!r}"
+          print("✅ All health JSON contracts OK")
+          PY
 
       - name: Verify K4 mesh topology
         run: |

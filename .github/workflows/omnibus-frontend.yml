@@ -80,5 +80,5 @@ jobs:
           projectName: andromeda-ui
           directory: 04_SOFTWARE/frontend/dist
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
-          wranglerVersion: '3'
+          wranglerVersion: "4.85.0"
           branch: main
