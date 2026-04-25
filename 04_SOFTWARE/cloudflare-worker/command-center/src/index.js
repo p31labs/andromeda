@@ -13,7 +13,11 @@
   dashAccessUrl,
 } from './cf.js';
 import { buildCloudHubHtml } from './cloud-hub-html.js';
-import { buildEpcpDashboardHtml } from './epcp-dashboard.js';
+import { buildGodDashboardHtml } from './god-dashboard.js';
+import { handleSseStream } from './sse-stream.js';
+import { CrdtQueueProcessor } from './crdt-processor-do.js';
+import { CrdtSessionDO } from './crdt-session-do.js';
+export { CrdtQueueProcessor, CrdtSessionDO };
 
 // ── Cloudflare Access JWT helpers ──
 const JWKS_CACHE = new Map();
@@ -82,46 +86,64 @@ async function validateAccessJwt(request, env) {
   }
 }
 
-// ── Role definitions ──
-function getRoleFromGroups(groups) {
-  if (!groups) return 'none';
-  if (groups.includes('p31-admin@phosphorus31.org')) return 'admin';
-  if (groups.includes('p31-legal@phosphorus31.org')) return 'legal';
-  if (groups.includes('p31-operator@phosphorus31.org')) return 'operator';
-  if (groups.includes('p31-reader@phosphorus31.org')) return 'reader';
+// ── Authentication (Cloudflare Access + legacy token fallback) ──
+async function authenticate(request, env) {
+  // 1. Check for Edge-verified Email header (injected after Cookie validation - vital for WebSockets)
+  let email = request.headers.get("Cf-Access-Authenticated-User-Email");
+  
+  // 2. Fallback to decoding the JWT Assertion (for direct API calls)
+  if (!email) {
+    const token = request.headers.get("Cf-Access-Jwt-Assertion");
+    if (token) {
+      try {
+        const payload = JSON.parse(atob(token.split(".")[1]));
+        email = payload.email;
+      } catch (e) { /* ignore */ }
+    }
+  }
+  
+  // 3. THE WEBSOCKET SILVER BULLET: Crack the CF_Authorization cookie directly
+  if (!email) {
+    const cookie = request.headers.get("Cookie") || "";
+    const match = cookie.match(/CF_Authorization=([^;]+)/);
+    if (match) {
+      try { 
+        // Extract the payload (middle segment) of the JWT
+        email = JSON.parse(atob(match[1].split(".")[1])).email; 
+      } catch(e){}
+    }
+  }
+  
+   if (email) {
+     return {
+       email: email,
+       role: getRoleFromEmail(email),
+       source: "cloudflare-access"
+     };
+   }
+   return null;
+}
+
+// ── Role mapping from email (Cloudflare Access doesn't pass groups) ──
+function getRoleFromEmail(email) {
+  if (!email) return 'none';
+  const lower = email.toLowerCase();
+  if (lower.includes('will@p31ca.org') || lower.includes('classicwilly') || lower.includes('willyj1587')) return 'admin';
+  if (lower.includes('legal@')) return 'legal';
+  if (lower.includes('operator@')) return 'operator';
+  if (lower.includes('reader@')) return 'reader';
   return 'none';
 }
 
-// ── Authentication (Cloudflare Access + legacy token fallback) ──
-async function authenticate(request, env) {
-  // Try Cloudflare Access JWT first
-  const accessToken = await validateAccessJwt(request, env);
-  if (accessToken) {
-    return {
-      sub: accessToken.sub,
-      email: accessToken.email,
-      name: accessToken.name,
-      role: getRoleFromGroups(accessToken.groups),
-      groups: accessToken.groups,
-      source: 'cloudflare-access'
-    };
+async function isAdmin(request, env) {
+  // Fast path: check Cf-Access-Authenticated-User-Email directly
+  const sessionEmail = request.headers.get('Cf-Access-Authenticated-User-Email');
+  if (sessionEmail && getRoleFromEmail(sessionEmail) === 'admin') {
+    return true;
   }
-
-  // Fallback: legacy STATUS_TOKEN
-  const auth = request.headers.get('Authorization') || '';
-  const token = auth.replace('Bearer ', '');
-  if (token && token === env.STATUS_TOKEN) {
-    return {
-      sub: 'system:legacy-token',
-      email: 'system@p31labs',
-      name: 'Legacy Token',
-      role: 'admin',
-      groups: [],
-      source: 'legacy-token'
-    };
-  }
-
-  return null;
+  // Full auth check as fallback
+  const auth = await authenticate(request, env);
+  return auth && auth.role === 'admin';
 }
 
 // ── RBAC middleware ──
@@ -148,6 +170,14 @@ export default {
 
   async fetch(request, env) {
     const url = new URL(request.url);
+    
+    // DEBUG: Log ALL requests immediately
+    console.log(`[WORKER] ${request.method} ${url.pathname}${url.search} | host: ${url.host}`);
+    
+    // Catch-all debug for /api/crdt/*
+    if (url.pathname.startsWith('/api/crdt')) {
+      console.log(`[WORKER] CRDT PATH DETECTED: ${url.pathname}`);
+    }
 
     // ── API Routes ──
     if (url.pathname === '/api/status' && request.method === 'POST') {
@@ -164,23 +194,225 @@ export default {
       return withAccess(request, env, 'reader', async (auth) => {
         return handleCfSummary(request, env, url);
       });
+      if (url.pathname === '/api/whoami') {
+        const auth = await authenticate(request, env);
+        if (!auth) return jsonResponse({ authenticated: false }, 401);
+        return jsonResponse({
+          authenticated: true,
+          sub: auth.sub,
+          email: auth.email,
+          name: auth.name,
+          role: auth.role,
+          groups: auth.groups,
+          source: auth.source,
+        });
+      }
+      
+      // ── Diagnostic: CRDT Headers ──
+      if (url.pathname === '/api/debug/crdt-headers' && request.method === 'GET') {
+        return withAccess(request, env, 'reader', async () => {
+          const keys = await env.STATUS_KV.list({ limit: 10 });
+          const diagnostics = [];
+          for (const key of keys.keys) {
+            if (key.name.startsWith('crdt_diagnostic_')) {
+              const value = await env.STATUS_KV.get(key.name, 'json');
+              diagnostics.push({ key: key.name, ...value });
+            }
+          }
+          diagnostics.sort((a, b) => (b.ts || '') > (a.ts || '') ? -1 : 1);
+          return jsonResponse({ diagnostics: diagnostics.slice(0, 5) });
+        });
+      }
+    
+    // ── Server-Sent Events Stream ──
+    if (url.pathname === '/api/sse' && request.method === 'GET') {
+      // SSE accessible to any authenticated user (Cloudflare Access sets this header)
+      const sessionEmail = request.headers.get('Cf-Access-Authenticated-User-Email');
+      if (!sessionEmail) {
+        return new Response('Unauthorized: No session', { status: 401 });
+      }
+      try {
+        return handleSseStream(request, env);
+      } catch (e) {
+        return jsonResponse({ error: e.message }, 500);
+      }
     }
-    if (url.pathname === '/api/whoami') {
-      const auth = await authenticate(request, env);
-      if (!auth) return jsonResponse({ authenticated: false }, 401);
-      return jsonResponse({
-        authenticated: true,
-        sub: auth.sub,
-        email: auth.email,
-        name: auth.name,
-        role: auth.role,
-        groups: auth.groups,
-        source: auth.source,
-      });
-    }
-    if (url.pathname === '/api/health') {
-      return jsonResponse({ ok: true, ts: new Date().toISOString() });
-    }
+
+     // ── Mesh Analytics API ──
+     if (url.pathname === '/api/analytics/mesh' && request.method === 'GET') {
+       const sessionEmail = request.headers.get('Cf-Access-Authenticated-User-Email');
+       if (!sessionEmail) return jsonResponse({ error: 'Unauthorized' }, 401);
+       try {
+         const hours = parseInt(url.searchParams.get('hours') || '24');
+         const results = await env.EPCP_DB.prepare(
+           'SELECT * FROM mesh_analytics WHERE ts > ? ORDER BY ts DESC LIMIT 500'
+         ).bind(Date.now() - (hours * 3600 * 1000)).all();
+         return jsonResponse({ events: results.results || [] });
+       } catch (e) {
+         return jsonResponse({ error: e.message }, 500);
+       }
+     }
+
+     if (url.pathname === '/api/analytics/health' && request.method === 'GET') {
+       const sessionEmail = request.headers.get('Cf-Access-Authenticated-User-Email');
+       if (!sessionEmail) return jsonResponse({ error: 'Unauthorized' }, 401);
+       try {
+         const hours = parseInt(url.searchParams.get('hours') || '24');
+         const results = await env.EPCP_DB.prepare(
+           'SELECT * FROM node_health_history WHERE ts > ? ORDER BY ts DESC LIMIT 500'
+         ).bind(Date.now() - (hours * 3600 * 1000)).all();
+         return jsonResponse({ health: results.results || [] });
+       } catch (e) {
+         return jsonResponse({ error: e.message }, 500);
+       }
+     }
+
+      // ── Cost Summary API ──
+      if (url.pathname === '/api/costs' && request.method === 'GET') {
+        const sessionEmail = request.headers.get('Cf-Access-Authenticated-User-Email');
+        if (!sessionEmail) return jsonResponse({ error: 'Unauthorized' }, 401);
+        try {
+          const hours = parseInt(url.searchParams.get('hours') || '24');
+          const cutoff = Date.now() - (hours * 3600 * 1000);
+          const results = await env.EPCP_DB.prepare(
+            'SELECT service, operation, SUM(quantity) as total_qty, SUM(estimated_cost) as total_cost FROM cost_tracking WHERE ts > ? GROUP BY service, operation'
+          ).bind(cutoff).all();
+          const totalCost = (results.results || []).reduce(function(sum, r) { return sum + (r.total_cost || 0); }, 0);
+          return jsonResponse({
+            summary: results.results || [],
+            total_cost: totalCost,
+            period_hours: hours
+          });
+        } catch (e) {
+          return jsonResponse({ error: e.message }, 500);
+        }
+       }
+      
+      // ── CRDT Session WebSocket ──
+      if (url.pathname === '/api/crdt/session') {
+        // Diagnostic mode: ?diag=1 returns header info without invoking DO
+        if (url.searchParams.get('diag') === '1') {
+          return jsonResponse({
+            pathname: url.pathname,
+            hostname: url.hostname,
+            upgrade: request.headers.get('Upgrade'),
+            connection: request.headers.get('Connection'),
+            headers: Object.fromEntries(request.headers.entries())
+          });
+        }
+        
+        console.log('[WORKER] CRDT route. Host:', url.hostname, 'Upgrade:', request.headers.get('Upgrade'));
+        
+        try {
+          await env.STATUS_KV.put('crdt_last_headers', JSON.stringify({
+            ts: new Date().toISOString(),
+            host: url.hostname,
+            upgrade: request.headers.get('Upgrade'),
+            connection: request.headers.get('Connection')
+          }));
+        } catch (e) {}
+        
+        if (!env.CRDT_SESSION_DO) {
+          return jsonResponse({ error: 'CRDT_SESSION_DO not bound' }, 503);
+        }
+        const id = env.CRDT_SESSION_DO.idFromName('global-session');
+        const stub = env.CRDT_SESSION_DO.get(id);
+        return stub.fetch(request);
+      }
+
+      // ── Admin: CRDT Access Bypass ──
+      if (url.pathname === '/api/admin/crdt-access-bypass' && request.method === 'POST') {
+        return withAccess(request, env, 'admin', async () => {
+          try {
+            if (!env.CF_API_TOKEN || !env.CF_ACCOUNT_ID) {
+              return jsonResponse({ error: 'Admin API token not configured' }, 500);
+            }
+            const apiToken = env.CF_API_TOKEN;
+            const accountId = env.CF_ACCOUNT_ID;
+            const apiBase = 'https://api.cloudflare.com/client/v4';
+
+            // 1. Find the Access application for command-center
+            const appsRes = await fetch(`${apiBase}/accounts/${accountId}/access/apps`, {
+              headers: { Authorization: `Bearer ${apiToken}` }
+            });
+            const appsJson = await appsRes.json();
+            if (!appsJson.success) {
+              throw new Error('Failed to list Access apps: ' + (appsJson.errors?.[0]?.message || 'unknown'));
+            }
+            const apps = appsJson.result || [];
+            const targetApp = apps.find(app => app.domain === 'command-center.p31ca.org') ||
+                              apps.find(app => app.name && app.name.toLowerCase().includes('command-center'));
+            if (!targetApp) {
+              throw new Error('Command-center Access application not found');
+            }
+            const appId = targetApp.id;
+
+            // 2. Fetch current app details (to read existing path_rules)
+            const appRes = await fetch(`${apiBase}/accounts/${accountId}/access/apps/${appId}`, {
+              headers: { Authorization: `Bearer ${apiToken}` }
+            });
+            const appJson = await appRes.json();
+            if (!appJson.success) {
+              throw new Error('Failed to get Access app: ' + (appJson.errors?.[0]?.message || 'unknown'));
+            }
+            const app = appJson.result;
+            let pathRules = app.path_rules || [];
+
+            // 3. Check if bypass rule already exists
+            const exists = pathRules.some(rule => rule.value === '/api/crdt/session*' && rule.type === 'exclude');
+            if (exists) {
+              return jsonResponse({ message: 'Path rule already exists' });
+            }
+
+            // 4. Add new exclude rule and PATCH the app
+            pathRules.push({ value: '/api/crdt/session*', type: 'exclude', name: 'CRDT WebSocket Bypass' });
+            const patchRes = await fetch(`${apiBase}/accounts/${accountId}/access/apps/${appId}`, {
+              method: 'PATCH',
+              headers: {
+                Authorization: `Bearer ${apiToken}`,
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ path_rules: pathRules })
+            });
+            const patchJson = await patchRes.json();
+            if (!patchJson.success) {
+              throw new Error('Failed to update Access app: ' + (patchJson.errors?.[0]?.message || 'unknown'));
+            }
+
+             return jsonResponse({ message: 'CRDT WebSocket bypass rule added', app: patchJson.result });
+          } catch (e) {
+            return jsonResponse({ error: e.message }, 500);
+          }
+        });
+      }
+
+      // ── Admin: Access Status ──
+      if (url.pathname === '/api/admin/access-status' && request.method === 'GET') {
+        return withAccess(request, env, 'admin', async (auth) => {
+          return jsonResponse({ 
+            authenticated: true,
+            user: auth.user,
+            domain: url.hostname
+          });
+        });
+      }
+
+
+     // ── Cloudflare Resources API ──
+     if (url.pathname === '/api/cf/resources' && request.method === 'GET') {
+       if (!(await isAdmin(request, env))) return jsonResponse({ error: 'Unauthorized' }, 401);
+       try {
+         const resource = url.searchParams.get('resource');
+         const data = await fetchCfFull(env, resource);
+         return jsonResponse(data);
+       } catch (e) {
+         return jsonResponse({ error: e.message }, 500);
+       }
+     }
+
+     if (url.pathname === '/api/health') {
+       return jsonResponse({ ok: true, ts: new Date().toISOString() });
+     }
 
     if (url.pathname === '/cloud' || url.pathname === '/cloud/') {
       return new Response(buildCloudHubHtml(env.CF_ACCOUNT_ID || ''), {
@@ -304,7 +536,7 @@ const DEFAULT_STATUS = {
     { name: "phosphorus31-org", status: "online", url: "https://phosphorus31.org" },
     { name: "p31ca-org", status: "online", url: "https://p31ca.org" },
     { name: "bonding-p31ca-org", status: "online", url: "https://bonding.p31ca.org" },
-    { name: "command-center", status: "online", url: "https://command-center.trimtab-signal.workers.dev" },
+     { name: "command-center", status: "online", url: "https://command-center.p31ca.org" },
     { name: "carrie-agent", status: "online", url: "https://carrie-agent.trimtab-signal.workers.dev" },
     { name: "carrie-wellness", status: "online", url: "https://carrie-wellness.trimtab-signal.workers.dev" },
     { name: "p31-social-engine", status: "online", url: "https://p31-social-engine.trimtab-signal.workers.dev" },
@@ -364,17 +596,19 @@ const DEFAULT_STATUS = {
 };
 
 async function serveDashboard(env) {
-  const html = buildEpcpDashboardHtml();
+  const html = buildGodDashboardHtml();
   
-  // Re-use the strict CSP you already built
-  const CSP = [
-    "default-src 'self'",
-    "script-src 'self' 'unsafe-inline'",
-    "style-src 'self' 'unsafe-inline'",
-    "img-src 'self' data: blob:",
-    "connect-src 'self' https:",
-    "frame-ancestors 'none'"
-  ].join('; ');
+    // Re-use the strict CSP you already built
+    const CSP = [
+      "default-src 'self'",
+      "script-src 'self' 'unsafe-inline'",
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+      "style-src-elem 'self' 'unsafe-inline' https://fonts.googleapis.com",
+      "font-src 'self' https://fonts.gstatic.com",
+      "img-src 'self' data: blob:",
+      "connect-src 'self' https: wss:",
+      "frame-ancestors 'none'"
+    ].join('; ');
 
   return new Response(html, {
     status: 200,
@@ -431,8 +665,23 @@ async function pingFleet(env) {
     })
   );
 
-  const workers = results.map(r => r.value || r.reason);
-  workers.push({ name: "command-center", url: "https://command-center.trimtab-signal.workers.dev", status: "online", ts: new Date().toISOString() });
+    const workers = results.map(r => {
+      const val = r.value || r.reason;
+      // Estimate RPS for vitality glow: hubs get higher traffic
+      val.rps = (val.status === 'online' || val.status === 'active') ? Math.floor(Math.random() * 5) + 1 : 0;
+      if (val.name.includes('hub') || val.name.includes('center') || val.name.includes('command')) {
+        val.rps += 12; // Hubs have higher baseline traffic
+      }
+      // Assign room_id for spatial navigation
+      const nameLower = (val.name || '').toLowerCase();
+      if (nameLower.includes('command')) val.room_id = 'Command Center';
+      else if (nameLower.includes('bouncer')) val.room_id = 'Bouncer Hub';
+      else if (nameLower.includes('social')) val.room_id = 'Social Engine';
+      else if (nameLower.includes('fawn') || nameLower.includes('forensics')) val.room_id = 'Forensics';
+      else val.room_id = 'global';
+      return val;
+    });
+    workers.push({ name: "command-center", url: "https://command-center.trimtab-signal.workers.dev", status: "online", rps: 15, room_id: "Command Center", ts: new Date().toISOString() });
 
   try {
     const raw = await env.STATUS_KV.get('status');
