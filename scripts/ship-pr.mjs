@@ -9,10 +9,20 @@
  * Requires: git, pnpm, GitHub CLI (`gh`) authenticated for this repo.
  */
 import { execSync, spawnSync } from 'node:child_process';
+import { existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
+
+// Prefer GitHub's official CLI over npm's `gh` package (often shadows real `gh` when nvm is first in PATH).
+if (process.platform !== 'win32' && existsSync('/usr/local/bin/gh')) {
+  const sep = ':';
+  const p = process.env.PATH || '';
+  if (!p.split(sep).includes('/usr/local/bin')) {
+    process.env.PATH = `/usr/local/bin${p ? `${sep}${p}` : ''}`;
+  }
+}
 
 const args = process.argv.slice(2);
 const flags = {
