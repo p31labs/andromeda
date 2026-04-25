@@ -29,6 +29,10 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # Second lockfile: 04_SOFTWARE/bonding + nested workspace (must match 04_SOFTWARE/pnpm-lock.yaml)
+      - name: Nested 04_SOFTWARE lockfile in sync
+        run: pnpm install --frozen-lockfile --dir 04_SOFTWARE
+
       - name: Deploy target guard (Pages)
         run: node scripts/enterprise-deploy-guard.mjs
 

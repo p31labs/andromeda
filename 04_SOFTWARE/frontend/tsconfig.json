@@ -12,6 +12,7 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
+    "allowJs": true,
     "jsx": "react-jsx",
 
     /* Linting */
@@ -28,8 +29,8 @@
     "noPropertyAccessFromIndexSignature": true,
     "noUncheckedIndexedAccess": true,
     
-    /* WebGPU types */
-    "types": ["@webgpu/types", "node"],
+    /* WebGPU & React types */
+    "types": ["@webgpu/types", "@types/node", "@types/react", "@types/react-dom"],
     
     /* Path mapping */
     "baseUrl": ".",

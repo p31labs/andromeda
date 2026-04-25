@@ -381,7 +381,7 @@ export function useVoltageSignalProcessor(): typeof useCockpitStore {
   useEffect(() => {
     // Connect to WebSocket bridge on mount
     const connectWebSocket = () => {
-      const wsToken = import.meta.env.VITE_WS_AUTH_TOKEN ?? '';
+      const wsToken = import.meta.env['VITE_WS_AUTH_TOKEN'] ?? '';
       const wsUrl = `ws://localhost:8031/ws${wsToken ? `?token=${wsToken}` : ''}`;
       console.log('🔌 Connecting to P31 WebSocket Bridge at', wsUrl);
 

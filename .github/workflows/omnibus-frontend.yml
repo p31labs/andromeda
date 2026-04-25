@@ -1,0 +1,84 @@
+# Forge 25 omnibus papers → copy .docx via prebuild → Vite build.
+# Run on relevant path changes so PRs get a green check before merge to protected main.
+
+name: Omnibus frontend
+
+on:
+  push:
+    branches: [main, 'feat/**']
+    paths:
+      - '04_SOFTWARE/frontend/**'
+      - '04_SOFTWARE/p31-forge/**'
+      - '04_SOFTWARE/ops/update-dois.js'
+      - '04_SOFTWARE/scripts/forge-omnibus-all.cjs'
+      - '04_SOFTWARE/package.json'
+      - '.github/workflows/omnibus-frontend.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - '04_SOFTWARE/frontend/**'
+      - '04_SOFTWARE/p31-forge/**'
+      - '04_SOFTWARE/ops/update-dois.js'
+      - '04_SOFTWARE/scripts/forge-omnibus-all.cjs'
+      - '04_SOFTWARE/package.json'
+      - '.github/workflows/omnibus-frontend.yml'
+
+concurrency:
+  group: omnibus-frontend-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  build:
+    name: Forge + Vite + DOI health
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      deployments: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: 04_SOFTWARE/frontend/package-lock.json
+
+      - name: Install p31-forge (docx)
+        run: cd 04_SOFTWARE/p31-forge && npm install
+
+      - name: Forge omnibus 25 papers
+        run: node 04_SOFTWARE/scripts/forge-omnibus-all.cjs
+
+      - name: Install frontend
+        run: cd 04_SOFTWARE/frontend && npm ci
+
+      - name: Build frontend
+        run: cd 04_SOFTWARE/frontend && npm run build
+
+      - name: update-dois.js (empty map, exit 0)
+        run: cd 04_SOFTWARE && node ops/update-dois.js
+
+      - name: Upload dist (Pages artifact)
+        uses: actions/upload-artifact@v4
+        with:
+          name: omnibus-frontend-dist
+          path: 04_SOFTWARE/frontend/dist
+          retention-days: 14
+          if-no-files-found: error
+
+      # Production only: PRs and feat/* builds above — do not ship to the edge.
+      - name: Deploy to Cloudflare Pages
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: andromeda-ui
+          directory: 04_SOFTWARE/frontend/dist
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          wranglerVersion: '3'
+          branch: main

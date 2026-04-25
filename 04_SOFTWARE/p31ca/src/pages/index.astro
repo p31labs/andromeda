@@ -66,22 +66,22 @@ const getStatusStyles = (status: string) => {
 
 <BaseLayout title="P31 Labs | Sovereign Cockpit">
   
-  <!-- Import Map for Three.js (Bypasses Vite Bundling for 100% Stability) -->
-  <script type="importmap" is:inline>
-    {
-      "imports": {
-        "three": "https://cdn.jsdelivr.net/npm/three@0.183.0/build/three.module.js",
-        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.183.0/examples/jsm/"
+  <Fragment slot="importmaps">
+    <!-- Import Map for Three.js -->
+    <script type="importmap" is:inline>
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.183.0/build/three.module.js",
+          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.183.0/examples/jsm/"
+        }
       }
-    }
-  </script>
-
-  <!-- 3D Canvas Background -->
-  <div id="webgl-container" class="fixed inset-0 z-0 bg-[#050508]"></div>
+    </script>
+  </Fragment>
   
-  <!-- Ambient Gradients & Vignette -->
-  <div class="fixed inset-0 z-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,#050508_110%)] opacity-90 pointer-events-none"></div>
-  <div class="fixed inset-0 z-0 bg-gradient-to-b from-[#050508]/60 via-transparent to-[#050508]/95 pointer-events-none"></div>
+
+  
+  <!-- 3D Canvas Background -->
+  <div id="webgl-container" class="fixed inset-0 z-5 bg-[#050508]"></div>
 
   <!-- FIXED SOVEREIGN HUD (Top Nav) -->
   <nav class="fixed top-0 left-0 right-0 z-50 glass-panel border-b border-white/10 px-4 py-2 flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-mono text-[#d8d6d0] shadow-[0_4px_30px_rgba(0,0,0,0.5)]">
@@ -134,8 +134,19 @@ const getStatusStyles = (status: string) => {
     </div>
   </nav>
 
-  <!-- FIXED HUD: Node Detail Panel (Hidden until clicked) -->
+  <!-- Node Detail Panel -->
   <aside id="node-detail-panel" class="fixed bottom-6 left-6 z-40 glass-panel p-5 rounded-xl border-t border-l border-white/10 shadow-[0_10px_40px_rgba(0,0,0,0.8)] w-80 transform transition-all duration-300 translate-y-4 opacity-0 pointer-events-none">
+    <button id="node-detail-close" class="absolute top-4 right-4 text-[#6b7280] hover:text-white transition-colors pointer-events-auto">✕</button>
+    <div class="text-[#4db8a8] font-bold text-lg mb-1" id="nd-title">Node Name</div>
+    <div class="flex items-center gap-3 text-[10px] font-mono mb-4 pb-3 border-b border-white/10">
+      <span id="nd-axis" class="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-white/70">Axis</span>
+      <span id="nd-state" class="px-2 py-0.5 rounded border">State</span>
+      <span id="nd-bus" class="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-white/70">Bus</span>
+    </div>
+    <div id="nd-notes" class="text-sm text-[#d8d6d0] mb-4 leading-relaxed font-sans">Node description goes here.</div>
+    <div class="text-[10px] font-mono text-[#6b7280] mb-2 uppercase tracking-widest">Entangled Edges</div>
+    <div id="nd-conns" class="flex flex-wrap gap-2 pointer-events-auto"></div>
+  </aside>
     <button id="node-detail-close" class="absolute top-4 right-4 text-[#6b7280] hover:text-white transition-colors pointer-events-auto">✕</button>
     <div class="text-[#4db8a8] font-bold text-lg mb-1" id="nd-title">Node Name</div>
     <div class="flex items-center gap-3 text-[10px] font-mono mb-4 pb-3 border-b border-white/10">
@@ -327,6 +338,9 @@ const getStatusStyles = (status: string) => {
   import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
   import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
   import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+
+  // Wait for DOM to be fully loaded before doing anything
+  document.addEventListener('DOMContentLoaded', () => {
 
   // ================================================================
   // 1. TELEMETRY & HUD STATE
@@ -522,19 +536,21 @@ const getStatusStyles = (status: string) => {
   // ================================================================
   const container = $('webgl-container');
   const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 200);
-  camera.position.set(0, 1.5, 7.5);
+  scene.background = new THREE.Color(0x050508);
+  const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 200);
+  camera.position.set(0, 1.5, 13);
 
-  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.setClearColor(0x050508, 1);
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
   container.appendChild(renderer.domElement);
 
-  // Post Processing - landing page optimized
+  // Post Processing - EXACT MATCH to /dome
   const composer = new EffectComposer(renderer);
   composer.addPass(new RenderPass(scene, camera));
-  const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth / 2, window.innerHeight / 2), 0.2, 0.2, 0.5);
+  const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 0.6, 0.4, 0.6);
   composer.addPass(bloomPass);
   composer.addPass(new OutputPass());
 
@@ -599,10 +615,46 @@ const getStatusStyles = (status: string) => {
     return { verts, edges, faces: gFaces };
   }
 
-  const RADIUS = 3.0;
+  const RADIUS = 3.5;
   const geo = buildGeo(RADIUS, 2);
+  const geoOuter = buildGeo(RADIUS * 1.08, 1);
+  const geoInner = buildGeo(RADIUS * 0.92, 2);
   const faceMeshes = [];
   const nodeToFace = new Map();
+
+  // Outer shell wireframe
+  const oPos = [];
+  for(let i=0; i<geoOuter.edges.length; i++) {
+    const [a,b] = geoOuter.edges[i];
+    oPos.push(geoOuter.verts[a].x, geoOuter.verts[a].y, geoOuter.verts[a].z);
+    oPos.push(geoOuter.verts[b].x, geoOuter.verts[b].y, geoOuter.verts[b].z);
+  }
+  const oGeo = new THREE.BufferGeometry();
+  oGeo.setAttribute('position', new THREE.Float32BufferAttribute(oPos, 3));
+  const oMat = new THREE.LineBasicMaterial({ color: 0x1a3040, transparent: true, opacity: 0.3 });
+  const outerShell = new THREE.LineSegments(oGeo, oMat);
+
+  // Inner shell
+  const iMat = new THREE.MeshPhysicalMaterial({
+    color: 0x080810,
+    roughness: 0.1,
+    metalness: 0.0,
+    transmission: 0.9,
+    thickness: 0.3,
+    transparent: true,
+    opacity: 0.3,
+    side: THREE.DoubleSide
+  });
+  const innerShell = new THREE.Group();
+  for(let i=0; i<geoInner.faces.length; i++) {
+    const f = geoInner.faces[i];
+    const [a,b,c] = f.indices;
+    const va = geoInner.verts[a], vb = geoInner.verts[b], vc = geoInner.verts[c];
+    const tGeo = new THREE.BufferGeometry();
+    tGeo.setAttribute('position', new THREE.Float32BufferAttribute([va.x,va.y,va.z, vb.x,vb.y,vb.z, vc.x,vc.y,vc.z], 3));
+    tGeo.computeVertexNormals();
+    innerShell.add(new THREE.Mesh(tGeo, iMat.clone()));
+  }
 
   // Assign nodes
   const sorted = Object.entries(VERTICES).map(([id,d])=>({id, label:d[0], a:d[1], b:d[2], c:d[3], d:d[4], state:d[5], bus:d[6], notes:d[7], dir:nodeDir(d[1],d[2],d[3],d[4]), p:d[5]==='countdown'?0:1})).sort((x,y)=>x.p-y.p);
@@ -618,38 +670,175 @@ const getStatusStyles = (status: string) => {
   const wPos=[], eProg=[];
   for(let i=0; i<geo.edges.length; i++) { const [a,b]=geo.edges[i]; wPos.push(geo.verts[a].x, geo.verts[a].y, geo.verts[a].z, geo.verts[b].x, geo.verts[b].y, geo.verts[b].z); eProg.push(i/geo.edges.length, i/geo.edges.length); }
   const wGeo=new THREE.BufferGeometry(); wGeo.setAttribute('position', new THREE.Float32BufferAttribute(wPos, 3)); wGeo.setAttribute('edgeProgress', new THREE.Float32BufferAttribute(eProg, 1));
-  const wMat=new THREE.ShaderMaterial({ uniforms:{uTime:{value:0}}, vertexShader:`attribute float edgeProgress; varying float vP; void main(){vP=edgeProgress; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`, fragmentShader:`uniform float uTime; varying float vP; void main(){ float p=smoothstep(0.,0.05,fract(vP-uTime*0.08))*(1.-smoothstep(0.05,0.1,fract(vP-uTime*0.08))); gl_FragColor=vec4(0.1,0.18,0.28,0.18+p*0.55); }`, transparent:true, depthWrite:false });
+  const wMat=new THREE.ShaderMaterial({ 
+    uniforms:{uTime:{value:0}}, 
+    vertexShader:`attribute float edgeProgress; varying float vP; void main(){vP=edgeProgress; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`, 
+    fragmentShader:`
+      uniform float uTime; 
+      varying float vP; 
+      void main(){ 
+        float p=smoothstep(0.,0.05,fract(vP-uTime*0.12))*(1.-smoothstep(0.05,0.15,fract(vP-uTime*0.12))); 
+        float shimmer = 0.3 + 0.7 * sin(uTime * 3.0 + vP * 10.0) * 0.5;
+        gl_FragColor=vec4(0.15,0.35,0.45,0.3 + p * 0.7) * shimmer; 
+      }
+    `, 
+    transparent:true, 
+    depthWrite:false 
+  });
   scene.add(new THREE.LineSegments(wGeo, wMat));
 
-  // Draw faces
+  // Draw faces - EXACT 3D TETRAHEDRAL BLOCKS FROM /dome
   const domeGroup = new THREE.Group();
   for(let i=0; i<geo.faces.length; i++) {
     const f=geo.faces[i], a=f.assignment, [ai,bi,ci]=f.indices;
-    const va=geo.verts[ai].clone().multiplyScalar(0.92), vb=geo.verts[bi].clone().multiplyScalar(0.92), vc=geo.verts[ci].clone().multiplyScalar(0.92);
+
+    const va=geo.verts[ai].clone();
+    const vb=geo.verts[bi].clone();
+    const vc=geo.verts[ci].clone();
     const cent = new THREE.Vector3().add(va).add(vb).add(vc).divideScalar(3);
-    va.lerp(cent, 0.12); vb.lerp(cent, 0.12); vc.lerp(cent, 0.12);
-    const tGeo=new THREE.BufferGeometry(); tGeo.setAttribute('position', new THREE.Float32BufferAttribute([va.x,va.y,va.z,vb.x,vb.y,vb.z,vc.x,vc.y,vc.z],3)); tGeo.computeVertexNormals();
-    
+
+    // Shrink outer face towards centroid to create gaps
+    const gap = 0.08;
+    va.lerp(cent, gap);
+    vb.lerp(cent, gap);
+    vc.lerp(cent, gap);
+
+    // Inner vertex to create the 3D block volume (points inward to core)
+    const vd = cent.clone().multiplyScalar(0.85);
+
+    const tGeo = new THREE.BufferGeometry();
+    const vertices = new Float32Array([
+      // Outer face
+      va.x,va.y,va.z, vb.x,vb.y,vb.z, vc.x,vc.y,vc.z,
+      // Side 1
+      va.x,va.y,va.z, vc.x,vc.y,vc.z, vd.x,vd.y,vd.z,
+      // Side 2
+      vc.x,vc.y,vc.z, vb.x,vb.y,vb.z, vd.x,vd.y,vd.z,
+      // Side 3
+      vb.x,vb.y,vb.z, va.x,va.y,va.z, vd.x,vd.y,vd.z
+    ]);
+    tGeo.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
+    tGeo.computeVertexNormals();
+
     let mat;
     if(a) {
-      const hot=a.glow>=1.2;
-      mat=new THREE.MeshPhysicalMaterial({ color:a.color, emissive:a.color.clone().multiplyScalar(hot?0.6:0.25*a.glow), emissiveIntensity:hot?2.5*a.glow:1.4, roughness:0.02, metalness:0.3, transmission:0.1, thickness:0.5, side:THREE.DoubleSide, transparent:true, opacity:0.92, toneMapped:!hot });
+      const hot=a.glow>=1.0;
+      mat=new THREE.MeshPhysicalMaterial({
+        color: a.color,
+        emissive: a.color.clone().multiplyScalar(hot?0.6:0.3),
+        emissiveIntensity: hot?3.0:1.2,
+        roughness: 0.08,
+        metalness: 0.3,
+        transmission: 0.6,
+        thickness: 0.8,
+        transparent: true,
+        opacity: 0.85,
+        side: THREE.FrontSide,
+        polygonOffset: true,
+        polygonOffsetFactor: 1
+      });
     } else {
-      mat=new THREE.MeshPhysicalMaterial({ color:0x050508, emissive:0x000000, roughness:0.01, metalness:0.1, transmission:0.3, thickness:0.2, side:THREE.DoubleSide, transparent:true, opacity:0.15 });
+      mat=new THREE.MeshPhysicalMaterial({
+        color: 0x050508,
+        emissive: 0x000000,
+        roughness: 0.1,
+        metalness: 0.1,
+        transmission: 0.7,
+        thickness: 0.5,
+        transparent: true,
+        opacity: 0.3,
+        side: THREE.FrontSide,
+        polygonOffset: true,
+        polygonOffsetFactor: 1
+      });
     }
-    const mesh=new THREE.Mesh(tGeo, mat); mesh.userData = { a };
-    domeGroup.add(mesh); faceMeshes.push(mesh);
+
+    const mesh=new THREE.Mesh(tGeo, mat);
+    mesh.userData = { a, centroidDir: cent.clone().normalize() };
+
+    // Edge definitions attached to each block
+    const edgeGeo = new THREE.EdgesGeometry(tGeo);
+    const edgeMat = new THREE.LineBasicMaterial({
+      color: a ? a.color : 0x223344,
+      transparent: true,
+      opacity: a ? 0.4 : 0.15
+    });
+    const edges = new THREE.LineSegments(edgeGeo, edgeMat);
+    
+    domeGroup.add(mesh);
+    domeGroup.add(edges);
+    faceMeshes.push(mesh);
   }
+  // Add layered shells
+  domeGroup.add(outerShell);
+  domeGroup.add(innerShell);
   scene.add(domeGroup);
 
-  // Landing page dome - pure geometry only, no particles
-  // Deep black background, dome only for maximum contrast and performance
+  // Base Ring Frame - always visible
+  const baseGeo = new THREE.BufferGeometry();
+  const basePoints = [];
+  for(let i=0; i<geo.verts.length; i++) {
+    if(geo.verts[i].y < 0.1) { // only lower hemisphere vertices
+      basePoints.push(geo.verts[i].x, -0.3, geo.verts[i].z);
+      basePoints.push(0, -0.3, 0);
+    }
+  }
+  baseGeo.setAttribute('position', new THREE.Float32BufferAttribute(basePoints, 3));
+  const baseMat = new THREE.LineBasicMaterial({ color: 0x225566, opacity: 0.7, transparent: true });
+  const baseFrame = new THREE.LineSegments(baseGeo, baseMat);
+  scene.add(baseFrame);
 
-  // Landing page: Disable raycaster interaction to save CPU
-  // Dome is purely decorative on landing page. Full interaction is on dedicated /dome.html
+  // Deep Molecular Soup - EXACT 1:1 COPY FROM DOME
+  const pCount = 12000;
+  const pGeo = new THREE.BufferGeometry();
+  const pPos = new Float32Array(pCount*3), pSiz = new Float32Array(pCount), pCol = new Float32Array(pCount*3);
+  for(let i=0; i<pCount; i++) {
+    const r=4+Math.random()*30, th=Math.random()*Math.PI*2, ph=Math.acos(2*Math.random()-1);
+    pPos[i*3]=r*Math.sin(ph)*Math.cos(th); pPos[i*3+1]=r*Math.sin(ph)*Math.sin(th); pPos[i*3+2]=r*Math.cos(ph);
+    pSiz[i]=0.01+Math.random()*0.04;
+    const cBase = r>15 ? 0x15151a : 0x1a201f;
+    pCol[i*3]=(cBase>>16)/255; pCol[i*3+1]=((cBase>>8)&0xff)/255; pCol[i*3+2]=(cBase&0xff)/255;
+  }
+  pGeo.setAttribute('position', new THREE.BufferAttribute(pPos,3));
+  pGeo.setAttribute('size', new THREE.BufferAttribute(pSiz,1));
+  pGeo.setAttribute('color', new THREE.BufferAttribute(pCol,3));
 
-  document.getElementById('btn-explore-dome').addEventListener('click', () => {
-    window.location.href = '/dome';
+  const pMat = new THREE.PointsMaterial({ color:0xffffff, vertexColors:true, size:0.03, transparent:true, opacity:0.5, sizeAttenuation:true, depthWrite:false });
+  const molField = new THREE.Points(pGeo, pMat);
+  scene.add(molField);
+
+  // Raycaster setup
+  container.addEventListener('mousemove', (e) => {
+    const rect = container.getBoundingClientRect();
+    mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+    mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+  });
+
+  container.addEventListener('click', () => {
+    if (hoveredFace && hoveredFace.userData.a) {
+      selectedNode = hoveredFace.userData.a;
+      
+      // Populate panel
+      $('nd-title').innerText = selectedNode.node.label;
+      $('nd-axis').innerText = getDominantAxis(selectedNode.node.a, selectedNode.node.b, selectedNode.node.c, selectedNode.node.d).toUpperCase();
+      $('nd-state').innerText = selectedNode.node.state.toUpperCase();
+      $('nd-state').style.color = STATE_CSS[selectedNode.node.state];
+      $('nd-bus').innerText = selectedNode.node.bus?.toUpperCase() || 'MAIN';
+      $('nd-notes').innerText = selectedNode.node.notes || 'No description';
+      
+      // Show connections
+      const conns = edgeMap.get(selectedNode.node.id) || [];
+      $('nd-conns').innerHTML = conns.map(c => `<span class="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-[10px]">${VERTICES[c.id]?.[0] || c.id}</span>`).join('');
+      
+      // Show panel
+      panel.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
+    }
+  });
+
+  $('node-detail-close').addEventListener('click', (e) => {
+    e.stopPropagation();
+    selectedNode = null;
+    panel.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none');
   });
 
   let time = 0;
@@ -673,15 +862,36 @@ const getStatusStyles = (status: string) => {
     
     const dt = 0.016; time += 0.002;
     
-    // Auto-rotate dome slowly to feel alive
-    domeGroup.rotation.y += 0.0003;
-    domeGroup.rotation.x = Math.sin(time) * 0.02;
+
+    
+    // Auto-rotate - EXACT SPEED FROM DOME
+    domeGroup.rotation.y += 0.0008;
+    domeGroup.rotation.x = Math.sin(time) * 0.05;
+    
+    // Particle rotation - EXACT FROM DOME
+    molField.rotation.y += 0.0003;
+    molField.rotation.x += Math.sin(time*0.3) * 0.0001;
 
     wMat.uniforms.uTime.value += dt;
 
-    // Dome pulse
-    const breath = 1.0 + 0.005 * Math.sin(time * 1.5); // Smaller pulse
-    for(const m of faceMeshes) m.scale.setScalar(breath);
+    // Dome pulse - EXACT FROM /dome
+    const breath = 1.0 + 0.005 * Math.sin(time * 1.5);
+
+    for(const m of faceMeshes) {
+      // Block insertion animation
+      if(!m.userData.insertProgress) m.userData.insertProgress = Math.random() * 0.3;
+      if(!m.userData.insertTarget) m.userData.insertTarget = 1.0;
+      
+      m.userData.insertProgress += (m.userData.insertTarget - m.userData.insertProgress) * 0.08;
+      const insertOffset = (1.0 - m.userData.insertProgress) * 1.5;
+
+      // Organic floating per block
+      const floatOffset = Math.sin(time * 2.5 + Math.random() * 10) * 0.04;
+      m.position.copy(m.userData.centroidDir).multiplyScalar(floatOffset + insertOffset);
+
+      m.scale.setScalar(breath);
+      m.material.opacity = 0.3 + m.userData.insertProgress * 0.6;
+    }
 
     composer.render();
   }
@@ -694,4 +904,13 @@ const getStatusStyles = (status: string) => {
     composer.setSize(window.innerWidth, window.innerHeight);
     bloomPass.resolution.set(window.innerWidth, window.innerHeight);
   });
+  
+  // Fix button handler (DOM now fully loaded)
+  const domeBtn = document.getElementById('btn-explore-dome');
+  if (domeBtn) {
+    domeBtn.addEventListener('click', () => {
+      window.location.href = '/dome';
+    });
+  }
+});
 </script>

@@ -27,11 +27,29 @@
 export interface Env {
   DB: D1Database;
   TELEMETRY_KV: KVNamespace;
+  SPOONS_KV: KVNamespace;
   DISCORD_WEBHOOK_URL?: string;
   GENESIS_GATE_URL?: string;
 }
 
-// R09: Emit event to Genesis Gate — fire-and-forget, never throws
+: Promise<void>;
+
+function getQFactor(spoonCount: number): number {
+  // Default qFactor based on spoon deficit with hysteresis
+  const defaultQFactor = 0.925;
+  
+  // Calculate variance-based adjustment based on spoon count
+  // Lower spoons = higher variance = lower qFactor
+  if (spoonCount <= 0) return 0.5; // Critical low spoons
+  if (spoonCount >= 20) return 1.0; // Full capacity
+  
+  // Exponential decay based on spoon deficit
+  const deficitRatio = (20 - spoonCount) / 20;
+  const varianceFactor = Math.exp(-3 * deficitRatio);
+  
+  return defaultQFactor * varianceFactor;
+}
+
 function emitToGenesis(env: Env, type: string, payload: Record<string, unknown>): void {
   const url = (env.GENESIS_GATE_URL ?? 'https://genesis.p31ca.org') + '/event';
   fetch(url, {
@@ -45,6 +63,32 @@ function emitToGenesis(env: Env, type: string, payload: Record<string, unknown>)
       session_id: 'relay-' + Math.random().toString(36).slice(2, 8),
     }),
   }).catch(() => { /* never block */ });
+}
+
+async function publishSpoonsUpdate(env: Env, sessionId: string, spoonCount: number): Promise<void> {
+  const qFactor = getQFactor(spoonCount);
+  const url = (env.GENESIS_GATE_URL ?? 'https://genesis.p31ca.org') + '/event';
+  
+  try {
+    await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        source: 'bonding-relay',
+        type: 'spoons:update',
+        payload: {
+          sessionId,
+          spoons: spoonCount,
+          qFactor,
+          timestamp: new Date().toISOString(),
+        },
+        timestamp: new Date().toISOString(),
+        session_id: 'relay-' + Math.random().toString(36).slice(2, 8),
+      }),
+    });
+  } catch {
+    // never block
+  }
 }
 
 // ── CORS ──
@@ -210,6 +254,9 @@ async function handleTelemetryFlush(req: Request, env: Env): Promise<Response> {
     }
   }
 
+  // Publish spoons update with qFactor
+  await publishSpoonsUpdate(env, sessionId, merged.length);
+
   return corsResponse(JSON.stringify({ ok: true, received: events.length }));
 }
 
@@ -249,14 +296,13 @@ async function handleTelemetrySeal(req: Request, env: Env, reqObj: Request): Pro
 
   await env.TELEMETRY_KV.put(sealKey(sessionId), JSON.stringify(seal), { expirationTtl: 365 * 86400 });
 
-  // Also persist final event list
-  await env.TELEMETRY_KV.put(sessionDataKey(sessionId), JSON.stringify(entries), { expirationTtl: 365 * 86400 });
+    // Also persist final event list
+    await env.TELEMETRY_KV.put(sessionDataKey(sessionId), JSON.stringify(entries), { expirationTtl: 365 * 86400 });
 
-  if (roomCode) {
-    await env.TELEMETRY_KV.put(sessionRoomKey(roomCode, sessionId), sessionId, { expirationTtl: 365 * 86400 });
-  }
+    // Publish spoons update with qFactor on seal as well
+    await publishSpoonsUpdate(env, sessionId, entries.length);
 
-  return corsResponse(JSON.stringify({ ok: true, serverVerified, serverHash }));
+    return corsResponse(JSON.stringify({ ok: true, serverVerified, serverHash }));
 }
 
 // POST /telemetry/orphan — recover events from a killed session (NEW)

@@ -6,10 +6,14 @@
 
 export const S_MAX = 20
 export const FRICTION_COEFFICIENT = 1.5
+export const CARE_SCORE_MODIFIER = 0.3
 export const EPSILON = 0.1
 export const HYSTERESIS = 0.5
 export const MAX_ACTIONS_PER_HOUR_BASE = 12
 export const DEFENSIVE_CRITICAL_PRIORITY = 10
+export const IMPLICIT_APPROVAL_MIN_SPOONS = 12
+export const IMPLICIT_APPROVAL_MIN_Q_FACTOR = 0.85
+export const IMPLICIT_APPROVAL_MIN_ACTIVE_MINUTES = 5
 
 export const GUARDRAIL_LEVELS = Object.freeze([
   { 
@@ -102,6 +106,11 @@ export function calculateCurrentLevel(currentSpoons, previousLevel = 4) {
 export function evaluateGuardrails(action, currentState) {
   const spoons = currentState.spoons
   const { safetyLevel, priority, baseDelayMs } = action
+  
+  // Extract mesh state variables
+  const careScore = currentState.careScore || 0.5
+  const qFactor = currentState.qFactor || 0.0
+  const activeMinutes = currentState.activeMinutes || 0
 
   // 1. Emergency bypass for critical actions
   if (priority === DEFENSIVE_CRITICAL_PRIORITY) {
@@ -120,8 +129,19 @@ export function evaluateGuardrails(action, currentState) {
   else if (spoons <= 10) lMax = 2
   else if (spoons <= 15) lMax = 3
 
-  // 3. Safety level gate check
-  if (safetyLevel > lMax) {
+  // 3. Safety level gate check with implicit approval
+  let requiresManual = safetyLevel > lMax
+
+  // Implicit approval override for Level 3 actions
+  if (safetyLevel === 3 && 
+      spoons >= IMPLICIT_APPROVAL_MIN_SPOONS && 
+      qFactor >= IMPLICIT_APPROVAL_MIN_Q_FACTOR &&
+      activeMinutes >= IMPLICIT_APPROVAL_MIN_ACTIVE_MINUTES) {
+    requiresManual = false
+    lMax = Math.max(lMax, 3)
+  }
+
+  if (requiresManual) {
     return { 
       approved: false, 
       delayMs: 0, 
@@ -130,9 +150,10 @@ export function evaluateGuardrails(action, currentState) {
     }
   }
 
-  // 4. Exponential time dilation calculation
+  // 4. Exponential time dilation calculation with care score modification
   const depletionRatio = (S_MAX - spoons) / (spoons + EPSILON)
-  const dilationFactor = Math.exp(FRICTION_COEFFICIENT * depletionRatio)
+  const adjustedFriction = FRICTION_COEFFICIENT * (1 - (careScore * CARE_SCORE_MODIFIER))
+  const dilationFactor = Math.exp(adjustedFriction * depletionRatio)
   const executionDelay = baseDelayMs * dilationFactor * (1 / priority)
 
   return {
@@ -140,6 +161,8 @@ export function evaluateGuardrails(action, currentState) {
     delayMs: Math.round(executionDelay),
     requiresManual: false,
     dilationFactor: dilationFactor.toFixed(2),
+    adjustedFriction: adjustedFriction.toFixed(3),
+    careScore: careScore,
     reason: `Approved with ${Math.round(executionDelay/60000)} minute delay`
   }
 }

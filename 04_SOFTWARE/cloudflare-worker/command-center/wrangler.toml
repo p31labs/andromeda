@@ -7,6 +7,27 @@ compatibility_date = "2026-04-13"
 binding = "STATUS_KV"
 id = "ff890e80e7e64ae8b8afb59870f1a0f6"
 
+[[d1_databases]]
+binding = "EPCP_DB"
+database_name = "epcp-audit"
+database_id = "12ce6570-839e-431d-a14d-bb6002dc89e8"
+
+[[r2_buckets]]
+binding = "FORENSICS_HOT"
+bucket_name = "p31-epcp-forensics-hot"
+
+[[r2_buckets]]
+binding = "FORENSICS_COLD"
+bucket_name = "p31-epcp-forensics-cold"
+
+[[r2_buckets]]
+binding = "ARTIFACTS"
+bucket_name = "p31-epcp-artifacts"
+
+[[r2_buckets]]
+binding = "AUDIT_EXPORTS"
+bucket_name = "p31-epcp-audit-exports"
+
 [triggers]
 crons = ["*/5 * * * *"]
 
@@ -14,5 +35,7 @@ crons = ["*/5 * * * *"]
 ENVIRONMENT = "production"
 # Public account id (same as Cloudflare dashboard URL)
 CF_ACCOUNT_ID = "ee05f70c889cb6f876b9925257e3a2fa"
+# Team domain for Cloudflare Access JWT validation
+CF_TEAM_DOMAIN = "trimtab-signal"
 # STATUS_TOKEN: set via `wrangler secret put STATUS_TOKEN`
 # CF_API_TOKEN: set via `wrangler secret put CF_API_TOKEN` — see CLOUD_HUB.md

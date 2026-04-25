@@ -18,12 +18,27 @@ const {
 ---
 
 <!doctype html>
-<html lang="en" class="dark">
+<html lang="en" data-i18n-lang="en" class="dark">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content={description} />
-    <meta name="theme-color" content="#050505" />
+    <!-- CRITICAL: UNREGISTER OLD HEARING OPS SERVICE WORKER FIRST THING -->
+    <script is:inline>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function (regs) {
+          regs.forEach(function (reg) {
+            reg.unregister();
+          });
+        });
+        // Hard reload if service worker was active
+        if (navigator.serviceWorker.controller) {
+          window.location.reload(true);
+        }
+      }
+    </script>
+    
+     <meta charset="utf-8" />
+     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+     <meta name="description" content={description} />
+     <meta name="theme-color" content="#050505" />
 
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -37,6 +52,9 @@ const {
     />
 
     <title>{title}</title>
+    
+    <!-- External import maps go here -->
+    <slot name="importmaps" />
   </head>
   <body class="bg-void min-h-screen text-white/85 font-sans antialiased">
     <!-- Ambient grid background -->
@@ -47,19 +65,5 @@ const {
     </div>
 
     <slot />
-    <!--
-      If another app (e.g. Hearing Ops PWA) was ever deployed to the same Pages project + domain,
-      browsers may keep a service worker that serves the wrong shell. Hub is static Astro — no hub SW.
-      Unregister so the current deployment’s HTML is what users see.
-    -->
-    <script is:inline>
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.getRegistrations().then(function (regs) {
-          regs.forEach(function (reg) {
-            reg.unregister();
-          });
-        });
-      }
-    </script>
   </body>
 </html>

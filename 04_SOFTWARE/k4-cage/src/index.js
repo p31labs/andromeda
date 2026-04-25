@@ -578,25 +578,45 @@ export default {
         return new Response(r.body, { status: r.status, headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' } });
       }
 
-      const pMatch = path.match(/^\/api\/presence\/(\w+)$/);
-      if (pMatch && method === 'POST') {
-        const r = await topologyFetch(request, env, `/api/presence/${pMatch[1]}`, 'POST');
-        const out = await r.text();
-        if (r.ok && env.FAMILY_MESH_ROOM) {
-          try {
-            const body = JSON.parse(out);
-            await broadcastPingToRooms(env, {
-              type: 'presence',
-              vertex: pMatch[1],
-              vertexRecord: body.vertex,
-              ts: Date.now(),
-            });
-          } catch {
-            /* ignore */
-          }
-        }
-        return new Response(out, { status: r.status, headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' } });
-      }
+       const pMatch = path.match(/^\/api\/presence\/(\w+)$/);
+       if (pMatch && method === 'POST') {
+         const r = await topologyFetch(request, env, `/api/presence/${pMatch[1]}`, 'POST');
+         const out = await r.text();
+         if (r.ok && env.FAMILY_MESH_ROOM) {
+           try {
+             const body = JSON.parse(out);
+             await broadcastPingToRooms(env, {
+               type: 'presence',
+               vertex: pMatch[1],
+               vertexRecord: body.vertex,
+               ts: Date.now(),
+             });
+           } catch {
+             /* ignore */
+           }
+         }
+
+         // Forward presence event to orchestrator webhook
+         if (r.ok && env.ORCHESTRATOR_WEBHOOK) {
+           try {
+             const body = JSON.parse(out);
+             await fetch(env.ORCHESTRATOR_WEBHOOK, {
+               method: 'POST',
+               headers: { 'Content-Type': 'application/json' },
+               body: JSON.stringify({
+                 type: 'presence',
+                 vertex: pMatch[1],
+                 vertexRecord: body.vertex,
+                 ts: Date.now()
+               })
+             }).catch(() => { /* optional, non-fatal */ });
+           } catch {
+             /* ignore */
+           }
+         }
+
+         return new Response(out, { status: r.status, headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' } });
+       }
 
       const pingMatch = path.match(/^\/api\/ping\/(\w+)\/(\w+)$/);
       if (pingMatch && method === 'POST') {

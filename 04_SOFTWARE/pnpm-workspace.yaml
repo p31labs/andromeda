@@ -1,6 +1,7 @@
 packages:
   - 'bonding'
   - 'spaceship-earth'
+  - 'workers'
   - 'packages/*'
   - 'extensions/*'
 

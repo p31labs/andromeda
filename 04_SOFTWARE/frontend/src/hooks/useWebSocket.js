@@ -1,298 +1,334 @@
+import { useEffect, useRef, useCallback, useState } from 'react';
+import { MeshClient } from '../api/mesh-client';
+
 /**
- * useWebSocket — Manages backend WS connection with robust reconnection,
- * message queuing, heartbeat, and connection state tracking
+ * useWebSocket Hook
+ * Manages WebSocket connection for real-time messaging
+ * 
+ * Features:
+ * - Auto-reconnection with exponential backoff
+ * - Event subscription system
+ * - Connection state tracking
+ * - Typing debouncing
+ * - Heartbeat/ping-pong
  */
 
-import { useRef, useState, useEffect, useCallback } from 'react';
-import { WS_URL, SEED_NODES, SPOON_BASELINE } from '../constants.js';
-
-// Reconnection configuration
-const BASE_RECONNECT_DELAY = 1000;
-const MAX_RECONNECT_DELAY = 30000;
-const MAX_RECONNECT_ATTEMPTS = 20;
-
-// Heartbeat configuration
-const HEARTBEAT_INTERVAL = 30000;
-const HEARTBEAT_TIMEOUT = 10000;
-
-// Message queue configuration
-const MAX_QUEUE_SIZE = 100;
-const MESSAGE_TTL = 60000; // 1 minute
-
-export default function useWebSocket() {
-  const nodesRef = useRef([...SEED_NODES]);
-  const voltageMapRef = useRef({}); // nodeId -> { composite, urgency, emotional, cognitive }
-  const activityRef = useRef([]);   // [{ id, axis, content, voltage, timestamp }]
-
-  const [connected, setConnected] = useState(false);
-  const [connectionState, setConnectionState] = useState('disconnected'); // disconnected, connecting, connected, reconnecting
-  const [spoonCount, setSpoonCount] = useState(SPOON_BASELINE);
-  const [nodeCount, setNodeCount] = useState(SEED_NODES.length);
-  const [activity, setActivity] = useState([]);
-  const [reconnectAttempt, setReconnectAttempt] = useState(0);
-  const [queuedMessageCount, setQueuedMessageCount] = useState(0);
-
-  // Refs for connection management
+export function useWebSocket(userId, options = {}) {
+  const [isConnected, setIsConnected] = useState(false);
+  const [connectionError, setConnectionError] = useState(null);
+  const [lastPong, setLastPong] = useState(null);
+  
+  const clientRef = useRef(null);
   const wsRef = useRef(null);
-  const reconnectAttemptRef = useRef(0);
-  const messageQueueRef = useRef([]);
-  const heartbeatIntervalRef = useRef(null);
-  const heartbeatTimeoutRef = useRef(null);
+  const handlersRef = useRef(new Map());
+  const pingIntervalRef = useRef(null);
+  const reconnectTimeoutRef = useRef(null);
 
-  // Exposed so App can call it after adding nodes
-  const onNodeAdded = useRef(null);
-
-  // Send message with queuing support
-  const sendMessage = useCallback((message) => {
-    const ws = wsRef.current;
-
-    if (ws && ws.readyState === WebSocket.OPEN) {
-      try {
-        ws.send(JSON.stringify(message));
-        return { sent: true, queued: false };
-      } catch (e) {
-        console.error('WS send error:', e);
-      }
-    }
-
-    // Queue message for later delivery
-    if (messageQueueRef.current.length < MAX_QUEUE_SIZE) {
-      messageQueueRef.current.push({
-        message,
-        timestamp: Date.now(),
-        retries: 0,
-      });
-      setQueuedMessageCount(messageQueueRef.current.length);
-      return { sent: false, queued: true };
-    }
-
-    return { sent: false, queued: false, error: 'Queue full' };
-  }, []);
-
-  // Flush queued messages on reconnect
-  const flushMessageQueue = useCallback((ws) => {
-    const now = Date.now();
-    const validMessages = messageQueueRef.current.filter(
-      item => now - item.timestamp < MESSAGE_TTL
-    );
-
-    let sent = 0;
-    for (const item of validMessages) {
-      try {
-        ws.send(JSON.stringify(item.message));
-        sent++;
-      } catch (e) {
-        console.error('Failed to flush queued message:', e);
-        break;
-      }
-    }
-
-    messageQueueRef.current = [];
-    setQueuedMessageCount(0);
-
-    if (sent > 0) {
-      console.log(`[WS] Flushed ${sent} queued messages`);
-    }
-  }, []);
-
-  // Start heartbeat mechanism
-  const startHeartbeat = useCallback((ws) => {
-    // Clear any existing heartbeat
-    if (heartbeatIntervalRef.current) {
-      clearInterval(heartbeatIntervalRef.current);
-    }
-    if (heartbeatTimeoutRef.current) {
-      clearTimeout(heartbeatTimeoutRef.current);
-    }
-
-    heartbeatIntervalRef.current = setInterval(() => {
-      if (ws.readyState === WebSocket.OPEN) {
-        ws.send(JSON.stringify({ type: 'heartbeat', timestamp: Date.now() }));
-
-        // Set timeout for heartbeat response
-        heartbeatTimeoutRef.current = setTimeout(() => {
-          console.warn('[WS] Heartbeat timeout - closing stale connection');
-          ws.close();
-        }, HEARTBEAT_TIMEOUT);
-      }
-    }, HEARTBEAT_INTERVAL);
-  }, []);
-
-  // Stop heartbeat mechanism
-  const stopHeartbeat = useCallback(() => {
-    if (heartbeatIntervalRef.current) {
-      clearInterval(heartbeatIntervalRef.current);
-      heartbeatIntervalRef.current = null;
-    }
-    if (heartbeatTimeoutRef.current) {
-      clearTimeout(heartbeatTimeoutRef.current);
-      heartbeatTimeoutRef.current = null;
-    }
-  }, []);
-
-  // Calculate reconnect delay with exponential backoff and jitter
-  const getReconnectDelay = useCallback((attempt) => {
-    const exponentialDelay = BASE_RECONNECT_DELAY * Math.pow(2, attempt);
-    const jitter = Math.random() * 1000; // Add up to 1s jitter
-    return Math.min(exponentialDelay + jitter, MAX_RECONNECT_DELAY);
-  }, []);
-
+  // Initialize client
   useEffect(() => {
-    let reconnectTimer;
-    let intentionalClose = false;
+    if (!userId) return;
 
-    function connect() {
-      // Check max attempts
-      if (reconnectAttemptRef.current >= MAX_RECONNECT_ATTEMPTS) {
-        console.error('[WS] Max reconnection attempts reached');
-        setConnectionState('disconnected');
-        return;
-      }
-
-      try {
-        setConnectionState(reconnectAttemptRef.current > 0 ? 'reconnecting' : 'connecting');
-        const ws = new WebSocket(WS_URL);
-        wsRef.current = ws;
-
-        ws.onopen = () => {
-          console.log('[WS] Connected to buffer agent');
-          setConnected(true);
-          setConnectionState('connected');
-          reconnectAttemptRef.current = 0;
-          setReconnectAttempt(0);
-
-          // Start heartbeat
-          startHeartbeat(ws);
-
-          // Flush any queued messages
-          flushMessageQueue(ws);
-        };
-
-        ws.onmessage = (event) => {
-          try {
-            const msg = JSON.parse(event.data);
-
-            // Handle heartbeat acknowledgment
-            if (msg.type === 'heartbeat_ack') {
-              // Clear heartbeat timeout - connection is alive
-              if (heartbeatTimeoutRef.current) {
-                clearTimeout(heartbeatTimeoutRef.current);
-                heartbeatTimeoutRef.current = null;
-              }
-              return;
-            }
-
-            // Handle error messages from server
-            if (msg.type === 'error') {
-              console.error('[WS] Server error:', msg.message);
-              return;
-            }
-
-            if (msg.type === 'connected' && msg.spoons) {
-              setSpoonCount(msg.spoons.current);
-            }
-
-            if (msg.type === 'node_ingested') {
-              const node = {
-                id: msg.node_id,
-                content: msg.content || '',
-                axis: msg.axis,
-              };
-              nodesRef.current.push(node);
-              setNodeCount(nodesRef.current.length);
-
-              // Store voltage data
-              if (msg.voltage) {
-                voltageMapRef.current[msg.node_id] = msg.voltage;
-              }
-
-              // Activity log (keep last 50)
-              const entry = {
-                id: msg.node_id,
-                axis: msg.axis,
-                content: msg.content || msg.node_id,
-                voltage: msg.voltage?.composite || 0,
-                timestamp: Date.now(),
-              };
-              activityRef.current = [entry, ...activityRef.current].slice(0, 50);
-              setActivity([...activityRef.current]);
-
-              // Trigger mesh update in App
-              onNodeAdded.current?.();
-            }
-
-            if (msg.type === 'spoon_update' && msg.spoons) {
-              setSpoonCount(msg.spoons.current);
-            }
-          } catch (e) {
-            console.error('[WS] Message parse error:', e);
-          }
-        };
-
-        ws.onclose = (event) => {
-          setConnected(false);
-          stopHeartbeat();
-          wsRef.current = null;
-
-          if (intentionalClose) {
-            setConnectionState('disconnected');
-            return;
-          }
-
-          // Schedule reconnection with exponential backoff
-          reconnectAttemptRef.current++;
-          setReconnectAttempt(reconnectAttemptRef.current);
-          setConnectionState('reconnecting');
-
-          const delay = getReconnectDelay(reconnectAttemptRef.current);
-          console.log(`[WS] Connection closed. Reconnecting in ${Math.round(delay)}ms (attempt ${reconnectAttemptRef.current})`);
-
-          reconnectTimer = setTimeout(connect, delay);
-        };
-
-        ws.onerror = (error) => {
-          console.error('[WS] Connection error');
-          // onclose will handle reconnection
-        };
-      } catch (e) {
-        console.error('[WS] Failed to create WebSocket:', e);
-        reconnectAttemptRef.current++;
-        setReconnectAttempt(reconnectAttemptRef.current);
-
-        const delay = getReconnectDelay(reconnectAttemptRef.current);
-        reconnectTimer = setTimeout(connect, delay);
-      }
-    }
-
-    connect();
+    clientRef.current = new MeshClient({ userId });
 
     return () => {
-      intentionalClose = true;
-      clearTimeout(reconnectTimer);
+      cleanup();
+    };
+  }, [userId]);
+
+  /**
+   * Connect to WebSocket
+   */
+  const connect = useCallback(() => {
+    if (!clientRef.current) return;
+
+    cleanup(); // Clean up existing connection
+
+    const onOpen = () => {
+      console.log('[useWebSocket] Connected');
+      setIsConnected(true);
+      setConnectionError(null);
+      startHeartbeat();
+    };
+
+    const onClose = (event) => {
+      console.log('[useWebSocket] Disconnected:', event.code, event.reason);
+      setIsConnected(false);
       stopHeartbeat();
-      if (wsRef.current) {
-        wsRef.current.close();
+      scheduleReconnect();
+    };
+
+    const onError = (error) => {
+      console.error('[useWebSocket] Error:', error);
+      setConnectionError(error);
+    };
+
+    const onMessage = (data) => {
+      // Route to registered handlers
+      const handler = handlersRef.current.get(data.type);
+      if (handler) {
+        handler(data);
       }
     };
-  }, [startHeartbeat, stopHeartbeat, flushMessageQueue, getReconnectDelay]);
 
-  // Get the raw WebSocket for direct access (legacy support)
-  const getWebSocket = useCallback(() => wsRef.current, []);
+    // Connect with callbacks
+    wsRef.current = clientRef.current.connectWebSocket(
+      onMessage,
+      null, // typing handler (not used here)
+      null, // presence handler (not used here)
+      onError
+    );
+
+    // Override onopen/onclose
+    const originalOnOpen = wsRef.current.onopen;
+    wsRef.current.onopen = () => {
+      if (originalOnOpen) originalOnOpen();
+      onOpen();
+    };
+
+    const originalOnClose = wsRef.current.onclose;
+    wsRef.current.onclose = (event) => {
+      if (originalOnClose) originalOnClose(event);
+      onClose(event);
+    };
+  }, [userId]);
+
+  /**
+   * Disconnect and cleanup
+   */
+  const disconnect = useCallback(() => {
+    cleanup();
+    setIsConnected(false);
+  }, []);
+
+  /**
+   * Cleanup resources
+   */
+  const cleanup = useCallback(() => {
+    // Clear reconnect timeout
+    if (reconnectTimeoutRef.current) {
+      clearTimeout(reconnectTimeoutRef.current);
+      reconnectTimeoutRef.current = null;
+    }
+
+    // Stop heartbeat
+    stopHeartbeat();
+
+    // Close WebSocket
+    if (wsRef.current) {
+      wsRef.current.close(1000, 'Cleanup');
+      wsRef.current = null;
+    }
+  }, []);
+
+  /**
+   * Start heartbeat to keep connection alive
+   */
+  const startHeartbeat = useCallback(() => {
+    stopHeartbeat(); // Clear existing
+    
+    pingIntervalRef.current = setInterval(() => {
+      if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+        // Send ping (optional, server handles it)
+        // wsRef.current.send(JSON.stringify({ type: 'ping' }));
+      }
+    }, 30000); // 30 seconds
+  }, []);
+
+  /**
+   * Stop heartbeat
+   */
+  const stopHeartbeat = useCallback(() => {
+    if (pingIntervalRef.current) {
+      clearInterval(pingIntervalRef.current);
+      pingIntervalRef.current = null;
+    }
+  }, []);
+
+  /**
+   * Schedule reconnection with exponential backoff
+   */
+  const scheduleReconnect = useCallback(() => {
+    if (reconnectTimeoutRef.current) return;
+
+    const delay = Math.min(1000 * Math.pow(2, 5), 30000); // Max 30s
+
+    reconnectTimeoutRef.current = setTimeout(() => {
+      reconnectTimeoutRef.current = null;
+      console.log('[useWebSocket] Attempting reconnection...');
+      connect();
+    }, delay);
+  }, [connect]);
+
+  /**
+   * Register event handler
+   */
+  const on = useCallback((eventType, handler) => {
+    if (!handlersRef.current.has(eventType)) {
+      handlersRef.current.set(eventType, new Set());
+    }
+    handlersRef.current.get(eventType).add(handler);
+
+    // Return unsubscribe function
+    return () => {
+      const handlers = handlersRef.current.get(eventType);
+      if (handlers) {
+        handlers.delete(handler);
+      }
+    };
+  }, []);
+
+  /**
+   * Remove event handler
+   */
+  const off = useCallback((eventType, handler) => {
+    const handlers = handlersRef.current.get(eventType);
+    if (handlers) {
+      handlers.delete(handler);
+    }
+  }, []);
+
+  /**
+   * Send message via WebSocket
+   */
+  const sendMessage = useCallback((conversationId, content, type = 'text', metadata = {}) => {
+    if (!clientRef.current || !isConnected) {
+      throw new Error('WebSocket not connected');
+    }
+    clientRef.current.sendMessageWS(conversationId, content, type, metadata);
+  }, [isConnected]);
+
+  /**
+   * Send typing indicator
+   */
+  const sendTyping = useCallback((conversationId, isTyping) => {
+    if (!clientRef.current) return;
+    clientRef.current.sendTyping(conversationId, isTyping);
+  }, []);
+
+  // Auto-connect on mount if userId provided
+  useEffect(() => {
+    if (userId && options.autoConnect !== false) {
+      connect();
+    }
+
+    return () => {
+      cleanup();
+    };
+  }, [userId, connect, cleanup, options.autoConnect]);
 
   return {
-    connected,
-    connectionState,
-    spoonCount,
-    nodeCount,
-    activity,
-    nodesRef,
-    voltageMapRef,
-    onNodeAdded,
-    setNodeCount,
-    // New exports
+    // State
+    isConnected,
+    connectionError,
+    lastPong,
+    client: clientRef.current,
+
+    // Actions
+    connect,
+    disconnect,
     sendMessage,
-    reconnectAttempt,
-    queuedMessageCount,
-    getWebSocket,
+    sendTyping,
+    on,
+    off
   };
 }
+
+/**
+ * useWebSocketQueue Hook
+ * Debounces typing indicators and manages message queue
+ */
+export function useWebSocketQueue(ws) {
+  const typingTimeoutRef = useRef(null);
+  const queueRef = useRef([]);
+  const isProcessingRef = useRef(false);
+
+  /**
+   * Debounced typing indicator
+   */
+  const sendTypingDebounced = useCallback((conversationId, isTyping) => {
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
+
+    // Send immediate start
+    if (isTyping) {
+      ws.sendTyping(conversationId, true);
+    }
+
+    // Schedule stop after delay
+    typingTimeoutRef.current = setTimeout(() => {
+      ws.sendTyping(conversationId, false);
+      typingTimeoutRef.current = null;
+    }, 2000);
+  }, [ws]);
+
+  /**
+   * Queue message if offline, send immediately if online
+   */
+  const queueMessage = useCallback((message) => {
+    if (ws.isConnected()) {
+      // Send immediately
+      try {
+        ws.sendMessage(
+          message.conversationId,
+          message.content,
+          message.type,
+          message.metadata
+        );
+        return { status: 'sent', message };
+      } catch (error) {
+        console.error('Failed to send message:', error);
+        return { status: 'failed', error };
+      }
+    } else {
+      // Add to offline queue
+      queueRef.current.push({
+        ...message,
+        queuedAt: Date.now(),
+        retries: 0
+      });
+      console.log('[useWebSocketQueue] Message queued for later delivery');
+      return { status: 'queued', message };
+    }
+  }, [ws]);
+
+  /**
+   * Flush offline queue (called on reconnect)
+   */
+  const flushQueue = useCallback(async () => {
+    if (queueRef.current.length === 0 || !ws.isConnected()) {
+      return;
+    }
+
+    const queue = [...queueRef.current];
+    queueRef.current = [];
+
+    for (const msg of queue) {
+      try {
+        ws.sendMessage(
+          msg.conversationId,
+          msg.content,
+          msg.type,
+          msg.metadata
+        );
+        console.log('[useWebSocketQueue] Flushed queued message:', msg.id);
+      } catch (error) {
+        console.error('[useWebSocketQueue] Failed to flush message:', error);
+        // Re-queue with retry count
+        msg.retries++;
+        if (msg.retries < 3) {
+          queueRef.current.push(msg);
+        }
+      }
+    }
+  }, [ws]);
+
+  return {
+    sendTypingDebounced,
+    queueMessage,
+    flushQueue,
+    queueSize: queueRef.current.length
+  };
+}
+
+export default useWebSocket;

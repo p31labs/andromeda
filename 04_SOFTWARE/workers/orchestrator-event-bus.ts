@@ -8,8 +8,8 @@
  */
 
 import type { D1Database, DurableObjectState, DurableObject } from './types';
-import { evaluateGuardrails, isFawnGuardActive, calculateCurrentLevel } from '../../src/guardrails.js';
-import { getActionHandler } from './action-registry.ts';
+import { evaluateGuardrails, isFawnGuardActive, calculateCurrentLevel } from '../src/guardrails.js';
+import { getActionHandler, executeActionWithGuardrails } from './action-registry.ts';
 
 export interface Env {
   ORCHESTRATOR_DO: DurableObjectNamespace;
@@ -27,6 +27,7 @@ export interface TriggerEvent {
   baseDelayMs: number;
   payload: Record<string, unknown>;
   timestamp: number;
+  sequenceNumber: number; // Monotonically increasing per user to prevent out-of-order processing
   metadata?: Record<string, unknown>;
 }
 
@@ -73,20 +74,27 @@ CREATE TABLE orchestrator_audit_log (
 );
 
 CREATE TABLE orchestrator_queue (
-  id TEXT PRIMARY KEY,
-  trigger_id TEXT NOT NULL,
-  action TEXT NOT NULL,
-  payload TEXT NOT NULL,
-  scheduled_at INTEGER NOT NULL,
-  priority INTEGER NOT NULL,
-  attempts INTEGER NOT NULL DEFAULT 0,
-  created_at INTEGER NOT NULL
-);
+    id TEXT PRIMARY KEY,
+    trigger_id TEXT NOT NULL,
+    action TEXT NOT NULL,
+    payload TEXT NOT NULL,
+    scheduled_at INTEGER NOT NULL,
+    priority INTEGER NOT NULL,
+    attempts INTEGER NOT NULL DEFAULT 0,
+    created_at INTEGER NOT NULL
+  );
+
+  CREATE TABLE IF NOT EXISTS event_sequence (
+    source TEXT PRIMARY KEY,
+    sequence_number INTEGER NOT NULL,
+    updated_at INTEGER NOT NULL
+  );
 
 CREATE INDEX idx_orchestrator_audit_trigger ON orchestrator_audit_log(trigger_id);
 CREATE INDEX idx_orchestrator_audit_created ON orchestrator_audit_log(created_at DESC);
 CREATE INDEX idx_orchestrator_queue_scheduled ON orchestrator_queue(scheduled_at);
 CREATE INDEX idx_orchestrator_queue_priority ON orchestrator_queue(priority DESC);
+CREATE INDEX idx_event_sequence_source ON event_sequence(source);
 */
 
 export class EventBusDO implements DurableObject {
@@ -94,14 +102,51 @@ export class EventBusDO implements DurableObject {
   env: Env;
   currentGuardrailLevel: number;
   lastSpoonCheck: number;
-  alarmScheduled: boolean;
+  // Hysteresis state: require 2 consecutive readings to change level
+  pendingLevel: number | null;
+  hysteresisCount: number;
+  meshState: {
+    careScore: number;
+    qFactor: number;
+    activeMinutes: number;
+    vertices: Record<string, { status: string; lastSeen: number }>;
+    lastMeshSync: number;
+  };
 
   constructor(state: DurableObjectState, env: Env) {
     this.state = state;
     this.env = env;
     this.currentGuardrailLevel = 4;
     this.lastSpoonCheck = 0;
-    this.alarmScheduled = false;
+    this.pendingLevel = null;
+    this.hysteresisCount = 0;
+    this.meshState = {
+      careScore: 0.5,
+      qFactor: 0.0,
+      activeMinutes: 0,
+      vertices: {},
+      lastMeshSync: 0
+    };
+
+    // Load persisted state on DO initialization
+    this.state.blockConcurrencyWhile(async () => {
+      const stored = await this.state.storage.get<{ level: number; lastCheck: number; pendingLevel: number; hysteresisCount: number; mesh: any }>('state');
+      if (stored) {
+        this.currentGuardrailLevel = stored.level;
+        this.lastSpoonCheck = stored.lastCheck;
+        this.pendingLevel = stored.pendingLevel ?? null;
+        this.hysteresisCount = stored.hysteresisCount ?? 0;
+        if (stored.mesh) {
+          this.meshState = { ...this.meshState, ...stored.mesh };
+        }
+      }
+
+      // Cold start: rebuild state from KV if lastSync is stale (>5 min)
+      const now = Date.now();
+      if (now - this.meshState.lastMeshSync > 5 * 60 * 1000) {
+        await this.rebuildStateFromKV();
+      }
+    });
   }
 
   async fetch(request: Request): Promise<Response> {
@@ -111,20 +156,71 @@ export class EventBusDO implements DurableObject {
     // Route: POST /api/orchestrator/trigger
     if (pathParts[0] === 'api' && pathParts[1] === 'orchestrator' && pathParts[2] === 'trigger') {
       if (request.method === 'POST') {
-        const event = await request.json() as TriggerEvent;
+        let event: TriggerEvent;
+        try {
+          event = await request.json() as TriggerEvent;
+        } catch (e) {
+          return new Response(JSON.stringify({ error: 'Invalid JSON payload' }), {
+            status: 400,
+            headers: { 'Content-Type': 'application/json' }
+          });
+        }
+
+        // Strict input validation
+        if (!event.id || typeof event.id !== 'string') {
+          return new Response(JSON.stringify({ error: 'Missing or invalid id' }), { status: 400 });
+        }
+        if (!event.action || typeof event.action !== 'string') {
+          return new Response(JSON.stringify({ error: 'Missing or invalid action' }), { status: 400 });
+        }
+        if (typeof event.priority !== 'number' || event.priority < 0 || event.priority > 10) {
+          return new Response(JSON.stringify({ error: 'Priority must be 0-10' }), { status: 400 });
+        }
+        if (typeof event.safetyLevel !== 'number' || event.safetyLevel < 0 || event.safetyLevel > 4) {
+          return new Response(JSON.stringify({ error: 'Safety level must be 0-4' }), { status: 400 });
+        }
+        if (typeof event.baseDelayMs !== 'number' || event.baseDelayMs < 0) {
+          return new Response(JSON.stringify({ error: 'Invalid base delay' }), { status: 400 });
+        }
+        if (typeof event.sequenceNumber !== 'number' || event.sequenceNumber < 0) {
+          return new Response(JSON.stringify({ error: 'Invalid or missing sequence number' }), { status: 400 });
+        }
+
         return this.handleTrigger(event);
+      }
+    }
+
+    // Route: POST /api/orchestrator/spoons-update
+    if (pathParts[0] === 'api' && pathParts[1] === 'orchestrator' && pathParts[2] === 'spoons-update') {
+      if (request.method === 'POST') {
+        return this.handleSpoonsUpdate(request);
+      }
+    }
+
+    // Route: POST /api/orchestrator/spoons-update
+    if (pathParts[0] === 'api' && pathParts[1] === 'orchestrator' && pathParts[2] === 'spoons-update') {
+      if (request.method === 'POST') {
+        return this.handleSpoonsUpdate(request);
       }
     }
 
     // Route: GET /api/orchestrator/status
     if (pathParts[0] === 'api' && pathParts[1] === 'orchestrator' && pathParts[2] === 'status') {
       const currentSpoons = await this.getCurrentSpoonCount();
-      
+      await this.syncMeshState();
+
       return new Response(JSON.stringify({
         guardrailLevel: this.currentGuardrailLevel,
         lastSpoonCheck: this.lastSpoonCheck,
         fawnGuardActive: isFawnGuardActive(this.currentGuardrailLevel),
         currentSpoons,
+        mesh: {
+          careScore: this.meshState.careScore,
+          qFactor: this.meshState.qFactor,
+          activeMinutes: this.meshState.activeMinutes,
+          vertices: this.meshState.vertices,
+          lastSync: this.meshState.lastMeshSync
+        },
         timestamp: Date.now()
       }), { headers: { 'Content-Type': 'application/json' } });
     }
@@ -219,7 +315,6 @@ export class EventBusDO implements DurableObject {
   }
 
   async alarm() {
-    this.alarmScheduled = false;
     await this.processQueue();
     
     // Reschedule alarm if there are more items
@@ -230,25 +325,87 @@ export class EventBusDO implements DurableObject {
 
     if (nextItem) {
       const delay = Math.max(0, nextItem.scheduled_at - Date.now());
-      this.state.setAlarm(Date.now() + Math.min(delay, 300000)); // Max 5 minutes
-      this.alarmScheduled = true;
+      // Add 0-30s jitter to prevent thundering herd
+      const jitter = Math.floor(Math.random() * 30000);
+      this.state.setAlarm(Date.now() + Math.min(delay + jitter, 300000)); // Max 5 minutes
     }
   }
 
   async handleTrigger(event: TriggerEvent): Promise<Response> {
-    // 1. Get current spoon count
+    // Hard queue depth limit - reject new triggers when overloaded
+    const queueCount = await this.env.ORCHESTRATOR_D1.prepare(`
+      SELECT COUNT(*) as count FROM orchestrator_queue
+    `).first<{ count: number }>();
+
+    if (queueCount && queueCount.count > 1500) {
+      // Only allow priority 10 critical actions when overloaded
+      if (event.priority < 10) {
+        return new Response(JSON.stringify({
+          success: false,
+          error: 'Queue depth exceeded. Only critical actions accepted.',
+          queueCount: queueCount.count
+        }), {
+          status: 503,
+          headers: { 'Content-Type': 'application/json' }
+        });
+      }
+    }
+
+    // 1. Sync mesh state from K4 Cage
+    await this.syncMeshState();
+
+    // 2. Get current spoon count
     const currentSpoons = await this.getCurrentSpoonCount();
-    
-    // 2. Update guardrail level with hysteresis
-    this.currentGuardrailLevel = calculateCurrentLevel(currentSpoons, this.currentGuardrailLevel);
+
+    // 3. Update guardrail level with hysteresis
+    const hysteresisState = { pendingLevel: this.pendingLevel, count: this.hysteresisCount };
+    const levelResult = calculateCurrentLevel(currentSpoons, this.currentGuardrailLevel, hysteresisState);
+
+    if (levelResult.changed) {
+      this.currentGuardrailLevel = levelResult.level;
+    }
+    this.pendingLevel = levelResult.pendingLevel;
+    this.hysteresisCount = levelResult.hysteresisCount;
+
+    // Persist state if level changed or hysteresis state updated
+    if (levelResult.changed || levelResult.hysteresisCount > 0) {
+      await this.state.storage.put('state', {
+        level: this.currentGuardrailLevel,
+        lastCheck: this.lastSpoonCheck,
+        pendingLevel: this.pendingLevel,
+        hysteresisCount: this.hysteresisCount,
+        mesh: this.meshState
+      });
+    }
+
     this.lastSpoonCheck = Date.now();
 
-    // 3. Evaluate against guardrails
+    // 4. Evaluate against guardrails with full system state
     const evaluation = evaluateGuardrails({
       safetyLevel: event.safetyLevel,
       priority: event.priority,
       baseDelayMs: event.baseDelayMs
-    }, { spoons: currentSpoons });
+    }, {
+      spoons: currentSpoons,
+      careScore: this.meshState.careScore,
+      qFactor: this.meshState.qFactor,
+      activeMinutes: this.meshState.activeMinutes
+    });
+
+    // 4.5 Runtime guardrail recheck (defense in depth)
+    let runtimeEvaluation = evaluation;
+    if (evaluation.approved) {
+      runtimeEvaluation = evaluateGuardrails({
+        safetyLevel: event.safetyLevel,
+        priority: event.priority,
+        baseDelayMs: event.baseDelayMs
+      }, {
+        spoons: currentSpoons,
+        careScore: this.meshState.careScore,
+        qFactor: this.meshState.qFactor,
+        activeMinutes: this.meshState.activeMinutes
+      });
+    }
 
     // 4. Log to immutable audit trail
     const auditEntry: AuditLogEntry = {
@@ -258,18 +415,18 @@ export class EventBusDO implements DurableObject {
       action: event.action,
       spoonsAtEvaluation: currentSpoons,
       guardrailLevel: this.currentGuardrailLevel,
-      approved: evaluation.approved,
-      delayMs: evaluation.delayMs,
-      requiresManual: evaluation.requiresManual,
-      reason: evaluation.reason,
+      approved: runtimeEvaluation.approved,
+      delayMs: runtimeEvaluation.delayMs,
+      requiresManual: runtimeEvaluation.requiresManual,
+      reason: runtimeEvaluation.reason,
       created_at: Date.now()
     };
 
     await this.logAuditEntry(auditEntry);
 
     // 5. If approved, queue for execution
-    if (evaluation.approved && !evaluation.requiresManual) {
-      const scheduledAt = Date.now() + evaluation.delayMs;
+    if (runtimeEvaluation.approved && !runtimeEvaluation.requiresManual) {
+      const scheduledAt = Date.now() + runtimeEvaluation.delayMs;
       
       await this.queueAction({
         id: crypto.randomUUID(),
@@ -281,13 +438,34 @@ export class EventBusDO implements DurableObject {
         attempts: 0
       });
 
-      // Schedule alarm if not already scheduled
-      if (!this.alarmScheduled) {
-        const delay = Math.min(evaluation.delayMs, 300000); // Max 5 minutes
+      // Schedule alarm for delayed execution
+      const existingAlarm = await this.state.getAlarm();
+      if (!existingAlarm || existingAlarm > Date.now() + runtimeEvaluation.delayMs) {
+        // Add 0-30s jitter to prevent thundering herd
+        const jitter = Math.floor(Math.random() * 30000);
+        const delay = Math.min(runtimeEvaluation.delayMs + jitter, 300000); // Max 5 minutes
         this.state.setAlarm(Date.now() + delay);
-        this.alarmScheduled = true;
       }
+    } else if (!evaluation.approved && runtimeEvaluation.approved) {
+      // Guardrail was too strict at queue time but passed at execution time
+      // Re-queue with updated evaluation
+      const scheduledAt = Date.now() + runtimeEvaluation.delayMs;
+      await this.queueAction({
+        id: crypto.randomUUID(),
+        triggerId: event.id,
+        action: event.action,
+        payload: event.payload,
+        scheduledAt,
+        priority: event.priority,
+        attempts: 0
+      });
     }
+
+    // 6. Runtime guardrail recheck at execution time (defense in depth)
+    await this.executeWithRuntimeGuardrail(event);
+
+    // Store sequence number to prevent replay attacks
+    await this.storeSequenceNumber(event.source, event.sequenceNumber);
 
     return new Response(JSON.stringify({
       success: true,
@@ -299,6 +477,95 @@ export class EventBusDO implements DurableObject {
     }), {
       headers: { 'Content-Type': 'application/json' }
     });
+  }
+
+  async getLastSequenceNumber(source: string): Promise<number | null> {
+    const val = await this.env.ORCHESTRATOR_D1.prepare(`
+      SELECT sequence_number FROM event_sequence WHERE source = ?
+    `).bind(source).first<{ sequence_number: number }>();
+    return val?.sequence_number ?? null;
+  }
+
+  async storeSequenceNumber(source: string, sequenceNumber: number): Promise<void> {
+    await this.env.ORCHESTRATOR_D1.prepare(`
+      INSERT OR REPLACE INTO event_sequence (source, sequence_number, updated_at)
+      VALUES (?, ?, ?)
+    `).bind(source, sequenceNumber, Date.now()).run();
+  }
+
+  async handleSpoonsUpdate(request: Request): Promise<Response> {
+    let event: any;
+    try {
+      event = await request.json();
+    } catch (e) {
+      return new Response(JSON.stringify({ error: 'Invalid JSON' }), { status: 400 });
+    }
+
+    const { userId, spoons, previousSpoons } = event;
+    if (userId === undefined || spoons === undefined) {
+      return new Response(JSON.stringify({ error: 'Missing userId or spoons' }), { status: 400 });
+    }
+
+    // Recompute guardrail level with hysteresis
+    const hysteresisState = { pendingLevel: this.pendingLevel, count: this.hysteresisCount };
+    const result = calculateCurrentLevel(spoons, this.currentGuardrailLevel, hysteresisState);
+
+    if (result.changed) {
+      this.currentGuardrailLevel = result.level;
+    }
+    this.pendingLevel = result.pendingLevel;
+    this.hysteresisCount = result.hysteresisCount;
+
+    // Persist all state fields
+    await this.state.storage.put('state', {
+      level: this.currentGuardrailLevel,
+      lastCheck: this.lastSpoonCheck,
+      pendingLevel: this.pendingLevel,
+      hysteresisCount: this.hysteresisCount,
+      mesh: this.meshState
+    });
+
+    this.lastSpoonCheck = Date.now();
+
+    // Broadcast guardrails:levelChanged event to all listeners
+    if (result.changed) {
+      const intervals = {
+        standard: 1000 * (this.currentGuardrailLevel === 0 ? 1 :
+                         this.currentGuardrailLevel === 1 ? 1.5 :
+                         this.currentGuardrailLevel === 2 ? 3 :
+                         this.currentGuardrailLevel === 3 ? 10 : Infinity),
+        backoff: this.currentGuardrailLevel * 2
+      };
+
+      console.log(`[GUARDRAILS] levelChanged: ${this.currentGuardrailLevel} spoons=${spoons}`);
+
+      // Also update command center status
+      if (this.env.COMMAND_CENTER_TOKEN) {
+        await fetch('https://command-center.trimtab-signal.workers.dev/api/update', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${this.env.COMMAND_CENTER_TOKEN}`
+          },
+          body: JSON.stringify({
+            key: 'guardrail/level',
+            value: this.currentGuardrailLevel,
+            color: this.currentGuardrailLevel <= 1 ? 'green' :
+                   this.currentGuardrailLevel === 2 ? 'yellow' :
+                   this.currentGuardrailLevel === 3 ? 'orange' : 'red',
+            metadata: { spoons, intervals }
+          })
+        }).catch(() => {}); // Fire and forget
+      }
+    }
+
+    return new Response(JSON.stringify({
+      success: true,
+      currentLevel: this.currentGuardrailLevel,
+      pendingLevel: this.pendingLevel,
+      hysteresisCount: this.hysteresisCount,
+      changed: result.changed
+    }), { headers: { 'Content-Type': 'application/json' } });
   }
 
   async getCurrentSpoonCount(): Promise<number> {
@@ -320,6 +587,53 @@ export class EventBusDO implements DurableObject {
       .reduce((sum: number, e: any) => sum + e.amount, 0);
 
     return Math.max(0, Math.min(20, 12 + totalEarned - totalSpent));
+  }
+
+  async syncMeshState(): Promise<void> {
+    // Only sync mesh state every 30 seconds minimum
+    if (Date.now() - this.meshState.lastMeshSync < 30000) {
+      return;
+    }
+
+    try {
+      const meshResponse = await fetch('https://k4-cage.trimtab-signal.workers.dev/api/mesh');
+      if (meshResponse.ok) {
+        const mesh = await meshResponse.json();
+        
+        // Calculate care score from total love
+        const totalLove = mesh.totalLove || 0;
+        this.meshState.careScore = Math.min(1.0, totalLove / 1000);
+
+        // Calculate Q-Factor (coherence) from active vertices
+        const activeVertices = Object.values(mesh.mesh.vertices)
+          .filter((v: any) => v.status === 'online').length;
+        this.meshState.qFactor = activeVertices / 4;
+
+        // Calculate active minutes
+        const willVertex = mesh.mesh.vertices.will;
+        if (willVertex && willVertex.status === 'online') {
+          const lastSeen = new Date(willVertex.lastSeen).getTime();
+          this.meshState.activeMinutes = Math.min(120, (Date.now() - lastSeen) / 60000);
+        } else {
+          this.meshState.activeMinutes = 0;
+        }
+
+        this.meshState.vertices = mesh.mesh.vertices;
+        this.meshState.lastMeshSync = Date.now();
+
+        // Persist mesh state
+        await this.state.storage.put('state', {
+          level: this.currentGuardrailLevel,
+          lastCheck: this.lastSpoonCheck,
+          pendingLevel: this.pendingLevel,
+          hysteresisCount: this.hysteresisCount,
+          mesh: this.meshState
+        });
+      }
+    } catch (error) {
+      // Silently fail - mesh is optional
+      console.error('Mesh sync failed:', error);
+    }
   }
 
   async logAuditEntry(entry: AuditLogEntry): Promise<void> {
@@ -362,15 +676,80 @@ export class EventBusDO implements DurableObject {
     ).run();
   }
 
+  async executeWithRuntimeGuardrail(event: TriggerEvent): Promise<void> {
+    // Re-check guardrails at execution time (defense in depth)
+    const currentSpoons = await this.getCurrentSpoonCount();
+    await this.syncMeshState();
+
+    const systemState = {
+      spoons: currentSpoons,
+      careScore: this.meshState.careScore,
+      qFactor: this.meshState.qFactor,
+      activeMinutes: this.meshState.activeMinutes
+    };
+
+    const evaluation = evaluateGuardrails({
+      safetyLevel: event.safetyLevel,
+      priority: event.priority,
+      baseDelayMs: event.baseDelayMs
+    }, systemState);
+
+    if (!evaluation.approved) {
+      // Action blocked at runtime - log and abort
+      await this.env.ORCHESTRATOR_D1.prepare(`
+        UPDATE orchestrator_audit_log
+        SET requiresManual = false, reason = ? || ' - BLOCKED AT EXECUTION'
+        WHERE trigger_id = ?
+      `).bind(evaluation.reason, event.id).run();
+
+      // Compensate: reverse any partial effects if needed
+      await this.compensateAction(event, evaluation.reason);
+      return;
+    }
+
+    // Re-execute with fresh guardrail approval
+    await this.queueAction({
+      id: crypto.randomUUID(),
+      triggerId: event.id,
+      action: event.action,
+      payload: event.payload,
+      scheduledAt: Date.now(),
+      priority: event.priority,
+      attempts: 0
+    });
+  }
+
+  async compensateAction(event: TriggerEvent, reason: string): Promise<void> {
+    // Implement compensation logic based on action type
+    // For example, reverse a transaction, restore state, etc.
+    console.warn(`Compensating action ${event.action} due to: ${reason}`);
+  }
+
   async processQueue(): Promise<void> {
     const now = Date.now();
+    
+    // Hard queue depth limit - prevent infinite growth
+    const queueCount = await this.env.ORCHESTRATOR_D1.prepare(`
+      SELECT COUNT(*) as count FROM orchestrator_queue
+    `).first<{ count: number }>();
+
+    // If queue exceeds 1000 items, clear low priority items
+    if (queueCount && queueCount.count > 1000) {
+      await this.env.ORCHESTRATOR_D1.prepare(`
+        DELETE FROM orchestrator_queue 
+        WHERE priority < 5 AND id IN (
+          SELECT id FROM orchestrator_queue 
+          ORDER BY scheduled_at ASC LIMIT 500
+        )
+      `).run();
+    }
     
     // Get all due actions sorted by priority
     const actions = await this.env.ORCHESTRATOR_D1.prepare(`
       SELECT * FROM orchestrator_queue 
       WHERE scheduled_at <= ? 
       ORDER BY priority DESC, scheduled_at ASC
-      LIMIT 10
+      LIMIT 50
     `).bind(now).all<QueuedAction & { payload: string }>();
 
     if (!actions.results || actions.results.length === 0) {
@@ -378,12 +757,17 @@ export class EventBusDO implements DurableObject {
     }
 
     for (const action of actions.results) {
-      try {
-        // Execute action
-        await this.executeAction({
-          ...action,
-          payload: JSON.parse(action.payload)
-        });
+        try {
+        // Execute action with 10 second hard timeout
+        await Promise.race([
+          this.executeAction({
+            ...action,
+            payload: JSON.parse(action.payload)
+          }),
+          new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('Action execution timeout')), 10000)
+          )
+        ]);
 
         // Mark as executed in audit log
         await this.env.ORCHESTRATOR_D1.prepare(`
@@ -419,18 +803,146 @@ export class EventBusDO implements DurableObject {
   }
 
   async executeAction(action: QueuedAction): Promise<void> {
-    const handler = getActionHandler(action.action);
-    
-    if (!handler) {
-      console.log(`Unknown action type: ${action.action}`);
+    // Re-check guardrails at execution time (defense in depth)
+    const currentSpoons = await this.getCurrentSpoonCount();
+    await this.syncMeshState();
+
+    const systemState = {
+      spoons: currentSpoons,
+      careScore: this.meshState.careScore,
+      qFactor: this.meshState.qFactor,
+      activeMinutes: this.meshState.activeMinutes
+    };
+
+    const result = await executeActionWithGuardrails(
+      action.action,
+      {
+        env: this.env,
+        triggerId: action.triggerId,
+        payload: action.payload
+      },
+      systemState
+    );
+
+    if (!result.success) {
+      // Action blocked or failed - log
+      console.warn(`Action ${action.action} skipped: ${result.reason}`);
+      await this.env.ORCHESTRATOR_D1.prepare(`
+        UPDATE orchestrator_audit_log
+        SET requiresManual = false, reason = ? || ' - BLOCKED AT EXECUTION'
+        WHERE trigger_id = ?
+      `).bind(result.reason, action.triggerId).run();
       return;
     }
+  }
 
-    await handler.execute({
-      env: this.env,
-      triggerId: action.triggerId,
-      payload: action.payload
-    });
+  /**
+   * Rebuild state from KV on cold start
+   * - Read spoons from KV → compute safety level
+   * - Replay spoons:update events from lastSync
+   * - Recompute careScore, qFactor, vertices
+   */
+  async rebuildStateFromKV(): Promise<void> {
+    try {
+      // 1. Read spoons from KV
+      const spoonsData = await this.env.SPOONS_KV.get('spoons:will');
+      const spoons = spoonsData ? parseInt(spoonsData) : 0;
+
+      // 2. Compute safety level from spoons
+      const newLevel = calculateCurrentLevel(spoons, this.currentGuardrailLevel, {
+        pendingLevel: this.pendingLevel,
+        count: this.hysteresisCount
+      });
+
+      if (newLevel.changed) {
+        this.currentGuardrailLevel = newLevel.level;
+      }
+      this.pendingLevel = newLevel.pendingLevel;
+      this.hysteresisCount = newLevel.hysteresisCount;
+
+      // 3. Replay spoons:update events from lastSync
+      const lastSync = this.meshState.lastMeshSync;
+      const events = await this.env.ORCHESTRATOR_D1.prepare(`
+        SELECT * FROM orchestrator_audit_log
+        WHERE event_type = 'spoons:update'
+        AND created_at > ?
+        ORDER BY created_at ASC
+      `).bind(lastSync).all();
+
+      let replayedSpoons = spoons;
+      if (events.results) {
+        for (const event of events.results) {
+          // Extract spoons from payload if available
+          try {
+            const payload = JSON.parse(event.reason || '{}');
+            if (payload.spoons !== undefined) {
+              replayedSpoons = payload.spoons;
+            }
+          } catch {
+            // Skip malformed events
+          }
+        }
+      }
+
+      // 4. Recompute mesh state
+      const meshData = await this.env.SPOONS_KV.get('mesh:state');
+      if (meshData) {
+        const mesh = JSON.parse(meshData);
+        this.meshState.careScore = mesh.careScore || this.meshState.careScore;
+        this.meshState.qFactor = mesh.qFactor || this.meshState.qFactor;
+        this.meshState.activeMinutes = mesh.activeMinutes || this.meshState.activeMinutes;
+        this.meshState.vertices = mesh.vertices || this.meshState.vertices;
+      }
+
+      // 5. Update lastSync timestamp
+      this.meshState.lastMeshSync = Date.now();
+      this.lastSpoonCheck = Date.now();
+
+      // 6. Persist rebuilt state
+      await this.state.storage.put('state', {
+        level: this.currentGuardrailLevel,
+        lastCheck: this.lastSpoonCheck,
+        pendingLevel: this.pendingLevel,
+        hysteresisCount: this.hysteresisCount,
+        mesh: this.meshState
+      });
+
+      console.log(`State rebuilt from KV: spoons=${replayedSpoons}, level=${this.currentGuardrailLevel}`);
+    } catch (error) {
+      console.error('Failed to rebuild state from KV:', error);
+    }
+  }
+
+  /**
+   * Sync mesh state from KV
+   */
+  async syncMeshState(): Promise<void> {
+    try {
+      const meshData = await this.env.SPOONS_KV.get('mesh:state');
+      if (meshData) {
+        const mesh = JSON.parse(meshData);
+        this.meshState.careScore = mesh.careScore ?? this.meshState.careScore;
+        this.meshState.qFactor = mesh.qFactor ?? this.meshState.qFactor;
+        this.meshState.activeMinutes = mesh.activeMinutes ?? this.meshState.activeMinutes;
+        this.meshState.vertices = mesh.vertices ?? this.meshState.vertices;
+        this.meshState.lastMeshSync = Date.now();
+      }
+    } catch (error) {
+      console.error('Failed to sync mesh state:', error);
+    }
+  }
+
+  /**
+   * Get current spoon count from KV
+   */
+  async getCurrentSpoonCount(): Promise<number> {
+    try {
+      const spoonsData = await this.env.SPOONS_KV.get('spoons:will');
+      return spoonsData ? parseInt(spoonsData) : 0;
+    } catch (error) {
+      console.error('Failed to get spoon count:', error);
+      return 0;
+    }
   }
 }
 

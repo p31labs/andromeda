@@ -426,3 +426,61 @@ export default {
   getActionHandler,
   listActions
 };
+
+// Robust SMS sender with retry and fallback
+async function sendSMS({ to, body, timeout = 10000, maxRetries = 3 }: { to: string; body: string; timeout?: number; maxRetries?: number }): Promise<void> {
+  for (let i = 0; i <= maxRetries; i++) {
+    try {
+      const controller = new AbortController();
+      const t = setTimeout(() => controller.abort(), timeout);
+      const res = await fetch('https://api.twilio.com/2010-04-01/Accounts/ACxxx/Messages.json', {
+        method: 'POST',
+        signal: controller.signal,
+        body: new URLSearchParams({ To: to, From: context.env.TWILIO_FROM, Body: body })
+      });
+      clearTimeout(t);
+      if (res.ok) return;
+      throw new Error(`Twilio ${res.status}`);
+    } catch (e) {
+      if (i === maxRetries) throw e;
+      await new Promise(r => setTimeout(r, 1000 * 2 ** i));
+    }
+  }
+}
+
+// Core guardrails execution wrapper with qFactor and hysteresis
+import { evaluateGuardrils } from './guardrails';
+
+export async function executeWithGuardrails(action: any, context: any) {
+  const spoons = await getSpoonCount(context.env);
+  const qFactor = await getQFactor(context.env);
+  const evaluation = evaluateGuardrils(action, spoons, qFactor);
+
+  if (!evaluation.approved) {
+    throw new Error(`Guardrails blocked: ${evaluation.reason}`);
+  }
+
+  // Execute the actual action handler (assuming action.handler exists)
+  if (typeof action.handler === 'function') {
+    return await action.handler(context);
+  }
+  return { success: true, evaluation };
+}
+
+async function getSpoonCount(env: any): Promise<number> {
+  try {
+    const raw = await env.SPOONS_KV.get('spoons');
+    return raw ? parseFloat(raw) : 12;
+  } catch {
+    return 12;
+  }
+}
+
+async function getQFactor(env: any): Promise<number> {
+  try {
+    const raw = await env.TELEMETRY_KV?.get('qFactor');
+    return raw ? parseFloat(raw) : 0.925;
+  } catch {
+    return 0.925;
+  }
+}
