@@ -15,9 +15,10 @@
  *   node forge.js compile <path/to/content-pack.json>   # Content-driven
  *   node forge.js court "TITLE" "16th day of April, 2026" [--subtitle "..."]
  *   node forge.js letter "RE: Subject" "April 14, 2026"
- *   node forge.js corporate resolution|memo "April 14, 2026"
+ *   node forge.js paper --paper <id>     # Generate omnibus paper by ID (01-25)
  *   node forge.js grant gates|nlnet|asan
  *   node forge.js social "Post content" bluesky|mastodon|linkedin|all
+ *   node forge.js social-post <post-id>   # Generate docs from social post
  *   node forge.js brand                  # Print brand constants
  */
 
@@ -242,6 +243,22 @@ function renderMemo(pack) {
   return new Document({ sections: [B.makeSection(children, { style: 'org' })] });
 }
 
+function renderPaper(pack) {
+  return new Document({
+    sections: [
+      B.makeSection(
+        [
+          { type: "h1", text: pack.title },
+          { type: "para", text: pack.abstract },
+          ...(pack.body || [])
+        ],
+        { style: "org" }
+      ),
+    ],
+  });
+}
+
+
 function renderGrant(pack) {
   const children = [
     B.para("P31 LABS, INC.", {
@@ -273,6 +290,7 @@ function renderGrant(pack) {
 }
 
 const RENDERERS = {
+  paper:      renderPaper,
   court:      renderCourt,
   letter:     renderLetter,
   resolution: renderResolution,
@@ -529,6 +547,17 @@ Font:   ${B.TYPE.serif} (body) | ${B.TYPE.mono} (code)
       doc = grant(args[1] || 'gates');
       filename = `P31_Grant_${(args[1] || 'Application').charAt(0).toUpperCase() + (args[1] || 'app').slice(1)}_Scaffold.docx`;
       break;
+    case 'paper': {
+      const paperId = args[args.indexOf('--paper') + 1];
+      if (!paperId) {
+        console.error("Usage: forge.js paper --paper <id>");
+        process.exit(1);
+      }
+      const packPath = `content/omnibus/paper${paperId.padStart(2, '0')}.json`;
+      const outPath = await compileFile(packPath);
+      console.log(`u2705 ${outPath}`);
+      return;
+    }
 
     case 'social': {
       const content = args[1] || "P31 Labs update";
@@ -624,35 +653,99 @@ Font:   ${B.TYPE.serif} (body) | ${B.TYPE.mono} (code)
       return;
     }
 
-    case 'scan-grants': {
-      const keywordsArg = args.indexOf('--keywords');
-      const content = {};
-      if (keywordsArg !== -1 && args[keywordsArg + 1]) {
-        content.keywords = args[keywordsArg + 1].split(',').map(s => s.trim());
+
+    case 'social-post': {
+      const postId = args[1];
+      if (!postId) {
+        console.error('Usage: forge.js social-post <post-id>');
+        process.exit(1);
       }
-      const sinceArg = args.indexOf('--since');
-      if (sinceArg !== -1 && args[sinceArg + 1]) {
-        content.since = args[sinceArg + 1];
+      
+      // Load social posts
+      const postsPath = path.resolve(__dirname, 'content/social/posts.json');
+      const postsData = JSON.parse(fs.readFileSync(postsPath, 'utf8'));
+      const post = postsData.posts.find(p => p.id === postId);
+      
+      if (!post) {
+        console.error(`Post not found: ${postId}`);
+        console.error('Available posts:', postsData.posts.map(p => p.id).join(', '));
+        process.exit(1);
       }
-      const result = await publish('grants', content, process.env);
-      console.log(`\ngrants.gov scan \u2014 ${result.count} match(es) across ${result.keywords.length} keyword(s)`);
-      console.log("\u2550".repeat(60));
-      for (const h of result.hits) {
-        const title = (h.title || '').replace(/&ndash;/g, '\u2013').replace(/&amp;/g, '&');
-        console.log(`\n  [${h.oppStatus || '?'}] ${title}`);
-        console.log(`  ${h.agency || ''} \u2022 ${h.number || ''}`);
-        console.log(`  opens: ${h.openDate || 'n/a'}  closes: ${h.closeDate || 'open'}`);
-        console.log(`  ${h.link}`);
-        console.log(`  matched: ${h.matched.join(', ')}`);
-      }
-      if (result.count === 0) console.log("(no matches)");
+      
+      console.log(`\n📄 Generating documents from social post: ${post.occasion}`);
+      console.log("═".repeat(60));
+      
+      // Generate all document types
+      const grantDoc = renderGrant({
+        ...post,
+        body: [
+          { type: 'h1', text: post.occasion },
+          { type: 'para', text: post.content },
+          { type: 'h2', text: 'Project Overview' },
+          { type: 'para', text: 'This initiative aligns with P31 Labs mission to build open-source cognitive infrastructure for neurodivergent individuals.' },
+          { type: 'field', label: 'Date', value: new Date().toLocaleDateString() },
+          { type: 'field', label: 'Organization', value: 'P31 Labs, Inc.' },
+          { type: 'field', label: 'EIN', value: '42-1888158' }
+        ]
+      });
+      
+      const boardDoc = renderResolution({
+        date: new Date().toLocaleDateString(),
+        title: `Board Resolution: ${post.occasion}`,
+        body: [
+          { type: 'h1', text: `Board Resolution: ${post.occasion}` },
+          { type: 'para', text: `WHEREAS, P31 Labs seeks to advance its mission through the following initiative;` },
+          { type: 'para', text: post.content },
+          { type: 'h2', text: 'RESOLVED' },
+          { type: 'bullet', text: 'That the Board approves this initiative and authorizes necessary resources.' },
+          { type: 'bullet', text: 'That the President is authorized to execute related documents.' },
+          { type: 'bullet', text: 'That this resolution shall be effective immediately.' }
+        ]
+      });
+      
+      const legalDoc = renderCourt(
+        `Legal Filing: ${post.occasion}`,
+        new Date().toLocaleDateString() + ' ' + post.occasion,
+        {
+          ...post,
+          body: [
+            { type: 'h1', text: 'COMPLAINT FOR DECLARATORY RELIEF' },
+            { type: 'para', text: post.content },
+            { type: 'h2', text: 'JURISDICTION AND VENUE' },
+            { type: 'para', text: 'This Court has jurisdiction pursuant to Georgia law and federal question jurisdiction.' },
+            { type: 'field', label: 'Case', value: '2025CV936' },
+            { type: 'field', label: 'Filing Date', value: new Date().toLocaleDateString() }
+          ]
+        }
+      );
+      
+      // Write files
+      const outDir = path.resolve(__dirname, 'out');
+      if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
+      
+      const { Packer } = require('docx');
+      
+      const grantPath = path.join(outDir, `grant-${postId}.docx`);
+      const boardPath = path.join(outDir, `resolution-${postId}.docx`);
+      const legalPath = path.join(outDir, `legal-${postId}.docx`);
+      
+      await Promise.all([
+        Packer.toBuffer(grantDoc).then(b => fs.writeFileSync(grantPath, b)),
+        Packer.toBuffer(boardDoc).then(b => fs.writeFileSync(boardPath, b)),
+        Packer.toBuffer(legalDoc).then(b => fs.writeFileSync(legalPath, b))
+      ]);
+      
+      console.log(`\n✅ Documents generated:`);
+      console.log(`   ${grantPath}`);
+      console.log(`   ${boardPath}`);
+      console.log(`   ${legalPath}`);
       console.log();
       return;
     }
 
     case 'brand':
-      console.log("\nP31 FORGE \u2014 BRAND CONSTANTS");
-      console.log("\u2550".repeat(40) + "\n");
+      console.log("\nP31 FORGE — BRAND CONSTANTS");
+      console.log("═".repeat(40) + "\n");
       console.log("COLORS:");
       Object.entries(B.COLORS).forEach(([k, v]) => console.log(`  ${k.padEnd(12)} #${v}`));
       console.log("\nTYPOGRAPHY:");
@@ -677,13 +770,13 @@ Font:   ${B.TYPE.serif} (body) | ${B.TYPE.mono} (code)
   const outPath = path.join(outDir, filename);
   const buffer = await Packer.toBuffer(doc);
   fs.writeFileSync(outPath, buffer);
-  console.log(`\u2705 ${outPath}`);
+  console.log(`✅ ${outPath}`);
 }
 
 if (require.main === module) {
   main().catch(e => {
     if (process.env.DEBUG) console.error(e);
-    else console.error(`\u2717 ${e.message}`);
+    else console.error(`❌ ${e.message}`);
     process.exit(1);
   });
 }
