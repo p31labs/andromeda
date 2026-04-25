@@ -194,36 +194,37 @@ export default {
       return withAccess(request, env, 'reader', async (auth) => {
         return handleCfSummary(request, env, url);
       });
-      if (url.pathname === '/api/whoami') {
-        const auth = await authenticate(request, env);
-        if (!auth) return jsonResponse({ authenticated: false }, 401);
-        return jsonResponse({
-          authenticated: true,
-          sub: auth.sub,
-          email: auth.email,
-          name: auth.name,
-          role: auth.role,
-          groups: auth.groups,
-          source: auth.source,
-        });
-      }
-      
-      // ── Diagnostic: CRDT Headers ──
-      if (url.pathname === '/api/debug/crdt-headers' && request.method === 'GET') {
-        return withAccess(request, env, 'reader', async () => {
-          const keys = await env.STATUS_KV.list({ limit: 10 });
-          const diagnostics = [];
-          for (const key of keys.keys) {
-            if (key.name.startsWith('crdt_diagnostic_')) {
-              const value = await env.STATUS_KV.get(key.name, 'json');
-              diagnostics.push({ key: key.name, ...value });
-            }
+    }
+    if (url.pathname === '/api/whoami') {
+      const auth = await authenticate(request, env);
+      if (!auth) return jsonResponse({ authenticated: false }, 401);
+      return jsonResponse({
+        authenticated: true,
+        sub: auth.sub,
+        email: auth.email,
+        name: auth.name,
+        role: auth.role,
+        groups: auth.groups,
+        source: auth.source,
+      });
+    }
+
+    // ── Diagnostic: CRDT Headers ──
+    if (url.pathname === '/api/debug/crdt-headers' && request.method === 'GET') {
+      return withAccess(request, env, 'reader', async () => {
+        const keys = await env.STATUS_KV.list({ limit: 10 });
+        const diagnostics = [];
+        for (const key of keys.keys) {
+          if (key.name.startsWith('crdt_diagnostic_')) {
+            const value = await env.STATUS_KV.get(key.name, 'json');
+            diagnostics.push({ key: key.name, ...value });
           }
-          diagnostics.sort((a, b) => (b.ts || '') > (a.ts || '') ? -1 : 1);
-          return jsonResponse({ diagnostics: diagnostics.slice(0, 5) });
-        });
-      }
-    
+        }
+        diagnostics.sort((a, b) => (b.ts || '') > (a.ts || '') ? -1 : 1);
+        return jsonResponse({ diagnostics: diagnostics.slice(0, 5) });
+      });
+    }
+
     // ── Server-Sent Events Stream ──
     if (url.pathname === '/api/sse' && request.method === 'GET') {
       // SSE accessible to any authenticated user (Cloudflare Access sets this header)
