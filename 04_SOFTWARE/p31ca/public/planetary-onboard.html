@@ -883,6 +883,7 @@
 </div>
 
 <script src="/lib/p31-subject-id.js"></script>
+<script src="/lib/p31-passkey-api-base.js"></script>
 <script>
 // ============================================================
 //  CONFIG
@@ -1526,10 +1527,17 @@ async function enrollPasskey() {
     setStatus('Opening secure prompt…', 'rgba(216,214,208,0.45)');
 
     try {
+        const passkeyBase = window.p31GetPasskeyApiBase
+            ? await window.p31GetPasskeyApiBase()
+            : '/api/passkey';
         // Fetch creation options from Worker; fall back to stub when offline/undeployed
         let popts = null;
         try {
-            const r = await fetch('/api/passkey/register-begin', { method: 'POST' });
+            const r = await fetch(passkeyBase + '/register-begin', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: '{}',
+            });
             if (r.ok) {
                 const o = await r.json();
                 const d = s => Uint8Array.from(atob(s.replace(/-/g,'+').replace(/_/g,'/')), c => c.charCodeAt(0));
@@ -1558,7 +1566,7 @@ async function enrollPasskey() {
         const resp = c.response;
         const b = buf => btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
         try {
-            await fetch('/api/passkey/register-finish', {
+            await fetch(passkeyBase + '/register-finish', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

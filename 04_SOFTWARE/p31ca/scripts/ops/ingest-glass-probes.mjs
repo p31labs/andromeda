@@ -91,12 +91,19 @@ function main() {
       console.error("ingest-glass-probes: bad url for", p.id, url);
       process.exit(1);
     }
-    probes.push({
+    /** @type {Record<string, unknown>} */
+    const row = {
       id: p.id,
       group: p.group || "other",
       note: p.note || "",
       url,
-    });
+    };
+    if (p.method && String(p.method).toUpperCase() !== "GET") {
+      row.method = p.method;
+    }
+    if (p.body !== undefined) row.body = p.body;
+    if (p.expectJsonKey) row.expectJsonKey = p.expectJsonKey;
+    probes.push(row);
   }
   const out = {
     schema: "p31.opsGlassProbes/1.0.0",

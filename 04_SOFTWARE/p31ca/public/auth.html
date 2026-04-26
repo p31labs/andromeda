@@ -114,6 +114,7 @@
         P31 LABS · EIN 42-1888158 · Local rigidity, global humility.
     </footer>
 
+<script src="/lib/p31-passkey-api-base.js"></script>
 <script>
 // ── P31 Google Bridge (OAuth + /auth manual token) — change when you deploy
 (function () {
@@ -160,10 +161,17 @@ async function authenticate() {
     setStatus('');
 
     try {
+        const passkeyBase = window.p31GetPasskeyApiBase
+            ? await window.p31GetPasskeyApiBase()
+            : '/api/passkey';
         // Fetch challenge from Worker; fall back gracefully if not deployed
         let reqOpts = null;
         try {
-            const r = await fetch('/api/passkey/auth-begin', { method: 'POST' });
+            const r = await fetch(passkeyBase + '/auth-begin', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: '{}',
+            });
             if (r.ok) {
                 const o = await r.json();
                 reqOpts = {
@@ -196,7 +204,7 @@ async function authenticate() {
             },
         };
 
-        const finish = await fetch('/api/passkey/auth-finish', {
+        const finish = await fetch(passkeyBase + '/auth-finish', {
             method:  'POST',
             headers: { 'Content-Type': 'application/json' },
             body:    JSON.stringify(payload),

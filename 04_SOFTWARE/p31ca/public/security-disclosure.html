@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0f1115">
+  <title>Security disclosure | P31 Labs</title>
+  <meta name="description" content="How to report security issues affecting P31 Labs public surfaces and Workers.">
+  <link rel="stylesheet" href="/p31-style.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/p31-tailwind-extend.js"></script>
+  <script>tailwind.config = { theme: { extend: { ...window.P31_TAILWIND_EXTEND } } };</script>
+  <style>body { background: #0f1115; color: #d8d6d0; }</style>
+</head>
+<body class="min-h-screen px-4 py-10 max-w-2xl mx-auto text-sm leading-relaxed">
+  <nav class="flex flex-wrap gap-3 text-cyan-300/90 text-xs font-mono mb-8 no-print">
+    <a href="/" class="hover:underline">Hub</a>
+    <a href="/privacy" class="hover:underline">Privacy</a>
+    <a href="/terms" class="hover:underline">Terms</a>
+    <a href="/contact" class="hover:underline">Contact</a>
+    <a href="/accessibility" class="hover:underline">Accessibility</a>
+    <a href="/oss" class="hover:underline">Open source</a>
+  </nav>
+  <h1 class="text-2xl font-bold text-white mb-2">Security disclosure</h1>
+  <p class="text-white/50 text-xs mb-8">Responsible reporting for <strong class="text-white">p31ca.org</strong>, related Workers, and public repos under <strong class="text-white">github.com/p31labs</strong>.</p>
+
+  <section class="space-y-3 mb-8">
+    <h2 class="text-white font-semibold">Where to report</h2>
+    <ul class="text-white/80 list-disc pl-5 space-y-2">
+      <li><strong>Email:</strong> <a class="text-cyan-300 underline" href="mailto:will@p31ca.org">will@p31ca.org</a> — use subject line <code class="text-cyan-200">[security]</code>.</li>
+      <li><strong>Machine-readable:</strong> <a class="text-cyan-300 underline" href="/.well-known/security.txt">/.well-known/security.txt</a></li>
+    </ul>
+  </section>
+
+  <section class="space-y-3 mb-8">
+    <h2 class="text-white font-semibold">What to include</h2>
+    <ul class="text-white/80 list-disc pl-5 space-y-1">
+      <li>Affected URL or Worker host and reproduction steps</li>
+      <li>Impact assessment (data exposure, auth bypass, etc.)</li>
+      <li>Optional: patch or mitigation idea</li>
+    </ul>
+  </section>
+
+  <section class="space-y-3 mb-8">
+    <h2 class="text-white font-semibold">Scope</h2>
+    <p class="text-white/80">In-scope: our static hub, configured Workers, and published packages. Out-of-scope: third-party dependency debates without a concrete exploit, social engineering against individuals, or denial-of-service load tests without prior agreement.</p>
+  </section>
+
+  <section class="space-y-3">
+    <h2 class="text-white font-semibold">Policy</h2>
+    <p class="text-white/80">We do not operate a paid bounty program. We aim to acknowledge valid reports and ship fixes proportional to severity. Do not publicly disclose unresolved critical issues until we’ve had a reasonable window to patch.</p>
+  </section>
+</body>
+</html>

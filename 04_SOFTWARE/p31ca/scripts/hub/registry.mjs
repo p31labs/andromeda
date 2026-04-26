@@ -27,7 +27,7 @@ export const registry = [
     tech: ['React 19', 'Three.js r183', 'Zustand v5', 'Vitest 4', 'CF Pages'],
     features: [
       'K₄ impedance matching — every bond is a complete graph edge, not a directed arrow',
-      '413 automated tests across 30 suites — production quality enforcement',
+      '424 automated tests across 32 suites — production quality enforcement',
       'Multiplayer relay via Cloudflare Workers KV at 3–10s polling intervals',
       'Timestamped bond events double as court-admissible engagement evidence',
       'Offline mode with localStorage mock relay for two-tab local testing'

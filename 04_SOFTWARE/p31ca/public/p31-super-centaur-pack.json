@@ -46,7 +46,17 @@
       "meshStart": "https://p31ca.org/mesh-start.html",
       "connectK4": "https://p31ca.org/connect.html",
       "passport": "https://p31ca.org/passport",
-      "creatorEconomyContract": "https://p31ca.org/creator-economy.json"
+      "creatorEconomyContract": "https://p31ca.org/creator-economy.json",
+      "familySovereignPack": "https://p31ca.org/family-sovereign-pack.html",
+      "familySovereignPackShort": "https://p31ca.org/family-pack",
+      "publicSurfaceManifest": "https://p31ca.org/p31-public-surface.json",
+      "privacy": "https://p31ca.org/privacy.html",
+      "terms": "https://p31ca.org/terms.html",
+      "contact": "https://p31ca.org/contact.html",
+      "accessibility": "https://p31ca.org/accessibility.html",
+      "securityDisclosure": "https://p31ca.org/security-disclosure.html",
+      "openSource": "https://p31ca.org/open-source.html",
+      "securityTxt": "https://p31ca.org/.well-known/security.txt"
     }
   },
   "dataHealth": {
@@ -79,8 +89,8 @@
     "stripeWorker": {
       "hostAsBuilt": "https://donate-api.phosphorus31.org",
       "workersDevBase": "https://donate-api.trimtab-signal.workers.dev",
-      "canonicalPaymentApiPerConstants": "https://api.phosphorus31.org",
-      "note": "MAP names donate-api for the checkout/worker surface; home p31-constants.json uses payment.stripeWorkerHost = api.phosphorus31.org — same pipeline family; unify naming in MAP when convenient. workersDevBase = account default URL; glass/MAP liveness use hostAsBuilt + /health."
+      "canonicalPaymentApiPerConstants": "https://donate-api.phosphorus31.org",
+      "note": "As-built: payment.stripeWorkerHost and payment.stripeApiHealthUrl in p31-constants.json point at donate-api (no separate api.phosphorus31.org Worker). workersDevBase = account default URL; glass uses donate-api-health + donate-api-health-workers-dev."
     },
     "koFiPath": "Discord p31-bot per docs/adr/MAP-KOFI-001.md",
     "complianceNote": "Pipeline code does not grant tax advice; 501(c)(3) language is operator-approved marketing only (MAP §1)."
@@ -139,5 +149,10 @@
     "P31-ROOT-MAP.md"
   ],
   "humanPage": "https://p31ca.org/p31-super-centaur-starter.html",
-  "humanPageAliases": ["https://p31ca.org/centaur", "https://p31ca.org/super-centaur"]
+  "humanPageAliases": [
+    "https://p31ca.org/centaur",
+    "https://p31ca.org/super-centaur",
+    "https://p31ca.org/family-pack",
+    "https://p31ca.org/family-sovereign-pack.html"
+  ]
 }
