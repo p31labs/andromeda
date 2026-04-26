@@ -5,7 +5,7 @@
 export function buildEpcpDashboardHtml() {
   var html = '<!DOCTYPE html>';
   html += '<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">';
-  html += '<title>EPCP Command Center</title>';
+  html += '<title>G.O.D. / EPCP Command Center</title>';
   html += '<style>';
   html += '*{box-sizing:border-box;margin:0;padding:0}';
   html += 'body{font-family:system-ui,sans-serif;background:#0a0a14;color:#e2e8f0;padding:12px}';
@@ -53,9 +53,24 @@ export function buildEpcpDashboardHtml() {
   html += '  var app=document.getElementById("app");';
   html += '  var out="";';
   html += '  out+="<div style=\\"margin-bottom:24px\\">";';
-  html += '  out+="<h1 style=\\"font-size:22px;background:linear-gradient(90deg,#c4b5fd,#22d3ee,#67e8f9);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:4px\\">EPCP COMMAND CENTER</h1>";';
+  html += '  out+="<h1 style=\\"font-size:22px;background:linear-gradient(90deg,#c4b5fd,#22d3ee,#67e8f9);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:2px\\">G.O.D. / EPCP</h1>";';
+  html += '  out+="<div style=\\"font-size:12px;color:#64748b;margin-bottom:8px\\">Grounded Operator Deck — <span style=\\"color:#94a3b8\\">edge fleet + <strong>local 127.0.0.1:3131</strong> (P31 home) + <a href=\\"https://p31ca.org/ops/\\" target=\\"_blank\\" rel=\\"noopener\\" style=\\"color:#22d3ee\\">p31ca/ops</a> glass</span></div>";';
   html += '  var whoamiText=whoami.authenticated?"Logged in as "+whoami.email+" ("+whoami.role+")":"Not authenticated";';
   html += '  out+="<div style=\\"font-size:11px;color:#64748b;text-transform:uppercase\\">"+whoamiText+"</div>";';
+  html += '  out+="</div>";';
+  html += '  out+="<div class=\\"card\\" id=\\"god-local-deck\\" style=\\"border-color:#4f46e5;background:linear-gradient(180deg,rgba(79,70,229,0.12),#111827);\\">";';
+  html += '  out+="<div class=\\"card-title\\" style=\\"color:#a5b4fc;letter-spacing:0.08em\\">Local machine + agent lattice</div>";';
+  html += '  out+="<p style=\\"font-size:13px;color:#94a3b8;line-height:1.6;margin-bottom:10px\\">The <strong style=\\"color:#e2e8f0\\">P31 home</strong> tree runs a whitelisted <strong>localhost</strong> API on <code style=\\"color:#22d3ee\\">127.0.0.1:3131</code> (run <code style=\\"color:#a78bfa\\">npm run command-center</code> there) — one-click <code>git hooks</code>, <code>verify:monetary</code>, <code>pr</code>, Andromeda <code>prepush:check</code>, etc. <strong>Cloud cannot reach 127.0.0.1</strong> — you open that URL on the same box you use for Cursor/terminal.</p>";';
+  html += '  out+="<a href=\\"http://127.0.0.1:3131/\\" target=\\"_blank\\" rel=\\"noopener\\" class=\\"btn\\" style=\\"display:inline-block;margin:0 0 10px 0\\">Open local P31 command center</a>";';
+  html += '  out+="<div style=\\"font-size:11px;color:#64748b;margin-bottom:14px\\">Nothing loads? <code>cd</code> to the <strong>bonding-soup</strong> (P31 home) repo root, then <code>npm run command-center</code>. Keep that terminal open (Ctrl+C stops the server).</div>";';
+  html += '  out+="<div class=\\"card-title\\" style=\\"color:#94a3b8;margin-top:4px\\">Connection lattice (where to act, super-linear)</div>";';
+  html += '  out+="<table style=\\"width:100%;font-size:12px;border-collapse:collapse\\"><tbody>";';
+  html += '  out+="<tr style=\\"border-bottom:1px solid #1e293b\\"><td style=\\"padding:6px 8px 6px 0;vertical-align:top;color:#64748b;width:28%\\"><strong>Local</strong></td><td style=\\"padding:6px 0;vertical-align:top;color:#cbd5e1\\">This machine: buttons · <a href=\\"http://127.0.0.1:3131/\\" target=\\"_blank\\" rel=\\"noopener\\" style=\\"color:#22d3ee\\">:3131</a> · repo <code>AGENTS.md</code> + <code>P31-ROOT-MAP.md</code></td></tr>";';
+  html += '  out+="<tr style=\\"border-bottom:1px solid #1e293b\\"><td style=\\"padding:6px 8px 6px 0;vertical-align:top;color:#64748b\\"><strong>Hub</strong> (read-mostly)</td><td style=\\"padding:6px 0;vertical-align:top\\"><a href=\\"https://p31ca.org/ops/\\" target=\\"_blank\\" rel=\\"noopener\\" style=\\"color:#22d3ee\\">p31ca.org/ops</a> glass · <a href=\\"https://p31ca.org/\\" target=\\"_blank\\" rel=\\"noopener\\" style=\\"color:#22d3ee\\">p31ca.org</a> · <a href=\\"https://p31ca.org/mesh-start.html\\" target=\\"_blank\\" rel=\\"noopener\\" style=\\"color:#22d3ee\\">mesh-start</a></td></tr>";';
+  html += '  out+="<tr><td style=\\"padding:6px 8px 6px 0;vertical-align:top;color:#64748b\\"><strong>Edge</strong></td><td style=\\"padding:6px 0;vertical-align:top\\">This Worker (Access + fleet below) + write paths per EPCP</td></tr>";';
+  html += '  out+="</tbody></table>";';
+  html += '  out+="<div class=\\"card-title\\" style=\\"color:#94a3b8;margin-top:12px\\">Repos</div>";';
+  html += '  out+="<div style=\\"font-size:12px;color:#94a3b8;line-height:1.6\\">• <a href=\\"https://github.com/p31labs/andromeda\\" target=\\"_blank\\" rel=\\"noopener\\" style=\\"color:#22d3ee\\">github.com/p31labs/andromeda</a> (monorepo)<br>• P31 <strong>home</strong> (BONDING Soup + <code>npm run command-center</code>) is a sibling / multi-root clone — see CWP and <code>docs/HANDOFF-PROMPT-COMMAND-CENTER.md</code> in the tree</div>";';
   html += '  out+="</div>";';
   
   html += '  var workerCount=status.workers?status.workers.length:0;';

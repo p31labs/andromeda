@@ -1,0 +1,567 @@
+---
+/**
+ * CWP-P31-UI-2026-01 — Operator shell
+ * Phase A: density dial, ambient status strip, focus mode (WBS UI-A.1–A.3)
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import mesh from '../../data/p31-mesh-constants.json'
+import opsGlass from '../../data/ops-glass-probes.json'
+
+const commandCenterBase = 'https://command-center.trimtab-signal.workers.dev'
+const commandCenterHealth = `${commandCenterBase}/api/health`
+const operatorShiftApiUrl = `${commandCenterBase}/api/operator/shift`
+const k4HealthUrl = new URL('/api/health', mesh.k4PersonalWorkerUrl).toString()
+const orchestratorStatusUrl = new URL('/api/orchestrator/status', mesh.orchestratorWorkerUrl).toString()
+---
+
+<BaseLayout
+  title="G.O.D. / Operator shell | p31ca"
+  description="Grounded Operator Deck — /ops/ glass + local 127.0.0.1:3131 + EPCP edge. CWP-P31-UI-2026-01."
+>
+  <div
+    class="ops-root relative z-10 max-w-6xl mx-auto px-4 py-8 transition-[padding,gap] duration-200"
+    id="ops-root"
+    data-density="standard"
+  >
+    <div
+      class="ops-chrome flex flex-col sm:flex-row sm:flex-wrap sm:items-center sm:justify-between gap-3 mb-4 pb-3 border-b border-white/10"
+    >
+      <p
+        class="ops-aux text-xs font-mono uppercase tracking-widest text-teal-400/90"
+        data-cwp="CWP-P31-UI-2026-01"
+      >
+        CWP-P31-UI-2026-01 · operator shell
+      </p>
+      <div class="flex flex-wrap items-center gap-2" role="group" aria-label="Interface density">
+        <span class="hidden sm:inline text-[10px] uppercase tracking-wider text-white/40 mr-1">Density</span>
+        <div class="inline-flex rounded-lg border border-white/15 p-0.5 bg-black/20">
+          <button
+            type="button"
+            class="ops-density-btn px-2.5 py-1.5 text-xs font-medium rounded-md text-white/70 hover:text-white"
+            data-density-value="calm"
+            >Calm</button
+          >
+          <button
+            type="button"
+            class="ops-density-btn px-2.5 py-1.5 text-xs font-medium rounded-md text-white/70 hover:text-white"
+            data-density-value="standard"
+            >Standard</button
+          >
+          <button
+            type="button"
+            class="ops-density-btn px-2.5 py-1.5 text-xs font-medium rounded-md text-white/70 hover:text-white"
+            data-density-value="deep"
+            >Deep</button
+          >
+        </div>
+        <button
+          type="button"
+          class="px-2.5 py-1.5 text-xs font-medium rounded-lg border border-white/15 text-amber-200/90 hover:bg-white/5"
+          id="ops-focus-toggle"
+          aria-pressed="false"
+        >
+          Focus
+        </button>
+      </div>
+    </div>
+
+    <div
+      class="ops-ambient mb-6 rounded-lg border px-3 py-2.5 text-sm font-mono flex flex-wrap items-center gap-x-4 gap-y-1"
+      id="ops-ambient"
+      role="status"
+      aria-live="polite"
+      data-state="loading"
+    >
+      <span class="text-white/45 text-xs uppercase tracking-wide">System pulse</span>
+      <span class="h-1.5 w-1.5 rounded-full bg-white/30 shrink-0" id="ops-ambient-dot" aria-hidden="true"
+      ></span>
+      <span id="ops-ambient-line" class="text-white/80">Checking edge…</span>
+    </div>
+
+    <header class="mb-8 border-b border-white/10 pb-6 ops-prose">
+      <h1 class="text-2xl md:text-3xl font-semibold text-white mb-1">G.O.D. — operator shell</h1>
+      <p class="text-xs text-indigo-200/80 font-mono uppercase tracking-widest mb-2">Grounded Operator Deck</p>
+      <p class="text-white/60 text-sm max-w-2xl ops-aux">
+        One frame for day-to-day work: same nav model everywhere, glass-box health readouts, and tag in/out
+        when you need explicit on-call focus. Trust boundary: mutations and sensitive reads are enforced on
+        Workers (see <code class="text-teal-300/80">p31ca/docs/EDGE-SECURITY.md</code> in the repo), not in
+        static HTML alone. Pair with the P31 home <code class="text-indigo-200/80">npm run command-center</code>
+        on <strong class="text-white/80">127.0.0.1:3131</strong> and the
+        <a href="https://command-center.trimtab-signal.workers.dev/" class="text-teal-300/80 hover:underline" rel="noopener"
+          >EPCP (G.O.D. edge) dashboard</a
+        >.
+      </p>
+    </header>
+
+    <section
+      class="mb-8 rounded-xl border border-indigo-500/35 bg-indigo-950/25 p-5 ops-aux"
+      aria-labelledby="god-lattice-title"
+    >
+      <h2 id="god-lattice-title" class="text-lg font-medium text-white mb-2">Local + lattice (never leave the stack)</h2>
+      <p class="text-sm text-white/55 mb-4 max-w-3xl">
+        Three surfaces — <strong class="text-indigo-200/90">this machine</strong> (whitelisted local API), <strong>this
+          page / p31ca</strong> (read-mostly glass), <strong>edge EPCP</strong> (Access, fleet, audit) — all mapped here so
+        agents and humans pick the right surface without spelunking the repo.
+      </p>
+      <div class="flex flex-wrap gap-2 mb-5">
+        <a
+          href="http://127.0.0.1:3131/"
+          class="inline-flex items-center rounded-lg border border-indigo-400/45 bg-indigo-500/15 px-3 py-2.5 text-sm text-indigo-100 hover:bg-indigo-500/25"
+          >Local command center (127.0.0.1:3131)</a
+        >
+        <a
+          href={commandCenterBase + '/'}
+          class="inline-flex items-center rounded-lg border border-white/15 px-3 py-2.5 text-sm text-white/85 hover:border-teal-500/40"
+          >G.O.D. edge (EPCP)</a
+        >
+        <a
+          href="https://github.com/p31labs/andromeda"
+          class="inline-flex items-center rounded-lg border border-white/10 px-3 py-2.5 text-sm text-white/70 hover:border-white/25"
+          rel="noopener">andromeda (monorepo)</a
+        >
+      </div>
+      <dl class="space-y-3 text-sm text-white/75">
+        <div class="grid sm:grid-cols-[5.5rem_1fr] gap-1 border-b border-white/5 pb-3">
+          <dt class="text-[10px] uppercase tracking-widest text-white/40 font-mono pt-0.5">Local</dt>
+          <dd class="text-white/60">
+            In the <strong class="text-white/85">P31 home</strong> (bonding-soup) repo: <code
+              class="text-teal-300/90 text-xs">npm run command-center</code> — hooks, <code
+              class="text-teal-300/80 text-xs">verify:monetary</code>, <code class="text-teal-300/80 text-xs">pr</code
+            >, Andromeda <code class="text-teal-300/80 text-xs">prepush:check</code>. Stays on your machine; start the
+            server, then use the top link.
+          </dd>
+        </div>
+        <div class="grid sm:grid-cols-[5.5rem_1fr] gap-1 border-b border-white/5 pb-3">
+          <dt class="text-[10px] uppercase tracking-widest text-white/40 font-mono pt-0.5">Hub</dt>
+          <dd class="text-white/60">
+            You are on <code class="text-teal-300/85 text-xs">/ops</code> on p31ca — full glass table below. Ingested from
+            home <code class="text-white/50 text-xs">p31-ecosystem.json</code> (see CWP).
+          </dd>
+        </div>
+        <div class="grid sm:grid-cols-[5.5rem_1fr] gap-1">
+          <dt class="text-[10px] uppercase tracking-widest text-white/40 font-mono pt-0.5">Edge</dt>
+          <dd class="text-white/60">
+            <a href={commandCenterHealth} class="text-teal-300/80 hover:underline">EPCP <code>GET /api/health</code></a
+            > ·
+            <a href={operatorShiftApiUrl} class="text-teal-300/80 hover:underline">operator shift (public state)</a> — tag
+            in/out via POST + Access.
+          </dd>
+        </div>
+      </dl>
+    </section>
+
+    <nav
+      class="ops-nav grid grid-cols-2 md:grid-cols-4 gap-2 mb-10"
+      aria-label="Primary operator areas"
+    >
+      <a
+        href="/passport"
+        class="block rounded-lg border border-white/10 bg-white/5 px-3 py-4 hover:border-teal-500/40 transition-colors"
+      >
+        <span class="text-xs text-white/50 uppercase tracking-wide">Personal</span>
+        <span class="block text-sm font-medium mt-1">Cognitive passport</span>
+      </a>
+      <a
+        href="/connect.html"
+        class="block rounded-lg border border-white/10 bg-white/5 px-3 py-4 hover:border-teal-500/40 transition-colors"
+      >
+        <span class="text-xs text-white/50 uppercase tracking-wide">Mesh</span>
+        <span class="block text-sm font-medium mt-1">K₄ connect</span>
+      </a>
+      <a
+        href="/orchestrator"
+        class="block rounded-lg border border-white/10 bg-white/5 px-3 py-4 hover:border-teal-500/40 transition-colors"
+      >
+        <span class="text-xs text-white/50 uppercase tracking-wide">Actions</span>
+        <span class="block text-sm font-medium mt-1">Orchestrator</span>
+      </a>
+      <a
+        href="/lattice.html"
+        class="block rounded-lg border border-white/10 bg-white/5 px-3 py-4 hover:border-teal-500/40 transition-colors"
+      >
+        <span class="text-xs text-white/50 uppercase tracking-wide">Explore</span>
+        <span class="block text-sm font-medium mt-1">Lattice</span>
+      </a>
+    </nav>
+
+    <section
+      class="mb-10 rounded-xl border border-white/10 bg-white/[0.03] p-5 ops-aux"
+      aria-labelledby="glass-title"
+    >
+      <h2 id="glass-title" class="text-lg font-medium text-white mb-1">Glass box (read-only)</h2>
+      <p class="text-xs text-white/40 font-mono mb-4" id="ops-glass-meta">
+        Ingest: {opsGlass.source} · {opsGlass.probes.length} probes ·
+        {opsGlass.ingested ? opsGlass.ingested.slice(0, 10) : "—"} 
+        <span class="text-white/30">(regenerate: home <code class="text-teal-500/80">p31-ecosystem.json</code> →
+        <code class="text-teal-500/80">npm run ops:ingest</code> in p31ca)</span>
+      </p>
+      <p class="text-sm text-white/55 mb-4">
+        Live GETs from your browser. CLI aggregate with no CORS limits:
+        <code class="text-teal-300/90">npm run ecosystem:glass</code> (repo root) →
+        <code class="text-white/50">/tmp/p31_glass_report.json</code>.
+      </p>
+      <div class="overflow-x-auto rounded-lg border border-white/10">
+        <table class="w-full text-left text-sm" id="ops-glass-table" aria-label="Ecosystem health probes">
+          <thead>
+            <tr class="border-b border-white/10 text-white/50 text-xs uppercase tracking-wide">
+              <th class="p-2 pl-3">Id</th>
+              <th class="p-2">Group</th>
+              <th class="p-2">Level</th>
+              <th class="p-2">HTTP</th>
+              <th class="p-2">ms</th>
+              <th class="p-2 pr-3">URL</th>
+            </tr>
+          </thead>
+          <tbody id="ops-glass-tbody">
+            {opsGlass.probes.map((p) => (
+              <tr class="border-b border-white/5" data-glass-probe={p.id}>
+                <td class="p-2 pl-3 font-mono text-teal-200/90 text-xs align-top whitespace-nowrap">{p.id}</td>
+                <td class="p-2 text-white/60 text-xs align-top whitespace-nowrap">{p.group}</td>
+                <td class="p-2 font-mono text-white/50 align-top" data-glass-level>…</td>
+                <td class="p-2 font-mono text-white/50 align-top" data-glass-code>—</td>
+                <td class="p-2 font-mono text-white/50 align-top" data-glass-ms>—</td>
+                <td class="p-2 pr-3 font-mono text-[11px] text-white/45 break-all align-top">{p.url}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section
+      class="mb-8 rounded-xl border border-white/10 bg-white/[0.03] p-5 ops-aux"
+      aria-labelledby="tag-title"
+    >
+      <h2 id="tag-title" class="text-lg font-medium text-white mb-2">Tag in / tag out</h2>
+      <div
+        class="rounded-lg border border-teal-500/25 bg-teal-500/[0.06] p-4 mb-4"
+        id="ops-edge-shift-block"
+      >
+        <h3 class="text-xs font-mono uppercase tracking-wider text-teal-300/80 mb-2">Live (edge)</h3>
+        <p class="text-sm text-white/85 mb-1" id="ops-edge-shift-line" role="status" aria-live="polite">
+          Loading edge state…
+        </p>
+        <p class="text-xs text-white/45">
+          <code class="text-teal-300/80">GET {operatorShiftApiUrl}</code> — public PII-free state.{' '}
+          <code class="text-teal-300/80">POST</code> JSON body: <code>action</code> = <code>in</code> or
+          <code>out</code>, optional <code>note</code> (requires Cloudflare Access + <strong>operator</strong> role).
+        </p>
+        <a
+          class="inline-block mt-3 text-sm text-teal-400 hover:underline"
+          href={commandCenterBase + '/'}
+          rel="noreferrer"
+          >Open EPCP command center (Access)</a
+        >
+      </div>
+      <p class="text-sm text-white/55">
+        <span class="text-white/70">Local</span> (home repo only):{' '}
+        <code class="text-teal-300/90">npm run operator:shift-in</code> ·
+        <code class="text-teal-300/90">npm run operator:shift-out</code> ·
+        <code class="text-teal-300/90">npm run operator:shift-status</code> →
+        <code class="text-white/50">~/.p31/operator-shift.jsonl</code>
+      </p>
+    </section>
+
+    <section
+      class="ops-aux rounded-xl border border-amber-500/20 bg-amber-500/5 p-5 text-sm text-white/70"
+    >
+      <p>
+        <strong class="text-amber-200/90">EPCP command center</strong> (Worker) is a separate glass surface:
+        <a
+          class="text-teal-400 hover:underline break-all"
+          href={commandCenterHealth}
+          rel="noreferrer"
+          >command-center health</a
+        > · see
+        <code class="text-white/50">andromeda/.../command-center/CLOSURE.md</code>
+      </p>
+    </section>
+  </div>
+
+  <script
+    define:vars={{
+      k4Health: k4HealthUrl,
+      orchStatus: orchestratorStatusUrl,
+      ccHealth: commandCenterHealth,
+      glassProbes: opsGlass.probes,
+      operatorShiftUrl: operatorShiftApiUrl,
+    }}
+  >
+    ;(function () {
+      var root = document.getElementById('ops-root')
+      var storageKey = 'p31-ops-density'
+      var focusKey = 'p31-ops-focus'
+      if (!root) return
+
+      var mqReduce = window.matchMedia('(prefers-reduced-motion: reduce)')
+
+      function applyDensity(d) {
+        if (d !== 'calm' && d !== 'standard' && d !== 'deep') d = 'standard'
+        root.setAttribute('data-density', d)
+        try {
+          sessionStorage.setItem(storageKey, d)
+        } catch (e) {}
+        var u = new URL(window.location.href)
+        u.searchParams.set('density', d)
+        window.history.replaceState({}, '', u.toString())
+        document.querySelectorAll('.ops-density-btn').forEach(function (btn) {
+          btn.setAttribute('data-on', btn.getAttribute('data-density-value') === d ? '1' : '')
+        })
+      }
+
+      var params = new URLSearchParams(window.location.search)
+      var initial = params.get('density') || (function () {
+        try {
+          return sessionStorage.getItem(storageKey)
+        } catch (e) {
+          return null
+        }
+      })() || 'standard'
+      applyDensity(initial)
+
+      document.querySelectorAll('.ops-density-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          applyDensity(btn.getAttribute('data-density-value') || 'standard')
+        })
+      })
+
+      var focusBtn = document.getElementById('ops-focus-toggle')
+      function setFocus(on) {
+        root.classList.toggle('ops-focus', on)
+        if (focusBtn) {
+          focusBtn.setAttribute('aria-pressed', on ? 'true' : 'false')
+          focusBtn.textContent = on ? 'Exit focus' : 'Focus'
+        }
+        try {
+          if (on) sessionStorage.setItem(focusKey, '1')
+          else sessionStorage.removeItem(focusKey)
+        } catch (e) {}
+      }
+      try {
+        if (sessionStorage.getItem(focusKey) === '1') setFocus(true)
+      } catch (e) {}
+      if (focusBtn) {
+        focusBtn.addEventListener('click', function () {
+          setFocus(!root.classList.contains('ops-focus'))
+        })
+      }
+      document.addEventListener('keydown', function (ev) {
+        if (ev.key === 'Escape' && root.classList.contains('ops-focus')) {
+          setFocus(false)
+        }
+      })
+
+      if (mqReduce.matches) root.setAttribute('data-reduced-motion', '1')
+      mqReduce.addEventListener('change', function () {
+        root.setAttribute('data-reduced-motion', mqReduce.matches ? '1' : '')
+      })
+
+      var amb = document.getElementById('ops-ambient')
+      var ambLine = document.getElementById('ops-ambient-line')
+      var ambDot = document.getElementById('ops-ambient-dot')
+      if (!amb || !ambLine) return
+
+      var ambBaseClass =
+        'ops-ambient mb-6 rounded-lg border px-3 py-2.5 text-sm font-mono flex flex-wrap items-center gap-x-4 gap-y-1 '
+
+      function setAmbientState(state, line) {
+        amb.setAttribute('data-state', state)
+        ambLine.textContent = line
+        if (ambDot) {
+          ambDot.className =
+            'h-1.5 w-1.5 rounded-full shrink-0 ' +
+            (state === 'ok' ? 'bg-emerald-400' : state === 'warn' ? 'bg-amber-400' : 'bg-rose-400')
+        }
+        if (state === 'ok') amb.className = ambBaseClass + 'border-emerald-500/35 bg-emerald-500/5'
+        else if (state === 'warn') amb.className = ambBaseClass + 'border-amber-500/40 bg-amber-500/5'
+        else amb.className = ambBaseClass + 'border-rose-500/40 bg-rose-500/5'
+      }
+
+      var timeoutMs = 12000
+      function probeOne(url) {
+        return fetch(url, { method: 'GET', credentials: 'omit' })
+          .then(function (r) {
+            return { ok: r.ok, code: r.status, auth: r.status === 401 || r.status === 403 }
+          })
+          .catch(function (e) {
+            return { ok: false, code: 0, err: String(e && e.message) }
+          })
+      }
+      var probeRace = new Promise(function (resolve, reject) {
+        setTimeout(function () {
+          reject(new Error('timeout'))
+        }, timeoutMs)
+      })
+      Promise.race([Promise.all([probeOne(k4Health), probeOne(orchStatus), probeOne(ccHealth)]), probeRace])
+        .then(function (results) {
+          var names = ['k4-personal', 'orchestrator', 'command-center']
+          var ok = 0
+          var auth = 0
+          var down = 0
+          var parts = []
+          for (var i = 0; i < results.length; i++) {
+            var r = results[i]
+            if (r.ok) {
+              ok++
+              parts.push(names[i] + ' · ' + (r.code || 200))
+            } else if (r.auth) {
+              auth++
+              parts.push(names[i] + ' · auth ' + (r.code || '—') + ' (edge up)')
+            } else {
+              down++
+              parts.push(names[i] + ' · down' + (r.code ? ' ' + r.code : ''))
+            }
+          }
+          var line = parts.join(' · ')
+          if (down === 0 && auth === 0) setAmbientState('ok', line)
+          else if (down === 0) setAmbientState('warn', line)
+          else setAmbientState('error', line)
+        })
+        .catch(function () {
+          setAmbientState(
+            'error',
+            'Pulse probe failed (network, CORS, or timeout). Run: npm run ecosystem:glass from repo root.'
+          )
+        })
+
+      function probeUrl(url) {
+        var t0 = Date.now()
+        return fetch(url, { method: 'GET', credentials: 'omit' })
+          .then(function (r) {
+            return {
+              level: r.ok
+                ? 'ok'
+                : r.status === 401 || r.status === 403
+                  ? 'auth'
+                  : r.status >= 500
+                    ? 'down'
+                    : 'warn',
+              code: r.status,
+              ms: Date.now() - t0,
+            }
+          })
+          .catch(function () {
+            return { level: 'down', code: 0, ms: Date.now() - t0 }
+          })
+      }
+
+      function runGlassTable(probes) {
+        if (!probes || !probes.length) return
+        probes.forEach(function (p) {
+          var row = document.querySelector('tr[data-glass-probe="' + p.id.replace(/"/g, '\\"') + '"]')
+          if (!row) return
+          var L = row.querySelector('[data-glass-level]')
+          var C = row.querySelector('[data-glass-code]')
+          var M = row.querySelector('[data-glass-ms]')
+          if (L) L.textContent = '…'
+          probeUrl(p.url).then(function (r) {
+            if (L) {
+              L.textContent = r.level
+              L.className =
+                'p-2 font-mono align-top ' +
+                (r.level === 'ok'
+                  ? 'text-emerald-400/95'
+                  : r.level === 'auth'
+                    ? 'text-amber-400/90'
+                    : r.level === 'warn'
+                      ? 'text-violet-300/90'
+                      : 'text-rose-400/90')
+            }
+            if (C) C.textContent = r.code ? String(r.code) : '—'
+            if (M) M.textContent = r.ms != null ? String(r.ms) : '—'
+          })
+        })
+      }
+      if (typeof glassProbes !== 'undefined' && glassProbes && glassProbes.length) {
+        runGlassTable(glassProbes)
+      }
+
+      var shiftLine = document.getElementById('ops-edge-shift-line')
+      if (shiftLine && typeof operatorShiftUrl !== 'undefined' && operatorShiftUrl) {
+        fetch(operatorShiftUrl, { method: 'GET', credentials: 'omit' })
+          .then(function (r) {
+            return r.json().then(function (j) {
+              return { ok: r.ok, j: j }
+            })
+          })
+          .then(function (x) {
+            if (!x || !x.j) {
+              shiftLine.textContent = 'Edge shift: empty response.'
+              return
+            }
+            var p = x.j.public
+            if (!p) {
+              shiftLine.textContent = 'Edge shift: no public field (API schema drift).'
+              return
+            }
+            if (p.state === 'unknown' || p.state == null) {
+              shiftLine.textContent = 'Edge shift: unknown (no in/out recorded yet).'
+            } else {
+              shiftLine.textContent =
+                'Edge shift: ' +
+                String(p.state).toUpperCase() +
+                (p.at ? ' · ' + p.at : '')
+            }
+          })
+          .catch(function () {
+            shiftLine.textContent = 'Edge shift: unavailable (network or CORS). Deploy /api/operator/shift on command-center.'
+          })
+      }
+    })()
+  </script>
+
+  <style is:global>
+    .ops-root {
+      --ops-pad: 1rem;
+      --ops-gap: 0.5rem;
+      --ops-text: 0.875rem;
+      --ops-chrome-display: flex;
+    }
+    .ops-root[data-density='calm'] {
+      --ops-pad: 0.75rem;
+      --ops-gap: 0.375rem;
+      --ops-text: 0.8125rem;
+    }
+    .ops-root[data-density='standard'] {
+      --ops-pad: 1rem;
+      --ops-gap: 0.5rem;
+      --ops-text: 0.875rem;
+    }
+    .ops-root[data-density='deep'] {
+      --ops-pad: 1.25rem;
+      --ops-gap: 0.75rem;
+      --ops-text: 0.9375rem;
+    }
+    .ops-root .ops-nav a {
+      padding: var(--ops-pad);
+      font-size: var(--ops-text);
+    }
+    .ops-root[data-reduced-motion='1'] * {
+      transition: none !important;
+      animation: none !important;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .ops-root * {
+        transition: none !important;
+        animation: none !important;
+      }
+    }
+    .ops-root.ops-focus .ops-aux {
+      display: none;
+    }
+    .ops-root.ops-focus .ops-ambient,
+    .ops-root.ops-focus .ops-chrome {
+      display: flex;
+    }
+    .ops-root.ops-focus .ops-ambient {
+      flex-wrap: wrap;
+    }
+    .ops-root.ops-focus .ops-prose p.ops-aux {
+      display: none;
+    }
+    .ops-density-btn[data-on='1'] {
+      background: rgba(45, 212, 191, 0.25);
+      color: rgb(255 255 255);
+    }
+  </style>
+</BaseLayout>
