@@ -32,8 +32,6 @@ export interface Env {
   GENESIS_GATE_URL?: string;
 }
 
-: Promise<void>;
-
 function getQFactor(spoonCount: number): number {
   // Default qFactor based on spoon deficit with hysteresis
   const defaultQFactor = 0.925;

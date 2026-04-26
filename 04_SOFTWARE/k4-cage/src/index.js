@@ -525,6 +525,9 @@ export class FamilyMeshRoom extends DurableObject {
   }
 }
 
+/** Legacy DO class name still referenced by existing k4-cage Durable Objects in Cloudflare. */
+export class FamilyMessagingDO extends FamilyMeshRoom {}
+
 // ═══ Worker router ═════════════════════════════════════════════════════
 /** @typedef {{ K4_TOPOLOGY: DurableObjectNamespace, FAMILY_MESH_ROOM: DurableObjectNamespace, K4_MESH: KVNamespace, DB?: D1Database, ADMIN_TOKEN?: string, INTERNAL_FANOUT_TOKEN?: string, MESH_ROOM_IDS?: string, WORKER_VERSION?: string, TOPOLOGY?: string, ENVIRONMENT?: string }} Env */
 

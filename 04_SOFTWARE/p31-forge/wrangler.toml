@@ -47,8 +47,11 @@ ALLOWED_ORIGINS = "https://phosphorus31.org,https://p31ca.org,http://localhost:5
 # "0 * * * *"  → hourly Substack RSS scan (+ auto-fanout if
 #                SUBSTACK_AUTO_TARGETS is set, e.g. "bluesky,mastodon")
 # Handler dispatches in worker/index.js → runScheduled(event, env)
+# Free-tier Workers cron budget is tight across the whole account; leave empty locally
+# and use manual/webhook triggers, or re-enable on a paid plan / after reducing other crons.
 [triggers]
-crons = ["0 9 * * *", "0 * * * *"]
+crons = []
+# crons = ["0 9 * * *", "0 * * * *"]
 
 # Observability
 [observability]

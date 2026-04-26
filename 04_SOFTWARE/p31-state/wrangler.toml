@@ -7,7 +7,7 @@ compatibility_date = "2026-04-04"
 
 [[kv_namespaces]]
 binding = "USER_STATE_KV"
-id = "REPLACE_WITH_KV_NAMESPACE_ID"
+id = "ebe6d01578a443aca9158203f67a4344"
 # Create: npx wrangler kv namespace create P31_USER_STATE
 # Then replace id above
 

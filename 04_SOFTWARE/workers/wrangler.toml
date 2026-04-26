@@ -14,7 +14,7 @@ new_sqlite_classes = [ "LoveTransactionDO" ]
 
 [[kv_namespaces]]
 binding = "SPOONS_KV"
-id = "ff890e80e7e64ae8b8afb59870f1a0f1"
+id = "dbc13218ee314f0e988f51d2618e6061"
 
 # [[kv_namespaces]]
 # binding = "THRESHOLDS_KV"
@@ -60,9 +60,7 @@ database_id = "592e3e2e-3203-4e0a-8342-9e85215ec8a6"
 name = "LOVE_TRANSACTION"
 class_name = "LoveTransactionDO"
 
-[[durable_objects.bindings]]
-name = "ORCHESTRATOR_DO"
-class_name = "EventBusDO"
+# EventBusDO lives on p31-orchestrator only (wrangler-orchestrator.toml) — do not bind here.
 
 # [[d1_databases]]
 # binding = "ORCHESTRATOR_D1"
