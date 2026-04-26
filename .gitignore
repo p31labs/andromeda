@@ -121,7 +121,9 @@ phenix-xiaozhi-v2/
 
 # Cloudflare Workers
 phosphorus31.org/planetary-planet/wrangler.toml
-phosphorus31.org/planetary-planet/src/store/
+# Track public dyslexia toggle store; other store paths stay local
+phosphorus31.org/planetary-planet/src/store/*
+!phosphorus31.org/planetary-planet/src/store/accessibility.js
 phosphorus31.org/planetary-planet/src/worker/
 
 # Malformed filenames (Windows copy-paste errors)

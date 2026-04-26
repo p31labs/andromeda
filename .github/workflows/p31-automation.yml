@@ -213,9 +213,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
+          cache: npm
+          cache-dependency-path: phosphorus31.org/planetary-planet/package-lock.json
 
       - name: Build phosphorus31.org
-        run: cd phosphorus31.org/planetary-planet && npm install && npm run build
+        run: cd phosphorus31.org/planetary-planet && npm ci && npm run build
 
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3

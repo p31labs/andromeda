@@ -39,6 +39,18 @@ if (existsSync(join(ROOT, hubPkg))) {
   }
 }
 
+// phosphorus31.org marketing site (parallel to p31ca hub — separate Pages project)
+const p31Site = 'phosphorus31.org/planetary-planet/package.json';
+if (existsSync(join(ROOT, p31Site))) {
+  const j = JSON.parse(read(p31Site));
+  const deploy = j.scripts?.deploy ?? '';
+  if (deploy) {
+    if (!deploy.includes('phosphorus31-org')) {
+      errors.push(`${p31Site}: deploy must use --project-name phosphorus31-org`);
+    }
+  }
+}
+
 if (errors.length) {
   console.error('enterprise-deploy-guard: FAILED\n');
   for (const e of errors) console.error(`  - ${e}`);
