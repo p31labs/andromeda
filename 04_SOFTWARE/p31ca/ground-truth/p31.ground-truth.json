@@ -354,6 +354,10 @@
     {
       "id": "canon-demo",
       "appUrl": "p31-canon-demo.html"
+    },
+    {
+      "id": "p31-delta-hiring",
+      "appUrl": "delta-hiring/index.html"
     }
   ],
   "threejs": {

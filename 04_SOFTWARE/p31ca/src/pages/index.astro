@@ -94,6 +94,7 @@ const countByStatus = coreProducts.reduce(
       </div>
       <div class="h-4 w-px bg-white/10"></div>
       <a href="/dome" class="text-[#4db8a8] hover:text-[#5ec4b3] transition-colors uppercase tracking-widest font-bold text-[10px] px-2 py-1 rounded border border-[#4db8a8]/30 bg-[#4db8a8]/10 hover:bg-[#4db8a8]/20" title="Sovereign Cockpit K₄ dome">Dome</a>
+      <a href="/ops/" class="text-[#818cf8] hover:text-[#a5b4fc] transition-colors uppercase tracking-widest font-bold text-[10px] px-2 py-1 rounded border border-[#818cf8]/35 bg-[#818cf8]/10 hover:bg-[#818cf8]/20" title="G.O.D. operator shell — glass + shift">Ops</a>
       <a href="/auth" class="text-[#E8636F] hover:text-[#ff7582] transition-colors uppercase tracking-widest font-bold text-[10px] px-3 py-1 rounded border border-[#E8636F]/30 bg-[#E8636F]/10 hover:bg-[#E8636F]/20">
         Authenticate
       </a>
@@ -151,6 +152,18 @@ const countByStatus = coreProducts.reduce(
         </a>
       </div>
     </header>
+
+    <!-- 1a. Operator shell (G.O.D.) -->
+    <div class="mb-10 interactive-zone animate-fade-in-up" style="animation-delay: 0.12s;">
+      <a href="/ops/" class="block glass-panel border border-[#6366f1]/35 hover:border-[#6366f1]/55 rounded-[12px] p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 transition-all duration-300 group no-underline hover:bg-[#14161d]/90">
+        <div>
+          <div class="text-[10px] font-mono text-[#818cf8] uppercase tracking-widest mb-2">/ operator</div>
+          <h2 class="font-bold text-white text-lg mb-1 group-hover:text-[#a5b4fc] transition-colors">G.O.D. — operator shell</h2>
+          <p class="text-sm text-[#d8d6d0]/70 max-w-xl leading-relaxed">Glass-box probes from <span class="font-mono text-[#d8d6d0]/90">p31-ecosystem.json</span>, system pulse, density dial, and edge shift readout. Pair with <span class="font-mono text-[#4db8a8]/90">npm run command-center</span> on your machine.</p>
+        </div>
+        <span class="px-5 py-2.5 bg-[#6366f1]/85 text-white font-bold rounded-[6px] text-sm tracking-wide whitespace-nowrap shrink-0">Open /ops →</span>
+      </a>
+    </div>
 
     <!-- 1b. Wye→Delta Entry Banner -->
     <div class="mb-16 interactive-zone animate-fade-in-up" style="animation-delay: 0.15s;">
@@ -318,10 +331,16 @@ const countByStatus = coreProducts.reduce(
     <footer class="border-t border-white/10 pt-10 pb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-8 text-xs text-[#6b7280] font-mono interactive-zone animate-fade-in-up" style="animation-delay: 0.4s;">
       <div>
         <p class="text-[#d8d6d0] font-bold mb-2 text-sm tracking-wide">P31 Labs, Inc.</p>
-        <p class="mb-1">Georgia 501(c)(3) Nonprofit</p>
+        <p class="mb-1">Georgia nonprofit · 501(c)(3) determination pending</p>
         <p>EIN: 42-1888158</p>
       </div>
       <div class="flex flex-wrap gap-x-8 gap-y-2">
+        <a href="/privacy" class="hover:text-[#4db8a8] transition-colors uppercase tracking-widest">Privacy</a>
+        <a href="/terms" class="hover:text-[#4db8a8] transition-colors uppercase tracking-widest">Terms</a>
+        <a href="/contact" class="hover:text-[#4db8a8] transition-colors uppercase tracking-widest">Contact</a>
+        <a href="/accessibility" class="hover:text-[#4db8a8] transition-colors uppercase tracking-widest">A11y</a>
+        <a href="/security" class="hover:text-[#4db8a8] transition-colors uppercase tracking-widest">Security</a>
+        <a href="/oss" class="hover:text-[#4db8a8] transition-colors uppercase tracking-widest">OSS</a>
         <a href="/dome" class="hover:text-[#4db8a8] transition-colors uppercase tracking-widest" title="Sovereign Cockpit K₄">/dome</a>
         <a href="/observatory.html" class="hover:text-[#4db8a8] transition-colors uppercase tracking-widest" title="Geodesic panel inspector">Observatory</a>
         <a href="/lattice.html" class="hover:text-[#4db8a8] transition-colors uppercase tracking-widest">Lattice</a>

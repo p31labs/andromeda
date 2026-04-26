@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#0f1115">
-<title>Kids Growth — S.J. & W.J. Milestone Tracker | P31 Labs</title>
-<meta name="description" content="Height and weight tracking with Chart.js growth curves">
+<title>P31 Delta hiring — Proof-based roles · WCD work samples · portable p31.proofRecord | P31 Labs</title>
+<meta name="description" content="Role packets with rubric weights, accommodations, and linked WCD identifiers — browse and search offline-first">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -13,7 +13,7 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --accent:#f472b6;
+  --accent:#6b9e8f;
   --font:var(--p31-font-sans);
   --mono:var(--p31-font-mono);
 }
@@ -102,7 +102,7 @@ ul.feature-list li:last-child{border-bottom:none}
     <div class="nav-links">
       <a href="/" class="nav-link">&larr; Hub</a>
       <a href="https://github.com/p31labs/andromeda" target="_blank" rel="noopener" class="nav-link">GitHub</a>
-      <a href="https://p31-kids-growth.trimtab-signal.workers.dev" class="nav-cta" target="_blank" rel="noopener">&#x2B21; Launch Kids Growth</a>
+      <a href="delta-hiring/index.html" class="nav-cta">&#x2B21; Launch P31 Delta hiring</a>
     </div>
   </div>
 </nav>
@@ -111,18 +111,18 @@ ul.feature-list li:last-child{border-bottom:none}
   <div class="hero-inner">
     <div class="hero-eyebrow">P31 Labs &mdash; LIVE</div>
     <div class="hero-top">
-      <div class="hero-icon">👶</div>
+      <div class="hero-icon">Δ</div>
       <div class="hero-text">
-        <h1>Kids Growth</h1>
-        <div class="tagline">S.J. & W.J. Milestone Tracker</div>
+        <h1>P31 Delta hiring</h1>
+        <div class="tagline">Proof-based roles · WCD work samples · portable p31.proofRecord</div>
         <div class="hero-badges">
           <span class="badge">LIVE</span>
-          <span class="badge" style="background:rgba(255,255,255,0.04);color:var(--muted);border-color:var(--border)">Cloudflare Worker</span><span class="badge" style="background:rgba(255,255,255,0.04);color:var(--muted);border-color:var(--border)">Chart.js</span><span class="badge" style="background:rgba(255,255,255,0.04);color:var(--muted);border-color:var(--border)">LocalStorage</span>
+          <span class="badge" style="background:rgba(255,255,255,0.04);color:var(--muted);border-color:var(--border)">Vite 5</span><span class="badge" style="background:rgba(255,255,255,0.04);color:var(--muted);border-color:var(--border)">TypeScript</span><span class="badge" style="background:rgba(255,255,255,0.04);color:var(--muted);border-color:var(--border)">Fuse.js</span>
         </div>
       </div>
     </div>
     <div class="hero-cta">
-      <a href="https://p31-kids-growth.trimtab-signal.workers.dev" class="cta-btn" target="_blank" rel="noopener">&#x2B21; Launch Kids Growth</a>
+      <a href="delta-hiring/index.html" class="cta-btn">&#x2B21; Launch P31 Delta hiring</a>
       <a href="/" class="cta-secondary">&larr; Back to Hub</a>
     </div>
   </div>
@@ -133,31 +133,30 @@ ul.feature-list li:last-child{border-bottom:none}
 
     <section>
       <div class="section-label">What Is It</div>
-      <p>Height and weight tracking with Chart.js growth curves. S.J. & W.J. Milestone Tracker is a core component of the P31 Labs sovereign cognitive infrastructure stack — built to run offline, deployed to the edge, and designed without dark patterns.</p>
-      <p>CDC growth data is bundled as a JSON lookup table — no API call. Chart.js renders dual-axis charts. All data localStorage-only per the privacy model.</p>
+      <p>Role packets with rubric weights, accommodations, and linked WCD identifiers — browse and search offline-first. Proof-based roles · WCD work samples · portable p31.proofRecord is a core component of the P31 Labs sovereign cognitive infrastructure stack — built to run offline, deployed to the edge, and designed without dark patterns.</p>
+      <p>Built in `04_SOFTWARE/p31-delta-hiring` (Vite SPA). Static assets sync to `p31ca/public/delta-hiring/`. Ground-truth key `routes.p31DeltaHiring`; mesh navigator link in `public/connect.html`.</p>
     </section>
 
     <section>
       <div class="section-label">Core Features</div>
       <ul class="feature-list">
-            <li>Height and weight tracking with Chart.js growth curves</li>
-            <li>CDC percentile bands overlaid on charts for developmental context</li>
-            <li>Milestone checklists: motor, language, social, cognitive — by age range</li>
-            <li>Photo journal with date stamps — stored locally, never uploaded</li>
-            <li>Export: PDF-ready growth summary for pediatric appointments</li>
+            <li>Role packets with rubric weights, accommodations, and linked WCD identifiers — browse and search offline-first</li>
+            <li>Help center and glossary grounded in mesh vocabulary; hash routes for deep links</li>
+            <li>Import and validate portable proof JSON (`p31.proofRecord`); export drafts from the browser only when you choose</li>
+            <li>Same-origin deploy under p31ca.org (`/delta-hiring/`, short URL `/hiring`) after `sync:p31ca` from the source package</li>
       </ul>
     </section>
 
     <section>
       <div class="section-label">How To Use</div>
-          <div class="step"><span class="step-num">1</span><span>Add a measurement: select the child (S.J. / W.J.), enter height and weight</span></div>
-          <div class="step"><span class="step-num">2</span><span>Charts update immediately with the new data point plotted against CDC bands</span></div>
-          <div class="step"><span class="step-num">3</span><span>Check milestone lists for the current age — check off achievements as they occur</span></div>
+          <div class="step"><span class="step-num">1</span><span>Open `/hiring` or `/delta-hiring/` — pick a role packet and read the WCD-linked expectations</span></div>
+          <div class="step"><span class="step-num">2</span><span>Use search and hash routes to jump to governance notes or a specific role</span></div>
+          <div class="step"><span class="step-num">3</span><span>When ready, export proof JSON from the app; keep drafts local until you explicitly share them</span></div>
     </section>
 
     <section>
       <div class="section-label">Architecture Notes</div>
-      <div class="tech-note">CDC growth data is bundled as a JSON lookup table — no API call. Chart.js renders dual-axis charts. All data localStorage-only per the privacy model.</div>
+      <div class="tech-note">Built in `04_SOFTWARE/p31-delta-hiring` (Vite SPA). Static assets sync to `p31ca/public/delta-hiring/`. Ground-truth key `routes.p31DeltaHiring`; mesh navigator link in `public/connect.html`.</div>
     </section>
 
     <div class="callout-p31">
@@ -165,15 +164,15 @@ ul.feature-list li:last-child{border-bottom:none}
     </div>
 
     <div style="margin-top:32px;display:flex;gap:14px;flex-wrap:wrap;align-items:center">
-      <a href="https://p31-kids-growth.trimtab-signal.workers.dev" class="cta-btn" target="_blank" rel="noopener">&#x2B21; Launch Kids Growth</a>
+      <a href="delta-hiring/index.html" class="cta-btn">&#x2B21; Launch P31 Delta hiring</a>
       <a href="/" class="cta-secondary">&larr; Back to Hub</a>
     </div>
 
     <div class="footer">
-      <span>P31 Labs, Inc. &middot; Kids Growth</span>
+      <span>P31 Labs, Inc. &middot; P31 Delta hiring</span>
       <div class="footer-links">
         <a href="/">Hub</a>
-        <a href="https://p31-kids-growth.trimtab-signal.workers.dev" target="_blank" rel="noopener">Kids Growth</a>
+        <a href="delta-hiring/index.html">P31 Delta hiring</a>
         <a href="https://phosphorus31.org/donate" target="_blank" rel="noopener">Support</a>
         <a href="https://github.com/p31labs/andromeda" target="_blank" rel="noopener">GitHub</a>
       </div>
@@ -190,16 +189,17 @@ ul.feature-list li:last-child{border-bottom:none}
     <div class="sidebar-card">
       <div class="sidebar-card-title">Tech Stack</div>
       <ul class="tech-stack">
-              <li>Cloudflare Worker</li>
-              <li>Chart.js</li>
-              <li>LocalStorage</li>
-              <li>CDC Percentile Data</li>
+              <li>Vite 5</li>
+              <li>TypeScript</li>
+              <li>Fuse.js</li>
+              <li>localStorage</li>
+              <li>p31.proofRecord</li>
       </ul>
     </div>
 
     <div class="sidebar-card">
       <div class="sidebar-card-title">Links</div>
-      <a href="https://p31-kids-growth.trimtab-signal.workers.dev" class="sidebar-link" target="_blank" rel="noopener">&#x2B21; Launch Application</a>
+      <a href="delta-hiring/index.html" class="sidebar-link">&#x2B21; Launch Application</a>
       <a href="https://github.com/p31labs/andromeda" target="_blank" rel="noopener" class="sidebar-link">&#x2009;&#x276F; Source Code</a>
       <a href="https://phosphorus31.org" target="_blank" rel="noopener" class="sidebar-link">&#x25B3; phosphorus31.org</a>
       <a href="https://phosphorus31.org/donate" target="_blank" rel="noopener" class="sidebar-link">&#x2665; Support P31 Labs</a>
@@ -207,9 +207,9 @@ ul.feature-list li:last-child{border-bottom:none}
 
     <div class="sidebar-card">
       <div class="sidebar-card-title">Related</div>
-            <a href="/medical-tracker-about.html" class="related-link">🩺 Medical Tracker</a>
-            <a href="/appointment-tracker-about.html" class="related-link">📅 Appointment Tracker</a>
-            <a href="/mission-control-about.html" class="related-link">🚀 Mission Control</a>
+            <a href="/geodesic-about.html" class="related-link">🔷 GEODESIC</a>
+            <a href="/legal-evidence-about.html" class="related-link">🛣 Legal Evidence</a>
+            <a href="/content-forge-about.html" class="related-link">✍️ CONTENT FORGE</a>
     </div>
   </aside>
 </div>

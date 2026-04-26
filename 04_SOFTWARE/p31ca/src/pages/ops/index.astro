@@ -189,12 +189,13 @@ const orchestratorStatusUrl = new URL('/api/orchestrator/status', mesh.orchestra
       aria-labelledby="glass-title"
     >
       <h2 id="glass-title" class="text-lg font-medium text-white mb-1">Glass box (read-only)</h2>
-      <p class="text-xs text-white/40 font-mono mb-4" id="ops-glass-meta">
+      <p class="text-xs text-white/40 font-mono mb-2" id="ops-glass-meta">
         Ingest: {opsGlass.source} · {opsGlass.probes.length} probes ·
         {opsGlass.ingested ? opsGlass.ingested.slice(0, 10) : "—"} 
         <span class="text-white/30">(regenerate: home <code class="text-teal-500/80">p31-ecosystem.json</code> →
         <code class="text-teal-500/80">npm run ops:ingest</code> in p31ca)</span>
       </p>
+      <p class="text-sm font-mono text-indigo-200/85 mb-4 min-h-[1.25rem]" id="ops-glass-summary" aria-live="polite"></p>
       <p class="text-sm text-white/55 mb-4">
         Live GETs from your browser. CLI aggregate with no CORS limits:
         <code class="text-teal-300/90">npm run ecosystem:glass</code> (repo root) →
@@ -445,16 +446,65 @@ const orchestratorStatusUrl = new URL('/api/orchestrator/status', mesh.orchestra
           })
       }
 
+      function probeGlassRow(p) {
+        var t0 = Date.now()
+        var method = (p.method || 'GET').toUpperCase()
+        var opts = {
+          method: method,
+          credentials: 'omit',
+          headers: { Accept: 'application/json, text/html;q=0.9, */*;q=0.1' },
+        }
+        if (method === 'POST') {
+          opts.headers['Content-Type'] = 'application/json'
+          opts.body = p.body !== undefined ? p.body : '{}'
+        }
+        return fetch(p.url, opts)
+          .then(function (r) {
+            var code = r.status
+            var ct = r.headers.get('content-type') || ''
+            function simple(level) {
+              return { level: level, code: code, ms: Date.now() - t0 }
+            }
+            if (r.ok) {
+              if (p.expectJsonKey) {
+                if (!ct.includes('application/json')) return simple('warn')
+                return r.json().then(function (j) {
+                  var ok =
+                    j &&
+                    typeof j === 'object' &&
+                    Object.prototype.hasOwnProperty.call(j, p.expectJsonKey)
+                  return { level: ok ? 'ok' : 'warn', code: code, ms: Date.now() - t0 }
+                }).catch(function () {
+                  return { level: 'warn', code: code, ms: Date.now() - t0 }
+                })
+              }
+              return simple('ok')
+            }
+            if (code === 401 || code === 403) return simple('auth')
+            if (code >= 500) return simple('down')
+            return simple('warn')
+          })
+          .catch(function () {
+            return { level: 'down', code: 0, ms: Date.now() - t0 }
+          })
+      }
+
+      function escProbeId(id) {
+        if (typeof CSS !== 'undefined' && typeof CSS.escape === 'function') return CSS.escape(id)
+        return String(id).replace(/\\/g, '\\\\').replace(/"/g, '\\"')
+      }
+
       function runGlassTable(probes) {
         if (!probes || !probes.length) return
-        probes.forEach(function (p) {
-          var row = document.querySelector('tr[data-glass-probe="' + p.id.replace(/"/g, '\\"') + '"]')
-          if (!row) return
-          var L = row.querySelector('[data-glass-level]')
-          var C = row.querySelector('[data-glass-code]')
-          var M = row.querySelector('[data-glass-ms]')
+        var summaryEl = document.getElementById('ops-glass-summary')
+        if (summaryEl) summaryEl.textContent = 'Probing ' + probes.length + ' endpoints…'
+        var jobs = probes.map(function (p) {
+          var row = document.querySelector('tr[data-glass-probe="' + escProbeId(p.id) + '"]')
+          var L = row ? row.querySelector('[data-glass-level]') : null
+          var C = row ? row.querySelector('[data-glass-code]') : null
+          var M = row ? row.querySelector('[data-glass-ms]') : null
           if (L) L.textContent = '…'
-          probeUrl(p.url).then(function (r) {
+          return probeGlassRow(p).then(function (r) {
             if (L) {
               L.textContent = r.level
               L.className =
@@ -469,7 +519,30 @@ const orchestratorStatusUrl = new URL('/api/orchestrator/status', mesh.orchestra
             }
             if (C) C.textContent = r.code ? String(r.code) : '—'
             if (M) M.textContent = r.ms != null ? String(r.ms) : '—'
+            return r.level
           })
+        })
+        Promise.all(jobs).then(function (levels) {
+          var ok = 0
+          var auth = 0
+          var warn = 0
+          var down = 0
+          for (var i = 0; i < levels.length; i++) {
+            var lv = levels[i]
+            if (lv === 'ok') ok++
+            else if (lv === 'auth') auth++
+            else if (lv === 'warn') warn++
+            else down++
+          }
+          if (!summaryEl) return
+          summaryEl.textContent =
+            'Glass summary: ' +
+            ok +
+            ' ok' +
+            (auth ? ' · ' + auth + ' auth (edge up)' : '') +
+            (warn ? ' · ' + warn + ' warn' : '') +
+            (down ? ' · ' + down + ' down' : '') +
+            ' — full report: npm run ecosystem:glass'
         })
       }
       if (typeof glassProbes !== 'undefined' && glassProbes && glassProbes.length) {

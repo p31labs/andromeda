@@ -2,6 +2,8 @@
 
 **Last Updated:** March 22, 2026
 
+**Live app:** [https://p31ca.org/hiring](https://p31ca.org/hiring) (same as `/delta-hiring/`). **Proof export:** portable `p31.proofRecord` JSON from the hiring UI (browser-local until you export).
+
 ---
 
 ## How Delta Hiring Works

@@ -4,9 +4,9 @@
 |--------|--------|
 | **CWP ID** | `CWP-P31-UI-2026-01` |
 | **Title** | Fully interactive P31 operator interface: unified shell, glass-box visibility, tag in/out, and progressive disclosure |
-| **Version** | 1.0.3 |
+| **Version** | 1.1.0 |
 | **Effective date** | 2026-04-26 |
-| **Status** | **Delivered (v1.0.3)** — A–C in tree; **deploy `command-center` Worker** to serve live `/api/operator/shift` in prod. |
+| **Status** | **Complete (v1.1.0)** — A–C shipped; **hub** discovery (nav + banner); **local** command-center extended; **glass** aggregate summary on `/ops/`. EPCP Worker deploy remains operator-owned. |
 | **Applies to** | **`andromeda/04_SOFTWARE/p31ca`** (primary route `/ops/`); **home** `scripts/ecosystem-glass.mjs`, `p31-ecosystem.json`, `operator-shift.mjs`; **edge** `cloudflare-worker/command-center` (read-only integration + health); **orchestrator** Worker (mutations — **not** implemented in Astro alone). **Does not** merge `phosphorus31.org` SUPER-CENTAUR UI without sister CWP **`CWP-P31-SC-2026-01`** alignment. |
 
 **Sister packages (do not conflate):**
@@ -136,8 +136,8 @@ This CWP is the **controlling** document. Work not listed in §4 or §6 is **out
 
 | Task ID | Task | Outputs | Acceptance |
 |---------|------|---------|------------|
-| **UI-F.1** | **Registry** row **`operator-shell`** (optional) + **about** stub when marketing-ready. | — | ECO D1 not broken |
-| **UI-F.2** | **CWP** **Version** `1.1.0` **Status** `Complete`. | D-UI-8 | Done |
+| **UI-F.1** | **Hub** discovery: **`/`** nav **Ops** + hero-region banner → **`/ops/`** (no separate `*-about.html`; avoids COCKPIT grid coupling). | — | **Done (v1.1.0)** |
+| **UI-F.2** | **CWP** **Version** `1.1.0` **Status** `Complete`. | D-UI-8 | **Done** |
 
 ---
 
@@ -203,6 +203,7 @@ This CWP is the **controlling** document. Work not listed in §4 or §6 is **out
 | 1.0.1 | 2026-04-26 | Phase A: density dial, ambient system pulse (3 edge GETs), focus mode, `prefers-reduced-motion` |
 | 1.0.2 | 2026-04-26 | Phase B: ingest pipeline + full glass table on `/ops/` (parallel GETs, ok/auth/warn/down) |
 | 1.0.3 | 2026-04-26 | Phase C: `/api/operator/shift` on EPCP Worker (KV + CORS); `/ops/` shows live public shift + home `p31-ecosystem` glass probe |
+| 1.1.0 | 2026-04-26 | **Closure:** hub **`/`** links **Ops** (top nav) + **G.O.D.** banner; **`npm run command-center`** adds verify / mesh / glass / shift-status; `/ops/` **glass summary** line after parallel probes |
 
 ---
 

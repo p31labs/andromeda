@@ -764,6 +764,30 @@ export const registry = [
     related: ['sovereign', 'collider', 'axiom']
   },
   {
+    id: 'p31-delta-hiring',
+    title: 'P31 Delta hiring',
+    tagline: 'Proof-based roles · WCD work samples · portable p31.proofRecord',
+    icon: 'Δ',
+    accent: '#6b9e8f',
+    status: 'live',
+    statusLabel: 'LIVE',
+    appUrl: 'delta-hiring/index.html',
+    tech: ['Vite 5', 'TypeScript', 'Fuse.js', 'localStorage', 'p31.proofRecord'],
+    features: [
+      'Role packets with rubric weights, accommodations, and linked WCD identifiers — browse and search offline-first',
+      'Help center and glossary grounded in mesh vocabulary; hash routes for deep links',
+      'Import and validate portable proof JSON (`p31.proofRecord`); export drafts from the browser only when you choose',
+      'Same-origin deploy under p31ca.org (`/delta-hiring/`, short URL `/hiring`) after `sync:p31ca` from the source package'
+    ],
+    howTo: [
+      'Open `/hiring` or `/delta-hiring/` — pick a role packet and read the WCD-linked expectations',
+      'Use search and hash routes to jump to governance notes or a specific role',
+      'When ready, export proof JSON from the app; keep drafts local until you explicitly share them'
+    ],
+    techNotes: 'Built in `04_SOFTWARE/p31-delta-hiring` (Vite SPA). Static assets sync to `p31ca/public/delta-hiring/`. Ground-truth key `routes.p31DeltaHiring`; mesh navigator link in `public/connect.html`.',
+    related: ['geodesic', 'legal-evidence', 'content-forge']
+  },
+  {
     id: 'super-centaur',
     title: 'Super-Centaur pack',
     tagline: 'Data health · MAP · mesh fleet · sovereignty',

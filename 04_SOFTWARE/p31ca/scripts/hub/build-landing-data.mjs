@@ -24,6 +24,7 @@ const COCKPIT_PRODUCT_IDS = [
   'collider',
   'content-forge',
   'geodesic',
+  'p31-delta-hiring',
   'genesis-gate',
   'k4market',
   'kenosis',
