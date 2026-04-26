@@ -22,30 +22,13 @@ jobs:
 
       - uses: ./.github/actions/pnpm-andromeda-full
 
-      # Bonding + shared: eslint (flat config). Warnings do not fail; errors fail the step.
-      - name: ESLint (bonding + shared)
-        run: |
-          set -e
-          cd 04_SOFTWARE
-          pnpm -C bonding run lint
-          pnpm -C packages/shared run lint
+      - uses: ./.github/actions/eslint-bonding-shared
 
-      - name: Security audit (high+)
+      - name: Security audit (high+, informational)
         continue-on-error: true
         run: pnpm audit --audit-level=high
 
-      - name: Type check (core packages)
-        run: cd 04_SOFTWARE && pnpm turbo run typecheck --filter=@p31/shared --filter=@p31/bonding --filter=@p31/spaceship-earth --filter=@p31/node-zero
-
-      - name: Build packages
-        run: cd 04_SOFTWARE && pnpm turbo run build --filter=@p31/shared --filter=@p31/bonding --filter=@p31/node-zero
-
-      - name: Run tests
-        run: cd 04_SOFTWARE && pnpm turbo run test --filter=@p31/bonding --filter=@p31/node-zero
-
-      - name: Turborepo remote cache
-        if: ${{ env.TURBO_TOKEN != '' }}
-        run: cd 04_SOFTWARE && pnpm turbo run build --filter=@p31/bonding --filter=@p31/node-zero --remote
+      - uses: ./.github/actions/turbo-core-slice
 
       - name: WCD documentation check
         run: |
