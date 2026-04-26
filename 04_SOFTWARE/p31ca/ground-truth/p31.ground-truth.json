@@ -461,7 +461,7 @@
     {
       "id": "demo.labs.page",
       "path": "public/demo-labs.html",
-      "mustIncludeSubstring": "Demo labs"
+      "mustIncludeSubstring": "Welcome to the demo lobby"
     }
   ],
   "registryAppUrlInvariants": [

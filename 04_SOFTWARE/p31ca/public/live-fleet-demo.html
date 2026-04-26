@@ -52,7 +52,7 @@
       <div>
         <p class="mono text-[var(--p31-phosphor)] uppercase tracking-widest text-[10px] mb-1">Demo · p31.liveFleet</p>
         <h1 class="text-xl md:text-2xl font-bold text-white tracking-tight">Live fleet map</h1>
-        <p class="text-sm text-[var(--p31-muted)] mt-1 max-w-xl">Sites, mesh Workers, payments, and allowlist — loaded from <code class="mono text-[var(--p31-cyan)]">/p31-live-fleet.json</code>.</p>
+        <p class="text-sm text-[var(--p31-muted)] mt-1 max-w-xl">A single, readable map of what we ship on the hub and at the edge — live data from <code class="mono text-[var(--p31-cyan)]">/p31-live-fleet.json</code>. Bookmark it for onboarding or audits.</p>
       </div>
       <div class="flex flex-wrap gap-2">
         <a href="/demos" class="px-3 py-1.5 rounded border border-white/15 text-xs font-mono uppercase tracking-wide hover:bg-white/5">All demos</a>
@@ -83,7 +83,7 @@
 
     <section id="sec-verified" class="hidden space-y-3">
       <h2 class="text-lg font-bold text-white">Verified Workers</h2>
-      <p class="text-sm text-[var(--p31-muted)]">Primary edge endpoints tracked in operator constants. Cross-origin probes from the browser are often blocked; use <a class="url" href="/ops/">/ops/</a> or <span class="mono">npm run ecosystem:glass</span> from the home repo for glass checks.</p>
+      <p class="text-sm text-[var(--p31-muted)]">These URLs match operator constants. Browsers may block cross-origin health checks; for a live glass table use <a class="url" href="/ops/">the operator shell</a> or run <span class="mono">npm run ecosystem:glass</span> from the P31 home repository.</p>
       <div class="panel overflow-x-auto">
         <table class="data w-full text-sm" id="verified-table"></table>
       </div>
@@ -97,9 +97,19 @@
       </div>
     </section>
 
-    <footer class="pt-8 border-t border-white/10 text-sm text-[var(--p31-muted)] flex flex-wrap gap-4 justify-between">
-      <span>P31 Labs — demo surface only; not legal advice.</span>
-      <a href="/" class="url">← Hub</a>
+    <footer class="pt-8 border-t border-white/10 text-sm text-[var(--p31-muted)] space-y-4">
+      <nav class="flex flex-wrap gap-x-4 gap-y-2" aria-label="Trust and policies">
+        <a href="/privacy" class="url">Privacy</a>
+        <a href="/terms" class="url">Terms</a>
+        <a href="/contact" class="url">Contact</a>
+        <a href="/accessibility" class="url">Accessibility</a>
+        <a href="/security" class="url">Security</a>
+        <a href="/demos" class="url">All demos</a>
+      </nav>
+      <div class="flex flex-wrap gap-4 justify-between items-center">
+        <span>P31 Labs, Inc. — reference map only; not legal, medical, or investment advice.</span>
+        <a href="/" class="url whitespace-nowrap">← Cockpit home</a>
+      </div>
     </footer>
   </main>
 
@@ -169,7 +179,8 @@
       for (const p of paths) {
         const li = document.createElement('li');
         const path = p.path.startsWith('/') ? p.path : '/' + p.path;
-        li.innerHTML = linkify(path, path) + ' — <span class="text-[var(--p31-muted)]">' + esc(p.note || '') + '</span>';
+        const u = esc(path);
+        li.innerHTML = '<a class="url" href="' + u + '">' + u + '</a> — <span class="text-[var(--p31-muted)]">' + esc(p.note || '') + '</span>';
         pl.appendChild(li);
       }
 
