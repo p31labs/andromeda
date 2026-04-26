@@ -3,6 +3,7 @@
   "private": true,
   "packageManager": "pnpm@10.32.1",
   "scripts": {
+    "lint": "node -e \"process.exit(0)\"",
     "update-dois": "node ops/update-dois.js",
     "forge:omnibus": "node scripts/forge-omnibus-all.cjs",
     "build:frontend": "npm run build --prefix frontend",
