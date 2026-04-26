@@ -6,11 +6,12 @@
 
 # Short-path aliases for public release surfaces
 /onboard    /planetary-onboard.html  301
+/passport   /passport-generator.html  301
 /start      /mesh-start.html         301
 /mesh       /connect.html            301
-/delta      /delta.html              301
+# /delta, /auth: do not redirect here — Pages serves *.html at /basename; adding /delta → delta.html
+# loops with CF 308 delta.html → /delta (same for auth.html → /auth).
 /why        /delta.html              301
-/auth       /auth.html               301
 /oracle     /magic-crystal.html      301
 /doc-suite  /open-doc-suite.html     301
 /centaur    /p31-super-centaur-starter.html  301
@@ -20,3 +21,9 @@
 /dev      /dev-workbench.html  301
 /build    /initial-build.html  301
 /hiring   /delta-hiring/index.html  301
+/family-pack   /family-sovereign-pack.html  301
+# /accessibility, /contact, /privacy, /terms — omit (Pages 308 file.html → /file; reverse rule loops).
+/oss   /open-source.html   301
+/security   /security-disclosure.html   301
+/fleet   /live-fleet-demo.html   301
+/demos   /demo-labs.html   301
