@@ -4,45 +4,38 @@ on:
   push:
     branches: [main]
     paths:
-      - '04_SOFTWARE/p31-hearing-ops/**'
-      - '.github/workflows/p31-hearing-ops.yml'
+      - "04_SOFTWARE/p31-hearing-ops/**"
+      - ".github/actions/**"
+      - ".github/workflows/p31-hearing-ops.yml"
   workflow_dispatch:
 
 concurrency:
   group: p31-hearing-ops-${{ github.ref }}
   cancel-in-progress: true
 
-env:
-  WRANGLER_VERSION: "4.85.0"
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    defaults:
-      run:
-        working-directory: 04_SOFTWARE/p31-hearing-ops
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - uses: ./.github/actions/toolchain-constants
+
+      - uses: ./.github/actions/npm-ci-project
         with:
-          node-version: '20'
-          cache: npm
+          working-directory: 04_SOFTWARE/p31-hearing-ops
           cache-dependency-path: 04_SOFTWARE/p31-hearing-ops/package-lock.json
 
-      - name: Install
-        run: npm ci
-
       - name: Build
+        working-directory: 04_SOFTWARE/p31-hearing-ops
         run: npm run build
 
       - name: Deploy to Cloudflare Pages
         if: github.ref == 'refs/heads/main'
-        uses: cloudflare/wrangler-action@v3
+        uses: ./.github/actions/wrangler-run
         with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          workingDirectory: 04_SOFTWARE/p31-hearing-ops
+          working-directory: 04_SOFTWARE/p31-hearing-ops
           command: pages deploy dist --project-name=p31-hearing-ops --branch=main
-          wranglerVersion: ${{ env.WRANGLER_VERSION }}
+          api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          account-id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

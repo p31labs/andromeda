@@ -4,16 +4,14 @@ on:
   push:
     branches: [main]
     paths:
-      - '04_SOFTWARE/cloudflare-pages/p31-vault/**'
-      - '.github/workflows/p31-vault.yml'
+      - "04_SOFTWARE/cloudflare-pages/p31-vault/**"
+      - ".github/actions/**"
+      - ".github/workflows/p31-vault.yml"
   workflow_dispatch:
 
 concurrency:
   group: p31-vault-${{ github.ref }}
   cancel-in-progress: true
-
-env:
-  WRANGLER_VERSION: "4.85.0"
 
 jobs:
   deploy:
@@ -22,10 +20,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: ./.github/actions/toolchain-constants
+
       - name: Deploy to Cloudflare Pages
-        uses: cloudflare/wrangler-action@v3
+        uses: ./.github/actions/wrangler-run
         with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          working-directory: "."
           command: pages deploy 04_SOFTWARE/cloudflare-pages/p31-vault --project-name=p31-vault --branch=main --commit-dirty=true
-          wranglerVersion: ${{ env.WRANGLER_VERSION }}
+          api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          account-id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

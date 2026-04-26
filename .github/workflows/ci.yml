@@ -1,4 +1,4 @@
-# Focused Turbo pipeline + compliance spot checks. Full monorepo gate: monorepo-verify.yml.
+# Focused turbo + compliance — implementation in reusable-ci-focused.yml
 name: P31 Labs CI
 
 on:
@@ -7,50 +7,11 @@ on:
   pull_request:
     branches: [main]
 
-env:
-  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
-  TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
-
 concurrency:
   group: p31-ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   ci:
-    runs-on: ubuntu-latest
-    timeout-minutes: 45
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: ./.github/actions/pnpm-andromeda-full
-
-      - name: ESLint (non-blocking)
-        run: cd 04_SOFTWARE && pnpm turbo run lint --filter=@p31/bonding --filter=@p31/shared || true
-
-      - name: Security audit (non-blocking)
-        run: pnpm audit --audit-level=high || true
-
-      - name: Type check (core packages)
-        run: cd 04_SOFTWARE && pnpm turbo run typecheck --filter=@p31/shared --filter=@p31/bonding --filter=@p31/spaceship-earth --filter=@p31/node-zero
-
-      - name: Build packages
-        run: cd 04_SOFTWARE && pnpm turbo run build --filter=@p31/shared --filter=@p31/bonding --filter=@p31/node-zero
-
-      - name: Run tests
-        run: cd 04_SOFTWARE && pnpm turbo run test --filter=@p31/bonding --filter=@p31/node-zero
-
-      - name: Turborepo remote cache
-        if: env.TURBO_TOKEN != ''
-        run: cd 04_SOFTWARE && pnpm turbo run build --filter=@p31/bonding --filter=@p31/node-zero --remote
-
-      - name: WCD documentation check
-        run: |
-          test -d "WCDs" || exit 1
-          ls WCDs/*.md | wc -l | xargs -I{} sh -c 'test {} -ge 10 || exit 1'
-
-      - name: ADA compliance check
-        run: grep -r "aria-" 04_SOFTWARE/bonding/src/ || exit 1
-
-      - name: Spoon Economy safety check
-        run: |
-          grep -r "spoon" 04_SOFTWARE/packages/ --include="*.ts" -l | wc -l | xargs -I{} sh -c 'test {} -ge 1 || exit 1'
+    uses: ./.github/workflows/reusable-ci-focused.yml
+    secrets: inherit

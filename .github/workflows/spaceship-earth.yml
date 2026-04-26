@@ -9,9 +9,6 @@ on:
       - ".github/workflows/spaceship-earth.yml"
   workflow_dispatch:
 
-env:
-  WRANGLER_VERSION: "4.85.0"
-
 concurrency:
   group: spaceship-earth-${{ github.ref }}
   cancel-in-progress: true
@@ -23,6 +20,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: ./.github/actions/toolchain-constants
+
       - uses: ./.github/actions/pnpm-04-software
 
       - name: Build
@@ -31,10 +30,9 @@ jobs:
 
       - name: Deploy to Cloudflare Pages
         if: github.ref == 'refs/heads/main'
-        uses: cloudflare/wrangler-action@v3
+        uses: ./.github/actions/wrangler-run
         with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          workingDirectory: 04_SOFTWARE/spaceship-earth
+          working-directory: 04_SOFTWARE/spaceship-earth
           command: pages deploy dist --project-name=spaceship-earth --branch=main
-          wranglerVersion: ${{ env.WRANGLER_VERSION }}
+          api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          account-id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

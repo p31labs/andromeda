@@ -1,15 +1,35 @@
-# GitHub Actions layout
+# GitHub Actions — reusable layers
 
-- **Composite actions** (`.github/actions/`): shared setup — use these instead of copying pnpm/Node steps.
-- **Pages / Astro deploys** are owned by path-scoped workflows (`p31ca-hub`, `p31-technical-library`, `phosphorus31-site`, `bonding`, etc.). **P31 Automation** only auto-deploys **bouncer** and **command-center** on push; other deploy toggles are **manual** (`workflow_dispatch`) to avoid double deploys.
+## Scale model
 
-| Workflow | Role |
-|----------|------|
-| `monorepo-verify.yml` | Canonical: full lockfile + deploy guard + MAP + turbo build/test |
-| `ci.yml` | Focused turbo lint/typecheck/build/test + compliance spot checks |
-| `p31ca-hub.yml` | p31ca hub:ci + Pages deploy |
-| `p31-automation.yml` | K4 worker deploys on push; optional Pages via manual dispatch only |
+1. **Toolchain (single bump point)** — `.github/actions/toolchain-constants` writes `NODE_VERSION`, `WRANGLER_VERSION`, and `PNPM_VERSION` to `GITHUB_ENV`. Run it first in any job that installs JS or calls Wrangler. Keep `package.json` `packageManager` in sync with `PNPM_VERSION`.
 
-**Wrangler:** workflows that deploy set `env.WRANGLER_VERSION: "4.85.0"` and pass `wranglerVersion: ${{ env.WRANGLER_VERSION }}` to `cloudflare/wrangler-action` (or `pages-action`). Bump in one place per workflow file when upgrading.
+2. **Composites** (`.github/actions/`)
 
-Run locally: `pnpm run verify:ci-local:static` (root); add `pnpm run verify:stack-links` for live URL probes after deploy.
+| Action | Use when |
+|--------|-----------|
+| `toolchain-constants` | Always first (unless job is shell-only). |
+| `pnpm-andromeda-full` | Root + `04_SOFTWARE` frozen install (same as `pnpm run lockfile:check`). |
+| `pnpm-04-software` | Only the nested Turbo workspace under `04_SOFTWARE`. |
+| `npm-ci-project` | One package with `package-lock.json` + npm cache. |
+| `wrangler-run` | `cloudflare/wrangler-action@v3` + shared Wrangler version. |
+| `cloudflare-pages-v1` | `cloudflare/pages-action@v1` + shared Wrangler version. |
+
+3. **Callable workflows** (`workflow_call`) — compose full jobs without copy-paste:
+
+| Workflow | Called by |
+|----------|-----------|
+| `reusable-monorepo-verify.yml` | `monorepo-verify.yml` |
+| `reusable-ci-focused.yml` | `ci.yml` (`secrets: inherit` for Turbo) |
+| `reusable-coverage.yml` | `coverage.yml` |
+
+Add new repo-wide gates by extending a reusable file, or add a new `reusable-*.yml` and a one-line caller workflow.
+
+## Pages ownership (no double deploy)
+
+- **Routine** deploys: path workflows (`p31ca-hub`, `p31-technical-library`, `phosphorus31-site`, `bonding`, …).
+- **P31 Automation** Pages jobs: **manual** (`workflow_dispatch`) only; push auto-deploy is for **bouncer** + **command-center** only.
+
+## Local parity
+
+`pnpm run verify:ci-local:static` at repo root; optional `pnpm run verify:stack-links` after edge deploy.

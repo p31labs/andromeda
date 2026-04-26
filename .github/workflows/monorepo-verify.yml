@@ -1,4 +1,4 @@
-# Canonical CI: lockfile + deploy guard + MAP + turbo build/test (entire 04_SOFTWARE graph).
+# Canonical CI: full monorepo gate — implementation in reusable-monorepo-verify.yml
 name: Monorepo verify
 
 on:
@@ -13,21 +13,4 @@ concurrency:
 
 jobs:
   verify:
-    runs-on: ubuntu-latest
-    timeout-minutes: 45
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: ./.github/actions/pnpm-andromeda-full
-
-      - name: Deploy target guard (Pages)
-        run: node scripts/enterprise-deploy-guard.mjs
-
-      - name: MAP monetary surface (static)
-        run: node scripts/verify-monetary-surface.mjs
-
-      - name: Build (Turbo)
-        run: pnpm run build
-
-      - name: Test (Turbo)
-        run: pnpm run test
+    uses: ./.github/workflows/reusable-monorepo-verify.yml

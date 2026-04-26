@@ -4,44 +4,37 @@ on:
   push:
     branches: [main]
     paths:
-      - '04_SOFTWARE/docs/**'
-      - '.github/workflows/p31-technical-library.yml'
+      - "04_SOFTWARE/docs/**"
+      - ".github/actions/**"
+      - ".github/workflows/p31-technical-library.yml"
   workflow_dispatch:
 
 concurrency:
   group: p31-technical-library-${{ github.ref }}
   cancel-in-progress: true
 
-env:
-  WRANGLER_VERSION: "4.85.0"
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    defaults:
-      run:
-        working-directory: 04_SOFTWARE/docs
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - uses: ./.github/actions/toolchain-constants
+
+      - uses: ./.github/actions/npm-ci-project
         with:
-          node-version: '20'
-          cache: npm
+          working-directory: 04_SOFTWARE/docs
           cache-dependency-path: 04_SOFTWARE/docs/package-lock.json
 
-      - name: Install
-        run: npm ci
-
       - name: Build
+        working-directory: 04_SOFTWARE/docs
         run: npm run build
 
       - name: Deploy to Cloudflare Pages
-        uses: cloudflare/wrangler-action@v3
+        uses: ./.github/actions/wrangler-run
         with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          workingDirectory: 04_SOFTWARE/docs
+          working-directory: 04_SOFTWARE/docs
           command: pages deploy dist --project-name=p31-technical-library --branch=main
-          wranglerVersion: ${{ env.WRANGLER_VERSION }}
+          api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          account-id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

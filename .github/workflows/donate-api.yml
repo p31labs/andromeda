@@ -8,6 +8,7 @@ on:
       - "04_SOFTWARE/donate-api/**"
       - "phosphorus31.org/planetary-planet/src/pages/donate.astro"
       - "scripts/verify-monetary-surface.mjs"
+      - ".github/actions/**"
       - ".github/workflows/donate-api.yml"
   pull_request:
     branches: [main]
@@ -15,14 +16,12 @@ on:
       - "04_SOFTWARE/donate-api/**"
       - "phosphorus31.org/planetary-planet/src/pages/donate.astro"
       - "scripts/verify-monetary-surface.mjs"
+      - ".github/actions/**"
       - ".github/workflows/donate-api.yml"
 
 concurrency:
   group: donate-api-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
-
-env:
-  NODE_VERSION: "20"
 
 jobs:
   map:
@@ -30,15 +29,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: npm
-          cache-dependency-path: 04_SOFTWARE/donate-api/package-lock.json
+      - uses: ./.github/actions/toolchain-constants
 
-      - name: Install (donate-api)
-        working-directory: 04_SOFTWARE/donate-api
-        run: npm ci
+      - uses: ./.github/actions/npm-ci-project
+        with:
+          working-directory: 04_SOFTWARE/donate-api
+          cache-dependency-path: 04_SOFTWARE/donate-api/package-lock.json
 
       - name: Test (vitest)
         working-directory: 04_SOFTWARE/donate-api

@@ -1,0 +1,13 @@
+# Single place to bump Node / Wrangler / pnpm pins for all workflows using this action first.
+name: Toolchain constants
+description: Writes NODE_VERSION, WRANGLER_VERSION, PNPM_VERSION to GITHUB_ENV for the job
+
+runs:
+  using: composite
+  steps:
+    - name: Export defaults
+      shell: bash
+      run: |
+        echo "NODE_VERSION=20" >> "$GITHUB_ENV"
+        echo "WRANGLER_VERSION=4.85.0" >> "$GITHUB_ENV"
+        echo "PNPM_VERSION=10.32.1" >> "$GITHUB_ENV"
