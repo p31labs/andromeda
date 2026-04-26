@@ -1,0 +1,43 @@
+# Emits status check **build-and-test / build-and-test** for branch protection rulesets.
+name: build-and-test
+
+permissions:
+  contents: read
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main, develop]
+
+concurrency:
+  group: build-and-test-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+  TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/toolchain-constants
+
+      - uses: ./.github/actions/pnpm-andromeda-full
+
+      - name: Type check (core packages)
+        run: cd 04_SOFTWARE && pnpm turbo run typecheck --filter=@p31/shared --filter=@p31/bonding --filter=@p31/spaceship-earth --filter=@p31/node-zero
+
+      - name: Build packages
+        run: cd 04_SOFTWARE && pnpm turbo run build --filter=@p31/shared --filter=@p31/bonding --filter=@p31/node-zero
+
+      - name: Run tests
+        run: cd 04_SOFTWARE && pnpm turbo run test --filter=@p31/bonding --filter=@p31/node-zero
+
+      - name: Turborepo remote cache
+        if: ${{ env.TURBO_TOKEN != '' }}
+        run: cd 04_SOFTWARE && pnpm turbo run build --filter=@p31/bonding --filter=@p31/node-zero --remote

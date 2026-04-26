@@ -30,6 +30,10 @@ Add new repo-wide gates by extending a reusable file, or add a new `reusable-*.y
 - **Routine** deploys: path workflows (`p31ca-hub`, `p31-technical-library`, `phosphorus31-site`, `bonding`, …).
 - **P31 Automation** Pages jobs: **manual** (`workflow_dispatch`) only; push auto-deploy is for **bouncer** + **command-center** only.
 
+## Branch protection status names
+
+Rulesets that require **`build-and-test`**, **`code-quality`**, or **`compliance-check`** are satisfied by the matching workflows in this directory (each defines a job with the same id). In the GitHub UI the check often appears as **`workflow-name / job-name`** (e.g. `build-and-test / build-and-test`). If a rule still shows *Expected — Waiting for status*, edit the ruleset and pick the check from the dropdown after one run on a PR, or align the required name with the string Actions actually emits.
+
 ## Local parity
 
 `pnpm run verify:ci-local:static` at repo root; optional `pnpm run verify:stack-links` after edge deploy.

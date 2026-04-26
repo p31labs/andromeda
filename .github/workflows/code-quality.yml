@@ -1,0 +1,32 @@
+# Emits status check **code-quality / code-quality** for branch protection rulesets.
+name: code-quality
+
+permissions:
+  contents: read
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main, develop]
+
+concurrency:
+  group: code-quality-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  code-quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/toolchain-constants
+
+      - uses: ./.github/actions/pnpm-andromeda-full
+
+      - name: ESLint (bonding + shared)
+        run: cd 04_SOFTWARE && pnpm turbo run lint --filter=@p31/bonding --filter=@p31/shared
+
+      - name: Security audit (high+)
+        run: pnpm audit --audit-level=high
