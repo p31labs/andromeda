@@ -33,7 +33,7 @@ npm install
 # Type check
 npx tsc --noEmit
 
-# Tests (488/488)
+# Tests (424 tests / 32 files — matches `p31-constants.json` → bonding.testBaseline)
 npx vitest run
 
 # Dev server
@@ -164,7 +164,7 @@ Mar 10   🎂 Ship. Bash's birthday.
 - **@react-three/fiber** (R3F) + **@react-three/drei** + **Three.js**
 - **Zustand** (state management)
 - **Tailwind CSS** (utility classes)
-- **Vitest** + jsdom (488 tests)
+- **Vitest** + jsdom (424 tests)
 - **Cloudflare Pages** (hosting) + **Cloudflare Workers + KV** (relay + telemetry)
 - **Web Audio API** (element-frequency sound engine)
 - **idb-keyval** (IndexedDB persistence for LOVE economy)

@@ -27,10 +27,25 @@
     a.url:hover { text-decoration: underline; }
     table.data td, table.data th { padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--p31-border-subtle); vertical-align: top; }
     table.data th { text-align: left; color: var(--p31-muted); font-weight: 600; }
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      z-index: 9999;
+      padding: 0.5rem 1rem;
+      background: #134e4a;
+      color: #fff;
+      border-radius: 0.375rem;
+      text-decoration: none;
+      font-size: 0.875rem;
+    }
+    .skip-link:focus {
+      left: 0.5rem;
+      top: 0.5rem;
+    }
   </style>
 </head>
 <body class="min-h-screen">
-  <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:px-3 focus:py-2 focus:bg-teal-900 focus:text-white rounded">Skip to content</a>
+  <a href="#main" class="skip-link">Skip to content</a>
 
   <header class="border-b border-white/10 bg-black/30 backdrop-blur-sm sticky top-0 z-40">
     <div class="max-w-5xl mx-auto px-4 py-4 flex flex-wrap items-center justify-between gap-3">
