@@ -55,6 +55,10 @@ Runs: `verify` → `test` → `lint` → `build`. GitHub Actions: workflow **`p3
 
 `dist/` is static files — any static host, or copy into a hub `public/delta-hiring/` (or similar) for same-origin deploy.
 
+### Production (Cloudflare Pages)
+
+On **push to `main`**, the workflow [`.github/workflows/p31-delta-hiring.yml`](../../.github/workflows/p31-delta-hiring.yml) runs `check` then **`wrangler pages deploy dist --project-name=p31-delta-hiring`**. You need a Cloudflare **Pages** project named `p31-delta-hiring` and repo secrets `CLOUDFLARE_API_TOKEN` + `CLOUDFLARE_ACCOUNT_ID` (same pattern as the p31ca deploy).
+
 ## Data & schema
 
 | File | Role |
