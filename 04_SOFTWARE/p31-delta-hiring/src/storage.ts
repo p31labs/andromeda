@@ -75,13 +75,17 @@ export function makeArtifact(
   kind: ProofArtifact['kind'],
   label: string,
   url: string,
-  notes?: string
+  notes?: string,
+  commitSha?: string
 ): ProofArtifact {
   return {
     id: uuid(),
     kind,
     label: label.slice(0, 200),
     url: url.slice(0, 2000),
-    notes: notes?.slice(0, 4000)
+    notes: notes?.slice(0, 4000),
+    ...(commitSha && commitSha.length >= 7
+      ? { commitSha: commitSha.slice(0, 64) }
+      : {})
   };
 }

@@ -49,7 +49,10 @@ export type WorkSampleDetail = {
   title: string;
   summary: string;
   timeBoundHours: number;
+  allowResourcesOverride?: string;
   deliverables: string[];
+  goodLookLike: string[];
+  antiPatterns: string[];
   rubric: RubricLine[];
 };
 
@@ -72,6 +75,7 @@ export type ProofArtifact = {
   label: string;
   url: string;
   notes?: string;
+  commitSha?: string;
 };
 
 export type ProofRecord = {
@@ -85,4 +89,47 @@ export type ProofRecord = {
   artifacts: ProofArtifact[];
   selfAssessment: Record<string, number>;
   candidateNotes: string;
+};
+
+export type HelpBlock =
+  | { type: 'p'; text: string }
+  | { type: 'h3'; text: string }
+  | { type: 'ul'; items: string[] }
+  | { type: 'callout'; tone: 'info' | 'warn' | 'legal'; text: string };
+
+export type HelpTopic = {
+  id: string;
+  title: string;
+  section: string;
+  tags: string[];
+  summary: string;
+  relatedWcd: string[];
+  relatedRoleId: string[];
+  lastReviewed: string;
+  blocks: HelpBlock[];
+};
+
+export type HelpData = { schema: string; updated: string; topics: HelpTopic[] };
+
+export type GlossaryEntry = {
+  id: string;
+  term: string;
+  definition: string;
+  seeAlso: string[];
+};
+
+export type GlossaryData = { schema: string; updated: string; entries: GlossaryEntry[] };
+
+export type ChangelogEntry = {
+  version: string;
+  date: string;
+  items: string[];
+};
+
+export type ChangelogData = { schema: string; entries: ChangelogEntry[] };
+
+export type HashRoute = {
+  name: string;
+  id?: string;
+  query?: string;
 };

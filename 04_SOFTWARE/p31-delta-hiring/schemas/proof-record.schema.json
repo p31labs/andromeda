@@ -41,7 +41,8 @@
           "kind": { "enum": ["repo", "url", "file", "other"] },
           "label": { "type": "string" },
           "url": { "type": "string" },
-          "notes": { "type": "string" }
+          "notes": { "type": "string" },
+          "commitSha": { "type": "string", "pattern": "^[a-fA-F0-9]{7,40}$" }
         }
       }
     },

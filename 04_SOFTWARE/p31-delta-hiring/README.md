@@ -1,6 +1,6 @@
 # p31-delta-hiring
 
-Shippable **next-gen hiring surface** for P31: canonical **role packets** (outcomes, constraints, evaluation weights), **bounded work samples** (WCD) with **rubrics** that sum to 100%, and a browser-side **portable proof** format (`p31.proofRecord/1.0.0`) candidates can export as JSON.
+Shippable **hiring + help surface** for P31: **role packets** (outcomes, constraints, evaluation weights), **WCDs** (bounded work samples, rubrics, good/anti patterns), a **help center** + **glossary** + **search** (Fuse.js), and a browser-side **portable proof** (`p31.proofRecord/1.0.0`) with import/export and optional **commit SHAs** on artifacts.
 
 ## Run
 
@@ -11,41 +11,64 @@ pnpm install
 pnpm --filter p31-delta-hiring dev
 ```
 
-Open the URL Vite prints (default port **3150**).
+Default Vite port **3150** (see `vite.config.ts`).
 
-- **Home** — value prop + equity tier summary  
-- **Open roles** — all roles from `src/data/role-packets.json`  
-- **Role detail** — full packet + linked WCD + rubric  
-- **My proofs** — local drafts; **Export** downloads JSON  
-- **Governance** — legal/ops caveats (not a cloud ATS)
+## Features (UI)
 
-## Build
+| Area | Route |
+|------|--------|
+| Home, equity tiers | `#/` |
+| Open roles (guild/priority filters) | `#/roles` |
+| Role packet + print | `#/roles/:id` |
+| WCD library & detail | `#/wcd`, `#/wcd/:id` |
+| Help center & topics | `#/help`, `#/help/:id` |
+| Glossary | `#/glossary` |
+| Full-text search | `#/search?q=` |
+| My proofs, JSON import/export | `#/portfolio` |
+| Proof editor | `#/proof/new/:roleId`, `#/proof/:id` |
+| Reviewers, changelog, governance | `#/reviewers`, `#/changelog`, `#/governance` |
+
+## One-shot quality gate (local / CI)
 
 ```bash
-pnpm --filter p31-delta-hiring build
+pnpm --filter p31-delta-hiring run check
 ```
 
-Static output: `p31-delta-hiring/dist/` — host on any static server or copy into a hub `public/` path.
-
-## Verify data
+From `04_SOFTWARE` (uses **Turbo** for the same pipeline + cache when enabled):
 
 ```bash
-pnpm --filter p31-delta-hiring run verify
+pnpm run check:p31-delta-hiring
 ```
 
-Checks every role’s `workSample.wcdId` exists in `work-samples.json` and rubric weights ≈ 1.0 per sample.
+Runs: `verify` → `test` → `lint` → `build`. GitHub Actions: workflow **`p31-delta-hiring`** runs `check:p31-delta-hiring` on path-filtered push/PR.
+
+## Individual commands
+
+| Script | Purpose |
+|--------|--------|
+| `pnpm run verify` | Data integrity: roles → WCD map, rubric weights, good/anti lists |
+| `pnpm run test` | Vitest (`tests/`) |
+| `pnpm run lint` | ESLint on `src/` |
+| `pnpm run build` | `tsc` + Vite → `dist/` |
+
+## Build output
+
+`dist/` is static files — any static host, or copy into a hub `public/delta-hiring/` (or similar) for same-origin deploy.
 
 ## Data & schema
 
 | File | Role |
 |------|------|
-| `src/data/role-packets.json` | `p31.rolePackets/1.0.0` — org + 8 roles |
-| `src/data/work-samples.json` | `p31.workSamples/1.0.0` — WCD text + rubric lines |
-| `schemas/proof-record.schema.json` | Portable export shape |
+| `src/data/role-packets.json` | `p31.rolePackets/1.0.0` |
+| `src/data/work-samples.json` | `p31.workSamples/1.0.0` |
+| `src/data/help-topics.json` | `p31.helpTopics/1.0.0` |
+| `src/data/glossary.json` | `p31.glossary/1.0.0` |
+| `src/data/changelog.json` | Release notes (hand-maintained) |
+| `schemas/proof-record.schema.json` | Portable export |
 
-## Related docs (Andromeda)
+## Related docs
 
-- `andromeda/docs/social/DELTA_JOB_BOARD.md` — list-oriented job board
-- `andromeda/docs/social/DELTA_HIRING_SYSTEM_ARCHITECTURE.md` — system narrative
+- `andromeda/docs/social/DELTA_JOB_BOARD.md` — list-oriented board
+- `andromeda/docs/social/DELTA_HIRING_SYSTEM_ARCHITECTURE.md` — narrative
 
-This package is the **working UI + contracts** for that direction.
+This package is the **working UI + contracts** for Delta hiring.

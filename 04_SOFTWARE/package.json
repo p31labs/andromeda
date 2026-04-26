@@ -13,6 +13,7 @@
     "typecheck": "turbo run typecheck",
     "build": "turbo run build",
     "test": "turbo run test",
+    "check:p31-delta-hiring": "turbo run check --filter=p31-delta-hiring",
     "dev": "turbo run dev --parallel",
     "clean": "turbo run clean",
     "google-bridge:preflight": "npm run preflight --prefix p31-google-bridge",

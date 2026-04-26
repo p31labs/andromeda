@@ -37,6 +37,7 @@ Use project-local scripts per package as documented in each project README.
 | `frontend/` | Vite | Legacy/aux UI. |
 | `sovereign-command-center/` | Next | Command UI (check env). |
 | `spoon-calculator/` | Vite | Utility. |
+| `p31-delta-hiring/` | Vite + TS | Delta hiring: role packets, WCDs, help, search, proof JSON. `pnpm run check` in-package; `pnpm run check:p31-delta-hiring` from `04_SOFTWARE`. |
 | `docs/` | Astro | Internal docs site if used. |
 
 ## Cloudflare Workers / edge

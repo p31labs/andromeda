@@ -23,9 +23,17 @@ for (const r of roles.roles) {
     console.error(`Missing work sample for role ${r.id}: ${id}`);
     errors++;
   } else {
-    const rub = work.samples[id].rubric;
-    if (Array.isArray(rub)) {
-      const sum = rub.reduce((a, x) => a + (x.weight ?? 0), 0);
+    const s = work.samples[id];
+    if (!s.goodLookLike?.length) {
+      console.error(`WCD ${id}: goodLookLike must be non-empty`);
+      errors++;
+    }
+    if (!s.antiPatterns?.length) {
+      console.error(`WCD ${id}: antiPatterns must be non-empty`);
+      errors++;
+    }
+    if (Array.isArray(s.rubric)) {
+      const sum = s.rubric.reduce((a, x) => a + (x.weight ?? 0), 0);
       if (Math.abs(sum - 1) > 0.02) {
         console.error(`Rubric weights for ${id} sum to ${sum}, expected 1.0`);
         errors++;
