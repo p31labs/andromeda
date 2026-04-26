@@ -33,6 +33,13 @@ After deploying, attach the org hostname to this Worker (same **Workers & Pages*
 
 ## Verify Deployment
 
+**Static MAP gate (Andromedia repo root):** `node scripts/verify-monetary-surface.mjs` — `wrangler.toml`, worker routes, Phosphorus `donate.astro`, no `sk_*` in public trees, optional `../p31/p31-constants.json` cross-checks.
+
+```bash
+# Liveness (must match p31-constants payment.donateApiHealthUrl)
+curl -sS -o /dev/null -w "%{http_code}\n" https://donate-api.phosphorus31.org/health
+```
+
 ```bash
 # Test the worker
 curl -X POST https://donate-api.phosphorus31.org/create-checkout \
@@ -58,4 +65,4 @@ The worker creates Stripe Checkout Sessions. Make sure:
 
 To deduplicate Stripe retries, create a KV namespace and uncomment `[[kv_namespaces]]` in `wrangler.toml`, then redeploy. Keys: `stripe:event:{eventId}` (90-day TTL).
 
-**Local / CI:** run `npm test` and from repo root `node scripts/verify-monetary-surface.mjs`.
+**Package tests:** `npm test` in `04_SOFTWARE/donate-api`.
