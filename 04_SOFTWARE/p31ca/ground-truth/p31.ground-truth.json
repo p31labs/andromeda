@@ -44,10 +44,10 @@
   },
   "routes": {
     "canonicalDome": {
-      "path": "/dome",
+      "path": "/dome/",
       "implementation": "src/pages/dome.astro",
       "label": "Sovereign Cockpit Dome (K₄ interactive)",
-      "note": "Primary CTA from hub home. Not the same product as observatory. Do not add _redirects /dome/ -> /dome (Astro may 308 /dome -> /dome/; that rule caused a redirect loop for clients)."
+      "note": "Primary CTA from hub home. Not the same product as observatory. Astro uses trailingSlash:'always'; bare /dome redirects to /dome/. Do not add _redirects that send /dome/ back to /dome."
     },
     "observatory": {
       "path": "/observatory.html",
@@ -180,7 +180,7 @@
     },
     {
       "from": "/dome.html",
-      "to": "/dome",
+      "to": "/dome/",
       "status": 301
     },
     {

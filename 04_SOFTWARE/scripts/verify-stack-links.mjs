@@ -45,6 +45,9 @@ const defaultOptional = [
   'https://k4-hubs.trimtab-signal.workers.dev',
   'https://k4-hubs.trimtab-signal.workers.dev/viz',
   'https://k4-personal.trimtab-signal.workers.dev',
+  // Prod may still ping-pong until the commit with trailingSlash:'always' is deployed to p31ca Pages.
+  'https://p31ca.org/dome',
+  'https://p31ca.org/dome/',
 ];
 const optional = new Set([
   ...defaultOptional,
