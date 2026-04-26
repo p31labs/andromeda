@@ -47,7 +47,7 @@
       "path": "/dome",
       "implementation": "src/pages/dome.astro",
       "label": "Sovereign Cockpit Dome (K₄ interactive)",
-      "note": "Primary CTA from hub home. Not the same product as observatory."
+      "note": "Primary CTA from hub home. Not the same product as observatory. Do not add _redirects /dome/ -> /dome (Astro may 308 /dome -> /dome/; that rule caused a redirect loop for clients)."
     },
     "observatory": {
       "path": "/observatory.html",
@@ -138,11 +138,6 @@
     },
     {
       "from": "/dome.html",
-      "to": "/dome",
-      "status": 301
-    },
-    {
-      "from": "/dome/",
       "to": "/dome",
       "status": 301
     },

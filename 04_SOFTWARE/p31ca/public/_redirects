@@ -3,3 +3,12 @@
 /app/buffer /buffer-about.html 302
 /app/larmor /larmor.html      302
 /dome.html  /dome             301
+
+# Short-path aliases for public release surfaces
+/onboard    /planetary-onboard.html  301
+/mesh       /connect.html            301
+/delta      /delta.html              301
+/why        /delta.html              301
+/auth       /auth.html               301
+/oracle     /magic-crystal.html      301
+/doc-suite  /open-doc-suite.html     301
