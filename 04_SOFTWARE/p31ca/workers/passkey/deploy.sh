@@ -14,13 +14,23 @@ D1_NAME="p31-passkey-db"
 log()  { echo "▸ $*"; }
 die()  { echo "✗ $*" >&2; exit 1; }
 
-command -v wrangler >/dev/null 2>&1 || die "wrangler not found — run: npm i -g wrangler && wrangler login"
+# Prefer local install → parent p31ca node_modules → global
+if   command -v wrangler >/dev/null 2>&1; then
+  WRANGLER=wrangler
+elif [ -x "$SCRIPT_DIR/../../node_modules/.bin/wrangler" ]; then
+  WRANGLER="$SCRIPT_DIR/../../node_modules/.bin/wrangler"
+elif [ -x "$SCRIPT_DIR/../../../node_modules/.bin/wrangler" ]; then
+  WRANGLER="$SCRIPT_DIR/../../../node_modules/.bin/wrangler"
+else
+  die "wrangler not found — run: npm i -g wrangler && wrangler login"
+fi
+log "Using wrangler: $WRANGLER"
 command -v jq       >/dev/null 2>&1 || die "jq not found — brew install jq  or  apt install jq"
 
 # ── 1. KV namespace ──────────────────────────────────────────────────────────
 if grep -q "REPLACE_WITH_KV_NAMESPACE_ID" "$TOML"; then
   log "Creating KV namespace '$KV_BINDING'…"
-  KV_OUT=$(wrangler kv namespace create "$KV_BINDING" 2>&1)
+  KV_OUT=$($WRANGLER kv namespace create "$KV_BINDING" 2>&1)
   KV_ID=$(echo "$KV_OUT" | grep -o '"id": "[^"]*"' | head -1 | awk -F'"' '{print $4}')
   [ -n "$KV_ID" ] || die "Could not parse KV ID from:\n$KV_OUT"
   log "KV id: $KV_ID"
@@ -32,7 +42,7 @@ fi
 # ── 2. D1 database ────────────────────────────────────────────────────────────
 if grep -q "REPLACE_WITH_D1_DATABASE_ID" "$TOML"; then
   log "Creating D1 database '$D1_NAME'…"
-  D1_OUT=$(wrangler d1 create "$D1_NAME" 2>&1)
+  D1_OUT=$($WRANGLER d1 create "$D1_NAME" 2>&1)
   D1_ID=$(echo "$D1_OUT" | grep -o 'database_id = "[^"]*"' | awk -F'"' '{print $2}')
   [ -n "$D1_ID" ] || die "Could not parse D1 database_id from:\n$D1_OUT"
   log "D1 id: $D1_ID"
@@ -43,12 +53,12 @@ fi
 
 # ── 3. Apply schema ───────────────────────────────────────────────────────────
 log "Applying schema to production D1…"
-wrangler d1 execute "$D1_NAME" --file="$SCHEMA" --env production --remote
+$WRANGLER d1 execute "$D1_NAME" --file="$SCHEMA" --env production --remote
 log "Schema applied."
 
 # ── 4. Deploy ─────────────────────────────────────────────────────────────────
 log "Deploying p31-passkey → production…"
-wrangler deploy --env production
+$WRANGLER deploy --env production
 log "Worker deployed."
 
 # ── 5. Smoke test ─────────────────────────────────────────────────────────────
