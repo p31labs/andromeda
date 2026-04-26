@@ -11,7 +11,7 @@
 | **Tests (BONDING)** | **413 tests / 30 suites** (canonical — see `CLAUDE.md`) |
 | **Edge / Pages** | Inventory: [`docs/WORKER_PAGES_MANIFEST.md`](docs/WORKER_PAGES_MANIFEST.md) |
 | **Layout** | [`docs/REPOSITORY_LAYOUT.md`](docs/REPOSITORY_LAYOUT.md) |
-| **Engineering** | [`docs/ENGINEERING.md`](docs/ENGINEERING.md) |
+| **Engineering** | [`docs/ENTERPRISE_QUALITY.md`](docs/ENTERPRISE_QUALITY.md) (ship bar) · [`docs/ENGINEERING.md`](docs/ENGINEERING.md) |
 | **Open Doc Suite (corp)** | [`docs/corporate/README.md`](docs/corporate/README.md) · [p31ca.org/open-doc-suite](https://p31ca.org/open-doc-suite.html) |
 
 ## Quick start (developers)

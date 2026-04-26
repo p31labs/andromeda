@@ -1,5 +1,7 @@
 # Contributing to P31 Andromeda
 
+**Engineering standard:** **`docs/ENTERPRISE_QUALITY.md`** (this repo) defines merge-to-`main` quality. In the **multi-root P31 home** checkout, read **`docs/P31-ENGINEERING-STANDARD.md`** (separate git repo at the Soup root) for the full verify + constants + passport alignment checklist.
+
 ## Google Workspace hookups (OAuth, Calendar, Drive, Gmail, SSO)
 
 Runbook: **[`docs/integrations/GOOGLE-WORKSPACE.md`](docs/integrations/GOOGLE-WORKSPACE.md)** — Cloud project, consent screen, redirect URIs, service-account **domain-wide delegation** when needed, Worker secret handling, and least-privilege scopes. Example env key names: [`docs/integrations/env.google.example`](docs/integrations/env.google.example) (gitignored in real use). **Automation:** `04_SOFTWARE/p31-google-bridge` — `npm run preflight` before deploy, `GET /setup` in-browser checklist, `pnpm run google-bridge:preflight` from `04_SOFTWARE/`.
