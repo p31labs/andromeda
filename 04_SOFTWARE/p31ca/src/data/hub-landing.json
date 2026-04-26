@@ -1,0 +1,368 @@
+{
+  "generated": "2026-04-26T05:05:36.470Z",
+  "coreProducts": [
+    {
+      "id": "bonding",
+      "title": "BONDING",
+      "status": "LIVE",
+      "desc": "Molecular Social Protocol",
+      "tags": [
+        "React 19",
+        "Three.js r183",
+        "Zustand v5",
+        "Vitest 4"
+      ],
+      "url": "/bonding-about.html"
+    },
+    {
+      "id": "spaceship-earth",
+      "title": "Spaceship Earth",
+      "status": "LIVE",
+      "desc": "Sovereign Command Center",
+      "tags": [
+        "PWA",
+        "PGlite (WASM PostgreSQL)",
+        "Three.js R3F",
+        "IndexedDB"
+      ],
+      "url": "/spaceship-earth-about.html"
+    },
+    {
+      "id": "ede",
+      "title": "EDE",
+      "status": "LIVE",
+      "desc": "Everything Development Environment",
+      "tags": [
+        "Babel Standalone",
+        "Sandboxed iframe",
+        "Samson's Law Linter",
+        "Q Distribution"
+      ],
+      "url": "/ede-about.html"
+    },
+    {
+      "id": "buffer",
+      "title": "The Buffer",
+      "status": "LIVE",
+      "desc": "Message Guardian & Fawn Guard",
+      "tags": [
+        "Voltage Scoring",
+        "Fawn Guard Algorithm",
+        "BLUF Extraction",
+        "4-2-6 Breathwork"
+      ],
+      "url": "/buffer-about.html"
+    },
+    {
+      "id": "alchemy",
+      "title": "Neuro-Cognition Alchemy",
+      "status": "RESEARCH",
+      "desc": "Theoretical Research Framework",
+      "tags": [
+        "Thermodynamics",
+        "Periodic Table Mapping",
+        "K₄ Graph Theory",
+        "Zenodo DOI"
+      ],
+      "url": "/alchemy-about.html"
+    },
+    {
+      "id": "attractor",
+      "title": "NANO-07 Attractor",
+      "status": "LIVE",
+      "desc": "Kenosis Mesh Visualizer",
+      "tags": [
+        "Three.js",
+        "SIC-POVM",
+        "Byzantine Fault Sim",
+        "Chaos Injector"
+      ],
+      "url": "/attractor-about.html"
+    },
+    {
+      "id": "axiom",
+      "title": "AXIOM",
+      "status": "LIVE",
+      "desc": "Physics & Chemistry Lab",
+      "tags": [
+        "Rapier.js",
+        "Three.js",
+        "NIST ASD Data",
+        "Offline-First"
+      ],
+      "url": "/axiom-about.html"
+    },
+    {
+      "id": "collider",
+      "title": "COLLIDER",
+      "status": "LIVE",
+      "desc": "Particle Physics Sandbox",
+      "tags": [
+        "Canvas 2D",
+        "Physics Engine",
+        "Valence Rules",
+        "Quest Chains"
+      ],
+      "url": "/collider-about.html"
+    },
+    {
+      "id": "content-forge",
+      "title": "CONTENT FORGE",
+      "status": "LIVE",
+      "desc": "Editorial Publishing Suite",
+      "tags": [
+        "Markdown Editor",
+        "Seed Bank",
+        "8-Point Checklist",
+        "LocalStorage"
+      ],
+      "url": "/content-forge-about.html"
+    },
+    {
+      "id": "geodesic",
+      "title": "GEODESIC",
+      "status": "LIVE",
+      "desc": "3D Structure Builder",
+      "tags": [
+        "Three.js r183",
+        "OrbitControls",
+        "Snap Grid",
+        "Rigidity Scoring"
+      ],
+      "url": "/geodesic-about.html"
+    },
+    {
+      "id": "genesis-gate",
+      "title": "Genesis Gate",
+      "status": "LIVE",
+      "desc": "Governance Control Plane",
+      "tags": [
+        "TypeScript ESM",
+        "Cloudflare Workers",
+        "TelemetryModule",
+        "GovernanceHook"
+      ],
+      "url": "/genesis-gate-about.html"
+    },
+    {
+      "id": "k4market",
+      "title": "K4 MARKET",
+      "status": "LIVE",
+      "desc": "Tetrahedral Price Geometry",
+      "tags": [
+        "Three.js r160",
+        "OHLCV Mapping",
+        "OrbitControls",
+        "Synthetic Live Data"
+      ],
+      "url": "/k4market-about.html"
+    },
+    {
+      "id": "kenosis",
+      "title": "Project Kenosis",
+      "status": "LIVE",
+      "desc": "Autopoietic Edge Network",
+      "tags": [
+        "Cloudflare Workers",
+        "SIC-POVM",
+        "7-Node Mesh",
+        "Byzantine Fault Tolerance"
+      ],
+      "url": "/kenosis-about.html"
+    },
+    {
+      "id": "liminal",
+      "title": "LIMINAL",
+      "status": "LIVE",
+      "desc": "Poetry · Astrology · Drawing",
+      "tags": [
+        "Perfect Freehand",
+        "SwissEph-JS",
+        "Web Speech API",
+        "Wabi-Sabi Canvas"
+      ],
+      "url": "/liminal-about.html"
+    },
+    {
+      "id": "vault",
+      "title": "VAULT",
+      "status": "LIVE",
+      "desc": "Ground Truth Identity Store",
+      "tags": [
+        "WebCrypto API",
+        "AES-256-GCM",
+        "Ed25519-equivalent",
+        "Daubert Export"
+      ],
+      "url": "/vault-about.html"
+    },
+    {
+      "id": "phenix-os",
+      "title": "Phenix OS",
+      "status": "LIVE",
+      "desc": "AuDHD Operator Command Console",
+      "tags": [
+        "Three.js",
+        "SIC-POVM",
+        "Fawn Guard",
+        "Web Audio"
+      ],
+      "url": "/phenix-os-about.html"
+    },
+    {
+      "id": "quantum-core",
+      "title": "Quantum Core",
+      "status": "LIVE",
+      "desc": "PQC & Algorithm Primitives",
+      "tags": [
+        "FIPS-203 ML-KEM-768",
+        "FIPS-204 ML-DSA-65",
+        "SIC-POVM Swarm",
+        "@noble/post-quantum"
+      ],
+      "url": "/quantum-core-about.html"
+    },
+    {
+      "id": "resonance",
+      "title": "RESONANCE",
+      "status": "LIVE",
+      "desc": "Conversation-to-Music Engine",
+      "tags": [
+        "Web Audio API",
+        "Pentatonic Synthesis",
+        "172.35 Hz P31 NMR",
+        "SVG Molecule"
+      ],
+      "url": "/resonance-about.html"
+    },
+    {
+      "id": "signal",
+      "title": "SIGNAL",
+      "status": "LIVE",
+      "desc": "Stim Room & Mini Games",
+      "tags": [
+        "WebGL Shaders",
+        "Cellular Automaton",
+        "Rapier.js",
+        "12-Spoon Budget"
+      ],
+      "url": "/signal-about.html"
+    },
+    {
+      "id": "donate",
+      "title": "Donate Pipeline",
+      "status": "LIVE",
+      "desc": "Stripe (edge) + Ko-fi (Discord)",
+      "tags": [
+        "Stripe Checkout",
+        "donate-api Worker",
+        "Optional KV (Stripe idempotency)",
+        "Ko-fi → Discord bot"
+      ],
+      "url": "/donate-about.html"
+    },
+    {
+      "id": "tactile",
+      "title": "TACTILE",
+      "status": "LIVE",
+      "desc": "Mechanical Keyboard Builder & Typing Lab",
+      "tags": [
+        "Web Audio API",
+        "Haptics",
+        "Keyboard Layout Engine",
+        "Typing Games"
+      ],
+      "url": "/tactile-about.html"
+    },
+    {
+      "id": "discord-bot",
+      "title": "p31-bot",
+      "status": "LIVE",
+      "desc": "Community Command Plane",
+      "tags": [
+        "Discord.js v14",
+        "TypeScript",
+        "Railway Deploy",
+        "CF Workers KV"
+      ],
+      "url": "/discord-bot-about.html"
+    },
+    {
+      "id": "cortex",
+      "title": "p31-cortex",
+      "status": "LIVE",
+      "desc": "AI Agent Orchestration",
+      "tags": [
+        "Cloudflare Durable Objects",
+        "D1 Database",
+        "CF AI Bindings",
+        "Workers Analytics"
+      ],
+      "url": "/cortex-about.html"
+    },
+    {
+      "id": "quantum-family",
+      "title": "THE QUANTUM FAMILY",
+      "status": "LIVE",
+      "desc": "Sovereign Welcome Pack",
+      "tags": [
+        "Three.js",
+        "Web Audio API",
+        "PWA",
+        "IndexedDB"
+      ],
+      "url": "/quantum-family-about.html"
+    },
+    {
+      "id": "observatory",
+      "title": "OBSERVATORY",
+      "status": "LIVE",
+      "desc": "Geodesic Data Dome",
+      "tags": [
+        "Three.js r160",
+        "WebGL Bloom",
+        "ES Modules",
+        "Panel Inspector"
+      ],
+      "url": "/observatory-about.html"
+    }
+  ],
+  "prototypes": [
+    {
+      "id": "node-zero",
+      "title": "Node Zero",
+      "desc": "Cryptographic Mesh Node",
+      "url": "/node-zero-about.html"
+    },
+    {
+      "id": "node-one",
+      "title": "Node One (The Totem)",
+      "desc": "Physical Haptic Anchor",
+      "url": "/node-one-about.html"
+    },
+    {
+      "id": "mission-control",
+      "title": "Mission Control",
+      "desc": "Kids Token Economy",
+      "url": "/mission-control-about.html"
+    }
+  ],
+  "research": [
+    {
+      "title": "Tetrahedral Mesh as Cybernetic Trauma Response",
+      "doi": "10.5281/zenodo.18627420"
+    },
+    {
+      "title": "Algorithmic Authenticity and the Fawn Guard",
+      "doi": "10.5281/zenodo.18627421"
+    },
+    {
+      "title": "Fisher-Escolà Coherence in Distributed Edge Systems",
+      "doi": "10.5281/zenodo.18627422"
+    },
+    {
+      "title": "The Thermodynamics of the Spoon Economy",
+      "doi": "10.5281/zenodo.18627423"
+    }
+  ]
+}

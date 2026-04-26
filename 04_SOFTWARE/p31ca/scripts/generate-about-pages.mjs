@@ -216,23 +216,23 @@ const registry = [
     related: ['cortex', 'genesis-gate', 'bridge']
   },
   {
-    id: 'donate', title: 'Donate Pipeline', tagline: 'Ko-fi + Stripe Infrastructure',
+    id: 'donate', title: 'Donate Pipeline', tagline: 'Stripe (edge) + Ko-fi (Discord)',
     icon: '💚', accent: '#3ba372', status: 'live', statusLabel: 'LIVE',
     appUrl: 'donate.html',
-    tech: ['Stripe Checkout', 'CF Worker Webhook', 'Ko-fi Webhooks', 'KV Receipt Store'],
+    tech: ['Stripe Checkout', 'donate-api Worker', 'Optional KV (Stripe idempotency)', 'Ko-fi → Discord bot'],
     features: [
-      'Stripe Checkout session creation via Cloudflare Worker — no server required',
-      'Ko-fi webhook loop closes the funding circuit and logs contributions to KV',
-      'Every contribution is classified as node-building — not charity, not donation',
-      'Receipt store in KV provides audit trail for grant reporting',
-      'EIN 42-1888158 displayed on every receipt for tax documentation'
+      'Card flow: Checkout on phosphorus31.org/donate — session API on donate-api Worker (no PAN on P31 origin)',
+      'Signed Stripe webhooks → Genesis Gate + Discord relay; optional DONATE_EVENTS KV dedupes event replays',
+      'Ko-fi: verified POST to Discord p31-bot (spoon ledger + telemetry) — not the donate-api Worker',
+      'CWP-P31-MAP automation: verify-monetary-surface, vitest, CI in Andromeda',
+      'EIN 42-1888158 on public donate copy; 501(c)(3) status per operator-approved language'
     ],
     howTo: [
-      'Click "Support" on the hub nav — goes directly to the donate page',
-      'Choose Ko-fi for recurring or one-time, Stripe for card processing with receipt',
-      'Contributions appear in the command-center dashboard within ~30 seconds via webhook'
+      'Support link (hub) → donate page / phosphorus31.org for card checkout',
+      'Ko-fi: configure dashboard to hit the org Discord ingress (see p31-bot webhook docs)',
+      'Ops: 04_SOFTWARE/docs/CONTROLLED-WORK-PACKAGE-MONETARY-PIPELINE.md (MAP)'
     ],
-    techNotes: 'Stripe Checkout API called from a Cloudflare Worker — no server, no PCI scope on origin. Ko-fi webhooks hit a separate Worker endpoint that writes receipts to KV.',
+    techNotes: 'As-built: do not claim a single CF Worker KV for Ko-fi receipts. Stripe path = donate-api; Ko-fi = Discord. Run `npm run verify` in donate-api and root `verify:monetary` after changes.',
     related: ['spaceship-earth', 'genesis-gate', 'cortex']
   },
   {
@@ -718,24 +718,86 @@ const registry = [
     related: ['echo', 'prism', 'signal']
   },
   {
-    id: 'k4market', title: 'K4 MARKET', tagline: 'Tetrahedral Market Tomography',
+    id: 'k4market', title: 'K4 MARKET', tagline: 'Tetrahedral Price Geometry',
     icon: '📐', accent: '#3ba372', status: 'live', statusLabel: 'LIVE',
     appUrl: 'k4market.html',
-    tech: ['Three.js r183', 'OHLCV Mapping', 'Larmor Ring Overlay', 'Demo Data'],
+    tech: ['Three.js r160', 'OHLCV Mapping', 'OrbitControls', 'Synthetic Live Data'],
     features: [
-      'Maps OHLCV price data into K₄ tetrahedral coordinate space',
-      'Support/resistance nodes color-coded by volume concentration',
-      'Larmor ring overlay at 0.86 Hz — identifies price oscillation frequencies',
-      'Demo data seeded by symbol string — hash the ticker to produce a deterministic chart',
-      'Time-frame selector: 1D, 1W, 1M — different K₄ topology at each resolution'
+      'OHLCV mapped to K₄ tetrahedron: Open→V1, High→V2, Low→V3, Close→V4, Volume→edge weights',
+      'Six-edge panel shows all K₄ connections and real-time weight values',
+      'Live Data mode: synthetic OHLCV refreshes on interval to simulate market movement',
+      'Volume Pulses: sphere scale pulses proportionally to the candle\'s volume',
+      'Edge Flow: particles traverse edges at speeds mapped to edge weight'
     ],
     howTo: [
-      'Enter a symbol in the search box — demo OHLCV data generates from the ticker hash',
-      'Rotate the K₄ tetrahedron to see support/resistance clusters from different angles',
-      'Toggle the Larmor ring to highlight price frequencies that match the overlay'
+      'Click Live Data to start the synthetic feed — spheres shift as OHLCV updates',
+      'Toggle Volume Pulses to see which vertex carries the most energy each candle',
+      'Enable Edge Flow and rotate the tetrahedron with mouse drag to inspect connectivity'
     ],
-    techNotes: 'OHLCV mapped to K₄ vertex coordinates by: Open→V1, High→V2, Low→V3, Close→V4, Volume→edge weights. Larmor ring is a torus geometry at 0.86 Hz parametric frequency.',
-    related: ['sovereign', 'observatory', 'axiom']
+    techNotes: 'Three.js r160 (unpkg). OHLCV → K₄ vertex mapping: Open→V1, High→V2, Low→V3, Close→V4. For symbol search, timeframes, and Larmor ring see tomography.html.',
+    related: ['tomography', 'sovereign', 'observatory']
+  },
+  {
+    id: 'tomography', title: 'K4 TOMOGRAPHY', tagline: 'Symbol-Seeded Depth View',
+    icon: '🔬', accent: '#4db8a8', status: 'live', statusLabel: 'LIVE',
+    appUrl: 'tomography.html',
+    tech: ['Three.js r183', 'Barycentric Mapping', 'PRNG OHLCV', 'Larmor Ring'],
+    features: [
+      'Symbol search — demo OHLCV series generated deterministically from ticker string hash',
+      'Timeframe selector: 1H / 1D / 1W / 1M — barycentric distribution shifts at each resolution',
+      'OHLCV candles placed as barycentric point clouds inside the regular tetrahedron',
+      'Support/resistance coloring: green clusters near highs, red clusters near lows, volume-weighted',
+      'Larmor ring torus overlay at 0.86 Hz — highlights price oscillation frequencies',
+      'Wireframe toggle for topology inspection'
+    ],
+    howTo: [
+      'Type any symbol and press Enter — a deterministic chart generates from the ticker hash',
+      'Switch timeframes to see how the barycentric distribution changes across resolutions',
+      'Toggle the Larmor ring to overlay the 0.86 Hz torus against support/resistance clusters'
+    ],
+    techNotes: 'Three.js r183 (jsdelivr). Barycentric OHLCV placement: each candle\'s (O,H,L,C) tuple maps to a point inside the tetrahedron. PRNG seeded by CRC32(symbol). Larmor ring rotation speed = LARMOR_HZ × dt.',
+    related: ['k4market', 'sovereign', 'observatory']
+  },
+  {
+    id: 'connect', title: 'THE MESH', tagline: 'K₄ Cage + Product Graph',
+    icon: '⬡', accent: '#4db8a8', status: 'live', statusLabel: 'LIVE',
+    appUrl: 'connect.html',
+    tech: ['Three.js r160', 'OrbitControls', 'Raycasting', 'HTML Labels'],
+    features: [
+      'Family K₄ cage rendered as a tetrahedron with four glowing vertices (will / S.J. / W.J. / christyn)',
+      'Product satellites orbit the cage, each edge-connected to its primary cage vertex',
+      'Click any node — cage vertex or product — to open a detail panel with description and link',
+      'Pending products rendered semi-transparent with a muted badge (honest about what\'s done)',
+      'Envision / Build / Connect three-verb compass rendered as a permanent bottom bar'
+    ],
+    howTo: [
+      'Drag to rotate the mesh — OrbitControls with auto-rotate enabled by default',
+      'Click a cage vertex (will, S.J., W.J., christyn) to read the role in the mesh',
+      'Click a product satellite to open its detail panel and navigate to the live surface'
+    ],
+    techNotes: 'Three.js r160 (unpkg). Labels are HTML divs positioned via camera.project() each frame — no TextGeometry or font loading required. Raycasting on pointer click determines hit object.',
+    related: ['k4market', 'tomography', 'observatory']
+  },
+  {
+    id: 'planetary-onboard', title: 'ONBOARDING', tagline: 'Wye → Delta Entry Flow',
+    icon: '🌍', accent: '#cc6247', status: 'live', statusLabel: 'LIVE',
+    appUrl: 'planetary-onboard.html',
+    tech: ['WebAuthn / FIDO2', 'CSS Custom Properties', 'Pointer Events', 'Web Haptics'],
+    features: [
+      'Five-phase neuro-inclusive journey: Void → Anchor → Rooms → Dial → Pact',
+      'Phase 2 somatic anchor: ³¹P nucleus pulses at 0.1 Hz (6/min); tap in sync for HRV regulation',
+      'Phase 3 spatial memory: drag four K₄ glass spheres (Structure / Connection / Rhythm / Creation)',
+      'Phase 4 Cognitive Load Dial: one slider sets five CSS variables — font size, label visibility, particle density',
+      'Phase 5 passkey enrollment: WebAuthn biometric framing ("secure the lock") — no SMS, no jargon',
+      'Archetype routing: ?a=child (haptic preset), ?a=elder (enlarged targets), default'
+    ],
+    howTo: [
+      'Navigate to /planetary-onboard.html — tap anywhere on the void to begin',
+      'Tap the ³¹P nucleus three times in sync with the pulse to proceed past the Anchor phase',
+      'Drag the four spheres into your preferred arrangement, then set the Cognitive Load Dial'
+    ],
+    techNotes: 'No Three.js — pure CSS + vanilla JS. Phase 5 uses a WebAuthn stub challenge (crypto.getRandomValues). Swap navigator.credentials.create() for /api/passkey/register-begin Worker endpoint when backend ships. prefers-reduced-motion respected throughout.',
+    related: ['connect', 'bonding', 'spaceship-earth']
   },
   {
     id: 'geodesic', title: 'GEODESIC', tagline: '3D Structure Builder',
@@ -1121,12 +1183,12 @@ ul.feature-list li:last-child{border-bottom:none}
 
 <nav class="nav">
   <div class="nav-inner">
-    <a href="index.html" class="nav-brand">
+    <a href="/" class="nav-brand">
       <svg width="24" height="24" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"><rect width="512" height="512" rx="112" fill="#25897d"/><circle cx="390" cy="120" r="48" fill="#cc6247"/><text x="256" y="340" font-family="system-ui" font-weight="900" font-size="220" fill="#d8d6d0" text-anchor="middle">P31</text><rect x="156" y="380" width="200" height="16" rx="8" fill="#cda852"/></svg>
       <span class="nav-brand-label">P31 Labs</span>
     </a>
     <div class="nav-links">
-      <a href="index.html" class="nav-link">&larr; Hub</a>
+      <a href="/" class="nav-link">&larr; Hub</a>
       <a href="https://github.com/p31labs/andromeda" target="_blank" rel="noopener" class="nav-link">GitHub</a>
       <a href="${appUrl}" class="nav-cta"${targetAttr}>&#x2B21; Launch ${item.title}</a>
     </div>
@@ -1149,7 +1211,7 @@ ul.feature-list li:last-child{border-bottom:none}
     </div>
     <div class="hero-cta">
       <a href="${appUrl}" class="cta-btn"${targetAttr}>&#x2B21; Launch ${item.title}</a>
-      <a href="index.html" class="cta-secondary">&larr; Back to Hub</a>
+      <a href="/" class="cta-secondary">&larr; Back to Hub</a>
     </div>
   </div>
 </div>
@@ -1186,13 +1248,13 @@ ${howToItems}
 
     <div style="margin-top:32px;display:flex;gap:14px;flex-wrap:wrap;align-items:center">
       <a href="${appUrl}" class="cta-btn"${targetAttr}>&#x2B21; Launch ${item.title}</a>
-      <a href="index.html" class="cta-secondary">&larr; Back to Hub</a>
+      <a href="/" class="cta-secondary">&larr; Back to Hub</a>
     </div>
 
     <div class="footer">
       <span>P31 Labs, Inc. &middot; ${item.title}</span>
       <div class="footer-links">
-        <a href="index.html">Hub</a>
+        <a href="/">Hub</a>
         <a href="${appUrl}"${targetAttr}>${item.title}</a>
         <a href="https://phosphorus31.org/donate" target="_blank" rel="noopener">Support</a>
         <a href="https://github.com/p31labs/andromeda" target="_blank" rel="noopener">GitHub</a>

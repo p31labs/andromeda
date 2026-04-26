@@ -1,8 +1,13 @@
 #!/usr/bin/env node
 /**
  * Injects MVP "enriched" sections into p31ca/public/*-about.html for every
- * card whose link in public/index.html mvpData ends with -about.html.
+ * product/prototype in src/data/hub-landing.json with url ending in -about.html
+ * (same graph as the Astro home — CWP D5).
  * Idempotent: skips files that already contain id="mvp-enriched".
+ *
+ * Layouts:
+ * - Legacy: `<table class="stack">` — full block + callout + CTA row (and removes old stack CTA).
+ * - Modern: `.page-body` + `.main-col` — hub `detail-grid` only (page already has callout/CTAs).
  */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -10,7 +15,7 @@ import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, '..');
-const INDEX = path.join(ROOT, 'public', 'index.html');
+const HUB_LANDING = path.join(ROOT, 'src', 'data', 'hub-landing.json');
 const PUBLIC = path.join(ROOT, 'public');
 
 const EXTRA_CSS = `
@@ -31,43 +36,42 @@ function safeBodyText(s) {
   return String(s).replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
-function parseMvpProducts(html) {
-  const parts = html.split(/\r?\n    \{\r?\n        id: '/);
+/**
+ * @returns {{ id: string, link: string, title: string, tagline: string, statusLabel: string, description: string, tech: string[] }[]}
+ */
+function loadTargetsFromHubLanding() {
+  if (!fs.existsSync(HUB_LANDING)) {
+    console.error('Missing', HUB_LANDING, '— run npm run hub:build first');
+    process.exit(1);
+  }
+  const data = JSON.parse(fs.readFileSync(HUB_LANDING, 'utf8'));
   const out = [];
-  for (let i = 1; i < parts.length; i++) {
-    const chunk = parts[i];
-    const idEnd = chunk.indexOf("'");
-    const id = chunk.slice(0, idEnd);
-    const rest = chunk.slice(idEnd + 1);
-    const linkM = /link:\s*'([^']+)'/.exec(rest);
-    if (!linkM) continue;
-    const link = linkM[1];
+
+  for (const p of data.coreProducts || []) {
+    const link = String(p.url || '').replace(/^\//, '');
     if (!link.endsWith('-about.html')) continue;
-
-    const titleM = /title:\s*'((?:\\'|[^'])*)'/.exec(rest);
-    const taglineM = /tagline:\s*'((?:\\'|[^'])*)'/.exec(rest);
-    const statusM = /statusLabel:\s*'((?:\\'|[^'])*)'/.exec(rest);
-    const descM =
-      /description:\s*'((?:\\'|[^'])*)'/.exec(rest) ||
-      /description:\s*"((?:\\"|[^"])*)"/.exec(rest);
-    const techM = /tech:\s*\[([^\]]*)\]/.exec(rest);
-
-    const title = titleM ? titleM[1].replace(/\\'/g, "'") : id;
-    const tagline = taglineM ? taglineM[1].replace(/\\'/g, "'") : '';
-    const statusLabel = statusM ? statusM[1].replace(/\\'/g, "'") : '';
-    const description = descM
-      ? descM[0].startsWith("description: '")
-        ? descM[1].replace(/\\'/g, "'")
-        : descM[1].replace(/\\"/g, '"')
-      : '';
-    let tech = [];
-    if (techM) {
-      tech = techM[1]
-        .split(',')
-        .map((t) => t.trim().replace(/^'|'$/g, ''))
-        .filter(Boolean);
-    }
-    out.push({ id, link, title, tagline, statusLabel, description, tech });
+    out.push({
+      id: p.id,
+      link,
+      title: p.title,
+      tagline: p.desc || '',
+      statusLabel: p.status || 'LIVE',
+      description: p.desc || '',
+      tech: Array.isArray(p.tags) ? p.tags : [],
+    });
+  }
+  for (const p of data.prototypes || []) {
+    const link = String(p.url || '').replace(/^\//, '');
+    if (!link.endsWith('-about.html')) continue;
+    out.push({
+      id: p.id,
+      link,
+      title: p.title,
+      tagline: p.desc || '',
+      statusLabel: 'PROTOTYPE',
+      description: p.desc || '',
+      tech: [],
+    });
   }
   return out;
 }
@@ -98,15 +102,25 @@ function readCtaLabel(aboutHtml) {
   return m ? m[1].trim() : 'Launch';
 }
 
-function buildInsert({ title, tagline, description, tech, launchHref, ctaLabel }) {
+/** Hub-backed cards (used by legacy + modern). */
+function buildDetailGrid({ title, tagline, description, tech, statusLabel }) {
   const sens = sentences(description);
   const lead = sens[0] || description;
   const more = sens.slice(1, 4);
-  const techLis = tech.map((t) => `      <li>${safeBodyText(t)}</li>`).join('\n');
+  const techList =
+    tech.length > 0
+      ? tech
+      : statusLabel === 'PROTOTYPE'
+        ? ['Prototype — see hub card for route']
+        : ['—'];
+  const techLis = techList.map((t) => `      <li>${safeBodyText(t)}</li>`).join('\n');
   const moreParas = more.map((p) => `      <p>${safeBodyText(p)}</p>`).join('\n');
+  const statusLine =
+    statusLabel && statusLabel !== 'LIVE'
+      ? ` <span style="opacity:.75">· ${safeBodyText(statusLabel)}</span>`
+      : '';
 
-  return `
-  <div id="mvp-enriched" class="detail-grid">
+  return `  <div id="mvp-enriched" class="detail-grid">
     <div class="detail-card">
       <h3>What you can do</h3>
       <p>${safeBodyText(lead)}</p>
@@ -114,18 +128,24 @@ ${moreParas}
     </div>
     <div class="detail-card">
       <h3>Build surface</h3>
-      <p>Hub card stack for <strong>${safeBodyText(title)}</strong> (${safeBodyText(tagline)}). Ships as static HTML on <code>p31ca.org</code>; live app may live on Pages, Workers, or a sibling route.</p>
+      <p>Hub card stack for <strong>${safeBodyText(title)}</strong> (${safeBodyText(tagline)}).${statusLine} Static HTML on <code>p31ca.org</code>; app may be on Pages, Workers, or a sibling route.</p>
       <ul>
 ${techLis}
       </ul>
     </div>
   </div>
+`;
+}
 
+function buildInsertLegacy({ title, tagline, description, tech, statusLabel, launchHref, ctaLabel }) {
+  const grid = buildDetailGrid({ title, tagline, description, tech, statusLabel });
+  return `
+${grid}
   <p class="callout-p31"><strong>P31 Labs, Inc.</strong> (Georgia nonprofit, EIN 42-1888158) builds open tools for cognitive load, communication clarity, and family coordination. This page is technical documentation, not medical or legal advice. Mission and donations: <a href="https://phosphorus31.org" target="_blank" rel="noopener">phosphorus31.org</a>.</p>
 
   <div class="cta-wrap">
     <a href="${safeBodyText(launchHref)}" class="cta-btn">${ctaLabel.replace(/</g, '&lt;')}</a>
-    <a href="index.html" class="cta-secondary">&larr; Back to Hub</a>
+    <a href="/" class="cta-secondary">&larr; Back to Hub</a>
   </div>
 `;
 }
@@ -135,16 +155,22 @@ function injectCss(html) {
   return html.replace('</style>', `${EXTRA_CSS}\n</style>`);
 }
 
-function injectBody(html, insert) {
+function injectAfterTable(html, insert) {
   if (html.includes('id="mvp-enriched"')) return html;
   const needle = '</table>';
   const idx = html.indexOf(needle);
-  if (idx === -1) {
-    console.warn('No </table> found, skip');
-    return html;
-  }
+  if (idx === -1) return html;
   const pos = idx + needle.length;
   return html.slice(0, pos) + '\n' + insert + html.slice(pos);
+}
+
+function injectAfterMainColOpen(html, insert) {
+  if (html.includes('id="mvp-enriched"')) return html;
+  const needle = '<div class="main-col">';
+  const idx = html.indexOf(needle);
+  if (idx === -1) return html;
+  const pos = idx + needle.length;
+  return html.slice(0, pos) + '\n\n' + insert + html.slice(pos);
 }
 
 /** Legacy stack CTA (margin-top:40px) — redundant after enrichment adds launch row. */
@@ -159,10 +185,17 @@ function removeOldStackCtaAfterEnriched(html) {
   return html.slice(0, pos) + html.slice(end + 6);
 }
 
+function isLegacyStack(html) {
+  return html.includes('<table class="stack">');
+}
+
+function isModernPageBody(html) {
+  return html.includes('class="page-body"') && html.includes('class="main-col"');
+}
+
 function main() {
-  const indexHtml = fs.readFileSync(INDEX, 'utf8');
-  const products = parseMvpProducts(indexHtml);
-  console.log(`Parsed ${products.length} MVP about targets from index.html`);
+  const products = loadTargetsFromHubLanding();
+  console.log(`Parsed ${products.length} about targets from hub-landing.json`);
 
   for (const p of products) {
     const fp = path.join(PUBLIC, p.link);
@@ -175,17 +208,31 @@ function main() {
       console.log('Skip (already enriched):', p.link);
       continue;
     }
-    if (!html.includes('<table class="stack">')) {
-      console.warn('Skip (non-standard layout, no stack table):', p.link);
+
+    let insert;
+    if (isLegacyStack(html)) {
+      const launchHref = readLaunchHref(html);
+      const ctaLabel = readCtaLabel(html);
+      insert = buildInsertLegacy({ ...p, launchHref, ctaLabel });
+    } else if (isModernPageBody(html)) {
+      insert = buildDetailGrid(p);
+    } else {
+      console.warn('Skip (unknown layout, expected stack table or main-col):', p.link);
       continue;
     }
-    const launchHref = readLaunchHref(html);
-    const ctaLabel = readCtaLabel(html);
-    const insert = buildInsert({ ...p, launchHref, ctaLabel });
-    html = injectCss(html);
-    html = injectBody(html, insert);
-    html = removeOldStackCtaAfterEnriched(html);
 
+    html = injectCss(html);
+    if (isLegacyStack(html)) {
+      html = injectAfterTable(html, insert);
+      html = removeOldStackCtaAfterEnriched(html);
+    } else {
+      html = injectAfterMainColOpen(html, insert);
+    }
+
+    if (!html.includes('id="mvp-enriched"')) {
+      console.warn('Inject failed:', p.link);
+      continue;
+    }
     fs.writeFileSync(fp, html, 'utf8');
     console.log('Enriched:', p.link);
   }
