@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#0f1115">
 <title>Quantum Core — PQC & Algorithm Primitives | P31 Labs</title>
-<meta name="description" content="ML-KEM-768 (FIPS-203) key encapsulation — post-quantum cryptography primitives">
+<meta name="description" content="ML-KEM-768 (FIPS-203): real module-lattice key encapsulation — 1184-byte ek, 1088-byte ct, 32-byte ss">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -42,7 +42,7 @@ a:hover{text-decoration:underline}
 .hero-text h1{font-size:clamp(28px,4vw,42px);font-weight:700;color:var(--accent);font-family:var(--mono);letter-spacing:2px;text-transform:uppercase;margin-bottom:6px}
 .hero-text .tagline{font-size:16px;color:rgba(216,214,208,.75);margin-bottom:16px}
 .hero-badges{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-.badge{display:inline-block;font-family:var(--mono);font-size:10px;font-weight:700;padding:3px 10px;border-radius:9999px;letter-spacing:1px;background:rgba(77,184,168,0.12);color:#4db8a8;border:1px solid color-mix(in srgb,#4db8a8 30%,transparent)}
+.badge{display:inline-block;font-family:var(--mono);font-size:10px;font-weight:700;padding:3px 10px;border-radius:9999px;letter-spacing:1px;background:rgba(59,163,114,0.12);color:#3ba372;border:1px solid color-mix(in srgb,#3ba372 30%,transparent)}
 .hero-cta{margin-top:28px;display:flex;gap:14px;flex-wrap:wrap;align-items:center}
 .cta-btn{display:inline-block;background:var(--accent);color:var(--void);font-family:var(--mono);font-weight:700;font-size:13px;letter-spacing:1px;padding:13px 32px;border-radius:5px;text-decoration:none;transition:filter .15s}
 .cta-btn:hover{filter:brightness(1.12);text-decoration:none}
@@ -109,15 +109,15 @@ ul.feature-list li:last-child{border-bottom:none}
 
 <div class="hero">
   <div class="hero-inner">
-    <div class="hero-eyebrow">P31 Labs &mdash; RESEARCH</div>
+    <div class="hero-eyebrow">P31 Labs &mdash; LIVE</div>
     <div class="hero-top">
       <div class="hero-icon">🌀</div>
       <div class="hero-text">
         <h1>Quantum Core</h1>
         <div class="tagline">PQC & Algorithm Primitives</div>
         <div class="hero-badges">
-          <span class="badge">RESEARCH</span>
-          <span class="badge" style="background:rgba(255,255,255,0.04);color:var(--muted);border-color:var(--border)">FIPS-203 ML-KEM-768</span><span class="badge" style="background:rgba(255,255,255,0.04);color:var(--muted);border-color:var(--border)">SIC-POVM Swarm</span><span class="badge" style="background:rgba(255,255,255,0.04);color:var(--muted);border-color:var(--border)">IBM Quantum</span>
+          <span class="badge">LIVE</span>
+          <span class="badge" style="background:rgba(255,255,255,0.04);color:var(--muted);border-color:var(--border)">FIPS-203 ML-KEM-768</span><span class="badge" style="background:rgba(255,255,255,0.04);color:var(--muted);border-color:var(--border)">FIPS-204 ML-DSA-65</span><span class="badge" style="background:rgba(255,255,255,0.04);color:var(--muted);border-color:var(--border)">SIC-POVM Swarm</span>
         </div>
       </div>
     </div>
@@ -133,31 +133,32 @@ ul.feature-list li:last-child{border-bottom:none}
 
     <section>
       <div class="section-label">What Is It</div>
-      <p>ML-KEM-768 (FIPS-203) key encapsulation — post-quantum cryptography primitives. PQC & Algorithm Primitives is a core component of the P31 Labs sovereign cognitive infrastructure stack — built to run offline, deployed to the edge, and designed without dark patterns.</p>
-      <p>IBM Quantum API calls are proxied through a Cloudflare Worker to avoid CORS. ML-KEM-768 is implemented in TypeScript following the FIPS-203 reference specification.</p>
+      <p>ML-KEM-768 (FIPS-203): real module-lattice key encapsulation — 1184-byte ek, 1088-byte ct, 32-byte ss. PQC & Algorithm Primitives is a core component of the P31 Labs sovereign cognitive infrastructure stack — built to run offline, deployed to the edge, and designed without dark patterns.</p>
+      <p>@noble/post-quantum (audited, MIT, zero-dependency). 45/45 tests pass. Key sizes verified against FIPS 203 Table 3 and FIPS 204. IBM Quantum API calls proxied through a Cloudflare Worker to avoid CORS.</p>
     </section>
 
     <section>
       <div class="section-label">Core Features</div>
       <ul class="feature-list">
-            <li>ML-KEM-768 (FIPS-203) key encapsulation — post-quantum cryptography primitives</li>
-            <li>SIC-POVM swarm management: 1-qubit POVM with 4 elements, IC-POVM for 7-node mesh</li>
-            <li>IBM Quantum bridge: execute real circuits against IBM hardware via the cloud API</li>
-            <li>Lattice-based signature scheme primitives aligned with NIST PQC standards</li>
-            <li>abdicate.sh integration point: key destruction protocol for governance transitions</li>
+            <li>ML-KEM-768 (FIPS-203): real module-lattice key encapsulation — 1184-byte ek, 1088-byte ct, 32-byte ss</li>
+            <li>ML-DSA-65 (FIPS-204): real lattice digital signatures — 1952-byte pk, 3309-byte sig max</li>
+            <li>HybridPQCScheme: ML-DSA sign + ML-KEM encapsulate in one call; decapsulateAndVerify round-trip</li>
+            <li>All three security levels: ML-KEM-512/768/1024 + ML-DSA-44/65/87</li>
+            <li>SIC-POVM swarm management: d² agents per dimension, biological tomography, calcium homeostasis cost</li>
+            <li>IBM Quantum bridge: execute circuits against IBM hardware via cloud API</li>
       </ul>
     </section>
 
     <section>
       <div class="section-label">How To Use</div>
-          <div class="step"><span class="step-num">1</span><span>Open Quantum Core — the SIC-POVM viewer loads the 4-element measurement set</span></div>
-          <div class="step"><span class="step-num">2</span><span>Switch to IBM Quantum tab to run a circuit — requires an IBM Quantum API key</span></div>
-          <div class="step"><span class="step-num">3</span><span>Inspect the ML-KEM-768 primitives in the Crypto tab — generate a test keypair</span></div>
+          <div class="step"><span class="step-num">1</span><span>Import MLKEM or MLDSA from @p31/quantum-core — keygen(), encapsulate(), sign(), verify()</span></div>
+          <div class="step"><span class="step-num">2</span><span>HybridPQCScheme: generateHybridKeyPair() → signAndEncapsulate() → decapsulateAndVerify()</span></div>
+          <div class="step"><span class="step-num">3</span><span>All operations synchronous, zero WASM, runs in Node + Cloudflare Workers + browser</span></div>
     </section>
 
     <section>
       <div class="section-label">Architecture Notes</div>
-      <div class="tech-note">IBM Quantum API calls are proxied through a Cloudflare Worker to avoid CORS. ML-KEM-768 is implemented in TypeScript following the FIPS-203 reference specification.</div>
+      <div class="tech-note">@noble/post-quantum (audited, MIT, zero-dependency). 45/45 tests pass. Key sizes verified against FIPS 203 Table 3 and FIPS 204. IBM Quantum API calls proxied through a Cloudflare Worker to avoid CORS.</div>
     </section>
 
     <div class="callout-p31">
@@ -183,7 +184,7 @@ ul.feature-list li:last-child{border-bottom:none}
   <aside class="sidebar">
     <div class="sidebar-card">
       <div class="sidebar-card-title">Status</div>
-      <span class="badge">RESEARCH</span>
+      <span class="badge">LIVE</span>
       <p style="margin-top:12px;font-size:13px;color:var(--muted)">Deployed on P31 Labs infrastructure. EIN 42-1888158.</p>
     </div>
 
@@ -191,9 +192,9 @@ ul.feature-list li:last-child{border-bottom:none}
       <div class="sidebar-card-title">Tech Stack</div>
       <ul class="tech-stack">
               <li>FIPS-203 ML-KEM-768</li>
+              <li>FIPS-204 ML-DSA-65</li>
               <li>SIC-POVM Swarm</li>
-              <li>IBM Quantum</li>
-              <li>Post-Quantum Primitives</li>
+              <li>@noble/post-quantum</li>
       </ul>
     </div>
 
@@ -207,9 +208,9 @@ ul.feature-list li:last-child{border-bottom:none}
 
     <div class="sidebar-card">
       <div class="sidebar-card-title">Related</div>
-            <a href="node-zero-about.html" class="related-link">📡 Node Zero</a>
-            <a href="genesis-gate-about.html" class="related-link">🔬 Genesis Gate</a>
-            <a href="vault-about.html" class="related-link">🔐 VAULT</a>
+            <a href="/node-zero-about.html" class="related-link">📡 Node Zero</a>
+            <a href="/genesis-gate-about.html" class="related-link">🔬 Genesis Gate</a>
+            <a href="/vault-about.html" class="related-link">🔐 VAULT</a>
     </div>
   </aside>
 </div>

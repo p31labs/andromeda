@@ -134,7 +134,7 @@ ul.feature-list li:last-child{border-bottom:none}
     <section>
       <div class="section-label">What Is It</div>
       <p>Symbol search — demo OHLCV series generated deterministically from ticker string hash. Symbol-Seeded Depth View is a core component of the P31 Labs sovereign cognitive infrastructure stack — built to run offline, deployed to the edge, and designed without dark patterns.</p>
-      <p>Three.js r183 (jsdelivr). Barycentric OHLCV placement: each candle's (O,H,L,C) tuple maps to a point inside the tetrahedron. PRNG seeded by CRC32(symbol). Larmor ring rotation speed = LARMOR_HZ × dt.</p>
+      <p>Three.js r183 (jsdelivr). Barycentric OHLCV placement: each candle's (O,H,L,C) tuple maps to a point inside the tetrahedron via λ₁=O, λ₂=H, λ₃=L, λ₄=C (normalised). PRNG seeded by CRC32(symbol). Larmor ring rotation speed = LARMOR_HZ × dt.</p>
     </section>
 
     <section>
@@ -158,7 +158,7 @@ ul.feature-list li:last-child{border-bottom:none}
 
     <section>
       <div class="section-label">Architecture Notes</div>
-      <div class="tech-note">Three.js r183 (jsdelivr). Barycentric OHLCV placement: each candle's (O,H,L,C) tuple maps to a point inside the tetrahedron. PRNG seeded by CRC32(symbol). Larmor ring rotation speed = LARMOR_HZ × dt.</div>
+      <div class="tech-note">Three.js r183 (jsdelivr). Barycentric OHLCV placement: each candle's (O,H,L,C) tuple maps to a point inside the tetrahedron via λ₁=O, λ₂=H, λ₃=L, λ₄=C (normalised). PRNG seeded by CRC32(symbol). Larmor ring rotation speed = LARMOR_HZ × dt.</div>
     </section>
 
     <div class="callout-p31">
@@ -208,9 +208,9 @@ ul.feature-list li:last-child{border-bottom:none}
 
     <div class="sidebar-card">
       <div class="sidebar-card-title">Related</div>
-            <a href="k4market-about.html" class="related-link">📐 K4 MARKET</a>
-            <a href="sovereign-about.html" class="related-link">🔑 SOVEREIGN</a>
-            <a href="observatory-about.html" class="related-link">🔺 OBSERVATORY</a>
+            <a href="/k4market-about.html" class="related-link">📐 K4 MARKET</a>
+            <a href="/sovereign-about.html" class="related-link">🔑 SOVEREIGN</a>
+            <a href="/observatory-about.html" class="related-link">🔺 OBSERVATORY</a>
     </div>
   </aside>
 </div>

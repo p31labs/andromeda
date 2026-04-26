@@ -1,5 +1,5 @@
 {
-  "generated": "2026-04-26T18:51:08.248Z",
+  "generated": "2026-04-26T19:23:15.199Z",
   "coreProducts": [
     {
       "id": "bonding",
@@ -130,6 +130,19 @@
         "Rigidity Scoring"
       ],
       "url": "/geodesic-about.html"
+    },
+    {
+      "id": "p31-delta-hiring",
+      "title": "P31 Delta hiring",
+      "status": "LIVE",
+      "desc": "Proof-based roles · WCD work samples · portable p31.proofRecord",
+      "tags": [
+        "Vite 5",
+        "TypeScript",
+        "Fuse.js",
+        "localStorage"
+      ],
+      "url": "/p31-delta-hiring-about.html"
     },
     {
       "id": "genesis-gate",
