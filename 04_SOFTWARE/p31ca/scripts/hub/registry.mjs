@@ -764,6 +764,52 @@ export const registry = [
     related: ['sovereign', 'collider', 'axiom']
   },
   {
+    id: 'super-centaur',
+    title: 'Super-Centaur pack',
+    tagline: 'Data health · MAP · mesh fleet · sovereignty',
+    icon: '🜊',
+    accent: '#25897d',
+    status: 'live',
+    statusLabel: 'LIVE',
+    appUrl: 'p31-super-centaur-starter.html',
+    tech: ['Static HTML', 'Machine JSON', 'CWP index', 'mesh-bridge sync'],
+    features: [
+      'Single operator page tying SUPER-CENTAUR, monetary pipeline (MAP), and ecosystem CWPs to live p31ca URLs',
+      'Mesh fleet table and FLEET_HEALTH_PATHS kept in lockstep with CWP-30 mesh-bridge.ts via verify:super-centaur-pack',
+      'Short entry /centaur and /super-centaur redirect to the starter; machine manifest at p31-super-centaur-pack.json'
+    ],
+    howTo: [
+      'Open the starter page from the hub or /centaur — skim structural, data, and financial sections',
+      'Use the JSON pack for agents and scripts; follow repoPath links into Andromeda for full CWPs',
+      'After changing mesh-bridge MESH URLs or health paths, run npm run verify:super-centaur-pack in p31ca'
+    ],
+    techNotes: 'Verifier reads integration-handoff/CWP-30/mesh-bridge.ts and requires public/p31-super-centaur-pack.json meshFleet to match. Ring D deploy (phosphorus SUPER-CENTAUR) is out of scope for this static surface.',
+    related: ['canon-demo', 'geodesic', 'donate', 'spaceship-earth']
+  },
+  {
+    id: 'canon-demo',
+    title: 'Universal canon',
+    tagline: 'Live tokens · hub ↔ org · Ring D hookup',
+    icon: '◈',
+    accent: '#4db8a8',
+    status: 'live',
+    statusLabel: 'LIVE',
+    appUrl: 'p31-canon-demo.html',
+    tech: ['p31.universalCanon', 'CSS variables', 'Tailwind CDN', 'localStorage'],
+    features: [
+      'Interactive Hub / Org / Auto switch on <html data-p31-appearance> with persisted preference',
+      'Palette, surfaces, type scale, space ladder, and motion demos driven by generated p31-style.css',
+      'Short URLs /canon and /tokens; footer links to raw CSS and Super-Centaur pack'
+    ],
+    howTo: [
+      'Open /canon — flip Org to see light-field tokens while brand accents stay aligned with the hub',
+      'Copy the snippet for phosphorus31.org; full runbook in design-tokens/PHOSPHORUS31-RING.md',
+      'After editing p31-universal-canon.json run npm run apply:p31-style and refresh'
+    ],
+    techNotes: 'Single source: andromeda/04_SOFTWARE/design-tokens/p31-universal-canon.json. BONDING is intentionally excluded from this canon.',
+    related: ['super-centaur', 'tomography', 'geodesic']
+  },
+  {
     id: 'content-forge', title: 'CONTENT FORGE', tagline: 'Editorial Publishing Suite',
     icon: '✍️', accent: '#4db8a8', status: 'live', statusLabel: 'LIVE',
     appUrl: 'content-forge.html',

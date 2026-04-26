@@ -15,7 +15,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         The Sovereign Cockpit Dome requires JavaScript to render the 3D visualization 
         and interactive elements. Please enable JavaScript in your browser settings.
       </p>
-      <a href="/mesh" class="px-6 py-3 bg-white/20 hover:bg-white/30 text-white rounded transition-colors" data-i18n="noscript.backLink">Back to Mesh Network</a>
+      <a href="/" class="px-6 py-3 bg-white/20 hover:bg-white/30 text-white rounded transition-colors" data-i18n="noscript.backLink">Back to hub</a>
     </div>
     <!-- CSS-only rotating tetrahedron SVG fallback -->
     <div class="fixed inset-0 flex items-center justify-center bg-void" aria-label="Fallback loading animation">
@@ -268,7 +268,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 </BaseLayout>
 
 <style is:global>
-  body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #050508; color: #d8d6d0; }
+  body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #0f1115; color: #d8d6d0; }
   #webgl-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
 
   .glass-panel {
@@ -469,7 +469,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
          // Noscript
          'noscript.title': 'JavaScript Required',
          'noscript.description': 'The Sovereign Cockpit Dome requires JavaScript to render the 3D visualization and interactive elements. Please enable JavaScript in your browser settings.',
-         'noscript.backLink': 'Back to Mesh Network',
+         'noscript.backLink': 'Back to hub',
          // Performance
          'perf.render': 'Render:',
          'perf.fps': 'FPS:',

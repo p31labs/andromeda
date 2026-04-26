@@ -1,0 +1,145 @@
+# P31 Security Runbook
+
+Single-page operator reference. Run `npm run security:check` and use this to triage what you see.
+
+---
+
+## Quick commands
+
+| Command | What it does |
+|---------|-------------|
+| `npm run security:check` | SCA + worker inventory + crypto surface (no full build) |
+| `npm run security:check:full` | Same + runs existing `npm run verify` contracts first |
+| `npm run security:audit` | npm audit only, with suppression filtering |
+| `npm run security:workers` | Worker inventory scan, writes `build/security-inventory.json` |
+| `npm run security:crypto` | PQC gate (quantum-core tests) + passkey boundary check |
+| `npm run security:lint` | ESLint security rules on `src/` + `workers/` |
+
+---
+
+## When `security:check` fails
+
+### P0: Prod-runtime vulnerability (SCA)
+
+```
+[FAIL] Prod dep <pkg> — high: <title>
+```
+
+**Cause:** A package in `dependencies` (not `devDependencies`) has an unsuppressed critical or high CVE.
+
+**Actions:**
+1. `npm audit --omit=dev` — confirm the finding
+2. Check if the dep is actually runtime-deployed (CF Workers use `workers/passkey/`; CF Pages deploys `dist/` — no Node deps at runtime)
+3. If it's a build artifact dep that leaked into `dependencies`, move it to `devDependencies`
+4. If genuinely runtime: patch/upgrade; if no fix available, add a suppression with a short expiry and reason to `security/audit-suppressions.json`
+
+### P0: quantum-core tests failed
+
+```
+[FAIL] quantum-core: test suite FAILED
+```
+
+**Cause:** ML-KEM or ML-DSA implementation broken after a change.
+
+**Actions:**
+1. `cd andromeda/04_SOFTWARE/packages/quantum-core && npm test` — see exact failure
+2. Check if `@noble/post-quantum` import paths changed (see `GHSA-` or npm changelog)
+3. Restore the FIPS 203/204 key-size constants in tests if the library changed a variant
+
+---
+
+## When `security:check` shows P1 warnings
+
+### P1: Dev dep CVE (not suppressed)
+
+```
+[WARN] Dev dep <pkg> — high: <title>
+```
+
+If this is a build tool (Vite, PostCSS, Astro), add it to `security/audit-suppressions.json`:
+
+```json
+{
+  "id": "GHSA-xxxx-xxxx-xxxx",
+  "package": "<pkg>",
+  "severity": "high",
+  "reason": "<why it's acceptable — scope, exploitability>",
+  "scope": "dev",
+  "addedAt": "YYYY-MM-DD",
+  "expiresAt": "YYYY-MM-DD"   // max 6 months; force a revisit
+}
+```
+
+### P1: Worker not in allowlist
+
+```
+[WARN] Worker not in allowlist: <name> — add to security/worker-allowlist.json
+```
+
+**Actions:**
+1. Review `build/security-inventory.json` — find the entry
+2. Check bindings (KV/D1/DO), var names, and CORS
+3. Add an entry to `security/worker-allowlist.json` with notes on auth scheme and CORS policy
+
+### P1: Wildcard CORS found
+
+```
+[WARN] Wildcard CORS in <worker>: N match(es) — review if credentials are passed
+```
+
+**Actions:**
+1. Check if the endpoint receives or returns auth tokens or cookies
+2. If credentials are involved and `*` is set: switch to explicit origin allowlist
+3. If it's a public read-only endpoint (public health check, etc.): document in `worker-allowlist.json` as intentional
+
+### P1: Suppression expired
+
+```
+[WARN] Suppression expired YYYY-MM-DD: GHSA-xxx — review or renew
+```
+
+Open `security/audit-suppressions.json`, find the entry, check if a patch is available. Either update the package or extend `expiresAt` with a new reason.
+
+---
+
+## Suppression policy
+
+- All suppressions must have a `reason` and `expiresAt` (max 6 months from `addedAt`)
+- `scope: "dev"` = build-tool only, never deployed
+- `scope: "prod"` = runtime dep, accepted risk — requires senior review and very short expiry
+- No `scope: "prod"` suppressions currently exist
+
+---
+
+## Crypto trust boundary
+
+| Layer | Algorithm | Where |
+|-------|-----------|-------|
+| WebAuthn / passkey | ECDSA P-256 (ES256) or RSA (RS256) | `workers/passkey/` — set by authenticator hardware |
+| App-layer signing | ML-DSA-65 (FIPS 204) | `packages/quantum-core` |
+| App-layer KEM | ML-KEM-768 (FIPS 203) | `packages/quantum-core` |
+| Transport | TLS 1.3 (Cloudflare managed) | Not in this repo |
+
+**The passkey Worker is correctly classical.** WebAuthn wire format is defined by the FIDO2 spec and hardware authenticators — we cannot put ML-DSA there. PQC is for P31's own signing and key exchange at the application layer.
+
+---
+
+## Adding a new worker
+
+1. Create `workers/<name>/wrangler.toml`
+2. Run `npm run security:workers` — it will flag the new worker as P1
+3. Review the generated entry in `build/security-inventory.json`
+4. Add to `security/worker-allowlist.json` with bindings, CORS policy, and auth scheme
+5. Run `npm run security:workers` again — should be clean
+
+---
+
+## Reference
+
+- Suppression file: `security/audit-suppressions.json`
+- Worker allowlist: `security/worker-allowlist.json`
+- Generated inventory: `build/security-inventory.json` (gitignored)
+- Generated report: `build/security-report.json` (gitignored)
+- Security scripts: `scripts/security/`
+- CI workflow: `.github/workflows/p31-security.yml` (home repo)
+- Edge trust boundary: `docs/EDGE-SECURITY.md`

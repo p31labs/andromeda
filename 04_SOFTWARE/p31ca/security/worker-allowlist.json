@@ -1,0 +1,40 @@
+{
+  "schema": "p31.workerAllowlist/1.0.0",
+  "note": "Known Cloudflare Workers in the p31ca tree. verify-worker-inventory.mjs flags any wrangler.toml not in this list as P1 (review needed). Add entries as workers are promoted.",
+  "workers": [
+    {
+      "name": "geodesic-room",
+      "path": "04_SOFTWARE/geodesic-room",
+      "bindings": ["GEODESIC_ROOM (DO)"],
+      "vars": ["WORKER_VERSION"],
+      "corsPolicy": "none — WebSocket only, no CORS headers set",
+      "authScheme": "none — rooms are public by name; no PII stored",
+      "notes": "Durable Object holding K₄ tetrahedron vertex positions (4 vertices, float xyz). WebSocket broadcast room. Clients drag vertices; DO is authoritative state. Room IDs are user-supplied; no auth required for POC. P2: add CF Access or Bearer token for private rooms."
+    },
+    {
+      "name": "p31-passkey",
+      "path": "workers/passkey",
+      "bindings": ["CHALLENGES (KV)", "DB (D1)"],
+      "vars": ["RP_NAME", "RP_ID"],
+      "corsPolicy": "wildcard — intentional, protected by WebAuthn rpId binding",
+      "authScheme": "WebAuthn FIDO2 (challenge/response)",
+      "notes": "WebAuthn passkey backend. ECDSA/RSA verification via SubtleCrypto. CORS is `*` but WebAuthn is secure regardless: authData.rpIdHash must equal SHA-256(RP_ID='p31ca.org'), and clientDataJSON.origin is verified. An attacker relaying from a different origin would fail rpId hash check. P2 improvement: restrict CORS to p31ca.org and p31ca.pages.dev explicitly."
+    },
+    {
+      "name": "p31-google-bridge",
+      "path": "04_SOFTWARE/p31-google-bridge",
+      "bindings": ["GOOGLE_OAUTH (KV)"],
+      "vars": [
+        "GOOGLE_CLIENT_ID",
+        "REDIRECT_URL",
+        "DEFAULT_OAUTH_SCOPES",
+        "OAUTH_SUCCESS_URL",
+        "CORS_ALLOW_ORIGIN",
+        "OAUTH_RETURN_ALLOWLIST"
+      ],
+      "corsPolicy": "configurable CORS — credentials for /api/*; set CORS_ALLOW_ORIGIN; no * in production",
+      "authScheme": "Google OAuth2 + session cookie; GOOGLE_CLIENT_SECRET in wrangler secret",
+      "notes": "User OAuth: calendar.readonly + OIDC. Tokens in KV. Session cookie p31_gb_sid. Callback and success URL must be same site for Set-Cookie. See docs/integrations/GOOGLE-WORKSPACE.md + p31-google-bridge/README.md."
+    }
+  ]
+}

@@ -2,7 +2,7 @@
   "schema": "p31.ground-truth/1.0.0",
   "version": "1.0.0",
   "updated": "2026-04-26",
-  "mission": "Build, create, connect — decentralized family mesh. This file is the machine-routable spine for p31ca.org; human narrative stays in root CLAUDE.md, P31 COGNITIVE PASSPORT — v5.md, and docs/. **Corporate + open print suite (letterhead, memos, watermarks) lives in andromeda/docs/corporate; public surface: /open-doc-suite.html. Version namespaces: P31 home docs/CANONICAL-NUMBERING.md; values: P31 home p31-constants.json.",
+  "mission": "Build, create, connect — decentralized family mesh. This file is the machine-routable spine for p31ca.org; human narrative stays in root CLAUDE.md, P31 COGNITIVE PASSPORT — v5.md, and docs/. Version namespaces: P31 home docs/CANONICAL-NUMBERING.md; values: P31 home p31-constants.json.",
   "canonicalNumbering": {
     "spec": "P31 home: docs/CANONICAL-NUMBERING.md",
     "passportLongForm": {
@@ -17,7 +17,7 @@
     "bondingTestBaseline": {
       "tests": 413,
       "suites": 30,
-      "asOf": "2026-04-25"
+      "asOf": "2026-04-26"
     }
   },
   "sites": {
@@ -73,8 +73,50 @@
     "planetaryOnboard": {
       "path": "/planetary-onboard.html",
       "implementation": "public/planetary-onboard.html",
-      "label": "Planetary Onboarding — five-phase neuro-inclusive entry flow",
-      "note": "No Three.js. Phase 5 passkey stub — awaits Cloudflare Worker backend."
+      "label": "Planetary Onboarding — welcome packages + five-phase Wye → Delta",
+      "note": "Phase 0: p31.welcomePackages/1.0.0 picker (kid, adult, parent, neuro, builder, default); ?welcome=kid skips to flow. Phases 1–5 unchanged. Meta persists welcomeKey + label. Passkey stub. Redirect mesh-start?dial=&welcome=."
+    },
+    "welcomePackages": {
+      "path": "/p31-welcome-packages.json",
+      "implementation": "public/p31-welcome-packages.json",
+      "label": "Welcome package definitions (onboard + mesh-start)",
+      "note": "Schema p31.welcomePackages/1.0.0. Drives copy, dial default, personalTetra dock overrides, mesh-start chips. Fetched by planetary-onboard.html and mesh-start.html."
+    },
+    "superCentaurStarter": {
+      "path": "/p31-super-centaur-starter.html",
+      "implementation": "public/p31-super-centaur-starter.html",
+      "label": "Super-Centaur starter pack — data, finance, structural sovereignty (human page)",
+      "note": "Tailwind CDN. Indexes CWP-P31-SC / MAP / ECO, mesh-bridge MESH table, onboarding links. Short /centaur and /super-centaur in _redirects. Pair with p31-super-centaur-pack.json."
+    },
+    "superCentaurPack": {
+      "path": "/p31-super-centaur-pack.json",
+      "implementation": "public/p31-super-centaur-pack.json",
+      "label": "Super-Centaur starter pack — machine manifest",
+      "note": "Schema p31.superCentaurStarterPack/1.0.0. CWPs, mesh fleet URLs from CWP-30, MAP anchors, p31ca URLs, condensed checklist."
+    },
+    "p31StyleCss": {
+      "path": "/p31-style.css",
+      "implementation": "public/p31-style.css",
+      "label": "P31 canonical design tokens (CSS variables)",
+      "note": "Generated from andromeda/04_SOFTWARE/design-tokens/p31-universal-canon.json via npm run apply:p31-style. Hub default dark; org/light via data-p31-appearance=org. Linked by static pages, about template, cognitive-passport mirror."
+    },
+    "p31TailwindCdn": {
+      "path": "/p31-tailwind-extend.js",
+      "implementation": "public/p31-tailwind-extend.js",
+      "label": "Tailwind CDN preset (window.P31_TAILWIND_EXTEND)",
+      "note": "Generated with p31-style.css; static HTML loads after cdn.tailwindcss.com."
+    },
+    "p31CanonDemo": {
+      "path": "/p31-canon-demo.html",
+      "implementation": "public/p31-canon-demo.html",
+      "label": "Universal canon — interactive hub/org switch + token gallery",
+      "note": "Tailwind CDN. Short /canon. Showcases p31-universal-canon.json via p31-style.css."
+    },
+    "meshStart": {
+      "path": "/mesh-start.html",
+      "implementation": "public/mesh-start.html",
+      "label": "EDE Personal — private assistant + EDE entry (k4-personal)",
+      "note": "Loads /p31-welcome-packages.json from meta.welcomeKey or ?welcome=. Personalizes headline, tetra blurb, prompt chips; merges package docks into first-time PUT /tetra. Hub fusion ?hub=&hubs=. ?agent= staging. Short /start in _redirects."
     },
     "connect": {
       "path": "/connect.html",
@@ -147,6 +189,11 @@
       "status": 301
     },
     {
+      "from": "/start",
+      "to": "/mesh-start.html",
+      "status": 301
+    },
+    {
       "from": "/mesh",
       "to": "/connect.html",
       "status": 301
@@ -175,9 +222,34 @@
       "from": "/doc-suite",
       "to": "/open-doc-suite.html",
       "status": 301
+    },
+    {
+      "from": "/centaur",
+      "to": "/p31-super-centaur-starter.html",
+      "status": 301
+    },
+    {
+      "from": "/super-centaur",
+      "to": "/p31-super-centaur-starter.html",
+      "status": 301
+    },
+    {
+      "from": "/canon",
+      "to": "/p31-canon-demo.html",
+      "status": 301
+    },
+    {
+      "from": "/tokens",
+      "to": "/p31-canon-demo.html",
+      "status": 301
     }
   ],
   "fileSnippets": [
+    {
+      "id": "p31-style-void-token",
+      "path": "public/p31-style.css",
+      "mustIncludeSubstring": "--p31-void:"
+    },
     {
       "id": "dome.noscriptBackToHub",
       "path": "src/pages/dome.astro",
@@ -209,6 +281,14 @@
     {
       "id": "tomography",
       "appUrl": "tomography.html"
+    },
+    {
+      "id": "super-centaur",
+      "appUrl": "p31-super-centaur-starter.html"
+    },
+    {
+      "id": "canon-demo",
+      "appUrl": "p31-canon-demo.html"
     }
   ],
   "threejs": {

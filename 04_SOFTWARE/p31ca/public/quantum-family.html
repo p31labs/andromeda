@@ -8,18 +8,15 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/p31-style.css">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/p31-tailwind-extend.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: { sans: ['"Nunito"', 'sans-serif'], display: ['"Fredoka"', 'sans-serif'] },
-                    colors: {
-                        bg: '#F8F5F0', card: '#FFFFFF', txt: '#3A3632', soft: '#7A7570',
-                        plum: '#8B6BAE', ocean: '#7EC8E3', mint: '#A8E6CF',
-                        gold: '#F0B547', coral: '#F4845F', bark: '#5D4E37'
-                    },
+                    ...window.P31_TAILWIND_EXTEND,
                     boxShadow: { 'soft': '0 6px 30px rgba(93,78,55,0.07)', 'inner-soft': 'inset 0 2px 8px rgba(93,78,55,0.06)' }
                 }
             }

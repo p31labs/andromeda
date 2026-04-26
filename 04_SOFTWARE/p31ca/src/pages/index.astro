@@ -1,67 +1,32 @@
 ---
 /**
  * P31 Labs Unified Landing Page
- * Quantum Overhaul: Spaceship Earth + Sovereign Cockpit
- * Isostatically Rigid. Cognitively Sovereign.
+ * Product grid + prototypes + research: single source via hub-landing.json
+ * (scripts/hub/build-landing-data.mjs from registry.mjs). CWP D2.
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
+import hubLanding from '../data/hub-landing.json';
 
-const coreProducts = [
-  { title: "BONDING", status: "LIVE", desc: "WebRTC peer-to-peer visual communicator", tags: ["React", "WebRTC", "Three.js"], url: "/bonding-about.html" },
-  { title: "Spaceship Earth", status: "LIVE", desc: "Observatory dome visualization of the K4 mesh", tags: ["R3F", "WebGL", "Zustand"], url: "/spaceship-earth-about.html" },
-  { title: "EDE", status: "LIVE", desc: "Everything Development Environment browser IDE", tags: ["Monaco", "WebContainer"], url: "/ede-about.html" },
-  { title: "The Buffer", status: "LIVE", desc: "Passive-aggression filter and emotional voltage gate", tags: ["Protocol", "Edge Workers"], url: "/buffer-about.html" },
-  { title: "Larmor", status: "LIVE", desc: "Decentralized offline-first credential vault", tags: ["WebCrypto", "IndexedDB"], url: "/larmor-about.html" },
-  { title: "Alchemy", status: "LIVE", desc: "Particle simulation engine", tags: ["Three.js", "Physics"], url: "/alchemy-about.html" },
-  { title: "Attractor", status: "LIVE", desc: "Chaos theory visualization", tags: ["Canvas", "Math"], url: "/attractor-about.html" },
-  { title: "Axiom", status: "LIVE", desc: "Post-quantum logic system", tags: ["Logic", "Formal"], url: "/axiom-about.html" },
-  { title: "BONDING", status: "LIVE", desc: "WebRTC peer-to-peer visual communicator", tags: ["React", "WebRTC", "Three.js"], url: "/bonding-about.html" },
-  { title: "Collider", status: "LIVE", desc: "Physics particle system", tags: ["Canvas", "Physics"], url: "/collider-about.html" },
-  { title: "Content Forge", status: "LIVE", desc: "Multimodal editor", tags: ["Editor", "Markdown"], url: "/content-forge-about.html" },
-  { title: "EDE", status: "LIVE", desc: "Everything Development Environment browser IDE", tags: ["Monaco", "WebContainer"], url: "/ede-about.html" },
-  { title: "Fawn Guard", status: "LIVE", desc: "Trauma-response interceptor and AI rewrite", tags: ["LLM", "NLP"], url: "/fawn-guard-about.html" },
-  { title: "Geodesic", status: "LIVE", desc: "3D structure builder", tags: ["Three.js", "Geometry"], url: "/geodesic-about.html" },
-  { title: "Genesis Gate", status: "BUILDING", desc: "Authentication and entry node", tags: ["JWT", "WebAuthn"], url: "/genesis-gate-about.html" },
-  { title: "K4 Market", status: "LIVE", desc: "Tomography marketplace", tags: ["Market", "Token"], url: "/k4market-about.html" },
-  { title: "Kenosis Mesh", status: "BUILDING", desc: "Distributed network protocol layer", tags: ["Libp2p", "WebRTC"], url: "/kenosis-about.html" },
-  { title: "Larmor", status: "LIVE", desc: "Decentralized offline-first credential vault", tags: ["WebCrypto", "IndexedDB"], url: "/larmor-about.html" },
-  { title: "Liminal", status: "LIVE", desc: "Transition space simulator", tags: ["Animation", "UX"], url: "/liminal-about.html" },
-  { title: "P31 Mesh", status: "LIVE", desc: "Local-first SQLite syncing and replication", tags: ["CRDT", "PGLite"], url: "/mesh-about.html" },
-  { title: "P31 Vault", status: "BUILDING", desc: "Encrypted medical and legal document storage", tags: ["E2EE", "Cloudflare R2"], url: "/vault-about.html" },
-  { title: "Phenix OS", status: "LIVE", desc: "Sovereign operating system", tags: ["WebAssembly", "PWA"], url: "/phenix-os-about.html" },
-  { title: "Quantum Core", status: "LIVE", desc: "Central processing unit", tags: ["Worker", "Edge"], url: "/quantum-core-about.html" },
-  { title: "Resonance", status: "LIVE", desc: "Harmonic frequency engine", tags: ["Audio", "WebAudio"], url: "/resonance-about.html" },
-  { title: "Signal", status: "LIVE", desc: "Mesh communication layer", tags: ["WebRTC", "P2P"], url: "/signal-about.html" },
-  { title: "Spaceship Earth", status: "LIVE", desc: "Observatory dome visualization of the K4 mesh", tags: ["R3F", "WebGL", "Zustand"], url: "/spaceship-earth-about.html" },
-  { title: "The Buffer", status: "LIVE", desc: "Passive-aggression filter and emotional voltage gate", tags: ["Protocol", "Edge Workers"], url: "/buffer-about.html" },
-  { title: "Donate Pipeline", status: "LIVE", desc: "Stripe-integrated nonprofit donation flow", tags: ["Stripe", "Edge"], url: "/donate-about.html" },
-  { title: "TACTILE", status: "LIVE", desc: "Haptic feedback integration layer", tags: ["Canvas", "WebAudio"], url: "/tactile-about.html" },
-
-  { title: "Dome Data Creator", status: "TOOL", desc: "Build custom tetrahedral topology maps", tags: ["Tool", "JSON", "Creator"], url: "/dome-data-creator.html" },
-  { title: "p31-bot", status: "RESEARCH", desc: "Discord and matrix integration for mesh telemetry", tags: ["Discord.js", "Workers"], url: "/discord-bot-about.html" },
-];
-
-const prototypes = [
-  { title: "Node Zero", desc: "Hardware biometric telemetry rig", url: "/node-zero-about.html" },
-  { title: "Node One", desc: "Mobile mesh relay station", url: "/node-one-about.html" },
-  { title: "Thermodynamic Syllabus", desc: "Educational curriculum platform", url: "/syllabus-about.html" },
-  { title: "p31-cortex", desc: "Centralized brain state viewer", url: "/cortex-about.html" },
-  { title: "Command Center", desc: "Administrative overview dashboard", url: "/command-center-about.html" },
-];
-
-const research = [
-  { title: "Tetrahedral Mesh as Cybernetic Trauma Response", doi: "10.5281/zenodo.18627420" },
-  { title: "Algorithmic Authenticity and the Fawn Guard", doi: "10.5281/zenodo.18627421" },
-  { title: "Fisher-Escolà Coherence in Distributed Edge Systems", doi: "10.5281/zenodo.18627422" },
-  { title: "The Thermodynamics of the Spoon Economy", doi: "10.5281/zenodo.18627423" },
-];
+const coreProducts = hubLanding.coreProducts;
+const prototypes = hubLanding.prototypes;
+const research = hubLanding.research;
 
 const getStatusStyles = (status: string) => {
   if (status === 'LIVE') return { text: 'text-[#3ba372]', bg: 'bg-[#3ba372]/10', border: 'border-[#3ba372]/30', glow: 'group-hover:shadow-[0_12px_40px_rgba(59,163,114,0.2),inset_0_1px_0_rgba(255,255,255,0.08)]' };
   if (status === 'BUILDING') return { text: 'text-[#cda852]', bg: 'bg-[#cda852]/10', border: 'border-[#cda852]/30', glow: 'group-hover:shadow-[0_12px_40px_rgba(205,168,82,0.2),inset_0_1px_0_rgba(255,255,255,0.08)]' };
-  if (status === 'RESEARCH') return { text: 'text-[#4db8a8]', bg: 'bg-[#4db8a8]/10', border: 'border-[#4db8a8]/30', glow: 'group-hover:shadow-[0_12px_40px_rgba(77,184,168,0.2),inset_0_1px_0_rgba(255,255,255,0.08)]' };
+  if (status === 'RESEARCH' || status === 'TOOL') return { text: 'text-[#4db8a8]', bg: 'bg-[#4db8a8]/10', border: 'border-[#4db8a8]/30', glow: 'group-hover:shadow-[0_12px_40px_rgba(77,184,168,0.2),inset_0_1px_0_rgba(255,255,255,0.08)]' };
   return { text: 'text-[#6b7280]', bg: 'bg-[#6b7280]/10', border: 'border-[#6b7280]/30', glow: 'group-hover:shadow-[0_12px_40px_rgba(107,114,128,0.2),inset_0_1px_0_rgba(255,255,255,0.08)]' };
 };
+
+/** CWP D3 — filter counts from hub-landing (registry-driven) */
+const FILTER_ORDER = ['LIVE', 'BUILDING', 'RESEARCH', 'TOOL'] as const;
+const countByStatus = coreProducts.reduce(
+  (acc, p) => {
+    acc[p.status] = (acc[p.status] || 0) + 1;
+    return acc;
+  },
+  {} as Record<string, number>
+);
 ---
 
 <BaseLayout title="P31 Labs | Sovereign Cockpit">
@@ -81,7 +46,7 @@ const getStatusStyles = (status: string) => {
 
   
   <!-- 3D Canvas Background -->
-  <div id="webgl-container" class="fixed inset-0 z-5 bg-[#050508]"></div>
+  <div id="webgl-container" class="fixed inset-0 z-5 bg-void"></div>
 
   <!-- FIXED SOVEREIGN HUD (Top Nav) -->
   <nav class="fixed top-0 left-0 right-0 z-50 glass-panel border-b border-white/10 px-4 py-2 flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-mono text-[#d8d6d0] shadow-[0_4px_30px_rgba(0,0,0,0.5)]">
@@ -101,7 +66,7 @@ const getStatusStyles = (status: string) => {
     </div>
 
     <!-- Central Telemetry: Spoons & Fleet -->
-    <div class="flex items-center gap-6 bg-[#080810]/50 px-4 py-1.5 rounded-md border border-white/5">
+    <div class="flex items-center gap-6 bg-void/50 px-4 py-1.5 rounded-md border border-white/5">
       <div class="flex items-center gap-2" title="Vertex A: Operator State">
         <span class="text-[#6b7280]">SPOONS</span>
         <div class="w-16 h-1.5 bg-[#1c2028] rounded-full overflow-hidden">
@@ -128,6 +93,7 @@ const getStatusStyles = (status: string) => {
         <span id="trimtab-freq" class="text-[#cda852] font-bold">863Hz</span>
       </div>
       <div class="h-4 w-px bg-white/10"></div>
+      <a href="/dome" class="text-[#4db8a8] hover:text-[#5ec4b3] transition-colors uppercase tracking-widest font-bold text-[10px] px-2 py-1 rounded border border-[#4db8a8]/30 bg-[#4db8a8]/10 hover:bg-[#4db8a8]/20" title="Sovereign Cockpit K₄ dome">Dome</a>
       <a href="/auth" class="text-[#E8636F] hover:text-[#ff7582] transition-colors uppercase tracking-widest font-bold text-[10px] px-3 py-1 rounded border border-[#E8636F]/30 bg-[#E8636F]/10 hover:bg-[#E8636F]/20">
         Authenticate
       </a>
@@ -147,20 +113,9 @@ const getStatusStyles = (status: string) => {
     <div class="text-[10px] font-mono text-[#6b7280] mb-2 uppercase tracking-widest">Entangled Edges</div>
     <div id="nd-conns" class="flex flex-wrap gap-2 pointer-events-auto"></div>
   </aside>
-    <button id="node-detail-close" class="absolute top-4 right-4 text-[#6b7280] hover:text-white transition-colors pointer-events-auto">✕</button>
-    <div class="text-[#4db8a8] font-bold text-lg mb-1" id="nd-title">Node Name</div>
-    <div class="flex items-center gap-3 text-[10px] font-mono mb-4 pb-3 border-b border-white/10">
-      <span id="nd-axis" class="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-white/70">Axis</span>
-      <span id="nd-state" class="px-2 py-0.5 rounded border">State</span>
-      <span id="nd-bus" class="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-white/70">Bus</span>
-    </div>
-    <div id="nd-notes" class="text-sm text-[#d8d6d0] mb-4 leading-relaxed font-sans">Node description goes here.</div>
-    <div class="text-[10px] font-mono text-[#6b7280] mb-2 uppercase tracking-widest">Entangled Edges</div>
-    <div id="nd-conns" class="flex flex-wrap gap-2 pointer-events-auto"></div>
-  </aside>
 
   <!-- LAYER 0: Somatic Mode Overlay -->
-  <div id="layer0" class="fixed inset-0 z-[100] bg-[#050508] flex flex-col items-center justify-center gap-6 transition-opacity duration-1000 opacity-0 pointer-events-none">
+  <div id="layer0" class="fixed inset-0 z-[100] bg-void flex flex-col items-center justify-center gap-6 transition-opacity duration-1000 opacity-0 pointer-events-none">
     <div class="absolute top-8 left-1/2 -translate-x-1/2 flex items-center gap-4 font-mono text-xs text-[#6b7280]">
       <span>SPOONS</span>
       <div class="w-32 h-1 bg-[#1c2028] rounded-full overflow-hidden">
@@ -197,17 +152,66 @@ const getStatusStyles = (status: string) => {
       </div>
     </header>
 
-    <!-- 2. Core Products Grid -->
-    <section id="core-products" class="mb-24 pt-12 animate-fade-in-up interactive-zone" style="animation-delay: 0.2s;">
+    <!-- 1b. Wye→Delta Entry Banner -->
+    <div class="mb-16 interactive-zone animate-fade-in-up" style="animation-delay: 0.15s;">
+      <a href="/delta.html" class="block glass-panel border border-[#25897d]/30 hover:border-[#25897d]/60 rounded-[12px] p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 transition-all duration-300 group no-underline hover:bg-[#14161d]/90">
+        <div>
+          <div class="text-[10px] font-mono text-[#25897d] uppercase tracking-widest mb-2">/ new_here</div>
+          <h2 class="font-bold text-white text-lg mb-1 group-hover:text-[#4db8a8] transition-colors">Why a mesh instead of an app?</h2>
+          <p class="text-sm text-[#d8d6d0]/70 max-w-lg leading-relaxed">P31 runs on a K₄ tetrahedron — four vertices, six edges, zero central authority. The Wye→Delta story explains why that matters.</p>
+        </div>
+        <div class="flex gap-3 shrink-0 pointer-events-none">
+          <span class="px-5 py-2.5 bg-[#25897d]/90 text-white font-bold rounded-[6px] text-sm tracking-wide whitespace-nowrap">Wye → Delta</span>
+          <span class="px-5 py-2.5 border border-white/10 text-[#d8d6d0] font-bold rounded-[6px] text-sm tracking-wide whitespace-nowrap">Join the mesh →</span>
+        </div>
+      </a>
+    </div>
+
+    <!-- 2. Core Products Grid (CWP D3 — client filter by status) -->
+    <section id="core-products" class="mb-24 pt-12 animate-fade-in-up interactive-zone" style="animation-delay: 0.2s;" aria-label="Core architecture products">
       <div class="flex items-center gap-4 mb-8">
         <h2 class="text-sm uppercase tracking-widest font-bold text-[#6b7280] font-mono">/ core_architecture</h2>
         <div class="h-px bg-white/10 flex-grow"></div>
       </div>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div
+        class="flex flex-wrap items-center gap-2 gap-y-2 mb-6 font-mono text-[11px] uppercase tracking-wider"
+        role="toolbar"
+        aria-label="Filter products by status"
+        id="hub-core-filters"
+      >
+        <span class="text-[#6b7280] mr-1 hidden sm:inline">Filter</span>
+        <button
+          type="button"
+          data-filter="all"
+          class="hub-filter-btn rounded border px-3 py-1.5 transition-colors border-[#4db8a8]/50 text-[#4db8a8] bg-[#4db8a8]/10"
+          aria-pressed="true"
+        >All ({coreProducts.length})</button>
+        {FILTER_ORDER.map((st) => {
+          const n = countByStatus[st] || 0;
+          if (n === 0) return null;
+          return (
+            <button
+              type="button"
+              data-filter={st.toLowerCase()}
+              class="hub-filter-btn rounded border border-white/10 px-3 py-1.5 text-[#6b7280] transition-colors hover:border-white/20 hover:text-[#d8d6d0]"
+              aria-pressed="false"
+            >
+              {st} ({n})
+            </button>
+          );
+        })}
+      </div>
+      <div id="hub-core-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {coreProducts.map((product) => {
           const styles = getStatusStyles(product.status);
           return (
-            <a href={product.url} target="_blank" rel="noopener noreferrer" class={`glass-panel p-6 rounded-[12px] flex flex-col group hover:bg-[#14161d]/98 transition-all duration-200 hover:-translate-y-3 hover:translate-z-12 border-t border-l border-white/15 hover:border-white/30 ${styles.glow} transform-gpu shadow-[0_8px_32px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.06)] hover:shadow-[0_20px_60px_rgba(0,0,0,0.6),inset_0_1px_0_rgba(255,255,255,0.1)]`}>
+            <a
+              href={product.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              data-product-status={product.status}
+              class={`hub-product-card glass-panel p-6 rounded-[12px] flex flex-col group hover:bg-[#14161d]/98 transition-all duration-200 hover:-translate-y-3 hover:translate-z-12 border-t border-l border-white/15 hover:border-white/30 ${styles.glow} transform-gpu shadow-[0_8px_32px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.06)] hover:shadow-[0_20px_60px_rgba(0,0,0,0.6),inset_0_1px_0_rgba(255,255,255,0.1)]`}
+            >
               <div class="flex justify-between items-start mb-4">
                 <h3 class="font-bold text-white text-lg transition-colors">{product.title}</h3>
                 <span class={`text-[9px] font-mono px-2 py-1 rounded-[4px] border uppercase tracking-wider ${styles.text} ${styles.bg} ${styles.border}`}>
@@ -225,6 +229,48 @@ const getStatusStyles = (status: string) => {
         })}
       </div>
     </section>
+
+    <script is:inline>
+      (function () {
+        var root = document.getElementById("hub-core-grid");
+        var bar = document.getElementById("hub-core-filters");
+        if (!root || !bar) return;
+        var cards = root.querySelectorAll("[data-product-status]");
+        var buttons = bar.querySelectorAll(".hub-filter-btn");
+        function apply(filter) {
+          var f = (filter || "all").toLowerCase();
+          cards.forEach(function (el) {
+            var st = (el.getAttribute("data-product-status") || "").toLowerCase();
+            var show = f === "all" || st === f;
+            if (show) {
+              el.classList.remove("hidden");
+              el.removeAttribute("aria-hidden");
+            } else {
+              el.classList.add("hidden");
+              el.setAttribute("aria-hidden", "true");
+            }
+          });
+          buttons.forEach(function (btn) {
+            var isAll = f === "all" && (btn.getAttribute("data-filter") || "") === "all";
+            var isSt = f !== "all" && (btn.getAttribute("data-filter") || "").toLowerCase() === f;
+            var active = isAll || isSt;
+            btn.setAttribute("aria-pressed", active ? "true" : "false");
+            if (active) {
+              btn.className =
+                "hub-filter-btn rounded border px-3 py-1.5 transition-colors border-[#4db8a8]/50 text-[#4db8a8] bg-[#4db8a8]/10";
+            } else {
+              btn.className =
+                "hub-filter-btn rounded border border-white/10 px-3 py-1.5 text-[#6b7280] transition-colors hover:border-white/20 hover:text-[#d8d6d0]";
+            }
+          });
+        }
+        buttons.forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            apply(btn.getAttribute("data-filter"));
+          });
+        });
+      })();
+    </script>
 
     <!-- 3. In Development & Research (Side by Side on Large Screens) -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-24 animate-fade-in-up interactive-zone" style="animation-delay: 0.3s;">
@@ -275,10 +321,13 @@ const getStatusStyles = (status: string) => {
         <p class="mb-1">Georgia 501(c)(3) Nonprofit</p>
         <p>EIN: 42-1888158</p>
       </div>
-      <div class="flex gap-8">
+      <div class="flex flex-wrap gap-x-8 gap-y-2">
+        <a href="/dome" class="hover:text-[#4db8a8] transition-colors uppercase tracking-widest" title="Sovereign Cockpit K₄">/dome</a>
+        <a href="/observatory.html" class="hover:text-[#4db8a8] transition-colors uppercase tracking-widest" title="Geodesic panel inspector">Observatory</a>
+        <a href="/lattice.html" class="hover:text-[#4db8a8] transition-colors uppercase tracking-widest">Lattice</a>
         <a href="https://github.com/p31labs" target="_blank" rel="noopener noreferrer" class="hover:text-[#4db8a8] transition-colors uppercase tracking-widest">GitHub</a>
         <a href="https://phosphorus31.org" target="_blank" rel="noopener noreferrer" class="hover:text-[#4db8a8] transition-colors uppercase tracking-widest">phosphorus31.org</a>
-        <a href="/donate" class="text-[#E8636F] hover:text-[#ff7582] transition-colors uppercase tracking-widest font-bold border border-[#E8636F]/30 px-3 py-1.5 rounded bg-[#E8636F]/5">Donate</a>
+        <a href="/donate" class="text-coral hover:brightness-110 transition-colors uppercase tracking-widest font-bold border border-coral/30 px-3 py-1.5 rounded bg-coral/5">Donate</a>
       </div>
     </footer>
 
@@ -286,16 +335,8 @@ const getStatusStyles = (status: string) => {
 </BaseLayout>
 
 <style is:global>
-  :root {
-    --void: #080810;
-    --surface: #12141b;
-  }
-  
   body {
-    background-color: var(--void);
-    color: #d8d6d0;
-    min-height: 100vh;
-    overflow-x: hidden;
+    @apply bg-void text-cloud min-h-screen overflow-x-hidden;
   }
 
   /* Glass Panels */

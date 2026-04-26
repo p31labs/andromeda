@@ -74,6 +74,12 @@
         }
         .hub-link:hover { color: rgba(216,214,208,0.8); }
 
+        .header-links {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
         /* EBC bar (bottom) */
         #ebc {
             position: fixed;
@@ -232,7 +238,10 @@
         </svg>
         THE MESH
     </a>
-    <a href="/" class="hub-link">← Hub</a>
+    <div class="header-links">
+        <a href="/centaur" class="hub-link" title="Operator starter — data, MAP, mesh fleet">Centaur pack</a>
+        <a href="/" class="hub-link">← Hub</a>
+    </div>
 </header>
 
 <div id="mount" role="img" aria-label="Interactive K₄ mesh visualization showing family cage and connected products"></div>

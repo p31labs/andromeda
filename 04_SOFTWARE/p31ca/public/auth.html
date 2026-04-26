@@ -9,25 +9,14 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/p31-style.css">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/p31-tailwind-extend.js"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: {
-                        sans: ['"Atkinson Hyperlegible"', 'sans-serif'],
-                        mono: ['"JetBrains Mono"', 'monospace'],
-                    },
-                    colors: {
-                        void:    '#0f1115',
-                        surface: '#161920',
-                        coral:   '#cc6247',
-                        teal:    '#25897d',
-                        cyan:    '#4db8a8',
-                        cloud:   '#d8d6d0',
-                        butter:  '#cda852',
-                        phos:    '#3ba372',
-                    },
+                    ...window.P31_TAILWIND_EXTEND,
                     keyframes: {
                         pulse31: {
                             '0%, 100%': { opacity: '0.25', transform: 'scale(0.97)' },
@@ -36,7 +25,7 @@
                     },
                     animation: {
                         pulse31: 'pulse31 10s ease-in-out infinite',
-                    },
+                    }
                 }
             }
         }

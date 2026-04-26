@@ -4,21 +4,18 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#0f1115">
-<title>Donate Pipeline — Ko-fi + Stripe Infrastructure | P31 Labs</title>
-<meta name="description" content="Stripe Checkout session creation via Cloudflare Worker — no server required">
+<title>Donate Pipeline — Stripe (edge) + Ko-fi (Discord) | P31 Labs</title>
+<meta name="description" content="Card flow: Checkout on phosphorus31.org/donate — session API on donate-api Worker (no PAN on P31 origin)">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/p31-style.css">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --void:#0f1115;--surface:#161920;--surface2:#1c2028;
-  --coral:#cc6247;--teal:#25897d;--cyan:#4db8a8;
-  --phosphorus:#3ba372;--cloud:#d8d6d0;--muted:#6b7280;
-  --butter:#cda852;--border:rgba(255,255,255,0.06);
   --accent:#3ba372;
-  --font:'Atkinson Hyperlegible',sans-serif;
-  --mono:'JetBrains Mono','Courier New',monospace;
+  --font:var(--p31-font-sans);
+  --mono:var(--p31-font-mono);
 }
 html,body{min-height:100%;background:var(--void);color:var(--cloud);font-family:var(--font);line-height:1.6}
 a{color:var(--accent);text-decoration:none}
@@ -98,12 +95,12 @@ ul.feature-list li:last-child{border-bottom:none}
 
 <nav class="nav">
   <div class="nav-inner">
-    <a href="index.html" class="nav-brand">
+    <a href="/" class="nav-brand">
       <svg width="24" height="24" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"><rect width="512" height="512" rx="112" fill="#25897d"/><circle cx="390" cy="120" r="48" fill="#cc6247"/><text x="256" y="340" font-family="system-ui" font-weight="900" font-size="220" fill="#d8d6d0" text-anchor="middle">P31</text><rect x="156" y="380" width="200" height="16" rx="8" fill="#cda852"/></svg>
       <span class="nav-brand-label">P31 Labs</span>
     </a>
     <div class="nav-links">
-      <a href="index.html" class="nav-link">&larr; Hub</a>
+      <a href="/" class="nav-link">&larr; Hub</a>
       <a href="https://github.com/p31labs/andromeda" target="_blank" rel="noopener" class="nav-link">GitHub</a>
       <a href="donate.html" class="nav-cta">&#x2B21; Launch Donate Pipeline</a>
     </div>
@@ -117,16 +114,16 @@ ul.feature-list li:last-child{border-bottom:none}
       <div class="hero-icon">💚</div>
       <div class="hero-text">
         <h1>Donate Pipeline</h1>
-        <div class="tagline">Ko-fi + Stripe Infrastructure</div>
+        <div class="tagline">Stripe (edge) + Ko-fi (Discord)</div>
         <div class="hero-badges">
           <span class="badge">LIVE</span>
-          <span class="badge" style="background:rgba(255,255,255,0.04);color:var(--muted);border-color:var(--border)">Stripe Checkout</span><span class="badge" style="background:rgba(255,255,255,0.04);color:var(--muted);border-color:var(--border)">CF Worker Webhook</span><span class="badge" style="background:rgba(255,255,255,0.04);color:var(--muted);border-color:var(--border)">Ko-fi Webhooks</span>
+          <span class="badge" style="background:rgba(255,255,255,0.04);color:var(--muted);border-color:var(--border)">Stripe Checkout</span><span class="badge" style="background:rgba(255,255,255,0.04);color:var(--muted);border-color:var(--border)">donate-api Worker</span><span class="badge" style="background:rgba(255,255,255,0.04);color:var(--muted);border-color:var(--border)">Optional KV (Stripe idempotency)</span>
         </div>
       </div>
     </div>
     <div class="hero-cta">
       <a href="donate.html" class="cta-btn">&#x2B21; Launch Donate Pipeline</a>
-      <a href="index.html" class="cta-secondary">&larr; Back to Hub</a>
+      <a href="/" class="cta-secondary">&larr; Back to Hub</a>
     </div>
   </div>
 </div>
@@ -136,31 +133,31 @@ ul.feature-list li:last-child{border-bottom:none}
 
     <section>
       <div class="section-label">What Is It</div>
-      <p>Stripe Checkout session creation via Cloudflare Worker — no server required. Ko-fi + Stripe Infrastructure is a core component of the P31 Labs sovereign cognitive infrastructure stack — built to run offline, deployed to the edge, and designed without dark patterns.</p>
-      <p>Stripe Checkout API called from a Cloudflare Worker — no server, no PCI scope on origin. Ko-fi webhooks hit a separate Worker endpoint that writes receipts to KV.</p>
+      <p>Card flow: Checkout on phosphorus31.org/donate — session API on donate-api Worker (no PAN on P31 origin). Stripe (edge) + Ko-fi (Discord) is a core component of the P31 Labs sovereign cognitive infrastructure stack — built to run offline, deployed to the edge, and designed without dark patterns.</p>
+      <p>As-built: do not claim a single CF Worker KV for Ko-fi receipts. Stripe path = donate-api; Ko-fi = Discord. Run `npm run verify` in donate-api and root `verify:monetary` after changes.</p>
     </section>
 
     <section>
       <div class="section-label">Core Features</div>
       <ul class="feature-list">
-            <li>Stripe Checkout session creation via Cloudflare Worker — no server required</li>
-            <li>Ko-fi webhook loop closes the funding circuit and logs contributions to KV</li>
-            <li>Every contribution is classified as node-building — not charity, not donation</li>
-            <li>Receipt store in KV provides audit trail for grant reporting</li>
-            <li>EIN 42-1888158 displayed on every receipt for tax documentation</li>
+            <li>Card flow: Checkout on phosphorus31.org/donate — session API on donate-api Worker (no PAN on P31 origin)</li>
+            <li>Signed Stripe webhooks → Genesis Gate + Discord relay; optional DONATE_EVENTS KV dedupes event replays</li>
+            <li>Ko-fi: verified POST to Discord p31-bot (spoon ledger + telemetry) — not the donate-api Worker</li>
+            <li>CWP-P31-MAP automation: verify-monetary-surface, vitest, CI in Andromeda</li>
+            <li>EIN 42-1888158 on public donate copy; 501(c)(3) status per operator-approved language</li>
       </ul>
     </section>
 
     <section>
       <div class="section-label">How To Use</div>
-          <div class="step"><span class="step-num">1</span><span>Click "Support" on the hub nav — goes directly to the donate page</span></div>
-          <div class="step"><span class="step-num">2</span><span>Choose Ko-fi for recurring or one-time, Stripe for card processing with receipt</span></div>
-          <div class="step"><span class="step-num">3</span><span>Contributions appear in the command-center dashboard within ~30 seconds via webhook</span></div>
+          <div class="step"><span class="step-num">1</span><span>Support link (hub) → donate page / phosphorus31.org for card checkout</span></div>
+          <div class="step"><span class="step-num">2</span><span>Ko-fi: configure dashboard to hit the org Discord ingress (see p31-bot webhook docs)</span></div>
+          <div class="step"><span class="step-num">3</span><span>Ops: 04_SOFTWARE/docs/CONTROLLED-WORK-PACKAGE-MONETARY-PIPELINE.md (MAP)</span></div>
     </section>
 
     <section>
       <div class="section-label">Architecture Notes</div>
-      <div class="tech-note">Stripe Checkout API called from a Cloudflare Worker — no server, no PCI scope on origin. Ko-fi webhooks hit a separate Worker endpoint that writes receipts to KV.</div>
+      <div class="tech-note">As-built: do not claim a single CF Worker KV for Ko-fi receipts. Stripe path = donate-api; Ko-fi = Discord. Run `npm run verify` in donate-api and root `verify:monetary` after changes.</div>
     </section>
 
     <div class="callout-p31">
@@ -169,13 +166,13 @@ ul.feature-list li:last-child{border-bottom:none}
 
     <div style="margin-top:32px;display:flex;gap:14px;flex-wrap:wrap;align-items:center">
       <a href="donate.html" class="cta-btn">&#x2B21; Launch Donate Pipeline</a>
-      <a href="index.html" class="cta-secondary">&larr; Back to Hub</a>
+      <a href="/" class="cta-secondary">&larr; Back to Hub</a>
     </div>
 
     <div class="footer">
       <span>P31 Labs, Inc. &middot; Donate Pipeline</span>
       <div class="footer-links">
-        <a href="index.html">Hub</a>
+        <a href="/">Hub</a>
         <a href="donate.html">Donate Pipeline</a>
         <a href="https://phosphorus31.org/donate" target="_blank" rel="noopener">Support</a>
         <a href="https://github.com/p31labs/andromeda" target="_blank" rel="noopener">GitHub</a>
@@ -194,9 +191,9 @@ ul.feature-list li:last-child{border-bottom:none}
       <div class="sidebar-card-title">Tech Stack</div>
       <ul class="tech-stack">
               <li>Stripe Checkout</li>
-              <li>CF Worker Webhook</li>
-              <li>Ko-fi Webhooks</li>
-              <li>KV Receipt Store</li>
+              <li>donate-api Worker</li>
+              <li>Optional KV (Stripe idempotency)</li>
+              <li>Ko-fi → Discord bot</li>
       </ul>
     </div>
 

@@ -9,16 +9,13 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/p31-style.css">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --void:#0f1115;--surface:#161920;--surface2:#1c2028;
-  --coral:#cc6247;--teal:#25897d;--cyan:#4db8a8;
-  --phosphorus:#3ba372;--cloud:#d8d6d0;--muted:#6b7280;
-  --butter:#cda852;--border:rgba(255,255,255,0.06);
   --accent:#8b7cc9;
-  --font:'Atkinson Hyperlegible',sans-serif;
-  --mono:'JetBrains Mono','Courier New',monospace;
+  --font:var(--p31-font-sans);
+  --mono:var(--p31-font-mono);
 }
 html,body{min-height:100%;background:var(--void);color:var(--cloud);font-family:var(--font);line-height:1.6}
 a{color:var(--accent);text-decoration:none}
@@ -98,12 +95,12 @@ ul.feature-list li:last-child{border-bottom:none}
 
 <nav class="nav">
   <div class="nav-inner">
-    <a href="index.html" class="nav-brand">
+    <a href="/" class="nav-brand">
       <svg width="24" height="24" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"><rect width="512" height="512" rx="112" fill="#25897d"/><circle cx="390" cy="120" r="48" fill="#cc6247"/><text x="256" y="340" font-family="system-ui" font-weight="900" font-size="220" fill="#d8d6d0" text-anchor="middle">P31</text><rect x="156" y="380" width="200" height="16" rx="8" fill="#cda852"/></svg>
       <span class="nav-brand-label">P31 Labs</span>
     </a>
     <div class="nav-links">
-      <a href="index.html" class="nav-link">&larr; Hub</a>
+      <a href="/" class="nav-link">&larr; Hub</a>
       <a href="https://github.com/p31labs/andromeda" target="_blank" rel="noopener" class="nav-link">GitHub</a>
       <a href="echo.html" class="nav-cta">&#x2B21; Launch ECHO</a>
     </div>
@@ -126,7 +123,7 @@ ul.feature-list li:last-child{border-bottom:none}
     </div>
     <div class="hero-cta">
       <a href="echo.html" class="cta-btn">&#x2B21; Launch ECHO</a>
-      <a href="index.html" class="cta-secondary">&larr; Back to Hub</a>
+      <a href="/" class="cta-secondary">&larr; Back to Hub</a>
     </div>
   </div>
 </div>
@@ -169,13 +166,13 @@ ul.feature-list li:last-child{border-bottom:none}
 
     <div style="margin-top:32px;display:flex;gap:14px;flex-wrap:wrap;align-items:center">
       <a href="echo.html" class="cta-btn">&#x2B21; Launch ECHO</a>
-      <a href="index.html" class="cta-secondary">&larr; Back to Hub</a>
+      <a href="/" class="cta-secondary">&larr; Back to Hub</a>
     </div>
 
     <div class="footer">
       <span>P31 Labs, Inc. &middot; ECHO</span>
       <div class="footer-links">
-        <a href="index.html">Hub</a>
+        <a href="/">Hub</a>
         <a href="echo.html">ECHO</a>
         <a href="https://phosphorus31.org/donate" target="_blank" rel="noopener">Support</a>
         <a href="https://github.com/p31labs/andromeda" target="_blank" rel="noopener">GitHub</a>

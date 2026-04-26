@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0f1115">
+  <title>Super-Centaur starter pack — data, finance, sovereignty | P31 Labs</title>
+  <meta name="description" content="One-page index: SUPER-CENTAUR mesh bridge, monetary pipeline (MAP), structural sovereignty on p31ca — with links to CWPs and machine JSON.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/p31-style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/p31-tailwind-extend.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+                    ...window.P31_TAILWIND_EXTEND
+                }
+      }
+    };
+  </script>
+  <style>body { background: #0f1115; color: #d8d6d0; } .divider { border: none; border-top: 1px solid rgba(255,255,255,0.05); }</style>
+</head>
+<body class="font-sans min-h-screen">
+<nav class="sticky top-0 z-50 border-b border-white/5 backdrop-blur-sm" style="background:rgba(15,17,21,0.92)">
+  <div class="max-w-3xl mx-auto px-6 py-4 flex items-center justify-between">
+    <a href="/" class="no-underline font-mono text-xs opacity-60 hover:opacity-90">← Hub</a>
+    <a href="/p31-super-centaur-pack.json" class="font-mono text-xs text-teal/70 hover:text-teal no-underline">Machine JSON →</a>
+  </div>
+</nav>
+
+<main class="max-w-3xl mx-auto px-6 py-14">
+
+  <header class="mb-14">
+    <p class="font-mono text-xs tracking-widest text-teal/70 mb-3">STARTER PACK · CWPs + EDGE</p>
+    <h1 class="text-3xl md:text-4xl font-bold mb-5 leading-tight">Super-Centaur: data health, financial health, structural sovereignty</h1>
+    <p class="text-lg text-cloud/60 leading-relaxed">
+      This page is the <strong class="text-cloud/85">human</strong> companion to
+      <a href="/p31-super-centaur-pack.json" class="text-teal hover:underline">p31-super-centaur-pack.json</a>
+      (<span class="font-mono text-sm text-cloud/50">p31.superCentaurStarterPack/1.0.0</span>).
+      It stitches together what the repo already defines: <strong class="text-cloud/85">Ring D</strong> SUPER-CENTAUR mesh proxy,
+      <strong class="text-cloud/85">MAP</strong> monetary pipeline, and <strong class="text-cloud/85">Ring A</strong> p31ca sovereignty contracts — without merging deploys.
+    </p>
+    <p class="mt-4 font-mono text-xs text-cloud/40">
+      Short URLs: <a href="/centaur" class="text-teal/70 hover:text-teal no-underline">/centaur</a>
+      · <a href="/super-centaur" class="text-teal/70 hover:text-teal no-underline">/super-centaur</a>
+      — same page; CI keeps <code class="text-cloud/55">meshFleet</code> in the JSON aligned with <code class="text-cloud/55">CWP-30/mesh-bridge.ts</code>.
+      · <a href="/canon" class="text-teal/70 hover:text-teal no-underline">/canon</a> — live universal design canon (hub ↔ org).
+    </p>
+  </header>
+
+  <hr class="divider mb-12">
+
+  <section class="mb-14">
+    <h2 class="text-xl font-bold mb-2">Structural sovereignty</h2>
+    <p class="font-mono text-xs tracking-widest text-coral/60 mb-6">TOPOLOGY + CONTRACT, NOT ONE GOD SERVER</p>
+    <ul class="space-y-3 text-cloud/75 text-sm leading-relaxed">
+      <li><strong class="text-cloud/90">Wye → Delta</strong> — <a href="/delta.html" class="text-teal hover:underline">Why star topologies fail</a> and what a closed mesh loop buys you.</li>
+      <li><strong class="text-cloud/90">Ground truth</strong> — <span class="font-mono text-xs">p31.ground-truth/1.0.0</span> in the monorepo governs p31ca routes, redirects, and key product invariants.</li>
+      <li><strong class="text-cloud/90">Personal isolation</strong> — <a href="/mesh-start.html" class="text-teal hover:underline">Mesh start</a> + <span class="font-mono text-xs">k4-personal</span>: one Durable Object per <span class="font-mono">subject_id</span>; cage data does not leak in by default.</li>
+      <li><strong class="text-cloud/90">SUPER-CENTAUR</strong> — Node app on <strong>phosphorus31.org</strong> that, in production, <em>proxies</em> to the Worker fleet per handoff — it does not replace edge agents.</li>
+    </ul>
+    <p class="mt-6 text-xs text-cloud/45 font-mono">Canonical CWP: <code class="text-cloud/55">integration-handoff/CONTROLLED-WORK-PACKAGE-SUPER-CENTAUR.md</code> — <code>CWP-P31-SC-2026-01</code></p>
+  </section>
+
+  <section class="mb-14">
+    <h2 class="text-xl font-bold mb-2">Data health</h2>
+    <p class="font-mono text-xs tracking-widest text-lavender/60 mb-6">PERSONAL TETRA · HUB FUSION · WELCOME PACKAGES</p>
+    <ul class="space-y-3 text-cloud/75 text-sm leading-relaxed">
+      <li><a href="/planetary-onboard.html" class="text-teal hover:underline">Planetary onboard</a> persists welcome metadata; <a href="/p31-welcome-packages.json" class="text-teal hover:underline">p31-welcome-packages.json</a> drives copy and dock defaults.</li>
+      <li><span class="font-mono text-xs">p31.personalTetra/1.0.0</span> — four docks (Structure, Connection, Rhythm, Creation) on each personal agent.</li>
+      <li><span class="font-mono text-xs">p31.hubFusion/1.0.0</span> — <span class="font-mono text-xs">k4-hubs</span> roster + symmetric four-channel energy reads (add <code class="text-cloud/55">?hub=</code> on mesh-start).</li>
+      <li><a href="/passport" class="text-teal hover:underline">Cognitive Passport</a> — human advocacy slice; complements machine profile in DO state.</li>
+    </ul>
+  </section>
+
+  <section class="mb-14">
+    <h2 class="text-xl font-bold mb-2">Financial health</h2>
+    <p class="font-mono text-xs tracking-widest text-butter/60 mb-6">MAP PIPELINE · STRIPE · NO SECRETS IN STATIC</p>
+    <p class="text-sm text-cloud/75 leading-relaxed mb-4">
+      The monetary work package (<code class="text-cloud/55">CWP-P31-MAP-2026-01</code>) describes pay-in on
+      <strong>phosphorus31.org</strong>, <span class="font-mono text-xs">donate-api</span> Worker webhooks, Discord / Genesis fan-out,
+      durable event logging goals, and operator export. p31ca <strong>links</strong> to programs; it does not host checkout (MAP A4).
+    </p>
+    <ul class="space-y-2 text-sm text-cloud/70">
+      <li>Verify surface: <span class="font-mono text-xs text-cloud/50">04_SOFTWARE/scripts/verify-monetary-surface.mjs</span></li>
+      <li>Org legal snapshot: P31 Labs, Inc. · EIN <strong>42-1888158</strong> · 501(c)(3) pending — marketing language only; not tax advice.</li>
+      <li>Hub creator economy contract: <a href="/creator-economy.json" class="text-teal hover:underline">/creator-economy.json</a></li>
+    </ul>
+  </section>
+
+  <section class="mb-14">
+    <h2 class="text-xl font-bold mb-2">Mesh fleet (handoff constants)</h2>
+    <p class="font-mono text-xs tracking-widest text-teal/60 mb-4">FROM CWP-30 mesh-bridge.ts — RECONCILE WITH LIVE DEPLOY</p>
+    <div class="overflow-x-auto rounded-xl border border-white/5 text-sm">
+      <table class="w-full text-left">
+        <thead>
+          <tr class="font-mono text-[0.65rem] uppercase tracking-wider text-cloud/45 border-b border-white/10">
+            <th class="p-3">Key</th>
+            <th class="p-3">Base URL</th>
+          </tr>
+        </thead>
+        <tbody class="text-cloud/80">
+          <tr class="border-t border-white/5"><td class="p-3 font-mono text-cyan/90">agentHub</td><td class="p-3 font-mono text-xs break-all">https://p31-agent-hub.trimtab-signal.workers.dev</td></tr>
+          <tr class="border-t border-white/5"><td class="p-3 font-mono text-cyan/90">cage</td><td class="p-3 font-mono text-xs break-all">https://k4-cage.trimtab-signal.workers.dev</td></tr>
+          <tr class="border-t border-white/5"><td class="p-3 font-mono text-cyan/90">personal</td><td class="p-3 font-mono text-xs break-all">https://k4-personal.trimtab-signal.workers.dev</td></tr>
+          <tr class="border-t border-white/5"><td class="p-3 font-mono text-cyan/90">hubs</td><td class="p-3 font-mono text-xs break-all">https://k4-hubs.trimtab-signal.workers.dev</td></tr>
+          <tr class="border-t border-white/5"><td class="p-3 font-mono text-cyan/90">bouncer</td><td class="p-3 font-mono text-xs break-all">https://p31-bouncer.trimtab-signal.workers.dev</td></tr>
+          <tr class="border-t border-white/5"><td class="p-3 font-mono text-cyan/90">chamber</td><td class="p-3 font-mono text-xs break-all">https://reflective-chamber.trimtab-signal.workers.dev</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="mt-4 text-xs text-cloud/45">
+      Production Centaur registers <span class="font-mono">meshProxy(app)</span> before local routes; dev skips proxy so local handlers win.
+      Auth paths vs <span class="font-mono">p31-bouncer</span> may need alignment — see SC CWP Phase 3.
+    </p>
+  </section>
+
+  <section class="mb-14">
+    <h2 class="text-xl font-bold mb-6">Operator checklist (condensed)</h2>
+    <ol class="space-y-4 text-sm text-cloud/75 list-decimal pl-5">
+      <li>Read <strong class="text-cloud/90">P31-ROOT-MAP.md</strong> — which ring you are editing (p31ca vs phosphorus31.org).</li>
+      <li>Structural: <a href="/delta.html" class="text-teal hover:underline">Delta narrative</a> → <a href="/planetary-onboard.html" class="text-teal hover:underline">Onboard</a> → <a href="/mesh-start.html" class="text-teal hover:underline">Mesh start</a>.</li>
+      <li>Data: deploy or probe <span class="font-mono text-xs">k4-personal</span> + <span class="font-mono text-xs">k4-hubs</span>; copy <span class="font-mono text-xs">CWP-30/mesh-bridge.ts</span> into SUPER-CENTAUR (D-SC1–D-SC2).</li>
+      <li>Finance: follow MAP §2 as-built; run <span class="font-mono text-xs">verify-monetary-surface.mjs</span> when touching donate paths.</li>
+      <li>Inventory: keep one host list — ECO R8 / SC D-SC7 must not fork (see ECO CWP R9).</li>
+    </ol>
+  </section>
+
+  <section class="mb-14 text-center">
+    <p class="text-sm text-cloud/55 mb-6">Jump back into the product surface</p>
+    <div class="flex flex-col sm:flex-row gap-3 justify-center">
+      <a href="/planetary-onboard.html" class="inline-block bg-teal hover:bg-teal/85 text-paper font-bold py-3 px-6 rounded-xl no-underline text-sm">Planetary onboard →</a>
+      <a href="/connect.html" class="inline-block border border-white/15 hover:border-teal/40 text-cloud/80 py-3 px-6 rounded-xl no-underline text-sm font-mono">K₄ Mesh →</a>
+    </div>
+  </section>
+
+  <footer class="text-center pt-8 border-t border-white/5">
+    <p class="font-mono text-xs text-cloud/25 tracking-widest mb-1">P31 LABS — EIN 42-1888158</p>
+    <p class="font-mono text-xs text-cloud/20">Starter pack page + JSON — not legal or tax advice.</p>
+  </footer>
+</main>
+</body>
+</html>

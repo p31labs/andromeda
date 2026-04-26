@@ -9,21 +9,14 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/p31-style.css">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/p31-tailwind-extend.js"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: {
-                        sans: ['"Atkinson Hyperlegible"', 'sans-serif'],
-                        mono: ['"JetBrains Mono"', 'monospace'],
-                    },
-                    colors: {
-                        void: '#0f1115', surface: '#161920',
-                        coral: '#cc6247', teal: '#25897d', cyan: '#4db8a8',
-                        cloud: '#d8d6d0', butter: '#cda852', lavender: '#8b7cc9',
-                        phosphorus: '#3ba372', paper: '#f4f4f5', ink: '#1e293b',
-                    }
+                    ...window.P31_TAILWIND_EXTEND
                 }
             }
         }
@@ -280,7 +273,8 @@
         <h2 class="text-2xl font-bold mb-6">How we onboard you</h2>
         <p class="text-base text-cloud/65 leading-relaxed mb-8">
             The transition from Wye to Delta should feel like a quiet sanctuary, not a technical
-            exam. Five phases, each with one primary action.
+            exam. Five phases, each with one primary action. While you move through them, a small
+            topology ribbon crossfades from star to mesh — the same story as on this page, made visible.
         </p>
 
         <ol class="flex flex-col gap-5">
@@ -331,14 +325,19 @@
             The mesh you enter is local-first, court-legible, and designed to stay usable
             when everything else is under stress.
         </p>
-        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <div class="flex flex-col sm:flex-row flex-wrap gap-4 justify-center">
             <a href="/planetary-onboard.html"
-               class="inline-block bg-teal hover:bg-teal/80 text-cloud font-bold py-4 px-8 rounded-xl transition-colors text-base no-underline">
+               class="inline-block bg-teal hover:bg-teal/80 text-cloud font-bold py-4 px-8 rounded-xl transition-colors text-base no-underline"
+               title="Starts with your welcome package, then five phases">
                 Enter the Delta →
             </a>
             <a href="/connect.html"
                class="inline-block border border-white/10 hover:border-teal/50 text-cloud/60 hover:text-cloud py-4 px-8 rounded-xl transition-colors text-base no-underline font-mono text-sm">
                 See the mesh ⬡
+            </a>
+            <a href="/p31-super-centaur-starter.html"
+               class="inline-block border border-white/10 hover:border-coral/40 text-cloud/55 hover:text-cloud py-4 px-8 rounded-xl transition-colors text-base no-underline font-mono text-sm">
+                Super-Centaur pack →
             </a>
         </div>
     </section>

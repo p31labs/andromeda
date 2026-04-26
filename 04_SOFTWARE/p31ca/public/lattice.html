@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#0f1115">
     <title>Lattice View | P31 Labs</title>
-    <meta name="description" content="Interactive 3D lattice of 39 P31 Labs MVP nodes — rotating Fibonacci sphere. For the geodesic dome lattice (search, filters, detail), see observatory.html → dome.html.">
+    <meta name="description" content="Interactive 3D lattice of 39 P31 Labs MVP nodes — rotating Fibonacci sphere. K₄ Sovereign Cockpit: /dome. Geodesic panel map (search, filters): /observatory.html.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -79,7 +79,8 @@
         <span class="nav-mono">P31 Labs</span>
     </a>
     <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap;justify-content:flex-end">
-        <a href="/observatory.html" class="nav-back">Observatory dome</a>
+        <a href="/dome" class="nav-back">Sovereign Cockpit /dome</a>
+        <a href="/observatory.html" class="nav-back">OBSERVATORY (panels)</a>
         <a href="/" class="nav-back">← Hub</a>
     </div>
 </nav>
@@ -134,7 +135,11 @@ const mvpNodes = [
     { id: 'bridge',            title: 'BRIDGE',            icon: '🌉',  url: 'bridge.html',            color: '#cda852', status: '🔵 PROTOTYPE' },
     { id: 'vault',             title: 'VAULT',             icon: '🔐',  url: 'vault-room.html',        color: '#cda852', status: '🔵 PROTOTYPE' },
     { id: 'sovereign',         title: 'SOVEREIGN',         icon: '🔑',  url: 'sovereign.html',         color: '#cda852', status: '🔵 PROTOTYPE' },
-    { id: 'k4market',          title: 'K4 MARKET',         icon: '📊',  url: 'k4market.html',          color: '#cda852', status: '🔵 PROTOTYPE' },
+    { id: 'k4market',          title: 'K4 MARKET',         icon: '📐',  url: 'k4market.html',          color: '#3ba372', status: '🟢 LIVE' },
+    { id: 'tomography',        title: 'K4 TOMOGRAPHY',     icon: '🔬',  url: 'tomography.html',        color: '#3ba372', status: '🟢 LIVE' },
+    { id: 'connect',           title: 'THE MESH',          icon: '⬡',   url: 'connect.html',           color: '#3ba372', status: '🟢 LIVE' },
+    { id: 'planetary-onboard', title: 'ONBOARDING',        icon: '🌍',  url: 'planetary-onboard.html', color: '#3ba372', status: '🟢 LIVE' },
+    { id: 'delta',             title: 'WYE→DELTA',         icon: '△',   url: 'delta.html',             color: '#3ba372', status: '🟢 LIVE' },
     { id: 'content-forge',     title: 'CONTENT FORGE',     icon: '✍️',  url: 'content-forge.html',     color: '#cda852', status: '🔵 PROTOTYPE' },
     { id: 'resonance',         title: 'RESONANCE',         icon: '🎵',  url: 'resonance.html',         color: '#cda852', status: '🔵 PROTOTYPE' },
     { id: 'qg-ide',            title: 'QG-IDE',            icon: '💻',  url: 'qg-ide.html',            color: '#cda852', status: '🔵 PROTOTYPE' },
@@ -144,6 +149,7 @@ const mvpNodes = [
     { id: 'mission-control',   title: 'Mission Control',   icon: '🚀',  url: 'wonky.html',             color: '#cda852', status: '🔵 PROTOTYPE' },
     { id: 'quantum-life-os',   title: 'Quantum Life OS',   icon: '✨',  url: 'quantum-os.html',        color: '#cda852', status: '🔵 PROTOTYPE' },
     { id: 'quantum-core',      title: 'Quantum Core',      icon: '🔮',  url: 'quantum-core.html',      color: '#4db8a8', status: '🔵 RESEARCH' },
+    { id: 'lattice-oracle',    title: 'ORACLE',            icon: '💎',  url: 'magic-crystal.html',      color: '#a78bfa', status: '✨ TOY' },
     { id: 'alchemy',           title: 'Alchemy',           icon: '📐',  url: 'alchemy.html',           color: '#4db8a8', status: '🔵 PUBLISHED' },
     { id: 'the-quantum-family',title: 'THE QUANTUM FAMILY',icon: '🔺',  url: 'quantum-family-about.html', color: '#3ba372', status: '🟢 LIVE' },
 ];
