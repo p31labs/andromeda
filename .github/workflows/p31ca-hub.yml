@@ -33,7 +33,7 @@ jobs:
           cache-dependency-path: 04_SOFTWARE/p31ca/package-lock.json
 
       - name: Install
-        run: npm ci
+        run: npm ci --prefer-offline
 
       - name: Hub CI (generate about pages + hub JSON + verify + Astro build)
         run: npm run hub:ci
