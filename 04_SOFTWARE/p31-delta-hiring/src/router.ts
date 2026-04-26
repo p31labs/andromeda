@@ -18,8 +18,11 @@ export function setHashPath(parts: string[], query?: Record<string, string>): vo
   window.location.hash = '#/' + parts.join('/') + q;
 }
 
-export function parseHash(): HashRoute {
-  const hash = (window.location.hash || '#/').replace(/^#/, '') || '/';
+/**
+ * Parse `#/path?query` (with or without leading `#`) — testable without `window`.
+ */
+export function parsePathFromHashInput(raw: string): HashRoute {
+  const hash = (raw || '#/').replace(/^#/, '') || '/';
   const [pathStr, searchStr] = hash.split('?');
   const query = searchStr ? new URLSearchParams('?' + searchStr).get('q') || '' : '';
   const parts = pathStr.split('/').filter(Boolean);
@@ -45,4 +48,11 @@ export function parseHash(): HashRoute {
     return { name: 'proof', id: parts[1] };
   }
   return { name: 'home' };
+}
+
+export function parseHash(): HashRoute {
+  if (typeof window === 'undefined') {
+    return { name: 'home' };
+  }
+  return parsePathFromHashInput(window.location.hash);
 }

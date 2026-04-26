@@ -1,0 +1,34 @@
+# CI for p31-delta-hiring (Vite static app under 04_SOFTWARE)
+name: p31-delta-hiring
+
+on:
+  # Any branch: path filters keep noise low; feature/wip PRs and pushes are covered
+  push:
+    paths:
+      - '04_SOFTWARE/p31-delta-hiring/**'
+      - '.github/actions/pnpm-04-software/**'
+      - '.github/actions/toolchain-constants/**'
+      - '.github/workflows/p31-delta-hiring.yml'
+  pull_request:
+    paths:
+      - '04_SOFTWARE/p31-delta-hiring/**'
+      - '.github/actions/pnpm-04-software/**'
+      - '.github/actions/toolchain-constants/**'
+      - '.github/workflows/p31-delta-hiring.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: p31-delta-hiring-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/toolchain-constants
+      - uses: ./.github/actions/pnpm-04-software
+      - name: Verify, test, lint, build
+        working-directory: 04_SOFTWARE
+        run: pnpm --filter p31-delta-hiring run check

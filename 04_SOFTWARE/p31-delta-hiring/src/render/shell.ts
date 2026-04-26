@@ -17,8 +17,14 @@ const SECONDARY: { id: string; href: string; label: string }[] = [
 ];
 
 function navItem(active: string, id: string, href: string, label: string): string {
-  const cls = active === id || (id === 'help' && active.startsWith('help')) || (id === 'glossary' && active.startsWith('glossary')) || (id === 'wcd' && active.startsWith('wcd')) ? ' is-active' : '';
-  return `<a class="${cls}" href="${href}">${escapeHtml(label)}</a>`;
+  const current =
+    active === id ||
+    (id === 'help' && active.startsWith('help')) ||
+    (id === 'glossary' && active.startsWith('glossary')) ||
+    (id === 'wcd' && active.startsWith('wcd'));
+  const cls = current ? ' is-active' : '';
+  const ac = current ? ' aria-current="page"' : '';
+  return `<a class="${cls}" href="${href}"${ac}>${escapeHtml(label)}</a>`;
 }
 
 export function renderShell(activeNav: string, mainHtml: string): string {
