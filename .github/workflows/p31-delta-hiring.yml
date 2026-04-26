@@ -29,6 +29,6 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/toolchain-constants
       - uses: ./.github/actions/pnpm-04-software
-      - name: Verify, test, lint, build
+      - name: Verify, test, lint, build (Turbo)
         working-directory: 04_SOFTWARE
-        run: pnpm --filter p31-delta-hiring run check
+        run: pnpm run check:p31-delta-hiring

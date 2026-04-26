@@ -34,7 +34,13 @@ Default Vite port **3150** (see `vite.config.ts`).
 pnpm --filter p31-delta-hiring run check
 ```
 
-Runs: `verify` → `test` → `lint` → `build`. GitHub Actions: workflow **`p31-delta-hiring`** on changes under `04_SOFTWARE/p31-delta-hiring/`.
+From `04_SOFTWARE` (uses **Turbo** for the same pipeline + cache when enabled):
+
+```bash
+pnpm run check:p31-delta-hiring
+```
+
+Runs: `verify` → `test` → `lint` → `build`. GitHub Actions: workflow **`p31-delta-hiring`** runs `check:p31-delta-hiring` on path-filtered push/PR.
 
 ## Individual commands
 

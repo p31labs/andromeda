@@ -15,6 +15,10 @@
     "lint": {
       "outputs": []
     },
+    "check": {
+      "dependsOn": [],
+      "outputs": ["dist/**"]
+    },
     "dev": {
       "cache": false,
       "persistent": true
