@@ -36,12 +36,30 @@ if (!existsSync(join(ROOT, wToml))) {
   }
 }
 
+// --- 1b) donate-api worker: MAP-required routes (static read; no network) ---
+const workerTs = "04_SOFTWARE/donate-api/src/worker.ts";
+if (existsSync(join(ROOT, workerTs))) {
+  const w = read(workerTs);
+  if (!w.includes("'/health'") && !w.includes('"/health"')) {
+    err(`${workerTs}: must define GET /health (MAP liveness; see payment.donateApiHealthUrl)`);
+  }
+  if (!w.includes("'/create-checkout'") && !w.includes('"/create-checkout"')) {
+    err(`${workerTs}: must define POST /create-checkout`);
+  }
+  if (!w.includes("api.stripe.com")) {
+    err(`${workerTs}: expected Stripe API call (api.stripe.com) for Checkout Sessions`);
+  }
+}
+
 // --- 2) Phosphorus donate page contract ---
 const donateAstro = "phosphorus31.org/planetary-planet/src/pages/donate.astro";
 if (existsSync(join(ROOT, donateAstro))) {
   const a = read(donateAstro);
-  if (!a.includes("donate-api.phosphorus31.org")) {
-    err(`${donateAstro}: must use API URL https://donate-api.phosphorus31.org (create-checkout)`);
+  if (!a.includes("https://donate-api.phosphorus31.org")) {
+    err(`${donateAstro}: must use https://donate-api.phosphorus31.org (create-checkout base; MAP)`);
+  }
+  if (!a.includes("create-checkout")) {
+    err(`${donateAstro}: must call create-checkout on donate-api`);
   }
   if (/\b(sk_live_|sk_test_)[A-Za-z0-9]+/.test(a)) {
     err(`${donateAstro}: must not contain Stripe secret keys (sk_*) in source`);
