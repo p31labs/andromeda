@@ -6,6 +6,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR"
 TOML="$SCRIPT_DIR/wrangler.toml"
 SCHEMA="$SCRIPT_DIR/schema.sql"
 KV_BINDING="CHALLENGES"
@@ -31,10 +32,12 @@ command -v jq       >/dev/null 2>&1 || die "jq not found — brew install jq  or
 if grep -q "REPLACE_WITH_KV_NAMESPACE_ID" "$TOML"; then
   log "Creating KV namespace '$KV_BINDING'…"
   KV_OUT=$($WRANGLER kv namespace create "$KV_BINDING" 2>&1)
-  KV_ID=$(echo "$KV_OUT" | grep -o '"id": "[^"]*"' | head -1 | awk -F'"' '{print $4}')
+  # Wrangler 4: "id = \"...\""; JSON-style output still possible
+  KV_ID=$(printf '%s' "$KV_OUT" | tr '\n' ' ' | sed -n 's/.*\bid = "\([^"]*\)".*/\1/p')
+  [ -n "$KV_ID" ] || KV_ID=$(printf '%s' "$KV_OUT" | tr '\n' ' ' | sed -n 's/.*"id" *: *"\([^"]*\)".*/\1/p')
   [ -n "$KV_ID" ] || die "Could not parse KV ID from:\n$KV_OUT"
   log "KV id: $KV_ID"
-  sed -i "s/REPLACE_WITH_KV_NAMESPACE_ID/$KV_ID/" "$TOML"
+  sed -i "s/REPLACE_WITH_KV_NAMESPACE_ID/$KV_ID/g" "$TOML"
 else
   log "KV namespace already set — skipping creation."
 fi
@@ -46,7 +49,7 @@ if grep -q "REPLACE_WITH_D1_DATABASE_ID" "$TOML"; then
   D1_ID=$(echo "$D1_OUT" | grep -o 'database_id = "[^"]*"' | awk -F'"' '{print $2}')
   [ -n "$D1_ID" ] || die "Could not parse D1 database_id from:\n$D1_OUT"
   log "D1 id: $D1_ID"
-  sed -i "s/REPLACE_WITH_D1_DATABASE_ID/$D1_ID/" "$TOML"
+  sed -i "s/REPLACE_WITH_D1_DATABASE_ID/$D1_ID/g" "$TOML"
 else
   log "D1 database already set — skipping creation."
 fi
@@ -54,12 +57,12 @@ fi
 # ── 3. Apply schema ───────────────────────────────────────────────────────────
 log "Applying schema to production D1…"
 $WRANGLER d1 execute "$D1_NAME" --file="$SCHEMA" --env production --remote
-log "Schema applied."
+log "Schema applied (remote D1)."
 
 # ── 4. Deploy ─────────────────────────────────────────────────────────────────
 log "Deploying p31-passkey → production…"
 $WRANGLER deploy --env production
-log "Worker deployed."
+log "Worker deployed (production + zone route from wrangler.toml)."
 
 # ── 5. Smoke test ─────────────────────────────────────────────────────────────
 log "Smoke test: POST https://p31ca.org/api/passkey/register-begin"
