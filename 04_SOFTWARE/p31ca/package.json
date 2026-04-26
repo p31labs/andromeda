@@ -33,6 +33,7 @@
     "deploy": "npx wrangler pages deploy dist --project-name p31ca --branch=main --commit-dirty=true",
     "preview": "astro preview",
     "test:e2e": "playwright test",
+    "test:e2e:prod": "PLAYWRIGHT_BASE_URL=https://p31ca.org PLAYWRIGHT_SKIP_WEBSERVER=1 playwright test",
     "test:e2e:install": "playwright install --with-deps chromium",
     "fleet:probe": "node scripts/fleet-health-probe.mjs",
     "fleet:probe:strict": "P31_FLEET_STRICT=1 node scripts/fleet-health-probe.mjs",
