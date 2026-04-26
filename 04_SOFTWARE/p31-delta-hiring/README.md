@@ -53,11 +53,21 @@ Runs: `verify` → `test` → `lint` → `build`. GitHub Actions: workflow **`p3
 
 ## Build output
 
-`dist/` is static files — any static host, or copy into a hub `public/delta-hiring/` (or similar) for same-origin deploy.
+`dist/` is static files.
 
-### Production (Cloudflare Pages)
+### Same-origin on p31ca (recommended path)
 
-On **push to `main`**, the workflow [`.github/workflows/p31-delta-hiring.yml`](../../.github/workflows/p31-delta-hiring.yml) runs `check` then **`wrangler pages deploy dist --project-name=p31-delta-hiring`**. You need a Cloudflare **Pages** project named `p31-delta-hiring` and repo secrets `CLOUDFLARE_API_TOKEN` + `CLOUDFLARE_ACCOUNT_ID` (same pattern as the p31ca deploy).
+From `andromeda/04_SOFTWARE` after a successful `pnpm run build` in this package:
+
+```bash
+pnpm --filter p31-delta-hiring run sync:p31ca
+```
+
+Copies `dist/` → `p31ca/public/delta-hiring/`. Public URL: **`https://p31ca.org/delta-hiring/`** (short **`/hiring`**). Commit the updated `public/delta-hiring/**` in the p31ca tree together with `ground-truth` / `_redirects` / `connect.html` (when you touch those) so the same-origin route and the mesh link stay in sync.
+
+### Standalone Cloudflare Pages
+
+On **push to `main`**, the workflow [`.github/workflows/p31-delta-hiring.yml`](../../.github/workflows/p31-delta-hiring.yml) runs `check` and can **`wrangler pages deploy dist --project-name=p31-delta-hiring`**. Requires a **Pages** project and secrets `CLOUDFLARE_API_TOKEN` + `CLOUDFLARE_ACCOUNT_ID` if you use that job.
 
 ## Data & schema
 

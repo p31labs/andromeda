@@ -136,6 +136,12 @@
       "label": "Wye→Delta — public narrative page explaining mesh resilience and onboarding",
       "note": "No Three.js. Uses Tailwind CDN. Entry-point for external visitors — links to /planetary-onboard.html and /connect.html."
     },
+    "p31DeltaHiring": {
+      "path": "/delta-hiring/index.html",
+      "implementation": "public/delta-hiring/index.html",
+      "label": "P31 Delta — proof-based hiring (role packets, WCDs, p31.proofRecord)",
+      "note": "Vite static SPA: build in 04_SOFTWARE/p31-delta-hiring, run sync:p31ca, deploy with p31ca. Short /hiring in _redirects."
+    },
     "auth": {
       "path": "/auth.html",
       "implementation": "public/auth.html",
@@ -271,6 +277,11 @@
       "from": "/build",
       "to": "/initial-build.html",
       "status": 301
+    },
+    {
+      "from": "/hiring",
+      "to": "/delta-hiring/index.html",
+      "status": 301
     }
   ],
   "fileSnippets": [
@@ -308,6 +319,11 @@
       "id": "initialBuild.bakeModule",
       "path": "public/lib/p31-initial-build-bake.js",
       "mustIncludeSubstring": "p31.buildRecord/0.1.0"
+    },
+    {
+      "id": "p31DeltaHiring.index",
+      "path": "public/delta-hiring/index.html",
+      "mustIncludeSubstring": "P31 Delta · Proof-based hiring"
     }
   ],
   "registryAppUrlInvariants": [
