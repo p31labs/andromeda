@@ -6,6 +6,7 @@
   "scripts": {
     "build": "tsc",
     "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
     "test": "vitest run --passWithNoTests",
     "test:watch": "vitest"
   },
@@ -20,6 +21,10 @@
     "zustand": "^5.0.0"
   },
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^8.0.0",
+    "@typescript-eslint/parser": "^8.0.0",
+    "eslint": "^9.0.0",
+    "typescript": "^5.5.0",
     "@sentry/types": "^7.81.1",
     "@types/node": "^20.0.0",
     "@types/react": "^19.0.0",
@@ -42,6 +47,8 @@
     "./types": "./src/types/index.ts",
     "./net": "./src/net/index.ts",
     "./ui": "./src/ui/index.ts",
-    "./sovereign": "./src/sovereign/index.ts"
+    "./sovereign": "./src/sovereign/index.ts",
+    "./geodesic-campaign": "./src/geodesic-campaign.ts",
+    "./geodesic-room-wire": "./src/geodesic-room-wire.ts"
   }
 }

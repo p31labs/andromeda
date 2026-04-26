@@ -17,7 +17,7 @@ test.describe('E2E: Full Happy Path', () => {
     await page.goto(baseURL + '/', { waitUntil: 'networkidle' });
 
     // Verify page title
-    await expect(page).toHaveTitle(/EPCP Command Center/);
+    await expect(page).toHaveTitle(/G\.O\.D\.\s*\/\s*EPCP Command Center/);
 
     // Verify KPI cards exist
     const kpiCards = page.locator('.kpi-card');

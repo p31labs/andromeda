@@ -1,0 +1,20 @@
+# Frozen install for jobs that only need the Turbo workspace under 04_SOFTWARE.
+# Run ./.github/actions/toolchain-constants first so NODE_VERSION / PNPM_VERSION apply.
+name: pnpm 04_SOFTWARE workspace
+description: pnpm/action-setup, Node, install with 04_SOFTWARE/pnpm-lock.yaml only
+
+runs:
+  using: composite
+  steps:
+    - uses: pnpm/action-setup@v4
+      with:
+        version: ${{ env.PNPM_VERSION || '10.32.1' }}
+    - uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION || '20' }}
+        cache: pnpm
+        cache-dependency-path: 04_SOFTWARE/pnpm-lock.yaml
+    - name: Install
+      shell: bash
+      working-directory: 04_SOFTWARE
+      run: pnpm install --frozen-lockfile

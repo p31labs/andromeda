@@ -9,20 +9,14 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/p31-style.css">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/p31-tailwind-extend.js"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: {
-                        sans: ['"Atkinson Hyperlegible"', 'sans-serif'],
-                        mono: ['"JetBrains Mono"', 'monospace'],
-                    },
-                    colors: {
-                        void: '#0f1115', surface: '#161920', coral: '#cc6247',
-                        teal: '#25897d', cyan: '#4db8a8', cloud: '#d8d6d0',
-                        butter: '#cda852', lavender: '#8b7cc9', phosphorus: '#3ba372',
-                    }
+                    ...window.P31_TAILWIND_EXTEND
                 }
             }
         }
@@ -42,7 +36,7 @@
 
     <header class="w-full border-b border-white/5 bg-void/95 sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-            <a href="index.html" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
+            <a href="/" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
                 <svg width="28" height="28" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
                     <rect width="512" height="512" rx="112" fill="#25897d"/>
                     <circle cx="390" cy="120" r="48" fill="#cc6247"/>
@@ -52,7 +46,7 @@
                 <span class="font-bold text-lg tracking-tight">P31 Labs</span>
             </a>
             <nav class="flex gap-4 font-mono text-sm">
-                <a href="index.html" class="text-cloud/50 hover:text-cloud transition-colors flex items-center gap-2">← Hub</a>
+                <a href="/" class="text-cloud/50 hover:text-cloud transition-colors flex items-center gap-2">← Hub</a>
             </nav>
         </div>
     </header>
@@ -192,7 +186,7 @@
     <footer class="border-t border-white/5 mt-12 py-6">
         <div class="max-w-7xl mx-auto px-6 flex justify-between items-center text-xs text-cloud/30 font-mono">
             <span>P31 Labs · 501(c)(3) · EIN 42-1888158</span>
-            <a href="index.html" class="hover:text-cloud/60 transition-colors">← Back to Hub</a>
+            <a href="/" class="hover:text-cloud/60 transition-colors">← Back to Hub</a>
         </div>
     </footer>
 

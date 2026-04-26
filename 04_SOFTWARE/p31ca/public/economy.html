@@ -4,11 +4,15 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>BRIDGE — LOVE Economy</title>
-<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="/p31-style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/p31-tailwind-extend.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
 <script>
-tailwind.config={theme:{extend:{colors:{void:'#0f1115',surface:'#161920',cloud:'#d8d6d0',butter:'#cda852',coral:'#cc6247',phosphorus:'#3ba372',dim:'#555860',faint:'#262a33'},fontFamily:{display:['Atkinson Hyperlegible','sans-serif'],mono:['JetBrains Mono','monospace']}}}}
+tailwind.config={theme:{extend:{
+                    ...window.P31_TAILWIND_EXTEND
+                }}}
 </script>
 <style>
 html,body{margin:0;height:100%;background:#0f1115;color:#d8d6d0;font-family:'Atkinson Hyperlegible',sans-serif}

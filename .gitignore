@@ -1,3 +1,6 @@
+# Local P31 tooling (e.g. git post-commit auto-push marker)
+.p31/
+
 # Environment secrets - NEVER COMMIT
 .env
 .env.local
@@ -6,6 +9,12 @@
 .env.canonical
 .env.unified
 .admin-token.local
+
+# docs/files operator drop zone — keep Zenodo PDFs / legal blobs local (tooling is tracked)
+docs/files/*.pdf
+docs/files/*.docx
+docs/files/p31_fleet_deploy.tar.gz
+docs/files/mnt/
 
 # Legal discovery — never commit
 Discovery_Production_*/
@@ -33,6 +42,7 @@ venv/
 
 # Node
 node_modules/
+.turbo/
 npm-debug.log*
 
 # PlatformIO
@@ -131,6 +141,9 @@ phosphorus31.org/planetary-planet/src/worker/
 
 # Package lock - use yarn/pnpm or commit intentionally
 package-lock.json
+# npm-ci workflows use npm ci + setup-node cache for these standalone Workers
+!04_SOFTWARE/donate-api/package-lock.json
+!04_SOFTWARE/p31-google-bridge/package-lock.json
 
 # Research and documentation
 02_RESEARCH/

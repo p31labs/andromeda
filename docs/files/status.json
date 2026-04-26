@@ -1,0 +1,44 @@
+{
+  "updated": "2026-04-13T21:00:00Z",
+  "workers": [
+    { "name": "genesis-gate", "status": "online", "url": "https://genesis-gate.trimtab-signal.workers.dev" },
+    { "name": "p31-bonding-relay", "status": "online", "url": "https://p31-bonding-relay.trimtab-signal.workers.dev" },
+    { "name": "p31-telemetry", "status": "online", "url": "https://p31-telemetry.trimtab-signal.workers.dev" },
+    { "name": "p31-stripe-webhook", "status": "online", "url": "https://p31-stripe-webhook.trimtab-signal.workers.dev" },
+    { "name": "api-phosphorus31-org", "status": "online", "url": "https://api-phosphorus31-org.trimtab-signal.workers.dev" },
+    { "name": "carrie-agent", "status": "online", "url": "https://carrie-agent.trimtab-signal.workers.dev" },
+    { "name": "command-center", "status": "online", "url": "https://command-center.trimtab-signal.workers.dev" },
+    { "name": "p31-mesh", "status": "online", "url": "https://p31-mesh.pages.dev" },
+    { "name": "phosphorus31-org", "status": "online", "url": "https://phosphorus31.org" },
+    { "name": "bonding-p31ca-org", "status": "online", "url": "https://bonding.p31ca.org" }
+  ],
+  "legal": {
+    "case": "Johnson v. Johnson, 2025CV936",
+    "next_hearing": "April 16, 2026 — 11:00 AM",
+    "judge": "Chief Judge Scarlett",
+    "status": "Contempt hearing — discovery sent Apr 14",
+    "mcghan_deadline": "April 17, 2026"
+  },
+  "financial": {
+    "operating_buffer": "$0",
+    "grants_active": "Awesome Foundation $1K (April deliberation)",
+    "grants_pending": "NIDILRR Switzer $80K, FIP $250K/yr (inquiries sent, no response)",
+    "grants_dead": "ESG, Microsoft AI, Pollination, NDEP, Mission.Earth",
+    "corp_status": "P31 Labs Inc — Active (GA SoS). EIN pending. 501(c)(3) not filed."
+  },
+  "research": {
+    "paper_xii": "Sovereign Stack — 11pp, triple-gated, Zenodo-ready",
+    "bonding_tests": "413 / 30 suites",
+    "deployed_workers": 10
+  },
+  "dates": [
+    { "date": "Apr 14", "event": "Discovery sent to McGhan (3 docs)" },
+    { "date": "Apr 16", "event": "CONTEMPT HEARING 11AM — Woodbine" },
+    { "date": "Apr 17", "event": "McGhan deadline" },
+    { "date": "Apr 30", "event": "Camden County wellness baseline" },
+    { "date": "Apr 30", "event": "Georgia Tech Summit" },
+    { "date": "May 19", "event": "Neurotech Frontiers Summit" },
+    { "date": "Jun 1", "event": "Stimpunks $3K opens" },
+    { "date": "Sep 30", "event": "FERS filing deadline" }
+  ]
+}

@@ -1,17 +1,21 @@
 ---
+import mesh from '../data/p31-mesh-constants.json'
+
 export interface Props {
   className?: string
 }
 
 const { className = '' } = Astro.props
+const orchestratorBase = mesh.orchestratorWorkerUrl
 ---
 
+<!-- egg-hunt ORCH-WORKER anchor (hostname must stay findable for verify-egg-hunt): p31-orchestrator.trimtab-signal.workers.dev -->
 <div id="orchestrator-dashboard" class={`orchestrator-dashboard ${className}`}>
   <div class="dashboard-header">
     <h2 class="dashboard-title">Orchestrator Control Panel</h2>
-    <div class="status-badge status-online">
-      <span class="status-dot"></span>
-      System Online
+    <div class="status-badge status-checking" id="orchestrator-conn-badge" title="Status from orchestrator Worker">
+      <span class="status-dot" id="orchestrator-conn-dot"></span>
+      <span id="orchestrator-conn-label">Checking…</span>
     </div>
   </div>
 
@@ -73,11 +77,33 @@ const { className = '' } = Astro.props
   </div>
 </div>
 
-<script>
+<script define:vars={{ orchestratorBase }}>
   class OrchestratorDashboard {
     constructor() {
       this.refreshInterval = 10000
       this.init()
+    }
+
+    setConnectionBadge(state) {
+      const wrap = document.getElementById('orchestrator-conn-badge')
+      const dot = document.getElementById('orchestrator-conn-dot')
+      const label = document.getElementById('orchestrator-conn-label')
+      if (!wrap || !dot || !label) return
+      wrap.classList.remove('status-checking', 'status-online', 'status-offline')
+      if (state === 'ok') {
+        wrap.classList.add('status-online')
+        dot.classList.add('pulsing')
+        label.textContent = 'Orchestrator reachable'
+      } else if (state === 'fail') {
+        wrap.classList.add('status-offline')
+        dot.classList.remove('pulsing')
+        label.textContent = 'Orchestrator unavailable'
+        wrap.title = 'Worker may be down, blocked, or require Access — see EDGE-SECURITY.md'
+      } else {
+        wrap.classList.add('status-checking')
+        dot.classList.remove('pulsing')
+        label.textContent = 'Checking…'
+      }
     }
 
     async init() {
@@ -96,9 +122,11 @@ const { className = '' } = Astro.props
 
     async refreshStatus() {
       try {
-        const res = await fetch('https://p31-orchestrator.trimtab-signal.workers.dev/api/orchestrator/status')
+        const res = await fetch(orchestratorBase + '/api/orchestrator/status')
+        if (!res.ok) throw new Error('status ' + res.status)
         const data = await res.json()
 
+        this.setConnectionBadge('ok')
         document.getElementById('spoons-value').textContent = data.currentSpoons
         document.getElementById('spoons-bar').style.width = `${(data.currentSpoons / 20) * 100}%`
         
@@ -122,12 +150,13 @@ const { className = '' } = Astro.props
 
       } catch (e) {
         console.error('Failed to fetch status:', e)
+        this.setConnectionBadge('fail')
       }
     }
 
     async refreshQueue() {
       try {
-        const res = await fetch('https://p31-orchestrator.trimtab-signal.workers.dev/api/orchestrator/queue')
+        const res = await fetch(orchestratorBase + '/api/orchestrator/queue')
         const data = await res.json()
         const container = document.getElementById('queue-list')
 
@@ -156,7 +185,7 @@ const { className = '' } = Astro.props
 
     async refreshManualReview() {
       try {
-        const res = await fetch('https://p31-orchestrator.trimtab-signal.workers.dev/api/orchestrator/manual-review')
+        const res = await fetch(orchestratorBase + '/api/orchestrator/manual-review')
         const data = await res.json()
         const container = document.getElementById('review-list')
 
@@ -191,7 +220,7 @@ const { className = '' } = Astro.props
 
     async refreshActivity() {
       try {
-        const res = await fetch('https://p31-orchestrator.trimtab-signal.workers.dev/api/orchestrator/audit-log?limit=10')
+        const res = await fetch(orchestratorBase + '/api/orchestrator/audit-log?limit=10')
         const data = await res.json()
         const container = document.getElementById('activity-list')
 
@@ -221,7 +250,7 @@ const { className = '' } = Astro.props
 
     async approveAction(auditId) {
       try {
-        await fetch(`https://p31-orchestrator.trimtab-signal.workers.dev/api/orchestrator/approve/${auditId}`, {
+        await fetch(`${orchestratorBase}/api/orchestrator/approve/${auditId}`, {
           method: 'POST'
         })
         await this.refresh()
@@ -262,18 +291,41 @@ const { className = '' } = Astro.props
     align-items: center;
     gap: 0.5rem;
     padding: 0.5rem 1rem;
-    background: rgba(16, 185, 129, 0.1);
     border-radius: 9999px;
-    color: #10b981;
     font-weight: 500;
+  }
+
+  .status-badge.status-checking {
+    background: rgba(148, 163, 184, 0.12);
+    color: #94a3b8;
+  }
+
+  .status-badge.status-online {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+  }
+
+  .status-badge.status-offline {
+    background: rgba(239, 68, 68, 0.1);
+    color: #f87171;
   }
 
   .status-dot {
     width: 8px;
     height: 8px;
-    background: #10b981;
+    background: #94a3b8;
     border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .status-dot.pulsing {
+    background: #10b981;
     animation: pulse 2s infinite;
+  }
+
+  .status-offline .status-dot {
+    background: #f87171;
+    animation: none;
   }
 
   @keyframes pulse {

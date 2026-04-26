@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>P31 Mesh</title>
+<script src="https://unpkg.com/peerjs@1.5.5/dist/peerjs.min.js"></script>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:system-ui,-apple-system,sans-serif;background:#0a0a14;color:#e2e8f0;
+    display:flex;flex-direction:column;min-height:100vh;padding:16px}
+  .mono{font-family:'Courier New',monospace}
+  h1{font-size:18px;color:#06b6d4;margin-bottom:4px}
+  .sub{font-size:11px;color:#64748b;margin-bottom:20px}
+  .card{background:#111827;border:1px solid #1e293b;border-radius:12px;padding:16px;margin-bottom:12px}
+  .label{font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+  .id-display{font-size:20px;font-weight:700;color:#06b6d4;letter-spacing:2px;word-break:break-all}
+  input{width:100%;background:#0f172a;border:1px solid #334155;border-radius:8px;padding:10px 12px;
+    color:#e2e8f0;font-size:16px;font-family:monospace;margin-bottom:8px}
+  input:focus{outline:none;border-color:#06b6d4}
+  button{width:100%;padding:12px;border:none;border-radius:8px;font-size:14px;font-weight:600;
+    cursor:pointer;transition:background 0.2s}
+  .btn-connect{background:#06b6d4;color:#0a0a14}
+  .btn-connect:hover{background:#22d3ee}
+  .btn-connect:disabled{background:#1e293b;color:#475569;cursor:default}
+  .btn-pulse{background:#7c3aed;color:white;margin-top:8px}
+  .btn-pulse:hover{background:#8b5cf6}
+  .btn-pulse:disabled{background:#1e293b;color:#475569;cursor:default}
+  .status{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+  .dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+  .dot-off{background:#475569}
+  .dot-init{background:#eab308;animation:blink 1s infinite}
+  .dot-on{background:#22c55e}
+  .dot-pulse{background:#a78bfa;animation:pulse-dot 1s infinite}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+  @keyframes pulse-dot{0%,100%{transform:scale(1)}50%{transform:scale(1.4)}}
+  .log{background:#0f172a;border-radius:8px;padding:10px;max-height:180px;overflow-y:auto;
+    font-family:monospace;font-size:11px;color:#64748b;line-height:1.6}
+  .log .rx{color:#22c55e}
+  .log .tx{color:#06b6d4}
+  .log .sys{color:#eab308}
+  .log .err{color:#ef4444}
+  .breath-ring{width:120px;height:120px;border-radius:50%;border:3px solid #334155;
+    display:flex;align-items:center;justify-content:center;margin:16px auto;
+    transition:all 1s ease-in-out;flex-direction:column}
+  .breath-ring.inhale{transform:scale(1.3);border-color:#7c3aed;background:rgba(124,58,237,0.1)}
+  .breath-ring.hold{transform:scale(1.3);border-color:#eab308;background:rgba(234,179,8,0.08)}
+  .breath-ring.exhale{transform:scale(1);border-color:#3b82f6;background:rgba(59,130,246,0.08)}
+  .breath-label{font-size:13px;font-weight:700;color:#94a3b8}
+  .breath-timer{font-size:24px;font-weight:700;color:#e2e8f0;margin-top:2px}
+  .peer-count{font-size:12px;color:#22c55e;text-align:center;margin-top:8px}
+</style>
+</head>
+<body>
+
+<h1>P31 MESH</h1>
+<div class="sub">WebRTC Data Channel — 0.1 Hz Vagal Sync</div>
+
+<!-- STATUS -->
+<div class="card">
+  <div class="status">
+    <div class="dot" id="statusDot"></div>
+    <span id="statusText" style="font-size:13px">Initializing...</span>
+  </div>
+  <div class="label">Your Node ID</div>
+  <div class="id-display mono" id="myId">...</div>
+  <div class="peer-count" id="peerCount"></div>
+</div>
+
+<!-- CONNECT -->
+<div class="card">
+  <div class="label">Connect to Peer</div>
+  <input type="text" id="remoteId" placeholder="Paste peer ID here" autocomplete="off" spellcheck="false">
+  <button class="btn-connect" id="btnConnect" onclick="connect()" disabled>LINK</button>
+</div>
+
+<!-- BREATH -->
+<div class="card" id="breathCard" style="display:none">
+  <div class="label" style="text-align:center">Vagal Sync — 4-4-6</div>
+  <div class="breath-ring" id="breathRing">
+    <div class="breath-label" id="breathLabel">READY</div>
+    <div class="breath-timer" id="breathTimer">—</div>
+  </div>
+  <button class="btn-pulse" id="btnPulse" onclick="startBreath()">START SYNC</button>
+</div>
+
+<!-- LOG -->
+<div class="card">
+  <div class="label">Mesh Log</div>
+  <div class="log" id="log"></div>
+</div>
+
+<script>
+// ── State ──
+let peer = null;
+let myId = null;
+let connections = [];
+let breathInterval = null;
+let breathActive = false;
+
+// ── Logging ──
+function log(msg, cls = 'sys') {
+  const el = document.getElementById('log');
+  const t = new Date().toLocaleTimeString('en-US', {hour12:false,hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  el.innerHTML += `<div class="${cls}">[${t}] ${msg}</div>`;
+  el.scrollTop = el.scrollHeight;
+}
+
+// ── Peer Setup ──
+function initPeer() {
+  const id = 'p31-' + crypto.getRandomValues(new Uint32Array(1))[0].toString(36).slice(0,6);
+  peer = new Peer(id, { debug: 0 });
+
+  peer.on('open', (openId) => {
+    myId = openId;
+    document.getElementById('myId').textContent = myId;
+    document.getElementById('btnConnect').disabled = false;
+    setStatus('on', 'Online — waiting for peer');
+    log('Node online: ' + myId);
+  });
+
+  peer.on('connection', (conn) => {
+    log('Incoming connection from ' + conn.peer, 'rx');
+    handleConn(conn);
+  });
+
+  peer.on('error', (err) => {
+    log('Error: ' + err.type, 'err');
+    if (err.type === 'peer-unavailable') {
+      log('Peer not found. Check the ID.', 'err');
+    }
+  });
+
+  peer.on('disconnected', () => {
+    setStatus('off', 'Disconnected');
+    log('Disconnected from signaling', 'err');
+    // Auto-reconnect
+    setTimeout(() => { if (peer && !peer.destroyed) peer.reconnect(); }, 3000);
+  });
+
+  setStatus('init', 'Connecting to signaling...');
+}
+
+// ── Connection Handler ──
+function handleConn(conn) {
+  conn.on('open', () => {
+    connections.push(conn);
+    updatePeerCount();
+    setStatus('on', `Linked — ${connections.length} peer(s)`);
+    log('Linked to ' + conn.peer, 'rx');
+    document.getElementById('breathCard').style.display = 'block';
+    conn.send({ type: 'hello', from: myId, ts: Date.now() });
+  });
+
+  conn.on('data', (data) => {
+    if (data.type === 'breath') {
+      onRemoteBreath(data);
+    } else if (data.type === 'hello') {
+      log('Handshake from ' + data.from, 'rx');
+    } else if (data.type === 'ping') {
+      log('Ping received', 'rx');
+      vibrate([80, 40, 80]);
+    }
+  });
+
+  conn.on('close', () => {
+    connections = connections.filter(c => c !== conn);
+    updatePeerCount();
+    log('Peer disconnected: ' + conn.peer, 'err');
+    if (connections.length === 0) {
+      setStatus('on', 'Online — waiting for peer');
+    }
+  });
+
+  conn.on('error', (err) => {
+    log('Connection error: ' + err, 'err');
+  });
+}
+
+// ── Connect ──
+function connect() {
+  const remoteId = document.getElementById('remoteId').value.trim();
+  if (!remoteId || !peer) return;
+  log('Connecting to ' + remoteId + '...', 'tx');
+  const conn = peer.connect(remoteId, { reliable: true });
+  handleConn(conn);
+}
+
+// ── Breathing Engine ──
+const INHALE = 4000;
+const HOLD = 4000;
+const EXHALE = 6000;
+const CYCLE = INHALE + HOLD + EXHALE; // 14s
+
+function startBreath() {
+  if (breathActive) {
+    stopBreath();
+    return;
+  }
+  breathActive = true;
+  document.getElementById('btnPulse').textContent = 'STOP SYNC';
+  log('Breath sync started (4-4-6)', 'tx');
+
+  const startTime = Date.now();
+
+  function tick() {
+    const elapsed = (Date.now() - startTime) % CYCLE;
+    const ring = document.getElementById('breathRing');
+    const label = document.getElementById('breathLabel');
+    const timer = document.getElementById('breathTimer');
+
+    if (elapsed < INHALE) {
+      const secs = Math.ceil((INHALE - elapsed) / 1000);
+      ring.className = 'breath-ring inhale';
+      label.textContent = 'INHALE';
+      timer.textContent = secs;
+    } else if (elapsed < INHALE + HOLD) {
+      const secs = Math.ceil((INHALE + HOLD - elapsed) / 1000);
+      ring.className = 'breath-ring hold';
+      label.textContent = 'HOLD';
+      timer.textContent = secs;
+    } else {
+      const secs = Math.ceil((CYCLE - elapsed) / 1000);
+      ring.className = 'breath-ring exhale';
+      label.textContent = 'EXHALE';
+      timer.textContent = secs;
+
+      // Vibrate + broadcast at exhale start
+      if (elapsed - (INHALE + HOLD) < 120) {
+        vibrate([100, 50, 100]);
+        broadcast({ type: 'breath', phase: 'exhale', ts: Date.now() });
+      }
+    }
+  }
+
+  tick();
+  breathInterval = setInterval(tick, 100);
+}
+
+function stopBreath() {
+  breathActive = false;
+  clearInterval(breathInterval);
+  breathInterval = null;
+  document.getElementById('btnPulse').textContent = 'START SYNC';
+  document.getElementById('breathRing').className = 'breath-ring';
+  document.getElementById('breathLabel').textContent = 'READY';
+  document.getElementById('breathTimer').textContent = '—';
+  log('Breath sync stopped', 'sys');
+}
+
+function onRemoteBreath(data) {
+  if (data.phase === 'exhale') {
+    vibrate([60, 30, 60]);
+    log('Remote exhale received', 'rx');
+    // Flash the ring briefly
+    const ring = document.getElementById('breathRing');
+    ring.style.boxShadow = '0 0 30px rgba(34,197,94,0.5)';
+    setTimeout(() => { ring.style.boxShadow = 'none'; }, 500);
+  }
+}
+
+// ── Broadcast to all peers ──
+function broadcast(data) {
+  connections.forEach(c => {
+    if (c.open) c.send(data);
+  });
+}
+
+// ── Vibrate ──
+function vibrate(pattern) {
+  if (navigator.vibrate) navigator.vibrate(pattern);
+}
+
+// ── UI Helpers ──
+function setStatus(state, text) {
+  const dot = document.getElementById('statusDot');
+  dot.className = 'dot dot-' + state;
+  document.getElementById('statusText').textContent = text;
+}
+
+function updatePeerCount() {
+  const el = document.getElementById('peerCount');
+  const n = connections.length;
+  el.textContent = n > 0 ? `${n} peer${n>1?'s':''} connected` : '';
+}
+
+// Copy ID on tap
+document.getElementById('myId').addEventListener('click', () => {
+  if (myId) {
+    navigator.clipboard.writeText(myId).then(() => {
+      log('ID copied to clipboard', 'sys');
+      const el = document.getElementById('myId');
+      const orig = el.textContent;
+      el.textContent = 'COPIED';
+      setTimeout(() => { el.textContent = orig; }, 1000);
+    });
+  }
+});
+
+// Enter key connects
+document.getElementById('remoteId').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') connect();
+});
+
+// ── Init ──
+initPeer();
+</script>
+</body>
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>P31 Labs — letterhead (print)</title>
+  <link rel="stylesheet" href="suite-tokens.css" />
+  <style>
+    .addr { font-size: 9.5pt; color: var(--p31-gray); line-height: 1.45; }
+    .return { margin-top: 2.5in; }
+  </style>
+</head>
+<body class="p31-body">
+  <p class="p31-hint no-print">File → Print → Save as PDF. For #10 envelope window, adjust return address block position in this file.</p>
+  <div class="p31-masthead">
+    <strong>P31 LABS, INC.</strong>
+    <div class="meta">Georgia nonprofit &middot; EIN 42-1888158 &middot; phosphorus31.org &middot; p31ca.org</div>
+  </div>
+  <p class="addr">
+    Mailing and registered-agent lines go here (confirm against executed filings).<br />
+    (City, ST ZIP)<br />
+    <span style="font-family: var(--p31-mono)">will@p31ca.org</span>
+  </p>
+  <div class="return">
+    <p style="color: var(--p31-gray); font-size: 10pt; margin: 0 0 0.2em 0">Return address (envelope / FedEx):</p>
+    <p class="addr" contenteditable="true" style="border: 1px dashed var(--p31-rule); padding: 0.35em; min-height: 1.1in;">
+      [Editable before print — e.g. Will Johnson, c/o P31 Labs&hellip;]
+    </p>
+  </div>
+  <p style="margin-top: 1.2in; min-height: 4in" contenteditable="true">
+    [Letter body — or leave blank, print, then compose in longhand / typewriter.]
+  </p>
+  <p style="margin-top: 1.5em; color: var(--p31-gray); font-size: 9.5pt;">
+    Respectfully,<br /><br />
+    _________________________<br />
+    Name, Title<br />
+    P31 Labs, Inc.
+  </p>
+</body>
+</html>

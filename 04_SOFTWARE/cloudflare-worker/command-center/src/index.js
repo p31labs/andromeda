@@ -15,9 +15,14 @@
 import { buildCloudHubHtml } from './cloud-hub-html.js';
 import { buildGodDashboardHtml } from './god-dashboard.js';
 import { handleSseStream } from './sse-stream.js';
-import { CrdtQueueProcessor } from './crdt-processor-do.js';
 import { CrdtSessionDO } from './crdt-session-do.js';
-export { CrdtQueueProcessor, CrdtSessionDO };
+export { CrdtSessionDO };
+
+/** Request access logging: dev only, or set var `DEBUG_ACCESS_LOG=1` on the Worker. */
+function accessLogEnabled(env) {
+  const v = env && env.DEBUG_ACCESS_LOG;
+  return env?.ENVIRONMENT === 'development' || v === '1' || v === 'true' || v === true;
+}
 
 // ── Cloudflare Access JWT helpers ──
 const JWKS_CACHE = new Map();
@@ -170,16 +175,25 @@ export default {
 
   async fetch(request, env) {
     const url = new URL(request.url);
-    
-    // DEBUG: Log ALL requests immediately
-    console.log(`[WORKER] ${request.method} ${url.pathname}${url.search} | host: ${url.host}`);
-    
-    // Catch-all debug for /api/crdt/*
-    if (url.pathname.startsWith('/api/crdt')) {
-      console.log(`[WORKER] CRDT PATH DETECTED: ${url.pathname}`);
+    if (accessLogEnabled(env)) {
+      console.log(`[WORKER] ${request.method} ${url.pathname}${url.search} | host: ${url.host}`);
+      if (url.pathname.startsWith('/api/crdt')) {
+        console.log(`[WORKER] CRDT PATH DETECTED: ${url.pathname}`);
+      }
     }
 
     // ── API Routes ──
+    if (url.pathname === '/api/operator/shift' && request.method === 'OPTIONS') {
+      return handleOperatorShiftOptions(request);
+    }
+    if (url.pathname === '/api/operator/shift' && request.method === 'GET') {
+      return handleOperatorShiftGet(request, env);
+    }
+    if (url.pathname === '/api/operator/shift' && request.method === 'POST') {
+      return withAccess(request, env, 'operator', async (auth) => {
+        return handleOperatorShiftPost(request, env, auth);
+      });
+    }
     if (url.pathname === '/api/status' && request.method === 'POST') {
       return withAccess(request, env, 'operator', async (auth) => {
         return handleStatusWrite(request, env, auth);
@@ -302,7 +316,9 @@ export default {
           });
         }
         
-        console.log('[WORKER] CRDT route. Host:', url.hostname, 'Upgrade:', request.headers.get('Upgrade'));
+        if (accessLogEnabled(env)) {
+          console.log('[WORKER] CRDT route. Host:', url.hostname, 'Upgrade:', request.headers.get('Upgrade'));
+        }
         
         try {
           await env.STATUS_KV.put('crdt_last_headers', JSON.stringify({
@@ -531,6 +547,152 @@ function jsonResponse(obj, status = 200, extraHeaders = {}) {
   });
 }
 
+// ── Operator shift (CWP-P31-UI-2026-01 Phase C) — p31ca /ops/ reads public; POST requires Access + operator
+const OPERATOR_SHIFT_PUBLIC_KV = 'p31:operator:shift:public';
+const OPERATOR_SHIFT_LOG_KV = 'p31:operator:shift:log';
+
+/**
+ * Browsers on p31ca.org, bonding, preview Pages, local dev.
+ * @param {Request} request
+ * @returns {string|null}
+ */
+function operatorShiftCorsOrigin(request) {
+  const o = request.headers.get('Origin') || '';
+  if (!o) return 'https://p31ca.org';
+  const allow = new Set([
+    'https://p31ca.org',
+    'https://www.p31ca.org',
+    'https://bonding.p31ca.org',
+    'http://127.0.0.1:4321',
+    'http://localhost:4321',
+    'http://127.0.0.1:8080',
+    'http://localhost:8080',
+  ]);
+  if (allow.has(o)) return o;
+  if (o.endsWith('.pages.dev')) return o;
+  return null;
+}
+
+function jsonResponseCors(request, obj, status = 200) {
+  const o = operatorShiftCorsOrigin(request) || 'https://p31ca.org';
+  return new Response(JSON.stringify(obj), {
+    status,
+    headers: {
+      'content-type': 'application/json; charset=utf-8',
+      'Access-Control-Allow-Origin': o,
+      Vary: 'Origin',
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, CF-Access-Jwt-Assertion, Cf-Access-Authenticated-User-Email, Cookie',
+    },
+  });
+}
+
+/**
+ * @param {Request} request
+ */
+function handleOperatorShiftOptions(request) {
+  const o = operatorShiftCorsOrigin(request) || 'https://p31ca.org';
+  return new Response(null, {
+    status: 204,
+    headers: {
+      'Access-Control-Max-Age': '86400',
+      'Access-Control-Allow-Origin': o,
+      Vary: 'Origin',
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, CF-Access-Jwt-Assertion, Cf-Access-Authenticated-User-Email, Cookie',
+    },
+  });
+}
+
+/**
+ * @param {Request} request
+ * @param {Record<string, unknown>} env
+ */
+async function handleOperatorShiftGet(request, env) {
+  if (!env.STATUS_KV) {
+    return jsonResponseCors(request, { error: 'KV not configured' }, 503);
+  }
+  let publicRow = { state: 'unknown', at: null };
+  try {
+    const raw = await env.STATUS_KV.get(OPERATOR_SHIFT_PUBLIC_KV, 'json');
+    if (raw && typeof raw === 'object') {
+      publicRow = {
+        state: raw.state === 'in' || raw.state === 'out' ? raw.state : 'unknown',
+        at: raw.at || null,
+      };
+    }
+  } catch (e) {
+    /* use default */
+  }
+  const auth = await authenticate(request, env);
+  const out = { schema: 'p31.operatorShift/1.0.0', public: publicRow };
+  if (auth && auth.email) {
+    let log = [];
+    try {
+      const rawLog = await env.STATUS_KV.get(OPERATOR_SHIFT_LOG_KV, 'json');
+      if (Array.isArray(rawLog)) log = rawLog.slice(0, 50);
+    } catch (e) {
+      /* */
+    }
+    out.audit = { entries: log, viewer: auth.email, role: auth.role };
+  } else {
+    out.hint = 'Authenticated Access session optional for audit tail; public state is PII-free.';
+  }
+  return jsonResponseCors(request, out, 200);
+}
+
+/**
+ * @param {Request} request
+ * @param {Record<string, unknown>} env
+ * @param {Record<string, unknown>} auth
+ */
+async function handleOperatorShiftPost(request, env, auth) {
+  if (!env.STATUS_KV) {
+    return jsonResponseCors(request, { error: 'KV not configured' }, 503);
+  }
+  let body;
+  try {
+    body = await request.json();
+  } catch (e) {
+    return jsonResponseCors(request, { error: 'Invalid JSON' }, 400);
+  }
+  const action = body && (body.action === 'in' || body.action === 'out') ? body.action : null;
+  if (!action) {
+    return jsonResponseCors(request, { error: 'action must be "in" or "out"' }, 400);
+  }
+  const note = typeof body.note === 'string' ? body.note.slice(0, 500) : '';
+  const t = new Date().toISOString();
+  const email = (auth && auth.email) || 'unknown';
+  const entry = { t, action, email, note: note || undefined };
+  let log = [];
+  try {
+    const rawLog = await env.STATUS_KV.get(OPERATOR_SHIFT_LOG_KV, 'json');
+    if (Array.isArray(rawLog)) log = rawLog;
+  } catch (e) {
+    /* */
+  }
+  log.unshift(entry);
+  log = log.slice(0, 100);
+  try {
+    await env.STATUS_KV.put(OPERATOR_SHIFT_LOG_KV, JSON.stringify(log));
+    await env.STATUS_KV.put(
+      OPERATOR_SHIFT_PUBLIC_KV,
+      JSON.stringify({ state: action, at: t })
+    );
+  } catch (e) {
+    return jsonResponseCors(request, { error: String(e.message || e) }, 500);
+  }
+  return jsonResponseCors(
+    request,
+    { ok: true, public: { state: action, at: t }, entry },
+    200
+  );
+}
+
+/**
+ * Fallback when STATUS_KV has no `status` key. Prefer live data: POST /api/status or
+ * `status.json` in this package for bulk edits — legal/financial lines go stale quickly.
+ */
 const DEFAULT_STATUS = {
   updated: "2026-04-14T20:30:00Z",
   workers: [
@@ -544,8 +706,11 @@ const DEFAULT_STATUS = {
     { name: "genesis-gate", status: "online", url: "https://genesis-gate.trimtab-signal.workers.dev" },
     { name: "p31-bonding-relay", status: "online", url: "https://p31-bonding-relay.trimtab-signal.workers.dev" },
     { name: "p31-telemetry", status: "online", url: "https://p31-telemetry.trimtab-signal.workers.dev" },
+    // MAP D-MAP-12: card Checkout + /stripe-webhook = donate-api (custom domain). p31-stripe-webhook = trimtab legacy/alt — confirm in CF before retire.
+    { name: "donate-api", status: "online", url: "https://donate-api.phosphorus31.org/health" },
     { name: "p31-stripe-webhook", status: "online", url: "https://p31-stripe-webhook.trimtab-signal.workers.dev" },
-    { name: "api-phosphorus31-org", status: "online", url: "https://api-phosphorus31-org.trimtab-signal.workers.dev" },
+    // Same liveness as p31-ecosystem glassProbe stripe-api-health + p31-constants payment.stripeApiHealthUrl (custom domain, not workers.dev root).
+    { name: "api-phosphorus31-org", status: "online", url: "https://api.phosphorus31.org/health" },
     { name: "fawn-guard", status: "online", url: "https://fawn-guard.trimtab-signal.workers.dev" },
     { name: "p31-signaling", status: "online", url: "https://p31-signaling.trimtab-signal.workers.dev" },
     { name: "p31-vault", status: "online", url: "https://p31-vault.pages.dev" },
@@ -634,8 +799,9 @@ async function pingFleet(env) {
     { name: "genesis-gate", url: "https://genesis-gate.trimtab-signal.workers.dev" },
     { name: "p31-bonding-relay", url: "https://p31-bonding-relay.trimtab-signal.workers.dev" },
     { name: "p31-telemetry", url: "https://p31-telemetry.trimtab-signal.workers.dev" },
+    { name: "donate-api", url: "https://donate-api.phosphorus31.org/health" },
     { name: "p31-stripe-webhook", url: "https://p31-stripe-webhook.trimtab-signal.workers.dev" },
-    { name: "api-phosphorus31-org", url: "https://api-phosphorus31-org.trimtab-signal.workers.dev" },
+    { name: "api-phosphorus31-org", url: "https://api.phosphorus31.org/health" },
     { name: "fawn-guard", url: "https://fawn-guard.trimtab-signal.workers.dev" },
     { name: "p31-signaling", url: "https://p31-signaling.trimtab-signal.workers.dev" },
     { name: "p31-vault", url: "https://p31-vault.pages.dev" },
@@ -668,7 +834,7 @@ async function pingFleet(env) {
 
     const workers = results.map(r => {
       const val = r.value || r.reason;
-      // Estimate RPS for vitality glow: hubs get higher traffic
+      // Illustrative RPS for dashboard "vitality" UI only — not production metrics
       val.rps = (val.status === 'online' || val.status === 'active') ? Math.floor(Math.random() * 5) + 1 : 0;
       if (val.name.includes('hub') || val.name.includes('center') || val.name.includes('command')) {
         val.rps += 12; // Hubs have higher baseline traffic

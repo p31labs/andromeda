@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0f1115">
+    <title>Wye → Delta | P31 Labs</title>
+    <meta name="description" content="Why centralized networks fail the people who need them most — and what a K₄ mesh does differently.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/p31-style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/p31-tailwind-extend.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    ...window.P31_TAILWIND_EXTEND
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background: #0f1115; color: #d8d6d0; }
+
+        /* Topology diagrams */
+        .topology-svg { width: 100%; max-width: 220px; }
+
+        /* Animated edge pulse */
+        @keyframes edge-pulse {
+            0%, 100% { stroke-opacity: 0.3; }
+            50%       { stroke-opacity: 0.9; }
+        }
+        .edge-live { animation: edge-pulse 3s ease-in-out infinite; }
+
+        /* Failure flash */
+        @keyframes fail-flash {
+            0%, 100% { opacity: 1; }
+            30%, 70% { opacity: 0.1; }
+        }
+        .hub-failed { animation: fail-flash 2s ease-in-out infinite; }
+
+        /* Section divider */
+        .divider { border: none; border-top: 1px solid rgba(255,255,255,0.05); margin: 0; }
+
+        /* Callout block */
+        .callout {
+            background: rgba(37,137,125,0.08);
+            border-left: 3px solid #25897d;
+            border-radius: 0 0.5rem 0.5rem 0;
+            padding: 1rem 1.25rem;
+        }
+        .callout-warn {
+            background: rgba(204,98,71,0.08);
+            border-left-color: #cc6247;
+        }
+
+        /* Comparison table */
+        .compare th { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; padding: 0.5rem 1rem; background: rgba(22,25,32,0.8); }
+        .compare td { padding: 0.625rem 1rem; font-size: 0.85rem; border-top: 1px solid rgba(255,255,255,0.04); line-height: 1.5; }
+        .compare tr:hover td { background: rgba(255,255,255,0.02); }
+        .yes { color: #3ba372; }
+        .no  { color: #cc6247; }
+    </style>
+</head>
+<body class="font-sans min-h-screen">
+
+<!-- Nav -->
+<nav class="sticky top-0 z-50 border-b border-white/5 backdrop-blur-sm" style="background:rgba(15,17,21,0.92)">
+    <div class="max-w-3xl mx-auto px-6 py-4 flex items-center justify-between">
+        <a href="/" class="flex items-center gap-3 no-underline">
+            <svg width="22" height="22" viewBox="0 0 512 512">
+                <rect width="512" height="512" rx="112" fill="#25897d"/>
+                <circle cx="390" cy="120" r="48" fill="#cc6247"/>
+                <text x="256" y="340" font-family="system-ui" font-weight="900" font-size="220" fill="#d8d6d0" text-anchor="middle">P31</text>
+                <rect x="156" y="380" width="200" height="16" rx="8" fill="#cda852"/>
+            </svg>
+            <span class="font-mono text-xs tracking-widest opacity-60">P31 Labs</span>
+        </a>
+        <a href="/" class="font-mono text-xs opacity-40 hover:opacity-90 transition-opacity">← Hub</a>
+    </div>
+</nav>
+
+<main class="max-w-3xl mx-auto px-6 py-16">
+
+    <!-- Hero -->
+    <header class="mb-16">
+        <div class="font-mono text-xs tracking-widest text-teal/70 mb-4">TOPOLOGY TRANSITION</div>
+        <h1 class="text-4xl md:text-5xl font-bold mb-6 leading-tight">
+            Wye&nbsp;→&nbsp;Delta
+        </h1>
+        <p class="text-xl text-cloud/60 leading-relaxed max-w-2xl">
+            Every network has a shape. The shape determines who gets hurt when something breaks.
+            Here is why it matters — and what we built instead.
+        </p>
+    </header>
+
+    <hr class="divider mb-16">
+
+    <!-- The Wye problem -->
+    <section class="mb-16">
+        <h2 class="text-2xl font-bold mb-2">The Wye (star) topology</h2>
+        <p class="font-mono text-xs tracking-widest text-coral/60 mb-8">THE SHAPE MOST SYSTEMS STILL USE</p>
+
+        <div class="flex flex-col md:flex-row gap-10 items-start mb-10">
+            <!-- Wye diagram -->
+            <div class="flex-shrink-0 flex flex-col items-center gap-3">
+                <svg class="topology-svg" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Wye star topology diagram">
+                    <!-- Hub (center) -->
+                    <circle cx="100" cy="100" r="22" fill="rgba(204,98,71,0.2)" stroke="#cc6247" stroke-width="2" class="hub-failed"/>
+                    <text x="100" y="105" font-family="monospace" font-size="10" fill="#cc6247" text-anchor="middle">HUB</text>
+                    <!-- Spokes -->
+                    <line x1="100" y1="78"  x2="100" y2="28"  stroke="#d8d6d0" stroke-width="1.5" stroke-opacity="0.3" class="hub-failed"/>
+                    <line x1="100" y1="122" x2="100" y2="172" stroke="#d8d6d0" stroke-width="1.5" stroke-opacity="0.3" class="hub-failed"/>
+                    <line x1="78"  y1="100" x2="28"  y2="100" stroke="#d8d6d0" stroke-width="1.5" stroke-opacity="0.3" class="hub-failed"/>
+                    <line x1="122" y1="100" x2="172" y2="100" stroke="#d8d6d0" stroke-width="1.5" stroke-opacity="0.3" class="hub-failed"/>
+                    <line x1="84"  y1="84"  x2="44"  y2="44"  stroke="#d8d6d0" stroke-width="1.5" stroke-opacity="0.3" class="hub-failed"/>
+                    <!-- Nodes -->
+                    <circle cx="100" cy="22"  r="10" fill="rgba(216,214,208,0.1)" stroke="#d8d6d0" stroke-width="1.5" opacity="0.4"/>
+                    <circle cx="100" cy="178" r="10" fill="rgba(216,214,208,0.1)" stroke="#d8d6d0" stroke-width="1.5" opacity="0.4"/>
+                    <circle cx="22"  cy="100" r="10" fill="rgba(216,214,208,0.1)" stroke="#d8d6d0" stroke-width="1.5" opacity="0.4"/>
+                    <circle cx="178" cy="100" r="10" fill="rgba(216,214,208,0.1)" stroke="#d8d6d0" stroke-width="1.5" opacity="0.4"/>
+                    <circle cx="38"  cy="38"  r="10" fill="rgba(216,214,208,0.1)" stroke="#d8d6d0" stroke-width="1.5" opacity="0.4"/>
+                </svg>
+                <span class="font-mono text-xs text-coral/60 tracking-widest">HUB OFFLINE = ALL OFFLINE</span>
+            </div>
+
+            <div class="flex flex-col gap-5 flex-1">
+                <p class="text-base text-cloud/75 leading-relaxed">
+                    In a star topology, every connection routes through one central hub.
+                    The hub owns authentication, truth, and routing. It is also the single point of failure.
+                </p>
+                <p class="text-base text-cloud/75 leading-relaxed">
+                    When the hub is unavailable — outage, legal injunction, policy change, bureaucratic
+                    failure, or hostile actor — every connected node loses access at once.
+                    Nodes cannot communicate directly. The network enters a <strong class="text-coral">floating neutral</strong> state.
+                </p>
+                <div class="callout callout-warn">
+                    <p class="text-sm text-cloud/80 leading-relaxed">
+                        For marginalized populations, neurodivergent individuals, and families under legal
+                        or financial stress, this is not an inconvenience. It is a threat to safety.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <hr class="divider mb-16">
+
+    <!-- The Delta solution -->
+    <section class="mb-16">
+        <h2 class="text-2xl font-bold mb-2">The Delta (K₄ mesh) topology</h2>
+        <p class="font-mono text-xs tracking-widest text-teal/60 mb-8">WHAT P31 BUILDS INSTEAD</p>
+
+        <div class="flex flex-col md:flex-row gap-10 items-start mb-10">
+            <!-- Delta diagram -->
+            <div class="flex-shrink-0 flex flex-col items-center gap-3">
+                <svg class="topology-svg" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="K4 Delta mesh topology diagram">
+                    <!-- Four vertices -->
+                    <!-- V1 top -->      <circle cx="100" cy="30"  r="14" fill="rgba(77,184,168,0.15)" stroke="#4db8a8" stroke-width="2"/>
+                    <!-- V2 bottom-L --> <circle cx="32"  cy="160" r="14" fill="rgba(59,163,114,0.15)" stroke="#3ba372" stroke-width="2"/>
+                    <!-- V3 bottom-R --> <circle cx="168" cy="160" r="14" fill="rgba(205,168,82,0.15)"  stroke="#cda852" stroke-width="2"/>
+                    <!-- V4 center -->   <circle cx="100" cy="110" r="14" fill="rgba(204,98,71,0.15)"  stroke="#cc6247" stroke-width="2"/>
+                    <!-- All 6 edges -->
+                    <line x1="100" y1="44"  x2="100" y2="96"  stroke="#4db8a8" stroke-width="1.5" class="edge-live"/>
+                    <line x1="100" y1="44"  x2="42"  y2="150" stroke="#3ba372" stroke-width="1.5" class="edge-live" style="animation-delay:0.5s"/>
+                    <line x1="100" y1="44"  x2="158" y2="150" stroke="#cda852" stroke-width="1.5" class="edge-live" style="animation-delay:1s"/>
+                    <line x1="88"  y1="116" x2="46"  y2="150" stroke="#cc6247" stroke-width="1.5" class="edge-live" style="animation-delay:1.5s"/>
+                    <line x1="112" y1="116" x2="154" y2="150" stroke="#cc6247" stroke-width="1.5" class="edge-live" style="animation-delay:2s"/>
+                    <line x1="46"  y1="160" x2="154" y2="160" stroke="#d8d6d0" stroke-width="1.5" class="edge-live" style="animation-delay:2.5s"/>
+                    <!-- Labels -->
+                    <text x="100" y="18"  font-family="monospace" font-size="8" fill="#4db8a8" text-anchor="middle">will</text>
+                    <text x="32"  y="185" font-family="monospace" font-size="8" fill="#3ba372" text-anchor="middle">S.J.</text>
+                    <text x="168" y="185" font-family="monospace" font-size="8" fill="#cda852" text-anchor="middle">W.J.</text>
+                    <text x="118" y="116" font-family="monospace" font-size="8" fill="#cc6247" text-anchor="start">chr.</text>
+                </svg>
+                <span class="font-mono text-xs text-teal/60 tracking-widest">ONE NODE FLARES → 57.7% UP</span>
+            </div>
+
+            <div class="flex flex-col gap-5 flex-1">
+                <p class="text-base text-cloud/75 leading-relaxed">
+                    A K₄ complete graph has four vertices and six edges. Every vertex connects
+                    directly to every other — no hub required. This is <em>isostatic rigidity</em>:
+                    the minimum structure that achieves three-dimensional stability without a central brace.
+                </p>
+                <p class="text-base text-cloud/75 leading-relaxed">
+                    When one vertex or edge fails, the remaining structure routes around it.
+                    The Open Delta principle guarantees the network continues at minimum
+                    <strong class="text-teal">57.7% capacity</strong>. Communications, identity, and trust do not vanish
+                    because one node is under duress.
+                </p>
+                <div class="callout">
+                    <p class="text-sm text-cloud/80 leading-relaxed">
+                        The P31 K₄ cage maps to four specific people (will, S.J., W.J., christyn)
+                        and four functional sectors (Structure, Connection, Rhythm, Creation).
+                        Nested K₄ clusters scale the network outward without degrading local rigidity.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <hr class="divider mb-16">
+
+    <!-- Comparison table -->
+    <section class="mb-16">
+        <h2 class="text-2xl font-bold mb-8">Side by side</h2>
+        <div class="overflow-x-auto rounded-xl border border-white/5">
+            <table class="compare w-full text-left">
+                <thead>
+                    <tr>
+                        <th class="text-cloud/40">Property</th>
+                        <th class="text-coral/70">Wye (star)</th>
+                        <th class="text-teal/70">Delta (K₄ mesh)</th>
+                    </tr>
+                </thead>
+                <tbody class="text-cloud/70">
+                    <tr>
+                        <td class="font-mono text-xs tracking-wide text-cloud/40">Single point of failure</td>
+                        <td><span class="no">Yes — the hub</span></td>
+                        <td><span class="yes">No — open-delta fallback</span></td>
+                    </tr>
+                    <tr>
+                        <td class="font-mono text-xs tracking-wide text-cloud/40">Identity authority</td>
+                        <td><span class="no">Centralized provider</span></td>
+                        <td><span class="yes">Device-bound passkey, no server</span></td>
+                    </tr>
+                    <tr>
+                        <td class="font-mono text-xs tracking-wide text-cloud/40">Node-to-node comms</td>
+                        <td><span class="no">Hub must be online</span></td>
+                        <td><span class="yes">Direct edge — always available</span></td>
+                    </tr>
+                    <tr>
+                        <td class="font-mono text-xs tracking-wide text-cloud/40">Offline recovery</td>
+                        <td><span class="no">None</span></td>
+                        <td><span class="yes">NFC / QR sneakernet, LoRa mesh</span></td>
+                    </tr>
+                    <tr>
+                        <td class="font-mono text-xs tracking-wide text-cloud/40">Bot / Sybil protection</td>
+                        <td><span class="no">Visual CAPTCHA (excludes neurodivergent)</span></td>
+                        <td><span class="yes">Turnstile invisible (no puzzle)</span></td>
+                    </tr>
+                    <tr>
+                        <td class="font-mono text-xs tracking-wide text-cloud/40">Auth recovery</td>
+                        <td><span class="no">SMS OTP (SIM-swap attack surface)</span></td>
+                        <td><span class="yes">QR / NFC cryptographic fallback</span></td>
+                    </tr>
+                    <tr>
+                        <td class="font-mono text-xs tracking-wide text-cloud/40">Data under legal attack</td>
+                        <td><span class="no">Hub subpoenaed → all nodes exposed</span></td>
+                        <td><span class="yes">Edge-local, KV-ephemeral, 5-min TTL challenges</span></td>
+                    </tr>
+                    <tr>
+                        <td class="font-mono text-xs tracking-wide text-cloud/40">Scaling model</td>
+                        <td><span class="no">Bigger hub — exponential cost</span></td>
+                        <td><span class="yes">Nested K₄ clusters — local cost stays constant</span></td>
+                    </tr>
+                    <tr>
+                        <td class="font-mono text-xs tracking-wide text-cloud/40">Cognitive load on entry</td>
+                        <td><span class="no">Seed phrases, wallets, gas</span></td>
+                        <td><span class="yes">Five-phase ritual, no jargon, biometric only</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <hr class="divider mb-16">
+
+    <!-- How we onboard -->
+    <section class="mb-16">
+        <h2 class="text-2xl font-bold mb-6">How we onboard you</h2>
+        <p class="text-base text-cloud/65 leading-relaxed mb-8">
+            The transition from Wye to Delta should feel like a quiet sanctuary, not a technical
+            exam. Five phases, each with one primary action. While you move through them, a small
+            topology ribbon crossfades from star to mesh — the same story as on this page, made visible.
+        </p>
+
+        <ol class="flex flex-col gap-5">
+            <li class="flex gap-4 items-start">
+                <span class="font-mono text-xs px-2 py-1 rounded bg-void border border-white/8 text-cloud/40 flex-shrink-0 mt-1">01</span>
+                <div>
+                    <p class="font-bold text-cloud/90 mb-1">The Void</p>
+                    <p class="text-sm text-cloud/55 leading-relaxed">A black screen. Silence. A prompt: <em>"Take a breath. This is a safe space."</em> The entry point matches your nervous system, not our marketing.</p>
+                </div>
+            </li>
+            <li class="flex gap-4 items-start">
+                <span class="font-mono text-xs px-2 py-1 rounded bg-void border border-white/8 text-cloud/40 flex-shrink-0 mt-1">02</span>
+                <div>
+                    <p class="font-bold text-cloud/90 mb-1">The Anchor</p>
+                    <p class="text-sm text-cloud/55 leading-relaxed">A single ³¹P molecule pulses at 0.1 Hz — the resonant rhythm of your baroreceptor reflex. Tap in sync three times. Your heart rate variability stabilizes before we introduce anything technical.</p>
+                </div>
+            </li>
+            <li class="flex gap-4 items-start">
+                <span class="font-mono text-xs px-2 py-1 rounded bg-void border border-white/8 text-cloud/40 flex-shrink-0 mt-1">03</span>
+                <div>
+                    <p class="font-bold text-cloud/90 mb-1">The Rooms</p>
+                    <p class="text-sm text-cloud/55 leading-relaxed">Four glass spheres appear: Structure, Connection, Rhythm, Creation. Drag them into your preferred arrangement. Spatial memory replaces navigation menus.</p>
+                </div>
+            </li>
+            <li class="flex gap-4 items-start">
+                <span class="font-mono text-xs px-2 py-1 rounded bg-void border border-white/8 text-cloud/40 flex-shrink-0 mt-1">04</span>
+                <div>
+                    <p class="font-bold text-cloud/90 mb-1">The Dial</p>
+                    <p class="text-sm text-cloud/55 leading-relaxed">One slider sets how dense your interface feels. Low: larger text, quieter chrome, fewer labels. High: full telemetry. It is yours to adjust anytime.</p>
+                </div>
+            </li>
+            <li class="flex gap-4 items-start">
+                <span class="font-mono text-xs px-2 py-1 rounded bg-void border border-white/8 text-cloud/40 flex-shrink-0 mt-1">05</span>
+                <div>
+                    <p class="font-bold text-cloud/90 mb-1">The Pact</p>
+                    <p class="text-sm text-cloud/55 leading-relaxed">Three plain-language bullets. One button: <em>"Secure my lock."</em> Your device's biometric (fingerprint, face, PIN) creates a passkey — cryptographic identity that lives on your hardware, not our servers. No seed phrase. No password. No SMS.</p>
+                </div>
+            </li>
+        </ol>
+    </section>
+
+    <hr class="divider mb-16">
+
+    <!-- CTA -->
+    <section class="mb-16 text-center">
+        <p class="text-base text-cloud/55 mb-8 max-w-lg mx-auto leading-relaxed">
+            The transition takes five minutes and one tap of your fingerprint.
+            The mesh you enter is local-first, court-legible, and designed to stay usable
+            when everything else is under stress.
+        </p>
+        <div class="flex flex-col sm:flex-row flex-wrap gap-4 justify-center">
+            <a href="/planetary-onboard.html"
+               class="inline-block bg-teal hover:bg-teal/80 text-cloud font-bold py-4 px-8 rounded-xl transition-colors text-base no-underline"
+               title="Starts with your welcome package, then five phases">
+                Enter the Delta →
+            </a>
+            <a href="/connect.html"
+               class="inline-block border border-white/10 hover:border-teal/50 text-cloud/60 hover:text-cloud py-4 px-8 rounded-xl transition-colors text-base no-underline font-mono text-sm">
+                See the mesh ⬡
+            </a>
+            <a href="/p31-super-centaur-starter.html"
+               class="inline-block border border-white/10 hover:border-coral/40 text-cloud/55 hover:text-cloud py-4 px-8 rounded-xl transition-colors text-base no-underline font-mono text-sm">
+                Super-Centaur pack →
+            </a>
+        </div>
+    </section>
+
+    <hr class="divider mb-12">
+
+    <!-- Footer note -->
+    <footer class="text-center">
+        <p class="font-mono text-xs text-cloud/25 tracking-widest mb-2">P31 LABS — EIN 42-1888158</p>
+        <p class="font-mono text-xs text-cloud/20">Local rigidity, global humility.</p>
+    </footer>
+
+</main>
+</body>
+</html>

@@ -8,20 +8,14 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/p31-style.css">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/p31-tailwind-extend.js"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: {
-                        sans: ['"Space Grotesk"', 'sans-serif'],
-                        pixel: ['"Press Start 2P"', 'cursive'],
-                    },
-                    colors: {
-                        void: '#0a0a1a', card: '#1a1a2e',
-                        npink: '#ff00ff', ngreen: '#00ff41',
-                        nblue: '#00ffff', ngold: '#ffd700',
-                    }
+                    ...window.P31_TAILWIND_EXTEND
                 }
             }
         }

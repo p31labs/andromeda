@@ -1,0 +1,1621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0f1115">
+    <title>Planetary onboard — pick your welcome | P31 Labs</title>
+    <meta name="description" content="Choose your P31 welcome package (kid, adult, parent, neuro-inclusive, builder), then five-phase Wye → Delta onboarding.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/p31-style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/p31-tailwind-extend.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    ...window.P31_TAILWIND_EXTEND
+                }
+            }
+        }
+    </script>
+    <style>
+        /* ================================================
+           DIAL-DRIVEN CSS CUSTOM PROPERTIES
+           JS writes these on slider change via applyDial()
+        ================================================ */
+        :root {
+            --dial-font-step:        1rem;
+            --dial-chrome-opacity:   1;
+            --dial-particle-opacity: 1;
+            --dial-label-opacity:    1;
+            --dial-border-radius:    1rem;
+
+            --anim-pulse-duration:   10s;   /* 0.1 Hz = 10 s period */
+            --anim-fade-duration:    400ms;
+            --anim-sphere-settle:    600ms;
+
+            /* 0 = Wye (star) → 1 = Delta (closed mesh); driven by onboarding phase */
+            --wye-delta-t: 0;
+            --topology-fade-duration: 850ms;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            :root {
+                --anim-pulse-duration:   0s;
+                --anim-fade-duration:    0s;
+                --anim-sphere-settle:    0s;
+                --topology-fade-duration: 120ms;
+            }
+        }
+
+        /* ── Wye → Delta shift (fixed ribbon) ── */
+        #topology-shift {
+            position: fixed;
+            top: 3.35rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 150;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.35rem;
+            width: min(18rem, 92vw);
+            pointer-events: none;
+        }
+        #topology-shift a { pointer-events: auto; }
+        .topology-stack {
+            position: relative;
+            width: 4.25rem;
+            height: 4.25rem;
+        }
+        .topology-stack svg {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            transition: opacity var(--topology-fade-duration) ease-out;
+        }
+        .topology-wye   { opacity: calc(1 - var(--wye-delta-t)); }
+        .topology-delta { opacity: var(--wye-delta-t); }
+        .topology-legend {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.35rem;
+            width: 100%;
+            font-family: "JetBrains Mono", monospace;
+            font-size: 0.58rem;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: rgba(216,214,208,0.38);
+        }
+        .topology-legend .on-wye   { color: rgba(204,98,71,0.75); transition: color var(--topology-fade-duration) ease; }
+        .topology-legend .on-delta { color: rgba(59,163,114,0.75); transition: color var(--topology-fade-duration) ease; }
+        .topology-bar {
+            flex: 1;
+            max-width: 5rem;
+            height: 3px;
+            border-radius: 2px;
+            background: rgba(255,255,255,0.08);
+            overflow: hidden;
+        }
+        .topology-bar i {
+            display: block;
+            height: 100%;
+            width: 0%;
+            border-radius: 2px;
+            background: linear-gradient(90deg, #cc6247, #25897d, #3ba372);
+            transition: width var(--topology-fade-duration) ease-out;
+        }
+        #topology-caption-text {
+            font-size: 0.62rem;
+            line-height: 1.35;
+            color: rgba(216,214,208,0.42);
+            text-align: center;
+            max-width: 16rem;
+            min-height: 2.5em;
+            transition: color var(--topology-fade-duration) ease;
+        }
+        #topology-story-link {
+            font-family: "JetBrains Mono", monospace;
+            font-size: 0.58rem;
+            color: rgba(37,137,125,0.55);
+            text-decoration: none;
+            letter-spacing: 0.06em;
+            pointer-events: auto;
+        }
+        #topology-story-link:hover { color: rgba(77,184,168,0.95); }
+
+        /* ================================================
+           BASE
+        ================================================ */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: #0f1115;
+            color: #d8d6d0;
+            font-family: "Atkinson Hyperlegible", sans-serif;
+            overflow: hidden;
+            height: 100dvh;
+        }
+
+        /* ================================================
+           PHASE TRANSITIONS
+        ================================================ */
+        .phase {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity var(--anim-fade-duration, 400ms) ease-out,
+                        transform var(--anim-fade-duration, 400ms) ease-out;
+            transform: translateY(6px);
+        }
+
+        .phase.active {
+            opacity: 1;
+            pointer-events: all;
+            transform: translateY(0);
+        }
+
+        /* ================================================
+           CHROME: progress dots, back btn, hub link
+        ================================================ */
+        #progress {
+            position: fixed;
+            bottom: 1.75rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            z-index: 100;
+            opacity: var(--dial-chrome-opacity);
+            transition: opacity 0.4s ease;
+        }
+        .dot {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: rgba(216,214,208,0.18);
+            transition: background 0.35s ease;
+        }
+        .dot.done    { background: rgba(37,137,125,0.75); }
+        .dot.current { background: rgba(204,98,71,0.9);   }
+
+        #back-btn {
+            position: fixed;
+            top: 1.25rem; left: 1.5rem;
+            font-family: "JetBrains Mono", monospace;
+            font-size: 0.7rem;
+            color: rgba(216,214,208,0.35);
+            background: none; border: none;
+            cursor: pointer;
+            padding: 0.5rem 0.75rem;
+            z-index: 200;
+            transition: color 0.2s ease;
+        }
+        #back-btn:hover  { color: rgba(216,214,208,0.8); }
+        #back-btn:focus-visible { outline: 2px solid #25897d; border-radius: 4px; }
+
+        #top-exit-links {
+            position: fixed;
+            top: 1.25rem; right: 1.5rem;
+            z-index: 200;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 0.35rem;
+        }
+        #top-exit-links a {
+            font-family: "JetBrains Mono", monospace;
+            font-size: 0.7rem;
+            color: rgba(216,214,208,0.25);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+        #top-exit-links a:hover { color: rgba(216,214,208,0.65); }
+        #pack-link { font-size: 0.62rem; color: rgba(216,214,208,0.2); }
+        #pack-link:hover { color: rgba(77,184,168,0.8); }
+
+        /* ================================================
+           PHASE 2 — ³¹P NUCLEUS
+        ================================================ */
+        @keyframes nucleus-pulse {
+            0%, 100% { transform: scale(1);    opacity: 0.75; }
+            50%       { transform: scale(1.08); opacity: 1;    }
+        }
+        @keyframes nucleus-pulse-safe {
+            0%, 100% { opacity: 0.75; }
+            50%       { opacity: 1;    }
+        }
+
+        #p2-nucleus {
+            width: 6rem; height: 6rem;
+            border-radius: 50%;
+            background: rgba(204,98,71,0.12);
+            border: 2px solid rgba(204,98,71,0.55);
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            cursor: pointer;
+            user-select: none;
+            touch-action: manipulation;
+            position: relative;
+            transition: border-color 0.2s ease, background 0.2s ease;
+        }
+        #p2-nucleus::after {
+            content: '';
+            position: absolute;
+            inset: -14px;
+            border-radius: 50%;
+            border: 1px solid rgba(204,98,71,0.12);
+            pointer-events: none;
+            animation: inherit;
+            animation-delay: -1s;
+        }
+        #p2-nucleus:focus-visible { outline: 2px solid #25897d; outline-offset: 6px; }
+
+        @media (prefers-reduced-motion: no-preference) {
+            #p2-nucleus { animation: nucleus-pulse var(--anim-pulse-duration) ease-in-out infinite; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            #p2-nucleus { animation: nucleus-pulse-safe 10s ease-in-out infinite; }
+        }
+
+        #p2-nucleus.tap-good { border-color: rgba(59,163,114,0.8);  background: rgba(59,163,114,0.12); }
+        #p2-nucleus.tap-late { border-color: rgba(205,168,82,0.8);  background: rgba(205,168,82,0.12); }
+
+        /* ================================================
+           PHASE 3 — SPHERES & PARTICLES
+        ================================================ */
+        #p3-arena {
+            position: fixed;
+            inset: 0;
+            touch-action: none;
+        }
+
+        .sphere {
+            position: absolute;
+            width: 88px; height: 88px;
+            border-radius: 50%;
+            background: rgba(22,25,32,0.65);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(255,255,255,0.08);
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            cursor: grab;
+            user-select: none;
+            touch-action: none;
+        }
+        .sphere:focus-visible { outline: 2px solid #25897d; }
+        .sphere.dragging { cursor: grabbing; z-index: 10; }
+
+        .sphere-label {
+            font-size: 0.6rem;
+            font-family: "JetBrains Mono", monospace;
+            letter-spacing: 0.08em;
+            margin-top: 4px;
+            opacity: var(--dial-label-opacity);
+            transition: opacity 0.35s ease;
+            text-transform: uppercase;
+        }
+
+        #sphere-a { border-color: rgba(37,137,125,0.35); }
+        #sphere-b { border-color: rgba(204,98,71,0.35);  }
+        #sphere-c { border-color: rgba(139,124,201,0.35);}
+        #sphere-d { border-color: rgba(59,163,114,0.35); }
+
+        /* Particles */
+        .particle-field {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            opacity: var(--dial-particle-opacity);
+            transition: opacity 0.5s ease;
+        }
+        @keyframes float-up {
+            from { transform: translateY(105vh) rotate(0deg); opacity: 0; }
+            10%  { opacity: 1; }
+            90%  { opacity: 0.6; }
+            to   { transform: translateY(-5vh) rotate(180deg); opacity: 0; }
+        }
+        .particle {
+            position: absolute;
+            width: 3px; height: 3px;
+            border-radius: 50%;
+        }
+        @media (prefers-reduced-motion: no-preference) {
+            .particle { animation: float-up linear infinite; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .particle { animation: none; opacity: 0.25; }
+        }
+
+        /* ================================================
+           PHASE 4 — COGNITIVE DIAL (semicircle, not a slider)
+        ================================================ */
+        #dial-preview {
+            background: rgba(22,25,32,0.6);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: var(--dial-border-radius);
+            padding: 1.25rem 2rem;
+            width: 100%;
+            transition: border-radius 0.4s ease;
+        }
+
+        #cognitive-dial {
+            position: relative;
+            width: 100%;
+            max-width: 240px;
+            margin: 0 auto;
+        }
+        #cognitive-dial-surface {
+            position: relative;
+            touch-action: none;
+            cursor: pointer;
+            border-radius: 1rem;
+            outline: none;
+        }
+        #cognitive-dial-surface:focus-visible {
+            box-shadow: 0 0 0 2px #0f1115, 0 0 0 5px rgba(37,137,125,0.7);
+        }
+        .dial-svg {
+            display: block;
+            width: 100%;
+            height: auto;
+            max-width: 240px;
+            margin: 0 auto;
+        }
+        .dial-track-ghost {
+            fill: none;
+            stroke: rgba(255,255,255,0.08);
+            stroke-width: 3;
+        }
+        .dial-track {
+            fill: none;
+            stroke: rgba(37,137,125,0.45);
+            stroke-width: 4;
+            stroke-linecap: round;
+        }
+        .dial-hub {
+            fill: #1a1d24;
+            stroke: rgba(37,137,125,0.5);
+            stroke-width: 1.5;
+        }
+        #dial-needle { transition: none; }
+        .elder-mode #cognitive-dial { max-width: 280px; }
+        .elder-mode .dial-svg { max-width: 280px; }
+        .dial-legend {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 200px;
+            margin: 0.35rem auto 0;
+            padding: 0 0.5rem;
+        }
+        .dial-legend span {
+            font-family: "JetBrains Mono", monospace;
+            font-size: 0.6rem;
+            color: rgba(216,214,208,0.45);
+        }
+        #dial-value-readout {
+            font-family: "JetBrains Mono", monospace;
+            font-size: 0.65rem;
+            color: rgba(37,137,125,0.9);
+            text-align: center;
+            margin-top: 0.25rem;
+        }
+        input#dial[type=hidden] {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            border: 0;
+            overflow: hidden;
+            clip: rect(0,0,0,0);
+            white-space: nowrap;
+        }
+
+        /* ================================================
+           PHASE 5 — PACT CARD
+        ================================================ */
+        #pact-card {
+            background: rgba(22,25,32,0.92);
+            border: 1px solid rgba(37,137,125,0.18);
+            border-radius: 1.5rem;
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            max-width: 480px;
+            width: calc(100% - 3rem);
+            padding: 2.5rem;
+        }
+
+        #passkey-btn {
+            background: #25897d;
+            color: #d8d6d0;
+            border: none;
+            border-radius: 0.75rem;
+            padding: 0.875rem 2rem;
+            font-family: "Atkinson Hyperlegible", sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.2s ease, transform 0.1s ease;
+        }
+        #passkey-btn:hover:not(:disabled) { background: #1e7268; }
+        #passkey-btn:active:not(:disabled) { transform: scale(0.98); }
+        #passkey-btn:focus-visible { outline: 2px solid #4db8a8; outline-offset: 3px; }
+        #passkey-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+        /* ================================================
+           SUCCESS OVERLAY
+        ================================================ */
+        #success-overlay {
+            position: fixed;
+            inset: 0;
+            background: #0f1115;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 800ms ease-in;
+            z-index: 500;
+        }
+        #success-overlay.active { opacity: 1; pointer-events: all; }
+
+        /* ================================================
+           ARCHETYPE OVERRIDES
+        ================================================ */
+
+        /* Elder: larger touch targets */
+        .elder-mode .sphere   { width: 110px; height: 110px; }
+        .elder-mode #p2-nucleus { width: 7.5rem; height: 7.5rem; font-size: 1rem; }
+        .elder-mode #passkey-btn { padding: 1.125rem 2rem; font-size: 1.125rem; }
+        .elder-mode .phase p, .elder-mode .phase li { font-size: 1.05rem; }
+
+        /* Child: skip pact (passkey enrollment) */
+        .child-mode #pact-card { display: none; }
+        .child-mode #p5-skip-wrapper { display: block !important; }
+
+        /* Welcome package picker (phase 0) */
+        #progress.pre-welcome { opacity: 0; pointer-events: none; }
+        #phase-welcome .welcome-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
+            gap: 0.75rem;
+            max-width: 36rem;
+            padding: 0 1.25rem;
+        }
+        .welcome-card {
+            text-align: left;
+            border-radius: 1rem;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(22,25,32,0.85);
+            padding: 1rem 1rem 0.9rem;
+            cursor: pointer;
+            transition: border-color 0.2s, background 0.2s, transform 0.12s;
+            color: inherit;
+            font: inherit;
+            width: 100%;
+        }
+        .welcome-card:hover, .welcome-card:focus-visible {
+            border-color: rgba(37,137,125,0.55);
+            background: rgba(22,25,32,0.95);
+            outline: none;
+        }
+        .welcome-card:active { transform: scale(0.98); }
+        .welcome-card .wc-label {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: rgba(216,214,208,0.92);
+            margin-bottom: 0.35rem;
+        }
+        .welcome-card .wc-sub {
+            font-size: 0.68rem;
+            line-height: 1.35;
+            color: rgba(216,214,208,0.48);
+        }
+    </style>
+</head>
+<body>
+
+<!-- Skip navigation -->
+<a href="#phase-welcome"
+   style="position:fixed;top:-3rem;left:1rem;z-index:999;background:#25897d;color:#0f1115;padding:0.5rem 1rem;border-radius:4px;font-family:monospace;font-size:0.8rem;text-decoration:none;transition:top 0.2s"
+   onfocus="this.style.top='1rem'" onblur="this.style.top='-3rem'">
+    Skip to welcome
+</a>
+
+<!-- Fixed chrome -->
+<div id="top-exit-links">
+    <a id="hub-link" href="/" aria-label="Return to P31 hub">P31 Hub →</a>
+    <a id="pack-link" href="/centaur" aria-label="Super-Centaur operator starter pack">Super-Centaur pack →</a>
+</div>
+
+<div id="topology-shift" aria-label="Topology transition progress">
+    <div class="topology-stack" aria-hidden="true">
+        <svg class="topology-wye" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="100" cy="100" r="18" fill="rgba(204,98,71,0.15)" stroke="#cc6247" stroke-width="2"/>
+            <line x1="100" y1="82" x2="100" y2="38" stroke="rgba(216,214,208,0.35)" stroke-width="1.5"/>
+            <line x1="100" y1="118" x2="100" y2="162" stroke="rgba(216,214,208,0.35)" stroke-width="1.5"/>
+            <line x1="82" y1="100" x2="38" y2="100" stroke="rgba(216,214,208,0.35)" stroke-width="1.5"/>
+            <line x1="118" y1="100" x2="162" y2="100" stroke="rgba(216,214,208,0.35)" stroke-width="1.5"/>
+            <circle cx="100" cy="32" r="8" fill="rgba(216,214,208,0.08)" stroke="rgba(216,214,208,0.35)" stroke-width="1.2"/>
+            <circle cx="100" cy="168" r="8" fill="rgba(216,214,208,0.08)" stroke="rgba(216,214,208,0.35)" stroke-width="1.2"/>
+            <circle cx="32" cy="100" r="8" fill="rgba(216,214,208,0.08)" stroke="rgba(216,214,208,0.35)" stroke-width="1.2"/>
+            <circle cx="168" cy="100" r="8" fill="rgba(216,214,208,0.08)" stroke="rgba(216,214,208,0.35)" stroke-width="1.2"/>
+        </svg>
+        <svg class="topology-delta" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <line x1="100" y1="44" x2="100" y2="96" stroke="#4db8a8" stroke-width="1.5" stroke-opacity="0.85"/>
+            <line x1="100" y1="44" x2="42" y2="150" stroke="#3ba372" stroke-width="1.5" stroke-opacity="0.85"/>
+            <line x1="100" y1="44" x2="158" y2="150" stroke="#cda852" stroke-width="1.5" stroke-opacity="0.85"/>
+            <line x1="88" y1="116" x2="46" y2="150" stroke="#cc6247" stroke-width="1.5" stroke-opacity="0.85"/>
+            <line x1="112" y1="116" x2="154" y2="150" stroke="#cc6247" stroke-width="1.5" stroke-opacity="0.85"/>
+            <line x1="46" y1="160" x2="154" y2="160" stroke="rgba(216,214,208,0.45)" stroke-width="1.5"/>
+            <circle cx="100" cy="30" r="12" fill="rgba(77,184,168,0.2)" stroke="#4db8a8" stroke-width="2"/>
+            <circle cx="32" cy="160" r="12" fill="rgba(59,163,114,0.2)" stroke="#3ba372" stroke-width="2"/>
+            <circle cx="168" cy="160" r="12" fill="rgba(205,168,82,0.2)" stroke="#cda852" stroke-width="2"/>
+            <circle cx="100" cy="110" r="12" fill="rgba(204,98,71,0.2)" stroke="#cc6247" stroke-width="2"/>
+        </svg>
+    </div>
+    <div class="topology-legend" aria-hidden="true">
+        <span class="on-wye">Wye</span>
+        <div class="topology-bar"><i id="topology-bar-fill" style="width:0%"></i></div>
+        <span class="on-delta">Delta</span>
+    </div>
+    <p id="topology-caption-text" aria-live="polite"></p>
+    <a id="topology-story-link" href="/delta.html">Why this shape →</a>
+</div>
+
+<button id="back-btn" style="display:none" onclick="goBack()" aria-label="Go back to previous step">
+    ← Back
+</button>
+
+<nav id="progress" class="pre-welcome" aria-label="Onboarding progress">
+    <div class="dot current" id="dot-1" title="Step 1"></div>
+    <div class="dot"         id="dot-2" title="Step 2"></div>
+    <div class="dot"         id="dot-3" title="Step 3"></div>
+    <div class="dot"         id="dot-4" title="Step 4"></div>
+    <div class="dot"         id="dot-5" title="Step 5"></div>
+</nav>
+
+<!-- =====================================================
+     PHASE 0 — WELCOME PACKAGE (p31.welcomePackages/1.0.0)
+===================================================== -->
+<section id="phase-welcome" class="phase active" role="main" aria-label="Choose your P31 welcome package"
+         tabindex="0">
+    <div style="text-align:center; padding:0 1rem 1.25rem; max-width:40rem">
+        <p style="font-family:'JetBrains Mono',monospace; font-size:0.62rem; letter-spacing:0.18em; color:rgba(37,137,125,0.75); margin-bottom:0.75rem">
+            P31 · WELCOME
+        </p>
+        <h1 style="font-size:1.15rem; font-weight:700; color:rgba(216,214,208,0.92); margin-bottom:0.5rem; letter-spacing:0.02em">
+            Pick your path
+        </h1>
+        <p id="welcome-loading" style="font-size:0.75rem; color:rgba(216,214,208,0.45); margin-bottom:1rem">
+            Loading packages…
+        </p>
+    </div>
+    <div id="welcome-grid" class="welcome-grid" role="list" aria-label="Welcome packages" style="display:none"></div>
+</section>
+
+<!-- =====================================================
+     PHASE 1 — THE VOID
+===================================================== -->
+<section id="phase-1" class="phase" role="main" aria-label="Step 1: The Void"
+         tabindex="0">
+
+    <div style="text-align:center; padding: 0 2rem; display:flex; flex-direction:column; gap:1.5rem; align-items:center">
+        <p id="p1-line1"
+           style="font-size:0.875rem; letter-spacing:0.12em; color:rgba(216,214,208,0); transition:opacity 700ms ease-out"
+           aria-live="polite">
+            Take a breath. This is a safe space.
+        </p>
+        <p id="p1-line2"
+           style="font-size:0.75rem; letter-spacing:0.1em; color:rgba(216,214,208,0); transition:opacity 700ms ease-out">
+            Tap anywhere when you're ready.
+        </p>
+    </div>
+</section>
+
+<!-- =====================================================
+     PHASE 2 — THE ANCHOR
+===================================================== -->
+<section id="phase-2" class="phase" aria-label="Step 2: The Anchor">
+
+    <p id="p2-prompt" style="font-size:0.8rem; letter-spacing:0.12em; color:rgba(216,214,208,0.65); margin-bottom:3.5rem; text-align:center">
+        Feel the pulse. Tap in sync.
+    </p>
+
+    <div id="p2-nucleus"
+         role="button" tabindex="0"
+         aria-label="Tap the nucleus in sync with the pulse">
+        <span style="font-family:'JetBrains Mono',monospace; color:#cc6247; font-size:0.85rem; font-weight:700">³¹P</span>
+    </div>
+
+    <p id="p2-counter"
+       style="margin-top:2.5rem; font-family:'JetBrains Mono',monospace; font-size:0.7rem; color:rgba(216,214,208,0.45); letter-spacing:0.1em"
+       aria-live="polite" aria-atomic="true">
+        3 taps remaining
+    </p>
+
+    <p id="p2-feedback"
+       style="margin-top:0.5rem; font-family:'JetBrains Mono',monospace; font-size:0.7rem; min-height:1em; color:transparent; transition:color 0.25s ease"
+       aria-live="polite">
+        &nbsp;
+    </p>
+
+    <button onclick="showPhase(3)"
+            style="position:absolute; bottom:5rem; right:1.75rem; background:none; border:none; font-family:'JetBrains Mono',monospace; font-size:0.65rem; color:rgba(216,214,208,0.3); cursor:pointer; transition:color 0.2s"
+            onmouseover="this.style.color='rgba(216,214,208,0.7)'" onmouseout="this.style.color='rgba(216,214,208,0.3)'"
+            aria-label="Skip tapping exercise and continue">
+        Skip →
+    </button>
+</section>
+
+<!-- =====================================================
+     PHASE 3 — THE ROOMS
+===================================================== -->
+<section id="phase-3" class="phase" aria-label="Step 3: The Rooms">
+
+    <!-- Floating particles (Dial-controlled opacity) -->
+    <div class="particle-field" id="p3-particles" aria-hidden="true"></div>
+
+    <!-- Draggable spheres -->
+    <div id="p3-arena" aria-label="Arrange your four spaces — drag to position">
+
+        <div id="sphere-a" class="sphere" role="button" tabindex="0"
+             aria-label="Structure — drag to position" aria-grabbed="false">
+            <span style="font-size:1.35rem; color:#4db8a8" aria-hidden="true">⬡</span>
+            <span class="sphere-label" style="color:#4db8a8">Structure</span>
+        </div>
+
+        <div id="sphere-b" class="sphere" role="button" tabindex="0"
+             aria-label="Connection — drag to position" aria-grabbed="false">
+            <span style="font-size:1.35rem; color:#cc6247" aria-hidden="true">◈</span>
+            <span class="sphere-label" style="color:#cc6247">Connection</span>
+        </div>
+
+        <div id="sphere-c" class="sphere" role="button" tabindex="0"
+             aria-label="Rhythm — drag to position" aria-grabbed="false">
+            <span style="font-size:1.35rem; color:#8b7cc9" aria-hidden="true">◉</span>
+            <span class="sphere-label" style="color:#8b7cc9">Rhythm</span>
+        </div>
+
+        <div id="sphere-d" class="sphere" role="button" tabindex="0"
+             aria-label="Creation — drag to position" aria-grabbed="false">
+            <span style="font-size:1.35rem; color:#3ba372" aria-hidden="true">✦</span>
+            <span class="sphere-label" style="color:#3ba372">Creation</span>
+        </div>
+
+    </div>
+
+    <!-- Top instruction -->
+    <div style="position:fixed; top:2.25rem; left:50%; transform:translateX(-50%); pointer-events:none; text-align:center">
+        <p id="p3-intro" style="font-size:0.8rem; letter-spacing:0.1em; color:rgba(216,214,208,0.55)">
+            Arrange your space.
+        </p>
+    </div>
+
+    <!-- Nudge (appears after 5s if no move) -->
+    <p id="p3-nudge"
+       style="position:fixed; bottom:11rem; left:50%; transform:translateX(-50%); font-size:0.7rem; color:rgba(216,214,208,0.4); opacity:0; transition:opacity 0.5s ease; white-space:nowrap; pointer-events:none"
+       aria-live="polite">
+        Try moving one ↑
+    </p>
+
+    <!-- Continue / skip -->
+    <div style="position:fixed; bottom:4.5rem; left:50%; transform:translateX(-50%); display:flex; flex-direction:column; align-items:center; gap:0.75rem">
+        <button id="p3-continue"
+                onclick="showPhase(4)"
+                style="opacity:0; pointer-events:none; transition:opacity 0.4s ease; background:#25897d; color:#d8d6d0; border:none; border-radius:0.75rem; padding:0.75rem 2rem; font-family:'Atkinson Hyperlegible',sans-serif; font-size:0.875rem; font-weight:700; cursor:pointer"
+                aria-label="Continue to next step">
+            Looks good →
+        </button>
+        <button onclick="showPhase(4)"
+                style="background:none; border:none; font-family:'JetBrains Mono',monospace; font-size:0.65rem; color:rgba(216,214,208,0.3); cursor:pointer; transition:color 0.2s"
+                onmouseover="this.style.color='rgba(216,214,208,0.65)'" onmouseout="this.style.color='rgba(216,214,208,0.3)'"
+                aria-label="Skip arrangement">
+            Skip →
+        </button>
+    </div>
+</section>
+
+<!-- =====================================================
+     PHASE 4 — THE DIAL
+===================================================== -->
+<section id="phase-4" class="phase" aria-label="Step 4: Your Cognitive Load Dial">
+
+    <div style="display:flex; flex-direction:column; align-items:center; gap:2rem; padding:0 1.5rem; max-width:420px; width:100%">
+
+        <p style="font-size:0.85rem; letter-spacing:0.06em; color:rgba(216,214,208,0.65); text-align:center; line-height:1.6">
+            This dial is yours. Turn it to match how you feel right now.
+        </p>
+
+        <!-- Live preview (three things change with the dial) -->
+        <div id="dial-preview">
+            <p style="font-family:'JetBrains Mono',monospace; font-size:0.6rem; letter-spacing:0.12em; color:rgba(216,214,208,var(--dial-label-opacity)); margin-bottom:0.5rem; transition:opacity 0.35s ease">
+                PREVIEW
+            </p>
+            <p style="font-size:var(--dial-font-step); color:rgba(216,214,208,0.88); transition:font-size 0.35s ease; line-height:1.5">
+                This is how your interface will look.
+            </p>
+            <!-- Secondary labels (opacity driven by dial) -->
+            <div style="margin-top:0.875rem; display:flex; gap:0.4rem; flex-wrap:wrap; opacity:var(--dial-label-opacity); transition:opacity 0.35s ease" aria-hidden="true">
+                <span style="font-size:0.6rem; font-family:'JetBrains Mono',monospace; color:#4db8a8; border:1px solid rgba(77,184,168,0.4); padding:2px 8px; border-radius:4px">structure</span>
+                <span style="font-size:0.6rem; font-family:'JetBrains Mono',monospace; color:#cc6247; border:1px solid rgba(204,98,71,0.4); padding:2px 8px; border-radius:4px">connection</span>
+                <span style="font-size:0.6rem; font-family:'JetBrains Mono',monospace; color:#8b7cc9; border:1px solid rgba(139,124,201,0.4); padding:2px 8px; border-radius:4px">rhythm</span>
+            </div>
+            <!-- Decorative particles (appear at high dial) -->
+            <div style="margin-top:0.875rem; display:flex; gap:4px; justify-content:center; opacity:var(--dial-particle-opacity); transition:opacity 0.35s ease" aria-hidden="true">
+                <span style="width:4px;height:4px;border-radius:50%;background:#25897d;display:inline-block"></span>
+                <span style="width:4px;height:4px;border-radius:50%;background:#cc6247;display:inline-block"></span>
+                <span style="width:4px;height:4px;border-radius:50%;background:#8b7cc9;display:inline-block"></span>
+                <span style="width:4px;height:4px;border-radius:50%;background:#3ba372;display:inline-block"></span>
+                <span style="width:4px;height:4px;border-radius:50%;background:#cda852;display:inline-block"></span>
+            </div>
+        </div>
+
+        <div style="display:flex; flex-direction:column; align-items:center; gap:0.4rem; width:100%">
+            <p id="dial-label-text" class="sr-only">Cognitive load preference: 0 is calm, 10 is full detail</p>
+            <div id="cognitive-dial" class="cognitive-dial">
+                <input type="hidden" id="dial" name="cognitive_dial" value="5" autocomplete="off">
+                <div id="cognitive-dial-surface" tabindex="0" role="slider"
+                     aria-label="Cognitive load dial, 0 calm through 10 full detail"
+                     aria-valuemin="0" aria-valuemax="10" aria-valuenow="5"
+                     aria-orientation="horizontal"
+                     aria-describedby="dial-hint"
+                     aria-labelledby="dial-label-text">
+                    <svg class="dial-svg" viewBox="0 0 220 128" role="presentation" focusable="false" aria-hidden="true">
+                        <!-- Center (110, 70), r=50 — lower semicircle (9 → 3 o’clock through 6) -->
+                        <path class="dial-track-ghost" d="M 60 70 A 50 50 0 0 1 160 70" />
+                        <path class="dial-track" d="M 60 70 A 50 50 0 0 1 160 70" />
+                        <line id="dial-needle" x1="110" y1="70" x2="60" y2="70" stroke="#4db8a8" stroke-width="2.5" stroke-linecap="round" />
+                        <circle class="dial-hub" cx="110" cy="70" r="5" />
+                    </svg>
+                </div>
+                <div class="dial-legend" aria-hidden="true">
+                    <span>Calm</span>
+                    <span>Full detail</span>
+                </div>
+                <p id="dial-value-readout" aria-hidden="true">5</p>
+            </div>
+            <p id="dial-hint" style="font-family:'JetBrains Mono',monospace; font-size:0.6rem; color:rgba(216,214,208,0.3); margin-top:0.15rem; text-align:center; max-width:18rem">
+                Drag along the arc. Keyboard: ← / →. You can change this later in settings.
+            </p>
+        </div>
+
+        <!-- Save + continue -->
+        <button onclick="saveDial()"
+                style="background:#25897d; color:#d8d6d0; border:none; border-radius:0.75rem; padding:0.875rem 2rem; font-family:'Atkinson Hyperlegible',sans-serif; font-size:1rem; font-weight:700; cursor:pointer; width:100%; transition:background 0.2s ease, transform 0.1s ease"
+                onmouseover="this.style.background='#1e7268'" onmouseout="this.style.background='#25897d'"
+                onmousedown="this.style.transform='scale(0.98)'" onmouseup="this.style.transform='scale(1)'"
+                aria-label="Save dial setting and continue">
+            Set my level →
+        </button>
+    </div>
+</section>
+
+<!-- =====================================================
+     PHASE 5 — THE PACT
+===================================================== -->
+<section id="phase-5" class="phase" aria-label="Step 5: The Pact">
+
+    <div id="pact-card">
+
+        <h1 id="pact-title"
+            style="font-size:1.2rem; font-weight:700; color:#cc6247; margin-bottom:1.75rem; letter-spacing:0.02em; line-height:1.3">
+            One last step — secure the lock.
+        </h1>
+
+        <ul style="list-style:none; display:flex; flex-direction:column; gap:1rem; margin-bottom:2rem">
+            <li style="display:flex; gap:0.75rem; align-items:flex-start">
+                <span style="color:#3ba372; font-size:0.9rem; flex-shrink:0; margin-top:2px" aria-hidden="true">✓</span>
+                <span style="font-size:0.9rem; color:rgba(216,214,208,0.85); line-height:1.55">
+                    Your identity lives on your device, not our servers.
+                </span>
+            </li>
+            <li style="display:flex; gap:0.75rem; align-items:flex-start">
+                <span style="color:#3ba372; font-size:0.9rem; flex-shrink:0; margin-top:2px" aria-hidden="true">✓</span>
+                <span style="font-size:0.9rem; color:rgba(216,214,208,0.85); line-height:1.55">
+                    Unlocking uses your fingerprint, face, or PIN — nothing you have to remember.
+                </span>
+            </li>
+            <li style="display:flex; gap:0.75rem; align-items:flex-start">
+                <span style="color:#3ba372; font-size:0.9rem; flex-shrink:0; margin-top:2px" aria-hidden="true">✓</span>
+                <span style="font-size:0.9rem; color:rgba(216,214,208,0.85); line-height:1.55">
+                    You can always update this in settings.
+                </span>
+            </li>
+        </ul>
+
+        <!-- Status / error area -->
+        <p id="pact-status"
+           style="font-family:'JetBrains Mono',monospace; font-size:0.75rem; color:rgba(216,214,208,0.45); min-height:1.1em; margin-bottom:1rem; text-align:center; line-height:1.5"
+           aria-live="polite" aria-atomic="true">
+            &nbsp;
+        </p>
+
+        <button id="passkey-btn" onclick="enrollPasskey()"
+                aria-label="Secure your account using your device fingerprint or PIN">
+            Secure my lock →
+        </button>
+
+        <!-- Child mode: auto-show skip -->
+        <div id="p5-skip-wrapper" style="text-align:center; margin-top:1rem; display:none">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:0.7rem; color:rgba(216,214,208,0.4)">
+                Setting this up for a child? It's already done.
+            </span>
+        </div>
+
+        <div style="text-align:center; margin-top:0.875rem">
+            <button onclick="skipPasskey()"
+                    style="background:none; border:none; font-family:'JetBrains Mono',monospace; font-size:0.65rem; color:rgba(216,214,208,0.3); cursor:pointer; text-decoration:underline; transition:color 0.2s"
+                    onmouseover="this.style.color='rgba(216,214,208,0.65)'" onmouseout="this.style.color='rgba(216,214,208,0.3)'"
+                    aria-label="Skip biometric setup and continue without it">
+                I'll do this later
+            </button>
+        </div>
+    </div>
+</section>
+
+<!-- =====================================================
+     SUCCESS OVERLAY
+===================================================== -->
+<div id="success-overlay" role="status" aria-live="assertive">
+    <p style="font-size:1.4rem; font-weight:700; color:#3ba372; letter-spacing:0.05em; text-align:center; padding:0 2rem">
+        Wye → Delta complete. Opening your workspace…
+    </p>
+    <p id="redirect-msg"
+       style="font-family:'JetBrains Mono',monospace; font-size:0.7rem; color:rgba(216,214,208,0.45); text-align:center; margin-top:0.75rem">
+        Closed mesh loop · private edge · EDE assistant.
+    </p>
+</div>
+
+<script src="/lib/p31-subject-id.js"></script>
+<script>
+// ============================================================
+//  CONFIG
+// ============================================================
+const POST_ONBOARD_URL = '/mesh-start.html';
+const DIAL_DEFAULT     = 5;
+
+// ============================================================
+//  I18N / SKIN STUBS (EN only for v1 — structure for future locales)
+// ============================================================
+const SKINS = {
+    en: {
+        phase2Prompt: 'Feel the pulse. Tap in sync.',
+        phase3Intro:  'Arrange your space.',
+        pactTitle:    'One last step — secure the lock.',
+        wyeDeltaStepCaption: [
+            'Wye: one center — spokes through a single point. You are moving toward a closed mesh.',
+            'Anchor: find a rhythm that is yours, not the hub’s pulse.',
+            'Rooms: four corners — edges between them replace the star.',
+            'Dial: choose how much “mesh” you feel right now.',
+            'Pact: close the Delta — lock to your device, not our servers.',
+        ],
+    },
+    // sa: { phase2Prompt: 'Touch the root. Feel it breathe.', … },
+    // ocean: { phase2Prompt: 'Feel the tide. Move with it.', … },
+};
+const skin = SKINS[navigator.language?.slice(0, 2)] ?? SKINS.en;
+
+const WELCOME_JSON_URL = '/p31-welcome-packages.json';
+const WELCOME_FALLBACK = {
+    schema: 'p31.welcomePackages/1.0.0',
+    version: 'fallback',
+    welcomePhaseCaption: 'Choose your P31 welcome package — then Wye → Delta in five calm steps.',
+    packages: {
+        default: {
+            id: 'default',
+            label: 'Continue',
+            cardSub: 'Standard welcome (packages file offline — refresh when online).',
+            topologyCaption: 'Standard P31 welcome.',
+            voidLine1: 'Take a breath. This is a safe space.',
+            voidLine2: 'Tap anywhere when you\'re ready.',
+            phase2Prompt: skin.phase2Prompt,
+            phase3Intro: skin.phase3Intro,
+            pactTitle: skin.pactTitle,
+            dialDefault: DIAL_DEFAULT,
+            successLine: 'Wye → Delta complete. Opening your workspace…',
+            successSub: 'Closed mesh loop · private edge · EDE assistant.',
+            meshStart: {},
+            personalTetra: null,
+        },
+    },
+};
+
+let WELCOME_ROOT = null;
+let welcomeKey = 'default';
+let atWelcomeScreen = true;
+
+function getPackagesMap() {
+    return (WELCOME_ROOT && WELCOME_ROOT.packages) ? WELCOME_ROOT.packages : {};
+}
+
+function activePackage() {
+    const m = getPackagesMap();
+    return m[welcomeKey] || m.default || WELCOME_FALLBACK.packages.default;
+}
+
+function urlArchetype() {
+    return new URLSearchParams(location.search).get('a') || 'default';
+}
+
+// const archetype: resolved from ?a=child|elder plus welcome package (kid|parent); see refreshBodyMode.
+
+function effectiveArchetype() {
+    const u = urlArchetype();
+    if (u === 'child' || u === 'elder') return u;
+    if (welcomeKey === 'kid') return 'child';
+    if (welcomeKey === 'parent') return 'elder';
+    return u || 'default';
+}
+
+function refreshBodyMode() {
+    document.body.classList.remove('elder-mode', 'child-mode');
+    if (effectiveArchetype() === 'elder') document.body.classList.add('elder-mode');
+    if (effectiveArchetype() === 'child') document.body.classList.add('child-mode');
+}
+
+function applyPackageToOnboarding(pkg) {
+    const p2 = document.getElementById('p2-prompt');
+    const p3 = document.getElementById('p3-intro');
+    const pt = document.getElementById('pact-title');
+    if (p2) p2.textContent = pkg.phase2Prompt || skin.phase2Prompt;
+    if (p3) p3.textContent = pkg.phase3Intro || skin.phase3Intro;
+    if (pt) pt.textContent = pkg.pactTitle || skin.pactTitle;
+    const l1 = document.getElementById('p1-line1');
+    const l2 = document.getElementById('p1-line2');
+    if (l1) l1.textContent = pkg.voidLine1 || 'Take a breath. This is a safe space.';
+    if (l2) l2.textContent = pkg.voidLine2 || 'Tap anywhere when you\'re ready.';
+    const dialEl = document.getElementById('dial');
+    if (dialEl && typeof pkg.dialDefault === 'number') {
+        dialEl.value = String(pkg.dialDefault);
+        applyDial(dialEl.value);
+    }
+    const ok = document.querySelector('#success-overlay > p:first-child');
+    if (ok && pkg.successLine) ok.textContent = pkg.successLine;
+    refreshBodyMode();
+}
+
+async function loadWelcomePackages() {
+    try {
+        const r = await fetch(WELCOME_JSON_URL, { cache: 'no-cache' });
+        if (r.ok) WELCOME_ROOT = await r.json();
+    } catch (e) {
+        console.warn('[P31] welcome packages', e);
+    }
+    if (!WELCOME_ROOT || !WELCOME_ROOT.packages) WELCOME_ROOT = WELCOME_FALLBACK;
+}
+
+function renderWelcomeGrid() {
+    const grid = document.getElementById('welcome-grid');
+    const loading = document.getElementById('welcome-loading');
+    const order = ['kid', 'adult', 'parent', 'neuro', 'builder', 'default'];
+    const m = getPackagesMap();
+    order.forEach((id) => {
+        const pkg = m[id];
+        if (!pkg) return;
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'welcome-card';
+        btn.setAttribute('role', 'listitem');
+        btn.dataset.welcome = id;
+        btn.innerHTML = '<div class="wc-label">' + pkg.label + '</div><div class="wc-sub">' + (pkg.cardSub || '') + '</div>';
+        btn.addEventListener('click', () => selectWelcomePackage(id));
+        btn.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectWelcomePackage(id); }
+        });
+        grid.appendChild(btn);
+    });
+    grid.style.display = 'grid';
+    if (loading) loading.style.display = 'none';
+}
+
+function selectWelcomePackage(key) {
+    const m = getPackagesMap();
+    welcomeKey = m[key] ? key : 'default';
+    localStorage.setItem('p31_welcome_key', welcomeKey);
+    applyPackageToOnboarding(activePackage());
+    document.getElementById('phase-welcome').classList.remove('active');
+    document.getElementById('phase-1').classList.add('active');
+    atWelcomeScreen = false;
+    document.getElementById('progress').classList.remove('pre-welcome');
+    currentPhase = 1;
+    updateProgress(1);
+    updateBackBtn(1);
+    applyWyeDeltaShift(1);
+    armPhase1WithAnimation();
+    const p1 = document.getElementById('phase-1');
+    const focusable = p1 && p1.querySelector('[tabindex="0"]');
+    if (focusable) setTimeout(() => focusable.focus(), 80);
+}
+
+function returnToWelcome() {
+    document.getElementById('phase-1').classList.remove('active');
+    document.getElementById('phase-welcome').classList.add('active');
+    atWelcomeScreen = true;
+    document.getElementById('progress').classList.add('pre-welcome');
+    currentPhase = 1;
+    applyWyeDeltaShift(0);
+    const cap = document.getElementById('topology-caption-text');
+    if (cap && WELCOME_ROOT && WELCOME_ROOT.welcomePhaseCaption) {
+        cap.textContent = WELCOME_ROOT.welcomePhaseCaption;
+    }
+    updateBackBtn(1);
+}
+
+function armPhase1WithAnimation() {
+    const line1 = document.getElementById('p1-line1');
+    const line2 = document.getElementById('p1-line2');
+    if (line1) line1.style.color = 'rgba(216,214,208,0)';
+    if (line2) line2.style.color = 'rgba(216,214,208,0)';
+    setTimeout(() => { if (line1) line1.style.color = 'rgba(216,214,208,0.8)'; }, 1200);
+    setTimeout(() => { if (line2) line2.style.color = 'rgba(216,214,208,0.45)'; }, 2500);
+    const p1 = document.getElementById('phase-1');
+    if (!p1) return;
+    const advance = (e) => {
+        if (e.type === 'keydown' && e.key !== 'Enter' && e.key !== ' ') return;
+        e.stopPropagation();
+        p1.removeEventListener('click', advance);
+        p1.removeEventListener('keydown', advance);
+        showPhase(2);
+    };
+    p1.addEventListener('click', advance);
+    p1.addEventListener('keydown', advance);
+}
+
+async function bootstrapWelcome() {
+    await loadWelcomePackages();
+    renderWelcomeGrid();
+    applyPackageToOnboarding(activePackage());
+    applyWyeDeltaShift(0);
+    const cap = document.getElementById('topology-caption-text');
+    if (cap && WELCOME_ROOT.welcomePhaseCaption) cap.textContent = WELCOME_ROOT.welcomePhaseCaption;
+    const qpWelcome = new URLSearchParams(location.search).get('welcome');
+    if (qpWelcome && getPackagesMap()[qpWelcome]) {
+        selectWelcomePackage(qpWelcome);
+    }
+}
+bootstrapWelcome();
+
+// ============================================================
+//  PHASE MANAGEMENT
+// ============================================================
+let currentPhase = 1;
+const PHASE_NAMES = ['', 'The Void', 'The Anchor', 'The Rooms', 'Your Dial', 'The Pact'];
+
+function showPhase(n) {
+    if (n === currentPhase || n < 1 || n > 5) return;
+
+    const prev = document.getElementById(`phase-${currentPhase}`);
+    const next = document.getElementById(`phase-${n}`);
+
+    prev.classList.remove('active');
+
+    requestAnimationFrame(() => {
+        next.classList.add('active');
+        currentPhase = n;
+        updateProgress(n);
+        updateBackBtn(n);
+        applyWyeDeltaShift(n);
+
+        const inits = { 2: initPhase2, 3: initPhase3, 4: initPhase4, 5: initPhase5 };
+        if (inits[n]) inits[n]();
+
+        if (n === 1) armPhase1WithAnimation();
+
+        const focusable = next.querySelector('[tabindex="0"], button, input:not([type="hidden"])');
+        if (focusable) setTimeout(() => focusable.focus(), 80);
+    });
+}
+
+function applyWyeDeltaShift(phaseNum) {
+    const t = phaseNum <= 0 ? 0 : (phaseNum - 1) / 4;
+    document.documentElement.style.setProperty('--wye-delta-t', String(t));
+    const bar = document.getElementById('topology-bar-fill');
+    if (bar) bar.style.width = `${Math.round(t * 100)}%`;
+    const cap = document.getElementById('topology-caption-text');
+    const lines = skin.wyeDeltaStepCaption;
+    if (!cap) return;
+    if (phaseNum <= 0) {
+        cap.textContent = (WELCOME_ROOT && WELCOME_ROOT.welcomePhaseCaption) ? WELCOME_ROOT.welcomePhaseCaption : lines[0];
+        return;
+    }
+    if (lines && lines[phaseNum - 1]) cap.textContent = lines[phaseNum - 1];
+}
+
+function goBack() {
+    if (currentPhase > 1) {
+        showPhase(currentPhase - 1);
+        return;
+    }
+    if (currentPhase === 1 && !atWelcomeScreen) returnToWelcome();
+}
+
+// ============================================================
+//  CHROME
+// ============================================================
+function updateProgress(n) {
+    for (let i = 1; i <= 5; i++) {
+        const d = document.getElementById(`dot-${i}`);
+        d.className = 'dot';
+        if (i < n)      { d.classList.add('done');    d.title = `Step ${i}: complete`; }
+        else if (i === n){ d.classList.add('current'); d.title = `Step ${i}: current`; }
+        else             {                             d.title = `Step ${i}`; }
+    }
+}
+
+function updateBackBtn(n) {
+    const btn = document.getElementById('back-btn');
+    if (atWelcomeScreen) {
+        btn.style.display = 'none';
+        return;
+    }
+    if (n > 1) {
+        btn.style.display = 'block';
+        btn.setAttribute('aria-label', `Go back to ${PHASE_NAMES[n - 1]}`);
+    } else {
+        btn.style.display = 'block';
+        btn.setAttribute('aria-label', 'Go back to welcome package choice');
+    }
+}
+
+// ============================================================
+//  PHASE 2 — THE ANCHOR
+// ============================================================
+let p2Done = false;
+
+function initPhase2() {
+    if (p2Done) return;
+
+    const nucleus  = document.getElementById('p2-nucleus');
+    const counter  = document.getElementById('p2-counter');
+    const feedback = document.getElementById('p2-feedback');
+    let tapsLeft   = 3;
+    const startMs  = performance.now();
+
+    function tap() {
+        if (tapsLeft <= 0) return;
+
+        // "Peak" = 50% through 10 s cycle. Good window: 30–70%.
+        const frac     = ((performance.now() - startMs) % 10000) / 10000;
+        const nearPeak = frac >= 0.3 && frac <= 0.7;
+
+        nucleus.classList.remove('tap-good', 'tap-late');
+        nucleus.classList.add(nearPeak ? 'tap-good' : 'tap-late');
+        setTimeout(() => nucleus.classList.remove('tap-good', 'tap-late'), 350);
+
+        if (navigator.vibrate) navigator.vibrate(nearPeak ? 50 : 25);
+
+        tapsLeft--;
+
+        feedback.textContent  = nearPeak ? 'In sync ✓' : 'Close enough ✓';
+        feedback.style.color  = nearPeak
+            ? 'rgba(59,163,114,0.9)'
+            : 'rgba(205,168,82,0.85)';
+
+        if (tapsLeft > 0) {
+            counter.textContent = `${tapsLeft} tap${tapsLeft > 1 ? 's' : ''} remaining`;
+        } else {
+            counter.textContent = 'Good. Moving on…';
+            p2Done = true;
+            setTimeout(() => showPhase(3), 900);
+        }
+    }
+
+    nucleus.addEventListener('click', tap);
+    nucleus.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); tap(); }
+    });
+}
+
+// ============================================================
+//  PHASE 3 — THE ROOMS
+// ============================================================
+let p3Done = false;
+
+function initPhase3() {
+    if (p3Done) return;
+    p3Done = true;
+
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const sz = 88;
+
+    // Default positions (scattered)
+    const layouts = {
+        default: [
+            { id: 'sphere-a', lx: 0.15, ty: 0.22 },
+            { id: 'sphere-b', lx: 0.62, ty: 0.18 },
+            { id: 'sphere-c', lx: 0.12, ty: 0.58 },
+            { id: 'sphere-d', lx: 0.65, ty: 0.56 },
+        ],
+        child: [
+            // Diamond preset
+            { id: 'sphere-a', lx: 0.5 - sz/2/vw, ty: 0.5 - sz/2/vh - 160/vh },
+            { id: 'sphere-b', lx: 0.5 - sz/2/vw + 160/vw, ty: 0.5 - sz/2/vh },
+            { id: 'sphere-c', lx: 0.5 - sz/2/vw, ty: 0.5 - sz/2/vh + 160/vh },
+            { id: 'sphere-d', lx: 0.5 - sz/2/vw - 160/vw, ty: 0.5 - sz/2/vh },
+        ],
+        elder: [
+            // Wider, easier-to-reach spread
+            { id: 'sphere-a', lx: 0.1,  ty: 0.25 },
+            { id: 'sphere-b', lx: 0.65, ty: 0.22 },
+            { id: 'sphere-c', lx: 0.08, ty: 0.60 },
+            { id: 'sphere-d', lx: 0.68, ty: 0.58 },
+        ],
+    };
+
+    const layout = layouts[effectiveArchetype()] || layouts.default;
+    layout.forEach(({ id, lx, ty }) => {
+        const el = document.getElementById(id);
+        el.style.left = `${Math.max(0, Math.min(vw - sz, lx * vw))}px`;
+        el.style.top  = `${Math.max(0, Math.min(vh - sz, ty * vh))}px`;
+    });
+
+    // Drag via Pointer Events
+    let dragging   = null;
+    let dragOffset = { x: 0, y: 0 };
+    let hasMoved   = false;
+    const continueBtn = document.getElementById('p3-continue');
+
+    function revealContinue() {
+        continueBtn.style.opacity       = '1';
+        continueBtn.style.pointerEvents = 'auto';
+    }
+
+    document.querySelectorAll('.sphere').forEach(sphere => {
+
+        sphere.addEventListener('pointerdown', e => {
+            dragging = sphere;
+            sphere.setPointerCapture(e.pointerId);
+            sphere.setAttribute('aria-grabbed', 'true');
+            sphere.classList.add('dragging');
+            const rect = sphere.getBoundingClientRect();
+            dragOffset.x = e.clientX - rect.left;
+            dragOffset.y = e.clientY - rect.top;
+            sphere.style.transition = 'none';
+            e.preventDefault();
+        });
+
+        sphere.addEventListener('pointermove', e => {
+            if (dragging !== sphere) return;
+            const spSz = effectiveArchetype() === 'elder' ? 110 : sz;
+            const x = Math.max(0, Math.min(vw - spSz, e.clientX - dragOffset.x));
+            const y = Math.max(0, Math.min(vh - spSz, e.clientY - dragOffset.y));
+            sphere.style.left = `${x}px`;
+            sphere.style.top  = `${y}px`;
+            hasMoved = true;
+        });
+
+        sphere.addEventListener('pointerup', () => {
+            if (dragging !== sphere) return;
+            dragging = null;
+            sphere.setAttribute('aria-grabbed', 'false');
+            sphere.classList.remove('dragging');
+            sphere.style.transition = '';
+            if (hasMoved) revealContinue();
+        });
+
+        // Keyboard: arrow keys move 8px
+        sphere.addEventListener('keydown', e => {
+            const step = 8;
+            const rect = sphere.getBoundingClientRect();
+            let x = rect.left, y = rect.top;
+            const moves = { ArrowLeft:[-step,0], ArrowRight:[step,0], ArrowUp:[0,-step], ArrowDown:[0,step] };
+            if (!moves[e.key]) return;
+            e.preventDefault();
+            [x, y] = [x + moves[e.key][0], y + moves[e.key][1]];
+            const spSz = effectiveArchetype() === 'elder' ? 110 : sz;
+            sphere.style.left = `${Math.max(0, Math.min(vw - spSz, x))}px`;
+            sphere.style.top  = `${Math.max(0, Math.min(vh - spSz, y))}px`;
+            hasMoved = true;
+            revealContinue();
+        });
+    });
+
+    // Nudge if user doesn't move anything in 5 s
+    setTimeout(() => {
+        if (!hasMoved) {
+            const nudge = document.getElementById('p3-nudge');
+            nudge.style.opacity = '1';
+            setTimeout(() => { nudge.style.opacity = '0'; }, 3000);
+        }
+    }, 5000);
+
+    // Spawn particles
+    const field  = document.getElementById('p3-particles');
+    const colors = ['#25897d','#cc6247','#8b7cc9','#3ba372','#cda852'];
+    for (let i = 0; i < 22; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        p.style.left              = `${Math.random() * 100}%`;
+        p.style.bottom            = `${-5}px`;
+        p.style.background        = `${colors[i % colors.length]}55`;
+        p.style.animationDuration = `${10 + Math.random() * 14}s`;
+        p.style.animationDelay   = `${-Math.random() * 24}s`;
+        p.style.width = p.style.height = `${2 + Math.random() * 3}px`;
+        field.appendChild(p);
+    }
+}
+
+// ============================================================
+//  PHASE 4 — COGNITIVE DIAL (semicircle; value 0–10 in hidden #dial)
+// ============================================================
+const DIAL_CX = 110;
+const DIAL_CY = 70;
+const DIAL_R = 50;
+let p4Done = false;
+let dialP4Wired = false;
+
+function clientToDialValue(clientX, clientY) {
+    const svg = document.querySelector('#cognitive-dial-surface .dial-svg');
+    if (!svg) return 5;
+    const br = svg.getBoundingClientRect();
+    if (br.width < 8 || br.height < 8) return 5;
+    const lx = ((clientX - br.left) / br.width) * 220;
+    const ly = ((clientY - br.top) / br.height) * 128;
+    const dx = lx - DIAL_CX;
+    const dy = ly - DIAL_CY;
+    if (dy <= 0) {
+        if (dx < 0) return 0;
+        return 10;
+    }
+    let deg = Math.atan2(dy, dx) * (180 / Math.PI);
+    if (deg < 0) deg += 360;
+    if (deg > 180) {
+        if (dx < 0) return 0;
+        return 10;
+    }
+    return Math.max(0, Math.min(10, Math.round(((180 - deg) / 180) * 10)));
+}
+
+function applyDial(v) {
+    const n = Math.max(0, Math.min(10, parseInt(String(v), 10) || 0));
+    const hid = document.getElementById('dial');
+    if (hid) hid.value = String(n);
+    const t = n / 10;
+    const root = document.documentElement;
+    root.style.setProperty('--dial-font-step',        `${(0.9 + t * 0.225).toFixed(3)}rem`);
+    root.style.setProperty('--dial-chrome-opacity',   `${(0.4 + t * 0.6).toFixed(2)}`);
+    root.style.setProperty('--dial-particle-opacity', `${t.toFixed(2)}`);
+    root.style.setProperty('--dial-label-opacity',    `${(0.3 + t * 0.7).toFixed(2)}`);
+    root.style.setProperty('--dial-border-radius',    `${(1.5 - t).toFixed(2)}rem`);
+    const rad = Math.PI * (1 - n / 10);
+    const x2 = DIAL_CX + DIAL_R * Math.cos(rad);
+    const y2 = DIAL_CY + DIAL_R * Math.sin(rad);
+    const needle = document.getElementById('dial-needle');
+    if (needle) {
+        needle.setAttribute('x1', String(DIAL_CX));
+        needle.setAttribute('y1', String(DIAL_CY));
+        needle.setAttribute('x2', x2.toFixed(2));
+        needle.setAttribute('y2', y2.toFixed(2));
+    }
+    const sli = document.getElementById('cognitive-dial-surface');
+    if (sli) sli.setAttribute('aria-valuenow', String(n));
+    const ro = document.getElementById('dial-value-readout');
+    if (ro) ro.textContent = String(n);
+}
+
+function onDialPointerDown(e) {
+    if (e.button !== 0) return;
+    e.preventDefault();
+    const surf = e.currentTarget;
+    surf.setPointerCapture(e.pointerId);
+    applyDial(clientToDialValue(e.clientX, e.clientY));
+}
+
+function onDialPointerMove(e) {
+    const surf = e.currentTarget;
+    if (!surf.hasPointerCapture(e.pointerId)) return;
+    applyDial(clientToDialValue(e.clientX, e.clientY));
+}
+
+function onDialPointerUp(e) {
+    const surf = e.currentTarget;
+    if (surf.hasPointerCapture(e.pointerId)) {
+        try {
+            surf.releasePointerCapture(e.pointerId);
+        } catch (_) { /* noop */ }
+    }
+}
+
+function onDialKey(e) {
+    if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'].includes(e.key)) return;
+    e.preventDefault();
+    let n = parseInt(document.getElementById('dial').value, 10) || 0;
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') n = n - 1;
+    else if (e.key === 'ArrowRight' || e.key === 'ArrowUp') n = n + 1;
+    else if (e.key === 'Home') n = 0;
+    else if (e.key === 'End') n = 10;
+    applyDial(n);
+}
+
+function initPhase4() {
+    if (p4Done) return;
+    p4Done = true;
+    const d = document.getElementById('dial');
+    const v = d && d.value !== '' && d.value !== undefined ? d.value : DIAL_DEFAULT;
+    applyDial(v);
+    if (!dialP4Wired) {
+        dialP4Wired = true;
+        const surf = document.getElementById('cognitive-dial-surface');
+        if (surf) {
+            surf.addEventListener('pointerdown', onDialPointerDown);
+            surf.addEventListener('pointermove', onDialPointerMove);
+            surf.addEventListener('pointerup', onDialPointerUp);
+            surf.addEventListener('pointercancel', onDialPointerUp);
+            surf.addEventListener('keydown', onDialKey);
+        }
+    }
+}
+
+function saveDial() {
+    const v = document.getElementById('dial').value;
+    // Pass preference in redirect URL (localStorage cleared by Clear-Site-Data header on next navigation)
+    window._dialPreference = v;
+    showPhase(5);
+}
+
+// ============================================================
+//  PHASE 5 — THE PACT
+// ============================================================
+/** CWP-P31 D-PA1: `subject_id` binds one Personal DO (`idFromName`); never use raw email in URL paths. */
+/** Derivation: `lib/p31-subject-id.js` (p31.subjectIdDerivation/0.1.0) — CWP-32 D-IB4. */
+async function persistSubjectAndMeta(withPasskey, credOrNull) {
+    const subjectId = await p31DeriveSubjectId(credOrNull);
+    try {
+        localStorage.setItem('p31_subject_id', subjectId);
+        localStorage.setItem('p31_onboard_meta', JSON.stringify({
+            welcomeKey,
+            welcomeLabel: activePackage().label,
+            welcomeSchema: WELCOME_ROOT && WELCOME_ROOT.schema,
+            welcomePackagesVersion: WELCOME_ROOT && WELCOME_ROOT.version,
+            archetype: effectiveArchetype(),
+            urlArchetype: urlArchetype(),
+            dial: typeof window._dialPreference !== 'undefined' ? window._dialPreference : DIAL_DEFAULT,
+            withPasskey,
+            ts: Date.now(),
+        }));
+    } catch (e) {
+        console.warn('[P31 onboard] localStorage:', e);
+    }
+}
+
+function initPhase5() {
+    if (effectiveArchetype() === 'child') {
+        document.getElementById('p5-skip-wrapper').style.display = 'block';
+        setTimeout(async () => {
+            await persistSubjectAndMeta(false, null);
+            showSuccess(false);
+        }, 2000);
+    }
+}
+
+function setStatus(msg, color) {
+    const el = document.getElementById('pact-status');
+    el.textContent = msg;
+    el.style.color  = color || 'rgba(216,214,208,0.45)';
+}
+
+async function enrollPasskey() {
+    const btn = document.getElementById('passkey-btn');
+
+    if (!window.PublicKeyCredential) {
+        setStatus(
+            "Your browser doesn't support this yet. Try on your phone or a modern browser.",
+            'rgba(205,168,82,0.9)'
+        );
+        return;
+    }
+
+    btn.disabled = true;
+    setStatus('Opening secure prompt…', 'rgba(216,214,208,0.45)');
+
+    try {
+        // Fetch creation options from Worker; fall back to stub when offline/undeployed
+        let popts = null;
+        try {
+            const r = await fetch('/api/passkey/register-begin', { method: 'POST' });
+            if (r.ok) {
+                const o = await r.json();
+                const d = s => Uint8Array.from(atob(s.replace(/-/g,'+').replace(/_/g,'/')), c => c.charCodeAt(0));
+                popts = { ...o, challenge: d(o.challenge), user: { ...o.user, id: d(o.user.id) } };
+            }
+        } catch { /* Worker not deployed — use stub below */ }
+
+        if (!popts) {
+            popts = {
+                challenge: crypto.getRandomValues(new Uint8Array(32)),
+                rp: { name: 'P31 Labs', id: location.hostname === 'localhost' ? 'localhost' : location.hostname },
+                user: { id: crypto.getRandomValues(new Uint8Array(16)), name: 'mesh-member', displayName: 'Mesh Member' },
+                pubKeyCredParams: [{ type: 'public-key', alg: -7 }, { type: 'public-key', alg: -257 }],
+                authenticatorSelection: { residentKey: 'preferred', userVerification: 'preferred' },
+                timeout: 60000,
+            };
+        }
+
+        const cred = await navigator.credentials.create({ publicKey: popts });
+        if (!cred) {
+            btn.disabled = false;
+            setStatus('No credential returned — try again.', 'rgba(204,98,71,0.8)');
+            return;
+        }
+        const c = cred;
+        const resp = c.response;
+        const b = buf => btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
+        try {
+            await fetch('/api/passkey/register-finish', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    id: c.id,
+                    rawId: b(c.rawId),
+                    response: {
+                        clientDataJSON:    b(resp.clientDataJSON),
+                        attestationObject: b(resp.attestationObject),
+                        transports: resp.getTransports?.() ?? [],
+                    },
+                }),
+            });
+        } catch { /* Worker offline — credential valid locally, will sync on next auth */ }
+
+        await persistSubjectAndMeta(true, c);
+        showSuccess(true);
+
+    } catch (err) {
+        btn.disabled = false;
+        if (err.name === 'NotAllowedError') {
+            setStatus('Cancelled — tap "Secure my lock" to try again.', 'rgba(205,168,82,0.8)');
+        } else if (err.name === 'InvalidStateError') {
+            setStatus('This device already has a lock set up.', 'rgba(59,163,114,0.8)');
+            setTimeout(() => showSuccess(true), 1500);
+        } else {
+            setStatus(`Something went wrong — try again or come back later.`, 'rgba(204,98,71,0.8)');
+            console.error('[P31 onboard] passkey error:', err.name, err.message);
+        }
+    }
+}
+
+async function skipPasskey() {
+    await persistSubjectAndMeta(false, null);
+    showSuccess(false);
+}
+
+function showSuccess(withPasskey) {
+    const pkg = activePackage();
+    const titleEl = document.querySelector('#success-overlay > p:first-child');
+    if (titleEl && pkg.successLine) titleEl.textContent = pkg.successLine;
+    const redir = document.getElementById('redirect-msg');
+    if (!withPasskey) {
+        redir.textContent =
+            'Passkey skipped — you can harden later. Same private assistant workspace.';
+    } else if (pkg.successSub) {
+        redir.textContent = pkg.successSub;
+    }
+
+    const overlay = document.getElementById('success-overlay');
+    overlay.classList.add('active');
+    if (navigator.vibrate) navigator.vibrate([80, 60, 80]);
+
+    const dialVal = window._dialPreference || DIAL_DEFAULT;
+    const dest = `${POST_ONBOARD_URL}?dial=${dialVal}&welcome=${encodeURIComponent(welcomeKey)}`;
+
+    setTimeout(() => { window.location.href = dest; }, 3000);
+}
+</script>
+</body>
+</html>

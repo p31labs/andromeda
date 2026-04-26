@@ -1,4 +1,5 @@
-# Verify (PR + push) + optional Cloudflare deploys (main / manual)
+# Verify (PR + push) + Worker deploys on push. Pages deploys here are manual-only;
+# path-scoped workflows own routine Pages ships (p31-technical-library, p31ca-hub, phosphorus31-site).
 name: P31 Automation
 
 on:
@@ -44,15 +45,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: ./.github/actions/toolchain-constants
+
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: 04_SOFTWARE/docs/package-lock.json
 
       - name: k4-mesh-core unit tests
         run: cd 04_SOFTWARE/packages/k4-mesh-core && node --test test/*.test.mjs
 
       - name: Install + build Starlight docs
-        run: cd 04_SOFTWARE/docs && npm install && npm run build
+        run: cd 04_SOFTWARE/docs && npm ci && npm run build
 
       - name: Stack link check (optional fleet URLs warn-only — see verify-stack-links.mjs)
         run: node 04_SOFTWARE/scripts/verify-stack-links.mjs
@@ -63,9 +68,6 @@ jobs:
     outputs:
       bouncer: ${{ steps.filter.outputs.bouncer }}
       command_center: ${{ steps.filter.outputs.command_center }}
-      docs: ${{ steps.filter.outputs.docs }}
-      p31ca: ${{ steps.filter.outputs.p31ca }}
-      phosphorus31: ${{ steps.filter.outputs.phosphorus31 }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -79,12 +81,6 @@ jobs:
               - '04_SOFTWARE/cloudflare-worker/bouncer/**'
             command_center:
               - '04_SOFTWARE/cloudflare-worker/command-center/**'
-            docs:
-              - '04_SOFTWARE/docs/**'
-            p31ca:
-              - '04_SOFTWARE/p31ca/**'
-            phosphorus31:
-              - 'phosphorus31.org/**'
 
   deploy-bouncer:
     needs: paths
@@ -95,9 +91,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: ./.github/actions/toolchain-constants
+
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: ${{ env.NODE_VERSION }}
 
       - name: Install wrangler (bouncer)
         run: cd 04_SOFTWARE/cloudflare-worker/bouncer && npm install
@@ -116,13 +114,12 @@ jobs:
           printf '%s' "$BOUNCER_GATE_TOKEN" | npx wrangler secret put BOUNCER_GATE_TOKEN
 
       - name: Deploy p31-bouncer
-        uses: cloudflare/wrangler-action@v3
+        uses: ./.github/actions/wrangler-run
         with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          workingDirectory: 04_SOFTWARE/cloudflare-worker/bouncer
+          working-directory: 04_SOFTWARE/cloudflare-worker/bouncer
           command: deploy
-          wranglerVersion: "4.85.0"
+          api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          account-id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 
   deploy-command-center:
     needs: paths
@@ -133,97 +130,99 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: ./.github/actions/toolchain-constants
+
       - name: Deploy command-center
-        uses: cloudflare/wrangler-action@v3
+        uses: ./.github/actions/wrangler-run
         with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          workingDirectory: 04_SOFTWARE/cloudflare-worker/command-center
+          working-directory: 04_SOFTWARE/cloudflare-worker/command-center
           command: deploy
-          wranglerVersion: "4.85.0"
+          api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          account-id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 
   deploy-docs:
     needs: paths
-    if: |
-      (github.event_name == 'workflow_dispatch' && github.event.inputs.deploy_docs == 'true') ||
-      (github.event_name == 'push' && needs.paths.outputs.docs == 'true')
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.deploy_docs == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - uses: ./.github/actions/toolchain-constants
+
+      - uses: ./.github/actions/npm-ci-project
         with:
-          node-version: '20'
+          working-directory: 04_SOFTWARE/docs
+          cache-dependency-path: 04_SOFTWARE/docs/package-lock.json
 
       - name: Build Starlight
-        run: cd 04_SOFTWARE/docs && npm install && npm run build
+        working-directory: 04_SOFTWARE/docs
+        run: npm run build
 
       - name: Deploy to Cloudflare Pages
-        uses: cloudflare/wrangler-action@v3
+        uses: ./.github/actions/wrangler-run
         with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          workingDirectory: 04_SOFTWARE/docs
+          working-directory: 04_SOFTWARE/docs
           command: pages deploy dist --project-name=p31-technical-library
-          wranglerVersion: "4.85.0"
+          api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          account-id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 
   deploy-p31ca:
     needs: paths
-    if: |
-      (github.event_name == 'workflow_dispatch' && github.event.inputs.deploy_p31ca == 'true') ||
-      (github.event_name == 'push' && needs.paths.outputs.p31ca == 'true')
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.deploy_p31ca == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
+      - uses: ./.github/actions/toolchain-constants
 
-      - name: Install p31ca
-        run: cd 04_SOFTWARE/p31ca && npm install
+      - uses: ./.github/actions/npm-ci-project
+        with:
+          working-directory: 04_SOFTWARE/p31ca
+          cache-dependency-path: 04_SOFTWARE/p31ca/package-lock.json
 
       - name: Verify passport mirror
         env:
           P31_STRICT_PASSPORT: ${{ (github.event_name == 'workflow_dispatch' && github.event.inputs.p31ca_strict_passport == 'true') && '1' || '0' }}
           P31_WORKSPACE_ROOT: ${{ github.workspace }}
-        run: cd 04_SOFTWARE/p31ca && npm run passport:verify
+        working-directory: 04_SOFTWARE/p31ca
+        run: npm run passport:verify
 
       - name: Build p31ca.org
-        run: cd 04_SOFTWARE/p31ca && npm run build
+        working-directory: 04_SOFTWARE/p31ca
+        run: npm run build
 
       - name: Deploy to Cloudflare Pages
-        uses: cloudflare/wrangler-action@v3
+        uses: ./.github/actions/wrangler-run
         with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          workingDirectory: 04_SOFTWARE/p31ca
+          working-directory: 04_SOFTWARE/p31ca
           command: pages deploy dist --project-name=p31ca
-          wranglerVersion: "4.85.0"
+          api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          account-id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 
   deploy-phosphorus31:
     needs: paths
-    if: |
-      (github.event_name == 'workflow_dispatch' && github.event.inputs.deploy_phosphorus31 == 'true') ||
-      (github.event_name == 'push' && needs.paths.outputs.phosphorus31 == 'true')
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.deploy_phosphorus31 == 'true'
     runs-on: ubuntu-latest
+    env:
+      SITE_DIR: phosphorus31.org/planetary-planet
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - uses: ./.github/actions/toolchain-constants
+
+      - uses: ./.github/actions/npm-ci-project
         with:
-          node-version: '20'
-          cache: npm
-          cache-dependency-path: phosphorus31.org/planetary-planet/package-lock.json
+          working-directory: ${{ env.SITE_DIR }}
+          cache-dependency-path: ${{ env.SITE_DIR }}/package-lock.json
 
       - name: Build phosphorus31.org
-        run: cd phosphorus31.org/planetary-planet && npm ci && npm run build
+        working-directory: ${{ env.SITE_DIR }}
+        run: npm run build
 
       - name: Deploy to Cloudflare Pages
-        uses: cloudflare/wrangler-action@v3
+        uses: ./.github/actions/wrangler-run
         with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          workingDirectory: phosphorus31.org/planetary-planet
+          working-directory: ${{ env.SITE_DIR }}
           command: pages deploy dist --project-name=phosphorus31-org
-          wranglerVersion: "4.85.0"
+          api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          account-id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

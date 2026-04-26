@@ -1,5 +1,15 @@
 # Contributing to P31 Andromeda
 
+**Engineering standard:** **`docs/ENTERPRISE_QUALITY.md`** (this repo) defines merge-to-`main` quality. In the **multi-root P31 home** checkout, read **`docs/P31-ENGINEERING-STANDARD.md`** (separate git repo at the Soup root) for the full verify + constants + passport alignment checklist.
+
+## Google Workspace hookups (OAuth, Calendar, Drive, Gmail, SSO)
+
+Runbook: **[`docs/integrations/GOOGLE-WORKSPACE.md`](docs/integrations/GOOGLE-WORKSPACE.md)** — Cloud project, consent screen, redirect URIs, service-account **domain-wide delegation** when needed, Worker secret handling, and least-privilege scopes. Example env key names: [`docs/integrations/env.google.example`](docs/integrations/env.google.example) (gitignored in real use). **Automation:** `04_SOFTWARE/p31-google-bridge` — `npm run preflight` before deploy, `GET /setup` in-browser checklist, `pnpm run google-bridge:preflight` from `04_SOFTWARE/`.
+
+## Office / corporate docs in-repo
+
+The **P31 Open Doc Suite** (HTML print templates, watermarks, Markdown shells, P31 Forge bridge) lives under **[`docs/corporate/`](docs/corporate/)**. The technical hub surface is **[`p31ca.org/open-doc-suite`](https://p31ca.org/open-doc-suite.html)**. Keep canonical org numbers aligned with `docs/GOD_GROUND_TRUTH.md` and regenerate `docs/corporate/suite/brand-tokens.json` after editing `04_SOFTWARE/p31-forge/brand.js` (`npm run brand:tokens` in `p31-forge`).
+
 ## Where the software lives
 
 Most applications, Workers, Pages projects, and shared packages live under **`04_SOFTWARE/`**, registered in the **root** `pnpm-workspace.yaml`. Use **one** install at the repository root:
@@ -11,7 +21,7 @@ pnpm run build
 pnpm run test
 ```
 
-Turbo scripts are defined in `04_SOFTWARE/package.json` (`build`, `test`, `dev`, etc.); the root `package.json` delegates to `pnpm --dir 04_SOFTWARE` for convenience.
+Turbo scripts are defined in `04_SOFTWARE/package.json` (`build`, `test`, `dev`, etc.); the **repository root** `package.json` also defines **`npm run git:hooks`**, which sets `core.hooksPath` to **`.githooks/`** (MAP monetary **pre-commit**, opt-in **post-commit** auto-push; see **`npm run git:autopush:status`**). Run once per clone or after pulling hook changes.
 
 **Production quality bar:** [`docs/ENTERPRISE_QUALITY.md`](docs/ENTERPRISE_QUALITY.md). PRs should keep **Monorepo verify** (GitHub Actions) green.
 
@@ -36,6 +46,8 @@ On **`main`**, **P31 Automation** (`.github/workflows/p31-automation.yml`) runs:
 3. `04_SOFTWARE/scripts/verify-stack-links.mjs` (URLs from connect-the-stack)
 
 Other required checks may run from **P31 Labs CI/CD Pipeline** and related workflows. Open a PR to satisfy branch protection.
+
+**Site updates — two lanes:** **`p31ca-hub.yml`** exercises the **p31ca.org** hub (`hub:ci` under `04_SOFTWARE/p31ca`). **`phosphorus31.org`** (e.g. `phosphorus31.org/planetary-planet` in this monorepo) has its **own** build and Pages project; treat it as a **parallel** track so changes do not get conflated with the technical hub unless you intend one coordinated release.
 
 ## Pages deploy safety
 

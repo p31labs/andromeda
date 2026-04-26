@@ -4,21 +4,25 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="description" content="P31 Cognitive Passport machine slice: Markdown, JSON (p31.cognitivePassport/1.0.0), and agent block. Not a replacement for the full v5 life document." />
-  <meta name="theme-color" content="#0a0a0e" />
+  <meta name="theme-color" content="#0f1115" />
   <title>P31 Cognitive Passport — Generator (v1)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="p31-style.css" />
   <style>
     :root {
-      --bg: #0a0a0e;
-      --card: #12121a;
-      --border: rgba(255,255,255,0.08);
-      --text: #e8e6e0;
-      --muted: #8a8798;
-      --accent: #2dd4bf;
+      --bg: var(--p31-void);
+      --card: var(--p31-surface);
+      --border: var(--p31-glass-border);
+      --text: var(--p31-cloud);
+      --muted: var(--p31-muted);
+      --accent: var(--p31-cyan);
       --warn: #f59e0b;
     }
     * { box-sizing: border-box; }
     body {
-      margin: 0; min-height: 100vh; font-family: system-ui, "Segoe UI", sans-serif;
+      margin: 0; min-height: 100vh; font-family: var(--p31-font-sans);
       background: var(--bg); color: var(--text);
       line-height: 1.5;
     }
@@ -35,16 +39,16 @@
     label { display: block; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); margin-bottom: 0.35rem; }
     input, select, textarea {
       width: 100%; padding: 0.5rem 0.65rem; border-radius: 8px;
-      border: 1px solid var(--border); background: #0d0d12; color: var(--text);
+      border: 1px solid var(--border); background: var(--p31-surface2); color: var(--text);
       font-size: 0.9rem;
     }
-    textarea { min-height: 12rem; font-family: ui-monospace, monospace; font-size: 0.8rem; }
+    textarea { min-height: 12rem; font-family: var(--p31-font-mono), ui-monospace, monospace; font-size: 0.8rem; }
     .row { margin-bottom: 0.9rem; }
     .checks label { text-transform: none; letter-spacing: 0; display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; color: var(--text); }
     .btn {
       display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem;
       padding: 0.55rem 1rem; border-radius: 8px; border: none; cursor: pointer;
-      font-weight: 600; font-size: 0.85rem; background: var(--accent); color: #041;
+      font-weight: 600; font-size: 0.85rem; background: var(--accent); color: var(--p31-void);
     }
     .btn:hover { filter: brightness(1.05); }
     .btn-ghost { background: transparent; color: var(--text); border: 1px solid var(--border); }
@@ -57,7 +61,7 @@
     .tab.on { color: var(--text); border-color: var(--accent); background: rgba(45,212,191,0.1); }
     .out-panel { display: none; }
     .out-panel.on { display: block; }
-    .badge { display: inline-block; padding: 0.15rem 0.4rem; border-radius: 4px; background: #1e1e28; font-size: 0.7rem; color: var(--muted); }
+    .badge { display: inline-block; padding: 0.15rem 0.4rem; border-radius: 4px; background: var(--p31-surface2); font-size: 0.7rem; color: var(--muted); }
     footer { margin-top: 2rem; font-size: 0.75rem; color: var(--muted); }
   </style>
 </head>

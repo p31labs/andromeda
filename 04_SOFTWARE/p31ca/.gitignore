@@ -22,3 +22,10 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+build/security-report.json
+build/security-inventory.json
+
+# Playwright
+playwright-report/
+test-results/
+blob-report/

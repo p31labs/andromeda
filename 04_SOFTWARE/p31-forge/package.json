@@ -8,6 +8,7 @@
   },
   "scripts": {
     "brand": "node forge.js brand",
+    "brand:tokens": "node scripts/export-brand-tokens.cjs",
     "compile": "node forge.js compile",
     "build:discovery": "node scripts/build-discovery.js",
     "pdf": "python scripts/docx_to_pdf.py",

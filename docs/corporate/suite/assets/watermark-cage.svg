@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="600" height="600" aria-label="Posner cage motif">
+  <!-- Simplified 2D motif; "cage" is chemistry metaphor in brand prose (see p31.ground-truth for product facts). -->
+  <g stroke="#2A9D8F" stroke-width="1.2" fill="none" opacity="0.2">
+    <polygon points="300,80 500,400 100,400" />
+    <line x1="300" y1="80" x2="300" y2="400" />
+    <line x1="100" y1="400" x2="500" y2="400" />
+  </g>
+  <g opacity="0.1" fill="#D94F3B" font-family="Georgia,serif" font-size="18" text-anchor="middle">
+    <text x="300" y="480">Posner (Ca9(PO4)6)</text>
+  </g>
+</svg>

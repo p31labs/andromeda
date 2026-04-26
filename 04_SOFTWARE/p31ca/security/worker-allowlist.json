@@ -1,0 +1,247 @@
+{
+  "schema": "p31.workerAllowlist/1.0.0",
+  "note": "Known Cloudflare Workers under andromeda/04_SOFTWARE (and p31ca workers/). verify-worker-inventory walks andromeda/ but excludes */docs/files/* (Zenodo/attachment copies, not deployables). First `name` in each wrangler.toml is what the inventory indexes. Add entries as workers are promoted; P1 WARN for unlisted names is expected until filled.",
+  "workers": [
+    {
+      "name": "geodesic-room",
+      "path": "04_SOFTWARE/geodesic-room",
+      "bindings": ["GEODESIC_ROOM (DO)"],
+      "vars": ["WORKER_VERSION"],
+      "corsPolicy": "none — WebSocket only, no CORS headers set",
+      "authScheme": "none — rooms are public by name; no PII stored",
+      "notes": "Durable Object holding K₄ tetrahedron vertex positions (4 vertices, float xyz). WebSocket broadcast room. Clients drag vertices; DO is authoritative state. Room IDs are user-supplied; no auth required for POC. P2: add CF Access or Bearer token for private rooms."
+    },
+    {
+      "name": "p31-passkey",
+      "path": "workers/passkey",
+      "bindings": ["CHALLENGES (KV)", "DB (D1)"],
+      "vars": ["RP_NAME", "RP_ID"],
+      "corsPolicy": "wildcard — intentional, protected by WebAuthn rpId binding",
+      "authScheme": "WebAuthn FIDO2 (challenge/response)",
+      "notes": "WebAuthn passkey backend. ECDSA/RSA verification via SubtleCrypto. CORS is `*` but WebAuthn is secure regardless: authData.rpIdHash must equal SHA-256(RP_ID='p31ca.org'), and clientDataJSON.origin is verified. An attacker relaying from a different origin would fail rpId hash check. P2 improvement: restrict CORS to p31ca.org and p31ca.pages.dev explicitly."
+    },
+    {
+      "name": "k4-personal",
+      "path": "04_SOFTWARE/k4-personal",
+      "bindings": ["PERSONAL_AGENT (DO)", "K4_MESH (KV)", "AI"],
+      "vars": ["ENVIRONMENT", "WORKER_VERSION", "TOPOLOGY"],
+      "corsPolicy": "allowlist + *.pages.dev — see src/index.js corsHeaders",
+      "authScheme": "none on mesh read; /agent/* is per-user DO",
+      "notes": "Personal K₄ mesh API + PersonalAgent SQLite DO. Deploy requires DO migration list in wrangler.toml. See k4-personal/README.md."
+    },
+    {
+      "name": "k4-cage",
+      "path": "04_SOFTWARE/k4-cage",
+      "bindings": ["K4_TOPOLOGY (DO)", "FAMILY_MESH_ROOM (DO)", "K4_MESH (KV)"],
+      "vars": ["WORKER_VERSION", "TOPOLOGY", "ENVIRONMENT", "MESH_ROOM_IDS", "ORCHESTRATOR_WEBHOOK"],
+      "corsPolicy": "as implemented in worker",
+      "authScheme": "optional internal tokens",
+      "notes": "Family cage mesh + topology DOs. unified-k4-cage reuses this worker name; same allowlist entry."
+    },
+    {
+      "name": "k4-hubs",
+      "path": "04_SOFTWARE/k4-hubs",
+      "bindings": ["HUB_FUSION (DO)", "K4_CAGE (service)", "K4_PERSONAL (service)"],
+      "vars": ["ENVIRONMENT", "WORKER_VERSION", "PERSONAL_MESH_URL"],
+      "corsPolicy": "as implemented in worker",
+      "authScheme": "optional HUBS_WRITE_TOKEN",
+      "notes": "Life-context hub router; service-binds to k4-cage and k4-personal."
+    },
+    {
+      "name": "p31-google-bridge",
+      "path": "04_SOFTWARE/p31-google-bridge",
+      "bindings": ["GOOGLE_OAUTH (KV)"],
+      "vars": [
+        "GOOGLE_CLIENT_ID",
+        "REDIRECT_URL",
+        "DEFAULT_OAUTH_SCOPES",
+        "OAUTH_SUCCESS_URL",
+        "CORS_ALLOW_ORIGIN",
+        "OAUTH_RETURN_ALLOWLIST"
+      ],
+      "corsPolicy": "configurable CORS — credentials for /api/*; set CORS_ALLOW_ORIGIN; no * in production",
+      "authScheme": "Google OAuth2 + session cookie; GOOGLE_CLIENT_SECRET in wrangler secret",
+      "notes": "User OAuth: calendar.readonly + OIDC. Tokens in KV. Session cookie p31_gb_sid. Callback and success URL must be same site for Set-Cookie. See docs/integrations/GOOGLE-WORKSPACE.md + p31-google-bridge/README.md."
+    },
+    {
+      "name": "bonding-relay",
+      "path": "04_SOFTWARE/bonding",
+      "bindings": [],
+      "vars": [],
+      "corsPolicy": "see bonding README",
+      "authScheme": "see package README",
+      "notes": "BONDING relay worker; allowlisted for inventory. Review CORS and bindings when changing."
+    },
+    {
+      "name": "p31-bouncer",
+      "path": "04_SOFTWARE/cloudflare-worker/bouncer",
+      "bindings": [],
+      "vars": [],
+      "corsPolicy": "see wrangler + src",
+      "authScheme": "see package README",
+      "notes": "Bouncer / edge gate; allowlisted for inventory."
+    },
+    {
+      "name": "command-center",
+      "path": "04_SOFTWARE/cloudflare-worker/command-center",
+      "bindings": [],
+      "vars": [],
+      "corsPolicy": "see wrangler + src",
+      "authScheme": "see package README",
+      "notes": "Command-center worker; allowlisted for inventory."
+    },
+    {
+      "name": "p31-social-worker",
+      "path": "04_SOFTWARE/cloudflare-worker/social-drop-automation",
+      "bindings": [],
+      "vars": [],
+      "corsPolicy": "see wrangler + src",
+      "authScheme": "see package README",
+      "notes": "Social-drop automation; allowlisted for inventory."
+    },
+    {
+      "name": "p31-social-broadcast",
+      "path": "04_SOFTWARE/cloudflare-worker",
+      "bindings": [],
+      "vars": [],
+      "corsPolicy": "see wrangler (multi-name file — first name indexed)",
+      "authScheme": "see package README",
+      "notes": "p31ca social / mesh broadcast stack; first name in parent wrangler.toml. Review multi-worker file."
+    },
+    {
+      "name": "donate-api",
+      "path": "04_SOFTWARE/donate-api",
+      "bindings": [],
+      "vars": [],
+      "corsPolicy": "see wrangler + src",
+      "authScheme": "see package README",
+      "notes": "Donate / payments edge API; allowlisted for inventory."
+    },
+    {
+      "name": "genesis-gate",
+      "path": "04_SOFTWARE/genesis-gate",
+      "bindings": [],
+      "vars": [],
+      "corsPolicy": "see wrangler (wildcard CORS may WARN — triage in security:check)",
+      "authScheme": "see package README",
+      "notes": "Genesis-gate; allowlisted for inventory."
+    },
+    {
+      "name": "kenosis-mesh",
+      "path": "04_SOFTWARE/kenosis-mesh",
+      "bindings": [],
+      "vars": [],
+      "corsPolicy": "see wrangler (multi DO names in file — first name indexed)",
+      "authScheme": "see package README",
+      "notes": "Kenosis mesh worker; allowlisted for inventory."
+    },
+    {
+      "name": "p31-agent-hub",
+      "path": "04_SOFTWARE/p31-agent-hub",
+      "bindings": [],
+      "vars": [],
+      "corsPolicy": "see src — AGENT_HUB_SECRET when set",
+      "authScheme": "optional secret for /api/chat",
+      "notes": "Edge agent / mesh chat; see worker README. Same allowlist covers internal variant name in file if second block."
+    },
+    {
+      "name": "p31-cortex",
+      "path": "04_SOFTWARE/p31-cortex",
+      "bindings": [],
+      "vars": [],
+      "corsPolicy": "see wrangler",
+      "authScheme": "see package README",
+      "notes": "Cortex / multi-agent; first name p31-cortex. Allowlisted for inventory."
+    },
+    {
+      "name": "p31-forge",
+      "path": "04_SOFTWARE/p31-forge",
+      "bindings": [],
+      "vars": [],
+      "corsPolicy": "see wrangler",
+      "authScheme": "see package README",
+      "notes": "P31 forge worker; allowlisted for inventory."
+    },
+    {
+      "name": "p31-hearing-ops",
+      "path": "04_SOFTWARE/p31-hearing-ops",
+      "bindings": [],
+      "vars": [],
+      "corsPolicy": "see wrangler",
+      "authScheme": "see package README",
+      "notes": "Hearing-ops; allowlisted for inventory."
+    },
+    {
+      "name": "p31-state",
+      "path": "04_SOFTWARE/p31-state",
+      "bindings": [],
+      "vars": [],
+      "corsPolicy": "see src — may use conditional * (inventory may WARN CORS)",
+      "authScheme": "see package README",
+      "notes": "P31 state worker; allowlisted for inventory."
+    },
+    {
+      "name": "p31ca",
+      "path": "04_SOFTWARE/p31ca",
+      "bindings": [],
+      "vars": [],
+      "corsPolicy": "static hub; passkey CORS in sub-worker",
+      "authScheme": "n/a (Pages-style)",
+      "notes": "p31ca.org static hub wrangler; allowlisted for inventory."
+    },
+    {
+      "name": "p31-pwa",
+      "path": "04_SOFTWARE/packages/node-zero/pwa",
+      "bindings": [],
+      "vars": [],
+      "corsPolicy": "see wrangler",
+      "authScheme": "see package README",
+      "notes": "PWA / node-zero; allowlisted for inventory."
+    },
+    {
+      "name": "p31-quantum-edge",
+      "path": "04_SOFTWARE/packages/quantum-edge",
+      "bindings": [],
+      "vars": [],
+      "corsPolicy": "see worker — * may WARN (triage)",
+      "authScheme": "see package README",
+      "notes": "Quantum edge package; first name p31-quantum-edge; allowlisted for inventory."
+    },
+    {
+      "name": "p31-command-center",
+      "path": "04_SOFTWARE/sovereign-command-center",
+      "bindings": [],
+      "vars": [],
+      "corsPolicy": "see wrangler",
+      "authScheme": "see package README",
+      "notes": "Sovereign command center; allowlisted for inventory."
+    },
+    {
+      "name": "spaceship-relay",
+      "path": "04_SOFTWARE/spaceship-earth",
+      "bindings": [],
+      "vars": [],
+      "corsPolicy": "see worker — * may WARN",
+      "authScheme": "see package README",
+      "notes": "Spaceship Earth relay; allowlisted for inventory."
+    },
+    {
+      "name": "p31-telemetry",
+      "path": "04_SOFTWARE/telemetry-worker",
+      "bindings": [],
+      "vars": [],
+      "corsPolicy": "see wrangler",
+      "authScheme": "see package README",
+      "notes": "Telemetry; allowlisted for inventory."
+    },
+    {
+      "name": "p31-workers",
+      "path": "04_SOFTWARE/workers",
+      "bindings": [],
+      "vars": [],
+      "corsPolicy": "see wrangler (multi DO names; first p31-workers)",
+      "authScheme": "see package README",
+      "notes": "Love ledger / shared workers monorepo; allowlisted for inventory."
+    }
+  ]
+}

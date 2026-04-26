@@ -39,6 +39,10 @@ Zenodo publications and citation standards — see `02_RESEARCH/` and Zenodo com
 
 No secrets in git. GDPR-aware defaults in user-facing apps — see package-level privacy notes.
 
+## P31 Open Doc Suite (baked in)
+
+**Git-native “office” layer** in the monorepo (no extra SaaS for letters, memos, watermarks, or grant CSV stubs): `docs/corporate/README.md` → `P31-DOC-SUITE.md` → `suite/print/*.html` and P31 Forge (`04_SOFTWARE/p31-forge`) for `.docx`. **Public explainer on the technical hub:** [p31ca.org/open-doc-suite.html](https://p31ca.org/open-doc-suite.html) (short: `/doc-suite`). **Brand tokens** sync: `cd 04_SOFTWARE/p31-forge && npm run brand:tokens`.
+
 ## Community and support
 
 Discord, GitHub, Ko-fi — links on main [README](../README.md).

@@ -1,586 +1,179 @@
 /**
- * P31 Labs: FIPS 203 ML-KEM and FIPS 204 ML-DSA Implementation
- * ---------------------------------------------------------
- * Post-Quantum Cryptography standards for quantum-resistant
- * key encapsulation and digital signatures.
+ * FIPS 203 (ML-KEM) + FIPS 204 (ML-DSA)
+ * Implementation via @noble/post-quantum — audited, zero-dependency, NIST KAT-verified.
  *
- * Based on NIST PQC Standardization Process winners:
- * - FIPS 203: Module-Lattice Key Encapsulation Mechanism (ML-KEM)
- * - FIPS 204: Module-Lattice Digital Signature Algorithm (ML-DSA)
+ * Security level → variant mapping:
+ *   Level 1 → ML-KEM-512  / ML-DSA-44   (128-bit post-quantum)
+ *   Level 3 → ML-KEM-768  / ML-DSA-65   (192-bit post-quantum) ← default
+ *   Level 5 → ML-KEM-1024 / ML-DSA-87   (256-bit post-quantum)
+ *
+ * FIPS 203 Table 3 key/ciphertext sizes (bytes):
+ *   ML-KEM-512:  ek=800,  dk=1632, ct=768,  ss=32
+ *   ML-KEM-768:  ek=1184, dk=2400, ct=1088, ss=32
+ *   ML-KEM-1024: ek=1568, dk=3168, ct=1568, ss=32
+ *
+ * FIPS 204 key/signature sizes (bytes):
+ *   ML-DSA-44: pk=1312, sk=2528, sig=2420
+ *   ML-DSA-65: pk=1952, sk=4032, sig=3309
+ *   ML-DSA-87: pk=2592, sk=4896, sig=4627
  */
 
-import * as crypto from "crypto";
-import {
-  generateQuantumSafeHash,
-  generateShake256Hash,
-} from "../pqcPrimitives";
+// @noble/post-quantum uses .js suffixes in its exports map
+import { ml_kem512, ml_kem768, ml_kem1024 } from "@noble/post-quantum/ml-kem.js";
+import { ml_dsa44, ml_dsa65, ml_dsa87 } from "@noble/post-quantum/ml-dsa.js";
+
+// ─── Types ───────────────────────────────────────────────────────────────────
 
 export interface MLKEMConfig {
   securityLevel: 1 | 3 | 5;
-  mode: "encapsulate" | "decapsulate";
 }
 
 export interface MLDSAConfig {
   securityLevel: 1 | 3 | 5;
-  mode: "sign" | "verify";
 }
 
 export interface MLKEMKeyPair {
-  publicKey: Buffer;
-  privateKey: Buffer;
-  encapsulationKey: Buffer;
+  /** Encapsulation key (ek) — public. Distribute to senders. */
+  publicKey: Uint8Array;
+  /** Decapsulation key (dk) — secret. Keep private. */
+  secretKey: Uint8Array;
+  /** @deprecated alias for publicKey */
+  privateKey: Uint8Array;
+  /** @deprecated alias for publicKey */
+  encapsulationKey: Uint8Array;
 }
 
-export interface MLDSASignature {
-  r: Buffer;
-  s: Buffer;
-  c: Buffer;
+export interface MLDSAKeyPair {
+  publicKey: Uint8Array;
+  secretKey: Uint8Array;
+  /** @deprecated alias for secretKey */
+  privateKey: Uint8Array;
 }
+
+/** FIPS 204 signature — flat byte array produced by ML-DSA. */
+export type MLDSASignature = Uint8Array;
+
+// ─── Variant tables ──────────────────────────────────────────────────────────
+
+const KEM_VARIANTS = {
+  1: ml_kem512,
+  3: ml_kem768,
+  5: ml_kem1024,
+} as const;
+
+const DSA_VARIANTS = {
+  1: ml_dsa44,
+  3: ml_dsa65,
+  5: ml_dsa87,
+} as const;
+
+// ─── ML-KEM (FIPS 203) ───────────────────────────────────────────────────────
 
 export class MLKEM {
-  private readonly config: MLKEMConfig;
-  private readonly params: {
-    n: number;
-    q: number;
-    eta: number;
-    du: number;
-    dv: number;
-  };
+  private readonly v: (typeof KEM_VARIANTS)[1 | 3 | 5];
 
-  constructor(config?: Partial<MLKEMConfig>) {
-    this.config = {
-      securityLevel: 3,
-      mode: "encapsulate",
-      ...config,
-    };
-
-    // ML-KEM parameters based on security level
-    this.params = this.getParameters(this.config.securityLevel);
+  constructor(config: Partial<MLKEMConfig> = {}) {
+    const level = (config.securityLevel ?? 3) as 1 | 3 | 5;
+    this.v = KEM_VARIANTS[level];
   }
 
-  /**
-   * Generate ML-KEM key pair
-   */
+  keygen(): MLKEMKeyPair {
+    const { publicKey, secretKey } = this.v.keygen();
+    return { publicKey, secretKey, privateKey: secretKey, encapsulationKey: publicKey };
+  }
+
+  /** @deprecated use keygen() */
   generateKeyPair(): MLKEMKeyPair {
-    console.log(
-      `🔐 Generating ML-KEM key pair (Security Level ${this.config.securityLevel})...`,
-    );
+    return this.keygen();
+  }
 
-    // Generate random seed for deterministic key generation
-    const seed = crypto.randomBytes(64);
-    const publicKey = this.derivePublicKey(seed);
-    const privateKey = this.derivePrivateKey(seed, publicKey);
-    const encapsulationKey = this.deriveEncapsulationKey(seed, publicKey);
-
-    return {
-      publicKey,
-      privateKey,
-      encapsulationKey,
-    };
+  encapsulate(publicKey: Uint8Array): { cipherText: Uint8Array; sharedSecret: Uint8Array } {
+    const { cipherText, sharedSecret } = this.v.encapsulate(publicKey);
+    return { cipherText, sharedSecret };
   }
 
   /**
-   * Encapsulate a shared secret using the public key
+   * Recover the shared secret from a ciphertext.
+   * Returns the implicit-reject value on any tamper — never throws.
    */
-  encapsulate(publicKey: Buffer): { ciphertext: Buffer; sharedSecret: Buffer } {
-    console.log("🔒 Encapsulating shared secret...");
-
-    // Generate ephemeral key pair
-    const ephemeralSeed = crypto.randomBytes(64);
-    const ephemeralPublicKey = this.derivePublicKey(ephemeralSeed);
-    const ephemeralPrivateKey = this.derivePrivateKey(
-      ephemeralSeed,
-      ephemeralPublicKey,
-    );
-
-    // Generate shared secret
-    const sharedSecret = this.generateSharedSecret(
-      ephemeralPrivateKey,
-      publicKey,
-    );
-
-    // Generate ciphertext
-    const ciphertext = this.generateCiphertext(
-      ephemeralPublicKey,
-      sharedSecret,
-      publicKey,
-    );
-
-    return {
-      ciphertext,
-      sharedSecret,
-    };
-  }
-
-  /**
-   * Decapsulate a shared secret from ciphertext using the private key
-   */
-  decapsulate(
-    ciphertext: Buffer,
-    privateKey: Buffer,
-    publicKey: Buffer,
-  ): Buffer {
-    console.log("🔓 Decapsulating shared secret...");
-
-    try {
-      // Extract components from ciphertext
-      const { ephemeralPublicKey, sharedSecret } =
-        this.extractCiphertextComponents(ciphertext, privateKey, publicKey);
-
-      // Verify and return shared secret
-      return this.verifyDecapsulation(
-        ephemeralPublicKey,
-        sharedSecret,
-        privateKey,
-        publicKey,
-      );
-    } catch (error) {
-      console.error("Decapsulation failed:", error);
-      throw new Error("ML-KEM decapsulation failed");
-    }
-  }
-
-  /**
-   * Get ML-KEM parameters based on security level
-   */
-  private getParameters(securityLevel: number): {
-    n: number;
-    q: number;
-    eta: number;
-    du: number;
-    dv: number;
-  } {
-    switch (securityLevel) {
-      case 1:
-        return { n: 256, q: 3329, eta: 2, du: 10, dv: 4 };
-      case 3:
-        return { n: 256, q: 3329, eta: 2, du: 11, dv: 5 };
-      case 5:
-        return { n: 256, q: 3329, eta: 4, du: 11, dv: 5 };
-      default:
-        throw new Error(`Unsupported security level: ${securityLevel}`);
-    }
-  }
-
-  /**
-   * Derive public key from seed
-   */
-  private derivePublicKey(seed: Buffer): Buffer {
-    // Simplified public key derivation using SHAKE256
-    const hash = generateShake256Hash(seed, 1024);
-    return Buffer.from(hash, "hex");
-  }
-
-  /**
-   * Derive private key from seed and public key
-   */
-  private derivePrivateKey(seed: Buffer, publicKey: Buffer): Buffer {
-    // Combine seed and public key for private key derivation
-    const combined = Buffer.concat([seed, publicKey]);
-    const hash = generateShake256Hash(combined, 2048);
-    return Buffer.from(hash, "hex");
-  }
-
-  /**
-   * Derive encapsulation key
-   */
-  private deriveEncapsulationKey(seed: Buffer, publicKey: Buffer): Buffer {
-    const combined = Buffer.concat([seed, publicKey]);
-    const hash = generateShake256Hash(combined, 512);
-    return Buffer.from(hash, "hex");
-  }
-
-  /**
-   * Generate shared secret
-   */
-  private generateSharedSecret(privateKey: Buffer, publicKey: Buffer): Buffer {
-    // Simplified shared secret generation using quantum-safe hashing
-    const combined = Buffer.concat([privateKey, publicKey]);
-    const hash = generateQuantumSafeHash(combined);
-    return Buffer.from(hash, "hex");
-  }
-
-  /**
-   * Generate ciphertext
-   */
-  private generateCiphertext(
-    ephemeralPublicKey: Buffer,
-    sharedSecret: Buffer,
-    publicKey: Buffer,
-  ): Buffer {
-    // Combine all components for ciphertext
-    const hashResult = generateQuantumSafeHash(
-      Buffer.concat([ephemeralPublicKey, sharedSecret, publicKey]),
-    );
-    const ciphertext = Buffer.concat([
-      ephemeralPublicKey,
-      sharedSecret,
-      Buffer.from(hashResult, "hex"),
-    ]);
-    return ciphertext;
-  }
-
-  /**
-   * Extract components from ciphertext
-   */
-  private extractCiphertextComponents(
-    ciphertext: Buffer,
-    privateKey: Buffer,
-    publicKey: Buffer,
-  ): { ephemeralPublicKey: Buffer; sharedSecret: Buffer } {
-    // Simplified extraction (in practice, this would be more complex)
-    const ephemeralPublicKey = ciphertext.slice(0, 128);
-    const sharedSecret = ciphertext.slice(128, 256);
-    return { ephemeralPublicKey, sharedSecret };
-  }
-
-  /**
-   * Verify decapsulation
-   */
-  private verifyDecapsulation(
-    ephemeralPublicKey: Buffer,
-    sharedSecret: Buffer,
-    privateKey: Buffer,
-    publicKey: Buffer,
-  ): Buffer {
-    // Verify the shared secret is valid
-    const expectedSharedSecret = this.generateSharedSecret(
-      privateKey,
-      publicKey,
-    );
-    const isValid = crypto.timingSafeEqual(sharedSecret, expectedSharedSecret);
-
-    if (!isValid) {
-      throw new Error("Decapsulation verification failed");
-    }
-
-    return sharedSecret;
+  decapsulate(cipherText: Uint8Array, secretKey: Uint8Array): Uint8Array {
+    return this.v.decapsulate(cipherText, secretKey);
   }
 }
+
+// ─── ML-DSA (FIPS 204) ───────────────────────────────────────────────────────
 
 export class MLDSA {
-  private readonly config: MLDSAConfig;
-  private readonly params: {
-    n: number;
-    q: number;
-    eta: number;
-    beta: number;
-    gamma1: number;
-    gamma2: number;
-  };
+  private readonly v: (typeof DSA_VARIANTS)[1 | 3 | 5];
 
-  constructor(config?: Partial<MLDSAConfig>) {
-    this.config = {
-      securityLevel: 3,
-      mode: "sign",
-      ...config,
-    };
-
-    // ML-DSA parameters based on security level
-    this.params = this.getParameters(this.config.securityLevel);
+  constructor(config: Partial<MLDSAConfig> = {}) {
+    const level = (config.securityLevel ?? 3) as 1 | 3 | 5;
+    this.v = DSA_VARIANTS[level];
   }
 
-  /**
-   * Generate ML-DSA key pair
-   */
-  generateKeyPair(): { publicKey: Buffer; privateKey: Buffer } {
-    console.log(
-      `✍️ Generating ML-DSA key pair (Security Level ${this.config.securityLevel})...`,
-    );
-
-    // Generate random seed for deterministic key generation
-    const seed = crypto.randomBytes(64);
-    const publicKey = this.derivePublicKey(seed);
-    const privateKey = this.derivePrivateKey(seed, publicKey);
-
-    return {
-      publicKey,
-      privateKey,
-    };
+  keygen(): MLDSAKeyPair {
+    const { publicKey, secretKey } = this.v.keygen();
+    return { publicKey, secretKey, privateKey: secretKey };
   }
 
-  /**
-   * Sign a message using the private key
-   */
-  sign(message: Buffer, privateKey: Buffer, publicKey: Buffer): MLDSASignature {
-    console.log("✍️ Signing message...");
-
-    // Generate random nonce
-    const nonce = crypto.randomBytes(64);
-
-    // Generate signature components
-    const r = this.generateR(nonce, message, privateKey, publicKey);
-    const s = this.generateS(nonce, message, privateKey, publicKey, r);
-    const c = this.generateChallenge(message, r, s, publicKey);
-
-    return { r, s, c };
+  /** @deprecated use keygen() */
+  generateKeyPair(): MLDSAKeyPair {
+    return this.keygen();
   }
 
-  /**
-   * Verify a signature using the public key
-   */
-  verify(
-    message: Buffer,
-    signature: MLDSASignature,
-    publicKey: Buffer,
-  ): boolean {
-    console.log("✅ Verifying signature...");
-
-    try {
-      // Verify signature components
-      const isValid = this.verifySignatureComponents(
-        message,
-        signature,
-        publicKey,
-      );
-      return isValid;
-    } catch (error) {
-      console.error("Signature verification failed:", error);
-      return false;
-    }
+  sign(message: Uint8Array, secretKey: Uint8Array): MLDSASignature {
+    return this.v.sign(message, secretKey);
   }
 
-  /**
-   * Get ML-DSA parameters based on security level
-   */
-  private getParameters(securityLevel: number): {
-    n: number;
-    q: number;
-    eta: number;
-    beta: number;
-    gamma1: number;
-    gamma2: number;
-  } {
-    switch (securityLevel) {
-      case 1:
-        return {
-          n: 256,
-          q: 8380417,
-          eta: 2,
-          beta: 78,
-          gamma1: 131072,
-          gamma2: 0,
-        };
-      case 3:
-        return {
-          n: 256,
-          q: 8380417,
-          eta: 4,
-          beta: 196,
-          gamma1: 131072,
-          gamma2: 0,
-        };
-      case 5:
-        return {
-          n: 256,
-          q: 8380417,
-          eta: 2,
-          beta: 124,
-          gamma1: 524288,
-          gamma2: 16384,
-        };
-      default:
-        throw new Error(`Unsupported security level: ${securityLevel}`);
-    }
-  }
-
-  /**
-   * Derive public key from seed
-   */
-  private derivePublicKey(seed: Buffer): Buffer {
-    // Simplified public key derivation using SHAKE256
-    const hash = generateShake256Hash(seed, 1024);
-    return Buffer.from(hash, "hex");
-  }
-
-  /**
-   * Derive private key from seed and public key
-   */
-  private derivePrivateKey(seed: Buffer, publicKey: Buffer): Buffer {
-    // Combine seed and public key for private key derivation
-    const combined = Buffer.concat([seed, publicKey]);
-    const hash = generateShake256Hash(combined, 2048);
-    return Buffer.from(hash, "hex");
-  }
-
-  /**
-   * Generate signature component R
-   */
-  private generateR(
-    nonce: Buffer,
-    message: Buffer,
-    privateKey: Buffer,
-    publicKey: Buffer,
-  ): Buffer {
-    const combined = Buffer.concat([nonce, message, privateKey, publicKey]);
-    const hash = generateShake256Hash(combined, 512);
-    return Buffer.from(hash, "hex");
-  }
-
-  /**
-   * Generate signature component S
-   */
-  private generateS(
-    nonce: Buffer,
-    message: Buffer,
-    privateKey: Buffer,
-    publicKey: Buffer,
-    r: Buffer,
-  ): Buffer {
-    const combined = Buffer.concat([nonce, message, privateKey, publicKey, r]);
-    const hash = generateShake256Hash(combined, 512);
-    return Buffer.from(hash, "hex");
-  }
-
-  /**
-   * Generate challenge value C
-   */
-  private generateChallenge(
-    message: Buffer,
-    r: Buffer,
-    s: Buffer,
-    publicKey: Buffer,
-  ): Buffer {
-    const combined = Buffer.concat([message, r, s, publicKey]);
-    const hash = generateQuantumSafeHash(combined);
-    return Buffer.from(hash, "hex");
-  }
-
-  /**
-   * Verify signature components
-   *
-   * In a Fiat-Shamir with Aborts scheme, verification re-derives the
-   * challenge c from (message, r, s, publicKey). If the signature was
-   * generated honestly with knowledge of the private key, the re-derived
-   * challenge will match signature.c.
-   *
-   * Note: generateR and generateS require the nonce (randomness from signing).
-   * We cannot re-derive r or s during verification — only c is verifiable.
-   * This is by design: the "with aborts" part means r and s contain hidden
-   * randomness that only the signer can produce.
-   */
-  private verifySignatureComponents(
-    message: Buffer,
-    signature: MLDSASignature,
-    publicKey: Buffer,
-  ): boolean {
-    // Validate signature component lengths
-    if (
-      signature.r.length === 0 ||
-      signature.s.length === 0 ||
-      signature.c.length === 0
-    ) {
-      return false;
-    }
-
-    // Re-derive the challenge from the signature components and message
-    // c = H(message || r || s || publicKey)
-    const expectedC = this.generateChallenge(
-      message,
-      signature.r,
-      signature.s,
-      publicKey,
-    );
-
-    // Timing-safe comparison of challenge values
-    if (signature.c.length !== expectedC.length) return false;
-    return crypto.timingSafeEqual(signature.c, expectedC);
+  /** Noble verify order: (sig, msg, publicKey) */
+  verify(message: Uint8Array, signature: MLDSASignature, publicKey: Uint8Array): boolean {
+    return this.v.verify(signature, message, publicKey);
   }
 }
+
+// ─── Hybrid scheme ───────────────────────────────────────────────────────────
 
 export class HybridPQCScheme {
-  private readonly mlkem: MLKEM;
-  private readonly mldsa: MLDSA;
+  private readonly kem: MLKEM;
+  private readonly dsa: MLDSA;
 
   constructor(securityLevel: 1 | 3 | 5 = 3) {
-    this.mlkem = new MLKEM({ securityLevel, mode: "encapsulate" });
-    this.mldsa = new MLDSA({ securityLevel, mode: "sign" });
+    this.kem = new MLKEM({ securityLevel });
+    this.dsa = new MLDSA({ securityLevel });
   }
 
-  /**
-   * Generate hybrid key pair (ML-KEM + ML-DSA)
-   */
   generateHybridKeyPair(): {
     mlkemKeys: MLKEMKeyPair;
-    mldsaKeys: { publicKey: Buffer; privateKey: Buffer };
+    mldsaKeys: MLDSAKeyPair;
   } {
-    console.log("🔐 Generating hybrid PQC key pair...");
-
-    const mlkemKeys = this.mlkem.generateKeyPair();
-    const mldsaKeys = this.mldsa.generateKeyPair();
-
-    return {
-      mlkemKeys,
-      mldsaKeys,
-    };
+    return { mlkemKeys: this.kem.keygen(), mldsaKeys: this.dsa.keygen() };
   }
 
   /**
-   * Sign and encrypt a message using hybrid scheme
+   * Sign `message` with ML-DSA + encapsulate a fresh shared secret with ML-KEM.
+   * Caller uses `sharedSecret` as the key for symmetric encryption (AES-256-GCM).
    */
-  signAndEncrypt(
-    message: Buffer,
-    privateKey: Buffer,
-    publicKey: Buffer,
-  ): { ciphertext: Buffer; signature: MLDSASignature } {
-    console.log("🔒 Signing and encrypting message...");
-
-    // Sign the message
-    const signature = this.mldsa.sign(message, privateKey, publicKey);
-
-    // Encrypt the message and signature
-    const combinedData = Buffer.concat([
-      message,
-      signature.r,
-      signature.s,
-      signature.c,
-    ]);
-    const { ciphertext } = this.mlkem.encapsulate(publicKey);
-
-    return {
-      ciphertext,
-      signature,
-    };
+  signAndEncapsulate(
+    message: Uint8Array,
+    dsaSecretKey: Uint8Array,
+    kemPublicKey: Uint8Array,
+  ): { kemCipherText: Uint8Array; sharedSecret: Uint8Array; signature: MLDSASignature } {
+    const signature = this.dsa.sign(message, dsaSecretKey);
+    const { cipherText: kemCipherText, sharedSecret } = this.kem.encapsulate(kemPublicKey);
+    return { kemCipherText, sharedSecret, signature };
   }
 
-  /**
-   * Decrypt and verify a message using hybrid scheme
-   */
-  decryptAndVerify(
-    ciphertext: Buffer,
+  decapsulateAndVerify(
+    kemCipherText: Uint8Array,
+    kemSecretKey: Uint8Array,
+    message: Uint8Array,
     signature: MLDSASignature,
-    privateKey: Buffer,
-    publicKey: Buffer,
-  ): { message: Buffer; isValid: boolean } {
-    console.log("🔓 Decrypting and verifying message...");
-
-    try {
-      // Decapsulate the shared secret
-      const sharedSecret = this.mlkem.decapsulate(
-        ciphertext,
-        privateKey,
-        publicKey,
-      );
-
-      // Verify the signature
-      const isValid = this.mldsa.verify(sharedSecret, signature, publicKey);
-
-      return {
-        message: sharedSecret,
-        isValid,
-      };
-    } catch (error) {
-      console.error("Decryption and verification failed:", error);
-      return {
-        message: Buffer.alloc(0),
-        isValid: false,
-      };
-    }
+    dsaPublicKey: Uint8Array,
+  ): { sharedSecret: Uint8Array; isValid: boolean } {
+    const sharedSecret = this.kem.decapsulate(kemCipherText, kemSecretKey);
+    const isValid = this.dsa.verify(message, signature, dsaPublicKey);
+    return { sharedSecret, isValid };
   }
 }
 
-export default {
-  MLKEM,
-  MLDSA,
-  HybridPQCScheme,
-};
+export default { MLKEM, MLDSA, HybridPQCScheme };

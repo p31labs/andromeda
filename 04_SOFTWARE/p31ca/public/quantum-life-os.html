@@ -8,20 +8,14 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/p31-style.css">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/p31-tailwind-extend.js"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: {
-                        sans: ['"Atkinson Hyperlegible"', 'sans-serif'],
-                        mono: ['"JetBrains Mono"', 'monospace'],
-                    },
-                    colors: {
-                        void: '#05050b', card: '#14141f',
-                        qcyan: '#00ffff', qpurple: '#8a2be2',
-                        qgreen: '#39ff14', qorange: '#ff6600',
-                    }
+                    ...window.P31_TAILWIND_EXTEND
                 }
             }
         }
@@ -229,7 +223,7 @@
         <p class="mb-4 font-light">"Trust the pattern. The geometry does not negotiate."</p>
         <div class="flex justify-center gap-6 font-mono text-xs">
             <a href="quantum-os.html" class="text-[#00ffff] hover:text-[#8a2be2] transition-colors">← About</a>
-            <a href="index.html" class="text-[#00ffff] hover:text-[#8a2be2] transition-colors">Hub</a>
+            <a href="/" class="text-[#00ffff] hover:text-[#8a2be2] transition-colors">Hub</a>
             <a href="simple-sovereignty.html" class="text-[#00ffff] hover:text-[#8a2be2] transition-colors">Sovereign Stack</a>
         </div>
     </footer>

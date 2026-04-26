@@ -1,0 +1,365 @@
+{
+  "schema": "p31.ground-truth/1.0.0",
+  "version": "1.0.0",
+  "updated": "2026-04-26",
+  "mission": "Build, create, connect — decentralized family mesh. This file is the machine-routable spine for p31ca.org; human narrative stays in root CLAUDE.md, P31 COGNITIVE PASSPORT — v5.md, and docs/. Version namespaces: P31 home docs/CANONICAL-NUMBERING.md; values: P31 home p31-constants.json.",
+  "canonicalNumbering": {
+    "spec": "P31 home: docs/CANONICAL-NUMBERING.md",
+    "passportLongForm": {
+      "edition": "5.1",
+      "sourceFile": "P31 COGNITIVE PASSPORT — v5.md",
+      "h1Authoritative": true
+    },
+    "jsonSchemaIds": {
+      "cognitivePassport": "p31.cognitivePassport/1.0.0",
+      "groundTruth": "p31.ground-truth/1.0.0"
+    },
+    "bondingTestBaseline": {
+      "tests": 413,
+      "suites": 30,
+      "asOf": "2026-04-26"
+    }
+  },
+  "sites": {
+    "p31ca": {
+      "label": "Technical hub (p31ca.org)",
+      "publicRoot": "https://p31ca.org",
+      "repoPath": "andromeda/04_SOFTWARE/p31ca (this tree)"
+    },
+    "phosphorus31": {
+      "label": "Public org / programs (phosphorus31.org)",
+      "publicRoot": "https://phosphorus31.org",
+      "repoPath": "separate tree — not governed by this file"
+    },
+    "andromedaCorporate": {
+      "label": "P31 Open Doc Suite + corporate one-pager (Andromeda repo, not a separate deploy)",
+      "repoPath": "andromeda/docs/corporate",
+      "githubTree": "https://github.com/p31labs/andromeda/tree/main/docs/corporate",
+      "publicSurfaceOnP31ca": "https://p31ca.org/open-doc-suite.html"
+    },
+    "homeVertical": {
+      "label": "P31 home — Soup, passport authoring, wcd33",
+      "repoPath": "workspace above this monorepo"
+    }
+  },
+  "routes": {
+    "canonicalDome": {
+      "path": "/dome/",
+      "implementation": "src/pages/dome.astro",
+      "label": "Sovereign Cockpit Dome (K₄ interactive)",
+      "note": "Primary CTA from hub home. Not the same product as observatory. Astro uses trailingSlash:'always'; bare /dome redirects to /dome/. Do not add _redirects that send /dome/ back to /dome."
+    },
+    "observatory": {
+      "path": "/observatory.html",
+      "implementation": "public/observatory.html",
+      "label": "OBSERVATORY — geodesic panel inspector",
+      "registryId": "observatory",
+      "note": "Hub registry appUrl must stay observatory.html."
+    },
+    "k4market": {
+      "path": "/k4market.html",
+      "implementation": "public/k4market.html",
+      "label": "K4 MARKET — tetrahedral price geometry (Three.js r160)",
+      "registryId": "k4market",
+      "note": "Main viz surface. Symbol search and Larmor ring live in tomography.html."
+    },
+    "tomography": {
+      "path": "/tomography.html",
+      "implementation": "public/tomography.html",
+      "label": "K4 TOMOGRAPHY — symbol-seeded depth view (Three.js r183)",
+      "registryId": "tomography",
+      "note": "Depth companion to k4market.html. Linked from k4market nav."
+    },
+    "planetaryOnboard": {
+      "path": "/planetary-onboard.html",
+      "implementation": "public/planetary-onboard.html",
+      "label": "Planetary Onboarding — welcome packages + five-phase Wye → Delta",
+      "note": "Phase 0: p31.welcomePackages/1.0.0 picker (kid, adult, parent, neuro, builder, default); ?welcome=kid skips to flow. Phases 1–5 unchanged. Meta persists welcomeKey + label. Passkey stub. Redirect mesh-start?dial=&welcome=."
+    },
+    "welcomePackages": {
+      "path": "/p31-welcome-packages.json",
+      "implementation": "public/p31-welcome-packages.json",
+      "label": "Welcome package definitions (onboard + mesh-start)",
+      "note": "Schema p31.welcomePackages/1.0.0. Drives copy, dial default, personalTetra dock overrides, mesh-start chips. Fetched by planetary-onboard.html and mesh-start.html."
+    },
+    "superCentaurStarter": {
+      "path": "/p31-super-centaur-starter.html",
+      "implementation": "public/p31-super-centaur-starter.html",
+      "label": "Super-Centaur starter pack — data, finance, structural sovereignty (human page)",
+      "note": "Tailwind CDN. Indexes CWP-P31-SC / MAP / ECO, mesh-bridge MESH table, onboarding links. Short /centaur and /super-centaur in _redirects. Pair with p31-super-centaur-pack.json."
+    },
+    "superCentaurPack": {
+      "path": "/p31-super-centaur-pack.json",
+      "implementation": "public/p31-super-centaur-pack.json",
+      "label": "Super-Centaur starter pack — machine manifest",
+      "note": "Schema p31.superCentaurStarterPack/1.0.0. CWPs, mesh fleet URLs from CWP-30, MAP anchors, p31ca URLs, condensed checklist."
+    },
+    "p31StyleCss": {
+      "path": "/p31-style.css",
+      "implementation": "public/p31-style.css",
+      "label": "P31 canonical design tokens (CSS variables)",
+      "note": "Generated from andromeda/04_SOFTWARE/design-tokens/p31-universal-canon.json via npm run apply:p31-style. Hub default dark; org/light via data-p31-appearance=org. Linked by static pages, about template, cognitive-passport mirror."
+    },
+    "p31TailwindCdn": {
+      "path": "/p31-tailwind-extend.js",
+      "implementation": "public/p31-tailwind-extend.js",
+      "label": "Tailwind CDN preset (window.P31_TAILWIND_EXTEND)",
+      "note": "Generated with p31-style.css; static HTML loads after cdn.tailwindcss.com."
+    },
+    "p31CanonDemo": {
+      "path": "/p31-canon-demo.html",
+      "implementation": "public/p31-canon-demo.html",
+      "label": "Universal canon — interactive hub/org switch + token gallery",
+      "note": "Tailwind CDN. Short /canon. Showcases p31-universal-canon.json via p31-style.css."
+    },
+    "meshStart": {
+      "path": "/mesh-start.html",
+      "implementation": "public/mesh-start.html",
+      "label": "EDE Personal — private assistant + EDE entry (k4-personal)",
+      "note": "Loads /p31-welcome-packages.json from meta.welcomeKey or ?welcome=. Personalizes headline, tetra blurb, prompt chips; merges package docks into first-time PUT /tetra. Hub fusion ?hub=&hubs=. ?agent= staging. Short /start in _redirects."
+    },
+    "initialBuild": {
+      "path": "/initial-build.html",
+      "implementation": "public/initial-build.html",
+      "label": "Initial Build — production entry for CWP-P31-IB-2026-01 (intake → subject_id → bake personal tetra)",
+      "note": "Short /build in _redirects. Normative spec: integration-handoff/INITIAL-BUILD-SITE-STRICT-PLAN.md. Phased UI: shell today; full intake and PUT sequence per CWP WBS. Sister to CWP-P31-PAR (Personal Agent Room)."
+    },
+    "connect": {
+      "path": "/connect.html",
+      "implementation": "public/connect.html",
+      "label": "The Mesh — K₄ cage + product graph (Three.js r160)",
+      "note": "Envision / Build / Connect navigator. Family cage + product satellites. Click nodes to open products."
+    },
+    "delta": {
+      "path": "/delta.html",
+      "implementation": "public/delta.html",
+      "label": "Wye→Delta — public narrative page explaining mesh resilience and onboarding",
+      "note": "No Three.js. Uses Tailwind CDN. Entry-point for external visitors — links to /planetary-onboard.html and /connect.html."
+    },
+    "auth": {
+      "path": "/auth.html",
+      "implementation": "public/auth.html",
+      "label": "Authenticate — passkey verification page for returning mesh members",
+      "note": "No Three.js. Calls /api/passkey/auth-begin + auth-finish. Falls back gracefully when Worker not deployed. Short URL: /auth via _redirects."
+    },
+    "latticeOracle": {
+      "path": "/magic-crystal.html",
+      "implementation": "public/magic-crystal.html",
+      "label": "Lattice Oracle — toy crystallomancy (CSPRNG, client-only)",
+      "note": "No network. Short URL /oracle via _redirects. Not medical, legal, or financial advice."
+    },
+    "creatorEconomy": {
+      "path": "/creator-economy.json",
+      "implementation": "public/creator-economy.json",
+      "label": "Creator Economy Contract — p31.creatorEconomy/1.0.0",
+      "note": "CI-verified fee/split disclosure. Source: ground-truth/creator-economy.json. Verifier: scripts/verify-creator-economy.mjs. Runs in prebuild. Public endpoint: /creator-economy.json (CORS *). Version 1.0.0 constraints: platform fee = 0, creator share = 1.0, room access free."
+    },
+    "geodesic": {
+      "path": "/geodesic.html",
+      "implementation": "public/geodesic.html",
+      "label": "GEODESIC — 3D structure builder + K₄ live room",
+      "doc": "P31 home docs/GEODESIC-CAMPAIGN.md",
+      "note": "Three.js r160. Static mode: 5-track progressive coach (BONDING-style tutor + tool unlocks, localStorage geodesic:progress:v1; skip=full unlock). ?room=<id> bypasses coach and enables K4 live: wss to GeodesicRoom DO (e.g. geodesic-room.trimtab-signal.workers.dev) for authoritative vertices (v0–v3) plus Phase-1 shared builder shapes (tet/oct/ico/cube) persisted in the DO, Maxwell rigidity summary on /state and in hello, 50-shape cap. Full spec: workspace docs/GEODESIC-CAMPAIGN.md when P31 home tree is present."
+    },
+    "openDocSuite": {
+      "path": "/open-doc-suite.html",
+      "implementation": "public/open-doc-suite.html",
+      "label": "P31 Open Doc Suite (git-native office pack + Forge bridge)",
+      "note": "Source tree: andromeda/docs/corporate. .docx via 04_SOFTWARE/p31-forge. Short path: /doc-suite (redirect)."
+    },
+    "devWorkbench": {
+      "path": "/dev-workbench.html",
+      "implementation": "public/dev-workbench.html",
+      "label": "P31 Dev Workbench — ephemeral mesh reads + edge agent + orchestrator (read)",
+      "note": "Single static page; sessionStorage only; fetches p31-constants mesh URLs + p31-agent-hub + p31-orchestrator. No secrets. Short /dev in _redirects. AGENT_HUB_SECRET blocks browser chat; mesh GETs always work when CORS allows."
+    },
+    "operatorShell": {
+      "path": "/ops/",
+      "implementation": "src/pages/ops/index.astro",
+      "label": "Operator shell — unified interactive frame (CWP-P31-UI-2026-01)",
+      "doc": "p31ca/docs/CONTROLLED-WORK-PACKAGE-INTERACTIVE-OPERATOR-UI.md",
+      "note": "Phase A–C: edge operator shift GET + local tag copy; glass ingest. CWP v1.0.3. Trust: EDGE-SECURITY.md; POST shift on command-center only."
+    }
+  },
+  "edgeRedirects": [
+    {
+      "from": "/app/ede",
+      "to": "/ede-about.html",
+      "status": 302
+    },
+    {
+      "from": "/app/buffer",
+      "to": "/buffer-about.html",
+      "status": 302
+    },
+    {
+      "from": "/app/larmor",
+      "to": "/larmor.html",
+      "status": 302
+    },
+    {
+      "from": "/dome.html",
+      "to": "/dome/",
+      "status": 301
+    },
+    {
+      "from": "/onboard",
+      "to": "/planetary-onboard.html",
+      "status": 301
+    },
+    {
+      "from": "/start",
+      "to": "/mesh-start.html",
+      "status": 301
+    },
+    {
+      "from": "/mesh",
+      "to": "/connect.html",
+      "status": 301
+    },
+    {
+      "from": "/delta",
+      "to": "/delta.html",
+      "status": 301
+    },
+    {
+      "from": "/why",
+      "to": "/delta.html",
+      "status": 301
+    },
+    {
+      "from": "/auth",
+      "to": "/auth.html",
+      "status": 301
+    },
+    {
+      "from": "/oracle",
+      "to": "/magic-crystal.html",
+      "status": 301
+    },
+    {
+      "from": "/doc-suite",
+      "to": "/open-doc-suite.html",
+      "status": 301
+    },
+    {
+      "from": "/centaur",
+      "to": "/p31-super-centaur-starter.html",
+      "status": 301
+    },
+    {
+      "from": "/super-centaur",
+      "to": "/p31-super-centaur-starter.html",
+      "status": 301
+    },
+    {
+      "from": "/canon",
+      "to": "/p31-canon-demo.html",
+      "status": 301
+    },
+    {
+      "from": "/tokens",
+      "to": "/p31-canon-demo.html",
+      "status": 301
+    },
+    {
+      "from": "/dev",
+      "to": "/dev-workbench.html",
+      "status": 301
+    },
+    {
+      "from": "/build",
+      "to": "/initial-build.html",
+      "status": 301
+    }
+  ],
+  "fileSnippets": [
+    {
+      "id": "p31-style-void-token",
+      "path": "public/p31-style.css",
+      "mustIncludeSubstring": "--p31-void:"
+    },
+    {
+      "id": "dome.noscriptBackToHub",
+      "path": "src/pages/dome.astro",
+      "mustIncludeSubstring": "<a href=\"/\" class=\"px-6 py-3 bg-white/20"
+    },
+    {
+      "id": "openDocSuite.page",
+      "path": "public/open-doc-suite.html",
+      "mustIncludeSubstring": "P31 Open Doc Suite"
+    },
+    {
+      "id": "devWorkbench.page",
+      "path": "public/dev-workbench.html",
+      "mustIncludeSubstring": "P31 Dev Workbench"
+    },
+    {
+      "id": "initialBuild.page",
+      "path": "public/initial-build.html",
+      "mustIncludeSubstring": "CWP-P31-IB-2026-01"
+    },
+    {
+      "id": "subjectIdDerivation.lib",
+      "path": "public/lib/p31-subject-id.js",
+      "mustIncludeSubstring": "p31.subjectIdDerivation/0.1.0"
+    },
+    {
+      "id": "initialBuild.bakeModule",
+      "path": "public/lib/p31-initial-build-bake.js",
+      "mustIncludeSubstring": "p31.buildRecord/0.1.0"
+    }
+  ],
+  "registryAppUrlInvariants": [
+    {
+      "id": "observatory",
+      "appUrl": "observatory.html"
+    },
+    {
+      "id": "ede",
+      "appUrl": "ede.html"
+    },
+    {
+      "id": "sovereign",
+      "appUrl": "sovereign.html"
+    },
+    {
+      "id": "k4market",
+      "appUrl": "k4market.html"
+    },
+    {
+      "id": "tomography",
+      "appUrl": "tomography.html"
+    },
+    {
+      "id": "super-centaur",
+      "appUrl": "p31-super-centaur-starter.html"
+    },
+    {
+      "id": "canon-demo",
+      "appUrl": "p31-canon-demo.html"
+    }
+  ],
+  "threejs": {
+    "dome.astro": {
+      "path": "src/pages/dome.astro",
+      "mustIncludeSubstring": "three@0.183.0"
+    },
+    "observatory.html": {
+      "path": "public/observatory.html",
+      "mustIncludeSubstring": "three@0.160.0"
+    },
+    "k4market.html": {
+      "path": "public/k4market.html",
+      "mustIncludeSubstring": "three@0.160.0"
+    },
+    "tomography.html": {
+      "path": "public/tomography.html",
+      "mustIncludeSubstring": "three@0.183.0"
+    },
+    "connect.html": {
+      "path": "public/connect.html",
+      "mustIncludeSubstring": "three@0.160.0"
+    }
+  }
+}

@@ -329,7 +329,7 @@ async function relaySendPing(to: string, reaction: string, message?: string): Pr
 
 // ── Backend dispatch ──
 
-function useRelay(): boolean {
+function isRelayConfigured(): boolean {
   return RELAY_URL.length > 0;
 }
 
@@ -340,7 +340,7 @@ export async function createRoom(
   playerColor: string,
   mode: string,
 ): Promise<{ code: string; room: Room; playerId: string }> {
-  const result = useRelay()
+  const result = isRelayConfigured()
     ? await relayCreateRoom(playerName, playerColor, mode)
     : await mockCreateRoom(playerName, playerColor, mode);
   currentRoom = result.room;
@@ -354,7 +354,7 @@ export async function joinRoom(
   playerColor: string,
   mode: string,
 ): Promise<{ room: Room; playerId: string }> {
-  const result = useRelay()
+  const result = isRelayConfigured()
     ? await relayJoinRoom(code, playerName, playerColor, mode)
     : await mockJoinRoom(code, playerName, playerColor, mode);
   currentRoom = result.room;
@@ -402,7 +402,7 @@ function flushPush(): void {
   const state = pendingState;
   pendingState = null;
 
-  const doFlush = useRelay()
+  const doFlush = isRelayConfigured()
     ? () => relayPushState(state)
     : () => mockPushState(state);
 
@@ -413,7 +413,7 @@ function flushPush(): void {
 
 export async function sendPing(to: string, reaction: string, message?: string): Promise<void> {
   try {
-    if (useRelay()) {
+    if (isRelayConfigured()) {
       await relaySendPing(to, reaction, message);
     } else {
       await mockSendPing(to, reaction, message);
@@ -435,7 +435,7 @@ export function startPolling(
   const poll = async () => {
     try {
       let room: Room | null;
-      if (useRelay()) {
+      if (isRelayConfigured()) {
         if (!currentRoom) return;
         room = await relayFetchRoom(currentRoom.code);
       } else {
@@ -507,7 +507,7 @@ export function startPolling(
   document.addEventListener('visibilitychange', visibilityHandler);
 
   // For mock relay: listen to localStorage changes from other tabs
-  if (!useRelay()) {
+  if (!isRelayConfigured()) {
     storageHandler = (e: StorageEvent) => {
       if (!currentRoom) return;
       if (e.key === storageKey(currentRoom.code) && e.newValue) {

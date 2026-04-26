@@ -31,11 +31,16 @@ async function forwardTo(env, targetName, envelope) {
 }
 
 // CORS preflight handler
+const ALLOWED_ORIGINS = new Set([
+  'https://p31ca.org',
+  'https://www.p31ca.org',
+  'http://localhost:5173',
+  'http://localhost:8787',
+]);
+
 function handleCors(request) {
   const origin = request.headers.get('Origin');
-  const allowedOrigins = ['https://p31ca.org', 'https://www.p31ca.org', 'http://localhost:5173', 'http://localhost:8787'];
-  
-  if (origin && allowedOrigins.includes(origin)) {
+  if (origin && ALLOWED_ORIGINS.has(origin)) {
     return {
       'Access-Control-Allow-Origin': origin,
       'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
@@ -239,7 +244,7 @@ export class DNODE {
 
         const seen = await this.state.storage.get(`seen_${envelope.id}`);
         if (seen) return new Response(JSON.stringify({ ack: true, cached: true }), { status: 200 });
-        await this.state.storage.put(`seen_${envelope.id}`, true);
+        await this.state.storage.put(`seen_${envelope.id}`, true, { expirationTtl: 86_400 });
 
         const root = this.env.R_NODE.get(this.env.R_NODE.idFromName('R'));
         await root.fetch('http://internal/message', {
@@ -272,7 +277,7 @@ export class ENODE {
 
         const seen = await this.state.storage.get(`seen_${envelope.id}`);
         if (seen) return new Response(JSON.stringify({ ack: true, cached: true }), { status: 200 });
-        await this.state.storage.put(`seen_${envelope.id}`, true);
+        await this.state.storage.put(`seen_${envelope.id}`, true, { expirationTtl: 86_400 });
 
         const root = this.env.R_NODE.get(this.env.R_NODE.idFromName('R'));
         await root.fetch('http://internal/message', {
@@ -304,7 +309,7 @@ export class FNODE {
 
         const seen = await this.state.storage.get(`seen_${envelope.id}`);
         if (seen) return new Response(JSON.stringify({ ack: true, cached: true }), { status: 200 });
-        await this.state.storage.put(`seen_${envelope.id}`, true);
+        await this.state.storage.put(`seen_${envelope.id}`, true, { expirationTtl: 86_400 });
 
         const root = this.env.R_NODE.get(this.env.R_NODE.idFromName('R'));
         await root.fetch('http://internal/message', {

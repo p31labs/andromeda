@@ -5,7 +5,9 @@
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "export:pipeline": "node scripts/pipeline-export.mjs",
+    "verify": "node ../../../scripts/verify-monetary-surface.mjs"
   },
   "devDependencies": {
     "@vitest/coverage-v8": "^4.1.2",

@@ -159,6 +159,7 @@ Create documentation for API, firmware, and user guides.
 ## Links
 
 - **Job Board (HTML):** `docs/delta-job-board.html`
+- **Hiring app (Vite, role packets + rubrics + proof export):** `andromeda/04_SOFTWARE/p31-delta-hiring/` — run `pnpm --filter p31-delta-hiring dev` from `andromeda/04_SOFTWARE`
 - **Delta Architecture:** `docs/DELTA_HIRING_SYSTEM_ARCHITECTURE.md`
 - **GitHub:** https://github.com/p31labs
 - **Website:** https://phosphorus31.org

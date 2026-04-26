@@ -1,26 +1,27 @@
 # phosphorus31.org (planetary-planet) — build on every PR; deploy Pages on main only.
-# Parallel to 04_SOFTWARE/p31ca (separate team/path); same secrets + Wrangler 4.x.
+# Parallel to 04_SOFTWARE/p31ca (separate team/path); shared actions for toolchain + Wrangler.
 
 name: Phosphorus31 site
 
 on:
   push:
-    branches: [main, 'feat/**']
+    branches: [main, "feat/**"]
     paths:
-      - 'phosphorus31.org/**'
-      - '.github/workflows/phosphorus31-site.yml'
+      - "phosphorus31.org/**"
+      - ".github/actions/**"
+      - ".github/workflows/phosphorus31-site.yml"
   pull_request:
     branches: [main]
     paths:
-      - 'phosphorus31.org/**'
-      - '.github/workflows/phosphorus31-site.yml'
+      - "phosphorus31.org/**"
+      - ".github/actions/**"
+      - ".github/workflows/phosphorus31-site.yml"
 
 concurrency:
   group: phosphorus31-site-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 env:
-  NODE_VERSION: '20'
   SITE_DIR: phosphorus31.org/planetary-planet
 
 jobs:
@@ -31,17 +32,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - uses: ./.github/actions/toolchain-constants
+
+      - uses: ./.github/actions/npm-ci-project
         with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: npm
+          working-directory: ${{ env.SITE_DIR }}
           cache-dependency-path: ${{ env.SITE_DIR }}/package-lock.json
 
-      - name: Install
-        run: cd ${{ env.SITE_DIR }} && npm ci
-
       - name: Build
-        run: cd ${{ env.SITE_DIR }} && npm run build
+        working-directory: ${{ env.SITE_DIR }}
+        run: npm run build
 
       - name: Upload dist (optional preview artifact)
         uses: actions/upload-artifact@v4
@@ -53,10 +53,9 @@ jobs:
 
       - name: Deploy to Cloudflare Pages
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        uses: cloudflare/wrangler-action@v3
+        uses: ./.github/actions/wrangler-run
         with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          workingDirectory: ${{ env.SITE_DIR }}
+          working-directory: ${{ env.SITE_DIR }}
           command: pages deploy dist --project-name=phosphorus31-org
-          wranglerVersion: '4.85.0'
+          api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          account-id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

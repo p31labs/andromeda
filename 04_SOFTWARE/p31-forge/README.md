@@ -35,6 +35,9 @@ cd 04_SOFTWARE/p31-forge
 npm install
 python -m pip install docx2pdf pypdf pdf2image   # for PDF bridge
 
+# Regenerate public brand JSON for the open doc suite (HTML/CSS in docs/corporate/suite)
+npm run brand:tokens
+
 # Compile a single content pack
 node forge.js compile content/legal/2025CV936/supplemental_notice.json
 

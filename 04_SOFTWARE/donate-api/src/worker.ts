@@ -15,6 +15,8 @@ interface Env {
   DISCORD_WEBHOOK_URL: string;  // https://webhook.p31ca.org/webhook/stripe
   ALLOWED_ORIGIN: string;
   GENESIS_GATE_URL?: string;    // https://genesis.p31ca.org (R09)
+  /** Optional KV for Stripe event idempotency (CWP-P31-MAP D-MAP-3/5). Omit in dev if unset. */
+  DONATE_EVENTS?: KVNamespace;
 }
 
 // R09: Emit telemetry to Genesis Gate (fire-and-forget, never throws)
@@ -166,6 +168,18 @@ async function handleStripeWebhook(request: Request, env: Env): Promise<Response
     return new Response('Invalid JSON', { status: 400 });
   }
 
+  const eventId = typeof event.id === 'string' ? event.id : null;
+  if (env.DONATE_EVENTS && eventId) {
+    const dedupKey = `stripe:event:${eventId}`;
+    const seen = await env.DONATE_EVENTS.get(dedupKey);
+    if (seen) {
+      return new Response(JSON.stringify({ received: true, duplicate: true }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+  }
+
   // R09: Emit donation_processed to Genesis Gate (no amount — privacy)
   if (event.type === 'checkout.session.completed') {
     emitEvent(env, 'donation_processed', { source: 'stripe', mode: (event.data as Record<string, unknown>)?.mode ?? 'unknown' });
@@ -182,6 +196,16 @@ async function handleStripeWebhook(request: Request, env: Env): Promise<Response
     } catch (e) {
       console.error('Failed to forward to Discord bot:', e);
       // Don't fail the Stripe webhook — just log
+    }
+  }
+
+  if (env.DONATE_EVENTS && eventId) {
+    try {
+      await env.DONATE_EVENTS.put(`stripe:event:${eventId}`, new Date().toISOString(), {
+        expirationTtl: 60 * 60 * 24 * 90, // 90d — Stripe replays are short; this is for audit overlap
+      });
+    } catch (e) {
+      console.error('DONATE_EVENTS put failed:', e);
     }
   }
 

@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0f1115">
+    <title>Connect | P31 Mesh</title>
+    <meta name="description" content="The P31 K₄ mesh — family cage, product edges, and the geometry that holds it rigid under stress.">
+    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/"}}</script>
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: #0f1115;
+            color: #d8d6d0;
+            font-family: "Atkinson Hyperlegible", sans-serif;
+            overflow: hidden;
+            height: 100dvh;
+            user-select: none;
+        }
+
+        /* Three.js canvas */
+        #mount { position: fixed; inset: 0; }
+
+        /* HTML label layer */
+        #labels {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 10;
+        }
+        .node-label {
+            position: absolute;
+            transform: translate(-50%, -50%);
+            font-family: "JetBrains Mono", monospace;
+            font-size: 0.6rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            white-space: nowrap;
+        }
+        .node-label.cage    { color: rgba(77,184,168,0.9); }
+        .node-label.product { color: rgba(216,214,208,0.6); }
+        .node-label.product.hovered { color: rgba(216,214,208,1); }
+
+        /* Header */
+        header {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 1.5rem;
+            background: rgba(15,17,21,0.7);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+        }
+        .logo {
+            display: flex; align-items: center; gap: 10px;
+            text-decoration: none; color: #d8d6d0;
+            font-family: "JetBrains Mono", monospace;
+            font-size: 0.75rem; font-weight: 700;
+            letter-spacing: 0.1em;
+        }
+        .hub-link {
+            font-family: "JetBrains Mono", monospace;
+            font-size: 0.65rem;
+            color: rgba(216,214,208,0.3);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .hub-link:hover { color: rgba(216,214,208,0.8); }
+
+        .header-links {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        /* EBC bar (bottom) */
+        #ebc {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            z-index: 50;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            border-top: 1px solid rgba(255,255,255,0.04);
+            background: rgba(15,17,21,0.8);
+            backdrop-filter: blur(10px);
+        }
+        .ebc-cell {
+            padding: 1rem 1.25rem;
+            border-right: 1px solid rgba(255,255,255,0.04);
+        }
+        .ebc-cell:last-child { border-right: none; }
+        .ebc-verb {
+            font-family: "JetBrains Mono", monospace;
+            font-size: 0.6rem;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            margin-bottom: 0.3rem;
+        }
+        .ebc-desc {
+            font-size: 0.7rem;
+            color: rgba(216,214,208,0.45);
+            line-height: 1.45;
+        }
+        #ebc-envision .ebc-verb { color: #8b7cc9; }
+        #ebc-build    .ebc-verb { color: #3ba372; }
+        #ebc-connect  .ebc-verb { color: #cc6247; }
+
+        /* Detail panel */
+        #detail {
+            position: fixed;
+            top: 4rem; right: 0;
+            width: 280px;
+            z-index: 60;
+            background: rgba(22,25,32,0.95);
+            border-left: 1px solid rgba(255,255,255,0.06);
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            padding: 1.5rem;
+            transform: translateX(100%);
+            transition: transform 0.35s cubic-bezier(.34,1.2,.64,1);
+        }
+        #detail.open { transform: translateX(0); }
+        #detail-close {
+            position: absolute;
+            top: 0.75rem; right: 0.75rem;
+            background: none; border: none;
+            color: rgba(216,214,208,0.3);
+            font-family: "JetBrains Mono", monospace;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        #detail-close:hover { color: rgba(216,214,208,0.8); }
+        #detail-icon  { font-size: 1.5rem; margin-bottom: 0.75rem; }
+        #detail-title {
+            font-family: "JetBrains Mono", monospace;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            margin-bottom: 0.25rem;
+        }
+        #detail-tagline {
+            font-size: 0.75rem;
+            color: rgba(216,214,208,0.5);
+            margin-bottom: 1rem;
+        }
+        #detail-status {
+            display: inline-block;
+            font-family: "JetBrains Mono", monospace;
+            font-size: 0.6rem;
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+        }
+        #detail-desc {
+            font-size: 0.78rem;
+            line-height: 1.55;
+            color: rgba(216,214,208,0.7);
+            margin-bottom: 1.25rem;
+        }
+        #detail-link {
+            display: block;
+            background: #25897d;
+            color: #d8d6d0;
+            text-decoration: none;
+            border-radius: 0.5rem;
+            padding: 0.6rem 1rem;
+            font-family: "JetBrains Mono", monospace;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-align: center;
+            transition: background 0.2s;
+        }
+        #detail-link:hover { background: #1e7268; }
+        #detail-link[data-stub="true"] {
+            background: rgba(37,137,125,0.25);
+            color: rgba(216,214,208,0.5);
+            cursor: default;
+            pointer-events: none;
+        }
+
+        /* Welcome toast (post-onboarding) */
+        #welcome-toast {
+            position: fixed;
+            top: 3.5rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(-6px);
+            background: rgba(37,137,125,0.12);
+            border: 1px solid rgba(37,137,125,0.4);
+            border-radius: 0.75rem;
+            padding: 0.65rem 1.25rem;
+            font-family: "JetBrains Mono", monospace;
+            font-size: 0.68rem;
+            color: #4db8a8;
+            letter-spacing: 0.08em;
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.6s ease, transform 0.6s ease;
+            pointer-events: none;
+            z-index: 100;
+        }
+        #welcome-toast.visible {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Instruction hint */
+        #hint {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, 5rem);
+            font-family: "JetBrains Mono", monospace;
+            font-size: 0.6rem;
+            color: rgba(216,214,208,0.2);
+            letter-spacing: 0.1em;
+            pointer-events: none;
+            transition: opacity 1s ease;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <a href="/" class="logo">
+        <svg width="20" height="20" viewBox="0 0 512 512">
+            <rect width="512" height="512" rx="112" fill="#25897d"/>
+            <circle cx="390" cy="120" r="48" fill="#cc6247"/>
+            <text x="256" y="340" font-family="system-ui" font-weight="900" font-size="220" fill="#d8d6d0" text-anchor="middle">P31</text>
+            <rect x="156" y="380" width="200" height="16" rx="8" fill="#cda852"/>
+        </svg>
+        THE MESH
+    </a>
+    <div class="header-links">
+        <a href="/centaur" class="hub-link" title="Operator starter — data, MAP, mesh fleet">Centaur pack</a>
+        <a href="/" class="hub-link">← Hub</a>
+    </div>
+</header>
+
+<div id="mount" role="img" aria-label="Interactive K₄ mesh visualization showing family cage and connected products"></div>
+<div id="labels" aria-hidden="true"></div>
+
+<p id="hint">click any node</p>
+<div id="welcome-toast" role="status" aria-live="polite"></div>
+
+<!-- Detail panel -->
+<aside id="detail" role="complementary" aria-label="Node details" aria-hidden="true">
+    <button id="detail-close" onclick="closeDetail()" aria-label="Close panel">✕</button>
+    <div id="detail-icon">⬡</div>
+    <div id="detail-title">—</div>
+    <div id="detail-tagline">—</div>
+    <div id="detail-status">—</div>
+    <div id="detail-desc">—</div>
+    <a id="detail-link" href="#" target="_blank" rel="noopener">Open →</a>
+</aside>
+
+<!-- EBC bar -->
+<footer id="ebc" role="contentinfo">
+    <div class="ebc-cell" id="ebc-envision">
+        <div class="ebc-verb">Envision</div>
+        <div class="ebc-desc">K₄ geometry before product. Local rigidity, specific vertices.</div>
+    </div>
+    <div class="ebc-cell" id="ebc-build">
+        <div class="ebc-verb">Build</div>
+        <div class="ebc-desc">Contracts first, surfaces second. Verify gates so nothing rots.</div>
+    </div>
+    <div class="ebc-cell" id="ebc-connect">
+        <div class="ebc-verb">Connect</div>
+        <div class="ebc-desc">Actual edges. Each one has a weight, a failure mode, and a plan.</div>
+    </div>
+</footer>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+// ============================================================
+//  ONBOARDING HANDOFF
+// ============================================================
+const _params     = new URLSearchParams(location.search);
+const _dialIn     = _params.get('dial');
+const _fromOnboard = _dialIn !== null;
+
+if (_fromOnboard) {
+    // Clean URL without reloading
+    history.replaceState(null, '', location.pathname);
+    // Show welcome toast after a short settle
+    setTimeout(() => {
+        const toast = document.getElementById('welcome-toast');
+        const dialVal = parseInt(_dialIn, 10) || 5;
+        const verb = dialVal >= 7 ? 'Pact confirmed.' : dialVal <= 3 ? 'Pact set.' : 'Pact confirmed.';
+        toast.textContent = `${verb} Welcome to the mesh.`;
+        toast.classList.add('visible');
+        setTimeout(() => { toast.style.opacity = '0'; }, 6000);
+    }, 800);
+}
+
+// ============================================================
+//  NODE DATA
+// ============================================================
+
+// Family cage vertices (K₄ tetrahedron)
+const CAGE = [
+    { id: 'will',    label: 'will',     color: '#4db8a8', role: 'Operator',   detail: 'Remote architect. CLI-first, AuDHD envelope. Passkey-first identity. Maintains mesh integrity under legal and logistical stress.' },
+    { id: 'sj',      label: 'S.J.',     color: '#3ba372', role: 'Builder',    detail: 'Enters via BONDING. Game-first, haptic-forward. Molecular bond formation is literal and metaphorical.' },
+    { id: 'wj',      label: 'W.J.',     color: '#cda852', role: 'Explorer',   detail: 'Enters via BONDING. Explorer archetype. Proprioceptive learning through molecular drag-and-place.' },
+    { id: 'christyn',label: 'christyn', color: '#cc6247', role: 'Co-parent',  detail: 'BLUF text, sphere metaphor, Cognitive Shield pattern. Blast-radius isolation preserves mesh coherence.' },
+];
+
+// Product nodes (satellites connected to cage vertices)
+const PRODUCTS = [
+    {
+        id: 'bonding',    label: 'BONDING',    icon: '⚛️',  color: '#3ba372',
+        tagline: 'Molecular Social Protocol',
+        url: 'https://bonding.p31ca.org',
+        status: 'LIVE', stub: false,
+        desc: 'Chemistry game as onboarding. Every atom placed is a timestamped engagement event. Proof of Care substrate for S.J. and W.J.',
+        connects: ['sj', 'wj'],
+        pos: new THREE.Vector3(-2.2, 0.6, 1.0),
+    },
+    {
+        id: 'spaceship',  label: 'SPACESHIP',  icon: '🚀',  color: '#8b7cc9',
+        tagline: 'Sovereign Command Center',
+        url: 'spaceship-earth.html',
+        status: 'LIVE', stub: false,
+        desc: 'React Three Fiber PWA. qFactor engine, Safe Mode, CRDT sync. Offline-first along the I-95 corridor.',
+        connects: ['will'],
+        pos: new THREE.Vector3(2.2, 1.0, -0.8),
+    },
+    {
+        id: 'passport',   label: 'PASSPORT',   icon: '🪪',  color: '#4db8a8',
+        tagline: 'Cognitive Identity Artifact',
+        url: 'passport-generator.html',
+        status: 'LIVE', stub: false,
+        desc: 'Edition 5.1. AuDHD envelope, spoon budget, calcium constraints. Machine-verified mirror between home repo and p31ca.',
+        connects: ['will', 'christyn'],
+        pos: new THREE.Vector3(-1.8, -1.2, -1.4),
+    },
+    {
+        id: 'onboard',    label: 'ONBOARD',    icon: '🌍',  color: '#cc6247',
+        tagline: 'Planetary Entry Flow',
+        url: 'planetary-onboard.html',
+        status: 'LIVE — Phase 5 stub', stub: false,
+        desc: 'Five phases: Void → Anchor → Rooms → Dial → Pact. Neuro-inclusive, passkey-first. Worker backend pending.',
+        connects: ['will', 'christyn', 'sj', 'wj'],
+        pos: new THREE.Vector3(0.2, -1.8, 1.6),
+    },
+    {
+        id: 'k4market',   label: 'K4 MARKET',  icon: '📐',  color: '#3ba372',
+        tagline: 'Tetrahedral Price Geometry',
+        url: 'k4market.html',
+        status: 'LIVE', stub: false,
+        desc: 'OHLCV mapped to K₄ vertices. Four nodes: O / H / L / C. Six edges show weight. Volume pulses, edge flow.',
+        connects: ['will'],
+        pos: new THREE.Vector3(1.6, 0.2, 2.0),
+    },
+    {
+        id: 'tomography', label: 'TOMOGRAPHY', icon: '🔬',  color: '#4db8a8',
+        tagline: 'Symbol-Seeded Depth View',
+        url: 'tomography.html',
+        status: 'LIVE', stub: false,
+        desc: 'Ticker hash → barycentric OHLCV cloud inside the tetrahedron. Larmor ring at 0.86 Hz. Support/resistance coloring.',
+        connects: ['will'],
+        pos: new THREE.Vector3(2.4, -0.8, 0.6),
+    },
+    {
+        id: 'dome',       label: 'DOME',        icon: '🔮',  color: '#cda852',
+        tagline: 'Sovereign Cockpit Dome',
+        url: '/dome',
+        status: 'LIVE', stub: false,
+        desc: 'Primary hub CTA. K₄ interactive in Astro. Three.js r183. The geometry made navigable.',
+        connects: ['will'],
+        pos: new THREE.Vector3(-2.6, 0.8, -0.6),
+    },
+    {
+        id: 'worker',     label: 'CAGE WORKER', icon: '⚙️',  color: '#8b7cc9',
+        tagline: 'K₄ Passkey + KV Backend',
+        url: '#',
+        status: 'PENDING', stub: true,
+        desc: 'Cloudflare Worker: passkey challenge/verify, D1 credential store, Turnstile ephemeral IDs. Required for onboarding Phase 5.',
+        connects: ['will'],
+        pos: new THREE.Vector3(-0.6, 2.0, -2.0),
+    },
+];
+
+// ============================================================
+//  THREE.JS SCENE
+// ============================================================
+const mount   = document.getElementById('mount');
+const W = () => mount.clientWidth;
+const H = () => mount.clientHeight;
+
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setSize(W(), H());
+renderer.setClearColor(0x0f1115, 1);
+mount.appendChild(renderer.domElement);
+
+const scene  = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(50, W() / H(), 0.1, 100);
+camera.position.set(0, 1.5, 7);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.05;
+controls.minDistance   = 3;
+controls.maxDistance   = 14;
+controls.autoRotate    = true;
+controls.autoRotateSpeed = 0.35;
+
+// Fog
+scene.fog = new THREE.FogExp2(0x0f1115, 0.045);
+
+// Starfield
+{
+    const geo = new THREE.BufferGeometry();
+    const pos = new Float32Array(1800);
+    for (let i = 0; i < 1800; i++) pos[i] = (Math.random() - 0.5) * 60;
+    geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    scene.add(new THREE.Points(geo, new THREE.PointsMaterial({ color: 0x4db8a8, size: 0.06, transparent: true, opacity: 0.35 })));
+}
+
+// ---- K₄ cage tetrahedron vertices ----
+const TETRA_VERTS = [
+    new THREE.Vector3( 0,      1.6,    0     ),   // top   — will
+    new THREE.Vector3(-1.385, -0.533,  0.8   ),   // FL    — S.J.
+    new THREE.Vector3( 1.385, -0.533,  0.8   ),   // FR    — W.J.
+    new THREE.Vector3( 0,     -0.533, -1.6   ),   // back  — christyn
+];
+
+// Cage vertex spheres
+const cageMeshes = [];
+CAGE.forEach((c, i) => {
+    const geo  = new THREE.SphereGeometry(0.18, 32, 32);
+    const mat  = new THREE.MeshStandardMaterial({
+        color:     new THREE.Color(c.color),
+        emissive:  new THREE.Color(c.color),
+        emissiveIntensity: 0.6,
+        roughness: 0.4,
+        metalness: 0.2,
+    });
+    const mesh = new THREE.Mesh(geo, mat);
+    mesh.position.copy(TETRA_VERTS[i]);
+    mesh.userData = { type: 'cage', data: c, index: i };
+    scene.add(mesh);
+    cageMeshes.push(mesh);
+});
+
+// Cage edges (6 K₄ edges)
+{
+    const mat = new THREE.LineBasicMaterial({ color: 0x25897d, transparent: true, opacity: 0.45 });
+    const pairs = [[0,1],[0,2],[0,3],[1,2],[1,3],[2,3]];
+    pairs.forEach(([a, b]) => {
+        const geo = new THREE.BufferGeometry().setFromPoints([TETRA_VERTS[a], TETRA_VERTS[b]]);
+        scene.add(new THREE.Line(geo, mat));
+    });
+}
+
+// Translucent tetra fill
+{
+    const geo = new THREE.BufferGeometry();
+    const v = TETRA_VERTS;
+    const verts = new Float32Array([
+        ...v[0].toArray(), ...v[1].toArray(), ...v[2].toArray(),
+        ...v[0].toArray(), ...v[1].toArray(), ...v[3].toArray(),
+        ...v[0].toArray(), ...v[2].toArray(), ...v[3].toArray(),
+        ...v[1].toArray(), ...v[2].toArray(), ...v[3].toArray(),
+    ]);
+    geo.setAttribute('position', new THREE.BufferAttribute(verts, 3));
+    const mat = new THREE.MeshBasicMaterial({ color: 0x25897d, transparent: true, opacity: 0.04, side: THREE.DoubleSide });
+    scene.add(new THREE.Mesh(geo, mat));
+}
+
+// ---- Product satellite nodes ----
+const productMeshes = [];
+const satelliteEdgeMats = [];
+
+PRODUCTS.forEach(p => {
+    const geo = new THREE.SphereGeometry(0.13, 24, 24);
+    const mat = new THREE.MeshStandardMaterial({
+        color:    new THREE.Color(p.color),
+        emissive: new THREE.Color(p.color),
+        emissiveIntensity: p.stub ? 0.15 : 0.45,
+        roughness: 0.5,
+        metalness: 0.1,
+        opacity:   p.stub ? 0.5 : 1,
+        transparent: p.stub,
+    });
+    const mesh = new THREE.Mesh(geo, mat);
+    mesh.position.copy(p.pos);
+    mesh.userData = { type: 'product', data: p };
+    scene.add(mesh);
+    productMeshes.push(mesh);
+
+    // Edges from product to its cage connections
+    p.connects.forEach(cageId => {
+        const ci = CAGE.findIndex(c => c.id === cageId);
+        if (ci < 0) return;
+        const lineMat = new THREE.LineBasicMaterial({
+            color: new THREE.Color(p.color),
+            transparent: true,
+            opacity: p.stub ? 0.1 : 0.2,
+        });
+        const geo2 = new THREE.BufferGeometry().setFromPoints([p.pos, TETRA_VERTS[ci]]);
+        scene.add(new THREE.Line(geo2, lineMat));
+        satelliteEdgeMats.push(lineMat);
+    });
+});
+
+// Lighting
+scene.add(new THREE.AmbientLight(0xd8d6d0, 0.4));
+const dirLight = new THREE.DirectionalLight(0x4db8a8, 0.8);
+dirLight.position.set(4, 6, 4);
+scene.add(dirLight);
+
+// ---- HTML label layer ----
+const labelsDiv  = document.getElementById('labels');
+const labelEls   = [];
+
+function makeLabel(text, cls) {
+    const el = document.createElement('div');
+    el.className = `node-label ${cls}`;
+    el.textContent = text;
+    labelsDiv.appendChild(el);
+    return el;
+}
+
+cageMeshes.forEach(m   => labelEls.push({ mesh: m, el: makeLabel(m.userData.data.label, 'cage') }));
+productMeshes.forEach(m => labelEls.push({ mesh: m, el: makeLabel(m.userData.data.label, 'product') }));
+
+function updateLabels() {
+    const vec = new THREE.Vector3();
+    labelEls.forEach(({ mesh, el }) => {
+        vec.copy(mesh.position).project(camera);
+        const x = (vec.x *  0.5 + 0.5) * W();
+        const y = (vec.y * -0.5 + 0.5) * H();
+        el.style.left = `${x}px`;
+        el.style.top  = `${y - 22}px`;
+        el.style.opacity = vec.z < 1 ? '1' : '0';
+    });
+}
+
+// ---- Raycasting (click/hover) ----
+const raycaster = new THREE.Raycaster();
+const pointer   = new THREE.Vector2();
+const allMeshes = [...cageMeshes, ...productMeshes];
+let   hoveredMesh = null;
+
+function toNDC(e) {
+    const rect = renderer.domElement.getBoundingClientRect();
+    pointer.x =  ((e.clientX - rect.left) / rect.width)  * 2 - 1;
+    pointer.y = -((e.clientY - rect.top)  / rect.height) * 2 + 1;
+}
+
+renderer.domElement.addEventListener('pointermove', e => {
+    toNDC(e);
+    raycaster.setFromCamera(pointer, camera);
+    const hits = raycaster.intersectObjects(allMeshes);
+    if (hits.length) {
+        const m = hits[0].object;
+        if (m !== hoveredMesh) {
+            if (hoveredMesh) hoveredMesh.material.emissiveIntensity -= 0.3;
+            hoveredMesh = m;
+            m.material.emissiveIntensity += 0.3;
+            renderer.domElement.style.cursor = 'pointer';
+            // update label class
+            const lbl = labelEls.find(l => l.mesh === m);
+            if (lbl) lbl.el.classList.add('hovered');
+        }
+    } else {
+        if (hoveredMesh) {
+            hoveredMesh.material.emissiveIntensity -= 0.3;
+            const lbl = labelEls.find(l => l.mesh === hoveredMesh);
+            if (lbl) lbl.el.classList.remove('hovered');
+            hoveredMesh = null;
+        }
+        renderer.domElement.style.cursor = 'default';
+    }
+});
+
+renderer.domElement.addEventListener('click', e => {
+    toNDC(e);
+    raycaster.setFromCamera(pointer, camera);
+    const hits = raycaster.intersectObjects(allMeshes);
+    if (!hits.length) return;
+    const node = hits[0].object.userData;
+    if (node.type === 'cage')    openCageDetail(node.data);
+    if (node.type === 'product') openProductDetail(node.data);
+    controls.autoRotate = false;
+    document.getElementById('hint').style.opacity = '0';
+});
+
+// ---- Detail panel ----
+function openCageDetail(c) {
+    const panel = document.getElementById('detail');
+    document.getElementById('detail-icon').textContent    = '⬡';
+    document.getElementById('detail-title').textContent   = c.label.toUpperCase();
+    document.getElementById('detail-tagline').textContent = c.role;
+    const st = document.getElementById('detail-status');
+    st.textContent        = 'CAGE VERTEX';
+    st.style.background   = 'rgba(37,137,125,0.15)';
+    st.style.color        = '#4db8a8';
+    st.style.border       = '1px solid rgba(37,137,125,0.3)';
+    document.getElementById('detail-desc').textContent = c.detail;
+    const lnk = document.getElementById('detail-link');
+    lnk.href           = '#';
+    lnk.textContent    = 'Part of the cage';
+    lnk.dataset.stub   = 'true';
+    panel.setAttribute('aria-hidden', 'false');
+    panel.classList.add('open');
+}
+
+function openProductDetail(p) {
+    const panel = document.getElementById('detail');
+    document.getElementById('detail-icon').textContent    = p.icon;
+    document.getElementById('detail-title').textContent   = p.label;
+    document.getElementById('detail-tagline').textContent = p.tagline;
+    const st = document.getElementById('detail-status');
+    st.textContent = p.status;
+    if (p.stub) {
+        st.style.background = 'rgba(139,124,201,0.15)';
+        st.style.color      = '#8b7cc9';
+        st.style.border     = '1px solid rgba(139,124,201,0.3)';
+    } else {
+        st.style.background = 'rgba(59,163,114,0.15)';
+        st.style.color      = '#3ba372';
+        st.style.border     = '1px solid rgba(59,163,114,0.3)';
+    }
+    document.getElementById('detail-desc').textContent = p.desc;
+    const lnk = document.getElementById('detail-link');
+    lnk.href           = p.url;
+    lnk.textContent    = p.stub ? 'Coming soon' : 'Open →';
+    lnk.dataset.stub   = p.stub ? 'true' : 'false';
+    panel.setAttribute('aria-hidden', 'false');
+    panel.classList.add('open');
+}
+
+window.closeDetail = function() {
+    const panel = document.getElementById('detail');
+    panel.classList.remove('open');
+    panel.setAttribute('aria-hidden', 'true');
+    controls.autoRotate = true;
+};
+
+// ---- Animate ----
+const clock = new THREE.Clock();
+
+// Pulse: cage vertices breathe at 0.1 Hz
+function pulseCage(t) {
+    cageMeshes.forEach((m, i) => {
+        const s = 1 + 0.04 * Math.sin(t * 0.628 + i * 1.57);
+        m.scale.setScalar(s);
+    });
+}
+
+function animate() {
+    requestAnimationFrame(animate);
+    const t = clock.getElapsedTime();
+    controls.update();
+    pulseCage(t);
+    updateLabels();
+    renderer.render(scene, camera);
+}
+animate();
+
+// ---- Resize ----
+window.addEventListener('resize', () => {
+    camera.aspect = W() / H();
+    camera.updateProjectionMatrix();
+    renderer.setSize(W(), H());
+});
+
+// Fade hint after 6s
+setTimeout(() => {
+    document.getElementById('hint').style.opacity = '0';
+}, 6000);
+</script>
+</body>
+</html>

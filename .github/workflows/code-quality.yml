@@ -1,0 +1,42 @@
+# Emits status check **code-quality / code-quality** for branch protection rulesets.
+name: code-quality
+
+permissions:
+  contents: read
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main, develop]
+
+concurrency:
+  group: code-quality-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  code-quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/toolchain-constants
+
+      - uses: ./.github/actions/pnpm-andromeda-full
+
+      # Real ESLint (flat config) per package; warnings are non-fatal, errors fail the job.
+      # Use `pnpm -C <path>` (not `--filter a --filter b run lint`) — pnpm 10 can hit
+      # ERR_PNPM_RECURSIVE_RUN_NO_SCRIPT with multiple filters even when each package has `lint`.
+      - name: Lint (bonding + shared)
+        run: |
+          set -e
+          cd 04_SOFTWARE
+          pnpm -C bonding run lint
+          pnpm -C packages/shared run lint
+
+      # Monorepo root pulls many legacy transitive trees (cli, ipfs, Next, etc.) — 80+ high
+      # findings until dependency upgrades; do not block lint + lockfile on audit alone.
+      - name: Security audit (high+, informational)
+        continue-on-error: true
+        run: pnpm audit --audit-level=high

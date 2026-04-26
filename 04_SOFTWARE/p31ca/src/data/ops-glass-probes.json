@@ -1,0 +1,109 @@
+{
+  "schema": "p31.opsGlassProbes/1.0.0",
+  "ingested": "2026-04-26T18:34:47.271Z",
+  "source": "p31-ecosystem.json",
+  "probes": [
+    {
+      "id": "k4-personal-api-health",
+      "group": "mesh",
+      "note": "Canonical k4-personal liveness",
+      "url": "https://k4-personal.trimtab-signal.workers.dev/api/health"
+    },
+    {
+      "id": "k4-personal-api-mesh",
+      "group": "mesh",
+      "note": "Personal mesh JSON",
+      "url": "https://k4-personal.trimtab-signal.workers.dev/api/mesh"
+    },
+    {
+      "id": "k4-cage-health",
+      "group": "mesh",
+      "note": "Cage worker",
+      "url": "https://k4-cage.trimtab-signal.workers.dev/api/health"
+    },
+    {
+      "id": "k4-hubs-health",
+      "group": "mesh",
+      "note": "Hub fusion liveness",
+      "url": "https://k4-hubs.trimtab-signal.workers.dev/health"
+    },
+    {
+      "id": "geodesic-room-worker",
+      "group": "mesh",
+      "note": "GeodesicRoom DO v0.2 — JSON { service, version, ok }; WS /api/geodesic/:id/ws; see docs/GEODESIC-GAME-ENGINE-INTEGRATION.md",
+      "url": "https://geodesic-room.trimtab-signal.workers.dev/"
+    },
+    {
+      "id": "agent-hub-health",
+      "group": "mesh",
+      "note": "Agent hub",
+      "url": "https://p31-agent-hub.trimtab-signal.workers.dev/api/health"
+    },
+    {
+      "id": "orchestrator-status",
+      "group": "orchestrator",
+      "note": "May return 401/403 without Access — still 'edge up'",
+      "url": "https://p31-orchestrator.trimtab-signal.workers.dev/api/orchestrator/status"
+    },
+    {
+      "id": "command-center-health",
+      "group": "command-center",
+      "note": "EPCP operator glass",
+      "url": "https://command-center.trimtab-signal.workers.dev/api/health"
+    },
+    {
+      "id": "operator-shift-public",
+      "group": "command-center",
+      "note": "GET public operator shift (PII-free); POST requires Access (CWP-P31-UI Phase C)",
+      "url": "https://command-center.trimtab-signal.workers.dev/api/operator/shift"
+    },
+    {
+      "id": "p31ca-hub-root",
+      "group": "pages",
+      "note": "Technical hub (HTML)",
+      "url": "https://p31ca.org/"
+    },
+    {
+      "id": "p31ca-mesh-start-page",
+      "group": "pages",
+      "note": "PAR personal landing (CWP-P31-PAR); repo dev: soup-demo.html → andromeda/.../p31ca/public/mesh-start.html",
+      "url": "https://p31ca.org/mesh-start.html"
+    },
+    {
+      "id": "p31ca-initial-build-page",
+      "group": "pages",
+      "note": "Initial Build CWP-P31-IB-2026-01; short /build; intake→tetra bake (phased WBS)",
+      "url": "https://p31ca.org/initial-build.html"
+    },
+    {
+      "id": "p31ca-build-shorturl",
+      "group": "pages",
+      "note": "301/302 → initial-build.html (Cloudflare _redirects); client follows redirect in glass + browsers",
+      "url": "https://p31ca.org/build"
+    },
+    {
+      "id": "bonding-soup",
+      "group": "pages",
+      "note": "BONDING vertical",
+      "url": "https://bonding.p31ca.org/"
+    },
+    {
+      "id": "stripe-api-health",
+      "group": "monetary",
+      "note": "Main API / Stripe Worker (p31-constants payment.stripeWorkerHost); glass liveness",
+      "url": "https://api.phosphorus31.org/health"
+    },
+    {
+      "id": "donate-api-health",
+      "group": "monetary",
+      "note": "Stripe checkout Worker liveness; CWP-P31-MAP-2026-01 as-built",
+      "url": "https://donate-api.phosphorus31.org/health"
+    },
+    {
+      "id": "creator-economy-contract",
+      "group": "contracts",
+      "note": "Public JSON contract (verify:economy in p31ca)",
+      "url": "https://p31ca.org/creator-economy.json"
+    }
+  ]
+}

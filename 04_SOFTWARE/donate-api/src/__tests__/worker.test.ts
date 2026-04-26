@@ -242,3 +242,64 @@ describe('CORS origin', () => {
     expect(res.headers.get('Access-Control-Allow-Origin')).toBe('http://localhost:4321');
   });
 });
+
+// ── Stripe webhook idempotency (DONATE_EVENTS KV) ───────────────────────────
+describe('POST /stripe-webhook — idempotency', () => {
+  function signedPost(body: string, secret: string) {
+    const timestamp = Math.floor(Date.now() / 1000).toString();
+    const signedPayload = `${timestamp}.${body}`;
+    return crypto.subtle
+      .importKey('raw', new TextEncoder().encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign'])
+      .then((key) => crypto.subtle.sign('HMAC', key, new TextEncoder().encode(signedPayload)))
+      .then((sig) => {
+        const v1 = Array.from(new Uint8Array(sig))
+          .map((b) => b.toString(16).padStart(2, '0'))
+          .join('');
+        return new Request('https://example.com/stripe-webhook', {
+          method: 'POST',
+          headers: { 'stripe-signature': `t=${timestamp},v1=${v1}` },
+          body,
+        });
+      });
+  }
+
+  it('second delivery of same Stripe event id returns duplicate:true', async () => {
+    const storage = new Map<string, string>();
+    const mockKV = {
+      async get(k: string) {
+        return storage.get(k) ?? null;
+      },
+      async put(k: string, v: string) {
+        storage.set(k, v);
+      },
+    } as KVNamespace;
+
+    mockFetch.mockResolvedValue(new Response('ok', { status: 200 }));
+
+    const secret = 'whsec_idem_test';
+    const localEnv = {
+      ...env,
+      STRIPE_WEBHOOK_SECRET: secret,
+      DONATE_EVENTS: mockKV,
+    };
+    const payload = JSON.stringify({
+      id: 'evt_idem_1',
+      type: 'checkout.session.completed',
+      data: { object: {} },
+    });
+
+    const worker = await getWorker();
+    const req = await signedPost(payload, secret);
+    const r1 = await worker.fetch(req, localEnv);
+    expect(r1.status).toBe(200);
+    const j1 = await r1.json() as { received: boolean; duplicate?: boolean };
+    expect(j1.received).toBe(true);
+    expect(j1.duplicate).toBeUndefined();
+
+    const req2 = await signedPost(payload, secret);
+    const r2 = await worker.fetch(req2, localEnv);
+    expect(r2.status).toBe(200);
+    const j2 = await r2.json() as { received: boolean; duplicate?: boolean };
+    expect(j2.duplicate).toBe(true);
+  });
+});

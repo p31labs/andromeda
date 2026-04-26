@@ -5,11 +5,12 @@ on:
     branches:
       - main
     paths:
-      - '04_SOFTWARE/k4-cage/**'
-      - '04_SOFTWARE/k4-personal/**'
-      - '04_SOFTWARE/k4-hubs/**'
-      - '04_SOFTWARE/p31-agent-hub/**'
-      - '.github/workflows/deploy-workers.yml'
+      - "04_SOFTWARE/k4-cage/**"
+      - "04_SOFTWARE/k4-personal/**"
+      - "04_SOFTWARE/k4-hubs/**"
+      - "04_SOFTWARE/p31-agent-hub/**"
+      - ".github/actions/**"
+      - ".github/workflows/deploy-workers.yml"
   workflow_dispatch:
 
 concurrency:
@@ -23,49 +24,46 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: ./.github/actions/toolchain-constants
+
       # Pre-install wrangler globally so wrangler-action finds it without
       # running npm install inside the pnpm workspace (workspace:* protocol
       # causes EUNSUPPORTEDPROTOCOL on plain npm).
       - name: Install wrangler globally
-        run: npm install -g wrangler@4.85.0
+        run: npm install -g wrangler@${{ env.WRANGLER_VERSION }}
 
-      # ── 1. k4-cage (no deps) ────────────────────────────────────────
       - name: Deploy k4-cage
-        uses: cloudflare/wrangler-action@v3
+        uses: ./.github/actions/wrangler-run
         with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          workingDirectory: 04_SOFTWARE/k4-cage
-          wranglerVersion: "4.85.0"
+          working-directory: 04_SOFTWARE/k4-cage
+          command: deploy
+          api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          account-id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 
-      # ── 2. k4-personal (no deps) ────────────────────────────────────
       - name: Deploy k4-personal
-        uses: cloudflare/wrangler-action@v3
+        uses: ./.github/actions/wrangler-run
         with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          workingDirectory: 04_SOFTWARE/k4-personal
-          wranglerVersion: "4.85.0"
+          working-directory: 04_SOFTWARE/k4-personal
+          command: deploy
+          api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          account-id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 
-      # ── 3. k4-hubs (binds → k4-cage, k4-personal) ───────────────────
       - name: Deploy k4-hubs
-        uses: cloudflare/wrangler-action@v3
+        uses: ./.github/actions/wrangler-run
         with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          workingDirectory: 04_SOFTWARE/k4-hubs
-          wranglerVersion: "4.85.0"
+          working-directory: 04_SOFTWARE/k4-hubs
+          command: deploy
+          api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          account-id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 
-      # ── 4. p31-agent-hub (binds → all three above) ──────────────────
       - name: Deploy p31-agent-hub
-        uses: cloudflare/wrangler-action@v3
+        uses: ./.github/actions/wrangler-run
         with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          workingDirectory: 04_SOFTWARE/p31-agent-hub
-          wranglerVersion: "4.85.0"
+          working-directory: 04_SOFTWARE/p31-agent-hub
+          command: deploy
+          api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          account-id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 
-      # ── 5. Post-deploy verification ──────────────────────────────────
       - name: Wait for propagation
         run: sleep 30
 
@@ -133,7 +131,5 @@ jobs:
           echo "$RESULT" | python3 -c "
           import json, sys
           d = json.load(sys.stdin)
-          # DO response: {ping:{...}, edge:{...}, fromLove:N, toLove:N}
-          # KV fallback: {ok:true, from:..., to:..., love:N}
           assert 'ping' in d or d.get('ok') == True, f'unexpected ping response: {d}'
           print('✅ Ping verified')"

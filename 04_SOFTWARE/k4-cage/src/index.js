@@ -97,9 +97,12 @@ async function getTelemetryKvChain(env, count) {
   const headRaw = await env.K4_MESH.get('telemetry:head');
   if (!headRaw) return { chain: [], head: null, verified: true };
   const head = JSON.parse(headRaw);
+  const floor = Math.max(0, head.index - count);
+  const indices = [];
+  for (let i = head.index; i > floor; i--) indices.push(i);
+  const raws = await Promise.all(indices.map((i) => env.K4_MESH.get(`telemetry:${i}`)));
   const chain = [];
-  for (let i = head.index; i > Math.max(0, head.index - count); i--) {
-    const raw = await env.K4_MESH.get(`telemetry:${i}`);
+  for (const raw of raws) {
     if (raw) chain.push(JSON.parse(raw));
   }
   let verified = true;
@@ -154,21 +157,24 @@ async function broadcastPingToRooms(env, pingPayload) {
     'Content-Type': 'application/json',
     Authorization: `Bearer ${token}`,
   };
-  for (const roomId of rooms) {
-    const id = env.FAMILY_MESH_ROOM.idFromName(roomId);
-    const stub = env.FAMILY_MESH_ROOM.get(id);
-    try {
-      await stub.fetch(
-        new Request('https://internal/broadcast', {
-          method: 'POST',
-          headers,
-          body: JSON.stringify(pingPayload),
-        }),
-      );
-    } catch {
-      /* non-fatal */
-    }
-  }
+  const body = JSON.stringify(pingPayload);
+  await Promise.all(
+    rooms.map((roomId) => {
+      const id = env.FAMILY_MESH_ROOM.idFromName(roomId);
+      const stub = env.FAMILY_MESH_ROOM.get(id);
+      return stub
+        .fetch(
+          new Request('https://internal/broadcast', {
+            method: 'POST',
+            headers,
+            body,
+          }),
+        )
+        .catch(() => {
+          /* non-fatal */
+        });
+    }),
+  );
 }
 
 // ═══ K4Topology DO ═══════════════════════════════════════════════════
@@ -210,20 +216,26 @@ export class K4Topology extends DurableObject {
     const method = request.method;
 
     if (path === '/mesh' && method === 'GET') {
+      const vRaws = await Promise.all(
+        VERTICES.map((v) => this.ctx.storage.get(`vertex:${v}`)),
+      );
+      const eRaws = await Promise.all(
+        EDGES.map(([a, b]) => this.ctx.storage.get(`edge:${edgeKey(a, b)}`)),
+      );
       const vertices = {};
       const edges = {};
       let totalLove = 0;
-      for (const v of VERTICES) {
-        const raw = await this.ctx.storage.get(`vertex:${v}`);
+      VERTICES.forEach((v, i) => {
+        const raw = vRaws[i];
         vertices[v] = raw ? JSON.parse(raw) : this.defaultVertex(v);
         totalLove += vertices[v].love || 0;
-      }
-      for (const [a, b] of EDGES) {
+      });
+      EDGES.forEach(([a, b], i) => {
         const k = edgeKey(a, b);
-        const raw = await this.ctx.storage.get(`edge:${k}`);
+        const raw = eRaws[i];
         edges[k] = raw ? JSON.parse(raw) : this.defaultEdge(a, b);
         totalLove += edges[k].love || 0;
-      }
+      });
       return Response.json({
         topology: 'K4',
         vertices: 4,
@@ -241,16 +253,23 @@ export class K4Topology extends DurableObject {
     if (vertexGet && method === 'GET') {
       const id = vertexGet[1];
       if (!isValidVertex(id)) return Response.json({ error: 'Unknown vertex' }, { status: 404 });
-      const raw = await this.ctx.storage.get(`vertex:${id}`);
-      const vertex = raw ? JSON.parse(raw) : this.defaultVertex(id);
-      const connectedEdges = {};
+      const touch = [];
       for (const [v1, v2] of EDGES) {
         if (v1 === id || v2 === id) {
           const k = edgeKey(v1, v2);
-          const er = await this.ctx.storage.get(`edge:${k}`);
-          connectedEdges[k] = er ? JSON.parse(er) : this.defaultEdge(v1, v2);
+          touch.push([v1, v2, k]);
         }
       }
+      const [raw, ...eRaws] = await Promise.all([
+        this.ctx.storage.get(`vertex:${id}`),
+        ...touch.map((t) => this.ctx.storage.get(`edge:${t[2]}`)),
+      ]);
+      const vertex = raw ? JSON.parse(raw) : this.defaultVertex(id);
+      const connectedEdges = {};
+      touch.forEach(([v1, v2, k], i) => {
+        const er = eRaws[i];
+        connectedEdges[k] = er ? JSON.parse(er) : this.defaultEdge(v1, v2);
+      });
       return Response.json({ vertex, edges: connectedEdges });
     }
 
@@ -277,7 +296,11 @@ export class K4Topology extends DurableObject {
       const body = await request.json().catch(() => ({}));
       const emoji = typeof body.emoji === 'string' && body.emoji.length < 32 ? body.emoji : '💚';
       const k = edgeKey(from, to);
-      const eraw = await this.ctx.storage.get(`edge:${k}`);
+      const [eraw, fromRaw, toRaw] = await Promise.all([
+        this.ctx.storage.get(`edge:${k}`),
+        this.ctx.storage.get(`vertex:${from}`),
+        this.ctx.storage.get(`vertex:${to}`),
+      ]);
       const edge = eraw ? JSON.parse(eraw) : this.defaultEdge(from, to);
       const pingObj = {
         from,
@@ -291,16 +314,16 @@ export class K4Topology extends DurableObject {
       edge.lastActivity = pingObj.timestamp;
       edge.messageCount = (edge.messageCount || 0) + 1;
 
-      const fromRaw = await this.ctx.storage.get(`vertex:${from}`);
-      const toRaw = await this.ctx.storage.get(`vertex:${to}`);
       const fromV = fromRaw ? JSON.parse(fromRaw) : this.defaultVertex(from);
       const toV = toRaw ? JSON.parse(toRaw) : this.defaultVertex(to);
       fromV.love = (fromV.love || 0) + 1;
       toV.love = (toV.love || 0) + 1;
 
-      await this.ctx.storage.put(`edge:${k}`, JSON.stringify(edge));
-      await this.ctx.storage.put(`vertex:${from}`, JSON.stringify(fromV));
-      await this.ctx.storage.put(`vertex:${to}`, JSON.stringify(toV));
+      await Promise.all([
+        this.ctx.storage.put(`edge:${k}`, JSON.stringify(edge)),
+        this.ctx.storage.put(`vertex:${from}`, JSON.stringify(fromV)),
+        this.ctx.storage.put(`vertex:${to}`, JSON.stringify(toV)),
+      ]);
 
       return Response.json({
         ping: pingObj,
@@ -749,10 +772,12 @@ export default {
 
       if (path === '/api/admin/dashboard' && method === 'GET') {
         if (!isAdmin(request, env)) return err('Unauthorized', 401);
-        const meshR = await topologyFetch(request, env, '/api/mesh', 'GET');
-        const mesh = meshR.ok ? await meshR.json() : null;
         const roomStub = env.FAMILY_MESH_ROOM.get(env.FAMILY_MESH_ROOM.idFromName('family-mesh'));
-        const statsR = await roomStub.fetch(new Request('https://room/stats'));
+        const [meshR, statsR] = await Promise.all([
+          topologyFetch(request, env, '/api/mesh', 'GET'),
+          roomStub.fetch(new Request('https://room/stats')),
+        ]);
+        const mesh = meshR.ok ? await meshR.json() : null;
         const room = statsR.ok ? await statsR.json() : null;
         return json({
           mesh,

@@ -66,13 +66,13 @@ function sendJson(res: Response, result: { status: number; data: unknown }) {
   return res.status(result.status).json(result.data);
 }
 
-/** Per-Worker liveness paths that exist in Andromeda today */
+/** Per-Worker liveness paths that exist in Andromeda today (worker root, not DO sub-routes). */
 const FLEET_HEALTH_PATHS: Record<MeshTarget, string> = {
   bouncer: '/health',
   agentHub: '/api/health',
   cage: '/health',
-  personal: '/api/health',
-  hubs: '/api/health',
+  personal: '/health',
+  hubs: '/health',
   chamber: '/health',
 };
 

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600" aria-label="DRAFT watermark">
+  <g opacity="0.11" fill="#D94F3B" font-family="Georgia,serif" font-weight="700">
+    <text x="100" y="320" font-size="96" transform="rotate(-32 400 300)">DRAFT</text>
+  </g>
+</svg>
