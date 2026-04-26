@@ -78,8 +78,9 @@
     },
     "stripeWorker": {
       "hostAsBuilt": "https://donate-api.phosphorus31.org",
+      "workersDevBase": "https://donate-api.trimtab-signal.workers.dev",
       "canonicalPaymentApiPerConstants": "https://api.phosphorus31.org",
-      "note": "MAP names donate-api for the checkout/worker surface; home p31-constants.json uses payment.stripeWorkerHost = api.phosphorus31.org — same pipeline family; unify naming in MAP when convenient."
+      "note": "MAP names donate-api for the checkout/worker surface; home p31-constants.json uses payment.stripeWorkerHost = api.phosphorus31.org — same pipeline family; unify naming in MAP when convenient. workersDevBase = account default URL; glass/MAP liveness use hostAsBuilt + /health."
     },
     "koFiPath": "Discord p31-bot per docs/adr/MAP-KOFI-001.md",
     "complianceNote": "Pipeline code does not grant tax advice; 501(c)(3) language is operator-approved marketing only (MAP §1)."

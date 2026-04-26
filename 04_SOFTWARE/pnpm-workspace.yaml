@@ -1,5 +1,7 @@
 packages:
+  - 'p31-delta-hiring'
   - 'bonding'
+  - 'k4-personal'
   - 'p31ca'
   - 'spaceship-earth'
   - 'workers'

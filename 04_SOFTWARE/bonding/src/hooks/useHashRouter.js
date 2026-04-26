@@ -2,11 +2,12 @@ import { useState, useEffect } from 'react';
 
 /**
  * useHashRouter — Simple hash-based room navigation
- * 
- * Routes:
+ *
+ * Routes (see ROOMS for labels):
  *   #bonding     → Main game (default)
  *   #collider    → ColliderMode proximity sensor
- *   #observatory → Geodesic data dome (planned)
+ *   #geodesic    → GeodesicMode 3D structure builder
+ *   #observatory → Data dome (planned; product lives on hub as /dome, etc.)
  *   #bridge      → LOVE wallet / identity (planned)
  */
 export function useHashRouter() {

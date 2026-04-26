@@ -9,6 +9,8 @@
 2026-04-23 — Commit 76997fb8  
 All infrastructure live and verified.
 
+**Engineering closure / route map:** see **`CLOSURE.md`** (2026-04-26) — CRDT `CrdtSessionDO` binding, access logging flags, orchestrator external to this package.
+
 ---
 
 ## 🔐 IAM & Security

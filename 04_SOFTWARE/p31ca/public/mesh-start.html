@@ -64,6 +64,7 @@
           <span class="inline-flex items-center gap-1.5 rounded-lg bg-teal/10 text-teal border border-teal/20 px-2.5 py-1">Delta · your loop</span>
           <span class="inline-flex items-center gap-1.5 rounded-lg bg-surface2 border border-white/[0.08] px-2.5 py-1">Not the family cage</span>
           <span id="passkey-badge" class="inline-flex items-center gap-1.5 rounded-lg bg-surface2 border border-white/[0.08] px-2.5 py-1 hidden"></span>
+          <a id="worker-tetra-shell" class="hidden inline-flex items-center gap-1.5 rounded-lg bg-cyan/10 text-cyan border border-cyan/25 px-2.5 py-1 text-[0.7rem] font-mono hover:opacity-90" target="_blank" rel="noopener" href="#">k4-personal tetra shell ↗</a>
         </div>
 
         <!-- Personal tetra (p31.personalTetra/1.0.0) -->
@@ -98,6 +99,10 @@
                 <button id="chat-send" type="button" class="flex-1 rounded-xl bg-teal text-paper font-semibold py-2.5 text-sm hover:opacity-95 active:scale-[0.99] transition">Send</button>
                 <button id="chat-clear" type="button" class="rounded-xl border border-white/15 px-4 py-2.5 text-sm text-cloud/60 hover:text-cloud hover:bg-white/[0.04] transition">Clear</button>
               </div>
+              <label class="mt-2 flex items-start gap-2 text-[0.7rem] text-cloud/55 cursor-pointer select-none max-w-prose">
+                <input type="checkbox" id="chat-soulsafe" class="mt-0.5 rounded border-white/20 bg-void" />
+                <span><span class="text-teal/90 font-mono">SOULSAFE</span> — four specialist lenses + fusion (five Workers AI calls; needs ≥3 spoons). Off by default; see <span class="text-cloud/40">docs/SOULSAFE-TETRA-SPEC.md</span> in repo.</span>
+              </label>
               <div id="chat-out-wrap" class="mt-3 flex-1 min-h-[6rem] rounded-xl border border-white/[0.06] bg-void/50 p-3 overflow-auto hidden">
                 <p class="font-mono text-[0.7rem] text-cloud/40 mb-1">Reply</p>
                 <p id="chat-out" class="text-sm text-cloud/85 whitespace-pre-wrap font-mono text-[0.8rem] leading-relaxed"></p>
@@ -148,6 +153,7 @@
 (function () {
   const LS_ID = 'p31_subject_id';
   const LS_META = 'p31_onboard_meta';
+  const LS_SOULSAFE = 'p31_mesh_soulsafe';
 
   function agentBase() {
     const q = new URLSearchParams(location.search).get('agent');
@@ -205,6 +211,12 @@
   const sidEl = document.getElementById('sid-display');
   sidEl.textContent = shortId(subjectId);
   sidEl.title = subjectId;
+
+  const shellA = document.getElementById('worker-tetra-shell');
+  if (shellA) {
+    shellA.href = `${BASE}/u/${encodeURIComponent(subjectId)}/home`;
+    shellA.classList.remove('hidden');
+  }
 
   document.getElementById('meta-display').textContent =
     [meta.welcomeLabel && `welcome: ${meta.welcomeLabel}`,
@@ -474,13 +486,22 @@
     wrap.classList.remove('hidden');
     out.textContent = '…';
     try {
+      const payload = { message: msg, scope: 'personal' };
+      const soulCb = document.getElementById('chat-soulsafe');
+      if (soulCb && soulCb.checked) payload.soulsafe = true;
       const r = await fetch(`${BASE}/agent/${encodeURIComponent(subjectId)}/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: msg, scope: 'personal' }),
+        body: JSON.stringify(payload),
       });
       const j = r.ok ? await r.json() : { error: await r.text() };
-      out.textContent = j.reply || j.error || JSON.stringify(j);
+      var replyText = j.reply || j.error || JSON.stringify(j);
+      if (j.soulsafe && j.soulsafe.effects) {
+        replyText += '\n\n— SOULSAFE effects —\n' + JSON.stringify(j.soulsafe.effects, null, 2);
+      } else if (j.soulsafeSkipped) {
+        replyText += '\n\n' + 'SOULSAFE skipped: ' + JSON.stringify(j.soulsafeSkipped);
+      }
+      out.textContent = replyText;
       input.value = '';
       ping();
     } catch (e) {
@@ -490,6 +511,32 @@
 
   document.getElementById('btn-refresh').addEventListener('click', ping);
 
+  async function pushSoulsafePrefs() {
+    const el = document.getElementById('chat-soulsafe');
+    if (!el) return;
+    try {
+      await fetch(`${BASE}/agent/${encodeURIComponent(subjectId)}/state`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ soulsafe_prefs: { default: el.checked } }),
+      });
+    } catch (_) { /* non-fatal */ }
+  }
+
+  (function initSoulsafeToggle() {
+    const el = document.getElementById('chat-soulsafe');
+    if (!el) return;
+    try {
+      if (localStorage.getItem(LS_SOULSAFE) === '1') el.checked = true;
+    } catch (_) {}
+    el.addEventListener('change', function () {
+      try {
+        localStorage.setItem(LS_SOULSAFE, el.checked ? '1' : '0');
+      } catch (_) {}
+      void pushSoulsafePrefs();
+    });
+  })();
+
   async function runInit() {
     await loadWelcomePackagesMesh();
     applyMeshWelcomeUI(activeWelcomePkg);
@@ -497,6 +544,7 @@
     await seedPersonalTetra();
     await loadTetra();
     await loadHubFusion();
+    await pushSoulsafePrefs();
     ping();
   }
   runInit();

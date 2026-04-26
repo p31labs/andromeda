@@ -84,6 +84,37 @@ for (const d of scanDirs) {
   walkScan(join(ROOT, d), d);
 }
 
+// --- 4) Optional: P31 home p31-constants.json (nested clone: .../p31/andromeda + .../p31/p31-constants.json) ---
+const homeConstantsPath = join(ROOT, "..", "p31-constants.json");
+if (existsSync(homeConstantsPath)) {
+  try {
+    const raw = readFileSync(homeConstantsPath, "utf8");
+    const c = JSON.parse(raw);
+    const pay = c.payment;
+    if (pay && typeof pay === "object") {
+      const wantDonate = "https://donate-api.phosphorus31.org/health";
+      if (pay.donateApiHealthUrl && String(pay.donateApiHealthUrl) !== wantDonate) {
+        err(
+          `parent p31-constants.json: payment.donateApiHealthUrl must be ${wantDonate} for MAP (got ${String(pay.donateApiHealthUrl)})`
+        );
+      }
+      const host = pay.stripeWorkerHost;
+      const stripeH = pay.stripeApiHealthUrl;
+      if (host && stripeH) {
+        const expect = "https://" + String(host).replace(/\/$/, "") + "/health";
+        const got = String(stripeH).replace(/\/$/, "");
+        if (expect !== got) {
+          err(
+            `parent p31-constants.json: payment.stripeApiHealthUrl must be ${expect} (got ${got}) — align with payment.stripeWorkerHost`
+          );
+        }
+      }
+    }
+  } catch (e) {
+    err("parent p31-constants.json: " + (e && e.message ? e.message : e));
+  }
+}
+
 if (errors.length) {
   console.error("verify-monetary-surface: FAILED\n");
   for (const e of errors) console.error("  -", e);

@@ -209,8 +209,7 @@ export const useLazyThemePreset = (presetKey: ThemePresetKey) => {
 export const usePreloadThemePresets = (presetKeys: ThemePresetKey[]) => {
   const loadedPresets = useMemo(
     () => new Set(presetKeys.filter(k => k in PRESET_MAP)),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [],
+    [presetKeys],
   );
   return { loadedPresets, isLoading: false };
 };

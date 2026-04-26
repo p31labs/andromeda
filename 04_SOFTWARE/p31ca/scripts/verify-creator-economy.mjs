@@ -9,10 +9,12 @@
 import { readFileSync, existsSync } from "fs";
 import { resolve, dirname } from "path";
 import { fileURLToPath } from "url";
+import { isDeepStrictEqual } from "util";
 
 const __dir = dirname(fileURLToPath(import.meta.url));
 const ROOT  = resolve(__dir, "..");
 const PATH  = resolve(ROOT, "ground-truth/creator-economy.json");
+const PUBLIC = resolve(ROOT, "public/creator-economy.json");
 
 let failed = false;
 function fail(msg) {
@@ -34,6 +36,25 @@ try {
 } catch (e) {
   fail("JSON parse error: " + e.message);
   process.exit(1);
+}
+
+// Public deploy mirror must match ground truth (AGENTS: edit both, same bytes semantically)
+if (!existsSync(PUBLIC)) {
+  fail("public/creator-economy.json missing (must mirror ground-truth for Pages deploy)");
+} else {
+  let pubDoc;
+  try {
+    pubDoc = JSON.parse(readFileSync(PUBLIC, "utf8"));
+  } catch (e) {
+    fail("public/creator-economy.json parse error: " + e.message);
+  }
+  if (!isDeepStrictEqual(doc, pubDoc)) {
+    fail(
+      "public/creator-economy.json out of sync with ground-truth/creator-economy.json — copy ground-truth → public/ or run your sync step, then re-run verify:economy"
+    );
+  } else {
+    ok("public/creator-economy.json matches ground truth ✓");
+  }
 }
 
 // Schema guard

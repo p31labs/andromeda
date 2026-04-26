@@ -60,9 +60,14 @@ Browser
 - Replay protection: `signCount` comparison in auth-finish (rejects if ≤ stored non-zero count)
 - rpId binding: `SHA-256(RP_ID)` must match first 32 bytes of authData
 
-**CORS:**
-- No wildcard `Access-Control-Allow-Origin: *`
-- Endpoints called same-origin from `p31ca.org` pages; CORS is not needed
+**CORS (implementation in `workers/passkey/src/index.ts`):**
+- Worker sets `Access-Control-Allow-Origin: *` on passkey JSON responses to allow preflight-free calls from the hub and local dev.
+- **Trust boundary** for WebAuthn is not CORS: **rpId** (`RP_ID` / `p31ca.org`) and **authData / clientData** verification; an attacker on another origin cannot satisfy **rpIdHash** in the authenticator. See `ground-truth/p31.ground-truth.json` and `security/worker-allowlist.json` (`p31-passkey` notes) for the documented posture.
+- **P2 (optional):** restrict `Access-Control-Allow-Origin` to `p31ca.org` + `p31ca.pages.dev` if you want defense-in-depth; same-origin production calls do not *require* CORS, but the Worker currently returns `*`.
+
+**Command Center operator shift (`command-center` Worker, `GET/POST/OPTIONS /api/operator/shift`):**
+- **GET** is intentionally **public** (PII-free JSON: `state` + `at`); CORS allows listed origins (p31ca, bonding, `*.pages.dev`, localhost) so the `/ops/` glass table and shift line can read it without a session.
+- **POST** (tag in/out) requires **Cloudflare Access** and **operator** role; **OPTIONS** preflight reflects the browser `Origin` when allowlisted. Audit entries and elevated fields are not returned to unauthenticated GETs.
 
 **Rate limiting:**
 - Not implemented at Worker level — relies on Cloudflare edge rate limiting (free tier: basic)
@@ -70,8 +75,7 @@ Browser
 
 **Orchestrator (`/orchestrator` page, `p31-orchestrator.trimtab-signal.workers.dev`):**
 - Unlisted from hub grid (Pauli assertion in egg-hunt manifest enforces this)
-- Not authenticated — P2 item: add Bearer token + CF Access rule or Worker-level auth
-- See `docs/EGG-HUNT.md` for the `ORCH-WORKER` entry
+- **Trust boundary (definition of done):** the **static** Astro/JS page is a convenience UI only; it is not an authentication layer. The **`p31-orchestrator` Worker** must enforce production controls on **mutating** and **sensitive read** paths: (1) **Cloudflare Access** in front of the `*.workers.dev` route *or* **Worker** validation of `Authorization: Bearer` against a `wrangler secret`, (2) **rate limits** (Workers Rate Limiting API, `fetch` throttling, or WAF), (3) **audit** logging for approval/mutation events. Unauthenticated **GET**s for read-only status may remain acceptable if documented and abuse-reviewed; **POST**/approve/queue must not be world-writable. See `docs/EGG-HUNT.md` for the `ORCH-WORKER` entry. **Policy F8: closed** — no further “P2” backlog item; implementation lives in the orchestrator worker deploy, not in static HTML.
 
 ---
 

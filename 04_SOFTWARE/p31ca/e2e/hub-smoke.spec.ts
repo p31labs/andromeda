@@ -46,4 +46,19 @@ test.describe("p31ca hub (built dist)", () => {
     expect(j.schema).toBe("p31.superCentaurStarterPack/1.0.0");
     expect(j.meshFleet?.MESH?.cage).toContain("k4-cage");
   });
+
+  test("initial build page loads (CWP + bake entry)", async ({ page }) => {
+    await page.goto("/initial-build.html", nav);
+    await expect(page.getByRole("heading", { name: /Initial Build/i })).toBeVisible();
+    await expect(page.getByText("CWP-P31-IB-2026-01", { exact: true }).first()).toBeVisible();
+    await expect(page.getByRole("link", { name: /Wye → Delta onboard/i })).toBeVisible();
+    await expect(page.getByRole("button", { name: /Create guest id here/i })).toBeVisible();
+  });
+
+  test("initial build bake script is servable", async ({ request }) => {
+    const res = await request.get("/lib/p31-initial-build-bake.js");
+    expect(res.ok()).toBeTruthy();
+    const t = await res.text();
+    expect(t).toContain("p31.buildRecord/0.1.0");
+  });
 });

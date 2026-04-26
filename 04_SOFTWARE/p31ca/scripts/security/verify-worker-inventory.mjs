@@ -15,7 +15,7 @@ import { execSync } from "child_process";
 
 const __dir = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dir, "../..");
-// Monorepo root: go up from p31ca
+// two levels up from p31ca → andromeda/ (entire monorepo tree for wrangler discovery)
 const MONO_ROOT = resolve(ROOT, "../..");
 const ALLOWLIST_PATH = resolve(ROOT, "security/worker-allowlist.json");
 const INVENTORY_PATH = resolve(ROOT, "build/security-inventory.json");
@@ -28,7 +28,9 @@ function log(level, msg) {
 function findWranglerTomls(root) {
   try {
     const out = execSync(
-      `find "${root}" -name "wrangler.toml" -not -path "*/node_modules/*" -not -path "*/.git/*"`,
+      `find "${root}" -name "wrangler.toml" ` +
+        `-not -path "*/node_modules/*" -not -path "*/.git/*" ` +
+        `-not -path "*/docs/files/*"`,
       { encoding: "utf8", stdio: ["pipe", "pipe", "pipe"] }
     );
     return out.trim().split("\n").filter(Boolean);

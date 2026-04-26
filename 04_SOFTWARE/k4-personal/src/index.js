@@ -4,9 +4,24 @@
  */
 import { DurableObject } from 'cloudflare:workers';
 import {
+  personalMesh,
+  personalHealth,
+  personalVertexGet,
+  personalPresence,
+  personalPing,
+  personalRouteIndex,
+} from '../../packages/k4-mesh-core/personal-handlers.js';
+import { personalVizResponse } from '../../packages/k4-mesh-core/personal-viz.js';
+import {
   normalizePersonalTetra,
   validatePersonalTetra,
 } from './personal-tetra.js';
+import { buildTetraHomePage } from './tetra-home-html.js';
+import {
+  DEFAULT_SOULSAFE_MODEL_ID,
+  runSoulsafeTetra,
+  SOULSAFE_TETRA_SCHEMA,
+} from './soulsafe-tetra.js';
 
 export class PersonalAgent extends DurableObject {
   constructor(ctx, env) {
@@ -40,10 +55,19 @@ export class PersonalAgent extends DurableObject {
         payload TEXT NOT NULL,
         ts INTEGER NOT NULL
       );
+      CREATE TABLE IF NOT EXISTS soulsafe_runs (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        ts INTEGER NOT NULL,
+        effects_json TEXT NOT NULL,
+        reply TEXT NOT NULL,
+        model_id TEXT NOT NULL
+      );
     `);
     this.ctx.storage.getAlarm().then((existing) => {
       if (existing === null) {
-        this.ctx.storage.setAlarm(Date.now() + parseInt(env.FLUSH_INTERVAL_MS || "30000", 10));
+        this.ctx.storage.setAlarm(
+          Date.now() + parseInt(this.env.FLUSH_INTERVAL_MS || "30000", 10)
+        );
       }
     });
   }
@@ -68,16 +92,47 @@ export class PersonalAgent extends DurableObject {
         return Response.json({ status: "ok", agent: "personal" });
       case "/tetra":
         return ["GET", "PUT"].includes(method) ? this._tetra(request) : new Response("Method not allowed", { status: 405 });
+      case "/manifest":
+        return method === "GET" ? this._manifest() : new Response("Method not allowed", { status: 405 });
       default:
         return new Response("Not found", { status: 404 });
     }
   }
 
+  /**
+   * Soft cap on `messages` rows (PA-2.4): trim oldest when over env `MESSAGES_MAX_ROWS` (default 2000).
+   */
+  _messagesMaxRows() {
+    const n = parseInt(this.env.MESSAGES_MAX_ROWS || "2000", 10);
+    if (Number.isNaN(n)) return 2000;
+    return Math.max(100, Math.min(50_000, n));
+  }
+
+  _trimMessagesToCap() {
+    const maxRows = this._messagesMaxRows();
+    const countRows = this.ctx.storage.sql
+      .exec("SELECT COUNT(*) as n FROM messages")
+      .toArray();
+    const n = countRows[0] && countRows[0].n != null ? Number(countRows[0].n) : 0;
+    if (n <= maxRows) return;
+    const toDelete = n - maxRows;
+    this.ctx.storage.sql.exec(
+      "DELETE FROM messages WHERE id IN (SELECT id FROM messages ORDER BY id ASC LIMIT ?)",
+      toDelete
+    );
+  }
+
   async _chat(request) {
-    const { message, scope, tools } = await request.json();
+    const body = await request.json();
+    const { message, scope, tools, soulsafe: soulsafeBody } = body;
     if (!message || typeof message !== "string" || message.length > 4000) {
       return Response.json({ error: "Invalid message" }, { status: 400 });
     }
+    try {
+    const prefs = this._getState("soulsafe_prefs") || {};
+    const defaultOn = this.env.SOULSAFE_CHAT_DEFAULT === "1" || prefs.default === true;
+    const wantSoulsafe = soulsafeBody === true || (soulsafeBody !== false && defaultOn);
+
     this.ctx.storage.sql.exec(
       "INSERT INTO messages (role, content, ts) VALUES (?, ?, ?)",
       "user", message, Date.now()
@@ -89,6 +144,58 @@ export class PersonalAgent extends DurableObject {
     const profile = this._getState("profile") || {};
     const energy = this._getState("energy") || { spoons: 10, max: 12 };
     const scrubRules = this._getState("scrub_rules") || [];
+    const scrubbedMessage = this._scrubPII(message, scrubRules);
+    const scrubbedHistory = history.map((m) => ({
+      ...m,
+      content: this._scrubPII(m.content, scrubRules)
+    }));
+
+    const spoons = Number(energy.spoons);
+    const canSoulsafe = wantSoulsafe && !Number.isNaN(spoons) && spoons >= 3;
+
+    if (canSoulsafe && this.env.AI) {
+      const modelId = DEFAULT_SOULSAFE_MODEL_ID;
+      const fused = await runSoulsafeTetra({
+        ai: this.env.AI,
+        modelId,
+        profile,
+        energy,
+        scrubbedUserMessage: scrubbedMessage,
+        scrubbedHistoryTail: scrubbedHistory,
+        scope,
+        tools,
+      });
+      const reply = fused.reply || "No response";
+      const meta = JSON.stringify({
+        schema: SOULSAFE_TETRA_SCHEMA,
+        modelId: fused.modelId,
+        effects: fused.effects,
+      });
+      this.ctx.storage.sql.exec(
+        "INSERT INTO messages (role, content, ts, metadata) VALUES (?, ?, ?, ?)",
+        "assistant",
+        reply,
+        Date.now(),
+        meta
+      );
+      this.ctx.storage.sql.exec(
+        "INSERT INTO soulsafe_runs (ts, effects_json, reply, model_id) VALUES (?, ?, ?, ?)",
+        Date.now(),
+        JSON.stringify(fused.effects),
+        reply,
+        fused.modelId
+      );
+      return Response.json({
+        reply,
+        energy,
+        soulsafe: {
+          schema: SOULSAFE_TETRA_SCHEMA,
+          effects: fused.effects,
+          modelId: fused.modelId,
+        },
+      });
+    }
+
     const systemPrompt = [
       `You are a personal assistant for ${profile.name || "this user"}.`,
       `Role: ${profile.role || "mesh participant"}.`,
@@ -97,11 +204,6 @@ export class PersonalAgent extends DurableObject {
       `Available tools: ${(tools || []).map((t) => t.name).join(", ") || "none"}.`,
       `Keep responses concise. This is a cognitive prosthetic, not a chatbot.`
     ].join(" ");
-    const scrubbedMessage = this._scrubPII(message, scrubRules);
-    const scrubbedHistory = history.map((m) => ({
-      ...m,
-      content: this._scrubPII(m.content, scrubRules)
-    }));
     const aiResponse = await this.env.AI.run(
       "@cf/meta/llama-3.1-8b-instruct-fast",
       {
@@ -119,7 +221,14 @@ export class PersonalAgent extends DurableObject {
       "INSERT INTO messages (role, content, ts) VALUES (?, ?, ?)",
       "assistant", reply, Date.now()
     );
-    return Response.json({ reply, energy });
+    const out = { reply, energy };
+    if (wantSoulsafe && !canSoulsafe) {
+      out.soulsafeSkipped = { reason: "low_energy", minSpoons: 3 };
+    }
+    return Response.json(out);
+    } finally {
+      this._trimMessagesToCap();
+    }
   }
 
   async _history(url) {
@@ -182,6 +291,31 @@ export class PersonalAgent extends DurableObject {
       Date.now()
     );
     return Response.json(v.value);
+  }
+
+  async _manifest() {
+    const personalTetra = normalizePersonalTetra(this._getState("personalTetra"));
+    const profile = this._getState("profile") || {};
+    const energy = this._getState("energy") || { spoons: 10, max: 12 };
+    const soulsafePrefs = this._getState("soulsafe_prefs") || {};
+    return Response.json({
+      schema: "p31.personalAgentManifest/0.1.0",
+      personalTetra,
+      profile: { name: profile.name ?? null, role: profile.role ?? null },
+      energy: { spoons: energy.spoons, max: energy.max },
+      soulsafeTetra: {
+        schema: SOULSAFE_TETRA_SCHEMA,
+        chatDefault:
+          this.env.SOULSAFE_CHAT_DEFAULT === "1" || soulsafePrefs.default === true,
+        minSpoonsForFusion: 3,
+      },
+      retention: {
+        schema: "p31.agentRetention/0.1.0",
+        chatMessagesMaxRows: this._messagesMaxRows(),
+        strategy: "delete_oldest_over_cap",
+      },
+      service: { name: "k4-personal", durableObject: "PersonalAgent" },
+    });
   }
 
   async _reminders(request) {
@@ -354,6 +488,9 @@ function corsHeaders(request) {
     "http://127.0.0.1:4321",
   ]);
   if (origin.endsWith(".pages.dev")) allowed.add(origin);
+  if (origin && /\.workers\.dev$/.test(new URL(origin).hostname || "")) {
+    allowed.add(origin);
+  }
   const allow = allowed.has(origin) ? origin : "*";
   return {
     "Access-Control-Allow-Origin": allow,
@@ -375,12 +512,69 @@ function withCors(response, request) {
   });
 }
 
+/**
+ * Personal K₄ mesh (KV `k4s:personal:*`) — same API shape as tools/docs expect.
+ */
+function meshContext(request) {
+  const requestId = request.headers.get("X-Request-ID") || undefined;
+  return requestId ? { requestId } : {};
+}
+
+async function handlePersonalMeshApi(request, env) {
+  const p = new URL(request.url).pathname;
+  const method = request.method;
+  const ctx = meshContext(request);
+
+  if (p === "/api" && method === "GET") {
+    return personalRouteIndex(ctx);
+  }
+  if (p === "/api/mesh" && method === "GET") {
+    return personalMesh(env, request.url, ctx);
+  }
+  if (p === "/api/health" && method === "GET") {
+    return personalHealth(env, ctx);
+  }
+  const mVertex = p.match(/^\/api\/vertex\/([a-d])$/);
+  if (mVertex && method === "GET") {
+    return personalVertexGet(env, mVertex[1], ctx);
+  }
+  const mPres = p.match(/^\/api\/presence\/([a-d])$/);
+  if (mPres && method === "POST") {
+    return personalPresence(env, request, mPres[1], ctx);
+  }
+  const mPing = p.match(/^\/api\/ping\/([a-d])\/([a-d])$/);
+  if (mPing && method === "POST") {
+    return personalPing(env, request, mPing[1], mPing[2], ctx);
+  }
+  if (p === "/viz" && method === "GET") {
+    return personalVizResponse();
+  }
+  return null;
+}
+
 export default {
   async fetch(request, env) {
     if (request.method === "OPTIONS") {
       return new Response(null, { status: 204, headers: corsHeaders(request) });
     }
     const url = new URL(request.url);
+    const meshRes = await handlePersonalMeshApi(request, env);
+    if (meshRes) {
+      return withCors(meshRes, request);
+    }
+    const uHome = url.pathname.match(/^\/u\/([^/]+)\/home$/);
+    if (uHome && request.method === "GET") {
+      return withCors(
+        new Response(buildTetraHomePage(uHome[1]), {
+          status: 200,
+          headers: {
+            "content-type": "text/html; charset=utf-8",
+            "cache-control": "no-store",
+          },
+        }),
+        request
+      );
+    }
     const agentMatch = url.pathname.match(/^\/agent\/([^/]+)(\/.*)?$/);
     if (agentMatch) {
       const userId = agentMatch[1];

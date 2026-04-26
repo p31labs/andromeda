@@ -15,7 +15,11 @@
 
 Deploying **any other app’s `dist/`** to project **`p31ca`** replaces the hub for **every** domain on that project.
 
-**Hub automation** — Registry: `scripts/hub/registry.mjs`. One command before deploy: **`npm run hub:ci`** (regenerates `public/*-about.html`, rebuilds `src/data/hub-landing.json`, runs `hub:verify`, then `astro build`). After `npm ci`, **`postinstall`** refreshes `hub-landing.json`. CI: **`.github/workflows/p31ca-hub.yml`** runs the same pipeline on pushes/PRs that touch `04_SOFTWARE/p31ca/**`.
+**Hub automation** — Registry: `scripts/hub/registry.mjs`. **Ship bar:** `npm run hub:ci` = `hub:about:generate` + full **`npm run verify`** (passport + prebuild + `astro build` + **`postbuild` `verify-p31ca-dist`**) — fails if `dist/` is missing critical `public/*` statics (e.g. `mesh-start.html`, `initial-build.html`, `lib/*`) before you deploy. **Deploy:** `npm run deploy` (runs `predeploy` = `verify`, then `wrangler pages deploy dist` — do not use wrangler on an empty `dist`).
+
+**CI (Andromeda monorepo):** **`.github/workflows/p31ca-hub.yml`** — on push to `main` under `04_SOFTWARE/p31ca/**`, runs `hub:ci` and **auto-deploys** `dist/` to the **`p31ca`** Pages project (requires `CLOUDFLARE_API_TOKEN` in repo secrets). **BONDING home** repo: **`.github/workflows/p31-pages-deploy.yml`** — manual `workflow_dispatch`, runs `node scripts/p31-ci.mjs` then the same `wrangler pages deploy` pattern.
+
+After `npm ci`, **`postinstall`** refreshes `hub-landing.json`.
 
 **Passport + CI** — `npm run deploy` runs `predeploy` → `passport:verify` (then build → Pages). Canonical transform: `scripts/passport-p31ca-transform.mjs` in this package. From full P31 home, sync first: `npm run sync:passport` at home root, or `npm run passport:sync` from here. **GitHub Actions** (`P31 Automation` → `deploy_p31ca`): `passport:verify` runs with `P31_WORKSPACE_ROOT` set; it **skips** if `cognitive-passport/` is missing (Andromeda-only clone). For a **strict** check, run workflow **manually** and enable **`p31ca_strict_passport`** (fails if no authoring file). **Wrangler** for Pages is pinned in `package.json` (dev dependency).
 
@@ -42,6 +46,7 @@ These static files are served directly from `public/` with no build step — the
 | `public/planetary-onboard.html` | `/onboard` | Five-phase neuro-inclusive onboarding. Phases 1–4 local; Phase 5 calls passkey Worker. |
 | `public/connect.html` | `/mesh` | K₄ mesh navigator — family cage + product satellites. Receives `?dial=N` handoff from onboarding. |
 | `public/delta.html` | `/why` `/delta` | Wye→Delta narrative. Entry point for external visitors. |
+| `public/initial-build.html` | `/build` | CWP-P31-IB-2026-01: guest/onboarded `subject_id` + `PUT` profile/tetra + `p31_build_record`. |
 | `public/auth.html` | `/auth` | Passkey authentication for returning mesh members. Calls passkey Worker auth endpoints. |
 
 Short-path aliases are defined in `public/_redirects` (Cloudflare Pages edge rules):
@@ -51,6 +56,7 @@ Short-path aliases are defined in `public/_redirects` (Cloudflare Pages edge rul
 /mesh     →  /connect.html             301
 /delta    →  /delta.html               301
 /why      →  /delta.html               301
+/build    →  /initial-build.html       301
 /auth     →  /auth.html                301
 ```
 

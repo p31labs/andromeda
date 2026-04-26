@@ -21,7 +21,7 @@ pnpm run build
 pnpm run test
 ```
 
-Turbo scripts are defined in `04_SOFTWARE/package.json` (`build`, `test`, `dev`, etc.); the root `package.json` delegates to `pnpm --dir 04_SOFTWARE` for convenience.
+Turbo scripts are defined in `04_SOFTWARE/package.json` (`build`, `test`, `dev`, etc.); the **repository root** `package.json` also defines **`npm run git:hooks`**, which sets `core.hooksPath` to **`.githooks/`** (MAP monetary **pre-commit**, opt-in **post-commit** auto-push; see **`npm run git:autopush:status`**). Run once per clone or after pulling hook changes.
 
 **Production quality bar:** [`docs/ENTERPRISE_QUALITY.md`](docs/ENTERPRISE_QUALITY.md). PRs should keep **Monorepo verify** (GitHub Actions) green.
 

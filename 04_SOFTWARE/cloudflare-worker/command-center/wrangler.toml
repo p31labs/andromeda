@@ -31,8 +31,18 @@ bucket_name = "p31-epcp-audit-exports"
 [triggers]
 crons = ["*/5 * * * *"]
 
+[[durable_objects.bindings]]
+name = "CRDT_SESSION_DO"
+class_name = "CrdtSessionDO"
+
+[[migrations]]
+tag = "crdt-session-v1"
+new_classes = ["CrdtSessionDO"]
+
 [vars]
 ENVIRONMENT = "production"
+# Set to 1 only when debugging routing: enables per-request console logging
+# DEBUG_ACCESS_LOG = "0"
 # Public account id (same as Cloudflare dashboard URL)
 CF_ACCOUNT_ID = "ee05f70c889cb6f876b9925257e3a2fa"
 # Team domain for Cloudflare Access JWT validation

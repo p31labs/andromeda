@@ -102,6 +102,18 @@ Open `security/audit-suppressions.json`, find the entry, check if a patch is ava
 
 ---
 
+## Closed policy items (governance, not open backlog)
+
+| Item | State |
+|------|--------|
+| **F4 — CI path filters** (home `p31-ci.yml`) | **Closed.** The workflow runs on every push/PR to `main`/`master` (no `paths` filter). You cannot “miss” P31 CI by editing only files that were off an old list. |
+| **F3 / P1 — CORS `*` inventory WARNs** | **Closed for CI policy.** P1 `Wildcard CORS` lines are **informational**; the security suite does **not** fail the merge on them. Triage: document intentional wildcards in `security/worker-allowlist.json` (already required for new Workers); change code only when credentials or cookies cross the boundary. |
+| **Semgrep (home `p31-ci.yml` + `p31-security.yml`)** | **Closed for mode.** SAST is **report-only** (`continue-on-error` / SARIF upload) until a future decision to make it blocking. That is a deliberate state, not a forgotten gate. |
+| **Orchestrator auth (F8)** | **Closed in policy** — see **Orchestrator** in `docs/EDGE-SECURITY.md` for the definition of done; deploy-time enforcement on the Worker. |
+| **Mesh / agent / orchestrator URLs in static pages** | **Closed** — `p31-constants.json` → `apply:constants` → `p31-mesh-constants.json` + `dev-workbench.html` + `verify-constants` (root). |
+
+---
+
 ## Suppression policy
 
 - All suppressions must have a `reason` and `expiresAt` (max 6 months from `addedAt`)

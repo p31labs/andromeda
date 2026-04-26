@@ -1,3 +1,6 @@
+# Local P31 tooling (e.g. git post-commit auto-push marker)
+.p31/
+
 # Environment secrets - NEVER COMMIT
 .env
 .env.local

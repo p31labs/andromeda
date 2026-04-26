@@ -118,6 +118,12 @@
       "label": "EDE Personal — private assistant + EDE entry (k4-personal)",
       "note": "Loads /p31-welcome-packages.json from meta.welcomeKey or ?welcome=. Personalizes headline, tetra blurb, prompt chips; merges package docks into first-time PUT /tetra. Hub fusion ?hub=&hubs=. ?agent= staging. Short /start in _redirects."
     },
+    "initialBuild": {
+      "path": "/initial-build.html",
+      "implementation": "public/initial-build.html",
+      "label": "Initial Build — production entry for CWP-P31-IB-2026-01 (intake → subject_id → bake personal tetra)",
+      "note": "Short /build in _redirects. Normative spec: integration-handoff/INITIAL-BUILD-SITE-STRICT-PLAN.md. Phased UI: shell today; full intake and PUT sequence per CWP WBS. Sister to CWP-P31-PAR (Personal Agent Room)."
+    },
     "connect": {
       "path": "/connect.html",
       "implementation": "public/connect.html",
@@ -160,6 +166,19 @@
       "implementation": "public/open-doc-suite.html",
       "label": "P31 Open Doc Suite (git-native office pack + Forge bridge)",
       "note": "Source tree: andromeda/docs/corporate. .docx via 04_SOFTWARE/p31-forge. Short path: /doc-suite (redirect)."
+    },
+    "devWorkbench": {
+      "path": "/dev-workbench.html",
+      "implementation": "public/dev-workbench.html",
+      "label": "P31 Dev Workbench — ephemeral mesh reads + edge agent + orchestrator (read)",
+      "note": "Single static page; sessionStorage only; fetches p31-constants mesh URLs + p31-agent-hub + p31-orchestrator. No secrets. Short /dev in _redirects. AGENT_HUB_SECRET blocks browser chat; mesh GETs always work when CORS allows."
+    },
+    "operatorShell": {
+      "path": "/ops/",
+      "implementation": "src/pages/ops/index.astro",
+      "label": "Operator shell — unified interactive frame (CWP-P31-UI-2026-01)",
+      "doc": "p31ca/docs/CONTROLLED-WORK-PACKAGE-INTERACTIVE-OPERATOR-UI.md",
+      "note": "Phase A–C: edge operator shift GET + local tag copy; glass ingest. CWP v1.0.3. Trust: EDGE-SECURITY.md; POST shift on command-center only."
     }
   },
   "edgeRedirects": [
@@ -242,6 +261,16 @@
       "from": "/tokens",
       "to": "/p31-canon-demo.html",
       "status": 301
+    },
+    {
+      "from": "/dev",
+      "to": "/dev-workbench.html",
+      "status": 301
+    },
+    {
+      "from": "/build",
+      "to": "/initial-build.html",
+      "status": 301
     }
   ],
   "fileSnippets": [
@@ -259,6 +288,26 @@
       "id": "openDocSuite.page",
       "path": "public/open-doc-suite.html",
       "mustIncludeSubstring": "P31 Open Doc Suite"
+    },
+    {
+      "id": "devWorkbench.page",
+      "path": "public/dev-workbench.html",
+      "mustIncludeSubstring": "P31 Dev Workbench"
+    },
+    {
+      "id": "initialBuild.page",
+      "path": "public/initial-build.html",
+      "mustIncludeSubstring": "CWP-P31-IB-2026-01"
+    },
+    {
+      "id": "subjectIdDerivation.lib",
+      "path": "public/lib/p31-subject-id.js",
+      "mustIncludeSubstring": "p31.subjectIdDerivation/0.1.0"
+    },
+    {
+      "id": "initialBuild.bakeModule",
+      "path": "public/lib/p31-initial-build-bake.js",
+      "mustIncludeSubstring": "p31.buildRecord/0.1.0"
     }
   ],
   "registryAppUrlInvariants": [
