@@ -1,8 +1,11 @@
-# Callable: full monorepo gate (lockfiles, guards, MAP, turbo build/test). Scale by reusing from any workflow.
-name: _ Reusable monorepo verify
+# Callable: full monorepo gate (lockfiles, guards, MAP, turbo build/test).
+name: Reusable monorepo verify
 
 on:
   workflow_call:
+
+permissions:
+  contents: read
 
 jobs:
   verify:

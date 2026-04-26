@@ -1,6 +1,9 @@
 # Focused turbo + compliance — implementation in reusable-ci-focused.yml
 name: P31 Labs CI
 
+permissions:
+  contents: read
+
 on:
   push:
     branches: [main]

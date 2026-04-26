@@ -26,5 +26,5 @@ runs:
         projectName: ${{ inputs.project-name }}
         directory: ${{ inputs.directory }}
         gitHubToken: ${{ inputs.github-token }}
-        wranglerVersion: ${{ env.WRANGLER_VERSION != '' && env.WRANGLER_VERSION || '4.85.0' }}
+        wranglerVersion: ${{ env.WRANGLER_VERSION || '4.85.0' }}
         branch: ${{ inputs.branch }}

@@ -22,4 +22,4 @@ runs:
         accountId: ${{ inputs.account-id }}
         workingDirectory: ${{ inputs.working-directory }}
         command: ${{ inputs.command }}
-        wranglerVersion: ${{ env.WRANGLER_VERSION != '' && env.WRANGLER_VERSION || '4.85.0' }}
+        wranglerVersion: ${{ env.WRANGLER_VERSION || '4.85.0' }}

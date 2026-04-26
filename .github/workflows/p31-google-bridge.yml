@@ -9,6 +9,7 @@ on:
       - ".github/actions/**"
       - ".github/workflows/p31-google-bridge.yml"
   pull_request:
+    branches: [main]
     paths:
       - "04_SOFTWARE/p31-google-bridge/**"
       - ".github/actions/**"

@@ -1,8 +1,11 @@
-# Callable: filtered turbo + compliance (pairs with reusable-monorepo-verify or standalone).
-name: _ Reusable CI focused (turbo + compliance)
+# Callable: filtered turbo + compliance checks.
+name: Reusable CI (focused turbo)
 
 on:
   workflow_call:
+
+permissions:
+  contents: read
 
 env:
   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
@@ -35,7 +38,7 @@ jobs:
         run: cd 04_SOFTWARE && pnpm turbo run test --filter=@p31/bonding --filter=@p31/node-zero
 
       - name: Turborepo remote cache
-        if: env.TURBO_TOKEN != ''
+        if: ${{ env.TURBO_TOKEN != '' }}
         run: cd 04_SOFTWARE && pnpm turbo run build --filter=@p31/bonding --filter=@p31/node-zero --remote
 
       - name: WCD documentation check

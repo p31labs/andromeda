@@ -1,6 +1,9 @@
 # Canonical CI: full monorepo gate — implementation in reusable-monorepo-verify.yml
 name: Monorepo verify
 
+permissions:
+  contents: read
+
 on:
   push:
     branches: [main, develop]

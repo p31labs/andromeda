@@ -2,7 +2,7 @@
 
 ## Scale model
 
-1. **Toolchain (single bump point)** — `.github/actions/toolchain-constants` writes `NODE_VERSION`, `WRANGLER_VERSION`, and `PNPM_VERSION` to `GITHUB_ENV`. Run it first in any job that installs JS or calls Wrangler. Keep `package.json` `packageManager` in sync with `PNPM_VERSION`.
+1. **Toolchain** — `.github/actions/toolchain-constants` runs **after** `actions/checkout`. It sets `GITHUB_ENV` from **repo root `package.json`**: `engines.node` → `NODE_VERSION` (first major digit), `packageManager` → `PNPM_VERSION` (strip `pnpm@`). **Wrangler** is not in `package.json`; bump `WRANGLER_VERSION` inside that action only (keep in sync with Cloudflare deploys).
 
 2. **Composites** (`.github/actions/`)
 
