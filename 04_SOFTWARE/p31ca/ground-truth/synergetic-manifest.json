@@ -1,0 +1,56 @@
+{
+  "schema": "p31.synergetic-manifest/1.0.0",
+  "version": "1.0.0",
+  "updated": "2026-04-25",
+  "note": "Dymaxion-style surface map for multi-dome stack. See docs/WORK-PACKAGE-SYNERGETIC-GEODESIC-STACK.md. Each p31.ground-truth.json threejs surface must have one entry with matching groundTruthThreejsKey.",
+  "entries": [
+    {
+      "id": "dome-astro",
+      "type": "astro",
+      "path": "src/pages/dome.astro",
+      "threeRevision": "0.183.0",
+      "status": "LIVE",
+      "groundTruthThreejsKey": "dome.astro"
+    },
+    {
+      "id": "observatory-static",
+      "type": "static",
+      "path": "public/observatory.html",
+      "threeRevision": "0.160.0",
+      "status": "LIVE",
+      "groundTruthThreejsKey": "observatory.html"
+    },
+    {
+      "id": "spaceship-earth-pwa",
+      "type": "pwa",
+      "path": "../spaceship-earth/package.json",
+      "threeDependency": "^0.159.0",
+      "status": "LIVE",
+      "roomId": "observatory"
+    },
+    {
+      "id": "k4market-static",
+      "type": "static",
+      "path": "public/k4market.html",
+      "threeRevision": "0.160.0",
+      "status": "LIVE",
+      "groundTruthThreejsKey": "k4market.html"
+    },
+    {
+      "id": "tomography-static",
+      "type": "static",
+      "path": "public/tomography.html",
+      "threeRevision": "0.183.0",
+      "status": "LIVE",
+      "groundTruthThreejsKey": "tomography.html"
+    },
+    {
+      "id": "connect-static",
+      "type": "static",
+      "path": "public/connect.html",
+      "threeRevision": "0.160.0",
+      "status": "LIVE",
+      "groundTruthThreejsKey": "connect.html"
+    }
+  ]
+}

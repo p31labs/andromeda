@@ -1,0 +1,241 @@
+{
+  "schema": "p31.ground-truth/1.0.0",
+  "version": "1.0.0",
+  "updated": "2026-04-26",
+  "mission": "Build, create, connect — decentralized family mesh. This file is the machine-routable spine for p31ca.org; human narrative stays in root CLAUDE.md, P31 COGNITIVE PASSPORT — v5.md, and docs/. **Corporate + open print suite (letterhead, memos, watermarks) lives in andromeda/docs/corporate; public surface: /open-doc-suite.html. Version namespaces: P31 home docs/CANONICAL-NUMBERING.md; values: P31 home p31-constants.json.",
+  "canonicalNumbering": {
+    "spec": "P31 home: docs/CANONICAL-NUMBERING.md",
+    "passportLongForm": {
+      "edition": "5.1",
+      "sourceFile": "P31 COGNITIVE PASSPORT — v5.md",
+      "h1Authoritative": true
+    },
+    "jsonSchemaIds": {
+      "cognitivePassport": "p31.cognitivePassport/1.0.0",
+      "groundTruth": "p31.ground-truth/1.0.0"
+    },
+    "bondingTestBaseline": {
+      "tests": 413,
+      "suites": 30,
+      "asOf": "2026-04-25"
+    }
+  },
+  "sites": {
+    "p31ca": {
+      "label": "Technical hub (p31ca.org)",
+      "publicRoot": "https://p31ca.org",
+      "repoPath": "andromeda/04_SOFTWARE/p31ca (this tree)"
+    },
+    "phosphorus31": {
+      "label": "Public org / programs (phosphorus31.org)",
+      "publicRoot": "https://phosphorus31.org",
+      "repoPath": "separate tree — not governed by this file"
+    },
+    "andromedaCorporate": {
+      "label": "P31 Open Doc Suite + corporate one-pager (Andromeda repo, not a separate deploy)",
+      "repoPath": "andromeda/docs/corporate",
+      "githubTree": "https://github.com/p31labs/andromeda/tree/main/docs/corporate",
+      "publicSurfaceOnP31ca": "https://p31ca.org/open-doc-suite.html"
+    },
+    "homeVertical": {
+      "label": "P31 home — Soup, passport authoring, wcd33",
+      "repoPath": "workspace above this monorepo"
+    }
+  },
+  "routes": {
+    "canonicalDome": {
+      "path": "/dome",
+      "implementation": "src/pages/dome.astro",
+      "label": "Sovereign Cockpit Dome (K₄ interactive)",
+      "note": "Primary CTA from hub home. Not the same product as observatory."
+    },
+    "observatory": {
+      "path": "/observatory.html",
+      "implementation": "public/observatory.html",
+      "label": "OBSERVATORY — geodesic panel inspector",
+      "registryId": "observatory",
+      "note": "Hub registry appUrl must stay observatory.html."
+    },
+    "k4market": {
+      "path": "/k4market.html",
+      "implementation": "public/k4market.html",
+      "label": "K4 MARKET — tetrahedral price geometry (Three.js r160)",
+      "registryId": "k4market",
+      "note": "Main viz surface. Symbol search and Larmor ring live in tomography.html."
+    },
+    "tomography": {
+      "path": "/tomography.html",
+      "implementation": "public/tomography.html",
+      "label": "K4 TOMOGRAPHY — symbol-seeded depth view (Three.js r183)",
+      "registryId": "tomography",
+      "note": "Depth companion to k4market.html. Linked from k4market nav."
+    },
+    "planetaryOnboard": {
+      "path": "/planetary-onboard.html",
+      "implementation": "public/planetary-onboard.html",
+      "label": "Planetary Onboarding — five-phase neuro-inclusive entry flow",
+      "note": "No Three.js. Phase 5 passkey stub — awaits Cloudflare Worker backend."
+    },
+    "connect": {
+      "path": "/connect.html",
+      "implementation": "public/connect.html",
+      "label": "The Mesh — K₄ cage + product graph (Three.js r160)",
+      "note": "Envision / Build / Connect navigator. Family cage + product satellites. Click nodes to open products."
+    },
+    "delta": {
+      "path": "/delta.html",
+      "implementation": "public/delta.html",
+      "label": "Wye→Delta — public narrative page explaining mesh resilience and onboarding",
+      "note": "No Three.js. Uses Tailwind CDN. Entry-point for external visitors — links to /planetary-onboard.html and /connect.html."
+    },
+    "auth": {
+      "path": "/auth.html",
+      "implementation": "public/auth.html",
+      "label": "Authenticate — passkey verification page for returning mesh members",
+      "note": "No Three.js. Calls /api/passkey/auth-begin + auth-finish. Falls back gracefully when Worker not deployed. Short URL: /auth via _redirects."
+    },
+    "latticeOracle": {
+      "path": "/magic-crystal.html",
+      "implementation": "public/magic-crystal.html",
+      "label": "Lattice Oracle — toy crystallomancy (CSPRNG, client-only)",
+      "note": "No network. Short URL /oracle via _redirects. Not medical, legal, or financial advice."
+    },
+    "creatorEconomy": {
+      "path": "/creator-economy.json",
+      "implementation": "public/creator-economy.json",
+      "label": "Creator Economy Contract — p31.creatorEconomy/1.0.0",
+      "note": "CI-verified fee/split disclosure. Source: ground-truth/creator-economy.json. Verifier: scripts/verify-creator-economy.mjs. Runs in prebuild. Public endpoint: /creator-economy.json (CORS *). Version 1.0.0 constraints: platform fee = 0, creator share = 1.0, room access free."
+    },
+    "geodesic": {
+      "path": "/geodesic.html",
+      "implementation": "public/geodesic.html",
+      "label": "GEODESIC — 3D structure builder + K₄ live room",
+      "doc": "P31 home docs/GEODESIC-CAMPAIGN.md",
+      "note": "Three.js r160. Static mode: 5-track progressive coach (BONDING-style tutor + tool unlocks, localStorage geodesic:progress:v1; skip=full unlock). ?room=<id> bypasses coach and enables K4 live: wss to GeodesicRoom DO (e.g. geodesic-room.trimtab-signal.workers.dev) for authoritative vertices (v0–v3) plus Phase-1 shared builder shapes (tet/oct/ico/cube) persisted in the DO, Maxwell rigidity summary on /state and in hello, 50-shape cap. Full spec: workspace docs/GEODESIC-CAMPAIGN.md when P31 home tree is present."
+    },
+    "openDocSuite": {
+      "path": "/open-doc-suite.html",
+      "implementation": "public/open-doc-suite.html",
+      "label": "P31 Open Doc Suite (git-native office pack + Forge bridge)",
+      "note": "Source tree: andromeda/docs/corporate. .docx via 04_SOFTWARE/p31-forge. Short path: /doc-suite (redirect)."
+    }
+  },
+  "edgeRedirects": [
+    {
+      "from": "/app/ede",
+      "to": "/ede-about.html",
+      "status": 302
+    },
+    {
+      "from": "/app/buffer",
+      "to": "/buffer-about.html",
+      "status": 302
+    },
+    {
+      "from": "/app/larmor",
+      "to": "/larmor.html",
+      "status": 302
+    },
+    {
+      "from": "/dome.html",
+      "to": "/dome",
+      "status": 301
+    },
+    {
+      "from": "/dome/",
+      "to": "/dome",
+      "status": 301
+    },
+    {
+      "from": "/onboard",
+      "to": "/planetary-onboard.html",
+      "status": 301
+    },
+    {
+      "from": "/mesh",
+      "to": "/connect.html",
+      "status": 301
+    },
+    {
+      "from": "/delta",
+      "to": "/delta.html",
+      "status": 301
+    },
+    {
+      "from": "/why",
+      "to": "/delta.html",
+      "status": 301
+    },
+    {
+      "from": "/auth",
+      "to": "/auth.html",
+      "status": 301
+    },
+    {
+      "from": "/oracle",
+      "to": "/magic-crystal.html",
+      "status": 301
+    },
+    {
+      "from": "/doc-suite",
+      "to": "/open-doc-suite.html",
+      "status": 301
+    }
+  ],
+  "fileSnippets": [
+    {
+      "id": "dome.noscriptBackToHub",
+      "path": "src/pages/dome.astro",
+      "mustIncludeSubstring": "<a href=\"/\" class=\"px-6 py-3 bg-white/20"
+    },
+    {
+      "id": "openDocSuite.page",
+      "path": "public/open-doc-suite.html",
+      "mustIncludeSubstring": "P31 Open Doc Suite"
+    }
+  ],
+  "registryAppUrlInvariants": [
+    {
+      "id": "observatory",
+      "appUrl": "observatory.html"
+    },
+    {
+      "id": "ede",
+      "appUrl": "ede.html"
+    },
+    {
+      "id": "sovereign",
+      "appUrl": "sovereign.html"
+    },
+    {
+      "id": "k4market",
+      "appUrl": "k4market.html"
+    },
+    {
+      "id": "tomography",
+      "appUrl": "tomography.html"
+    }
+  ],
+  "threejs": {
+    "dome.astro": {
+      "path": "src/pages/dome.astro",
+      "mustIncludeSubstring": "three@0.183.0"
+    },
+    "observatory.html": {
+      "path": "public/observatory.html",
+      "mustIncludeSubstring": "three@0.160.0"
+    },
+    "k4market.html": {
+      "path": "public/k4market.html",
+      "mustIncludeSubstring": "three@0.160.0"
+    },
+    "tomography.html": {
+      "path": "public/tomography.html",
+      "mustIncludeSubstring": "three@0.183.0"
+    },
+    "connect.html": {
+      "path": "public/connect.html",
+      "mustIncludeSubstring": "three@0.160.0"
+    }
+  }
+}
