@@ -22,11 +22,13 @@ jobs:
 
       - uses: ./.github/actions/pnpm-andromeda-full
 
-      - name: ESLint (non-blocking)
-        run: cd 04_SOFTWARE && pnpm turbo run lint --filter=@p31/bonding --filter=@p31/shared || true
+      # Bonding + shared: eslint (flat config). Warnings do not fail; errors fail the step.
+      - name: ESLint (bonding + shared)
+        run: cd 04_SOFTWARE && pnpm --filter @p31/bonding --filter @p31/shared run lint
 
-      - name: Security audit (non-blocking)
-        run: pnpm audit --audit-level=high || true
+      - name: Security audit (high+)
+        continue-on-error: true
+        run: pnpm audit --audit-level=high
 
       - name: Type check (core packages)
         run: cd 04_SOFTWARE && pnpm turbo run typecheck --filter=@p31/shared --filter=@p31/bonding --filter=@p31/spaceship-earth --filter=@p31/node-zero

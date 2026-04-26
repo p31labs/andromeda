@@ -25,8 +25,11 @@ jobs:
 
       - uses: ./.github/actions/pnpm-andromeda-full
 
-      - name: ESLint (bonding + shared)
-        run: cd 04_SOFTWARE && pnpm turbo run lint --filter=@p31/bonding --filter=@p31/shared
+      # Real ESLint (flat config) per package; warnings are non-fatal, errors fail the job.
+      # pnpm --filter (not `turbo run lint`) — nested 04_SOFTWARE workspace + turbo graph can
+      # error with "Could not find task `lint` in project" on some package roots.
+      - name: Lint (bonding + shared)
+        run: cd 04_SOFTWARE && pnpm --filter @p31/bonding --filter @p31/shared run lint
 
       - name: Security audit (high+)
         run: pnpm audit --audit-level=high
