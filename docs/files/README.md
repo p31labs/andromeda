@@ -22,7 +22,7 @@
 
 | Tool | Location | Role |
 |------|----------|------|
-| **Batch uploader (this folder)** | `zenodo_upload.py` | Builds Zenodo metadata, **`--dry-run`** checks PDFs on disk, ordered upload (**XII first** → XI & XIX cite XII → V–X, XIV–XVII). Needs `ZENODO_TOKEN`. |
+| **Batch uploader (this folder)** | `zenodo_upload.py` | Builds Zenodo metadata, **`--dry-run`** checks PDFs on disk, ordered upload (**XII first** → XI & XIX cite XII → V–X, XIII–XVII, XVIII–XX). Needs **`ZENODO_TOKEN`**: shell `export`, **or** `.env` next to this script / next to `--pdf-dir` (see `.env.example`). Same name as the **GitHub Actions secret** — it is **not** committed to git. |
 | **Forge — Zenodo channel** | `andromeda/04_SOFTWARE/p31-forge/README.md` | `node forge.js publish zenodo @content/releases/....json` — deposition from structured JSON (`title`, `description`, `creators`, `files`, optional `publish`). |
 | **DOI backfill helper** | `andromeda/04_SOFTWARE/ops/update-dois.js` | Paste DOIs into `DOI_MAP` and propagate across configured paths (see script header). |
 | **Zenodo Worker (edge)** | `andromeda/04_SOFTWARE/cloudflare-worker/p31_zenodo_worker.js` | HTTP wrapper around Zenodo API (optional; needs `ZENODO_API_TOKEN`). |

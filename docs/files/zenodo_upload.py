@@ -5,6 +5,7 @@ Uploads the full research series as a linked collection.
 
 Usage:
   export ZENODO_TOKEN=your_token_here
+  # or: cp .env.example .env  and set ZENODO_TOKEN (see andromeda/.gitignore)
   python zenodo_upload.py --dry-run     # preview metadata
   python zenodo_upload.py               # upload everything
 
@@ -13,6 +14,38 @@ then V–X, XIII–XVII, XVIII–XX (stable order within each priority tier).
 """
 
 import os, sys, json, time, argparse, glob
+
+_SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+
+
+def load_env_file(path):
+    """KEY=VAL lines; does not override existing os.environ. Supports optional export prefix."""
+    if not path or not os.path.isfile(path):
+        return
+    with open(path, encoding="utf-8", errors="replace") as f:
+        for raw in f:
+            line = raw.strip()
+            if not line or line.startswith("#"):
+                continue
+            if line.startswith("export "):
+                line = line[7:].strip()
+            if "=" not in line:
+                continue
+            key, _, val = line.partition("=")
+            key = key.strip()
+            if not key or key in os.environ:
+                continue
+            val = val.strip()
+            if len(val) >= 2 and val[0] == val[-1] and val[0] in "\"'":
+                val = val[1:-1]
+            os.environ[key] = val
+
+
+def hydrate_token_from_dotenv(pdf_dir):
+    """GitHub / Forge store ZENODO_TOKEN out-of-band; local runs can use .env next to PDFs or this script."""
+    for base in (_SCRIPT_DIR, os.path.abspath(pdf_dir)):
+        load_env_file(os.path.join(base, ".env"))
+
 
 # ══════════════════════════════════════════════
 # PAPER METADATA — THE FULL SERIES
@@ -288,10 +321,10 @@ def upload_all(papers, pdf_dir, token, xii_doi=None):
         dep_id = dep["id"]
         bucket_url = dep["links"]["bucket"]
 
-        # 2. Upload PDF
+        # 2. Upload PDF (Zenodo S3-compatible bucket may return 200 or 201)
         with open(pdf_path, "rb") as f:
             r2 = requests.put(f"{bucket_url}/{p['file']}", data=f, headers=headers)
-        if r2.status_code != 200:
+        if r2.status_code not in (200, 201):
             print(f"    \u2717 Upload failed: {r2.status_code}")
             continue
 
@@ -333,10 +366,16 @@ if __name__ == "__main__":
     parser.add_argument("--xii-doi", default=None, help="Paper XII DOI if already published")
     args = parser.parse_args()
 
+    hydrate_token_from_dotenv(args.pdf_dir)
     token = os.environ.get("ZENODO_TOKEN")
     if not token and not args.dry_run:
-        print("Error: Set ZENODO_TOKEN environment variable.")
-        print("  Get your token at: https://zenodo.org/account/settings/applications/")
+        print("Error: ZENODO_TOKEN not set.")
+        print("  Put it in the environment, or create:")
+        print(f"    {_SCRIPT_DIR}/.env")
+        print(f"    {os.path.abspath(args.pdf_dir)}/.env")
+        print('  with a line: ZENODO_TOKEN="..."')
+        print("  (GitHub Actions: repository secret ZENODO_TOKEN — not stored in git.)")
+        print("  Token UI: https://zenodo.org/account/settings/applications/")
         sys.exit(1)
 
     if args.dry_run:
