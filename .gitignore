@@ -138,6 +138,9 @@ phosphorus31.org/planetary-planet/src/worker/
 
 # Package lock - use yarn/pnpm or commit intentionally
 package-lock.json
+# npm-ci workflows use npm ci + setup-node cache for these standalone Workers
+!04_SOFTWARE/donate-api/package-lock.json
+!04_SOFTWARE/p31-google-bridge/package-lock.json
 
 # Research and documentation
 02_RESEARCH/
