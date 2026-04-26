@@ -93,7 +93,8 @@ export function renderPortfolio(
         if (getProof(rec.id)) rec = { ...rec, id: newId() };
         rec.updated = new Date().toISOString();
         upsertProof(rec);
-        errEl() && (errEl().hidden = true);
+        const _err = errEl();
+        if (_err) _err.hidden = true;
         announceStatus('Proof imported');
         onRefresh();
       } catch (ex) {
@@ -306,8 +307,8 @@ export function wireProofForm(
       return;
     }
     try {
-      // eslint-disable-next-line no-new
-      new URL(url);
+      const u = new URL(url);
+      if (u.protocol !== 'http:' && u.protocol !== 'https:') throw new Error('not http(s)');
     } catch {
       const err = document.getElementById('proof-err');
       if (err) {

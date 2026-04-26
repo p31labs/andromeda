@@ -1,4 +1,4 @@
-import type { Fuse } from 'fuse.js';
+import Fuse from 'fuse.js';
 import type { SearchDoc } from './lib/buildSearchIndex';
 import type {
   RolePacketsData,

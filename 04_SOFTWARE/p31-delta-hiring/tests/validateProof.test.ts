@@ -32,7 +32,7 @@ describe('parseProofJson', () => {
     }
   });
   it('rejects bad WCD id', () => {
-    const bad = { ...minimal, wcdId: 'nope' };
+    const bad = { ...(minimal as Record<string, unknown>), wcdId: 'nope' };
     const r = parseProofJson(bad);
     expect(r.ok).toBe(false);
   });

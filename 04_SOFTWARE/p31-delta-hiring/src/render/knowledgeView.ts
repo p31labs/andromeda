@@ -1,5 +1,6 @@
 import type { AppModel } from '../appModel';
 import type { SearchDoc } from '../lib/buildSearchIndex';
+import type { HelpTopic } from '../types';
 import { helpBlocksToHtml } from '../lib/blocksToHtml';
 import { escapeHtml } from '../lib/escape';
 import { setHashPath } from '../router';
