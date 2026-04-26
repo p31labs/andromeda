@@ -1,0 +1,49 @@
+# Regenerate *-about.html from registry, verify hub graph, Astro build — on p31ca changes only
+name: p31ca Hub
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "04_SOFTWARE/p31ca/**"
+      - ".github/workflows/p31ca-hub.yml"
+  push:
+    branches: [main]
+    paths:
+      - "04_SOFTWARE/p31ca/**"
+      - ".github/workflows/p31ca-hub.yml"
+
+concurrency:
+  group: p31ca-hub-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: 04_SOFTWARE/p31ca
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: 04_SOFTWARE/p31ca/package-lock.json
+
+      - name: Install
+        run: npm ci
+
+      - name: Hub CI (generate about pages + hub JSON + verify + Astro build)
+        run: npm run hub:ci
+
+      - name: Deploy to Cloudflare Pages
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: 04_SOFTWARE/p31ca
+          command: pages deploy dist --project-name=p31ca --branch=main
+          wranglerVersion: '4.85.0'

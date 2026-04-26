@@ -1,0 +1,47 @@
+name: spaceship-earth
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '04_SOFTWARE/spaceship-earth/**'
+      - '.github/workflows/spaceship-earth.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: spaceship-earth-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: 04_SOFTWARE
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: pnpm
+          cache-dependency-path: 04_SOFTWARE/pnpm-lock.yaml
+
+      - name: Install (workspace)
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm --filter @p31/spaceship-earth run build
+
+      - name: Deploy to Cloudflare Pages
+        if: github.ref == 'refs/heads/main'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: 04_SOFTWARE/spaceship-earth
+          command: pages deploy dist --project-name=spaceship-earth --branch=main
+          wranglerVersion: '4.85.0'
