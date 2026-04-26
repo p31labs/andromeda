@@ -1,0 +1,354 @@
+---
+// p31ca.org/src/pages/index.astro
+// P31 Labs Technical Hub — Connected to command-center API
+---
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>P31 Labs — Open-Source Assistive Technology</title>
+  <meta name="description" content="P31 Labs builds open-source assistive technology for neurodivergent individuals. BONDING, Node Zero, Buffer, Mesh." />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,600;0,9..40,800;1,9..40,400&display=swap" rel="stylesheet" />
+  <meta name="theme-color" content="#080810" />
+
+  <!-- Schema.org -->
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "P31 Labs, Inc.",
+    "url": "https://p31ca.org",
+    "logo": "https://phosphorus31.org/logo.svg",
+    "description": "Open-source assistive technology for neurodivergent individuals",
+    "taxID": "42-1888158",
+    "foundingDate": "2026-04-03",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "401 Powder Horn Rd",
+      "addressLocality": "Saint Marys",
+      "addressRegion": "GA",
+      "postalCode": "31558"
+    },
+    "sameAs": [
+      "https://github.com/p31labs",
+      "https://phosphorus31.org",
+      "https://orcid.org/0009-0002-2492-9079"
+    ]
+  })} />
+
+  <style>
+    :root {
+      --bg: #080810;
+      --surface: #0f0f18;
+      --card: #141420;
+      --border: rgba(255,255,255,0.06);
+      --border-hover: rgba(255,255,255,0.12);
+      --text: rgba(255,255,255,0.87);
+      --muted: rgba(255,255,255,0.5);
+      --dim: rgba(255,255,255,0.3);
+      --coral: #E8636F;
+      --coral-glow: rgba(232,99,111,0.15);
+      --teal: #2A9D8F;
+      --green: #34d399;
+      --green-glow: rgba(52,211,153,0.4);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .container { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+
+    /* ── Nav ── */
+    nav { position: sticky; top: 0; z-index: 50; backdrop-filter: blur(12px);
+      background: rgba(8,8,16,0.85); border-bottom: 1px solid var(--border); }
+    nav .inner { display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 24px; max-width: 1080px; margin: 0 auto; }
+    nav .logo { display: flex; align-items: center; gap: 10px; }
+    nav .logo-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--coral);
+      box-shadow: 0 0 10px var(--coral-glow); animation: pulse 3s ease-in-out infinite; }
+    nav .logo-text { font-weight: 800; font-size: 15px; color: white; letter-spacing: -0.02em; }
+    nav .logo-sub { font-size: 12px; color: var(--muted); margin-left: 8px; }
+    nav .links { display: flex; gap: 20px; align-items: center; }
+    nav .links a { font-size: 13px; color: var(--muted); text-decoration: none; transition: color 0.2s; }
+    nav .links a:hover { color: white; }
+
+    /* ── Hero ── */
+    .hero { padding: 100px 0 72px; }
+    .hero .status { display: flex; align-items: center; gap: 8px; margin-bottom: 20px; }
+    .hero .status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green);
+      box-shadow: 0 0 8px var(--green-glow); }
+    .hero .status-text { font-size: 12px; color: var(--green); font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.08em; }
+    .hero h1 { font-size: clamp(2.5rem, 6vw, 3.75rem); font-weight: 800; color: white;
+      line-height: 1.1; letter-spacing: -0.03em; margin-bottom: 20px; }
+    .hero h1 span { color: var(--coral); }
+    .hero p { font-size: 18px; color: var(--muted); max-width: 580px; margin-bottom: 36px; }
+    .hero .actions { display: flex; gap: 12px; flex-wrap: wrap; }
+    .hero .btn-coral { display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px;
+      background: var(--coral); color: white; border-radius: 12px; font-size: 14px;
+      font-weight: 700; text-decoration: none; transition: filter 0.2s; }
+    .hero .btn-coral:hover { filter: brightness(1.15); }
+    .hero .btn-outline { display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px;
+      border: 1px solid var(--border); color: var(--muted); border-radius: 12px;
+      font-size: 14px; font-weight: 600; text-decoration: none; transition: all 0.2s; }
+    .hero .btn-outline:hover { border-color: var(--border-hover); color: white; }
+
+    /* ── Section headers ── */
+    .section-label { font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.18em; color: var(--dim); margin-bottom: 28px; }
+
+    /* ── Products grid ── */
+    .products { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+    .product-card { display: block; padding: 24px; border-radius: 16px; border: 1px solid var(--border);
+      background: rgba(255,255,255,0.015); text-decoration: none; transition: all 0.3s; }
+    .product-card:hover { background: rgba(255,255,255,0.035); border-color: var(--border-hover); }
+    .product-card .top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; }
+    .product-card .icon-wrap { width: 40px; height: 40px; border-radius: 10px; display: flex;
+      align-items: center; justify-content: center; }
+    .product-card .status-badge { font-size: 10px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.06em; padding: 4px 10px; border-radius: 20px; }
+    .product-card h3 { font-size: 17px; font-weight: 700; color: white; margin-bottom: 6px; }
+    .product-card p { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+    /* ── Research block ── */
+    .research-block { padding: 32px; border-radius: 16px; border: 1px solid var(--border);
+      background: rgba(255,255,255,0.015); }
+    .research-block h3 { font-size: 20px; font-weight: 800; color: white; margin-bottom: 4px; }
+    .research-block .sub { font-size: 13px; color: var(--muted); }
+    .research-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 24px; }
+    .stat-card { padding: 16px; border-radius: 12px; background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.03); }
+    .stat-card .num { font-size: 28px; font-weight: 800; color: white; }
+    .stat-card .label { font-size: 11px; color: var(--dim); }
+
+    /* ── Fleet ── */
+    .fleet-block { padding: 32px; border-radius: 16px; border: 1px solid var(--border);
+      background: rgba(255,255,255,0.015); }
+    .fleet-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+    .fleet-header .green-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green);
+      box-shadow: 0 0 6px var(--green-glow); }
+    .fleet-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 4px 24px; }
+    .fleet-node { display: flex; align-items: center; gap: 8px; padding: 6px 0; }
+    .fleet-node .dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+    .fleet-node .dot.on { background: var(--green); box-shadow: 0 0 6px var(--green-glow); }
+    .fleet-node .dot.off { background: #4b5563; }
+    .fleet-node .name { font-size: 12px; color: var(--muted); font-family: 'DM Sans', monospace; }
+
+    /* ── Footer ── */
+    footer { border-top: 1px solid var(--border); padding: 48px 0; margin-top: 80px; }
+    footer .inner { display: flex; justify-content: space-between; gap: 40px; flex-wrap: wrap; }
+    footer .brand { max-width: 280px; }
+    footer .brand-name { font-weight: 800; font-size: 14px; color: white; margin-bottom: 8px;
+      display: flex; align-items: center; gap: 8px; }
+    footer .brand-info { font-size: 12px; color: var(--dim); line-height: 1.7; }
+    footer .col { }
+    footer .col-title { font-size: 11px; font-weight: 700; color: var(--dim);
+      text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 14px; }
+    footer .col a { display: block; font-size: 13px; color: var(--muted); text-decoration: none;
+      padding: 3px 0; transition: color 0.2s; }
+    footer .col a:hover { color: white; }
+    footer .copyright { text-align: center; font-size: 10px; color: rgba(255,255,255,0.15);
+      margin-top: 40px; padding-top: 24px; border-top: 1px solid var(--border); }
+
+    /* ── Animations ── */
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+    /* ── Responsive ── */
+    @media (max-width: 640px) {
+      .hero { padding: 60px 0 48px; }
+      .research-stats { grid-template-columns: 1fr; }
+      footer .inner { flex-direction: column; }
+    }
+
+    /* ── Gradient backdrop ── */
+    .gradient-bg { position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      background: radial-gradient(ellipse at 15% 0%, rgba(232,99,111,0.03) 0%, transparent 55%),
+                  radial-gradient(ellipse at 85% 100%, rgba(42,157,143,0.04) 0%, transparent 55%); }
+  </style>
+</head>
+<body>
+  <div class="gradient-bg"></div>
+
+  <!-- NAV -->
+  <nav>
+    <div class="inner">
+      <div class="logo">
+        <div class="logo-dot"></div>
+        <span class="logo-text">P31 Labs</span>
+        <span class="logo-sub">Technical Hub</span>
+      </div>
+      <div class="links">
+        <a href="https://bonding.p31ca.org">BONDING</a>
+        <a href="https://phosphorus31.org">Research</a>
+        <a href="https://github.com/p31labs">GitHub</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container" style="position:relative;z-index:1;">
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="status">
+        <div class="status-dot"></div>
+        <span class="status-text" id="nodeCount">Loading fleet...</span>
+      </div>
+      <h1>Technology that<br><span>meets you where you are.</span></h1>
+      <p>P31 Labs builds open-source assistive technology for neurodivergent individuals. Our tools don't ask you to be someone else. They amplify who you already are.</p>
+      <div class="actions">
+        <a href="https://bonding.p31ca.org" class="btn-coral">Play BONDING →</a>
+        <a href="https://phosphorus31.org" class="btn-outline">Read the Research</a>
+      </div>
+    </section>
+
+    <!-- PRODUCTS -->
+    <section style="padding-bottom:64px;">
+      <div class="section-label">What We Build</div>
+      <div class="products">
+        <a href="https://bonding.p31ca.org" class="product-card" target="_blank">
+          <div class="top">
+            <div class="icon-wrap" style="background:rgba(232,99,111,0.1)">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E8636F" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            </div>
+            <span class="status-badge" style="color:#E8636F;background:rgba(232,99,111,0.1)">Live</span>
+          </div>
+          <h3>BONDING</h3>
+          <p>Molecular chemistry game for neurodivergent families. Build water, breathe together, stay connected. 413 automated tests.</p>
+        </a>
+        <a href="https://phosphorus31.org" class="product-card" target="_blank">
+          <div class="top">
+            <div class="icon-wrap" style="background:rgba(6,182,212,0.1)">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#06b6d4" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6m-6 3h6m-6 3h4"/></svg>
+            </div>
+            <span class="status-badge" style="color:#06b6d4;background:rgba(6,182,212,0.1)">Prototype</span>
+          </div>
+          <h3>Node Zero</h3>
+          <p>ESP32-S3 cognitive prosthetic. Haptic feedback, LoRa mesh, secure element. The hardware layer of the Delta topology.</p>
+        </a>
+        <a href="https://fawn-guard.trimtab-signal.workers.dev" class="product-card" target="_blank">
+          <div class="top">
+            <div class="icon-wrap" style="background:rgba(167,139,250,0.1)">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <span class="status-badge" style="color:#a78bfa;background:rgba(167,139,250,0.1)">In Progress</span>
+          </div>
+          <h3>The Buffer</h3>
+          <p>Communication processor with Fawn Guard. Detects people-pleasing language patterns before you hit send.</p>
+        </a>
+        <a href="https://p31-mesh.pages.dev" class="product-card" target="_blank">
+          <div class="top">
+            <div class="icon-wrap" style="background:rgba(34,197,94,0.1)">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.59 13.51l6.83 3.98M15.41 6.51l-6.82 3.98"/></svg>
+            </div>
+            <span class="status-badge" style="color:#22c55e;background:rgba(34,197,94,0.1)">Live</span>
+          </div>
+          <h3>P31 Mesh</h3>
+          <p>WebRTC peer-to-peer vagal sync. Two devices, one room code, 4-2-6 breathing with haptic feedback.</p>
+        </a>
+      </div>
+    </section>
+
+    <!-- RESEARCH -->
+    <section style="padding-bottom:64px;">
+      <div class="section-label">Research Series</div>
+      <div class="research-block">
+        <h3>The Tetrahedron Protocol</h3>
+        <div class="sub">17 papers spanning quantum cognition, network topology, care economics, and cognitive engineering.</div>
+        <div class="research-stats">
+          <div class="stat-card"><div class="num">4</div><div class="label">Published on Zenodo with DOIs</div></div>
+          <div class="stat-card"><div class="num">13</div><div class="label">Styled, gate-checked, upload-ready</div></div>
+          <div class="stat-card"><div class="num">0</div><div class="label">Uncorrected hallucinations</div></div>
+        </div>
+        <a href="https://orcid.org/0009-0002-2492-9079" target="_blank"
+          style="display:inline-flex;align-items:center;gap:6px;margin-top:20px;font-size:12px;color:var(--muted);text-decoration:none;">
+          ORCID: 0009-0002-2492-9079 ↗
+        </a>
+      </div>
+    </section>
+
+    <!-- FLEET STATUS -->
+    <section style="padding-bottom:64px;">
+      <div class="section-label">Infrastructure</div>
+      <div class="fleet-block">
+        <div class="fleet-header">
+          <div class="green-dot"></div>
+          <span style="font-size:14px;font-weight:700;color:white;" id="fleetTitle">Loading fleet...</span>
+          <span style="font-size:11px;color:var(--dim);margin-left:auto;font-family:monospace;">Cloudflare Edge Network</span>
+        </div>
+        <div class="fleet-grid" id="fleetGrid">
+          <div style="font-size:12px;color:var(--dim);">Connecting to command center...</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container">
+      <div class="inner">
+        <div class="brand">
+          <div class="brand-name">
+            <div class="logo-dot" style="width:6px;height:6px;"></div>
+            P31 Labs, Inc.
+          </div>
+          <div class="brand-info">
+            Georgia Domestic Nonprofit Corporation.<br>
+            EIN: 42-1888158. Incorporated April 3, 2026.<br>
+            <a href="https://phosphorus31.org" style="color:var(--teal);text-decoration:none;">phosphorus31.org</a> — Nonprofit Portal
+          </div>
+        </div>
+        <div class="col">
+          <div class="col-title">Products</div>
+          <a href="https://bonding.p31ca.org">BONDING</a>
+          <a href="https://p31-mesh.pages.dev">Mesh</a>
+          <a href="https://p31-vault.pages.dev">Vault</a>
+          <a href="https://fawn-guard.trimtab-signal.workers.dev">Fawn Guard</a>
+        </div>
+        <div class="col">
+          <div class="col-title">Connect</div>
+          <a href="https://github.com/p31labs">GitHub</a>
+          <a href="https://phosphorus31.org">Research</a>
+          <a href="mailto:will@p31ca.org">will@p31ca.org</a>
+          <a href="https://ko-fi.com/trimtab69420">Ko-fi</a>
+        </div>
+      </div>
+      <div class="copyright">
+        Open-source assistive technology for neurodivergent individuals. CC BY 4.0.
+      </div>
+    </div>
+  </footer>
+
+  <!-- Fleet status script -->
+  <script>
+    (async () => {
+      try {
+        const ctrl = new AbortController();
+        setTimeout(() => ctrl.abort(), 5000);
+        const res = await fetch('https://command-center.trimtab-signal.workers.dev/api/status', { signal: ctrl.signal });
+        const data = await res.json();
+
+        const online = data.workers?.filter(w => w.status === 'online').length || 0;
+        document.getElementById('nodeCount').textContent = `${online} nodes online`;
+        document.getElementById('fleetTitle').textContent = `${online} Workers Online`;
+
+        const grid = document.getElementById('fleetGrid');
+        grid.innerHTML = data.workers?.map(w => {
+          const on = w.status === 'online';
+          return `<div class="fleet-node"><div class="dot ${on ? 'on' : 'off'}"></div><span class="name">${w.name}</span></div>`;
+        }).join('') || '';
+      } catch (e) {
+        document.getElementById('nodeCount').textContent = 'Fleet status unavailable';
+        document.getElementById('fleetTitle').textContent = 'Fleet Offline';
+      }
+    })();
+  </script>
+</body>
+</html>

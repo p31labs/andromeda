@@ -1,0 +1,10 @@
+line_id,category,description,amount_usd,period,notes,grant_line_ref
+1,Personnel,Role / % FTE,0,per year,pending salary rates as applicable,
+2,Fringe,Benefits on personnel,0,per year,,
+3,Subcontracts,Named vendor,0,per year,SOW reference,
+4,Equipment,Hardware,0,one-time,,
+5,Supplies,Consumables,0,per year,,
+6,Travel,Conferences & meetings,0,per year,,
+7,Cloud & APIs,Cloudflare & model APIs,0,per year,usage estimate,
+8,Indirect,Overhead if allowed,0,per year,institutional rate if applicable,
+9,Total,,0,,sum must match narrative,

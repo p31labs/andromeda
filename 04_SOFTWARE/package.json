@@ -13,7 +13,10 @@
     "build": "turbo run build",
     "test": "turbo run test",
     "dev": "turbo run dev --parallel",
-    "clean": "turbo run clean"
+    "clean": "turbo run clean",
+    "google-bridge:preflight": "npm run preflight --prefix p31-google-bridge",
+    "google-bridge:dry": "npm run deploy --prefix p31-google-bridge -- --dry-run",
+    "google-bridge:verify": "npm run verify --prefix p31-google-bridge"
   },
   "devDependencies": {
     "turbo": "^2.3.0",

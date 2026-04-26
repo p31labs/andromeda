@@ -23,3 +23,5 @@ Canonical source for the merged Worker lives in this folder. The deployable Work
 ## SUPER-CENTAUR bridge
 
 Copy `04_SOFTWARE/integration-handoff/CWP-30/mesh-bridge.ts` into **phosphorus31.org** at `SUPER-CENTAUR/src/mesh-bridge.ts` and call `meshProxy(app)` before other routes in production (see comments in that file).
+
+**Controlled work package (full plan):** `andromeda/04_SOFTWARE/integration-handoff/CONTROLLED-WORK-PACKAGE-SUPER-CENTAUR.md` — **`CWP-P31-SC-2026-01`**.

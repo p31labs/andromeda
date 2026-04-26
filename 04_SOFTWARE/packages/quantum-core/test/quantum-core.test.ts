@@ -94,39 +94,71 @@ describe("PQC Primitives", () => {
 // ML-KEM (FIPS 203)
 // ═══════════════════════════════════════════════════════════════
 
+// FIPS 203 Table 3 byte sizes
+const KEM_SIZES = {
+  1: { ek: 800,  dk: 1632, ct: 768,  ss: 32 },
+  3: { ek: 1184, dk: 2400, ct: 1088, ss: 32 },
+  5: { ek: 1568, dk: 3168, ct: 1568, ss: 32 },
+} as const;
+
 describe("ML-KEM (FIPS 203)", () => {
-  let kem: MLKEM;
-
-  beforeEach(() => {
-    kem = new MLKEM({ securityLevel: 3 });
+  it("ML-KEM-768: key pair matches FIPS 203 Table 3 byte sizes", () => {
+    const kem = new MLKEM({ securityLevel: 3 });
+    const keys = kem.keygen();
+    expect(keys.publicKey.length).toBe(KEM_SIZES[3].ek);
+    expect(keys.secretKey.length).toBe(KEM_SIZES[3].dk);
+    expect(keys.encapsulationKey).toBe(keys.publicKey);
   });
 
-  it("generates key pair with non-empty buffers", () => {
-    const keys = kem.generateKeyPair();
-    expect(keys.publicKey.length).toBeGreaterThan(0);
-    expect(keys.privateKey.length).toBeGreaterThan(0);
-    expect(keys.encapsulationKey.length).toBeGreaterThan(0);
+  it("ML-KEM-768: encapsulate returns FIPS 203 Table 3 ct + 32-byte ss", () => {
+    const kem = new MLKEM({ securityLevel: 3 });
+    const { publicKey } = kem.keygen();
+    const { cipherText, sharedSecret } = kem.encapsulate(publicKey);
+    expect(cipherText.length).toBe(KEM_SIZES[3].ct);
+    expect(sharedSecret.length).toBe(KEM_SIZES[3].ss);
   });
 
-  it("generates different key pairs each time", () => {
-    const k1 = kem.generateKeyPair();
-    const k2 = kem.generateKeyPair();
-    expect(k1.publicKey.equals(k2.publicKey)).toBe(false);
+  it("KEM round-trip: decapsulate recovers the same shared secret", () => {
+    const kem = new MLKEM({ securityLevel: 3 });
+    const keys = kem.keygen();
+    const { cipherText, sharedSecret: ss1 } = kem.encapsulate(keys.publicKey);
+    const ss2 = kem.decapsulate(cipherText, keys.secretKey);
+    expect(Buffer.from(ss1).equals(Buffer.from(ss2))).toBe(true);
   });
 
-  it("encapsulate returns ciphertext and shared secret", () => {
-    const keys = kem.generateKeyPair();
-    const result = kem.encapsulate(keys.publicKey);
-    expect(result.ciphertext.length).toBeGreaterThan(0);
-    expect(result.sharedSecret.length).toBeGreaterThan(0);
+  it("two encapsulations to the same key yield different ciphertexts", () => {
+    const kem = new MLKEM({ securityLevel: 3 });
+    const { publicKey } = kem.keygen();
+    const r1 = kem.encapsulate(publicKey);
+    const r2 = kem.encapsulate(publicKey);
+    expect(Buffer.from(r1.cipherText).equals(Buffer.from(r2.cipherText))).toBe(false);
   });
 
-  it("supports all three security levels", () => {
+  it("decapsulate with wrong secret key returns implicit-reject (different secret)", () => {
+    const kem = new MLKEM({ securityLevel: 3 });
+    const k1 = kem.keygen();
+    const k2 = kem.keygen();
+    const { cipherText, sharedSecret } = kem.encapsulate(k1.publicKey);
+    const badSS = kem.decapsulate(cipherText, k2.secretKey);
+    expect(Buffer.from(sharedSecret).equals(Buffer.from(badSS))).toBe(false);
+  });
+
+  it("each security level produces FIPS 203 Table 3 byte sizes", () => {
     for (const level of [1, 3, 5] as const) {
-      const k = new MLKEM({ securityLevel: level });
-      const keys = k.generateKeyPair();
-      expect(keys.publicKey.length).toBeGreaterThan(0);
+      const kem = new MLKEM({ securityLevel: level });
+      const keys = kem.keygen();
+      const { cipherText, sharedSecret } = kem.encapsulate(keys.publicKey);
+      expect(keys.publicKey.length).toBe(KEM_SIZES[level].ek);
+      expect(keys.secretKey.length).toBe(KEM_SIZES[level].dk);
+      expect(cipherText.length).toBe(KEM_SIZES[level].ct);
+      expect(sharedSecret.length).toBe(KEM_SIZES[level].ss);
     }
+  });
+
+  it("generateKeyPair() is a backward-compat alias for keygen()", () => {
+    const kem = new MLKEM();
+    const keys = kem.generateKeyPair();
+    expect(keys.publicKey.length).toBe(KEM_SIZES[3].ek);
   });
 });
 
@@ -134,52 +166,90 @@ describe("ML-KEM (FIPS 203)", () => {
 // ML-DSA (FIPS 204)
 // ═══════════════════════════════════════════════════════════════
 
+// FIPS 204 byte sizes (verified against @noble/post-quantum 0.6.x)
+const DSA_SIZES = {
+  1: { pk: 1312, sk: 2560, sig: 2420 },
+  3: { pk: 1952, sk: 4032, sig: 3309 },
+  5: { pk: 2592, sk: 4896, sig: 4627 },
+} as const;
+
 describe("ML-DSA (FIPS 204)", () => {
-  let dsa: MLDSA;
-
-  beforeEach(() => {
-    dsa = new MLDSA({ securityLevel: 3 });
+  it("ML-DSA-65: key pair matches FIPS 204 byte sizes", () => {
+    const dsa = new MLDSA({ securityLevel: 3 });
+    const keys = dsa.keygen();
+    expect(keys.publicKey.length).toBe(DSA_SIZES[3].pk);
+    expect(keys.secretKey.length).toBe(DSA_SIZES[3].sk);
+    expect(keys.privateKey).toBe(keys.secretKey);
   });
 
-  it("generates key pair with non-empty buffers", () => {
-    const keys = dsa.generateKeyPair();
-    expect(keys.publicKey.length).toBeGreaterThan(0);
-    expect(keys.privateKey.length).toBeGreaterThan(0);
+  it("ML-DSA-65: sign produces FIPS 204 signature of correct byte length", () => {
+    const dsa = new MLDSA({ securityLevel: 3 });
+    const keys = dsa.keygen();
+    const sig = dsa.sign(Buffer.from("test message"), keys.secretKey);
+    // ML-DSA-65 max signature length is 3309 bytes; randomized so ≤ not =
+    expect(sig.length).toBeLessThanOrEqual(DSA_SIZES[3].sig);
+    expect(sig.length).toBeGreaterThan(0);
   });
 
-  it("sign produces signature with r, s, c components", () => {
-    const keys = dsa.generateKeyPair();
-    const message = Buffer.from("test message");
-    const sig = dsa.sign(message, keys.privateKey, keys.publicKey);
-    expect(sig.r.length).toBeGreaterThan(0);
-    expect(sig.s.length).toBeGreaterThan(0);
-    expect(sig.c.length).toBeGreaterThan(0);
-  });
-
-  it("verify returns true for valid signature", () => {
-    const keys = dsa.generateKeyPair();
-    const message = Buffer.from("test message");
-    const sig = dsa.sign(message, keys.privateKey, keys.publicKey);
-    expect(dsa.verify(message, sig, keys.publicKey)).toBe(true);
+  it("DSA round-trip: sign → verify returns true", () => {
+    const dsa = new MLDSA({ securityLevel: 3 });
+    const keys = dsa.keygen();
+    const msg = Buffer.from("mesh member verified");
+    const sig = dsa.sign(msg, keys.secretKey);
+    expect(dsa.verify(msg, sig, keys.publicKey)).toBe(true);
   });
 
   it("verify returns false for tampered message", () => {
-    const keys = dsa.generateKeyPair();
-    const message = Buffer.from("test message");
-    const sig = dsa.sign(message, keys.privateKey, keys.publicKey);
-    expect(dsa.verify(Buffer.from("tampered"), sig, keys.publicKey)).toBe(
-      false,
-    );
+    const dsa = new MLDSA({ securityLevel: 3 });
+    const keys = dsa.keygen();
+    const sig = dsa.sign(Buffer.from("authentic"), keys.secretKey);
+    expect(dsa.verify(Buffer.from("tampered"), sig, keys.publicKey)).toBe(false);
   });
 
-  it("supports all three security levels", () => {
+  it("verify returns false for signature from wrong key", () => {
+    const dsa = new MLDSA({ securityLevel: 3 });
+    const k1 = dsa.keygen();
+    const k2 = dsa.keygen();
+    const msg = Buffer.from("test");
+    const sig = dsa.sign(msg, k1.secretKey);
+    expect(dsa.verify(msg, sig, k2.publicKey)).toBe(false);
+  });
+
+  it("verify returns false for mutated signature byte", () => {
+    const dsa = new MLDSA({ securityLevel: 3 });
+    const keys = dsa.keygen();
+    const msg = Buffer.from("test");
+    const sig = dsa.sign(msg, keys.secretKey);
+    const corrupted = new Uint8Array(sig);
+    corrupted[0] ^= 0xff;
+    expect(dsa.verify(msg, corrupted, keys.publicKey)).toBe(false);
+  });
+
+  it("same message signed twice produces different signatures (randomized)", () => {
+    const dsa = new MLDSA({ securityLevel: 3 });
+    const keys = dsa.keygen();
+    const msg = Buffer.from("test");
+    const s1 = dsa.sign(msg, keys.secretKey);
+    const s2 = dsa.sign(msg, keys.secretKey);
+    expect(Buffer.from(s1).equals(Buffer.from(s2))).toBe(false);
+  });
+
+  it("each security level produces FIPS 204 byte sizes and valid round-trip", () => {
     for (const level of [1, 3, 5] as const) {
-      const d = new MLDSA({ securityLevel: level });
-      const keys = d.generateKeyPair();
-      const msg = Buffer.from("test");
-      const sig = d.sign(msg, keys.privateKey, keys.publicKey);
-      expect(d.verify(msg, sig, keys.publicKey)).toBe(true);
+      const dsa = new MLDSA({ securityLevel: level });
+      const keys = dsa.keygen();
+      expect(keys.publicKey.length).toBe(DSA_SIZES[level].pk);
+      expect(keys.secretKey.length).toBe(DSA_SIZES[level].sk);
+      const msg = Buffer.from("level test");
+      const sig = dsa.sign(msg, keys.secretKey);
+      expect(dsa.verify(msg, sig, keys.publicKey)).toBe(true);
     }
+  });
+
+  it("generateKeyPair() is a backward-compat alias for keygen()", () => {
+    const dsa = new MLDSA();
+    const keys = dsa.generateKeyPair();
+    expect(keys.publicKey.length).toBe(DSA_SIZES[3].pk);
   });
 });
 
@@ -188,11 +258,40 @@ describe("ML-DSA (FIPS 204)", () => {
 // ═══════════════════════════════════════════════════════════════
 
 describe("HybridPQCScheme", () => {
-  it("generates both ML-KEM and ML-DSA key pairs", () => {
+  it("generateHybridKeyPair: KEM and DSA keys have correct FIPS sizes", () => {
     const scheme = new HybridPQCScheme(3);
-    const keys = scheme.generateHybridKeyPair();
-    expect(keys.mlkemKeys.publicKey.length).toBeGreaterThan(0);
-    expect(keys.mldsaKeys.publicKey.length).toBeGreaterThan(0);
+    const { mlkemKeys, mldsaKeys } = scheme.generateHybridKeyPair();
+    expect(mlkemKeys.publicKey.length).toBe(KEM_SIZES[3].ek);
+    expect(mldsaKeys.publicKey.length).toBe(DSA_SIZES[3].pk);
+  });
+
+  it("signAndEncapsulate + decapsulateAndVerify: full round-trip", () => {
+    const scheme = new HybridPQCScheme(3);
+    const { mlkemKeys, mldsaKeys } = scheme.generateHybridKeyPair();
+    const message = Buffer.from("p31 mesh token");
+
+    const { kemCipherText, sharedSecret: ss1, signature } =
+      scheme.signAndEncapsulate(message, mldsaKeys.secretKey, mlkemKeys.publicKey);
+
+    const { sharedSecret: ss2, isValid } =
+      scheme.decapsulateAndVerify(kemCipherText, mlkemKeys.secretKey, message, signature, mldsaKeys.publicKey);
+
+    expect(isValid).toBe(true);
+    expect(Buffer.from(ss1).equals(Buffer.from(ss2))).toBe(true);
+  });
+
+  it("decapsulateAndVerify: isValid=false for tampered message", () => {
+    const scheme = new HybridPQCScheme(3);
+    const { mlkemKeys, mldsaKeys } = scheme.generateHybridKeyPair();
+    const message = Buffer.from("authentic");
+    const { kemCipherText, signature } =
+      scheme.signAndEncapsulate(message, mldsaKeys.secretKey, mlkemKeys.publicKey);
+
+    const { isValid } = scheme.decapsulateAndVerify(
+      kemCipherText, mlkemKeys.secretKey,
+      Buffer.from("tampered"), signature, mldsaKeys.publicKey,
+    );
+    expect(isValid).toBe(false);
   });
 });
 

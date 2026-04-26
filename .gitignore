@@ -7,6 +7,12 @@
 .env.unified
 .admin-token.local
 
+# docs/files operator drop zone — keep Zenodo PDFs / legal blobs local (tooling is tracked)
+docs/files/*.pdf
+docs/files/*.docx
+docs/files/p31_fleet_deploy.tar.gz
+docs/files/mnt/
+
 # Legal discovery — never commit
 Discovery_Production_*/
 
@@ -33,6 +39,7 @@ venv/
 
 # Node
 node_modules/
+.turbo/
 npm-debug.log*
 
 # PlatformIO

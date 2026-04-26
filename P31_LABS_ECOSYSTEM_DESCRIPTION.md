@@ -1,5 +1,7 @@
 # P31 Labs Ecosystem: Vision, Mission, and Philosophy
 
+> **Canonical org facts, legal identity, and printable suite:** use [`docs/corporate/ORGANIZATION-SHEET.md`](docs/corporate/ORGANIZATION-SHEET.md) and [`docs/GOD_GROUND_TRUTH.md`](docs/GOD_GROUND_TRUTH.md) (Entity). This file mixes **narrative** with aspirational phrasing; it is **not** a filing, bank packet, or press fact-check by itself. For letters, memos, and letterhead: [`docs/corporate/P31-DOC-SUITE.md`](docs/corporate/P31-DOC-SUITE.md) and P31 Forge (`04_SOFTWARE/p31-forge`).
+
 ## 🌌 Overview: The P31 Labs Universe
 
 P31 Labs represents a revolutionary approach to technology development, community building, and human potential realization. It's not just a company or project—it's a living ecosystem designed to empower individuals, foster innovation, and create a better future through technology.

@@ -12,6 +12,7 @@
 | **Edge / Pages** | Inventory: [`docs/WORKER_PAGES_MANIFEST.md`](docs/WORKER_PAGES_MANIFEST.md) |
 | **Layout** | [`docs/REPOSITORY_LAYOUT.md`](docs/REPOSITORY_LAYOUT.md) |
 | **Engineering** | [`docs/ENGINEERING.md`](docs/ENGINEERING.md) |
+| **Open Doc Suite (corp)** | [`docs/corporate/README.md`](docs/corporate/README.md) · [p31ca.org/open-doc-suite](https://p31ca.org/open-doc-suite.html) |
 
 ## Quick start (developers)
 
@@ -37,10 +38,10 @@ Individual apps (BONDING, p31ca, hearing-ops, etc.) live under **`04_SOFTWARE/`*
 - **`04_SOFTWARE/`** — Primary applications, Cloudflare Workers, shared packages, VS Code extensions.
 - **`05_FIRMWARE/`** — ESP32 / embedded documentation and prompts.
 - **`02_RESEARCH/`**, **`zenodo_batch/`** — Papers and publication tooling.
-- **`docs/`** — Engineering layout, worker manifest, tutorials.
+- **`docs/`** — Engineering layout, worker manifest, tutorials; **`docs/corporate/`** — P31 Open Doc Suite (print HTML, watermarks, Forge).
 - **`Legal_Instruments/`**, **`Discovery_Production_*`** (gitignored) — legal drafts and production; not reviewed here.
 
-Extended product narrative: [`docs/ECOSYSTEM_OVERVIEW.md`](docs/ECOSYSTEM_OVERVIEW.md).
+Extended product narrative: [`docs/ECOSYSTEM_OVERVIEW.md`](docs/ECOSYSTEM_OVERVIEW.md). Planned **P31 Workspaces** (sovereign productivity site — identity, files, calendar, docs portal): [`docs/P31-WORKSPACES-SITE-PLAN.md`](docs/P31-WORKSPACES-SITE-PLAN.md). Experiential / speculative deep dive: [`docs/P31-WORKSPACES-DEEP-DIVE.md`](docs/P31-WORKSPACES-DEEP-DIVE.md). **Google Workspace** (OAuth, Calendar/Drive/Gmail APIs, domain delegation): [`docs/integrations/GOOGLE-WORKSPACE.md`](docs/integrations/GOOGLE-WORKSPACE.md).
 
 ## Contributing
 

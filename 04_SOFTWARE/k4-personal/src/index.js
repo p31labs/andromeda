@@ -3,6 +3,10 @@
  * DO-based for per-user sessions.
  */
 import { DurableObject } from 'cloudflare:workers';
+import {
+  normalizePersonalTetra,
+  validatePersonalTetra,
+} from './personal-tetra.js';
 
 export class PersonalAgent extends DurableObject {
   constructor(ctx, env) {
@@ -62,6 +66,8 @@ export class PersonalAgent extends DurableObject {
         return method === "POST" ? this._bioIngest(request) : new Response("Method not allowed", { status: 405 });
       case "/health":
         return Response.json({ status: "ok", agent: "personal" });
+      case "/tetra":
+        return ["GET", "PUT"].includes(method) ? this._tetra(request) : new Response("Method not allowed", { status: 405 });
       default:
         return new Response("Not found", { status: 404 });
     }
@@ -131,16 +137,51 @@ export class PersonalAgent extends DurableObject {
       rows.forEach((r) => {
         try { obj[r.key] = JSON.parse(r.value); } catch { obj[r.key] = r.value; }
       });
+      if (Object.prototype.hasOwnProperty.call(obj, "personalTetra")) {
+        obj.personalTetra = normalizePersonalTetra(obj.personalTetra);
+      }
       return Response.json(obj);
     }
     const updates = await request.json();
     for (const [key, value] of Object.entries(updates)) {
+      if (key === "personalTetra") {
+        const v = validatePersonalTetra(value);
+        if (!v.ok) {
+          return Response.json({ error: v.error }, { status: 400 });
+        }
+        this.ctx.storage.sql.exec(
+          "INSERT OR REPLACE INTO state (key, value, updated_at) VALUES (?, ?, ?)",
+          key,
+          JSON.stringify(v.value),
+          Date.now()
+        );
+        continue;
+      }
       this.ctx.storage.sql.exec(
         "INSERT OR REPLACE INTO state (key, value, updated_at) VALUES (?, ?, ?)",
         key, JSON.stringify(value), Date.now()
       );
     }
     return Response.json({ ok: true });
+  }
+
+  async _tetra(request) {
+    if (request.method === "GET") {
+      const raw = this._getState("personalTetra");
+      return Response.json(normalizePersonalTetra(raw));
+    }
+    const body = await request.json();
+    const v = validatePersonalTetra(body);
+    if (!v.ok) {
+      return Response.json({ error: v.error }, { status: 400 });
+    }
+    this.ctx.storage.sql.exec(
+      "INSERT OR REPLACE INTO state (key, value, updated_at) VALUES (?, ?, ?)",
+      "personalTetra",
+      JSON.stringify(v.value),
+      Date.now()
+    );
+    return Response.json(v.value);
   }
 
   async _reminders(request) {
@@ -298,8 +339,47 @@ export class PersonalAgent extends DurableObject {
   }
 }
 
+/** Browser callers: p31ca static pages, bonding, org site previews. */
+function corsHeaders(request) {
+  const origin = request.headers.get("Origin") || "";
+  const allowed = new Set([
+    "https://p31ca.org",
+    "https://www.p31ca.org",
+    "https://bonding.p31ca.org",
+    "https://phosphorus31.org",
+    "https://www.phosphorus31.org",
+    "http://127.0.0.1:8080",
+    "http://localhost:8080",
+    "http://localhost:4321",
+    "http://127.0.0.1:4321",
+  ]);
+  if (origin.endsWith(".pages.dev")) allowed.add(origin);
+  const allow = allowed.has(origin) ? origin : "*";
+  return {
+    "Access-Control-Allow-Origin": allow,
+    "Access-Control-Allow-Methods": "GET, HEAD, POST, PUT, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+    "Access-Control-Max-Age": "86400",
+  };
+}
+
+function withCors(response, request) {
+  const headers = new Headers(response.headers);
+  for (const [k, v] of Object.entries(corsHeaders(request))) {
+    headers.set(k, v);
+  }
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
+}
+
 export default {
   async fetch(request, env) {
+    if (request.method === "OPTIONS") {
+      return new Response(null, { status: 204, headers: corsHeaders(request) });
+    }
     const url = new URL(request.url);
     const agentMatch = url.pathname.match(/^\/agent\/([^/]+)(\/.*)?$/);
     if (agentMatch) {
@@ -307,11 +387,12 @@ export default {
       const subPath = agentMatch[2] || "/health";
       const id = env.PERSONAL_AGENT.idFromName(userId);
       const stub = env.PERSONAL_AGENT.get(id);
-      return stub.fetch(new Request(new URL(subPath, request.url), request));
+      const inner = await stub.fetch(new Request(new URL(subPath, request.url), request));
+      return withCors(inner, request);
     }
     if (url.pathname === "/health") {
-      return Response.json({ status: "ok", service: "k4-personal" });
+      return withCors(Response.json({ status: "ok", service: "k4-personal" }), request);
     }
-    return new Response("k4-personal alive", { status: 200 });
-  }
+    return withCors(new Response("k4-personal alive", { status: 200 }), request);
+  },
 };

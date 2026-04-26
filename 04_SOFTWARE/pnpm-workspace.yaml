@@ -1,5 +1,6 @@
 packages:
   - 'bonding'
+  - 'p31ca'
   - 'spaceship-earth'
   - 'workers'
   - 'packages/*'

@@ -16,6 +16,16 @@ pnpm --dir 04_SOFTWARE run test
 
 Use project-local scripts per package as documented in each project README.
 
+**Corporate + open print suite (letterhead, memos, watermarks, Forge):** from repo root, `docs/corporate/` (hub `README.md`); **live** on [p31ca.org/open-doc-suite.html](https://p31ca.org/open-doc-suite.html) (`/doc-suite` on the hub). Regenerate `brand-tokens.json`: `pnpm --dir 04_SOFTWARE/p31-forge run brand:tokens` from the Andromeda root.
+
+**Controlled work packages (scope + WBS):**
+
+- **Ecosystem hub (p31ca.org):** `p31ca/docs/CONTROLLED-WORK-PACKAGE-ECOSYSTEM-INTEGRATION.md` — `CWP-P31-ECO-2026-01`
+- **SUPER-CENTAUR / mesh handoff:** `integration-handoff/CONTROLLED-WORK-PACKAGE-SUPER-CENTAUR.md` — `CWP-P31-SC-2026-01`
+- **Monetary / revenue pipeline (Stripe, webhooks, durable record, export):** `docs/CONTROLLED-WORK-PACKAGE-MONETARY-PIPELINE.md` — `CWP-P31-MAP-2026-01`
+- **Ko-fi vs Stripe (ADR):** `docs/adr/MAP-KOFI-001.md`
+- **Multi-agent (touch boundaries):** `p31ca/docs/PARALLEL_AGENT_COORDINATION.md`
+
 ## Applications and sites
 
 | Project | Stack | Notes |
@@ -36,6 +46,7 @@ Use project-local scripts per package as documented in each project README.
 | `cloudflare-worker/` | Multiple Workers (command-center, bouncer, social-drop, etc.). |
 | `k4-cage/` | K₄ graph Worker (canonical). |
 | `p31-forge/` | Forge + Worker + crons. |
+| `p31-google-bridge/` | Google Workspace OAuth (Calendar readonly probe); see `README` + `docs/integrations/GOOGLE-WORKSPACE.md`. |
 | `telemetry-worker/` | Telemetry. |
 | `donate-api/` | Donation API. |
 | `kenosis-mesh/` | Mesh / edge. |
@@ -47,7 +58,7 @@ Use project-local scripts per package as documented in each project README.
 
 ## Extensions
 
-`extensions/` — VS Code / tooling extensions (p31ca, progressive disclosure, cognitive shield, cockpit, spoon gauge).
+`extensions/` — VS Code / tooling extensions (`p31ca` **folder** = npm `p31-centaur-ede` Centaur EDE; progressive disclosure, cognitive shield, cockpit, spoon gauge).
 
 ## Other
 

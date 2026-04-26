@@ -544,6 +544,8 @@ const DEFAULT_STATUS = {
     { name: "genesis-gate", status: "online", url: "https://genesis-gate.trimtab-signal.workers.dev" },
     { name: "p31-bonding-relay", status: "online", url: "https://p31-bonding-relay.trimtab-signal.workers.dev" },
     { name: "p31-telemetry", status: "online", url: "https://p31-telemetry.trimtab-signal.workers.dev" },
+    // MAP D-MAP-12: card Checkout + /stripe-webhook = donate-api (custom domain). p31-stripe-webhook = trimtab legacy/alt — confirm in CF before retire.
+    { name: "donate-api", status: "online", url: "https://donate-api.phosphorus31.org/health" },
     { name: "p31-stripe-webhook", status: "online", url: "https://p31-stripe-webhook.trimtab-signal.workers.dev" },
     { name: "api-phosphorus31-org", status: "online", url: "https://api-phosphorus31-org.trimtab-signal.workers.dev" },
     { name: "fawn-guard", status: "online", url: "https://fawn-guard.trimtab-signal.workers.dev" },
@@ -634,6 +636,7 @@ async function pingFleet(env) {
     { name: "genesis-gate", url: "https://genesis-gate.trimtab-signal.workers.dev" },
     { name: "p31-bonding-relay", url: "https://p31-bonding-relay.trimtab-signal.workers.dev" },
     { name: "p31-telemetry", url: "https://p31-telemetry.trimtab-signal.workers.dev" },
+    { name: "donate-api", url: "https://donate-api.phosphorus31.org/health" },
     { name: "p31-stripe-webhook", url: "https://p31-stripe-webhook.trimtab-signal.workers.dev" },
     { name: "api-phosphorus31-org", url: "https://api-phosphorus31-org.trimtab-signal.workers.dev" },
     { name: "fawn-guard", url: "https://fawn-guard.trimtab-signal.workers.dev" },

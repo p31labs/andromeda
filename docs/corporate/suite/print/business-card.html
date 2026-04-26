@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>P31 Labs — business card (2-up)</title>
+  <link rel="stylesheet" href="suite-tokens.css" />
+  <style>
+    @page { size: letter; margin: 0.4in; }
+    .sheet { display: flex; flex-wrap: wrap; gap: 0.3in; justify-content: space-between; max-width: 7.5in; margin: 0 auto; }
+    .card {
+      width: 3.5in; height: 2in; box-sizing: border-box;
+      border: 0.5pt solid var(--p31-rule);
+      padding: 0.2in 0.25in;
+      background: #fff;
+      page-break-inside: avoid;
+      position: relative;
+    }
+    .card::after {
+      content: ""; position: absolute; bottom: 0.15in; right: 0.2in;
+      width: 0.4in; height: 0.4in; border: 1.5px solid var(--p31-coral);
+      border-radius: 1px; opacity: 0.85; transform: rotate(45deg);
+    }
+    .name { font-size: 10.5pt; font-weight: 700; color: var(--p31-coral); letter-spacing: 0.04em; }
+    .line { font-size: 7.5pt; color: var(--p31-gray); margin-top: 0.1em; }
+    .org { font-size: 7pt; color: var(--p31-med); margin-top: 0.35em; }
+    .p31-hint { margin-bottom: 0.3em; }
+  </style>
+</head>
+<body class="p31-body" style="max-width: none; background: #eee">
+  <p class="p31-hint no-print">2 cards per row &times; 5 rows = 10 per sheet if you duplicate the card block, or print twice. Standard US: 3.5&Prime;&times;2&Prime; — verify cut margin on your printer.</p>
+  <div class="sheet">
+    <div class="card" contenteditable="true">
+      <div class="name">P31 LABS, INC.</div>
+      <div class="line">Open-source assistive technology</div>
+      <div class="org">EIN 42-1888158 &middot; Georgia nonprofit (501(c)(3) pending)</div>
+      <div class="line" style="margin-top:0.25em">will@p31ca.org &middot; p31ca.org &middot; phosphorus31.org</div>
+    </div>
+    <div class="card" contenteditable="true">
+      <div class="name" style="color: var(--p31-dark)">William R. Johnson</div>
+      <div class="line">Founder &amp; President</div>
+      <div class="org">P31 Labs, Inc.</div>
+      <div class="line" style="margin-top:0.3em; font-family: var(--p31-mono)">ORCID: 0009-0002-2492-9079</div>
+    </div>
+  </div>
+  <p class="p31-hint no-print" style="margin-top:0.4em">Back of card: leave blank, QR to donation page, or GitHub — use a QR generator; do not store payment links you cannot maintain.</p>
+</body>
+</html>

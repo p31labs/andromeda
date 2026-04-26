@@ -1,5 +1,7 @@
 # Donate API Deployment Guide
 
+**Monetary pipeline (full WBS, durable store, export, CI):** see **`../docs/CONTROLLED-WORK-PACKAGE-MONETARY-PIPELINE.md`** (`CWP-P31-MAP-2026-01`).
+
 ## Quick Deploy
 
 ```bash
@@ -46,3 +48,9 @@ Expected response: `{"sessionId": "cs_..."}`
 The worker creates Stripe Checkout Sessions. Make sure:
 - Stripe secret key is set: `npx wrangler secret put STRIPE_SECRET_KEY`
 - Use `sk_live_...` for production (starts with `sk_live_`)
+
+## Optional: webhook idempotency (KV)
+
+To deduplicate Stripe retries, create a KV namespace and uncomment `[[kv_namespaces]]` in `wrangler.toml`, then redeploy. Keys: `stripe:event:{eventId}` (90-day TTL).
+
+**Local / CI:** run `npm test` and from repo root `node scripts/verify-monetary-surface.mjs`.

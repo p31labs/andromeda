@@ -13,7 +13,7 @@ This document is the **map of record** for how the monorepo is organized. Update
 | `03_OPERATIONS/` | CWPs, WCDs, runbooks. |
 | `04_SOFTWARE/` | **Primary software monorepo**: apps, Workers, shared packages, extensions. See `04_SOFTWARE/README.md`. |
 | `05_FIRMWARE/` | GOD doc, ESP32 prompts, MCD. |
-| `docs/` | Cross-cutting documentation (this file, deployment notes). |
+| `docs/` | Cross-cutting documentation (this file, deployment notes). **Corporate + open print suite:** `docs/corporate/README.md` (P31 open doc suite, letterhead, tokens). **P31 Workspaces (planned productivity surface):** [`P31-WORKSPACES-SITE-PLAN.md`](P31-WORKSPACES-SITE-PLAN.md) + imaginative layer [`P31-WORKSPACES-DEEP-DIVE.md`](P31-WORKSPACES-DEEP-DIVE.md). **Integrations:** [`integrations/GOOGLE-WORKSPACE.md`](integrations/GOOGLE-WORKSPACE.md) (Workspace OAuth, APIs, delegation). |
 | `WCDs/` | Court templates and WCD sources. |
 | `Legal_Instruments/` | POA and standalone legal drafts (review before filing). |
 | `zenodo_batch/` | Zenodo metadata and batch uploader. |

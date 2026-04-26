@@ -23,6 +23,7 @@ export {
   type MLKEMConfig,
   type MLDSAConfig,
   type MLKEMKeyPair,
+  type MLDSAKeyPair,
   type MLDSASignature,
 } from "./pqc/fips203-204";
 

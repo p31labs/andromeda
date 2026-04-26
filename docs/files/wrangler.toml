@@ -1,0 +1,13 @@
+name = "command-center"
+main = "src/index.js"
+compatibility_date = "2026-04-13"
+
+[[kv_namespaces]]
+binding = "STATUS_KV"
+id = "__PROVISION_ME__"
+# Run: wrangler kv namespace create STATUS_KV
+# Then replace __PROVISION_ME__ with the returned ID
+
+[vars]
+ENVIRONMENT = "production"
+# STATUS_TOKEN: set via `wrangler secret put STATUS_TOKEN`

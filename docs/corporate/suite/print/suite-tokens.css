@@ -1,0 +1,87 @@
+/* P31 Open Doc Suite — shared print styles. */
+:root {
+  --p31-coral: #D94F3B;
+  --p31-teal: #2A9D8F;
+  --p31-dark: #1A1A1A;
+  --p31-med: #333333;
+  --p31-gray: #666666;
+  --p31-rule: #CCCCCC;
+  --p31-warm: #F5F0EB;
+  --p31-paper: #FAFAFA;
+  --p31-serif: Georgia, "Times New Roman", serif;
+  --p31-mono: "JetBrains Mono", Consolas, monospace;
+}
+
+@page {
+  size: letter;
+  margin: 0.6in 0.65in 0.55in 0.65in;
+}
+
+@media print {
+  .no-print { display: none !important; }
+  body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+
+.p31-hint {
+  font-family: var(--p31-mono);
+  font-size: 9px;
+  color: var(--p31-gray);
+  margin: 0 0 0.4em 0;
+}
+
+.p31-masthead {
+  border-bottom: 3px solid var(--p31-coral);
+  padding-bottom: 0.35em;
+  margin-bottom: 1em;
+}
+
+.p31-masthead strong {
+  font-size: 13pt;
+  letter-spacing: 0.04em;
+  color: var(--p31-coral);
+}
+
+.p31-masthead .meta {
+  font-size: 8.5pt;
+  color: var(--p31-gray);
+  margin-top: 0.15em;
+}
+
+body.p31-body {
+  font-family: var(--p31-serif);
+  font-size: 11pt;
+  line-height: 1.4;
+  color: var(--p31-med);
+  background: var(--p31-paper);
+  max-width: 7.1in;
+  margin: 0 auto;
+  padding: 0.4in 0.5in;
+  min-height: 10in;
+}
+
+.p31-block {
+  margin: 0.6em 0;
+  min-height: 1.1em;
+}
+
+.p31-ruled .p31-block {
+  border-bottom: 1px solid var(--p31-rule);
+}
+
+body.p31-watermark-draft::before {
+  content: "DRAFT";
+  position: fixed;
+  top: 40%;
+  left: 10%;
+  font-size: 64pt;
+  color: rgba(217, 79, 59, 0.08);
+  transform: rotate(-32deg);
+  z-index: 0;
+  pointer-events: none;
+  font-weight: 700;
+}
+
+.p31-surface {
+  position: relative;
+  z-index: 1;
+}

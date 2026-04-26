@@ -10,7 +10,9 @@
     "build": "tsc --noEmit",
     "audit": "node scripts/pqc-audit.js"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@noble/post-quantum": "^0.6.1"
+  },
   "devDependencies": {
     "@types/node": "^20.14.0",
     "typescript": "^5.4.0",
