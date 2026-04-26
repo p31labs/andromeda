@@ -36,7 +36,7 @@ p31ca/
 │   ├── hub/
 │   │   ├── registry.mjs               # Source of truth for product list
 │   │   ├── build-landing-data.mjs     # → src/data/hub-landing.json
-│   │   ├── generate-about-pages.mjs   # → public/*-about.html (51 pages)
+│   │   ├── generate-about-pages.mjs   # → public/*-about.html (imports hub/registry.mjs)
 │   │   └── verify.mjs                 # Hub invariants check
 │   ├── verify-ground-truth.mjs        # Routes + Three.js pins + redirect check
 │   ├── verify-synergetic.mjs          # Multi-dome manifest check
