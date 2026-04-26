@@ -39,10 +39,11 @@ export function useHashRouter() {
 
 // Room configuration
 export const ROOMS = [
-  { id: 'bonding', label: 'BONDING', description: 'Molecule builder' },
-  { id: 'collider', label: 'COLLIDER', description: 'Proximity sensor' },
+  { id: 'bonding',   label: 'BONDING',     description: 'Molecule builder' },
+  { id: 'collider',  label: 'COLLIDER',    description: 'Proximity sensor' },
+  { id: 'geodesic',  label: 'GEODESIC',    description: '3D structure builder' },
   { id: 'observatory', label: 'OBSERVATORY', description: 'Data dome (planned)' },
-  { id: 'bridge', label: 'BRIDGE', description: 'Identity & wallet (planned)' },
+  { id: 'bridge',    label: 'BRIDGE',      description: 'Identity & wallet (planned)' },
 ];
 
 export default useHashRouter;

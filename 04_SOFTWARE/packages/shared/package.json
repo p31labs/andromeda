@@ -42,6 +42,7 @@
     "./types": "./src/types/index.ts",
     "./net": "./src/net/index.ts",
     "./ui": "./src/ui/index.ts",
-    "./sovereign": "./src/sovereign/index.ts"
+    "./sovereign": "./src/sovereign/index.ts",
+    "./geodesic-campaign": "./src/geodesic-campaign.ts"
   }
 }

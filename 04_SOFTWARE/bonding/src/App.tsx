@@ -53,6 +53,7 @@ import { initAudio } from './engine/sound';
 import { useConsoleEgg } from './hooks/useConsoleEgg';
 import { useHashRouter } from './hooks/useHashRouter';
 import { ColliderMode } from './components/ColliderMode';
+const GeodesicMode = lazy(() => import('./components/GeodesicMode').then(m => ({ default: m.GeodesicMode })));
 import { ElementManager } from './components/elements';
 import { getFunFact } from './config/funFacts';
 import { getQuestMessage } from './config/questMessages';
@@ -361,8 +362,9 @@ function App() {
       <ShootingStars />
       <MissingNode />
 
-      {/* Room router: ColliderMode takes full screen when #collider is active */}
-      {currentRoom === 'collider' && <ColliderMode />}
+      {/* Room router: full-screen modes keyed on hash */}
+      {currentRoom === 'collider'  && <ColliderMode />}
+      {currentRoom === 'geodesic'  && <Suspense fallback={null}><GeodesicMode /></Suspense>}
 
       {/* ── Floating overlays (z-20) — retained from pre-cockpit layout ── */}
 

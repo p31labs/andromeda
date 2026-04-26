@@ -4,6 +4,22 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "astro dev",
+    "hub:build": "node scripts/hub/build-landing-data.mjs",
+    "hub:verify": "node scripts/hub/verify.mjs",
+    "hub:diff": "node scripts/verify-ground-truth.mjs && node scripts/hub/diff-index-sources.mjs",
+    "hub:sync": "node scripts/hub/build-landing-data.mjs && node scripts/hub/verify.mjs",
+    "hub:about:generate": "node scripts/generate-about-pages.mjs",
+    "verify": "npm run passport:verify && npm run build",
+    "ci": "npm run verify",
+    "ci:content": "npm run hub:about:generate && npm run hub:about:enrich && npm run verify",
+    "hub:ci": "npm run hub:about:generate && npm run build",
+    "postinstall": "node scripts/hub/build-landing-data.mjs",
+    "verify:ground-truth": "node scripts/verify-ground-truth.mjs",
+    "verify:synergetic": "node scripts/verify-synergetic.mjs",
+    "verify:lattice-oracle": "node scripts/verify-lattice-oracle.mjs",
+    "verify:economy": "node scripts/verify-creator-economy.mjs",
+    "verify:geodesic-campaign": "node scripts/verify-geodesic-campaign.mjs",
+    "prebuild": "node scripts/verify-ground-truth.mjs && node scripts/verify-synergetic.mjs && node scripts/verify-lattice-oracle.mjs && node scripts/verify-creator-economy.mjs && node scripts/verify-geodesic-campaign.mjs && node scripts/hub/build-landing-data.mjs && node scripts/hub/verify.mjs && node scripts/hub/diff-index-sources.mjs",
     "build": "astro build",
     "passport:verify": "node scripts/verify-passport.mjs",
     "passport:sync": "node ../../../scripts/sync-passport-to-p31ca.mjs",
@@ -12,7 +28,13 @@
     "preview": "astro preview",
     "astro": "astro",
     "hub:about:enrich": "node scripts/enrich-mvp-about-pages.mjs",
-    "hub:about:fix-hrefs": "node scripts/fix-about-enriched-hrefs.mjs"
+    "hub:about:fix-hrefs": "node scripts/fix-about-enriched-hrefs.mjs",
+    "security:check": "node scripts/security/run.mjs --skip-A",
+    "security:check:full": "node scripts/security/run.mjs",
+    "security:audit": "node scripts/security/sca.mjs",
+    "security:workers": "node scripts/security/verify-worker-inventory.mjs",
+    "security:crypto": "node scripts/security/verify-crypto-surface.mjs",
+    "security:lint": "eslint src/ workers/ --ext .ts,.js --config eslint.config.security.mjs 2>/dev/null || true"
   },
   "dependencies": {
     "@astrojs/tailwind": "^6.0.2",
@@ -21,6 +43,10 @@
     "three": "^0.183.0"
   },
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^8.59.0",
+    "@typescript-eslint/parser": "^8.59.0",
+    "eslint": "^10.2.1",
+    "eslint-plugin-security": "^4.0.0",
     "wrangler": "^4.85.0"
   }
 }
