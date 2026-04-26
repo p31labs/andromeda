@@ -2,7 +2,6 @@
  * K4-Personal — Per-user PersonalAgent with SQLite-backed state, reminders, energy.
  * DO-based for per-user sessions.
  */
-var PersonalAgent = class PersonalAgent {
 import { DurableObject } from 'cloudflare:workers';
 
 export class PersonalAgent extends DurableObject {
