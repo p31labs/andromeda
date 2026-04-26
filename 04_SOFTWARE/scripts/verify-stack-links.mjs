@@ -59,29 +59,54 @@ let failed = 0;
 let warned = 0;
 
 /**
- * Many edges block HEAD or return 404 on `/` while GET serves HTML.
+ * GET with manual redirects: avoids undici "redirect count exceeded" when an edge
+ * ping-pongs (e.g. /dome <-> /dome/). Detects cycles explicitly.
  * @param {string} url
  */
 async function probe(url) {
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), TIMEOUT_MS);
+  const visited = [];
+  let current = url;
+  const rangeHeaders = {
+    Range: 'bytes=0-8191',
+    Accept: 'text/html,application/json,*/*',
+  };
   try {
-    let res = await fetch(url, { method: 'HEAD', signal: ctrl.signal, redirect: 'follow' });
-    if (res.ok || res.status === 405 || res.status === 403) {
-      clearTimeout(timer);
-      return { ok: true, status: res.status };
-    }
-    if (res.status === 404) {
-      res = await fetch(url, {
+    for (let hop = 0; hop < 24; hop++) {
+      if (visited.includes(current)) {
+        clearTimeout(timer);
+        return { ok: false, status: 0, err: `redirect loop involving ${current}` };
+      }
+      visited.push(current);
+      const res = await fetch(current, {
         method: 'GET',
         signal: ctrl.signal,
-        redirect: 'follow',
-        headers: { Range: 'bytes=0-8191', Accept: 'text/html,application/json,*/*' },
+        redirect: 'manual',
+        headers: rangeHeaders,
       });
+      if (res.status >= 200 && res.status < 300) {
+        clearTimeout(timer);
+        return { ok: true, status: res.status };
+      }
+      if (res.status === 206 || res.status === 403 || res.status === 405) {
+        clearTimeout(timer);
+        return { ok: true, status: res.status };
+      }
+      if (res.status >= 300 && res.status < 400) {
+        const loc = res.headers.get('location');
+        if (!loc) {
+          clearTimeout(timer);
+          return { ok: false, status: res.status, err: 'redirect without Location' };
+        }
+        current = new URL(loc, current).href;
+        continue;
+      }
+      clearTimeout(timer);
+      return { ok: false, status: res.status, err: `HTTP ${res.status}` };
     }
     clearTimeout(timer);
-    const ok = res.ok || res.status === 206 || res.status === 405 || res.status === 403;
-    return { ok, status: res.status };
+    return { ok: false, status: 0, err: 'too many redirects' };
   } catch (e) {
     clearTimeout(timer);
     return { ok: false, status: 0, err: /** @type {Error} */ (e).message };
