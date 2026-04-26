@@ -5,6 +5,7 @@ permissions:
   contents: read
 
 on:
+  workflow_dispatch:
   push:
     branches: [main, develop]
   pull_request:
@@ -17,3 +18,4 @@ concurrency:
 jobs:
   verify:
     uses: ./.github/workflows/reusable-monorepo-verify.yml
+    secrets: inherit

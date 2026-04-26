@@ -5,6 +5,7 @@ permissions:
   contents: read
 
 on:
+  workflow_dispatch:
   pull_request:
     branches: [main]
   push:
@@ -29,15 +30,4 @@ jobs:
 
       - uses: ./.github/actions/pnpm-andromeda-full
 
-      - name: Type check (core packages)
-        run: cd 04_SOFTWARE && pnpm turbo run typecheck --filter=@p31/shared --filter=@p31/bonding --filter=@p31/spaceship-earth --filter=@p31/node-zero
-
-      - name: Build packages
-        run: cd 04_SOFTWARE && pnpm turbo run build --filter=@p31/shared --filter=@p31/bonding --filter=@p31/node-zero
-
-      - name: Run tests
-        run: cd 04_SOFTWARE && pnpm turbo run test --filter=@p31/bonding --filter=@p31/node-zero
-
-      - name: Turborepo remote cache
-        if: ${{ env.TURBO_TOKEN != '' }}
-        run: cd 04_SOFTWARE && pnpm turbo run build --filter=@p31/bonding --filter=@p31/node-zero --remote
+      - uses: ./.github/actions/turbo-core-slice
