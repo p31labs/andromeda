@@ -24,7 +24,11 @@ jobs:
 
       # Bonding + shared: eslint (flat config). Warnings do not fail; errors fail the step.
       - name: ESLint (bonding + shared)
-        run: cd 04_SOFTWARE && pnpm --filter @p31/bonding --filter @p31/shared run lint
+        run: |
+          set -e
+          cd 04_SOFTWARE
+          pnpm -C bonding run lint
+          pnpm -C packages/shared run lint
 
       - name: Security audit (high+)
         continue-on-error: true
