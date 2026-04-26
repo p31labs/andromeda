@@ -1,0 +1,21 @@
+# Frozen install: root pnpm workspace + nested 04_SOFTWARE lockfile (matches lockfile:check).
+name: pnpm Andromeda full install
+description: pnpm/action-setup, Node 20, pnpm cache, root + 04_SOFTWARE frozen install
+
+runs:
+  using: composite
+  steps:
+    - uses: pnpm/action-setup@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version: "20"
+        cache: pnpm
+        cache-dependency-path: |
+          pnpm-lock.yaml
+          04_SOFTWARE/pnpm-lock.yaml
+    - name: Install (root)
+      shell: bash
+      run: pnpm install --frozen-lockfile
+    - name: Install (04_SOFTWARE)
+      shell: bash
+      run: pnpm install --frozen-lockfile --dir 04_SOFTWARE

@@ -12,6 +12,9 @@ concurrency:
   group: p31-vault-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  WRANGLER_VERSION: "4.85.0"
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -25,4 +28,4 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: pages deploy 04_SOFTWARE/cloudflare-pages/p31-vault --project-name=p31-vault --branch=main --commit-dirty=true
-          wranglerVersion: '4.85.0'
+          wranglerVersion: ${{ env.WRANGLER_VERSION }}

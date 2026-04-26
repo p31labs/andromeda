@@ -16,6 +16,9 @@ concurrency:
   group: deploy-workers-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  WRANGLER_VERSION: "4.85.0"
+
 jobs:
   deploy:
     name: Deploy workers in dependency order
@@ -27,7 +30,7 @@ jobs:
       # running npm install inside the pnpm workspace (workspace:* protocol
       # causes EUNSUPPORTEDPROTOCOL on plain npm).
       - name: Install wrangler globally
-        run: npm install -g wrangler@4.85.0
+        run: npm install -g wrangler@${{ env.WRANGLER_VERSION }}
 
       # ── 1. k4-cage (no deps) ────────────────────────────────────────
       - name: Deploy k4-cage
@@ -36,7 +39,7 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: 04_SOFTWARE/k4-cage
-          wranglerVersion: "4.85.0"
+          wranglerVersion: ${{ env.WRANGLER_VERSION }}
 
       # ── 2. k4-personal (no deps) ────────────────────────────────────
       - name: Deploy k4-personal
@@ -45,7 +48,7 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: 04_SOFTWARE/k4-personal
-          wranglerVersion: "4.85.0"
+          wranglerVersion: ${{ env.WRANGLER_VERSION }}
 
       # ── 3. k4-hubs (binds → k4-cage, k4-personal) ───────────────────
       - name: Deploy k4-hubs
@@ -54,7 +57,7 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: 04_SOFTWARE/k4-hubs
-          wranglerVersion: "4.85.0"
+          wranglerVersion: ${{ env.WRANGLER_VERSION }}
 
       # ── 4. p31-agent-hub (binds → all three above) ──────────────────
       - name: Deploy p31-agent-hub
@@ -63,7 +66,7 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: 04_SOFTWARE/p31-agent-hub
-          wranglerVersion: "4.85.0"
+          wranglerVersion: ${{ env.WRANGLER_VERSION }}
 
       # ── 5. Post-deploy verification ──────────────────────────────────
       - name: Wait for propagation

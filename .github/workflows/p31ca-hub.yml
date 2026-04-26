@@ -17,6 +17,9 @@ concurrency:
   group: p31ca-hub-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  WRANGLER_VERSION: "4.85.0"
+
 jobs:
   verify:
     runs-on: ubuntu-latest
@@ -46,4 +49,4 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: 04_SOFTWARE/p31ca
           command: pages deploy dist --project-name=p31ca --branch=main
-          wranglerVersion: '4.85.0'
+          wranglerVersion: ${{ env.WRANGLER_VERSION }}

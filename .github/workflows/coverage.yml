@@ -4,32 +4,24 @@ on:
   pull_request:
     branches: [main]
 
+concurrency:
+  group: coverage-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   coverage:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Nested 04_SOFTWARE lockfile in sync
-        run: pnpm install --frozen-lockfile --dir 04_SOFTWARE
+      - uses: ./.github/actions/pnpm-andromeda-full
 
       - name: Generate coverage for shared
+        working-directory: 04_SOFTWARE
         run: pnpm --filter @p31/shared test --run --coverage
 
       - name: Generate coverage for game-engine
+        working-directory: 04_SOFTWARE
         run: pnpm --filter @p31/game-engine test --run --coverage
 
       - name: Upload coverage reports
@@ -37,6 +29,6 @@ jobs:
         with:
           name: coverage-reports
           path: |
-            packages/shared/coverage
-            packages/game-engine/coverage
+            04_SOFTWARE/packages/shared/coverage
+            04_SOFTWARE/packages/game-engine/coverage
           retention-days: 7

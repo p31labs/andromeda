@@ -12,6 +12,9 @@ concurrency:
   group: p31-technical-library-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  WRANGLER_VERSION: "4.85.0"
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -41,4 +44,4 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: 04_SOFTWARE/docs
           command: pages deploy dist --project-name=p31-technical-library --branch=main
-          wranglerVersion: '4.85.0'
+          wranglerVersion: ${{ env.WRANGLER_VERSION }}

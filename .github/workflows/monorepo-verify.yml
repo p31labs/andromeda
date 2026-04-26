@@ -1,5 +1,4 @@
-# Canonical CI: single install at repo root, Turbo build + test, deploy guards.
-# Requires: root pnpm-lock.yaml committed and in sync.
+# Canonical CI: lockfile + deploy guard + MAP + turbo build/test (entire 04_SOFTWARE graph).
 name: Monorepo verify
 
 on:
@@ -19,22 +18,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      # Second lockfile: 04_SOFTWARE/bonding + nested workspace (must match 04_SOFTWARE/pnpm-lock.yaml)
-      - name: Nested 04_SOFTWARE lockfile in sync
-        run: pnpm install --frozen-lockfile --dir 04_SOFTWARE
+      - uses: ./.github/actions/pnpm-andromeda-full
 
       - name: Deploy target guard (Pages)
         run: node scripts/enterprise-deploy-guard.mjs
+
+      - name: MAP monetary surface (static)
+        run: node scripts/verify-monetary-surface.mjs
 
       - name: Build (Turbo)
         run: pnpm run build

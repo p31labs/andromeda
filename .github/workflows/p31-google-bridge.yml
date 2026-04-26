@@ -1,0 +1,28 @@
+# Config + bundle validation for 04_SOFTWARE/p31-google-bridge (no Cloudflare auth required)
+name: p31-google-bridge
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - "04_SOFTWARE/p31-google-bridge/**"
+      - ".github/workflows/p31-google-bridge.yml"
+  pull_request:
+    paths:
+      - "04_SOFTWARE/p31-google-bridge/**"
+      - ".github/workflows/p31-google-bridge.yml"
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Install
+        working-directory: 04_SOFTWARE/p31-google-bridge
+        run: npm ci
+      - name: Verify (print redirect + preflight + wrangler dry-run)
+        working-directory: 04_SOFTWARE/p31-google-bridge
+        run: node scripts/verify.mjs

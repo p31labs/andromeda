@@ -20,8 +20,9 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  NODE_VERSION: '20'
+  NODE_VERSION: "20"
   SITE_DIR: phosphorus31.org/planetary-planet
+  WRANGLER_VERSION: "4.85.0"
 
 jobs:
   build:
@@ -59,4 +60,4 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: ${{ env.SITE_DIR }}
           command: pages deploy dist --project-name=phosphorus31-org
-          wranglerVersion: '4.85.0'
+          wranglerVersion: ${{ env.WRANGLER_VERSION }}
