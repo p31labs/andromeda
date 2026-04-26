@@ -1,5 +1,18 @@
 {
-  "updated": "2026-04-24T19:30:56-04:00",
+  "updated": "2026-04-26T00:24:05-04:00",
+  "audit": {
+    "probed_at": "2026-04-26T00:24:05-04:00",
+    "method": "curl — GET -L, 5–8s timeout; OPTIONS/POST where noted",
+    "environment": "linux workspace (real network)",
+    "summary": "25 fleet rows. GET 2xx: 20 worker/page roots. genesis-gate: root 404, /health 200. p31-telemetry: no GET /; OPTIONS /api/telemetry/perf → 204. p31-vault + p31-technical-library: *.pages.dev 404 (verify project bind). api.phosphorus31.org: not resolved in this environment — confirm DNS vs workers.dev URL.",
+    "anomalies": [
+      { "name": "p31-vault", "url": "https://p31-vault.pages.dev", "http": 404, "action": "Restore or retarget Pages project / update URL" },
+      { "name": "p31-technical-library", "url": "https://p31-technical-library.pages.dev", "http": 404, "action": "Restore or retarget Pages project / update URL" },
+      { "name": "p31-telemetry", "note": "POST/OPTIONS API; root GET 404" },
+      { "name": "route-only-workers", "note": "p31-bonding-relay, p31-signaling, p31-stripe-webhook: root GET 404 (or empty POST) — expected if routes are /api/* or webhooks" },
+      { "name": "api.phosphorus31.org", "note": "Not resolved in audit environment; api-phosphorus31-org workers.dev root GET 404" }
+    ]
+  },
   "workers": [
     { "name": "phosphorus31-org", "status": "online", "url": "https://phosphorus31.org" },
     { "name": "p31ca-org", "status": "online", "url": "https://p31ca.org" },
@@ -8,14 +21,15 @@
     { "name": "command-center", "status": "online", "url": "https://command-center.trimtab-signal.workers.dev" },
     { "name": "carrie-agent", "status": "online", "url": "https://carrie-agent.trimtab-signal.workers.dev" },
     { "name": "p31-social-engine", "status": "online", "url": "https://p31-social-engine.trimtab-signal.workers.dev" },
-    { "name": "genesis-gate", "status": "online", "url": "https://genesis-gate.trimtab-signal.workers.dev" },
+    { "name": "genesis-gate", "status": "online", "url": "https://genesis-gate.trimtab-signal.workers.dev/health" },
     { "name": "p31-bonding-relay", "status": "online", "url": "https://p31-bonding-relay.trimtab-signal.workers.dev" },
     { "name": "p31-telemetry", "status": "online", "url": "https://p31-telemetry.trimtab-signal.workers.dev" },
+    { "name": "donate-api", "status": "online", "url": "https://donate-api.phosphorus31.org/health" },
     { "name": "p31-stripe-webhook", "status": "online", "url": "https://p31-stripe-webhook.trimtab-signal.workers.dev" },
     { "name": "api-phosphorus31-org", "status": "online", "url": "https://api-phosphorus31-org.trimtab-signal.workers.dev" },
     { "name": "fawn-guard", "status": "online", "url": "https://fawn-guard.trimtab-signal.workers.dev" },
     { "name": "p31-signaling", "status": "online", "url": "https://p31-signaling.trimtab-signal.workers.dev" },
-    { "name": "p31-vault", "status": "online", "url": "https://p31-vault.pages.dev" },
+    { "name": "p31-vault", "status": "debug", "url": "https://p31-vault.pages.dev" },
     { "name": "p31-mesh", "status": "online", "url": "https://p31-mesh.pages.dev" },
     { "name": "p31-lab", "status": "online", "url": "https://p31-lab.trimtab-signal.workers.dev" },
     { "name": "will-workshop", "status": "online", "url": "https://will-workshop.trimtab-signal.workers.dev" },
@@ -25,7 +39,7 @@
     { "name": "k4-cage", "status": "online", "url": "https://k4-cage.trimtab-signal.workers.dev" },
     { "name": "p31-bouncer", "status": "online", "url": "https://p31-bouncer.trimtab-signal.workers.dev" },
     { "name": "p31-phenix", "status": "online", "url": "https://p31-phenix.pages.dev" },
-    { "name": "p31-technical-library", "status": "online", "url": "https://p31-technical-library.pages.dev" }
+    { "name": "p31-technical-library", "status": "debug", "url": "https://p31-technical-library.pages.dev" }
   ],
   "legal": {
     "case": "Johnson v. Johnson, 2025CV936",
@@ -45,6 +59,8 @@
     "paper_xii": "Sovereign Stack — 11pp, triple-gated, Zenodo-ready",
     "bonding_tests": "413 / 30 suites",
     "deployed_workers": 25,
+    "http_probe_2xx_roots": 20,
+    "http_probe_degraded": 2,
     "k4_phase": 3,
     "k4_viz_url": "https://k4-cage.trimtab-signal.workers.dev/viz",
     "k4_api_url": "https://k4-cage.trimtab-signal.workers.dev/api",
@@ -64,6 +80,7 @@
     { "date": "2026-04-20", "event": "Mercury bank account APPROVED & ACTIVE" },
     { "date": "2026-04-24", "event": "Temporal sync — Command Center state grounded" },
     { "date": "2026-04-24", "event": "Routing fix deployed: CRDT Session WebSocket + Cloudflare Resources API" },
+    { "date": "2026-04-26", "event": "Fleet HTTP audit: genesis /health, vault + tech library Pages 404, telemetry API-only" },
     { "date": "2026-04-30", "event": "Camden County wellness baseline" },
     { "date": "2026-04-30", "event": "Georgia Tech Summit" },
     { "date": "2026-05-17", "event": "SSDI Reconsideration appeal deadline (using April 18 ER visit as evidence)" },
