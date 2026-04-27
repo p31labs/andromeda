@@ -69,6 +69,17 @@ Browser
 - **GET** is intentionally **public** (PII-free JSON: `state` + `at`); CORS allows listed origins (p31ca, bonding, `*.pages.dev`, localhost) so the `/ops/` glass table and shift line can read it without a session.
 - **POST** (tag in/out) requires **Cloudflare Access** and **operator** role; **OPTIONS** preflight reflects the browser `Origin` when allowlisted. Audit entries and elevated fields are not returned to unauthenticated GETs.
 
+### Access bypass rules (Cloudflare Access)
+
+For **`command-center.trimtab-signal.workers.dev`** the dashboard uses **two** Access applications so public glass can read shift state without giving the world SSO:
+
+| App | Policy | Path scope | Purpose |
+|-----|--------|------------|--------|
+| **Public operator shift** (or equivalent name) | **Bypass** — Include = *Everyone* (or path-scoped bypass) | **`/api/operator/shift`** for **GET** only in practice | PII-free JSON for `/ops` + ecosystem glass; not a free pass to other routes. |
+| **command-center** (default) | **Allow** e.g. Admins / named IdP group | `*` on this hostname (or all non-bypassed paths) | **POST** `/api/operator/shift`, internal operator UI, and any mutating or sensitive paths. |
+
+**Rules:** (1) **GET** `/api/operator/shift` is the intentionally public read — implemented in the Worker + CORS; Access **bypass** for that path avoids **302 to login** in browsers that hit the Worker URL directly. (2) **POST** `/api/operator/shift` is **not** bypassed — requires Access session + **operator** role. (3) All **other** command-center routes should remain under the main Access app, not the bypass. (4) If you add routes, re-audit: no bypass wider than needed for the glass operator story.
+
 **Rate limiting:**
 - Not implemented at Worker level — relies on Cloudflare edge rate limiting (free tier: basic)
 - P2 item: add `CHALLENGES` KV TTL as a natural rate limit; consider explicit rate-limit token in KV
