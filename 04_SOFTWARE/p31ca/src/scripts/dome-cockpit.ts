@@ -704,7 +704,17 @@ if (prefersReducedMotion) {
  'node-zero': ['Node Zero', 1, 0, 3, 0, 'prototype', 'dc', 'Hardware Rig'],
  'alchemy': ['Neuro-Cognition Alchemy', 1, 1, 1, 1, 'research', 'dc', 'Zenodo Published'],
  'p31-mesh': ['P31 Mesh', 0, 1, 3, 0, 'active', 'dc', 'CRDT PGLite Sync'],
- 'vault': ['P31 Vault', 0, 0, 3, 1, 'building', 'ac', 'Encrypted Storage']
+ 'vault': ['P31 Vault', 0, 0, 3, 1, 'building', 'ac', 'Encrypted Storage'],
+ 'oqe-icosa': [
+   'OQE Icosa (forensic)',
+   1,
+   1,
+   1,
+   1,
+   'deployed',
+   'dc',
+   'Twenty-face contradiction map. Short /oqe; lexicon /p31-oqe-twenty.json; schema p31.oqeTwenty',
+ ],
   };
 
   const EDGES = [
@@ -718,7 +728,8 @@ if (prefersReducedMotion) {
  ['spaceship', 'p31-mesh', 'reads'],
  ['ede', 'shield-engine', 'compiles'],
  ['fawn', 'signal-processor', 'filters'],
- ['vault', 'operator-state', 'protects']
+ ['vault', 'operator-state', 'protects'],
+ ['oqe-icosa', 'context-engine', 'forensic_index'],
   ];
 
   $("node-count").innerText = `${Object.keys(VERTICES).length} ${i18n.t('stats.nodes')}`;

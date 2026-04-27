@@ -122,6 +122,9 @@ phenix-xiaozhi-v2/
 /love-ledger/
 /donation-wallet-v2/
 
+# Next.js export (local build artifact; not source of truth)
+04_SOFTWARE/sovereign-command-center/out/
+
 # WCD duplicates in root - keep in WCDs/ only
 /WCDs/eslint.config.mjs
 /WCDs/*_corrected*

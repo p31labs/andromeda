@@ -422,7 +422,8 @@ document.getElementById('autoRotateToggle').addEventListener('change', e => {
 });
 
 // ── Animation loop ───────────────────────────────────────────────
-const LARMOR_HZ = 0.86;
+// Must stay in sync with TRIM_HZ_MIN in src/lib/dome/p31-dome-constants.ts (verify-quantum-clock).
+const TRIM_HZ_MIN = 0.86;
 const clock = new THREE.Clock();
 
 function animate() {
@@ -430,8 +431,8 @@ function animate() {
     const dt = clock.getDelta();
     const elapsed = clock.getElapsedTime();
 
-    // Larmor rotation: 0.86 Hz = 0.86 * 2PI rad/s
-    larmorRing.rotation.z = elapsed * LARMOR_HZ * Math.PI * 2;
+    // Grandfather / trim floor rotation: TRIM_HZ_MIN Hz (see quantum clock plan)
+    larmorRing.rotation.z = elapsed * TRIM_HZ_MIN * Math.PI * 2;
 
     controls.update();
     renderer.render(scene, camera);
