@@ -18,7 +18,9 @@ const PUBLIC = path.join(__dirname, '..', 'public');
 
 // ─── URL map (about page → launch URL) ─────────────────────────────────────
 function getAppUrl(item) {
-  return item.appUrl;
+  const u = item.appUrl;
+  if (u.startsWith('http')) return u;
+  return u.startsWith('/') ? u : `/${u}`;
 }
 
 // Status badges: token-only (see verify:style-alignment) — .badge--{live|research|hardware}
