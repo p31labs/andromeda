@@ -288,6 +288,24 @@
       "label": "OSS smart home, wearables, and operator tool catalog (machine + doc links)",
       "doc": "docs/P31-INTEGRATIONS-BRIDGE.md",
       "note": "Data from p31-constants.json integrations; apply:constants → public/p31-integrations.json. No secrets; empty endpoint slots = disabled."
+    },
+    "oqeTwentyLexicon": {
+      "path": "/p31-oqe-twenty.json",
+      "implementation": "public/p31-oqe-twenty.json",
+      "label": "OQE twenty-face lexicon (forensic, not Fate 20)",
+      "note": "Schema p31.oqeTwenty/1.0.0. Short /oqe → oqe-icosa.html in _redirects."
+    },
+    "oqeIcosa": {
+      "path": "/oqe-icosa.html",
+      "implementation": "public/oqe-icosa.html",
+      "label": "OQE Icosa — twenty-face forensic map",
+      "note": "Static HTML; fetches p31-oqe-twenty.json. No CSPRNG. Verifier: scripts/verify-oqe-icosa.mjs. Short /d20 → d20-omnibus-icosa.html in _redirects (Fate 20 vs OQE icosa)."
+    },
+    "quantumClock": {
+      "path": "/quantum-clock.html",
+      "implementation": "public/quantum-clock.html",
+      "label": "Quantum clock — Grandfather / Cuckoo explainer (pedagogy, not metrology)",
+      "note": "Schema meta p31.quantumClockPage/0.1.0. Short /quantum-clock in _redirects. See docs/PLAN-QUANTUM-CLOCK.md; verify:quantum-clock links tomography TRIM to dome-constants."
     }
   },
   "edgeRedirects": [
@@ -425,6 +443,21 @@
       "from": "/kids",
       "to": "/kids-home.html",
       "status": 301
+    },
+    {
+      "from": "/oqe",
+      "to": "/oqe-icosa.html",
+      "status": 301
+    },
+    {
+      "from": "/d20",
+      "to": "/d20-omnibus-icosa.html",
+      "status": 301
+    },
+    {
+      "from": "/quantum-clock",
+      "to": "/quantum-clock.html",
+      "status": 301
     }
   ],
   "fileSnippets": [
@@ -462,6 +495,11 @@
       "id": "kidsHome.page",
       "path": "public/kids-home.html",
       "mustIncludeSubstring": "p31.householdKidsHome/0.1.0"
+    },
+    {
+      "id": "quantumClock.page",
+      "path": "public/quantum-clock.html",
+      "mustIncludeSubstring": "p31.quantumClockPage/0.1.0"
     },
     {
       "id": "initialBuild.page",

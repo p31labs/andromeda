@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f1115" />
+  <link rel="manifest" href="/p31-mesh.webmanifest" crossorigin="anonymous" />
+  <meta name="description" content="The Ultimate Decision Maker — icosahedral D20, CSPRNG fair pick, Fate 20 lexicon (Lattice Oracle). Tie-break when executive function is stuck; not professional advice." />
+  <title>The Ultimate Decision Maker | P31</title>
+  <!-- three@0.160.0 — pinned with observatory / k4market (ground-truth) -->
+  <link rel="stylesheet" href="/p31-style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; overflow: hidden; }
+    body {
+      background: radial-gradient(ellipse 100% 80% at 50% 0%, #1a2238 0%, var(--p31-void, #0f1115) 55%);
+      color: var(--p31-cloud, #d8d6d0);
+      font-family: var(--p31-font-sans, "Atkinson Hyperlegible"), system-ui, sans-serif;
+    }
+    #canvas-host { position: fixed; inset: 0; z-index: 0; }
+    #canvas-host canvas { display: block; }
+    #nav-connect {
+      position: fixed; top: 14px; right: 16px; z-index: 20;
+      display: flex; flex-wrap: wrap; gap: 0.6rem; justify-content: flex-end;
+      font-family: "JetBrains Mono", monospace; font-size: 0.65rem;
+      letter-spacing: 0.08em; text-transform: uppercase;
+    }
+    #nav-connect a {
+      color: var(--p31-teal, #3d9b8c); text-decoration: none;
+      border-bottom: 1px solid transparent; padding: 0.15rem 0;
+    }
+    #nav-connect a:hover, #nav-connect a:focus-visible {
+      color: var(--p31-ice, #9ee7ff); border-color: var(--p31-ice, #9ee7ff);
+    }
+    #hud {
+      position: fixed; top: 14px; left: 16px; z-index: 20;
+      width: min(22rem, calc(100vw - 32px));
+      background: color-mix(in srgb, var(--p31-surface, #161920) 92%, transparent);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px; padding: 1rem 1.1rem;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.35);
+    }
+    #hud h1 {
+      font-family: "JetBrains Mono", monospace; font-size: 0.75rem;
+      font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--p31-teal, #3d9b8c); margin-bottom: 0.35rem;
+    }
+    #hud .geo { font-size: 0.72rem; opacity: 0.55; line-height: 1.4; margin-bottom: 0.75rem; }
+    #btn-roll {
+      width: 100%; padding: 0.65rem 1rem; border-radius: 8px; border: none; cursor: pointer;
+      font-family: "JetBrains Mono", monospace; font-size: 0.72rem; font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      background: linear-gradient(165deg, var(--p31-teal, #25897d), color-mix(in srgb, var(--p31-teal, #25897d) 70%, #000));
+      color: var(--p31-void, #0f1115);
+      transition: transform 0.15s, filter 0.15s;
+    }
+    #btn-roll:hover:not(:disabled) { filter: brightness(1.08); transform: translateY(-1px); }
+    #btn-roll:disabled { opacity: 0.45; cursor: not-allowed; }
+    #outcome {
+      margin-top: 1rem; padding-top: 0.85rem;
+      border-top: 1px solid rgba(255,255,255,0.07);
+      font-size: 0.88rem; line-height: 1.45; min-height: 3.5rem;
+    }
+    #outcome .face-line {
+      font-family: "JetBrains Mono", monospace; font-size: 0.65rem;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--p31-teal, #4db8a8); margin-bottom: 0.4rem;
+    }
+    #outcome .reading { color: var(--p31-cloud, #e8e6e0); }
+    #outcome .reading strong { color: var(--p31-coral, #e07a5f); font-weight: 700; }
+    #natural20 {
+      display: none; margin-top: 0.75rem; padding: 0.55rem 0.65rem;
+      border-radius: 8px; text-align: center;
+      font-family: "JetBrains Mono", monospace; font-size: 0.62rem;
+      font-weight: 700; letter-spacing: 0.2em;
+      background: linear-gradient(90deg, rgba(212,168,75,0.25), rgba(61,155,140,0.2));
+      border: 1px solid rgba(212,168,75,0.45);
+      color: #f0d78c;
+    }
+    #natural20.visible { display: block; }
+    #hint-foot {
+      position: fixed; bottom: 12px; left: 50%; transform: translateX(-50%);
+      z-index: 15; font-family: "JetBrains Mono", monospace; font-size: 0.6rem;
+      opacity: 0.35; text-align: center; max-width: 90vw; pointer-events: none;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      #btn-roll { transition: none; }
+    }
+  </style>
+</head>
+<body class="p31-mesh-m-first">
+  <div id="canvas-host" aria-hidden="true"></div>
+
+  <nav id="nav-connect" aria-label="Hub links">
+    <a href="/oqe">OQE (forensic)</a>
+    <a href="/oracle">Oracle</a>
+    <a href="/lattice.html">Lattice</a>
+    <a href="/geodesic.html">Geodesic</a>
+    <a href="/">Hub</a>
+  </nav>
+
+  <aside id="hud" aria-live="polite">
+    <h1>The Ultimate Decision Maker</h1>
+    <p class="geo"><strong>One fair geometry, one outcome.</strong> Icosahedron <strong>V=12 E=30 F=20</strong> · d20 symmetry. Use when you need a <em>commit assist</em> between branches — not prophecy. Orbit-drag · click a face to inspect · <kbd style="opacity:0.7">R</kbd> roll.</p>
+    <button type="button" id="btn-roll">Roll — decide</button>
+    <div id="outcome" role="status">
+      <p class="face-line" id="face-line">&nbsp;</p>
+      <p class="reading" id="reading">Fair pick via <code>crypto.getRandomValues</code> — stays in your browser. One lexicon file: <code>/p31-fate-twenty.json</code> (loaded with <a href="/oracle" style="color:var(--p31-teal)">Lattice Oracle</a>). You still choose whether to act.</p>
+    </div>
+    <div id="natural20" aria-hidden="true">NATURAL 20 · FACE 20 · DECISION SEALED (READING ABOVE STILL APPLIES — YOU OWN THE CHOICE)</div>
+  </aside>
+
+  <p id="hint-foot">Decision assist only — not medical, legal, financial, or relationship advice · <a href="/oracle" style="color:inherit;pointer-events:auto">crystal oracle</a> · short URL <strong>/decide</strong> or <strong>/d20</strong></p>
+
+  <script type="importmap">
+  {"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/"}}
+  </script>
+  <script type="module">
+  import * as THREE from "three";
+  import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+
+  const btnRoll = document.getElementById("btn-roll");
+  btnRoll.disabled = true;
+  const fateRes = await fetch("/p31-fate-twenty.json", { cache: "no-store" });
+  if (!fateRes.ok) {
+    btnRoll.textContent = "Lexicon unavailable";
+    throw new Error("p31-fate-twenty.json missing");
+  }
+  const fateBundle = await fateRes.json();
+  if (fateBundle.schema !== "p31.fateTwenty/1.0.0") {
+    btnRoll.textContent = "Lexicon mismatch";
+    throw new Error("Fate Twenty schema mismatch");
+  }
+  /** @type {{ tag: string, tone: string, text: string }[]} */
+  const FATE = fateBundle.readings;
+  if (!Array.isArray(FATE) || FATE.length !== 20) {
+    throw new Error("Ultimate Decision Maker: readings.length must be 20");
+  }
+  btnRoll.disabled = false;
+
+  function rollUintBelow(maxExclusive) {
+    const buf = new Uint32Array(1);
+    const lim = Math.floor(0x100000000 / maxExclusive) * maxExclusive;
+    let x;
+    do {
+      crypto.getRandomValues(buf);
+      x = buf[0];
+    } while (x >= lim);
+    return x % maxExclusive;
+  }
+
+  function buildDie(radius) {
+    const base = new THREE.IcosahedronGeometry(radius, 0);
+    const pos = base.attributes.position;
+    const idx = base.index;
+    const group = new THREE.Group();
+    const faceNormals = [];
+    const meshes = [];
+    for (let f = 0; f < 20; f++) {
+      const i0 = idx.getX(f * 3);
+      const i1 = idx.getX(f * 3 + 1);
+      const i2 = idx.getX(f * 3 + 2);
+      const ax = pos.getX(i0), ay = pos.getY(i0), az = pos.getZ(i0);
+      const bx = pos.getX(i1), by = pos.getY(i1), bz = pos.getZ(i1);
+      const cx = pos.getX(i2), cy = pos.getY(i2), cz = pos.getZ(i2);
+      const verts = new Float32Array([ax, ay, az, bx, by, bz, cx, cy, cz]);
+      const g = new THREE.BufferGeometry();
+      g.setAttribute("position", new THREE.BufferAttribute(verts, 3));
+      g.computeVertexNormals();
+      const hue = 0.48 + (f / 20) * 0.12;
+      const mat = new THREE.MeshStandardMaterial({
+        color: new THREE.Color().setHSL(hue, 0.42, 0.2),
+        metalness: 0.9,
+        roughness: 0.18,
+        emissive: new THREE.Color(0x000000),
+        emissiveIntensity: 0,
+        side: THREE.DoubleSide,
+        flatShading: true,
+      });
+      const mesh = new THREE.Mesh(g, mat);
+      mesh.userData.faceId = f + 1;
+      const cxm = (ax + bx + cx) / 3;
+      const cym = (ay + by + cy) / 3;
+      const czm = (az + bz + cz) / 3;
+      faceNormals.push(new THREE.Vector3(cxm, cym, czm).normalize());
+      const edges = new THREE.LineSegments(
+        new THREE.EdgesGeometry(g),
+        new THREE.LineBasicMaterial({ color: 0x4db8a8, transparent: true, opacity: 0.35 })
+      );
+      mesh.add(edges);
+      group.add(mesh);
+      meshes.push(mesh);
+    }
+    return { group, faceNormals, meshes };
+  }
+
+  const host = document.getElementById("canvas-host");
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 200);
+  camera.position.set(0, 1.4, 6.2);
+  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  host.appendChild(renderer.domElement);
+
+  const controls = new OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.06;
+  controls.target.set(0, 0, 0);
+  controls.minDistance = 3.2;
+  controls.maxDistance = 14;
+
+  const { group: dieGroup, faceNormals, meshes } = buildDie(1.85);
+  scene.add(dieGroup);
+
+  scene.add(new THREE.AmbientLight(0xffffff, 0.35));
+  const key = new THREE.DirectionalLight(0xffffff, 1.1);
+  key.position.set(4, 6, 5);
+  scene.add(key);
+  const rim = new THREE.PointLight(0x6eb8d4, 1.2, 20);
+  rim.position.set(-4, 2, 6);
+  scene.add(rim);
+
+  const raycaster = new THREE.Raycaster();
+  const pointer = new THREE.Vector2();
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  let rollPhase = "idle";
+  let spinAxis = new THREE.Vector3(0, 1, 0);
+  let spinMag = 0;
+  let settleActive = false;
+  let settleFrom = new THREE.Quaternion();
+  let settleTo = new THREE.Quaternion();
+  let settleT = 0;
+  let pendingFace = null;
+  let idleSpin = !reduceMotion;
+
+  const faceLine = document.getElementById("face-line");
+  const readingEl = document.getElementById("reading");
+  const natural20 = document.getElementById("natural20");
+
+  function showOutcome(faceId) {
+    pendingFace = faceId;
+    const f = FATE[faceId - 1];
+    const tone =
+      f.tone === "yes" ? "warm" : f.tone === "no" ? "cool" : "open";
+    faceLine.textContent = `Face ${faceId}/20 · ${f.tag} · ${tone}`;
+    readingEl.innerHTML = f.text;
+    natural20.classList.toggle("visible", faceId === 20);
+    natural20.setAttribute("aria-hidden", faceId === 20 ? "false" : "true");
+    meshes.forEach((m) => {
+      const on = m.userData.faceId === faceId;
+      m.material.emissive.set(on ? 0x2a6088 : 0x000000);
+      m.material.emissiveIntensity = on ? 0.95 : 0;
+    });
+  }
+
+  function startRoll() {
+    if (rollPhase !== "idle") return;
+    btnRoll.disabled = true;
+    natural20.classList.remove("visible");
+    pendingFace = rollUintBelow(20) + 1;
+    settleTo.setFromUnitVectors(faceNormals[pendingFace - 1].clone(), new THREE.Vector3(0, 0, 1));
+    if (reduceMotion) {
+      dieGroup.quaternion.copy(settleTo);
+      rollPhase = "idle";
+      showOutcome(/** @type {number} */ (pendingFace));
+      btnRoll.disabled = false;
+      return;
+    }
+    rollPhase = "spin";
+    spinAxis.set(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize();
+    spinMag = 11 + Math.random() * 6;
+    settleActive = false;
+    idleSpin = false;
+  }
+
+  function endSettle() {
+    settleActive = false;
+    rollPhase = "idle";
+    dieGroup.quaternion.copy(settleTo);
+    showOutcome(pendingFace);
+    btnRoll.disabled = false;
+    idleSpin = !reduceMotion;
+  }
+
+  function meshFromHit(hit) {
+    let o = hit.object;
+    while (o && o.userData.faceId == null) o = o.parent;
+    return o && o.userData.faceId ? o : null;
+  }
+
+  function onPointerMove(e) {
+    pointer.x = (e.clientX / window.innerWidth) * 2 - 1;
+    pointer.y = -(e.clientY / window.innerHeight) * 2 + 1;
+    raycaster.setFromCamera(pointer, camera);
+    const hits = raycaster.intersectObjects(meshes, true);
+    const over = hits.length && rollPhase !== "settle" && rollPhase !== "spin";
+    document.body.style.cursor = over ? "pointer" : "";
+  }
+
+  function onClick(e) {
+    if (e.target.closest("#hud") || e.target.closest("#nav-connect")) return;
+    pointer.x = (e.clientX / window.innerWidth) * 2 - 1;
+    pointer.y = -(e.clientY / window.innerHeight) * 2 + 1;
+    raycaster.setFromCamera(pointer, camera);
+    const hits = raycaster.intersectObjects(meshes, true);
+    if (!hits.length) return;
+    const m = meshFromHit(hits[0]);
+    if (!m) return;
+    pendingFace = m.userData.faceId;
+    settleTo.setFromUnitVectors(faceNormals[pendingFace - 1].clone(), new THREE.Vector3(0, 0, 1));
+    if (reduceMotion) {
+      dieGroup.quaternion.copy(settleTo);
+      showOutcome(pendingFace);
+    } else {
+      settleFrom.copy(dieGroup.quaternion);
+      settleT = 0;
+      settleActive = true;
+      rollPhase = "settle";
+      idleSpin = false;
+      btnRoll.disabled = true;
+    }
+  }
+
+  window.addEventListener("pointermove", onPointerMove);
+  window.addEventListener("click", onClick);
+  btnRoll.addEventListener("click", startRoll);
+  window.addEventListener("keydown", (e) => {
+    if (e.code === "KeyR" && !e.target.matches("input, textarea, button")) startRoll();
+  });
+
+  const clock = new THREE.Clock();
+  function animate() {
+    requestAnimationFrame(animate);
+    const dt = Math.min(clock.getDelta(), 0.1);
+    controls.update();
+
+    if (rollPhase === "spin") {
+      dieGroup.rotateOnWorldAxis(spinAxis, spinMag * dt);
+      spinMag *= 0.96;
+      if (spinMag < 0.65) {
+        rollPhase = "settle";
+        settleFrom.copy(dieGroup.quaternion);
+        settleT = 0;
+        settleActive = true;
+      }
+    } else if (settleActive) {
+      settleT += dt * 1.35;
+      const k = Math.min(1, settleT);
+      THREE.Quaternion.slerpQuaternions(settleFrom, settleTo, dieGroup.quaternion, k);
+      if (k >= 1) endSettle();
+    } else if (idleSpin && rollPhase === "idle") {
+      dieGroup.rotation.y += 0.15 * dt;
+      dieGroup.rotation.x += 0.08 * dt;
+    }
+
+    renderer.render(scene, camera);
+  }
+  animate();
+
+  window.addEventListener("resize", () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+  </script>
+</body>
+</html>

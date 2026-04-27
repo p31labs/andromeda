@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#0f1115">
     <title>Planetary onboard — pick your welcome | P31 Labs</title>
-    <meta name="description" content="Choose your P31 welcome package (kid, adult, parent, neuro-inclusive, builder), then five-phase Wye → Delta onboarding.">
+    <meta name="description" content="Neuro-inclusive P31 welcome: pick a package, then five calm steps (Wye → Delta) to your private mesh workspace — dial, pace, and optional device lock.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -483,6 +483,7 @@
         .elder-mode #p2-nucleus { width: 7.5rem; height: 7.5rem; font-size: 1rem; }
         .elder-mode #passkey-btn { padding: 1.125rem 2rem; font-size: 1.125rem; }
         .elder-mode .phase p, .elder-mode .phase li { font-size: 1.05rem; }
+        .elder-mode .elder-hint { font-size: 0.7rem !important; color: rgba(216,214,208,0.48) !important; }
 
         /* Child: skip pact (passkey enrollment) */
         .child-mode #pact-card { display: none; }
@@ -526,15 +527,27 @@
             line-height: 1.35;
             color: rgba(216,214,208,0.48);
         }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
     </style>
 </head>
 <body>
 
 <!-- Skip navigation -->
-<a href="#phase-welcome"
+<a href="#onboard-main"
    style="position:fixed;top:-3rem;left:1rem;z-index:999;background:#25897d;color:#0f1115;padding:0.5rem 1rem;border-radius:4px;font-family:monospace;font-size:0.8rem;text-decoration:none;transition:top 0.2s"
    onfocus="this.style.top='1rem'" onblur="this.style.top='-3rem'">
-    Skip to welcome
+    Skip to onboarding
 </a>
 
 <!-- Fixed chrome -->
@@ -582,18 +595,22 @@
     ← Back
 </button>
 
+<main id="onboard-main" aria-label="Planetary onboarding">
+
+<div id="phase-step-ann" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
 <nav id="progress" class="pre-welcome" aria-label="Onboarding progress">
-    <div class="dot current" id="dot-1" title="Step 1"></div>
-    <div class="dot"         id="dot-2" title="Step 2"></div>
-    <div class="dot"         id="dot-3" title="Step 3"></div>
-    <div class="dot"         id="dot-4" title="Step 4"></div>
-    <div class="dot"         id="dot-5" title="Step 5"></div>
+    <div class="dot current" id="dot-1" title="Step 1" role="presentation"></div>
+    <div class="dot"         id="dot-2" title="Step 2" role="presentation"></div>
+    <div class="dot"         id="dot-3" title="Step 3" role="presentation"></div>
+    <div class="dot"         id="dot-4" title="Step 4" role="presentation"></div>
+    <div class="dot"         id="dot-5" title="Step 5" role="presentation"></div>
 </nav>
 
 <!-- =====================================================
      PHASE 0 — WELCOME PACKAGE (p31.welcomePackages/1.0.0)
 ===================================================== -->
-<section id="phase-welcome" class="phase active" role="main" aria-label="Choose your P31 welcome package"
+<section id="phase-welcome" class="phase active" aria-label="Choose your P31 welcome package"
          tabindex="0">
     <div style="text-align:center; padding:0 1rem 1.25rem; max-width:40rem">
         <p style="font-family:'JetBrains Mono',monospace; font-size:0.62rem; letter-spacing:0.18em; color:rgba(37,137,125,0.75); margin-bottom:0.75rem">
@@ -612,7 +629,7 @@
 <!-- =====================================================
      PHASE 1 — THE VOID
 ===================================================== -->
-<section id="phase-1" class="phase" role="main" aria-label="Step 1: The Void"
+<section id="phase-1" class="phase" aria-label="Step 1: The Void"
          tabindex="0">
 
     <div style="text-align:center; padding: 0 2rem; display:flex; flex-direction:column; gap:1.5rem; align-items:center">
@@ -623,7 +640,7 @@
         </p>
         <p id="p1-line2"
            style="font-size:0.75rem; letter-spacing:0.1em; color:rgba(216,214,208,0); transition:opacity 700ms ease-out">
-            Tap anywhere when you're ready.
+            Tap or press Enter when you are ready.
         </p>
     </div>
 </section>
@@ -701,9 +718,12 @@
     </div>
 
     <!-- Top instruction -->
-    <div style="position:fixed; top:2.25rem; left:50%; transform:translateX(-50%); pointer-events:none; text-align:center">
+    <div style="position:fixed; top:2.25rem; left:50%; transform:translateX(-50%); pointer-events:none; text-align:center; max-width:min(22rem,92vw)">
         <p id="p3-intro" style="font-size:0.8rem; letter-spacing:0.1em; color:rgba(216,214,208,0.55)">
             Arrange your space.
+        </p>
+        <p id="p3-keyboard-hint" class="elder-hint" style="font-size:0.62rem; font-family:'JetBrains Mono',monospace; color:rgba(216,214,208,0.32); margin-top:0.35rem; line-height:1.35">
+            Focus a space, then arrow keys nudge it — pointer or touch works too.
         </p>
     </div>
 
@@ -711,7 +731,7 @@
     <p id="p3-nudge"
        style="position:fixed; bottom:11rem; left:50%; transform:translateX(-50%); font-size:0.7rem; color:rgba(216,214,208,0.4); opacity:0; transition:opacity 0.5s ease; white-space:nowrap; pointer-events:none"
        aria-live="polite">
-        Try moving one ↑
+        Try a nudge — or arrow keys on a focused space
     </p>
 
     <!-- Continue / skip -->
@@ -869,6 +889,8 @@
     </div>
 </section>
 
+</main>
+
 <!-- =====================================================
      SUCCESS OVERLAY
 ===================================================== -->
@@ -901,7 +923,7 @@ const SKINS = {
         pactTitle:    'One last step — secure the lock.',
         wyeDeltaStepCaption: [
             'Wye: one center — spokes through a single point. You are moving toward a closed mesh.',
-            'Anchor: find a rhythm that is yours, not the hub’s pulse.',
+            'Anchor: find a rhythm that is yours — not the default pulse on the screen.',
             'Rooms: four corners — edges between them replace the star.',
             'Dial: choose how much “mesh” you feel right now.',
             'Pact: close the Delta — lock to your device, not our servers.',
@@ -924,7 +946,7 @@ const WELCOME_FALLBACK = {
             cardSub: 'Standard welcome (packages file offline — refresh when online).',
             topologyCaption: 'Standard P31 welcome.',
             voidLine1: 'Take a breath. This is a safe space.',
-            voidLine2: 'Tap anywhere when you\'re ready.',
+            voidLine2: 'Tap or press Enter when you are ready.',
             phase2Prompt: skin.phase2Prompt,
             phase3Intro: skin.phase3Intro,
             pactTitle: skin.pactTitle,
@@ -980,7 +1002,7 @@ function applyPackageToOnboarding(pkg) {
     const l1 = document.getElementById('p1-line1');
     const l2 = document.getElementById('p1-line2');
     if (l1) l1.textContent = pkg.voidLine1 || 'Take a breath. This is a safe space.';
-    if (l2) l2.textContent = pkg.voidLine2 || 'Tap anywhere when you\'re ready.';
+    if (l2) l2.textContent = pkg.voidLine2 || 'Tap or press Enter when you are ready.';
     const dialEl = document.getElementById('dial');
     if (dialEl && typeof pkg.dialDefault === 'number') {
         dialEl.value = String(pkg.dialDefault);
@@ -1023,6 +1045,8 @@ function renderWelcomeGrid() {
     });
     grid.style.display = 'grid';
     if (loading) loading.style.display = 'none';
+    const firstCard = grid.querySelector('.welcome-card');
+    if (firstCard) setTimeout(() => firstCard.focus(), 0);
 }
 
 function selectWelcomePackage(key) {
@@ -1039,6 +1063,7 @@ function selectWelcomePackage(key) {
     updateBackBtn(1);
     applyWyeDeltaShift(1);
     armPhase1WithAnimation();
+    announceOnboardStep(1);
     const p1 = document.getElementById('phase-1');
     const focusable = p1 && p1.querySelector('[tabindex="0"]');
     if (focusable) setTimeout(() => focusable.focus(), 80);
@@ -1055,6 +1080,8 @@ function returnToWelcome() {
     if (cap && WELCOME_ROOT && WELCOME_ROOT.welcomePhaseCaption) {
         cap.textContent = WELCOME_ROOT.welcomePhaseCaption;
     }
+    const ann = document.getElementById('phase-step-ann');
+    if (ann) ann.textContent = 'Welcome package choice.';
     updateBackBtn(1);
 }
 
@@ -1079,8 +1106,11 @@ function armPhase1WithAnimation() {
 }
 
 async function bootstrapWelcome() {
+    const main = document.getElementById('onboard-main');
+    if (main) main.setAttribute('aria-busy', 'true');
     await loadWelcomePackages();
     renderWelcomeGrid();
+    if (main) main.setAttribute('aria-busy', 'false');
     applyPackageToOnboarding(activePackage());
     applyWyeDeltaShift(0);
     const cap = document.getElementById('topology-caption-text');
@@ -1108,6 +1138,7 @@ function showPhase(n) {
 
     requestAnimationFrame(() => {
         next.classList.add('active');
+        window.scrollTo(0, 0);
         currentPhase = n;
         updateProgress(n);
         updateBackBtn(n);
@@ -1117,6 +1148,8 @@ function showPhase(n) {
         if (inits[n]) inits[n]();
 
         if (n === 1) armPhase1WithAnimation();
+
+        announceOnboardStep(n);
 
         const focusable = next.querySelector('[tabindex="0"], button, input:not([type="hidden"])');
         if (focusable) setTimeout(() => focusable.focus(), 80);
@@ -1153,10 +1186,17 @@ function updateProgress(n) {
     for (let i = 1; i <= 5; i++) {
         const d = document.getElementById(`dot-${i}`);
         d.className = 'dot';
+        d.removeAttribute('aria-current');
         if (i < n)      { d.classList.add('done');    d.title = `Step ${i}: complete`; }
-        else if (i === n){ d.classList.add('current'); d.title = `Step ${i}: current`; }
+        else if (i === n){ d.classList.add('current'); d.title = `Step ${i}: current`; d.setAttribute('aria-current', 'step'); }
         else             {                             d.title = `Step ${i}`; }
     }
+}
+
+function announceOnboardStep(n) {
+    const el = document.getElementById('phase-step-ann');
+    if (!el || n < 1 || n > 5) return;
+    el.textContent = `Step ${n} of 5: ${PHASE_NAMES[n]}.`;
 }
 
 function updateBackBtn(n) {
@@ -1499,6 +1539,11 @@ async function persistSubjectAndMeta(withPasskey, credOrNull) {
 function initPhase5() {
     if (effectiveArchetype() === 'child') {
         document.getElementById('p5-skip-wrapper').style.display = 'block';
+        const ann = document.getElementById('phase-step-ann');
+        if (ann) {
+            ann.textContent =
+                'Kid path: no device lock on this device. You can add one later with a grown-up. Moving to your home base.';
+        }
         setTimeout(async () => {
             await persistSubjectAndMeta(false, null);
             showSuccess(false);
@@ -1524,7 +1569,7 @@ async function enrollPasskey() {
     }
 
     btn.disabled = true;
-    setStatus('Opening secure prompt…', 'rgba(216,214,208,0.45)');
+    setStatus('Waiting for your device (fingerprint, face, or PIN)…', 'rgba(216,214,208,0.45)');
 
     try {
         const passkeyBase = window.p31GetPasskeyApiBase
@@ -1559,7 +1604,7 @@ async function enrollPasskey() {
         const cred = await navigator.credentials.create({ publicKey: popts });
         if (!cred) {
             btn.disabled = false;
-            setStatus('No credential returned — try again.', 'rgba(204,98,71,0.8)');
+            setStatus('No lock was created — try again.', 'rgba(204,98,71,0.8)');
             return;
         }
         const c = cred;
@@ -1587,13 +1632,13 @@ async function enrollPasskey() {
     } catch (err) {
         btn.disabled = false;
         if (err.name === 'NotAllowedError') {
-            setStatus('Cancelled — tap "Secure my lock" to try again.', 'rgba(205,168,82,0.8)');
+            setStatus('Cancelled — press “Secure my lock” to try again.', 'rgba(205,168,82,0.8)');
         } else if (err.name === 'InvalidStateError') {
             setStatus('This device already has a lock set up.', 'rgba(59,163,114,0.8)');
             setTimeout(() => showSuccess(true), 1500);
         } else {
             setStatus(`Something went wrong — try again or come back later.`, 'rgba(204,98,71,0.8)');
-            console.error('[P31 onboard] passkey error:', err.name, err.message);
+            console.error('[P31 onboard] lock enroll error:', err.name, err.message);
         }
     }
 }
@@ -1610,19 +1655,21 @@ function showSuccess(withPasskey) {
     const redir = document.getElementById('redirect-msg');
     if (!withPasskey) {
         redir.textContent =
-            'Passkey skipped — you can harden later. Same private assistant workspace.';
+            'Device lock skipped — you can add it in settings when you are ready. Same private workspace.';
     } else if (pkg.successSub) {
         redir.textContent = pkg.successSub;
     }
 
     const overlay = document.getElementById('success-overlay');
     overlay.classList.add('active');
-    if (navigator.vibrate) navigator.vibrate([80, 60, 80]);
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!reduceMotion && navigator.vibrate) navigator.vibrate([80, 60, 80]);
 
     const dialVal = window._dialPreference || DIAL_DEFAULT;
     const dest = `${POST_ONBOARD_URL}?dial=${dialVal}&welcome=${encodeURIComponent(welcomeKey)}`;
+    const redirectMs = reduceMotion ? 1200 : 3000;
 
-    setTimeout(() => { window.location.href = dest; }, 3000);
+    setTimeout(() => { window.location.href = dest; }, redirectMs);
 }
 </script>
 </body>

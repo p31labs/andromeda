@@ -16,11 +16,32 @@ const __dir = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dir, "../..");
 const MONO_ROOT = resolve(ROOT, "../..");
 const QC_PKG = resolve(MONO_ROOT, "04_SOFTWARE/packages/quantum-core/package.json");
+const PQC_AUDIT = resolve(MONO_ROOT, "04_SOFTWARE/packages/quantum-core/scripts/pqc-audit.mjs");
 const PASSKEY_SRC = resolve(ROOT, "workers/passkey/src/index.ts");
 
 function log(level, msg) {
   const prefix = { P0: "[FAIL]", P1: "[WARN]", P2: "[INFO]", OK: "[ OK ]" }[level] ?? "[    ]";
   console.log(`${prefix} ${msg}`);
+}
+
+function runPqcDependencyAudit() {
+  const qcDir = dirname(QC_PKG);
+  if (!existsSync(PQC_AUDIT)) {
+    log("P2", "pqc-audit.mjs not found — skipping @noble supply-chain preflight");
+    return true;
+  }
+  try {
+    execSync(`node ${JSON.stringify(PQC_AUDIT)} --quiet`, {
+      cwd: qcDir,
+      stdio: "inherit",
+      timeout: 15_000,
+    });
+    log("OK", "PQC supply-chain: @noble/post-quantum install + entrypoints verified");
+    return true;
+  } catch {
+    log("P0", "pqc-audit: FAILED — @noble/post-quantum missing, wrong version, or broken package layout");
+    return false;
+  }
 }
 
 function runQuantumCoreTests() {
@@ -78,10 +99,14 @@ function verifyPasskeyBoundary() {
 export function runCryptoSurface() {
   let p0 = 0;
 
-  // Quantum-core gate (skip if not in checkout)
+  // Quantum-core gate (skip if not in checkout): audit first; run tests only if audit passes
   if (existsSync(QC_PKG)) {
-    const passed = runQuantumCoreTests();
-    if (!passed) p0++;
+    if (!runPqcDependencyAudit()) {
+      p0++;
+    } else {
+      const passed = runQuantumCoreTests();
+      if (!passed) p0++;
+    }
   } else {
     log("P2", "packages/quantum-core not in checkout — skipping PQC test gate (partial clone)");
   }

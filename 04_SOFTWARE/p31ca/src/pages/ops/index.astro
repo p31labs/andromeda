@@ -289,6 +289,46 @@ const orchestratorStatusUrl = new URL('/api/orchestrator/status', mesh.orchestra
         <code class="text-white/50">andromeda/.../command-center/CLOSURE.md</code>
       </p>
     </section>
+
+    <!-- iPhone thumb rail — P31 lavender glass strip -->
+    <div
+      class="md:hidden fixed bottom-0 left-0 right-0 z-40 border-t border-lavender/30 bg-void/92 backdrop-blur-md supports-[padding:max(0px)]:pb-[max(0.35rem,env(safe-area-inset-bottom))]"
+      id="ops-thumb-rail"
+      role="navigation"
+      aria-label="Primary thumb shortcuts"
+    >
+      <div class="grid max-w-6xl grid-cols-4 gap-0 mx-auto">
+        <a
+          href="/"
+          class="flex min-h-[3.4rem] flex-col items-center justify-center gap-0.5 border-r border-white/[0.06] py-2 text-center text-[0.7rem] font-medium text-paper/90 active:bg-lavender/15"
+        >
+          <span class="text-[0.9rem] leading-none text-phosphorus/80" aria-hidden="true">⌂</span>
+          <span>Hub</span>
+        </a>
+        <a
+          href="/fleet-portal"
+          class="flex min-h-[3.4rem] flex-col items-center justify-center gap-0.5 border-r border-white/[0.06] py-2 text-center text-[0.7rem] font-medium text-paper/90 active:bg-lavender/15"
+        >
+          <span class="text-[0.9rem] leading-none text-lavender/80" aria-hidden="true">◇</span>
+          <span>Fleet</span>
+        </a>
+        <a
+          href="/orchestrator"
+          class="flex min-h-[3.4rem] flex-col items-center justify-center gap-0.5 border-r border-white/[0.06] py-2 text-center text-[0.7rem] font-medium text-paper/90 active:bg-lavender/15"
+        >
+          <span class="text-[0.9rem] leading-none text-butter/80" aria-hidden="true">◎</span>
+          <span>Orch</span>
+        </a>
+        <a
+          href={commandCenterBase + "/"}
+          class="flex min-h-[3.4rem] flex-col items-center justify-center gap-0.5 py-2 text-center text-[0.7rem] font-semibold text-coral/90 active:bg-coral/10"
+          rel="noreferrer"
+        >
+          <span class="text-[0.9rem] leading-none" aria-hidden="true">✦</span>
+          <span>EPCP</span>
+        </a>
+      </div>
+    </div>
   </div>
 
   <script
@@ -511,26 +551,34 @@ const orchestratorStatusUrl = new URL('/api/orchestrator/status', mesh.orchestra
         var summaryEl = document.getElementById('ops-glass-summary')
         if (summaryEl) summaryEl.textContent = 'Probing ' + probes.length + ' endpoints…'
         var jobs = probes.map(function (p) {
-          var row = document.querySelector('tr[data-glass-probe="' + escProbeId(p.id) + '"]')
-          var L = row ? row.querySelector('[data-glass-level]') : null
-          var C = row ? row.querySelector('[data-glass-code]') : null
-          var M = row ? row.querySelector('[data-glass-ms]') : null
-          if (L) L.textContent = '…'
+          var nodes = document.querySelectorAll('[data-glass-probe="' + escProbeId(p.id) + '"]')
+          nodes.forEach(function (el) {
+            var L0 = el.querySelector('[data-glass-level]')
+            if (L0) L0.textContent = '…'
+          })
           return probeGlassRow(p).then(function (r) {
-            if (L) {
-              L.textContent = r.level
-              L.className =
-                'p-2 font-mono align-top ' +
-                (r.level === 'ok'
-                  ? 'text-phosphorus/95'
-                  : r.level === 'auth'
-                    ? 'text-butter/90'
-                    : r.level === 'warn'
-                      ? 'text-lavender/90'
-                      : 'text-coral/90')
-            }
-            if (C) C.textContent = r.code ? String(r.code) : '—'
-            if (M) M.textContent = r.ms != null ? String(r.ms) : '—'
+            var levelColor =
+              r.level === 'ok'
+                ? 'text-phosphorus/95'
+                : r.level === 'auth'
+                  ? 'text-butter/90'
+                  : r.level === 'warn'
+                    ? 'text-lavender/90'
+                    : 'text-coral/90'
+            nodes.forEach(function (row) {
+              var L = row.querySelector('[data-glass-level]')
+              var C = row.querySelector('[data-glass-code]')
+              var M = row.querySelector('[data-glass-ms]')
+              if (L) {
+                L.textContent = r.level
+                L.className =
+                  row.tagName === 'TR'
+                    ? 'p-2 font-mono align-top ' + levelColor
+                    : 'text-xs font-mono ' + levelColor
+              }
+              if (C) C.textContent = r.code ? String(r.code) : '—'
+              if (M) M.textContent = r.ms != null ? String(r.ms) : '—'
+            })
             return r.level
           })
         })
@@ -642,6 +690,9 @@ const orchestratorStatusUrl = new URL('/api/orchestrator/status', mesh.orchestra
       flex-wrap: wrap;
     }
     .ops-root.ops-focus .ops-prose p.ops-aux {
+      display: none;
+    }
+    .ops-root.ops-focus #ops-thumb-rail {
       display: none;
     }
     .ops-density-btn[data-on='1'] {

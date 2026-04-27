@@ -1,0 +1,70 @@
+{
+  "schema": "p31.labsEducationCatalog/0.1.0",
+  "updated": "2026-04-27",
+  "narrative": "Static catalog for E1 — links stay on p31ca.org; normative source trees remain on GitHub (bonding-soup and andromeda).",
+  "entries": [
+    {
+      "id": "hub-home",
+      "title": "Technical hub",
+      "href": "/",
+      "kind": "product",
+      "tags": ["hub", "p31ca", "entry"]
+    },
+    {
+      "id": "mesh-nav",
+      "title": "The Mesh (K₄ navigator)",
+      "href": "/connect.html",
+      "kind": "product",
+      "tags": ["mesh", "K4", "graph"]
+    },
+    {
+      "id": "geodesic-coach",
+      "title": "Geodesic campaign coach",
+      "href": "/geodesic.html",
+      "kind": "product",
+      "tags": ["coach", "tracks", "geometry"]
+    },
+    {
+      "id": "buffer-comms",
+      "title": "The Buffer (communication processing)",
+      "href": "/buffer-about.html",
+      "kind": "product",
+      "tags": ["buffer", "youth", "comms", "edge"]
+    },
+    {
+      "id": "doc-lib",
+      "title": "Document library (search)",
+      "href": "/doc-suite",
+      "kind": "resource",
+      "tags": ["docs", "search", "minisearch"]
+    },
+    {
+      "id": "quantum-clock",
+      "title": "Quantum clock explainer (Larmor coherence)",
+      "href": "/quantum-clock.html",
+      "kind": "resource",
+      "tags": ["quantum", "Larmor", "rhythm", "time"]
+    },
+    {
+      "id": "ethical-lab",
+      "title": "Ethical engagement pattern lab",
+      "href": "/ethical",
+      "kind": "resource",
+      "tags": ["ethics", "ux", "accessibility", "showcase"]
+    },
+    {
+      "id": "dome",
+      "title": "Sovereign cockpit dome",
+      "href": "/dome/",
+      "kind": "product",
+      "tags": ["dome", "3d", "cockpit"]
+    },
+    {
+      "id": "onboard",
+      "title": "Planetary onboard",
+      "href": "/planetary-onboard.html",
+      "kind": "journey",
+      "tags": ["onboard", "Wye", "Delta", "families"]
+    }
+  ]
+}

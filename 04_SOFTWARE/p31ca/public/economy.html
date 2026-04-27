@@ -222,6 +222,26 @@ function renderWallet() {
   const initDot = state.genesisInit ? '#3ba372' : '#555860';
   const initLabel = state.genesisInit ? 'INITIALIZED' : 'NOT INITIALIZED';
   return `
+  <div class="card mb-4" id="wallet-edge-trust">
+    <div class="card-title">
+      <span class="w-2 h-2 rounded-full bg-lavender/90 inline-block"></span>
+      <span class="text-lavender">P31 EDGE TRUST</span>
+      <button type="button" class="ml-auto text-[10px] font-mono text-dim hover:text-butter border border-faint rounded px-2 py-0.5" onclick="refreshWalletEdge()">Refresh</button>
+    </div>
+    <p class="text-dim text-xs font-mono px-0.5" id="wallet-edge-trust-body">Loading live snapshot (economy + mesh health)…</p>
+  </div>
+
+  <div class="card mb-4">
+    <div class="card-title"><span class="w-2 h-2 rounded-full bg-coral/80 inline-block"></span><span class="text-coral">POST-QUANTUM + OPS</span></div>
+    <p class="text-dim text-xs leading-relaxed mb-3">App-layer signing and KEM use ML-DSA-65 and ML-KEM-768 (FIPS 204/203) in <a class="text-teal/90 hover:underline" href="/quantum-core.html">Quantum Core</a>. Passkeys stay classical (WebAuthn + SubtleCrypto) — same boundary as the <a class="text-teal/90 hover:underline" href="/planetary-onboard.html">onboard</a> pact.</p>
+    <ul class="text-xs font-mono space-y-1.5 text-cloud/90">
+      <li><a class="text-butter/90 hover:underline" href="/ops/">Operator shell</a> <span class="text-dim">(glass, mesh, EPCP links)</span></li>
+      <li><a class="text-butter/90 hover:underline" href="/fleet-portal">Fleet portal</a> <span class="text-dim">(Wrangler / Pages map)</span></li>
+      <li><a class="text-butter/90 hover:underline" href="/creator-economy.json" target="_blank" rel="noopener">creator-economy.json</a> <span class="text-dim">(authoritative fee disclosure)</span></li>
+    </ul>
+    <p class="text-dim text-[10px] font-mono mt-3 border-t border-faint pt-2 leading-relaxed">From the P31 home repo (not runnable in-page): <span class="text-cloud/80">npm run pqc:verify</span> · <span class="text-cloud/80">npm run quantum:cloud</span></p>
+  </div>
+
   <div class="card mb-4">
     <div class="card-title"><span class="w-2 h-2 rounded-full inline-block" style="background:${initDot}"></span><span class="text-phosphorus">GENESIS GATE</span></div>
     <div class="flex items-center gap-3 mb-3">
@@ -229,7 +249,8 @@ function renderWallet() {
       <span class="font-mono text-sm" style="color:${state.genesisInit?'#3ba372':'#555860'}">${initLabel}</span>
     </div>
     ${!state.genesisInit ? `<button class="btn btn-primary" onclick="initGenesis()">Initialize Genesis Gate</button>` :
-      `<p class="text-dim text-xs font-mono">Key: ${load('genesisKey','')?.slice(0,16)}...</p>`}
+      `<p class="text-dim text-xs font-mono">Key: ${load('genesisKey','')?.slice(0,16)}...</p>
+       <p class="text-dim text-[10px] font-mono mt-2">32-byte preview secret — entropy from <code class="text-teal/80">crypto.getRandomValues</code> (Web Crypto), not a seed phrase.</p>`}
   </div>
 
   <div class="card mb-4">
@@ -413,11 +434,103 @@ function exportLedger() {
   URL.revokeObjectURL(a.href);
 }
 
+// ── P31 edge trust snapshot (WALLET) — same contracts as verify / ops ───
+function edgeTrustHtml(loading, data) {
+  if (loading) {
+    return `<span class="text-dim">Loading live snapshot (economy + mesh health)…</span>`;
+  }
+  if (data && data.error && !data.economy && !data.k4) {
+    return `<span class="text-coral/90 text-xs">${data.error}</span><p class="text-dim text-[10px] mt-2">Open this page on <a class="text-teal/80 hover:underline" href="https://p31ca.org/economy.html">p31ca.org</a> for fetches, or use the static links in Post-Quantum + Ops below.</p>`;
+  }
+  const e = data && data.economy;
+  const k4 = data && data.k4;
+  const lines = [];
+  if (data && data.economyError) {
+    lines.push(`<p class="text-coral/80 text-xs font-mono mb-1">/creator-economy.json → HTTP ${data.economyError}</p>`);
+  }
+  if (e) {
+    const fee = e.platformFee && typeof e.platformFee.rate === 'number' ? e.platformFee.rate : '—';
+    const cr = e.revenueShare && typeof e.revenueShare.creator === 'number' ? e.revenueShare.creator : '—';
+    const ci = e.transparency && e.transparency.ciVerified ? 'yes' : 'no';
+    lines.push(`<div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs font-mono mb-2">`
+      + `<span><span class="text-dim">Platform fee</span> <span class="text-butter">${fee}</span></span>`
+      + `<span><span class="text-dim">Creator share</span> <span class="text-phosphorus">${cr}</span></span>`
+      + `<span><span class="text-dim">CI verified</span> <span class="text-teal/90">${ci}</span></span>`
+      + `</div>`);
+  }
+  if (k4) {
+    const ok = k4.ok ? '#3ba372' : '#cc6247';
+    const label = k4.ok ? 'UP' : `HTTP ${k4.status || '?'}`;
+    lines.push(`<div class="flex items-center gap-2 text-xs font-mono"><span class="w-2 h-2 rounded-full" style="background:${ok}"></span><span class="text-dim">k4-personal /api/health</span> <span style="color:${ok}">${label}</span>${k4.note ? ` <span class="text-dim">${k4.note}</span>` : ''}</div>`);
+  } else if (data && !data.k4 && data.economy) {
+    lines.push(`<p class="text-dim text-[10px] font-mono mt-1">Mesh health: not probed (constants or CORS unavailable)</p>`);
+  }
+  const ts = data && data.fetchedAt ? new Date(data.fetchedAt).toLocaleString() : '';
+  if (ts) lines.push(`<p class="text-dim text-[10px] mt-2">Fetched ${ts}</p>`);
+  return lines.length ? lines.join('') : `<span class="text-dim text-xs">No data — use Refresh or open on p31ca.org</span>`;
+}
+
+async function refreshWalletEdge() {
+  const body = document.getElementById('wallet-edge-trust-body');
+  if (body) body.innerHTML = edgeTrustHtml(true, null);
+  const out = { fetchedAt: new Date().toISOString() };
+  try {
+    const re = await fetch('/creator-economy.json', { cache: 'no-store' });
+    if (re.ok) out.economy = await re.json();
+    else out.economyError = re.status;
+  } catch {
+    out.error = 'Could not load /creator-economy.json (open this app on the hub origin).';
+  }
+  try {
+    const rm = await fetch('/p31-mesh-constants.json', { cache: 'no-store' });
+    if (!rm.ok) throw new Error('mesh constants');
+    const mesh = await rm.json();
+    const base = mesh.k4PersonalWorkerUrl;
+    if (base && typeof base === 'string') {
+      const rh = await fetch(`${base.replace(/\/$/, '')}/api/health`, { cache: 'no-store' });
+      out.k4 = { ok: rh.ok, status: rh.status };
+      if (rh.ok) {
+        try {
+          const j = await rh.json();
+          if (j && j.service) out.k4.note = j.service;
+        } catch { /* non-JSON body */ }
+      } else {
+        out.k4.note = 'non-200 from worker';
+      }
+    } else {
+      out.k4 = { ok: false, status: 0, note: 'no k4 URL in p31-mesh-constants' };
+    }
+  } catch {
+    out.k4 = { ok: false, status: 0, note: 'mesh probe skipped (offline or CORS)' };
+  }
+  try {
+    localStorage.setItem(LS_PREFIX + 'edgeLastSnap', JSON.stringify(out));
+  } catch { /* quota */ }
+  if (body) body.innerHTML = edgeTrustHtml(false, out);
+}
+
+function mountWalletEdgePanel() {
+  const body = document.getElementById('wallet-edge-trust-body');
+  if (!body) return;
+  let snap = null;
+  try {
+    const raw = localStorage.getItem(LS_PREFIX + 'edgeLastSnap');
+    if (raw) snap = JSON.parse(raw);
+  } catch { /* ignore */ }
+  if (snap && snap.fetchedAt) {
+    body.innerHTML = edgeTrustHtml(false, snap);
+  }
+  void refreshWalletEdge();
+}
+
 // ── Render ─────────────────────────────────────────────────────
 function render() {
   document.getElementById('topLove').textContent = state.love;
   const renderers = { love: renderLove, wallet: renderWallet, stealth: renderStealth, ledger: renderLedger };
   content.innerHTML = renderers[activeTab]();
+  if (activeTab === 'wallet') {
+    requestAnimationFrame(mountWalletEdgePanel);
+  }
 }
 
 render();
