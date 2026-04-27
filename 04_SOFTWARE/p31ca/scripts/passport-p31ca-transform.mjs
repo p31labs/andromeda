@@ -18,12 +18,14 @@ export const FOOTER_SOURCE = `    <footer>
       P31 Labs — <code>cognitive-passport/index.html</code> (authoring copy) · mirrored for static deploy as
       <code>andromeda/04_SOFTWARE/p31ca/public/passport-generator.html</code> · localStorage <code>p31_passport_draft_v1</code> ·
       full ground truth remains <code>P31 COGNITIVE PASSPORT — v5.md</code>; this page only emits a safe machine slice.
+      · <a href="../docs/P31-DEPLOY-CANON.md" title="npm run connection">CONNECTION</a>
       · <a href="../docs/PLAN-BONDING-SOUP-WHEN-SCALE.md">BONDING Soup — when-scale plan</a>
     </footer>`;
 
 export const FOOTER_P31CA = `    <footer>
       P31 Labs — you are on <code>passport-generator.html</code> · authoring source in the repo: <code>cognitive-passport/index.html</code> · localStorage <code>p31_passport_draft_v1</code> ·
       full ground truth remains <code>P31 COGNITIVE PASSPORT — v5.md</code> at workspace root; this page only emits a safe machine slice.
+      · <a href="https://github.com/p31labs/bonding-soup/blob/main/docs/P31-DEPLOY-CANON.md" target="_blank" rel="noopener noreferrer" title="npm run connection">CONNECTION</a>
       · <a href="https://p31ca.org/doc-library/?q=PLAN-BONDING-SOUP-WHEN-SCALE" target="_blank" rel="noopener noreferrer">BONDING Soup — when-scale plan</a>
     </footer>`;
 

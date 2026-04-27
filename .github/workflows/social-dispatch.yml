@@ -2,12 +2,10 @@ name: Social Dispatch - Operation Trimtab
 
 # DEPRECATED — Social scheduling is now handled by p31-social-worker
 # (Cloudflare Worker with recurring cron triggers at social.p31ca.org).
-# This workflow is kept only for manual dispatch fallback.
+# This workflow is manual-only (cron removed 2026-04 so GitHub does not imply live posting).
 # Primary automation: social.p31ca.org (Mon/Wed/Fri + daily digest)
 
 on:
-  schedule:
-    - cron: '0 12 * * *'   # Daily at 12:00 UTC — auto-fires matching wave
   workflow_dispatch:
     inputs:
       wave_selector:
@@ -46,7 +44,7 @@ jobs:
           echo "OPERATION TRIMTAB — Dispatch Sequence"
           echo "========================================"
 
-          # Auto-mode: no manual selector provided (cron or blank dispatch)
+          # Auto-mode: no manual selector provided (blank workflow_dispatch input)
           if [ -z "$SELECTOR" ]; then
             TODAY=$(date -u +"%Y-%m-%d")
             echo "Auto-mode: searching for wave scheduled on $TODAY..."
