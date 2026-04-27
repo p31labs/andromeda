@@ -4,6 +4,10 @@
 /app/larmor /larmor.html      302
 /dome.html  /dome/            301
 
+# Retired static legacy hub; canonical home is / (Astro + hub-landing)
+/legacy-mvp-hub.html  /  301
+/legacy-mvp-hub  /  301
+
 # /integrations/ — Astro static folder; short path without trailing slash
 /integrations  /integrations/  301
 

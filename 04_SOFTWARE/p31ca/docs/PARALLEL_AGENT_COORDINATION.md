@@ -4,7 +4,7 @@ When **multiple agents** edit the same monorepo, use these **touch boundaries** 
 
 | Track | Primary paths (prefer one agent per file per PR) |
 |--------|--------------------------------------------------|
-| **ECO** — p31ca home / catalog | `src/pages/index.astro` (D2: hub-landing import), `public/legacy-mvp-hub.html` `mvpData`, `scripts/hub/build-landing-data.mjs` `COCKPIT_PRODUCT_IDS` |
+| **ECO** — p31ca home / catalog | `src/pages/index.astro` (D2: hub-landing import), `scripts/hub/build-landing-data.mjs` + `hub-app-ids.mjs` (legacy `legacy-mvp-hub.html` retired) |
 | **MAP** — monetary | `04_SOFTWARE/donate-api/`, `scripts/verify-monetary-surface.mjs`, `phosphorus31.org/.../donate.astro` |
 | **SC** — SUPER-CENTAUR / phosphorus server | `phosphorus31.org/.../SUPER-CENTAUR/`, `integration-handoff/CWP-30/mesh-bridge.ts` (copy handoff) |
 | **K₄ / command-center** | `cloudflare-worker/command-center/`, `unified-k4-cage/`, `k4-cage/` |

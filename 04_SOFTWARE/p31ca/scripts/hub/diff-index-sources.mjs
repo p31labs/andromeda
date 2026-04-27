@@ -6,8 +6,8 @@
  * Run **after** verify-ground-truth in CI (`prebuild` runs GT → hub:build → hub:verify → this).
  *
  * 1) Ensures src/data/hub-landing.json coreProducts id order === HUB_COCKPIT_ORDER in hub-app-ids.mjs
- * 2) If public/legacy-mvp-hub.html has mvpData, extracts ids; optional strict-mvp for registry match;
- *    compares mvp set to HUB_ALL_CARD_ORDER (cockpit + prototypes), not cockpit alone (see ADR-ECO-MVPDATA-COCKPIT-DUAL-TRACK)
+ * 2) If public/legacy-mvp-hub.html exists and has mvpData, extracts ids; optional strict-mvp for registry match;
+ *    compares mvp set to HUB_ALL_CARD_ORDER (legacy file may be absent — retired, see ADR)
  * 3) Warns if index.astro still has inline const coreProducts
  *
  * Usage: node scripts/hub/diff-index-sources.mjs
@@ -63,13 +63,10 @@ function parseHubLandingIds() {
  */
 function parseMvpDataIds() {
   const legacy = path.join(P31CA, "public", "legacy-mvp-hub.html");
-  const fp = fs.existsSync(legacy)
-    ? legacy
-    : path.join(P31CA, "public", "index.html");
-  if (!fs.existsSync(fp)) {
+  if (!fs.existsSync(legacy)) {
     return [];
   }
-  const m = fs.readFileSync(fp, "utf8");
+  const m = fs.readFileSync(legacy, "utf8");
   const start = m.indexOf("const mvpData =");
   if (start < 0) {
     return [];
@@ -195,7 +192,7 @@ async function main() {
   }
   if (warned) {
     console.log(
-      "\ndiff-index-sources: OK (hard checks passed); see warnings above — use --strict-mvp after cleaning legacy-mvp-hub mvpData"
+      "\ndiff-index-sources: OK (hard checks passed); see warnings above — use --strict-mvp if legacy mvpData exists and must match registry"
     );
   } else {
     console.log("diff-index-sources: OK (ground truth + hub-landing alignment)");
