@@ -1,4 +1,5 @@
-# Regenerate *-about.html from registry, verify hub graph, Astro build — on p31ca changes only
+# Regenerate *-about.html from registry, verify hub graph, Astro build — on p31ca changes only.
+# Deploy spine vs bonding-soup manual Pages workflow vs local deploy:p31ca — bonding-soup docs/P31-DEPLOY-CANON.md
 name: p31ca Hub
 
 on:
