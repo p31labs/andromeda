@@ -371,9 +371,9 @@ const PRODUCTS = [
     {
         id: 'worker',     label: 'CAGE WORKER', icon: '⚙️',  color: '#8b7cc9',
         tagline: 'K₄ Passkey + KV Backend',
-        url: '#',
-        status: 'PENDING', stub: true,
-        desc: 'Cloudflare Worker (p31-passkey): challenge/verify, D1 credential store. Mounted at p31ca.org/api/passkey/* in production. Turnstile / cage IDs are separate edges.',
+        url: '/auth',
+        status: 'LIVE', stub: false,
+        desc: 'Cloudflare Worker (p31-passkey): challenge/verify, D1 credential store. Zone route p31ca.org/api/passkey/*. Same-origin /auth for returning members; Turnstile / cage IDs are separate edges.',
         connects: ['will'],
         pos: new THREE.Vector3(-0.6, 2.0, -2.0),
     },
