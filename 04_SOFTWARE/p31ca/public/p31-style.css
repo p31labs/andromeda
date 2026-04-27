@@ -170,3 +170,80 @@
 
 html { color-scheme: dark; }
 [data-p31-appearance="org"] { color-scheme: light; }
+
+
+/* p31.missionTrio — Build / Create / Connect (EBC + hub index rail) */
+.p31-mission-trio--ebc {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-top: 1px solid var(--p31-glass-border);
+  background: var(--p31-glass-surface);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.p31-mission-trio--hub {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--p31-space-3);
+}
+.p31-mission-trio__link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+  padding: var(--p31-space-4) var(--p31-space-4);
+  min-width: 0;
+  transition: background var(--p31-duration-base, 200ms) var(--p31-ease-out, ease);
+}
+.p31-mission-trio--ebc .p31-mission-trio__link:last-child { border-right: none; }
+.p31-mission-trio__link[aria-current="page"] {
+  background: rgba(77, 184, 168, 0.1);
+  cursor: default;
+}
+.p31-mission-trio__head {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-bottom: 0.35rem;
+}
+.p31-mission-trio__dot {
+  width: 0.35rem;
+  height: 0.35rem;
+  border-radius: 999px;
+  background: var(--p31-teal);
+  flex-shrink: 0;
+}
+.p31-mission-trio__link--build .p31-mission-trio__dot { background: var(--p31-phosphorus); }
+.p31-mission-trio__link--create .p31-mission-trio__dot { background: var(--p31-butter); }
+.p31-mission-trio__link--connect .p31-mission-trio__dot { background: var(--p31-coral); }
+.p31-mission-trio__verb {
+  font-family: var(--p31-font-mono);
+  font-size: var(--p31-text-2xs, 0.6rem);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--p31-cloud);
+}
+.p31-mission-trio__desc {
+  display: block;
+  font-size: var(--p31-text-xs, 0.7rem);
+  line-height: 1.45;
+  color: var(--p31-muted);
+}
+.p31-mission-trio__now { font-weight: 600; color: var(--p31-cyan); margin-right: 0.15em; }
+.p31-mission-trio__link--build { }
+.p31-mission-trio__link--create { }
+.p31-mission-trio__link--connect { }
+@media (prefers-reduced-motion: reduce) {
+  .p31-mission-trio, .p31-mission-trio * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}

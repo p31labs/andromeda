@@ -81,38 +81,7 @@
             gap: 1rem;
         }
 
-        /* EBC bar (bottom) */
-        #ebc {
-            position: fixed;
-            bottom: 0; left: 0; right: 0;
-            z-index: 50;
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            border-top: 1px solid rgba(255,255,255,0.07);
-            background: rgba(22, 25, 32, 0.9);
-            backdrop-filter: blur(12px);
-        }
-        .ebc-cell {
-            padding: 1rem 1.25rem;
-            border-right: 1px solid rgba(255,255,255,0.04);
-        }
-        .ebc-cell:last-child { border-right: none; }
-        .ebc-verb {
-            font-family: "JetBrains Mono", monospace;
-            font-size: 0.6rem;
-            font-weight: 700;
-            letter-spacing: 0.15em;
-            text-transform: uppercase;
-            margin-bottom: 0.3rem;
-        }
-        .ebc-desc {
-            font-size: 0.7rem;
-            color: rgba(216,214,208,0.45);
-            line-height: 1.45;
-        }
-        #ebc-envision .ebc-verb { color: #8b7cc9; }
-        #ebc-build    .ebc-verb { color: #3ba372; }
-        #ebc-connect  .ebc-verb { color: #cc6247; }
+        /* Mission EBC — layout from /p31-style.css (.p31-mission-trio--ebc) */
 
         /* Detail panel */
         #detail {
@@ -262,21 +231,31 @@
     <a id="detail-link" href="#" target="_blank" rel="noopener">Open →</a>
 </aside>
 
-<!-- EBC bar -->
-<footer id="ebc" role="contentinfo">
-    <div class="ebc-cell" id="ebc-envision">
-        <div class="ebc-verb">Envision</div>
-        <div class="ebc-desc">K₄ geometry before product. Local rigidity, specific vertices.</div>
-    </div>
-    <div class="ebc-cell" id="ebc-build">
-        <div class="ebc-verb">Build</div>
-        <div class="ebc-desc">Contracts first, surfaces second. Verify gates so nothing rots.</div>
-    </div>
-    <div class="ebc-cell" id="ebc-connect">
-        <div class="ebc-verb">Connect</div>
-        <div class="ebc-desc">Actual edges. Each one has a weight, a failure mode, and a plan.</div>
+<!-- P31:mission-ebc:start -->
+<footer id="ebc" class="p31-mission-trio p31-mission-trio--ebc" role="contentinfo" aria-label="Mission — build, create, connect">
+    <a class="p31-mission-trio__link p31-mission-trio__link--build p31-mesh-tap" id="ebc-build" href="/build" title="Initial Build — intake, subject scope, verify-gated bake">
+        <span class="p31-mission-trio__head">
+            <span class="p31-mission-trio__dot" aria-hidden="true"></span>
+            <span class="p31-mission-trio__verb">Build</span>
+        </span>
+        <span class="p31-mission-trio__desc">Intake and bake on the same verify chain—not a decoupled mock.</span>
+    </a>
+    <a class="p31-mission-trio__link p31-mission-trio__link--create p31-mesh-tap" id="ebc-create" href="/geodesic.html" title="GEODESIC — snap grid, Maxwell rigidity, scene export">
+        <span class="p31-mission-trio__head">
+            <span class="p31-mission-trio__dot" aria-hidden="true"></span>
+            <span class="p31-mission-trio__verb">Create</span>
+        </span>
+        <span class="p31-mission-trio__desc">One lab surface, honest rigidity—generate or prove; don’t fork the same truth twice (ephemeralization).</span>
+    </a>
+    <div class="p31-mission-trio__link p31-mission-trio__link--connect p31-mission-trio__link--current p31-mesh-tap" id="ebc-connect" aria-current="page" title="Mesh navigator — K₄ cage and product graph">
+        <span class="p31-mission-trio__head">
+            <span class="p31-mission-trio__dot" aria-hidden="true"></span>
+            <span class="p31-mission-trio__verb">Connect</span>
+        </span>
+        <span class="p31-mission-trio__desc"><span class="p31-mission-trio__now">Now</span> — live cage and edges: mesh, hubs, and money follow the same published contracts (ethical monetization).</span>
     </div>
 </footer>
+<!-- P31:mission-ebc:end -->
 
 <script type="module">
 import * as THREE from 'three';

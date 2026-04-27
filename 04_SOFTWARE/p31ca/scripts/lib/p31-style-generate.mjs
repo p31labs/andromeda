@@ -162,7 +162,89 @@ export function buildStyleArtifacts(canon) {
   const js =
     `/* AUTO-GENERATED — hub Tailwind CDN preset (dark vars). Org: rely on CSS variables + data-p31-appearance. */\n(function () {\n  window.P31_TAILWIND_EXTEND = ${JSON.stringify(extendObj, null, 2)};\n})();\n`;
 
+  emitMissionTrioBlock(cssLines);
+
   return { css: cssLines.join("\n"), js };
+}
+
+/** Mission trio EBC + hub rail — used by static pages, verify-mission-trio, Playwright e2e */
+function emitMissionTrioBlock(lines) {
+  lines.push("");
+  lines.push("/* p31.missionTrio — Build / Create / Connect (EBC + hub index rail) */");
+  lines.push(".p31-mission-trio--ebc {");
+  lines.push("  position: fixed;");
+  lines.push("  bottom: 0;");
+  lines.push("  left: 0;");
+  lines.push("  right: 0;");
+  lines.push("  z-index: 50;");
+  lines.push("  display: grid;");
+  lines.push("  grid-template-columns: repeat(3, minmax(0, 1fr));");
+  lines.push("  border-top: 1px solid var(--p31-glass-border);");
+  lines.push("  background: var(--p31-glass-surface);");
+  lines.push("  backdrop-filter: blur(12px);");
+  lines.push("  -webkit-backdrop-filter: blur(12px);");
+  lines.push("}");
+  lines.push(".p31-mission-trio--hub {");
+  lines.push("  display: flex;");
+  lines.push("  flex-wrap: wrap;");
+  lines.push("  align-items: center;");
+  lines.push("  justify-content: center;");
+  lines.push("  gap: var(--p31-space-3);");
+  lines.push("}");
+  lines.push(".p31-mission-trio__link {");
+  lines.push("  display: block;");
+  lines.push("  text-decoration: none;");
+  lines.push("  color: inherit;");
+  lines.push("  border-right: 1px solid rgba(255, 255, 255, 0.06);");
+  lines.push("  padding: var(--p31-space-4) var(--p31-space-4);");
+  lines.push("  min-width: 0;");
+  lines.push("  transition: background var(--p31-duration-base, 200ms) var(--p31-ease-out, ease);");
+  lines.push("}");
+  lines.push(".p31-mission-trio--ebc .p31-mission-trio__link:last-child { border-right: none; }");
+  lines.push('.p31-mission-trio__link[aria-current="page"] {');
+  lines.push("  background: rgba(77, 184, 168, 0.1);");
+  lines.push("  cursor: default;");
+  lines.push("}");
+  lines.push(".p31-mission-trio__head {");
+  lines.push("  display: flex;");
+  lines.push("  align-items: center;");
+  lines.push("  gap: 0.35rem;");
+  lines.push("  margin-bottom: 0.35rem;");
+  lines.push("}");
+  lines.push(".p31-mission-trio__dot {");
+  lines.push("  width: 0.35rem;");
+  lines.push("  height: 0.35rem;");
+  lines.push("  border-radius: 999px;");
+  lines.push("  background: var(--p31-teal);");
+  lines.push("  flex-shrink: 0;");
+  lines.push("}");
+  lines.push(".p31-mission-trio__link--build .p31-mission-trio__dot { background: var(--p31-phosphorus); }");
+  lines.push(".p31-mission-trio__link--create .p31-mission-trio__dot { background: var(--p31-butter); }");
+  lines.push(".p31-mission-trio__link--connect .p31-mission-trio__dot { background: var(--p31-coral); }");
+  lines.push(".p31-mission-trio__verb {");
+  lines.push("  font-family: var(--p31-font-mono);");
+  lines.push("  font-size: var(--p31-text-2xs, 0.6rem);");
+  lines.push("  font-weight: 700;");
+  lines.push("  letter-spacing: 0.12em;");
+  lines.push("  text-transform: uppercase;");
+  lines.push("  color: var(--p31-cloud);");
+  lines.push("}");
+  lines.push(".p31-mission-trio__desc {");
+  lines.push("  display: block;");
+  lines.push("  font-size: var(--p31-text-xs, 0.7rem);");
+  lines.push("  line-height: 1.45;");
+  lines.push("  color: var(--p31-muted);");
+  lines.push("}");
+  lines.push(".p31-mission-trio__now { font-weight: 600; color: var(--p31-cyan); margin-right: 0.15em; }");
+  lines.push(".p31-mission-trio__link--build { }");
+  lines.push(".p31-mission-trio__link--create { }");
+  lines.push(".p31-mission-trio__link--connect { }");
+  lines.push("@media (prefers-reduced-motion: reduce) {");
+  lines.push("  .p31-mission-trio, .p31-mission-trio * {");
+  lines.push("    transition-duration: 0.01ms !important;");
+  lines.push("    animation-duration: 0.01ms !important;");
+  lines.push("  }");
+  lines.push("}");
 }
 
 /**

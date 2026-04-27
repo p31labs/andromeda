@@ -1079,6 +1079,33 @@ export const registry = [
       'Astro route at `src/pages/integrations.astro`. Ground truth: `routes.integrationsBridge` and `edgeRedirects` for `/integrations` → `/integrations/`.',
     related: ['connect', 'planetary-onboard', 'bridge'],
   },
+  {
+    id: 'education',
+    title: 'P31 Labs Education',
+    tagline: 'Progressive curriculum — mesh, integrity, labs',
+    icon: '📚',
+    accent: '#25897d',
+    status: 'live',
+    statusLabel: 'LIVE',
+    appUrl: 'education/index.html',
+    tech: [
+      'Static HTML',
+      'p31.labsEducation/0.2.0',
+      'p31.labsEducationCatalog/0.2.0',
+      'p31.labsEducationCurriculum/0.2.0',
+    ],
+    features: [
+      'Discover, tracks, modules, and labs — public read on E0–E2; no accounts on this tier',
+      'Machine-checked catalog + curriculum JSON; `verify:education` in p31ca prebuild',
+      'Ethics + parent FAQ; E3 portal placeholder until policy + Worker scope land',
+    ],
+    howTo: [
+      'Open `/education/` or short `/learn` — browse tracks, complete labs, filter the catalog',
+    ],
+    techNotes:
+      'Static tree under `public/education/`. Ground truth: `routes.p31LabsEducation`; short paths in `_redirects`. Normative plan: P31 home `docs/PLAN-P31-LABS-EDUCATION-SITE.md`.',
+    related: ['planetary-onboard', 'geodesic', 'connect', 'integrations'],
+  },
   // ── Research / quantum tooling ────────────────────────────────────────────
   {
     id: 'quantum-core', title: 'Quantum Core', tagline: 'PQC & Algorithm Primitives',
