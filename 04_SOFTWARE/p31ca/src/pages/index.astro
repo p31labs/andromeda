@@ -6,6 +6,7 @@
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
 import hubLanding from '../data/hub-landing.json';
+import missionTrio from '../data/p31-mission-trio.json';
 
 const coreProducts = hubLanding.coreProducts;
 const prototypes = hubLanding.prototypes;
@@ -58,6 +59,7 @@ const pageDescription =
 <BaseLayout
   title="P31 Labs | Sovereign technical hub"
   description={pageDescription}
+  meshBackground="hub"
 >
   <Fragment slot="head">
     <link rel="canonical" href="https://p31ca.org/" />
@@ -76,23 +78,6 @@ const pageDescription =
     />
     <meta name="twitter:description" content={pageDescription} />
   </Fragment>
-
-  <Fragment slot="importmaps">
-    <!-- Import Map for Three.js -->
-    <script type="importmap" is:inline>
-      {
-        "imports": {
-          "three": "https://cdn.jsdelivr.net/npm/three@0.183.0/build/three.module.js",
-          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.183.0/examples/jsm/"
-        }
-      }
-    </script>
-  </Fragment>
-  
-
-  
-  <!-- 3D Canvas Background -->
-  <div id="webgl-container" class="fixed inset-0 z-5 bg-void"></div>
 
   <!-- FIXED SOVEREIGN HUD (Top Nav) -->
   <nav
@@ -145,7 +130,7 @@ const pageDescription =
         <span class="text-muted text-[10px]">L♥</span>
         <span id="nav-mesh-ve" class="text-cloud text-[10px] font-mono">—</span>
         <span id="nav-mesh-detail" class="text-muted text-[9px] font-mono max-w-[7rem] truncate hidden 2xl:inline" title=""> </span>
-        <a href="/mesh-observatory/" class="text-lavender hover:text-lavender/85 hover:underline text-[10px] font-bold" title="Mesh Observatory">OBS</a>
+        <a href="/mesh-observatory/" class="p31-mesh-tap text-lavender hover:text-lavender/85 hover:underline text-[10px] font-bold" title="Mesh Observatory">OBS</a>
       </div>
     </div>
 
@@ -154,7 +139,7 @@ const pageDescription =
       class="flex w-full flex-wrap items-center justify-center gap-2 sm:justify-end md:w-auto md:justify-end"
     >
       <div
-        class="group inline-flex min-h-[2.75rem] min-w-[2.75rem] cursor-pointer items-center gap-2 rounded-md px-1 md:min-h-0 md:min-w-0"
+        class="p31-mesh-tap group inline-flex min-h-[2.75rem] min-w-[2.75rem] cursor-pointer items-center gap-2 rounded-md px-1 md:min-h-0 md:min-w-0"
         id="trimtab-trigger"
         title="Drag to tune · Click for Layer 0"
       >
@@ -164,23 +149,23 @@ const pageDescription =
       <div class="h-4 w-px bg-white/10 max-md:hidden" aria-hidden="true"></div>
       <a
         href="/dome"
-        class="inline-flex min-h-[2.75rem] items-center justify-center rounded border border-teal/30 bg-teal/10 px-3 py-2 text-xs font-bold uppercase tracking-widest text-teal hover:bg-teal/20 hover:text-phosphorus md:min-h-0 md:px-2 md:py-1 md:text-[10px]"
+        class="p31-mesh-tap inline-flex min-h-[2.75rem] items-center justify-center rounded border border-teal/30 bg-teal/10 px-3 py-2 text-xs font-bold uppercase tracking-widest text-teal hover:bg-teal/20 hover:text-phosphorus md:min-h-0 md:px-2 md:py-1 md:text-[10px]"
         title="Sovereign Cockpit K₄ dome">Dome</a>
       <a
         href="/demos"
-        class="inline-flex min-h-[2.75rem] items-center justify-center rounded border border-butter/35 bg-butter/10 px-3 py-2 text-xs font-bold uppercase tracking-widest text-butter hover:bg-butter/20 hover:text-butter/90 md:min-h-0 md:px-2 md:py-1 md:text-[10px]"
+        class="p31-mesh-tap inline-flex min-h-[2.75rem] items-center justify-center rounded border border-butter/35 bg-butter/10 px-3 py-2 text-xs font-bold uppercase tracking-widest text-butter hover:bg-butter/20 hover:text-butter/90 md:min-h-0 md:px-2 md:py-1 md:text-[10px]"
         title="Static demo labs — fleet map, canon, onboarding">Demos</a>
       <a
         href="/journey"
-        class="inline-flex min-h-[2.75rem] items-center justify-center rounded border border-phosphorus/35 bg-phosphorus/10 px-3 py-2 text-xs font-bold uppercase tracking-widest text-phosphorus hover:bg-phosphorus/20 hover:brightness-110 md:min-h-0 md:px-2 md:py-1 md:text-[10px]"
+        class="p31-mesh-tap inline-flex min-h-[2.75rem] items-center justify-center rounded border border-phosphorus/35 bg-phosphorus/10 px-3 py-2 text-xs font-bold uppercase tracking-widest text-phosphorus hover:bg-phosphorus/20 hover:brightness-110 md:min-h-0 md:px-2 md:py-1 md:text-[10px]"
         title="Core path — onboard, authenticate, EDE home">Journey</a>
       <a
         href="/ops/"
-        class="inline-flex min-h-[2.75rem] items-center justify-center rounded border border-lavender/35 bg-lavender/10 px-3 py-2 text-xs font-bold uppercase tracking-widest text-lavender hover:bg-lavender/20 hover:text-lavender/90 md:min-h-0 md:px-2 md:py-1 md:text-[10px]"
+        class="p31-mesh-tap inline-flex min-h-[2.75rem] items-center justify-center rounded border border-lavender/35 bg-lavender/10 px-3 py-2 text-xs font-bold uppercase tracking-widest text-lavender hover:bg-lavender/20 hover:text-lavender/90 md:min-h-0 md:px-2 md:py-1 md:text-[10px]"
         title="G.O.D. operator shell — glass + shift">Ops</a>
       <a
         href="/auth"
-        class="inline-flex min-h-[2.75rem] items-center justify-center rounded border border-coral/30 bg-coral/10 px-3 py-2 text-xs font-bold uppercase tracking-widest text-coral hover:bg-coral/20 hover:brightness-110 md:min-h-0 md:py-1 md:text-[10px]"
+        class="p31-mesh-tap inline-flex min-h-[2.75rem] items-center justify-center rounded border border-coral/30 bg-coral/10 px-3 py-2 text-xs font-bold uppercase tracking-widest text-coral hover:bg-coral/20 hover:brightness-110 md:min-h-0 md:py-1 md:text-[10px]"
       >
         Authenticate
       </a>
@@ -194,7 +179,7 @@ const pageDescription =
   >
     <button
       id="node-detail-close"
-      class="text-muted pointer-events-auto absolute right-2 top-2 inline-flex min-h-[2.75rem] min-w-[2.75rem] items-center justify-center rounded-md hover:bg-white/10 hover:text-white"
+      class="p31-mesh-tap text-muted pointer-events-auto absolute right-2 top-2 inline-flex min-h-[2.75rem] min-w-[2.75rem] items-center justify-center rounded-md hover:bg-white/10 hover:text-white"
       type="button"
       aria-label="Close details"
     >
@@ -243,36 +228,80 @@ const pageDescription =
     </div>
     <a
       href="#core-products"
-      class="skip-to-content focus:pointer-events-auto interactive-zone"
+      class="p31-mesh-tap skip-to-content focus:pointer-events-auto interactive-zone"
     >
       Skip to architecture grid
     </a>
 
     <!-- 1. Hero — editorial type, ethical signals, CTAs -->
     <header
-      class="animate-fade-in-up relative z-[1] mb-16 text-center sm:mb-20 md:mb-28 md:pt-4 interactive-zone"
-      style="animation-delay: 0.08s;"
+      class="relative z-[1] mb-16 text-center sm:mb-20 md:mb-28 md:pt-4 interactive-zone"
     >
+      <div
+        class="animate-fade-in-up"
+        style="animation-delay: 0.08s;"
+      >
+        <p
+          class="mb-3 font-mono text-[10px] font-semibold uppercase tracking-[0.35em] text-cyan/90 sm:text-[11px] sm:tracking-[0.4em]"
+        >
+          Technical hub
+        </p>
+        <h1
+          class="mx-auto mb-4 max-w-[18ch] bg-gradient-to-b from-white via-white to-cloud/85 bg-clip-text text-balance text-[clamp(2.5rem,5.5vw+0.5rem,4.25rem)] font-bold leading-[0.95] tracking-[-0.04em] text-transparent drop-shadow-[0_1px_40px_rgba(0,0,0,0.45)] sm:mb-5"
+        >
+          P31 Labs
+        </h1>
+        <p
+          class="mx-auto mb-2 max-w-2xl font-mono text-base font-medium leading-snug tracking-tight text-cloud/90 sm:text-lg md:text-xl"
+        >
+          Isostatically rigid. Cognitively sovereign.
+        </p>
+      </div>
+
+      <nav
+        class="p31-mission-trio--hub interactive-zone mt-6 sm:mt-7"
+        aria-label={missionTrio.ariaLabel}
+      >
+        <ul class="p31-mission-trio__list">
+          {(missionTrio.pillOrder as readonly ('build' | 'create' | 'connect')[]).map(
+            (key) => {
+              const p = missionTrio.pills[key];
+              return (
+                <li class="p31-mission-trio__item">
+                  <a
+                    class={`p31-mission-trio__link p31-mission-trio__link--${key} p31-mesh-tap`}
+                    href={p.href}
+                    title={p.title}
+                  >
+                    <span class="p31-mission-trio__dot" aria-hidden="true" />
+                    <span class="p31-mission-trio__label">{p.label}</span>
+                  </a>
+                </li>
+              );
+            },
+          )}
+        </ul>
+      </nav>
       <p
-        class="mb-3 font-mono text-[10px] font-semibold uppercase tracking-[0.35em] text-cyan/90 sm:text-[11px] sm:tracking-[0.4em]"
+        class="mx-auto mb-8 max-w-xl text-center text-sm leading-relaxed text-muted sm:mb-10 sm:text-base mt-5 sm:mt-6"
       >
-        Technical hub
-      </p>
-      <h1
-        class="mx-auto mb-4 max-w-[18ch] bg-gradient-to-b from-white via-white to-cloud/85 bg-clip-text text-balance text-[clamp(2.5rem,5.5vw+0.5rem,4.25rem)] font-bold leading-[0.95] tracking-[-0.04em] text-transparent drop-shadow-[0_1px_40px_rgba(0,0,0,0.45)] sm:mb-5"
-      >
-        P31 Labs
-      </h1>
-      <p
-        class="mx-auto mb-2 max-w-2xl font-mono text-base font-medium leading-snug tracking-tight text-cloud/90 sm:text-lg md:text-xl"
-      >
-        Isostatically rigid. Cognitively sovereign.
-      </p>
-      <p
-        class="mx-auto mb-8 max-w-xl text-sm leading-relaxed text-muted sm:mb-10 sm:text-base"
-      >
-        <span class="text-cloud/90">Build, create, connect</span> — family-scale mesh, verify-gated releases, and
-        interfaces that respect attention.
+        {missionTrio.hubSubtitle.map((chunk) =>
+          'verb' in chunk ? (
+            <strong
+              class={
+                chunk.verb === 'build'
+                  ? 'font-semibold text-phosphorus'
+                  : chunk.verb === 'create'
+                    ? 'font-semibold text-butter'
+                    : 'font-semibold text-coral'
+              }
+            >
+              {chunk.text}
+            </strong>
+          ) : (
+            chunk.text
+          )
+        )}
       </p>
 
       <ul
@@ -315,14 +344,14 @@ const pageDescription =
         <button
           id="btn-explore-dome"
           type="button"
-          class="hub-cta-primary w-full min-h-[3.25rem] rounded-lg px-7 py-3.5 text-center text-base font-bold tracking-tight text-white sm:w-auto"
+          class="p31-mesh-tap hub-cta-primary w-full min-h-[3.25rem] rounded-lg px-7 py-3.5 text-center text-base font-bold tracking-tight text-white sm:w-auto"
           title="Sovereign Cockpit K₄ dome"
         >
           Explore Dome
         </button>
         <a
           href="#core-products"
-          class="hub-cta-secondary glass-panel inline-flex w-full min-h-[3.25rem] items-center justify-center gap-2 rounded-lg border border-white/12 px-7 py-3.5 text-center text-base font-bold tracking-tight text-cloud transition-all duration-300 hover:border-white/20 hover:bg-white/5 sm:w-auto"
+          class="p31-mesh-tap hub-cta-secondary glass-panel inline-flex w-full min-h-[3.25rem] items-center justify-center gap-2 rounded-lg border border-white/12 px-7 py-3.5 text-center text-base font-bold tracking-tight text-cloud transition-all duration-300 hover:border-white/20 hover:bg-white/5 sm:w-auto"
         >
           View architecture
           <span class="text-cyan" aria-hidden="true">→</span>
@@ -332,7 +361,7 @@ const pageDescription =
 
     <!-- 1a. Operator shell (G.O.D.) -->
     <div class="mb-10 interactive-zone animate-fade-in-up" style="animation-delay: 0.14s;">
-      <a href="/ops/" class="group flex flex-col gap-4 rounded-[12px] border border-lavender/35 p-5 no-underline transition-all duration-300 hover:border-lavender/55 hover:bg-surface2/90 sm:flex-row sm:items-center sm:justify-between glass-panel">
+      <a href="/ops/" class="p31-mesh-tap group flex flex-col gap-4 rounded-[12px] border border-lavender/35 p-5 no-underline transition-all duration-300 hover:border-lavender/55 hover:bg-surface2/90 sm:flex-row sm:items-center sm:justify-between glass-panel">
         <div>
           <div class="mb-2 font-mono text-xs uppercase tracking-widest text-lavender sm:text-[10px]">/ operator</div>
           <h2 class="font-bold text-white text-lg mb-1 group-hover:text-lavender/90 transition-colors">G.O.D. — operator shell</h2>
@@ -344,7 +373,7 @@ const pageDescription =
 
     <!-- 1b. Wye→Delta Entry Banner -->
     <div class="mb-16 interactive-zone animate-fade-in-up" style="animation-delay: 0.18s;">
-      <a href="/delta.html" class="group flex flex-col gap-4 rounded-[12px] border border-teal/30 p-6 no-underline transition-all duration-300 hover:border-teal/60 hover:bg-surface2/90 sm:flex-row sm:items-center sm:justify-between glass-panel">
+      <a href="/delta.html" class="p31-mesh-tap group flex flex-col gap-4 rounded-[12px] border border-teal/30 p-6 no-underline transition-all duration-300 hover:border-teal/60 hover:bg-surface2/90 sm:flex-row sm:items-center sm:justify-between glass-panel">
         <div>
           <div class="mb-2 font-mono text-xs uppercase tracking-widest text-teal sm:text-[10px]">/ new_here</div>
           <h2 class="font-bold text-white text-lg mb-1 group-hover:text-teal transition-colors">Why a mesh instead of an app?</h2>
@@ -373,7 +402,7 @@ const pageDescription =
         <button
           type="button"
           data-filter="all"
-          class="hub-filter-btn rounded border border-teal/50 bg-teal/10 px-4 py-2.5 text-teal transition-colors md:px-3 md:py-1.5"
+          class="p31-mesh-tap hub-filter-btn rounded border border-teal/50 bg-teal/10 px-4 py-2.5 text-teal transition-colors md:px-3 md:py-1.5"
           aria-pressed="true"
         >All ({coreProducts.length})</button>
         {FILTER_ORDER.map((st) => {
@@ -383,7 +412,7 @@ const pageDescription =
             <button
               type="button"
               data-filter={st.toLowerCase()}
-              class="hub-filter-btn rounded border border-white/10 px-4 py-2.5 text-muted transition-colors hover:border-white/20 hover:text-cloud md:px-3 md:py-1.5"
+              class="p31-mesh-tap hub-filter-btn rounded border border-white/10 px-4 py-2.5 text-muted transition-colors hover:border-white/20 hover:text-cloud md:px-3 md:py-1.5"
               aria-pressed="false"
             >
               {st} ({n})
@@ -400,7 +429,7 @@ const pageDescription =
               target="_blank"
               rel="noopener noreferrer"
               data-product-status={product.status}
-              class={`hub-product-card glass-panel p-6 rounded-[12px] flex flex-col group hover:bg-surface2/98 transition-all duration-200 hover:-translate-y-3 hover:translate-z-12 border-t border-l border-white/15 hover:border-white/30 ${styles.glow} transform-gpu shadow-[0_8px_32px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.06)] hover:shadow-[0_20px_60px_rgba(0,0,0,0.6),inset_0_1px_0_rgba(255,255,255,0.1)]`}
+              class={`p31-mesh-tap hub-product-card glass-panel p-6 rounded-[12px] flex flex-col group hover:bg-surface2/98 transition-all duration-200 hover:-translate-y-3 hover:translate-z-12 border-t border-l border-white/15 hover:border-white/30 ${styles.glow} transform-gpu shadow-[0_8px_32px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.06)] hover:shadow-[0_20px_60px_rgba(0,0,0,0.6),inset_0_1px_0_rgba(255,255,255,0.1)]`}
             >
               <div class="flex justify-between items-start mb-4">
                 <h3 class="font-bold text-white text-lg transition-colors">{product.title}</h3>
@@ -473,7 +502,7 @@ const pageDescription =
         </div>
         <div class="flex flex-col gap-4">
           {prototypes.map((proto) => (
-            <a href={proto.url} target="_blank" rel="noopener noreferrer" class="glass-panel p-5 rounded-[8px] flex items-center justify-between group hover:bg-surface2/95 transition-all duration-300 border border-[rgba(255,255,255,0.04)] hover:border-white/10">
+            <a href={proto.url} target="_blank" rel="noopener noreferrer" class="p31-mesh-tap glass-panel p-5 rounded-[8px] flex items-center justify-between group hover:bg-surface2/95 transition-all duration-300 border border-[rgba(255,255,255,0.04)] hover:border-white/10">
               <div>
                 <h3 class="font-bold text-cloud mb-1 group-hover:text-white transition-colors">{proto.title}</h3>
                 <p class="text-sm text-muted">{proto.desc}</p>
@@ -492,7 +521,7 @@ const pageDescription =
         </div>
         <div class="flex flex-col gap-4">
           {research.map((paper) => (
-            <a href={`https://doi.org/${paper.doi}`} target="_blank" rel="noopener noreferrer" class="glass-panel p-6 rounded-[8px] group hover:bg-surface2/95 transition-all duration-300 border border-[rgba(255,255,255,0.04)] hover:border-teal/30">
+            <a href={`https://doi.org/${paper.doi}`} target="_blank" rel="noopener noreferrer" class="p31-mesh-tap glass-panel p-6 rounded-[8px] group hover:bg-surface2/95 transition-all duration-300 border border-[rgba(255,255,255,0.04)] hover:border-teal/30">
               <h3 class="font-bold text-teal mb-3 text-sm leading-relaxed group-hover:text-white transition-colors">{paper.title}</h3>
               <div class="flex items-center gap-2 text-xs font-mono text-muted">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-70"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
@@ -515,19 +544,19 @@ const pageDescription =
         <p class="text-cloud/60">EIN: 42-1888158 · © 2026</p>
       </div>
       <div class="flex flex-wrap gap-x-4 gap-y-1 sm:gap-x-6 md:gap-x-8">
-        <a href="/privacy" class="inline-flex min-h-[2.5rem] items-center py-1 uppercase tracking-widest transition-colors hover:text-teal">Privacy</a>
-        <a href="/terms" class="inline-flex min-h-[2.5rem] items-center py-1 uppercase tracking-widest transition-colors hover:text-teal">Terms</a>
-        <a href="/contact" class="inline-flex min-h-[2.5rem] items-center py-1 uppercase tracking-widest transition-colors hover:text-teal">Contact</a>
-        <a href="/accessibility" class="inline-flex min-h-[2.5rem] items-center py-1 uppercase tracking-widest transition-colors hover:text-teal">A11y</a>
-        <a href="/security" class="inline-flex min-h-[2.5rem] items-center py-1 uppercase tracking-widest transition-colors hover:text-teal">Security</a>
-        <a href="/oss" class="inline-flex min-h-[2.5rem] items-center py-1 uppercase tracking-widest transition-colors hover:text-teal">OSS</a>
-        <a href="/dome" class="inline-flex min-h-[2.5rem] items-center py-1 uppercase tracking-widest transition-colors hover:text-teal" title="Sovereign Cockpit K₄">/dome</a>
-        <a href="/observatory.html" class="inline-flex min-h-[2.5rem] items-center py-1 uppercase tracking-widest transition-colors hover:text-teal" title="Geodesic panel inspector">Observatory</a>
-        <a href="/geodesic-math/" class="inline-flex min-h-[2.5rem] items-center py-1 uppercase tracking-widest transition-colors hover:text-teal" title="Icosa subdivision stats (same math as hub + /dome shell)">Geodesic math</a>
-        <a href="/lattice.html" class="inline-flex min-h-[2.5rem] items-center py-1 uppercase tracking-widest transition-colors hover:text-teal">Lattice</a>
-        <a href="https://github.com/p31labs" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-[2.5rem] items-center py-1 uppercase tracking-widest transition-colors hover:text-teal">GitHub</a>
-        <a href="https://phosphorus31.org" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-[2.5rem] items-center py-1 uppercase tracking-widest transition-colors hover:text-teal">phosphorus31.org</a>
-        <a href="/donate" class="inline-flex min-h-[2.5rem] items-center rounded border border-coral/30 bg-coral/5 px-2 py-1 font-bold uppercase tracking-widest text-coral transition-colors hover:brightness-110">Donate</a>
+        <a href="/privacy" class="p31-mesh-tap inline-flex min-h-[2.5rem] items-center py-1 uppercase tracking-widest transition-colors hover:text-teal">Privacy</a>
+        <a href="/terms" class="p31-mesh-tap inline-flex min-h-[2.5rem] items-center py-1 uppercase tracking-widest transition-colors hover:text-teal">Terms</a>
+        <a href="/contact" class="p31-mesh-tap inline-flex min-h-[2.5rem] items-center py-1 uppercase tracking-widest transition-colors hover:text-teal">Contact</a>
+        <a href="/accessibility" class="p31-mesh-tap inline-flex min-h-[2.5rem] items-center py-1 uppercase tracking-widest transition-colors hover:text-teal">A11y</a>
+        <a href="/security" class="p31-mesh-tap inline-flex min-h-[2.5rem] items-center py-1 uppercase tracking-widest transition-colors hover:text-teal">Security</a>
+        <a href="/oss" class="p31-mesh-tap inline-flex min-h-[2.5rem] items-center py-1 uppercase tracking-widest transition-colors hover:text-teal">OSS</a>
+        <a href="/dome" class="p31-mesh-tap inline-flex min-h-[2.5rem] items-center py-1 uppercase tracking-widest transition-colors hover:text-teal" title="Sovereign Cockpit K₄">/dome</a>
+        <a href="/observatory.html" class="p31-mesh-tap inline-flex min-h-[2.5rem] items-center py-1 uppercase tracking-widest transition-colors hover:text-teal" title="Geodesic panel inspector">Observatory</a>
+        <a href="/geodesic-math/" class="p31-mesh-tap inline-flex min-h-[2.5rem] items-center py-1 uppercase tracking-widest transition-colors hover:text-teal" title="Icosa subdivision stats (same math as hub + /dome shell)">Geodesic math</a>
+        <a href="/lattice.html" class="p31-mesh-tap inline-flex min-h-[2.5rem] items-center py-1 uppercase tracking-widest transition-colors hover:text-teal">Lattice</a>
+        <a href="https://github.com/p31labs" target="_blank" rel="noopener noreferrer" class="p31-mesh-tap inline-flex min-h-[2.5rem] items-center py-1 uppercase tracking-widest transition-colors hover:text-teal">GitHub</a>
+        <a href="https://phosphorus31.org" target="_blank" rel="noopener noreferrer" class="p31-mesh-tap inline-flex min-h-[2.5rem] items-center py-1 uppercase tracking-widest transition-colors hover:text-teal">phosphorus31.org</a>
+        <a href="/donate" class="p31-mesh-tap inline-flex min-h-[2.5rem] items-center rounded border border-coral/30 bg-coral/5 px-2 py-1 font-bold uppercase tracking-widest text-coral transition-colors hover:brightness-110">Donate</a>
       </div>
     </footer>
 
