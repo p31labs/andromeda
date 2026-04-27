@@ -31,8 +31,10 @@ const VERTEX_NAMES = {
 
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS, HEAD',
   'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+  'Cross-Origin-Opener-Policy': 'same-origin',
+  'Cross-Origin-Resource-Policy': 'cross-origin',
 };
 
 function edgeKey(v1, v2) {
@@ -95,7 +97,9 @@ async function appendTelemetryKv(env, event) {
 
 async function getTelemetryKvChain(env, count) {
   const headRaw = await env.K4_MESH.get('telemetry:head');
-  if (!headRaw) return { chain: [], head: null, verified: true };
+  if (!headRaw) {
+    return { chain: [], head: null, verified: true, source: 'kv' };
+  }
   const head = JSON.parse(headRaw);
   const chain = [];
   for (let i = head.index; i > Math.max(0, head.index - count); i--) {
@@ -209,6 +213,13 @@ export class K4Topology extends DurableObject {
     const path = url.pathname;
     const method = request.method;
 
+    if (path === '/mesh' && method === 'HEAD') {
+      return new Response(null, {
+        status: 200,
+        headers: { 'Content-Type': 'application/json; charset=utf-8' },
+      });
+    }
+
     if (path === '/mesh' && method === 'GET') {
       const vertices = {};
       const edges = {};
@@ -224,6 +235,7 @@ export class K4Topology extends DurableObject {
         edges[k] = raw ? JSON.parse(raw) : this.defaultEdge(a, b);
         totalLove += edges[k].love || 0;
       }
+      const qFactor = 1;
       return Response.json({
         topology: 'K4',
         vertices: 4,
@@ -232,6 +244,8 @@ export class K4Topology extends DurableObject {
         betti_2: 1,
         mesh: { vertices, edges },
         totalLove,
+        qFactor,
+        routing_protocol: 'custom_dsdv',
         timestamp: new Date().toISOString(),
         signature: 'Ca₉(PO₄)₆',
       });
@@ -553,6 +567,14 @@ export default {
           workerVersion: env.WORKER_VERSION || '2.0.0',
           topology: topologySummary,
           ts: new Date().toISOString(),
+        });
+      }
+
+      if (path === '/api/mesh' && method === 'HEAD') {
+        const r = await topologyFetch(request, env, '/api/mesh', 'HEAD');
+        return new Response(null, {
+          status: r.status,
+          headers: { ...CORS_HEADERS, 'Content-Type': r.headers.get('Content-Type') || 'application/json; charset=utf-8' },
         });
       }
 

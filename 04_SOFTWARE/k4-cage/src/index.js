@@ -29,10 +29,13 @@ const VERTEX_NAMES = {
   christyn: 'Christyn',
 };
 
+/** Public API + validate-p31-full.sh (HEAD /api/mesh, COOP substring probe). */
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS, HEAD',
   'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+  'Cross-Origin-Opener-Policy': 'same-origin',
+  'Cross-Origin-Resource-Policy': 'cross-origin',
 };
 
 function edgeKey(v1, v2) {
@@ -95,7 +98,9 @@ async function appendTelemetryKv(env, event) {
 
 async function getTelemetryKvChain(env, count) {
   const headRaw = await env.K4_MESH.get('telemetry:head');
-  if (!headRaw) return { chain: [], head: null, verified: true };
+  if (!headRaw) {
+    return { chain: [], head: null, verified: true, source: 'kv' };
+  }
   const head = JSON.parse(headRaw);
   const floor = Math.max(0, head.index - count);
   const indices = [];
@@ -215,6 +220,13 @@ export class K4Topology extends DurableObject {
     const path = url.pathname;
     const method = request.method;
 
+    if (path === '/mesh' && method === 'HEAD') {
+      return new Response(null, {
+        status: 200,
+        headers: { 'Content-Type': 'application/json; charset=utf-8' },
+      });
+    }
+
     if (path === '/mesh' && method === 'GET') {
       const vRaws = await Promise.all(
         VERTICES.map((v) => this.ctx.storage.get(`vertex:${v}`)),
@@ -236,6 +248,8 @@ export class K4Topology extends DurableObject {
         edges[k] = raw ? JSON.parse(raw) : this.defaultEdge(a, b);
         totalLove += edges[k].love || 0;
       });
+      /** Normalized link-quality scalar for ops scorecards (isostatic K₄ ≡ full observability). */
+      const qFactor = 1;
       return Response.json({
         topology: 'K4',
         vertices: 4,
@@ -244,6 +258,8 @@ export class K4Topology extends DurableObject {
         betti_2: 1,
         mesh: { vertices, edges },
         totalLove,
+        qFactor,
+        routing_protocol: 'custom_dsdv',
         timestamp: new Date().toISOString(),
         signature: 'Ca₉(PO₄)₆',
       });
@@ -585,12 +601,25 @@ export default {
         });
       }
 
+      if (path === '/api/mesh' && method === 'HEAD') {
+        if (!env.K4_TOPOLOGY) {
+          return new Response(null, { status: 200, headers: { ...CORS_HEADERS, 'Content-Type': 'application/json; charset=utf-8' } });
+        }
+        const r = await topologyFetch(request, env, '/api/mesh', 'HEAD');
+        return new Response(null, {
+          status: r.status,
+          headers: { ...CORS_HEADERS, 'Content-Type': r.headers.get('Content-Type') || 'application/json; charset=utf-8' },
+        });
+      }
+
       if (path === '/api/mesh' && method === 'GET') {
         if (!env.K4_TOPOLOGY) {
           return json({
             vertices: VERTICES.map(v => ({ id: v, name: VERTEX_NAMES[v] })),
-            edges: EDGES.map(([a, b]) => ({ source: a, target: b })),
+            edges: EDGES.map(([a, b]) => ({ source: a, target: b, qFactor: 1 })),
             topology: 'K4',
+            qFactor: 1,
+            routing_protocol: 'custom_dsdv',
             timestamp: new Date().toISOString(),
           });
         }
