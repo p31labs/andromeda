@@ -178,6 +178,12 @@
       "label": "Cognitive Passport — static generator",
       "note": "Schema p31.cognitivePassport/1.0.0. Short /passport in _redirects (AGENTS live URL). Mirror: npm run sync:passport from P31 home cognitive-passport/index.html. verify:passport."
     },
+    "welcomeStranger": {
+      "path": "/welcome.html",
+      "implementation": "public/welcome.html",
+      "label": "Welcome — meat-space & household door",
+      "note": "Connection-first CTAs (household kit, mesh, passport, onboard); optional /why, /start, lab. Short /welcome (200) and /together (301). Ko-fi."
+    },
     "delta": {
       "path": "/delta.html",
       "implementation": "public/delta.html",
@@ -358,6 +364,16 @@
     {
       "from": "/passport",
       "to": "/passport-generator.html",
+      "status": 301
+    },
+    {
+      "from": "/welcome",
+      "to": "/welcome.html",
+      "status": 200
+    },
+    {
+      "from": "/together",
+      "to": "/welcome.html",
       "status": 301
     },
     {

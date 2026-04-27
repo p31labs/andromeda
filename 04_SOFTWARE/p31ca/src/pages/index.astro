@@ -53,11 +53,11 @@ const countByStatus = coreProducts.reduce(
 );
 
 const pageDescription =
-  'P31 Labs — edge-native mesh for families and builders: K₄ co-presence, geodesic stack, glass-box ops. Verify-gated ship bar, accessibility-minded UI, no engagement dark patterns.';
+  'Free tools that adapt to how your brain works — AI context card, open-source hub, no login. Georgia nonprofit.';
 ---
 
 <BaseLayout
-  title="P31 Labs | Sovereign technical hub"
+  title="P31 Labs | Tools that adapt to your brain"
   description={pageDescription}
 >
   <Fragment slot="head">
@@ -65,7 +65,7 @@ const pageDescription =
     <meta property="og:site_name" content="P31 Labs" />
     <meta
       property="og:title"
-      content="P31 Labs — Build, create, connect on the edge"
+      content="P31 Labs — Tools that adapt to your brain"
     />
     <meta property="og:description" content={pageDescription} />
     <meta property="og:type" content="website" />
@@ -73,7 +73,7 @@ const pageDescription =
     <meta name="twitter:card" content="summary_large_image" />
     <meta
       name="twitter:title"
-      content="P31 Labs — Sovereign technical hub"
+      content="P31 Labs — Tools that adapt to your brain"
     />
     <meta name="twitter:description" content={pageDescription} />
   </Fragment>
@@ -164,6 +164,10 @@ const pageDescription =
       </div>
       <div class="h-4 w-px bg-white/10 max-md:hidden" aria-hidden="true"></div>
       <a
+        href="/passport"
+        class="inline-flex min-h-[2.75rem] items-center justify-center rounded border border-phosphorus/35 bg-phosphorus/10 px-3 py-2 text-xs font-bold uppercase tracking-widest text-phosphorus hover:bg-phosphorus/25 hover:text-phosphorus md:min-h-0 md:px-2 md:py-1 md:text-[10px]"
+        title="AI context card — free, runs in your browser">Context Card</a>
+      <a
         href="/dome"
         class="inline-flex min-h-[2.75rem] items-center justify-center rounded border border-teal/30 bg-teal/10 px-3 py-2 text-xs font-bold uppercase tracking-widest text-teal hover:bg-teal/20 hover:text-phosphorus md:min-h-0 md:px-2 md:py-1 md:text-[10px]"
         title="Sovereign Cockpit K₄ dome">Dome</a>
@@ -237,6 +241,48 @@ const pageDescription =
     id="scroll-container"
     class="pointer-events-none relative z-10 mx-auto max-w-7xl px-4 pt-40 pb-16 font-sans text-p31-cloud sm:px-6 sm:pb-24 md:pt-32"
   >
+    <!-- Tier 0 — stranger-first (above the cockpit / lab) -->
+    <section
+      id="stranger-hero"
+      class="pointer-events-auto interactive-zone relative z-[2] mx-auto mb-10 max-w-[42rem] px-2 pt-4 text-center md:mb-12 md:pt-6"
+      aria-labelledby="stranger-hero-heading"
+    >
+      <h2
+        id="stranger-hero-heading"
+        class="mb-4 text-xl font-bold tracking-tight text-p31-cloud md:text-2xl"
+      >
+        Technology that adapts to your brain — not the other way around.
+      </h2>
+      <p class="mb-6 text-sm leading-relaxed text-p31-muted md:text-base">
+        P31 Labs builds free, open-source tools for people whose brains work differently. No logins on these surfaces.
+        No tracking on the context card. Start with your AI context card — or scroll down to explore what we ship in
+        public.
+      </p>
+      <div class="mb-4 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center">
+        <a
+          href="/passport"
+          class="hub-cta-primary inline-flex min-h-[3rem] w-full items-center justify-center rounded-lg px-7 py-3 text-center text-base font-bold tracking-tight text-p31-cloud sm:w-auto"
+          title="Free AI context card"
+        >
+          Create your context card →
+        </a>
+        <a
+          href="#technical-hub-boundary"
+          class="glass-panel inline-flex min-h-[3rem] w-full items-center justify-center rounded-lg border border-white/12 px-7 py-3 text-center text-base font-bold tracking-tight text-p31-cloud transition-all duration-300 hover:border-white/20 hover:bg-white/5 sm:w-auto"
+        >
+          Explore the lab ↓
+        </a>
+      </div>
+      <p class="font-mono text-[11px] uppercase tracking-wider text-p31-muted">
+        Free · Open source · Georgia nonprofit (EIN 42-1888158)
+      </p>
+    </section>
+
+    <div class="mx-auto mb-10 max-w-xl border-t border-white/10 opacity-90" role="presentation"></div>
+    <p class="pointer-events-auto interactive-zone mx-auto mb-12 max-w-xl px-2 text-center text-xs leading-relaxed text-p31-muted md:text-sm">
+      Below here is the technical lab — dozens of tools, probes, and experiments. Built in public. Verified in production.
+    </p>
+
     <div
       class="pointer-events-none absolute left-1/2 top-0 -z-10 h-[min(60vh,28rem)] w-[min(100%,90rem)] -translate-x-1/2 hub-hero-aura"
       aria-hidden="true"
@@ -246,11 +292,12 @@ const pageDescription =
       href="#core-products"
       class="skip-to-content focus:pointer-events-auto interactive-zone"
     >
-      Skip to architecture grid
+      Skip to lab grid
     </a>
 
     <!-- 1. Hero — editorial type, ethical signals, CTAs -->
     <header
+      id="technical-hub-boundary"
       class="animate-fade-in-up relative z-[1] mb-16 text-center sm:mb-20 md:mb-28 md:pt-4 interactive-zone"
       style="animation-delay: 0.08s;"
     >
@@ -379,7 +426,7 @@ const pageDescription =
     <!-- 2. Core Products Grid (CWP D3 — client filter by status) -->
     <section id="core-products" class="mb-24 pt-12 animate-fade-in-up interactive-zone" style="animation-delay: 0.22s;" aria-label="Core architecture products">
       <div class="flex items-center gap-4 mb-8">
-        <h2 class="text-sm uppercase tracking-widest font-bold text-p31-muted font-mono">/ core_architecture</h2>
+        <h2 class="text-sm uppercase tracking-widest font-bold text-p31-muted font-mono">Labs &amp; demos</h2>
         <div class="h-px bg-white/10 flex-grow"></div>
       </div>
       <div
