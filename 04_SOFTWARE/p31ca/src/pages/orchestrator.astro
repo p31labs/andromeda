@@ -1,47 +1,11 @@
 ---
-import OrchestratorDashboard from '../components/OrchestratorDashboard.astro'
+import BaseLayout from '../layouts/BaseLayout.astro';
+import OrchestratorDashboard from '../components/OrchestratorDashboard.astro';
 ---
 
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>P31 Orchestrator | Sovereign Cockpit</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-      min-height: 100vh;
-      color: #e2e8f0;
-    }
-
-    .page-header {
-      background: rgba(15, 23, 42, 0.95);
-      border-bottom: 1px solid rgba(148, 163, 184, 0.1);
-      padding: 1rem 2rem;
-      backdrop-filter: blur(8px);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-
-    .page-header h1 {
-      font-size: 1.25rem;
-      font-weight: 600;
-      color: #f8fafc;
-    }
-  </style>
-</head>
-<body>
-  <div class="page-header">
-    <h1>🔮 Sovereign Cockpit · Orchestrator Control</h1>
-  </div>
-  
+<BaseLayout
+  title="P31 Orchestrator | Sovereign Cockpit"
+  description="Orchestrator control panel · Workers-edge posture"
+>
   <OrchestratorDashboard />
-</body>
-</html>
+</BaseLayout>

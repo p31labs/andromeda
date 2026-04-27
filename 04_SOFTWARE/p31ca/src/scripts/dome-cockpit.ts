@@ -905,10 +905,10 @@ if (prefersReducedMotion) {
  btn.addEventListener('click', (e) => {
    document.querySelectorAll('#axis-filters button').forEach(b => {
      b.classList.remove('bg-white/10', 'border-white/20');
-     b.classList.add('bg-void', 'border-white/5');
+     b.classList.add('bg-p31-void', 'border-white/5');
    });
    e.target.classList.add('bg-white/10', 'border-white/20');
-   e.target.classList.remove('bg-void', 'border-white/5');
+   e.target.classList.remove('bg-p31-void', 'border-white/5');
 
    activeAxis = e.target.dataset.axis;
    applyFilters();
@@ -980,7 +980,7 @@ if (prefersReducedMotion) {
      const otherId = e[0] === n.id ? e[1] : e[0];
      const other = VERTICES[otherId];
      return other ? `<span class="px-2 py-1 bg-white/5 border border-white/10 rounded text-[9px] hover:bg-white/10 transition-colors">${other[0]}</span>` : '';
-   }).join('') : '<span class="text-xs text-muted/50 italic">Isolated Node</span>';
+   }).join('') : '<span class="text-xs text-p31-muted-50 italic">Isolated Node</span>';
 
    panel.classList.remove('opacity-0', 'translate-x-10', 'pointer-events-none');
 
@@ -1031,8 +1031,8 @@ $('node-detail-close').addEventListener('click', () => {
        <div class="flex flex-col items-center justify-center h-full text-center p-6">
          <svg width="64" height="64" viewBox="0 0 512 512" class="mb-6"><rect width="512" height="512" rx="112" fill="#25897d"/><circle cx="390" cy="120" r="48" fill="#cc6247"/><text x="256" y="340" font-family="system-ui" font-weight="900" font-size="220" fill="#d8d6d0" text-anchor="middle">P31</text><rect x="156" y="380" width="200" height="16" rx="8" fill="#cda852"/></svg>
          <h2 class="text-2xl font-bold text-red-400 mb-3" data-i18n="error.webgl.title">WebGL Not Supported</h2>
-         <p class="text-cloud mb-6" data-i18n="error.webgl.message">Your browser or device does not support WebGL, which is required for the 3D visualization. Please try a modern browser like Chrome, Firefox, or Edge.</p>
-         <button onclick="location.reload()" class="px-6 py-3 bg-white/20 hover:bg-white/30 text-white rounded transition-colors" data-i18n="error.retry">Retry</button>
+         <p class="text-p31-cloud mb-6" data-i18n="error.webgl.message">Your browser or device does not support WebGL, which is required for the 3D visualization. Please try a modern browser like Chrome, Firefox, or Edge.</p>
+         <button onclick="location.reload()" class="px-6 py-3 bg-white/20 hover:bg-white/30 text-p31-cloud rounded transition-colors" data-i18n="error.retry">Retry</button>
        </div>
      `;
      // Apply i18n to the error message
@@ -1048,8 +1048,8 @@ $('node-detail-close').addEventListener('click', () => {
      <div class="flex flex-col items-center justify-center text-center">
        <svg width="64" height="64" viewBox="0 0 512 512" class="mb-8"><rect width="512" height="512" rx="112" fill="#25897d"/><circle cx="390" cy="120" r="48" fill="#cc6247"/><text x="256" y="340" font-family="system-ui" font-weight="900" font-size="220" fill="#d8d6d0" text-anchor="middle">P31</text><rect x="156" y="380" width="200" height="16" rx="8" fill="#cda852"/></svg>
        <div class="text-red-400 font-bold mb-4" data-i18n="error.loading.title">Loading Failed</div>
-       <div class="text-cloud mb-6" data-i18n="error.loading.message">Failed to load 3D resources. Please check your connection and try again.</div>
-       <button onclick="location.reload()" class="px-6 py-3 bg-white/20 hover:bg-white/30 text-white rounded transition-colors" data-i18n="error.retry">Retry</button>
+       <div class="text-p31-cloud mb-6" data-i18n="error.loading.message">Failed to load 3D resources. Please check your connection and try again.</div>
+       <button onclick="location.reload()" class="px-6 py-3 bg-white/20 hover:bg-white/30 text-p31-cloud rounded transition-colors" data-i18n="error.retry">Retry</button>
      </div>
    `;
    i18n.apply();
@@ -1304,7 +1304,7 @@ window.addEventListener('resize', () => {
  const focusStyle = document.createElement('style');
  focusStyle.textContent = `
     .focus-visible {
-      outline: 2px solid #06b6d4;
+      outline: 2px solid var(--p31-cyan);
       outline-offset: 2px;
       transition: outline 0.15s ease;
     }

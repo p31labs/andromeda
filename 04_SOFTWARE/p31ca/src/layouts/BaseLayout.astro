@@ -3,7 +3,7 @@
  * BaseLayout.astro — P31 Command Center root layout.
  *
  * Enforces the dark-mode glassmorphism theme across all children.
- * Void (#050505) baseline, Atkinson Hyperlegible (body) + Inter (fallback) + JetBrains Mono.
+ * Baseline colors from /p31-style.css (--p31-void / --p31-cloud). Fonts: Atkinson + JetBrains Mono.
  * Google Fonts loaded via preconnect + display=swap for FOUT prevention.
  * Mobile-first + neuro-inclusive: @/styles/global.css (safe areas, focus, motion).
  */
@@ -21,7 +21,7 @@ const {
 ---
 
 <!doctype html>
-<html lang="en" data-i18n-lang="en" class="dark">
+<html lang="en" data-i18n-lang="en" class="dark" data-p31-appearance="hub">
   <head>
     <!-- CRITICAL: UNREGISTER OLD HEARING OPS SERVICE WORKER FIRST THING -->
     <script is:inline>
@@ -44,10 +44,11 @@ const {
        content="width=device-width, initial-scale=1, viewport-fit=cover"
      />
      <meta name="description" content={description} />
-     <meta name="theme-color" content="#050505" />
+     <meta name="theme-color" content="#0f1115" />
 
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="stylesheet" href="/p31-style.css" />
 
     <!-- Fonts: Inter + JetBrains Mono -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -58,12 +59,13 @@ const {
     />
 
     <title>{title}</title>
+    <script is:inline src="/lib/p31-subject-prefs.js"></script>
     <slot name="head" />
     <!-- External import maps go here -->
     <slot name="importmaps" />
   </head>
   <body
-    class="bg-void min-h-screen text-base leading-relaxed text-white/90 font-sans antialiased p31-root [padding-bottom:env(safe-area-inset-bottom,0px)]"
+    class="bg-p31-void min-h-screen text-base leading-relaxed text-p31-cloud font-sans antialiased p31-root [padding-bottom:env(safe-area-inset-bottom,0px)]"
   >
     <!-- Ambient grid background -->
     <div

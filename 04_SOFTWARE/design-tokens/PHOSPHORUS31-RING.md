@@ -48,6 +48,10 @@ When the user’s OS prefers light, org tokens apply; you still need the same `p
 
 Use **hub** on org only if you intentionally want the technical dark shell on a subset of pages.
 
+## See also
+
+- [DESIGN-TOKENS-REFERENCE.md](./DESIGN-TOKENS-REFERENCE.md) — generated tables for org vs hub color roles and all `--p31-*` variables.
+
 ## JSON editing
 
 Change **only** `p31-universal-canon.json`, then from P31 home run `npm run apply:p31-style` and redeploy hub CSS (and your org copy, if not using the same deployed file).
