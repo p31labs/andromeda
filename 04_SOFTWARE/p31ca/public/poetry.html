@@ -7,16 +7,17 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/p31-style.css">
     <style>
-        body { margin: 0; overflow: hidden; background-color: #0f1115; color: #d8d6d0; font-family: 'Atkinson Hyperlegible', sans-serif; }
+        body { margin: 0; overflow: hidden; background-color: var(--p31-void); color: var(--p31-cloud); font-family: var(--p31-font-sans), 'Atkinson Hyperlegible', sans-serif; }
         #canvas-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
         #ui-layer { position: absolute; top: 0; left: 0; width: 100%; z-index: 10; pointer-events: none; padding: 1.25rem; box-sizing: border-box; display: flex; flex-direction: column; gap: 0.75rem; }
-        .glass-input { background: rgba(22, 25, 32, 0.85); border: 1px solid rgba(139, 124, 201, 0.3); border-radius: 99px; padding: 0.9rem 1.4rem; color: #d8d6d0; width: 100%; font-family: 'Atkinson Hyperlegible', sans-serif; font-size: 1rem; outline: none; pointer-events: auto; backdrop-filter: blur(10px); transition: border-color 0.2s; }
+        .glass-input { background: rgba(22, 25, 32, 0.85); border: 1px solid rgba(139, 124, 201, 0.3); border-radius: 99px; padding: 0.9rem 1.4rem; color: var(--p31-cloud); width: 100%; font-family: var(--p31-font-sans), 'Atkinson Hyperlegible', sans-serif; font-size: 1rem; outline: none; pointer-events: auto; backdrop-filter: blur(10px); transition: border-color 0.2s; }
         .glass-input:focus { border-color: #8b7cc9; }
-        .btn { background: rgba(139, 124, 201, 0.12); border: 1px solid rgba(139, 124, 201, 0.3); color: #8b7cc9; padding: 0.5rem 1.1rem; border-radius: 99px; cursor: pointer; font-size: 0.85rem; font-family: 'Atkinson Hyperlegible', sans-serif; transition: all 0.2s; pointer-events: auto; }
+        .btn { background: rgba(139, 124, 201, 0.12); border: 1px solid rgba(139, 124, 201, 0.3); color: #8b7cc9; padding: 0.5rem 1.1rem; border-radius: 99px; cursor: pointer; font-size: 0.85rem; font-family: var(--p31-font-sans), 'Atkinson Hyperlegible', sans-serif; transition: all 0.2s; pointer-events: auto; }
         .btn:hover { background: rgba(139, 124, 201, 0.22); }
-        .btn.active { background: #8b7cc9; color: #0f1115; }
-        .back-link { color: rgba(139,124,201,0.6); font-size: 11px; text-decoration: none; letter-spacing: 0.08em; font-family: 'JetBrains Mono', monospace; pointer-events: auto; background: rgba(22,25,32,0.7); padding: 4px 10px; border-radius: 99px; border: 1px solid rgba(139,124,201,0.15); }
+        .btn.active { background: #8b7cc9; color: var(--p31-void); }
+        .back-link { color: rgba(139,124,201,0.6); font-size: 11px; text-decoration: none; letter-spacing: 0.08em; font-family: var(--p31-font-mono), 'JetBrains Mono', monospace; pointer-events: auto; background: rgba(22,25,32,0.7); padding: 4px 10px; border-radius: 99px; border: 1px solid rgba(139,124,201,0.15); }
     </style>
 </head>
 <body>

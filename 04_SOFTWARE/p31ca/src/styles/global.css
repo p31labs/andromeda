@@ -2,16 +2,47 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ── P31 Design Tokens ── */
+/* ── P31 mobile-first + neuro-inclusive base ── */
 
 @layer base {
   html {
     background-color: #050505;
-    color: rgba(255, 255, 255, 0.85);
-    font-family: 'Inter', system-ui, sans-serif;
-    scroll-behavior: smooth;
+    color: rgba(255, 255, 255, 0.9);
+    font-family: "Atkinson Hyperlegible", "Inter", system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+
+  .p31-root {
+    -webkit-tap-highlight-color: rgba(77, 184, 168, 0.15);
+  }
+
+  :where(a, button, input, select, textarea, summary) {
+    touch-action: manipulation;
+  }
+
+  :where(a, button, [role="button"]):focus-visible,
+  :where(input, select, textarea):focus-visible {
+    outline: 2px solid rgba(77, 184, 168, 0.85);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .animate-fade-in-up,
+    .animate-pulse,
+    .animate-spin {
+      animation: none !important;
+    }
+    .animate-fade-in-up {
+      opacity: 1 !important;
+      transform: none !important;
+    }
   }
 
   ::selection {
@@ -20,7 +51,7 @@
   }
 }
 
-/* ── Glassmorphism primitives ── */
+/* ── Glass + status (existing) ── */
 
 @layer components {
   .glass-panel {
@@ -41,19 +72,26 @@
   }
 
   .phosphor-glow {
-    text-shadow: 0 0 20px rgba(0, 255, 136, 0.3),
-                 0 0 40px rgba(0, 255, 136, 0.1);
+    text-shadow:
+      0 0 20px rgba(0, 255, 136, 0.3),
+      0 0 40px rgba(0, 255, 136, 0.1);
   }
 
   .status-live {
     background: rgba(0, 255, 136, 0.1);
     border-color: rgba(0, 255, 136, 0.25);
-    color: #00FF88;
+    color: #00ff88;
   }
 
   .status-dev {
     background: rgba(255, 215, 0, 0.1);
     border-color: rgba(255, 215, 0, 0.25);
-    color: #FFD700;
+    color: #ffd700;
+  }
+
+  /** Optional: pair with `md:min-h-0 md:min-w-0` on the same element for dense desktop HUD. */
+  .p31-touch {
+    min-height: 2.75rem;
+    min-width: 2.75rem;
   }
 }

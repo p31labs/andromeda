@@ -24,10 +24,10 @@
         }
     </script>
     <style>
-        body { background-color: #0f1115; color: #d8d6d0; overflow-x: hidden; }
+        body { background-color: var(--p31-void); color: var(--p31-cloud); overflow-x: hidden; }
         body::before {
             content: ''; position: fixed; inset: 0; z-index: 9999; pointer-events: none;
-            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(77, 184, 168, 0.03) 2px, rgba(77, 184, 168, 0.03) 4px);
+            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(37, 137, 125, 0.04) 2px, rgba(37, 137, 125, 0.04) 4px);
             animation: scan 10s linear infinite;
         }
         body::after {
@@ -69,9 +69,9 @@
                 <div class="flex items-center gap-3">
                     <span class="font-mono text-xs text-cloud/50">ENERGY</span>
                     <div class="w-24 h-1.5 bg-black/50 rounded-full overflow-hidden border border-white/10">
-                        <div id="nav-spoon-fill" class="h-full bg-gradient-to-r from-butter to-cyan transition-all duration-500" style="width: 70%;"></div>
+                        <div id="nav-spoon-fill" class="h-full bg-gradient-to-r from-butter to-teal transition-all duration-500" style="width: 70%;"></div>
                     </div>
-                    <span id="nav-spoon-text" class="font-mono text-xs text-cyan font-bold">7/10</span>
+                    <span id="nav-spoon-text" class="font-mono text-xs text-teal font-bold">7/10</span>
                 </div>
                 <div class="font-mono text-xs text-lavender font-bold">
                     ♥ <span id="nav-love-text">0</span>
@@ -83,7 +83,7 @@
             </div>
         </div>
         <nav class="flex overflow-x-auto border-t border-white/5 bg-black/40 px-2" id="main-tabs">
-            <button class="tab-btn px-6 py-3 font-mono text-xs font-bold text-cyan border-b-2 border-cyan transition-colors" data-target="core">◈ CORE</button>
+            <button class="tab-btn px-6 py-3 font-mono text-xs font-bold text-teal border-b-2 border-teal transition-colors" data-target="core">◈ CORE</button>
             <button class="tab-btn px-6 py-3 font-mono text-xs font-bold text-cloud/50 border-b-2 border-transparent hover:text-cloud transition-colors" data-target="mesh">◈ MESH</button>
             <button class="tab-btn px-6 py-3 font-mono text-xs font-bold text-cloud/50 border-b-2 border-transparent hover:text-cloud transition-colors" data-target="forge">◈ FORGE</button>
             <button class="tab-btn px-6 py-3 font-mono text-xs font-bold text-cloud/50 border-b-2 border-transparent hover:text-cloud transition-colors" data-target="health">◈ HEALTH</button>
@@ -97,9 +97,9 @@
         <div id="tab-core" class="tab-content active">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div class="glass-panel flex flex-col">
-                    <div class="px-4 py-3 border-b border-white/5 flex justify-between items-center bg-cyan/5">
-                        <h2 class="font-mono text-[10px] tracking-[0.2em] text-cyan font-bold">◈ TETRAHEDRON NAVIGATOR</h2>
-                        <span class="font-mono text-[9px] px-2 py-0.5 rounded bg-cyan/10 text-cyan/70">SIC-POVM</span>
+                    <div class="px-4 py-3 border-b border-white/5 flex justify-between items-center bg-teal/5">
+                        <h2 class="font-mono text-[10px] tracking-[0.2em] text-teal font-bold">◈ TETRAHEDRON NAVIGATOR</h2>
+                        <span class="font-mono text-[9px] px-2 py-0.5 rounded bg-teal/10 text-teal/70">SIC-POVM</span>
                     </div>
                     <div class="h-64 w-full relative cursor-grab active:cursor-grabbing" id="tetra-container"></div>
                     <div class="p-4 border-t border-white/5 grid grid-cols-2 gap-4">
@@ -118,9 +118,9 @@
                             </div>
                         </div>
                         <div class="flex items-center gap-3 bg-elevated p-2 rounded-lg">
-                            <div class="w-2 h-2 rounded-full bg-cyan shadow-[0_0_5px_#4db8a8]"></div>
+                            <div class="w-2 h-2 rounded-full bg-teal shadow-[0_0_5px_#4db8a8]"></div>
                             <div>
-                                <div class="font-mono text-[8px] font-bold text-cyan tracking-widest">THE FORGE</div>
+                                <div class="font-mono text-[8px] font-bold text-teal tracking-widest">THE FORGE</div>
                                 <div class="font-mono text-xs text-cloud/60 mt-0.5" id="vtx-forge">Build Mode</div>
                             </div>
                         </div>
@@ -145,7 +145,7 @@
                             </div>
                         </div>
                         <div class="h-4 bg-void rounded-full overflow-hidden border border-white/5 relative">
-                            <div id="main-spoon-fill" class="h-full bg-gradient-to-r from-coral via-butter to-cyan transition-all duration-700" style="width: 70%;"></div>
+                            <div id="main-spoon-fill" class="h-full bg-gradient-to-r from-coral via-butter to-teal transition-all duration-700" style="width: 70%;"></div>
                         </div>
                     </div>
 
@@ -182,9 +182,9 @@
                             <button onclick="addFawnKw()" class="glass-btn px-3 py-2 text-coral border-coral/30 hover:bg-coral/10">+</button>
                         </div>
                         <div class="mt-4 border-t border-white/5 pt-4">
-                            <h3 class="font-mono text-xs text-cyan mb-2">📝 Test Sandbox</h3>
-                            <textarea id="fawn-test" rows="3" placeholder="Draft a message to check..." class="w-full bg-void border border-white/10 rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:border-cyan transition-colors"></textarea>
-                            <button onclick="testFawn()" class="glass-btn w-full mt-2 py-2 text-cyan border-cyan/30 hover:bg-cyan/10">⚡ SCAN MESSAGE</button>
+                            <h3 class="font-mono text-xs text-teal mb-2">📝 Test Sandbox</h3>
+                            <textarea id="fawn-test" rows="3" placeholder="Draft a message to check..." class="w-full bg-void border border-white/10 rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:border-teal transition-colors"></textarea>
+                            <button onclick="testFawn()" class="glass-btn w-full mt-2 py-2 text-teal border-teal/30 hover:bg-teal/10">⚡ SCAN MESSAGE</button>
                         </div>
                     </div>
                 </div>
@@ -230,20 +230,20 @@
                 </div>
 
                 <div class="glass-panel flex flex-col">
-                    <div class="px-4 py-3 border-b border-white/5 flex justify-between items-center bg-cyan/5">
-                        <h2 class="font-mono text-[10px] tracking-[0.2em] text-cyan font-bold">◈ FOCUS TIMER</h2>
-                        <span class="font-mono text-[9px] px-2 py-0.5 rounded bg-cyan/10 text-cyan/70">FUEL BURN</span>
+                    <div class="px-4 py-3 border-b border-white/5 flex justify-between items-center bg-teal/5">
+                        <h2 class="font-mono text-[10px] tracking-[0.2em] text-teal font-bold">◈ FOCUS TIMER</h2>
+                        <span class="font-mono text-[9px] px-2 py-0.5 rounded bg-teal/10 text-teal/70">FUEL BURN</span>
                     </div>
                     <div class="p-5 flex items-center gap-8">
                         <div class="relative w-32 h-32 shrink-0">
                             <canvas id="timer-canvas" width="128" height="128" class="w-full h-full"></canvas>
                             <div class="absolute inset-0 flex flex-col items-center justify-center">
-                                <div class="font-mono text-2xl font-bold text-cyan" id="timer-text">25:00</div>
+                                <div class="font-mono text-2xl font-bold text-teal" id="timer-text">25:00</div>
                                 <div class="font-mono text-[8px] text-cloud/50 tracking-widest mt-1" id="timer-phase">STANDBY</div>
                             </div>
                         </div>
                         <div class="flex-1 flex flex-col gap-3">
-                            <button onclick="toggleTimer()" id="btn-timer" class="glass-btn w-full py-3 text-cyan border-cyan/30 hover:bg-cyan/10 text-sm font-bold">▶ IGNITE</button>
+                            <button onclick="toggleTimer()" id="btn-timer" class="glass-btn w-full py-3 text-teal border-teal/30 hover:bg-teal/10 text-sm font-bold">▶ IGNITE</button>
                             <button onclick="resetTimer()" class="glass-btn w-full py-2 text-cloud/50 border-white/10 hover:text-cloud hover:border-white/30">↻ RESET</button>
                         </div>
                     </div>
@@ -285,9 +285,9 @@
                 </div>
 
                 <div class="glass-panel flex flex-col">
-                    <div class="px-4 py-3 border-b border-white/5 flex justify-between items-center bg-cyan/5">
-                        <h2 class="font-mono text-[10px] tracking-[0.2em] text-cyan font-bold">◈ CALCIUM MONITOR</h2>
-                        <span class="font-mono text-[9px] px-2 py-0.5 rounded bg-cyan/10 text-cyan/70">Ca₉(PO₄)₆</span>
+                    <div class="px-4 py-3 border-b border-white/5 flex justify-between items-center bg-teal/5">
+                        <h2 class="font-mono text-[10px] tracking-[0.2em] text-teal font-bold">◈ CALCIUM MONITOR</h2>
+                        <span class="font-mono text-[9px] px-2 py-0.5 rounded bg-teal/10 text-teal/70">Ca₉(PO₄)₆</span>
                     </div>
                     <div class="p-5 flex flex-col gap-4">
                         <div class="h-6 bg-void rounded-full border border-white/10 relative overflow-hidden">
@@ -299,8 +299,8 @@
                             <span class="text-butter">Target: 1500 mg</span>
                         </div>
                         <div class="flex gap-2 mt-2">
-                            <input type="number" id="calcium-input" placeholder="mg" class="w-20 bg-void border border-white/10 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:border-cyan" onkeypress="if(event.key === 'Enter') addCalcium()">
-                            <button onclick="addCalcium()" class="glass-btn px-4 text-cyan border-cyan/30 hover:bg-cyan/10">+ LOG</button>
+                            <input type="number" id="calcium-input" placeholder="mg" class="w-20 bg-void border border-white/10 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:border-teal" onkeypress="if(event.key === 'Enter') addCalcium()">
+                            <button onclick="addCalcium()" class="glass-btn px-4 text-teal border-teal/30 hover:bg-teal/10">+ LOG</button>
                             <button onclick="addCalcium(600)" class="glass-btn px-4 text-butter border-butter/30 hover:bg-butter/10">+600</button>
                             <button onclick="resetCalcium()" class="glass-btn px-3 ml-auto text-coral border-coral/30 hover:bg-coral/10">↻</button>
                         </div>
@@ -313,7 +313,7 @@
         <div id="tab-library" class="tab-content">
             <div class="max-w-4xl mx-auto flex flex-col gap-6">
                 <div class="glass-panel p-6 border-l-4 border-l-cyan">
-                    <h3 class="font-mono text-sm font-bold text-cyan mb-2">🔺 SIC-POVM: The Tetrahedron</h3>
+                    <h3 class="font-mono text-sm font-bold text-teal mb-2">🔺 SIC-POVM: The Tetrahedron</h3>
                     <p class="text-sm text-cloud/70 leading-relaxed">A Symmetric Informationally Complete Positive Operator-Valued Measure (SIC-POVM) extracts <strong>maximum information</strong> from a quantum state using exactly 4 measurement directions forming a tetrahedron. Your 4 life domains do the same—providing <em>informationally complete</em> self-awareness without redundancy.</p>
                 </div>
                 <div class="glass-panel p-6 border-l-4 border-l-lavender">
@@ -338,7 +338,7 @@
         </div>
         <div id="modal-focus" class="hidden flex-col items-center justify-center">
             <p class="text-cloud/50 mb-6 tracking-widest text-sm">DEEP WORK — FUEL BURN IN PROGRESS</p>
-            <div class="font-mono text-7xl font-bold text-cyan mb-2" id="focus-time">25:00</div>
+            <div class="font-mono text-7xl font-bold text-teal mb-2" id="focus-time">25:00</div>
             <div class="font-mono text-xs text-cloud/50 tracking-widest mb-12">IGNITION SEQUENCE</div>
             <button onclick="toggleTimer()" class="glass-btn px-6 py-3 text-coral border-coral bg-coral/10 hover:bg-coral/20">⬛ ABORT BURN</button>
         </div>
@@ -368,7 +368,7 @@
         function showToast(msg, type = 'info') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
-            const colors = { success: 'border-phosphorus text-phosphorus bg-phosphorus/10', warn: 'border-butter text-butter bg-butter/10', error: 'border-coral text-coral bg-coral/10', info: 'border-cyan text-cyan bg-cyan/10' };
+            const colors = { success: 'border-phosphorus text-phosphorus bg-phosphorus/10', warn: 'border-butter text-butter bg-butter/10', error: 'border-coral text-coral bg-coral/10', info: 'border-teal text-teal bg-teal/10' };
             toast.className = `glass-panel px-4 py-3 font-mono text-xs border ${colors[type]} transform translate-y-10 opacity-0 transition-all duration-300`;
             toast.innerHTML = msg;
             container.appendChild(toast);
@@ -378,11 +378,11 @@
 
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
-                document.querySelectorAll('.tab-btn').forEach(b => { b.classList.remove('border-cyan', 'text-cyan'); b.classList.add('border-transparent', 'text-cloud/50'); });
+                document.querySelectorAll('.tab-btn').forEach(b => { b.classList.remove('border-teal', 'text-teal'); b.classList.add('border-transparent', 'text-cloud/50'); });
                 document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
                 const target = e.target.dataset.target;
                 e.target.classList.remove('border-transparent', 'text-cloud/50');
-                e.target.classList.add('border-cyan', 'text-cyan');
+                e.target.classList.add('border-teal', 'text-teal');
                 document.getElementById('tab-' + target).classList.add('active');
             });
         });
@@ -444,7 +444,7 @@
             const container = document.getElementById('grounding-steps');
             container.innerHTML = gSteps.map((step, i) => `
                 <div onclick="completeMeltStep(${i})" class="glass-panel p-4 flex items-center gap-4 cursor-pointer transition-colors ${meltProgress[i] ? 'border-phosphorus bg-phosphorus/5' : 'hover:bg-white/5'} text-left">
-                    <div class="w-10 h-10 rounded-full flex items-center justify-center font-mono text-xl font-bold ${meltProgress[i] ? 'text-phosphorus bg-phosphorus/20' : 'text-cyan bg-cyan/10'}">${step.n}</div>
+                    <div class="w-10 h-10 rounded-full flex items-center justify-center font-mono text-xl font-bold ${meltProgress[i] ? 'text-phosphorus bg-phosphorus/20' : 'text-teal bg-teal/10'}">${step.n}</div>
                     <div>
                         <div class="font-mono text-[8px] font-bold tracking-widest ${meltProgress[i] ? 'text-phosphorus' : 'text-butter'}">${step.s}</div>
                         <div class="text-sm text-cloud/80">${step.t}</div>
@@ -507,7 +507,7 @@
             const btn = document.getElementById('btn-timer');
             if(timerInt) {
                 clearInterval(timerInt); timerInt = null;
-                btn.innerText = '▶ IGNITE'; btn.className = 'glass-btn w-full py-3 text-cyan border-cyan/30 hover:bg-cyan/10 text-sm font-bold';
+                btn.innerText = '▶ IGNITE'; btn.className = 'glass-btn w-full py-3 text-teal border-teal/30 hover:bg-teal/10 text-sm font-bold';
                 document.getElementById('timer-phase').innerText = 'STANDBY';
                 document.getElementById('modal-overlay').classList.replace('flex', 'hidden');
                 document.getElementById('modal-focus').classList.replace('flex', 'hidden');

@@ -5,6 +5,8 @@
 
 **Live:** [bonding.p31ca.org](https://bonding.p31ca.org)
 
+**BONDING Soup (static “bowl” surface)** — *The answer isn’t a feed—it’s the bowl.* Own route (not the React shell): [bonding.p31ca.org/soup/](https://bonding.p31ca.org/soup/) · `npm run sync:soup-bonding` from home or `npm run soup:sync` here → `npx vite build` → deploy.
+
 ---
 
 ## What Is This

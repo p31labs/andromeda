@@ -23,18 +23,16 @@
     </script>
     <style>
         body {
-            background-color: #0f1115;
-            color: #d8d6d0;
             background-image: linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
             background-size: 40px 40px;
         }
-        .matte-panel { background-color: #161920; border: 1px solid rgba(255,255,255,0.04); }
+        .matte-panel { background-color: var(--p31-surface); border: 1px solid rgba(255,255,255,0.07); }
     </style>
 </head>
-<body class="min-h-screen flex flex-col text-cloud/90">
+<body class="bg-void text-cloud min-h-screen flex flex-col font-sans antialiased">
 
-    <header class="w-full border-b border-white/5 bg-void/95 sticky top-0 z-50">
+    <header class="w-full border-b border-white/[0.07] bg-surface/90 backdrop-blur-sm sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
             <a href="/" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
                 <svg width="28" height="28" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
@@ -56,10 +54,10 @@
         <header class="border-b border-white/10 pb-8">
             <div class="flex items-center gap-4 mb-4">
                 <div class="text-3xl bg-surface w-12 h-12 rounded flex items-center justify-center border border-white/5">📐</div>
-                <div class="px-2 py-0.5 rounded border text-[10px] font-mono tracking-wide text-cyan/80 border-cyan/20 bg-cyan/5">🔵 PUBLISHED</div>
+                <div class="px-2 py-0.5 rounded border text-[10px] font-mono tracking-wide text-teal/80 border-teal/20 bg-teal/5">🔵 PUBLISHED</div>
             </div>
             <h1 class="text-4xl md:text-5xl font-bold mb-4 text-cloud">Neuro-Cognition Alchemy</h1>
-            <p class="text-xl text-cyan/70 font-mono">Theoretical Research Framework — The Mathematical Foundation</p>
+            <p class="text-xl text-teal/70 font-mono">Theoretical Research Framework — The Mathematical Foundation</p>
         </header>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -68,22 +66,22 @@
 
                 <section class="matte-panel rounded-lg p-8">
                     <h2 class="text-2xl font-bold mb-4 flex items-center gap-3">
-                        <span class="text-cyan">01.</span> The Principle of Independent Convergence
+                        <span class="text-teal">01.</span> The Principle of Independent Convergence
                     </h2>
                     <p class="text-cloud/70 leading-relaxed mb-6">
                         The P31 thesis rests on a verifiable anomaly: three completely independent scientific fields — quantum measurement theory, molecular biophysics, and network topology — independently converge on the same geometric optimum: <strong class="text-cloud/90">tetrahedral symmetry</strong>. This is not metaphor. It is structural necessity.
                     </p>
                     <div class="space-y-4">
-                        <div class="bg-void border border-cyan/10 rounded p-5">
-                            <p class="text-cyan/80 font-mono text-xs mb-2 uppercase tracking-widest">Domain 1 — Quantum Measurement</p>
+                        <div class="bg-void border border-teal/10 rounded p-5">
+                            <p class="text-teal/80 font-mono text-xs mb-2 uppercase tracking-widest">Domain 1 — Quantum Measurement</p>
                             <p class="text-cloud/70 text-sm leading-relaxed">The d=2 Symmetric Informationally Complete POVM (SIC-POVM) consists of exactly 4 measurement operators forming a <strong class="text-cloud/85">regular tetrahedron on the Bloch sphere</strong>. This is the minimum set of measurements needed to fully reconstruct any qubit state — informationally complete by mathematical necessity, not design choice.</p>
                         </div>
-                        <div class="bg-void border border-cyan/10 rounded p-5">
-                            <p class="text-cyan/80 font-mono text-xs mb-2 uppercase tracking-widest">Domain 2 — Molecular Biophysics</p>
+                        <div class="bg-void border border-teal/10 rounded p-5">
+                            <p class="text-teal/80 font-mono text-xs mb-2 uppercase tracking-widest">Domain 2 — Molecular Biophysics</p>
                             <p class="text-cloud/70 text-sm leading-relaxed">The Posner molecule (Ca₉(PO₄)₆) exhibits S₆ <strong class="text-cloud/85">nested tetrahedral symmetry</strong>. This cage geometry protects the nuclear spin of the Phosphorus-31 (³¹P) isotope from environmental decoherence, potentially enabling biologically meaningful quantum coherence times. The same ³¹P isotope gives P31 Labs its name.</p>
                         </div>
-                        <div class="bg-void border border-cyan/10 rounded p-5">
-                            <p class="text-cyan/80 font-mono text-xs mb-2 uppercase tracking-widest">Domain 3 — Network Topology</p>
+                        <div class="bg-void border border-teal/10 rounded p-5">
+                            <p class="text-teal/80 font-mono text-xs mb-2 uppercase tracking-widest">Domain 3 — Network Topology</p>
                             <p class="text-cloud/70 text-sm leading-relaxed">The K₄ complete graph satisfies <strong class="text-cloud/85">Maxwell's Isostatic Rigidity condition</strong>: 3V − E = 6, where V=4 vertices and E=6 edges. It is the smallest network that is simultaneously rigid, fault-tolerant, and free of a floating neutral — the mathematical guarantee against structural collapse.</p>
                         </div>
                     </div>
@@ -91,7 +89,7 @@
 
                 <section class="matte-panel rounded-lg p-8">
                     <h2 class="text-2xl font-bold mb-4 flex items-center gap-3">
-                        <span class="text-cyan">02.</span> Applications
+                        <span class="text-teal">02.</span> Applications
                     </h2>
 
                     <div class="space-y-6">
@@ -112,7 +110,7 @@
 
                         <div class="border-t border-white/5 pt-6">
                             <h3 class="font-bold text-cloud mb-2">Scaling Constants</h3>
-                            <p class="text-cloud/65 text-sm leading-relaxed">The same constants that appear in quantum chemistry define P31's growth targets. <strong class="text-cloud/80">4 nodes</strong> = minimum stable tetrahedron (K₄). <strong class="text-cloud/80">150 nodes</strong> = Dunbar's number, the cognitive limit for stable social relationships (registered in <code class="font-mono text-xs text-cyan/60">founding-nodes.json</code>). <strong class="text-cloud/80">863 nodes</strong> = the ³¹P Larmor frequency in Hz — the biological anchor of the entire system, also the haptic calibration target for Node One.</p>
+                            <p class="text-cloud/65 text-sm leading-relaxed">The same constants that appear in quantum chemistry define P31's growth targets. <strong class="text-cloud/80">4 nodes</strong> = minimum stable tetrahedron (K₄). <strong class="text-cloud/80">150 nodes</strong> = Dunbar's number, the cognitive limit for stable social relationships (registered in <code class="font-mono text-xs text-teal/60">founding-nodes.json</code>). <strong class="text-cloud/80">863 nodes</strong> = the ³¹P Larmor frequency in Hz — the biological anchor of the entire system, also the haptic calibration target for Node One.</p>
                         </div>
                     </div>
                 </section>
@@ -143,14 +141,14 @@
                     <h3 class="text-sm font-mono text-cloud/40 uppercase tracking-widest mb-4">Source</h3>
                     <a href="https://github.com/p31labs/andromeda/tree/main/01_ADMIN"
                        target="_blank" rel="noopener"
-                       class="block p-4 bg-void border border-white/5 rounded hover:border-cyan/30 transition-colors group mb-3">
-                        <div class="font-bold text-sm text-cloud group-hover:text-cyan transition-colors mb-1">01_ADMIN / GOD Document</div>
+                       class="block p-4 bg-void border border-white/5 rounded hover:border-teal/30 transition-colors group mb-3">
+                        <div class="font-bold text-sm text-cloud group-hover:text-teal transition-colors mb-1">01_ADMIN / GOD Document</div>
                         <div class="text-xs text-cloud/50 font-mono">andromeda/01_ADMIN</div>
                     </a>
                     <a href="https://github.com/p31labs/andromeda"
                        target="_blank" rel="noopener"
-                       class="block p-4 bg-void border border-white/5 rounded hover:border-cyan/30 transition-colors group">
-                        <div class="font-bold text-sm text-cloud group-hover:text-cyan transition-colors mb-1">p31labs/andromeda</div>
+                       class="block p-4 bg-void border border-white/5 rounded hover:border-teal/30 transition-colors group">
+                        <div class="font-bold text-sm text-cloud group-hover:text-teal transition-colors mb-1">p31labs/andromeda</div>
                         <div class="text-xs text-cloud/50 font-mono">Full monorepo</div>
                     </a>
                 </div>
@@ -169,8 +167,8 @@
                         <div class="font-bold text-sm text-cloud group-hover:text-butter transition-colors mb-1">Node One</div>
                         <div class="text-xs text-cloud/50">863 Hz Larmor frequency as haptic calibration target.</div>
                     </a>
-                    <a href="quantum-core.html" class="block p-4 bg-void border border-white/5 rounded hover:border-cyan/30 transition-colors group">
-                        <div class="font-bold text-sm text-cloud group-hover:text-cyan transition-colors mb-1">Quantum Core</div>
+                    <a href="quantum-core.html" class="block p-4 bg-void border border-white/5 rounded hover:border-teal/30 transition-colors group">
+                        <div class="font-bold text-sm text-cloud group-hover:text-teal transition-colors mb-1">Quantum Core</div>
                         <div class="text-xs text-cloud/50">Posner molecule simulation + SIC-POVM verification.</div>
                     </a>
                 </div>

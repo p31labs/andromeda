@@ -1,5 +1,11 @@
 {
-  "generated": "2026-04-26T21:15:20.133Z",
+  "generated": "2026-04-27T00:41:31.166Z",
+  "meta": {
+    "schema": "p31.hub-landing/1.0.0",
+    "registry": "scripts/hub/registry.mjs",
+    "hubCardIds": "scripts/hub/hub-app-ids.mjs",
+    "alignment": "P31 home: p31-alignment.json (p31.alignment/1.0.0); human: docs/P31-ALIGNMENT-SYSTEM.md; verify: npm run verify:alignment (root)"
+  },
   "coreProducts": [
     {
       "id": "bonding",
@@ -338,6 +344,344 @@
         "Panel Inspector"
       ],
       "url": "/observatory-about.html"
+    },
+    {
+      "id": "connect",
+      "title": "THE MESH",
+      "status": "LIVE",
+      "desc": "K₄ cage + product graph",
+      "tags": [
+        "Three.js r160",
+        "K₄ tetrahedron",
+        "Product satellites",
+        "Static HTML"
+      ],
+      "url": "/connect-about.html"
+    },
+    {
+      "id": "planetary-onboard",
+      "title": "Planetary Onboard",
+      "status": "LIVE",
+      "desc": "Wye → Delta entry flow",
+      "tags": [
+        "Static HTML",
+        "Five phases",
+        "Passkey hooks",
+        "P31 style"
+      ],
+      "url": "/planetary-onboard-about.html"
+    },
+    {
+      "id": "integrations",
+      "title": "Integrations bridge",
+      "status": "LIVE",
+      "desc": "OSS home, wearables, operator endpoints",
+      "tags": [
+        "Astro",
+        "p31.integrationsBridge/1.0.0",
+        "apply:constants",
+        "p31-constants.json"
+      ],
+      "url": "/integrations-about.html"
+    },
+    {
+      "id": "appointment-tracker",
+      "title": "Appointment Tracker",
+      "status": "LIVE",
+      "desc": "Legal & Family Calendar",
+      "tags": [
+        "Cloudflare Worker",
+        "LocalStorage",
+        "CSV Export",
+        "Recurring Events"
+      ],
+      "url": "/appointment-tracker-about.html"
+    },
+    {
+      "id": "book",
+      "title": "Mother Nature & Father Time",
+      "status": "LIVE",
+      "desc": "Children's Picture Book",
+      "tags": [
+        "Vite 8",
+        "React 19",
+        "CF Pages",
+        "Touch Navigation"
+      ],
+      "url": "/book-about.html"
+    },
+    {
+      "id": "bridge",
+      "title": "BRIDGE",
+      "status": "LIVE",
+      "desc": "LOVE Economy Dashboard",
+      "tags": [
+        "SVG Gauges",
+        "Phenix Wallet",
+        "Vesting Schedules",
+        "Stealth Addresses"
+      ],
+      "url": "/bridge-about.html"
+    },
+    {
+      "id": "budget-tracker",
+      "title": "Budget Tracker",
+      "status": "LIVE",
+      "desc": "Zero-Based Budgeting",
+      "tags": [
+        "Cloudflare Worker",
+        "Chart.js",
+        "LocalStorage",
+        "SNAP-Friendly Categories"
+      ],
+      "url": "/budget-tracker-about.html"
+    },
+    {
+      "id": "canon-demo",
+      "title": "Universal canon",
+      "status": "LIVE",
+      "desc": "Live tokens · hub ↔ org · Ring D hookup",
+      "tags": [
+        "p31.universalCanon",
+        "CSS variables",
+        "Tailwind CDN",
+        "localStorage"
+      ],
+      "url": "/canon-demo-about.html"
+    },
+    {
+      "id": "contact-locker",
+      "title": "Contact Locker",
+      "status": "LIVE",
+      "desc": "AES-256-GCM Encrypted Directory",
+      "tags": [
+        "Cloudflare Worker",
+        "WebCrypto AES-256-GCM",
+        "PBKDF2",
+        "Room Code Auth"
+      ],
+      "url": "/contact-locker-about.html"
+    },
+    {
+      "id": "echo",
+      "title": "ECHO",
+      "status": "LIVE",
+      "desc": "Vocal Looper & Script Rehearsal",
+      "tags": [
+        "Web Audio API",
+        "MediaRecorder",
+        "Pitch-Shift",
+        "Offline-First"
+      ],
+      "url": "/echo-about.html"
+    },
+    {
+      "id": "forge",
+      "title": "FORGE",
+      "status": "LIVE",
+      "desc": "Special Interest Vault",
+      "tags": [
+        "SQLite WASM",
+        "D3.js Skill Tree",
+        "Local-First",
+        "RPG Aesthetic"
+      ],
+      "url": "/forge-about.html"
+    },
+    {
+      "id": "kids-growth",
+      "title": "Kids Growth",
+      "status": "LIVE",
+      "desc": "S.J. & W.J. Milestone Tracker",
+      "tags": [
+        "Static (p31ca.org)",
+        "Chart.js 4",
+        "LocalStorage",
+        "Print & JSON export"
+      ],
+      "url": "/kids-growth-about.html"
+    },
+    {
+      "id": "kinematics",
+      "title": "KINEMATICS",
+      "status": "LIVE",
+      "desc": "Proprioceptive Movement Node",
+      "tags": [
+        "DeviceOrientation API",
+        "Tone.js",
+        "Accelerometer",
+        "Screen-Free Mode"
+      ],
+      "url": "/kinematics-about.html"
+    },
+    {
+      "id": "legal-evidence",
+      "title": "Legal Evidence",
+      "status": "LIVE",
+      "desc": "SHA-256 Tamper-Evident Chain",
+      "tags": [
+        "Cloudflare Worker",
+        "WebCrypto SHA-256",
+        "Hash Chain",
+        "Court-Ready JSON Export"
+      ],
+      "url": "/legal-evidence-about.html"
+    },
+    {
+      "id": "love-ledger",
+      "title": "Love Ledger",
+      "status": "LIVE",
+      "desc": "Family LOVE Token Economy",
+      "tags": [
+        "Cloudflare Worker",
+        "Chart.js",
+        "Leaderboard",
+        "Streak Counter"
+      ],
+      "url": "/love-ledger-about.html"
+    },
+    {
+      "id": "medical-tracker",
+      "title": "Medical Tracker",
+      "status": "LIVE",
+      "desc": "Hypoparathyroidism HPT-SD Monitor",
+      "tags": [
+        "Cloudflare Worker",
+        "Chart.js",
+        "WebCrypto",
+        "0-4 Symptom Scaling"
+      ],
+      "url": "/medical-tracker-about.html"
+    },
+    {
+      "id": "prism",
+      "title": "PRISM",
+      "status": "LIVE",
+      "desc": "Sensory Diet Synthesizer",
+      "tags": [
+        "Web Audio API",
+        "WebGL",
+        "Binaural Beats",
+        "Offline PWA"
+      ],
+      "url": "/prism-about.html"
+    },
+    {
+      "id": "qg-ide",
+      "title": "QG-IDE",
+      "status": "LIVE",
+      "desc": "Quantum Geodesic IDE",
+      "tags": [
+        "Code Editor",
+        "SVG Tetrahedron",
+        "Centaur AI Copilot",
+        "PHX Coherence"
+      ],
+      "url": "/qg-ide-about.html"
+    },
+    {
+      "id": "quantum-life-os",
+      "title": "Quantum Life OS",
+      "status": "LIVE",
+      "desc": "Quantum-Coherent Life System",
+      "tags": [
+        "Quantum Stats Engine",
+        "Consciousness Model",
+        "Control Panel",
+        "Dark/Light Mode"
+      ],
+      "url": "/quantum-life-os-about.html"
+    },
+    {
+      "id": "simple-sovereignty",
+      "title": "Simple Sovereignty",
+      "status": "LIVE",
+      "desc": "Sovereign Stack Portal",
+      "tags": [
+        "Portal Hub",
+        "Live Terminal",
+        "Dark/Light Mode",
+        "Sovereignty Tracker"
+      ],
+      "url": "/simple-sovereignty-about.html"
+    },
+    {
+      "id": "sleep-tracker",
+      "title": "Sleep Tracker",
+      "status": "LIVE",
+      "desc": "Hypoparathyroidism Sleep Monitor",
+      "tags": [
+        "Cloudflare Worker",
+        "Chart.js",
+        "LocalStorage",
+        "7-Day Trend Analysis"
+      ],
+      "url": "/sleep-tracker-about.html"
+    },
+    {
+      "id": "somatic-anchor",
+      "title": "Somatic Anchor",
+      "status": "LIVE",
+      "desc": "863 Hz Larmor Grounding Tool",
+      "tags": [
+        "Cloudflare Worker",
+        "Web Audio API",
+        "Vibration API",
+        "4-4-6 Breathwork"
+      ],
+      "url": "/somatic-anchor-about.html"
+    },
+    {
+      "id": "sovereign",
+      "title": "SOVEREIGN",
+      "status": "LIVE",
+      "desc": "Sovereign OS 3D Cockpit",
+      "tags": [
+        "Three.js r183",
+        "Bloom Postprocessing",
+        "Jitterbug Transform",
+        "SIC-POVM"
+      ],
+      "url": "/sovereign-about.html"
+    },
+    {
+      "id": "super-centaur",
+      "title": "Super-Centaur pack",
+      "status": "LIVE",
+      "desc": "Data health · MAP · mesh fleet · sovereignty",
+      "tags": [
+        "Static HTML",
+        "Machine JSON",
+        "CWP index",
+        "mesh-bridge sync"
+      ],
+      "url": "/super-centaur-about.html"
+    },
+    {
+      "id": "tether",
+      "title": "TETHER",
+      "status": "LIVE",
+      "desc": "Spatial Executive Function Map",
+      "tags": [
+        "Matter.js",
+        "Canvas API",
+        "IndexedDB",
+        "Gravity Well Physics"
+      ],
+      "url": "/tether-about.html"
+    },
+    {
+      "id": "tomography",
+      "title": "K4 TOMOGRAPHY",
+      "status": "LIVE",
+      "desc": "Symbol-Seeded Depth View",
+      "tags": [
+        "Three.js r183",
+        "Barycentric Mapping",
+        "PRNG OHLCV",
+        "Larmor Ring"
+      ],
+      "url": "/tomography-about.html"
     }
   ],
   "prototypes": [

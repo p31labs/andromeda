@@ -23,7 +23,7 @@
       border-radius: var(--p31-radius-lg);
     }
     .mono { font-family: var(--p31-font-mono); font-size: var(--p31-text-xs); }
-    a.url { color: var(--p31-cyan); word-break: break-all; }
+    a.url { color: var(--p31-teal); word-break: break-all; }
     a.url:hover { text-decoration: underline; }
     table.data td, table.data th { padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--p31-border-subtle); vertical-align: top; }
     table.data th { text-align: left; color: var(--p31-muted); font-weight: 600; }
@@ -44,15 +44,15 @@
     }
   </style>
 </head>
-<body class="min-h-screen">
+<body class="bg-void text-cloud min-h-screen font-sans antialiased">
   <a href="#main" class="skip-link">Skip to content</a>
 
-  <header class="border-b border-white/10 bg-black/30 backdrop-blur-sm sticky top-0 z-40">
+  <header class="border-b border-white/[0.07] bg-surface/90 backdrop-blur-sm sticky top-0 z-40">
     <div class="max-w-5xl mx-auto px-4 py-4 flex flex-wrap items-center justify-between gap-3">
       <div>
         <p class="mono text-[var(--p31-phosphor)] uppercase tracking-widest text-[10px] mb-1">Demo · p31.liveFleet</p>
-        <h1 class="text-xl md:text-2xl font-bold text-white tracking-tight">Live fleet map</h1>
-        <p class="text-sm text-[var(--p31-muted)] mt-1 max-w-xl">A single, readable map of what we ship on the hub and at the edge — live data from <code class="mono text-[var(--p31-cyan)]">/p31-live-fleet.json</code>. Bookmark it for onboarding or audits.</p>
+        <h1 class="text-xl md:text-2xl font-bold text-paper tracking-tight">Live fleet map</h1>
+        <p class="text-sm text-[var(--p31-muted)] mt-1 max-w-xl">A single, readable map of what we ship on the hub and at the edge — live data from <code class="mono text-[var(--p31-teal)]">/p31-live-fleet.json</code>. Bookmark it for onboarding or audits.</p>
       </div>
       <div class="flex flex-wrap gap-2">
         <a href="/demos" class="px-3 py-1.5 rounded border border-white/15 text-xs font-mono uppercase tracking-wide hover:bg-white/5">All demos</a>

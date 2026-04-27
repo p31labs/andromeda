@@ -2,47 +2,17 @@
 /**
  * Build src/data/hub-landing.json from hub/registry.mjs (single source of truth).
  * Run: node scripts/hub/build-landing-data.mjs
+ * P31 home alignment: p31-alignment.json (registry derivation + verifyPipeline); docs/P31-ALIGNMENT-SYSTEM.md
  */
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { registry } from './registry.mjs';
+import { HUB_COCKPIT_ORDER, HUB_PROTOTYPE_ORDER } from './hub-app-ids.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const P31CA = path.join(__dirname, '../..');
 const OUT = path.join(P31CA, 'src', 'data', 'hub-landing.json');
-
-/** Cards on / — order preserved; only entries with a generated *-about.html. */
-const COCKPIT_PRODUCT_IDS = [
-  'bonding',
-  'spaceship-earth',
-  'ede',
-  'buffer',
-  'alchemy',
-  'attractor',
-  'axiom',
-  'collider',
-  'content-forge',
-  'geodesic',
-  'p31-delta-hiring',
-  'genesis-gate',
-  'k4market',
-  'kenosis',
-  'liminal',
-  'vault',
-  'phenix-os',
-  'quantum-core',
-  'resonance',
-  'signal',
-  'donate',
-  'tactile',
-  'discord-bot',
-  'cortex',
-  'quantum-family',
-  'observatory',
-];
-
-const PROTOTYPE_IDS = ['node-zero', 'node-one', 'mission-control'];
 
 const RESEARCH = [
   { title: 'Tetrahedral Mesh as Cybernetic Trauma Response', doi: '10.5281/zenodo.18627420' },
@@ -93,11 +63,18 @@ function protoRow(id) {
   };
 }
 
-const coreProducts = COCKPIT_PRODUCT_IDS.map(productRow);
-const prototypes = PROTOTYPE_IDS.map(protoRow);
+const coreProducts = HUB_COCKPIT_ORDER.map(productRow);
+const prototypes = HUB_PROTOTYPE_ORDER.map(protoRow);
 
 const payload = {
   generated: new Date().toISOString(),
+    meta: {
+    schema: "p31.hub-landing/1.0.0",
+    registry: "scripts/hub/registry.mjs",
+    hubCardIds: "scripts/hub/hub-app-ids.mjs",
+    alignment:
+      "P31 home: p31-alignment.json (p31.alignment/1.0.0); human: docs/P31-ALIGNMENT-SYSTEM.md; verify: npm run verify:alignment (root)",
+  },
   coreProducts,
   prototypes,
   research: RESEARCH,

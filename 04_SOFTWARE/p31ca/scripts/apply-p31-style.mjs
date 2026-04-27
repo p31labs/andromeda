@@ -1,4 +1,9 @@
 #!/usr/bin/env node
+/**
+ * p31ca apply-p31-style — writes public/p31-style.css + p31-tailwind-extend.js from design-tokens.
+ * Root `npm run apply:p31-style` runs this and mirrors to cognitive-passport/p31-style.css.
+ * Alignment: p31-alignment.json (canon-to-style-css); verify: npm run verify:p31-style
+ */
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";

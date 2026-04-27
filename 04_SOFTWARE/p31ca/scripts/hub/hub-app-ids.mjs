@@ -1,0 +1,67 @@
+/**
+ * Single source: every id here gets exactly one card on p31ca.org/ and one *-about.html
+ * (must match scripts/hub/registry.mjs 1:1). Order = cockpit grid then prototypes section.
+ * @see scripts/hub/verify.mjs (card–registry–about alignment)
+ */
+export const HUB_COCKPIT_ORDER = [
+  "bonding",
+  "spaceship-earth",
+  "ede",
+  "buffer",
+  "alchemy",
+  "attractor",
+  "axiom",
+  "collider",
+  "content-forge",
+  "geodesic",
+  "p31-delta-hiring",
+  "genesis-gate",
+  "k4market",
+  "kenosis",
+  "liminal",
+  "vault",
+  "phenix-os",
+  "quantum-core",
+  "resonance",
+  "signal",
+  "donate",
+  "tactile",
+  "discord-bot",
+  "cortex",
+  "quantum-family",
+  "observatory",
+  "connect",
+  "planetary-onboard",
+  "integrations",
+  "appointment-tracker",
+  "book",
+  "bridge",
+  "budget-tracker",
+  "canon-demo",
+  "contact-locker",
+  "echo",
+  "forge",
+  "kids-growth",
+  "kinematics",
+  "legal-evidence",
+  "love-ledger",
+  "medical-tracker",
+  "prism",
+  "qg-ide",
+  "quantum-life-os",
+  "simple-sovereignty",
+  "sleep-tracker",
+  "somatic-anchor",
+  "sovereign",
+  "super-centaur",
+  "tether",
+  "tomography",
+];
+
+export const HUB_PROTOTYPE_ORDER = ["node-zero", "node-one", "mission-control"];
+
+/** Strict render order: cockpit grid then / prototypes (matches index.astro data shape). */
+export const HUB_ALL_CARD_ORDER = [
+  ...HUB_COCKPIT_ORDER,
+  ...HUB_PROTOTYPE_ORDER,
+];

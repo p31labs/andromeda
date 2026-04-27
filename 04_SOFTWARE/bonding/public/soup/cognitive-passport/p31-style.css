@@ -1,0 +1,172 @@
+/* AUTO-GENERATED from andromeda/04_SOFTWARE/design-tokens/p31-universal-canon.json */
+/* Hub (p31ca): default. Org (phosphorus31.org): set <html data-p31-appearance="org"> */
+:root {
+  --p31-appearance: hub;
+  --p31-font-sans: "Atkinson Hyperlegible", sans-serif;
+  --p31-font-mono: "JetBrains Mono", monospace;
+  --p31-text-xs: 0.75rem;
+  --p31-text-sm: 0.875rem;
+  --p31-text-base: 1rem;
+  --p31-text-md: 1.0625rem;
+  --p31-text-lg: 1.125rem;
+  --p31-text-xl: 1.25rem;
+  --p31-text-2xl: 1.5rem;
+  --p31-text-3xl: 1.875rem;
+  --p31-text-4xl: 2.25rem;
+  --p31-leading-tight: 1.25;
+  --p31-leading-snug: 1.4;
+  --p31-leading-normal: 1.6;
+  --p31-leading-relaxed: 1.75;
+  --p31-tracking-tight: -0.02em;
+  --p31-tracking-normal: 0;
+  --p31-tracking-wide: 0.08em;
+  --p31-tracking-caps: 0.12em;
+  --p31-space-0: 0;
+  --p31-space-1: 0.25rem;
+  --p31-space-2: 0.5rem;
+  --p31-space-3: 0.75rem;
+  --p31-space-4: 1rem;
+  --p31-space-5: 1.25rem;
+  --p31-space-6: 1.5rem;
+  --p31-space-8: 2rem;
+  --p31-space-10: 2.5rem;
+  --p31-space-12: 3rem;
+  --p31-space-16: 4rem;
+  --p31-space-20: 5rem;
+  --p31-space-24: 6rem;
+  --p31-space-px: 1px;
+  --p31-radius-none: 0;
+  --p31-radius-sm: 4px;
+  --p31-radius-md: 8px;
+  --p31-radius-lg: 12px;
+  --p31-radius-xl: 16px;
+  --p31-radius-2xl: 1.25rem;
+  --p31-radius-full: 9999px;
+  --p31-shadow-none: none;
+  --p31-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
+  --p31-shadow-md: 0 4px 14px rgba(0, 0, 0, 0.08);
+  --p31-shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.12);
+  --p31-shadow-glowTeal: 0 0 24px rgba(37, 137, 125, 0.25);
+  --p31-duration-instant: 100ms;
+  --p31-duration-fast: 150ms;
+  --p31-duration-normal: 250ms;
+  --p31-duration-slow: 400ms;
+  --p31-duration-glacial: 800ms;
+  --p31-ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --p31-ease-emphasized: cubic-bezier(0.2, 0, 0, 1);
+  --p31-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --p31-z-base: 0;
+  --p31-z-dropdown: 50;
+  --p31-z-sticky: 100;
+  --p31-z-overlay: 200;
+  --p31-z-modal: 300;
+  --p31-z-toast: 400;
+  --p31-focus-ring: 2px;
+  --p31-focus-offset: 2px;
+  --p31-focus-color-hub: rgba(77, 184, 168, 0.55);
+  --p31-focus-color-org: rgba(37, 137, 125, 0.45);
+
+  --p31-void: #0f1115;
+  --p31-surface: #161920;
+  --p31-surface2: #1c2028;
+  --p31-coral: #cc6247;
+  --p31-teal: #25897d;
+  --p31-cyan: #4db8a8;
+  --p31-cloud: #d8d6d0;
+  --p31-butter: #cda852;
+  --p31-lavender: #8b7cc9;
+  --p31-phosphorus: #3ba372;
+  --p31-paper: #f4f4f5;
+  --p31-ink: #1e293b;
+  --p31-muted: #6b7280;
+  --p31-phosphor: #00FF88;
+  --p31-border-subtle: rgba(255, 255, 255, 0.06);
+  --p31-glass-border: rgba(255, 255, 255, 0.08);
+  --p31-glass-surface: rgba(255, 255, 255, 0.04);
+  --p31-theme-color: #0f1115;
+
+  --void: var(--p31-void);
+  --surface: var(--p31-surface);
+  --surface2: var(--p31-surface2);
+  --coral: var(--p31-coral);
+  --teal: var(--p31-teal);
+  --cyan: var(--p31-cyan);
+  --phosphorus: var(--p31-phosphorus);
+  --cloud: var(--p31-cloud);
+  --muted: var(--p31-muted);
+  --butter: var(--p31-butter);
+  --border: var(--p31-border-subtle);
+}
+
+[data-p31-appearance="org"] {
+  color-scheme: light;
+  --p31-theme-color: #f5f4f0;
+  --p31-void: #f5f4f0;
+  --p31-surface: #ffffff;
+  --p31-surface2: #ebeae4;
+  --p31-coral: #cc6247;
+  --p31-teal: #25897d;
+  --p31-cyan: #4db8a8;
+  --p31-cloud: #1e293b;
+  --p31-butter: #cda852;
+  --p31-lavender: #8b7cc9;
+  --p31-phosphorus: #3ba372;
+  --p31-paper: #fdfcfa;
+  --p31-ink: #0f172a;
+  --p31-muted: #64748b;
+  --p31-phosphor: #00FF88;
+  --p31-border-subtle: rgba(15, 23, 42, 0.09);
+  --p31-glass-border: rgba(15, 23, 42, 0.07);
+  --p31-glass-surface: rgba(255, 255, 255, 0.82);
+
+  --void: var(--p31-void);
+  --surface: var(--p31-surface);
+  --surface2: var(--p31-surface2);
+  --coral: var(--p31-coral);
+  --teal: var(--p31-teal);
+  --cyan: var(--p31-cyan);
+  --phosphorus: var(--p31-phosphorus);
+  --cloud: var(--p31-cloud);
+  --muted: var(--p31-muted);
+  --butter: var(--p31-butter);
+  --border: var(--p31-border-subtle);
+}
+
+/* Prefer org when user wants light system UI on org host only (optional; set on <html>) */
+@media (prefers-color-scheme: light) {
+  html[data-p31-appearance="auto"] {
+    color-scheme: light;
+    --p31-void: #f5f4f0;
+    --p31-surface: #ffffff;
+    --p31-surface2: #ebeae4;
+    --p31-coral: #cc6247;
+    --p31-teal: #25897d;
+    --p31-cyan: #4db8a8;
+    --p31-cloud: #1e293b;
+    --p31-butter: #cda852;
+    --p31-lavender: #8b7cc9;
+    --p31-phosphorus: #3ba372;
+    --p31-paper: #fdfcfa;
+    --p31-ink: #0f172a;
+    --p31-muted: #64748b;
+    --p31-phosphor: #00FF88;
+    --p31-border-subtle: rgba(15, 23, 42, 0.09);
+    --p31-glass-border: rgba(15, 23, 42, 0.07);
+    --p31-glass-surface: rgba(255, 255, 255, 0.82);
+    --p31-theme-color: #f5f4f0;
+    --void: var(--p31-void);
+    --surface: var(--p31-surface);
+    --surface2: var(--p31-surface2);
+    --coral: var(--p31-coral);
+    --teal: var(--p31-teal);
+    --cyan: var(--p31-cyan);
+    --phosphorus: var(--p31-phosphorus);
+    --cloud: var(--p31-cloud);
+    --muted: var(--p31-muted);
+    --butter: var(--p31-butter);
+    --border: var(--p31-border-subtle);
+  }
+}
+
+html { color-scheme: dark; }
+[data-p31-appearance="org"] { color-scheme: light; }

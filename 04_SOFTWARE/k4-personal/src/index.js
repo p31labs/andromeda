@@ -10,6 +10,7 @@ import {
   personalPresence,
   personalPing,
   personalRouteIndex,
+  personalApiSnapshot,
 } from '../../packages/k4-mesh-core/personal-handlers.js';
 import { personalVizResponse } from '../../packages/k4-mesh-core/personal-viz.js';
 import {
@@ -530,6 +531,9 @@ async function handlePersonalMeshApi(request, env) {
   }
   if (p === "/api/mesh" && method === "GET") {
     return personalMesh(env, request.url, ctx);
+  }
+  if (p === "/api/snapshot" && method === "GET") {
+    return personalApiSnapshot(env, request.url, ctx);
   }
   if (p === "/api/health" && method === "GET") {
     return personalHealth(env, ctx);

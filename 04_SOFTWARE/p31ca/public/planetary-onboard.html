@@ -135,9 +135,9 @@
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            background: #0f1115;
-            color: #d8d6d0;
-            font-family: "Atkinson Hyperlegible", sans-serif;
+            background: var(--p31-void);
+            color: var(--p31-cloud);
+            font-family: var(--p31-font-sans), "Atkinson Hyperlegible", sans-serif;
             overflow: hidden;
             height: 100dvh;
         }
@@ -461,7 +461,7 @@
         #success-overlay {
             position: fixed;
             inset: 0;
-            background: #0f1115;
+            background: var(--p31-void);
             display: flex;
             flex-direction: column;
             align-items: center;

@@ -7,18 +7,19 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/p31-style.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { overflow: hidden; background: #0f1115; color: #d8d6d0; font-family: 'Atkinson Hyperlegible', sans-serif; }
+        body { overflow: hidden; background: var(--p31-void); color: var(--p31-cloud); font-family: var(--p31-font-sans), 'Atkinson Hyperlegible', sans-serif; }
         #canvas-container { position: absolute; inset: 0; z-index: 1; }
         #ui { position: absolute; top: 0; left: 0; width: 100%; z-index: 10; pointer-events: none; padding: 1.25rem; display: flex; flex-direction: column; align-items: center; gap: 0.6rem; }
         .glass { background: rgba(22,25,32,0.85); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; pointer-events: auto; }
         .panel { display: flex; gap: 0.5rem; width: 100%; max-width: 560px; padding: 0.85rem; }
-        input, select { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #d8d6d0; padding: 0.65rem 0.9rem; border-radius: 8px; outline: none; font-family: 'Atkinson Hyperlegible', sans-serif; }
+        input, select { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--p31-cloud); padding: 0.65rem 0.9rem; border-radius: 8px; outline: none; font-family: var(--p31-font-sans), 'Atkinson Hyperlegible', sans-serif; }
         input { flex: 1; min-width: 0; }
         input::placeholder { color: rgba(216,214,208,0.35); }
         select option { background: #161920; }
-        .spawn-btn { background: #cda852; color: #0f1115; font-weight: 700; border: none; padding: 0.65rem 1.1rem; border-radius: 8px; cursor: pointer; font-family: 'Atkinson Hyperlegible', sans-serif; transition: 0.15s; white-space: nowrap; }
+        .spawn-btn { background: #cda852; color: var(--p31-void); font-weight: 700; border: none; padding: 0.65rem 1.1rem; border-radius: 8px; cursor: pointer; font-family: var(--p31-font-sans), 'Atkinson Hyperlegible', sans-serif; transition: 0.15s; white-space: nowrap; }
         .spawn-btn:hover { background: #e0be6c; }
         .hint { font-size: 10px; color: rgba(216,214,208,0.3); font-family: 'JetBrains Mono', monospace; letter-spacing: 0.1em; text-transform: uppercase; pointer-events: none; }
         .back { color: rgba(205,168,82,0.55); font-family: 'JetBrains Mono', monospace; font-size: 11px; text-decoration: none; padding: 5px 12px; border-radius: 99px; border: 1px solid rgba(205,168,82,0.15); background: rgba(22,25,32,0.7); }

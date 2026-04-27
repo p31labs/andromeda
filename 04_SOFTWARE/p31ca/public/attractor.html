@@ -23,18 +23,16 @@
     </script>
     <style>
         body {
-            background-color: #0f1115;
-            color: #d8d6d0;
             background-image: linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
             background-size: 40px 40px;
         }
-        .matte-panel { background-color: #161920; border: 1px solid rgba(255,255,255,0.04); }
+        .matte-panel { background-color: var(--p31-surface); border: 1px solid rgba(255,255,255,0.07); }
     </style>
 </head>
-<body class="min-h-screen flex flex-col text-cloud/90">
+<body class="bg-void text-cloud min-h-screen flex flex-col font-sans antialiased">
 
-    <header class="w-full border-b border-white/5 bg-void/95 sticky top-0 z-50">
+    <header class="w-full border-b border-white/[0.07] bg-surface/90 backdrop-blur-sm sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
             <a href="/" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
                 <svg width="28" height="28" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
@@ -56,10 +54,10 @@
         <header class="border-b border-white/10 pb-8">
             <div class="flex items-center gap-4 mb-4">
                 <div class="text-3xl bg-surface w-12 h-12 rounded flex items-center justify-center border border-white/5">🌀</div>
-                <div class="px-2 py-0.5 rounded border text-[10px] font-mono tracking-wide text-cyan/80 border-cyan/20 bg-cyan/5">🟢 LIVE</div>
+                <div class="px-2 py-0.5 rounded border text-[10px] font-mono tracking-wide text-teal/80 border-teal/20 bg-teal/5">🟢 LIVE</div>
             </div>
             <h1 class="text-4xl md:text-5xl font-bold mb-4 text-cloud">NANO-07 Attractor</h1>
-            <p class="text-xl text-cyan/70 font-mono">Kenosis Mesh — Live Socio-Thermodynamic Simulation</p>
+            <p class="text-xl text-teal/70 font-mono">Kenosis Mesh — Live Socio-Thermodynamic Simulation</p>
         </header>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -68,22 +66,22 @@
 
                 <section class="matte-panel rounded-lg p-8">
                     <h2 class="text-2xl font-bold mb-4 flex items-center gap-3">
-                        <span class="text-cyan">01.</span> What You Are Watching
+                        <span class="text-teal">01.</span> What You Are Watching
                     </h2>
                     <p class="text-cloud/70 leading-relaxed mb-6">
                         The NANO-07 Attractor is a live Three.js simulation of the Kenosis mesh — P31's 7-node Cloudflare Worker topology based on SIC-POVM tetrahedral geometry. It renders two layers simultaneously: the <strong class="text-cloud/85">Alpha Nodes</strong> (the 7 Workers, orbiting an empty center) and the <strong class="text-cloud/85">Human VFDs</strong> (1500 agent particles, each tethered to their nearest online node via magenta lines).
                     </p>
                     <div class="space-y-4">
-                        <div class="bg-void border border-cyan/10 rounded p-5">
-                            <p class="text-cyan/80 font-mono text-xs mb-2 uppercase tracking-widest">The Empty Center</p>
-                            <p class="text-cloud/70 text-sm leading-relaxed">The origin <code class="font-mono text-xs text-cyan/60">(0,0,0)</code> is always empty. There is no hub, no central server, no single point of failure. All 7 nodes orbit the void. This is the K₄ Delta topology — the Faraday cage — Maxwell's isostatic rigidity condition: <code class="font-mono text-xs text-cyan/60">3V − E = 6</code>.</p>
+                        <div class="bg-void border border-teal/10 rounded p-5">
+                            <p class="text-teal/80 font-mono text-xs mb-2 uppercase tracking-widest">The Empty Center</p>
+                            <p class="text-cloud/70 text-sm leading-relaxed">The origin <code class="font-mono text-xs text-teal/60">(0,0,0)</code> is always empty. There is no hub, no central server, no single point of failure. All 7 nodes orbit the void. This is the K₄ Delta topology — the Faraday cage — Maxwell's isostatic rigidity condition: <code class="font-mono text-xs text-teal/60">3V − E = 6</code>.</p>
                         </div>
-                        <div class="bg-void border border-cyan/10 rounded p-5">
-                            <p class="text-cyan/80 font-mono text-xs mb-2 uppercase tracking-widest">Pacemaker Pulse</p>
+                        <div class="bg-void border border-teal/10 rounded p-5">
+                            <p class="text-teal/80 font-mono text-xs mb-2 uppercase tracking-widest">Pacemaker Pulse</p>
                             <p class="text-cloud/70 text-sm leading-relaxed">Every ~5 seconds, the cyan service binding lines flash white. This represents the GitHub Actions cron trigger — the pacemaker that drives the Kenosis topology beyond Cloudflare's 30-second cron limit.</p>
                         </div>
-                        <div class="bg-void border border-cyan/10 rounded p-5">
-                            <p class="text-cyan/80 font-mono text-xs mb-2 uppercase tracking-widest">Byzantine Fault Tolerance</p>
+                        <div class="bg-void border border-teal/10 rounded p-5">
+                            <p class="text-teal/80 font-mono text-xs mb-2 uppercase tracking-widest">Byzantine Fault Tolerance</p>
                             <p class="text-cloud/70 text-sm leading-relaxed">EXECUTE K-NODE kills a random Worker. All agents tethered to it instantly recalculate nearest-neighbor distance across the surviving nodes and reroute their magenta tethers — demonstrating self-healing without any central coordinator.</p>
                         </div>
                     </div>
@@ -91,12 +89,12 @@
 
                 <section class="matte-panel rounded-lg p-8">
                     <h2 class="text-2xl font-bold mb-4 flex items-center gap-3">
-                        <span class="text-cyan">02.</span> Thermodynamic States
+                        <span class="text-teal">02.</span> Thermodynamic States
                     </h2>
                     <div class="space-y-6">
                         <div>
                             <h3 class="font-bold text-cloud mb-2 flex items-center gap-2">
-                                <span class="text-xs font-mono px-2 py-0.5 rounded bg-cyan/10 border border-cyan/20 text-cyan">H ≈ 0.35 / Q ≥ 3.0</span>
+                                <span class="text-xs font-mono px-2 py-0.5 rounded bg-teal/10 border border-teal/20 text-teal">H ≈ 0.35 / Q ≥ 3.0</span>
                                 Healthy — 7 Days
                             </h3>
                             <p class="text-cloud/65 text-sm leading-relaxed">Agents form a breathing spherical lattice. Drift is actively dampened (× 0.95 per frame). Magenta tethers connect each agent to its nearest NANO-07 node. The system is informationally complete — any qubit state can be reconstructed from the 7 measurement axes.</p>
@@ -132,9 +130,9 @@
                 <div class="matte-panel rounded-lg p-6">
                     <h3 class="text-sm font-mono text-cloud/40 uppercase tracking-widest mb-4">Launch Simulation</h3>
                     <a href="attractor-sim.html"
-                       class="block p-5 bg-void border border-cyan/30 rounded hover:border-cyan/60 transition-colors group mb-3 text-center">
+                       class="block p-5 bg-void border border-teal/30 rounded hover:border-teal/60 transition-colors group mb-3 text-center">
                         <div class="text-2xl mb-2">🌀</div>
-                        <div class="font-bold text-sm text-cyan group-hover:text-cyan transition-colors mb-1">Open Attractor</div>
+                        <div class="font-bold text-sm text-teal group-hover:text-teal transition-colors mb-1">Open Attractor</div>
                         <div class="text-xs text-cloud/40 font-mono">attractor-sim.html · standalone</div>
                     </a>
                 </div>
@@ -144,15 +142,15 @@
                     <div class="space-y-3 text-sm font-mono">
                         <div class="flex justify-between items-center">
                             <span class="text-cloud/50">H slider</span>
-                            <span class="text-cyan/70">entropy 0→1</span>
+                            <span class="text-teal/70">entropy 0→1</span>
                         </div>
                         <div class="flex justify-between items-center">
                             <span class="text-cloud/50">B slider</span>
-                            <span class="text-cyan/70">Larmor field µT</span>
+                            <span class="text-teal/70">Larmor field µT</span>
                         </div>
                         <div class="flex justify-between items-center">
                             <span class="text-cloud/50">Q slider</span>
-                            <span class="text-cyan/70">coherence 0.1→5</span>
+                            <span class="text-teal/70">coherence 0.1→5</span>
                         </div>
                         <div class="border-t border-white/5 pt-3 flex justify-between items-center">
                             <span class="text-red-400/70">FORCE CHAOS</span>
@@ -205,8 +203,8 @@
                         <div class="font-bold text-sm text-cloud group-hover:text-teal transition-colors mb-1">Project Kenosis</div>
                         <div class="text-xs text-cloud/50">The live 7-node CF Worker topology this simulation models.</div>
                     </a>
-                    <a href="alchemy.html" class="block p-4 bg-void border border-white/5 rounded hover:border-cyan/30 transition-colors group mb-3">
-                        <div class="font-bold text-sm text-cloud group-hover:text-cyan transition-colors mb-1">Neuro-Cognition Alchemy</div>
+                    <a href="alchemy.html" class="block p-4 bg-void border border-white/5 rounded hover:border-teal/30 transition-colors group mb-3">
+                        <div class="font-bold text-sm text-cloud group-hover:text-teal transition-colors mb-1">Neuro-Cognition Alchemy</div>
                         <div class="text-xs text-cloud/50">Theoretical basis — K₄ rigidity, SIC-POVM, Posner molecule.</div>
                     </a>
                     <a href="spaceship-earth.html" class="block p-4 bg-void border border-white/5 rounded hover:border-teal/30 transition-colors group">

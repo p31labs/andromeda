@@ -4,6 +4,9 @@
 /app/larmor /larmor.html      302
 /dome.html  /dome/            301
 
+# /integrations/ — Astro static folder; short path without trailing slash
+/integrations  /integrations/  301
+
 # Short-path aliases for public release surfaces
 /onboard    /planetary-onboard.html  301
 /passport   /passport-generator.html  301
@@ -27,3 +30,6 @@
 /security   /security-disclosure.html   301
 /fleet   /live-fleet-demo.html   301
 /demos   /demo-labs.html   301
+/journey   /vision.html   301
+/growth   /kids-growth.html   301
+/kids   /kids-home.html   301

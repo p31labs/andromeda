@@ -3,6 +3,7 @@
  * Wires public/*.html Tailwind CDN pages to canonical p31-style:
  * /p31-style.css, /p31-tailwind-extend.js, extend: { ...window.P31_TAILWIND_EXTEND, ... }.
  * Idempotent: skips pages already using P31_TAILWIND_EXTEND.
+ * Invoked by apply-p31-style; alignment: p31-alignment.json "canon-to-style-css" + verify:p31-style.
  */
 import fs from "fs";
 import path from "path";

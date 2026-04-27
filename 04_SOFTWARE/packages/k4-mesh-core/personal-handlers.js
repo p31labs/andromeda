@@ -13,6 +13,8 @@ import {
   edgeKeySub,
   edgesForScope,
   PHASE_SIERPINSKI,
+  MESH_PAYLOAD_VERSION,
+  listScopes,
 } from './scopes.js';
 import { json, err } from './http.js';
 import {
@@ -152,7 +154,13 @@ export async function personalVertexGet(env, id, ctx = {}) {
   return json({ vertex, edges: connectedEdges, scope: 'personal' }, 200, reqHeaders(ctx));
 }
 
-export async function personalHealth(env, ctx = {}) {
+/**
+ * One round-trip: full mesh payload + liveness metadata (for observatory + fat clients).
+ * Schema: p31.mesh.snapshot/1.0.0
+ */
+export async function personalApiSnapshot(env, requestUrl, ctx = {}) {
+  const hub = buildPersonalConnectHub(requestUrl);
+  const mesh = await buildMeshPayload(env, PERSONAL_SCOPE, { connectHub: hub });
   const workerVersion = env.WORKER_VERSION || '1.0.0';
   let kv = 'ok';
   try {
@@ -163,16 +171,87 @@ export async function personalHealth(env, ctx = {}) {
   const ok = kv === 'ok';
   return json(
     {
+      schema: 'p31.mesh.snapshot/1.0.0',
+      at: new Date().toISOString(),
+      service: 'k4-personal',
+      workerVersion,
+      meshPayloadVersion: MESH_PAYLOAD_VERSION,
+      mesh,
+      /** Larmor-locked readout: same 863 Hz anchor as hub trim (p31-constants physics.larmorHz). */
+      physics: {
+        schema: 'p31.meshPhysics/0.1.0',
+        larmorReferenceHz: 863,
+        note:
+          "Classical mesh vitality; not a qubit. PQC app transport: FIPS 203/204 in @p31/quantum-core (separate from this KV state).",
+      },
+      /** Hermetic echo: p31ca ↑ ↔ Workers ↓ (observatory + curl). */
+      mirror: {
+        schema: 'p31.mirror/0.1.0',
+        asAbove:
+          'p31ca static shell, Mesh Observatory, landing/dome HUD (src/lib/mesh/mesh-snapshot.ts)',
+        asBelow: 'k4-personal Worker, K4_MESH KV, PersonalAgent Durable Object',
+        familyBelow: 'k4-cage Worker (separate request; same K4 face lattice)',
+        tag: 'as above, so below <3',
+      },
+      liveness: {
+        ok,
+        checks: { kv },
+        scope: 'personal',
+        topology: 'K4',
+        phase: PHASE_SIERPINSKI,
+      },
+    },
+    ok ? 200 : 503,
+    reqHeaders(ctx),
+  );
+}
+
+export async function personalHealth(env, ctx = {}) {
+  const workerVersion = env.WORKER_VERSION || '1.0.0';
+  let kv = 'ok';
+  try {
+    await env.K4_MESH.get('meta:scope_registry');
+  } catch {
+    kv = 'error';
+  }
+  const ok = kv === 'ok';
+  let registry = null;
+  if (ok) {
+    try {
+      registry = await listScopes(env);
+    } catch {
+      registry = { error: 'registry_unavailable' };
+    }
+  }
+  return json(
+    {
       ok,
       service: 'k4-personal',
       workerVersion,
+      meshPayloadVersion: MESH_PAYLOAD_VERSION,
       topologyLabel: env.TOPOLOGY || 'K4_PERSONAL',
       scope: 'personal',
       topology: 'K4',
       phase: PHASE_SIERPINSKI,
       vertices: ['a', 'b', 'c', 'd'],
       checks: { kv },
+      capabilities: [
+        'GET /api/mesh',
+        'GET /api/vertex/:id',
+        'POST /api/presence/:id',
+        'POST /api/ping/:from/:to',
+        'GET /viz',
+        'GET /u/:user/home',
+        'DurableObject /agent/*',
+      ],
+      registry: registry || { error: 'skipped' },
       note: 'Dedicated Worker + KV; mesh keys k4s:personal:*',
+      mirror: {
+        schema: 'p31.mirror/0.1.0',
+        asAbove: 'p31ca GET /api/* via mesh-snapshot (browser)',
+        asBelow: 'k4-personal edge (this service)',
+        tag: 'as above, so below <3',
+      },
       timestamp: new Date().toISOString(),
     },
     ok ? 200 : 503,
@@ -184,11 +263,13 @@ export function personalRouteIndex(ctx = {}) {
   return json({
     service: 'k4-personal',
     package: '@p31/k4-mesh-core',
+    meshPayloadVersion: MESH_PAYLOAD_VERSION,
     routes: [
       { method: 'GET', path: '/', desc: 'HTML index' },
       { method: 'GET', path: '/viz', desc: 'Live tetrahedron (pillars a–d)' },
       { method: 'GET', path: '/api', desc: 'Route index (this JSON)' },
       { method: 'GET', path: '/api/mesh', desc: 'Personal K₄ mesh (same shape as cage GET /api/v4/mesh?scope=personal)' },
+      { method: 'GET', path: '/api/snapshot', desc: 'Mesh + liveness in one JSON (p31.mesh.snapshot/1.0.0)' },
       { method: 'GET', path: '/api/health', desc: 'Liveness' },
       { method: 'GET', path: '/api/vertex/:id', desc: 'Vertex detail a|b|c|d' },
       { method: 'POST', path: '/api/presence/:id', desc: 'Presence heartbeat' },

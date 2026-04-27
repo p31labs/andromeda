@@ -23,8 +23,8 @@
     <style>
         :root { color-scheme: dark; }
         body {
-            background-color: #0f1115;
-            color: #d8d6d0;
+            background-color: var(--p31-void);
+            color: var(--p31-cloud);
             background-image: linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
             background-size: 40px 40px;
@@ -49,9 +49,9 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.06);
         }
         .portal-card:hover {
-            border-color: #4db8a8;
+            border-color: var(--p31-teal);
             transform: translateY(-4px);
-            box-shadow: 0 10px 30px rgba(77, 184, 168, 0.1);
+            box-shadow: 0 10px 30px rgba(37, 137, 125, 0.12);
         }
         .terminal-blink { animation: blink 1s step-end infinite; }
         @keyframes blink { 50% { opacity: 0; } }
@@ -64,11 +64,11 @@
 </head>
 <body class="min-h-screen flex flex-col" id="sov-body">
 
-    <header class="w-full border-b border-white/5 bg-void/90 backdrop-blur-md sticky top-0 z-50" id="sov-header">
+    <header class="w-full border-b border-white/[0.07] bg-surface/90 backdrop-blur-sm sticky top-0 z-50" id="sov-header">
         <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
             <div class="flex items-center gap-4">
                 <a href="sovereignty.html" class="font-mono text-xs text-cloud/30 hover:text-cloud/70 transition-colors">← About</a>
-                <div class="font-bold text-xl tracking-widest" style="background: linear-gradient(90deg, #4db8a8, #8b7cc9); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                <div class="font-bold text-xl tracking-widest" style="background: linear-gradient(90deg, #25897d, #8b7cc9); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
                     ▲ SIMPLE SOVEREIGNTY
                 </div>
             </div>
@@ -92,7 +92,7 @@
         <!-- Quick Stats -->
         <section class="grid grid-cols-2 md:grid-cols-4 gap-6">
             <div class="glass-card p-6 text-center">
-                <div class="text-3xl font-bold text-cyan mb-2" id="sovereignty-level">30%</div>
+                <div class="text-3xl font-bold text-teal mb-2" id="sovereignty-level">30%</div>
                 <div class="font-mono text-xs text-cloud/50 uppercase tracking-widest">Sovereignty Level</div>
             </div>
             <div class="glass-card p-6 text-center">
@@ -100,7 +100,7 @@
                 <div class="font-mono text-xs text-cloud/50 uppercase tracking-widest">Metabolic Status</div>
             </div>
             <div class="glass-card p-6 text-center">
-                <div class="text-3xl font-bold text-cyan mb-2">ACTIVE</div>
+                <div class="text-3xl font-bold text-teal mb-2">ACTIVE</div>
                 <div class="font-mono text-xs text-cloud/50 uppercase tracking-widest">Legal Shield</div>
             </div>
             <div class="glass-card p-6 text-center">
@@ -151,9 +151,9 @@
                 <div class="w-3 h-3 rounded-full bg-phosphorus"></div>
             </div>
             <div class="text-phosphorus flex flex-col gap-2 terminal-text">
-                <div><span class="text-cyan">$ sovereignty init</span> <span class="text-cloud/40">// Initializing stack...</span></div>
-                <div><span class="text-cyan">$ status check</span> <span class="text-cloud/40">// System operational</span></div>
-                <div><span class="text-cyan">$ cat manifest.json</span></div>
+                <div><span class="text-teal">$ sovereignty init</span> <span class="text-cloud/40">// Initializing stack...</span></div>
+                <div><span class="text-teal">$ status check</span> <span class="text-cloud/40">// System operational</span></div>
+                <div><span class="text-teal">$ cat manifest.json</span></div>
                 <div class="text-cloud">
                     {<br>
                     &nbsp;&nbsp;"operator": "Will",<br>
@@ -163,7 +163,7 @@
                     &nbsp;&nbsp;"devices": ["P31 Compass", "P31 Buffer"]<br>
                     }
                 </div>
-                <div><span class="text-cyan">$ _</span><span class="terminal-blink">█</span></div>
+                <div><span class="text-teal">$ _</span><span class="terminal-blink">█</span></div>
             </div>
         </section>
 
@@ -172,8 +172,8 @@
     <footer class="border-t border-white/5 py-8 text-center text-cloud/40 text-sm font-mono mt-auto">
         <p class="mb-4">"Structure determines performance. Grounding determines connection."</p>
         <div class="flex justify-center gap-6">
-            <a href="sovereignty.html" class="hover:text-cyan transition-colors">← About</a>
-            <a href="/" class="hover:text-cyan transition-colors">Hub</a>
+            <a href="sovereignty.html" class="hover:text-teal transition-colors">← About</a>
+            <a href="/" class="hover:text-teal transition-colors">Hub</a>
             <a href="phenix-os.html" class="hover:text-coral transition-colors">Phenix OS</a>
         </div>
     </footer>

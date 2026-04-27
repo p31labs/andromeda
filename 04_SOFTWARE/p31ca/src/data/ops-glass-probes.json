@@ -1,6 +1,6 @@
 {
   "schema": "p31.opsGlassProbes/1.0.0",
-  "ingested": "2026-04-26T21:15:19.838Z",
+  "ingested": "2026-04-27T00:41:29.582Z",
   "source": "p31-ecosystem.json",
   "probes": [
     {
@@ -80,7 +80,7 @@
     {
       "id": "p31ca-mesh-start-page",
       "group": "pages",
-      "note": "PAR personal landing (CWP-P31-PAR); repo dev: soup-demo.html → andromeda/.../p31ca/public/mesh-start.html",
+      "note": "PAR personal landing (CWP-P31-PAR); repo: soup.html → andromeda/.../p31ca/public/mesh-start.html",
       "url": "https://p31ca.org/mesh-start.html"
     },
     {

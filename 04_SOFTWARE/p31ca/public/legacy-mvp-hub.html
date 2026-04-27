@@ -25,12 +25,12 @@
     <style>
         :root { color-scheme: dark; }
         body {
-            background-color: #0f1115;
-            color: #d8d6d0;
+            background-color: var(--p31-void);
+            color: var(--p31-cloud);
         }
         body.dark {
-            background-color: #0f1115;
-            color: #d8d6d0;
+            background-color: var(--p31-void);
+            color: var(--p31-cloud);
         }
         body.light {
             background-color: #f4f4f5;
@@ -46,9 +46,9 @@
                 linear-gradient(90deg, rgba(0,0,0,0.04) 1px, transparent 1px);
             background-size: 40px 40px;
         }
-        .matte-panel-dark { background-color: #161920; border: 1px solid rgba(255,255,255,0.04); }
+        .matte-panel-dark { background-color: var(--p31-surface); border: 1px solid rgba(255,255,255,0.07); }
         .matte-panel-light { background-color: #ffffff; border: 1px solid rgba(0,0,0,0.08); box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
-        .logo-text { fill: #d8d6d0; }
+        .logo-text { fill: var(--p31-cloud); }
         .light .logo-text { fill: #1e293b; }
         .card-hover { transition: transform 0.15s ease, border-color 0.15s ease; }
         .card-hover:hover { transform: translateY(-2px); }
@@ -58,7 +58,7 @@
 <body class="dark min-h-screen flex flex-col ambient-grid-dark" id="body">
 
 <!-- Nav -->
-<nav id="navbar" class="sticky top-0 z-50 border-b border-white/5 backdrop-blur-sm" style="background:rgba(15,17,21,0.92)">
+<nav id="navbar" class="sticky top-0 z-50 border-b border-white/[0.07] bg-surface/90 backdrop-blur-sm">
     <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
         <a href="/" class="flex items-center gap-3">
             <svg width="28" height="28" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
@@ -501,19 +501,20 @@ function toggleTheme() {
         body.classList.remove('light');
         body.classList.add('dark', 'ambient-grid-dark');
         body.classList.remove('ambient-grid-light');
-        body.style.backgroundColor = '#0f1115';
-        body.style.color = '#d8d6d0';
-        navbar.style.background = 'rgba(15,17,21,0.92)';
-        navbar.className = navbar.className.replace('border-black/5', 'border-white/5');
-        icon.textContent = '&#9728;';
+        body.style.backgroundColor = '';
+        body.style.color = '';
+        navbar.className = 'sticky top-0 z-50 border-b border-white/[0.07] bg-surface/90 backdrop-blur-sm';
+        navbar.style.background = '';
+        icon.textContent = '☀';
         heroSpan.className = 'text-teal';
     } else {
         body.classList.remove('dark', 'ambient-grid-dark');
         body.classList.add('light', 'ambient-grid-light');
-        body.style.backgroundColor = '#f4f4f5';
-        body.style.color = '#1e293b';
-        navbar.style.background = 'rgba(244,244,245,0.95)';
-        icon.textContent = '&#x1F319;';
+        body.style.backgroundColor = '';
+        body.style.color = '';
+        navbar.className = 'sticky top-0 z-50 border-b border-black/10 bg-white/95 backdrop-blur-sm';
+        navbar.style.background = '';
+        icon.textContent = '🌙';
         heroSpan.className = 'text-teal';
     }
     renderCards();

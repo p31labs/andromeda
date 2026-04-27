@@ -5,7 +5,7 @@
  * Compares hub "index" sources to reduce drift (CWP WBS 0.1 / 5.1).
  * Run **after** verify-ground-truth in CI (`prebuild` runs GT → hub:build → hub:verify → this).
  *
- * 1) Ensures src/data/hub-landing.json coreProducts id order === COCKPIT_PRODUCT_IDS in build-landing-data.mjs
+ * 1) Ensures src/data/hub-landing.json coreProducts id order === HUB_COCKPIT_ORDER in hub-app-ids.mjs
  * 2) If public/legacy-mvp-hub.html has mvpData, extracts ids; optional strict-mvp for registry match
  * 3) Warns if index.astro still has inline const coreProducts
  *
@@ -47,11 +47,11 @@ function runVerifyGroundTruth() {
  * @returns {string[]}
  */
 function parseCockpitIdsFromBuildScript() {
-  const fp = path.join(P31CA, "scripts", "hub", "build-landing-data.mjs");
+  const fp = path.join(P31CA, "scripts", "hub", "hub-app-ids.mjs");
   const text = fs.readFileSync(fp, "utf8");
-  const m = text.match(/const\s+COCKPIT_PRODUCT_IDS\s*=\s*\[([\s\S]*?)\];/);
+  const m = text.match(/export const HUB_COCKPIT_ORDER\s*=\s*\[([\s\S]*?)\];/);
   if (!m) {
-    throw new Error("COCKPIT_PRODUCT_IDS not found in build-landing-data.mjs");
+    throw new Error("HUB_COCKPIT_ORDER not found in hub-app-ids.mjs");
   }
   const body = m[1];
   const ids = [];

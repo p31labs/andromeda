@@ -2,7 +2,7 @@
   "schema": "p31.ground-truth/1.0.0",
   "version": "1.0.0",
   "updated": "2026-04-26",
-  "mission": "Build, create, connect — decentralized family mesh. This file is the machine-routable spine for p31ca.org; human narrative stays in root CLAUDE.md, P31 COGNITIVE PASSPORT — v5.md, and docs/. Version namespaces: P31 home docs/CANONICAL-NUMBERING.md; values: P31 home p31-constants.json.",
+  "mission": "Build, create, connect — decentralized family mesh. This file is the machine-routable spine for p31ca.org; human narrative stays in root CLAUDE.md, P31 COGNITIVE PASSPORT — v5.md, and docs/. Version namespaces: P31 home docs/CANONICAL-NUMBERING.md; values: P31 home p31-constants.json. Source→sink alignment: P31 home p31-alignment.json (p31.alignment/1.0.0) and docs/P31-ALIGNMENT-SYSTEM.md (ephemeralization; verify: npm run verify:alignment).",
   "canonicalNumbering": {
     "spec": "P31 home: docs/CANONICAL-NUMBERING.md",
     "passportLongForm": {
@@ -136,11 +136,29 @@
       "label": "Demo labs — curated static demos index",
       "note": "Short /demos in _redirects. Links fleet map, canon, ops, delta, connect, onboard, centaur."
     },
+    "visionJourney": {
+      "path": "/vision.html",
+      "implementation": "public/vision.html",
+      "label": "Core journey — onboard → auth → EDE home (static narrative + CTAs)",
+      "note": "Canonical P31 hub path in one page: /onboard, /auth, /start with Wye→Delta and Mesh links. Short /journey in _redirects. No medical or legal advice."
+    },
     "meshStart": {
       "path": "/mesh-start.html",
       "implementation": "public/mesh-start.html",
       "label": "EDE Personal — private assistant + EDE entry (k4-personal)",
       "note": "Loads /p31-welcome-packages.json from meta.welcomeKey or ?welcome=. Personalizes headline, tetra blurb, prompt chips; merges package docks into first-time PUT /tetra. Hub fusion ?hub=&hubs=. ?agent= staging. Short /start in _redirects."
+    },
+    "kidsGrowth": {
+      "path": "/kids-growth.html",
+      "implementation": "public/kids-growth.html",
+      "label": "Kids growth — S.J. & W.J. height/weight, milestones, export",
+      "note": "Static hub app; localStorage; Chart.js. Short /growth in _redirects. Not medical advice."
+    },
+    "kidsHome": {
+      "path": "/kids-home.html",
+      "implementation": "public/kids-home.html",
+      "label": "Household kids home — one screen to growth, missions, EDE, mesh, kid onboard",
+      "note": "p31.householdKidsHome/0.1.0. Short /kids. Large tiles; grown-up links below."
     },
     "initialBuild": {
       "path": "/initial-build.html",
@@ -263,6 +281,13 @@
       "label": "Operator shell — unified interactive frame (CWP-P31-UI-2026-01)",
       "doc": "p31ca/docs/CONTROLLED-WORK-PACKAGE-INTERACTIVE-OPERATOR-UI.md",
       "note": "Phase A–C + v1.1.0 closure: hub / nav+banner → /ops/; glass summary; home npm run command-center actions. CWP v1.1.0. Trust: EDGE-SECURITY.md; POST shift on command-center only."
+    },
+    "integrationsBridge": {
+      "path": "/integrations",
+      "implementation": "src/pages/integrations.astro",
+      "label": "OSS smart home, wearables, and operator tool catalog (machine + doc links)",
+      "doc": "docs/P31-INTEGRATIONS-BRIDGE.md",
+      "note": "Data from p31-constants.json integrations; apply:constants → public/p31-integrations.json. No secrets; empty endpoint slots = disabled."
     }
   },
   "edgeRedirects": [
@@ -280,6 +305,11 @@
       "from": "/app/larmor",
       "to": "/larmor.html",
       "status": 302
+    },
+    {
+      "from": "/integrations",
+      "to": "/integrations/",
+      "status": 301
     },
     {
       "from": "/dome.html",
@@ -380,6 +410,21 @@
       "from": "/demos",
       "to": "/demo-labs.html",
       "status": 301
+    },
+    {
+      "from": "/journey",
+      "to": "/vision.html",
+      "status": 301
+    },
+    {
+      "from": "/growth",
+      "to": "/kids-growth.html",
+      "status": 301
+    },
+    {
+      "from": "/kids",
+      "to": "/kids-home.html",
+      "status": 301
     }
   ],
   "fileSnippets": [
@@ -402,6 +447,21 @@
       "id": "devWorkbench.page",
       "path": "public/dev-workbench.html",
       "mustIncludeSubstring": "P31 Dev Workbench"
+    },
+    {
+      "id": "visionJourney.page",
+      "path": "public/vision.html",
+      "mustIncludeSubstring": "Core mesh journey"
+    },
+    {
+      "id": "kidsGrowth.page",
+      "path": "public/kids-growth.html",
+      "mustIncludeSubstring": "p31.kidsGrowth/1.0.0"
+    },
+    {
+      "id": "kidsHome.page",
+      "path": "public/kids-home.html",
+      "mustIncludeSubstring": "p31.householdKidsHome/0.1.0"
     },
     {
       "id": "initialBuild.page",
@@ -462,6 +522,21 @@
       "id": "demo.labs.page",
       "path": "public/demo-labs.html",
       "mustIncludeSubstring": "Welcome to the demo lobby"
+    },
+    {
+      "id": "meshObservatory.page",
+      "path": "src/pages/mesh-observatory.astro",
+      "mustIncludeSubstring": "p31.mesh.snapshot/1.0.0"
+    },
+    {
+      "id": "meshObservatory.mirror",
+      "path": "src/pages/mesh-observatory.astro",
+      "mustIncludeSubstring": "p31.mirror/0.1.0"
+    },
+    {
+      "id": "meshObservatory.physics",
+      "path": "src/pages/mesh-observatory.astro",
+      "mustIncludeSubstring": "p31.meshPhysics/0.1.0"
     }
   ],
   "registryAppUrlInvariants": [
@@ -496,6 +571,10 @@
     {
       "id": "p31-delta-hiring",
       "appUrl": "delta-hiring/index.html"
+    },
+    {
+      "id": "integrations",
+      "appUrl": "integrations/index.html"
     }
   ],
   "threejs": {
@@ -518,6 +597,14 @@
     "connect.html": {
       "path": "public/connect.html",
       "mustIncludeSubstring": "three@0.160.0"
+    },
+    "geodesic-math.astro": {
+      "path": "src/pages/geodesic-math.astro",
+      "mustIncludeSubstring": "three@0.183.0"
+    },
+    "mesh-observatory.astro": {
+      "path": "src/pages/mesh-observatory.astro",
+      "mustIncludeSubstring": "three@0.183.0"
     }
   }
 }

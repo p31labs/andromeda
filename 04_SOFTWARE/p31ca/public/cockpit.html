@@ -6,12 +6,13 @@
 <title>SOVEREIGN OS // Cockpit</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/p31-style.css">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
-    background: #0f1115;
-    color: #d8d6d0;
-    font-family: 'Atkinson Hyperlegible', sans-serif;
+    background: var(--p31-void);
+    color: var(--p31-cloud);
+    font-family: var(--p31-font-sans), 'Atkinson Hyperlegible', sans-serif;
     overflow: hidden;
     width: 100vw; height: 100vh;
   }
@@ -21,14 +22,14 @@
     background: rgba(22, 25, 32, 0.75);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(77, 184, 168, 0.15);
+    border: 1px solid rgba(37, 137, 125, 0.2);
     border-radius: 8px;
   }
 
   #back-link {
     position: fixed; top: 16px; left: 20px; z-index: 10;
     font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 500;
-    color: #4db8a8; text-decoration: none; letter-spacing: 0.5px;
+    color: var(--p31-teal); text-decoration: none; letter-spacing: 0.5px;
     opacity: 0.8; transition: opacity 0.2s;
   }
   #back-link:hover { opacity: 1; }

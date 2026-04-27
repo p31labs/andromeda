@@ -1,0 +1,178 @@
+{
+  "_comment": "Single updatable source for operator-locked numbers, public URLs, and schema ids. After edits: npm run apply:constants && npm run verify:constants",
+  "updated": "2026-04-26",
+  "organization": {
+    "legalName": "P31 Labs, Inc.",
+    "ein": "42-1888158",
+    "stateOfIncorporation": "GA",
+    "incorporationDate": "2026-04-03",
+    "einAssignedDate": "2026-04-13",
+    "status501c3": "pending"
+  },
+  "contact": {
+    "primaryEmail": "will@p31ca.org",
+    "githubOrg": "p31labs",
+    "kofiUrl": "https://ko-fi.com/trimtab69420"
+  },
+  "payment": {
+    "stripeWorkerHost": "donate-api.phosphorus31.org",
+    "stripeApiHealthUrl": "https://donate-api.phosphorus31.org/health",
+    "donateApiHealthUrl": "https://donate-api.phosphorus31.org/health",
+    "donateApiWorkersDevUrl": "https://donate-api.trimtab-signal.workers.dev",
+    "hcbReference": "4XDUXX",
+    "hcbStatus": "unresponsive_pivot_to_stripe"
+  },
+  "bonding": {
+    "shippedDate": "2026-03-10",
+    "testBaseline": { "tests": 424, "suites": 32 },
+    "publicUrl": "https://bonding.p31ca.org"
+  },
+  "physics": {
+    "larmorHz": 863,
+    "larmorLabel": "31P Larmor in Earth field (P31 canonical copy)"
+  },
+  "cognitivePassport": {
+    "longFormFilename": "P31 COGNITIVE PASSPORT — v5.md",
+    "longFormEdition": "5.1",
+    "jsonSchema": "p31.cognitivePassport/1.0.0",
+    "htmlGeneratorTitle": "P31 Cognitive Passport — Generator (v1)"
+  },
+  "groundTruth": {
+    "schema": "p31.ground-truth/1.0.0",
+    "fileVersion": "1.0.0"
+  },
+  "edge": {
+    "workerFleetCount": 10,
+    "notes": "Production Worker count (operator snapshot); not auto-verified against Cloudflare API here."
+  },
+  "mesh": {
+    "_comment": "Canonical worker URLs for K₄ edge; keep in sync with k4-hubs PERSONAL_MESH_URL and mesh-start default. orchestrator + agent URLs: OrchestratorDashboard.astro, public/dev-workbench.html, src/data/p31-mesh-constants.json (from npm run apply:constants). passkeyApiBasePath: same-origin API mounted by Cloudflare Worker zone route p31ca.org/api/passkey/* (workers/passkey/wrangler.toml); static pages use fetch(passkeyApiBasePath + '/register-begin', …).",
+    "k4PersonalWorkerUrl": "https://k4-personal.trimtab-signal.workers.dev",
+    "k4CageWorkerUrl": "https://k4-cage.trimtab-signal.workers.dev",
+    "k4HubsWorkerUrl": "https://k4-hubs.trimtab-signal.workers.dev",
+    "agentHubWorkerUrl": "https://p31-agent-hub.trimtab-signal.workers.dev",
+    "orchestratorWorkerUrl": "https://p31-orchestrator.trimtab-signal.workers.dev",
+    "passkeyApiBasePath": "/api/passkey"
+  },
+  "research": {
+    "orcid": "0009-0002-2492-9079",
+    "papers": [
+      {
+        "id": "defensive",
+        "doi": "10.5281/zenodo.18627420",
+        "title": "The Tetrahedron Protocol"
+      },
+      {
+        "id": "IV",
+        "doi": "10.5281/zenodo.19503542",
+        "title": "Universal Bridge at the Phase Transition",
+        "published": "2026-04-10"
+      },
+      {
+        "id": "V",
+        "doi": "10.5281/zenodo.19782977",
+        "title": "The Borderland Strategy and Estuarine Sensory Gating: Environmental Psychology as Cognitive Infrastructure",
+        "published": "2026-04-26"
+      },
+      {
+        "id": "VI",
+        "doi": "10.5281/zenodo.19782979",
+        "title": "Topological History of Camden County: Institutional Capture and the K₄ Counter-Architecture",
+        "published": "2026-04-26"
+      },
+      {
+        "id": "VII",
+        "doi": "10.5281/zenodo.19782981",
+        "title": "Neuro-Kinship and the Impedance Mismatch: Communication Topology Across Divergent Neurotypes",
+        "published": "2026-04-26"
+      },
+      {
+        "id": "VIII",
+        "doi": "10.5281/zenodo.19782983",
+        "title": "The Value-Form Problem: Self-Domestication, Proactive Strategy, and the L.O.V.E. Use-Value Ledger",
+        "published": "2026-04-26"
+      },
+      {
+        "id": "IX",
+        "doi": "10.5281/zenodo.19782985",
+        "title": "Quantum Social Science: The Authorized Observer Problem and the Spinning Coin Phenomenology",
+        "published": "2026-04-26"
+      },
+      {
+        "id": "X",
+        "doi": "10.5281/zenodo.19782987",
+        "title": "Linguistic Thermodynamics and Synergetic Accounting: The Landauer Limit of Zero-Work Syntax",
+        "published": "2026-04-26"
+      },
+      {
+        "id": "XI",
+        "doi": "10.5281/zenodo.19782971",
+        "title": "The L.O.V.E. Protocol: Biometric Consensus and the Financialization of Care in Assistive Technology",
+        "published": "2026-04-26"
+      },
+      {
+        "id": "XII",
+        "doi": "10.5281/zenodo.19782969",
+        "title": "The Sovereign Stack: Open-Source Hardware–Software Architecture for Neurodivergent Assistive Technology",
+        "published": "2026-04-26"
+      },
+      {
+        "id": "XIII",
+        "doi": "10.5281/zenodo.19782989",
+        "title": "The Abdication Protocol and Legal Faraday Cage: Structural Containment for High-Conflict Jurisdictions",
+        "published": "2026-04-26"
+      },
+      {
+        "id": "XIV",
+        "doi": "10.5281/zenodo.19782991",
+        "title": "Centennial Sync: Fuller's 50-Year Prediction and the P31 Implementation Timeline",
+        "published": "2026-04-26"
+      },
+      {
+        "id": "XV",
+        "doi": "10.5281/zenodo.19782993",
+        "title": "The Resonant Mind: HRV Biofeedback and the 0.1 Hz Cognitive Anchor",
+        "published": "2026-04-26"
+      },
+      {
+        "id": "XVI",
+        "doi": "10.5281/zenodo.19782995",
+        "title": "The Incense Metaphor: Olfactory Anchoring and Ritual in Cognitive Prosthetic Design",
+        "published": "2026-04-26"
+      },
+      {
+        "id": "XVII",
+        "doi": "10.5281/zenodo.19782997",
+        "title": "The Architecture of Chaos: Structured Entropy and the Parking Lot Protocol",
+        "published": "2026-04-26"
+      },
+      {
+        "id": "XVIII",
+        "doi": "10.5281/zenodo.19782999",
+        "title": "The G.O.D. DAO Constitution and the Slashing Engine: Governance Primitives for Assistive-Technology Commons",
+        "published": "2026-04-26"
+      },
+      {
+        "id": "XIX",
+        "doi": "10.5281/zenodo.19782973",
+        "title": "The SOULSAFE Protocol: High-Reliability Engineering for Human–AI Cognitive Symbiosis",
+        "published": "2026-04-26"
+      },
+      {
+        "id": "XX",
+        "doi": "10.5281/zenodo.19783001",
+        "title": "The Trimtab Declaration and Safe Geometry: Minimum Leverage for Maximum Human Flourishing",
+        "published": "2026-04-26"
+      }
+    ]
+  },
+  "operations": {
+    "masterOpsManual": { "lines": 1445, "cwps": 11, "wcds": 41 },
+    "wcdBatch3": { "from": 26, "to": 32, "status": "closed" }
+  },
+  "documentation": {
+    "canonicalNumbering": "docs/CANONICAL-NUMBERING.md",
+    "reviewBundle": "docs/GEMINI-OPUS-REVIEW-BUNDLE.md",
+    "mvpInventory": "docs/MVP-DELIVERABLES-INVENTORY.md"
+  }
+}

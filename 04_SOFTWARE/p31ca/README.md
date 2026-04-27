@@ -34,10 +34,11 @@ p31ca/
 │   └── _headers         # Security headers (CORP, Clear-Site-Data, etc.)
 ├── scripts/
 │   ├── hub/
-│   │   ├── registry.mjs               # Source of truth for product list
+│   │   ├── registry.mjs               # Product list, appUrl, related[]
+│   │   ├── hub-app-ids.mjs            # HUB_COCKPIT_ORDER + prototypes (grid + verify)
 │   │   ├── build-landing-data.mjs     # → src/data/hub-landing.json
-│   │   ├── generate-about-pages.mjs   # → public/*-about.html (imports hub/registry.mjs)
-│   │   └── verify.mjs                 # Hub invariants check
+│   │   └── verify.mjs                 # Hub invariants (registry ↔ ids ↔ abouts)
+│   ├── generate-about-pages.mjs      # → public/*-about.html
 │   ├── verify-ground-truth.mjs        # Routes + Three.js pins + redirect check
 │   ├── verify-synergetic.mjs          # Multi-dome manifest check
 │   └── verify-passport.mjs            # CogPass mirror sync check
@@ -92,9 +93,9 @@ Any verifier failure blocks the Astro build.
 
 ## Registry pipeline
 
-Products are defined in `scripts/hub/registry.mjs`. To add or update a product:
+Product metadata lives in `scripts/hub/registry.mjs`; home grid order is `scripts/hub/hub-app-ids.mjs` (must stay in lockstep — see `docs/P31-HUB-CARD-ECOSYSTEM.md` in the home repo). To add or update a product:
 
-1. Edit `registry.mjs`.
+1. Edit `registry.mjs` and add the id to `hub-app-ids.mjs` (cockpit or prototype list).
 2. `npm run hub:ci` — regenerates about pages, hub-landing.json, and runs all verifiers.
 3. If the product uses Three.js: add a pin to `ground-truth/p31.ground-truth.json` → `threejs` and a matching entry to `ground-truth/synergetic-manifest.json`.
 

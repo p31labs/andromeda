@@ -98,6 +98,7 @@ const orchestratorStatusUrl = new URL('/api/orchestrator/status', mesh.orchestra
         <a href="/" class="hover:text-teal-300/90 transition-colors">Cockpit home</a>
         <a href="/demos" class="hover:text-teal-300/90 transition-colors">Demo lobby</a>
         <a href="/fleet" class="hover:text-teal-300/90 transition-colors">Fleet map</a>
+        <a href="/integrations" class="hover:text-teal-300/90 transition-colors">Integrations</a>
         <a href="/privacy" class="hover:text-teal-300/90 transition-colors">Privacy</a>
         <a href="/contact" class="hover:text-teal-300/90 transition-colors">Contact</a>
         <a href="/accessibility" class="hover:text-teal-300/90 transition-colors">Accessibility</a>
@@ -136,10 +137,10 @@ const orchestratorStatusUrl = new URL('/api/orchestrator/status', mesh.orchestra
           <dt class="text-[10px] uppercase tracking-widest text-white/40 font-mono pt-0.5">Local</dt>
           <dd class="text-white/60">
             In the <strong class="text-white/85">P31 home</strong> (bonding-soup) repo: <code
-              class="text-teal-300/90 text-xs">npm run command-center</code> — hooks, <code
-              class="text-teal-300/80 text-xs">verify:monetary</code>, <code class="text-teal-300/80 text-xs">pr</code
-            >, Andromeda <code class="text-teal-300/80 text-xs">prepush:check</code>. Stays on your machine; start the
-            server, then use the top link.
+              class="text-teal-300/90 text-xs">npm run command-center</code> — grouped whitelisted actions (verify, <code
+              class="text-white/50 text-xs">p31:all</code>, <code class="text-white/50 text-xs">validate:full</code>,
+            release, mesh, glass, operator shift, <code class="text-white/50 text-xs">hub:ci</code>, PR). Stays on your
+            machine; start the server, then use the top link.
           </dd>
         </div>
         <div class="grid sm:grid-cols-[5.5rem_1fr] gap-1 border-b border-white/5 pb-3">
@@ -521,12 +522,12 @@ const orchestratorStatusUrl = new URL('/api/orchestrator/status', mesh.orchestra
               L.className =
                 'p-2 font-mono align-top ' +
                 (r.level === 'ok'
-                  ? 'text-emerald-400/95'
+                  ? 'text-phosphorus/95'
                   : r.level === 'auth'
-                    ? 'text-amber-400/90'
+                    ? 'text-butter/90'
                     : r.level === 'warn'
-                      ? 'text-violet-300/90'
-                      : 'text-rose-400/90')
+                      ? 'text-lavender/90'
+                      : 'text-coral/90')
             }
             if (C) C.textContent = r.code ? String(r.code) : '—'
             if (M) M.textContent = r.ms != null ? String(r.ms) : '—'

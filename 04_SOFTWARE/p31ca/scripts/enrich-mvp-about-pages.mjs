@@ -4,6 +4,7 @@
  * product/prototype in src/data/hub-landing.json with url ending in -about.html
  * (same graph as the Astro home — CWP D5).
  * Idempotent: skips files that already contain id="mvp-enriched".
+ * Run after generate-about-pages + hub:build. Alignment: p31-alignment.json; docs/P31-ALIGNMENT-SYSTEM.md
  *
  * Layouts:
  * - Legacy: `<table class="stack">` — full block + callout + CTA row (and removes old stack CTA).
