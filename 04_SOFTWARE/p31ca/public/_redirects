@@ -14,8 +14,8 @@
 # Short-path aliases for public release surfaces
 /onboard    /planetary-onboard.html  301
 /passport   /passport-generator.html  301
-/welcome    /welcome.html             200
-/together   /welcome.html             301
+# /welcome — no rule: Pages clean URL serves welcome.html at /welcome; a /welcome→welcome.html rule ping-pongs with .html→/welcome (308) → ERR_TOO_MANY_REDIRECTS.
+/together   /welcome                  301
 /start      /mesh-start.html         301
 /mesh       /connect.html            301
 # /delta, /auth: do not redirect here — Pages serves *.html at /basename; adding /delta → delta.html

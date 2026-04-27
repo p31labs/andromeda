@@ -182,7 +182,7 @@
       "path": "/welcome.html",
       "implementation": "public/welcome.html",
       "label": "Welcome — meat-space & household door",
-      "note": "Connection-first CTAs (household kit, mesh, passport, onboard); optional /why, /start, lab. Short /welcome (200) and /together (301). Ko-fi."
+      "note": "Connection-first CTAs (household kit, mesh, passport, onboard); optional /why, /start, lab. Clean URL /welcome from welcome.html (no _redirects row — avoids CF Pages redirect loop). Short /together → /welcome (301). Ko-fi."
     },
     "delta": {
       "path": "/delta.html",
@@ -367,13 +367,8 @@
       "status": 301
     },
     {
-      "from": "/welcome",
-      "to": "/welcome.html",
-      "status": 200
-    },
-    {
       "from": "/together",
-      "to": "/welcome.html",
+      "to": "/welcome",
       "status": 301
     },
     {
