@@ -22,7 +22,17 @@
         }
     </script>
     <style>
-        body { background: #0f1115; color: #d8d6d0; }
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
 
         /* Topology diagrams */
         .topology-svg { width: 100%; max-width: 220px; }
@@ -62,12 +72,86 @@
         .compare tr:hover td { background: rgba(255,255,255,0.02); }
         .yes { color: #3ba372; }
         .no  { color: #cc6247; }
+
+        /* Interactive ribbon (same story as planetary-onboard topology-shift) */
+        #delta-ribbon {
+            --ribbon-t: 0;
+            --ribbon-fade: 0.35s;
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 1rem;
+            padding: 1.25rem 1.25rem 1rem;
+            background: rgba(22,25,32,0.5);
+        }
+        @media (prefers-reduced-motion: reduce) {
+            #delta-ribbon { --ribbon-fade: 0.01s; }
+            .edge-live { animation: none !important; }
+        }
+        .delta-ribbon-stack {
+            position: relative;
+            width: 7.5rem;
+            height: 7.5rem;
+            margin: 0 auto 1rem;
+        }
+        .delta-ribbon-stack svg {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            transition: opacity var(--ribbon-fade) ease-out;
+        }
+        .delta-ribbon-wye   { opacity: calc(1 - var(--ribbon-t)); }
+        .delta-ribbon-delta { opacity: var(--ribbon-t); }
+        .delta-ribbon-legend {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.58rem;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: rgba(216,214,208,0.38);
+            margin-bottom: 0.75rem;
+        }
+        .delta-ribbon-legend .rw { color: rgba(204,98,71,0.8); transition: color var(--ribbon-fade) ease; }
+        .delta-ribbon-legend .rd { color: rgba(59,163,114,0.8); transition: color var(--ribbon-fade) ease; }
+        .delta-ribbon-bar {
+            flex: 1;
+            max-width: 6rem;
+            height: 3px;
+            border-radius: 2px;
+            background: rgba(255,255,255,0.08);
+            overflow: hidden;
+        }
+        .delta-ribbon-bar i {
+            display: block;
+            height: 100%;
+            width: 0%;
+            border-radius: 2px;
+            background: linear-gradient(90deg, #cc6247, #25897d, #3ba372);
+            transition: width var(--ribbon-fade) ease-out;
+        }
+        .delta-ribbon-slider {
+            width: 100%;
+            max-width: 16rem;
+            margin: 0 auto;
+            display: block;
+            accent-color: #25897d;
+        }
+        .delta-ribbon-caption {
+            font-size: 0.72rem;
+            line-height: 1.45;
+            color: rgba(216,214,208,0.45);
+            text-align: center;
+            max-width: 22rem;
+            margin: 0.75rem auto 0;
+        }
     </style>
 </head>
-<body class="font-sans min-h-screen">
+<body class="bg-void text-cloud min-h-screen font-sans antialiased">
 
 <!-- Nav -->
-<nav class="sticky top-0 z-50 border-b border-white/5 backdrop-blur-sm" style="background:rgba(15,17,21,0.92)">
+<nav class="sticky top-0 z-50 border-b border-white/[0.07] bg-surface/90 backdrop-blur-sm">
     <div class="max-w-3xl mx-auto px-6 py-4 flex items-center justify-between">
         <a href="/" class="flex items-center gap-3 no-underline">
             <svg width="22" height="22" viewBox="0 0 512 512">
@@ -95,6 +179,50 @@
             Here is why it matters — and what we built instead.
         </p>
     </header>
+
+    <!-- Live crossfade: same topology ribbon progression as onboarding -->
+    <section id="delta-ribbon" class="mb-16" aria-labelledby="delta-ribbon-heading">
+        <h2 id="delta-ribbon-heading" class="sr-only">Crossfade from Wye to Delta</h2>
+        <div class="delta-ribbon-stack" aria-hidden="true">
+            <svg class="delta-ribbon-wye topology-svg" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="100" cy="100" r="18" fill="rgba(204,98,71,0.15)" stroke="#cc6247" stroke-width="2"/>
+                <line x1="100" y1="82" x2="100" y2="38" stroke="rgba(216,214,208,0.35)" stroke-width="1.5"/>
+                <line x1="100" y1="118" x2="100" y2="162" stroke="rgba(216,214,208,0.35)" stroke-width="1.5"/>
+                <line x1="82" y1="100" x2="38" y2="100" stroke="rgba(216,214,208,0.35)" stroke-width="1.5"/>
+                <line x1="118" y1="100" x2="162" y2="100" stroke="rgba(216,214,208,0.35)" stroke-width="1.5"/>
+                <circle cx="100" cy="32" r="8" fill="rgba(216,214,208,0.08)" stroke="rgba(216,214,208,0.35)" stroke-width="1.2"/>
+                <circle cx="100" cy="168" r="8" fill="rgba(216,214,208,0.08)" stroke="rgba(216,214,208,0.35)" stroke-width="1.2"/>
+                <circle cx="32" cy="100" r="8" fill="rgba(216,214,208,0.08)" stroke="rgba(216,214,208,0.35)" stroke-width="1.2"/>
+                <circle cx="168" cy="100" r="8" fill="rgba(216,214,208,0.08)" stroke="rgba(216,214,208,0.35)" stroke-width="1.2"/>
+            </svg>
+            <svg class="delta-ribbon-delta topology-svg" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <line x1="100" y1="44" x2="100" y2="96" stroke="#4db8a8" stroke-width="1.5" stroke-opacity="0.85"/>
+                <line x1="100" y1="44" x2="42" y2="150" stroke="#3ba372" stroke-width="1.5" stroke-opacity="0.85"/>
+                <line x1="100" y1="44" x2="158" y2="150" stroke="#cda852" stroke-width="1.5" stroke-opacity="0.85"/>
+                <line x1="88" y1="116" x2="46" y2="150" stroke="#cc6247" stroke-width="1.5" stroke-opacity="0.85"/>
+                <line x1="112" y1="116" x2="154" y2="150" stroke="#cc6247" stroke-width="1.5" stroke-opacity="0.85"/>
+                <line x1="46" y1="160" x2="154" y2="160" stroke="rgba(216,214,208,0.45)" stroke-width="1.5"/>
+                <circle cx="100" cy="30" r="12" fill="rgba(77,184,168,0.2)" stroke="#4db8a8" stroke-width="2"/>
+                <circle cx="32" cy="160" r="12" fill="rgba(59,163,114,0.2)" stroke="#3ba372" stroke-width="2"/>
+                <circle cx="168" cy="160" r="12" fill="rgba(205,168,82,0.2)" stroke="#cda852" stroke-width="2"/>
+                <circle cx="100" cy="110" r="12" fill="rgba(204,98,71,0.2)" stroke="#cc6247" stroke-width="2"/>
+            </svg>
+        </div>
+        <div class="delta-ribbon-legend" aria-hidden="true">
+            <span class="rw">Wye</span>
+            <div class="delta-ribbon-bar"><i id="delta-ribbon-fill"></i></div>
+            <span class="rd">Delta</span>
+        </div>
+        <label for="delta-ribbon-range" class="sr-only">Blend from star hub to mesh</label>
+        <input id="delta-ribbon-range" class="delta-ribbon-slider" type="range" min="0" max="1" step="0.01" value="0"
+               aria-valuemin="0" aria-valuemax="1" aria-valuenow="0" aria-label="Blend topology from Wye toward Delta"/>
+        <p class="delta-ribbon-caption" id="delta-ribbon-caption" aria-live="polite">
+            Drag the slider: the hub thins out as direct edges take the load — the same crossfade runs quietly while you complete onboarding.
+        </p>
+        <p class="text-center mt-3 mb-0">
+            <a href="/planetary-onboard.html" class="font-mono text-xs text-teal/70 hover:text-teal no-underline">See it during the five phases →</a>
+        </p>
+    </section>
 
     <hr class="divider mb-16">
 
@@ -175,7 +303,7 @@
                     <text x="168" y="185" font-family="monospace" font-size="8" fill="#cda852" text-anchor="middle">W.J.</text>
                     <text x="118" y="116" font-family="monospace" font-size="8" fill="#cc6247" text-anchor="start">chr.</text>
                 </svg>
-                <span class="font-mono text-xs text-teal/60 tracking-widest">ONE NODE FLARES → 57.7% UP</span>
+                <span class="font-mono text-xs text-teal/60 tracking-widest">ONE LEG DROPS → ~57.7% CAPACITY KEEPS RUNNING</span>
             </div>
 
             <div class="flex flex-col gap-5 flex-1">
@@ -186,9 +314,15 @@
                 </p>
                 <p class="text-base text-cloud/75 leading-relaxed">
                     When one vertex or edge fails, the remaining structure routes around it.
-                    The Open Delta principle guarantees the network continues at minimum
-                    <strong class="text-teal">57.7% capacity</strong>. Communications, identity, and trust do not vanish
-                    because one node is under duress.
+                    The open-delta pattern (borrowed from three-phase power practice) is our shorthand for
+                    <strong class="text-teal">degraded but non-zero</strong> operation: enough of the loop remains
+                    that coordination, consent, and continuity do not collapse to zero because one path is hot.
+                </p>
+                <p class="text-xs text-cloud/45 leading-relaxed font-mono">
+                    ~57.7% ≈ 1/√3 — a familiar open-delta capacity figure in electrical work. Here it is a
+                    <strong class="text-cloud/55">resilience metaphor</strong>, not wiring instructions.
+                    Contributors: same four-vector map lives in <code class="text-cloud/50">docs/SIC-POVM-K4-ARCHITECTURE.md</code>
+                    (P31 home workspace).
                 </p>
                 <div class="callout">
                     <p class="text-sm text-cloud/80 leading-relaxed">
@@ -198,6 +332,27 @@
                     </p>
                 </div>
             </div>
+        </div>
+    </section>
+
+    <hr class="divider mb-16">
+
+    <!-- Open delta: degraded grace -->
+    <section class="mb-16" aria-labelledby="open-delta-heading">
+        <h2 id="open-delta-heading" class="text-2xl font-bold mb-2">Open delta — grace under missing pieces</h2>
+        <p class="font-mono text-xs tracking-widest text-cloud/40 mb-6">DEGRADED MODE IS A FEATURE, NOT AN APOLOGY</p>
+        <div class="flex flex-col gap-5 text-base text-cloud/75 leading-relaxed max-w-2xl">
+            <p>
+                In a delta winding, current can still circulate when one branch is open: the triangle closes through
+                the remaining legs. Translating to people and software: if a vendor, a court order, or a caregiver
+                device drops offline, the mesh does not instantly become a pile of isolated endpoints — peers keep
+                a thread of truth at the edge until the missing leg can be repaired or replaced.
+            </p>
+            <p>
+                P31 encodes that instinct in Workers, KV with short TTLs where appropriate, passkeys on-device,
+                and static fallbacks you can bookmark on paper. The goal is never “five nines for the corporation.”
+                It is <strong class="text-cloud/90">survivable minutes for the household</strong> when the hub stops answering.
+            </p>
         </div>
     </section>
 
@@ -261,9 +416,72 @@
                         <td><span class="no">Seed phrases, wallets, gas</span></td>
                         <td><span class="yes">Five-phase ritual, no jargon, biometric only</span></td>
                     </tr>
+                    <tr>
+                        <td class="font-mono text-xs tracking-wide text-cloud/40">When one leg goes dark</td>
+                        <td><span class="no">Total service loss until hub returns</span></td>
+                        <td><span class="yes">Open-delta routing — partial capacity, clear glass on what failed</span></td>
+                    </tr>
+                    <tr>
+                        <td class="font-mono text-xs tracking-wide text-cloud/40">Operator visibility</td>
+                        <td><span class="no">Black box dashboards</span></td>
+                        <td><span class="yes">Glass probes + local command center patterns (home repo)</span></td>
+                    </tr>
+                    <tr>
+                        <td class="font-mono text-xs tracking-wide text-cloud/40">Curriculum / practice surface</td>
+                        <td><span class="no">Ad-hoc PDFs and DMs</span></td>
+                        <td><span class="yes">Geodesic coach + mesh start pages linked from this hub</span></td>
+                    </tr>
                 </tbody>
             </table>
         </div>
+    </section>
+
+    <hr class="divider mb-16">
+
+    <!-- Reconfiguration ladder -->
+    <section class="mb-16" aria-labelledby="ladder-heading">
+        <h2 id="ladder-heading" class="text-2xl font-bold mb-2">Reconfiguration ladder</h2>
+        <p class="text-base text-cloud/60 leading-relaxed mb-6 max-w-2xl">
+            Moving from Wye to Delta is incremental. You do not need a whitepaper — you need a sequence that still works
+            when DNS is flaky.
+        </p>
+        <ol class="flex flex-col gap-4 list-none pl-0">
+            <li class="flex gap-3 items-start">
+                <span class="font-mono text-xs text-teal/70 flex-shrink-0 mt-0.5">1</span>
+                <div>
+                    <p class="text-cloud/85 font-semibold mb-1">Anchor the story</p>
+                    <p class="text-sm text-cloud/55">You are here. Save <a href="/delta.html" class="text-teal/70 hover:text-teal no-underline">/delta</a> or <a href="/why" class="text-teal/70 hover:text-teal no-underline">/why</a> for “why mesh.”</p>
+                </div>
+            </li>
+            <li class="flex gap-3 items-start">
+                <span class="font-mono text-xs text-teal/70 flex-shrink-0 mt-0.5">2</span>
+                <div>
+                    <p class="text-cloud/85 font-semibold mb-1">Complete the five-phase onboard</p>
+                    <p class="text-sm text-cloud/55"><a href="/planetary-onboard.html" class="text-teal/70 hover:text-teal no-underline">Planetary onboard</a> binds the same ribbon progression to biometric passkey where available.</p>
+                </div>
+            </li>
+            <li class="flex gap-3 items-start">
+                <span class="font-mono text-xs text-teal/70 flex-shrink-0 mt-0.5">3</span>
+                <div>
+                    <p class="text-cloud/85 font-semibold mb-1">See the cage + satellites</p>
+                    <p class="text-sm text-cloud/55"><a href="/connect.html" class="text-teal/70 hover:text-teal no-underline">Connect</a> places the K₄ cage in 3D next to product links.</p>
+                </div>
+            </li>
+            <li class="flex gap-3 items-start">
+                <span class="font-mono text-xs text-teal/70 flex-shrink-0 mt-0.5">4</span>
+                <div>
+                    <p class="text-cloud/85 font-semibold mb-1">Practice on the geodesic track</p>
+                    <p class="text-sm text-cloud/55"><a href="/geodesic.html" class="text-teal/70 hover:text-teal no-underline">Geodesic</a> turns rigidity into a coached loop (Explorer → Mesh).</p>
+                </div>
+            </li>
+            <li class="flex gap-3 items-start">
+                <span class="font-mono text-xs text-teal/70 flex-shrink-0 mt-0.5">5</span>
+                <div>
+                    <p class="text-cloud/85 font-semibold mb-1">Wire the household pack</p>
+                    <p class="text-sm text-cloud/55"><a href="/family-sovereign-pack.html" class="text-teal/70 hover:text-teal no-underline">Family sovereign pack</a> and <a href="/mesh-start.html" class="text-teal/70 hover:text-teal no-underline">Mesh start</a> keep bookmarks and dev entry points in one place.</p>
+                </div>
+            </li>
+        </ol>
     </section>
 
     <hr class="divider mb-16">
@@ -335,6 +553,10 @@
                class="inline-block border border-white/10 hover:border-teal/50 text-cloud/60 hover:text-cloud py-4 px-8 rounded-xl transition-colors text-base no-underline font-mono text-sm">
                 See the mesh ⬡
             </a>
+            <a href="/geodesic.html"
+               class="inline-block border border-white/10 hover:border-teal/50 text-cloud/55 hover:text-cloud py-4 px-8 rounded-xl transition-colors text-base no-underline font-mono text-sm">
+                Geodesic coach →
+            </a>
             <a href="/p31-super-centaur-starter.html"
                class="inline-block border border-white/10 hover:border-coral/40 text-cloud/55 hover:text-cloud py-4 px-8 rounded-xl transition-colors text-base no-underline font-mono text-sm">
                 Super-Centaur pack →
@@ -351,5 +573,34 @@
     </footer>
 
 </main>
+<script>
+(function () {
+    var root = document.getElementById("delta-ribbon");
+    var input = document.getElementById("delta-ribbon-range");
+    var fill = document.getElementById("delta-ribbon-fill");
+    var cap = document.getElementById("delta-ribbon-caption");
+    if (!root || !input) return;
+
+    var captions = [
+        "Fully Wye: every path kneels to the hub. One subpoena, one outage, one policy flip — and the star goes dark.",
+        "Between modes: some edges are direct; the hub still mediates the rest. This is where most “hybrid” stacks secretly live.",
+        "Mostly Delta: the hub is ornamental. Peers hold continuity; the center can fail without erasing the graph."
+    ];
+
+    function setT(t) {
+        t = Math.max(0, Math.min(1, t));
+        root.style.setProperty("--ribbon-t", String(t));
+        if (fill) fill.style.width = (t * 100) + "%";
+        input.setAttribute("aria-valuenow", String(Math.round(t * 100) / 100));
+        var idx = t < 0.34 ? 0 : t > 0.67 ? 2 : 1;
+        if (cap) cap.textContent = captions[idx];
+    }
+
+    input.addEventListener("input", function () {
+        setT(parseFloat(input.value) || 0);
+    });
+    setT(parseFloat(input.value) || 0);
+})();
+</script>
 </body>
 </html>

@@ -2,6 +2,17 @@
 
 Edge computing infrastructure for the P31 Andromeda ecosystem.
 
+## Orchestrator (`p31-orchestrator.trimtab-signal.workers.dev`)
+
+**Source of truth:** deploy from this directory with **`wrangler-orchestrator.toml`** (Worker name `p31-orchestrator`, entry `orchestrator.ts`). Same URL as **`p31-constants.json` → `mesh.orchestratorWorkerUrl`** and k4-cage `ORCHESTRATOR_WEBHOOK`.
+
+```bash
+cd andromeda/04_SOFTWARE/workers
+npx wrangler deploy --config wrangler-orchestrator.toml
+```
+
+**Note:** `p31-cortex` is a separate Worker (multi-agent DO stack); do not confuse with the mesh orchestrator hostname above.
+
 ## Workers Implemented
 
 | Worker | File | Priority | Description |

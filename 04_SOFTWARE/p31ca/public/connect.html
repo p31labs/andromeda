@@ -7,14 +7,15 @@
     <title>Connect | P31 Mesh</title>
     <meta name="description" content="The P31 K₄ mesh — family cage, product edges, and the geometry that holds it rigid under stress.">
     <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/p31-style.css">
     <script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/"}}</script>
     <style>
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            background: #0f1115;
-            color: #d8d6d0;
-            font-family: "Atkinson Hyperlegible", sans-serif;
+            background: var(--p31-void);
+            color: var(--p31-cloud);
+            font-family: var(--p31-font-sans), "Atkinson Hyperlegible", sans-serif;
             overflow: hidden;
             height: 100dvh;
             user-select: none;
@@ -54,13 +55,13 @@
             align-items: center;
             justify-content: space-between;
             padding: 1rem 1.5rem;
-            background: rgba(15,17,21,0.7);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255,255,255,0.04);
+            background: rgba(22, 25, 32, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255,255,255,0.07);
         }
         .logo {
             display: flex; align-items: center; gap: 10px;
-            text-decoration: none; color: #d8d6d0;
+            text-decoration: none; color: var(--p31-cloud);
             font-family: "JetBrains Mono", monospace;
             font-size: 0.75rem; font-weight: 700;
             letter-spacing: 0.1em;
@@ -87,9 +88,9 @@
             z-index: 50;
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
-            border-top: 1px solid rgba(255,255,255,0.04);
-            background: rgba(15,17,21,0.8);
-            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255,255,255,0.07);
+            background: rgba(22, 25, 32, 0.9);
+            backdrop-filter: blur(12px);
         }
         .ebc-cell {
             padding: 1rem 1.25rem;
@@ -168,7 +169,7 @@
         #detail-link {
             display: block;
             background: #25897d;
-            color: #d8d6d0;
+            color: var(--p31-cloud);
             text-decoration: none;
             border-radius: 0.5rem;
             padding: 0.6rem 1rem;
@@ -337,7 +338,7 @@ const PRODUCTS = [
     {
         id: 'passport',   label: 'PASSPORT',   icon: '🪪',  color: '#4db8a8',
         tagline: 'Cognitive Identity Artifact',
-        url: 'passport-generator.html',
+        url: '/passport',
         status: 'LIVE', stub: false,
         desc: 'Edition 5.1. AuDHD envelope, spoon budget, calcium constraints. Machine-verified mirror between home repo and p31ca.',
         connects: ['will', 'christyn'],
@@ -348,7 +349,7 @@ const PRODUCTS = [
         tagline: 'Planetary Entry Flow',
         url: 'planetary-onboard.html',
         status: 'LIVE — Phase 5 stub', stub: false,
-        desc: 'Five phases: Void → Anchor → Rooms → Dial → Pact. Neuro-inclusive, passkey-first. Worker backend pending.',
+        desc: 'Five phases: Void → Anchor → Rooms → Dial → Pact. Neuro-inclusive, passkey-first. Phase 5 POSTs to same-origin /api/passkey/* when the passkey Worker zone route is live.',
         connects: ['will', 'christyn', 'sj', 'wj'],
         pos: new THREE.Vector3(0.2, -1.8, 1.6),
     },
@@ -393,7 +394,7 @@ const PRODUCTS = [
         tagline: 'K₄ Passkey + KV Backend',
         url: '#',
         status: 'PENDING', stub: true,
-        desc: 'Cloudflare Worker: passkey challenge/verify, D1 credential store, Turnstile ephemeral IDs. Required for onboarding Phase 5.',
+        desc: 'Cloudflare Worker (p31-passkey): challenge/verify, D1 credential store. Mounted at p31ca.org/api/passkey/* in production. Turnstile / cage IDs are separate edges.',
         connects: ['will'],
         pos: new THREE.Vector3(-0.6, 2.0, -2.0),
     },

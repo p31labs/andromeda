@@ -34,6 +34,22 @@ if (!existsSync(join(ROOT, wToml))) {
   if (!/main\s*=\s*"src\/worker\.ts"/.test(t)) {
     err(`${wToml}: must point main to src/worker.ts`);
   }
+  if (!t.includes("donate-api.phosphorus31.org") || !t.includes("donate-api.trimtab-signal.workers.dev")) {
+    err(
+      `${wToml}: comments must document custom domain donate-api.phosphorus31.org and workers.dev donate-api.trimtab-signal.workers.dev (fleet truth)`
+    );
+  }
+}
+
+// --- 1c) p31ca public surface lists donate-api hosts (machine index) ---
+const pubSurface = "04_SOFTWARE/p31ca/public/p31-public-surface.json";
+if (existsSync(join(ROOT, pubSurface))) {
+  const s = read(pubSurface);
+  if (!s.includes("donate-api.phosphorus31.org") || !s.includes("donate-api.trimtab-signal.workers.dev")) {
+    err(
+      `${pubSurface}: donateApi block must include custom domain + workers.dev (keep in sync with p31-constants payment.*)`
+    );
+  }
 }
 
 // --- 1b) donate-api worker: MAP-required routes (static read; no network) ---
@@ -114,6 +130,15 @@ if (existsSync(homeConstantsPath)) {
       if (pay.donateApiHealthUrl && String(pay.donateApiHealthUrl) !== wantDonate) {
         err(
           `parent p31-constants.json: payment.donateApiHealthUrl must be ${wantDonate} for MAP (got ${String(pay.donateApiHealthUrl)})`
+        );
+      }
+      const wantWd = "https://donate-api.trimtab-signal.workers.dev";
+      if (
+        pay.donateApiWorkersDevUrl &&
+        String(pay.donateApiWorkersDevUrl).replace(/\/$/, "") !== wantWd
+      ) {
+        err(
+          `parent p31-constants.json: payment.donateApiWorkersDevUrl must be ${wantWd} (got ${String(pay.donateApiWorkersDevUrl)})`
         );
       }
       const host = pay.stripeWorkerHost;

@@ -1,6 +1,7 @@
 /**
  * Single source of truth for root → p31ca passport mirror transform.
  * Home `scripts/passport-p31ca-transform.mjs` re-exports from here.
+ * Alignment: p31-alignment.json "passport-to-p31ca-mirror" + verify:passport
  */
 
 export const HEADER_SOURCE = `      <p class="sub">

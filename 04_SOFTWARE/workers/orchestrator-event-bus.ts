@@ -912,38 +912,6 @@ export class EventBusDO implements DurableObject {
       console.error('Failed to rebuild state from KV:', error);
     }
   }
-
-  /**
-   * Sync mesh state from KV
-   */
-  async syncMeshState(): Promise<void> {
-    try {
-      const meshData = await this.env.SPOONS_KV.get('mesh:state');
-      if (meshData) {
-        const mesh = JSON.parse(meshData);
-        this.meshState.careScore = mesh.careScore ?? this.meshState.careScore;
-        this.meshState.qFactor = mesh.qFactor ?? this.meshState.qFactor;
-        this.meshState.activeMinutes = mesh.activeMinutes ?? this.meshState.activeMinutes;
-        this.meshState.vertices = mesh.vertices ?? this.meshState.vertices;
-        this.meshState.lastMeshSync = Date.now();
-      }
-    } catch (error) {
-      console.error('Failed to sync mesh state:', error);
-    }
-  }
-
-  /**
-   * Get current spoon count from KV
-   */
-  async getCurrentSpoonCount(): Promise<number> {
-    try {
-      const spoonsData = await this.env.SPOONS_KV.get('spoons:will');
-      return spoonsData ? parseInt(spoonsData) : 0;
-    } catch (error) {
-      console.error('Failed to get spoon count:', error);
-      return 0;
-    }
-  }
 }
 
 export default {

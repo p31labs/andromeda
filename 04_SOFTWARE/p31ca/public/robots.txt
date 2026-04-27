@@ -1,0 +1,5 @@
+# https://p31ca.org — static hub + tools
+User-agent: *
+Allow: /
+
+Sitemap: https://p31ca.org/sitemap.xml

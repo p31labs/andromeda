@@ -2,7 +2,7 @@
 /**
  * Resolves p31-ecosystem.json glassProbes (home) + mesh/bonding into src/data/ops-glass-probes.json.
  * Run: node scripts/ops/ingest-glass-probes.mjs (from p31ca)
- * CWP-P31-UI-2026-01 Phase B
+ * CWP-P31-UI-2026-01 Phase B. Home↔p31ca coupling is listed in p31-alignment.json (sources/derivations).
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -65,6 +65,8 @@ function main() {
   let bonding = defaultBonding;
   /** @type {Record<string, unknown>} */
   const payment = {};
+  /** @type {Record<string, unknown>} */
+  let integrations = {};
   if (fs.existsSync(constantsPath)) {
     const c = JSON.parse(fs.readFileSync(constantsPath, "utf8"));
     if (c.bonding?.publicUrl) {
@@ -73,8 +75,11 @@ function main() {
     if (c.payment && typeof c.payment === "object") {
       Object.assign(payment, c.payment);
     }
+    if (c.integrations && typeof c.integrations === "object") {
+      integrations = c.integrations;
+    }
   }
-  const constMap = { mesh, bonding, payment };
+  const constMap = { mesh, bonding, payment, integrations };
   let source = "inline-fallback";
   let glass = fallbackEcosystem.glassProbes;
   if (fs.existsSync(ecosystemPath)) {
@@ -87,16 +92,26 @@ function main() {
   const probes = [];
   for (const p of glass) {
     const url = expand(p.url, constMap);
+    if (p.skipIfEmpty && (!url || !/^https?:/i.test(String(url)))) {
+      continue;
+    }
     if (!url.startsWith("http")) {
       console.error("ingest-glass-probes: bad url for", p.id, url);
       process.exit(1);
     }
-    probes.push({
+    /** @type {Record<string, unknown>} */
+    const row = {
       id: p.id,
       group: p.group || "other",
       note: p.note || "",
       url,
-    });
+    };
+    if (p.method && String(p.method).toUpperCase() !== "GET") {
+      row.method = p.method;
+    }
+    if (p.body !== undefined) row.body = p.body;
+    if (p.expectJsonKey) row.expectJsonKey = p.expectJsonKey;
+    probes.push(row);
   }
   const out = {
     schema: "p31.opsGlassProbes/1.0.0",

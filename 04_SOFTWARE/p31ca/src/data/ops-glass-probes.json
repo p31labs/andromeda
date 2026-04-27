@@ -1,6 +1,6 @@
 {
   "schema": "p31.opsGlassProbes/1.0.0",
-  "ingested": "2026-04-26T19:23:14.896Z",
+  "ingested": "2026-04-27T00:41:29.582Z",
   "source": "p31-ecosystem.json",
   "probes": [
     {
@@ -26,6 +26,14 @@
       "group": "mesh",
       "note": "Hub fusion liveness",
       "url": "https://k4-hubs.trimtab-signal.workers.dev/health"
+    },
+    {
+      "id": "p31ca-passkey-register-begin",
+      "group": "mesh",
+      "note": "WebAuthn register-begin; 200 + challenge when p31-passkey zone route is live",
+      "url": "https://p31ca.org/api/passkey/register-begin",
+      "method": "POST",
+      "expectJsonKey": "challenge"
     },
     {
       "id": "geodesic-room-worker",
@@ -64,9 +72,15 @@
       "url": "https://p31ca.org/"
     },
     {
+      "id": "p31ca-passport-short",
+      "group": "pages",
+      "note": "301 → passport-generator.html; AGENTS canonical /passport",
+      "url": "https://p31ca.org/passport"
+    },
+    {
       "id": "p31ca-mesh-start-page",
       "group": "pages",
-      "note": "PAR personal landing (CWP-P31-PAR); repo dev: soup-demo.html → andromeda/.../p31ca/public/mesh-start.html",
+      "note": "PAR personal landing (CWP-P31-PAR); repo: soup.html → andromeda/.../p31ca/public/mesh-start.html",
       "url": "https://p31ca.org/mesh-start.html"
     },
     {
@@ -82,22 +96,46 @@
       "url": "https://p31ca.org/build"
     },
     {
+      "id": "p31ca-family-sovereign-pack",
+      "group": "pages",
+      "note": "Household delivery handoff; 301 → family-sovereign-pack.html; prose in docs/FAMILY-SOVEREIGN-PACK.md",
+      "url": "https://p31ca.org/family-pack"
+    },
+    {
+      "id": "p31ca-public-surface-json",
+      "group": "contracts",
+      "note": "p31.publicSurface/1.0.0 — trust/legal index + machine endpoints",
+      "url": "https://p31ca.org/p31-public-surface.json"
+    },
+    {
+      "id": "p31ca-privacy-page",
+      "group": "pages",
+      "note": "301 → privacy.html; generic public deliverable",
+      "url": "https://p31ca.org/privacy"
+    },
+    {
+      "id": "p31ca-security-txt",
+      "group": "pages",
+      "note": "RFC 9116 security.txt; mailto contact",
+      "url": "https://p31ca.org/.well-known/security.txt"
+    },
+    {
       "id": "bonding-soup",
       "group": "pages",
       "note": "BONDING vertical",
       "url": "https://bonding.p31ca.org/"
     },
     {
-      "id": "stripe-api-health",
-      "group": "monetary",
-      "note": "Main API / Stripe Worker (p31-constants payment.stripeWorkerHost); glass liveness",
-      "url": "https://api.phosphorus31.org/health"
-    },
-    {
       "id": "donate-api-health",
       "group": "monetary",
       "note": "Stripe checkout Worker liveness; CWP-P31-MAP-2026-01 as-built",
       "url": "https://donate-api.phosphorus31.org/health"
+    },
+    {
+      "id": "donate-api-health-workers-dev",
+      "group": "monetary",
+      "note": "Same Worker as donate-api-health; default workers.dev subdomain (DNS-independent check)",
+      "url": "https://donate-api.trimtab-signal.workers.dev/health"
     },
     {
       "id": "creator-economy-contract",

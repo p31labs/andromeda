@@ -19,7 +19,7 @@ enabled = true
 # Replace with id from: npx wrangler kv namespace create GOOGLE_OAUTH
 [[kv_namespaces]]
 binding = "GOOGLE_OAUTH"
-id = "a1b2c3d4e5f6789012345678abcdef01"
+id = "4a21fa7168864b4cb122c32ba416efcd"
 
 # Non-secret; matches OAuth "Web client" in Google Cloud Console
 [vars]
@@ -41,7 +41,7 @@ name = "p31-google-bridge"
 
 [[env.production.kv_namespaces]]
 binding = "GOOGLE_OAUTH"
-id = "a1b2c3d4e5f6789012345678abcdef01"
+id = "4a21fa7168864b4cb122c32ba416efcd"
 
 [env.production.vars]
 # GOOGLE_CLIENT_ID = set in Cloudflare or uncomment after wrangler

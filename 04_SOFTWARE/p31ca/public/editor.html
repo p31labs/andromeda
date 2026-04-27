@@ -21,21 +21,21 @@
         }
     </script>
     <style>
-        body { background: #0f1115; color: #d8d6d0; margin: 0; font-family: 'Atkinson Hyperlegible', sans-serif; }
-        .mono { font-family: 'JetBrains Mono', monospace; }
-        .panel { background: #161920; border: 1px solid rgba(255,255,255,0.06); }
+        body { background: var(--p31-void); color: var(--p31-cloud); margin: 0; font-family: var(--p31-font-sans), 'Atkinson Hyperlegible', sans-serif; }
+        .mono { font-family: var(--p31-font-mono), 'JetBrains Mono', monospace; }
+        .panel { background: var(--p31-surface); border: 1px solid rgba(255,255,255,0.07); }
         .seed-item { padding: 8px 10px; margin-bottom: 4px; border-radius: 6px; cursor: pointer; border: 1px solid transparent; transition: all 0.15s; }
         .seed-item:hover { background: rgba(255,255,255,0.03); }
         .seed-item.active { border-color: #cc6247; background: rgba(204,98,71,0.08); }
         .badge { display: inline-block; font-size: 9px; padding: 1px 6px; border-radius: 4px; letter-spacing: 0.5px; text-transform: uppercase; }
-        .toolbar-btn { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); color: #d8d6d0; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 11px; font-family: 'JetBrains Mono', monospace; transition: all 0.15s; }
+        .toolbar-btn { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); color: var(--p31-cloud); padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 11px; font-family: var(--p31-font-mono), 'JetBrains Mono', monospace; transition: all 0.15s; }
         .toolbar-btn:hover { background: rgba(204,98,71,0.15); border-color: #cc6247; }
         .action-btn { width: 100%; padding: 8px; border-radius: 6px; cursor: pointer; font-size: 12px; font-family: 'Atkinson Hyperlegible', sans-serif; border: 1px solid; transition: all 0.15s; margin-bottom: 6px; }
         .action-btn:hover { filter: brightness(1.2); }
         .fw-card { padding: 6px 10px; margin-bottom: 4px; border-radius: 6px; cursor: pointer; border: 1px solid rgba(255,255,255,0.06); background: rgba(255,255,255,0.02); transition: all 0.15s; }
         .fw-card:hover { border-color: #cc6247; background: rgba(204,98,71,0.06); }
-        select, input, textarea { background: transparent; color: #d8d6d0; border: 1px solid rgba(255,255,255,0.08); border-radius: 4px; outline: none; font-family: 'Atkinson Hyperlegible', sans-serif; }
-        select option { background: #161920; color: #d8d6d0; }
+        select, input, textarea { background: transparent; color: var(--p31-cloud); border: 1px solid rgba(255,255,255,0.08); border-radius: 4px; outline: none; font-family: var(--p31-font-sans), 'Atkinson Hyperlegible', sans-serif; }
+        select option { background: var(--p31-surface); color: var(--p31-cloud); }
         input:focus, textarea:focus, select:focus { border-color: #cc6247; }
         ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
         .checklist-item { display: flex; align-items: flex-start; gap: 8px; padding: 3px 0; font-size: 11px; cursor: pointer; color: rgba(216,214,208,0.5); transition: color 0.15s; }
@@ -57,7 +57,7 @@
         <span class="text-lg font-bold text-coral tracking-wide">CONTENT FORGE</span>
         <div class="flex-1"></div>
         <button onclick="exportJSON()" class="toolbar-btn text-phosphorus" style="border-color:rgba(59,163,114,0.3)">Export JSON</button>
-        <button onclick="exportMarkdown()" class="toolbar-btn text-cyan" style="border-color:rgba(77,184,168,0.3)">Export MD</button>
+        <button onclick="exportMarkdown()" class="toolbar-btn text-teal" style="border-color:rgba(77,184,168,0.3)">Export MD</button>
     </header>
 
     <!-- 3-Column Layout -->
@@ -90,7 +90,7 @@
         </div>
 
         <!-- Center Panel: Editor -->
-        <div id="center-panel" class="flex flex-col flex-1 overflow-hidden" style="background:#0f1115">
+        <div id="center-panel" class="flex flex-col flex-1 overflow-hidden" style="background:var(--p31-void)">
             <!-- Toolbar -->
             <div class="flex items-center gap-1 px-3 py-2 border-b border-white/5" style="background:#161920">
                 <button class="toolbar-btn" onclick="insertMD('# ','')">H1</button>

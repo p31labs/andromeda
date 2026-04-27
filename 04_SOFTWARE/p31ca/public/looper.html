@@ -6,12 +6,13 @@
     <title>ECHO | Vocal Looper & Script Practice</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/p31-style.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root { --lav: #8b7cc9; --lav-dim: rgba(139,124,201,0.35); }
-        body { min-height: 100svh; background: #0f1115; color: #d8d6d0; font-family: 'Atkinson Hyperlegible', sans-serif; display: flex; flex-direction: column; align-items: center; padding: 1.5rem 1rem; gap: 1rem; }
-        h1 { font-size: 2rem; font-weight: 700; color: var(--lav); font-family: 'JetBrains Mono', monospace; }
-        .sub { font-size: 10px; color: rgba(216,214,208,0.4); font-family: 'JetBrains Mono', monospace; letter-spacing: 0.12em; text-transform: uppercase; }
+        body { min-height: 100svh; background: var(--p31-void); color: var(--p31-cloud); font-family: var(--p31-font-sans), 'Atkinson Hyperlegible', sans-serif; display: flex; flex-direction: column; align-items: center; padding: 1.5rem 1rem; gap: 1rem; }
+        h1 { font-size: 2rem; font-weight: 700; color: var(--lav); font-family: var(--p31-font-mono), 'JetBrains Mono', monospace; }
+        .sub { font-size: 10px; color: rgba(216,214,208,0.4); font-family: var(--p31-font-mono), 'JetBrains Mono', monospace; letter-spacing: 0.12em; text-transform: uppercase; }
 
         .glass { background: rgba(22,25,32,0.85); backdrop-filter: blur(14px); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 1.25rem; width: 100%; max-width: 480px; }
 
@@ -39,9 +40,9 @@
         /* Main record button */
         .rec-row { display: flex; gap: 0.6rem; }
         .main-btn { flex: 1; padding: 0.85rem; border: none; border-radius: 10px; font-size: 1rem; font-weight: 700; cursor: pointer; font-family: 'Atkinson Hyperlegible', sans-serif; transition: 0.2s; }
-        .main-btn.start { background: var(--lav); color: #0f1115; }
+        .main-btn.start { background: var(--lav); color: var(--p31-void); }
         .main-btn.start:disabled { opacity: 0.35; cursor: not-allowed; }
-        .main-btn.stop { background: #cc6247; color: #0f1115; }
+        .main-btn.stop { background: #cc6247; color: var(--p31-void); }
         .clear-btn { padding: 0.85rem 1rem; border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; background: transparent; color: rgba(216,214,208,0.4); cursor: pointer; font-family: 'Atkinson Hyperlegible', sans-serif; font-size: 0.85rem; transition: 0.15s; }
         .clear-btn:hover { color: #d8d6d0; border-color: rgba(255,255,255,0.2); }
 

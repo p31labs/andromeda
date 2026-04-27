@@ -5,6 +5,8 @@
 
 **Live:** [bonding.p31ca.org](https://bonding.p31ca.org)
 
+**BONDING Soup (static “bowl” surface)** — *The answer isn’t a feed—it’s the bowl.* Own route (not the React shell): [bonding.p31ca.org/soup/](https://bonding.p31ca.org/soup/) · `npm run sync:soup-bonding` from home or `npm run soup:sync` here → `npx vite build` → deploy.
+
 ---
 
 ## What Is This
@@ -33,7 +35,7 @@ npm install
 # Type check
 npx tsc --noEmit
 
-# Tests (488/488)
+# Tests (424 tests / 32 files — matches `p31-constants.json` → bonding.testBaseline)
 npx vitest run
 
 # Dev server
@@ -164,7 +166,7 @@ Mar 10   🎂 Ship. Bash's birthday.
 - **@react-three/fiber** (R3F) + **@react-three/drei** + **Three.js**
 - **Zustand** (state management)
 - **Tailwind CSS** (utility classes)
-- **Vitest** + jsdom (488 tests)
+- **Vitest** + jsdom (424 tests)
 - **Cloudflare Pages** (hosting) + **Cloudflare Workers + KV** (relay + telemetry)
 - **Web Audio API** (element-frequency sound engine)
 - **idb-keyval** (IndexedDB persistence for LOVE economy)

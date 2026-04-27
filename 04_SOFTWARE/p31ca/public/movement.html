@@ -6,15 +6,16 @@
     <title>KINEMATICS | Movement Synthesizer</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/p31-style.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root { --coral: #cc6247; }
-        body { min-height: 100svh; background: #0f1115; color: #d8d6d0; font-family: 'Atkinson Hyperlegible', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.5rem; transition: filter 2s ease; overflow: hidden; }
+        body { min-height: 100svh; background: var(--p31-void); color: var(--p31-cloud); font-family: var(--p31-font-sans), 'Atkinson Hyperlegible', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.5rem; transition: filter 2s ease; overflow: hidden; }
         body.dim { filter: brightness(0.08); }
         .glass { background: rgba(22,25,32,0.85); backdrop-filter: blur(14px); border: 1px solid rgba(255,255,255,0.08); border-radius: 18px; padding: 2rem; width: 100%; max-width: 400px; position: relative; z-index: 10; }
-        h1 { font-size: 2rem; font-weight: 700; color: var(--coral); font-family: 'JetBrains Mono', monospace; margin-bottom: 2px; }
-        .sub { font-size: 10px; color: rgba(216,214,208,0.4); font-family: 'JetBrains Mono', monospace; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 1.5rem; }
-        .start-btn { width: 100%; padding: 1rem; border: none; border-radius: 10px; font-size: 1.05rem; font-weight: 700; cursor: pointer; font-family: 'Atkinson Hyperlegible', sans-serif; transition: 0.2s; background: var(--coral); color: #0f1115; margin-bottom: 1.5rem; }
+        h1 { font-size: 2rem; font-weight: 700; color: var(--coral); font-family: var(--p31-font-mono), 'JetBrains Mono', monospace; margin-bottom: 2px; }
+        .sub { font-size: 10px; color: rgba(216,214,208,0.4); font-family: var(--p31-font-mono), 'JetBrains Mono', monospace; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 1.5rem; }
+        .start-btn { width: 100%; padding: 1rem; border: none; border-radius: 10px; font-size: 1.05rem; font-weight: 700; cursor: pointer; font-family: var(--p31-font-sans), 'Atkinson Hyperlegible', sans-serif; transition: 0.2s; background: var(--coral); color: var(--p31-void); margin-bottom: 1.5rem; }
         .start-btn:disabled { opacity: 0.4; cursor: not-allowed; }
         .start-btn.active { background: rgba(204,98,71,0.3); color: var(--coral); border: 1px solid var(--coral); }
 

@@ -161,6 +161,9 @@ export function isValidEdgeScoped(scopePath, v1, v2) {
 
 const STALE_MS = 5 * 60 * 1000;
 
+/** Bumped when GET /api/mesh gains new top-level fields (clients may gate on this). */
+export const MESH_PAYLOAD_VERSION = '1.1.0';
+
 export async function sweepStaleScoped(env, scopePath) {
   const { labels } = verticesForScope(scopePath);
   const now = Date.now();
@@ -184,7 +187,8 @@ export async function buildMeshPayload(env, scopePath, { connectHub } = {}) {
 
   const vertices = {};
   const edgesOut = {};
-  let totalLove = 0;
+  let vertexLove = 0;
+  let edgeLove = 0;
   let onlineCount = 0;
   let edgesWithRecentPing = 0;
   const activityHorizon = Date.now() - 24 * 60 * 60 * 1000;
@@ -193,21 +197,39 @@ export async function buildMeshPayload(env, scopePath, { connectHub } = {}) {
 
   for (const v of labels) {
     vertices[v] = await getVertexScoped(env, scopePath, v, { legacyFamily: scopePath === '' });
-    totalLove += vertices[v].love || 0;
+    vertexLove += vertices[v].love || 0;
     if (vertices[v].status === 'online' || vertices[v].status === 'away') onlineCount += 1;
   }
 
   for (const [v1, v2] of edges) {
     const key = edgeKeySub(v1, v2);
     edgesOut[key] = await getEdgeScoped(env, scopePath, v1, v2);
-    totalLove += edgesOut[key].love || 0;
+    edgeLove += edgesOut[key].love || 0;
     const la = edgesOut[key].lastActivity;
     if (la && new Date(la).getTime() > activityHorizon) edgesWithRecentPing += 1;
+  }
+
+  const totalLove = vertexLove + edgeLove;
+  const nVert = labels.length;
+  const nEdge = edges.length;
+  const onlineRatio = nVert > 0 ? onlineCount / nVert : 0;
+  const edgeActivityRatio = nEdge > 0 ? edgesWithRecentPing / nEdge : 0;
+  const vitalityScore = Math.round(100 * (0.5 * onlineRatio + 0.5 * edgeActivityRatio));
+
+  let registry = null;
+  try {
+    registry = await listScopes(env);
+  } catch {
+    registry = { error: 'registry_unavailable' };
   }
 
   const depth = scopeDepth(scopePath);
 
   return {
+    api: {
+      version: MESH_PAYLOAD_VERSION,
+      schema: 'p31.k4mesh.payload',
+    },
     phase: PHASE_SIERPINSKI,
     topology: 'K4',
     scope: scopePath === '' ? 'family' : scopePath,
@@ -220,9 +242,20 @@ export async function buildMeshPayload(env, scopePath, { connectHub } = {}) {
     betti_2: 1,
     mesh: { vertices, edges: edgesOut },
     connect: connectHub || {},
+    love: {
+      vertices: vertexLove,
+      edges: edgeLove,
+      total: totalLove,
+    },
     totalLove,
     onlineCount,
     edgeActivity24h: edgesWithRecentPing,
+    vitality: {
+      score: vitalityScore,
+      onlineRatio: Math.round(onlineRatio * 1000) / 1000,
+      edgeActivity24hRatio: Math.round(edgeActivityRatio * 1000) / 1000,
+    },
+    registry,
     staleThresholdMs: STALE_MS,
     timestamp: new Date().toISOString(),
     signature: 'Ca₉(PO₄)₆',

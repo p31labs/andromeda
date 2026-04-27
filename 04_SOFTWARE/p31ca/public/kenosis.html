@@ -23,19 +23,17 @@
     </script>
     <style>
         body {
-            background-color: #0f1115;
-            color: #d8d6d0;
             background-image: linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
             background-size: 40px 40px;
         }
-        .matte-panel { background-color: #161920; border: 1px solid rgba(255,255,255,0.04); }
-        .logo-text { fill: #d8d6d0; }
+        .matte-panel { background-color: var(--p31-surface); border: 1px solid rgba(255,255,255,0.07); }
+        .logo-text { fill: var(--p31-cloud); }
     </style>
 </head>
-<body class="min-h-screen flex flex-col text-cloud/90">
+<body class="bg-void text-cloud min-h-screen flex flex-col font-sans antialiased">
 
-<nav class="sticky top-0 z-50 border-b border-white/5 backdrop-blur-sm" style="background:rgba(15,17,21,0.92)">
+<nav class="sticky top-0 z-50 border-b border-white/[0.07] bg-surface/90 backdrop-blur-sm">
     <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
         <a href="/" class="flex items-center gap-3">
             <svg width="24" height="24" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
@@ -110,7 +108,7 @@
                         <div class="font-mono text-xs text-teal/60 mb-3">TOPOLOGY EQUATION</div>
                         <div class="font-mono text-sm text-center">
                             <span class="text-cloud/40">Maxwell isostatic: </span>
-                            <span class="text-cyan">3V − E = 6</span>
+                            <span class="text-teal">3V − E = 6</span>
                             <span class="text-cloud/40"> (K₄ subsets)</span>
                         </div>
                         <div class="font-mono text-xs text-center text-cloud/30 mt-2">7 nodes · Service Bindings · No floating neutral</div>

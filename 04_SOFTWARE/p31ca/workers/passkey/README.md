@@ -200,6 +200,10 @@ curl -s -X POST https://p31ca.org/api/passkey/auth-begin \
 curl -s https://p31ca.org/api/passkey/unknown | jq .
 ```
 
+### 6. Production smoke (two devices)
+
+After deploy: complete **planetary onboard Phase 5** on one profile (e.g. desktop), then open **`/auth`** on a second profile or device and verify **auth-begin → get → auth-finish** returns `ok`. RP_ID must match the page origin (`p31ca.org` in production).
+
 ---
 
 ## Local development

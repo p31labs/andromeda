@@ -23,18 +23,16 @@
     </script>
     <style>
         body {
-            background-color: #0f1115;
-            color: #d8d6d0;
             background-image: linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
             background-size: 40px 40px;
         }
-        .matte-panel { background-color: #161920; border: 1px solid rgba(255,255,255,0.04); }
+        .matte-panel { background-color: var(--p31-surface); border: 1px solid rgba(255,255,255,0.07); }
     </style>
 </head>
-<body class="min-h-screen flex flex-col text-cloud/90">
+<body class="bg-void text-cloud min-h-screen flex flex-col font-sans antialiased">
 
-    <header class="w-full border-b border-white/5 bg-void/95 sticky top-0 z-50">
+    <header class="w-full border-b border-white/[0.07] bg-surface/90 backdrop-blur-sm sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
             <a href="/" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
                 <svg width="28" height="28" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
@@ -188,8 +186,8 @@
                         <div class="font-bold text-sm text-cloud group-hover:text-teal transition-colors mb-1">Simple Sovereignty</div>
                         <div class="text-xs text-cloud/50">Parent portal hub — surfaces Quantum Family as a launch target.</div>
                     </a>
-                    <a href="posner.html" class="block p-4 bg-void border border-white/5 rounded hover:border-cyan/30 transition-colors group">
-                        <div class="font-bold text-sm text-cloud group-hover:text-cyan transition-colors mb-1">Posner Lab</div>
+                    <a href="posner.html" class="block p-4 bg-void border border-white/5 rounded hover:border-teal/30 transition-colors group">
+                        <div class="font-bold text-sm text-cloud group-hover:text-teal transition-colors mb-1">Posner Lab</div>
                         <div class="text-xs text-cloud/50">Full Posner molecule simulation — adult version.</div>
                     </a>
                 </div>

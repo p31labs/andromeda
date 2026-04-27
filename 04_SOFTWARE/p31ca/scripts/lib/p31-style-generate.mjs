@@ -1,5 +1,6 @@
 /**
  * Build CSS, Tailwind CDN bridge, and Astro extend from p31.universalCanon/1.0.0
+ * Coupled sinks: p31-alignment.json derivation "canon-to-style-css" (passport + p31ca public)
  */
 function assertPaletteAligned(canon) {
   const p = canon.palette;

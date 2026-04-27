@@ -115,4 +115,7 @@ for (const spec of gt.fileSnippets || []) {
   }
 }
 
+if (!failed) {
+  console.log("verify-ground-truth: OK");
+}
 process.exit(failed);

@@ -3,9 +3,12 @@
  * BaseLayout.astro — P31 Command Center root layout.
  *
  * Enforces the dark-mode glassmorphism theme across all children.
- * Void (#050505) baseline, Inter/JetBrains Mono dual font-stack.
+ * Void (#050505) baseline, Atkinson Hyperlegible (body) + Inter (fallback) + JetBrains Mono.
  * Google Fonts loaded via preconnect + display=swap for FOUT prevention.
+ * Mobile-first + neuro-inclusive: @/styles/global.css (safe areas, focus, motion).
  */
+import '../styles/global.css';
+
 interface Props {
   title: string;
   description?: string;
@@ -36,7 +39,10 @@ const {
     </script>
     
      <meta charset="utf-8" />
-     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+     <meta
+       name="viewport"
+       content="width=device-width, initial-scale=1, viewport-fit=cover"
+     />
      <meta name="description" content={description} />
      <meta name="theme-color" content="#050505" />
 
@@ -47,16 +53,18 @@ const {
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap"
       rel="stylesheet"
     />
 
     <title>{title}</title>
-    
+    <slot name="head" />
     <!-- External import maps go here -->
     <slot name="importmaps" />
   </head>
-  <body class="bg-void min-h-screen text-white/85 font-sans antialiased">
+  <body
+    class="bg-void min-h-screen text-base leading-relaxed text-white/90 font-sans antialiased p31-root [padding-bottom:env(safe-area-inset-bottom,0px)]"
+  >
     <!-- Ambient grid background -->
     <div
       class="fixed inset-0 pointer-events-none opacity-[0.03]"

@@ -35,9 +35,7 @@ crons = ["*/5 * * * *"]
 name = "CRDT_SESSION_DO"
 class_name = "CrdtSessionDO"
 
-[[migrations]]
-tag = "crdt-session-v1"
-new_classes = ["CrdtSessionDO"]
+# Migrations already applied in production; re-declaring triggers API 10074.
 
 [vars]
 ENVIRONMENT = "production"

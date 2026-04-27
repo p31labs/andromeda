@@ -18,6 +18,9 @@ import { handleSseStream } from './sse-stream.js';
 import { CrdtSessionDO } from './crdt-session-do.js';
 export { CrdtSessionDO };
 
+/** Legacy DO class name still present in Cloudflare for this Worker. */
+export class CrdtQueueProcessor extends CrdtSessionDO {}
+
 /** Request access logging: dev only, or set var `DEBUG_ACCESS_LOG=1` on the Worker. */
 function accessLogEnabled(env) {
   const v = env && env.DEBUG_ACCESS_LOG;

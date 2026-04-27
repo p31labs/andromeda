@@ -27,7 +27,7 @@ export const registry = [
     tech: ['React 19', 'Three.js r183', 'Zustand v5', 'Vitest 4', 'CF Pages'],
     features: [
       'K₄ impedance matching — every bond is a complete graph edge, not a directed arrow',
-      '413 automated tests across 30 suites — production quality enforcement',
+      '424 automated tests across 32 suites — production quality enforcement',
       'Multiplayer relay via Cloudflare Workers KV at 3–10s polling intervals',
       'Timestamped bond events double as court-admissible engagement evidence',
       'Offline mode with localStorage mock relay for two-tab local testing'
@@ -344,8 +344,8 @@ export const registry = [
   {
     id: 'kids-growth', title: 'Kids Growth', tagline: 'S.J. & W.J. Milestone Tracker',
     icon: '👶', accent: '#f472b6', status: 'live', statusLabel: 'LIVE',
-    appUrl: 'https://p31-kids-growth.trimtab-signal.workers.dev',
-    tech: ['Cloudflare Worker', 'Chart.js', 'LocalStorage', 'CDC Percentile Data'],
+    appUrl: 'kids-growth.html',
+    tech: ['Static (p31ca.org)', 'Chart.js 4', 'LocalStorage', 'Print & JSON export'],
     features: [
       'Height and weight tracking with Chart.js growth curves',
       'CDC percentile bands overlaid on charts for developmental context',
@@ -358,7 +358,7 @@ export const registry = [
       'Charts update immediately with the new data point plotted against CDC bands',
       'Check milestone lists for the current age — check off achievements as they occur'
     ],
-    techNotes: 'CDC growth data is bundled as a JSON lookup table — no API call. Chart.js renders dual-axis charts. All data localStorage-only per the privacy model.',
+    techNotes: 'Height and weight time series in Chart.js; milestone lists are general parenting prompts only—not a screening tool. All data is localStorage on-device; use JSON export before switching browsers.',
     related: ['medical-tracker', 'appointment-tracker', 'mission-control']
   },
   {
@@ -625,7 +625,7 @@ export const registry = [
   {
     id: 'mission-control', title: 'Mission Control', tagline: 'Kids Token Economy',
     icon: '🚀', accent: '#ff00ff', status: 'live', statusLabel: 'LIVE',
-    appUrl: 'wonky.html',
+    appUrl: 'mission-control.html',
     tech: ['Pixel RPG Engine', 'Genesis Token Economy', 'Press Start 2P Font', 'Custom Toast'],
     features: [
       'Willow (CCO) and Bash (CSO) character cards with XP bars and role badges',
@@ -1013,7 +1013,73 @@ export const registry = [
     techNotes: 'DeviceOrientation and DeviceMotion APIs drive the synth parameters. Tone.js provides the synthesis engine with reverb and filter for ambient texture. Screen lock is via the Screen Wake Lock API (keeps audio running).',
     related: ['signal', 'prism', 'somatic-anchor']
   },
-  // ── Research ────────────────────────────────────────────────────────────
+  {
+    id: 'connect',
+    title: 'THE MESH',
+    tagline: 'K₄ cage + product graph',
+    icon: '⬡',
+    accent: '#4db8a8',
+    status: 'live',
+    statusLabel: 'LIVE',
+    appUrl: 'connect.html',
+    tech: ['Three.js r160', 'K₄ tetrahedron', 'Product satellites', 'Static HTML'],
+    features: [
+      'Family K₄ rendered as a tetrahedron with four vertices and product satellites you can open',
+      'No separate build — one static `connect.html` on p31ca.org',
+      'Pairs with the observatory, tomography, and k4 market surfaces in the same stack',
+    ],
+    howTo: [
+      'Open `/connect.html` or use Launch on the hub about page',
+      'Drag to rotate the cage; follow outbound links to mesh-adjacent products',
+    ],
+    techNotes: 'Three.js in a single file from `p31ca/public/`. See synergetic manifest for Three pin alignment.',
+    related: ['planetary-onboard', 'observatory', 'k4market'],
+  },
+  {
+    id: 'planetary-onboard',
+    title: 'Planetary Onboard',
+    tagline: 'Wye → Delta entry flow',
+    icon: '🜂',
+    accent: '#cc6247',
+    status: 'live',
+    statusLabel: 'LIVE',
+    appUrl: 'planetary-onboard.html',
+    tech: ['Static HTML', 'Five phases', 'Passkey hooks', 'P31 style'],
+    features: [
+      'Neuro-inclusive onboarding: Void → Anchor → Rooms → Dial → Pact',
+      'Same-origin styling as the hub (`/p31-style.css`)',
+      'Optional WebAuthn / Worker-backed passkey in production (see `workers/passkey`)',
+    ],
+    howTo: [
+      'Start at `/planetary-onboard.html` or from the home banner',
+      'Complete the phases; use mesh and dome when you are ready to go deeper',
+    ],
+    techNotes: 'Ships as a single static file in `public/`. Pairs with `connect` and the journey page.',
+    related: ['connect', 'buffer', 'ede'],
+  },
+  {
+    id: 'integrations',
+    title: 'Integrations bridge',
+    tagline: 'OSS home, wearables, operator endpoints',
+    icon: '🔗',
+    accent: '#4db8a8',
+    status: 'live',
+    statusLabel: 'LIVE',
+    appUrl: 'integrations/index.html',
+    tech: ['Astro', 'p31.integrationsBridge/1.0.0', 'apply:constants', 'p31-constants.json'],
+    features: [
+      'Single place for which bridges exist (e.g. Home Assistant, Nostr, calendar) and their status',
+      'No secrets: endpoint slots that are empty in constants read as disabled',
+      'Paired with `public/p31-integrations.json` from `apply:constants` and `/ops` glass checks',
+    ],
+    howTo: [
+      'Open `/integrations/` from the hub or ops — review availability and follow linked docs for setup',
+    ],
+    techNotes:
+      'Astro route at `src/pages/integrations.astro`. Ground truth: `routes.integrationsBridge` and `edgeRedirects` for `/integrations` → `/integrations/`.',
+    related: ['connect', 'planetary-onboard', 'bridge'],
+  },
+  // ── Research / quantum tooling ────────────────────────────────────────────
   {
     id: 'quantum-core', title: 'Quantum Core', tagline: 'PQC & Algorithm Primitives',
     icon: '🌀', accent: '#4db8a8', status: 'live', statusLabel: 'LIVE',

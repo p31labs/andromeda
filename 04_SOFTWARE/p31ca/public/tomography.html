@@ -4,7 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>P31 | K4 Market Tomography</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/p31-style.css">
     <script type="importmap">
     {
         "imports": {
@@ -17,13 +20,13 @@
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             overflow: hidden;
-            background: #0f1115;
-            color: #d8d6d0;
-            font-family: 'Atkinson Hyperlegible', sans-serif;
+            background: var(--p31-void);
+            color: var(--p31-cloud);
+            font-family: var(--p31-font-sans), 'Atkinson Hyperlegible', sans-serif;
         }
         canvas { display: block; }
 
-        .mono { font-family: 'JetBrains Mono', monospace; }
+        .mono { font-family: var(--p31-font-mono), 'JetBrains Mono', monospace; }
 
         #ui-layer {
             position: absolute; inset: 0; z-index: 10;
@@ -45,7 +48,7 @@
         .top-bar a:hover { color: #3ba372; }
 
         .field-input, .field-select {
-            background: #161920; color: #3ba372;
+            background: var(--p31-surface); color: #3ba372;
             border: 1px solid rgba(59,163,114,0.25);
             padding: 6px 10px; border-radius: 4px;
             font-family: 'JetBrains Mono', monospace;
@@ -57,7 +60,7 @@
         .field-input { width: 80px; text-transform: uppercase; }
 
         .btn {
-            background: #3ba372; color: #0f1115;
+            background: #3ba372; color: var(--p31-void);
             border: none; padding: 6px 14px; border-radius: 4px;
             font-family: 'JetBrains Mono', monospace;
             font-size: 12px; font-weight: 700; cursor: pointer;
@@ -96,7 +99,7 @@
         }
         .price-display {
             margin-left: auto;
-            font-size: 13px; color: #d8d6d0; font-weight: 700;
+            font-size: 13px; color: var(--p31-cloud); font-weight: 700;
         }
         .data-count { color: #555; }
     </style>

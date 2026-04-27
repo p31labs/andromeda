@@ -9,7 +9,14 @@ export default defineConfig({
   trailingSlash: 'always',
   vite: {
     build: {
-      sourcemap: false
-    }
+      sourcemap: false,
+      rollupOptions: {
+        output: {
+          manualChunks(id) {
+            if (id.includes('node_modules/three')) return 'three';
+          },
+        },
+      },
+    },
   }
 });

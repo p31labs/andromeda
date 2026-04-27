@@ -12,10 +12,33 @@ const prototypes = hubLanding.prototypes;
 const research = hubLanding.research;
 
 const getStatusStyles = (status: string) => {
-  if (status === 'LIVE') return { text: 'text-[#3ba372]', bg: 'bg-[#3ba372]/10', border: 'border-[#3ba372]/30', glow: 'group-hover:shadow-[0_12px_40px_rgba(59,163,114,0.2),inset_0_1px_0_rgba(255,255,255,0.08)]' };
-  if (status === 'BUILDING') return { text: 'text-[#cda852]', bg: 'bg-[#cda852]/10', border: 'border-[#cda852]/30', glow: 'group-hover:shadow-[0_12px_40px_rgba(205,168,82,0.2),inset_0_1px_0_rgba(255,255,255,0.08)]' };
-  if (status === 'RESEARCH' || status === 'TOOL') return { text: 'text-[#4db8a8]', bg: 'bg-[#4db8a8]/10', border: 'border-[#4db8a8]/30', glow: 'group-hover:shadow-[0_12px_40px_rgba(77,184,168,0.2),inset_0_1px_0_rgba(255,255,255,0.08)]' };
-  return { text: 'text-[#6b7280]', bg: 'bg-[#6b7280]/10', border: 'border-[#6b7280]/30', glow: 'group-hover:shadow-[0_12px_40px_rgba(107,114,128,0.2),inset_0_1px_0_rgba(255,255,255,0.08)]' };
+  if (status === 'LIVE')
+    return {
+      text: 'text-phosphorus',
+      bg: 'bg-phosphorus/10',
+      border: 'border-phosphorus/30',
+      glow: 'group-hover:shadow-[0_12px_40px_rgba(59,163,114,0.2),inset_0_1px_0_rgba(255,255,255,0.08)]',
+    };
+  if (status === 'BUILDING')
+    return {
+      text: 'text-butter',
+      bg: 'bg-butter/10',
+      border: 'border-butter/30',
+      glow: 'group-hover:shadow-[0_12px_40px_rgba(205,168,82,0.2),inset_0_1px_0_rgba(255,255,255,0.08)]',
+    };
+  if (status === 'RESEARCH' || status === 'TOOL')
+    return {
+      text: 'text-teal',
+      bg: 'bg-teal/10',
+      border: 'border-teal/30',
+      glow: 'group-hover:shadow-[0_12px_40px_rgba(37,137,125,0.22),inset_0_1px_0_rgba(255,255,255,0.08)]',
+    };
+  return {
+    text: 'text-muted',
+    bg: 'bg-muted/10',
+    border: 'border-muted/30',
+    glow: 'group-hover:shadow-[0_12px_40px_rgba(107,114,128,0.2),inset_0_1px_0_rgba(255,255,255,0.08)]',
+  };
 };
 
 /** CWP D3 — filter counts from hub-landing (registry-driven) */
@@ -27,10 +50,33 @@ const countByStatus = coreProducts.reduce(
   },
   {} as Record<string, number>
 );
+
+const pageDescription =
+  'P31 Labs — edge-native mesh for families and builders: K₄ co-presence, geodesic stack, glass-box ops. Verify-gated ship bar, accessibility-minded UI, no engagement dark patterns.';
 ---
 
-<BaseLayout title="P31 Labs | Sovereign Cockpit">
-  
+<BaseLayout
+  title="P31 Labs | Sovereign technical hub"
+  description={pageDescription}
+>
+  <Fragment slot="head">
+    <link rel="canonical" href="https://p31ca.org/" />
+    <meta property="og:site_name" content="P31 Labs" />
+    <meta
+      property="og:title"
+      content="P31 Labs — Build, create, connect on the edge"
+    />
+    <meta property="og:description" content={pageDescription} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://p31ca.org/" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:title"
+      content="P31 Labs — Sovereign technical hub"
+    />
+    <meta name="twitter:description" content={pageDescription} />
+  </Fragment>
+
   <Fragment slot="importmaps">
     <!-- Import Map for Three.js -->
     <script type="importmap" is:inline>
@@ -49,7 +95,10 @@ const countByStatus = coreProducts.reduce(
   <div id="webgl-container" class="fixed inset-0 z-5 bg-void"></div>
 
   <!-- FIXED SOVEREIGN HUD (Top Nav) -->
-  <nav class="fixed top-0 left-0 right-0 z-50 glass-panel border-b border-white/10 px-4 py-2 flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-mono text-[#d8d6d0] shadow-[0_4px_30px_rgba(0,0,0,0.5)]">
+  <nav
+    class="fixed top-0 left-0 right-0 z-50 glass-panel border-b border-white/[0.07] flex flex-col gap-3 pt-[max(0.5rem,env(safe-area-inset-top))] pb-2 pl-[max(0.75rem,env(safe-area-inset-left))] pr-[max(0.75rem,env(safe-area-inset-right))] sm:px-5 md:flex-row md:items-center md:justify-between md:gap-4 text-sm font-mono text-cloud shadow-[0_4px_30px_rgba(0,0,0,0.5)] md:text-xs"
+    aria-label="Primary"
+  >
     
     <!-- Logo & Q-Factor -->
     <div class="flex items-center gap-4">
@@ -59,144 +108,272 @@ const countByStatus = coreProducts.reduce(
       </div>
       <div class="h-4 w-px bg-white/10"></div>
       <div class="flex items-center gap-2" title="Fisher-Escolà Coherence Score">
-        <span class="w-2 h-2 rounded-full bg-[#3ba372] shadow-[0_0_8px_#3ba372] animate-pulse" id="nav-status-dot"></span>
-        <span class="text-[#6b7280]">Q-FACTOR:</span>
-        <span class="font-bold text-[#3ba372] tracking-wider" id="nav-q-factor">0.925</span>
+        <span class="w-2 h-2 rounded-full bg-phosphorus shadow-[0_0_8px_rgba(59,163,114,0.55)] animate-pulse" id="nav-status-dot"></span>
+        <span class="text-muted">Q-FACTOR:</span>
+        <span class="font-bold text-phosphorus tracking-wider" id="nav-q-factor">0.925</span>
       </div>
     </div>
 
     <!-- Central Telemetry: Spoons & Fleet -->
-    <div class="flex items-center gap-6 bg-void/50 px-4 py-1.5 rounded-md border border-white/5">
+    <div
+      class="flex max-w-full items-center gap-4 overflow-x-auto overflow-y-visible overscroll-x-contain bg-void/50 px-3 py-2 [scrollbar-width:thin] sm:gap-6 sm:px-4 rounded-md border border-white/[0.07] md:max-w-none md:overflow-visible"
+    >
       <div class="flex items-center gap-2" title="Vertex A: Operator State">
-        <span class="text-[#6b7280]">SPOONS</span>
-        <div class="w-16 h-1.5 bg-[#1c2028] rounded-full overflow-hidden">
-          <div id="nav-spoon-fill" class="h-full bg-[#E8636F] transition-all duration-500" style="width: 50%;"></div>
+        <span class="text-muted">SPOONS</span>
+        <div class="w-16 h-1.5 bg-surface2 rounded-full overflow-hidden">
+          <div id="nav-spoon-fill" class="h-full bg-coral transition-all duration-500" style="width: 50%;"></div>
         </div>
-        <span id="nav-spoon-val" class="text-[#E8636F] font-bold">10</span>
+        <span id="nav-spoon-val" class="text-coral font-bold">10</span>
       </div>
       <div class="h-3 w-px bg-white/10"></div>
       <div class="flex items-center gap-2" title="L.O.V.E. Ledger Balance">
-        <span class="text-[#6b7280]">L.O.V.E.</span>
-        <span id="nav-love-val" class="text-[#4db8a8] font-bold">3.28</span>
+        <span class="text-muted">L.O.V.E.</span>
+        <span id="nav-love-val" class="text-teal font-bold">3.28</span>
       </div>
       <div class="h-3 w-px bg-white/10 hidden md:block"></div>
       <div class="hidden md:flex items-center gap-2">
-        <span class="text-[#6b7280]">FLEET:</span>
-        <span id="nav-fleet-val" class="text-[#d8d6d0]">4/4</span>
+        <span class="text-muted">FLEET:</span>
+        <span id="nav-fleet-val" class="text-cloud">4/4</span>
+      </div>
+      <div class="h-3 w-px bg-white/10 hidden xl:block"></div>
+      <div
+        class="hidden xl:flex items-center gap-2"
+        title="As above, so below — p31ca HUD ↔ k4-personal edge (vitality, V/E L♥)"
+      >
+        <span class="text-muted">MESH</span>
+        <span id="nav-mesh-vit" class="text-lavender font-bold">—</span>
+        <span class="text-muted text-[10px]">L♥</span>
+        <span id="nav-mesh-ve" class="text-cloud text-[10px] font-mono">—</span>
+        <span id="nav-mesh-detail" class="text-muted text-[9px] font-mono max-w-[7rem] truncate hidden 2xl:inline" title=""> </span>
+        <a href="/mesh-observatory/" class="text-lavender hover:text-lavender/85 hover:underline text-[10px] font-bold" title="Mesh Observatory">OBS</a>
       </div>
     </div>
 
-    <!-- Trimtab & Actions -->
-    <div class="flex items-center gap-4">
-      <div class="flex items-center gap-2 cursor-pointer group" id="trimtab-trigger" title="Drag to tune · Click for Layer 0">
-        <canvas id="trimtab-canvas" width="24" height="24" class="opacity-80 group-hover:opacity-100 transition-opacity"></canvas>
-        <span id="trimtab-freq" class="text-[#cda852] font-bold">863Hz</span>
+    <!-- Trimtab & Actions: mobile-first touch targets, dense labels on md+ -->
+    <div
+      class="flex w-full flex-wrap items-center justify-center gap-2 sm:justify-end md:w-auto md:justify-end"
+    >
+      <div
+        class="group inline-flex min-h-[2.75rem] min-w-[2.75rem] cursor-pointer items-center gap-2 rounded-md px-1 md:min-h-0 md:min-w-0"
+        id="trimtab-trigger"
+        title="Drag to tune · Click for Layer 0"
+      >
+        <canvas id="trimtab-canvas" width="24" height="24" class="opacity-80 transition-opacity group-hover:opacity-100"></canvas>
+        <span id="trimtab-freq" class="text-butter font-bold">863Hz</span>
       </div>
-      <div class="h-4 w-px bg-white/10"></div>
-      <a href="/dome" class="text-[#4db8a8] hover:text-[#5ec4b3] transition-colors uppercase tracking-widest font-bold text-[10px] px-2 py-1 rounded border border-[#4db8a8]/30 bg-[#4db8a8]/10 hover:bg-[#4db8a8]/20" title="Sovereign Cockpit K₄ dome">Dome</a>
-      <a href="/ops/" class="text-[#818cf8] hover:text-[#a5b4fc] transition-colors uppercase tracking-widest font-bold text-[10px] px-2 py-1 rounded border border-[#818cf8]/35 bg-[#818cf8]/10 hover:bg-[#818cf8]/20" title="G.O.D. operator shell — glass + shift">Ops</a>
-      <a href="/auth" class="text-[#E8636F] hover:text-[#ff7582] transition-colors uppercase tracking-widest font-bold text-[10px] px-3 py-1 rounded border border-[#E8636F]/30 bg-[#E8636F]/10 hover:bg-[#E8636F]/20">
+      <div class="h-4 w-px bg-white/10 max-md:hidden" aria-hidden="true"></div>
+      <a
+        href="/dome"
+        class="inline-flex min-h-[2.75rem] items-center justify-center rounded border border-teal/30 bg-teal/10 px-3 py-2 text-xs font-bold uppercase tracking-widest text-teal hover:bg-teal/20 hover:text-phosphorus md:min-h-0 md:px-2 md:py-1 md:text-[10px]"
+        title="Sovereign Cockpit K₄ dome">Dome</a>
+      <a
+        href="/demos"
+        class="inline-flex min-h-[2.75rem] items-center justify-center rounded border border-butter/35 bg-butter/10 px-3 py-2 text-xs font-bold uppercase tracking-widest text-butter hover:bg-butter/20 hover:text-butter/90 md:min-h-0 md:px-2 md:py-1 md:text-[10px]"
+        title="Static demo labs — fleet map, canon, onboarding">Demos</a>
+      <a
+        href="/journey"
+        class="inline-flex min-h-[2.75rem] items-center justify-center rounded border border-phosphorus/35 bg-phosphorus/10 px-3 py-2 text-xs font-bold uppercase tracking-widest text-phosphorus hover:bg-phosphorus/20 hover:brightness-110 md:min-h-0 md:px-2 md:py-1 md:text-[10px]"
+        title="Core path — onboard, authenticate, EDE home">Journey</a>
+      <a
+        href="/ops/"
+        class="inline-flex min-h-[2.75rem] items-center justify-center rounded border border-lavender/35 bg-lavender/10 px-3 py-2 text-xs font-bold uppercase tracking-widest text-lavender hover:bg-lavender/20 hover:text-lavender/90 md:min-h-0 md:px-2 md:py-1 md:text-[10px]"
+        title="G.O.D. operator shell — glass + shift">Ops</a>
+      <a
+        href="/auth"
+        class="inline-flex min-h-[2.75rem] items-center justify-center rounded border border-coral/30 bg-coral/10 px-3 py-2 text-xs font-bold uppercase tracking-widest text-coral hover:bg-coral/20 hover:brightness-110 md:min-h-0 md:py-1 md:text-[10px]"
+      >
         Authenticate
       </a>
     </div>
   </nav>
 
   <!-- Node Detail Panel -->
-  <aside id="node-detail-panel" class="fixed bottom-6 left-6 z-40 glass-panel p-5 rounded-xl border-t border-l border-white/10 shadow-[0_10px_40px_rgba(0,0,0,0.8)] w-80 transform transition-all duration-300 translate-y-4 opacity-0 pointer-events-none">
-    <button id="node-detail-close" class="absolute top-4 right-4 text-[#6b7280] hover:text-white transition-colors pointer-events-auto">✕</button>
-    <div class="text-[#4db8a8] font-bold text-lg mb-1" id="nd-title">Node Name</div>
+  <aside
+    id="node-detail-panel"
+    class="pointer-events-none fixed bottom-[max(1rem,env(safe-area-inset-bottom))] left-4 right-4 z-40 w-auto max-w-sm translate-y-4 transform rounded-xl border-l border-t border-white/10 bg-void/95 p-5 opacity-0 shadow-[0_10px_40px_rgba(0,0,0,0.8)] backdrop-blur-sm transition-all duration-300 sm:left-6 sm:right-auto sm:w-80"
+  >
+    <button
+      id="node-detail-close"
+      class="text-muted pointer-events-auto absolute right-2 top-2 inline-flex min-h-[2.75rem] min-w-[2.75rem] items-center justify-center rounded-md hover:bg-white/10 hover:text-white"
+      type="button"
+      aria-label="Close details"
+    >
+      ✕
+    </button>
+    <div class="text-teal font-bold text-lg mb-1" id="nd-title">Node Name</div>
     <div class="flex items-center gap-3 text-[10px] font-mono mb-4 pb-3 border-b border-white/10">
       <span id="nd-axis" class="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-white/70">Axis</span>
       <span id="nd-state" class="px-2 py-0.5 rounded border">State</span>
       <span id="nd-bus" class="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-white/70">Bus</span>
     </div>
-    <div id="nd-notes" class="text-sm text-[#d8d6d0] mb-4 leading-relaxed font-sans">Node description goes here.</div>
-    <div class="text-[10px] font-mono text-[#6b7280] mb-2 uppercase tracking-widest">Entangled Edges</div>
+    <div id="nd-notes" class="text-sm text-cloud mb-4 leading-relaxed font-sans">Node description goes here.</div>
+    <div class="text-[10px] font-mono text-muted mb-2 uppercase tracking-widest">Entangled Edges</div>
     <div id="nd-conns" class="flex flex-wrap gap-2 pointer-events-auto"></div>
   </aside>
 
   <!-- LAYER 0: Somatic Mode Overlay -->
   <div id="layer0" class="fixed inset-0 z-[100] bg-void flex flex-col items-center justify-center gap-6 transition-opacity duration-1000 opacity-0 pointer-events-none">
-    <div class="absolute top-8 left-1/2 -translate-x-1/2 flex items-center gap-4 font-mono text-xs text-[#6b7280]">
+    <div class="absolute top-8 left-1/2 -translate-x-1/2 flex items-center gap-4 font-mono text-xs text-muted">
       <span>SPOONS</span>
-      <div class="w-32 h-1 bg-[#1c2028] rounded-full overflow-hidden">
-        <div id="l0-spoon-fill" class="h-full bg-[#E8636F] transition-all duration-500"></div>
+      <div class="w-32 h-1 bg-surface2 rounded-full overflow-hidden">
+        <div id="l0-spoon-fill" class="h-full bg-coral transition-all duration-500"></div>
       </div>
       <span id="l0-spoon-pct">50%</span>
     </div>
-    <div id="l0-dot" class="w-16 h-16 rounded-full bg-[#E8636F] opacity-40 transform scale-75"></div>
-    <div id="l0-phase" class="text-xl font-mono text-[#E8636F] tracking-[0.2em] uppercase">INHALE</div>
+    <div id="l0-dot" class="w-16 h-16 rounded-full bg-coral opacity-40 transform scale-75"></div>
+    <div id="l0-phase" class="text-xl font-mono text-coral tracking-[0.2em] uppercase">INHALE</div>
     <div class="absolute bottom-12 flex flex-col items-center gap-3">
-      <div class="w-32 h-1 bg-[#1c2028] rounded-full overflow-hidden">
-        <div id="l0-escape-fill" class="h-full w-0 bg-[#E8636F]"></div>
+      <div class="w-32 h-1 bg-surface2 rounded-full overflow-hidden">
+        <div id="l0-escape-fill" class="h-full w-0 bg-coral"></div>
       </div>
-      <div class="text-[10px] font-mono text-[#6b7280] tracking-widest uppercase">Hold ESC to exit</div>
+      <div class="text-[10px] font-mono text-muted tracking-widest uppercase">Hold ESC to exit</div>
     </div>
   </div>
 
   <!-- MAIN SCROLLING CONTENT -->
   <!-- pointer-events-none allows background clicking, but we restore it on .interactive-zone -->
-  <main id="scroll-container" class="relative z-10 pt-32 pb-24 px-6 max-w-7xl mx-auto font-sans text-[#d8d6d0] antialiased pointer-events-none">
-    
-    <!-- 1. Hero Section -->
-    <header class="text-center mb-32 relative pt-12 animate-fade-in-up interactive-zone" style="animation-delay: 0.1s;">
-      <h1 class="text-6xl md:text-7xl font-bold mb-6 tracking-tighter bg-clip-text text-transparent bg-gradient-to-b from-white to-[#d8d6d0] drop-shadow-lg">P31 Labs</h1>
-      <p class="text-xl md:text-2xl text-[#d8d6d0] opacity-80 mb-12 font-mono tracking-wide max-w-2xl mx-auto">Isostatically Rigid. Cognitively Sovereign.</p>
-      
-      <div class="flex flex-col sm:flex-row justify-center items-center gap-5">
-        <button id="btn-explore-dome" class="w-full sm:w-auto px-8 py-3.5 rounded-[6px] font-bold text-white bg-[#E8636F]/90 hover:bg-[#E8636F] shadow-[0_0_20px_rgba(232,99,111,0.3)] hover:shadow-[0_0_30px_rgba(232,99,111,0.5)] transition-all duration-300 text-center tracking-wide backdrop-blur-md border border-[#E8636F]">
-          Explore Dome Topology
+  <main
+    id="scroll-container"
+    class="pointer-events-none relative z-10 mx-auto max-w-7xl px-4 pt-40 pb-16 font-sans text-cloud sm:px-6 sm:pb-24 md:pt-32"
+  >
+    <div
+      class="pointer-events-none absolute left-1/2 top-0 -z-10 h-[min(60vh,28rem)] w-[min(100%,90rem)] -translate-x-1/2 hub-hero-aura"
+      aria-hidden="true"
+    >
+    </div>
+    <a
+      href="#core-products"
+      class="skip-to-content focus:pointer-events-auto interactive-zone"
+    >
+      Skip to architecture grid
+    </a>
+
+    <!-- 1. Hero — editorial type, ethical signals, CTAs -->
+    <header
+      class="animate-fade-in-up relative z-[1] mb-16 text-center sm:mb-20 md:mb-28 md:pt-4 interactive-zone"
+      style="animation-delay: 0.08s;"
+    >
+      <p
+        class="mb-3 font-mono text-[10px] font-semibold uppercase tracking-[0.35em] text-cyan/90 sm:text-[11px] sm:tracking-[0.4em]"
+      >
+        Technical hub
+      </p>
+      <h1
+        class="mx-auto mb-4 max-w-[18ch] bg-gradient-to-b from-white via-white to-cloud/85 bg-clip-text text-balance text-[clamp(2.5rem,5.5vw+0.5rem,4.25rem)] font-bold leading-[0.95] tracking-[-0.04em] text-transparent drop-shadow-[0_1px_40px_rgba(0,0,0,0.45)] sm:mb-5"
+      >
+        P31 Labs
+      </h1>
+      <p
+        class="mx-auto mb-2 max-w-2xl font-mono text-base font-medium leading-snug tracking-tight text-cloud/90 sm:text-lg md:text-xl"
+      >
+        Isostatically rigid. Cognitively sovereign.
+      </p>
+      <p
+        class="mx-auto mb-8 max-w-xl text-sm leading-relaxed text-muted sm:mb-10 sm:text-base"
+      >
+        <span class="text-cloud/90">Build, create, connect</span> — family-scale mesh, verify-gated releases, and
+        interfaces that respect attention.
+      </p>
+
+      <ul
+        class="mb-10 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 font-mono text-[10px] uppercase tracking-wider text-muted sm:mb-12 sm:gap-x-4 sm:text-[11px]"
+        role="list"
+        aria-label="Ship and ethics signals"
+      >
+        <li
+          class="inline-flex items-center gap-2 rounded-full border border-teal/25 bg-teal/5 px-3 py-1.5 text-teal/95"
+        >
+          <span
+            class="h-1.5 w-1.5 rounded-full bg-phosphorus shadow-[0_0_8px_rgba(59,163,114,0.5)]"
+            aria-hidden="true"
+          />
+          Verify-gated
+        </li>
+        <li
+          class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5"
+        >
+          <span class="h-1.5 w-1.5 rounded-full bg-cyan/80" aria-hidden="true" />
+          A11y-minded
+        </li>
+        <li
+          class="inline-flex items-center gap-2 rounded-full border border-butter/20 bg-butter/5 px-3 py-1.5 text-butter/95"
+        >
+          <span class="h-1.5 w-1.5 rounded-full bg-butter/90" aria-hidden="true" />
+          No dark patterns
+        </li>
+        <li
+          class="inline-flex items-center gap-2 rounded-full border border-lavender/20 bg-lavender/5 px-3 py-1.5 text-lavender/90"
+        >
+          <span class="h-1.5 w-1.5 rounded-full bg-lavender/80" aria-hidden="true" />
+          Open core
+        </li>
+      </ul>
+
+      <div
+        class="flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center sm:gap-4"
+      >
+        <button
+          id="btn-explore-dome"
+          type="button"
+          class="hub-cta-primary w-full min-h-[3.25rem] rounded-lg px-7 py-3.5 text-center text-base font-bold tracking-tight text-white sm:w-auto"
+          title="Sovereign Cockpit K₄ dome"
+        >
+          Explore Dome
         </button>
-        <a href="#core-products" class="w-full sm:w-auto px-8 py-3.5 rounded-[6px] font-bold text-[#d8d6d0] border border-white/10 glass-panel hover:bg-white/10 transition-all duration-300 text-center tracking-wide">
-          View Architecture
+        <a
+          href="#core-products"
+          class="hub-cta-secondary glass-panel inline-flex w-full min-h-[3.25rem] items-center justify-center gap-2 rounded-lg border border-white/12 px-7 py-3.5 text-center text-base font-bold tracking-tight text-cloud transition-all duration-300 hover:border-white/20 hover:bg-white/5 sm:w-auto"
+        >
+          View architecture
+          <span class="text-cyan" aria-hidden="true">→</span>
         </a>
       </div>
     </header>
 
     <!-- 1a. Operator shell (G.O.D.) -->
-    <div class="mb-10 interactive-zone animate-fade-in-up" style="animation-delay: 0.12s;">
-      <a href="/ops/" class="block glass-panel border border-[#6366f1]/35 hover:border-[#6366f1]/55 rounded-[12px] p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 transition-all duration-300 group no-underline hover:bg-[#14161d]/90">
+    <div class="mb-10 interactive-zone animate-fade-in-up" style="animation-delay: 0.14s;">
+      <a href="/ops/" class="group flex flex-col gap-4 rounded-[12px] border border-lavender/35 p-5 no-underline transition-all duration-300 hover:border-lavender/55 hover:bg-surface2/90 sm:flex-row sm:items-center sm:justify-between glass-panel">
         <div>
-          <div class="text-[10px] font-mono text-[#818cf8] uppercase tracking-widest mb-2">/ operator</div>
-          <h2 class="font-bold text-white text-lg mb-1 group-hover:text-[#a5b4fc] transition-colors">G.O.D. — operator shell</h2>
-          <p class="text-sm text-[#d8d6d0]/70 max-w-xl leading-relaxed">Glass-box probes from <span class="font-mono text-[#d8d6d0]/90">p31-ecosystem.json</span>, system pulse, density dial, and edge shift readout. Pair with <span class="font-mono text-[#4db8a8]/90">npm run command-center</span> on your machine.</p>
+          <div class="mb-2 font-mono text-xs uppercase tracking-widest text-lavender sm:text-[10px]">/ operator</div>
+          <h2 class="font-bold text-white text-lg mb-1 group-hover:text-lavender/90 transition-colors">G.O.D. — operator shell</h2>
+          <p class="text-sm text-cloud/70 max-w-xl leading-relaxed">Glass-box probes from <span class="font-mono text-cloud/90">p31-ecosystem.json</span>, system pulse, density dial, and edge shift readout. Pair with <span class="font-mono text-teal/90">npm run command-center</span> on your machine.</p>
         </div>
-        <span class="px-5 py-2.5 bg-[#6366f1]/85 text-white font-bold rounded-[6px] text-sm tracking-wide whitespace-nowrap shrink-0">Open /ops →</span>
+        <span class="inline-flex min-h-[2.75rem] flex-shrink-0 items-center justify-center rounded-[6px] bg-lavender/90 px-5 py-2.5 text-sm font-bold tracking-wide text-white sm:min-h-0">Open /ops →</span>
       </a>
     </div>
 
     <!-- 1b. Wye→Delta Entry Banner -->
-    <div class="mb-16 interactive-zone animate-fade-in-up" style="animation-delay: 0.15s;">
-      <a href="/delta.html" class="block glass-panel border border-[#25897d]/30 hover:border-[#25897d]/60 rounded-[12px] p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 transition-all duration-300 group no-underline hover:bg-[#14161d]/90">
+    <div class="mb-16 interactive-zone animate-fade-in-up" style="animation-delay: 0.18s;">
+      <a href="/delta.html" class="group flex flex-col gap-4 rounded-[12px] border border-teal/30 p-6 no-underline transition-all duration-300 hover:border-teal/60 hover:bg-surface2/90 sm:flex-row sm:items-center sm:justify-between glass-panel">
         <div>
-          <div class="text-[10px] font-mono text-[#25897d] uppercase tracking-widest mb-2">/ new_here</div>
-          <h2 class="font-bold text-white text-lg mb-1 group-hover:text-[#4db8a8] transition-colors">Why a mesh instead of an app?</h2>
-          <p class="text-sm text-[#d8d6d0]/70 max-w-lg leading-relaxed">P31 runs on a K₄ tetrahedron — four vertices, six edges, zero central authority. The Wye→Delta story explains why that matters.</p>
+          <div class="mb-2 font-mono text-xs uppercase tracking-widest text-teal sm:text-[10px]">/ new_here</div>
+          <h2 class="font-bold text-white text-lg mb-1 group-hover:text-teal transition-colors">Why a mesh instead of an app?</h2>
+          <p class="text-sm text-cloud/70 max-w-lg leading-relaxed">P31 runs on a K₄ tetrahedron — four vertices, six edges, zero central authority. The Wye→Delta story explains why that matters.</p>
         </div>
         <div class="flex gap-3 shrink-0 pointer-events-none">
-          <span class="px-5 py-2.5 bg-[#25897d]/90 text-white font-bold rounded-[6px] text-sm tracking-wide whitespace-nowrap">Wye → Delta</span>
-          <span class="px-5 py-2.5 border border-white/10 text-[#d8d6d0] font-bold rounded-[6px] text-sm tracking-wide whitespace-nowrap">Join the mesh →</span>
+          <span class="px-5 py-2.5 bg-teal/90 text-white font-bold rounded-[6px] text-sm tracking-wide whitespace-nowrap">Wye → Delta</span>
+          <span class="px-5 py-2.5 border border-white/10 text-cloud font-bold rounded-[6px] text-sm tracking-wide whitespace-nowrap">Join the mesh →</span>
         </div>
       </a>
     </div>
 
     <!-- 2. Core Products Grid (CWP D3 — client filter by status) -->
-    <section id="core-products" class="mb-24 pt-12 animate-fade-in-up interactive-zone" style="animation-delay: 0.2s;" aria-label="Core architecture products">
+    <section id="core-products" class="mb-24 pt-12 animate-fade-in-up interactive-zone" style="animation-delay: 0.22s;" aria-label="Core architecture products">
       <div class="flex items-center gap-4 mb-8">
-        <h2 class="text-sm uppercase tracking-widest font-bold text-[#6b7280] font-mono">/ core_architecture</h2>
+        <h2 class="text-sm uppercase tracking-widest font-bold text-muted font-mono">/ core_architecture</h2>
         <div class="h-px bg-white/10 flex-grow"></div>
       </div>
       <div
-        class="flex flex-wrap items-center gap-2 gap-y-2 mb-6 font-mono text-[11px] uppercase tracking-wider"
+        class="mb-6 flex flex-wrap items-stretch gap-2 font-mono text-sm uppercase tracking-wider sm:items-center md:text-[11px]"
         role="toolbar"
         aria-label="Filter products by status"
         id="hub-core-filters"
       >
-        <span class="text-[#6b7280] mr-1 hidden sm:inline">Filter</span>
+        <span class="mr-1 hidden self-center text-muted sm:inline">Filter</span>
         <button
           type="button"
           data-filter="all"
-          class="hub-filter-btn rounded border px-3 py-1.5 transition-colors border-[#4db8a8]/50 text-[#4db8a8] bg-[#4db8a8]/10"
+          class="hub-filter-btn rounded border border-teal/50 bg-teal/10 px-4 py-2.5 text-teal transition-colors md:px-3 md:py-1.5"
           aria-pressed="true"
         >All ({coreProducts.length})</button>
         {FILTER_ORDER.map((st) => {
@@ -206,7 +383,7 @@ const countByStatus = coreProducts.reduce(
             <button
               type="button"
               data-filter={st.toLowerCase()}
-              class="hub-filter-btn rounded border border-white/10 px-3 py-1.5 text-[#6b7280] transition-colors hover:border-white/20 hover:text-[#d8d6d0]"
+              class="hub-filter-btn rounded border border-white/10 px-4 py-2.5 text-muted transition-colors hover:border-white/20 hover:text-cloud md:px-3 md:py-1.5"
               aria-pressed="false"
             >
               {st} ({n})
@@ -223,7 +400,7 @@ const countByStatus = coreProducts.reduce(
               target="_blank"
               rel="noopener noreferrer"
               data-product-status={product.status}
-              class={`hub-product-card glass-panel p-6 rounded-[12px] flex flex-col group hover:bg-[#14161d]/98 transition-all duration-200 hover:-translate-y-3 hover:translate-z-12 border-t border-l border-white/15 hover:border-white/30 ${styles.glow} transform-gpu shadow-[0_8px_32px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.06)] hover:shadow-[0_20px_60px_rgba(0,0,0,0.6),inset_0_1px_0_rgba(255,255,255,0.1)]`}
+              class={`hub-product-card glass-panel p-6 rounded-[12px] flex flex-col group hover:bg-surface2/98 transition-all duration-200 hover:-translate-y-3 hover:translate-z-12 border-t border-l border-white/15 hover:border-white/30 ${styles.glow} transform-gpu shadow-[0_8px_32px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.06)] hover:shadow-[0_20px_60px_rgba(0,0,0,0.6),inset_0_1px_0_rgba(255,255,255,0.1)]`}
             >
               <div class="flex justify-between items-start mb-4">
                 <h3 class="font-bold text-white text-lg transition-colors">{product.title}</h3>
@@ -231,10 +408,10 @@ const countByStatus = coreProducts.reduce(
                   {product.status}
                 </span>
               </div>
-              <p class="text-sm text-[#d8d6d0] opacity-80 mb-8 leading-relaxed flex-grow">{product.desc}</p>
+              <p class="text-sm text-cloud opacity-80 mb-8 leading-relaxed flex-grow">{product.desc}</p>
               <div class="flex gap-2 flex-wrap mt-auto">
                 {product.tags.map(tag => (
-                  <span class="text-[10px] font-mono text-[#6b7280] bg-white/5 border border-white/5 px-2 py-1 rounded-[4px]">{tag}</span>
+                  <span class="text-[10px] font-mono text-muted bg-white/5 border border-white/5 px-2 py-1 rounded-[4px]">{tag}</span>
                 ))}
               </div>
             </a>
@@ -270,10 +447,10 @@ const countByStatus = coreProducts.reduce(
             btn.setAttribute("aria-pressed", active ? "true" : "false");
             if (active) {
               btn.className =
-                "hub-filter-btn rounded border px-3 py-1.5 transition-colors border-[#4db8a8]/50 text-[#4db8a8] bg-[#4db8a8]/10";
+                "hub-filter-btn rounded border border-teal/50 bg-teal/10 px-4 py-2.5 text-teal transition-colors md:px-3 md:py-1.5";
             } else {
               btn.className =
-                "hub-filter-btn rounded border border-white/10 px-3 py-1.5 text-[#6b7280] transition-colors hover:border-white/20 hover:text-[#d8d6d0]";
+                "hub-filter-btn rounded border border-white/10 px-4 py-2.5 text-muted transition-colors hover:border-white/20 hover:text-cloud md:px-3 md:py-1.5";
             }
           });
         }
@@ -286,22 +463,22 @@ const countByStatus = coreProducts.reduce(
     </script>
 
     <!-- 3. In Development & Research (Side by Side on Large Screens) -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-24 animate-fade-in-up interactive-zone" style="animation-delay: 0.3s;">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-24 animate-fade-in-up interactive-zone" style="animation-delay: 0.28s;">
       
       <!-- Prototypes -->
       <section>
         <div class="flex items-center gap-4 mb-8">
-          <h2 class="text-sm uppercase tracking-widest font-bold text-[#6b7280] font-mono">/ prototypes</h2>
+          <h2 class="text-sm uppercase tracking-widest font-bold text-muted font-mono">/ prototypes</h2>
           <div class="h-px bg-white/10 flex-grow"></div>
         </div>
         <div class="flex flex-col gap-4">
           {prototypes.map((proto) => (
-            <a href={proto.url} target="_blank" rel="noopener noreferrer" class="glass-panel p-5 rounded-[8px] flex items-center justify-between group hover:bg-[#12141b]/95 transition-all duration-300 border border-[rgba(255,255,255,0.04)] hover:border-white/10">
+            <a href={proto.url} target="_blank" rel="noopener noreferrer" class="glass-panel p-5 rounded-[8px] flex items-center justify-between group hover:bg-surface2/95 transition-all duration-300 border border-[rgba(255,255,255,0.04)] hover:border-white/10">
               <div>
-                <h3 class="font-bold text-[#d8d6d0] mb-1 group-hover:text-white transition-colors">{proto.title}</h3>
-                <p class="text-sm text-[#6b7280]">{proto.desc}</p>
+                <h3 class="font-bold text-cloud mb-1 group-hover:text-white transition-colors">{proto.title}</h3>
+                <p class="text-sm text-muted">{proto.desc}</p>
               </div>
-              <span class="text-[#cda852] font-mono text-xl opacity-0 group-hover:opacity-100 transition-all duration-300 transform -translate-x-2 group-hover:translate-x-0">→</span>
+              <span class="text-butter font-mono text-xl opacity-0 group-hover:opacity-100 transition-all duration-300 transform -translate-x-2 group-hover:translate-x-0">→</span>
             </a>
           ))}
         </div>
@@ -310,14 +487,14 @@ const countByStatus = coreProducts.reduce(
       <!-- Whitepapers -->
       <section>
         <div class="flex items-center gap-4 mb-8">
-          <h2 class="text-sm uppercase tracking-widest font-bold text-[#6b7280] font-mono">/ whitepapers</h2>
+          <h2 class="text-sm uppercase tracking-widest font-bold text-muted font-mono">/ whitepapers</h2>
           <div class="h-px bg-white/10 flex-grow"></div>
         </div>
         <div class="flex flex-col gap-4">
           {research.map((paper) => (
-            <a href={`https://doi.org/${paper.doi}`} target="_blank" rel="noopener noreferrer" class="glass-panel p-6 rounded-[8px] group hover:bg-[#12141b]/95 transition-all duration-300 border border-[rgba(255,255,255,0.04)] hover:border-[#4db8a8]/30">
-              <h3 class="font-bold text-[#4db8a8] mb-3 text-sm leading-relaxed group-hover:text-white transition-colors">{paper.title}</h3>
-              <div class="flex items-center gap-2 text-xs font-mono text-[#6b7280]">
+            <a href={`https://doi.org/${paper.doi}`} target="_blank" rel="noopener noreferrer" class="glass-panel p-6 rounded-[8px] group hover:bg-surface2/95 transition-all duration-300 border border-[rgba(255,255,255,0.04)] hover:border-teal/30">
+              <h3 class="font-bold text-teal mb-3 text-sm leading-relaxed group-hover:text-white transition-colors">{paper.title}</h3>
+              <div class="flex items-center gap-2 text-xs font-mono text-muted">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-70"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
                 DOI: {paper.doi}
               </div>
@@ -328,25 +505,29 @@ const countByStatus = coreProducts.reduce(
     </div>
 
     <!-- 4. Footer -->
-    <footer class="border-t border-white/10 pt-10 pb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-8 text-xs text-[#6b7280] font-mono interactive-zone animate-fade-in-up" style="animation-delay: 0.4s;">
+    <footer
+      class="animate-fade-in-up interactive-zone flex flex-col items-start gap-8 border-t border-white/10 pt-10 pb-[max(2rem,env(safe-area-inset-bottom))] text-sm text-muted sm:text-xs font-mono md:flex-row md:items-center md:justify-between"
+      style="animation-delay: 0.34s;"
+    >
       <div>
-        <p class="text-[#d8d6d0] font-bold mb-2 text-sm tracking-wide">P31 Labs, Inc.</p>
+        <p class="text-cloud font-bold mb-2 text-sm tracking-wide">P31 Labs, Inc.</p>
         <p class="mb-1">Georgia nonprofit · 501(c)(3) determination pending</p>
-        <p>EIN: 42-1888158</p>
+        <p class="text-cloud/60">EIN: 42-1888158 · © 2026</p>
       </div>
-      <div class="flex flex-wrap gap-x-8 gap-y-2">
-        <a href="/privacy" class="hover:text-[#4db8a8] transition-colors uppercase tracking-widest">Privacy</a>
-        <a href="/terms" class="hover:text-[#4db8a8] transition-colors uppercase tracking-widest">Terms</a>
-        <a href="/contact" class="hover:text-[#4db8a8] transition-colors uppercase tracking-widest">Contact</a>
-        <a href="/accessibility" class="hover:text-[#4db8a8] transition-colors uppercase tracking-widest">A11y</a>
-        <a href="/security" class="hover:text-[#4db8a8] transition-colors uppercase tracking-widest">Security</a>
-        <a href="/oss" class="hover:text-[#4db8a8] transition-colors uppercase tracking-widest">OSS</a>
-        <a href="/dome" class="hover:text-[#4db8a8] transition-colors uppercase tracking-widest" title="Sovereign Cockpit K₄">/dome</a>
-        <a href="/observatory.html" class="hover:text-[#4db8a8] transition-colors uppercase tracking-widest" title="Geodesic panel inspector">Observatory</a>
-        <a href="/lattice.html" class="hover:text-[#4db8a8] transition-colors uppercase tracking-widest">Lattice</a>
-        <a href="https://github.com/p31labs" target="_blank" rel="noopener noreferrer" class="hover:text-[#4db8a8] transition-colors uppercase tracking-widest">GitHub</a>
-        <a href="https://phosphorus31.org" target="_blank" rel="noopener noreferrer" class="hover:text-[#4db8a8] transition-colors uppercase tracking-widest">phosphorus31.org</a>
-        <a href="/donate" class="text-coral hover:brightness-110 transition-colors uppercase tracking-widest font-bold border border-coral/30 px-3 py-1.5 rounded bg-coral/5">Donate</a>
+      <div class="flex flex-wrap gap-x-4 gap-y-1 sm:gap-x-6 md:gap-x-8">
+        <a href="/privacy" class="inline-flex min-h-[2.5rem] items-center py-1 uppercase tracking-widest transition-colors hover:text-teal">Privacy</a>
+        <a href="/terms" class="inline-flex min-h-[2.5rem] items-center py-1 uppercase tracking-widest transition-colors hover:text-teal">Terms</a>
+        <a href="/contact" class="inline-flex min-h-[2.5rem] items-center py-1 uppercase tracking-widest transition-colors hover:text-teal">Contact</a>
+        <a href="/accessibility" class="inline-flex min-h-[2.5rem] items-center py-1 uppercase tracking-widest transition-colors hover:text-teal">A11y</a>
+        <a href="/security" class="inline-flex min-h-[2.5rem] items-center py-1 uppercase tracking-widest transition-colors hover:text-teal">Security</a>
+        <a href="/oss" class="inline-flex min-h-[2.5rem] items-center py-1 uppercase tracking-widest transition-colors hover:text-teal">OSS</a>
+        <a href="/dome" class="inline-flex min-h-[2.5rem] items-center py-1 uppercase tracking-widest transition-colors hover:text-teal" title="Sovereign Cockpit K₄">/dome</a>
+        <a href="/observatory.html" class="inline-flex min-h-[2.5rem] items-center py-1 uppercase tracking-widest transition-colors hover:text-teal" title="Geodesic panel inspector">Observatory</a>
+        <a href="/geodesic-math/" class="inline-flex min-h-[2.5rem] items-center py-1 uppercase tracking-widest transition-colors hover:text-teal" title="Icosa subdivision stats (same math as hub + /dome shell)">Geodesic math</a>
+        <a href="/lattice.html" class="inline-flex min-h-[2.5rem] items-center py-1 uppercase tracking-widest transition-colors hover:text-teal">Lattice</a>
+        <a href="https://github.com/p31labs" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-[2.5rem] items-center py-1 uppercase tracking-widest transition-colors hover:text-teal">GitHub</a>
+        <a href="https://phosphorus31.org" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-[2.5rem] items-center py-1 uppercase tracking-widest transition-colors hover:text-teal">phosphorus31.org</a>
+        <a href="/donate" class="inline-flex min-h-[2.5rem] items-center rounded border border-coral/30 bg-coral/5 px-2 py-1 font-bold uppercase tracking-widest text-coral transition-colors hover:brightness-110">Donate</a>
       </div>
     </footer>
 
@@ -369,10 +550,9 @@ const countByStatus = coreProducts.reduce(
   .interactive-zone {
     pointer-events: auto;
   }
-
-
-  
-  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: no-preference) {
+    html { scroll-behavior: smooth; }
+  }
 
   /* Typography */
   .font-mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
@@ -383,594 +563,88 @@ const countByStatus = coreProducts.reduce(
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
   }
-  .animate-fade-in-up { opacity: 0; animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-  
+  .animate-fade-in-up { opacity: 0; animation: fadeInUp 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+  .hub-hero-aura {
+    background:
+      radial-gradient(ellipse 85% 65% at 50% 0%, rgba(77, 184, 168, 0.12) 0%, transparent 58%),
+      radial-gradient(ellipse 45% 50% at 78% 18%, rgba(139, 124, 201, 0.08) 0%, transparent 50%),
+      radial-gradient(ellipse 40% 45% at 12% 35%, rgba(37, 137, 125, 0.07) 0%, transparent 50%);
+  }
+
+  .skip-to-content {
+    position: absolute;
+    left: 50%;
+    z-index: 60;
+    padding: 0.5rem 1rem;
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #0a0c0f;
+    background: #4db8a8;
+    border-radius: 0.25rem;
+    transform: translate(-50%, -160%);
+    transition: transform 0.2s ease;
+  }
+  .skip-to-content:focus {
+    transform: translate(-50%, 0.5rem);
+  }
+
+  .hub-cta-primary {
+    border: 1px solid rgba(204, 98, 71, 0.5);
+    background: linear-gradient(168deg, #d66f5a 0%, #c94e38 45%, #a83220 100%);
+    box-shadow:
+      0 0 0 1px rgba(0, 0, 0, 0.18) inset,
+      0 4px 28px rgba(204, 98, 71, 0.32);
+    transition: box-shadow 0.25s ease, transform 0.2s ease, filter 0.2s ease;
+  }
+  .hub-cta-primary:hover {
+    box-shadow:
+      0 0 0 1px rgba(0, 0, 0, 0.12) inset,
+      0 8px 36px rgba(204, 98, 71, 0.42);
+    filter: brightness(1.05);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .hub-cta-primary:hover {
+      transform: translateY(-2px);
+    }
+  }
+  .hub-cta-primary:focus-visible {
+    outline: 2px solid #4db8a8;
+    outline-offset: 3px;
+  }
+
+  .hub-cta-secondary:focus-visible {
+    outline: 2px solid rgba(77, 184, 168, 0.9);
+    outline-offset: 2px;
+  }
+
+  a.hub-product-card:focus-visible {
+    outline: 2px solid rgba(77, 184, 168, 0.88);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hub-hero-aura {
+      opacity: 0.75;
+    }
+    .skip-to-content {
+      transition: none;
+    }
+    .hub-cta-primary:hover {
+      transform: none;
+    }
+  }
+
   /* Layer 0 Animations */
   @keyframes l0-inhale { to { transform: scale(1.3); opacity: 1; } }
   @keyframes l0-hold   { from { transform: scale(1.3); opacity: 1; } to { transform: scale(1.3); opacity: 1; } }
   @keyframes l0-exhale { to { transform: scale(0.75); opacity: 0.4; } }
 </style>
 
-<!-- COMBINED LOGIC: TELEMETRY + WEBGL DOME + COCKPIT -->
-<script type="module" is:inline>
-  import * as THREE from 'three';
-  import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
-  import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
-  import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
-  import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
-
-  // Wait for DOM to be fully loaded before doing anything
-  document.addEventListener('DOMContentLoaded', () => {
-
-  // ================================================================
-  // 1. TELEMETRY & HUD STATE
-  // ================================================================
-  const $ = (id) => document.getElementById(id);
-  
-  let currentSpoons = 10;
-  const MAX_SPOONS = 20;
-
-  const fetchWithCache = async (url, cacheKey, fallbackValue) => {
-    try {
-      const response = await fetch(url, { signal: AbortSignal.timeout(5000) });
-      if (!response.ok) throw new Error('Network error');
-      const data = await response.json();
-      localStorage.setItem(cacheKey, JSON.stringify(data));
-      return data;
-    } catch (error) {
-      const cached = localStorage.getItem(cacheKey);
-      return cached ? JSON.parse(cached) : fallbackValue;
-    }
-  };
-
-  const updateTelemetry = async () => {
-    // Q-Factor
-    const qData = await fetchWithCache('https://k4-hubs.trimtab-signal.workers.dev/hub/q-factor', 'p31_cache_qfactor', { score: 0.925, vertexHealth: { A:1, B:1, C:1, D:1 } });
-    if (qData && qData.score) {
-      const score = qData.score.toFixed(3);
-      const isOpt = qData.score >= 0.9, isStab = qData.score >= 0.7;
-      const colorClass = isOpt ? 'text-[#3ba372]' : isStab ? 'text-[#cda852]' : 'text-[#E8636F]';
-      const bgClass = isOpt ? 'bg-[#3ba372]' : isStab ? 'bg-[#cda852]' : 'bg-[#E8636F]';
-      
-      const nq = $('nav-q-factor'), nd = $('nav-status-dot');
-      if (nq) { nq.innerText = score; nq.className = `font-bold tracking-wider ${colorClass}`; }
-      if (nd) { nd.className = `w-2 h-2 rounded-full animate-pulse ${bgClass}`; nd.style.boxShadow = `0 0 8px ${isOpt?'#3ba372':isStab?'#cda852':'#E8636F'}`; }
-      
-      const activeVerts = Object.values(qData.vertexHealth || {}).filter(v => v > 0).length;
-      if ($('nav-fleet-val')) $('nav-fleet-val').innerText = `${activeVerts}/4`;
-    }
-
-    // LOVE
-    const loveData = await fetchWithCache('https://p31-workers.trimtab-signal.workers.dev/api/love/balance/will-001', 'p31_cache_love', { availableBalance: 3.28 });
-    if (loveData.availableBalance !== undefined && $('nav-love-val')) $('nav-love-val').innerText = loveData.availableBalance.toFixed(2);
-
-    // Spoons
-    const spoonData = await fetchWithCache('https://k4-personal.trimtab-signal.workers.dev/agent/will/energy', 'p31_cache_spoons', { spoons: 10 });
-    if (spoonData.spoons !== undefined) {
-      currentSpoons = spoonData.spoons;
-      if ($('nav-spoon-val')) $('nav-spoon-val').innerText = currentSpoons;
-      if ($('nav-spoon-fill')) $('nav-spoon-fill').style.width = `${(currentSpoons/MAX_SPOONS)*100}%`;
-    }
-  };
-
-  setInterval(updateTelemetry, 60000);
-  updateTelemetry();
-
-  // ================================================================
-  // 2. EDE TRIMTAB & LAYER 0 (Somatic Mode)
-  // ================================================================
-  const $trimCanvas = $('trimtab-canvas');
-  const $trimFreq = $('trimtab-freq');
-  let trimValue = 1.0; 
-  let trimOn = false;
-  let trimAudioCtx = null, trimOsc = null, trimGain = null;
-  let _trimIsDown = false, _trimAngle = null;
-
-  function trimFreq() { return 0.86 * Math.pow(1000, trimValue); }
-
-  function drawTrimtab() {
-    if (!$trimCanvas) return;
-    const ctx = $trimCanvas.getContext('2d');
-    ctx.clearRect(0, 0, 24, 24);
-    const cx = 12, cy = 12, r = 8, start = 3*Math.PI/4, sweep = 3*Math.PI/2;
-    
-    ctx.strokeStyle = 'rgba(255,255,255,0.15)'; ctx.lineWidth = 2; ctx.lineCap = 'round';
-    ctx.beginPath(); ctx.arc(cx, cy, r, start, start + sweep); ctx.stroke();
-
-    const valEnd = start + trimValue * sweep;
-    ctx.strokeStyle = trimOn ? '#E8636F' : 'rgba(232,99,111,0.4)';
-    ctx.beginPath(); ctx.arc(cx, cy, r, start, valEnd); ctx.stroke();
-
-    ctx.fillStyle = trimOn ? '#E8636F' : 'rgba(232,99,111,0.6)';
-    ctx.beginPath(); ctx.arc(cx + r*Math.cos(valEnd), cy + r*Math.sin(valEnd), 2, 0, Math.PI*2); ctx.fill();
-    ctx.fillStyle = trimOn ? 'rgba(232,99,111,0.4)' : 'rgba(255,255,255,0.1)';
-    ctx.beginPath(); ctx.arc(cx, cy, 2, 0, Math.PI*2); ctx.fill();
-
-    const f = trimFreq();
-    if ($trimFreq) $trimFreq.innerText = f >= 1000 ? (f/1000).toFixed(2)+'k Hz' : Math.round(f)+'Hz';
-  }
-
-  function trimToggleAudio() {
-    trimOn = !trimOn;
-    if (trimOn) {
-      try {
-        if (!trimAudioCtx) trimAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        trimOsc = trimAudioCtx.createOscillator(); trimGain = trimAudioCtx.createGain();
-        trimOsc.type = 'sine'; trimOsc.frequency.setValueAtTime(trimFreq(), trimAudioCtx.currentTime);
-        trimGain.gain.setValueAtTime(0, trimAudioCtx.currentTime);
-        trimGain.gain.linearRampToValueAtTime(0.05, trimAudioCtx.currentTime + 0.1);
-        trimOsc.connect(trimGain); trimGain.connect(trimAudioCtx.destination);
-        trimOsc.start();
-      } catch(e) { trimOn = false; }
-    } else if (trimOsc) {
-      try { trimGain.gain.linearRampToValueAtTime(0, trimAudioCtx.currentTime + 0.1); trimOsc.stop(trimAudioCtx.currentTime + 0.15); } catch(e){}
-      trimOsc = null; trimGain = null;
-    }
-    drawTrimtab();
-  }
-
-  if ($trimCanvas) {
-    $trimCanvas.addEventListener('pointerdown', e => {
-      e.preventDefault(); $trimCanvas.setPointerCapture(e.pointerId);
-      _trimIsDown = true;
-      const rect = $trimCanvas.getBoundingClientRect();
-      _trimAngle = Math.atan2(e.clientY - rect.top - 12, e.clientX - rect.left - 12);
-    });
-    $trimCanvas.addEventListener('pointermove', e => {
-      if (!_trimIsDown) return;
-      const rect = $trimCanvas.getBoundingClientRect();
-      const a = Math.atan2(e.clientY - rect.top - 12, e.clientX - rect.left - 12);
-      let d = a - _trimAngle;
-      if (d > Math.PI) d -= 2*Math.PI; if (d < -Math.PI) d += 2*Math.PI;
-      trimValue = Math.max(0, Math.min(1, trimValue + d / (3*Math.PI/2)));
-      if (trimOn && trimOsc) try { trimOsc.frequency.setValueAtTime(trimFreq(), trimAudioCtx.currentTime); } catch(e){}
-      _trimAngle = a; drawTrimtab();
-    });
-    const trimUp = () => { _trimIsDown = false; _trimAngle = null; };
-    $trimCanvas.addEventListener('pointerup', trimUp);
-    $trimCanvas.addEventListener('pointercancel', trimUp);
-    $('trimtab-trigger').addEventListener('click', (e) => { if (e.target !== $trimCanvas) activateLayer0(); else if (!_trimIsDown) trimToggleAudio(); });
-  }
-  drawTrimtab();
-
-  // Layer 0 Logic
-  let l0Timer = null, l0Audio = null, escStart = null, escTimer = null;
-  
-  function activateLayer0() {
-    $('layer0').classList.remove('opacity-0', 'pointer-events-none');
-    $('l0-spoon-fill').style.width = `${(currentSpoons/MAX_SPOONS)*100}%`;
-    $('l0-spoon-pct').innerText = `${Math.round((currentSpoons/MAX_SPOONS)*100)}%`;
-    if (!l0Timer) runBreathCycle();
-  }
-  
-  function deactivateLayer0() {
-    $('layer0').classList.add('opacity-0', 'pointer-events-none');
-    clearTimeout(l0Timer); l0Timer = null;
-    if (l0Audio) { try { l0Audio.close(); } catch(e){} l0Audio = null; }
-  }
-
-  function playBreath(phase, durMs, freq) {
-    $('l0-phase').innerText = phase;
-    const dot = $('l0-dot');
-    dot.style.animation = 'none'; void dot.offsetWidth;
-    dot.style.animation = `l0-${phase.toLowerCase()} ${durMs}ms ease-in-out forwards`;
-    if (!freq) return;
-    try {
-      if (!l0Audio) l0Audio = new (window.AudioContext || window.webkitAudioContext)();
-      const osc = l0Audio.createOscillator(), gain = l0Audio.createGain();
-      osc.frequency.setValueAtTime(freq, l0Audio.currentTime); osc.type = 'sine';
-      gain.gain.setValueAtTime(0, l0Audio.currentTime);
-      gain.gain.linearRampToValueAtTime(0.05, l0Audio.currentTime + 0.4);
-      gain.gain.linearRampToValueAtTime(0, l0Audio.currentTime + (durMs/1000) - 0.4);
-      osc.connect(gain); gain.connect(l0Audio.destination);
-      osc.start(); osc.stop(l0Audio.currentTime + (durMs/1000));
-    } catch(e) {}
-  }
-
-  function runBreathCycle() {
-    playBreath('INHALE', 4000, 172.35);
-    l0Timer = setTimeout(() => {
-      playBreath('HOLD', 4000, null);
-      l0Timer = setTimeout(() => {
-        playBreath('EXHALE', 6000, 86.3);
-        l0Timer = setTimeout(runBreathCycle, 6000);
-      }, 4000);
-    }, 4000);
-  }
-
-  document.addEventListener('keydown', e => {
-    if (e.key !== 'Escape' || $('layer0').classList.contains('pointer-events-none')) return;
-    e.preventDefault();
-    if (escStart) return;
-    escStart = Date.now();
-    $('l0-escape-fill').style.transition = 'width 3s linear';
-    $('l0-escape-fill').style.width = '100%';
-    escTimer = setTimeout(() => { deactivateLayer0(); escStart = null; $('l0-escape-fill').style.width = '0%'; }, 3000);
-  });
-  document.addEventListener('keyup', e => {
-    if (e.key === 'Escape') { clearTimeout(escTimer); escStart = null; $('l0-escape-fill').style.transition = 'width 0.15s linear'; $('l0-escape-fill').style.width = '0%'; }
-  });
-
-  // ================================================================
-  // 3. WEBGL SPACESHIP EARTH DOME (Three.js)
-  // ================================================================
-  const container = $('webgl-container');
-  const scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x050508);
-  const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 200);
-  camera.position.set(0, 1.5, 13);
-
-  const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  renderer.setClearColor(0x050508, 1);
-  renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  container.appendChild(renderer.domElement);
-
-  // Post Processing - EXACT MATCH to /dome
-  const composer = new EffectComposer(renderer);
-  composer.addPass(new RenderPass(scene, camera));
-  const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 0.6, 0.4, 0.6);
-  composer.addPass(bloomPass);
-  composer.addPass(new OutputPass());
-
-  // Lights
-  scene.add(new THREE.AmbientLight(0x0a0a0a, 0.05));
-  const domeLight = new THREE.PointLight(0x1a2a3a, 0.8, 12);
-  domeLight.position.set(0, 0, 0); scene.add(domeLight);
-
-  // Data
-  const AXIS_COLORS = { a: 0xff9944, b: 0x44aaff, c: 0x44ffaa, d: 0xff4466 };
-  const AXIS_LABELS = { a: 'Operator', b: 'Signals', c: 'Context', d: 'Shield' };
-  const STATE_CSS = { active: '#3ba372', deployed: '#25897d', countdown: '#cda852', complete: '#4db8a8', missing: '#cc6247', ongoing: '#25897d', prototype: '#25897d' };
-  const STATE_GLOW = { countdown: 2.0, critical: 2.5, complete: 0.4, active: 1.0, ongoing: 0.6, deployed: 0.7, prototype: 0.5, missing: 1.2 };
-
-  const VERTICES = {
-    'med-calcitriol': ['Calcitriol', 4, 0, 0, 0, 'ongoing', 'vital', '12hr dose cycle'],
-    'spoon-budget': ['Spoon Budget', 4, 0, 0, 0, 'active', 'vital', '12/20'],
-    'exec-dys': ['Exec Dysfunction', 3, 0, 1, 0, 'active', 'vital'],
-    'bonding-game': ['BONDING', 0, 3, 1, 0, 'deployed', 'ac', 'WebRTC Mesh'],
-    'p31-labs': ['P31 Labs', 1, 1, 2, 0, 'active', 'ac', '501(c)(3)'],
-    'spaceship': ['Spaceship Earth', 0, 1, 3, 0, 'deployed', 'ac', 'Observatory Dome'],
-    'buffer': ['The Buffer', 2, 1, 1, 0, 'active', 'dc', 'Voltage Filter'],
-    'node-one': ['Node One', 1, 0, 3, 0, 'prototype', 'dc', 'ESP32-S3'],
-    'centaur': ['The Centaur', 1, 1, 2, 0, 'active', 'ac'],
-    'love-econ': ['L.O.V.E.', 1, 1, 2, 0, 'deployed', 'ac', 'Ledger'],
-    'phosphorus31': ['phosphorus31.org', 0, 0, 3, 1, 'deployed', 'ac'],
-    'posner': ['Posner Molecule', 2, 0, 2, 0, 'active', 'dc', 'Ca9(PO4)6'],
-    'larmor': ['863 Hz', 1, 0, 1, 2, 'active', 'dc', 'Larmor canonical'],
-    'ivm': ['IVM Geometry', 0, 0, 4, 0, 'active', 'dc'],
-    'soulsafe': ['SOULSAFE', 0, 0, 2, 2, 'active', 'ac'],
-    'opm-deadline': ['OPM Sep 26', 0, 0, 0, 4, 'countdown', 'vital'],
-    'court-void': ['Void Ab Initio', 0, 0, 0, 4, 'active', 'ac'],
-  };
-
-  const EDGES = [
-    ['exec-dys', 'spoon-budget', 'drains'], ['bonding-game', 'love-econ', 'earns'],
-    ['p31-labs', 'spaceship', 'builds'], ['p31-labs', 'buffer', 'builds'],
-    ['spaceship', 'love-econ', 'displays'], ['phosphorus31', 'spaceship', 'hosted'],
-    ['posner', 'larmor', 'resonates'], ['posner', 'ivm', 'geometry'],
-    ['court-void', 'soulsafe', 'protects']
-  ];
-
-  function getDominantAxis(a,b,c,d) { const v={a,b,c,d}; let m=-1, ax='a'; for(let k of ['a','b','c','d']) { if(v[k]>m) { m=v[k]; ax=k; } } return ax; }
-  function getNodeColor(a,b,c,d) { const s=a+b+c+d||1, col=new THREE.Color(0); const ac={a:new THREE.Color(AXIS_COLORS.a),b:new THREE.Color(AXIS_COLORS.b),c:new THREE.Color(AXIS_COLORS.c),d:new THREE.Color(AXIS_COLORS.d)}; for(let k of ['a','b','c','d']) { const w=({a,b,c,d})[k]/s; col.r+=ac[k].r*w; col.g+=ac[k].g*w; col.b+=ac[k].b*w; } return col; }
-  
-  const TETRA = [new THREE.Vector3(0,1,0), new THREE.Vector3(0,-1/3,Math.sqrt(8/9)), new THREE.Vector3(-Math.sqrt(2/3),-1/3,-Math.sqrt(2/9)), new THREE.Vector3(Math.sqrt(2/3),-1/3,-Math.sqrt(2/9))];
-  function nodeDir(a,b,c,d) { const s=a+b+c+d||1, dir=new THREE.Vector3(0,0,0); dir.addScaledVector(TETRA[0],a/s); dir.addScaledVector(TETRA[1],b/s); dir.addScaledVector(TETRA[2],c/s); dir.addScaledVector(TETRA[3],d/s); return dir.normalize(); }
-
-  // Build Geodesic
-  function buildGeo(rad, subs) {
-    const PHI = (1+Math.sqrt(5))/2;
-    const raw = [[-1,PHI,0],[1,PHI,0],[-1,-PHI,0],[1,-PHI,0],[0,-1,PHI],[0,1,PHI],[0,-1,-PHI],[0,1,-PHI],[PHI,0,-1],[PHI,0,1],[-PHI,0,-1],[-PHI,0,1]];
-    let verts = raw.map(([x,y,z]) => { const l=Math.sqrt(x*x+y*y+z*z); return new THREE.Vector3(x/l*rad, y/l*rad, z/l*rad); });
-    let faces = [[0,11,5],[0,5,1],[0,1,7],[0,7,10],[0,10,11],[1,5,9],[5,11,4],[11,10,2],[10,7,6],[7,1,8],[3,9,4],[3,4,2],[3,2,6],[3,6,8],[3,8,9],[4,9,5],[2,4,11],[6,2,10],[8,6,7],[9,8,1]];
-    for(let s=0; s<subs; s++) {
-      const cache={}, getMid=(i,j)=>{ const k=Math.min(i,j)+'_'+Math.max(i,j); if(cache[k]!==undefined) return cache[k]; const idx=verts.length; verts.push(verts[i].clone().add(verts[j]).normalize().multiplyScalar(rad)); cache[k]=idx; return idx; };
-      const nf=[]; for(const [a,b,c] of faces) { const ab=getMid(a,b), bc=getMid(b,c), ca=getMid(c,a); nf.push([a,ab,ca],[b,bc,ab],[c,ca,bc],[ab,bc,ca]); } faces=nf;
-    }
-    const es=new Set(); for(const [a,b,c] of faces) { es.add(Math.min(a,b)+'_'+Math.max(a,b)); es.add(Math.min(b,c)+'_'+Math.max(b,c)); es.add(Math.min(c,a)+'_'+Math.max(c,a)); }
-    const edges=[]; es.forEach(e => edges.push(e.split('_').map(Number)));
-    const gFaces=faces.map(f => ({ indices: f, centroid: new THREE.Vector3().add(verts[f[0]]).add(verts[f[1]]).add(verts[f[2]]).divideScalar(3) }));
-    return { verts, edges, faces: gFaces };
-  }
-
-  const RADIUS = 3.5;
-  const geo = buildGeo(RADIUS, 2);
-  const geoOuter = buildGeo(RADIUS * 1.08, 1);
-  const geoInner = buildGeo(RADIUS * 0.92, 2);
-  const faceMeshes = [];
-  const nodeToFace = new Map();
-
-  // Outer shell wireframe
-  const oPos = [];
-  for(let i=0; i<geoOuter.edges.length; i++) {
-    const [a,b] = geoOuter.edges[i];
-    oPos.push(geoOuter.verts[a].x, geoOuter.verts[a].y, geoOuter.verts[a].z);
-    oPos.push(geoOuter.verts[b].x, geoOuter.verts[b].y, geoOuter.verts[b].z);
-  }
-  const oGeo = new THREE.BufferGeometry();
-  oGeo.setAttribute('position', new THREE.Float32BufferAttribute(oPos, 3));
-  const oMat = new THREE.LineBasicMaterial({ color: 0x1a3040, transparent: true, opacity: 0.3 });
-  const outerShell = new THREE.LineSegments(oGeo, oMat);
-
-  // Inner shell
-  const iMat = new THREE.MeshPhysicalMaterial({
-    color: 0x080810,
-    roughness: 0.1,
-    metalness: 0.0,
-    transmission: 0.9,
-    thickness: 0.3,
-    transparent: true,
-    opacity: 0.3,
-    side: THREE.DoubleSide
-  });
-  const innerShell = new THREE.Group();
-  for(let i=0; i<geoInner.faces.length; i++) {
-    const f = geoInner.faces[i];
-    const [a,b,c] = f.indices;
-    const va = geoInner.verts[a], vb = geoInner.verts[b], vc = geoInner.verts[c];
-    const tGeo = new THREE.BufferGeometry();
-    tGeo.setAttribute('position', new THREE.Float32BufferAttribute([va.x,va.y,va.z, vb.x,vb.y,vb.z, vc.x,vc.y,vc.z], 3));
-    tGeo.computeVertexNormals();
-    innerShell.add(new THREE.Mesh(tGeo, iMat.clone()));
-  }
-
-  // Assign nodes
-  const sorted = Object.entries(VERTICES).map(([id,d])=>({id, label:d[0], a:d[1], b:d[2], c:d[3], d:d[4], state:d[5], bus:d[6], notes:d[7], dir:nodeDir(d[1],d[2],d[3],d[4]), p:d[5]==='countdown'?0:1})).sort((x,y)=>x.p-y.p);
-  const used = new Set();
-  const assignments = [];
-  for(const n of sorted) {
-    let best=-1, bd=-2;
-    for(let i=0; i<geo.faces.length; i++) { if(used.has(i)) continue; const dot=geo.faces[i].centroid.clone().normalize().dot(n.dir); if(dot>bd) {bd=dot; best=i;} }
-    if(best>=0) { used.add(best); const a={faceIdx:best, node:n, color:getNodeColor(n.a,n.b,n.c,n.d), glow:STATE_GLOW[n.state]||0.5}; assignments.push(a); nodeToFace.set(n.id, a); geo.faces[best].assignment = a; }
-  }
-
-  // Draw wireframe
-  const wPos=[], eProg=[];
-  for(let i=0; i<geo.edges.length; i++) { const [a,b]=geo.edges[i]; wPos.push(geo.verts[a].x, geo.verts[a].y, geo.verts[a].z, geo.verts[b].x, geo.verts[b].y, geo.verts[b].z); eProg.push(i/geo.edges.length, i/geo.edges.length); }
-  const wGeo=new THREE.BufferGeometry(); wGeo.setAttribute('position', new THREE.Float32BufferAttribute(wPos, 3)); wGeo.setAttribute('edgeProgress', new THREE.Float32BufferAttribute(eProg, 1));
-  const wMat=new THREE.ShaderMaterial({ 
-    uniforms:{uTime:{value:0}}, 
-    vertexShader:`attribute float edgeProgress; varying float vP; void main(){vP=edgeProgress; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`, 
-    fragmentShader:`
-      uniform float uTime; 
-      varying float vP; 
-      void main(){ 
-        float p=smoothstep(0.,0.05,fract(vP-uTime*0.12))*(1.-smoothstep(0.05,0.15,fract(vP-uTime*0.12))); 
-        float shimmer = 0.3 + 0.7 * sin(uTime * 3.0 + vP * 10.0) * 0.5;
-        gl_FragColor=vec4(0.15,0.35,0.45,0.3 + p * 0.7) * shimmer; 
-      }
-    `, 
-    transparent:true, 
-    depthWrite:false 
-  });
-  scene.add(new THREE.LineSegments(wGeo, wMat));
-
-  // Draw faces - EXACT 3D TETRAHEDRAL BLOCKS FROM /dome
-  const domeGroup = new THREE.Group();
-  for(let i=0; i<geo.faces.length; i++) {
-    const f=geo.faces[i], a=f.assignment, [ai,bi,ci]=f.indices;
-
-    const va=geo.verts[ai].clone();
-    const vb=geo.verts[bi].clone();
-    const vc=geo.verts[ci].clone();
-    const cent = new THREE.Vector3().add(va).add(vb).add(vc).divideScalar(3);
-
-    // Shrink outer face towards centroid to create gaps
-    const gap = 0.08;
-    va.lerp(cent, gap);
-    vb.lerp(cent, gap);
-    vc.lerp(cent, gap);
-
-    // Inner vertex to create the 3D block volume (points inward to core)
-    const vd = cent.clone().multiplyScalar(0.85);
-
-    const tGeo = new THREE.BufferGeometry();
-    const vertices = new Float32Array([
-      // Outer face
-      va.x,va.y,va.z, vb.x,vb.y,vb.z, vc.x,vc.y,vc.z,
-      // Side 1
-      va.x,va.y,va.z, vc.x,vc.y,vc.z, vd.x,vd.y,vd.z,
-      // Side 2
-      vc.x,vc.y,vc.z, vb.x,vb.y,vb.z, vd.x,vd.y,vd.z,
-      // Side 3
-      vb.x,vb.y,vb.z, va.x,va.y,va.z, vd.x,vd.y,vd.z
-    ]);
-    tGeo.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
-    tGeo.computeVertexNormals();
-
-    let mat;
-    if(a) {
-      const hot=a.glow>=1.0;
-      mat=new THREE.MeshPhysicalMaterial({
-        color: a.color,
-        emissive: a.color.clone().multiplyScalar(hot?0.6:0.3),
-        emissiveIntensity: hot?3.0:1.2,
-        roughness: 0.08,
-        metalness: 0.3,
-        transmission: 0.6,
-        thickness: 0.8,
-        transparent: true,
-        opacity: 0.85,
-        side: THREE.FrontSide,
-        polygonOffset: true,
-        polygonOffsetFactor: 1
-      });
-    } else {
-      mat=new THREE.MeshPhysicalMaterial({
-        color: 0x050508,
-        emissive: 0x000000,
-        roughness: 0.1,
-        metalness: 0.1,
-        transmission: 0.7,
-        thickness: 0.5,
-        transparent: true,
-        opacity: 0.3,
-        side: THREE.FrontSide,
-        polygonOffset: true,
-        polygonOffsetFactor: 1
-      });
-    }
-
-    const mesh=new THREE.Mesh(tGeo, mat);
-    mesh.userData = { a, centroidDir: cent.clone().normalize() };
-
-    // Edge definitions attached to each block
-    const edgeGeo = new THREE.EdgesGeometry(tGeo);
-    const edgeMat = new THREE.LineBasicMaterial({
-      color: a ? a.color : 0x223344,
-      transparent: true,
-      opacity: a ? 0.4 : 0.15
-    });
-    const edges = new THREE.LineSegments(edgeGeo, edgeMat);
-    
-    domeGroup.add(mesh);
-    domeGroup.add(edges);
-    faceMeshes.push(mesh);
-  }
-  // Add layered shells
-  domeGroup.add(outerShell);
-  domeGroup.add(innerShell);
-  scene.add(domeGroup);
-
-  // Base Ring Frame - always visible
-  const baseGeo = new THREE.BufferGeometry();
-  const basePoints = [];
-  for(let i=0; i<geo.verts.length; i++) {
-    if(geo.verts[i].y < 0.1) { // only lower hemisphere vertices
-      basePoints.push(geo.verts[i].x, -0.3, geo.verts[i].z);
-      basePoints.push(0, -0.3, 0);
-    }
-  }
-  baseGeo.setAttribute('position', new THREE.Float32BufferAttribute(basePoints, 3));
-  const baseMat = new THREE.LineBasicMaterial({ color: 0x225566, opacity: 0.7, transparent: true });
-  const baseFrame = new THREE.LineSegments(baseGeo, baseMat);
-  scene.add(baseFrame);
-
-  // Deep Molecular Soup - EXACT 1:1 COPY FROM DOME
-  const pCount = 12000;
-  const pGeo = new THREE.BufferGeometry();
-  const pPos = new Float32Array(pCount*3), pSiz = new Float32Array(pCount), pCol = new Float32Array(pCount*3);
-  for(let i=0; i<pCount; i++) {
-    const r=4+Math.random()*30, th=Math.random()*Math.PI*2, ph=Math.acos(2*Math.random()-1);
-    pPos[i*3]=r*Math.sin(ph)*Math.cos(th); pPos[i*3+1]=r*Math.sin(ph)*Math.sin(th); pPos[i*3+2]=r*Math.cos(ph);
-    pSiz[i]=0.01+Math.random()*0.04;
-    const cBase = r>15 ? 0x15151a : 0x1a201f;
-    pCol[i*3]=(cBase>>16)/255; pCol[i*3+1]=((cBase>>8)&0xff)/255; pCol[i*3+2]=(cBase&0xff)/255;
-  }
-  pGeo.setAttribute('position', new THREE.BufferAttribute(pPos,3));
-  pGeo.setAttribute('size', new THREE.BufferAttribute(pSiz,1));
-  pGeo.setAttribute('color', new THREE.BufferAttribute(pCol,3));
-
-  const pMat = new THREE.PointsMaterial({ color:0xffffff, vertexColors:true, size:0.03, transparent:true, opacity:0.5, sizeAttenuation:true, depthWrite:false });
-  const molField = new THREE.Points(pGeo, pMat);
-  scene.add(molField);
-
-  // Raycaster setup
-  container.addEventListener('mousemove', (e) => {
-    const rect = container.getBoundingClientRect();
-    mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-    mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
-  });
-
-  container.addEventListener('click', () => {
-    if (hoveredFace && hoveredFace.userData.a) {
-      selectedNode = hoveredFace.userData.a;
-      
-      // Populate panel
-      $('nd-title').innerText = selectedNode.node.label;
-      $('nd-axis').innerText = getDominantAxis(selectedNode.node.a, selectedNode.node.b, selectedNode.node.c, selectedNode.node.d).toUpperCase();
-      $('nd-state').innerText = selectedNode.node.state.toUpperCase();
-      $('nd-state').style.color = STATE_CSS[selectedNode.node.state];
-      $('nd-bus').innerText = selectedNode.node.bus?.toUpperCase() || 'MAIN';
-      $('nd-notes').innerText = selectedNode.node.notes || 'No description';
-      
-      // Show connections
-      const conns = edgeMap.get(selectedNode.node.id) || [];
-      $('nd-conns').innerHTML = conns.map(c => `<span class="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-[10px]">${VERTICES[c.id]?.[0] || c.id}</span>`).join('');
-      
-      // Show panel
-      panel.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
-    }
-  });
-
-  $('node-detail-close').addEventListener('click', (e) => {
-    e.stopPropagation();
-    selectedNode = null;
-    panel.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none');
-  });
-
-  let time = 0;
-  let isVisible = true;
-  let lastFrame = 0;
-  const minFrameTime = 1000 / 30; // 30 FPS cap on landing page
-
-  // Pause rendering when page is hidden or scrolled out of view
-  document.addEventListener('visibilitychange', () => {
-    isVisible = !document.hidden;
-  });
-  
-  function animate(timestamp) {
-    requestAnimationFrame(animate);
-    
-    if (!isVisible) return;
-    
-    // FPS throttling
-    if (timestamp - lastFrame < minFrameTime) return;
-    lastFrame = timestamp;
-    
-    const dt = 0.016; time += 0.002;
-    
-
-    
-    // Auto-rotate - EXACT SPEED FROM DOME
-    domeGroup.rotation.y += 0.0008;
-    domeGroup.rotation.x = Math.sin(time) * 0.05;
-    
-    // Particle rotation - EXACT FROM DOME
-    molField.rotation.y += 0.0003;
-    molField.rotation.x += Math.sin(time*0.3) * 0.0001;
-
-    wMat.uniforms.uTime.value += dt;
-
-    // Dome pulse - EXACT FROM /dome
-    const breath = 1.0 + 0.005 * Math.sin(time * 1.5);
-
-    for(const m of faceMeshes) {
-      // Block insertion animation
-      if(!m.userData.insertProgress) m.userData.insertProgress = Math.random() * 0.3;
-      if(!m.userData.insertTarget) m.userData.insertTarget = 1.0;
-      
-      m.userData.insertProgress += (m.userData.insertTarget - m.userData.insertProgress) * 0.08;
-      const insertOffset = (1.0 - m.userData.insertProgress) * 1.5;
-
-      // Organic floating per block
-      const floatOffset = Math.sin(time * 2.5 + Math.random() * 10) * 0.04;
-      m.position.copy(m.userData.centroidDir).multiplyScalar(floatOffset + insertOffset);
-
-      m.scale.setScalar(breath);
-      m.material.opacity = 0.3 + m.userData.insertProgress * 0.6;
-    }
-
-    composer.render();
-  }
-  animate(0);
-
-  window.addEventListener('resize', () => {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    composer.setSize(window.innerWidth, window.innerHeight);
-    bloomPass.resolution.set(window.innerWidth, window.innerHeight);
-  });
-  
-  // Fix button handler (DOM now fully loaded)
-  const domeBtn = document.getElementById('btn-explore-dome');
-  if (domeBtn) {
-    domeBtn.addEventListener('click', () => {
-      window.location.href = '/dome';
-    });
-  }
-});
+<!-- Landing WebGL: src/scripts/landing-cockpit.ts (shared icosa math: src/lib/dome/) · activateLayer0 trim→Layer0 (parity with /dome) -->
+<script>
+  import '../scripts/landing-cockpit.ts';
 </script>

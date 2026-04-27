@@ -2,7 +2,7 @@
   "schema": "p31.ground-truth/1.0.0",
   "version": "1.0.0",
   "updated": "2026-04-26",
-  "mission": "Build, create, connect — decentralized family mesh. This file is the machine-routable spine for p31ca.org; human narrative stays in root CLAUDE.md, P31 COGNITIVE PASSPORT — v5.md, and docs/. Version namespaces: P31 home docs/CANONICAL-NUMBERING.md; values: P31 home p31-constants.json.",
+  "mission": "Build, create, connect — decentralized family mesh. This file is the machine-routable spine for p31ca.org; human narrative stays in root CLAUDE.md, P31 COGNITIVE PASSPORT — v5.md, and docs/. Version namespaces: P31 home docs/CANONICAL-NUMBERING.md; values: P31 home p31-constants.json. Source→sink alignment: P31 home p31-alignment.json (p31.alignment/1.0.0) and docs/P31-ALIGNMENT-SYSTEM.md (ephemeralization; verify: npm run verify:alignment).",
   "canonicalNumbering": {
     "spec": "P31 home: docs/CANONICAL-NUMBERING.md",
     "passportLongForm": {
@@ -15,8 +15,8 @@
       "groundTruth": "p31.ground-truth/1.0.0"
     },
     "bondingTestBaseline": {
-      "tests": 413,
-      "suites": 30,
+      "tests": 424,
+      "suites": 32,
       "asOf": "2026-04-26"
     }
   },
@@ -94,6 +94,12 @@
       "label": "Super-Centaur starter pack — machine manifest",
       "note": "Schema p31.superCentaurStarterPack/1.0.0. CWPs, mesh fleet URLs from CWP-30, MAP anchors, p31ca URLs, condensed checklist."
     },
+    "familySovereignPack": {
+      "path": "/family-sovereign-pack.html",
+      "implementation": "public/family-sovereign-pack.html",
+      "label": "Family sovereign pack — printable household delivery",
+      "note": "Lobby URLs, welcome-package entry points, edge anchors, troubleshooting. Canonical prose: P31 home docs/FAMILY-SOVEREIGN-PACK.md. Short /family-pack in _redirects. Pairs with p31-super-centaur-pack.json."
+    },
     "p31StyleCss": {
       "path": "/p31-style.css",
       "implementation": "public/p31-style.css",
@@ -112,11 +118,47 @@
       "label": "Universal canon — interactive hub/org switch + token gallery",
       "note": "Tailwind CDN. Short /canon. Showcases p31-universal-canon.json via p31-style.css."
     },
+    "liveFleetBundle": {
+      "path": "/p31-live-fleet.json",
+      "implementation": "public/p31-live-fleet.json",
+      "label": "Live fleet bundle — sites + Worker URLs (machine)",
+      "note": "Schema p31.liveFleet/1.0.0. Mirror P31 home p31-live-fleet.json; verify-live-fleet-mesh vs p31-mesh-constants.json in prebuild."
+    },
+    "liveFleetDemo": {
+      "path": "/live-fleet-demo.html",
+      "implementation": "public/live-fleet-demo.html",
+      "label": "Live fleet map — interactive demo page",
+      "note": "Short /fleet in _redirects. Fetches p31-live-fleet.json client-side."
+    },
+    "demoLabs": {
+      "path": "/demo-labs.html",
+      "implementation": "public/demo-labs.html",
+      "label": "Demo labs — curated static demos index",
+      "note": "Short /demos in _redirects. Links fleet map, canon, ops, delta, connect, onboard, centaur."
+    },
+    "visionJourney": {
+      "path": "/vision.html",
+      "implementation": "public/vision.html",
+      "label": "Core journey — onboard → auth → EDE home (static narrative + CTAs)",
+      "note": "Canonical P31 hub path in one page: /onboard, /auth, /start with Wye→Delta and Mesh links. Short /journey in _redirects. No medical or legal advice."
+    },
     "meshStart": {
       "path": "/mesh-start.html",
       "implementation": "public/mesh-start.html",
       "label": "EDE Personal — private assistant + EDE entry (k4-personal)",
       "note": "Loads /p31-welcome-packages.json from meta.welcomeKey or ?welcome=. Personalizes headline, tetra blurb, prompt chips; merges package docks into first-time PUT /tetra. Hub fusion ?hub=&hubs=. ?agent= staging. Short /start in _redirects."
+    },
+    "kidsGrowth": {
+      "path": "/kids-growth.html",
+      "implementation": "public/kids-growth.html",
+      "label": "Kids growth — S.J. & W.J. height/weight, milestones, export",
+      "note": "Static hub app; localStorage; Chart.js. Short /growth in _redirects. Not medical advice."
+    },
+    "kidsHome": {
+      "path": "/kids-home.html",
+      "implementation": "public/kids-home.html",
+      "label": "Household kids home — one screen to growth, missions, EDE, mesh, kid onboard",
+      "note": "p31.householdKidsHome/0.1.0. Short /kids. Large tiles; grown-up links below."
     },
     "initialBuild": {
       "path": "/initial-build.html",
@@ -130,11 +172,59 @@
       "label": "The Mesh — K₄ cage + product graph (Three.js r160)",
       "note": "Envision / Build / Connect navigator. Family cage + product satellites. Click nodes to open products."
     },
+    "cognitivePassportGenerator": {
+      "path": "/passport-generator.html",
+      "implementation": "public/passport-generator.html",
+      "label": "Cognitive Passport — static generator",
+      "note": "Schema p31.cognitivePassport/1.0.0. Short /passport in _redirects (AGENTS live URL). Mirror: npm run sync:passport from P31 home cognitive-passport/index.html. verify:passport."
+    },
     "delta": {
       "path": "/delta.html",
       "implementation": "public/delta.html",
       "label": "Wye→Delta — public narrative page explaining mesh resilience and onboarding",
-      "note": "No Three.js. Uses Tailwind CDN. Entry-point for external visitors — links to /planetary-onboard.html and /connect.html."
+      "note": "No Three.js. Uses Tailwind CDN + small inline script: Wye↔Delta crossfade slider (same topology story as planetary-onboard ribbon). Links to onboard, connect, geodesic, mesh-start, family pack. Canonical /delta (Pages); /why in _redirects → delta.html."
+    },
+    "accessibility": {
+      "path": "/accessibility.html",
+      "implementation": "public/accessibility.html",
+      "label": "Accessibility statement — p31ca.org",
+      "note": "WCAG-oriented practices; barrier reporting. Canonical /accessibility (Pages); do not add /accessibility → accessibility.html in _redirects (308 loop)."
+    },
+    "contact": {
+      "path": "/contact.html",
+      "implementation": "public/contact.html",
+      "label": "Contact & imprint — P31 Labs",
+      "note": "Entity, EIN, channels. Sync copy with p31-constants.json organization + contact. Canonical /contact (Pages)."
+    },
+    "openSource": {
+      "path": "/open-source.html",
+      "implementation": "public/open-source.html",
+      "label": "Open source — GitHub org and licenses",
+      "note": "Short /oss in _redirects."
+    },
+    "privacy": {
+      "path": "/privacy.html",
+      "implementation": "public/privacy.html",
+      "label": "Privacy — data practices for hub static tools and edge Workers",
+      "note": "Canonical /privacy (Pages). High-level; not legal advice."
+    },
+    "publicSurfaceManifest": {
+      "path": "/p31-public-surface.json",
+      "implementation": "public/p31-public-surface.json",
+      "label": "Public surface manifest — generic deliverable index",
+      "note": "Schema p31.publicSurface/1.0.0. Trust/legal URLs + key JSON endpoints + .well-known/security.txt path."
+    },
+    "securityDisclosure": {
+      "path": "/security-disclosure.html",
+      "implementation": "public/security-disclosure.html",
+      "label": "Security disclosure — responsible reporting",
+      "note": "Short /security. Pairs with public/.well-known/security.txt."
+    },
+    "terms": {
+      "path": "/terms.html",
+      "implementation": "public/terms.html",
+      "label": "Terms of use — p31ca.org",
+      "note": "Canonical /terms (Pages)."
     },
     "p31DeltaHiring": {
       "path": "/delta-hiring/index.html",
@@ -146,7 +236,13 @@
       "path": "/auth.html",
       "implementation": "public/auth.html",
       "label": "Authenticate — passkey verification page for returning mesh members",
-      "note": "No Three.js. Calls /api/passkey/auth-begin + auth-finish. Falls back gracefully when Worker not deployed. Short URL: /auth via _redirects."
+      "note": "No Three.js. Calls /api/passkey/auth-begin + auth-finish. Falls back gracefully when Worker zone route is not live. Canonical /auth (Pages)."
+    },
+    "passkeyApi": {
+      "path": "/api/passkey/*",
+      "implementation": "workers/passkey/src/index.ts",
+      "label": "WebAuthn passkey API — register + auth (Worker)",
+      "note": "Not a static file. Production: zone route pattern p31ca.org/api/passkey/* → Worker p31-passkey (wrangler.toml env.production.routes). Endpoints: POST register-begin, register-finish, auth-begin, auth-finish. Hub static pages use same-origin relative paths (see mesh.passkeyApiBasePath in p31-constants.json). README: workers/passkey/README.md."
     },
     "latticeOracle": {
       "path": "/magic-crystal.html",
@@ -184,7 +280,14 @@
       "implementation": "src/pages/ops/index.astro",
       "label": "Operator shell — unified interactive frame (CWP-P31-UI-2026-01)",
       "doc": "p31ca/docs/CONTROLLED-WORK-PACKAGE-INTERACTIVE-OPERATOR-UI.md",
-      "note": "Phase A–C: edge operator shift GET + local tag copy; glass ingest. CWP v1.0.3. Trust: EDGE-SECURITY.md; POST shift on command-center only."
+      "note": "Phase A–C + v1.1.0 closure: hub / nav+banner → /ops/; glass summary; home npm run command-center actions. CWP v1.1.0. Trust: EDGE-SECURITY.md; POST shift on command-center only."
+    },
+    "integrationsBridge": {
+      "path": "/integrations",
+      "implementation": "src/pages/integrations.astro",
+      "label": "OSS smart home, wearables, and operator tool catalog (machine + doc links)",
+      "doc": "docs/P31-INTEGRATIONS-BRIDGE.md",
+      "note": "Data from p31-constants.json integrations; apply:constants → public/p31-integrations.json. No secrets; empty endpoint slots = disabled."
     }
   },
   "edgeRedirects": [
@@ -204,6 +307,11 @@
       "status": 302
     },
     {
+      "from": "/integrations",
+      "to": "/integrations/",
+      "status": 301
+    },
+    {
       "from": "/dome.html",
       "to": "/dome/",
       "status": 301
@@ -211,6 +319,11 @@
     {
       "from": "/onboard",
       "to": "/planetary-onboard.html",
+      "status": 301
+    },
+    {
+      "from": "/passport",
+      "to": "/passport-generator.html",
       "status": 301
     },
     {
@@ -224,18 +337,8 @@
       "status": 301
     },
     {
-      "from": "/delta",
-      "to": "/delta.html",
-      "status": 301
-    },
-    {
       "from": "/why",
       "to": "/delta.html",
-      "status": 301
-    },
-    {
-      "from": "/auth",
-      "to": "/auth.html",
       "status": 301
     },
     {
@@ -282,6 +385,46 @@
       "from": "/hiring",
       "to": "/delta-hiring/index.html",
       "status": 301
+    },
+    {
+      "from": "/family-pack",
+      "to": "/family-sovereign-pack.html",
+      "status": 301
+    },
+    {
+      "from": "/oss",
+      "to": "/open-source.html",
+      "status": 301
+    },
+    {
+      "from": "/security",
+      "to": "/security-disclosure.html",
+      "status": 301
+    },
+    {
+      "from": "/fleet",
+      "to": "/live-fleet-demo.html",
+      "status": 301
+    },
+    {
+      "from": "/demos",
+      "to": "/demo-labs.html",
+      "status": 301
+    },
+    {
+      "from": "/journey",
+      "to": "/vision.html",
+      "status": 301
+    },
+    {
+      "from": "/growth",
+      "to": "/kids-growth.html",
+      "status": 301
+    },
+    {
+      "from": "/kids",
+      "to": "/kids-home.html",
+      "status": 301
     }
   ],
   "fileSnippets": [
@@ -306,6 +449,21 @@
       "mustIncludeSubstring": "P31 Dev Workbench"
     },
     {
+      "id": "visionJourney.page",
+      "path": "public/vision.html",
+      "mustIncludeSubstring": "Core mesh journey"
+    },
+    {
+      "id": "kidsGrowth.page",
+      "path": "public/kids-growth.html",
+      "mustIncludeSubstring": "p31.kidsGrowth/1.0.0"
+    },
+    {
+      "id": "kidsHome.page",
+      "path": "public/kids-home.html",
+      "mustIncludeSubstring": "p31.householdKidsHome/0.1.0"
+    },
+    {
       "id": "initialBuild.page",
       "path": "public/initial-build.html",
       "mustIncludeSubstring": "CWP-P31-IB-2026-01"
@@ -324,6 +482,61 @@
       "id": "p31DeltaHiring.index",
       "path": "public/delta-hiring/index.html",
       "mustIncludeSubstring": "P31 Delta · Proof-based hiring"
+    },
+    {
+      "id": "publicSurface.manifest",
+      "path": "public/p31-public-surface.json",
+      "mustIncludeSubstring": "p31.publicSurface/1.0.0"
+    },
+    {
+      "id": "publicSurface.ecosystemIntegration",
+      "path": "public/p31-public-surface.json",
+      "mustIncludeSubstring": "ecosystemIntegration"
+    },
+    {
+      "id": "cognitivePassport.generator",
+      "path": "public/passport-generator.html",
+      "mustIncludeSubstring": "p31.cognitivePassport/1.0.0"
+    },
+    {
+      "id": "meshConstants.publicMirror",
+      "path": "public/p31-mesh-constants.json",
+      "mustIncludeSubstring": "passkeyApiBasePath"
+    },
+    {
+      "id": "passkeyApiBase.lib",
+      "path": "public/lib/p31-passkey-api-base.js",
+      "mustIncludeSubstring": "p31GetPasskeyApiBase"
+    },
+    {
+      "id": "liveFleet.bundle",
+      "path": "public/p31-live-fleet.json",
+      "mustIncludeSubstring": "p31.liveFleet/1.0.0"
+    },
+    {
+      "id": "liveFleet.demo.page",
+      "path": "public/live-fleet-demo.html",
+      "mustIncludeSubstring": "p31-live-fleet.json"
+    },
+    {
+      "id": "demo.labs.page",
+      "path": "public/demo-labs.html",
+      "mustIncludeSubstring": "Welcome to the demo lobby"
+    },
+    {
+      "id": "meshObservatory.page",
+      "path": "src/pages/mesh-observatory.astro",
+      "mustIncludeSubstring": "p31.mesh.snapshot/1.0.0"
+    },
+    {
+      "id": "meshObservatory.mirror",
+      "path": "src/pages/mesh-observatory.astro",
+      "mustIncludeSubstring": "p31.mirror/0.1.0"
+    },
+    {
+      "id": "meshObservatory.physics",
+      "path": "src/pages/mesh-observatory.astro",
+      "mustIncludeSubstring": "p31.meshPhysics/0.1.0"
     }
   ],
   "registryAppUrlInvariants": [
@@ -358,6 +571,10 @@
     {
       "id": "p31-delta-hiring",
       "appUrl": "delta-hiring/index.html"
+    },
+    {
+      "id": "integrations",
+      "appUrl": "integrations/index.html"
     }
   ],
   "threejs": {
@@ -380,6 +597,14 @@
     "connect.html": {
       "path": "public/connect.html",
       "mustIncludeSubstring": "three@0.160.0"
+    },
+    "geodesic-math.astro": {
+      "path": "src/pages/geodesic-math.astro",
+      "mustIncludeSubstring": "three@0.183.0"
+    },
+    "mesh-observatory.astro": {
+      "path": "src/pages/mesh-observatory.astro",
+      "mustIncludeSubstring": "three@0.183.0"
     }
   }
 }

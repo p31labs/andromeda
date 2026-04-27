@@ -1,0 +1,76 @@
+{
+  "schema": "p31.publicSurface/1.0.0",
+  "version": "1.0.0",
+  "updated": "2026-04-26",
+  "note": "Machine index of generic public deliverables on p31ca.org. Sync entity/contact copy with P31 home p31-constants.json.",
+  "organization": {
+    "legalName": "P31 Labs, Inc.",
+    "ein": "42-1888158",
+    "stateOfIncorporation": "GA",
+    "status501c3": "pending"
+  },
+  "contact": {
+    "primaryEmail": "will@p31ca.org",
+    "githubOrg": "https://github.com/p31labs",
+    "kofiUrl": "https://ko-fi.com/trimtab69420"
+  },
+  "trustAndGovernance": {
+    "privacy": { "path": "/privacy.html", "shortPath": "/privacy" },
+    "terms": { "path": "/terms.html", "shortPath": "/terms" },
+    "contact": { "path": "/contact.html", "shortPath": "/contact" },
+    "accessibility": { "path": "/accessibility.html", "shortPath": "/accessibility" },
+    "securityDisclosure": { "path": "/security-disclosure.html", "shortPath": "/security" },
+    "openSource": { "path": "/open-source.html", "shortPath": "/oss" }
+  },
+  "householdHandoff": {
+    "familyPack": { "path": "/family-sovereign-pack.html", "shortPath": "/family-pack" }
+  },
+  "machineIndexes": {
+    "creatorEconomy": "/creator-economy.json",
+    "superCentaurPack": "/p31-super-centaur-pack.json",
+    "welcomePackages": "/p31-welcome-packages.json",
+    "liveFleetBundle": "/p31-live-fleet.json",
+    "groundTruthSchema": "p31.ground-truth/1.0.0",
+    "cognitivePassportGenerator": "/passport-generator.html",
+    "cognitivePassportShort": "/passport"
+  },
+  "webAuthnPasskey": {
+    "relativeApiBase": "/api/passkey",
+    "postEndpoints": [
+      "register-begin",
+      "register-finish",
+      "auth-begin",
+      "auth-finish"
+    ],
+    "implementation": "andromeda/04_SOFTWARE/p31ca/workers/passkey",
+    "mount": "Cloudflare zone route p31ca.org/api/passkey/* (not Pages Functions)",
+    "note": "Same-origin fetch from p31ca.org when Worker is deployed; RP_ID p31ca.org in production."
+  },
+  "wellKnown": {
+    "securityTxt": "/.well-known/security.txt"
+  },
+  "donateApi": {
+    "customDomain": "https://donate-api.phosphorus31.org",
+    "workersDev": "https://donate-api.trimtab-signal.workers.dev",
+    "healthPath": "/health",
+    "createCheckoutPath": "/create-checkout",
+    "stripeWebhookPath": "/stripe-webhook",
+    "constantsKeys": [
+      "payment.donateApiHealthUrl",
+      "payment.donateApiWorkersDevUrl"
+    ],
+    "deployDoc": "andromeda/04_SOFTWARE/donate-api/DEPLOY.md"
+  },
+  "ecosystemIntegration": {
+    "schema": "p31.ecosystem/1.0.0",
+    "meshConstantsUrl": "/p31-mesh-constants.json",
+    "glassReportHint": "Home repo: npm run ecosystem:glass → /tmp/p31_glass_report.json",
+    "verificationLadder": [
+      "npm run apply:constants",
+      "npm run release:check",
+      "MESH_LIVE_STRICT=1 npm run p31:ci",
+      "P31_GLASS_STRICT=1 npm run ecosystem:glass"
+    ],
+    "normativeMatrix": "docs/ECOSYSTEM-PRODUCTION-11.md (P31 home workspace)"
+  }
+}

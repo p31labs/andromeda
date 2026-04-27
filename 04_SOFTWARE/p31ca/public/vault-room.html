@@ -23,18 +23,16 @@
     </script>
     <style>
         body {
-            background-color: #0f1115;
-            color: #d8d6d0;
             background-image: linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
             background-size: 40px 40px;
         }
-        .matte-panel { background-color: #161920; border: 1px solid rgba(255,255,255,0.04); }
+        .matte-panel { background-color: var(--p31-surface); border: 1px solid rgba(255,255,255,0.07); }
     </style>
 </head>
-<body class="min-h-screen flex flex-col text-cloud/90">
+<body class="bg-void text-cloud min-h-screen flex flex-col font-sans antialiased">
 
-    <header class="w-full border-b border-white/5 bg-void/95 sticky top-0 z-50">
+    <header class="w-full border-b border-white/[0.07] bg-surface/90 backdrop-blur-sm sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
             <a href="/" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
                 <svg width="28" height="28" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">

@@ -14,7 +14,7 @@
   },
   "paymentProcessing": {
     "provider": "Stripe",
-    "route": "api.phosphorus31.org → Stripe direct",
+    "route": "donate-api.phosphorus31.org (Cloudflare Worker) → Stripe Checkout",
     "processorFeeCard": "2.9% + $0.30 per successful charge (Stripe standard rate, not set by P31 Labs)",
     "processorFeeACH": "0.8%, max $5.00 per transfer (Stripe ACH rate)",
     "note": "Processor fees are set by Stripe and paid directly to Stripe. P31 Labs does not mark them up."

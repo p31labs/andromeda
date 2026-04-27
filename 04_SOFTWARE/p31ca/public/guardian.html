@@ -23,14 +23,12 @@
     </script>
     <style>
         body {
-            background-color: #0f1115;
-            color: #d8d6d0;
             background-image: linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
             background-size: 40px 40px;
         }
-        .glass { background: rgba(22,25,32,0.85); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.06); }
-        textarea, input, select { background: rgba(15,17,21,0.7); border: 1px solid rgba(255,255,255,0.08); color: #d8d6d0; }
+        .glass { background: rgba(22,25,32,0.85); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.07); }
+        textarea, input, select { background: rgba(22,25,32,0.7); border: 1px solid rgba(255,255,255,0.08); color: var(--p31-cloud); }
         textarea:focus, input:focus, select:focus { outline: none; border-color: #cda852; }
         .bar-fill { transition: width 0.4s ease, background-color 0.4s ease; }
         .badge { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; padding: 2px 10px; border-radius: 4px; }
@@ -42,14 +40,14 @@
         .collapsible-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
         .collapsible-content.open { max-height: 2000px; }
         ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #0f1115; }
+        ::-webkit-scrollbar-track { background: var(--p31-void); }
         ::-webkit-scrollbar-thumb { background: rgba(205,168,82,0.3); border-radius: 3px; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col text-cloud/90">
+<body class="bg-void text-cloud min-h-screen flex flex-col font-sans antialiased">
 
 <!-- Top Bar -->
-<header class="w-full border-b border-white/5 bg-void/95 sticky top-0 z-50">
+<header class="w-full border-b border-white/[0.07] bg-surface/90 backdrop-blur-sm sticky top-0 z-50">
     <div class="max-w-[1600px] mx-auto px-4 py-3 flex justify-between items-center">
         <div class="flex items-center gap-4">
             <a href="buffer.html" class="font-mono text-sm text-butter hover:text-cloud transition-colors">&larr; BUFFER</a>
@@ -448,7 +446,7 @@ function updateVoltage() {
         ? bluf.actions.map(a => '<li class="text-phosphorus/80 pl-3 border-l border-phosphorus/30 text-xs">' + esc(a) + '</li>').join('')
         : '<li class="text-cloud/30 text-xs italic">No action items detected.</li>';
     $('blufQuestions').innerHTML = bluf.questions.length
-        ? bluf.questions.map(q => '<li class="text-cyan/80 pl-3 border-l border-cyan/30 text-xs">' + esc(q) + '</li>').join('')
+        ? bluf.questions.map(q => '<li class="text-teal/80 pl-3 border-l border-teal/30 text-xs">' + esc(q) + '</li>').join('')
         : '<li class="text-cloud/30 text-xs italic">No questions detected.</li>';
 }
 

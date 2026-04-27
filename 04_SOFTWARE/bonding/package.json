@@ -8,6 +8,7 @@
     "./ColliderMode": "./src/components/ColliderMode.jsx"
   },
   "scripts": {
+    "soup:sync": "node ../../../scripts/sync-soup-to-bonding.mjs",
     "dev": "vite --port 5188",
     "build": "vite build",
     "preview": "vite preview",
