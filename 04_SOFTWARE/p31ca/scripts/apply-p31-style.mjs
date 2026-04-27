@@ -27,3 +27,11 @@ fs.writeFileSync(path.join(pub, "p31-tailwind-extend.js"), js, "utf8");
 console.log("apply-p31-style: wrote public/p31-style.css, public/p31-tailwind-extend.js");
 
 execSync("node scripts/sync-tailwind-cdn-pages.mjs", { cwd: root, stdio: "inherit" });
+
+const softwareRoot = path.join(__dirname, "..", "..");
+const genRef = path.join(softwareRoot, "design-tokens", "generate-reference.mjs");
+if (fs.existsSync(genRef)) {
+  execSync(`node ${JSON.stringify(genRef)}`, { cwd: softwareRoot, stdio: "inherit" });
+} else {
+  console.warn("apply-p31-style: skip design-token reference —", genRef, "missing");
+}

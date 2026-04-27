@@ -6,8 +6,8 @@
 
 @layer base {
   html {
-    background-color: #050505;
-    color: rgba(255, 255, 255, 0.9);
+    background-color: var(--p31-void, #0f1115);
+    color: var(--p31-cloud, rgba(255, 255, 255, 0.9));
     font-family: "Atkinson Hyperlegible", "Inter", system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -20,7 +20,7 @@
   }
 
   .p31-root {
-    -webkit-tap-highlight-color: rgba(77, 184, 168, 0.15);
+    -webkit-tap-highlight-color: color-mix(in srgb, var(--p31-cyan) 18%, transparent);
   }
 
   :where(a, button, input, select, textarea, summary) {
@@ -29,7 +29,7 @@
 
   :where(a, button, [role="button"]):focus-visible,
   :where(input, select, textarea):focus-visible {
-    outline: 2px solid rgba(77, 184, 168, 0.85);
+    outline: 2px solid var(--p31-cyan);
     outline-offset: 2px;
   }
 
@@ -46,8 +46,8 @@
   }
 
   ::selection {
-    background: rgba(0, 255, 136, 0.2);
-    color: #fff;
+    background: color-mix(in srgb, var(--p31-phosphor) 22%, transparent);
+    color: var(--p31-cloud);
   }
 }
 
@@ -73,25 +73,86 @@
 
   .phosphor-glow {
     text-shadow:
-      0 0 20px rgba(0, 255, 136, 0.3),
-      0 0 40px rgba(0, 255, 136, 0.1);
+      0 0 20px color-mix(in srgb, var(--p31-phosphor) 30%, transparent),
+      0 0 40px color-mix(in srgb, var(--p31-phosphor) 12%, transparent);
   }
 
   .status-live {
-    background: rgba(0, 255, 136, 0.1);
-    border-color: rgba(0, 255, 136, 0.25);
-    color: #00ff88;
+    background: color-mix(in srgb, var(--p31-phosphor) 12%, transparent);
+    border-color: color-mix(in srgb, var(--p31-phosphor) 28%, transparent);
+    color: var(--p31-phosphor);
   }
 
   .status-dev {
-    background: rgba(255, 215, 0, 0.1);
-    border-color: rgba(255, 215, 0, 0.25);
-    color: #ffd700;
+    background: color-mix(in srgb, var(--p31-butter) 12%, transparent);
+    border-color: color-mix(in srgb, var(--p31-butter) 28%, transparent);
+    color: var(--p31-butter);
   }
 
   /** Optional: pair with `md:min-h-0 md:min-w-0` on the same element for dense desktop HUD. */
   .p31-touch {
     min-height: 2.75rem;
     min-width: 2.75rem;
+  }
+}
+
+/* Passport-driven prefs override --p31-* on :root (see /lib/p31-subject-prefs.js + p31-style.css) */
+@layer utilities {
+  .bg-p31-void {
+    background-color: var(--p31-void);
+  }
+  .bg-p31-void-50 {
+    background-color: color-mix(in srgb, var(--p31-void) 50%, transparent);
+  }
+  .bg-p31-void-95 {
+    background-color: color-mix(in srgb, var(--p31-void) 95%, transparent);
+  }
+  .bg-p31-void-92 {
+    background-color: color-mix(in srgb, var(--p31-void) 92%, transparent);
+  }
+  .bg-p31-void-80 {
+    background-color: color-mix(in srgb, var(--p31-void) 80%, transparent);
+  }
+  .bg-p31-void-70 {
+    background-color: color-mix(in srgb, var(--p31-void) 70%, transparent);
+  }
+  .text-p31-cloud {
+    color: var(--p31-cloud);
+  }
+  .text-p31-muted {
+    color: var(--p31-muted);
+  }
+  .text-p31-cloud-90 {
+    color: color-mix(in srgb, var(--p31-cloud) 90%, transparent);
+  }
+  .text-p31-cloud-80 {
+    color: color-mix(in srgb, var(--p31-cloud) 80%, transparent);
+  }
+  .text-p31-cloud-70 {
+    color: color-mix(in srgb, var(--p31-cloud) 70%, transparent);
+  }
+  .text-p31-cloud-60 {
+    color: color-mix(in srgb, var(--p31-cloud) 60%, transparent);
+  }
+  .text-p31-cloud-50 {
+    color: color-mix(in srgb, var(--p31-cloud) 50%, transparent);
+  }
+  .text-p31-cloud-40 {
+    color: color-mix(in srgb, var(--p31-cloud) 40%, transparent);
+  }
+  .text-p31-cloud-30 {
+    color: color-mix(in srgb, var(--p31-cloud) 30%, transparent);
+  }
+  .text-p31-muted-60 {
+    color: color-mix(in srgb, var(--p31-muted) 60%, transparent);
+  }
+  .text-p31-muted-50 {
+    color: color-mix(in srgb, var(--p31-muted) 50%, transparent);
+  }
+  .bg-p31-muted-10 {
+    background-color: color-mix(in srgb, var(--p31-muted) 12%, transparent);
+  }
+  .border-p31-muted-30 {
+    border-color: color-mix(in srgb, var(--p31-muted) 35%, transparent);
   }
 }

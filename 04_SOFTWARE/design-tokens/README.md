@@ -11,4 +11,8 @@ It defines:
 
 **Regenerate CSS + Tailwind CDN bridge:** from repo root, `npm run apply:p31-style`.
 
+**Machine-readable table (generated):** [DESIGN-TOKENS-REFERENCE.md](./DESIGN-TOKENS-REFERENCE.md) — full palette, scales, `--p31-*` names, and hub vs org. Regenerate: `npm run apply:p31-style` from the P31 home root (or `npm run generate:design-token-docs` to refresh the Markdown only).
+
+**Component patterns (layouts, Gray Rock, semantic classes):** [`docs/P31-DESIGN-DOCTRINE.md`](../../../docs/P31-DESIGN-DOCTRINE.md) — how tokens become surfaces; generated helpers live in `p31-style.css` via `emitDesignDoctrineBlock` in p31ca.
+
 **phosphorus31.org:** see [PHOSPHORUS31-RING.md](./PHOSPHORUS31-RING.md). BONDING stays outside this canon by policy.

@@ -1,0 +1,7 @@
+{
+  "schema": "p31.styleAlignmentExclude/1.0.0",
+  "globs": [
+    "doc-library/**"
+  ],
+  "note": "When P31_STYLE_ALIGN_GLOB=all, skip these paths. Add a path here for legacy static HTML; prefer fixing the page. See verify-style-alignment.mjs."
+}

@@ -504,7 +504,7 @@ export function mountMeshLivingBackground(
                 return `<span class="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-[10px]">${label}</span>`;
               })
               .join("")
-          : '<span class="text-xs text-white/40 italic">Isolated</span>';
+          : '<span class="text-xs text-p31-cloud-40 italic">Isolated</span>';
       }
 
       if (panel) {

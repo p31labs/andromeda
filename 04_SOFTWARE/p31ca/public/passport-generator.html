@@ -15,6 +15,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="p31-style.css" />
   <link rel="stylesheet" href="p31-responsive-surface.css" />
+  <script src="lib/p31-subject-prefs.js"></script>
   <style>
     :root {
       --bg: var(--p31-void);
@@ -112,6 +113,45 @@
             <option value="crisis">Crisis — commands only</option>
           </select>
         </div>
+        <div class="row" style="margin-top: 1rem">
+          <p style="margin: 0 0 0.5rem; font-size: 0.7rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted)">
+            Screen comfort (P31 surfaces)
+          </p>
+          <div class="grid" style="gap: 0.65rem">
+            <div>
+              <label for="prefContrast">Contrast</label>
+              <select id="prefContrast">
+                <option value="standard">Standard</option>
+                <option value="high">High</option>
+                <option value="max">Maximum</option>
+              </select>
+            </div>
+            <div>
+              <label for="prefDensity">Density</label>
+              <select id="prefDensity">
+                <option value="comfortable">Comfortable</option>
+                <option value="compact">Compact</option>
+                <option value="spacious">Spacious</option>
+              </select>
+            </div>
+            <div>
+              <label for="prefMotion">Motion</label>
+              <select id="prefMotion">
+                <option value="full">Full</option>
+                <option value="reduced" selected>Reduced</option>
+                <option value="none">None</option>
+              </select>
+            </div>
+            <div>
+              <label for="prefTemp">Color temperature</label>
+              <select id="prefTemp">
+                <option value="neutral" selected>Neutral</option>
+                <option value="cool">Cool</option>
+                <option value="warm">Warm</option>
+              </select>
+            </div>
+          </div>
+        </div>
         <div class="row checks" id="constraints">
           <label class="flex"><input type="checkbox" data-key="noMilitary" checked /> No military / naval / submarine metaphors</label>
           <label class="flex"><input type="checkbox" data-key="handwriting" checked /> Handwriting = highest-fidelity when applicable</label>
@@ -174,6 +214,22 @@
     const STORAGE_KEY = "p31_passport_draft_v1";
     const SCHEMA = "p31.cognitivePassport/1.0.0";
 
+    function readSubjectPrefs() {
+      return {
+        contrast: document.getElementById("prefContrast").value,
+        density: document.getElementById("prefDensity").value,
+        motion: document.getElementById("prefMotion").value,
+        temp: document.getElementById("prefTemp").value,
+      };
+    }
+
+    function applySubjectPrefsToSite(prefs) {
+      if (typeof window.p31SubjectPrefs === "undefined" || !prefs) return;
+      try {
+        window.p31SubjectPrefs.set(prefs);
+      } catch (_) {}
+    }
+
     function getForm() {
       const boxes = document.querySelectorAll("#constraints input[type=checkbox]");
       const constraints = {};
@@ -185,6 +241,7 @@
         diagnoses: document.getElementById("diagnoses").value,
         commStyle: document.getElementById("commStyle").value,
         spoon: document.getElementById("spoon").value,
+        subjectPrefs: readSubjectPrefs(),
         constraints,
         customNotes: document.getElementById("customNotes").value.trim(),
         email: document.getElementById("email").value.trim(),
@@ -205,6 +262,13 @@
         document.querySelectorAll("#constraints input[type=checkbox]").forEach((b) => {
           if (d.constraints[b.dataset.key] != null) b.checked = !!d.constraints[b.dataset.key];
         });
+      }
+      if (d.subjectPrefs && typeof d.subjectPrefs === "object") {
+        const p = d.subjectPrefs;
+        if (p.contrast != null) document.getElementById("prefContrast").value = p.contrast;
+        if (p.density != null) document.getElementById("prefDensity").value = p.density;
+        if (p.motion != null) document.getElementById("prefMotion").value = p.motion;
+        if (p.temp != null) document.getElementById("prefTemp").value = p.temp;
       }
     }
 
@@ -234,6 +298,12 @@
           noMilitaryNavalMetaphors: f.constraints.noMilitary,
           actionOverLengthyExplanation: f.constraints.actionOverChat,
           preferWrittenChannelWhenLowSpoon: f.spoon !== "ok",
+        },
+        uiComfort: {
+          contrast: f.subjectPrefs?.contrast ?? "standard",
+          density: f.subjectPrefs?.density ?? "comfortable",
+          motion: f.subjectPrefs?.motion ?? "reduced",
+          temp: f.subjectPrefs?.temp ?? "neutral",
         },
       };
     }
@@ -331,6 +401,7 @@
     document.getElementById("btnSave").addEventListener("click", () => {
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(getForm()));
+        applySubjectPrefsToSite(readSubjectPrefs());
         alert("Draft saved in this browser.");
       } catch (e) {
         alert("Could not save: " + e);
@@ -342,6 +413,7 @@
         if (!raw) return alert("No draft found.");
         setForm(JSON.parse(raw));
         render();
+        applySubjectPrefsToSite(readSubjectPrefs());
       } catch (e) {
         alert("Could not load: " + e);
       }
@@ -360,12 +432,19 @@
       download("p31_cognitive_passport.json", JSON.stringify(buildPayload(f), null, 2), "application/json");
     });
 
+    ["prefContrast", "prefDensity", "prefMotion", "prefTemp"].forEach((id) => {
+      document.getElementById(id).addEventListener("change", () => {
+        applySubjectPrefsToSite(readSubjectPrefs());
+      });
+    });
+
     // Load draft on open
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) setForm(JSON.parse(raw));
     } catch (_) {}
     render();
+    applySubjectPrefsToSite(readSubjectPrefs());
   </script>
 </body>
 </html>
