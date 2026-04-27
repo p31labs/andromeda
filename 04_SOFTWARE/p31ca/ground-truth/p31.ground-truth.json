@@ -341,6 +341,16 @@
       "status": 301
     },
     {
+      "from": "/legacy-mvp-hub.html",
+      "to": "/",
+      "status": 301
+    },
+    {
+      "from": "/legacy-mvp-hub",
+      "to": "/",
+      "status": 301
+    },
+    {
       "from": "/onboard",
       "to": "/planetary-onboard.html",
       "status": 301
