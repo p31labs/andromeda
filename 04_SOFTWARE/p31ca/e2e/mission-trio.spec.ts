@@ -12,6 +12,7 @@ const trioPath = path.join(
 );
 const missionTrio = JSON.parse(readFileSync(trioPath, "utf8")) as {
   pills: { build: { title: string }; create: { title: string }; connect: { title: string } };
+  ebc: { build: string; create: string; connectLead: string; connect: string };
 };
 
 test("mission trio — connect EBC and canon CSS", async ({ page, request }) => {
@@ -32,8 +33,10 @@ test("mission trio — connect EBC and canon CSS", async ({ page, request }) => 
   await expect(footer.locator("#ebc-create")).toHaveAttribute("title", missionTrio.pills.create.title);
   await expect(footer.locator("#ebc-connect")).toHaveAttribute("aria-current", "page");
   await expect(footer.locator("#ebc-connect")).toHaveAttribute("title", missionTrio.pills.connect.title);
-  await expect(footer.getByText(/ship bar you gate in CI/i)).toBeVisible();
-  await expect(footer.getByText(/rigidity score stays honest/i)).toBeVisible();
+  await expect(footer.getByText(missionTrio.ebc.build, { exact: true })).toBeVisible();
+  await expect(footer.getByText(missionTrio.ebc.create, { exact: true })).toBeVisible();
+  await expect(footer.locator("#ebc-connect .p31-mission-trio__now")).toHaveText(missionTrio.ebc.connectLead);
+  await expect(footer.locator("#ebc-connect")).toContainText(missionTrio.ebc.connect.trim());
 });
 
 test("mission trio — delta EBC (all links, no current column)", async ({ page }) => {

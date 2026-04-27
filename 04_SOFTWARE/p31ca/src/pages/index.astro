@@ -6,6 +6,7 @@
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
 import hubLanding from '../data/hub-landing.json';
+import missionTrio from '../data/p31-mission-trio.json';
 
 const coreProducts = hubLanding.coreProducts;
 const prototypes = hubLanding.prototypes;
@@ -274,6 +275,24 @@ const pageDescription =
         <span class="text-cloud/90">Build, create, connect</span> — family-scale mesh, verify-gated releases, and
         interfaces that respect attention.
       </p>
+
+      <nav
+        class="p31-mission-trio p31-mission-trio--hub interactive-zone mx-auto mb-8 flex max-w-2xl flex-wrap justify-center gap-2"
+        aria-label={missionTrio.ariaLabel}
+      >
+        {missionTrio.pillOrder.map((key: 'build' | 'create' | 'connect') => {
+          const pill = missionTrio.pills[key];
+          return (
+            <a
+              href={pill.href}
+              class={`p31-mission-trio__link p31-mission-trio__link--${key} inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-md border border-white/10 px-4 py-2 font-mono text-xs text-cloud/90 transition hover:border-teal/40 hover:text-cloud`}
+              title={pill.title}
+            >
+              {pill.label}
+            </a>
+          );
+        })}
+      </nav>
 
       <ul
         class="mb-10 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 font-mono text-[10px] uppercase tracking-wider text-muted sm:mb-12 sm:gap-x-4 sm:text-[11px]"

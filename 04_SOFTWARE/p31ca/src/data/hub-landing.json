@@ -1,5 +1,5 @@
 {
-  "generated": "2026-04-27T06:00:03.274Z",
+  "generated": "2026-04-27T15:10:05.419Z",
   "meta": {
     "schema": "p31.hub-landing/1.0.0",
     "registry": "scripts/hub/registry.mjs",
@@ -383,6 +383,19 @@
         "p31-constants.json"
       ],
       "url": "/integrations-about.html"
+    },
+    {
+      "id": "education",
+      "title": "P31 Labs Education",
+      "status": "LIVE",
+      "desc": "Progressive curriculum — mesh, integrity, labs",
+      "tags": [
+        "Static HTML",
+        "p31.labsEducation/0.2.0",
+        "p31.labsEducationCatalog/0.2.0",
+        "p31.labsEducationCurriculum/0.2.0"
+      ],
+      "url": "/education-about.html"
     },
     {
       "id": "appointment-tracker",

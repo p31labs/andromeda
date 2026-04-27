@@ -306,6 +306,12 @@
       "implementation": "public/quantum-clock.html",
       "label": "Quantum clock — Grandfather / Cuckoo explainer (pedagogy, not metrology)",
       "note": "Schema meta p31.quantumClockPage/0.1.0. Short /quantum-clock in _redirects. See docs/PLAN-QUANTUM-CLOCK.md; verify:quantum-clock links tomography TRIM to dome-constants."
+    },
+    "p31LabsEducation": {
+      "path": "/education/",
+      "implementation": "public/education/index.html",
+      "label": "P31 Labs Education — static curriculum (E0–E2)",
+      "note": "Discover, tracks, modules, labs; schemas p31.labsEducation/0.2.0, p31.labsEducationCatalog/0.2.0, p31.labsEducationCurriculum/0.2.0. verify:education in prebuild. E3 portal placeholder only. Short /learn, /edu, /education in _redirects."
     }
   },
   "edgeRedirects": [
@@ -458,6 +464,21 @@
       "from": "/quantum-clock",
       "to": "/quantum-clock.html",
       "status": 301
+    },
+    {
+      "from": "/education",
+      "to": "/education/",
+      "status": 301
+    },
+    {
+      "from": "/learn",
+      "to": "/education/",
+      "status": 301
+    },
+    {
+      "from": "/edu",
+      "to": "/education/",
+      "status": 301
     }
   ],
   "fileSnippets": [
@@ -575,6 +596,16 @@
       "id": "meshObservatory.physics",
       "path": "src/pages/mesh-observatory.astro",
       "mustIncludeSubstring": "p31.meshPhysics/0.1.0"
+    },
+    {
+      "id": "p31Labs.educationIndex",
+      "path": "public/education/index.html",
+      "mustIncludeSubstring": "p31.labsEducation/0.2.0"
+    },
+    {
+      "id": "p31Labs.educationCurriculum",
+      "path": "public/education/curriculum.json",
+      "mustIncludeSubstring": "p31.labsEducationCurriculum/0.2.0"
     }
   ],
   "registryAppUrlInvariants": [
@@ -613,6 +644,10 @@
     {
       "id": "integrations",
       "appUrl": "integrations/index.html"
+    },
+    {
+      "id": "education",
+      "appUrl": "education/index.html"
     }
   ],
   "threejs": {

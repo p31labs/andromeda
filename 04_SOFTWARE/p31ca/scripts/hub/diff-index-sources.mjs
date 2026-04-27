@@ -6,7 +6,8 @@
  * Run **after** verify-ground-truth in CI (`prebuild` runs GT → hub:build → hub:verify → this).
  *
  * 1) Ensures src/data/hub-landing.json coreProducts id order === HUB_COCKPIT_ORDER in hub-app-ids.mjs
- * 2) If public/legacy-mvp-hub.html has mvpData, extracts ids; optional strict-mvp for registry match
+ * 2) If public/legacy-mvp-hub.html has mvpData, extracts ids; optional strict-mvp for registry match;
+ *    compares mvp set to HUB_ALL_CARD_ORDER (cockpit + prototypes), not cockpit alone (see ADR-ECO-MVPDATA-COCKPIT-DUAL-TRACK)
  * 3) Warns if index.astro still has inline const coreProducts
  *
  * Usage: node scripts/hub/diff-index-sources.mjs
@@ -41,24 +42,6 @@ function runVerifyGroundTruth() {
     err("verify-ground-truth failed — fix ground truth / _redirects / registry / pins first");
     process.exit(1);
   }
-}
-
-/**
- * @returns {string[]}
- */
-function parseCockpitIdsFromBuildScript() {
-  const fp = path.join(P31CA, "scripts", "hub", "hub-app-ids.mjs");
-  const text = fs.readFileSync(fp, "utf8");
-  const m = text.match(/export const HUB_COCKPIT_ORDER\s*=\s*\[([\s\S]*?)\];/);
-  if (!m) {
-    throw new Error("HUB_COCKPIT_ORDER not found in hub-app-ids.mjs");
-  }
-  const body = m[1];
-  const ids = [];
-  for (const q of body.matchAll(/['"]([a-z0-9-]+)['"]/g)) {
-    ids.push(q[1]);
-  }
-  return ids;
 }
 
 /**
@@ -122,7 +105,17 @@ async function main() {
     runVerifyGroundTruth();
   }
 
-  const cockpitIds = parseCockpitIdsFromBuildScript();
+  const hubAppIdsUrl = pathToFileURL(
+    path.join(P31CA, "scripts", "hub", "hub-app-ids.mjs")
+  ).href;
+  const hubApp = await import(hubAppIdsUrl);
+  const cockpitIds = hubApp.HUB_COCKPIT_ORDER;
+  const homeIndexIds = hubApp.HUB_ALL_CARD_ORDER;
+  if (!Array.isArray(cockpitIds) || !Array.isArray(homeIndexIds)) {
+    err("hub-app-ids.mjs must export HUB_COCKPIT_ORDER and HUB_ALL_CARD_ORDER");
+    process.exit(1);
+  }
+
   const hubIds = parseHubLandingIds();
   const mvpIds = parseMvpDataIds();
   const registry = await loadRegistry();
@@ -167,16 +160,22 @@ async function main() {
 
   if (mvpIds.length > 0) {
     const mvpSet = new Set(mvpIds);
-    const cockpitSet = new Set(cockpitIds);
-    const onlyMvp = [...mvpSet].filter((id) => !cockpitSet.has(id));
-    const onlyCockpit = [...cockpitSet].filter((id) => !mvpSet.has(id));
-    if (onlyMvp.length || onlyCockpit.length) {
+    const homeIndexSet = new Set(homeIndexIds);
+    const onlyMvp = [...mvpSet].filter((id) => !homeIndexSet.has(id));
+    const onlyHome = [...homeIndexSet].filter((id) => !mvpSet.has(id));
+    if (onlyMvp.length) {
       console.warn(
-        "\n[info] mvpData id set != COCKPIT index list (expected until ECO CWP merge):"
+        "\n[warn] mvpData lists id(s) not on hub home index (cockpit+prototypes):",
+        onlyMvp.join(", ")
       );
-      if (onlyMvp.length) console.warn("  only in mvpData:", onlyMvp.join(", "));
-      if (onlyCockpit.length) console.warn("  only in COCKPIT (hub home):", onlyCockpit.join(", "));
       warned = 1;
+    }
+    if (onlyHome.length) {
+      console.log(
+        "\n[info] Legacy mvpData omits " +
+          onlyHome.length +
+          " hub index card(s) — expected dual-track (see docs/ADR-ECO-MVPDATA-COCKPIT-DUAL-TRACK.md)"
+      );
     }
   }
 
