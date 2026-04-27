@@ -5,28 +5,35 @@
  */
 
 export const HEADER_SOURCE = `      <p class="sub">
-        Produces a <strong>machine slice</strong> (AI/agent context) + <strong>JSON</strong> for tools — not a replacement for the full
-        <a href="../P31%20COGNITIVE%20PASSPORT%20%E2%80%94%20v5.md">v5.1 life document</a> at repo root. No PII is required; contact fields are optional.
+        Tell tools how your brain works — once. Free. No login. Everything stays in your browser.
+      </p>
+      <p class="sub-muted">
+        Works with ChatGPT, Claude, Gemini, or any assistant that accepts custom instructions.
       </p>`;
 
 export const HEADER_P31CA = `      <p class="sub">
-        Produces a <strong>machine slice</strong> (AI/agent context) + <strong>JSON</strong> for tools — not a replacement for the full
-        <code>P31 COGNITIVE PASSPORT — v5.md</code> in the P31 / <code>andromeda</code> tree. No PII is required; contact fields are optional.
+        Tell tools how your brain works — once. Free. No login. Everything stays in your browser.
+      </p>
+      <p class="sub-muted">
+        Works with ChatGPT, Claude, Gemini, or any assistant that accepts custom instructions.
       </p>`;
 
 export const FOOTER_SOURCE = `    <footer>
-      P31 Labs — <code>cognitive-passport/index.html</code> (authoring copy) · mirrored for static deploy as
-      <code>andromeda/04_SOFTWARE/p31ca/public/passport-generator.html</code> · localStorage <code>p31_passport_draft_v1</code> ·
-      full ground truth remains <code>P31 COGNITIVE PASSPORT — v5.md</code>; this page only emits a safe machine slice.
+      Built by P31 Labs — open-source assistive technology.
+      Free forever. No tracking. No ads.
+      · <a href="https://github.com/p31labs/bonding-soup" target="_blank" rel="noopener noreferrer">Source code</a>
+      · <a href="https://ko-fi.com/trimtab69420" target="_blank" rel="noopener noreferrer">Ko-fi</a>
       · <a href="../docs/P31-DEPLOY-CANON.md" title="npm run connection">CONNECTION</a>
-      · <a href="../docs/PLAN-BONDING-SOUP-WHEN-SCALE.md">BONDING Soup — when-scale plan</a>
+      · Full human document: <a href="../P31%20COGNITIVE%20PASSPORT%20%E2%80%94%20v5.md">P31 Cognitive Passport v5</a> (not required for export).
     </footer>`;
 
 export const FOOTER_P31CA = `    <footer>
-      P31 Labs — you are on <code>passport-generator.html</code> · authoring source in the repo: <code>cognitive-passport/index.html</code> · localStorage <code>p31_passport_draft_v1</code> ·
-      full ground truth remains <code>P31 COGNITIVE PASSPORT — v5.md</code> at workspace root; this page only emits a safe machine slice.
+      Built by P31 Labs — open-source assistive technology.
+      Free forever. No tracking. No ads.
+      · <a href="https://github.com/p31labs/bonding-soup" target="_blank" rel="noopener noreferrer">Source code</a>
+      · <a href="https://ko-fi.com/trimtab69420" target="_blank" rel="noopener noreferrer">Ko-fi</a>
       · <a href="https://github.com/p31labs/bonding-soup/blob/main/docs/P31-DEPLOY-CANON.md" target="_blank" rel="noopener noreferrer" title="npm run connection">CONNECTION</a>
-      · <a href="https://p31ca.org/doc-library/?q=PLAN-BONDING-SOUP-WHEN-SCALE" target="_blank" rel="noopener noreferrer">BONDING Soup — when-scale plan</a>
+      · Full human document: <code>P31 COGNITIVE PASSPORT — v5.md</code> in the repo (not required for export).
     </footer>`;
 
 /** @returns {string | null} error message, or null if OK */
@@ -44,7 +51,5 @@ export function validateSourceHtml(html) {
 export function toP31caMirror(sourceHtml) {
   const err = validateSourceHtml(sourceHtml);
   if (err) throw new Error(err);
-  return sourceHtml
-    .replace(HEADER_SOURCE, HEADER_P31CA)
-    .replace(FOOTER_SOURCE, FOOTER_P31CA);
+  return sourceHtml.replace(HEADER_SOURCE, HEADER_P31CA).replace(FOOTER_SOURCE, FOOTER_P31CA);
 }

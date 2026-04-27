@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en" data-p31-appearance="hub">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f1115" />
+  <meta name="description" content="One link for your table—household kit, shared map, how you're wired. No account. Nothing to explain out loud." />
+  <title>Together · P31 Labs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/p31-style.css" />
+  <script src="/lib/p31-subject-prefs.js" defer></script>
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: var(--p31-font-sans);
+      background: var(--p31-void);
+      color: var(--p31-cloud);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: max(1.25rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right))
+        max(1.25rem, env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left));
+    }
+    .wrap {
+      max-width: 26rem;
+      width: 100%;
+      text-align: center;
+    }
+    .mark {
+      opacity: 0.55;
+      margin-bottom: 1.25rem;
+    }
+    h1 {
+      font-size: clamp(1.35rem, 4vw, 1.65rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin: 0 0 1rem;
+      line-height: 1.25;
+    }
+    p.lede {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      color: color-mix(in srgb, var(--p31-cloud) 82%, var(--p31-muted));
+      margin: 0 0 1.25rem;
+    }
+    p.micro {
+      font-size: 0.8rem;
+      line-height: 1.55;
+      color: var(--p31-muted);
+      margin: 0 0 1.35rem;
+    }
+    .stack {
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+      margin-bottom: 1rem;
+    }
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 3rem;
+      padding: 0.65rem 1.35rem;
+      border-radius: 0.65rem;
+      font-weight: 700;
+      font-size: 0.95rem;
+      text-decoration: none;
+      background: color-mix(in srgb, var(--p31-teal, #25897d) 88%, transparent);
+      color: var(--p31-cloud);
+      border: 1px solid color-mix(in srgb, var(--p31-teal) 45%, transparent);
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .btn-primary:hover {
+      filter: brightness(1.06);
+    }
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 2.85rem;
+      padding: 0.55rem 1.25rem;
+      border-radius: 0.65rem;
+      font-weight: 600;
+      font-size: 0.9rem;
+      text-decoration: none;
+      color: var(--p31-cloud);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.04);
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .btn-secondary:hover {
+      border-color: rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.07);
+    }
+    .links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.65rem 1rem;
+      justify-content: center;
+      font-size: 0.88rem;
+      margin: 0.35rem 0 1rem;
+    }
+    .links a {
+      color: var(--p31-cyan);
+      font-weight: 500;
+    }
+    .support {
+      font-size: 0.88rem;
+    }
+    .support a {
+      color: var(--p31-cyan);
+    }
+    .fine {
+      margin-top: 1.35rem;
+      font-size: 0.75rem;
+      color: var(--p31-muted);
+      line-height: 1.55;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="mark" aria-hidden="true">
+      <svg width="40" height="40" viewBox="0 0 512 512">
+        <rect width="512" height="512" rx="112" fill="#25897d" />
+        <circle cx="390" cy="120" r="48" fill="#cc6247" />
+        <text x="256" y="340" font-family="system-ui,sans-serif" font-weight="900" font-size="220" fill="#d8d6d0" text-anchor="middle">P31</text>
+        <rect x="156" y="380" width="200" height="16" rx="8" fill="#cda852" />
+      </svg>
+    </div>
+    <h1>Same side of the table.</h1>
+    <p class="lede">
+      Tap what fits—you don&rsquo;t have to pitch anything out loud. These screens carry it.
+    </p>
+    <p class="micro">Kids, parents, elders: different pace, same door.</p>
+
+    <nav class="stack" aria-label="Start here">
+      <a class="btn-primary" href="/family-pack">Household kit — tonight&rsquo;s path →</a>
+      <a class="btn-secondary" href="/mesh">Shared map — explore together →</a>
+      <a class="btn-secondary" href="/passport">How I&rsquo;m wired — card for ChatGPT / Claude →</a>
+      <a class="btn-secondary" href="/onboard">Guided setup — phases →</a>
+    </nav>
+
+    <div class="links">
+      <a href="/why">Why this exists →</a>
+      <a href="/start">Your mesh home →</a>
+      <a href="/">Browse the lab →</a>
+    </div>
+
+    <p class="support"><a href="https://ko-fi.com/trimtab69420" target="_blank" rel="noopener noreferrer">Support this work →</a></p>
+    <p class="fine">
+      Free · No login · No tracking · Open source<br />
+      Georgia nonprofit · EIN 42-1888158<br />
+      Short links: <span style="font-variant-numeric: tabular-nums">p31ca.org/welcome</span> · <span style="font-variant-numeric: tabular-nums">p31ca.org/together</span>
+    </p>
+  </div>
+</body>
+</html>

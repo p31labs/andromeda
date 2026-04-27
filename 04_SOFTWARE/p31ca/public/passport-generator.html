@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content" />
-  <meta name="description" content="P31 Cognitive Passport machine slice: Markdown, JSON (p31.cognitivePassport/1.0.0), and agent block. Not a replacement for the full v5 life document." />
+  <meta name="description" content="Your AI context card — tell assistants how your brain works, once. Free, no login, stays in your browser. Export JSON or paste into ChatGPT, Claude, Gemini." />
   <meta name="theme-color" content="#0f1115" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-title" content="P31 home" />
+  <meta name="apple-mobile-web-app-title" content="AI Context Card" />
   <link rel="manifest" href="../p31-bonding.webmanifest" crossorigin="anonymous" />
   <link rel="apple-touch-icon" href="../p31-bonding-icons/apple-touch-180.png" sizes="180x180" />
-  <title>P31 Cognitive Passport — Generator (v1)</title>
+  <title>Your AI Context Card — free, local, exportable</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
@@ -24,24 +24,30 @@
       --text: var(--p31-cloud);
       --muted: var(--p31-muted);
       --accent: var(--p31-cyan);
+      --alive: var(--p31-teal, #25897d);
       --warn: #f59e0b;
+      --dur: 250ms;
     }
     * { box-sizing: border-box; }
     body {
       margin: 0; min-height: 100vh; font-family: var(--p31-font-sans);
       background: var(--bg); color: var(--text);
       line-height: 1.5;
+      transition: background-color var(--dur) ease, color var(--dur) ease;
     }
     a { color: var(--accent); }
-    h1 { font-size: clamp(1.2rem, 2.5vw + 0.85rem, 1.5rem); font-weight: 700; margin: 0 0 0.25rem; }
-    .sub { color: var(--muted); font-size: 0.9rem; max-width: 60ch; }
+    h1 { font-size: clamp(1.35rem, 2.5vw + 0.85rem, 1.65rem); font-weight: 700; margin: 0 0 0.35rem; letter-spacing: -0.02em; }
+    .sub { color: var(--muted); font-size: 0.95rem; max-width: 52ch; line-height: 1.55; }
+    .sub-muted { font-size: 0.88rem; color: color-mix(in srgb, var(--muted) 92%, transparent); margin-top: 0.5rem; max-width: 54ch; }
     .grid { display: grid; gap: 1rem; }
     @media (min-width: 900px) { .grid-2 { grid-template-columns: 1fr 1fr; } }
     .card {
       background: var(--card); border: 1px solid var(--border);
       border-radius: 12px; padding: 1.25rem;
+      transition: border-color var(--dur) ease, box-shadow var(--dur) ease;
     }
     label { display: block; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); margin-bottom: 0.35rem; }
+    label.plain-case { text-transform: none; letter-spacing: normal; font-size: 0.9rem; color: var(--text); }
     input, select, textarea {
       width: 100%; padding: 0.5rem 0.65rem; border-radius: 8px;
       border: 1px solid var(--border); background: var(--p31-surface2); color: var(--text);
@@ -53,7 +59,7 @@
     .btn {
       display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem;
       padding: 0.55rem 1rem; border-radius: 8px; border: none; cursor: pointer;
-      font-weight: 600; font-size: 0.85rem; background: var(--accent); color: var(--p31-void);
+      font-weight: 600; font-size: 0.82rem; background: var(--accent); color: var(--p31-void);
     }
     .btn:hover { filter: brightness(1.05); }
     .btn-ghost { background: transparent; color: var(--text); border: 1px solid var(--border); }
@@ -66,56 +72,100 @@
     .tab.on { color: var(--text); border-color: var(--accent); background: rgba(45,212,191,0.1); }
     .out-panel { display: none; }
     .out-panel.on { display: block; }
-    .badge { display: inline-block; padding: 0.15rem 0.4rem; border-radius: 4px; background: var(--p31-surface2); font-size: 0.7rem; color: var(--muted); }
-    footer { margin-top: 2rem; font-size: 0.75rem; color: var(--muted); }
+    footer { margin-top: 2rem; font-size: 0.8rem; color: var(--muted); line-height: 1.55; max-width: 56ch; }
+    footer a { white-space: nowrap; }
+
+    /* Gray Rock → Alive: section rails */
+    .passport-section {
+      border-left: 3px solid transparent;
+      padding-left: 0.65rem;
+      margin-left: -0.15rem;
+      margin-bottom: 1rem;
+      transition: border-color var(--dur) ease;
+    }
+    .passport-section.passport-section--alive {
+      border-left-color: var(--alive);
+    }
+    .hint-try {
+      font-size: 0.88rem;
+      color: color-mix(in srgb, var(--text) 88%, var(--muted));
+      margin: 0 0 0.65rem;
+      line-height: 1.45;
+    }
+    .micro {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin: 0.25rem 0 0;
+      line-height: 1.45;
+    }
+    .micro a { color: var(--accent); }
+
+    @keyframes phosphorRing {
+      0%, 100% { box-shadow: none; }
+      35% { box-shadow: 0 0 0 3px color-mix(in srgb, var(--p31-phosphorus, #3ba372) 45%, transparent); }
+    }
+    .btn.flash-confirm {
+      animation: phosphorRing 0.55s ease-out;
+    }
+    .export-note {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-top: 0.65rem;
+      max-width: 42ch;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .btn.flash-confirm { animation: none; }
+      .passport-section { transition: none; }
+    }
   </style>
 </head>
 <body class="p31-mesh-m-first p31-responsive-surface">
   <div class="p31-shell" style="--p31-shell-max: 1100px; --p31-shell-pad: 1.5rem">
-    <header style="margin-bottom: 1.25rem;">
-      <h1>P31 Cognitive Passport — Generator</h1>
+    <header style="margin-bottom: 1.35rem;">
+      <h1>Your AI Context Card</h1>
       <p class="sub">
-        Produces a <strong>machine slice</strong> (AI/agent context) + <strong>JSON</strong> for tools — not a replacement for the full
-        <code>P31 COGNITIVE PASSPORT — v5.md</code> in the P31 / <code>andromeda</code> tree. No PII is required; contact fields are optional.
+        Tell tools how your brain works — once. Free. No login. Everything stays in your browser.
       </p>
-      <span class="badge">schema p31.cognitivePassport/1.0.0</span>
+      <p class="sub-muted">
+        Works with ChatGPT, Claude, Gemini, or any assistant that accepts custom instructions.
+      </p>
     </header>
 
     <div class="grid grid-2">
       <div class="card">
-        <h2 style="font-size: 1.05rem; margin: 0 0 1rem;">Input</h2>
-        <div class="row">
-          <label for="displayName">Display name (or alias)</label>
-          <input type="text" id="displayName" placeholder="e.g. Operator" />
+        <h2 style="font-size: 1.05rem; margin: 0 0 1rem;">Fill in what feels right</h2>
+
+        <div class="passport-section" id="sec-think" data-section="think">
+          <div class="row">
+            <label for="displayName">Name or alias (optional)</label>
+            <input type="text" id="displayName" placeholder="e.g. Alex — or leave blank" autocomplete="name" />
+          </div>
+          <div class="row">
+            <label for="diagnoses">How you think</label>
+            <select id="diagnoses">
+              <option value="AuDHD">AuDHD (Autism + ADHD)</option>
+              <option value="Hypoparathyroidism">Hypoparathyroidism (calcium/PTH)</option>
+              <option value="AuDHD+Hypo">Both</option>
+              <option value="Custom">Custom — describe in notes</option>
+            </select>
+          </div>
         </div>
-        <div class="row">
-          <label for="diagnoses">Primary context</label>
-          <select id="diagnoses">
-            <option value="AuDHD">AuDHD (Autism + ADHD)</option>
-            <option value="Hypoparathyroidism">Hypoparathyroidism (calcium/PTH)</option>
-            <option value="AuDHD+Hypo">Both</option>
-            <option value="Custom">Custom (use notes)</option>
-          </select>
+
+        <div class="passport-section" id="sec-comms" data-section="comms">
+          <div class="row">
+            <label for="commStyle">How you communicate</label>
+            <select id="commStyle">
+              <option value="Direct">Direct — no corporate hedging</option>
+              <option value="Technical">Technical — systems &amp; precision</option>
+              <option value="Sparse">Sparse — minimum words</option>
+            </select>
+          </div>
         </div>
-        <div class="row">
-          <label for="commStyle">Communication</label>
-          <select id="commStyle">
-            <option value="Direct">Direct — no corporate hedging</option>
-            <option value="Technical">Technical — systems & geometry</option>
-            <option value="Sparse">Sparse — minimum words</option>
-          </select>
-        </div>
-        <div class="row">
-          <label for="spoon">Spoon / executive state</label>
-          <select id="spoon">
-            <option value="ok">Adequate</option>
-            <option value="low">Depleted — minimize decisions</option>
-            <option value="crisis">Crisis — commands only</option>
-          </select>
-        </div>
-        <div class="row" style="margin-top: 1rem">
+
+        <div class="passport-section" id="sec-comfort" data-section="comfort">
+          <p class="hint-try"><strong style="color: var(--text)">Try it now:</strong> Change a setting below and watch this page adapt.</p>
           <p style="margin: 0 0 0.5rem; font-size: 0.7rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted)">
-            Screen comfort (P31 surfaces)
+            Screen comfort
           </p>
           <div class="grid" style="gap: 0.65rem">
             <div>
@@ -152,37 +202,60 @@
             </div>
           </div>
         </div>
-        <div class="row checks" id="constraints">
-          <label class="flex"><input type="checkbox" data-key="noMilitary" checked /> No military / naval / submarine metaphors</label>
-          <label class="flex"><input type="checkbox" data-key="handwriting" checked /> Handwriting = highest-fidelity when applicable</label>
-          <label class="flex"><input type="checkbox" data-key="verbalLossy" checked /> Real-time speech is a lossy channel vs writing</label>
-          <label class="flex"><input type="checkbox" data-key="actionOverChat" checked /> Action over long explanation</label>
+
+        <div class="passport-section" id="sec-energy" data-section="energy">
+          <div class="row">
+            <label for="spoon">Energy right now</label>
+            <select id="spoon">
+              <option value="ok">OK — usual capacity</option>
+              <option value="low">Low — minimize decisions</option>
+              <option value="crisis">Crisis — commands only</option>
+            </select>
+            <p class="micro">
+              Spoon theory — a simple way to describe limited daily energy.
+              <a href="https://en.wikipedia.org/wiki/Spoon_theory" target="_blank" rel="noopener noreferrer">Learn more</a>
+            </p>
+          </div>
         </div>
-        <div class="row">
-          <label for="customNotes">Custom notes (optional, included in export)</label>
-          <textarea id="customNotes" rows="3" placeholder="Triggers, access needs, K₄ mesh role, etc."></textarea>
+
+        <div class="passport-section" id="sec-drains" data-section="drains">
+          <p style="margin: 0 0 0.45rem; font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted)">What drains you</p>
+          <div class="row checks" id="constraints">
+            <label class="flex"><input type="checkbox" data-key="noMilitary" checked /> No military / naval / submarine metaphors</label>
+            <label class="flex"><input type="checkbox" data-key="handwriting" checked /> Handwriting = highest fidelity when applicable</label>
+            <label class="flex"><input type="checkbox" data-key="verbalLossy" checked /> Live speech is lossy vs writing — prefer text when it matters</label>
+            <label class="flex"><input type="checkbox" data-key="actionOverChat" checked /> Prefer action over long explanation</label>
+          </div>
         </div>
-        <div class="row">
-          <label for="email">Email (optional — leave blank in shared exports)</label>
-          <input type="email" id="email" placeholder="" autocomplete="off" />
+
+        <div class="passport-section" id="sec-notes" data-section="notes">
+          <div class="row">
+            <label for="customNotes">Notes for assistants (optional)</label>
+            <textarea id="customNotes" rows="3" placeholder="e.g. I process visually and need extra time on verbal-only calls; triggers include…"></textarea>
+          </div>
+          <div class="row">
+            <label for="email">Email (optional — omit when sharing exports)</label>
+            <input type="email" id="email" placeholder="" autocomplete="off" />
+          </div>
+          <div class="row">
+            <label for="orcid">ORCID (optional)</label>
+            <input type="text" id="orcid" placeholder="0000-0000-0000-0000" />
+          </div>
         </div>
-        <div class="row">
-          <label for="orcid">ORCID (optional)</label>
-          <input type="text" id="orcid" placeholder="0000-0000-0000-0000" />
-        </div>
+
         <div class="btn-bar">
-          <button type="button" class="btn" id="btnGen">Generate</button>
-          <button type="button" class="btn btn-ghost" id="btnSave">Save draft (local)</button>
+          <button type="button" class="btn" id="btnGen">Update preview</button>
+          <button type="button" class="btn btn-ghost" id="btnSave">Save draft in this browser</button>
           <button type="button" class="btn btn-ghost" id="btnLoad">Load draft</button>
         </div>
       </div>
 
-      <div class="card">
-        <h2 style="font-size: 1.05rem; margin: 0 0 0.5rem;">Output</h2>
+      <div class="card" id="output-card">
+        <h2 style="font-size: 1.05rem; margin: 0 0 0.5rem;">Export</h2>
         <div class="tabs" id="tabs">
           <button type="button" class="tab on" data-panel="md">Markdown</button>
           <button type="button" class="tab" data-panel="json">JSON</button>
-          <button type="button" class="tab" data-panel="agent">Agent block</button>
+          <button type="button" class="tab" data-panel="agent">Plain text</button>
         </div>
         <div class="out-panel on" id="out-md">
           <textarea id="outMd" readonly></textarea>
@@ -194,20 +267,23 @@
           <textarea id="outAgent" readonly></textarea>
         </div>
         <div class="btn-bar">
-          <button type="button" class="btn" id="cpyMd">Copy MD</button>
-          <button type="button" class="btn" id="cpyJson">Copy JSON</button>
-          <button type="button" class="btn" id="cpyAgent">Copy agent block</button>
-          <button type="button" class="btn btn-ghost" id="dlMd">Download .md</button>
-          <button type="button" class="btn btn-ghost" id="dlJson">Download .json</button>
+          <button type="button" class="btn" id="cpyAgent">Copy for ChatGPT / Claude</button>
+          <button type="button" class="btn btn-ghost" id="cpyMd">Copy Markdown</button>
+          <button type="button" class="btn btn-ghost" id="cpyJson">Copy JSON only</button>
+          <button type="button" class="btn btn-ghost" id="dlJson">Download full profile (.json)</button>
+          <button type="button" class="btn btn-ghost" id="dlMd">Download Markdown (.md)</button>
         </div>
+        <p class="export-note">Your data never leaves your device unless you copy or download it yourself.</p>
       </div>
     </div>
 
     <footer>
-      P31 Labs — you are on <code>passport-generator.html</code> · authoring source in the repo: <code>cognitive-passport/index.html</code> · localStorage <code>p31_passport_draft_v1</code> ·
-      full ground truth remains <code>P31 COGNITIVE PASSPORT — v5.md</code> at workspace root; this page only emits a safe machine slice.
+      Built by P31 Labs — open-source assistive technology.
+      Free forever. No tracking. No ads.
+      · <a href="https://github.com/p31labs/bonding-soup" target="_blank" rel="noopener noreferrer">Source code</a>
+      · <a href="https://ko-fi.com/trimtab69420" target="_blank" rel="noopener noreferrer">Ko-fi</a>
       · <a href="https://github.com/p31labs/bonding-soup/blob/main/docs/P31-DEPLOY-CANON.md" target="_blank" rel="noopener noreferrer" title="npm run connection">CONNECTION</a>
-      · <a href="https://p31ca.org/doc-library/?q=PLAN-BONDING-SOUP-WHEN-SCALE" target="_blank" rel="noopener noreferrer">BONDING Soup — when-scale plan</a>
+      · Full human document: <code>P31 COGNITIVE PASSPORT — v5.md</code> in the repo (not required for export).
     </footer>
   </div>
 
@@ -229,6 +305,37 @@
       try {
         window.p31SubjectPrefs.set(prefs);
       } catch (_) {}
+    }
+
+    function flashConfirm(btn) {
+      if (!btn || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      btn.classList.remove("flash-confirm");
+      void btn.offsetWidth;
+      btn.classList.add("flash-confirm");
+      btn.addEventListener("animationend", () => btn.classList.remove("flash-confirm"), { once: true });
+    }
+
+    function sectionAlive(id, on) {
+      const el = document.getElementById(id);
+      if (el) el.classList.toggle("passport-section--alive", !!on);
+    }
+
+    function refreshSectionAlive() {
+      const rawName = document.getElementById("displayName").value.trim();
+      const diag = document.getElementById("diagnoses").value;
+      const f = getForm();
+      sectionAlive("sec-think", rawName.length > 0 || diag === "Custom");
+      sectionAlive("sec-comms", true);
+      sectionAlive("sec-comfort", true);
+      sectionAlive("sec-energy", true);
+      sectionAlive(
+        "sec-drains",
+        f.constraints.noMilitary ||
+          f.constraints.handwriting ||
+          f.constraints.verbalLossy ||
+          f.constraints.actionOverChat
+      );
+      sectionAlive("sec-notes", !!(f.customNotes || f.email || f.orcid));
     }
 
     function getForm() {
@@ -312,33 +419,33 @@
     function toMarkdown(f, data) {
       const lines = [];
       const day = data.generatedAt.slice(0, 10);
-      lines.push(`# P31 COGNITIVE PASSPORT — machine slice (generated ${day})`);
+      lines.push(`# AI context card — machine slice (generated ${day})`);
       lines.push("");
-      lines.push(`> **Schema:** \`${data.schema}\`  ·  **Not** a full life/court/benefits record — for AI and tooling only.`);
+      lines.push(`> For ChatGPT, Claude, Gemini, or any assistant. Schema \`${data.schema}\` lives in JSON export — not required to paste this prose.`);
       lines.push("");
-      lines.push("## Operator");
+      lines.push("## You");
       lines.push(`- **Name / alias:** ${f.displayName}`);
-      lines.push(`- **Context:** ${f.diagnoses.replace(/\+/g, " + ")}`);
+      lines.push(`- **How you think:** ${f.diagnoses.replace(/\+/g, " + ")}`);
       lines.push(`- **Communication:** ${f.commStyle}`);
-      lines.push(`- **Spoon / executive:** ${f.spoon}`);
+      lines.push(`- **Energy:** ${f.spoon}`);
       lines.push("");
-      lines.push("## Hard constraints for assistants");
+      lines.push("## Assistant boundaries");
       if (f.constraints.noMilitary) lines.push("- **Never** use military, naval, or submarine metaphors.");
       if (f.constraints.handwriting) lines.push("- **Writing** (incl. handwriting) &gt; real-time speech for fidelity when relevant.");
       if (f.constraints.verbalLossy) lines.push("- Treat **verbal-only** interaction as a lossy channel.");
       if (f.constraints.actionOverChat) lines.push("- Default to **action** (code, file paths, commands) over long prose.");
-      lines.push(`- If spoon state is **low** or **crisis**: reduce branching questions; one clear next step.`);
+      lines.push(`- If energy is **low** or **crisis**: reduce branching questions; one clear next step.`);
       lines.push("");
-      lines.push("## Family / mesh (public-facing systems)");
+      lines.push("## Household / public systems");
       lines.push(data.familyMesh.label);
       lines.push("");
       if (f.customNotes) {
-        lines.push("## Custom notes");
+        lines.push("## Notes");
         lines.push(f.customNotes);
         lines.push("");
       }
       if (f.email || f.orcid) {
-        lines.push("## Optional contact (user-supplied)");
+        lines.push("## Optional contact (only if you chose to include)");
         if (f.email) lines.push(`- **Email:** ${f.email}`);
         if (f.orcid) lines.push(`- **ORCID:** ${f.orcid}`);
         lines.push("");
@@ -351,10 +458,18 @@
     function toAgentBlock(f, data) {
       const c = f.constraints;
       return [
-        "## P31 Cognitive Passport — agent block (paste into rules / system)",
-        `Operator: ${f.displayName} | Context: ${f.diagnoses} | Comms: ${f.commStyle} | Spoon: ${f.spoon}`,
-        `Constraints: no_military_naval_metaphors=${c.noMilitary} verbal_is_lossy=${c.verbalLossy} action_first=${c.actionOverChat}`,
-        "Children: use initials S.J., W.J. only in generated UI copy and agent-facing text.",
+        "## AI context — paste into custom instructions / rules",
+        `You: ${f.displayName} | Context: ${f.diagnoses} | Communication: ${f.commStyle} | Energy: ${f.spoon}`,
+        `Boundaries: no_military_naval=${c.noMilitary} verbal_lossy=${c.verbalLossy} action_first=${c.actionOverChat}`,
+        "Children in generated UI: use initials S.J., W.J. only.",
+        "Screen comfort (if your UI respects tokens): contrast=" +
+          (data.uiComfort?.contrast ?? "standard") +
+          ", density=" +
+          (data.uiComfort?.density ?? "comfortable") +
+          ", motion=" +
+          (data.uiComfort?.motion ?? "reduced") +
+          ", temp=" +
+          (data.uiComfort?.temp ?? "neutral"),
         f.customNotes ? `Notes: ${f.customNotes}` : "",
       ]
         .filter(Boolean)
@@ -368,14 +483,15 @@
       document.getElementById("outJson").value = json;
       document.getElementById("outMd").value = toMarkdown(f, data);
       document.getElementById("outAgent").value = toAgentBlock(f, data);
+      refreshSectionAlive();
     }
 
-    function copyText(id) {
+    function copyText(id, btn) {
       const el = document.getElementById(id);
       el.select();
       el.setSelectionRange(0, 99999);
       navigator.clipboard.writeText(el.value).then(
-        () => {},
+        () => flashConfirm(btn || document.activeElement),
         () => document.execCommand("copy")
       );
     }
@@ -388,7 +504,6 @@
       URL.revokeObjectURL(a.href);
     }
 
-    // Tabs
     document.getElementById("tabs").addEventListener("click", (e) => {
       const btn = e.target.closest(".tab");
       if (!btn) return;
@@ -403,7 +518,7 @@
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(getForm()));
         applySubjectPrefsToSite(readSubjectPrefs());
-        alert("Draft saved in this browser.");
+        flashConfirm(document.getElementById("btnSave"));
       } catch (e) {
         alert("Could not save: " + e);
       }
@@ -420,26 +535,37 @@
       }
     });
 
-    document.getElementById("cpyMd").addEventListener("click", () => copyText("outMd"));
-    document.getElementById("cpyJson").addEventListener("click", () => copyText("outJson"));
-    document.getElementById("cpyAgent").addEventListener("click", () => copyText("outAgent"));
+    document.getElementById("cpyMd").addEventListener("click", () => copyText("outMd", document.getElementById("cpyMd")));
+    document.getElementById("cpyJson").addEventListener("click", () => copyText("outJson", document.getElementById("cpyJson")));
+    document.getElementById("cpyAgent").addEventListener("click", () => copyText("outAgent", document.getElementById("cpyAgent")));
     document.getElementById("dlMd").addEventListener("click", () => {
       const f = getForm();
       const d = buildPayload(f);
-      download("P31_COGNITIVE_PASSPORT_SLICE.md", toMarkdown(f, d), "text/markdown");
+      download("ai_context_card.md", toMarkdown(f, d), "text/markdown");
+      flashConfirm(document.getElementById("dlMd"));
     });
     document.getElementById("dlJson").addEventListener("click", () => {
       const f = getForm();
-      download("p31_cognitive_passport.json", JSON.stringify(buildPayload(f), null, 2), "application/json");
+      download("ai_context_card.json", JSON.stringify(buildPayload(f), null, 2), "application/json");
+      flashConfirm(document.getElementById("dlJson"));
     });
 
     ["prefContrast", "prefDensity", "prefMotion", "prefTemp"].forEach((id) => {
       document.getElementById(id).addEventListener("change", () => {
         applySubjectPrefsToSite(readSubjectPrefs());
+        render();
       });
     });
 
-    // Load draft on open
+    ["displayName", "diagnoses", "commStyle", "spoon", "customNotes", "email", "orcid"].forEach((id) => {
+      const el = document.getElementById(id);
+      el.addEventListener("input", render);
+      el.addEventListener("change", render);
+    });
+    document.querySelectorAll("#constraints input[type=checkbox]").forEach((b) => {
+      b.addEventListener("change", render);
+    });
+
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) setForm(JSON.parse(raw));
