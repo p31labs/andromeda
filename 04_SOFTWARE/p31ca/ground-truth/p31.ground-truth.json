@@ -550,6 +550,51 @@
       "from": "/edu",
       "to": "/education/",
       "status": 301
+    },
+    {
+      "from": "/appointment-tracker",
+      "to": "https://p31-appointment-tracker.trimtab-signal.workers.dev",
+      "status": 302
+    },
+    {
+      "from": "/love-ledger",
+      "to": "https://p31-love-ledger.trimtab-signal.workers.dev",
+      "status": 302
+    },
+    {
+      "from": "/medical-tracker",
+      "to": "https://p31-medical-tracker.trimtab-signal.workers.dev",
+      "status": 302
+    },
+    {
+      "from": "/somatic-anchor",
+      "to": "https://p31-somatic-anchor.trimtab-signal.workers.dev",
+      "status": 302
+    },
+    {
+      "from": "/legal-evidence",
+      "to": "https://p31-legal-evidence.trimtab-signal.workers.dev",
+      "status": 302
+    },
+    {
+      "from": "/contact-locker",
+      "to": "https://p31-contact-locker.trimtab-signal.workers.dev",
+      "status": 302
+    },
+    {
+      "from": "/sleep-tracker",
+      "to": "https://p31-sleep-tracker.trimtab-signal.workers.dev",
+      "status": 302
+    },
+    {
+      "from": "/budget-tracker",
+      "to": "https://p31-budget-tracker.trimtab-signal.workers.dev",
+      "status": 302
+    },
+    {
+      "from": "/genesis-gate",
+      "to": "https://genesis-gate.trimtab-signal.workers.dev",
+      "status": 302
     }
   ],
   "fileSnippets": [

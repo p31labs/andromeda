@@ -1,6 +1,6 @@
 /**
  * Single source: every id here gets exactly one card on p31ca.org/ and one *-about.html
- * (must match scripts/hub/registry.mjs 1:1). Order = cockpit grid then prototypes section.
+ * (must match scripts/hub/registry.mjs 1:1). Order = cockpit grid (optionally prototypes when non-empty).
  * @see scripts/hub/verify.mjs (card–registry–about alignment)
  */
 export const HUB_COCKPIT_ORDER = [
@@ -29,6 +29,9 @@ export const HUB_COCKPIT_ORDER = [
   "discord-bot",
   "cortex",
   "quantum-family",
+  "mission-control",
+  "node-zero",
+  "node-one",
   "observatory",
   "connect",
   "planetary-onboard",
@@ -60,7 +63,7 @@ export const HUB_COCKPIT_ORDER = [
   "tomography",
 ];
 
-export const HUB_PROTOTYPE_ORDER = ["node-zero", "node-one", "mission-control"];
+export const HUB_PROTOTYPE_ORDER = [];
 
 /** Strict render order: cockpit grid then / prototypes (matches index.astro data shape). */
 export const HUB_ALL_CARD_ORDER = [
