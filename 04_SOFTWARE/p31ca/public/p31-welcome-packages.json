@@ -2,6 +2,26 @@
   "schema": "p31.welcomePackages/1.0.0",
   "version": "1.0.0",
   "welcomePhaseCaption": "Choose your P31 welcome package — then Wye → Delta in five calm steps.",
+  "paceSubtitle": "Five steps — pause anytime. Back returns one step.",
+  "explicitNegationLines": [
+    "No seed phrases to write down or store.",
+    "Not a cryptocurrency wallet.",
+    "Device-first lock — we don't keep your screen unlock or a reusable vault password.",
+    "Glass-box: ship bar and public routes are documented and version-checked in-repo."
+  ],
+  "wyeDeltaRibbonLines": [
+    "Quiet entry — settle before the mesh reroutes.",
+    "Anchor — match the pulse or ignore it; grace beats panic.",
+    "Rooms — place four corners; edges emerge between them.",
+    "Dial — set load today; degraded grace beats forced hustle.",
+    "Pact — close the Delta on-device; settings stay reversible."
+  ],
+  "phaseJobLines": {
+    "1": "Job: regulate first — bandwidth before rewiring.",
+    "2": "Job: anchor a repeatable tap — escalation stays gentle.",
+    "3": "Job: arrange corners — topology matches your workload.",
+    "4": "Job: choose fidelity — throttle chrome without quitting."
+  },
   "packages": {
     "kid": {
       "id": "kid",
