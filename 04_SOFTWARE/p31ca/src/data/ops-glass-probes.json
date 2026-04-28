@@ -1,6 +1,6 @@
 {
   "schema": "p31.opsGlassProbes/1.0.0",
-  "ingested": "2026-04-28T20:56:51.801Z",
+  "ingested": "2026-04-28T22:02:51.965Z",
   "source": "p31-ecosystem.json",
   "probes": [
     {
@@ -168,6 +168,60 @@
       "group": "contracts",
       "note": "Public JSON contract (verify:economy in p31ca)",
       "url": "https://p31ca.org/creator-economy.json"
+    },
+    {
+      "id": "worker-spa-appointment-tracker",
+      "group": "worker-spa",
+      "note": "Worker SPA bundle (p31ca /appointment-tracker 302); PRS concept-tier unless promoted — edge HTML up",
+      "url": "https://p31-appointment-tracker.trimtab-signal.workers.dev/"
+    },
+    {
+      "id": "worker-spa-love-ledger",
+      "group": "worker-spa",
+      "note": "Worker SPA /love-ledger short URL target",
+      "url": "https://p31-love-ledger.trimtab-signal.workers.dev/"
+    },
+    {
+      "id": "worker-spa-medical-tracker",
+      "group": "worker-spa",
+      "note": "Worker SPA /medical-tracker — wellness logging only per registry copy",
+      "url": "https://p31-medical-tracker.trimtab-signal.workers.dev/"
+    },
+    {
+      "id": "worker-spa-somatic-anchor",
+      "group": "worker-spa",
+      "note": "Worker SPA /somatic-anchor",
+      "url": "https://p31-somatic-anchor.trimtab-signal.workers.dev/"
+    },
+    {
+      "id": "worker-spa-legal-evidence",
+      "group": "worker-spa",
+      "note": "Worker SPA /legal-evidence",
+      "url": "https://p31-legal-evidence.trimtab-signal.workers.dev/"
+    },
+    {
+      "id": "worker-spa-contact-locker",
+      "group": "worker-spa",
+      "note": "Worker SPA /contact-locker",
+      "url": "https://p31-contact-locker.trimtab-signal.workers.dev/"
+    },
+    {
+      "id": "worker-spa-sleep-tracker",
+      "group": "worker-spa",
+      "note": "Worker SPA /sleep-tracker",
+      "url": "https://p31-sleep-tracker.trimtab-signal.workers.dev/"
+    },
+    {
+      "id": "worker-spa-budget-tracker",
+      "group": "worker-spa",
+      "note": "Worker SPA /budget-tracker",
+      "url": "https://p31-budget-tracker.trimtab-signal.workers.dev/"
+    },
+    {
+      "id": "worker-spa-genesis-gate",
+      "group": "worker-spa",
+      "note": "genesis-gate API Worker — GET /health (root / is 404 by design)",
+      "url": "https://genesis-gate.trimtab-signal.workers.dev/health"
     }
   ]
 }

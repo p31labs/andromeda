@@ -43,12 +43,15 @@ export default [
       "no-new-func": "error",
 
       // ── Node/CF crypto hygiene ──
-      // Flag Math.random() usage (use crypto.getRandomValues for tokens/challenges)
-      "no-restricted-globals": [
+      // Flag Math.random() usage (use crypto.getRandomValues for tokens/challenges).
+      // IMPORTANT: do not restrict the entire `Math` global — that false-positives on Math.min/Math.max/etc.
+      "no-restricted-properties": [
         "warn",
         {
-          "name": "Math",
-          "message": "Math.random() is not cryptographically secure. Use crypto.getRandomValues() for tokens and challenges.",
+          object: "Math",
+          property: "random",
+          message:
+            "Math.random() is not cryptographically secure. Use crypto.getRandomValues() (WebCrypto) for tokens/challenges.",
         },
       ],
     },
@@ -60,6 +63,7 @@ export default [
       "security/detect-non-literal-fs-filename": "off",
       "security/detect-object-injection": "off",
       "no-restricted-globals": "off",
+      "no-restricted-properties": "off",
     },
   },
   {

@@ -9,6 +9,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { registry } from './registry.mjs';
 import { HUB_COCKPIT_ORDER, HUB_PROTOTYPE_ORDER } from './hub-app-ids.mjs';
+import { resolvePrsPath, loadHubCardTierMap, prsGridStatus } from './prs-production-posture.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const P31CA = path.join(__dirname, '../..');
@@ -22,6 +23,14 @@ const RESEARCH = [
 ];
 
 const byId = new Map(registry.map((r) => [r.id, r]));
+
+const prsPath = resolvePrsPath(P31CA);
+const prsTierMap = prsPath ? loadHubCardTierMap(prsPath) : null;
+if (prsPath) {
+  console.log('hub-landing: PRS posture from', path.relative(P31CA, prsPath));
+} else {
+  console.log('hub-landing: PRS file not found — registry statusLabel only');
+}
 
 function cardStatus(r) {
   const sl = (r.statusLabel || 'LIVE').toUpperCase();
@@ -43,10 +52,12 @@ function productRow(id) {
   if (!r) {
     throw new Error(`[hub:build] unknown registry id: ${id}`);
   }
+  const prs = prsGridStatus(r, prsTierMap);
+  const status = prs ? prs.landingStatus : cardStatus(r);
   return {
     id,
     title: r.title,
-    status: cardStatus(r),
+    status,
     desc: r.tagline,
     tags: toTags(r.tech),
     url: `/${id}-about.html`,
@@ -75,6 +86,7 @@ const payload = {
     hubCardIds: "scripts/hub/hub-app-ids.mjs",
     alignment:
       "P31 home: p31-alignment.json (p31.alignment/1.0.0); human: docs/P31-ALIGNMENT-SYSTEM.md; verify: npm run verify:alignment (root)",
+    prsPosture: prsPath ? path.relative(P31CA, prsPath).replace(/\\/g, '/') : null,
   },
   coreProducts,
   prototypes,
