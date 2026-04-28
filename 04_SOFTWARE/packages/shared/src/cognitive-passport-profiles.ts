@@ -278,7 +278,8 @@ export function exportRulesForProfile(profile: PassportProfileId): Record<FieldG
   return out;
 }
 
+/** True when matrix norm requires `serialization_profile` on the wire (Cog = A). */
 export function requiresSerializationProfile(profile: PassportProfileId): boolean {
   const row = COGNITIVE_PASSPORT_AUDIENCE_MATRIX[profile];
-  return row.cog === 'A' || row.cog === 'R';
+  return row.cog === 'A';
 }

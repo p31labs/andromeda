@@ -33,8 +33,10 @@ describe('cognitive-passport-profiles (audience matrix v1.0.0)', () => {
     expect(COGNITIVE_PASSPORT_AUDIENCE_MATRIX.child.sent).toBe('D');
   });
 
-  it('flags serialization when cog is A or R', () => {
+  it('requires serialization_profile when Cog column is A (not when R)', () => {
     expect(requiresSerializationProfile('cursor-agent')).toBe(true);
     expect(requiresSerializationProfile('ssa')).toBe(true);
+    expect(requiresSerializationProfile('court')).toBe(false);
+    expect(requiresSerializationProfile('child')).toBe(false);
   });
 });

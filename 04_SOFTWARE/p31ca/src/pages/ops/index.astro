@@ -83,10 +83,14 @@ const orchestratorStatusUrl = new URL('/api/orchestrator/status', mesh.orchestra
       <p class="text-xs text-indigo-200/80 font-mono uppercase tracking-widest mb-2">Grounded Operator Deck</p>
       <p class="text-p31-muted text-sm max-w-2xl ops-aux">
         One frame for day-to-day work: same nav model everywhere, glass-box health readouts, and tag in/out
-        when you need explicit on-call focus. Trust boundary: mutations and sensitive reads are enforced on
-        Workers (see <code class="text-teal-300/80">p31ca/docs/EDGE-SECURITY.md</code> in the repo), not in
-        static HTML alone. Pair with the P31 home <code class="text-indigo-200/80">npm run command-center</code>
-        on <strong class="text-p31-cloud-80">127.0.0.1:3131</strong> and the
+        when you need explicit on-call focus. This page only issues <strong class="text-p31-cloud-80">GET</strong> probes from your
+        browser (no <code class="text-p31-muted-50">POST</code> to command-center — shift writes go through EPCP Access or home
+        <code class="text-indigo-200/80">npm run operator:shift-in</code> / <code class="text-indigo-200/80">out</code>).
+        Trust boundary: mutations are enforced on Workers (see
+        <code class="text-teal-300/80">p31ca/docs/EDGE-SECURITY.md</code>;
+        mesh-red order: <code class="text-teal-300/80">p31ca/docs/OPS-GLASS-OPERATOR-RUNBOOK.md</code>), not in static HTML alone.
+        Pair with <code class="text-indigo-200/80">npm run command-center</code> on
+        <strong class="text-p31-cloud-80">127.0.0.1:3131</strong> and the
         <a href="https://command-center.trimtab-signal.workers.dev/" class="text-teal-300/80 hover:underline" rel="noopener"
           >EPCP (G.O.D. edge) dashboard</a
         >.
@@ -200,12 +204,13 @@ const orchestratorStatusUrl = new URL('/api/orchestrator/status', mesh.orchestra
       class="mb-10 rounded-xl border border-white/10 bg-white/[0.03] p-5 ops-aux"
       aria-labelledby="glass-title"
     >
-      <h2 id="glass-title" class="text-lg font-medium text-p31-cloud mb-1">Glass box (read-only)</h2>
+      <h2 id="glass-title" class="text-lg font-medium text-p31-cloud mb-1">Glass box (read-only GETs)</h2>
       <p class="text-xs text-p31-cloud-40 font-mono mb-2" id="ops-glass-meta">
         Ingest: {opsGlass.source} · {opsGlass.probes.length} probes ·
         {opsGlass.ingested ? opsGlass.ingested.slice(0, 10) : "—"} 
-        <span class="text-p31-cloud-30">(regenerate: home <code class="text-teal-500/80">p31-ecosystem.json</code> →
-        <code class="text-teal-500/80">npm run ops:ingest</code> in p31ca)</span>
+        <span class="text-p31-cloud-30">(single source: home <code class="text-teal-500/80">p31-ecosystem.json</code> →
+        <code class="text-teal-500/80">npm run ops:ingest</code> in p31ca; CLI aggregate:
+        <code class="text-teal-500/80">npm run ecosystem:glass</code>)</span>
       </p>
       <p class="text-sm font-mono text-indigo-200/85 mb-4 min-h-[1.25rem]" id="ops-glass-summary" aria-live="polite"></p>
       <p class="text-sm text-p31-muted mb-4">

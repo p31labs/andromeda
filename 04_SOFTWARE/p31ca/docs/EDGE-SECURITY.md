@@ -99,6 +99,8 @@ For **`command-center.trimtab-signal.workers.dev`** the dashboard uses **two** A
 
 **Rules:** (1) **GET** `/api/operator/shift` is the intentionally public read — implemented in the Worker + CORS; Access **bypass** for that path avoids **302 to login** in browsers that hit the Worker URL directly. (2) **POST** `/api/operator/shift` is **not** bypassed — requires Access session + **operator** role. (3) All **other** command-center routes should remain under the main Access app, not the bypass. (4) If you add routes, re-audit: no bypass wider than needed for the glass operator story.
 
+**Operator runbook (mesh red, probe order, 401/403 table):** **`OPS-GLASS-OPERATOR-RUNBOOK.md`** (this directory).
+
 **Rate limiting:**
 - Not implemented at Worker level — relies on Cloudflare edge rate limiting (free tier: basic)
 - P2 item: add `CHALLENGES` KV TTL as a natural rate limit; consider explicit rate-limit token in KV
