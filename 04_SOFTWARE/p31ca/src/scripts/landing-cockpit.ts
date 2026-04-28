@@ -238,6 +238,7 @@ renderer.setPixelRatio(domePerfLite ? 1 : Math.min(window.devicePixelRatio, 2));
 renderer.setClearColor(0x050508, 1);
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 container.appendChild(renderer.domElement);
+renderer.domElement.style.pointerEvents = 'auto';
 
 // Post Processing — align with /dome (no bloom in ?perf=lite)
 const composer = new EffectComposer(renderer);
