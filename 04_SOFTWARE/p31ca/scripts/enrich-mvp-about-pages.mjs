@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Injects MVP "enriched" sections into p31ca/public/*-about.html for every
+ * Injects hub "enriched" sections into p31ca/public/*-about.html for every
  * product/prototype in src/data/hub-landing.json with url ending in -about.html
  * (same graph as the Astro home — CWP D5).
  * Idempotent: skips files that already contain id="mvp-enriched".
