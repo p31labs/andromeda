@@ -27,6 +27,13 @@ const getStatusStyles = (status: string) => {
       border: 'border-butter/30',
       glow: 'group-hover:shadow-[0_12px_40px_rgba(205,168,82,0.2),inset_0_1px_0_rgba(255,255,255,0.08)]',
     };
+  if (status === 'HARDWARE')
+    return {
+      text: 'text-butter',
+      bg: 'bg-butter/15',
+      border: 'border-butter/35',
+      glow: 'group-hover:shadow-[0_12px_40px_rgba(205,168,82,0.25),inset_0_1px_0_rgba(255,255,255,0.08)]',
+    };
   if (status === 'RESEARCH' || status === 'TOOL')
     return {
       text: 'text-teal',
@@ -43,7 +50,7 @@ const getStatusStyles = (status: string) => {
 };
 
 /** CWP D3 — filter counts from hub-landing (registry-driven) */
-const FILTER_ORDER = ['LIVE', 'BUILDING', 'RESEARCH', 'TOOL'] as const;
+const FILTER_ORDER = ['LIVE', 'BUILDING', 'HARDWARE', 'RESEARCH', 'TOOL'] as const;
 const countByStatus = coreProducts.reduce(
   (acc, p) => {
     acc[p.status] = (acc[p.status] || 0) + 1;
@@ -586,33 +593,41 @@ const pageDescription =
       })();
     </script>
 
-    <!-- 3. In Development & Research (Side by Side on Large Screens) -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-24 animate-fade-in-up interactive-zone" style="animation-delay: 0.28s;">
-      
-      <!-- Prototypes -->
-      <section>
-        <div class="mb-8 flex items-center gap-4">
-          <div class="h-px flex-grow bg-white/10"></div>
-          <h2 class="m-0 whitespace-nowrap font-mono text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-p31-muted">
-            Prototypes
-          </h2>
-          <div class="h-px flex-grow bg-white/10"></div>
-        </div>
-        <div class="flex flex-col gap-4">
-          {prototypes.map((proto) => (
-            <a href={proto.url} target="_blank" rel="noopener noreferrer" class="ede-mission-card glass-panel p-5 rounded-[8px] flex items-center justify-between group hover:bg-surface2/95 transition-all duration-300 border border-[rgba(255,255,255,0.06)] hover:border-white/12">
-              <div>
-                <h3 class="font-bold text-p31-cloud mb-1 group-hover:text-butter transition-colors">{proto.title}</h3>
-                <p class="text-sm text-p31-muted">{proto.desc}</p>
+    <!-- 3. In Development & Research (Side by Side on Large Screens when prototypes exist) -->
+    <div
+      class:list={[
+        'grid grid-cols-1 gap-12 mb-24 animate-fade-in-up interactive-zone',
+        prototypes.length > 0 ? 'lg:grid-cols-2' : '',
+      ]}
+      style="animation-delay: 0.28s;"
+    >
+      {
+        prototypes.length > 0 && (
+          <section>
+              <div class="mb-8 flex items-center gap-4">
+                <div class="h-px flex-grow bg-white/10"></div>
+                <h2 class="m-0 whitespace-nowrap font-mono text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-p31-muted">
+                  Prototypes
+                </h2>
+                <div class="h-px flex-grow bg-white/10"></div>
               </div>
-              <span class="text-butter font-mono text-xl opacity-0 group-hover:opacity-100 transition-all duration-300 transform -translate-x-2 group-hover:translate-x-0">→</span>
-            </a>
-          ))}
-        </div>
-      </section>
+              <div class="flex flex-col gap-4">
+                {prototypes.map((proto) => (
+                  <a href={proto.url} target="_blank" rel="noopener noreferrer" class="ede-mission-card glass-panel p-5 rounded-[8px] flex items-center justify-between group hover:bg-surface2/95 transition-all duration-300 border border-[rgba(255,255,255,0.06)] hover:border-white/12">
+                    <div>
+                      <h3 class="font-bold text-p31-cloud mb-1 group-hover:text-butter transition-colors">{proto.title}</h3>
+                      <p class="text-sm text-p31-muted">{proto.desc}</p>
+                    </div>
+                    <span class="text-butter font-mono text-xl opacity-0 group-hover:opacity-100 transition-all duration-300 transform -translate-x-2 group-hover:translate-x-0">→</span>
+                  </a>
+                ))}
+              </div>
+          </section>
+        )
+      }
 
-      <!-- Whitepapers -->
-      <section>
+      {/* Whitepapers */}
+      <section class:list={[prototypes.length === 0 ? 'lg:col-span-2' : '']}>
         <div class="mb-8 flex items-center gap-4">
           <div class="h-px flex-grow bg-white/10"></div>
           <h2 class="m-0 whitespace-nowrap font-mono text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-p31-muted">

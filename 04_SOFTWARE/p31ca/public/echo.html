@@ -1,10 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-p31-appearance="hub">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Private vocal loop station — mic capture, up to 6 layers, semitone pitch via Web Audio playbackRate. Nothing leaves your browser.">
     <meta name="theme-color" content="#0f1115">
     <title>ECHO | Vocal Loop Station | P31 Labs</title>
+    <link rel="stylesheet" href="/p31-style.css" />
     <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
         *{margin:0;padding:0;box-sizing:border-box}
@@ -124,6 +126,14 @@ const pitchVal = document.getElementById('pitch-val');
 
 pitchSlider.addEventListener('input', () => {
     pitchVal.textContent = pitchSlider.value;
+    const semi = parseInt(pitchSlider.value, 10);
+    loops.forEach((loop) => {
+        loop.pitchSemitones = semi;
+        if (loop.playing) {
+            stopLoop(loop);
+            playLoop(loop);
+        }
+    });
 });
 
 async function initAudio() {

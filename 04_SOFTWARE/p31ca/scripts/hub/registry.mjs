@@ -1,4 +1,6 @@
 /** P31 app registry — single source for about pages + hub landing. */
+import { appUrlForWorkerSpa } from "./worker-spa-launches.mjs";
+
 export const registry = [
   {
     id: 'ede', title: 'EDE', tagline: 'Everything Development Environment',
@@ -123,7 +125,7 @@ export const registry = [
   {
     id: 'genesis-gate', title: 'Genesis Gate', tagline: 'Governance Control Plane',
     icon: '🔬', accent: '#3ba372', status: 'live', statusLabel: 'LIVE',
-    appUrl: 'https://genesis-gate.trimtab-signal.workers.dev',
+    appUrl: appUrlForWorkerSpa('genesis-gate'),
     tech: ['TypeScript ESM', 'Cloudflare Workers', 'TelemetryModule', 'GovernanceHook'],
     features: [
       'TelemetryModule: real-time event stream from all P31 infrastructure endpoints',
@@ -251,7 +253,7 @@ export const registry = [
   {
     id: 'appointment-tracker', title: 'Appointment Tracker', tagline: 'Legal & Family Calendar',
     icon: '📅', accent: '#8b5cf6', status: 'live', statusLabel: 'LIVE',
-    appUrl: 'https://p31-appointment-tracker.trimtab-signal.workers.dev',
+    appUrl: appUrlForWorkerSpa('appointment-tracker'),
     tech: ['Cloudflare Worker', 'LocalStorage', 'CSV Export', 'Recurring Events'],
     features: [
       'Color-coded categories: legal (red), kids (blue), medical (purple), personal (green)',
@@ -271,7 +273,7 @@ export const registry = [
   {
     id: 'love-ledger', title: 'Love Ledger', tagline: 'Family LOVE Token Economy',
     icon: '💜', accent: '#ec4899', status: 'live', statusLabel: 'LIVE',
-    appUrl: 'https://p31-love-ledger.trimtab-signal.workers.dev',
+    appUrl: appUrlForWorkerSpa('love-ledger'),
     tech: ['Cloudflare Worker', 'Chart.js', 'Leaderboard', 'Streak Counter'],
     features: [
       'Track LOVE tokens earned through care, creation, and consistency',
@@ -291,7 +293,7 @@ export const registry = [
   {
     id: 'medical-tracker', title: 'Medical Tracker', tagline: 'Hypoparathyroidism HPT-SD Monitor',
     icon: '🩺', accent: '#3b82f6', status: 'live', statusLabel: 'LIVE',
-    appUrl: 'https://p31-medical-tracker.trimtab-signal.workers.dev',
+    appUrl: appUrlForWorkerSpa('medical-tracker'),
     tech: ['Cloudflare Worker', 'Chart.js', 'WebCrypto', '0-4 Symptom Scaling'],
     features: [
       'Calcium and PTH log with timestamp — court-admissible medical record format',
@@ -311,7 +313,7 @@ export const registry = [
   {
     id: 'somatic-anchor', title: 'Somatic Anchor', tagline: '863 Hz Larmor Grounding Tool',
     icon: '🕸️', accent: '#10b981', status: 'live', statusLabel: 'LIVE',
-    appUrl: 'https://p31-somatic-anchor.trimtab-signal.workers.dev',
+    appUrl: appUrlForWorkerSpa('somatic-anchor'),
     tech: ['Cloudflare Worker', 'Web Audio API', 'Vibration API', '4-4-6 Breathwork'],
     features: [
       '4-4-6 box breathing with visual cue — inhale 4, hold 4, exhale 6',
@@ -331,7 +333,7 @@ export const registry = [
   {
     id: 'legal-evidence', title: 'Legal Evidence', tagline: 'SHA-256 Tamper-Evident Chain',
     icon: '🛣', accent: '#f59e0b', status: 'live', statusLabel: 'LIVE',
-    appUrl: 'https://p31-legal-evidence.trimtab-signal.workers.dev',
+    appUrl: appUrlForWorkerSpa('legal-evidence'),
     tech: ['Cloudflare Worker', 'WebCrypto SHA-256', 'Hash Chain', 'Court-Ready JSON Export'],
     features: [
       'SHA-256 hash chain: each exhibit links to the hash of the previous one — tamper-evident',
@@ -371,7 +373,7 @@ export const registry = [
   {
     id: 'contact-locker', title: 'Contact Locker', tagline: 'AES-256-GCM Encrypted Directory',
     icon: '🔐', accent: '#06b6d4', status: 'live', statusLabel: 'LIVE',
-    appUrl: 'https://p31-contact-locker.trimtab-signal.workers.dev',
+    appUrl: appUrlForWorkerSpa('contact-locker'),
     tech: ['Cloudflare Worker', 'WebCrypto AES-256-GCM', 'PBKDF2', 'Room Code Auth'],
     features: [
       'AES-256-GCM encryption with PBKDF2 key derivation from a Room Code passphrase',
@@ -391,7 +393,7 @@ export const registry = [
   {
     id: 'sleep-tracker', title: 'Sleep Tracker', tagline: 'Hypoparathyroidism Sleep Monitor',
     icon: '😴', accent: '#6366f1', status: 'live', statusLabel: 'LIVE',
-    appUrl: 'https://p31-sleep-tracker.trimtab-signal.workers.dev',
+    appUrl: appUrlForWorkerSpa('sleep-tracker'),
     tech: ['Cloudflare Worker', 'Chart.js', 'LocalStorage', '7-Day Trend Analysis'],
     features: [
       'Log bedtime and wake time — duration computed automatically',
@@ -411,7 +413,7 @@ export const registry = [
   {
     id: 'budget-tracker', title: 'Budget Tracker', tagline: 'Zero-Based Budgeting',
     icon: '💰', accent: '#22c55e', status: 'live', statusLabel: 'LIVE',
-    appUrl: 'https://p31-budget-tracker.trimtab-signal.workers.dev',
+    appUrl: appUrlForWorkerSpa('budget-tracker'),
     tech: ['Cloudflare Worker', 'Chart.js', 'LocalStorage', 'SNAP-Friendly Categories'],
     features: [
       'Zero-based budgeting: every dollar assigned a job before the month starts',
@@ -964,20 +966,20 @@ export const registry = [
     id: 'echo', title: 'ECHO', tagline: 'Vocal Looper & Script Rehearsal',
     icon: '🗣️', accent: '#8b7cc9', status: 'live', statusLabel: 'LIVE',
     appUrl: 'echo.html',
-    tech: ['Web Audio API', 'MediaRecorder', 'Pitch-Shift', 'Offline-First'],
+    tech: ['Web Audio API', 'MediaRecorder', 'BufferSource playbackRate', 'Offline-First'],
     features: [
-      'Private loop station: record your voice, loop it, layer up to 4 tracks',
-      'Real-time pitch-shift: abstracts your voice so you can hear yourself without cringe',
-      'Situational script practice: write scripts, record read-throughs, loop for rehearsal',
-      'Offline-first: recordings stay local — nothing uploaded, nothing shared',
-      'Regulating echolalia mode: loop a calming phrase at variable rate and pitch'
+      'Private loop station: mic → WebM → decoded AudioBuffers, layered up to 6 loops',
+      'Pitch via playbackRate (varispeed): global semitone slider retunes loops in real time',
+      'Each loop loops via buffer source with independent gain — mix layers in mono',
+      'Offline-first: audio never leaves your device; no accounts, no uploads',
+      'Live input meter via AnalyserNode on the microphone graph'
     ],
     howTo: [
-      'Click Record and speak — the first loop captures automatically',
-      'Add pitch shift with the slider — shift up or down to reduce cringe factor',
-      'Switch to Script mode: paste a script, record yourself reading it, replay for practice'
+      'Grant mic permission on first Record — waveform uses live time-domain frames',
+      'Set pitch (semitones) before recording, or move the slider to retune all loops (playing loops restart)',
+      'Play All stacks every loop; Stop All clears buffer sources without deleting buffers'
     ],
-    techNotes: 'MediaRecorder captures the microphone stream. Pitch-shift uses a phase vocoder implemented in Web Audio API ScriptProcessorNode (legacy API — will migrate to AudioWorklet).',
+    techNotes: 'Recording: MediaRecorder( webm/opus ) → Blob → decodeAudioData. Playback: AudioBufferSourceNode with loop=true; pitch uses playbackRate = 2^(semitones/12) (varispeed: pitch and duration scale together — not a phase-vocoder). Graph uses AnalyserNode + GainNode only; no deprecated ScriptProcessorNode.',
     related: ['prism', 'resonance', 'signal']
   },
   {

@@ -1,5 +1,5 @@
 {
-  "generated": "2026-04-28T06:26:41.388Z",
+  "generated": "2026-04-28T06:59:07.334Z",
   "meta": {
     "schema": "p31.hub-landing/1.0.0",
     "registry": "scripts/hub/registry.mjs",
@@ -333,6 +333,45 @@
       "url": "/quantum-family-about.html"
     },
     {
+      "id": "mission-control",
+      "title": "Mission Control",
+      "status": "LIVE",
+      "desc": "Kids Token Economy",
+      "tags": [
+        "Pixel RPG Engine",
+        "Genesis Token Economy",
+        "Press Start 2P Font",
+        "Custom Toast"
+      ],
+      "url": "/mission-control-about.html"
+    },
+    {
+      "id": "node-zero",
+      "title": "Node Zero",
+      "status": "LIVE",
+      "desc": "Cryptographic Mesh Node",
+      "tags": [
+        "WebCrypto API",
+        "WebSocket",
+        "IndexedDB Vault",
+        "Ed25519-equivalent"
+      ],
+      "url": "/node-zero-about.html"
+    },
+    {
+      "id": "node-one",
+      "title": "Node One (The Totem)",
+      "status": "HARDWARE",
+      "desc": "Physical Haptic Anchor",
+      "tags": [
+        "Waveshare ESP32-S3",
+        "LVGL 8.4",
+        "ESP-IDF 5.5.x",
+        "NXP SE050"
+      ],
+      "url": "/node-one-about.html"
+    },
+    {
       "id": "observatory",
       "title": "OBSERVATORY",
       "status": "LIVE",
@@ -495,7 +534,7 @@
       "tags": [
         "Web Audio API",
         "MediaRecorder",
-        "Pitch-Shift",
+        "BufferSource playbackRate",
         "Offline-First"
       ],
       "url": "/echo-about.html"
@@ -709,26 +748,7 @@
       "url": "/tomography-about.html"
     }
   ],
-  "prototypes": [
-    {
-      "id": "node-zero",
-      "title": "Node Zero",
-      "desc": "Cryptographic Mesh Node",
-      "url": "/node-zero-about.html"
-    },
-    {
-      "id": "node-one",
-      "title": "Node One (The Totem)",
-      "desc": "Physical Haptic Anchor",
-      "url": "/node-one-about.html"
-    },
-    {
-      "id": "mission-control",
-      "title": "Mission Control",
-      "desc": "Kids Token Economy",
-      "url": "/mission-control-about.html"
-    }
-  ],
+  "prototypes": [],
   "research": [
     {
       "title": "Tetrahedral Mesh as Cybernetic Trauma Response",

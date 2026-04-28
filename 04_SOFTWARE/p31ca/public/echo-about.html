@@ -6,15 +6,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#0f1115">
 <title>ECHO — Vocal Looper &amp; Script Rehearsal | P31 Labs</title>
-<meta name="description" content="Private loop station: record your voice, loop it, layer up to 4 tracks">
+<meta name="description" content="Private loop station: mic → WebM → decoded AudioBuffers, layered up to 6 loops">
 <link rel="canonical" href="https://p31ca.org/echo-about.html">
 <meta property="og:type" content="website">
 <meta property="og:title" content="ECHO — Vocal Looper &amp; Script Rehearsal">
-<meta property="og:description" content="Private loop station: record your voice, loop it, layer up to 4 tracks">
+<meta property="og:description" content="Private loop station: mic → WebM → decoded AudioBuffers, layered up to 6 loops">
 <meta property="og:url" content="https://p31ca.org/echo-about.html">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="ECHO — Vocal Looper &amp; Script Rehearsal">
-<meta name="twitter:description" content="Private loop station: record your voice, loop it, layer up to 4 tracks">
+<meta name="twitter:description" content="Private loop station: mic → WebM → decoded AudioBuffers, layered up to 6 loops">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
@@ -192,7 +192,7 @@ p{font-size:15px;color:color-mix(in srgb,var(--p31-cloud) 88%,transparent);margi
         <div class="tagline">Vocal Looper & Script Rehearsal</div>
         <div class="hero-badges">
           <span class="badge badge--live">LIVE</span>
-          <span class="badge badge--muted-tech">Web Audio API</span><span class="badge badge--muted-tech">MediaRecorder</span><span class="badge badge--muted-tech">Pitch-Shift</span>
+          <span class="badge badge--muted-tech">Web Audio API</span><span class="badge badge--muted-tech">MediaRecorder</span><span class="badge badge--muted-tech">BufferSource playbackRate</span>
         </div>
       </div>
     </div>
@@ -212,8 +212,8 @@ p{font-size:15px;color:color-mix(in srgb,var(--p31-cloud) 88%,transparent);margi
         <h2 class="sec-kicker">What it is</h2>
         <span class="sec-rule" aria-hidden="true"></span>
       </div>
-      <p>Private loop station: record your voice, loop it, layer up to 4 tracks. Vocal Looper & Script Rehearsal is a core component of the P31 Labs sovereign cognitive infrastructure stack — built to run offline, deployed to the edge, and designed without dark patterns.</p>
-      <p>MediaRecorder captures the microphone stream. Pitch-shift uses a phase vocoder implemented in Web Audio API ScriptProcessorNode (legacy API — will migrate to AudioWorklet).</p>
+      <p>Private loop station: mic → WebM → decoded AudioBuffers, layered up to 6 loops. Vocal Looper & Script Rehearsal is a core component of the P31 Labs sovereign cognitive infrastructure stack — built to run offline, deployed to the edge, and designed without dark patterns.</p>
+      <p>Recording: MediaRecorder( webm/opus ) → Blob → decodeAudioData. Playback: AudioBufferSourceNode with loop=true; pitch uses playbackRate = 2^(semitones/12) (varispeed: pitch and duration scale together — not a phase-vocoder). Graph uses AnalyserNode + GainNode only; no deprecated ScriptProcessorNode.</p>
     </section>
 
     <section>
@@ -225,23 +225,23 @@ p{font-size:15px;color:color-mix(in srgb,var(--p31-cloud) 88%,transparent);margi
       <div class="mesh-list">
           <div class="mesh-item">
             <span class="mesh-node"></span>
-            <p class="mesh-item-body">Private loop station: record your voice, loop it, layer up to 4 tracks</p>
+            <p class="mesh-item-body">Private loop station: mic → WebM → decoded AudioBuffers, layered up to 6 loops</p>
           </div>
           <div class="mesh-item">
             <span class="mesh-node coral"></span>
-            <p class="mesh-item-body">Real-time pitch-shift: abstracts your voice so you can hear yourself without cringe</p>
+            <p class="mesh-item-body">Pitch via playbackRate (varispeed): global semitone slider retunes loops in real time</p>
           </div>
           <div class="mesh-item">
             <span class="mesh-node butter"></span>
-            <p class="mesh-item-body">Situational script practice: write scripts, record read-throughs, loop for rehearsal</p>
+            <p class="mesh-item-body">Each loop loops via buffer source with independent gain — mix layers in mono</p>
           </div>
           <div class="mesh-item">
             <span class="mesh-node"></span>
-            <p class="mesh-item-body">Offline-first: recordings stay local — nothing uploaded, nothing shared</p>
+            <p class="mesh-item-body">Offline-first: audio never leaves your device; no accounts, no uploads</p>
           </div>
           <div class="mesh-item">
             <span class="mesh-node"></span>
-            <p class="mesh-item-body">Regulating echolalia mode: loop a calming phrase at variable rate and pitch</p>
+            <p class="mesh-item-body">Live input meter via AnalyserNode on the microphone graph</p>
           </div>
       </div>
     </section>
@@ -252,9 +252,9 @@ p{font-size:15px;color:color-mix(in srgb,var(--p31-cloud) 88%,transparent);margi
         <h2 class="sec-kicker">How to use</h2>
         <span class="sec-rule" aria-hidden="true"></span>
       </div>
-          <div class="step"><span class="step-num">1</span><span>Click Record and speak — the first loop captures automatically</span></div>
-          <div class="step"><span class="step-num">2</span><span>Add pitch shift with the slider — shift up or down to reduce cringe factor</span></div>
-          <div class="step"><span class="step-num">3</span><span>Switch to Script mode: paste a script, record yourself reading it, replay for practice</span></div>
+          <div class="step"><span class="step-num">1</span><span>Grant mic permission on first Record — waveform uses live time-domain frames</span></div>
+          <div class="step"><span class="step-num">2</span><span>Set pitch (semitones) before recording, or move the slider to retune all loops (playing loops restart)</span></div>
+          <div class="step"><span class="step-num">3</span><span>Play All stacks every loop; Stop All clears buffer sources without deleting buffers</span></div>
     </section>
 
     <section>
@@ -263,7 +263,7 @@ p{font-size:15px;color:color-mix(in srgb,var(--p31-cloud) 88%,transparent);margi
         <h2 class="sec-kicker">Architecture</h2>
         <span class="sec-rule" aria-hidden="true"></span>
       </div>
-      <div class="tech-note">MediaRecorder captures the microphone stream. Pitch-shift uses a phase vocoder implemented in Web Audio API ScriptProcessorNode (legacy API — will migrate to AudioWorklet).</div>
+      <div class="tech-note">Recording: MediaRecorder( webm/opus ) → Blob → decodeAudioData. Playback: AudioBufferSourceNode with loop=true; pitch uses playbackRate = 2^(semitones/12) (varispeed: pitch and duration scale together — not a phase-vocoder). Graph uses AnalyserNode + GainNode only; no deprecated ScriptProcessorNode.</div>
     </section>
 
     <div class="callout-p31">
@@ -298,7 +298,7 @@ p{font-size:15px;color:color-mix(in srgb,var(--p31-cloud) 88%,transparent);margi
       <ul class="tech-stack">
               <li>Web Audio API</li>
               <li>MediaRecorder</li>
-              <li>Pitch-Shift</li>
+              <li>BufferSource playbackRate</li>
               <li>Offline-First</li>
       </ul>
     </div>

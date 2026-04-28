@@ -28,6 +28,7 @@ function cardStatus(r) {
   if (r.status === 'research' || sl === 'RESEARCH') return 'RESEARCH';
   if (sl === 'BUILDING' || r.status === 'building') return 'BUILDING';
   if (sl === 'TOOL' || r.status === 'tool') return 'TOOL';
+  if (sl === 'HARDWARE') return 'HARDWARE';
   return 'LIVE';
 }
 

@@ -51,3 +51,15 @@
 /education  /education/   301
 /learn  /education/   301
 /edu  /education/   301
+
+# @generated begin worker-spa-launch — do not edit by hand; npm run sync:worker-spa-launch
+/appointment-tracker  https://p31-appointment-tracker.trimtab-signal.workers.dev  302
+/love-ledger  https://p31-love-ledger.trimtab-signal.workers.dev  302
+/medical-tracker  https://p31-medical-tracker.trimtab-signal.workers.dev  302
+/somatic-anchor  https://p31-somatic-anchor.trimtab-signal.workers.dev  302
+/legal-evidence  https://p31-legal-evidence.trimtab-signal.workers.dev  302
+/contact-locker  https://p31-contact-locker.trimtab-signal.workers.dev  302
+/sleep-tracker  https://p31-sleep-tracker.trimtab-signal.workers.dev  302
+/budget-tracker  https://p31-budget-tracker.trimtab-signal.workers.dev  302
+/genesis-gate  https://genesis-gate.trimtab-signal.workers.dev  302
+# @generated end worker-spa-launch
