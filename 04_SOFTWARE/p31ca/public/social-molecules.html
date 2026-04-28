@@ -103,7 +103,6 @@
     onfocus="this.style.top='1rem'"
     onblur="this.style.top='-3rem'"
     >Skip to C.A.R.S. console</a>
-  >
   <!-- Boot veil -->
   <div id="sm-boot" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#05080c] px-6 text-center sm:px-8" role="dialog" aria-modal="true" aria-labelledby="sm-boot-title" aria-describedby="sm-boot-desc">
     <div class="sm-boot-rail relative max-w-lg rounded-2xl border border-white/[0.08] bg-p31-void/80 px-8 py-12 shadow-[0_0_80px_rgba(77,184,168,0.12)]">
@@ -326,6 +325,8 @@
     var fb = fallbackSel ? document.querySelector(fallbackSel) : null;
     if (fb && fb.focus) fb.focus();
   }
+
+  function loadPrefs() {
     try {
       var raw = localStorage.getItem(STORAGE);
       if (!raw) return;
@@ -337,6 +338,7 @@
       }
     } catch (e) {}
   }
+
   function savePrefs() {
     try {
       localStorage.setItem(STORAGE, JSON.stringify(prefs));

@@ -1,6 +1,6 @@
 {
   "schema": "p31.opsGlassProbes/1.0.0",
-  "ingested": "2026-04-28T20:45:20.993Z",
+  "ingested": "2026-04-28T20:56:51.801Z",
   "source": "p31-ecosystem.json",
   "probes": [
     {
@@ -56,14 +56,15 @@
     {
       "id": "command-center-health",
       "group": "command-center",
-      "note": "EPCP operator glass",
+      "note": "EPCP liveness. If Cloudflare Access wraps this path without bypass, fetch may follow login HTML — prefer Access bypass for GET /api/health (EDGE-SECURITY); operator-shift-public carries JSON shape check",
       "url": "https://command-center.trimtab-signal.workers.dev/api/health"
     },
     {
       "id": "operator-shift-public",
       "group": "command-center",
-      "note": "GET public operator shift (PII-free); POST requires Access (CWP-P31-UI Phase C)",
-      "url": "https://command-center.trimtab-signal.workers.dev/api/operator/shift"
+      "note": "GET public operator shift (PII-free); POST requires Access + operator role",
+      "url": "https://command-center.trimtab-signal.workers.dev/api/operator/shift",
+      "expectJsonKey": "public"
     },
     {
       "id": "p31ca-hub-root",
