@@ -1068,14 +1068,15 @@ let lastTime = performance.now();
 const timeScale = Math.min(navigator.hardwareConcurrency || 4, 8) / 4;
 
 function animate(timestamp = 0) {
+  let dt: number;
   // Handle hidden tabs: use setTimeout to reduce power consumption
   if (document.hidden) {
     animationFrameId = setTimeout(animate, FRAME_TIME);
-    const dt = FRAME_TIME / 1000;
+    dt = FRAME_TIME / 1000;
     time += dt * 0.1 * timeScale; // Slow-motion when hidden
   } else {
     animationFrameId = requestAnimationFrame(animate);
-    const dt = (timestamp - lastTime) / 1000 || 0.016;
+    dt = (timestamp - lastTime) / 1000 || 0.016;
     lastTime = timestamp;
     time += dt * timeScale;
   }

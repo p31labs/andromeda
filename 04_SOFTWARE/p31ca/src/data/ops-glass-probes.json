@@ -1,6 +1,6 @@
 {
   "schema": "p31.opsGlassProbes/1.0.0",
-  "ingested": "2026-04-27T23:20:50.135Z",
+  "ingested": "2026-04-28T01:24:40.191Z",
   "source": "p31-ecosystem.json",
   "probes": [
     {
@@ -78,6 +78,12 @@
       "url": "https://p31ca.org/passport"
     },
     {
+      "id": "p31ca-agents-short",
+      "group": "pages",
+      "note": "301 → fleet-agents.html; Worker · bot · Cortex roster + probes + paste-ready curl/wrangler",
+      "url": "https://p31ca.org/agents"
+    },
+    {
       "id": "p31ca-mesh-start-page",
       "group": "pages",
       "note": "PAR personal landing (CWP-P31-PAR); repo: soup.html → andromeda/.../p31ca/public/mesh-start.html",
@@ -106,6 +112,13 @@
       "group": "contracts",
       "note": "p31.publicSurface/1.0.0 — trust/legal index + machine endpoints",
       "url": "https://p31ca.org/p31-public-surface.json"
+    },
+    {
+      "id": "p31ca-fleet-entities-json",
+      "group": "contracts",
+      "note": "p31.fleetEntities/1.0.0 — merged roster consumed by fleet-agents.html; npm run build:fleet-entities in p31ca prebuild",
+      "url": "https://p31ca.org/p31-fleet-entities.json",
+      "expectJsonKey": "schema"
     },
     {
       "id": "p31ca-privacy-page",

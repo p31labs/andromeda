@@ -56,6 +56,7 @@
       </div>
       <div class="flex flex-wrap gap-2">
         <a href="/demos" class="px-3 py-1.5 rounded border border-white/15 text-xs font-mono uppercase tracking-wide hover:bg-white/5">All demos</a>
+        <a href="/agents" class="px-3 py-1.5 rounded border border-cyan-400/35 text-cyan-200 text-xs font-mono uppercase tracking-wide hover:bg-cyan-500/10">Fleet agents</a>
         <a href="/ops/" class="px-3 py-1.5 rounded border border-violet-400/40 text-violet-200 text-xs font-mono uppercase tracking-wide hover:bg-violet-500/10">Ops shell</a>
         <a href="/p31-live-fleet.json" class="px-3 py-1.5 rounded border border-teal-500/40 text-teal-200 text-xs font-mono uppercase tracking-wide hover:bg-teal-500/10">Raw JSON</a>
       </div>
@@ -216,7 +217,7 @@
       const ver = data.workersVerified || [];
       if (ver.length) {
         const vt = document.getElementById('verified-table');
-        let html = '<thead><tr><th>Worker</th><th>URL / paths</th><th>Deploy hint</th></tr></thead><tbody>';
+        let html = '<thead><tr><th>Worker</th><th>URL / paths</th><th>Deploy hint</th><th>Agent room</th></tr></thead><tbody>';
         for (const w of ver) {
           const urls = [];
           if (w.workersDev) urls.push(linkify(w.workersDev, 'workers.dev'));
@@ -229,7 +230,9 @@
             .concat(w.statusPath ? [w.statusPath] : [])
             .map(function (p) { return '<code>' + esc(p) + '</code>'; })
             .join(' ');
-          html += '<tr><td class="mono font-semibold">' + esc(w.id) + '</td><td>' + urls.join('<br>') + (paths ? '<div class="mt-1 text-[var(--p31-muted)]">' + paths + '</div>' : '') + '</td><td class="text-[var(--p31-muted)] mono text-xs">' + esc(w.deploy || '') + (w.note ? '<div class="mt-1">' + esc(w.note) + '</div>' : '') + '</td></tr>';
+          const slug = encodeURIComponent(w.id || '');
+          const room = '<a class="url" href="/fleet-agents.html#' + esc(w.id || '') + '">interactive</a> · <a class="url mono text-[10px]" href="/agent/' + slug + '/">/agent/…/</a>';
+          html += '<tr><td class="mono font-semibold">' + esc(w.id) + '</td><td>' + urls.join('<br>') + (paths ? '<div class="mt-1 text-[var(--p31-muted)]">' + paths + '</div>' : '') + '</td><td class="text-[var(--p31-muted)] mono text-xs">' + esc(w.deploy || '') + (w.note ? '<div class="mt-1">' + esc(w.note) + '</div>' : '') + '</td><td class="mono text-xs whitespace-nowrap">' + room + '</td></tr>';
         }
         html += '</tbody>';
         vt.innerHTML = html;

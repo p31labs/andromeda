@@ -21,7 +21,13 @@ const {
 ---
 
 <!doctype html>
-<html lang="en" data-i18n-lang="en" class="dark" data-p31-appearance="hub">
+<html
+  lang="en"
+  data-i18n-lang="en"
+  class="dark"
+  data-p31-appearance="hub"
+  style="color-scheme: dark;"
+>
   <head>
     <!-- CRITICAL: UNREGISTER OLD HEARING OPS SERVICE WORKER FIRST THING -->
     <script is:inline>
@@ -50,11 +56,11 @@ const {
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="stylesheet" href="/p31-style.css" />
 
-    <!-- Fonts: Inter + JetBrains Mono -->
+    <!-- Fonts: Atkinson (UI) + JetBrains Mono (data / code) — EDE canon -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:wght@400;500;700;800&display=swap"
       rel="stylesheet"
     />
 
@@ -67,10 +73,17 @@ const {
   <body
     class="bg-p31-void min-h-screen text-base leading-relaxed text-p31-cloud font-sans antialiased p31-root [padding-bottom:env(safe-area-inset-bottom,0px)]"
   >
-    <!-- Ambient grid background -->
+    <!-- EDE: line grid + soft teal radial (aligned with Super-Centaur starter) -->
     <div
-      class="fixed inset-0 pointer-events-none opacity-[0.03]"
-      style="background-image: radial-gradient(rgba(255,255,255,0.3) 1px, transparent 1px); background-size: 32px 32px;"
+      class="fixed inset-0 pointer-events-none z-[1]"
+      aria-hidden="true"
+      style="background-color: var(--p31-void); background-image: linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px); background-size: 40px 40px; background-position: center top;"
+    >
+    </div>
+    <div
+      class="fixed top-0 left-0 w-[800px] h-[800px] pointer-events-none z-[1]"
+      aria-hidden="true"
+      style="background: radial-gradient(circle at top left, rgba(77, 184, 168, 0.12), transparent 40%);"
     >
     </div>
 

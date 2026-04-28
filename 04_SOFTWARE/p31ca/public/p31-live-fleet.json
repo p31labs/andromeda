@@ -6,6 +6,7 @@
     "p31-constants.json",
     "p31-ecosystem.json",
     "andromeda/04_SOFTWARE/p31ca/public/p31-public-surface.json",
+    "andromeda/04_SOFTWARE/p31ca/public/p31-integrations.json",
     "andromeda/04_SOFTWARE/p31ca/security/worker-allowlist.json"
   ],
   "sites": {
@@ -18,6 +19,11 @@
       "url": "https://p31ca.org/ops/",
       "kind": "pages-route",
       "note": "Glass probes, density dial; CWP-P31-UI"
+    },
+    "integrationsBridge": {
+      "url": "https://p31ca.org/integrations",
+      "kind": "pages-route",
+      "note": "OSS catalog + endpoint slots; driven by p31-constants.json integrations → p31-integrations.json"
     },
     "orgMarketing": {
       "url": "https://phosphorus31.org/",
@@ -44,7 +50,8 @@
       { "path": "/passport", "note": "301 → passport generator" },
       { "path": "/build", "note": "Initial Build CWP" },
       { "path": "/family-pack", "note": "family sovereign pack" },
-      { "path": "/mesh-start.html", "note": "PAR landing" }
+      { "path": "/mesh-start.html", "note": "PAR landing" },
+      { "path": "/integrations", "note": "OSS integrations catalog + LAN endpoint slots" }
     ]
   },
   "meshAndPayments": {

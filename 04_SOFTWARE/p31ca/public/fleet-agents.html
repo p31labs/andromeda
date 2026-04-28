@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0f1115">
+  <title>Fleet agents &amp; Workers | P31 Labs</title>
+  <meta name="description" content="Interactive room for each Cloudflare Worker, Discord bot, and Cortex sub-agent. Data: p31.fleetEntities (see p31-alignment derivation live-fleet-to-fleet-entities-hub). Not the live-fleet map (/fleet) or fleet-portal URL roster.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/p31-style.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/p31-tailwind-extend.js"></script>
+  <script>
+    tailwind.config = { theme: { extend: { ...window.P31_TAILWIND_EXTEND } } };
+  </script>
+  <style>
+    body { font-family: var(--p31-font-sans); background: var(--p31-void); color: var(--p31-cloud); }
+    .mono { font-family: var(--p31-font-mono); font-size: var(--p31-text-xs); }
+    a.url { color: var(--p31-teal); word-break: break-all; }
+    a.url:hover { text-decoration: underline; }
+    #probe-out { word-break: break-word; overflow-wrap: anywhere; }
+    .pill { letter-spacing: 0.06em; }
+    .hit { outline: 2px solid rgba(77,184,168,0.5); outline-offset: 4px; }
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      z-index: 9999;
+      padding: 0.5rem 1rem;
+      background: #134e4a;
+      color: #fff;
+      border-radius: 0.375rem;
+      text-decoration: none;
+      font-size: 0.875rem;
+    }
+    .skip-link:focus { left: 0.5rem; top: 0.5rem; }
+
+    /** Glass box — operator terminal (vignette + live probe lines) */
+    .glass-terminal-wrap {
+      border-radius: var(--p31-radius-lg, 10px);
+      border: 1px solid color-mix(in srgb, var(--p31-teal, #4db8a8) 22%, transparent);
+      background: color-mix(in srgb, var(--p31-void, #0f1115) 94%, var(--p31-surface2, #1c2028));
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.06),
+        0 0 0 1px rgba(0, 0, 0, 0.45),
+        0 12px 36px -16px rgba(77, 184, 168, 0.18);
+      position: relative;
+      overflow: hidden;
+      min-height: 15rem;
+      display: flex;
+      flex-direction: column;
+    }
+    .glass-terminal-wrap::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 0, 0, 0.12) 2px,
+        rgba(0, 0, 0, 0.12) 3px
+      );
+      pointer-events: none;
+      opacity: 0.35;
+    }
+    .glass-terminal-wrap::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 90% 55% at 50% 0%, rgba(77, 184, 168, 0.07), transparent 55%);
+      pointer-events: none;
+    }
+    .glass-bar {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      padding: 0.45rem 0.65rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      font-family: var(--p31-font-mono);
+      font-size: 9px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: color-mix(in srgb, var(--p31-phosphorus, #3ba372) 92%, var(--p31-muted));
+    }
+    .glass-bar-btns button {
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(0, 0, 0, 0.35);
+      color: var(--p31-cyan, #4db8a8);
+      cursor: pointer;
+    }
+    .glass-bar-btns button:hover { border-color: rgba(77, 184, 168, 0.45); background: rgba(77, 184, 168, 0.09); }
+    .glass-bar-btns button[aria-pressed="true"] { color: var(--p31-butter, #cda852); border-color: rgba(205, 168, 82, 0.35); }
+    #glass-feed {
+      position: relative;
+      z-index: 1;
+      flex: 1;
+      margin: 0;
+      padding: 0.65rem 0.75rem 0.75rem;
+      font-family: var(--p31-font-mono);
+      font-size: 10.5px;
+      line-height: 1.55;
+      color: color-mix(in srgb, var(--p31-cloud) 88%, var(--p31-teal));
+      min-height: 11rem;
+      max-height: 20rem;
+      overflow-y: auto;
+    }
+    #glass-feed > div {
+      margin: 0.12em 0;
+      padding: 0;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    #glass-feed .g-dim { opacity: 0.55; }
+    #glass-feed .g-live { color: var(--p31-cyan, #4db8a8); }
+    #glass-feed .g-warn { color: color-mix(in srgb, var(--p31-butter) 85%, #fff); }
+    .glass-note {
+      position: relative;
+      z-index: 1;
+      padding: 0.35rem 0.75rem 0.55rem;
+      font-size: 9px;
+      line-height: 1.4;
+      color: var(--p31-muted);
+      border-top: 1px dashed rgba(255, 255, 255, 0.08);
+    }
+    .glass-note a { color: var(--p31-teal); }
+    /** Copyable commands */
+    .cmd-panel {
+      border-radius: var(--p31-radius-md, 8px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(0, 0, 0, 0.25);
+      padding: 1rem 1.1rem;
+    }
+    .cmd-row-label {
+      font-size: 9px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: color-mix(in srgb, var(--p31-phosphor) 92%, transparent);
+      margin-bottom: 0.25rem;
+    }
+    .cmd-row {
+      margin-bottom: 0.85rem;
+    }
+    .cmd-row:last-child { margin-bottom: 0; }
+    .cmd-field {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      align-items: stretch;
+    }
+    .cmd-field input[readonly],
+    .cmd-field textarea[readonly] {
+      flex: 1 1 12rem;
+      min-width: 0;
+      font-family: var(--p31-font-mono);
+      font-size: 10px;
+      line-height: 1.45;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(0, 0, 0, 0.45);
+      color: var(--p31-cloud);
+      padding: 0.45rem 0.55rem;
+    }
+    .cmd-copy {
+      flex: 0 0 auto;
+      font-family: var(--p31-font-mono);
+      font-size: 9px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 0.45rem 0.65rem;
+      border-radius: 6px;
+      border: 1px solid rgba(77, 184, 168, 0.45);
+      background: rgba(77, 184, 168, 0.12);
+      color: var(--p31-cyan, #4db8a8);
+      cursor: pointer;
+    }
+    .cmd-copy:hover { background: rgba(77, 184, 168, 0.2); }
+    .cmd-copy:focus-visible { outline: 2px solid var(--p31-cyan); outline-offset: 2px; }
+    .cmd-hint {
+      font-size: 10px;
+      color: var(--p31-muted);
+      margin-top: 0.2rem;
+      line-height: 1.45;
+    }
+    .instr-list {
+      font-size: 11px;
+      color: color-mix(in srgb, var(--p31-cloud) 90%, var(--p31-muted));
+      line-height: 1.5;
+      margin: 0.35rem 0 0;
+      padding-left: 1rem;
+      list-style: decimal;
+    }
+    .instr-list li { margin: 0.2rem 0; }
+    @media (prefers-reduced-motion: reduce) {
+      .glass-terminal-wrap::before { opacity: 0.2; animation: none !important; }
+    }
+  </style>
+</head>
+<body class="bg-void text-cloud min-h-screen font-sans antialiased" data-p31-appearance="hub">
+  <a href="#browse" class="skip-link">Skip to roster</a>
+
+  <header class="border-b border-white/[0.07] bg-surface/90 backdrop-blur-sm sticky top-0 z-40">
+    <div class="max-w-5xl mx-auto px-4 py-4 flex flex-wrap items-center justify-between gap-3">
+      <div>
+        <p class="mono text-[var(--p31-phosphor)] uppercase tracking-widest text-[10px] mb-1">Meshes · bots · Cortex</p>
+        <h1 class="text-xl md:text-2xl font-bold text-paper tracking-tight">Fleet agents room</h1>
+        <p class="text-sm text-[var(--p31-muted)] mt-1 max-w-2xl">One interactive profile per Worker, Discord bot, and Cortex sub-agent. Data from <code class="mono text-[var(--p31-teal)]">p31-fleet-entities.json</code> (<code>p31.fleetEntities/1.0.0</code>). Share:<span class="mono text-[var(--p31-teal)]">&nbsp;<span id="share-url">&nbsp;</span></span></p>
+      </div>
+      <div class="flex flex-wrap gap-2 items-center">
+        <input id="q" type="search" autocomplete="off" placeholder="Search by name or slug…" class="rounded border border-white/10 bg-black/40 px-3 py-1.5 text-xs text-[var(--p31-cloud)] w-48 lg:w-56 font-mono" />
+        <a href="/p31-fleet-entities.json" class="px-3 py-1.5 rounded border border-teal-500/40 text-teal-200 text-xs font-mono uppercase tracking-wide hover:bg-teal-500/10">JSON bundle</a>
+        <a href="/live-fleet-demo.html" class="px-3 py-1.5 rounded border border-white/15 text-xs font-mono uppercase tracking-wide hover:bg-white/5">Fleet map</a>
+        <a href="/demos" class="px-3 py-1.5 rounded border border-white/15 text-xs font-mono uppercase tracking-wide hover:bg-white/5">Demos</a>
+        <a href="/" class="px-3 py-1.5 rounded border border-violet-400/35 text-xs font-mono uppercase tracking-wide hover:bg-white/5">Hub</a>
+      </div>
+    </div>
+
+    <div class="border-t border-white/5 bg-black/25">
+      <div class="max-w-5xl mx-auto px-4 py-2 flex flex-wrap gap-2" id="filters" aria-label="Filter by kind"></div>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-4 py-6 grid lg:grid-cols-[minmax(0,18rem)_1fr] gap-8">
+    <section id="browse" aria-labelledby="browse-h" class="space-y-4">
+      <h2 id="browse-h" class="text-sm font-bold text-[var(--p31-muted)] uppercase tracking-[0.2em]">Roster</h2>
+      <div id="roster-status" class="mono text-[var(--p31-muted)] text-xs"></div>
+      <ul id="roster" class="space-y-1 max-h-[min(70vh,44rem)] overflow-y-auto pr-1 mono text-[11px]"></ul>
+    </section>
+
+    <section id="detail" class="rounded-xl border border-white/[0.08] bg-[var(--p31-surface)]/95 p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
+      <p id="empty-pick" class="text-[var(--p31-muted)] text-sm">Pick any row on the left, or paste a slug into the URL hash&nbsp;<span class="mono text-[var(--p31-teal)]">#your-slug</span>.</p>
+
+      <div id="detail-body" class="hidden space-y-5">
+        <div class="flex flex-col xl:flex-row gap-5 xl:items-start">
+          <div class="flex-1 min-w-0 space-y-4">
+            <div class="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <p id="d-kind" class="mono uppercase text-[10px] tracking-[0.2em] text-[var(--p31-phosphor)] mb-1"></p>
+                <h2 id="d-title" class="text-xl font-bold text-white"></h2>
+                <p id="d-sub" class="text-sm text-[var(--p31-muted)] mt-2 max-w-2xl"></p>
+              </div>
+              <span id="d-tier" class="mono text-[10px] px-2 py-1 rounded border border-white/10 text-[var(--p31-muted)]"></span>
+            </div>
+
+            <dl class="grid sm:grid-cols-2 gap-3 mono text-[11px] text-[var(--p31-muted)]">
+              <div class="sm:col-span-2"><dt class="text-[var(--p31-phosphor)] uppercase tracking-[0.12em]">Stable URL</dt><dd class="mt-1"><code id="d-share" class="text-[var(--p31-teal)]"></code></dd></div>
+              <div><dt class="text-[var(--p31-phosphor)] uppercase tracking-[0.12em]">workers.dev</dt><dd class="mt-1" id="d-wd"></dd></div>
+              <div><dt class="text-[var(--p31-phosphor)] uppercase tracking-[0.12em]">Prod / alternate</dt><dd class="mt-1" id="d-prod"></dd></div>
+              <div class="sm:col-span-2"><dt class="text-[var(--p31-phosphor)] uppercase tracking-[0.12em]">Hub surface</dt><dd class="mt-1" id="d-hub"></dd></div>
+              <div class="sm:col-span-2"><dt class="text-[var(--p31-phosphor)] uppercase tracking-[0.12em]">constants key</dt><dd class="mt-1" id="d-ck"></dd></div>
+            </dl>
+
+            <div>
+              <h3 class="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--p31-muted)] mb-1">Deploy hints</h3>
+              <ul id="d-deploy" class="mono text-[11px] text-[var(--p31-muted)] list-disc pl-4 space-y-1"></ul>
+            </div>
+          </div>
+
+          <aside class="glass-terminal-wrap w-full xl:w-[380px] xl:shrink-0" aria-label="Glass activity stream">
+            <div class="glass-bar">
+              <span>Glass · edge stream</span>
+              <div class="glass-bar-btns flex flex-wrap gap-1">
+                <button type="button" id="btn-glass-pause" aria-pressed="false" title="Pause vignette">Pause</button>
+                <a class="inline-flex items-center rounded border border-white/10 bg-black/35 px-2 py-0.5 mono text-[9px] uppercase tracking-[0.12em] text-[var(--p31-violet, #8b7cc9)] hover:bg-white/5" href="/ops/">Ops glass</a>
+              </div>
+            </div>
+            <div id="glass-feed" role="log" aria-live="polite" aria-relevant="additions"></div>
+            <p class="glass-note">Rhythm below is an <strong class="text-[var(--p31-cloud)]">illustrative</strong> vignette (coordination + org patterns at the edge)—not your Worker’s real tail. <strong class="text-[var(--p31-cyan)]">[live]</strong> lines append when you Probe or when the stream notes a real clock tick.</p>
+          </aside>
+        </div>
+
+        <div class="cmd-panel" id="cmd-panel-wrap" aria-label="Paste-ready commands">
+          <h3 class="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--p31-muted)] mb-2">Instructions · paste &amp; run</h3>
+          <ol class="instr-list mb-4">
+            <li><strong class="text-[var(--p31-cloud)]">Choose</strong> the entity on the left; this page syncs slug, probe URLs, and deploy hints.</li>
+            <li><strong class="text-[var(--p31-cloud)]">Adjust inputs</strong> below if you need a different <code class="mono text-[var(--p31-teal)]">wrangler.toml</code> name or extra path/query on the probe host.</li>
+            <li>Copy <strong class="text-[var(--p31-cloud)]">curl</strong> or <strong class="text-[var(--p31-cloud)]">wrangler tail</strong> into a terminal that can reach <code class="mono text-[var(--p31-teal)]">workers.dev</code> (or your zone).</li>
+            <li><strong class="text-[var(--p31-cloud)]">Probe</strong> uses the merged URL below; same-tab GET may hit CORS—browser output may differ from curl.</li>
+            <li><strong class="text-[var(--p31-cloud)]">Fleet glass</strong> for operator-wide probes: <a href="/ops/" class="url">hub /ops/</a> or repo <span class="mono">npm run ecosystem:glass</span> from P31 home after <span class="mono">npm install</span>.</li>
+          </ol>
+
+          <div class="grid sm:grid-cols-2 gap-3 mb-4">
+            <div>
+              <label for="wrangler-name-override" class="cmd-row-label">Input · Wrangler worker <code class="normal-case lowercase">name</code></label>
+              <input id="wrangler-name-override" type="text" autocomplete="off" spellcheck="false" placeholder="(optional) override — default = slug"
+                class="w-full font-mono text-[11px] rounded-lg border border-white/12 bg-black/35 px-2.5 py-2 text-[var(--p31-cloud)]" />
+              <p class="cmd-hint">Used only for generated <span class="mono">wrangler tail</span>; must match the Worker&apos;s Wrangler project <code class="mono">name</code> (Agents default to parent <span class="mono">p31-cortex</span>).</p>
+            </div>
+            <div>
+              <label for="probe-append" class="cmd-row-label">Input · Merge into probe URL</label>
+              <input id="probe-append" type="text" autocomplete="off" spellcheck="false" placeholder="/path · ?query=value · or append segment"
+                class="w-full font-mono text-[11px] rounded-lg border border-white/12 bg-black/35 px-2.5 py-2 text-[var(--p31-cloud)]" />
+              <p class="cmd-hint">Joined with the selected probe base: leading <span class="mono">/</span> replaces path; leading <span class="mono">?</span> merges query; bare segments append. If JSON lists no probe, paste a full <span class="mono">https://…</span> URL alone here.</p>
+            </div>
+          </div>
+
+          <div class="cmd-row">
+            <div class="cmd-row-label">Merged probe URL · preview</div>
+            <div class="cmd-field">
+              <input type="text" id="probe-url-preview" readonly class="mono" aria-live="polite" />
+              <button type="button" class="cmd-copy" data-copy="probe-url-preview">Copy</button>
+            </div>
+          </div>
+
+          <div class="cmd-row" id="row-cwd">
+            <div class="cmd-row-label">Terminal · repo path (hint from deploy line)</div>
+            <div class="cmd-field">
+              <textarea id="cmd-cwd" rows="2" readonly class="mono" spellcheck="false"></textarea>
+              <button type="button" class="cmd-copy" data-copy="cmd-cwd">Copy</button>
+            </div>
+          </div>
+
+          <div class="cmd-row" id="row-curl-head">
+            <div class="cmd-row-label">Shell · <code class="normal-case mono">curl</code> HEAD (TLS + headers)</div>
+            <div class="cmd-field">
+              <textarea id="cmd-curl-head" rows="3" readonly class="mono" spellcheck="false"></textarea>
+              <button type="button" class="cmd-copy" data-copy="cmd-curl-head">Copy</button>
+            </div>
+          </div>
+
+          <div class="cmd-row" id="row-curl-get">
+            <div class="cmd-row-label">Shell · <code class="normal-case mono">curl</code> GET body</div>
+            <div class="cmd-field">
+              <textarea id="cmd-curl-get" rows="2" readonly class="mono" spellcheck="false"></textarea>
+              <button type="button" class="cmd-copy" data-copy="cmd-curl-get">Copy</button>
+            </div>
+          </div>
+
+          <div class="cmd-row" id="row-wrangler-tail">
+            <div class="cmd-row-label">Cloudflare · Wrangler live tail</div>
+            <div class="cmd-field">
+              <textarea id="cmd-wrangler-tail" rows="3" readonly class="mono" spellcheck="false"></textarea>
+              <button type="button" class="cmd-copy" data-copy="cmd-wrangler-tail">Copy</button>
+            </div>
+            <p class="cmd-hint" id="cmd-wrangler-note"></p>
+          </div>
+
+          <div class="cmd-row">
+            <div class="cmd-row-label">Repo root (P31 home) · verification</div>
+            <div class="cmd-field">
+              <textarea id="cmd-npm-eco" rows="2" readonly class="mono" spellcheck="false">npm install
+npm run verify:ecosystem</textarea>
+              <button type="button" class="cmd-copy" data-copy="cmd-npm-eco">Copy</button>
+            </div>
+          </div>
+
+          <div class="cmd-row">
+            <div class="cmd-row-label">Repo root (P31 home) · glass probes table</div>
+            <div class="cmd-field">
+              <textarea id="cmd-npm-glass" rows="2" readonly class="mono" spellcheck="false">npm install
+npm run ecosystem:glass</textarea>
+              <button type="button" class="cmd-copy" data-copy="cmd-npm-glass">Copy</button>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--p31-muted)] mb-2">Probe (GET · same-tab)</h3>
+          <p class="text-xs text-[var(--p31-muted)] mb-2 max-w-xl">Browsers enforce CORS — edge health may succeed from <strong class="text-[var(--p31-cloud)]">node / wrangler tail</strong> while this tab reads <strong class="text-[var(--p31-cloud)]">blocked</strong>. Operators: <a href="/ops/" class="url">Glass shell</a> or repo <span class="mono">npm run ecosystem:glass</span>.</p>
+          <div class="flex flex-wrap gap-2 items-center">
+            <select id="probe-url" class="mono text-[11px] rounded border border-white/10 bg-black/35 max-w-[min(100%,32rem)] flex-1 min-w-[10rem] text-[var(--p31-cloud)] py-2 px-2"></select>
+            <button type="button" id="btn-probe" class="rounded border border-[var(--p31-teal)]/55 bg-teal-500/15 px-3 py-2 mono text-[11px] uppercase tracking-[0.1em] text-[var(--p31-teal)] hover:bg-teal-500/25">Probe</button>
+          </div>
+          <pre id="probe-out" class="mono text-[11px] mt-2 p-3 rounded border border-white/10 bg-black/55 text-[var(--p31-cloud)] min-h-[3rem] max-h-[12rem] overflow-auto whitespace-pre-wrap"></pre>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <footer class="max-w-5xl mx-auto px-4 py-10 border-t border-white/10 text-sm text-[var(--p31-muted)]">
+    <p>P31 Labs, Inc. — fleet reference only. Probes are best-effort; do not treat as sole production health signal.</p>
+    <p class="mt-2"><a href="/privacy" class="url">Privacy</a> · <a href="/contact" class="url">Contact</a> · <a href="/" class="url">Cockpit home</a></p>
+  </footer>
+
+  <script>
+    var ALL = [];
+    var FILTER = 'all';
+    var LAST = null;
+    var glassTimer = null;
+    var glassPaused = false;
+    var glassSeq = 0;
+
+    function bashQuote(str) {
+      var s = str == null ? '' : String(str);
+      if (!s) return "''";
+      if (!/[^a-zA-Z0-9,._+:@%/-]/.test(s)) return s;
+      return "'" + s.replace(/'/g, "'\\''") + "'";
+    }
+
+    function effectiveProbeUrl() {
+      var e = LAST;
+      var sel = document.getElementById('probe-url');
+      var base = sel && sel.value ? String(sel.value).trim() : '';
+      var extraEl = document.getElementById('probe-append');
+      var extra = extraEl && extraEl.value ? String(extraEl.value).trim() : '';
+
+      if (!base && e && e.workersDevUrl) {
+        base = String(e.workersDevUrl).replace(/\/$/, '');
+        var hp = e.healthPaths && e.healthPaths[0] ? String(e.healthPaths[0]) : '';
+        if (hp) base += hp.charAt(0) === '/' ? hp : '/' + hp;
+      }
+
+      if (!base && extra && /^https?:\/\//i.test(extra.trim())) {
+        try {
+          return new URL(extra.trim()).href;
+        } catch (err2) {
+          return '';
+        }
+      }
+
+      if (!base) return '';
+
+      if (!extra) return base;
+
+      try {
+        var u = new URL(base);
+        if (extra.charAt(0) === '?') {
+          var q = extra.slice(1);
+          u.search = u.search ? u.search + (q.charAt(0) === '&' ? '' : '&') + q : '?' + q;
+        } else if (extra.charAt(0) === '/') {
+          u.pathname = extra;
+        } else if (extra.charAt(0) === '&' && u.search) {
+          u.search += extra;
+        } else {
+          u.pathname = u.pathname.replace(/\/$/, '') + '/' + extra.replace(/^\//, '');
+        }
+        return u.href;
+      } catch (err) {
+        return base;
+      }
+    }
+
+    function cdFromEntity(e) {
+      if (!e) return '';
+      var hints = (e.deployHints || []).filter(Boolean);
+      if (!hints.length) return '# No 04_SOFTWARE path in deploy hints — open your local Andromeda clone.';
+      var joined = hints.join('\n');
+      var m = joined.match(/04_SOFTWARE\/[a-zA-Z0-9._/-]+/);
+      if (m) return 'cd ' + bashQuote('andromeda/' + m[0]);
+      return hints.map(function (h) {
+        return '# ' + h;
+      }).join('\n');
+    }
+
+    function wranglerTailName(e) {
+      var ov = document.getElementById('wrangler-name-override');
+      var o = ov && ov.value ? String(ov.value).trim() : '';
+      if (o) return o;
+      var k = e && (e.kind || 'worker');
+      if (k === 'agent') return 'p31-cortex';
+      return e && e.slug ? e.slug : 'worker-name';
+    }
+
+    function populateCommandPanel() {
+      var e = LAST;
+      if (!e) return;
+
+      var merged = effectiveProbeUrl();
+      var prev = document.getElementById('probe-url-preview');
+      if (prev) prev.value = merged || '—';
+
+      var cwd = document.getElementById('cmd-cwd');
+      if (cwd) cwd.value = cdFromEntity(e);
+
+      var qmerged = bashQuote(merged);
+      var head = document.getElementById('cmd-curl-head');
+      var get = document.getElementById('cmd-curl-get');
+      if (head && get) {
+        if (merged) {
+          head.value = 'curl -fsSIL ' + qmerged;
+          get.value = 'curl -fsSL ' + qmerged;
+        } else {
+          var na =
+            '# No probe URL — add probeUrls in p31-fleet-entities.json, or paste a host + path in “Merge into probe URL” if known.';
+          head.value = na;
+          get.value = na;
+        }
+      }
+
+      var tailTa = document.getElementById('cmd-wrangler-tail');
+      var note = document.getElementById('cmd-wrangler-note');
+      var rowTail = document.getElementById('row-wrangler-tail');
+      var k = e.kind || 'worker';
+      var wn = wranglerTailName(e);
+      var qwn = bashQuote(wn);
+
+      if (k === 'bot') {
+        if (tailTa) tailTa.value = '# Discord bot — use Railway (or host) logs, not wrangler tail.';
+        if (note) note.textContent = 'Not a Cloudflare Worker on this roster; Wrangler tail does not apply.';
+        if (rowTail) rowTail.style.opacity = '0.65';
+      } else {
+        if (rowTail) rowTail.style.opacity = '1';
+        if (tailTa) tailTa.value = 'npx wrangler tail ' + qwn;
+        if (note) {
+          note.textContent =
+            k === 'agent'
+              ? 'Cortex agents share the parent Worker — default tail name is p31-cortex (override if your wrangler.toml differs).'
+              : 'Must match the name in wrangler.toml (usually the fleet slug).';
+        }
+      }
+
+      var wo = document.getElementById('wrangler-name-override');
+      if (wo) {
+        wo.placeholder =
+          k === 'agent' ? 'Empty = p31-cortex' : k === 'bot' ? 'N/A for bots' : 'Empty = ' + (e.slug || 'slug');
+      }
+    }
+
+    function copyElementById(elId, btn) {
+      var el = document.getElementById(elId);
+      if (!el) return;
+      var raw = 'value' in el && el.value !== undefined ? el.value : el.textContent || '';
+      function flash() {
+        if (!btn) return;
+        var orig = btn.textContent;
+        btn.textContent = 'Copied';
+        setTimeout(function () {
+          btn.textContent = orig;
+        }, 1100);
+      }
+      function trySelectCopy() {
+        if (typeof el.select === 'function') {
+          el.focus();
+          el.select();
+          try {
+            document.execCommand('copy');
+            flash();
+          } catch (x) {}
+        }
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(raw).then(flash).catch(trySelectCopy);
+      } else {
+        trySelectCopy();
+      }
+    }
+
+    function esc(s) {
+      var d = document.createElement('div');
+      d.textContent = s == null ? '' : String(s);
+      return d.innerHTML;
+    }
+    function linkify(url, label) {
+      if (!url) return '—';
+      var u = esc(url);
+      var t = esc(label || url);
+      return '<a class="url" href="' + u + '" target="_blank" rel="noopener">' + t + '</a>';
+    }
+
+    function rnd(n) {
+      return Math.floor(Math.random() * n);
+    }
+
+    function padTsBracket() {
+      return '[' + new Date().toISOString().slice(11, 23) + ']';
+    }
+
+    function wsHost(url) {
+      try {
+        return url && /^https?:/i.test(url) ? new URL(url).hostname : '';
+      } catch (x) {
+        return '';
+      }
+    }
+
+    function hex6() {
+      return ('000000' + rnd(16777216).toString(16)).slice(-6);
+    }
+
+    function glassFeedEl() {
+      return document.getElementById('glass-feed');
+    }
+
+    function stopGlassFeed() {
+      if (glassTimer) {
+        clearInterval(glassTimer);
+        glassTimer = null;
+      }
+      glassSeq = 0;
+    }
+
+    function appendGlass(text, cls) {
+      var el = glassFeedEl();
+      if (!el) return;
+      var div = document.createElement('div');
+      div.textContent = text;
+      if (cls) div.className = cls;
+      el.appendChild(div);
+      while (el.children.length > 28) el.removeChild(el.firstChild);
+      el.scrollTop = el.scrollHeight;
+    }
+
+    function nextGlassLine(e) {
+      var ts = padTsBracket();
+      var host = wsHost(e.workersDevUrl);
+      var slug = String(e.slug || '');
+      var k = e.kind || 'worker';
+
+      if (k === 'bot') {
+        var botPool =
+          slug === 'discord-bot'
+            ? [
+                ts + ' discord:gateway READY · shard=0 · resume',
+                ts + ' command:defer /telemetry · autocomplete cache hit',
+                ts + ' kv:ledger reconcile · spoons=stably tracked',
+                ts + ' org:coordinate fanout_digest · qos=steady',
+              ]
+            : [
+                ts + ' bot:http_keepalive · TTL=' + (30 + rnd(40)) + 's',
+                ts + ' org:slack_pattern priority=ambient',
+              ];
+        return botPool[rnd(botPool.length)];
+      }
+
+      if (k === 'agent') {
+        var cortexPool = [
+          ts + ' cortex:' + slug + ':do_ping · sqlite_wal=steady',
+          ts + ' cortex:coordination · task_spec parse · backlog=' + rnd(3),
+          ts + ' cortex:organization topic=' + slug.replace(/^cortex-/, '') + ' · anchors=pinned',
+          ts + ' code:fence · deterministic_eval=no_network',
+          ts + ' subrequest:to_parent service=p31-cortex · ACK',
+          ts + ' memory:d1_roundtrip rows≤6 · journaling',
+        ];
+        return cortexPool[rnd(cortexPool.length)];
+      }
+
+      /** Cloudflare Workers — illustrative edge ops */
+      var wPool = [
+        ts + ' request:incoming · host=' + (host || 'edge.local') + ' · isolate path',
+        ts + ' isolate:reuse · ' + slug + ' · warm=yes',
+        ts + ' coordination:middleware bind · next=handler',
+        ts + ' org:topology note row=' + rnd(63000),
+        ts + ' code:fence deploy_sha #' + hex6() + ' · cold_start=false',
+        ts + ' subrequest:outbound orchestrator poke · jitter=' + rnd(18) + 'ms',
+        ts + ' glass:telemetry_emit · μs=' + (410 + rnd(820)),
+      ];
+      if (e.constantsKey && String(e.constantsKey).indexOf('passkey') !== -1) {
+        wPool.push(ts + ' webauthn:challenge bucket · TTL=short');
+      }
+      return wPool[rnd(wPool.length)];
+    }
+
+    function restartGlassFeed(e) {
+      stopGlassFeed();
+      glassPaused = false;
+      var btnGp = document.getElementById('btn-glass-pause');
+      if (btnGp) {
+        btnGp.textContent = 'Pause';
+        btnGp.setAttribute('aria-pressed', 'false');
+      }
+
+      var gel = glassFeedEl();
+      if (!gel) return;
+      gel.innerHTML = '';
+
+      appendGlass('━━━━ ' + e.slug + ' · glass stream ━━━━', 'g-warn');
+      appendGlass('[live] cockpit:navigator · onLine=' + navigator.onLine, 'g-live');
+      appendGlass(
+        '[live] viewport · ' +
+          Math.max(document.documentElement.clientWidth || 0, 320) +
+          '×' +
+          Math.max(window.innerHeight || 0, 200),
+        'g-dim'
+      );
+
+      var reduced =
+        typeof window.matchMedia === 'function' &&
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      appendGlass('[live] stream:class · illustrative edge rhythm (coordination · org · code fence)', 'g-dim');
+
+      if (reduced) {
+        appendGlass('[live] prefers-reduced-motion · ticks frozen', 'g-live');
+        appendGlass(nextGlassLine(e), 'g-dim');
+        appendGlass('[live] use Probe below + /ops glass for factual signal', 'g-live');
+        return;
+      }
+
+      glassSeq = 0;
+      glassTimer = setInterval(function () {
+        if (glassPaused || !LAST || LAST.slug !== e.slug) return;
+        glassSeq += 1;
+        if (glassSeq % 8 === 0) {
+          appendGlass('[live] cockpit:clock_iso ' + new Date().toISOString(), 'g-dim');
+        }
+        appendGlass(nextGlassLine(LAST), 'g-dim');
+      }, 2680 + rnd(640));
+    }
+
+    function parseHash() {
+      var h = (location.hash || '').replace(/^#/, '');
+      if (!h) return '';
+      var i = h.indexOf('=');
+      if (i === 0) return '';
+      if (h.indexOf('slug=') === 0) return decodeURIComponent(h.slice(5));
+      return decodeURIComponent(h);
+    }
+
+    function setHash(slug) {
+      if (!slug) {
+        history.replaceState(null, '', location.pathname + location.search);
+        return;
+      }
+      location.hash = encodeURIComponent(slug);
+    }
+
+    function renderFilters() {
+      var wrap = document.getElementById('filters');
+      var kinds = ['all', 'worker', 'bot', 'agent'];
+      var labels = { all: 'All', worker: 'Workers', bot: 'Bots', agent: 'Agents' };
+      wrap.innerHTML = kinds.map(function (k) {
+        var on = k === FILTER ? 'border-[var(--p31-teal)] bg-teal-500/15 text-[var(--p31-teal)]' : 'border-white/10 text-[var(--p31-muted)] hover:border-white/25';
+        return '<button type="button" class="filter btn pill rounded border px-2.5 py-1 text-[10px] font-mono uppercase tracking-[0.12em] ' + on + '" data-kind="' + esc(k) + '">' + esc(labels[k] || k) + '</button>';
+      }).join('');
+      wrap.querySelectorAll('.filter').forEach(function (b) {
+        b.addEventListener('click', function () {
+          FILTER = b.getAttribute('data-kind') || 'all';
+          renderFilters();
+          renderRoster();
+        });
+      });
+    }
+
+    function visibleList() {
+      if (FILTER === 'all') return ALL;
+      return ALL.filter(function (e) { return (e.kind || 'worker') === FILTER; });
+    }
+
+    function renderRoster() {
+      var ul = document.getElementById('roster');
+      var list = visibleList();
+      document.getElementById('roster-status').textContent = list.length + ' shown · ' + ALL.length + ' total';
+      ul.innerHTML = list.map(function (e) {
+        var k = e.kind || 'worker';
+        var active = LAST && LAST.slug === e.slug ? ' hit' : '';
+        return '<li><button type="button" class="w-full text-left rounded px-2 py-1.5 hover:bg-white/5 border border-transparent hover:border-white/10 roster-item' + active + '" data-slug="' + esc(e.slug) + '"><span class="text-[var(--p31-teal)]">' + esc(e.slug) + '</span> <span class="text-[var(--p31-muted)]">· ' + esc(k) + '</span><br><span class="text-[var(--p31-cloud)]">' + esc(e.title) + '</span></button></li>';
+      }).join('');
+      ul.querySelectorAll('.roster-item').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var s = btn.getAttribute('data-slug');
+          setHash(s);
+          selectBySlug(s);
+        });
+      });
+    }
+
+    function selectBySlug(slug) {
+      var e = ALL.find(function (x) {
+        return x.slug === slug;
+      });
+      if (!e) {
+        stopGlassFeed();
+        document.getElementById('empty-pick').classList.remove('hidden');
+        document.getElementById('detail-body').classList.add('hidden');
+        LAST = null;
+        renderRoster();
+        return;
+      }
+      LAST = e;
+      document.getElementById('empty-pick').classList.add('hidden');
+      document.getElementById('detail-body').classList.remove('hidden');
+      document.getElementById('d-kind').textContent = (e.kind || 'worker');
+      document.getElementById('d-title').textContent = e.title;
+      document.getElementById('d-sub').textContent = e.subtitle || '';
+      document.getElementById('d-tier').textContent = e.tier || '—';
+      var share = location.origin + '/agent/' + e.slug + '/';
+      document.getElementById('d-share').textContent = share;
+      document.getElementById('share-url').textContent = location.origin + '/fleet-agents.html#' + encodeURIComponent(e.slug);
+      document.getElementById('d-wd').innerHTML = e.workersDevUrl ? linkify(e.workersDevUrl) : '—';
+      document.getElementById('d-prod').innerHTML = e.prodUrl ? linkify(e.prodUrl) : '—';
+      document.getElementById('d-hub').innerHTML = e.hubPagePath ? linkify(location.origin + e.hubPagePath, e.hubPagePath) : '—';
+      document.getElementById('d-ck').textContent = e.constantsKey || '—';
+      var dep = document.getElementById('d-deploy');
+      var hints = (e.deployHints || []).filter(Boolean);
+      dep.innerHTML = hints.length ? hints.map(function (h) { return '<li>' + esc(h) + '</li>'; }).join('') : '<li class="list-none pl-0 text-[var(--p31-muted)]">—</li>';
+      var sel = document.getElementById('probe-url');
+      var probes = (e.probeUrls || []).filter(Boolean);
+      if (!probes.length) {
+        sel.innerHTML = '<option value="">No GET probe listed for this profile</option>';
+        sel.disabled = true;
+      } else {
+        sel.disabled = false;
+        sel.innerHTML = probes.map(function (u) { return '<option value="' + esc(u) + '">' + esc(u) + '</option>'; }).join('');
+      }
+      var woClear = document.getElementById('wrangler-name-override');
+      var paClear = document.getElementById('probe-append');
+      if (woClear) woClear.value = '';
+      if (paClear) paClear.value = '';
+      document.getElementById('probe-out').textContent = '';
+      renderRoster();
+      restartGlassFeed(e);
+      populateCommandPanel();
+    }
+
+    document.getElementById('btn-probe').addEventListener('click', async function () {
+      var u = effectiveProbeUrl();
+      var out = document.getElementById('probe-out');
+      if (!u) {
+        out.textContent = 'No URL — pick a roster entry with probes, paste a lone https URL in Merge, or add probeUrls / workers.dev in fleet JSON.';
+        return;
+      }
+      appendGlass('[live] probe:GET start · ' + u, 'g-live');
+      out.textContent = 'GET ' + u + ' …';
+      try {
+        var r = await fetch(u, { method: 'GET', cache: 'no-store' });
+        var txt = await r.text();
+        var clip = txt.length > 4000 ? txt.slice(0, 4000) + '\n…(truncated)' : txt;
+        out.textContent = r.status + ' ' + r.statusText + '\n' + clip;
+        appendGlass('[live] probe:resolved · HTTP ' + r.status + ' ' + r.statusText + ' · chars=' + txt.length, 'g-live');
+      } catch (err) {
+        var msg = err && err.message ? err.message : String(err);
+        out.textContent = 'Error: ' + msg;
+        appendGlass('[live] probe:failed · ' + msg, 'g-warn');
+      }
+    });
+
+    document.getElementById('q').addEventListener('input', function (ev) {
+      var q = (ev.target.value || '').trim().toLowerCase();
+      if (!q) {
+        renderRoster();
+        return;
+      }
+      var ul = document.getElementById('roster');
+      var list = visibleList().filter(function (e) {
+        return (e.slug + ' ' + (e.title || '')).toLowerCase().indexOf(q) !== -1;
+      });
+      document.getElementById('roster-status').textContent = list.length + ' match · ' + ALL.length + ' total';
+      ul.innerHTML = list.map(function (e) {
+        var k = e.kind || 'worker';
+        return '<li><button type="button" class="w-full text-left rounded px-2 py-1.5 hover:bg-white/5 border border-transparent hover:border-white/10 roster-item" data-slug="' + esc(e.slug) + '"><span class="text-[var(--p31-teal)]">' + esc(e.slug) + '</span> <span class="text-[var(--p31-muted)]">· ' + esc(k) + '</span><br><span class="text-[var(--p31-cloud)]">' + esc(e.title) + '</span></button></li>';
+      }).join('');
+      ul.querySelectorAll('.roster-item').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var s = btn.getAttribute('data-slug');
+          setHash(s);
+          selectBySlug(s);
+        });
+      });
+    });
+
+    window.addEventListener('hashchange', function () {
+      var s = parseHash();
+      if (s) selectBySlug(s);
+    });
+
+    async function boot() {
+      var st = document.getElementById('roster-status');
+      try {
+        var r = await fetch('/p31-fleet-entities.json', { cache: 'no-store' });
+        if (!r.ok) throw new Error(r.status + ' ' + r.statusText);
+        var data = await r.json();
+        if (data.schema !== 'p31.fleetEntities/1.0.0') console.warn('Unexpected schema', data.schema);
+        ALL = data.entities || [];
+      } catch (e) {
+        st.innerHTML = '<span class="text-red-400">Failed to load: ' + esc(e.message || e) + '</span>';
+        return;
+      }
+      st.textContent = ALL.length + ' entities';
+      renderFilters();
+      renderRoster();
+      var h = parseHash();
+      if (h) selectBySlug(h);
+      document.getElementById('btn-glass-pause').addEventListener('click', function () {
+        glassPaused = !glassPaused;
+        this.textContent = glassPaused ? 'Resume' : 'Pause';
+        this.setAttribute('aria-pressed', glassPaused ? 'true' : 'false');
+      });
+
+      var probeSel = document.getElementById('probe-url');
+      var paIn = document.getElementById('probe-append');
+      var woIn = document.getElementById('wrangler-name-override');
+      if (probeSel) probeSel.addEventListener('change', populateCommandPanel);
+      if (paIn) paIn.addEventListener('input', populateCommandPanel);
+      if (woIn) woIn.addEventListener('input', populateCommandPanel);
+
+      var cmdWrap = document.getElementById('cmd-panel-wrap');
+      if (cmdWrap) {
+        cmdWrap.addEventListener('click', function (ev) {
+          var tgt = ev.target;
+          if (!tgt || !tgt.closest) return;
+          var btn = tgt.closest('.cmd-copy');
+          if (!btn) return;
+          var id = btn.getAttribute('data-copy');
+          if (id) copyElementById(id, btn);
+        });
+      }
+    }
+    boot();
+  </script>
+</body>
+</html>
