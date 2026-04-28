@@ -18,7 +18,7 @@
       "vars": ["RP_NAME", "RP_ID"],
       "corsPolicy": "wildcard — intentional, protected by WebAuthn rpId binding",
       "authScheme": "WebAuthn FIDO2 (challenge/response)",
-      "notes": "WebAuthn passkey backend. ECDSA/RSA verification via SubtleCrypto. CORS is `*` but WebAuthn is secure regardless: authData.rpIdHash must equal SHA-256(RP_ID='p31ca.org'), and clientDataJSON.origin is verified. An attacker relaying from a different origin would fail rpId hash check. P2 improvement: restrict CORS to p31ca.org and p31ca.pages.dev explicitly."
+      "notes": "WebAuthn (POST /api/passkey/*); education GET; Node Zero (POST /api/hardware/challenge|pair|telemetry). Same D1/KV. ECDSA/RSA for WebAuthn. Hardware pairing is opaque subject_id + Ed25519 pubkey—no Passkey on device. Education/hardware fetch use high-entropy ids; static pages gate UX. P2: narrow CORS for non-WebAuthn paths."
     },
     {
       "name": "k4-personal",

@@ -1,9 +1,9 @@
 {
   "schema": "p31.labsEducationCurriculum/0.2.0",
-  "updated": "2026-04-26",
+  "updated": "2026-04-27",
   "title": "P31 Labs education — machine index",
-  "narrative": "Static-first curriculum (E0–E2). No accounts. E3 portal is a placeholder. Normative product plan: P31 home docs/PLAN-P31-LABS-EDUCATION-SITE.md",
-  "phases": { "E0": true, "E1": true, "E2": true, "E3": false, "E4": false },
+  "narrative": "Static curriculum (E0–E2) plus gated E3+ portal at education/portal/ — Workers GET /api/education/progress/:subject_id (opaque p31_subject_id, D1). Normative plan: P31 home docs/PLAN-P31-LABS-EDUCATION-SITE.md",
+  "phases": { "E0": true, "E1": true, "E2": true, "E3": true, "E4": false },
   "tracks": [
     {
       "id": "edge-mesh",

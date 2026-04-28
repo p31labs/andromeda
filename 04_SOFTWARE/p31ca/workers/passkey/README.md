@@ -113,6 +113,43 @@ Returns: `{ "ok": true, "userId": "<base64url>" }` or `{ "error": "..." }`.
 
 ---
 
+### `GET /api/education/progress/:subject_id`
+
+**Opaque identifiers only.** `subject_id` must match **`p31_subject_id`** in browser storage — `u_<32 hex chars>` (passkey-derived) or **`guest_<20 hex>`** (`p31.subjectIdDerivation/0.1.0`). No emails, display names, or other PII.
+
+Returns **`p31.educationProgress/0.1.0`** JSON. On first request for a given id, the Worker **inserts** a default row in D1 (`education_progress` table) so progress is stable per subject.
+
+Production route: zone pattern **`p31ca.org/api/education/*`** → same Worker as passkey (`wrangler.toml`). Static hub page: `public/education/portal/index.html`.
+
+Example:
+
+```bash
+# Replace SUBJECT_ID with a real opaque id from browser localStorage p31_subject_id (starts with u_ or guest_).
+curl -s "https://p31ca.org/api/education/progress/u_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" | jq .
+```
+
+---
+
+### Node Zero (Phase 4) — `/api/hardware/*`
+
+Contract: **`docs/NODE-ZERO-FIRMWARE-CONTRACT.md`**. HTTPS POST only — firmware never holds operator Passkeys; device uses **Ed25519** pubkey + ephemeral six-digit KV challenge.
+
+#### `POST /api/hardware/challenge`
+
+Body **`p31.nodeZero.pairChallenge/0.1.0`** — stores `hw_pair:{code}` in KV (~10 min), returns **`pairing_code`**.
+
+#### `POST /api/hardware/pair`
+
+Body **`p31.nodeZero.pairApprove/0.1.0`** — operator binds **`subject_id`** + pubkey to **`hardware_pairings`** (D1), deletes KV.
+
+#### `POST /api/hardware/telemetry`
+
+Body **`p31.nodeZero.telemetry/0.1.0`** — shape-validated; v0 **`202 Accepted`** stub (no persistence).
+
+Production route: **`p31ca.org/api/hardware/*`** → `p31-passkey`. Operator UI: **`public/connect.html`** (hardware strip).
+
+---
+
 ## D1 schema
 
 ```sql
@@ -130,6 +167,23 @@ CREATE TABLE IF NOT EXISTS credentials (
 );
 
 CREATE INDEX IF NOT EXISTS idx_credentials_user ON credentials(user_id);
+
+CREATE TABLE IF NOT EXISTS education_progress (
+  subject_id    TEXT PRIMARY KEY,
+  payload_json  TEXT NOT NULL,
+  updated_at    INTEGER NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS hardware_pairings (
+  id                      TEXT PRIMARY KEY,
+  subject_id              TEXT NOT NULL,
+  ed25519_pubkey_b64url   TEXT NOT NULL,
+  device_label            TEXT,
+  created_at              INTEGER NOT NULL,
+  revoked_at              INTEGER
+);
+
+CREATE INDEX IF NOT EXISTS idx_hardware_pair_subject ON hardware_pairings(subject_id);
 ```
 
 ---

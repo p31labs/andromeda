@@ -38,6 +38,14 @@ database_id   = "9d284b07-50c9-434b-ae5e-975842bdb992"
 pattern   = "p31ca.org/api/passkey/*"
 zone_name = "p31ca.org"
 
+[[env.production.routes]]
+pattern   = "p31ca.org/api/education/*"
+zone_name = "p31ca.org"
+
+[[env.production.routes]]
+pattern   = "p31ca.org/api/hardware/*"
+zone_name = "p31ca.org"
+
 # ── Preview ──────────────────────────────────────────────────────────────────
 [env.preview.vars]
 RP_NAME = "P31 Labs"
@@ -51,6 +59,9 @@ id      = "d9bf5ef388164afab701270f4d031590"
 binding       = "DB"
 database_name = "p31-passkey-db"
 database_id   = "9d284b07-50c9-434b-ae5e-975842bdb992"
+
+# Preview / workers.dev: Worker fetch handler still matches /api/education/* at the script URL.
+# Production zone routes above also mount education progress on p31-passkey.
 
 [[rules]]
 type  = "ESModule"

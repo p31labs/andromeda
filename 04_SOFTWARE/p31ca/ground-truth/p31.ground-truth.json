@@ -262,6 +262,18 @@
       "label": "WebAuthn passkey API — register + auth (Worker)",
       "note": "Not a static file. Production: zone route pattern p31ca.org/api/passkey/* → Worker p31-passkey (wrangler.toml env.production.routes). Endpoints: POST register-begin, register-finish, auth-begin, auth-finish. Hub static pages use same-origin relative paths (see mesh.passkeyApiBasePath in p31-constants.json). README: workers/passkey/README.md."
     },
+    "educationProgressApi": {
+      "path": "/api/education/*",
+      "implementation": "workers/passkey/src/index.ts",
+      "label": "Education E3+ progress API — opaque subject key (Worker + D1)",
+      "note": "GET /api/education/progress/:subject_id returns p31.educationProgress/0.1.0; first-touch inserts D1 education_progress row. Same Worker mount as passkey — production route p31ca.org/api/education/*. Static portal: public/education/portal/index.html."
+    },
+    "nodeZeroHardwareApi": {
+      "path": "/api/hardware/*",
+      "implementation": "workers/passkey/src/node-zero.ts (+ src/index.ts router)",
+      "label": "Node Zero Phase 4 — hardware pairing challenge, operator bind, telemetry v0 ack",
+      "note": "POST /api/hardware/challenge (KV hw_pair:+6-digit code), POST /api/hardware/pair (D1 hardware_pairings), POST /api/hardware/telemetry (shape-validated stub). HTTPS only — no MQTT or cloud IoT. Contract docs/NODE-ZERO-FIRMWARE-CONTRACT.md — production zone route p31ca.org/api/hardware/* → p31-passkey."
+    },
     "latticeOracle": {
       "path": "/magic-crystal.html",
       "implementation": "public/magic-crystal.html",
@@ -328,8 +340,8 @@
     "p31LabsEducation": {
       "path": "/education/",
       "implementation": "public/education/index.html",
-      "label": "P31 Labs Education — static curriculum (E0–E2)",
-      "note": "Discover, tracks, modules, labs; schemas p31.labsEducation/0.2.0, p31.labsEducationCatalog/0.2.0, p31.labsEducationCurriculum/0.2.0. verify:education in prebuild. E3 portal placeholder only. Short /learn, /edu, /education in _redirects."
+      "label": "P31 Labs Education — curriculum E0–E2 + gated E3+ portal",
+      "note": "Discover, tracks, modules, labs; schemas p31.labsEducation/0.2.0, p31.labsEducationCatalog/0.2.0, p31.labsEducationCurriculum/0.2.0. verify:education in prebuild. E3+ stateful portal: public/education/portal/index.html (requires p31_subject_id; progress GET /api/education/progress/:id Worker+D1). Short /learn, /edu, /education in _redirects."
     }
   },
   "edgeRedirects": [

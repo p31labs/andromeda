@@ -6,12 +6,24 @@
  * POST /api/passkey/auth-begin       → PublicKeyCredentialRequestOptions
  * POST /api/passkey/auth-finish      → { ok: true, userId } | { error }
  *
+ * GET  /api/education/progress/:subject_id → p31.educationProgress/0.1.0 (D1-backed; same Worker + DB mount)
+ *
+ * POST /api/hardware/challenge      → Node Zero pairing challenge (KV) — firmware
+ * POST /api/hardware/pair         → operator approves pubkey → D1 hardware_pairings
+ * POST /api/hardware/telemetry    → heartbeat (validated; v0 no store)
+ *
  * v2 improvements:
  *   - Minimal CBOR decoder (no WASM dependency)
  *   - authData parsed: rpIdHash verified, COSE key extracted
  *   - COSE key stored as JWK JSON (not raw attestationObject)
  *   - auth-finish: full SubtleCrypto signature verification (ES256 + RS256)
  */
+
+import {
+  postHardwareChallenge,
+  postHardwarePair,
+  postHardwareTelemetry,
+} from './node-zero.ts';
 
 export interface Env {
   CHALLENGES: KVNamespace;
@@ -24,7 +36,7 @@ export interface Env {
 
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin':  '*',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
   'Access-Control-Allow-Headers': 'Content-Type',
 };
 
@@ -429,6 +441,81 @@ async function authFinish(env: Env, body: Record<string, unknown>): Promise<Resp
   return json({ ok: true, userId: cred.user_id });
 }
 
+// ── EDUCATION E3+ PROGRESS (D1) ────────────────────────────────────────────────
+
+interface EducationProgressBody {
+  schema: 'p31.educationProgress/0.1.0';
+  subject_id: string;
+  e3_track: ReadonlyArray<{
+    id: string;
+    title: string;
+    lane: string;
+    status: 'not_started' | 'in_progress' | 'completed';
+    pct: number;
+  }>;
+  updated_at_ms: number;
+}
+
+const E3_TRACK_DEFAULT = [
+  { id: 'e3-core-mesh', title: 'Core mesh concepts', lane: 'Conceptual', status: 'not_started' as const, pct: 0 },
+  { id: 'e3-personal-k4', title: 'Personal K₄ literacy', lane: 'Operational', status: 'not_started' as const, pct: 0 },
+  { id: 'e3-operator-runbooks', title: 'Operator runbooks', lane: 'Procedural', status: 'not_started' as const, pct: 0 },
+];
+
+function educationProgressEnvelope(subject_id: string): EducationProgressBody {
+  const now = Date.now();
+  return {
+    schema:           'p31.educationProgress/0.1.0',
+    subject_id,
+    e3_track:         E3_TRACK_DEFAULT.map(row => ({
+      ...row,
+      pct: Math.max(0, Math.min(100, row.pct)),
+    })),
+    updated_at_ms:    now,
+  };
+}
+
+function isValidOpaqueSubjectId(s: string): boolean {
+  if (s.length > 120) return false;
+  return (
+    /^u_[a-f0-9]{32}$/.test(s) ||
+    /^guest_[a-f0-9]{20}$/.test(s)
+  );
+}
+
+async function fetchEducationProgress(env: Env, subjectId: string): Promise<Response> {
+  if (!isValidOpaqueSubjectId(subjectId)) {
+    return json({ error: 'invalid subject_id' }, 400);
+  }
+
+  const row = await env.DB.prepare(
+    'SELECT payload_json, updated_at FROM education_progress WHERE subject_id = ?'
+  ).bind(subjectId).first<{ payload_json: string; updated_at: number }>();
+
+  if (!row) {
+    const fresh = educationProgressEnvelope(subjectId);
+    const payload = JSON.stringify(fresh);
+    await env.DB.prepare(
+      `INSERT INTO education_progress (subject_id, payload_json, updated_at) VALUES (?, ?, ?)`
+    ).bind(subjectId, payload, fresh.updated_at_ms).run();
+
+    return new Response(payload, {
+      status: 200,
+      headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },
+    });
+  }
+
+  return new Response(row.payload_json, {
+    status: 200,
+    headers: {
+      'Content-Type':                     'application/json',
+      ...CORS_HEADERS,
+      'Cache-Control':                  'private, max-age=0, must-revalidate',
+      'Last-Modified':                  new Date(row.updated_at).toUTCString(),
+    },
+  });
+}
+
 // ── ROUTER ───────────────────────────────────────────────────────────────────
 
 export default {
@@ -439,6 +526,15 @@ export default {
 
     const url = new URL(request.url);
 
+    const eduMatch = /^\/api\/education\/progress\/([^/?#]+)$/.exec(url.pathname);
+    if (eduMatch && request.method === 'GET') {
+      try {
+        return await fetchEducationProgress(env, decodeURIComponent(eduMatch[1]));
+      } catch (e) {
+        return json({ error: String((e as Error).message || e) }, 500);
+      }
+    }
+
     if (request.method !== 'POST') return json({ error: 'Method not allowed' }, 405);
 
     let body: Record<string, unknown> = {};
@@ -447,6 +543,23 @@ export default {
         body = await request.json() as Record<string, unknown>;
       }
     } catch { /* empty body ok for begin endpoints */ }
+
+    if (url.pathname.startsWith('/api/hardware/')) {
+      try {
+        switch (url.pathname) {
+          case '/api/hardware/challenge':
+            return await postHardwareChallenge(env, body);
+          case '/api/hardware/pair':
+            return await postHardwarePair(env, body);
+          case '/api/hardware/telemetry':
+            return await postHardwareTelemetry(body);
+          default:
+            return json({ error: 'Not found' }, 404);
+        }
+      } catch (e) {
+        return json({ error: String((e as Error).message || e) }, 500);
+      }
+    }
 
     switch (url.pathname) {
       case '/api/passkey/register-begin':  return registerBegin(env);

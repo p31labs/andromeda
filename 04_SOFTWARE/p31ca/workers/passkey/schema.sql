@@ -15,3 +15,24 @@ CREATE TABLE IF NOT EXISTS credentials (
 );
 
 CREATE INDEX IF NOT EXISTS idx_credentials_user ON credentials(user_id);
+
+-- Education E3+ portal — progress keyed by opaque p31_subject_id (u_* or guest_*)
+-- Apply: wrangler d1 execute p31-passkey-db --file=schema.sql [--env production]
+
+CREATE TABLE IF NOT EXISTS education_progress (
+  subject_id    TEXT PRIMARY KEY,   -- from localStorage p31_subject_id — no PII
+  payload_json  TEXT NOT NULL,      -- p31.educationProgress/0.1.0 JSON
+  updated_at    INTEGER NOT NULL    -- Unix ms
+);
+
+-- Node Zero Phase 4 — paired hardware keys (never stores operator Passkey material)
+CREATE TABLE IF NOT EXISTS hardware_pairings (
+  id                     TEXT PRIMARY KEY,
+  subject_id             TEXT NOT NULL,
+  ed25519_pubkey_b64url  TEXT NOT NULL,
+  device_label           TEXT,
+  created_at             INTEGER NOT NULL,
+  revoked_at             INTEGER
+);
+
+CREATE INDEX IF NOT EXISTS idx_hardware_pair_subject ON hardware_pairings(subject_id);

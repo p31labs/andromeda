@@ -30,7 +30,7 @@
         <h1 class="text-2xl md:text-3xl font-bold text-paper tracking-tight">Learn — resources &amp; labs</h1>
         <p class="mt-2 text-sm text-butter/80 font-mono">E2 static series · <a class="text-teal/90 underline decoration-teal/30" href="catalog.json">catalog.json</a> + <a class="text-teal/90 underline decoration-teal/30" href="curriculum.json">curriculum.json</a></p>
         <p class="mt-3 text-cloud/80 max-w-prose leading-relaxed">
-          <strong class="text-paper/95">Discover → tracks → modules → labs</strong> (public, no accounts on E0–E2). Gated <strong>portal (E3)</strong> is a placeholder only. Same
+          <strong class="text-paper/95">Discover → tracks → modules → labs</strong> (public, no accounts on E0–E2). Stateful <strong>portal (E3+)</strong> uses <span class="font-mono text-cloud/65">localStorage.p31_subject_id</span> and Workers+D1 progress — handshake at <a class="text-teal font-medium hover:text-teal/90 underline decoration-teal/30" href="/connect.html">/connect.html</a> or <a class="text-teal font-medium hover:text-teal/90 underline decoration-teal/30" href="/mesh">/mesh</a>. Same
           <a class="text-teal font-medium hover:text-teal/90 underline decoration-teal/30" href="/security-disclosure.html">security bar</a> as the rest of the hub; MAP / donate flows stay on their existing surfaces.
         </p>
         <p class="mt-2 text-sm text-butter/90 font-mono" aria-label="Page schema">p31.labsEducation/0.2.0</p>
@@ -46,7 +46,7 @@
           <a class="text-teal/90 hover:underline" href="/education/tracks/index.html">Tracks</a>
           <a class="text-teal/90 hover:underline" href="/education/modules/index.html">Modules</a>
           <a class="text-teal/90 hover:underline" href="/education/labs/index.html">Labs</a>
-          <a class="text-teal/90 hover:underline" href="/education/portal/index.html">Portal (E3)</a>
+          <a class="text-teal/90 hover:underline" href="/education/portal/index.html">Portal (E3+)</a>
         </nav>
       </div>
     </header>
@@ -65,7 +65,7 @@
           <li><strong class="text-paper/90">E0</strong> — Shell + principles + <code class="text-xs">verify:ground-truth</code> alignment.</li>
           <li><strong class="text-paper/90">E1</strong> — <code class="text-xs">catalog.json</code> + client filter; schema <code class="text-xs">p31.labsEducationCatalog/0.2.0</code>.</li>
           <li><strong class="text-paper/90">E2</strong> — <code class="text-xs">curriculum.json</code>, discover/tracks/modules/labs static pages, <code class="text-xs">verify:education</code> in prebuild.</li>
-          <li><strong class="text-paper/90">E3+</strong> — Optional portal, Workers, policy — <em>not shipped</em> on this static tier.</li>
+          <li><strong class="text-paper/90">E3+</strong> — <a class="text-teal hover:text-teal/90 underline decoration-teal/30" href="/education/portal/">Portal</a> (opaque subject-bound progress GET <code class="text-xs text-cloud/60">/api/education/progress/:id</code>).</li>
         </ol>
         <p class="mt-4 text-xs text-cloud/55">
           Normative plan (operators): clone P31 home and open <code class="text-lavender/90">docs/PLAN-P31-LABS-EDUCATION-SITE.md</code> — or browse the
