@@ -566,9 +566,10 @@ loadingManager.onStart = (url, itemsLoaded, itemsTotal) => {
 
 loadingManager.onLoad = () => {
   console.log('All resources loaded');
-  // Hide loading screen with smooth transition
+  // Hide loading screen — stop blocking input immediately (opacity alone keeps hit target)
   const loadingScreen = $('loading-screen');
   if (loadingScreen) {
+    loadingScreen.style.pointerEvents = 'none';
     loadingScreen.style.opacity = '0';
     setTimeout(() => {
       loadingScreen.style.display = 'none';
@@ -623,6 +624,7 @@ if (!webglSupported) {
   showWebGLError();
   const loadingScreenFail = $('loading-screen');
   if (loadingScreenFail) {
+    loadingScreenFail.style.pointerEvents = 'none';
     loadingScreenFail.style.opacity = '0';
     setTimeout(() => { loadingScreenFail.style.display = 'none'; }, 400);
   }
@@ -1140,6 +1142,7 @@ window.addEventListener('resize', () => {
  setTimeout(() => {
    const loadingScreen = $('loading-screen');
    if (loadingScreen && loadingScreen.style.display !== 'none') {
+     loadingScreen.style.pointerEvents = 'none';
      loadingScreen.style.opacity = '0';
      setTimeout(() => {
        loadingScreen.style.display = 'none';
@@ -1520,6 +1523,7 @@ window.addEventListener('resize', () => {
     try {
       const loadingScreen = $('loading-screen');
       if (loadingScreen) {
+        loadingScreen.style.pointerEvents = 'none';
         loadingScreen.style.opacity = '0';
         setTimeout(() => {
           loadingScreen.style.display = 'none';
