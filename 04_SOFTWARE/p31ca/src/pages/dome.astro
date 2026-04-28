@@ -50,9 +50,10 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     })();
    </script>
 
-  <!-- 3D Canvas -->
+  <!-- 3D Canvas — z-index MUST sit above BaseLayout's z-[1] shell (../layouts/BaseLayout.astro)
+       or the void + line grid paints over the THREE canvas and you're stuck on “grid screen”. -->
   <div id="webgl-container"></div>
-  <div class="ambient-grid fixed inset-0 z-0 pointer-events-none"></div>
+  <div class="ambient-grid fixed inset-0 z-[3] pointer-events-none"></div>
 
    <!-- Boot Sequence -->
    <div id="loading-screen" class="fixed inset-0 z-[200] bg-p31-void flex flex-col items-center justify-center font-mono text-cyan" role="status" aria-live="polite">
@@ -294,7 +295,8 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
 <style is:global>
   body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: var(--p31-void); color: var(--p31-cloud); }
-  #webgl-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
+  /* z-index 2+: BaseLayout inserts full-viewport z-[1] layers (grid + radial) ahead of slot content — canvas must paint above them. */
+  #webgl-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; }
 
   .glass-panel {
     background: rgba(12, 14, 20, 0.65);
