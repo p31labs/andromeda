@@ -34,6 +34,7 @@ export const HUB_COCKPIT_ORDER = [
   "planetary-onboard",
   "integrations",
   "education",
+  "poets",
   "appointment-tracker",
   "book",
   "bridge",
