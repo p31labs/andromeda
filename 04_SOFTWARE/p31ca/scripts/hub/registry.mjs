@@ -1137,7 +1137,7 @@ export const registry = [
       'Prefer long-form author copy in Cognitive Passport editions in-repo rather than ephemeral browser text boxes',
     ],
     techNotes:
-      'Mirror of bonding-soup `poets-room.html` intent: hub-only URLs and `public/poets.html`. Ground-truth route `routes.poetsLobby`; redirect `/poets` → `/poets.html`.',
+      'Mirror of bonding-soup `poets-room.html` intent: hub-only URLs and `public/poets.html`. Ground-truth route `routes.poetsLobby`. No `/poets`→`poets.html` in `_redirects` — avoids CF Pages redirect loop (same pattern as welcome.html).',
     related: ['planetary-onboard', 'education', 'connect'],
   },
   // ── Research / quantum tooling ────────────────────────────────────────────

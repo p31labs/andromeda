@@ -17,7 +17,6 @@
 # /welcome — no rule: Pages clean URL serves welcome.html at /welcome; a /welcome→welcome.html rule ping-pongs with .html→/welcome (308) → ERR_TOO_MANY_REDIRECTS.
 /together   /welcome                  301
 /start      /mesh-start.html         301
-/poets   /poets.html   301
 /branding   /branding/index.html   301
 /donate   /donate.html   301
 /kofi-forge   /p31-kofi-forge.html   301
