@@ -12,11 +12,14 @@ import '../styles/global.css';
 interface Props {
   title: string;
   description?: string;
+  /** When false, omit the z-[1] void+grid shell (use on full-viewport WebGL routes so the canvas is not covered). Default true. */
+  shellBackdrop?: boolean;
 }
 
 const {
   title,
   description = 'P31 Labs — Isostatically Rigid. Cognitively Sovereign.',
+  shellBackdrop = true,
 } = Astro.props;
 ---
 
@@ -73,19 +76,25 @@ const {
   <body
     class="bg-p31-void min-h-screen text-base leading-relaxed text-p31-cloud font-sans antialiased p31-root [padding-bottom:env(safe-area-inset-bottom,0px)]"
   >
-    <!-- EDE: line grid + soft teal radial (aligned with Super-Centaur starter) -->
-    <div
-      class="fixed inset-0 pointer-events-none z-[1]"
-      aria-hidden="true"
-      style="background-color: var(--p31-void); background-image: linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px); background-size: 40px 40px; background-position: center top;"
-    >
-    </div>
-    <div
-      class="fixed top-0 left-0 w-[800px] h-[800px] pointer-events-none z-[1]"
-      aria-hidden="true"
-      style="background: radial-gradient(circle at top left, rgba(77, 184, 168, 0.12), transparent 40%);"
-    >
-    </div>
+    {
+      shellBackdrop && (
+        <>
+          {/* EDE: line grid + soft teal radial (aligned with Super-Centaur starter) */}
+          <div
+            class="fixed inset-0 pointer-events-none z-[1]"
+            aria-hidden="true"
+            style="background-color: var(--p31-void); background-image: linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px); background-size: 40px 40px; background-position: center top;"
+          >
+          </div>
+          <div
+            class="fixed top-0 left-0 w-[800px] h-[800px] pointer-events-none z-[1]"
+            aria-hidden="true"
+            style="background: radial-gradient(circle at top left, rgba(77, 184, 168, 0.12), transparent 40%);"
+          >
+          </div>
+        </>
+      )
+    }
 
     <slot />
   </body>
