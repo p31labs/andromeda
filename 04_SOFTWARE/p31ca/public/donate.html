@@ -1,489 +1,267 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-p31-appearance="hub" style="color-scheme: dark">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Donate — P31 Labs</title>
-<meta name="description" content="Support open-source cognitive prosthetics for neurodivergent families.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-<style>
-*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
-:root {
-  --bg-void: #050810;
-  --bg-deep: #080c16;
-  --bg-panel: #0a1018;
-  --phosphor: #ff9944;
-  --phosphor-dim: #cc6622;
-  --mesh-blue: #44aaff;
-  --forge-green: #44ffaa;
-  --shield-red: #ff4466;
-  --text-primary: #c8ccd4;
-  --text-dim: #5a6678;
-  --text-bright: #e8ecf2;
-  --border-subtle: #141e2a;
-  --serif: 'Cormorant Garamond', Georgia, serif;
-  --mono: 'JetBrains Mono', 'Fira Code', monospace;
-}
-
-html { scroll-behavior: smooth; }
-body {
-  font-family: var(--serif);
-  background: var(--bg-void);
-  color: var(--text-primary);
-  line-height: 1.7;
-  overflow-x: hidden;
-  -webkit-font-smoothing: antialiased;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-body::after {
-  content: '';
-  position: fixed; inset: 0;
-  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
-  pointer-events: none;
-  z-index: 9999;
-}
-
-.reveal {
-  opacity: 0;
-  transform: translateY(30px);
-  transition: opacity 0.8s ease, transform 0.8s ease;
-}
-.reveal.visible { opacity: 1; transform: translateY(0); }
-.reveal-delay-1 { transition-delay: 0.12s; }
-.reveal-delay-2 { transition-delay: 0.24s; }
-.reveal-delay-3 { transition-delay: 0.36s; }
-
-.container {
-  max-width: 720px;
-  margin: 0 auto;
-  padding: 0 28px;
-}
-
-/* ═══ NAV ═══ */
-.nav {
-  padding: 20px 28px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.nav-brand {
-  font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: 3px;
-  color: var(--text-dim);
-  text-decoration: none;
-  transition: color 0.3s;
-}
-.nav-brand:hover { color: var(--phosphor); }
-.nav-back {
-  font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 2px;
-  color: var(--text-dim);
-  text-decoration: none;
-  opacity: 0.5;
-  transition: opacity 0.3s;
-}
-.nav-back:hover { opacity: 1; }
-
-/* ═══ HERO ═══ */
-.hero {
-  padding: 80px 0 60px;
-  text-align: center;
-}
-.hero h1 {
-  font-family: var(--serif);
-  font-size: clamp(2rem, 5vw, 3.2rem);
-  font-weight: 300;
-  color: var(--text-bright);
-  line-height: 1.2;
-  margin-bottom: 20px;
-  letter-spacing: -0.3px;
-}
-.hero h1 em {
-  font-style: italic;
-  color: var(--phosphor);
-}
-.hero-sub {
-  font-family: var(--serif);
-  font-size: 1.1rem;
-  font-weight: 300;
-  color: var(--text-dim);
-  max-width: 480px;
-  margin: 0 auto;
-  line-height: 1.8;
-}
-
-/* ═══ DONATION TIERS ═══ */
-.tiers {
-  padding: 40px 0 60px;
-}
-.tier-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 16px;
-}
-@media (min-width: 560px) {
-  .tier-grid { grid-template-columns: 1fr 1fr; }
-}
-
-.tier-card {
-  background: var(--bg-panel);
-  border: 1px solid var(--border-subtle);
-  border-radius: 6px;
-  padding: 28px 24px;
-  text-align: center;
-  transition: border-color 0.3s, transform 0.2s;
-  cursor: pointer;
-  text-decoration: none;
-  display: block;
-}
-.tier-card:hover {
-  border-color: var(--phosphor-dim);
-  transform: translateY(-2px);
-}
-.tier-card.featured {
-  border-color: rgba(255, 153, 68, 0.25);
-  background: rgba(255, 153, 68, 0.03);
-}
-
-.tier-amount {
-  font-family: var(--serif);
-  font-size: 2.4rem;
-  font-weight: 300;
-  color: var(--text-bright);
-  margin-bottom: 4px;
-}
-.tier-amount .dollar {
-  font-size: 1.4rem;
-  color: var(--text-dim);
-  vertical-align: top;
-  position: relative;
-  top: 6px;
-}
-.tier-name {
-  font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 3px;
-  color: var(--phosphor-dim);
-  text-transform: uppercase;
-  margin-bottom: 12px;
-}
-.tier-desc {
-  font-family: var(--serif);
-  font-size: 0.95rem;
-  font-weight: 300;
-  color: var(--text-dim);
-  line-height: 1.6;
-}
-.tier-love {
-  font-family: var(--mono);
-  font-size: 9px;
-  color: var(--phosphor);
-  margin-top: 14px;
-  letter-spacing: 1px;
-}
-
-.custom-tier {
-  grid-column: 1 / -1;
-}
-
-/* ═══ WHAT IT FUNDS ═══ */
-.funds {
-  padding: 40px 0 60px;
-  border-top: 1px solid var(--border-subtle);
-}
-.funds h2 {
-  font-family: var(--serif);
-  font-size: 1.5rem;
-  font-weight: 300;
-  color: var(--text-bright);
-  margin-bottom: 28px;
-  text-align: center;
-}
-.fund-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 20px;
-}
-@media (min-width: 560px) {
-  .fund-grid { grid-template-columns: 1fr 1fr; }
-}
-.fund-item {
-  display: flex;
-  gap: 14px;
-  align-items: flex-start;
-}
-.fund-icon {
-  width: 8px;
-  height: 8px;
-  border-radius: 1px;
-  flex-shrink: 0;
-  margin-top: 8px;
-  transform: rotate(45deg);
-}
-.fund-text h3 {
-  font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 2px;
-  color: var(--text-primary);
-  margin-bottom: 4px;
-}
-.fund-text p {
-  font-family: var(--serif);
-  font-size: 0.9rem;
-  font-weight: 300;
-  color: var(--text-dim);
-  line-height: 1.6;
-}
-
-/* ═══ TRUST ═══ */
-.trust {
-  padding: 40px 0 60px;
-  border-top: 1px solid var(--border-subtle);
-  text-align: center;
-}
-.trust-text {
-  font-family: var(--serif);
-  font-size: 1.05rem;
-  font-weight: 300;
-  color: var(--text-dim);
-  max-width: 500px;
-  margin: 0 auto;
-  line-height: 1.8;
-}
-.trust-text strong {
-  color: var(--text-primary);
-  font-weight: 400;
-}
-.trust-links {
-  margin-top: 24px;
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  flex-wrap: wrap;
-}
-.trust-links a {
-  font-family: var(--mono);
-  font-size: 9px;
-  letter-spacing: 2px;
-  color: var(--text-dim);
-  text-decoration: none;
-  opacity: 0.6;
-  transition: opacity 0.3s, color 0.3s;
-}
-.trust-links a:hover { opacity: 1; color: var(--phosphor); }
-
-/* ═══ POSNER ═══ */
-.posner {
-  padding: 60px 0;
-  text-align: center;
-}
-.posner-quote {
-  font-family: var(--serif);
-  font-size: 1.3rem;
-  font-weight: 300;
-  font-style: italic;
-  color: var(--text-dim);
-  max-width: 400px;
-  margin: 0 auto;
-  line-height: 1.6;
-}
-.posner-quote em {
-  color: var(--phosphor);
-  font-style: italic;
-}
-
-/* ═══ FOOTER ═══ */
-.site-footer {
-  margin-top: auto;
-  padding: 40px 0;
-  border-top: 1px solid var(--border-subtle);
-  text-align: center;
-}
-.footer-id {
-  font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 3px;
-  color: var(--text-dim);
-  margin-bottom: 8px;
-}
-.footer-sub {
-  font-family: var(--serif);
-  font-size: 0.85rem;
-  font-style: italic;
-  color: var(--text-dim);
-  opacity: 0.3;
-}
-
-@media (max-width: 480px) {
-  .hero { padding: 50px 0 40px; }
-  .tier-card { padding: 20px 18px; }
-  .tier-amount { font-size: 2rem; }
-}
-</style>
-<!-- R08: P31 telemetry — CWP-2026-014 -->
-<script src="/p31-telemetry.js" defer></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Donate — P31 Labs technical hub</title>
+  <meta name="description" content="Infrastructure Telemetry Fund. MAP: Stripe Payment Link with optional client_reference_id binding; GitHub Sponsors; zero PAN on origin.">
+  <meta name="theme-color" content="#05080c">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&family=Playfair+Display:ital,wght@1;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/p31-style.css">
+  <script src="/p31-telemetry.js" defer></script>
+  <style>
+    :root {
+      --ede-void: #05080c;
+      --ede-surface: #11151c;
+      --ede-muted: #5a6b7c;
+    }
+    html { background: var(--ede-void); }
+    body {
+      font-family: var(--p31-font-sans, "Atkinson Hyperlegible"), system-ui, sans-serif;
+      background: var(--ede-void);
+      color: var(--p31-cloud, #e8e6e3);
+      margin: 0;
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+    .mono { font-family: var(--p31-font-mono, "JetBrains Mono"), monospace; }
+    .terminal-glass {
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(180deg, rgba(26, 31, 41, 0.72) 0%, rgba(17, 21, 28, 0.88) 100%);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-top: 1px solid rgba(255, 255, 255, 0.09);
+      border-radius: 12px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+    }
+    .terminal-glass::after {
+      content: "";
+      pointer-events: none;
+      position: absolute;
+      inset: 0;
+      border-radius: 12px;
+      background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0, 0, 0, 0.12) 3px, rgba(0, 0, 0, 0.12) 4px);
+      opacity: 0.35;
+    }
+    .panel-wrap { position: relative; padding: 2rem 1.5rem 1.75rem; margin: 1.5rem auto; max-width: 44rem; z-index: 1; }
+    h1 {
+      font-family: "Playfair Display", Georgia, serif;
+      font-style: italic;
+      font-weight: 600;
+      font-size: clamp(1.75rem, 4vw, 2.25rem);
+      color: var(--p31-cloud, #e8e6e3);
+      margin: 0 0 0.5rem;
+      line-height: 1.2;
+    }
+    .kicker {
+      font-family: var(--p31-font-mono, "JetBrains Mono"), monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--p31-cyan, #4db8a8);
+      margin-bottom: 0.75rem;
+    }
+    .fund-title {
+      font-family: var(--p31-font-mono, "JetBrains Mono"), monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--p31-teal, #25897d);
+      margin-bottom: 0.5rem;
+    }
+    .map-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      align-items: center;
+      margin-top: 1.25rem;
+    }
+    .map-actions .p31-btn {
+      flex: 1 1 auto;
+      min-width: min(100%, 12rem);
+      justify-content: center;
+      text-align: center;
+      text-decoration: none;
+      box-sizing: border-box;
+    }
+    .fund-copy {
+      font-size: 0.895rem;
+      color: color-mix(in srgb, var(--p31-cloud, #e8e6e3) 80%, transparent);
+      margin: 0;
+      padding-left: 0.85rem;
+      border-left: 2px solid rgba(37, 137, 125, 0.45);
+      line-height: 1.55;
+    }
+    #map-telemetry {
+      font-family: var(--p31-font-mono, "JetBrains Mono"), monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.06em;
+      margin-top: 1rem;
+      padding-top: 0.85rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      min-height: 1.25rem;
+    }
+    #map-telemetry.binding-on { color: var(--p31-phosphorus, #3ba372); }
+    #map-telemetry.binding-off { color: var(--ede-muted, #5a6b7c); }
+    .map-dot {
+      display: inline-block;
+      width: 9px;
+      height: 9px;
+      border-radius: 9999px;
+      flex-shrink: 0;
+    }
+    .map-dot--muted { background: var(--ede-muted, #5a6b7c); opacity: 0.88; }
+    .map-dot--active {
+      background: var(--p31-phosphorus, #3ba372);
+      box-shadow: 0 0 10px rgba(59, 163, 114, 0.65), 0 0 18px rgba(59, 163, 114, 0.35);
+      animation: subjBlink 1.05s ease-in-out infinite;
+    }
+    @keyframes subjBlink {
+      0%, 100% { opacity: 1; filter: brightness(1); }
+      50% { opacity: 0.45; filter: brightness(0.85); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .map-dot--active { animation: none; }
+    }
+    .toast {
+      font-family: var(--p31-font-mono, "JetBrains Mono"), monospace;
+      font-size: 0.7rem;
+      margin: 1rem auto;
+      max-width: 44rem;
+      padding: 0.5rem 0.75rem;
+      border-radius: 8px;
+      border: 1px solid rgba(77, 184, 168, 0.25);
+      background: rgba(37, 137, 125, 0.12);
+      color: var(--p31-cyan, #4db8a8);
+    }
+  </style>
 </head>
 <body>
-
-<nav class="nav">
-  <a href="https://phosphorus31.org" class="nav-brand">P31 LABS</a>
-  <a href="https://phosphorus31.org" class="nav-back">&larr; ECOSYSTEM</a>
-</nav>
-
-<section class="hero">
-  <div class="container reveal">
-    <h1>Support this work<br><em>open assistive tools</em></h1>
-    <p class="hero-sub">
-      Support ongoing open-source assistive technology for neurodivergent families.
-      The tools stay free — infrastructure and build time still need fuel.
+  <header class="panel-wrap" style="max-width:48rem;padding-bottom:0.5rem">
+    <p class="kicker">P31 labs — map / ethical monetization</p>
+    <h1>Infrastructure Telemetry Fund</h1>
+    <p style="color: color-mix(in srgb, var(--p31-cloud) 75%, transparent); font-size: 0.9375rem;">
+      Primary path is a static Stripe <span class="mono">Payment Link</span> — no PAN on this origin. When Edge identity (<span class="mono">localStorage.p31_subject_id</span>) validates, we append <span class="mono">client_reference_id</span> — zero-trust monetary alignment (MAP) without Stripe.js or server round-trips for this UI.
     </p>
-  </div>
-</section>
+  </header>
 
-<section class="tiers">
-  <div class="container">
-    <div class="tier-grid">
+  <div id="toast" class="toast" hidden role="status"></div>
 
-      <a href="STRIPE_LINK_10" class="tier-card reveal reveal-delay-1" target="_blank" rel="noopener">
-        <div class="tier-amount"><span class="dollar">$</span>10</div>
-        <div class="tier-name">SEED</div>
-        <div class="tier-desc">
-          Fund one hour of test device runtime.
-          Every feature is verified on the devices our users actually have.
-        </div>
-        <div class="tier-love">+100 L.O.V.E.</div>
-      </a>
-
-      <a href="STRIPE_LINK_25" class="tier-card featured reveal reveal-delay-2" target="_blank" rel="noopener">
-        <div class="tier-amount"><span class="dollar">$</span>25</div>
-        <div class="tier-name">SPROUT</div>
-        <div class="tier-desc">
-          Cover a month of Cloudflare Workers infrastructure.
-          The relay that keeps multiplayer connections alive across devices.
-        </div>
-        <div class="tier-love">+250 L.O.V.E.</div>
-      </a>
-
-      <a href="STRIPE_LINK_50" class="tier-card reveal reveal-delay-1" target="_blank" rel="noopener">
-        <div class="tier-amount"><span class="dollar">$</span>50</div>
-        <div class="tier-name">SAPLING</div>
-        <div class="tier-desc">
-          Fund a hardware prototype component.
-          ESP32 boards, haptic motors, LoRa radios — the physical layer.
-        </div>
-        <div class="tier-love">+500 L.O.V.E.</div>
-      </a>
-
-      <a href="STRIPE_LINK_CUSTOM" class="tier-card custom-tier reveal reveal-delay-2" target="_blank" rel="noopener">
-        <div class="tier-amount" style="font-size: 1.8rem; color: var(--text-dim);">Custom amount</div>
-        <div class="tier-name">POSNER</div>
-        <div class="tier-desc">
-          Choose your own amount. Every contribution
-          strengthens the cage that protects the phosphorus.
-        </div>
-        <div class="tier-love">+10 L.O.V.E. per dollar</div>
-      </a>
-
-    </div>
-  </div>
-</section>
-
-<section class="funds">
-  <div class="container">
-    <h2 class="reveal">Where it goes</h2>
-    <div class="fund-grid">
-
-      <div class="fund-item reveal reveal-delay-1">
-        <div class="fund-icon" style="background: var(--phosphor);"></div>
-        <div class="fund-text">
-          <h3>INFRASTRUCTURE</h3>
-          <p>Cloudflare Workers, KV storage, domain renewals. The relay layer that keeps multiplayer alive.</p>
-        </div>
-      </div>
-
-      <div class="fund-item reveal reveal-delay-2">
-        <div class="fund-icon" style="background: var(--mesh-blue);"></div>
-        <div class="fund-text">
-          <h3>TEST HARDWARE</h3>
-          <p>Android tablets for device testing. Our target users have budget hardware — every feature must work there first.</p>
-        </div>
-      </div>
-
-      <div class="fund-item reveal reveal-delay-1">
-        <div class="fund-icon" style="background: var(--forge-green);"></div>
-        <div class="fund-text">
-          <h3>NODE ONE PROTOTYPE</h3>
-          <p>ESP32-S3 development boards, DRV2605L haptic drivers, LoRa radios. The hardware that makes the Totem real.</p>
-        </div>
-      </div>
-
-      <div class="fund-item reveal reveal-delay-2">
-        <div class="fund-icon" style="background: var(--shield-red);"></div>
-        <div class="fund-text">
-          <h3>LEGAL & COMPLIANCE</h3>
-          <p>501(c)(3) filing fees, WCAG accessibility audits, COPPA compliance review. The cage needs legal walls too.</p>
-        </div>
-      </div>
-
-    </div>
-  </div>
-</section>
-
-<section class="trust">
-  <div class="container reveal">
-    <p class="trust-text">
-      P31 Labs is built in the open. <strong>Every line of code is on GitHub.</strong>
-      Every architectural decision is documented. Every test assertion is public.
-      We don't hide behind NDAs — we publish defensive disclosures on Zenodo
-      so the research stays free forever.
+  <section class="terminal-glass panel-wrap" aria-labelledby="fund-heading">
+    <p class="fund-title" id="fund-heading">Infrastructure Telemetry Fund</p>
+    <p class="fund-copy mono" style="font-size:0.7rem;line-height:1.65;margin-bottom:1rem;color:var(--ede-muted);">
+      Supports mesh observability, passkey infra, Sovereign Operator Grants, and humane assistive tooling. Amount is chosen on Stripe’s hosted Checkout; Sponsors billing is on GitHub.
     </p>
-    <div class="trust-links">
-      <a href="https://github.com/p31labs" target="_blank" rel="noopener">GITHUB</a>
-      <a href="https://doi.org/10.5281/zenodo.18627420" target="_blank" rel="noopener">ZENODO DOI</a>
-      <a href="https://orcid.org/0009-0002-2492-9079" target="_blank" rel="noopener">ORCID</a>
-      <a href="https://p31ca.org" target="_blank" rel="noopener">LIVE DEPLOY</a>
-    </div>
-  </div>
-</section>
-
-<section class="posner">
-  <div class="container reveal">
-    <p class="posner-quote">
-      Phosphorus alone <em>burns</em>.<br>
-      Caged in calcium, it becomes<br>
-      the architecture of thought.
+    <p class="mono" style="font-size:0.7rem;color:var(--ede-muted);margin:0;">
+      Canonical MAP link → optional <span style="color:var(--p31-cyan);">client_reference_id</span>
     </p>
-  </div>
-</section>
 
-<footer class="site-footer">
-  <div class="container">
-    <div class="footer-id">P31 LABS &middot; OPEN SOURCE</div>
-    <div class="footer-sub">Structure protects fragile things.</div>
-  </div>
-</footer>
+    <div class="map-actions">
+      <a id="stripe-link" class="p31-btn p31-btn--primary" href="https://buy.stripe.com/5kQ14g827gmpcHFb0W8Ra00">
+        Operator Grant (Stripe)
+      </a>
+      <a id="github-sponsors-link" class="p31-btn p31-btn--secondary" href="https://github.com/sponsors/p31labs" target="_blank" rel="noopener noreferrer">
+        Developer Sponsorship (GitHub)
+      </a>
+    </div>
 
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  const els = document.querySelectorAll('.reveal');
-  const obs = new IntersectionObserver((entries) => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        e.target.classList.add('visible');
-        obs.unobserve(e.target);
-      }
-    });
-  }, { threshold: 0.15, rootMargin: '0px 0px -30px 0px' });
-  els.forEach(el => obs.observe(el));
-});
-</script>
+    <p id="map-telemetry" class="mono binding-off" aria-live="polite">
+      <span id="map-dot" class="map-dot map-dot--muted" aria-hidden="true"></span>
+      <span id="map-telemetry-copy">SUBJECT_BINDING: …</span>
+    </p>
+  </section>
 
+  <footer style="text-align:center;padding:2rem 1rem 3rem;font-size:0.72rem;color:var(--ede-muted);">
+    <p class="mono" style="margin:0">EIN 42-1888158 · P31 Labs · <a href="/" style="color:var(--p31-teal)">Hub</a></p>
+  </footer>
+
+  <script>
+(function () {
+  var STRIPE_PAYMENT_LINK = 'https://buy.stripe.com/5kQ14g827gmpcHFb0W8Ra00';
+  var SUBJECT_RE = /^u_[0-9a-f]{32}$|^guest_[0-9a-f]{20}$/;
+
+  function safeGetSubject() {
+    try {
+      var v = window.localStorage.getItem('p31_subject_id');
+      if (v === null || v === undefined) return '';
+      var t = String(v).trim();
+      return SUBJECT_RE.test(t) ? t : '';
+    } catch (e) {
+      return '';
+    }
+  }
+
+  function qs() {
+    try {
+      return new URLSearchParams(window.location.search);
+    } catch (e2) {
+      return { get: function () { return null; } };
+    }
+  }
+
+  function showToast(msg) {
+    var el = document.getElementById('toast');
+    if (!el) return;
+    el.textContent = msg;
+    el.hidden = false;
+    setTimeout(function () { el.hidden = true; }, 8000);
+  }
+
+  var q = qs();
+  if (q.get && q.get('success')) showToast('Checkout completed. Thank you.');
+  if (q.get && q.get('canceled')) showToast('Checkout canceled.');
+
+  function shortenForDisplay(id) {
+    if (!id) return '';
+    if (id.indexOf('u_') === 0) return 'u_' + id.slice(2, 10) + '…';
+    if (id.indexOf('guest_') === 0) return 'guest_' + id.slice(6, 14) + '…';
+    return id.slice(0, 14) + '…';
+  }
+
+  function stripeHref() {
+    var sid = safeGetSubject();
+    if (!sid) return STRIPE_PAYMENT_LINK;
+    return STRIPE_PAYMENT_LINK + '?client_reference_id=' + encodeURIComponent(sid);
+  }
+
+  function updateMapWire() {
+    var linkEl = document.getElementById('stripe-link');
+    if (linkEl) linkEl.setAttribute('href', stripeHref());
+
+    var sid = safeGetSubject();
+    var valid = Boolean(sid);
+    var wrap = document.getElementById('map-telemetry');
+    var dot = document.getElementById('map-dot');
+    var copy = document.getElementById('map-telemetry-copy');
+    if (copy) {
+      copy.textContent = valid
+        ? ('SUBJECT_BINDING: ACTIVE [' + shortenForDisplay(sid) + ']')
+        : 'SUBJECT_BINDING: ANONYMOUS';
+    }
+    if (wrap) {
+      wrap.className = 'mono ' + (valid ? 'binding-on' : 'binding-off');
+      if (valid) {
+        wrap.setAttribute('title', 'Validated p31_subject_id — client_reference_id appended to Stripe Payment Link only when regex /^u_/guest_/ matches.');
+      } else wrap.removeAttribute('title');
+    }
+    if (dot) {
+      dot.className = 'map-dot ' + (valid ? 'map-dot--active' : 'map-dot--muted');
+    }
+  }
+
+  updateMapWire();
+  window.addEventListener('storage', function (ev) {
+    if (ev.key === 'p31_subject_id' || ev.key === null) updateMapWire();
+  });
+})();
+  </script>
 </body>
 </html>

@@ -49,6 +49,8 @@ curl -X POST https://donate-api.phosphorus31.org/create-checkout \
 
 Expected response: `{"sessionId": "cs_..."}`
 
+**Subject-bound donation (MAP Track C):** optionally pass `p31_subject_id` (same string as `localStorage.p31_subject_id`) — `p31.subjectIdDerivation/0.1.0` shape: `u_<32 hex>` or `guest_<20 hex>`. The Worker attaches **`metadata[p31_subject_id]`** on the Stripe Checkout Session and **`client_reference_id`** for Dashboard search; webhooks and Genesis Gate `donation_processed` payloads may include **`p31_subject_id`** when present (no card data).
+
 ## Troubleshooting
 
 - **Error 524:** Worker timeout - check worker logs in Cloudflare dashboard

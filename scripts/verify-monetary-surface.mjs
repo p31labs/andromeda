@@ -52,7 +52,35 @@ if (existsSync(join(ROOT, pubSurface))) {
   }
 }
 
-// --- 1b) donate-api worker: MAP-required routes (static read; no network) ---
+// --- 1b) p31ca donate.html — primary MAP surface (Stripe Payment Link; no Stripe.js)
+const donateHtmlPrimary = "04_SOFTWARE/p31ca/public/donate.html";
+if (existsSync(join(ROOT, donateHtmlPrimary))) {
+  const dh = read(donateHtmlPrimary);
+  const PAYMENT_LINK = "https://buy.stripe.com/5kQ14g827gmpcHFb0W8Ra00";
+  if (!dh.includes(PAYMENT_LINK)) {
+    err(`${donateHtmlPrimary}: must embed canonical Stripe Payment Link (MAP primary hub)`);
+  }
+  if (!dh.includes("client_reference_id")) {
+    err(`${donateHtmlPrimary}: must bind MAP via client_reference_id query when subject id is valid`);
+  }
+  if (!dh.includes("github.com/sponsors/p31labs")) {
+    err(`${donateHtmlPrimary}: must link GitHub Sponsors (canonical recurring path)`);
+  }
+  if (!dh.includes('id="stripe-link"')) {
+    err(`${donateHtmlPrimary}: primary Stripe MAP anchor must use id stripe-link`);
+  }
+  if (!dh.includes('SUBJECT_BINDING:')) {
+    err(`${donateHtmlPrimary}: telemetry must expose SUBJECT_BINDING line`);
+  }
+  if (dh.includes("js.stripe.com") || /\bredirectToCheckout\b/.test(dh)) {
+    err(`${donateHtmlPrimary}: primary MAP hub must not load Stripe.js or redirectToCheckout (static Payment Link only)`);
+  }
+  if (!(dh.includes("^u_[0-9a-f]{32}$") && dh.includes("guest_[0-9a-f]{20}"))) {
+    err(`${donateHtmlPrimary}: must validate p31_subject_id with u_/guest_ derivation regex`);
+  }
+}
+
+// --- 1d) donate-api worker: MAP-required routes (static read; no network) ---
 const workerTs = "04_SOFTWARE/donate-api/src/worker.ts";
 if (existsSync(join(ROOT, workerTs))) {
   const w = read(workerTs);
@@ -61,6 +89,9 @@ if (existsSync(join(ROOT, workerTs))) {
   }
   if (!w.includes("'/create-checkout'") && !w.includes('"/create-checkout"')) {
     err(`${workerTs}: must define POST /create-checkout`);
+  }
+  if (!w.includes("metadata[p31_subject_id]")) {
+    err(`${workerTs}: POST /create-checkout must attach Stripe metadata[p31_subject_id] when subject-bound (MAP Track C)`);
   }
   if (!w.includes("api.stripe.com")) {
     err(`${workerTs}: expected Stripe API call (api.stripe.com) for Checkout Sessions`);

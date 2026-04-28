@@ -25,6 +25,10 @@ npm run dev
 
 Open `http://localhost:5173`. The P31 tab walks through the Quantum Hello World — identity generation, covenant, molecule formation, geodesic building — all wired to the real stack. The Shelter tab shows system status.
 
+### Firmware (Node Zero M2M)
+
+ESP32 **PlatformIO** stub for the edge pairing challenge (`POST /api/hardware/challenge`) lives under **`firmware/esp32-m2m-stub/`**. It pairs with the **`p31-node-zero-m2m`** Worker (`p31ca/workers/node-zero-m2m/`). See those READMEs for KV, Bearer, and TLS notes.
+
 ---
 
 ## Architecture

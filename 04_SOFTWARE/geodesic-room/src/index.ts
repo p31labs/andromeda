@@ -9,8 +9,8 @@ import { DurableObject } from 'cloudflare:workers';
  *
  * WS client → server:
  *   { type: 'SET_VERTEX', id: 'v0'|'v1'|'v2'|'v3', x, y, z }
- *   { type: 'ADD_SHAPE', shapeId: string, shapeType: ShapeType, x, y, z }
- *   { type: 'MOVE_SHAPE', shapeId: string, x, y, z }
+ *   { type: 'ADD_SHAPE', shapeId: string, shapeType: ShapeType, x, y, z, rotY?: number }
+ *   { type: 'MOVE_SHAPE', shapeId: string, x, y, z, rotY?: number }
  *   { type: 'REMOVE_SHAPE', shapeId: string }
  *   { type: 'RESET_SHAPES' }
  *   { type: 'RESET' }       ← resets vertices only
@@ -28,6 +28,8 @@ import { DurableObject } from 'cloudflare:workers';
 
 export interface Env {
   GEODESIC_ROOM: DurableObjectNamespace;
+  /** From wrangler.toml `[vars]` WORKER_VERSION (npm package semver) */
+  WORKER_VERSION?: string;
 }
 
 export type VertexId = 'v0' | 'v1' | 'v2' | 'v3';
@@ -41,6 +43,8 @@ export interface ShapeRecord {
   id: string;
   type: ShapeType;
   x: number; y: number; z: number;
+  /** Radians — rotation about +Y (tabletop spin), Three.js convention. Optional in persisted JSON (default 0). */
+  rotY?: number;
   clientId: string;
   ts: number;
 }
@@ -61,6 +65,8 @@ export interface Op {
   shapeType?: ShapeType;
   // position (all ops that move something)
   x?: number; y?: number; z?: number;
+  /** Y rotation (radians), ADD_SHAPE / MOVE_SHAPE */
+  rotY?: number;
   // shared metadata
   version: number;
   ts: number;
@@ -86,6 +92,14 @@ const SHAPE_FACES: Record<ShapeType, number> = { tet: 4, oct: 8, ico: 20, cube: 
 
 function clamp(v: number, lo: number, hi: number): number {
   return Math.min(hi, Math.max(lo, v));
+}
+
+/** Tabletop yaw — generous bound so floats don’t spike from client bugs */
+function sanitizeRotY(raw: unknown): number {
+  const n = typeof raw === 'number' ? raw : Number(raw);
+  if (!Number.isFinite(n)) return 0;
+  const maxTurns = Math.PI * 96;
+  return clamp(n, -maxTurns, maxTurns);
 }
 
 function sanitizeId(raw: unknown, maxLen = 64): string {
@@ -219,12 +233,16 @@ export class GeodesicRoom extends DurableObject<Env> {
         const y = clamp(Number(msg['y']), -20, 20);
         const z = clamp(Number(msg['z']), -20, 20);
         if (!isFinite(x) || !isFinite(y) || !isFinite(z)) return;
-        const shape: ShapeRecord = { id: shapeId, type: shapeType, x, y, z, clientId, ts: Date.now() };
+        const rotYRequested = msg['rotY'];
+        const rotY = rotYRequested !== undefined && rotYRequested !== null
+          ? sanitizeRotY(rotYRequested)
+          : 0;
+        const shape: ShapeRecord = { id: shapeId, type: shapeType, x, y, z, rotY, clientId, ts: Date.now() };
         shapes[shapeId] = shape;
         await this.ctx.storage.put('shapes', JSON.stringify(shapes));
         await this.ctx.storage.put('version', version);
         const rigidity = computeRigidity(shapes);
-        const op: Op = { type: 'ADD_SHAPE', shapeId, shapeType, x, y, z, version, ts: Date.now(), clientId, rigidity };
+        const op: Op = { type: 'ADD_SHAPE', shapeId, shapeType, x, y, z, rotY, version, ts: Date.now(), clientId, rigidity };
         this.broadcastJson({ type: 'op', op });
         break;
       }
@@ -238,10 +256,15 @@ export class GeodesicRoom extends DurableObject<Env> {
         const y = clamp(Number(msg['y']), -20, 20);
         const z = clamp(Number(msg['z']), -20, 20);
         if (!isFinite(x) || !isFinite(y) || !isFinite(z)) return;
-        shapes[shapeId] = { ...shapes[shapeId], x, y, z };
+        const prev = shapes[shapeId];
+        const rotYRaw = msg['rotY'];
+        const rotY = rotYRaw !== undefined && rotYRaw !== null
+          ? sanitizeRotY(rotYRaw)
+          : (prev.rotY ?? 0);
+        shapes[shapeId] = { ...prev, x, y, z, rotY, ts: Date.now() };
         await this.ctx.storage.put('shapes', JSON.stringify(shapes));
         await this.ctx.storage.put('version', version);
-        const op: Op = { type: 'MOVE_SHAPE', shapeId, x, y, z, version, ts: Date.now(), clientId };
+        const op: Op = { type: 'MOVE_SHAPE', shapeId, x, y, z, rotY, version, ts: Date.now(), clientId };
         this.broadcastJson({ type: 'op', op });
         break;
       }
@@ -293,6 +316,9 @@ export class GeodesicRoom extends DurableObject<Env> {
   }
 }
 
+/** Matches `@p31/shared/geodesic-room-wire` — CI enforces alignment (`p31ca`: `verify:geodesic-room-wire`). */
+const GEODESIC_ROOM_WIRE_SCHEMA = 'p31.geodesicRoomWire/0.2.1';
+
 const ROOM_PATTERN = /^\/api\/geodesic\/([a-zA-Z0-9_-]{1,64})\/(ws|state)$/;
 
 export default {
@@ -300,7 +326,21 @@ export default {
     const url = new URL(request.url);
     const m = ROOM_PATTERN.exec(url.pathname);
     if (!m) {
-      return Response.json({ service: 'geodesic-room', version: 2, ok: true }, { status: 200 });
+      const pkg =
+        typeof env.WORKER_VERSION === 'string' && env.WORKER_VERSION.trim()
+          ? env.WORKER_VERSION.trim()
+          : undefined;
+      return Response.json(
+        {
+          service: 'geodesic-room',
+          /** Historic numeric probe — not semver */
+          version: 2,
+          ok: true,
+          wireSchema: GEODESIC_ROOM_WIRE_SCHEMA,
+          ...(pkg ? { packageVersion: pkg } : {}),
+        },
+        { status: 200 },
+      );
     }
     const [, roomId] = m;
     const id = env.GEODESIC_ROOM.idFromName(roomId);

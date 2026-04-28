@@ -5,7 +5,7 @@
  * Secret key stored as CF secret (STRIPE_SECRET_KEY).
  *
  * Endpoints:
- *   POST /create-checkout  { amount, currency, successUrl, cancelUrl }
+ *   POST /create-checkout  { amount, currency, mode, successUrl, cancelUrl [, p31_subject_id] }
  *   → { sessionId }
  */
 
@@ -41,14 +41,46 @@ interface CheckoutRequest {
   mode: 'monthly' | 'once';
   successUrl: string;
   cancelUrl: string;
+  /** Optional — `p31.subjectIdDerivation/0.1.0`: `u_[0-9a-f]{32}` or `guest_[0-9a-f]{20}` from passkey / guest mint (zero PII). Attached to Stripe Session metadata + client_reference_id. */
+  p31_subject_id?: string;
 }
 
-function corsHeaders(origin: string, allowed: string): Record<string, string> {
-  const isAllowed = origin === allowed
-    || origin === 'http://localhost:4321'  // astro dev
-    || origin === 'http://localhost:3000';
+/** Aligned with `p31ca/public/lib/p31-subject-id.js` (`p31.subjectIdDerivation/0.1.0`). */
+const P31_SUBJECT_ID_PATTERN = /^u_[0-9a-f]{32}$|^guest_[0-9a-f]{20}$/;
+
+function validatedSubjectId(raw: unknown): { ok: true; value: string | null } | { ok: false; message: string } {
+  if (raw === undefined || raw === null) return { ok: true, value: null };
+  if (typeof raw !== 'string') return { ok: false, message: 'p31_subject_id must be a string' };
+  const s = raw.trim();
+  if (s.length === 0) return { ok: true, value: null };
+  if (!P31_SUBJECT_ID_PATTERN.test(s)) {
+    return {
+      ok: false,
+      message: 'Invalid p31_subject_id — expected p31.subjectIdDerivation/0.1.0 format (u_<32 hex> or guest_<20 hex>)',
+    };
+  }
+  return { ok: true, value: s };
+}
+
+function corsHeaders(originHeader: string, env: Env): Record<string, string> {
+  const primary = (env.ALLOWED_ORIGIN || 'https://phosphorus31.org').replace(/\/$/, '');
+  const o = originHeader.replace(/\/$/, '');
+  const list = new Set([
+    primary,
+    'https://p31ca.org',
+    'https://www.p31ca.org',
+    'http://localhost:4321',
+    'http://localhost:3000',
+    'http://127.0.0.1:8080',
+    'http://localhost:8080',
+    'http://localhost:5173',
+  ]);
+  let acao = primary;
+  if (o !== '' && (list.has(o) || /^https:\/\/[a-z0-9-]+\.p31ca\.pages\.dev$/i.test(o))) {
+    acao = o;
+  }
   return {
-    'Access-Control-Allow-Origin': isAllowed ? origin : allowed,
+    'Access-Control-Allow-Origin': acao,
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
     'Access-Control-Max-Age': '86400',
@@ -58,7 +90,7 @@ function corsHeaders(origin: string, allowed: string): Record<string, string> {
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const origin = request.headers.get('Origin') || '';
-    const headers = corsHeaders(origin, env.ALLOWED_ORIGIN);
+    const headers = corsHeaders(origin, env);
 
     // CORS preflight
     if (request.method === 'OPTIONS') {
@@ -70,6 +102,11 @@ export default {
     if (url.pathname === '/create-checkout' && request.method === 'POST') {
       try {
         const body = await request.json() as CheckoutRequest;
+
+        const subjectCheck = validatedSubjectId(body.p31_subject_id);
+        if (!subjectCheck.ok) {
+          return Response.json({ error: subjectCheck.message }, { status: 400, headers });
+        }
 
         // Validate
         if (!body.amount || body.amount < 100) {
@@ -101,6 +138,12 @@ export default {
         // submit_type only valid for mode=payment (not subscription)
         if (body.mode !== 'monthly') {
           params.append('submit_type', 'donate');
+        }
+
+        const subjectTag = subjectCheck.value;
+        if (subjectTag) {
+          params.append('metadata[p31_subject_id]', subjectTag);
+          params.append('client_reference_id', subjectTag);
         }
 
         const stripeRes = await fetch('https://api.stripe.com/v1/checkout/sessions', {
@@ -136,7 +179,8 @@ export default {
       return Response.json({
         status: 'ok',
         worker: 'donate-api',
-        version: '1.0.0',
+        version: '1.1.0',
+        map: { checkoutSubjectBind: true, subjectIdSchema: 'p31.subjectIdDerivation/0.1.0' },
         timestamp: new Date().toISOString()
       }, { headers });
     }
@@ -180,9 +224,19 @@ async function handleStripeWebhook(request: Request, env: Env): Promise<Response
     }
   }
 
-  // R09: Emit donation_processed to Genesis Gate (no amount — privacy)
+  // R09: Emit donation_processed to Genesis Gate (no amount — privacy). Include subject binding when present.
   if (event.type === 'checkout.session.completed') {
-    emitEvent(env, 'donation_processed', { source: 'stripe', mode: (event.data as Record<string, unknown>)?.mode ?? 'unknown' });
+    const data = event.data as Record<string, unknown> | undefined;
+    const obj = data?.object as Record<string, unknown> | undefined;
+    const meta = obj?.metadata as Record<string, unknown> | undefined;
+    const fromMeta = typeof meta?.p31_subject_id === 'string' ? meta.p31_subject_id : undefined;
+    const fromRef = typeof obj?.client_reference_id === 'string' ? obj.client_reference_id : undefined;
+    const p31_subject_id = fromMeta || fromRef;
+    emitEvent(env, 'donation_processed', {
+      source: 'stripe',
+      mode: (obj?.mode as string) ?? 'unknown',
+      ...(p31_subject_id ? { p31_subject_id } : {}),
+    });
   }
 
   // Forward checkout.session.completed to the Discord bot webhook (best-effort)

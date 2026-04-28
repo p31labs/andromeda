@@ -14,6 +14,10 @@ TOPOLOGY = "K4_PERSONAL"
 SOULSAFE_CHAT_DEFAULT = "0"
 # Max rows in per-user `messages` table; after each /chat, oldest rows are deleted if over cap (PA-2.4).
 MESSAGES_MAX_ROWS = "2000"
+# SOULSAFE fusion audit (`soulsafe_runs`): row cap + optional max age — see soulsafe-retention.js
+SOULSAFE_RUNS_MAX_ROWS = "800"
+# Omit or "0" to disable age eviction. Else milliseconds (min 86400000 = 24h): delete runs with ts older than now−age before FIFO cap pass.
+SOULSAFE_RUNS_MAX_AGE_MS = "0"
 
 [ai]
 binding = "AI"

@@ -91,6 +91,80 @@ describe('POST /create-checkout — validation', () => {
     expect(res.status).toBe(400);
   });
 
+  it('reflects Origin https://p31ca.org for CORS (MAP hub donate page)', async () => {
+    mockFetch.mockResolvedValueOnce(
+      new Response(JSON.stringify({ id: 'cs_from_hub' }), { status: 200 }),
+    );
+
+    const worker = await getWorker();
+    const req = new Request('https://donate-api.phosphorus31.org/create-checkout', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Origin: 'https://p31ca.org',
+      },
+      body: JSON.stringify({
+        amount: 500,
+        currency: 'usd',
+        mode: 'once',
+        successUrl: 'https://example.com/s',
+        cancelUrl: 'https://example.com/c',
+      }),
+    });
+    const res = await worker.fetch(req, env);
+    expect(res.status).toBe(200);
+    expect(res.headers.get('Access-Control-Allow-Origin')).toBe('https://p31ca.org');
+  });
+
+  it('rejects invalid p31_subject_id', async () => {
+    const worker = await getWorker();
+    const req = new Request('https://example.com/create-checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        amount: 500,
+        currency: 'usd',
+        mode: 'once',
+        successUrl: 'https://example.com/success',
+        cancelUrl: 'https://example.com/cancel',
+        p31_subject_id: 'not-a-subject',
+      }),
+    });
+    const res = await worker.fetch(req, env);
+    expect(res.status).toBe(400);
+    const body = await res.json() as { error: string };
+    expect(body.error).toMatch(/Invalid p31_subject_id|subjectIdDerivation/i);
+  });
+
+  it('accepts valid u_* subject id and passes Stripe metadata + client_reference_id', async () => {
+    mockFetch.mockResolvedValueOnce(
+      new Response(JSON.stringify({ id: 'cs_test_subj' }), { status: 200 }),
+    );
+    const sid =
+      'u_' + 'a'.repeat(32);
+    const worker = await getWorker();
+    const req = new Request('https://example.com/create-checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        amount: 500,
+        currency: 'usd',
+        mode: 'once',
+        successUrl: 'https://example.com/success',
+        cancelUrl: 'https://example.com/cancel',
+        p31_subject_id: sid,
+      }),
+    });
+    const res = await worker.fetch(req, env);
+    expect(res.status).toBe(200);
+
+    const callArgs = mockFetch.mock.calls[0];
+    const stripeBody = callArgs[1].body as string;
+    const parsed = new URLSearchParams(stripeBody);
+    expect(parsed.get('metadata[p31_subject_id]')).toBe(sid);
+    expect(parsed.get('client_reference_id')).toBe(sid);
+  });
+
   it('rejects missing amount', async () => {
     const worker = await getWorker();
     const req = new Request('https://example.com/create-checkout', {

@@ -1,9 +1,9 @@
 /**
- * GeodesicRoom WebSocket + JSON wire — mirrors `geodesic-room/src/index.ts` (v0.2.0).
+ * GeodesicRoom WebSocket + JSON wire — mirrors `geodesic-room/src/index.ts` (v0.2.1).
  * Use from Unity/Godot TS glue, Deno, or any TS client; keep in sync with the Worker.
  */
 
-export const GEODESIC_ROOM_WIRE_SCHEMA = 'p31.geodesicRoomWire/0.2.0' as const;
+export const GEODESIC_ROOM_WIRE_SCHEMA = 'p31.geodesicRoomWire/0.2.1' as const;
 
 export const GEODESIC_ROOM_LIMITS = {
   /** Matches geodesic-room SHAPE_CAP */
@@ -31,6 +31,8 @@ export interface ShapeRecord {
   x: number;
   y: number;
   z: number;
+  /** Radians, +Y tabletop spin (Three.js). Omitted in persisted JSON from older rooms — treat as 0. */
+  rotY?: number;
   clientId: string;
   ts: number;
 }
@@ -53,6 +55,7 @@ export interface GeodesicRoomOp {
   x?: number;
   y?: number;
   z?: number;
+  rotY?: number;
   version: number;
   ts: number;
   clientId: string;
@@ -62,8 +65,8 @@ export interface GeodesicRoomOp {
 /** Client → GeodesicRoom (WebSocket JSON body) */
 export type GeodesicClientMessage =
   | { type: 'SET_VERTEX'; id: VertexId; x: number; y: number; z: number }
-  | { type: 'ADD_SHAPE'; shapeId: string; shapeType: ShapeType; x: number; y: number; z: number }
-  | { type: 'MOVE_SHAPE'; shapeId: string; x: number; y: number; z: number }
+  | { type: 'ADD_SHAPE'; shapeId: string; shapeType: ShapeType; x: number; y: number; z: number; rotY?: number }
+  | { type: 'MOVE_SHAPE'; shapeId: string; x: number; y: number; z: number; rotY?: number }
   | { type: 'REMOVE_SHAPE'; shapeId: string }
   | { type: 'RESET_SHAPES' }
   | { type: 'RESET' }

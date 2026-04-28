@@ -23,6 +23,17 @@ import {
   runSoulsafeTetra,
   SOULSAFE_TETRA_SCHEMA,
 } from './soulsafe-tetra.js';
+import {
+  countSoulsafeRuns,
+  parseSoulsafeRunsMaxAgeMs,
+  parseSoulsafeRunsMaxRows,
+  SOULSAFE_RETENTION_SCHEMA,
+  trimSoulsafeRuns,
+} from './soulsafe-retention.js';
+
+/** Samson v0 — time-capped spoon replenishment (∆hours × rate, clamped to max) + fusion floor for SOULSAFE. */
+const SAMSON_REGEN_SPOONS_PER_ELAPSED_HOUR = 1.5;
+const SAMSON_MIN_SPOONS_FUSION = 3;
 
 export class PersonalAgent extends DurableObject {
   constructor(ctx, env) {
@@ -103,6 +114,26 @@ export class PersonalAgent extends DurableObject {
   /**
    * Soft cap on `messages` rows (PA-2.4): trim oldest when over env `MESSAGES_MAX_ROWS` (default 2000).
    */
+  /**
+   * SOULSAFE audit rows (`soulsafe_runs`): env `SOULSAFE_RUNS_MAX_ROWS` + optional age floor.
+   */
+  _soulsafeRunsMaxRows() {
+    return parseSoulsafeRunsMaxRows(this.env);
+  }
+
+  /** @returns {number | null} */
+  _soulsafeRunsMaxAgeMs() {
+    return parseSoulsafeRunsMaxAgeMs(this.env);
+  }
+
+  _trimSoulsafeRunsToCap() {
+    trimSoulsafeRuns(
+      this.ctx.storage.sql,
+      this._soulsafeRunsMaxRows(),
+      this._soulsafeRunsMaxAgeMs()
+    );
+  }
+
   _messagesMaxRows() {
     const n = parseInt(this.env.MESSAGES_MAX_ROWS || "2000", 10);
     if (Number.isNaN(n)) return 2000;
@@ -152,7 +183,7 @@ export class PersonalAgent extends DurableObject {
     }));
 
     const spoons = Number(energy.spoons);
-    const canSoulsafe = wantSoulsafe && !Number.isNaN(spoons) && spoons >= 3;
+    const canSoulsafe = wantSoulsafe && !Number.isNaN(spoons) && spoons >= SAMSON_MIN_SPOONS_FUSION;
 
     if (canSoulsafe && this.env.AI) {
       const modelId = DEFAULT_SOULSAFE_MODEL_ID;
@@ -224,11 +255,12 @@ export class PersonalAgent extends DurableObject {
     );
     const out = { reply, energy };
     if (wantSoulsafe && !canSoulsafe) {
-      out.soulsafeSkipped = { reason: "low_energy", minSpoons: 3 };
+      out.soulsafeSkipped = { reason: "low_energy", minSpoons: SAMSON_MIN_SPOONS_FUSION };
     }
     return Response.json(out);
     } finally {
       this._trimMessagesToCap();
+      this._trimSoulsafeRunsToCap();
     }
   }
 
@@ -299,6 +331,8 @@ export class PersonalAgent extends DurableObject {
     const profile = this._getState("profile") || {};
     const energy = this._getState("energy") || { spoons: 10, max: 12 };
     const soulsafePrefs = this._getState("soulsafe_prefs") || {};
+    const soulsafeRunsCount = countSoulsafeRuns(this.ctx.storage.sql);
+    const runsMaxAgeMs = this._soulsafeRunsMaxAgeMs();
     return Response.json({
       schema: "p31.personalAgentManifest/0.1.0",
       personalTetra,
@@ -308,12 +342,32 @@ export class PersonalAgent extends DurableObject {
         schema: SOULSAFE_TETRA_SCHEMA,
         chatDefault:
           this.env.SOULSAFE_CHAT_DEFAULT === "1" || soulsafePrefs.default === true,
-        minSpoonsForFusion: 3,
+        minSpoonsForFusion: SAMSON_MIN_SPOONS_FUSION,
+        retention: {
+          schema: SOULSAFE_RETENTION_SCHEMA,
+          runsMaxRows: this._soulsafeRunsMaxRows(),
+          runsMaxAgeMs: runsMaxAgeMs,
+          currentRunCount: soulsafeRunsCount,
+          strategy:
+            runsMaxAgeMs != null
+              ? "delete_older_than_age_then_oldest_over_cap"
+              : "delete_oldest_over_cap",
+        },
       },
       retention: {
         schema: "p31.agentRetention/0.1.0",
         chatMessagesMaxRows: this._messagesMaxRows(),
         strategy: "delete_oldest_over_cap",
+      },
+      spoonEconomy: {
+        schema: "p31.spoonEconomyController/0.1.0",
+        samsonV0: {
+          regenSpoonsPerElapsedHour: SAMSON_REGEN_SPOONS_PER_ELAPSED_HOUR,
+          minSpoonsForSoulsafeFusion: SAMSON_MIN_SPOONS_FUSION,
+          integration:
+            "floor(elapsed_hours) * regen capped at energy.max via GET /energy",
+          spec: "See docs/SOULSAFE-TETRA-SPEC.md (home repo) · GET /manifest",
+        },
       },
       service: { name: "k4-personal", durableObject: "PersonalAgent" },
     });
@@ -342,7 +396,7 @@ export class PersonalAgent extends DurableObject {
       const current = this._getState("energy") || { spoons: 10, max: 12, lastUpdate: Date.now() };
       const { spoons, max, lastUpdate } = current;
       const elapsedHours = (Date.now() - (lastUpdate || Date.now())) / 3600000;
-      const regenned = Math.min(max, spoons + Math.floor(elapsedHours * 1.5));
+      const regenned = Math.min(max, spoons + Math.floor(elapsedHours * SAMSON_REGEN_SPOONS_PER_ELAPSED_HOUR));
       return Response.json({ spoons: regenned, max, lastUpdate, regenned: elapsedHours > 0.5 && regenned > spoons });
     }
     if (request.method === "PUT") {
@@ -358,14 +412,7 @@ export class PersonalAgent extends DurableObject {
       );
       return Response.json(merged);
     }
-    const update = await request.json();
-    const current = this._getState("energy") || { spoons: 10, max: 12 };
-    const merged = { ...current, ...update, lastUpdate: Date.now() };
-    this.ctx.storage.sql.exec(
-      "INSERT OR REPLACE INTO state (key, value, updated_at) VALUES (?, ?, ?)",
-      "energy", JSON.stringify(merged), Date.now()
-    );
-    return Response.json(merged);
+    return Response.json({ error: "Method not allowed" }, { status: 405 });
   }
 
   async _bioIngest(request) {
@@ -438,6 +485,7 @@ export class PersonalAgent extends DurableObject {
   }
 
   async alarm(alarmInfo) {
+    this._trimSoulsafeRunsToCap();
     const rows = this.ctx.storage.sql.exec(
       "SELECT id, kind, payload, ts FROM telemetry_pending ORDER BY id LIMIT 500"
     ).toArray();

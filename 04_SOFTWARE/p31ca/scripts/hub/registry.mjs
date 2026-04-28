@@ -201,23 +201,30 @@ export const registry = [
     related: ['cortex', 'genesis-gate', 'bridge']
   },
   {
-    id: 'donate', title: 'Donate Pipeline', tagline: 'Stripe (edge) + Ko-fi (Discord)',
+    id: 'donate', title: 'Donate Pipeline', tagline: 'MAP — Stripe Payment Link + Sponsors',
     icon: '💚', accent: '#3ba372', status: 'live', statusLabel: 'LIVE',
     appUrl: 'donate.html',
-    tech: ['Stripe Checkout', 'donate-api Worker', 'Optional KV (Stripe idempotency)', 'Ko-fi → Discord bot'],
+    tech: [
+      'Stripe Payment Link (MAP)',
+      'Optional client_reference_id binding',
+      'GitHub Sponsors',
+      'donate-api Worker (optional programmatic Checkout)',
+      'Ko-fi → Discord bot'
+    ],
     features: [
-      'Card flow: Checkout on phosphorus31.org/donate — session API on donate-api Worker (no PAN on P31 origin)',
-      'Signed Stripe webhooks → Genesis Gate + Discord relay; optional DONATE_EVENTS KV dedupes event replays',
+      'Hub (/donate): canonical Stripe Payment Link; MAP attaches ?client_reference_id when localStorage p31_subject_id matches derivation — no PAN on p31ca origin',
+      'GitHub Sponsors (developer-centric path); donate-api retains POST /create-checkout + signed webhooks when programmatic Checkout is needed',
       'Ko-fi: verified POST to Discord p31-bot (spoon ledger + telemetry) — not the donate-api Worker',
-      'CWP-P31-MAP automation: verify-monetary-surface, vitest, CI in Andromeda',
+      'MAP automation: verify-monetary-surface, donate-api Vitest, CI in Andromeda',
       'EIN 42-1888158 on public donate copy; 501(c)(3) status per operator-approved language'
     ],
     howTo: [
-      'Support link (hub) → donate page / phosphorus31.org for card checkout',
+      'Open hub /donate — Stripe MAP Payment Link + GitHub Sponsors',
       'Ko-fi: configure dashboard to hit the org Discord ingress (see p31-bot webhook docs)',
-      'Ops: 04_SOFTWARE/docs/CONTROLLED-WORK-PACKAGE-MONETARY-PIPELINE.md (MAP)'
+      'Launch ops checklist: docs/ENTERPRISE-LAUNCH-PREP.md (P31 home) · MAP CWP: 04_SOFTWARE/docs/CONTROLLED-WORK-PACKAGE-MONETARY-PIPELINE.md'
     ],
-    techNotes: 'As-built: do not claim a single CF Worker KV for Ko-fi receipts. Stripe path = donate-api; Ko-fi = Discord. Run `npm run verify` in donate-api and root `verify:monetary` after changes.',
+    techNotes:
+      'Primary MAP on hub = static Payment Link (no Stripe.js). donate-api Worker = optional programmatic Checkout + webhooks; Ko-fi = Discord-only path. Run `npm run verify` in donate-api and root `verify:monetary` after monetary edits.',
     related: ['spaceship-earth', 'genesis-gate', 'cortex']
   },
   {

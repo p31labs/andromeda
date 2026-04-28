@@ -1,5 +1,5 @@
 -- P31 Passkey Worker — D1 schema
--- Apply: wrangler d1 execute p31-passkey-db --file=schema.sql
+-- Apply remote prod: wrangler d1 execute p31-passkey-db --remote --file=schema.sql
 
 CREATE TABLE IF NOT EXISTS credentials (
   id            TEXT PRIMARY KEY,          -- base64url credential ID

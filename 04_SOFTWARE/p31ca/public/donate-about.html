@@ -5,8 +5,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#0f1115">
-<title>Donate Pipeline — Stripe (edge) + Ko-fi (Discord) | P31 Labs</title>
-<meta name="description" content="Card flow: Checkout on phosphorus31.org/donate — session API on donate-api Worker (no PAN on P31 origin)">
+<title>Donate Pipeline — MAP — Stripe Payment Link + Sponsors | P31 Labs</title>
+<meta name="description" content="Hub (/donate): canonical Stripe Payment Link; MAP attaches ?client_reference_id when localStorage p31_subject_id matches derivation — no PAN on p31ca origin">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
@@ -181,10 +181,10 @@ p{font-size:15px;color:color-mix(in srgb,var(--p31-cloud) 88%,transparent);margi
       <div class="hero-icon">💚</div>
       <div class="hero-text">
         <h1>Donate Pipeline</h1>
-        <div class="tagline">Stripe (edge) + Ko-fi (Discord)</div>
+        <div class="tagline">MAP — Stripe Payment Link + Sponsors</div>
         <div class="hero-badges">
           <span class="badge badge--live">LIVE</span>
-          <span class="badge badge--muted-tech">Stripe Checkout</span><span class="badge badge--muted-tech">donate-api Worker</span><span class="badge badge--muted-tech">Optional KV (Stripe idempotency)</span>
+          <span class="badge badge--muted-tech">Stripe Payment Link (MAP)</span><span class="badge badge--muted-tech">Optional client_reference_id binding</span><span class="badge badge--muted-tech">GitHub Sponsors</span>
         </div>
       </div>
     </div>
@@ -204,8 +204,8 @@ p{font-size:15px;color:color-mix(in srgb,var(--p31-cloud) 88%,transparent);margi
         <h2 class="sec-kicker">What it is</h2>
         <span class="sec-rule" aria-hidden="true"></span>
       </div>
-      <p>Card flow: Checkout on phosphorus31.org/donate — session API on donate-api Worker (no PAN on P31 origin). Stripe (edge) + Ko-fi (Discord) is a core component of the P31 Labs sovereign cognitive infrastructure stack — built to run offline, deployed to the edge, and designed without dark patterns.</p>
-      <p>As-built: do not claim a single CF Worker KV for Ko-fi receipts. Stripe path = donate-api; Ko-fi = Discord. Run `npm run verify` in donate-api and root `verify:monetary` after changes.</p>
+      <p>Hub (/donate): canonical Stripe Payment Link; MAP attaches ?client_reference_id when localStorage p31_subject_id matches derivation — no PAN on p31ca origin. MAP — Stripe Payment Link + Sponsors is a core component of the P31 Labs sovereign cognitive infrastructure stack — built to run offline, deployed to the edge, and designed without dark patterns.</p>
+      <p>Primary MAP on hub = static Payment Link (no Stripe.js). donate-api Worker = optional programmatic Checkout + webhooks; Ko-fi = Discord-only path. Run `npm run verify` in donate-api and root `verify:monetary` after monetary edits.</p>
     </section>
 
     <section>
@@ -217,11 +217,11 @@ p{font-size:15px;color:color-mix(in srgb,var(--p31-cloud) 88%,transparent);margi
       <div class="mesh-list">
           <div class="mesh-item">
             <span class="mesh-node"></span>
-            <p class="mesh-item-body">Card flow: Checkout on phosphorus31.org/donate — session API on donate-api Worker (no PAN on P31 origin)</p>
+            <p class="mesh-item-body">Hub (/donate): canonical Stripe Payment Link; MAP attaches ?client_reference_id when localStorage p31_subject_id matches derivation — no PAN on p31ca origin</p>
           </div>
           <div class="mesh-item">
             <span class="mesh-node coral"></span>
-            <p class="mesh-item-body">Signed Stripe webhooks → Genesis Gate + Discord relay; optional DONATE_EVENTS KV dedupes event replays</p>
+            <p class="mesh-item-body">GitHub Sponsors (developer-centric path); donate-api retains POST /create-checkout + signed webhooks when programmatic Checkout is needed</p>
           </div>
           <div class="mesh-item">
             <span class="mesh-node butter"></span>
@@ -229,7 +229,7 @@ p{font-size:15px;color:color-mix(in srgb,var(--p31-cloud) 88%,transparent);margi
           </div>
           <div class="mesh-item">
             <span class="mesh-node"></span>
-            <p class="mesh-item-body">CWP-P31-MAP automation: verify-monetary-surface, vitest, CI in Andromeda</p>
+            <p class="mesh-item-body">MAP automation: verify-monetary-surface, donate-api Vitest, CI in Andromeda</p>
           </div>
           <div class="mesh-item">
             <span class="mesh-node"></span>
@@ -244,9 +244,9 @@ p{font-size:15px;color:color-mix(in srgb,var(--p31-cloud) 88%,transparent);margi
         <h2 class="sec-kicker">How to use</h2>
         <span class="sec-rule" aria-hidden="true"></span>
       </div>
-          <div class="step"><span class="step-num">1</span><span>Support link (hub) → donate page / phosphorus31.org for card checkout</span></div>
+          <div class="step"><span class="step-num">1</span><span>Open hub /donate — Stripe MAP Payment Link + GitHub Sponsors</span></div>
           <div class="step"><span class="step-num">2</span><span>Ko-fi: configure dashboard to hit the org Discord ingress (see p31-bot webhook docs)</span></div>
-          <div class="step"><span class="step-num">3</span><span>Ops: 04_SOFTWARE/docs/CONTROLLED-WORK-PACKAGE-MONETARY-PIPELINE.md (MAP)</span></div>
+          <div class="step"><span class="step-num">3</span><span>Launch ops checklist: docs/ENTERPRISE-LAUNCH-PREP.md (P31 home) · MAP CWP: 04_SOFTWARE/docs/CONTROLLED-WORK-PACKAGE-MONETARY-PIPELINE.md</span></div>
     </section>
 
     <section>
@@ -255,7 +255,7 @@ p{font-size:15px;color:color-mix(in srgb,var(--p31-cloud) 88%,transparent);margi
         <h2 class="sec-kicker">Architecture</h2>
         <span class="sec-rule" aria-hidden="true"></span>
       </div>
-      <div class="tech-note">As-built: do not claim a single CF Worker KV for Ko-fi receipts. Stripe path = donate-api; Ko-fi = Discord. Run `npm run verify` in donate-api and root `verify:monetary` after changes.</div>
+      <div class="tech-note">Primary MAP on hub = static Payment Link (no Stripe.js). donate-api Worker = optional programmatic Checkout + webhooks; Ko-fi = Discord-only path. Run `npm run verify` in donate-api and root `verify:monetary` after monetary edits.</div>
     </section>
 
     <div class="callout-p31">
@@ -288,9 +288,10 @@ p{font-size:15px;color:color-mix(in srgb,var(--p31-cloud) 88%,transparent);margi
     <div class="sidebar-card">
       <div class="sidebar-card-title">Tech stack</div>
       <ul class="tech-stack">
-              <li>Stripe Checkout</li>
-              <li>donate-api Worker</li>
-              <li>Optional KV (Stripe idempotency)</li>
+              <li>Stripe Payment Link (MAP)</li>
+              <li>Optional client_reference_id binding</li>
+              <li>GitHub Sponsors</li>
+              <li>donate-api Worker (optional programmatic Checkout)</li>
               <li>Ko-fi → Discord bot</li>
       </ul>
     </div>
