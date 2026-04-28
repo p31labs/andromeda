@@ -33,6 +33,8 @@ pnpm --dir 04_SOFTWARE run test
 
 Individual apps (BONDING, p31ca, hearing-ops, etc.) live under **`04_SOFTWARE/`** — see [`04_SOFTWARE/README.md`](04_SOFTWARE/README.md).
 
+Operators who also clone **[bonding-soup](https://github.com/p31labs/bonding-soup)** get the multi-root home layout: local **`npm run command-center`** on **`:3131`**, **`npm run startup`**, Chromebook/iPhone LAN notes — **[CONTRIBUTING.md](CONTRIBUTING.md)** (*Companion repo — bonding-soup*).
+
 ## Repository structure
 
 - **`04_SOFTWARE/`** — Primary applications, Cloudflare Workers, shared packages, VS Code extensions.
