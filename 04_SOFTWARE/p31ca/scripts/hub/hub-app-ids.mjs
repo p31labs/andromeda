@@ -5,6 +5,7 @@
  */
 export const HUB_COCKPIT_ORDER = [
   "bonding",
+  "social-molecules",
   "spaceship-earth",
   "ede",
   "buffer",

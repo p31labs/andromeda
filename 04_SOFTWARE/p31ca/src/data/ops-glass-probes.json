@@ -1,6 +1,6 @@
 {
   "schema": "p31.opsGlassProbes/1.0.0",
-  "ingested": "2026-04-28T06:59:05.672Z",
+  "ingested": "2026-04-28T20:45:20.993Z",
   "source": "p31-ecosystem.json",
   "probes": [
     {
@@ -88,6 +88,18 @@
       "group": "pages",
       "note": "PAR personal landing (CWP-P31-PAR); repo: soup.html → andromeda/.../p31ca/public/mesh-start.html",
       "url": "https://p31ca.org/mesh-start.html"
+    },
+    {
+      "id": "p31ca-social-molecules-page",
+      "group": "pages",
+      "note": "Social Molecules · C.A.R.S. hub operator shell (boot, load, edge ribbon); registry id social-molecules",
+      "url": "https://p31ca.org/social-molecules.html"
+    },
+    {
+      "id": "p31ca-cars-shorturl",
+      "group": "pages",
+      "note": "301 → social-molecules.html (_redirects); short path for C.A.R.S. cockpit",
+      "url": "https://p31ca.org/cars"
     },
     {
       "id": "p31ca-initial-build-page",

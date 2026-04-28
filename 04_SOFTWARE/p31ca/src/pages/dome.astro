@@ -6,7 +6,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 ---
 
-<BaseLayout title="P31 Labs | Sovereign Cockpit" data-i18n-title="page.title">
+<BaseLayout title="P31 Labs | Sovereign Cockpit" data-i18n-title="page.title" shellBackdrop={false}>
   <!-- Noscript fallback for JS-disabled users -->
   <noscript>
     <div class="fixed inset-0 bg-black/90 flex flex-col items-center justify-center z-50 p-6 text-center">
@@ -50,9 +50,9 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     })();
    </script>
 
-  <!-- 3D Canvas -->
-  <div id="webgl-container"></div>
-  <div class="ambient-grid fixed inset-0 z-0 pointer-events-none"></div>
+  <!-- THREE: fixed stacking context; shellBackdrop off above so EDE grid does not sit on canvas -->
+  <div id="webgl-container" class="fixed inset-0 z-[20] isolate"></div>
+  <div class="ambient-grid fixed inset-0 z-[21] pointer-events-none"></div>
 
    <!-- Boot Sequence -->
    <div id="loading-screen" class="fixed inset-0 z-[200] bg-p31-void flex flex-col items-center justify-center font-mono text-cyan" role="status" aria-live="polite">
@@ -294,7 +294,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
 <style is:global>
   body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: var(--p31-void); color: var(--p31-cloud); }
-  #webgl-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
+  /* #webgl-container: fixed+z-index from markup — do not opacity-hide here; splash (#loading-screen) covers until JS dismisses */
 
   .glass-panel {
     background: rgba(12, 14, 20, 0.65);
@@ -359,22 +359,19 @@ import BaseLayout from '../layouts/BaseLayout.astro';
      transition: all 0.3s ease;
    }
    
-    /* Entrance animation: fade + upshift */
-    body:not(.loaded) #webgl-container,
+    /* Entrance animation: HUD only (#webgl-container never gated — avoids “grid-only” if body.loaded delays). */
     body:not(.loaded) .hud-element,
-    body:not(.loaded) .glass-panel {
+    body:not(.loaded) #top-hud {
       opacity: 0;
       transform: translateY(20px);
     }
-    
-    body.loaded #webgl-container,
+
     body.loaded .hud-element,
-    body.loaded .glass-panel {
+    body.loaded #top-hud {
       opacity: 1;
       transform: translateY(0);
       transition: opacity 600ms ease-out, transform 600ms ease-out;
     }
-    
     /* ===============================================
        A/B ACCENT PALETTES
        Variant "tm" (teal-magenta, default) - current

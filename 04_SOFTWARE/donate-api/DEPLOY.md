@@ -12,6 +12,23 @@
 
 Health checks and glass probes use the **custom domain** URL: `https://donate-api.phosphorus31.org/health` (see home `p31-constants.json` / `p31-ecosystem.json`).
 
+**`GET /health` semantics:** Returns **`200`** and JSON **`{ status: "ok", worker: "donate-api", … }`**. This is **liveness only** — it does not verify Stripe credentials. Strict glass (`P31_GLASS_STRICT=1 npm run ecosystem:glass`) treats monetary probes as required when enabled.
+
+**Incident triage:** **`RUNBOOK-PAYMENTS-DOWN.md`** (symptom → checks → webhook → rollback → comms).
+
+## Secrets and env (runtime)
+
+| Name | Kind | Role |
+|------|------|------|
+| `STRIPE_SECRET_KEY` | wrangler secret | **`POST /create-checkout`** → Stripe Checkout Sessions API |
+| `STRIPE_WEBHOOK_SECRET` | wrangler secret | HMAC verify on **`POST /stripe-webhook`** (`Stripe-Signature`); missing → **400** |
+| `DISCORD_WEBHOOK_URL` | wrangler secret / var | Optional; forwards **`checkout.session.completed`** (best-effort) |
+| `ALLOWED_ORIGIN` | `[vars]` in `wrangler.toml` | Primary CORS origin (default phosphorus31.org) |
+| `DONATE_EVENTS` | KV binding (optional) | Idempotency: **`stripe:event:{eventId}`**, 90d TTL |
+| `GENESIS_GATE_URL` | optional var | Fire-and-forget **`donation_processed`** telemetry |
+
+**Webhook:** Signature verification uses **HMAC-SHA256** over **`t.payload`**. Requests with **`t`** more than **300 seconds** from Worker time fail verification (**400**), limiting replay. Valid duplicate **`event.id`** with KV returns **200** + **`duplicate: true`**.
+
 ## Quick Deploy
 
 ```bash

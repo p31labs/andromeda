@@ -46,6 +46,18 @@ Single-page operator reference. Run `npm run security:check` and use this to tri
 2. Check if `@noble/post-quantum` import paths changed (see `GHSA-` or npm changelog)
 3. Restore the FIPS 203/204 key-size constants in tests if the library changed a variant
 
+### P0: passkey wrangler RP_ID drift
+
+```
+[FAIL] passkey wrangler: [env.production.vars] RP_ID must be "p31ca.org" (got …)
+```
+
+**Cause:** `workers/passkey/wrangler.toml` lost the documented production or preview **RP_ID** (WebAuthn rpId binding would not match the public hub).
+
+**Actions:**
+1. Restore **`[env.production.vars]`** → `RP_ID = "p31ca.org"` and **`[env.preview.vars]`** → `RP_ID = "p31ca.pages.dev"` unless you are intentionally changing the public passkey hostname (then update `EDGE-SECURITY.md`, ground-truth, and client assumptions in the same change).
+2. `npm run security:crypto` — confirm Phase E passes.
+
 ---
 
 ## When `security:check` shows P1 warnings

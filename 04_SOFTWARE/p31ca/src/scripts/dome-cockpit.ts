@@ -27,6 +27,50 @@ import {
 // ================================================================
 const $ = (id) => document.getElementById(id);
 
+/** Hide boot splash and set `body.loaded` so dome.astro paints #webgl-container / HUD visible. */
+function dismissDomeSplash(options?: { fadeMs?: number }) {
+  const fadeMs = options?.fadeMs ?? 1000;
+  document.body.classList.add("loaded");
+  const splash = $("loading-screen");
+  if (!splash || splash.style.display === "none") return;
+  splash.style.pointerEvents = "none";
+  splash.style.opacity = "0";
+  setTimeout(() => {
+    splash.style.display = "none";
+  }, fadeMs);
+}
+
+function showWebGLError() {
+  const container = $("webgl-container");
+  if (container) {
+    container.innerHTML = `
+       <div class="flex flex-col items-center justify-center h-full text-center p-6">
+         <svg width="64" height="64" viewBox="0 0 512 512" class="mb-6"><rect width="512" height="512" rx="112" fill="#25897d"/><circle cx="390" cy="120" r="48" fill="#cc6247"/><text x="256" y="340" font-family="system-ui" font-weight="900" font-size="220" fill="#d8d6d0" text-anchor="middle">P31</text><rect x="156" y="380" width="200" height="16" rx="8" fill="#cda852"/></svg>
+         <h2 class="text-2xl font-bold text-red-400 mb-3" data-i18n="error.webgl.title">WebGL Not Supported</h2>
+         <p class="text-p31-cloud mb-6" data-i18n="error.webgl.message">Your browser or device does not support WebGL, which is required for the 3D visualization. Please try a modern browser like Chrome, Firefox, or Edge.</p>
+         <button onclick="location.reload()" class="px-6 py-3 bg-white/20 hover:bg-white/30 text-p31-cloud rounded transition-colors" data-i18n="error.retry">Retry</button>
+       </div>
+     `;
+    i18n.apply();
+  }
+}
+
+function showLoadingError() {
+  const container = $("webgl-container");
+  if (container) {
+    container.innerHTML = `
+     <div class="flex flex-col items-center justify-center h-full text-center p-6">
+       <svg width="64" height="64" viewBox="0 0 512 512" class="mb-8"><rect width="512" height="512" rx="112" fill="#25897d"/><circle cx="390" cy="120" r="48" fill="#cc6247"/><text x="256" y="340" font-family="system-ui" font-weight="900" font-size="220" fill="#d8d6d0" text-anchor="middle">P31</text><rect x="156" y="380" width="200" height="16" rx="8" fill="#cda852"/></svg>
+       <div class="text-red-400 font-bold mb-4" data-i18n="error.loading.title">Loading Failed</div>
+       <div class="text-p31-cloud mb-6" data-i18n="error.loading.message">Failed to load 3D resources. Please check your connection and try again.</div>
+       <button onclick="location.reload()" class="px-6 py-3 bg-white/20 hover:bg-white/30 text-p31-cloud rounded transition-colors" data-i18n="error.retry">Retry</button>
+     </div>
+   `;
+  }
+  i18n.apply();
+  dismissDomeSplash({ fadeMs: 400 });
+}
+
 let currentSpoons = 10;
 const MAX_SPOONS = 20;
 
@@ -566,15 +610,7 @@ loadingManager.onStart = (url, itemsLoaded, itemsTotal) => {
 
 loadingManager.onLoad = () => {
   console.log('All resources loaded');
-  // Hide loading screen — stop blocking input immediately (opacity alone keeps hit target)
-  const loadingScreen = $('loading-screen');
-  if (loadingScreen) {
-    loadingScreen.style.pointerEvents = 'none';
-    loadingScreen.style.opacity = '0';
-    setTimeout(() => {
-      loadingScreen.style.display = 'none';
-    }, 1000);
-  }
+  dismissDomeSplash();
   // Audio will initialize on first user interaction (initAudioOnInteraction)
 };
 
@@ -622,12 +658,7 @@ try {
 
 if (!webglSupported) {
   showWebGLError();
-  const loadingScreenFail = $('loading-screen');
-  if (loadingScreenFail) {
-    loadingScreenFail.style.pointerEvents = 'none';
-    loadingScreenFail.style.opacity = '0';
-    setTimeout(() => { loadingScreenFail.style.display = 'none'; }, 400);
-  }
+  dismissDomeSplash({ fadeMs: 400 });
 } else {
 const container = $("webgl-container");
   const scene = new THREE.Scene();
@@ -1024,40 +1055,6 @@ $('node-detail-close').addEventListener('click', () => {
 });
 
 // ================================================================
-// 5. ERROR HANDLING
-// ================================================================
- function showWebGLError() {
-   const container = $("webgl-container");
-   if (container) {
-     container.innerHTML = `
-       <div class="flex flex-col items-center justify-center h-full text-center p-6">
-         <svg width="64" height="64" viewBox="0 0 512 512" class="mb-6"><rect width="512" height="512" rx="112" fill="#25897d"/><circle cx="390" cy="120" r="48" fill="#cc6247"/><text x="256" y="340" font-family="system-ui" font-weight="900" font-size="220" fill="#d8d6d0" text-anchor="middle">P31</text><rect x="156" y="380" width="200" height="16" rx="8" fill="#cda852"/></svg>
-         <h2 class="text-2xl font-bold text-red-400 mb-3" data-i18n="error.webgl.title">WebGL Not Supported</h2>
-         <p class="text-p31-cloud mb-6" data-i18n="error.webgl.message">Your browser or device does not support WebGL, which is required for the 3D visualization. Please try a modern browser like Chrome, Firefox, or Edge.</p>
-         <button onclick="location.reload()" class="px-6 py-3 bg-white/20 hover:bg-white/30 text-p31-cloud rounded transition-colors" data-i18n="error.retry">Retry</button>
-       </div>
-     `;
-     // Apply i18n to the error message
-     i18n.apply();
-   }
- }
-
- function showLoadingError() {
-   const loadingScreen = $("loading-screen");
-   if (!loadingScreen) return;
-   
-   loadingScreen.innerHTML = `
-     <div class="flex flex-col items-center justify-center text-center">
-       <svg width="64" height="64" viewBox="0 0 512 512" class="mb-8"><rect width="512" height="512" rx="112" fill="#25897d"/><circle cx="390" cy="120" r="48" fill="#cc6247"/><text x="256" y="340" font-family="system-ui" font-weight="900" font-size="220" fill="#d8d6d0" text-anchor="middle">P31</text><rect x="156" y="380" width="200" height="16" rx="8" fill="#cda852"/></svg>
-       <div class="text-red-400 font-bold mb-4" data-i18n="error.loading.title">Loading Failed</div>
-       <div class="text-p31-cloud mb-6" data-i18n="error.loading.message">Failed to load 3D resources. Please check your connection and try again.</div>
-       <button onclick="location.reload()" class="px-6 py-3 bg-white/20 hover:bg-white/30 text-p31-cloud rounded transition-colors" data-i18n="error.retry">Retry</button>
-     </div>
-   `;
-   i18n.apply();
- }
-
-// ================================================================
 // 5. ANIMATION & RENDER LOOP
 // ================================================================
 let time = 0;
@@ -1138,15 +1135,11 @@ window.addEventListener('resize', () => {
      }
    });
 
- // Fallback: hide loading screen after 10 seconds even if resources stall
+ // Fallback: reveal scene after 10s even if LoadingManager never completes
  setTimeout(() => {
-   const loadingScreen = $('loading-screen');
-   if (loadingScreen && loadingScreen.style.display !== 'none') {
-     loadingScreen.style.pointerEvents = 'none';
-     loadingScreen.style.opacity = '0';
-     setTimeout(() => {
-       loadingScreen.style.display = 'none';
-     }, 1000);
+   const splash = $("loading-screen");
+   if (splash && splash.style.display !== "none") {
+     dismissDomeSplash();
    }
  }, 10000);
  
@@ -1515,23 +1508,4 @@ window.addEventListener('resize', () => {
     }
   });
   
-  // ================================================================
-  // 10. ENTRANCE ANIMATION
-  // ================================================================
-  // Fade-up entrance for main content when loading screen hides
-  const hideLoading = () => {
-    try {
-      const loadingScreen = $('loading-screen');
-      if (loadingScreen) {
-        loadingScreen.style.pointerEvents = 'none';
-        loadingScreen.style.opacity = '0';
-        setTimeout(() => {
-          loadingScreen.style.display = 'none';
-          // Trigger entrance animation
-          document.body.classList.add('loaded');
-        }, 1000);
-      }
-    } catch(e) {}
-  };
-
 } // WebGL branch (else opened when webglSupported)

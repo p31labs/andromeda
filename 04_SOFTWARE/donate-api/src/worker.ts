@@ -176,12 +176,13 @@ export default {
 
     // Health check endpoint
     if (url.pathname === '/health' && request.method === 'GET') {
+      // Liveness only: does not call Stripe. Glass / MAP expect 200 + JSON with status ok.
       return Response.json({
         status: 'ok',
         worker: 'donate-api',
-        version: '1.1.0',
+        version: '1.2.0',
         map: { checkoutSubjectBind: true, subjectIdSchema: 'p31.subjectIdDerivation/0.1.0' },
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       }, { headers });
     }
 
@@ -269,6 +270,9 @@ async function handleStripeWebhook(request: Request, env: Env): Promise<Response
   });
 }
 
+/** Seconds; Stripe recommends rejecting payloads outside ~5 minutes to limit replay. */
+const STRIPE_WEBHOOK_TOLERANCE_SEC = 300;
+
 async function verifyStripeSignature(
   payload: string,
   sigHeader: string,
@@ -282,6 +286,11 @@ async function verifyStripeSignature(
     const timestamp = parts['t'];
     const v1 = parts['v1'];
     if (!timestamp || !v1) return false;
+
+    const tsNum = parseInt(timestamp, 10);
+    if (Number.isNaN(tsNum)) return false;
+    const now = Math.floor(Date.now() / 1000);
+    if (Math.abs(now - tsNum) > STRIPE_WEBHOOK_TOLERANCE_SEC) return false;
 
     const signedPayload = `${timestamp}.${payload}`;
     const key = await crypto.subtle.importKey(
