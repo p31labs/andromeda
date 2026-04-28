@@ -1,0 +1,86 @@
+#!/usr/bin/env node
+/**
+ * Triple-lock: ground-truth/geodesic-build-snapshot.json ↔ public/geodesic.html
+ * inline constants ↔ @p31/shared/geodesic-build-snapshot.
+ *
+ * Run: npm run verify:geodesic-build-snapshot
+ */
+
+import { readFileSync, existsSync } from 'fs';
+import { resolve, dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+const __dir = dirname(fileURLToPath(import.meta.url));
+const P31CA = resolve(__dir, '..');
+const SOFTWARE = resolve(P31CA, '..');
+
+const CANONICAL = resolve(P31CA, 'ground-truth/geodesic-build-snapshot.json');
+const HTML_PATH = resolve(P31CA, 'public/geodesic.html');
+const SHARED_TS = resolve(SOFTWARE, 'packages/shared/src/geodesic-build-snapshot.ts');
+
+function fail(msg) {
+  console.error('[FAIL] verify-geodesic-build-snapshot:', msg);
+  process.exit(1);
+}
+function ok(msg) {
+  console.log('[ OK ] verify-geodesic-build-snapshot:', msg);
+}
+
+for (const p of [CANONICAL, HTML_PATH, SHARED_TS]) {
+  if (!existsSync(p)) {
+    fail(`missing ${p}`);
+    process.exit(1);
+  }
+}
+
+let canonical;
+try {
+  canonical = JSON.parse(readFileSync(CANONICAL, 'utf8'));
+} catch (e) {
+  fail('JSON parse error: ' + e.message);
+  process.exit(1);
+}
+
+const html = readFileSync(HTML_PATH, 'utf8');
+const sharedSrc = readFileSync(SHARED_TS, 'utf8');
+
+const mHtmlSchema = html.match(
+  /const GEODESIC_BUILD_SNAPSHOT_SCHEMA = ['"]([^'"]+)['"]/,
+);
+const mHtmlCap = html.match(/const GEODESIC_BUILD_SHAPE_CAP = (\d+)/);
+
+const mTsSchema = sharedSrc.match(
+  /export const GEODESIC_BUILD_SNAPSHOT_SCHEMA = ['"]([^'"]+)['"]/,
+);
+const mTsCap = sharedSrc.match(/export const GEODESIC_BUILD_SHAPE_CAP = (\d+)/);
+
+if (!mHtmlSchema || !mHtmlCap) {
+  fail('could not parse GEODESIC_BUILD_* constants in public/geodesic.html');
+  process.exit(1);
+}
+if (!mTsSchema || !mTsCap) {
+  fail('could not parse GEODESIC_BUILD_* in packages/shared geodesic-build-snapshot.ts');
+  process.exit(1);
+}
+
+const schema = canonical.schema;
+const cap = canonical.shapeCap;
+
+if (typeof schema !== 'string' || schema !== mHtmlSchema[1] || schema !== mTsSchema[1]) {
+  fail(
+    `schema drift: ground-truth=${schema} html=${mHtmlSchema[1]} shared=${mTsSchema[1]}`,
+  );
+  process.exit(1);
+}
+if (
+  typeof cap !== 'number' ||
+  cap !== Number(mHtmlCap[1]) ||
+  cap !== Number(mTsCap[1])
+) {
+  fail(
+    `shapeCap drift: ground-truth=${cap} html=${mHtmlCap[1]} shared=${mTsCap[1]}`,
+  );
+  process.exit(1);
+}
+
+ok(`schema ${schema}; shapeCap ${cap} — canonical, geodesic.html, shared match ✓`);
