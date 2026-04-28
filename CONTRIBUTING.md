@@ -25,6 +25,16 @@ Turbo scripts are defined in `04_SOFTWARE/package.json` (`build`, `test`, `dev`,
 
 **Production quality bar:** [`docs/ENTERPRISE_QUALITY.md`](docs/ENTERPRISE_QUALITY.md). PRs should keep **Monorepo verify** (GitHub Actions) green.
 
+## Companion repo — bonding-soup (local command center · Chromebook · iPhone)
+
+Operators usually clone **[p31labs/bonding-soup](https://github.com/p31labs/bonding-soup)** beside this repo (Soup is intentionally **not** embedded here — see Soup **`P31-ROOT-MAP.md`**). From the **Soup** root:
+
+- **`npm run command-center`** → local dashboard on **`:3131`** (verify/deploy shortcuts, **`P31_CMD_CENTER_LAN=1`** so iPhone Safari / LAN Chrome OS can reach the host).
+- **`npm run startup`** echoes the top of the **[P31 startup package](https://github.com/p31labs/bonding-soup/blob/main/docs/P31-STARTUP-PACKAGE.md)** (desktop loopback · Crostini · iPhone Wi‑Fi in one table).
+- Deeper ops: [Device setup (Chromebook + mobile)](https://github.com/p31labs/bonding-soup/blob/main/docs/P31-DEVICE-SETUP-CHROMEBOOK-MOBILE.md), [Chromebook command readiness](https://github.com/p31labs/bonding-soup/blob/main/docs/P31-CHROMEBOOK-COMMAND-READINESS.md), [iPhone command readiness](https://github.com/p31labs/bonding-soup/blob/main/docs/P31-IPHONE-COMMAND-READINESS.md); [AGENTS.md](https://github.com/p31labs/bonding-soup/blob/main/AGENTS.md) in that repo describes the full home ship bar and CI gates.
+
+Nothing in **`andromeda/04_SOFTWARE`** replaces those scripts — this monorepo ships Workers (e.g. **[command-center Worker](https://command-center.trimtab-signal.workers.dev)** KV dashboard) separately from that **localhost** tooling.
+
 ## Fleet map and edge deployables
 
 - **Integration index (Starlight):** `04_SOFTWARE/docs/src/content/docs/getting-started/connect-the-stack.md` (published on the docs site).

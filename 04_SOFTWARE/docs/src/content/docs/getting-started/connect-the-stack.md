@@ -14,6 +14,12 @@ This page is the **integration index** for the monorepo: the same links appear a
 | **This document library** | [docs.phosphorus31.org](https://docs.phosphorus31.org) | `04_SOFTWARE/docs/` |
 | Source of truth | [github.com/p31labs/andromeda](https://github.com/p31labs/andromeda) | repo root |
 
+## Local tooling (bonding-soup companion repo)
+
+**Not in this monorepo:** clone **[bonding-soup](https://github.com/p31labs/bonding-soup)** beside Andromeda. From the Soup root, **`npm run command-center`** binds **`:3131`** (operator dashboard for **`npm run verify`**, **`deploy:p31ca`**, etc. — whitelisted scripts). **`P31_CMD_CENTER_LAN=1`** advertises **LAN URLs** so **Chrome OS (Crostini)** browsers and **iPhone Safari** (same Wi‑Fi) can use the UI. **`npm run startup`** prints **[P31-STARTUP-PACKAGE.md](https://github.com/p31labs/bonding-soup/blob/main/docs/P31-STARTUP-PACKAGE.md)** (~54-line head: desktop · Chromebook · iPhone rows). Detailed walkthrough: [device setup](https://github.com/p31labs/bonding-soup/blob/main/docs/P31-DEVICE-SETUP-CHROMEBOOK-MOBILE.md).
+
+**Contrast:** deployed fleet **Command Center** (KV-backed status) remains **[command-center…workers.dev](https://command-center.trimtab-signal.workers.dev)** below — unrelated to Soup **localhost** `:3131`.
+
 ## Operator / fleet
 
 | Surface | URL |

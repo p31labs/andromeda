@@ -14,6 +14,8 @@ pnpm --dir 04_SOFTWARE run build
 pnpm --dir 04_SOFTWARE run test
 ```
 
+**Companion checkout — [bonding-soup](https://github.com/p31labs/bonding-soup) (recommended):** local **`:3131` command center**, **`npm run startup`**, and **Chromebook / iPhone** operator paths live in that repo, not here. See the Andromeda root **[CONTRIBUTING.md](../CONTRIBUTING.md)** section *Companion repo — bonding-soup*.
+
 Use project-local scripts per package as documented in each project README.
 
 **Corporate + open print suite (letterhead, memos, watermarks, Forge):** from repo root, `docs/corporate/` (hub `README.md`); **live** on [p31ca.org/open-doc-suite.html](https://p31ca.org/open-doc-suite.html) (`/doc-suite` on the hub). Regenerate `brand-tokens.json`: `pnpm --dir 04_SOFTWARE/p31-forge run brand:tokens` from the Andromeda root.
