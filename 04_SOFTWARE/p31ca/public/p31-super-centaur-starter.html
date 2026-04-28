@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-p31-appearance="hub" style="color-scheme: dark;">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,164 +8,480 @@
   <meta name="description" content="One-page index: SUPER-CENTAUR mesh bridge, monetary pipeline (MAP), structural sovereignty on p31ca — with links to CWPs and machine JSON.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/p31-style.css">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="/p31-tailwind-extend.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/p31-tailwind-extend.js"></script>
   <script>
     tailwind.config = {
-      theme: {
-        extend: {
-                    ...window.P31_TAILWIND_EXTEND
-                }
-      }
+      darkMode: 'class',
+      theme: { extend: { ...window.P31_TAILWIND_EXTEND } },
     };
   </script>
-  <style>.divider { border: none; border-top: 1px solid rgba(255,255,255,0.06); }</style>
+  <style>
+    body {
+      background-color: var(--p31-void);
+      color: var(--p31-cloud);
+      background-image:
+        linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 40px 40px;
+      background-position: center top;
+    }
+    .ambient-radial {
+      background: radial-gradient(circle at top left, rgba(77, 184, 168, 0.15), transparent 40%);
+    }
+    .wye-delta-node {
+      transform-origin: center;
+      animation: pulse-node 4s ease-in-out infinite;
+    }
+    .wye-delta-path {
+      stroke-dasharray: 100;
+      stroke-dashoffset: 100;
+      animation: draw-path 3s forwards cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .wye-delta-spin {
+      animation: spin-slow 30s linear infinite;
+      transform-origin: center;
+    }
+    @keyframes pulse-node {
+      0%, 100% { fill-opacity: 0.5; r: 2px; }
+      50% { fill-opacity: 1; r: 3px; filter: drop-shadow(0 0 6px var(--p31-cyan)); }
+    }
+    @keyframes draw-path {
+      to { stroke-dashoffset: 0; }
+    }
+    @keyframes spin-slow {
+      to { transform: rotate(360deg); }
+    }
+    .p31-card-sc {
+      background-color: rgba(22, 25, 32, 0.6);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      box-shadow: 0 8px 32px -8px rgba(0, 0, 0, 0.5);
+      position: relative;
+      overflow: hidden;
+    }
+    .p31-card-sc::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(77, 184, 168, 0.3), transparent);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .p31-card-sc:hover::before { opacity: 1; }
+    .p31-badge-sc {
+      display: inline-flex;
+      align-items: center;
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 0.3rem 0.75rem;
+      border-radius: 9999px;
+      border: 1px solid transparent;
+      font-family: var(--p31-font-mono);
+      backdrop-filter:blur(4px);
+    }
+    .p31-badge-sc--live {
+      background-color: rgba(59, 163, 114, 0.1);
+      color: var(--p31-phosphorus);
+      border-color: rgba(59, 163, 114, 0.2);
+      box-shadow: 0 0 10px rgba(59, 163, 114, 0.1);
+    }
+    .p31-badge-sc--surface {
+      background-color: rgba(28, 32, 40, 0.8);
+      color: var(--p31-muted);
+      border-color: rgba(255, 255, 255, 0.05);
+    }
+    .p31-btn-sc {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 44px;
+      padding: 0 1.5rem;
+      font-family: var(--p31-font-mono);
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      border-radius: 0.375rem;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      text-decoration: none;
+      border: 1px solid var(--p31-coral);
+      background-color: var(--p31-coral);
+      color: var(--p31-void);
+    }
+    .p31-btn-sc:hover {
+      background-color: transparent;
+      color: var(--p31-coral);
+      box-shadow: 0 0 15px rgba(204, 98, 71, 0.2);
+    }
+    .p31-caps-sc {
+      font-family: var(--p31-font-mono);
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--p31-muted);
+    }
+    .p31-code-sc {
+      font-family: var(--p31-font-mono);
+      font-size: 0.8rem;
+      color: var(--p31-cyan);
+      background: linear-gradient(90deg, rgba(77, 184, 168, 0.1), transparent);
+      padding: 0.1rem 0.4rem;
+      border-left: 2px solid var(--p31-teal);
+      border-radius: 0 0.25rem 0.25rem 0;
+    }
+    .mesh-list {
+      position: relative;
+      padding-left: 1.5rem;
+    }
+    .mesh-list::before {
+      content: '';
+      position: absolute;
+      left: 0.45rem;
+      top: 0.5rem;
+      bottom: 1rem;
+      width: 1px;
+      background: linear-gradient(to bottom, var(--p31-teal), rgba(37, 137, 125, 0.1));
+    }
+    .mesh-item { position: relative; margin-bottom: 2rem; }
+    .mesh-node {
+      position: absolute;
+      left: -1.5rem;
+      top: 0.25rem;
+      width: 0.8rem;
+      height: 0.8rem;
+      background-color: var(--p31-void);
+      border: 2px solid var(--p31-teal);
+      border-radius: 50%;
+      z-index: 2;
+      transition: all 0.3s ease;
+    }
+    .mesh-item:hover .mesh-node {
+      background-color: var(--p31-teal);
+      box-shadow: 0 0 10px var(--p31-cyan);
+    }
+    .mesh-node.coral { border-color: var(--p31-coral); }
+    .mesh-item:hover .mesh-node.coral {
+      background-color: var(--p31-coral);
+      box-shadow: 0 0 10px var(--p31-coral);
+    }
+    .mesh-node.butter { border-color: var(--p31-butter); }
+    .mesh-item:hover .mesh-node.butter {
+      background-color: var(--p31-butter);
+      box-shadow: 0 0 10px var(--p31-butter);
+    }
+  </style>
 </head>
-<body class="bg-void text-cloud min-h-screen font-sans antialiased">
-<nav class="sticky top-0 z-50 border-b border-white/[0.07] bg-surface/90 backdrop-blur-sm">
-  <div class="max-w-3xl mx-auto px-6 py-4 flex items-center justify-between">
-    <a href="/" class="no-underline font-mono text-xs opacity-60 hover:opacity-90">← Hub</a>
-    <a href="/p31-super-centaur-pack.json" class="font-mono text-xs text-teal/70 hover:text-teal no-underline">Machine JSON →</a>
-  </div>
-</nav>
+<body class="min-h-screen flex flex-col antialiased selection:bg-teal selection:text-void font-sans text-cloud">
 
-<main class="max-w-3xl mx-auto px-6 py-14">
+  <div class="fixed top-0 left-0 w-[800px] h-[800px] ambient-radial pointer-events-none z-0" aria-hidden="true"></div>
 
-  <header class="mb-14">
-    <p class="font-mono text-xs tracking-widest text-teal/70 mb-3">STARTER PACK · CWPs + EDGE</p>
-    <h1 class="text-3xl md:text-4xl font-bold mb-5 leading-tight">Super-Centaur: data health, financial health, structural sovereignty</h1>
-    <p class="text-lg text-cloud/60 leading-relaxed">
-      This page is the <strong class="text-cloud/85">human</strong> companion to
-      <a href="/p31-super-centaur-pack.json" class="text-teal hover:underline">p31-super-centaur-pack.json</a>
-      (<span class="font-mono text-sm text-cloud/50">p31.superCentaurStarterPack/1.0.0</span>).
-      It stitches together what the repo already defines: <strong class="text-cloud/85">Ring D</strong> SUPER-CENTAUR mesh proxy,
-      <strong class="text-cloud/85">MAP</strong> monetary pipeline, and <strong class="text-cloud/85">Ring A</strong> p31ca sovereignty contracts — without merging deploys.
-    </p>
-    <p class="mt-4 font-mono text-xs text-cloud/40">
-      Short URLs: <a href="/centaur" class="text-teal/70 hover:text-teal no-underline">/centaur</a>
-      · <a href="/super-centaur" class="text-teal/70 hover:text-teal no-underline">/super-centaur</a>
-      — same page; CI keeps <code class="text-cloud/55">meshFleet</code> in the JSON aligned with <code class="text-cloud/55">CWP-30/mesh-bridge.ts</code>.
-      · <a href="/canon" class="text-teal/70 hover:text-teal no-underline">/canon</a> — live universal design canon (hub ↔ org).
-    </p>
-  </header>
-
-  <hr class="divider mb-12">
-
-  <section class="mb-14">
-    <h2 class="text-xl font-bold mb-2">Structural sovereignty</h2>
-    <p class="font-mono text-xs tracking-widest text-coral/60 mb-6">TOPOLOGY + CONTRACT, NOT ONE GOD SERVER</p>
-    <ul class="space-y-3 text-cloud/75 text-sm leading-relaxed">
-      <li><strong class="text-cloud/90">Wye → Delta</strong> — <a href="/delta.html" class="text-teal hover:underline">Why star topologies fail</a> and what a closed mesh loop buys you.</li>
-      <li><strong class="text-cloud/90">Ground truth</strong> — <span class="font-mono text-xs">p31.ground-truth/1.0.0</span> in the monorepo governs p31ca routes, redirects, and key product invariants.</li>
-      <li><strong class="text-cloud/90">Personal isolation</strong> — <a href="/mesh-start.html" class="text-teal hover:underline">Mesh start</a> + <span class="font-mono text-xs">k4-personal</span>: one Durable Object per <span class="font-mono">subject_id</span>; cage data does not leak in by default.</li>
-      <li><strong class="text-cloud/90">SUPER-CENTAUR</strong> — Node app on <strong>phosphorus31.org</strong> that, in production, <em>proxies</em> to the Worker fleet per handoff — it does not replace edge agents.</li>
-    </ul>
-    <p class="mt-6 text-xs text-cloud/45 font-mono">Canonical CWP: <code class="text-cloud/55">integration-handoff/CONTROLLED-WORK-PACKAGE-SUPER-CENTAUR.md</code> — <code>CWP-P31-SC-2026-01</code></p>
-  </section>
-
-  <section class="mb-14">
-    <h2 class="text-xl font-bold mb-2">Data health</h2>
-    <p class="font-mono text-xs tracking-widest text-lavender/60 mb-6">PERSONAL TETRA · HUB FUSION · WELCOME PACKAGES</p>
-    <ul class="space-y-3 text-cloud/75 text-sm leading-relaxed">
-      <li><a href="/planetary-onboard.html" class="text-teal hover:underline">Planetary onboard</a> persists welcome metadata; <a href="/p31-welcome-packages.json" class="text-teal hover:underline">p31-welcome-packages.json</a> drives copy and dock defaults.</li>
-      <li><span class="font-mono text-xs">p31.personalTetra/1.0.0</span> — four docks (Structure, Connection, Rhythm, Creation) on each personal agent.</li>
-      <li><span class="font-mono text-xs">p31.hubFusion/1.0.0</span> — <span class="font-mono text-xs">k4-hubs</span> roster + symmetric four-channel energy reads (add <code class="text-cloud/55">?hub=</code> on mesh-start).</li>
-      <li><a href="/passport" class="text-teal hover:underline">Cognitive Passport</a> — human advocacy slice; complements machine profile in DO state.</li>
-    </ul>
-  </section>
-
-  <section class="mb-14">
-    <h2 class="text-xl font-bold mb-2">Financial health</h2>
-    <p class="font-mono text-xs tracking-widest text-butter/60 mb-6">MAP PIPELINE · STRIPE · NO SECRETS IN STATIC</p>
-    <p class="text-sm text-cloud/75 leading-relaxed mb-4">
-      The monetary work package (<code class="text-cloud/55">CWP-P31-MAP-2026-01</code>) describes pay-in on
-      <strong>phosphorus31.org</strong>, <span class="font-mono text-xs">donate-api</span> Worker webhooks, Discord / Genesis fan-out,
-      durable event logging goals, and operator export. p31ca <strong>links</strong> to programs; it does not host checkout (MAP A4).
-    </p>
-    <ul class="space-y-2 text-sm text-cloud/70">
-      <li>Verify surface: <span class="font-mono text-xs text-cloud/50">04_SOFTWARE/scripts/verify-monetary-surface.mjs</span></li>
-      <li>Org legal snapshot: P31 Labs, Inc. · EIN <strong>42-1888158</strong> · 501(c)(3) pending — marketing language only; not tax advice.</li>
-      <li>Hub creator economy contract: <a href="/creator-economy.json" class="text-teal hover:underline">/creator-economy.json</a></li>
-    </ul>
-  </section>
-
-  <section class="mb-14">
-    <h2 class="text-xl font-bold mb-2">Mesh fleet (handoff constants)</h2>
-    <p class="font-mono text-xs tracking-widest text-teal/60 mb-4">FROM CWP-30 mesh-bridge.ts — RECONCILE WITH LIVE DEPLOY</p>
-    <div class="overflow-x-auto rounded-xl border border-white/5 text-sm">
-      <table class="w-full text-left">
-        <thead>
-          <tr class="font-mono text-[0.65rem] uppercase tracking-wider text-cloud/45 border-b border-white/10">
-            <th class="p-3">Key</th>
-            <th class="p-3">Base URL</th>
-          </tr>
-        </thead>
-        <tbody class="text-cloud/80">
-          <tr class="border-t border-white/5"><td class="p-3 font-mono text-teal/90">agentHub</td><td class="p-3 font-mono text-xs break-all">https://p31-agent-hub.trimtab-signal.workers.dev</td></tr>
-          <tr class="border-t border-white/5"><td class="p-3 font-mono text-teal/90">cage</td><td class="p-3 font-mono text-xs break-all">https://k4-cage.trimtab-signal.workers.dev</td></tr>
-          <tr class="border-t border-white/5"><td class="p-3 font-mono text-teal/90">personal</td><td class="p-3 font-mono text-xs break-all">https://k4-personal.trimtab-signal.workers.dev</td></tr>
-          <tr class="border-t border-white/5"><td class="p-3 font-mono text-teal/90">hubs</td><td class="p-3 font-mono text-xs break-all">https://k4-hubs.trimtab-signal.workers.dev</td></tr>
-          <tr class="border-t border-white/5"><td class="p-3 font-mono text-teal/90">bouncer</td><td class="p-3 font-mono text-xs break-all">https://p31-bouncer.trimtab-signal.workers.dev</td></tr>
-          <tr class="border-t border-white/5"><td class="p-3 font-mono text-teal/90">chamber</td><td class="p-3 font-mono text-xs break-all">https://reflective-chamber.trimtab-signal.workers.dev</td></tr>
-        </tbody>
-      </table>
+  <nav class="w-full max-w-[1100px] mx-auto px-6 py-8 flex justify-between items-center z-10 relative">
+    <a href="/" class="flex items-center gap-4 group no-underline">
+      <div class="w-8 h-8 flex items-center justify-center border border-teal/40 bg-teal/10 text-cyan text-[11px] font-bold font-mono rounded transition-all group-hover:bg-teal group-hover:text-void group-hover:shadow-[0_0_15px_rgba(77,184,168,0.4)]">
+        P31
+      </div>
+      <span class="p31-caps-sc text-cloud/70 group-hover:text-cloud transition-colors">P31 LABS — STARTER PACK</span>
+    </a>
+    <div class="flex items-center gap-8 font-mono text-xs text-muted">
+      <a href="/" class="hover:text-cloud transition-colors no-underline flex items-center gap-2"><span class="text-teal opacity-50">..</span> Hub</a>
+      <a href="https://github.com/p31labs/andromeda" target="_blank" rel="noopener" class="hover:text-cloud transition-colors no-underline">GitHub</a>
+      <a href="#launch" class="text-cloud hover:text-coral transition-colors no-underline flex items-center gap-2">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+        Machine JSON
+      </a>
     </div>
-    <p class="mt-4 text-xs text-cloud/45">
-      Production Centaur registers <span class="font-mono">meshProxy(app)</span> before local routes; dev skips proxy so local handlers win.
-      Auth paths vs <span class="font-mono">p31-bouncer</span> may need alignment — see SC CWP Phase 3.
-    </p>
-  </section>
+  </nav>
 
-  <section class="mb-14">
-    <h2 class="text-xl font-bold mb-6">Operator checklist (condensed)</h2>
-    <ol class="space-y-4 text-sm text-cloud/75 list-decimal pl-5">
-      <li>Read <strong class="text-cloud/90">P31-ROOT-MAP.md</strong> — which ring you are editing (p31ca vs phosphorus31.org).</li>
-      <li>Structural: <a href="/delta.html" class="text-teal hover:underline">Delta narrative</a> → <a href="/planetary-onboard.html" class="text-teal hover:underline">Onboard</a> → <a href="/mesh-start.html" class="text-teal hover:underline">Mesh start</a>.</li>
-      <li>Data: deploy or probe <span class="font-mono text-xs">k4-personal</span> + <span class="font-mono text-xs">k4-hubs</span>; copy <span class="font-mono text-xs">CWP-30/mesh-bridge.ts</span> into SUPER-CENTAUR (D-SC1–D-SC2).</li>
-      <li>Finance: follow MAP §2 as-built; run <span class="font-mono text-xs">verify-monetary-surface.mjs</span> when touching donate paths.</li>
-      <li>Inventory: keep one host list — ECO R8 / SC D-SC7 must not fork (see ECO CWP R9).</li>
-    </ol>
-  </section>
+  <main class="w-full max-w-[1100px] mx-auto px-6 flex-grow flex flex-col relative z-10 pb-8">
 
-  <section class="mb-14 text-center">
-    <p class="text-sm text-cloud/55 mb-6">Jump back into the product surface</p>
-    <div class="flex flex-col sm:flex-row gap-3 justify-center">
-      <a href="/planetary-onboard.html" class="inline-block bg-teal hover:bg-teal/85 text-paper font-bold py-3 px-6 rounded-xl no-underline text-sm">Planetary onboard →</a>
-      <a href="/connect.html" class="inline-block border border-white/15 hover:border-teal/40 text-cloud/80 py-3 px-6 rounded-xl no-underline text-sm font-mono">K₄ Mesh →</a>
+    <header class="py-12 md:py-16 border-b border-white/5 relative">
+      <div class="flex flex-col sm:flex-row items-start gap-8">
+        <div class="shrink-0 w-20 h-20 rounded-2xl border border-white/5 bg-surface2/50 backdrop-blur-md flex items-center justify-center relative overflow-hidden group shadow-[0_4px_20px_rgba(0,0,0,0.5)]" aria-hidden="true">
+          <div class="absolute inset-0 bg-teal/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+          <svg width="48" height="48" viewBox="0 0 100 100" fill="none" class="text-cyan wye-delta-spin">
+            <polygon points="50,10 90,80 10,80" stroke="rgba(255,255,255,0.1)" stroke-width="1" fill="rgba(37, 137, 125, 0.02)" />
+            <path class="wye-delta-path" d="M50,50 L50,10" stroke="currentColor" stroke-width="1.5" stroke-dasharray="2 4" />
+            <path class="wye-delta-path" d="M50,50 L90,80" stroke="currentColor" stroke-width="1.5" stroke-dasharray="2 4" />
+            <path class="wye-delta-path" d="M50,50 L10,80" stroke="currentColor" stroke-width="1.5" stroke-dasharray="2 4" />
+            <circle cx="50" cy="50" r="3" fill="currentColor" class="wye-delta-node" />
+            <circle cx="50" cy="10" r="2" fill="currentColor" />
+            <circle cx="90" cy="80" r="2" fill="currentColor" />
+            <circle cx="10" cy="80" r="2" fill="currentColor" />
+          </svg>
+        </div>
+        <div class="flex flex-col gap-5 min-w-0">
+          <p class="font-mono text-xs tracking-widest text-teal/70">STARTER PACK · CWPs + EDGE</p>
+          <h1 class="text-[2.25rem] md:text-[3.25rem] font-bold tracking-tight text-cloud leading-[1.1] font-sans uppercase">
+            Super-Centaur
+          </h1>
+          <p class="text-lg text-cloud/70 max-w-2xl leading-relaxed">
+            Data health, financial health, structural sovereignty. The human companion to
+            <a href="/p31-super-centaur-pack.json" class="text-teal hover:underline">p31-super-centaur-pack.json</a>
+            (<span class="font-mono text-sm text-cloud/50">p31.superCentaurStarterPack/1.0.0</span>).
+            <span class="p31-code-sc text-xs ml-1 border-none bg-transparent p-0 inline">Ring D</span> proxy,
+            <strong class="text-cloud/85">MAP</strong> pipeline, <strong class="text-cloud/85">Ring A</strong> contracts — without merging deploys.
+          </p>
+          <p class="font-mono text-xs text-cloud/45 max-w-2xl">
+            Short URLs:
+            <a href="/centaur" class="text-teal/70 hover:text-teal no-underline">/centaur</a>
+            · <a href="/super-centaur" class="text-teal/70 hover:text-teal no-underline">/super-centaur</a>
+            — CI keeps <code class="text-cloud/55">meshFleet</code> aligned with <code class="text-cloud/55">CWP-30/mesh-bridge.ts</code>.
+            · <a href="/canon" class="text-teal/70 hover:text-teal no-underline">/canon</a>
+          </p>
+          <div class="flex flex-wrap items-center gap-3">
+            <span class="p31-badge-sc p31-badge-sc--live">
+              <span class="w-1.5 h-1.5 rounded-full bg-phosphorus mr-2 animate-pulse" aria-hidden="true"></span>
+              LIVE
+            </span>
+            <span class="p31-badge-sc p31-badge-sc--surface">Ring D Proxy</span>
+            <span class="p31-badge-sc p31-badge-sc--surface">Ring A Contracts</span>
+            <span class="p31-badge-sc p31-badge-sc--surface">MAP Pipeline</span>
+          </div>
+          <div class="flex items-center gap-5 pt-2" id="launch">
+            <a href="/p31-super-centaur-pack.json" class="p31-btn-sc no-underline">
+              <span>Launch — machine JSON</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-12 lg:gap-20 pb-12 pt-14">
+
+      <div class="space-y-16 min-w-0">
+
+        <section>
+          <div class="flex items-center gap-4 mb-8">
+            <div class="h-px bg-white/10 flex-grow"></div>
+            <h2 class="p31-caps-sc text-cloud/50 m-0">Structural sovereignty</h2>
+            <div class="h-px bg-white/10 flex-grow"></div>
+          </div>
+          <p class="font-mono text-xs tracking-widest text-coral/60 mb-6">TOPOLOGY + CONTRACT, NOT ONE GOD SERVER</p>
+          <div class="mesh-list">
+            <div class="mesh-item">
+              <div class="mesh-node"></div>
+              <h3 class="text-lg font-bold text-cloud mb-2 font-sans tracking-tight">Wye → Delta</h3>
+              <p class="text-cloud/60 text-[0.95rem] leading-relaxed max-w-2xl">
+                <a href="/delta.html" class="text-teal hover:underline">Why star topologies fail</a> and what a closed mesh loop buys you.
+              </p>
+            </div>
+            <div class="mesh-item">
+              <div class="mesh-node butter"></div>
+              <h3 class="text-lg font-bold text-cloud mb-2 font-sans tracking-tight">Ground truth</h3>
+              <p class="text-cloud/60 text-[0.95rem] leading-relaxed max-w-2xl">
+                <span class="p31-code-sc border-none bg-transparent p-0 text-xs">p31.ground-truth/1.0.0</span> in the monorepo governs p31ca routes, redirects, and key product invariants.
+              </p>
+            </div>
+            <div class="mesh-item">
+              <div class="mesh-node coral"></div>
+              <h3 class="text-lg font-bold text-cloud mb-2 font-sans tracking-tight">Personal isolation</h3>
+              <p class="text-cloud/60 text-[0.95rem] leading-relaxed max-w-2xl">
+                <a href="/mesh-start.html" class="text-teal hover:underline">Mesh start</a> + <span class="font-mono text-xs text-coral">k4-personal</span>: one Durable Object per <span class="font-mono">subject_id</span>; cage data does not leak in by default.
+              </p>
+            </div>
+            <div class="mesh-item">
+              <div class="mesh-node"></div>
+              <h3 class="text-lg font-bold text-cloud mb-2 font-sans tracking-tight">SUPER-CENTAUR node</h3>
+              <p class="text-cloud/60 text-[0.95rem] leading-relaxed max-w-2xl">
+                Node on <strong class="text-cloud/85">phosphorus31.org</strong> that, in production, <em>proxies</em> to the Worker fleet — it does not replace edge agents.
+              </p>
+            </div>
+          </div>
+          <p class="mt-6 text-xs text-cloud/45 font-mono">Canonical CWP: <code class="text-cloud/55">integration-handoff/CONTROLLED-WORK-PACKAGE-SUPER-CENTAUR.md</code> — <code>CWP-P31-SC-2026-01</code></p>
+        </section>
+
+        <section>
+          <div class="flex items-center gap-4 mb-8">
+            <div class="h-px bg-white/10 flex-grow"></div>
+            <h2 class="p31-caps-sc text-cloud/50 m-0">Data health</h2>
+            <div class="h-px bg-white/10 flex-grow"></div>
+          </div>
+          <p class="font-mono text-xs tracking-widest text-lavender/60 mb-6">PERSONAL TETRA · HUB FUSION · WELCOME PACKAGES</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="bg-surface2/30 border border-white/5 rounded-xl p-5 hover:bg-surface2/60 transition-colors group">
+              <strong class="text-sm text-cloud block mb-2 font-mono group-hover:text-cyan transition-colors">Planetary onboard</strong>
+              <p class="text-[0.85rem] text-muted leading-relaxed">
+                <a href="/planetary-onboard.html" class="text-teal hover:underline">Onboard</a> + <a href="/p31-welcome-packages.json" class="text-teal hover:underline">p31-welcome-packages.json</a>.
+              </p>
+            </div>
+            <div class="bg-surface2/30 border border-white/5 rounded-xl p-5 hover:bg-surface2/60 transition-colors group">
+              <strong class="text-sm text-cloud block mb-2 font-mono group-hover:text-cyan transition-colors">Personal tetra</strong>
+              <p class="text-[0.85rem] text-muted leading-relaxed"><span class="font-mono text-xs">p31.personalTetra/1.0.0</span> — four docks per agent.</p>
+            </div>
+            <div class="bg-surface2/30 border border-white/5 rounded-xl p-5 hover:bg-surface2/60 transition-colors group">
+              <strong class="text-sm text-cloud block mb-2 font-mono group-hover:text-cyan transition-colors">Hub fusion</strong>
+              <p class="text-[0.85rem] text-muted leading-relaxed"><span class="font-mono text-xs">p31.hubFusion/1.0.0</span> — <span class="font-mono text-xs">k4-hubs</span> + four-channel reads (<code class="text-cloud/55">?hub=</code> on mesh-start).</p>
+            </div>
+            <div class="bg-surface2/30 border border-white/5 rounded-xl p-5 hover:bg-surface2/60 transition-colors group relative overflow-hidden">
+              <div class="absolute inset-0 bg-teal/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              <strong class="text-sm text-cloud block mb-2 font-mono group-hover:text-teal transition-colors">Cognitive passport</strong>
+              <p class="text-[0.85rem] text-muted leading-relaxed relative z-10"><a href="/passport" class="text-teal hover:underline">Passport</a> — human advocacy slice.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <div class="flex items-center gap-4 mb-8">
+            <div class="h-px bg-white/10 flex-grow"></div>
+            <h2 class="p31-caps-sc text-cloud/50 m-0">Financial health</h2>
+            <div class="h-px bg-white/10 flex-grow"></div>
+          </div>
+          <p class="font-mono text-xs tracking-widest text-butter/60 mb-4">MAP PIPELINE · STRIPE · NO SECRETS IN STATIC</p>
+          <p class="text-sm text-cloud/75 leading-relaxed mb-4 max-w-2xl">
+            MAP (<code class="text-cloud/55">CWP-P31-MAP-2026-01</code>): pay-in on <strong>phosphorus31.org</strong>, <span class="font-mono text-xs">donate-api</span> webhooks, fan-out, event logging. p31ca <strong>links</strong> to programs; it does not host checkout (MAP A4).
+          </p>
+          <ul class="space-y-2 text-sm text-cloud/70 max-w-2xl">
+            <li>Verify: <span class="font-mono text-xs text-cloud/50">04_SOFTWARE/scripts/verify-monetary-surface.mjs</span></li>
+            <li>P31 Labs, Inc. · EIN <strong>42-1888158</strong> · 501(c)(3) pending — not tax advice.</li>
+            <li><a href="/creator-economy.json" class="text-teal hover:underline">/creator-economy.json</a></li>
+          </ul>
+        </section>
+
+        <section>
+          <div class="flex items-center gap-4 mb-6">
+            <div class="h-px bg-white/10 flex-grow"></div>
+            <h2 class="p31-caps-sc text-cloud/50 m-0">Mesh fleet (handoff)</h2>
+            <div class="h-px bg-white/10 flex-grow"></div>
+          </div>
+          <p class="font-mono text-xs tracking-widest text-teal/60 mb-4">FROM CWP-30 mesh-bridge.ts — RECONCILE WITH LIVE DEPLOY</p>
+          <div class="overflow-x-auto rounded-xl border border-white/5 text-sm">
+            <table class="w-full text-left">
+              <thead>
+                <tr class="font-mono text-[0.65rem] uppercase tracking-wider text-cloud/45 border-b border-white/10">
+                  <th class="p-3">Key</th>
+                  <th class="p-3">Base URL</th>
+                </tr>
+              </thead>
+              <tbody class="text-cloud/80">
+                <tr class="border-t border-white/5"><td class="p-3 font-mono text-teal/90">agentHub</td><td class="p-3 font-mono text-xs break-all">https://p31-agent-hub.trimtab-signal.workers.dev</td></tr>
+                <tr class="border-t border-white/5"><td class="p-3 font-mono text-teal/90">cage</td><td class="p-3 font-mono text-xs break-all">https://k4-cage.trimtab-signal.workers.dev</td></tr>
+                <tr class="border-t border-white/5"><td class="p-3 font-mono text-teal/90">personal</td><td class="p-3 font-mono text-xs break-all">https://k4-personal.trimtab-signal.workers.dev</td></tr>
+                <tr class="border-t border-white/5"><td class="p-3 font-mono text-teal/90">hubs</td><td class="p-3 font-mono text-xs break-all">https://k4-hubs.trimtab-signal.workers.dev</td></tr>
+                <tr class="border-t border-white/5"><td class="p-3 font-mono text-teal/90">bouncer</td><td class="p-3 font-mono text-xs break-all">https://p31-bouncer.trimtab-signal.workers.dev</td></tr>
+                <tr class="border-t border-white/5"><td class="p-3 font-mono text-teal/90">chamber</td><td class="p-3 font-mono text-xs break-all">https://reflective-chamber.trimtab-signal.workers.dev</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="mt-4 text-xs text-cloud/45 max-w-2xl">
+            Production Centaur registers <span class="font-mono">meshProxy(app)</span> before local routes. Auth vs <span class="font-mono">p31-bouncer</span> — see SC CWP Phase 3.
+          </p>
+        </section>
+
+        <section>
+          <div class="flex items-center gap-4 mb-6">
+            <div class="h-px bg-white/10 flex-grow"></div>
+            <h2 class="p31-caps-sc text-cloud/50 m-0">Operator checklist</h2>
+            <div class="h-px bg-white/10 flex-grow"></div>
+          </div>
+          <ol class="space-y-4 text-sm text-cloud/75 list-decimal pl-5 max-w-2xl">
+            <li>Read <strong class="text-cloud/90">P31-ROOT-MAP.md</strong> — which ring you are editing.</li>
+            <li>Structural: <a href="/delta.html" class="text-teal hover:underline">Delta</a> → <a href="/planetary-onboard.html" class="text-teal hover:underline">Onboard</a> → <a href="/mesh-start.html" class="text-teal hover:underline">Mesh start</a>.</li>
+            <li>Data: probe <span class="font-mono text-xs">k4-personal</span> + <span class="font-mono text-xs">k4-hubs</span>; align <span class="font-mono text-xs">CWP-30/mesh-bridge.ts</span> (D-SC1–D-SC2).</li>
+            <li>Finance: MAP §2; <span class="font-mono text-xs">verify-monetary-surface.mjs</span> when touching donate paths.</li>
+            <li>Inventory: one host list — ECO R8 / SC D-SC7 must not fork.</li>
+          </ol>
+        </section>
+
+        <section class="text-center sm:text-left">
+          <p class="text-sm text-cloud/55 mb-6">Jump back into the product surface</p>
+          <div class="flex flex-col sm:flex-row gap-3 justify-start">
+            <a href="/planetary-onboard.html" class="inline-block bg-teal hover:bg-teal/85 text-paper font-bold py-3 px-6 rounded-xl no-underline text-sm text-center">Planetary onboard →</a>
+            <a href="/connect.html" class="inline-block border border-white/15 hover:border-teal/40 text-cloud/80 py-3 px-6 rounded-xl no-underline text-sm font-mono text-center">K₄ Mesh →</a>
+          </div>
+        </section>
+
+        <footer class="text-center sm:text-left pt-8 border-t border-white/5">
+          <p class="font-mono text-xs text-cloud/25 tracking-widest mb-1">P31 LABS — EIN 42-1888158</p>
+          <p class="font-mono text-xs text-cloud/20">Starter pack page + JSON — not legal or tax advice.</p>
+        </footer>
+      </div>
+
+      <aside class="space-y-6 lg:pt-2">
+        <div class="p31-card-sc border-t-teal/50">
+          <h3 class="p31-caps-sc mb-5 text-cloud">System status</h3>
+          <div class="bg-void border border-white/5 rounded-lg p-4 font-mono text-[11px] leading-relaxed text-muted">
+            <div class="flex justify-between items-center mb-3 pb-2 border-b border-white/5">
+              <span class="text-cyan">EIN 42-1888158</span>
+              <span class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-phosphorus rounded-full"></span> RUNNING</span>
+            </div>
+            <p class="text-cloud/80 mb-1">&gt; P31 edge infrastructure.</p>
+            <p>&gt; Ring D SUPER-CENTAUR mesh proxy (handoff).</p>
+            <p>&gt; CI ↔ <span class="text-coral">CWP-30/mesh-bridge.ts</span></p>
+          </div>
+        </div>
+        <div class="p31-card-sc">
+          <h3 class="p31-caps-sc mb-5 text-cloud">Integrations map</h3>
+          <ul class="space-y-3 font-mono text-[12px]">
+            <li class="flex items-center justify-between group">
+              <div class="flex items-center gap-3">
+                <span class="text-teal group-hover:text-cyan transition-colors">├─</span>
+                <span class="text-cloud/80 group-hover:text-cloud transition-colors">SUPER-CENTAUR</span>
+              </div>
+              <span class="text-muted text-[10px]">Ring D</span>
+            </li>
+            <li class="flex items-center justify-between group">
+              <div class="flex items-center gap-3">
+                <span class="text-teal group-hover:text-cyan transition-colors">├─</span>
+                <span class="text-cloud/80 group-hover:text-cloud transition-colors">MAP pipeline</span>
+              </div>
+              <span class="text-muted text-[10px]">Stripe</span>
+            </li>
+            <li class="flex items-center justify-between group">
+              <div class="flex items-center gap-3">
+                <span class="text-teal group-hover:text-cyan transition-colors">├─</span>
+                <span class="text-cloud/80 group-hover:text-cloud transition-colors">Sovereignty contracts</span>
+              </div>
+              <span class="text-muted text-[10px]">Ring A</span>
+            </li>
+            <li class="flex items-center justify-between group">
+              <div class="flex items-center gap-3">
+                <span class="text-teal/40">└─</span>
+                <a href="/canon" class="text-cloud/60 hover:text-cyan no-underline">Universal canon</a>
+              </div>
+              <span class="text-muted text-[10px]">/canon</span>
+            </li>
+          </ul>
+        </div>
+      </aside>
     </div>
-  </section>
+  </main>
 
-  <footer class="text-center pt-8 border-t border-white/5">
-    <p class="font-mono text-xs text-cloud/25 tracking-widest mb-1">P31 LABS — EIN 42-1888158</p>
-    <p class="font-mono text-xs text-cloud/20">Starter pack page + JSON — not legal or tax advice.</p>
-  </footer>
-</main>
-<!-- P31:mission-ebc:start -->
-<footer id="ebc" class="p31-mission-trio p31-mission-trio--ebc" role="contentinfo" aria-label="Mission — build, create, connect">
+  <!-- P31:mission-ebc:start -->
+  <footer id="ebc" class="p31-mission-trio p31-mission-trio--ebc" role="contentinfo" aria-label="Mission — build, create, connect">
     <a class="p31-mission-trio__link p31-mission-trio__link--build p31-mesh-tap" id="ebc-build" href="/build" title="Initial Build — intake, subject scope, verify-gated bake">
-        <span class="p31-mission-trio__head">
-            <span class="p31-mission-trio__dot" aria-hidden="true"></span>
-            <span class="p31-mission-trio__verb">Build</span>
-        </span>
-        <span class="p31-mission-trio__desc">Intake and bake on the same verify chain—not a decoupled mock.</span>
+      <span class="p31-mission-trio__head">
+        <span class="p31-mission-trio__dot" aria-hidden="true"></span>
+        <span class="p31-mission-trio__verb">Build</span>
+      </span>
+      <span class="p31-mission-trio__desc">Intake and bake on the same verify chain—not a decoupled mock.</span>
     </a>
     <a class="p31-mission-trio__link p31-mission-trio__link--create p31-mesh-tap" id="ebc-create" href="/geodesic.html" title="GEODESIC — snap grid, Maxwell rigidity, scene export">
-        <span class="p31-mission-trio__head">
-            <span class="p31-mission-trio__dot" aria-hidden="true"></span>
-            <span class="p31-mission-trio__verb">Create</span>
-        </span>
-        <span class="p31-mission-trio__desc">One lab surface, honest rigidity—generate or prove; don’t fork the same truth twice (ephemeralization).</span>
+      <span class="p31-mission-trio__head">
+        <span class="p31-mission-trio__dot" aria-hidden="true"></span>
+        <span class="p31-mission-trio__verb">Create</span>
+      </span>
+      <span class="p31-mission-trio__desc">One lab surface, honest rigidity—generate or prove; don't fork the same truth twice (ephemeralization).</span>
     </a>
     <a class="p31-mission-trio__link p31-mission-trio__link--connect p31-mesh-tap" id="ebc-connect" href="/mesh" title="Mesh navigator — K₄ cage and product graph">
-        <span class="p31-mission-trio__head">
-            <span class="p31-mission-trio__dot" aria-hidden="true"></span>
-            <span class="p31-mission-trio__verb">Connect</span>
-        </span>
-        <span class="p31-mission-trio__desc"><span class="p31-mission-trio__now">Now</span> — live cage and edges: mesh, hubs, and money follow the same published contracts (ethical monetization).</span>
+      <span class="p31-mission-trio__head">
+        <span class="p31-mission-trio__dot" aria-hidden="true"></span>
+        <span class="p31-mission-trio__verb">Connect</span>
+      </span>
+      <span class="p31-mission-trio__desc"><span class="p31-mission-trio__now">Now</span> — live cage and edges: mesh, hubs, and money follow the same published contracts (ethical monetization).</span>
     </a>
-</footer>
-<!-- P31:mission-ebc:end -->
+  </footer>
+  <!-- P31:mission-ebc:end -->
 </body>
 </html>
