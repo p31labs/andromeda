@@ -401,6 +401,21 @@
       "status": 301
     },
     {
+      "from": "/branding",
+      "to": "/branding/index.html",
+      "status": 301
+    },
+    {
+      "from": "/donate",
+      "to": "/donate.html",
+      "status": 301
+    },
+    {
+      "from": "/kofi-forge",
+      "to": "/p31-kofi-forge.html",
+      "status": 301
+    },
+    {
       "from": "/mesh",
       "to": "/connect.html",
       "status": 301
