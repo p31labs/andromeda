@@ -1,7 +1,7 @@
 {
   "schema": "p31.publicSurface/1.0.0",
   "version": "1.0.0",
-  "updated": "2026-04-26",
+  "updated": "2026-04-27",
   "note": "Machine index of generic public deliverables on p31ca.org. Sync entity/contact copy with P31 home p31-constants.json.",
   "organization": {
     "legalName": "P31 Labs, Inc.",
@@ -48,6 +48,12 @@
   },
   "wellKnown": {
     "securityTxt": "/.well-known/security.txt"
+  },
+  "mapPrimaryHubDonatePage": {
+    "path": "/donate.html",
+    "stripePaymentLink": "https://buy.stripe.com/5kQ14g827gmpcHFb0W8Ra00",
+    "githubSponsors": "https://github.com/sponsors/p31labs",
+    "note": "Canonical static MAP surface. Optional query client_reference_id when localStorage p31_subject_id matches derivation; no Stripe.js."
   },
   "donateApi": {
     "customDomain": "https://donate-api.phosphorus31.org",

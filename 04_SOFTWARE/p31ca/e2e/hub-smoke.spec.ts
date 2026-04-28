@@ -36,7 +36,7 @@ test.describe("p31ca hub (built dist)", () => {
 
   test("super-centaur starter renders", async ({ page }) => {
     await page.goto("/p31-super-centaur-starter.html", nav);
-    await expect(page.getByRole("heading", { name: /Super-Centaur/i })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1, name: /^Super-Centaur$/ })).toBeVisible();
   });
 
   test("machine pack JSON is valid", async ({ request }) => {

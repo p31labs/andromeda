@@ -1,5 +1,5 @@
 {
-  "generated": "2026-04-28T01:40:53.400Z",
+  "generated": "2026-04-28T05:39:40.190Z",
   "meta": {
     "schema": "p31.hub-landing/1.0.0",
     "registry": "scripts/hub/registry.mjs",
@@ -271,12 +271,12 @@
       "id": "donate",
       "title": "Donate Pipeline",
       "status": "LIVE",
-      "desc": "Stripe (edge) + Ko-fi (Discord)",
+      "desc": "MAP — Stripe Payment Link + Sponsors",
       "tags": [
-        "Stripe Checkout",
-        "donate-api Worker",
-        "Optional KV (Stripe idempotency)",
-        "Ko-fi → Discord bot"
+        "Stripe Payment Link (MAP)",
+        "Optional client_reference_id binding",
+        "GitHub Sponsors",
+        "donate-api Worker (optional programmatic Checkout)"
       ],
       "url": "/donate-about.html"
     },

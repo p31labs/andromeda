@@ -222,8 +222,8 @@ database_id   = "<your-d1-id>"
 ### 3. Apply the schema
 
 ```bash
-# Remote (production)
-wrangler d1 execute p31-passkey-db --file=schema.sql
+# Remote (production Cloudflare)
+wrangler d1 execute p31-passkey-db --remote --file=schema.sql
 
 # Local (dev)
 wrangler d1 execute p31-passkey-db --local --file=schema.sql

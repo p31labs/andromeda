@@ -21,6 +21,15 @@
       "notes": "WebAuthn (POST /api/passkey/*); education GET; Node Zero (POST /api/hardware/challenge|pair|telemetry). Same D1/KV. ECDSA/RSA for WebAuthn. Hardware pairing is opaque subject_id + Ed25519 pubkey—no Passkey on device. Education/hardware fetch use high-entropy ids; static pages gate UX. P2: narrow CORS for non-WebAuthn paths."
     },
     {
+      "name": "p31-node-zero-m2m",
+      "path": "workers/node-zero-m2m",
+      "bindings": ["HARDWARE_CHALLENGES (KV)"],
+      "vars": ["DEV_ALLOW_INSECURE"],
+      "corsPolicy": "preflight OPTIONS for lab tools — POST is device/machine (Bearer), not cookie-sessions",
+      "authScheme": "Bearer M2M_BEARER_TOKEN (wrangler secret); optional insecure dev mode when DEV_ALLOW_INSECURE=1 and secret unset — never prod",
+      "notes": "POST /api/hardware/challenge emits six-digit pairing display_code + ephemeral KV record. Companion firmware: packages/node-zero/firmware/esp32-m2m-stub. Routes: uncomment zone route in wrangler.toml for p31ca.org/api/hardware/*. Replace KV id placeholder before deploy."
+    },
+    {
       "name": "k4-personal",
       "path": "04_SOFTWARE/k4-personal",
       "bindings": ["PERSONAL_AGENT (DO)", "K4_MESH (KV)", "AI"],

@@ -1,81 +1,107 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-p31-appearance="hub">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#0f1115">
+    <meta name="description" content="Build Platonic solids in the browser or join a shared K4 live room — tabletop snap, Turn / bracket rotation synced over WebSocket, Maxwell rigidity checks.">
+    <meta property="og:title" content="GEODESIC — 3D structure builder | P31 Labs">
+    <meta property="og:description" content="Progressive coach, Platonic primitives, GeodesicRoom K4 cage + synced shapes (?room=) with shared position and tabletop rotY over wss://.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://p31ca.org/geodesic">
+    <meta name="twitter:card" content="summary">
     <title>GEODESIC | 3D Structure Builder | P31 Labs</title>
     <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/p31-style.css">
     <style>
         *{margin:0;padding:0;box-sizing:border-box}
-        :root{--void:#0f1115;--surface:#161920;--teal:#25897d;--cyan:#4db8a8;--cloud:#d8d6d0;--butter:#cda852;--lav:#8b7cc9;--coral:#cc6247;--phos:#3ba372}
         html,body{height:100%;height:100dvh;max-height:-webkit-fill-available}
-        body{background:var(--void);color:var(--cloud);font-family:'Atkinson Hyperlegible',sans-serif;display:flex;flex-direction:column;overflow:hidden;min-height:0;
+        .p31-geodesic-skip{position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;z-index:-1}
+        .p31-geodesic-skip:focus-visible{position:fixed;left:max(var(--p31-space-2), env(safe-area-inset-left,0));top:max(var(--p31-space-2), env(safe-area-inset-top,0));width:auto;height:auto;padding:var(--p31-space-2) var(--p31-space-4);background:var(--p31-surface);color:var(--p31-teal);border:2px solid var(--p31-teal);border-radius:var(--p31-radius-md);z-index:120;font-family:var(--p31-font-sans);font-size:var(--p31-text-sm);text-decoration:none;overflow:visible}
+        body{background:var(--p31-void);color:var(--p31-cloud);font-family:var(--p31-font-sans);display:flex;flex-direction:column;overflow:hidden;min-height:0;
             padding-top:env(safe-area-inset-top,0px);padding-right:env(safe-area-inset-right,0px);padding-left:env(safe-area-inset-left,0px);
             padding-bottom:env(safe-area-inset-bottom,0px)}
+        .p31-geodesic-shell{flex:1;display:flex;flex-direction:column;min-height:0}
         header{padding:8px 16px;min-height:48px;background:rgba(15,17,21,0.95);border-bottom:1px solid rgba(255,255,255,0.05);display:flex;justify-content:space-between;align-items:center;flex-shrink:0;z-index:10}
         a.logo, .logo{touch-action:manipulation;-webkit-tap-highlight-color:transparent;outline:none}
-        a.logo:focus-visible, .back:focus-visible, button:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
-        .logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--cloud);font-weight:700;font-size:14px}
-        a.back{color:rgba(216,214,208,0.4);font-family:'JetBrains Mono',monospace;font-size:12px;text-decoration:none}
-        a.back:hover{color:var(--cloud)}
+        a.logo:focus-visible, .back:focus-visible, button:focus-visible{outline:var(--p31-focus-ring) solid var(--p31-teal);outline-offset:var(--p31-focus-offset)}
+        .logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--p31-cloud);font-weight:700;font-size:var(--p31-text-sm)}
+        a.back{color:var(--p31-muted);font-family:var(--p31-font-sans);font-size:var(--p31-text-xs);text-decoration:none}
+        a.back:hover{color:var(--p31-cloud)}
         .toolbar-wrap{background:rgba(22,25,32,0.8);border-bottom:1px solid rgba(255,255,255,0.04);flex-shrink:0;min-height:0}
         .toolbar{display:flex;gap:6px;align-items:center;padding:8px 10px;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;scroll-snap-type:x proximity;scrollbar-width:thin;scrollbar-color:rgba(37,137,125,0.4) transparent;touch-action:pan-x}
         .toolbar::-webkit-scrollbar{height:5px}
         .toolbar::-webkit-scrollbar-thumb{background:rgba(37,137,125,0.35);border-radius:3px}
         .tool-sep{flex:0 0 1px;align-self:stretch;width:1px;min-width:0;background:rgba(255,255,255,0.1);margin:0 2px;flex-shrink:0}
-        .tool-label{flex:0 0 auto;font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.04em;text-transform:uppercase;color:rgba(216,214,208,0.4);align-self:center;padding:0 4px;user-select:none}
-        button{display:inline-flex;font-family:'JetBrains Mono',monospace;font-size:11px;padding:6px 10px;border-radius:6px;cursor:pointer;border:1px solid rgba(255,255,255,0.1);background:rgba(22,25,32,0.8);color:rgba(216,214,208,0.6);transition:all 0.2s;flex:0 0 auto;touch-action:manipulation;-webkit-tap-highlight-color:transparent;scroll-snap-align:start;min-height:40px;min-width:40px;align-items:center;justify-content:center}
-        button:hover{border-color:var(--teal);color:var(--teal)}
-        button.active{border-color:var(--teal);color:var(--teal);background:rgba(37,137,125,0.15)}
+        .tool-label{flex:0 0 auto;font-family:var(--p31-font-sans);font-size:var(--p31-text-xs);font-weight:600;letter-spacing:var(--p31-tracking-caps);text-transform:uppercase;color:var(--p31-muted);align-self:center;padding:0 var(--p31-space-1);user-select:none}
+        button{display:inline-flex;font-family:var(--p31-font-mono);font-size:var(--p31-text-xs);padding:var(--p31-space-2) 10px;border-radius:var(--p31-radius-sm);cursor:pointer;border:1px solid rgba(255,255,255,0.1);background:rgba(22,25,32,0.8);color:rgba(216,214,208,0.6);transition:border-color var(--p31-duration-fast) var(--p31-ease-standard),color var(--p31-duration-fast) var(--p31-ease-standard),background var(--p31-duration-fast) var(--p31-ease-standard);flex:0 0 auto;touch-action:manipulation;-webkit-tap-highlight-color:transparent;scroll-snap-align:start;min-height:40px;min-width:40px;align-items:center;justify-content:center}
+        button:hover{border-color:var(--p31-teal);color:var(--p31-teal)}
+        button.active{border-color:var(--p31-teal);color:var(--p31-teal);background:rgba(37,137,125,0.15)}
         #three-mount{flex:1;position:relative;min-height:0}
-        .inf-toggle{display:none;position:absolute;top:10px;right:10px;z-index:6;width:44px;height:44px;border-radius:10px;border:1px solid rgba(255,255,255,0.12);background:rgba(22,25,32,0.95);color:var(--teal);font-size:18px;line-height:1;cursor:pointer;touch-action:manipulation;align-items:center;justify-content:center;box-shadow:0 2px 12px rgba(0,0,0,0.35)}
-        .inf-toggle[aria-expanded="true"]{background:rgba(37,137,125,0.2);color:var(--cloud);border-color:var(--teal)}
-        .info-panel{position:absolute;top:12px;right:12px;background:rgba(22,25,32,0.9);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:14px;font-family:'JetBrains Mono',monospace;font-size:11px;z-index:5;min-width:180px;max-width:min(92vw, 280px);max-height:min(50dvh, 360px);overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;scroll-snap-align:none}
+        #geodesic-canvas{opacity:0;transition:opacity var(--p31-duration-slow) var(--p31-ease-decelerate)}
+        #geodesic-canvas.p31-geodesic-ready{opacity:1}
+        .inf-toggle{display:none;position:absolute;top:10px;right:10px;z-index:6;width:44px;height:44px;border-radius:var(--p31-radius-md);border:1px solid rgba(255,255,255,0.12);background:rgba(22,25,32,0.95);color:var(--p31-teal);font-size:18px;line-height:1;cursor:pointer;touch-action:manipulation;align-items:center;justify-content:center;box-shadow:0 2px 12px rgba(0,0,0,0.35)}
+        .inf-toggle[aria-expanded="true"]{background:rgba(37,137,125,0.2);color:var(--p31-cloud);border-color:var(--p31-teal)}
+        .info-panel{position:absolute;top:12px;right:12px;background:rgba(22,25,32,0.9);border:1px solid rgba(255,255,255,0.06);border-radius:var(--p31-radius-md);padding:14px;font-family:var(--p31-font-mono);font-size:var(--p31-text-xs);z-index:5;min-width:180px;max-width:min(92vw, 280px);max-height:min(50dvh, 360px);overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;scroll-snap-align:none}
         .info-row{display:flex;justify-content:space-between;gap:16px;margin-bottom:6px}
         .info-key{color:rgba(216,214,208,0.4)}
-        .info-val{color:var(--teal)}
-        .hud{position:absolute;bottom:max(10px, env(safe-area-inset-bottom, 0px));left:50%;transform:translateX(-50%);font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(216,214,208,0.3);pointer-events:none;z-index:4;max-width:min(96vw, 480px);text-align:center;line-height:1.4;padding:0 8px}
-        #room-bar{display:none;align-items:center;gap:8px;flex-wrap:wrap;padding:8px 12px;min-height:48px;background:rgba(37,137,125,0.12);border-bottom:1px solid rgba(37,137,125,0.25);font-family:'JetBrains Mono',monospace;font-size:11px;flex-shrink:0}
-        #room-bar button{min-height:40px;touch-action:manipulation}
-        #room-bar .dot{width:7px;height:7px;border-radius:50%;background:var(--teal);flex-shrink:0;animation:pulse 2s infinite}
-        #room-bar .room-id{color:var(--teal)}
-        #room-bar .room-status{color:rgba(216,214,208,0.45);margin-left:auto}
+        .info-val{color:var(--p31-teal)}
+        .hud{position:absolute;bottom:max(10px, env(safe-area-inset-bottom, 0px));left:50%;transform:translateX(-50%);font-family:var(--p31-font-mono);font-size:10px;color:rgba(216,214,208,0.3);pointer-events:none;z-index:4;max-width:min(96vw, 480px);text-align:center;line-height:var(--p31-leading-snug);padding:0 8px}
+        #room-bar{display:flex;align-items:center;gap:var(--p31-space-2);flex-wrap:wrap;padding:var(--p31-space-2) var(--p31-space-3);min-height:48px;background:rgba(37,137,125,0.12);border-bottom:1px solid rgba(37,137,125,0.25);font-family:var(--p31-font-mono);font-size:var(--p31-text-xs);flex-shrink:0}
+        #room-bar button{min-height:36px;touch-action:manipulation}
+        #room-bar .dot{width:7px;height:7px;border-radius:var(--p31-radius-full);background:var(--p31-teal);flex-shrink:0;animation:pulse 2s var(--p31-ease-standard) infinite}
+        #room-bar .room-id{color:var(--p31-teal);word-break:break-all;max-width:min(40vw,200px)}
+        #room-bar .room-status{color:rgba(216,214,208,0.45);margin-left:auto;flex:0 1 auto;text-align:right}
+        .room-bar-tools{display:flex;align-items:center;gap:var(--p31-space-1);flex-wrap:wrap}
+        #room-bar .room-bar-tools button{font-size:10px;min-height:36px;padding:4px 8px;min-width:auto}
         @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.35}}
-        .vertex-label{position:absolute;font-family:'JetBrains Mono',monospace;font-size:10px;pointer-events:none;color:rgba(216,214,208,0.7);text-shadow:0 0 4px #000;transform:translate(-50%,-140%)}
+        .vertex-label{position:absolute;font-family:var(--p31-font-mono);font-size:10px;pointer-events:none;color:rgba(216,214,208,0.7);text-shadow:0 0 4px #000;transform:translate(-50%,-140%)}
         #labels-container{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none}
 
-        /* ── Coach overlay (mirrors BONDING TutorialOverlay) ── */
         #coach{position:fixed;left:max(10px, env(safe-area-inset-left,0px));z-index:50;pointer-events:auto;bottom:calc(12px + env(safe-area-inset-bottom,0px));max-width:min(90vw,320px);max-height:min(40vh, 240px);display:flex;flex-direction:column}
-        #coach-card{background:rgba(22,25,32,0.95);border:1px solid rgba(205,168,82,0.2);border-radius:10px;padding:12px 32px 10px 12px;backdrop-filter:blur(8px);max-height:100%;display:flex;flex-direction:column;min-height:0;overflow-y:auto;overscroll-behavior:contain;box-shadow:0 4px 24px rgba(0,0,0,0.4)}
-        #coach-pill{display:none;position:fixed;left:max(10px, env(safe-area-inset-left,0px));z-index:50;bottom:calc(12px + env(safe-area-inset-bottom,0px));font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(205,168,82,0.6);background:rgba(22,25,32,0.9);border:1px solid rgba(205,168,82,0.2);border-radius:22px;min-height:44px;min-width:44px;padding:8px 16px;cursor:pointer;pointer-events:auto;touch-action:manipulation;align-items:center;box-shadow:0 2px 12px rgba(0,0,0,0.3)}
+        #coach-card{background:rgba(22,25,32,0.95);border:1px solid rgba(205,168,82,0.2);border-radius:var(--p31-radius-md);padding:12px 32px 10px 12px;backdrop-filter:blur(8px);max-height:100%;display:flex;flex-direction:column;min-height:0;overflow-y:auto;overscroll-behavior:contain;box-shadow:0 4px 24px rgba(0,0,0,0.4)}
+        #coach-pill{display:none;position:fixed;left:max(10px, env(safe-area-inset-left,0px));z-index:50;bottom:calc(12px + env(safe-area-inset-bottom,0px));font-family:var(--p31-font-mono);font-size:11px;color:rgba(205,168,82,0.6);background:rgba(22,25,32,0.9);border:1px solid rgba(205,168,82,0.2);border-radius:22px;min-height:44px;min-width:44px;padding:8px 16px;cursor:pointer;pointer-events:auto;touch-action:manipulation;align-items:center;box-shadow:0 2px 12px rgba(0,0,0,0.3)}
         .coach-body{display:flex;gap:10px;align-items:flex-start}
         .coach-emoji{font-size:1.3rem;flex-shrink:0;opacity:0.75;line-height:1.3}
-        .coach-msg{font-family:'Atkinson Hyperlegible',sans-serif;font-size:13px;color:var(--cloud);line-height:1.45}
-        .coach-meta{font-family:'JetBrains Mono',monospace;font-size:9px;color:rgba(216,214,208,0.25);margin-top:5px;display:flex;gap:10px}
+        .coach-msg{font-family:var(--p31-font-sans);font-size:var(--p31-text-sm);color:var(--p31-cloud);line-height:var(--p31-leading-snug)}
+        .coach-meta{font-family:var(--p31-font-mono);font-size:9px;color:rgba(216,214,208,0.25);margin-top:5px;display:flex;gap:10px}
         .coach-skip{cursor:pointer}
         .coach-skip:hover{color:rgba(216,214,208,0.5)}
         #coach-min{position:absolute;top:6px;right:8px;background:none;border:none;color:rgba(216,214,208,0.2);cursor:pointer;font-size:13px;padding:2px 6px;line-height:1}
         #coach-min:hover{color:rgba(216,214,208,0.5)}
-        /* Toast */
-        #coach-toast{position:fixed;left:50%;transform:translateX(-50%) translateY(8px);bottom:calc(72px + env(safe-area-inset-bottom,0px));background:rgba(37,137,125,0.95);border-radius:10px;padding:10px 16px;font-family:'Atkinson Hyperlegible',sans-serif;font-size:14px;font-weight:500;color:var(--cloud);z-index:60;pointer-events:none;opacity:0;transition:opacity 0.25s,transform 0.25s;white-space:normal;word-break:break-word;max-width:min(94vw, 400px);text-align:center;box-shadow:0 4px 20px rgba(0,0,0,0.35);line-height:1.4}
+        #coach-toast{position:fixed;left:50%;transform:translateX(-50%) translateY(8px);bottom:calc(72px + env(safe-area-inset-bottom,0px));background:rgba(37,137,125,0.95);border-radius:var(--p31-radius-md);padding:var(--p31-space-2) var(--p31-space-4);font-family:var(--p31-font-sans);font-size:var(--p31-text-md);font-weight:500;color:var(--p31-cloud);z-index:60;pointer-events:none;opacity:0;transition:opacity var(--p31-duration-normal) var(--p31-ease-standard),transform var(--p31-duration-normal) var(--p31-ease-standard);white-space:normal;word-break:break-word;max-width:min(94vw, 400px);text-align:center;box-shadow:0 4px 20px rgba(0,0,0,0.35);line-height:var(--p31-leading-snug)}
         #coach-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-        /* Locked toolbar buttons — faded, not hidden, so kids see what's coming */
         button.locked{opacity:0.22;pointer-events:none;cursor:not-allowed}
-        /* Live: info panel hidden (room bar replaces it); toolbar stays visible */
         body.geodesic-live .info-panel { display: none !important; }
+        body.geodesic-live #btn-snapshot-export,
+        body.geodesic-live #btn-snapshot-import { display: none !important; }
         @media (max-width: 640px) {
             .inf-toggle{display:inline-flex}
             .info-panel{top:58px;right:10px;left:10px;max-width:none;min-width:0;display:none}
-            .info-panel.is-open{display:block;animation:fadein 0.2s ease}
+            .info-panel.is-open{display:block;animation:fadein var(--p31-duration-fast) var(--p31-ease-standard)}
             @keyframes fadein{from{opacity:0}to{opacity:1}}
+            #room-bar .room-status{flex:1 1 100%;margin-left:0;text-align:left}
         }
         @media (min-width: 641px) {
             .info-panel{ display: block; }
             .inf-toggle{ display: none !important; }
         }
-    </style>
+        @media (prefers-reduced-motion: reduce) {
+            #room-bar .dot{animation:none;opacity:0.85}
+            #coach-toast{transition:opacity var(--p31-duration-instant) var(--p31-ease-standard)}
+            #geodesic-canvas{transition:none}
+        }
+        .p31-geodesic-dialog{border:none;padding:0;background:transparent;color:var(--p31-cloud);max-width:calc(100vw - 2rem)}
+        .p31-geodesic-dialog::backdrop{background:rgba(15,17,21,0.72);backdrop-filter:blur(3px)}
+        .p31-geodesic-dialog__panel{padding:var(--p31-space-6);border-radius:var(--p31-radius-lg);background:rgba(22,25,32,0.97);border:1px solid var(--p31-glass-border);box-shadow:var(--p31-shadow-lg)}
+        .p31-geodesic-dialog__title{font-size:var(--p31-text-lg);font-family:var(--p31-font-sans);font-weight:700;margin:0 0 var(--p31-space-2)}
+        .p31-geodesic-dialog__hint{font-size:var(--p31-text-xs);color:var(--p31-muted);line-height:var(--p31-leading-snug);margin-bottom:var(--p31-space-4)}
+        .p31-geodesic-dialog__label{display:block;font-family:var(--p31-font-sans);font-size:var(--p31-text-xs);font-weight:600;letter-spacing:var(--p31-tracking-caps);text-transform:uppercase;color:var(--p31-muted);margin-bottom:var(--p31-space-2)}
+        .p31-geodesic-dialog__panel input{font-family:var(--p31-font-mono);font-size:var(--p31-text-sm);width:100%;padding:var(--p31-space-3);border-radius:var(--p31-radius-sm);border:1px solid rgba(255,255,255,0.12);background:rgba(0,0,0,0.25);color:var(--p31-cloud);box-sizing:border-box}
+        .p31-geodesic-dialog__panel input:focus-visible{outline:var(--p31-focus-ring) solid var(--p31-teal);outline-offset:2px;border-color:rgba(37,137,125,0.5)}
+        .p31-geodesic-dialog__actions{display:flex;justify-content:flex-end;gap:var(--p31-space-2);margin-top:var(--p31-space-5)}
+        .p31-geodesic-dialog__actions button{min-height:42px;padding-left:var(--p31-space-4);padding-right:var(--p31-space-4)}
+</style>
 </head>
 <body>
 <header>
@@ -86,13 +112,21 @@
     <a href="/" class="back" title="Back to hub">← Hub</a>
 </header>
 
-<div id="room-bar">
-    <span class="dot"></span>
+<a href="#three-mount" class="p31-geodesic-skip">Skip to 3D view</a>
+
+<main id="geodesic-main" class="p31-geodesic-shell">
+<div id="room-bar" hidden>
+    <span class="dot" aria-hidden="true"></span>
     <span>K4 LIVE</span>
     <span style="color:rgba(216,214,208,0.35)">·</span>
     <span class="room-id" id="room-id-display"></span>
+    <div class="room-bar-tools">
+        <button type="button" id="btn-copy-room" onclick="copyRoomLink()" title="Copy URL with ?room= for this session" aria-label="Copy join link">Copy link</button>
+        <button type="button" id="btn-share-room" onclick="shareRoomLink()" title="Share room (or copy on desktop)" aria-label="Share join link">Share</button>
+    </div>
     <span class="room-status" id="room-conn-status">connecting…</span>
-    <button type="button" onclick="resetRoom()" class="room-reset" style="margin-left:6px" title="Reset K4 to default" aria-label="Reset room to default">Reset</button>
+    <button type="button" id="room-reconnect" class="room-reconnect" hidden onclick="manualReconnectLive()" title="Reconnect after connection loss" aria-label="Reconnect to live room">Reconnect</button>
+    <button type="button" onclick="resetRoom()" class="room-reset" title="Reset K4 to default" aria-label="Reset room to default">Reset</button>
 </div>
 <div class="toolbar-wrap" id="builder-toolbar" aria-label="Build tools" role="toolbar">
 <nav class="toolbar" id="build-tools-nav" aria-label="Platonic building blocks and display">
@@ -108,13 +142,17 @@
     <span class="tool-sep" aria-hidden="true"></span>
     <span class="tool-label">Scene</span>
     <button type="button" onclick="resetScene()" title="Clear all shapes" aria-label="Reset scene, remove all shapes">Reset</button>
-    <button type="button" onclick="autoArrange()" title="Arrange shapes in a ring" aria-label="Auto arrange shapes in a ring">Arrange</button>
+    <button type="button" id="btn-turn" onclick="rotateFocusedShape(Math.PI / 2)" title="Rotate last touched shape 90° on the table plane (shortcut [ / ])" aria-label="Rotate shape ninety degrees around vertical axis">Turn</button>
+    <button type="button" id="btn-arrange" onclick="autoArrange()" title="Arrange shapes in a ring" aria-label="Auto arrange shapes in a ring">Arrange</button>
+    <button type="button" id="btn-snapshot-export" onclick="exportGeodesicSnapshot()" title="Download tableau as JSON — share with a classmate or archive your build" aria-label="Export build snapshot as JSON file">Export</button>
+    <button type="button" id="btn-snapshot-import" onclick="triggerGeodesicImport()" title="Import a prior JSON snapshot (solo)" aria-label="Import build snapshot from JSON file">Import</button>
+    <input type="file" id="geodesic-import-file" accept="application/json,.json" hidden aria-hidden="true" tabindex="-1" />
     <span class="tool-sep" aria-hidden="true"></span>
     <span class="tool-label">Co-op</span>
-    <button type="button" id="btn-join-room" class="locked" onclick="promptJoinRoom()" style="border-color:var(--teal);color:var(--teal)" title="Join a shared K4 room" aria-label="Join live room">Live</button>
+    <button type="button" id="btn-join-room" class="locked" onclick="promptJoinRoom()" style="border-color:var(--p31-teal);color:var(--p31-teal)" title="Join a shared K4 room" aria-label="Join live room" aria-haspopup="dialog" aria-controls="geodesic-room-dialog">Live</button>
     <button type="button" id="btn-snap" class="locked" onclick="toggleAutoSnap(this)" title="On release, snap nearest corner to another solid" aria-label="Toggle auto-snap for corners">Snap</button>
     <span class="tool-sep" aria-hidden="true"></span>
-    <span id="rigidity-score" class="tool-label" style="max-width:min(50vw,220px);font-size:9px;color:var(--butter);line-height:1.2;white-space:normal;min-width:0" aria-live="polite" role="status"></span>
+    <span id="rigidity-score" class="tool-label" style="max-width:min(50vw,220px);font-size:9px;color:var(--p31-butter);line-height:1.2;white-space:normal;min-width:0" aria-live="polite" role="status"></span>
 </nav>
 </div>
 
@@ -150,6 +188,21 @@
     <div id="labels-container"></div>
 </div>
 
+<dialog id="geodesic-room-dialog" class="p31-geodesic-dialog" aria-labelledby="room-dlg-title" aria-describedby="room-dlg-hint">
+  <div class="p31-geodesic-dialog__panel">
+    <h2 id="room-dlg-title" class="p31-geodesic-dialog__title">Join live room</h2>
+    <p id="room-dlg-hint" class="p31-geodesic-dialog__hint">Shared K4 vertices and platonic shapes sync over the network. Use letters, numbers, underscore, or hyphen (1–64 chars). Leave empty for an auto-named room.</p>
+    <label class="p31-geodesic-dialog__label" for="geodesic-room-input">Room id</label>
+    <input type="text" id="geodesic-room-input" name="room" maxlength="64" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="leave blank or e.g. k4-family-build" />
+    <div class="p31-geodesic-dialog__actions">
+      <button type="button" id="room-dlg-cancel">Cancel</button>
+      <button type="button" id="room-dlg-join">Join room</button>
+    </div>
+  </div>
+</dialog>
+
+</main>
+
 <script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/"}}</script>
 <script type="module">
 import * as THREE from 'three';
@@ -162,9 +215,32 @@ renderer.setClearColor(0x0f1115,1);
 const canvas = renderer.domElement;
 canvas.id = 'geodesic-canvas';
 canvas.setAttribute('role', 'application');
-canvas.setAttribute('aria-label', '3D build space. Drag on empty area to turn the view; drag a shape to move it.');
+canvas.setAttribute(
+    'aria-label',
+    '3D build space. Drag empty background to orbit the camera. Drag a Platonic solid to slide it on the table; with Snap on, hold Shift while dragging to skip the corner weld on release. Bracket keys or Turn rotate the last touched shape. In Live room, rotations sync between clients.'
+);
 mount.appendChild(canvas);
 canvas.style.touchAction = 'none';
+
+let _canvasReady = false;
+function markCanvasReady() {
+    if (_canvasReady) return;
+    _canvasReady = true;
+    canvas.classList.add('p31-geodesic-ready');
+}
+canvas.addEventListener('webglcontextlost', (ev) => {
+    ev.preventDefault();
+    _canvasReady = false;
+    canvas.classList.remove('p31-geodesic-ready');
+    const hud = document.getElementById('hud-text');
+    if (hud) hud.textContent = 'GPU context lost — reload the page if the view stays blank';
+});
+canvas.addEventListener('webglcontextrestored', () => {
+    requestAnimationFrame(() => { resize(); markCanvasReady(); });
+});
+if ('outputColorSpace' in renderer && THREE.SRGBColorSpace) {
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+}
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(50,1,0.1,1000);
@@ -189,6 +265,10 @@ const SHAPE_INFO={
     cube:{verts:8,edges:12,faces:6}
 };
 
+/** Solo portable tableau (`ground-truth/geodesic-build-snapshot.json`); verifier: npm run verify:geodesic-build-snapshot */
+const GEODESIC_BUILD_SNAPSHOT_SCHEMA = 'p31.geodesicBuildSnapshot/1.0.0';
+const GEODESIC_BUILD_SHAPE_CAP = 50;
+
 let shapes=[];
 let wireMode=true, solidMode=false;
 let selectedShape='tet';
@@ -196,7 +276,108 @@ let shapeCount={tet:0,oct:0,ico:0,cube:0};
 
 let isLiveMode = false;
 let autoSnapOn = false;
-let buildDrag = null; // { group, pointerId, yLock, plane: THREE.Plane }
+/** @type {{ group:THREE.Group, pointerId: number|null, yLock:number, plane:THREE.Plane, snapSuppressed: boolean}|null} */
+let buildDrag = null;
+/** Last Platonic group interacted with — solo sandbox Turn / [ ] target */
+let lastPickedShape = null;
+
+/** Sandbox tabletop: keep constructions on-grid (±10 helper; tighten slightly). */
+const PLAYFIELD_HALF_XZ = 8.92;
+/** Inner snap pulls corners fully flush; outer band does a partial weld. */
+const SNAP_DIST_FULL = 4.35;
+const SNAP_DIST_MAX = 8.05;
+const SNAP_PARTIAL_T = 0.66;
+
+let snapGuide = null;
+const SNAP_GUIDE_MAT = new THREE.LineBasicMaterial({
+    color: 0x4db8a8,
+    opacity: 0.55,
+    transparent: true,
+    depthTest: true,
+});
+
+function clampShapeXZOnTable(group) {
+    if (!group) return;
+    const h = PLAYFIELD_HALF_XZ;
+    group.position.x = Math.min(h, Math.max(-h, group.position.x));
+    group.position.z = Math.min(h, Math.max(-h, group.position.z));
+}
+
+function clampLiveVertexSphere(mesh) {
+    if (!mesh) return;
+    const lim = 5.92;
+    mesh.position.x = Math.min(lim, Math.max(-lim, mesh.position.x));
+    mesh.position.y = Math.min(lim, Math.max(-lim, mesh.position.y));
+    mesh.position.z = Math.min(lim, Math.max(-lim, mesh.position.z));
+}
+
+function feelSnapPulse(strong) {
+    if (isLiveMode) return;
+    if (typeof navigator === 'undefined' || !navigator.vibrate) return;
+    try {
+        navigator.vibrate(strong ? [14, 5, 10] : [8]);
+    } catch {
+        /* */
+    }
+}
+
+function hideSnapGuide() {
+    if (!snapGuide) return;
+    scene.remove(snapGuide);
+    snapGuide.geometry?.dispose?.();
+    snapGuide = null;
+}
+
+function refreshSnapGuideForDrag(dragged, shiftHeld) {
+    if (isLiveMode || !autoSnapOn || shiftHeld || !dragged) {
+        hideSnapGuide();
+        return;
+    }
+    const pair = findBestCornerPair(dragged);
+    if (!pair || pair.bestD > SNAP_DIST_MAX) {
+        hideSnapGuide();
+        return;
+    }
+    hideSnapGuide();
+    const pts = [
+        pair.tipA.x, pair.tipA.y, pair.tipA.z,
+        pair.tipB.x, pair.tipB.y, pair.tipB.z,
+    ];
+    const geom = new THREE.BufferGeometry();
+    geom.setAttribute('position', new THREE.BufferAttribute(new Float32Array(pts), 3));
+    snapGuide = new THREE.Line(geom, SNAP_GUIDE_MAT);
+    scene.add(snapGuide);
+}
+
+function findBestCornerPair(dragged) {
+    const boxA = new THREE.Box3().setFromObject(dragged);
+    const cornersA = cornersFromBox3(boxA);
+    let bestD = 1e9;
+    /** @type {THREE.Vector3|null} */
+    let tipA = null;
+    /** @type {THREE.Vector3|null} */
+    let tipB = null;
+    /** @type {THREE.Vector3|null} */
+    let bestDelta = null;
+    for (const other of shapes) {
+        if (other === dragged) continue;
+        const boxB = new THREE.Box3().setFromObject(other);
+        const cornersB = cornersFromBox3(boxB);
+        for (const ca of cornersA) {
+            for (const cb of cornersB) {
+                const d = ca.distanceTo(cb);
+                if (d < bestD) {
+                    bestD = d;
+                    tipA = ca.clone();
+                    tipB = cb.clone();
+                    bestDelta = new THREE.Vector3().subVectors(cb, ca);
+                }
+            }
+        }
+    }
+    if (!tipA || !tipB || !bestDelta) return null;
+    return { bestD, delta: bestDelta, tipA, tipB };
+}
 
 function hitShapeGroup(obj) {
     let o = obj;
@@ -220,32 +401,33 @@ function cornersFromBox3(box) {
     return o;
 }
 
-function tryCornerSnap(dragged) {
-    if (!autoSnapOn || !dragged) return;
-    const boxA = new THREE.Box3().setFromObject(dragged);
-    const cornersA = cornersFromBox3(boxA);
-    let bestD = 1e9;
-    let best = null;
-    for (const other of shapes) {
-        if (other === dragged) continue;
-        const boxB = new THREE.Box3().setFromObject(other);
-        const cornersB = cornersFromBox3(boxB);
-        for (const ca of cornersA) {
-            for (const cb of cornersB) {
-                const d = ca.distanceTo(cb);
-                if (d < bestD) {
-                    bestD = d;
-                    best = { ca, cb };
-                }
-            }
-        }
+function tryCornerSnap(dragged, bypassSnap) {
+    if (bypassSnap || !autoSnapOn || !dragged) return;
+    const pair = findBestCornerPair(dragged);
+    if (!pair || pair.bestD > SNAP_DIST_MAX) return;
+    const { bestD, delta } = pair;
+    if (!delta) return;
+    if (bestD <= SNAP_DIST_FULL) {
+        dragged.position.add(delta);
+        feelSnapPulse(true);
+    } else {
+        dragged.position.addScaledVector(delta, SNAP_PARTIAL_T);
+        feelSnapPulse(false);
     }
-    if (!best || bestD > 5.5) return;
-    const delta = new THREE.Vector3().subVectors(best.cb, best.ca);
-    dragged.position.add(delta);
+    clampShapeXZOnTable(dragged);
     updateInfo();
     fireCoachEvent('snap_used');
 }
+
+window.rotateFocusedShape = function (deltaRadians) {
+    const d = typeof deltaRadians === 'number' && !Number.isNaN(deltaRadians) ? deltaRadians : Math.PI / 2;
+    let g = lastPickedShape;
+    if (!g || !shapes.includes(g)) g = shapes.length ? shapes[shapes.length - 1] : null;
+    if (!g) return;
+    g.rotation.y += d;
+    sendLiveMoveShape(g);
+    updateInfo();
+};
 
 window.toggleAutoSnap = function (btn) {
     autoSnapOn = !autoSnapOn;
@@ -260,16 +442,18 @@ function updateBuildHelp() {
     const hud = document.getElementById('hud-text');
     if (isLiveMode) return;
     if (el) {
-        const snap = autoSnapOn ? 'On — on release, nearest corners glue if within 5.5u' : 'Off';
-        el.innerHTML =
-            '<b>Grab & move</b> any wire or solid in the 3D view (table plane at its height).<br>' +
-            '<b>Orbit / zoom</b> empty area: one finger to drag, scroll or <b>pinch</b> to zoom. <b>Auto-snap:</b> ' +
-            snap;
+        const snap =
+            '<b>Mechanics:</b> With <b>Snap</b> on, release near another solid to weld corners. <b>Hold Shift</b> while dragging to skip that weld on release. Teal line = snap preview; tiers: flush (inner band) · partial (outer). <b>Turn</b> or <kbd>[</kbd> <kbd>]</kbd> rotates the last picked shape.<br>' +
+            '<b>Solo:</b> <b>Export</b>/<b>Import</b> JSON tableau — one portable pattern (teach forward; wire/solid saved in the file).<br>' +
+            (autoSnapOn
+                ? '<span style="color:var(--p31-teal)">Snap on</span> — corner weld active on release (unless Shift).'
+                : '<span style="color:rgba(216,214,208,0.55)">Snap off</span> — unlock Snap in the campaign to weld.');
+        el.innerHTML = snap;
     }
     if (hud) {
         hud.textContent = autoSnapOn
-            ? 'Drag shapes on the table · release near another to join corners (Auto-snap on)'
-            : 'Drag a shape to place it · Orbit: drag the void · enable Auto-snap to glue by corners';
+            ? 'Shift = skip weld · teal line = bond preview · flush (inner) vs partial (outer)'
+            : 'Drag shapes · orbit empty area · Turn / [ ] rotates last pick · unlock Snap to weld';
     }
 }
 
@@ -282,17 +466,12 @@ function makeGeom(type) {
     }
 }
 
-window.addShape = function(type, btn) {
-    selectedShape=type;
-    document.querySelectorAll('.toolbar button').forEach(b=>{
-        if(['btn-tet','btn-oct','btn-ico','btn-cube'].includes(b.id))b.classList.remove('active');
-    });
-    if(btn)btn.classList.add('active');
-
-    const color=COLORS[type];
-    const geom=makeGeom(type);
-    const group=new THREE.Group();
-
+/** Instantiate wire + solid children for current view toggles — addShape + snapshot import share this path. */
+function buildPlatonicShapeGroup(type) {
+    const color = COLORS[type];
+    const geom = makeGeom(type);
+    if (!color || !geom) return null;
+    const group = new THREE.Group();
     if(solidMode||!wireMode) {
         const mat=new THREE.MeshPhongMaterial({color,transparent:true,opacity:0.4,side:THREE.DoubleSide});
         const mesh=new THREE.Mesh(geom,mat);
@@ -304,18 +483,40 @@ window.addShape = function(type, btn) {
         const wire=new THREE.LineSegments(wireGeo,wireMat);
         group.add(wire);
     }
+    return group;
+}
+
+window.addShape = function(type, btn) {
+    selectedShape=type;
+    document.querySelectorAll('.toolbar button').forEach(b=>{
+        if(['btn-tet','btn-oct','btn-ico','btn-cube'].includes(b.id))b.classList.remove('active');
+    });
+    if(btn)btn.classList.add('active');
+
+    const group = buildPlatonicShapeGroup(type);
+    if (!group) return;
 
     const x=(Math.random()-0.5)*6, y=0.5, z=(Math.random()-0.5)*6;
     group.position.set(x,y,z);
+    clampShapeXZOnTable(group);
     const shapeId = Math.random().toString(36).slice(2,10) + '-' + type;
     group.userData={type,id:shapeId};
+    lastPickedShape = group;
     scene.add(group);
     shapes.push(group);
 
     if (isLiveMode) {
         liveShapeMap[shapeId] = group;
         if (liveWs?.readyState === WebSocket.OPEN) {
-            liveWs.send(JSON.stringify({ type:'ADD_SHAPE', shapeId, shapeType:type, x, y, z }));
+            liveWs.send(JSON.stringify({
+                type: 'ADD_SHAPE',
+                shapeId,
+                shapeType: type,
+                x,
+                y,
+                z,
+                rotY: group.rotation.y,
+            }));
         }
     }
 
@@ -338,19 +539,28 @@ window.toggleSolid=function(){
 };
 
 function rebuildAll(){
-    const data=shapes.map(s=>({type:s.userData.type,id:s.userData.id,pos:s.position.clone()}));
+    const data = shapes.map((s) => ({
+        type: s.userData.type,
+        id: s.userData.id,
+        pos: s.position.clone(),
+        rotY: s.rotation.y,
+    }));
     shapes.forEach(s=>scene.remove(s));
     shapes=[];
     if (isLiveMode) liveShapeMap={};
     data.forEach(d=>{
-        const color=COLORS[d.type];const geom=makeGeom(d.type);const group=new THREE.Group();
-        if(solidMode||!wireMode){const mat=new THREE.MeshPhongMaterial({color,transparent:true,opacity:0.4,side:THREE.DoubleSide});group.add(new THREE.Mesh(geom,mat));}
-        if(wireMode){const wire=new THREE.LineSegments(new THREE.WireframeGeometry(geom),new THREE.LineBasicMaterial({color}));group.add(wire);}
-        group.position.copy(d.pos);group.userData={type:d.type,id:d.id};
+        const group = buildPlatonicShapeGroup(d.type);
+        if (!group) return;
+        group.position.copy(d.pos);
+        group.rotation.y = d.rotY ?? 0;
+        group.userData={type:d.type,id:d.id};
         scene.add(group);shapes.push(group);
         if(isLiveMode&&d.id)liveShapeMap[d.id]=group;
     });
     updateInfo();
+    if (isLiveMode && liveWs?.readyState === WebSocket.OPEN) {
+        for (const g of shapes) sendLiveMoveShape(g);
+    }
 }
 
 window.resetScene=function(){
@@ -363,6 +573,8 @@ window.resetScene=function(){
     }
     shapes.forEach(s=>scene.remove(s));
     shapes=[];
+    lastPickedShape = null;
+    hideSnapGuide();
     updateInfo();
 };
 
@@ -371,8 +583,159 @@ window.autoArrange=function(){
         const angle=i*(Math.PI*2/shapes.length);
         const r=Math.max(2,shapes.length*0.8);
         s.position.set(Math.cos(angle)*r,0.5,Math.sin(angle)*r);
+        clampShapeXZOnTable(s);
     });
+    if (isLiveMode && liveWs?.readyState === WebSocket.OPEN) {
+        for (const s of shapes) sendLiveMoveShape(s);
+    }
 };
+
+function maxwellFromScene() {
+    const c = calcRigidity();
+    if (!shapes.length) return { V: 0, E: 0, F: 0, rigid: null };
+    const rigid =
+        typeof c.E === 'number' && typeof c.V === 'number' && typeof c.F === 'number' && c.E >= 3 * c.V - 6;
+    return { V: c.V, E: c.E, F: c.F, rigid };
+}
+
+window.exportGeodesicSnapshot = function exportGeodesicSnapshot() {
+    if (isLiveMode) {
+        showCoachToast('Snapshot export uses solo sandbox only');
+        return;
+    }
+    const payload = {
+        schema: GEODESIC_BUILD_SNAPSHOT_SCHEMA,
+        exportedAt: new Date().toISOString(),
+        origin: typeof location !== 'undefined' ? location.origin + location.pathname : '',
+        mission: 'Build, Create, Connect — pattern over noise.',
+        view: { wire: wireMode, solid: solidMode },
+        snapEnabled: autoSnapOn,
+        shapes: shapes.map((s) => ({
+            type: s.userData.type,
+            position: [s.position.x, s.position.y, s.position.z],
+            rotY: s.rotation.y,
+        })),
+        maxwell: maxwellFromScene(),
+    };
+    const json = JSON.stringify(payload, null, 2);
+    const blob = new Blob([json], { type: 'application/json;charset=utf-8' });
+    const a = document.createElement('a');
+    const ts = new Date().toISOString().replace(/[:]/g, '-').slice(0, 19);
+    a.href = URL.createObjectURL(blob);
+    a.download = `geodesic-build-${ts}.json`;
+    a.rel = 'noopener';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => {
+        URL.revokeObjectURL(a.href);
+        a.remove();
+    }, 0);
+    showCoachToast('Exported JSON snapshot');
+};
+
+window.triggerGeodesicImport = function triggerGeodesicImport() {
+    if (isLiveMode) {
+        showCoachToast('Import uses solo sandbox only');
+        return;
+    }
+    document.getElementById('geodesic-import-file')?.click();
+};
+
+function applyGeodesicSnapshotPayload(data) {
+    if (!data || data.schema !== GEODESIC_BUILD_SNAPSHOT_SCHEMA) {
+        showCoachToast('Snapshot schema mismatch');
+        return false;
+    }
+    const list = data.shapes;
+    if (!Array.isArray(list)) {
+        showCoachToast('Missing shapes array');
+        return false;
+    }
+    if (list.length > GEODESIC_BUILD_SHAPE_CAP) {
+        showCoachToast('More than ' + GEODESIC_BUILD_SHAPE_CAP + ' solids');
+        return false;
+    }
+    const valid = new Set(['tet', 'oct', 'ico', 'cube']);
+    for (const row of list) {
+        if (!row || !valid.has(row.type)) {
+            showCoachToast('Unsupported solid type');
+            return false;
+        }
+        const p = row.position;
+        if (!Array.isArray(p) || p.length !== 3) {
+            showCoachToast('Need position [x,y,z] per solid');
+            return false;
+        }
+        for (const u of p) {
+            if (typeof u !== 'number' || !Number.isFinite(u) || Math.abs(u) > 48) {
+                showCoachToast('Position out of range');
+                return false;
+            }
+        }
+        if (row.rotY != null && (typeof row.rotY !== 'number' || !Number.isFinite(row.rotY))) {
+            showCoachToast('rotY must be numeric radians');
+            return false;
+        }
+    }
+    if (typeof data.snapEnabled === 'boolean') {
+        autoSnapOn = !!data.snapEnabled;
+        document.getElementById('btn-snap')?.classList.toggle('active', autoSnapOn);
+    }
+    if (
+        data.view &&
+        typeof data.view === 'object' &&
+        typeof data.view.wire === 'boolean' &&
+        typeof data.view.solid === 'boolean'
+    ) {
+        wireMode = !!data.view.wire;
+        solidMode = !!data.view.solid;
+        document.getElementById('btn-wire')?.classList.toggle('active', wireMode);
+        document.getElementById('btn-wire')?.setAttribute('aria-pressed', wireMode ? 'true' : 'false');
+        document.getElementById('btn-solid')?.classList.toggle('active', solidMode);
+        document.getElementById('btn-solid')?.setAttribute('aria-pressed', solidMode ? 'true' : 'false');
+    }
+    shapes.forEach((s) => scene.remove(s));
+    shapes = [];
+    lastPickedShape = null;
+    hideSnapGuide();
+    for (const row of list) {
+        const group = buildPlatonicShapeGroup(row.type);
+        if (!group) continue;
+        group.position.set(row.position[0], row.position[1], row.position[2]);
+        group.rotation.y = typeof row.rotY === 'number' && Number.isFinite(row.rotY) ? row.rotY : 0;
+        clampShapeXZOnTable(group);
+        const sid = Math.random().toString(36).slice(2, 10) + '-' + row.type;
+        group.userData = { type: row.type, id: sid };
+        scene.add(group);
+        shapes.push(group);
+    }
+    if (shapes.length) lastPickedShape = shapes[shapes.length - 1];
+    updateBuildHelp();
+    updateInfo();
+    showCoachToast(list.length ? `Imported ${list.length} solids` : 'Imported empty tableau');
+    return true;
+}
+
+(function wireGeodesicSnapshotFile() {
+    const inp = document.getElementById('geodesic-import-file');
+    if (!inp) return;
+    inp.addEventListener('change', (e) => {
+        const f = e.target.files?.[0];
+        inp.value = '';
+        if (!f) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+            try {
+                const text = typeof reader.result === 'string' ? reader.result : '';
+                applyGeodesicSnapshotPayload(JSON.parse(text));
+            } catch {
+                showCoachToast('Could not parse JSON snapshot');
+            }
+        };
+        reader.onerror = () => showCoachToast('File read failed');
+        reader.readAsText(f, 'UTF-8');
+    });
+})();
 
 function calcRigidity() {
     let E=0,V=0,F=0;
@@ -402,16 +765,29 @@ function resize(){
 resize();
 window.addEventListener('resize',resize);
 window.addEventListener('orientationchange', () => { requestAnimationFrame(resize); });
+if (typeof ResizeObserver !== 'undefined') {
+    new ResizeObserver(() => { requestAnimationFrame(resize); }).observe(mount);
+}
 
+const _reduceMotion = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 let t=0;
+let _labelFrame = 0;
 function animate(){
     requestAnimationFrame(animate);
     t+=0.005;
-    if (placementRing) { const s=1+0.1*Math.sin(t*4); placementRing.scale.set(s,s,1); }
+    if (placementRing) {
+        if (_reduceMotion) placementRing.scale.set(1, 1, 1);
+        else { const s=1+0.1*Math.sin(t*4); placementRing.scale.set(s,s,1); }
+    }
     if (document.hidden) return;
     controls.update();
     renderer.render(scene,camera);
-    if (isLiveMode) updateLiveLabels();
+    markCanvasReady();
+    if (isLiveMode) {
+        _labelFrame++;
+        const draggingLiveUi = !!(dragTarget || buildDrag);
+        if (draggingLiveUi || (_labelFrame % 2 === 0)) updateLiveLabels();
+    }
 }
 animate();
 
@@ -440,7 +816,7 @@ const CAMPAIGN = {
       unlock: ['btn-snap'],
       steps: [
         { id: 'second',   msg: 'Tap Tetrahedron to add a second shape.',         emoji: '➕', waitFor: 'shape_count:2',  celebration: 'Two shapes!' },
-        { id: 'snap_on',  msg: 'Tap Auto-snap to turn it on.',                   emoji: '🔗', waitFor: 'snap_enabled',   celebration: 'Snap is on!' },
+        { id: 'snap_on',  msg: 'Tap Snap in the toolbar to turn it on.',       emoji: '🔗', waitFor: 'snap_enabled',   celebration: 'Snap is on!' },
         { id: 'snap_do',  msg: 'Drag one shape close to the other and let go.',  emoji: '💥', waitFor: 'snap_used',      celebration: 'They stuck!' },
       ]
     },
@@ -456,7 +832,7 @@ const CAMPAIGN = {
       id: 'mesh', label: 'Mesh', emoji: '🌐',
       unlock: ['btn-join-room'],
       steps: [
-        { id: 'live', msg: 'Try Join Live Room to build with someone else.', emoji: '🌐', waitFor: 'any_tap', celebration: '' },
+        { id: 'live', msg: 'Join Live Room, then copy or share the link so a friend can open the same ?room= URL.', emoji: '🌐', waitFor: 'any_tap', celebration: '' },
       ]
     },
   ]
@@ -504,6 +880,47 @@ function showCoachToast(msg) {
   clearTimeout(el._timer);
   el._timer = setTimeout(() => el.classList.remove('show'), 2200);
 }
+
+function getRoomJoinUrl() {
+    if (!liveRoomId) return '';
+    const u = new URL(location.href);
+    u.searchParams.set('room', liveRoomId);
+    u.hash = '';
+    return u.toString();
+}
+
+window.copyRoomLink = async function copyRoomLink() {
+    const text = getRoomJoinUrl();
+    if (!text) {
+        showCoachToast('Join Live first');
+        return;
+    }
+    try {
+        await navigator.clipboard.writeText(text);
+        showCoachToast('Join link copied');
+    } catch {
+        try {
+            window.prompt('Copy this URL:', text);
+        } catch { /* */ }
+    }
+};
+
+window.shareRoomLink = async function shareRoomLink() {
+    const url = getRoomJoinUrl();
+    if (!url) {
+        showCoachToast('Join Live first');
+        return;
+    }
+    if (typeof navigator.share === 'function') {
+        try {
+            await navigator.share({ title: 'Geodesic · K4 live', text: 'Join this shared build:', url });
+            return;
+        } catch (e) {
+            if (e && e.name === 'AbortError') return;
+        }
+    }
+    await window.copyRoomLink();
+};
 
 function renderCoach() {
   const coach = document.getElementById('coach');
@@ -650,6 +1067,53 @@ const EDGE_PAIRS = [['v0','v1'],['v0','v2'],['v0','v3'],['v1','v2'],['v1','v3'],
 
 let liveRoomId = null;
 let liveWs = null;
+let liveWsReconnectTimer = null;
+let liveReconnectAttempt = 0;
+const LIVE_RECONNECT_MAX = 10;
+
+/** Live room — push tabletop pose (+Y rotation as rotY radians) so peers match drag / Turn / Arrange. */
+function sendLiveMoveShape(group) {
+    if (!isLiveMode || liveWs?.readyState !== WebSocket.OPEN || !group) return;
+    const sid = group.userData?.id;
+    if (!sid) return;
+    const { x, y, z } = group.position;
+    liveWs.send(JSON.stringify({
+        type: 'MOVE_SHAPE',
+        shapeId: sid,
+        x,
+        y,
+        z,
+        rotY: group.rotation.y,
+    }));
+}
+
+function clearLiveReconnectTimer() {
+    if (liveWsReconnectTimer) {
+        clearTimeout(liveWsReconnectTimer);
+        liveWsReconnectTimer = null;
+    }
+}
+
+/** @param {{ colorVar?: string, showRetry?: boolean }} [opts] */
+function setLiveRoomStatus(text, opts = {}) {
+    const el = document.getElementById('room-conn-status');
+    const rc = document.getElementById('room-reconnect');
+    if (el) {
+        el.textContent = text;
+        el.style.color = opts.colorVar || '';
+    }
+    if (rc) rc.hidden = !opts.showRetry;
+}
+
+function manualReconnectLive() {
+    if (!isLiveMode || !liveRoomId) return;
+    clearLiveReconnectTimer();
+    liveReconnectAttempt = 0;
+    setLiveRoomStatus('connecting…', { colorVar: 'rgba(216,214,208,0.45)' });
+    connectRoom(liveRoomId);
+}
+window.manualReconnectLive = manualReconnectLive;
+
 let liveGroup = null;          // THREE.Group containing spheres + edge lines
 let liveVertexMeshes = {};     // vertexId → THREE.Mesh (sphere)
 let liveEdgeLines = [];        // THREE.Line[]
@@ -666,6 +1130,15 @@ _raycaster.params.Line = { threshold: _coarse ? 3 : 1 };
 const _pointer = new THREE.Vector2();
 const _dragIntersect = new THREE.Vector3();
 const labelsContainer = document.getElementById('labels-container');
+const _liveLabelEls = Object.create(null);
+const _lblProj = new THREE.Vector3();
+
+function clearLiveLabelPool() {
+    for (const id of Object.keys(_liveLabelEls)) {
+        _liveLabelEls[id]?.remove();
+        delete _liveLabelEls[id];
+    }
+}
 
 function buildLiveTetra(vertices) {
     if (liveGroup) scene.remove(liveGroup);
@@ -726,25 +1199,40 @@ function updateEdgeLines() {
 }
 
 function updateLiveLabels() {
-    labelsContainer.innerHTML = '';
-    if (!isLiveMode || !liveGroup) return;
+    if (!isLiveMode || !liveGroup) {
+        clearLiveLabelPool();
+        return;
+    }
+    const seen = Object.create(null);
     for (const [id, mesh] of Object.entries(liveVertexMeshes)) {
-        const pos = mesh.position.clone().project(camera);
-        const w = mount.offsetWidth, h = mount.offsetHeight;
-        const px = (pos.x *  0.5 + 0.5) * w;
-        const py = (pos.y * -0.5 + 0.5) * h;
-        const el = document.createElement('div');
-        el.className = 'vertex-label';
+        seen[id] = true;
+        let el = _liveLabelEls[id];
+        if (!el) {
+            el = document.createElement('div');
+            el.className = 'vertex-label';
+            labelsContainer.appendChild(el);
+            _liveLabelEls[id] = el;
+        }
+        _lblProj.copy(mesh.position).project(camera);
+        const w = mount.offsetWidth;
+        const h = mount.offsetHeight;
+        const px = (_lblProj.x * 0.5 + 0.5) * w;
+        const py = (_lblProj.y * -0.5 + 0.5) * h;
         el.style.left = `${px}px`;
-        el.style.top  = `${py}px`;
+        el.style.top = `${py}px`;
         el.textContent = mesh.userData.label ?? id;
-        labelsContainer.appendChild(el);
+    }
+    for (const id of Object.keys(_liveLabelEls)) {
+        if (!seen[id]) {
+            _liveLabelEls[id]?.remove();
+            delete _liveLabelEls[id];
+        }
     }
 }
 
 // ── Live shape helpers ──────────────────────────────────────────────────────
 
-function addLiveShape(shapeId, type, x, y, z) {
+function addLiveShape(shapeId, type, x, y, z, rotY) {
     if (liveShapeMap[shapeId]) return; // already present (optimistic-add dedup)
     const color = COLORS[type];
     if (!color) return;
@@ -759,6 +1247,7 @@ function addLiveShape(shapeId, type, x, y, z) {
         group.add(new THREE.LineSegments(new THREE.WireframeGeometry(geom), new THREE.LineBasicMaterial({color})));
     }
     group.position.set(x, y, z);
+    group.rotation.y = typeof rotY === 'number' && Number.isFinite(rotY) ? rotY : 0;
     group.userData = { type, id: shapeId };
     scene.add(group);
     shapes.push(group);
@@ -785,7 +1274,7 @@ function resetAllLiveShapes() {
 function rebuildLiveShapes(shapesFromServer) {
     resetAllLiveShapes();
     for (const [id, s] of Object.entries(shapesFromServer)) {
-        addLiveShape(id, s.type, s.x, s.y, s.z);
+        addLiveShape(id, s.type, s.x, s.y, s.z, s.rotY);
     }
 }
 
@@ -797,21 +1286,39 @@ function updateRigidityDisplay(rig) {
 }
 
 function connectRoom(roomId) {
-    if (liveWs) { try { liveWs.close(); } catch {} }
+    clearLiveReconnectTimer();
+    if (liveWs) {
+        try {
+            liveWs.onclose = null;
+            liveWs.onerror = null;
+            liveWs.close();
+        } catch { /* */ }
+    }
     const url = `${WS_BASE}/api/geodesic/${encodeURIComponent(roomId)}/ws?client=${encodeURIComponent('browser-' + Math.random().toString(36).slice(2,8))}`;
     liveWs = new WebSocket(url);
 
     liveWs.onopen = () => {
-        document.getElementById('room-conn-status').textContent = 'connected';
-        document.getElementById('room-conn-status').style.color = 'var(--teal)';
+        liveReconnectAttempt = 0;
+        setLiveRoomStatus('connected', { colorVar: 'var(--p31-teal)' });
     };
     liveWs.onclose = () => {
-        document.getElementById('room-conn-status').textContent = 'disconnected — reload to reconnect';
-        document.getElementById('room-conn-status').style.color = 'var(--coral)';
+        if (!isLiveMode || !roomId) return;
+        if (liveReconnectAttempt >= LIVE_RECONNECT_MAX) {
+            setLiveRoomStatus('offline — tap Reconnect', { colorVar: 'var(--p31-coral)', showRetry: true });
+            return;
+        }
+        liveReconnectAttempt += 1;
+        const delay = Math.min(25000, 500 * Math.pow(1.55, liveReconnectAttempt - 1));
+        setLiveRoomStatus(`reconnecting (${liveReconnectAttempt}/${LIVE_RECONNECT_MAX})…`, { colorVar: 'rgba(216,214,208,0.45)' });
+        liveWsReconnectTimer = setTimeout(() => {
+            if (isLiveMode && liveRoomId === roomId) connectRoom(roomId);
+        }, delay);
     };
     liveWs.onerror = () => {
-        document.getElementById('room-conn-status').textContent = 'error';
-        document.getElementById('room-conn-status').style.color = 'var(--coral)';
+        const el = document.getElementById('room-conn-status');
+        if (el && /connecting/i.test(el.textContent)) {
+            setLiveRoomStatus('connecting…', { colorVar: 'rgba(216,214,208,0.45)' });
+        }
     };
     liveWs.onmessage = (e) => {
         let msg; try { msg = JSON.parse(e.data); } catch { return; }
@@ -832,12 +1339,13 @@ function connectRoom(roomId) {
             if (op.type === 'SET_VERTEX') {
                 applyVertexOp(op.id, op.x, op.y, op.z);
             } else if (op.type === 'ADD_SHAPE') {
-                addLiveShape(op.shapeId, op.shapeType, op.x, op.y, op.z);
+                addLiveShape(op.shapeId, op.shapeType, op.x, op.y, op.z, op.rotY);
                 if (op.rigidity) updateRigidityDisplay(op.rigidity);
             } else if (op.type === 'MOVE_SHAPE') {
                 const g = liveShapeMap[op.shapeId];
                 if (g && op.shapeId !== currentDragShapeId) {
                     g.position.set(op.x, op.y, op.z);
+                    if (typeof op.rotY === 'number' && Number.isFinite(op.rotY)) g.rotation.y = op.rotY;
                     updateInfo();
                 }
             } else if (op.type === 'REMOVE_SHAPE') {
@@ -870,22 +1378,72 @@ function enterLiveMode(roomId) {
     hidePlacementRing();
     renderCoach();
 
-    document.getElementById('room-bar').style.display = 'flex';
+    const rb = document.getElementById('room-bar');
+    if (rb) {
+        rb.removeAttribute('hidden');
+        rb.style.display = 'flex';
+    }
+    const _rr = document.getElementById('room-reconnect');
+    if (_rr) _rr.hidden = true;
     document.getElementById('room-id-display').textContent = roomId;
+    setLiveRoomStatus('connecting…', { colorVar: 'rgba(216,214,208,0.45)' });
     document.getElementById('btn-join-room')?.classList.add('active');
-    document.getElementById('hud-text').textContent = 'K4 live · drag a colored ball to move a vertex · use toolbar to add shapes · shapes sync to all players';
+    document.getElementById('hud-text').textContent = 'K4 live · Share link above · drag balls for vertices · solids: drag to move, Turn or [ ] to spin (synced) · toolbar adds for all';
     const ih = document.getElementById('info-help');
     if (ih) {
         ih.innerHTML =
-            '<b>Shared build</b> — toolbar adds shapes for all players. <b>K4 vertices:</b> drag colored balls. <b>View:</b> orbit empty area, pinch to zoom.';
+            '<b>Shared build</b> — toolbar adds shapes for everyone. <b>K4 vertices:</b> drag colored balls. <b>Solids:</b> drag · Turn or <kbd>[</kbd><kbd>]</kbd> rotates on the table (synced). <b>View:</b> orbit empty area, pinch to zoom.';
     }
     connectRoom(roomId);
 }
 
-window.promptJoinRoom = function() {
+function confirmGeodesicRoomJoin() {
+    const dlg = document.getElementById('geodesic-room-dialog');
+    const inp = document.getElementById('geodesic-room-input');
+    const raw = (inp?.value ?? '').trim();
+    if (raw && !/^[a-zA-Z0-9_-]{1,64}$/.test(raw)) {
+        showCoachToast('Use 1–64 characters: letters, numbers, underscore, hyphen');
+        return;
+    }
+    const roomId = raw || ('k4-' + Math.random().toString(36).slice(2,8));
+    dlg?.close();
+    const newUrl = new URL(location.href);
+    newUrl.searchParams.set('room', roomId);
+    history.replaceState({}, '', newUrl.toString());
+    enterLiveMode(roomId);
+}
+window.confirmGeodesicRoomJoin = confirmGeodesicRoomJoin;
+
+(function wireGeodesicRoomDialog() {
+    const dlg = document.getElementById('geodesic-room-dialog');
+    const inp = document.getElementById('geodesic-room-input');
+    if (!dlg || !inp) return;
+    document.getElementById('room-dlg-cancel')?.addEventListener('click', () => dlg.close());
+    dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
+    document.getElementById('room-dlg-join')?.addEventListener('click', confirmGeodesicRoomJoin);
+    inp.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            confirmGeodesicRoomJoin();
+        }
+    });
+})();
+
+window.promptJoinRoom = function promptJoinRoom() {
     if (isLiveMode) return;
-    const id = prompt('Room ID (leave blank to auto-generate):', '') ?? '';
-    const roomId = id.trim() || 'k4-' + Math.random().toString(36).slice(2,8);
+    const dlg = document.getElementById('geodesic-room-dialog');
+    const inp = document.getElementById('geodesic-room-input');
+    if (dlg && inp && typeof dlg.showModal === 'function') {
+        inp.value = '';
+        dlg.showModal();
+        requestAnimationFrame(() => {
+            inp.focus();
+            inp.select();
+        });
+        return;
+    }
+    const fallback = typeof window.prompt === 'function' ? window.prompt('Room ID (leave blank for auto):', '') : '';
+    const roomId = (fallback ?? '').trim() || ('k4-' + Math.random().toString(36).slice(2,8));
     const newUrl = new URL(location.href);
     newUrl.searchParams.set('room', roomId);
     history.replaceState({}, '', newUrl.toString());
@@ -899,6 +1457,21 @@ window.resetRoom = function() {
 };
 
 canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+
+window.addEventListener('keydown', (e) => {
+    if (e.defaultPrevented) return;
+    const t = e.target;
+    if (t instanceof HTMLElement) {
+        if (t.closest('dialog[open], [data-geodesic-no-hotkey]')) return;
+        if (t.closest('input, textarea, select, [contenteditable="true"], [contenteditable=""]'))
+            return;
+    }
+    if (e.key === '[' || e.key === ']') {
+        if (e.repeat) return;
+        e.preventDefault();
+        rotateFocusedShape(e.key === '[' ? -Math.PI / 2 : Math.PI / 2);
+    }
+});
 
 function setPointerNdcFromEvent(e) {
     const rect = canvas.getBoundingClientRect();
@@ -944,13 +1517,15 @@ canvas.addEventListener(
                         e.stopPropagation();
                         e.stopImmediatePropagation();
                         const y0 = g.position.y;
+                        lastPickedShape = g;
                         buildDrag = {
                             group: g,
                             pointerId: e.pointerId,
                             yLock: y0,
                             plane: new THREE.Plane().setFromNormalAndCoplanarPoint(
                                 new THREE.Vector3(0,1,0), new THREE.Vector3(0,y0,0)
-                            )
+                            ),
+                            snapSuppressed: !!e.shiftKey,
                         };
                         currentDragShapeId = g.userData.id ?? null;
                         canvas.setPointerCapture(e.pointerId);
@@ -970,6 +1545,7 @@ canvas.addEventListener(
         e.stopPropagation();
         e.stopImmediatePropagation();
         const y0 = g.position.y;
+        lastPickedShape = g;
         buildDrag = {
             group: g,
             pointerId: e.pointerId,
@@ -977,7 +1553,8 @@ canvas.addEventListener(
             plane: new THREE.Plane().setFromNormalAndCoplanarPoint(
                 new THREE.Vector3(0, 1, 0),
                 new THREE.Vector3(0, y0, 0)
-            )
+            ),
+            snapSuppressed: !!e.shiftKey,
         };
         canvas.setPointerCapture(e.pointerId);
         controls.enabled = false;
@@ -990,7 +1567,10 @@ canvas.addEventListener('pointermove', (e) => {
         setPointerNdcFromEvent(e);
         _raycaster.setFromCamera(_pointer, camera);
         if (_raycaster.ray.intersectPlane(buildDrag.plane, _dragIntersect)) {
+            buildDrag.snapSuppressed = !!e.shiftKey;
             buildDrag.group.position.set(_dragIntersect.x, buildDrag.yLock, _dragIntersect.z);
+            clampShapeXZOnTable(buildDrag.group);
+            refreshSnapGuideForDrag(buildDrag.group, e.shiftKey);
             updateInfo();
         }
         return;
@@ -1001,6 +1581,7 @@ canvas.addEventListener('pointermove', (e) => {
     _raycaster.setFromCamera(_pointer, camera);
     if (dragPlane && _raycaster.ray.intersectPlane(dragPlane, _dragIntersect)) {
         dragTarget.sphere.position.copy(_dragIntersect);
+        clampLiveVertexSphere(dragTarget.sphere);
         updateEdgeLines();
     }
 });
@@ -1008,20 +1589,20 @@ canvas.addEventListener('pointermove', (e) => {
 function endPointerDrag(e) {
     if (buildDrag && e.pointerId === buildDrag.pointerId) {
         const g = buildDrag.group;
+        const bypassSnap = buildDrag.snapSuppressed;
         try { canvas.releasePointerCapture(e.pointerId); } catch { /* */ }
         buildDrag = null;
+        hideSnapGuide();
         controls.enabled = true;
         currentDragShapeId = null;
-        // Sync final position to server in live mode
+        // Sync final position + rotation to server in live mode (first pass: pre-snap)
         if (isLiveMode && liveWs?.readyState === WebSocket.OPEN && g.userData.id) {
-            const { x, y, z } = g.position;
-            liveWs.send(JSON.stringify({ type:'MOVE_SHAPE', shapeId:g.userData.id, x, y, z }));
+            sendLiveMoveShape(g);
         }
-        tryCornerSnap(g);
-        // After snap, re-send corrected position
+        tryCornerSnap(g, bypassSnap);
+        // After snap (position may change): re-sync
         if (isLiveMode && liveWs?.readyState === WebSocket.OPEN && g.userData.id) {
-            const { x, y, z } = g.position;
-            liveWs.send(JSON.stringify({ type:'MOVE_SHAPE', shapeId:g.userData.id, x, y, z }));
+            sendLiveMoveShape(g);
         }
         checkRingReach();
         fireCoachEvent('any_tap');
@@ -1042,6 +1623,13 @@ function endPointerDrag(e) {
 
 canvas.addEventListener('pointerup', endPointerDrag);
 canvas.addEventListener('pointercancel', endPointerDrag);
+
+window.addEventListener('online', () => {
+    if (!isLiveMode || !liveRoomId) return;
+    if (!liveWs || liveWs.readyState !== WebSocket.OPEN) {
+        manualReconnectLive();
+    }
+});
 
 // Auto-enter live mode if ?room= present
 if (_roomParamBoot && /^[a-zA-Z0-9_-]{1,64}$/.test(_roomParamBoot)) {

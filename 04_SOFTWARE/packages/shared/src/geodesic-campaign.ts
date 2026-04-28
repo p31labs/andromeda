@@ -65,7 +65,7 @@ export const GEODESIC_CAMPAIGN: GeodesicCampaign = {
       unlock: ['btn-snap'],
       steps: [
         { id: 'second',  msg: 'Tap Tetrahedron to add a second shape.',        emoji: '➕', waitFor: 'shape_count:2', celebration: 'Two shapes!' },
-        { id: 'snap_on', msg: 'Tap Auto-snap to turn it on.',                  emoji: '🔗', waitFor: 'snap_enabled',  celebration: 'Snap is on!' },
+        { id: 'snap_on', msg: 'Tap Snap in the toolbar to turn it on.',       emoji: '🔗', waitFor: 'snap_enabled',  celebration: 'Snap is on!' },
         { id: 'snap_do', msg: 'Drag one shape close to the other and let go.', emoji: '💥', waitFor: 'snap_used',     celebration: 'They stuck!' },
       ],
     },
@@ -85,7 +85,7 @@ export const GEODESIC_CAMPAIGN: GeodesicCampaign = {
       emoji: '🌐',
       unlock: ['btn-join-room'],
       steps: [
-        { id: 'live', msg: 'Try Join Live Room to build with someone else.', emoji: '🌐', waitFor: 'any_tap', celebration: '' },
+        { id: 'live', msg: 'Join Live Room, then copy or share the link so a friend can open the same ?room= URL.', emoji: '🌐', waitFor: 'any_tap', celebration: '' },
       ],
     },
   ],
