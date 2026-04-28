@@ -347,7 +347,7 @@
       "path": "/poets.html",
       "implementation": "public/poets.html",
       "label": "Poets room — writing & narrative lobby",
-      "note": "Static lobby linking passport, education, mesh, geodesic, delta, connect (hub URLs only). Short /poets → /poets.html in _redirects. Hub registry id poets."
+      "note": "Static lobby linking passport, education, mesh, geodesic, delta, connect. Clean URL /poets served from poets.html — no _redirects row /poets→poets.html (same failure mode as welcome.html: CF Pages 308 .html↔basename ping-pong). Hub registry id poets."
     }
   },
   "edgeRedirects": [
@@ -404,11 +404,6 @@
     {
       "from": "/start",
       "to": "/mesh-start.html",
-      "status": 301
-    },
-    {
-      "from": "/poets",
-      "to": "/poets.html",
       "status": 301
     },
     {
