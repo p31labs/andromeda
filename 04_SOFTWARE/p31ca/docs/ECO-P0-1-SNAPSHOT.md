@@ -1,32 +1,43 @@
 # ECO WBS 0.1 — Index source diff snapshot
 
-**Generated:** 2026-04-25 (automated `node scripts/hub/diff-index-sources.mjs`). Re-run after registry or hub-landing changes. (Legacy `public/legacy-mvp-hub.html` removed 2026-04-27.)
+**Status:** **Cockpit parity sealed** — `hub-landing.json` ↔ `HUB_COCKPIT_ORDER` only; **`public/legacy-mvp-hub.html`** absent. Normative ADR (P31 home repo): `docs/ADR-ECO-HUB-SINGLE-SOURCE.md`.
+**Last verified:** 2026-04-27
 
 ## Command
 
 ```bash
 cd andromeda/04_SOFTWARE/p31ca
+npm run hub:diff
+# same as verify-ground-truth && diff-index-sources
+```
+
+Or standalone drift check:
+
+```bash
 node scripts/hub/diff-index-sources.mjs
 ```
 
-## Last output (representative)
+## Last output (clean — canonical)
 
 ```
 diff-index-sources: hub-landing + optional mvpData index
 
-[info] mvpData id set != COCKPIT index list (expected until ECO CWP merge):
-  only in mvpData: book, appointment-tracker, love-ledger, medical-tracker, somatic-anchor, legal-evidence, kids-growth, contact-locker, sleep-tracker, budget-tracker, simple-sovereignty, node-one, node-zero, sovereign, bridge, mission-control, quantum-life-os, qg-ide, forge, prism, tether, echo, kinematics
-
-diff-index-sources: OK (hard checks passed); see warnings above
+[info] public/legacy-mvp-hub.html absent — mvpData parse skipped (expected). Normative ADR: P31 home docs/ADR-ECO-HUB-SINGLE-SOURCE.md
+diff-index-sources: OK (ground truth + hub-landing alignment)
 ```
 
 ## Interpretation
 
-- **`src/data/hub-landing.json`** (COCKPIT list in `build-landing-data.mjs`) = **Astro home** product grid source path.
-- ~~**`public/legacy-mvp-hub.html`** `mvpData`~~ **Retired** — file removed; hub index is `hub-landing.json` + registry + `hub-app-ids` only.
-- **Stakeholder decision (0.1):** which ids belong on **/** vs “about only” — then remove drift or add ids to `COCKPIT_PRODUCT_IDS` / mvp.
+- **`src/data/hub-landing.json`** is generated solely from **`registry.mjs`** + **`hub-app-ids.mjs`** (**`scripts/hub/build-landing-data.mjs`**).
+- **`src/pages/index.astro`** imports **`hubLanding`** JSON — **no** parallel **`mvpData`** catalog.
+- **Legacy **`mvpData`** parsing** in **`diff-index-sources.mjs`** remains a safety net **if** `legacy-mvp-hub.html` is ever re-added; otherwise **`parseMvpDataIds()`** returns **[]**.
 
-## Strict mode (CI later)
+## Historical note (pre-parity warnings)
 
-- `--strict-mvp` — fail if any `mvpData` id is not in `registry.mjs` (use after mvp is cleaned up).
-- `--strict` — fail on any warning (inline `index.astro` `coreProducts`, etc.).
+Older runs warned when **`legacy-mvp-hub.html`** **`mvpData`** ids differed from the full cockpit grid. That dual track is **closed** — archived narrative only in git history.
+
+## Strict mode
+
+- **`npm run hub:diff`** — runs **`verify-ground-truth`** then **`diff-index-sources`**  
+- **`--strict-mvp`** on **`diff-index-sources.mjs`** — fail if **`mvpData`** ids are not in **registry** (only meaningful if legacy HTML returns)  
+- **`--strict`** — treat **`diff-index-sources`** warnings as failure (inline **`coreProducts`** in **`index.astro`**, etc.)
