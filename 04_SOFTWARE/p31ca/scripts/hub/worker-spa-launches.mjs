@@ -1,6 +1,8 @@
 /**
  * Single source for hub Worker SPAs exposed as https://p31ca.org/<path> (302 → *.workers.dev).
  * Registry Launch URLs: appUrlForWorkerSpa("<id>"). Edge + _redirects: npm run sync:worker-spa-launch.
+ * Glass: p31-ecosystem.json glassProbes id worker-spa-* (workers.dev roots). Hub grid badges for these
+ * products follow PRS tiers via scripts/hub/prs-production-posture.mjs when p31-production-readiness.json is present.
  */
 
 export const CANONICAL_LAUNCH_ORIGIN = "https://p31ca.org";

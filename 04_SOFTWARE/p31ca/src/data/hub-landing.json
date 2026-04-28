@@ -1,10 +1,11 @@
 {
-  "generated": "2026-04-28T20:45:22.073Z",
+  "generated": "2026-04-28T22:02:53.579Z",
   "meta": {
     "schema": "p31.hub-landing/1.0.0",
     "registry": "scripts/hub/registry.mjs",
     "hubCardIds": "scripts/hub/hub-app-ids.mjs",
-    "alignment": "P31 home: p31-alignment.json (p31.alignment/1.0.0); human: docs/P31-ALIGNMENT-SYSTEM.md; verify: npm run verify:alignment (root)"
+    "alignment": "P31 home: p31-alignment.json (p31.alignment/1.0.0); human: docs/P31-ALIGNMENT-SYSTEM.md; verify: npm run verify:alignment (root)",
+    "prsPosture": "../../../p31-production-readiness.json"
   },
   "coreProducts": [
     {
@@ -36,7 +37,7 @@
     {
       "id": "spaceship-earth",
       "title": "Spaceship Earth",
-      "status": "LIVE",
+      "status": "ALPHA",
       "desc": "Sovereign Command Center",
       "tags": [
         "PWA",
@@ -49,7 +50,7 @@
     {
       "id": "ede",
       "title": "EDE",
-      "status": "LIVE",
+      "status": "ALPHA",
       "desc": "Everything Development Environment",
       "tags": [
         "Babel Standalone",
@@ -62,7 +63,7 @@
     {
       "id": "buffer",
       "title": "The Buffer",
-      "status": "LIVE",
+      "status": "ALPHA",
       "desc": "Message Guardian & Fawn Guard",
       "tags": [
         "Voltage Scoring",
@@ -75,7 +76,7 @@
     {
       "id": "alchemy",
       "title": "Neuro-Cognition Alchemy",
-      "status": "RESEARCH",
+      "status": "CONCEPT",
       "desc": "Theoretical Research Framework",
       "tags": [
         "Thermodynamics",
@@ -88,7 +89,7 @@
     {
       "id": "attractor",
       "title": "NANO-07 Attractor",
-      "status": "LIVE",
+      "status": "CONCEPT",
       "desc": "Kenosis Mesh Visualizer",
       "tags": [
         "Three.js",
@@ -101,7 +102,7 @@
     {
       "id": "axiom",
       "title": "AXIOM",
-      "status": "LIVE",
+      "status": "CONCEPT",
       "desc": "Physics & Chemistry Lab",
       "tags": [
         "Rapier.js",
@@ -114,7 +115,7 @@
     {
       "id": "collider",
       "title": "COLLIDER",
-      "status": "LIVE",
+      "status": "CONCEPT",
       "desc": "Particle Physics Sandbox",
       "tags": [
         "Canvas 2D",
@@ -127,7 +128,7 @@
     {
       "id": "content-forge",
       "title": "CONTENT FORGE",
-      "status": "LIVE",
+      "status": "CONCEPT",
       "desc": "Editorial Publishing Suite",
       "tags": [
         "Markdown Editor",
@@ -140,7 +141,7 @@
     {
       "id": "geodesic",
       "title": "GEODESIC",
-      "status": "LIVE",
+      "status": "BETA",
       "desc": "3D Structure Builder",
       "tags": [
         "Three.js r183",
@@ -153,7 +154,7 @@
     {
       "id": "p31-delta-hiring",
       "title": "P31 Delta hiring",
-      "status": "LIVE",
+      "status": "ALPHA",
       "desc": "Proof-based roles · WCD work samples · portable p31.proofRecord",
       "tags": [
         "Vite 5",
@@ -166,7 +167,7 @@
     {
       "id": "genesis-gate",
       "title": "Genesis Gate",
-      "status": "LIVE",
+      "status": "ALPHA",
       "desc": "Governance Control Plane",
       "tags": [
         "TypeScript ESM",
@@ -179,7 +180,7 @@
     {
       "id": "k4market",
       "title": "K4 MARKET",
-      "status": "LIVE",
+      "status": "BETA",
       "desc": "Tetrahedral Price Geometry",
       "tags": [
         "Three.js r160",
@@ -192,7 +193,7 @@
     {
       "id": "kenosis",
       "title": "Project Kenosis",
-      "status": "LIVE",
+      "status": "CONCEPT",
       "desc": "Autopoietic Edge Network",
       "tags": [
         "Cloudflare Workers",
@@ -205,7 +206,7 @@
     {
       "id": "liminal",
       "title": "LIMINAL",
-      "status": "LIVE",
+      "status": "CONCEPT",
       "desc": "Poetry · Astrology · Drawing",
       "tags": [
         "Perfect Freehand",
@@ -218,7 +219,7 @@
     {
       "id": "vault",
       "title": "VAULT",
-      "status": "LIVE",
+      "status": "CONCEPT",
       "desc": "Ground Truth Identity Store",
       "tags": [
         "WebCrypto API",
@@ -231,7 +232,7 @@
     {
       "id": "phenix-os",
       "title": "Phenix OS",
-      "status": "LIVE",
+      "status": "CONCEPT",
       "desc": "AuDHD Operator Command Console",
       "tags": [
         "Three.js",
@@ -244,7 +245,7 @@
     {
       "id": "quantum-core",
       "title": "Quantum Core",
-      "status": "LIVE",
+      "status": "CONCEPT",
       "desc": "PQC & Algorithm Primitives",
       "tags": [
         "FIPS-203 ML-KEM-768",
@@ -257,7 +258,7 @@
     {
       "id": "resonance",
       "title": "RESONANCE",
-      "status": "LIVE",
+      "status": "CONCEPT",
       "desc": "Conversation-to-Music Engine",
       "tags": [
         "Web Audio API",
@@ -270,7 +271,7 @@
     {
       "id": "signal",
       "title": "SIGNAL",
-      "status": "LIVE",
+      "status": "CONCEPT",
       "desc": "Stim Room & Mini Games",
       "tags": [
         "WebGL Shaders",
@@ -283,7 +284,7 @@
     {
       "id": "donate",
       "title": "Donate Pipeline",
-      "status": "LIVE",
+      "status": "BETA",
       "desc": "MAP — Stripe Payment Link + Sponsors",
       "tags": [
         "Stripe Payment Link (MAP)",
@@ -296,7 +297,7 @@
     {
       "id": "tactile",
       "title": "TACTILE",
-      "status": "LIVE",
+      "status": "CONCEPT",
       "desc": "Mechanical Keyboard Builder & Typing Lab",
       "tags": [
         "Web Audio API",
@@ -309,7 +310,7 @@
     {
       "id": "discord-bot",
       "title": "p31-bot",
-      "status": "LIVE",
+      "status": "CONCEPT",
       "desc": "Community Command Plane",
       "tags": [
         "Discord.js v14",
@@ -322,7 +323,7 @@
     {
       "id": "cortex",
       "title": "p31-cortex",
-      "status": "LIVE",
+      "status": "ALPHA",
       "desc": "AI Agent Orchestration",
       "tags": [
         "Cloudflare Durable Objects",
@@ -335,7 +336,7 @@
     {
       "id": "quantum-family",
       "title": "THE QUANTUM FAMILY",
-      "status": "LIVE",
+      "status": "CONCEPT",
       "desc": "Sovereign Welcome Pack",
       "tags": [
         "Three.js",
@@ -348,7 +349,7 @@
     {
       "id": "mission-control",
       "title": "Mission Control",
-      "status": "LIVE",
+      "status": "CONCEPT",
       "desc": "Kids Token Economy",
       "tags": [
         "Pixel RPG Engine",
@@ -361,7 +362,7 @@
     {
       "id": "node-zero",
       "title": "Node Zero",
-      "status": "LIVE",
+      "status": "CONCEPT",
       "desc": "Cryptographic Mesh Node",
       "tags": [
         "WebCrypto API",
@@ -387,7 +388,7 @@
     {
       "id": "observatory",
       "title": "OBSERVATORY",
-      "status": "LIVE",
+      "status": "BETA",
       "desc": "Geodesic Data Dome",
       "tags": [
         "Three.js r160",
@@ -400,7 +401,7 @@
     {
       "id": "connect",
       "title": "THE MESH",
-      "status": "LIVE",
+      "status": "BETA",
       "desc": "K₄ cage + product graph",
       "tags": [
         "Three.js r160",
@@ -413,7 +414,7 @@
     {
       "id": "planetary-onboard",
       "title": "Planetary Onboard",
-      "status": "LIVE",
+      "status": "BETA",
       "desc": "Wye → Delta entry flow",
       "tags": [
         "Static HTML",
@@ -439,7 +440,7 @@
     {
       "id": "education",
       "title": "P31 Labs Education",
-      "status": "LIVE",
+      "status": "BETA",
       "desc": "Progressive curriculum — mesh, integrity, labs",
       "tags": [
         "Static HTML",
@@ -452,7 +453,7 @@
     {
       "id": "poets",
       "title": "Poets room",
-      "status": "LIVE",
+      "status": "ALPHA",
       "desc": "Lobby — write, read, dialogue, visuals",
       "tags": [
         "Static lobby",
@@ -464,7 +465,7 @@
     {
       "id": "appointment-tracker",
       "title": "Appointment Tracker",
-      "status": "LIVE",
+      "status": "CONCEPT",
       "desc": "Legal & Family Calendar",
       "tags": [
         "Cloudflare Worker",
@@ -477,7 +478,7 @@
     {
       "id": "book",
       "title": "Mother Nature & Father Time",
-      "status": "LIVE",
+      "status": "CONCEPT",
       "desc": "Children's Picture Book",
       "tags": [
         "Vite 8",
@@ -490,7 +491,7 @@
     {
       "id": "bridge",
       "title": "BRIDGE",
-      "status": "LIVE",
+      "status": "CONCEPT",
       "desc": "LOVE Economy Dashboard",
       "tags": [
         "SVG Gauges",
@@ -503,7 +504,7 @@
     {
       "id": "budget-tracker",
       "title": "Budget Tracker",
-      "status": "LIVE",
+      "status": "CONCEPT",
       "desc": "Zero-Based Budgeting",
       "tags": [
         "Cloudflare Worker",
@@ -516,7 +517,7 @@
     {
       "id": "canon-demo",
       "title": "Universal canon",
-      "status": "LIVE",
+      "status": "BETA",
       "desc": "Live tokens · hub ↔ org · Ring D hookup",
       "tags": [
         "p31.universalCanon",
@@ -529,7 +530,7 @@
     {
       "id": "contact-locker",
       "title": "Contact Locker",
-      "status": "LIVE",
+      "status": "CONCEPT",
       "desc": "AES-256-GCM Encrypted Directory",
       "tags": [
         "Cloudflare Worker",
@@ -542,7 +543,7 @@
     {
       "id": "echo",
       "title": "ECHO",
-      "status": "LIVE",
+      "status": "CONCEPT",
       "desc": "Vocal Looper & Script Rehearsal",
       "tags": [
         "Web Audio API",
@@ -555,7 +556,7 @@
     {
       "id": "forge",
       "title": "FORGE",
-      "status": "LIVE",
+      "status": "CONCEPT",
       "desc": "Special Interest Vault",
       "tags": [
         "SQLite WASM",
@@ -568,7 +569,7 @@
     {
       "id": "kids-growth",
       "title": "Kids Growth",
-      "status": "LIVE",
+      "status": "BETA",
       "desc": "S.J. & W.J. Milestone Tracker",
       "tags": [
         "Static (p31ca.org)",
@@ -581,7 +582,7 @@
     {
       "id": "kinematics",
       "title": "KINEMATICS",
-      "status": "LIVE",
+      "status": "CONCEPT",
       "desc": "Proprioceptive Movement Node",
       "tags": [
         "DeviceOrientation API",
@@ -594,20 +595,20 @@
     {
       "id": "legal-evidence",
       "title": "Legal Evidence",
-      "status": "LIVE",
+      "status": "CONCEPT",
       "desc": "SHA-256 Tamper-Evident Chain",
       "tags": [
         "Cloudflare Worker",
         "WebCrypto SHA-256",
         "Hash Chain",
-        "Court-Ready JSON Export"
+        "JSON chain export"
       ],
       "url": "/legal-evidence-about.html"
     },
     {
       "id": "love-ledger",
       "title": "Love Ledger",
-      "status": "LIVE",
+      "status": "CONCEPT",
       "desc": "Family LOVE Token Economy",
       "tags": [
         "Cloudflare Worker",
@@ -620,7 +621,7 @@
     {
       "id": "medical-tracker",
       "title": "Medical Tracker",
-      "status": "LIVE",
+      "status": "CONCEPT",
       "desc": "Hypoparathyroidism HPT-SD Monitor",
       "tags": [
         "Cloudflare Worker",
@@ -633,7 +634,7 @@
     {
       "id": "prism",
       "title": "PRISM",
-      "status": "LIVE",
+      "status": "CONCEPT",
       "desc": "Sensory Diet Synthesizer",
       "tags": [
         "Web Audio API",
@@ -646,7 +647,7 @@
     {
       "id": "qg-ide",
       "title": "QG-IDE",
-      "status": "LIVE",
+      "status": "CONCEPT",
       "desc": "Quantum Geodesic IDE",
       "tags": [
         "Code Editor",
@@ -659,7 +660,7 @@
     {
       "id": "quantum-life-os",
       "title": "Quantum Life OS",
-      "status": "LIVE",
+      "status": "CONCEPT",
       "desc": "Quantum-Coherent Life System",
       "tags": [
         "Quantum Stats Engine",
@@ -672,7 +673,7 @@
     {
       "id": "simple-sovereignty",
       "title": "Simple Sovereignty",
-      "status": "LIVE",
+      "status": "CONCEPT",
       "desc": "Sovereign Stack Portal",
       "tags": [
         "Portal Hub",
@@ -685,8 +686,8 @@
     {
       "id": "sleep-tracker",
       "title": "Sleep Tracker",
-      "status": "LIVE",
-      "desc": "Hypoparathyroidism Sleep Monitor",
+      "status": "CONCEPT",
+      "desc": "Sleep log (HPT-aware notes, not a medical device)",
       "tags": [
         "Cloudflare Worker",
         "Chart.js",
@@ -698,7 +699,7 @@
     {
       "id": "somatic-anchor",
       "title": "Somatic Anchor",
-      "status": "LIVE",
+      "status": "CONCEPT",
       "desc": "863 Hz Larmor Grounding Tool",
       "tags": [
         "Cloudflare Worker",
@@ -711,7 +712,7 @@
     {
       "id": "sovereign",
       "title": "SOVEREIGN",
-      "status": "LIVE",
+      "status": "ALPHA",
       "desc": "Sovereign OS 3D Cockpit",
       "tags": [
         "Three.js r183",
@@ -724,7 +725,7 @@
     {
       "id": "super-centaur",
       "title": "Super-Centaur pack",
-      "status": "LIVE",
+      "status": "BETA",
       "desc": "Data health · MAP · mesh fleet · sovereignty",
       "tags": [
         "Static HTML",
@@ -737,7 +738,7 @@
     {
       "id": "tether",
       "title": "TETHER",
-      "status": "LIVE",
+      "status": "CONCEPT",
       "desc": "Spatial Executive Function Map",
       "tags": [
         "Matter.js",
@@ -750,7 +751,7 @@
     {
       "id": "tomography",
       "title": "K4 TOMOGRAPHY",
-      "status": "LIVE",
+      "status": "BETA",
       "desc": "Symbol-Seeded Depth View",
       "tags": [
         "Three.js r183",

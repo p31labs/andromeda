@@ -96,6 +96,7 @@ export const registry = [
     appUrl: 'buffer.html',
     tech: ['Voltage Scoring', 'Fawn Guard Algorithm', 'BLUF Extraction', '4-2-6 Breathwork'],
     features: [
+      'Educational drafting aid only — not therapy, diagnosis, or legal advice; Fawn Guard flags language patterns from public literature, not a clinical assessment',
       'Voltage scoring: paste any message and get urgency / emotional charge / cognitive load ratings',
       'Fawn Guard: detects codependency patterns and people-pleasing signals in your drafts',
       'BLUF extraction pulls the bottom line up front and lists action items',
@@ -116,7 +117,8 @@ export const registry = [
     appUrl: 'quantum-family.html',
     tech: ['Three.js', 'Web Audio API', 'PWA', 'IndexedDB', 'Vibration API'],
     features: [
-      'Calm Engine: auto-detects dysregulation patterns and offers co-regulation prompts',
+      'Parenting / wellness companion only — not medical diagnosis, therapy, or crisis care; use licensed professionals for health emergencies',
+      'Calm Engine: lightweight prompts when the UI senses high-motion patterns (heuristic, not clinical)',
       'Grounding Games: 5-4-3-2-1 sensory game, bubble breathing, weighted blanket sim',
       'Sound Garden: generative ambient audio tuned to 863 Hz Larmor + 432 Hz base',
       'Family Tetrahedron: live K₄ mesh showing connection status across all 4 nodes',
@@ -167,7 +169,8 @@ export const registry = [
       'GET /api/health returns the full governance state vector',
       'POST to /api/govern with a CWP ID to trigger a guarded state transition'
     ],
-    techNotes: 'Pure TypeScript ESM Cloudflare Worker. GovernanceHook uses a merkle-linked audit chain so every state transition is verifiable offline. No external dependencies.',
+    techNotes:
+      'Pure TypeScript ESM Cloudflare Worker. GovernanceHook uses a merkle-linked audit chain so every state transition is verifiable offline. No external dependencies. Hub launch uses a short p31ca.org path (302 → workers.dev bundle); PRS lists this card as concept-tier — treat as experimental.',
     related: ['cortex', 'kenosis', 'spaceship-earth']
   },
   {
@@ -286,7 +289,7 @@ export const registry = [
     features: [
       'Color-coded categories: legal (red), kids (blue), medical (purple), personal (green)',
       'Recurring events with RRULE-style repetition — never miss a court date',
-      'CSV export formatted for legal filing and court exhibit submission',
+      'CSV export for your own scheduling / filing workflows — not a legal service',
       'Local notifications 24h and 1h before any legal appointment',
       'Zero cloud — all data lives in localStorage, nothing leaves the device'
     ],
@@ -295,7 +298,8 @@ export const registry = [
       'Legal events auto-tag with case number field for court documentation',
       'Export to CSV: click the export button — opens as a spreadsheet in any app'
     ],
-    techNotes: 'Cloudflare Worker serves the SPA. All calendar state is localStorage — the Worker only delivers the HTML/CSS/JS bundle. No backend, no data collection.',
+    techNotes:
+      'Cloudflare Worker serves the SPA. All calendar state is localStorage — the Worker only delivers the HTML/CSS/JS bundle. No backend, no data collection. Short p31ca.org URL is a convenience 302 to the Worker bundle (ecosystem:glass probe: worker-spa-appointment-tracker).',
     related: ['legal-evidence', 'spaceship-earth', 'contact-locker']
   },
   {
@@ -315,7 +319,8 @@ export const registry = [
       'View the leaderboard — sorted by total tokens this week',
       'Check the streak panel to see your longest care streak'
     ],
-    techNotes: 'Chart.js renders weekly trends. All token data in localStorage. The ledger format mirrors the Phenix LOVE Protocol from Paper I (DOI on file at Zenodo).',
+    techNotes:
+      'Chart.js renders weekly trends. All token data in localStorage. The ledger format mirrors the Phenix LOVE Protocol from Paper I (DOI on file at Zenodo). Short p31ca.org URL 302 → workers.dev bundle (probe: worker-spa-love-ledger).',
     related: ['bridge', 'mission-control', 'quantum-family']
   },
   {
@@ -324,7 +329,7 @@ export const registry = [
     appUrl: appUrlForWorkerSpa('medical-tracker'),
     tech: ['Cloudflare Worker', 'Chart.js', 'WebCrypto', '0-4 Symptom Scaling'],
     features: [
-      'Calcium and PTH log with timestamp — court-admissible medical record format',
+      'Personal calcium / PTH log with timestamps — educational self-tracking only; not a certified EHR, not medical advice — confirm all care decisions with your clinician',
       'HPT-SD symptom tracking on a 0–4 severity scale (Chvostek, Trousseau, tetany)',
       '7-day Chart.js trend graph for pattern identification',
       'WebCrypto encrypted export — share with a physician without cloud exposure',
@@ -335,7 +340,8 @@ export const registry = [
       'View the 7-day chart — identify correlations between calcium dips and symptom spikes',
       'Export encrypted: enter a passphrase, download the encrypted JSON for physician sharing'
     ],
-    techNotes: 'The 0–4 scale is calibrated to the clinical literature for hypoparathyroidism symptom burden. WebCrypto AES-GCM with PBKDF2 key derivation for export encryption.',
+    techNotes:
+      'The 0–4 scale references common hypoparathyroidism symptom descriptions in the literature; it does not replace labs or clinician judgment. WebCrypto AES-GCM with PBKDF2 key derivation for export encryption. Short p31ca.org URL 302 → workers.dev (probe: worker-spa-medical-tracker).',
     related: ['sleep-tracker', 'somatic-anchor', 'legal-evidence']
   },
   {
@@ -344,6 +350,7 @@ export const registry = [
     appUrl: appUrlForWorkerSpa('somatic-anchor'),
     tech: ['Cloudflare Worker', 'Web Audio API', 'Vibration API', '4-4-6 Breathwork'],
     features: [
+      'Wellness / grounding aid only — not medical treatment; stop if you feel worse and seek appropriate care',
       '4-4-6 box breathing with visual cue — inhale 4, hold 4, exhale 6',
       '863 Hz Larmor frequency tone (³¹P in Earth\'s field) as a somatic anchor point',
       '5-4-3-2-1 grounding exercise with visual and haptic prompts',
@@ -355,18 +362,19 @@ export const registry = [
       'Plug in earbuds and enable the 863 Hz tone for the full somatic effect',
       'Complete the 5-4-3-2-1 exercise at the end — takes about 3 minutes total'
     ],
-    techNotes: 'Web Audio API generates the 863 Hz tone via an OscillatorNode — no audio file to download. Vibration API drives the haptic guide. All state resets on close — no data stored.',
+    techNotes:
+      'Web Audio API generates the 863 Hz tone via an OscillatorNode — no audio file to download. Vibration API drives the haptic guide. All state resets on close — no data stored. Short p31ca.org URL 302 → workers.dev (probe: worker-spa-somatic-anchor).',
     related: ['prism', 'signal', 'echo']
   },
   {
     id: 'legal-evidence', title: 'Legal Evidence', tagline: 'SHA-256 Tamper-Evident Chain',
     icon: '🛣', accent: '#f59e0b', status: 'live', statusLabel: 'LIVE',
     appUrl: appUrlForWorkerSpa('legal-evidence'),
-    tech: ['Cloudflare Worker', 'WebCrypto SHA-256', 'Hash Chain', 'Court-Ready JSON Export'],
+    tech: ['Cloudflare Worker', 'WebCrypto SHA-256', 'Hash Chain', 'JSON chain export'],
     features: [
       'SHA-256 hash chain: each exhibit links to the hash of the previous one — tamper-evident',
       'Exhibit fields: date, description, file reference, category (legal/medical/financial)',
-      'Daubert-standard export: JSON with chain verification proof',
+      'Structured JSON export with hash-chain verification helpers — admissibility depends on jurisdiction and counsel; not a guarantee',
       'QR code generation for each exhibit — print and attach to physical filing',
       'Batch import from CSV for bulk evidence ingestion'
     ],
@@ -375,7 +383,8 @@ export const registry = [
       'The chain viewer shows every exhibit linked to the one before it',
       'Export the full chain as JSON — the verification proof can be independently confirmed'
     ],
-    techNotes: 'WebCrypto SubtleCrypto.digest() computes SHA-256 in-browser. The chain is a linked list of {hash, prevHash, data} objects stored in localStorage and exported as a signed JSON bundle.',
+    techNotes:
+      'WebCrypto SubtleCrypto.digest() computes SHA-256 in-browser. The chain is a linked list of {hash, prevHash, data} objects stored in localStorage and exported as a signed JSON bundle. This tool documents your own exhibits — not legal advice. Short p31ca.org URL 302 → workers.dev (probe: worker-spa-legal-evidence).',
     related: ['appointment-tracker', 'contact-locker', 'vault']
   },
   {
@@ -415,11 +424,12 @@ export const registry = [
       'Add contacts: name, phone, category, notes — all encrypted immediately',
       'Emergency panel: tap ☎ to quick-dial without full decrypt'
     ],
-    techNotes: 'PBKDF2 with 200,000 iterations and a random 16-byte salt derives the AES-256-GCM key. All crypto operations via WebCrypto SubtleCrypto — no third-party crypto library.',
+    techNotes:
+      'PBKDF2 with 200,000 iterations and a random 16-byte salt derives the AES-256-GCM key. All crypto operations via WebCrypto SubtleCrypto — no third-party crypto library. Short p31ca.org URL 302 → workers.dev (probe: worker-spa-contact-locker).',
     related: ['legal-evidence', 'vault', 'appointment-tracker']
   },
   {
-    id: 'sleep-tracker', title: 'Sleep Tracker', tagline: 'Hypoparathyroidism Sleep Monitor',
+    id: 'sleep-tracker', title: 'Sleep Tracker', tagline: 'Sleep log (HPT-aware notes, not a medical device)',
     icon: '😴', accent: '#6366f1', status: 'live', statusLabel: 'LIVE',
     appUrl: appUrlForWorkerSpa('sleep-tracker'),
     tech: ['Cloudflare Worker', 'Chart.js', 'LocalStorage', '7-Day Trend Analysis'],
@@ -435,7 +445,8 @@ export const registry = [
       'Log on wake: confirm actual wake time — duration and efficiency compute automatically',
       'View the 7-day chart — identify which nights correlate with HPT-SD symptom spikes'
     ],
-    techNotes: 'Chart.js annotated charts with a goal-band plugin. Sleep entries keyed by ISO date in localStorage. Duration and efficiency calculations done client-side.',
+    techNotes:
+      'Chart.js annotated charts with a goal-band plugin. Sleep entries keyed by ISO date in localStorage. Duration and efficiency calculations done client-side. Wellness logging only — not FDA-regulated monitoring. Short p31ca.org URL 302 → workers.dev (probe: worker-spa-sleep-tracker).',
     related: ['medical-tracker', 'somatic-anchor', 'spaceship-earth']
   },
   {
@@ -455,7 +466,8 @@ export const registry = [
       'Add expenses by category as they occur — safe-to-spend decreases in real time',
       'Export at month end for documentation — CSV matches SNAP eligibility report format'
     ],
-    techNotes: 'All arithmetic done client-side. Chart.js pie and bar charts update on each entry. CSV export uses the RFC 4180 format compatible with Google Sheets and Excel.',
+    techNotes:
+      'All arithmetic done client-side. Chart.js pie and bar charts update on each entry. CSV export uses the RFC 4180 format compatible with Google Sheets and Excel. Short p31ca.org URL 302 → workers.dev (probe: worker-spa-budget-tracker).',
     related: ['legal-evidence', 'appointment-tracker', 'donate']
   },
   // ── Apps ────────────────────────────────────────────────────────────────
