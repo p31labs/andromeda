@@ -49,6 +49,9 @@
     "./ui": "./src/ui/index.ts",
     "./sovereign": "./src/sovereign/index.ts",
     "./geodesic-campaign": "./src/geodesic-campaign.ts",
-    "./geodesic-room-wire": "./src/geodesic-room-wire.ts"
+    "./geodesic-room-wire": "./src/geodesic-room-wire.ts",
+    "./geodesic-build-snapshot": "./src/geodesic-build-snapshot.ts",
+    "./cars-wire": "./src/cars-wire.ts",
+    "./cognitive-passport-schema": "./src/cognitive-passport-schema.ts"
   }
 }
