@@ -115,6 +115,11 @@ async function main() {
 
   const hubIds = parseHubLandingIds();
   const mvpIds = parseMvpDataIds();
+  if (mvpIds.length === 0) {
+    console.log(
+      "[info] public/legacy-mvp-hub.html absent — mvpData parse skipped (expected). Normative ADR: P31 home docs/ADR-ECO-HUB-SINGLE-SOURCE.md"
+    );
+  }
   const registry = await loadRegistry();
   const byId = new Set(registry.map((r) => r.id));
 
@@ -171,7 +176,7 @@ async function main() {
       console.log(
         "\n[info] Legacy mvpData omits " +
           onlyHome.length +
-          " hub index card(s) — expected dual-track (see docs/ADR-ECO-MVPDATA-COCKPIT-DUAL-TRACK.md)"
+          " hub index card(s). Dual-track is retired — remove or align legacy file (P31 home docs/ADR-ECO-HUB-SINGLE-SOURCE.md)"
       );
     }
   }
