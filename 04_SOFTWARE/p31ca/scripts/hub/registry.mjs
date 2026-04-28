@@ -1044,17 +1044,20 @@ export const registry = [
     status: 'live',
     statusLabel: 'LIVE',
     appUrl: 'planetary-onboard.html',
-    tech: ['Static HTML', 'Five phases', 'Passkey hooks', 'P31 style'],
+    tech: ['Static HTML', 'Welcome JSON canon', 'WebAuthn / passkey Worker', 'P31 style'],
     features: [
-      'Neuro-inclusive onboarding: Void → Anchor → Rooms → Dial → Pact',
-      'Same-origin styling as the hub (`/p31-style.css`)',
-      'Optional WebAuthn / Worker-backed passkey in production (see `workers/passkey`)',
+      'Six surfaces: Welcome → Void → Anchor → Rooms → Dial → Pact (Wye→Delta ribbon synced to step)',
+      'Canon copy via `public/p31-welcome-packages.json` (`p31.welcomePackages`) — explicit negations (no seed phrases / not crypto) + paced steps',
+      'Pact uses hold-to-confirm (~3 s) unless `prefers-reduced-motion` (single activation); kid path skips enrollment',
+      'Same-origin hub chrome (`/p31-style.css`); mesh home at `/mesh-start.html` after the shift',
     ],
     howTo: [
-      'Start at `/planetary-onboard.html` or from the home banner',
-      'Complete the phases; use mesh and dome when you are ready to go deeper',
+      'Start `/planetary-onboard.html` (or deep-link `?welcome=…`). Read the pace line and explicit-neg list on Welcome',
+      'Finish Dial, then press-and-hold “secure lock” on capable browsers — or use reduced motion one-tap, or Skip',
+      'After redirect, tetra docks and `/mesh-start.html` consume the same welcome JSON chip copy',
     ],
-    techNotes: 'Ships as a single static file in `public/`. Pairs with `connect` and the journey page.',
+    techNotes:
+      'Ships under `public/planetary-onboard.html`. Passkey register flows post to same-origin `/api/passkey/*` (see `workers/passkey`). Normative mesh-onboarding plan: home `docs/PLAN-MESH-WYE-DELTA-ONBOARDING.md`.',
     related: ['connect', 'buffer', 'ede'],
   },
   {

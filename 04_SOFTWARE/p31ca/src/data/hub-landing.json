@@ -1,5 +1,5 @@
 {
-  "generated": "2026-04-28T01:24:40.680Z",
+  "generated": "2026-04-28T01:40:53.400Z",
   "meta": {
     "schema": "p31.hub-landing/1.0.0",
     "registry": "scripts/hub/registry.mjs",
@@ -365,8 +365,8 @@
       "desc": "Wye → Delta entry flow",
       "tags": [
         "Static HTML",
-        "Five phases",
-        "Passkey hooks",
+        "Welcome JSON canon",
+        "WebAuthn / passkey Worker",
         "P31 style"
       ],
       "url": "/planetary-onboard-about.html"

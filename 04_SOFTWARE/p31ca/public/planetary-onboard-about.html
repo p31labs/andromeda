@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#0f1115">
 <title>Planetary Onboard — Wye → Delta entry flow | P31 Labs</title>
-<meta name="description" content="Neuro-inclusive onboarding: Void → Anchor → Rooms → Dial → Pact">
+<meta name="description" content="Six surfaces: Welcome → Void → Anchor → Rooms → Dial → Pact (Wye→Delta ribbon synced to step)">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
@@ -184,7 +184,7 @@ p{font-size:15px;color:color-mix(in srgb,var(--p31-cloud) 88%,transparent);margi
         <div class="tagline">Wye → Delta entry flow</div>
         <div class="hero-badges">
           <span class="badge badge--live">LIVE</span>
-          <span class="badge badge--muted-tech">Static HTML</span><span class="badge badge--muted-tech">Five phases</span><span class="badge badge--muted-tech">Passkey hooks</span>
+          <span class="badge badge--muted-tech">Static HTML</span><span class="badge badge--muted-tech">Welcome JSON canon</span><span class="badge badge--muted-tech">WebAuthn / passkey Worker</span>
         </div>
       </div>
     </div>
@@ -204,8 +204,8 @@ p{font-size:15px;color:color-mix(in srgb,var(--p31-cloud) 88%,transparent);margi
         <h2 class="sec-kicker">What it is</h2>
         <span class="sec-rule" aria-hidden="true"></span>
       </div>
-      <p>Neuro-inclusive onboarding: Void → Anchor → Rooms → Dial → Pact. Wye → Delta entry flow is a core component of the P31 Labs sovereign cognitive infrastructure stack — built to run offline, deployed to the edge, and designed without dark patterns.</p>
-      <p>Ships as a single static file in `public/`. Pairs with `connect` and the journey page.</p>
+      <p>Six surfaces: Welcome → Void → Anchor → Rooms → Dial → Pact (Wye→Delta ribbon synced to step). Wye → Delta entry flow is a core component of the P31 Labs sovereign cognitive infrastructure stack — built to run offline, deployed to the edge, and designed without dark patterns.</p>
+      <p>Ships under `public/planetary-onboard.html`. Passkey register flows post to same-origin `/api/passkey/*` (see `workers/passkey`). Normative mesh-onboarding plan: home `docs/PLAN-MESH-WYE-DELTA-ONBOARDING.md`.</p>
     </section>
 
     <section>
@@ -217,15 +217,19 @@ p{font-size:15px;color:color-mix(in srgb,var(--p31-cloud) 88%,transparent);margi
       <div class="mesh-list">
           <div class="mesh-item">
             <span class="mesh-node"></span>
-            <p class="mesh-item-body">Neuro-inclusive onboarding: Void → Anchor → Rooms → Dial → Pact</p>
+            <p class="mesh-item-body">Six surfaces: Welcome → Void → Anchor → Rooms → Dial → Pact (Wye→Delta ribbon synced to step)</p>
           </div>
           <div class="mesh-item">
             <span class="mesh-node coral"></span>
-            <p class="mesh-item-body">Same-origin styling as the hub (`/p31-style.css`)</p>
+            <p class="mesh-item-body">Canon copy via `public/p31-welcome-packages.json` (`p31.welcomePackages`) — explicit negations (no seed phrases / not crypto) + paced steps</p>
           </div>
           <div class="mesh-item">
             <span class="mesh-node butter"></span>
-            <p class="mesh-item-body">Optional WebAuthn / Worker-backed passkey in production (see `workers/passkey`)</p>
+            <p class="mesh-item-body">Pact uses hold-to-confirm (~3 s) unless `prefers-reduced-motion` (single activation); kid path skips enrollment</p>
+          </div>
+          <div class="mesh-item">
+            <span class="mesh-node"></span>
+            <p class="mesh-item-body">Same-origin hub chrome (`/p31-style.css`); mesh home at `/mesh-start.html` after the shift</p>
           </div>
       </div>
     </section>
@@ -236,8 +240,9 @@ p{font-size:15px;color:color-mix(in srgb,var(--p31-cloud) 88%,transparent);margi
         <h2 class="sec-kicker">How to use</h2>
         <span class="sec-rule" aria-hidden="true"></span>
       </div>
-          <div class="step"><span class="step-num">1</span><span>Start at `/planetary-onboard.html` or from the home banner</span></div>
-          <div class="step"><span class="step-num">2</span><span>Complete the phases; use mesh and dome when you are ready to go deeper</span></div>
+          <div class="step"><span class="step-num">1</span><span>Start `/planetary-onboard.html` (or deep-link `?welcome=…`). Read the pace line and explicit-neg list on Welcome</span></div>
+          <div class="step"><span class="step-num">2</span><span>Finish Dial, then press-and-hold “secure lock” on capable browsers — or use reduced motion one-tap, or Skip</span></div>
+          <div class="step"><span class="step-num">3</span><span>After redirect, tetra docks and `/mesh-start.html` consume the same welcome JSON chip copy</span></div>
     </section>
 
     <section>
@@ -246,7 +251,7 @@ p{font-size:15px;color:color-mix(in srgb,var(--p31-cloud) 88%,transparent);margi
         <h2 class="sec-kicker">Architecture</h2>
         <span class="sec-rule" aria-hidden="true"></span>
       </div>
-      <div class="tech-note">Ships as a single static file in `public/`. Pairs with `connect` and the journey page.</div>
+      <div class="tech-note">Ships under `public/planetary-onboard.html`. Passkey register flows post to same-origin `/api/passkey/*` (see `workers/passkey`). Normative mesh-onboarding plan: home `docs/PLAN-MESH-WYE-DELTA-ONBOARDING.md`.</div>
     </section>
 
     <div class="callout-p31">
@@ -280,8 +285,8 @@ p{font-size:15px;color:color-mix(in srgb,var(--p31-cloud) 88%,transparent);margi
       <div class="sidebar-card-title">Tech stack</div>
       <ul class="tech-stack">
               <li>Static HTML</li>
-              <li>Five phases</li>
-              <li>Passkey hooks</li>
+              <li>Welcome JSON canon</li>
+              <li>WebAuthn / passkey Worker</li>
               <li>P31 style</li>
       </ul>
     </div>

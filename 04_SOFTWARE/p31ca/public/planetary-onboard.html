@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#0f1115">
     <title>Planetary onboard — pick your welcome | P31 Labs</title>
-    <meta name="description" content="Neuro-inclusive P31 welcome: pick a package, then five calm steps (Wye → Delta) to your private mesh workspace — dial, pace, and optional device lock.">
+    <meta name="description" content="Neuro-inclusive P31 welcome: pick a package, explicit no-seed / not-crypto clarity, then five calm Wye→Delta steps — dial, hold-to-confirm device lock (or one tap with reduced motion), always skippable.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -438,7 +438,7 @@
             padding: 2.5rem;
         }
 
-        #passkey-btn {
+        #passkey-btn.passkey-ritual {
             background: #25897d;
             color: #d8d6d0;
             border: none;
@@ -449,12 +449,42 @@
             font-weight: 700;
             cursor: pointer;
             width: 100%;
-            transition: background 0.2s ease, transform 0.1s ease;
+            transition: background 0.2s ease;
+            position: relative;
+            overflow: hidden;
+            isolation: isolate;
         }
-        #passkey-btn:hover:not(:disabled) { background: #1e7268; }
-        #passkey-btn:active:not(:disabled) { transform: scale(0.98); }
-        #passkey-btn:focus-visible { outline: 2px solid #4db8a8; outline-offset: 3px; }
-        #passkey-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+        #passkey-btn.passkey-ritual:hover:not(:disabled) { background: #1e7268; }
+        #passkey-btn.passkey-ritual:focus-visible { outline: 2px solid #4db8a8; outline-offset: 3px; }
+        #passkey-btn.passkey-ritual:disabled { opacity: 0.45; cursor: not-allowed; }
+        #passkey-btn .pw-fill {
+            position: absolute;
+            inset: 0;
+            right: auto;
+            width: 100%;
+            transform: scaleX(0);
+            transform-origin: left center;
+            background: linear-gradient(
+                90deg,
+                rgba(77,184,168,0.35),
+                rgba(255,255,255,0.12)
+            );
+            pointer-events: none;
+            z-index: 0;
+            border-radius: inherit;
+        }
+        #passkey-btn .pw-label { position: relative; z-index: 1; }
+        #passkey-ritual-hint {
+            font-family: "JetBrains Mono", monospace;
+            font-size: 0.62rem;
+            color: rgba(216,214,208,0.38);
+            line-height: 1.35;
+            margin-bottom: 0.75rem;
+            text-align: center;
+            max-width: 22rem;
+            margin-left: auto;
+            margin-right: auto;
+        }
 
         /* ================================================
            SUCCESS OVERLAY
@@ -527,6 +557,50 @@
             font-size: 0.68rem;
             line-height: 1.35;
             color: rgba(216,214,208,0.48);
+        }
+
+        /* Phase 1–4: one-line cognitive job (muted) */
+        .phase-micro {
+            font-family: "JetBrains Mono", monospace;
+            font-size: 0.62rem;
+            letter-spacing: 0.06em;
+            color: rgba(216,214,208,0.36);
+            line-height: 1.35;
+            max-width: 22rem;
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        /* Welcome strip — explicit negation */
+        #welcome-neg-strip {
+            list-style: none;
+            max-width: 28rem;
+            margin: 0 auto 1.25rem;
+            padding: 0 1.25rem;
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+            gap: 0.38rem;
+        }
+        #welcome-neg-strip li {
+            font-size: 0.68rem;
+            line-height: 1.4;
+            color: rgba(216,214,208,0.46);
+            padding-left: 0.75rem;
+            position: relative;
+        }
+        #welcome-neg-strip li::before {
+            content: '·';
+            position: absolute;
+            left: 0;
+            color: rgba(37,137,125,0.55);
+        }
+        #welcome-pace-note {
+            font-size: 0.68rem;
+            font-family: "JetBrains Mono", monospace;
+            letter-spacing: 0.08em;
+            color: rgba(37,137,125,0.55);
+            margin-bottom: 0.75rem;
         }
 
         .sr-only {
@@ -620,9 +694,11 @@
         <h1 style="font-size:1.15rem; font-weight:700; color:rgba(216,214,208,0.92); margin-bottom:0.5rem; letter-spacing:0.02em">
             Set up your space — pick what fits
         </h1>
-        <p style="font-size:0.8rem; color:rgba(216,214,208,0.5); margin-bottom:0.75rem; max-width:28rem; margin-left:auto; margin-right:auto; line-height:1.45">
+        <p style="font-size:0.8rem; color:rgba(216,214,208,0.5); margin-bottom:0.5rem; max-width:28rem; margin-left:auto; margin-right:auto; line-height:1.45">
             Choose a welcome tone — change anytime. No wrong answer.
         </p>
+        <p id="welcome-pace-note" style="margin-bottom:0.6rem;"></p>
+        <ul id="welcome-neg-strip" aria-label="What this onboarding is not" hidden></ul>
         <p id="welcome-loading" style="font-size:0.75rem; color:rgba(216,214,208,0.45); margin-bottom:1rem">
             Loading packages…
         </p>
@@ -646,6 +722,7 @@
            style="font-size:0.75rem; letter-spacing:0.1em; color:rgba(216,214,208,0); transition:opacity 700ms ease-out">
             Tap or press Enter when you are ready.
         </p>
+        <p id="p1-micro" class="phase-micro" aria-live="polite"></p>
     </div>
 </section>
 
@@ -654,12 +731,14 @@
 ===================================================== -->
 <section id="phase-2" class="phase" aria-label="Step 2: The Anchor">
 
-    <p id="p2-prompt" style="font-size:0.8rem; letter-spacing:0.12em; color:rgba(216,214,208,0.65); margin-bottom:3.5rem; text-align:center">
+    <p id="p2-prompt" style="font-size:0.8rem; letter-spacing:0.12em; color:rgba(216,214,208,0.65); margin-bottom:0.5rem; text-align:center">
         Feel the pulse. Tap in sync.
     </p>
+    <p id="p2-micro" class="phase-micro" aria-live="polite"></p>
 
     <div id="p2-nucleus"
          role="button" tabindex="0"
+         style="margin-bottom:3.5rem;"
          aria-label="Tap the nucleus in sync with the pulse">
         <span style="font-family:'JetBrains Mono',monospace; color:#cc6247; font-size:0.85rem; font-weight:700">³¹P</span>
     </div>
@@ -726,6 +805,7 @@
         <p id="p3-intro" style="font-size:0.8rem; letter-spacing:0.1em; color:rgba(216,214,208,0.55)">
             Arrange your space.
         </p>
+        <p id="p3-micro" class="phase-micro" aria-live="polite"></p>
         <p id="p3-keyboard-hint" class="elder-hint" style="font-size:0.62rem; font-family:'JetBrains Mono',monospace; color:rgba(216,214,208,0.32); margin-top:0.35rem; line-height:1.35">
             Focus a space, then arrow keys nudge it — pointer or touch works too.
         </p>
@@ -765,6 +845,7 @@
         <p style="font-size:0.85rem; letter-spacing:0.06em; color:rgba(216,214,208,0.65); text-align:center; line-height:1.6">
             This dial is yours. Turn it to match how you feel right now.
         </p>
+        <p id="p4-micro" class="phase-micro" aria-live="polite"></p>
 
         <!-- Live preview (three things change with the dial) -->
         <div id="dial-preview">
@@ -842,23 +923,29 @@
             One last step — secure the lock.
         </h1>
 
-        <ul style="list-style:none; display:flex; flex-direction:column; gap:1rem; margin-bottom:2rem">
+        <ul style="list-style:none; display:flex; flex-direction:column; gap:0.95rem; margin-bottom:1.75rem">
             <li style="display:flex; gap:0.75rem; align-items:flex-start">
                 <span style="color:#3ba372; font-size:0.9rem; flex-shrink:0; margin-top:2px" aria-hidden="true">✓</span>
                 <span style="font-size:0.9rem; color:rgba(216,214,208,0.85); line-height:1.55">
-                    Your identity lives on your device, not our servers.
+                    Binding uses WebAuthn on this device — <strong class="font-semibold">no seed phrases</strong>, <strong class="font-semibold">not a crypto wallet</strong> flow.
                 </span>
             </li>
             <li style="display:flex; gap:0.75rem; align-items:flex-start">
                 <span style="color:#3ba372; font-size:0.9rem; flex-shrink:0; margin-top:2px" aria-hidden="true">✓</span>
                 <span style="font-size:0.9rem; color:rgba(216,214,208,0.85); line-height:1.55">
-                    Unlocking uses your fingerprint, face, or PIN — nothing you have to remember.
+                    Unlock is your fingerprint, face, or device PIN pattern — reversible in browser settings anytime.
                 </span>
             </li>
             <li style="display:flex; gap:0.75rem; align-items:flex-start">
                 <span style="color:#3ba372; font-size:0.9rem; flex-shrink:0; margin-top:2px" aria-hidden="true">✓</span>
                 <span style="font-size:0.9rem; color:rgba(216,214,208,0.85); line-height:1.55">
-                    You can always update this in settings.
+                    <strong class="font-semibold">Glass-box transparency:</strong> redirects, economics, and deploy scripts are tracked in-repo and checked on ship — nothing hidden behind dark patterns.
+                </span>
+            </li>
+            <li style="display:flex; gap:0.75rem; align-items:flex-start">
+                <span style="color:#3ba372; font-size:0.9rem; flex-shrink:0; margin-top:2px" aria-hidden="true">✓</span>
+                <span style="font-size:0.9rem; color:rgba(216,214,208,0.85); line-height:1.55">
+                    Skip stays available — pace over pressure.
                 </span>
             </li>
         </ul>
@@ -870,9 +957,12 @@
             &nbsp;
         </p>
 
-        <button id="passkey-btn" onclick="enrollPasskey()"
-                aria-label="Secure your account using your device fingerprint or PIN">
-            Secure my lock →
+        <p id="passkey-ritual-hint" aria-live="polite"></p>
+
+        <button type="button" id="passkey-btn" class="passkey-ritual"
+                aria-label="Hold to enable device-backed lock via WebAuthn">
+            <span class="pw-fill" aria-hidden="true"></span>
+            <span class="pw-label">Hold to secure your lock →</span>
         </button>
 
         <!-- Child mode: auto-show skip -->
@@ -925,12 +1015,18 @@ const SKINS = {
         phase2Prompt: 'Feel the pulse. Tap in sync.',
         phase3Intro:  'Arrange your space.',
         pactTitle:    'One last step — secure the lock.',
+        defaultPhaseJobs: {
+            1: 'Job: regulate first — bandwidth before rewiring.',
+            2: 'Job: anchor a repeatable tap — escalation stays gentle.',
+            3: 'Job: arrange corners — topology matches your workload.',
+            4: 'Job: choose fidelity — throttle chrome without quitting.',
+        },
         wyeDeltaStepCaption: [
-            'Wye: one center — spokes through a single point. You are moving toward a closed mesh.',
-            'Anchor: find a rhythm that is yours — not the default pulse on the screen.',
-            'Rooms: four corners — edges between them replace the star.',
-            'Dial: choose how much “mesh” you feel right now.',
-            'Pact: close the Delta — lock to your device, not our servers.',
+            'Quiet entry — settle before the mesh reroutes.',
+            'Anchor — match the pulse or ignore it; grace beats panic.',
+            'Rooms — place four corners; edges emerge between them.',
+            'Dial — set load today; degraded grace beats forced hustle.',
+            'Pact — close the Delta on-device; settings stay reversible.',
         ],
     },
     // sa: { phase2Prompt: 'Touch the root. Feel it breathe.', … },
@@ -943,6 +1039,15 @@ const WELCOME_FALLBACK = {
     schema: 'p31.welcomePackages/1.0.0',
     version: 'fallback',
     welcomePhaseCaption: 'Pick a welcome tone — then five calm steps when you are ready.',
+    paceSubtitle: 'Five steps — pause anytime. Back returns one step.',
+    explicitNegationLines: [
+        'No seed phrases to write down or store.',
+        'Not a cryptocurrency wallet.',
+        'Device-first lock — no custodial passphrase stored in our cloud.',
+        'Glass-box tooling is version-checked — same bar as shipping code.',
+    ],
+    wyeDeltaRibbonLines: null,
+    phaseJobLines: null,
     packages: {
         default: {
             id: 'default',
@@ -967,6 +1072,150 @@ let WELCOME_ROOT = null;
 let welcomeKey = 'default';
 let atWelcomeScreen = true;
 
+/** Best-effort root for onboarding canon (ribbon, negation strip, pace line). */
+function canonWelcomeRoot() {
+    return WELCOME_ROOT && WELCOME_ROOT.packages ? WELCOME_ROOT : WELCOME_FALLBACK;
+}
+
+function getRibbonLines() {
+    const r = canonWelcomeRoot();
+    const w = r.wyeDeltaRibbonLines;
+    if (Array.isArray(w) && w.length >= 5) return w;
+    return skin.wyeDeltaStepCaption;
+}
+
+/** Welcome screen: pace note + explicit negation list from JSON/fallback */
+function renderCanonWelcomeChrome() {
+    const root = canonWelcomeRoot();
+    const pace = document.getElementById('welcome-pace-note');
+    if (pace && root.paceSubtitle) {
+        pace.textContent = root.paceSubtitle;
+    }
+    const strip = document.getElementById('welcome-neg-strip');
+    const lines =
+        Array.isArray(root.explicitNegationLines) && root.explicitNegationLines.length
+            ? root.explicitNegationLines
+            : WELCOME_FALLBACK.explicitNegationLines;
+    if (strip && Array.isArray(lines)) {
+        strip.innerHTML = '';
+        lines.forEach((txt) => {
+            const li = document.createElement('li');
+            li.textContent = txt;
+            strip.appendChild(li);
+        });
+        strip.hidden = false;
+    }
+}
+
+/** Phase cognitive job lines (muted), steps 1–4 */
+function applyPhaseJobLines() {
+    const root = canonWelcomeRoot();
+    const defs = SKINS.en.defaultPhaseJobs;
+    const fromJson = root.phaseJobLines;
+    function line(n) {
+        if (
+            fromJson &&
+            typeof fromJson[String(n)] === 'string' &&
+            fromJson[String(n)].trim()
+        ) {
+            return fromJson[String(n)];
+        }
+        return defs[n] || '';
+    }
+    const map = [['p1-micro', 1], ['p2-micro', 2], ['p3-micro', 3], ['p4-micro', 4]];
+    map.forEach(([id, step]) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = line(step);
+    });
+}
+
+/** Passkeys: AbortController clears duplicate listeners across phase visits */
+let passkeyRitualCtl = null;
+let passkeyHoldTimer = null;
+
+function clearPasskeyHoldVisual(btn, fill) {
+    if (passkeyHoldTimer) {
+        clearTimeout(passkeyHoldTimer);
+        passkeyHoldTimer = null;
+    }
+    if (btn) btn.classList.remove('holding');
+    if (fill) {
+        fill.style.transition = 'none';
+        fill.style.transform = 'scaleX(0)';
+    }
+}
+
+/** Hold ~2.8s to confirm enroll; prefers-reduced-motion → single activation */
+function wirePasskeyRitual() {
+    if (effectiveArchetype() === 'child') return;
+    const btn = document.getElementById('passkey-btn');
+    const hint = document.getElementById('passkey-ritual-hint');
+    if (!btn) return;
+
+    passkeyRitualCtl?.abort();
+    clearPasskeyHoldVisual(btn, btn.querySelector('.pw-fill'));
+
+    passkeyRitualCtl = new AbortController();
+    const { signal } = passkeyRitualCtl;
+
+    const fill = btn.querySelector('.pw-fill');
+    const reduced =
+        typeof window.matchMedia === 'function' &&
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const HOLD_MS = reduced ? 0 : 2800;
+
+    if (hint) {
+        hint.textContent = HOLD_MS === 0
+            ? 'Reduced motion — one activation starts device lock.'
+            : 'Hold about three seconds. Release resets — reversible in browser settings.';
+    }
+
+    function tryEnrollReduced(ev) {
+        ev.preventDefault();
+        enrollPasskey();
+    }
+
+    if (HOLD_MS === 0) {
+        btn.addEventListener('click', tryEnrollReduced, { signal, capture: true });
+        return;
+    }
+
+    function pointerDown(ev) {
+        if (ev.button !== 0 || btn.disabled) return;
+        ev.preventDefault();
+        clearPasskeyHoldVisual(btn, fill);
+        btn.classList.add('holding');
+        try {
+            btn.setPointerCapture(ev.pointerId);
+        } catch (_) { /* noop */ }
+        if (fill) {
+            requestAnimationFrame(() => {
+                fill.style.transition = `transform ${HOLD_MS}ms linear`;
+                fill.style.transform = 'scaleX(1)';
+            });
+        }
+        passkeyHoldTimer = setTimeout(() => {
+            passkeyHoldTimer = null;
+            clearPasskeyHoldVisual(btn, fill);
+            try {
+                btn.releasePointerCapture(ev.pointerId);
+            } catch (_) { /* noop */ }
+            enrollPasskey();
+        }, HOLD_MS);
+    }
+
+    function pointerEnd(ev) {
+        if (!passkeyHoldTimer) return;
+        clearPasskeyHoldVisual(btn, fill);
+        try {
+            if (btn.hasPointerCapture(ev.pointerId)) btn.releasePointerCapture(ev.pointerId);
+        } catch (_) { /* noop */ }
+    }
+
+    btn.addEventListener('pointerdown', pointerDown, { signal });
+    btn.addEventListener('pointerup', pointerEnd, { signal });
+    btn.addEventListener('pointercancel', pointerEnd, { signal });
+}
 function getPackagesMap() {
     return (WELCOME_ROOT && WELCOME_ROOT.packages) ? WELCOME_ROOT.packages : {};
 }
@@ -1015,6 +1264,7 @@ function applyPackageToOnboarding(pkg) {
     const ok = document.querySelector('#success-overlay > p:first-child');
     if (ok && pkg.successLine) ok.textContent = pkg.successLine;
     refreshBodyMode();
+    applyPhaseJobLines();
 }
 
 async function loadWelcomePackages() {
@@ -1080,10 +1330,6 @@ function returnToWelcome() {
     document.getElementById('progress').classList.add('pre-welcome');
     currentPhase = 1;
     applyWyeDeltaShift(0);
-    const cap = document.getElementById('topology-caption-text');
-    if (cap && WELCOME_ROOT && WELCOME_ROOT.welcomePhaseCaption) {
-        cap.textContent = WELCOME_ROOT.welcomePhaseCaption;
-    }
     const ann = document.getElementById('phase-step-ann');
     if (ann) ann.textContent = 'Welcome package choice.';
     updateBackBtn(1);
@@ -1113,12 +1359,11 @@ async function bootstrapWelcome() {
     const main = document.getElementById('onboard-main');
     if (main) main.setAttribute('aria-busy', 'true');
     await loadWelcomePackages();
+    renderCanonWelcomeChrome();
     renderWelcomeGrid();
     if (main) main.setAttribute('aria-busy', 'false');
     applyPackageToOnboarding(activePackage());
     applyWyeDeltaShift(0);
-    const cap = document.getElementById('topology-caption-text');
-    if (cap && WELCOME_ROOT.welcomePhaseCaption) cap.textContent = WELCOME_ROOT.welcomePhaseCaption;
     const qpWelcome = new URLSearchParams(location.search).get('welcome');
     if (qpWelcome && getPackagesMap()[qpWelcome]) {
         selectWelcomePackage(qpWelcome);
@@ -1166,10 +1411,11 @@ function applyWyeDeltaShift(phaseNum) {
     const bar = document.getElementById('topology-bar-fill');
     if (bar) bar.style.width = `${Math.round(t * 100)}%`;
     const cap = document.getElementById('topology-caption-text');
-    const lines = skin.wyeDeltaStepCaption;
+    const lines = getRibbonLines();
     if (!cap) return;
     if (phaseNum <= 0) {
-        cap.textContent = (WELCOME_ROOT && WELCOME_ROOT.welcomePhaseCaption) ? WELCOME_ROOT.welcomePhaseCaption : lines[0];
+        const root = canonWelcomeRoot();
+        cap.textContent = root.welcomePhaseCaption || lines[0];
         return;
     }
     if (lines && lines[phaseNum - 1]) cap.textContent = lines[phaseNum - 1];
@@ -1552,7 +1798,9 @@ function initPhase5() {
             await persistSubjectAndMeta(false, null);
             showSuccess(false);
         }, 2000);
+        return;
     }
+    wirePasskeyRitual();
 }
 
 function setStatus(msg, color) {
@@ -1636,7 +1884,7 @@ async function enrollPasskey() {
     } catch (err) {
         btn.disabled = false;
         if (err.name === 'NotAllowedError') {
-            setStatus('Cancelled — press “Secure my lock” to try again.', 'rgba(205,168,82,0.8)');
+            setStatus('Cancelled — hold the button again when you are ready.', 'rgba(205,168,82,0.8)');
         } else if (err.name === 'InvalidStateError') {
             setStatus('This device already has a lock set up.', 'rgba(59,163,114,0.8)');
             setTimeout(() => showSuccess(true), 1500);
