@@ -66,6 +66,7 @@ const pageDescription =
 <BaseLayout
   title="P31 Labs — Technical hub"
   description={pageDescription}
+  shellBackdrop={false}
 >
   <Fragment slot="head">
     <link
@@ -102,9 +103,18 @@ const pageDescription =
   </Fragment>
   
 
-  
-  <!-- 3D Canvas Background — pass-through shell; canvas re-enables hits in TS -->
-  <div id="webgl-container" class="pointer-events-none fixed inset-0 z-[5] bg-p31-void"></div>
+  <!-- Ambient WebGL: fixed background stack; canvas re-enables pointer hits in landing-cockpit.ts -->
+  <div
+    id="hub-gl-backdrop"
+    class="pointer-events-none fixed inset-0 z-0 isolate overflow-hidden"
+    aria-hidden="true"
+  >
+    <div id="webgl-container" class="absolute inset-0 bg-transparent"></div>
+    <div
+      class="pointer-events-none absolute inset-0 z-[1] bg-[#05080c]/60"
+      aria-hidden="true"
+    ></div>
+  </div>
 
   <!-- FIXED SOVEREIGN HUD (Top Nav) -->
   <nav
@@ -262,24 +272,12 @@ const pageDescription =
     <!-- EDE Operator Console — sole hero (brand: docs/P31-BRAND-GUIDELINES.md) -->
     <header
       id="technical-hub-boundary"
-      class="animate-fade-in-up relative z-[1] mb-16 text-center sm:mb-20 md:mb-24"
+      class="animate-fade-in-up relative z-10 mb-16 text-center sm:mb-20 md:mb-24"
       style="animation-delay: 0.08s;"
     >
       <div
-        class="pointer-events-none relative overflow-hidden rounded-[1.25rem] border border-white/[0.08] bg-p31-void/40 px-5 py-10 shadow-[inset_0_1px_0_rgba(255,255,255,0.07),0_8px_48px_rgba(0,0,0,0.35)] backdrop-blur-md sm:px-10 md:py-14"
+        class="terminal-glass mx-auto mt-8 max-w-3xl flex flex-col items-center p-10 text-center sm:mt-12 md:p-16 relative z-10 pointer-events-auto"
       >
-        <div
-          class="pointer-events-none absolute inset-0 hub-hero-aura opacity-95"
-          aria-hidden="true"
-        />
-        <div
-          class="pointer-events-none absolute inset-0 opacity-[0.35]"
-          aria-hidden="true"
-          style="background-image: linear-gradient(to right, rgba(77,184,168,0.07) 1px, transparent 1px), linear-gradient(to bottom, rgba(77,184,168,0.06) 1px, transparent 1px); background-size: 32px 32px;"
-        />
-
-        <div class="relative">
-      <div class="pointer-events-auto">
       <p
         class="mb-4 font-mono text-[10px] font-semibold uppercase tracking-[0.22em] text-teal/80 sm:text-[11px]"
       >
@@ -325,11 +323,31 @@ const pageDescription =
         Isostatically rigid. Cognitively sovereign.
       </p>
       <p
-        class="mx-auto mb-8 max-w-xl text-sm leading-relaxed text-p31-muted sm:mb-10 sm:text-base"
+        class="mx-auto mb-8 max-w-xl text-sm leading-relaxed text-p31-muted sm:mb-8 sm:text-base"
       >
         <span class="text-p31-cloud-90">Build, create, connect</span> — family-scale mesh, verify-gated releases, and
         interfaces that respect attention.
       </p>
+
+      <div
+        class="interactive-zone mb-8 flex w-full max-w-xl flex-col items-stretch justify-center gap-3 sm:mb-9 sm:flex-row sm:items-center sm:gap-4"
+      >
+        <button
+          id="btn-explore-dome"
+          type="button"
+          class="p31-btn p31-btn--primary w-full px-8 text-[0.9375rem] tracking-tight sm:w-auto sm:justify-center"
+          title="Sovereign Cockpit K₄ dome"
+        >
+          Explore Dome
+        </button>
+        <a
+          href="#core-products"
+          class="p31-btn p31-btn--secondary w-full gap-2 px-8 text-[0.9375rem] tracking-tight no-underline backdrop-blur-[2px] sm:w-auto sm:justify-center"
+        >
+          View architecture
+          <span class="text-cyan" aria-hidden="true">→</span>
+        </a>
+      </div>
 
       <nav
         class="p31-mission-trio p31-mission-trio--hub interactive-zone mx-auto mb-8 flex max-w-2xl flex-wrap justify-center gap-2"
@@ -350,7 +368,7 @@ const pageDescription =
       </nav>
 
       <ul
-        class="mb-10 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 font-mono text-[10px] uppercase tracking-wider text-p31-muted sm:mb-12 sm:gap-x-4 sm:text-[11px]"
+        class="mb-0 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 font-mono text-[10px] uppercase tracking-wider text-p31-muted sm:gap-x-4 sm:text-[11px]"
         role="list"
         aria-label="Ship and ethics signals"
       >
@@ -382,60 +400,79 @@ const pageDescription =
           Open core
         </li>
       </ul>
-
-      <div
-        class="flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center sm:gap-4"
-      >
-        <button
-          id="btn-explore-dome"
-          type="button"
-          class="p31-btn p31-btn--primary w-full px-8 text-[0.9375rem] tracking-tight sm:w-auto sm:justify-center"
-          title="Sovereign Cockpit K₄ dome"
-        >
-          Explore Dome
-        </button>
-        <a
-          href="#core-products"
-          class="p31-btn p31-btn--secondary w-full gap-2 px-8 text-[0.9375rem] tracking-tight no-underline backdrop-blur-[2px] sm:w-auto sm:justify-center"
-        >
-          View architecture
-          <span class="text-cyan" aria-hidden="true">→</span>
-        </a>
-      </div>
-        </div>
-      </div>
       </div>
     </header>
 
-    <!-- 1a. Operator shell (G.O.D.) -->
-    <div class="mb-10 interactive-zone animate-fade-in-up" style="animation-delay: 0.14s;">
-      <a href="/ops/" class="group flex flex-col gap-4 rounded-[12px] border border-lavender/35 p-5 no-underline transition-all duration-300 hover:border-lavender/55 hover:bg-surface2/90 sm:flex-row sm:items-center sm:justify-between glass-panel">
-        <div>
-          <div class="mb-2 font-mono text-xs uppercase tracking-widest text-lavender sm:text-[10px]">/ operator</div>
-          <h2 class="font-bold text-p31-cloud text-lg mb-1 group-hover:text-lavender/90 transition-colors">G.O.D. — operator shell</h2>
-          <p class="text-sm text-p31-cloud-70 max-w-xl leading-relaxed">Glass-box probes from <span class="font-mono text-p31-cloud-90">p31-ecosystem.json</span>, system pulse, density dial, and edge shift readout. Pair with <span class="font-mono text-teal/90">npm run command-center</span> on your machine.</p>
+    <!-- Priority routes — operator first (left / top), mesh story second -->
+    <section
+      class="animate-fade-in-up interactive-zone mb-12 sm:mb-14"
+      style="animation-delay: 0.12s;"
+      aria-label="Priority routes"
+    >
+      <div class="mb-4 flex items-center gap-3">
+        <div class="h-px min-w-[1.5rem] flex-grow bg-white/15 sm:min-w-[2rem]"></div>
+        <p class="m-0 shrink-0 font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-teal/80">
+          Priority
+        </p>
+        <div class="h-px flex-grow bg-white/15"></div>
+      </div>
+      <div class="grid gap-4 sm:grid-cols-2 lg:gap-6">
+        <div class="min-w-0">
+          <a
+            href="/ops/"
+            class="group flex h-full min-h-[12rem] flex-col justify-between gap-4 rounded-[12px] border border-lavender/35 p-5 no-underline transition-all duration-300 hover:border-lavender/55 hover:bg-surface2/90 sm:min-h-0 sm:p-6 glass-panel"
+          >
+            <div>
+              <div class="mb-2 font-mono text-xs uppercase tracking-widest text-lavender sm:text-[10px]">/ operator</div>
+              <h2 class="mb-2 font-bold text-p31-cloud text-lg leading-snug group-hover:text-lavender/90 transition-colors">
+                G.O.D. — operator shell
+              </h2>
+              <p class="text-sm text-p31-cloud-70 leading-relaxed">
+                Glass-box probes from <span class="font-mono text-p31-cloud-90">p31-ecosystem.json</span>, system pulse,
+                density dial, and edge shift readout. Pair with <span class="font-mono text-teal/90">npm run command-center</span> on your machine.
+              </p>
+            </div>
+            <span
+              class="inline-flex min-h-[2.75rem] w-full shrink-0 items-center justify-center rounded-[6px] bg-lavender/90 px-5 py-2.5 text-sm font-bold tracking-wide text-p31-cloud sm:min-h-0 sm:w-auto sm:self-start"
+            >
+              Open /ops →
+            </span>
+          </a>
         </div>
-        <span class="inline-flex min-h-[2.75rem] flex-shrink-0 items-center justify-center rounded-[6px] bg-lavender/90 px-5 py-2.5 text-sm font-bold tracking-wide text-p31-cloud sm:min-h-0">Open /ops →</span>
-      </a>
-    </div>
-
-    <!-- 1b. Wye→Delta Entry Banner -->
-    <div class="mb-16 interactive-zone animate-fade-in-up" style="animation-delay: 0.18s;">
-      <a href="/delta.html" class="group flex flex-col gap-4 rounded-[12px] border border-teal/30 p-6 no-underline transition-all duration-300 hover:border-teal/60 hover:bg-surface2/90 sm:flex-row sm:items-center sm:justify-between glass-panel">
-        <div>
-          <div class="mb-2 font-mono text-xs uppercase tracking-widest text-teal sm:text-[10px]">/ new_here</div>
-          <h2 class="font-bold text-p31-cloud text-lg mb-1 group-hover:text-teal transition-colors">Why a mesh instead of an app?</h2>
-          <p class="text-sm text-p31-cloud-70 max-w-lg leading-relaxed">P31 runs on a K₄ tetrahedron — four vertices, six edges, zero central authority. The Wye→Delta story explains why that matters.</p>
+        <div class="min-w-0">
+          <a
+            href="/delta.html"
+            class="group flex h-full min-h-[12rem] flex-col justify-between gap-4 rounded-[12px] border border-teal/30 p-5 no-underline transition-all duration-300 hover:border-teal/60 hover:bg-surface2/90 sm:min-h-0 sm:p-6 glass-panel"
+          >
+            <div>
+              <div class="mb-2 font-mono text-xs uppercase tracking-widest text-teal sm:text-[10px]">/ new_here</div>
+              <h2 class="mb-2 font-bold text-p31-cloud text-lg leading-snug group-hover:text-teal transition-colors">
+                Why a mesh instead of an app?
+              </h2>
+              <p class="text-sm text-p31-cloud-70 leading-relaxed">
+                P31 runs on a K₄ tetrahedron — four vertices, six edges, zero central authority. The Wye→Delta story
+                explains why that matters.
+              </p>
+            </div>
+            <div class="flex flex-wrap gap-2 sm:gap-3">
+              <span
+                class="inline-flex min-h-[2.5rem] items-center justify-center rounded-[6px] bg-teal/90 px-4 py-2 text-p31-cloud text-sm font-bold tracking-wide"
+              >
+                Wye → Delta
+              </span>
+              <span
+                class="inline-flex min-h-[2.5rem] items-center justify-center rounded-[6px] border border-white/10 px-4 py-2 text-p31-cloud text-sm font-bold tracking-wide"
+              >
+                Join the mesh →
+              </span>
+            </div>
+          </a>
         </div>
-        <div class="flex gap-3 shrink-0 pointer-events-none">
-          <span class="px-5 py-2.5 bg-teal/90 text-p31-cloud font-bold rounded-[6px] text-sm tracking-wide whitespace-nowrap">Wye → Delta</span>
-          <span class="px-5 py-2.5 border border-white/10 text-p31-cloud font-bold rounded-[6px] text-sm tracking-wide whitespace-nowrap">Join the mesh →</span>
-        </div>
-      </a>
-    </div>
+      </div>
+    </section>
 
     <!-- 2. Core Products Grid (CWP D3 — client filter by status) -->
-    <section id="core-products" class="mb-24 pt-12 animate-fade-in-up interactive-zone" style="animation-delay: 0.22s;" aria-label="Core architecture products">
+    <section id="core-products" class="mb-24 pt-4 animate-fade-in-up interactive-zone sm:pt-6" style="animation-delay: 0.22s;" aria-label="Core architecture products">
       <div class="mb-8 flex items-center gap-4">
         <div class="h-px flex-grow bg-white/10"></div>
         <h2 class="m-0 whitespace-nowrap font-mono text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-p31-muted">
@@ -661,6 +698,38 @@ const pageDescription =
     -webkit-backdrop-filter: blur(20px);
   }
 
+  /** Hero — matches donate.html / connect.html terminal-glass (Operator Console readability) */
+  .terminal-glass {
+    position: relative;
+    overflow: hidden;
+    border-radius: 12px;
+    background: linear-gradient(180deg, rgba(26, 31, 41, 0.72) 0%, rgba(17, 21, 28, 0.88) 100%);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-top: 1px solid rgba(255, 255, 255, 0.09);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+  }
+  .terminal-glass::after {
+    content: '';
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 3px,
+      rgba(0, 0, 0, 0.12) 3px,
+      rgba(0, 0, 0, 0.12) 4px
+    );
+    opacity: 0.35;
+  }
+  .terminal-glass > * {
+    position: relative;
+    z-index: 1;
+  }
+
   /** EDE mission cards — denser panels + teal hairline accent (Super-Centaur parity) */
   .ede-mission-card {
     position: relative;
@@ -708,14 +777,6 @@ const pageDescription =
     to { opacity: 1; transform: translateY(0); }
   }
   .animate-fade-in-up { opacity: 0; animation: fadeInUp 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-
-  .hub-hero-aura {
-    background: radial-gradient(
-      ellipse 80% 55% at 50% 0%,
-      color-mix(in srgb, var(--p31-teal) 10%, transparent) 0%,
-      transparent 55%
-    );
-  }
 
   /** Wye-Delta hero glyph — slow spin; engineering schematic (Super-Centaur parity) */
   @keyframes hub-wye-spin {
@@ -803,9 +864,6 @@ const pageDescription =
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .hub-hero-aura {
-      opacity: 0.75;
-    }
     .skip-to-content {
       transition: none;
     }

@@ -47,6 +47,17 @@ Browser
 - **CSP**: Currently not set via `_headers`. Inline scripts and Tailwind CDN usage on some pages (`delta.html`, `planetary-onboard.html`) means a strict nonce-based CSP would require a build pipeline change. This is a P2 improvement item.
 - **`Clear-Site-Data`**: Applied on navigation (via `_headers`) — localStorage is wiped. The `?dial=N` onboarding handoff uses query params instead of localStorage for this reason.
 
+### Security suite entrypoints (what runs when)
+
+| Entry | Phases | When |
+|--------|--------|------|
+| `npm run security:check` (from `p31ca/`) | **B** npm audit (suppressions) + **C** worker inventory / CORS grep + **E** PQC gate + passkey checks | Default after a successful hub `npm run verify` in **CI** (`scripts/p31-ci.mjs` when `GITHUB_ACTIONS`/`CI` and p31ca present); locally use `node scripts/p31-ci.mjs --security` or run `security:check` by hand. Uses `--skip-A` so it does **not** re-run full `npm run verify` inside p31ca. |
+| `npm run security:check:full` | **A** `npm run verify` in p31ca + B + C + E | Manual “belt and suspenders” gate. |
+| `.github/workflows/p31-security.yml` | B, C, E only (sparse checkout: p31ca + `quantum-core`) | Push/PR path filters + weekly schedule; **does not** run the home root `verify` bar—use **P31 CI** for that. |
+| `scripts/p31-all.mjs` | Invokes `p31-ci` with `--security` when Andromeda is present (+ e2e, glass, soft Semgrep) | **P31 / full stack** job after root verify. |
+
+**`/ops/` static shell (`src/pages/ops/`):** Uses only public URLs (command-center base, mesh constants from build data, glass probe list from `ops-glass-probes.json`). No API tokens or Worker secrets belong in Astro frontmatter or client bundles; mutations stay on Access-gated Workers.
+
 ### Passkey Worker (`workers/passkey/`)
 
 **Endpoints:**
@@ -64,6 +75,14 @@ Browser
 - Worker sets `Access-Control-Allow-Origin: *` on passkey JSON responses to allow preflight-free calls from the hub and local dev.
 - **Trust boundary** for WebAuthn is not CORS: **rpId** (`RP_ID` / `p31ca.org`) and **authData / clientData** verification; an attacker on another origin cannot satisfy **rpIdHash** in the authenticator. See `ground-truth/p31.ground-truth.json` and `security/worker-allowlist.json` (`p31-passkey` notes) for the documented posture.
 - **P2 (optional):** restrict `Access-Control-Allow-Origin` to `p31ca.org` + `p31ca.pages.dev` if you want defense-in-depth; same-origin production calls do not *require* CORS, but the Worker currently returns `*`.
+
+**Same-origin production API — condensed threat model**
+
+- **Happy path:** Pages on `https://p31ca.org` call `fetch('/api/passkey/…')`; the zone route sends traffic to the passkey Worker. **RP_ID** in `[env.production.vars]` must stay **`p31ca.org`** (enforced by `scripts/security/verify-crypto-surface.mjs`).
+- **Why CORS `*` is not a WebAuthn bypass:** A malicious site can call the API, but the authenticator will not produce a valid assertion for `p31ca.org`’s **rpIdHash** unless the user is tricked into using a different RP or the attacker controls a same-rpId context (e.g. XSS on a real p31ca page).
+- **Preview:** `[env.preview.vars]` **RP_ID** is **`p31ca.pages.dev`** — keep aligned with Cloudflare Pages preview hostnames.
+- **Hardware / education colocated routes:** `p31ca.org/api/hardware/*` and `api/education/*` share the Worker; hardware pairing uses **Ed25519** and high-entropy opaque ids in `node-zero.ts`, not WebAuthn wire format—still treat firmware abuse and KV stuffing as operational risks (rate limits P2).
+- **Out of scope for CI:** Phishing (typosquat domains), device malware, Cloudflare account compromise. **In scope:** dependency P0s, quantum-core tests, passkey source boundary (SubtleCrypto, no ML-DSA in WebAuthn path), wrangler RP_ID contract, allowlisted worker inventory.
 
 **Command Center operator shift (`command-center` Worker, `GET/POST/OPTIONS /api/operator/shift`):**
 - **GET** is intentionally **public** (PII-free JSON: `state` + `at`); CORS allows listed origins (p31ca, bonding, `*.pages.dev`, localhost) so the `/ops/` glass table and shift line can read it without a session.

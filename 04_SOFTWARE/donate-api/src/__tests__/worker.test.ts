@@ -44,6 +44,20 @@ describe('OPTIONS preflight', () => {
   });
 });
 
+// ── GET /health (MAP + glass liveness) ─────────────────────────────────────
+describe('GET /health', () => {
+  it('returns 200 JSON with status ok and worker id', async () => {
+    const worker = await getWorker();
+    const req = new Request('https://donate-api.phosphorus31.org/health', { method: 'GET' });
+    const res = await worker.fetch(req, env);
+    expect(res.status).toBe(200);
+    const body = await res.json() as { status: string; worker: string; map: { checkoutSubjectBind: boolean } };
+    expect(body.status).toBe('ok');
+    expect(body.worker).toBe('donate-api');
+    expect(body.map.checkoutSubjectBind).toBe(true);
+  });
+});
+
 // ── 404 for unknown routes ─────────────────────────────────────────────────
 describe('unknown routes', () => {
   it('returns 404 for GET /', async () => {
@@ -258,6 +272,78 @@ describe('POST /stripe-webhook', () => {
     });
     const res = await worker.fetch(req, env);
     expect(res.status).toBe(400);
+  });
+
+  it('rejects signature when event timestamp is outside tolerance (replay / clock skew)', async () => {
+    const secret = 'whsec_replay_test';
+    const localEnv = { ...env, STRIPE_WEBHOOK_SECRET: secret };
+    const payload = JSON.stringify({ type: 'checkout.session.completed', id: 'evt_old', data: {} });
+    const oldTs = Math.floor(Date.now() / 1000) - 400;
+    const signedPayload = `${oldTs}.${payload}`;
+    const key = await crypto.subtle.importKey(
+      'raw',
+      new TextEncoder().encode(secret),
+      { name: 'HMAC', hash: 'SHA-256' },
+      false,
+      ['sign'],
+    );
+    const sig = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(signedPayload));
+    const v1 = Array.from(new Uint8Array(sig))
+      .map(b => b.toString(16).padStart(2, '0'))
+      .join('');
+
+    const worker = await getWorker();
+    const req = new Request('https://example.com/stripe-webhook', {
+      method: 'POST',
+      headers: { 'stripe-signature': `t=${oldTs},v1=${v1}` },
+      body: payload,
+    });
+    const res = await worker.fetch(req, localEnv);
+    expect(res.status).toBe(400);
+    const text = await res.text();
+    expect(text).toMatch(/Invalid signature/i);
+  });
+
+  it('returns 400 Invalid JSON when body is not JSON after valid signature', async () => {
+    const secret = 'whsec_json_fail';
+    const localEnv = { ...env, STRIPE_WEBHOOK_SECRET: secret };
+    const payload = '{"type":"checkout.session.completed","broken":';
+    const timestamp = Math.floor(Date.now() / 1000).toString();
+    const signedPayload = `${timestamp}.${payload}`;
+    const key = await crypto.subtle.importKey(
+      'raw',
+      new TextEncoder().encode(secret),
+      { name: 'HMAC', hash: 'SHA-256' },
+      false,
+      ['sign'],
+    );
+    const sig = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(signedPayload));
+    const v1 = Array.from(new Uint8Array(sig))
+      .map(b => b.toString(16).padStart(2, '0'))
+      .join('');
+
+    const worker = await getWorker();
+    const req = new Request('https://example.com/stripe-webhook', {
+      method: 'POST',
+      headers: { 'stripe-signature': `t=${timestamp},v1=${v1}` },
+      body: payload,
+    });
+    const res = await worker.fetch(req, localEnv);
+    expect(res.status).toBe(400);
+    expect(await res.text()).toMatch(/Invalid JSON/i);
+  });
+
+  it('returns 400 when webhook secret is not configured', async () => {
+    const worker = await getWorker();
+    const localEnv = { ...env, STRIPE_WEBHOOK_SECRET: '' };
+    const req = new Request('https://example.com/stripe-webhook', {
+      method: 'POST',
+      headers: { 'stripe-signature': 't=1,v1=ab' },
+      body: '{}',
+    });
+    const res = await worker.fetch(req, localEnv);
+    expect(res.status).toBe(400);
+    expect(await res.text()).toMatch(/Webhook secret not configured/i);
   });
 
   it('accepts a valid HMAC-SHA256 signature and returns 200', async () => {

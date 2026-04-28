@@ -43,6 +43,34 @@ export const registry = [
     related: ['attractor', 'collider', 'axiom']
   },
   {
+    id: 'social-molecules',
+    title: 'Social Molecules',
+    tagline: 'C.A.R.S. — Collaborative Affective Realtime Sim',
+    icon: '⚗️',
+    accent: '#3ba372',
+    status: 'live',
+    statusLabel: 'LIVE',
+    appUrl: 'social-molecules.html',
+    tech: ['SoupEngine', 'p31.carsWire/0.1.0', 'WebSocket', 'Three.js', 'Ghost molecules'],
+    features: [
+      'Operator shell: boot screen, load menu (live sim vs mesh assistant), and settings without leaving the page',
+      'Field chat staging — glass transcript, role chips, timestamps; pairs with Mesh Start for real k4-personal /chat',
+      'Live edge ribbon: /p31-mesh-constants.json + probes k4-personal /api/health and same-origin hub /api/health (refresh; no secrets)',
+      'Neuro-inclusive defaults: prefers-reduced-motion seeds first-visit prefs; skip link to console; Escape closes overlays; modal focus returns to opener',
+      'Local prefs: reduced motion, compact transcript density, ethics strip visibility (persisted)',
+      'Deep links to the live soup vertical, BONDING (3D graph), and the canonical C.A.R.S. wire catalog'
+    ],
+    howTo: [
+      'Dismiss the boot veil, open Load menu — choose Live C.A.R.S. sim, Mesh assistant, or stay in Field chat',
+      'Use Settings (gear) to tune motion and layout; prefs save to this origin only — first visit respects system reduced-motion',
+      'Keyboard: Escape closes Load or Settings; skip link jumps past boot to the console',
+      'When you need a private DO conversation, jump to Mesh Start from Load or Field chat footer'
+    ],
+    techNotes:
+      'Static hub cockpit framing the home-repo C.A.R.S. stack (soup vertical on bonding Pages deploy). Message kinds for multiplayer are locked via cars-contract/p31.carsWire.json + npm run verify:cars-wire in the bonding-soup repo.',
+    related: ['bonding', 'buffer', 'planetary-onboard']
+  },
+  {
     id: 'spaceship-earth', title: 'Spaceship Earth', tagline: 'Sovereign Command Center',
     icon: '🌐', accent: '#3ba372', status: 'live', statusLabel: 'LIVE',
     appUrl: 'spaceship-earth.html',

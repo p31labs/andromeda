@@ -1,7 +1,7 @@
 {
   "schema": "p31.ground-truth/1.0.0",
   "version": "1.0.0",
-  "updated": "2026-04-28",
+  "updated": "2026-04-26",
   "mission": "Build, create, connect — decentralized family mesh. This file is the machine-routable spine for p31ca.org; human narrative stays in root CLAUDE.md, P31 COGNITIVE PASSPORT — v5.md, and docs/. Version namespaces: P31 home docs/CANONICAL-NUMBERING.md; values: P31 home p31-constants.json. Source→sink alignment: P31 home p31-alignment.json (p31.alignment/1.0.0) and docs/P31-ALIGNMENT-SYSTEM.md (ephemeralization; verify: npm run verify:alignment).",
   "canonicalNumbering": {
     "spec": "P31 home: docs/CANONICAL-NUMBERING.md",
@@ -146,7 +146,7 @@
       "path": "/demo-labs.html",
       "implementation": "public/demo-labs.html",
       "label": "Demo labs — curated static demos index",
-      "note": "Short /demos in _redirects. Links fleet map, agents room (/agents), canon, ops, delta, connect, onboard, centaur."
+      "note": "Short /demos in _redirects. Lobby links fleet map, agents (/agents), canon, ops, delta, connect, onboard, centaur, kids, journey, /cars (Social Molecules · C.A.R.S.)."
     },
     "visionJourney": {
       "path": "/vision.html",
@@ -159,6 +159,13 @@
       "implementation": "public/mesh-start.html",
       "label": "EDE Personal — private assistant + EDE entry (k4-personal)",
       "note": "Loads /p31-welcome-packages.json from meta.welcomeKey or ?welcome=. Personalizes headline, tetra blurb, prompt chips; merges package docks into first-time PUT /tetra. Hub fusion ?hub=&hubs=. ?agent= staging. Short /start in _redirects."
+    },
+    "socialMoleculesCars": {
+      "path": "/social-molecules.html",
+      "implementation": "public/social-molecules.html",
+      "label": "Social Molecules — C.A.R.S. operator shell (boot, load, settings, field chat)",
+      "registryId": "social-molecules",
+      "note": "Hub card + about; short /cars in edgeRedirects. Live sim: bonding.p31ca.org/soup. Wire catalog: P31 home cars-contract/p31.carsWire.json."
     },
     "kidsGrowth": {
       "path": "/kids-growth.html",
@@ -454,6 +461,11 @@
     {
       "from": "/canon",
       "to": "/p31-canon-demo.html",
+      "status": 301
+    },
+    {
+      "from": "/cars",
+      "to": "/social-molecules.html",
       "status": 301
     },
     {
@@ -778,6 +790,10 @@
     {
       "id": "poets",
       "appUrl": "poets.html"
+    },
+    {
+      "id": "social-molecules",
+      "appUrl": "social-molecules.html"
     }
   ],
   "threejs": {

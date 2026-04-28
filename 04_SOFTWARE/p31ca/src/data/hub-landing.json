@@ -1,5 +1,5 @@
 {
-  "generated": "2026-04-28T06:59:07.334Z",
+  "generated": "2026-04-28T20:45:22.073Z",
   "meta": {
     "schema": "p31.hub-landing/1.0.0",
     "registry": "scripts/hub/registry.mjs",
@@ -19,6 +19,19 @@
         "Vitest 4"
       ],
       "url": "/bonding-about.html"
+    },
+    {
+      "id": "social-molecules",
+      "title": "Social Molecules",
+      "status": "LIVE",
+      "desc": "C.A.R.S. — Collaborative Affective Realtime Sim",
+      "tags": [
+        "SoupEngine",
+        "p31.carsWire/0.1.0",
+        "WebSocket",
+        "Three.js"
+      ],
+      "url": "/social-molecules-about.html"
     },
     {
       "id": "spaceship-earth",

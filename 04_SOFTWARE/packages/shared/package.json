@@ -52,6 +52,7 @@
     "./geodesic-room-wire": "./src/geodesic-room-wire.ts",
     "./geodesic-build-snapshot": "./src/geodesic-build-snapshot.ts",
     "./cars-wire": "./src/cars-wire.ts",
-    "./cognitive-passport-schema": "./src/cognitive-passport-schema.ts"
+    "./cognitive-passport-schema": "./src/cognitive-passport-schema.ts",
+    "./cognitive-passport-profiles": "./src/cognitive-passport-profiles.ts"
   }
 }

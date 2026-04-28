@@ -167,3 +167,7 @@ stripe_backup_code.txt
 
 # Wrangler local state
 .wrangler/
+
+# Local Zenodo inventory scan outputs (SCHOLAR tooling)
+/zenodo_scan_*.json
+/zenodo_scan_*.md

@@ -18,6 +18,7 @@ const MONO_ROOT = resolve(ROOT, "../..");
 const QC_PKG = resolve(MONO_ROOT, "04_SOFTWARE/packages/quantum-core/package.json");
 const PQC_AUDIT = resolve(MONO_ROOT, "04_SOFTWARE/packages/quantum-core/scripts/pqc-audit.mjs");
 const PASSKEY_SRC = resolve(ROOT, "workers/passkey/src/index.ts");
+const PASSKEY_WRANGLER = resolve(ROOT, "workers/passkey/wrangler.toml");
 
 function log(level, msg) {
   const prefix = { P0: "[FAIL]", P1: "[WARN]", P2: "[INFO]", OK: "[ OK ]" }[level] ?? "[    ]";
@@ -59,6 +60,53 @@ function runQuantumCoreTests() {
     log("P0", "quantum-core: test suite FAILED — ML-KEM/ML-DSA implementation is broken");
     return false;
   }
+}
+
+/**
+ * Enforce documented production/preview RP_ID values in wrangler (catches accidental edits).
+ * workers.dev / localhost use top-level [vars]; production zone routes must stay on p31ca.org.
+ */
+function verifyPasskeyWranglerRpIds() {
+  if (!existsSync(PASSKEY_WRANGLER)) {
+    log("P2", "passkey wrangler.toml not found — skipping RP_ID contract check");
+    return true;
+  }
+  const content = readFileSync(PASSKEY_WRANGLER, "utf8");
+  const lines = content.split(/\r?\n/);
+  /** @type {Record<string, string | undefined>} */
+  const expected = {
+    "env.production.vars": "p31ca.org",
+    "env.preview.vars": "p31ca.pages.dev",
+  };
+  /** @type {string | null} */
+  let currentSection = null;
+
+  /** @type {Record<string, string>} */
+  const found = {};
+  for (const line of lines) {
+    const sec = line.match(/^\[([^\]]+)\]\s*$/);
+    if (sec) {
+      currentSection = sec[1];
+      continue;
+    }
+    if (!currentSection || !(currentSection in expected)) continue;
+    const rp = line.match(/^\s*RP_ID\s*=\s*"([^"]*)"\s*$/);
+    if (rp) found[currentSection] = rp[1];
+  }
+
+  let ok = true;
+  for (const [section, want] of Object.entries(expected)) {
+    const got = found[section];
+    if (got !== want) {
+      log(
+        "P0",
+        `passkey wrangler: [${section}] RP_ID must be "${want}" (got ${got === undefined ? "missing" : JSON.stringify(got)})`
+      );
+      ok = false;
+    }
+  }
+  if (ok) log("OK", "passkey wrangler: production/preview RP_ID contract OK (p31ca.org / p31ca.pages.dev)");
+  return ok;
 }
 
 function verifyPasskeyBoundary() {
@@ -109,6 +157,11 @@ export function runCryptoSurface() {
     }
   } else {
     log("P2", "packages/quantum-core not in checkout — skipping PQC test gate (partial clone)");
+  }
+
+  // Passkey wrangler RP_ID (P0 — misconfiguration breaks WebAuthn binding)
+  if (!verifyPasskeyWranglerRpIds()) {
+    p0++;
   }
 
   // Passkey boundary check (always run if source present)

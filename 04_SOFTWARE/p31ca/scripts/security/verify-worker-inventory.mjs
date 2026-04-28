@@ -8,7 +8,7 @@
  * - Writes build/security-inventory.json
  */
 
-import { readFileSync, writeFileSync, existsSync } from "fs";
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from "fs";
 import { resolve, dirname, relative } from "path";
 import { fileURLToPath } from "url";
 import { execSync } from "child_process";
@@ -136,7 +136,8 @@ export function runWorkerInventory() {
     }
   }
 
-  // Write inventory
+  // Write inventory (ensure build/ exists — clean checkouts may omit it)
+  mkdirSync(dirname(INVENTORY_PATH), { recursive: true });
   writeFileSync(INVENTORY_PATH, JSON.stringify(inventory, null, 2));
 
   const known = inventory.workers.filter(w => w.inAllowlist).length;

@@ -1,7 +1,7 @@
 {
   "schema": "p31.publicSurface/1.0.0",
   "version": "1.0.0",
-  "updated": "2026-04-27",
+  "updated": "2026-04-28",
   "note": "Machine index of generic public deliverables on p31ca.org. Sync entity/contact copy with P31 home p31-constants.json.",
   "organization": {
     "legalName": "P31 Labs, Inc.",
@@ -24,6 +24,12 @@
   },
   "householdHandoff": {
     "familyPack": { "path": "/family-sovereign-pack.html", "shortPath": "/family-pack" }
+  },
+  "carsSocialMolecules": {
+    "path": "/social-molecules.html",
+    "shortPath": "/cars",
+    "registryId": "social-molecules",
+    "note": "C.A.R.S. operator shell on the technical hub; live soup sim remains on bonding vertical; wire catalog p31.carsWire in bonding-soup repo"
   },
   "machineIndexes": {
     "creatorEconomy": "/creator-economy.json",

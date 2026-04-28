@@ -6,7 +6,7 @@
  *   A  verify   — existing npm run verify (contracts, ground-truth, egg-hunt, passport)
  *   B  sca      — npm audit with suppression file (P0 = prod runtime vulns only)
  *   C  worker   — wrangler.toml inventory + CORS wildcard scan (P1 warnings)
- *   E  crypto   — quantum-core test gate + passkey boundary check
+ *   E  crypto   — quantum-core test gate + passkey boundary + wrangler RP_ID contract
  *
  * Flags:
  *   --ci         machine-readable output, strict exit codes
