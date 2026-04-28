@@ -342,6 +342,12 @@
       "implementation": "public/education/index.html",
       "label": "P31 Labs Education — curriculum E0–E2 + gated E3+ portal",
       "note": "Discover, tracks, modules, labs; schemas p31.labsEducation/0.2.0, p31.labsEducationCatalog/0.2.0, p31.labsEducationCurriculum/0.2.0. verify:education in prebuild. E3+ stateful portal: public/education/portal/index.html (requires p31_subject_id; progress GET /api/education/progress/:id Worker+D1). Short /learn, /edu, /education in _redirects."
+    },
+    "poetsLobby": {
+      "path": "/poets.html",
+      "implementation": "public/poets.html",
+      "label": "Poets room — writing & narrative lobby",
+      "note": "Static lobby linking passport, education, mesh, geodesic, delta, connect (hub URLs only). Short /poets → /poets.html in _redirects. Hub registry id poets."
     }
   },
   "edgeRedirects": [
@@ -398,6 +404,11 @@
     {
       "from": "/start",
       "to": "/mesh-start.html",
+      "status": 301
+    },
+    {
+      "from": "/poets",
+      "to": "/poets.html",
       "status": 301
     },
     {
@@ -723,6 +734,10 @@
     {
       "id": "education",
       "appUrl": "education/index.html"
+    },
+    {
+      "id": "poets",
+      "appUrl": "poets.html"
     }
   ],
   "threejs": {

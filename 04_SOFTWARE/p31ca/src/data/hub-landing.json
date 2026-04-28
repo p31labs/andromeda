@@ -1,5 +1,5 @@
 {
-  "generated": "2026-04-28T05:39:40.190Z",
+  "generated": "2026-04-28T06:20:28.987Z",
   "meta": {
     "schema": "p31.hub-landing/1.0.0",
     "registry": "scripts/hub/registry.mjs",
@@ -396,6 +396,18 @@
         "p31.labsEducationCurriculum/0.2.0"
       ],
       "url": "/education-about.html"
+    },
+    {
+      "id": "poets",
+      "title": "Poets room",
+      "status": "LIVE",
+      "desc": "Lobby — write, read, dialogue, visuals",
+      "tags": [
+        "Static lobby",
+        "Hub-canonical URLs",
+        "No uploads"
+      ],
+      "url": "/poets-about.html"
     },
     {
       "id": "appointment-tracker",

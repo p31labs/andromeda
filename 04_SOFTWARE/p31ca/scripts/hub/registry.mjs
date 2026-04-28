@@ -1114,7 +1114,31 @@ export const registry = [
     ],
     techNotes:
       'Static tree under `public/education/`. Ground truth: `routes.p31LabsEducation`; short paths in `_redirects`. Normative plan: P31 home `docs/PLAN-P31-LABS-EDUCATION-SITE.md`.',
-    related: ['planetary-onboard', 'geodesic', 'connect', 'integrations'],
+    related: ['planetary-onboard', 'geodesic', 'connect', 'integrations', 'poets'],
+  },
+  {
+    id: 'poets',
+    title: 'Poets room',
+    tagline: 'Lobby — write, read, dialogue, visuals',
+    icon: '🪶',
+    accent: '#c4b5fd',
+    status: 'live',
+    statusLabel: 'LIVE',
+    appUrl: 'poets.html',
+    tech: ['Static lobby', 'Hub-canonical URLs', 'No uploads'],
+    features: [
+      'Curated paths to Cognitive Passport, education, mesh-start, geodesic, delta, connect, and onboarding — bookmark once on Chromebook or phone',
+      'Nothing uploads from this lobby — open each destination with intention',
+      'Same typography and Tailwind presets as hub legal/contact surfaces for visual continuity',
+    ],
+    howTo: [
+      'Pick a lane below (Write → passport, Read → curriculum, Dialogue → mesh, Visual → geodesic)',
+      'Use the hub footer (Build / Create / Connect) for the spine when you graduate from hopping',
+      'Prefer long-form author copy in Cognitive Passport editions in-repo rather than ephemeral browser text boxes',
+    ],
+    techNotes:
+      'Mirror of bonding-soup `poets-room.html` intent: hub-only URLs and `public/poets.html`. Ground-truth route `routes.poetsLobby`; redirect `/poets` → `/poets.html`.',
+    related: ['planetary-onboard', 'education', 'connect'],
   },
   // ── Research / quantum tooling ────────────────────────────────────────────
   {
