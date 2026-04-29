@@ -164,8 +164,96 @@ export function buildStyleArtifacts(canon) {
 
   emitMissionTrioBlock(cssLines);
   emitDesignDoctrineBlock(cssLines);
+  emitSkyRibbonAndStarfieldBlock(cssLines, canon);
 
   return { css: cssLines.join("\n"), js };
+}
+
+/** One sky spine + Layer 1.5 starfield tokens — docs/P31-UNIVERSAL-UI-VISION.md */
+function emitSkyRibbonAndStarfieldBlock(lines, canon) {
+  lines.push("");
+  lines.push("/* P31 universal UI — return ribbon + starfield manifest (canon.starfield / returnRibbon) */");
+
+  const sf = canon.starfield || {};
+  lines.push(":root {");
+  lines.push(`  --p31-sf-layer: ${JSON.stringify(sf.layer || "1.5")};`);
+  lines.push(`  --p31-sf-off-key: ${JSON.stringify(sf.globalOffStorageKey || "p31.starfield.off")};`);
+  const presets = sf.presets || {};
+  for (const key of Object.keys(presets)) {
+    const p = presets[key];
+    const px = key.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase();
+    if (p.baseAlphaCap != null) {
+      lines.push(`  --p31-sf-preset-${px}-base-alpha-cap: ${p.baseAlphaCap};`);
+    }
+    if (p.maxFps != null) {
+      lines.push(`  --p31-sf-preset-${px}-max-fps: ${p.maxFps};`);
+    }
+    if (p.dotCount != null) {
+      lines.push(`  --p31-sf-preset-${px}-dot-count: ${p.dotCount};`);
+    }
+    if (p.motion != null) {
+      lines.push(`  --p31-sf-preset-${px}-motion: ${JSON.stringify(p.motion)};`);
+    }
+  }
+  lines.push("}");
+
+  lines.push("");
+  lines.push(".p31-host-mind {");
+  lines.push("  margin: 0 0 var(--p31-space-3) 0;");
+  lines.push("  font-family: var(--p31-font-sans);");
+  lines.push("  font-size: var(--p31-text-sm);");
+  lines.push("  font-weight: 500;");
+  lines.push("  line-height: var(--p31-leading-snug);");
+  lines.push("  color: var(--p31-muted);");
+  lines.push("  max-width: 42rem;");
+  lines.push("}");
+  lines.push("");
+  lines.push(".p31-return-ribbon {");
+  lines.push("  position: fixed;");
+  lines.push("  bottom: 0;");
+  lines.push("  left: 0;");
+  lines.push("  right: 0;");
+  lines.push("  z-index: 105;");
+  lines.push("  display: flex;");
+  lines.push("  flex-wrap: wrap;");
+  lines.push("  align-items: center;");
+  lines.push("  justify-content: center;");
+  lines.push("  gap: 0.35rem 0.55rem;");
+  lines.push("  padding: 0.5rem var(--p31-space-4);");
+  lines.push("  font-family: var(--p31-font-mono);");
+  lines.push("  font-size: 11px;");
+  lines.push("  line-height: 1.35;");
+  lines.push("  letter-spacing: 0.02em;");
+  lines.push("  color: var(--p31-muted);");
+  lines.push("  background: color-mix(in srgb, var(--p31-void) 92%, transparent);");
+  lines.push("  border-top: 1px solid var(--p31-border-subtle);");
+  lines.push("  backdrop-filter: blur(12px);");
+  lines.push("  -webkit-backdrop-filter: blur(12px);");
+  lines.push("}");
+  lines.push(".p31-return-ribbon a {");
+  lines.push("  color: inherit;");
+  lines.push("  text-decoration: none;");
+  lines.push("  opacity: 0.88;");
+  lines.push("}");
+  lines.push(".p31-return-ribbon a:hover,");
+  lines.push(".p31-return-ribbon a:focus-visible {");
+  lines.push("  color: var(--p31-cyan);");
+  lines.push("  opacity: 1;");
+  lines.push("  outline: none;");
+  lines.push("}");
+  lines.push(".p31-return-ribbon__sep { opacity: 0.4; user-select: none; }");
+  lines.push("body.p31-has-return-ribbon { padding-bottom: 2.75rem; }");
+  lines.push("");
+  lines.push(".p31-translate-bridge {");
+  lines.push("  display: inline-flex;");
+  lines.push("  align-items: center;");
+  lines.push("  gap: var(--p31-space-2);");
+  lines.push("  margin-top: var(--p31-space-3);");
+  lines.push("  font-family: var(--p31-font-mono);");
+  lines.push("  font-size: var(--p31-text-xs);");
+  lines.push("}");
+  lines.push(".p31-translate-bridge a { color: var(--p31-cyan); text-decoration: none; }");
+  lines.push(".p31-translate-bridge a:hover { text-decoration: underline; }");
 }
 
 /** Mission trio EBC + hub rail — used by static pages, verify-mission-trio, Playwright e2e */
