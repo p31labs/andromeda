@@ -67,6 +67,9 @@
       "passkeyApiBasePath": "/api/passkey",
       "passkeySameOriginBase": "https://p31ca.org/api/passkey",
       "edgeLabWorkerUrl": "https://cf-edge-lab.trimtab-signal.workers.dev",
+      "remembranceWarmWhite": "#f5f0e8",
+      "remembranceBereavementKvKey": "mesh_bereavement_until",
+      "vertexStateRemembered": "remembered",
       "note": "passkey Worker zone-routed on p31ca.org when deployed"
     },
     "payment": {
