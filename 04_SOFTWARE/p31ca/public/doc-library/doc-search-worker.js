@@ -23,8 +23,8 @@ self.onmessage = function (e) {
     try {
       mini = new MS({
         idField: "id",
-        fields: ["title", "text", "h2text", "path"],
-        storeFields: ["title", "path", "preview", "h2"],
+        fields: ["title", "text", "h2text", "path", "cluster", "tagsText"],
+        storeFields: ["title", "path", "preview", "previewLead", "h2", "cluster", "tagsText", "lines", "x", "y", "daysSinceCommit", "references"],
       });
       mini.addAll(msg.documents);
       self.postMessage({ type: "ready" });

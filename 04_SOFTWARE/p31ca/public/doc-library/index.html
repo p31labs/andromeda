@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-p31-appearance="hub" data-p31-doclib="1.2.0" style="color-scheme: dark;">
+<html lang="en" data-p31-appearance="hub" data-p31-doclib="1.3.0" style="color-scheme: dark;">
 <head>
   <base href="/doc-library/" />
   <meta charset="UTF-8" />
@@ -730,6 +730,166 @@
       .hits .hit { border-color: rgba(255, 255, 255, 0.16); }
       #q { border-color: rgba(255, 255, 255, 0.18); }
     }
+    .doclib-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--p31-space-3);
+      margin: var(--p31-space-4) 0 var(--p31-space-3);
+    }
+    .doclib-view-toggle {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+    }
+    .doclib-toggle {
+      font: inherit;
+      font-size: 0.72rem;
+      font-weight: 600;
+      font-family: var(--p31-font-mono, ui-monospace, monospace);
+      letter-spacing: 0.04em;
+      padding: 0.45rem 0.85rem;
+      min-height: 40px;
+      border-radius: 999px;
+      border: 1px solid var(--p31-border-subtle, rgba(255, 255, 255, 0.08));
+      background: var(--p31-surface, #161920);
+      color: var(--p31-muted, #6b7280);
+      cursor: pointer;
+      transition: border-color 0.2s, color 0.2s, background 0.2s;
+    }
+    .doclib-toggle.is-active {
+      border-color: color-mix(in srgb, var(--p31-cyan, #4db8a8) 55%, var(--p31-border-subtle));
+      color: var(--p31-cyan, #4db8a8);
+    }
+    .doclib-toolbar-hint {
+      margin: 0;
+      font-size: 0.68rem;
+      font-family: var(--p31-font-mono, ui-monospace, monospace);
+      color: var(--p31-muted, #6b7280);
+      opacity: 0.85;
+    }
+    main.doclib-main {
+      max-width: min(96vw, 1100px);
+      margin-left: auto;
+      margin-right: auto;
+    }
+    body.doclib-mode-list main.doclib-main {
+      max-width: 52rem;
+    }
+    .constellation-wrap {
+      position: relative;
+      width: 100%;
+      min-height: clamp(220px, 44vh, 540px);
+      margin: 0 auto var(--p31-space-5);
+      border-radius: var(--p31-radius-xl, 16px);
+      border: 1px solid var(--p31-border-subtle, rgba(255, 255, 255, 0.07));
+      background: rgba(8, 10, 14, 0.45);
+      overflow: hidden;
+    }
+    .constellation-wrap--empty {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 12rem;
+    }
+    .const-empty {
+      margin: 0;
+      padding: var(--p31-space-6);
+      text-align: center;
+      color: var(--p31-muted, #6b7280);
+      font-size: var(--p31-text-sm);
+    }
+    .constellation-svg {
+      width: 100%;
+      height: auto;
+      display: block;
+      min-height: clamp(220px, 44vh, 540px);
+      touch-action: manipulation;
+    }
+    body.doclib-mode-list .constellation-wrap {
+      display: none !important;
+    }
+    body:not(.doclib-mode-list) .results {
+      display: none !important;
+    }
+    body.doclib-mode-list .results {
+      display: block !important;
+    }
+    .cluster-label {
+      font-size: 10px;
+      fill: rgba(216, 214, 208, 0.22);
+      font-family: var(--p31-font-mono, ui-monospace, monospace);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      pointer-events: none;
+    }
+    .constellation-detail {
+      position: absolute;
+      right: 0.45rem;
+      top: 0.45rem;
+      bottom: 0.45rem;
+      width: min(38vw, 300px);
+      max-width: 92%;
+      overflow: auto;
+      padding: var(--p31-space-4);
+      border-radius: var(--p31-radius-lg, 12px);
+      background: color-mix(in srgb, var(--p31-surface, #161920) 94%, transparent);
+      border: 1px solid var(--p31-border-subtle, rgba(255, 255, 255, 0.08));
+      box-shadow: 0 12px 40px -16px rgba(0, 0, 0, 0.55);
+      font-size: 0.82rem;
+      line-height: 1.5;
+    }
+    @supports not (background: color-mix(in srgb, red, blue)) {
+      .constellation-detail {
+        background: var(--p31-surface, #161920);
+      }
+    }
+    .cd-title {
+      font-size: 1.02rem;
+      margin: 0 0 0.35rem;
+      line-height: 1.2;
+    }
+    .cd-path {
+      font-family: var(--p31-font-mono, ui-monospace, monospace);
+      font-size: 0.62rem;
+      color: var(--p31-lavender, #8b7cc9);
+      word-break: break-all;
+      margin: 0 0 0.5rem;
+    }
+    .cd-lead {
+      color: var(--p31-muted, #6b7280);
+      margin: 0 0 0.75rem;
+    }
+    .cd-conn {
+      font-size: 0.76rem;
+      color: var(--p31-muted, #6b7280);
+      margin: 0.75rem 0;
+    }
+    .cd-link {
+      display: inline;
+      margin: 0;
+      padding: 0;
+      font: inherit;
+      font-size: inherit;
+      background: none;
+      border: none;
+      color: var(--p31-cyan, #4db8a8);
+      cursor: pointer;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+    @media (max-width: 640px) {
+      .constellation-detail {
+        position: relative;
+        right: auto;
+        top: auto;
+        bottom: auto;
+        width: 100%;
+        max-height: none;
+        margin-top: var(--p31-space-2);
+      }
+    }
     .foot {
       margin-top: var(--p31-space-10);
       padding-top: var(--p31-space-4);
@@ -743,6 +903,7 @@
     }
   </style>
   <script src="app.js" defer></script>
+  <script src="constellation-ui.js" defer></script>
 </head>
 <body class="p31-mesh-m-first p31-responsive-surface">
   <div class="bg-mesh" aria-hidden="true">
@@ -806,7 +967,7 @@
             type="search"
             id="q"
             name="q"
-            placeholder="One word: mesh, verify, passport… or tap a chip for a nudge"
+            placeholder="search by word, or just look · try legal: or agent: or stale:"
             autocomplete="off"
             autocorrect="off"
             autocapitalize="off"
@@ -820,8 +981,30 @@
         <p class="kbd-hint" id="kbd-hint"><kbd>/</kbd> search · <kbd>Esc</kbd> clear (almost anywhere) · <kbd>↓</kbd> <kbd>↑</kbd> in results (first <kbd>↑</kbd> back to the box) · <kbd>Enter</kbd> save a history step</p>
       </div>
     </header>
-    <main id="main" class="results-stage" tabindex="-1" aria-label="Search results" aria-busy="true">
+    <main id="main" class="results-stage doclib-main" tabindex="-1" aria-label="Document library" aria-busy="true">
       <p class="meta-line" id="meta" aria-live="polite">Loading your index…</p>
       <p class="meta-hint" id="meta-hint" hidden>The address line keeps your query so you can bookmark it or paste it to a teammate. <kbd>Enter</kbd> saves a step in your browser’s Back stack.</p>
-      <div id="results" class="results" role="region" aria-label="Document hits" aria-describedby="meta"></div>
-      <p class="foot" id="foot-hint" hidden>End of the list — same library, two altitudes. Tweak a word or tap a chip; t
+      <div class="doclib-toolbar" role="toolbar" aria-label="View mode">
+        <div class="doclib-view-toggle">
+          <button type="button" class="doclib-toggle p31-mesh-tap is-active" id="btn-view-constellation" aria-pressed="true">Constellation</button>
+          <button type="button" class="doclib-toggle p31-mesh-tap" id="btn-view-list" aria-pressed="false">List</button>
+        </div>
+        <p class="doclib-toolbar-hint">Shape first · words second · prefixes <code>legal:</code> <code>agent:</code> <code>shipped:</code> <code>stale:</code></p>
+      </div>
+      <div id="constellation-wrap" class="constellation-wrap" aria-label="Document map">
+        <svg id="constellation-svg" class="constellation-svg" viewBox="0 0 1000 640" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="svg-title">
+          <title id="svg-title">Document constellation — each dot is one markdown file</title>
+          <rect width="1000" height="640" fill="transparent" />
+          <g id="constellation-edges"></g>
+          <g id="constellation-nodes"></g>
+          <g id="constellation-labels"></g>
+        </svg>
+        <aside id="constellation-detail" class="constellation-detail" hidden></aside>
+      </div>
+      <div id="results" class="results" role="region" aria-label="Document list" aria-describedby="meta"></div>
+      <p class="foot" id="foot-hint" hidden>List view — same library, two altitudes.</p>
+      <p class="foot">Markdown lives in git; nothing leaves your machine until you open a file.</p>
+    </main>
+  </div>
+</body>
+</html>
