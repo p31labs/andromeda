@@ -135,6 +135,8 @@ const pageDescription =
   shellBackdrop={false}
 >
   <Fragment slot="head">
+    <link rel="stylesheet" href="/lib/p31-starfield.css" />
+    <link rel="stylesheet" href="/lib/p31-larmor-fields.css" />
     <link
       href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1;500;1;600&display=swap"
       rel="stylesheet"
@@ -171,107 +173,108 @@ const pageDescription =
     </script>
   </Fragment>
 
-  <Fragment slot="importmaps">
-    <!-- Import Map for Three.js -->
-    <script type="importmap" is:inline>
-      {
-        "imports": {
-          "three": "https://cdn.jsdelivr.net/npm/three@0.183.0/build/three.module.js",
-          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.183.0/examples/jsm/"
-        }
-      }
-    </script>
-  </Fragment>
-  
-
-  <!-- Ambient WebGL: fixed background stack; canvas re-enables pointer hits in landing-cockpit.ts -->
+  <!-- Hub landing: 2D particle canvas (no WebGL — full dome lives at /dome) -->
   <div
     id="hub-gl-backdrop"
-    class="pointer-events-none fixed inset-0 z-0 isolate overflow-hidden"
+    class="pointer-events-none fixed inset-0 z-0 isolate overflow-hidden bg-[#05080c]"
     aria-hidden="true"
   >
-    <div id="webgl-container" class="absolute inset-0 bg-transparent"></div>
+    <canvas id="hub-particle-canvas" class="p31-starfield-canvas absolute inset-0 h-full w-full"></canvas>
     <div
-      class="pointer-events-none absolute inset-0 z-[1] bg-[#05080c]/60"
+      class="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-b from-[rgba(37,137,125,0.03)] via-transparent to-[rgba(204,98,71,0.035)]"
+      aria-hidden="true"
+    ></div>
+    <div
+      class="pointer-events-none absolute inset-0 z-[2] bg-[#05080c]/50"
       aria-hidden="true"
     ></div>
   </div>
 
-  <!-- FIXED SOVEREIGN HUD (Top Nav) -->
+  <!-- Top nav: public actions always visible; operator instruments in <details> (mobile-first) -->
   <nav
-    class="fixed top-0 left-0 right-0 z-50 glass-panel border-b border-white/[0.07] flex flex-col gap-3 pt-[max(0.5rem,env(safe-area-inset-top))] pb-2 pl-[max(0.75rem,env(safe-area-inset-left))] pr-[max(0.75rem,env(safe-area-inset-right))] sm:px-5 md:flex-row md:items-center md:justify-between md:gap-4 text-sm font-mono text-p31-cloud shadow-[0_4px_30px_rgba(0,0,0,0.5)] md:text-xs"
+    class="fixed top-0 left-0 right-0 z-50 glass-panel border-b border-white/[0.07] flex flex-col gap-3 pt-[max(0.5rem,env(safe-area-inset-top))] pb-2 pl-[max(0.75rem,env(safe-area-inset-left))] pr-[max(0.75rem,env(safe-area-inset-right))] sm:px-5 lg:flex-row lg:items-center lg:justify-between lg:gap-4 text-sm font-mono text-p31-cloud shadow-[0_4px_30px_rgba(0,0,0,0.5)] md:text-xs"
     aria-label="Primary"
   >
-    
-    <!-- Logo & Q-Factor — EDE: mono cluster + instrument readout -->
-    <div class="flex min-w-0 flex-1 flex-wrap items-center gap-4">
+    <div class="flex min-w-0 flex-wrap items-center justify-between gap-3 lg:flex-1 lg:justify-start">
       <a href="/" class="group flex min-w-0 shrink-0 items-center gap-3 no-underline" title="P31 Labs hub">
         <div
-          class="flex h-8 w-8 shrink-0 items-center justify-center rounded border border-teal/40 bg-teal/10 font-mono text-[11px] font-bold tracking-tight text-cyan transition-all group-hover:border-teal group-hover:bg-teal group-hover:text-p31-cloud group-hover:shadow-[0_0_15px_rgba(77,184,168,0.35)]"
+          class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-teal/40 bg-teal/10 font-mono text-[11px] font-bold tracking-tight text-cyan transition-all group-hover:border-teal group-hover:bg-teal group-hover:text-p31-cloud group-hover:shadow-[0_0_15px_rgba(77,184,168,0.35)]"
         >
           P31
         </div>
         <span
           class="hidden font-mono text-[11px] font-semibold uppercase leading-tight tracking-[0.2em] text-p31-cloud/70 transition-colors group-hover:text-p31-cloud sm:inline sm:max-w-[14rem]"
         >
-          P31 Labs — Cockpit</span>
+          P31 Labs</span>
       </a>
-      <div class="h-4 w-px bg-white/10 max-sm:hidden"></div>
-      <div class="flex items-center gap-2" title="Fisher-Escolà Coherence Score">
-        <span class="w-2 h-2 rounded-full bg-phosphorus shadow-[0_0_8px_rgba(59,163,114,0.55)] animate-pulse" id="nav-status-dot"></span>
-        <span class="text-p31-muted">Q-FACTOR:</span>
-        <span class="font-bold text-phosphorus tracking-wider" id="nav-q-factor">0.925</span>
-      </div>
-    </div>
 
-    <!-- Central Telemetry: Spoons & Fleet -->
-    <div
-      class="flex max-w-full items-center gap-4 overflow-x-auto overflow-y-visible overscroll-x-contain bg-p31-void-50 px-3 py-2 [scrollbar-width:thin] sm:gap-6 sm:px-4 rounded-md border border-white/[0.07] md:max-w-none md:overflow-visible"
-    >
-      <div class="flex items-center gap-2" title="Vertex A: Operator State">
-        <span class="text-p31-muted">SPOONS</span>
-        <div class="w-16 h-1.5 bg-surface2 rounded-full overflow-hidden">
-          <div id="nav-spoon-fill" class="h-full bg-coral transition-all duration-500" style="width: 50%;"></div>
+      <details
+        id="hub-instruments"
+        class="group relative min-w-0 max-w-full flex-1 sm:max-w-md lg:max-w-lg [&_summary::-webkit-details-marker]:hidden"
+      >
+        <summary
+          class="flex min-h-[2.75rem] cursor-pointer list-none items-center justify-center gap-2 rounded-lg border border-white/[0.1] bg-p31-void-50 px-3 py-2 text-[10px] font-bold uppercase tracking-widest text-p31-muted transition-colors hover:border-teal/25 hover:text-p31-cloud lg:min-h-0 lg:py-1.5"
+        >
+          Instruments
+          <span class="text-p31-muted/50" aria-hidden="true">▾</span>
+        </summary>
+        <div
+          class="absolute left-0 right-0 top-full z-[60] mt-2 flex max-h-[min(70vh,28rem)] flex-col gap-4 overflow-y-auto rounded-lg border border-white/[0.08] bg-p31-void-95 p-4 shadow-[0_12px_40px_rgba(0,0,0,0.65)] backdrop-blur-md sm:left-auto sm:right-0 sm:min-w-[22rem]"
+        >
+          <div class="flex flex-wrap items-center gap-2" title="Fisher-Escolà Coherence Score">
+            <span class="w-2 h-2 shrink-0 rounded-full bg-phosphorus shadow-[0_0_8px_rgba(59,163,114,0.55)] animate-pulse" id="nav-status-dot"></span>
+            <span class="text-p31-muted">Q-FACTOR:</span>
+            <span class="font-bold text-phosphorus tracking-wider" id="nav-q-factor">0.925</span>
+          </div>
+          <div
+            class="flex flex-wrap items-center gap-x-4 gap-y-3 overflow-x-auto rounded-md border border-white/[0.07] bg-p31-void-50 px-3 py-2.5 [scrollbar-width:thin]"
+          >
+            <div class="flex items-center gap-2" title="Vertex A: Operator State">
+              <span class="text-p31-muted">SPOONS</span>
+              <div class="w-16 h-1.5 bg-surface2 rounded-full overflow-hidden">
+                <div id="nav-spoon-fill" class="h-full bg-coral transition-all duration-500" style="width: 50%;"></div>
+              </div>
+              <span id="nav-spoon-val" class="text-coral font-bold">10</span>
+            </div>
+            <div class="h-3 w-px bg-white/10"></div>
+            <div class="flex items-center gap-2" title="L.O.V.E. Ledger Balance">
+              <span class="text-p31-muted">L.O.V.E.</span>
+              <span id="nav-love-val" class="text-teal font-bold">3.28</span>
+            </div>
+            <div class="h-3 w-px bg-white/10 hidden sm:block"></div>
+            <div class="hidden sm:flex items-center gap-2">
+              <span class="text-p31-muted">FLEET:</span>
+              <span id="nav-fleet-val" class="text-p31-cloud">4/4</span>
+            </div>
+            <div class="h-3 w-px bg-white/10 hidden lg:block"></div>
+            <div
+              class="hidden lg:flex flex-wrap items-center gap-2"
+              title="As above, so below — p31ca HUD ↔ k4-personal edge (vitality, V/E L♥)"
+            >
+              <span class="text-p31-muted">MESH</span>
+              <span id="nav-mesh-vit" class="text-lavender font-bold">—</span>
+              <span class="text-p31-muted text-[10px]">L♥</span>
+              <span id="nav-mesh-ve" class="text-p31-cloud text-[10px] font-mono">—</span>
+              <span id="nav-mesh-detail" class="text-p31-muted text-[9px] font-mono max-w-[7rem] truncate hidden 2xl:inline" title=""> </span>
+              <a href="/mesh-observatory/" class="text-lavender hover:text-lavender/85 hover:underline text-[10px] font-bold" title="Mesh Observatory">OBS</a>
+            </div>
+          </div>
+          <div
+            class="group inline-flex min-h-[3rem] cursor-pointer items-center gap-3 rounded-md border border-white/[0.06] px-2 py-2 md:min-h-0"
+            id="trimtab-trigger"
+            title="Drag to tune · Click for Layer 0"
+          >
+            <canvas id="trimtab-canvas" width="24" height="24" class="opacity-80 transition-opacity group-hover:opacity-100"></canvas>
+            <span id="trimtab-freq" class="text-butter font-bold">863Hz</span>
+            <span class="text-[9px] text-p31-muted">Trim · breath</span>
+          </div>
         </div>
-        <span id="nav-spoon-val" class="text-coral font-bold">10</span>
-      </div>
-      <div class="h-3 w-px bg-white/10"></div>
-      <div class="flex items-center gap-2" title="L.O.V.E. Ledger Balance">
-        <span class="text-p31-muted">L.O.V.E.</span>
-        <span id="nav-love-val" class="text-teal font-bold">3.28</span>
-      </div>
-      <div class="h-3 w-px bg-white/10 hidden md:block"></div>
-      <div class="hidden md:flex items-center gap-2">
-        <span class="text-p31-muted">FLEET:</span>
-        <span id="nav-fleet-val" class="text-p31-cloud">4/4</span>
-      </div>
-      <div class="h-3 w-px bg-white/10 hidden xl:block"></div>
-      <div
-        class="hidden xl:flex items-center gap-2"
-        title="As above, so below — p31ca HUD ↔ k4-personal edge (vitality, V/E L♥)"
-      >
-        <span class="text-p31-muted">MESH</span>
-        <span id="nav-mesh-vit" class="text-lavender font-bold">—</span>
-        <span class="text-p31-muted text-[10px]">L♥</span>
-        <span id="nav-mesh-ve" class="text-p31-cloud text-[10px] font-mono">—</span>
-        <span id="nav-mesh-detail" class="text-p31-muted text-[9px] font-mono max-w-[7rem] truncate hidden 2xl:inline" title=""> </span>
-        <a href="/mesh-observatory/" class="text-lavender hover:text-lavender/85 hover:underline text-[10px] font-bold" title="Mesh Observatory">OBS</a>
-      </div>
+      </details>
     </div>
 
-    <!-- Trimtab & Actions: mobile-first touch targets, dense labels on md+ -->
     <div
-      class="flex w-full flex-wrap items-center justify-center gap-2 sm:justify-end md:w-auto md:justify-end"
+      class="flex w-full flex-wrap items-center justify-center gap-2 sm:justify-end lg:w-auto lg:flex-nowrap lg:justify-end"
     >
-      <div
-        class="group inline-flex min-h-[2.75rem] min-w-[2.75rem] cursor-pointer items-center gap-2 rounded-md px-1 md:min-h-0 md:min-w-0"
-        id="trimtab-trigger"
-        title="Drag to tune · Click for Layer 0"
-      >
-        <canvas id="trimtab-canvas" width="24" height="24" class="opacity-80 transition-opacity group-hover:opacity-100"></canvas>
-        <span id="trimtab-freq" class="text-butter font-bold">863Hz</span>
-      </div>
-      <div class="h-4 w-px bg-white/10 max-md:hidden" aria-hidden="true"></div>
       <a
         href="/passport"
         class="inline-flex min-h-[2.75rem] items-center justify-center rounded border border-phosphorus/35 bg-phosphorus/10 px-3 py-2 text-xs font-bold uppercase tracking-widest text-phosphorus hover:bg-phosphorus/25 hover:text-phosphorus md:min-h-0 md:px-2 md:py-1 md:text-[10px]"
@@ -327,6 +330,7 @@ const pageDescription =
 
   <!-- LAYER 0: Somatic Mode Overlay -->
   <div id="layer0" class="fixed inset-0 z-[100] bg-p31-void flex flex-col items-center justify-center gap-6 transition-opacity duration-1000 opacity-0 pointer-events-none">
+    <!-- Hub Layer0 POVM latch — string anchor for egg-hunt; handler: activateLayer0 in landing-cockpit.ts -->
     <div class="absolute top-8 left-1/2 -translate-x-1/2 flex items-center gap-4 font-mono text-xs text-p31-muted">
       <span>SPOONS</span>
       <div class="w-32 h-1 bg-surface2 rounded-full overflow-hidden">
@@ -348,18 +352,18 @@ const pageDescription =
   <!-- pointer-events-none allows background clicking, but we restore it on .interactive-zone -->
   <main
     id="scroll-container"
-    class="pointer-events-none relative z-10 mx-auto max-w-7xl px-4 pt-32 pb-16 font-sans text-p31-cloud sm:px-6 sm:pb-24 md:pt-28"
+    class="pointer-events-none relative z-10 mx-auto max-w-7xl px-4 pt-28 pb-12 font-sans text-p31-cloud sm:px-6 sm:pb-20 md:pt-24"
   >
     <!-- Lobby threshold — geometry first, then nameplate (hub shell; tokens via p31-style.css) -->
     <header
       id="technical-hub-boundary"
-      class="animate-fade-in-up relative z-10 mb-12 text-center sm:mb-16 md:mb-20"
+      class="animate-fade-in-up relative z-10 mb-8 text-center sm:mb-12 md:mb-14"
       style="animation-delay: 0.08s;"
     >
-      <div class="lobby-hero pointer-events-auto mx-auto max-w-xl px-4 pt-24 sm:pt-28 md:pt-32">
-        <div class="lobby-k4-wrap mb-8 flex justify-center" aria-hidden="true">
+      <div class="lobby-hero pointer-events-auto mx-auto max-w-xl px-4 pt-16 sm:pt-20 md:pt-24">
+        <div class="lobby-k4-wrap mb-6 flex justify-center" aria-hidden="true">
           <svg
-            class="lobby-k4 text-teal"
+            class="lobby-k4 lobby-k4--static text-teal"
             width="120"
             height="120"
             viewBox="-100 -100 200 200"
@@ -402,7 +406,7 @@ const pageDescription =
 
     <section
       id="lobby-rooms"
-      class="interactive-zone animate-fade-in-up relative z-10 mx-auto mb-16 max-w-3xl px-4 sm:mb-20"
+      class="interactive-zone animate-fade-in-up relative z-10 mx-auto mb-12 max-w-3xl px-4 sm:mb-16"
       style="animation-delay: 0.12s;"
       aria-labelledby="lobby-rooms-heading"
     >
@@ -413,7 +417,11 @@ const pageDescription =
             <a
               href={door.href}
               {...(door.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-              class="hub-door group flex min-h-[3.25rem] flex-col gap-1 rounded-md border border-white/[0.06] border-l-4 border-l-teal/55 bg-p31-void/40 py-3 pl-4 pr-3 no-underline transition-colors hover:border-teal/35 hover:border-l-teal hover:bg-surface2/50 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:py-3.5"
+              class={`hub-door group flex min-h-[3.25rem] flex-col gap-1 rounded-lg border border-white/[0.06] border-l-4 bg-p31-void/40 py-3 pl-4 pr-3 no-underline transition-colors hover:bg-surface2/50 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:py-3.5 ${
+                door.title === 'Research'
+                  ? 'border-l-coral/45 hover:border-l-coral hover:border-coral/25'
+                  : 'border-l-teal/55 hover:border-l-teal hover:border-teal/25'
+              }`}
             >
               <div class="min-w-0 text-left">
                 <div class="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-p31-cloud">
@@ -818,16 +826,9 @@ const pageDescription =
       transform: rotate(360deg);
     }
   }
-  @media (prefers-reduced-motion: no-preference) {
-    .lobby-k4 {
-      transform-origin: 0px 0px;
-      animation: lobby-k4-slow 30s linear infinite;
-    }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .lobby-k4 {
-      animation: none;
-    }
+  /** Hub lobby: calm signature glyph — no idle spin (full dome lives at /dome). */
+  .lobby-k4--static {
+    animation: none !important;
   }
   @keyframes fadeInUp {
     from { opacity: 0; transform: translateY(20px); }
@@ -991,7 +992,7 @@ const pageDescription =
   @keyframes l0-exhale { to { transform: scale(0.75); opacity: 0.4; } }
 </style>
 
-<!-- Landing WebGL: src/scripts/landing-cockpit.ts (shared icosa math: src/lib/dome/) · activateLayer0 trim→Layer0 (parity with /dome) -->
+<!-- Landing: src/scripts/landing-cockpit.ts (telemetry + trimtab + 2D particle canvas); full Three.js dome: /dome -->
 <script>
   import '../scripts/landing-cockpit.ts';
 </script>

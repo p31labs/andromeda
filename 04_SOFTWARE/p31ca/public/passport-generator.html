@@ -27,6 +27,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital@1&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/p31-style.css" />
   <link rel="stylesheet" href="p31-responsive-surface.css" />
+  <link rel="stylesheet" href="../design-assets/starfield/p31-larmor-fields.css" />
   <script src="lib/p31-subject-prefs.js"></script>
   <style>
     :root {
@@ -102,7 +103,32 @@
     }
     textarea { min-height: 12rem; font-family: var(--p31-font-mono), ui-monospace, monospace; font-size: 0.8rem; }
     .row { margin-bottom: 0.9rem; }
-    .checks label { text-transform: none; letter-spacing: 0; display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; color: var(--text); }
+    /** Mobile-first: touch targets + aligned checkbox column (avoids wrap glitches on narrow viewports) */
+    #constraints.checks {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+    .checks label {
+      text-transform: none;
+      letter-spacing: 0;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      min-height: 3rem;
+      padding: 0.35rem 0;
+      font-size: clamp(0.875rem, 2.8vw, 0.95rem);
+      color: var(--text);
+      line-height: 1.45;
+    }
+    .checks input[type="checkbox"] {
+      width: 1.35rem;
+      height: 1.35rem;
+      min-width: 1.35rem;
+      margin: 0.15rem 0 0;
+      flex-shrink: 0;
+      accent-color: var(--p31-teal, #25897d);
+    }
     .btn {
       display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem;
       padding: 0.55rem 1rem; border-radius: 8px; border: 1px solid var(--p31-coral); cursor: pointer;
@@ -405,7 +431,7 @@
         <div class="passport-section" id="sec-notes" data-section="notes">
           <div class="row">
             <label for="customNotes">Notes for assistants (optional)</label>
-            <textarea id="customNotes" rows="3" placeholder="e.g. I process visually and need extra time on verbal-only calls; triggers include…"></textarea>
+            <textarea id="customNotes" class="p31-larmor-field" rows="3" placeholder="e.g. I process visually and need extra time on verbal-only calls; triggers include…"></textarea>
           </div>
           <div class="row">
             <label for="email">Email (optional — omit when sharing exports)</label>
@@ -779,6 +805,15 @@
       document.getElementById("outMd").value = toMarkdown(f, data);
       document.getElementById("outAgent").value = toAgentBlock(f, data);
       setGenesisReadout(data);
+      void import("../design-assets/starfield/p31-mesh-touches.js")
+        .then((MT) => {
+          try {
+            MT.broadcastMeshTouch({ type: "genesis" });
+          } catch {
+            /* ignore */
+          }
+        })
+        .catch(() => {});
       refreshSectionAlive();
     }
 

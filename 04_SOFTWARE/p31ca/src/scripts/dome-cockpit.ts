@@ -931,8 +931,10 @@ if (!webglSupported) {
 const container = $("webgl-container");
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0x050508);
+  /** Depth cue — far faces soften so the shell reads as volume, not a sticker */
+  scene.fog = new THREE.Fog(0x050508, 14, 92);
 
-  const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 200);
+  const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.08, 520);
   /* Interior cockpit: start just inside the RADIUS≈3.5 shell, looking toward origin */
   camera.position.set(0, 0.45, 2.38);
 
@@ -948,8 +950,8 @@ const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.dampingFactor = 0.05;
 controls.maxPolarAngle = Math.PI / 2 - 0.1; // Prevent going below ground
-controls.minDistance = 1.38;
-controls.maxDistance = 6.75;
+controls.minDistance = 0.52;
+controls.maxDistance = 108;
 controls.enablePan = false;
 controls.autoRotate = false;
 controls.mouseButtons.LEFT = THREE.MOUSE.PAN; // with enablePan false → left does not orbit

@@ -1,6 +1,6 @@
 {
   "schema": "p31.opsGlassProbes/1.0.0",
-  "ingested": "2026-04-29T01:43:06.888Z",
+  "ingested": "2026-04-29T05:45:44.276Z",
   "source": "p31-ecosystem.json",
   "probes": [
     {
@@ -40,6 +40,13 @@
       "group": "mesh",
       "note": "GeodesicRoom DO v0.2 — JSON { service, version, ok }; WS /api/geodesic/:id/ws; see docs/GEODESIC-GAME-ENGINE-INTEGRATION.md",
       "url": "https://geodesic-room.trimtab-signal.workers.dev/"
+    },
+    {
+      "id": "cf-edge-lab-api-edge",
+      "group": "labs",
+      "note": "request.cf + cf-ray JSON; 404 until first deploy (npm run edge-lab:deploy). P31_GLASS_STRICT=1 fails row when down.",
+      "url": "https://cf-edge-lab.trimtab-signal.workers.dev/api/edge",
+      "expectJsonKey": "ok"
     },
     {
       "id": "agent-hub-health",

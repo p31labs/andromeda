@@ -6,5 +6,8 @@
   "agentHubWorkerUrl": "https://p31-agent-hub.trimtab-signal.workers.dev",
   "orchestratorWorkerUrl": "https://p31-orchestrator.trimtab-signal.workers.dev",
   "passkeyApiBasePath": "/api/passkey",
-  "edgeLabWorkerUrl": "https://cf-edge-lab.trimtab-signal.workers.dev"
+  "edgeLabWorkerUrl": "https://cf-edge-lab.trimtab-signal.workers.dev",
+  "remembranceWarmWhite": "#f5f0e8",
+  "remembranceBereavementKvKey": "mesh_bereavement_until",
+  "vertexStateRemembered": "remembered"
 }
