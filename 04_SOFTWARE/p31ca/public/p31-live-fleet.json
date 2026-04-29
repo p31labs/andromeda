@@ -1,7 +1,7 @@
 {
   "_comment": "Single bundle of live sites + Worker fleet. Mesh/payment URLs MUST match p31-constants.json; allowlist names MUST match andromeda/04_SOFTWARE/p31ca/security/worker-allowlist.json. After changing constants: npm run apply:constants && npm run verify:constants. defaultWorkersDev uses account subdomain trimtab-signal — confirm with wrangler or live GET if a Worker uses another account.",
   "schema": "p31.liveFleet/1.0.0",
-  "updated": "2026-04-26",
+  "updated": "2026-04-29",
   "sources": [
     "p31-constants.json",
     "p31-ecosystem.json",
@@ -66,6 +66,7 @@
       "orchestratorWorkerUrl": "https://p31-orchestrator.trimtab-signal.workers.dev",
       "passkeyApiBasePath": "/api/passkey",
       "passkeySameOriginBase": "https://p31ca.org/api/passkey",
+      "edgeLabWorkerUrl": "https://cf-edge-lab.trimtab-signal.workers.dev",
       "note": "passkey Worker zone-routed on p31ca.org when deployed"
     },
     "payment": {
@@ -126,6 +127,13 @@
       "workersDev": "https://geodesic-room.trimtab-signal.workers.dev",
       "deploy": "04_SOFTWARE/geodesic-room",
       "note": "DO v0.2; WS /api/geodesic/:id/ws; see GEODESIC-GAME-ENGINE-INTEGRATION.md"
+    },
+    {
+      "id": "cf-edge-lab",
+      "workersDev": "https://cf-edge-lab.trimtab-signal.workers.dev",
+      "constantsKey": "mesh.edgeLabWorkerUrl",
+      "deploy": "packages/cf-edge-lab",
+      "note": "Workers AI + /api/edge (request.cf) + WebSocket /ws; GET / playground"
     },
     {
       "id": "donate-api",
