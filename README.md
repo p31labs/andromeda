@@ -2,7 +2,7 @@
 
 **Phosphorus31 / P31 Labs** — open-source assistive-technology and research software. Georgia nonprofit (**P31 Labs, Inc.**). 501(c)(3) pending.
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18627420.svg)](https://doi.org/10.5281/zenodo.18627420)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19004485.svg)](https://doi.org/10.5281/zenodo.19004485)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19411363.svg)](https://doi.org/10.5281/zenodo.19411363)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 

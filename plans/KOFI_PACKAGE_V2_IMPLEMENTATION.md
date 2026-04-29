@@ -110,7 +110,7 @@ engineering, graph theory, quantum biology, electrical topology, and network
 resilience.
 
 Written by William R. Johnson, P31 Labs.
-DOI: 10.5281/zenodo.18627420
+DOI: 10.5281/zenodo.19004485
 ORCID: 0009-0002-2492-9079
 
 39 pages. Peer-linkable. Daubert-ready. Published on Zenodo under open 

@@ -48,7 +48,7 @@ Feature
 	Not calcium-dependent; unrelated to endocrine function
 	
 
-Key distinction: My output is coherent, technically verified, peer-reviewed (DOI: 10.5281/zenodo.18627420), and deployed as working software (bonding.p31ca.org, 511 automated tests). Manic output is characteristically disorganized and incomplete. Volume is not pathology when the content is sound.
+Key distinction: My output is coherent, technically verified, peer-reviewed (DOI: 10.5281/zenodo.19004485), and deployed as working software (bonding.p31ca.org, 511 automated tests). Manic output is characteristically disorganized and incomplete. Volume is not pathology when the content is sound.
 ________________
 
 
@@ -130,7 +130,7 @@ ________________
 
 Section 6: Context for Any Future Evaluator
 When the court-ordered psychological evaluation is administered, the evaluator will see a 40-year-old man who, in the past 6 months, has:
-* Published a peer-reviewed monograph on Zenodo (DOI: 10.5281/zenodo.18627420)
+* Published a peer-reviewed monograph on Zenodo (DOI: 10.5281/zenodo.19004485)
 * Shipped a deployed web application with 511 automated tests (bonding.p31ca.org)
 * Founded a 501(c)(3) nonprofit focused on assistive technology
 * Filed five pro se legal briefs with verified IRS documentation
@@ -162,5 +162,5 @@ Section 8: Recommended Actions for Clinician
 6. Note that patient requested a paramedic during March 18 court hearing and request was ignored by the court. This is documented on the court record (court reporter present).
 Prepared by William R. Johnson for psychiatric appointment March 24, 2026
 References: JCEM 2025 (PMC12261092) | ClinicalTrials.gov NCT04569604 | PubMed 38648280
-Zenodo DOI: 10.5281/zenodo.18627420 | ORCID: 0009-0002-2492-9079
+Zenodo DOI: 10.5281/zenodo.19004485 | ORCID: 0009-0002-2492-9079
 William R. Johnson | will@p31ca.org | (912) 227-4980 | Page

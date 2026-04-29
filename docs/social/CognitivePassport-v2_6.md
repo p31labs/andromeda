@@ -74,7 +74,7 @@
 **Fiscal sponsor:** HCB (applied 2/18/26, ref 4XDUXX — NO RESPONSE after 4 weeks). HCB fiscal sponsorship unsuitable for federal grants (Model A, P31 Labs has no separate legal identity under HCB). Pivoting to Aspiration (top pick) or Social Good Fund (backup). Stripe donations live at phosphorus31.org/donate. **Ko-fi live at ko-fi.com/trimtab69420** — donation button + digital shop (monograph PDF, geometric prints).
 **GitHub:** github.com/p31labs
 **ORCID:** 0009-0002-2492-9079
-**Zenodo DOI:** 10.5281/zenodo.18627420
+**Zenodo DOI:** 10.5281/zenodo.19004485
 **Substack:** @trimtabsignal
 
 ### Incorporation Status (as of Mar 16)
@@ -333,7 +333,7 @@ Adding a room = one import + one array entry. Pattern proven by Collider Room (r
 
 **What converged (all in the same week):**
 
-**Monograph completed:** "The Minimum Enclosing Structure: Tetrahedral Geometry as Universal Architecture from Quantum Coherence to Social Resilience" — 5 chapters, 39 references, unified bibliography. Companion to GUT (DOI: 10.5281/zenodo.18627420). Ready for Zenodo upload with new DOI.
+**Monograph completed:** "The Minimum Enclosing Structure: Tetrahedral Geometry as Universal Architecture from Quantum Coherence to Social Resilience" — 5 chapters, 39 references, unified bibliography. Companion to GUT (DOI: 10.5281/zenodo.19004485). Ready for Zenodo upload with new DOI.
 
 **Defensive publications finalized (Mar 17):** Three white papers polished to publication-ready manuscripts:
 - "The Floating Neutral Hypothesis: Basal Ganglia Calcification and Biological Voltage Failure" — medical/physiological, positions Phenix Navigator as life-sustaining prosthesis (Iron Lung Constraint applied)
@@ -427,7 +427,7 @@ Adding a room = one import + one array entry. Pattern proven by Collider Room (r
 - Ko-fi live at ko-fi.com/trimtab69420
 - **Ko-fi content packages v1 + v2 COMPLETE** — shop descriptions, 9 posts queued, gallery structure, naming convention. Ready to copy/paste.
 - **Deep Research output (Mar 21):** "The P31 Initiative: Integrating Health Advocacy, Quantum Security, and IP Strategy" — comprehensive report in Google Docs. Covers hypopara advocacy, quantum timeline, expert credibility, IP valuation, defensive pub strategy, SOP platforms, Ko-fi audience, time-sensitive contextualization.
-- Defensive publication on Internet Archive (Feb 25) and Zenodo (DOI: 10.5281/zenodo.18627420)
+- Defensive publication on Internet Archive (Feb 25) and Zenodo (DOI: 10.5281/zenodo.19004485)
 - **Monograph ready for Zenodo upload** — new DOI, references GUT
 - **Three defensive white papers finalized Mar 17** — ready for Zenodo upload (Floating Neutral Hypothesis, Mechanical Translation of Quantum States, Hardware-Accelerated Lattice Decoders)
 - **Grant applications submitted March 10:** Pollination Project ($500), Awesome Foundation ($1,000) — 11 days, no reply

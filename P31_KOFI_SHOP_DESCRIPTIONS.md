@@ -13,7 +13,7 @@
 **Description:**
 Five chapters. Thirty-nine references. One idea — the minimum enclosing structure is a tetrahedron.
 
-This monograph synthesizes K₄ complete graph topology, Maxwell's electromagnetic bio-error correction, Thomson's tetrahedral packing conjecture, and Posner molecule chemistry into a unified geometric framework. It's the companion to the GUT (DOI: 10.5281/zenodo.18627420).
+This monograph synthesizes K₄ complete graph topology, Maxwell's electromagnetic bio-error correction, Thomson's tetrahedral packing conjecture, and Posner molecule chemistry into a unified geometric framework. It's the companion to the GUT (DOI: 10.5281/zenodo.19004485).
 
 Who needs this? Researchers tired of reductionist thinking. Makers who want to understand why the geometry keeps showing up. Anyone who suspects the universe has structure and wants to know what it is.
 
@@ -108,7 +108,7 @@ When Node Count reaches a milestone, supporters unlock rewards:
 ```
 Title: The Minimum Enclosing Structure: Tetrahedral Geometry as Universal Architecture from Quantum Coherence to Social Resilience
 Price: $5 (Pay What You Want)
-Description: Five chapters. Thirty-nine references. One idea — the minimum enclosing structure is a tetrahedron. This monograph synthesizes K₄ complete graph topology, Maxwell's electromagnetic bio-error correction, Thomson's tetrahedral packing conjecture, and Posner molecule chemistry into a unified geometric framework. Companion to the GUT (DOI: 10.5281/zenodo.18627420).
+Description: Five chapters. Thirty-nine references. One idea — the minimum enclosing structure is a tetrahedron. This monograph synthesizes K₄ complete graph topology, Maxwell's electromagnetic bio-error correction, Thomson's tetrahedral packing conjecture, and Posner molecule chemistry into a unified geometric framework. Companion to the GUT (DOI: 10.5281/zenodo.19004485).
 Tags: physics, geometry, mathematics, chemistry, cognitive science, nonprofit, P31 Labs, Buckminster Fuller, quantum biology
 ```
 

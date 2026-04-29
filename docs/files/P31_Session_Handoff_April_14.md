@@ -118,7 +118,7 @@ Screenshot the sent email for the hearing folder.
 ## RESEARCH PAPER STATUS
 
 ### Published (Zenodo DOIs)
-- Paper I (Tetrahedron Protocol): 10.5281/zenodo.18627420
+- Paper I (Tetrahedron Protocol): 10.5281/zenodo.19004485
 - Paper III: 10.5281/zenodo.19411363 / 10.5281/zenodo.19416491
 - Paper IV (Universal Bridge): 10.5281/zenodo.19503542
 

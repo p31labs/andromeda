@@ -19,7 +19,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     </div>
     <!-- CSS-only rotating tetrahedron SVG fallback -->
     <div class="fixed inset-0 flex items-center justify-center bg-p31-void" aria-label="Fallback loading animation">
-      <svg class="w-48 h-48 animate-spin text-cyan" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round" stroke-linejoin="round">
+      <svg class="w-48 h-48 text-cyan motion-safe:animate-spin" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round" stroke-linejoin="round">
         <path d="M50 15 L85 85 L15 85 Z"/>
       </svg>
     </div>
@@ -106,18 +106,12 @@ import BaseLayout from '../layouts/BaseLayout.astro';
    >
      <!-- HUD Header -->
      <div class="flex items-center justify-between w-full">
-       <!-- Left: Logo & Q-Factor -->
+       <!-- Left: Logo (Q lives in instrument strip + dock) -->
        <div class="flex items-center gap-4">
          <div class="flex items-center gap-2 font-bold text-p31-cloud tracking-widest uppercase">
             <svg width="18" height="18" viewBox="0 0 512 512" class="opacity-90"><rect width="512" height="512" rx="112" fill="#25897d"/><circle cx="390" cy="120" r="48" fill="#cc6247"/><text x="256" y="340" font-family="system-ui" font-weight="900" font-size="220" fill="#d8d6d0" text-anchor="middle">P31</text><rect x="156" y="380" width="200" height="16" rx="8" fill="#cda852"/></svg>
             <span data-i18n="hud.cockpit">Cockpit</span>
          </div>
-         <div class="h-4 w-px bg-white/10"></div>
-          <div class="flex items-center gap-2 cursor-help" title="Fisher-Escolà Coherence Score" data-i18n-title="hud.qFactor.title">
-            <span class="w-2 h-2 rounded-full bg-emerald shadow-[0_0_8px_#3ba372] animate-pulse" id="hud-q-dot"></span>
-            <span class="text-p31-muted" data-i18n="hud.qFactor.label">Q-FACTOR:</span>
-            <span class="font-bold text-emerald tracking-wider" id="hud-q-val" data-i18n="hud.qFactor.value">0.925</span>
-          </div>
        </div>
        
        <!-- Right: Volume Control & Status -->
@@ -169,24 +163,20 @@ import BaseLayout from '../layouts/BaseLayout.astro';
           <button id="ui-toggle-btn" class="text-p31-muted hover:text-p31-cloud transition-colors p-1" aria-label="Toggle heads-up display" data-i18n-aria-label="hud.toggleUI" type="button">[UI]</button>
        </div>
      </div>
+
+     <div class="w-full border-t border-white/5 px-1 py-1 md:border-t-0 md:px-4 md:py-0" role="status">
+       <span id="cockpit-instrument-strip" class="block text-[10px] md:text-[11px] text-p31-cloud/90 tracking-wide font-mono leading-snug" aria-live="polite">
+         COCKPIT · Q — · SPOONS —/12 · FERS —d · SENTINEL —
+       </span>
+       <span id="dome-mode-strip" class="mt-0.5 block text-[10px] text-p31-muted-60 tracking-wide font-mono leading-snug">
+         MODE: SELECT · orbit: Alt+drag or right-drag · zoom: scroll · touch: 1=tap face · 2=orbit/zoom
+       </span>
+     </div>
      
      <!-- Collapsible HUD Content -->
      <div id="hud-content" class="w-full mt-2 space-y-2 opacity-100 transition-opacity duration-300">
-       <!-- Thermodynamics & Economy -->
-       <div class="flex items-center gap-6 bg-p31-void-50 px-5 py-1.5 rounded-md border border-white/5 shadow-center">
-          <div class="flex items-center gap-2 cursor-help" title="Vertex A: Operator State" data-i18n-title="hud.spoons.title">
-            <span class="text-p31-muted" data-i18n="hud.spoons.label">SPOONS</span>
-            <div class="w-20 h-1.5 bg-surface rounded-full overflow-hidden">
-              <div id="hud-spoon-fill" class="h-full bg-coral transition-all duration-500" style="width: 75%;"></div>
-            </div>
-            <span id="hud-spoon-val" class="text-coral font-bold w-4 text-right" data-i18n="hud.spoons.value">15</span>
-          </div>
-          <div class="h-3 w-px bg-white/10"></div>
-          <div class="flex items-center gap-2 cursor-help" title="L.O.V.E. Ledger Balance" data-i18n-title="hud.love.title">
-            <span class="text-p31-muted" data-i18n="hud.love.label">L.O.V.E.</span>
-            <span id="hud-love-val" class="text-cyan font-bold" data-i18n="hud.love.value">3.28</span>
-          </div>
-          <div class="h-3 w-px bg-white/10 hidden md:block"></div>
+       <!-- Mesh + fleet (spoons · LOVE · Q on instrument strip + bottom dock) -->
+       <div class="flex flex-wrap items-center gap-4 bg-p31-void-50 px-5 py-1.5 rounded-md border border-white/5 shadow-center md:gap-6">
           <div class="hidden md:flex items-center gap-2 cursor-help" title="Active K4 Vertices" data-i18n-title="hud.fleet.title">
             <span class="text-p31-muted" data-i18n="hud.fleet.label">FLEET:</span>
             <span class="text-p31-cloud font-bold" data-i18n="hud.fleet.value">4/4</span>
@@ -214,6 +204,65 @@ import BaseLayout from '../layouts/BaseLayout.astro';
        </div>
      </div>
    </nav>
+
+   <!-- SIMPLEX instrument dock — 2D overlay (same telemetry as strip; tomograph when /api/agents CORS allows) -->
+   <div
+     id="dome-simplex-dock"
+     class="hud-element pointer-events-none fixed bottom-[max(4.25rem,env(safe-area-inset-bottom))] left-1/2 z-[32] flex w-[min(100vw-0.75rem,34rem)] -translate-x-1/2 flex-col gap-2 px-2 sm:bottom-[max(4.75rem,env(safe-area-inset-bottom))]"
+     aria-label="SIMPLEX instruments"
+   >
+     <div class="pointer-events-auto grid grid-cols-1 gap-2 sm:grid-cols-3">
+       <div class="glass-panel flex min-h-[5.75rem] flex-col rounded-lg border border-white/10 p-2 sm:col-span-1">
+         <div class="mb-1 flex items-center justify-between gap-1">
+           <span class="font-mono text-[9px] uppercase tracking-wider text-p31-muted">Tomograph</span>
+           <span class="inline-flex items-center gap-1 font-mono text-[9px] text-p31-muted" title="Q-Factor" data-i18n-title="hud.qFactor.title">
+             <span id="dock-q-dot" class="h-1.5 w-1.5 shrink-0 rounded-full bg-emerald"></span>
+             <span id="dock-q-mini" class="text-p31-cloud/90">—</span>
+           </span>
+         </div>
+         <pre
+           id="dock-tomograph-feed"
+           class="mb-0 max-h-[4.5rem] flex-1 overflow-y-auto whitespace-pre-wrap break-words font-mono text-[9px] leading-snug text-p31-cloud/85"
+         >—</pre>
+       </div>
+       <div class="glass-panel flex min-h-[5.75rem] flex-col items-center justify-center rounded-lg border border-teal/25 p-2 sm:col-span-1">
+         <span class="mb-1 font-mono text-[9px] uppercase tracking-wider text-p31-muted">Spoons</span>
+         <div class="relative flex h-[3.75rem] w-[3.75rem] items-center justify-center">
+           <svg width="60" height="60" viewBox="0 0 60 60" aria-hidden="true" class="text-coral">
+             <circle cx="30" cy="30" r="24" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="5" />
+             <circle
+               id="dock-spoon-arc"
+               cx="30"
+               cy="30"
+               r="24"
+               fill="none"
+               stroke="currentColor"
+               stroke-width="5"
+               stroke-linecap="round"
+               stroke-dasharray="0 150.8"
+               transform="rotate(-90 30 30)"
+             />
+           </svg>
+           <span id="dock-spoon-label" class="pointer-events-none absolute font-mono text-[11px] font-bold text-p31-cloud">—</span>
+         </div>
+       </div>
+       <div class="glass-panel flex min-h-[5.75rem] flex-col justify-center rounded-lg border border-white/10 p-2 sm:col-span-1">
+         <div class="mb-1 font-mono text-[9px] uppercase tracking-wider text-p31-muted">L.O.V.E. → 863</div>
+         <div class="mb-1 font-mono text-sm font-bold text-teal" id="dock-love-val">—</div>
+         <div class="h-1.5 w-full overflow-hidden rounded-full bg-white/10">
+           <div id="dock-love-bar" class="h-full rounded-full bg-phosphorus transition-all duration-500" style="width: 0%;"></div>
+         </div>
+         <p class="mb-0 mt-1 font-mono text-[8px] leading-tight text-p31-muted-60">Larmor ladder (static target)</p>
+       </div>
+     </div>
+     <div id="dock-fers-panel" class="pointer-events-auto glass-panel rounded-lg border px-3 py-2 fers-ok">
+       <div class="flex items-baseline justify-between gap-2">
+         <span class="font-mono text-[9px] uppercase tracking-wider text-p31-muted">FERS window</span>
+         <span id="dock-fers-val" class="font-mono text-lg font-bold tabular-nums text-p31-cloud">—</span>
+       </div>
+       <p class="mb-0 mt-0.5 font-mono text-[8px] leading-tight text-p31-muted-60">Days to 2026-09-30 filing close (UTC)</p>
+     </div>
+   </div>
 
    <!-- LEFT HUD: Filters & Legend -->
    <aside
@@ -346,6 +395,20 @@ import BaseLayout from '../layouts/BaseLayout.astro';
      border-color: rgba(255, 255, 255, 0.2);
    }
 
+   #dock-fers-panel.fers-ok {
+     border-color: rgba(59, 163, 114, 0.35);
+   }
+   #dock-fers-panel.fers-warn {
+     border-color: rgba(205, 168, 82, 0.45);
+   }
+   #dock-fers-panel.fers-hot {
+     border-color: rgba(232, 99, 111, 0.45);
+   }
+   #dock-fers-panel.fers-critical {
+     border-color: rgba(232, 99, 111, 0.65);
+     box-shadow: 0 0 0 1px rgba(232, 99, 111, 0.25);
+   }
+
   /* Layer 0 Animations */
   @keyframes l0-inhale { to { transform: scale(1.4); opacity: 1; } }
   @keyframes l0-hold   { from { transform: scale(1.4); opacity: 1; } to { transform: scale(1.4); opacity: 1; } }
@@ -405,6 +468,19 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     }
     [data-palette="cv"] #trimtab-canvas {
       stroke: #d946ef !important;
+    }
+
+    /* Gray Rock — doctrine §1 / §7 (`?alive=1` skips 3D + HUD withholding in dome-cockpit.ts) */
+    body.dome-gray-rock #connection-status {
+      filter: grayscale(1);
+      opacity: 0.65;
+    }
+    body.dome-gray-rock #cockpit-instrument-strip,
+    body.dome-gray-rock #dome-mode-strip {
+      opacity: 0.78;
+    }
+    body.dome-gray-rock #hud-content {
+      opacity: 0.72;
     }
   </style>
 

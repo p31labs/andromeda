@@ -808,7 +808,7 @@ GATE:          IP1 — March 27, 2026
 DELIVERABLES:
   [ ] Upload abstract to Zenodo as Technical Note
   [ ] Tag: assistive technology, haptic feedback, phosphorus-31, NMR, DRV2605L
-  [ ] Link to existing GUT DOI (10.5281/zenodo.18627420)
+  [ ] Link to existing GUT DOI (10.5281/zenodo.19004485)
   [ ] Cross-post to Internet Archive for redundancy
 OPUS VERDICT: ✅ STRONGEST OF THE FIVE. Publish first.
   - 863 Hz math verified (17.235 MHz/T × 50.07 μT = 862.96 Hz)

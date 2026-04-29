@@ -23,6 +23,8 @@ export const FOOTER_SOURCE = `    <footer>
       Free forever. No tracking. No ads.
       · <a href="https://github.com/p31labs/bonding-soup" target="_blank" rel="noopener noreferrer">Source code</a>
       · <a href="https://ko-fi.com/trimtab69420" target="_blank" rel="noopener noreferrer">Ko-fi</a>
+      · <a href="../soup.html">C.A.R.S.</a>
+      · <a href="../p31-sovereign-lab.html">Sovereign Lab</a>
       · <a href="../docs/P31-DEPLOY-CANON.md" title="npm run connection">CONNECTION</a>
       · Full human document: <a href="../P31%20COGNITIVE%20PASSPORT%20%E2%80%94%20v5.md">P31 Cognitive Passport v5</a> (not required for export).
     </footer>`;
@@ -32,6 +34,8 @@ export const FOOTER_P31CA = `    <footer>
       Free forever. No tracking. No ads.
       · <a href="https://github.com/p31labs/bonding-soup" target="_blank" rel="noopener noreferrer">Source code</a>
       · <a href="https://ko-fi.com/trimtab69420" target="_blank" rel="noopener noreferrer">Ko-fi</a>
+      · <a href="https://bonding.p31ca.org/soup" target="_blank" rel="noopener noreferrer">C.A.R.S.</a>
+      · <a href="https://p31ca.org/lab">Sovereign Lab</a>
       · <a href="https://github.com/p31labs/bonding-soup/blob/main/docs/P31-DEPLOY-CANON.md" target="_blank" rel="noopener noreferrer" title="npm run connection">CONNECTION</a>
       · Full human document: <code>P31 COGNITIVE PASSPORT — v5.md</code> in the repo (not required for export).
     </footer>`;

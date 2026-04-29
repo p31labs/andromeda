@@ -12,7 +12,7 @@ SuperStonk community has strict rules against direct fundraising requests. We ne
 - **Psychology:** People who clone/download the research will see the link as they explore the repository
 
 ### 2. **Zenodo DOI Strategy**
-- **Primary approach:** The Zenodo DOI (10.5281/zenodo.18627420) is the "official" academic version
+- **Primary approach:** The Zenodo DOI (10.5281/zenodo.19004485) is the "official" academic version
 - **Implementation:** Include Ko-fi link in the Zenodo description and supplementary materials
 - **Psychology:** Academic users will follow the DOI link and discover the support options
 
@@ -58,7 +58,7 @@ In the SuperStonk post, include this section:
 The complete mathematical proof and all source code are available for free:
 
 - **GitHub Repository:** [github.com/p31labs/andromeda](https://github.com/p31labs/andromeda)
-- **Zenodo DOI:** [10.5281/zenodo.18627420](https://doi.org/10.5281/zenodo.18627420)
+- **Zenodo DOI:** [10.5281/zenodo.19004485](https://doi.org/10.5281/zenodo.19004485)
 
 The repository contains the complete mathematical framework, source code, and all references. If you find this work valuable and want to support continued research, there are options available in the repository README.
 

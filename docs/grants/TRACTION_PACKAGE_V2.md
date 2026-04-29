@@ -48,7 +48,7 @@
 
 | Output | Metric |
 |--------|--------|
-| Zenodo DOI | 10.5281/zenodo.18627420 |
+| Zenodo DOI | 10.5281/zenodo.19004485 |
 | Zenodo views | 191 |
 | Zenodo downloads | 163 |
 | White papers | 5 (finalized March 17, 2026) |

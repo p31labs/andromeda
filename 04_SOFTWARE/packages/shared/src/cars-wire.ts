@@ -32,7 +32,7 @@ export const CARS_MOCK_SERVER_TO_CLIENT_TYPES = [
 ] as const;
 
 /** Parses client payloads (mock accepts) — cars-contract.mockServer.acceptsClientParsingTypes */
-export const CARS_MOCK_ACCEPTS_CLIENT_TYPES = ['playerState', 'heartbeat', 'ping'] as const;
+export const CARS_MOCK_ACCEPTS_CLIENT_TYPES = ['playerState', 'heartbeat', 'ping', 'labTelemetry'] as const;
 
 /** SoupEngine sends — cars-contract.browserClientOutbound.sendsTypes */
 export const CARS_BROWSER_CLIENT_OUTBOUND_TYPES = ['playerState', 'heartbeat', 'ping'] as const;

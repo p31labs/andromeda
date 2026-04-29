@@ -31,6 +31,16 @@
     "registryId": "social-molecules",
     "note": "C.A.R.S. operator shell on the technical hub; live soup sim remains on bonding vertical; wire catalog p31.carsWire in bonding-soup repo"
   },
+  "sovereignLab": {
+    "path": "/p31-sovereign-lab.html",
+    "shortPath": "/lab",
+    "note": "Sovereign Lab mirror from P31 home; npm run sync:sovereign-p31ca; optional labTelemetry → mock WS eventLog"
+  },
+  "browserSlicer": {
+    "path": "/p31-slicer.html",
+    "shortPath": "/slicer",
+    "note": "Kiri:Moto shell + K₄ STL; synced with Sovereign Lab pipeline"
+  },
   "machineIndexes": {
     "creatorEconomy": "/creator-economy.json",
     "superCentaurPack": "/p31-super-centaur-pack.json",

@@ -38,7 +38,7 @@
     { "type": "h1", "text": "UPDATE 5: Research Publications" },
     { "type": "affects", "text": "Response to Request No. 11" },
     { "type": "para", "text": "Since March 26, 2026, Defendant has published additional open-access research papers via Zenodo. All publications are freely available to the public at no cost and have no commercial value. Current DOIs:" },
-    { "type": "bullet", "text": "10.5281/zenodo.18627420 (Paper I — Tetrahedron Protocol)" },
+    { "type": "bullet", "text": "10.5281/zenodo.19004485 (Paper I — Tetrahedron Protocol; prior deposit 10.5281/zenodo.18627420)" },
     { "type": "bullet", "text": "10.5281/zenodo.19411363 (Paper III — Consciousness Memory Architecture)" },
     { "type": "bullet", "text": "10.5281/zenodo.19416491 (Paper III — alternate version)" },
     { "type": "bullet", "text": "10.5281/zenodo.19432309 (Procedural analysis)" },

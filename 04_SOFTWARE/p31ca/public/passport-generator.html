@@ -2,17 +2,29 @@
 <html lang="en" data-p31-appearance="hub" style="color-scheme: dark;">
 <head>
   <meta charset="UTF-8" />
+  <script>
+    (function () {
+      var r = document.documentElement;
+      if (/[?&]alive=1(?:&|$)/.test(location.search)) return;
+      r.classList.add("p31-gray-rock");
+      function wake() {
+        r.classList.remove("p31-gray-rock");
+      }
+      document.addEventListener("pointerdown", wake, { once: true, capture: true });
+      document.addEventListener("keydown", wake, { once: true, capture: true });
+    })();
+  </script>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content" />
-  <meta name="description" content="Your AI context card — tell assistants how your brain works, once. Free, no login, stays in your browser. Export JSON or paste into ChatGPT, Claude, Gemini." />
+  <meta name="description" content="P31 Cognitive Passport — pick an audience door (matrix v1.0.0), fill your context once, export JSON or Markdown with a Genesis attestation. Free, no login, stays in your browser." />
   <meta name="theme-color" content="#0f1115" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-title" content="AI Context Card" />
+  <meta name="apple-mobile-web-app-title" content="Cognitive Passport" />
   <link rel="manifest" href="/p31-mesh.webmanifest" crossorigin="anonymous" />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   <title>P31 Cognitive Passport — Generator (v1)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital@1&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/p31-style.css" />
   <link rel="stylesheet" href="p31-responsive-surface.css" />
   <script src="lib/p31-subject-prefs.js"></script>
@@ -151,16 +163,94 @@
       margin-top: 0.65rem;
       max-width: 42ch;
     }
+    .audience-vault { margin-bottom: 0.25rem; }
+    .vault-lede {
+      font-family: "Playfair Display", Georgia, "Times New Roman", serif;
+      font-style: italic;
+      font-size: clamp(1.2rem, 2.2vw + 0.75rem, 1.55rem);
+      color: color-mix(in srgb, var(--text) 94%, var(--muted));
+      margin: 0 0 0.85rem;
+      max-width: 36ch;
+      line-height: 1.3;
+      letter-spacing: -0.01em;
+    }
+    .audience-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+      gap: 0.65rem;
+    }
+    .audience-card {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.2rem;
+      text-align: left;
+      padding: 0.65rem 0.75rem;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      border-left: 3px solid color-mix(in srgb, var(--p31-teal) 45%, transparent);
+      background: color-mix(in srgb, var(--p31-surface2) 70%, transparent);
+      color: var(--text);
+      font-family: var(--p31-font-sans);
+      cursor: pointer;
+      transition: border-color var(--dur) ease, box-shadow var(--dur) ease, background var(--dur) ease;
+    }
+    .audience-card:hover:not(:disabled) {
+      border-color: color-mix(in srgb, var(--p31-teal) 35%, transparent);
+      box-shadow: 0 0 0 1px color-mix(in srgb, var(--p31-teal) 18%, transparent);
+    }
+    .audience-card--on {
+      border-left-color: var(--alive);
+      background: color-mix(in srgb, var(--p31-teal) 12%, var(--p31-surface2));
+    }
+    .audience-card--locked,
+    .audience-card:disabled {
+      opacity: 0.52;
+      cursor: not-allowed;
+      border-left-color: color-mix(in srgb, var(--muted) 40%, transparent);
+    }
+    .audience-card__title { font-size: 0.88rem; font-weight: 600; line-height: 1.25; }
+    .audience-card__id {
+      font-size: 0.72rem;
+      font-family: var(--p31-font-mono);
+      color: var(--muted);
+      letter-spacing: 0.02em;
+    }
+    #genesis-readout {
+      font-family: var(--p31-font-mono), ui-monospace, monospace;
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin: 0.5rem 0 0;
+      word-break: break-all;
+      line-height: 1.45;
+    }
+    #export-status { min-height: 1.25em; margin-top: 0.35rem; font-size: 0.78rem; color: var(--alive); }
+    /* Gray Rock first paint (design doctrine §1, §7) — chroma + rail after operator reaches */
+    html.p31-gray-rock body::before {
+      opacity: 0.035;
+    }
+    html.p31-gray-rock .audience-card {
+      border-left-color: color-mix(in srgb, var(--p31-cloud) 7%, transparent);
+      background: color-mix(in srgb, var(--p31-surface2) 55%, transparent);
+    }
+    html.p31-gray-rock .audience-card--on {
+      border-left-color: color-mix(in srgb, var(--p31-cloud) 10%, transparent);
+      background: color-mix(in srgb, var(--p31-surface2) 60%, transparent);
+    }
+    html.p31-gray-rock .passport-section--alive {
+      border-left-color: color-mix(in srgb, var(--p31-cloud) 12%, transparent);
+    }
     @media (prefers-reduced-motion: reduce) {
       .btn.flash-confirm { animation: none; }
       .passport-section { transition: none; }
+      .audience-card { transition: none; }
     }
   </style>
 </head>
 <body class="p31-mesh-m-first p31-responsive-surface">
   <div class="p31-shell" style="--p31-shell-max: 1100px; --p31-shell-pad: 1.5rem">
     <header style="margin-bottom: 1.35rem;">
-      <h1>Your AI Context Card</h1>
+      <h1>Cognitive Passport</h1>
       <p class="sub">
         Tell tools how your brain works — once. Free. No login. Everything stays in your browser.
       </p>
@@ -170,6 +260,52 @@
     </header>
 
     <div class="grid grid-2">
+      <section class="card audience-vault" style="grid-column: 1 / -1" aria-labelledby="vault-audience-heading">
+        <p id="vault-audience-heading" class="vault-lede">Who are you talking to?</p>
+        <p class="micro" style="margin: -0.35rem 0 1rem;">
+          One building, different doors — labels match the locked audience matrix (<a href="https://github.com/p31labs/bonding-soup/blob/main/docs/COGNITIVE-PASSPORT-AUDIENCE-MATRIX.md" target="_blank" rel="noopener noreferrer">v1.0.0</a>).
+        </p>
+        <input type="hidden" id="audienceProfile" value="cursor-agent" autocomplete="off" />
+        <div class="audience-grid" id="vault-audience-group" role="group" aria-label="Export audience profile">
+          <button type="button" class="audience-card audience-card--on" data-audience="cursor-agent" aria-pressed="true">
+            <span class="audience-card__title">Coding agent</span>
+            <span class="audience-card__id">cursor-agent</span>
+          </button>
+          <button type="button" class="audience-card" data-audience="claude-session" aria-pressed="false">
+            <span class="audience-card__title">Long Claude session</span>
+            <span class="audience-card__id">claude-session</span>
+          </button>
+          <button type="button" class="audience-card" data-audience="clinician" aria-pressed="false">
+            <span class="audience-card__title">Clinician</span>
+            <span class="audience-card__id">clinician</span>
+          </button>
+          <button type="button" class="audience-card" data-audience="ssa" aria-pressed="false">
+            <span class="audience-card__title">SSA examiner</span>
+            <span class="audience-card__id">ssa</span>
+          </button>
+          <button type="button" class="audience-card" data-audience="court" aria-pressed="false">
+            <span class="audience-card__title">Court-facing</span>
+            <span class="audience-card__id">court</span>
+          </button>
+          <button type="button" class="audience-card" data-audience="ada-support" aria-pressed="false">
+            <span class="audience-card__title">ADA support</span>
+            <span class="audience-card__id">ada-support</span>
+          </button>
+          <button type="button" class="audience-card" data-audience="beta" aria-pressed="false">
+            <span class="audience-card__title">Beta tester</span>
+            <span class="audience-card__id">beta</span>
+          </button>
+          <button type="button" class="audience-card audience-card--locked" data-audience="child" disabled title="Activates when S.J. or W.J. holds a mesh-scoped device identity (see matrix row 8).">
+            <span class="audience-card__title">S.J. / W.J. slice</span>
+            <span class="audience-card__id">child — gated</span>
+          </button>
+          <div class="audience-card audience-card--locked" role="note" aria-label="More audience profiles will ship as the mesh grows.">
+            <span class="audience-card__title">More profiles</span>
+            <span class="audience-card__id">as the mesh grows</span>
+          </div>
+        </div>
+      </section>
+
       <div class="card">
         <h2 style="font-size: 1.05rem; margin: 0 0 1rem;">Fill in what feels right</h2>
 
@@ -307,11 +443,13 @@
         <div class="btn-bar">
           <button type="button" class="btn" id="cpyAgent">Copy for ChatGPT / Claude</button>
           <button type="button" class="btn btn-ghost" id="cpyMd">Copy Markdown</button>
-          <button type="button" class="btn btn-ghost" id="cpyJson">Copy JSON only</button>
-          <button type="button" class="btn btn-ghost" id="dlJson">Download full profile (.json)</button>
+          <button type="button" class="btn btn-ghost" id="cpyJson">Copy JSON</button>
+          <button type="button" class="btn btn-ghost" id="dlJson">Download JSON (.json)</button>
           <button type="button" class="btn btn-ghost" id="dlMd">Download Markdown (.md)</button>
         </div>
         <p class="export-note">Your data never leaves your device unless you copy or download it yourself.</p>
+        <p id="genesis-readout" aria-live="polite"></p>
+        <p id="export-status" role="status" aria-live="polite"></p>
       </div>
     </div>
 
@@ -320,6 +458,8 @@
       Free forever. No tracking. No ads.
       · <a href="https://github.com/p31labs/bonding-soup" target="_blank" rel="noopener noreferrer">Source code</a>
       · <a href="https://ko-fi.com/trimtab69420" target="_blank" rel="noopener noreferrer">Ko-fi</a>
+      · <a href="https://bonding.p31ca.org/soup" target="_blank" rel="noopener noreferrer">C.A.R.S.</a>
+      · <a href="https://p31ca.org/lab">Sovereign Lab</a>
       · <a href="https://github.com/p31labs/bonding-soup/blob/main/docs/P31-DEPLOY-CANON.md" target="_blank" rel="noopener noreferrer" title="npm run connection">CONNECTION</a>
       · Full human document: <code>P31 COGNITIVE PASSPORT — v5.md</code> in the repo (not required for export).
     </footer>
@@ -328,6 +468,42 @@
   <script>
     const STORAGE_KEY = "p31_passport_draft_v1";
     const SCHEMA = "p31.cognitivePassport/1.0.0";
+    const AUDIENCE_MATRIX_VERSION = "1.0.0";
+    const CHILD_MESH_UNLOCK_KEY = "p31_passport_child_mesh_unlocked";
+    const ALLOWED_AUDIENCE = new Set([
+      "cursor-agent",
+      "claude-session",
+      "clinician",
+      "ssa",
+      "court",
+      "ada-support",
+      "beta",
+      "child",
+    ]);
+    const AUDIENCE_LABEL = {
+      "cursor-agent": "Coding agent",
+      "claude-session": "Long Claude session",
+      clinician: "Clinician / new doctor",
+      ssa: "SSA examiner",
+      court: "Court-facing",
+      "ada-support": "ADA support (Brenda)",
+      beta: "Beta tester (Tyler)",
+      child: "S.J. / W.J. slice",
+    };
+
+    function isChildAudienceUnlocked() {
+      try {
+        return localStorage.getItem(CHILD_MESH_UNLOCK_KEY) === "1";
+      } catch (_) {
+        return false;
+      }
+    }
+
+    function resolveAudienceProfile(id) {
+      if (!id || !ALLOWED_AUDIENCE.has(id)) return "cursor-agent";
+      if (id === "child" && !isChildAudienceUnlocked()) return "cursor-agent";
+      return id;
+    }
 
     function readSubjectPrefs() {
       return {
@@ -382,7 +558,9 @@
       boxes.forEach((b) => {
         constraints[b.dataset.key] = b.checked;
       });
+      const rawAudience = document.getElementById("audienceProfile").value;
       return {
+        audienceProfile: resolveAudienceProfile(rawAudience),
         displayName: document.getElementById("displayName").value.trim() || "Operator",
         diagnoses: document.getElementById("diagnoses").value,
         commStyle: document.getElementById("commStyle").value,
@@ -397,6 +575,10 @@
 
     function setForm(d) {
       if (!d) return;
+      if (d.audienceProfile != null) {
+        document.getElementById("audienceProfile").value = resolveAudienceProfile(String(d.audienceProfile));
+        syncAudienceCards();
+      }
       if (d.displayName != null) document.getElementById("displayName").value = d.displayName;
       if (d.diagnoses) document.getElementById("diagnoses").value = d.diagnoses;
       if (d.commStyle) document.getElementById("commStyle").value = d.commStyle;
@@ -418,10 +600,36 @@
       }
     }
 
-    function buildPayload(f) {
+    function syncAudienceCards() {
+      const v = document.getElementById("audienceProfile").value;
+      document.querySelectorAll(".audience-card[data-audience]").forEach((btn) => {
+        const on = btn.dataset.audience === v;
+        btn.classList.toggle("audience-card--on", on);
+        btn.setAttribute("aria-pressed", on ? "true" : "false");
+      });
+    }
+
+    function applyChildGateUi() {
+      const btn = document.querySelector('.audience-card[data-audience="child"]');
+      if (!btn) return;
+      const ok = isChildAudienceUnlocked();
+      btn.disabled = !ok;
+      btn.classList.toggle("audience-card--locked", !ok);
+      btn.title = ok
+        ? "Child-facing mesh slice"
+        : "Activates when S.J. or W.J. holds a mesh-scoped device identity (matrix row 8).";
+      if (!ok && document.getElementById("audienceProfile").value === "child") {
+        document.getElementById("audienceProfile").value = "cursor-agent";
+        syncAudienceCards();
+      }
+    }
+
+    function buildPayloadBase(f) {
       const now = new Date().toISOString();
       return {
         schema: SCHEMA,
+        audienceMatrixVersion: AUDIENCE_MATRIX_VERSION,
+        audienceProfile: f.audienceProfile,
         generatedAt: now,
         operator: {
           displayName: f.displayName,
@@ -454,10 +662,34 @@
       };
     }
 
+    async function digestSha256Hex(text) {
+      if (!window.crypto?.subtle) return "";
+      const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
+      return Array.from(new Uint8Array(buf), (b) => b.toString(16).padStart(2, "0")).join("");
+    }
+
+    async function buildExportBundle(f) {
+      const base = buildPayloadBase(f);
+      const hashInput = JSON.stringify(base);
+      const hash = await digestSha256Hex(hashInput);
+      return {
+        ...base,
+        genesis: {
+          hash_sha256: hash,
+          iso_timestamp: base.generatedAt,
+          schema_id: SCHEMA,
+          audience_matrix_version: AUDIENCE_MATRIX_VERSION,
+        },
+      };
+    }
+
     function toMarkdown(f, data) {
       const lines = [];
       const day = data.generatedAt.slice(0, 10);
-      lines.push(`# AI context card — machine slice (generated ${day})`);
+      const audLabel = AUDIENCE_LABEL[data.audienceProfile] || data.audienceProfile;
+      lines.push(`# Cognitive Passport — machine slice (generated ${day})`);
+      lines.push("");
+      lines.push(`> **Audience:** ${audLabel} · \`${data.audienceProfile}\` · matrix v${data.audienceMatrixVersion}`);
       lines.push("");
       lines.push(`> For ChatGPT, Claude, Gemini, or any assistant. Schema \`${data.schema}\` lives in JSON export — not required to paste this prose.`);
       lines.push("");
@@ -488,6 +720,13 @@
         if (f.orcid) lines.push(`- **ORCID:** ${f.orcid}`);
         lines.push("");
       }
+      if (data.genesis?.hash_sha256) {
+        lines.push("## Genesis (export attestation)");
+        lines.push(`- **SHA-256** (payload before this block): \`${data.genesis.hash_sha256}\``);
+        lines.push(`- **ISO time:** ${data.genesis.iso_timestamp}`);
+        lines.push(`- **Schema:** \`${data.genesis.schema_id}\``);
+        lines.push("");
+      }
       lines.push("---");
       lines.push(`*Generated: ${data.generatedAt}*`);
       return lines.join("\n");
@@ -497,6 +736,7 @@
       const c = f.constraints;
       return [
         "## AI context — paste into custom instructions / rules",
+        `Audience: ${data.audienceProfile} (matrix v${data.audienceMatrixVersion})`,
         `You: ${f.displayName} | Context: ${f.diagnoses} | Communication: ${f.commStyle} | Energy: ${f.spoon}`,
         `Boundaries: no_military_naval=${c.noMilitary} verbal_lossy=${c.verbalLossy} action_first=${c.actionOverChat}`,
         "Children in generated UI: use initials S.J., W.J. only.",
@@ -509,27 +749,48 @@
           ", temp=" +
           (data.uiComfort?.temp ?? "neutral"),
         f.customNotes ? `Notes: ${f.customNotes}` : "",
+        data.genesis?.hash_sha256 ? `Genesis sha256: ${data.genesis.hash_sha256}` : "",
       ]
         .filter(Boolean)
         .join("\n");
     }
 
-    function render() {
+    function setGenesisReadout(data) {
+      const el = document.getElementById("genesis-readout");
+      if (!el) return;
+      const g = data.genesis;
+      if (!g?.hash_sha256) {
+        el.textContent = "Genesis: SHA-256 unavailable in this browser (no Web Crypto). JSON still exports.";
+        return;
+      }
+      el.textContent = `Genesis · sha256(payload)=${g.hash_sha256.slice(0, 16)}…${g.hash_sha256.slice(-12)} · ${g.schema_id}`;
+    }
+
+    function setExportStatus(msg) {
+      const el = document.getElementById("export-status");
+      if (el) el.textContent = msg || "";
+    }
+
+    async function render() {
       const f = getForm();
-      const data = buildPayload(f);
+      const data = await buildExportBundle(f);
       const json = JSON.stringify(data, null, 2);
       document.getElementById("outJson").value = json;
       document.getElementById("outMd").value = toMarkdown(f, data);
       document.getElementById("outAgent").value = toAgentBlock(f, data);
+      setGenesisReadout(data);
       refreshSectionAlive();
     }
 
-    function copyText(id, btn) {
+    function copyText(id, btn, statusMsg) {
       const el = document.getElementById(id);
       el.select();
       el.setSelectionRange(0, 99999);
       navigator.clipboard.writeText(el.value).then(
-        () => flashConfirm(btn || document.activeElement),
+        () => {
+          flashConfirm(btn || document.activeElement);
+          if (statusMsg) setExportStatus(statusMsg);
+        },
         () => document.execCommand("copy")
       );
     }
@@ -542,6 +803,12 @@
       URL.revokeObjectURL(a.href);
     }
 
+    function exportDownloadStem(d) {
+      const prof = String(d.audienceProfile || "cursor-agent").replace(/[^a-z0-9-]/gi, "");
+      const day = (d.generatedAt || new Date().toISOString()).slice(0, 10);
+      return `p31-passport_${prof}_${day}`;
+    }
+
     document.getElementById("tabs").addEventListener("click", (e) => {
       const btn = e.target.closest(".tab");
       if (!btn) return;
@@ -551,7 +818,7 @@
       document.getElementById("out-" + panel).classList.add("on");
     });
 
-    document.getElementById("btnGen").addEventListener("click", render);
+    document.getElementById("btnGen").addEventListener("click", () => void render());
     document.getElementById("btnSave").addEventListener("click", () => {
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(getForm()));
@@ -566,49 +833,75 @@
         const raw = localStorage.getItem(STORAGE_KEY);
         if (!raw) return alert("No draft found.");
         setForm(JSON.parse(raw));
-        render();
+        void render();
         applySubjectPrefsToSite(readSubjectPrefs());
       } catch (e) {
         alert("Could not load: " + e);
       }
     });
 
-    document.getElementById("cpyMd").addEventListener("click", () => copyText("outMd", document.getElementById("cpyMd")));
-    document.getElementById("cpyJson").addEventListener("click", () => copyText("outJson", document.getElementById("cpyJson")));
-    document.getElementById("cpyAgent").addEventListener("click", () => copyText("outAgent", document.getElementById("cpyAgent")));
-    document.getElementById("dlMd").addEventListener("click", () => {
+    document.getElementById("cpyMd").addEventListener("click", () =>
+      copyText("outMd", document.getElementById("cpyMd"), "Markdown copied.")
+    );
+    document.getElementById("cpyJson").addEventListener("click", () =>
+      copyText("outJson", document.getElementById("cpyJson"), "JSON copied.")
+    );
+    document.getElementById("cpyAgent").addEventListener("click", () =>
+      copyText("outAgent", document.getElementById("cpyAgent"), "Plain text copied.")
+    );
+    document.getElementById("dlMd").addEventListener("click", async () => {
       const f = getForm();
-      const d = buildPayload(f);
-      download("ai_context_card.md", toMarkdown(f, d), "text/markdown");
+      const d = await buildExportBundle(f);
+      download(`${exportDownloadStem(d)}.md`, toMarkdown(f, d), "text/markdown");
       flashConfirm(document.getElementById("dlMd"));
+      setExportStatus("Markdown downloaded.");
     });
-    document.getElementById("dlJson").addEventListener("click", () => {
+    document.getElementById("dlJson").addEventListener("click", async () => {
       const f = getForm();
-      download("ai_context_card.json", JSON.stringify(buildPayload(f), null, 2), "application/json");
+      const d = await buildExportBundle(f);
+      download(`${exportDownloadStem(d)}.json`, JSON.stringify(d, null, 2), "application/json");
       flashConfirm(document.getElementById("dlJson"));
+      setExportStatus("JSON downloaded.");
     });
 
     ["prefContrast", "prefDensity", "prefMotion", "prefTemp"].forEach((id) => {
       document.getElementById(id).addEventListener("change", () => {
         applySubjectPrefsToSite(readSubjectPrefs());
-        render();
+        void render();
       });
     });
 
     ["displayName", "diagnoses", "commStyle", "spoon", "customNotes", "email", "orcid"].forEach((id) => {
       const el = document.getElementById(id);
-      el.addEventListener("input", render);
-      el.addEventListener("change", render);
+      el.addEventListener("input", () => void render());
+      el.addEventListener("change", () => void render());
     });
     document.querySelectorAll("#constraints input[type=checkbox]").forEach((b) => {
-      b.addEventListener("change", render);
+      b.addEventListener("change", () => void render());
     });
 
+    document.getElementById("vault-audience-group").addEventListener("click", (e) => {
+      const btn = e.target.closest(".audience-card[data-audience]");
+      if (!btn || btn.disabled) return;
+      const id = btn.dataset.audience;
+      document.getElementById("audienceProfile").value = resolveAudienceProfile(id);
+      syncAudienceCards();
+      void render();
+      const out = document.getElementById("output-card");
+      if (out && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        out.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      } else if (out) {
+        out.scrollIntoView({ block: "nearest" });
+      }
+    });
+
+    applyChildGateUi();
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) setForm(JSON.parse(raw));
     } catch (_) {}
-    render();
+    syncAudienceCards();
+    void render();
     applySubjectPrefsToSite(readSubjectPrefs());
   </script>
 </body>

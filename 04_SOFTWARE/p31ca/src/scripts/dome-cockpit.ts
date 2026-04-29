@@ -15,6 +15,10 @@ import {
   fetchWithCache,
   formatTrimHz,
   readDomePerfLite,
+  resolveSimplexStateUrl,
+  fersDaysRemaining,
+  LOVE_LEDGER_TARGET,
+  fersUrgencyCss,
 } from "../lib/dome/cockpit-shared";
 import { makeDomeCockpitFaceMaterial } from "../lib/dome/three-dome-materials";
 import {
@@ -71,8 +75,92 @@ function showLoadingError() {
   dismissDomeSplash({ fadeMs: 400 });
 }
 
-let currentSpoons = 10;
-const MAX_SPOONS = 20;
+let currentSpoons = 8;
+/** SENTINEL / SIMPLEX spoon scale (max 12); HUD fill uses this cap. */
+let maxSpoonsHud = 12;
+/** Gray Rock test bypass — `docs/P31-DESIGN-DOCTRINE.md` §7 */
+const domeAliveBypass =
+  typeof location !== "undefined" && /[?&]alive=1(?:&|$)/.test(location.search);
+/** Operator has reached toward the dome (Layer 2 gate). Bypass skips withholding. */
+let domeOperatorReached = domeAliveBypass;
+/** True while scene should stay low-kinetic (Gray Rock 3D + HUD damp). */
+let domeVISuppressed = !domeAliveBypass;
+/** Assigned after Three.js scene init; telemetry may run earlier. */
+let syncDomeGrayRockVisuals: (() => void) | null = null;
+/** Last L.O.V.E. numeric applied to dock + legacy HUD */
+let lastLoveBalance = 3.28;
+/** Circumference of dock spoon ring (r=24, 2πr) for stroke-dasharray */
+const DOCK_SPOON_ARC = 150.79644737231007;
+
+function simplexOriginFromStateUrl(): string | null {
+  try {
+    return new URL(resolveSimplexStateUrl()).origin;
+  } catch {
+    return null;
+  }
+}
+
+async function tryFetchAgentRuns(): Promise<Array<Record<string, unknown>>> {
+  const origin = simplexOriginFromStateUrl();
+  if (!origin) return [];
+  try {
+    const r = await fetch(`${origin}/api/agents`, {
+      mode: "cors",
+      signal: AbortSignal.timeout(6000),
+    });
+    if (!r.ok) return [];
+    const j = (await r.json()) as unknown;
+    return Array.isArray(j) ? (j as Array<Record<string, unknown>>).slice(0, 10) : [];
+  } catch {
+    return [];
+  }
+}
+
+function formatTomographFeed(rows: Array<Record<string, unknown>>): string {
+  if (!rows.length) {
+    return "No recent agent rows.\n(/api/agents blocked or SIMPLEX offline — strip still uses /api/state when CORS allows.)";
+  }
+  const head = "agent      voltage   age";
+  const lines = rows.map((r) => {
+    const id = String(r.agent_id ?? "?").slice(0, 10);
+    const v = String(r.voltage ?? "—").slice(0, 9);
+    const c = r.created_at;
+    const ageMin =
+      typeof c === "number"
+        ? `${Math.max(0, Math.round((Date.now() - c) / 60_000))}m`
+        : "—";
+    return `${id.padEnd(10)} ${v.padEnd(9)} ${ageMin}`;
+  });
+  return [head, "—", ...lines].join("\n");
+}
+
+function setDockSpoonArc(spoons: number, max: number) {
+  const arc = $("dock-spoon-arc") as SVGCircleElement | null;
+  const lab = $("dock-spoon-label");
+  const pct = Math.max(0, Math.min(1, max > 0 ? spoons / max : 0));
+  if (lab) lab.textContent = `${Math.round(spoons)}/${max}`;
+  if (arc) arc.setAttribute("stroke-dasharray", `${pct * DOCK_SPOON_ARC} ${DOCK_SPOON_ARC}`);
+}
+
+function setDockLove(love: number) {
+  lastLoveBalance = love;
+  const v = $("dock-love-val");
+  const b = $("dock-love-bar");
+  const pct = Math.max(0, Math.min(1, love / LOVE_LEDGER_TARGET));
+  if (v) v.textContent = love.toFixed(2);
+  if (b) b.style.width = `${pct * 100}%`;
+}
+
+function setDockFers(days: number) {
+  const el = $("dock-fers-val");
+  const pan = $("dock-fers-panel");
+  const band = fersUrgencyCss(days);
+  if (el) el.textContent = `${days}d`;
+  if (pan) {
+    pan.classList.remove("fers-ok", "fers-warn", "fers-hot", "fers-critical");
+    pan.classList.add(band);
+  }
+}
 
 // ================================================================
 // 1a. INTERNATIONALIZATION (i18n)
@@ -383,38 +471,219 @@ if (volumeMuteBtn) {
 // Initialize audio on first user interaction
 initAudioOnInteraction();
 
-  const updateTelemetry = async () => {
-    // Q-Factor
-    const qData = await fetchWithCache(TELEMETRY_URLS.qFactor, "p31_cache_qfactor", { score: 0.925, vertexHealth: { A:1, B:1, C:1, D:1 } });
- if (qData && qData.score) {
-   const score = qData.score.toFixed(3);
-   const isOpt = qData.score >= 0.9, isStab = qData.score >= 0.7;
-   const colorClass = isOpt ? "text-[#3ba372]" : isStab ? "text-[#cda852]" : "text-[#E8636F]";
-   const bgClass = isOpt ? "bg-[#3ba372]" : isStab ? "bg-[#cda852]" : "bg-[#E8636F]";
-   
-   const nq = $("hud-q-val"), nd = $("hud-q-dot");
-   if (nq) { nq.innerText = score; nq.className = `font-bold tracking-wider ${colorClass}`; }
-   if (nd) { nd.className = `w-2 h-2 rounded-full animate-pulse ${bgClass}`; nd.style.boxShadow = `0 0 8px ${isOpt?"#3ba372":isStab?"#cda852":"#E8636F"}`; }
- }
+  function applyQFactorHud(score: number) {
+    const isOpt = score >= 0.9;
+    const isStab = score >= 0.7;
+    const colorClass = isOpt ? "text-[#3ba372]" : isStab ? "text-[#cda852]" : "text-[#E8636F]";
+    const bgClass = isOpt ? "bg-[#3ba372]" : isStab ? "bg-[#cda852]" : "bg-[#E8636F]";
+    const s = score.toFixed(3);
+    const nq = $("dock-q-mini") || $("hud-q-val");
+    const nd = $("dock-q-dot") || $("hud-q-dot");
+    if (nq) {
+      nq.innerText = s;
+      nq.className = `font-mono text-[9px] font-bold tabular-nums ${colorClass}`;
+    }
+    if (nd) {
+      nd.className = `h-1.5 w-1.5 shrink-0 rounded-full ${bgClass}`;
+      nd.style.boxShadow = `0 0 8px ${isOpt ? "#3ba372" : isStab ? "#cda852" : "#E8636F"}`;
+    }
+  }
 
-    // LOVE
-    const loveData = await fetchWithCache(TELEMETRY_URLS.love, "p31_cache_love", { availableBalance: 3.28 });
-    const loveEl = $("hud-love-val");
-    if (loveEl && loveData) {
-      const v =
-        loveData.availableBalance ?? loveData.balance ?? loveData.available;
-      if (typeof v === "number" && Number.isFinite(v)) {
-        loveEl.textContent = v.toFixed(2);
-      }
+  function extractQFromSimplexState(state: Record<string, unknown> | null): number | null {
+    if (!state) return null;
+    const raw =
+      state.q_factor ??
+      state.qFactor ??
+      (typeof state.telemetry === "object" && state.telemetry !== null
+        ? (state.telemetry as Record<string, unknown>).q_factor
+        : undefined);
+    if (typeof raw === "number" && Number.isFinite(raw)) return raw;
+    if (typeof raw === "string") {
+      const n = parseFloat(raw);
+      if (Number.isFinite(n)) return n;
+    }
+    return null;
+  }
+
+  type SimplexStateSlice = {
+    q: number | null;
+    spoons: number | null;
+    maxSpoons: number;
+    sentinel: string | null;
+    love: number | null;
+  };
+
+  async function tryFetchSimplexState(): Promise<SimplexStateSlice | null> {
+    const url = resolveSimplexStateUrl();
+    try {
+      const r = await fetch(url, {
+        method: "GET",
+        mode: "cors",
+        signal: AbortSignal.timeout(8000),
+      });
+      if (!r.ok) return null;
+      const j = (await r.json()) as { state?: Record<string, unknown> };
+      const st = j.state && typeof j.state === "object" ? (j.state as Record<string, unknown>) : null;
+      if (!st) return null;
+      const q = extractQFromSimplexState(st);
+      const rawSp = st.current_spoons;
+      const spoons = typeof rawSp === "number" && Number.isFinite(rawSp) ? rawSp : null;
+      const rawMax = st.max_spoons;
+      const maxSpoons = typeof rawMax === "number" && rawMax > 0 ? rawMax : 12;
+      const sent = st.sentinel_context_source;
+      const sentinel = typeof sent === "string" ? sent : null;
+      const rawLove = st.current_love;
+      const love = typeof rawLove === "number" && Number.isFinite(rawLove) ? rawLove : null;
+      return { q, spoons, maxSpoons, sentinel, love };
+    } catch {
+      return null;
+    }
+  }
+
+  function updateCockpitInstrumentStrip(parts: {
+    q: string;
+    spoons: string;
+    fers: string;
+    sentinel: string;
+  }) {
+    const el = $("cockpit-instrument-strip");
+    if (!el) return;
+    el.textContent = `COCKPIT · Q ${parts.q} · SPOONS ${parts.spoons} · FERS ${parts.fers} · SENTINEL ${parts.sentinel}`;
+  }
+
+  const updateTelemetry = async () => {
+    const dq = $("dock-q-mini");
+    const dd = $("dock-q-dot");
+    if (dq) {
+      dq.textContent = "···";
+      dq.className = "text-p31-muted animate-pulse font-mono text-[9px]";
+    }
+    if (dd) {
+      dd.className = "h-1.5 w-1.5 shrink-0 rounded-full bg-cyan animate-pulse opacity-80";
     }
 
-    // Spoons
-    const spoonData = await fetchWithCache(TELEMETRY_URLS.spoons, "p31_cache_spoons", { spoons: 10 });
- if (spoonData.spoons !== undefined) {
-   currentSpoons = spoonData.spoons;
-   if ($("hud-spoon-val")) $("hud-spoon-val").innerText = currentSpoons;
-   if ($("hud-spoon-fill")) $("hud-spoon-fill").style.width = `${(currentSpoons/MAX_SPOONS)*100}%`;
- }
+    const sx = await tryFetchSimplexState();
+    let stripQ = "—";
+    let stripSpoons = `—/${maxSpoonsHud}`;
+    let stripSent = "—";
+    const fersD = fersDaysRemaining();
+
+    if (sx) {
+      if (sx.q != null) {
+        applyQFactorHud(sx.q);
+        stripQ = sx.q.toFixed(2);
+        try {
+          localStorage.setItem("p31_cache_simplex_q", String(sx.q));
+        } catch {
+          /* */
+        }
+      } else {
+        const qData = await fetchWithCache(TELEMETRY_URLS.qFactor, "p31_cache_qfactor", {
+          score: 0.925,
+          vertexHealth: { A: 1, B: 1, C: 1, D: 1 },
+        });
+        let cachedSimplex: number | null = null;
+        try {
+          const c = localStorage.getItem("p31_cache_simplex_q");
+          if (c) {
+            const n = parseFloat(c);
+            if (Number.isFinite(n)) cachedSimplex = n;
+          }
+        } catch {
+          /* */
+        }
+        const score =
+          (qData && typeof qData.score === "number" && Number.isFinite(qData.score) ? qData.score : null) ??
+          cachedSimplex ??
+          0.925;
+        applyQFactorHud(score);
+        stripQ = score.toFixed(2);
+      }
+
+      maxSpoonsHud = sx.maxSpoons > 0 ? sx.maxSpoons : 12;
+      if (sx.spoons != null) {
+        currentSpoons = sx.spoons;
+        stripSpoons = `${Math.round(sx.spoons)}/${maxSpoonsHud}`;
+        setDockSpoonArc(sx.spoons, maxSpoonsHud);
+      } else {
+        const spoonData = await fetchWithCache(TELEMETRY_URLS.spoons, "p31_cache_spoons", { spoons: currentSpoons });
+        if (spoonData.spoons !== undefined) {
+          currentSpoons = spoonData.spoons as number;
+        }
+        stripSpoons = `${Math.round(currentSpoons)}/${maxSpoonsHud}`;
+        setDockSpoonArc(currentSpoons, maxSpoonsHud);
+      }
+
+      stripSent = sx.sentinel ?? "sync";
+
+      if (sx.love != null) {
+        setDockLove(sx.love);
+      } else {
+        const loveData = await fetchWithCache(TELEMETRY_URLS.love, "p31_cache_love", { availableBalance: 3.28 });
+        const v =
+          loveData.availableBalance ?? loveData.balance ?? (loveData as { available?: number }).available;
+        if (typeof v === "number" && Number.isFinite(v)) setDockLove(v);
+      }
+    } else {
+      const qData = await fetchWithCache(TELEMETRY_URLS.qFactor, "p31_cache_qfactor", {
+        score: 0.925,
+        vertexHealth: { A: 1, B: 1, C: 1, D: 1 },
+      });
+      let cachedSimplex: number | null = null;
+      try {
+        const c = localStorage.getItem("p31_cache_simplex_q");
+        if (c) {
+          const n = parseFloat(c);
+          if (Number.isFinite(n)) cachedSimplex = n;
+        }
+      } catch {
+        /* */
+      }
+      const score =
+        (qData && typeof qData.score === "number" && Number.isFinite(qData.score) ? qData.score : null) ??
+        cachedSimplex ??
+        0.925;
+      applyQFactorHud(score);
+      stripQ = score.toFixed(2);
+
+      const loveData = await fetchWithCache(TELEMETRY_URLS.love, "p31_cache_love", { availableBalance: 3.28 });
+      const lv =
+        loveData.availableBalance ?? loveData.balance ?? (loveData as { available?: number }).available;
+      if (typeof lv === "number" && Number.isFinite(lv)) setDockLove(lv);
+
+      const spoonData = await fetchWithCache(TELEMETRY_URLS.spoons, "p31_cache_spoons", { spoons: currentSpoons });
+      if (spoonData.spoons !== undefined) {
+        currentSpoons = spoonData.spoons as number;
+      }
+      stripSpoons = `${Math.round(currentSpoons)}/${maxSpoonsHud}`;
+      setDockSpoonArc(currentSpoons, maxSpoonsHud);
+      stripSent = "mesh_fallback";
+    }
+
+    setDockFers(fersD);
+    setDockLove(lastLoveBalance);
+    void tryFetchAgentRuns().then((runs) => {
+      const feed = $("dock-tomograph-feed");
+      if (feed) feed.textContent = formatTomographFeed(runs);
+    });
+
+    updateCockpitInstrumentStrip({
+      q: stripQ,
+      spoons: stripSpoons,
+      fers: `${fersD}d`,
+      sentinel: stripSent,
+    });
+
+    syncDomeGrayRockVisuals?.();
+
+    const conn = $("connection-status");
+    if (conn && stripSent !== "mesh_fallback" && stripSent !== "—") {
+      conn.className = "w-2 h-2 rounded-full bg-emerald";
+      conn.setAttribute("title", `SIMPLEX · ${stripSent}`);
+    } else if (conn) {
+      conn.className = "w-2 h-2 rounded-full bg-butter";
+      conn.setAttribute("title", "SYNC · fallback telemetry");
+    }
 
     await refreshMeshHud();
   };
@@ -539,12 +808,11 @@ initAudioOnInteraction();
  dot.style.animation = `l0-${phase.toLowerCase()} ${durMs}ms ease-in-out forwards`;
  
  // Regen spoons slowly
- if(phase === "INHALE" && spoons < 20) {
+ if (phase === "INHALE" && spoons < maxSpoonsHud) {
    spoons += 0.5;
-   $("l0-spoon-fill").style.width = `${(spoons/20)*100}%`;
-   $("l0-spoon-pct").innerText = `${Math.round((spoons/20)*100)}%`;
-   $("hud-spoon-fill").style.width = `${(spoons/20)*100}%`;
-   $("hud-spoon-val").innerText = Math.floor(spoons);
+   $("l0-spoon-fill").style.width = `${(spoons / maxSpoonsHud) * 100}%`;
+   $("l0-spoon-pct").innerText = `${Math.round((spoons / maxSpoonsHud) * 100)}%`;
+   setDockSpoonArc(Math.min(spoons, maxSpoonsHud), maxSpoonsHud);
  }
 
  if (!freq) return;
@@ -665,7 +933,8 @@ const container = $("webgl-container");
   scene.background = new THREE.Color(0x050508);
 
   const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 200);
-  camera.position.set(0, 1.5, 9);
+  /* Interior cockpit: start just inside the RADIUS≈3.5 shell, looking toward origin */
+  camera.position.set(0, 0.45, 2.38);
 
   const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
   renderer.setSize(window.innerWidth, window.innerHeight);
@@ -674,26 +943,42 @@ const container = $("webgl-container");
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 container.appendChild(renderer.domElement);
 
-// Camera Controls (Orbit)
+// Camera Controls (Orbit) — cockpit policy: left = select (raycast-wins); orbit = Alt+left or right-drag; zoom = scroll.
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.dampingFactor = 0.05;
 controls.maxPolarAngle = Math.PI / 2 - 0.1; // Prevent going below ground
-controls.minDistance = 3;
-controls.maxDistance = 10;
+controls.minDistance = 1.38;
+controls.maxDistance = 6.75;
 controls.enablePan = false;
+controls.autoRotate = false;
+controls.mouseButtons.LEFT = THREE.MOUSE.PAN; // with enablePan false → left does not orbit
+controls.mouseButtons.RIGHT = THREE.MOUSE.ROTATE;
+controls.mouseButtons.MIDDLE = THREE.MOUSE.DOLLY;
+controls.touches.ONE = THREE.TOUCH.PAN; // with enablePan false → one-finger no camera (raycast selects)
+controls.touches.TWO = THREE.TOUCH.DOLLY_ROTATE; // two-finger pinch + orbit
 
-// Respect user's motion preferences
+window.addEventListener(
+  "keydown",
+  (e) => {
+    if (e.key === "Alt") controls.mouseButtons.LEFT = THREE.MOUSE.ROTATE;
+  },
+  true
+);
+window.addEventListener(
+  "keyup",
+  (e) => {
+    if (e.key === "Alt") controls.mouseButtons.LEFT = THREE.MOUSE.PAN;
+  },
+  true
+);
+
+controls.target.set(0, 0, 0);
+controls.update();
+
 if (prefersReducedMotion) {
-  controls.autoRotate = false;
   controls.enableZoom = false;
-} else {
-  controls.autoRotate = true;
-  controls.autoRotateSpeed = 0.5;
 }
-
-// Touch gestures: OrbitControls handles pinch zoom and single-finger rotate by default
-// No additional configuration needed
 
 // Post Processing
   const composer = new EffectComposer(renderer);
@@ -702,18 +987,21 @@ if (prefersReducedMotion) {
   if (!domePerfLite) {
     bloomPass = new UnrealBloomPass(
       new THREE.Vector2(window.innerWidth, window.innerHeight),
-      0.6,
-      0.4,
-      0.6
+      0.38,
+      0.35,
+      0.55
     );
     composer.addPass(bloomPass);
   }
   composer.addPass(new OutputPass());
 
-  // Lighting
-  scene.add(new THREE.AmbientLight(0x0a0a0a, 0.5));
-  const domeLight = new THREE.PointLight(0x1a2a3a, 2, 15);
-  domeLight.position.set(0, 0, 0);
+  // Lighting — one key direction + dim fill; dome shell reads as structure not FX wash
+  scene.add(new THREE.AmbientLight(0x0a0a0a, 0.28));
+  const keyLight = new THREE.DirectionalLight(0xa8c4d8, 0.55);
+  keyLight.position.set(4.5, 9, 5);
+  scene.add(keyLight);
+  const domeLight = new THREE.PointLight(0x1a2a3a, 1.05, 18);
+  domeLight.position.set(0, 0.4, 0);
   scene.add(domeLight);
 
   // Data
@@ -838,6 +1126,14 @@ if (prefersReducedMotion) {
    a ? { glow: a.glow, color: a.color } : null,
    domePerfLite
  );
+ /* Cockpit shell: nearly transparent faces so structure reads as teal wire, not slabs */
+ if (typeof mat.opacity === "number") {
+   mat.opacity = a ? (domePerfLite ? 0.82 : 0.2) : domePerfLite ? 0.35 : 0.06;
+ }
+ if ("emissiveIntensity" in mat && typeof (mat as THREE.MeshPhysicalMaterial).emissiveIntensity === "number") {
+   const m = mat as THREE.MeshPhysicalMaterial;
+   m.emissiveIntensity = a ? (domePerfLite ? m.emissiveIntensity : m.emissiveIntensity * 0.55) : m.emissiveIntensity * 0.4;
+ }
 
  const mesh=new THREE.Mesh(tGeo, mat);
 
@@ -858,7 +1154,14 @@ if (prefersReducedMotion) {
    centroidDir: cent.clone().normalize(),
    randomPhase: Math.random() * Math.PI * 2,
    currentOffset: 0,
-   targetOffset: 0
+   targetOffset: 0,
+   domeSaved: {
+     faceColor: a ? a.color.clone() : null,
+     emissiveIntensity: (mat as THREE.MeshPhysicalMaterial).emissiveIntensity,
+     opacity: (mat as THREE.MeshPhysicalMaterial).opacity,
+     edgeColorHex: (edgeMat as THREE.LineBasicMaterial).color.getHex(),
+     edgeOpacity: (edgeMat as THREE.LineBasicMaterial).opacity,
+   },
  };
 
  domeGroup.add(mesh);
@@ -866,22 +1169,18 @@ if (prefersReducedMotion) {
   }
 
   // 2. Global Wireframe Encapsulation Layer (The Grid)
-  const wPos=[], eProg=[];
+  const wPos=[];
   for(let i=0; i<geo.edges.length; i++) {
  const [a,b]=geo.edges[i];
  wPos.push(geo.verts[a].x, geo.verts[a].y, geo.verts[a].z, geo.verts[b].x, geo.verts[b].y, geo.verts[b].z);
- eProg.push(i/geo.edges.length, i/geo.edges.length);
   }
   const wGeo=new THREE.BufferGeometry();
   wGeo.setAttribute('position', new THREE.Float32BufferAttribute(wPos, 3));
-  wGeo.setAttribute('edgeProgress', new THREE.Float32BufferAttribute(eProg, 1));
-  const wMat=new THREE.ShaderMaterial({
- uniforms:{uTime:{value:0}},
- vertexShader:`attribute float edgeProgress; varying float vP; void main(){vP=edgeProgress; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`,
- fragmentShader:`uniform float uTime; varying float vP; void main(){ float p=smoothstep(0.,0.05,fract(vP-uTime*0.08))*(1.-smoothstep(0.05,0.1,fract(vP-uTime*0.08))); gl_FragColor=vec4(0.2,0.4,0.5,0.15+p*0.7); }`,
- transparent:true,
- depthWrite:false,
- blending: THREE.AdditiveBlending
+  const wMat = new THREE.LineBasicMaterial({
+    color: 0x4db8a8,
+    transparent: true,
+    opacity: domePerfLite ? 0.38 : 0.48,
+    depthWrite: false,
   });
   const wireMesh = new THREE.LineSegments(wGeo, wMat);
   wireMesh.scale.setScalar(1.02); // Push outward to encapsulate the blocks
@@ -902,7 +1201,12 @@ if (prefersReducedMotion) {
   domeGroup.add(struts);
 
   const coreGeo = new THREE.IcosahedronGeometry(0.4, 1);
-  const coreMat = new THREE.MeshPhysicalMaterial({ color: 0x4db8a8, emissive: 0x4db8a8, emissiveIntensity: 2.0, wireframe: true });
+  const coreMat = new THREE.MeshPhysicalMaterial({
+    color: 0x4db8a8,
+    emissive: 0x2a6a62,
+    emissiveIntensity: 0.85,
+    wireframe: true,
+  });
   const coreMesh = new THREE.Mesh(coreGeo, coreMat);
   domeGroup.add(coreMesh);
 
@@ -921,9 +1225,102 @@ if (prefersReducedMotion) {
   pGeo.setAttribute('size', new THREE.BufferAttribute(pSiz,1));
   pGeo.setAttribute('color', new THREE.BufferAttribute(pCol,3));
 
-  const pMat = new THREE.PointsMaterial({ color:0xffffff, vertexColors:true, size:0.03, transparent:true, opacity:0.5, sizeAttenuation:true, depthWrite:false });
+  const pMat = new THREE.PointsMaterial({
+    color: 0xffffff,
+    vertexColors: true,
+    size: domePerfLite ? 0.022 : 0.026,
+    transparent: true,
+    opacity: domePerfLite ? 0.14 : 0.2,
+    sizeAttenuation: true,
+    depthWrite: false,
+  });
   const molField = new THREE.Points(pGeo, pMat);
   scene.add(molField);
+
+  const domeShellSaved = {
+    wireColorHex: wMat.color.getHex(),
+    wireOpacity: wMat.opacity,
+    strutOpacity: strutMat.opacity,
+    coreColorHex: coreMat.color.getHex(),
+    coreEmissiveIntensity: coreMat.emissiveIntensity,
+  };
+
+  syncDomeGrayRockVisuals = () => {
+    const suppressed =
+      !domeAliveBypass && (!domeOperatorReached || Math.round(currentSpoons) <= 3);
+    domeVISuppressed = suppressed;
+    document.body.classList.toggle("dome-gray-rock", suppressed);
+
+    molField.visible = !suppressed;
+
+    if (bloomPass) {
+      bloomPass.enabled = !suppressed;
+    }
+
+    for (const m of faceMeshes) {
+      const du = m.userData;
+      const a = du.a;
+      const mat = m.material as THREE.MeshPhysicalMaterial;
+      const saved = du.domeSaved as
+        | {
+            faceColor: THREE.Color | null;
+            emissiveIntensity: number;
+            opacity: number;
+            edgeColorHex: number;
+            edgeOpacity: number;
+          }
+        | undefined;
+      if (!saved) continue;
+      if (suppressed) {
+        mat.color.setHex(0x4a5568);
+        if (mat.emissive) mat.emissive.setHex(0x080a0c);
+        mat.emissiveIntensity = 0.07;
+        mat.opacity = a ? (domePerfLite ? 0.38 : 0.11) : saved.opacity * 0.45;
+      } else {
+        if (a && saved.faceColor) {
+          mat.color.copy(saved.faceColor);
+          mat.emissive?.copy(saved.faceColor);
+        }
+        mat.emissiveIntensity = saved.emissiveIntensity;
+        mat.opacity = saved.opacity;
+      }
+      const edge = m.children[0] as THREE.LineSegments | undefined;
+      const em = edge?.material as THREE.LineBasicMaterial | undefined;
+      if (em) {
+        if (suppressed) {
+          em.color.setHex(0x3a4450);
+          em.opacity = 0.24;
+        } else {
+          em.color.setHex(saved.edgeColorHex);
+          em.opacity = saved.edgeOpacity;
+        }
+      }
+    }
+
+    if (suppressed) {
+      wMat.color.setHex(0x3d4f56);
+      wMat.opacity = domePerfLite ? 0.3 : 0.36;
+      strutMat.opacity = 0.16;
+      coreMat.color.setHex(0x2a3238);
+      coreMat.emissiveIntensity = 0.09;
+    } else {
+      wMat.color.setHex(domeShellSaved.wireColorHex);
+      wMat.opacity = domeShellSaved.wireOpacity;
+      strutMat.opacity = domeShellSaved.strutOpacity;
+      coreMat.color.setHex(domeShellSaved.coreColorHex);
+      coreMat.emissiveIntensity = domeShellSaved.coreEmissiveIntensity;
+    }
+  };
+
+  function markDomeOperatorReached() {
+    if (domeAliveBypass || domeOperatorReached) return;
+    domeOperatorReached = true;
+    syncDomeGrayRockVisuals?.();
+  }
+  window.addEventListener("pointerdown", markDomeOperatorReached, { once: true, capture: true });
+  window.addEventListener("keydown", markDomeOperatorReached, { once: true, capture: true });
+
+  syncDomeGrayRockVisuals();
 
   // ================================================================
   // 4. INTERACTION & RAYCASTING
@@ -971,74 +1368,156 @@ if (prefersReducedMotion) {
      m.material.emissiveIntensity = 0;
    }
  }
+    syncDomeGrayRockVisuals?.();
   }
 
-  // Hover & Click
-  window.addEventListener('pointermove', e => {
- pointer.x = (e.clientX / window.innerWidth) * 2 - 1;
- pointer.y = -(e.clientY / window.innerHeight) * 2 + 1;
+  const canvas = renderer.domElement;
+  canvas.addEventListener("contextmenu", (e) => e.preventDefault());
 
- if(e.target.tagName !== 'CANVAS') { document.body.style.cursor = 'default'; return; }
+  const touchIdsOnCanvas = new Set<number>();
+  let selectSuppressPointerId: number | null = null;
 
- raycaster.setFromCamera(pointer, camera);
- const hits = raycaster.intersectObjects(faceMeshes);
- document.body.style.cursor = (hits.length && hits[0].object.userData.a) ? 'pointer' : 'grab';
-  });
+  function ndcFromClient(clientX: number, clientY: number) {
+    const rect = canvas.getBoundingClientRect();
+    const x = ((clientX - rect.left) / rect.width) * 2 - 1;
+    const y = -((clientY - rect.top) / rect.height) * 2 + 1;
+    return { x, y };
+  }
 
-  window.addEventListener('click', e => {
- if(e.target.tagName !== 'CANVAS') return;
+  function refreshFaceHighlight() {
+    for (const m of faceMeshes) {
+      const a = m.userData.a;
+      if (!a) continue;
+      if (selectedNode && a.node.id === selectedNode.id) {
+        m.material.emissiveIntensity = 4.0;
+        m.material.opacity = 1.0;
+        m.userData.targetOffset = 0.5;
+      } else {
+        m.material.emissiveIntensity = a.glow >= 1.0 ? 2.5 : 0.8;
+        m.material.opacity = selectedNode ? 0.2 : 0.9;
+        m.userData.targetOffset = 0.0;
+      }
+    }
+    syncDomeGrayRockVisuals?.();
+  }
 
- raycaster.setFromCamera(pointer, camera);
- const hits = raycaster.intersectObjects(faceMeshes);
- const panel = $('node-detail-panel');
+  function applyHitSelection(hit: THREE.Intersection | null) {
+    const panel = $("node-detail-panel");
+    if (hit && hit.object.userData.a) {
+      const n = hit.object.userData.a.node;
+      selectedNode = n;
+      $("nd-title").innerText = n.label;
 
- if (hits.length && hits[0].object.userData.a) {
-   const n = hits[0].object.userData.a.node;
-   selectedNode = n;
-   $('nd-title').innerText = n.label;
+      const ax = getDominantAxis(n.a, n.b, n.c, n.d);
+      $("nd-axis").innerText = AXIS_LABELS[ax];
+      $("nd-axis").style.color = "#" + AXIS_COLORS[ax].toString(16);
 
-   const ax = getDominantAxis(n.a, n.b, n.c, n.d);
-   $('nd-axis').innerText = AXIS_LABELS[ax];
-   $('nd-axis').style.color = '#' + AXIS_COLORS[ax].toString(16);
+      $("nd-state").innerText = n.state;
+      $("nd-state").style.color = STATE_CSS[n.state] || "#d8d6d0";
+      $("nd-state").style.borderColor = STATE_CSS[n.state] || "#d8d6d0";
 
-   $('nd-state').innerText = n.state;
-   $('nd-state').style.color = STATE_CSS[n.state] || '#d8d6d0';
-   $('nd-state').style.borderColor = STATE_CSS[n.state] || '#d8d6d0';
+      $("nd-bus").innerText = n.bus;
+      $("nd-notes").innerText = n.notes || "Core topology node verified by K4 edge network.";
 
-   $('nd-bus').innerText = n.bus;
-   $('nd-notes').innerText = n.notes || 'Core topology node verified by K4 edge network.';
+      const edges = EDGES.filter((ed) => ed[0] === n.id || ed[1] === n.id);
+      $("nd-conns").innerHTML = edges.length
+        ? edges
+            .map((ed) => {
+              const otherId = ed[0] === n.id ? ed[1] : ed[0];
+              const other = VERTICES[otherId];
+              return other
+                ? `<span class="px-2 py-1 bg-white/5 border border-white/10 rounded text-[9px] hover:bg-white/10 transition-colors">${other[0]}</span>`
+                : "";
+            })
+            .join("")
+        : '<span class="text-xs text-p31-muted-50 italic">Isolated Node</span>';
 
-   const edges = EDGES.filter(e => e[0] === n.id || e[1] === n.id);
-   $('nd-conns').innerHTML = edges.length ? edges.map(e => {
-     const otherId = e[0] === n.id ? e[1] : e[0];
-     const other = VERTICES[otherId];
-     return other ? `<span class="px-2 py-1 bg-white/5 border border-white/10 rounded text-[9px] hover:bg-white/10 transition-colors">${other[0]}</span>` : '';
-   }).join('') : '<span class="text-xs text-p31-muted-50 italic">Isolated Node</span>';
+      panel.classList.remove("opacity-0", "translate-x-10", "pointer-events-none");
 
-   panel.classList.remove('opacity-0', 'translate-x-10', 'pointer-events-none');
+      const targetPos = hit.object.userData.centroidDir.clone().multiplyScalar(7);
+      camera.position.lerp(targetPos, 0.1);
+    } else {
+      selectedNode = null;
+      panel.classList.add("opacity-0", "translate-x-10", "pointer-events-none");
+    }
+    refreshFaceHighlight();
+  }
 
-   // Fly camera
-   const targetPos = hits[0].object.userData.centroidDir.clone().multiplyScalar(7);
-   camera.position.lerp(targetPos, 0.1);
- } else {
-   selectedNode = null;
-   panel.classList.add('opacity-0', 'translate-x-10', 'pointer-events-none');
- }
+  /** Capture phase: raycast before OrbitControls; Alt / 2+ touches / non-primary always orbit. */
+  canvas.addEventListener(
+    "pointerdown",
+    (e) => {
+      if (e.target !== canvas) return;
+      if (e.pointerType === "touch") {
+        touchIdsOnCanvas.add(e.pointerId);
+        // Second+ finger: pinch/orbit handled by OrbitControls (must have seen all pointers — never disable controls on touch hits).
+        if (touchIdsOnCanvas.size >= 2) {
+          controls.enabled = true;
+          return;
+        }
+      }
+      if (e.altKey) return;
+      if (e.button === 1 || e.button === 2) return;
 
- // Interaction State Update
- for(const m of faceMeshes) {
-   const a = m.userData.a;
-   if(!a) continue;
-   if(selectedNode && a.node.id === selectedNode.id) {
-     m.material.emissiveIntensity = 4.0;
-     m.material.opacity = 1.0;
-     m.userData.targetOffset = 0.5; // POP OUT the selected block
-   } else {
-     m.material.emissiveIntensity = a.glow >= 1.0 ? 2.5 : 0.8;
-     m.material.opacity = selectedNode ? 0.2 : 0.9;
-     m.userData.targetOffset = 0.0;
-   }
- }
+      const primary = e.pointerType === "touch" || e.button === 0;
+      if (!primary) return;
+
+      const { x, y } = ndcFromClient(e.clientX, e.clientY);
+      pointer.set(x, y);
+      raycaster.setFromCamera(pointer, camera);
+      const hits = raycaster.intersectObjects(faceMeshes);
+      const hit = hits.find((h) => h.object.userData?.a) ?? null;
+
+      if (hit) {
+        applyHitSelection(hit);
+        // Mouse/stylus: block OrbitControls for this gesture so drag does not fight raycast. Touch keeps controls enabled so 2-finger pinch tracks both pointers.
+        if (e.pointerType !== "touch") {
+          controls.enabled = false;
+          selectSuppressPointerId = e.pointerId;
+        }
+      } else {
+        applyHitSelection(null);
+      }
+    },
+    true
+  );
+
+  window.addEventListener(
+    "pointerup",
+    (e) => {
+      if (e.pointerType === "touch") touchIdsOnCanvas.delete(e.pointerId);
+      if (selectSuppressPointerId != null && e.pointerId === selectSuppressPointerId) {
+        selectSuppressPointerId = null;
+        controls.enabled = true;
+      }
+    },
+    true
+  );
+  window.addEventListener(
+    "pointercancel",
+    (e) => {
+      if (e.pointerType === "touch") touchIdsOnCanvas.delete(e.pointerId);
+      if (selectSuppressPointerId != null && e.pointerId === selectSuppressPointerId) {
+        selectSuppressPointerId = null;
+        controls.enabled = true;
+      }
+    },
+    true
+  );
+
+  window.addEventListener("pointermove", (e) => {
+    const { x, y } = ndcFromClient(e.clientX, e.clientY);
+    pointer.set(x, y);
+
+    if (e.target !== canvas) {
+      document.body.style.cursor = "default";
+      return;
+    }
+
+    raycaster.setFromCamera(pointer, camera);
+    const hits = raycaster.intersectObjects(faceMeshes);
+    const over = hits.find((h) => h.object.userData?.a);
+    document.body.style.cursor = over ? "pointer" : "default";
   });
 
 $('node-detail-close').addEventListener('click', () => {
@@ -1052,6 +1531,7 @@ $('node-detail-close').addEventListener('click', () => {
     }
     m.userData.targetOffset = 0.0;
   }
+  syncDomeGrayRockVisuals?.();
 });
 
 // ================================================================
@@ -1080,27 +1560,14 @@ function animate(timestamp = 0) {
     time += dt * timeScale;
   }
 
-// Auto-rotate with smooth lerp (respects prefers-reduced-motion)
-if(!selectedNode && !controls.isDragging && !prefersReducedMotion) {
-  const targetY = Math.sin(time * 0.5) * 0.1;
-  const targetX = Math.sin(time * 0.3) * 0.05;
-  
-  // Smoothly interpolate towards target rotation
-  domeGroup.rotation.y = THREE.MathUtils.lerp(domeGroup.rotation.y, targetY, 0.02);
-  domeGroup.rotation.x = THREE.MathUtils.lerp(domeGroup.rotation.x, targetX, 0.02);
-}
+ /* Cockpit: shell stays fixed until the operator orbits (no idle dome spin). */
+ const ambientMotion = !prefersReducedMotion && !domeVISuppressed;
 
- molField.rotation.y += 0.0003;
- molField.rotation.x += Math.sin(time*0.3) * 0.0001;
-
- wMat.uniforms.uTime.value += dt;
-
- // Breathing & Displacement effect on blocks
- const breath = 1.0 + 0.005 * Math.sin(time * 1.5);
+ // Breathing & Displacement effect on blocks — very subtle instrument sway
+ const breath = ambientMotion ? 1.0 + 0.0018 * Math.sin(time * 1.2) : 1.0;
 
  for(const m of faceMeshes) {
-   // Organic floating per block
-   const floatOffset = Math.sin(time * 2.5 + m.userData.randomPhase) * 0.04;
+   const floatOffset = ambientMotion ? Math.sin(time * 1.8 + m.userData.randomPhase) * 0.012 : 0;
 
    // Smoothly lerp towards target offset (interaction)
    m.userData.currentOffset += (m.userData.targetOffset - m.userData.currentOffset) * 0.1;
@@ -1111,9 +1578,6 @@ if(!selectedNode && !controls.isDragging && !prefersReducedMotion) {
 
    m.scale.setScalar(breath);
  }
-
- coreMesh.rotation.y += 0.01;
- coreMesh.rotation.x += 0.005;
 
  composer.render();
   }

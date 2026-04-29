@@ -1,7 +1,7 @@
 {
   "schema": "p31.ground-truth/1.0.0",
   "version": "1.0.0",
-  "updated": "2026-04-26",
+  "updated": "2026-04-28",
   "mission": "Build, create, connect — decentralized family mesh. This file is the machine-routable spine for p31ca.org; human narrative stays in root CLAUDE.md, P31 COGNITIVE PASSPORT — v5.md, and docs/. Version namespaces: P31 home docs/CANONICAL-NUMBERING.md; values: P31 home p31-constants.json. Source→sink alignment: P31 home p31-alignment.json (p31.alignment/1.0.0) and docs/P31-ALIGNMENT-SYSTEM.md (ephemeralization; verify: npm run verify:alignment).",
   "canonicalNumbering": {
     "spec": "P31 home: docs/CANONICAL-NUMBERING.md",
@@ -17,7 +17,7 @@
     "bondingTestBaseline": {
       "tests": 424,
       "suites": 32,
-      "asOf": "2026-04-26"
+      "asOf": "2026-04-28"
     }
   },
   "sites": {
@@ -73,8 +73,8 @@
     "planetaryOnboard": {
       "path": "/planetary-onboard.html",
       "implementation": "public/planetary-onboard.html",
-      "label": "Planetary Onboarding — welcome packages + five-phase Wye → Delta",
-      "note": "Phase 0: p31.welcomePackages/1.0.0 picker (kid, adult, parent, neuro, builder, default); ?welcome=kid skips to flow. Phases 1–5 unchanged. Meta persists welcomeKey + label. Passkey stub. Redirect mesh-start?dial=&welcome=."
+      "label": "Planetary onboard — threshold (four doors, Gray Rock first paint)",
+      "note": "Static threshold: void + K₄ + tagline → understand | use | build | know. No welcome JSON fetch on this page; p31.welcomePackages still consumed by mesh-start.html. ?fast=1 skips timers; ?welcome=kid&?a=child opens Door 2 parent path. Passkey / pact on mesh-start + auth when invited."
     },
     "welcomePackages": {
       "path": "/p31-welcome-packages.json",
@@ -147,6 +147,18 @@
       "implementation": "public/demo-labs.html",
       "label": "Demo labs — curated static demos index",
       "note": "Short /demos in _redirects. Lobby links fleet map, agents (/agents), canon, ops, delta, connect, onboard, centaur, kids, journey, /cars (Social Molecules · C.A.R.S.)."
+    },
+    "sovereignLab": {
+      "path": "/p31-sovereign-lab.html",
+      "implementation": "public/p31-sovereign-lab.html",
+      "label": "Sovereign Lab — dome trim · Web Serial · optional C.A.R.S. labTelemetry bridge",
+      "note": "Mirrored from P31 home; npm run sync:sovereign-p31ca (root). Short /lab. Optional ?carsWs= → mock WS streams coherence into eventLog (cars-contract)."
+    },
+    "browserSlicer": {
+      "path": "/p31-slicer.html",
+      "implementation": "public/p31-slicer.html",
+      "label": "Browser slicer — Kiri:Moto shell + K₄ STL",
+      "note": "Mirrored from P31 home; sync:sovereign-p31ca. Short /slicer. STL under public/design-assets/stl/."
     },
     "visionJourney": {
       "path": "/vision.html",
@@ -353,8 +365,8 @@
     "poetsLobby": {
       "path": "/poets.html",
       "implementation": "public/poets.html",
-      "label": "Poets room — writing & narrative lobby",
-      "note": "Static lobby linking passport, education, mesh, geodesic, delta, connect. Clean URL /poets served from poets.html — no _redirects row /poets→poets.html (same failure mode as welcome.html: CF Pages 308 .html↔basename ping-pong). Hub registry id poets."
+      "label": "Poets Room — void, daily quote, shelf, private local writing",
+      "note": "No crew APIs; quotes from public/poets-room-quotes.json; localStorage only for draft/photo. Clean URL /poets served from poets.html — no _redirects row /poets→poets.html (CF Pages 308 ping-pong). Hub registry id poets."
     }
   },
   "edgeRedirects": [
@@ -516,6 +528,16 @@
     {
       "from": "/demos",
       "to": "/demo-labs.html",
+      "status": 301
+    },
+    {
+      "from": "/lab",
+      "to": "/p31-sovereign-lab.html",
+      "status": 301
+    },
+    {
+      "from": "/slicer",
+      "to": "/p31-slicer.html",
       "status": 301
     },
     {

@@ -17,7 +17,7 @@ export ZENODO_TOKEN="<your_new_token>"
 python zenodo_upload.py \
   --file "P31_Consciousness_Memory_Architecture.pdf" \
   --title "Consciousness, Memory, and the Architecture of Self-Preservation: Neuroscientific Foundations for Cognitive Prosthetic Design" \
-  --description "Third paper in the P31 Labs research trilogy. Synthesizes evidence across cognitive psychology, computational neuroscience, and digital systems architecture to establish theoretical foundations for cognitive prosthetic design. Companion to the Tetrahedron Protocol (10.5281/zenodo.18627420) and Genesis Whitepaper (10.5281/zenodo.19411363)." \
+  --description "Third paper in the P31 Labs research trilogy. Synthesizes evidence across cognitive psychology, computational neuroscience, and digital systems architecture to establish theoretical foundations for cognitive prosthetic design. Companion to the Tetrahedron Protocol (10.5281/zenodo.19004485) and Genesis Whitepaper (10.5281/zenodo.19411363)." \
   --creators "Johnson, William R." \
   --keywords "cognitive prosthetics,predictive processing,neural entrainment,context-dependent memory,delta topology,loosely coupled architecture,digital zeitgebers,knowledge externalization,belief change,trauma,neurodivergent,assistive technology" \
   --token "$ZENODO_TOKEN"
@@ -30,7 +30,7 @@ If the script creates a draft (--no-publish), complete these steps in the Zenodo
 ## ZENODO WEB UI STEPS (After Draft Creation)
 
 1. **Related Identifiers** — Add TWO relationships:
-   - "Is supplement to" → `10.5281/zenodo.18627420` (Tetrahedron Protocol)
+   - "Is supplement to" → `10.5281/zenodo.19004485` (Tetrahedron Protocol)
    - "Is supplement to" → `10.5281/zenodo.19411363` (Genesis Whitepaper)
 
 2. **Creator ORCID** — Add `0009-0002-2492-9079` to William R. Johnson
@@ -58,7 +58,7 @@ If the script creates a draft (--no-publish), complete these steps in the Zenodo
     "title": "Consciousness, Memory, and the Architecture of Self-Preservation: Neuroscientific Foundations for Cognitive Prosthetic Design",
     "upload_type": "publication",
     "publication_type": "preprint",
-    "description": "Third paper in the P31 Labs research trilogy. Synthesizes evidence across cognitive psychology (Haidt, Friston, Janoff-Bulman, Festinger, Kahneman), computational neuroscience (O'Keefe place cells, theta-gamma coupling, neural entrainment), and digital systems architecture (CAP theorem, CRDTs, Zettelkasten) to establish the theoretical foundations for cognitive prosthetic design. Central finding: the optimal architecture for both biological and digital cognitive systems is loosely coupled autonomy — maximum local sovereignty with asynchronous connections for learning and reality-testing. This directly validates the Delta mesh topology underlying the P31 Labs ecosystem. Companion to the Tetrahedron Protocol (DOI: 10.5281/zenodo.18627420) and Genesis Whitepaper (DOI: 10.5281/zenodo.19411363).",
+    "description": "Third paper in the P31 Labs research trilogy. Synthesizes evidence across cognitive psychology (Haidt, Friston, Janoff-Bulman, Festinger, Kahneman), computational neuroscience (O'Keefe place cells, theta-gamma coupling, neural entrainment), and digital systems architecture (CAP theorem, CRDTs, Zettelkasten) to establish the theoretical foundations for cognitive prosthetic design. Central finding: the optimal architecture for both biological and digital cognitive systems is loosely coupled autonomy — maximum local sovereignty with asynchronous connections for learning and reality-testing. This directly validates the Delta mesh topology underlying the P31 Labs ecosystem. Companion to the Tetrahedron Protocol (DOI: 10.5281/zenodo.19004485) and Genesis Whitepaper (DOI: 10.5281/zenodo.19411363).",
     "creators": [
       {
         "name": "Johnson, William R.",
@@ -84,7 +84,7 @@ If the script creates a draft (--no-publish), complete these steps in the Zenodo
     ],
     "related_identifiers": [
       {
-        "identifier": "10.5281/zenodo.18627420",
+        "identifier": "10.5281/zenodo.19004485",
         "relation": "isSupplementTo",
         "scheme": "doi"
       },
@@ -131,6 +131,6 @@ After the DOI is minted:
 
 | # | Paper | DOI | Focus |
 |---|-------|-----|-------|
-| I | Tetrahedron Protocol | 10.5281/zenodo.18627420 | Mathematical optimality (geometry, graph theory, QM) |
+| I | Tetrahedron Protocol | 10.5281/zenodo.19004485 | Mathematical optimality (geometry, graph theory, QM) |
 | II | Genesis Whitepaper | 10.5281/zenodo.19411363 | Applied implementation (6 deployed systems) |
 | III | Consciousness & Memory | **PENDING** | Neuroscientific foundation (why this architecture is correct) |

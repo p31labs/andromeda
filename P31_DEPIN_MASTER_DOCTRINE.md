@@ -151,7 +151,7 @@ Simultaneously, the network employs a highly aggressive strategy of **"Defensive
 
 | Publication | DOI | Purpose |
 |-------------|-----|---------|
-| The Tetrahedron Protocol | 10.5281/zenodo.18627420 | K4 complete graph math |
+| The Tetrahedron Protocol | 10.5281/zenodo.19004485 | K4 complete graph math |
 | The Minimum Enclosing Structure Monograph | 10.5281/zenodo.19004485 | Daubert-ready evidence base |
 | Larmor Frequency Hardware Synchronization | [Pending] | 863 Hz / 172.35 Hz integration |
 | The "Fawn Guard" Algorithmic Membrane | [Pending] | NLP compliance detection |
@@ -447,7 +447,7 @@ This transition is executed through a terminal ritual known as the **"Abdication
 
 | Document | DOI | Status |
 |----------|-----|-------|
-| The Tetrahedron Protocol | 10.5281/zenodo.18627420 | **Published** |
+| The Tetrahedron Protocol | 10.5281/zenodo.19004485 | **Published** |
 | The Minimum Enclosing Structure Monograph | 10.5281/zenodo.19004485 | **Published** |
 
 ### C. Contact Matrix

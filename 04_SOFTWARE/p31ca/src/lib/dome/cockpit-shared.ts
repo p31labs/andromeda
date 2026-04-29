@@ -8,6 +8,42 @@ export const TELEMETRY_URLS = {
   spoons: "https://k4-personal.trimtab-signal.workers.dev/agent/will/energy",
 } as const;
 
+/** FERS wall clock — aligned with simplex-v7/src/lib/fers-countdown.ts */
+export const FERS_DEADLINE_MS = Date.parse("2026-09-30T21:00:00.000Z");
+
+export function fersDaysRemaining(nowMs = Date.now()): number {
+  return Math.ceil((FERS_DEADLINE_MS - nowMs) / 86_400_000);
+}
+
+/** Ko-fi / L.O.V.E. ladder target (31P Larmor Hz) — same meaning as hub trimtab readout */
+export const LOVE_LEDGER_TARGET = 863;
+
+export function fersUrgencyCss(daysRemaining: number): "fers-ok" | "fers-warn" | "fers-hot" | "fers-critical" {
+  if (daysRemaining < 30) return "fers-critical";
+  if (daysRemaining < 60) return "fers-hot";
+  if (daysRemaining < 90) return "fers-warn";
+  return "fers-ok";
+}
+
+/** SIMPLEX v7 merged state (`GET /api/state` → `state`). Override: `?simplexState=` URL or `window.__P31_SIMPLEX_STATE_URL__`. */
+export const SIMPLEX_STATE_URL_DEFAULT = "https://api.phosphorus31.org/api/state";
+
+export function resolveSimplexStateUrl(): string {
+  try {
+    const w = typeof window !== "undefined" ? (window as unknown as { __P31_SIMPLEX_STATE_URL__?: string }) : undefined;
+    if (w?.__P31_SIMPLEX_STATE_URL__) return String(w.__P31_SIMPLEX_STATE_URL__).trim();
+  } catch {
+    /* */
+  }
+  try {
+    const q = new URLSearchParams(typeof location !== "undefined" ? location.search : "").get("simplexState");
+    if (q) return decodeURIComponent(q.trim());
+  } catch {
+    /* */
+  }
+  return SIMPLEX_STATE_URL_DEFAULT;
+}
+
 export function readDomePerfLite(): boolean {
   if (typeof window === "undefined") return false;
   const q = new URLSearchParams(location.search);

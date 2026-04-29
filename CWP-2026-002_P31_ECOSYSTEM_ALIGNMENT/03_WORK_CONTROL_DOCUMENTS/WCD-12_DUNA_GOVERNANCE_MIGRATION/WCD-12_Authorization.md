@@ -27,7 +27,7 @@ WCD-12 establishes the governance migration vector for the P31 Labs ecosystem. T
 ## Dependencies
 
 - P31_Genesis_Whitepaper_v1.md (Section VI, Section IX)
-- Tetrahedron Protocol v2 (Zenodo DOI 10.5281/zenodo.18627420)
+- Tetrahedron Protocol v2 (Zenodo DOI 10.5281/zenodo.19004485)
 - P31 Labs, Inc. (EIN: 42-1888158) — incorporated April 3, 2026; supersedes HCB fiscal sponsorship
 
 ## Execution Mode

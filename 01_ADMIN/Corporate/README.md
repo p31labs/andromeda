@@ -46,7 +46,7 @@
 
 ## Zenodo Publications (Prior Art)
 
-- 10.5281/zenodo.18627420 (Tetrahedron Protocol)
+- 10.5281/zenodo.19004485 (Tetrahedron Protocol)
 - 10.5281/zenodo.19411363 (Genesis Whitepaper)
 - 10.5281/zenodo.19416491
 - 10.5281/zenodo.19432309

@@ -1,5 +1,5 @@
 {
-  "generated": "2026-04-28T22:02:53.579Z",
+  "generated": "2026-04-29T01:38:39.880Z",
   "meta": {
     "schema": "p31.hub-landing/1.0.0",
     "registry": "scripts/hub/registry.mjs",
@@ -413,14 +413,14 @@
     },
     {
       "id": "planetary-onboard",
-      "title": "Planetary Onboard",
+      "title": "Planetary onboard",
       "status": "BETA",
-      "desc": "Wye → Delta entry flow",
+      "desc": "Threshold — four doors, no funnel",
       "tags": [
         "Static HTML",
-        "Welcome JSON canon",
-        "WebAuthn / passkey Worker",
-        "P31 style"
+        "Gray Rock first paint",
+        "No analytics",
+        "Door 4 invite / room gates"
       ],
       "url": "/planetary-onboard-about.html"
     },
@@ -452,13 +452,14 @@
     },
     {
       "id": "poets",
-      "title": "Poets room",
+      "title": "Poets Room",
       "status": "ALPHA",
-      "desc": "Lobby — write, read, dialogue, visuals",
+      "desc": "Void, a daily line, a shelf — nothing to verify here but the door",
       "tags": [
-        "Static lobby",
-        "Hub-canonical URLs",
-        "No uploads"
+        "Static",
+        "No crew APIs",
+        "localStorage only",
+        "Quotes JSON"
       ],
       "url": "/poets-about.html"
     },
@@ -765,20 +766,92 @@
   "prototypes": [],
   "research": [
     {
-      "title": "Tetrahedral Mesh as Cybernetic Trauma Response",
-      "doi": "10.5281/zenodo.18627420"
+      "title": "The Tetrahedron Protocol: A Grand Unified Theory of Structural Resilience",
+      "doi": "10.5281/zenodo.19004485"
     },
     {
-      "title": "Algorithmic Authenticity and the Fawn Guard",
-      "doi": "10.5281/zenodo.18627421"
+      "title": "Strategic Convergence of Geometric Security and Cognitive Resilience: P31 Labs Genesis Whitepaper",
+      "doi": "10.5281/zenodo.19411363"
     },
     {
-      "title": "Fisher-Escolà Coherence in Distributed Edge Systems",
-      "doi": "10.5281/zenodo.18627422"
+      "title": "Consciousness, Memory, and the Architecture of Self-Preservation: Neuroscientific Foundations for Cognitive Prosthetic Design",
+      "doi": "10.5281/zenodo.19416491"
     },
     {
-      "title": "The Thermodynamics of the Spoon Economy",
-      "doi": "10.5281/zenodo.18627423"
+      "title": "The Universal Bridge at the Phase Transition: Kuramoto Criticality, Maxwell Rigidity, and the Topology of Neurodivergent Cognition",
+      "doi": "10.5281/zenodo.19503542"
+    },
+    {
+      "title": "The Borderland Strategy and Estuarine Sensory Gating: Environmental Psychology as Cognitive Infrastructure",
+      "doi": "10.5281/zenodo.19782977"
+    },
+    {
+      "title": "Topological History of Camden County: Institutional Capture and the K₄ Counter-Architecture",
+      "doi": "10.5281/zenodo.19782979"
+    },
+    {
+      "title": "Neuro-Kinship and the Impedance Mismatch: Communication Topology Across Divergent Neurotypes",
+      "doi": "10.5281/zenodo.19782981"
+    },
+    {
+      "title": "The Value-Form Problem: Self-Domestication, Proactive Strategy, and the L.O.V.E. Use-Value Ledger",
+      "doi": "10.5281/zenodo.19782983"
+    },
+    {
+      "title": "Quantum Social Science: The Authorized Observer Problem and the Spinning Coin Phenomenology",
+      "doi": "10.5281/zenodo.19782985"
+    },
+    {
+      "title": "Linguistic Thermodynamics and Synergetic Accounting: The Landauer Limit of Zero-Work Syntax",
+      "doi": "10.5281/zenodo.19782987"
+    },
+    {
+      "title": "The L.O.V.E. Protocol: Biometric Consensus and the Financialization of Care in Assistive Technology",
+      "doi": "10.5281/zenodo.19782971"
+    },
+    {
+      "title": "The Sovereign Stack: Open-Source Hardware–Software Architecture for Neurodivergent Assistive Technology",
+      "doi": "10.5281/zenodo.19782969"
+    },
+    {
+      "title": "The Abdication Protocol and Legal Faraday Cage: Structural Containment for High-Conflict Jurisdictions",
+      "doi": "10.5281/zenodo.19782989"
+    },
+    {
+      "title": "Centennial Sync: Fuller's 50-Year Prediction and the P31 Implementation Timeline",
+      "doi": "10.5281/zenodo.19782991"
+    },
+    {
+      "title": "The Resonant Mind: HRV Biofeedback and the 0.1 Hz Cognitive Anchor",
+      "doi": "10.5281/zenodo.19782993"
+    },
+    {
+      "title": "The Incense Metaphor: Olfactory Anchoring and Ritual in Cognitive Prosthetic Design",
+      "doi": "10.5281/zenodo.19782995"
+    },
+    {
+      "title": "The Architecture of Chaos: Structured Entropy and the Parking Lot Protocol",
+      "doi": "10.5281/zenodo.19782997"
+    },
+    {
+      "title": "The G.O.D. DAO Constitution and the Slashing Engine: Governance Primitives for Assistive-Technology Commons",
+      "doi": "10.5281/zenodo.19782999"
+    },
+    {
+      "title": "The SOULSAFE Protocol: High-Reliability Engineering for Human–AI Cognitive Symbiosis",
+      "doi": "10.5281/zenodo.19782973"
+    },
+    {
+      "title": "The Trimtab Declaration and Safe Geometry: Minimum Leverage for Maximum Human Flourishing",
+      "doi": "10.5281/zenodo.19783001"
+    },
+    {
+      "title": "Procedural Anomalies, Inchoate Judgments, and ADA Title II Violations in Georgia Domestic Relations Proceedings: A Public Interest Analysis",
+      "doi": "10.5281/zenodo.19432309"
+    },
+    {
+      "title": "The Architecture of Coercive Control: Systemic Abuse in High-Conflict Domestic Relations Proceedings - A Case Study in Neurodivergent Targeting, Legal Weaponization, and Institutional Failure",
+      "doi": "10.5281/zenodo.19432313"
     }
   ]
 }

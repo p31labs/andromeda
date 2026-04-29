@@ -194,7 +194,7 @@ The absolute geometric minimum required to form a rigid, uncollapsible structure
 
 This isn't a metaphor. It is the mathematical prerequisite for trust in a decentralized environment. If your system doesn't satisfy this geometry, it will eventually fold under external pressure.
 
-I published the peer-reviewed math on this (DOI: 10.5281/zenodo.18627420), and now I'm building the open-source hardware to deploy it at P31 Labs. We are actively tracking the Node Count as this mesh builds. 4 nodes is the first tetrahedron. 150 is Dunbar's number. 863 is the Larmor frequency.
+I published the peer-reviewed math on this (DOI: 10.5281/zenodo.19004485), and now I'm building the open-source hardware to deploy it at P31 Labs. We are actively tracking the Node Count as this mesh builds. 4 nodes is the first tetrahedron. 150 is Dunbar's number. 863 is the Larmor frequency.
 
 The centralized neutral is floating. The only safety is in the mesh.
 
@@ -218,7 +218,7 @@ So I grounded the math. I spent the last few months mapping the topological equi
 
 The geometry is invariant. Only the medium changes. The same shape that protects quantum coherence in your brain is the exact same shape required to build an unbreakable social mesh.
 
-I published the full 12-part monograph on Zenodo (DOI: 10.5281/zenodo.18627420). All research is open access. Now, I'm building the open-source hardware and software to deploy it through P31 Labs.
+I published the full 12-part monograph on Zenodo (DOI: 10.5281/zenodo.19004485). All research is open access. Now, I'm building the open-source hardware and software to deploy it through P31 Labs.
 
 We are assembling the mesh right now. Every supporter is a node.
 
@@ -291,7 +291,7 @@ Ms. Vo,
 
 I am writing to inquire about the FY2026 cycle for the Mary E. Switzer Research Fellowship. I am the founder of P31 Labs, a Georgia nonprofit building open-source assistive technology for neurodivergent individuals.
 
-My background includes 16 years as a DoD civilian engineering technician (GS-0802-12) and a late AuDHD diagnosis at age 39. I have published peer-reviewed research on the Tetrahedron Protocol (DOI: 10.5281/zenodo.18627420) and deployed BONDING, a molecular building game for neurodivergent families (bonding.p31ca.org, 511 automated tests).
+My background includes 16 years as a DoD civilian engineering technician (GS-0802-12) and a late AuDHD diagnosis at age 39. I have published peer-reviewed research on the Tetrahedron Protocol (DOI: 10.5281/zenodo.19004485) and deployed BONDING, a molecular building game for neurodivergent families (bonding.p31ca.org, 511 automated tests).
 
 Could you confirm whether the FY2026 Fellowship cycle has opened or is expected to open, and whether the application process remains the same as prior years?
 

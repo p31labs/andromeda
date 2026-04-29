@@ -111,7 +111,7 @@ PAYLOADS = [
         "content": (
             "📄 New publication: 'The Minimum Enclosing Structure: "
             "Tetrahedral Geometry as Universal Architecture'\n\n"
-            "DOI: 10.5281/zenodo.18627420\n\n"
+            "DOI: 10.5281/zenodo.19004485\n\n"
             "From quantum coherence to social resilience— "
             "the mathematics of why triangles are the strongest shape.\n\n"
             "#OpenScience #DOI #Zenodo #P31Labs"

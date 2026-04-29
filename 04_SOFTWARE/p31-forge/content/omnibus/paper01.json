@@ -4,7 +4,7 @@
   "program": "research",
   "title": "Tetrahedron Protocol",
   "abstract": "Mathematical optimality (geometry, graph theory, QM)",
-  "doi": "10.5281/zenodo.18627420",
+  "doi": "10.5281/zenodo.19004485",
   "body": [
     { "type": "h1", "text": "ABSTRACT" },
     { "type": "para", "text": "The Tetrahedron Protocol establishes the mathematical foundation for P31 Labs' research, proving that the minimum replacement structure for centralized systems is a tetrahedral (K₄) mesh topology." },

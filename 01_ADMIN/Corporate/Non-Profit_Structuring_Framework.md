@@ -15,7 +15,7 @@
 
 P31 Labs, Inc. was incorporated as a Georgia Domestic Nonprofit Corporation on April 3, 2026 via eCorp filing. The Articles of Incorporation contain all five IRS-mandated clauses: charitable purpose, prohibition on private inurement, legislative activity restriction, dissolution clause directing assets to another 501(c)(3), and reference to Internal Revenue Code Section 501(c)(3).
 
-The organization's charitable mission is the development and distribution of open-source assistive technology for neurodivergent individuals. This mission is grounded in the founder's lived experience with Autism Spectrum Disorder, ADHD, and chronic Hypoparathyroidism, and reflects a genuine community need documented in the organization's peer-reviewed research publications (Zenodo DOIs: 10.5281/zenodo.18627420, 10.5281/zenodo.19411363, 10.5281/zenodo.19416491, 10.5281/zenodo.19432309, 10.5281/zenodo.19432313).
+The organization's charitable mission is the development and distribution of open-source assistive technology for neurodivergent individuals. This mission is grounded in the founder's lived experience with Autism Spectrum Disorder, ADHD, and chronic Hypoparathyroidism, and reflects a genuine community need documented in the organization's peer-reviewed research publications (Zenodo DOIs: 10.5281/zenodo.19004485, 10.5281/zenodo.19411363, 10.5281/zenodo.19416491, 10.5281/zenodo.19432309, 10.5281/zenodo.19432313).
 
 ### 1.1 Formation Sequence Pending Completion
 

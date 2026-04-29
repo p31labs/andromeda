@@ -35,7 +35,7 @@
 
 | Paper | Title | DOI |
 |-------|-------|-----|
-| I | The Tetrahedron Protocol: Structural Information Security via K₄ Complete Graphs | 10.5281/zenodo.18627420 |
+| I | The Tetrahedron Protocol (current deposit) | 10.5281/zenodo.19004485 (prior: 10.5281/zenodo.18627420) |
 | II | Genesis Whitepaper | — |
 | III | Consciousness Memory Architecture | 10.5281/zenodo.19411363 |
 | IV | Universal Bridge at the Phase Transition | 10.5281/zenodo.19503542 |

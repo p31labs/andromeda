@@ -177,10 +177,10 @@ async function getDepositionCount(env) {
 
 async function getLatestDOI(env) {
   if (!env.ZENODO_KV) {
-    return global.latestDOI || '10.5281/zenodo.18627420'; // Default from Cognitive Passport
+    return global.latestDOI || '10.5281/zenodo.19004485'; // Default from Cognitive Passport
   }
   
-  return await env.ZENODO_KV.get('latest_doi') || '10.5281/zenodo.18627420';
+  return await env.ZENODO_KV.get('latest_doi') || '10.5281/zenodo.19004485';
 }
 
 async function saveDOI(env, doi, depositionId) {

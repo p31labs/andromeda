@@ -74,7 +74,7 @@
 
 | Output | Detail |
 |--------|--------|
-| Zenodo DOI #1 | 10.5281/zenodo.18627420 (Tetrahedron Protocol) |
+| Zenodo DOI #1 | 10.5281/zenodo.19004485 (Tetrahedron Protocol) |
 | Zenodo DOI #2 | 10.5281/zenodo.19411363 (Genesis Whitepaper v1.1) |
 | Zenodo DOI #3 | 10.5281/zenodo.19416491 (Consciousness, Memory & Architecture) |
 | Zenodo views | 280+ combined |

@@ -75,7 +75,7 @@ The trimtab is the tiny rudder that turns the big rudder that turns the whole sh
 💜🔺💜
 
 phosphorus31.org | github.com/p31labs | bonding.p31ca.org
-DOI: 10.5281/zenodo.18627420 | ORCID: 0009-0002-2492-9079
+DOI: 10.5281/zenodo.19004485 | ORCID: 0009-0002-2492-9079
 ```
 
 ---
@@ -180,7 +180,7 @@ NODE COUNT — THE MILESTONES ARE PHYSICS
 - [ ] Convert SVGs to PNG (use https://svgtopng.com or browser canvas)
 - [ ] Add "Node Count" to bio or create pinned post
 - [ ] Verify all links work: phosphorus31.org, github.com/p31labs, bonding.p31ca.org
-- [ ] Check DOI link: https://doi.org/10.5281/zenodo.18627420
+- [ ] Check DOI link: https://doi.org/10.5281/zenodo.19004485
 - [ ] Post first update to signal launch
 
 ---

@@ -16,7 +16,7 @@
 
 ### State Initialization
 - [ ] Flush any test data from the Redis instance: `redis-cli flushall` (Ensure you are on the PROD database, not DEV)
-- [ ] Manually seed the `current_zenodo_hash` in Redis with the SHA-256 string from your Zenodo publication (DOI 10.5281/zenodo.18627420)
+- [ ] Manually seed the `current_zenodo_hash` in Redis with the SHA-256 string from your Zenodo publication (DOI 10.5281/zenodo.19004485)
 - [ ] Initialize Posner status to zero state: `{ assembled: false, calciumIons: 0, phosphateIons: 0, uniqueContributors: 0 }`
 - [ ] Set system health metrics to baseline values
 

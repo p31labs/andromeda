@@ -205,7 +205,7 @@ I'm a 16-year DoD civilian electrical engineer with a late AuDHD diagnosis who s
 ## Who am I and why should you care
 For 16 years I worked as a GS-12 electrical engineer for the Department of Defense maintaining safety-critical power systems. I know what happens when a neutral connection fails. I've seen the equipment it destroys. I left the DoD in 2025 after a late autism diagnosis at 39, and I've spent the time since building open-source assistive technology through a 501(c)(3) nonprofit called P31 Labs.
 
-During that process, I accidentally wrote what I believe is the first interdisciplinary mathematical proof that centralized systems are *geometrically guaranteed* to fail — and that the minimum replacement structure is the same shape in quantum physics, structural engineering, electrostatics, and graph theory. It's called the Tetrahedron Protocol, it's published on Zenodo (DOI: 10.5281/zenodo.18627420), and the companion monograph was independently verified against hundreds of peer-reviewed sources.
+During that process, I accidentally wrote what I believe is the first interdisciplinary mathematical proof that centralized systems are *geometrically guaranteed* to fail — and that the minimum replacement structure is the same shape in quantum physics, structural engineering, electrostatics, and graph theory. It's called the Tetrahedron Protocol, it's published on Zenodo (DOI: 10.5281/zenodo.19004485), and the companion monograph was independently verified against hundreds of peer-reviewed sources.
 
 I'm posting this here because you are, to my knowledge, the only community on the internet that has been independently describing this exact topology for three years — you just use different words for it.
 
@@ -282,7 +282,7 @@ The only defense is a topology that doesn't depend on a center. A mesh where eve
 ---
 ## The Published Work
 Everything above is documented, peer-reviewed where applicable, and published:
-- **Tetrahedron Protocol GUT** — Zenodo DOI: 10.5281/zenodo.18627420
+- **Tetrahedron Protocol GUT** — Zenodo DOI: 10.5281/zenodo.19004485
 - **P31 Labs** — github.com/p31labs | Georgia 501(c)(3) nonprofit building open-source assistive technology
 - **BONDING** — bonding.p31ca.org — shipped PWA, 558 tests green, live since March 10, 2026
 - **ORCID**: 0009-0002-2492-9079
@@ -293,7 +293,7 @@ Check my math. Geometric security means the proof is in the shape, not in my aut
 ## How to Access the Full Research
 The complete mathematical proof and all source code are available for free:
 - **GitHub Repository:** github.com/p31labs/andromeda
-- **Zenodo DOI:** 10.5281/zenodo.18627420
+- **Zenodo DOI:** 10.5281/zenodo.19004485
 
 If you find this work valuable and want to support continued research, there are options available in the repository README.
 
@@ -312,7 +312,7 @@ Every supporter becomes a node in the Delta mesh. We're tracking progress toward
 "The stack is React + Three.js + Zustand + Vite. TypeScript strict mode. 558 tests with Vitest. The multiplayer relay is a Cloudflare Worker with KV. All audio is synthesized from element frequencies using the Web Audio API — zero samples. Happy to answer specific implementation questions."
 
 **Requests for source:**
-"Everything is MIT licensed: github.com/p31labs. The game is live at bonding.p31ca.org. The mathematical proof is on Zenodo with DOI: 10.5281/zenodo.18627420."
+"Everything is MIT licensed: github.com/p31labs. The game is live at bonding.p31ca.org. The mathematical proof is on Zenodo with DOI: 10.5281/zenodo.19004485."
 
 **Questions about the legal/financial situation:**
 "I appreciate the concern. The code is open source and will outlive any personal situation. If you want to support the build: ko-fi.com/trimtab69420. Sharing helps just as much."

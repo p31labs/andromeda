@@ -2,7 +2,7 @@
 
 **CWP-2026-002** | Whitepaper Vol. I, No. 1
 **Date:** March 31, 2026
-**DOI:** [DOI TO BE ASSIGNED — companion deposit to Tetrahedron Protocol, 10.5281/zenodo.18627420]
+**DOI:** [DOI TO BE ASSIGNED — companion deposit to Tetrahedron Protocol, 10.5281/zenodo.19004485]
 **Archive:** [PENDING INTERNET ARCHIVE DEPLOYMENT]
 
 ---
