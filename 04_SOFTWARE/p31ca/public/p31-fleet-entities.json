@@ -1,6 +1,6 @@
 {
   "schema": "p31.fleetEntities/1.0.0",
-  "updated": "2026-04-26",
+  "updated": "2026-04-29",
   "sourceNotes": "Merged from published p31-live-fleet.json (verified + allowlisted Workers) plus static bot/cortex-agents roster. Probe GETs may be CORS-blocked from the hub origin.",
   "entities": [
     {
@@ -23,6 +23,27 @@
       "probeUrls": [
         "https://bonding-relay.trimtab-signal.workers.dev/api/health",
         "https://bonding-relay.trimtab-signal.workers.dev/health"
+      ],
+      "hubPagePath": null,
+      "registryId": null
+    },
+    {
+      "slug": "cf-edge-lab",
+      "kind": "worker",
+      "title": "cf-edge-lab",
+      "subtitle": "Workers AI + /api/edge (request.cf) + WebSocket /ws; GET / playground",
+      "tier": "verified",
+      "workersDevUrl": "https://cf-edge-lab.trimtab-signal.workers.dev",
+      "prodUrl": "",
+      "healthPaths": [],
+      "meshPaths": [],
+      "constantsKey": "mesh.edgeLabWorkerUrl",
+      "deployHints": [
+        "packages/cf-edge-lab"
+      ],
+      "probeUrls": [
+        "https://cf-edge-lab.trimtab-signal.workers.dev/api/health",
+        "https://cf-edge-lab.trimtab-signal.workers.dev/health"
       ],
       "hubPagePath": null,
       "registryId": null

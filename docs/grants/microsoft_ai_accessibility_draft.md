@@ -194,7 +194,7 @@ Grant funds cover 12-month development sprint. Post-grant sustainability:
 - [ ] Georgia Articles of Incorporation (filed April 3, 2026)
 - [ ] Founder resume / CV (William R. Johnson)
 - [ ] BONDING product screenshots + video demo
-- [ ] Zenodo DOI printouts (three publications: 10.5281/zenodo.18627420, 10.5281/zenodo.19411363, 10.5281/zenodo.19416491)
+- [ ] Zenodo DOI printouts (three publications: 10.5281/zenodo.19004485, 10.5281/zenodo.19411363, 10.5281/zenodo.19416491)
 - [ ] GitHub repository links with star/fork counts
 
 ---

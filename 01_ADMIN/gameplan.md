@@ -79,7 +79,7 @@
 - [ ] Makers Making Change: Jake McIvor expressed interest. Formal submission pending.
 
 ### 2.5 🟢 ACADEMIC PIPELINE
-- [x] Tetrahedron Protocol published to Zenodo (DOI: 10.5281/zenodo.18627420, 191 views, 163 downloads)
+- [x] Tetrahedron Protocol published to Zenodo (DOI: 10.5281/zenodo.19004485, 191 views, 163 downloads)
 - [x] ORCID configured (0009-0002-2492-9079)
 - [x] Five white papers finalized March 17 (defensive publication / prior art / freedom to operate)
 - [ ] Monograph upload to Zenodo (new DOI, references GUT)

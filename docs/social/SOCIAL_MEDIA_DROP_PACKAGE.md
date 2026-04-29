@@ -130,7 +130,7 @@ Personal narrative. Late autism diagnosis, lost kids, $70k gone, $5 in bank, bui
 | Spaceship Earth | https://p31ca.org |
 | BONDING Game | https://bonding.p31ca.org |
 | GitHub | https://github.com/p31labs |
-| Zenodo DOI | https://doi.org/10.5281/zenodo.18627420 |
+| Zenodo DOI | https://doi.org/10.5281/zenodo.19004485 |
 | Ko-fi | https://ko-fi.com/trimtab69420 |
 | Phosphorus31.org | https://phosphorus31.org |
 | Stripe Donations | https://phosphorus31.org/donate |

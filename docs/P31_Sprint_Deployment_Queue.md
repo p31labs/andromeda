@@ -81,7 +81,7 @@
 >
 > I am a late-diagnosed autistic engineer (AuDHD, diagnosed 2025) with 16 years of DoD civilian engineering experience and 23 years living with chronic hypoparathyroidism. My work focuses on deploying cognitive assistive technology — including a shipped molecular building game for parental engagement (bonding.p31ca.org, 511 automated tests) and an open-source ESP32-S3 sensory regulation device ($37.50 BOM).
 >
-> My research is published on Zenodo (DOI: 10.5281/zenodo.18627420, ORCID: 0009-0002-2492-9079), and I meet the eligibility criteria as a disability-identified applicant with demonstrated research capacity.
+> My research is published on Zenodo (DOI: 10.5281/zenodo.19004485, ORCID: 0009-0002-2492-9079), and I meet the eligibility criteria as a disability-identified applicant with demonstrated research capacity.
 >
 > Could you advise on whether the FY2026 competition has been announced, and the expected timeline for applications?
 >
@@ -116,7 +116,7 @@
 >
 > This isn't a metaphor. It is the mathematical prerequisite for trust in a decentralized environment. If your system doesn't satisfy this geometry, it will eventually fold under external pressure.
 >
-> I published the peer-reviewed math on this (DOI: 10.5281/zenodo.18627420), and now I'm building the open-source hardware to deploy it at P31 Labs. We are actively tracking the Node Count as this mesh builds. 4 nodes is the first tetrahedron. 150 is Dunbar's number. 863 is the Larmor frequency.
+> I published the peer-reviewed math on this (DOI: 10.5281/zenodo.19004485), and now I'm building the open-source hardware to deploy it at P31 Labs. We are actively tracking the Node Count as this mesh builds. 4 nodes is the first tetrahedron. 150 is Dunbar's number. 863 is the Larmor frequency.
 >
 > The centralized neutral is floating. The only safety is in the mesh.
 >
@@ -140,7 +140,7 @@
 >
 > The geometry is invariant. Only the medium changes. The same shape that protects quantum coherence in your brain is the exact same shape required to build an unbreakable social mesh.
 >
-> I published the full 12-part monograph on Zenodo (DOI: 10.5281/zenodo.18627420). All research is open access — no paywall, no gatekeeping. Now, I'm building the open-source hardware and software to deploy it through P31 Labs.
+> I published the full 12-part monograph on Zenodo (DOI: 10.5281/zenodo.19004485). All research is open access — no paywall, no gatekeeping. Now, I'm building the open-source hardware and software to deploy it through P31 Labs.
 >
 > We are assembling the mesh right now. Every supporter is a node.
 >

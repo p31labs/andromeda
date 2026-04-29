@@ -7,7 +7,7 @@
 
 ## CONTEXT
 
-Monograph is ALREADY PUBLISHED on Zenodo (DOI: 10.5281/zenodo.18627420)
+Monograph is ALREADY PUBLISHED on Zenodo (DOI: 10.5281/zenodo.19004485)
 
 Three defensive white papers need final polish before Zenodo upload:
 1. "The Floating Neutral Hypothesis: Basal Ganglia Calcification and Biological Voltage Failure"

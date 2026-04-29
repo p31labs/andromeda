@@ -223,5 +223,5 @@ Pre-flight:
 | P31 Labs | p31ca.org |
 | Ko-fi | ko-fi.com/trimtab69420 |
 | GitHub | github.com/p31labs |
-| Zenodo DOI | doi.org/10.5281/zenodo.18627420 |
+| Zenodo DOI | doi.org/10.5281/zenodo.19004485 |
 | phosphorus31.org | phosphorus31.org |

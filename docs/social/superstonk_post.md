@@ -16,7 +16,7 @@ I'm a 16-year DoD civilian electrical engineer with a late AuDHD diagnosis who s
 
 For 16 years I worked as a GS-12 electrical engineer for the Department of Defense maintaining safety-critical power systems. I know what happens when a neutral connection fails. I've seen the equipment it destroys. I left the DoD in 2025 after a late autism diagnosis at 39, and I've spent the time since building open-source assistive technology through a 501(c)(3) nonprofit called P31 Labs.
 
-During that process, I accidentally wrote what I believe is the first interdisciplinary mathematical proof that centralized systems are *geometrically guaranteed* to fail — and that the minimum replacement structure is the same shape in quantum physics, structural engineering, electrostatics, and graph theory. It's called the Tetrahedron Protocol, it's published on Zenodo (DOI: 10.5281/zenodo.18627420), and the companion monograph was independently verified against hundreds of peer-reviewed sources.
+During that process, I accidentally wrote what I believe is the first interdisciplinary mathematical proof that centralized systems are *geometrically guaranteed* to fail — and that the minimum replacement structure is the same shape in quantum physics, structural engineering, electrostatics, and graph theory. It's called the Tetrahedron Protocol, it's published on Zenodo (DOI: 10.5281/zenodo.19004485), and the companion monograph was independently verified against hundreds of peer-reviewed sources.
 
 I'm posting this here because you are, to my knowledge, the only community on the internet that has been independently describing this exact topology for three years — you just use different words for it.
 
@@ -155,7 +155,7 @@ The only defense is a topology that doesn't depend on a center. A mesh where eve
 
 Everything above is documented, peer-reviewed where applicable, and published:
 
-- **Tetrahedron Protocol GUT** — Zenodo DOI: [10.5281/zenodo.18627420](https://doi.org/10.5281/zenodo.18627420)
+- **Tetrahedron Protocol GUT** — Zenodo DOI: [10.5281/zenodo.19004485](https://doi.org/10.5281/zenodo.19004485)
 - **Companion Monograph** — "The Minimum Enclosing Structure: Tetrahedral Geometry as Universal Architecture from Quantum Coherence to Social Resilience" (verified against 100+ independent sources; Zenodo DOI pending — available upon request)
 - **P31 Labs** — [github.com/p31labs](https://github.com/p31labs) | Georgia 501(c)(3) nonprofit building open-source assistive technology for neurodivergent individuals and families
 - **BONDING** — [bonding.p31ca.org](https://bonding.p31ca.org) — shipped PWA, 488 tests green, live since March 10, 2026. Every atom placed = timestamped parental engagement log. Objective evidence: 488 passing tests, telemetry shows 1,200+ sessions, zero crashes in production.
@@ -173,7 +173,7 @@ We're growing the node count to 39 (Posner number) — the minimum for quantum c
 The complete mathematical proof and all source code are available for free:
 
 - **GitHub Repository:** [github.com/p31labs/andromeda](https://github.com/p31labs/andromeda)
-- **Zenodo DOI:** [10.5281/zenodo.18627420](https://doi.org/10.5281/zenodo.18627420)
+- **Zenodo DOI:** [10.5281/zenodo.19004485](https://doi.org/10.5281/zenodo.19004485)
 
 The repository contains the complete mathematical framework, source code, and all references. If you find this work valuable and want to support continued research, there are options available in the repository README.
 

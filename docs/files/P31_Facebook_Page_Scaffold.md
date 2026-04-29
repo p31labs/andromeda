@@ -126,13 +126,13 @@ Play free: bonding.p31ca.org
 **Text:**
 P31 Labs doesn't just build tools — we publish the science behind them.
 
-The Tetrahedron Protocol is a 17-paper research series spanning:
+The P31 Research Series (papers I–XX) spans:
 📐 Network topology and structural resilience
 🧠 Quantum cognition and calcium biology
 💚 Care economics and the value of unpaid labor
 🔧 Cognitive engineering for neurodivergent operators
 
-4 papers published on Zenodo with DOIs. 13 more gate-checked and ready.
+22 Zenodo deposits live with DOIs (series I–XX + two standalone analyses). Paper I current DOI: 10.5281/zenodo.19004485.
 
 Every claim verified against primary sources. Every hallucination caught and corrected. Zero uncorrected errors in the published series.
 

@@ -6,11 +6,77 @@
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
 import hubLanding from '../data/hub-landing.json';
-import missionTrio from '../data/p31-mission-trio.json';
+import groundTruth from '../../ground-truth/p31.ground-truth.json';
+import docLibIndex from '../../public/doc-library/index.json';
 
 const coreProducts = hubLanding.coreProducts;
 const prototypes = hubLanding.prototypes;
 const research = hubLanding.research;
+
+const bondingTests =
+  (groundTruth as { canonicalNumbering?: { bondingTestBaseline?: { tests?: number } } }).canonicalNumbering
+    ?.bondingTestBaseline?.tests ?? 424;
+const docCount =
+  typeof (docLibIndex as { count?: unknown }).count === 'number'
+    ? (docLibIndex as { count: number }).count
+    : 0;
+const researchPaperCount = research.length;
+const doiCount = new Set(research.map((p: { doi: string }) => p.doi)).size;
+
+/** Curated threshold “doors” — same building, different rooms (live = phosphor, warm = butter). */
+const lobbyDoors: {
+  title: string;
+  meta: string;
+  sub: string;
+  href: string;
+  external?: boolean;
+  dot: 'live' | 'warm';
+}[] = [
+  {
+    title: 'BONDING',
+    meta: `Known molecular catalog · ${bondingTests} tests · live`,
+    sub: 'Build what the body needs — together.',
+    href: 'https://bonding.p31ca.org',
+    external: true,
+    dot: 'live',
+  },
+  {
+    title: 'Cognitive Passport',
+    meta: '8 profiles · p31.cognitivePassport/1.0.0 · live',
+    sub: 'Control what the world knows about your mind.',
+    href: '/passport',
+    dot: 'live',
+  },
+  {
+    title: 'Dome / Cockpit',
+    meta: '16 face nodes · Q-Factor readout · live',
+    sub: 'See the whole mesh at once.',
+    href: '/dome/',
+    dot: 'live',
+  },
+  {
+    title: 'C.A.R.S.',
+    meta: 'your people · no strangers · live',
+    sub: 'Same bowl, same room.',
+    href: 'https://bonding.p31ca.org/soup',
+    external: true,
+    dot: 'live',
+  },
+  {
+    title: 'Document Library',
+    meta: `${docCount} documents · searchable · live`,
+    sub: "Everything we've written down.",
+    href: '/doc-library/',
+    dot: 'live',
+  },
+  {
+    title: 'Research',
+    meta: `${researchPaperCount} papers · ${doiCount} DOIs · live`,
+    sub: 'The proof is public.',
+    href: '#research-papers',
+    dot: 'live',
+  },
+];
 
 const getStatusStyles = (status: string) => {
   if (status === 'LIVE')
@@ -69,6 +135,8 @@ const pageDescription =
   shellBackdrop={false}
 >
   <Fragment slot="head">
+    <link rel="stylesheet" href="/lib/p31-starfield.css" />
+    <link rel="stylesheet" href="/lib/p31-larmor-fields.css" />
     <link
       href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1;500;1;600&display=swap"
       rel="stylesheet"
@@ -88,109 +156,125 @@ const pageDescription =
       content="P31 Labs — Technical hub"
     />
     <meta name="twitter:description" content={pageDescription} />
-  </Fragment>
-
-  <Fragment slot="importmaps">
-    <!-- Import Map for Three.js -->
-    <script type="importmap" is:inline>
-      {
-        "imports": {
-          "three": "https://cdn.jsdelivr.net/npm/three@0.183.0/build/three.module.js",
-          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.183.0/examples/jsm/"
+    <script is:inline>
+      (function () {
+        if (/[?&]alive=1(?:&|$)/.test(location.search)) {
+          document.documentElement.classList.add('p31-hub-alive');
+          return;
         }
-      }
+        document.documentElement.classList.add('p31-hub-gray-rock');
+        function wake() {
+          document.documentElement.classList.remove('p31-hub-gray-rock');
+          document.documentElement.classList.add('p31-hub-alive');
+        }
+        document.addEventListener('pointerdown', wake, { once: true, capture: true });
+        document.addEventListener('keydown', wake, { once: true, capture: true });
+      })();
     </script>
   </Fragment>
-  
 
-  <!-- Ambient WebGL: fixed background stack; canvas re-enables pointer hits in landing-cockpit.ts -->
+  <!-- Hub landing: 2D particle canvas (no WebGL — full dome lives at /dome) -->
   <div
     id="hub-gl-backdrop"
-    class="pointer-events-none fixed inset-0 z-0 isolate overflow-hidden"
+    class="pointer-events-none fixed inset-0 z-0 isolate overflow-hidden bg-[#05080c]"
     aria-hidden="true"
   >
-    <div id="webgl-container" class="absolute inset-0 bg-transparent"></div>
+    <canvas id="hub-particle-canvas" class="p31-starfield-canvas absolute inset-0 h-full w-full"></canvas>
     <div
-      class="pointer-events-none absolute inset-0 z-[1] bg-[#05080c]/60"
+      class="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-b from-[rgba(37,137,125,0.03)] via-transparent to-[rgba(204,98,71,0.035)]"
+      aria-hidden="true"
+    ></div>
+    <div
+      class="pointer-events-none absolute inset-0 z-[2] bg-[#05080c]/50"
       aria-hidden="true"
     ></div>
   </div>
 
-  <!-- FIXED SOVEREIGN HUD (Top Nav) -->
+  <!-- Top nav: public actions always visible; operator instruments in <details> (mobile-first) -->
   <nav
-    class="fixed top-0 left-0 right-0 z-50 glass-panel border-b border-white/[0.07] flex flex-col gap-3 pt-[max(0.5rem,env(safe-area-inset-top))] pb-2 pl-[max(0.75rem,env(safe-area-inset-left))] pr-[max(0.75rem,env(safe-area-inset-right))] sm:px-5 md:flex-row md:items-center md:justify-between md:gap-4 text-sm font-mono text-p31-cloud shadow-[0_4px_30px_rgba(0,0,0,0.5)] md:text-xs"
+    class="fixed top-0 left-0 right-0 z-50 glass-panel border-b border-white/[0.07] flex flex-col gap-3 pt-[max(0.5rem,env(safe-area-inset-top))] pb-2 pl-[max(0.75rem,env(safe-area-inset-left))] pr-[max(0.75rem,env(safe-area-inset-right))] sm:px-5 lg:flex-row lg:items-center lg:justify-between lg:gap-4 text-sm font-mono text-p31-cloud shadow-[0_4px_30px_rgba(0,0,0,0.5)] md:text-xs"
     aria-label="Primary"
   >
-    
-    <!-- Logo & Q-Factor — EDE: mono cluster + instrument readout -->
-    <div class="flex min-w-0 flex-1 flex-wrap items-center gap-4">
+    <div class="flex min-w-0 flex-wrap items-center justify-between gap-3 lg:flex-1 lg:justify-start">
       <a href="/" class="group flex min-w-0 shrink-0 items-center gap-3 no-underline" title="P31 Labs hub">
         <div
-          class="flex h-8 w-8 shrink-0 items-center justify-center rounded border border-teal/40 bg-teal/10 font-mono text-[11px] font-bold tracking-tight text-cyan transition-all group-hover:border-teal group-hover:bg-teal group-hover:text-p31-cloud group-hover:shadow-[0_0_15px_rgba(77,184,168,0.35)]"
+          class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-teal/40 bg-teal/10 font-mono text-[11px] font-bold tracking-tight text-cyan transition-all group-hover:border-teal group-hover:bg-teal group-hover:text-p31-cloud group-hover:shadow-[0_0_15px_rgba(77,184,168,0.35)]"
         >
           P31
         </div>
         <span
           class="hidden font-mono text-[11px] font-semibold uppercase leading-tight tracking-[0.2em] text-p31-cloud/70 transition-colors group-hover:text-p31-cloud sm:inline sm:max-w-[14rem]"
         >
-          P31 Labs — Cockpit</span>
+          P31 Labs</span>
       </a>
-      <div class="h-4 w-px bg-white/10 max-sm:hidden"></div>
-      <div class="flex items-center gap-2" title="Fisher-Escolà Coherence Score">
-        <span class="w-2 h-2 rounded-full bg-phosphorus shadow-[0_0_8px_rgba(59,163,114,0.55)] animate-pulse" id="nav-status-dot"></span>
-        <span class="text-p31-muted">Q-FACTOR:</span>
-        <span class="font-bold text-phosphorus tracking-wider" id="nav-q-factor">0.925</span>
-      </div>
-    </div>
 
-    <!-- Central Telemetry: Spoons & Fleet -->
-    <div
-      class="flex max-w-full items-center gap-4 overflow-x-auto overflow-y-visible overscroll-x-contain bg-p31-void-50 px-3 py-2 [scrollbar-width:thin] sm:gap-6 sm:px-4 rounded-md border border-white/[0.07] md:max-w-none md:overflow-visible"
-    >
-      <div class="flex items-center gap-2" title="Vertex A: Operator State">
-        <span class="text-p31-muted">SPOONS</span>
-        <div class="w-16 h-1.5 bg-surface2 rounded-full overflow-hidden">
-          <div id="nav-spoon-fill" class="h-full bg-coral transition-all duration-500" style="width: 50%;"></div>
+      <details
+        id="hub-instruments"
+        class="group relative min-w-0 max-w-full flex-1 sm:max-w-md lg:max-w-lg [&_summary::-webkit-details-marker]:hidden"
+      >
+        <summary
+          class="flex min-h-[2.75rem] cursor-pointer list-none items-center justify-center gap-2 rounded-lg border border-white/[0.1] bg-p31-void-50 px-3 py-2 text-[10px] font-bold uppercase tracking-widest text-p31-muted transition-colors hover:border-teal/25 hover:text-p31-cloud lg:min-h-0 lg:py-1.5"
+        >
+          Instruments
+          <span class="text-p31-muted/50" aria-hidden="true">▾</span>
+        </summary>
+        <div
+          class="absolute left-0 right-0 top-full z-[60] mt-2 flex max-h-[min(70vh,28rem)] flex-col gap-4 overflow-y-auto rounded-lg border border-white/[0.08] bg-p31-void-95 p-4 shadow-[0_12px_40px_rgba(0,0,0,0.65)] backdrop-blur-md sm:left-auto sm:right-0 sm:min-w-[22rem]"
+        >
+          <div class="flex flex-wrap items-center gap-2" title="Fisher-Escolà Coherence Score">
+            <span class="w-2 h-2 shrink-0 rounded-full bg-phosphorus shadow-[0_0_8px_rgba(59,163,114,0.55)] animate-pulse" id="nav-status-dot"></span>
+            <span class="text-p31-muted">Q-FACTOR:</span>
+            <span class="font-bold text-phosphorus tracking-wider" id="nav-q-factor">0.925</span>
+          </div>
+          <div
+            class="flex flex-wrap items-center gap-x-4 gap-y-3 overflow-x-auto rounded-md border border-white/[0.07] bg-p31-void-50 px-3 py-2.5 [scrollbar-width:thin]"
+          >
+            <div class="flex items-center gap-2" title="Vertex A: Operator State">
+              <span class="text-p31-muted">SPOONS</span>
+              <div class="w-16 h-1.5 bg-surface2 rounded-full overflow-hidden">
+                <div id="nav-spoon-fill" class="h-full bg-coral transition-all duration-500" style="width: 50%;"></div>
+              </div>
+              <span id="nav-spoon-val" class="text-coral font-bold">10</span>
+            </div>
+            <div class="h-3 w-px bg-white/10"></div>
+            <div class="flex items-center gap-2" title="L.O.V.E. Ledger Balance">
+              <span class="text-p31-muted">L.O.V.E.</span>
+              <span id="nav-love-val" class="text-teal font-bold">3.28</span>
+            </div>
+            <div class="h-3 w-px bg-white/10 hidden sm:block"></div>
+            <div class="hidden sm:flex items-center gap-2">
+              <span class="text-p31-muted">FLEET:</span>
+              <span id="nav-fleet-val" class="text-p31-cloud">4/4</span>
+            </div>
+            <div class="h-3 w-px bg-white/10 hidden lg:block"></div>
+            <div
+              class="hidden lg:flex flex-wrap items-center gap-2"
+              title="As above, so below — p31ca HUD ↔ k4-personal edge (vitality, V/E L♥)"
+            >
+              <span class="text-p31-muted">MESH</span>
+              <span id="nav-mesh-vit" class="text-lavender font-bold">—</span>
+              <span class="text-p31-muted text-[10px]">L♥</span>
+              <span id="nav-mesh-ve" class="text-p31-cloud text-[10px] font-mono">—</span>
+              <span id="nav-mesh-detail" class="text-p31-muted text-[9px] font-mono max-w-[7rem] truncate hidden 2xl:inline" title=""> </span>
+              <a href="/mesh-observatory/" class="text-lavender hover:text-lavender/85 hover:underline text-[10px] font-bold" title="Mesh Observatory">OBS</a>
+            </div>
+          </div>
+          <div
+            class="group inline-flex min-h-[3rem] cursor-pointer items-center gap-3 rounded-md border border-white/[0.06] px-2 py-2 md:min-h-0"
+            id="trimtab-trigger"
+            title="Drag to tune · Click for Layer 0"
+          >
+            <canvas id="trimtab-canvas" width="24" height="24" class="opacity-80 transition-opacity group-hover:opacity-100"></canvas>
+            <span id="trimtab-freq" class="text-butter font-bold">863Hz</span>
+            <span class="text-[9px] text-p31-muted">Trim · breath</span>
+          </div>
         </div>
-        <span id="nav-spoon-val" class="text-coral font-bold">10</span>
-      </div>
-      <div class="h-3 w-px bg-white/10"></div>
-      <div class="flex items-center gap-2" title="L.O.V.E. Ledger Balance">
-        <span class="text-p31-muted">L.O.V.E.</span>
-        <span id="nav-love-val" class="text-teal font-bold">3.28</span>
-      </div>
-      <div class="h-3 w-px bg-white/10 hidden md:block"></div>
-      <div class="hidden md:flex items-center gap-2">
-        <span class="text-p31-muted">FLEET:</span>
-        <span id="nav-fleet-val" class="text-p31-cloud">4/4</span>
-      </div>
-      <div class="h-3 w-px bg-white/10 hidden xl:block"></div>
-      <div
-        class="hidden xl:flex items-center gap-2"
-        title="As above, so below — p31ca HUD ↔ k4-personal edge (vitality, V/E L♥)"
-      >
-        <span class="text-p31-muted">MESH</span>
-        <span id="nav-mesh-vit" class="text-lavender font-bold">—</span>
-        <span class="text-p31-muted text-[10px]">L♥</span>
-        <span id="nav-mesh-ve" class="text-p31-cloud text-[10px] font-mono">—</span>
-        <span id="nav-mesh-detail" class="text-p31-muted text-[9px] font-mono max-w-[7rem] truncate hidden 2xl:inline" title=""> </span>
-        <a href="/mesh-observatory/" class="text-lavender hover:text-lavender/85 hover:underline text-[10px] font-bold" title="Mesh Observatory">OBS</a>
-      </div>
+      </details>
     </div>
 
-    <!-- Trimtab & Actions: mobile-first touch targets, dense labels on md+ -->
     <div
-      class="flex w-full flex-wrap items-center justify-center gap-2 sm:justify-end md:w-auto md:justify-end"
+      class="flex w-full flex-wrap items-center justify-center gap-2 sm:justify-end lg:w-auto lg:flex-nowrap lg:justify-end"
     >
-      <div
-        class="group inline-flex min-h-[2.75rem] min-w-[2.75rem] cursor-pointer items-center gap-2 rounded-md px-1 md:min-h-0 md:min-w-0"
-        id="trimtab-trigger"
-        title="Drag to tune · Click for Layer 0"
-      >
-        <canvas id="trimtab-canvas" width="24" height="24" class="opacity-80 transition-opacity group-hover:opacity-100"></canvas>
-        <span id="trimtab-freq" class="text-butter font-bold">863Hz</span>
-      </div>
-      <div class="h-4 w-px bg-white/10 max-md:hidden" aria-hidden="true"></div>
       <a
         href="/passport"
         class="inline-flex min-h-[2.75rem] items-center justify-center rounded border border-phosphorus/35 bg-phosphorus/10 px-3 py-2 text-xs font-bold uppercase tracking-widest text-phosphorus hover:bg-phosphorus/25 hover:text-phosphorus md:min-h-0 md:px-2 md:py-1 md:text-[10px]"
@@ -246,6 +330,7 @@ const pageDescription =
 
   <!-- LAYER 0: Somatic Mode Overlay -->
   <div id="layer0" class="fixed inset-0 z-[100] bg-p31-void flex flex-col items-center justify-center gap-6 transition-opacity duration-1000 opacity-0 pointer-events-none">
+    <!-- Hub Layer0 POVM latch — string anchor for egg-hunt; handler: activateLayer0 in landing-cockpit.ts -->
     <div class="absolute top-8 left-1/2 -translate-x-1/2 flex items-center gap-4 font-mono text-xs text-p31-muted">
       <span>SPOONS</span>
       <div class="w-32 h-1 bg-surface2 rounded-full overflow-hidden">
@@ -267,141 +352,99 @@ const pageDescription =
   <!-- pointer-events-none allows background clicking, but we restore it on .interactive-zone -->
   <main
     id="scroll-container"
-    class="pointer-events-none relative z-10 mx-auto max-w-7xl px-4 pt-32 pb-16 font-sans text-p31-cloud sm:px-6 sm:pb-24 md:pt-28"
+    class="pointer-events-none relative z-10 mx-auto max-w-7xl px-4 pt-28 pb-12 font-sans text-p31-cloud sm:px-6 sm:pb-20 md:pt-24"
   >
-    <!-- EDE Operator Console — sole hero (brand: docs/P31-BRAND-GUIDELINES.md) -->
+    <!-- Lobby threshold — geometry first, then nameplate (hub shell; tokens via p31-style.css) -->
     <header
       id="technical-hub-boundary"
-      class="animate-fade-in-up relative z-10 mb-16 text-center sm:mb-20 md:mb-24"
+      class="animate-fade-in-up relative z-10 mb-8 text-center sm:mb-12 md:mb-14"
       style="animation-delay: 0.08s;"
     >
-      <div
-        class="terminal-glass mx-auto mt-8 max-w-3xl flex flex-col items-center p-10 text-center sm:mt-12 md:p-16 relative z-10 pointer-events-auto"
-      >
-      <p
-        class="mb-4 font-mono text-[10px] font-semibold uppercase tracking-[0.22em] text-teal/80 sm:text-[11px]"
-      >
-        Technical hub
-      </p>
-      <div class="mx-auto mb-6 flex max-w-[42rem] flex-col items-center gap-5 sm:mb-7 sm:flex-row sm:items-start sm:justify-center sm:text-left sm:gap-6">
-        <div
-          class="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border border-teal/25 bg-teal/[0.07] shadow-[0_4px_24px_rgba(77,184,168,0.12)] backdrop-blur-sm sm:h-[4.75rem] sm:w-[4.75rem]"
-          aria-hidden="true"
-        >
+      <div class="lobby-hero pointer-events-auto mx-auto max-w-xl px-4 pt-16 sm:pt-20 md:pt-24">
+        <div class="lobby-k4-wrap mb-6 flex justify-center" aria-hidden="true">
           <svg
-            width="40"
-            height="40"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            class="text-teal drop-shadow-[0_0_8px_rgba(77,184,168,0.35)]"
-            aria-hidden="true"
+            class="lobby-k4 lobby-k4--static text-teal"
+            width="120"
+            height="120"
+            viewBox="-100 -100 200 200"
+            role="img"
+            aria-label="K₄ tetrahedron wireframe — four vertices, six edges"
           >
-            <circle cx="4" cy="4" r="1.5" fill="currentColor" class="animate-pulse" style="animation-delay:0ms"/>
-            <circle cx="12" cy="4" r="1.5" fill="currentColor" class="animate-pulse" style="animation-delay:75ms"/>
-            <circle cx="20" cy="4" r="1.5" fill="currentColor" class="animate-pulse" style="animation-delay:150ms"/>
-            <circle cx="4" cy="12" r="1.5" fill="currentColor" class="animate-pulse" style="animation-delay:100ms"/>
-            <circle cx="12" cy="12" r="2" fill="currentColor"/>
-            <circle cx="20" cy="12" r="1.5" fill="currentColor" class="animate-pulse" style="animation-delay:200ms"/>
-            <circle cx="4" cy="20" r="1.5" fill="currentColor" class="animate-pulse" style="animation-delay:50ms"/>
-            <circle cx="12" cy="20" r="1.5" fill="currentColor" class="animate-pulse" style="animation-delay:125ms"/>
-            <circle cx="20" cy="20" r="1.5" fill="currentColor" class="animate-pulse" style="animation-delay:175ms"/>
+            <!-- Schlegel-style projection: triangle + interior hub = K₄ -->
+            <line x1="0" y1="-72" x2="-62" y2="52" stroke="currentColor" stroke-width="1.25" vector-effect="non-scaling-stroke" opacity="0.85" />
+            <line x1="0" y1="-72" x2="62" y2="52" stroke="currentColor" stroke-width="1.25" vector-effect="non-scaling-stroke" opacity="0.85" />
+            <line x1="-62" y1="52" x2="62" y2="52" stroke="currentColor" stroke-width="1.25" vector-effect="non-scaling-stroke" opacity="0.85" />
+            <line x1="0" y1="-8" x2="0" y2="-72" stroke="currentColor" stroke-width="1.25" vector-effect="non-scaling-stroke" opacity="0.85" />
+            <line x1="0" y1="-8" x2="-62" y2="52" stroke="currentColor" stroke-width="1.25" vector-effect="non-scaling-stroke" opacity="0.85" />
+            <line x1="0" y1="-8" x2="62" y2="52" stroke="currentColor" stroke-width="1.25" vector-effect="non-scaling-stroke" opacity="0.85" />
           </svg>
         </div>
-        <div class="min-w-0 text-center sm:text-left">
-          <h1
-            id="technical-hub-heading"
-            class="hub-operator-title mb-0 max-w-[20ch] text-balance text-[clamp(2.1rem,4.2vw+0.85rem,3.35rem)] leading-[1.08] tracking-tight text-p31-cloud drop-shadow-[0_1px_28px_rgba(0,0,0,0.4)]"
+        <h1
+          id="technical-hub-heading"
+          class="hub-operator-title mb-4 text-balance text-[clamp(1.85rem,4vw+0.5rem,2.85rem)] leading-[1.12] tracking-tight text-p31-cloud"
+        >
+          P31 Labs
+        </h1>
+        <p class="mx-auto mb-8 max-w-xl font-sans text-base leading-relaxed text-p31-cloud-80 sm:text-lg">
+          Open-source assistive technology for neurodivergent individuals.
+        </p>
+        <p class="font-mono text-[10px] uppercase tracking-[0.16em] text-p31-muted">
+          <a href="#lobby-rooms" class="text-teal/90 no-underline hover:underline">Rooms</a>
+          <span class="mx-2 opacity-40" aria-hidden="true">·</span>
+          <a href="#core-products" class="text-p31-muted no-underline hover:text-teal/90">Full catalog</a>
+          <span class="mx-2 opacity-40" aria-hidden="true">·</span>
+          <button
+            id="btn-explore-dome"
+            type="button"
+            class="border-0 bg-transparent p-0 font-mono text-[10px] uppercase tracking-[0.16em] text-p31-muted hover:text-teal/90"
           >
-            P31 Labs
-          </h1>
-        </div>
-      </div>
-      <p
-        class="mx-auto mb-2 max-w-2xl font-mono text-sm font-medium leading-snug tracking-tight text-cyan sm:text-base md:text-lg"
-      >
-        Isostatically rigid. Cognitively sovereign.
-      </p>
-      <p
-        class="mx-auto mb-8 max-w-xl text-sm leading-relaxed text-p31-muted sm:mb-8 sm:text-base"
-      >
-        <span class="text-p31-cloud-90">Build, create, connect</span> — family-scale mesh, verify-gated releases, and
-        interfaces that respect attention.
-      </p>
-
-      <div
-        class="interactive-zone mb-8 flex w-full max-w-xl flex-col items-stretch justify-center gap-3 sm:mb-9 sm:flex-row sm:items-center sm:gap-4"
-      >
-        <button
-          id="btn-explore-dome"
-          type="button"
-          class="p31-btn p31-btn--primary w-full px-8 text-[0.9375rem] tracking-tight sm:w-auto sm:justify-center"
-          title="Sovereign Cockpit K₄ dome"
-        >
-          Explore Dome
-        </button>
-        <a
-          href="#core-products"
-          class="p31-btn p31-btn--secondary w-full gap-2 px-8 text-[0.9375rem] tracking-tight no-underline backdrop-blur-[2px] sm:w-auto sm:justify-center"
-        >
-          View architecture
-          <span class="text-cyan" aria-hidden="true">→</span>
-        </a>
-      </div>
-
-      <nav
-        class="p31-mission-trio p31-mission-trio--hub interactive-zone mx-auto mb-8 flex max-w-2xl flex-wrap justify-center gap-2"
-        aria-label={missionTrio.ariaLabel}
-      >
-        {missionTrio.pillOrder.map((key: 'build' | 'create' | 'connect') => {
-          const pill = missionTrio.pills[key];
-          return (
-            <a
-              href={pill.href}
-              class={`p31-mission-trio__link p31-mission-trio__link--${key} inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-md border border-white/10 px-4 py-2 font-mono text-xs text-p31-cloud-90 transition hover:border-teal/40 hover:text-p31-cloud`}
-              title={pill.title}
-            >
-              {pill.label}
-            </a>
-          );
-        })}
-      </nav>
-
-      <ul
-        class="mb-0 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 font-mono text-[10px] uppercase tracking-wider text-p31-muted sm:gap-x-4 sm:text-[11px]"
-        role="list"
-        aria-label="Ship and ethics signals"
-      >
-        <li
-          class="inline-flex items-center gap-2 rounded-full border border-teal/25 bg-teal/5 px-3 py-1.5 text-teal/95"
-        >
-          <span
-            class="h-1.5 w-1.5 rounded-full bg-phosphorus shadow-[0_0_8px_rgba(59,163,114,0.5)]"
-            aria-hidden="true"
-          />
-          Verify-gated
-        </li>
-        <li
-          class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5"
-        >
-          <span class="h-1.5 w-1.5 rounded-full bg-cyan/80" aria-hidden="true" />
-          A11y-minded
-        </li>
-        <li
-          class="inline-flex items-center gap-2 rounded-full border border-butter/20 bg-butter/5 px-3 py-1.5 text-butter/95"
-        >
-          <span class="h-1.5 w-1.5 rounded-full bg-butter/90" aria-hidden="true" />
-          No dark patterns
-        </li>
-        <li
-          class="inline-flex items-center gap-2 rounded-full border border-lavender/20 bg-lavender/5 px-3 py-1.5 text-lavender/90"
-        >
-          <span class="h-1.5 w-1.5 rounded-full bg-lavender/80" aria-hidden="true" />
-          Open core
-        </li>
-      </ul>
+            Dome
+          </button>
+        </p>
       </div>
     </header>
+
+    <section
+      id="lobby-rooms"
+      class="interactive-zone animate-fade-in-up relative z-10 mx-auto mb-12 max-w-3xl px-4 sm:mb-16"
+      style="animation-delay: 0.12s;"
+      aria-labelledby="lobby-rooms-heading"
+    >
+      <h2 id="lobby-rooms-heading" class="sr-only">Rooms</h2>
+      <ul class="m-0 list-none space-y-3 p-0">
+        {lobbyDoors.map((door) => (
+          <li>
+            <a
+              href={door.href}
+              {...(door.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+              class={`hub-door group flex min-h-[3.25rem] flex-col gap-1 rounded-lg border border-white/[0.06] border-l-4 bg-p31-void/40 py-3 pl-4 pr-3 no-underline transition-colors hover:bg-surface2/50 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:py-3.5 ${
+                door.title === 'Research'
+                  ? 'border-l-coral/45 hover:border-l-coral hover:border-coral/25'
+                  : 'border-l-teal/55 hover:border-l-teal hover:border-teal/25'
+              }`}
+            >
+              <div class="min-w-0 text-left">
+                <div class="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-p31-cloud">
+                  {door.title}
+                </div>
+                <div class="font-mono text-[10px] leading-snug text-p31-muted">{door.meta}</div>
+                <p class="mb-0 mt-1 font-sans text-sm leading-snug text-p31-cloud-75">{door.sub}</p>
+              </div>
+              <span
+                class="mt-1 inline-flex shrink-0 items-center gap-1.5 self-end font-mono text-[10px] uppercase tracking-wider text-p31-muted sm:mt-0 sm:self-center"
+                aria-hidden="true"
+              >
+                {door.dot === 'live' ? (
+                  <span class="h-2 w-2 rounded-full bg-phosphorus shadow-[0_0_10px_rgba(59,163,114,0.45)]" title="Live" />
+                ) : (
+                  <span class="h-2 w-2 rounded-full bg-butter shadow-[0_0_8px_rgba(205,168,82,0.35)]" title="Warm" />
+                )}
+              </span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
 
     <!-- Priority routes — operator first (left / top), mesh story second -->
     <section
@@ -613,7 +656,7 @@ const pageDescription =
       }
 
       {/* Whitepapers */}
-      <section class:list={[prototypes.length === 0 ? 'lg:col-span-2' : '']}>
+      <section id="research-papers" class:list={[prototypes.length === 0 ? 'lg:col-span-2' : '']}>
         <div class="mb-8 flex items-center gap-4">
           <div class="h-px flex-grow bg-white/10"></div>
           <h2 class="m-0 whitespace-nowrap font-mono text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-p31-muted">
@@ -675,6 +718,8 @@ const pageDescription =
         <a href="/geodesic-math/" class="inline-flex min-h-[2.5rem] items-center py-1 uppercase tracking-widest transition-colors hover:text-teal" title="Icosa subdivision stats (same math as hub + /dome shell)">Geodesic math</a>
         <a href="/lattice.html" class="inline-flex min-h-[2.5rem] items-center py-1 uppercase tracking-widest transition-colors hover:text-teal">Lattice</a>
         <a href="https://github.com/p31labs" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-[2.5rem] items-center py-1 uppercase tracking-widest transition-colors hover:text-teal">GitHub</a>
+        <a href="https://orcid.org/0009-0002-2492-9079" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-[2.5rem] items-center py-1 uppercase tracking-widest transition-colors hover:text-teal">ORCID</a>
+        <a href="https://ko-fi.com/trimtab69420" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-[2.5rem] items-center py-1 uppercase tracking-widest transition-colors hover:text-teal">Ko-fi</a>
         <a href="https://phosphorus31.org" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-[2.5rem] items-center py-1 uppercase tracking-widest transition-colors hover:text-teal">phosphorus31.org</a>
         <a href="/donate" class="inline-flex min-h-[2.5rem] items-center rounded border border-coral/30 bg-coral/5 px-2 py-1 font-bold uppercase tracking-widest text-coral transition-colors hover:brightness-110">Donate</a>
       </div>
@@ -772,6 +817,19 @@ const pageDescription =
     font-weight: 600;
     letter-spacing: -0.02em;
   }
+
+  .lobby-k4-wrap {
+    filter: drop-shadow(0 0 12px color-mix(in srgb, var(--p31-cyan, #4db8a8) 28%, transparent));
+  }
+  @keyframes lobby-k4-slow {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  /** Hub lobby: calm signature glyph — no idle spin (full dome lives at /dome). */
+  .lobby-k4--static {
+    animation: none !important;
+  }
   @keyframes fadeInUp {
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
@@ -822,6 +880,62 @@ const pageDescription =
   }
   .skip-to-content:focus {
     transform: translate(-50%, 0.5rem);
+  }
+
+  /* Gray Rock hub landing — doctrine §1 / §7 (`?alive=1` skips) */
+  html.p31-hub-gray-rock #hub-gl-backdrop {
+    opacity: 0 !important;
+    visibility: hidden !important;
+  }
+  html.p31-hub-gray-rock .lobby-k4-wrap {
+    filter: none;
+  }
+  html.p31-hub-gray-rock .lobby-k4 {
+    color: rgba(180, 188, 202, 0.42) !important;
+    animation: none !important;
+  }
+  html.p31-hub-gray-rock #technical-hub-boundary a {
+    color: rgba(148, 156, 170, 0.88) !important;
+  }
+  html.p31-hub-gray-rock #technical-hub-boundary a:hover {
+    color: rgba(200, 206, 218, 0.95) !important;
+  }
+  html.p31-hub-gray-rock #scroll-container > #technical-hub-boundary ~ * {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    height: 0 !important;
+    min-height: 0 !important;
+    max-height: 0 !important;
+    margin-block: 0 !important;
+    padding-block: 0 !important;
+    overflow: hidden !important;
+    border: none !important;
+  }
+  html.p31-hub-gray-rock main#scroll-container {
+    min-height: 70vh;
+  }
+  html.p31-hub-gray-rock #nav-status-dot {
+    animation: none !important;
+    background: rgba(130, 136, 148, 0.4) !important;
+    box-shadow: none !important;
+  }
+  html.p31-hub-gray-rock #nav-q-factor,
+  html.p31-hub-gray-rock #nav-spoon-val,
+  html.p31-hub-gray-rock #nav-love-val {
+    color: rgba(232, 234, 240, 0.72) !important;
+  }
+  html.p31-hub-gray-rock #nav-spoon-fill {
+    background: rgba(118, 124, 136, 0.45) !important;
+  }
+  html.p31-hub-gray-rock nav a.border-phosphorus,
+  html.p31-hub-gray-rock nav a.border-teal,
+  html.p31-hub-gray-rock nav a.border-butter,
+  html.p31-hub-gray-rock nav a.border-lavender,
+  html.p31-hub-gray-rock nav a.border-coral {
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    background: rgba(255, 255, 255, 0.04) !important;
+    color: rgba(232, 234, 240, 0.78) !important;
   }
 
   .hub-cta-primary {
@@ -878,7 +992,7 @@ const pageDescription =
   @keyframes l0-exhale { to { transform: scale(0.75); opacity: 0.4; } }
 </style>
 
-<!-- Landing WebGL: src/scripts/landing-cockpit.ts (shared icosa math: src/lib/dome/) · activateLayer0 trim→Layer0 (parity with /dome) -->
+<!-- Landing: src/scripts/landing-cockpit.ts (telemetry + trimtab + 2D particle canvas); full Three.js dome: /dome -->
 <script>
   import '../scripts/landing-cockpit.ts';
 </script>

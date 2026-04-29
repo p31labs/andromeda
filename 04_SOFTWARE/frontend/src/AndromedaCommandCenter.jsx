@@ -7,7 +7,7 @@ import { ShieldCheck, Lock, Unlock, Wallet } from 'lucide-react';
 import OmnibusD20 from './omnibus/OmnibusD20';
 
 const OMNIBUS_PAPERS = [
-  { id: 1, title: 'Tetrahedron Protocol', doi: '10.5281/zenodo.18627420', filename: 'P31_Paper_01_Tetrahedron_Protocol.docx' },
+  { id: 1, title: 'Tetrahedron Protocol', doi: '10.5281/zenodo.19004485', filename: 'P31_Paper_01_Tetrahedron_Protocol.docx' },
   { id: 2, title: 'Genesis Whitepaper v1.1', doi: '10.5281/zenodo.19411363', filename: 'P31_Paper_02_Genesis_Whitepaper_v1.1.docx' },
   { id: 3, title: 'Consciousness, Memory, and the Architecture of Self-Preservation', doi: '10.5281/zenodo.xxxxx', filename: 'P31_Paper_03_Consciousness_Memory_Architecture.docx' },
   { id: 4, title: 'The Minimum Enclosing Structure Monograph', doi: '10.5281/zenodo.19004485', filename: 'P31_Paper_04_Minimum_Enclosing_Structure.docx' },

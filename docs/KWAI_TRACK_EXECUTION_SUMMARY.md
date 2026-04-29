@@ -39,7 +39,7 @@
 **Critical Evidence:**
 - 23 years of hypoparathyroidism (since 2003)
 - JCEM 2025 study: 56.7% attention deficits, 60% executive dysfunction
-- Peer-reviewed monograph: DOI 10.5281/zenodo.18627420
+- Peer-reviewed monograph: DOI 10.5281/zenodo.19004485
 - 511 automated tests, 29 files, all green (BONDING deployment)
 
 ### 2. DISCOVERY RESPONSE DOCUMENT
@@ -71,7 +71,7 @@
    - Calcium: 7.8 mg/dL (normal: 8.5-10.5)
    - PTH: <6 pg/mL (normal: 15-65)
 3. **JCEM 2025 Citation:** Tmava-Berisha et al., PMC12261092
-4. **Peer-reviewed evidence:** DOI 10.5281/zenodo.18627420
+4. **Peer-reviewed evidence:** DOI 10.5281/zenodo.19004485
 
 ### Key Talking Points:
 - **Lifelong pattern:** Since childhood, consistent across decades

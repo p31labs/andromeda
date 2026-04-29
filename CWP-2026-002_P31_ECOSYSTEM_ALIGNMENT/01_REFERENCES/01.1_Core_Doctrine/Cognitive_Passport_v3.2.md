@@ -73,7 +73,7 @@
 **Domains:** phosphorus31.org (institutional/Astro 5), p31ca.org (React PWA gateway)
 **Relay:** bonding-relay.trimtab-signal.workers.dev
 **Discord:** discord.gg/uYW5rTCuZ
-**Zenodo DOI #1:** 10.5281/zenodo.18627420 (Tetrahedron Protocol — 280+ views, 240+ downloads)
+**Zenodo Paper I (current):** 10.5281/zenodo.19004485 (Tetrahedron Protocol; prior v1: 10.5281/zenodo.18627420). Portfolio: **22** deposits — home `p31-constants.json` → `research`.
 **Zenodo DOI #2:** 10.5281/zenodo.19411363 (Genesis Whitepaper v1.1)
 **Fiscal sponsor:** Mission.Earth — DEAD (closed to new projects April 2026). HCB application 4XDUXX (Feb 18) — no response, follow-up pending. Going direct where possible.
 

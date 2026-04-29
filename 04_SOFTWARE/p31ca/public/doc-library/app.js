@@ -23,6 +23,37 @@
     worker: "doc-search-worker.js",
   });
 
+  /** @returns {{ type: "tag", tag: string, rest: string } | { type: "normal", q: string }} */
+  function parseCategoryQuery(qs) {
+    const s = String(qs).trim();
+    const m = s.match(/^(legal|agent|shipped|stale):(.*)$/i);
+    if (!m) return { type: "normal", q: s };
+    return { type: "tag", tag: m[1].toLowerCase(), rest: (m[2] || "").trim() };
+  }
+
+  function docsMatchingTag(tag) {
+    return docs.filter(function (d) {
+      const tags = d.tags || [];
+      if (tag === "stale") return d.daysSinceCommit != null && d.daysSinceCommit > 30;
+      if (tag === "shipped") return tags.indexOf("shipped") !== -1;
+      if (tag === "legal") return tags.indexOf("legal") !== -1 || d.cluster === "legal";
+      if (tag === "agent") return tags.indexOf("agent") !== -1 || d.cluster === "agent_crew";
+      return false;
+    });
+  }
+
+  function filterDocsBySubstring(subset, sub) {
+    if (!sub) return subset;
+    const low = sub.toLowerCase();
+    return subset.filter(function (d) {
+      return (
+        (d.text && d.text.toLowerCase().indexOf(low) !== -1) ||
+        (d.title && d.title.toLowerCase().indexOf(low) !== -1) ||
+        (d.path && d.path.toLowerCase().indexOf(low) !== -1)
+      );
+    });
+  }
+
   const input = document.getElementById("q");
   const resultsEl = document.getElementById("results");
   const meta = document.getElementById("meta");
@@ -410,7 +441,32 @@
       setClearVisible(false);
       renderList(docs, "", null);
       updateMeta(docs.length, "");
+      try {
+        window.dispatchEvent(new CustomEvent("p31-doclib-search", { detail: { all: true } }));
+      } catch (e) {
+        void e;
+      }
       setSearchBusy(false);
+      return;
+    }
+    const parsed = parseCategoryQuery(qS);
+    if (parsed.type === "tag") {
+      if (skipUrl) skipUrl = false;
+      else urlReplaceForQuery(qS);
+      setClearVisible(true);
+      setSearchBusy(false);
+      let subset = docsMatchingTag(parsed.tag);
+      subset = filterDocsBySubstring(subset, parsed.rest);
+      const idSet = new Set(subset.map(function (d) {
+        return d.id;
+      }));
+      try {
+        window.dispatchEvent(new CustomEvent("p31-doclib-search", { detail: { ids: idSet, q: qS } }));
+      } catch (e) {
+        void e;
+      }
+      renderList(subset, qS, null);
+      updateMeta(subset.length, qS);
       return;
     }
     if (skipUrl) {
@@ -422,7 +478,7 @@
     setSearchBusy(true);
     const myId = ++searchSeq;
     activeSearchId = myId;
-    worker.postMessage({ type: "search", q: qS, reqId: myId });
+    worker.postMessage({ type: "search", q: parsed.q, reqId: myId });
   }
 
   function onSearchResults(m) {
@@ -446,6 +502,13 @@
     }
     renderList(out, m.q, metas);
     updateMeta(out.length, m.q);
+    try {
+      window.dispatchEvent(
+        new CustomEvent("p31-doclib-search", { detail: { ids: new Set(out.map(function (x) { return x.id; })), q: m.q } })
+      );
+    } catch (e) {
+      void e;
+    }
     setSearchBusy(false);
   }
 
@@ -696,5 +759,56 @@
       indexWhen;
 
     worker.postMessage({ type: "load", documents: docs });
+    try {
+      window.dispatchEvent(
+        new CustomEvent("p31-doclib-loaded", {
+          detail: {
+            docs: docs,
+            byId: byId,
+            constellation: data.constellation || {},
+          },
+        })
+      );
+    } catch (e) {
+      void e;
+    }
+
+    const btnList = document.getElementById("btn-view-list");
+    const btnCon = document.getElementById("btn-view-constellation");
+    function setViewMode(list) {
+      document.body.classList.toggle("doclib-mode-list", Boolean(list));
+      if (btnList) {
+        btnList.classList.toggle("is-active", Boolean(list));
+        btnList.setAttribute("aria-pressed", list ? "true" : "false");
+      }
+      if (btnCon) {
+        btnCon.classList.toggle("is-active", !list);
+        btnCon.setAttribute("aria-pressed", list ? "false" : "true");
+      }
+      if (list && input && !String(input.value).trim()) {
+        renderList(docs, "", null);
+      }
+      if (!list) {
+        try {
+          window.dispatchEvent(new CustomEvent("p31-doclib-search", { detail: { all: true } }));
+        } catch (e2) {
+          void e2;
+        }
+      }
+    }
+    if (btnList) {
+      btnList.addEventListener("click", function () {
+        setViewMode(true);
+      });
+    }
+    if (btnCon) {
+      btnCon.addEventListener("click", function () {
+        setViewMode(false);
+      });
+    }
+    if (/\bview=list\b/i.test(window.location.search || "")) {
+      setViewMode(true);
+    }
   });
 })();
+

@@ -30,7 +30,7 @@ GitHub Actions detect a stable molecule and automatically bypass branch protecti
 Merged code triggers an automated IPFS pin, updating the ENS routing for `andromeda.classicwilly.eth`.
 
 ### **[THE ACADEMY]**
-Cryptographic hashes from our Zenodo peer-reviewed papers (DOI 10.5281/zenodo.18627420) are verified by the Oracle to unlock new lore.
+Zenodo portfolio (**22** open-access DOIs under ORCID; Paper I current **10.5281/zenodo.19004485**) feeds verification hashes for the Oracle lore unlock pipeline.
 
 ***(The Loop Restarts)***
 

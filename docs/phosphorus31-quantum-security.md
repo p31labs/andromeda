@@ -48,4 +48,4 @@ Data sovereignty requires structural rigidity. We are building ahead of the curv
 
 *This page is maintained by P31 Labs. Our defensive publication on cryptographic agility frameworks is available on Zenodo.*
 
-*phosphorus31.org | github.com/p31labs | [DOI: 10.5281/zenodo.18627420](https://doi.org/10.5281/zenodo.18627420)*
+*phosphorus31.org | github.com/p31labs | [DOI: 10.5281/zenodo.19004485](https://doi.org/10.5281/zenodo.19004485)*

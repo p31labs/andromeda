@@ -1,10 +1,11 @@
 /**
- * BONDING Soup — static molecular surface. soup.html · bonding.p31ca.org/soup/
+ * C.A.R.S. — static molecular surface. soup.html · bonding.p31ca.org/soup/
  * Depends: cognitive-passport/p31-style.css (p31.universalCanon)
  */
 
 html.soup-app {
   color-scheme: dark;
+  overflow-x: clip;
   scroll-padding-bottom: max(5.5rem, env(safe-area-inset-bottom, 0px));
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
@@ -185,6 +186,34 @@ html.soup-app body::after {
 .soup-psych-dot--belong {
   color: var(--p31-phosphorus);
   background: var(--p31-phosphorus);
+}
+
+.soup-aaso {
+  margin: var(--p31-space-3) 0 0;
+  font-size: var(--p31-text-sm);
+  line-height: 1.55;
+  color: color-mix(in srgb, var(--p31-cloud) 78%, var(--p31-muted) 22%);
+  max-width: 42rem;
+}
+@supports not (color: color-mix(in srgb, red, blue)) {
+  .soup-aaso {
+    color: #b5b3ad;
+  }
+}
+.soup-aaso a {
+  color: var(--p31-cyan, #4db8a8);
+  text-decoration: none;
+  border-bottom: 1px solid color-mix(in srgb, var(--p31-cyan) 32%, transparent);
+}
+.soup-aaso a:hover {
+  color: var(--p31-butter, #cda852);
+  border-bottom-color: color-mix(in srgb, var(--p31-butter) 50%, transparent);
+}
+.soup-aaso .aaso-love,
+.soup-aaso .aaso-3 {
+  color: var(--p31-coral, #cc6247);
+  font-style: normal;
+  white-space: nowrap;
 }
 
 .soup-app-header__title {
@@ -396,6 +425,43 @@ html.soup-app.parents-mode:not(.kids-mode) #info {
   line-height: var(--p31-leading-relaxed);
 }
 
+.soup-hero__p-tight {
+  margin: 0 0 8px 0;
+}
+
+.soup-hero__p-secondary {
+  margin: 8px 0 0 0;
+  opacity: 0.88;
+}
+
+.soup-kids-hint {
+  margin: 0.4em 0 0;
+  opacity: 0.9;
+  font-size: 0.9em;
+}
+
+.soup-kids-label {
+  align-self: center;
+  opacity: 0.85;
+  font-size: 0.88em;
+}
+
+.soup-runbook {
+  display: none;
+  margin-top: var(--p31-space-3);
+  font-size: var(--p31-text-sm);
+  line-height: var(--p31-leading-relaxed);
+  color: var(--p31-cloud);
+}
+
+.soup-runbook.soup-panel-visible {
+  display: block;
+}
+
+.soup-runbook-line {
+  margin: 0.35em 0;
+}
+
 /* —— Canvas stage —— */
 html.soup-app #canvas-wrap {
   position: relative;
@@ -453,6 +519,10 @@ html.soup-app #presence-hud {
   display: none;
   pointer-events: none;
 }
+
+html.soup-app #presence-hud.soup-hud--visible {
+  display: block;
+}
 html.soup-app #presence-hud .ph-inner {
   display: flex;
   flex-wrap: wrap;
@@ -486,6 +556,13 @@ html.soup-app .presence-pill {
   background: rgba(15, 17, 21, 0.72);
   backdrop-filter: blur(10px);
   font-size: inherit;
+}
+
+html.soup-app .presence-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
 }
 
 /* Info panel — mobile-first: larger type, relaxed leading; compact on wide screens */
@@ -566,6 +643,20 @@ html.soup-app .soup-event-stream {
   word-break: break-word;
 }
 
+html.soup-app .stats--connection {
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+html.soup-app .stat--connection {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-width: 100%;
+}
+
 html.soup-app .connection-status {
   display: inline-block;
   flex-shrink: 0;
@@ -586,6 +677,7 @@ html.soup-app .reconnecting {
 }
 
 html.soup-app #as-above-so-below {
+  display: none;
   max-width: 100%;
   background: var(--p31-void) !important;
   border: 1px solid rgba(77, 184, 168, 0.35) !important;
@@ -595,6 +687,11 @@ html.soup-app #as-above-so-below {
   line-height: var(--p31-leading-snug) !important;
 }
 
+html.soup-app #as-above-so-below.soup-panel-visible {
+  display: inline-flex !important;
+  align-items: center;
+}
+
 @media (min-width: 900px) {
   html.soup-app #as-above-so-below {
     font-size: var(--p31-text-xs) !important;
@@ -602,7 +699,7 @@ html.soup-app #as-above-so-below {
 }
 
 html.soup-app #network-family-row {
-  display: flex;
+  display: none;
   flex-direction: column;
   align-items: stretch !important;
   background: var(--p31-void) !important;
@@ -615,8 +712,12 @@ html.soup-app #network-family-row {
   font-family: var(--p31-font-mono) !important;
 }
 
+html.soup-app #network-family-row.soup-visible {
+  display: flex;
+}
+
 @media (min-width: 520px) {
-  html.soup-app #network-family-row {
+  html.soup-app #network-family-row.soup-visible {
     flex-direction: row;
     flex-wrap: wrap;
     align-items: center !important;
@@ -1064,4 +1165,92 @@ html.soup-app.kids-mode .soup-app-header__welcome {
   html.soup-app * {
     scroll-behavior: auto !important;
   }
+}
+
+/* Mobile mesh: larger tap targets in family + dev link rows (uses canon --p31-touch-min from p31-style) */
+.soup-tap a[href],
+.soup-tap button {
+  min-height: max(2.75rem, var(--p31-touch-min, 2.75rem));
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: manipulation;
+  box-sizing: border-box;
+  padding: 0.2em 0.5em;
+  -webkit-tap-highlight-color: rgba(77, 184, 168, 0.18);
+}
+
+/* ── Gray Rock (initial paint): calm void, no ambient brand gradients; chroma after first interaction ── */
+html.soup-app.soup-app--gray-rock body::before {
+  background: linear-gradient(180deg, var(--p31-void) 0%, #0a0c12 100%);
+  animation: none !important;
+  filter: none !important;
+}
+
+html.soup-app.soup-app--gray-rock body::after {
+  opacity: 0 !important;
+  animation: none !important;
+}
+
+html.soup-app.soup-app--gray-rock .soup-app-header--psych {
+  border-left-color: var(--p31-border-subtle);
+  background: var(--p31-surface);
+  box-shadow: var(--p31-shadow-sm);
+}
+
+html.soup-app.soup-app--gray-rock .soup-app-header__welcome strong {
+  color: var(--p31-cloud);
+  font-weight: 600;
+}
+
+html.soup-app.soup-app--gray-rock .soup-psych-dot--calm,
+html.soup-app.soup-app--gray-rock .soup-psych-dot--warm,
+html.soup-app.soup-app--gray-rock .soup-psych-dot--belong {
+  color: var(--p31-muted);
+  background: var(--p31-muted);
+  box-shadow: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.soup-app.soup-app--gray-rock body::before,
+  html.soup-app.soup-app--gray-rock body::after {
+    animation: none !important;
+  }
+}
+
+/* ── Dev telemetry (FPS, perf graph, streams): ?dev=1 or ?debug — public face stays calm ── */
+html.soup-app:not(.soup-dev-panel) .soup-dev-telemetry {
+  display: none !important;
+}
+
+/* Hearth rings — subtle calm/warm/belong concentric hint behind playfield (not gameplay HUD) */
+html.soup-app #canvas-wrap.soup-canvas-shell::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 38% 36% at 50% 52%, transparent 58%, rgba(77, 184, 168, 0.055) 59%, transparent 61%),
+    radial-gradient(ellipse 56% 54% at 50% 52%, transparent 58%, rgba(204, 98, 71, 0.045) 59%, transparent 61%),
+    radial-gradient(ellipse 78% 74% at 50% 52%, transparent 58%, rgba(59, 163, 114, 0.038) 59%, transparent 61%);
+  opacity: 0.9;
+}
+
+html.soup-app #canvas-wrap.soup-canvas-shell canvas.p31-soup-starfield-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  pointer-events: none;
+}
+
+html.soup-app #canvas-wrap.soup-canvas-shell canvas#canvas {
+  position: relative;
+  z-index: 1;
+}
+
+html.soup-app #canvas-wrap #presence-hud {
+  z-index: 4;
 }

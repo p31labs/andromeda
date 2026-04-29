@@ -13,7 +13,7 @@
 | **Price** | $5 PWYW (Pay What You Want, minimum $5) |
 | **File** | `The_Minimum_Enclosing_Structure_P31_Labs_2026.pdf` |
 | **Title** | The Minimum Enclosing Structure: Tetrahedral Geometry as Universal Architecture from Quantum Coherence to Social Resilience |
-| **Description** | A 5-chapter monograph synthesizing K₄ complete graph topology, Maxwell's electromagnetic bio-error correction, Thomson's tetrahedral packing conjecture, and Posner molecule chemistry into a unified geometric framework. Includes 39 verified references. Companion to the GUT (DOI: 10.5281/zenodo.18627420). Perfect for researchers, makers, and anyone exploring the geometry underlying cognition, chemistry, and community. |
+| **Description** | A 5-chapter monograph synthesizing K₄ complete graph topology, Maxwell's electromagnetic bio-error correction, Thomson's tetrahedral packing conjecture, and Posner molecule chemistry into a unified geometric framework. Includes 39 verified references. Companion to the GUT (DOI: 10.5281/zenodo.19004485). Perfect for researchers, makers, and anyone exploring the geometry underlying cognition, chemistry, and community. |
 
 **Tags (comma-separated):**
 ```
@@ -89,7 +89,7 @@ sacred geometry, art, poster, print, philosophy, P31 Labs, tetrahedron, design, 
 ```
 Title: The Minimum Enclosing Structure: Tetrahedral Geometry as Universal Architecture from Quantum Coherence to Social Resilience
 Price: $5 (Pay What You Want)
-Description: A 5-chapter monograph synthesizing K₄ complete graph topology, Maxwell's electromagnetic bio-error correction, Thomson's tetrahedral packing conjecture, and Posner molecule chemistry into a unified geometric framework. Includes 39 verified references. Companion to the GUT (DOI: 10.5281/zenodo.18627420).
+Description: A 5-chapter monograph synthesizing K₄ complete graph topology, Maxwell's electromagnetic bio-error correction, Thomson's tetrahedral packing conjecture, and Posner molecule chemistry into a unified geometric framework. Includes 39 verified references. Companion to the GUT (DOI: 10.5281/zenodo.19004485).
 Tags: physics, geometry, mathematics, chemistry, cognitive science, nonprofit, P31 Labs, Buckminster Fuller, quantum biology
 ```
 

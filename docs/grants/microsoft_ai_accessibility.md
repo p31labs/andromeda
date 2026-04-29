@@ -79,7 +79,7 @@ All P31 Labs IP is open-source. The requested funding will scale the Cloudflare 
 
 | Paper | DOI |
 |-------|-----|
-| Tetrahedron Protocol | 10.5281/zenodo.18627420 |
+| Tetrahedron Protocol | 10.5281/zenodo.19004485 |
 | Genesis Whitepaper | 10.5281/zenodo.19411363 |
 | Cognitive Prosthetics | 10.5281/zenodo.19416491 |
 | Universal Bridge | 10.5281/zenodo.19503542 |

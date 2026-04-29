@@ -28,7 +28,7 @@ Assignor hereby irrevocably assigns, transfers, and conveys to Assignee all righ
 
 **(a)** All software source code, object code, scripts, configuration files, build systems, and related technical documentation developed for or in connection with the P31 Labs ecosystem, including but not limited to: **BONDING, The Buffer, Spaceship Earth, Genesis Gate, Kenosis Mesh, Node Zero firmware, Node One firmware, TACTILE, CogPass**, and all applications deployed at p31ca.org and phosphorus31.org;
 
-**(b)** All research papers, publications, preprints, and manuscripts published under the P31 Labs name or in furtherance of its mission, including publications deposited on Zenodo (DOIs: 10.5281/zenodo.18627420, 10.5281/zenodo.19411363, 10.5281/zenodo.19416491, 10.5281/zenodo.19432309, 10.5281/zenodo.19432313);
+**(b)** All research papers, publications, preprints, and manuscripts published under the P31 Labs name or in furtherance of its mission, including publications deposited on Zenodo (DOIs: 10.5281/zenodo.19004485, 10.5281/zenodo.19411363, 10.5281/zenodo.19416491, 10.5281/zenodo.19432309, 10.5281/zenodo.19432313);
 
 **(c)** All documentation including Work Control Documents (WCDs), Controlled Work Packages (CWPs), the Master Operations Manual, the GOD Ground Truth document, the WCD Registry, grant narratives, traction packages, and all operational documentation;
 

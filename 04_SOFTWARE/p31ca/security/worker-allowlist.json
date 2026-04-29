@@ -251,6 +251,15 @@
       "corsPolicy": "see wrangler (multi DO names; first p31-workers)",
       "authScheme": "see package README",
       "notes": "Love ledger / shared workers monorepo; allowlisted for inventory."
+    },
+    {
+      "name": "cf-edge-lab",
+      "path": "home-root packages/cf-edge-lab (bonding-soup; not under andromeda/ — verify-worker-inventory does not scan this path)",
+      "bindings": ["AI (Workers AI)"],
+      "vars": [],
+      "corsPolicy": "playground HTML same-origin; /api/* JSON; no cookie auth",
+      "authScheme": "none — lab only; rate-limit /api/vibe before public exposure",
+      "notes": "Edge introspection (/api/edge), Workers AI vibe POST, WebSocket /ws. Canonical URL mesh.edgeLabWorkerUrl. npm run edge-lab:deploy from home root."
     }
   ]
 }

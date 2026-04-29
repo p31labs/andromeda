@@ -213,7 +213,7 @@ p{font-size:15px;color:color-mix(in srgb,var(--p31-cloud) 88%,transparent);margi
         <span class="sec-rule" aria-hidden="true"></span>
       </div>
       <p>Operator shell: boot screen, load menu (live sim vs mesh assistant), and settings without leaving the page. C.A.R.S. — Collaborative Affective Realtime Sim is a core component of the P31 Labs sovereign cognitive infrastructure stack — built to run offline, deployed to the edge, and designed without dark patterns.</p>
-      <p>Static hub cockpit framing the home-repo C.A.R.S. stack (soup vertical on bonding Pages deploy). Message kinds for multiplayer are locked via cars-contract/p31.carsWire.json + npm run verify:cars-wire in the bonding-soup repo.</p>
+      <p>Static hub cockpit framing the home-repo C.A.R.S. stack (soup vertical on bonding Pages deploy). Message kinds for multiplayer are locked via cars-contract/p31.carsWire.json + npm run verify:cars-wire in the bonding-soup repo; labTelemetry is an extra client-to-mock type for Sovereign Lab only (not sent by soup.ts).</p>
     </section>
 
     <section>
@@ -233,6 +233,10 @@ p{font-size:15px;color:color-mix(in srgb,var(--p31-cloud) 88%,transparent);margi
           </div>
           <div class="mesh-item">
             <span class="mesh-node butter"></span>
+            <p class="mesh-item-body">Load menu: same-origin Sovereign Lab (/lab) and browser slicer (/slicer); lab mirrors from bonding-soup via npm run sync:sovereign-p31ca</p>
+          </div>
+          <div class="mesh-item">
+            <span class="mesh-node"></span>
             <p class="mesh-item-body">Live edge ribbon: /p31-mesh-constants.json + probes k4-personal /api/health and same-origin hub /api/health (refresh; no secrets)</p>
           </div>
           <div class="mesh-item">
@@ -240,11 +244,15 @@ p{font-size:15px;color:color-mix(in srgb,var(--p31-cloud) 88%,transparent);margi
             <p class="mesh-item-body">Neuro-inclusive defaults: prefers-reduced-motion seeds first-visit prefs; skip link to console; Escape closes overlays; modal focus returns to opener</p>
           </div>
           <div class="mesh-item">
-            <span class="mesh-node"></span>
+            <span class="mesh-node coral"></span>
             <p class="mesh-item-body">Local prefs: reduced motion, compact transcript density, ethics strip visibility (persisted)</p>
           </div>
           <div class="mesh-item">
-            <span class="mesh-node coral"></span>
+            <span class="mesh-node butter"></span>
+            <p class="mesh-item-body">Wire: mock WebSocket accepts labTelemetry (Sovereign Lab) into room eventLog — cars-contract/p31.carsWire.json + verify:cars-wire</p>
+          </div>
+          <div class="mesh-item">
+            <span class="mesh-node"></span>
             <p class="mesh-item-body">Deep links to the live soup vertical, BONDING (3D graph), and the canonical C.A.R.S. wire catalog</p>
           </div>
       </div>
@@ -256,10 +264,11 @@ p{font-size:15px;color:color-mix(in srgb,var(--p31-cloud) 88%,transparent);margi
         <h2 class="sec-kicker">How to use</h2>
         <span class="sec-rule" aria-hidden="true"></span>
       </div>
-          <div class="step"><span class="step-num">1</span><span>Dismiss the boot veil, open Load menu — choose Live C.A.R.S. sim, Mesh assistant, or stay in Field chat</span></div>
+          <div class="step"><span class="step-num">1</span><span>Dismiss the boot veil, open Load menu — choose Live C.A.R.S. sim, Mesh assistant, Sovereign Lab, browser slicer, or stay in Field chat</span></div>
           <div class="step"><span class="step-num">2</span><span>Use Settings (gear) to tune motion and layout; prefs save to this origin only — first visit respects system reduced-motion</span></div>
           <div class="step"><span class="step-num">3</span><span>Keyboard: Escape closes Load or Settings; skip link jumps past boot to the console</span></div>
           <div class="step"><span class="step-num">4</span><span>When you need a private DO conversation, jump to Mesh Start from Load or Field chat footer</span></div>
+          <div class="step"><span class="step-num">5</span><span>Optional: run the home mock WebSocket and connect Sovereign Lab with ?carsWs= to stream trim coherence as labTelemetry</span></div>
     </section>
 
     <section>
@@ -268,7 +277,7 @@ p{font-size:15px;color:color-mix(in srgb,var(--p31-cloud) 88%,transparent);margi
         <h2 class="sec-kicker">Architecture</h2>
         <span class="sec-rule" aria-hidden="true"></span>
       </div>
-      <div class="tech-note">Static hub cockpit framing the home-repo C.A.R.S. stack (soup vertical on bonding Pages deploy). Message kinds for multiplayer are locked via cars-contract/p31.carsWire.json + npm run verify:cars-wire in the bonding-soup repo.</div>
+      <div class="tech-note">Static hub cockpit framing the home-repo C.A.R.S. stack (soup vertical on bonding Pages deploy). Message kinds for multiplayer are locked via cars-contract/p31.carsWire.json + npm run verify:cars-wire in the bonding-soup repo; labTelemetry is an extra client-to-mock type for Sovereign Lab only (not sent by soup.ts).</div>
     </section>
 
     <div class="callout-p31">
@@ -321,7 +330,7 @@ p{font-size:15px;color:color-mix(in srgb,var(--p31-cloud) 88%,transparent);margi
       <div class="sidebar-card-title">Related</div>
             <a href="/bonding-about.html" class="related-link">⚛️ BONDING</a>
             <a href="/buffer-about.html" class="related-link">🛡️ The Buffer</a>
-            <a href="/planetary-onboard-about.html" class="related-link">🜂 Planetary Onboard</a>
+            <a href="/planetary-onboard-about.html" class="related-link">🜂 Planetary onboard</a>
     </div>
   </aside>
 </div>

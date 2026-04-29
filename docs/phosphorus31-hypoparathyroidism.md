@@ -57,4 +57,4 @@ While it represents a functional treatment that can free patients from conventio
 
 *P31 Labs is named after Phosphorus-31 — the isotope at the center of the Posner molecule (Ca₉(PO₄)₆) that theoretically shields quantum coherence in biological systems. The same calcium that my body cannot regulate.*
 
-*phosphorus31.org | [DOI: 10.5281/zenodo.18627420](https://doi.org/10.5281/zenodo.18627420)*
+*phosphorus31.org | [DOI: 10.5281/zenodo.19004485](https://doi.org/10.5281/zenodo.19004485)*

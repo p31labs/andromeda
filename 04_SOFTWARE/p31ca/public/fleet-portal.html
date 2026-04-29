@@ -36,6 +36,131 @@
       background: radial-gradient(circle at top left, rgba(77, 184, 168, 0.1), transparent 42%);
       z-index: 0;
     }
+    body.fp-gray-rock:not(.fp-alive) .fp-shell::before {
+      opacity: 0.35;
+    }
+    .fp-atc-wrap {
+      margin: 0 auto 1.35rem;
+      padding: 1rem 0.75rem 1.15rem;
+      border-radius: 0.75rem;
+      border: 1px solid var(--p31-border-subtle);
+      background: color-mix(in srgb, var(--p31-surface2, #161920) 55%, transparent);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+      text-align: center;
+    }
+    .fp-atc-radar {
+      max-width: 22rem;
+      margin: 0 auto;
+      padding: 0.35rem 0.25rem 0.15rem;
+    }
+    .fp-glass-strip {
+      font-size: 0.7rem;
+      line-height: 1.45;
+      color: color-mix(in srgb, var(--p31-muted) 93%, transparent);
+      margin: 0.5rem auto 0;
+      max-width: 38rem;
+    }
+    .fp-glass-strip code { font-size: 0.85em; }
+    .fp-glass-missing { color: color-mix(in srgb, var(--p31-muted) 88%, var(--p31-teal) 12%); }
+    .fp-status-legend {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.5rem 1rem;
+      list-style: none;
+      padding: 0.35rem 0 0;
+      margin: 0.25rem 0 0;
+      font-size: 0.65rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: color-mix(in srgb, var(--p31-muted) 94%, transparent);
+    }
+    .fp-status-legend li { display: inline-flex; align-items: center; gap: 0.35rem; }
+    .fp-leg-dot {
+      width: 0.45rem;
+      height: 0.45rem;
+      border-radius: 999px;
+      flex-shrink: 0;
+    }
+    .fp-leg-green { background: rgb(52, 211, 153); box-shadow: 0 0 6px rgba(52, 211, 153, 0.45); }
+    .fp-leg-amber { background: rgb(251, 191, 36); box-shadow: 0 0 6px rgba(251, 191, 36, 0.4); }
+    .fp-leg-coral { background: rgb(248, 113, 113); box-shadow: 0 0 6px rgba(248, 113, 113, 0.45); }
+    .fp-leg-gray { background: rgb(148, 163, 184); opacity: 0.75; }
+    .fp-radar-svg {
+      width: 100%;
+      height: auto;
+      display: block;
+      filter: drop-shadow(0 0 6px rgba(45, 212, 191, 0.08));
+    }
+    .fp-radar-svg a { text-decoration: none; outline: none; }
+    .fp-radar-svg a:focus-visible circle {
+      stroke: var(--p31-cyan, #5eead4);
+      stroke-width: 0.9;
+    }
+    .fp-radar-empty {
+      font-size: 0.8rem;
+      color: color-mix(in srgb, var(--p31-muted) 90%, transparent);
+      margin: 0.5rem 0;
+    }
+    .fp-atc-caption {
+      font-size: 0.72rem;
+      line-height: 1.45;
+      color: color-mix(in srgb, var(--p31-muted) 92%, transparent);
+      margin: 0.65rem auto 0;
+      max-width: 34rem;
+    }
+    .fp-local-hint {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      gap: 0.45rem;
+      text-align: left;
+      font-size: 0.72rem;
+      line-height: 1.45;
+      color: color-mix(in srgb, var(--p31-muted) 94%, transparent);
+      margin: 0.85rem auto 0;
+      max-width: 34rem;
+    }
+    .fp-local-icon {
+      flex-shrink: 0;
+      font-size: 1rem;
+      line-height: 1.2;
+      opacity: 0.75;
+    }
+    .fp-reveal-tables {
+      margin-top: 1rem;
+      padding: 0.45rem 1rem;
+      border-radius: 0.5rem;
+      border: 1px solid color-mix(in srgb, var(--p31-teal) 45%, var(--p31-border-subtle));
+      background: color-mix(in srgb, var(--p31-teal) 12%, transparent);
+      color: color-mix(in srgb, var(--p31-cloud) 92%, var(--p31-teal));
+      font-family: var(--p31-font-mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .fp-reveal-tables:hover {
+      background: color-mix(in srgb, var(--p31-teal) 22%, transparent);
+      border-color: color-mix(in srgb, var(--p31-teal) 65%, var(--p31-border-subtle));
+    }
+    body.fp-gray-rock:not(.fp-alive) #fp-detail {
+      opacity: 0;
+      max-height: 0;
+      overflow: hidden;
+      pointer-events: none;
+      margin: 0;
+      padding: 0;
+      border: none;
+    }
+    body.fp-gray-rock.fp-alive #fp-detail {
+      opacity: 1;
+      max-height: none;
+      overflow: visible;
+      pointer-events: auto;
+      margin-top: 0.5rem;
+    }
     .fp-page {
       position: relative;
       z-index: 1;
@@ -190,8 +315,17 @@
     }
   </style>
 </head>
-<body class="p31-surface p31-responsive-surface fp-shell" data-soup-psych="1">
+<body id="fp-body" class="p31-surface p31-responsive-surface fp-shell fp-gray-rock" data-soup-psych="1">
   <div class="fp-page">
+    <section class="fp-atc-wrap" id="fp-atc" aria-label="Fleet air traffic">
+      <div class="fp-atc-radar"><svg class="fp-radar-svg" viewBox="0 0 100 100" role="img" aria-label="Fleet worker blips" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="fp-radar-glow" cx="50%" cy="45%" r="55%"><stop offset="0%" stop-color="rgba(77,184,168,0.12)"/><stop offset="100%" stop-color="transparent"/></radialGradient></defs><rect width="100" height="100" fill="url(#fp-radar-glow)"/><a href="https://bonding-relay.trimtab-signal.workers.dev/" target="_blank" rel="noopener"><circle cx="50.00" cy="14.00" r="1.85" fill="rgba(148, 163, 184, 0.42)" stroke="rgba(100, 116, 139, 0.45)" stroke-width="0.4"><title>bonding-relay · glass: no probe on this origin</title></circle></a><a href="https://command-center.trimtab-signal.workers.dev/" target="_blank" rel="noopener"><circle cx="58.30" cy="14.97" r="1.85" fill="rgba(52, 211, 153, 0.58)" stroke="rgba(34, 197, 94, 0.72)" stroke-width="0.4"><title>command-center — EPCP operator glass · glass: green · max 389ms (command-center-health, operator-shift-public)</title></circle></a><a href="https://donate-api.trimtab-signal.workers.dev/" target="_blank" rel="noopener"><circle cx="66.16" cy="17.83" r="1.85" fill="rgba(52, 211, 153, 0.58)" stroke="rgba(34, 197, 94, 0.72)" stroke-width="0.4"><title>donate-api · glass: green · max 175ms (donate-api-health-workers-dev)</title></circle></a><a href="https://genesis-gate.trimtab-signal.workers.dev/" target="_blank" rel="noopener"><circle cx="73.14" cy="22.42" r="1.85" fill="rgba(52, 211, 153, 0.58)" stroke="rgba(34, 197, 94, 0.72)" stroke-width="0.4"><title>genesis-gate · glass: green · max 152ms (worker-spa-genesis-gate)</title></circle></a><a href="https://geodesic-room.trimtab-signal.workers.dev/" target="_blank" rel="noopener"><circle cx="78.88" cy="28.50" r="1.85" fill="rgba(52, 211, 153, 0.58)" stroke="rgba(34, 197, 94, 0.72)" stroke-width="0.4"><title>geodesic-room — DO v0.2; WS /api/geodesic/:id/ws; see GEODESIC-GAME-ENGINE-INTEGRATION.md · glass: green · max 149ms (geodesic-room-worker)</title></circle></a><a href="https://k4-cage.trimtab-signal.workers.dev/" target="_blank" rel="noopener"><circle cx="83.06" cy="35.74" r="1.85" fill="rgba(52, 211, 153, 0.58)" stroke="rgba(34, 197, 94, 0.72)" stroke-width="0.4"><title>k4-cage · glass: green · max 202ms (k4-cage-health)</title></circle></a><a href="https://k4-hubs.trimtab-signal.workers.dev/" target="_blank" rel="noopener"><circle cx="85.45" cy="43.75" r="1.85" fill="rgba(52, 211, 153, 0.58)" stroke="rgba(34, 197, 94, 0.72)" stroke-width="0.4"><title>k4-hubs · glass: green · max 162ms (k4-hubs-health)</title></circle></a><a href="https://k4-personal.trimtab-signal.workers.dev/" target="_blank" rel="noopener"><circle cx="85.94" cy="52.09" r="3" fill="rgba(52, 211, 153, 0.58)" stroke="rgba(34, 197, 94, 0.72)" stroke-width="0.4"><title>k4-personal · glass: green · max 375ms (k4-personal-api-health, k4-personal-api-mesh)</title></circle></a><a href="https://kenosis-mesh.trimtab-signal.workers.dev/" target="_blank" rel="noopener"><circle cx="84.49" cy="60.32" r="1.85" fill="rgba(148, 163, 184, 0.42)" stroke="rgba(100, 116, 139, 0.45)" stroke-width="0.4"><title>kenosis-mesh · glass: no probe on this origin</title></circle></a><a href="https://p31-agent-hub.trimtab-signal.workers.dev/" target="_blank" rel="noopener"><circle cx="81.18" cy="68.00" r="1.85" fill="rgba(52, 211, 153, 0.58)" stroke="rgba(34, 197, 94, 0.72)" stroke-width="0.4"><title>p31-agent-hub — wrangler may define p31-agent-hub-internal; prod URL per constants · glass: green · max 177ms (agent-hub-health)</title></circle></a><a href="https://p31-bouncer.trimtab-signal.workers.dev/" target="_blank" rel="noopener"><circle cx="76.19" cy="74.70" r="1.85" fill="rgba(148, 163, 184, 0.42)" stroke="rgba(100, 116, 139, 0.45)" stroke-width="0.4"><title>p31-bouncer · glass: no probe on this origin</title></circle></a><a href="https://p31-command-center.trimtab-signal.workers.dev/" target="_blank" rel="noopener"><circle cx="69.78" cy="80.08" r="1.85" fill="rgba(148, 163, 184, 0.42)" stroke="rgba(100, 116, 139, 0.45)" stroke-width="0.4"><title>p31-command-center — Distinct from command-center EPCP Worker · glass: no probe on this origin</title></circle></a><a href="https://p31-cortex.trimtab-signal.workers.dev/" target="_blank" rel="noopener"><circle cx="62.31" cy="83.83" r="3.35" fill="rgba(148, 163, 184, 0.42)" stroke="rgba(100, 116, 139, 0.45)" stroke-width="0.4"><title>p31-cortex · glass: no probe on this origin</title></circle></a><a href="https://p31-forge.trimtab-signal.workers.dev/" target="_blank" rel="noopener"><circle cx="54.18" cy="85.76" r="1.85" fill="rgba(148, 163, 184, 0.42)" stroke="rgba(100, 116, 139, 0.45)" stroke-width="0.4"><title>p31-forge · glass: no probe on this origin</title></circle></a><a href="https://p31-google-bridge.trimtab-signal.workers.dev/" target="_blank" rel="noopener"><circle cx="45.82" cy="85.76" r="1.85" fill="rgba(148, 163, 184, 0.42)" stroke="rgba(100, 116, 139, 0.45)" stroke-width="0.4"><title>p31-google-bridge · glass: no probe on this origin</title></circle></a><a href="https://p31-hearing-ops.trimtab-signal.workers.dev/" target="_blank" rel="noopener"><circle cx="37.69" cy="83.83" r="1.85" fill="rgba(148, 163, 184, 0.42)" stroke="rgba(100, 116, 139, 0.45)" stroke-width="0.4"><title>p31-hearing-ops · glass: no probe on this origin</title></circle></a><a href="https://p31-orchestrator.trimtab-signal.workers.dev/" target="_blank" rel="noopener"><circle cx="30.22" cy="80.08" r="3.35" fill="rgba(52, 211, 153, 0.58)" stroke="rgba(34, 197, 94, 0.72)" stroke-width="0.4"><title>p31-orchestrator — May 401/403 without Cloudflare Access — still edge up · glass: green · max 197ms (orchestrator-status)</title></circle></a><a href="https://p31-passkey.trimtab-signal.workers.dev/" target="_blank" rel="noopener"><circle cx="23.81" cy="74.70" r="1.85" fill="rgba(148, 163, 184, 0.42)" stroke="rgba(100, 116, 139, 0.45)" stroke-width="0.4"><title>p31-passkey — Production mount: zone route p31ca.org/api/passkey/*; workers.dev may exist for direct tests · glass: no probe on this origin</title></circle></a><a href="https://p31ca.org/api/passkey/" target="_blank" rel="noopener"><circle cx="18.82" cy="68.00" r="1.85" fill="rgba(52, 211, 153, 0.58)" stroke="rgba(34, 197, 94, 0.72)" stroke-width="0.4"><title>p31-passkey (zone) — same-origin on hub · glass: green · max 331ms (p31ca-passkey-register-begin, p31ca-hub-root, p31ca-passport-short, p31ca-agents-short…)</title></circle></a><a href="https://p31-pwa.trimtab-signal.workers.dev/" target="_blank" rel="noopener"><circle cx="15.51" cy="60.32" r="1.85" fill="rgba(148, 163, 184, 0.42)" stroke="rgba(100, 116, 139, 0.45)" stroke-width="0.4"><title>p31-pwa · glass: no probe on this origin</title></circle></a><a href="https://p31-quantum-edge.trimtab-signal.workers.dev/" target="_blank" rel="noopener"><circle cx="14.06" cy="52.09" r="1.85" fill="rgba(148, 163, 184, 0.42)" stroke="rgba(100, 116, 139, 0.45)" stroke-width="0.4"><title>p31-quantum-edge — wrangler defines prod/staging variants · glass: no probe on this origin</title></circle></a><a href="https://p31-social-broadcast.trimtab-signal.workers.dev/" target="_blank" rel="noopener"><circle cx="14.55" cy="43.75" r="1.85" fill="rgba(148, 163, 184, 0.42)" stroke="rgba(100, 116, 139, 0.45)" stroke-width="0.4"><title>p31-social-broadcast — Same file defines discord dev/staging names · glass: no probe on this origin</title></circle></a><a href="https://p31-social-worker.trimtab-signal.workers.dev/" target="_blank" rel="noopener"><circle cx="16.94" cy="35.74" r="1.85" fill="rgba(148, 163, 184, 0.42)" stroke="rgba(100, 116, 139, 0.45)" stroke-width="0.4"><title>p31-social-worker · glass: no probe on this origin</title></circle></a><a href="https://p31-state.trimtab-signal.workers.dev/" target="_blank" rel="noopener"><circle cx="21.12" cy="28.50" r="1.85" fill="rgba(148, 163, 184, 0.42)" stroke="rgba(100, 116, 139, 0.45)" stroke-width="0.4"><title>p31-state · glass: no probe on this origin</title></circle></a><a href="https://p31-telemetry.trimtab-signal.workers.dev/" target="_blank" rel="noopener"><circle cx="26.86" cy="22.42" r="1.85" fill="rgba(148, 163, 184, 0.42)" stroke="rgba(100, 116, 139, 0.45)" stroke-width="0.4"><title>p31-telemetry · glass: no probe on this origin</title></circle></a><a href="https://p31-workers.trimtab-signal.workers.dev/" target="_blank" rel="noopener"><circle cx="33.84" cy="17.83" r="3.35" fill="rgba(148, 163, 184, 0.42)" stroke="rgba(100, 116, 139, 0.45)" stroke-width="0.4"><title>p31-workers — Love ledger monolith; orchestrator is separate Worker p31-orchestrator · glass: no probe on this origin</title></circle></a><a href="https://spaceship-relay.trimtab-signal.workers.dev/" target="_blank" rel="noopener"><circle cx="41.70" cy="14.97" r="1.85" fill="rgba(148, 163, 184, 0.42)" stroke="rgba(100, 116, 139, 0.45)" stroke-width="0.4"><title>spaceship-relay · glass: no probe on this origin</title></circle></a></svg></div>
+      <p class="fp-glass-strip" role="status">Merged glass <code>p31_glass_report.json</code> · <time datetime="2026-04-29T01:03:44.808Z">2026-04-29T01:03:44.808Z</time> · up 36 · auth 0 · warn 0 · down 0</p>
+<ul class="fp-status-legend" aria-label="Blip colors"><li><span class="fp-leg-dot fp-leg-green"></span> healthy</li><li><span class="fp-leg-dot fp-leg-amber"></span> degraded</li><li><span class="fp-leg-dot fp-leg-coral"></span> down</li><li><span class="fp-leg-dot fp-leg-gray"></span> no probe</li></ul>
+      <p class="fp-atc-caption">Gray Rock: blips first — hover for Worker id and glass detail when a report was merged. Add <code>?alive=1</code> or use the button to show route tables.</p>
+      <p class="fp-local-hint" role="note"><span class="fp-local-icon" aria-hidden="true">⌂</span><span><strong>Local only</strong> — Command Center is not on Workers.dev. Run <code>npm run command-center</code> → <a href="http://127.0.0.1:3131/" target="_blank" rel="noopener">127.0.0.1:3131</a> (EPCP glass).</span></p>
+      <button type="button" class="fp-reveal-tables" id="fp-reveal-tables">Open route tables →</button>
+    </section>
+    <div id="fp-detail" class="fp-detail">
     <nav class="fp-topnav" aria-label="Site">
       <span style="color: var(--p31-teal); letter-spacing: 0.18em;">Fleet index</span>
       <span style="display: flex; flex-wrap: wrap; gap: 0.75rem 1rem;">
@@ -248,6 +382,16 @@
     <footer class="fp-meta">
       <p><a href="https://bonding.p31ca.org/soup">← C.A.R.S.</a> · <a href="https://github.com/p31labs/bonding-soup/blob/main/p31-personal-howto.html">How-to</a> · <a href="https://github.com/p31labs/bonding-soup/blob/main/docs/P31-DEPLOY-CANON.md">CONNECTION</a> · <a href="https://github.com/p31labs/bonding-soup/blob/main/docs/PLAN-BONDING-SOUP-WHEN-SCALE.md">When-scale plan</a> · <a href="https://p31ca.org/">p31ca.org</a></p>
     </footer>
+    </div>
   </div>
+  <script>
+(function(){
+  var b=document.getElementById("fp-body");
+  function alive(){ if(b) b.classList.add("fp-alive"); }
+  if(/[?&]alive=1(?:&|$)/.test(location.search||"")) alive();
+  var btn=document.getElementById("fp-reveal-tables");
+  if(btn) btn.addEventListener("click",alive);
+})();
+  </script>
 </body>
 </html>

@@ -55,19 +55,22 @@ export const registry = [
     features: [
       'Operator shell: boot screen, load menu (live sim vs mesh assistant), and settings without leaving the page',
       'Field chat staging — glass transcript, role chips, timestamps; pairs with Mesh Start for real k4-personal /chat',
+      'Load menu: same-origin Sovereign Lab (/lab) and browser slicer (/slicer); lab mirrors from bonding-soup via npm run sync:sovereign-p31ca',
       'Live edge ribbon: /p31-mesh-constants.json + probes k4-personal /api/health and same-origin hub /api/health (refresh; no secrets)',
       'Neuro-inclusive defaults: prefers-reduced-motion seeds first-visit prefs; skip link to console; Escape closes overlays; modal focus returns to opener',
       'Local prefs: reduced motion, compact transcript density, ethics strip visibility (persisted)',
+      'Wire: mock WebSocket accepts labTelemetry (Sovereign Lab) into room eventLog — cars-contract/p31.carsWire.json + verify:cars-wire',
       'Deep links to the live soup vertical, BONDING (3D graph), and the canonical C.A.R.S. wire catalog'
     ],
     howTo: [
-      'Dismiss the boot veil, open Load menu — choose Live C.A.R.S. sim, Mesh assistant, or stay in Field chat',
+      'Dismiss the boot veil, open Load menu — choose Live C.A.R.S. sim, Mesh assistant, Sovereign Lab, browser slicer, or stay in Field chat',
       'Use Settings (gear) to tune motion and layout; prefs save to this origin only — first visit respects system reduced-motion',
       'Keyboard: Escape closes Load or Settings; skip link jumps past boot to the console',
-      'When you need a private DO conversation, jump to Mesh Start from Load or Field chat footer'
+      'When you need a private DO conversation, jump to Mesh Start from Load or Field chat footer',
+      'Optional: run the home mock WebSocket and connect Sovereign Lab with ?carsWs= to stream trim coherence as labTelemetry'
     ],
     techNotes:
-      'Static hub cockpit framing the home-repo C.A.R.S. stack (soup vertical on bonding Pages deploy). Message kinds for multiplayer are locked via cars-contract/p31.carsWire.json + npm run verify:cars-wire in the bonding-soup repo.',
+      'Static hub cockpit framing the home-repo C.A.R.S. stack (soup vertical on bonding Pages deploy). Message kinds for multiplayer are locked via cars-contract/p31.carsWire.json + npm run verify:cars-wire in the bonding-soup repo; labTelemetry is an extra client-to-mock type for Sovereign Lab only (not sent by soup.ts).',
     related: ['bonding', 'buffer', 'planetary-onboard']
   },
   {
@@ -1086,27 +1089,27 @@ export const registry = [
   },
   {
     id: 'planetary-onboard',
-    title: 'Planetary Onboard',
-    tagline: 'Wye → Delta entry flow',
+    title: 'Planetary onboard',
+    tagline: 'Threshold — four doors, no funnel',
     icon: '🜂',
-    accent: '#cc6247',
+    accent: '#25897d',
     status: 'live',
     statusLabel: 'LIVE',
     appUrl: 'planetary-onboard.html',
-    tech: ['Static HTML', 'Welcome JSON canon', 'WebAuthn / passkey Worker', 'P31 style'],
+    tech: ['Static HTML', 'Gray Rock first paint', 'No analytics', 'Door 4 invite / room gates'],
     features: [
-      'Six surfaces: Welcome → Void → Anchor → Rooms → Dial → Pact (Wye→Delta ribbon synced to step)',
-      'Canon copy via `public/p31-welcome-packages.json` (`p31.welcomePackages`) — explicit negations (no seed phrases / not crypto) + paced steps',
-      'Pact uses hold-to-confirm (~3 s) unless `prefers-reduced-motion` (single activation); kid path skips enrollment',
-      'Same-origin hub chrome (`/p31-style.css`); mesh home at `/mesh-start.html` after the shift',
+      'Void + still K₄ + one sentence, then four doors (understand · use · build · know someone)',
+      'Door 1 walks origin → products → evidence → help without accounts; numbers link to verifiable sources',
+      'Door 2 self-identifies role then deep-links Passport, BONDING, doc library; `?welcome=kid` / `?a=child` opens the parent path',
+      'Door 3 is the developer spine (clone, verify, AGENTS.md); Door 4 routes room codes to bonding and invite URLs to mesh-start when same-origin',
     ],
     howTo: [
-      'Start `/planetary-onboard.html` (or deep-link `?welcome=…`). Read the pace line and explicit-neg list on Welcome',
-      'Finish Dial, then press-and-hold “secure lock” on capable browsers — or use reduced motion one-tap, or Skip',
-      'After redirect, tetra docks and `/mesh-start.html` consume the same welcome JSON chip copy',
+      'Open `/planetary-onboard.html` or short `/onboard`; add `?fast=1` to skip the timed Gray Rock reveal',
+      'Mesh passkey + pact lives on `/mesh-start.html` and `/auth` when you already have an invite — not on this threshold',
+      'Wye→Delta narrative and legacy copy rhythm: `/delta.html` + `docs/PLAN-MESH-WYE-DELTA-ONBOARDING.md`',
     ],
     techNotes:
-      'Ships under `public/planetary-onboard.html`. Passkey register flows post to same-origin `/api/passkey/*` (see `workers/passkey`). Normative mesh-onboarding plan: home `docs/PLAN-MESH-WYE-DELTA-ONBOARDING.md`.',
+      'Replaced multi-phase Wye UI (Apr 2026) with threshold design; `p31-welcome-packages.json` still used by `mesh-start.html`. Passkey Worker unchanged. Egg-hunt archetype substrings kept as hidden anchors.',
     related: ['connect', 'buffer', 'ede'],
   },
   {
@@ -1160,26 +1163,26 @@ export const registry = [
   },
   {
     id: 'poets',
-    title: 'Poets room',
-    tagline: 'Lobby — write, read, dialogue, visuals',
+    title: 'Poets Room',
+    tagline: 'Void, a daily line, a shelf — nothing to verify here but the door',
     icon: '🪶',
-    accent: '#c4b5fd',
+    accent: '#8a9aa8',
     status: 'live',
     statusLabel: 'LIVE',
     appUrl: 'poets.html',
-    tech: ['Static lobby', 'Hub-canonical URLs', 'No uploads'],
+    tech: ['Static', 'No crew APIs', 'localStorage only', 'Quotes JSON'],
     features: [
-      'Curated paths to Cognitive Passport, education, mesh-start, geodesic, delta, connect, and onboarding — bookmark once on Chromebook or phone',
-      'Nothing uploads from this lobby — open each destination with intention',
-      'Same typography and Tailwind presets as hub legal/contact surfaces for visual continuity',
+      'First paint is quiet; one quote fades in by calendar day (`poets-room-quotes.json`)',
+      'Scroll reveals a small shelf (K₄, Posner echo, BONDING ship day, Paper IV, 863 Hz tap, local photo drop) and a private writing space — never uploaded',
+      'Hub mirrors home intent; exit link returns to C.A.R.S. soup when you need the rest of the house',
     ],
     howTo: [
-      'Pick a lane below (Write → passport, Read → curriculum, Dialogue → mesh, Visual → geodesic)',
-      'Use the hub footer (Build / Create / Connect) for the spine when you graduate from hopping',
-      'Prefer long-form author copy in Cognitive Passport editions in-repo rather than ephemeral browser text boxes',
+      'Sit with the line; scroll only if you want the shelf or the cursor',
+      'Drop a photo on the slot if you want something tactile on the mantle — it stays in this browser',
+      '863 Hz plays one second on tap (respects reduced motion — silence only)',
     ],
     techNotes:
-      'Mirror of bonding-soup `poets-room.html` intent: hub-only URLs and `public/poets.html`. Ground-truth route `routes.poetsLobby`. No `/poets`→`poets.html` in `_redirects` — avoids CF Pages redirect loop (same pattern as welcome.html).',
+      'Home source `poets-room.html` + `poets-room-quotes.json`; hub `public/poets.html` + `public/poets-room-quotes.json`. Ground-truth `routes.poetsLobby`. No `/poets`→`poets.html` in `_redirects` (CF Pages ping-pong).',
     related: ['planetary-onboard', 'education', 'connect'],
   },
   // ── Research / quantum tooling ────────────────────────────────────────────

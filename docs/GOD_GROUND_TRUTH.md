@@ -88,7 +88,7 @@ Last Updated: 2026-04-14 | CWP corrections sync pass
 
 ## Research
 
-- Zenodo DOI #1: 10.5281/zenodo.18627420 — Tetrahedron Protocol (CC BY 4.0)
+- Zenodo Paper I (current): 10.5281/zenodo.19004485 — Tetrahedron Protocol (prior v1: 10.5281/zenodo.18627420). Full portfolio: **22** deposits — see P31 home `p31-constants.json` → `research`.
 - Zenodo DOI #2: 10.5281/zenodo.19411363 — Genesis Whitepaper v1.1
 - Combined views: 280+ | Downloads: 240+
 - White papers: 5 finalized (March 17, 2026)

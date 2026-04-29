@@ -60,7 +60,7 @@ CREATOR = {
 
 # Papers I-IV already have DOIs
 EXISTING_DOIS = {
-    "I": "10.5281/zenodo.18627420",
+    "I": "10.5281/zenodo.19004485",
     "III_a": "10.5281/zenodo.19411363",
     "III_b": "10.5281/zenodo.19416491",
     "IV": "10.5281/zenodo.19503542",

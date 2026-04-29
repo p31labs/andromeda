@@ -50,7 +50,7 @@ The subject has produced a body of work over the past year that the court has in
 - 511 tests passing in the BONDING game
 - 5 research documents independently verified by Opus (QA)
 - 3 defensive publications on Zenodo with DOIs
-- Published mathematical proofs on Zenodo (DOI: 10.5281/zenodo.18627420)
+- Published mathematical proofs on Zenodo (DOI: 10.5281/zenodo.19004485)
 
 **VERDICT:** The output quality is inconsistent with mania. Manic patients do not produce independently-verified mathematical proofs.
 
