@@ -1,7 +1,7 @@
 {
   "schema": "p31.ground-truth/1.0.0",
   "version": "1.0.0",
-  "updated": "2026-04-28",
+  "updated": "2026-04-29",
   "mission": "Build, create, connect — decentralized family mesh. This file is the machine-routable spine for p31ca.org; human narrative stays in root CLAUDE.md, P31 COGNITIVE PASSPORT — v5.md, and docs/. Version namespaces: P31 home docs/CANONICAL-NUMBERING.md; values: P31 home p31-constants.json. Source→sink alignment: P31 home p31-alignment.json (p31.alignment/1.0.0) and docs/P31-ALIGNMENT-SYSTEM.md (ephemeralization; verify: npm run verify:alignment).",
   "canonicalNumbering": {
     "spec": "P31 home: docs/CANONICAL-NUMBERING.md",
@@ -17,7 +17,7 @@
     "bondingTestBaseline": {
       "tests": 424,
       "suites": 32,
-      "asOf": "2026-04-28"
+      "asOf": "2026-04-29"
     }
   },
   "sites": {
