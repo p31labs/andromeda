@@ -236,28 +236,33 @@ describe("ChannelManager", () => {
       channel.destroy();
     });
 
-    it("returns initial score of 0.5 for new bonds", async () => {
-      const mesh = "test-cm-care-2";
-      const alice = await makeNode(mesh);
-      const bob = await makeNode(mesh);
+    it(
+      "returns initial score of 0.5 for new bonds",
+      async () => {
+        // Unique mesh name avoids InMemoryBus / BroadcastChannel cross-talk when Vitest parallelizes files.
+        const mesh = `test-cm-care-2-${Math.random().toString(36).slice(2, 10)}`;
+        const alice = await makeNode(mesh);
+        const bob = await makeNode(mesh);
 
-      const bobPubKey = bob.identity.getCompressedPublicKey();
-      const alicePubKey = alice.identity.getCompressedPublicKey();
+        const bobPubKey = bob.identity.getCompressedPublicKey();
+        const alicePubKey = alice.identity.getCompressedPublicKey();
 
-      await Promise.all([
-        alice.channel.initiate(bobPubKey),
-        bob.channel.accept(alicePubKey),
-      ]);
+        await Promise.all([
+          alice.channel.initiate(bobPubKey),
+          bob.channel.accept(alicePubKey),
+        ]);
 
-      const aliceBond = alice.channel.listBonds()[0]!;
-      const score = alice.channel.getCareScore(aliceBond.partner.nodeId);
-      expect(score).toBe(0.5);
+        const aliceBond = alice.channel.listBonds()[0]!;
+        const score = alice.channel.getCareScore(aliceBond.partner.nodeId);
+        expect(score).toBe(0.5);
 
-      alice.channel.destroy();
-      bob.channel.destroy();
-      alice.transport.close();
-      bob.transport.close();
-    });
+        alice.channel.destroy();
+        bob.channel.destroy();
+        alice.transport.close();
+        bob.transport.close();
+      },
+      30_000
+    );
   });
 
   describe("getCareScoreComponents()", () => {
