@@ -145,7 +145,7 @@ function AtomsWithPersonality({ atoms, gamePhase }: { atoms: ReturnType<typeof u
 /**
  * Scene: all 3D content. Separated from Canvas for Suspense boundary.
  */
-function Scene() {
+function Scene({ atmosphereCoherence }: { atmosphereCoherence: number }) {
   const atoms = useGameStore((s) => s.atoms);
   const bonds = useGameStore((s) => s.bonds);
   const dragging = useGameStore((s) => s.dragging);
@@ -202,7 +202,7 @@ function Scene() {
       <Environment preset="city" background={false} />
 
       {/* Molecular field — element-colored particles */}
-      <MolecularWarp />
+      <MolecularWarp coherence={atmosphereCoherence} />
 
       {/* Personality hint — computed ONCE on completion, shared across all atoms */}
       <AtomsWithPersonality atoms={atoms} gamePhase={gamePhase} />
@@ -266,7 +266,7 @@ function Scene() {
         enablePan={false}
         enabled={!dragging}
         autoRotate={!dragging && atoms.length > 0}
-        autoRotateSpeed={0.5}
+        autoRotateSpeed={0.28 + 0.52 * atmosphereCoherence}
         minDistance={3}
         maxDistance={15}
         makeDefault
@@ -279,7 +279,11 @@ function Scene() {
  * MoleculeCanvas: the R3F Canvas wrapper.
  * Full viewport, flat tone mapping.
  */
-export function MoleculeCanvas() {
+export function MoleculeCanvas({
+  atmosphereCoherence = 6.5 / 12,
+}: {
+  atmosphereCoherence?: number;
+}) {
   const triggerWarp = useGameStore((s) => s.triggerWarp);
   const lastMissRef = useRef(0);
 
@@ -332,7 +336,7 @@ export function MoleculeCanvas() {
             </div>
           </Html>
         }>
-          <Scene />
+          <Scene atmosphereCoherence={atmosphereCoherence} />
         </Suspense>
       </Canvas>
     </div>
