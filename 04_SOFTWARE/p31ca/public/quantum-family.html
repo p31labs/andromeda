@@ -871,10 +871,16 @@
             renderGardenPreview();
         }
 
-        /* ── Pollination Courier (non-violent aim loop) ─────────────────── */
+        /* ── Pollination Courier — kid-first juice: cheers, chords, celebrations ── */
         (function pollinationCourier() {
             const MAX_CLOUD = 100;
-            const CLOUD_LEAK = 14;
+            const CLOUD_LEAK = 11;
+            const WELCOME_KEY = 'p31:courier:kid-welcome-v2';
+            const CHEER = {
+                bud: ['Bloom!', 'So pretty!', 'You helped!', 'Yay petals!', 'Sweet!'],
+                bee: ['Zoom home!', 'Bee happy!', 'Nice hello!', 'Off you go!', 'Gold star!'],
+                pod: ['Pop!', 'You did it!', 'Three cheers!', 'Great focus!', 'Confetti!'],
+            };
             let cv, ctx, W = 360, H = 440;
             let raf = 0;
             let running = false;
@@ -888,14 +894,24 @@
             let guests = [];
             let puffs = [];
             let particles = [];
+            let floatTexts = [];
+            let ripples = [];
             let playerX = 180;
+            let puffSquish = 0;
+            let skyT = 0;
+            let waveBanner = 0;
+            let streak = 0;
+            let streakToastT = 0;
             let keys = { left: false, right: false };
             let audioCtx = null;
 
             function chillM() { return document.getElementById('courier-chill')?.checked ? 0.58 : 1; }
             function autopuffOn() { return !!document.getElementById('courier-autopuff')?.checked; }
+            function reduceMotion() {
+                try { return window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (_) { return false; }
+            }
 
-            function playChime(freq, dur) {
+            function playChime(freq, dur, gain = 0.07) {
                 try {
                     if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                     const o = audioCtx.createOscillator();
@@ -906,11 +922,53 @@
                     o.connect(g);
                     g.connect(audioCtx.destination);
                     const t = audioCtx.currentTime;
-                    g.gain.exponentialRampToValueAtTime(0.08, t + 0.02);
+                    g.gain.exponentialRampToValueAtTime(gain, t + 0.02);
                     g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
                     o.start(t);
                     o.stop(t + dur + 0.05);
                 } catch (_) {}
+            }
+
+            function playChord(freqs, dur, gain = 0.045) {
+                try {
+                    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    const t0 = audioCtx.currentTime;
+                    freqs.forEach((f, i) => {
+                        const o = audioCtx.createOscillator();
+                        const g = audioCtx.createGain();
+                        o.type = 'sine';
+                        o.frequency.value = f;
+                        g.gain.value = 0.0001;
+                        o.connect(g);
+                        g.connect(audioCtx.destination);
+                        const t = t0 + i * 0.028;
+                        g.gain.exponentialRampToValueAtTime(gain, t + 0.02);
+                        g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+                        o.start(t);
+                        o.stop(t + dur + 0.12);
+                    });
+                } catch (_) {}
+            }
+
+            function cheerFor(g) {
+                const list = CHEER[g.type] || CHEER.bud;
+                const msg = list[Math.floor(Math.random() * list.length)];
+                floatTexts.push({ x: g.x, y: g.y - g.r - 8, text: msg, life: 52, vy: -0.55 });
+            }
+
+            function streakMilestone() {
+                const el = document.getElementById('courier-streak-toast');
+                const lines = {
+                    3: 'You’re on a roll — three helps in a row! 🌟',
+                    5: 'Five in a row! Your brain is a garden laser. ✨',
+                    8: 'Eight helps! That’s real focus. Proud of you. 💚',
+                    13: 'Thirteen! Legendary kindness streak. 🌈',
+                };
+                const line = lines[streak];
+                if (line && el) {
+                    el.textContent = line;
+                    streakToastT = 220;
+                }
             }
 
             function resize() {
@@ -920,7 +978,7 @@
                 const dpr = Math.min(window.devicePixelRatio || 1, 2);
                 const rect = wrap ? wrap.getBoundingClientRect() : cv.getBoundingClientRect();
                 const w = Math.max(280, Math.floor(rect.width - 8));
-                const h = Math.min(520, Math.max(320, Math.floor(Math.min(window.innerHeight * 0.58, rect.width * 1.15))));
+                const h = Math.min(540, Math.max(340, Math.floor(Math.min(window.innerHeight * 0.58, rect.width * 1.18))));
                 W = w;
                 H = h;
                 cv.width = Math.floor(w * dpr);
@@ -929,41 +987,47 @@
                 cv.style.height = h + 'px';
                 ctx = cv.getContext('2d');
                 ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-                playerX = Math.min(Math.max(playerX, 36), W - 36);
+                playerX = Math.min(Math.max(playerX, 40), W - 40);
             }
 
             function spawnGuest() {
                 const roll = Math.random();
                 let type = 'bud';
-                if (wave >= 2 && roll > 0.55) type = 'bee';
-                if (wave >= 3 && roll > 0.82) type = 'pod';
-                const r = type === 'pod' ? 26 : type === 'bee' ? 15 : 19;
+                if (wave >= 2 && roll > 0.52) type = 'bee';
+                if (wave >= 3 && roll > 0.78) type = 'pod';
+                const r = type === 'pod' ? 27 : type === 'bee' ? 16 : 20;
                 const guest = {
                     type,
                     x: r + Math.random() * (W - 2 * r),
-                    y: -r - 4,
+                    y: -r - 6,
                     r,
-                    vy: (0.55 + Math.random() * 0.95 + wave * 0.04) * chillM(),
+                    vy: (0.5 + Math.random() * 0.85 + wave * 0.035) * chillM(),
                     phase: Math.random() * Math.PI * 2,
                     hits: 0,
                     hitsNeeded: type === 'pod' ? 3 : 1,
                     done: false,
-                    wobble: type === 'bee' ? 2.2 + Math.random() : 0,
+                    celebrate: 0,
+                    wobble: type === 'bee' ? 2.4 + Math.random() * 0.8 : 0,
                 };
                 guests.push(guest);
             }
 
-            function addParticles(x, y, n, colors) {
-                for (let i = 0; i < n; i++) {
+            function addParticles(x, y, n, colors, petal) {
+                const rm = reduceMotion();
+                const count = rm ? Math.min(n, 6) : n;
+                for (let i = 0; i < count; i++) {
                     const a = Math.random() * Math.PI * 2;
-                    const sp = 1 + Math.random() * 3.5;
+                    const sp = 1.2 + Math.random() * 4;
                     particles.push({
                         x, y,
                         vx: Math.cos(a) * sp,
-                        vy: Math.sin(a) * sp - 1.2,
-                        life: 38 + Math.random() * 24,
+                        vy: Math.sin(a) * sp - 1.4,
+                        life: rm ? 22 : 40 + Math.random() * 28,
                         color: colors[Math.floor(Math.random() * colors.length)],
-                        size: 2 + Math.random() * 3,
+                        size: 2 + Math.random() * 3.5,
+                        rot: Math.random() * Math.PI,
+                        vr: (Math.random() - 0.5) * 0.2,
+                        petal: petal && !rm,
                     });
                 }
             }
@@ -972,46 +1036,69 @@
                 if (g.done) return;
                 g.done = true;
                 blooms++;
+                streak++;
+                streakMilestone();
+                cheerFor(g);
+                const rm = reduceMotion();
                 if (g.type === 'bud') {
-                    addParticles(g.x, g.y, 14, ['#f9b4c9', '#ffd6e8', '#a8e6cf', '#fff8dc']);
-                    playChime(523.25, 0.12);
+                    addParticles(g.x, g.y, 18, ['#f9b4c9', '#ffd6e8', '#ffb7d5', '#fff8dc', '#a8e6cf'], true);
+                    playChord([392, 493.88, 587.33], 0.22);
+                    g.celebrate = rm ? 18 : 56;
                 } else if (g.type === 'bee') {
-                    addParticles(g.x, g.y, 10, ['#ffe066', '#fff3bf', '#ffd43b']);
-                    g.escape = 40;
-                    playChime(659.25, 0.1);
+                    addParticles(g.x, g.y, 14, ['#ffe066', '#fff3bf', '#ffd43b', '#fff'], false);
+                    playChord([523.25, 659.25, 783.99], 0.16);
+                    g.escape = rm ? 22 : 48;
                 } else {
-                    addParticles(g.x, g.y, 22, ['#e9c46a', '#f4a261', '#fff', '#a8e6cf']);
-                    playChime(392, 0.14);
+                    addParticles(g.x, g.y, 28, ['#e9c46a', '#f4a261', '#fff', '#a8e6cf', '#ffecd2'], true);
+                    playChord([329.63, 415.3, 523.25], 0.24);
+                    g.celebrate = rm ? 18 : 58;
                 }
-                if (blooms > 0 && blooms % 10 === 0) wave++;
+                if (blooms > 0 && blooms % 10 === 0) {
+                    wave++;
+                    waveBanner = rm ? 40 : 96;
+                    playChord([261.63, 329.63, 392], 0.28);
+                    floatTexts.push({ x: W / 2, y: H * 0.22, text: 'New breeze — you leveled up! 🌬️', life: 70, vy: -0.35 });
+                }
                 updateHud();
             }
 
             function leakGuest() {
+                streak = 0;
                 cloud = Math.min(MAX_CLOUD, cloud + CLOUD_LEAK);
-                playChime(130, 0.08);
+                playChime(155, 0.06, 0.04);
+                floatTexts.push({ x: W / 2, y: H * 0.35, text: 'Almost — you’re still great 💚', life: 48, vy: -0.3 });
                 updateHud();
                 if (cloud >= MAX_CLOUD) rainPause();
             }
 
             function showRainOverlay() {
                 const ov = document.getElementById('courier-overlay');
-                if (ov) {
-                    ov.classList.remove('hidden');
-                    ov.classList.add('flex');
-                }
+                if (ov) { ov.classList.remove('hidden'); ov.classList.add('flex'); }
             }
 
             function rainPause() {
                 running = false;
+                streak = 0;
                 showRainOverlay();
                 const tgl = document.getElementById('courier-btn-toggle');
                 if (tgl) tgl.textContent = 'Start';
+                const st = document.getElementById('courier-streak-toast');
+                if (st) st.textContent = '';
             }
 
             function hideOverlay() {
                 const ov = document.getElementById('courier-overlay');
                 if (ov) { ov.classList.add('hidden'); ov.classList.remove('flex'); }
+            }
+
+            function hideWelcome() {
+                const w = document.getElementById('courier-welcome');
+                if (w) { w.classList.add('hidden'); w.classList.remove('flex'); }
+            }
+
+            function showWelcome() {
+                const w = document.getElementById('courier-welcome');
+                if (w) { w.classList.remove('hidden'); w.classList.add('flex'); }
             }
 
             function updateHud() {
@@ -1026,109 +1113,196 @@
             function tryPuff() {
                 if (!running || cloud >= MAX_CLOUD) return;
                 const now = performance.now();
-                if (now - lastShot < 160) return;
+                if (now - lastShot < 145) return;
                 lastShot = now;
-                puffs.push({ x: playerX, y: H - 52, vy: -7.2 * chillM(), r: 7, life: 55 });
+                puffSquish = 12;
+                const px = playerX + (Math.random() - 0.5) * 3;
+                puffs.push({ x: px, y: H - 54, vy: -7.6 * chillM(), r: 8, life: 58, seed: Math.random() * 9 });
+            }
+
+            function drawCloud(cx, cy, sc, alpha) {
+                ctx.save();
+                ctx.globalAlpha = alpha;
+                ctx.fillStyle = 'rgba(255,255,255,0.72)';
+                ctx.beginPath();
+                ctx.arc(cx, cy, 18 * sc, 0, Math.PI * 2);
+                ctx.arc(cx + 22 * sc, cy + 3, 22 * sc, 0, Math.PI * 2);
+                ctx.arc(cx + 44 * sc, cy, 16 * sc, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
             }
 
             function drawBg() {
                 const dark = document.body.classList.contains('dark');
                 const g = ctx.createLinearGradient(0, 0, 0, H);
                 if (dark) {
-                    g.addColorStop(0, '#1a2332');
-                    g.addColorStop(0.55, '#121820');
-                    g.addColorStop(1, '#0f1410');
+                    g.addColorStop(0, '#243044');
+                    g.addColorStop(0.4, '#1a2230');
+                    g.addColorStop(1, '#121a14');
                 } else {
-                    g.addColorStop(0, '#d4e9ff');
-                    g.addColorStop(0.45, '#e8f4e6');
-                    g.addColorStop(1, '#c8e0c0');
+                    g.addColorStop(0, '#cfe8ff');
+                    g.addColorStop(0.35, '#e5f5e8');
+                    g.addColorStop(0.7, '#d8efd9');
+                    g.addColorStop(1, '#bcd9b8');
                 }
                 ctx.fillStyle = g;
                 ctx.fillRect(0, 0, W, H);
-                ctx.fillStyle = dark ? 'rgba(168,230,207,0.12)' : 'rgba(255,255,255,0.35)';
-                for (let i = 0; i < 18; i++) {
-                    const x = (i * 97 + blooms * 3) % W;
-                    const y = (i * 53) % (H - 80);
+                if (!reduceMotion()) {
+                    const spd = 0.35 * chillM();
+                    for (let i = 0; i < 3; i++) {
+                        const cx = ((skyT * (12 + i * 3) + i * 120) % (W + 100)) - 30;
+                        const cy = 36 + i * 42;
+                        drawCloud(cx, cy, 0.55 + i * 0.12, dark ? 0.08 : 0.55);
+                    }
+                    skyT += spd;
+                }
+                ctx.fillStyle = dark ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.45)';
+                for (let i = 0; i < 22; i++) {
+                    const x = (i * 83 + blooms * 2) % W;
+                    const y = (i * 47 + (reduceMotion() ? 0 : skyT * 2)) % (H - 100);
                     ctx.beginPath();
-                    ctx.arc(x, y, 1.2, 0, Math.PI * 2);
+                    ctx.arc(x, y + 40, 1.1, 0, Math.PI * 2);
                     ctx.fill();
+                }
+                if (waveBanner > 0) {
+                    waveBanner--;
+                    const a = Math.min(1, waveBanner / 25);
+                    ctx.fillStyle = dark ? `rgba(77,184,168,${a * 0.2})` : `rgba(168,230,207,${a * 0.35})`;
+                    ctx.fillRect(0, 0, W, 44);
+                    ctx.globalAlpha = a;
+                    ctx.font = '600 15px Fredoka, "Nunito", system-ui, sans-serif';
+                    ctx.fillStyle = dark ? '#d8d6d0' : '#3d5c45';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('New breeze — gentle challenge up high 🌬️', W / 2, 28);
+                    ctx.globalAlpha = 1;
                 }
             }
 
             function drawPlayer() {
                 const px = playerX;
-                const py = H - 42;
+                const py = H - 44;
+                const squash = puffSquish > 0 ? 1 + 0.12 * (puffSquish / 12) : 1;
+                const stretch = puffSquish > 0 ? 1 - 0.06 * (puffSquish / 12) : 1;
                 ctx.save();
                 ctx.translate(px, py);
-                ctx.fillStyle = '#7ec8e3';
+                ctx.scale(squash, stretch);
+                ctx.fillStyle = '#6eb8d8';
                 ctx.beginPath();
-                ctx.ellipse(0, 4, 22, 10, 0, 0, Math.PI * 2);
+                ctx.ellipse(0, 6, 24, 11, 0, 0, Math.PI * 2);
                 ctx.fill();
-                ctx.fillStyle = '#a8e6cf';
+                ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+                ctx.fillStyle = '#9fd9b8';
                 ctx.beginPath();
-                ctx.arc(-8, -2, 6, 0, Math.PI * 2);
-                ctx.arc(8, -2, 6, 0, Math.PI * 2);
+                ctx.ellipse(-10, 0, 7, 5, -0.3, 0, Math.PI * 2);
+                ctx.ellipse(10, 0, 7, 5, 0.3, 0, Math.PI * 2);
                 ctx.fill();
                 ctx.fillStyle = '#f9b4c9';
                 for (let i = -1; i <= 1; i++) {
                     ctx.beginPath();
-                    ctx.ellipse(i * 7, -8, 5, 8, i * 0.3, 0, Math.PI * 2);
+                    ctx.ellipse(i * 8, -10, 6, 9, i * 0.25, 0, Math.PI * 2);
                     ctx.fill();
                 }
+                ctx.fillStyle = '#3a3530';
+                ctx.beginPath();
+                ctx.arc(-5, 2, 2.2, 0, Math.PI * 2);
+                ctx.arc(5, 2, 2.2, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = '#3a3530';
+                ctx.lineWidth = 1.2;
+                ctx.beginPath();
+                ctx.arc(0, 5, 4, 0.15 * Math.PI, 0.85 * Math.PI);
+                ctx.stroke();
                 ctx.restore();
             }
 
             function drawGuest(g) {
                 ctx.save();
                 let gx = g.x;
-                if (g.wobble && !g.escape) gx += Math.sin(g.phase + performance.now() * 0.004) * g.wobble;
+                if (g.wobble && !g.escape && !g.celebrate) gx += Math.sin(g.phase + performance.now() * 0.0038) * g.wobble;
                 ctx.translate(gx, g.y);
+                const cel = g.celebrate > 0;
+                const pulse = cel ? 1 + 0.08 * Math.sin(g.phase * 2) : 1;
+                ctx.scale(pulse, pulse);
                 if (g.escape) {
-                    ctx.globalAlpha = Math.min(1, g.escape / 12);
-                    ctx.rotate(-0.4);
+                    ctx.globalAlpha = Math.min(1, g.escape / 14);
+                    ctx.rotate(-0.45);
                 }
                 if (g.type === 'bud') {
-                    const open = g.hits > 0;
-                    ctx.fillStyle = open ? '#ffb7d5' : '#5d9c6b';
+                    const open = g.hits > 0 || cel;
+                    const face = open || cel;
+                    ctx.fillStyle = open ? '#ff9ec4' : '#4a9e6f';
                     ctx.beginPath();
-                    ctx.arc(0, 0, g.r * (open ? 1.05 : 0.92), 0, Math.PI * 2);
+                    ctx.arc(0, 0, g.r * (open ? 1.08 : 0.94), 0, Math.PI * 2);
                     ctx.fill();
-                    if (open) {
+                    ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                    if (face) {
+                        ctx.fillStyle = '#3a3530';
+                        ctx.beginPath();
+                        ctx.arc(-5, -2, 2, 0, Math.PI * 2);
+                        ctx.arc(5, -2, 2, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.strokeStyle = '#3a3530';
+                        ctx.lineWidth = 1.2;
+                        ctx.beginPath();
+                        ctx.arc(0, 2, 5, 0.1 * Math.PI, 0.9 * Math.PI);
+                        ctx.stroke();
                         ctx.strokeStyle = '#fff8dc';
                         ctx.lineWidth = 2;
-                        for (let i = 0; i < 5; i++) {
-                            const a = (i / 5) * Math.PI * 2 + g.phase;
+                        for (let i = 0; i < 6; i++) {
+                            const a = (i / 6) * Math.PI * 2 + g.phase * 1.5;
                             ctx.beginPath();
                             ctx.moveTo(0, 0);
-                            ctx.lineTo(Math.cos(a) * g.r * 1.1, Math.sin(a) * g.r * 1.1);
+                            ctx.lineTo(Math.cos(a) * g.r * 1.15, Math.sin(a) * g.r * 1.15);
                             ctx.stroke();
                         }
+                    } else {
+                        ctx.strokeStyle = 'rgba(0,0,0,0.12)';
+                        ctx.lineWidth = 1.5;
+                        ctx.beginPath();
+                        ctx.arc(0, 2, 4, 0.15 * Math.PI, 0.85 * Math.PI);
+                        ctx.stroke();
                     }
                 } else if (g.type === 'bee') {
                     ctx.fillStyle = '#2d2a26';
                     ctx.beginPath();
-                    ctx.ellipse(0, 0, g.r * 1.1, g.r * 0.75, 0, 0, Math.PI * 2);
+                    ctx.ellipse(0, 0, g.r * 1.12, g.r * 0.78, 0, 0, Math.PI * 2);
                     ctx.fill();
                     ctx.fillStyle = '#ffd43b';
-                    ctx.fillRect(-g.r, -3, g.r * 2, 5);
-                    ctx.fillStyle = 'rgba(255,255,255,0.45)';
+                    ctx.fillRect(-g.r * 1.05, -3, g.r * 2.1, 6);
+                    ctx.fillStyle = '#3a3530';
                     ctx.beginPath();
-                    ctx.ellipse(-6, -g.r * 0.6, 8, 5, -0.5, 0, Math.PI * 2);
+                    ctx.arc(-3, -1, 1.8, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.fillStyle = 'rgba(255,255,255,0.5)';
+                    ctx.beginPath();
+                    ctx.ellipse(-7, -g.r * 0.65, 9, 5.5, -0.55, 0, Math.PI * 2);
                     ctx.fill();
                     ctx.beginPath();
-                    ctx.ellipse(6, -g.r * 0.6, 8, 5, 0.5, 0, Math.PI * 2);
+                    ctx.ellipse(7, -g.r * 0.65, 9, 5.5, 0.55, 0, Math.PI * 2);
                     ctx.fill();
                 } else {
-                    ctx.fillStyle = '#8b6914';
+                    ctx.fillStyle = '#a67c2c';
                     ctx.beginPath();
                     ctx.arc(0, 0, g.r, 0, Math.PI * 2);
                     ctx.fill();
-                    ctx.strokeStyle = 'rgba(0,0,0,0.2)';
+                    ctx.strokeStyle = 'rgba(255,255,255,0.25)';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                    ctx.fillStyle = '#3a3530';
+                    ctx.beginPath();
+                    ctx.arc(-6, -4, 2, 0, Math.PI * 2);
+                    ctx.arc(6, -4, 2, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.strokeStyle = 'rgba(0,0,0,0.25)';
                     ctx.lineWidth = 2;
                     for (let i = 0; i < g.hits; i++) {
-                        const a = -0.4 + i * 0.45;
+                        const a = -0.35 + i * 0.42;
                         ctx.beginPath();
-                        ctx.arc(0, 0, g.r - 4, a, a + 0.35);
+                        ctx.arc(0, 0, g.r - 5, a, a + 0.38);
                         ctx.stroke();
                     }
                 }
@@ -1136,40 +1310,76 @@
                 ctx.restore();
             }
 
+            function drawFloatTexts() {
+                ctx.font = '700 17px Fredoka, "Nunito", system-ui, sans-serif';
+                ctx.textAlign = 'center';
+                for (const ft of floatTexts) {
+                    ft.y += ft.vy;
+                    ft.life--;
+                    const a = Math.min(1, ft.life / 18);
+                    ctx.globalAlpha = a;
+                    ctx.strokeStyle = 'rgba(255,255,255,0.92)';
+                    ctx.lineWidth = 4;
+                    ctx.strokeText(ft.text, ft.x, ft.y);
+                    ctx.fillStyle = '#5d4e37';
+                    ctx.fillText(ft.text, ft.x, ft.y);
+                }
+                floatTexts = floatTexts.filter(ft => ft.life > 0);
+                ctx.globalAlpha = 1;
+            }
+
             function tick() {
                 if (!tabActive || !ctx) return;
                 raf = requestAnimationFrame(tick);
+                if (puffSquish > 0) puffSquish--;
+                if (streakToastT > 0) {
+                    streakToastT--;
+                    if (streakToastT === 0) {
+                        const el = document.getElementById('courier-streak-toast');
+                        if (el) el.textContent = '';
+                    }
+                }
+
                 if (!running) {
                     drawBg();
+                    guests.forEach(drawGuest);
+                    drawFloatTexts();
                     drawPlayer();
                     return;
                 }
 
-                const floorY = H - 18;
+                const floorY = H - 16;
                 spawnAcc += chillM();
-                const spawnEvery = Math.max(38, 92 - wave * 4) / chillM();
+                const cap = waveBanner > 0 ? 3 + Math.min(3, wave) : 5 + Math.min(4, wave);
+                const spawnEvery = Math.max(36, 88 - wave * 3.5) / chillM();
                 if (spawnAcc >= spawnEvery) {
                     spawnAcc = 0;
-                    if (guests.filter(g => !g.done && !g.escape).length < 5 + Math.min(4, wave))
-                        spawnGuest();
+                    if (guests.filter(g => !g.done && !g.escape && !(g.celebrate > 0)).length < cap) spawnGuest();
                 }
 
                 if (autopuffOn()) {
                     autoAcc++;
-                    const every = Math.round(26 / chillM());
+                    const every = Math.round(24 / chillM());
                     if (autoAcc >= every) { autoAcc = 0; tryPuff(); }
                 }
 
                 guests.forEach(g => {
                     if (g.done && g.escape) {
-                        g.y -= 12 * chillM();
+                        g.y -= 13 * chillM();
                         g.escape--;
                         if (g.escape <= 0) g.remove = true;
                         return;
                     }
+                    if (g.done && g.celebrate > 0) {
+                        g.celebrate--;
+                        g.y -= 1.35 * chillM();
+                        g.phase += 0.14;
+                        if (g.celebrate <= 0) g.remove = true;
+                        return;
+                    }
                     if (g.done) { g.remove = true; return; }
                     g.y += g.vy;
-                    g.phase += 0.04;
+                    g.phase += 0.035;
                     if (g.y - g.r > floorY) {
                         g.remove = true;
                         leakGuest();
@@ -1180,58 +1390,92 @@
                 puffs.forEach(p => {
                     p.y += p.vy;
                     p.life--;
+                    p.x += Math.sin((p.life + (p.seed || 0) * 7) * 0.12) * 0.35;
                 });
-                puffs = puffs.filter(p => p.life > 0 && p.y > -20);
+                puffs = puffs.filter(p => p.life > 0 && p.y > -24);
 
                 for (const p of puffs) {
                     for (const g of guests) {
-                        if (g.done || g.escape) continue;
+                        if (g.done || g.escape || g.celebrate > 0) continue;
                         const dx = p.x - g.x;
                         const dy = p.y - g.y;
                         if (dx * dx + dy * dy < (p.r + g.r) * (p.r + g.r)) {
                             p.life = 0;
                             g.hits++;
+                            ripples.push({ x: g.x, y: g.y, life: 14, max: 14 });
+                            if (g.hits < g.hitsNeeded) playChime(330 + g.hits * 40, 0.05, 0.05);
                             if (g.hits >= g.hitsNeeded) resolveGuest(g);
                             break;
                         }
                     }
                 }
 
+                ripples.forEach(r => { r.life--; });
+                ripples = ripples.filter(r => r.life > 0);
+
                 particles.forEach(pt => {
                     pt.x += pt.vx;
                     pt.y += pt.vy;
-                    pt.vy += 0.06;
+                    pt.vy += 0.055;
                     pt.life--;
+                    if (pt.petal) pt.rot += pt.vr;
                 });
                 particles = particles.filter(pt => pt.life > 0);
 
-                if (keys.left) playerX = Math.max(32, playerX - 5.2 * chillM());
-                if (keys.right) playerX = Math.min(W - 32, playerX + 5.2 * chillM());
+                if (keys.left) playerX = Math.max(36, playerX - 5.6 * chillM());
+                if (keys.right) playerX = Math.min(W - 36, playerX + 5.6 * chillM());
 
                 drawBg();
+                for (const r of ripples) {
+                    const t = r.life / r.max;
+                    ctx.strokeStyle = `rgba(255,230,150,${t * 0.6})`;
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.arc(r.x, r.y, (r.max - r.life) * 4 + 4, 0, Math.PI * 2);
+                    ctx.stroke();
+                }
                 guests.forEach(drawGuest);
                 for (const p of puffs) {
-                    const grd = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 2);
-                    grd.addColorStop(0, 'rgba(255,250,220,0.95)');
-                    grd.addColorStop(0.5, 'rgba(255,230,150,0.45)');
-                    grd.addColorStop(1, 'rgba(255,200,100,0)');
+                    const grd = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 2.4);
+                    grd.addColorStop(0, 'rgba(255,252,235,0.98)');
+                    grd.addColorStop(0.45, 'rgba(255,225,160,0.5)');
+                    grd.addColorStop(1, 'rgba(255,190,120,0)');
                     ctx.fillStyle = grd;
                     ctx.beginPath();
-                    ctx.arc(p.x, p.y, p.r * 2, 0, Math.PI * 2);
+                    ctx.arc(p.x, p.y, p.r * 2.3, 0, Math.PI * 2);
                     ctx.fill();
                 }
                 for (const pt of particles) {
-                    ctx.globalAlpha = Math.min(1, pt.life / 20);
+                    ctx.globalAlpha = Math.min(1, pt.life / 22);
                     ctx.fillStyle = pt.color;
-                    ctx.beginPath();
-                    ctx.arc(pt.x, pt.y, pt.size, 0, Math.PI * 2);
-                    ctx.fill();
+                    if (pt.petal) {
+                        ctx.save();
+                        ctx.translate(pt.x, pt.y);
+                        ctx.rotate(pt.rot);
+                        ctx.beginPath();
+                        ctx.ellipse(0, 0, pt.size * 1.2, pt.size * 0.55, 0, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.restore();
+                    } else {
+                        ctx.beginPath();
+                        ctx.arc(pt.x, pt.y, pt.size, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
                 }
                 ctx.globalAlpha = 1;
+                drawFloatTexts();
                 drawPlayer();
 
-                ctx.fillStyle = document.body.classList.contains('dark') ? 'rgba(255,255,255,0.08)' : 'rgba(93,78,55,0.12)';
-                ctx.fillRect(0, H - 14, W * (cloud / MAX_CLOUD), 8);
+                const cg = ctx.createLinearGradient(0, H - 20, W, H - 20);
+                cg.addColorStop(0, 'rgba(168,230,207,0.25)');
+                cg.addColorStop(1, 'rgba(126,200,227,0.35)');
+                ctx.fillStyle = cg;
+                ctx.fillRect(0, H - 16, W, 14);
+                ctx.fillStyle = document.body.classList.contains('dark') ? 'rgba(77,184,168,0.35)' : 'rgba(93,78,55,0.18)';
+                ctx.fillRect(0, H - 16, W * (cloud / MAX_CLOUD), 14);
+                ctx.strokeStyle = 'rgba(255,255,255,0.25)';
+                ctx.lineWidth = 1;
+                ctx.strokeRect(0.5, H - 15.5, W - 1, 13);
             }
 
             function loopStart() {
@@ -1259,61 +1503,75 @@
                 const btn = document.getElementById('courier-btn-toggle');
                 const reset = document.getElementById('courier-btn-reset');
                 const ovBtn = document.getElementById('courier-overlay-btn');
-                if (!cv || !btn) {
-                    return;
-                }
-                if (btn.dataset.wired === '1') {
-                    loopStart();
-                    return;
-                }
-                btn.dataset.wired = '1';
-                window.addEventListener('resize', () => { resize(); });
+                const welcomeOk = document.getElementById('courier-welcome-ok');
+                if (!cv || !btn) return;
 
-                btn.addEventListener('click', () => {
-                    if (cloud >= MAX_CLOUD) return;
-                    running = !running;
-                    btn.textContent = running ? 'Pause' : 'Start';
-                    if (running && audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
-                    loopStart();
-                });
-                reset.addEventListener('click', () => {
-                    blooms = 0; wave = 1; cloud = 0;
-                    guests = []; puffs = []; particles = [];
-                    spawnAcc = 0;
-                    hideOverlay();
-                    updateHud();
-                    running = false;
-                    btn.textContent = 'Start';
-                });
-                ovBtn.addEventListener('click', () => {
-                    cloud = 0;
-                    guests = []; puffs = []; particles = [];
-                    hideOverlay();
-                    updateHud();
-                    running = true;
-                    btn.textContent = 'Pause';
-                    loopStart();
-                });
+                if (btn.dataset.wired !== '1') {
+                    btn.dataset.wired = '1';
+                    window.addEventListener('resize', resize);
 
-                cv.addEventListener('pointermove', e => {
-                    const r = cv.getBoundingClientRect();
-                    const x = e.clientX - r.left;
-                    playerX = Math.min(Math.max(x, 28), W - 28);
-                });
-                cv.addEventListener('pointerdown', e => {
-                    if (e.button !== 0 && e.pointerType !== 'touch') return;
-                    tryPuff();
-                });
-                window.addEventListener('keydown', e => {
-                    if (!tabActive) return;
-                    if (e.code === 'Space') { e.preventDefault(); tryPuff(); }
-                    if (e.code === 'ArrowLeft') keys.left = true;
-                    if (e.code === 'ArrowRight') keys.right = true;
-                });
-                window.addEventListener('keyup', e => {
-                    if (e.code === 'ArrowLeft') keys.left = false;
-                    if (e.code === 'ArrowRight') keys.right = false;
-                });
+                    try {
+                        if (!localStorage.getItem(WELCOME_KEY)) showWelcome();
+                    } catch (_) {}
+
+                    if (welcomeOk) {
+                        welcomeOk.addEventListener('click', () => {
+                            try { localStorage.setItem(WELCOME_KEY, '1'); } catch (_) {}
+                            hideWelcome();
+                            playChord([392, 523.25], 0.15);
+                        });
+                    }
+
+                    btn.addEventListener('click', () => {
+                        if (cloud >= MAX_CLOUD) return;
+                        running = !running;
+                        btn.textContent = running ? 'Pause' : 'Start';
+                        if (running && audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+                        loopStart();
+                    });
+                    reset.addEventListener('click', () => {
+                        blooms = 0; wave = 1; cloud = 0; streak = 0;
+                        guests = []; puffs = []; particles = []; floatTexts = []; ripples = [];
+                        spawnAcc = 0; waveBanner = 0; skyT = 0;
+                        hideOverlay();
+                        const st = document.getElementById('courier-streak-toast');
+                        if (st) st.textContent = '';
+                        updateHud();
+                        running = false;
+                        btn.textContent = 'Start';
+                    });
+                    ovBtn && ovBtn.addEventListener('click', () => {
+                        cloud = 0;
+                        guests = []; puffs = []; particles = []; floatTexts = []; ripples = [];
+                        streak = 0;
+                        hideOverlay();
+                        updateHud();
+                        running = true;
+                        btn.textContent = 'Pause';
+                        playChord([349.23, 440, 523.25], 0.2);
+                        loopStart();
+                    });
+
+                    cv.addEventListener('pointermove', e => {
+                        const r = cv.getBoundingClientRect();
+                        const x = e.clientX - r.left;
+                        playerX = Math.min(Math.max(x, 32), W - 32);
+                    });
+                    cv.addEventListener('pointerdown', e => {
+                        if (e.button !== 0 && e.pointerType !== 'touch') return;
+                        tryPuff();
+                    });
+                    window.addEventListener('keydown', e => {
+                        if (!tabActive) return;
+                        if (e.code === 'Space') { e.preventDefault(); tryPuff(); }
+                        if (e.code === 'ArrowLeft') keys.left = true;
+                        if (e.code === 'ArrowRight') keys.right = true;
+                    });
+                    window.addEventListener('keyup', e => {
+                        if (e.code === 'ArrowLeft') keys.left = false;
+                        if (e.code === 'ArrowRight') keys.right = false;
+                    });
+                }
 
                 updateHud();
                 loopStart();
