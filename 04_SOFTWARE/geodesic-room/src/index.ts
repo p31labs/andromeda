@@ -1,29 +1,37 @@
 import { DurableObject } from 'cloudflare:workers';
+import {
+  computeMergedRigidity,
+  PLATONIC_VERTS,
+  type StrutMap,
+  type StrutRecord,
+} from './platonic';
 
 /**
  * geodesic-room v2: authoritative K₄ vertices + N-shape build state via Durable Object
  *
  * Routes:
- *   GET /api/geodesic/:roomId/state  → JSON snapshot (vertices + shapes + rigidity)
+ *   GET /api/geodesic/:roomId/state  → JSON snapshot (vertices + shapes + struts + rigidity)
  *   GET /api/geodesic/:roomId/ws     → WebSocket upgrade
  *
  * WS client → server:
  *   { type: 'SET_VERTEX', id: 'v0'|'v1'|'v2'|'v3', x, y, z }
- *   { type: 'ADD_SHAPE', shapeId: string, shapeType: ShapeType, x, y, z, rotY?: number }
+ *   { type: 'ADD_SHAPE', shapeId: string, shapeType: ShapeType, x, y, z, rotY?: number, tint?: number }
  *   { type: 'MOVE_SHAPE', shapeId: string, x, y, z, rotY?: number }
  *   { type: 'REMOVE_SHAPE', shapeId: string }
  *   { type: 'RESET_SHAPES' }
+ *   { type: 'ADD_STRUT', strutId, aShape, aVi, bShape, bVi }
+ *   { type: 'REMOVE_STRUT', strutId }
  *   { type: 'RESET' }       ← resets vertices only
  *   { type: 'ping' }
  *
  * WS server → client:
- *   { type: 'hello',  state: Vertices, shapes: ShapeMap, version, clientId, rigidity }
- *   { type: 'op',     op: Op }
+ *   { type: 'hello',  state: Vertices, shapes: ShapeMap, struts: StrutMap, version, clientId, rigidity }
+ *   { type: 'op',     op: Op }  // includes ADD_STRUT / REMOVE_STRUT
  *   { type: 'reset',  state: Vertices, version, ts }  ← vertex-only reset
  *   { type: 'joined', clientId, ts }
  *   { type: 'left',   clientId, ts }
  *   { type: 'pong',   ts }
- *   { type: 'error',  code: 'SHAPE_CAP', max: number }
+ *   { type: 'error',  code: 'SHAPE_CAP' | 'STRUT_CAP', max: number }
  */
 
 export interface Env {
@@ -45,19 +53,28 @@ export interface ShapeRecord {
   x: number; y: number; z: number;
   /** Radians — rotation about +Y (tabletop spin), Three.js convention. Optional in persisted JSON (default 0). */
   rotY?: number;
+  /** 0–7 CO-OP player palette slot (default derived from clientId). */
+  tint?: number;
   clientId: string;
   ts: number;
 }
 
 export interface RigidityResult {
-  V: number; E: number; F: number; rigid: boolean;
+  /** Merged joint count (pin joints after weld merge). */
+  V: number;
+  /** Unique bars (solid edges + struts). */
+  E: number;
+  F: number;
+  rigid: boolean;
+  /** Maxwell m = 3V − E − 6 on merged framework. */
+  m: number;
 }
 
 export type Vertices = Record<VertexId, VertexPos>;
 export type ShapeMap = Record<string, ShapeRecord>;
 
 export interface Op {
-  type: 'SET_VERTEX' | 'ADD_SHAPE' | 'MOVE_SHAPE' | 'REMOVE_SHAPE' | 'RESET_SHAPES';
+  type: 'SET_VERTEX' | 'ADD_SHAPE' | 'MOVE_SHAPE' | 'REMOVE_SHAPE' | 'RESET_SHAPES' | 'ADD_STRUT' | 'REMOVE_STRUT';
   // SET_VERTEX
   id?: VertexId;
   // ADD_SHAPE / MOVE_SHAPE / REMOVE_SHAPE
@@ -67,6 +84,12 @@ export interface Op {
   x?: number; y?: number; z?: number;
   /** Y rotation (radians), ADD_SHAPE / MOVE_SHAPE */
   rotY?: number;
+  tint?: number;
+  strutId?: string;
+  aShape?: string;
+  aVi?: number;
+  bShape?: string;
+  bVi?: number;
   // shared metadata
   version: number;
   ts: number;
@@ -85,6 +108,7 @@ const DEFAULT_VERTICES: Vertices = {
 const VERTEX_IDS: VertexId[] = ['v0', 'v1', 'v2', 'v3'];
 const VALID_TYPES = new Set<ShapeType>(['tet', 'oct', 'ico', 'cube']);
 const SHAPE_CAP = 50;
+const STRUT_CAP = 120;
 
 const SHAPE_VERTS: Record<ShapeType, number> = { tet: 4, oct: 6, ico: 12, cube: 8 };
 const SHAPE_EDGES: Record<ShapeType, number> = { tet: 6, oct: 12, ico: 30, cube: 12 };
@@ -106,14 +130,32 @@ function sanitizeId(raw: unknown, maxLen = 64): string {
   return String(raw ?? '').replace(/[^a-zA-Z0-9_-]/g, '').slice(0, maxLen);
 }
 
-function computeRigidity(shapes: ShapeMap): RigidityResult {
-  let V = 0, E = 0, F = 0;
-  for (const s of Object.values(shapes)) {
-    V += SHAPE_VERTS[s.type] ?? 0;
-    E += SHAPE_EDGES[s.type] ?? 0;
-    F += SHAPE_FACES[s.type] ?? 0;
+function tintFromClientId(clientId: string): number {
+  let h = 0;
+  for (let i = 0; i < clientId.length; i++) h = (h * 31 + clientId.charCodeAt(i)) | 0;
+  return Math.abs(h) % 8;
+}
+
+function computeRigidity(shapes: ShapeMap, struts: StrutMap): RigidityResult {
+  if (Object.keys(shapes).length === 0) {
+    return { V: 0, E: 0, F: 0, rigid: false, m: 0 };
   }
-  return { V, E, F, rigid: V === 0 ? false : E >= 3 * V - 6 };
+  const r = computeMergedRigidity(shapes, struts);
+  return { V: r.j, E: r.e, F: r.F, rigid: r.rigid, m: r.m };
+}
+
+function strutEndpointsKey(aShape: string, aVi: number, bShape: string, bVi: number): string {
+  const A = `${aShape}:${aVi}`;
+  const B = `${bShape}:${bVi}`;
+  return A < B ? `${A}|${B}` : `${B}|${A}`;
+}
+
+function pruneStrutsForShape(struts: StrutMap, shapeId: string): StrutMap {
+  const o: StrutMap = {};
+  for (const [k, v] of Object.entries(struts)) {
+    if (v.aShape !== shapeId && v.bShape !== shapeId) o[k] = v;
+  }
+  return o;
 }
 
 export class GeodesicRoom extends DurableObject<Env> {
@@ -142,6 +184,12 @@ export class GeodesicRoom extends DurableObject<Env> {
     try { return JSON.parse(raw) as ShapeMap; } catch { return {}; }
   }
 
+  private async getStruts(): Promise<StrutMap> {
+    const raw = await this.ctx.storage.get<string>('struts');
+    if (!raw) return {};
+    try { return JSON.parse(raw) as StrutMap; } catch { return {}; }
+  }
+
   private async getVersion(): Promise<number> {
     return (await this.ctx.storage.get<number>('version')) ?? 0;
   }
@@ -151,13 +199,13 @@ export class GeodesicRoom extends DurableObject<Env> {
     const path = url.pathname;
 
     if (path.endsWith('/state')) {
-      const [vertices, shapes, version] = await Promise.all([
-        this.getVertices(), this.getShapes(), this.getVersion(),
+      const [vertices, shapes, struts, version] = await Promise.all([
+        this.getVertices(), this.getShapes(), this.getStruts(), this.getVersion(),
       ]);
       return Response.json({
-        vertices, shapes, version,
+        vertices, shapes, struts, version,
         connections: this.ctx.getWebSockets().length,
-        rigidity: computeRigidity(shapes),
+        rigidity: computeRigidity(shapes, struts),
       });
     }
 
@@ -176,16 +224,17 @@ export class GeodesicRoom extends DurableObject<Env> {
     const [client, server] = Object.values(pair) as [WebSocket, WebSocket];
     this.ctx.acceptWebSocket(server, [clientId]);
 
-    const [vertices, shapes, version] = await Promise.all([
-      this.getVertices(), this.getShapes(), this.getVersion(),
+    const [vertices, shapes, struts, version] = await Promise.all([
+      this.getVertices(), this.getShapes(), this.getStruts(), this.getVersion(),
     ]);
     server.send(JSON.stringify({
       type: 'hello',
       state: vertices,
       shapes,
+      struts,
       version,
       clientId,
-      rigidity: computeRigidity(shapes),
+      rigidity: computeRigidity(shapes, struts),
     }));
 
     this.broadcastJson({ type: 'joined', clientId, ts: Date.now() }, clientId);
@@ -237,12 +286,33 @@ export class GeodesicRoom extends DurableObject<Env> {
         const rotY = rotYRequested !== undefined && rotYRequested !== null
           ? sanitizeRotY(rotYRequested)
           : 0;
-        const shape: ShapeRecord = { id: shapeId, type: shapeType, x, y, z, rotY, clientId, ts: Date.now() };
+        const tintRaw = msg['tint'];
+        const tint =
+          tintRaw !== undefined && tintRaw !== null
+            ? clamp(Math.floor(Number(tintRaw)), 0, 7)
+            : tintFromClientId(clientId);
+        const shape: ShapeRecord = {
+          id: shapeId, type: shapeType, x, y, z, rotY, tint, clientId, ts: Date.now(),
+        };
         shapes[shapeId] = shape;
         await this.ctx.storage.put('shapes', JSON.stringify(shapes));
         await this.ctx.storage.put('version', version);
-        const rigidity = computeRigidity(shapes);
-        const op: Op = { type: 'ADD_SHAPE', shapeId, shapeType, x, y, z, rotY, version, ts: Date.now(), clientId, rigidity };
+        const struts = await this.getStruts();
+        const rigidity = computeRigidity(shapes, struts);
+        const op: Op = {
+          type: 'ADD_SHAPE',
+          shapeId,
+          shapeType,
+          x,
+          y,
+          z,
+          rotY,
+          tint,
+          version,
+          ts: Date.now(),
+          clientId,
+          rigidity,
+        };
         this.broadcastJson({ type: 'op', op });
         break;
       }
@@ -264,7 +334,11 @@ export class GeodesicRoom extends DurableObject<Env> {
         shapes[shapeId] = { ...prev, x, y, z, rotY, ts: Date.now() };
         await this.ctx.storage.put('shapes', JSON.stringify(shapes));
         await this.ctx.storage.put('version', version);
-        const op: Op = { type: 'MOVE_SHAPE', shapeId, x, y, z, rotY, version, ts: Date.now(), clientId };
+        const strutsM = await this.getStruts();
+        const rigidityM = computeRigidity(shapes, strutsM);
+        const op: Op = {
+          type: 'MOVE_SHAPE', shapeId, x, y, z, rotY, version, ts: Date.now(), clientId, rigidity: rigidityM,
+        };
         this.broadcastJson({ type: 'op', op });
         break;
       }
@@ -275,18 +349,82 @@ export class GeodesicRoom extends DurableObject<Env> {
         const shapes = await this.getShapes();
         if (!shapes[shapeId]) return;
         delete shapes[shapeId];
+        let struts = pruneStrutsForShape(await this.getStruts(), shapeId);
+        await this.ctx.storage.put('struts', JSON.stringify(struts));
         await this.ctx.storage.put('shapes', JSON.stringify(shapes));
         await this.ctx.storage.put('version', version);
-        const rigidity = computeRigidity(shapes);
+        const rigidity = computeRigidity(shapes, struts);
         const op: Op = { type: 'REMOVE_SHAPE', shapeId, version, ts: Date.now(), clientId, rigidity };
+        this.broadcastJson({ type: 'op', op });
+        break;
+      }
+
+      case 'ADD_STRUT': {
+        const struts = await this.getStruts();
+        if (Object.keys(struts).length >= STRUT_CAP) {
+          ws.send(JSON.stringify({ type: 'error', code: 'STRUT_CAP', max: STRUT_CAP }));
+          return;
+        }
+        const shapes = await this.getShapes();
+        const strutId = sanitizeId(msg['strutId']) || `s-${crypto.randomUUID().slice(0, 10)}`;
+        if (!strutId || struts[strutId]) return;
+        const aShape = sanitizeId(msg['aShape']);
+        const bShape = sanitizeId(msg['bShape']);
+        if (!aShape || !bShape || !shapes[aShape] || !shapes[bShape]) return;
+        const aVi = Math.floor(Number(msg['aVi']));
+        const bVi = Math.floor(Number(msg['bVi']));
+        if (!Number.isFinite(aVi) || !Number.isFinite(bVi)) return;
+        const ta = shapes[aShape]!.type;
+        const tb = shapes[bShape]!.type;
+        const nA = PLATONIC_VERTS[ta]?.length ?? 0;
+        const nB = PLATONIC_VERTS[tb]?.length ?? 0;
+        if (aVi < 0 || aVi >= nA || bVi < 0 || bVi >= nB) return;
+        const ek = strutEndpointsKey(aShape, aVi, bShape, bVi);
+        for (const s of Object.values(struts)) {
+          if (strutEndpointsKey(s.aShape, s.aVi, s.bShape, s.bVi) === ek) return;
+        }
+        const rec: StrutRecord = {
+          id: strutId, aShape, aVi, bShape, bVi, clientId, ts: Date.now(),
+        };
+        struts[strutId] = rec;
+        await this.ctx.storage.put('struts', JSON.stringify(struts));
+        await this.ctx.storage.put('version', version);
+        const rigidity = computeRigidity(shapes, struts);
+        const op: Op = {
+          type: 'ADD_STRUT', strutId, aShape, aVi, bShape, bVi, version, ts: Date.now(), clientId, rigidity,
+        };
+        this.broadcastJson({ type: 'op', op });
+        break;
+      }
+
+      case 'REMOVE_STRUT': {
+        const strutId = sanitizeId(msg['strutId']);
+        if (!strutId) return;
+        const struts = await this.getStruts();
+        if (!struts[strutId]) return;
+        delete struts[strutId];
+        await this.ctx.storage.put('struts', JSON.stringify(struts));
+        await this.ctx.storage.put('version', version);
+        const shapes = await this.getShapes();
+        const rigidity = computeRigidity(shapes, struts);
+        const op: Op = {
+          type: 'REMOVE_STRUT', strutId, version, ts: Date.now(), clientId, rigidity,
+        };
         this.broadcastJson({ type: 'op', op });
         break;
       }
 
       case 'RESET_SHAPES': {
         await this.ctx.storage.put('shapes', JSON.stringify({}));
+        await this.ctx.storage.put('struts', JSON.stringify({}));
         await this.ctx.storage.put('version', version);
-        const op: Op = { type: 'RESET_SHAPES', version, ts: Date.now(), clientId, rigidity: { V: 0, E: 0, F: 0, rigid: false } };
+        const op: Op = {
+          type: 'RESET_SHAPES',
+          version,
+          ts: Date.now(),
+          clientId,
+          rigidity: { V: 0, E: 0, F: 0, rigid: false, m: 0 },
+        };
         this.broadcastJson({ type: 'op', op });
         break;
       }
@@ -317,7 +455,7 @@ export class GeodesicRoom extends DurableObject<Env> {
 }
 
 /** Matches `@p31/shared/geodesic-room-wire` — CI enforces alignment (`p31ca`: `verify:geodesic-room-wire`). */
-const GEODESIC_ROOM_WIRE_SCHEMA = 'p31.geodesicRoomWire/0.2.1';
+const GEODESIC_ROOM_WIRE_SCHEMA = 'p31.geodesicRoomWire/0.2.2';
 
 const ROOM_PATTERN = /^\/api\/geodesic\/([a-zA-Z0-9_-]{1,64})\/(ws|state)$/;
 

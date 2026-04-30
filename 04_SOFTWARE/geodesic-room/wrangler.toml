@@ -25,4 +25,4 @@ new_sqlite_classes = ["GeodesicRoom"]
 tag = "v2-shapes"
 
 [vars]
-WORKER_VERSION = "0.2.1"
+WORKER_VERSION = "0.2.2"

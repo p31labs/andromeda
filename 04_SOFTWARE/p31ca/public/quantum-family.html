@@ -43,6 +43,8 @@
         .sound-pad:active { transform: scale(0.95); }
         .sound-pad.playing { border-color: rgba(255,255,255,0.6); box-shadow: 0 0 20px rgba(255,255,255,0.3); }
         #draw-canvas { touch-action: none; cursor: crosshair; }
+        #courier-canvas { touch-action: none; cursor: none; display: block; width: 100%; max-height: min(72vh, 520px); border-radius: 24px; }
+        body.dark #courier-wrap { border-color: rgba(255,255,255,0.12); }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
@@ -55,9 +57,11 @@
         <button class="nav-pill px-4 py-2.5 rounded-2xl border-2 border-[#F0EBE3] bg-white font-display font-semibold text-[#7A7570] text-sm" data-target="ground">🌿 Ground</button>
         <button class="nav-pill px-4 py-2.5 rounded-2xl border-2 border-[#F0EBE3] bg-white font-display font-semibold text-[#7A7570] text-sm" data-target="sounds">🎵 Sounds</button>
         <button class="nav-pill px-4 py-2.5 rounded-2xl border-2 border-[#F0EBE3] bg-white font-display font-semibold text-[#7A7570] text-sm" data-target="draw">🎨 Draw</button>
+        <button class="nav-pill px-4 py-2.5 rounded-2xl border-2 border-[#F0EBE3] bg-white font-display font-semibold text-[#7A7570] text-sm" data-target="courier">🐝 Courier</button>
         <button class="nav-pill px-4 py-2.5 rounded-2xl border-2 border-[#F0EBE3] bg-white font-display font-semibold text-[#7A7570] text-sm" data-target="family">🔺 Family</button>
         <button class="nav-pill px-4 py-2.5 rounded-2xl border-2 border-[#F0EBE3] bg-white font-display font-semibold text-[#7A7570] text-sm" data-target="calcium">🦴 Calcium</button>
         <button class="nav-pill px-4 py-2.5 rounded-2xl border-2 border-[#F0EBE3] bg-white font-display font-semibold text-[#7A7570] text-sm" data-target="love">💌 Love Notes</button>
+        <button class="nav-pill px-4 py-2.5 rounded-2xl border-2 border-[#F0EBE3] bg-white font-display font-semibold text-[#7A7570] text-sm" data-target="garden">🌱 Garden Log</button>
     </nav>
 
     <main class="flex-grow max-w-3xl mx-auto w-full px-4 py-8 md:py-12">
@@ -79,11 +83,17 @@
                 <button onclick="document.querySelector('[data-target=\'draw\']').click()" class="soft-card p-6 flex flex-col items-center hover:-translate-y-1 transition-transform">
                     <span class="text-4xl mb-2">🎨</span><span class="font-display font-bold text-[#5D4E37]">Draw</span><span class="text-xs text-[#7A7570]">Blank canvas</span>
                 </button>
+                <button onclick="document.querySelector('[data-target=\'courier\']').click()" class="soft-card p-6 flex flex-col items-center hover:-translate-y-1 transition-transform border-2 border-[#A8E6CF]/40">
+                    <span class="text-4xl mb-2">🐝</span><span class="font-display font-bold text-[#5D4E37]">Pollination</span><span class="text-xs text-[#7A7570]">Kind reflexes</span>
+                </button>
                 <button onclick="document.querySelector('[data-target=\'family\']').click()" class="soft-card p-6 flex flex-col items-center hover:-translate-y-1 transition-transform">
                     <span class="text-4xl mb-2">🔺</span><span class="font-display font-bold text-[#5D4E37]">Family</span><span class="text-xs text-[#7A7570]">The tetrahedron</span>
                 </button>
                 <button onclick="document.querySelector('[data-target=\'love\']').click()" class="soft-card p-6 flex flex-col items-center hover:-translate-y-1 transition-transform">
                     <span class="text-4xl mb-2">💌</span><span class="font-display font-bold text-[#5D4E37]">Love Notes</span><span class="text-xs text-[#7A7570]">From the jar</span>
+                </button>
+                <button onclick="document.querySelector('[data-target=\'garden\']').click()" class="soft-card p-6 flex flex-col items-center hover:-translate-y-1 transition-transform">
+                    <span class="text-4xl mb-2">🌱</span><span class="font-display font-bold text-[#5D4E37]">Garden Log</span><span class="text-xs text-[#7A7570]">What we found today</span>
                 </button>
             </div>
             <div class="mt-8 p-6 soft-card border-t-4 border-t-[#8B6BAE] text-left">
@@ -172,8 +182,8 @@
             </div>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 text-center">
                 <div class="soft-card p-4"><div class="text-3xl mb-1">🔧</div><div class="font-display font-bold text-[#5D4E37] text-sm">Dad</div></div>
-                <div class="soft-card p-4"><div class="text-3xl mb-1">🌿</div><div class="font-display font-bold text-[#5D4E37] text-sm">Willow</div></div>
-                <div class="soft-card p-4"><div class="text-3xl mb-1">🚀</div><div class="font-display font-bold text-[#5D4E37] text-sm">Bash</div></div>
+                <div class="soft-card p-4"><div class="text-3xl mb-1">🌿</div><div class="font-display font-bold text-[#5D4E37] text-sm">S.J.</div></div>
+                <div class="soft-card p-4"><div class="text-3xl mb-1">🚀</div><div class="font-display font-bold text-[#5D4E37] text-sm">W.J.</div></div>
                 <div class="soft-card p-4"><div class="text-3xl mb-1">💜</div><div class="font-display font-bold text-[#5D4E37] text-sm">Mom</div></div>
             </div>
         </div>
@@ -209,6 +219,116 @@
             </div>
         </div>
 
+        <!-- GARDEN LOG — physical garden → Phos garden_state bridge -->
+        <!-- Schema: p31.phos.gardenState/1.0.0; manifest: /garden-zone-8b.json -->
+        <div id="page-garden" class="page">
+            <h1 class="font-display text-3xl text-[#5D4E37] mb-2">🌱 Garden Log</h1>
+            <p class="text-[#7A7570] mb-6">What did you see, smell, or pick today? This builds a Phos message — Phos is sleepy until a grown-up sends it.</p>
+
+            <div class="soft-card p-6 mb-6">
+                <h3 class="font-display text-xl text-[#5D4E37] mb-4">🌿 What we found</h3>
+                <p class="text-xs text-[#7A7570] mb-3">Tap chips for what's in the garden right now. Manifest: <a href="/garden-zone-8b.json" class="text-[#8B6BAE] underline">zone 8b plants</a>.</p>
+                <div id="g-mol-chips" class="flex flex-wrap gap-2 mb-4"></div>
+                <input type="text" id="g-mol-custom" placeholder="Add your own (e.g. monarch-chrysalis)" class="w-full px-4 py-2 rounded-xl border-2 border-[#F0EBE3] bg-white text-sm font-mono text-[#5D4E37]" />
+                <div class="flex gap-2 mt-3 flex-wrap">
+                    <button onclick="addCustomMol()" class="px-4 py-2 rounded-full bg-[#A8E6CF] text-[#5D4E37] font-display font-semibold text-sm">+ Add</button>
+                    <button onclick="clearMols()" class="px-4 py-2 rounded-full bg-white border-2 border-[#F0EBE3] text-[#7A7570] font-display font-semibold text-sm">Clear</button>
+                </div>
+                <div id="g-mol-selected" class="mt-3 flex flex-wrap gap-2 min-h-[2rem]"></div>
+            </div>
+
+            <div class="soft-card p-6 mb-6">
+                <h3 class="font-display text-xl text-[#5D4E37] mb-4">🦶 What we did</h3>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-2" id="g-action-grid">
+                    <button class="g-action-btn soft-card p-3 text-sm font-display text-[#5D4E37]" data-action="building">🔨 Building</button>
+                    <button class="g-action-btn soft-card p-3 text-sm font-display text-[#5D4E37]" data-action="watching">👀 Watching</button>
+                    <button class="g-action-btn soft-card p-3 text-sm font-display text-[#5D4E37]" data-action="planting">🌱 Planting</button>
+                    <button class="g-action-btn soft-card p-3 text-sm font-display text-[#5D4E37]" data-action="tasting">😋 Tasting</button>
+                    <button class="g-action-btn soft-card p-3 text-sm font-display text-[#5D4E37]" data-action="sitting">🪑 Sitting</button>
+                    <button class="g-action-btn soft-card p-3 text-sm font-display text-[#5D4E37]" data-action="digging">⛏️ Digging</button>
+                </div>
+            </div>
+
+            <div class="soft-card p-6 mb-6">
+                <h3 class="font-display text-xl text-[#5D4E37] mb-4">✋ How it felt</h3>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-2" id="g-sense-grid">
+                    <button class="g-sense-btn soft-card p-3 text-sm font-display text-[#5D4E37]" data-sense="cloud_soft_some">☁️ Cloud-soft</button>
+                    <button class="g-sense-btn soft-card p-3 text-sm font-display text-[#5D4E37]" data-sense="thyme_warm">🌿 Thyme-warm</button>
+                    <button class="g-sense-btn soft-card p-3 text-sm font-display text-[#5D4E37]" data-sense="sand_warm">🏖️ Sand-warm</button>
+                    <button class="g-sense-btn soft-card p-3 text-sm font-display text-[#5D4E37]" data-sense="moss_cool">💧 Moss-cool</button>
+                    <button class="g-sense-btn soft-card p-3 text-sm font-display text-[#5D4E37]" data-sense="stone_cool">🪨 Stone-cool</button>
+                    <button class="g-sense-btn soft-card p-3 text-sm font-display text-[#5D4E37]" data-sense="wind_steady">🍃 Wind-steady</button>
+                </div>
+            </div>
+
+            <div class="soft-card p-6 mb-6">
+                <h3 class="font-display text-xl text-[#5D4E37] mb-4">💬 Words for Phos (optional)</h3>
+                <textarea id="g-input" rows="2" placeholder="A short thing to ask Phos, like: 'What does carbon like to do?'" class="w-full px-4 py-3 rounded-xl border-2 border-[#F0EBE3] bg-white font-mono text-sm text-[#5D4E37]"></textarea>
+                <div class="flex flex-wrap gap-3 mt-3 items-center">
+                    <label class="flex items-center gap-2 text-sm text-[#7A7570]"><input type="checkbox" id="g-pre-reader" class="w-4 h-4 accent-[#8B6BAE]"> Pre-reader (≤12 simple words)</label>
+                </div>
+            </div>
+
+            <div class="soft-card p-6">
+                <h3 class="font-display text-xl text-[#5D4E37] mb-2">📦 Phos message preview</h3>
+                <p class="text-xs text-[#7A7570] mb-3">A grown-up will sign and send this. Nothing leaves your tablet until they do.</p>
+                <pre id="g-preview" class="bg-[#F8F5F0] dark:bg-[#0f0f1a] rounded-xl p-4 text-[10px] font-mono text-[#5D4E37] overflow-x-auto whitespace-pre-wrap"></pre>
+                <div class="flex flex-wrap gap-3 mt-4">
+                    <button onclick="copyGardenJson()" class="px-5 py-2.5 rounded-full bg-[#8B6BAE] text-white font-display font-semibold text-sm">📋 Copy for grown-up</button>
+                    <button onclick="saveGardenLog()" class="px-5 py-2.5 rounded-full bg-white border-2 border-[#F0EBE3] text-[#7A7570] font-display font-semibold text-sm">💾 Save to log</button>
+                    <button onclick="clearGardenForm()" class="px-5 py-2.5 rounded-full bg-white border-2 border-[#F0EBE3] text-[#7A7570] font-display font-semibold text-sm">↺ Reset</button>
+                </div>
+                <div id="g-log-history" class="mt-6"></div>
+            </div>
+        </div>
+
+        <!-- POLLINATION COURIER — kid-first: celebration, cheers, no lose framing -->
+        <div id="page-courier" class="page">
+            <h1 class="font-display text-3xl text-[#5D4E37] mb-2">🐝 Pollination Courier</h1>
+            <p class="text-[#7A7570] mb-2 text-base leading-relaxed">A <strong>kind reflex</strong> game: you steer a tiny flower-boat and send sparkly nectar puffs. Buds bloom, bees get a gold hello, pods need three soft knocks. <strong>You can’t lose</strong> — if the cloud strip fills, the sky just asks everyone to take a breath together.</p>
+            <p class="text-sm text-[#7A7570] mb-4">Slide or drag to move · Tap for a puff · <kbd class="px-1.5 py-0.5 rounded bg-[#F0EBE3] font-mono text-xs">Space</kbd> works too · Arrows nudge · Turn on <span class="text-[#8B6BAE] font-semibold">Chill</span> if you want it slower</p>
+            <div id="courier-wrap" class="soft-card p-3 mb-4 border-2 border-[#F0EBE3] relative overflow-hidden">
+                <canvas id="courier-canvas" width="360" height="440" aria-label="Pollination Courier playfield — slide to move your boat, tap to puff nectar"></canvas>
+                <div id="courier-welcome" class="hidden absolute inset-3 z-20 flex flex-col items-center justify-center rounded-2xl bg-gradient-to-b from-[#fff9fc] via-[#f3faf5] to-[#e5f0ff] dark:from-[#1e2433] dark:via-[#1a1f2e] dark:to-[#121820] border-2 border-[#A8E6CF]/45 p-5 pointer-events-auto text-center shadow-[0_12px_40px_rgba(93,78,55,0.12)]">
+                    <div class="max-w-sm px-1">
+                        <div class="text-5xl mb-2 select-none" aria-hidden="true">🌸🐝🌼</div>
+                        <h2 class="font-display text-2xl text-[#5D4E37] dark:text-[#d8d6d0] mb-3">Hi, garden helper</h2>
+                        <p class="text-[#5D4E37] dark:text-[#d8d6d0] text-[0.95rem] leading-relaxed mb-3">Your boat is a little flower with a job: <strong>help things grow</strong>. Slide your finger side to side. Tap anywhere on the sky to send a warm puff. Every friend in the sky wants a high-five, not a fight.</p>
+                        <p class="text-sm text-[#7A7570] mb-5">Busy brain? Check <strong>Chill mode</strong> and <strong>Gentle auto-puff</strong> below. The pause screen is only a cozy rain break — tap and the sun comes back.</p>
+                        <button type="button" id="courier-welcome-ok" class="px-8 py-3.5 rounded-full bg-[#8B6BAE] text-white font-display font-bold text-lg shadow-md active:scale-[0.98] transition-transform">Let’s grow something beautiful 💚</button>
+                    </div>
+                </div>
+                <div id="courier-overlay" class="hidden absolute inset-3 items-center justify-center rounded-2xl bg-[#F8F5F0]/95 dark:bg-[#0f1115]/95 text-center p-6 pointer-events-auto z-10 border-2 border-[#7EC8E3]/35">
+                    <div>
+                        <div class="text-5xl mb-3" id="courier-overlay-icon" aria-hidden="true">☁️💤</div>
+                        <p class="font-display text-xl text-[#5D4E37] dark:text-[#d8d6d0] mb-2" id="courier-overlay-title">Cozy rain break</p>
+                        <p class="text-sm text-[#7A7570] mb-5 max-w-xs mx-auto leading-relaxed" id="courier-overlay-body">The cloud basket got full — that happens! Nothing is mad at you. Take one slow breath, then we’ll dry the sky and keep playing.</p>
+                        <button type="button" id="courier-overlay-btn" class="px-8 py-3 rounded-full bg-[#7EC8E3] text-[#0a0c10] font-display font-bold shadow-md">Okay — sun’s out again</button>
+                    </div>
+                </div>
+            </div>
+            <div class="flex flex-wrap gap-3 items-center justify-center mb-4">
+                <button type="button" id="courier-btn-toggle" class="px-5 py-2.5 rounded-full bg-[#5D4E37] text-white font-display font-semibold text-sm">Start</button>
+                <label class="flex items-center gap-2 text-sm text-[#7A7570] cursor-pointer select-none"><input type="checkbox" id="courier-chill" class="w-4 h-4 accent-[#8B6BAE]"> Chill mode</label>
+                <label class="flex items-center gap-2 text-sm text-[#7A7570] cursor-pointer select-none"><input type="checkbox" id="courier-autopuff" checked class="w-4 h-4 accent-[#8B6BAE]"> Gentle auto-puff</label>
+                <button type="button" id="courier-btn-reset" class="px-4 py-2 rounded-full bg-white border-2 border-[#F0EBE3] font-display font-semibold text-sm text-[#7A7570]">Reset run</button>
+            </div>
+            <div class="grid grid-cols-3 gap-3 text-center font-mono text-xs text-[#7A7570] mb-6">
+                <div class="soft-card p-3"><div class="text-[#8B6BAE] font-display text-base text-[#5D4E37] dark:text-[#d8d6d0]" id="courier-stat-blooms">0</div><span class="font-display text-[10px] uppercase tracking-wide text-[#7A7570]">helps</span></div>
+                <div class="soft-card p-3"><div class="text-[#7EC8E3] font-display text-base text-[#5D4E37] dark:text-[#d8d6d0]" id="courier-stat-wave">1</div><span class="font-display text-[10px] uppercase tracking-wide text-[#7A7570]">breeze</span></div>
+                <div class="soft-card p-3"><div class="text-[#A8E6CF] font-display text-base text-[#5D4E37] dark:text-[#d8d6d0]" id="courier-stat-cloud">0</div><span class="font-display text-[10px] uppercase tracking-wide text-[#7A7570]">cloud</span></div>
+            </div>
+            <p id="courier-streak-toast" class="text-center font-display text-sm text-[#8B6BAE] mb-4 min-h-[1.25em]" aria-live="polite"></p>
+            <div class="soft-card p-5 text-sm text-[#5D4E37] dark:text-[#d8d6d0]">
+                <h3 class="font-display text-lg mb-2 text-[#8B6BAE]">Friends in the sky</h3>
+                <ul class="space-y-2 list-disc pl-5 text-[#7A7570]">
+                    <li><strong class="text-[#5D4E37] dark:text-[#d8d6d0]">Sleepy bud</strong> — one puff and it <em>blooms</em> right in front of you.</li>
+                    <li><strong class="text-[#5D4E37] dark:text-[#d8d6d0]">Wiggly bee</strong> — zig-zags because bees are silly; one sparkle and it zooms home.</li>
+                    <li><strong class="text-[#5D4E37] dark:text-[#d8d6d0]">Round seed pod</strong> — say hi three times (three puffs); then confetti fluff.</li>
+                </ul>
+            </div>
+        </div>
+
         <!-- LOVE NOTES -->
         <div id="page-love" class="page text-center">
             <h1 class="font-display text-3xl text-[#5D4E37] mb-2">💌 Love Notes</h1>
@@ -225,14 +345,19 @@
     <script>
         document.querySelectorAll('.nav-pill[data-target]').forEach(btn => {
             btn.addEventListener('click', (e) => {
+                const pill = e.currentTarget;
+                const target = pill.dataset.target;
                 document.querySelectorAll('.nav-pill[data-target]').forEach(b => { b.classList.remove('active'); b.style.background='white'; b.style.color='#7A7570'; b.style.borderColor='#F0EBE3'; b.style.boxShadow=''; });
-                e.target.classList.add('active'); e.target.style.background='#8B6BAE'; e.target.style.color='white'; e.target.style.borderColor='#8B6BAE'; e.target.style.boxShadow='0 4px 12px rgba(139,107,174,0.25)';
+                pill.classList.add('active'); pill.style.background='#8B6BAE'; pill.style.color='white'; pill.style.borderColor='#8B6BAE'; pill.style.boxShadow='0 4px 12px rgba(139,107,174,0.25)';
                 document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-                document.getElementById('page-' + e.target.dataset.target).classList.add('active');
+                document.getElementById('page-' + target).classList.add('active');
                 window.scrollTo(0,0);
-                if(e.target.dataset.target === 'family') initFamilyTetra();
-                if(e.target.dataset.target === 'calcium') initMolecule();
-                if(e.target.dataset.target === 'draw') initDraw();
+                if(target === 'family') initFamilyTetra();
+                if(target === 'calcium') initMolecule();
+                if(target === 'draw') initDraw();
+                if(target === 'garden') initGardenLog();
+                if(target === 'courier') initPollinationCourier();
+                else if (window.__pollinationCourierPause) window.__pollinationCourierPause();
             });
         });
 
@@ -436,6 +561,1022 @@
             document.querySelectorAll('.mol-ctrl-btn').forEach(b => { b.className = 'mol-ctrl-btn px-4 py-1.5 rounded-full font-display text-xs bg-white border border-gray-300 text-[#7A7570]'; });
             btn.className = 'mol-ctrl-btn active px-4 py-1.5 rounded-full font-display text-xs bg-[#7EC8E3] text-white border-transparent';
         }
+
+        /* ========== GARDEN LOG ==========
+         * Bridges the physical Camden County garden (ground-truth/garden-zone-8b.json)
+         * to the Phos digital companion (simplex-v7/src/skills/phos-handler.ts).
+         *
+         * Posts NOTHING. The page builds a JSON payload that matches Phos's
+         * `garden_state` schema exactly (p31.phos.gardenState/1.0.0). The operator
+         * copies the payload into `npm run phos:probe` (HMAC-signed off-device) or
+         * the operator-only garden-phos-probe.html to actually send it. The kid
+         * tablet never holds a secret.
+         */
+
+        const GARDEN_STATE_KEY = 'p31:quantum-family:garden-state';
+        const GARDEN_LOG_KEY = 'p31:quantum-family:garden-log';
+        const PHOS_DEFAULT_CHILD_ID = 'family-garden-child-1';
+        const PHOS_GARDEN_STATE_SCHEMA = 'p31.phos.gardenState/1.0.0';
+
+        let gardenState = {
+            molecules: new Set(),
+            action: null,
+            sense: null,
+        };
+
+        async function initGardenLog() {
+            if (window.__gardenInited) return;
+            window.__gardenInited = true;
+
+            /* Load chips from the canonical zone-8b manifest. Falls back to a
+             * built-in seed list if the manifest hasn't deployed yet. */
+            let manifest = null;
+            try {
+                const r = await fetch('/garden-zone-8b.json', { cache: 'no-store' });
+                if (r.ok) manifest = await r.json();
+            } catch (_) { /* offline-tolerant */ }
+
+            const seedChips = manifest && Array.isArray(manifest.plants)
+                ? manifest.plants
+                    .filter(p => ['A','B'].includes(p.tier))
+                    .map(p => ({ id: p.id, label: p.common }))
+                : [
+                    { id: 'rabbiteye-blueberry', label: 'Rabbiteye blueberry' },
+                    { id: 'swamp-milkweed', label: 'Swamp milkweed' },
+                    { id: 'mammoth-russian-sunflower', label: 'Sunflower' },
+                    { id: 'monarch-chrysalis', label: 'Monarch chrysalis' },
+                    { id: 'cherry-tomato', label: 'Cherry tomato' },
+                    { id: 'mint', label: 'Mint' },
+                    { id: 'creeping-thyme', label: 'Thyme' },
+                    { id: 'nasturtium', label: 'Nasturtium' },
+                ];
+
+            const chipsHost = document.getElementById('g-mol-chips');
+            chipsHost.innerHTML = seedChips.map(c =>
+                `<button class="g-mol-chip px-3 py-1.5 rounded-full bg-white border-2 border-[#F0EBE3] text-xs font-display text-[#5D4E37] hover:border-[#A8E6CF]" data-mol="${c.id}">${c.label}</button>`
+            ).join('');
+            chipsHost.querySelectorAll('.g-mol-chip').forEach(b => {
+                b.addEventListener('click', () => toggleMol(b.dataset.mol, b));
+            });
+
+            document.querySelectorAll('.g-action-btn').forEach(b => {
+                b.addEventListener('click', () => setGardenAction(b.dataset.action, b));
+            });
+            document.querySelectorAll('.g-sense-btn').forEach(b => {
+                b.addEventListener('click', () => setGardenSense(b.dataset.sense, b));
+            });
+
+            document.getElementById('g-input').addEventListener('input', renderGardenPreview);
+            document.getElementById('g-pre-reader').addEventListener('change', renderGardenPreview);
+
+            /* Restore prior in-progress state if the kid navigated away. */
+            try {
+                const saved = JSON.parse(localStorage.getItem(GARDEN_STATE_KEY) || 'null');
+                if (saved && saved.molecules) {
+                    gardenState.molecules = new Set(saved.molecules);
+                    gardenState.action = saved.action || null;
+                    gardenState.sense = saved.sense || null;
+                    chipsHost.querySelectorAll('.g-mol-chip').forEach(b => {
+                        if (gardenState.molecules.has(b.dataset.mol)) markChipActive(b);
+                    });
+                    if (gardenState.action) {
+                        const btn = document.querySelector(`[data-action="${gardenState.action}"]`);
+                        if (btn) markActionActive(btn);
+                    }
+                    if (gardenState.sense) {
+                        const btn = document.querySelector(`[data-sense="${gardenState.sense}"]`);
+                        if (btn) markSenseActive(btn);
+                    }
+                }
+            } catch (_) { /* ignore restore errors */ }
+
+            renderGardenSelected();
+            renderGardenPreview();
+            renderGardenHistory();
+        }
+
+        function markChipActive(b) {
+            b.style.background = '#A8E6CF';
+            b.style.borderColor = '#A8E6CF';
+            b.style.color = '#5D4E37';
+        }
+        function markChipInactive(b) {
+            b.style.background = 'white';
+            b.style.borderColor = '#F0EBE3';
+            b.style.color = '#5D4E37';
+        }
+
+        function toggleMol(id, btn) {
+            if (gardenState.molecules.has(id)) {
+                gardenState.molecules.delete(id);
+                markChipInactive(btn);
+            } else {
+                gardenState.molecules.add(id);
+                markChipActive(btn);
+            }
+            persistGardenState();
+            renderGardenSelected();
+            renderGardenPreview();
+        }
+
+        function addCustomMol() {
+            const input = document.getElementById('g-mol-custom');
+            const v = (input.value || '').trim().toLowerCase().replace(/\s+/g, '-');
+            if (!v) return;
+            if (v.length > 64) return; /* keep payloads kid-sized */
+            gardenState.molecules.add(v);
+            input.value = '';
+            persistGardenState();
+            renderGardenSelected();
+            renderGardenPreview();
+        }
+
+        function clearMols() {
+            gardenState.molecules.clear();
+            document.querySelectorAll('.g-mol-chip').forEach(markChipInactive);
+            persistGardenState();
+            renderGardenSelected();
+            renderGardenPreview();
+        }
+
+        function renderGardenSelected() {
+            const host = document.getElementById('g-mol-selected');
+            const items = [...gardenState.molecules];
+            host.innerHTML = items.length === 0
+                ? '<span class="text-xs text-[#7A7570] italic">Nothing picked yet.</span>'
+                : items.map(m =>
+                    `<span class="px-3 py-1 rounded-full bg-[#A8E6CF] text-[#5D4E37] text-xs font-mono">${m}<button onclick="removeMol('${m}')" class="ml-2 font-bold text-[#5D4E37]/60 hover:text-[#5D4E37]">×</button></span>`
+                ).join('');
+        }
+
+        function removeMol(id) {
+            gardenState.molecules.delete(id);
+            const btn = document.querySelector(`.g-mol-chip[data-mol="${id}"]`);
+            if (btn) markChipInactive(btn);
+            persistGardenState();
+            renderGardenSelected();
+            renderGardenPreview();
+        }
+
+        function setGardenAction(action, btn) {
+            gardenState.action = action;
+            document.querySelectorAll('.g-action-btn').forEach(b => {
+                b.style.background = ''; b.style.borderColor = '';
+            });
+            markActionActive(btn);
+            persistGardenState();
+            renderGardenPreview();
+        }
+        function markActionActive(btn) {
+            btn.style.background = '#7EC8E3';
+            btn.style.borderColor = '#7EC8E3';
+            btn.style.color = 'white';
+        }
+
+        function setGardenSense(sense, btn) {
+            gardenState.sense = sense;
+            document.querySelectorAll('.g-sense-btn').forEach(b => {
+                b.style.background = ''; b.style.borderColor = ''; b.style.color = '#5D4E37';
+            });
+            markSenseActive(btn);
+            persistGardenState();
+            renderGardenPreview();
+        }
+        function markSenseActive(btn) {
+            btn.style.background = '#C3AED6';
+            btn.style.borderColor = '#C3AED6';
+            btn.style.color = 'white';
+        }
+
+        function persistGardenState() {
+            try {
+                localStorage.setItem(GARDEN_STATE_KEY, JSON.stringify({
+                    molecules: [...gardenState.molecules],
+                    action: gardenState.action,
+                    sense: gardenState.sense,
+                }));
+            } catch (_) { /* quota or private mode */ }
+        }
+
+        function buildPhosPayload() {
+            const input = (document.getElementById('g-input').value || '').trim();
+            const preReader = document.getElementById('g-pre-reader').checked;
+            const localHour = new Date().getHours();
+            const garden_state = {
+                molecules_today: [...gardenState.molecules],
+                current_action: gardenState.action || 'present',
+                ...(gardenState.sense ? { sensory_profile: gardenState.sense } : {}),
+                manifest: '/garden-zone-8b.json',
+                manifest_schema: 'p31.gardenZone/1.0.0',
+            };
+            return {
+                child_id: PHOS_DEFAULT_CHILD_ID,
+                garden_state,
+                input_type: 'text',
+                input: input || '(child present in garden; react to garden_state only)',
+                exchange_count: 0,
+                local_hour: localHour,
+                pre_reader: preReader,
+                _schema_hint: PHOS_GARDEN_STATE_SCHEMA,
+            };
+        }
+
+        function renderGardenPreview() {
+            const payload = buildPhosPayload();
+            document.getElementById('g-preview').textContent = JSON.stringify(payload, null, 2);
+        }
+
+        async function copyGardenJson() {
+            const txt = document.getElementById('g-preview').textContent;
+            try {
+                await navigator.clipboard.writeText(txt);
+                flashGardenStatus('Copied! Hand the tablet to a grown-up.');
+            } catch (_) {
+                /* HTTP / older Safari fallback */
+                const ta = document.createElement('textarea');
+                ta.value = txt; document.body.appendChild(ta);
+                ta.select(); document.execCommand('copy');
+                document.body.removeChild(ta);
+                flashGardenStatus('Copied (fallback). Hand the tablet to a grown-up.');
+            }
+        }
+
+        function flashGardenStatus(msg) {
+            let el = document.getElementById('g-flash');
+            if (!el) {
+                el = document.createElement('div');
+                el.id = 'g-flash';
+                el.className = 'mt-3 px-4 py-2 rounded-xl bg-[#A8E6CF] text-[#5D4E37] font-display text-sm';
+                document.getElementById('g-preview').parentNode.appendChild(el);
+            }
+            el.textContent = msg;
+            clearTimeout(window.__gFlashT);
+            window.__gFlashT = setTimeout(() => { el.remove(); }, 3500);
+        }
+
+        function saveGardenLog() {
+            const payload = buildPhosPayload();
+            const entry = {
+                ts: new Date().toISOString(),
+                payload,
+            };
+            let log = [];
+            try { log = JSON.parse(localStorage.getItem(GARDEN_LOG_KEY) || '[]'); } catch (_) {}
+            log.unshift(entry);
+            log = log.slice(0, 30); /* keep last 30 */
+            try { localStorage.setItem(GARDEN_LOG_KEY, JSON.stringify(log)); } catch (_) {}
+            flashGardenStatus('Saved. ' + log.length + ' log entr' + (log.length === 1 ? 'y' : 'ies') + ' on this tablet.');
+            renderGardenHistory();
+        }
+
+        function renderGardenHistory() {
+            const host = document.getElementById('g-log-history');
+            let log = [];
+            try { log = JSON.parse(localStorage.getItem(GARDEN_LOG_KEY) || '[]'); } catch (_) {}
+            if (log.length === 0) { host.innerHTML = ''; return; }
+            host.innerHTML = `
+                <h4 class="font-display text-sm text-[#5D4E37] mt-6 mb-2">Recent log (this tablet only)</h4>
+                <div class="space-y-2">
+                    ${log.slice(0, 5).map(e => {
+                        const dt = new Date(e.ts);
+                        const mols = (e.payload?.garden_state?.molecules_today || []).slice(0, 4).join(', ') || '(presence only)';
+                        const action = e.payload?.garden_state?.current_action || '—';
+                        return `<div class="p-3 rounded-xl bg-[#F8F5F0] dark:bg-[#0f0f1a] border border-[#F0EBE3] text-xs">
+                            <div class="font-mono text-[#7A7570]">${dt.toLocaleString()}</div>
+                            <div class="text-[#5D4E37]"><strong>${action}</strong> · ${mols}</div>
+                        </div>`;
+                    }).join('')}
+                </div>
+                <button onclick="clearGardenLogHistory()" class="mt-3 px-3 py-1.5 rounded-full bg-white border-2 border-[#F0EBE3] text-[#7A7570] font-display text-xs">Clear log history</button>
+            `;
+        }
+
+        function clearGardenLogHistory() {
+            try { localStorage.removeItem(GARDEN_LOG_KEY); } catch (_) {}
+            renderGardenHistory();
+        }
+
+        function clearGardenForm() {
+            gardenState.molecules.clear();
+            gardenState.action = null;
+            gardenState.sense = null;
+            document.querySelectorAll('.g-mol-chip').forEach(markChipInactive);
+            document.querySelectorAll('.g-action-btn, .g-sense-btn').forEach(b => {
+                b.style.background = ''; b.style.borderColor = ''; b.style.color = '#5D4E37';
+            });
+            document.getElementById('g-input').value = '';
+            document.getElementById('g-pre-reader').checked = false;
+            persistGardenState();
+            renderGardenSelected();
+            renderGardenPreview();
+        }
+
+        /* ── Pollination Courier — kid-first juice: cheers, chords, celebrations ── */
+        (function pollinationCourier() {
+            const MAX_CLOUD = 100;
+            const CLOUD_LEAK = 11;
+            const WELCOME_KEY = 'p31:courier:kid-welcome-v2';
+            const CHEER = {
+                bud: ['Bloom!', 'So pretty!', 'You helped!', 'Yay petals!', 'Sweet!'],
+                bee: ['Zoom home!', 'Bee happy!', 'Nice hello!', 'Off you go!', 'Gold star!'],
+                pod: ['Pop!', 'You did it!', 'Three cheers!', 'Great focus!', 'Confetti!'],
+            };
+            let cv, ctx, W = 360, H = 440;
+            let raf = 0;
+            let running = false;
+            let tabActive = false;
+            let blooms = 0;
+            let wave = 1;
+            let cloud = 0;
+            let spawnAcc = 0;
+            let autoAcc = 0;
+            let lastShot = 0;
+            let guests = [];
+            let puffs = [];
+            let particles = [];
+            let floatTexts = [];
+            let ripples = [];
+            let playerX = 180;
+            let puffSquish = 0;
+            let skyT = 0;
+            let waveBanner = 0;
+            let streak = 0;
+            let streakToastT = 0;
+            let keys = { left: false, right: false };
+            let audioCtx = null;
+
+            function chillM() { return document.getElementById('courier-chill')?.checked ? 0.58 : 1; }
+            function autopuffOn() { return !!document.getElementById('courier-autopuff')?.checked; }
+            function reduceMotion() {
+                try { return window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (_) { return false; }
+            }
+
+            function playChime(freq, dur, gain = 0.07) {
+                try {
+                    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    const o = audioCtx.createOscillator();
+                    const g = audioCtx.createGain();
+                    o.type = 'sine';
+                    o.frequency.value = freq;
+                    g.gain.value = 0.0001;
+                    o.connect(g);
+                    g.connect(audioCtx.destination);
+                    const t = audioCtx.currentTime;
+                    g.gain.exponentialRampToValueAtTime(gain, t + 0.02);
+                    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+                    o.start(t);
+                    o.stop(t + dur + 0.05);
+                } catch (_) {}
+            }
+
+            function playChord(freqs, dur, gain = 0.045) {
+                try {
+                    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    const t0 = audioCtx.currentTime;
+                    freqs.forEach((f, i) => {
+                        const o = audioCtx.createOscillator();
+                        const g = audioCtx.createGain();
+                        o.type = 'sine';
+                        o.frequency.value = f;
+                        g.gain.value = 0.0001;
+                        o.connect(g);
+                        g.connect(audioCtx.destination);
+                        const t = t0 + i * 0.028;
+                        g.gain.exponentialRampToValueAtTime(gain, t + 0.02);
+                        g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+                        o.start(t);
+                        o.stop(t + dur + 0.12);
+                    });
+                } catch (_) {}
+            }
+
+            function cheerFor(g) {
+                const list = CHEER[g.type] || CHEER.bud;
+                const msg = list[Math.floor(Math.random() * list.length)];
+                floatTexts.push({ x: g.x, y: g.y - g.r - 8, text: msg, life: 52, vy: -0.55 });
+            }
+
+            function streakMilestone() {
+                const el = document.getElementById('courier-streak-toast');
+                const lines = {
+                    3: 'You’re on a roll — three helps in a row! 🌟',
+                    5: 'Five in a row! Your brain is a garden laser. ✨',
+                    8: 'Eight helps! That’s real focus. Proud of you. 💚',
+                    13: 'Thirteen! Legendary kindness streak. 🌈',
+                };
+                const line = lines[streak];
+                if (line && el) {
+                    el.textContent = line;
+                    streakToastT = 220;
+                }
+            }
+
+            function resize() {
+                cv = document.getElementById('courier-canvas');
+                if (!cv) return;
+                const wrap = document.getElementById('courier-wrap');
+                const dpr = Math.min(window.devicePixelRatio || 1, 2);
+                const rect = wrap ? wrap.getBoundingClientRect() : cv.getBoundingClientRect();
+                const w = Math.max(280, Math.floor(rect.width - 8));
+                const h = Math.min(540, Math.max(340, Math.floor(Math.min(window.innerHeight * 0.58, rect.width * 1.18))));
+                W = w;
+                H = h;
+                cv.width = Math.floor(w * dpr);
+                cv.height = Math.floor(h * dpr);
+                cv.style.width = w + 'px';
+                cv.style.height = h + 'px';
+                ctx = cv.getContext('2d');
+                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+                playerX = Math.min(Math.max(playerX, 40), W - 40);
+            }
+
+            function spawnGuest() {
+                const roll = Math.random();
+                let type = 'bud';
+                if (wave >= 2 && roll > 0.52) type = 'bee';
+                if (wave >= 3 && roll > 0.78) type = 'pod';
+                const r = type === 'pod' ? 27 : type === 'bee' ? 16 : 20;
+                const guest = {
+                    type,
+                    x: r + Math.random() * (W - 2 * r),
+                    y: -r - 6,
+                    r,
+                    vy: (0.5 + Math.random() * 0.85 + wave * 0.035) * chillM(),
+                    phase: Math.random() * Math.PI * 2,
+                    hits: 0,
+                    hitsNeeded: type === 'pod' ? 3 : 1,
+                    done: false,
+                    celebrate: 0,
+                    wobble: type === 'bee' ? 2.4 + Math.random() * 0.8 : 0,
+                };
+                guests.push(guest);
+            }
+
+            function addParticles(x, y, n, colors, petal) {
+                const rm = reduceMotion();
+                const count = rm ? Math.min(n, 6) : n;
+                for (let i = 0; i < count; i++) {
+                    const a = Math.random() * Math.PI * 2;
+                    const sp = 1.2 + Math.random() * 4;
+                    particles.push({
+                        x, y,
+                        vx: Math.cos(a) * sp,
+                        vy: Math.sin(a) * sp - 1.4,
+                        life: rm ? 22 : 40 + Math.random() * 28,
+                        color: colors[Math.floor(Math.random() * colors.length)],
+                        size: 2 + Math.random() * 3.5,
+                        rot: Math.random() * Math.PI,
+                        vr: (Math.random() - 0.5) * 0.2,
+                        petal: petal && !rm,
+                    });
+                }
+            }
+
+            function resolveGuest(g) {
+                if (g.done) return;
+                g.done = true;
+                blooms++;
+                streak++;
+                streakMilestone();
+                cheerFor(g);
+                const rm = reduceMotion();
+                if (g.type === 'bud') {
+                    addParticles(g.x, g.y, 18, ['#f9b4c9', '#ffd6e8', '#ffb7d5', '#fff8dc', '#a8e6cf'], true);
+                    playChord([392, 493.88, 587.33], 0.22);
+                    g.celebrate = rm ? 18 : 56;
+                } else if (g.type === 'bee') {
+                    addParticles(g.x, g.y, 14, ['#ffe066', '#fff3bf', '#ffd43b', '#fff'], false);
+                    playChord([523.25, 659.25, 783.99], 0.16);
+                    g.escape = rm ? 22 : 48;
+                } else {
+                    addParticles(g.x, g.y, 28, ['#e9c46a', '#f4a261', '#fff', '#a8e6cf', '#ffecd2'], true);
+                    playChord([329.63, 415.3, 523.25], 0.24);
+                    g.celebrate = rm ? 18 : 58;
+                }
+                if (blooms > 0 && blooms % 10 === 0) {
+                    wave++;
+                    waveBanner = rm ? 40 : 96;
+                    playChord([261.63, 329.63, 392], 0.28);
+                    floatTexts.push({ x: W / 2, y: H * 0.22, text: 'New breeze — you leveled up! 🌬️', life: 70, vy: -0.35 });
+                }
+                updateHud();
+            }
+
+            function leakGuest() {
+                streak = 0;
+                cloud = Math.min(MAX_CLOUD, cloud + CLOUD_LEAK);
+                playChime(155, 0.06, 0.04);
+                floatTexts.push({ x: W / 2, y: H * 0.35, text: 'Almost — you’re still great 💚', life: 48, vy: -0.3 });
+                updateHud();
+                if (cloud >= MAX_CLOUD) rainPause();
+            }
+
+            function showRainOverlay() {
+                const ov = document.getElementById('courier-overlay');
+                if (ov) { ov.classList.remove('hidden'); ov.classList.add('flex'); }
+            }
+
+            function rainPause() {
+                running = false;
+                streak = 0;
+                showRainOverlay();
+                const tgl = document.getElementById('courier-btn-toggle');
+                if (tgl) tgl.textContent = 'Start';
+                const st = document.getElementById('courier-streak-toast');
+                if (st) st.textContent = '';
+            }
+
+            function hideOverlay() {
+                const ov = document.getElementById('courier-overlay');
+                if (ov) { ov.classList.add('hidden'); ov.classList.remove('flex'); }
+            }
+
+            function hideWelcome() {
+                const w = document.getElementById('courier-welcome');
+                if (w) { w.classList.add('hidden'); w.classList.remove('flex'); }
+            }
+
+            function showWelcome() {
+                const w = document.getElementById('courier-welcome');
+                if (w) { w.classList.remove('hidden'); w.classList.add('flex'); }
+            }
+
+            function updateHud() {
+                const b = document.getElementById('courier-stat-blooms');
+                const wv = document.getElementById('courier-stat-wave');
+                const c = document.getElementById('courier-stat-cloud');
+                if (b) b.textContent = String(blooms);
+                if (wv) wv.textContent = String(wave);
+                if (c) c.textContent = String(Math.round(cloud));
+            }
+
+            function tryPuff() {
+                if (!running || cloud >= MAX_CLOUD) return;
+                const now = performance.now();
+                if (now - lastShot < 145) return;
+                lastShot = now;
+                puffSquish = 12;
+                const px = playerX + (Math.random() - 0.5) * 3;
+                puffs.push({ x: px, y: H - 54, vy: -7.6 * chillM(), r: 8, life: 58, seed: Math.random() * 9 });
+            }
+
+            function drawCloud(cx, cy, sc, alpha) {
+                ctx.save();
+                ctx.globalAlpha = alpha;
+                ctx.fillStyle = 'rgba(255,255,255,0.72)';
+                ctx.beginPath();
+                ctx.arc(cx, cy, 18 * sc, 0, Math.PI * 2);
+                ctx.arc(cx + 22 * sc, cy + 3, 22 * sc, 0, Math.PI * 2);
+                ctx.arc(cx + 44 * sc, cy, 16 * sc, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+
+            function drawBg() {
+                const dark = document.body.classList.contains('dark');
+                const g = ctx.createLinearGradient(0, 0, 0, H);
+                if (dark) {
+                    g.addColorStop(0, '#243044');
+                    g.addColorStop(0.4, '#1a2230');
+                    g.addColorStop(1, '#121a14');
+                } else {
+                    g.addColorStop(0, '#cfe8ff');
+                    g.addColorStop(0.35, '#e5f5e8');
+                    g.addColorStop(0.7, '#d8efd9');
+                    g.addColorStop(1, '#bcd9b8');
+                }
+                ctx.fillStyle = g;
+                ctx.fillRect(0, 0, W, H);
+                if (!reduceMotion()) {
+                    const spd = 0.35 * chillM();
+                    for (let i = 0; i < 3; i++) {
+                        const cx = ((skyT * (12 + i * 3) + i * 120) % (W + 100)) - 30;
+                        const cy = 36 + i * 42;
+                        drawCloud(cx, cy, 0.55 + i * 0.12, dark ? 0.08 : 0.55);
+                    }
+                    skyT += spd;
+                }
+                ctx.fillStyle = dark ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.45)';
+                for (let i = 0; i < 22; i++) {
+                    const x = (i * 83 + blooms * 2) % W;
+                    const y = (i * 47 + (reduceMotion() ? 0 : skyT * 2)) % (H - 100);
+                    ctx.beginPath();
+                    ctx.arc(x, y + 40, 1.1, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                if (waveBanner > 0) {
+                    waveBanner--;
+                    const a = Math.min(1, waveBanner / 25);
+                    ctx.fillStyle = dark ? `rgba(77,184,168,${a * 0.2})` : `rgba(168,230,207,${a * 0.35})`;
+                    ctx.fillRect(0, 0, W, 44);
+                    ctx.globalAlpha = a;
+                    ctx.font = '600 15px Fredoka, "Nunito", system-ui, sans-serif';
+                    ctx.fillStyle = dark ? '#d8d6d0' : '#3d5c45';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('New breeze — gentle challenge up high 🌬️', W / 2, 28);
+                    ctx.globalAlpha = 1;
+                }
+            }
+
+            function drawPlayer() {
+                const px = playerX;
+                const py = H - 44;
+                const squash = puffSquish > 0 ? 1 + 0.12 * (puffSquish / 12) : 1;
+                const stretch = puffSquish > 0 ? 1 - 0.06 * (puffSquish / 12) : 1;
+                ctx.save();
+                ctx.translate(px, py);
+                ctx.scale(squash, stretch);
+                ctx.fillStyle = '#6eb8d8';
+                ctx.beginPath();
+                ctx.ellipse(0, 6, 24, 11, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+                ctx.fillStyle = '#9fd9b8';
+                ctx.beginPath();
+                ctx.ellipse(-10, 0, 7, 5, -0.3, 0, Math.PI * 2);
+                ctx.ellipse(10, 0, 7, 5, 0.3, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#f9b4c9';
+                for (let i = -1; i <= 1; i++) {
+                    ctx.beginPath();
+                    ctx.ellipse(i * 8, -10, 6, 9, i * 0.25, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                ctx.fillStyle = '#3a3530';
+                ctx.beginPath();
+                ctx.arc(-5, 2, 2.2, 0, Math.PI * 2);
+                ctx.arc(5, 2, 2.2, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = '#3a3530';
+                ctx.lineWidth = 1.2;
+                ctx.beginPath();
+                ctx.arc(0, 5, 4, 0.15 * Math.PI, 0.85 * Math.PI);
+                ctx.stroke();
+                ctx.restore();
+            }
+
+            function drawGuest(g) {
+                ctx.save();
+                let gx = g.x;
+                if (g.wobble && !g.escape && !g.celebrate) gx += Math.sin(g.phase + performance.now() * 0.0038) * g.wobble;
+                ctx.translate(gx, g.y);
+                const cel = g.celebrate > 0;
+                const pulse = cel ? 1 + 0.08 * Math.sin(g.phase * 2) : 1;
+                ctx.scale(pulse, pulse);
+                if (g.escape) {
+                    ctx.globalAlpha = Math.min(1, g.escape / 14);
+                    ctx.rotate(-0.45);
+                }
+                if (g.type === 'bud') {
+                    const open = g.hits > 0 || cel;
+                    const face = open || cel;
+                    ctx.fillStyle = open ? '#ff9ec4' : '#4a9e6f';
+                    ctx.beginPath();
+                    ctx.arc(0, 0, g.r * (open ? 1.08 : 0.94), 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                    if (face) {
+                        ctx.fillStyle = '#3a3530';
+                        ctx.beginPath();
+                        ctx.arc(-5, -2, 2, 0, Math.PI * 2);
+                        ctx.arc(5, -2, 2, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.strokeStyle = '#3a3530';
+                        ctx.lineWidth = 1.2;
+                        ctx.beginPath();
+                        ctx.arc(0, 2, 5, 0.1 * Math.PI, 0.9 * Math.PI);
+                        ctx.stroke();
+                        ctx.strokeStyle = '#fff8dc';
+                        ctx.lineWidth = 2;
+                        for (let i = 0; i < 6; i++) {
+                            const a = (i / 6) * Math.PI * 2 + g.phase * 1.5;
+                            ctx.beginPath();
+                            ctx.moveTo(0, 0);
+                            ctx.lineTo(Math.cos(a) * g.r * 1.15, Math.sin(a) * g.r * 1.15);
+                            ctx.stroke();
+                        }
+                    } else {
+                        ctx.strokeStyle = 'rgba(0,0,0,0.12)';
+                        ctx.lineWidth = 1.5;
+                        ctx.beginPath();
+                        ctx.arc(0, 2, 4, 0.15 * Math.PI, 0.85 * Math.PI);
+                        ctx.stroke();
+                    }
+                } else if (g.type === 'bee') {
+                    ctx.fillStyle = '#2d2a26';
+                    ctx.beginPath();
+                    ctx.ellipse(0, 0, g.r * 1.12, g.r * 0.78, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.fillStyle = '#ffd43b';
+                    ctx.fillRect(-g.r * 1.05, -3, g.r * 2.1, 6);
+                    ctx.fillStyle = '#3a3530';
+                    ctx.beginPath();
+                    ctx.arc(-3, -1, 1.8, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.fillStyle = 'rgba(255,255,255,0.5)';
+                    ctx.beginPath();
+                    ctx.ellipse(-7, -g.r * 0.65, 9, 5.5, -0.55, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.beginPath();
+                    ctx.ellipse(7, -g.r * 0.65, 9, 5.5, 0.55, 0, Math.PI * 2);
+                    ctx.fill();
+                } else {
+                    ctx.fillStyle = '#a67c2c';
+                    ctx.beginPath();
+                    ctx.arc(0, 0, g.r, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.strokeStyle = 'rgba(255,255,255,0.25)';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                    ctx.fillStyle = '#3a3530';
+                    ctx.beginPath();
+                    ctx.arc(-6, -4, 2, 0, Math.PI * 2);
+                    ctx.arc(6, -4, 2, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.strokeStyle = 'rgba(0,0,0,0.25)';
+                    ctx.lineWidth = 2;
+                    for (let i = 0; i < g.hits; i++) {
+                        const a = -0.35 + i * 0.42;
+                        ctx.beginPath();
+                        ctx.arc(0, 0, g.r - 5, a, a + 0.38);
+                        ctx.stroke();
+                    }
+                }
+                ctx.globalAlpha = 1;
+                ctx.restore();
+            }
+
+            function drawFloatTexts() {
+                ctx.font = '700 17px Fredoka, "Nunito", system-ui, sans-serif';
+                ctx.textAlign = 'center';
+                for (const ft of floatTexts) {
+                    ft.y += ft.vy;
+                    ft.life--;
+                    const a = Math.min(1, ft.life / 18);
+                    ctx.globalAlpha = a;
+                    ctx.strokeStyle = 'rgba(255,255,255,0.92)';
+                    ctx.lineWidth = 4;
+                    ctx.strokeText(ft.text, ft.x, ft.y);
+                    ctx.fillStyle = '#5d4e37';
+                    ctx.fillText(ft.text, ft.x, ft.y);
+                }
+                floatTexts = floatTexts.filter(ft => ft.life > 0);
+                ctx.globalAlpha = 1;
+            }
+
+            function tick() {
+                if (!tabActive || !ctx) return;
+                raf = requestAnimationFrame(tick);
+                if (puffSquish > 0) puffSquish--;
+                if (streakToastT > 0) {
+                    streakToastT--;
+                    if (streakToastT === 0) {
+                        const el = document.getElementById('courier-streak-toast');
+                        if (el) el.textContent = '';
+                    }
+                }
+
+                if (!running) {
+                    drawBg();
+                    guests.forEach(drawGuest);
+                    drawFloatTexts();
+                    drawPlayer();
+                    return;
+                }
+
+                const floorY = H - 16;
+                spawnAcc += chillM();
+                const cap = waveBanner > 0 ? 3 + Math.min(3, wave) : 5 + Math.min(4, wave);
+                const spawnEvery = Math.max(36, 88 - wave * 3.5) / chillM();
+                if (spawnAcc >= spawnEvery) {
+                    spawnAcc = 0;
+                    if (guests.filter(g => !g.done && !g.escape && !(g.celebrate > 0)).length < cap) spawnGuest();
+                }
+
+                if (autopuffOn()) {
+                    autoAcc++;
+                    const every = Math.round(24 / chillM());
+                    if (autoAcc >= every) { autoAcc = 0; tryPuff(); }
+                }
+
+                guests.forEach(g => {
+                    if (g.done && g.escape) {
+                        g.y -= 13 * chillM();
+                        g.escape--;
+                        if (g.escape <= 0) g.remove = true;
+                        return;
+                    }
+                    if (g.done && g.celebrate > 0) {
+                        g.celebrate--;
+                        g.y -= 1.35 * chillM();
+                        g.phase += 0.14;
+                        if (g.celebrate <= 0) g.remove = true;
+                        return;
+                    }
+                    if (g.done) { g.remove = true; return; }
+                    g.y += g.vy;
+                    g.phase += 0.035;
+                    if (g.y - g.r > floorY) {
+                        g.remove = true;
+                        leakGuest();
+                    }
+                });
+                guests = guests.filter(g => !g.remove);
+
+                puffs.forEach(p => {
+                    p.y += p.vy;
+                    p.life--;
+                    p.x += Math.sin((p.life + (p.seed || 0) * 7) * 0.12) * 0.35;
+                });
+                puffs = puffs.filter(p => p.life > 0 && p.y > -24);
+
+                for (const p of puffs) {
+                    for (const g of guests) {
+                        if (g.done || g.escape || g.celebrate > 0) continue;
+                        const dx = p.x - g.x;
+                        const dy = p.y - g.y;
+                        if (dx * dx + dy * dy < (p.r + g.r) * (p.r + g.r)) {
+                            p.life = 0;
+                            g.hits++;
+                            ripples.push({ x: g.x, y: g.y, life: 14, max: 14 });
+                            if (g.hits < g.hitsNeeded) playChime(330 + g.hits * 40, 0.05, 0.05);
+                            if (g.hits >= g.hitsNeeded) resolveGuest(g);
+                            break;
+                        }
+                    }
+                }
+
+                ripples.forEach(r => { r.life--; });
+                ripples = ripples.filter(r => r.life > 0);
+
+                particles.forEach(pt => {
+                    pt.x += pt.vx;
+                    pt.y += pt.vy;
+                    pt.vy += 0.055;
+                    pt.life--;
+                    if (pt.petal) pt.rot += pt.vr;
+                });
+                particles = particles.filter(pt => pt.life > 0);
+
+                if (keys.left) playerX = Math.max(36, playerX - 5.6 * chillM());
+                if (keys.right) playerX = Math.min(W - 36, playerX + 5.6 * chillM());
+
+                drawBg();
+                for (const r of ripples) {
+                    const t = r.life / r.max;
+                    ctx.strokeStyle = `rgba(255,230,150,${t * 0.6})`;
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.arc(r.x, r.y, (r.max - r.life) * 4 + 4, 0, Math.PI * 2);
+                    ctx.stroke();
+                }
+                guests.forEach(drawGuest);
+                for (const p of puffs) {
+                    const grd = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 2.4);
+                    grd.addColorStop(0, 'rgba(255,252,235,0.98)');
+                    grd.addColorStop(0.45, 'rgba(255,225,160,0.5)');
+                    grd.addColorStop(1, 'rgba(255,190,120,0)');
+                    ctx.fillStyle = grd;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.r * 2.3, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                for (const pt of particles) {
+                    ctx.globalAlpha = Math.min(1, pt.life / 22);
+                    ctx.fillStyle = pt.color;
+                    if (pt.petal) {
+                        ctx.save();
+                        ctx.translate(pt.x, pt.y);
+                        ctx.rotate(pt.rot);
+                        ctx.beginPath();
+                        ctx.ellipse(0, 0, pt.size * 1.2, pt.size * 0.55, 0, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.restore();
+                    } else {
+                        ctx.beginPath();
+                        ctx.arc(pt.x, pt.y, pt.size, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                }
+                ctx.globalAlpha = 1;
+                drawFloatTexts();
+                drawPlayer();
+
+                const cg = ctx.createLinearGradient(0, H - 20, W, H - 20);
+                cg.addColorStop(0, 'rgba(168,230,207,0.25)');
+                cg.addColorStop(1, 'rgba(126,200,227,0.35)');
+                ctx.fillStyle = cg;
+                ctx.fillRect(0, H - 16, W, 14);
+                ctx.fillStyle = document.body.classList.contains('dark') ? 'rgba(77,184,168,0.35)' : 'rgba(93,78,55,0.18)';
+                ctx.fillRect(0, H - 16, W * (cloud / MAX_CLOUD), 14);
+                ctx.strokeStyle = 'rgba(255,255,255,0.25)';
+                ctx.lineWidth = 1;
+                ctx.strokeRect(0.5, H - 15.5, W - 1, 13);
+            }
+
+            function loopStart() {
+                if (raf) cancelAnimationFrame(raf);
+                raf = requestAnimationFrame(tick);
+            }
+
+            function pauseLoop() {
+                tabActive = false;
+            }
+
+            window.__pollinationCourierPause = pauseLoop;
+
+            window.initPollinationCourier = function initPollinationCourier() {
+                resize();
+                tabActive = true;
+                if (cloud >= MAX_CLOUD) {
+                    showRainOverlay();
+                    running = false;
+                    const tgl0 = document.getElementById('courier-btn-toggle');
+                    if (tgl0) tgl0.textContent = 'Start';
+                } else {
+                    hideOverlay();
+                }
+                const btn = document.getElementById('courier-btn-toggle');
+                const reset = document.getElementById('courier-btn-reset');
+                const ovBtn = document.getElementById('courier-overlay-btn');
+                const welcomeOk = document.getElementById('courier-welcome-ok');
+                if (!cv || !btn) return;
+
+                if (btn.dataset.wired !== '1') {
+                    btn.dataset.wired = '1';
+                    window.addEventListener('resize', resize);
+
+                    try {
+                        if (!localStorage.getItem(WELCOME_KEY)) showWelcome();
+                    } catch (_) {}
+
+                    if (welcomeOk) {
+                        welcomeOk.addEventListener('click', () => {
+                            try { localStorage.setItem(WELCOME_KEY, '1'); } catch (_) {}
+                            hideWelcome();
+                            playChord([392, 523.25], 0.15);
+                        });
+                    }
+
+                    btn.addEventListener('click', () => {
+                        if (cloud >= MAX_CLOUD) return;
+                        running = !running;
+                        btn.textContent = running ? 'Pause' : 'Start';
+                        if (running && audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+                        loopStart();
+                    });
+                    reset.addEventListener('click', () => {
+                        blooms = 0; wave = 1; cloud = 0; streak = 0;
+                        guests = []; puffs = []; particles = []; floatTexts = []; ripples = [];
+                        spawnAcc = 0; waveBanner = 0; skyT = 0;
+                        hideOverlay();
+                        const st = document.getElementById('courier-streak-toast');
+                        if (st) st.textContent = '';
+                        updateHud();
+                        running = false;
+                        btn.textContent = 'Start';
+                    });
+                    ovBtn && ovBtn.addEventListener('click', () => {
+                        cloud = 0;
+                        guests = []; puffs = []; particles = []; floatTexts = []; ripples = [];
+                        streak = 0;
+                        hideOverlay();
+                        updateHud();
+                        running = true;
+                        btn.textContent = 'Pause';
+                        playChord([349.23, 440, 523.25], 0.2);
+                        loopStart();
+                    });
+
+                    cv.addEventListener('pointermove', e => {
+                        const r = cv.getBoundingClientRect();
+                        const x = e.clientX - r.left;
+                        playerX = Math.min(Math.max(x, 32), W - 32);
+                    });
+                    cv.addEventListener('pointerdown', e => {
+                        if (e.button !== 0 && e.pointerType !== 'touch') return;
+                        tryPuff();
+                    });
+                    window.addEventListener('keydown', e => {
+                        if (!tabActive) return;
+                        if (e.code === 'Space') { e.preventDefault(); tryPuff(); }
+                        if (e.code === 'ArrowLeft') keys.left = true;
+                        if (e.code === 'ArrowRight') keys.right = true;
+                    });
+                    window.addEventListener('keyup', e => {
+                        if (e.code === 'ArrowLeft') keys.left = false;
+                        if (e.code === 'ArrowRight') keys.right = false;
+                    });
+                }
+
+                updateHud();
+                loopStart();
+            };
+        })();
     </script>
 </body>
 </html>
