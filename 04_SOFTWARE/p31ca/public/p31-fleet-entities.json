@@ -1,6 +1,6 @@
 {
   "schema": "p31.fleetEntities/1.0.0",
-  "updated": "2026-04-29",
+  "updated": "2026-04-30",
   "sourceNotes": "Merged from published p31-live-fleet.json (verified + allowlisted Workers) plus static bot/cortex-agents roster. Probe GETs may be CORS-blocked from the hub origin.",
   "entities": [
     {
@@ -770,6 +770,28 @@
       "probeUrls": [
         "https://spaceship-relay.trimtab-signal.workers.dev/api/health",
         "https://spaceship-relay.trimtab-signal.workers.dev/health"
+      ],
+      "hubPagePath": null,
+      "registryId": null
+    },
+    {
+      "slug": "tetra-hub",
+      "kind": "worker",
+      "title": "tetra-hub",
+      "subtitle": "Read-only K₄ trio aggregator; service-binds k4-cage, k4-personal, k4-hubs",
+      "tier": "verified",
+      "workersDevUrl": "https://tetra-hub.trimtab-signal.workers.dev",
+      "prodUrl": "",
+      "healthPaths": [
+        "/api/health"
+      ],
+      "meshPaths": [],
+      "constantsKey": "mesh.tetraHubWorkerUrl",
+      "deployHints": [
+        "workers/tetra-hub (bonding-soup home root)"
+      ],
+      "probeUrls": [
+        "https://tetra-hub.trimtab-signal.workers.dev/api/health"
       ],
       "hubPagePath": null,
       "registryId": null
