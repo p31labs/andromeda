@@ -1,7 +1,7 @@
 {
   "_comment": "Single bundle of live sites + Worker fleet. Mesh/payment URLs MUST match p31-constants.json; allowlist names MUST match andromeda/04_SOFTWARE/p31ca/security/worker-allowlist.json. After changing constants: npm run apply:constants && npm run verify:constants. defaultWorkersDev uses account subdomain trimtab-signal — confirm with wrangler or live GET if a Worker uses another account.",
   "schema": "p31.liveFleet/1.0.0",
-  "updated": "2026-04-29",
+  "updated": "2026-04-30",
   "sources": [
     "p31-constants.json",
     "p31-ecosystem.json",
@@ -67,6 +67,7 @@
       "passkeyApiBasePath": "/api/passkey",
       "passkeySameOriginBase": "https://p31ca.org/api/passkey",
       "edgeLabWorkerUrl": "https://cf-edge-lab.trimtab-signal.workers.dev",
+      "tetraHubWorkerUrl": "https://tetra-hub.trimtab-signal.workers.dev",
       "remembranceWarmWhite": "#f5f0e8",
       "remembranceBereavementKvKey": "mesh_bereavement_until",
       "vertexStateRemembered": "remembered",
@@ -100,6 +101,14 @@
       "healthPaths": ["/health"],
       "constantsKey": "mesh.k4HubsWorkerUrl",
       "deploy": "04_SOFTWARE/k4-hubs"
+    },
+    {
+      "id": "tetra-hub",
+      "workersDev": "https://tetra-hub.trimtab-signal.workers.dev",
+      "healthPaths": ["/api/health"],
+      "constantsKey": "mesh.tetraHubWorkerUrl",
+      "deploy": "workers/tetra-hub (bonding-soup home root)",
+      "note": "Read-only K₄ trio aggregator; service-binds k4-cage, k4-personal, k4-hubs"
     },
     {
       "id": "p31-agent-hub",
