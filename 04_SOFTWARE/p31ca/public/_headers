@@ -30,3 +30,13 @@
 /*.html
   Cache-Control: no-cache, no-store, must-revalidate
   Clear-Site-Data: "cache", "storage"
+
+# Static assets below — no Clear-Site-Data (navigation semantics belong on HTML only).
+# Helps DevTools: avoids attributing Clear-Site-Data warnings to favicon.svg subresource fetches.
+
+/favicon.svg
+  Cache-Control: public, max-age=604800, immutable
+
+/p31-delta-language.json
+  Cache-Control: public, max-age=600
+  Content-Type: application/json; charset=utf-8

@@ -7,11 +7,12 @@
   <meta name="description" content="P31 Universal DELTA Language — searchable glossary: same void, same sky, no jarring cuts." />
   <meta name="p31-delta-json-href" content="/p31-delta-language.json" />
   <title>DELTA Language · P31</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <!-- No external fonts — avoids net::ERR_NAME_NOT_RESOLVED when fonts.googleapis.com is blocked/offline. -->
   <style>
     :root {
+      --font-sans: system-ui, ui-sans-serif, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      --font-mono: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, "DejaVu Sans Mono", monospace;
       --void: #0a0c10;
       --panel: #12151c;
       --cloud: #d8d6d0;
@@ -28,7 +29,7 @@
     body {
       margin: 0;
       min-height: 100vh;
-      font-family: "DM Sans", system-ui, sans-serif;
+      font-family: var(--font-sans);
       background: var(--void);
       color: var(--cloud);
       line-height: 1.55;
@@ -55,7 +56,7 @@
       margin-bottom: 2.5rem;
     }
     .delta-mark {
-      font-family: "JetBrains Mono", monospace;
+      font-family: var(--font-mono);
       font-size: 0.7rem;
       letter-spacing: 0.22em;
       text-transform: uppercase;
@@ -116,7 +117,7 @@
     }
     #q::placeholder { color: rgba(216, 214, 208, 0.35); }
     .pill {
-      font-family: "JetBrains Mono", monospace;
+      font-family: var(--font-mono);
       font-size: 0.65rem;
       letter-spacing: 0.08em;
       text-transform: uppercase;
@@ -139,7 +140,7 @@
       gap: 0.5rem;
     }
     h2 .n {
-      font-family: "JetBrains Mono", monospace;
+      font-family: var(--font-mono);
       font-size: 0.65rem;
       font-weight: 500;
       color: var(--cloud-dim);
@@ -169,7 +170,7 @@
       margin-bottom: 1.75rem;
     }
     .group-title {
-      font-family: "JetBrains Mono", monospace;
+      font-family: var(--font-mono);
       font-size: 0.7rem;
       letter-spacing: 0.14em;
       text-transform: uppercase;
@@ -213,7 +214,7 @@
     }
     table.forbidden th {
       text-align: left;
-      font-family: "JetBrains Mono", monospace;
+      font-family: var(--font-mono);
       font-size: 0.65rem;
       letter-spacing: 0.1em;
       text-transform: uppercase;
@@ -244,7 +245,7 @@
       font-size: 0.95rem;
     }
     .surface-card .host {
-      font-family: "JetBrains Mono", monospace;
+      font-family: var(--font-mono);
       font-size: 0.65rem;
       color: var(--hearth);
       letter-spacing: 0.06em;
