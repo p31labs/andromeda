@@ -16,7 +16,8 @@ import * as THREE from 'three';
 import { ELEMENTS_ARRAY } from '../data/elements';
 import { useGameStore } from '../store/gameStore';
 
-const COUNT = 200;
+const BASE_COUNT = 200;
+const DEFAULT_COHERENCE = 6.5 / 12;
 const TUNNEL_R = 8;
 const TUNNEL_Z = 40;
 const CAMERA_Z = 5;
@@ -36,27 +37,38 @@ interface Mote {
   s: number; // individual speed multiplier
 }
 
-export function MolecularWarp() {
+interface MolecularWarpProps {
+  /** 0–1 from atmosphere motion budget (registry + AOD) */
+  coherence?: number;
+}
+
+export function MolecularWarp({ coherence = DEFAULT_COHERENCE }: MolecularWarpProps) {
   const warpActive = useGameStore((s) => s.warpActive);
   const ref = useRef<THREE.LineSegments>(null);
   const phase = useRef(0);
+  const c = Math.max(0.08, Math.min(1, coherence));
+
+  const effectiveCount = useMemo(() => {
+    const n = Math.round(BASE_COUNT * (0.45 + 0.55 * c));
+    return Math.max(72, Math.min(280, n));
+  }, [c]);
 
   const motes = useMemo<Mote[]>(
     () =>
-      Array.from({ length: COUNT }, () => ({
+      Array.from({ length: effectiveCount }, () => ({
         a: Math.random() * Math.PI * 2,
         r: 0.5 + Math.random() * TUNNEL_R,
         z: -Math.random() * TUNNEL_Z,
         ci: Math.floor(Math.random() * PALETTE.length),
         s: 0.7 + Math.random() * 0.6,
       })),
-    [],
+    [effectiveCount],
   );
 
   const geometry = useMemo(() => {
-    const pos = new Float32Array(COUNT * 6);
-    const col = new Float32Array(COUNT * 6);
-    for (let i = 0; i < COUNT; i++) {
+    const pos = new Float32Array(effectiveCount * 6);
+    const col = new Float32Array(effectiveCount * 6);
+    for (let i = 0; i < effectiveCount; i++) {
       const m = motes[i];
       const x = Math.cos(m.a) * m.r;
       const y = Math.sin(m.a) * m.r;
@@ -78,7 +90,7 @@ export function MolecularWarp() {
     geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
     geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
     return geo;
-  }, [motes]);
+  }, [motes, effectiveCount]);
 
   useFrame((_, delta) => {
     if (!ref.current) return;
@@ -96,12 +108,14 @@ export function MolecularWarp() {
     }
 
     const t = phase.current;
-    const speed = SPEED_REST + (SPEED_WARP - SPEED_REST) * t;
+    const restMul = 0.35 + 0.65 * c;
+    const speed = SPEED_REST * restMul + (SPEED_WARP - SPEED_REST * restMul) * t;
     const streak = STREAK_REST + (STREAK_WARP - STREAK_REST) * t;
 
     let colorDirty = false;
+    const n = motes.length;
 
-    for (let i = 0; i < COUNT; i++) {
+    for (let i = 0; i < n; i++) {
       const m = motes[i];
       m.z += speed * m.s * delta;
 
@@ -142,7 +156,7 @@ export function MolecularWarp() {
       <lineBasicMaterial
         vertexColors
         transparent
-        opacity={0.7}
+        opacity={0.42 + 0.38 * c}
         blending={THREE.AdditiveBlending}
         toneMapped={false}
       />

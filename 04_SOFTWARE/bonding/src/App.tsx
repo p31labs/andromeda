@@ -13,6 +13,7 @@
 import { useState, useEffect, useRef, useCallback, useMemo, lazy, Suspense } from 'react';
 import { genesisInit } from './genesis/genesis';
 import { MoleculeCanvas } from './components/MoleculeCanvas';
+import { useBondingAtmosphere } from './atmosphere/useBondingAtmosphere';
 import { ElementPalette } from './components/ElementPalette';
 import { StabilityMeter } from './components/StabilityMeter';
 import { AchievementToast } from './components/AchievementToast';
@@ -79,6 +80,8 @@ const useActions = () => useGameStore(useShallow((s) => ({
 })));
 
 function App() {
+  const bondingAtmosphere = useBondingAtmosphere();
+
   // Console Easter Egg - "Zero Samples" verification
   // Triggers on DevTools open - displays ASCII tetrahedron
   useConsoleEgg();
@@ -325,7 +328,7 @@ function App() {
 
   return (
     <CockpitLayout
-      viewport={<MoleculeCanvas />}
+      viewport={<MoleculeCanvas atmosphereCoherence={bondingAtmosphere.coherence} />}
       topBar={
         <TopBar
           modeEmoji={mode.emoji}
