@@ -45,6 +45,10 @@ export const SOURCE_WEB_APP_ICONS = `  <link rel="manifest" href="../p31-bonding
 export const P31CA_WEB_APP_ICONS = `  <link rel="manifest" href="/p31-mesh.webmanifest" crossorigin="anonymous" />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />`;
 
+/** Home demo serves starfield main CSS under /design-assets/starfield/; hub mirrors it as /lib/p31-starfield.css. */
+export const STARFIELD_MAIN_CSS_HREF_SOURCE = 'href="/design-assets/starfield/p31-starfield.css"';
+export const STARFIELD_MAIN_CSS_HREF_P31CA = 'href="/lib/p31-starfield.css"';
+
 /** @returns {string | null} error message, or null if OK */
 export function validateSourceHtml(html) {
   if (!html.includes(HEADER_SOURCE)) {
@@ -66,5 +70,6 @@ export function toP31caMirror(sourceHtml) {
   return sourceHtml
     .replace(HEADER_SOURCE, HEADER_P31CA)
     .replace(FOOTER_SOURCE, FOOTER_P31CA)
-    .replace(SOURCE_WEB_APP_ICONS, P31CA_WEB_APP_ICONS);
+    .replace(SOURCE_WEB_APP_ICONS, P31CA_WEB_APP_ICONS)
+    .replace(STARFIELD_MAIN_CSS_HREF_SOURCE, STARFIELD_MAIN_CSS_HREF_P31CA);
 }
