@@ -45,6 +45,7 @@
     "test:e2e": "playwright test",
     "test:e2e:prod": "PLAYWRIGHT_BASE_URL=https://p31ca.org PLAYWRIGHT_SKIP_WEBSERVER=1 playwright test",
     "test:e2e:install": "playwright install --with-deps chromium",
+    "spike:appshell": "playwright test spike-appshell-persistence.spec.ts",
     "fleet:probe": "node scripts/fleet-health-probe.mjs",
     "fleet:probe:strict": "P31_FLEET_STRICT=1 node scripts/fleet-health-probe.mjs",
     "astro": "astro",

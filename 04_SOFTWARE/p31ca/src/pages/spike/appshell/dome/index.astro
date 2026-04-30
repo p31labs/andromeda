@@ -1,0 +1,28 @@
+---
+/**
+ * /spike/appshell/dome/ — second half of the AppShell persistence spike.
+ *
+ * Pairs with /spike/appshell/ — same AppShell, different routeName, the
+ * starfield singleton lerps the camera + hue when the route changes.
+ */
+import AppShell from '../../../../components/AppShell.astro';
+---
+
+<AppShell title="P31 spike — AppShell dome" routeName="dome">
+  <h1>Track 2.5 spike — AppShell dome</h1>
+  <p>
+    Camera pulled deeper. Hue shifted toward coral. If you got here without a
+    flash, the canvas survived navigation. Press <em>home</em> to send the
+    camera back. The lerp should take ~600&nbsp;ms either way.
+  </p>
+  <nav class="p31-spike-nav" aria-label="Spike routes">
+    <a href="/spike/appshell/">home</a>
+    <a href="/spike/appshell/dome/" aria-current="page">dome</a>
+  </nav>
+  <p>
+    With <code>prefers-reduced-motion: reduce</code> the lerp half-life is
+    still 600&nbsp;ms (visually a brief soft snap rather than instant), kept
+    deliberately so the persistence test is detectable in headless Chromium.
+    Reduced-motion in production routes will use a 0&nbsp;ms snap.
+  </p>
+</AppShell>

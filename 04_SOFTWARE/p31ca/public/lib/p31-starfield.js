@@ -725,6 +725,23 @@ export function initStarfield(canvas, config, options = {}) {
   document.addEventListener("visibilitychange", onVis);
   if (allowRipple) canvas.addEventListener("pointerdown", pointerRipple);
 
+  /** bfcache resume — `pageshow` fires on initial load AND on back/forward
+   *  cache restore (`event.persisted === true`). Without this, RAF stays
+   *  paused after a "hidden via bfcache" cycle and the sky goes static.   */
+  function onPageShow(ev) {
+    if (!ev || !ev.persisted) return;
+    running = true;
+    lastT = performance.now();
+    if (!reducedMotion) raf = requestAnimationFrame(frame);
+    else draw(0, 1);
+  }
+  function onPageHide() {
+    running = false;
+    cancelAnimationFrame(raf);
+  }
+  window.addEventListener("pageshow", onPageShow);
+  window.addEventListener("pagehide", onPageHide);
+
   if (reducedMotion) {
     draw(0, 1);
   } else {
@@ -782,6 +799,8 @@ export function initStarfield(canvas, config, options = {}) {
     cancelAnimationFrame(raf);
     window.removeEventListener("resize", onResize);
     document.removeEventListener("visibilitychange", onVis);
+    window.removeEventListener("pageshow", onPageShow);
+    window.removeEventListener("pagehide", onPageHide);
     if (allowRipple) canvas.removeEventListener("pointerdown", pointerRipple);
     if (typeof mqRm.removeEventListener === "function") mqRm.removeEventListener("change", onRm);
     else mqRm.removeListener(onRm);
