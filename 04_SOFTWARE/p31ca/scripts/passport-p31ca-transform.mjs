@@ -5,22 +5,21 @@
  */
 
 export const HEADER_SOURCE = `      <p class="sub">
-        Tell tools how your brain works — once. Free. No login. Everything stays in your browser.
+        Answer questions once; export a short summary when you need someone else to understand how your brain works. Free. No login. Stays in your browser.
       </p>
       <p class="sub-muted">
-        Works with ChatGPT, Claude, Gemini, or any assistant that accepts custom instructions.
+        If this tool uses AI to tidy wording or layout, it is organizing what <em>you</em> enter—not writing your history for you. Change anything that does not sound like you.
       </p>`;
 
 export const HEADER_P31CA = `      <p class="sub">
-        Tell tools how your brain works — once. Free. No login. Everything stays in your browser.
+        Answer questions once; export a short summary when you need someone else to understand how your brain works. Free. No login. Stays in your browser.
       </p>
       <p class="sub-muted">
-        Works with ChatGPT, Claude, Gemini, or any assistant that accepts custom instructions.
+        If this tool uses AI to tidy wording or layout, it is organizing what <em>you</em> enter—not writing your history for you. Change anything that does not sound like you.
       </p>`;
 
 export const FOOTER_SOURCE = `    <footer>
-      Built by P31 Labs — open-source assistive technology.
-      Free forever. No tracking. No ads.
+      Built by P31 Labs — Georgia nonprofit. Free. Open source. No tracking. No ads.
       · <a href="https://github.com/p31labs/bonding-soup" target="_blank" rel="noopener noreferrer">Source code</a>
       · <a href="https://ko-fi.com/trimtab69420" target="_blank" rel="noopener noreferrer">Ko-fi</a>
       · <a href="../soup.html">C.A.R.S.</a>
@@ -30,8 +29,7 @@ export const FOOTER_SOURCE = `    <footer>
     </footer>`;
 
 export const FOOTER_P31CA = `    <footer>
-      Built by P31 Labs — open-source assistive technology.
-      Free forever. No tracking. No ads.
+      Built by P31 Labs — Georgia nonprofit. Free. Open source. No tracking. No ads.
       · <a href="https://github.com/p31labs/bonding-soup" target="_blank" rel="noopener noreferrer">Source code</a>
       · <a href="https://ko-fi.com/trimtab69420" target="_blank" rel="noopener noreferrer">Ko-fi</a>
       · <a href="https://bonding.p31ca.org/soup" target="_blank" rel="noopener noreferrer">C.A.R.S.</a>

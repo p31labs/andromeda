@@ -19,6 +19,8 @@ function readCssVar(name, fallback) {
 }
 
 const PRESET_PREFIX = {
+  soup: "soup",
+  hub: "hub",
   commandCenter: "command-center",
   operatorDesk: "operator-desk",
 };

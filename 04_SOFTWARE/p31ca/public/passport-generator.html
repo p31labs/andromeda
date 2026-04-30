@@ -15,7 +15,7 @@
     })();
   </script>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content" />
-  <meta name="description" content="P31 Cognitive Passport — pick an audience door (matrix v1.0.0), fill your context once, export JSON or Markdown with a Genesis attestation. Free, no login, stays in your browser." />
+  <meta name="description" content="Answer questions once; export a one-page summary for doctors, teachers, or tools. Free, no login, stays in your browser. AI may help organize what you type—it does not invent your story." />
   <meta name="theme-color" content="#0f1115" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-title" content="Cognitive Passport" />
@@ -28,6 +28,7 @@
   <link rel="stylesheet" href="/p31-style.css" />
   <link rel="stylesheet" href="p31-responsive-surface.css" />
   <link rel="stylesheet" href="/design-assets/starfield/p31-larmor-fields.css" />
+  <link rel="stylesheet" href="/design-assets/starfield/p31-starfield.css" />
   <script src="lib/p31-subject-prefs.js"></script>
   <style>
     :root {
@@ -274,15 +275,18 @@
   </style>
 </head>
 <body class="p31-mesh-m-first p31-responsive-surface">
+  <div id="passport-starfield-wrap" aria-hidden="true" style="position:fixed;inset:0;z-index:0;pointer-events:none">
+    <canvas id="passport-starfield" class="p31-starfield-canvas" style="display:block;width:100%;height:100%;opacity:0.5"></canvas>
+  </div>
   <div class="p31-shell" style="--p31-shell-max: 1100px; --p31-shell-pad: 1.5rem">
     <header style="margin-bottom: 1.35rem;">
       <h1>Cognitive Passport</h1>
       <p class="p31-host-mind">Host mind: <strong>Operator · Parent</strong> — accommodation slice of the same night sky.</p>
       <p class="sub">
-        Tell tools how your brain works — once. Free. No login. Everything stays in your browser.
+        Answer questions once; export a short summary when you need someone else to understand how your brain works. Free. No login. Stays in your browser.
       </p>
       <p class="sub-muted">
-        Works with ChatGPT, Claude, Gemini, or any assistant that accepts custom instructions.
+        If this tool uses AI to tidy wording or layout, it is organizing what <em>you</em> enter—not writing your history for you. Change anything that does not sound like you.
       </p>
     </header>
 
@@ -481,8 +485,7 @@
     </div>
 
     <footer>
-      Built by P31 Labs — open-source assistive technology.
-      Free forever. No tracking. No ads.
+      Built by P31 Labs — Georgia nonprofit. Free. Open source. No tracking. No ads.
       · <a href="https://github.com/p31labs/bonding-soup" target="_blank" rel="noopener noreferrer">Source code</a>
       · <a href="https://ko-fi.com/trimtab69420" target="_blank" rel="noopener noreferrer">Ko-fi</a>
       · <a href="https://bonding.p31ca.org/soup" target="_blank" rel="noopener noreferrer">C.A.R.S.</a>
@@ -939,6 +942,14 @@
     syncAudienceCards();
     void render();
     applySubjectPrefsToSite(readSubjectPrefs());
+  </script>
+  <script type="module">
+    const hub = ["p31ca.org", "www.p31ca.org"].includes(location.hostname) || /\.pages\.dev$/i.test(location.hostname);
+    const { bootAtmosphereStarfieldCanvas } = await import(
+      (hub ? "/lib/atmosphere/" : "/design-assets/atmosphere/") + "p31-atmosphere-hints-boot.js"
+    );
+    const cv = document.getElementById("passport-starfield");
+    if (cv instanceof HTMLCanvasElement) void bootAtmosphereStarfieldCanvas("cognitive-passport", cv);
   </script>
   <script src="lib/p31-return-ribbon.js" data-local-soup="../soup.html" defer></script>
 </body>

@@ -130,12 +130,16 @@
     </div>
 
     <script type="module">
-      import { initStarfield, configFromSpoons, DEFAULT_STARFIELD_CONFIG } from "./p31-starfield.js";
+      import { configFromSpoons, DEFAULT_STARFIELD_CONFIG } from "./p31-starfield.js";
+      import { bootAtmosphereStarfieldCanvas } from "../atmosphere/p31-atmosphere-hints-boot.js";
 
       const canvas = document.getElementById("sf");
       const label = document.getElementById("state-label");
 
-      const api = initStarfield(canvas, { ...DEFAULT_STARFIELD_CONFIG });
+      const { api } = await bootAtmosphereStarfieldCanvas("starfield-demo", canvas);
+      if (!api) {
+        throw new Error("starfield-demo: expected animated starfield");
+      }
 
       const states = {
         nominal: () => {
