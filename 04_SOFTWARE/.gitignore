@@ -48,3 +48,6 @@ firmware/.pio/
 # VS Code (keep .vscode/settings.json and extensions.json)
 !.vscode/settings.json
 !.vscode/extensions.json
+
+# VS Code extension compile output (rebuild: npm run compile in extension dir)
+extensions/p31-cockpit-panel/out/
