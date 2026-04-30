@@ -267,6 +267,8 @@
                 <div class="flex flex-wrap gap-3 mt-3 items-center">
                     <label class="flex items-center gap-2 text-sm text-[#7A7570]"><input type="checkbox" id="g-pre-reader" class="w-4 h-4 accent-[#8B6BAE]"> Pre-reader (≤12 simple words)</label>
                 </div>
+                <p class="text-xs text-[#7A7570] mt-4 mb-1 leading-relaxed">Optional one-JSON handoff: merge a <strong>Pollination Courier</strong> session snapshot (helps, breeze, local event sample — same posture as the copyable session manifest) into <code class="text-[#5D4E37]">garden_state</code>. Still zero network until a grown-up sends Phos.</p>
+                <label class="flex items-center gap-2 text-sm text-[#7A7570] mt-2"><input type="checkbox" id="g-include-courier" class="w-4 h-4 accent-[#8B6BAE]"> Include Courier play session (<code class="text-[10px]">p31.playSession/1.0.0</code>)</label>
             </div>
 
             <div class="soft-card p-6">
@@ -282,13 +284,18 @@
             </div>
         </div>
 
-        <!-- POLLINATION COURIER — kid-first: celebration, cheers, no lose framing -->
+        <!-- POLLINATION COURIER — kid-first + policy-grade local audit trail -->
         <div id="page-courier" class="page">
             <h1 class="font-display text-3xl text-[#5D4E37] mb-2">🐝 Pollination Courier</h1>
             <p class="text-[#7A7570] mb-2 text-base leading-relaxed">A <strong>kind reflex</strong> game: you steer a tiny flower-boat and send sparkly nectar puffs. Buds bloom, bees get a gold hello, pods need three soft knocks. <strong>You can’t lose</strong> — if the cloud strip fills, the sky just asks everyone to take a breath together.</p>
-            <p class="text-sm text-[#7A7570] mb-4">Slide or drag to move · Tap for a puff · <kbd class="px-1.5 py-0.5 rounded bg-[#F0EBE3] font-mono text-xs">Space</kbd> works too · Arrows nudge · Turn on <span class="text-[#8B6BAE] font-semibold">Chill</span> if you want it slower</p>
+            <p class="text-xs text-[#5D4E37] dark:text-[#d8d6d0]/90 mb-3 font-mono leading-relaxed border-l-[3px] border-[#4db8a8]/55 pl-3 py-1 bg-[#f3faf7]/80 dark:bg-[#161920]/80 rounded-r-lg"><strong class="font-display text-[#5D4E37] dark:text-[#d8d6d0]">Why operators (and skeptical platforms) should care:</strong> zero network calls, copyable <em>session manifest</em> for audits, no retention dark patterns, explicit reduced-motion path, keyboard surface — the kind of “attention ethics in a file” product councils ask for in slide decks.</p>
+            <p class="text-sm text-[#7A7570] mb-2">Slide or drag to move · Tap for a puff · <kbd class="px-1.5 py-0.5 rounded bg-[#F0EBE3] font-mono text-xs">Space</kbd> works too · <span class="text-[#8B6BAE] font-semibold">Focus</span> the garden (click outline) then arrows + space · <span class="text-[#8B6BAE] font-semibold">Chill</span> slows drift</p>
+            <p class="text-xs text-[#7A7570] mb-4">For a single grown-up JSON bundle (garden + optional play context): open <button type="button" class="text-[#8B6BAE] font-display font-semibold underline decoration-dotted underline-offset-2 bg-transparent border-0 p-0 cursor-pointer" onclick="document.querySelector('.nav-pill[data-target=&quot;garden&quot;]')?.click()">Garden Log</button> and enable <strong>Include Courier play session</strong>.</p>
+            <span id="courier-aria-assertive" class="sr-only" aria-live="assertive" aria-atomic="true"></span>
             <div id="courier-wrap" class="soft-card p-3 mb-4 border-2 border-[#F0EBE3] relative overflow-hidden">
-                <canvas id="courier-canvas" width="360" height="440" aria-label="Pollination Courier playfield — slide to move your boat, tap to puff nectar"></canvas>
+                <div id="courier-canvas-host" class="rounded-2xl outline-none focus-visible:ring-2 focus-visible:ring-[#8B6BAE] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F8F5F0] dark:focus-visible:ring-offset-[#0f1115]" role="application" aria-label="Pollination Courier. Drag to steer your flower boat. Tap the sky to puff nectar. Or focus here and use arrow keys to move and space bar to puff." tabindex="0">
+                <canvas id="courier-canvas" width="360" height="440" aria-hidden="true"></canvas>
+                </div>
                 <div id="courier-welcome" class="hidden absolute inset-3 z-20 flex flex-col items-center justify-center rounded-2xl bg-gradient-to-b from-[#fff9fc] via-[#f3faf5] to-[#e5f0ff] dark:from-[#1e2433] dark:via-[#1a1f2e] dark:to-[#121820] border-2 border-[#A8E6CF]/45 p-5 pointer-events-auto text-center shadow-[0_12px_40px_rgba(93,78,55,0.12)]">
                     <div class="max-w-sm px-1">
                         <div class="text-5xl mb-2 select-none" aria-hidden="true">🌸🐝🌼</div>
@@ -312,13 +319,24 @@
                 <label class="flex items-center gap-2 text-sm text-[#7A7570] cursor-pointer select-none"><input type="checkbox" id="courier-chill" class="w-4 h-4 accent-[#8B6BAE]"> Chill mode</label>
                 <label class="flex items-center gap-2 text-sm text-[#7A7570] cursor-pointer select-none"><input type="checkbox" id="courier-autopuff" checked class="w-4 h-4 accent-[#8B6BAE]"> Gentle auto-puff</label>
                 <button type="button" id="courier-btn-reset" class="px-4 py-2 rounded-full bg-white border-2 border-[#F0EBE3] font-display font-semibold text-sm text-[#7A7570]">Reset run</button>
+                <button type="button" id="courier-btn-manifest" class="px-4 py-2 rounded-full bg-white border-2 border-[#4db8a8]/40 font-mono text-xs font-semibold text-[#2d6a5d] dark:text-[#a8e6cf]" title="Local JSON only — nothing is uploaded">Copy session manifest</button>
             </div>
+            <p id="courier-bench" class="hidden text-center font-mono text-[10px] text-[#7A7570] mb-2" aria-hidden="true"></p>
             <div class="grid grid-cols-3 gap-3 text-center font-mono text-xs text-[#7A7570] mb-6">
                 <div class="soft-card p-3"><div class="text-[#8B6BAE] font-display text-base text-[#5D4E37] dark:text-[#d8d6d0]" id="courier-stat-blooms">0</div><span class="font-display text-[10px] uppercase tracking-wide text-[#7A7570]">helps</span></div>
                 <div class="soft-card p-3"><div class="text-[#7EC8E3] font-display text-base text-[#5D4E37] dark:text-[#d8d6d0]" id="courier-stat-wave">1</div><span class="font-display text-[10px] uppercase tracking-wide text-[#7A7570]">breeze</span></div>
                 <div class="soft-card p-3"><div class="text-[#A8E6CF] font-display text-base text-[#5D4E37] dark:text-[#d8d6d0]" id="courier-stat-cloud">0</div><span class="font-display text-[10px] uppercase tracking-wide text-[#7A7570]">cloud</span></div>
             </div>
             <p id="courier-streak-toast" class="text-center font-display text-sm text-[#8B6BAE] mb-4 min-h-[1.25em]" aria-live="polite"></p>
+            <details class="soft-card p-5 text-sm text-[#5D4E37] dark:text-[#d8d6d0] mb-4 group">
+                <summary class="font-display text-lg text-[#8B6BAE] cursor-pointer list-none flex items-center gap-2"><span class="transition-transform group-open:rotate-90" aria-hidden="true">▸</span> Design charter (auditable)</summary>
+                <ul class="mt-4 space-y-3 list-disc pl-5 text-[#7A7570] leading-relaxed">
+                    <li><strong class="text-[#5D4E37] dark:text-[#d8d6d0]">Non-extractive engagement.</strong> No streak punishment, no surprise dark patterns, no “lose” screen — the only hard stop is an explicit calm break that reads as care, not failure.</li>
+                    <li><strong class="text-[#5D4E37] dark:text-[#d8d6d0]">Local-first evidence.</strong> This build does not phone home. The <strong>session manifest</strong> is JSON you copy yourself — suitable for IRB packets, trust &amp; safety review, or parent transparency.</li>
+                    <li><strong class="text-[#5D4E37] dark:text-[#d8d6d0]">Inclusion defaults.</strong> Keyboard surface, screen-reader milestones, reduced-motion particle caps — the boring compliance layer done without making kids wait for “accessibility mode.”</li>
+                    <li><strong class="text-[#5D4E37] dark:text-[#d8d6d0]">Child-directed shape.</strong> Copy and metaphors are parent-auditable; mechanics reward helping, not dominating.</li>
+                </ul>
+            </details>
             <div class="soft-card p-5 text-sm text-[#5D4E37] dark:text-[#d8d6d0]">
                 <h3 class="font-display text-lg mb-2 text-[#8B6BAE]">Friends in the sky</h3>
                 <ul class="space-y-2 list-disc pl-5 text-[#7A7570]">
@@ -554,6 +572,7 @@
         function toggleDark() {
             document.body.classList.toggle('dark');
             document.getElementById('darkToggle').textContent = document.body.classList.contains('dark') ? '☀️' : '🌙';
+            try { window.dispatchEvent(new CustomEvent('p31:courier-theme')); } catch (_) {}
         }
 
         function setMol(mode, btn) {
@@ -628,6 +647,11 @@
 
             document.getElementById('g-input').addEventListener('input', renderGardenPreview);
             document.getElementById('g-pre-reader').addEventListener('change', renderGardenPreview);
+            const inc = document.getElementById('g-include-courier');
+            if (inc && inc.dataset.wired !== '1') {
+                inc.dataset.wired = '1';
+                inc.addEventListener('change', renderGardenPreview);
+            }
 
             /* Restore prior in-progress state if the kid navigated away. */
             try {
@@ -781,8 +805,25 @@
             };
         }
 
+        const PHOS_HANDOFF_BRIDGE = 'p31.phos.gardenState/1.0.0+p31.playSession/1.0.0';
+
+        function gardenHandoffIncludeCourier() {
+            try { return !!document.getElementById('g-include-courier')?.checked; } catch (_) { return false; }
+        }
+
+        function buildUnifiedPhosPayload() {
+            const base = buildPhosPayload();
+            if (!gardenHandoffIncludeCourier()) return base;
+            if (typeof window.__p31CourierPhosSnapshot !== 'function') return base;
+            const snap = window.__p31CourierPhosSnapshot();
+            if (!snap) return base;
+            base.garden_state.play_session = snap;
+            base.garden_state._handoff_bridge = PHOS_HANDOFF_BRIDGE;
+            return base;
+        }
+
         function renderGardenPreview() {
-            const payload = buildPhosPayload();
+            const payload = gardenHandoffIncludeCourier() ? buildUnifiedPhosPayload() : buildPhosPayload();
             document.getElementById('g-preview').textContent = JSON.stringify(payload, null, 2);
         }
 
@@ -815,7 +856,7 @@
         }
 
         function saveGardenLog() {
-            const payload = buildPhosPayload();
+            const payload = gardenHandoffIncludeCourier() ? buildUnifiedPhosPayload() : buildPhosPayload();
             const entry = {
                 ts: new Date().toISOString(),
                 payload,
@@ -871,11 +912,12 @@
             renderGardenPreview();
         }
 
-        /* ── Pollination Courier — kid-first juice: cheers, chords, celebrations ── */
+        /* ── Pollination Courier — kid-first + auditable session manifest (local-only) ── */
         (function pollinationCourier() {
             const MAX_CLOUD = 100;
             const CLOUD_LEAK = 11;
             const WELCOME_KEY = 'p31:courier:kid-welcome-v2';
+            const MANIFEST_SCHEMA = 'p31.wellnessSession.manifest/1.0.0';
             const CHEER = {
                 bud: ['Bloom!', 'So pretty!', 'You helped!', 'Yay petals!', 'Sweet!'],
                 bee: ['Zoom home!', 'Bee happy!', 'Nice hello!', 'Off you go!', 'Gold star!'],
@@ -897,6 +939,7 @@
             let floatTexts = [];
             let ripples = [];
             let playerX = 180;
+            let playerTargetX = 180;
             let puffSquish = 0;
             let skyT = 0;
             let waveBanner = 0;
@@ -904,6 +947,57 @@
             let streakToastT = 0;
             let keys = { left: false, right: false };
             let audioCtx = null;
+            let sessionT0 = performance.now();
+            let sessionEvents = [];
+            let streakMax = 0;
+            let benchFrames = 0;
+            let benchLast = performance.now();
+            const courierBenchOn = typeof location !== 'undefined' && /\bcourierBench=1\b/.test(location.search || '');
+
+            function logSession(type, detail) {
+                const row = Object.assign({ t: Math.round(performance.now() - sessionT0), type }, detail || {});
+                sessionEvents.push(row);
+                if (sessionEvents.length > 200) sessionEvents.shift();
+            }
+
+            function announceAssertive(msg) {
+                const el = document.getElementById('courier-aria-assertive');
+                if (!el || !msg) return;
+                el.textContent = '';
+                requestAnimationFrame(() => { el.textContent = msg; });
+            }
+
+            function haptic(kind) {
+                try {
+                    if (!navigator.vibrate) return;
+                    if (kind === 'celebrate') navigator.vibrate([12, 38, 14]);
+                    else if (kind === 'milestone') navigator.vibrate([14, 42, 14, 42, 14]);
+                    else navigator.vibrate(10);
+                } catch (_) {}
+            }
+
+            function buildManifest() {
+                return {
+                    $schema: MANIFEST_SCHEMA,
+                    surface: 'quantum-family/pollination-courier',
+                    generatedAt: new Date().toISOString(),
+                    privacy: {
+                        networkTransport: 'none',
+                        storesPersonallyIdentifiableInformation: false,
+                        childDirectedPosture: true,
+                    },
+                    session: {
+                        wallClockMs: Math.round(performance.now() - sessionT0),
+                        aggregates: {
+                            helps: blooms,
+                            breeze: wave,
+                            cloudPct: Math.round(cloud),
+                            streakMax,
+                        },
+                    },
+                    events: sessionEvents.slice(-120),
+                };
+            }
 
             function chillM() { return document.getElementById('courier-chill')?.checked ? 0.58 : 1; }
             function autopuffOn() { return !!document.getElementById('courier-autopuff')?.checked; }
@@ -961,13 +1055,15 @@
                 const lines = {
                     3: 'You’re on a roll — three helps in a row! 🌟',
                     5: 'Five in a row! Your brain is a garden laser. ✨',
-                    8: 'Eight helps! That’s real focus. Proud of you. 💚',
+                    8: 'Eight helps! That’s real focus — steady and kind. 💚',
                     13: 'Thirteen! Legendary kindness streak. 🌈',
                 };
                 const line = lines[streak];
                 if (line && el) {
                     el.textContent = line;
                     streakToastT = 220;
+                    announceAssertive(line);
+                    haptic('milestone');
                 }
             }
 
@@ -988,6 +1084,7 @@
                 ctx = cv.getContext('2d');
                 ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
                 playerX = Math.min(Math.max(playerX, 40), W - 40);
+                playerTargetX = Math.min(Math.max(playerTargetX, 40), W - 40);
             }
 
             function spawnGuest() {
@@ -1037,8 +1134,11 @@
                 g.done = true;
                 blooms++;
                 streak++;
+                streakMax = Math.max(streakMax, streak);
                 streakMilestone();
                 cheerFor(g);
+                logSession('help', { kind: g.type, helps: blooms, wave });
+                haptic(g.type === 'pod' ? 'celebrate' : 'pulse');
                 const rm = reduceMotion();
                 if (g.type === 'bud') {
                     addParticles(g.x, g.y, 18, ['#f9b4c9', '#ffd6e8', '#ffb7d5', '#fff8dc', '#a8e6cf'], true);
@@ -1058,6 +1158,9 @@
                     waveBanner = rm ? 40 : 96;
                     playChord([261.63, 329.63, 392], 0.28);
                     floatTexts.push({ x: W / 2, y: H * 0.22, text: 'New breeze — you leveled up! 🌬️', life: 70, vy: -0.35 });
+                    logSession('breeze_up', { wave });
+                    announceAssertive('New breeze. Chapter ' + wave + '.');
+                    haptic('celebrate');
                 }
                 updateHud();
             }
@@ -1067,6 +1170,7 @@
                 cloud = Math.min(MAX_CLOUD, cloud + CLOUD_LEAK);
                 playChime(155, 0.06, 0.04);
                 floatTexts.push({ x: W / 2, y: H * 0.35, text: 'Almost — you’re still great 💚', life: 48, vy: -0.3 });
+                logSession('cloud_rise', { cloudPct: Math.round(cloud) });
                 updateHud();
                 if (cloud >= MAX_CLOUD) rainPause();
             }
@@ -1080,6 +1184,8 @@
                 running = false;
                 streak = 0;
                 showRainOverlay();
+                logSession('rain_pause', { cloudPct: 100 });
+                announceAssertive('Cozy rain break. The garden asked for a pause. Tap when you are ready.');
                 const tgl = document.getElementById('courier-btn-toggle');
                 if (tgl) tgl.textContent = 'Start';
                 const st = document.getElementById('courier-streak-toast');
@@ -1331,6 +1437,20 @@
             function tick() {
                 if (!tabActive || !ctx) return;
                 raf = requestAnimationFrame(tick);
+                if (courierBenchOn) {
+                    benchFrames++;
+                    const nowB = performance.now();
+                    if (nowB - benchLast >= 1000) {
+                        const fps = Math.round((benchFrames * 1000) / (nowB - benchLast));
+                        benchFrames = 0;
+                        benchLast = nowB;
+                        const bel = document.getElementById('courier-bench');
+                        if (bel) {
+                            bel.classList.remove('hidden');
+                            bel.textContent = 'bench ~' + fps + ' fps · helps ' + blooms + ' · add ?courierBench=1 to URL';
+                        }
+                    }
+                }
                 if (puffSquish > 0) puffSquish--;
                 if (streakToastT > 0) {
                     streakToastT--;
@@ -1339,6 +1459,8 @@
                         if (el) el.textContent = '';
                     }
                 }
+
+                playerX += (playerTargetX - playerX) * 0.28;
 
                 if (!running) {
                     drawBg();
@@ -1422,8 +1544,14 @@
                 });
                 particles = particles.filter(pt => pt.life > 0);
 
-                if (keys.left) playerX = Math.max(36, playerX - 5.6 * chillM());
-                if (keys.right) playerX = Math.min(W - 36, playerX + 5.6 * chillM());
+                if (keys.left) {
+                    playerX = Math.max(36, playerX - 5.6 * chillM());
+                    playerTargetX = playerX;
+                }
+                if (keys.right) {
+                    playerX = Math.min(W - 36, playerX + 5.6 * chillM());
+                    playerTargetX = playerX;
+                }
 
                 drawBg();
                 for (const r of ripples) {
@@ -1504,33 +1632,63 @@
                 const reset = document.getElementById('courier-btn-reset');
                 const ovBtn = document.getElementById('courier-overlay-btn');
                 const welcomeOk = document.getElementById('courier-welcome-ok');
+                const manifestBtn = document.getElementById('courier-btn-manifest');
+                const host = document.getElementById('courier-canvas-host');
                 if (!cv || !btn) return;
 
                 if (btn.dataset.wired !== '1') {
                     btn.dataset.wired = '1';
                     window.addEventListener('resize', resize);
+                    window.addEventListener('p31:courier-theme', resize);
 
                     try {
                         if (!localStorage.getItem(WELCOME_KEY)) showWelcome();
                     } catch (_) {}
 
+                    logSession('surface_open', { chill: !!document.getElementById('courier-chill')?.checked });
+
                     if (welcomeOk) {
                         welcomeOk.addEventListener('click', () => {
                             try { localStorage.setItem(WELCOME_KEY, '1'); } catch (_) {}
                             hideWelcome();
+                            logSession('welcome_ok', {});
                             playChord([392, 523.25], 0.15);
+                        });
+                    }
+
+                    if (manifestBtn) {
+                        manifestBtn.addEventListener('click', async () => {
+                            logSession('manifest_copy', { helps: blooms });
+                            const txt = JSON.stringify(buildManifest(), null, 2);
+                            try {
+                                await navigator.clipboard.writeText(txt);
+                                manifestBtn.textContent = 'Copied ✓';
+                                setTimeout(() => { manifestBtn.textContent = 'Copy session manifest'; }, 2200);
+                            } catch (_) {
+                                const ta = document.createElement('textarea');
+                                ta.value = txt;
+                                document.body.appendChild(ta);
+                                ta.select();
+                                document.execCommand('copy');
+                                document.body.removeChild(ta);
+                                manifestBtn.textContent = 'Copied (fallback)';
+                                setTimeout(() => { manifestBtn.textContent = 'Copy session manifest'; }, 2200);
+                            }
                         });
                     }
 
                     btn.addEventListener('click', () => {
                         if (cloud >= MAX_CLOUD) return;
+                        const was = running;
                         running = !running;
                         btn.textContent = running ? 'Pause' : 'Start';
+                        logSession(running ? 'play' : 'pause', { wasRunning: was });
                         if (running && audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
                         loopStart();
                     });
                     reset.addEventListener('click', () => {
-                        blooms = 0; wave = 1; cloud = 0; streak = 0;
+                        logSession('reset_run', { helps: blooms, wave, cloudPct: Math.round(cloud) });
+                        blooms = 0; wave = 1; cloud = 0; streak = 0; streakMax = 0;
                         guests = []; puffs = []; particles = []; floatTexts = []; ripples = [];
                         spawnAcc = 0; waveBanner = 0; skyT = 0;
                         hideOverlay();
@@ -1541,6 +1699,8 @@
                         btn.textContent = 'Start';
                     });
                     ovBtn && ovBtn.addEventListener('click', () => {
+                        logSession('rain_resume', {});
+                        announceAssertive('Playing again. Sky is clear.');
                         cloud = 0;
                         guests = []; puffs = []; particles = []; floatTexts = []; ripples = [];
                         streak = 0;
@@ -1552,20 +1712,28 @@
                         loopStart();
                     });
 
-                    cv.addEventListener('pointermove', e => {
+                    const onPointerMove = e => {
                         const r = cv.getBoundingClientRect();
                         const x = e.clientX - r.left;
-                        playerX = Math.min(Math.max(x, 32), W - 32);
-                    });
+                        playerTargetX = Math.min(Math.max(x, 32), W - 32);
+                    };
+                    cv.addEventListener('pointermove', onPointerMove);
                     cv.addEventListener('pointerdown', e => {
                         if (e.button !== 0 && e.pointerType !== 'touch') return;
                         tryPuff();
                     });
                     window.addEventListener('keydown', e => {
                         if (!tabActive) return;
-                        if (e.code === 'Space') { e.preventDefault(); tryPuff(); }
-                        if (e.code === 'ArrowLeft') keys.left = true;
-                        if (e.code === 'ArrowRight') keys.right = true;
+                        if (e.code === 'Space') {
+                            if (host && document.activeElement !== host) return;
+                            e.preventDefault();
+                            tryPuff();
+                        }
+                        if (e.code === 'ArrowLeft' || e.code === 'ArrowRight') {
+                            if (host && document.activeElement !== host) return;
+                            if (e.code === 'ArrowLeft') keys.left = true;
+                            if (e.code === 'ArrowRight') keys.right = true;
+                        }
                     });
                     window.addEventListener('keyup', e => {
                         if (e.code === 'ArrowLeft') keys.left = false;
@@ -1575,6 +1743,18 @@
 
                 updateHud();
                 loopStart();
+            };
+
+            window.__p31CourierPhosSnapshot = function __p31CourierPhosSnapshot() {
+                const m = buildManifest();
+                return {
+                    schema: 'p31.playSession/1.0.0',
+                    surface: m.surface,
+                    generatedAt: m.generatedAt,
+                    privacy: m.privacy,
+                    session: m.session,
+                    events: m.events,
+                };
             };
         })();
     </script>
