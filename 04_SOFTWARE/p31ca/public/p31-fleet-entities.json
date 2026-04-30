@@ -7,21 +7,19 @@
       "slug": "bonding-relay",
       "kind": "worker",
       "title": "bonding-relay",
-      "subtitle": "04_SOFTWARE/bonding",
-      "tier": "allowlisted",
+      "subtitle": "BONDING telemetry + rooms; not the vertical Pages front",
+      "tier": "verified_allowlisted",
       "workersDevUrl": "https://bonding-relay.trimtab-signal.workers.dev",
       "prodUrl": "",
       "healthPaths": [
-        "/health",
-        "/api/health"
+        "/health"
       ],
       "meshPaths": [],
-      "constantsKey": null,
+      "constantsKey": "mesh.bondingRelayWorkerUrl",
       "deployHints": [
         "04_SOFTWARE/bonding"
       ],
       "probeUrls": [
-        "https://bonding-relay.trimtab-signal.workers.dev/api/health",
         "https://bonding-relay.trimtab-signal.workers.dev/health"
       ],
       "hubPagePath": null,
@@ -248,7 +246,7 @@
       "prodUrl": "",
       "healthPaths": [],
       "meshPaths": [],
-      "constantsKey": null,
+      "constantsKey": "mesh.geodesicRoomWorkerUrl",
       "deployHints": [
         "04_SOFTWARE/geodesic-room"
       ],
@@ -473,21 +471,19 @@
       "slug": "p31-google-bridge",
       "kind": "worker",
       "title": "p31-google-bridge",
-      "subtitle": "04_SOFTWARE/p31-google-bridge",
-      "tier": "allowlisted",
+      "subtitle": "Google OAuth + calendar.readonly; KV sessions",
+      "tier": "verified_allowlisted",
       "workersDevUrl": "https://p31-google-bridge.trimtab-signal.workers.dev",
       "prodUrl": "",
       "healthPaths": [
-        "/health",
-        "/api/health"
+        "/health"
       ],
       "meshPaths": [],
-      "constantsKey": null,
+      "constantsKey": "mesh.googleBridgeWorkerUrl",
       "deployHints": [
         "04_SOFTWARE/p31-google-bridge"
       ],
       "probeUrls": [
-        "https://p31-google-bridge.trimtab-signal.workers.dev/api/health",
         "https://p31-google-bridge.trimtab-signal.workers.dev/health"
       ],
       "hubPagePath": null,

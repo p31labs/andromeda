@@ -68,6 +68,9 @@
       "passkeySameOriginBase": "https://p31ca.org/api/passkey",
       "edgeLabWorkerUrl": "https://cf-edge-lab.trimtab-signal.workers.dev",
       "tetraHubWorkerUrl": "https://tetra-hub.trimtab-signal.workers.dev",
+      "geodesicRoomWorkerUrl": "https://geodesic-room.trimtab-signal.workers.dev",
+      "googleBridgeWorkerUrl": "https://p31-google-bridge.trimtab-signal.workers.dev",
+      "bondingRelayWorkerUrl": "https://bonding-relay.trimtab-signal.workers.dev",
       "remembranceWarmWhite": "#f5f0e8",
       "remembranceBereavementKvKey": "mesh_bereavement_until",
       "vertexStateRemembered": "remembered",
@@ -137,8 +140,25 @@
     {
       "id": "geodesic-room",
       "workersDev": "https://geodesic-room.trimtab-signal.workers.dev",
+      "constantsKey": "mesh.geodesicRoomWorkerUrl",
       "deploy": "04_SOFTWARE/geodesic-room",
       "note": "DO v0.2; WS /api/geodesic/:id/ws; see GEODESIC-GAME-ENGINE-INTEGRATION.md"
+    },
+    {
+      "id": "p31-google-bridge",
+      "workersDev": "https://p31-google-bridge.trimtab-signal.workers.dev",
+      "healthPaths": ["/health"],
+      "constantsKey": "mesh.googleBridgeWorkerUrl",
+      "deploy": "04_SOFTWARE/p31-google-bridge",
+      "note": "Google OAuth + calendar.readonly; KV sessions"
+    },
+    {
+      "id": "bonding-relay",
+      "workersDev": "https://bonding-relay.trimtab-signal.workers.dev",
+      "healthPaths": ["/health"],
+      "constantsKey": "mesh.bondingRelayWorkerUrl",
+      "deploy": "04_SOFTWARE/bonding",
+      "note": "BONDING telemetry + rooms; not the vertical Pages front"
     },
     {
       "id": "cf-edge-lab",
