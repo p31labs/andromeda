@@ -240,7 +240,7 @@ document.addEventListener('keyup', e => {
 });
 
 // ================================================================
-// 3. STARFIELD (2D canvas — canonical module from design-assets; mesh touches)
+// 3. STARFIELD (2D canvas — bundled from public/lib; mesh touches)
 // ================================================================
 type StarfieldApi = {
   destroy: () => void;
