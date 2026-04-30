@@ -277,7 +277,7 @@ async function refreshStarfieldFromApi() {
     const { config, hints } = await starfieldMod.resolveStarfieldConfig();
     starfieldApi.setConfig(config);
     starfieldApi.ingestTouchHints(hints);
-    const mt = await import("../../../../../design-assets/starfield/p31-mesh-touches.js");
+    const mt = await import("../../public/lib/p31-mesh-touches.js");
     let lastMed: number | null = null;
     try {
       lastMed = Number(localStorage.getItem(mt.STORAGE.lastMedTs)) || null;
@@ -300,7 +300,7 @@ if (particleCanvas instanceof HTMLCanvasElement) {
   void (async () => {
     try {
       const mod = (await import(
-        "../../../../../design-assets/starfield/p31-starfield.js"
+        "../../public/lib/p31-starfield.js"
       )) as StarfieldMod;
       starfieldMod = mod;
       const { config, hints } = await mod.resolveStarfieldConfig();
