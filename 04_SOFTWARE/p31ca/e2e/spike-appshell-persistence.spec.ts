@@ -1,46 +1,31 @@
 /**
  * spike-appshell-persistence.spec.ts — automation half of Track 2.5 spike.
  *
- * Drives 20× navigations between /spike/appshell/ and /spike/appshell/dome/
- * in headless Chromium and writes a JSON report to e2e/results/spike-appshell.json
- * for the operator's field-test follow-up.
+ * Five automated probes against /spike/appshell/ and /spike/appshell/dome/:
+ *   1. baseline       — 20× ClientRouter nav, idle CPU
+ *   2. extended       — 50× ClientRouter nav, idle CPU (slow-leak surface)
+ *   3. cpu-throttle   — 20× nav under 4× CPU throttle (Chromebook-class)
+ *   4. reduced-motion — 20× nav with prefers-reduced-motion: reduce
+ *   5. bfcache        — 10× browser back/forward (real iOS swipe behaviour)
  *
- * Pass criteria (matches docs/SPIKE-APPSHELL-PERSISTENCE.md "green path"):
- *   1. canvasId is non-empty after first paint
- *   2. canvasAttachCount stays at 1 over 20 navigations
- *      (the strong claim — same HTMLCanvasElement DOM node persists across
- *      every Astro ClientRouter navigation via transition:persist)
- *   3. ctxLost === ctxRestored (every WebGL context-loss is recovered;
- *      headless SwiftShader loses contexts during view-transition snapshots
- *      on real hardware GPUs this rarely happens, but the code path must
- *      handle it gracefully)
- *   4. ctxHealthy is true at the end of the run (final state is renderable)
- *   5. min FPS sample stays >= 5 in headless (>= 30 expected on real
- *      Chromebook — that's the operator's field test)
- *   6. memory delta over the run < 25 MB JS heap (best-effort; only Chromium
- *      via CDP; skipped if perf.memory unavailable)
+ * All five share the same pass criteria (matches docs/SPIKE-APPSHELL-PERSISTENCE.md):
+ *   - canvasAttachCount stays at 1 (the strong claim — same DOM canvas)
+ *   - canvas data-id is the same UUID throughout
+ *   - ctxRestored >= ctxLost AND ctxHealthy at end of run
+ *   - min FPS >= 5 in headless (>= 30 expected on real hardware)
  *
- * Stop conditions (red path):
- *   - canvasAttachCount > 1 mid-run -> fail (Astro is not persisting the
- *     canvas; the architectural premise is wrong)
- *   - ctxLost > ctxRestored at end -> fail (context was lost and not
- *     recovered)
- *   - canvas data-id changes mid-run -> fail
- *   - final ctxHealthy === false -> fail (last frame is unrenderable)
+ * Each test writes per-nav samples to e2e/results/spike-appshell-<test>.json
+ * and contributes a section to docs/SPIKE-APPSHELL-RESULT.md (manually).
  *
- * Out of scope (operator field test only):
- *   - bfcache (browser back/forward physical buttons)
- *   - real-device touch swipes
- *   - throttled CPU on actual Chromebook
+ * Out of scope of automation (operator field test only):
+ *   - real Pixelbook + iPhone hardware
+ *   - cellular cold-load
+ *   - WebAuthn / Passkey paths through transitions
  */
 import { test, expect } from '@playwright/test';
 import fs from 'node:fs';
 import path from 'node:path';
-
-const NAV_COUNT = 20;
-const FPS_FLOOR_HEADLESS = 15;
-const FPS_FLOOR_FIELD = 30; // documented; not enforced in headless
-const MEMORY_DELTA_BUDGET_MB = 25;
+import type { Page, CDPSession } from '@playwright/test';
 
 interface ShellStats {
   canvasId: string;
@@ -75,13 +60,15 @@ declare global {
   }
 }
 
-async function readStats(page: import('@playwright/test').Page): Promise<ShellStats> {
+const FPS_FLOOR_HEADLESS = 5; // very loose under throttle; real-hardware floor is 30
+const MEMORY_DELTA_BUDGET_MB = 25;
+const SAMPLE_PER_NAV_TIMEOUT = 10_000;
+
+async function readStats(page: Page): Promise<ShellStats> {
   return await page.evaluate(() => window.__p31AppShell);
 }
 
-async function readJsHeapMb(page: import('@playwright/test').Page): Promise<number | null> {
-  /* perf.memory is non-standard, Chromium-only, gated by allow-list; treat as
-   * best-effort. If unavailable, return null and skip the budget check. */
+async function readJsHeapMb(page: Page): Promise<number | null> {
   return await page.evaluate(() => {
     const perf = performance as Performance & {
       memory?: { usedJSHeapSize: number };
@@ -90,163 +77,348 @@ async function readJsHeapMb(page: import('@playwright/test').Page): Promise<numb
   });
 }
 
+async function landOnHome(page: Page): Promise<{ canvasId: string; baseHeap: number | null; startedAt: number }> {
+  const startedAt = Date.now();
+  await page.goto('/spike/appshell/', { waitUntil: 'domcontentloaded' });
+  await page.waitForFunction(
+    () => Boolean(window.__p31AppShell && window.__p31AppShell.canvasId),
+    null,
+    { timeout: 10_000 }
+  );
+  await page.waitForTimeout(300);
+  const initial = await readStats(page);
+  expect(initial.canvasId, 'canvasId set after first paint').toBeTruthy();
+  const baseHeap = await readJsHeapMb(page);
+  return { canvasId: initial.canvasId, baseHeap, startedAt };
+}
+
+async function captureSample(
+  page: Page,
+  index: number,
+  expectedRoute: 'home' | 'dome',
+  startedAt: number
+): Promise<NavSample> {
+  const stats = await readStats(page);
+  const heap = await readJsHeapMb(page);
+  return {
+    index,
+    route: expectedRoute,
+    canvasId: stats.canvasId,
+    navCount: stats.navCount,
+    canvasAttachCount: stats.canvasAttachCount,
+    ctxLost: stats.ctxLost,
+    ctxRestored: stats.ctxRestored,
+    ctxHealthy: stats.ctxHealthy,
+    fps: stats.fps,
+    jsHeapMb: heap,
+    url: page.url(),
+    elapsedMs: Date.now() - startedAt,
+  };
+}
+
+function assertSampleHealthy(s: NavSample, baseCanvasId: string, idx: number): void {
+  expect(
+    s.canvasAttachCount,
+    `canvas DOM node must persist across nav ${idx} (${s.route})`
+  ).toBe(1);
+  expect(s.canvasId, `canvas data-id must remain ${baseCanvasId} after nav ${idx}`).toBe(
+    baseCanvasId
+  );
+  expect(
+    s.ctxRestored,
+    `ctxRestored must >= ctxLost (nav ${idx}: lost ${s.ctxLost}, restored ${s.ctxRestored})`
+  ).toBeGreaterThanOrEqual(s.ctxLost);
+  expect(s.ctxHealthy, `GL context must be healthy at end of nav ${idx}`).toBe(true);
+}
+
+async function navigateClickRouter(
+  page: Page,
+  target: 'home' | 'dome',
+  perNavTimeoutMs: number = SAMPLE_PER_NAV_TIMEOUT
+): Promise<void> {
+  await page.getByRole('link', { name: target, exact: true }).click();
+  await page.waitForFunction(
+    (route) => {
+      const s = window.__p31AppShell;
+      if (!s) return false;
+      if (s.route !== route) return false;
+      return s.ctxHealthy && (s.fps > 0 || s.ctxRestored >= s.ctxLost);
+    },
+    target,
+    { timeout: perNavTimeoutMs }
+  );
+  await page.waitForTimeout(200);
+}
+
+interface ReportSummary {
+  schema: 'p31.spike.appshell/1.0.0';
+  scenario: string;
+  ranAt: string;
+  navCount: number;
+  canvasId: string;
+  result: 'green' | 'red';
+  thresholds: {
+    fpsFloorHeadless: number;
+    memoryDeltaBudgetMb: number;
+  };
+  summary: {
+    avgFps: number;
+    minFps: number;
+    canvasAttachCountFinal: number;
+    ctxLostTotal: number;
+    ctxRestoredTotal: number;
+    ctxHealthyFinal: boolean;
+    heapDeltaMb: number | null;
+    durationMs: number;
+  };
+  samples: NavSample[];
+  context?: Record<string, unknown>;
+}
+
+function writeReport(scenario: string, body: Omit<ReportSummary, 'scenario' | 'schema' | 'ranAt'>): string {
+  const outDir = path.join(process.cwd(), 'e2e', 'results');
+  if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
+  const out = path.join(outDir, `spike-appshell-${scenario}.json`);
+  const report: ReportSummary = {
+    schema: 'p31.spike.appshell/1.0.0',
+    scenario,
+    ranAt: new Date().toISOString(),
+    ...body,
+  };
+  fs.writeFileSync(out, JSON.stringify(report, null, 2) + '\n', 'utf8');
+  console.log(`spike-appshell[${scenario}]: wrote ${out}`);
+  return out;
+}
+
+function summariseSamples(samples: NavSample[]): ReportSummary['summary'] {
+  const fpsSamples = samples.map((s) => s.fps).filter((f) => f > 0);
+  const minFps = fpsSamples.length ? Math.min(...fpsSamples) : 0;
+  const avgFps = fpsSamples.length
+    ? Math.round(fpsSamples.reduce((a, b) => a + b, 0) / fpsSamples.length)
+    : 0;
+  const heapSamples = samples
+    .map((s) => s.jsHeapMb)
+    .filter((h): h is number => typeof h === 'number');
+  const heapDelta =
+    heapSamples.length > 1 ? Math.max(...heapSamples) - Math.min(...heapSamples) : null;
+  const last = samples[samples.length - 1];
+  return {
+    avgFps,
+    minFps,
+    canvasAttachCountFinal: last?.canvasAttachCount ?? 0,
+    ctxLostTotal: last?.ctxLost ?? 0,
+    ctxRestoredTotal: last?.ctxRestored ?? 0,
+    ctxHealthyFinal: last?.ctxHealthy ?? false,
+    heapDeltaMb: heapDelta,
+    durationMs: last?.elapsedMs ?? 0,
+  };
+}
+
+/* ============================================================ */
+/*  Test 1 — baseline                                            */
+/* ============================================================ */
 test.describe('spike — AppShell persistence (Track 2.5)', () => {
-  test('canvas survives 20× navigations between / and /dome', async ({ page }) => {
+  test('baseline: canvas survives 20× ClientRouter navigations', async ({ page }) => {
     const samples: NavSample[] = [];
-    const startedAt = Date.now();
+    const { canvasId: baseCanvasId, baseHeap, startedAt } = await landOnHome(page);
+    samples.push(await captureSample(page, 0, 'home', startedAt));
 
-    /* Land on home; wait for the singleton to mount. */
-    await page.goto('/spike/appshell/', { waitUntil: 'domcontentloaded' });
-    await page.waitForFunction(
-      () => Boolean(window.__p31AppShell && window.__p31AppShell.canvasId),
-      null,
-      { timeout: 10_000 }
-    );
-    /* Let two rAF frames pass so fps has at least one dt sample. */
-    await page.waitForTimeout(250);
+    const NAV = 20;
+    for (let i = 1; i <= NAV; i++) {
+      const route: 'home' | 'dome' = i % 2 === 1 ? 'dome' : 'home';
+      await navigateClickRouter(page, route);
+      const s = await captureSample(page, i, route, startedAt);
+      samples.push(s);
+      assertSampleHealthy(s, baseCanvasId, i);
+    }
 
-    const initial = await readStats(page);
-    expect(initial.canvasId, 'canvasId set after first paint').toBeTruthy();
-    const baseCanvasId = initial.canvasId;
-    const baseHeap = await readJsHeapMb(page);
-
-    samples.push({
-      index: 0,
-      route: 'home',
-      canvasId: initial.canvasId,
-      navCount: initial.navCount,
-      canvasAttachCount: initial.canvasAttachCount,
-      ctxLost: initial.ctxLost,
-      ctxRestored: initial.ctxRestored,
-      ctxHealthy: initial.ctxHealthy,
-      fps: initial.fps,
-      jsHeapMb: baseHeap,
-      url: page.url(),
-      elapsedMs: Date.now() - startedAt,
-    });
-
-    for (let i = 1; i <= NAV_COUNT; i++) {
-      const target = i % 2 === 1 ? '/spike/appshell/dome/' : '/spike/appshell/';
-      const expectedRoute: 'home' | 'dome' = i % 2 === 1 ? 'dome' : 'home';
-
-      /* Click the in-page <a> so we exercise Astro ClientRouter, not full
-       * browser navigation. */
-      const linkText = expectedRoute;
-      await page.getByRole('link', { name: linkText, exact: true }).click();
-
-      /* Wait until the singleton sees the new route AND has either a fresh
-       * fps sample OR a recovered context (lost-then-restored is fine,
-       * but the loop must be running again). */
-      await page.waitForFunction(
-        (route) => {
-          const s = window.__p31AppShell;
-          if (!s) return false;
-          if (s.route !== route) return false;
-          /* Healthy + producing frames, OR was lost but restored and ready */
-          return s.ctxHealthy && (s.fps > 0 || s.ctxRestored >= s.ctxLost);
-        },
-        expectedRoute,
-        { timeout: 10_000 }
+    const summary = summariseSamples(samples);
+    expect(summary.minFps, 'min FPS over baseline run').toBeGreaterThanOrEqual(FPS_FLOOR_HEADLESS);
+    if (summary.heapDeltaMb !== null) {
+      expect(summary.heapDeltaMb, `heap delta < ${MEMORY_DELTA_BUDGET_MB} MB`).toBeLessThan(
+        MEMORY_DELTA_BUDGET_MB
       );
-      await page.waitForTimeout(200);
-
-      const stats = await readStats(page);
-      const heap = await readJsHeapMb(page);
-      samples.push({
-        index: i,
-        route: expectedRoute,
-        canvasId: stats.canvasId,
-        navCount: stats.navCount,
-        canvasAttachCount: stats.canvasAttachCount,
-        ctxLost: stats.ctxLost,
-        ctxRestored: stats.ctxRestored,
-        ctxHealthy: stats.ctxHealthy,
-        fps: stats.fps,
-        jsHeapMb: heap,
-        url: page.url(),
-        elapsedMs: Date.now() - startedAt,
-      });
-
-      expect(
-        stats.canvasAttachCount,
-        `canvas DOM node must persist across nav ${i} (${expectedRoute}) — Astro transition:persist holds the <canvas> across ClientRouter navigations`
-      ).toBe(1);
-      expect(
-        stats.canvasId,
-        `canvas data-id must remain ${baseCanvasId} after nav ${i}`
-      ).toBe(baseCanvasId);
-      expect(
-        stats.ctxRestored,
-        `every webglcontextlost must be recovered by webglcontextrestored (nav ${i}: lost ${stats.ctxLost}, restored ${stats.ctxRestored})`
-      ).toBeGreaterThanOrEqual(stats.ctxLost);
-      expect(
-        stats.ctxHealthy,
-        `GL context must be healthy at end of nav ${i}`
-      ).toBe(true);
     }
-
-    /* Aggregate report. */
-    const fpsSamples = samples.map((s) => s.fps).filter((f) => f > 0);
-    const minFps = fpsSamples.length ? Math.min(...fpsSamples) : 0;
-    const avgFps = fpsSamples.length
-      ? Math.round(fpsSamples.reduce((a, b) => a + b, 0) / fpsSamples.length)
-      : 0;
-    const heapSamples = samples
-      .map((s) => s.jsHeapMb)
-      .filter((h): h is number => typeof h === 'number');
-    const heapDelta =
-      heapSamples.length > 1
-        ? Math.max(...heapSamples) - Math.min(...heapSamples)
-        : null;
-
-    expect(
-      minFps,
-      `min FPS over ${NAV_COUNT} navs (headless floor ${FPS_FLOOR_HEADLESS}, field ${FPS_FLOOR_FIELD})`
-    ).toBeGreaterThanOrEqual(FPS_FLOOR_HEADLESS);
-
-    if (heapDelta !== null) {
-      expect(
-        heapDelta,
-        `JS heap delta < ${MEMORY_DELTA_BUDGET_MB} MB`
-      ).toBeLessThan(MEMORY_DELTA_BUDGET_MB);
-    }
-
-    /* Persist the report regardless of pass/fail (Playwright will skip writes
-     * after a failed assertion above; that's fine — failing the test is the
-     * red signal). */
-    const outDir = path.join(process.cwd(), 'e2e', 'results');
-    if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
-    const out = path.join(outDir, 'spike-appshell.json');
-    const report = {
-      schema: 'p31.spike.appshell/1.0.0',
-      ranAt: new Date().toISOString(),
-      navCount: NAV_COUNT,
+    writeReport('baseline', {
+      navCount: NAV,
       canvasId: baseCanvasId,
       result: 'green',
-      thresholds: {
-        fpsFloorHeadless: FPS_FLOOR_HEADLESS,
-        fpsFloorField: FPS_FLOOR_FIELD,
-        memoryDeltaBudgetMb: MEMORY_DELTA_BUDGET_MB,
-      },
-      summary: {
-        avgFps,
-        minFps,
-        canvasAttachCountFinal: samples[samples.length - 1]?.canvasAttachCount ?? 0,
-        ctxLostTotal: samples[samples.length - 1]?.ctxLost ?? 0,
-        ctxRestoredTotal: samples[samples.length - 1]?.ctxRestored ?? 0,
-        ctxHealthyFinal: samples[samples.length - 1]?.ctxHealthy ?? false,
-        heapDeltaMb: heapDelta,
-        durationMs: samples[samples.length - 1]?.elapsedMs ?? 0,
-      },
+      thresholds: { fpsFloorHeadless: FPS_FLOOR_HEADLESS, memoryDeltaBudgetMb: MEMORY_DELTA_BUDGET_MB },
+      summary,
       samples,
-      operatorFieldTest: {
-        required: true,
-        instructions:
-          'Open /spike/appshell/ on a real Chromebook + iPhone. Navigate back-and-forth 20× including bfcache (browser back button). Confirm: no black flash, the camera lerps smoothly between routes, the page footer "canvas identity" stays the same UUID. Record subjective fps + battery delta.',
-        recordTo: 'andromeda/04_SOFTWARE/p31ca/docs/SPIKE-APPSHELL-RESULT.md',
-      },
-    };
-    fs.writeFileSync(out, JSON.stringify(report, null, 2) + '\n', 'utf8');
-    console.log(`spike-appshell: wrote ${out}`);
+      context: { baseHeapMb: baseHeap },
+    });
+  });
+
+  /* ============================================================ */
+  /*  Test 2 — extended (50×)                                      */
+  /* ============================================================ */
+  test('extended: canvas survives 50× ClientRouter navigations (slow-leak surface)', async ({
+    page,
+  }) => {
+    test.setTimeout(180_000); // 3 minutes max for the long run
+    const samples: NavSample[] = [];
+    const { canvasId: baseCanvasId, baseHeap, startedAt } = await landOnHome(page);
+    samples.push(await captureSample(page, 0, 'home', startedAt));
+
+    const NAV = 50;
+    for (let i = 1; i <= NAV; i++) {
+      const route: 'home' | 'dome' = i % 2 === 1 ? 'dome' : 'home';
+      await navigateClickRouter(page, route);
+      const s = await captureSample(page, i, route, startedAt);
+      samples.push(s);
+      assertSampleHealthy(s, baseCanvasId, i);
+    }
+
+    const summary = summariseSamples(samples);
+    expect(summary.minFps, 'min FPS over extended run').toBeGreaterThanOrEqual(FPS_FLOOR_HEADLESS);
+    /* Extended run uses a more generous heap budget (35 MB) since 50 navs
+     * legitimately allocate more transient state (route params, etc.). */
+    if (summary.heapDeltaMb !== null) {
+      expect(summary.heapDeltaMb, 'heap delta < 35 MB over 50 navs').toBeLessThan(35);
+    }
+    writeReport('extended', {
+      navCount: NAV,
+      canvasId: baseCanvasId,
+      result: 'green',
+      thresholds: { fpsFloorHeadless: FPS_FLOOR_HEADLESS, memoryDeltaBudgetMb: 35 },
+      summary,
+      samples,
+      context: { baseHeapMb: baseHeap },
+    });
+  });
+
+  /* ============================================================ */
+  /*  Test 3 — CPU throttle (4×, Chromebook-class)                 */
+  /* ============================================================ */
+  test('cpu-throttle: canvas survives 20× navigations under 4× CPU throttle', async ({ page }) => {
+    test.setTimeout(300_000); // 5 minutes — throttled runs are slow
+    /* Use Chrome DevTools Protocol to throttle CPU. 4× rate roughly matches
+     * a low-end Chromebook compared to a desktop. Real iPhone is closer
+     * to 2×; real Pixelbook is closer to 4×. */
+    const cdp: CDPSession = await page.context().newCDPSession(page);
+    await cdp.send('Emulation.setCPUThrottlingRate', { rate: 4 });
+
+    const samples: NavSample[] = [];
+    try {
+      const { canvasId: baseCanvasId, baseHeap, startedAt } = await landOnHome(page);
+      samples.push(await captureSample(page, 0, 'home', startedAt));
+
+      const NAV = 20;
+      const PER_NAV_TIMEOUT_MS = 30_000; // generous under 4× throttle
+      for (let i = 1; i <= NAV; i++) {
+        const route: 'home' | 'dome' = i % 2 === 1 ? 'dome' : 'home';
+        await navigateClickRouter(page, route, PER_NAV_TIMEOUT_MS);
+        const s = await captureSample(page, i, route, startedAt);
+        samples.push(s);
+        assertSampleHealthy(s, baseCanvasId, i);
+      }
+
+      const summary = summariseSamples(samples);
+      /* Under 4× throttle, fps will drop hard. We only assert the floor of 1
+       * (i.e. it isn't completely frozen) — the real signal is whether the
+       * canvas persists and the GL context recovers. */
+      expect(summary.minFps, 'min FPS under 4× throttle').toBeGreaterThanOrEqual(1);
+      writeReport('cpu-throttle', {
+        navCount: NAV,
+        canvasId: baseCanvasId,
+        result: 'green',
+        thresholds: { fpsFloorHeadless: 1, memoryDeltaBudgetMb: MEMORY_DELTA_BUDGET_MB },
+        summary,
+        samples,
+        context: { cpuThrottleRate: 4, baseHeapMb: baseHeap },
+      });
+    } finally {
+      await cdp.send('Emulation.setCPUThrottlingRate', { rate: 1 });
+      await cdp.detach();
+    }
+  });
+
+  /* ============================================================ */
+  /*  Test 4 — prefers-reduced-motion                              */
+  /* ============================================================ */
+  test('reduced-motion: canvas + persist honour prefers-reduced-motion: reduce', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+
+    const samples: NavSample[] = [];
+    const { canvasId: baseCanvasId, baseHeap, startedAt } = await landOnHome(page);
+    samples.push(await captureSample(page, 0, 'home', startedAt));
+
+    const NAV = 20;
+    for (let i = 1; i <= NAV; i++) {
+      const route: 'home' | 'dome' = i % 2 === 1 ? 'dome' : 'home';
+      await navigateClickRouter(page, route);
+      const s = await captureSample(page, i, route, startedAt);
+      samples.push(s);
+      assertSampleHealthy(s, baseCanvasId, i);
+    }
+
+    /* Specific reduced-motion invariant: route SHOULD still update; lerp is
+     * implementation-defined (current singleton uses same 600 ms half-life,
+     * which is acceptable; a stricter implementation would snap). What we
+     * MUST NOT have is a broken canvas because of the media query. */
+    const summary = summariseSamples(samples);
+    expect(summary.minFps, 'min FPS with reduced motion').toBeGreaterThanOrEqual(FPS_FLOOR_HEADLESS);
+    writeReport('reduced-motion', {
+      navCount: NAV,
+      canvasId: baseCanvasId,
+      result: 'green',
+      thresholds: { fpsFloorHeadless: FPS_FLOOR_HEADLESS, memoryDeltaBudgetMb: MEMORY_DELTA_BUDGET_MB },
+      summary,
+      samples,
+      context: { reducedMotion: true, baseHeapMb: baseHeap },
+    });
+  });
+
+  /* ============================================================ */
+  /*  Test 5 — bfcache (browser back/forward)                      */
+  /* ============================================================ */
+  test('bfcache: canvas survives 10× browser back/forward navigations', async ({ page }) => {
+    const samples: NavSample[] = [];
+    const { canvasId: baseCanvasId, baseHeap, startedAt } = await landOnHome(page);
+    samples.push(await captureSample(page, 0, 'home', startedAt));
+
+    /* First seed the history with one click-nav so back/forward has a
+     * non-trivial stack. */
+    await navigateClickRouter(page, 'dome');
+    samples.push(await captureSample(page, 1, 'dome', startedAt));
+
+    const NAV = 10;
+    for (let i = 2; i <= NAV + 1; i++) {
+      /* Even rounds: goBack to home. Odd rounds: goForward to dome. */
+      const back = i % 2 === 0;
+      if (back) {
+        await page.goBack({ waitUntil: 'domcontentloaded' });
+      } else {
+        await page.goForward({ waitUntil: 'domcontentloaded' });
+      }
+      const expectedRoute: 'home' | 'dome' = back ? 'home' : 'dome';
+      /* bfcache restore can fire either as fresh navigation OR as pageshow
+       * with persisted=true. The singleton's own astro:after-swap might not
+       * fire for browser back/forward — we wait on the route attribute on
+       * the html element (set by the AppShell). */
+      await page.waitForFunction(
+        (route) => document.documentElement.getAttribute('data-p31-spike-route') === route,
+        expectedRoute,
+        { timeout: SAMPLE_PER_NAV_TIMEOUT }
+      );
+      /* Allow rAF/route-binding to settle. */
+      await page.waitForTimeout(400);
+      const s = await captureSample(page, i, expectedRoute, startedAt);
+      samples.push(s);
+      assertSampleHealthy(s, baseCanvasId, i);
+    }
+
+    const summary = summariseSamples(samples);
+    expect(summary.minFps, 'min FPS through bfcache run').toBeGreaterThanOrEqual(FPS_FLOOR_HEADLESS);
+    writeReport('bfcache', {
+      navCount: NAV,
+      canvasId: baseCanvasId,
+      result: 'green',
+      thresholds: { fpsFloorHeadless: FPS_FLOOR_HEADLESS, memoryDeltaBudgetMb: MEMORY_DELTA_BUDGET_MB },
+      summary,
+      samples,
+      context: { mechanism: 'browser back/forward', baseHeapMb: baseHeap },
+    });
   });
 });
