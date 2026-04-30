@@ -1,6 +1,6 @@
 {
   "schema": "p31.universalCanon/1.0.0",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "title": "P31 universal design canon — shared tokens, ring-local appearance",
   "description": "Single source for typography, spacing, motion, and brand palette. Ring A (p31ca hub) defaults to appearance \"hub\" (dark). Ring D (phosphorus31.org) uses appearance \"org\" (light) via data-p31-appearance on <html> — same brand colors, inverted surfaces so it feels related but not identical. BONDING (bonding.p31ca.org) stays out of this file by operator policy.",
   "rings": {
@@ -85,6 +85,22 @@
     "md": "0 4px 14px rgba(0, 0, 0, 0.08)",
     "lg": "0 12px 40px rgba(0, 0, 0, 0.12)",
     "glowTeal": "0 0 24px rgba(37, 137, 125, 0.25)"
+  },
+  "starfield": {
+    "comment": "Layer 1.5 — luminance atmosphere between Gray Rock void and Alive chrome. Presets inform CSS vars + JS starfield/static-plate.",
+    "layer": "1.5",
+    "globalOffStorageKey": "p31.starfield.off",
+    "presets": {
+      "soup": { "baseAlphaCap": 0.35, "maxFps": 24, "motion": "animated" },
+      "hub": { "baseAlphaCap": 0.22, "maxFps": 20, "motion": "animated" },
+      "commandCenter": { "baseAlphaCap": 0.14, "dotCount": 140, "motion": "staticPlate" },
+      "operatorDesk": { "baseAlphaCap": 0.11, "dotCount": 120, "motion": "staticPlate" }
+    }
+  },
+  "returnRibbon": {
+    "comment": "Fixed spine: soup · hub · passport · connection · mesh —see cognitive-passport/lib/p31-return-ribbon.js",
+    "order": ["soup", "hub", "passport", "connection", "mesh"],
+    "typography": { "fontSizePx": 11, "fontFamily": "mono" }
   },
   "motion": {
     "durationMs": {
