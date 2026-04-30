@@ -282,19 +282,28 @@
             </div>
         </div>
 
-        <!-- POLLINATION COURIER — gentle aim-and-track loop (no combat framing) -->
+        <!-- POLLINATION COURIER — kid-first: celebration, cheers, no lose framing -->
         <div id="page-courier" class="page">
             <h1 class="font-display text-3xl text-[#5D4E37] mb-2">🐝 Pollination Courier</h1>
-            <p class="text-[#7A7570] mb-2">You’re delivering nectar and pollen — not fighting anything. Sleepy buds open, bees get the right sparkle, thick seed pods need three gentle knocks. If the cloud basket fills, the garden pauses for a breath.</p>
-            <p class="text-sm text-[#7A7570] mb-4 font-mono">Move: drag / touch / ← → · Puff: tap / click / space · <span id="courier-chill-hint" class="text-[#8B6BAE]">Chill mode: slower drifts</span></p>
-            <div id="courier-wrap" class="soft-card p-3 mb-4 border-2 border-[#F0EBE3] relative">
-                <canvas id="courier-canvas" width="360" height="440" aria-label="Pollination Courier playfield"></canvas>
-                <div id="courier-overlay" class="hidden absolute inset-3 items-center justify-center rounded-2xl bg-[#F8F5F0]/92 dark:bg-[#0f1115]/92 text-center p-6 pointer-events-auto z-10 border border-[#A8E6CF]/30">
+            <p class="text-[#7A7570] mb-2 text-base leading-relaxed">A <strong>kind reflex</strong> game: you steer a tiny flower-boat and send sparkly nectar puffs. Buds bloom, bees get a gold hello, pods need three soft knocks. <strong>You can’t lose</strong> — if the cloud strip fills, the sky just asks everyone to take a breath together.</p>
+            <p class="text-sm text-[#7A7570] mb-4">Slide or drag to move · Tap for a puff · <kbd class="px-1.5 py-0.5 rounded bg-[#F0EBE3] font-mono text-xs">Space</kbd> works too · Arrows nudge · Turn on <span class="text-[#8B6BAE] font-semibold">Chill</span> if you want it slower</p>
+            <div id="courier-wrap" class="soft-card p-3 mb-4 border-2 border-[#F0EBE3] relative overflow-hidden">
+                <canvas id="courier-canvas" width="360" height="440" aria-label="Pollination Courier playfield — slide to move your boat, tap to puff nectar"></canvas>
+                <div id="courier-welcome" class="hidden absolute inset-3 z-20 flex flex-col items-center justify-center rounded-2xl bg-gradient-to-b from-[#fff9fc] via-[#f3faf5] to-[#e5f0ff] dark:from-[#1e2433] dark:via-[#1a1f2e] dark:to-[#121820] border-2 border-[#A8E6CF]/45 p-5 pointer-events-auto text-center shadow-[0_12px_40px_rgba(93,78,55,0.12)]">
+                    <div class="max-w-sm px-1">
+                        <div class="text-5xl mb-2 select-none" aria-hidden="true">🌸🐝🌼</div>
+                        <h2 class="font-display text-2xl text-[#5D4E37] dark:text-[#d8d6d0] mb-3">Hi, garden helper</h2>
+                        <p class="text-[#5D4E37] dark:text-[#d8d6d0] text-[0.95rem] leading-relaxed mb-3">Your boat is a little flower with a job: <strong>help things grow</strong>. Slide your finger side to side. Tap anywhere on the sky to send a warm puff. Every friend in the sky wants a high-five, not a fight.</p>
+                        <p class="text-sm text-[#7A7570] mb-5">Busy brain? Check <strong>Chill mode</strong> and <strong>Gentle auto-puff</strong> below. The pause screen is only a cozy rain break — tap and the sun comes back.</p>
+                        <button type="button" id="courier-welcome-ok" class="px-8 py-3.5 rounded-full bg-[#8B6BAE] text-white font-display font-bold text-lg shadow-md active:scale-[0.98] transition-transform">Let’s grow something beautiful 💚</button>
+                    </div>
+                </div>
+                <div id="courier-overlay" class="hidden absolute inset-3 items-center justify-center rounded-2xl bg-[#F8F5F0]/95 dark:bg-[#0f1115]/95 text-center p-6 pointer-events-auto z-10 border-2 border-[#7EC8E3]/35">
                     <div>
-                        <div class="text-4xl mb-3" id="courier-overlay-icon">🌧️</div>
-                        <p class="font-display text-lg text-[#5D4E37] dark:text-[#d8d6d0] mb-2" id="courier-overlay-title">Cloud basket full</p>
-                        <p class="text-sm text-[#7A7570] mb-4" id="courier-overlay-body">The garden asked for a break. Nothing is hurt — try another breeze.</p>
-                        <button type="button" id="courier-overlay-btn" class="px-6 py-3 rounded-full bg-[#8B6BAE] text-white font-display font-semibold">Breathe &amp; play again</button>
+                        <div class="text-5xl mb-3" id="courier-overlay-icon" aria-hidden="true">☁️💤</div>
+                        <p class="font-display text-xl text-[#5D4E37] dark:text-[#d8d6d0] mb-2" id="courier-overlay-title">Cozy rain break</p>
+                        <p class="text-sm text-[#7A7570] mb-5 max-w-xs mx-auto leading-relaxed" id="courier-overlay-body">The cloud basket got full — that happens! Nothing is mad at you. Take one slow breath, then we’ll dry the sky and keep playing.</p>
+                        <button type="button" id="courier-overlay-btn" class="px-8 py-3 rounded-full bg-[#7EC8E3] text-[#0a0c10] font-display font-bold shadow-md">Okay — sun’s out again</button>
                     </div>
                 </div>
             </div>
@@ -305,16 +314,17 @@
                 <button type="button" id="courier-btn-reset" class="px-4 py-2 rounded-full bg-white border-2 border-[#F0EBE3] font-display font-semibold text-sm text-[#7A7570]">Reset run</button>
             </div>
             <div class="grid grid-cols-3 gap-3 text-center font-mono text-xs text-[#7A7570] mb-6">
-                <div class="soft-card p-3"><div class="text-[#8B6BAE] font-display text-base text-[#5D4E37] dark:text-[#d8d6d0]" id="courier-stat-blooms">0</div>blooms</div>
-                <div class="soft-card p-3"><div class="text-[#7EC8E3] font-display text-base text-[#5D4E37] dark:text-[#d8d6d0]" id="courier-stat-wave">1</div>wave</div>
-                <div class="soft-card p-3"><div class="text-[#A8E6CF] font-display text-base text-[#5D4E37] dark:text-[#d8d6d0]" id="courier-stat-cloud">0</div>cloud %</div>
+                <div class="soft-card p-3"><div class="text-[#8B6BAE] font-display text-base text-[#5D4E37] dark:text-[#d8d6d0]" id="courier-stat-blooms">0</div><span class="font-display text-[10px] uppercase tracking-wide text-[#7A7570]">helps</span></div>
+                <div class="soft-card p-3"><div class="text-[#7EC8E3] font-display text-base text-[#5D4E37] dark:text-[#d8d6d0]" id="courier-stat-wave">1</div><span class="font-display text-[10px] uppercase tracking-wide text-[#7A7570]">breeze</span></div>
+                <div class="soft-card p-3"><div class="text-[#A8E6CF] font-display text-base text-[#5D4E37] dark:text-[#d8d6d0]" id="courier-stat-cloud">0</div><span class="font-display text-[10px] uppercase tracking-wide text-[#7A7570]">cloud</span></div>
             </div>
+            <p id="courier-streak-toast" class="text-center font-display text-sm text-[#8B6BAE] mb-4 min-h-[1.25em]" aria-live="polite"></p>
             <div class="soft-card p-5 text-sm text-[#5D4E37] dark:text-[#d8d6d0]">
-                <h3 class="font-display text-lg mb-2 text-[#8B6BAE]">Who’s who</h3>
+                <h3 class="font-display text-lg mb-2 text-[#8B6BAE]">Friends in the sky</h3>
                 <ul class="space-y-2 list-disc pl-5 text-[#7A7570]">
-                    <li><strong class="text-[#5D4E37] dark:text-[#d8d6d0]">Closed bud</strong> — one puff opens it; petals drift upward.</li>
-                    <li><strong class="text-[#5D4E37] dark:text-[#d8d6d0]">Busy bee</strong> — wiggly path; one sparkle sends it zooming home.</li>
-                    <li><strong class="text-[#5D4E37] dark:text-[#d8d6d0]">Seed pod</strong> — knock hello three times; it pops into confetti fluff.</li>
+                    <li><strong class="text-[#5D4E37] dark:text-[#d8d6d0]">Sleepy bud</strong> — one puff and it <em>blooms</em> right in front of you.</li>
+                    <li><strong class="text-[#5D4E37] dark:text-[#d8d6d0]">Wiggly bee</strong> — zig-zags because bees are silly; one sparkle and it zooms home.</li>
+                    <li><strong class="text-[#5D4E37] dark:text-[#d8d6d0]">Round seed pod</strong> — say hi three times (three puffs); then confetti fluff.</li>
                 </ul>
             </div>
         </div>
