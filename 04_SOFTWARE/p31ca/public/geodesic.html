@@ -13,6 +13,7 @@
     <title>GEODESIC | 3D Structure Builder | P31 Labs</title>
     <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/p31-style.css">
+    <link rel="stylesheet" href="/lib/p31-starfield.css">
     <style>
         *{margin:0;padding:0;box-sizing:border-box}
         html,body{height:100%;height:100dvh;max-height:-webkit-fill-available}
@@ -37,8 +38,9 @@
         button{display:inline-flex;font-family:var(--p31-font-mono);font-size:var(--p31-text-xs);padding:var(--p31-space-2) 10px;border-radius:var(--p31-radius-sm);cursor:pointer;border:1px solid rgba(255,255,255,0.1);background:rgba(22,25,32,0.8);color:rgba(216,214,208,0.6);transition:border-color var(--p31-duration-fast) var(--p31-ease-standard),color var(--p31-duration-fast) var(--p31-ease-standard),background var(--p31-duration-fast) var(--p31-ease-standard);flex:0 0 auto;touch-action:manipulation;-webkit-tap-highlight-color:transparent;scroll-snap-align:start;min-height:40px;min-width:40px;align-items:center;justify-content:center}
         button:hover{border-color:var(--p31-teal);color:var(--p31-teal)}
         button.active{border-color:var(--p31-teal);color:var(--p31-teal);background:rgba(37,137,125,0.15)}
-        #three-mount{flex:1;position:relative;min-height:0}
-        #geodesic-canvas{opacity:0;transition:opacity var(--p31-duration-slow) var(--p31-ease-decelerate)}
+        #three-mount{flex:1;position:relative;min-height:0;background:var(--p31-void)}
+        #geodesic-starfield{position:absolute;inset:0;z-index:0;display:block;width:100%;height:100%;pointer-events:none;opacity:0.92}
+        #geodesic-canvas{position:relative;z-index:1;opacity:0;transition:opacity var(--p31-duration-slow) var(--p31-ease-decelerate)}
         #geodesic-canvas.p31-geodesic-ready{opacity:1}
         .inf-toggle{display:none;position:absolute;top:10px;right:10px;z-index:6;width:44px;height:44px;border-radius:var(--p31-radius-md);border:1px solid rgba(255,255,255,0.12);background:rgba(22,25,32,0.95);color:var(--p31-teal);font-size:18px;line-height:1;cursor:pointer;touch-action:manipulation;align-items:center;justify-content:center;box-shadow:0 2px 12px rgba(0,0,0,0.35)}
         .inf-toggle[aria-expanded="true"]{background:rgba(37,137,125,0.2);color:var(--p31-cloud);border-color:var(--p31-teal)}
@@ -54,6 +56,11 @@
         #room-bar .room-status{color:rgba(216,214,208,0.45);margin-left:auto;flex:0 1 auto;text-align:right}
         .room-bar-tools{display:flex;align-items:center;gap:var(--p31-space-1);flex-wrap:wrap}
         #room-bar .room-bar-tools button{font-size:10px;min-height:36px;padding:4px 8px;min-width:auto}
+        .live-activity{flex:1 1 100%;max-height:5.5em;overflow-y:auto;font-family:var(--p31-font-mono);font-size:10px;line-height:1.35;color:rgba(216,214,208,0.5);border-top:1px solid rgba(37,137,125,0.22);padding-top:6px;margin-top:4px}
+        .live-activity__line{margin:0 0 3px;padding:0}
+        .live-activity__line--you{color:var(--p31-teal)}
+        .live-activity__line--sys{color:rgba(205,168,82,0.55)}
+        #btn-goals.has-progress{border-color:rgba(205,168,82,0.45);color:rgba(205,168,82,0.9)}
         @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.35}}
         .vertex-label{position:absolute;font-family:var(--p31-font-mono);font-size:10px;pointer-events:none;color:rgba(216,214,208,0.7);text-shadow:0 0 4px #000;transform:translate(-50%,-140%)}
         #labels-container{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none}
@@ -128,6 +135,7 @@
     <span class="room-status" id="room-conn-status">connecting…</span>
     <button type="button" id="room-reconnect" class="room-reconnect" hidden onclick="manualReconnectLive()" title="Reconnect after connection loss" aria-label="Reconnect to live room">Reconnect</button>
     <button type="button" onclick="resetRoom()" class="room-reset" title="Reset K4 to default" aria-label="Reset room to default">Reset</button>
+    <div id="live-activity" class="live-activity" hidden aria-live="polite" aria-label="Live room activity"></div>
 </div>
 <div class="toolbar-wrap" id="builder-toolbar" aria-label="Build tools" role="toolbar">
 <nav class="toolbar" id="build-tools-nav" aria-label="Platonic building blocks and display">
@@ -145,6 +153,8 @@
     <button type="button" onclick="resetScene()" title="Clear all shapes" aria-label="Reset scene, remove all shapes">Reset</button>
     <button type="button" id="btn-turn" onclick="rotateFocusedShape(Math.PI / 2)" title="Rotate last touched shape 90° on the table plane (shortcut [ / ])" aria-label="Rotate shape ninety degrees around vertical axis">Turn</button>
     <button type="button" id="btn-arrange" onclick="autoArrange()" title="Arrange shapes in a ring" aria-label="Auto arrange shapes in a ring">Arrange</button>
+    <button type="button" id="btn-finish-build" onclick="openFinishBuildDialog()" title="Name this build and save a trophy file (solo) or copy a session summary (live)" aria-label="Finish build — save or copy summary">Finish</button>
+    <button type="button" id="btn-goals" onclick="openGeodesicGoalsDialog()" title="Short family goals — checked automatically as you build" aria-label="Open tonight goals">Goals</button>
     <button type="button" id="btn-snapshot-export" onclick="exportGeodesicSnapshot()" title="Download tableau as JSON — share with a classmate or archive your build" aria-label="Export build snapshot as JSON file">Export</button>
     <button type="button" id="btn-snapshot-import" onclick="triggerGeodesicImport()" title="Import a prior JSON snapshot (solo)" aria-label="Import build snapshot from JSON file">Import</button>
     <input type="file" id="geodesic-import-file" accept="application/json,.json" hidden aria-hidden="true" tabindex="-1" />
@@ -152,6 +162,11 @@
     <span class="tool-label">Co-op</span>
     <button type="button" id="btn-join-room" class="locked" onclick="promptJoinRoom()" style="border-color:var(--p31-teal);color:var(--p31-teal)" title="Join a shared K4 room" aria-label="Join live room" aria-haspopup="dialog" aria-controls="geodesic-room-dialog">Live</button>
     <button type="button" id="btn-snap" class="locked" onclick="toggleAutoSnap(this)" title="On release, snap nearest corner to another solid" aria-label="Toggle auto-snap for corners">Snap</button>
+    <button type="button" id="btn-strut" onclick="toggleStrutMode(this)" title="Drag between two vertices to place a strut (holds structure)" aria-pressed="false" aria-label="Strut tool off">Strut</button>
+    <span class="tool-sep" aria-hidden="true"></span>
+    <span class="tool-label">Sense</span>
+    <button type="button" id="btn-stress" onclick="toggleStressMap(this)" title="Color edges by Maxwell state (green · amber · coral)" aria-pressed="false" aria-label="Stress map off">Stress</button>
+    <button type="button" id="btn-sound" onclick="toggleRigiditySound(this)" title="Rigidity hum — resolves at 863 Hz when m = 0 (off by default)" aria-pressed="false" aria-label="Rigidity sound off">Sound</button>
     <span class="tool-sep" aria-hidden="true"></span>
     <span id="rigidity-score" class="tool-label" style="max-width:min(50vw,220px);font-size:9px;color:var(--p31-butter);line-height:1.2;white-space:normal;min-width:0" aria-live="polite" role="status"></span>
 </nav>
@@ -185,16 +200,16 @@
         <div class="info-row"><span class="info-key">Rigidity</span><span class="info-val" id="inf-rig">—</span></div>
         <div id="info-help" style="font-size:9px;color:rgba(216,214,208,0.2);margin-top:8px;line-height:1.5">—</div>
     </div>
-    <div class="hud" id="hud-text">Swipe the tool bar for more options · Then drag the scene or a shape</div>
+    <div class="hud" id="hud-text">Swipe the toolbar for tools · Goals = tonight’s checks · Finish = named save (solo) or summary (live)</div>
     <div id="labels-container"></div>
 </div>
 
 <dialog id="geodesic-room-dialog" class="p31-geodesic-dialog" aria-labelledby="room-dlg-title" aria-describedby="room-dlg-hint">
   <div class="p31-geodesic-dialog__panel">
     <h2 id="room-dlg-title" class="p31-geodesic-dialog__title">Join live room</h2>
-    <p id="room-dlg-hint" class="p31-geodesic-dialog__hint">Shared K4 vertices and platonic shapes sync over the network. Use letters, numbers, underscore, or hyphen (1–64 chars). Leave empty for an auto-named room.</p>
+    <p id="room-dlg-hint" class="p31-geodesic-dialog__hint">Shared K4 vertices and platonic shapes sync over the network. Leave empty for a random six-character room code (Bonding-style), or type a custom id (1–64 chars: letters, numbers, underscore, hyphen).</p>
     <label class="p31-geodesic-dialog__label" for="geodesic-room-input">Room id</label>
-    <input type="text" id="geodesic-room-input" name="room" maxlength="64" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="leave blank or e.g. k4-family-build" />
+    <input type="text" id="geodesic-room-input" name="room" maxlength="64" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="blank = random 6-char code, or custom id" />
     <div class="p31-geodesic-dialog__actions">
       <button type="button" id="room-dlg-cancel">Cancel</button>
       <button type="button" id="room-dlg-join">Join room</button>
@@ -202,17 +217,50 @@
   </div>
 </dialog>
 
+<dialog id="geodesic-goals-dialog" class="p31-geodesic-dialog" aria-labelledby="goals-dlg-title" data-geodesic-no-hotkey>
+  <div class="p31-geodesic-dialog__panel">
+    <h2 id="goals-dlg-title" class="p31-geodesic-dialog__title">Tonight's goals</h2>
+    <p class="p31-geodesic-dialog__hint">Small wins together — no scoreboard, no account. Checks update as you build.</p>
+    <ul id="geodesic-goals-list" style="list-style:none;margin:var(--p31-space-3) 0;padding:0;font-family:var(--p31-font-sans);font-size:var(--p31-text-sm);line-height:1.45;color:var(--p31-cloud)"></ul>
+    <div class="p31-geodesic-dialog__actions">
+      <button type="button" id="goals-dlg-close">Close</button>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="geodesic-finish-dialog" class="p31-geodesic-dialog" aria-labelledby="finish-dlg-title" data-geodesic-no-hotkey>
+  <div class="p31-geodesic-dialog__panel">
+    <h2 id="finish-dlg-title" class="p31-geodesic-dialog__title">Finish this build</h2>
+    <p id="finish-dlg-solo-hint" class="p31-geodesic-dialog__hint">Give it a name — you get a JSON trophy you can re-import later or park in family Drive.</p>
+    <p id="finish-dlg-live-hint" class="p31-geodesic-dialog__hint" hidden>Live room: we copy a short text summary (counts, rigidity, join link) to your clipboard — good for a family thread or notes app.</p>
+    <label class="p31-geodesic-dialog__label" for="finish-build-name">Build name</label>
+    <input type="text" id="finish-build-name" maxlength="80" autocomplete="off" placeholder="e.g. Friday tetra stack" />
+    <label class="p31-geodesic-dialog__label" for="finish-build-tag">Optional tag</label>
+    <input type="text" id="finish-build-tag" maxlength="40" autocomplete="off" placeholder="e.g. with S.J. + W.J." />
+    <div class="p31-geodesic-dialog__actions">
+      <button type="button" id="finish-dlg-cancel">Cancel</button>
+      <button type="button" id="finish-dlg-confirm">Save trophy</button>
+    </div>
+  </div>
+</dialog>
+
 </main>
 
-<script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/"}}</script>
+<script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/","geodesic-frame":"/geodesic-frame-rigidity.js"}}</script>
 <script type="module">
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { LineSegments2 } from 'three/addons/lines/LineSegments2.js';
+import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
+import { LineSegmentsGeometry } from 'three/addons/lines/LineSegmentsGeometry.js';
+import * as Frame from 'geodesic-frame';
 
 const mount = document.getElementById('three-mount');
-const renderer = new THREE.WebGLRenderer({antialias:true,alpha:true, powerPreference: 'high-performance'});
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2.25));
-renderer.setClearColor(0x0f1115,1);
+renderer.setClearColor(0x000000, 0);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 const canvas = renderer.domElement;
 canvas.id = 'geodesic-canvas';
 canvas.setAttribute('role', 'application');
@@ -220,8 +268,40 @@ canvas.setAttribute(
     'aria-label',
     '3D build space. Drag empty background to orbit the camera. Drag a Platonic solid to slide it on the table; with Snap on, hold Shift while dragging to skip the corner weld on release. Bracket keys or Turn rotate the last touched shape. In Live room, rotations sync between clients.'
 );
+const starfieldCanvas = document.createElement('canvas');
+starfieldCanvas.id = 'geodesic-starfield';
+starfieldCanvas.className = 'p31-starfield-canvas';
+starfieldCanvas.setAttribute('aria-hidden', 'true');
+starfieldCanvas.setAttribute('role', 'presentation');
+mount.appendChild(starfieldCanvas);
 mount.appendChild(canvas);
 canvas.style.touchAction = 'none';
+
+/** Sparse analytical starfield — does not compete with solids (atmosphere, not decoration). */
+const GEODESIC_STARFIELD_CONFIG = {
+    count: 40,
+    speed: 0.06,
+    connR: 52,
+    hearthA: 0.02,
+    tealGlowA: 0.018,
+    coralRatio: 0.18,
+    baseAlpha: 0.14,
+    breathRate: 0.00035,
+    dimFactor: 0.85,
+};
+
+(async function bootGeodesicStarfield() {
+    try {
+        const mod = await import('/lib/p31-starfield.js');
+        mod.initStarfield(starfieldCanvas, GEODESIC_STARFIELD_CONFIG, {
+            surface: 'hub',
+            touchRipple: false,
+            connectionAudio: false,
+        });
+    } catch {
+        /* offline / partial clone — void only */
+    }
+})();
 
 let _canvasReady = false;
 function markCanvasReady() {
@@ -244,21 +324,80 @@ if ('outputColorSpace' in renderer && THREE.SRGBColorSpace) {
 }
 
 const scene = new THREE.Scene();
+scene.background = null;
 const camera = new THREE.PerspectiveCamera(50,1,0.1,1000);
 camera.position.set(0,4,12);
 
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping=true;controls.dampingFactor=0.08;
 
-// Lights
-scene.add(new THREE.AmbientLight(0x404060,2));
-const dir=new THREE.DirectionalLight(0x4db8a8,3);dir.position.set(5,10,5);scene.add(dir);
-const dir2=new THREE.DirectionalLight(0xcda852,1.5);dir2.position.set(-5,-5,5);scene.add(dir2);
+// Three-point rig + shadows (512² budget for integrated GPUs)
+const keyLight = new THREE.DirectionalLight(0xfff5e6, 0.85);
+keyLight.position.set(-5, 8, 5);
+keyLight.castShadow = true;
+keyLight.shadow.mapSize.width = 512;
+keyLight.shadow.mapSize.height = 512;
+keyLight.shadow.camera.near = 0.5;
+keyLight.shadow.camera.far = 50;
+keyLight.shadow.bias = -0.0001;
+keyLight.shadow.camera.left = -14;
+keyLight.shadow.camera.right = 14;
+keyLight.shadow.camera.top = 14;
+keyLight.shadow.camera.bottom = -14;
+scene.add(keyLight);
 
-// Grid
-const grid=new THREE.GridHelper(20,20,0x1e2630,0x1a1f26);scene.add(grid);
+const fillLight = new THREE.DirectionalLight(0x4db8a8, 0.32);
+fillLight.position.set(4, -2, 3);
+scene.add(fillLight);
+
+const rimLight = new THREE.DirectionalLight(0xcc6247, 0.16);
+rimLight.position.set(0, 3, -5);
+scene.add(rimLight);
+
+scene.add(new THREE.AmbientLight(0x0a0d14, 0.42));
+
+const groundGeo = new THREE.PlaneGeometry(120, 120);
+const groundMat = new THREE.ShadowMaterial({ opacity: 0.14 });
+const ground = new THREE.Mesh(groundGeo, groundMat);
+ground.rotation.x = -Math.PI / 2;
+ground.position.y = -0.01;
+ground.receiveShadow = true;
+scene.add(ground);
+
+// Grid on the table plane
+const grid=new THREE.GridHelper(20,20,0x1e2630,0x1a1f26);
+grid.position.y = 0.002;
+scene.add(grid);
+
+const strutsRoot = new THREE.Group();
+scene.add(strutsRoot);
+
+const fatWireMaterialSet = new Set();
+
+function registerFatWireMaterial(mat) {
+    fatWireMaterialSet.add(mat);
+}
+
+function syncFatWireResolution(w, h) {
+    for (const m of fatWireMaterialSet) {
+        m.resolution.set(w, h);
+    }
+}
 
 const COLORS={tet:0x3ba372,oct:0x4db8a8,ico:0x8b7cc9,cube:0xcda852};
+const STRESS_HEX = { ok: 0x3ba372, flex: 0xcda852, over: 0xcc6247 };
+let stressMapOn = false;
+let rigiditySoundOn = false;
+/** @type {{ kind: string, spec?: object, id?: string }[]} */
+const undoStack = [];
+const UNDO_CAP = 48;
+
+let rigidityAudioCtx = null;
+/** @type {OscillatorNode|null} */
+let rigidityOsc = null;
+/** @type {GainNode|null} */
+let rigidityGain = null;
+
 const SHAPE_INFO={
     tet:{verts:4,edges:6,faces:4},
     oct:{verts:6,edges:12,faces:8},
@@ -269,14 +408,489 @@ const SHAPE_INFO={
 /** Solo portable tableau (`ground-truth/geodesic-build-snapshot.json`); verifier: npm run verify:geodesic-build-snapshot */
 const GEODESIC_BUILD_SNAPSHOT_SCHEMA = 'p31.geodesicBuildSnapshot/1.0.0';
 const GEODESIC_BUILD_SHAPE_CAP = 50;
+const GEODESIC_BUILD_STRUT_CAP = 120;
 
 let shapes=[];
+const _reduceMotion = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 let wireMode=true, solidMode=false;
 let selectedShape='tet';
 let shapeCount={tet:0,oct:0,ico:0,cube:0};
 
 let isLiveMode = false;
 let autoSnapOn = false;
+
+/** @type {{ id: string, aShape: string, aVi: number, bShape: string, bVi: number }[]} */
+let struts = [];
+let strutMode = false;
+/** @type {{ shapeId: string, vi: number } | null} */
+let strutDragStart = null;
+/** @type {THREE.Line|null} */
+let strutPreview = null;
+/** @type {number|null} */
+let strutPointerId = null;
+let liveRoomClientId = '';
+/** Set true after a successful corner snap (solo or live) — micro-goals. */
+let snapWeldEver = false;
+/** One celebration toast per goal id per page load. */
+const challengeToasted = new Set();
+
+const PLAYER_PALETTE = [0x4db8a8, 0x3ba372, 0xcda852, 0x8b7cc9, 0xcc6247, 0x6eb5a9, 0xa67dcf, 0xe0c36a];
+
+function tintIndexForClient(cid) {
+    let h = 0;
+    for (let i = 0; i < (cid || '').length; i++) h = (h * 31 + cid.charCodeAt(i)) | 0;
+    return Math.abs(h) % PLAYER_PALETTE.length;
+}
+
+function tintHexForIndex(i) {
+    return PLAYER_PALETTE[Math.max(0, Math.min(PLAYER_PALETTE.length - 1, i | 0))];
+}
+
+function shapePosesFromGroups() {
+    const o = {};
+    for (const g of shapes) {
+        o[g.userData.id] = {
+            type: g.userData.type,
+            x: g.position.x,
+            y: g.position.y,
+            z: g.position.z,
+            rotY: g.rotation.y,
+        };
+    }
+    return o;
+}
+
+function strutsPayloadForRigidity() {
+    return struts.map((s) => ({ aShape: s.aShape, aVi: s.aVi, bShape: s.bShape, bVi: s.bVi }));
+}
+
+function getFrameRigidity() {
+    return Frame.computeMergedFrameRigidity(shapePosesFromGroups(), strutsPayloadForRigidity());
+}
+
+function worldVertexForShape(group, vi) {
+    const type = group.userData.type;
+    const verts = Frame.PLATONIC_VERTS[type];
+    if (!verts || vi < 0 || vi >= verts.length) return null;
+    const [lx, ly, lz] = verts[vi];
+    const ry = group.rotation.y ?? 0;
+    const c = Math.cos(ry);
+    const s = Math.sin(ry);
+    const wx = lx * c - lz * s + group.position.x;
+    const wy = ly + group.position.y;
+    const wz = lx * s + lz * c + group.position.z;
+    return new THREE.Vector3(wx, wy, wz);
+}
+
+function clearStrutMeshes() {
+    while (strutsRoot.children.length) {
+        const ch = strutsRoot.children[0];
+        strutsRoot.remove(ch);
+        ch.traverse((x) => {
+            if (x.material && fatWireMaterialSet.has(x.material)) fatWireMaterialSet.delete(x.material);
+            x.geometry?.dispose?.();
+            x.material?.dispose?.();
+        });
+    }
+}
+
+function rebuildStrutMeshes() {
+    clearStrutMeshes();
+    if (!struts.length) return;
+    const fm = getFrameRigidity();
+    const m = fm.m;
+    struts.forEach((st, si) => {
+        const ga = shapes.find((g) => g.userData.id === st.aShape);
+        const gb = shapes.find((g) => g.userData.id === st.bShape);
+        if (!ga || !gb) return;
+        const pa = worldVertexForShape(ga, st.aVi);
+        const pb = worldVertexForShape(gb, st.bVi);
+        if (!pa || !pb) return;
+        let hex = 0x4db8a8;
+        if (stressMapOn) {
+            if (m > 0) hex = STRESS_HEX.flex;
+            else if (m === 0) hex = STRESS_HEX.ok;
+            else {
+                const k = -m;
+                const redundantFromEnd = Math.min(k, struts.length);
+                const idxFromEnd = struts.length - 1 - si;
+                hex = idxFromEnd < redundantFromEnd ? STRESS_HEX.over : STRESS_HEX.ok;
+            }
+        }
+        const lg = new LineSegmentsGeometry();
+        lg.setPositions(new Float32Array([pa.x, pa.y, pa.z, pb.x, pb.y, pb.z]));
+        const w = mount.offsetWidth || 640;
+        const h = mount.offsetHeight || 480;
+        const mat = new LineMaterial({
+            color: hex,
+            linewidth: 2.5,
+            transparent: true,
+            opacity: 0.9,
+            resolution: new THREE.Vector2(w, h),
+        });
+        registerFatWireMaterial(mat);
+        const line = new LineSegments2(lg, mat);
+        line.userData.strutId = st.id;
+        strutsRoot.add(line);
+    });
+}
+
+function pruneStrutsMissingShapes() {
+    const ids = new Set(shapes.map((g) => g.userData.id));
+    struts = struts.filter((s) => ids.has(s.aShape) && ids.has(s.bShape));
+}
+
+function stressVisualHex(type, m) {
+    if (!stressMapOn) return COLORS[type];
+    if (m > 0) return STRESS_HEX.flex;
+    if (m === 0) return STRESS_HEX.ok;
+    return STRESS_HEX.over;
+}
+
+function maxwellExcess() {
+    if (!shapes.length) return 0;
+    return getFrameRigidity().m;
+}
+
+/** Maxwell m if `type` were added at `pos` (merged graph). */
+function maxwellExcessIfAdded(type, pos, rotY) {
+    const poses = shapePosesFromGroups();
+    poses.__ghost = { type, x: pos.x, y: pos.y, z: pos.z, rotY: rotY ?? 0 };
+    return Frame.computeMergedFrameRigidity(poses, strutsPayloadForRigidity()).m;
+}
+
+function rigiditySoundEffective() {
+    return rigiditySoundOn && !_reduceMotion;
+}
+
+function ensureRigidityAudio() {
+    if (rigidityAudioCtx || typeof AudioContext === 'undefined') return;
+    try {
+        rigidityAudioCtx = new AudioContext();
+    } catch {
+        /* */
+    }
+}
+
+function startRigidityOscillator() {
+    if (!rigidityAudioCtx || rigidityOsc) return;
+    const o = rigidityAudioCtx.createOscillator();
+    const g = rigidityAudioCtx.createGain();
+    o.type = 'sine';
+    o.frequency.value = 220;
+    g.gain.value = 0;
+    o.connect(g);
+    g.connect(rigidityAudioCtx.destination);
+    o.start();
+    rigidityOsc = o;
+    rigidityGain = g;
+}
+
+function stopRigidityOscillator() {
+    try {
+        rigidityOsc?.stop();
+    } catch {
+        /* */
+    }
+    rigidityOsc = null;
+    rigidityGain = null;
+}
+
+function updateRigiditySoundFromScene() {
+    if (!rigiditySoundEffective() || !rigidityAudioCtx) return;
+    if (!rigidityOsc) startRigidityOscillator();
+    if (!rigidityOsc || !rigidityGain) return;
+    if (!shapes.length) {
+        rigidityGain.gain.setTargetAtTime(0, rigidityAudioCtx.currentTime, 0.2);
+        return;
+    }
+    const m = maxwellExcess();
+    let baseFreq;
+    if (m === 0) baseFreq = 863;
+    else if (m > 0) baseFreq = 220 + Math.min(m, 12) * 48;
+    else baseFreq = 863 + Math.min(Math.abs(m), 12) * 20;
+    const proximity = Math.max(0.12, 1 - Math.abs(m) / 14);
+    rigidityOsc.frequency.setTargetAtTime(baseFreq, rigidityAudioCtx.currentTime, 0.28);
+    rigidityGain.gain.setTargetAtTime(proximity * 0.045, rigidityAudioCtx.currentTime, 0.48);
+}
+
+function pushUndo(entry) {
+    undoStack.push(entry);
+    if (undoStack.length > UNDO_CAP) undoStack.shift();
+}
+
+function clearUndoStack() {
+    undoStack.length = 0;
+}
+
+function snapshotShapeSpec(g) {
+    return {
+        type: g.userData.type,
+        id: g.userData.id,
+        pos: [g.position.x, g.position.y, g.position.z],
+        rotY: g.rotation.y,
+        tint: g.userData.tint,
+    };
+}
+
+function disposeShapeMaterials(group) {
+    if (!group) return;
+    group.traverse((ch) => {
+        const mat = ch.material;
+        if (ch.isLineSegments2 && mat && fatWireMaterialSet.has(mat)) fatWireMaterialSet.delete(mat);
+        ch.geometry?.dispose?.();
+        if (mat) {
+            if (Array.isArray(mat)) mat.forEach((m) => m.dispose?.());
+            else mat.dispose?.();
+        }
+    });
+}
+
+function fatWireLineFromGeometry(geom, hexColor, opacity) {
+    const wf = new THREE.WireframeGeometry(geom);
+    const pos = wf.attributes.position;
+    const arr = new Float32Array(pos.array.length);
+    arr.set(pos.array);
+    wf.dispose();
+    const lg = new LineSegmentsGeometry();
+    lg.setPositions(arr);
+    const w = mount.offsetWidth || 640;
+    const h = mount.offsetHeight || 480;
+    const mat = new LineMaterial({
+        color: hexColor,
+        linewidth: 2,
+        transparent: true,
+        opacity,
+        resolution: new THREE.Vector2(w, h),
+    });
+    registerFatWireMaterial(mat);
+    const line = new LineSegments2(lg, mat);
+    return line;
+}
+
+function refreshShapeStressMaterials() {
+    const m = maxwellExcess();
+    for (const g of shapes) {
+        const type = g.userData.type;
+        const hex = stressVisualHex(type, m);
+        const wireOp = stressMapOn ? (m === 0 ? 0.92 : m > 0 ? 0.74 : 0.88) : m === 0 ? 0.9 : m > 0 ? 0.78 : 0.82;
+        g.traverse((ch) => {
+            if (ch.isLineSegments2 && ch.material) {
+                ch.material.color.setHex(hex);
+                ch.material.opacity = wireOp;
+                ch.material.needsUpdate = true;
+            }
+            if (ch.isMesh && ch.material?.isMeshPhysicalMaterial) {
+                ch.material.color.setHex(hex);
+                ch.material.needsUpdate = true;
+            }
+        });
+    }
+}
+
+window.toggleStressMap = function toggleStressMap(btn) {
+    stressMapOn = !stressMapOn;
+    if (btn) {
+        btn.classList.toggle('active', stressMapOn);
+        btn.setAttribute('aria-pressed', stressMapOn ? 'true' : 'false');
+    }
+    refreshShapeStressMaterials();
+};
+
+window.toggleRigiditySound = function toggleRigiditySound(btn) {
+    if (_reduceMotion) {
+        showCoachToast('Rigidity sound respects reduced motion — off');
+        return;
+    }
+    rigiditySoundOn = !rigiditySoundOn;
+    if (btn) {
+        btn.classList.toggle('active', rigiditySoundOn);
+        btn.setAttribute('aria-pressed', rigiditySoundOn ? 'true' : 'false');
+    }
+    if (rigiditySoundOn) {
+        ensureRigidityAudio();
+        rigidityAudioCtx?.resume?.().catch(() => {});
+        startRigidityOscillator();
+        updateRigiditySoundFromScene();
+    } else {
+        stopRigidityOscillator();
+    }
+};
+
+function removeShapeByIdSolo(id) {
+    const g = shapes.find((s) => s.userData.id === id);
+    if (!g) return;
+    struts = struts.filter((s) => s.aShape !== id && s.bShape !== id);
+    disposeShapeMaterials(g);
+    scene.remove(g);
+    shapes = shapes.filter((s) => s !== g);
+    if (lastPickedShape === g) lastPickedShape = shapes[shapes.length - 1] ?? null;
+    hideSnapGuide();
+    updateInfo();
+}
+
+function fadeRemoveShapeSolo(group) {
+    if (!group || isLiveMode || !shapes.includes(group)) return;
+    pushUndo({ kind: 'restore', spec: snapshotShapeSpec(group) });
+    if (_reduceMotion) {
+        removeShapeByIdSolo(group.userData.id);
+        return;
+    }
+    const start = performance.now();
+    const dur = 200;
+    function tick() {
+        const u = Math.min(1, (performance.now() - start) / dur);
+        const k = 1 - u;
+        group.scale.setScalar(Math.max(0.02, k));
+        if (u < 1) requestAnimationFrame(tick);
+        else removeShapeByIdSolo(group.userData.id);
+    }
+    requestAnimationFrame(tick);
+}
+
+window.doUndoGeodesic = function doUndoGeodesic() {
+    if (isLiveMode) return;
+    const u = undoStack.pop();
+    if (!u) return;
+    if (u.kind === 'delete_shape_by_id' && u.id) {
+        removeShapeByIdSolo(u.id);
+    } else if (u.kind === 'restore' && u.spec) {
+        const sp = u.spec;
+        const th = sp.tint != null ? tintHexForIndex(sp.tint) : null;
+        const g = buildPlatonicShapeGroup(
+            sp.type,
+            maxwellExcessIfAdded(sp.type, { x: sp.pos[0], y: sp.pos[1], z: sp.pos[2] }, sp.rotY),
+            th,
+        );
+        if (!g) return;
+        g.position.set(sp.pos[0], sp.pos[1], sp.pos[2]);
+        g.rotation.y = sp.rotY ?? 0;
+        g.userData.type = sp.type;
+        g.userData.id = sp.id;
+        if (sp.tint != null) g.userData.tint = sp.tint;
+        g.userData._wobbleBase = g.position.clone();
+        clampShapeXZOnTable(g);
+        if (!_reduceMotion) {
+            g.scale.setScalar(0.02);
+            g.userData.placeAnim = { start: performance.now(), dur: 200, from: 0.02, to: 1 };
+        }
+        scene.add(g);
+        shapes.push(g);
+        lastPickedShape = g;
+        pushUndo({ kind: 'delete_shape_by_id', id: sp.id });
+        updateInfo();
+    } else if (u.kind === 'delete_strut_by_id' && u.id) {
+        const removed = struts.find((s) => s.id === u.id);
+        if (!removed) return;
+        struts = struts.filter((s) => s.id !== u.id);
+        pushUndo({ kind: 'restore_strut', strut: removed });
+        rebuildStrutMeshes();
+        updateInfo();
+    } else if (u.kind === 'restore_strut' && u.strut) {
+        struts.push(u.strut);
+        pushUndo({ kind: 'delete_strut_by_id', id: u.strut.id });
+        rebuildStrutMeshes();
+        updateInfo();
+    }
+};
+
+function hideStrutPreview() {
+    if (strutPreview) {
+        scene.remove(strutPreview);
+        strutPreview.geometry?.dispose?.();
+        strutPreview.material?.dispose?.();
+        strutPreview = null;
+    }
+}
+
+function nearestVertexPick(group, worldPoint) {
+    const type = group.userData.type;
+    const verts = Frame.PLATONIC_VERTS[type];
+    if (!verts) return null;
+    let best = 0;
+    let bestD = 1e9;
+    for (let i = 0; i < verts.length; i++) {
+        const w = worldVertexForShape(group, i);
+        const d = w.distanceToSquared(worldPoint);
+        if (d < bestD) {
+            bestD = d;
+            best = i;
+        }
+    }
+    if (bestD > 0.55 * 0.55) return null;
+    return { shapeId: group.userData.id, vi: best };
+}
+
+function addStrutRecord(aShape, aVi, bShape, bVi, skipUndo, fromServer, serverStrutId) {
+    const ek = Frame.strutEndpointsKey(aShape, aVi, bShape, bVi);
+    for (const s of struts) {
+        if (Frame.strutEndpointsKey(s.aShape, s.aVi, s.bShape, s.bVi) === ek) {
+            if (!fromServer) showCoachToast('Strut already exists');
+            return false;
+        }
+    }
+    if (struts.length >= GEODESIC_BUILD_STRUT_CAP) {
+        showCoachToast('Strut limit reached');
+        return false;
+    }
+    const id =
+        fromServer && typeof serverStrutId === 'string' && serverStrutId
+            ? serverStrutId
+            : 'st-' + Math.random().toString(36).slice(2, 11);
+    if (fromServer && struts.some((s) => s.id === id)) return false;
+    struts.push({ id, aShape, aVi, bShape, bVi });
+    if (!skipUndo && !isLiveMode) pushUndo({ kind: 'delete_strut_by_id', id });
+    rebuildStrutMeshes();
+    updateInfo();
+    if (isLiveMode && liveWs?.readyState === WebSocket.OPEN && !fromServer) {
+        liveWs.send(JSON.stringify({ type: 'ADD_STRUT', strutId: id, aShape, aVi, bShape, bVi }));
+    }
+    return true;
+}
+
+function applyStrutsFromServer(strutsMap) {
+    struts = [];
+    if (strutsMap && typeof strutsMap === 'object') {
+        for (const [sid, rec] of Object.entries(strutsMap)) {
+            if (!rec || typeof rec.aShape !== 'string' || typeof rec.bShape !== 'string') continue;
+            struts.push({
+                id: sid,
+                aShape: rec.aShape,
+                aVi: rec.aVi | 0,
+                bShape: rec.bShape,
+                bVi: rec.bVi | 0,
+            });
+        }
+    }
+    rebuildStrutMeshes();
+    updateInfo();
+}
+
+window.toggleStrutMode = function toggleStrutMode(btn) {
+    strutMode = !strutMode;
+    if (btn) {
+        btn.classList.toggle('active', strutMode);
+        btn.setAttribute('aria-pressed', strutMode ? 'true' : 'false');
+    }
+    strutDragStart = null;
+    hideStrutPreview();
+    if (strutPointerId != null) {
+        try {
+            canvas.releasePointerCapture(strutPointerId);
+        } catch {
+            /* */
+        }
+        strutPointerId = null;
+    }
+};
+
+function randomGeodesicRoomCode() {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let s = '';
+    for (let i = 0; i < 6; i++) s += chars[Math.floor(Math.random() * chars.length)];
+    return s;
+}
+
 /** @type {{ group:THREE.Group, pointerId: number|null, yLock:number, plane:THREE.Plane, snapSuppressed: boolean}|null} */
 let buildDrag = null;
 /** Last Platonic group interacted with — solo sandbox Turn / [ ] target */
@@ -417,6 +1031,7 @@ function tryCornerSnap(dragged, bypassSnap) {
     }
     clampShapeXZOnTable(dragged);
     updateInfo();
+    snapWeldEver = true;
     fireCoachEvent('snap_used');
 }
 
@@ -445,6 +1060,7 @@ function updateBuildHelp() {
     if (el) {
         const snap =
             '<b>Mechanics:</b> With <b>Snap</b> on, release near another solid to weld corners. <b>Hold Shift</b> while dragging to skip that weld on release. Teal line = snap preview; tiers: flush (inner band) · partial (outer). <b>Turn</b> or <kbd>[</kbd> <kbd>]</kbd> rotates the last picked shape.<br>' +
+            '<b>Together:</b> <b>Goals</b> — short checks that tick off as you build; <b>Finish</b> — name the build and save a trophy JSON (solo) or copy a text summary (live). Press <kbd>Enter</kbd> in the name field to save.<br>' +
             '<b>Solo:</b> <b>Export</b>/<b>Import</b> JSON tableau — one portable pattern (teach forward; wire/solid saved in the file).<br>' +
             (autoSnapOn
                 ? '<span style="color:var(--p31-teal)">Snap on</span> — corner weld active on release (unless Shift).'
@@ -453,8 +1069,8 @@ function updateBuildHelp() {
     }
     if (hud) {
         hud.textContent = autoSnapOn
-            ? 'Shift = skip weld · teal line = bond preview · flush (inner) vs partial (outer)'
-            : 'Drag shapes · orbit empty area · Turn / [ ] rotates last pick · unlock Snap to weld';
+            ? 'Shift = skip weld · teal line = bond preview · Goals · Finish when done'
+            : 'Drag shapes · orbit empty area · Turn / [ ] rotates last pick · unlock Snap to weld · Goals · Finish when done';
     }
 }
 
@@ -467,22 +1083,46 @@ function makeGeom(type) {
     }
 }
 
-/** Instantiate wire + solid children for current view toggles — addShape + snapshot import share this path. */
-function buildPlatonicShapeGroup(type) {
-    const color = COLORS[type];
+/**
+ * @param {string} type
+ * @param {number} [mHint] Maxwell m for stress tint when placing a new solid
+ * @param {number|null} [tintHex] optional CO-OP player tint (lerp into base)
+ */
+function buildPlatonicShapeGroup(type, mHint, tintHex) {
     const geom = makeGeom(type);
-    if (!color || !geom) return null;
+    if (!geom) return null;
+    const m = typeof mHint === 'number' ? mHint : maxwellExcess();
+    let color = stressVisualHex(type, m);
+    if (tintHex != null) {
+        const c = new THREE.Color(color);
+        c.lerp(new THREE.Color(tintHex), 0.38);
+        color = c.getHex();
+    }
     const group = new THREE.Group();
-    if(solidMode||!wireMode) {
-        const mat=new THREE.MeshPhongMaterial({color,transparent:true,opacity:0.4,side:THREE.DoubleSide});
-        const mesh=new THREE.Mesh(geom,mat);
+    if (solidMode || !wireMode) {
+        const mat = new THREE.MeshPhysicalMaterial({
+            color,
+            metalness: 0.1,
+            roughness: 0.4,
+            clearcoat: 0.3,
+            clearcoatRoughness: 0.2,
+            transparent: true,
+            opacity: 0.86,
+            side: THREE.DoubleSide,
+        });
+        const mesh = new THREE.Mesh(geom, mat);
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
         group.add(mesh);
     }
-    if(wireMode) {
-        const wireMat=new THREE.LineBasicMaterial({color});
-        const wireGeo=new THREE.WireframeGeometry(geom);
-        const wire=new THREE.LineSegments(wireGeo,wireMat);
+    if (wireMode) {
+        const wOp = stressMapOn ? (m === 0 ? 0.92 : m > 0 ? 0.74 : 0.88) : m === 0 ? 0.9 : m > 0 ? 0.78 : 0.82;
+        const wire = fatWireLineFromGeometry(geom, color, wOp);
+        wire.castShadow = false;
         group.add(wire);
+    }
+    if (wireMode && !solidMode) {
+        geom.dispose();
     }
     return group;
 }
@@ -494,17 +1134,31 @@ window.addShape = function(type, btn) {
     });
     if(btn)btn.classList.add('active');
 
-    const group = buildPlatonicShapeGroup(type);
+    const x=(Math.random()-0.5)*6, y=0.5, z=(Math.random()-0.5)*6;
+    const pos = { x, y, z };
+    const liveTint =
+        isLiveMode && liveRoomClientId
+            ? tintHexForIndex(tintIndexForClient(liveRoomClientId))
+            : null;
+    const group = buildPlatonicShapeGroup(type, maxwellExcessIfAdded(type, pos, 0), liveTint);
     if (!group) return;
 
-    const x=(Math.random()-0.5)*6, y=0.5, z=(Math.random()-0.5)*6;
     group.position.set(x,y,z);
     clampShapeXZOnTable(group);
     const shapeId = Math.random().toString(36).slice(2,10) + '-' + type;
     group.userData={type,id:shapeId};
+    if (isLiveMode && liveRoomClientId) {
+        group.userData.tint = tintIndexForClient(liveRoomClientId);
+    }
+    group.userData._wobbleBase = group.position.clone();
     lastPickedShape = group;
     scene.add(group);
     shapes.push(group);
+    if (!_reduceMotion) {
+        group.scale.setScalar(0.02);
+        group.userData.placeAnim = { start: performance.now(), dur: 200, from: 0.02, to: 1 };
+    }
+    if (!isLiveMode) pushUndo({ kind: 'delete_shape_by_id', id: shapeId });
 
     if (isLiveMode) {
         liveShapeMap[shapeId] = group;
@@ -517,6 +1171,7 @@ window.addShape = function(type, btn) {
                 y,
                 z,
                 rotY: group.rotation.y,
+                tint: tintIndexForClient(liveRoomClientId),
             }));
         }
     }
@@ -545,16 +1200,23 @@ function rebuildAll(){
         id: s.userData.id,
         pos: s.position.clone(),
         rotY: s.rotation.y,
+        tint: s.userData.tint,
     }));
-    shapes.forEach(s=>scene.remove(s));
+    shapes.forEach((s) => {
+        disposeShapeMaterials(s);
+        scene.remove(s);
+    });
     shapes=[];
     if (isLiveMode) liveShapeMap={};
     data.forEach(d=>{
-        const group = buildPlatonicShapeGroup(d.type);
+        const th = d.tint != null ? tintHexForIndex(d.tint) : null;
+        const group = buildPlatonicShapeGroup(d.type, undefined, th);
         if (!group) return;
         group.position.copy(d.pos);
         group.rotation.y = d.rotY ?? 0;
         group.userData={type:d.type,id:d.id};
+        if (d.tint != null) group.userData.tint = d.tint;
+        group.userData._wobbleBase = group.position.clone();
         scene.add(group);shapes.push(group);
         if(isLiveMode&&d.id)liveShapeMap[d.id]=group;
     });
@@ -572,10 +1234,26 @@ window.resetScene=function(){
         }
         return;
     }
-    shapes.forEach(s=>scene.remove(s));
+    shapes.forEach((s) => {
+        disposeShapeMaterials(s);
+        scene.remove(s);
+    });
     shapes=[];
+    struts = [];
+    strutDragStart = null;
+    hideStrutPreview();
+    if (strutPointerId != null) {
+        try {
+            canvas.releasePointerCapture(strutPointerId);
+        } catch {
+            /* */
+        }
+        strutPointerId = null;
+    }
     lastPickedShape = null;
     hideSnapGuide();
+    clearUndoStack();
+    rebuildStrutMeshes();
     updateInfo();
 };
 
@@ -585,6 +1263,7 @@ window.autoArrange=function(){
         const r=Math.max(2,shapes.length*0.8);
         s.position.set(Math.cos(angle)*r,0.5,Math.sin(angle)*r);
         clampShapeXZOnTable(s);
+        s.userData._wobbleBase = s.position.clone();
     });
     if (isLiveMode && liveWs?.readyState === WebSocket.OPEN) {
         for (const s of shapes) sendLiveMoveShape(s);
@@ -592,18 +1271,12 @@ window.autoArrange=function(){
 };
 
 function maxwellFromScene() {
-    const c = calcRigidity();
-    if (!shapes.length) return { V: 0, E: 0, F: 0, rigid: null };
-    const rigid =
-        typeof c.E === 'number' && typeof c.V === 'number' && typeof c.F === 'number' && c.E >= 3 * c.V - 6;
-    return { V: c.V, E: c.E, F: c.F, rigid };
+    if (!shapes.length) return { V: 0, E: 0, F: 0, rigid: null, m: 0 };
+    const { j, e, m, F, rigid } = getFrameRigidity();
+    return { V: j, E: e, F, rigid, m };
 }
 
-window.exportGeodesicSnapshot = function exportGeodesicSnapshot() {
-    if (isLiveMode) {
-        showCoachToast('Snapshot export uses solo sandbox only');
-        return;
-    }
+function buildGeodesicSnapshotPayload(sessionBlock) {
     const payload = {
         schema: GEODESIC_BUILD_SNAPSHOT_SCHEMA,
         exportedAt: new Date().toISOString(),
@@ -612,18 +1285,32 @@ window.exportGeodesicSnapshot = function exportGeodesicSnapshot() {
         view: { wire: wireMode, solid: solidMode },
         snapEnabled: autoSnapOn,
         shapes: shapes.map((s) => ({
+            id: s.userData.id,
             type: s.userData.type,
             position: [s.position.x, s.position.y, s.position.z],
             rotY: s.rotation.y,
+            ...(s.userData.tint != null ? { tint: s.userData.tint } : {}),
+        })),
+        struts: struts.map((st) => ({
+            id: st.id,
+            aShape: st.aShape,
+            aVi: st.aVi,
+            bShape: st.bShape,
+            bVi: st.bVi,
         })),
         maxwell: maxwellFromScene(),
     };
+    if (sessionBlock && typeof sessionBlock === 'object') payload.session = sessionBlock;
+    return payload;
+}
+
+function downloadGeodesicJsonFile(payload, downloadBasename) {
     const json = JSON.stringify(payload, null, 2);
     const blob = new Blob([json], { type: 'application/json;charset=utf-8' });
     const a = document.createElement('a');
-    const ts = new Date().toISOString().replace(/[:]/g, '-').slice(0, 19);
+    const safe = String(downloadBasename || 'geodesic-build').replace(/[^a-zA-Z0-9_-]/g, '-').slice(0, 56) || 'geodesic-build';
     a.href = URL.createObjectURL(blob);
-    a.download = `geodesic-build-${ts}.json`;
+    a.download = `${safe}.json`;
     a.rel = 'noopener';
     document.body.appendChild(a);
     a.click();
@@ -631,6 +1318,14 @@ window.exportGeodesicSnapshot = function exportGeodesicSnapshot() {
         URL.revokeObjectURL(a.href);
         a.remove();
     }, 0);
+}
+
+window.exportGeodesicSnapshot = function exportGeodesicSnapshot() {
+    if (isLiveMode) {
+        showCoachToast('Snapshot export uses solo sandbox only');
+        return;
+    }
+    downloadGeodesicJsonFile(buildGeodesicSnapshotPayload(null), 'geodesic-build-' + new Date().toISOString().replace(/[:]/g, '-').slice(0, 19));
     showCoachToast('Exported JSON snapshot');
 };
 
@@ -656,7 +1351,29 @@ function applyGeodesicSnapshotPayload(data) {
         showCoachToast('More than ' + GEODESIC_BUILD_SHAPE_CAP + ' solids');
         return false;
     }
+    const strutList = data.struts;
+    if (strutList != null) {
+        if (!Array.isArray(strutList)) {
+            showCoachToast('struts must be an array');
+            return false;
+        }
+        if (strutList.length > GEODESIC_BUILD_STRUT_CAP) {
+            showCoachToast('More than ' + GEODESIC_BUILD_STRUT_CAP + ' struts');
+            return false;
+        }
+        for (const st of strutList) {
+            if (!st || typeof st.aShape !== 'string' || typeof st.bShape !== 'string') {
+                showCoachToast('Invalid strut entry');
+                return false;
+            }
+            if (typeof st.aVi !== 'number' || typeof st.bVi !== 'number' || !Number.isFinite(st.aVi) || !Number.isFinite(st.bVi)) {
+                showCoachToast('Invalid strut vertices');
+                return false;
+            }
+        }
+    }
     const valid = new Set(['tet', 'oct', 'ico', 'cube']);
+    const seenIds = new Set();
     for (const row of list) {
         if (!row || !valid.has(row.type)) {
             showCoachToast('Unsupported solid type');
@@ -677,6 +1394,21 @@ function applyGeodesicSnapshotPayload(data) {
             showCoachToast('rotY must be numeric radians');
             return false;
         }
+        if (row.id != null) {
+            if (typeof row.id !== 'string' || !/^[a-zA-Z0-9_-]{1,64}$/.test(row.id)) {
+                showCoachToast('Invalid shape id');
+                return false;
+            }
+            if (seenIds.has(row.id)) {
+                showCoachToast('Duplicate shape id in snapshot');
+                return false;
+            }
+            seenIds.add(row.id);
+        }
+        if (row.tint != null && (typeof row.tint !== 'number' || !Number.isFinite(row.tint))) {
+            showCoachToast('tint must be numeric');
+            return false;
+        }
     }
     if (typeof data.snapEnabled === 'boolean') {
         autoSnapOn = !!data.snapEnabled;
@@ -695,20 +1427,60 @@ function applyGeodesicSnapshotPayload(data) {
         document.getElementById('btn-solid')?.classList.toggle('active', solidMode);
         document.getElementById('btn-solid')?.setAttribute('aria-pressed', solidMode ? 'true' : 'false');
     }
-    shapes.forEach((s) => scene.remove(s));
+    shapes.forEach((s) => {
+        disposeShapeMaterials(s);
+        scene.remove(s);
+    });
     shapes = [];
+    struts = [];
     lastPickedShape = null;
     hideSnapGuide();
+    clearUndoStack();
+    const assignedIds = new Set(seenIds);
     for (const row of list) {
-        const group = buildPlatonicShapeGroup(row.type);
+        let th =
+            row.tint != null && Number.isFinite(row.tint)
+                ? tintHexForIndex(row.tint)
+                : null;
+        const group = buildPlatonicShapeGroup(row.type, undefined, th);
         if (!group) continue;
         group.position.set(row.position[0], row.position[1], row.position[2]);
         group.rotation.y = typeof row.rotY === 'number' && Number.isFinite(row.rotY) ? row.rotY : 0;
         clampShapeXZOnTable(group);
-        const sid = Math.random().toString(36).slice(2, 10) + '-' + row.type;
+        let sid =
+            typeof row.id === 'string' && /^[a-zA-Z0-9_-]{1,64}$/.test(row.id)
+                ? row.id
+                : null;
+        if (!sid) {
+            do {
+                sid = Math.random().toString(36).slice(2, 10) + '-' + row.type;
+            } while (assignedIds.has(sid));
+        }
+        assignedIds.add(sid);
         group.userData = { type: row.type, id: sid };
+        if (row.tint != null && Number.isFinite(row.tint)) {
+            group.userData.tint = Math.max(0, Math.min(7, row.tint | 0));
+        }
+        group.userData._wobbleBase = group.position.clone();
         scene.add(group);
         shapes.push(group);
+    }
+    if (Array.isArray(strutList) && strutList.length) {
+        const idSet = new Set(shapes.map((g) => g.userData.id));
+        for (const st of strutList) {
+            if (!idSet.has(st.aShape) || !idSet.has(st.bShape)) continue;
+            const sid =
+                typeof st.id === 'string' && /^[a-zA-Z0-9_-]{1,64}$/.test(st.id)
+                    ? st.id
+                    : 'st-' + Math.random().toString(36).slice(2, 11);
+            struts.push({
+                id: sid,
+                aShape: st.aShape,
+                aVi: st.aVi | 0,
+                bShape: st.bShape,
+                bVi: st.bVi | 0,
+            });
+        }
     }
     if (shapes.length) lastPickedShape = shapes[shapes.length - 1];
     updateBuildHelp();
@@ -739,28 +1511,34 @@ function applyGeodesicSnapshotPayload(data) {
 })();
 
 function calcRigidity() {
-    let E=0,V=0,F=0;
-    shapes.forEach(s=>{const info=SHAPE_INFO[s.userData.type];V+=info.verts;E+=info.edges;F+=info.faces;});
-    if(V===0)return{E,V,F,r:'—'};
-    const euler=V-E+F;
-    const rig=E>=3*V-6?'Rigid ✓':'Flexible';
-    return{E,V,F,r:rig};
+    if (!shapes.length) return { E: 0, V: 0, F: 0, r: '—', m: 0 };
+    const { j, e, m, F, rigid } = getFrameRigidity();
+    const r = m > 0 ? 'Flexible' : 'Rigid ✓';
+    return { E: e, V: j, F, r, m };
 }
 
 function updateInfo(){
-    const {E,V,F,r}=calcRigidity();
+    const {E,V,F,r,m}=calcRigidity();
     document.getElementById('inf-shapes').textContent=shapes.length;
     document.getElementById('inf-verts').textContent=V;
     document.getElementById('inf-edges').textContent=E;
     document.getElementById('inf-faces').textContent=F;
     document.getElementById('inf-rig').textContent=r;
-    document.getElementById('rigidity-score').textContent=shapes.length?`Maxwell: ${E}≥${3*V-6}?`:'' ;
+    const iso = 3 * V - 6;
+    document.getElementById('rigidity-score').textContent=shapes.length
+        ? `m=${m} · ${E} bars / ${V} joints · isostatic ${iso} bars`
+        : '';
+    refreshShapeStressMaterials();
+    rebuildStrutMeshes();
+    updateRigiditySoundFromScene();
+    refreshGeodesicGoalsUi();
 }
 
 function resize(){
     const w=mount.offsetWidth,h=mount.offsetHeight;
     renderer.setSize(w,h);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2.25));
+    syncFatWireResolution(w, h);
     camera.aspect=w/h;camera.updateProjectionMatrix();
 }
 resize();
@@ -770,7 +1548,6 @@ if (typeof ResizeObserver !== 'undefined') {
     new ResizeObserver(() => { requestAnimationFrame(resize); }).observe(mount);
 }
 
-const _reduceMotion = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 let t=0;
 let _labelFrame = 0;
 function animate(){
@@ -781,6 +1558,39 @@ function animate(){
         else { const s=1+0.1*Math.sin(t*4); placementRing.scale.set(s,s,1); }
     }
     if (document.hidden) return;
+    for (const g of shapes) {
+        const pa = g.userData.placeAnim;
+        if (pa && !_reduceMotion) {
+            const u = Math.min(1, (performance.now() - pa.start) / pa.dur);
+            const k = 1 - Math.pow(1 - u, 3);
+            g.scale.setScalar(pa.from + (pa.to - pa.from) * k);
+            if (u >= 1) delete g.userData.placeAnim;
+        } else if (pa && _reduceMotion) {
+            g.scale.setScalar(1);
+            delete g.userData.placeAnim;
+        }
+    }
+    const mW = maxwellExcess();
+    const wobbleOn = !_reduceMotion && mW > 0;
+    shapes.forEach((g, i) => {
+        if (!g.userData._wobbleBase) g.userData._wobbleBase = g.position.clone();
+        const draggingThis = buildDrag?.group === g || (isLiveMode && currentDragShapeId === g.userData.id);
+        if (draggingThis) {
+            g.userData._wobbleBase.copy(g.position);
+            return;
+        }
+        if (!wobbleOn) {
+            g.position.copy(g.userData._wobbleBase);
+            return;
+        }
+        const amp = 0.006 * Math.max(1, Math.abs(mW));
+        const ph = t * 2.2 + i * 0.73;
+        g.position.set(
+            g.userData._wobbleBase.x + amp * Math.sin(ph),
+            g.userData._wobbleBase.y + amp * Math.sin(ph * 0.9),
+            g.userData._wobbleBase.z + amp * Math.cos(ph * 1.07),
+        );
+    });
     controls.update();
     renderer.render(scene,camera);
     markCanvasReady();
@@ -922,6 +1732,205 @@ window.shareRoomLink = async function shareRoomLink() {
     }
     await window.copyRoomLink();
 };
+
+// ── Family finish + goals + live activity ───────────────────────────────────
+const GEODESIC_MICRO_GOALS = [
+    { id: 'two_solids', label: 'Place 2 solids on the table', test: () => shapes.length >= 2 },
+    { id: 'snap_weld', label: 'Weld corners once (Snap on, drag, release)', test: () => snapWeldEver },
+    { id: 'one_strut', label: 'Add one strut between two vertices', test: () => struts.length >= 1 },
+    {
+        id: 'brace_rigid',
+        label: 'Reach a rigid merged frame (m ≤ 0)',
+        test: () => shapes.length > 0 && getFrameRigidity().m <= 0,
+    },
+    {
+        id: 'live_together',
+        label: 'Build in a live room together',
+        test: () => isLiveMode && !!liveRoomClientId,
+    },
+];
+
+function liveActorLabel(cid) {
+    if (!cid) return 'Someone';
+    if (liveRoomClientId && cid === liveRoomClientId) return 'You';
+    return cid.length <= 14 ? cid : cid.slice(0, 11) + '…';
+}
+
+function shapeNick(t) {
+    return (
+        { tet: 'tetrahedron', oct: 'octahedron', ico: 'icosahedron', cube: 'cube' }[t] || t || 'solid'
+    );
+}
+
+function appendLiveActivity(text, kind) {
+    const el = document.getElementById('live-activity');
+    if (!el || !isLiveMode) return;
+    el.hidden = false;
+    const line = document.createElement('p');
+    line.className = 'live-activity__line';
+    if (kind === 'you') line.classList.add('live-activity__line--you');
+    else if (kind === 'sys') line.classList.add('live-activity__line--sys');
+    const d = new Date();
+    const hm = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+    line.textContent = `${hm} ${text}`;
+    el.appendChild(line);
+    while (el.children.length > 12) el.removeChild(el.firstChild);
+}
+
+function logLiveBuildOp(op) {
+    if (!op || !isLiveMode) return;
+    const who = liveActorLabel(op.clientId);
+    const you = !!(liveRoomClientId && op.clientId === liveRoomClientId);
+    const k = you ? 'you' : 'other';
+    if (op.type === 'ADD_SHAPE') {
+        appendLiveActivity(`${who} added a ${shapeNick(op.shapeType)}`, k);
+    } else if (op.type === 'REMOVE_SHAPE') {
+        appendLiveActivity(`${who} removed a solid`, k);
+    } else if (op.type === 'ADD_STRUT') {
+        appendLiveActivity(`${who} placed a strut`, k);
+    } else if (op.type === 'REMOVE_STRUT') {
+        appendLiveActivity(`${who} removed a strut`, k);
+    } else if (op.type === 'RESET_SHAPES') {
+        appendLiveActivity(`${who} cleared all solids`, k);
+    }
+}
+
+function clearLiveActivityFeed() {
+    const el = document.getElementById('live-activity');
+    if (!el) return;
+    el.innerHTML = '';
+    el.hidden = true;
+}
+
+function refreshGeodesicGoalsUi() {
+    let done = 0;
+    for (const g of GEODESIC_MICRO_GOALS) {
+        if (g.test()) {
+            done++;
+            if (!challengeToasted.has(g.id)) {
+                challengeToasted.add(g.id);
+                showCoachToast(`Goal ✓ ${g.label}`);
+            }
+        }
+    }
+    const btn = document.getElementById('btn-goals');
+    const total = GEODESIC_MICRO_GOALS.length;
+    if (btn) {
+        btn.classList.toggle('has-progress', done > 0 && done < total);
+        btn.setAttribute('aria-label', `Tonight goals, ${done} of ${total} done`);
+    }
+    const dlg = document.getElementById('geodesic-goals-dialog');
+    const list = document.getElementById('geodesic-goals-list');
+    if (dlg?.open && list) {
+        list.innerHTML = GEODESIC_MICRO_GOALS.map((g) => {
+            const ok = g.test();
+            return `<li style="display:flex;gap:10px;align-items:flex-start;margin-bottom:10px"><span aria-hidden="true" style="flex-shrink:0;width:1.2em">${ok ? '✓' : '○'}</span><span>${g.label}</span></li>`;
+        }).join('');
+    }
+}
+
+window.openGeodesicGoalsDialog = function openGeodesicGoalsDialog() {
+    const dlg = document.getElementById('geodesic-goals-dialog');
+    if (!dlg || typeof dlg.showModal !== 'function') return;
+    const list = document.getElementById('geodesic-goals-list');
+    if (list) {
+        list.innerHTML = GEODESIC_MICRO_GOALS.map((g) => {
+            const ok = g.test();
+            return `<li style="display:flex;gap:10px;align-items:flex-start;margin-bottom:10px"><span aria-hidden="true" style="flex-shrink:0;width:1.2em">${ok ? '✓' : '○'}</span><span>${g.label}</span></li>`;
+        }).join('');
+    }
+    dlg.showModal();
+};
+
+function slugifyFilenamePart(name) {
+    const s = String(name || '')
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-|-$/g, '')
+        .slice(0, 48);
+    return s || 'family-build';
+}
+
+window.openFinishBuildDialog = function openFinishBuildDialog() {
+    const dlg = document.getElementById('geodesic-finish-dialog');
+    if (!dlg || typeof dlg.showModal !== 'function') return;
+    const soloHint = document.getElementById('finish-dlg-solo-hint');
+    const liveHint = document.getElementById('finish-dlg-live-hint');
+    const confirmBtn = document.getElementById('finish-dlg-confirm');
+    if (soloHint && liveHint) {
+        soloHint.hidden = isLiveMode;
+        liveHint.hidden = !isLiveMode;
+    }
+    if (confirmBtn) confirmBtn.textContent = isLiveMode ? 'Copy summary' : 'Save trophy';
+    const nameInp = document.getElementById('finish-build-name');
+    const tagInp = document.getElementById('finish-build-tag');
+    if (nameInp && !nameInp.value.trim()) nameInp.value = 'Family build';
+    if (tagInp && !tagInp.value) tagInp.value = '';
+    dlg.showModal();
+    requestAnimationFrame(() => nameInp?.focus());
+};
+
+window.confirmFinishBuildFromDialog = async function confirmFinishBuildFromDialog() {
+    const dlg = document.getElementById('geodesic-finish-dialog');
+    const name = (document.getElementById('finish-build-name')?.value ?? '').trim() || 'Family build';
+    const tag = (document.getElementById('finish-build-tag')?.value ?? '').trim();
+    const sessionBlock = { name, closedAt: new Date().toISOString(), ...(tag ? { tag } : {}) };
+
+    if (isLiveMode) {
+        const mw = maxwellFromScene();
+        const lines = [
+            `GEODESIC — ${name}`,
+            tag ? `Tag: ${tag}` : null,
+            liveRoomId ? `Room: ${liveRoomId}` : null,
+            getRoomJoinUrl() ? `Join: ${getRoomJoinUrl()}` : null,
+            `Solids: ${shapes.length} · Struts: ${struts.length}`,
+            `Merged Maxwell m=${mw.m} (≤0 means rigid enough at count level)`,
+        ].filter((x) => x != null && x !== '');
+        const summary = `${lines.join('\n')}\n\nMade with care — pattern over noise.`;
+        try {
+            await navigator.clipboard.writeText(summary);
+            showCoachToast('Summary copied — paste anywhere');
+        } catch {
+            try {
+                window.prompt('Copy this summary:', summary);
+            } catch {
+                /* */
+            }
+        }
+        dlg?.close();
+        return;
+    }
+
+    downloadGeodesicJsonFile(buildGeodesicSnapshotPayload(sessionBlock), slugifyFilenamePart(name));
+    showCoachToast('Trophy saved — re-import anytime');
+    dlg?.close();
+};
+
+(function wireGeodesicGoalsAndFinish() {
+    document.getElementById('goals-dlg-close')?.addEventListener('click', () => {
+        document.getElementById('geodesic-goals-dialog')?.close();
+    });
+    document.getElementById('geodesic-goals-dialog')?.addEventListener('click', (e) => {
+        if (e.target?.id === 'geodesic-goals-dialog') e.target.close();
+    });
+    document.getElementById('finish-dlg-cancel')?.addEventListener('click', () => {
+        document.getElementById('geodesic-finish-dialog')?.close();
+    });
+    document.getElementById('geodesic-finish-dialog')?.addEventListener('click', (e) => {
+        if (e.target?.id === 'geodesic-finish-dialog') e.target.close();
+    });
+    document.getElementById('finish-dlg-confirm')?.addEventListener('click', () => {
+        window.confirmFinishBuildFromDialog();
+    });
+    for (const id of ['finish-build-name', 'finish-build-tag']) {
+        document.getElementById(id)?.addEventListener('keydown', (e) => {
+            if (e.key !== 'Enter' || e.repeat) return;
+            e.preventDefault();
+            window.confirmFinishBuildFromDialog();
+        });
+    }
+})();
 
 function renderCoach() {
   const coach = document.getElementById('coach');
@@ -1156,6 +2165,8 @@ function buildLiveTetra(vertices) {
         const mesh = new THREE.Mesh(SPHERE_GEOM, mat);
         mesh.position.set(v.x, v.y, v.z);
         mesh.userData.vertexId = id;
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
         liveGroup.add(mesh);
         liveVertexMeshes[id] = mesh;
         liveVertexPositions[id] = mesh.position.clone();
@@ -1233,23 +2244,19 @@ function updateLiveLabels() {
 
 // ── Live shape helpers ──────────────────────────────────────────────────────
 
-function addLiveShape(shapeId, type, x, y, z, rotY) {
+function addLiveShape(shapeId, type, x, y, z, rotY, tint) {
     if (liveShapeMap[shapeId]) return; // already present (optimistic-add dedup)
-    const color = COLORS[type];
-    if (!color) return;
-    const geom = makeGeom(type);
-    if (!geom) return;
-    const group = new THREE.Group();
-    if (solidMode || !wireMode) {
-        const mat = new THREE.MeshPhongMaterial({color,transparent:true,opacity:0.4,side:THREE.DoubleSide});
-        group.add(new THREE.Mesh(geom, mat));
-    }
-    if (wireMode) {
-        group.add(new THREE.LineSegments(new THREE.WireframeGeometry(geom), new THREE.LineBasicMaterial({color})));
-    }
+    const ry = typeof rotY === 'number' && Number.isFinite(rotY) ? rotY : 0;
+    const pos = { x, y, z };
+    const th = tint != null ? tintHexForIndex(tint) : null;
+    const group = buildPlatonicShapeGroup(type, maxwellExcessIfAdded(type, pos, ry), th);
+    if (!group) return;
     group.position.set(x, y, z);
-    group.rotation.y = typeof rotY === 'number' && Number.isFinite(rotY) ? rotY : 0;
-    group.userData = { type, id: shapeId };
+    group.rotation.y = ry;
+    group.userData.type = type;
+    group.userData.id = shapeId;
+    if (tint != null) group.userData.tint = tint;
+    group.userData._wobbleBase = group.position.clone();
     scene.add(group);
     shapes.push(group);
     liveShapeMap[shapeId] = group;
@@ -1259,6 +2266,8 @@ function addLiveShape(shapeId, type, x, y, z, rotY) {
 function removeLiveShape(shapeId) {
     const g = liveShapeMap[shapeId];
     if (!g) return;
+    struts = struts.filter((s) => s.aShape !== shapeId && s.bShape !== shapeId);
+    disposeShapeMaterials(g);
     scene.remove(g);
     shapes = shapes.filter(s => s !== g);
     delete liveShapeMap[shapeId];
@@ -1266,24 +2275,39 @@ function removeLiveShape(shapeId) {
 }
 
 function resetAllLiveShapes() {
-    for (const g of shapes) scene.remove(g);
+    for (const g of shapes) {
+        disposeShapeMaterials(g);
+        scene.remove(g);
+    }
     shapes = [];
     liveShapeMap = {};
+    struts = [];
+    strutDragStart = null;
+    hideStrutPreview();
     updateInfo();
 }
 
 function rebuildLiveShapes(shapesFromServer) {
     resetAllLiveShapes();
     for (const [id, s] of Object.entries(shapesFromServer)) {
-        addLiveShape(id, s.type, s.x, s.y, s.z, s.rotY);
+        addLiveShape(id, s.type, s.x, s.y, s.z, s.rotY, s.tint);
     }
 }
 
 function updateRigidityDisplay(rig) {
     if (!rig) return;
-    document.getElementById('inf-rig').textContent = rig.rigid ? 'Rigid ✓' : 'Flexible';
+    const m = typeof rig.m === 'number' && Number.isFinite(rig.m) ? rig.m : 0;
+    const V = rig.V | 0;
+    const E = rig.E | 0;
+    const F = rig.F | 0;
+    document.getElementById('inf-rig').textContent = m > 0 ? 'Flexible' : 'Rigid ✓';
+    document.getElementById('inf-verts').textContent = String(V);
+    document.getElementById('inf-edges').textContent = String(E);
+    document.getElementById('inf-faces').textContent = String(F);
     const n = shapes.length;
-    document.getElementById('rigidity-score').textContent = n ? `Maxwell: ${rig.E}≥${3*rig.V-6}?` : '';
+    document.getElementById('rigidity-score').textContent = n
+        ? `m=${m} · ${E} bars / ${V} joints · isostatic ${3 * V - 6} bars`
+        : '';
 }
 
 function connectRoom(roomId) {
@@ -1324,12 +2348,17 @@ function connectRoom(roomId) {
     liveWs.onmessage = (e) => {
         let msg; try { msg = JSON.parse(e.data); } catch { return; }
         if (msg.type === 'hello') {
+            liveRoomClientId = msg.clientId || '';
             buildLiveTetra(msg.state);
             for (const [id, v] of Object.entries(msg.state)) {
                 if (liveVertexMeshes[id]) liveVertexMeshes[id].userData.label = v.label;
             }
             if (msg.shapes) rebuildLiveShapes(msg.shapes);
+            applyStrutsFromServer(msg.struts);
             if (msg.rigidity) updateRigidityDisplay(msg.rigidity);
+            const nSh = Object.keys(msg.shapes || {}).length;
+            const nSt = Object.keys(msg.struts || {}).length;
+            appendLiveActivity(`Room synced · ${nSh} solids · ${nSt} struts`, 'sys');
         } else if (msg.type === 'reset') {
             buildLiveTetra(msg.state);
             for (const [id, v] of Object.entries(msg.state)) {
@@ -1340,12 +2369,13 @@ function connectRoom(roomId) {
             if (op.type === 'SET_VERTEX') {
                 applyVertexOp(op.id, op.x, op.y, op.z);
             } else if (op.type === 'ADD_SHAPE') {
-                addLiveShape(op.shapeId, op.shapeType, op.x, op.y, op.z, op.rotY);
+                addLiveShape(op.shapeId, op.shapeType, op.x, op.y, op.z, op.rotY, op.tint);
                 if (op.rigidity) updateRigidityDisplay(op.rigidity);
             } else if (op.type === 'MOVE_SHAPE') {
                 const g = liveShapeMap[op.shapeId];
                 if (g && op.shapeId !== currentDragShapeId) {
                     g.position.set(op.x, op.y, op.z);
+                    g.userData._wobbleBase?.copy(g.position);
                     if (typeof op.rotY === 'number' && Number.isFinite(op.rotY)) g.rotation.y = op.rotY;
                     updateInfo();
                 }
@@ -1355,19 +2385,59 @@ function connectRoom(roomId) {
             } else if (op.type === 'RESET_SHAPES') {
                 resetAllLiveShapes();
                 if (op.rigidity) updateRigidityDisplay(op.rigidity);
+            } else if (op.type === 'ADD_STRUT') {
+                addStrutRecord(op.aShape, op.aVi, op.bShape, op.bVi, true, true, op.strutId);
+                if (op.rigidity) updateRigidityDisplay(op.rigidity);
+            } else if (op.type === 'REMOVE_STRUT') {
+                struts = struts.filter((s) => s.id !== op.strutId);
+                rebuildStrutMeshes();
+                updateInfo();
+                if (op.rigidity) updateRigidityDisplay(op.rigidity);
             }
-        } else if (msg.type === 'error' && msg.code === 'SHAPE_CAP') {
+            logLiveBuildOp(op);
+        } else if (msg.type === 'joined') {
+            appendLiveActivity(
+                `${liveActorLabel(msg.clientId)} joined`,
+                msg.clientId === liveRoomClientId ? 'you' : 'other',
+            );
+        } else if (msg.type === 'left') {
+            appendLiveActivity(`${liveActorLabel(msg.clientId)} left`, 'sys');
+        } else if (msg.type === 'error' && (msg.code === 'SHAPE_CAP' || msg.code === 'STRUT_CAP')) {
             const toast = document.getElementById('coach-toast');
-            if (toast) { toast.textContent = `Room full — ${msg.max} shapes max`; toast.classList.add('show'); clearTimeout(toast._timer); toast._timer = setTimeout(()=>toast.classList.remove('show'),2500); }
+            const capLine =
+                msg.code === 'STRUT_CAP'
+                    ? `Strut cap — ${msg.max} max`
+                    : `Room full — ${msg.max} shapes max`;
+            if (toast) {
+                toast.textContent = capLine;
+                toast.classList.add('show');
+                clearTimeout(toast._timer);
+                toast._timer = setTimeout(() => toast.classList.remove('show'), 2500);
+            }
         }
     };
 }
 
 function enterLiveMode(roomId) {
     // Clear local shapes before switching mode
-    shapes.forEach(s => scene.remove(s));
+    shapes.forEach((s) => {
+        disposeShapeMaterials(s);
+        scene.remove(s);
+    });
     shapes = [];
     liveShapeMap = {};
+    struts = [];
+    strutDragStart = null;
+    hideStrutPreview();
+    if (strutPointerId != null) {
+        try {
+            canvas.releasePointerCapture(strutPointerId);
+        } catch {
+            /* */
+        }
+        strutPointerId = null;
+    }
+    liveRoomClientId = '';
 
     isLiveMode = true;
     liveRoomId = roomId;
@@ -1389,12 +2459,15 @@ function enterLiveMode(roomId) {
     document.getElementById('room-id-display').textContent = roomId;
     setLiveRoomStatus('connecting…', { colorVar: 'rgba(216,214,208,0.45)' });
     document.getElementById('btn-join-room')?.classList.add('active');
-    document.getElementById('hud-text').textContent = 'K4 live · Share link above · drag balls for vertices · solids: drag to move, Turn or [ ] to spin (synced) · toolbar adds for all';
+    document.getElementById('hud-text').textContent =
+        'K4 live · Copy link above · Goals · Finish = session summary to clipboard · activity below · drag vertices & solids together';
     const ih = document.getElementById('info-help');
     if (ih) {
         ih.innerHTML =
-            '<b>Shared build</b> — toolbar adds shapes for everyone. <b>K4 vertices:</b> drag colored balls. <b>Solids:</b> drag · Turn or <kbd>[</kbd><kbd>]</kbd> rotates on the table (synced). <b>View:</b> orbit empty area, pinch to zoom.';
+            '<b>Shared build</b> — toolbar adds shapes for everyone. <b>K4 vertices:</b> drag colored balls. <b>Solids:</b> drag · Turn or <kbd>[</kbd><kbd>]</kbd> rotates on the table (synced). <b>View:</b> orbit empty area, pinch to zoom.<br>' +
+            '<b>Together:</b> <b>Goals</b> — same short checks as solo; <b>Finish</b> — copy a named summary (room link, counts, rigidity) for Messages or Notes. <b>Activity</b> — who added solids or struts.';
     }
+    clearLiveActivityFeed();
     connectRoom(roomId);
 }
 
@@ -1406,7 +2479,7 @@ function confirmGeodesicRoomJoin() {
         showCoachToast('Use 1–64 characters: letters, numbers, underscore, hyphen');
         return;
     }
-    const roomId = raw || ('k4-' + Math.random().toString(36).slice(2,8));
+    const roomId = raw || randomGeodesicRoomCode();
     dlg?.close();
     const newUrl = new URL(location.href);
     newUrl.searchParams.set('room', roomId);
@@ -1444,7 +2517,7 @@ window.promptJoinRoom = function promptJoinRoom() {
         return;
     }
     const fallback = typeof window.prompt === 'function' ? window.prompt('Room ID (leave blank for auto):', '') : '';
-    const roomId = (fallback ?? '').trim() || ('k4-' + Math.random().toString(36).slice(2,8));
+    const roomId = (fallback ?? '').trim() || randomGeodesicRoomCode();
     const newUrl = new URL(location.href);
     newUrl.searchParams.set('room', roomId);
     history.replaceState({}, '', newUrl.toString());
@@ -1467,10 +2540,40 @@ window.addEventListener('keydown', (e) => {
         if (t.closest('input, textarea, select, [contenteditable="true"], [contenteditable=""]'))
             return;
     }
+    if (e.key === 'Escape' && !e.repeat) {
+        if (strutDragStart || strutPreview) {
+            e.preventDefault();
+            strutDragStart = null;
+            hideStrutPreview();
+            if (strutPointerId != null) {
+                try {
+                    canvas.releasePointerCapture(strutPointerId);
+                } catch {
+                    /* */
+                }
+                strutPointerId = null;
+            }
+            return;
+        }
+    }
     if (e.key === '[' || e.key === ']') {
         if (e.repeat) return;
         e.preventDefault();
         rotateFocusedShape(e.key === '[' ? -Math.PI / 2 : Math.PI / 2);
+        return;
+    }
+    if ((e.key === 'Delete' || e.key === 'Backspace') && !e.repeat) {
+        if (isLiveMode) return;
+        const g = lastPickedShape;
+        if (g && shapes.includes(g)) {
+            e.preventDefault();
+            fadeRemoveShapeSolo(g);
+        }
+        return;
+    }
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z' && !e.shiftKey && !e.repeat) {
+        e.preventDefault();
+        window.doUndoGeodesic();
     }
 });
 
@@ -1489,6 +2592,66 @@ canvas.addEventListener(
         if (e.button !== 0) return;
         setPointerNdcFromEvent(e);
         _raycaster.setFromCamera(_pointer, camera);
+
+        if (strutMode && shapes.length) {
+            const sh = _raycaster.intersectObjects(shapes, true);
+            if (sh.length) {
+                const hit = sh[0];
+                const g = hitShapeGroup(hit.object);
+                if (g) {
+                    const pick = nearestVertexPick(g, hit.point);
+                    if (!pick) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        e.stopImmediatePropagation();
+                        showCoachToast('Tap near a vertex');
+                        return;
+                    }
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
+                    if (!strutDragStart) {
+                        strutDragStart = pick;
+                        strutPointerId = e.pointerId;
+                        try {
+                            canvas.setPointerCapture(e.pointerId);
+                        } catch {
+                            /* */
+                        }
+                        return;
+                    }
+                    if (strutDragStart.shapeId === pick.shapeId && strutDragStart.vi === pick.vi) {
+                        strutDragStart = null;
+                        hideStrutPreview();
+                        try {
+                            canvas.releasePointerCapture(e.pointerId);
+                        } catch {
+                            /* */
+                        }
+                        strutPointerId = null;
+                        return;
+                    }
+                    addStrutRecord(
+                        strutDragStart.shapeId,
+                        strutDragStart.vi,
+                        pick.shapeId,
+                        pick.vi,
+                        false,
+                        false,
+                        null,
+                    );
+                    strutDragStart = null;
+                    hideStrutPreview();
+                    try {
+                        canvas.releasePointerCapture(e.pointerId);
+                    } catch {
+                        /* */
+                    }
+                    strutPointerId = null;
+                    return;
+                }
+            }
+        }
 
         if (isLiveMode) {
             // Priority 1: K4 vertex drag
@@ -1564,6 +2727,45 @@ canvas.addEventListener(
 );
 
 canvas.addEventListener('pointermove', (e) => {
+    if (strutDragStart) {
+        setPointerNdcFromEvent(e);
+        _raycaster.setFromCamera(_pointer, camera);
+        const ga = shapes.find((g) => g.userData.id === strutDragStart.shapeId);
+        if (!ga) return;
+        const p0 = worldVertexForShape(ga, strutDragStart.vi);
+        if (!p0) return;
+        let p1 = null;
+        const sh = _raycaster.intersectObjects(shapes, true);
+        if (sh.length) {
+            const g = hitShapeGroup(sh[0].object);
+            if (g) {
+                const pick = nearestVertexPick(g, sh[0].point);
+                if (pick) {
+                    const gb = shapes.find((x) => x.userData.id === pick.shapeId);
+                    if (gb) p1 = worldVertexForShape(gb, pick.vi);
+                }
+            }
+        }
+        if (!p1) {
+            const pl = new THREE.Plane().setFromNormalAndCoplanarPoint(new THREE.Vector3(0, 1, 0), p0);
+            if (_raycaster.ray.intersectPlane(pl, _dragIntersect)) p1 = _dragIntersect.clone();
+        }
+        if (!p1) return;
+        if (!strutPreview) {
+            strutPreview = new THREE.Line(
+                new THREE.BufferGeometry(),
+                new THREE.LineBasicMaterial({
+                    color: 0x6eb5a9,
+                    transparent: true,
+                    opacity: 0.88,
+                    depthTest: true,
+                }),
+            );
+            scene.add(strutPreview);
+        }
+        strutPreview.geometry.setFromPoints([p0, p1]);
+        return;
+    }
     if (buildDrag && e.pointerId === buildDrag.pointerId) {
         setPointerNdcFromEvent(e);
         _raycaster.setFromCamera(_pointer, camera);
@@ -1571,6 +2773,7 @@ canvas.addEventListener('pointermove', (e) => {
             buildDrag.snapSuppressed = !!e.shiftKey;
             buildDrag.group.position.set(_dragIntersect.x, buildDrag.yLock, _dragIntersect.z);
             clampShapeXZOnTable(buildDrag.group);
+            buildDrag.group.userData._wobbleBase?.copy(buildDrag.group.position);
             refreshSnapGuideForDrag(buildDrag.group, e.shiftKey);
             updateInfo();
         }
@@ -1588,6 +2791,14 @@ canvas.addEventListener('pointermove', (e) => {
 });
 
 function endPointerDrag(e) {
+    if (strutPointerId != null && e.pointerId === strutPointerId) {
+        try {
+            canvas.releasePointerCapture(e.pointerId);
+        } catch {
+            /* */
+        }
+        strutPointerId = null;
+    }
     if (buildDrag && e.pointerId === buildDrag.pointerId) {
         const g = buildDrag.group;
         const bypassSnap = buildDrag.snapSuppressed;
@@ -1601,6 +2812,7 @@ function endPointerDrag(e) {
             sendLiveMoveShape(g);
         }
         tryCornerSnap(g, bypassSnap);
+        g.userData._wobbleBase?.copy(g.position);
         // After snap (position may change): re-sync
         if (isLiveMode && liveWs?.readyState === WebSocket.OPEN && g.userData.id) {
             sendLiveMoveShape(g);

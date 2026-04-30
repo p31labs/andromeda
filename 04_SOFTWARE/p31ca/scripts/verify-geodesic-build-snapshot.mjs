@@ -48,23 +48,26 @@ const mHtmlSchema = html.match(
   /const GEODESIC_BUILD_SNAPSHOT_SCHEMA = ['"]([^'"]+)['"]/,
 );
 const mHtmlCap = html.match(/const GEODESIC_BUILD_SHAPE_CAP = (\d+)/);
+const mHtmlStrutCap = html.match(/const GEODESIC_BUILD_STRUT_CAP = (\d+)/);
 
 const mTsSchema = sharedSrc.match(
   /export const GEODESIC_BUILD_SNAPSHOT_SCHEMA = ['"]([^'"]+)['"]/,
 );
 const mTsCap = sharedSrc.match(/export const GEODESIC_BUILD_SHAPE_CAP = (\d+)/);
+const mTsStrutCap = sharedSrc.match(/export const GEODESIC_BUILD_STRUT_CAP = (\d+)/);
 
-if (!mHtmlSchema || !mHtmlCap) {
+if (!mHtmlSchema || !mHtmlCap || !mHtmlStrutCap) {
   fail('could not parse GEODESIC_BUILD_* constants in public/geodesic.html');
   process.exit(1);
 }
-if (!mTsSchema || !mTsCap) {
+if (!mTsSchema || !mTsCap || !mTsStrutCap) {
   fail('could not parse GEODESIC_BUILD_* in packages/shared geodesic-build-snapshot.ts');
   process.exit(1);
 }
 
 const schema = canonical.schema;
 const cap = canonical.shapeCap;
+const strutCap = canonical.strutCap;
 
 if (typeof schema !== 'string' || schema !== mHtmlSchema[1] || schema !== mTsSchema[1]) {
   fail(
@@ -82,5 +85,17 @@ if (
   );
   process.exit(1);
 }
+if (
+  typeof strutCap !== 'number' ||
+  strutCap !== Number(mHtmlStrutCap[1]) ||
+  strutCap !== Number(mTsStrutCap[1])
+) {
+  fail(
+    `strutCap drift: ground-truth=${strutCap} html=${mHtmlStrutCap[1]} shared=${mTsStrutCap[1]}`,
+  );
+  process.exit(1);
+}
 
-ok(`schema ${schema}; shapeCap ${cap} — canonical, geodesic.html, shared match ✓`);
+ok(
+  `schema ${schema}; shapeCap ${cap}; strutCap ${strutCap} — canonical, geodesic.html, shared match ✓`,
+);

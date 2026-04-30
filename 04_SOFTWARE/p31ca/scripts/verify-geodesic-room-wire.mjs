@@ -72,4 +72,15 @@ if (!mWsShared || !mWsWorker || mWsShared[1] !== mWsWorker[1]) {
   process.exit(1);
 }
 
-ok(`${mSharedSchema[1]}; SHAPE_CAP=${mShapeShared[1]}; maxWs=${mWsShared[1]} ✓`);
+const mStrutShared = sharedSrc.match(/strutCap:\s*(\d+)/);
+const mStrutWorker = workerSrc.match(/\bSTRUT_CAP\s*=\s*(\d+)/);
+if (!mStrutShared || !mStrutWorker || mStrutShared[1] !== mStrutWorker[1]) {
+  fail(
+    `strut cap mismatch: shared strutCap=${mStrutShared?.[1]} worker STRUT_CAP=${mStrutWorker?.[1]}`,
+  );
+  process.exit(1);
+}
+
+ok(
+  `${mSharedSchema[1]}; SHAPE_CAP=${mShapeShared[1]}; STRUT_CAP=${mStrutShared[1]}; maxWs=${mWsShared[1]} ✓`,
+);
