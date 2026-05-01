@@ -258,6 +258,30 @@
       "registryId": null
     },
     {
+      "slug": "k4-agent-hub",
+      "kind": "worker",
+      "title": "k4-agent-hub",
+      "subtitle": "K₄ agent worker tetrahedron — Ed25519 dock/call/anchor-pact/federation/family-cage; schema p31.k4AgentHub/1.1.0",
+      "tier": "verified",
+      "workersDevUrl": "https://k4-agent-hub.trimtab-signal.workers.dev",
+      "prodUrl": "",
+      "healthPaths": [
+        "/v1/manifest",
+        "/v1/forge/health"
+      ],
+      "meshPaths": [],
+      "constantsKey": "mesh.k4AgentHubWorkerUrl",
+      "deployHints": [
+        "packages/k4-agent-hub (wrangler deploy)"
+      ],
+      "probeUrls": [
+        "https://k4-agent-hub.trimtab-signal.workers.dev/v1/manifest",
+        "https://k4-agent-hub.trimtab-signal.workers.dev/v1/forge/health"
+      ],
+      "hubPagePath": null,
+      "registryId": null
+    },
+    {
       "slug": "k4-cage",
       "kind": "worker",
       "title": "k4-cage",

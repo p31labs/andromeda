@@ -68,6 +68,7 @@
       "k4PersonalWorkerUrl": "https://k4-personal.trimtab-signal.workers.dev",
       "k4CageWorkerUrl": "https://k4-cage.trimtab-signal.workers.dev",
       "k4HubsWorkerUrl": "https://k4-hubs.trimtab-signal.workers.dev",
+      "k4AgentHubWorkerUrl": "https://k4-agent-hub.trimtab-signal.workers.dev",
       "agentHubWorkerUrl": "https://p31-agent-hub.trimtab-signal.workers.dev",
       "orchestratorWorkerUrl": "https://p31-orchestrator.trimtab-signal.workers.dev",
       "passkeyApiBasePath": "/api/passkey",
@@ -118,6 +119,14 @@
       "constantsKey": "mesh.tetraHubWorkerUrl",
       "deploy": "workers/tetra-hub (bonding-soup home root)",
       "note": "Read-only K₄ trio aggregator; service-binds k4-cage, k4-personal, k4-hubs"
+    },
+    {
+      "id": "k4-agent-hub",
+      "workersDev": "https://k4-agent-hub.trimtab-signal.workers.dev",
+      "healthPaths": ["/v1/manifest", "/v1/forge/health"],
+      "constantsKey": "mesh.k4AgentHubWorkerUrl",
+      "deploy": "packages/k4-agent-hub (wrangler deploy)",
+      "note": "K₄ agent worker tetrahedron — Ed25519 dock/call/anchor-pact/federation/family-cage; schema p31.k4AgentHub/1.1.0"
     },
     {
       "id": "p31-agent-hub",
