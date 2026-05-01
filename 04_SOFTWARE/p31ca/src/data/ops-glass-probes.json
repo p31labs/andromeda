@@ -1,6 +1,6 @@
 {
   "schema": "p31.opsGlassProbes/1.0.0",
-  "ingested": "2026-04-30T06:32:41.105Z",
+  "ingested": "2026-05-01T03:36:00.699Z",
   "source": "p31-ecosystem.json",
   "probes": [
     {
@@ -26,6 +26,24 @@
       "group": "mesh",
       "note": "Hub fusion liveness",
       "url": "https://k4-hubs.trimtab-signal.workers.dev/health"
+    },
+    {
+      "id": "k4-agent-hub-manifest",
+      "group": "mesh",
+      "note": "K₄ agent hub manifest — schema p31.k4AgentHub/1.1.0",
+      "url": "https://k4-agent-hub.trimtab-signal.workers.dev/v1/manifest"
+    },
+    {
+      "id": "k4-agent-hub-topology",
+      "group": "mesh",
+      "note": "K₄ agent hub topology snapshot (vertices · edges · family triadic cover)",
+      "url": "https://k4-agent-hub.trimtab-signal.workers.dev/v1/topology"
+    },
+    {
+      "id": "k4-agent-hub-federation",
+      "group": "mesh",
+      "note": "K₄ agent hub federation peer registry",
+      "url": "https://k4-agent-hub.trimtab-signal.workers.dev/v1/federation"
     },
     {
       "id": "p31ca-passkey-register-begin",
@@ -134,6 +152,20 @@
       "url": "https://p31ca.org/p31-public-surface.json"
     },
     {
+      "id": "social-worker-health",
+      "group": "social",
+      "note": "p31-social-worker root — { service, status, endpoints, schedule } JSON. Falls back to https://p31-social-worker.trimtab-signal.workers.dev when zone route is down (operator CLI: npm run social:health).",
+      "url": "https://social.p31ca.org/",
+      "expectJsonKey": "service"
+    },
+    {
+      "id": "social-worker-status",
+      "group": "social",
+      "note": "Per-platform secret presence (no values). P31_GLASS_STRICT=1 fails when route is down — surfaces silent broken cron.",
+      "url": "https://social.p31ca.org/status",
+      "expectJsonKey": "platforms"
+    },
+    {
       "id": "p31ca-fleet-entities-json",
       "group": "contracts",
       "note": "p31.fleetEntities/1.0.0 — merged roster consumed by fleet-agents.html; npm run build:fleet-entities in p31ca prebuild",
@@ -229,6 +261,20 @@
       "group": "worker-spa",
       "note": "genesis-gate API Worker — GET /health (root / is 404 by design)",
       "url": "https://genesis-gate.trimtab-signal.workers.dev/health"
+    },
+    {
+      "id": "p31-google-bridge-health",
+      "group": "mesh",
+      "note": "Google Workspace OAuth bridge; JSON readiness + config flags",
+      "url": "https://p31-google-bridge.trimtab-signal.workers.dev/health",
+      "expectJsonKey": "ok"
+    },
+    {
+      "id": "bonding-relay-health",
+      "group": "mesh",
+      "note": "BONDING telemetry Worker (telemetry.ts); body.status === ok",
+      "url": "https://bonding-relay.trimtab-signal.workers.dev/health",
+      "expectJsonKey": "status"
     }
   ]
 }
