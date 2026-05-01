@@ -111,6 +111,354 @@
       "rampId": "dome-cockpit",
       "starfieldAOD": "on",
       "notes": "observatory.html — static Three dome shell; same ramp family as dome."
+    },
+    {
+      "surfaceId": "alchemy",
+      "rampId": "lab-sovereign",
+      "starfieldAOD": "on",
+      "notes": "Hub registry card (lab-sovereign) — synced by scripts/sync-atmosphere-hub-routes.mjs"
+    },
+    {
+      "surfaceId": "appointment-tracker",
+      "rampId": "hub-lobby",
+      "starfieldAOD": "on",
+      "notes": "Hub registry card (hub-lobby) — synced by scripts/sync-atmosphere-hub-routes.mjs"
+    },
+    {
+      "surfaceId": "attractor",
+      "rampId": "lab-sovereign",
+      "starfieldAOD": "on",
+      "notes": "Hub registry card (lab-sovereign) — synced by scripts/sync-atmosphere-hub-routes.mjs"
+    },
+    {
+      "surfaceId": "axiom",
+      "rampId": "lab-sovereign",
+      "starfieldAOD": "on",
+      "notes": "Hub registry card (lab-sovereign) — synced by scripts/sync-atmosphere-hub-routes.mjs"
+    },
+    {
+      "surfaceId": "book",
+      "rampId": "garden-warm",
+      "starfieldAOD": "on",
+      "notes": "Hub registry card (garden-warm) — synced by scripts/sync-atmosphere-hub-routes.mjs"
+    },
+    {
+      "surfaceId": "bridge",
+      "rampId": "hub-lobby",
+      "starfieldAOD": "on",
+      "notes": "Hub registry card (hub-lobby) — synced by scripts/sync-atmosphere-hub-routes.mjs"
+    },
+    {
+      "surfaceId": "budget-tracker",
+      "rampId": "hub-lobby",
+      "starfieldAOD": "on",
+      "notes": "Hub registry card (hub-lobby) — synced by scripts/sync-atmosphere-hub-routes.mjs"
+    },
+    {
+      "surfaceId": "buffer",
+      "rampId": "hub-lobby",
+      "starfieldAOD": "on",
+      "notes": "Hub registry card (hub-lobby) — synced by scripts/sync-atmosphere-hub-routes.mjs"
+    },
+    {
+      "surfaceId": "canon-demo",
+      "rampId": "hub-lobby",
+      "starfieldAOD": "on",
+      "notes": "Hub registry card (hub-lobby) — synced by scripts/sync-atmosphere-hub-routes.mjs"
+    },
+    {
+      "surfaceId": "collider",
+      "rampId": "lab-sovereign",
+      "starfieldAOD": "on",
+      "notes": "Hub registry card (lab-sovereign) — synced by scripts/sync-atmosphere-hub-routes.mjs"
+    },
+    {
+      "surfaceId": "contact-locker",
+      "rampId": "hub-lobby",
+      "starfieldAOD": "on",
+      "notes": "Hub registry card (hub-lobby) — synced by scripts/sync-atmosphere-hub-routes.mjs"
+    },
+    {
+      "surfaceId": "content-forge",
+      "rampId": "hub-lobby",
+      "starfieldAOD": "on",
+      "notes": "Hub registry card (hub-lobby) — synced by scripts/sync-atmosphere-hub-routes.mjs"
+    },
+    {
+      "surfaceId": "cortex",
+      "rampId": "lab-sovereign",
+      "starfieldAOD": "on",
+      "notes": "Hub registry card (lab-sovereign) — synced by scripts/sync-atmosphere-hub-routes.mjs"
+    },
+    {
+      "surfaceId": "discord-bot",
+      "rampId": "hub-lobby",
+      "starfieldAOD": "on",
+      "notes": "Hub registry card (hub-lobby) — synced by scripts/sync-atmosphere-hub-routes.mjs"
+    },
+    {
+      "surfaceId": "donate",
+      "rampId": "hub-lobby",
+      "starfieldAOD": "on",
+      "notes": "Hub registry card (hub-lobby) — synced by scripts/sync-atmosphere-hub-routes.mjs"
+    },
+    {
+      "surfaceId": "echo",
+      "rampId": "hub-lobby",
+      "starfieldAOD": "on",
+      "notes": "Hub registry card (hub-lobby) — synced by scripts/sync-atmosphere-hub-routes.mjs"
+    },
+    {
+      "surfaceId": "ede",
+      "rampId": "hub-lobby",
+      "starfieldAOD": "on",
+      "notes": "Hub registry card (hub-lobby) — synced by scripts/sync-atmosphere-hub-routes.mjs"
+    },
+    {
+      "surfaceId": "education",
+      "rampId": "hub-lobby",
+      "starfieldAOD": "on",
+      "notes": "Hub registry card (hub-lobby) — synced by scripts/sync-atmosphere-hub-routes.mjs"
+    },
+    {
+      "surfaceId": "forge",
+      "rampId": "hub-lobby",
+      "starfieldAOD": "on",
+      "notes": "Hub registry card (hub-lobby) — synced by scripts/sync-atmosphere-hub-routes.mjs"
+    },
+    {
+      "surfaceId": "genesis-gate",
+      "rampId": "lab-sovereign",
+      "starfieldAOD": "on",
+      "notes": "Hub registry card (lab-sovereign) — synced by scripts/sync-atmosphere-hub-routes.mjs"
+    },
+    {
+      "surfaceId": "integrations",
+      "rampId": "hub-lobby",
+      "starfieldAOD": "on",
+      "notes": "Hub registry card (hub-lobby) — synced by scripts/sync-atmosphere-hub-routes.mjs"
+    },
+    {
+      "surfaceId": "k4market",
+      "rampId": "lab-sovereign",
+      "starfieldAOD": "on",
+      "notes": "Hub registry card (lab-sovereign) — synced by scripts/sync-atmosphere-hub-routes.mjs"
+    },
+    {
+      "surfaceId": "kenosis",
+      "rampId": "lab-sovereign",
+      "starfieldAOD": "on",
+      "notes": "Hub registry card (lab-sovereign) — synced by scripts/sync-atmosphere-hub-routes.mjs"
+    },
+    {
+      "surfaceId": "kids-growth",
+      "rampId": "garden-warm",
+      "starfieldAOD": "on",
+      "notes": "Hub registry card (garden-warm) — synced by scripts/sync-atmosphere-hub-routes.mjs"
+    },
+    {
+      "surfaceId": "kinematics",
+      "rampId": "hub-lobby",
+      "starfieldAOD": "on",
+      "notes": "Hub registry card (hub-lobby) — synced by scripts/sync-atmosphere-hub-routes.mjs"
+    },
+    {
+      "surfaceId": "legal-evidence",
+      "rampId": "legal-document",
+      "starfieldAOD": "off",
+      "notes": "Hub registry card (legal-document) — synced by scripts/sync-atmosphere-hub-routes.mjs"
+    },
+    {
+      "surfaceId": "liminal",
+      "rampId": "lab-sovereign",
+      "starfieldAOD": "on",
+      "notes": "Hub registry card (lab-sovereign) — synced by scripts/sync-atmosphere-hub-routes.mjs"
+    },
+    {
+      "surfaceId": "love-ledger",
+      "rampId": "hub-lobby",
+      "starfieldAOD": "on",
+      "notes": "Hub registry card (hub-lobby) — synced by scripts/sync-atmosphere-hub-routes.mjs"
+    },
+    {
+      "surfaceId": "medical-tracker",
+      "rampId": "hub-lobby",
+      "starfieldAOD": "on",
+      "notes": "Hub registry card (hub-lobby) — synced by scripts/sync-atmosphere-hub-routes.mjs"
+    },
+    {
+      "surfaceId": "mission-control",
+      "rampId": "garden-warm",
+      "starfieldAOD": "on",
+      "notes": "Hub registry card (garden-warm) — synced by scripts/sync-atmosphere-hub-routes.mjs"
+    },
+    {
+      "surfaceId": "node-one",
+      "rampId": "hub-lobby",
+      "starfieldAOD": "on",
+      "notes": "Hub registry card (hub-lobby) — synced by scripts/sync-atmosphere-hub-routes.mjs"
+    },
+    {
+      "surfaceId": "node-zero",
+      "rampId": "lab-sovereign",
+      "starfieldAOD": "on",
+      "notes": "Hub registry card (lab-sovereign) — synced by scripts/sync-atmosphere-hub-routes.mjs"
+    },
+    {
+      "surfaceId": "p31-delta-hiring",
+      "rampId": "hub-lobby",
+      "starfieldAOD": "on",
+      "notes": "Hub registry card (hub-lobby) — synced by scripts/sync-atmosphere-hub-routes.mjs"
+    },
+    {
+      "surfaceId": "phenix-os",
+      "rampId": "hub-lobby",
+      "starfieldAOD": "on",
+      "notes": "Hub registry card (hub-lobby) — synced by scripts/sync-atmosphere-hub-routes.mjs"
+    },
+    {
+      "surfaceId": "planetary-onboard",
+      "rampId": "garden-warm",
+      "starfieldAOD": "on",
+      "notes": "Hub registry card (garden-warm) — synced by scripts/sync-atmosphere-hub-routes.mjs"
+    },
+    {
+      "surfaceId": "prism",
+      "rampId": "lab-sovereign",
+      "starfieldAOD": "on",
+      "notes": "Hub registry card (lab-sovereign) — synced by scripts/sync-atmosphere-hub-routes.mjs"
+    },
+    {
+      "surfaceId": "qg-ide",
+      "rampId": "lab-sovereign",
+      "starfieldAOD": "on",
+      "notes": "Hub registry card (lab-sovereign) — synced by scripts/sync-atmosphere-hub-routes.mjs"
+    },
+    {
+      "surfaceId": "quantum-core",
+      "rampId": "lab-sovereign",
+      "starfieldAOD": "on",
+      "notes": "Hub registry card (lab-sovereign) — synced by scripts/sync-atmosphere-hub-routes.mjs"
+    },
+    {
+      "surfaceId": "quantum-family",
+      "rampId": "garden-warm",
+      "starfieldAOD": "on",
+      "notes": "Hub registry card (garden-warm) — synced by scripts/sync-atmosphere-hub-routes.mjs"
+    },
+    {
+      "surfaceId": "quantum-life-os",
+      "rampId": "lab-sovereign",
+      "starfieldAOD": "on",
+      "notes": "Hub registry card (lab-sovereign) — synced by scripts/sync-atmosphere-hub-routes.mjs"
+    },
+    {
+      "surfaceId": "resonance",
+      "rampId": "lab-sovereign",
+      "starfieldAOD": "on",
+      "notes": "Hub registry card (lab-sovereign) — synced by scripts/sync-atmosphere-hub-routes.mjs"
+    },
+    {
+      "surfaceId": "signal",
+      "rampId": "lab-sovereign",
+      "starfieldAOD": "on",
+      "notes": "Hub registry card (lab-sovereign) — synced by scripts/sync-atmosphere-hub-routes.mjs"
+    },
+    {
+      "surfaceId": "simple-sovereignty",
+      "rampId": "hub-lobby",
+      "starfieldAOD": "on",
+      "notes": "Hub registry card (hub-lobby) — synced by scripts/sync-atmosphere-hub-routes.mjs"
+    },
+    {
+      "surfaceId": "sleep-tracker",
+      "rampId": "hub-lobby",
+      "starfieldAOD": "on",
+      "notes": "Hub registry card (hub-lobby) — synced by scripts/sync-atmosphere-hub-routes.mjs"
+    },
+    {
+      "surfaceId": "social-molecules",
+      "rampId": "hub-lobby",
+      "starfieldAOD": "on",
+      "notes": "Hub registry card (hub-lobby) — synced by scripts/sync-atmosphere-hub-routes.mjs"
+    },
+    {
+      "surfaceId": "somatic-anchor",
+      "rampId": "lab-sovereign",
+      "starfieldAOD": "on",
+      "notes": "Hub registry card (lab-sovereign) — synced by scripts/sync-atmosphere-hub-routes.mjs"
+    },
+    {
+      "surfaceId": "sovereign",
+      "rampId": "lab-sovereign",
+      "starfieldAOD": "on",
+      "notes": "Hub registry card (lab-sovereign) — synced by scripts/sync-atmosphere-hub-routes.mjs"
+    },
+    {
+      "surfaceId": "spaceship-earth",
+      "rampId": "lab-sovereign",
+      "starfieldAOD": "on",
+      "notes": "Hub registry card (lab-sovereign) — synced by scripts/sync-atmosphere-hub-routes.mjs"
+    },
+    {
+      "surfaceId": "super-centaur",
+      "rampId": "hub-lobby",
+      "starfieldAOD": "on",
+      "notes": "Hub registry card (hub-lobby) — synced by scripts/sync-atmosphere-hub-routes.mjs"
+    },
+    {
+      "surfaceId": "tactile",
+      "rampId": "hub-lobby",
+      "starfieldAOD": "on",
+      "notes": "Hub registry card (hub-lobby) — synced by scripts/sync-atmosphere-hub-routes.mjs"
+    },
+    {
+      "surfaceId": "tether",
+      "rampId": "hub-lobby",
+      "starfieldAOD": "on",
+      "notes": "Hub registry card (hub-lobby) — synced by scripts/sync-atmosphere-hub-routes.mjs"
+    },
+    {
+      "surfaceId": "tomography",
+      "rampId": "lab-sovereign",
+      "starfieldAOD": "on",
+      "notes": "Hub registry card (lab-sovereign) — synced by scripts/sync-atmosphere-hub-routes.mjs"
+    },
+    {
+      "surfaceId": "vault",
+      "rampId": "lab-sovereign",
+      "starfieldAOD": "on",
+      "notes": "Hub registry card (lab-sovereign) — synced by scripts/sync-atmosphere-hub-routes.mjs"
+    },
+    {
+      "surfaceId": "quantum-clock",
+      "rampId": "hub-lobby",
+      "starfieldAOD": "on",
+      "notes": "Hub registry card (hub-lobby) — synced by scripts/sync-atmosphere-hub-routes.mjs"
+    },
+    {
+      "surfaceId": "quantum-deck",
+      "rampId": "lab-sovereign",
+      "starfieldAOD": "on",
+      "notes": "Hub registry card (lab-sovereign) — synced by scripts/sync-atmosphere-hub-routes.mjs"
+    },
+    {
+      "surfaceId": "contract-builder",
+      "rampId": "hub-lobby",
+      "starfieldAOD": "on",
+      "notes": "Hub registry card (hub-lobby) — synced by scripts/sync-atmosphere-hub-routes.mjs"
+    },
+    {
+      "surfaceId": "quantum-composer",
+      "rampId": "hub-lobby",
+      "starfieldAOD": "on",
+      "notes": "Hub registry card (hub-lobby) — synced by scripts/sync-atmosphere-hub-routes.mjs"
+    },
+    {
+      "surfaceId": "k4-agent-hubs",
+      "rampId": "hub-lobby",
+      "starfieldAOD": "on",
+      "notes": "Hub registry card (hub-lobby) — synced by scripts/sync-atmosphere-hub-routes.mjs"
     }
   ]
 }

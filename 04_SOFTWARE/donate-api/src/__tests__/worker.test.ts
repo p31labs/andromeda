@@ -6,6 +6,7 @@ interface Env {
   STRIPE_WEBHOOK_SECRET: string;
   DISCORD_WEBHOOK_URL: string;
   ALLOWED_ORIGIN: string;
+  P31_DISCORD_INGRESS_SECRET?: string;
 }
 
 const env: Env = {
@@ -379,6 +380,50 @@ describe('POST /stripe-webhook', () => {
     expect(res.status).toBe(200);
     const body = await res.json() as { received: boolean };
     expect(body.received).toBe(true);
+  });
+
+  it('forwards Discord ingress HMAC when P31_DISCORD_INGRESS_SECRET is set', async () => {
+    const whsec = 'whsec_test_valid';
+    const ingress = 'ingress_shared_test_secret';
+    const localEnv = { ...env, STRIPE_WEBHOOK_SECRET: whsec, P31_DISCORD_INGRESS_SECRET: ingress };
+    const payload = JSON.stringify({
+      id: 'evt_ingress_1',
+      type: 'checkout.session.completed',
+      data: { object: {} },
+    });
+    const timestamp = Math.floor(Date.now() / 1000).toString();
+    const signedPayload = `${timestamp}.${payload}`;
+    const key = await crypto.subtle.importKey(
+      'raw',
+      new TextEncoder().encode(whsec),
+      { name: 'HMAC', hash: 'SHA-256' },
+      false,
+      ['sign'],
+    );
+    const sigBytes = await crypto.subtle.sign(
+      'HMAC',
+      key,
+      new TextEncoder().encode(signedPayload),
+    );
+    const v1 = Array.from(new Uint8Array(sigBytes))
+      .map((b) => b.toString(16).padStart(2, '0'))
+      .join('');
+
+    mockFetch.mockResolvedValueOnce(new Response('ok', { status: 200 }));
+
+    const worker = await getWorker();
+    const req = new Request('https://example.com/stripe-webhook', {
+      method: 'POST',
+      headers: { 'stripe-signature': `t=${timestamp},v1=${v1}` },
+      body: payload,
+    });
+    await worker.fetch(req, localEnv);
+
+    const discordCall = mockFetch.mock.calls.find((c) => c[0] === env.DISCORD_WEBHOOK_URL);
+    expect(discordCall).toBeDefined();
+    const init = discordCall![1] as { headers: Record<string, string>; body: string };
+    expect(init.body).toBe(payload);
+    expect(init.headers['X-P31-Ingress-Signature']).toMatch(/^sha256=[a-f0-9]{64}$/);
   });
 });
 

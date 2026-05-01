@@ -37,7 +37,8 @@ jobs:
 
       - name: Run grant radar scan
         run: |
-          node grant_radar.py --output grant-opportunities.json
+          cd ..
+          python3 grant_radar.py --output grant-opportunities.json
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

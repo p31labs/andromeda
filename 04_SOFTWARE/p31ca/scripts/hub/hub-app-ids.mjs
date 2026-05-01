@@ -44,6 +44,7 @@ export const HUB_COCKPIT_ORDER = [
   "bridge",
   "budget-tracker",
   "canon-demo",
+  "contract-builder",
   "contact-locker",
   "echo",
   "forge",
@@ -62,6 +63,10 @@ export const HUB_COCKPIT_ORDER = [
   "super-centaur",
   "tether",
   "tomography",
+  "quantum-clock",
+  "quantum-deck",
+  "quantum-composer",
+  "k4-agent-hubs",
 ];
 
 export const HUB_PROTOTYPE_ORDER = [];

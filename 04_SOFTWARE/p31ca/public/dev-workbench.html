@@ -54,6 +54,16 @@
         <pre class="ledger bg-black/20 rounded p-2 text-cloud/80 font-mono text-xs" id="out-agent">—</pre>
       </section>
 
+      <!-- Geodesic + OAuth + BONDING relay (read-only GET) -->
+      <section class="bg-surface/50 border border-white/8 rounded-xl p-4 md:col-span-2">
+        <h2 class="text-cloud/70 font-mono text-xs uppercase tracking-widest mb-2">Geodesic · Google bridge · BONDING relay</h2>
+        <p class="text-cloud/45 text-xs mb-2">JSON health / room metadata only — same <code class="text-cloud/60">mesh.*WorkerUrl</code> keys as constants.</p>
+        <div class="flex flex-wrap gap-2 mb-2">
+          <button type="button" id="btn-bridge-ping" class="px-3 py-1.5 rounded-lg bg-teal/15 text-teal/90 text-xs font-mono hover:bg-teal/25">Ping all three</button>
+        </div>
+        <pre class="ledger bg-black/20 rounded p-2 text-xs" id="out-bridge">—</pre>
+      </section>
+
       <!-- cf-edge-lab (request.cf snapshot) -->
       <section class="bg-surface/50 border border-white/8 rounded-xl p-4 md:col-span-2">
         <h2 class="text-teal/70 font-mono text-xs uppercase tracking-widest mb-2">cf-edge-lab</h2>
@@ -99,10 +109,14 @@
     k4Personal: "https://k4-personal.trimtab-signal.workers.dev",
     k4Cage: "https://k4-cage.trimtab-signal.workers.dev",
     k4Hubs: "https://k4-hubs.trimtab-signal.workers.dev",
+    k4AgentHub: "https://k4-agent-hub.trimtab-signal.workers.dev",
     agentHub: "https://p31-agent-hub.trimtab-signal.workers.dev",
     orchestrator: "https://p31-orchestrator.trimtab-signal.workers.dev",
     edgeLab: "https://cf-edge-lab.trimtab-signal.workers.dev",
-    tetraHub: "https://tetra-hub.trimtab-signal.workers.dev"
+    tetraHub: "https://tetra-hub.trimtab-signal.workers.dev",
+    geodesicRoom: "https://geodesic-room.trimtab-signal.workers.dev",
+    googleBridge: "https://p31-google-bridge.trimtab-signal.workers.dev",
+    bondingRelay: "https://bonding-relay.trimtab-signal.workers.dev"
   };
 
   const SKEY = "p31_dev_ephemeral";
@@ -141,6 +155,17 @@
 
   document.getElementById("btn-mesh-all").addEventListener("click", function () { refreshMesh().catch(function (e) { show(document.getElementById("out-personal"), String(e)); }); });
   document.getElementById("btn-edge-lab").addEventListener("click", function () { refreshEdgeLab().catch(function (e) { show(document.getElementById("out-edge-lab"), String(e)); }); });
+
+  async function refreshBridgePing() {
+    var out = document.getElementById("out-bridge");
+    show(out, "…");
+    var g = await safeJson(URLS.geodesicRoom + "/");
+    var gb = await safeJson(URLS.googleBridge + "/health");
+    var b = await safeJson(URLS.bondingRelay + "/health");
+    show(out, { geodesic_room_root: g, google_bridge_health: gb, bonding_relay_health: b });
+  }
+  var btnBr = document.getElementById("btn-bridge-ping");
+  if (btnBr) btnBr.addEventListener("click", function () { refreshBridgePing().catch(function (e) { show(document.getElementById("out-bridge"), String(e)); }); });
 
   document.getElementById("btn-agent-send").addEventListener("click", async function () {
     var input = document.getElementById("agent-input");

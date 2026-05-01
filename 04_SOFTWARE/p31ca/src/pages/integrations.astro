@@ -8,6 +8,8 @@ import integ from '../data/p31-integrations.json';
 const catalog = integ.openCatalog || [];
 const endpoints = integ.endpoints || {};
 const meshBridge = integ.meshBridge || {};
+const edgeMesh = integ.edgeMesh || {};
+const sovereignWorkerSpas = integ.sovereignWorkerSpas || [];
 ---
 
 <BaseLayout
@@ -98,6 +100,86 @@ const meshBridge = integ.meshBridge || {};
       </p>
       <p class="text-xs text-p31-muted-60">{meshBridge.trust || ''}</p>
     </section>
+
+    {
+      Object.keys(edgeMesh).length > 1 && (
+        <section class="mb-10 rounded-xl border border-teal-500/20 bg-teal-500/[0.04] p-5 text-sm text-p31-cloud-70">
+          <h2 class="text-lg font-medium text-p31-cloud mb-2">Canonical mesh URLs</h2>
+          <p class="text-xs text-p31-muted-50 mb-3">
+            From <code class="text-teal-300/80">p31-constants.json</code> <code>mesh.*</code> (mirrored as{' '}
+            <code class="text-p31-muted-50">edgeMesh</code> for this page). Same values as{' '}
+            <a href="/p31-mesh-constants.json" class="text-teal-400/90 hover:underline">
+              /p31-mesh-constants.json
+            </a>
+            .
+          </p>
+          <dl class="space-y-2 font-mono text-xs">
+            {Object.entries(edgeMesh)
+              .filter(([k]) => k !== 'schema')
+              .map(([k, v]) => (
+                <div class="flex flex-wrap gap-x-2 gap-y-1 border-b border-white/5 pb-2">
+                  <dt class="text-p31-muted-50 shrink-0">{k}</dt>
+                  <dd class="text-teal-200/85 break-all">
+                    {typeof v === 'string' && /^https?:\/\//.test(v) ? (
+                      <a href={v} class="hover:underline" rel="noopener noreferrer">
+                        {v}
+                      </a>
+                    ) : (
+                      String(v)
+                    )}
+                  </dd>
+                </div>
+              ))}
+          </dl>
+        </section>
+      )
+    }
+
+    {
+      sovereignWorkerSpas.length > 0 && (
+        <section class="mb-10 rounded-xl border border-white/10 bg-white/[0.03] p-5">
+          <h2 class="text-lg font-medium text-p31-cloud mb-2">Sovereign Worker SPAs</h2>
+          <p class="text-xs text-p31-muted-50 mb-4 max-w-2xl">
+            Local-first bundles on Cloudflare Workers; <code class="text-teal-300/80">p31ca.org</code> short paths 302 to{' '}
+            <code class="text-p31-muted-50">*.trimtab-signal.workers.dev</code>. Hub registry cards use the same launch URLs.
+          </p>
+          <div class="overflow-x-auto rounded-lg border border-white/10">
+            <table class="w-full text-left text-sm">
+              <thead>
+                <tr class="border-b border-white/10 text-p31-muted-50 text-xs uppercase tracking-wide">
+                  <th class="p-2 pl-3">Id</th>
+                  <th class="p-2">Hub launch</th>
+                  <th class="p-2 pr-3">workers.dev</th>
+                </tr>
+              </thead>
+              <tbody>
+                {sovereignWorkerSpas.map(
+                  (row: { id: string; hubLaunchUrl: string; workersDevUrl: string }) => (
+                    <tr class="border-b border-white/5">
+                      <td class="p-2 pl-3 font-mono text-teal-200/90 text-xs whitespace-nowrap">{row.id}</td>
+                      <td class="p-2">
+                        <a href={row.hubLaunchUrl} class="text-teal-400/90 hover:underline text-xs break-all">
+                          {row.hubLaunchUrl}
+                        </a>
+                      </td>
+                      <td class="p-2 pr-3">
+                        <a
+                          href={row.workersDevUrl}
+                          class="text-p31-muted hover:text-teal-300/90 hover:underline text-xs break-all"
+                          rel="noopener noreferrer"
+                        >
+                          {row.workersDevUrl}
+                        </a>
+                      </td>
+                    </tr>
+                  )
+                )}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      )
+    }
 
     <p class="mt-8 text-xs text-p31-cloud-40">
       <a href="/ops/" class="text-teal-400/80 hover:underline">← Operator shell</a>

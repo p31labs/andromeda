@@ -1,7 +1,7 @@
 {
   "schema": "p31.ground-truth/1.0.0",
   "version": "1.0.0",
-  "updated": "2026-04-29",
+  "updated": "2026-04-30",
   "mission": "Build, create, connect — decentralized family mesh. This file is the machine-routable spine for p31ca.org; human narrative stays in root CLAUDE.md, P31 COGNITIVE PASSPORT — v5.md, and docs/. Version namespaces: P31 home docs/CANONICAL-NUMBERING.md; values: P31 home p31-constants.json. Source→sink alignment: P31 home p31-alignment.json (p31.alignment/1.0.0) and docs/P31-ALIGNMENT-SYSTEM.md (ephemeralization; verify: npm run verify:alignment).",
   "canonicalNumbering": {
     "spec": "P31 home: docs/CANONICAL-NUMBERING.md",
@@ -17,7 +17,7 @@
     "bondingTestBaseline": {
       "tests": 424,
       "suites": 32,
-      "asOf": "2026-04-29"
+      "asOf": "2026-04-30"
     }
   },
   "sites": {
@@ -43,6 +43,18 @@
     }
   },
   "routes": {
+    "glassBox": {
+      "path": "/glass-box.html",
+      "implementation": "public/glass-box.html (mirrored from P31 home glass-box.html via npm run build:glass-box)",
+      "label": "P31 Glass Box — public live transparency terminal",
+      "note": "Schema p31.glassBox/0.1.0. Streams synthetic CLI playbacks (verify:*, launch:audit, reports:simulate, ecosystem:glass) + a real-time poll of the public reports/index.json. No tracking, no analytics, no operator secrets — only what we'd publish anyway. Short routes /glass, /glass-box, /transparency in edgeRedirects. Not the operator UI (CWP-P31-UI-2026-01) which is at /ops and is gated."
+    },
+    "demosPublic": {
+      "path": "/demos/index.html",
+      "implementation": "public/demos/ (mirrored from P31 home demos/ via npm run build:demos)",
+      "label": "P31 visual demos — mind-bending walkthroughs",
+      "note": "Schema p31.demosIndex/0.1.0. Four self-contained visualizations (K₄ family mesh · alignment graph · Larmor pulse · glass box) + share-kit captions. Reads real data from p31-alignment.json + p31-constants.json. Short routes /visuals and /demos-public in edgeRedirects (the existing /demos points at demo-labs.html, a different product — see routes.demoLabs in this file)."
+    },
     "canonicalDome": {
       "path": "/dome/",
       "implementation": "src/pages/dome.astro",
@@ -69,6 +81,20 @@
       "label": "K4 TOMOGRAPHY — symbol-seeded depth view (Three.js r183)",
       "registryId": "tomography",
       "note": "Depth companion to k4market.html. Linked from k4market nav."
+    },
+    "quantumDeck": {
+      "path": "/quantum-deck.html",
+      "implementation": "public/quantum-deck.html",
+      "label": "QUANTUM DECK — fair shuffle demo (@p31/quantum-deck)",
+      "registryId": "quantum-deck",
+      "note": "Schema meta p31.quantumDeckPage/0.1.0. Browser core mirrored from packages/quantum-deck/src/deck.mjs via verify:quantum-deck. Short /deck in _redirects. crypto.getRandomValues — not destiny; no gambling UX."
+    },
+    "quantumComposer": {
+      "path": "/quantum-composer.html",
+      "implementation": "public/quantum-composer.html",
+      "label": "Quantum composer — K₄ Web Audio partials on the Larmor ladder",
+      "registryId": "quantum-composer",
+      "note": "Meta p31.quantumComposerPage/0.1.0. Four oscillators at Larmor/divisors; TRIM-rate interference via p31-quantum-grandfather-boot; verify:quantum-clock locks LARMOR_HZ to p31-constants.json. Short /composer. Pedagogy, not a physics engine."
     },
     "planetaryOnboard": {
       "path": "/planetary-onboard.html",
@@ -146,7 +172,7 @@
       "path": "/demo-labs.html",
       "implementation": "public/demo-labs.html",
       "label": "Demo labs — curated static demos index",
-      "note": "Short /demos in _redirects. Lobby links fleet map, agents (/agents), canon, ops, delta, connect, onboard, centaur, kids, journey, /cars (Social Molecules · C.A.R.S.)."
+      "note": "Short /demos in _redirects. Lobby links fleet map, agents (/agents), canon, contract builder (/contracts), quantum composer (/composer), ops, delta, connect, onboard, centaur, kids, journey, /cars (Social Molecules · C.A.R.S.)."
     },
     "sovereignLab": {
       "path": "/p31-sovereign-lab.html",
@@ -202,6 +228,13 @@
       "implementation": "public/connect.html",
       "label": "The Mesh — K₄ cage + product graph (Three.js r160)",
       "note": "Envision / Build / Connect navigator. Family cage + product satellites. Click nodes to open products."
+    },
+    "contractBuilder": {
+      "path": "/contract-builder.html",
+      "implementation": "public/contract-builder.html",
+      "label": "Contract builder — JSON contract registry from alignment sources",
+      "registryId": "contract-builder",
+      "note": "Loads /p31-contract-registry.json (p31.contractRegistry/1.0.0). Built by P31 home npm run build:contract-registry; verify:contract-registry. Short /contracts in _redirects. Anchor p31.contractBuilder/0.1.0."
     },
     "cognitivePassportGenerator": {
       "path": "/passport-generator.html",
@@ -268,6 +301,12 @@
       "implementation": "public/delta-hiring/index.html",
       "label": "P31 Delta — proof-based hiring (role packets, WCDs, p31.proofRecord)",
       "note": "Vite static SPA: build in 04_SOFTWARE/p31-delta-hiring, run sync:p31ca, deploy with p31ca. Short /hiring in _redirects."
+    },
+    "messagingHub": {
+      "path": "/messaging-hub.html",
+      "implementation": "public/messaging-hub.html",
+      "label": "Messaging hub — static index of mesh, C.A.R.S., geodesic, operator, and mail-ingest paths",
+      "note": "No shared chat bus. Short /messages and /comms in _redirects. Schema anchor p31.messagingHub/0.1.0. Manifest: p31-public-surface.json messagingHub."
     },
     "auth": {
       "path": "/auth.html",
@@ -354,7 +393,8 @@
       "path": "/quantum-clock.html",
       "implementation": "public/quantum-clock.html",
       "label": "Quantum clock — Grandfather / Cuckoo explainer (pedagogy, not metrology)",
-      "note": "Schema meta p31.quantumClockPage/0.1.0. Short /quantum-clock in _redirects. See docs/PLAN-QUANTUM-CLOCK.md; verify:quantum-clock links tomography TRIM to dome-constants."
+      "registryId": "quantum-clock",
+      "note": "Schema meta p31.quantumClockPage/0.1.0. Short /quantum-clock in _redirects. Hub registry card quantum-clock. See docs/PLAN-QUANTUM-CLOCK.md; verify:quantum-clock links tomography TRIM + grandfather boot to dome-constants."
     },
     "p31LabsEducation": {
       "path": "/education/",
@@ -493,11 +533,31 @@
     {
       "from": "/build",
       "to": "/initial-build.html",
-      "status": 301
+      "status": 200
     },
     {
       "from": "/hiring",
       "to": "/delta-hiring/index.html",
+      "status": 301
+    },
+    {
+      "from": "/messages",
+      "to": "/messaging-hub.html",
+      "status": 301
+    },
+    {
+      "from": "/comms",
+      "to": "/messaging-hub.html",
+      "status": 301
+    },
+    {
+      "from": "/contracts",
+      "to": "/contract-builder.html",
+      "status": 301
+    },
+    {
+      "from": "/composer",
+      "to": "/quantum-composer.html",
       "status": 301
     },
     {
@@ -536,6 +596,26 @@
       "status": 301
     },
     {
+      "from": "/glass",
+      "to": "/glass-box.html",
+      "status": 200
+    },
+    {
+      "from": "/transparency",
+      "to": "/glass-box.html",
+      "status": 200
+    },
+    {
+      "from": "/visuals",
+      "to": "/demos/index.html",
+      "status": 301
+    },
+    {
+      "from": "/demos-public",
+      "to": "/demos/index.html",
+      "status": 301
+    },
+    {
       "from": "/slicer",
       "to": "/p31-slicer.html",
       "status": 301
@@ -568,6 +648,11 @@
     {
       "from": "/quantum-clock",
       "to": "/quantum-clock.html",
+      "status": 301
+    },
+    {
+      "from": "/deck",
+      "to": "/quantum-deck.html",
       "status": 301
     },
     {
@@ -673,6 +758,11 @@
       "mustIncludeSubstring": "p31.quantumClockPage/0.1.0"
     },
     {
+      "id": "quantumDeck.page",
+      "path": "public/quantum-deck.html",
+      "mustIncludeSubstring": "p31.quantumDeckPage/0.1.0"
+    },
+    {
       "id": "initialBuild.page",
       "path": "public/initial-build.html",
       "mustIncludeSubstring": "CWP-P31-IB-2026-01"
@@ -693,6 +783,16 @@
       "mustIncludeSubstring": "P31 Delta · Proof-based hiring"
     },
     {
+      "id": "p31DeltaHiring.canonical",
+      "path": "public/delta-hiring/index.html",
+      "mustIncludeSubstring": "https://p31ca.org/delta-hiring/"
+    },
+    {
+      "id": "messagingHub.page",
+      "path": "public/messaging-hub.html",
+      "mustIncludeSubstring": "p31.messagingHub/0.1.0"
+    },
+    {
       "id": "publicSurface.manifest",
       "path": "public/p31-public-surface.json",
       "mustIncludeSubstring": "p31.publicSurface/1.0.0"
@@ -701,6 +801,11 @@
       "id": "publicSurface.ecosystemIntegration",
       "path": "public/p31-public-surface.json",
       "mustIncludeSubstring": "ecosystemIntegration"
+    },
+    {
+      "id": "publicSurface.messagingHub",
+      "path": "public/p31-public-surface.json",
+      "mustIncludeSubstring": "\"messagingHub\""
     },
     {
       "id": "cognitivePassport.generator",
@@ -788,6 +893,14 @@
     {
       "id": "tomography",
       "appUrl": "tomography.html"
+    },
+    {
+      "id": "quantum-clock",
+      "appUrl": "quantum-clock.html"
+    },
+    {
+      "id": "quantum-deck",
+      "appUrl": "quantum-deck.html"
     },
     {
       "id": "super-centaur",

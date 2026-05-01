@@ -1,13 +1,15 @@
 {
   "schema": "p31.publicSurface/1.0.0",
   "version": "1.0.0",
-  "updated": "2026-04-28",
+  "updated": "2026-04-30",
   "note": "Machine index of generic public deliverables on p31ca.org. Sync entity/contact copy with P31 home p31-constants.json.",
   "organization": {
     "legalName": "P31 Labs, Inc.",
     "ein": "42-1888158",
     "stateOfIncorporation": "GA",
-    "status501c3": "pending"
+    "status501c3": "application-filed",
+    "filedDate501c3": "2026-04-30",
+    "trackingId501c3": "281TLBGO"
   },
   "contact": {
     "primaryEmail": "will@p31ca.org",
@@ -31,6 +33,18 @@
     "registryId": "social-molecules",
     "note": "C.A.R.S. operator shell on the technical hub; live soup sim remains on bonding vertical; wire catalog p31.carsWire in bonding-soup repo"
   },
+  "quantumComposer": {
+    "path": "/quantum-composer.html",
+    "shortPath": "/composer",
+    "schemaAnchor": "p31.quantumComposerPage/0.1.0",
+    "note": "Web Audio instrument; LARMOR_HZ locked to p31-constants via verify:quantum-clock; module /lib/p31-quantum-composer.mjs"
+  },
+  "messagingHub": {
+    "path": "/messaging-hub.html",
+    "shortPaths": ["/messages", "/comms"],
+    "schemaAnchor": "p31.messagingHub/0.1.0",
+    "note": "Static index of hub messaging surfaces; no unified inbox; Phos handoff stays on kids/onboard."
+  },
   "sovereignLab": {
     "path": "/p31-sovereign-lab.html",
     "shortPath": "/lab",
@@ -43,6 +57,9 @@
   },
   "machineIndexes": {
     "creatorEconomy": "/creator-economy.json",
+    "contractRegistry": "/p31-contract-registry.json",
+    "contractBuilderPage": "/contract-builder.html",
+    "contractBuilderShort": "/contracts",
     "superCentaurPack": "/p31-super-centaur-pack.json",
     "welcomePackages": "/p31-welcome-packages.json",
     "liveFleetBundle": "/p31-live-fleet.json",

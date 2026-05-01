@@ -5,6 +5,7 @@
   "sources": [
     "p31-constants.json",
     "p31-ecosystem.json",
+    "p31-discord-bot-swarm.json",
     "andromeda/04_SOFTWARE/p31ca/public/p31-public-surface.json",
     "andromeda/04_SOFTWARE/p31ca/public/p31-integrations.json",
     "andromeda/04_SOFTWARE/p31ca/security/worker-allowlist.json"
@@ -38,11 +39,16 @@
     "publicMachineIndexes": {
       "publicSurface": "https://p31ca.org/p31-public-surface.json",
       "creatorEconomy": "https://p31ca.org/creator-economy.json",
+      "contractRegistry": "https://p31ca.org/p31-contract-registry.json",
       "meshConstants": "https://p31ca.org/p31-mesh-constants.json",
       "note": "Hub ships JSON contracts; schema p31.publicSurface/1.0.0"
     },
     "featuredPublicPaths": [
       { "path": "/demos", "note": "Demo labs index (static demos)" },
+      { "path": "/visuals", "note": "Mind-bending visual demos — K₄ mesh · alignment graph · Larmor pulse · glass box (p31.demosIndex)" },
+      { "path": "/glass-box", "note": "Public transparency terminal — synthetic CLI playbacks + verify pulse + promoted reports (p31.glassBox)" },
+      { "path": "/contracts", "note": "Contract builder UI + alignment-derived registry (p31.contractRegistry)" },
+      { "path": "/composer", "note": "Quantum composer — K₄ Web Audio partials on Larmor ladder (p31.quantumComposerPage)" },
       { "path": "/cars", "note": "Social Molecules · C.A.R.S. operator shell (boot, load, settings, field chat, edge ribbon)" },
       { "path": "/fleet", "note": "Live fleet map (sites + Workers)" },
       { "path": "/agents", "note": "Fleet agents room — each Worker · bot · Cortex sub-agent interactive + probes (/fleet-agents)" },
@@ -62,12 +68,16 @@
       "k4PersonalWorkerUrl": "https://k4-personal.trimtab-signal.workers.dev",
       "k4CageWorkerUrl": "https://k4-cage.trimtab-signal.workers.dev",
       "k4HubsWorkerUrl": "https://k4-hubs.trimtab-signal.workers.dev",
+      "k4AgentHubWorkerUrl": "https://k4-agent-hub.trimtab-signal.workers.dev",
       "agentHubWorkerUrl": "https://p31-agent-hub.trimtab-signal.workers.dev",
       "orchestratorWorkerUrl": "https://p31-orchestrator.trimtab-signal.workers.dev",
       "passkeyApiBasePath": "/api/passkey",
       "passkeySameOriginBase": "https://p31ca.org/api/passkey",
       "edgeLabWorkerUrl": "https://cf-edge-lab.trimtab-signal.workers.dev",
       "tetraHubWorkerUrl": "https://tetra-hub.trimtab-signal.workers.dev",
+      "geodesicRoomWorkerUrl": "https://geodesic-room.trimtab-signal.workers.dev",
+      "googleBridgeWorkerUrl": "https://p31-google-bridge.trimtab-signal.workers.dev",
+      "bondingRelayWorkerUrl": "https://bonding-relay.trimtab-signal.workers.dev",
       "remembranceWarmWhite": "#f5f0e8",
       "remembranceBereavementKvKey": "mesh_bereavement_until",
       "vertexStateRemembered": "remembered",
@@ -111,6 +121,14 @@
       "note": "Read-only K₄ trio aggregator; service-binds k4-cage, k4-personal, k4-hubs"
     },
     {
+      "id": "k4-agent-hub",
+      "workersDev": "https://k4-agent-hub.trimtab-signal.workers.dev",
+      "healthPaths": ["/v1/manifest", "/v1/forge/health"],
+      "constantsKey": "mesh.k4AgentHubWorkerUrl",
+      "deploy": "packages/k4-agent-hub (wrangler deploy)",
+      "note": "K₄ agent worker tetrahedron — Ed25519 dock/call/anchor-pact/federation/family-cage; schema p31.k4AgentHub/1.1.0"
+    },
+    {
       "id": "p31-agent-hub",
       "workersDev": "https://p31-agent-hub.trimtab-signal.workers.dev",
       "healthPaths": ["/api/health"],
@@ -137,8 +155,25 @@
     {
       "id": "geodesic-room",
       "workersDev": "https://geodesic-room.trimtab-signal.workers.dev",
+      "constantsKey": "mesh.geodesicRoomWorkerUrl",
       "deploy": "04_SOFTWARE/geodesic-room",
       "note": "DO v0.2; WS /api/geodesic/:id/ws; see GEODESIC-GAME-ENGINE-INTEGRATION.md"
+    },
+    {
+      "id": "p31-google-bridge",
+      "workersDev": "https://p31-google-bridge.trimtab-signal.workers.dev",
+      "healthPaths": ["/health"],
+      "constantsKey": "mesh.googleBridgeWorkerUrl",
+      "deploy": "04_SOFTWARE/p31-google-bridge",
+      "note": "Google OAuth + calendar.readonly; KV sessions"
+    },
+    {
+      "id": "bonding-relay",
+      "workersDev": "https://bonding-relay.trimtab-signal.workers.dev",
+      "healthPaths": ["/health"],
+      "constantsKey": "mesh.bondingRelayWorkerUrl",
+      "deploy": "04_SOFTWARE/bonding",
+      "note": "BONDING telemetry + rooms; not the vertical Pages front"
     },
     {
       "id": "cf-edge-lab",
@@ -190,5 +225,12 @@
   "wcd33Archive": {
     "deployPath": "wcd33-global-archive",
     "note": "Listed in p31-ecosystem deployables; URL not in constants — see package wrangler"
+  },
+  "discordBotSwarm": {
+    "schema": "p31.discordBotSwarm/1.0.0",
+    "summaryPath": "p31-discord-bot-swarm.json",
+    "codePath": "andromeda/04_SOFTWARE/discord/p31-bot",
+    "ecosystemDeployableId": "p31-discord-bot-swarm",
+    "note": "Command roster + registryFingerprint mirror the bot manifest; regenerate with npm run verify:discord-bot"
   }
 }

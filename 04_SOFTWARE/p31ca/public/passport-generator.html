@@ -17,8 +17,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content" />
   <meta name="description" content="Answer questions once; export a one-page summary for doctors, teachers, or tools. Free, no login, stays in your browser. AI may help organize what you type—it does not invent your story." />
   <meta name="theme-color" content="#0f1115" />
+  <meta name="color-scheme" content="dark light" />
+  <meta name="robots" content="index, follow" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-title" content="Cognitive Passport" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="P31 Cognitive Passport — answer once, share with anyone" />
+  <meta property="og:description" content="Free, no-login tool to write a one-page cognitive accommodation summary for doctors, teachers, agents, or tools. Your data stays in your browser." />
+  <meta property="og:site_name" content="P31 Labs" />
+  <meta property="og:locale" content="en_US" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="P31 Cognitive Passport" />
+  <meta name="twitter:description" content="Answer questions once; export a short summary for doctors, teachers, or tools. Free. No login. Stays in your browser." />
+  <link rel="canonical" href="https://p31ca.org/passport" />
   <link rel="manifest" href="/p31-mesh.webmanifest" crossorigin="anonymous" />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   <title>P31 Cognitive Passport — Generator (v1)</title>
@@ -31,97 +42,363 @@
   <link rel="stylesheet" href="/design-assets/starfield/p31-larmor-fields.css" />
   <link rel="stylesheet" href="/lib/p31-starfield.css" />
   <script src="lib/p31-subject-prefs.js"></script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "P31 Cognitive Passport",
+    "url": "https://p31ca.org/passport",
+    "applicationCategory": "HealthApplication",
+    "operatingSystem": "Any",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "browserRequirements": "Requires modern browser with Web Crypto support",
+    "description": "Answer questions once; export a one-page accommodation summary. Free. No login. Data stays in your browser.",
+    "publisher": { "@type": "Organization", "name": "P31 Labs", "url": "https://p31ca.org" }
+  }
+  </script>
   <style>
+    /* Cognitive Passport — public release shell.
+       Tokens + components from cognitive-passport/p31-style.css (auto-generated).
+       This stylesheet only adds the cp-* layout sugar that's specific to this page. */
     :root {
-      --bg: var(--p31-void);
-      --card: var(--p31-surface);
-      --border: var(--p31-glass-border);
-      --text: var(--p31-cloud);
-      --muted: var(--p31-muted);
-      --accent: var(--p31-cyan);
-      --alive: var(--p31-teal, #25897d);
-      --warn: #f59e0b;
-      --dur: 250ms;
+      --cp-accent: var(--p31-cyan);
+      --cp-shell-max: 1180px;
+      --cp-rail: var(--p31-teal);
     }
     * { box-sizing: border-box; }
     body {
-      margin: 0; min-height: 100vh; font-family: var(--p31-font-sans);
-      background-color: var(--bg);
-      background-image:
-        linear-gradient(to right, rgba(255,255,255,0.022) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(255,255,255,0.022) 1px, transparent 1px);
-      background-size: 40px 40px;
-      background-position: center top;
-      color: var(--text);
-      line-height: 1.55;
-      transition: background-color var(--dur) ease, color var(--dur) ease;
+      margin: 0;
+      min-height: 100dvh;
+      font-family: var(--p31-font-sans);
+      background: var(--p31-void);
+      color: var(--p31-cloud);
+      line-height: var(--p31-leading-normal);
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
     }
     body::before {
       content: '';
       pointer-events: none;
       position: fixed;
       top: 0; left: 0;
-      width: min(800px, 100vw);
-      height: min(800px, 100vh);
-      background: radial-gradient(circle at top left, rgba(77, 184, 168, 0.1), transparent 42%);
+      width: min(900px, 100vw);
+      height: min(900px, 100vh);
+      background:
+        radial-gradient(circle at 8% 0%, rgba(77, 184, 168, 0.10), transparent 45%),
+        radial-gradient(circle at 100% 100%, rgba(139, 124, 201, 0.07), transparent 50%);
       z-index: 0;
+      transition: opacity var(--p31-q-motion-enter, 250ms) ease;
     }
-    .p31-shell { position: relative; z-index: 1; }
-    a { color: var(--accent); }
-    h1 { font-size: clamp(1.35rem, 2.5vw + 0.85rem, 1.65rem); font-weight: 700; margin: 0 0 0.35rem; letter-spacing: -0.02em; }
-    .sub { color: var(--muted); font-size: 0.95rem; max-width: 52ch; line-height: 1.55; }
-    .sub-muted { font-size: 0.88rem; color: color-mix(in srgb, var(--muted) 92%, transparent); margin-top: 0.5rem; max-width: 54ch; }
-    .grid { display: grid; gap: 1rem; }
-    @media (min-width: 900px) { .grid-2 { grid-template-columns: 1fr 1fr; } }
-    .card {
-      background: color-mix(in srgb, var(--p31-surface) 88%, transparent);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid color-mix(in srgb, var(--p31-cloud) 6%, transparent);
-      border-top: 1px solid color-mix(in srgb, var(--p31-cloud) 10%, transparent);
-      border-radius: 12px; padding: 1.25rem;
-      transition: border-color var(--dur) ease, box-shadow var(--dur) ease;
+    .p31-shell {
+      position: relative;
+      z-index: 1;
+      max-width: var(--cp-shell-max);
+      margin: 0 auto;
+      padding: clamp(1rem, 3vw, 2rem) clamp(1rem, 3vw, 1.5rem) calc(var(--p31-space-24) + 3rem);
     }
-    .card:hover { border-color: color-mix(in srgb, var(--p31-teal) 25%, transparent); }
-    label { display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.14em; color: var(--muted); margin-bottom: 0.35rem; font-family: var(--p31-font-mono); }
-    label.plain-case { text-transform: none; letter-spacing: normal; font-size: 0.9rem; color: var(--text); }
+    a { color: var(--cp-accent); text-decoration-thickness: 1px; }
+
+    /* Skip link */
+    .cp-skip {
+      position: absolute;
+      left: -999px;
+      top: 0;
+      padding: var(--p31-space-2) var(--p31-space-4);
+      background: var(--p31-teal);
+      color: var(--p31-void);
+      border-radius: var(--p31-shape-sm);
+      font-weight: 600;
+      z-index: var(--p31-z-modal, 300);
+    }
+    .cp-skip:focus {
+      left: var(--p31-space-3);
+      top: var(--p31-space-3);
+    }
+
+    /* Hero */
+    .cp-hero {
+      margin-bottom: var(--p31-space-6);
+    }
+    .cp-hero h1 {
+      font-size: clamp(1.55rem, 2.5vw + 0.95rem, 2rem);
+      font-weight: 700;
+      margin: 0 0 var(--p31-space-2) 0;
+      letter-spacing: var(--p31-tracking-tight);
+      color: var(--p31-cloud);
+    }
+    .cp-hero .p31-host-mind {
+      margin: 0 0 var(--p31-space-3) 0;
+      color: var(--p31-muted);
+      font-size: var(--p31-text-sm);
+    }
+    .cp-hero .sub {
+      max-width: 56ch;
+      margin: 0 0 var(--p31-space-3) 0;
+      color: var(--p31-cloud);
+      font-size: var(--p31-text-md);
+      line-height: var(--p31-leading-normal);
+    }
+    .cp-hero .sub-muted {
+      max-width: 58ch;
+      color: color-mix(in srgb, var(--p31-cloud) 78%, var(--p31-muted));
+      font-size: var(--p31-text-sm);
+      line-height: var(--p31-leading-normal);
+      margin: 0;
+    }
+
+    .cp-trust {
+      list-style: none;
+      padding: 0;
+      margin: var(--p31-space-5) 0 var(--p31-space-3) 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--p31-space-2);
+    }
+    .cp-trust .p31-q-chip {
+      pointer-events: none;
+      cursor: default;
+      color: var(--p31-cloud);
+    }
+    .cp-trust .p31-q-chip::before {
+      content: "";
+      display: inline-block;
+      inline-size: 0.4rem;
+      block-size: 0.4rem;
+      border-radius: 999px;
+      background: var(--p31-tone-phosphorus-3);
+      margin-inline-end: 0.4rem;
+    }
+
+    .cp-steps {
+      list-style: none;
+      counter-reset: cp-step;
+      padding: 0;
+      margin: var(--p31-space-3) 0 0 0;
+      display: grid;
+      gap: var(--p31-space-3);
+      grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+    }
+    .cp-steps li {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--p31-space-3);
+      padding: var(--p31-space-3) var(--p31-space-4);
+      background: var(--p31-tone-teal-1);
+      border: 1px solid var(--p31-border-subtle);
+      border-radius: var(--p31-shape-md);
+      font-size: var(--p31-text-sm);
+      color: var(--p31-cloud);
+    }
+    .cp-steps__num {
+      flex: 0 0 auto;
+      inline-size: 1.6rem;
+      block-size: 1.6rem;
+      border-radius: var(--p31-shape-full);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--p31-teal);
+      color: var(--p31-void);
+      font-family: var(--p31-font-mono);
+      font-weight: 700;
+      font-size: var(--p31-text-xs);
+    }
+
+    /* Audience picker — composes p31-q-chip with audience-card so existing JS keeps working */
+    .audience-vault { margin-bottom: var(--p31-space-5); }
+    .vault-lede {
+      font-family: "Playfair Display", Georgia, "Times New Roman", serif;
+      font-style: italic;
+      font-size: clamp(1.2rem, 2.2vw + 0.75rem, 1.55rem);
+      color: color-mix(in srgb, var(--p31-cloud) 94%, var(--p31-muted));
+      margin: 0 0 var(--p31-space-2) 0;
+      max-width: 36ch;
+      line-height: 1.3;
+      letter-spacing: -0.01em;
+    }
+    .audience-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: var(--p31-space-3);
+      margin-top: var(--p31-space-4);
+    }
+    .audience-card {
+      /* base p31-q-chip filled in by p31-style.css; these properties layer on top */
+      block-size: auto;
+      min-block-size: 3.6rem;
+      padding: var(--p31-space-3) var(--p31-space-4);
+      align-items: flex-start;
+      flex-direction: column;
+      gap: var(--p31-space-1);
+      text-align: left;
+      line-height: 1.25;
+      border-radius: var(--p31-shape-md);
+    }
+    .audience-card[aria-pressed="true"],
+    .audience-card.audience-card--on {
+      background: var(--p31-tone-teal-2);
+      border-color: var(--p31-teal);
+    }
+    .audience-card.audience-card--locked,
+    .audience-card:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+    .audience-card__title {
+      font-size: var(--p31-text-sm);
+      font-weight: 600;
+      color: var(--p31-cloud);
+    }
+    .audience-card__id {
+      font-size: var(--p31-text-xs);
+      font-family: var(--p31-font-mono);
+      color: var(--p31-muted);
+      letter-spacing: 0.02em;
+    }
+
+    /* Two-column flow */
+    .cp-grid {
+      display: grid;
+      gap: var(--p31-space-5);
+      grid-template-columns: 1fr;
+    }
+    @media (min-width: 1024px) {
+      .cp-grid { grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); }
+    }
+
+    .cp-fill h2,
+    .cp-export h2 {
+      margin: 0 0 var(--p31-space-3) 0;
+    }
+    .cp-progress-wrap {
+      display: flex;
+      align-items: center;
+      gap: var(--p31-space-3);
+      margin: 0 0 var(--p31-space-5) 0;
+      font-family: var(--p31-font-mono);
+      font-size: var(--p31-text-xs);
+      color: var(--p31-muted);
+    }
+    .cp-progress {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 100%;
+      max-width: 16rem;
+      height: 6px;
+      border: none;
+      border-radius: var(--p31-shape-full);
+      background: var(--p31-surface2);
+      overflow: hidden;
+    }
+    .cp-progress::-webkit-progress-bar { background: var(--p31-surface2); border-radius: var(--p31-shape-full); }
+    .cp-progress::-webkit-progress-value {
+      background: var(--p31-teal);
+      border-radius: var(--p31-shape-full);
+      transition: width var(--p31-q-motion-within, 150ms) var(--p31-ease-standard);
+    }
+    .cp-progress::-moz-progress-bar { background: var(--p31-teal); border-radius: var(--p31-shape-full); }
+
+    /* Form sections — fieldset reset + alive rail */
+    .passport-section {
+      border: none;
+      border-left: 3px solid transparent;
+      padding: 0 0 0 var(--p31-space-3);
+      margin: 0 0 var(--p31-space-5) 0;
+      transition: border-color var(--p31-q-motion-within, 150ms) ease;
+    }
+    .passport-section legend {
+      padding: 0;
+      margin: 0 0 var(--p31-space-2) 0;
+      font-family: var(--p31-font-sans);
+      font-weight: 600;
+    }
+    .passport-section legend .cp-step-num {
+      display: inline-block;
+      font-family: var(--p31-font-mono);
+      font-size: var(--p31-text-xs);
+      letter-spacing: 0.08em;
+      color: var(--p31-muted);
+      margin-right: var(--p31-space-2);
+    }
+    .passport-section.passport-section--alive {
+      border-left-color: var(--cp-rail);
+    }
+
+    .row { margin-bottom: var(--p31-space-4); }
+    .row:last-child { margin-bottom: 0; }
+
+    label {
+      display: block;
+      font-size: var(--p31-text-xs);
+      text-transform: uppercase;
+      letter-spacing: var(--p31-tracking-caps);
+      color: var(--p31-muted);
+      margin-bottom: var(--p31-space-2);
+      font-family: var(--p31-font-mono);
+    }
+    label.plain-case {
+      text-transform: none;
+      letter-spacing: normal;
+      font-size: var(--p31-text-sm);
+      color: var(--p31-cloud);
+      font-family: var(--p31-font-sans);
+    }
     input, select, textarea {
       width: 100%;
-      padding: 0.5rem 0.65rem calc(0.5rem + 1px);
-      border-radius: 8px;
-      border: 1px solid var(--border);
+      padding: 0.6rem 0.75rem calc(0.6rem + 1px);
+      border-radius: var(--p31-shape-sm);
+      border: 1px solid var(--p31-border-subtle);
       border-bottom: 2px solid color-mix(in srgb, var(--p31-teal) 58%, transparent);
       background: var(--p31-surface2);
-      color: var(--text);
-      font-size: 0.9rem;
-      transition: border-color 0.18s ease, border-bottom-color 0.18s ease, box-shadow 0.18s ease;
+      color: var(--p31-cloud);
+      font-size: var(--p31-text-sm);
+      font-family: var(--p31-font-sans);
+      transition: border-color var(--p31-q-motion-within, 150ms) ease, box-shadow var(--p31-q-motion-within, 150ms) ease;
     }
     input:focus-visible,
     select:focus-visible,
     textarea:focus-visible {
       outline: none;
-      border-bottom-color: var(--p31-cyan, #4db8a8);
+      border-bottom-color: var(--p31-cyan);
       box-shadow: 0 0 0 2px color-mix(in srgb, var(--p31-cyan) 22%, transparent);
     }
-    textarea { min-height: 12rem; font-family: var(--p31-font-mono), ui-monospace, monospace; font-size: 0.8rem; }
-    .row { margin-bottom: 0.9rem; }
-    /** Mobile-first: touch targets + aligned checkbox column (avoids wrap glitches on narrow viewports) */
+    textarea {
+      min-height: 12rem;
+      font-family: var(--p31-font-mono), ui-monospace, monospace;
+      font-size: var(--p31-text-sm);
+    }
+    textarea[readonly] {
+      background: var(--p31-elev-1-tone, var(--p31-surface2));
+    }
+    textarea[readonly]:placeholder-shown {
+      color: var(--p31-muted);
+    }
+
+    /* Grid for the comfort selects */
+    .cp-comfort-grid {
+      display: grid;
+      gap: var(--p31-space-3);
+      grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+    }
+
+    /* Drains list */
     #constraints.checks {
       display: flex;
       flex-direction: column;
-      gap: 0.25rem;
+      gap: var(--p31-space-1);
     }
     .checks label {
       text-transform: none;
       letter-spacing: 0;
       display: flex;
       align-items: flex-start;
-      gap: 0.75rem;
+      gap: var(--p31-space-3);
       min-height: 3rem;
       padding: 0.35rem 0;
       font-size: clamp(0.875rem, 2.8vw, 0.95rem);
-      color: var(--text);
+      color: var(--p31-cloud);
       line-height: 1.45;
+      font-family: var(--p31-font-sans);
     }
     .checks input[type="checkbox"] {
       width: 1.35rem;
@@ -129,158 +406,154 @@
       min-width: 1.35rem;
       margin: 0.15rem 0 0;
       flex-shrink: 0;
-      accent-color: var(--p31-teal, #25897d);
+      accent-color: var(--p31-teal);
     }
-    .btn {
-      display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem;
-      padding: 0.55rem 1rem; border-radius: 8px; border: 1px solid var(--p31-coral); cursor: pointer;
-      font-family: var(--p31-font-mono);
-      font-weight: 600; font-size: 0.8rem; letter-spacing: 0.04em;
-      background: var(--p31-coral); color: var(--p31-void);
-      transition: background var(--dur) ease, color var(--dur) ease, filter var(--dur) ease;
+
+    /* Action bars */
+    .cp-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--p31-space-2);
+      margin-top: var(--p31-space-5);
     }
-    .btn:hover { background: transparent; color: var(--p31-coral); box-shadow: 0 0 14px rgba(204, 98, 71, 0.18); filter: none; }
-    .btn-ghost { background: transparent; color: var(--text); border: 1px solid var(--border); }
-    .btn-bar { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.75rem; }
-    .tabs { display: flex; gap: 0.25rem; margin-bottom: 0.5rem; flex-wrap: wrap; }
-    .tab {
-      padding: 0.35rem 0.75rem; border-radius: 6px; border: 1px solid var(--border);
-      background: transparent; color: var(--muted); cursor: pointer; font-size: 0.8rem;
+
+    /* Tabs / output panels */
+    .cp-tabs {
+      display: flex;
+      gap: var(--p31-space-2);
+      margin: var(--p31-space-2) 0 var(--p31-space-3) 0;
+      flex-wrap: wrap;
     }
-    .tab.on { color: var(--text); border-color: var(--accent); background: rgba(45,212,191,0.1); }
     .out-panel { display: none; }
     .out-panel.on { display: block; }
-    footer { margin-top: 2rem; font-size: 0.8rem; color: var(--muted); line-height: 1.55; max-width: 56ch; }
-    footer a { white-space: nowrap; }
 
-    /* Gray Rock → Alive: section rails */
-    .passport-section {
-      border-left: 3px solid transparent;
-      padding-left: 0.65rem;
-      margin-left: -0.15rem;
-      margin-bottom: 1rem;
-      transition: border-color var(--dur) ease;
-    }
-    .passport-section.passport-section--alive {
-      border-left-color: var(--alive);
-    }
-    .hint-try {
-      font-size: 0.88rem;
-      color: color-mix(in srgb, var(--text) 88%, var(--muted));
-      margin: 0 0 0.65rem;
-      line-height: 1.45;
+    .export-note {
+      font-size: var(--p31-text-xs);
+      color: var(--p31-muted);
+      margin-top: var(--p31-space-3);
+      max-width: 46ch;
     }
     .micro {
-      font-size: 0.78rem;
-      color: var(--muted);
-      margin: 0.25rem 0 0;
+      font-size: var(--p31-text-xs);
+      color: var(--p31-muted);
+      margin: var(--p31-space-2) 0 0;
       line-height: 1.45;
     }
-    .micro a { color: var(--accent); }
-
-    @keyframes phosphorRing {
-      0%, 100% { box-shadow: none; }
-      35% { box-shadow: 0 0 0 3px color-mix(in srgb, var(--p31-phosphorus, #3ba372) 45%, transparent); }
-    }
-    .btn.flash-confirm {
-      animation: phosphorRing 0.55s ease-out;
-    }
-    .export-note {
-      font-size: 0.78rem;
-      color: var(--muted);
-      margin-top: 0.65rem;
-      max-width: 42ch;
-    }
-    .audience-vault { margin-bottom: 0.25rem; }
-    .vault-lede {
-      font-family: "Playfair Display", Georgia, "Times New Roman", serif;
-      font-style: italic;
-      font-size: clamp(1.2rem, 2.2vw + 0.75rem, 1.55rem);
-      color: color-mix(in srgb, var(--text) 94%, var(--muted));
-      margin: 0 0 0.85rem;
-      max-width: 36ch;
-      line-height: 1.3;
-      letter-spacing: -0.01em;
-    }
-    .audience-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
-      gap: 0.65rem;
-    }
-    .audience-card {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 0.2rem;
-      text-align: left;
-      padding: 0.65rem 0.75rem;
-      border-radius: 10px;
-      border: 1px solid var(--border);
-      border-left: 3px solid color-mix(in srgb, var(--p31-teal) 45%, transparent);
-      background: color-mix(in srgb, var(--p31-surface2) 70%, transparent);
-      color: var(--text);
-      font-family: var(--p31-font-sans);
-      cursor: pointer;
-      transition: border-color var(--dur) ease, box-shadow var(--dur) ease, background var(--dur) ease;
-    }
-    .audience-card:hover:not(:disabled) {
-      border-color: color-mix(in srgb, var(--p31-teal) 35%, transparent);
-      box-shadow: 0 0 0 1px color-mix(in srgb, var(--p31-teal) 18%, transparent);
-    }
-    .audience-card--on {
-      border-left-color: var(--alive);
-      background: color-mix(in srgb, var(--p31-teal) 12%, var(--p31-surface2));
-    }
-    .audience-card--locked,
-    .audience-card:disabled {
-      opacity: 0.52;
-      cursor: not-allowed;
-      border-left-color: color-mix(in srgb, var(--muted) 40%, transparent);
-    }
-    .audience-card__title { font-size: 0.88rem; font-weight: 600; line-height: 1.25; }
-    .audience-card__id {
-      font-size: 0.72rem;
-      font-family: var(--p31-font-mono);
-      color: var(--muted);
-      letter-spacing: 0.02em;
+    .micro a { color: var(--cp-accent); }
+    .hint-try {
+      font-size: var(--p31-text-sm);
+      color: color-mix(in srgb, var(--p31-cloud) 88%, var(--p31-muted));
+      margin: 0 0 var(--p31-space-3);
+      line-height: 1.45;
     }
     #genesis-readout {
-      font-family: var(--p31-font-mono), ui-monospace, monospace;
-      font-size: 0.72rem;
-      color: var(--muted);
-      margin: 0.5rem 0 0;
+      font-family: var(--p31-font-mono);
+      font-size: var(--p31-text-xs);
+      color: var(--p31-muted);
+      margin: var(--p31-space-3) 0 0;
       word-break: break-all;
       line-height: 1.45;
     }
-    #export-status { min-height: 1.25em; margin-top: 0.35rem; font-size: 0.78rem; color: var(--alive); }
-    /* Gray Rock first paint (design doctrine §1, §7) — chroma + rail after operator reaches */
-    html.p31-gray-rock body::before {
-      opacity: 0.035;
+    #export-status {
+      min-height: 1.25em;
+      margin-top: var(--p31-space-2);
+      font-size: var(--p31-text-xs);
+      color: var(--p31-phosphorus, #3ba372);
     }
-    html.p31-gray-rock .audience-card {
-      border-left-color: color-mix(in srgb, var(--p31-cloud) 7%, transparent);
-      background: color-mix(in srgb, var(--p31-surface2) 55%, transparent);
+
+    footer {
+      margin-top: var(--p31-space-12);
+      font-size: var(--p31-text-sm);
+      color: var(--p31-muted);
+      line-height: var(--p31-leading-normal);
+      max-width: 64ch;
     }
-    html.p31-gray-rock .audience-card--on {
-      border-left-color: color-mix(in srgb, var(--p31-cloud) 10%, transparent);
-      background: color-mix(in srgb, var(--p31-surface2) 60%, transparent);
+    footer a { white-space: nowrap; }
+
+    /* Mobile FAB — hidden by default; JS reveals on small viewports */
+    .cp-fab {
+      position: fixed;
+      right: max(var(--p31-space-4), env(safe-area-inset-right, 0px));
+      bottom: max(calc(var(--p31-space-4) + 3rem), env(safe-area-inset-bottom, 0px));
+      z-index: var(--p31-z-sticky, 100);
+    }
+    .cp-fab[hidden] { display: none; }
+
+    /* Confirm flash */
+    @keyframes phosphorRing {
+      0%, 100% { box-shadow: var(--p31-elev-1-shadow, none); }
+      35% { box-shadow: 0 0 0 3px color-mix(in srgb, var(--p31-phosphorus, #3ba372) 45%, transparent), var(--p31-elev-2-shadow, none); }
+    }
+    .p31-q-button.flash-confirm,
+    .p31-q-fab.flash-confirm {
+      animation: phosphorRing 0.55s ease-out;
+    }
+
+    /* Gray Rock first paint — chroma & rails dampen until operator interacts */
+    html.p31-gray-rock body::before { opacity: 0.35; }
+    html.p31-gray-rock .audience-card[aria-pressed="true"],
+    html.p31-gray-rock .audience-card.audience-card--on {
+      background: color-mix(in srgb, var(--p31-surface2) 70%, transparent);
+      border-color: var(--p31-border-subtle);
     }
     html.p31-gray-rock .passport-section--alive {
       border-left-color: color-mix(in srgb, var(--p31-cloud) 12%, transparent);
     }
+    html.p31-gray-rock .cp-steps li {
+      background: var(--p31-surface);
+    }
+    html.p31-gray-rock .cp-steps__num {
+      background: color-mix(in srgb, var(--p31-cloud) 18%, var(--p31-surface2));
+      color: var(--p31-cloud);
+    }
+
     @media (prefers-reduced-motion: reduce) {
-      .btn.flash-confirm { animation: none; }
+      .p31-q-button.flash-confirm,
+      .p31-q-fab.flash-confirm { animation: none; }
       .passport-section { transition: none; }
-      .audience-card { transition: none; }
+      .cp-progress::-webkit-progress-value { transition: none; }
+      body::before { transition: none; }
+    }
+
+    /* Print — hide chrome, render export Markdown panel cleanly */
+    @media print {
+      body::before,
+      #passport-starfield-wrap,
+      .cp-skip,
+      .cp-trust,
+      .cp-steps,
+      .audience-vault,
+      .cp-actions,
+      .cp-fab,
+      .p31-return-ribbon,
+      .p31-mission-trio,
+      footer { display: none !important; }
+      body { background: white; color: black; }
+      .p31-q-card { box-shadow: none; border: 1px solid #ccc; background: white; color: black; }
+      .cp-hero h1 { color: black; }
+      .out-panel,
+      .out-panel textarea {
+        display: block !important;
+        width: 100% !important;
+        white-space: pre-wrap;
+        background: white !important;
+        color: black !important;
+        border: none;
+        font-size: 11pt;
+      }
+      #out-md { display: block !important; }
     }
   </style>
 </head>
-<body class="p31-mesh-m-first p31-responsive-surface">
+<body class="p31-mesh-m-first p31-responsive-surface p31-has-return-ribbon">
+  <a class="cp-skip" href="#fill">Skip to passport form</a>
+
   <div id="passport-starfield-wrap" aria-hidden="true" style="position:fixed;inset:0;z-index:0;pointer-events:none">
     <canvas id="passport-starfield" class="p31-starfield-canvas" style="display:block;width:100%;height:100%;opacity:0.5"></canvas>
   </div>
-  <div class="p31-shell" style="--p31-shell-max: 1100px; --p31-shell-pad: 1.5rem">
-    <header style="margin-bottom: 1.35rem;">
+
+  <div class="p31-shell">
+    <header class="cp-hero p31-q-card" data-p31-tone="teal">
       <h1>Cognitive Passport</h1>
       <p class="p31-host-mind">Host mind: <strong>Operator · Parent</strong> — accommodation slice of the same night sky.</p>
       <p class="sub">
@@ -289,59 +562,78 @@
       <p class="sub-muted">
         If this tool uses AI to tidy wording or layout, it is organizing what <em>you</em> enter—not writing your history for you. Change anything that does not sound like you.
       </p>
+
+      <ul class="cp-trust" aria-label="What this tool is and isn't">
+        <li class="p31-q-chip p31-q-chip--assist" aria-label="Free to use">Free</li>
+        <li class="p31-q-chip p31-q-chip--assist" aria-label="No account required">No login</li>
+        <li class="p31-q-chip p31-q-chip--assist" aria-label="Data stays in your browser">Stays in your browser</li>
+        <li class="p31-q-chip p31-q-chip--assist" aria-label="Open source">Open source</li>
+      </ul>
+
+      <ol class="cp-steps" aria-label="How it works">
+        <li><span class="cp-steps__num" aria-hidden="true">1</span><span>Answer a few questions about how you think and communicate.</span></li>
+        <li><span class="cp-steps__num" aria-hidden="true">2</span><span>A short summary assembles itself as you type.</span></li>
+        <li><span class="cp-steps__num" aria-hidden="true">3</span><span>Copy or download what you need — Markdown, JSON, or plain text.</span></li>
+      </ol>
     </header>
 
-    <div class="grid grid-2">
-      <section class="card audience-vault" style="grid-column: 1 / -1" aria-labelledby="vault-audience-heading">
-        <p id="vault-audience-heading" class="vault-lede">Who are you talking to?</p>
-        <p class="micro" style="margin: -0.35rem 0 1rem;">
-          One building, different doors — labels match the locked audience matrix (<a href="https://github.com/p31labs/bonding-soup/blob/main/docs/COGNITIVE-PASSPORT-AUDIENCE-MATRIX.md" target="_blank" rel="noopener noreferrer">v1.0.0</a>).
-        </p>
-        <input type="hidden" id="audienceProfile" value="cursor-agent" autocomplete="off" />
-        <div class="audience-grid" id="vault-audience-group" role="group" aria-label="Export audience profile">
-          <button type="button" class="audience-card audience-card--on" data-audience="cursor-agent" aria-pressed="true">
-            <span class="audience-card__title">Coding agent</span>
-            <span class="audience-card__id">cursor-agent</span>
-          </button>
-          <button type="button" class="audience-card" data-audience="claude-session" aria-pressed="false">
-            <span class="audience-card__title">Long Claude session</span>
-            <span class="audience-card__id">claude-session</span>
-          </button>
-          <button type="button" class="audience-card" data-audience="clinician" aria-pressed="false">
-            <span class="audience-card__title">Clinician</span>
-            <span class="audience-card__id">clinician</span>
-          </button>
-          <button type="button" class="audience-card" data-audience="ssa" aria-pressed="false">
-            <span class="audience-card__title">SSA examiner</span>
-            <span class="audience-card__id">ssa</span>
-          </button>
-          <button type="button" class="audience-card" data-audience="court" aria-pressed="false">
-            <span class="audience-card__title">Court-facing</span>
-            <span class="audience-card__id">court</span>
-          </button>
-          <button type="button" class="audience-card" data-audience="ada-support" aria-pressed="false">
-            <span class="audience-card__title">ADA support</span>
-            <span class="audience-card__id">ada-support</span>
-          </button>
-          <button type="button" class="audience-card" data-audience="beta" aria-pressed="false">
-            <span class="audience-card__title">Beta tester</span>
-            <span class="audience-card__id">beta</span>
-          </button>
-          <button type="button" class="audience-card audience-card--locked" data-audience="child" disabled title="Activates when S.J. or W.J. holds a mesh-scoped device identity (see matrix row 8).">
-            <span class="audience-card__title">S.J. / W.J. slice</span>
-            <span class="audience-card__id">child — gated</span>
-          </button>
-          <div class="audience-card audience-card--locked" role="note" aria-label="More audience profiles will ship as the mesh grows.">
-            <span class="audience-card__title">More profiles</span>
-            <span class="audience-card__id">as the mesh grows</span>
-          </div>
+    <section class="p31-q-card audience-vault" aria-labelledby="vault-audience-heading" data-p31-tone="lavender">
+      <p id="vault-audience-heading" class="vault-lede">Who are you talking to?</p>
+      <p class="micro">
+        One building, different doors — labels match the locked audience matrix (<a href="https://github.com/p31labs/bonding-soup/blob/main/docs/COGNITIVE-PASSPORT-AUDIENCE-MATRIX.md" target="_blank" rel="noopener noreferrer">v1.0.0</a>).
+      </p>
+      <input type="hidden" id="audienceProfile" value="cursor-agent" autocomplete="off" />
+      <div class="audience-grid" id="vault-audience-group" role="group" aria-label="Export audience profile">
+        <button type="button" class="p31-q-chip p31-q-chip--filter audience-card audience-card--on" data-audience="cursor-agent" aria-pressed="true">
+          <span class="audience-card__title">Coding agent</span>
+          <span class="audience-card__id">cursor-agent</span>
+        </button>
+        <button type="button" class="p31-q-chip p31-q-chip--filter audience-card" data-audience="claude-session" aria-pressed="false">
+          <span class="audience-card__title">Long Claude session</span>
+          <span class="audience-card__id">claude-session</span>
+        </button>
+        <button type="button" class="p31-q-chip p31-q-chip--filter audience-card" data-audience="clinician" aria-pressed="false">
+          <span class="audience-card__title">Clinician</span>
+          <span class="audience-card__id">clinician</span>
+        </button>
+        <button type="button" class="p31-q-chip p31-q-chip--filter audience-card" data-audience="ssa" aria-pressed="false">
+          <span class="audience-card__title">SSA examiner</span>
+          <span class="audience-card__id">ssa</span>
+        </button>
+        <button type="button" class="p31-q-chip p31-q-chip--filter audience-card" data-audience="court" aria-pressed="false">
+          <span class="audience-card__title">Court-facing</span>
+          <span class="audience-card__id">court</span>
+        </button>
+        <button type="button" class="p31-q-chip p31-q-chip--filter audience-card" data-audience="ada-support" aria-pressed="false">
+          <span class="audience-card__title">ADA support</span>
+          <span class="audience-card__id">ada-support</span>
+        </button>
+        <button type="button" class="p31-q-chip p31-q-chip--filter audience-card" data-audience="beta" aria-pressed="false">
+          <span class="audience-card__title">Beta tester</span>
+          <span class="audience-card__id">beta</span>
+        </button>
+        <button type="button" class="p31-q-chip p31-q-chip--filter audience-card audience-card--locked" data-audience="child" disabled title="Activates when S.J. or W.J. holds a mesh-scoped device identity (see matrix row 8).">
+          <span class="audience-card__title">S.J. / W.J. slice</span>
+          <span class="audience-card__id">child — gated</span>
+        </button>
+        <div class="p31-q-chip audience-card audience-card--locked" role="note" aria-label="More audience profiles will ship as the mesh grows.">
+          <span class="audience-card__title">More profiles</span>
+          <span class="audience-card__id">as the mesh grows</span>
         </div>
-      </section>
+      </div>
+    </section>
 
-      <div class="card">
-        <h2 style="font-size: 1.05rem; margin: 0 0 1rem;">Fill in what feels right</h2>
+    <div class="cp-grid">
+      <section class="p31-q-card cp-fill" id="fill" aria-labelledby="cp-fill-heading">
+        <h2 class="p31-h2" id="cp-fill-heading">Fill in what feels right</h2>
 
-        <div class="passport-section" id="sec-think" data-section="think">
+        <div class="cp-progress-wrap" aria-live="polite">
+          <progress class="cp-progress" id="cp-progress" max="6" value="0"></progress>
+          <span id="cp-progress-label">0 of 6 sections complete</span>
+        </div>
+
+        <fieldset class="passport-section" id="sec-think" data-section="think">
+          <legend><span class="cp-step-num">1.</span> You</legend>
           <div class="row">
             <label for="displayName">Name or alias (optional)</label>
             <input type="text" id="displayName" placeholder="e.g. Alex — or leave blank" autocomplete="name" />
@@ -355,9 +647,10 @@
               <option value="Custom">Custom — describe in notes</option>
             </select>
           </div>
-        </div>
+        </fieldset>
 
-        <div class="passport-section" id="sec-comms" data-section="comms">
+        <fieldset class="passport-section" id="sec-comms" data-section="comms">
+          <legend><span class="cp-step-num">2.</span> Communication</legend>
           <div class="row">
             <label for="commStyle">How you communicate</label>
             <select id="commStyle">
@@ -366,14 +659,12 @@
               <option value="Sparse">Sparse — minimum words</option>
             </select>
           </div>
-        </div>
+        </fieldset>
 
-        <div class="passport-section" id="sec-comfort" data-section="comfort">
-          <p class="hint-try"><strong style="color: var(--text)">Try it now:</strong> Change a setting below and watch this page adapt.</p>
-          <p style="margin: 0 0 0.5rem; font-size: 0.7rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted)">
-            Screen comfort
-          </p>
-          <div class="grid" style="gap: 0.65rem">
+        <fieldset class="passport-section" id="sec-comfort" data-section="comfort">
+          <legend><span class="cp-step-num">3.</span> Screen comfort</legend>
+          <p class="hint-try"><strong style="color: var(--p31-cloud)">Try it now:</strong> Change a setting below and watch this page adapt.</p>
+          <div class="cp-comfort-grid">
             <div>
               <label for="prefContrast">Contrast</label>
               <select id="prefContrast">
@@ -407,9 +698,10 @@
               </select>
             </div>
           </div>
-        </div>
+        </fieldset>
 
-        <div class="passport-section" id="sec-energy" data-section="energy">
+        <fieldset class="passport-section" id="sec-energy" data-section="energy">
+          <legend><span class="cp-step-num">4.</span> Energy</legend>
           <div class="row">
             <label for="spoon">Energy right now</label>
             <select id="spoon">
@@ -422,19 +714,20 @@
               <a href="https://en.wikipedia.org/wiki/Spoon_theory" target="_blank" rel="noopener noreferrer">Learn more</a>
             </p>
           </div>
-        </div>
+        </fieldset>
 
-        <div class="passport-section" id="sec-drains" data-section="drains">
-          <p style="margin: 0 0 0.45rem; font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted)">What drains you</p>
+        <fieldset class="passport-section" id="sec-drains" data-section="drains">
+          <legend><span class="cp-step-num">5.</span> What drains you</legend>
           <div class="row checks" id="constraints">
             <label class="flex"><input type="checkbox" data-key="noMilitary" checked /> No military / naval / submarine metaphors</label>
             <label class="flex"><input type="checkbox" data-key="handwriting" checked /> Handwriting = highest fidelity when applicable</label>
             <label class="flex"><input type="checkbox" data-key="verbalLossy" checked /> Live speech is lossy vs writing — prefer text when it matters</label>
             <label class="flex"><input type="checkbox" data-key="actionOverChat" checked /> Prefer action over long explanation</label>
           </div>
-        </div>
+        </fieldset>
 
-        <div class="passport-section" id="sec-notes" data-section="notes">
+        <fieldset class="passport-section" id="sec-notes" data-section="notes">
+          <legend><span class="cp-step-num">6.</span> Notes &amp; optional contact</legend>
           <div class="row">
             <label for="customNotes">Notes for assistants (optional)</label>
             <textarea id="customNotes" class="p31-larmor-field" rows="3" placeholder="e.g. I process visually and need extra time on verbal-only calls; triggers include…"></textarea>
@@ -447,42 +740,42 @@
             <label for="orcid">ORCID (optional)</label>
             <input type="text" id="orcid" placeholder="0000-0000-0000-0000" />
           </div>
-        </div>
+        </fieldset>
 
-        <div class="btn-bar">
-          <button type="button" class="btn" id="btnGen">Update preview</button>
-          <button type="button" class="btn btn-ghost" id="btnSave">Save draft in this browser</button>
-          <button type="button" class="btn btn-ghost" id="btnLoad">Load draft</button>
+        <div class="cp-actions">
+          <button type="button" class="p31-q-button p31-q-button--filled" data-p31-tone="phosphorus" id="btnGen">Update preview</button>
+          <button type="button" class="p31-q-button p31-q-button--outlined" id="btnSave">Save draft in this browser</button>
+          <button type="button" class="p31-q-button p31-q-button--outlined" id="btnLoad">Load draft</button>
         </div>
-      </div>
+      </section>
 
-      <div class="card" id="output-card">
-        <h2 style="font-size: 1.05rem; margin: 0 0 0.5rem;">Export</h2>
-        <div class="tabs" id="tabs">
-          <button type="button" class="tab on" data-panel="md">Markdown</button>
-          <button type="button" class="tab" data-panel="json">JSON</button>
-          <button type="button" class="tab" data-panel="agent">Plain text</button>
+      <section class="p31-q-card cp-export" id="output-card" data-p31-tone="phosphorus" aria-labelledby="cp-export-heading">
+        <h2 class="p31-h2" id="cp-export-heading">Export</h2>
+        <div class="cp-tabs" id="tabs" role="tablist" aria-label="Export format">
+          <button type="button" class="p31-q-chip p31-q-chip--filter tab on" role="tab" aria-selected="true" aria-controls="out-md" data-panel="md">Markdown</button>
+          <button type="button" class="p31-q-chip p31-q-chip--filter tab" role="tab" aria-selected="false" aria-controls="out-json" data-panel="json">JSON</button>
+          <button type="button" class="p31-q-chip p31-q-chip--filter tab" role="tab" aria-selected="false" aria-controls="out-agent" data-panel="agent">Plain text</button>
         </div>
-        <div class="out-panel on" id="out-md">
-          <textarea id="outMd" readonly></textarea>
+        <div class="out-panel on" id="out-md" role="tabpanel">
+          <textarea id="outMd" readonly placeholder="Your Markdown summary appears here as you type. Use it for emails, intake forms, or sharing with new clinicians."></textarea>
         </div>
-        <div class="out-panel" id="out-json">
-          <textarea id="outJson" readonly></textarea>
+        <div class="out-panel" id="out-json" role="tabpanel">
+          <textarea id="outJson" readonly placeholder="JSON appears here — schema p31.cognitivePassport/1.0.0 with SHA-256 genesis."></textarea>
         </div>
-        <div class="out-panel" id="out-agent">
-          <textarea id="outAgent" readonly></textarea>
+        <div class="out-panel" id="out-agent" role="tabpanel">
+          <textarea id="outAgent" readonly placeholder="Plain-text agent block appears here — paste into ChatGPT custom instructions, Claude project rules, or any assistant."></textarea>
         </div>
-        <div class="btn-bar">
-          <button type="button" class="btn" id="cpyAgent">Copy for ChatGPT / Claude</button>
-          <button type="button" class="btn btn-ghost" id="cpyMd">Copy Markdown</button>
-          <button type="button" class="btn btn-ghost" id="cpyJson">Copy JSON</button>
-          <button type="button" class="btn btn-ghost" id="dlJson">Download JSON (.json)</button>
-          <button type="button" class="btn btn-ghost" id="dlMd">Download Markdown (.md)</button>
+        <div class="cp-actions">
+          <button type="button" class="p31-q-button p31-q-button--filled" data-p31-tone="phosphorus" id="cpyAgent">Copy for ChatGPT / Claude</button>
+          <button type="button" class="p31-q-button p31-q-button--outlined" id="cpyMd">Copy Markdown</button>
+          <button type="button" class="p31-q-button p31-q-button--outlined" id="cpyJson">Copy JSON</button>
+          <button type="button" class="p31-q-button p31-q-button--outlined" id="dlJson">Download JSON (.json)</button>
+          <button type="button" class="p31-q-button p31-q-button--outlined" id="dlMd">Download Markdown (.md)</button>
         </div>
         <p class="export-note">Your data never leaves your device unless you copy or download it yourself.</p>
         <p id="genesis-readout" aria-live="polite"></p>
         <p id="export-status" role="status" aria-live="polite"></p>
-      </div>
+      </section>
     </div>
 
     <footer>
@@ -491,10 +784,14 @@
       · <a href="https://ko-fi.com/trimtab69420" target="_blank" rel="noopener noreferrer">Ko-fi</a>
       · <a href="https://bonding.p31ca.org/soup" target="_blank" rel="noopener noreferrer">C.A.R.S.</a>
       · <a href="https://p31ca.org/lab">Sovereign Lab</a>
+      · <a href="https://p31ca.org/visuals">Visual demos</a>
+      · <a href="https://p31ca.org/glass-box">Glass box</a>
       · <a href="https://github.com/p31labs/bonding-soup/blob/main/docs/P31-DEPLOY-CANON.md" target="_blank" rel="noopener noreferrer" title="npm run connection">CONNECTION</a>
       · Full human document: <code>P31 COGNITIVE PASSPORT — v5.md</code> in the repo (not required for export).
     </footer>
   </div>
+
+  <button type="button" class="p31-q-fab cp-fab" id="cpFab" aria-label="Update preview" hidden>Update preview</button>
 
   <script>
     const STORAGE_KEY = "p31_passport_draft_v1";
@@ -581,6 +878,25 @@
           f.constraints.actionOverChat
       );
       sectionAlive("sec-notes", !!(f.customNotes || f.email || f.orcid));
+      refreshProgressMeter(f, rawName, diag);
+    }
+
+    function refreshProgressMeter(f, rawName, diag) {
+      // 6 sections; "complete" = the section has a non-default user signal.
+      const c = f.constraints;
+      const filled = [
+        rawName.length > 0 || diag === "Custom",
+        true, // commStyle always has a value
+        f.subjectPrefs && (f.subjectPrefs.contrast !== "standard" || f.subjectPrefs.density !== "comfortable" || f.subjectPrefs.motion !== "reduced" || f.subjectPrefs.temp !== "neutral"),
+        f.spoon !== "ok",
+        c.noMilitary || c.handwriting || c.verbalLossy || c.actionOverChat,
+        !!(f.customNotes || f.email || f.orcid),
+      ];
+      const count = filled.filter(Boolean).length;
+      const bar = document.getElementById("cp-progress");
+      const label = document.getElementById("cp-progress-label");
+      if (bar) bar.value = count;
+      if (label) label.textContent = `${count} of 6 sections complete`;
     }
 
     function getForm() {
@@ -853,7 +1169,11 @@
       const btn = e.target.closest(".tab");
       if (!btn) return;
       const panel = btn.dataset.panel;
-      document.querySelectorAll(".tab").forEach((b) => b.classList.toggle("on", b === btn));
+      document.querySelectorAll(".tab").forEach((b) => {
+        const on = b === btn;
+        b.classList.toggle("on", on);
+        b.setAttribute("aria-selected", on ? "true" : "false");
+      });
       document.querySelectorAll(".out-panel").forEach((p) => p.classList.remove("on"));
       document.getElementById("out-" + panel).classList.add("on");
     });
@@ -864,6 +1184,7 @@
         localStorage.setItem(STORAGE_KEY, JSON.stringify(getForm()));
         applySubjectPrefsToSite(readSubjectPrefs());
         flashConfirm(document.getElementById("btnSave"));
+        setExportStatus("Draft saved in this browser.");
       } catch (e) {
         alert("Could not save: " + e);
       }
@@ -875,6 +1196,7 @@
         setForm(JSON.parse(raw));
         void render();
         applySubjectPrefsToSite(readSubjectPrefs());
+        setExportStatus("Draft loaded.");
       } catch (e) {
         alert("Could not load: " + e);
       }
@@ -934,6 +1256,30 @@
         out.scrollIntoView({ block: "nearest" });
       }
     });
+
+    // Mobile FAB — visible on small viewports when the form is partially scrolled
+    (function setupFab() {
+      const fab = document.getElementById("cpFab");
+      const btnGen = document.getElementById("btnGen");
+      if (!fab || !btnGen) return;
+      const small = window.matchMedia("(max-width: 768px)");
+      function onScroll() {
+        if (!small.matches) {
+          fab.hidden = true;
+          return;
+        }
+        const rect = btnGen.getBoundingClientRect();
+        const offscreen = rect.bottom < 0 || rect.top > window.innerHeight;
+        fab.hidden = !offscreen;
+      }
+      fab.addEventListener("click", () => {
+        btnGen.click();
+        flashConfirm(fab);
+      });
+      window.addEventListener("scroll", onScroll, { passive: true });
+      window.addEventListener("resize", onScroll);
+      onScroll();
+    })();
 
     applyChildGateUi();
     try {

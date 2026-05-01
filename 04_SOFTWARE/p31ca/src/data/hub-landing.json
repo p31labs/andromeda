@@ -1,5 +1,5 @@
 {
-  "generated": "2026-04-30T06:32:42.067Z",
+  "generated": "2026-05-01T03:37:13.446Z",
   "meta": {
     "schema": "p31.hub-landing/1.0.0",
     "registry": "scripts/hub/registry.mjs",
@@ -154,7 +154,7 @@
     {
       "id": "p31-delta-hiring",
       "title": "P31 Delta hiring",
-      "status": "ALPHA",
+      "status": "BETA",
       "desc": "Proof-based roles · WCD work samples · portable p31.proofRecord",
       "tags": [
         "Vite 5",
@@ -529,6 +529,18 @@
       "url": "/canon-demo-about.html"
     },
     {
+      "id": "contract-builder",
+      "title": "Contract builder",
+      "status": "BETA",
+      "desc": "Alignment JSON · schema anchors · verify hints",
+      "tags": [
+        "p31.contractRegistry",
+        "p31-alignment.json",
+        "ephemeralization"
+      ],
+      "url": "/contract-builder-about.html"
+    },
+    {
       "id": "contact-locker",
       "title": "Contact Locker",
       "status": "CONCEPT",
@@ -761,6 +773,55 @@
         "Larmor Ring"
       ],
       "url": "/tomography-about.html"
+    },
+    {
+      "id": "quantum-clock",
+      "title": "QUANTUM CLOCK",
+      "status": "ALPHA",
+      "desc": "Grandfather Rhythm · Coherence (Pedagogy)",
+      "tags": [
+        "Static HTML",
+        "TRIM ↔ dome constants",
+        "Quantum clock events"
+      ],
+      "url": "/quantum-clock-about.html"
+    },
+    {
+      "id": "quantum-deck",
+      "title": "QUANTUM DECK",
+      "status": "ALPHA",
+      "desc": "Fair Shuffle · Suite Core",
+      "tags": [
+        "Web Crypto",
+        "@p31/quantum-deck",
+        "JSON save schema stub"
+      ],
+      "url": "/quantum-deck-about.html"
+    },
+    {
+      "id": "quantum-composer",
+      "title": "Quantum composer",
+      "status": "ALPHA",
+      "desc": "K₄ partials · Larmor ladder · TRIM beats",
+      "tags": [
+        "Web Audio",
+        "LARMOR_HZ ↔ p31-constants",
+        "TRIM via grandfather boot"
+      ],
+      "url": "/quantum-composer-about.html"
+    },
+    {
+      "id": "k4-agent-hubs",
+      "title": "K₄ Agent Hubs",
+      "status": "LIVE",
+      "desc": "Four hubs. One mesh.",
+      "tags": [
+        "Cloudflare Workers",
+        "Durable Objects",
+        "Ed25519",
+        "@p31/k4-agent-hub-client"
+      ],
+      "url": "/k4-agent-hubs-about.html"
     }
   ],
   "prototypes": [],

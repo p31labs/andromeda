@@ -1,5 +1,13 @@
 import express, { Request, Response } from "express";
+import rateLimit from "express-rate-limit";
 import { Client, TextChannel, EmbedBuilder } from "discord.js";
+
+const cortexRouteLimiter = rateLimit({
+  windowMs: 60_000,
+  max: Number(process.env.WEBHOOK_RATE_LIMIT_MAX || 120),
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 
 export interface CortexAlert {
   type:
@@ -20,8 +28,12 @@ export function setupCortexRoutes(
   app: express.Application,
   client: Client,
 ): void {
-  // Cortex pushes alerts here → routed to Discord channels
-  app.post("/webhook/cortex", async (req: Request, res: Response) => {
+  // Cortex pushes alerts here → routed to Discord channels (own JSON parser — stripe/github use raw body)
+  app.post(
+    "/webhook/cortex",
+    cortexRouteLimiter,
+    express.json({ limit: "256kb" }),
+    async (req: Request, res: Response) => {
     try {
       const alert = req.body as CortexAlert;
 
@@ -72,7 +84,8 @@ export function setupCortexRoutes(
       console.error("Cortex webhook error:", error);
       res.status(500).json({ error: "Internal server error" });
     }
-  });
+  },
+  );
 
   // Cortex status check
   app.get("/webhook/cortex/health", (_req: Request, res: Response) => {

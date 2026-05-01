@@ -61,4 +61,10 @@ test.describe("p31ca hub (built dist)", () => {
     const t = await res.text();
     expect(t).toContain("p31.buildRecord/0.1.0");
   });
+
+  test("messaging hub page and schema anchor", async ({ page }) => {
+    await page.goto("/messaging-hub.html", nav);
+    await expect(page.getByRole("heading", { level: 1, name: /Messaging hub/i })).toBeVisible();
+    await expect(page.getByText(/p31\.messagingHub\/0\.1\.0/)).toBeVisible();
+  });
 });

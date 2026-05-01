@@ -9,13 +9,20 @@
     "dev": "ts-node src/index.ts",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "inspect:bot": "npm run build && node -r ./scripts/bot-quiet.cjs dist/qa/cli.js inspect",
+    "sync:bot": "npm run build && node -r ./scripts/bot-quiet.cjs dist/qa/cli.js sync",
+    "simulate:bot": "npm run build && node -r ./scripts/bot-quiet.cjs dist/qa/cli.js simulate",
+    "suite:bot": "npm run build && node -r ./scripts/bot-quiet.cjs dist/qa/cli.js all",
+    "sync:bot:check": "npm run build && node -r ./scripts/bot-quiet.cjs dist/qa/cli.js sync-check",
+    "verify:bot": "npm run build && npm test && node -r ./scripts/bot-quiet.cjs dist/qa/cli.js all && node -r ./scripts/bot-quiet.cjs dist/qa/cli.js sync-check"
   },
   "dependencies": {
     "cors": "^2.8.5",
     "discord.js": "^14.14.1",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
+    "express-rate-limit": "^7.5.0",
     "node-fetch": "^2.7.0",
     "rss-parser": "^3.13.0"
   },

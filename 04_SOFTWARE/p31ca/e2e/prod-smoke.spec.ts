@@ -28,4 +28,20 @@ test.describe("production smoke (optional)", () => {
     const t = await res.text();
     expect(t).toContain("p31.buildRecord/0.1.0");
   });
+
+  test("Delta hiring short /hiring resolves and SPA shell renders", async ({ page }) => {
+    const res = await page.goto("/hiring", nav);
+    expect(res?.ok()).toBeTruthy();
+    await expect(page.getByRole("heading", { name: /P31 Delta · Hiring/i })).toBeVisible({
+      timeout: 25_000,
+    });
+  });
+
+  test("messaging hub short /messages resolves", async ({ page }) => {
+    const res = await page.goto("/messages", nav);
+    expect(res?.ok()).toBeTruthy();
+    await expect(page.getByRole("heading", { level: 1, name: /Messaging hub/i })).toBeVisible({
+      timeout: 20_000,
+    });
+  });
 });

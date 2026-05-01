@@ -91,7 +91,10 @@
           <section class="md:col-span-3 flex flex-col rounded-2xl border border-white/10 bg-surface shadow-ede overflow-hidden min-h-[22rem] md:min-h-[28rem]">
             <div class="px-4 py-3 border-b border-white/[0.07] bg-void/40 flex flex-wrap items-center justify-between gap-2">
               <h2 class="font-mono text-xs text-coral uppercase tracking-wider">Assistant</h2>
-              <span class="text-[0.65rem] font-mono text-cloud/40">k4-personal · POST /chat</span>
+              <div class="flex flex-col items-end gap-0.5 text-right">
+                <span class="text-[0.65rem] font-mono text-cloud/40">k4-personal · POST /chat</span>
+                <span id="chat-queue-hint" class="hidden text-[0.62rem] font-mono text-amber/85 max-w-[14rem] leading-tight" title="Messages saved on device until the worker answers"></span>
+              </div>
             </div>
             <div class="p-4 flex-1 flex flex-col min-h-0">
               <p id="assistant-lede" class="text-xs text-cloud/50 mb-3">Coding-oriented nudges — your thread and profile stay in <span class="text-cloud/70">your</span> object only.</p>
@@ -142,6 +145,7 @@
                 <a href="/cars" class="text-teal hover:underline pl-0.5">Social Molecules (C.A.R.S.) →</a>
                 <a href="/connect.html" class="text-teal hover:underline pl-0.5">The Mesh (K₄) →</a>
                 <a href="/geodesic.html" class="text-teal hover:underline pl-0.5">Geodesic builder →</a>
+                <a href="/messages" class="text-teal hover:underline pl-0.5">Messaging hub (all paths) →</a>
               </div>
               <div class="flex flex-col gap-1 text-sm mt-3 pt-3 border-t border-white/[0.06]">
                 <span class="font-mono text-[9px] uppercase tracking-wider text-cloud/35 mb-0.5">Foundry</span>
@@ -167,6 +171,8 @@
   const LS_ID = 'p31_subject_id';
   const LS_META = 'p31_onboard_meta';
   const LS_SOULSAFE = 'p31_mesh_soulsafe';
+  const LS_CHAT_QUEUE = 'p31_mesh_chat_queue';
+  const CHAT_QUEUE_MAX = 24;
 
   function agentBase() {
     const q = new URLSearchParams(location.search).get('agent');
@@ -490,6 +496,71 @@
     out.textContent = '';
   });
 
+  function readChatQueue() {
+    try {
+      const raw = localStorage.getItem(LS_CHAT_QUEUE);
+      const a = raw ? JSON.parse(raw) : [];
+      return Array.isArray(a) ? a : [];
+    } catch (_) {
+      return [];
+    }
+  }
+
+  function writeChatQueue(rows) {
+    try {
+      localStorage.setItem(LS_CHAT_QUEUE, JSON.stringify(rows.slice(-CHAT_QUEUE_MAX)));
+    } catch (_) { /* quota */ }
+    updateChatQueueHint();
+  }
+
+  function updateChatQueueHint() {
+    const el = document.getElementById('chat-queue-hint');
+    if (!el) return;
+    const n = readChatQueue().length;
+    if (n < 1) {
+      el.classList.add('hidden');
+      el.textContent = '';
+      return;
+    }
+    el.classList.remove('hidden');
+    el.textContent = n + ' message(s) queued offline — will send when the mesh answers';
+  }
+
+  async function postChatPayload(payload) {
+    const r = await fetch(`${BASE}/agent/${encodeURIComponent(subjectId)}/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    const j = r.ok ? await r.json() : { error: await r.text() };
+    return { ok: r.ok, j };
+  }
+
+  function formatReply(j) {
+    var replyText = j.reply || j.error || JSON.stringify(j);
+    if (j.soulsafe && j.soulsafe.effects) {
+      replyText += '\n\n— SOULSAFE effects —\n' + JSON.stringify(j.soulsafe.effects, null, 2);
+    } else if (j.soulsafeSkipped) {
+      replyText += '\n\n' + 'SOULSAFE skipped: ' + JSON.stringify(j.soulsafeSkipped);
+    }
+    return replyText;
+  }
+
+  async function flushChatQueue() {
+    const q = readChatQueue();
+    if (!q.length) return;
+    const rest = [];
+    for (const row of q) {
+      try {
+        const { ok } = await postChatPayload(row.payload);
+        if (!ok) rest.push(row);
+      } catch (_) {
+        rest.push(row);
+      }
+    }
+    writeChatQueue(rest);
+  }
+
   document.getElementById('chat-send').addEventListener('click', async () => {
     const input = document.getElementById('chat-in');
     const wrap = document.getElementById('chat-out-wrap');
@@ -498,28 +569,37 @@
     if (!msg) return;
     wrap.classList.remove('hidden');
     out.textContent = '…';
+    const payload = { message: msg, scope: 'personal' };
+    const soulCb = document.getElementById('chat-soulsafe');
+    if (soulCb && soulCb.checked) payload.soulsafe = true;
     try {
-      const payload = { message: msg, scope: 'personal' };
-      const soulCb = document.getElementById('chat-soulsafe');
-      if (soulCb && soulCb.checked) payload.soulsafe = true;
-      const r = await fetch(`${BASE}/agent/${encodeURIComponent(subjectId)}/chat`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-      const j = r.ok ? await r.json() : { error: await r.text() };
-      var replyText = j.reply || j.error || JSON.stringify(j);
-      if (j.soulsafe && j.soulsafe.effects) {
-        replyText += '\n\n— SOULSAFE effects —\n' + JSON.stringify(j.soulsafe.effects, null, 2);
-      } else if (j.soulsafeSkipped) {
-        replyText += '\n\n' + 'SOULSAFE skipped: ' + JSON.stringify(j.soulsafeSkipped);
+      const { ok, j } = await postChatPayload(payload);
+      if (!ok) {
+        const q = readChatQueue();
+        q.push({ payload: payload, ts: Date.now() });
+        writeChatQueue(q);
+        out.textContent =
+          'Mesh did not answer (HTTP). Message saved — will retry when you send again or when connection returns. ' +
+          (j.error || JSON.stringify(j));
+        updateChatQueueHint();
+        return;
       }
-      out.textContent = replyText;
+      out.textContent = formatReply(j);
       input.value = '';
       ping();
+      await flushChatQueue();
     } catch (e) {
-      out.textContent = 'Request failed: ' + (e.message || e);
+      const q = readChatQueue();
+      q.push({ payload: payload, ts: Date.now() });
+      writeChatQueue(q);
+      out.textContent =
+        'Offline or network error — message queued on this device. ' + (e.message || e);
     }
+    updateChatQueueHint();
+  });
+
+  window.addEventListener('online', function () {
+    void flushChatQueue();
   });
 
   document.getElementById('btn-refresh').addEventListener('click', ping);
@@ -551,6 +631,7 @@
   })();
 
   async function runInit() {
+    updateChatQueueHint();
     await loadWelcomePackagesMesh();
     applyMeshWelcomeUI(activeWelcomePkg);
     await seedProfile();
@@ -559,6 +640,7 @@
     await loadHubFusion();
     await pushSoulsafePrefs();
     ping();
+    void flushChatQueue();
   }
   runInit();
 })();
@@ -588,6 +670,10 @@
     </a>
 </footer>
 <!-- P31:mission-ebc:end -->
+<script type="module">
+  import { startGrandfatherPhaseVar } from "/lib/p31-quantum-grandfather-boot.mjs";
+  startGrandfatherPhaseVar();
+</script>
   <script src="/lib/p31-return-ribbon.js" defer></script>
 </body>
 </html>

@@ -20,7 +20,7 @@ interface NodeOneStatus {
 export class StatusCommand implements P31Command {
   name = 'status';
   description = 'Check Node One/P31 system status';
-  aliases = ['health', 'ping', 'check'];
+  aliases = ['check', 'sys'];
   usage = 'status [service]';
 
   async execute(context: CommandContext): Promise<void> {

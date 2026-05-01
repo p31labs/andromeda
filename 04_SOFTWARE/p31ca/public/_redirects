@@ -33,8 +33,12 @@
 /canon    /p31-canon-demo.html  301
 /tokens   /p31-canon-demo.html  301
 /dev      /dev-workbench.html  301
-/build    /initial-build.html  301
+/build    /initial-build.html  200
 /hiring   /delta-hiring/index.html  301
+/messages   /messaging-hub.html  301
+/comms   /messaging-hub.html  301
+/contracts   /contract-builder.html  301
+/composer   /quantum-composer.html  301
 /family-pack   /family-sovereign-pack.html  301
 # /accessibility, /contact, /privacy, /terms — omit (Pages 308 file.html → /file; reverse rule loops).
 /oss   /open-source.html   301
@@ -42,6 +46,11 @@
 /fleet   /live-fleet-demo.html   301
 /agents   /fleet-agents.html   301
 /demos   /demo-labs.html   301
+/visuals   /demos/index.html   301
+/demos-public   /demos/index.html   301
+# /glass-box — omit (Pages clean URL serves glass-box.html at /glass-box; explicit rule loops with 308 .html → /glass-box).
+/glass   /glass-box.html   200
+/transparency   /glass-box.html   200
 /lab   /p31-sovereign-lab.html   301
 /slicer   /p31-slicer.html   301
 /journey   /vision.html   301
@@ -50,6 +59,7 @@
 /oqe   /oqe-icosa.html   301
 /d20   /d20-omnibus-icosa.html   301
 /quantum-clock   /quantum-clock.html   301
+/deck   /quantum-deck.html   301
 # Education — canonical trailing slash (static tree under public/education/)
 /education  /education/   301
 /learn  /education/   301

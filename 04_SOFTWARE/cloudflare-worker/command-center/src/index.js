@@ -853,6 +853,30 @@ async function pingFleet(env) {
     });
     workers.push({ name: "command-center", url: "https://command-center.trimtab-signal.workers.dev", status: "online", rps: 15, room_id: "Command Center", ts: new Date().toISOString() });
 
+    // Enrich with grant pipeline summary from Cortex GrantAgent (non-blocking)
+    let grantsData = { active: 0, daysToNextDeadline: '?', upcoming: [] };
+    try {
+      const grantResp = await fetch('https://p31-cortex.trimtab-signal.workers.dev/api/grant/run', { method: 'POST', signal: AbortSignal.timeout(5000) });
+      if (grantResp.ok) {
+        const gd = await grantResp.json();
+        const today = new Date(); today.setHours(0,0,0,0);
+        const activeStatuses = ['pending','assembling','researching','submitted','active'];
+        const pipeline = gd.pipeline || [];
+        const active = pipeline.filter(g => activeStatuses.includes(g.status));
+        grantsData.active = active.length;
+        const sortedActive = active
+          .map(g => {
+            const meta = typeof g.metadata === 'string' ? JSON.parse(g.metadata) : g.metadata || {};
+            return { title: g.title, funder: meta.funder || 'Unknown', daysLeft: Math.max(0, Math.ceil((new Date(g.due_date) - today) / 86400000)), status: g.status };
+          })
+          .sort((a,b) => a.daysLeft - b.daysLeft)
+          .slice(0, 5);
+        grantsData.upcoming = sortedActive;
+        if (sortedActive.length > 0) grantsData.daysToNextDeadline = sortedActive[0].daysLeft;
+      }
+    } catch (e) { console.error('Grant fetch failed:', e); }
+    status.grants = grantsData;
+
   try {
     const raw = await env.STATUS_KV.get('status');
     const status = raw ? JSON.parse(raw) : {};

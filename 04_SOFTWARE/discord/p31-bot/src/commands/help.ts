@@ -43,6 +43,18 @@ export class HelpCommand implements P31Command {
         { name: '❓ Help', value: `\`${prefix} help\` - Show this help message`, inline: true }
       )
       .addFields(
+        {
+          name: '🎭 Mesh crew & fun',
+          value: [
+            `\`${prefix} crew\` · \`${prefix} joke\` [\`dev\`|\`mesh\`|\`dad\`] · \`${prefix} lore\` · \`${prefix} drift\``,
+            `\`${prefix} trivia\` + tags + \`daily\` (UTC) + \`stats\` · \`${prefix} meshword\` + \`daily\``,
+            `\`${prefix} qclock\` (quantum clock + deck) · \`${prefix} tetra\` · \`${prefix} deep\` · \`${prefix} chain\` · \`${prefix} paradox\` · \`${prefix} hangman\``,
+            `\`${prefix} play\` — rps · flip · roll · 8ball · number`,
+          ].join('\n'),
+          inline: false,
+        },
+      )
+      .addFields(
         { name: 'Webhooks', value: 'Receives events from Ko-fi, Node One, and BONDING', inline: false }
       )
       .setFooter({ text: '🔺 P31 Labs • p31 help [command] for details' });

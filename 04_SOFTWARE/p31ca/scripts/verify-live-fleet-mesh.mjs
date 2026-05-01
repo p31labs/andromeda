@@ -34,5 +34,16 @@ for (const k of Object.keys(mesh)) {
   }
 }
 
+/** Live-fleet bundle may add operator-facing fields not duplicated in the slim client JSON (see p31-constants mesh vs apply:constants output). */
+const LIVE_FLEET_MESH_EXTRA = new Set(["note", "passkeySameOriginBase"]);
+for (const k of Object.keys(fm)) {
+  if (LIVE_FLEET_MESH_EXTRA.has(k)) continue;
+  if (!(k in mesh)) {
+    fail(
+      `mesh.${k}: live-fleet has field not present in p31-mesh-constants (typo or stale mirror — run npm run sync:live-fleet:p31ca from P31 home after apply:constants)`
+    );
+  }
+}
+
 console.log("verify-live-fleet-mesh: OK");
 process.exit(0);

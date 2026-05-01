@@ -90,7 +90,7 @@ I'm an autistic engineer. Late-diagnosed at 39. Sixteen years maintaining safety
 
 My 6-year-old drags hydrogen and oxygen together. Builds water in 10 seconds. My 10-year-old chases glucose. Two secret elements are named after them. They don't know yet.
 
-488 automated tests. Works offline. Runs on the Android tablets my kids use. No accounts. No ads. No data collection. Free forever.
+424 automated tests across 32 suites. Works offline. Runs on the Android tablets my kids use. No accounts. No ads. No data collection. Free forever.
 
 Play it right now: bonding.p31ca.org
 
@@ -106,17 +106,17 @@ ko-fi.com/trimtab69420`,
     tweets: [
       `I built a chemistry game so my kids could see me.
 
-I'm autistic. Late-diagnosed at 39. When I lost access to my children, I built BONDING — a molecular builder where every atom placed is a timestamped parental contact.
+Autistic, diagnosed at 39. When I lost access to my kids, I built BONDING — a molecule builder where every atom is a timestamped parental contact.
 
-It shipped on my son's 10th birthday. It's live and free.
+Shipped on my son's 10th birthday. Live.
 
 bonding.p31ca.org`,
 
-      `488 tests. PWA. Works offline on Android tablets. Touch-first. No accounts. No ads. No data collection.
+      `424 tests / 32 suites. PWA. Works offline on tablets. No accounts. No ads. No data collection.
 
-11 elements + 2 secret ones named after my kids. 82 molecules. Quest chains from hydrogen to the Posner molecule.
+11 elements + 2 secret ones, 82 molecules. Quest chains from hydrogen to the Posner molecule.
 
-Every sound is synthesized from element frequencies using the Web Audio API. Zero samples.`,
+Every sound synthesized from element frequencies via Web Audio API. Zero samples.`,
 
       `Two secret elements unlock when you complete quest chains:
 
@@ -132,13 +132,12 @@ The code is MIT licensed and will outlive my housing situation. But I'd rather k
 ko-fi.com/trimtab69420`,
 
       `Stack:
-- TypeScript strict, 488 tests (Vitest)
+- TypeScript strict, 424 Vitest tests
 - React + Three.js + Zustand + Vite
 - Cloudflare Pages + Workers + KV
-- Web Audio API (zero samples)
-- IndexedDB (offline-first, no server)
-- PWA with service worker caching
-- COPPA compliant, zero data collection
+- Web Audio API
+- IndexedDB (offline-first)
+- PWA, COPPA-aligned
 
 GitHub: github.com/p31labs`,
     ],
@@ -150,7 +149,7 @@ GitHub: github.com/p31labs`,
     color: 0x0A66C2,
     content: `I shipped two applications this month.
 
-BONDING is a multiplayer chemistry education game. Players drag atoms, form bonds following VSEPR geometry, and build molecules from hydrogen to the Posner molecule (Ca9(PO4)6). 11 elements, 82 molecules, 5 quest chains, 41 achievements. All audio synthesized from element-specific frequencies using the Web Audio API. 488 automated tests. Offline-first PWA targeting tablet devices.
+BONDING is a multiplayer chemistry education game. Players drag atoms, form bonds following VSEPR geometry, and build molecules from hydrogen to the Posner molecule (Ca9(PO4)6). 11 elements, 82 molecules, 5 quest chains, 41 achievements. All audio synthesized from element-specific frequencies using the Web Audio API. 424 automated tests across 32 suites. Offline-first PWA targeting tablet devices.
 
 It shipped on my son's 10th birthday. Every interaction is timestamped for evidence-grade export — designed for contexts where proof of engagement matters.
 

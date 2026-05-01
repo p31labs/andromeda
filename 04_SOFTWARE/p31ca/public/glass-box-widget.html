@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>P31 Glass Box — embed widget</title>
+  <meta name="description" content="Compact, iframe-friendly widget showing P31's live verify-pulse heartbeat and the latest public reports. Drop-in transparency for any p31 page." />
+  <meta name="color-scheme" content="dark light" />
+  <style>
+    :root {
+      --bg: transparent;
+      --panel: #0f1411;
+      --line: #20302480;
+      --green: #62d979;
+      --green-dim: #3aa653;
+      --amber: #f0b25a;
+      --red: #e36062;
+      --blue: #6cc5ff;
+      --grey: #aab2ad;
+      --grey-dim: #6c7773;
+      --ink: #e7eee9;
+      --mono: ui-monospace, "SF Mono", Menlo, Consolas, "Roboto Mono", monospace;
+    }
+    * { box-sizing: border-box }
+    html, body { margin:0; padding:0; background:var(--bg); color:var(--ink); font-family:var(--mono); font-size:13px; line-height:1.45 }
+    .wrap { background:var(--panel); border:1px solid var(--line); border-radius:8px; overflow:hidden; max-width:520px; margin:0 auto }
+    .h { padding:8px 12px; border-bottom:1px solid var(--line); display:flex; align-items:center; gap:8px; font-size:12px }
+    .h .t { color:var(--green); font-weight:bold; letter-spacing:0.04em }
+    .h .meta { color:var(--grey); font-size:11px; margin-left:auto }
+    .pulse { padding:10px 12px; border-bottom:1px solid var(--line); display:flex; align-items:baseline; gap:10px; flex-wrap:wrap }
+    .pulse .label { color:var(--grey-dim); font-size:11px; text-transform:uppercase; letter-spacing:0.05em }
+    .pulse .val { color:var(--green) }
+    .pulse .dim { color:var(--grey) }
+    .feed { padding:6px 12px 10px; max-height:260px; overflow:auto }
+    .row { padding:5px 0; border-bottom:1px solid #1a221d; display:grid; grid-template-columns: 64px 56px 1fr; gap:6px; align-items:baseline; font-size:12px }
+    .row:last-child { border-bottom:none }
+    .row .k { color:var(--grey-dim); text-transform:uppercase; font-size:10px }
+    .row .s { font-size:10px; padding:1px 5px; border-radius:99px; text-align:center; border:1px solid }
+    .row .s.ok { color:var(--green); border-color:var(--green-dim) }
+    .row .s.notice { color:var(--blue); border-color:#2e5d7a }
+    .row .s.caution { color:var(--amber); border-color:#5a3f1f }
+    .row .s.urgent, .row .s.high { color:var(--red); border-color:#7a2e2e }
+    .row .s.critical { color:#fff; background:#7a2e2e; border-color:#a04040 }
+    .row .h-text { color:var(--ink) }
+    .row .h-text .ts { color:var(--grey-dim); font-size:10px; margin-right:5px }
+    .empty { color:var(--grey-dim); padding:10px 12px; font-style:italic; font-size:12px }
+    .foot { padding:6px 12px; border-top:1px solid var(--line); display:flex; gap:8px; align-items:center; font-size:11px; color:var(--grey) }
+    .foot a { color:var(--green); text-decoration:none }
+    .foot a:hover { text-decoration:underline }
+    .foot .right { margin-left:auto; color:var(--grey-dim) }
+  </style>
+</head>
+<body>
+  <div class="wrap" id="wrap">
+    <div class="h">
+      <span class="t">◍ P31 Glass Box</span>
+      <span class="meta" id="meta">loading…</span>
+    </div>
+    <div class="pulse">
+      <span class="label">last verify</span>
+      <span class="val" id="pulseVal">—</span>
+      <span class="dim" id="pulseGit"></span>
+      <span class="dim" id="pulseDur"></span>
+    </div>
+    <div class="feed" id="feed">
+      <div class="empty">loading public reports index…</div>
+    </div>
+    <div class="foot">
+      <a href="/glass-box.html" target="_top">open full terminal →</a>
+      <a href="/demos/index.html" target="_top" title="Visual demos gallery">visual demos →</a>
+      <span class="right">no tracking · no analytics · no secrets</span>
+    </div>
+  </div>
+
+<script>
+"use strict";
+async function fetchFirst(paths) {
+  for (const p of paths) {
+    try {
+      const r = await fetch(p, { cache: "no-store" });
+      if (r.ok) return await r.json();
+    } catch {}
+  }
+  return null;
+}
+function fmtAgo(iso) {
+  if (!iso) return "—";
+  const ms = Date.now() - new Date(iso).getTime();
+  if (!isFinite(ms) || ms < 0) return "—";
+  const m = Math.round(ms / 60_000);
+  if (m < 1) return "just now";
+  if (m < 60) return `${m}m ago`;
+  const h = Math.round(m / 60);
+  if (h < 48) return `${h}h ago`;
+  return `${Math.round(h / 24)}d ago`;
+}
+function safe(s) { return String(s || "").replace(/[<>&]/g, (c) => ({"<":"&lt;",">":"&gt;","&":"&amp;"}[c])); }
+
+async function load() {
+  const reports = await fetchFirst(["./reports/index.json", "/reports/index.json", "/docs/reports/index.json"]);
+  const pulse = await fetchFirst(["./verify-pulse.json", "/verify-pulse.json", "/docs/verify-pulse.json"]);
+
+  // pulse
+  if (pulse?.lastSuccess) {
+    document.getElementById("pulseVal").textContent = fmtAgo(pulse.lastSuccess.ts);
+    document.getElementById("pulseGit").textContent = pulse.lastSuccess.git?.head ? `· ${pulse.lastSuccess.git.head}` : "";
+    const recent = pulse.history?.[0];
+    if (recent?.durationMs) document.getElementById("pulseDur").textContent = `· ${(recent.durationMs / 1000).toFixed(1)}s · ${recent.stepCount || 0} steps`;
+  } else {
+    document.getElementById("pulseVal").textContent = "no data";
+    document.getElementById("pulseDur").textContent = "(operator hasn't seeded the pulse yet)";
+  }
+
+  // feed
+  const rows = reports?.recent || [];
+  const meta = document.getElementById("meta");
+  if (reports) {
+    meta.textContent = `${reports.count || 0} reports · index ${fmtAgo(reports.generatedAt)}`;
+  } else {
+    meta.textContent = "no public index";
+  }
+  if (!rows.length) {
+    document.getElementById("feed").innerHTML = '<div class="empty">no reports filed yet — they appear here as the operator commits the public index.</div>';
+    return;
+  }
+  document.getElementById("feed").innerHTML = rows.slice(0, 8).map((r) => {
+    const sev = (r.severity || "ok").toLowerCase();
+    const ts = (r.ts || "").replace("T", " ").slice(0, 16) + "Z";
+    return `<div class="row"><div class="k">${safe((r.kind || "?").slice(0, 8))}</div><div class="s ${sev}">${sev}</div><div class="h-text"><span class="ts">${ts}</span>${safe(r.headline || r.id || "")}</div></div>`;
+  }).join("");
+}
+load();
+setInterval(load, 60_000);
+</script>
+</body>
+</html>

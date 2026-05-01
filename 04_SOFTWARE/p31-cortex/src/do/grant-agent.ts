@@ -15,20 +15,59 @@ interface GrantRecord {
 
 export class GrantAgentDO extends BaseAgent {
   protected async handleInit(request: Request): Promise<Response> {
+    // Rate limiting: max 10 init calls per minute per IP (simple in-memory bucket per DO instance)
+    const ip = request.headers.get('cf-connecting-ip') || 'unknown';
+    const rateKey = `rate:grant-init:${ip}`;
+    const count = await this.storage.get<number>(rateKey);
+    if (count && count >= 10) {
+      return new Response(JSON.stringify({ error: 'rate_limit_exceeded', retry_after: 60 }), {
+        status: 429,
+        headers: { 'Content-Type': 'application/json', 'Retry-After': '60' },
+      });
+    }
+    await this.storage.put(rateKey, (count || 0) + 1, { expirationTtl: 60 });
+
     const body = await request.json<Partial<GrantRecord>>();
     const id = this.generateId();
 
-    const grant: GrantRecord = {
-      id,
-      title: body.title ?? "Untitled Grant",
-      funder: body.funder ?? "",
-      amount: body.amount ?? 0,
-      deadline: body.deadline ?? new Date().toISOString(),
-      status: body.status ?? "researching",
-      requirements: body.requirements ?? [],
-      notes: body.notes ?? "",
-      alertDays: body.alertDays ?? [14, 7, 3, 1],
-    };
+    // Input validation (defensive)
+    const title = body.title?.trim();
+    if (!title || title.length > 200) {
+      return new Response(JSON.stringify({ error: 'invalid_title', reason: 'title required and must be ≤200 chars' }), {
+        status: 400, headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
+    const funder = body.funder?.trim() || 'Unknown';
+    const amount = Number(body.amount) || 0;
+    if (amount < 0 || amount > 100000000) {
+      return new Response(JSON.stringify({ error: 'invalid_amount', reason: 'amount must be 0–100M' }), {
+        status: 400, headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
+    let deadline: string;
+    try {
+      const d = new Date(body.deadline);
+      if (isNaN(d.getTime())) throw new Error();
+      deadline = d.toISOString().split('T')[0]; // store YYYY-MM-DD only
+    } catch {
+      return new Response(JSON.stringify({ error: 'invalid_deadline', reason: 'ISO date required (YYYY-MM-DD)' }), {
+        status: 400, headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
+    const validStatuses: readonly string[] = ["researching", "assembling", "submitted", "awarded", "rejected"];
+    const status = validStatuses.includes(body.status) ? body.status : "researching";
+
+    const requirements = Array.isArray(body.requirements) ? body.requirements : [];
+    const notes = body.notes?.trim() || '';
+
+    const alertDays = Array.isArray(body.alertDays)
+      ? body.alertDays.filter(n => Number.isInteger(n) && n > 0 && n <= 365).slice(0, 10)
+      : [14, 7, 3, 1];
+
+    const grant: GrantRecord = { id, title, funder, amount, deadline, status, requirements, notes, alertDays };
 
     await this.env.DB.prepare(
       `INSERT INTO deadlines (id, title, description, due_date, category, priority, status, alert_days, metadata)

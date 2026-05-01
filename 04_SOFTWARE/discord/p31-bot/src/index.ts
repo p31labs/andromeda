@@ -21,26 +21,8 @@ import {
   parseArgs,
   CommandContext,
 } from "./commands/base";
+import { registerAllCommands } from "./boot/registerCommands";
 import { handleScaffoldCommand } from "./services/serverScaffold";
-import { SpoonCommand } from "./commands/spoon";
-import { BondingCommand } from "./commands/bonding";
-import { StatusCommand } from "./commands/status";
-import { HelpCommand } from "./commands/help";
-import { DeployCommand } from "./commands/deploy";
-import { EggsCommand } from "./commands/eggs";
-import { NodesCommand } from "./commands/nodes";
-import { ClaimCommand } from "./commands/claim";
-import { CortexCommand } from "./commands/cortex";
-import { HealthCommand } from "./commands/health";
-import { SocialCommand } from "./commands/social";
-import { LeaderboardCommand } from "./commands/leaderboard";
-import { EasterCommand } from "./commands/easter";
-import { HousingCommand } from "./commands/housing";
-import { TelemetryCommand } from "./commands/telemetry";
-import { EsgCommand } from "./commands/esg";
-import { RehousedCommand } from "./commands/rehoused";
-import { GrantsCommand } from "./commands/grants";
-import { BookCommand } from "./commands/book";
 import * as spoonLedger from "./services/spoonLedger";
 import { startSubstackIntegration, initSubstackPoller } from "./services/substackPoller";
 
@@ -76,26 +58,7 @@ setupCortexRoutes(webhookHandler.app, client);
 // Initialize command registry
 const registry = createCommandRegistry();
 
-// Register commands
-registry.register(new SpoonCommand());
-registry.register(new BondingCommand());
-registry.register(new StatusCommand());
-registry.register(new DeployCommand());
-registry.register(new EggsCommand());
-registry.register(new ClaimCommand());
-registry.register(new NodesCommand());
-registry.register(new CortexCommand());
-registry.register(new HealthCommand());
-registry.register(new SocialCommand());
-registry.register(new LeaderboardCommand());
-registry.register(new EasterCommand());
-registry.register(new HousingCommand());
-registry.register(new TelemetryCommand());
-registry.register(new EsgCommand());
-registry.register(new RehousedCommand());
-registry.register(new GrantsCommand());
-registry.register(new BookCommand());
-registry.register(new HelpCommand(registry));
+registerAllCommands(registry);
 
 // Get configuration
 const prefix = getPrefix();
@@ -259,8 +222,8 @@ webhookHandler.on("stripe", async (event) => {
   // Only handle completed checkout sessions
   if (stripeType !== "checkout.session.completed") return;
 
-  const session = event.payload.data as Record<string, unknown>;
-  const obj = (session?.object as Record<string, unknown>) ?? session;
+  const dataWrap = event.payload.data as Record<string, unknown> | undefined;
+  const obj = (dataWrap?.object as Record<string, unknown>) ?? {};
   const amount =
     typeof obj.amount_total === "number"
       ? (obj.amount_total / 100).toFixed(2)

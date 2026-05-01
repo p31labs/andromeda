@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#0f1115">
-  <title>Privacy | P31 Labs — p31ca.org</title>
-  <meta name="description" content="How p31ca.org static tools and edge services handle data — high-level privacy overview.">
+  <title>Privacy policy | P31 Labs — p31ca.org</title>
+  <meta name="description" content="How P31 Labs, Inc. collects, uses, and protects data across p31ca.org, bonding.p31ca.org, and associated Cloudflare Workers.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -17,38 +17,318 @@
 <body class="bg-void text-cloud min-h-screen font-sans antialiased px-4 py-10 max-w-2xl mx-auto text-sm leading-relaxed">
   <nav class="flex flex-wrap gap-3 text-teal/80 text-xs font-mono mb-8 no-print">
     <a href="/" class="hover:underline">Hub</a>
-    <a href="/contact" class="hover:underline">Contact</a>
+    <a href="/privacy" class="hover:underline">Privacy</a>
     <a href="/terms" class="hover:underline">Terms</a>
+    <a href="/contact" class="hover:underline">Contact</a>
     <a href="/accessibility" class="hover:underline">Accessibility</a>
     <a href="/security" class="hover:underline">Security</a>
     <a href="/oss" class="hover:underline">Open source</a>
   </nav>
-  <h1 class="text-2xl font-bold text-paper mb-2">Privacy overview</h1>
-  <p class="text-cloud/50 text-xs mb-8">High-level summary only — not a substitute for legal advice. Last updated 2026-04-26.</p>
 
-  <section class="space-y-3 mb-8">
-    <h2 class="text-paper font-semibold">What this site is</h2>
-    <p class="text-cloud/80"><strong class="text-paper">p31ca.org</strong> hosts static HTML, JSON contracts, and client-side tools (e.g. onboarding, mesh landing pages). Pages may use <strong>browser <code class="font-mono text-teal/80">localStorage</code></strong> or <code class="font-mono text-teal/80">sessionStorage</code> for UX (dial state, onboarding progress). You can clear site data in your browser settings.</p>
+  <h1 class="text-2xl font-bold text-paper mb-2">Privacy policy</h1>
+  <p class="text-cloud/50 text-xs mb-8">
+    <strong class="text-paper">P31 Labs, Inc.</strong> &mdash; EIN 42-1888158 &mdash; Georgia domestic nonprofit corporation.<br>
+    Effective date: <strong class="text-paper">2026-05-01</strong>.
+  </p>
+
+  <!-- 1. What we are -->
+  <section class="space-y-3 mb-8" id="who-we-are">
+    <h2 class="text-paper font-semibold text-base">1. What we are</h2>
+    <p class="text-cloud/80">
+      <strong class="text-paper">P31 Labs, Inc.</strong> is a Georgia domestic nonprofit corporation
+      (incorporated 2026-04-03, EIN 42-1888158). We build open, neurodivergent-centered tools and
+      infrastructure. Our 501(c)(3) application (Form 1023-EZ) was filed 2026-04-30 and is
+      pending IRS determination; we are not yet recognized as tax-exempt.
+    </p>
+    <p class="text-cloud/80">
+      This policy describes how we handle personal data across our public surfaces. We are the
+      &ldquo;data controller&rdquo; (in GDPR terminology) for data processed under our direct control.
+      Where Cloudflare, Stripe, or other third parties act as separate controllers or processors,
+      their own policies govern that processing.
+    </p>
+    <p class="text-cloud/80">
+      We do not sell personal data. We do not operate advertising networks. We do not have an
+      email marketing list or newsletter.
+    </p>
   </section>
 
-  <section class="space-y-3 mb-8">
-    <h2 class="text-paper font-semibold">Edge & Workers</h2>
-    <p class="text-cloud/80">When you use features that call our <strong>Cloudflare Workers</strong> (for example personal mesh <strong>k4-personal</strong>), requests go to the URLs published in our public constants and health checks. Those services have their own storage (e.g. Durable Objects / KV) described in their architecture docs. We do not sell personal data; creator-economy terms are public at <a class="text-teal underline hover:text-teal/90" href="/creator-economy.json">/creator-economy.json</a>.</p>
+  <!-- 2. What data we collect and why -->
+  <section class="space-y-3 mb-8" id="data-collected">
+    <h2 class="text-paper font-semibold text-base">2. What data we collect and why</h2>
+    <p class="text-cloud/80">
+      We collect the minimum data necessary to operate each service. The following subsections
+      describe each surface separately.
+    </p>
+
+    <!-- 2a: Static pages -->
+    <h3 class="text-paper font-semibold mt-4">2a. Static pages (p31ca.org)</h3>
+    <p class="text-cloud/80">
+      <strong class="text-paper">p31ca.org</strong> is a static site served via Cloudflare&rsquo;s CDN.
+      We do not set first-party analytics cookies or tracking pixels. Some pages use
+      <code class="font-mono text-teal/80">localStorage</code> or
+      <code class="font-mono text-teal/80">sessionStorage</code> in your browser for UX state
+      (for example: onboarding progress, interface dial position). This data is stored entirely
+      in your browser and is never transmitted to our servers. You can clear it at any time
+      through your browser&rsquo;s site data settings.
+    </p>
+    <p class="text-cloud/80">
+      Cloudflare&rsquo;s network will log standard HTTP access data (IP address, user agent, timestamp,
+      referrer, bytes transferred) for security, abuse prevention, and CDN optimization.
+      This logging is governed by Cloudflare&rsquo;s privacy policy, not ours.
+    </p>
+
+    <!-- 2b: Workers & sessions -->
+    <h3 class="text-paper font-semibold mt-4">2b. Cloudflare Workers and sessions</h3>
+    <p class="text-cloud/80">
+      Several of our services are implemented as <strong class="text-paper">Cloudflare Workers</strong>
+      backed by <strong class="text-paper">Durable Objects</strong> (SQLite) and
+      <strong class="text-paper">KV</strong> storage:
+    </p>
+    <ul class="text-cloud/80 list-disc pl-5 space-y-1">
+      <li>
+        <strong class="text-paper">k4-personal</strong> &mdash; Stores operator-provided personal mesh
+        content in Cloudflare KV and Durable Objects SQLite under the authenticated operator&rsquo;s account.
+        Access is gated by the operator&rsquo;s credentials. We do not review this content.
+      </li>
+      <li>
+        <strong class="text-paper">k4-cage</strong> &mdash; Family mesh. Stores operator-provided
+        content under the operator&rsquo;s authenticated account in Cloudflare KV / Durable Objects.
+      </li>
+      <li>
+        <strong class="text-paper">k4-hubs</strong> &mdash; Life-context hub data. Same storage model.
+      </li>
+      <li>
+        <strong class="text-paper">k4-agent-hub</strong> &mdash; Stores per-vertex session tokens,
+        Ed25519 key fingerprints (not the private keys &mdash; those never leave your device),
+        skill usage logs, and dock session metadata in Durable Objects SQLite.
+        Operator sessions expire after <strong class="text-paper">24 hours</strong>.
+        Family dock sessions expire after <strong class="text-paper">8 hours</strong>.
+        Session data is automatically deleted on expiry.
+      </li>
+    </ul>
+    <p class="text-cloud/80">
+      <strong class="text-paper">k4-agent-hub skill dispatch.</strong>
+      When you invoke a skill on k4-agent-hub, your input is routed to a language model inference endpoint.
+      The default configuration routes to a <strong>locally-operated Ollama instance</strong> under the
+      operator&rsquo;s control — your input is not sent to third-party AI platforms by default.
+      If an instance operator configures a remote inference endpoint (e.g. a cloud LLM API), inputs
+      are forwarded to that endpoint; you should consult the instance operator&rsquo;s configuration
+      for the specific endpoint in use. Skill inputs and outputs are not stored beyond the session
+      log retained in Durable Objects SQLite (deleted on session expiry).
+    </p>
+    <p class="text-cloud/80 mt-2">
+      We log standard Cloudflare request metadata (IP, user agent, timestamp) on all Worker
+      requests for security and abuse monitoring. We do not use this log data for advertising.
+    </p>
+
+    <!-- 2c: BONDING multiplayer -->
+    <h3 class="text-paper font-semibold mt-4">2c. BONDING multiplayer</h3>
+    <p class="text-cloud/80">
+      <strong class="text-paper">bonding.p31ca.org</strong> includes an optional multiplayer mode.
+      When you join or create a multiplayer session:
+    </p>
+    <ul class="text-cloud/80 list-disc pl-5 space-y-1">
+      <li>A short room code is generated and stored in Cloudflare KV under an ephemeral room ID.</li>
+      <li>Molecular snapshots you share in the session are stored in KV under that room ID.</li>
+      <li>No account is required. No name, email, or persistent identifier is collected.</li>
+      <li>Room data expires automatically when the room is closed or the KV TTL elapses.</li>
+    </ul>
+    <p class="text-cloud/80">
+      We do not link room participation to any individual identity.
+    </p>
+
+    <!-- 2d: Payments -->
+    <h3 class="text-paper font-semibold mt-4">2d. Payments and donations</h3>
+    <p class="text-cloud/80">
+      Donations are processed by <strong class="text-paper">Stripe</strong> through
+      <strong class="text-paper">donate-api.phosphorus31.org</strong>. Stripe collects your
+      payment card details, billing name, and email address directly; we never receive or store
+      your card number, CVV, or full card details.
+    </p>
+    <p class="text-cloud/80">
+      P31 Labs receives from Stripe only limited transaction metadata: the donation amount,
+      timestamp, and a Stripe customer ID (a pseudonymous token assigned by Stripe).
+      We use this solely to track donation receipts and respond to donor inquiries.
+      We do not build marketing profiles from payment data.
+    </p>
+
+    <!-- 2e: Logs -->
+    <h3 class="text-paper font-semibold mt-4">2e. Infrastructure logs</h3>
+    <p class="text-cloud/80">
+      Cloudflare logs HTTP request metadata (IP address, user agent, timestamp, HTTP method,
+      response code) for all requests to our domains. These logs are retained by Cloudflare
+      under Cloudflare&rsquo;s own data retention policies. We may access aggregated log data
+      to investigate security incidents or abuse. We do not routinely export or store raw
+      request logs ourselves beyond what Cloudflare&rsquo;s dashboard provides.
+    </p>
   </section>
 
-  <section class="space-y-3 mb-8">
-    <h2 class="text-paper font-semibold">Analytics</h2>
-    <p class="text-cloud/80">We do not rely on third-party advertising trackers on these static deliverables. Infrastructure providers (e.g. CDN / host) may log technical metadata (IP, user agent) under their own policies.</p>
+  <!-- 3. Children -->
+  <section class="space-y-3 mb-8" id="children">
+    <h2 class="text-paper font-semibold text-base">3. Children and COPPA</h2>
+    <p class="text-cloud/80">
+      Our services are not directed to children under 13 as independent users. We do not
+      knowingly collect personal information directly from children under 13 through
+      <strong class="text-paper">p31ca.org</strong> or any of our public consumer surfaces.
+    </p>
+    <p class="text-cloud/80">
+      The <strong class="text-paper">k4-agent-hub family dock</strong> allows a guardian to
+      activate minor vertices within a family mesh. This is an operator-side technical API.
+      Activation requires an Ed25519-authenticated guardian signature and a child-mesh-unlock
+      token. The guardian &mdash; not the minor &mdash; is the account holder and data principal.
+      We treat any data stored under a minor vertex as belonging to the guardian&rsquo;s account
+      and process it under the guardian&rsquo;s consent.
+    </p>
+    <p class="text-cloud/80">
+      The <strong class="text-paper">Cognitive Passport</strong> and
+      <strong class="text-paper">BONDING</strong> tools may be used by minors with active
+      guardian involvement. The Cognitive Passport generator runs entirely in your browser
+      and generates no server-side record; no personal data is transmitted to us.
+    </p>
+    <p class="text-cloud/80">
+      If you believe a child under 13 has submitted personal data to us without appropriate
+      guardian consent, please contact us at
+      <a class="text-teal underline hover:text-teal/90" href="mailto:will@p31ca.org">will@p31ca.org</a>
+      and we will delete that data promptly.
+    </p>
   </section>
 
-  <section class="space-y-3 mb-8">
-    <h2 class="text-paper font-semibold">Children</h2>
-    <p class="text-cloud/80">Tools that collect or persist data about minors should be used with <strong>guardian involvement</strong>. See <a class="text-teal underline hover:text-teal/90" href="/terms.html">Terms of use</a> for age expectations.</p>
+  <!-- 4. Third-party services -->
+  <section class="space-y-3 mb-8" id="third-parties">
+    <h2 class="text-paper font-semibold text-base">4. Third-party services</h2>
+
+    <h3 class="text-paper font-semibold mt-4">Cloudflare</h3>
+    <p class="text-cloud/80">
+      Our static pages, Workers, Durable Objects, and KV storage run on
+      <strong class="text-paper">Cloudflare&rsquo;s</strong> global network. All traffic to
+      our domains passes through Cloudflare and is subject to
+      <a class="text-teal underline hover:text-teal/90" href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noopener">Cloudflare&rsquo;s privacy policy</a>.
+      Cloudflare may set cookies (e.g., <code class="font-mono text-teal/80">__cflb</code>,
+      <code class="font-mono text-teal/80">cf_clearance</code>) for load balancing and
+      bot mitigation; these are not under our direct control.
+    </p>
+
+    <h3 class="text-paper font-semibold mt-4">Stripe</h3>
+    <p class="text-cloud/80">
+      Payment processing is handled by <strong class="text-paper">Stripe, Inc.</strong>
+      Stripe&rsquo;s processing is governed by
+      <a class="text-teal underline hover:text-teal/90" href="https://stripe.com/privacy" target="_blank" rel="noopener">Stripe&rsquo;s privacy policy</a>.
+      P31 Labs is a Stripe merchant; we do not share your payment data with other parties.
+    </p>
+
+    <h3 class="text-paper font-semibold mt-4">Google Fonts</h3>
+    <p class="text-cloud/80">
+      Our pages load the <em>Atkinson Hyperlegible</em> and <em>JetBrains Mono</em> typefaces
+      from <strong class="text-paper">fonts.googleapis.com</strong>. When your browser loads
+      a Google Font, your IP address is sent to Google&rsquo;s servers. This is governed by
+      <a class="text-teal underline hover:text-teal/90" href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google&rsquo;s privacy policy</a>.
+      Cloudflare may cache these font responses at the edge; in that case, the request may
+      be served without reaching Google&rsquo;s origin servers.
+    </p>
+
+    <h3 class="text-paper font-semibold mt-4">No advertising trackers</h3>
+    <p class="text-cloud/80">
+      We do not embed advertising pixels, third-party analytics scripts (e.g., Google Analytics,
+      Meta Pixel), or session recording tools on our static deliverables.
+    </p>
   </section>
 
-  <section class="space-y-3">
-    <h2 class="text-paper font-semibold">Contact</h2>
-    <p class="text-cloud/80">Questions: <a class="text-teal underline hover:text-teal/90" href="/contact.html">Contact & imprint</a>.</p>
+  <!-- 5. Data retention -->
+  <section class="space-y-3 mb-8" id="retention">
+    <h2 class="text-paper font-semibold text-base">5. Data retention</h2>
+    <ul class="text-cloud/80 list-disc pl-5 space-y-1">
+      <li><strong class="text-paper">Browser localStorage / sessionStorage</strong> &mdash; Stored in your browser; persists until you clear it or until session end (sessionStorage). Never sent to us.</li>
+      <li><strong class="text-paper">k4 mesh content</strong> &mdash; Retained in Cloudflare KV / Durable Objects until the authenticated operator deletes it or until the resource is deprovisioned. We do not apply automatic TTLs to operator mesh data (except BONDING multiplayer rooms, which have a KV TTL).</li>
+      <li><strong class="text-paper">Agent session tokens</strong> &mdash; Automatically deleted: 24 hours (operator), 8 hours (family dock).</li>
+      <li><strong class="text-paper">BONDING room data</strong> &mdash; Deleted on room close or KV TTL expiry. No retention beyond the session.</li>
+      <li><strong class="text-paper">Donation transaction metadata</strong> &mdash; Retained as long as needed for financial record-keeping and as required by applicable law (typically 7 years for nonprofit financial records).</li>
+      <li><strong class="text-paper">Cloudflare request logs</strong> &mdash; Retained according to Cloudflare&rsquo;s own policies, which we do not control.</li>
+    </ul>
   </section>
+
+  <!-- 6. Your rights -->
+  <section class="space-y-3 mb-8" id="your-rights">
+    <h2 class="text-paper font-semibold text-base">6. Your rights</h2>
+    <p class="text-cloud/80">
+      Depending on where you live, you may have rights regarding your personal data,
+      including the right to access, correct, delete, or restrict our processing.
+    </p>
+    <p class="text-cloud/80">
+      For data you have stored in k4 mesh Workers (k4-personal, k4-cage, k4-hubs), you control
+      your data directly through the API. You can delete your content at any time through
+      the API endpoints.
+    </p>
+    <p class="text-cloud/80">
+      For any other request &mdash; including deletion requests for donation records or security
+      log data &mdash; email us at
+      <a class="text-teal underline hover:text-teal/90" href="mailto:will@p31ca.org">will@p31ca.org</a>
+      with the subject line <code class="font-mono text-teal/80">[privacy]</code>. We will respond
+      within 30 days. We may need to verify your identity before acting on a request.
+    </p>
+    <p class="text-cloud/80">
+      We are a small nonprofit. We handle privacy requests manually and in good faith.
+    </p>
+  </section>
+
+  <!-- 7. International users / GDPR -->
+  <section class="space-y-3 mb-8" id="international">
+    <h2 class="text-paper font-semibold text-base">7. International users (GDPR good-faith notice)</h2>
+    <p class="text-cloud/80">
+      Our services are operated from the United States by a U.S. nonprofit. If you access
+      our services from the European Economic Area, United Kingdom, or another jurisdiction
+      with data protection laws, please be aware:
+    </p>
+    <ul class="text-cloud/80 list-disc pl-5 space-y-1">
+      <li>Data you submit may be processed and stored on servers located in the United States and in Cloudflare&rsquo;s global edge network (including EU-based edge nodes).</li>
+      <li>We do not rely on Standard Contractual Clauses or other formal transfer mechanisms at this time, as we do not systematically market to or target EEA residents. Our services are available globally via the public internet; we do not take steps to direct them at EEA users specifically.</li>
+      <li>If you are an EEA resident and believe you have GDPR rights that apply to our processing, you may contact us at <a class="text-teal underline hover:text-teal/90" href="mailto:will@p31ca.org">will@p31ca.org</a> and we will make a good-faith effort to accommodate your request.</li>
+    </ul>
+    <p class="text-cloud/80">
+      We are a small nonprofit. We do not currently have a formal EU representative or Data Protection Officer.
+      If you have concerns, we encourage you to contact us directly before filing a supervisory authority complaint.
+    </p>
+  </section>
+
+  <!-- 8. Changes -->
+  <section class="space-y-3 mb-8" id="changes">
+    <h2 class="text-paper font-semibold text-base">8. Changes to this policy</h2>
+    <p class="text-cloud/80">
+      We may update this policy when our data practices change (for example, when we launch
+      new services or when our 501(c)(3) status changes). When we update it, we revise the
+      effective date at the top of this page. Material changes that affect how we handle data
+      you have already provided will be communicated via a notice on this page for at least 14 days
+      before taking effect.
+    </p>
+    <p class="text-cloud/80">
+      Continued use of our services after the effective date of an updated policy constitutes
+      acceptance of the revised terms.
+    </p>
+  </section>
+
+  <!-- 9. Contact -->
+  <section class="space-y-3 mb-8" id="contact">
+    <h2 class="text-paper font-semibold text-base">9. Contact</h2>
+    <p class="text-cloud/80">
+      Privacy questions, data requests, and COPPA inquiries:
+    </p>
+    <address class="not-italic text-cloud/80 space-y-1 pl-4 border-l border-teal/30">
+      <div><strong class="text-paper">P31 Labs, Inc.</strong></div>
+      <div>EIN 42-1888158 &mdash; Georgia domestic nonprofit</div>
+      <div>
+        Email: <a class="text-teal underline hover:text-teal/90" href="mailto:will@p31ca.org">will@p31ca.org</a>
+        &mdash; subject line <code class="font-mono text-teal/80">[privacy]</code>
+      </div>
+      <div>
+        Web: <a class="text-teal underline hover:text-teal/90" href="https://p31ca.org">p31ca.org</a>
+      </div>
+    </address>
+  </section>
+
+  <p class="text-cloud/40 text-xs mt-10">
+    &copy; 2026 P31 Labs, Inc. &mdash;
+    <a class="text-teal/60 hover:underline" href="/terms">Terms</a> &middot;
+    <a class="text-teal/60 hover:underline" href="/security">Security</a> &middot;
+    <a class="text-teal/60 hover:underline" href="/accessibility">Accessibility</a>
+  </p>
 </body>
 </html>

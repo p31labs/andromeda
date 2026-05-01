@@ -97,5 +97,9 @@ const {
     }
 
     <slot />
+    <script type="module" is:inline>
+      import { startGrandfatherPhaseVar } from "/lib/p31-quantum-grandfather-boot.mjs";
+      startGrandfatherPhaseVar();
+    </script>
   </body>
 </html>
