@@ -5,6 +5,7 @@
   "sources": [
     "p31-constants.json",
     "p31-ecosystem.json",
+    "p31-discord-bot-swarm.json",
     "andromeda/04_SOFTWARE/p31ca/public/p31-public-surface.json",
     "andromeda/04_SOFTWARE/p31ca/public/p31-integrations.json",
     "andromeda/04_SOFTWARE/p31ca/security/worker-allowlist.json"
@@ -38,11 +39,16 @@
     "publicMachineIndexes": {
       "publicSurface": "https://p31ca.org/p31-public-surface.json",
       "creatorEconomy": "https://p31ca.org/creator-economy.json",
+      "contractRegistry": "https://p31ca.org/p31-contract-registry.json",
       "meshConstants": "https://p31ca.org/p31-mesh-constants.json",
       "note": "Hub ships JSON contracts; schema p31.publicSurface/1.0.0"
     },
     "featuredPublicPaths": [
       { "path": "/demos", "note": "Demo labs index (static demos)" },
+      { "path": "/visuals", "note": "Mind-bending visual demos — K₄ mesh · alignment graph · Larmor pulse · glass box (p31.demosIndex)" },
+      { "path": "/glass-box", "note": "Public transparency terminal — synthetic CLI playbacks + verify pulse + promoted reports (p31.glassBox)" },
+      { "path": "/contracts", "note": "Contract builder UI + alignment-derived registry (p31.contractRegistry)" },
+      { "path": "/composer", "note": "Quantum composer — K₄ Web Audio partials on Larmor ladder (p31.quantumComposerPage)" },
       { "path": "/cars", "note": "Social Molecules · C.A.R.S. operator shell (boot, load, settings, field chat, edge ribbon)" },
       { "path": "/fleet", "note": "Live fleet map (sites + Workers)" },
       { "path": "/agents", "note": "Fleet agents room — each Worker · bot · Cortex sub-agent interactive + probes (/fleet-agents)" },
@@ -210,5 +216,12 @@
   "wcd33Archive": {
     "deployPath": "wcd33-global-archive",
     "note": "Listed in p31-ecosystem deployables; URL not in constants — see package wrangler"
+  },
+  "discordBotSwarm": {
+    "schema": "p31.discordBotSwarm/1.0.0",
+    "summaryPath": "p31-discord-bot-swarm.json",
+    "codePath": "andromeda/04_SOFTWARE/discord/p31-bot",
+    "ecosystemDeployableId": "p31-discord-bot-swarm",
+    "note": "Command roster + registryFingerprint mirror the bot manifest; regenerate with npm run verify:discord-bot"
   }
 }
