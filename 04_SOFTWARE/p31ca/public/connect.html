@@ -323,6 +323,8 @@
         <a href="/lab" class="hub-link" title="Sovereign Lab · trim dome · optional mock WS labTelemetry">Lab</a>
         <a href="/slicer" class="hub-link" title="Browser slicer · Kiri + K₄ STL on this origin">Slicer</a>
         <a href="/centaur" class="hub-link" title="Operator starter — data, MAP, mesh fleet">Centaur pack</a>
+        <a href="/visuals" class="hub-link" title="Visual demos — K₄ mesh diagram, alignment graph, Larmor pulse, glass box">Visuals</a>
+        <a href="/glass-box" class="hub-link" title="Public transparency terminal — synthetic CLI playbacks + verify pulse + promoted reports">Glass</a>
         <a href="/" class="hub-link">← Hub</a>
     </div>
 </header>
@@ -503,6 +505,15 @@ const PRODUCTS = [
         desc: 'Cloudflare Worker (p31-passkey): challenge/verify, D1 credential store. Zone route p31ca.org/api/passkey/*. Same-origin /auth for returning members; Turnstile / cage IDs are separate edges.',
         connects: ['will'],
         pos: new THREE.Vector3(-0.6, 2.0, -2.0),
+    },
+    {
+        id: 'messaging-hub', label: 'COMMS', icon: '💬', color: '#5a9e8a',
+        tagline: 'Messaging index',
+        url: 'messaging-hub.html',
+        status: 'LIVE', stub: false,
+        desc: 'Static map: mesh assistant, C.A.R.S. field, geodesic room, dev bench, integrations, operator shell; Phos stays on kids/onboard. Short /messages · /comms.',
+        connects: ['will'],
+        pos: new THREE.Vector3(1.0, 2.2, 0.35),
     },
 ];
 
@@ -859,6 +870,10 @@ setTimeout(() => {
         }
     });
 })();
+</script>
+<script type="module">
+  import { startGrandfatherPhaseVar } from "/lib/p31-quantum-grandfather-boot.mjs";
+  startGrandfatherPhaseVar();
 </script>
 <script src="/lib/p31-return-ribbon.js" defer></script>
 </body>

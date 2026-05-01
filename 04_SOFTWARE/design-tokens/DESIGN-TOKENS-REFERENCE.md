@@ -2,7 +2,7 @@
 
 <!-- AUTO-GENERATED — do not hand-edit. Source: p31-universal-canon.json -->
 
-**Schema:** `p31.universalCanon/1.0.0` · **Canon version:** `1.1.0` · **Generated:** `2026-04-29T23:01:56.793Z`
+**Schema:** `p31.universalCanon/1.0.0` · **Canon version:** `1.2.0` · **Generated:** `2026-04-30T21:16:00.918Z`
 
 *P31 universal design canon — shared tokens, ring-local appearance*
 

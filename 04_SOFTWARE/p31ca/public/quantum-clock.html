@@ -21,7 +21,10 @@
     <p class="mt-1 text-sm text-butter/90 font-mono">p31.quantumClockPage/0.1.0</p>
     <p class="mt-4 text-cloud/85 leading-relaxed" id="main">
       <strong>Grandfather</strong> = continuous slow rhythm: <code class="text-lavender/90">TRIM_HZ_MIN</code> (0.86 Hz) up through Larmor, visualised as
-      <code class="text-lavender/90">--p31-grandfather-phase</code> on the hub and <code class="text-lavender/90">/dome</code>.
+      <code class="text-lavender/90">--p31-grandfather-phase</code> on <code class="text-lavender/90">/</code>, <code class="text-lavender/90">/dome</code>,
+      Tier-S1 navigators (<code class="text-lavender/90">connect</code>, planetary onboard, <code class="text-lavender/90">geodesic</code>, quantum deck,
+      tomography, delta, oracle crystal, Fate d20/OQE, quantum family, …) via shared
+      <code class="text-lavender/90">/lib/p31-quantum-grandfather-boot.mjs</code> (machine-checked against dome constants).
       <strong>Cuckoo</strong> = episodic: telemetry refresh, mesh HUD line, breath phases—surfaced as
       <code class="text-lavender/90">p31:quantum-clock</code> on <code class="text-lavender/90">document</code>.
     </p>
@@ -32,6 +35,8 @@
     <ul class="mt-6 list-disc pl-5 space-y-2 text-sm text-cloud/80">
       <li>Try: <a class="p31-mesh-tap text-teal hover:underline" href="/dome/">Sovereign dome</a> (HUD + trim)</li>
       <li>Try: <a class="p31-mesh-tap text-teal hover:underline" href="/tomography.html">Tomography</a> (slow 0.86 Hz ring, verify-linked)</li>
+      <li>Try: <a class="p31-mesh-tap text-teal hover:underline" href="/quantum-deck.html">Quantum Deck</a> (Web Crypto shuffle, same verify chain)</li>
+      <li>Try: <a class="p31-mesh-tap text-teal hover:underline" href="/quantum-composer.html">Quantum composer</a> (K₄ Web Audio · Larmor ladder · short <code class="text-xs">/composer</code>)</li>
       <li>Code: P31 home <code class="text-xs">docs/PLAN-QUANTUM-CLOCK.md</code></li>
     </ul>
     <p class="mt-8">
@@ -39,6 +44,10 @@
       <span class="text-cloud/40 mx-2">·</span>
       <a class="p31-mesh-tap text-teal/90 hover:underline" href="/">Hub home</a>
     </p>
+    <script type="module">
+      import { startGrandfatherPhaseVar } from "/lib/p31-quantum-grandfather-boot.mjs";
+      startGrandfatherPhaseVar();
+    </script>
   </div>
 </body>
 </html>

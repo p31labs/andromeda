@@ -28,6 +28,16 @@ Default Vite port **3150** (see `vite.config.ts`).
 | Proof editor | `#/proof/new/:roleId`, `#/proof/:id` |
 | Reviewers, changelog, governance | `#/reviewers`, `#/changelog`, `#/governance` |
 
+## Hub production gate (p31ca)
+
+After **`sync:p31ca`**, the monorepo verifies the mirrored bundle (assets resolve, `/p31-style.css`, schemas in source data):
+
+```bash
+cd ../p31ca && npm run verify:delta-hiring
+```
+
+Playwright: **`p31ca/e2e/delta-hiring.spec.ts`** (runs with `npm run test:e2e` in p31ca).
+
 ## One-shot quality gate (local / CI)
 
 ```bash

@@ -1,0 +1,19 @@
+{
+  "schema": "p31.reportsIndex/0.1.0",
+  "version": "1.0.0",
+  "generatedAt": "2026-04-30T21:20:01.032Z",
+  "count": 1,
+  "byKind": {
+    "urgent": 1
+  },
+  "recent": [
+    {
+      "id": "urgent-20260430-2120-qoc3",
+      "kind": "urgent",
+      "ts": "2026-04-30T21:20:01.013Z",
+      "severity": "high",
+      "headline": "P31 Glass Box ships pulse + promoted + widget",
+      "refsLocal": true
+    }
+  ]
+}

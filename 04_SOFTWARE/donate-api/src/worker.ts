@@ -17,6 +17,25 @@ interface Env {
   GENESIS_GATE_URL?: string;    // https://genesis.p31ca.org (R09)
   /** Optional KV for Stripe event idempotency (CWP-P31-MAP D-MAP-3/5). Omit in dev if unset. */
   DONATE_EVENTS?: KVNamespace;
+  /**
+   * Shared with p31-bot `P31_DISCORD_INGRESS_SECRET` — HMAC-SHA256 hex over the exact JSON body
+   * forwarded to DISCORD_WEBHOOK_URL (`X-P31-Ingress-Signature: sha256=<hex>`).
+   */
+  P31_DISCORD_INGRESS_SECRET?: string;
+}
+
+async function hmacSha256Hex(secret: string, message: string): Promise<string> {
+  const key = await crypto.subtle.importKey(
+    'raw',
+    new TextEncoder().encode(secret),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign'],
+  );
+  const sig = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(message));
+  return Array.from(new Uint8Array(sig))
+    .map(b => b.toString(16).padStart(2, '0'))
+    .join('');
 }
 
 // R09: Emit telemetry to Genesis Gate (fire-and-forget, never throws)
@@ -243,10 +262,16 @@ async function handleStripeWebhook(request: Request, env: Env): Promise<Response
   // Forward checkout.session.completed to the Discord bot webhook (best-effort)
   if (event.type === 'checkout.session.completed' && env.DISCORD_WEBHOOK_URL) {
     try {
+      const body = JSON.stringify(event);
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      if (env.P31_DISCORD_INGRESS_SECRET) {
+        const hex = await hmacSha256Hex(env.P31_DISCORD_INGRESS_SECRET, body);
+        headers['X-P31-Ingress-Signature'] = `sha256=${hex}`;
+      }
       await fetch(env.DISCORD_WEBHOOK_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(event),
+        headers,
+        body,
       });
     } catch (e) {
       console.error('Failed to forward to Discord bot:', e);

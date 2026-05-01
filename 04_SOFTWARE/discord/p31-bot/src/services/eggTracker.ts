@@ -34,8 +34,10 @@ function getWritablePath(basePath: string): string {
 export const PROGRESS_FILE = getWritablePath(process.env.EGG_PROGRESS_PATH || './egg-progress.json');
 export const FOUNDING_FILE = getWritablePath(process.env.EGG_FOUNDING_PATH || './founding-nodes.json');
 
-console.log(`[EggTracker] Using progress file: ${PROGRESS_FILE}`);
-console.log(`[EggTracker] Using founding file: ${FOUNDING_FILE}`);
+if (process.env.P31_BOT_QUIET !== "1") {
+  console.log(`[EggTracker] Using progress file: ${PROGRESS_FILE}`);
+  console.log(`[EggTracker] Using founding file: ${FOUNDING_FILE}`);
+}
 
 // Initialize files if they don't exist
 if (!fs.existsSync(PROGRESS_FILE)) fs.writeFileSync(PROGRESS_FILE, JSON.stringify({}));

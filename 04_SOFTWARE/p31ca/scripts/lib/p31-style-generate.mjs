@@ -151,13 +151,57 @@ export function buildStyleArtifacts(canon) {
     twColors[name] = `var(--p31-${name})`;
   }
 
+  const q = canon.quantum;
+  const twTone = {};
+  const twElevTone = {};
+  const twElevShadow = {};
+  const twShape = {};
+  const twQMotion = {};
+  if (q) {
+    const anchors = Array.isArray(q.tonalAnchors) ? q.tonalAnchors : [];
+    const steps = Array.isArray(q.tonalSteps) ? q.tonalSteps : [];
+    for (const a of anchors) {
+      twTone[a] = {};
+      steps.forEach((_pct, i) => {
+        twTone[a][i] = `var(--p31-tone-${a}-${i})`;
+      });
+    }
+    for (const lvl of Object.keys(q.elevation || {})) {
+      twElevTone[lvl] = `var(--p31-elev-${lvl}-tone)`;
+      twElevShadow[lvl] = `var(--p31-elev-${lvl}-shadow)`;
+    }
+    for (const k of Object.keys(q.shape || {})) {
+      twShape[k] = `var(--p31-shape-${k})`;
+    }
+    for (const k of Object.keys(q.motionBudget || {})) {
+      twQMotion[`q-${k}`] = `var(--p31-q-motion-${k})`;
+    }
+  }
+
+  /** @type {Record<string, unknown>} */
   const extendObj = {
     fontFamily: {
       sans: [`"${canon.typography.fontFamilies.sans[0]}"`, ...canon.typography.fontFamilies.sans.slice(1)],
       mono: [`"${canon.typography.fontFamilies.mono[0]}"`, ...canon.typography.fontFamilies.mono.slice(1)],
     },
-    colors: twColors,
+    colors: q ? { ...twColors, tone: twTone, elev: twElevTone } : twColors,
+    boxShadow: q ? twElevShadow : undefined,
+    borderRadius: q ? twShape : undefined,
+    transitionDuration: q ? twQMotion : undefined,
   };
+  if (q) {
+    extendObj.p31Quantum = {
+      schema: "p31.universalCanon/1.0.0",
+      version: q.version || "1.0.0",
+      anchors: Array.isArray(q.tonalAnchors) ? q.tonalAnchors : [],
+      steps: Array.isArray(q.tonalSteps) ? q.tonalSteps : [],
+      stateLayer: q.stateLayer || {},
+    };
+  } else {
+    delete extendObj.boxShadow;
+    delete extendObj.borderRadius;
+    delete extendObj.transitionDuration;
+  }
 
   const js =
     `/* AUTO-GENERATED — hub Tailwind CDN preset (dark vars). Org: rely on CSS variables + data-p31-appearance. */\n(function () {\n  window.P31_TAILWIND_EXTEND = ${JSON.stringify(extendObj, null, 2)};\n})();\n`;
@@ -165,6 +209,7 @@ export function buildStyleArtifacts(canon) {
   emitMissionTrioBlock(cssLines);
   emitDesignDoctrineBlock(cssLines);
   emitSkyRibbonAndStarfieldBlock(cssLines, canon);
+  emitQuantumMaterialUBlock(cssLines, canon);
 
   return { css: cssLines.join("\n"), js };
 }
@@ -612,7 +657,362 @@ function emitDesignDoctrineBlock(lines) {
 }
 
 /**
+ * P31 Quantum Material U — additive Material 3 grammar refracted through K\u2084 anchors.
+ *
+ * Emits ONLY tokens + opt-in `.p31-q-*` classes. Existing `.p31-card`, `.p31-btn`,
+ * `.p31-glass`, `.p31-mission-trio*`, `.p31-return-ribbon` remain untouched.
+ *
+ * Hard guards (matched in this block):
+ *  - Layer 1 (Gray Rock) untouched: tokens defined, classes opt-in.
+ *  - No first-paint motion: transitions only on :hover / :focus-visible / :active.
+ *  - prefers-reduced-motion: clamp transitions to 0.01ms.
+ *  - Operator passport prefs (data-p31-{contrast,density,motion}) compose with classes.
+ *
+ * Spec: docs/P31-QUANTUM-MATERIAL-U.md  ·  Verifier: scripts/verify-quantum-material-u.mjs
+ */
+function emitQuantumMaterialUBlock(lines, canon) {
+  const q = canon.quantum;
+  if (!q) return;
+  const anchors = Array.isArray(q.tonalAnchors) ? q.tonalAnchors : [];
+  const steps = Array.isArray(q.tonalSteps) ? q.tonalSteps : [];
+  const elev = q.elevation || {};
+  const state = q.stateLayer || {};
+  const shape = q.shape || {};
+  const motion = q.motionBudget || {};
+
+  lines.push("");
+  lines.push("/* P31 Quantum Material U \u2014 docs/P31-QUANTUM-MATERIAL-U.md (additive, opt-in via .p31-q-*). */");
+
+  lines.push(":root {");
+  for (const a of anchors) {
+    steps.forEach((pct, i) => {
+      lines.push(`  --p31-tone-${a}-${i}: color-mix(in srgb, var(--p31-${a}) ${pct}%, var(--p31-void));`);
+    });
+  }
+  for (const lvl of Object.keys(elev)) {
+    const e = elev[lvl];
+    if (e == null) continue;
+    if (typeof e.tone === "number") {
+      lines.push(
+        `  --p31-elev-${lvl}-tone: color-mix(in srgb, var(--p31-cloud) ${e.tone}%, var(--p31-surface));`,
+      );
+    }
+    if (typeof e.shadow === "string") {
+      lines.push(`  --p31-elev-${lvl}-shadow: ${e.shadow};`);
+    }
+  }
+  for (const k of Object.keys(state)) {
+    lines.push(`  --p31-state-${k}: ${state[k]};`);
+  }
+  for (const k of Object.keys(shape)) {
+    lines.push(`  --p31-shape-${k}: ${shape[k]};`);
+  }
+  for (const k of Object.keys(motion)) {
+    lines.push(`  --p31-q-motion-${k}: ${motion[k]};`);
+  }
+  lines.push("}");
+
+  lines.push('[data-p31-appearance="org"] {');
+  for (const a of anchors) {
+    steps.forEach((pct, i) => {
+      lines.push(`  --p31-tone-${a}-${i}: color-mix(in srgb, var(--p31-${a}) ${pct}%, var(--p31-paper));`);
+    });
+  }
+  for (const lvl of Object.keys(elev)) {
+    const e = elev[lvl];
+    if (e == null) continue;
+    if (typeof e.tone === "number") {
+      lines.push(
+        `  --p31-elev-${lvl}-tone: color-mix(in srgb, var(--p31-ink) ${e.tone}%, var(--p31-paper));`,
+      );
+    }
+    if (typeof e.shadow === "string") {
+      const softer = e.shadow.replace(/rgba\(0,0,0,0\.(\d+)\)/g, (_m, n) => {
+        const v = Math.max(0.04, parseFloat(`0.${n}`) * 0.4).toFixed(2);
+        return `rgba(15, 23, 42, ${v})`;
+      });
+      lines.push(`  --p31-elev-${lvl}-shadow: ${softer};`);
+    }
+  }
+  lines.push("}");
+
+  lines.push("");
+  lines.push("/* Surface — semantic elevation (data-p31-elev=\"0..5\"). Inherits Gray Rock when no attribute. */");
+  lines.push(".p31-q-surface {");
+  lines.push("  background: var(--p31-surface);");
+  lines.push("  border: 1px solid var(--p31-border-subtle);");
+  lines.push("  border-radius: var(--p31-shape-md);");
+  lines.push("  color: var(--p31-cloud);");
+  lines.push("  padding: var(--p31-space-5);");
+  lines.push("}");
+  for (let i = 0; i <= 5; i++) {
+    lines.push(`.p31-q-surface[data-p31-elev="${i}"] {`);
+    lines.push(`  background: var(--p31-elev-${i}-tone);`);
+    lines.push(`  box-shadow: var(--p31-elev-${i}-shadow);`);
+    lines.push("}");
+  }
+
+  lines.push("");
+  lines.push("/* Card \u2014 Material 3 filled card adapted; tone, no chroma at rest. */");
+  lines.push(".p31-q-card {");
+  lines.push("  position: relative;");
+  lines.push("  display: flex;");
+  lines.push("  flex-direction: column;");
+  lines.push("  gap: var(--p31-space-3);");
+  lines.push("  padding: var(--p31-space-6);");
+  lines.push("  background: var(--p31-elev-1-tone);");
+  lines.push("  border: 1px solid var(--p31-border-subtle);");
+  lines.push("  border-radius: var(--p31-shape-lg);");
+  lines.push("  box-shadow: var(--p31-elev-1-shadow);");
+  lines.push("  color: var(--p31-cloud);");
+  lines.push("  transition: box-shadow var(--p31-q-motion-within) var(--p31-ease-standard),");
+  lines.push("              transform var(--p31-q-motion-within) var(--p31-ease-standard),");
+  lines.push("              border-color var(--p31-q-motion-within) var(--p31-ease-standard);");
+  lines.push("  isolation: isolate;");
+  lines.push("}");
+  lines.push(".p31-q-card::after {");
+  lines.push("  content: \"\";");
+  lines.push("  position: absolute;");
+  lines.push("  inset: 0;");
+  lines.push("  border-radius: inherit;");
+  lines.push("  background: var(--p31-cloud);");
+  lines.push("  opacity: 0;");
+  lines.push("  transition: opacity var(--p31-q-motion-within) var(--p31-ease-standard);");
+  lines.push("  pointer-events: none;");
+  lines.push("  z-index: 0;");
+  lines.push("}");
+  lines.push(".p31-q-card > * { position: relative; z-index: 1; }");
+  lines.push(".p31-q-card:hover { box-shadow: var(--p31-elev-2-shadow); border-color: var(--p31-teal); }");
+  lines.push(".p31-q-card:hover::after { opacity: var(--p31-state-hover); }");
+  lines.push(".p31-q-card:focus-within { box-shadow: var(--p31-elev-2-shadow); border-color: var(--p31-cyan); }");
+  lines.push(".p31-q-card:focus-within::after { opacity: var(--p31-state-focus); }");
+  lines.push(".p31-q-card[data-p31-shape=\"asymmetric\"] { border-radius: var(--p31-shape-asymmetric); }");
+  lines.push(".p31-q-card[data-p31-tone=\"teal\"] { border-color: var(--p31-tone-teal-1); }");
+  lines.push(".p31-q-card[data-p31-tone=\"coral\"] { border-color: var(--p31-tone-coral-1); }");
+  lines.push(".p31-q-card[data-p31-tone=\"phosphorus\"] { border-color: var(--p31-tone-phosphorus-1); }");
+  lines.push(".p31-q-card[data-p31-tone=\"butter\"] { border-color: var(--p31-tone-butter-1); }");
+  lines.push(".p31-q-card[data-p31-tone=\"lavender\"] { border-color: var(--p31-tone-lavender-1); }");
+  lines.push("@media (prefers-reduced-motion: reduce) {");
+  lines.push("  .p31-q-card,");
+  lines.push("  .p31-q-card::after { transition: none; }");
+  lines.push("}");
+
+  lines.push("");
+  lines.push("/* Buttons \u2014 filled / tonal / outlined / text + state-layer pseudo. */");
+  lines.push(".p31-q-button {");
+  lines.push("  position: relative;");
+  lines.push("  display: inline-flex;");
+  lines.push("  align-items: center;");
+  lines.push("  justify-content: center;");
+  lines.push("  gap: var(--p31-space-2);");
+  lines.push("  min-height: 44px;");
+  lines.push("  padding: var(--p31-space-3) var(--p31-space-5);");
+  lines.push("  font-family: var(--p31-font-sans);");
+  lines.push("  font-size: var(--p31-text-sm);");
+  lines.push("  font-weight: 600;");
+  lines.push("  line-height: 1;");
+  lines.push("  border-radius: var(--p31-shape-full);");
+  lines.push("  border: 1px solid transparent;");
+  lines.push("  cursor: pointer;");
+  lines.push("  text-decoration: none;");
+  lines.push("  isolation: isolate;");
+  lines.push("  transition: background var(--p31-q-motion-within) var(--p31-ease-standard),");
+  lines.push("              color var(--p31-q-motion-within) var(--p31-ease-standard),");
+  lines.push("              border-color var(--p31-q-motion-within) var(--p31-ease-standard),");
+  lines.push("              box-shadow var(--p31-q-motion-within) var(--p31-ease-standard);");
+  lines.push("}");
+  lines.push(".p31-q-button::after {");
+  lines.push("  content: \"\";");
+  lines.push("  position: absolute;");
+  lines.push("  inset: 0;");
+  lines.push("  border-radius: inherit;");
+  lines.push("  background: currentColor;");
+  lines.push("  opacity: 0;");
+  lines.push("  transition: opacity var(--p31-q-motion-within) var(--p31-ease-standard);");
+  lines.push("  pointer-events: none;");
+  lines.push("  z-index: 0;");
+  lines.push("}");
+  lines.push(".p31-q-button > * { position: relative; z-index: 1; }");
+  lines.push(".p31-q-button:hover::after { opacity: var(--p31-state-hover); }");
+  lines.push(".p31-q-button:focus-visible {");
+  lines.push("  outline: var(--p31-focus-ring) solid var(--p31-focus-color-hub);");
+  lines.push("  outline-offset: var(--p31-focus-offset);");
+  lines.push("}");
+  lines.push(".p31-q-button:focus-visible::after { opacity: var(--p31-state-focus); }");
+  lines.push(".p31-q-button:active::after { opacity: var(--p31-state-pressed); }");
+  lines.push(".p31-q-button[aria-disabled=\"true\"],");
+  lines.push(".p31-q-button:disabled {");
+  lines.push("  cursor: not-allowed;");
+  lines.push("  opacity: var(--p31-state-disabled);");
+  lines.push("}");
+  lines.push(".p31-q-button--filled {");
+  lines.push("  background: var(--p31-teal);");
+  lines.push("  color: var(--p31-void);");
+  lines.push("  box-shadow: var(--p31-elev-1-shadow);");
+  lines.push("}");
+  lines.push(".p31-q-button--filled:hover { box-shadow: var(--p31-elev-2-shadow); }");
+  lines.push(".p31-q-button--tonal {");
+  lines.push("  background: var(--p31-tone-teal-2);");
+  lines.push("  color: var(--p31-cloud);");
+  lines.push("}");
+  lines.push(".p31-q-button--outlined {");
+  lines.push("  background: transparent;");
+  lines.push("  color: var(--p31-cloud);");
+  lines.push("  border-color: var(--p31-border-subtle);");
+  lines.push("}");
+  lines.push(".p31-q-button--outlined:hover { border-color: var(--p31-teal); color: var(--p31-teal); }");
+  lines.push(".p31-q-button--text {");
+  lines.push("  background: transparent;");
+  lines.push("  color: var(--p31-cyan);");
+  lines.push("  padding: var(--p31-space-2) var(--p31-space-3);");
+  lines.push("}");
+  lines.push(".p31-q-button[data-p31-tone=\"coral\"].p31-q-button--filled { background: var(--p31-coral); }");
+  lines.push(".p31-q-button[data-p31-tone=\"coral\"].p31-q-button--tonal { background: var(--p31-tone-coral-2); }");
+  lines.push(".p31-q-button[data-p31-tone=\"coral\"].p31-q-button--text { color: var(--p31-coral); }");
+  lines.push(".p31-q-button[data-p31-tone=\"phosphorus\"].p31-q-button--filled { background: var(--p31-phosphorus); }");
+  lines.push(".p31-q-button[data-p31-tone=\"phosphorus\"].p31-q-button--tonal { background: var(--p31-tone-phosphorus-2); }");
+  lines.push(".p31-q-button[data-p31-tone=\"phosphorus\"].p31-q-button--text { color: var(--p31-phosphorus); }");
+  lines.push(".p31-q-button[data-p31-tone=\"butter\"].p31-q-button--filled { background: var(--p31-butter); color: var(--p31-ink); }");
+  lines.push(".p31-q-button[data-p31-tone=\"butter\"].p31-q-button--tonal { background: var(--p31-tone-butter-2); }");
+  lines.push(".p31-q-button[data-p31-tone=\"butter\"].p31-q-button--text { color: var(--p31-butter); }");
+  lines.push(".p31-q-button[data-p31-tone=\"lavender\"].p31-q-button--filled { background: var(--p31-lavender); color: var(--p31-void); }");
+  lines.push(".p31-q-button[data-p31-tone=\"lavender\"].p31-q-button--tonal { background: var(--p31-tone-lavender-2); }");
+  lines.push(".p31-q-button[data-p31-tone=\"lavender\"].p31-q-button--text { color: var(--p31-lavender); }");
+  lines.push("@media (prefers-reduced-motion: reduce) {");
+  lines.push("  .p31-q-button,");
+  lines.push("  .p31-q-button::after { transition: none; }");
+  lines.push("}");
+
+  lines.push("");
+  lines.push("/* FAB \u2014 Floating Action Button. Operator-summoned only; never autoload chrome. */");
+  lines.push(".p31-q-fab {");
+  lines.push("  position: relative;");
+  lines.push("  display: inline-flex;");
+  lines.push("  align-items: center;");
+  lines.push("  justify-content: center;");
+  lines.push("  gap: var(--p31-space-2);");
+  lines.push("  min-width: 56px;");
+  lines.push("  min-height: 56px;");
+  lines.push("  padding: 0 var(--p31-space-5);");
+  lines.push("  border: none;");
+  lines.push("  border-radius: var(--p31-shape-lg);");
+  lines.push("  background: var(--p31-teal);");
+  lines.push("  color: var(--p31-void);");
+  lines.push("  font-family: var(--p31-font-sans);");
+  lines.push("  font-size: var(--p31-text-sm);");
+  lines.push("  font-weight: 600;");
+  lines.push("  cursor: pointer;");
+  lines.push("  box-shadow: var(--p31-elev-3-shadow);");
+  lines.push("  isolation: isolate;");
+  lines.push("  transition: box-shadow var(--p31-q-motion-within) var(--p31-ease-emphasized),");
+  lines.push("              transform var(--p31-q-motion-within) var(--p31-ease-emphasized);");
+  lines.push("}");
+  lines.push(".p31-q-fab:hover { box-shadow: var(--p31-elev-4-shadow); }");
+  lines.push(".p31-q-fab:active { box-shadow: var(--p31-elev-2-shadow); }");
+  lines.push(".p31-q-fab:focus-visible {");
+  lines.push("  outline: var(--p31-focus-ring) solid var(--p31-focus-color-hub);");
+  lines.push("  outline-offset: var(--p31-focus-offset);");
+  lines.push("}");
+  lines.push(".p31-q-fab--small { min-width: 40px; min-height: 40px; padding: 0 var(--p31-space-3); border-radius: var(--p31-shape-md); }");
+  lines.push(".p31-q-fab--large { min-width: 96px; min-height: 96px; padding: 0 var(--p31-space-6); border-radius: var(--p31-shape-xl); font-size: var(--p31-text-lg); }");
+  lines.push("@media (prefers-reduced-motion: reduce) {");
+  lines.push("  .p31-q-fab { transition: none; }");
+  lines.push("}");
+
+  lines.push("");
+  lines.push("/* Chips \u2014 assist / filter / input / suggestion. */");
+  lines.push(".p31-q-chip {");
+  lines.push("  position: relative;");
+  lines.push("  display: inline-flex;");
+  lines.push("  align-items: center;");
+  lines.push("  gap: var(--p31-space-2);");
+  lines.push("  height: 32px;");
+  lines.push("  padding: 0 var(--p31-space-4);");
+  lines.push("  font-family: var(--p31-font-sans);");
+  lines.push("  font-size: var(--p31-text-sm);");
+  lines.push("  font-weight: 500;");
+  lines.push("  line-height: 1;");
+  lines.push("  color: var(--p31-cloud);");
+  lines.push("  background: transparent;");
+  lines.push("  border: 1px solid var(--p31-border-subtle);");
+  lines.push("  border-radius: var(--p31-shape-sm);");
+  lines.push("  cursor: pointer;");
+  lines.push("  isolation: isolate;");
+  lines.push("  transition: background var(--p31-q-motion-within) var(--p31-ease-standard),");
+  lines.push("              border-color var(--p31-q-motion-within) var(--p31-ease-standard);");
+  lines.push("}");
+  lines.push(".p31-q-chip:hover { border-color: var(--p31-teal); background: var(--p31-tone-teal-0); }");
+  lines.push(".p31-q-chip:focus-visible {");
+  lines.push("  outline: var(--p31-focus-ring) solid var(--p31-focus-color-hub);");
+  lines.push("  outline-offset: var(--p31-focus-offset);");
+  lines.push("}");
+  lines.push(".p31-q-chip[aria-pressed=\"true\"],");
+  lines.push(".p31-q-chip[data-p31-selected=\"true\"] {");
+  lines.push("  background: var(--p31-tone-teal-2);");
+  lines.push("  border-color: var(--p31-teal);");
+  lines.push("}");
+  lines.push(".p31-q-chip--assist {}");
+  lines.push(".p31-q-chip--filter[aria-pressed=\"true\"] { background: var(--p31-tone-phosphorus-2); border-color: var(--p31-phosphorus); }");
+  lines.push(".p31-q-chip--input { background: var(--p31-elev-1-tone); }");
+  lines.push(".p31-q-chip--suggestion { color: var(--p31-muted); }");
+  lines.push(".p31-q-chip--suggestion:hover { color: var(--p31-cloud); }");
+  lines.push("@media (prefers-reduced-motion: reduce) { .p31-q-chip { transition: none; } }");
+
+  lines.push("");
+  lines.push("/* Divider \u2014 hairline; quiet; honors focus-within for orientation. */");
+  lines.push(".p31-q-divider {");
+  lines.push("  display: block;");
+  lines.push("  block-size: 1px;");
+  lines.push("  border: none;");
+  lines.push("  background: var(--p31-border-subtle);");
+  lines.push("  margin: var(--p31-space-4) 0;");
+  lines.push("}");
+  lines.push(".p31-q-divider--inset { margin-inline: var(--p31-space-6); }");
+  lines.push(".p31-q-divider[data-p31-orient=\"vertical\"] {");
+  lines.push("  block-size: auto;");
+  lines.push("  inline-size: 1px;");
+  lines.push("  align-self: stretch;");
+  lines.push("  margin: 0 var(--p31-space-4);");
+  lines.push("}");
+
+  lines.push("");
+  lines.push("/* Quantum atmosphere \u2014 K\u2084 vertex glow rail; opt-in via [data-p31-q-atmosphere]. */");
+  lines.push(".p31-q-atmosphere {");
+  lines.push("  position: relative;");
+  lines.push("}");
+  lines.push(".p31-q-atmosphere::before {");
+  lines.push("  content: \"\";");
+  lines.push("  position: absolute;");
+  lines.push("  inset: -1px;");
+  lines.push("  border-radius: inherit;");
+  lines.push("  background:");
+  lines.push("    radial-gradient(circle at 0% 0%, var(--p31-tone-teal-1), transparent 55%),");
+  lines.push("    radial-gradient(circle at 100% 0%, var(--p31-tone-coral-1), transparent 55%),");
+  lines.push("    radial-gradient(circle at 0% 100%, var(--p31-tone-phosphorus-1), transparent 55%),");
+  lines.push("    radial-gradient(circle at 100% 100%, var(--p31-tone-butter-1), transparent 55%);");
+  lines.push("  opacity: 0;");
+  lines.push("  pointer-events: none;");
+  lines.push("  z-index: -1;");
+  lines.push("  transition: opacity var(--p31-q-motion-enter) var(--p31-ease-emphasized);");
+  lines.push("}");
+  lines.push(".p31-q-atmosphere:hover::before,");
+  lines.push(".p31-q-atmosphere:focus-within::before { opacity: 1; }");
+  lines.push("@media (prefers-reduced-motion: reduce) { .p31-q-atmosphere::before { transition: none; } }");
+  lines.push(":root[data-p31-motion=\"none\"] .p31-q-atmosphere::before { opacity: 0 !important; }");
+
+  lines.push("");
+  lines.push("/* Personalization composes with passport prefs (data-p31-density / contrast / motion). */");
+  lines.push(":root[data-p31-density=\"compact\"] .p31-q-card { padding: var(--p31-space-4); }");
+  lines.push(":root[data-p31-density=\"spacious\"] .p31-q-card { padding: var(--p31-space-8); }");
+  lines.push(":root[data-p31-contrast=\"high\"] .p31-q-card,");
+  lines.push(":root[data-p31-contrast=\"max\"] .p31-q-card { border-color: var(--p31-cloud); }");
+}
+
+/**
  * Tailwind theme.extend for Astro — hub appearance hex values (compile-time).
+ * When canon.quantum is present, also exposes tone / elevation / shape / motion
+ * as Tailwind-utility-friendly nested keys (`tone-teal-2`, `shadow-elev-3`,
+ * `rounded-shape-asymmetric`, `duration-q-enter`).
  */
 export function buildAstroTailwindThemeExtend(canon) {
   if (canon.schema !== "p31.universalCanon/1.0.0") {
@@ -620,16 +1020,22 @@ export function buildAstroTailwindThemeExtend(canon) {
   }
   const hub = canon.appearances.hub;
   const { colors, glass } = hub;
-  return {
-    colors: {
-      ...colors,
-      emerald: colors.phosphorus,
-      amber: colors.butter,
-      glass: {
-        border: glass.border,
-        surface: glass.surface,
-      },
+  const q = canon.quantum;
+
+  /** @type {Record<string, any>} */
+  const colorExt = {
+    ...colors,
+    emerald: colors.phosphorus,
+    amber: colors.butter,
+    glass: {
+      border: glass.border,
+      surface: glass.surface,
     },
+  };
+
+  /** @type {Record<string, unknown>} */
+  const out = {
+    colors: colorExt,
     fontFamily: {
       sans: canon.typography.fontFamilies.sans,
       mono: canon.typography.fontFamilies.mono,
@@ -638,4 +1044,42 @@ export function buildAstroTailwindThemeExtend(canon) {
       glass: "12px",
     },
   };
+
+  if (q) {
+    const anchors = Array.isArray(q.tonalAnchors) ? q.tonalAnchors : [];
+    const steps = Array.isArray(q.tonalSteps) ? q.tonalSteps : [];
+    /** @type {Record<string, Record<number, string>>} */
+    const tone = {};
+    for (const a of anchors) {
+      tone[a] = {};
+      steps.forEach((_pct, i) => {
+        tone[a][i] = `var(--p31-tone-${a}-${i})`;
+      });
+    }
+    /** @type {Record<string, string>} */
+    const elev = {};
+    /** @type {Record<string, string>} */
+    const elevShadow = {};
+    for (const lvl of Object.keys(q.elevation || {})) {
+      elev[lvl] = `var(--p31-elev-${lvl}-tone)`;
+      elevShadow[lvl] = `var(--p31-elev-${lvl}-shadow)`;
+    }
+    /** @type {Record<string, string>} */
+    const shape = {};
+    for (const k of Object.keys(q.shape || {})) {
+      shape[k] = `var(--p31-shape-${k})`;
+    }
+    /** @type {Record<string, string>} */
+    const motion = {};
+    for (const k of Object.keys(q.motionBudget || {})) {
+      motion[`q-${k}`] = `var(--p31-q-motion-${k})`;
+    }
+    colorExt.tone = tone;
+    colorExt.elev = elev;
+    out.boxShadow = elevShadow;
+    out.borderRadius = shape;
+    out.transitionDuration = motion;
+  }
+
+  return out;
 }

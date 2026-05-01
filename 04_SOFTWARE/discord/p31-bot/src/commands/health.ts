@@ -13,7 +13,7 @@ interface HealthStatus {
 export class HealthCommand implements P31Command {
   name = "health";
   description = "P31 Network Health — check status of all workers and services";
-  aliases = ["status", "ping", "network"];
+  aliases = ["ping", "workers"];
   usage = "health";
 
   async execute(context: CommandContext): Promise<void> {
