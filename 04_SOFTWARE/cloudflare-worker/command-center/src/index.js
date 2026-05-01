@@ -860,7 +860,7 @@ async function pingFleet(env) {
       if (grantResp.ok) {
         const gd = await grantResp.json();
         const today = new Date(); today.setHours(0,0,0,0);
-        const activeStatuses = ['pending','assembling','researching'];
+        const activeStatuses = ['pending','assembling','researching','submitted','active'];
         const pipeline = gd.pipeline || [];
         const active = pipeline.filter(g => activeStatuses.includes(g.status));
         grantsData.active = active.length;
