@@ -5,8 +5,12 @@
     {
       "name": "geodesic-room",
       "path": "04_SOFTWARE/geodesic-room",
-      "bindings": ["GEODESIC_ROOM (DO)"],
-      "vars": ["WORKER_VERSION"],
+      "bindings": [
+        "GEODESIC_ROOM (DO)"
+      ],
+      "vars": [
+        "WORKER_VERSION"
+      ],
       "corsPolicy": "none — WebSocket only, no CORS headers set",
       "authScheme": "none — rooms are public by name; no PII stored",
       "notes": "Durable Object holding K₄ tetrahedron vertex positions (4 vertices, float xyz). WebSocket broadcast room. Clients drag vertices; DO is authoritative state. Room IDs are user-supplied; no auth required for POC. P2: add CF Access or Bearer token for private rooms."
@@ -14,8 +18,14 @@
     {
       "name": "p31-passkey",
       "path": "workers/passkey",
-      "bindings": ["CHALLENGES (KV)", "DB (D1)"],
-      "vars": ["RP_NAME", "RP_ID"],
+      "bindings": [
+        "CHALLENGES (KV)",
+        "DB (D1)"
+      ],
+      "vars": [
+        "RP_NAME",
+        "RP_ID"
+      ],
       "corsPolicy": "wildcard — intentional, protected by WebAuthn rpId binding",
       "authScheme": "WebAuthn FIDO2 (challenge/response)",
       "notes": "WebAuthn (POST /api/passkey/*); education GET; Node Zero (POST /api/hardware/challenge|pair|telemetry). Same D1/KV. ECDSA/RSA for WebAuthn. Hardware pairing is opaque subject_id + Ed25519 pubkey—no Passkey on device. Education/hardware fetch use high-entropy ids; static pages gate UX. P2: narrow CORS for non-WebAuthn paths."
@@ -23,8 +33,12 @@
     {
       "name": "p31-node-zero-m2m",
       "path": "workers/node-zero-m2m",
-      "bindings": ["HARDWARE_CHALLENGES (KV)"],
-      "vars": ["DEV_ALLOW_INSECURE"],
+      "bindings": [
+        "HARDWARE_CHALLENGES (KV)"
+      ],
+      "vars": [
+        "DEV_ALLOW_INSECURE"
+      ],
       "corsPolicy": "preflight OPTIONS for lab tools — POST is device/machine (Bearer), not cookie-sessions",
       "authScheme": "Bearer M2M_BEARER_TOKEN (wrangler secret); optional insecure dev mode when DEV_ALLOW_INSECURE=1 and secret unset — never prod",
       "notes": "POST /api/hardware/challenge emits six-digit pairing display_code + ephemeral KV record. Companion firmware: packages/node-zero/firmware/esp32-m2m-stub. Routes: uncomment zone route in wrangler.toml for p31ca.org/api/hardware/*. Replace KV id placeholder before deploy."
@@ -32,8 +46,16 @@
     {
       "name": "k4-personal",
       "path": "04_SOFTWARE/k4-personal",
-      "bindings": ["PERSONAL_AGENT (DO)", "K4_MESH (KV)", "AI"],
-      "vars": ["ENVIRONMENT", "WORKER_VERSION", "TOPOLOGY"],
+      "bindings": [
+        "PERSONAL_AGENT (DO)",
+        "K4_MESH (KV)",
+        "AI"
+      ],
+      "vars": [
+        "ENVIRONMENT",
+        "WORKER_VERSION",
+        "TOPOLOGY"
+      ],
       "corsPolicy": "allowlist + *.pages.dev — see src/index.js corsHeaders",
       "authScheme": "none on mesh read; /agent/* is per-user DO",
       "notes": "Personal K₄ mesh API + PersonalAgent SQLite DO. Deploy requires DO migration list in wrangler.toml. See k4-personal/README.md."
@@ -41,8 +63,18 @@
     {
       "name": "k4-cage",
       "path": "04_SOFTWARE/k4-cage",
-      "bindings": ["K4_TOPOLOGY (DO)", "FAMILY_MESH_ROOM (DO)", "K4_MESH (KV)"],
-      "vars": ["WORKER_VERSION", "TOPOLOGY", "ENVIRONMENT", "MESH_ROOM_IDS", "ORCHESTRATOR_WEBHOOK"],
+      "bindings": [
+        "K4_TOPOLOGY (DO)",
+        "FAMILY_MESH_ROOM (DO)",
+        "K4_MESH (KV)"
+      ],
+      "vars": [
+        "WORKER_VERSION",
+        "TOPOLOGY",
+        "ENVIRONMENT",
+        "MESH_ROOM_IDS",
+        "ORCHESTRATOR_WEBHOOK"
+      ],
       "corsPolicy": "as implemented in worker",
       "authScheme": "optional internal tokens",
       "notes": "Family cage mesh + topology DOs. unified-k4-cage reuses this worker name; same allowlist entry."
@@ -50,8 +82,16 @@
     {
       "name": "k4-hubs",
       "path": "04_SOFTWARE/k4-hubs",
-      "bindings": ["HUB_FUSION (DO)", "K4_CAGE (service)", "K4_PERSONAL (service)"],
-      "vars": ["ENVIRONMENT", "WORKER_VERSION", "PERSONAL_MESH_URL"],
+      "bindings": [
+        "HUB_FUSION (DO)",
+        "K4_CAGE (service)",
+        "K4_PERSONAL (service)"
+      ],
+      "vars": [
+        "ENVIRONMENT",
+        "WORKER_VERSION",
+        "PERSONAL_MESH_URL"
+      ],
       "corsPolicy": "as implemented in worker",
       "authScheme": "optional HUBS_WRITE_TOKEN",
       "notes": "Life-context hub router; service-binds to k4-cage and k4-personal."
@@ -59,7 +99,9 @@
     {
       "name": "p31-google-bridge",
       "path": "04_SOFTWARE/p31-google-bridge",
-      "bindings": ["GOOGLE_OAUTH (KV)"],
+      "bindings": [
+        "GOOGLE_OAUTH (KV)"
+      ],
       "vars": [
         "GOOGLE_CLIENT_ID",
         "REDIRECT_URL",
@@ -255,11 +297,37 @@
     {
       "name": "cf-edge-lab",
       "path": "home-root packages/cf-edge-lab (bonding-soup; not under andromeda/ — verify-worker-inventory does not scan this path)",
-      "bindings": ["AI (Workers AI)"],
+      "bindings": [
+        "AI (Workers AI)"
+      ],
       "vars": [],
       "corsPolicy": "playground HTML same-origin; /api/* JSON; no cookie auth",
       "authScheme": "none — lab only; rate-limit /api/vibe before public exposure",
       "notes": "Edge introspection (/api/edge), Workers AI vibe POST, WebSocket /ws. Canonical URL mesh.edgeLabWorkerUrl. npm run edge-lab:deploy from home root."
+    },
+    {
+      "name": "k4-agent-hub",
+      "path": "packages/k4-agent-hub",
+      "bindings": [
+        "ForgeHub (DO + SQLite)",
+        "CounselHub (DO + SQLite)",
+        "ScholarHub (DO + SQLite)",
+        "ScribeHub (DO + SQLite)",
+        "K4_AGENT_SESSIONS (KV)",
+        "K4_AGENT_ANCHORS (KV)",
+        "K4_AGENT_PEERS (KV)"
+      ],
+      "vars": [
+        "ENVIRONMENT",
+        "WORKER_VERSION",
+        "OLLAMA_BASE_URL"
+      ],
+      "secrets": [
+        "OPERATOR_PUBLIC_KEY (Ed25519 pem or b64u for anchor verify)"
+      ],
+      "corsPolicy": "open on /v1/manifest, /v1/topology, /v1/*/health, /v1/*/skills; Bearer sessionId required on /v1/*/call",
+      "authScheme": "Ed25519 signed canonical strings (dock, call, anchor-pact, peer-dispatch, family-dock); sessionId Bearer on call routes",
+      "notes": "K₄ agent worker tetrahedron. Schema p31.k4AgentHub/1.1.0. Four DOs (forge/counsel/scholar/scribe) backed by SQLite. Ed25519 operator dock + anchor pact + family cage wire + P2P federation + hibernatable WS fanout. Deployed from bonding-soup home root (packages/k4-agent-hub/). Verify: npm run verify:k4-agent-hub."
     }
   ]
 }

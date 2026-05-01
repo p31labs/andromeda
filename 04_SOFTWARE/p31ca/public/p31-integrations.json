@@ -115,5 +115,68 @@
     "k4PersonalIngest": "k4-personal Worker: see andromeda/04_SOFTWARE/k4-personal/README.md — /agent/:userId/*, optional bio/energy routes; post minimized events only.",
     "commandCenterEdge": "https://command-center.trimtab-signal.workers.dev",
     "trust": "No raw PHI on static p31ca pages. ETHICAL-STYLE-MAP + EDGE-SECURITY for consent and motion."
-  }
+  },
+  "edgeMesh": {
+    "schema": "p31.edgeMesh/0.1.0",
+    "k4PersonalWorkerUrl": "https://k4-personal.trimtab-signal.workers.dev",
+    "k4CageWorkerUrl": "https://k4-cage.trimtab-signal.workers.dev",
+    "k4HubsWorkerUrl": "https://k4-hubs.trimtab-signal.workers.dev",
+    "k4AgentHubWorkerUrl": "https://k4-agent-hub.trimtab-signal.workers.dev",
+    "agentHubWorkerUrl": "https://p31-agent-hub.trimtab-signal.workers.dev",
+    "orchestratorWorkerUrl": "https://p31-orchestrator.trimtab-signal.workers.dev",
+    "passkeyApiBasePath": "/api/passkey",
+    "edgeLabWorkerUrl": "https://cf-edge-lab.trimtab-signal.workers.dev",
+    "tetraHubWorkerUrl": "https://tetra-hub.trimtab-signal.workers.dev",
+    "geodesicRoomWorkerUrl": "https://geodesic-room.trimtab-signal.workers.dev",
+    "googleBridgeWorkerUrl": "https://p31-google-bridge.trimtab-signal.workers.dev",
+    "bondingRelayWorkerUrl": "https://bonding-relay.trimtab-signal.workers.dev",
+    "passkeyHubApiRoot": "https://p31ca.org/api/passkey"
+  },
+  "sovereignWorkerSpas": [
+    {
+      "id": "appointment-tracker",
+      "hubLaunchUrl": "https://p31ca.org/appointment-tracker",
+      "workersDevUrl": "https://p31-appointment-tracker.trimtab-signal.workers.dev"
+    },
+    {
+      "id": "love-ledger",
+      "hubLaunchUrl": "https://p31ca.org/love-ledger",
+      "workersDevUrl": "https://p31-love-ledger.trimtab-signal.workers.dev"
+    },
+    {
+      "id": "medical-tracker",
+      "hubLaunchUrl": "https://p31ca.org/medical-tracker",
+      "workersDevUrl": "https://p31-medical-tracker.trimtab-signal.workers.dev"
+    },
+    {
+      "id": "somatic-anchor",
+      "hubLaunchUrl": "https://p31ca.org/somatic-anchor",
+      "workersDevUrl": "https://p31-somatic-anchor.trimtab-signal.workers.dev"
+    },
+    {
+      "id": "legal-evidence",
+      "hubLaunchUrl": "https://p31ca.org/legal-evidence",
+      "workersDevUrl": "https://p31-legal-evidence.trimtab-signal.workers.dev"
+    },
+    {
+      "id": "contact-locker",
+      "hubLaunchUrl": "https://p31ca.org/contact-locker",
+      "workersDevUrl": "https://p31-contact-locker.trimtab-signal.workers.dev"
+    },
+    {
+      "id": "sleep-tracker",
+      "hubLaunchUrl": "https://p31ca.org/sleep-tracker",
+      "workersDevUrl": "https://p31-sleep-tracker.trimtab-signal.workers.dev"
+    },
+    {
+      "id": "budget-tracker",
+      "hubLaunchUrl": "https://p31ca.org/budget-tracker",
+      "workersDevUrl": "https://p31-budget-tracker.trimtab-signal.workers.dev"
+    },
+    {
+      "id": "genesis-gate",
+      "hubLaunchUrl": "https://p31ca.org/genesis-gate",
+      "workersDevUrl": "https://genesis-gate.trimtab-signal.workers.dev"
+    }
+  ]
 }
