@@ -82,7 +82,12 @@ const app = {
         message: "It's okay to be a little wonky. 🔺",
       }),
       {
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type, CF-Access-Jwt-Assertion'
+        },
       },
     );
 
@@ -150,10 +155,19 @@ async function handleAgentInit(
   const binding = env[bindingKey] as DurableObjectNamespace;
   const id = binding.idFromName(agentName);
   const stub = binding.get(id);
-  return stub.fetch("http://internal/init", {
+  const resp = await stub.fetch("http://internal/init", {
     method: "POST",
     body: await request.text(),
     headers: { "Content-Type": "application/json" },
+  });
+  return new Response(await resp.text(), {
+    status: resp.status,
+    headers: {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, CF-Access-Jwt-Assertion'
+    }
   });
 }
 
@@ -165,7 +179,16 @@ async function handleRunAgent(
   const binding = env[bindingKey] as DurableObjectNamespace;
   const id = binding.idFromName(agentName);
   const stub = binding.get(id);
-  return stub.fetch("http://internal/run", { method: "POST" });
+  const resp = await stub.fetch("http://internal/run", { method: "POST" });
+  return new Response(await resp.text(), {
+    status: resp.status,
+    headers: {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, CF-Access-Jwt-Assertion'
+    }
+  });
 }
 
 async function handleListDeadlines(

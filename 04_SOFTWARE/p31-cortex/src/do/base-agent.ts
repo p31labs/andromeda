@@ -25,6 +25,31 @@ export abstract class BaseAgent {
     const url = new URL(request.url);
     const path = url.pathname;
 
+    // CORS preflight
+    if (request.method === 'OPTIONS') {
+      return new Response(null, {
+        status: 204,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type, CF-Access-Jwt-Assertion',
+          'Access-Control-Max-Age': '86400',
+        }
+      });
+    }
+
+    // Enforce request size limit (10KB max for POST /init)
+    const contentType = request.headers.get('Content-Type') || '';
+    if (request.method === 'POST' && contentType.includes('application/json')) {
+      const contentLength = request.headers.get('Content-Length');
+      if (contentLength && parseInt(contentLength) > 10240) {
+        return new Response(JSON.stringify({ error: 'request_too_large', max_bytes: 10240 }), {
+          status: 413,
+          headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+        });
+      }
+    }
+
     try {
       if (path === "/run" && request.method === "POST") {
         return this.handleRun(request);
