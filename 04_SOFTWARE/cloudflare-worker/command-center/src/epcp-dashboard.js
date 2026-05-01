@@ -81,6 +81,8 @@ export function buildEpcpDashboardHtml() {
   html += '  out+="<div class=\\"kpi-card\\"><div class=\\"kpi-value\\">"+onlineCount+"</div><div class=\\"kpi-label\\">Online Nodes</div></div>";';
   html += '  out+="<div class=\\"kpi-card\\"><div class=\\"kpi-value\\">"+degradedCount+"</div><div class=\\"kpi-label\\">Offline/Degraded</div></div>";';
   html += '  out+="<div class=\\"kpi-card\\"><div class=\\"kpi-value\\">"+workerCount+"</div><div class=\\"kpi-label\\">Total Fleet</div></div>";';
+  html += '  out+="<div class=\\"kpi-card\\"><div class=\\"kpi-value\\" style=\\"color:#22d3ee\\">"+ (status.grants ? status.grants.active : "?") +"</div><div class=\\"kpi-label\\">Active Grants</div></div>";';
+  html += '  out+="<div class=\\"kpi-card\\"><div class=\\"kpi-value\\" style=\\"color:#eab308\\">"+ (status.grants ? status.grants.daysToNextDeadline : "?") +"</div><div class=\\"kpi-label\\">Days to Next Deadline</div></div>";';
   html += '  out+="</div>";';
   
   html += '  if(status.legal && status.legal.next_hearing){';
