@@ -7,7 +7,9 @@
     "legalName": "P31 Labs, Inc.",
     "ein": "42-1888158",
     "stateOfIncorporation": "GA",
-    "status501c3": "pending"
+    "status501c3": "application-filed",
+    "filedDate501c3": "2026-04-30",
+    "trackingId501c3": "281TLBGO"
   },
   "contact": {
     "primaryEmail": "will@p31ca.org",
