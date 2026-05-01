@@ -533,7 +533,7 @@
     {
       "from": "/build",
       "to": "/initial-build.html",
-      "status": 301
+      "status": 200
     },
     {
       "from": "/hiring",
@@ -596,19 +596,14 @@
       "status": 301
     },
     {
-      "from": "/glass-box",
-      "to": "/glass-box.html",
-      "status": 301
-    },
-    {
       "from": "/glass",
       "to": "/glass-box.html",
-      "status": 301
+      "status": 200
     },
     {
       "from": "/transparency",
       "to": "/glass-box.html",
-      "status": 301
+      "status": 200
     },
     {
       "from": "/visuals",

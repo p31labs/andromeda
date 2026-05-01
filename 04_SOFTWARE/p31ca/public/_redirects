@@ -33,7 +33,7 @@
 /canon    /p31-canon-demo.html  301
 /tokens   /p31-canon-demo.html  301
 /dev      /dev-workbench.html  301
-/build    /initial-build.html  301
+/build    /initial-build.html  200
 /hiring   /delta-hiring/index.html  301
 /messages   /messaging-hub.html  301
 /comms   /messaging-hub.html  301
@@ -48,9 +48,9 @@
 /demos   /demo-labs.html   301
 /visuals   /demos/index.html   301
 /demos-public   /demos/index.html   301
-/glass-box   /glass-box.html   301
-/glass   /glass-box.html   301
-/transparency   /glass-box.html   301
+# /glass-box — omit (Pages clean URL serves glass-box.html at /glass-box; explicit rule loops with 308 .html → /glass-box).
+/glass   /glass-box.html   200
+/transparency   /glass-box.html   200
 /lab   /p31-sovereign-lab.html   301
 /slicer   /p31-slicer.html   301
 /journey   /vision.html   301
