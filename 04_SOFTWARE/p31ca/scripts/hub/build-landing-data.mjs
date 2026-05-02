@@ -107,8 +107,10 @@ const coreProducts = HUB_COCKPIT_ORDER.map(productRow);
 const prototypes = HUB_PROTOTYPE_ORDER.map(protoRow);
 
 const payload = {
-  generated: new Date().toISOString(),
-    meta: {
+  // No `generated` timestamp: deterministic build for drift detection.
+  // Git log on this file IS the audit trail. (Same pattern as
+  // home repo scripts/build-phos-voice-json.mjs line 205.)
+  meta: {
     schema: "p31.hub-landing/1.0.0",
     registry: "scripts/hub/registry.mjs",
     hubCardIds: "scripts/hub/hub-app-ids.mjs",
