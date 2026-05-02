@@ -21,6 +21,12 @@
   <meta name="robots" content="index, follow" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-title" content="Cognitive Passport" />
+  <!-- P31 PWA contract — manifest + icon + drop-in script. Sources in /pwa/.
+       The script ./p31-pwa.js is mirrored into this folder by scripts/build-pwa.mjs
+       so the service worker registers with this app's per-folder scope (no _headers gymnastics). -->
+  <link rel="manifest" href="/pwa/manifest-cogpass.json" />
+  <link rel="apple-touch-icon" href="/pwa/p31-tetra-icon.svg" />
+  <script src="./p31-pwa.js" defer></script>
   <meta property="og:type" content="website" />
   <meta property="og:title" content="P31 Cognitive Passport — answer once, share with anyone" />
   <meta property="og:description" content="Free, no-login tool to write a one-page cognitive accommodation summary for doctors, teachers, agents, or tools. Your data stays in your browser." />
