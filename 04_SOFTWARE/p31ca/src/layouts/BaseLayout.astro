@@ -68,7 +68,34 @@ const {
     />
 
     <title>{title}</title>
+
+    {/*
+      ─── Bus bar nervous system (CWP-PHOS-2026-01) ──────────────────────────
+      Load order MATTERS for the suppression handshake; do NOT reorder without
+      reading docs/CWP-PHOS-2026-01.md §4 + the suppression doctrine in
+      04_SOFTWARE/p31ca/public/lib/p31-phos-guide.mjs.
+
+        1. p31-subject-prefs.js  (inline, sync, before-paint accessibility axes)
+        2. p31-theme-engine.mjs  (defines window.p31Theme — required by 3 + 5)
+        3. p31-cogpass-reader.mjs (reads p31-cogpass-v1, configures
+                                    window.p31SubjectPrefs + window.p31Theme;
+                                    sets data-p31-cogpass / -role on <html>)
+        4. p31-phos-guide.mjs    (PRE-EMPTIVELY claims window.p31ThemeSwitcher
+                                    in its boot() before the switcher's
+                                    setTimeout(100) auto-mount fires)
+        5. p31-theme-switcher.mjs (sees window.p31ThemeSwitcher already taken
+                                    and self-suppresses cleanly)
+
+      Single-affordance result: PHOS is the only floating personalization
+      element on every page, and the theme engine remains importable for
+      stylebook / theme-showcase pages that need it directly.
+    */}
     <script is:inline src="/lib/p31-subject-prefs.js"></script>
+    <script type="module" src="/lib/p31-theme-engine.mjs"></script>
+    <script type="module" src="/lib/p31-cogpass-reader.mjs"></script>
+    <script type="module" src="/lib/p31-phos-guide.mjs"></script>
+    <script type="module" src="/lib/p31-theme-switcher.mjs"></script>
+
     <slot name="head" />
     <!-- External import maps go here -->
     <slot name="importmaps" />

@@ -612,10 +612,19 @@ function onRootInput(e) {
   }
 }
 
-// ─── voice loader (defaults baked in; future: fetch p31-phos-voice.json) ───
+// ─── voice loader (defaults baked in; runtime fetches p31-phos-voice.json) ─
+// p31-phos-voice.json schema: p31.phosVoice/1.0.0 (built by
+// scripts/build-phos-voice-json.mjs from docs/PHOS-VOICE-DRAFT.md §4).
+// Top-level _meta key is metadata (skipped here); other keys are pathnames
+// pointing to { _tag, _tagSource?, greeting, hint, fallback, links }.
+// _tag and _tagSource are passed through harmlessly (voiceForPage reads only
+// greeting/hint/fallback/links). Keeping them lets future PHOS UI surface
+// "operator-voice vs draft" badges or ?phos-debug=tags views.
 function setVoice(obj) {
   if (!obj || typeof obj !== 'object') return;
-  VOICE = { ...DEFAULT_VOICE, ...obj };
+  // Strip _meta before merging so it doesn't pollute the voice map
+  const { _meta: _ignored, ...slotEntries } = obj;
+  VOICE = { ...DEFAULT_VOICE, ...slotEntries };
   refresh();
 }
 

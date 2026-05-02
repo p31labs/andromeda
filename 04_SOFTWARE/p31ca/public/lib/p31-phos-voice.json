@@ -1,0 +1,210 @@
+{
+  "_meta": {
+    "schema": "p31.phosVoice/1.0.0",
+    "source": "docs/PHOS-VOICE-DRAFT.md §4",
+    "generator": "scripts/build-phos-voice-json.mjs",
+    "slotCount": 12,
+    "operatorVoiceCount": 1,
+    "draftCount": 11,
+    "doctrine": "The operator's hand is the source of truth. Agent drafts unblock implementation; the operator promotes them by rewriting and changing _tag to OPERATOR-VOICE. verify:phos-voice fails if any OPERATOR-VOICE line is silently rewritten by an agent. (no generatedAt: deterministic build for drift detection; git log + lock file are the audit trail.)"
+  },
+  "_default": {
+    "_tag": "DRAFT-AGENT-SIMULATED",
+    "_tagSource": "operator: replace when iPad is warm",
+    "greeting": "Hi. I'm PHOS — your guide to P31.",
+    "hint": "Need help finding something?",
+    "fallback": "I'll be here.",
+    "links": [
+      {
+        "label": "Create your context card",
+        "href": "/passport/"
+      },
+      {
+        "label": "Back to welcome",
+        "href": "/welcome"
+      }
+    ]
+  },
+  "/bonding": {
+    "_tag": "DRAFT-AGENT-SIMULATED",
+    "_tagSource": "cross-origin surface; bridge ships in BUS4 Phase 3",
+    "greeting": "Welcome to BONDING.",
+    "hint": "A chemistry game for parents and kids. Play together, learn together. Free.",
+    "fallback": "If your kid wanders off, the game just pauses. No score, no penalty.",
+    "links": [
+      {
+        "label": "Back to the lab",
+        "href": "https://p31ca.org/lab"
+      },
+      {
+        "label": "Back to welcome",
+        "href": "https://p31ca.org/welcome"
+      }
+    ]
+  },
+  "/buffer": {
+    "_tag": "DRAFT-AGENT-SIMULATED",
+    "greeting": "This is the buffer.",
+    "hint": "Drafts and routes communication based on what's in your context card.",
+    "fallback": "If you haven't made a context card yet, the buffer works in default mode.",
+    "links": [
+      {
+        "label": "Make your context card",
+        "href": "/passport/"
+      },
+      {
+        "label": "Back to the lab",
+        "href": "/lab"
+      }
+    ]
+  },
+  "/ede": {
+    "_tag": "DRAFT-AGENT-SIMULATED",
+    "_tagSource": "operator-only surface",
+    "greeting": "EDE — the development environment.",
+    "hint": "Every tool, one keystroke away. Built for the operator's hands.",
+    "fallback": "If you're exploring without context, the lab is the friendlier door.",
+    "links": [
+      {
+        "label": "Back to the lab",
+        "href": "/lab"
+      },
+      {
+        "label": "Back to welcome",
+        "href": "/welcome"
+      }
+    ]
+  },
+  "/glass-box": {
+    "_tag": "DRAFT-AGENT-SIMULATED",
+    "greeting": "Everything we do, in the open.",
+    "hint": "Verifiers, deploys, audits, ledgers. If P31 ran it, it shows here.",
+    "fallback": "Hard read? The support page has the same numbers in plain English.",
+    "links": [
+      {
+        "label": "Support page",
+        "href": "/support"
+      },
+      {
+        "label": "Back to welcome",
+        "href": "/welcome"
+      }
+    ]
+  },
+  "/lab": {
+    "_tag": "DRAFT-AGENT-SIMULATED",
+    "greeting": "Welcome to the lab.",
+    "hint": "Everything P31 has built lives here. All of it free, all of it open source.",
+    "fallback": "If something feels overwhelming, your context card has a Screen Comfort slider that quiets things down.",
+    "links": [
+      {
+        "label": "Adjust Screen Comfort",
+        "href": "#screen-comfort"
+      },
+      {
+        "label": "Create your context card",
+        "href": "/passport/"
+      }
+    ]
+  },
+  "/ops": {
+    "_tag": "DRAFT-AGENT-SIMULATED",
+    "_tagSource": "operator-only surface; PHOS still greets in case someone is shoulder-surfing",
+    "greeting": "Operator console.",
+    "hint": "Status across the mesh. Quick actions. Context for the next decision.",
+    "fallback": "Not what you're looking for? Most public surfaces live in the lab.",
+    "links": [
+      {
+        "label": "Back to the lab",
+        "href": "/lab"
+      },
+      {
+        "label": "Back to welcome",
+        "href": "/welcome"
+      }
+    ]
+  },
+  "/passport": {
+    "_tag": "DRAFT-AGENT-SIMULATED",
+    "_tagSource": "operator: this is the card itself — write what feels true",
+    "greeting": "This is your context card.",
+    "hint": "Fill in what feels right. Skip what doesn't. Watch the page change as you go.",
+    "fallback": "When you're done, copy it into any AI tool — or keep it here. The site will remember.",
+    "links": [
+      {
+        "label": "Why this exists",
+        "href": "#why"
+      },
+      {
+        "label": "See an example",
+        "href": "#example"
+      }
+    ]
+  },
+  "/research": {
+    "_tag": "DRAFT-AGENT-SIMULATED",
+    "greeting": "Twenty-two papers, all open access.",
+    "hint": "P31's research lives here. Nothing behind a paywall. Browse, download, cite.",
+    "fallback": "Looking for something specific? The lab has the products that came out of this work.",
+    "links": [
+      {
+        "label": "See what we build",
+        "href": "/lab"
+      },
+      {
+        "label": "Back to welcome",
+        "href": "/welcome"
+      }
+    ]
+  },
+  "/stylebook": {
+    "_tag": "DRAFT-AGENT-SIMULATED",
+    "greeting": "The P31 design system.",
+    "hint": "Every component, every token, every rule. Copy what you need. Fork the rest.",
+    "fallback": "If you're not building software, the lab is the friendlier door.",
+    "links": [
+      {
+        "label": "See what we build",
+        "href": "/lab"
+      },
+      {
+        "label": "Back to welcome",
+        "href": "/welcome"
+      }
+    ]
+  },
+  "/support": {
+    "_tag": "DRAFT-AGENT-SIMULATED",
+    "_tagSource": "line 1 mirrors operator §3.1 framing — keep it",
+    "greeting": "Every dollar builds tools for neurodivergent families.",
+    "hint": "P31 takes 0% platform fees. No tracking. No donor data sold.",
+    "fallback": "Even $1 helps. Seriously.",
+    "links": [
+      {
+        "label": "Back to welcome",
+        "href": "/welcome"
+      },
+      {
+        "label": "See what we build",
+        "href": "/lab"
+      }
+    ]
+  },
+  "/welcome": {
+    "_tag": "OPERATOR-VOICE",
+    "_tagSource": "§3.2 first derivation — locked by verify:phos-voice SHA",
+    "greeting": "Hi. I'm PHOS.",
+    "hint": "For all the parents and kids out there raw dogging life — help is on the way.\n\nStart with your context card. Two minutes. It makes everything here work better for you.",
+    "fallback": "Or just look around. I'll be here if you need me.",
+    "links": [
+      {
+        "label": "Create your context card",
+        "href": "/passport/"
+      },
+      {
+        "label": "See what we build",
+        "href": "/lab"
+      }
+    ]
+  }
+}
