@@ -13,49 +13,6 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="/p31-tailwind-extend.js"></script>
   <script>tailwind.config = { theme: { extend: { ...window.P31_TAILWIND_EXTEND } } };</script>
-  <style>
-    /* PiP CLI placeholder &mdash; visual only; Phase 2 wires the real terminal */
-    .pip-cli {
-      position: fixed;
-      right: 1rem;
-      bottom: 1rem;
-      width: min(420px, 90vw);
-      height: 220px;
-      background: #0a0d12;
-      border: 1px solid rgba(77, 184, 168, 0.35);
-      border-radius: 8px;
-      box-shadow: 0 12px 40px -12px rgba(0,0,0,0.75);
-      font-family: 'JetBrains Mono', ui-monospace, monospace;
-      font-size: 12px;
-      color: #c5d2db;
-      overflow: hidden;
-      z-index: 30;
-    }
-    .pip-cli__bar {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.4rem 0.7rem;
-      background: rgba(77, 184, 168, 0.07);
-      border-bottom: 1px solid rgba(77, 184, 168, 0.18);
-      font-size: 10.5px;
-      color: rgba(232, 230, 227, 0.78);
-      cursor: grab;
-    }
-    .pip-cli__dot { width: 9px; height: 9px; border-radius: 999px; background: #4db8a8; box-shadow: 0 0 6px rgba(77, 184, 168, 0.45); }
-    .pip-cli__title { flex: 1; letter-spacing: 0.04em; }
-    .pip-cli__hint { font-size: 9.5px; color: rgba(232, 230, 227, 0.42); }
-    .pip-cli__body {
-      padding: 0.6rem 0.8rem;
-      height: calc(100% - 30px);
-      overflow: auto;
-      line-height: 1.5;
-    }
-    .pip-cli__prompt { color: #4db8a8; }
-    .pip-cli__phos { color: rgba(204, 153, 255, 0.85); margin-top: 0.5rem; font-style: italic; }
-    .pip-cli__placeholder { color: rgba(232, 230, 227, 0.42); margin-top: 0.7rem; font-size: 10.5px; }
-    @media (prefers-reduced-motion: reduce) { .pip-cli { transition: none; } }
-  </style>
 </head>
 <body class="bg-void text-cloud min-h-screen font-sans antialiased px-4 py-10 max-w-3xl mx-auto text-sm leading-relaxed">
   <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 bg-teal text-void px-3 py-1 rounded font-mono text-xs">Skip to content</a>
@@ -71,7 +28,7 @@
   </nav>
 
   <main id="main">
-    <p class="text-coral/85 font-mono text-[0.65rem] tracking-widest uppercase mb-1">Phase 1 preview &middot; PiP CLI is visual only</p>
+    <p class="text-coral/85 font-mono text-[0.65rem] tracking-widest uppercase mb-1">Phase 2 &middot; PiP CLI substrate already exists &mdash; this page points at it</p>
     <h1 class="text-2xl font-bold text-paper mb-2">Vibcoding</h1>
     <p class="text-cloud/60 text-xs mb-8">
       <strong class="text-paper">CWP-P31-VIBE-2026-06</strong> &middot; Edition <strong class="text-paper">1.0.0</strong> &middot; Authored <strong class="text-paper">2026-05-02</strong> &middot;
@@ -135,23 +92,45 @@
 
     <section id="five-doctrines" class="mb-10 rounded border border-teal/25 bg-teal/5 p-5">
       <h2 class="text-paper font-semibold text-base mb-3">The five doctrines hold here too</h2>
-      <ol class="text-cloud/80 list-decimal pl-6 space-y-2 text-xs">
+      <p class="text-cloud/80 text-xs mb-2">
+        Vibcoding inherits the floor from the <a class="text-teal hover:underline" href="/manifesto">Manifesto</a> &mdash; one canonical source, never restated, never drifting:
+      </p>
+      <ol class="text-cloud/75 list-decimal pl-6 space-y-1 text-xs">
         <li>Operator-condition-aware AI &mdash; PHOS carries your medical/cognitive context into every prompt.</li>
         <li>K&#8324; family mesh as architectural primitive &mdash; the tetra IS a K&#8324;, at every level.</li>
-        <li>Cognitive Passport as portable personalization without surveillance &mdash; your environment lives on your device.</li>
-        <li>A measurable voice &mdash; PHOS guidance copy passes <code class="font-mono text-teal/80">verify:public-voice</code> at the build step.</li>
-        <li>Sub-medical-grade by design &mdash; PHOS guides; never diagnoses, prescribes, or substitutes for clinical care.</li>
+        <li>Cognitive Passport as portable personalization without surveillance.</li>
+        <li>A measurable voice &mdash; <code class="font-mono text-teal/80">verify:public-voice</code> + <code class="font-mono text-teal/80">verify:delta-language</code> at the build step.</li>
+        <li>Sub-medical-grade by design.</li>
       </ol>
+      <p class="text-cloud/55 text-[0.7rem] mt-3 italic">
+        The list above is a courtesy summary. The <a class="text-teal/80 hover:underline" href="/manifesto#five-doctrines">Manifesto &sect;1</a> is canon &mdash; if these ever drift, that page wins.
+      </p>
+    </section>
+
+    <section id="run-it" class="mb-10 rounded border border-phosphorus/30 bg-phosphorus/5 p-5">
+      <h2 class="text-paper font-semibold text-base mb-3">Run the PiP CLI right now</h2>
+      <p class="text-cloud/80 text-xs mb-3">
+        The substrate already exists. <strong class="text-paper">Ephemeralization</strong>: one HTML file, three URLs, zero duplication.
+      </p>
+      <ol class="text-cloud/80 text-xs list-decimal pl-6 space-y-1.5 mb-4">
+        <li>On your operator machine, run <code class="font-mono text-teal/90 bg-void/40 px-1.5 py-0.5 rounded">npm run command-center</code> from the <code class="font-mono text-teal/90">bonding-soup</code> repo root.</li>
+        <li>Open <a class="text-teal hover:underline font-mono" href="http://127.0.0.1:3131/vibe">http://127.0.0.1:3131/vibe</a> in your browser (alias of <code class="font-mono text-teal/90">/term</code>).</li>
+        <li>Pick a PHOS persona from the dropdown, or switch to <em>cmd</em> mode and type a whitelisted action like <code class="font-mono text-teal/90">npm run doctor</code>.</li>
+      </ol>
+      <p class="text-cloud/65 text-[0.7rem]">
+        Source of truth: <code class="font-mono">command-center-terminal.html</code> in <code class="font-mono">bonding-soup</code>. Served from <code class="font-mono">:3131/term</code>, <code class="font-mono">:3131/terminal</code>, and <code class="font-mono">:3131/vibe</code>. New URL in front of an existing service &mdash; no new code, no new attack surface.
+      </p>
     </section>
 
     <section id="phase" class="mb-10">
-      <h2 class="text-paper font-semibold text-base mb-3">Where we are right now</h2>
+      <h2 class="text-paper font-semibold text-base mb-3">Phase ladder</h2>
       <ul class="text-cloud/80 list-disc pl-6 space-y-2 text-xs">
-        <li><strong class="text-paper">Phase 1 (today).</strong> This page exists. The personal hub (<a class="text-teal hover:underline" href="/start">/start</a>), the threshold onboard (<a class="text-teal hover:underline" href="/onboard">/onboard</a>), and the initial build (<a class="text-teal hover:underline" href="/build">/build</a>) are reachable in under 90 seconds from a fresh device boot.</li>
-        <li><strong class="text-paper">Phase 2 (next session).</strong> The PiP CLI you see floating in the corner becomes a real terminal. A Monaco editor lands next to it. PHOS observes both and offers Guidance, Not Solutions.</li>
-        <li><strong class="text-paper">Phase 3.</strong> Multi-vertex tetra collaboration. Operator + child collaborator on the same buffer; child on Level-2 Glue, operator on Level-8.</li>
-        <li><strong class="text-paper">Phase 4.</strong> Four tetras link into a cluster. PHOS coordinates as bridge persona. MLS-bearing edges (forward-secret cross-tetra collab).</li>
-        <li><strong class="text-paper">Phase 5+.</strong> Hub federation. Open mesh. Truly Everything AND Everyone.</li>
+        <li><strong class="text-paper">Phase 1 (shipped 2026-05-02).</strong> Operator entry surfaces &mdash; this page, <a class="text-teal hover:underline" href="/onboard">/onboard</a>, <a class="text-teal hover:underline" href="/start">/start</a>, <a class="text-teal hover:underline" href="/build">/build</a> &mdash; reachable in under 90 seconds from a fresh device boot.</li>
+        <li><strong class="text-paper">Phase 2 (shipped 2026-05-02).</strong> PiP CLI substrate adopted: the existing <code class="font-mono text-teal/80">/term</code> serves <code class="font-mono text-teal/80">/vibe</code> with no duplication. PHOS persona chat + whitelisted command runner already wired.</li>
+        <li><strong class="text-paper">Phase 3.</strong> Monaco editor pane next to the existing terminal; PHOS auto-guidance reads the last command output. No second PiP CLI &mdash; only the editor is new.</li>
+        <li><strong class="text-paper">Phase 4.</strong> Multi-vertex tetra collaboration. Operator + child collaborator on the same buffer; child on Level-2 Glue, operator on Level-8.</li>
+        <li><strong class="text-paper">Phase 5.</strong> Four tetras link into a cluster. PHOS coordinates as bridge persona. MLS-bearing edges (forward-secret cross-tetra collab; gated on PEER-3A).</li>
+        <li><strong class="text-paper">Phase 6+.</strong> Hub federation. Open mesh. Truly Everything AND Everyone.</li>
       </ul>
     </section>
 
@@ -159,24 +138,6 @@
       &mdash; Authored 2026-05-02 by Cursor agent (Claude Opus 4.7) under operator command authority &middot; P31 Labs, Inc.
     </p>
   </main>
-
-  <!-- PiP CLI placeholder &mdash; visual only in Phase 1 -->
-  <aside class="pip-cli" role="complementary" aria-label="Vibcoding command line (Phase 1 placeholder)">
-    <div class="pip-cli__bar">
-      <span class="pip-cli__dot" aria-hidden="true"></span>
-      <span class="pip-cli__title">vibe-cli &middot; tetra-0 &middot; vertex-0</span>
-      <span class="pip-cli__hint" aria-hidden="true">drag &middot; resize &middot; close (Phase 2)</span>
-    </div>
-    <div class="pip-cli__body">
-      <div><span class="pip-cli__prompt">$</span> p31 vibe --status</div>
-      <div>vibe-substrate: <span style="color:#4db8a8">phase-1-preview</span></div>
-      <div>tetra-0/vertex-0: ready (sandbox empty)</div>
-      <div>monaco: not loaded (Phase 2)</div>
-      <div>phos-observer: standby</div>
-      <div class="pip-cli__phos">PHOS: I will start observing once you open a buffer. Until then, the substrate is yours to walk through.</div>
-      <div class="pip-cli__placeholder">Phase 1 preview. The terminal becomes real in Phase 2 (xterm.js + whitelisted shell). The operator's local command center already runs at http://127.0.0.1:3131 &mdash; this page will adopt the same whitelist contract when it ships.</div>
-    </div>
-  </aside>
 
   <footer class="text-cloud/40 text-xs mt-10 pt-4 border-t border-white/10 mb-12">
     &copy; 2026 P31 Labs, Inc. &middot;
