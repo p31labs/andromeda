@@ -12,7 +12,12 @@
     },
     "jsonSchemaIds": {
       "cognitivePassport": "p31.cognitivePassport/1.1.0",
-      "groundTruth": "p31.ground-truth/1.0.0"
+      "groundTruth": "p31.ground-truth/1.0.0",
+      "cogPassBridge": "p31.cogPassBridge/1.0.0",
+      "phosVoice": "p31.phosVoice/1.0.0",
+      "phosVoiceLock": "p31.phosVoiceLock/1.0.0",
+      "creatorEconomy": "p31.creatorEconomy/1.0.0",
+      "wiringDiagram": "p31.wiringDiagram/1.0.0"
     },
     "bondingTestBaseline": {
       "tests": 424,
@@ -240,7 +245,7 @@
       "path": "/passport-generator.html",
       "implementation": "public/passport-generator.html",
       "label": "Cognitive Passport — static generator",
-      "note": "Schema p31.cognitivePassport/1.0.0. Short /passport in _redirects (AGENTS live URL). Mirror: npm run sync:passport from P31 home cognitive-passport/index.html. verify:passport."
+      "note": "Schema p31.cognitivePassport/1.1.0 (CWP-PHOS-2026-01 C-4 atomic bump). Short /passport in _redirects (AGENTS live URL). Mirror: npm run sync:passport from P31 home cognitive-passport/index.html. verify:passport."
     },
     "welcomeStranger": {
       "path": "/welcome.html",
@@ -810,7 +815,7 @@
     {
       "id": "cognitivePassport.generator",
       "path": "public/passport-generator.html",
-      "mustIncludeSubstring": "p31.cognitivePassport/1.0.0"
+      "mustIncludeSubstring": "p31.cognitivePassport/1.1.0"
     },
     {
       "id": "meshConstants.publicMirror",
