@@ -975,7 +975,7 @@
         "label": "BONDING",
         "href": "https://bonding.p31ca.org",
         "external": true,
-        "description": "Chemistry game bridging distance between parents and children. Separate origin (Vite+React+R3F). CogPass crosses via URL param bridge (WCD-PHOS-2026-01 BUS4)."
+        "description": "Chemistry game bridging distance between parents and children. Separate origin (Vite+React+R3F). CogPass crosses via the postMessage iframe bridge at /cogpass-bridge.html (CWP-BUS4-COGPASS-BRIDGE-2026-05). The previous URL param bridge plan was rejected for privacy reasons; see the spec \u00a74 strategy comparison."
       },
       "lab": {
         "label": "Lab",
@@ -1061,9 +1061,29 @@
       "axiom": "lab",
       "book": "lab"
     },
+    "crossOriginBridge": {
+      "schema": "p31.cogPassBridge/1.0.0",
+      "label": "Cross-origin Cognitive Passport bridge",
+      "doctrine": "The bus bar promise \u2014 one CogPass, all surfaces \u2014 works inside p31ca.org because localStorage is shared at the same origin. It breaks at bonding.p31ca.org (and any future cross-origin P31 surface) because localStorage is origin-scoped. The bridge solves this without a server, without a cookie, and without copying the JSON across origins: a postMessage iframe loaded from p31ca.org reads the passport in its own origin and replies to allowlisted parents only. See docs/CWP-BUS4-COGPASS-BRIDGE-2026-05.md.",
+      "doctrineSource": "docs/CWP-BUS4-COGPASS-BRIDGE-2026-05.md",
+      "endpoint": {
+        "host": "p31ca.org",
+        "path": "/cogpass-bridge.html",
+        "url": "https://p31ca.org/cogpass-bridge.html",
+        "file": "andromeda/04_SOFTWARE/p31ca/public/cogpass-bridge.html"
+      },
+      "schemaFile": "andromeda/04_SOFTWARE/p31ca/ground-truth/cogpass-bridge.schema.json",
+      "singleRule": "The bridge HTML imports normalize() from /lib/p31-cogpass-reader.mjs. It does NOT reimplement normalization. Locked by scripts/verify-cogpass-bridge.mjs.",
+      "allowedOrigins": [
+        "https://bonding.p31ca.org"
+      ],
+      "allowedOriginsPolicy": "Hardcoded in this file AND in cogpass-bridge.html ALLOWED_ORIGINS Set. verify:cogpass-bridge enforces the two lists are identical \u2014 drift fails CI. New origins require: (1) operator approval logged in the commit message, (2) privacy policy update naming the partner, (3) verify:cogpass-bridge green. No runtime config; no wildcards.",
+      "rolloutPhase": 1,
+      "rolloutPhaseLabel": "Phase 1 of 5: bridge HTML + schema + ground-truth + privacy disclosure shipped. No consumer wired yet (Phase 3). See spec \u00a712 for phase gates."
+    },
     "constraints": {
       "maxProducts": 9,
-      "maxProductsRationale": "Nine calcium atoms per Posner molecule (Ca₉(PO₄)₆). The cage is complete at 9. A 10th MVP would break the symmetry and require an explicit cage-expansion CWP that re-derives the geometry. See docs/PHOS-VOICE-DRAFT.md §3.3.",
+      "maxProductsRationale": "Nine calcium atoms per Posner molecule (Ca\u2089(PO\u2084)\u2086). The cage is complete at 9. A 10th MVP would break the symmetry and require an explicit cage-expansion CWP that re-derives the geometry. See docs/PHOS-VOICE-DRAFT.md \u00a73.3.",
       "constraintEnforcedAt": "Architectural review. Future CI gate: verify:bus-bar (planned) audits scripts/hub/hub-app-ids.mjs against this constraint."
     },
     "phos": {
