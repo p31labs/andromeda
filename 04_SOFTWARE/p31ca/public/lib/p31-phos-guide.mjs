@@ -369,9 +369,17 @@ function k4MarkSvg() {
 // ─── voice resolution (page key → voice entry) ──────────────────────────────
 function voiceForPage(pathname) {
   if (!pathname) return VOICE._default;
-  // Normalize trailing slash; '/welcome/' and '/welcome' resolve to same key
-  const norm = pathname === '/' ? '/welcome' : pathname.replace(/\/+$/, '') || '/';
-  return VOICE[norm] || VOICE._default;
+  // Normalize: '/' → /welcome (front door), strip trailing slash so /lab/ ≡ /lab.
+  // Try the normalized pathname first, then a .html-stripped variant
+  // (so /buffer.html and /buffer both look up VOICE['/buffer']) — lets the
+  // operator write voice keys as the natural route name in PHOS-VOICE-DRAFT.md
+  // without thinking about which surfaces are static .html and which are
+  // route-based.
+  const root = pathname === '/' ? '/welcome' : pathname.replace(/\/+$/, '') || '/';
+  if (VOICE[root]) return VOICE[root];
+  const noHtml = root.replace(/\.html$/, '');
+  if (noHtml !== root && VOICE[noHtml]) return VOICE[noHtml];
+  return VOICE._default;
 }
 
 // ─── helpers (defensive reads of CogPass + engine state) ────────────────────
