@@ -109,17 +109,31 @@
 
     <section id="run-it" class="mb-10 rounded border border-phosphorus/30 bg-phosphorus/5 p-5">
       <h2 class="text-paper font-semibold text-base mb-3">Run the PiP CLI right now</h2>
-      <p class="text-cloud/80 text-xs mb-3">
-        The substrate already exists. <strong class="text-paper">Ephemeralization</strong>: one HTML file, three URLs, zero duplication.
+      <p class="text-cloud/80 text-xs mb-4">
+        The substrate already exists. <strong class="text-paper">Ephemeralization</strong>: one HTML file, four URLs, zero duplication.
       </p>
-      <ol class="text-cloud/80 text-xs list-decimal pl-6 space-y-1.5 mb-4">
-        <li>On your operator machine, run <code class="font-mono text-teal/90 bg-void/40 px-1.5 py-0.5 rounded">npm run command-center</code> from the <code class="font-mono text-teal/90">bonding-soup</code> repo root.</li>
-        <li>Open <a class="text-teal hover:underline font-mono" href="http://127.0.0.1:3131/vibe">http://127.0.0.1:3131/vibe</a> in your browser (alias of <code class="font-mono text-teal/90">/term</code>).</li>
-        <li>Pick a PHOS persona from the dropdown, or switch to <em>cmd</em> mode and type a whitelisted action like <code class="font-mono text-teal/90">npm run doctor</code>.</li>
-      </ol>
-      <p class="text-cloud/65 text-[0.7rem]">
-        Source of truth: <code class="font-mono">command-center-terminal.html</code> in <code class="font-mono">bonding-soup</code>. Served from <code class="font-mono">:3131/term</code>, <code class="font-mono">:3131/terminal</code>, and <code class="font-mono">:3131/vibe</code>. New URL in front of an existing service &mdash; no new code, no new attack surface.
-      </p>
+      <div class="flex flex-wrap items-center gap-2 mb-4">
+        <a href="http://127.0.0.1:3131/vibe" class="inline-flex items-center gap-2 bg-phosphorus/20 hover:bg-phosphorus/30 border border-phosphorus/40 hover:border-phosphorus/70 text-phosphorus hover:text-paper rounded px-3 py-2 font-mono text-xs transition" title="Opens in a new tab; works only when your local command center is running on this device.">
+          <span aria-hidden="true">&rarr;</span> Open my local PiP CLI <span class="text-phosphorus/60 font-mono">(127.0.0.1:3131/vibe)</span>
+        </a>
+        <a href="/glass-box" class="inline-flex items-center gap-2 border border-teal/40 hover:border-teal/70 text-teal hover:text-paper rounded px-3 py-2 font-mono text-xs transition" title="Public synthetic CLI playbacks &mdash; what the substrate looks like in motion, no setup needed.">
+          <span aria-hidden="true">&deg;</span> See it in motion (Glass box)
+        </a>
+        <a href="/start" class="inline-flex items-center gap-2 border border-white/15 hover:border-teal/50 text-cloud hover:text-paper rounded px-3 py-2 font-mono text-xs transition" title="First time on this device? Start at the personal hub.">
+          <span aria-hidden="true">&star;</span> First time? Start here
+        </a>
+      </div>
+      <details class="text-cloud/75 text-xs">
+        <summary class="cursor-pointer text-cloud hover:text-paper font-mono mb-2">How the launch button works (3 steps)</summary>
+        <ol class="list-decimal pl-6 space-y-1.5 mt-2">
+          <li>On your operator machine, run <code class="font-mono text-teal/90 bg-void/40 px-1.5 py-0.5 rounded">npm run command-center</code> from the <code class="font-mono text-teal/90">bonding-soup</code> repo root.</li>
+          <li>Click the launch button above (or open <a class="text-teal hover:underline font-mono" href="http://127.0.0.1:3131/vibe">http://127.0.0.1:3131/vibe</a> directly).</li>
+          <li>Three modes: <em>chat</em> (PHOS personas), <em>cmd</em> (whitelisted scripts), <em>view</em> (read AGENTS.md, CWPs, Manifesto, voice docs inline). After any cmd run, an <span class="text-phosphorus">Ask PHOS for the next move</span> button appears beneath the output.</li>
+        </ol>
+        <p class="text-cloud/55 text-[0.7rem] mt-3">
+          Source of truth: <code class="font-mono">command-center-terminal.html</code> in <code class="font-mono">bonding-soup</code>. Served from <code class="font-mono">:3131/term</code>, <code class="font-mono">:3131/terminal</code>, and <code class="font-mono">:3131/vibe</code>. New URL in front of an existing service &mdash; no new code, no new attack surface. Cross-origin probe from this hub page to your local <code class="font-mono">127.0.0.1:3131</code> would be blocked by mixed-content rules; the launch button is the honest path.
+        </p>
+      </details>
     </section>
 
     <section id="phase" class="mb-10">
@@ -127,7 +141,8 @@
       <ul class="text-cloud/80 list-disc pl-6 space-y-2 text-xs">
         <li><strong class="text-paper">Phase 1 (shipped 2026-05-02).</strong> Operator entry surfaces &mdash; this page, <a class="text-teal hover:underline" href="/onboard">/onboard</a>, <a class="text-teal hover:underline" href="/start">/start</a>, <a class="text-teal hover:underline" href="/build">/build</a> &mdash; reachable in under 90 seconds from a fresh device boot.</li>
         <li><strong class="text-paper">Phase 2 (shipped 2026-05-02).</strong> PiP CLI substrate adopted: the existing <code class="font-mono text-teal/80">/term</code> serves <code class="font-mono text-teal/80">/vibe</code> with no duplication. PHOS persona chat + whitelisted command runner already wired.</li>
-        <li><strong class="text-paper">Phase 3.</strong> Monaco editor pane next to the existing terminal; PHOS auto-guidance reads the last command output. No second PiP CLI &mdash; only the editor is new.</li>
+        <li><strong class="text-paper">Phase 2.5 (shipped 2026-05-02).</strong> Three parallel converging paths landed in one verify pass: Tier B voice cleanup (9 &rarr; 0), <code class="font-mono text-teal/80">verify:vibe-pip-whitelist</code> CI gate (caught a real bug &mdash; cmd-mode buttons were dead-on-click; fixed in same session), PHOS auto-guidance hook (Ask PHOS button after every command), inline document viewer (<em>view</em> mode, eight allowlisted docs).</li>
+        <li><strong class="text-paper">Phase 3.</strong> Editor pane next to the existing terminal (sandbox file ops, save endpoint). No second PiP CLI &mdash; only the editor is new.</li>
         <li><strong class="text-paper">Phase 4.</strong> Multi-vertex tetra collaboration. Operator + child collaborator on the same buffer; child on Level-2 Glue, operator on Level-8.</li>
         <li><strong class="text-paper">Phase 5.</strong> Four tetras link into a cluster. PHOS coordinates as bridge persona. MLS-bearing edges (forward-secret cross-tetra collab; gated on PEER-3A).</li>
         <li><strong class="text-paper">Phase 6+.</strong> Hub federation. Open mesh. Truly Everything AND Everyone.</li>
