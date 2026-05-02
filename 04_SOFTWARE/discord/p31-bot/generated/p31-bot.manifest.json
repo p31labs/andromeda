@@ -1,8 +1,8 @@
 {
   "schema": "p31.discordBot.manifest/1.0.0",
-  "generatedAt": "2026-05-01T03:37:34.970Z",
+  "generatedAt": "2026-05-02T04:21:28.358Z",
   "packageVersion": "1.0.0",
-  "registryFingerprint": "ee0ac2e4c38fc4d71ed9aaad",
+  "registryFingerprint": "a8b62d65e42ce62b9b1be173",
   "commands": [
     {
       "name": "bonding",
@@ -120,7 +120,7 @@
         "donations",
         "funding"
       ],
-      "description": "Show P31 Labs funding pipeline status",
+      "description": "Show P31 Labs funding pipeline status (live from GrantAgent)",
       "usage": "grants"
     },
     {

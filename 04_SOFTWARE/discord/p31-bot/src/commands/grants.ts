@@ -42,7 +42,7 @@ export class GrantsCommand implements P31Command {
 
     try {
       const resp = await fetch(CORTEX_URL, { method: 'POST' });
-      const data: PipelineResponse = await resp.json();
+      const data = (await resp.json()) as PipelineResponse;
 
       if (data.ok && data.pipeline.length > 0) {
         // Sort by deadline ascending
