@@ -664,6 +664,27 @@
         <fieldset class="passport-section" id="sec-comfort" data-section="comfort">
           <legend><span class="cp-step-num">3.</span> Screen comfort</legend>
           <p class="hint-try"><strong style="color: var(--p31-cloud)">Try it now:</strong> Change a setting below and watch this page adapt.</p>
+          <div class="row" style="margin-bottom: 1rem;">
+            <label for="prefScreenComfort">
+              Master comfort &mdash; <span id="prefScreenComfortValue" style="color: var(--p31-coral)">50</span> / 100
+            </label>
+            <input
+              type="range"
+              id="prefScreenComfort"
+              min="0"
+              max="100"
+              step="5"
+              value="50"
+              style="width: 100%; accent-color: var(--p31-coral)"
+              aria-describedby="prefScreenComfortHint"
+            />
+            <p class="micro" id="prefScreenComfortHint">
+              0 = strict Gray Rock (no chroma, zero motion, even after interaction).
+              50 = adaptive (Layer 2 on engagement). 100 = full theme + glass + motion.
+              Below 30 the reader unconditionally disables glass and animations; below
+              10 it pins permanent Gray Rock. The court mode slider.
+            </p>
+          </div>
           <div class="cp-comfort-grid">
             <div>
               <label for="prefContrast">Contrast</label>
@@ -760,7 +781,7 @@
           <textarea id="outMd" readonly placeholder="Your Markdown summary appears here as you type. Use it for emails, intake forms, or sharing with new clinicians."></textarea>
         </div>
         <div class="out-panel" id="out-json" role="tabpanel">
-          <textarea id="outJson" readonly placeholder="JSON appears here — schema p31.cognitivePassport/1.0.0 with SHA-256 genesis."></textarea>
+          <textarea id="outJson" readonly placeholder="JSON appears here — schema p31.cognitivePassport/1.1.0 with SHA-256 genesis."></textarea>
         </div>
         <div class="out-panel" id="out-agent" role="tabpanel">
           <textarea id="outAgent" readonly placeholder="Plain-text agent block appears here — paste into ChatGPT custom instructions, Claude project rules, or any assistant."></textarea>
@@ -795,7 +816,7 @@
 
   <script>
     const STORAGE_KEY = "p31_passport_draft_v1";
-    const SCHEMA = "p31.cognitivePassport/1.0.0";
+    const SCHEMA = "p31.cognitivePassport/1.1.0";
     const AUDIENCE_MATRIX_VERSION = "1.0.0";
     const CHILD_MESH_UNLOCK_KEY = "p31_passport_child_mesh_unlocked";
     const ALLOWED_AUDIENCE = new Set([
@@ -834,11 +855,13 @@
     }
 
     function readSubjectPrefs() {
+      const sc = parseInt(document.getElementById("prefScreenComfort").value, 10);
       return {
         contrast: document.getElementById("prefContrast").value,
         density: document.getElementById("prefDensity").value,
         motion: document.getElementById("prefMotion").value,
         temp: document.getElementById("prefTemp").value,
+        screenComfort: Number.isFinite(sc) ? sc : 50,
       };
     }
 
@@ -944,6 +967,12 @@
         if (p.density != null) document.getElementById("prefDensity").value = p.density;
         if (p.motion != null) document.getElementById("prefMotion").value = p.motion;
         if (p.temp != null) document.getElementById("prefTemp").value = p.temp;
+        if (p.screenComfort != null) {
+          const slider = document.getElementById("prefScreenComfort");
+          const out = document.getElementById("prefScreenComfortValue");
+          slider.value = String(p.screenComfort);
+          if (out) out.textContent = String(p.screenComfort);
+        }
       }
     }
 
@@ -1005,6 +1034,18 @@
           density: f.subjectPrefs?.density ?? "comfortable",
           motion: f.subjectPrefs?.motion ?? "reduced",
           temp: f.subjectPrefs?.temp ?? "neutral",
+        },
+        // v1.1.0 additive overlay (additive over /1.0.0 — backward compatible).
+        // Coordinates with andromeda/04_SOFTWARE/p31ca/ground-truth/cognitive-passport-v1-1.schema.json
+        // and andromeda/04_SOFTWARE/p31ca/public/lib/p31-cogpass-reader.mjs (the activator).
+        // The reader normalizes legacy /1.0.0 documents (which only have uiComfort)
+        // into the same shape, so emitting both keys is honest, not redundant.
+        accessibility: {
+          screenComfort: f.subjectPrefs?.screenComfort ?? 50,
+          motionPreference: f.subjectPrefs?.motion ?? "reduced",
+          contrastPreference: f.subjectPrefs?.contrast ?? "standard",
+          informationDensity: f.subjectPrefs?.density ?? "comfortable",
+          temperaturePreference: f.subjectPrefs?.temp ?? "neutral",
         },
       };
     }
@@ -1226,6 +1267,15 @@
       setExportStatus("JSON downloaded.");
     });
 
+    const prefScreenComfortEl = document.getElementById("prefScreenComfort");
+    if (prefScreenComfortEl) {
+      prefScreenComfortEl.addEventListener("input", () => {
+        const out = document.getElementById("prefScreenComfortValue");
+        if (out) out.textContent = String(prefScreenComfortEl.value);
+        applySubjectPrefsToSite(readSubjectPrefs());
+        void render();
+      });
+    }
     ["prefContrast", "prefDensity", "prefMotion", "prefTemp"].forEach((id) => {
       document.getElementById(id).addEventListener("change", () => {
         applySubjectPrefsToSite(readSubjectPrefs());
