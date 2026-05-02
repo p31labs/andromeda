@@ -10,7 +10,13 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/p31-style.css" />
+  <!-- Bus bar nervous system: subject-prefs (Layer 3 a11y) → cogpass-reader
+       (CogPass v1.1.0 → engines) → phos-guide (the FACE). Per WCD-PHOS-2026-
+       01 BUS1, busBar.phos.absorbsThemeSwitcher=true. Order matters: prefs
+       and reader load first; PHOS auto-expands on /welcome at ~600ms. -->
   <script src="/lib/p31-subject-prefs.js" defer></script>
+  <script type="module" src="/lib/p31-cogpass-reader.mjs"></script>
+  <script type="module" src="/lib/p31-phos-guide.mjs"></script>
   <style>
     body {
       margin: 0;
