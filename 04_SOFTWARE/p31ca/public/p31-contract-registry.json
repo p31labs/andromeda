@@ -1,7 +1,6 @@
 {
   "schema": "p31.contractRegistry/1.0.0",
   "version": "1.0.0",
-  "generatedAt": "2026-05-01T12:56:14.315Z",
   "builder": {
     "uiPath": "/contract-builder.html",
     "shortPath": "/contracts",
@@ -10,8 +9,155 @@
     "smartSuite": "SMART",
     "smartSuiteExpanded": "Sovereign · Manifest · Access · Root · Treasury"
   },
-  "count": 42,
+  "count": 58,
   "contracts": [
+    {
+      "id": "cognitive-passport-v1-1-overlay-schema",
+      "path": "andromeda/04_SOFTWARE/p31ca/ground-truth/cognitive-passport-v1-1.schema.json",
+      "role": "p31.cognitivePassport/1.1.0 — additive overlay JSON Schema (Draft 7) for the v1.0.0 base. Documents optional identity / cognition / communication / accessibility / stylePreferences / context blocks introduced by WCD-PHOS-2026-01 (bus bar + face). LIVE as of WCD-PHOS C-4: SCHEMA constant in cognitive-passport/index.html and COGNITIVE_PASSPORT_SCHEMA in @p31/shared atomically bumped to 1.1.0; live generator now emits accessibility.{screenComfort, motionPreference, contrastPreference, informationDensity, temperaturePreference} alongside the legacy uiComfort block (backward compatible — every v1.0.0 reader can still read v1.1.0 documents).",
+      "schemas": [],
+      "primarySchema": null,
+      "verifyHints": [
+        "verify:cognitive-passport-schema (atomic SCHEMA equality, html ≡ @p31/shared); npm run verify:passport (mirror parity); npm run verify:cognitive-passport-profiles (audience matrix types unbroken). JSON Schema Draft 7 validity is manual today; npm run verify:cognitive-passport-overlay remains planned.",
+        "verify:cogpass-reader — structural + behavioral guards (node --check; required public API window.p31CogPass.{get,set,clear,getRole,getDisplayName,onChange}; required events p31:cogpass-{loaded,cleared,error}; screenComfort cascade thresholds 30/10 with gray-rock pin; STORAGE_KEY 'p31-cogpass-v1' matches privacy.html §2f; schema URI 'p31.cognitivePassport/1.1.0' matches constants.cognitivePassport.jsonSchema). Partial-clone-friendly (skips when andromeda missing); strict via P31_VERIFY_COGPASS_READER_STRICT=1. Manual round-trip: load a v1.1.0 document into localStorage 'p31-cogpass-v1' on a page that includes p31-subject-prefs.js + p31-theme-engine.mjs + p31-cogpass-reader.mjs; verify <html> data-* attributes match passport, document.dispatchEvent fires p31:cogpass-loaded once."
+      ],
+      "optional": true
+    },
+    {
+      "id": "nonprofit-compliance-json",
+      "path": "andromeda/04_SOFTWARE/p31ca/ground-truth/nonprofit/compliance.json",
+      "role": "p31.nonprofit.compliance/1.0.0 — Form 1023 + 990 schedule, GA annual registration, 39-state charitable solicitation tracker, filing calendar; drives npm run nonprofit:calendar",
+      "schemas": [],
+      "primarySchema": null,
+      "verifyHints": [
+        "verify:nonprofit (schema shape + cross-references); also runs as part of npm run verify"
+      ],
+      "optional": true
+    },
+    {
+      "id": "nonprofit-donor-policy-json",
+      "path": "andromeda/04_SOFTWARE/p31ca/ground-truth/nonprofit/donor-policy.json",
+      "role": "p31.nonprofit.donorPolicy/1.0.0 — gift acceptance (9 types accepted, 6 declined), recognition tiers, refund policy (30d window), receipt language with IRS conditional, ethical screening",
+      "schemas": [],
+      "primarySchema": null,
+      "verifyHints": [
+        "verify:nonprofit (schema shape + cross-references); also runs as part of npm run verify"
+      ],
+      "optional": true
+    },
+    {
+      "id": "nonprofit-financials-json",
+      "path": "andromeda/04_SOFTWARE/p31ca/ground-truth/nonprofit/financials.json",
+      "role": "p31.nonprofit.financials/1.0.0 — chart of accounts, expense ratio targets (75/15/10), fund accounting, audit triggers, donor-acknowledgment thresholds, transparency commitments",
+      "schemas": [],
+      "primarySchema": null,
+      "verifyHints": [
+        "verify:nonprofit (schema shape + cross-references); also runs as part of npm run verify"
+      ],
+      "optional": true
+    },
+    {
+      "id": "nonprofit-governance-json",
+      "path": "andromeda/04_SOFTWARE/p31ca/ground-truth/nonprofit/governance.json",
+      "role": "p31.nonprofit.governance/1.0.0 — canonical board, officers, COI, meeting cadence, document retention, succession planning. Single source of truth for governance pages, board portals, audit trails.",
+      "schemas": [],
+      "primarySchema": null,
+      "verifyHints": [
+        "verify:nonprofit (schema shape + cross-references); also runs as part of npm run verify"
+      ],
+      "optional": true
+    },
+    {
+      "id": "nonprofit-grants-json",
+      "path": "andromeda/04_SOFTWARE/p31ca/ground-truth/nonprofit/grants.json",
+      "role": "p31.nonprofit.grants/1.0.0 — 10-stage pipeline, fit criteria (must-have + automatic-decline), 12-funder candidate pool, post-award discipline, ethical declines log",
+      "schemas": [],
+      "primarySchema": null,
+      "verifyHints": [
+        "verify:nonprofit (schema shape + cross-references); also runs as part of npm run verify"
+      ],
+      "optional": true
+    },
+    {
+      "id": "nonprofit-legal-json",
+      "path": "andromeda/04_SOFTWARE/p31ca/ground-truth/nonprofit/legal.json",
+      "role": "p31.nonprofit.legal/1.0.0 — IP licensing (AGPL+CC-BY default), 3 trademark filings planned, contract template library, GDPR/CCPA/HIPAA/COPPA matrix, breach notification protocol",
+      "schemas": [],
+      "primarySchema": null,
+      "verifyHints": [
+        "verify:nonprofit (schema shape + cross-references); also runs as part of npm run verify"
+      ],
+      "optional": true
+    },
+    {
+      "id": "nonprofit-people-json",
+      "path": "andromeda/04_SOFTWARE/p31ca/ground-truth/nonprofit/people.json",
+      "role": "p31.nonprofit.people/1.0.0 — role classifications, current roster, P0 open positions (Vice-Chair + Treasurer + Secretary), onboarding checklists per role type, comp philosophy, accessibility commitments",
+      "schemas": [],
+      "primarySchema": null,
+      "verifyHints": [
+        "verify:nonprofit (schema shape + cross-references); also runs as part of npm run verify"
+      ],
+      "optional": true
+    },
+    {
+      "id": "nonprofit-programs-json",
+      "path": "andromeda/04_SOFTWARE/p31ca/ground-truth/nonprofit/programs.json",
+      "role": "p31.nonprofit.programs/1.0.0 — mission, vision, theory of change (problem/intervention/short-medium-long outcomes), 5-program portfolio, KPIs, impact-measurement framework",
+      "schemas": [],
+      "primarySchema": null,
+      "verifyHints": [
+        "verify:nonprofit (schema shape + cross-references); also runs as part of npm run verify"
+      ],
+      "optional": true
+    },
+    {
+      "id": "nonprofit-risk-json",
+      "path": "andromeda/04_SOFTWARE/p31ca/ground-truth/nonprofit/risk.json",
+      "role": "p31.nonprofit.risk/1.0.0 — 9-risk register (R-001 to R-009), incident response classes (P0–P3), business continuity scenarios, insurance roadmap (D&O P0, GL/cyber P1, workers-comp P2)",
+      "schemas": [],
+      "primarySchema": null,
+      "verifyHints": [
+        "verify:nonprofit (schema shape + cross-references); also runs as part of npm run verify"
+      ],
+      "optional": true
+    },
+    {
+      "id": "phos-voice-json",
+      "path": "andromeda/04_SOFTWARE/p31ca/public/lib/p31-phos-voice.json",
+      "role": "Built artifact (NOT hand-edited) — schema p31.phosVoice/1.0.0. Generated from PHOS-VOICE-DRAFT.md §4 by scripts/build-phos-voice-json.mjs. Top-level _meta declares schema/source/generator/slot counts/doctrine. Other top-level keys are pathnames (slots) with shape { _tag, _tagSource?, greeting, hint, fallback, links }. Fetched at runtime by /lib/p31-phos-guide.mjs tryLoadVoiceJson() and merged over baked-in DEFAULT_VOICE via setVoice() — JSON wins for every defined slot, defaults stand for everything else. Deterministic build (no generatedAt timestamp; verify:phos-voice asserts byte-equality with --check). Production URL: https://p31ca.org/lib/p31-phos-voice.json.",
+      "schemas": [],
+      "primarySchema": null,
+      "verifyHints": [],
+      "optional": true
+    },
+    {
+      "id": "p31ca-research-public-mirror",
+      "path": "andromeda/04_SOFTWARE/p31ca/public/p31-research.json",
+      "role": "Public mirror of p31-constants.json `research` for cross-origin / programmatic consumers. Generated by scripts/apply-constants.mjs alongside the src/data copy. URL: https://p31ca.org/p31-research.json (CORS open for *).",
+      "schemas": [],
+      "primarySchema": null,
+      "verifyHints": [],
+      "optional": true
+    },
+    {
+      "id": "p31ca-research-data-mirror",
+      "path": "andromeda/04_SOFTWARE/p31ca/src/data/p31-research.json",
+      "role": "Mirror of p31-constants.json `research` (papers + zenodoSearchUrl) generated by scripts/apply-constants.mjs. Imported by src/pages/research.astro at build time. Not hand-edited.",
+      "schemas": [],
+      "primarySchema": null,
+      "verifyHints": [],
+      "optional": true
+    },
+    {
+      "id": "phos-voice-lock",
+      "path": "docs/PHOS-VOICE-DRAFT.lock.json",
+      "role": "SHA-256 lock for OPERATOR-VOICE slots in PHOS-VOICE-DRAFT.md §4. Schema p31.phosVoiceLock/1.0.0. Maintained by `npm run verify:phos-voice -- --update-lock`. Any change to an OPERATOR-VOICE slot's content (greeting/hint/fallback/links) without a matching SHA update fails verify:phos-voice — making silent agent rewrites impossible. Bootstrap state: 1 SHA (/welcome, derived from §3.2). When operator promotes a DRAFT-AGENT-SIMULATED slot to OPERATOR-VOICE, run --update-lock and commit the lock alongside the §4 edit so the diff is reviewable.",
+      "schemas": [],
+      "primarySchema": null,
+      "verifyHints": [],
+      "optional": false
+    },
     {
       "id": "p31-passport-anchor-pact-fingerprint",
       "path": "p31-passport-anchor-pact.json",
@@ -112,13 +258,14 @@
       "path": "p31-constants.json",
       "role": "Operator-locked numbers, mission snippet, ground-truth version/schema pins, mesh URLs",
       "schemas": [
-        "p31.cognitivePassport/1.0.0",
+        "p31.cognitivePassport/1.1.0",
         "p31.integrationsBridge/1.0.0",
         "p31.ground-truth/1.0.0"
       ],
-      "primarySchema": "p31.cognitivePassport/1.0.0",
+      "primarySchema": "p31.cognitivePassport/1.1.0",
       "verifyHints": [
         "verify:facts",
+        "verify:alignment -- --verify (shape + sink mtime check)",
         "verify:edge-lab",
         "verify:shipbox",
         "verify:fleet-portal + verify:facts pathsMustExist fleet-portal.html + scripts/build-fleet-portal.mjs",
@@ -126,12 +273,24 @@
         "verify:simplex",
         "verify:starfield",
         "implicit in bonding build; run hub build after sync when shipping",
+        "(part of `npm run verify:constants` indirectly via apply:constants golden behavior — mirrors must match home source).",
         "p31ca prebuild: scripts/hub/verify.mjs",
         "verify:ecosystem; hub `verify-live-fleet-mesh.mjs` in p31ca matches mesh block to shipped `p31-mesh-constants.json`",
         "verify:constants (integrations schema, openCatalog https, src/public/json parity)",
         "test:triper:cert"
       ],
       "optional": false
+    },
+    {
+      "id": "cogpass-bridge-schema",
+      "path": "andromeda/04_SOFTWARE/p31ca/ground-truth/cogpass-bridge.schema.json",
+      "role": "BUS4 Phase 1 — JSON Schema Draft 7 for the postMessage envelope p31.cogPassBridge/1.0.0. Defines cogpass:get / cogpass:reply / cogpass:ready message shapes with nonce + schema fields and conditional 'present:false implies passport:null' constraint. Doctrine block embedded (single_rule, privacy, origin_validation, graceful_degradation). $id locked atomically against bridge HTML SCHEMA constant by verify:cogpass-bridge.",
+      "schemas": [
+        "p31.cogPassBridge/1.0.0"
+      ],
+      "primarySchema": "p31.cogPassBridge/1.0.0",
+      "verifyHints": [],
+      "optional": true
     },
     {
       "id": "p31-contract-registry",
@@ -229,6 +388,8 @@
       ],
       "primarySchema": "p31.ground-truth/1.0.0",
       "verifyHints": [
+        "verify:alignment -- --verify (shape + sink mtime check)",
+        "verify:cogpass-bridge — atomic locks across cogpass-bridge.html SCHEMA + ALLOWED_ORIGINS, cogpass-bridge.schema.json $id, busBar.crossOriginBridge.{schema, allowedOrigins} in ground-truth, privacy.html §2g sentinel. Drift in any of the 4 surfaces fails CI.",
         "from p31ca: npm run verify:ground-truth",
         "verify:education",
         "from p31ca: npm run verify:oqe-icosa (includes dome-cockpit OQE node check)"
@@ -310,6 +471,7 @@
         "verify:fleet-portal + verify:facts pathsMustExist fleet-portal.html + scripts/build-fleet-portal.mjs",
         "verify:live-fleet:p31ca-mirror (home vs hub mirror + entities) then verify:p31ca-contracts; hub prebuild verify-live-fleet-mesh locks mesh block to public/p31-mesh-constants.json",
         "verify:live-fleet:p31ca-mirror",
+        "verify:doc-index (the wiring diagram is in the searchable doc library); verify:alignment (catches missing source rows when a new system is added without doc update). The PDF itself has no CI verifier — it is a print artifact derived from the markdown.",
         "validate:full includes npm run quantum:cloud and npm run pqc:verify when p31ca is present",
         "test:triper:cert"
       ],
@@ -356,6 +518,17 @@
       "optional": false
     },
     {
+      "id": "p31-protocol-registry",
+      "path": "p31-protocol-registry.json",
+      "role": "p31.protocolRegistry/1.0.0 — unified source for TRIPER, launch readiness, verification tiers; verify:protocol-registry",
+      "schemas": [
+        "p31.protocolRegistry/1.0.0"
+      ],
+      "primarySchema": "p31.protocolRegistry/1.0.0",
+      "verifyHints": [],
+      "optional": false
+    },
+    {
       "id": "p31-public-voice-guardrails-json",
       "path": "docs/p31-public-voice-guardrails.json",
       "role": "p31.publicVoiceGuardrails/1.0.0 — watched paths + regex guardrails for verify:public-voice (pairs docs/PUBLIC-VOICE.md)",
@@ -364,6 +537,7 @@
       ],
       "primarySchema": "p31.publicVoiceGuardrails/1.0.0",
       "verifyHints": [
+        "verify:alignment -- --verify (shape + sink mtime check)",
         "verify:public-voice"
       ],
       "optional": false
@@ -440,7 +614,8 @@
         "verify:p31-style",
         "verify:quantum-material-u",
         "verify:style-alignment (about pages); visual doctrine compliance is manual.",
-        "verify:style-alignment (from P31 home or p31ca/)"
+        "verify:style-alignment (from P31 home or p31ca/)",
+        "verify:doc-index (the wiring diagram is in the searchable doc library); verify:alignment (catches missing source rows when a new system is added without doc update). The PDF itself has no CI verifier — it is a print artifact derived from the markdown."
       ],
       "optional": true
     },
@@ -516,7 +691,8 @@
         "verify:fleet-ten",
         "verify:fleet-llm-bridge",
         "verify:ollama-mcp",
-        "verify:ollama-tunnel-config"
+        "verify:ollama-tunnel-config",
+        "verify:doc-index (the wiring diagram is in the searchable doc library); verify:alignment (catches missing source rows when a new system is added without doc update). The PDF itself has no CI verifier — it is a print artifact derived from the markdown."
       ],
       "optional": false
     },
@@ -548,7 +724,6 @@
     "solidity": "0.8.24",
     "package": "packages/p31-sovereign-chain",
     "verifyScript": "verify:sovereign-chain",
-    "generatedAt": "2026-05-01T12:56:14.284Z",
     "contracts": [
       {
         "letter": "S",

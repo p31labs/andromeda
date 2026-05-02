@@ -118,7 +118,7 @@ bonding.p31ca.org`,
 
 Every sound synthesized from element frequencies via Web Audio API. Zero samples.`,
 
-      `Two secret elements unlock when you complete quest chains:
+      `Two secret elements appear when you complete quest chains:
 
 Bashium (Ba) — "Crashed into Earth 3/10/2016. Refuses broccoli."
 Willium (Wi) — "First observed 8/8/2019. Always holds on to loved ones."

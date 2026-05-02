@@ -148,10 +148,43 @@ collectHtml(dist);
 
 const hrefRe = /href\s*=\s*["']([^"']+)["']/gi;
 const srcRe = /\ssrc\s*=\s*["']([^"']+)["']/gi;
+
+/**
+ * Strip <pre>…</pre>, <code>…</code>, <script>…</script>, <style>…</style>,
+ * and HTML comments before link-scanning.
+ *
+ * Why each scope:
+ *   - <pre> / <code>: literal HTML examples rendered by `code()` in
+ *     public/stylebook/_chrome.js (escapes `<` → `&lt;` then wraps in a
+ *     <pre><code> block). The escaped content still contains literal
+ *     `href="…"` substrings that the naive regex would match.
+ *   - <script>: stylebook pages also ship example HTML *inside JS
+ *     template literals* (e.g. `${code(\`<link rel=canonical href=…>\`)}`),
+ *     where the static HTML file holds the unescaped JS source. The
+ *     example only becomes <pre><code> at browser runtime — too late for
+ *     a static scan.
+ *   - <style> / comments: defensive — not currently a source of false
+ *     positives but they are scopes where href= / src= text can appear
+ *     without being live links (e.g. CSS background-image url(…), HTML
+ *     comments demonstrating tags).
+ *
+ * All real navigational <a href> / <link href> / <img src> tags live
+ * outside these blocks and remain in scope.
+ */
+function stripCodeBlocks(html) {
+  return html
+    .replace(/<!--[\s\S]*?-->/g, '')
+    .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, '')
+    .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, '')
+    .replace(/<pre\b[^>]*>[\s\S]*?<\/pre>/gi, '')
+    .replace(/<code\b[^>]*>[\s\S]*?<\/code>/gi, '');
+}
+
 const errors = [];
 
 for (const rel of htmlFiles) {
-  const body = fs.readFileSync(path.join(dist, rel), "utf8");
+  const raw = fs.readFileSync(path.join(dist, rel), "utf8");
+  const body = stripCodeBlocks(raw);
 
   for (const [, attr] of body.matchAll(hrefRe)) {
     const pathname = resolveSameOriginPath(attr, body, rel);

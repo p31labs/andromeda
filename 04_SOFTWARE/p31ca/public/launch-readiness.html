@@ -42,13 +42,13 @@
 <main>
   <header>
     <h1>Launch readiness</h1>
-    <div class="lr-meta">2026-05-01T12:23:19.135Z · mode <code>rehearsal</code> · git <code>main@2de6059</code></div>
+    <div class="lr-meta">2026-05-02T04:34:31.020Z · mode <code>audit</code> · git <code>main@2fd0aa8</code></div>
   </header>
   <div class="lr-headline go">
-    <div><span class="lr-tier go">GO</span> · <span class="lr-score">95 / 100</span> · 9/10 lanes green · 2 human gates pending</div>
+    <div><span class="lr-tier go">GO</span> · <span class="lr-score">95 / 100</span> · 9/10 lanes green · 1 human gates pending</div>
     <p class="lr-narrative">Ready: 95% — 9/10 lanes green.
-Warnings (1): human-gate: 2 critical gates pending
-Human gates pending: 2.</p>
+Warnings (1): human-gate: 1 critical gates pending
+Human gates pending: 1.</p>
     <div class="lr-next">▶ Ready. Run npm run launch:gate before deploy; npm run launch:rehearsal for strict mesh + glass.</div>
   </div>
   <section class="lr-lane lr-pass">
@@ -80,9 +80,9 @@ Human gates pending: 2.</p>
         <ul><li class="lr-check lr-pass"><code>verify-doc-index</code> · pass · npm run verify:doc-index</li><li class="lr-check lr-pass"><code>verify-fleet-portal</code> · pass · npm run verify:fleet-portal</li><li class="lr-check lr-pass"><code>verify-runbooks</code> · pass · npm run verify:runbooks</li></ul></section>
 <section class="lr-lane lr-warn">
         <h3><span class="lr-dot lr-warn"></span> Human-in-the-loop checkpoints (operator sign-off) <small>(5/10)</small></h3>
-        <ul><li class="lr-check lr-warn"><code>checklist</code> · warn · 2 critical gates pending</li></ul></section>
+        <ul><li class="lr-check lr-warn"><code>checklist</code> · warn · 1 critical gates pending</li></ul></section>
   <footer>
-    Machine source <code>/p31_launch_readiness.json</code> ·
+    Machine source <code>/tmp/p31_launch_readiness.json</code> (local; not publicly served — <code>npm run launch:audit</code> regenerates) ·
     Config <code>p31-launch-readiness-config.json</code> ·
     Checklist <code>p31-launch-checklist.json</code> ·
     <a href="/contracts">/contracts</a> · <a href="/fleet-portal">/fleet-portal</a>

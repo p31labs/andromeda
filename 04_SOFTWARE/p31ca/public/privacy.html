@@ -161,6 +161,115 @@
       to investigate security incidents or abuse. We do not routinely export or store raw
       request logs ourselves beyond what Cloudflare&rsquo;s dashboard provides.
     </p>
+
+    <!-- 2f: Browser-local personalization (CogPass + theme + PHOS) -->
+    <h3 class="text-paper font-semibold mt-4">2f. Browser-local personalization</h3>
+    <p class="text-cloud/80">
+      Several p31ca.org pages adapt their appearance to your stated preferences using
+      <code class="font-mono text-teal/80">localStorage</code>. All values are stored
+      <strong class="text-paper">entirely in your browser</strong> and are
+      <strong class="text-paper">never transmitted to our servers</strong>. The keys we use
+      under our control are:
+    </p>
+    <ul class="text-cloud/80 list-disc pl-5 space-y-1">
+      <li>
+        <code class="font-mono text-teal/80">p31_subject_prefs</code> &mdash; your accessibility
+        preferences (contrast, density, motion, color temperature). Schema
+        <code class="font-mono text-teal/80">p31.subjectPrefs/0.1.0</code>. Read by
+        <code class="font-mono text-teal/80">/lib/p31-subject-prefs.js</code> and consumed by CSS only.
+      </li>
+      <li>
+        <code class="font-mono text-teal/80">p31.theme.v2</code> &mdash; your selected
+        visual theme (hub, org, midnight, genesis, paper, matrix), mode (default, focus, calm,
+        vibrant, muted), and appearance (auto / light / dark). Read by
+        <code class="font-mono text-teal/80">/lib/p31-theme-engine.mjs</code>.
+      </li>
+      <li>
+        <code class="font-mono text-teal/80">p31-cogpass-v1</code> &mdash; if you choose to save
+        a Cognitive Passport profile to your browser, it is stored here. The Cognitive Passport
+        generator runs entirely client-side (see &sect;3 above on Children); the saved profile
+        contains only what you typed and the style preferences you selected. We have no copy of
+        this data.
+      </li>
+      <li>
+        <code class="font-mono text-teal/80">p31-phos-greeted</code> /
+        <code class="font-mono text-teal/80">p31-phos-dismissed</code> &mdash; UI flags that
+        record whether you have seen or dismissed the on-page PHOS guide element. Boolean only.
+      </li>
+      <li>
+        <code class="font-mono text-teal/80">p31.starfield.off</code> &mdash; optional flag to
+        suppress the ambient starfield layer site-wide. Boolean only.
+      </li>
+    </ul>
+    <p class="text-cloud/80">
+      You can clear any of these at any time through your browser&rsquo;s site-data settings,
+      or via in-page affordances where provided (the Cognitive Passport generator includes a
+      &ldquo;Clear my card&rdquo; button; PHOS guide includes &ldquo;Don&rsquo;t show again&rdquo;).
+      Clearing these keys resets the corresponding personalization to the
+      <strong class="text-paper">Gray Rock default</strong> &mdash; minimal stimulus, no
+      brand chroma on first paint, reduced motion. See
+      <a class="text-teal underline hover:text-teal/90" href="/accessibility">accessibility</a>
+      for the doctrine.
+    </p>
+    <p class="text-cloud/80">
+      We do not use these keys to track you across sessions, link them to any identity, or
+      transmit them to any P31 Labs system or third-party analytics. They exist solely to make
+      our pages adapt to how your brain prefers to receive information.
+    </p>
+
+    <!-- 2g: Cross-origin Cognitive Passport bridge (CWP-BUS4-COGPASS-BRIDGE-2026-05) -->
+    <h3 class="text-paper font-semibold mt-4">2g. Cross-origin Cognitive Passport bridge</h3>
+    <p class="text-cloud/80">
+      When you visit a P31 surface at a <strong class="text-paper">different origin</strong> than the one
+      you saved your Cognitive Passport at &mdash; for example, visiting
+      <code class="font-mono text-teal/80">bonding.p31ca.org</code> after saving your passport at
+      <code class="font-mono text-teal/80">p31ca.org</code> &mdash; we may load a hidden iframe from
+      your passport&rsquo;s origin to read the passport via the browser&rsquo;s
+      <code class="font-mono text-teal/80">postMessage</code> mechanism. Specifically:
+    </p>
+    <ul class="text-cloud/80 list-disc pl-5 space-y-1">
+      <li>
+        The bridge endpoint at
+        <code class="font-mono text-teal/80">https://p31ca.org/cogpass-bridge.html</code>
+        runs entirely in your browser, reads
+        <code class="font-mono text-teal/80">p31-cogpass-v1</code> from
+        <code class="font-mono text-teal/80">localStorage</code>, normalizes it, and replies to
+        the consumer page via <code class="font-mono text-teal/80">postMessage</code>.
+      </li>
+      <li>
+        The passport never travels through any P31 server, never appears in any URL or log, and
+        is held in the consumer tab&rsquo;s
+        <strong class="text-paper">session memory only</strong> &mdash; it disappears when you
+        close the tab.
+      </li>
+      <li>
+        Origin validation is enforced on both sides: the bridge will only reply to origins on
+        a hardcoded allowlist (today: <code class="font-mono text-teal/80">bonding.p31ca.org</code>),
+        and the consumer will only accept replies whose
+        <code class="font-mono text-teal/80">event.origin</code> equals
+        <code class="font-mono text-teal/80">https://p31ca.org</code>. No wildcards. No runtime config.
+      </li>
+      <li>
+        You can disable this behavior at any time in the PHOS guide
+        (<em>Personalization &rarr; Cross-origin sync</em>) on any consumer surface.
+        The flag persists in that origin&rsquo;s
+        <code class="font-mono text-teal/80">localStorage</code> as
+        <code class="font-mono text-teal/80">p31-cogpass-bridge-disabled</code>.
+      </li>
+      <li>
+        The wire contract is documented at
+        <code class="font-mono text-teal/80">p31.cogPassBridge/1.0.0</code>. The single
+        architectural rule that prevents drift across schema versions: the bridge HTML imports
+        <code class="font-mono text-teal/80">normalize()</code> from the canonical Cognitive
+        Passport reader and does not reimplement it.
+      </li>
+    </ul>
+    <p class="text-cloud/80">
+      Adding a new cross-origin partner to the allowlist requires a code change reviewed against
+      this disclosure (the partner is named here before the allowlist is widened). See
+      <a class="text-teal underline hover:text-teal/90" href="https://github.com/p31labs">GitHub commits</a>
+      for the audit trail.
+    </p>
   </section>
 
   <!-- 3. Children -->

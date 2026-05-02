@@ -28,6 +28,17 @@
 /oracle     /magic-crystal.html      301
 /doc-suite  /open-doc-suite.html     301
 /centaur    /p31-super-centaur-starter.html  301
+
+# CWP-P31-PEER-COMP-2026-05 Phase 1 — trust & transparency layer
+# (/security stays mapped to the existing /security-disclosure.html — see line below;
+#  the richer hub-style policy lives at /security-policy → /security.html.)
+/manifesto         /manifesto.html         301
+/code-of-conduct   /code-of-conduct.html   301
+/coc               /code-of-conduct.html   301
+/roadmap           /roadmap.html           301
+/status            /status.html            301
+/financials        /financials.html        301
+/security-policy   /security.html          301
 /super-centaur  /p31-super-centaur-starter.html  301
 /cars   /social-molecules.html   301
 /canon    /p31-canon-demo.html  301

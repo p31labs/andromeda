@@ -20,7 +20,6 @@ import { createStandardDeck } from "../lib/quantum-deck-local";
 
 export type BotManifest = {
   schema: "p31.discordBot.manifest/1.0.0";
-  generatedAt: string;
   packageVersion: string;
   registryFingerprint: string;
   commands: Array<{
@@ -56,7 +55,8 @@ export function buildManifest(root: string): BotManifest {
 
   return {
     schema: "p31.discordBot.manifest/1.0.0",
-    generatedAt: new Date().toISOString(),
+    // No generatedAt: deterministic build for drift detection; git log is the audit trail.
+    // (Same pattern as home repo scripts/build-phos-voice-json.mjs line 205.)
     packageVersion: pkg.version,
     registryFingerprint,
     commands: commandRows,
