@@ -27,6 +27,7 @@ export const FOOTER_SOURCE = `    <footer>
       · <a href="../demos/index.html">Visual demos</a>
       · <a href="../glass-box.html">Glass box</a>
       · <a href="../andromeda/04_SOFTWARE/p31ca/public/vibe.html" title="Vibcoding (preview) — operator entry · CWP-P31-VIBE-2026-06">Vibcoding (preview)</a>
+      · <a href="../docs/operator/BOOT-UP-AND-USE.md" title="Boot up & use — operator loop in 6 moves">Boot up</a>
       · <a href="../docs/P31-DEPLOY-CANON.md" title="npm run connection">CONNECTION</a>
       · Full human document: <a href="../P31%20COGNITIVE%20PASSPORT%20%E2%80%94%20v5.md">P31 Cognitive Passport v5</a> (not required for export).
     </footer>`;
@@ -40,6 +41,7 @@ export const FOOTER_P31CA = `    <footer>
       · <a href="https://p31ca.org/visuals">Visual demos</a>
       · <a href="https://p31ca.org/glass-box">Glass box</a>
       · <a href="/vibe" title="Vibcoding (preview) — operator entry · CWP-P31-VIBE-2026-06">Vibcoding (preview)</a>
+      · <a href="https://github.com/p31labs/bonding-soup/blob/main/docs/operator/BOOT-UP-AND-USE.md" target="_blank" rel="noopener noreferrer" title="Boot up & use — operator loop in 6 moves">Boot up</a>
       · <a href="https://github.com/p31labs/bonding-soup/blob/main/docs/P31-DEPLOY-CANON.md" target="_blank" rel="noopener noreferrer" title="npm run connection">CONNECTION</a>
       · Full human document: <code>P31 COGNITIVE PASSPORT — v5.md</code> in the repo (not required for export).
     </footer>`;
