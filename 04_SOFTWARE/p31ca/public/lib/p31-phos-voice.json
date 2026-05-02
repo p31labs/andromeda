@@ -44,13 +44,14 @@
   },
   "/buffer": {
     "_tag": "DRAFT-AGENT-SIMULATED",
-    "greeting": "This is the buffer.",
-    "hint": "Drafts and routes communication based on what's in your context card.",
-    "fallback": "If you haven't made a context card yet, the buffer works in default mode.",
+    "_tagSource": "refined 2026-05-02 morning — grounded in actual product behavior per registry.mjs",
+    "greeting": "This is the Buffer.",
+    "hint": "When a hard message lands and you need to respond carefully — paste it here. The Buffer flags pressure tactics, finds the part that actually needs an answer, and helps you draft a reply at your pace.\n\nSlow breath. Clear head.",
+    "fallback": "Not sure you need it right now? You probably don't. Bookmark it for the next stressful inbox moment.",
     "links": [
       {
-        "label": "Make your context card",
-        "href": "/passport/"
+        "label": "Open the Buffer",
+        "href": "/buffer.html"
       },
       {
         "label": "Back to the lab",
