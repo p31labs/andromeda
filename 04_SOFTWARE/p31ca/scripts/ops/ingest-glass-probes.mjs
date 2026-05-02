@@ -122,8 +122,15 @@ function main() {
     probes,
   };
   fs.mkdirSync(path.dirname(outPath), { recursive: true });
-  fs.writeFileSync(outPath, JSON.stringify(out, null, 2) + "\n", "utf8");
+  const serialized = JSON.stringify(out, null, 2) + "\n";
+  fs.writeFileSync(outPath, serialized, "utf8");
   console.log("ingest-glass-probes: wrote", path.relative(p31ca, outPath), `(${probes.length} probes, ${source})`);
+  // Public mirror so /status.html (CWP-PEER-1I) can fetch the registry from the same origin
+  // without auth. Same payload as src/data/ — committed; verifier in repo CI will catch drift.
+  const publicMirror = path.join(p31ca, "public/ops-glass-probes.json");
+  fs.mkdirSync(path.dirname(publicMirror), { recursive: true });
+  fs.writeFileSync(publicMirror, serialized, "utf8");
+  console.log("ingest-glass-probes: wrote", path.relative(p31ca, publicMirror), "(public mirror for /status.html)");
 }
 
 main();

@@ -516,6 +516,41 @@
       "status": 301
     },
     {
+      "from": "/manifesto",
+      "to": "/manifesto.html",
+      "status": 301
+    },
+    {
+      "from": "/code-of-conduct",
+      "to": "/code-of-conduct.html",
+      "status": 301
+    },
+    {
+      "from": "/coc",
+      "to": "/code-of-conduct.html",
+      "status": 301
+    },
+    {
+      "from": "/roadmap",
+      "to": "/roadmap.html",
+      "status": 301
+    },
+    {
+      "from": "/status",
+      "to": "/status.html",
+      "status": 301
+    },
+    {
+      "from": "/financials",
+      "to": "/financials.html",
+      "status": 301
+    },
+    {
+      "from": "/security-policy",
+      "to": "/security.html",
+      "status": 301
+    },
+    {
       "from": "/canon",
       "to": "/p31-canon-demo.html",
       "status": 301
