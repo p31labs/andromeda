@@ -1,7 +1,7 @@
 {
   "schema": "p31.contractRegistry/1.0.0",
   "version": "1.0.0",
-  "generatedAt": "2026-05-02T04:42:56.298Z",
+  "generatedAt": "2026-05-02T05:03:07.784Z",
   "builder": {
     "uiPath": "/contract-builder.html",
     "shortPath": "/contracts",
@@ -20,7 +20,7 @@
       "primarySchema": null,
       "verifyHints": [
         "verify:cognitive-passport-schema (atomic SCHEMA equality, html ≡ @p31/shared); npm run verify:passport (mirror parity); npm run verify:cognitive-passport-profiles (audience matrix types unbroken). JSON Schema Draft 7 validity is manual today; npm run verify:cognitive-passport-overlay remains planned.",
-        "Manual today: load a v1.1.0 document into localStorage 'p31-cogpass-v1' on a page that includes both p31-subject-prefs.js and p31-theme-engine.mjs and p31-cogpass-reader.mjs; verify <html> data-* attributes match passport, document.dispatchEvent fires p31:cogpass-loaded once. CI: npm run verify:cogpass-reader (planned, jsdom + vitest). Until then: node --check andromeda/04_SOFTWARE/p31ca/public/lib/p31-cogpass-reader.mjs."
+        "verify:cogpass-reader — structural + behavioral guards (node --check; required public API window.p31CogPass.{get,set,clear,getRole,getDisplayName,onChange}; required events p31:cogpass-{loaded,cleared,error}; screenComfort cascade thresholds 30/10 with gray-rock pin; STORAGE_KEY 'p31-cogpass-v1' matches privacy.html §2f; schema URI 'p31.cognitivePassport/1.1.0' matches constants.cognitivePassport.jsonSchema). Partial-clone-friendly (skips when andromeda missing); strict via P31_VERIFY_COGPASS_READER_STRICT=1. Manual round-trip: load a v1.1.0 document into localStorage 'p31-cogpass-v1' on a page that includes p31-subject-prefs.js + p31-theme-engine.mjs + p31-cogpass-reader.mjs; verify <html> data-* attributes match passport, document.dispatchEvent fires p31:cogpass-loaded once."
       ],
       "optional": true
     },
@@ -725,7 +725,7 @@
     "solidity": "0.8.24",
     "package": "packages/p31-sovereign-chain",
     "verifyScript": "verify:sovereign-chain",
-    "generatedAt": "2026-05-02T04:42:56.268Z",
+    "generatedAt": "2026-05-02T05:03:07.730Z",
     "contracts": [
       {
         "letter": "S",
