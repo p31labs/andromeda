@@ -931,6 +931,151 @@
       "appUrl": "social-molecules.html"
     }
   ],
+  "busBar": {
+    "schema": "p31.busBar/1.0.0",
+    "label": "Bus bar — unified personalization + navigation contract",
+    "doctrine": "Nine MVPs around one operator. K₄ topology applied to UX: every product binds to the same nervous system (CogPass + PHOS + theme engine + BaseLayout) instead of running parallel onboarding, parallel style, parallel state. The bus bar is the consolidation that lets PHOS speak with one voice across every surface.",
+    "doctrineSource": "docs/PHOS-VOICE-DRAFT.md §3.3 — 9 calcium = 9 MVPs",
+    "roles": {
+      "stranger": {
+        "label": "Stranger",
+        "description": "No CogPass loaded. Default state. Sees only the front door and the public products. PHOS uses warm register.",
+        "isDefault": true,
+        "cogPassLoaded": false
+      },
+      "user": {
+        "label": "User",
+        "description": "CogPass loaded with accessLevel=user (default). Personalized experience. Sees the lab and design system.",
+        "cogPassLoaded": true,
+        "cogPassAccessLevel": "user"
+      },
+      "operator": {
+        "label": "Operator",
+        "description": "CogPass loaded with accessLevel=operator. Sees operations surfaces (ops, ede, buffer, glass-box). Self-attestation only — true operator-only systems still gate via Ed25519.",
+        "cogPassLoaded": true,
+        "cogPassAccessLevel": "operator"
+      }
+    },
+    "slots": {
+      "welcome": {
+        "label": "Welcome",
+        "href": "/welcome",
+        "phosVoiceKey": "/welcome",
+        "description": "Front door. PHOS greets and offers the next step. Fast load, no jargon, ≤200 words first paint.",
+        "wcd": "WCD-PHOS-2026-01 C-2"
+      },
+      "passport": {
+        "label": "Your card",
+        "href": "/passport/",
+        "phosVoiceKey": "/passport/",
+        "description": "CogPass v1.1.0 generator + saved profile. Source: cognitive-passport/index.html (home root).",
+        "wcd": "WCD-PHOS-2026-01 C-4"
+      },
+      "bonding": {
+        "label": "BONDING",
+        "href": "https://bonding.p31ca.org",
+        "external": true,
+        "description": "Chemistry game bridging distance between parents and children. Separate origin (Vite+React+R3F). CogPass crosses via URL param bridge (WCD-PHOS-2026-01 BUS4)."
+      },
+      "lab": {
+        "label": "Lab",
+        "href": "/lab",
+        "phosVoiceKey": "/lab",
+        "description": "Full product catalog. Currently the hub home page (/); rename pending route migration in WCD-PHOS-2026-01 BUS3."
+      },
+      "research": {
+        "label": "Research",
+        "href": "/research",
+        "phosVoiceKey": "/research",
+        "description": "22 open-access papers, filterable. Consolidation of Zenodo entries.",
+        "wcd": "WCD-PHOS-2026-01 BUS3"
+      },
+      "support": {
+        "label": "Support",
+        "href": "/support",
+        "phosVoiceKey": "/support",
+        "description": "Ko-fi + Stripe. 0% platform fees, accurate 501c3-pending language matching terms.html §5.",
+        "wcd": "WCD-PHOS-2026-01 C-3"
+      },
+      "stylebook": {
+        "label": "Stylebook",
+        "href": "/stylebook/",
+        "phosVoiceKey": "/stylebook/",
+        "description": "Design system reference. From the in-flight stylebook agent's work."
+      },
+      "ops": {
+        "label": "Ops",
+        "href": "/ops/",
+        "phosVoiceKey": "/ops/",
+        "description": "Operator dashboard. Wraps command-center + EPCP data. CWP-P31-UI-2026-01."
+      },
+      "ede": {
+        "label": "EDE",
+        "href": "/ede.html",
+        "phosVoiceKey": "/ede.html",
+        "description": "Everything Development Environment. Operator IDE."
+      },
+      "buffer": {
+        "label": "Buffer",
+        "href": "/buffer",
+        "phosVoiceKey": "/buffer",
+        "description": "Communications processing. ~85% complete; reads CogPass communication.preferredTone + avoidList on load."
+      },
+      "glass-box": {
+        "label": "Glass box",
+        "href": "/glass-box.html",
+        "phosVoiceKey": "/glass-box.html",
+        "description": "Public transparency dashboard. Visible to operator role in nav for one-click access; remains publicly reachable for everyone."
+      }
+    },
+    "navByRole": {
+      "_comment": "Slot IDs in the order they render in BaseLayout nav. Stranger sees 5; user sees 7; operator sees 11. WCD-PHOS-2026-01 BUS2 implements the rendering.",
+      "stranger": ["welcome", "passport", "bonding", "research", "support"],
+      "user": ["welcome", "passport", "bonding", "lab", "research", "stylebook", "support"],
+      "operator": ["welcome", "passport", "bonding", "lab", "research", "stylebook", "support", "ops", "ede", "buffer", "glass-box"]
+    },
+    "productSlots": {
+      "_comment": "Maps registry product IDs (from registryAppUrlInvariants + scripts/hub/registry.mjs) to the bus bar slot that contains them. Seed list — extend as products are reviewed for bus bar membership. WCD-PHOS-2026-01 BUS3 completes the map.",
+      "bonding": "bonding",
+      "spaceship-earth": "lab",
+      "ede": "ede",
+      "buffer": "buffer",
+      "command-center": "ops",
+      "cortex": "ops",
+      "sovereign": "ops",
+      "k4market": "lab",
+      "tomography": "lab",
+      "geodesic": "lab",
+      "observatory": "lab",
+      "quantum-deck": "lab",
+      "quantum-clock": "research",
+      "super-centaur": "lab",
+      "social-molecules": "lab",
+      "poets": "lab",
+      "education": "lab",
+      "integrations": "lab",
+      "p31-delta-hiring": "lab",
+      "canon-demo": "stylebook",
+      "alchemy": "lab",
+      "attractor": "lab",
+      "axiom": "lab",
+      "book": "lab"
+    },
+    "constraints": {
+      "maxProducts": 9,
+      "maxProductsRationale": "Nine calcium atoms per Posner molecule (Ca₉(PO₄)₆). The cage is complete at 9. A 10th MVP would break the symmetry and require an explicit cage-expansion CWP that re-derives the geometry. See docs/PHOS-VOICE-DRAFT.md §3.3.",
+      "constraintEnforcedAt": "Architectural review. Future CI gate: verify:bus-bar (planned) audits scripts/hub/hub-app-ids.mjs against this constraint."
+    },
+    "phos": {
+      "absorbsThemeSwitcher": true,
+      "absorbsThemeSwitcherRationale": "PHOS becomes the single personalization affordance — greeting + hint + theme controls + 'create your context card' link. The theme engine stays the engine; PHOS is its face. Resolves the position collision (both wanted bottom-right). See docs/PHOS-VOICE-DRAFT.md §1 and andromeda/04_SOFTWARE/p31ca/public/lib/p31-theme-switcher.mjs (to be unified into PHOS guide component in WCD-PHOS-2026-01 C-1).",
+      "panelPosition": "bottom-right",
+      "collapsedSize": "48px",
+      "alwaysAvailable": true,
+      "voiceSource": "docs/PHOS-VOICE-DRAFT.md (operator hand) → andromeda/04_SOFTWARE/p31ca/public/lib/p31-phos-voice.json (mirror, planned)"
+    },
+    "verify": "npm run verify:bus-bar (planned) — checks that productSlots covers all registry IDs, navByRole references only declared slots, and product count ≤ constraints.maxProducts. Until that script lands, validate manually: every key in productSlots must exist in registryAppUrlInvariants OR be flagged as 'subdomain-only' (e.g. bonding); every value in productSlots must be a key in slots; every entry in navByRole must be a key in slots."
+  },
   "threejs": {
     "dome.astro": {
       "path": "src/pages/dome.astro",
