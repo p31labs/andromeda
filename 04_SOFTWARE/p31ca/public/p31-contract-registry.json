@@ -1,7 +1,7 @@
 {
   "schema": "p31.contractRegistry/1.0.0",
   "version": "1.0.0",
-  "generatedAt": "2026-05-02T05:03:07.784Z",
+  "generatedAt": "2026-05-02T05:12:25.336Z",
   "builder": {
     "uiPath": "/contract-builder.html",
     "shortPath": "/contracts",
@@ -725,7 +725,7 @@
     "solidity": "0.8.24",
     "package": "packages/p31-sovereign-chain",
     "verifyScript": "verify:sovereign-chain",
-    "generatedAt": "2026-05-02T05:03:07.730Z",
+    "generatedAt": "2026-05-02T05:12:25.287Z",
     "contracts": [
       {
         "letter": "S",
