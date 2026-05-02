@@ -561,6 +561,16 @@
       "status": 301
     },
     {
+      "from": "/vibe",
+      "to": "/vibe.html",
+      "status": 301
+    },
+    {
+      "from": "/vibcoding",
+      "to": "/vibe.html",
+      "status": 301
+    },
+    {
       "from": "/canon",
       "to": "/p31-canon-demo.html",
       "status": 301

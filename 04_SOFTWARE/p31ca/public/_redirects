@@ -47,6 +47,10 @@
 # so the existing dashboard URL is preserved.
 /telemetry-policy  /telemetry-policy.html  301
 /transparency-report /transparency.html    301
+
+# CWP-P31-VIBE-2026-06 Phase 1 — vibcoding tetra-hub dev environment (operator entry)
+/vibe              /vibe.html              301
+/vibcoding         /vibe.html              301
 /super-centaur  /p31-super-centaur-starter.html  301
 /cars   /social-molecules.html   301
 /canon    /p31-canon-demo.html  301
