@@ -52,7 +52,7 @@
       "path": "/glass-box.html",
       "implementation": "public/glass-box.html (mirrored from P31 home glass-box.html via npm run build:glass-box)",
       "label": "P31 Glass Box — public live transparency terminal",
-      "note": "Schema p31.glassBox/0.1.0. Streams synthetic CLI playbacks (verify:*, launch:audit, reports:simulate, ecosystem:glass) + a real-time poll of the public reports/index.json. No tracking, no analytics, no operator secrets — only what we'd publish anyway. Short routes /glass, /glass-box, /transparency in edgeRedirects. Not the operator UI (CWP-P31-UI-2026-01) which is at /ops and is gated."
+      "note": "Schema p31.glassBox/0.1.0. Streams synthetic CLI playbacks (verify:*, launch:audit, reports:simulate, ecosystem:glass) + a real-time poll of the public reports/index.json. No tracking, no analytics, no operator secrets — only what we'd publish anyway. Short routes /glass and /glass-box in edgeRedirects (the /transparency short formerly aliased here now serves the formal annual transparency report at /transparency.html, PEER-2A). Not the operator UI (CWP-P31-UI-2026-01) which is at /ops and is gated."
     },
     "demosPublic": {
       "path": "/demos/index.html",
@@ -551,6 +551,26 @@
       "status": 301
     },
     {
+      "from": "/telemetry-policy",
+      "to": "/telemetry-policy.html",
+      "status": 301
+    },
+    {
+      "from": "/transparency-report",
+      "to": "/transparency.html",
+      "status": 301
+    },
+    {
+      "from": "/vibe",
+      "to": "/vibe.html",
+      "status": 301
+    },
+    {
+      "from": "/vibcoding",
+      "to": "/vibe.html",
+      "status": 301
+    },
+    {
       "from": "/canon",
       "to": "/p31-canon-demo.html",
       "status": 301
@@ -642,8 +662,8 @@
     },
     {
       "from": "/transparency",
-      "to": "/glass-box.html",
-      "status": 200
+      "to": "/transparency.html",
+      "status": 301
     },
     {
       "from": "/visuals",

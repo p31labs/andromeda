@@ -39,6 +39,18 @@
 /status            /status.html            301
 /financials        /financials.html        301
 /security-policy   /security.html          301
+
+# CWP-P31-PEER-COMP-2026-05 Phase 2 — independent verification layer
+# (annual transparency report + no-telemetry posture, both public)
+# /telemetry stays mapped to the existing internal telemetry dashboard at /telemetry.html;
+# the new no-telemetry POSTURE page lives at /telemetry-policy → /telemetry-policy.html
+# so the existing dashboard URL is preserved.
+/telemetry-policy  /telemetry-policy.html  301
+/transparency-report /transparency.html    301
+
+# CWP-P31-VIBE-2026-06 Phase 1 — vibcoding tetra-hub dev environment (operator entry)
+/vibe              /vibe.html              301
+/vibcoding         /vibe.html              301
 /super-centaur  /p31-super-centaur-starter.html  301
 /cars   /social-molecules.html   301
 /canon    /p31-canon-demo.html  301
@@ -61,7 +73,9 @@
 /demos-public   /demos/index.html   301
 # /glass-box — omit (Pages clean URL serves glass-box.html at /glass-box; explicit rule loops with 308 .html → /glass-box).
 /glass   /glass-box.html   200
-/transparency   /glass-box.html   200
+# /transparency now serves the formal transparency report (PEER-2A); the operator-facing
+# glass box continues to live at /glass-box and short /glass.
+/transparency   /transparency.html   301
 /lab   /p31-sovereign-lab.html   301
 /slicer   /p31-slicer.html   301
 /journey   /vision.html   301
