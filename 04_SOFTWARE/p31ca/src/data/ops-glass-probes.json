@@ -1,6 +1,5 @@
 {
   "schema": "p31.opsGlassProbes/1.0.0",
-  "ingested": "2026-05-02T05:05:08.329Z",
   "source": "p31-ecosystem.json",
   "probes": [
     {

@@ -115,7 +115,9 @@ function main() {
   }
   const out = {
     schema: "p31.opsGlassProbes/1.0.0",
-    ingested: new Date().toISOString(),
+    // No `ingested` timestamp: deterministic build for drift detection.
+    // Git log on this mirror is the audit trail. (Same pattern as
+    // home repo scripts/build-phos-voice-json.mjs line 205.)
     source,
     probes,
   };
