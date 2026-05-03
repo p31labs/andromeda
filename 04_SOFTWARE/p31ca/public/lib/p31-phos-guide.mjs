@@ -464,6 +464,14 @@ function k4MarkSvg() {
 // ─── voice resolution (page key → voice entry) ──────────────────────────────
 function voiceForPage(pathname) {
   if (!pathname) return VOICE._default;
+
+  // Check data-p31-phos-page attribute first (set by BaseLayout.astro)
+  // This allows explicit page targeting regardless of URL structure
+  if (HAS_DOC) {
+    const bodyPage = document.body?.getAttribute('data-p31-phos-page');
+    if (bodyPage && VOICE[`/${bodyPage}`]) return VOICE[`/${bodyPage}`];
+  }
+
   // Normalize: '/' → /welcome (front door), strip trailing slash so /lab/ ≡ /lab.
   // Try the normalized pathname first, then a .html-stripped variant
   // (so /buffer.html and /buffer both look up VOICE['/buffer']) — lets the
