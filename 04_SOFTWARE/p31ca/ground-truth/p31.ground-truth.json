@@ -185,6 +185,12 @@
       "label": "Sovereign Lab — dome trim · Web Serial · optional C.A.R.S. labTelemetry bridge",
       "note": "Mirrored from P31 home; npm run sync:sovereign-p31ca (root). Short /lab. Optional ?carsWs= → mock WS streams coherence into eventLog (cars-contract)."
     },
+    "sovereignLabV2": {
+      "path": "/p31-sovereign-lab-v2.html",
+      "implementation": "public/p31-sovereign-lab-v2.html",
+      "label": "Sovereign Lab v2 — live worker fleet control, K4 mesh routing, trim-tab tuning",
+      "note": "Three-panel interface: fleet panel (14 Workers), Three.js K4 tetrahedron stage, mesh state panel. Probes Worker health, routes to endpoints, connects to Geodesic Room WS. P31 home source: p31-sovereign-lab-v2.html. Short /lab2."
+    },
     "browserSlicer": {
       "path": "/p31-slicer.html",
       "implementation": "public/p31-slicer.html",
@@ -658,6 +664,11 @@
     {
       "from": "/lab",
       "to": "/p31-sovereign-lab.html",
+      "status": 301
+    },
+    {
+      "from": "/lab2",
+      "to": "/p31-sovereign-lab-v2.html",
       "status": 301
     },
     {
