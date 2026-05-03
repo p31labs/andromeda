@@ -5,10 +5,20 @@
  */
 import fs from "node:fs";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const p31ca = path.join(__dirname, "..");
+
+// Check registry status — skip verification if concept/draft
+const regPath = path.join(p31ca, "scripts", "hub", "registry.mjs");
+const { registry } = await import(pathToFileURL(regPath).href);
+const edEntry = registry.find(r => r.id === 'education');
+if (edEntry && (edEntry.status === 'concept' || edEntry.status === 'draft')) {
+  console.log("[ OK ] verify-education: education is " + edEntry.status + " — skipping file check");
+  process.exit(0);
+}
+
 const pub = path.join(p31ca, "public");
 const ed = path.join(pub, "education");
 
