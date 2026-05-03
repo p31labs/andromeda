@@ -776,7 +776,7 @@ export const registry = [
   },
   {
     id: 'tomography', title: 'K4 TOMOGRAPHY', tagline: 'Symbol-Seeded Depth View',
-    icon: '🔬', accent: '#4db8a8', status: 'live', statusLabel: 'LIVE',
+    icon: '🔬', accent: '#4db8a8', status: 'concept', statusLabel: 'CONCEPT',
     appUrl: 'tomography.html',
     tech: ['Three.js r183', 'Barycentric Mapping', 'PRNG OHLCV', 'Larmor Ring'],
     features: [
@@ -797,7 +797,7 @@ export const registry = [
   },
   {
     id: 'quantum-clock', title: 'QUANTUM CLOCK', tagline: 'Grandfather Rhythm · Coherence (Pedagogy)',
-    icon: '◔', accent: '#8b7ec8', status: 'live', statusLabel: 'LIVE',
+    icon: '◔', accent: '#8b7ec8', status: 'concept', statusLabel: 'CONCEPT',
     appUrl: 'quantum-clock.html',
     tech: ['Static HTML', 'TRIM ↔ dome constants', 'Quantum clock events'],
     features: [
