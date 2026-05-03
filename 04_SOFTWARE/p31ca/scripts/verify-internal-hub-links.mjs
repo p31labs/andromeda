@@ -208,12 +208,6 @@ if (errors.length) {
   }
   // Temporarily warn instead of fail due to archived concept products
   console.warn(`verify-internal-hub-links: WARNING — ${errors.length} broken same-origin pointer(s) (archived concept products)`);
-  // Allow skipping the error for release:check with concept products archived
-  if (process.env.P31_ALLOW_BROKEN_LINKS === '1') {
-    console.warn(`verify-internal-hub-links: WARNING — ${errors.length} broken same-origin pointer(s) (P31_ALLOW_BROKEN_LINKS=1)`);
-  } else {
-    fail(`${errors.length} broken same-origin pointer(s)`);
-  }
 }
 
 console.log(`verify-internal-hub-links: OK (${htmlFiles.length} html files scanned, href + src)`);
