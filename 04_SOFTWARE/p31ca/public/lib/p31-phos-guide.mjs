@@ -32,6 +32,7 @@
  *   .refresh()      → re-render with current state
  *
  * Events on document:
+ *   'p31:phos-booted'     detail = { inference }  — fires after signals collected + render
  *   'p31:phos-opened'     detail = {}
  *   'p31:phos-closed'     detail = {}
  *   'p31:phos-dismissed'  detail = {}
@@ -380,6 +381,53 @@ html[data-p31-glass="on"] [${ROOT_MARKER}] .phos-panel {
 }
 [${ROOT_MARKER}] .phos-voice-btn:hover { opacity: 1; }
 [${ROOT_MARKER}] .phos-voice-btn[data-voice-on="false"] { opacity: 0.4; text-decoration: line-through; }
+
+/* ── urgent mode (safe mode) ─────────────────────────────────────────────── */
+/* When user is in sensory crisis: no animations, no blur, high contrast, */
+/* one clear action only. */
+[${ROOT_MARKER}][data-p31-urgent="true"] .phos-dot {
+  background: #ff4444 !important;
+  animation: none !important;
+  box-shadow: none !important;
+}
+[${ROOT_MARKER}][data-p31-urgent="true"] .phos-panel {
+  background: #000 !important;
+  border-color: #333 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+[${ROOT_MARKER}][data-p31-urgent="true"] .phos-title,
+[${ROOT_MARKER}][data-p31-urgent="true"] .phos-hint {
+  color: #fff !important;
+}
+[${ROOT_MARKER}][data-p31-urgent="true"] .phos-chip {
+  background: #222 !important;
+  border-color: #444 !important;
+  color: #fff !important;
+  transition: none !important;
+}
+[${ROOT_MARKER}][data-p31-urgent="true"] .phos-chip.primary {
+  background: #fff !important;
+  color: #000 !important;
+  border-color: #fff !important;
+}
+[${ROOT_MARKER}] .phos-urgent-btn {
+  position: absolute;
+  top: -28px;
+  right: 0;
+  background: transparent;
+  border: none;
+  color: var(--p31-coral, #cc6247);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  opacity: 0.6;
+  padding: 4px 8px;
+}
+[${ROOT_MARKER}] .phos-urgent-btn:hover { opacity: 1; }
+
 @media (prefers-reduced-motion: reduce) {
   [${ROOT_MARKER}] .phos-dot { transition: none; }
   [${ROOT_MARKER}] .phos-chip { transition: none; }
@@ -502,6 +550,35 @@ function applyScreenComfort(value) {
       // inline script's "remove on first interaction" lifecycle govern that.
     }
   }
+}
+
+// ─── urgent mode (sensory crisis / safe mode) ─────────────────────────────────
+// Bypasses all inference, animation, and voice when user is in overwhelm.
+// Triggered by: CogPass urgentMode flag, screenComfort < 5, or explicit toggle.
+
+function isUrgentMode() {
+  if (!HAS_WIN) return false;
+  // Check explicit toggle first
+  if (localStorage.getItem('p31-urgent-mode') === 'true') return true;
+  // Check CogPass urgentMode flag
+  try {
+    const cogpass = JSON.parse(localStorage.getItem('p31-cogpass-v1') || '{}');
+    if (cogpass.urgentMode === true) return true;
+    if (cogpass.screenComfort != null && Number(cogpass.screenComfort) < 5) return true;
+  } catch {}
+  return false;
+}
+
+function clearUrgentMode() {
+  if (!HAS_WIN) return;
+  localStorage.removeItem('p31-urgent-mode');
+  try {
+    const cogpass = JSON.parse(localStorage.getItem('p31-cogpass-v1') || '{}');
+    if (cogpass.urgentMode) {
+      cogpass.urgentMode = false;
+      localStorage.setItem('p31-cogpass-v1', JSON.stringify(cogpass));
+    }
+  } catch {}
 }
 
 // ─── inference engine ────────────────────────────────────────────────────────
@@ -657,6 +734,24 @@ let isOpenState = false;
 let currentScreenComfort = 50;
 
 function renderPanelHtml(voice, role) {
+  // Urgent mode: simplified UI, no choices, no animations, immediate escape
+  if (isUrgentMode()) {
+    return `
+      <div class="phos-header">
+        <h2 class="phos-title">Safe Mode</h2>
+        <button class="phos-close" type="button" aria-label="Close panel" data-phos-close>×</button>
+      </div>
+      <p class="phos-hint">All motion and sound disabled. One option available.</p>
+      <div class="phos-section">
+        <a class="phos-chip primary" href="/support" data-phos-link>Get to safe space →</a>
+      </div>
+      <div class="phos-footer">
+        <span>P31 · Safe Mode</span>
+        <button type="button" data-phos-urgent-clear>Exit Safe Mode</button>
+      </div>
+    `;
+  }
+
   const roleBadge =
     role === 'operator' ? '<span class="phos-section-label" style="color:var(--p31-coral,#cc6247);margin-left:6px;">OP</span>' :
     role === 'user'     ? '<span class="phos-section-label" style="margin-left:6px;">CARD</span>' :
@@ -741,6 +836,8 @@ function renderPanelHtml(voice, role) {
         <button type="button" data-phos-dismiss>Don't show again</button>
       </div>
     </div>
+
+    <button type="button" class="phos-urgent-btn" data-phos-urgent-trigger title="Enter Safe Mode (immediate calm)">Safe Mode</button>
   `;
 }
 
@@ -777,6 +874,14 @@ function refresh() {
   const role = getRole();
   const panel = rootEl.querySelector('[data-phos-panel]');
   if (panel) panel.innerHTML = renderPanelHtml(voice, role);
+
+  // Update urgent mode attribute on root for CSS styling
+  const urgent = isUrgentMode();
+  rootEl.setAttribute('data-p31-urgent', urgent ? 'true' : 'false');
+
+  // Show/hide urgent mode trigger button based on state
+  const urgentBtn = rootEl.querySelector('[data-phos-urgent-trigger]');
+  if (urgentBtn) urgentBtn.style.display = urgent ? 'none' : 'block';
 }
 
 function open() {
@@ -822,12 +927,24 @@ function dispatch(name, detail = {}) {
 
 // ─── event delegation on rootEl ─────────────────────────────────────────────
 function onRootClick(e) {
-  const t = e.target.closest('[data-phos-toggle], [data-phos-close], [data-phos-dismiss], [data-phos-appearance], [data-phos-link], [data-phos-chip], [data-phos-voice-toggle]');
+  const t = e.target.closest('[data-phos-toggle], [data-phos-close], [data-phos-dismiss], [data-phos-appearance], [data-phos-link], [data-phos-chip], [data-phos-voice-toggle], [data-phos-urgent-clear]');
   if (!t) return;
 
   if (t.matches('[data-phos-toggle]')) { toggle(); return; }
   if (t.matches('[data-phos-close]'))  { close();  return; }
   if (t.matches('[data-phos-dismiss]')) { dismiss(); return; }
+
+  if (t.matches('[data-phos-urgent-clear]')) {
+    clearUrgentMode();
+    refresh();
+    return;
+  }
+
+  if (t.matches('[data-phos-urgent-trigger]')) {
+    if (HAS_WIN) localStorage.setItem('p31-urgent-mode', 'true');
+    refresh();
+    return;
+  }
 
   if (t.matches('[data-phos-voice-toggle]')) {
     toggleVoice();
@@ -940,6 +1057,9 @@ function boot() {
 
   refresh();
 
+  // Notify the page that PHOS has booted with inference results
+  dispatch('p31:phos-booted', { inference: _inference });
+
   // Hot updates: re-render when CogPass loads / clears (role + voice may change)
   document.addEventListener('p31:cogpass-loaded', () => {
     _inference = inferRoute(collectSignals());
@@ -979,6 +1099,9 @@ if (HAS_WIN) {
     getInference: () => _inference,
     collectSignals,
     inferRoute,
+    isUrgentMode,
+    setUrgentMode: (v) => { if (HAS_WIN) localStorage.setItem('p31-urgent-mode', v ? 'true' : 'false'); refresh(); },
+    clearUrgentMode,
   });
 
   if (HAS_DOC) {
