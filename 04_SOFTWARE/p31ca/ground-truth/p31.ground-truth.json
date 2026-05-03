@@ -461,6 +461,11 @@
       "status": 301
     },
     {
+      "from": "/launch",
+      "to": "/launch.html",
+      "status": 301
+    },
+    {
       "from": "/together",
       "to": "/welcome",
       "status": 301
