@@ -157,7 +157,7 @@ export const registry = [
   },
   {
     id: 'genesis-gate', title: 'Genesis Gate', tagline: 'Governance Control Plane',
-    icon: '🔬', accent: '#3ba372', status: 'live', statusLabel: 'LIVE',
+    icon: '🔬', accent: '#3ba372', status: 'concept', statusLabel: 'CONCEPT',
     appUrl: appUrlForWorkerSpa('genesis-gate'),
     tech: ['TypeScript ESM', 'Cloudflare Workers', 'TelemetryModule', 'GovernanceHook'],
     features: [
