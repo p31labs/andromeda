@@ -137,7 +137,7 @@ export const registry = [
   },
   {
     id: 'kenosis', title: 'Project Kenosis', tagline: 'Autopoietic Edge Network',
-    icon: '🕸️', accent: '#3ba372', status: 'live', statusLabel: 'LIVE',
+    icon: '🕸️', accent: '#3ba372', status: 'concept', statusLabel: 'CONCEPT',
     appUrl: 'kenosis.html',
     tech: ['Cloudflare Workers', 'SIC-POVM', '7-Node Mesh', 'Byzantine Fault Tolerance'],
     features: [
@@ -676,7 +676,7 @@ export const registry = [
   },
   {
     id: 'mission-control', title: 'Mission Control', tagline: 'Kids Token Economy',
-    icon: '🚀', accent: '#ff00ff', status: 'live', statusLabel: 'LIVE',
+    icon: '🚀', accent: '#ff00ff', status: 'concept', statusLabel: 'CONCEPT',
     appUrl: 'mission-control.html',
     tech: ['Pixel RPG Engine', 'Genesis Token Economy', 'Press Start 2P Font', 'Custom Toast'],
     features: [
@@ -1107,7 +1107,7 @@ export const registry = [
   },
   {
     id: 'liminal', title: 'LIMINAL', tagline: 'Poetry · Astrology · Drawing',
-    icon: '🌙', accent: '#8b7cc9', status: 'live', statusLabel: 'LIVE',
+    icon: '🌙', accent: '#8b7cc9', status: 'concept', statusLabel: 'CONCEPT',
     appUrl: 'liminal.html',
     tech: ['Perfect Freehand', 'SwissEph-JS', 'Web Speech API', 'Wabi-Sabi Canvas'],
     features: [
