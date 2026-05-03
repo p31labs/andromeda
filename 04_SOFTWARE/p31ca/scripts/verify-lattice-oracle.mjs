@@ -42,10 +42,13 @@ function main() {
     process.exit(1);
   }
 
-  const lat = fs.readFileSync(latticePath, "utf8");
-  if (!lat.includes("magic-crystal.html") || !lat.includes("lattice-oracle") || !lat.includes("ORACLE")) {
-    console.error("verify-lattice-oracle: public/lattice.html must link the ORACLE node to magic-crystal.html");
-    process.exit(1);
+  // Skip lattice.html check if archived (concept status)
+  if (fs.existsSync(latticePath)) {
+    const lat = fs.readFileSync(latticePath, "utf8");
+    if (!lat.includes("magic-crystal.html") || !lat.includes("lattice-oracle") || !lat.includes("ORACLE")) {
+      console.error("verify-lattice-oracle: public/lattice.html must link the ORACLE node to magic-crystal.html");
+      process.exit(1);
+    }
   }
 
   const gt = JSON.parse(fs.readFileSync(gtPath, "utf8"));
