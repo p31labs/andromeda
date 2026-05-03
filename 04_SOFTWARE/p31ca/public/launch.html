@@ -283,11 +283,38 @@
      the "last sweep" pill + step rows below. Fails silently when the JSON is missing
      (e.g. on the public p31ca mirror) so the static page still works.
      Schema: p31.launchReadiness/1.0.0 — written by scripts/p31-launch.mjs. -->
+<!-- Rainbow celebration: appears only when mode=full AND assemblyComplete=true. -->
+<section class="block" id="rainbow-banner" hidden style="text-align:center;padding:24px;border:2px solid transparent;border-image:linear-gradient(90deg,#ff3030,#ff8c00,#ffd000,#30c030,#30b8d0,#a040ff) 1;">
+  <h2 style="background:linear-gradient(90deg,#ff3030,#ff8c00,#ffd000,#30c030,#30b8d0,#a040ff);-webkit-background-clip:text;background-clip:text;color:transparent;font-size:28px;margin:0">\u25cd FULL ASSEMBLY READY</h2>
+  <p class="desc" style="margin-top:8px">every standard step \u00b7 every extra deliverable \u00b7 the ship is complete</p>
+  <p id="rainbow-stats" style="font-family:var(--mono);font-size:13px;color:var(--muted);margin-top:8px"></p>
+</section>
+
 <section class="block" id="live-sweep" hidden>
   <h2>\u00a705 \u00b7 last sweep (live)</h2>
   <p class="desc">Read live from <code>.p31-launch-readiness.json</code> next to this page.</p>
   <table class="surfaces" id="live-steps">
-    <thead><tr><th>step</th><th>result</th><th>duration</th></tr></thead>
+    <thead><tr><th>phase</th><th>step</th><th>result</th><th>duration</th></tr></thead>
+    <tbody></tbody>
+  </table>
+</section>
+
+<!-- Deliverables panel: rendered from snapshot.deliverables[]. Only visible in --full mode runs. -->
+<section class="block" id="live-deliverables" hidden>
+  <h2>\u00a706 \u00b7 deliverables present</h2>
+  <p class="desc">Every artifact assembled by <code>npm run launch -- --full</code>. \u2713 = present on disk; \u2717 = missing (run launch).</p>
+  <table class="surfaces" id="live-deliverables-table">
+    <thead><tr><th>id</th><th>artifact</th><th>path</th><th>status</th><th>size</th></tr></thead>
+    <tbody></tbody>
+  </table>
+</section>
+
+<!-- Services panel: rendered from snapshot.steps[] where phase==="full-probe". -->
+<section class="block" id="live-services" hidden>
+  <h2>\u00a707 \u00b7 local services (probed)</h2>
+  <p class="desc">Health probes of locally-running daemons. Amber here doesn't block ship: command-center / tailscale are optional per machine.</p>
+  <table class="surfaces" id="live-services-table">
+    <thead><tr><th>service</th><th>status</th><th>detail</th></tr></thead>
     <tbody></tbody>
   </table>
 </section>
@@ -310,21 +337,78 @@
           + (d.commit ? " <span style=\"color:var(--muted)\">@ " + d.commit + "</span>" : "");
         pill.classList.add(d.allGreen ? "live" : "thinking");
       }
-      // table
+      // Step table
       const sec = document.getElementById("live-sweep");
       const tbody = sec.querySelector("tbody");
       tbody.innerHTML = "";
+      const phaseLabel = (p) => p === "full-build" ? "build" : p === "full-probe" ? "probe" : "step";
       for (const s of (d.steps || [])) {
         const tr = document.createElement("tr");
         tr.dataset.status = s.ok ? "green" : (s.critical ? "red" : "amber");
-        const mark = s.ok ? "\u2713" : "\u2717";
-        const color = s.ok ? "var(--phos)" : "var(--coral)";
-        tr.innerHTML = "<td><span class=\"tier " + (s.publish ? "story" : (s.ok ? "substrate" : "education")) + "\">" + (s.publish ? "publish" : "step") + "</span></td>"
-          + "<td><code>" + s.name + "</code></td>"
-          + "<td><span style=\"color:" + color + "\">" + mark + "</span> <span style=\"color:var(--muted);font-family:var(--mono);font-size:12px\">" + (s.durationMs || 0) + " ms</span></td>";
+        const mark = s.ok ? "\u2713" : (s.critical === false ? "\u26a0" : "\u2717");
+        const color = s.ok ? "var(--phos)" : (s.critical === false ? "var(--butter)" : "var(--coral)");
+        const phLab = s.publish ? "publish" : phaseLabel(s.phase);
+        tr.innerHTML = "<td><span class=\"tier " + (phLab === "build" ? "substrate" : phLab === "probe" ? "education" : phLab === "publish" ? "story" : "substrate") + "\">" + phLab + "</span></td>"
+          + "<td><code>" + s.name + "</code>" + (s.detail ? "<div style=\"font-size:11px;color:var(--muted);font-family:var(--mono);margin-top:2px\">" + s.detail + "</div>" : "") + "</td>"
+          + "<td><span style=\"color:" + color + ";font-size:18px;line-height:1\">" + mark + "</span></td>"
+          + "<td><span style=\"color:var(--muted);font-family:var(--mono);font-size:12px\">" + (s.durationMs || 0) + " ms</span></td>";
         tbody.appendChild(tr);
       }
       sec.hidden = false;
+
+      // Deliverables panel (only when full mode wrote inventory)
+      if (Array.isArray(d.deliverables) && d.deliverables.length) {
+        const dsec = document.getElementById("live-deliverables");
+        const dbody = dsec.querySelector("tbody");
+        dbody.innerHTML = "";
+        for (const a of d.deliverables) {
+          const tr = document.createElement("tr");
+          const mark = a.present ? "\u2713" : "\u2717";
+          const color = a.present ? "var(--phos)" : "var(--coral)";
+          const size = a.present ? (a.bytes || 0).toLocaleString() + " B" : "\u2014";
+          tr.innerHTML = "<td><code>" + a.id + "</code></td>"
+            + "<td>" + a.label + "</td>"
+            + "<td><code style=\"font-size:11px;color:var(--muted)\">" + a.path + "</code></td>"
+            + "<td><span style=\"color:" + color + ";font-size:18px;line-height:1\">" + mark + "</span></td>"
+            + "<td><span style=\"color:var(--muted);font-family:var(--mono);font-size:12px\">" + size + "</span></td>";
+          dbody.appendChild(tr);
+        }
+        dsec.hidden = false;
+      }
+
+      // Services panel (only when probes were run)
+      const probes = (d.steps || []).filter((s) => s.phase === "full-probe");
+      if (probes.length) {
+        const psec = document.getElementById("live-services");
+        const pbody = psec.querySelector("tbody");
+        pbody.innerHTML = "";
+        for (const s of probes) {
+          const tr = document.createElement("tr");
+          const mark = s.ok ? "\u2713 up" : "\u26a0 down";
+          const color = s.ok ? "var(--phos)" : "var(--butter)";
+          tr.innerHTML = "<td><code>" + s.name.replace(/^probe:/, "") + "</code></td>"
+            + "<td><span style=\"color:" + color + ";font-weight:600\">" + mark + "</span></td>"
+            + "<td><span style=\"color:var(--muted);font-size:12px\">" + (s.detail || "\u2014") + "</span></td>";
+          pbody.appendChild(tr);
+        }
+        psec.hidden = false;
+      }
+
+      // Rainbow celebration (only when full mode + every step green OR assembly complete)
+      if (d.mode === "full" && (d.allFullGreen || d.assemblyComplete)) {
+        const banner = document.getElementById("rainbow-banner");
+        const stats = document.getElementById("rainbow-stats");
+        if (banner && stats) {
+          const built = (d.deliverables || []).filter((x) => x.present).length;
+          const services = probes.filter((s) => s.ok).length;
+          const ms = d.elapsedMs ? (d.elapsedMs / 1000).toFixed(1) + "s" : "";
+          stats.textContent = (d.steps || []).length + " steps \u00b7 "
+            + built + " deliverables \u00b7 "
+            + services + "/" + probes.length + " services up \u00b7 "
+            + ms + (d.commit ? " \u00b7 commit " + d.commit : "");
+          banner.hidden = false;
+        }
+      }
     })
     .catch(() => { /* JSON absent (public mirror) \u2014 keep static page intact */ });
 })();
