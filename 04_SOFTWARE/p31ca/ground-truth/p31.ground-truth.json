@@ -809,9 +809,10 @@
       "mustIncludeSubstring": "P31 Open Doc Suite"
     },
     {
-      "id": "devWorkbench.page",
-      "path": "public/dev-workbench.html",
-      "mustIncludeSubstring": "P31 Dev Workbench"
+      "id": "_devWorkbench.archived",
+      "path": "public/archive/2025-early/dev-workbench.html",
+      "mustIncludeSubstring": "P31 Dev Workbench",
+      "note": "ARCHIVED 2026-05-03 — moved to archive"
     },
     {
       "id": "visionJourney.page",
@@ -834,9 +835,10 @@
       "mustIncludeSubstring": "p31.quantumClockPage/0.1.0"
     },
     {
-      "id": "quantumDeck.page",
-      "path": "public/quantum-deck.html",
-      "mustIncludeSubstring": "p31.quantumDeckPage/0.1.0"
+      "id": "_quantumDeck.archived",
+      "path": "public/archive/2025-early/quantum-deck.html",
+      "mustIncludeSubstring": "p31.quantumDeckPage/0.1.0",
+      "note": "ARCHIVED 2026-05-03 — concept status, not live"
     },
     {
       "id": "initialBuild.page",
@@ -854,19 +856,16 @@
       "mustIncludeSubstring": "p31.buildRecord/0.1.0"
     },
     {
-      "id": "p31DeltaHiring.index",
-      "path": "public/delta-hiring/index.html",
-      "mustIncludeSubstring": "P31 Delta · Proof-based hiring"
+      "id": "_p31DeltaHiring.archived",
+      "path": "public/archive/2025-early/delta-hiring/index.html",
+      "mustIncludeSubstring": "P31 Delta · Proof-based hiring",
+      "note": "ARCHIVED 2026-05-03 — moved to archive"
     },
     {
-      "id": "p31DeltaHiring.canonical",
-      "path": "public/delta-hiring/index.html",
-      "mustIncludeSubstring": "https://p31ca.org/delta-hiring/"
-    },
-    {
-      "id": "messagingHub.page",
-      "path": "public/messaging-hub.html",
-      "mustIncludeSubstring": "p31.messagingHub/0.1.0"
+      "id": "_messagingHub.archived",
+      "path": "public/archive/2025-early/messaging-hub.html",
+      "mustIncludeSubstring": "p31.messagingHub/0.1.0",
+      "note": "ARCHIVED 2026-05-03 — moved to archive"
     },
     {
       "id": "publicSurface.manifest",
@@ -904,9 +903,10 @@
       "mustIncludeSubstring": "p31.liveFleet/1.0.0"
     },
     {
-      "id": "liveFleet.demo.page",
-      "path": "public/live-fleet-demo.html",
-      "mustIncludeSubstring": "p31-live-fleet.json"
+      "id": "_liveFleetDemo.archived",
+      "path": "public/archive/2025-early/live-fleet-demo.html",
+      "mustIncludeSubstring": "p31-live-fleet.json",
+      "note": "ARCHIVED 2026-05-03 — moved to archive"
     },
     {
       "id": "fleet.entities.bundle",
@@ -919,9 +919,10 @@
       "mustIncludeSubstring": "p31-fleet-entities.json"
     },
     {
-      "id": "demo.labs.page",
-      "path": "public/demo-labs.html",
-      "mustIncludeSubstring": "Welcome to the demo lobby"
+      "id": "_demoLabs.archived",
+      "path": "public/archive/2025-early/demo-labs.html",
+      "mustIncludeSubstring": "Welcome to the demo lobby",
+      "note": "ARCHIVED 2026-05-03 — moved to archive"
     },
     {
       "id": "meshObservatory.page",
@@ -1202,13 +1203,15 @@
       "path": "src/pages/dome.astro",
       "mustIncludeSubstring": "three@0.183.0"
     },
-    "observatory.html": {
-      "path": "public/observatory.html",
-      "mustIncludeSubstring": "three@0.160.0"
+    "_observatory_archived": {
+      "path": "public/archive/2025-early/observatory.html",
+      "mustIncludeSubstring": "three@0.160.0",
+      "note": "ARCHIVED 2026-05-03 — concept status, not live"
     },
-    "k4market.html": {
-      "path": "public/k4market.html",
-      "mustIncludeSubstring": "three@0.160.0"
+    "_k4market_archived": {
+      "path": "public/archive/2025-early/k4market.html",
+      "mustIncludeSubstring": "three@0.160.0",
+      "note": "ARCHIVED 2026-05-03 — concept status, not live"
     },
     "tomography.html": {
       "path": "public/tomography.html",
