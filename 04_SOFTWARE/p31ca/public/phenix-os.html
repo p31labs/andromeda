@@ -2,10 +2,18 @@
 <html lang="en" data-p31-appearance="hub" class="scroll-smooth" style="color-scheme: dark;">
 <head>
     <meta charset="UTF-8">
+<script>(function(){var r=document.documentElement;if(/[?&]alive=1(?:&|$)/.test(location.search))return;r.classList.add("p31-gray-rock");function wake(){r.classList.remove("p31-gray-rock")}document.addEventListener("pointerdown",wake,{once:true,capture:true});document.addEventListener("keydown",wake,{once:true,capture:true})})();</script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#0f1115">
     <title>Phenix OS | Node Zero</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <meta property="og:type" content="website">
+<meta property="og:title" content="Phenix OS | Node Zero">
+<meta property="og:description" content="Phenix OS | Node Zero">
+<meta property="og:url" content="https://p31ca.org/phenix-os.html">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Phenix OS | Node Zero">
+<meta name="twitter:description" content="Phenix OS | Node Zero">
+<link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/p31-style.css">
@@ -48,8 +56,10 @@
         ::-webkit-scrollbar-thumb { background: #8b7cc9; border-radius: 4px; }
         #ambient-canvas { position: fixed; inset: 0; z-index: 0; opacity: 0.4; pointer-events: none; }
     </style>
+<link rel="canonical" href="https://p31ca.org/phenix-os.html">
 </head>
 <body class="min-h-screen flex flex-col relative">
+<a href="#main" style="position:absolute;left:-9999px;top:0;padding:0.5rem 1rem;background:var(--p31-void);color:var(--p31-teal);font-size:0.875rem;z-index:9999;border-radius:0 0 4px 4px;text-decoration:none" onfocus="this.style.left='0'" onblur="this.style.left='-9999px'">Skip to main content</a>
 
     <canvas id="ambient-canvas"></canvas>
     <div id="toast-container" class="fixed bottom-6 right-6 z-[10000] flex flex-col gap-2 pointer-events-none"></div>
@@ -91,7 +101,7 @@
         </nav>
     </header>
 
-    <main class="flex-grow p-4 md:p-6 lg:p-8 z-10 w-full max-w-screen-2xl mx-auto">
+    <main id="main" class="flex-grow p-4 md:p-6 lg:p-8 z-10 w-full max-w-screen-2xl mx-auto">
 
         <!-- CORE TAB -->
         <div id="tab-core" class="tab-content active">
