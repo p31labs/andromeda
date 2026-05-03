@@ -21,14 +21,6 @@
       "roomId": "observatory"
     },
     {
-      "id": "tomography-static",
-      "type": "static",
-      "path": "public/tomography.html",
-      "threeRevision": "0.183.0",
-      "status": "LIVE",
-      "groundTruthThreejsKey": "tomography.html"
-    },
-    {
       "id": "connect-static",
       "type": "static",
       "path": "public/connect.html",
