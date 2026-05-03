@@ -374,7 +374,7 @@
     {
       "id": "node-one",
       "title": "Node One (The Totem)",
-      "status": "HARDWARE",
+      "status": "CONCEPT",
       "desc": "Physical Haptic Anchor",
       "tags": [
         "Waveshare ESP32-S3",
