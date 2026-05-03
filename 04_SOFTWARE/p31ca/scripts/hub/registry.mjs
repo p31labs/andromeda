@@ -392,7 +392,7 @@ export const registry = [
   },
   {
     id: 'kids-growth', title: 'Kids Growth', tagline: 'S.J. & W.J. Milestone Tracker',
-    icon: '👶', accent: '#f472b6', status: 'live', statusLabel: 'LIVE',
+    icon: '👶', accent: '#f472b6', status: 'concept', statusLabel: 'CONCEPT',
     appUrl: 'kids-growth.html',
     tech: ['Static (p31ca.org)', 'Chart.js 4', 'LocalStorage', 'Print & JSON export'],
     features: [

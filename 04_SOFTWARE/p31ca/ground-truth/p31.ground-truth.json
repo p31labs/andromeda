@@ -218,7 +218,7 @@
     },
     "kidsGrowth": {
       "path": "/kids-growth.html",
-      "implementation": "public/kids-growth.html",
+      "implementation": "public/archive/2025-early/kids-growth.html",
       "label": "Kids growth — S.J. & W.J. height/weight, milestones, export",
       "note": "Static hub app; localStorage; Chart.js. Short /growth in _redirects. Not medical advice."
     },
@@ -821,9 +821,10 @@
       "note": "ARCHIVED 2026-05-03"
     },
     {
-      "id": "kidsGrowth.page",
-      "path": "public/kids-growth.html",
-      "mustIncludeSubstring": "p31.kidsGrowth/1.0.0"
+      "id": "_kidsGrowth.archived",
+      "path": "public/archive/2025-early/kids-growth.html",
+      "mustIncludeSubstring": "p31.kidsGrowth/1.0.0",
+      "note": "ARCHIVED 2026-05-03"
     },
     {
       "id": "kidsHome.page",
