@@ -214,7 +214,7 @@ export const registry = [
       'Use the chaos panel to inject sustained faults and observe equilibrium restoration'
     ],
     techNotes: 'Pure Three.js — no React wrapper. The simulation runs in a requestAnimationFrame loop with a shared Float32Array for agent positions to minimize GC pressure.',
-    related: ['kenosis', 'observatory', 'collider']
+    related: ['kenosis']
   },
   {
     id: 'discord-bot', title: 'p31-bot', tagline: 'Community Command Plane',
@@ -471,7 +471,7 @@ export const registry = [
     ],
     techNotes:
       'All arithmetic done client-side. Chart.js pie and bar charts update on each entry. CSV export uses the RFC 4180 format compatible with Google Sheets and Excel. Short p31ca.org URL 302 → workers.dev (probe: worker-spa-budget-tracker).',
-    related: ['legal-evidence', 'appointment-tracker', 'donate']
+    related: ['legal-evidence', 'appointment-tracker']
   },
   // ── Apps ────────────────────────────────────────────────────────────────
   {
@@ -572,7 +572,7 @@ export const registry = [
       'Click any SIC-POVM vector to freeze it and read its coordinate in the inspector panel'
     ],
     techNotes: 'Three.js r183 with UnrealBloomPass for selective glow. The Jitterbug transform is an interpolated animation across 48 frames of vertex positions derived from Fuller\'s original geometry.',
-    related: ['observatory', 'axiom', 'k4market']
+    related: ['axiom']
   },
   {
     id: 'observatory', title: 'OBSERVATORY', tagline: 'Geodesic Data Dome',
@@ -612,7 +612,7 @@ export const registry = [
       'Use Stealth to generate a private transfer address for sensitive LOVE flows'
     ],
     techNotes: 'SVG gauges are pure SVG with CSS animations — no canvas. Stealth addresses use a simplified Diffie-Hellman scheme over secp256k1 coordinates via WebCrypto.',
-    related: ['love-ledger', 'donate', 'quantum-family']
+    related: ['love-ledger', 'quantum-family']
   },
   {
     id: 'vault', title: 'VAULT', tagline: 'Ground Truth Identity Store',
@@ -772,7 +772,7 @@ export const registry = [
       'Enable Edge Flow and rotate the tetrahedron with mouse drag to inspect connectivity'
     ],
     techNotes: 'Three.js r160 (unpkg). OHLCV → K₄ vertex mapping: Open→V1, High→V2, Low→V3, Close→V4, Volume→edge weights. For symbol search, timeframes, and Larmor ring see tomography.html.',
-    related: ['tomography', 'sovereign', 'observatory']
+    related: ['tomography', 'sovereign']
   },
   {
     id: 'tomography', title: 'K4 TOMOGRAPHY', tagline: 'Symbol-Seeded Depth View',
@@ -793,7 +793,7 @@ export const registry = [
       'Toggle the Larmor ring to overlay the 0.86 Hz torus against support/resistance clusters'
     ],
     techNotes: 'Three.js r183 (jsdelivr). Barycentric OHLCV placement: each candle\'s (O,H,L,C) tuple maps to a point inside the tetrahedron via λ₁=O, λ₂=H, λ₃=L, λ₄=C (normalised). PRNG seeded by CRC32(symbol). Larmor ring rotation speed = LARMOR_HZ × dt.',
-    related: ['k4market', 'sovereign', 'observatory']
+    related: ['sovereign']
   },
   {
     id: 'quantum-clock', title: 'QUANTUM CLOCK', tagline: 'Grandfather Rhythm · Coherence (Pedagogy)',
@@ -827,7 +827,7 @@ export const registry = [
       'Pair with K4 Tomography + market when teaching “measurement vs hidden information” metaphor'
     ],
     techNotes: 'Static shell; core copied from packages/quantum-deck/src/deck.mjs. No wagering, no loot RNG. Short /deck in _redirects.',
-    related: ['quantum-clock', 'quantum-composer', 'k4market', 'tomography', 'signal']
+    related: ['quantum-clock', 'tomography', 'signal']
   },
   {
     id: 'quantum-composer',
@@ -917,7 +917,7 @@ export const registry = [
       'After changing mesh-bridge MESH URLs or health paths, run npm run verify:super-centaur-pack in p31ca'
     ],
     techNotes: 'Verifier reads integration-handoff/CWP-30/mesh-bridge.ts and requires public/p31-super-centaur-pack.json meshFleet to match. Ring D deploy (phosphorus SUPER-CENTAUR) is out of scope for this static surface.',
-    related: ['canon-demo', 'geodesic', 'donate', 'spaceship-earth']
+    related: ['geodesic', 'spaceship-earth']
   },
   {
     id: 'canon-demo',
@@ -963,7 +963,7 @@ export const registry = [
       'Commit contracts/p31-contract-registry.json when alignment sources change so CI stays green'
     ],
     techNotes: 'Hub mirrors the registry into public/ only when present in the same checkout. Partial clones without andromeda still verify the home contracts/ file.',
-    related: ['canon-demo', 'integrations', 'super-centaur']
+    related: ['integrations', 'super-centaur']
   },
   {
     id: 'content-forge', title: 'CONTENT FORGE', tagline: 'Editorial Publishing Suite',
@@ -1043,7 +1043,7 @@ export const registry = [
       'Mini games are in the Games tab — each one ends automatically at the 2-spoon mark'
     ],
     techNotes: 'WebGL fluid is a Navier-Stokes solver in GLSL. Cellular automaton uses a 512×512 buffer with double-buffering for smooth updates. Rapier.js handles the spoon jar physics.',
-    related: ['prism', 'echo', 'kinematics']
+    related: ['prism', 'echo']
   },
   {
     id: 'prism', title: 'PRISM', tagline: 'Sensory Diet Synthesizer',
@@ -1165,7 +1165,7 @@ export const registry = [
       'Drag to rotate the cage; follow outbound links to mesh-adjacent products',
     ],
     techNotes: 'Three.js in a single file from `p31ca/public/`. See synergetic manifest for Three pin alignment.',
-    related: ['planetary-onboard', 'observatory', 'k4market'],
+    related: ['planetary-onboard'],
   },
   {
     id: 'planetary-onboard',
