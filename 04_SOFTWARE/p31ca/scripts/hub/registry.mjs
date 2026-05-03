@@ -476,7 +476,7 @@ export const registry = [
   // ── Apps ────────────────────────────────────────────────────────────────
   {
     id: 'phenix-os', title: 'Phenix OS', tagline: 'AuDHD Operator Command Console',
-    icon: '◈', accent: '#4db8a8', status: 'live', statusLabel: 'LIVE',
+    icon: '◈', accent: '#4db8a8', status: 'concept', statusLabel: 'CONCEPT',
     appUrl: 'phenix-os.html',
     tech: ['Three.js', 'SIC-POVM', 'Fawn Guard', 'Web Audio', 'IndexedDB'],
     features: [
