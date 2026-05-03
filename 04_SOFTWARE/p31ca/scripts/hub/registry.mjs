@@ -576,7 +576,7 @@ export const registry = [
   },
   {
     id: 'observatory', title: 'OBSERVATORY', tagline: 'Geodesic Data Dome',
-    icon: '🔺', accent: '#25897d', status: 'live', statusLabel: 'LIVE',
+    icon: '🔺', accent: '#25897d', status: 'concept', statusLabel: 'CONCEPT',
     appUrl: 'observatory.html',
     tech: ['Three.js r160', 'WebGL Bloom', 'ES Modules', 'Panel Inspector'],
     features: [
@@ -756,7 +756,7 @@ export const registry = [
   },
   {
     id: 'k4market', title: 'K4 MARKET', tagline: 'Tetrahedral Price Geometry',
-    icon: '📐', accent: '#3ba372', status: 'live', statusLabel: 'LIVE',
+    icon: '📐', accent: '#3ba372', status: 'concept', statusLabel: 'CONCEPT',
     appUrl: 'k4market.html',
     tech: ['Three.js r160', 'OHLCV Mapping', 'OrbitControls', 'Synthetic Live Data'],
     features: [
@@ -814,7 +814,7 @@ export const registry = [
   },
   {
     id: 'quantum-deck', title: 'QUANTUM DECK', tagline: 'Fair Shuffle · Suite Core',
-    icon: '🃏', accent: '#4db8a8', status: 'live', statusLabel: 'LIVE',
+    icon: '🃏', accent: '#4db8a8', status: 'concept', statusLabel: 'CONCEPT',
     appUrl: 'quantum-deck.html',
     tech: ['Web Crypto', '@p31/quantum-deck', 'JSON save schema stub'],
     features: [
