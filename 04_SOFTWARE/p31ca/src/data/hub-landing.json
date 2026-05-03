@@ -138,19 +138,6 @@
       "url": "/geodesic-about.html"
     },
     {
-      "id": "genesis-gate",
-      "title": "Genesis Gate",
-      "status": "ALPHA",
-      "desc": "Governance Control Plane",
-      "tags": [
-        "TypeScript ESM",
-        "Cloudflare Workers",
-        "TelemetryModule",
-        "GovernanceHook"
-      ],
-      "url": "/genesis-gate-about.html"
-    },
-    {
       "id": "resonance",
       "title": "RESONANCE",
       "status": "CONCEPT",
