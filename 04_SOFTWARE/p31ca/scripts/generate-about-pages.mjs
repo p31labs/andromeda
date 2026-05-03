@@ -428,6 +428,11 @@ for (const id of expected) {
 let written = 0, skipped = 0;
 for (const id of HUB_ALL_CARD_ORDER) {
   const item = byId.get(id);
+  // Skip concept/draft products — no about page for archived items
+  if (item.status === 'concept' || item.status === 'draft') {
+    console.log(`⏭️  ${id}-about.html (skipped — ${item.status})`);
+    continue;
+  }
   const outPath = path.join(PUBLIC, `${id}-about.html`);
   const html = renderAboutPage(item);
   fs.writeFileSync(outPath, html, 'utf8');
