@@ -89,6 +89,8 @@ function renderAboutPage(item) {
     .map((r) => {
       const rel = registry.find((x) => x.id === r);
       if (!rel) return '';
+      // Skip concept/draft products in related links
+      if (rel.status === 'concept' || rel.status === 'draft') return '';
       return `            <a href="/${r}-about.html" class="related-link">${rel.icon} ${rel.title}</a>`;
     })
     .filter(Boolean)
