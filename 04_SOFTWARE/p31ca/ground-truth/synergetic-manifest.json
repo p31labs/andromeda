@@ -13,18 +13,12 @@
       "groundTruthThreejsKey": "dome.astro"
     },
     {
-      "_comment": "observatory-static ARCHIVED 2026-05-03 — concept status"
-    },
-    {
       "id": "spaceship-earth-pwa",
       "type": "pwa",
       "path": "../spaceship-earth/package.json",
       "threeDependency": "^0.159.0",
       "status": "LIVE",
       "roomId": "observatory"
-    },
-    {
-      "_comment": "k4market-static ARCHIVED 2026-05-03 — concept status"
     },
     {
       "id": "tomography-static",
