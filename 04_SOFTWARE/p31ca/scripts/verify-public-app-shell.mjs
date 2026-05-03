@@ -21,6 +21,7 @@ const regPath = path.join(P31CA, "scripts", "hub", "registry.mjs");
 const { registry } = await import(pathToFileURL(regPath).href);
 
 const SKIP_IDS = new Set(["integrations"]);
+const SKIP_STATUSES = new Set(["concept", "draft"]);
 
 let errs = 0;
 function fail(m) {
@@ -46,6 +47,7 @@ function verifyShell(relPath, id) {
 
 for (const item of registry) {
   if (SKIP_IDS.has(item.id)) continue;
+  if (SKIP_STATUSES.has(item.status)) continue;
   let u = String(item.appUrl ?? "").trim();
   if (/^https?:\/\//i.test(u)) continue;
   if (u.startsWith("/")) u = u.slice(1);
