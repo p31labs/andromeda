@@ -952,20 +952,12 @@
   ],
   "registryAppUrlInvariants": [
     {
-      "id": "observatory",
-      "appUrl": "observatory.html"
-    },
-    {
       "id": "ede",
       "appUrl": "ede.html"
     },
     {
       "id": "sovereign",
       "appUrl": "sovereign.html"
-    },
-    {
-      "id": "k4market",
-      "appUrl": "k4market.html"
     },
     {
       "id": "tomography",
@@ -976,20 +968,8 @@
       "appUrl": "quantum-clock.html"
     },
     {
-      "id": "quantum-deck",
-      "appUrl": "quantum-deck.html"
-    },
-    {
       "id": "super-centaur",
       "appUrl": "p31-super-centaur-starter.html"
-    },
-    {
-      "id": "canon-demo",
-      "appUrl": "p31-canon-demo.html"
-    },
-    {
-      "id": "p31-delta-hiring",
-      "appUrl": "delta-hiring/index.html"
     },
     {
       "id": "integrations",
@@ -1006,6 +986,9 @@
     {
       "id": "social-molecules",
       "appUrl": "social-molecules.html"
+    },
+    {
+      "_note": "ARCHIVED 2026-05-03 — concept products removed: observatory, k4market, quantum-deck, canon-demo, p31-delta-hiring, donate, simple-sovereignty, node-one, node-zero, vault, collider, quantum-life-os, qg-ide, quantum-composer, contract-builder, kinematics, quantum-core"
     }
   ],
   "busBar": {
