@@ -1,0 +1,495 @@
+<!doctype html>
+<html lang="en" data-p31-appearance="hub" style="color-scheme: dark;">
+<head>
+  <meta charset="utf-8" />
+  <script>(function(){var r=document.documentElement;if(/[?&]alive=1(?:&|$)/.test(location.search))return;r.classList.add("p31-gray-rock");function wake(){r.classList.remove("p31-gray-rock")}document.addEventListener("pointerdown",wake,{once:true,capture:true});document.addEventListener("keydown",wake,{once:true,capture:true})})();</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="color-scheme" content="dark" />
+  <title>P31 Psych E2E — Live</title>
+  <meta name="description" content="Live psychological E2E testing — science-grounded accessibility simulation. Watch P31's systems evaluated by simulated personas across Fitts, Hick, CLT, and WCAG 2.2 formulas in real time." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/p31-style.css" />
+  <link rel="manifest" href="/p31-bonding.webmanifest" crossorigin="anonymous" />
+  <style>
+    :root {
+      --void:   #0f1115;
+      --panel:  #161a20;
+      --border: #232830;
+      --teal:   #4db8a8;
+      --green:  #62d979;
+      --amber:  #f0b25a;
+      --red:    #e36062;
+      --mono:   "JetBrains Mono", monospace;
+      --dim:    #6b7280;
+    }
+
+    body {
+      background: var(--void);
+      color: #e2e8f0;
+      font-family: "Atkinson Hyperlegible", sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    .header {
+      padding: 1.25rem 1.5rem 1rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .header h1 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      color: var(--teal);
+      margin: 0;
+    }
+    .badge-live   { background: var(--green); color: #0a1a0f; }
+    .badge-done   { background: var(--teal);  color: #0a1515; }
+    .badge-idle   { background: var(--border); color: var(--dim); }
+    .badge {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 0.2rem 0.55rem;
+      border-radius: 3px;
+      letter-spacing: 0.08em;
+    }
+    .status-row { margin-left: auto; font-family: var(--mono); font-size: 0.75rem; color: var(--dim); }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: var(--border);
+      border-top: 1px solid var(--border);
+    }
+    @media (max-width: 700px) { .main-grid { grid-template-columns: 1fr; } }
+
+    .panel {
+      background: var(--panel);
+      padding: 1.2rem 1.4rem;
+    }
+    .panel-title {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      color: var(--dim);
+      text-transform: uppercase;
+      margin: 0 0 0.9rem;
+    }
+
+    /* Active session */
+    .persona-label { font-size: 1rem; font-weight: 700; color: #e2e8f0; }
+    .persona-meta  { font-family: var(--mono); font-size: 0.72rem; color: var(--dim); margin-top: 0.3rem; }
+    .current-url   { font-family: var(--mono); font-size: 0.78rem; color: var(--teal); margin-top: 0.6rem; }
+
+    .frustration-bar {
+      height: 6px;
+      border-radius: 3px;
+      background: var(--border);
+      margin-top: 0.8rem;
+      overflow: hidden;
+    }
+    .frustration-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 0.5s, background 0.5s;
+    }
+    .frustration-label {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--dim);
+      margin-top: 0.25rem;
+    }
+
+    .metric-row {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-top: 0.9rem;
+    }
+    .metric {
+      background: var(--void);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.4rem 0.75rem;
+      flex: 1;
+      min-width: 5rem;
+    }
+    .metric-val { font-family: var(--mono); font-size: 1rem; font-weight: 600; }
+    .metric-key { font-size: 0.65rem; color: var(--dim); margin-top: 0.1rem; }
+    .metric-val.warn { color: var(--amber); }
+    .metric-val.crit { color: var(--red);   }
+    .metric-val.good { color: var(--green); }
+
+    /* Score history */
+    .score-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 4px;
+      height: 80px;
+      margin-top: 0.5rem;
+    }
+    .score-bar-wrap {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+    .score-bar {
+      width: 100%;
+      border-radius: 2px 2px 0 0;
+      transition: height 0.4s;
+      min-height: 2px;
+    }
+    .score-num { font-family: var(--mono); font-size: 0.6rem; color: var(--dim); }
+
+    /* Findings feed */
+    .finding-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.6rem;
+      padding: 0.55rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.82rem;
+    }
+    .finding-item:last-child { border-bottom: none; }
+    .finding-sym { font-size: 1rem; line-height: 1; flex-shrink: 0; margin-top: 0.1rem; }
+    .finding-url { font-family: var(--mono); font-size: 0.72rem; color: var(--teal); }
+    .finding-detail { color: var(--dim); font-size: 0.75rem; margin-top: 0.15rem; }
+    .finding-citation { color: #555; font-size: 0.68rem; margin-top: 0.1rem; font-style: italic; }
+
+    /* Science lens */
+    .science-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.6rem;
+    }
+    .science-card {
+      background: var(--void);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.6rem 0.75rem;
+    }
+    .science-name { font-family: var(--mono); font-size: 0.72rem; color: var(--teal); font-weight: 600; }
+    .science-formula { font-family: var(--mono); font-size: 0.68rem; color: var(--dim); margin-top: 0.2rem; }
+    .science-cite { font-size: 0.65rem; color: #555; margin-top: 0.15rem; font-style: italic; }
+
+    /* Run summary */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
+    }
+    .stat-card {
+      background: var(--void);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.5rem 0.7rem;
+      text-align: center;
+    }
+    .stat-val { font-family: var(--mono); font-size: 1.1rem; font-weight: 700; }
+    .stat-key { font-size: 0.65rem; color: var(--dim); margin-top: 0.15rem; }
+
+    .progress-bar-wrap { margin-top: 0.8rem; }
+    .progress-bar {
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: var(--teal);
+      border-radius: 2px;
+      transition: width 0.5s;
+    }
+    .progress-label { font-family: var(--mono); font-size: 0.68rem; color: var(--dim); margin-top: 0.3rem; }
+
+    .idle-msg { color: var(--dim); font-size: 0.85rem; padding: 1rem 0; }
+
+    footer {
+      padding: 0.8rem 1.5rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.72rem;
+      color: var(--dim);
+      font-family: var(--mono);
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+    footer a { color: var(--teal); text-decoration: none; }
+  </style>
+</head>
+<body>
+<a href="#main" style="position:absolute;left:-9999px;top:0;padding:0.5rem 1rem;background:var(--p31-void,#0f1115);color:var(--p31-teal,#4db8a8);font-size:0.875rem;z-index:9999;border-radius:0 0 4px 4px;text-decoration:none" onfocus="this.style.left='0'" onblur="this.style.left='-9999px'">Skip to main content</a>
+
+<header class="header">
+  <h1>◍ P31 Psych E2E — Live</h1>
+  <span class="badge badge-idle" id="statusBadge">IDLE</span>
+  <span class="status-row" id="statusRow">waiting for run · polling psych-e2e-live.json</span>
+</header>
+
+<main id="main">
+  <div class="main-grid">
+
+    <!-- Panel: Active Session -->
+    <div class="panel" id="activePanel">
+      <p class="panel-title">Active Session</p>
+      <div id="personaBlock">
+        <p class="idle-msg">No active run. Start one: <code>npm run psych:run</code></p>
+      </div>
+    </div>
+
+    <!-- Panel: Score History -->
+    <div class="panel">
+      <p class="panel-title">Recent Scores (last 8 steps)</p>
+      <div class="score-row" id="scoreRow">
+        <span class="idle-msg" style="font-size:0.78rem">—</span>
+      </div>
+      <div id="progressBlock"></div>
+    </div>
+
+    <!-- Panel: Findings Feed -->
+    <div class="panel">
+      <p class="panel-title">Recent Findings</p>
+      <div id="findingsBlock">
+        <p class="idle-msg">Findings will appear here during a run.</p>
+      </div>
+    </div>
+
+    <!-- Panel: Science Lens -->
+    <div class="panel">
+      <p class="panel-title">Science Lens</p>
+      <div class="science-grid">
+        <div class="science-card">
+          <div class="science-name">Fitts' Law</div>
+          <div class="science-formula">MT = a + b·log₂(D/W+1)</div>
+          <div class="science-cite">Fitts (1954); MacKenzie (1992)</div>
+        </div>
+        <div class="science-card">
+          <div class="science-name">Hick's Law</div>
+          <div class="science-formula">RT = b·log₂(n+1)</div>
+          <div class="science-cite">Hick (1952)</div>
+        </div>
+        <div class="science-card">
+          <div class="science-name">Cog. Load Theory</div>
+          <div class="science-formula">CLI = IL + EL + GL</div>
+          <div class="science-cite">Sweller (1988)</div>
+        </div>
+        <div class="science-card">
+          <div class="science-name">Miller's Law</div>
+          <div class="science-formula">WM = 7 ± 2 chunks</div>
+          <div class="science-cite">Miller (1956); Barkley (1997)</div>
+        </div>
+        <div class="science-card">
+          <div class="science-name">Bayes (Frustration)</div>
+          <div class="science-formula">P(F|obs) ∝ P(obs|F)·P(F)</div>
+          <div class="science-cite">Bayesian inference</div>
+        </div>
+        <div class="science-card">
+          <div class="science-name">WCAG 2.2</div>
+          <div class="science-formula">Contrast ≥ 4.5:1 · 24×24px</div>
+          <div class="science-cite">W3C (2023) SC 1.4.3, 2.5.8</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Run Summary (shown when complete) -->
+  <div id="summaryBlock" style="display:none; padding: 1.2rem 1.4rem; border-top: 1px solid var(--border);">
+    <p class="panel-title">Last Completed Run</p>
+    <div class="stat-grid" id="statGrid"></div>
+  </div>
+</main>
+
+<footer>
+  <span>no tracking · no analytics · no secrets</span>
+  <a href="/glass-box.html">glass box</a>
+  <a href="/reports/index.json">reports index</a>
+  <span id="footerTs">—</span>
+</footer>
+
+<script type="module">
+const POLL_MS    = 2500; // poll interval during run
+const IDLE_MS    = 8000; // poll interval when idle
+
+let findings = [];
+
+function colourForScore(s) {
+  if (s >= 85) return "var(--green)";
+  if (s >= 70) return "var(--teal)";
+  if (s >= 50) return "var(--amber)";
+  return "var(--red)";
+}
+
+function frustrationColour(f) {
+  if (f < 0.3) return "var(--green)";
+  if (f < 0.55) return "var(--amber)";
+  return "var(--red)";
+}
+
+function renderPersona(live) {
+  const ap = live.activePersona;
+  if (!ap) return `<p class="idle-msg">Starting session…</p>`;
+  const fCol = frustrationColour(ap.frustration || 0);
+  const fPct = Math.round((ap.frustration || 0) * 100);
+  return `
+    <div class="persona-label">${ap.label || "—"}</div>
+    <div class="persona-meta">frustration ${fPct}% · step score ${ap.stepScore ?? "—"}/100</div>
+    ${live.currentUrl ? `<div class="current-url">→ ${live.currentUrl}</div>` : ""}
+    <div class="frustration-bar">
+      <div class="frustration-fill" style="width:${fPct}%;background:${fCol}"></div>
+    </div>
+    <div class="frustration-label">frustration P(frustrated) = ${(ap.frustration || 0).toFixed(2)}</div>
+    <div class="metric-row">
+      <div class="metric">
+        <div class="metric-val ${ap.stepScore >= 85 ? 'good' : ap.stepScore >= 50 ? '' : 'crit'}">${ap.stepScore ?? "—"}</div>
+        <div class="metric-key">step score</div>
+      </div>
+      <div class="metric">
+        <div class="metric-val ${fPct < 30 ? 'good' : fPct < 55 ? 'warn' : 'crit'}">${fPct}%</div>
+        <div class="metric-key">frustration</div>
+      </div>
+      <div class="metric">
+        <div class="metric-val">${live.completedSteps || 0}</div>
+        <div class="metric-key">steps</div>
+      </div>
+    </div>`;
+}
+
+function renderScoreBar(scores) {
+  if (!scores || scores.length === 0) return `<span class="idle-msg" style="font-size:0.78rem">—</span>`;
+  return scores.map((s) => {
+    const h = Math.max(4, Math.round(s * 0.78));
+    const col = colourForScore(s);
+    return `<div class="score-bar-wrap">
+      <div class="score-bar" style="height:${h}px;background:${col}"></div>
+      <span class="score-num">${s}</span>
+    </div>`;
+  }).join("");
+}
+
+function renderProgress(live) {
+  const total = live.totalSessions || 1;
+  const done  = live.completedSessions || 0;
+  const pct   = Math.round(done / total * 100);
+  return `<div class="progress-bar-wrap">
+    <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+    <div class="progress-label">${done}/${total} sessions · ${pct}%</div>
+  </div>`;
+}
+
+function addFinding(live) {
+  // Use recentScores to infer critical steps for the feed
+  const scores = live.recentScores || [];
+  const lastScore = scores[scores.length - 1];
+  const url = live.currentUrl;
+  if (!url || lastScore == null) return;
+
+  const sym = lastScore >= 85 ? "●" : lastScore >= 70 ? "◕" : lastScore >= 50 ? "◑" : "✗";
+  const existing = findings.find((f) => f.url === url && f.score === lastScore);
+  if (existing) return;
+
+  findings.unshift({ sym, url, score: lastScore, ts: Date.now() });
+  findings = findings.slice(0, 12);
+}
+
+function renderFindings() {
+  if (findings.length === 0) return `<p class="idle-msg">Findings will appear here during a run.</p>`;
+  return findings.map((f) => `
+    <div class="finding-item">
+      <span class="finding-sym" style="color:${colourForScore(f.score)}">${f.sym}</span>
+      <div>
+        <div class="finding-url">${f.url} — ${f.score}/100</div>
+      </div>
+    </div>`).join("");
+}
+
+function renderSummary(live) {
+  const summaryEl = document.getElementById("summaryBlock");
+  const statEl    = document.getElementById("statGrid");
+  if (live.status !== "complete" || !live.mean) {
+    summaryEl.style.display = "none";
+    return;
+  }
+  summaryEl.style.display = "block";
+  statEl.innerHTML = `
+    <div class="stat-card"><div class="stat-val" style="color:${colourForScore(live.mean)}">${live.mean}</div><div class="stat-key">mean score</div></div>
+    <div class="stat-card"><div class="stat-val">${live.sessionCount}</div><div class="stat-key">sessions</div></div>
+    <div class="stat-card"><div class="stat-val ${live.severity === 'high' ? 'crit' : ''}">${live.severity?.toUpperCase() || "—"}</div><div class="stat-key">severity</div></div>`;
+}
+
+async function poll() {
+  let live = null;
+  try {
+    const res  = await fetch("psych-e2e-live.json", { cache: "no-store" });
+    if (res.ok) live = await res.json();
+  } catch (_) {}
+
+  if (!live || live.status === "complete") {
+    // Try the p31ca path (when served from p31ca.org)
+    if (!live) {
+      try {
+        const res = await fetch("/psych-e2e-live.json", { cache: "no-store" });
+        if (res.ok) live = await res.json();
+      } catch (_) {}
+    }
+  }
+
+  const badge   = document.getElementById("statusBadge");
+  const statusR = document.getElementById("statusRow");
+  const persona = document.getElementById("personaBlock");
+  const scoreR  = document.getElementById("scoreRow");
+  const progB   = document.getElementById("progressBlock");
+  const findB   = document.getElementById("findingsBlock");
+  const footTs  = document.getElementById("footerTs");
+
+  if (!live || live.status === "complete") {
+    badge.className  = "badge badge-done";
+    badge.textContent = live?.status === "complete" ? "DONE" : "IDLE";
+    statusR.textContent = live?.headline || "waiting for run · npm run psych:run";
+    persona.innerHTML = `<p class="idle-msg">${live?.headline || "No active run."}</p>`;
+    scoreR.innerHTML  = `<span class="idle-msg" style="font-size:0.78rem">—</span>`;
+    progB.innerHTML   = "";
+    if (live) renderSummary(live);
+    if (live?.mean) {
+      findB.innerHTML = renderFindings();
+    } else {
+      findB.innerHTML = `<p class="idle-msg">Findings will appear here during a run.</p>`;
+    }
+    footTs.textContent = live?.updatedAt || "—";
+    return IDLE_MS;
+  }
+
+  // Running
+  badge.className   = "badge badge-live";
+  badge.textContent = "LIVE";
+  statusR.textContent = `run ${live.runId?.slice(-12) || ""} · ${live.completedSessions || 0}/${live.totalSessions || "?"} sessions`;
+  persona.innerHTML = renderPersona(live);
+  scoreR.innerHTML  = renderScoreBar(live.recentScores || []);
+  progB.innerHTML   = renderProgress(live);
+  addFinding(live);
+  findB.innerHTML   = renderFindings();
+  footTs.textContent = live.updatedAt || "—";
+  renderSummary(live);
+
+  return POLL_MS;
+}
+
+async function loop() {
+  const delay = await poll();
+  setTimeout(loop, delay);
+}
+
+loop();
+</script>
+</body>
+</html>

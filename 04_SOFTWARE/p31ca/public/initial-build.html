@@ -1,11 +1,20 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-p31-appearance="hub" style="color-scheme: dark;">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>(function(){var r=document.documentElement;if(/[?&]alive=1(?:&|$)/.test(location.search))return;r.classList.add("p31-gray-rock");function wake(){r.classList.remove("p31-gray-rock")}document.addEventListener("pointerdown",wake,{once:true,capture:true});document.addEventListener("keydown",wake,{once:true,capture:true})})();</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#0f1115">
   <title>Initial Build — personal tetra | P31 Labs</title>
   <meta name="description" content="First-run: bind cryptographic subject_id and bake your personal tetra into k4-personal; then EDE home. CWP-P31-IB-2026-01.">
+<link rel="canonical" href="https://p31ca.org/initial-build.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Initial Build — personal tetra">
+<meta property="og:description" content="First-run: bind cryptographic subject_id and bake your personal tetra into k4-personal; then EDE home. CWP-P31-IB-2026-01.">
+<meta property="og:url" content="https://p31ca.org/initial-build.html">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Initial Build — personal tetra">
+<meta name="twitter:description" content="First-run: bind cryptographic subject_id and bake your personal tetra into k4-personal; then EDE home. CWP-P31-IB-2026-01.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
@@ -17,6 +26,7 @@
   </script>
 </head>
 <body class="bg-void text-cloud min-h-screen font-sans antialiased">
+<a href="#main" style="position:absolute;left:-9999px;top:0;padding:0.5rem 1rem;background:var(--p31-void);color:var(--p31-teal);font-size:0.875rem;z-index:9999;border-radius:0 0 4px 4px;text-decoration:none" onfocus="this.style.left='0'" onblur="this.style.left='-9999px'">Skip to main content</a>
   <div class="min-h-screen flex flex-col">
     <header class="shrink-0 border-b border-white/[0.07] bg-surface/90 backdrop-blur-sm">
       <div class="max-w-3xl mx-auto px-4 py-4 flex flex-wrap items-baseline justify-between gap-2">
@@ -28,7 +38,7 @@
       </div>
     </header>
 
-    <main class="flex-1 flex items-start justify-center px-4 py-8">
+    <main id="main" class="flex-1 flex items-start justify-center px-4 py-8">
       <div class="max-w-lg w-full rounded-2xl border border-white/10 bg-surface shadow-ede p-6 sm:p-8">
         <p class="text-sm text-cloud/80 leading-relaxed text-left mb-2">
           <span class="font-mono text-teal/90">CWP-P31-IB-2026-01</span> —

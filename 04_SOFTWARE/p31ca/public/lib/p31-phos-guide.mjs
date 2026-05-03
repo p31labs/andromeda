@@ -32,6 +32,7 @@
  *   .refresh()      → re-render with current state
  *
  * Events on document:
+ *   'p31:phos-booted'     detail = { inference }  — fires after signals collected + render
  *   'p31:phos-opened'     detail = {}
  *   'p31:phos-closed'     detail = {}
  *   'p31:phos-dismissed'  detail = {}
@@ -113,6 +114,87 @@ const DEFAULT_VOICE = Object.freeze({
     links: [
       { label: "Back to welcome", href: "/welcome" },
       { label: "See what we build", href: "/lab" },
+    ],
+  },
+  '/social-molecules': {
+    greeting: "Your household is a molecule.",
+    hint: "See who's connected and how the bonds are holding. Real-time family mesh status.",
+    fallback: "If something feels off, check the Glass Box for live system telemetry.",
+    links: [
+      { label: "Glass Box — live status", href: "/glass-box" },
+      { label: "Bonding tools", href: "/bonding" },
+    ],
+  },
+  '/spaceship-earth': {
+    greeting: "The pale blue dot view.",
+    hint: "Install P31 as an app on your phone or desktop. Works offline. Your data stays local.",
+    fallback: "The install button is below. If it doesn't appear, your browser already supports the features we need.",
+    links: [
+      { label: "How to install", href: "#install" },
+      { label: "Explore the lab", href: "/lab" },
+    ],
+  },
+  '/axiom': {
+    greeting: "Start with what you know.",
+    hint: "Axiom is the bond surface — where family connections are forged and tested.",
+    fallback: "If you're new here, the context card helps everything make more sense.",
+    links: [
+      { label: "Bonding app", href: "/bonding" },
+      { label: "Mesh start", href: "/mesh-start" },
+    ],
+  },
+  '/bridge': {
+    greeting: "Crossing into the mesh.",
+    hint: "This is the entry point for the K4 network. Your first step toward a connected family topology.",
+    fallback: "The mesh works best when everyone has a context card. Takes two minutes.",
+    links: [
+      { label: "Mesh setup", href: "/mesh-start" },
+      { label: "Create context card", href: "/passport" },
+    ],
+  },
+  '/glass-box-widget': {
+    greeting: "Transparency, embeddable.",
+    hint: "A smaller version of the Glass Box that can live on other sites. Real-time P31 status, anywhere.",
+    fallback: "For the full experience with all controls, visit the main Glass Box.",
+    links: [
+      { label: "Full Glass Box", href: "/glass-box" },
+      { label: "Get support", href: "/support" },
+    ],
+  },
+  '/fleet-portal': {
+    greeting: "Every ship in view.",
+    hint: "URL index and health status for all P31 surfaces. Check what's live, what's maintenance, what's coming.",
+    fallback: "If something you need is showing maintenance, the support page has alternatives.",
+    links: [
+      { label: "System status", href: "/glass-box" },
+      { label: "Education hub", href: "/education/" },
+    ],
+  },
+  '/education/': {
+    greeting: "Learn how this works.",
+    hint: "Curriculum, guides, and documentation for understanding the P31 architecture.",
+    fallback: "Start with the research page if you want the technical deep-dive.",
+    links: [
+      { label: "Research (specs)", href: "/research" },
+      { label: "Lab (practice)", href: "/lab" },
+    ],
+  },
+  '/sovereign': {
+    greeting: "Your own tools.",
+    hint: "Personal mesh utilities. Tools that run on your device, under your control, without the cloud.",
+    fallback: "The full lab has more tools. This is the sovereign subset — local-first, privacy-preserving.",
+    links: [
+      { label: "Lab (all tools)", href: "/lab" },
+      { label: "Get support", href: "/support" },
+    ],
+  },
+  '/delta-language': {
+    greeting: "Words that wire together.",
+    hint: "The terminology and conceptual framework behind P31. Delta, K4, isostatic rigidity, trimtabs.",
+    fallback: "If this feels dense, the research page has the full architecture specs.",
+    links: [
+      { label: "Research (architecture)", href: "/research" },
+      { label: "Documentation", href: "/docs" },
     ],
   },
 });
@@ -334,8 +416,102 @@ html[data-p31-glass="on"] [${ROOT_MARKER}] .phos-panel {
 }
 [${ROOT_MARKER}] .phos-footer button:hover { color: var(--p31-coral, #cc6247); }
 
+/* ── chips (inference + Akinator navigation) ── */
+[${ROOT_MARKER}] .phos-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 2px;
+}
+[${ROOT_MARKER}] .phos-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 11px;
+  border-radius: 20px;
+  border: 1px solid rgba(216, 214, 208, 0.16);
+  background: rgba(216, 214, 208, 0.05);
+  color: var(--p31-cloud, #d8d6d0);
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 140ms ease, border-color 140ms ease;
+  -webkit-tap-highlight-color: transparent;
+  white-space: nowrap;
+}
+[${ROOT_MARKER}] .phos-chip:hover,
+[${ROOT_MARKER}] .phos-chip:focus-visible {
+  background: rgba(37, 137, 125, 0.16);
+  border-color: rgba(37, 137, 125, 0.45);
+  color: var(--p31-teal, #25897d);
+}
+[${ROOT_MARKER}] .phos-chip:focus-visible { outline: 2px solid var(--p31-teal,#25897d); outline-offset: 2px; }
+[${ROOT_MARKER}] .phos-chip-icon { font-size: 13px; line-height: 1; }
+/* ── voice toggle (in footer) ── */
+[${ROOT_MARKER}] .phos-voice-btn {
+  background: transparent;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  font-size: 11.5px;
+  cursor: pointer;
+  padding: 0;
+  opacity: 0.7;
+}
+[${ROOT_MARKER}] .phos-voice-btn:hover { opacity: 1; }
+[${ROOT_MARKER}] .phos-voice-btn[data-voice-on="false"] { opacity: 0.4; text-decoration: line-through; }
+
+/* ── urgent mode (safe mode) ─────────────────────────────────────────────── */
+/* When user is in sensory crisis: no animations, no blur, high contrast, */
+/* one clear action only. */
+[${ROOT_MARKER}][data-p31-urgent="true"] .phos-dot {
+  background: #ff4444 !important;
+  animation: none !important;
+  box-shadow: none !important;
+}
+[${ROOT_MARKER}][data-p31-urgent="true"] .phos-panel {
+  background: #000 !important;
+  border-color: #333 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+[${ROOT_MARKER}][data-p31-urgent="true"] .phos-title,
+[${ROOT_MARKER}][data-p31-urgent="true"] .phos-hint {
+  color: #fff !important;
+}
+[${ROOT_MARKER}][data-p31-urgent="true"] .phos-chip {
+  background: #222 !important;
+  border-color: #444 !important;
+  color: #fff !important;
+  transition: none !important;
+}
+[${ROOT_MARKER}][data-p31-urgent="true"] .phos-chip.primary {
+  background: #fff !important;
+  color: #000 !important;
+  border-color: #fff !important;
+}
+[${ROOT_MARKER}] .phos-urgent-btn {
+  position: absolute;
+  top: -28px;
+  right: 0;
+  background: transparent;
+  border: none;
+  color: var(--p31-coral, #cc6247);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  opacity: 0.6;
+  padding: 4px 8px;
+}
+[${ROOT_MARKER}] .phos-urgent-btn:hover { opacity: 1; }
+
 @media (prefers-reduced-motion: reduce) {
   [${ROOT_MARKER}] .phos-dot { transition: none; }
+  [${ROOT_MARKER}] .phos-chip { transition: none; }
 }
 @media (max-width: 480px) {
   [${ROOT_MARKER}] {
@@ -369,6 +545,14 @@ function k4MarkSvg() {
 // ─── voice resolution (page key → voice entry) ──────────────────────────────
 function voiceForPage(pathname) {
   if (!pathname) return VOICE._default;
+
+  // Check data-p31-phos-page attribute first (set by BaseLayout.astro)
+  // This allows explicit page targeting regardless of URL structure
+  if (HAS_DOC) {
+    const bodyPage = document.body?.getAttribute('data-p31-phos-page');
+    if (bodyPage && VOICE[`/${bodyPage}`]) return VOICE[`/${bodyPage}`];
+  }
+
   // Normalize: '/' → /welcome (front door), strip trailing slash so /lab/ ≡ /lab.
   // Try the normalized pathname first, then a .html-stripped variant
   // (so /buffer.html and /buffer both look up VOICE['/buffer']) — lets the
@@ -457,12 +641,206 @@ function applyScreenComfort(value) {
   }
 }
 
+// ─── urgent mode (sensory crisis / safe mode) ─────────────────────────────────
+// Bypasses all inference, animation, and voice when user is in overwhelm.
+// Triggered by: CogPass urgentMode flag, screenComfort < 5, or explicit toggle.
+
+function isUrgentMode() {
+  if (!HAS_WIN) return false;
+  // Check explicit toggle first
+  if (localStorage.getItem('p31-urgent-mode') === 'true') return true;
+  // Check CogPass urgentMode flag
+  try {
+    const cogpass = JSON.parse(localStorage.getItem('p31-cogpass-v1') || '{}');
+    if (cogpass.urgentMode === true) return true;
+    if (cogpass.screenComfort != null && Number(cogpass.screenComfort) < 5) return true;
+  } catch {}
+  return false;
+}
+
+function clearUrgentMode() {
+  if (!HAS_WIN) return;
+  localStorage.removeItem('p31-urgent-mode');
+  try {
+    const cogpass = JSON.parse(localStorage.getItem('p31-cogpass-v1') || '{}');
+    if (cogpass.urgentMode) {
+      cogpass.urgentMode = false;
+      localStorage.setItem('p31-cogpass-v1', JSON.stringify(cogpass));
+    }
+  } catch {}
+}
+
+// ─── inference engine ────────────────────────────────────────────────────────
+// Deterministic signal-based routing. No ML, no network. Pure function.
+
+const STANDARD_CHIPS = Object.freeze([
+  { label: 'Find a tool',           path: '/lab',        icon: '🔬' },
+  { label: 'Create my context card', path: '/passport',   icon: '🪪' },
+  { label: 'Get support',           path: '/support',    icon: '💚' },
+  { label: 'See what\'s live',      path: '/glass-box',  icon: '🪟' },
+  { label: 'Help me decide →',      path: null,          icon: '🧭', action: 'decide' },
+]);
+
+const DECIDE_CHIPS = Object.freeze([
+  { label: 'For myself',        path: '/lab',       icon: '🙋' },
+  { label: 'For my family',     path: '/lab',       icon: '🏠' },
+  { label: 'As a professional', path: '/glass-box', icon: '💼' },
+  { label: '← Back',            path: null,         icon: null, action: 'back' },
+]);
+
+function classifyReferrer(ref) {
+  if (!ref) return 'direct';
+  if (/p31ca\.org/i.test(ref)) return 'internal';
+  if (/phosphorus31\.org/i.test(ref)) return 'research';
+  if (/twitter\.com|x\.com|linkedin\.com|facebook\.com|instagram\.com|tiktok\.com/i.test(ref)) return 'social';
+  return 'external';
+}
+
+function collectSignals() {
+  const hour = new Date().getHours();
+  let previousPages = [];
+  try { previousPages = JSON.parse(sessionStorage.getItem('p31-nav-history') || '[]'); } catch {}
+  return {
+    hasCogPass: HAS_WIN && !!localStorage.getItem('p31-cogpass-v1'),
+    cogPassRole: getRole(),
+    referrer: HAS_DOC ? document.referrer : '',
+    referrerClass: classifyReferrer(HAS_DOC ? document.referrer : ''),
+    isQr: HAS_WIN && /[?&]qr\b/i.test(location.search),
+    device: HAS_WIN ? (window.innerWidth < 768 ? 'mobile' : window.innerWidth < 1024 ? 'tablet' : 'desktop') : 'desktop',
+    timeOfDay: hour < 12 ? 'morning' : hour < 17 ? 'afternoon' : 'evening',
+    previousPages,
+    currentPath: HAS_WIN ? location.pathname : '/',
+  };
+}
+
+function inferRoute(signals) {
+  // Operator fast-path
+  if (signals.cogPassRole === 'operator') {
+    return {
+      confidence: 0.95,
+      suggestedPath: '/ops/',
+      suggestedLabel: 'Ops Dashboard',
+      chips: [{ label: 'Open Ops Dashboard', path: '/ops/', icon: '⬡' }, ...STANDARD_CHIPS.slice(0, 2)],
+      phosMessage: "Welcome back.",
+    };
+  }
+
+  // Returning user with CogPass + session history
+  if (signals.hasCogPass && signals.cogPassRole === 'user' && signals.previousPages.length > 0) {
+    const last = signals.previousPages[signals.previousPages.length - 1];
+    return {
+      confidence: 0.80,
+      suggestedPath: last,
+      suggestedLabel: 'Continue where you left off',
+      chips: [
+        { label: 'Continue →', path: last, icon: '→' },
+        ...STANDARD_CHIPS.slice(0, 3),
+      ],
+      phosMessage: "Welcome back.",
+    };
+  }
+
+  // QR scan — likely first-time visitor via printed/shared code
+  if (signals.isQr || signals.referrerClass === 'external') {
+    return {
+      confidence: 0.80,
+      suggestedPath: '/passport',
+      suggestedLabel: 'Create your context card',
+      chips: [
+        { label: 'Create my context card', path: '/passport', icon: '🪪' },
+        { label: 'Start here', path: '/welcome', icon: '👋' },
+        { label: 'See what we build', path: '/lab', icon: '🔬' },
+      ],
+      phosMessage: "Glad you're here.",
+    };
+  }
+
+  // Research referral (from phosphorus31.org — research audience)
+  if (signals.referrerClass === 'research') {
+    return {
+      confidence: 0.75,
+      suggestedPath: '/lab',
+      suggestedLabel: 'Explore the tools',
+      chips: [
+        { label: 'Explore the tools', path: '/lab', icon: '🔬' },
+        { label: 'Glass Box — what\'s live', path: '/glass-box', icon: '🪟' },
+        { label: 'Create context card', path: '/passport', icon: '🪪' },
+      ],
+      phosMessage: null,
+    };
+  }
+
+  // Default: standard chips, no strong inference signal
+  return {
+    confidence: 0.0,
+    suggestedPath: null,
+    suggestedLabel: null,
+    chips: [...STANDARD_CHIPS],
+    phosMessage: null,
+  };
+}
+
+// Module-level inference cache (set at boot, used by renderPanelHtml)
+let _inference = null;
+let _chipsMode = 'standard'; // 'standard' | 'decide'
+
+// ─── voice synthesis ─────────────────────────────────────────────────────────
+// Web Speech API — zero deps, zero infrastructure.
+// Fires when PHOS panel opens, not on page load (Gray Rock doctrine).
+// Respects: p31-phos-voice=off localStorage flag, prefers-reduced-motion,
+// and CogPass screenComfort < 10 (gray rock pinned).
+
+function phosSpeak(text, rate = 0.92, pitch = 1.0) {
+  if (!HAS_WIN || !window.speechSynthesis) return;
+  if (localStorage.getItem('p31-phos-voice') === 'off') return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (isGrayRockPinned()) return;
+  const utt = new SpeechSynthesisUtterance(text);
+  utt.rate = rate;
+  utt.pitch = pitch;
+  window.speechSynthesis.cancel(); // prevent queue buildup
+  window.speechSynthesis.speak(utt);
+}
+
+function isVoiceEnabled() {
+  return HAS_WIN && 'speechSynthesis' in window && localStorage.getItem('p31-phos-voice') !== 'off';
+}
+
+function toggleVoice() {
+  if (!HAS_WIN) return;
+  if (isVoiceEnabled()) {
+    localStorage.setItem('p31-phos-voice', 'off');
+    window.speechSynthesis?.cancel();
+  } else {
+    localStorage.removeItem('p31-phos-voice');
+  }
+  refresh();
+}
+
 // ─── render ─────────────────────────────────────────────────────────────────
 let rootEl = null;
 let isOpenState = false;
 let currentScreenComfort = 50;
 
 function renderPanelHtml(voice, role) {
+  // Urgent mode: simplified UI, no choices, no animations, immediate escape
+  if (isUrgentMode()) {
+    return `
+      <div class="phos-header">
+        <h2 class="phos-title">Safe Mode</h2>
+        <button class="phos-close" type="button" aria-label="Close panel" data-phos-close>×</button>
+      </div>
+      <p class="phos-hint">All motion and sound disabled. One option available.</p>
+      <div class="phos-section">
+        <a class="phos-chip primary" href="/support" data-phos-link>Get to safe space →</a>
+      </div>
+      <div class="phos-footer">
+        <span>P31 · Safe Mode</span>
+        <button type="button" data-phos-urgent-clear>Exit Safe Mode</button>
+      </div>
+    `;
+  }
+
   const roleBadge =
     role === 'operator' ? '<span class="phos-section-label" style="color:var(--p31-coral,#cc6247);margin-left:6px;">OP</span>' :
     role === 'user'     ? '<span class="phos-section-label" style="margin-left:6px;">CARD</span>' :
@@ -470,13 +848,44 @@ function renderPanelHtml(voice, role) {
   const escaped = (s) => String(s)
     .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
-  const linksHtml = (voice.links || [])
-    .map(l => `<li><a href="${escaped(l.href)}" data-phos-link>${escaped(l.label)}</a></li>`)
-    .join('');
+  // Chips section — shown when inference has chips (replaces static links on navigation)
+  const activeChips = _chipsMode === 'decide' ? DECIDE_CHIPS : (_inference?.chips ?? null);
+  let navigationSection = '';
+  if (activeChips && activeChips.length > 0) {
+    const chipsHtml = activeChips.map(chip => {
+      if (chip.path) {
+        return `<a class="phos-chip" href="${escaped(chip.path)}" data-phos-chip data-phos-link${chip.action ? ` data-phos-chip-action="${escaped(chip.action)}"` : ''}>` +
+          (chip.icon ? `<span class="phos-chip-icon" aria-hidden="true">${escaped(chip.icon)}</span>` : '') +
+          `${escaped(chip.label)}</a>`;
+      }
+      return `<button class="phos-chip" type="button" data-phos-chip data-phos-chip-action="${escaped(chip.action || '')}">${chip.icon ? `<span class="phos-chip-icon" aria-hidden="true">${escaped(chip.icon)}</span>` : ''}${escaped(chip.label)}</button>`;
+    }).join('');
+    navigationSection = `
+      <div class="phos-section">
+        <p class="phos-section-label">Where to</p>
+        <div class="phos-chips" role="group" aria-label="Navigation chips">${chipsHtml}</div>
+      </div>`;
+  } else if (voice.links && voice.links.length > 0) {
+    // Fallback to static voice links if no inference chips
+    const linksHtml = voice.links
+      .map(l => `<li><a href="${escaped(l.href)}" data-phos-link>${escaped(l.label)}</a></li>`)
+      .join('');
+    navigationSection = `
+      <div class="phos-section">
+        <p class="phos-section-label">Where to</p>
+        <ul class="phos-links">${linksHtml}</ul>
+      </div>`;
+  }
 
   const appearance = getCurrentAppearance();
   const ap = (id, label) =>
     `<button type="button" data-phos-appearance="${id}" aria-pressed="${appearance === id ? 'true' : 'false'}">${label}</button>`;
+
+  const hasVoiceApi = HAS_WIN && 'speechSynthesis' in window;
+  const voiceOn = isVoiceEnabled();
+  const voiceBtn = hasVoiceApi
+    ? `<button type="button" class="phos-voice-btn" data-phos-voice-toggle data-voice-on="${voiceOn}" aria-label="${voiceOn ? 'Mute PHOS voice' : 'Enable PHOS voice'}" title="${voiceOn ? 'Mute voice' : 'Enable voice'}">${voiceOn ? '🔊' : '🔇'}</button>`
+    : '';
 
   return `
     <div class="phos-header">
@@ -486,11 +895,7 @@ function renderPanelHtml(voice, role) {
     ${voice.hint ? `<p class="phos-hint">${escaped(voice.hint)}</p>` : ''}
     ${voice.fallback ? `<p class="phos-fallback">${escaped(voice.fallback)}</p>` : ''}
 
-    ${linksHtml ? `
-      <div class="phos-section">
-        <p class="phos-section-label">Where to</p>
-        <ul class="phos-links">${linksHtml}</ul>
-      </div>` : ''}
+    ${navigationSection}
 
     <div class="phos-section">
       <p class="phos-section-label">Comfort</p>
@@ -515,8 +920,13 @@ function renderPanelHtml(voice, role) {
 
     <div class="phos-footer">
       <span>P31 · nine around one</span>
-      <button type="button" data-phos-dismiss>Don't show again</button>
+      <div style="display:flex;align-items:center;gap:10px;">
+        ${voiceBtn}
+        <button type="button" data-phos-dismiss>Don't show again</button>
+      </div>
     </div>
+
+    <button type="button" class="phos-urgent-btn" data-phos-urgent-trigger title="Enter Safe Mode (immediate calm)">Safe Mode</button>
   `;
 }
 
@@ -553,6 +963,14 @@ function refresh() {
   const role = getRole();
   const panel = rootEl.querySelector('[data-phos-panel]');
   if (panel) panel.innerHTML = renderPanelHtml(voice, role);
+
+  // Update urgent mode attribute on root for CSS styling
+  const urgent = isUrgentMode();
+  rootEl.setAttribute('data-p31-urgent', urgent ? 'true' : 'false');
+
+  // Show/hide urgent mode trigger button based on state
+  const urgentBtn = rootEl.querySelector('[data-phos-urgent-trigger]');
+  if (urgentBtn) urgentBtn.style.display = urgent ? 'none' : 'block';
 }
 
 function open() {
@@ -562,6 +980,15 @@ function open() {
   isOpenState = true;
   markGreeted();
   dispatch('p31:phos-opened');
+
+  // Voice synthesis fires on open, not on page load (Gray Rock doctrine)
+  const voice = voiceForPage(HAS_WIN ? window.location.pathname : '/');
+  const inferMsg = _inference?.phosMessage;
+  const speakText = inferMsg
+    ? `${voice.greeting} ${inferMsg}`
+    : voice.greeting;
+  // Small delay so the panel renders before speech starts
+  setTimeout(() => phosSpeak(speakText), 300);
 }
 
 function close() {
@@ -589,22 +1016,67 @@ function dispatch(name, detail = {}) {
 
 // ─── event delegation on rootEl ─────────────────────────────────────────────
 function onRootClick(e) {
-  const t = e.target.closest('[data-phos-toggle], [data-phos-close], [data-phos-dismiss], [data-phos-appearance], [data-phos-link]');
+  const t = e.target.closest('[data-phos-toggle], [data-phos-close], [data-phos-dismiss], [data-phos-appearance], [data-phos-link], [data-phos-chip], [data-phos-voice-toggle], [data-phos-urgent-clear]');
   if (!t) return;
 
   if (t.matches('[data-phos-toggle]')) { toggle(); return; }
   if (t.matches('[data-phos-close]'))  { close();  return; }
   if (t.matches('[data-phos-dismiss]')) { dismiss(); return; }
 
+  if (t.matches('[data-phos-urgent-clear]')) {
+    clearUrgentMode();
+    refresh();
+    return;
+  }
+
+  if (t.matches('[data-phos-urgent-trigger]')) {
+    if (HAS_WIN) localStorage.setItem('p31-urgent-mode', 'true');
+    refresh();
+    return;
+  }
+
+  if (t.matches('[data-phos-voice-toggle]')) {
+    toggleVoice();
+    return;
+  }
+
   if (t.matches('[data-phos-appearance]')) {
     const ap = t.getAttribute('data-phos-appearance');
     if (HAS_WIN && window.p31Theme && typeof window.p31Theme.setAppearance === 'function') {
       window.p31Theme.setAppearance(ap);
     } else if (HAS_DOC) {
-      // Fallback: set the data attribute directly
       document.documentElement.setAttribute('data-p31-appearance', ap === 'auto' ? 'hub' : ap);
     }
     refresh();
+    return;
+  }
+
+  // Chip action buttons (no href — Akinator flow)
+  if (t.matches('[data-phos-chip]')) {
+    const action = t.getAttribute('data-phos-chip-action');
+    if (action === 'decide') {
+      _chipsMode = 'decide';
+      refresh();
+      e.preventDefault();
+      return;
+    }
+    if (action === 'back') {
+      _chipsMode = 'standard';
+      refresh();
+      e.preventDefault();
+      return;
+    }
+    // Chip with href — track nav history then let it follow naturally
+    const href = t.getAttribute('href');
+    if (href && HAS_WIN) {
+      try {
+        const history = JSON.parse(sessionStorage.getItem('p31-nav-history') || '[]');
+        history.push(href);
+        if (history.length > 10) history.shift();
+        sessionStorage.setItem('p31-nav-history', JSON.stringify(history));
+      } catch {}
+    }
+    // href chips follow naturally; button chips were handled above
     return;
   }
   // [data-phos-link] follows its href naturally — no preventDefault
@@ -667,11 +1139,27 @@ function boot() {
   if (isDismissed())         return; // operator chose "Don't show again"
 
   buildRoot();
+
+  // Run inference at boot (passive, no user interaction required)
+  _inference = inferRoute(collectSignals());
+  _chipsMode = 'standard';
+
   refresh();
 
+  // Notify the page that PHOS has booted with inference results
+  dispatch('p31:phos-booted', { inference: _inference });
+
   // Hot updates: re-render when CogPass loads / clears (role + voice may change)
-  document.addEventListener('p31:cogpass-loaded',  refresh);
-  document.addEventListener('p31:cogpass-cleared', refresh);
+  document.addEventListener('p31:cogpass-loaded', () => {
+    _inference = inferRoute(collectSignals());
+    _chipsMode = 'standard';
+    refresh();
+  });
+  document.addEventListener('p31:cogpass-cleared', () => {
+    _inference = inferRoute(collectSignals());
+    _chipsMode = 'standard';
+    refresh();
+  });
 
   // Best-effort voice JSON pickup when operator's §4 lands
   tryLoadVoiceJson();
@@ -692,10 +1180,17 @@ if (HAS_WIN) {
     close,
     toggle,
     dismiss,
-    isOpen:      () => isOpenState,
+    isOpen:       () => isOpenState,
     isDismissed,
     setVoice,
     refresh,
+    speak:        phosSpeak,
+    getInference: () => _inference,
+    collectSignals,
+    inferRoute,
+    isUrgentMode,
+    setUrgentMode: (v) => { if (HAS_WIN) localStorage.setItem('p31-urgent-mode', v ? 'true' : 'false'); refresh(); },
+    clearUrgentMode,
   });
 
   if (HAS_DOC) {
@@ -714,6 +1209,9 @@ export {
   voiceForPage,
   k4MarkSvg,
   applyScreenComfort,
+  collectSignals,
+  inferRoute,
+  phosSpeak,
   open, close, toggle, dismiss,
   isDismissed, setVoice, refresh,
   boot,
@@ -722,4 +1220,8 @@ export {
 export default {
   open, close, toggle, dismiss,
   isDismissed, setVoice, refresh,
+  speak: phosSpeak,
+  getInference: () => _inference,
+  collectSignals,
+  inferRoute,
 };

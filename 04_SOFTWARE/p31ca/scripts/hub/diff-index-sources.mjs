@@ -122,6 +122,13 @@ async function main() {
   }
   const registry = await loadRegistry();
   const byId = new Set(registry.map((r) => r.id));
+  const registryById = new Map(registry.map((r) => [r.id, r]));
+
+  // Filter concept/draft products from cockpitIds for comparison
+  const liveCockpitIds = cockpitIds.filter((id) => {
+    const r = registryById.get(id);
+    return r && r.status !== 'concept' && r.status !== 'draft';
+  });
 
   let failed = 0;
   let warned = 0;
@@ -130,16 +137,16 @@ async function main() {
     err("src/data/hub-landing.json missing or empty — run npm run hub:build");
     failed = 1;
   } else {
-    if (hubIds.length !== cockpitIds.length) {
+    if (hubIds.length !== liveCockpitIds.length) {
       err(
-        `hub-landing coreProducts count (${hubIds.length}) != COCKPIT_PRODUCT_IDS (${cockpitIds.length})`
+        `hub-landing coreProducts count (${hubIds.length}) != live COCKPIT_PRODUCT_IDS (${liveCockpitIds.length})`
       );
       failed = 1;
     }
-    for (let i = 0; i < Math.min(hubIds.length, cockpitIds.length); i++) {
-      if (hubIds[i] !== cockpitIds[i]) {
+    for (let i = 0; i < Math.min(hubIds.length, liveCockpitIds.length); i++) {
+      if (hubIds[i] !== liveCockpitIds[i]) {
         err(
-          `order/id mismatch at [${i}]: hub-landing ${hubIds[i]} vs COCKPIT ${cockpitIds[i]}`
+          `order/id mismatch at [${i}]: hub-landing ${hubIds[i]} vs COCKPIT ${liveCockpitIds[i]}`
         );
         failed = 1;
         break;

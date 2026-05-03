@@ -82,8 +82,8 @@
     },
     "tomography": {
       "path": "/tomography.html",
-      "implementation": "public/tomography.html",
-      "label": "K4 TOMOGRAPHY — symbol-seeded depth view (Three.js r183)",
+      "implementation": "public/archive/2025-early/tomography.html",
+      "label": "K4 TOMOGRAPHY — ARCHIVED 2026-05-03",
       "registryId": "tomography",
       "note": "Depth companion to k4market.html. Linked from k4market nav."
     },
@@ -218,7 +218,7 @@
     },
     "kidsGrowth": {
       "path": "/kids-growth.html",
-      "implementation": "public/kids-growth.html",
+      "implementation": "public/archive/2025-early/kids-growth.html",
       "label": "Kids growth — S.J. & W.J. height/weight, milestones, export",
       "note": "Static hub app; localStorage; Chart.js. Short /growth in _redirects. Not medical advice."
     },
@@ -809,34 +809,40 @@
       "mustIncludeSubstring": "P31 Open Doc Suite"
     },
     {
-      "id": "devWorkbench.page",
-      "path": "public/dev-workbench.html",
-      "mustIncludeSubstring": "P31 Dev Workbench"
+      "id": "_devWorkbench.archived",
+      "path": "public/archive/2025-early/dev-workbench.html",
+      "mustIncludeSubstring": "P31 Dev Workbench",
+      "note": "ARCHIVED 2026-05-03 — moved to archive"
     },
     {
-      "id": "visionJourney.page",
-      "path": "public/vision.html",
-      "mustIncludeSubstring": "Core mesh journey"
+      "id": "_visionJourney.archived",
+      "path": "public/archive/2025-early/vision.html",
+      "mustIncludeSubstring": "Core mesh journey",
+      "note": "ARCHIVED 2026-05-03"
     },
     {
-      "id": "kidsGrowth.page",
-      "path": "public/kids-growth.html",
-      "mustIncludeSubstring": "p31.kidsGrowth/1.0.0"
+      "id": "_kidsGrowth.archived",
+      "path": "public/archive/2025-early/kids-growth.html",
+      "mustIncludeSubstring": "p31.kidsGrowth/1.0.0",
+      "note": "ARCHIVED 2026-05-03"
     },
     {
-      "id": "kidsHome.page",
-      "path": "public/kids-home.html",
-      "mustIncludeSubstring": "p31.householdKidsHome/0.1.0"
+      "id": "_kidsHome.archived",
+      "path": "public/archive/2025-early/kids-home.html",
+      "mustIncludeSubstring": "p31.householdKidsHome/0.1.0",
+      "note": "ARCHIVED 2026-05-03"
     },
     {
-      "id": "quantumClock.page",
-      "path": "public/quantum-clock.html",
-      "mustIncludeSubstring": "p31.quantumClockPage/0.1.0"
+      "id": "_quantumClock.archived",
+      "path": "public/archive/2025-early/quantum-clock.html",
+      "mustIncludeSubstring": "p31.quantumClockPage/0.1.0",
+      "note": "ARCHIVED 2026-05-03"
     },
     {
-      "id": "quantumDeck.page",
-      "path": "public/quantum-deck.html",
-      "mustIncludeSubstring": "p31.quantumDeckPage/0.1.0"
+      "id": "_quantumDeck.archived",
+      "path": "public/archive/2025-early/quantum-deck.html",
+      "mustIncludeSubstring": "p31.quantumDeckPage/0.1.0",
+      "note": "ARCHIVED 2026-05-03 — concept status, not live"
     },
     {
       "id": "initialBuild.page",
@@ -854,19 +860,16 @@
       "mustIncludeSubstring": "p31.buildRecord/0.1.0"
     },
     {
-      "id": "p31DeltaHiring.index",
-      "path": "public/delta-hiring/index.html",
-      "mustIncludeSubstring": "P31 Delta · Proof-based hiring"
+      "id": "_p31DeltaHiring.archived",
+      "path": "public/archive/2025-early/delta-hiring/index.html",
+      "mustIncludeSubstring": "P31 Delta · Proof-based hiring",
+      "note": "ARCHIVED 2026-05-03 — moved to archive"
     },
     {
-      "id": "p31DeltaHiring.canonical",
-      "path": "public/delta-hiring/index.html",
-      "mustIncludeSubstring": "https://p31ca.org/delta-hiring/"
-    },
-    {
-      "id": "messagingHub.page",
-      "path": "public/messaging-hub.html",
-      "mustIncludeSubstring": "p31.messagingHub/0.1.0"
+      "id": "_messagingHub.archived",
+      "path": "public/archive/2025-early/messaging-hub.html",
+      "mustIncludeSubstring": "p31.messagingHub/0.1.0",
+      "note": "ARCHIVED 2026-05-03 — moved to archive"
     },
     {
       "id": "publicSurface.manifest",
@@ -904,9 +907,10 @@
       "mustIncludeSubstring": "p31.liveFleet/1.0.0"
     },
     {
-      "id": "liveFleet.demo.page",
-      "path": "public/live-fleet-demo.html",
-      "mustIncludeSubstring": "p31-live-fleet.json"
+      "id": "_liveFleetDemo.archived",
+      "path": "public/archive/2025-early/live-fleet-demo.html",
+      "mustIncludeSubstring": "p31-live-fleet.json",
+      "note": "ARCHIVED 2026-05-03 — moved to archive"
     },
     {
       "id": "fleet.entities.bundle",
@@ -919,9 +923,10 @@
       "mustIncludeSubstring": "p31-fleet-entities.json"
     },
     {
-      "id": "demo.labs.page",
-      "path": "public/demo-labs.html",
-      "mustIncludeSubstring": "Welcome to the demo lobby"
+      "id": "_demoLabs.archived",
+      "path": "public/archive/2025-early/demo-labs.html",
+      "mustIncludeSubstring": "Welcome to the demo lobby",
+      "note": "ARCHIVED 2026-05-03 — moved to archive"
     },
     {
       "id": "meshObservatory.page",
@@ -951,10 +956,6 @@
   ],
   "registryAppUrlInvariants": [
     {
-      "id": "observatory",
-      "appUrl": "observatory.html"
-    },
-    {
       "id": "ede",
       "appUrl": "ede.html"
     },
@@ -963,32 +964,12 @@
       "appUrl": "sovereign.html"
     },
     {
-      "id": "k4market",
-      "appUrl": "k4market.html"
-    },
-    {
-      "id": "tomography",
-      "appUrl": "tomography.html"
-    },
-    {
       "id": "quantum-clock",
       "appUrl": "quantum-clock.html"
     },
     {
-      "id": "quantum-deck",
-      "appUrl": "quantum-deck.html"
-    },
-    {
       "id": "super-centaur",
       "appUrl": "p31-super-centaur-starter.html"
-    },
-    {
-      "id": "canon-demo",
-      "appUrl": "p31-canon-demo.html"
-    },
-    {
-      "id": "p31-delta-hiring",
-      "appUrl": "delta-hiring/index.html"
     },
     {
       "id": "integrations",
@@ -1200,18 +1181,6 @@
   "threejs": {
     "dome.astro": {
       "path": "src/pages/dome.astro",
-      "mustIncludeSubstring": "three@0.183.0"
-    },
-    "observatory.html": {
-      "path": "public/observatory.html",
-      "mustIncludeSubstring": "three@0.160.0"
-    },
-    "k4market.html": {
-      "path": "public/k4market.html",
-      "mustIncludeSubstring": "three@0.160.0"
-    },
-    "tomography.html": {
-      "path": "public/tomography.html",
       "mustIncludeSubstring": "three@0.183.0"
     },
     "connect.html": {

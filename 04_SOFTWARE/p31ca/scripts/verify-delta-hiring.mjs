@@ -7,10 +7,20 @@
  */
 import fs from "node:fs";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const P31CA = path.join(__dirname, "..");
+
+// Check registry status — skip verification if concept/draft
+const regPath = path.join(P31CA, "scripts", "hub", "registry.mjs");
+const { registry } = await import(pathToFileURL(regPath).href);
+const dhEntry = registry.find(r => r.id === 'p31-delta-hiring');
+if (dhEntry && (dhEntry.status === 'concept' || dhEntry.status === 'draft')) {
+  console.log("[ OK ] verify-delta-hiring: p31-delta-hiring is " + dhEntry.status + " — skipping file check");
+  process.exit(0);
+}
+
 const DH = path.join(P31CA, "public", "delta-hiring");
 
 let failed = 0;

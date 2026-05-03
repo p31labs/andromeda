@@ -2,18 +2,26 @@
 <html lang="en" data-p31-appearance="hub" style="color-scheme: dark;">
 <head>
   <meta charset="UTF-8" />
+<script>(function(){var r=document.documentElement;if(/[?&]alive=1(?:&|$)/.test(location.search))return;r.classList.add("p31-gray-rock");function wake(){r.classList.remove("p31-gray-rock")}document.addEventListener("pointerdown",wake,{once:true,capture:true});document.addEventListener("keydown",wake,{once:true,capture:true})})();</script>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#0f1115" />
-  <meta name="description" content="One link for your table—household kit, shared map, how you're wired. No account. Nothing to explain out loud." />
-  <title>Together · P31 Labs</title>
+  <meta name="description" content="For every family out there figuring it out as they go — help is on the way. Free tools, no account, nothing to explain out loud." />
+  <link rel="canonical" href="https://p31ca.org/welcome" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Welcome · P31 Labs" />
+  <meta property="og:description" content="For every family out there figuring it out as they go — help is on the way." />
+  <meta property="og:url" content="https://p31ca.org/welcome" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Welcome · P31 Labs" />
+  <meta name="twitter:description" content="For every family out there figuring it out as they go — help is on the way." />
+  <title>Welcome · P31 Labs</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/p31-style.css" />
-  <!-- Bus bar nervous system: subject-prefs (Layer 3 a11y) → cogpass-reader
-       (CogPass v1.1.0 → engines) → phos-guide (the FACE). Per WCD-PHOS-2026-
-       01 BUS1, busBar.phos.absorbsThemeSwitcher=true. Order matters: prefs
-       and reader load first; PHOS auto-expands on /welcome at ~600ms. -->
+  <!-- Bus bar: subject-prefs → cogpass-reader → phos-guide (the FACE).
+       PHOS auto-expands on /welcome at ~600ms, fires p31:phos-booted with
+       inference results for the chips mount below. -->
   <script src="/lib/p31-subject-prefs.js" defer></script>
   <script type="module" src="/lib/p31-cogpass-reader.mjs"></script>
   <script type="module" src="/lib/p31-phos-guide.mjs"></script>
@@ -21,30 +29,26 @@
     body {
       margin: 0;
       min-height: 100vh;
-      font-family: var(--p31-font-sans);
-      background: var(--p31-void);
-      color: var(--p31-cloud);
+      font-family: var(--p31-font-sans, 'Atkinson Hyperlegible', system-ui, sans-serif);
+      background: var(--p31-void, #0f1115);
+      color: var(--p31-cloud, #d8d6d0);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: max(1.25rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right))
-        max(1.25rem, env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left));
+      padding: max(1.5rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right))
+               max(1.5rem, env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left));
     }
-    .p31-welcome-root {
-      position: relative;
-    }
-    .p31-welcome-root::before {
+    /* Subtle field texture */
+    body::before {
       content: '';
       position: fixed;
       inset: 0;
       pointer-events: none;
       z-index: 0;
       background:
-        radial-gradient(circle at top left, rgba(77, 184, 168, 0.08), transparent 45%),
-        linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px);
-      background-size: auto, 40px 40px, 40px 40px;
+        radial-gradient(ellipse at 20% 30%, rgba(77, 184, 168, 0.07) 0%, transparent 55%),
+        radial-gradient(ellipse at 80% 70%, rgba(204, 98, 71, 0.04) 0%, transparent 50%);
     }
     .wrap {
       position: relative;
@@ -55,138 +59,293 @@
     }
     .mark {
       opacity: 0.55;
-      margin-bottom: 1.25rem;
+      margin-bottom: 1.5rem;
     }
     h1 {
-      font-size: clamp(1.35rem, 4vw, 1.65rem);
+      font-size: clamp(1.45rem, 4.5vw, 1.75rem);
       font-weight: 700;
-      letter-spacing: -0.02em;
-      margin: 0 0 1rem;
-      line-height: 1.25;
+      letter-spacing: -0.025em;
+      margin: 0 0 0.85rem;
+      line-height: 1.2;
+      color: var(--p31-cloud, #d8d6d0);
     }
-    p.lede {
-      font-size: 0.95rem;
-      line-height: 1.6;
-      color: color-mix(in srgb, var(--p31-cloud) 82%, var(--p31-muted));
-      margin: 0 0 1.25rem;
+    p.promise {
+      font-size: 0.975rem;
+      line-height: 1.65;
+      color: color-mix(in srgb, var(--p31-cloud, #d8d6d0) 80%, transparent);
+      margin: 0 0 0.75rem;
     }
     p.micro {
-      font-size: 0.8rem;
+      font-size: 0.82rem;
       line-height: 1.55;
-      color: var(--p31-muted);
-      margin: 0 0 1.35rem;
+      color: var(--p31-muted, #808080);
+      margin: 0 0 1.75rem;
     }
-    .stack {
+
+    /* ── Navigation area ─────────────────────────────────────────────── */
+    .welcome-nav {
       display: flex;
       flex-direction: column;
-      gap: 0.65rem;
-      margin-bottom: 1rem;
+      gap: 0.6rem;
+      margin-bottom: 1.25rem;
     }
-    .btn-primary {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 3rem;
-      padding: 0.65rem 1.35rem;
-      border-radius: 0.65rem;
-      font-weight: 700;
-      font-size: 0.95rem;
-      text-decoration: none;
-      background: color-mix(in srgb, var(--p31-teal, #25897d) 88%, transparent);
-      color: var(--p31-cloud);
-      border: 1px solid color-mix(in srgb, var(--p31-teal) 45%, transparent);
-      width: 100%;
-      box-sizing: border-box;
-    }
-    .btn-primary:hover {
-      filter: brightness(1.06);
-    }
-    .btn-secondary {
+    .btn {
       display: inline-flex;
       align-items: center;
       justify-content: center;
       min-height: 2.85rem;
-      padding: 0.55rem 1.25rem;
+      padding: 0.6rem 1.25rem;
       border-radius: 0.65rem;
       font-weight: 600;
-      font-size: 0.9rem;
+      font-size: 0.92rem;
       text-decoration: none;
-      color: var(--p31-cloud);
+      box-sizing: border-box;
+      width: 100%;
+      transition: background-color 140ms ease, border-color 140ms ease, filter 140ms ease;
       border: 1px solid rgba(255, 255, 255, 0.12);
       background: rgba(255, 255, 255, 0.04);
-      width: 100%;
-      box-sizing: border-box;
+      color: var(--p31-cloud, #d8d6d0);
+      cursor: pointer;
+      font-family: inherit;
     }
-    .btn-secondary:hover {
+    .btn:hover, .btn:focus-visible {
+      background: rgba(255, 255, 255, 0.08);
       border-color: rgba(255, 255, 255, 0.2);
-      background: rgba(255, 255, 255, 0.07);
     }
-    .links {
+    .btn:focus-visible {
+      outline: 2px solid var(--p31-teal, #25897d);
+      outline-offset: 2px;
+    }
+    .btn-primary {
+      background: color-mix(in srgb, var(--p31-teal, #25897d) 88%, transparent);
+      border-color: color-mix(in srgb, var(--p31-teal, #25897d) 45%, transparent);
+      font-weight: 700;
+      font-size: 0.95rem;
+      min-height: 3rem;
+    }
+    .btn-primary:hover { filter: brightness(1.07); }
+
+    /* ── PHOS chips mount (injected by inference engine) ──────────────── */
+    /* Chips mount fades in when PHOS injects content */
+    #phos-chips-mount {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.65rem 1rem;
+      gap: 0.55rem;
       justify-content: center;
-      font-size: 0.88rem;
-      margin: 0.35rem 0 1rem;
+      margin-bottom: 1.25rem;
+      opacity: 0;
+      transition: opacity 280ms ease;
     }
-    .links a {
-      font-family: var(--p31-font-mono);
-      font-size: 0.82rem;
-      color: var(--p31-cyan);
+    #phos-chips-mount.ready {
+      opacity: 1;
+    }
+    #phos-chips-mount[hidden] {
+      display: none;
+    }
+    .welcome-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border-radius: 22px;
+      border: 1px solid rgba(216, 214, 208, 0.16);
+      background: rgba(216, 214, 208, 0.05);
+      color: var(--p31-cloud, #d8d6d0);
+      font: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background-color 140ms ease, border-color 140ms ease;
+      -webkit-tap-highlight-color: transparent;
+      white-space: nowrap;
+    }
+    .welcome-chip:hover, .welcome-chip:focus-visible {
+      background: rgba(37, 137, 125, 0.16);
+      border-color: rgba(37, 137, 125, 0.42);
+      color: var(--p31-teal, #25897d);
+    }
+    .welcome-chip:focus-visible { outline: 2px solid var(--p31-teal,#25897d); outline-offset: 2px; }
+    .welcome-chip-icon { font-size: 14px; line-height: 1; }
+    /* Primary chip (first inference result) */
+    .welcome-chip.primary {
+      background: color-mix(in srgb, var(--p31-teal, #25897d) 80%, transparent);
+      border-color: color-mix(in srgb, var(--p31-teal, #25897d) 45%, transparent);
+      padding: 10px 18px;
+      font-size: 14px;
+      font-weight: 700;
+      width: 100%;
+      justify-content: center;
+      border-radius: 0.65rem;
+    }
+    .welcome-chip.primary:hover { filter: brightness(1.07); }
+
+    /* ── Secondary links ─────────────────────────────────────────────── */
+    .quick-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem 0.9rem;
+      justify-content: center;
+      margin: 0 0 1.25rem;
+    }
+    .quick-links a {
+      font-family: var(--p31-font-mono, 'JetBrains Mono', monospace);
+      font-size: 0.8rem;
+      color: var(--p31-cyan, #4db8a8);
       font-weight: 500;
+      text-decoration: none;
     }
-    .support {
-      font-size: 0.88rem;
-    }
-    .support a {
-      color: var(--p31-cyan);
-    }
+    .quick-links a:hover { text-decoration: underline; }
+
     .fine {
-      margin-top: 1.35rem;
       font-size: 0.75rem;
-      color: var(--p31-muted);
-      line-height: 1.55;
+      color: var(--p31-muted, #808080);
+      line-height: 1.6;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      body::before { display: none; }
+      #phos-chips-mount { transition: none; }
+      .welcome-chip, .btn { transition: none; }
     }
   </style>
 </head>
-<body class="p31-welcome-root" style="color-scheme: dark;">
-  <div class="wrap">
-    <div class="mark" aria-hidden="true">
-      <svg width="40" height="40" viewBox="0 0 512 512">
-        <rect width="512" height="512" rx="112" fill="#25897d" />
-        <circle cx="390" cy="120" r="48" fill="#cc6247" />
-        <text x="256" y="340" font-family="system-ui,sans-serif" font-weight="900" font-size="220" fill="#d8d6d0" text-anchor="middle">P31</text>
-        <rect x="156" y="380" width="200" height="16" rx="8" fill="#cda852" />
-      </svg>
-    </div>
-    <h1>Same side of the table.</h1>
-    <p class="lede">
-      Tap what fits—you don&rsquo;t have to pitch anything out loud. These screens carry it.
-    </p>
-    <p class="micro">Kids, parents, elders: different pace, same door.</p>
+<body style="color-scheme: dark;">
+<a href="#main" style="position:absolute;left:-9999px;top:0;padding:0.5rem 1rem;background:var(--p31-void,#0f1115);color:var(--p31-teal,#25897d);font-size:0.875rem;z-index:9999;border-radius:0 0 4px 4px;text-decoration:none" onfocus="this.style.left='0'" onblur="this.style.left='-9999px'">Skip to main content</a>
 
-    <nav class="stack" aria-label="Start here">
-      <a class="btn-primary" href="/family-pack">Household kit — tonight&rsquo;s path →</a>
-      <a class="btn-secondary" href="/mesh">Shared map — explore together →</a>
-      <a class="btn-secondary" href="/passport">How I&rsquo;m wired — card for ChatGPT / Claude →</a>
-      <a class="btn-secondary" href="/onboard">Guided setup — phases →</a>
-    </nav>
-
-    <div class="links">
-      <a href="/why">Why this exists →</a>
-      <a href="/start">Your mesh home →</a>
-      <a href="/">Browse the lab →</a>
-      <a href="/demos">Demo lobby →</a>
-      <a href="/lab">Sovereign Lab →</a>
-      <a href="/slicer">Browser slicer →</a>
-    </div>
-
-    <p class="support"><a href="https://ko-fi.com/trimtab69420" target="_blank" rel="noopener noreferrer">Support this work →</a></p>
-    <p class="fine">
-      Free · No login · No tracking · Open source<br />
-      Georgia nonprofit · EIN 42-1888158<br />
-      Short links: <span style="font-variant-numeric: tabular-nums">p31ca.org/welcome</span> · <span style="font-variant-numeric: tabular-nums">p31ca.org/together</span>
-    </p>
+<main id="main" class="wrap">
+  <div class="mark" aria-hidden="true">
+    <svg width="44" height="44" viewBox="0 0 512 512">
+      <rect width="512" height="512" rx="112" fill="#25897d" />
+      <circle cx="390" cy="120" r="48" fill="#cc6247" />
+      <text x="256" y="340" font-family="system-ui,sans-serif" font-weight="900" font-size="220" fill="#d8d6d0" text-anchor="middle">P31</text>
+      <rect x="156" y="380" width="200" height="16" rx="8" fill="#cda852" />
+    </svg>
   </div>
+
+  <h1>For every family figuring it out as they go.</h1>
+  <p class="promise">Free tools that carry the context for you — no account, nothing to explain out loud.</p>
+  <p class="micro">Kids, parents, partners: different pace, same door.</p>
+
+  <!-- PHOS inference chips — injected by p31-phos-guide.mjs after boot.
+       Fades in when ready. Hidden until JS populates it. -->
+  <div id="phos-chips-mount" hidden aria-live="polite" aria-label="Suggested next steps"></div>
+
+  <!-- Static fallback nav — shown until PHOS chips arrive.
+       Points only to verified live pages. Hidden by JS after chips mount. -->
+  <nav class="welcome-nav" id="welcome-fallback-nav" aria-label="Start here">
+    <a class="btn btn-primary" href="/passport">Create your context card →</a>
+    <a class="btn" href="/lab">Explore the tools →</a>
+    <a class="btn" href="/glass-box">See what&rsquo;s live →</a>
+  </nav>
+
+  <div class="quick-links">
+    <a href="/passport">Context card →</a>
+    <a href="/lab">Lab →</a>
+    <a href="/glass-box">Glass Box →</a>
+    <a href="/support">Support →</a>
+    <a href="/ede">EDE →</a>
+  </div>
+
+  <p class="fine">
+    Free · No login · No tracking · Open source<br />
+    Georgia nonprofit · EIN 42-1888158
+  </p>
+</main>
+
+<script type="module">
+  // Mount PHOS inference chips into the page body when PHOS boots.
+  // Falls back to the static nav if PHOS never fires (JS off, slow net, etc.).
+
+  const ESC_MAP = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' };
+  const esc = (s) => String(s).replace(/[&<>"]/g, c => ESC_MAP[c]);
+
+  function mountChips(chips) {
+    if (!chips || !chips.length) return;
+
+    const mount = document.getElementById('phos-chips-mount');
+    const fallback = document.getElementById('welcome-fallback-nav');
+    if (!mount) return;
+
+    // Build chip elements
+    const chipsHtml = chips.map((chip, i) => {
+      const iconHtml = chip.icon ? `<span class="welcome-chip-icon" aria-hidden="true">${esc(chip.icon)}</span>` : '';
+      const isPrimary = i === 0 && chip.confidence >= 0.70;
+      const cls = `welcome-chip${isPrimary ? ' primary' : ''}`;
+
+      if (chip.path) {
+        return `<a class="${cls}" href="${esc(chip.path)}">${iconHtml}${esc(chip.label)}</a>`;
+      }
+      if (chip.action === 'decide') {
+        return `<button class="${cls}" type="button" id="phos-decide-btn">${iconHtml}${esc(chip.label)}</button>`;
+      }
+      return null;
+    }).filter(Boolean).join('');
+
+    mount.innerHTML = chipsHtml;
+    mount.hidden = false;
+
+    // Fade in — requestAnimationFrame so the transition fires
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => mount.classList.add('ready'));
+    });
+
+    // Hide the static fallback
+    if (fallback) {
+      fallback.hidden = true;
+      fallback.setAttribute('aria-hidden', 'true');
+    }
+
+    // Wire up "Help me decide →" button
+    const decideBtn = document.getElementById('phos-decide-btn');
+    if (decideBtn) {
+      decideBtn.addEventListener('click', () => {
+        // Show Akinator Q1 sub-chips
+        const decideChips = [
+          { label: 'For myself', path: '/lab', icon: '🙋' },
+          { label: 'For my family', path: '/lab', icon: '🏠' },
+          { label: 'As a professional', path: '/glass-box', icon: '💼' },
+          { label: '← Back', path: null, icon: null, action: 'back' },
+        ];
+        const subHtml = decideChips.map(c => {
+          if (c.path) return `<a class="welcome-chip" href="${esc(c.path)}">${c.icon ? `<span class="welcome-chip-icon" aria-hidden="true">${esc(c.icon)}</span>` : ''}${esc(c.label)}</a>`;
+          if (c.action === 'back') return `<button class="welcome-chip" type="button" id="phos-back-btn">${esc(c.label)}</button>`;
+          return null;
+        }).filter(Boolean).join('');
+        mount.innerHTML = subHtml;
+
+        // Wire back button
+        const backBtn = document.getElementById('phos-back-btn');
+        if (backBtn) backBtn.addEventListener('click', () => mountChips(chips));
+      });
+    }
+  }
+
+  // Listen for PHOS boot event (fired by p31-phos-guide.mjs after inference)
+  document.addEventListener('p31:phos-booted', (e) => {
+    const inference = e.detail?.inference ?? window.p31PhosGuide?.getInference?.();
+    if (inference?.chips?.length) {
+      // Attach confidence to first chip so mountChips can decide primary styling
+      const chips = inference.chips.map((c, i) => ({
+        ...c,
+        confidence: i === 0 ? (inference.confidence ?? 0) : 0,
+      }));
+      mountChips(chips);
+    }
+  }, { once: true });
+
+  // Fallback: if PHOS boots before this listener registered, pull from window
+  requestAnimationFrame(() => {
+    const inference = window.p31PhosGuide?.getInference?.();
+    if (inference?.chips?.length) {
+      const mount = document.getElementById('phos-chips-mount');
+      if (!mount || !mount.hidden) return; // already mounted
+      mountChips(inference.chips.map((c, i) => ({
+        ...c,
+        confidence: i === 0 ? (inference.confidence ?? 0) : 0,
+      })));
+    }
+  });
+</script>
 </body>
 </html>

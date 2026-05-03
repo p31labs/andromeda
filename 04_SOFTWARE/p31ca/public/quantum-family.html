@@ -1,11 +1,19 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en" data-p31-appearance="hub" class="scroll-smooth" style="color-scheme: dark;">
 <head>
     <meta charset="UTF-8">
+<script>(function(){var r=document.documentElement;if(/[?&]alive=1(?:&|$)/.test(location.search))return;r.classList.add("p31-gray-rock");function wake(){r.classList.remove("p31-gray-rock")}document.addEventListener("pointerdown",wake,{once:true,capture:true});document.addEventListener("keydown",wake,{once:true,capture:true})})();</script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#F8F5F0">
     <title>Quantum Family | P31 Labs</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <meta property="og:type" content="website">
+<meta property="og:title" content="Quantum Family">
+<meta property="og:description" content="Quantum Family">
+<meta property="og:url" content="https://p31ca.org/quantum-family.html">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Quantum Family">
+<meta name="twitter:description" content="Quantum Family">
+<link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/p31-style.css">
@@ -46,8 +54,10 @@
         #courier-canvas { touch-action: none; cursor: none; display: block; width: 100%; max-height: min(72vh, 520px); border-radius: 24px; }
         body.dark #courier-wrap { border-color: rgba(255,255,255,0.12); }
     </style>
+<link rel="canonical" href="https://p31ca.org/quantum-family.html">
 </head>
 <body class="min-h-screen flex flex-col">
+<a href="#main" style="position:absolute;left:-9999px;top:0;padding:0.5rem 1rem;background:var(--p31-void);color:var(--p31-teal);font-size:0.875rem;z-index:9999;border-radius:0 0 4px 4px;text-decoration:none" onfocus="this.style.left='0'" onblur="this.style.left='-9999px'">Skip to main content</a>
 
     <nav class="sticky top-0 z-50 bg-[#F8F5F0]/90 backdrop-blur-md px-4 py-3 flex items-center gap-3 overflow-x-auto border-b border-[#5D4E37]/10" style="-webkit-overflow-scrolling:touch;">
         <a href="family.html" class="nav-pill px-4 py-2.5 rounded-2xl border-2 border-[#F0EBE3] bg-white font-display font-semibold text-[#7A7570] text-sm shrink-0">← Hub</a>
@@ -64,7 +74,7 @@
         <button class="nav-pill px-4 py-2.5 rounded-2xl border-2 border-[#F0EBE3] bg-white font-display font-semibold text-[#7A7570] text-sm" data-target="garden">🌱 Garden Log</button>
     </nav>
 
-    <main class="flex-grow max-w-3xl mx-auto w-full px-4 py-8 md:py-12">
+    <main id="main" class="flex-grow max-w-3xl mx-auto w-full px-4 py-8 md:py-12">
 
         <!-- HOME -->
         <div id="page-home" class="page active text-center">

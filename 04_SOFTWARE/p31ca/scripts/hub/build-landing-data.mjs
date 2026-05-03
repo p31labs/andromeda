@@ -80,6 +80,8 @@ function productRow(id) {
   if (!r) {
     throw new Error(`[hub:build] unknown registry id: ${id}`);
   }
+  // Skip concept/draft products
+  if (r.status === 'concept' || r.status === 'draft') return null;
   const prs = prsGridStatus(r, prsTierMap);
   const status = prs ? prs.landingStatus : cardStatus(r);
   return {
@@ -95,6 +97,8 @@ function productRow(id) {
 function protoRow(id) {
   const r = byId.get(id);
   if (!r) throw new Error(`[hub:build] unknown prototype id: ${id}`);
+  // Skip concept/draft products
+  if (r.status === 'concept' || r.status === 'draft') return null;
   return {
     id,
     title: r.title,
@@ -103,8 +107,8 @@ function protoRow(id) {
   };
 }
 
-const coreProducts = HUB_COCKPIT_ORDER.map(productRow);
-const prototypes = HUB_PROTOTYPE_ORDER.map(protoRow);
+const coreProducts = HUB_COCKPIT_ORDER.map(productRow).filter(Boolean);
+const prototypes = HUB_PROTOTYPE_ORDER.map(protoRow).filter(Boolean);
 
 const payload = {
   // No `generated` timestamp: deterministic build for drift detection.

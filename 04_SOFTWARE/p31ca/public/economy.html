@@ -1,12 +1,20 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-p31-appearance="hub" style="color-scheme: dark;">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<script>(function(){var r=document.documentElement;if(/[?&]alive=1(?:&|$)/.test(location.search))return;r.classList.add("p31-gray-rock");function wake(){r.classList.remove("p31-gray-rock")}document.addEventListener("pointerdown",wake,{once:true,capture:true});document.addEventListener("keydown",wake,{once:true,capture:true})})();</script>
+<meta name="viewport" content="width=device-width,initial-scale=1, viewport-fit=cover"/>
 <title>BRIDGE — LOVE Economy</title>
 <link rel="stylesheet" href="/p31-style.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="/p31-tailwind-extend.js"></script>
+<meta property="og:type" content="website">
+<meta property="og:title" content="BRIDGE — LOVE Economy">
+<meta property="og:description" content="BRIDGE — LOVE Economy">
+<meta property="og:url" content="https://p31ca.org/economy.html">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="BRIDGE — LOVE Economy">
+<meta name="twitter:description" content="BRIDGE — LOVE Economy">
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
 <script>
@@ -37,8 +45,10 @@ input[type=text],input[type=number]{background:var(--p31-void);border:1px solid 
 input:focus{border-color:#cda852}
 select{background:var(--p31-void);border:1px solid #262a33;border-radius:6px;color:var(--p31-cloud);padding:6px 10px;font-size:12px;outline:none}
 </style>
+<link rel="canonical" href="https://p31ca.org/economy.html">
 </head>
 <body class="flex flex-col h-screen overflow-hidden">
+<a href="#main" style="position:absolute;left:-9999px;top:0;padding:0.5rem 1rem;background:var(--p31-void);color:var(--p31-teal);font-size:0.875rem;z-index:9999;border-radius:0 0 4px 4px;text-decoration:none" onfocus="this.style.left='0'" onblur="this.style.left='-9999px'">Skip to main content</a>
 
 <!-- Top Bar -->
 <header class="flex items-center justify-between px-5 py-3 border-b border-faint flex-shrink-0">
@@ -61,7 +71,7 @@ select{background:var(--p31-void);border:1px solid #262a33;border-radius:6px;col
 </nav>
 
 <!-- Content -->
-<main class="flex-1 overflow-y-auto p-4" id="content"></main>
+<main id="main" class="flex-1 overflow-y-auto p-4" id="content"></main>
 
 <script>
 // ── State ──────────────────────────────────────────────────────

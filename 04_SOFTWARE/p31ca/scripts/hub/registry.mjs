@@ -75,7 +75,7 @@ export const registry = [
   },
   {
     id: 'spaceship-earth', title: 'Spaceship Earth', tagline: 'Sovereign Command Center',
-    icon: '🌐', accent: '#3ba372', status: 'live', statusLabel: 'LIVE',
+    icon: '🌐', accent: '#3ba372', status: 'concept', statusLabel: 'CONCEPT',
     appUrl: 'spaceship-earth.html',
     tech: ['PWA', 'PGlite (WASM PostgreSQL)', 'Three.js R3F', 'IndexedDB', 'Service Worker'],
     features: [
@@ -116,7 +116,7 @@ export const registry = [
   },
   {
     id: 'quantum-family', title: 'THE QUANTUM FAMILY', tagline: 'Sovereign Welcome Pack',
-    icon: '🔺', accent: '#8b7cc9', status: 'live', statusLabel: 'LIVE',
+    icon: '🔺', accent: '#8b7cc9', status: 'concept', statusLabel: 'CONCEPT',
     appUrl: 'quantum-family.html',
     tech: ['Three.js', 'Web Audio API', 'PWA', 'IndexedDB', 'Vibration API'],
     features: [
@@ -137,7 +137,7 @@ export const registry = [
   },
   {
     id: 'kenosis', title: 'Project Kenosis', tagline: 'Autopoietic Edge Network',
-    icon: '🕸️', accent: '#3ba372', status: 'live', statusLabel: 'LIVE',
+    icon: '🕸️', accent: '#3ba372', status: 'concept', statusLabel: 'CONCEPT',
     appUrl: 'kenosis.html',
     tech: ['Cloudflare Workers', 'SIC-POVM', '7-Node Mesh', 'Byzantine Fault Tolerance'],
     features: [
@@ -157,7 +157,7 @@ export const registry = [
   },
   {
     id: 'genesis-gate', title: 'Genesis Gate', tagline: 'Governance Control Plane',
-    icon: '🔬', accent: '#3ba372', status: 'live', statusLabel: 'LIVE',
+    icon: '🔬', accent: '#3ba372', status: 'concept', statusLabel: 'CONCEPT',
     appUrl: appUrlForWorkerSpa('genesis-gate'),
     tech: ['TypeScript ESM', 'Cloudflare Workers', 'TelemetryModule', 'GovernanceHook'],
     features: [
@@ -214,7 +214,7 @@ export const registry = [
       'Use the chaos panel to inject sustained faults and observe equilibrium restoration'
     ],
     techNotes: 'Pure Three.js — no React wrapper. The simulation runs in a requestAnimationFrame loop with a shared Float32Array for agent positions to minimize GC pressure.',
-    related: ['kenosis', 'observatory', 'collider']
+    related: ['kenosis']
   },
   {
     id: 'discord-bot', title: 'p31-bot', tagline: 'Community Command Plane',
@@ -238,7 +238,7 @@ export const registry = [
   },
   {
     id: 'donate', title: 'Donate Pipeline', tagline: 'MAP — Stripe Payment Link + Sponsors',
-    icon: '💚', accent: '#3ba372', status: 'live', statusLabel: 'LIVE',
+    icon: '💚', accent: '#3ba372', status: 'concept', statusLabel: 'CONCEPT',
     appUrl: 'donate.html',
     tech: [
       'Stripe Payment Link (MAP)',
@@ -307,7 +307,7 @@ export const registry = [
   },
   {
     id: 'love-ledger', title: 'Love Ledger', tagline: 'Family LOVE Token Economy',
-    icon: '💜', accent: '#ec4899', status: 'live', statusLabel: 'LIVE',
+    icon: '💜', accent: '#ec4899', status: 'concept', statusLabel: 'CONCEPT',
     appUrl: appUrlForWorkerSpa('love-ledger'),
     tech: ['Cloudflare Worker', 'Chart.js', 'Leaderboard', 'Streak Counter'],
     features: [
@@ -392,7 +392,7 @@ export const registry = [
   },
   {
     id: 'kids-growth', title: 'Kids Growth', tagline: 'S.J. & W.J. Milestone Tracker',
-    icon: '👶', accent: '#f472b6', status: 'live', statusLabel: 'LIVE',
+    icon: '👶', accent: '#f472b6', status: 'concept', statusLabel: 'CONCEPT',
     appUrl: 'kids-growth.html',
     tech: ['Static (p31ca.org)', 'Chart.js 4', 'LocalStorage', 'Print & JSON export'],
     features: [
@@ -471,12 +471,12 @@ export const registry = [
     ],
     techNotes:
       'All arithmetic done client-side. Chart.js pie and bar charts update on each entry. CSV export uses the RFC 4180 format compatible with Google Sheets and Excel. Short p31ca.org URL 302 → workers.dev (probe: worker-spa-budget-tracker).',
-    related: ['legal-evidence', 'appointment-tracker', 'donate']
+    related: ['legal-evidence', 'appointment-tracker']
   },
   // ── Apps ────────────────────────────────────────────────────────────────
   {
     id: 'phenix-os', title: 'Phenix OS', tagline: 'AuDHD Operator Command Console',
-    icon: '◈', accent: '#4db8a8', status: 'live', statusLabel: 'LIVE',
+    icon: '◈', accent: '#4db8a8', status: 'concept', statusLabel: 'CONCEPT',
     appUrl: 'phenix-os.html',
     tech: ['Three.js', 'SIC-POVM', 'Fawn Guard', 'Web Audio', 'IndexedDB'],
     features: [
@@ -496,7 +496,7 @@ export const registry = [
   },
   {
     id: 'simple-sovereignty', title: 'Simple Sovereignty', tagline: 'Sovereign Stack Portal',
-    icon: '▲', accent: '#4db8a8', status: 'live', statusLabel: 'LIVE',
+    icon: '▲', accent: '#4db8a8', status: 'concept', statusLabel: 'CONCEPT',
     appUrl: 'sovereignty.html',
     tech: ['Portal Hub', 'Live Terminal', 'Dark/Light Mode', 'Sovereignty Tracker'],
     features: [
@@ -516,7 +516,7 @@ export const registry = [
   },
   {
     id: 'node-one', title: 'Node One (The Totem)', tagline: 'Physical Haptic Anchor',
-    icon: '📟', accent: '#cda852', status: 'live', statusLabel: 'HARDWARE',
+    icon: '📟', accent: '#cda852', status: 'concept', statusLabel: 'CONCEPT',
     appUrl: 'node-one.html',
     tech: ['Waveshare ESP32-S3', 'LVGL 8.4', 'ESP-IDF 5.5.x', 'NXP SE050', 'Kailh Choc Navy'],
     features: [
@@ -536,7 +536,7 @@ export const registry = [
   },
   {
     id: 'node-zero', title: 'Node Zero', tagline: 'Cryptographic Mesh Node',
-    icon: '📡', accent: '#cda852', status: 'live', statusLabel: 'LIVE',
+    icon: '📡', accent: '#cda852', status: 'concept', statusLabel: 'CONCEPT',
     appUrl: 'node-zero.html',
     tech: ['WebCrypto API', 'WebSocket', 'IndexedDB Vault', 'Ed25519-equivalent'],
     features: [
@@ -572,11 +572,11 @@ export const registry = [
       'Click any SIC-POVM vector to freeze it and read its coordinate in the inspector panel'
     ],
     techNotes: 'Three.js r183 with UnrealBloomPass for selective glow. The Jitterbug transform is an interpolated animation across 48 frames of vertex positions derived from Fuller\'s original geometry.',
-    related: ['observatory', 'axiom', 'k4market']
+    related: ['axiom']
   },
   {
     id: 'observatory', title: 'OBSERVATORY', tagline: 'Geodesic Data Dome',
-    icon: '🔺', accent: '#25897d', status: 'live', statusLabel: 'LIVE',
+    icon: '🔺', accent: '#25897d', status: 'concept', statusLabel: 'CONCEPT',
     appUrl: 'observatory.html',
     tech: ['Three.js r160', 'WebGL Bloom', 'ES Modules', 'Panel Inspector'],
     features: [
@@ -612,11 +612,11 @@ export const registry = [
       'Use Stealth to generate a private transfer address for sensitive LOVE flows'
     ],
     techNotes: 'SVG gauges are pure SVG with CSS animations — no canvas. Stealth addresses use a simplified Diffie-Hellman scheme over secp256k1 coordinates via WebCrypto.',
-    related: ['love-ledger', 'donate', 'quantum-family']
+    related: ['love-ledger', 'quantum-family']
   },
   {
     id: 'vault', title: 'VAULT', tagline: 'Ground Truth Identity Store',
-    icon: '🔐', accent: '#8b7cc9', status: 'live', statusLabel: 'LIVE',
+    icon: '🔐', accent: '#8b7cc9', status: 'concept', statusLabel: 'CONCEPT',
     appUrl: 'vault-room.html',
     tech: ['WebCrypto API', 'AES-256-GCM', 'Ed25519-equivalent', 'Daubert Export'],
     features: [
@@ -636,7 +636,7 @@ export const registry = [
   },
   {
     id: 'collider', title: 'COLLIDER', tagline: 'Particle Physics Sandbox',
-    icon: '⚛️', accent: '#cc6247', status: 'live', statusLabel: 'LIVE',
+    icon: '⚛️', accent: '#cc6247', status: 'concept', statusLabel: 'CONCEPT',
     appUrl: 'collider.html',
     tech: ['Canvas 2D', 'Physics Engine', 'Valence Rules', 'Quest Chains'],
     features: [
@@ -676,7 +676,7 @@ export const registry = [
   },
   {
     id: 'mission-control', title: 'Mission Control', tagline: 'Kids Token Economy',
-    icon: '🚀', accent: '#ff00ff', status: 'live', statusLabel: 'LIVE',
+    icon: '🚀', accent: '#ff00ff', status: 'concept', statusLabel: 'CONCEPT',
     appUrl: 'mission-control.html',
     tech: ['Pixel RPG Engine', 'Genesis Token Economy', 'Press Start 2P Font', 'Custom Toast'],
     features: [
@@ -696,7 +696,7 @@ export const registry = [
   },
   {
     id: 'quantum-life-os', title: 'Quantum Life OS', tagline: 'Quantum-Coherent Life System',
-    icon: '✨', accent: '#00ffff', status: 'live', statusLabel: 'LIVE',
+    icon: '✨', accent: '#00ffff', status: 'concept', statusLabel: 'CONCEPT',
     appUrl: 'quantum-os.html',
     tech: ['Quantum Stats Engine', 'Consciousness Model', 'Control Panel', 'Dark/Light Mode'],
     features: [
@@ -716,7 +716,7 @@ export const registry = [
   },
   {
     id: 'qg-ide', title: 'QG-IDE', tagline: 'Quantum Geodesic IDE',
-    icon: '💻', accent: '#4db8a8', status: 'live', statusLabel: 'LIVE',
+    icon: '💻', accent: '#4db8a8', status: 'concept', statusLabel: 'CONCEPT',
     appUrl: 'qg-ide.html',
     tech: ['Code Editor', 'SVG Tetrahedron', 'Centaur AI Copilot', 'PHX Coherence', '6 Workspaces'],
     features: [
@@ -756,7 +756,7 @@ export const registry = [
   },
   {
     id: 'k4market', title: 'K4 MARKET', tagline: 'Tetrahedral Price Geometry',
-    icon: '📐', accent: '#3ba372', status: 'live', statusLabel: 'LIVE',
+    icon: '📐', accent: '#3ba372', status: 'concept', statusLabel: 'CONCEPT',
     appUrl: 'k4market.html',
     tech: ['Three.js r160', 'OHLCV Mapping', 'OrbitControls', 'Synthetic Live Data'],
     features: [
@@ -772,11 +772,11 @@ export const registry = [
       'Enable Edge Flow and rotate the tetrahedron with mouse drag to inspect connectivity'
     ],
     techNotes: 'Three.js r160 (unpkg). OHLCV → K₄ vertex mapping: Open→V1, High→V2, Low→V3, Close→V4, Volume→edge weights. For symbol search, timeframes, and Larmor ring see tomography.html.',
-    related: ['tomography', 'sovereign', 'observatory']
+    related: ['tomography', 'sovereign']
   },
   {
     id: 'tomography', title: 'K4 TOMOGRAPHY', tagline: 'Symbol-Seeded Depth View',
-    icon: '🔬', accent: '#4db8a8', status: 'live', statusLabel: 'LIVE',
+    icon: '🔬', accent: '#4db8a8', status: 'concept', statusLabel: 'CONCEPT',
     appUrl: 'tomography.html',
     tech: ['Three.js r183', 'Barycentric Mapping', 'PRNG OHLCV', 'Larmor Ring'],
     features: [
@@ -793,11 +793,11 @@ export const registry = [
       'Toggle the Larmor ring to overlay the 0.86 Hz torus against support/resistance clusters'
     ],
     techNotes: 'Three.js r183 (jsdelivr). Barycentric OHLCV placement: each candle\'s (O,H,L,C) tuple maps to a point inside the tetrahedron via λ₁=O, λ₂=H, λ₃=L, λ₄=C (normalised). PRNG seeded by CRC32(symbol). Larmor ring rotation speed = LARMOR_HZ × dt.',
-    related: ['k4market', 'sovereign', 'observatory']
+    related: ['sovereign']
   },
   {
     id: 'quantum-clock', title: 'QUANTUM CLOCK', tagline: 'Grandfather Rhythm · Coherence (Pedagogy)',
-    icon: '◔', accent: '#8b7ec8', status: 'live', statusLabel: 'LIVE',
+    icon: '◔', accent: '#8b7ec8', status: 'concept', statusLabel: 'CONCEPT',
     appUrl: 'quantum-clock.html',
     tech: ['Static HTML', 'TRIM ↔ dome constants', 'Quantum clock events'],
     features: [
@@ -814,7 +814,7 @@ export const registry = [
   },
   {
     id: 'quantum-deck', title: 'QUANTUM DECK', tagline: 'Fair Shuffle · Suite Core',
-    icon: '🃏', accent: '#4db8a8', status: 'live', statusLabel: 'LIVE',
+    icon: '🃏', accent: '#4db8a8', status: 'concept', statusLabel: 'CONCEPT',
     appUrl: 'quantum-deck.html',
     tech: ['Web Crypto', '@p31/quantum-deck', 'JSON save schema stub'],
     features: [
@@ -827,7 +827,7 @@ export const registry = [
       'Pair with K4 Tomography + market when teaching “measurement vs hidden information” metaphor'
     ],
     techNotes: 'Static shell; core copied from packages/quantum-deck/src/deck.mjs. No wagering, no loot RNG. Short /deck in _redirects.',
-    related: ['quantum-clock', 'quantum-composer', 'k4market', 'tomography', 'signal']
+    related: ['quantum-clock', 'tomography', 'signal']
   },
   {
     id: 'quantum-composer',
@@ -835,8 +835,8 @@ export const registry = [
     tagline: 'K₄ partials · Larmor ladder · TRIM beats',
     icon: '♪',
     accent: '#34d399',
-    status: 'live',
-    statusLabel: 'LIVE',
+    status: 'concept',
+    statusLabel: 'CONCEPT',
     appUrl: 'quantum-composer.html',
     tech: ['Web Audio', 'LARMOR_HZ ↔ p31-constants', 'TRIM via grandfather boot'],
     features: [
@@ -878,8 +878,8 @@ export const registry = [
     tagline: 'Proof-based roles · WCD work samples · portable p31.proofRecord',
     icon: 'Δ',
     accent: '#6b9e8f',
-    status: 'live',
-    statusLabel: 'LIVE',
+    status: 'concept',
+    statusLabel: 'CONCEPT',
     appUrl: 'delta-hiring/index.html',
     tech: ['Vite 5', 'TypeScript', 'Fuse.js', 'localStorage', 'p31.proofRecord'],
     features: [
@@ -917,7 +917,7 @@ export const registry = [
       'After changing mesh-bridge MESH URLs or health paths, run npm run verify:super-centaur-pack in p31ca'
     ],
     techNotes: 'Verifier reads integration-handoff/CWP-30/mesh-bridge.ts and requires public/p31-super-centaur-pack.json meshFleet to match. Ring D deploy (phosphorus SUPER-CENTAUR) is out of scope for this static surface.',
-    related: ['canon-demo', 'geodesic', 'donate', 'spaceship-earth']
+    related: ['geodesic', 'spaceship-earth']
   },
   {
     id: 'canon-demo',
@@ -925,8 +925,8 @@ export const registry = [
     tagline: 'Live tokens · hub ↔ org · Ring D hookup',
     icon: '◈',
     accent: '#4db8a8',
-    status: 'live',
-    statusLabel: 'LIVE',
+    status: 'concept',
+    statusLabel: 'CONCEPT',
     appUrl: 'p31-canon-demo.html',
     tech: ['p31.universalCanon', 'CSS variables', 'Tailwind CDN', 'localStorage'],
     features: [
@@ -948,8 +948,8 @@ export const registry = [
     tagline: 'Alignment JSON · schema anchors · verify hints',
     icon: '⎘',
     accent: '#818cf8',
-    status: 'live',
-    statusLabel: 'LIVE',
+    status: 'concept',
+    statusLabel: 'CONCEPT',
     appUrl: 'contract-builder.html',
     tech: ['p31.contractRegistry', 'p31-alignment.json', 'ephemeralization'],
     features: [
@@ -963,7 +963,7 @@ export const registry = [
       'Commit contracts/p31-contract-registry.json when alignment sources change so CI stays green'
     ],
     techNotes: 'Hub mirrors the registry into public/ only when present in the same checkout. Partial clones without andromeda still verify the home contracts/ file.',
-    related: ['canon-demo', 'integrations', 'super-centaur']
+    related: ['integrations', 'super-centaur']
   },
   {
     id: 'content-forge', title: 'CONTENT FORGE', tagline: 'Editorial Publishing Suite',
@@ -1043,7 +1043,7 @@ export const registry = [
       'Mini games are in the Games tab — each one ends automatically at the 2-spoon mark'
     ],
     techNotes: 'WebGL fluid is a Navier-Stokes solver in GLSL. Cellular automaton uses a 512×512 buffer with double-buffering for smooth updates. Rapier.js handles the spoon jar physics.',
-    related: ['prism', 'echo', 'kinematics']
+    related: ['prism', 'echo']
   },
   {
     id: 'prism', title: 'PRISM', tagline: 'Sensory Diet Synthesizer',
@@ -1107,7 +1107,7 @@ export const registry = [
   },
   {
     id: 'liminal', title: 'LIMINAL', tagline: 'Poetry · Astrology · Drawing',
-    icon: '🌙', accent: '#8b7cc9', status: 'live', statusLabel: 'LIVE',
+    icon: '🌙', accent: '#8b7cc9', status: 'concept', statusLabel: 'CONCEPT',
     appUrl: 'liminal.html',
     tech: ['Perfect Freehand', 'SwissEph-JS', 'Web Speech API', 'Wabi-Sabi Canvas'],
     features: [
@@ -1127,7 +1127,7 @@ export const registry = [
   },
   {
     id: 'kinematics', title: 'KINEMATICS', tagline: 'Proprioceptive Movement Node',
-    icon: '🕺', accent: '#cc6247', status: 'live', statusLabel: 'LIVE',
+    icon: '🕺', accent: '#cc6247', status: 'concept', statusLabel: 'CONCEPT',
     appUrl: 'kinematics.html',
     tech: ['DeviceOrientation API', 'Tone.js', 'Accelerometer', 'Screen-Free Mode'],
     features: [
@@ -1165,7 +1165,7 @@ export const registry = [
       'Drag to rotate the cage; follow outbound links to mesh-adjacent products',
     ],
     techNotes: 'Three.js in a single file from `p31ca/public/`. See synergetic manifest for Three pin alignment.',
-    related: ['planetary-onboard', 'observatory', 'k4market'],
+    related: ['planetary-onboard'],
   },
   {
     id: 'planetary-onboard',
@@ -1220,8 +1220,8 @@ export const registry = [
     tagline: 'Progressive curriculum — mesh, integrity, labs',
     icon: '📚',
     accent: '#25897d',
-    status: 'live',
-    statusLabel: 'LIVE',
+    status: 'concept',
+    statusLabel: 'CONCEPT',
     appUrl: 'education/index.html',
     tech: [
       'Static HTML',
@@ -1268,7 +1268,7 @@ export const registry = [
   // ── Research / quantum tooling ────────────────────────────────────────────
   {
     id: 'quantum-core', title: 'Quantum Core', tagline: 'PQC & Algorithm Primitives',
-    icon: '🌀', accent: '#4db8a8', status: 'live', statusLabel: 'LIVE',
+    icon: '🌀', accent: '#4db8a8', status: 'concept', statusLabel: 'CONCEPT',
     appUrl: 'quantum-core.html',
     tech: ['FIPS-203 ML-KEM-768', 'FIPS-204 ML-DSA-65', 'SIC-POVM Swarm', '@noble/post-quantum'],
     features: [
@@ -1313,8 +1313,8 @@ export const registry = [
     tagline: 'Four hubs. One mesh.',
     icon: '⬡',
     accent: '#7c6af7',
-    status: 'live',
-    statusLabel: 'LIVE',
+    status: 'concept',
+    statusLabel: 'CONCEPT',
     appUrl: 'agents.html',
     tech: ['Cloudflare Workers', 'Durable Objects', 'Ed25519', '@p31/k4-agent-hub-client', 'Ollama · Anthropic fallback'],
     features: [

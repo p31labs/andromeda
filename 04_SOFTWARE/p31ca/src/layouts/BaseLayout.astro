@@ -14,12 +14,15 @@ interface Props {
   description?: string;
   /** When false, omit the z-[1] void+grid shell (use on full-viewport WebGL routes so the canvas is not covered). Default true. */
   shellBackdrop?: boolean;
+  /** Page identifier for PHOS voice targeting (e.g., 'lab', 'passport', 'glass-box') */
+  phosPage?: string;
 }
 
 const {
   title,
   description = 'P31 Labs — Isostatically Rigid. Cognitively Sovereign.',
   shellBackdrop = true,
+  phosPage,
 } = Astro.props;
 ---
 
@@ -102,6 +105,7 @@ const {
   </head>
   <body
     class="bg-p31-void min-h-screen text-base leading-relaxed text-p31-cloud font-sans antialiased p31-root [padding-bottom:env(safe-area-inset-bottom,0px)]"
+    data-p31-phos-page={phosPage}
   >
     {
       shellBackdrop && (

@@ -89,6 +89,8 @@ function renderAboutPage(item) {
     .map((r) => {
       const rel = registry.find((x) => x.id === r);
       if (!rel) return '';
+      // Skip concept/draft products in related links
+      if (rel.status === 'concept' || rel.status === 'draft') return '';
       return `            <a href="/${r}-about.html" class="related-link">${rel.icon} ${rel.title}</a>`;
     })
     .filter(Boolean)
@@ -109,7 +111,8 @@ function renderAboutPage(item) {
 <html lang="en" data-p31-appearance="hub" style="color-scheme: dark;">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>(function(){var r=document.documentElement;if(/[?&]alive=1(?:&|$)/.test(location.search))return;r.classList.add("p31-gray-rock");function wake(){r.classList.remove("p31-gray-rock")}document.addEventListener("pointerdown",wake,{once:true,capture:true});document.addEventListener("keydown",wake,{once:true,capture:true})})();</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0f1115">
 <title>${escDocTitle}</title>
 <meta name="description" content="${metaDesc}">
@@ -427,6 +430,11 @@ for (const id of expected) {
 let written = 0, skipped = 0;
 for (const id of HUB_ALL_CARD_ORDER) {
   const item = byId.get(id);
+  // Skip concept/draft products — no about page for archived items
+  if (item.status === 'concept' || item.status === 'draft') {
+    console.log(`⏭️  ${id}-about.html (skipped — ${item.status})`);
+    continue;
+  }
   const outPath = path.join(PUBLIC, `${id}-about.html`);
   const html = renderAboutPage(item);
   fs.writeFileSync(outPath, html, 'utf8');
