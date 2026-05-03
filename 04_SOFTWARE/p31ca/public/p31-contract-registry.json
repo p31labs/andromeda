@@ -9,7 +9,7 @@
     "smartSuite": "SMART",
     "smartSuiteExpanded": "Sovereign · Manifest · Access · Root · Treasury"
   },
-  "count": 58,
+  "count": 62,
   "contracts": [
     {
       "id": "cognitive-passport-v1-1-overlay-schema",
@@ -682,6 +682,54 @@
       "optional": false
     },
     {
+      "id": "p31-pwa-manifest-cogpass",
+      "path": "pwa/manifest-cogpass.json",
+      "role": "Web app manifest for Cognitive Passport. id p31.cogpass; scope /cognitive-passport/. Validated by verify:pwa.",
+      "schemas": [],
+      "primarySchema": null,
+      "verifyHints": [
+        "verify:pwa",
+        "launch:status  (read-only) or npm run launch -- --dry-run"
+      ],
+      "optional": false
+    },
+    {
+      "id": "p31-pwa-manifest-same-shape",
+      "path": "pwa/manifest-same-shape.json",
+      "role": "Web app manifest for The Same Shape demo (K₄ × 4 panels). id p31.sameShape; scope /demos/. Validated by verify:pwa.",
+      "schemas": [],
+      "primarySchema": null,
+      "verifyHints": [
+        "verify:pwa",
+        "launch:status  (read-only) or npm run launch -- --dry-run"
+      ],
+      "optional": false
+    },
+    {
+      "id": "p31-pwa-manifest-social-cards",
+      "path": "pwa/manifest-social-cards.json",
+      "role": "Web app manifest for the 10-card social kit. id p31.socialCards; scope /social-cards/. Validated by verify:pwa.",
+      "schemas": [],
+      "primarySchema": null,
+      "verifyHints": [
+        "verify:pwa",
+        "launch:status  (read-only) or npm run launch -- --dry-run"
+      ],
+      "optional": false
+    },
+    {
+      "id": "p31-pwa-manifest-the-pulse",
+      "path": "pwa/manifest-the-pulse.json",
+      "role": "Web app manifest for The Pulse demo (editable Larmor canon). id p31.thePulse; scope /demos/. Validated by verify:pwa.",
+      "schemas": [],
+      "primarySchema": null,
+      "verifyHints": [
+        "verify:pwa",
+        "launch:status  (read-only) or npm run launch -- --dry-run"
+      ],
+      "optional": false
+    },
+    {
       "id": "p31-fleet-ten-local-ollama",
       "path": "scripts/p31-fleet-ten/models.json",
       "role": "Ten Ollama personas (merged prompts + setup.sh/verify.sh/benchmark.sh); static gate npm run verify:fleet-ten",
@@ -724,6 +772,7 @@
     "solidity": "0.8.24",
     "package": "packages/p31-sovereign-chain",
     "verifyScript": "verify:sovereign-chain",
+    "sourceFingerprint": "d0ef0cee7840dd85a2c93f56abbe7e2f57a4d8e613e611e99adf08c1256b1472",
     "contracts": [
       {
         "letter": "S",

@@ -186,7 +186,12 @@
     {
       "id": "p31-launch-html",
       "path": "launch.html",
-      "role": "p31.launchReadiness/1.0.0 \u2014 readiness dashboard. Static counters (83 gates / 17 surfaces / 4 PWAs / 10 cards / 22 papers / 10 workers / $50/mo / 0% fee), surfaces table, verbs cards, phase ladder, contrast matrix. Adds a live \u00a705 panel client-side when .p31-launch-readiness.json is present (local only). Mirrored to p31ca/public/launch.html via build:launch-page; live at https://p31ca.org/launch (short) / /launch.html."
+      "role": "p31.launchReadiness/1.0.0 \u2014 readiness dashboard. Static counters (83 gates / 17 surfaces / 4 PWAs / 10 cards / 22 papers / 10 workers / $50/mo / 0% fee), surfaces table, verbs cards, phase ladder, contrast matrix. Adds a live \u00a705 panel client-side when .p31-launch-readiness.json is present (local only). In --full mode also renders \u00a706 deliverables-present table and \u00a707 local-services probe table, plus a gradient-bordered rainbow celebration banner at the top when assemblyComplete. Mirrored to p31ca/public/launch.html via build:launch-page; live at https://p31ca.org/launch (short) / /launch.html."
+    },
+    {
+      "id": "p31-launch-rainbow-lib",
+      "path": "scripts/lib/rainbow.mjs",
+      "role": "p31.rainbow/1.0.0 \u2014 ANSI 256-color rainbow utility used by scripts/p31-launch.mjs --full to print the assembly-complete celebration. Six-hue palette (red/orange/yellow/green/cyan/violet). Respects NO_COLOR + non-TTY (degrades to plain text). Self-contained, zero dependencies. Public API: rainbowText, rainbowLine, rainbowBanner, celebrate, isRainbowEnabled."
     },
     {
       "id": "p31-deep-dive-doc",
@@ -1438,6 +1443,11 @@
       "id": "p31-cogpass-v4-public",
       "path": "docs/P31-COGNITIVE-PASSPORT-v4-PUBLIC.md",
       "role": "Public-safe cognitive passport (v4.0) \u2014 children referenced as S.J./W.J. only; address/phone/case-number/financial specifics redacted. Folds in codebase corrections Opus 4.6 web missed (sources 273\u2192275; workers 14 verified / 18 allowlisted; local Ollama fleet 10 personas; GEODESIC Phase 1 shipped; C.A.R.S. shipped as bonding-soup; etc.). Safe to attach to any AI handoff outside operator-controlled instances."
+    },
+    {
+      "id": "p31-session-memory-failure-mode-2026-05-02",
+      "path": "docs/operator/SESSION-MEMORY-FAILURE-MODE-2026-05-02.md",
+      "role": "p31.operatorReflection/1.0.0 \u2014 operator-voice reflection captured immediately after the second Triad loop close of 2026-05-02 (CogPass v4.0). Names the failure mode the Triad catches: a model with context but without file access produces confident, internally consistent, structurally plausible output that is wrong in specific, verifiable ways. Lists the six concrete misses that prompted the reflection (workers 10\u219214/18, invented local-fleet names, GEODESIC stale status, C.A.R.S. stale status, sources 271\u2192273) and traces each to its canonical file. Generalizes the pattern (when this failure mode appears, how to detect it, how to fix it for both writer and system) so the 'Verify before you cite' line in the CogPass Output Preferences has a documented origin. Reference pattern, not a template to re-enact."
     }
   ],
   "derivations": [
@@ -1551,6 +1561,28 @@
       "apply": "npm run launch  (set P31_LAUNCH_PUBLISH=I_UNDERSTAND to additionally git push)",
       "verify": "npm run launch:status  (read-only) or npm run launch -- --dry-run",
       "note": "Definitive market-launch automation. Chains build:pwa \u2192 build:demos \u2192 sync:passport \u2192 build:doc-index \u2192 verify:* (8 gates) \u2192 readiness snapshot. Idempotent. Local only by default. Audit log at ~/.p31/launch-log.jsonl."
+    },
+    {
+      "id": "p31-launch-full-assembly-pipeline",
+      "from": [
+        "scripts/p31-launch.mjs",
+        "scripts/lib/rainbow.mjs",
+        "docs/LAUNCH-PACKAGE-2026-05.md"
+      ],
+      "to": [
+        ".p31-launch-readiness.json",
+        "fleet-portal.html",
+        "contracts/p31-contract-registry.json",
+        "contracts/p31-smart-evm.json",
+        "andromeda/04_SOFTWARE/p31ca/public/lib/p31-phos-voice.json",
+        "glass-box.html",
+        "p31-shipbox.json",
+        "docs/P31-USER-NAV-TREE.md",
+        "docs/reports/promoted/index.json"
+      ],
+      "apply": "npm run launch -- --full   (or: npm run launch:full \u00b7 p31 launch --full \u00b7 VS Code task \u201cP31: launch \u2014 FULL ASSEMBLY (rainbows, ~2-3min)\u201d \u00b7 command-center button home-launch-full)",
+      "verify": "npm run launch:status  (read-only \u2014 shows deliverables panel + per-probe detail when last sweep ran in full mode)",
+      "note": "Extends p31-launch-package-pipeline with 10 extra non-critical deliverable builds (fleet-portal, contract-registry, smart-evm, phos-voice, wiring-ci-ladder, verify-pipeline, nav-tree, glass-box, shipbox, mcp-verify, fleet-ten verify) and 6 local service probes (ollama :11434, mcp-bridge pgrep, command-center :3131, demo-server :8080, tailscale, ecosystem-glass). Total 31 steps. Probes are informational and do not gate ship readiness; they surface in launch.html \u00a707 + launch:status. The ANSI rainbow celebration fires in the terminal when every standard step + every full-build step is green; same condition triggers the gradient-bordered banner on launch.html. Does NOT start any local service. Does NOT deploy. Does NOT push remotes (still gated by P31_LAUNCH_PUBLISH=I_UNDERSTAND)."
     },
     {
       "id": "p31ca-design-spec-bundle",
@@ -2749,6 +2781,7 @@
       "verify:reports-promoted",
       "verify:glass-box",
       "verify:demos",
+      "verify:pwa",
       "verify:facts",
       "verify:subscriptions",
       "verify:p31-env",
