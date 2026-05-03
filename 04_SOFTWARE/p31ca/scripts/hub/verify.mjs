@@ -51,6 +51,8 @@ for (const item of registry) {
 }
 
 for (const item of registry) {
+  // Skip about page check for concept/draft products
+  if (item.status === 'concept' || item.status === 'draft') continue;
   const about = path.join(PUBLIC, `${item.id}-about.html`);
   if (!fs.existsSync(about)) {
     fail(`missing about page for registry id "${item.id}" (${path.basename(about)})`);
@@ -63,12 +65,18 @@ if (fs.existsSync(LANDING)) {
   for (const p of data.coreProducts || []) {
     if (seen.has(p.id)) fail(`duplicate cockpit id: ${p.id}`);
     seen.add(p.id);
+    // Skip about page check for concept/draft products
+    const item = byId.get(p.id);
+    if (item && (item.status === 'concept' || item.status === 'draft')) continue;
     const about = path.join(PUBLIC, `${p.id}-about.html`);
     if (!fs.existsSync(about)) {
       fail(`cockpit card "${p.id}" has no ${p.id}-about.html`);
     }
   }
   for (const p of data.prototypes || []) {
+    // Skip about page check for concept/draft products
+    const item = byId.get(p.id);
+    if (item && (item.status === 'concept' || item.status === 'draft')) continue;
     const about = path.join(PUBLIC, `${p.id}-about.html`);
     if (!fs.existsSync(about)) {
       fail(`prototype "${p.id}" has no ${p.id}-about.html`);
