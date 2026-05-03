@@ -112,19 +112,6 @@
       "url": "/axiom-about.html"
     },
     {
-      "id": "collider",
-      "title": "COLLIDER",
-      "status": "CONCEPT",
-      "desc": "Particle Physics Sandbox",
-      "tags": [
-        "Canvas 2D",
-        "Physics Engine",
-        "Valence Rules",
-        "Quest Chains"
-      ],
-      "url": "/collider-about.html"
-    },
-    {
       "id": "content-forge",
       "title": "CONTENT FORGE",
       "status": "CONCEPT",
@@ -151,19 +138,6 @@
       "url": "/geodesic-about.html"
     },
     {
-      "id": "p31-delta-hiring",
-      "title": "P31 Delta hiring",
-      "status": "BETA",
-      "desc": "Proof-based roles · WCD work samples · portable p31.proofRecord",
-      "tags": [
-        "Vite 5",
-        "TypeScript",
-        "Fuse.js",
-        "localStorage"
-      ],
-      "url": "/p31-delta-hiring-about.html"
-    },
-    {
       "id": "genesis-gate",
       "title": "Genesis Gate",
       "status": "ALPHA",
@@ -175,84 +149,6 @@
         "GovernanceHook"
       ],
       "url": "/genesis-gate-about.html"
-    },
-    {
-      "id": "k4market",
-      "title": "K4 MARKET",
-      "status": "BETA",
-      "desc": "Tetrahedral Price Geometry",
-      "tags": [
-        "Three.js r160",
-        "OHLCV Mapping",
-        "OrbitControls",
-        "Synthetic Live Data"
-      ],
-      "url": "/k4market-about.html"
-    },
-    {
-      "id": "kenosis",
-      "title": "Project Kenosis",
-      "status": "CONCEPT",
-      "desc": "Autopoietic Edge Network",
-      "tags": [
-        "Cloudflare Workers",
-        "SIC-POVM",
-        "7-Node Mesh",
-        "Byzantine Fault Tolerance"
-      ],
-      "url": "/kenosis-about.html"
-    },
-    {
-      "id": "liminal",
-      "title": "LIMINAL",
-      "status": "CONCEPT",
-      "desc": "Poetry · Astrology · Drawing",
-      "tags": [
-        "Perfect Freehand",
-        "SwissEph-JS",
-        "Web Speech API",
-        "Wabi-Sabi Canvas"
-      ],
-      "url": "/liminal-about.html"
-    },
-    {
-      "id": "vault",
-      "title": "VAULT",
-      "status": "CONCEPT",
-      "desc": "Ground Truth Identity Store",
-      "tags": [
-        "WebCrypto API",
-        "AES-256-GCM",
-        "Ed25519-equivalent",
-        "Daubert Export"
-      ],
-      "url": "/vault-about.html"
-    },
-    {
-      "id": "phenix-os",
-      "title": "Phenix OS",
-      "status": "CONCEPT",
-      "desc": "AuDHD Operator Command Console",
-      "tags": [
-        "Three.js",
-        "SIC-POVM",
-        "Fawn Guard",
-        "Web Audio"
-      ],
-      "url": "/phenix-os-about.html"
-    },
-    {
-      "id": "quantum-core",
-      "title": "Quantum Core",
-      "status": "CONCEPT",
-      "desc": "PQC & Algorithm Primitives",
-      "tags": [
-        "FIPS-203 ML-KEM-768",
-        "FIPS-204 ML-DSA-65",
-        "SIC-POVM Swarm",
-        "@noble/post-quantum"
-      ],
-      "url": "/quantum-core-about.html"
     },
     {
       "id": "resonance",
@@ -279,19 +175,6 @@
         "12-Spoon Budget"
       ],
       "url": "/signal-about.html"
-    },
-    {
-      "id": "donate",
-      "title": "Donate Pipeline",
-      "status": "BETA",
-      "desc": "MAP — Stripe Payment Link + Sponsors",
-      "tags": [
-        "Stripe Payment Link (MAP)",
-        "Optional client_reference_id binding",
-        "GitHub Sponsors",
-        "donate-api Worker (optional programmatic Checkout)"
-      ],
-      "url": "/donate-about.html"
     },
     {
       "id": "tactile",
@@ -346,58 +229,6 @@
       "url": "/quantum-family-about.html"
     },
     {
-      "id": "mission-control",
-      "title": "Mission Control",
-      "status": "CONCEPT",
-      "desc": "Kids Token Economy",
-      "tags": [
-        "Pixel RPG Engine",
-        "Genesis Token Economy",
-        "Press Start 2P Font",
-        "Custom Toast"
-      ],
-      "url": "/mission-control-about.html"
-    },
-    {
-      "id": "node-zero",
-      "title": "Node Zero",
-      "status": "CONCEPT",
-      "desc": "Cryptographic Mesh Node",
-      "tags": [
-        "WebCrypto API",
-        "WebSocket",
-        "IndexedDB Vault",
-        "Ed25519-equivalent"
-      ],
-      "url": "/node-zero-about.html"
-    },
-    {
-      "id": "node-one",
-      "title": "Node One (The Totem)",
-      "status": "CONCEPT",
-      "desc": "Physical Haptic Anchor",
-      "tags": [
-        "Waveshare ESP32-S3",
-        "LVGL 8.4",
-        "ESP-IDF 5.5.x",
-        "NXP SE050"
-      ],
-      "url": "/node-one-about.html"
-    },
-    {
-      "id": "observatory",
-      "title": "OBSERVATORY",
-      "status": "BETA",
-      "desc": "Geodesic Data Dome",
-      "tags": [
-        "Three.js r160",
-        "WebGL Bloom",
-        "ES Modules",
-        "Panel Inspector"
-      ],
-      "url": "/observatory-about.html"
-    },
-    {
       "id": "connect",
       "title": "THE MESH",
       "status": "BETA",
@@ -435,19 +266,6 @@
         "p31-constants.json"
       ],
       "url": "/integrations-about.html"
-    },
-    {
-      "id": "education",
-      "title": "P31 Labs Education",
-      "status": "BETA",
-      "desc": "Progressive curriculum — mesh, integrity, labs",
-      "tags": [
-        "Static HTML",
-        "p31.labsEducation/0.2.0",
-        "p31.labsEducationCatalog/0.2.0",
-        "p31.labsEducationCurriculum/0.2.0"
-      ],
-      "url": "/education-about.html"
     },
     {
       "id": "poets",
@@ -515,31 +333,6 @@
       "url": "/budget-tracker-about.html"
     },
     {
-      "id": "canon-demo",
-      "title": "Universal canon",
-      "status": "BETA",
-      "desc": "Live tokens · hub ↔ org · Ring D hookup",
-      "tags": [
-        "p31.universalCanon",
-        "CSS variables",
-        "Tailwind CDN",
-        "localStorage"
-      ],
-      "url": "/canon-demo-about.html"
-    },
-    {
-      "id": "contract-builder",
-      "title": "Contract builder",
-      "status": "BETA",
-      "desc": "Alignment JSON · schema anchors · verify hints",
-      "tags": [
-        "p31.contractRegistry",
-        "p31-alignment.json",
-        "ephemeralization"
-      ],
-      "url": "/contract-builder-about.html"
-    },
-    {
       "id": "contact-locker",
       "title": "Contact Locker",
       "status": "CONCEPT",
@@ -577,32 +370,6 @@
         "RPG Aesthetic"
       ],
       "url": "/forge-about.html"
-    },
-    {
-      "id": "kids-growth",
-      "title": "Kids Growth",
-      "status": "BETA",
-      "desc": "S.J. & W.J. Milestone Tracker",
-      "tags": [
-        "Static (p31ca.org)",
-        "Chart.js 4",
-        "LocalStorage",
-        "Print & JSON export"
-      ],
-      "url": "/kids-growth-about.html"
-    },
-    {
-      "id": "kinematics",
-      "title": "KINEMATICS",
-      "status": "CONCEPT",
-      "desc": "Proprioceptive Movement Node",
-      "tags": [
-        "DeviceOrientation API",
-        "Tone.js",
-        "Accelerometer",
-        "Screen-Free Mode"
-      ],
-      "url": "/kinematics-about.html"
     },
     {
       "id": "legal-evidence",
@@ -655,45 +422,6 @@
         "Offline PWA"
       ],
       "url": "/prism-about.html"
-    },
-    {
-      "id": "qg-ide",
-      "title": "QG-IDE",
-      "status": "CONCEPT",
-      "desc": "Quantum Geodesic IDE",
-      "tags": [
-        "Code Editor",
-        "SVG Tetrahedron",
-        "Centaur AI Copilot",
-        "PHX Coherence"
-      ],
-      "url": "/qg-ide-about.html"
-    },
-    {
-      "id": "quantum-life-os",
-      "title": "Quantum Life OS",
-      "status": "CONCEPT",
-      "desc": "Quantum-Coherent Life System",
-      "tags": [
-        "Quantum Stats Engine",
-        "Consciousness Model",
-        "Control Panel",
-        "Dark/Light Mode"
-      ],
-      "url": "/quantum-life-os-about.html"
-    },
-    {
-      "id": "simple-sovereignty",
-      "title": "Simple Sovereignty",
-      "status": "CONCEPT",
-      "desc": "Sovereign Stack Portal",
-      "tags": [
-        "Portal Hub",
-        "Live Terminal",
-        "Dark/Light Mode",
-        "Sovereignty Tracker"
-      ],
-      "url": "/simple-sovereignty-about.html"
     },
     {
       "id": "sleep-tracker",
@@ -759,55 +487,6 @@
         "Gravity Well Physics"
       ],
       "url": "/tether-about.html"
-    },
-    {
-      "id": "tomography",
-      "title": "K4 TOMOGRAPHY",
-      "status": "BETA",
-      "desc": "Symbol-Seeded Depth View",
-      "tags": [
-        "Three.js r183",
-        "Barycentric Mapping",
-        "PRNG OHLCV",
-        "Larmor Ring"
-      ],
-      "url": "/tomography-about.html"
-    },
-    {
-      "id": "quantum-clock",
-      "title": "QUANTUM CLOCK",
-      "status": "ALPHA",
-      "desc": "Grandfather Rhythm · Coherence (Pedagogy)",
-      "tags": [
-        "Static HTML",
-        "TRIM ↔ dome constants",
-        "Quantum clock events"
-      ],
-      "url": "/quantum-clock-about.html"
-    },
-    {
-      "id": "quantum-deck",
-      "title": "QUANTUM DECK",
-      "status": "ALPHA",
-      "desc": "Fair Shuffle · Suite Core",
-      "tags": [
-        "Web Crypto",
-        "@p31/quantum-deck",
-        "JSON save schema stub"
-      ],
-      "url": "/quantum-deck-about.html"
-    },
-    {
-      "id": "quantum-composer",
-      "title": "Quantum composer",
-      "status": "ALPHA",
-      "desc": "K₄ partials · Larmor ladder · TRIM beats",
-      "tags": [
-        "Web Audio",
-        "LARMOR_HZ ↔ p31-constants",
-        "TRIM via grandfather boot"
-      ],
-      "url": "/quantum-composer-about.html"
     },
     {
       "id": "k4-agent-hubs",
