@@ -238,7 +238,7 @@ export const registry = [
   },
   {
     id: 'donate', title: 'Donate Pipeline', tagline: 'MAP — Stripe Payment Link + Sponsors',
-    icon: '💚', accent: '#3ba372', status: 'live', statusLabel: 'LIVE',
+    icon: '💚', accent: '#3ba372', status: 'concept', statusLabel: 'CONCEPT',
     appUrl: 'donate.html',
     tech: [
       'Stripe Payment Link (MAP)',
@@ -496,7 +496,7 @@ export const registry = [
   },
   {
     id: 'simple-sovereignty', title: 'Simple Sovereignty', tagline: 'Sovereign Stack Portal',
-    icon: '▲', accent: '#4db8a8', status: 'live', statusLabel: 'LIVE',
+    icon: '▲', accent: '#4db8a8', status: 'concept', statusLabel: 'CONCEPT',
     appUrl: 'sovereignty.html',
     tech: ['Portal Hub', 'Live Terminal', 'Dark/Light Mode', 'Sovereignty Tracker'],
     features: [
@@ -516,7 +516,7 @@ export const registry = [
   },
   {
     id: 'node-one', title: 'Node One (The Totem)', tagline: 'Physical Haptic Anchor',
-    icon: '📟', accent: '#cda852', status: 'live', statusLabel: 'HARDWARE',
+    icon: '📟', accent: '#cda852', status: 'concept', statusLabel: 'CONCEPT',
     appUrl: 'node-one.html',
     tech: ['Waveshare ESP32-S3', 'LVGL 8.4', 'ESP-IDF 5.5.x', 'NXP SE050', 'Kailh Choc Navy'],
     features: [
@@ -536,7 +536,7 @@ export const registry = [
   },
   {
     id: 'node-zero', title: 'Node Zero', tagline: 'Cryptographic Mesh Node',
-    icon: '📡', accent: '#cda852', status: 'live', statusLabel: 'LIVE',
+    icon: '📡', accent: '#cda852', status: 'concept', statusLabel: 'CONCEPT',
     appUrl: 'node-zero.html',
     tech: ['WebCrypto API', 'WebSocket', 'IndexedDB Vault', 'Ed25519-equivalent'],
     features: [
@@ -616,7 +616,7 @@ export const registry = [
   },
   {
     id: 'vault', title: 'VAULT', tagline: 'Ground Truth Identity Store',
-    icon: '🔐', accent: '#8b7cc9', status: 'live', statusLabel: 'LIVE',
+    icon: '🔐', accent: '#8b7cc9', status: 'concept', statusLabel: 'CONCEPT',
     appUrl: 'vault-room.html',
     tech: ['WebCrypto API', 'AES-256-GCM', 'Ed25519-equivalent', 'Daubert Export'],
     features: [
@@ -636,7 +636,7 @@ export const registry = [
   },
   {
     id: 'collider', title: 'COLLIDER', tagline: 'Particle Physics Sandbox',
-    icon: '⚛️', accent: '#cc6247', status: 'live', statusLabel: 'LIVE',
+    icon: '⚛️', accent: '#cc6247', status: 'concept', statusLabel: 'CONCEPT',
     appUrl: 'collider.html',
     tech: ['Canvas 2D', 'Physics Engine', 'Valence Rules', 'Quest Chains'],
     features: [
@@ -696,7 +696,7 @@ export const registry = [
   },
   {
     id: 'quantum-life-os', title: 'Quantum Life OS', tagline: 'Quantum-Coherent Life System',
-    icon: '✨', accent: '#00ffff', status: 'live', statusLabel: 'LIVE',
+    icon: '✨', accent: '#00ffff', status: 'concept', statusLabel: 'CONCEPT',
     appUrl: 'quantum-os.html',
     tech: ['Quantum Stats Engine', 'Consciousness Model', 'Control Panel', 'Dark/Light Mode'],
     features: [
@@ -716,7 +716,7 @@ export const registry = [
   },
   {
     id: 'qg-ide', title: 'QG-IDE', tagline: 'Quantum Geodesic IDE',
-    icon: '💻', accent: '#4db8a8', status: 'live', statusLabel: 'LIVE',
+    icon: '💻', accent: '#4db8a8', status: 'concept', statusLabel: 'CONCEPT',
     appUrl: 'qg-ide.html',
     tech: ['Code Editor', 'SVG Tetrahedron', 'Centaur AI Copilot', 'PHX Coherence', '6 Workspaces'],
     features: [
@@ -835,8 +835,8 @@ export const registry = [
     tagline: 'K₄ partials · Larmor ladder · TRIM beats',
     icon: '♪',
     accent: '#34d399',
-    status: 'live',
-    statusLabel: 'LIVE',
+    status: 'concept',
+    statusLabel: 'CONCEPT',
     appUrl: 'quantum-composer.html',
     tech: ['Web Audio', 'LARMOR_HZ ↔ p31-constants', 'TRIM via grandfather boot'],
     features: [
@@ -878,8 +878,8 @@ export const registry = [
     tagline: 'Proof-based roles · WCD work samples · portable p31.proofRecord',
     icon: 'Δ',
     accent: '#6b9e8f',
-    status: 'live',
-    statusLabel: 'LIVE',
+    status: 'concept',
+    statusLabel: 'CONCEPT',
     appUrl: 'delta-hiring/index.html',
     tech: ['Vite 5', 'TypeScript', 'Fuse.js', 'localStorage', 'p31.proofRecord'],
     features: [
@@ -925,8 +925,8 @@ export const registry = [
     tagline: 'Live tokens · hub ↔ org · Ring D hookup',
     icon: '◈',
     accent: '#4db8a8',
-    status: 'live',
-    statusLabel: 'LIVE',
+    status: 'concept',
+    statusLabel: 'CONCEPT',
     appUrl: 'p31-canon-demo.html',
     tech: ['p31.universalCanon', 'CSS variables', 'Tailwind CDN', 'localStorage'],
     features: [
@@ -948,8 +948,8 @@ export const registry = [
     tagline: 'Alignment JSON · schema anchors · verify hints',
     icon: '⎘',
     accent: '#818cf8',
-    status: 'live',
-    statusLabel: 'LIVE',
+    status: 'concept',
+    statusLabel: 'CONCEPT',
     appUrl: 'contract-builder.html',
     tech: ['p31.contractRegistry', 'p31-alignment.json', 'ephemeralization'],
     features: [
@@ -1127,7 +1127,7 @@ export const registry = [
   },
   {
     id: 'kinematics', title: 'KINEMATICS', tagline: 'Proprioceptive Movement Node',
-    icon: '🕺', accent: '#cc6247', status: 'live', statusLabel: 'LIVE',
+    icon: '🕺', accent: '#cc6247', status: 'concept', statusLabel: 'CONCEPT',
     appUrl: 'kinematics.html',
     tech: ['DeviceOrientation API', 'Tone.js', 'Accelerometer', 'Screen-Free Mode'],
     features: [
@@ -1268,7 +1268,7 @@ export const registry = [
   // ── Research / quantum tooling ────────────────────────────────────────────
   {
     id: 'quantum-core', title: 'Quantum Core', tagline: 'PQC & Algorithm Primitives',
-    icon: '🌀', accent: '#4db8a8', status: 'live', statusLabel: 'LIVE',
+    icon: '🌀', accent: '#4db8a8', status: 'concept', statusLabel: 'CONCEPT',
     appUrl: 'quantum-core.html',
     tech: ['FIPS-203 ML-KEM-768', 'FIPS-204 ML-DSA-65', 'SIC-POVM Swarm', '@noble/post-quantum'],
     features: [
