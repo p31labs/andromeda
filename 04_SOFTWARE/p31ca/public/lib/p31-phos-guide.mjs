@@ -116,6 +116,87 @@ const DEFAULT_VOICE = Object.freeze({
       { label: "See what we build", href: "/lab" },
     ],
   },
+  '/social-molecules': {
+    greeting: "Your household is a molecule.",
+    hint: "See who's connected and how the bonds are holding. Real-time family mesh status.",
+    fallback: "If something feels off, check the Glass Box for live system telemetry.",
+    links: [
+      { label: "Glass Box — live status", href: "/glass-box" },
+      { label: "Bonding tools", href: "/bonding" },
+    ],
+  },
+  '/spaceship-earth': {
+    greeting: "The pale blue dot view.",
+    hint: "Install P31 as an app on your phone or desktop. Works offline. Your data stays local.",
+    fallback: "The install button is below. If it doesn't appear, your browser already supports the features we need.",
+    links: [
+      { label: "How to install", href: "#install" },
+      { label: "Explore the lab", href: "/lab" },
+    ],
+  },
+  '/axiom': {
+    greeting: "Start with what you know.",
+    hint: "Axiom is the bond surface — where family connections are forged and tested.",
+    fallback: "If you're new here, the context card helps everything make more sense.",
+    links: [
+      { label: "Bonding app", href: "/bonding" },
+      { label: "Mesh start", href: "/mesh-start" },
+    ],
+  },
+  '/bridge': {
+    greeting: "Crossing into the mesh.",
+    hint: "This is the entry point for the K4 network. Your first step toward a connected family topology.",
+    fallback: "The mesh works best when everyone has a context card. Takes two minutes.",
+    links: [
+      { label: "Mesh setup", href: "/mesh-start" },
+      { label: "Create context card", href: "/passport" },
+    ],
+  },
+  '/glass-box-widget': {
+    greeting: "Transparency, embeddable.",
+    hint: "A smaller version of the Glass Box that can live on other sites. Real-time P31 status, anywhere.",
+    fallback: "For the full experience with all controls, visit the main Glass Box.",
+    links: [
+      { label: "Full Glass Box", href: "/glass-box" },
+      { label: "Get support", href: "/support" },
+    ],
+  },
+  '/fleet-portal': {
+    greeting: "Every ship in view.",
+    hint: "URL index and health status for all P31 surfaces. Check what's live, what's maintenance, what's coming.",
+    fallback: "If something you need is showing maintenance, the support page has alternatives.",
+    links: [
+      { label: "System status", href: "/glass-box" },
+      { label: "Education hub", href: "/education/" },
+    ],
+  },
+  '/education/': {
+    greeting: "Learn how this works.",
+    hint: "Curriculum, guides, and documentation for understanding the P31 architecture.",
+    fallback: "Start with the research page if you want the technical deep-dive.",
+    links: [
+      { label: "Research (specs)", href: "/research" },
+      { label: "Lab (practice)", href: "/lab" },
+    ],
+  },
+  '/sovereign': {
+    greeting: "Your own tools.",
+    hint: "Personal mesh utilities. Tools that run on your device, under your control, without the cloud.",
+    fallback: "The full lab has more tools. This is the sovereign subset — local-first, privacy-preserving.",
+    links: [
+      { label: "Lab (all tools)", href: "/lab" },
+      { label: "Get support", href: "/support" },
+    ],
+  },
+  '/delta-language': {
+    greeting: "Words that wire together.",
+    hint: "The terminology and conceptual framework behind P31. Delta, K4, isostatic rigidity, trimtabs.",
+    fallback: "If this feels dense, the research page has the full architecture specs.",
+    links: [
+      { label: "Research (architecture)", href: "/research" },
+      { label: "Documentation", href: "/docs" },
+    ],
+  },
 });
 
 let VOICE = { ...DEFAULT_VOICE };
