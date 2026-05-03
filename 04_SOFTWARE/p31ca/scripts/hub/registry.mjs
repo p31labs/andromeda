@@ -1220,8 +1220,8 @@ export const registry = [
     tagline: 'Progressive curriculum — mesh, integrity, labs',
     icon: '📚',
     accent: '#25897d',
-    status: 'live',
-    statusLabel: 'LIVE',
+    status: 'concept',
+    statusLabel: 'CONCEPT',
     appUrl: 'education/index.html',
     tech: [
       'Static HTML',
