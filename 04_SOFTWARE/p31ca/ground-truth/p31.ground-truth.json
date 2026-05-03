@@ -827,9 +827,10 @@
       "note": "ARCHIVED 2026-05-03"
     },
     {
-      "id": "kidsHome.page",
-      "path": "public/kids-home.html",
-      "mustIncludeSubstring": "p31.householdKidsHome/0.1.0"
+      "id": "_kidsHome.archived",
+      "path": "public/archive/2025-early/kids-home.html",
+      "mustIncludeSubstring": "p31.householdKidsHome/0.1.0",
+      "note": "ARCHIVED 2026-05-03"
     },
     {
       "id": "_quantumClock.archived",
