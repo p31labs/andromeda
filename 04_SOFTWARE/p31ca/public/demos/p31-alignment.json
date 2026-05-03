@@ -186,7 +186,7 @@
     {
       "id": "p31-launch-html",
       "path": "launch.html",
-      "role": "p31.launchReadiness/1.0.0 \u2014 static readiness dashboard. Counters (83 gates / 17 surfaces / 4 PWAs / 10 cards / 22 papers / 10 workers / $50/mo / 0% fee), surfaces table, verbs cards, phase ladder, contrast matrix. Rewritten by scripts/p31-launch.mjs (data row attributes only)."
+      "role": "p31.launchReadiness/1.0.0 \u2014 readiness dashboard. Static counters (83 gates / 17 surfaces / 4 PWAs / 10 cards / 22 papers / 10 workers / $50/mo / 0% fee), surfaces table, verbs cards, phase ladder, contrast matrix. Adds a live \u00a705 panel client-side when .p31-launch-readiness.json is present (local only). Mirrored to p31ca/public/launch.html via build:launch-page; live at https://p31ca.org/launch (short) / /launch.html."
     },
     {
       "id": "p31-deep-dive-doc",
@@ -1181,6 +1181,16 @@
       "role": "p31.operatorReference/1.0.0 \u2014 small-model fleet training doctrine: SIC-POVM as minimum-complete-measurement principle applied to agent fleet. Per-agent model assignments (Qwen 2.5 7B for SCRIBE/HERALD/SENTINEL/MEDIC; Qwen3 8B for ORACLE/PHOS) within RX 6600 XT 8GB VRAM budget; 5-step training protocol (system prompt as basis, few-shot calibration, alignment verification loop, ORACLE drift detection, upgrade path). Structured-output JSON schemas per agent enforce eigenvalue projection. Companion to docs/SIC-POVM-K4-ARCHITECTURE.md and docs/SIC-POVM-MATHEMATICAL-APPENDIX.md. Reachable as the `phos-training` view slug."
     },
     {
+      "id": "p31-triad-loop-close-2026-05-02",
+      "path": "docs/operator/TRIAD-LOOP-CLOSE-2026-05-02.md",
+      "role": "p31.triadExchange/1.0.0 \u2014 record of one closed Triad loop (Operator + Reviewer + Executor) within a single calendar day. Documents the post-launch peer review by Opus 4.6 (web): five concrete asks + bonus flag returned in one pass; all six absorbed in commit 7ffaa57 + andromeda PR #116. Names what worked (each ask had a test, reviewer named the failure mode, escape hatches not just critiques, bonus flag honest about scope, commit message preserved the trace), generalizes the pattern (when to use, when not), and lists what didn\u2019t need to happen (no negotiation, no reinterpretation, no deferral, no performative thanks). Reference pattern for future multi-instance reviews; not a template that must be re-enacted on every change."
+    },
+    {
+      "id": "p31-status-report-opus-4-6-2026-05-02",
+      "path": "docs/operator/STATUS-REPORT-OPUS-4.6-2026-05-02.md",
+      "role": "p31.statusReport/1.0.0 \u2014 detailed status briefing for peer Opus 4.6 (web) covering the post-WEAVE arc: rewards framework, PHOS training, crypto positioning, peer reflection, Root Authority, Phosphorus Thesis v2, social cards, demos consolidation, PWA layer, market launch automation package. Quantitative delta tables (gates 83\u219284, sources 261\u2192271, derivations 71\u219275, PWAs 0\u21924, social cards 0\u219210), 7-commit ladder, 3 merged andromeda PRs (#113 #114 #115), what didn\u2019t change, operator action items, requests for reviewer\u2019s eyes (5 specific asks), funding-gated queue, possible follow-ups, things deliberately not done. Authored by Composer 2 in-Cursor session at commit 02b0459. Peer-Claude voice; not P31 doctrine."
+    },
+    {
       "id": "p31-peer-claude-reflection-2026-05-02",
       "path": "docs/operator/PEER-CLAUDE-REFLECTION-2026-05-02.md",
       "role": "p31.peerReflection/1.0.0 \u2014 honest assessment from a peer Claude session 2026-05-02. NOT P31 doctrine; treat as one-time peer commentary. Contains specific actionable warnings the operator should weigh against his own judgement and his counsel's advice: (a) PHOS-x-custody timing risk (PHOS interactions with minors during active custody dispute could become opposing-counsel evidence), (b) `lead with the blood test` legal advice (serum calcium 7.8 mg/dL as objective biomarker preferred over clever pro-se arguments), (c) audience-specific framing for crypto vocabulary (W3C/FIDO terminology to disability community, soulbound/ZKP to crypto community, plain English to grant reviewers), (d) burnout / single-stonemason risk warning. Reachable as the `peer-reflection` view slug."
@@ -1418,6 +1428,16 @@
       "id": "p31-github-code-of-conduct-md",
       "path": ".github/CODE_OF_CONDUCT.md",
       "role": "GitHub-facing Code of Conduct stub \u2014 forwards to docs/CODE-OF-CONDUCT.md; CWP PEER-1F"
+    },
+    {
+      "id": "p31-cogpass-v4-master",
+      "path": "docs/operator/P31-COGNITIVE-PASSPORT-v4-MASTER.md",
+      "role": "Operator-private MASTER cognitive passport (v4.0) \u2014 full names, address, phone, case number, financial figures. Gitignored. Never pushed to public remotes. Public-safe twin: docs/P31-COGNITIVE-PASSPORT-v4-PUBLIC.md."
+    },
+    {
+      "id": "p31-cogpass-v4-public",
+      "path": "docs/P31-COGNITIVE-PASSPORT-v4-PUBLIC.md",
+      "role": "Public-safe cognitive passport (v4.0) \u2014 children referenced as S.J./W.J. only; address/phone/case-number/financial specifics redacted. Folds in codebase corrections Opus 4.6 web missed (sources 273\u2192275; workers 14 verified / 18 allowlisted; local Ollama fleet 10 personas; GEODESIC Phase 1 shipped; C.A.R.S. shipped as bonding-soup; etc.). Safe to attach to any AI handoff outside operator-controlled instances."
     }
   ],
   "derivations": [
@@ -1447,6 +1467,34 @@
       "apply": "edit p31-facts.json when adding externally cited file/path/key claims",
       "verify": "npm run verify:facts",
       "note": "Declarative invariants: required paths, mesh + org keys, https worker URLs, no credential-like substrings in policy files"
+    },
+    {
+      "id": "p31-launch-page-mirror-pipeline",
+      "from": [
+        "launch.html"
+      ],
+      "to": [
+        "andromeda/04_SOFTWARE/p31ca/public/launch.html"
+      ],
+      "apply": "npm run build:launch-page",
+      "verify": "(implicit \u2014 part of npm run launch; byte-mirror)",
+      "note": "Mirrors launch.html into the p31ca public deploy tree. Short redirect /launch \u2192 /launch.html lives in p31ca/public/_redirects. .p31-launch-readiness.json is gitignored so the public mirror renders the static counters only."
+    },
+    {
+      "id": "p31-social-cards-mirror-pipeline",
+      "from": [
+        "social-cards/index.html",
+        "social-cards/sw.js",
+        "social-cards/p31-pwa.js"
+      ],
+      "to": [
+        "andromeda/04_SOFTWARE/p31ca/public/social-cards/index.html",
+        "andromeda/04_SOFTWARE/p31ca/public/social-cards/sw.js",
+        "andromeda/04_SOFTWARE/p31ca/public/social-cards/p31-pwa.js"
+      ],
+      "apply": "npm run build:social-cards",
+      "verify": "(implicit \u2014 part of npm run launch; byte-mirror checked manually after build:pwa populates sw.js + p31-pwa.js)",
+      "note": "Mirrors the 10-card share kit + per-app PWA companions into the p31ca public deploy tree. Must be paired with the _headers PWA exemption (see docs/LAUNCH-PACKAGE-2026-05.md \u00a73)."
     },
     {
       "id": "p31-pwa-mirror-pipeline",
@@ -2650,6 +2698,18 @@
       "apply": "Edit the controlling CWP first (docs/CWP-P31-VIBE-2026-06.md). Phase 1 (2026-05-02) shipped the operator-entry surface (/vibe.html) + short routes. Phase 2 (2026-05-02 same session, ephemeralization pivot) adopted the existing command-center-terminal.html as the PiP CLI substrate \u2014 added /vibe alias to scripts/p31-local-command-center.mjs route handler (one HTML file, three URLs: /term + /terminal + /vibe), consolidated public vibe.html (-39 lines, removed placeholder PiP CLI + duplicate doctrine restatement; now points at :3131/vibe and links to /manifesto for canonical doctrines), and added 'Vibcoding (preview)' footer link from soup.html, cognitive-passport/index.html, and p31-personal-howto.html for discoverability. Phase 3 adds Monaco editor pane + PHOS auto-guidance to the SAME command-center-terminal.html (no new file); VIBE-3H added a third 'view' mode tab + GET /api/view-doc?slug=<slug> read-only operator doc viewer (allowlist + slug regex defends against path traversal; eight slugs: manifesto, vibe-cwp, peer-cwp, agents, public-voice, delta-language, morning-arc, engineering-standard). Phase 4 adds tetra topology Worker; Phase 5 adds 4-tetra cluster + MLS edges (gated on PEER-3A). Personal hub (/start mesh-start.html), threshold onboard (/onboard planetary-onboard.html), and starter hub (/build initial-build.html) keep their CWPs (PAR / IB) but cross-link from /vibe.",
       "verify": "manual + npm run hub:diff:p31ca + cd andromeda/04_SOFTWARE/p31ca && npm run verify:ground-truth + npm run command-center then open http://127.0.0.1:3131/vibe",
       "note": "Ephemeralization gate (CWP \u00a74.5) is the floor for this derivation: every future agent must check whether an existing service can carry one more URL before adding a new one. Five doctrines (PEER-COMP \u00a75 / Manifesto \u00a71) are the floor for content. Substrate composes: tetra (K\u2084) \u2192 cluster (4 tetras) \u2192 hub (4 clusters) \u2192 mesh (open federation). PHOS is the guide at every level. Phase 2 closure documented in CWP-P31-VIBE-2026-06.md \u00a716. VIBE-3H view mode (read-only doc viewer; allowlist-gated /api/view-doc) closure documented in \u00a718; no new ship-bar gate this session (slug-allowlist verifier is a Phase 4 follow-up if needed)."
+    },
+    {
+      "id": "p31-cogpass-v4-master-public-twin",
+      "from": [
+        "p31-cogpass-v4-master"
+      ],
+      "to": [
+        "p31-cogpass-v4-public"
+      ],
+      "apply": "Edit the MASTER first when adding sections, products, or facts; then propagate corrections to the PUBLIC twin while applying the sanitization rules: children referenced as S.J./W.J. only (never full names), operator address/phone/case-number/financial figures redacted, third-party emails removed, sealed legal detail summarized to public-safe framing. The two files share schema and section ordering; only the redacted fields differ.",
+      "verify": "node scripts/probe-public-sanitization.mjs --strict",
+      "note": "MASTER is gitignored (operator-private; full-detail context for AI handoff inside operator-controlled instances). PUBLIC ships in the repo and is mirrored to p31ca via doc-library + sync:doc-library:p31ca. Section 14 of both files is the codebase-survey addendum that catches what an external session-only writer (e.g. Opus 4.6 web) would miss: 273 sources, 14 verified Workers / 18 allowlisted, 34 ecosystem deployables, 10 local Ollama personas (not 6; HERALD/SENTINEL/MEDIC do not exist on the local lane), GEODESIC Phase 1 shipped, C.A.R.S. shipped as bonding-soup, TRIPER 9-suite cert, IB / PAR / Operator-UI / Super-Centaur / K4-Agent-Hub CWP set, Document Foundry, SIMPLEX v7 + simplex-email + cf-edge-lab, three Cursor lanes, 22-paper DOI list."
     }
   ],
   "optionalVerifyCommands": {
