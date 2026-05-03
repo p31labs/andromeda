@@ -19,6 +19,8 @@ const { registry } = await import(pathToFileURL(regPath).href);
 
 /** Astro routes under `src/pages/` — absent from `public/` until `astro build`; hub Launch still targets final URL */
 const SKIP_IDS = new Set(['integrations']);
+/** Status values that don't require a live file (concept/draft are not shipped) */
+const SKIP_STATUSES = new Set(['concept', 'draft']);
 let errs = 0;
 function fail(m) {
   console.error('[FAIL] verify-registry-app-urls:', m);
@@ -27,6 +29,7 @@ function fail(m) {
 
 for (const item of registry) {
   if (SKIP_IDS.has(item.id)) continue;
+  if (SKIP_STATUSES.has(item.status)) continue;
   let u = String(item.appUrl ?? '').trim();
   if (/^https?:\/\//i.test(u)) continue;
   if (u.startsWith('/')) u = u.slice(1);
