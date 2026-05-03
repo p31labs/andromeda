@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en" data-p31-appearance="hub" style="color-scheme: dark;">
+<head>
+  <meta charset="UTF-8" />
+  <script>(function(){var r=document.documentElement;if(/[?&]alive=1(?:&|$)/.test(location.search))return;r.classList.add("p31-gray-rock");function wake(){r.classList.remove("p31-gray-rock")}document.addEventListener("pointerdown",wake,{once:true,capture:true});document.addEventListener("keydown",wake,{once:true,capture:true})})();</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f1115" />
+  <meta name="description" content="PHOS — Phosphorus31 Operating System. Voice-first, inference-driven navigation for neurodivergent operators." />
+  <title>PHOS · P31 Labs</title>
+  <link rel="canonical" href="https://p31ca.org/phos" />
+  
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="PHOS · P31 Labs" />
+  <meta property="og:description" content="Voice-first navigation for neurodivergent operators. Say where you want to go — PHOS handles the rest." />
+  <meta property="og:url" content="https://p31ca.org/phos" />
+  <meta property="og:site_name" content="P31 Labs" />
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+  
+  <!-- P31 Styles -->
+  <link rel="stylesheet" href="/p31-style.css" />
+  
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    html, body {
+      min-height: 100vh;
+      background: var(--p31-void, #0f1115);
+      color: var(--p31-cloud, #d8d6d0);
+      font-family: var(--p31-font-sans, 'Atkinson Hyperlegible', system-ui, sans-serif);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    
+    /* Ambient background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background:
+        radial-gradient(ellipse at 20% 30%, rgba(77, 184, 168, 0.08) 0%, transparent 55%),
+        radial-gradient(ellipse at 80% 70%, rgba(204, 98, 71, 0.05) 0%, transparent 50%);
+    }
+    
+    /* PHOS Root */
+    #phos-root {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+    }
+    
+    /* Skip link */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      padding: 0.5rem 1rem;
+      background: var(--p31-void);
+      color: var(--p31-teal);
+      font-size: 0.875rem;
+      z-index: 9999;
+      border-radius: 0 0 4px 4px;
+      text-decoration: none;
+    }
+    
+    .skip-link:focus {
+      left: 0;
+    }
+    
+    /* PHOS Shell (injected by JS) */
+    .phos-shell {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    /* Footer — minimal */
+    .phos-footer {
+      padding: 1.5rem;
+      text-align: center;
+      font-size: 0.75rem;
+      color: var(--p31-muted, #808080);
+      font-family: var(--p31-font-mono, 'JetBrains Mono', monospace);
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    
+    .phos-footer a {
+      color: var(--p31-teal, #25897d);
+      text-decoration: none;
+    }
+    
+    .phos-footer a:hover {
+      text-decoration: underline;
+    }
+    
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a href="#phos-root" class="skip-link">Skip to PHOS</a>
+  
+  <div id="phos-root" data-phos></div>
+  
+  <footer class="phos-footer">
+    <p>P31 Labs, Inc. · Georgia nonprofit · EIN 42-1888158</p>
+    <p style="margin-top: 0.5rem;">
+      <a href="/">Hub</a> · 
+      <a href="/welcome">Welcome</a> · 
+      <a href="https://phosphorus31.org" target="_blank" rel="noopener">phosphorus31.org</a>
+    </p>
+  </footer>
+  
+  <!-- PHOS Initialization -->
+  <script type="module">
+    import { initPHOS } from '/lib/p31-phos-ui.mjs';
+    
+    // Initialize PHOS with context from cognitive passport if available
+    const context = {
+      screenComfort: 100,
+      soundComfort: 100,
+      hasPassport: false,
+    };
+    
+    // Try to read from localStorage if user has a passport
+    try {
+      const passport = localStorage.getItem('p31.cognitivePassport');
+      if (passport) {
+        const data = JSON.parse(passport);
+        context.hasPassport = true;
+        context.screenComfort = data.screenComfort || 100;
+        context.soundComfort = data.soundComfort || 100;
+      }
+    } catch (e) {
+      // Ignore localStorage errors
+    }
+    
+    // Check for urgent mode in URL
+    const params = new URLSearchParams(window.location.search);
+    if (params.has('urgent') || params.has('safe') || params.has('crisis')) {
+      context.urgentMode = true;
+    }
+    
+    // Initialize PHOS
+    initPHOS('phos-root', { context });
+  </script>
+</body>
+</html>
