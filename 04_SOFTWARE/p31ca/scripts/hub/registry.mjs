@@ -75,7 +75,7 @@ export const registry = [
   },
   {
     id: 'spaceship-earth', title: 'Spaceship Earth', tagline: 'Sovereign Command Center',
-    icon: '🌐', accent: '#3ba372', status: 'live', statusLabel: 'LIVE',
+    icon: '🌐', accent: '#3ba372', status: 'concept', statusLabel: 'CONCEPT',
     appUrl: 'spaceship-earth.html',
     tech: ['PWA', 'PGlite (WASM PostgreSQL)', 'Three.js R3F', 'IndexedDB', 'Service Worker'],
     features: [
@@ -116,7 +116,7 @@ export const registry = [
   },
   {
     id: 'quantum-family', title: 'THE QUANTUM FAMILY', tagline: 'Sovereign Welcome Pack',
-    icon: '🔺', accent: '#8b7cc9', status: 'live', statusLabel: 'LIVE',
+    icon: '🔺', accent: '#8b7cc9', status: 'concept', statusLabel: 'CONCEPT',
     appUrl: 'quantum-family.html',
     tech: ['Three.js', 'Web Audio API', 'PWA', 'IndexedDB', 'Vibration API'],
     features: [
@@ -307,7 +307,7 @@ export const registry = [
   },
   {
     id: 'love-ledger', title: 'Love Ledger', tagline: 'Family LOVE Token Economy',
-    icon: '💜', accent: '#ec4899', status: 'live', statusLabel: 'LIVE',
+    icon: '💜', accent: '#ec4899', status: 'concept', statusLabel: 'CONCEPT',
     appUrl: appUrlForWorkerSpa('love-ledger'),
     tech: ['Cloudflare Worker', 'Chart.js', 'Leaderboard', 'Streak Counter'],
     features: [
@@ -1313,8 +1313,8 @@ export const registry = [
     tagline: 'Four hubs. One mesh.',
     icon: '⬡',
     accent: '#7c6af7',
-    status: 'live',
-    statusLabel: 'LIVE',
+    status: 'concept',
+    statusLabel: 'CONCEPT',
     appUrl: 'agents.html',
     tech: ['Cloudflare Workers', 'Durable Objects', 'Ed25519', '@p31/k4-agent-hub-client', 'Ollama · Anthropic fallback'],
     features: [
