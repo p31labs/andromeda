@@ -82,8 +82,8 @@
     },
     "tomography": {
       "path": "/tomography.html",
-      "implementation": "public/tomography.html",
-      "label": "K4 TOMOGRAPHY — symbol-seeded depth view (Three.js r183)",
+      "implementation": "public/archive/2025-early/tomography.html",
+      "label": "K4 TOMOGRAPHY — ARCHIVED 2026-05-03",
       "registryId": "tomography",
       "note": "Depth companion to k4market.html. Linked from k4market nav."
     },
@@ -815,9 +815,10 @@
       "note": "ARCHIVED 2026-05-03 — moved to archive"
     },
     {
-      "id": "visionJourney.page",
-      "path": "public/vision.html",
-      "mustIncludeSubstring": "Core mesh journey"
+      "id": "_visionJourney.archived",
+      "path": "public/archive/2025-early/vision.html",
+      "mustIncludeSubstring": "Core mesh journey",
+      "note": "ARCHIVED 2026-05-03"
     },
     {
       "id": "kidsGrowth.page",
@@ -830,9 +831,10 @@
       "mustIncludeSubstring": "p31.householdKidsHome/0.1.0"
     },
     {
-      "id": "quantumClock.page",
-      "path": "public/quantum-clock.html",
-      "mustIncludeSubstring": "p31.quantumClockPage/0.1.0"
+      "id": "_quantumClock.archived",
+      "path": "public/archive/2025-early/quantum-clock.html",
+      "mustIncludeSubstring": "p31.quantumClockPage/0.1.0",
+      "note": "ARCHIVED 2026-05-03"
     },
     {
       "id": "_quantumDeck.archived",
@@ -958,10 +960,6 @@
     {
       "id": "sovereign",
       "appUrl": "sovereign.html"
-    },
-    {
-      "id": "tomography",
-      "appUrl": "tomography.html"
     },
     {
       "id": "quantum-clock",
@@ -1183,9 +1181,10 @@
       "path": "src/pages/dome.astro",
       "mustIncludeSubstring": "three@0.183.0"
     },
-    "tomography.html": {
-      "path": "public/tomography.html",
-      "mustIncludeSubstring": "three@0.183.0"
+    "_tomography.archived": {
+      "path": "public/archive/2025-early/tomography.html",
+      "mustIncludeSubstring": "three@0.183.0",
+      "note": "ARCHIVED 2026-05-03"
     },
     "connect.html": {
       "path": "public/connect.html",
