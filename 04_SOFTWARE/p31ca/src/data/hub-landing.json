@@ -34,19 +34,6 @@
       "url": "/social-molecules-about.html"
     },
     {
-      "id": "spaceship-earth",
-      "title": "Spaceship Earth",
-      "status": "ALPHA",
-      "desc": "Sovereign Command Center",
-      "tags": [
-        "PWA",
-        "PGlite (WASM PostgreSQL)",
-        "Three.js R3F",
-        "IndexedDB"
-      ],
-      "url": "/spaceship-earth-about.html"
-    },
-    {
       "id": "ede",
       "title": "EDE",
       "status": "ALPHA",
@@ -201,19 +188,6 @@
         "Workers Analytics"
       ],
       "url": "/cortex-about.html"
-    },
-    {
-      "id": "quantum-family",
-      "title": "THE QUANTUM FAMILY",
-      "status": "CONCEPT",
-      "desc": "Sovereign Welcome Pack",
-      "tags": [
-        "Three.js",
-        "Web Audio API",
-        "PWA",
-        "IndexedDB"
-      ],
-      "url": "/quantum-family-about.html"
     },
     {
       "id": "connect",
@@ -372,19 +346,6 @@
       "url": "/legal-evidence-about.html"
     },
     {
-      "id": "love-ledger",
-      "title": "Love Ledger",
-      "status": "CONCEPT",
-      "desc": "Family LOVE Token Economy",
-      "tags": [
-        "Cloudflare Worker",
-        "Chart.js",
-        "Leaderboard",
-        "Streak Counter"
-      ],
-      "url": "/love-ledger-about.html"
-    },
-    {
       "id": "medical-tracker",
       "title": "Medical Tracker",
       "status": "CONCEPT",
@@ -474,19 +435,6 @@
         "Gravity Well Physics"
       ],
       "url": "/tether-about.html"
-    },
-    {
-      "id": "k4-agent-hubs",
-      "title": "K₄ Agent Hubs",
-      "status": "LIVE",
-      "desc": "Four hubs. One mesh.",
-      "tags": [
-        "Cloudflare Workers",
-        "Durable Objects",
-        "Ed25519",
-        "@p31/k4-agent-hub-client"
-      ],
-      "url": "/k4-agent-hubs-about.html"
     }
   ],
   "prototypes": [],
