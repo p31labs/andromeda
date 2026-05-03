@@ -2,10 +2,19 @@
 <html lang="en" data-p31-appearance="hub" style="color-scheme: dark;">
 <head>
   <meta charset="UTF-8">
+<script>(function(){var r=document.documentElement;if(/[?&]alive=1(?:&|$)/.test(location.search))return;r.classList.add("p31-gray-rock");function wake(){r.classList.remove("p31-gray-rock")}document.addEventListener("pointerdown",wake,{once:true,capture:true});document.addEventListener("keydown",wake,{once:true,capture:true})})();</script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#0f1115">
   <title>Fleet agents &amp; Workers | P31 Labs</title>
   <meta name="description" content="Interactive room for each Cloudflare Worker, Discord bot, and Cortex sub-agent. Data: p31.fleetEntities (see p31-alignment derivation live-fleet-to-fleet-entities-hub). Not the live-fleet map (/fleet) or fleet-portal URL roster.">
+<link rel="canonical" href="https://p31ca.org/fleet-agents.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Fleet agents &amp;amp; Workers">
+<meta property="og:description" content="Interactive room for each Cloudflare Worker, Discord bot, and Cortex sub-agent. Data: p31.fleetEntities (see p31-alignment derivation live-fleet-to-fleet-entities-hub). Not the live-fleet map (/fleet) or fleet-portal URL roster.">
+<meta property="og:url" content="https://p31ca.org/fleet-agents.html">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Fleet agents &amp;amp; Workers">
+<meta name="twitter:description" content="Interactive room for each Cloudflare Worker, Discord bot, and Cortex sub-agent. Data: p31.fleetEntities (see p31-alignment derivation live-fleet-to-fleet-entities-hub). Not the live-fleet map (/fleet) or fleet-portal URL roster.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -230,7 +239,7 @@
     </div>
   </header>
 
-  <main class="max-w-5xl mx-auto px-4 py-6 grid lg:grid-cols-[minmax(0,18rem)_1fr] gap-8">
+  <main id="main" class="max-w-5xl mx-auto px-4 py-6 grid lg:grid-cols-[minmax(0,18rem)_1fr] gap-8">
     <section id="browse" aria-labelledby="browse-h" class="space-y-4">
       <h2 id="browse-h" class="text-sm font-bold text-[var(--p31-muted)] uppercase tracking-[0.2em]">Roster</h2>
       <div id="roster-status" class="mono text-[var(--p31-muted)] text-xs"></div>
