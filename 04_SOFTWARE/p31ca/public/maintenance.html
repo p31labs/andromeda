@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en" data-p31-appearance="hub" style="color-scheme: dark;">
+<head>
+  <meta charset="UTF-8" />
+<script>(function(){var r=document.documentElement;if(/[?&]alive=1(?:&|$)/.test(location.search))return;r.classList.add("p31-gray-rock");function wake(){r.classList.remove("p31-gray-rock")}document.addEventListener("pointerdown",wake,{once:true,capture:true});document.addEventListener("keydown",wake,{once:true,capture:true})})();</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f1115" />
+  <meta name="description" content="This page is temporarily under care. PHOS will show you something useful while you wait." />
+  <meta name="robots" content="noindex" />
+  <link rel="canonical" href="https://p31ca.org/maintenance" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Under Care · P31 Labs" />
+  <meta property="og:description" content="This page is temporarily under care. PHOS will show you something useful." />
+  <title>Under Care · P31 Labs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/p31-style.css" />
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: var(--p31-font-sans, 'Atkinson Hyperlegible', system-ui, sans-serif);
+      background: var(--p31-void, #0f1115);
+      color: var(--p31-cloud, #d8d6d0);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: max(1.25rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right))
+               max(1.25rem, env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left));
+      text-align: center;
+    }
+    .wrap {
+      max-width: 26rem;
+      width: 100%;
+    }
+    .mark {
+      opacity: 0.45;
+      margin-bottom: 1.5rem;
+    }
+    .pulse {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--p31-teal, #25897d);
+      margin-bottom: 1.5rem;
+      animation: pulse 2.4s ease-in-out infinite;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .pulse { animation: none; opacity: 0.6; }
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 0.3; transform: scale(1); }
+      50%       { opacity: 1;   transform: scale(1.2); }
+    }
+    h1 {
+      font-size: clamp(1.2rem, 3.5vw, 1.5rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin: 0 0 0.75rem;
+      line-height: 1.25;
+    }
+    p {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      color: color-mix(in srgb, var(--p31-cloud, #d8d6d0) 75%, transparent);
+      margin: 0 0 1.5rem;
+    }
+    .eta {
+      display: inline-block;
+      font-size: 0.82rem;
+      color: var(--p31-muted, #808080);
+      margin-bottom: 1.75rem;
+      font-family: var(--p31-font-mono, 'JetBrains Mono', monospace);
+    }
+    nav {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+    a.btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 2.85rem;
+      padding: 0.6rem 1.25rem;
+      border-radius: 0.65rem;
+      font-size: 0.92rem;
+      font-weight: 600;
+      text-decoration: none;
+      color: var(--p31-cloud, #d8d6d0);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.04);
+      transition: background 0.15s, border-color 0.15s;
+    }
+    a.btn:hover, a.btn:focus-visible {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.22);
+      outline: none;
+    }
+    a.btn:focus-visible {
+      outline: 2px solid var(--p31-teal, #25897d);
+      outline-offset: 2px;
+    }
+    a.btn-primary {
+      background: color-mix(in srgb, var(--p31-teal, #25897d) 88%, transparent);
+      border-color: color-mix(in srgb, var(--p31-teal, #25897d) 45%, transparent);
+    }
+    a.btn-primary:hover, a.btn-primary:focus-visible {
+      filter: brightness(1.08);
+    }
+    .footer {
+      margin-top: 2rem;
+      font-size: 0.78rem;
+      color: var(--p31-muted, #808080);
+    }
+    .footer a { color: var(--p31-cyan, #4db8a8); }
+  </style>
+</head>
+<body style="color-scheme: dark;">
+<a href="#main" style="position:absolute;left:-9999px;top:0;padding:0.5rem 1rem;background:var(--p31-void,#0f1115);color:var(--p31-teal,#25897d);font-size:0.875rem;z-index:9999;border-radius:0 0 4px 4px;text-decoration:none" onfocus="this.style.left='0'" onblur="this.style.left='-9999px'">Skip to main content</a>
+<main id="main" class="wrap">
+  <div class="mark" aria-hidden="true">
+    <svg width="40" height="40" viewBox="0 0 512 512">
+      <rect width="512" height="512" rx="112" fill="#25897d" opacity="0.5"/>
+      <circle cx="390" cy="120" r="48" fill="#cc6247" opacity="0.5"/>
+      <text x="256" y="340" font-family="system-ui,sans-serif" font-weight="900" font-size="220" fill="#d8d6d0" opacity="0.5" text-anchor="middle">P31</text>
+    </svg>
+  </div>
+
+  <div class="pulse" aria-hidden="true"></div>
+
+  <h1>This page is getting some care.</h1>
+  <p id="phos-msg">
+    I'll show you something useful while you wait.
+  </p>
+
+  <span class="eta" id="eta-display" aria-live="polite"></span>
+
+  <nav aria-label="Working surfaces">
+    <a class="btn btn-primary" href="/welcome">Start here →</a>
+    <a class="btn" href="/passport">Create your context card</a>
+    <a class="btn" href="/glass-box">See what's live — Glass Box</a>
+  </nav>
+
+  <p class="footer">
+    Questions? <a href="mailto:will@phosphorus31.org">will@phosphorus31.org</a>
+  </p>
+</main>
+
+<script type="module">
+  // Read ETA from query string or page meta — operator sets ?eta=2026-05-05
+  const params = new URLSearchParams(location.search);
+  const eta = params.get('eta') || document.querySelector('meta[name="maintenance-eta"]')?.content;
+  if (eta) {
+    try {
+      const d = new Date(eta);
+      if (!isNaN(d)) {
+        const fmt = d.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+        document.getElementById('eta-display').textContent = `Expected back: ${fmt}`;
+      }
+    } catch {}
+  }
+
+  // PHOS voice — only if speech available and user hasn't turned it off
+  const voiceOff = localStorage.getItem('p31-phos-voice') === 'off';
+  const motionReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!voiceOff && !motionReduced && 'speechSynthesis' in window) {
+    const msg = document.getElementById('phos-msg').textContent.trim();
+    const greet = "This page is getting some care. " + msg;
+    setTimeout(() => {
+      const utt = new SpeechSynthesisUtterance(greet);
+      utt.rate = 0.92;
+      window.speechSynthesis.speak(utt);
+    }, 800);
+  }
+</script>
+</body>
+</html>
