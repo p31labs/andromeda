@@ -1183,16 +1183,6 @@
       "path": "src/pages/dome.astro",
       "mustIncludeSubstring": "three@0.183.0"
     },
-    "_observatory_archived": {
-      "path": "public/archive/2025-early/observatory.html",
-      "mustIncludeSubstring": "three@0.160.0",
-      "note": "ARCHIVED 2026-05-03 — concept status, not live"
-    },
-    "_k4market_archived": {
-      "path": "public/archive/2025-early/k4market.html",
-      "mustIncludeSubstring": "three@0.160.0",
-      "note": "ARCHIVED 2026-05-03 — concept status, not live"
-    },
     "tomography.html": {
       "path": "public/tomography.html",
       "mustIncludeSubstring": "three@0.183.0"

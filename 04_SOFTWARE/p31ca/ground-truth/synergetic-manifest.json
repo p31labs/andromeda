@@ -13,12 +13,7 @@
       "groundTruthThreejsKey": "dome.astro"
     },
     {
-      "id": "observatory-static",
-      "type": "static",
-      "path": "public/observatory.html",
-      "threeRevision": "0.160.0",
-      "status": "LIVE",
-      "groundTruthThreejsKey": "observatory.html"
+      "_comment": "observatory-static ARCHIVED 2026-05-03 — concept status"
     },
     {
       "id": "spaceship-earth-pwa",
@@ -29,12 +24,7 @@
       "roomId": "observatory"
     },
     {
-      "id": "k4market-static",
-      "type": "static",
-      "path": "public/k4market.html",
-      "threeRevision": "0.160.0",
-      "status": "LIVE",
-      "groundTruthThreejsKey": "k4market.html"
+      "_comment": "k4market-static ARCHIVED 2026-05-03 — concept status"
     },
     {
       "id": "tomography-static",
