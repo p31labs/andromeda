@@ -17,15 +17,9 @@ const requiredFiles = [
   "initial-build.html",
   "planetary-onboard.html",
   "passport-generator.html",
-  "auth.html",
-  "privacy.html",
-  "family-sovereign-pack.html",
   "p31-public-surface.json",
   "p31-mesh-constants.json",
   "p31-welcome-packages.json",
-  "p31-canon-demo.html",
-  "live-fleet-demo.html",
-  "demo-labs.html",
   "p31-live-fleet.json",
   "lib/p31-subject-id.js",
   "lib/p31-initial-build-bake.js",
@@ -33,6 +27,7 @@ const requiredFiles = [
   ".well-known/security.txt",
   "robots.txt",
   "sitemap.xml",
+  // ARCHIVED 2026-05-03: auth.html, privacy.html, family-sovereign-pack.html, p31-canon-demo.html, live-fleet-demo.html, demo-labs.html
 ];
 
 let failed = 0;
