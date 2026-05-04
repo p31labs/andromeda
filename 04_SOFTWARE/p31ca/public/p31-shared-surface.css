@@ -855,3 +855,74 @@ body.p31-doc-no-spy .p31-doc-section {
 @media (prefers-reduced-motion: reduce) {
   .p31-doc-foot .p31-doc-bead::before { animation: none; }
 }
+
+/* ============================================================
+   CANONICAL TOP APP BAR  (.p31-top-bar)
+   Sticky global brand identity strip — elevation 2 surface.
+   Companion to .p31-return-ribbon (bottom). Both inject via JS/
+   HTML; CSS here applies once either one hits the DOM.
+   ============================================================ */
+.p31-top-bar {
+  position: sticky;
+  top: 0;
+  z-index: 110;
+  display: flex;
+  align-items: center;
+  gap: var(--p31-space-4);
+  padding: 0 var(--p31-space-6);
+  height: 3rem;
+  background: color-mix(in srgb, var(--p31-void) 88%, transparent);
+  border-bottom: 1px solid var(--p31-border-subtle);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.p31-top-bar__wordmark {
+  font-family: var(--p31-font-mono);
+  font-size: var(--p31-text-sm);
+  font-weight: 600;
+  letter-spacing: var(--p31-tracking-caps);
+  text-transform: uppercase;
+  color: var(--p31-cloud);
+  text-decoration: none;
+  flex-shrink: 0;
+}
+.p31-top-bar__wordmark:hover { color: var(--p31-teal); }
+.p31-top-bar__accent { color: var(--p31-teal); }
+.p31-top-bar__nav {
+  display: flex;
+  align-items: center;
+  gap: var(--p31-space-5);
+  margin-left: auto;
+  font-family: var(--p31-font-mono);
+  font-size: var(--p31-text-xs);
+  letter-spacing: 0.05em;
+}
+.p31-top-bar__nav a {
+  color: var(--p31-muted);
+  text-decoration: none;
+  transition: color 150ms ease;
+}
+.p31-top-bar__nav a:hover,
+.p31-top-bar__nav a:focus-visible { color: var(--p31-cloud); }
+/* Page body padding: make room for the sticky top-bar + ribbon */
+body.p31-has-top-bar { padding-top: 3rem; }
+
+/* ============================================================
+   SKIP LINK  (.p31-skip-link)
+   Visually hidden until focused — screen reader + keyboard a11y.
+   ============================================================ */
+.p31-skip-link {
+  position: fixed;
+  top: -100%;
+  left: 0;
+  z-index: 9999;
+  padding: var(--p31-space-3) var(--p31-space-6);
+  background: var(--p31-teal);
+  color: var(--p31-void);
+  font-family: var(--p31-font-mono);
+  font-size: var(--p31-text-sm);
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: 0 0 var(--p31-shape-md) 0;
+}
+.p31-skip-link:focus { top: 0; }

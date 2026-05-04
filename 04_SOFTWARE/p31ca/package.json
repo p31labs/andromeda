@@ -35,6 +35,8 @@
     "verify:style-alignment": "node scripts/verify-style-alignment.mjs",
     "verify:surface-canon": "node scripts/verify-surface-canon.mjs",
     "new:page": "node scripts/new-page.mjs",
+    "apply:smart-features": "node scripts/apply-smart-features.mjs",
+    "build:p31-tw": "npx tailwindcss -c tailwind.build.config.cjs -i tailwind.build.css -o public/p31-tw.css --minify",
     "ops:ingest": "node scripts/ops/ingest-glass-probes.mjs",
     "verify:live-fleet-mesh": "node scripts/verify-live-fleet-mesh.mjs",
     "build:fleet-entities": "node scripts/build-fleet-entities.mjs",

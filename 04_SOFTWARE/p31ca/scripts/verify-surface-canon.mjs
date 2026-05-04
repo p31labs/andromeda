@@ -38,11 +38,15 @@ const backlogPath = path.join(__dirname, "surface-canon-backlog.json");
 const STRICT = process.env.SURFACE_CANON_STRICT === "1";
 
 const REQUIRED = [
-  { id: "gray-rock",    needle: "p31-gray-rock",                   label: "Gray Rock inline script" },
-  { id: "qmu-tokens",   needle: "/public/lib/p31-qmu-tokens.css",  label: "QMU tokens stylesheet" },
-  { id: "p31-style",    needle: "/p31-style.css",                   label: "p31-style.css" },
-  { id: "shared-surface", needle: "/p31-shared-surface.css",       label: "p31-shared-surface.css" },
-  { id: "appearance",   needle: "data-p31-appearance",              label: "data-p31-appearance on <html>" },
+  { id: "gray-rock",     needle: "p31-gray-rock",           label: "Gray Rock inline script"     },
+  { id: "qmu-tokens",    needle: "p31-qmu-tokens.css",      label: "QMU tokens stylesheet"        },
+  { id: "p31-style",     needle: "/p31-style.css",           label: "p31-style.css"                },
+  { id: "shared-surface",needle: "p31-shared-surface.css",  label: "p31-shared-surface.css"       },
+  { id: "appearance",    needle: "data-p31-appearance",      label: "data-p31-appearance on <html>"},
+  { id: "return-ribbon", needle: "p31-return-ribbon",        label: "return-ribbon footer"         },
+  { id: "starfield",     needle: "starfield-canvas",         label: "starfield canvas"             },
+  { id: "skip-link",     needle: "p31-skip-link",            label: "skip-link (a11y)"             },
+  { id: "top-bar",       needle: "p31-top-bar",              label: "top-bar header"               },
 ];
 
 const FORBIDDEN = [
@@ -74,15 +78,17 @@ const backlogWarnList = [];
 
 for (const file of htmlFiles) {
   const filePath = path.join(publicDir, file);
-  const head = fs.readFileSync(filePath, "utf8").slice(0, 4000);
+  const full = fs.readFileSync(filePath, "utf8");
+  // Head-only checks use the first 4000 chars; body-feature checks use the full file.
+  const head = full.slice(0, 4000);
   const isBacklog = backlog.has(file);
   const issues = [];
 
   for (const { id, needle, label } of REQUIRED) {
-    if (!head.includes(needle)) issues.push(`missing ${label}`);
+    if (!full.includes(needle)) issues.push(`missing ${label}`);
   }
   for (const { id, needle, label } of FORBIDDEN) {
-    if (head.includes(needle)) issues.push(`forbidden: ${label}`);
+    if (full.includes(needle)) issues.push(`forbidden: ${label}`);
   }
 
   if (!issues.length) continue;

@@ -15,7 +15,12 @@
 <meta name="twitter:description" content="Private vocal loop station — mic capture, up to 6 layers, semitone pitch via Web Audio playbackRate. Nothing leaves your browser.">
     <meta name="theme-color" content="#0f1115">
     <title>ECHO | Vocal Loop Station | P31 Labs</title>
-    <link rel="stylesheet" href="/p31-style.css" />
+      <link rel="stylesheet" href="/lib/p31-qmu-tokens.css" />
+<link rel="stylesheet" href="/p31-style.css" />
+  <link rel="stylesheet" href="/p31-shared-surface.css" />
+  <link rel="stylesheet" href="/p31-responsive-surface.css" />
+
+
     <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
         *{margin:0;padding:0;box-sizing:border-box}
@@ -57,8 +62,23 @@
         .status-bar{font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(216,214,208,0.3);text-align:center;padding:8px}
         .rec-timer{font-size:16px;color:var(--coral);font-weight:bold}
     </style>
+  <script src="/lib/p31-subject-prefs.js"></script>
 </head>
 <body>
+  <!-- Starfield ambient layer (Gray Rock until interaction) -->
+  <canvas id="starfield-canvas" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:0.45;" aria-hidden="true"></canvas>
+  <a class="p31-skip-link" href="#main">Skip to content</a>
+  <!-- ── Top app bar ──────────────────────────────────────────────────────── -->
+  <header class="p31-q-surface p31-top-bar" data-p31-elev="2" role="banner">
+    <a href="/" class="p31-top-bar__wordmark" aria-label="P31 Labs home">P31 <span class="p31-top-bar__accent">Labs</span></a>
+    <nav class="p31-top-bar__nav" aria-label="Global">
+      <a href="/hub.html">Hub</a>
+      <a href="/connect.html">Connect</a>
+    </nav>
+  </header>
+
+
+
 <a href="#main" style="position:absolute;left:-9999px;top:0;padding:0.5rem 1rem;background:var(--p31-void);color:var(--p31-teal);font-size:0.875rem;z-index:9999;border-radius:0 0 4px 4px;text-decoration:none" onfocus="this.style.left='0'" onblur="this.style.left='-9999px'">Skip to main content</a>
 <header>
     <a href="/" class="logo">
@@ -357,5 +377,17 @@ function drawViz() {
 drawViz();
 renderLoops();
 </script>
+
+  <!-- Starfield init -->
+  <script type="module">
+    const cv = document.getElementById("starfield-canvas");
+    if (cv) {
+      import("/lib/p31-starfield-static-plate.js")
+        .then(({ initStaticStarPlate }) => initStaticStarPlate(cv, { preset: "hub" }))
+        .catch(() => {});
+    }
+  </script>
+  <script src="/lib/atmosphere/p31-atmosphere-client.js" defer></script>
+  <script src="/lib/p31-return-ribbon.js" defer></script>
 </body>
 </html>

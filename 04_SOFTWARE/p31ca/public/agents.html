@@ -291,6 +291,17 @@
   </style>
 </head>
 <body class="p31-mesh-m-first p31-responsive-surface">
+  <a class="p31-skip-link" href="#main">Skip to content</a>
+  <!-- ── Top app bar ──────────────────────────────────────────────────────── -->
+  <header class="p31-q-surface p31-top-bar" data-p31-elev="2" role="banner">
+    <a href="/" class="p31-top-bar__wordmark" aria-label="P31 Labs home">P31 <span class="p31-top-bar__accent">Labs</span></a>
+    <nav class="p31-top-bar__nav" aria-label="Global">
+      <a href="/hub.html">Hub</a>
+      <a href="/connect.html">Connect</a>
+    </nav>
+  </header>
+
+
   <canvas id="ds-star-plate" width="4" height="4" aria-hidden="true" style="position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;display:block"></canvas>
   <script type="module">
     const cv = document.getElementById("ds-star-plate");
@@ -738,5 +749,7 @@
       starCount: 100
     });
   </script>
+  <script src="/lib/atmosphere/p31-atmosphere-client.js" defer></script>
+  <script src="/lib/p31-return-ribbon.js" defer></script>
 </body>
 </html>

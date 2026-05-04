@@ -24,7 +24,7 @@
 
   <!-- ── Canonical style stack (order is load-order; do not reorder) ──────── -->
   <!-- 1. QMU tokens: Material U tonal roles, elevation, state-layer vars     -->
-  <link rel="stylesheet" href="/public/lib/p31-qmu-tokens.css" />
+  <link rel="stylesheet" href="/lib/p31-qmu-tokens.css" />
   <!-- 2. Fonts: Atkinson Hyperlegible (a11y body) + JetBrains Mono (code)    -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -38,7 +38,7 @@
   <!-- ── End canonical stack ─────────────────────────────────────────────── -->
 
   <!-- Subject prefs: safe mode, reduced motion, font-size, color override    -->
-  <script src="/public/lib/p31-subject-prefs.js"></script>
+  <script src="/lib/p31-subject-prefs.js"></script>
 
   <style>
     /* Page-local layout only — use p31-q-* and p31-* canonical classes       */
@@ -108,9 +108,18 @@
 
   </main>
 
+  <!-- ── Starfield init (pairs with #starfield-canvas above) ─────────────── -->
+  <script type="module">
+    const cv = document.getElementById("starfield-canvas");
+    if (cv) {
+      import("/lib/p31-starfield-static-plate.js")
+        .then(({ initStaticStarPlate }) => initStaticStarPlate(cv, { preset: "hub" }))
+        .catch(() => {});
+    }
+  </script>
   <!-- ── Atmosphere + return ribbon (always last) ───────────────────────── -->
-  <script src="/public/lib/atmosphere/p31-atmosphere-client.js" defer></script>
-  <script src="/public/lib/p31-return-ribbon.js" defer></script>
+  <script src="/lib/atmosphere/p31-atmosphere-client.js" defer></script>
+  <script src="/lib/p31-return-ribbon.js" defer></script>
 
 </body>
 </html>

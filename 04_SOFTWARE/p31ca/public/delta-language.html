@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-p31-appearance="hub" style="color-scheme: dark;">
 <head>
+  <script>(function(){var r=document.documentElement;if(/[?&]alive=1(?:&|$)/.test(location.search))return;r.classList.add("p31-gray-rock");function wake(){r.classList.remove("p31-gray-rock")}document.addEventListener("pointerdown",wake,{once:true,capture:true});document.addEventListener("keydown",wake,{once:true,capture:true})})();</script>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#0a0c10" />
@@ -280,8 +281,29 @@
     }
     footer.doc a:hover { text-decoration: underline; }
   </style>
+  <link rel="stylesheet" href="/lib/p31-qmu-tokens.css" />
+  <link rel="stylesheet" href="/p31-style.css" />
+
+  <link rel="stylesheet" href="/p31-shared-surface.css" />
+  <link rel="stylesheet" href="/p31-responsive-surface.css" />
+
+  <script src="/lib/p31-subject-prefs.js"></script>
 </head>
 <body>
+  <!-- Starfield ambient layer (Gray Rock until interaction) -->
+  <canvas id="starfield-canvas" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:0.45;" aria-hidden="true"></canvas>
+  <a class="p31-skip-link" href="#main">Skip to content</a>
+  <!-- ── Top app bar ──────────────────────────────────────────────────────── -->
+  <header class="p31-q-surface p31-top-bar" data-p31-elev="2" role="banner">
+    <a href="/" class="p31-top-bar__wordmark" aria-label="P31 Labs home">P31 <span class="p31-top-bar__accent">Labs</span></a>
+    <nav class="p31-top-bar__nav" aria-label="Global">
+      <a href="/hub.html">Hub</a>
+      <a href="/connect.html">Connect</a>
+    </nav>
+  </header>
+
+
+
   <div class="sky-gradient" aria-hidden="true"></div>
   <div class="wrap">
     <header class="hero">
@@ -467,5 +489,17 @@
         .replace(/"/g, "&quot;");
     }
   </script>
+
+  <!-- Starfield init -->
+  <script type="module">
+    const cv = document.getElementById("starfield-canvas");
+    if (cv) {
+      import("/lib/p31-starfield-static-plate.js")
+        .then(({ initStaticStarPlate }) => initStaticStarPlate(cv, { preset: "hub" }))
+        .catch(() => {});
+    }
+  </script>
+  <script src="/lib/atmosphere/p31-atmosphere-client.js" defer></script>
+  <script src="/lib/p31-return-ribbon.js" defer></script>
 </body>
 </html>

@@ -15,7 +15,12 @@
 <meta name="twitter:title" content="P31 — Threshold">
 <meta name="twitter:description" content="P31 Labs threshold: understand, use, build, or find someone you know — no funnel, no capture. Geometric calm.">
   <link rel="canonical" href="https://p31ca.org/planetary-onboard.html" />
-  <link rel="stylesheet" href="/p31-style.css" />
+    <link rel="stylesheet" href="/lib/p31-qmu-tokens.css" />
+<link rel="stylesheet" href="/p31-style.css" />
+  <link rel="stylesheet" href="/p31-shared-surface.css" />
+  <link rel="stylesheet" href="/p31-responsive-surface.css" />
+
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
@@ -188,8 +193,23 @@
     }
     footer.site a { color: rgba(77, 184, 168, 0.55); }
   </style>
+  <script src="/lib/p31-subject-prefs.js"></script>
 </head>
 <body>
+  <!-- Starfield ambient layer (Gray Rock until interaction) -->
+  <canvas id="starfield-canvas" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:0.45;" aria-hidden="true"></canvas>
+  <a class="p31-skip-link" href="#main">Skip to content</a>
+  <!-- ── Top app bar ──────────────────────────────────────────────────────── -->
+  <header class="p31-q-surface p31-top-bar" data-p31-elev="2" role="banner">
+    <a href="/" class="p31-top-bar__wordmark" aria-label="P31 Labs home">P31 <span class="p31-top-bar__accent">Labs</span></a>
+    <nav class="p31-top-bar__nav" aria-label="Global">
+      <a href="/hub.html">Hub</a>
+      <a href="/connect.html">Connect</a>
+    </nav>
+  </header>
+
+
+
 <a href="#main" style="position:absolute;left:-9999px;top:0;padding:0.5rem 1rem;background:var(--p31-void);color:var(--p31-teal);font-size:0.875rem;z-index:9999;border-radius:0 0 4px 4px;text-decoration:none" onfocus="this.style.left='0'" onblur="this.style.left='-9999px'">Skip to main content</a>
   <a class="visually-hidden" href="#four-doors">Skip to doors</a>
 
@@ -532,5 +552,16 @@ npm run command-center
   startGrandfatherPhaseVar();
 </script>
   <script src="/lib/p31-return-ribbon.js" defer></script>
+
+  <!-- Starfield init -->
+  <script type="module">
+    const cv = document.getElementById("starfield-canvas");
+    if (cv) {
+      import("/lib/p31-starfield-static-plate.js")
+        .then(({ initStaticStarPlate }) => initStaticStarPlate(cv, { preset: "hub" }))
+        .catch(() => {});
+    }
+  </script>
+  <script src="/lib/atmosphere/p31-atmosphere-client.js" defer></script>
 </body>
 </html>

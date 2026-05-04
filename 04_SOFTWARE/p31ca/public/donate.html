@@ -17,26 +17,31 @@
   <meta name="theme-color" content="#05080c">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&family=Playfair+Display:ital,wght@1;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/p31-style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/lib/p31-qmu-tokens.css" />
+<link rel="stylesheet" href="/p31-style.css">
+  <link rel="stylesheet" href="/p31-shared-surface.css" />
+  <link rel="stylesheet" href="/p31-responsive-surface.css" />
+
+
   <script src="/p31-telemetry.js" defer></script>
   <style>
     :root {
-      --ede-void: #05080c;
-      --ede-surface: #11151c;
-      --ede-muted: #5a6b7c;
+      
+      
+      
     }
-    html { background: var(--ede-void); }
+    html { background: var(--p31-void); }
     body {
       font-family: var(--p31-font-sans, "Atkinson Hyperlegible"), system-ui, sans-serif;
-      background: var(--ede-void);
+      background: var(--p31-void);
       color: var(--p31-cloud, #e8e6e3);
       margin: 0;
       min-height: 100vh;
       line-height: 1.6;
     }
     .mono { font-family: var(--p31-font-mono, "JetBrains Mono"), monospace; }
-    .terminal-glass {
+    .p31-q-terminal {
       position: relative;
       overflow: hidden;
       background: linear-gradient(180deg, rgba(26, 31, 41, 0.72) 0%, rgba(17, 21, 28, 0.88) 100%);
@@ -47,7 +52,7 @@
       border-radius: 12px;
       box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
     }
-    .terminal-glass::after {
+    .p31-q-terminal::after {
       content: "";
       pointer-events: none;
       position: absolute;
@@ -58,7 +63,7 @@
     }
     .panel-wrap { position: relative; padding: 2rem 1.5rem 1.75rem; margin: 1.5rem auto; max-width: 44rem; z-index: 1; }
     h1 {
-      font-family: "Playfair Display", Georgia, serif;
+      font-family: var(--p31-font-sans), Georgia, serif;
       font-style: italic;
       font-weight: 600;
       font-size: clamp(1.75rem, 4vw, 2.25rem);
@@ -119,7 +124,7 @@
       min-height: 1.25rem;
     }
     #map-telemetry.binding-on { color: var(--p31-phosphorus, #3ba372); }
-    #map-telemetry.binding-off { color: var(--ede-muted, #5a6b7c); }
+    #map-telemetry.binding-off { color: var(--p31-muted); }
     .map-dot {
       display: inline-block;
       width: 9px;
@@ -127,7 +132,7 @@
       border-radius: 9999px;
       flex-shrink: 0;
     }
-    .map-dot--muted { background: var(--ede-muted, #5a6b7c); opacity: 0.88; }
+    .map-dot--muted { background: var(--p31-muted); opacity: 0.88; }
     .map-dot--active {
       background: var(--p31-phosphorus, #3ba372);
       box-shadow: 0 0 10px rgba(59, 163, 114, 0.65), 0 0 18px rgba(59, 163, 114, 0.35);
@@ -152,8 +157,23 @@
       color: var(--p31-cyan, #4db8a8);
     }
   </style>
+  <script src="/lib/p31-subject-prefs.js"></script>
 </head>
 <body>
+  <!-- Starfield ambient layer (Gray Rock until interaction) -->
+  <canvas id="starfield-canvas" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:0.45;" aria-hidden="true"></canvas>
+  <a class="p31-skip-link" href="#main">Skip to content</a>
+  <!-- ── Top app bar ──────────────────────────────────────────────────────── -->
+  <header class="p31-q-surface p31-top-bar" data-p31-elev="2" role="banner">
+    <a href="/" class="p31-top-bar__wordmark" aria-label="P31 Labs home">P31 <span class="p31-top-bar__accent">Labs</span></a>
+    <nav class="p31-top-bar__nav" aria-label="Global">
+      <a href="/hub.html">Hub</a>
+      <a href="/connect.html">Connect</a>
+    </nav>
+  </header>
+
+
+
 <a href="#main" style="position:absolute;left:-9999px;top:0;padding:0.5rem 1rem;background:var(--p31-void);color:var(--p31-teal);font-size:0.875rem;z-index:9999;border-radius:0 0 4px 4px;text-decoration:none" onfocus="this.style.left='0'" onblur="this.style.left='-9999px'">Skip to main content</a>
   <header class="panel-wrap" style="max-width:48rem;padding-bottom:0.5rem">
     <p class="kicker">P31 labs — map / ethical monetization</p>
@@ -165,12 +185,12 @@
 
   <div id="toast" class="toast" hidden role="status"></div>
 
-  <section class="terminal-glass panel-wrap" aria-labelledby="fund-heading">
+  <section class="p31-q-terminal panel-wrap" aria-labelledby="fund-heading">
     <p class="fund-title" id="fund-heading">Infrastructure Telemetry Fund</p>
-    <p class="fund-copy mono" style="font-size:0.7rem;line-height:1.65;margin-bottom:1rem;color:var(--ede-muted);">
+    <p class="fund-copy mono" style="font-size:0.7rem;line-height:1.65;margin-bottom:1rem;color:var(--p31-muted);">
       Supports mesh observability, passkey infra, Sovereign Operator Grants, and humane assistive tooling. Amount is chosen on Stripe’s hosted Checkout; Sponsors billing is on GitHub.
     </p>
-    <p class="mono" style="font-size:0.7rem;color:var(--ede-muted);margin:0;">
+    <p class="mono" style="font-size:0.7rem;color:var(--p31-muted);margin:0;">
       Canonical MAP link → optional <span style="color:var(--p31-cyan);">client_reference_id</span>
     </p>
 
@@ -189,7 +209,7 @@
     </p>
   </section>
 
-  <footer style="text-align:center;padding:2rem 1rem 3rem;font-size:0.72rem;color:var(--ede-muted);">
+  <footer style="text-align:center;padding:2rem 1rem 3rem;font-size:0.72rem;color:var(--p31-muted);">
     <p class="mono" style="margin:0">EIN 42-1888158 · P31 Labs · <a href="/" style="color:var(--p31-teal)">Hub</a></p>
   </footer>
 
@@ -273,5 +293,17 @@
   });
 })();
   </script>
+
+  <!-- Starfield init -->
+  <script type="module">
+    const cv = document.getElementById("starfield-canvas");
+    if (cv) {
+      import("/lib/p31-starfield-static-plate.js")
+        .then(({ initStaticStarPlate }) => initStaticStarPlate(cv, { preset: "hub" }))
+        .catch(() => {});
+    }
+  </script>
+  <script src="/lib/atmosphere/p31-atmosphere-client.js" defer></script>
+  <script src="/lib/p31-return-ribbon.js" defer></script>
 </body>
 </html>
