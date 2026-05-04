@@ -91,8 +91,8 @@ export function initStaticStarPlate(canvas, opts = {}) {
     for (let i = 0; i < dotCount; i++) {
       const ci    = Math.floor(rng() * STAR_COLORS.length);
       const [r, g, b] = STAR_COLORS[ci];
-      const alpha = 0.22 + rng() * 0.60;           // 0.22 – 0.82
-      const size  = alpha > 0.6 ? rng() * 1.2 + 0.6 : rng() * 0.7 + 0.2;
+      const alpha = 0.55 + rng() * 0.45;           // 0.55 – 1.0
+      const size  = alpha > 0.75 ? rng() * 1.8 + 1.0 : rng() * 1.1 + 0.5;
       // Stream timing: each star gets its own random interval (4 – 20 s)
       const intervalMs = 4000 + rng() * 16000;
       const phaseMs    = rng() * intervalMs;       // stagger initial fires
@@ -131,6 +131,12 @@ export function initStaticStarPlate(canvas, opts = {}) {
     ctx.textAlign = 'center';
 
     for (const dot of dots) {
+      // Star glow halo
+      const [gr, gg, gb] = dot.rgb;
+      ctx.fillStyle = `rgba(${gr},${gg},${gb},${(dot.alpha * 0.18).toFixed(3)})`;
+      ctx.beginPath();
+      ctx.arc(dot.x, dot.y, dot.r * 3.5, 0, Math.PI * 2);
+      ctx.fill();
       // Star core
       ctx.fillStyle = dot.color;
       ctx.beginPath();
@@ -156,7 +162,7 @@ export function initStaticStarPlate(canvas, opts = {}) {
         // Head char: bright; trail: fades toward tail
         const trailFrac  = 1 - i / len;            // 1.0 at head, 0 at tail
         const fadeOut    = Math.max(0, 1 - (elapsed - len * STREAM_SPEED) / 600);
-        const charAlpha  = trailFrac * trailFrac * fadeOut * 0.95;
+        const charAlpha  = trailFrac * fadeOut * 1.0;
 
         ctx.fillStyle = `rgba(${r},${g},${b},${charAlpha.toFixed(3)})`;
         ctx.fillText(chars[i], dot.x, cy);
