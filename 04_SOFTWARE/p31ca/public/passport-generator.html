@@ -43,12 +43,13 @@
   <link rel="manifest" href="/p31-mesh.webmanifest" crossorigin="anonymous" />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   <title>P31 Cognitive Passport — Generator (v1)</title>
+  <link rel="stylesheet" href="/lib/p31-qmu-tokens.css" />
   <link rel="stylesheet" href="/p31-style.css" />
   <link rel="stylesheet" href="/p31-shared-surface.css" />
-  <link rel="stylesheet" href="p31-responsive-surface.css" />
+  <link rel="stylesheet" href="/p31-responsive-surface.css" />
   <link rel="stylesheet" href="/design-assets/starfield/p31-larmor-fields.css" />
   <link rel="stylesheet" href="/lib/p31-starfield.css" />
-  <script src="lib/p31-subject-prefs.js"></script>
+  <script src="/lib/p31-subject-prefs.js"></script>
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -63,11 +64,9 @@
     "publisher": { "@type": "Organization", "name": "P31 Labs", "url": "https://p31ca.org" }
   }
   </script>
-  <link rel="preconnect" href="https://rsms.me/">
-  <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
     /* Cognitive Passport — public release shell.
        Tokens + components from cognitive-passport/p31-style.css (auto-generated).
@@ -219,7 +218,7 @@
     /* Audience picker — composes p31-q-chip with audience-card so existing JS keeps working */
     .audience-vault { margin-bottom: var(--p31-space-5); }
     .vault-lede {
-      font-family: "Playfair Display", Georgia, "Times New Roman", serif;
+      font-family: var(--p31-font-sans);
       font-style: italic;
       font-size: clamp(1.2rem, 2.2vw + 0.75rem, 1.55rem);
       color: color-mix(in srgb, var(--p31-cloud) 94%, var(--p31-muted));
@@ -568,11 +567,17 @@
   </style>
 </head>
 <body class="p31-mesh-m-first p31-responsive-surface p31-has-return-ribbon">
-  <a class="cp-skip skip-link p31-doc-skip" href="#fill">Skip to passport form</a>
+  <a class="cp-skip skip-link p31-doc-skip p31-skip-link" href="#fill">Skip to passport form</a>
 
   <div id="passport-starfield-wrap" aria-hidden="true" style="position:fixed;inset:0;z-index:0;pointer-events:none">
     <canvas id="passport-starfield" class="p31-starfield-canvas" style="display:block;width:100%;height:100%;opacity:0.5"></canvas>
   </div>
+
+  <!-- ── Canonical top app bar ──────────────────────────────────────────── -->
+  <header class="p31-q-surface p31-top-bar" data-p31-elev="2" role="banner">
+    <a href="/" class="p31-top-bar__wordmark" aria-label="P31 Labs home">P31 <span class="p31-top-bar__accent">Labs</span></a>
+    <nav class="p31-top-bar__nav" aria-label="Global"><a href="/hub.html">Hub</a><a href="/connect.html">Connect</a></nav>
+  </header>
 
   <div class="p31-shell">
     <header class="cp-hero p31-q-card" data-p31-tone="teal">
@@ -1372,6 +1377,7 @@
     const cv = document.getElementById("passport-starfield");
     if (cv instanceof HTMLCanvasElement) void bootAtmosphereStarfieldCanvas("cognitive-passport", cv);
   </script>
-  <script src="lib/p31-return-ribbon.js" data-local-soup="../soup.html" defer></script>
+  <script src="/lib/atmosphere/p31-atmosphere-client.js" defer></script>
+  <script src="/lib/p31-return-ribbon.js" data-local-soup="../soup.html" defer></script>
 </body>
 </html>
