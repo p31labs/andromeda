@@ -43,6 +43,18 @@ const SKIP_CHROME = new Set([
   "404.html",
 ]);
 
+// ── Canonical starfield block ──────────────────────────────────────────────────
+const STARFIELD_BLOCK = `<canvas id="p31-star-plate" width="4" height="4" aria-hidden="true" style="position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;display:block"></canvas>
+<script type="module">
+  const cv = document.getElementById("p31-star-plate");
+  if (cv instanceof HTMLCanvasElement) {
+    try {
+      const mod = await import("/lib/p31-starfield-static-plate.js");
+      mod.initStaticStarPlate(cv, { preset: "hub" });
+    } catch (_e) { /* offline-friendly */ }
+  }
+</script>`;
+
 // ── Canonical nav HTML ─────────────────────────────────────────────────────────
 const CANONICAL_NAV = `<nav class="nav">
   <div class="nav-inner">
@@ -204,6 +216,16 @@ function removeOldSkipLink(html) {
  */
 function fixPublicLibPaths(html) {
   return html.replace(/\/public\/lib\//g, "/lib/");
+}
+
+/**
+ * Fix broken starfield import paths.
+ * /design-assets/starfield/p31-starfield-static-plate.js → /lib/p31-starfield-static-plate.js
+ * ./design-assets/starfield/p31-starfield-static-plate.js → /lib/p31-starfield-static-plate.js
+ */
+function fixStarfieldPaths(html) {
+  return html
+    .replace(/\.?\/design-assets\/starfield\/p31-starfield-static-plate\.js/g, "/lib/p31-starfield-static-plate.js");
 }
 
 /**
@@ -397,6 +419,7 @@ for (const file of htmlFiles) {
   // ════════════════════════════════════════════════════════════════════════════
 
   html = fixPublicLibPaths(html);
+  html = fixStarfieldPaths(html);
   html = removeTopBarComment(html);
   html = removeTopBar(html);
   html = removeStarfieldCanvas(html);
@@ -461,7 +484,20 @@ for (const file of htmlFiles) {
     }
   }
 
-  // About pages: only need Step A (already done above)
+  // ════════════════════════════════════════════════════════════════════════════
+  // STEP C — Inject starfield on ALL pages that have canonical nav
+  // ════════════════════════════════════════════════════════════════════════════
+
+  if (!html.includes("p31-starfield-static-plate")) {
+    const navClassIdx = html.indexOf('class="nav"');
+    if (navClassIdx !== -1) {
+      const navCloseIdx = html.indexOf("</nav>", navClassIdx);
+      if (navCloseIdx !== -1) {
+        const insertAt = navCloseIdx + "</nav>".length;
+        html = html.slice(0, insertAt) + "\n" + STARFIELD_BLOCK + html.slice(insertAt);
+      }
+    }
+  }
 
   // ── Write (or dry-run) ──────────────────────────────────────────────────────
   if (html === original) {

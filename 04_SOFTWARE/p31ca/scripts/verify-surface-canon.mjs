@@ -12,6 +12,7 @@
  *   7. ambient-radial     ambient-radial-fixed div (CSS ambient background)
  *   8. nav                canonical <nav class="nav"> header
  *   9. ebc-footer         P31:mission-ebc footer
+ *  10. starfield          /lib/p31-starfield-static-plate.js static star plate
  *
  * FORBIDDEN on every page:
  *   - terminal-glass      old CRT scanline aesthetic
@@ -53,6 +54,7 @@ const REQUIRED = [
   { id: "ambient",        needle: "ambient-radial-fixed",    label: "ambient-radial-fixed background"},
   { id: "nav",            needle: 'class="nav"',             label: "canonical .nav header"         },
   { id: "ebc-footer",     needle: "p31-mission-trio--ebc",   label: "EBC mission footer"            },
+  { id: "starfield",      needle: "p31-starfield-static-plate", label: "static star plate"         },
 ];
 
 const FORBIDDEN = [

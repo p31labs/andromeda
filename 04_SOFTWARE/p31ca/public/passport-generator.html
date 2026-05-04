@@ -584,6 +584,16 @@
     </div>
   </div>
 </nav>
+<canvas id="p31-star-plate" width="4" height="4" aria-hidden="true" style="position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;display:block"></canvas>
+<script type="module">
+  const cv = document.getElementById("p31-star-plate");
+  if (cv instanceof HTMLCanvasElement) {
+    try {
+      const mod = await import("/lib/p31-starfield-static-plate.js");
+      mod.initStaticStarPlate(cv, { preset: "hub" });
+    } catch (_e) { /* offline-friendly */ }
+  }
+</script>
 
   <div id="passport-starfield-wrap" aria-hidden="true" style="position:fixed;inset:0;z-index:0;pointer-events:none">
     <canvas id="passport-starfield" class="p31-starfield-canvas" style="display:block;width:100%;height:100%;opacity:0.5"></canvas>
