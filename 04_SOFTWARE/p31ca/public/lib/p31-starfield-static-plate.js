@@ -2,6 +2,19 @@
  * Static star plate — fixed luminance dots (breaker panel / precision surfaces).
  * Same night sky as animated starfield; no drift. Pair with docs/P31-UNIVERSAL-UI-VISION.md §5.
  */
+
+// P31 star palette: teal · coral · phosphor · butter · warm-white
+const STAR_COLORS = [
+  [77,  184, 168],  // teal     (most common)
+  [77,  184, 168],
+  [77,  184, 168],
+  [204, 98,  71],   // coral
+  [59,  163, 114],  // phosphor
+  [205, 168, 82],   // butter
+  [245, 240, 232],  // warm white
+  [255, 255, 255],  // pure white (rare)
+];
+
 function mulberry32(a) {
   return function () {
     let t = (a += 0x6d2b79f5);
@@ -33,12 +46,13 @@ export function initStaticStarPlate(canvas, opts = {}) {
   const preset = opts.preset || "commandCenter";
   const slug = PRESET_PREFIX[preset] || preset.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase();
   const cssDotCount = readCssVar(`--p31-sf-preset-${slug}-dot-count`, NaN);
-  const cssAlpha = readCssVar(`--p31-sf-preset-${slug}-base-alpha-cap`, NaN);
 
   let dotCount =
     opts.dotCount != null ? opts.dotCount : Number.isFinite(cssDotCount) ? cssDotCount : preset === "operatorDesk" ? 120 : 140;
-  let alpha =
-    opts.alpha != null ? opts.alpha : Number.isFinite(cssAlpha) ? cssAlpha : preset === "operatorDesk" ? 0.09 : 0.11;
+
+  // Alpha range: dim stars 0.25 → bright stars 0.85
+  const alphaMin = 0.22;
+  const alphaMax = 0.82;
 
   const reduced =
     typeof matchMedia !== "undefined" && matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -65,19 +79,20 @@ export function initStaticStarPlate(canvas, opts = {}) {
     const rng = mulberry32(seed);
     dots = [];
     for (let i = 0; i < dotCount; i++) {
-      dots.push({
-        x: rng() * w,
-        y: rng() * h,
-        r: (rng() * 0.65 + 0.25) * dpr,
-      });
+      const colorIdx = Math.floor(rng() * STAR_COLORS.length);
+      const [r, g, b] = STAR_COLORS[colorIdx];
+      const alpha = alphaMin + rng() * (alphaMax - alphaMin);
+      // Brighter stars are slightly larger
+      const size = alpha > 0.6 ? rng() * 1.2 + 0.6 : rng() * 0.7 + 0.2;
+      dots.push({ x: rng() * w, y: rng() * h, r: size * dpr, color: `rgba(${r},${g},${b},${alpha.toFixed(3)})` });
     }
     draw();
   }
 
   function draw() {
     ctx.clearRect(0, 0, w, h);
-    ctx.fillStyle = `rgba(180, 210, 205, ${alpha})`;
     for (const d of dots) {
+      ctx.fillStyle = d.color;
       ctx.beginPath();
       ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
       ctx.fill();
