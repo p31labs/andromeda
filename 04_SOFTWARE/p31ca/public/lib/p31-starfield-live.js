@@ -216,15 +216,34 @@ export async function initLiveStarfield(canvas, opts = {}) {
     s.color = `rgba(${s.rgb[0]},${s.rgb[1]},${s.rgb[2]},${s.alpha.toFixed(3)})`;
   }
 
+  function notify(opts) {
+    if (typeof window !== 'undefined' && typeof window.p31Notify === 'function') {
+      window.p31Notify(opts);
+    }
+  }
+
   function setEntityState(id, state, streamData = null) {
     const s = entityMap.get(id);
     if (!s) return;
+    const prev = s.state;
     s.state = state;
-    if (state === 'active') {
-      s.activeUntil = performance.now() + 2500;
-    }
+    if (state === 'active') s.activeUntil = performance.now() + 2500;
     updateStarColor(s);
     if (streamData) triggerEntityStream(s, streamData);
+
+    // Fire molecular notification on meaningful transitions
+    if (prev === state && state !== 'active') return;  // no change, no noise
+    if (state === 'down' && prev !== 'down') {
+      notify({ severity: 'critical', title: `${s.label} DOWN`, groupId: s.kind, lifespan: 15000 });
+    } else if (state === 'healthy' && prev === 'down') {
+      notify({ severity: 'success', title: `${s.label} recovered`, groupId: s.kind });
+    } else if (state === 'degraded' && prev !== 'degraded') {
+      notify({ severity: 'warning', title: `${s.label} degraded`, groupId: s.kind });
+    } else if (state === 'active' && s.kind === 'family') {
+      notify({ severity: 'mesh', title: streamData?.[1] ? `${s.label}: ${streamData[1]}` : s.label, groupId: 'family' });
+    } else if (state === 'active' && s.kind === 'social') {
+      notify({ severity: 'info', title: streamData?.[1] ? `${s.label}: ${streamData[1]}` : s.label, groupId: 'social' });
+    }
   }
 
   // ── Health polling ────────────────────────────────────────────────────────
@@ -399,8 +418,34 @@ export async function initLiveStarfield(canvas, opts = {}) {
   setTimeout(probeGitHub, 3000);
   setInterval(probeGitHub, 5 * 60 * 1000);
 
+  // ── System state → quantum state ──────────────────────────────────────────
+  async function syncSystemState() {
+    try {
+      const r = await fetch('https://api.phosphorus31.org/api/state', {
+        signal: AbortSignal.timeout(4000), credentials: 'omit', cache: 'no-store',
+      });
+      if (!r.ok) return;
+      const j = await r.json();
+      const st = j?.state ?? j;
+      const voltage = (st?.system_voltage ?? st?.systemVoltage ?? 'GREEN').toUpperCase();
+      const spoons  = st?.current_spoons  ?? st?.currentSpoons ?? 8;
+      const qState  = voltage === 'RED' || spoons <= 2  ? 'plasma'
+                    : voltage === 'AMBER' || spoons <= 5 ? 'gas'
+                    : 'liquid';
+      if (typeof window !== 'undefined' && window.p31MolField?.get) {
+        window.p31MolField.get().setQuantumState(qState);
+      }
+      // Also notify on voltage change
+      if (voltage === 'RED')   notify({ severity: 'critical', title: `System voltage: RED`,   groupId: 'system', lifespan: 20000 });
+      if (voltage === 'AMBER') notify({ severity: 'warning',  title: `System voltage: AMBER`, groupId: 'system' });
+    } catch { /* offline */ }
+  }
+
   document.addEventListener('visibilitychange', onVis);
   raf = requestAnimationFrame(loop);
+
+  syncSystemState();
+  setInterval(syncSystemState, 5 * 60 * 1000);
 
   return {
     destroy() {
