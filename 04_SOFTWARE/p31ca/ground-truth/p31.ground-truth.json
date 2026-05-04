@@ -1,13 +1,13 @@
 {
   "schema": "p31.ground-truth/1.0.0",
   "version": "1.0.0",
-  "updated": "2026-04-30",
-  "mission": "Build, create, connect — decentralized family mesh. This file is the machine-routable spine for p31ca.org; human narrative stays in root CLAUDE.md, P31 COGNITIVE PASSPORT — v5.md, and docs/. Version namespaces: P31 home docs/CANONICAL-NUMBERING.md; values: P31 home p31-constants.json. Source→sink alignment: P31 home p31-alignment.json (p31.alignment/1.0.0) and docs/P31-ALIGNMENT-SYSTEM.md (ephemeralization; verify: npm run verify:alignment).",
+  "updated": "2026-05-04",
+  "mission": "Build, create, connect \u2014 decentralized family mesh. This file is the machine-routable spine for p31ca.org; human narrative stays in root CLAUDE.md, P31 COGNITIVE PASSPORT \u2014 v5.md, and docs/. Version namespaces: P31 home docs/CANONICAL-NUMBERING.md; values: P31 home p31-constants.json. Source\u2192sink alignment: P31 home p31-alignment.json (p31.alignment/1.0.0) and docs/P31-ALIGNMENT-SYSTEM.md (ephemeralization; verify: npm run verify:alignment).",
   "canonicalNumbering": {
     "spec": "P31 home: docs/CANONICAL-NUMBERING.md",
     "passportLongForm": {
       "edition": "5.1",
-      "sourceFile": "P31 COGNITIVE PASSPORT — v5.md",
+      "sourceFile": "P31 COGNITIVE PASSPORT \u2014 v5.md",
       "h1Authoritative": true
     },
     "jsonSchemaIds": {
@@ -22,7 +22,7 @@
     "bondingTestBaseline": {
       "tests": 424,
       "suites": 32,
-      "asOf": "2026-04-30"
+      "asOf": "2026-05-04"
     }
   },
   "sites": {
@@ -34,7 +34,7 @@
     "phosphorus31": {
       "label": "Public org / programs (phosphorus31.org)",
       "publicRoot": "https://phosphorus31.org",
-      "repoPath": "separate tree — not governed by this file"
+      "repoPath": "separate tree \u2014 not governed by this file"
     },
     "andromedaCorporate": {
       "label": "P31 Open Doc Suite + corporate one-pager (Andromeda repo, not a separate deploy)",
@@ -43,7 +43,7 @@
       "publicSurfaceOnP31ca": "https://p31ca.org/open-doc-suite.html"
     },
     "homeVertical": {
-      "label": "P31 home — Soup, passport authoring, wcd33",
+      "label": "P31 home \u2014 Soup, passport authoring, wcd33",
       "repoPath": "workspace above this monorepo"
     }
   },
@@ -51,61 +51,61 @@
     "glassBox": {
       "path": "/glass-box.html",
       "implementation": "public/glass-box.html (mirrored from P31 home glass-box.html via npm run build:glass-box)",
-      "label": "P31 Glass Box — public live transparency terminal",
-      "note": "Schema p31.glassBox/0.1.0. Streams synthetic CLI playbacks (verify:*, launch:audit, reports:simulate, ecosystem:glass) + a real-time poll of the public reports/index.json. No tracking, no analytics, no operator secrets — only what we'd publish anyway. Short routes /glass and /glass-box in edgeRedirects (the /transparency short formerly aliased here now serves the formal annual transparency report at /transparency.html, PEER-2A). Not the operator UI (CWP-P31-UI-2026-01) which is at /ops and is gated."
+      "label": "P31 Glass Box \u2014 public live transparency terminal",
+      "note": "Schema p31.glassBox/0.1.0. Streams synthetic CLI playbacks (verify:*, launch:audit, reports:simulate, ecosystem:glass) + a real-time poll of the public reports/index.json. No tracking, no analytics, no operator secrets \u2014 only what we'd publish anyway. Short routes /glass and /glass-box in edgeRedirects (the /transparency short formerly aliased here now serves the formal annual transparency report at /transparency.html, PEER-2A). Not the operator UI (CWP-P31-UI-2026-01) which is at /ops and is gated."
     },
     "demosPublic": {
       "path": "/demos/index.html",
       "implementation": "public/demos/ (mirrored from P31 home demos/ via npm run build:demos)",
-      "label": "P31 visual demos — mind-bending walkthroughs",
-      "note": "Schema p31.demosIndex/0.1.0. Four self-contained visualizations (K₄ family mesh · alignment graph · Larmor pulse · glass box) + share-kit captions. Reads real data from p31-alignment.json + p31-constants.json. Short routes /visuals and /demos-public in edgeRedirects (the existing /demos points at demo-labs.html, a different product — see routes.demoLabs in this file)."
+      "label": "P31 visual demos \u2014 mind-bending walkthroughs",
+      "note": "Schema p31.demosIndex/0.1.0. Four self-contained visualizations (K\u2084 family mesh \u00b7 alignment graph \u00b7 Larmor pulse \u00b7 glass box) + share-kit captions. Reads real data from p31-alignment.json + p31-constants.json. Short routes /visuals and /demos-public in edgeRedirects (the existing /demos points at demo-labs.html, a different product \u2014 see routes.demoLabs in this file)."
     },
     "canonicalDome": {
       "path": "/dome/",
       "implementation": "src/pages/dome.astro",
-      "label": "Sovereign Cockpit Dome (K₄ interactive)",
+      "label": "Sovereign Cockpit Dome (K\u2084 interactive)",
       "note": "Primary CTA from hub home. Not the same product as observatory. Astro uses trailingSlash:'always'; bare /dome redirects to /dome/. Do not add _redirects that send /dome/ back to /dome."
     },
     "observatory": {
       "path": "/observatory.html",
       "implementation": "public/observatory.html",
-      "label": "OBSERVATORY — geodesic panel inspector",
+      "label": "OBSERVATORY \u2014 geodesic panel inspector",
       "registryId": "observatory",
       "note": "Hub registry appUrl must stay observatory.html."
     },
     "k4market": {
       "path": "/k4market.html",
       "implementation": "public/k4market.html",
-      "label": "K4 MARKET — tetrahedral price geometry (Three.js r160)",
+      "label": "K4 MARKET \u2014 tetrahedral price geometry (Three.js r160)",
       "registryId": "k4market",
       "note": "Main viz surface. Symbol search and Larmor ring live in tomography.html."
     },
     "tomography": {
       "path": "/tomography.html",
       "implementation": "public/archive/2025-early/tomography.html",
-      "label": "K4 TOMOGRAPHY — ARCHIVED 2026-05-03",
+      "label": "K4 TOMOGRAPHY \u2014 ARCHIVED 2026-05-03",
       "registryId": "tomography",
       "note": "Depth companion to k4market.html. Linked from k4market nav."
     },
     "quantumDeck": {
       "path": "/quantum-deck.html",
       "implementation": "public/quantum-deck.html",
-      "label": "QUANTUM DECK — fair shuffle demo (@p31/quantum-deck)",
+      "label": "QUANTUM DECK \u2014 fair shuffle demo (@p31/quantum-deck)",
       "registryId": "quantum-deck",
-      "note": "Schema meta p31.quantumDeckPage/0.1.0. Browser core mirrored from packages/quantum-deck/src/deck.mjs via verify:quantum-deck. Short /deck in _redirects. crypto.getRandomValues — not destiny; no gambling UX."
+      "note": "Schema meta p31.quantumDeckPage/0.1.0. Browser core mirrored from packages/quantum-deck/src/deck.mjs via verify:quantum-deck. Short /deck in _redirects. crypto.getRandomValues \u2014 not destiny; no gambling UX."
     },
     "quantumComposer": {
       "path": "/quantum-composer.html",
       "implementation": "public/quantum-composer.html",
-      "label": "Quantum composer — K₄ Web Audio partials on the Larmor ladder",
+      "label": "Quantum composer \u2014 K\u2084 Web Audio partials on the Larmor ladder",
       "registryId": "quantum-composer",
       "note": "Meta p31.quantumComposerPage/0.1.0. Four oscillators at Larmor/divisors; TRIM-rate interference via p31-quantum-grandfather-boot; verify:quantum-clock locks LARMOR_HZ to p31-constants.json. Short /composer. Pedagogy, not a physics engine."
     },
     "planetaryOnboard": {
       "path": "/planetary-onboard.html",
       "implementation": "public/planetary-onboard.html",
-      "label": "Planetary onboard — threshold (four doors, Gray Rock first paint)",
-      "note": "Static threshold: void + K₄ + tagline → understand | use | build | know. No welcome JSON fetch on this page; p31.welcomePackages still consumed by mesh-start.html. ?fast=1 skips timers; ?welcome=kid&?a=child opens Door 2 parent path. Passkey / pact on mesh-start + auth when invited."
+      "label": "Planetary onboard \u2014 threshold (four doors, Gray Rock first paint)",
+      "note": "Static threshold: void + K\u2084 + tagline \u2192 understand | use | build | know. No welcome JSON fetch on this page; p31.welcomePackages still consumed by mesh-start.html. ?fast=1 skips timers; ?welcome=kid&?a=child opens Door 2 parent path. Passkey / pact on mesh-start + auth when invited."
     },
     "welcomePackages": {
       "path": "/p31-welcome-packages.json",
@@ -116,19 +116,19 @@
     "superCentaurStarter": {
       "path": "/p31-super-centaur-starter.html",
       "implementation": "public/p31-super-centaur-starter.html",
-      "label": "Super-Centaur starter pack — data, finance, structural sovereignty (human page)",
+      "label": "Super-Centaur starter pack \u2014 data, finance, structural sovereignty (human page)",
       "note": "Tailwind CDN. Indexes CWP-P31-SC / MAP / ECO, mesh-bridge MESH table, onboarding links. Short /centaur and /super-centaur in _redirects. Pair with p31-super-centaur-pack.json."
     },
     "superCentaurPack": {
       "path": "/p31-super-centaur-pack.json",
       "implementation": "public/p31-super-centaur-pack.json",
-      "label": "Super-Centaur starter pack — machine manifest",
+      "label": "Super-Centaur starter pack \u2014 machine manifest",
       "note": "Schema p31.superCentaurStarterPack/1.0.0. CWPs, mesh fleet URLs from CWP-30, MAP anchors, p31ca URLs, condensed checklist."
     },
     "familySovereignPack": {
       "path": "/family-sovereign-pack.html",
       "implementation": "public/family-sovereign-pack.html",
-      "label": "Family sovereign pack — printable household delivery",
+      "label": "Family sovereign pack \u2014 printable household delivery",
       "note": "Lobby URLs, welcome-package entry points, edge anchors, troubleshooting. Canonical prose: P31 home docs/FAMILY-SOVEREIGN-PACK.md. Short /family-pack in _redirects. Pairs with p31-super-centaur-pack.json."
     },
     "p31StyleCss": {
@@ -146,221 +146,221 @@
     "p31CanonDemo": {
       "path": "/p31-canon-demo.html",
       "implementation": "public/p31-canon-demo.html",
-      "label": "Universal canon — interactive hub/org switch + token gallery",
+      "label": "Universal canon \u2014 interactive hub/org switch + token gallery",
       "note": "Tailwind CDN. Short /canon. Showcases p31-universal-canon.json via p31-style.css."
     },
     "liveFleetBundle": {
       "path": "/p31-live-fleet.json",
       "implementation": "public/p31-live-fleet.json",
-      "label": "Live fleet bundle — sites + Worker URLs (machine)",
+      "label": "Live fleet bundle \u2014 sites + Worker URLs (machine)",
       "note": "Schema p31.liveFleet/1.0.0. Mirror P31 home p31-live-fleet.json; verify-live-fleet-mesh vs p31-mesh-constants.json in prebuild."
     },
     "liveFleetDemo": {
       "path": "/live-fleet-demo.html",
       "implementation": "public/live-fleet-demo.html",
-      "label": "Live fleet map — interactive demo page",
+      "label": "Live fleet map \u2014 interactive demo page",
       "note": "Short /fleet in _redirects. Fetches p31-live-fleet.json (schema p31.liveFleet). For Workers/bots/agents interactive room + probes use routes.fleetAgentsConsole (/agents); do not conflate the two products."
     },
     "fleetEntitiesBundle": {
       "path": "/p31-fleet-entities.json",
       "implementation": "public/p31-fleet-entities.json",
-      "label": "Fleet entities — Workers, bots, Cortex sub-agents — machine roster",
+      "label": "Fleet entities \u2014 Workers, bots, Cortex sub-agents \u2014 machine roster",
       "note": "Schema p31.fleetEntities/1.0.0. Built by npm run build:fleet-entities (merged from published p31-live-fleet.json + supplemental agents/bots)."
     },
     "fleetAgentsConsole": {
       "path": "/fleet-agents.html",
       "implementation": "public/fleet-agents.html",
-      "label": "Fleet agents room — interactive directory + probes",
+      "label": "Fleet agents room \u2014 interactive directory + probes",
       "note": "Short /agents in _redirects. Loads p31-fleet-entities.json; not the same as liveFleetDemo (raw liveFleet map) or fleet portal (URL roster from build:fleet-portal). Stub pages public/agent/<slug>/ canonical to this UI."
     },
     "demoLabs": {
       "path": "/demo-labs.html",
       "implementation": "public/demo-labs.html",
-      "label": "Demo labs — curated static demos index",
-      "note": "Short /demos in _redirects. Lobby links fleet map, agents (/agents), canon, contract builder (/contracts), quantum composer (/composer), ops, delta, connect, onboard, centaur, kids, journey, /cars (Social Molecules · C.A.R.S.)."
+      "label": "Demo labs \u2014 curated static demos index",
+      "note": "Short /demos in _redirects. Lobby links fleet map, agents (/agents), canon, contract builder (/contracts), quantum composer (/composer), ops, delta, connect, onboard, centaur, kids, journey, /cars (Social Molecules \u00b7 C.A.R.S.)."
     },
     "sovereignLab": {
       "path": "/p31-sovereign-lab.html",
       "implementation": "public/p31-sovereign-lab.html",
-      "label": "Sovereign Lab — dome trim · Web Serial · optional C.A.R.S. labTelemetry bridge",
-      "note": "Mirrored from P31 home; npm run sync:sovereign-p31ca (root). Short /lab. Optional ?carsWs= → mock WS streams coherence into eventLog (cars-contract)."
+      "label": "Sovereign Lab \u2014 dome trim \u00b7 Web Serial \u00b7 optional C.A.R.S. labTelemetry bridge",
+      "note": "Mirrored from P31 home; npm run sync:sovereign-p31ca (root). Short /lab. Optional ?carsWs= \u2192 mock WS streams coherence into eventLog (cars-contract)."
     },
     "sovereignLabV2": {
       "path": "/p31-sovereign-lab-v2.html",
       "implementation": "public/p31-sovereign-lab-v2.html",
-      "label": "Sovereign Lab v2 — live worker fleet control, K4 mesh routing, trim-tab tuning",
+      "label": "Sovereign Lab v2 \u2014 live worker fleet control, K4 mesh routing, trim-tab tuning",
       "note": "Three-panel interface: fleet panel (14 Workers), Three.js K4 tetrahedron stage, mesh state panel. Probes Worker health, routes to endpoints, connects to Geodesic Room WS. P31 home source: p31-sovereign-lab-v2.html. Short /lab2."
     },
     "browserSlicer": {
       "path": "/p31-slicer.html",
       "implementation": "public/p31-slicer.html",
-      "label": "Browser slicer — Kiri:Moto shell + K₄ STL",
+      "label": "Browser slicer \u2014 Kiri:Moto shell + K\u2084 STL",
       "note": "Mirrored from P31 home; sync:sovereign-p31ca. Short /slicer. STL under public/design-assets/stl/."
     },
     "visionJourney": {
       "path": "/vision.html",
       "implementation": "public/vision.html",
-      "label": "Core journey — onboard → auth → EDE home (static narrative + CTAs)",
-      "note": "Canonical P31 hub path in one page: /onboard, /auth, /start with Wye→Delta and Mesh links. Short /journey in _redirects. No medical or legal advice."
+      "label": "Core journey \u2014 onboard \u2192 auth \u2192 EDE home (static narrative + CTAs)",
+      "note": "Canonical P31 hub path in one page: /onboard, /auth, /start with Wye\u2192Delta and Mesh links. Short /journey in _redirects. No medical or legal advice."
     },
     "meshStart": {
       "path": "/mesh-start.html",
       "implementation": "public/mesh-start.html",
-      "label": "EDE Personal — private assistant + EDE entry (k4-personal)",
+      "label": "EDE Personal \u2014 private assistant + EDE entry (k4-personal)",
       "note": "Loads /p31-welcome-packages.json from meta.welcomeKey or ?welcome=. Personalizes headline, tetra blurb, prompt chips; merges package docks into first-time PUT /tetra. Hub fusion ?hub=&hubs=. ?agent= staging. Short /start in _redirects."
     },
     "socialMoleculesCars": {
       "path": "/social-molecules.html",
       "implementation": "public/social-molecules.html",
-      "label": "Social Molecules — C.A.R.S. operator shell (boot, load, settings, field chat)",
+      "label": "Social Molecules \u2014 C.A.R.S. operator shell (boot, load, settings, field chat)",
       "registryId": "social-molecules",
       "note": "Hub card + about; short /cars in edgeRedirects. Live sim: bonding.p31ca.org/soup. Wire catalog: P31 home cars-contract/p31.carsWire.json."
     },
     "kidsGrowth": {
       "path": "/kids-growth.html",
       "implementation": "public/archive/2025-early/kids-growth.html",
-      "label": "Kids growth — S.J. & W.J. height/weight, milestones, export",
+      "label": "Kids growth \u2014 S.J. & W.J. height/weight, milestones, export",
       "note": "Static hub app; localStorage; Chart.js. Short /growth in _redirects. Not medical advice."
     },
     "kidsHome": {
       "path": "/kids-home.html",
       "implementation": "public/kids-home.html",
-      "label": "Household kids home — one screen to growth, missions, EDE, mesh, kid onboard",
+      "label": "Household kids home \u2014 one screen to growth, missions, EDE, mesh, kid onboard",
       "note": "p31.householdKidsHome/0.1.0. Short /kids. Large tiles; grown-up links below."
     },
     "initialBuild": {
       "path": "/initial-build.html",
       "implementation": "public/initial-build.html",
-      "label": "Initial Build — production entry for CWP-P31-IB-2026-01 (intake → subject_id → bake personal tetra)",
+      "label": "Initial Build \u2014 production entry for CWP-P31-IB-2026-01 (intake \u2192 subject_id \u2192 bake personal tetra)",
       "note": "Short /build in _redirects. Normative spec: integration-handoff/INITIAL-BUILD-SITE-STRICT-PLAN.md. Phased UI: shell today; full intake and PUT sequence per CWP WBS. Sister to CWP-P31-PAR (Personal Agent Room)."
     },
     "connect": {
       "path": "/connect.html",
       "implementation": "public/connect.html",
-      "label": "The Mesh — K₄ cage + product graph (Three.js r160)",
+      "label": "The Mesh \u2014 K\u2084 cage + product graph (Three.js r160)",
       "note": "Envision / Build / Connect navigator. Family cage + product satellites. Click nodes to open products."
     },
     "contractBuilder": {
       "path": "/contract-builder.html",
       "implementation": "public/contract-builder.html",
-      "label": "Contract builder — JSON contract registry from alignment sources",
+      "label": "Contract builder \u2014 JSON contract registry from alignment sources",
       "registryId": "contract-builder",
       "note": "Loads /p31-contract-registry.json (p31.contractRegistry/1.0.0). Built by P31 home npm run build:contract-registry; verify:contract-registry. Short /contracts in _redirects. Anchor p31.contractBuilder/0.1.0."
     },
     "cognitivePassportGenerator": {
       "path": "/passport-generator.html",
       "implementation": "public/passport-generator.html",
-      "label": "Cognitive Passport — static generator",
+      "label": "Cognitive Passport \u2014 static generator",
       "note": "Schema p31.cognitivePassport/1.1.0 (CWP-PHOS-2026-01 C-4 atomic bump). Short /passport in _redirects (AGENTS live URL). Mirror: npm run sync:passport from P31 home cognitive-passport/index.html. verify:passport."
     },
     "welcomeStranger": {
       "path": "/welcome.html",
       "implementation": "public/welcome.html",
-      "label": "Welcome — meat-space & household door",
-      "note": "Connection-first CTAs (household kit, mesh, passport, onboard); optional /why, /start, lab. Clean URL /welcome from welcome.html (no _redirects row — avoids CF Pages redirect loop). Short /together → /welcome (301). Ko-fi."
+      "label": "Welcome \u2014 meat-space & household door",
+      "note": "Connection-first CTAs (household kit, mesh, passport, onboard); optional /why, /start, lab. Clean URL /welcome from welcome.html (no _redirects row \u2014 avoids CF Pages redirect loop). Short /together \u2192 /welcome (301). Ko-fi."
     },
     "delta": {
       "path": "/delta.html",
       "implementation": "public/delta.html",
-      "label": "Wye→Delta — public narrative page explaining mesh resilience and onboarding",
-      "note": "No Three.js. Uses Tailwind CDN + small inline script: Wye↔Delta crossfade slider (same topology story as planetary-onboard ribbon). Links to onboard, connect, geodesic, mesh-start, family pack. Canonical /delta (Pages); /why in _redirects → delta.html."
+      "label": "Wye\u2192Delta \u2014 public narrative page explaining mesh resilience and onboarding",
+      "note": "No Three.js. Uses Tailwind CDN + small inline script: Wye\u2194Delta crossfade slider (same topology story as planetary-onboard ribbon). Links to onboard, connect, geodesic, mesh-start, family pack. Canonical /delta (Pages); /why in _redirects \u2192 delta.html."
     },
     "accessibility": {
       "path": "/accessibility.html",
       "implementation": "public/accessibility.html",
-      "label": "Accessibility statement — p31ca.org",
-      "note": "WCAG-oriented practices; barrier reporting. Canonical /accessibility (Pages); do not add /accessibility → accessibility.html in _redirects (308 loop)."
+      "label": "Accessibility statement \u2014 p31ca.org",
+      "note": "WCAG-oriented practices; barrier reporting. Canonical /accessibility (Pages); do not add /accessibility \u2192 accessibility.html in _redirects (308 loop)."
     },
     "contact": {
       "path": "/contact.html",
       "implementation": "public/contact.html",
-      "label": "Contact & imprint — P31 Labs",
+      "label": "Contact & imprint \u2014 P31 Labs",
       "note": "Entity, EIN, channels. Sync copy with p31-constants.json organization + contact. Canonical /contact (Pages)."
     },
     "openSource": {
       "path": "/open-source.html",
       "implementation": "public/open-source.html",
-      "label": "Open source — GitHub org and licenses",
+      "label": "Open source \u2014 GitHub org and licenses",
       "note": "Short /oss in _redirects."
     },
     "privacy": {
       "path": "/privacy.html",
       "implementation": "public/privacy.html",
-      "label": "Privacy — data practices for hub static tools and edge Workers",
+      "label": "Privacy \u2014 data practices for hub static tools and edge Workers",
       "note": "Canonical /privacy (Pages). High-level; not legal advice."
     },
     "publicSurfaceManifest": {
       "path": "/p31-public-surface.json",
       "implementation": "public/p31-public-surface.json",
-      "label": "Public surface manifest — generic deliverable index",
+      "label": "Public surface manifest \u2014 generic deliverable index",
       "note": "Schema p31.publicSurface/1.0.0. Trust/legal URLs + key JSON endpoints + .well-known/security.txt path."
     },
     "securityDisclosure": {
       "path": "/security-disclosure.html",
       "implementation": "public/security-disclosure.html",
-      "label": "Security disclosure — responsible reporting",
+      "label": "Security disclosure \u2014 responsible reporting",
       "note": "Short /security. Pairs with public/.well-known/security.txt."
     },
     "terms": {
       "path": "/terms.html",
       "implementation": "public/terms.html",
-      "label": "Terms of use — p31ca.org",
+      "label": "Terms of use \u2014 p31ca.org",
       "note": "Canonical /terms (Pages)."
     },
     "p31DeltaHiring": {
       "path": "/delta-hiring/index.html",
       "implementation": "public/delta-hiring/index.html",
-      "label": "P31 Delta — proof-based hiring (role packets, WCDs, p31.proofRecord)",
+      "label": "P31 Delta \u2014 proof-based hiring (role packets, WCDs, p31.proofRecord)",
       "note": "Vite static SPA: build in 04_SOFTWARE/p31-delta-hiring, run sync:p31ca, deploy with p31ca. Short /hiring in _redirects."
     },
     "messagingHub": {
       "path": "/messaging-hub.html",
       "implementation": "public/messaging-hub.html",
-      "label": "Messaging hub — static index of mesh, C.A.R.S., geodesic, operator, and mail-ingest paths",
+      "label": "Messaging hub \u2014 static index of mesh, C.A.R.S., geodesic, operator, and mail-ingest paths",
       "note": "No shared chat bus. Short /messages and /comms in _redirects. Schema anchor p31.messagingHub/0.1.0. Manifest: p31-public-surface.json messagingHub."
     },
     "auth": {
       "path": "/auth.html",
       "implementation": "public/auth.html",
-      "label": "Authenticate — passkey verification page for returning mesh members",
+      "label": "Authenticate \u2014 passkey verification page for returning mesh members",
       "note": "No Three.js. Calls /api/passkey/auth-begin + auth-finish. Falls back gracefully when Worker zone route is not live. Canonical /auth (Pages)."
     },
     "passkeyApi": {
       "path": "/api/passkey/*",
       "implementation": "workers/passkey/src/index.ts",
-      "label": "WebAuthn passkey API — register + auth (Worker)",
-      "note": "Not a static file. Production: zone route pattern p31ca.org/api/passkey/* → Worker p31-passkey (wrangler.toml env.production.routes). Endpoints: POST register-begin, register-finish, auth-begin, auth-finish. Hub static pages use same-origin relative paths (see mesh.passkeyApiBasePath in p31-constants.json). README: workers/passkey/README.md."
+      "label": "WebAuthn passkey API \u2014 register + auth (Worker)",
+      "note": "Not a static file. Production: zone route pattern p31ca.org/api/passkey/* \u2192 Worker p31-passkey (wrangler.toml env.production.routes). Endpoints: POST register-begin, register-finish, auth-begin, auth-finish. Hub static pages use same-origin relative paths (see mesh.passkeyApiBasePath in p31-constants.json). README: workers/passkey/README.md."
     },
     "educationProgressApi": {
       "path": "/api/education/*",
       "implementation": "workers/passkey/src/index.ts",
-      "label": "Education E3+ progress API — opaque subject key (Worker + D1)",
-      "note": "GET /api/education/progress/:subject_id returns p31.educationProgress/0.1.0; first-touch inserts D1 education_progress row. Same Worker mount as passkey — production route p31ca.org/api/education/*. Static portal: public/education/portal/index.html."
+      "label": "Education E3+ progress API \u2014 opaque subject key (Worker + D1)",
+      "note": "GET /api/education/progress/:subject_id returns p31.educationProgress/0.1.0; first-touch inserts D1 education_progress row. Same Worker mount as passkey \u2014 production route p31ca.org/api/education/*. Static portal: public/education/portal/index.html."
     },
     "nodeZeroHardwareApi": {
       "path": "/api/hardware/*",
       "implementation": "workers/passkey/src/node-zero.ts (+ src/index.ts router)",
-      "label": "Node Zero Phase 4 — hardware pairing challenge, operator bind, telemetry v0 ack",
-      "note": "POST /api/hardware/challenge (KV hw_pair:+6-digit code), POST /api/hardware/pair (D1 hardware_pairings), POST /api/hardware/telemetry (shape-validated stub). HTTPS only — no MQTT or cloud IoT. Contract docs/NODE-ZERO-FIRMWARE-CONTRACT.md — production zone route p31ca.org/api/hardware/* → p31-passkey."
+      "label": "Node Zero Phase 4 \u2014 hardware pairing challenge, operator bind, telemetry v0 ack",
+      "note": "POST /api/hardware/challenge (KV hw_pair:+6-digit code), POST /api/hardware/pair (D1 hardware_pairings), POST /api/hardware/telemetry (shape-validated stub). HTTPS only \u2014 no MQTT or cloud IoT. Contract docs/NODE-ZERO-FIRMWARE-CONTRACT.md \u2014 production zone route p31ca.org/api/hardware/* \u2192 p31-passkey."
     },
     "latticeOracle": {
       "path": "/magic-crystal.html",
       "implementation": "public/magic-crystal.html",
-      "label": "Lattice Oracle — toy crystallomancy (CSPRNG, client-only)",
+      "label": "Lattice Oracle \u2014 toy crystallomancy (CSPRNG, client-only)",
       "note": "No network. Short URL /oracle via _redirects. Not medical, legal, or financial advice."
     },
     "creatorEconomy": {
       "path": "/creator-economy.json",
       "implementation": "public/creator-economy.json",
-      "label": "Creator Economy Contract — p31.creatorEconomy/1.0.0",
+      "label": "Creator Economy Contract \u2014 p31.creatorEconomy/1.0.0",
       "note": "CI-verified fee/split disclosure. Source: ground-truth/creator-economy.json. Verifier: scripts/verify-creator-economy.mjs. Runs in prebuild. Public endpoint: /creator-economy.json (CORS *). Version 1.0.0 constraints: platform fee = 0, creator share = 1.0, room access free."
     },
     "geodesic": {
       "path": "/geodesic.html",
       "implementation": "public/geodesic.html",
-      "label": "GEODESIC — 3D structure builder + K₄ live room",
+      "label": "GEODESIC \u2014 3D structure builder + K\u2084 live room",
       "doc": "P31 home docs/GEODESIC-CAMPAIGN.md",
-      "note": "Three.js r160. Static mode: 5-track progressive coach (BONDING-style tutor + tool unlocks, localStorage geodesic:progress:v1; skip=full unlock). ?room=<id> bypasses coach and enables K4 live: wss to GeodesicRoom DO (e.g. geodesic-room.trimtab-signal.workers.dev) for authoritative vertices (v0–v3) plus Phase-1 shared builder shapes (tet/oct/ico/cube) persisted in the DO, Maxwell rigidity summary on /state and in hello, 50-shape cap. Full spec: workspace docs/GEODESIC-CAMPAIGN.md when P31 home tree is present."
+      "note": "Three.js r160. Static mode: 5-track progressive coach (BONDING-style tutor + tool unlocks, localStorage geodesic:progress:v1; skip=full unlock). ?room=<id> bypasses coach and enables K4 live: wss to GeodesicRoom DO (e.g. geodesic-room.trimtab-signal.workers.dev) for authoritative vertices (v0\u2013v3) plus Phase-1 shared builder shapes (tet/oct/ico/cube) persisted in the DO, Maxwell rigidity summary on /state and in hello, 50-shape cap. Full spec: workspace docs/GEODESIC-CAMPAIGN.md when P31 home tree is present."
     },
     "openDocSuite": {
       "path": "/open-doc-suite.html",
@@ -371,53 +371,53 @@
     "devWorkbench": {
       "path": "/dev-workbench.html",
       "implementation": "public/dev-workbench.html",
-      "label": "P31 Dev Workbench — ephemeral mesh reads + edge agent + orchestrator (read)",
+      "label": "P31 Dev Workbench \u2014 ephemeral mesh reads + edge agent + orchestrator (read)",
       "note": "Single static page; sessionStorage only; fetches p31-constants mesh URLs + p31-agent-hub + p31-orchestrator. No secrets. Short /dev in _redirects. AGENT_HUB_SECRET blocks browser chat; mesh GETs always work when CORS allows."
     },
     "operatorShell": {
       "path": "/ops/",
       "implementation": "src/pages/ops/index.astro",
-      "label": "Operator shell — unified interactive frame (CWP-P31-UI-2026-01)",
+      "label": "Operator shell \u2014 unified interactive frame (CWP-P31-UI-2026-01)",
       "doc": "p31ca/docs/CONTROLLED-WORK-PACKAGE-INTERACTIVE-OPERATOR-UI.md",
-      "note": "Phase A–C + v1.1.0 closure: hub / nav+banner → /ops/; glass summary; home npm run command-center actions. CWP v1.1.0. Trust: EDGE-SECURITY.md; POST shift on command-center only."
+      "note": "Phase A\u2013C + v1.1.0 closure: hub / nav+banner \u2192 /ops/; glass summary; home npm run command-center actions. CWP v1.1.0. Trust: EDGE-SECURITY.md; POST shift on command-center only."
     },
     "integrationsBridge": {
       "path": "/integrations",
       "implementation": "src/pages/integrations.astro",
       "label": "OSS smart home, wearables, and operator tool catalog (machine + doc links)",
       "doc": "docs/P31-INTEGRATIONS-BRIDGE.md",
-      "note": "Data from p31-constants.json integrations; apply:constants → public/p31-integrations.json. No secrets; empty endpoint slots = disabled."
+      "note": "Data from p31-constants.json integrations; apply:constants \u2192 public/p31-integrations.json. No secrets; empty endpoint slots = disabled."
     },
     "oqeTwentyLexicon": {
       "path": "/p31-oqe-twenty.json",
       "implementation": "public/p31-oqe-twenty.json",
       "label": "OQE twenty-face lexicon (forensic, not Fate 20)",
-      "note": "Schema p31.oqeTwenty/1.0.0. Short /oqe → oqe-icosa.html in _redirects."
+      "note": "Schema p31.oqeTwenty/1.0.0. Short /oqe \u2192 oqe-icosa.html in _redirects."
     },
     "oqeIcosa": {
       "path": "/oqe-icosa.html",
       "implementation": "public/oqe-icosa.html",
-      "label": "OQE Icosa — twenty-face forensic map",
-      "note": "Static HTML; fetches p31-oqe-twenty.json. No CSPRNG. Verifier: scripts/verify-oqe-icosa.mjs. Short /d20 → d20-omnibus-icosa.html in _redirects (Fate 20 vs OQE icosa)."
+      "label": "OQE Icosa \u2014 twenty-face forensic map",
+      "note": "Static HTML; fetches p31-oqe-twenty.json. No CSPRNG. Verifier: scripts/verify-oqe-icosa.mjs. Short /d20 \u2192 d20-omnibus-icosa.html in _redirects (Fate 20 vs OQE icosa)."
     },
     "quantumClock": {
       "path": "/quantum-clock.html",
       "implementation": "public/quantum-clock.html",
-      "label": "Quantum clock — Grandfather / Cuckoo explainer (pedagogy, not metrology)",
+      "label": "Quantum clock \u2014 Grandfather / Cuckoo explainer (pedagogy, not metrology)",
       "registryId": "quantum-clock",
       "note": "Schema meta p31.quantumClockPage/0.1.0. Short /quantum-clock in _redirects. Hub registry card quantum-clock. See docs/PLAN-QUANTUM-CLOCK.md; verify:quantum-clock links tomography TRIM + grandfather boot to dome-constants."
     },
     "p31LabsEducation": {
       "path": "/education/",
       "implementation": "public/education/index.html",
-      "label": "P31 Labs Education — curriculum E0–E2 + gated E3+ portal",
+      "label": "P31 Labs Education \u2014 curriculum E0\u2013E2 + gated E3+ portal",
       "note": "Discover, tracks, modules, labs; schemas p31.labsEducation/0.2.0, p31.labsEducationCatalog/0.2.0, p31.labsEducationCurriculum/0.2.0. verify:education in prebuild. E3+ stateful portal: public/education/portal/index.html (requires p31_subject_id; progress GET /api/education/progress/:id Worker+D1). Short /learn, /edu, /education in _redirects."
     },
     "poetsLobby": {
       "path": "/poets.html",
       "implementation": "public/poets.html",
-      "label": "Poets Room — void, daily quote, shelf, private local writing",
-      "note": "No crew APIs; quotes from public/poets-room-quotes.json; localStorage only for draft/photo. Clean URL /poets served from poets.html — no _redirects row /poets→poets.html (CF Pages 308 ping-pong). Hub registry id poets."
+      "label": "Poets Room \u2014 void, daily quote, shelf, private local writing",
+      "note": "No crew APIs; quotes from public/poets-room-quotes.json; localStorage only for draft/photo. Clean URL /poets served from poets.html \u2014 no _redirects row /poets\u2192poets.html (CF Pages 308 ping-pong). Hub registry id poets."
     }
   },
   "edgeRedirects": [
@@ -484,11 +484,6 @@
     {
       "from": "/branding",
       "to": "/branding/index.html",
-      "status": 301
-    },
-    {
-      "from": "/donate",
-      "to": "/donate.html",
       "status": 301
     },
     {
@@ -677,11 +672,6 @@
       "status": 200
     },
     {
-      "from": "/transparency",
-      "to": "/transparency.html",
-      "status": 301
-    },
-    {
       "from": "/visuals",
       "to": "/demos/index.html",
       "status": 301
@@ -812,7 +802,7 @@
       "id": "_devWorkbench.archived",
       "path": "public/archive/2025-early/dev-workbench.html",
       "mustIncludeSubstring": "P31 Dev Workbench",
-      "note": "ARCHIVED 2026-05-03 — moved to archive"
+      "note": "ARCHIVED 2026-05-03 \u2014 moved to archive"
     },
     {
       "id": "_visionJourney.archived",
@@ -842,7 +832,7 @@
       "id": "_quantumDeck.archived",
       "path": "public/archive/2025-early/quantum-deck.html",
       "mustIncludeSubstring": "p31.quantumDeckPage/0.1.0",
-      "note": "ARCHIVED 2026-05-03 — concept status, not live"
+      "note": "ARCHIVED 2026-05-03 \u2014 concept status, not live"
     },
     {
       "id": "initialBuild.page",
@@ -862,14 +852,14 @@
     {
       "id": "_p31DeltaHiring.archived",
       "path": "public/archive/2025-early/delta-hiring/index.html",
-      "mustIncludeSubstring": "P31 Delta · Proof-based hiring",
-      "note": "ARCHIVED 2026-05-03 — moved to archive"
+      "mustIncludeSubstring": "P31 Delta \u00b7 Proof-based hiring",
+      "note": "ARCHIVED 2026-05-03 \u2014 moved to archive"
     },
     {
       "id": "_messagingHub.archived",
       "path": "public/archive/2025-early/messaging-hub.html",
       "mustIncludeSubstring": "p31.messagingHub/0.1.0",
-      "note": "ARCHIVED 2026-05-03 — moved to archive"
+      "note": "ARCHIVED 2026-05-03 \u2014 moved to archive"
     },
     {
       "id": "publicSurface.manifest",
@@ -910,7 +900,7 @@
       "id": "_liveFleetDemo.archived",
       "path": "public/archive/2025-early/live-fleet-demo.html",
       "mustIncludeSubstring": "p31-live-fleet.json",
-      "note": "ARCHIVED 2026-05-03 — moved to archive"
+      "note": "ARCHIVED 2026-05-03 \u2014 moved to archive"
     },
     {
       "id": "fleet.entities.bundle",
@@ -926,7 +916,7 @@
       "id": "_demoLabs.archived",
       "path": "public/archive/2025-early/demo-labs.html",
       "mustIncludeSubstring": "Welcome to the demo lobby",
-      "note": "ARCHIVED 2026-05-03 — moved to archive"
+      "note": "ARCHIVED 2026-05-03 \u2014 moved to archive"
     },
     {
       "id": "meshObservatory.page",
@@ -990,9 +980,9 @@
   ],
   "busBar": {
     "schema": "p31.busBar/1.0.0",
-    "label": "Bus bar — unified personalization + navigation contract",
-    "doctrine": "Nine MVPs around one operator. K₄ topology applied to UX: every product binds to the same nervous system (CogPass + PHOS + theme engine + BaseLayout) instead of running parallel onboarding, parallel style, parallel state. The bus bar is the consolidation that lets PHOS speak with one voice across every surface.",
-    "doctrineSource": "docs/PHOS-VOICE-DRAFT.md §3.3 — 9 calcium = 9 MVPs",
+    "label": "Bus bar \u2014 unified personalization + navigation contract",
+    "doctrine": "Nine MVPs around one operator. K\u2084 topology applied to UX: every product binds to the same nervous system (CogPass + PHOS + theme engine + BaseLayout) instead of running parallel onboarding, parallel style, parallel state. The bus bar is the consolidation that lets PHOS speak with one voice across every surface.",
+    "doctrineSource": "docs/PHOS-VOICE-DRAFT.md \u00a73.3 \u2014 9 calcium = 9 MVPs",
     "roles": {
       "stranger": {
         "label": "Stranger",
@@ -1008,7 +998,7 @@
       },
       "operator": {
         "label": "Operator",
-        "description": "CogPass loaded with accessLevel=operator. Sees operations surfaces (ops, ede, buffer, glass-box). Self-attestation only — true operator-only systems still gate via Ed25519.",
+        "description": "CogPass loaded with accessLevel=operator. Sees operations surfaces (ops, ede, buffer, glass-box). Self-attestation only \u2014 true operator-only systems still gate via Ed25519.",
         "cogPassLoaded": true,
         "cogPassAccessLevel": "operator"
       }
@@ -1018,7 +1008,7 @@
         "label": "Welcome",
         "href": "/welcome",
         "phosVoiceKey": "/welcome",
-        "description": "Front door. PHOS greets and offers the next step. Fast load, no jargon, ≤200 words first paint.",
+        "description": "Front door. PHOS greets and offers the next step. Fast load, no jargon, \u2264200 words first paint.",
         "wcd": "WCD-PHOS-2026-01 C-2"
       },
       "passport": {
@@ -1032,7 +1022,7 @@
         "label": "BONDING",
         "href": "https://bonding.p31ca.org",
         "external": true,
-        "description": "Chemistry game bridging distance between parents and children. Separate origin (Vite+React+R3F). CogPass crosses via the postMessage iframe bridge at /cogpass-bridge.html (CWP-BUS4-COGPASS-BRIDGE-2026-05). The previous URL param bridge plan was rejected for privacy reasons; see the spec §4 strategy comparison."
+        "description": "Chemistry game bridging distance between parents and children. Separate origin (Vite+React+R3F). CogPass crosses via the postMessage iframe bridge at /cogpass-bridge.html (CWP-BUS4-COGPASS-BRIDGE-2026-05). The previous URL param bridge plan was rejected for privacy reasons; see the spec \u00a74 strategy comparison."
       },
       "lab": {
         "label": "Lab",
@@ -1051,7 +1041,7 @@
         "label": "Support",
         "href": "/support",
         "phosVoiceKey": "/support",
-        "description": "Ko-fi + Stripe. 0% platform fees, accurate 501c3-pending language matching terms.html §5.",
+        "description": "Ko-fi + Stripe. 0% platform fees, accurate 501c3-pending language matching terms.html \u00a75.",
         "wcd": "WCD-PHOS-2026-01 C-3"
       },
       "stylebook": {
@@ -1118,7 +1108,7 @@
       ]
     },
     "productSlots": {
-      "_comment": "Maps registry product IDs (from registryAppUrlInvariants + scripts/hub/registry.mjs) to the bus bar slot that contains them. Seed list — extend as products are reviewed for bus bar membership. WCD-PHOS-2026-01 BUS3 completes the map.",
+      "_comment": "Maps registry product IDs (from registryAppUrlInvariants + scripts/hub/registry.mjs) to the bus bar slot that contains them. Seed list \u2014 extend as products are reviewed for bus bar membership. WCD-PHOS-2026-01 BUS3 completes the map.",
       "bonding": "bonding",
       "spaceship-earth": "lab",
       "ede": "ede",
@@ -1146,7 +1136,7 @@
     "crossOriginBridge": {
       "schema": "p31.cogPassBridge/1.0.0",
       "label": "Cross-origin Cognitive Passport bridge",
-      "doctrine": "The bus bar promise — one CogPass, all surfaces — works inside p31ca.org because localStorage is shared at the same origin. It breaks at bonding.p31ca.org (and any future cross-origin P31 surface) because localStorage is origin-scoped. The bridge solves this without a server, without a cookie, and without copying the JSON across origins: a postMessage iframe loaded from p31ca.org reads the passport in its own origin and replies to allowlisted parents only. See docs/CWP-BUS4-COGPASS-BRIDGE-2026-05.md.",
+      "doctrine": "The bus bar promise \u2014 one CogPass, all surfaces \u2014 works inside p31ca.org because localStorage is shared at the same origin. It breaks at bonding.p31ca.org (and any future cross-origin P31 surface) because localStorage is origin-scoped. The bridge solves this without a server, without a cookie, and without copying the JSON across origins: a postMessage iframe loaded from p31ca.org reads the passport in its own origin and replies to allowlisted parents only. See docs/CWP-BUS4-COGPASS-BRIDGE-2026-05.md.",
       "doctrineSource": "docs/CWP-BUS4-COGPASS-BRIDGE-2026-05.md",
       "endpoint": {
         "host": "p31ca.org",
@@ -1159,24 +1149,24 @@
       "allowedOrigins": [
         "https://bonding.p31ca.org"
       ],
-      "allowedOriginsPolicy": "Hardcoded in this file AND in cogpass-bridge.html ALLOWED_ORIGINS Set. verify:cogpass-bridge enforces the two lists are identical — drift fails CI. New origins require: (1) operator approval logged in the commit message, (2) privacy policy update naming the partner, (3) verify:cogpass-bridge green. No runtime config; no wildcards.",
+      "allowedOriginsPolicy": "Hardcoded in this file AND in cogpass-bridge.html ALLOWED_ORIGINS Set. verify:cogpass-bridge enforces the two lists are identical \u2014 drift fails CI. New origins require: (1) operator approval logged in the commit message, (2) privacy policy update naming the partner, (3) verify:cogpass-bridge green. No runtime config; no wildcards.",
       "rolloutPhase": 1,
-      "rolloutPhaseLabel": "Phase 1 of 5: bridge HTML + schema + ground-truth + privacy disclosure shipped. No consumer wired yet (Phase 3). See spec §12 for phase gates."
+      "rolloutPhaseLabel": "Phase 1 of 5: bridge HTML + schema + ground-truth + privacy disclosure shipped. No consumer wired yet (Phase 3). See spec \u00a712 for phase gates."
     },
     "constraints": {
       "maxProducts": 9,
-      "maxProductsRationale": "Nine calcium atoms per Posner molecule (Ca₉(PO₄)₆). The cage is complete at 9. A 10th MVP would break the symmetry and require an explicit cage-expansion CWP that re-derives the geometry. See docs/PHOS-VOICE-DRAFT.md §3.3.",
+      "maxProductsRationale": "Nine calcium atoms per Posner molecule (Ca\u2089(PO\u2084)\u2086). The cage is complete at 9. A 10th MVP would break the symmetry and require an explicit cage-expansion CWP that re-derives the geometry. See docs/PHOS-VOICE-DRAFT.md \u00a73.3.",
       "constraintEnforcedAt": "Architectural review. Future CI gate: verify:bus-bar (planned) audits scripts/hub/hub-app-ids.mjs against this constraint."
     },
     "phos": {
       "absorbsThemeSwitcher": true,
-      "absorbsThemeSwitcherRationale": "PHOS becomes the single personalization affordance — greeting + hint + theme controls + 'create your context card' link. The theme engine stays the engine; PHOS is its face. Resolves the position collision (both wanted bottom-right). See docs/PHOS-VOICE-DRAFT.md §1 and andromeda/04_SOFTWARE/p31ca/public/lib/p31-theme-switcher.mjs (to be unified into PHOS guide component in WCD-PHOS-2026-01 C-1).",
+      "absorbsThemeSwitcherRationale": "PHOS becomes the single personalization affordance \u2014 greeting + hint + theme controls + 'create your context card' link. The theme engine stays the engine; PHOS is its face. Resolves the position collision (both wanted bottom-right). See docs/PHOS-VOICE-DRAFT.md \u00a71 and andromeda/04_SOFTWARE/p31ca/public/lib/p31-theme-switcher.mjs (to be unified into PHOS guide component in WCD-PHOS-2026-01 C-1).",
       "panelPosition": "bottom-right",
       "collapsedSize": "48px",
       "alwaysAvailable": true,
-      "voiceSource": "docs/PHOS-VOICE-DRAFT.md (operator hand) → andromeda/04_SOFTWARE/p31ca/public/lib/p31-phos-voice.json (mirror, planned)"
+      "voiceSource": "docs/PHOS-VOICE-DRAFT.md (operator hand) \u2192 andromeda/04_SOFTWARE/p31ca/public/lib/p31-phos-voice.json (mirror, planned)"
     },
-    "verify": "npm run verify:bus-bar (planned) — checks that productSlots covers all registry IDs, navByRole references only declared slots, and product count ≤ constraints.maxProducts. Until that script lands, validate manually: every key in productSlots must exist in registryAppUrlInvariants OR be flagged as 'subdomain-only' (e.g. bonding); every value in productSlots must be a key in slots; every entry in navByRole must be a key in slots."
+    "verify": "npm run verify:bus-bar (planned) \u2014 checks that productSlots covers all registry IDs, navByRole references only declared slots, and product count \u2264 constraints.maxProducts. Until that script lands, validate manually: every key in productSlots must exist in registryAppUrlInvariants OR be flagged as 'subdomain-only' (e.g. bonding); every value in productSlots must be a key in slots; every entry in navByRole must be a key in slots."
   },
   "threejs": {
     "dome.astro": {
