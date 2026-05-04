@@ -73,8 +73,8 @@
   const cv = document.getElementById("p31-star-plate");
   if (cv instanceof HTMLCanvasElement) {
     try {
-      const mod = await import("/lib/p31-starfield-static-plate.js");
-      mod.initStaticStarPlate(cv, { preset: "hub" });
+      const mod = await import("/lib/p31-starfield-live.js");
+      mod.initLiveStarfield(cv, { preset: "hub" });
     } catch (_e) { /* offline-friendly */ }
   }
 </script>

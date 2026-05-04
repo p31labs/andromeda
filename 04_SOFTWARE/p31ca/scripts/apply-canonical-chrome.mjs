@@ -49,8 +49,8 @@ const STARFIELD_BLOCK = `<canvas id="p31-star-plate" width="4" height="4" aria-h
   const cv = document.getElementById("p31-star-plate");
   if (cv instanceof HTMLCanvasElement) {
     try {
-      const mod = await import("/lib/p31-starfield-static-plate.js");
-      mod.initStaticStarPlate(cv, { preset: "hub" });
+      const mod = await import("/lib/p31-starfield-live.js");
+      mod.initLiveStarfield(cv, { preset: "hub" });
     } catch (_e) { /* offline-friendly */ }
   }
 </script>`;
@@ -175,7 +175,7 @@ function removeStarfieldInit(html) {
     const closeIdx = html.indexOf(closeTag, start);
     if (closeIdx === -1) continue;
     const block = html.slice(start, closeIdx + closeTag.length);
-    if (block.includes("starfield-canvas") && block.includes("initStaticStarPlate")) {
+    if (block.includes("starfield-canvas") && (block.includes("initStaticStarPlate") || block.includes("initLiveStarfield"))) {
       // Eat leading whitespace/newlines and trailing newline
       let realStart = start;
       // eat leading whitespace on that line
@@ -420,6 +420,11 @@ for (const file of htmlFiles) {
 
   html = fixPublicLibPaths(html);
   html = fixStarfieldPaths(html);
+  // Replace old static-plate import with live module in the STARFIELD_BLOCK script
+  html = html.replace(
+    /import\("\/lib\/p31-starfield-static-plate\.js"\);\s*\n(\s*)mod\.initStaticStarPlate\(/g,
+    'import("/lib/p31-starfield-live.js");\n$1mod.initLiveStarfield('
+  );
   html = removeTopBarComment(html);
   html = removeTopBar(html);
   html = removeStarfieldCanvas(html);
@@ -507,7 +512,7 @@ for (const file of htmlFiles) {
   // STEP C — Inject starfield on ALL pages that have canonical nav
   // ════════════════════════════════════════════════════════════════════════════
 
-  if (!html.includes("p31-starfield-static-plate")) {
+  if (!html.includes("p31-starfield-live")) {
     const navClassIdx = html.indexOf('class="nav"');
     if (navClassIdx !== -1) {
       const navCloseIdx = html.indexOf("</nav>", navClassIdx);

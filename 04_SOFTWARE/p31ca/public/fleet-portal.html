@@ -161,8 +161,8 @@
     const cv = document.getElementById("fp-star-plate");
     if (cv instanceof HTMLCanvasElement) {
       try {
-        const mod = await import("/lib/p31-starfield-static-plate.js");
-        mod.initStaticStarPlate(cv, { preset: "operatorDesk" });
+        const mod = await import("/lib/p31-starfield-live.js");
+        mod.initLiveStarfield(cv, { preset: "operatorDesk" });
       } catch (_e) { /* offline / not synced — sky optional */ }
     }
   </script>

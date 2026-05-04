@@ -54,7 +54,7 @@ const REQUIRED = [
   { id: "ambient",        needle: "ambient-radial-fixed",    label: "ambient-radial-fixed background"},
   { id: "nav",            needle: 'class="nav"',             label: "canonical .nav header"         },
   { id: "ebc-footer",     needle: "p31-mission-trio--ebc",   label: "EBC mission footer"            },
-  { id: "starfield",      needle: "p31-starfield-static-plate", label: "static star plate"         },
+  { id: "starfield",      needle: "p31-starfield-live",         label: "live starfield"            },
 ];
 
 const FORBIDDEN = [
