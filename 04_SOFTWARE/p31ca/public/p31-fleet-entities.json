@@ -1,6 +1,6 @@
 {
   "schema": "p31.fleetEntities/1.0.0",
-  "updated": "2026-04-30",
+  "updated": "2026-05-04",
   "sourceNotes": "Merged from published p31-live-fleet.json (verified + allowlisted Workers) plus static bot/cortex-agents roster. Probe GETs may be CORS-blocked from the hub origin.",
   "entities": [
     {
@@ -420,6 +420,28 @@
       "registryId": null
     },
     {
+      "slug": "p31-buffer-api",
+      "kind": "worker",
+      "title": "p31-buffer-api",
+      "subtitle": "AI rewrite worker (Gemini) for phosphorus31.org — voltage-gated messaging buffer",
+      "tier": "verified",
+      "workersDevUrl": "https://p31-buffer-api.trimtab-signal.workers.dev",
+      "prodUrl": "",
+      "healthPaths": [
+        "/health"
+      ],
+      "meshPaths": [],
+      "constantsKey": null,
+      "deployHints": [
+        "phosphorus31.org/apps/buffer-api (wrangler deploy)"
+      ],
+      "probeUrls": [
+        "https://p31-buffer-api.trimtab-signal.workers.dev/health"
+      ],
+      "hubPagePath": null,
+      "registryId": null
+    },
+    {
       "slug": "p31-command-center",
       "kind": "worker",
       "title": "p31-command-center",
@@ -463,6 +485,28 @@
       "probeUrls": [
         "https://p31-cortex.trimtab-signal.workers.dev/api/health",
         "https://p31-cortex.trimtab-signal.workers.dev/health"
+      ],
+      "hubPagePath": null,
+      "registryId": null
+    },
+    {
+      "slug": "p31-ecosystem-bridge",
+      "kind": "worker",
+      "title": "p31-ecosystem-bridge",
+      "subtitle": "Cross-site nervous system. CORS bridge for phosphorus31.org ↔ p31ca.org. Serves org constants slice + aggregated health.",
+      "tier": "verified",
+      "workersDevUrl": "https://ecosystem-bridge.trimtab-signal.workers.dev",
+      "prodUrl": "",
+      "healthPaths": [
+        "/health"
+      ],
+      "meshPaths": [],
+      "constantsKey": "mesh.ecosystemBridgeWorkerUrl",
+      "deployHints": [
+        "workers/p31-ecosystem-bridge (wrangler deploy)"
+      ],
+      "probeUrls": [
+        "https://ecosystem-bridge.trimtab-signal.workers.dev/health"
       ],
       "hubPagePath": null,
       "registryId": null

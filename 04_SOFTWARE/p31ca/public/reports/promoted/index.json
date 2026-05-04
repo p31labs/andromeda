@@ -1,9 +1,36 @@
 {
   "schema": "p31.reportsPromoted/0.1.0",
   "version": "1.0.0",
-  "generatedAt": "2026-05-03T05:34:07.928Z",
-  "count": 1,
+  "generatedAt": "2026-05-04T17:21:25.413Z",
+  "count": 4,
   "entries": [
+    {
+      "id": "psych-e2e-20260504-1645-dkl9",
+      "file": "/docs/reports/promoted/psych-e2e-20260504-1645-dkl9.md",
+      "ts": "2026-05-04T16:45:21.996Z",
+      "kind": "psych-e2e",
+      "severity": "low",
+      "headline": "psych-e2e-20260504-1645-dkl9",
+      "bytes": 1604
+    },
+    {
+      "id": "psych-e2e-20260503-1334-oasy",
+      "file": "/docs/reports/promoted/psych-e2e-20260503-1334-oasy.md",
+      "ts": "2026-05-03T13:34:28.299Z",
+      "kind": "psych-e2e",
+      "severity": "low",
+      "headline": "psych-e2e-20260503-1334-oasy",
+      "bytes": 1441
+    },
+    {
+      "id": "psych-e2e-20260503-1321-asjl",
+      "file": "/docs/reports/promoted/psych-e2e-20260503-1321-asjl.md",
+      "ts": "2026-05-03T13:21:45.457Z",
+      "kind": "psych-e2e",
+      "severity": "low",
+      "headline": "psych-e2e-20260503-1321-asjl",
+      "bytes": 1481
+    },
     {
       "id": "urgent-20260430-2120-qoc3",
       "file": "/docs/reports/promoted/urgent-20260430-2120-qoc3.md",

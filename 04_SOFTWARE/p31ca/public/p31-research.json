@@ -1,7 +1,8 @@
 {
   "orcid": "0009-0002-2492-9079",
   "zenodoPublicationCount": 22,
-  "researchSeriesCount": 20,
+  "zenodoDraftCount": 2,
+  "researchSeriesCount": 22,
   "standalonePublicationCount": 2,
   "paperXiiStatus": "published",
   "zenodoSearchUrl": "https://zenodo.org/search?q=creators.name:%22Johnson%2C%20William%20R.%22&l=list&p=1&s=25&sort=newest",

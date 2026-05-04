@@ -1,12 +1,37 @@
 {
   "schema": "p31.reportsIndex/0.1.0",
   "version": "1.0.0",
-  "generatedAt": "2026-04-30T21:20:01.032Z",
-  "count": 1,
+  "generatedAt": "2026-05-04T16:45:22.032Z",
+  "count": 4,
   "byKind": {
-    "urgent": 1
+    "urgent": 1,
+    "psych-e2e": 3
   },
   "recent": [
+    {
+      "id": "psych-e2e-20260504-1645-dkl9",
+      "kind": "psych-e2e",
+      "ts": "2026-05-04T16:45:21.996Z",
+      "severity": "low",
+      "headline": "5 sessions · 20 steps · mean 82.4 [79.1–85.6] · worst: http://127.0.0.1:40251/soup.html (74.4)",
+      "refsLocal": true
+    },
+    {
+      "id": "psych-e2e-20260503-1334-oasy",
+      "kind": "psych-e2e",
+      "ts": "2026-05-03T13:34:28.299Z",
+      "severity": "low",
+      "headline": "2 sessions · 12 steps · mean 89.8 [87.4–92.1] · worst: http://127.0.0.1:36561/fleet-portal.html (85)",
+      "refsLocal": true
+    },
+    {
+      "id": "psych-e2e-20260503-1321-asjl",
+      "kind": "psych-e2e",
+      "ts": "2026-05-03T13:21:45.457Z",
+      "severity": "low",
+      "headline": "3 sessions · 10 steps · mean 92 [89.2–94.8] · worst: http://127.0.0.1:45157/fleet-portal.html (84.5)",
+      "refsLocal": true
+    },
     {
       "id": "urgent-20260430-2120-qoc3",
       "kind": "urgent",

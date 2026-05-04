@@ -1,14 +1,16 @@
 {
   "_comment": "Single bundle of live sites + Worker fleet. Mesh/payment URLs MUST match p31-constants.json; allowlist names MUST match andromeda/04_SOFTWARE/p31ca/security/worker-allowlist.json. After changing constants: npm run apply:constants && npm run verify:constants. defaultWorkersDev uses account subdomain trimtab-signal — confirm with wrangler or live GET if a Worker uses another account.",
   "schema": "p31.liveFleet/1.0.0",
-  "updated": "2026-04-30",
+  "updated": "2026-05-04",
   "sources": [
     "p31-constants.json",
     "p31-ecosystem.json",
     "p31-discord-bot-swarm.json",
     "andromeda/04_SOFTWARE/p31ca/public/p31-public-surface.json",
     "andromeda/04_SOFTWARE/p31ca/public/p31-integrations.json",
-    "andromeda/04_SOFTWARE/p31ca/security/worker-allowlist.json"
+    "andromeda/04_SOFTWARE/p31ca/security/worker-allowlist.json",
+    "workers/p31-ecosystem-bridge/wrangler.toml",
+    "phosphorus31.org/apps/buffer-api/wrangler.toml"
   ],
   "sites": {
     "technicalHub": {
@@ -29,7 +31,8 @@
     "orgMarketing": {
       "url": "https://phosphorus31.org/",
       "kind": "separate-repo-deploy",
-      "note": "Not p31ca; parallel site"
+      "statusJson": "https://phosphorus31.org/p31-status.json",
+      "note": "Not p31ca; parallel site. Serves p31-status.json for cross-site reads."
     },
     "bondingVertical": {
       "url": "https://bonding.p31ca.org/",
@@ -78,6 +81,8 @@
       "geodesicRoomWorkerUrl": "https://geodesic-room.trimtab-signal.workers.dev",
       "googleBridgeWorkerUrl": "https://p31-google-bridge.trimtab-signal.workers.dev",
       "bondingRelayWorkerUrl": "https://bonding-relay.trimtab-signal.workers.dev",
+      "ecosystemBridgeWorkerUrl": "https://ecosystem-bridge.trimtab-signal.workers.dev",
+      "bufferApiWorkerUrl": "https://p31-buffer-api.trimtab-signal.workers.dev",
       "remembranceWarmWhite": "#f5f0e8",
       "remembranceBereavementKvKey": "mesh_bereavement_until",
       "vertexStateRemembered": "remembered",
@@ -195,6 +200,25 @@
       "workersDev": "https://p31-passkey.trimtab-signal.workers.dev",
       "deploy": "p31ca/workers/passkey",
       "note": "Production mount: zone route p31ca.org/api/passkey/*; workers.dev may exist for direct tests"
+    },
+    {
+      "id": "p31-ecosystem-bridge",
+      "workersDev": "https://ecosystem-bridge.trimtab-signal.workers.dev",
+      "healthPaths": ["/health"],
+      "publicPaths": ["/api/sync", "/api/status", "/api/fleet"],
+      "constantsKey": "mesh.ecosystemBridgeWorkerUrl",
+      "deploy": "workers/p31-ecosystem-bridge (wrangler deploy)",
+      "cors": ["https://phosphorus31.org", "https://p31ca.org"],
+      "note": "Cross-site nervous system. CORS bridge for phosphorus31.org ↔ p31ca.org. Serves org constants slice + aggregated health."
+    },
+    {
+      "id": "p31-buffer-api",
+      "workersDev": "https://p31-buffer-api.trimtab-signal.workers.dev",
+      "healthPaths": ["/health"],
+      "publicPaths": ["/rewrite"],
+      "deploy": "phosphorus31.org/apps/buffer-api (wrangler deploy)",
+      "cors": ["https://phosphorus31.org"],
+      "note": "AI rewrite worker (Gemini) for phosphorus31.org — voltage-gated messaging buffer"
     }
   ],
   "workersAllowlisted": [
