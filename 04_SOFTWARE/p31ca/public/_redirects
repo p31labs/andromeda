@@ -21,7 +21,7 @@
 /together   /welcome                  301
 /start      /mesh-start.html         301
 /branding   /branding/index.html   301
-/donate   /donate.html   301
+# /donate — omit (Pages clean URL serves donate.html at /donate; explicit rule loops with 308 .html → /donate).
 /kofi-forge   /p31-kofi-forge.html   301
 /mesh       /connect.html            301
 
@@ -78,7 +78,7 @@
 /glass   /glass-box.html   200
 # /transparency now serves the formal transparency report (PEER-2A); the operator-facing
 # glass box continues to live at /glass-box and short /glass.
-/transparency   /transparency.html   301
+# /transparency — omit (Pages clean URL serves transparency.html at /transparency; explicit rule loops with 308 .html → /transparency).
 /lab   /p31-sovereign-lab.html   301
 /lab2   /p31-sovereign-lab-v2.html   301
 /slicer   /p31-slicer.html   301
