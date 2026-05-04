@@ -363,6 +363,7 @@ button { cursor: pointer; font-family: var(--font-ui); border: none; background:
 </style>
 <link rel="canonical" href="https://p31ca.org/ede.html">
   <script src="/lib/p31-subject-prefs.js"></script>
+  <link rel="stylesheet" href="/lib/p31-molecular-field.css">
 </head>
 <body>
 <div class="ambient-radial-fixed" aria-hidden="true"></div>
@@ -1960,5 +1961,7 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/ede-sw.js').catch(() => {});
 }
 </script>
+  <script type="module" src="/lib/p31-molecular-field.js"></script>
+
 </body>
 </html>

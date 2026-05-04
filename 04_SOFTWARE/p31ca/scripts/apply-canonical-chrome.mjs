@@ -482,6 +482,25 @@ for (const file of htmlFiles) {
     if (!html.includes("p31-return-ribbon")) {
       html = insertBeforeBodyClose(html, '  <script src="/lib/p31-return-ribbon.js" defer></script>\n');
     }
+
+    // 6. Ensure molecular field CSS in <head>
+    if (!html.includes("p31-molecular-field.css")) {
+      // Insert before first </head>
+      const headClose = html.indexOf("</head>");
+      if (headClose !== -1) {
+        html = html.slice(0, headClose)
+          + '  <link rel="stylesheet" href="/lib/p31-molecular-field.css">\n'
+          + html.slice(headClose);
+      }
+    }
+
+    // 7. Ensure molecular field JS module before </body>
+    if (!html.includes("p31-molecular-field.js")) {
+      html = insertBeforeBodyClose(
+        html,
+        '  <script type="module" src="/lib/p31-molecular-field.js"></script>\n'
+      );
+    }
   }
 
   // ════════════════════════════════════════════════════════════════════════════
