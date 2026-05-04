@@ -28,11 +28,12 @@
   <title>P31 K₄ agent hubs — Forge · Counsel · Scholar · Scribe</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="/public/lib/p31-qmu-tokens.css">
   <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700&family=JetBrains+Mono:ital,wght@0,400;0,600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/p31-style.css" />
   <link rel="stylesheet" href="/p31-shared-surface.css" />
   <link rel="stylesheet" href="/p31-responsive-surface.css" />
-  <script src="/lib/p31-subject-prefs.js"></script>
+  <script src="/public/lib/p31-subject-prefs.js"></script>
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -87,7 +88,7 @@
       position: relative; z-index: 1;
       max-width: var(--ag-shell-max);
       margin: 0 auto;
-      padding: clamp(1rem, 3vw, 2rem) clamp(1rem, 3vw, 1.5rem) calc(var(--p31-space-24) + 3rem);
+      padding: clamp(0.75rem, 2vw, 1.5rem) clamp(0.75rem, 2vw, 1.25rem) calc(var(--p31-space-16) + 2rem);
     }
 
     .ag-hero { margin-bottom: var(--p31-space-6); }
@@ -274,6 +275,19 @@
     @media (prefers-reduced-motion: reduce) {
       body::before { transition: none; }
     }
+  </style>
+  <style>
+    .safe-toggle { position: fixed; top: 1rem; right: 1rem; z-index: 9999; padding: 0.5rem 0.75rem; border: 1px solid rgba(204,98,71,0.3); border-radius: 6px; background: rgba(204,98,71,0.08); color: var(--p31-coral); font-family: var(--p31-font-mono); font-size: 0.75rem; text-transform: uppercase; cursor: pointer; transition: all 150ms; }
+    .safe-toggle:hover { background: rgba(204,98,71,0.15); }
+    body.safe-mode { --p31-void: #000; --p31-surface: #0a0a0a; --p31-cloud: #fff; }
+    body.safe-mode * { animation: none !important; transition: none !important; }
+  </style>
+  <style>
+    .safe-toggle { position: fixed; top: 1rem; right: 1rem; z-index: 9999; padding: 0.5rem 0.75rem; border: 1px solid rgba(204,98,71,0.3); border-radius: 6px; background: rgba(204,98,71,0.08); color: var(--p31-coral); font-family: var(--p31-font-mono); font-size: 0.75rem; text-transform: uppercase; cursor: pointer; transition: all 150ms; }
+    .safe-toggle:hover { background: rgba(204,98,71,0.15); }
+    body.safe-mode { --p31-void: #000; --p31-surface: #0a0a0a; --p31-cloud: #fff; }
+    body.safe-mode * { animation: none !important; transition: none !important; }
+    body.safe-mode #starfield-canvas { display: none !important; }
   </style>
 </head>
 <body class="p31-mesh-m-first p31-responsive-surface">
@@ -683,6 +697,46 @@
     } else {
       bootTetra();
     }
+  </script>
+  
+  <!-- PHOS Atmosphere Core — Voice-first navigation wrapper -->
+  <script src="public/lib/p31-smart-starfield.js"></script>
+<script src="public/lib/p31-atmosphere-core.js"></script>
+  <script>
+    // Safe Mode Toggle with WebGL destruction for tetra canvas
+    const safeToggle = document.createElement('button');
+    safeToggle.className = 'safe-toggle';
+    safeToggle.innerText = 'Safe Mode';
+    safeToggle.style.cssText = 'position:fixed;top:1rem;right:1rem;z-index:9999;padding:0.5rem 0.75rem;border:1px solid rgba(204,98,71,0.3);border-radius:6px;background:rgba(204,98,71,0.08);color:#cc6247;font-family:"JetBrains Mono",monospace;font-size:0.75rem;text-transform:uppercase;cursor:pointer;transition:all 150ms;';
+    safeToggle.onclick = () => {
+      const isSafe = document.body.classList.toggle('safe-mode');
+      const tetra = document.getElementById('tetra-canvas');
+      if (isSafe && tetra) {
+        // WebGL destruction protocol
+        const gl = tetra.getContext('webgl') || tetra.getContext('webgl2');
+        if (gl) {
+          const ext = gl.getExtension('WEBGL_lose_context');
+          if (ext) ext.loseContext();
+        }
+        tetra.style.display = 'none';
+      }
+    };
+    document.body.appendChild(safeToggle);
+    
+    if (localStorage.getItem('p31_safe_mode') === 'true') document.body.classList.add('safe-mode');
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      document.body.classList.add('safe-mode');
+      const tetra = document.getElementById('tetra-canvas');
+      if (tetra) tetra.style.display = 'none';
+    }
+  </script>
+<script>
+    // Initialize Smart Starfield
+    const starfield = new SmartStarfield('starfield-canvas', {
+      surfaceId: 'surface-agents',
+      meshSync: true,
+      starCount: 100
+    });
   </script>
 </body>
 </html>
