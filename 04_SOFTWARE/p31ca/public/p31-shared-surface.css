@@ -926,3 +926,102 @@ body.p31-has-top-bar { padding-top: 3rem; }
   border-radius: 0 0 var(--p31-shape-md) 0;
 }
 .p31-skip-link:focus { top: 0; }
+
+/* ============================================================
+   CANONICAL PAGE CHROME
+   .ambient-radial-fixed — CSS ambient radial gradient layer
+   .nav / .nav-inner / .nav-brand / .nav-links — sticky top nav
+   Used on all non-Astro public HTML pages.
+   ============================================================ */
+.ambient-radial-fixed {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background: radial-gradient(circle at top left, rgba(77, 184, 168, 0.12), transparent 42%);
+}
+
+.nav,
+.hero,
+.page-body { position: relative; z-index: 1; }
+
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: color-mix(in srgb, var(--p31-surface, #161920) 92%, transparent);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.nav-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: var(--p31-cloud, #d8d6d0);
+}
+.nav-brand:hover { text-decoration: none; }
+.nav-mark {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  border: 1px solid color-mix(in srgb, var(--p31-teal, #4db8a8) 40%, transparent);
+  background: color-mix(in srgb, var(--p31-teal, #4db8a8) 12%, transparent);
+  font-family: var(--p31-font-mono, "JetBrains Mono", monospace);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--p31-cyan, #4db8a8);
+}
+.nav-brand-label {
+  font-family: var(--p31-font-mono, "JetBrains Mono", monospace);
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--p31-cloud, #d8d6d0) 82%, transparent);
+}
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 1.35rem;
+  flex-wrap: wrap;
+}
+.nav-prompt {
+  font-family: var(--p31-font-mono, "JetBrains Mono", monospace);
+  font-size: 11px;
+  color: color-mix(in srgb, var(--p31-teal, #4db8a8) 50%, transparent);
+}
+.nav-link {
+  font-family: var(--p31-font-mono, "JetBrains Mono", monospace);
+  font-size: 11px;
+  color: var(--p31-muted, #6b7280);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.nav-link:hover { color: var(--p31-cloud, #d8d6d0); text-decoration: none; }
+.nav-cta {
+  font-family: var(--p31-font-mono, "JetBrains Mono", monospace);
+  font-size: 11px;
+  font-weight: 700;
+  background: transparent;
+  color: var(--p31-coral, #cc6247);
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: 1px solid var(--p31-coral, #cc6247);
+  text-decoration: none;
+  transition: background 0.18s, color 0.18s;
+}
+.nav-cta:hover { background: var(--p31-coral, #cc6247); color: var(--p31-void, #0f1115); text-decoration: none; }

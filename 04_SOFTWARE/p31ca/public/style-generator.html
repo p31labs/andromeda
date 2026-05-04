@@ -15,14 +15,14 @@
   <meta name="twitter:title" content="P31 Style Generator" />
   <link rel="canonical" href="https://p31ca.org/style-generator" />
   <title>P31 Style Generator — Design System</title>
-  <link rel="stylesheet" href="/public/lib/p31-qmu-tokens.css" />
+  <link rel="stylesheet" href="/lib/p31-qmu-tokens.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/p31-style.css" />
   <link rel="stylesheet" href="/p31-shared-surface.css" />
   <link rel="stylesheet" href="/p31-responsive-surface.css" />
-  <script src="/public/lib/p31-subject-prefs.js"></script>
+  <script src="/lib/p31-subject-prefs.js"></script>
   <style>
     body { margin:0; min-height:100dvh; font-family:var(--p31-font-sans); background:var(--p31-void); color:var(--p31-cloud); line-height:var(--p31-leading-normal); }
 
@@ -90,7 +90,23 @@
   </style>
 </head>
 <body>
-<canvas id="starfield-canvas" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:0.35;" aria-hidden="true"></canvas>
+<div class="ambient-radial-fixed" aria-hidden="true"></div>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="/" class="nav-brand" title="P31 Labs hub">
+      <span class="nav-mark" aria-hidden="true">P31</span>
+      <span class="nav-brand-label">P31 Labs</span>
+    </a>
+    <div class="nav-links">
+      <span class="nav-prompt" aria-hidden="true">..</span>
+      <a href="/" class="nav-link">Hub</a>
+      <a href="https://github.com/p31labs/andromeda" target="_blank" rel="noopener" class="nav-link">GitHub</a>
+      <a href="/connect.html" class="nav-link">Connect</a>
+    </div>
+  </div>
+</nav>
+
 
 <main id="main" class="sg-shell">
 
@@ -360,8 +376,33 @@
 
 </main>
 
-<script src="/public/lib/atmosphere/p31-atmosphere-client.js" defer></script>
-<script src="/public/lib/p31-return-ribbon.js" defer></script>
+<script src="/lib/atmosphere/p31-atmosphere-client.js" defer></script>
+<!-- P31:mission-ebc:start -->
+<footer id="ebc" class="p31-mission-trio p31-mission-trio--ebc" role="contentinfo" aria-label="Mission — build, create, connect">
+  <a class="p31-mission-trio__link p31-mission-trio__link--build p31-mesh-tap" id="ebc-build" href="/build" title="Initial Build — intake, subject scope, verify-gated bake">
+    <span class="p31-mission-trio__head">
+      <span class="p31-mission-trio__dot" aria-hidden="true"></span>
+      <span class="p31-mission-trio__verb">Build</span>
+    </span>
+    <span class="p31-mission-trio__desc">Intake and bake on the same verify chain—not a decoupled mock.</span>
+  </a>
+  <a class="p31-mission-trio__link p31-mission-trio__link--create p31-mesh-tap" id="ebc-create" href="/geodesic.html" title="GEODESIC — snap grid, Maxwell rigidity, scene export">
+    <span class="p31-mission-trio__head">
+      <span class="p31-mission-trio__dot" aria-hidden="true"></span>
+      <span class="p31-mission-trio__verb">Create</span>
+    </span>
+    <span class="p31-mission-trio__desc">One lab surface, honest rigidity—generate or prove; don't fork the same truth twice (ephemeralization).</span>
+  </a>
+  <a class="p31-mission-trio__link p31-mission-trio__link--connect p31-mesh-tap" id="ebc-connect" href="/mesh" title="Mesh navigator — K₄ cage and product graph">
+    <span class="p31-mission-trio__head">
+      <span class="p31-mission-trio__dot" aria-hidden="true"></span>
+      <span class="p31-mission-trio__verb">Connect</span>
+    </span>
+    <span class="p31-mission-trio__desc"><span class="p31-mission-trio__now">Now</span> — live cage and edges: mesh, hubs, and money follow the same published contracts (ethical monetization).</span>
+  </a>
+</footer>
+<!-- P31:mission-ebc:end -->
+<script src="/lib/p31-return-ribbon.js" defer></script>
 <script>
 // ── Tab navigation ──────────────────────────────────────────────────────────
 document.querySelectorAll('.sg-tab').forEach(tab => {
@@ -509,32 +550,20 @@ function buildScaffold() {
   <meta name="twitter:title" content="${title}" />
   <link rel="canonical" href="https://p31ca.org/${slug}" />
   <title>${title} — P31 Labs</title>
-  <link rel="stylesheet" href="/public/lib/p31-qmu-tokens.css" />
+  <link rel="stylesheet" href="/lib/p31-qmu-tokens.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/p31-style.css" />
   <link rel="stylesheet" href="/p31-shared-surface.css" />
   <link rel="stylesheet" href="/p31-responsive-surface.css" />
-  <script src="/public/lib/p31-subject-prefs.js"><\/script>
+  <script src="/lib/p31-subject-prefs.js"><\/script>
   <style>
     body { margin:0; min-height:100dvh; font-family:var(--p31-font-sans); background:var(--p31-void); color:var(--p31-cloud); line-height:var(--p31-leading-normal); }
   </style>
 </head>
 <body>
-  <canvas id="starfield-canvas" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:0.45;" aria-hidden="true"></canvas>
-  <a class="p31-skip-link" href="#main">Skip to content</a>
-  <!-- ── Top app bar ──────────────────────────────────────────────────────── -->
-  <header class="p31-q-surface p31-top-bar" data-p31-elev="2" role="banner">
-    <a href="/" class="p31-top-bar__wordmark" aria-label="P31 Labs home">P31 <span class="p31-top-bar__accent">Labs</span></a>
-    <nav class="p31-top-bar__nav" aria-label="Global">
-      <a href="/hub.html">Hub</a>
-      <a href="/connect.html">Connect</a>
-    </nav>
-  </header>
-
-
-  <main id="main" class="p31-content p31-page-shell">
+    <main id="main" class="p31-content p31-page-shell">
     <section class="p31-page-header p31-stack">
       <p class="p31-section-label">${section}</p>
       <h1>${title}</h1>
@@ -558,18 +587,8 @@ function buildScaffold() {
     </section>
   </main>
 
-  <script src="/public/lib/atmosphere/p31-atmosphere-client.js" defer><\/script>
-  <script src="/public/lib/p31-return-ribbon.js" defer><\/script>
-
-  <!-- Starfield init -->
-  <script type="module">
-    const cv = document.getElementById("starfield-canvas");
-    if (cv) {
-      import("/lib/p31-starfield-static-plate.js")
-        .then(({ initStaticStarPlate }) => initStaticStarPlate(cv, { preset: "hub" }))
-        .catch(() => {});
-    }
-  </script>
+  <script src="/lib/atmosphere/p31-atmosphere-client.js" defer><\/script>
+  <script src="/lib/p31-return-ribbon.js" defer><\/script>
 </body>
 </html>`;
 }
@@ -598,7 +617,7 @@ document.getElementById('gen-download').addEventListener('click', () => {
 
 // ── Canon stack reference ────────────────────────────────────────────────────
 document.getElementById('canon-ref').textContent = `<!-- 1. QMU tokens: Material U tonal roles, elevation, state-layer vars -->
-<link rel="stylesheet" href="/public/lib/p31-qmu-tokens.css" />
+<link rel="stylesheet" href="/lib/p31-qmu-tokens.css" />
 <!-- 2. Fonts: Atkinson Hyperlegible (a11y body) + JetBrains Mono (code) -->
 <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
 <!-- 3. Canon: design-token CSS (auto-generated from p31-universal-canon.json) -->
@@ -608,7 +627,7 @@ document.getElementById('canon-ref').textContent = `<!-- 1. QMU tokens: Material
 <!-- 5. Responsive surface: breakpoint grid, container, fluid type -->
 <link rel="stylesheet" href="/p31-responsive-surface.css" />
 <!-- Subject prefs: safe mode, reduced motion, font-size -->
-<script src="/public/lib/p31-subject-prefs.js"><\/script>`;
+<script src="/lib/p31-subject-prefs.js"><\/script>`;
 </script>
 
 </body>

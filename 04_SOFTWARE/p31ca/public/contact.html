@@ -23,22 +23,30 @@
   <link rel="stylesheet" href="/p31-shared-surface.css" />
   <link rel="stylesheet" href="/p31-responsive-surface.css" />
 
-
   <link rel="stylesheet" href="/p31-tw.css" />
   <script src="/p31-tailwind-extend.js"></script>
   <!-- tailwind.config removed: using compiled p31-tw.css -->
   <script src="/lib/p31-subject-prefs.js"></script>
 </head>
 <body class="bg-void text-cloud min-h-screen font-sans antialiased px-4 py-10 max-w-2xl mx-auto text-sm leading-relaxed">
-  <!-- Starfield ambient layer -->
-  <canvas id="starfield-canvas" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:0.45;" aria-hidden="true">
-  <a class="p31-skip-link" href="#main">Skip to content</a>
-  <!-- ── Top app bar ──────────────────────────────────────── -->
-  <header class="p31-q-surface p31-top-bar" data-p31-elev="2" role="banner"><a href="/" class="p31-top-bar__wordmark" aria-label="P31 Labs home">P31 <span class="p31-top-bar__accent">Labs</span></a><nav class="p31-top-bar__nav" aria-label="Global"><a href="/hub.html">Hub</a><a href="/connect.html">Connect</a></nav></header>
+<div class="ambient-radial-fixed" aria-hidden="true"></div>
 
-</canvas>
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="/" class="nav-brand" title="P31 Labs hub">
+      <span class="nav-mark" aria-hidden="true">P31</span>
+      <span class="nav-brand-label">P31 Labs</span>
+    </a>
+    <div class="nav-links">
+      <span class="nav-prompt" aria-hidden="true">..</span>
+      <a href="/" class="nav-link">Hub</a>
+      <a href="https://github.com/p31labs/andromeda" target="_blank" rel="noopener" class="nav-link">GitHub</a>
+      <a href="/connect.html" class="nav-link">Connect</a>
+    </div>
+  </div>
+</nav>
 
-<a href="#main" style="position:absolute;left:-9999px;top:0;padding:0.5rem 1rem;background:var(--p31-void);color:var(--p31-teal);font-size:0.875rem;z-index:9999;border-radius:0 0 4px 4px;text-decoration:none" onfocus="this.style.left='0'" onblur="this.style.left='-9999px'">Skip to main content</a>
+
   <!-- Sync entity/contact with p31-constants.json -->
   <nav class="flex flex-wrap gap-3 text-teal/80 text-xs font-mono mb-8 no-print">
     <a href="/" class="hover:underline">Hub</a>
@@ -75,9 +83,32 @@
   </section>
 
   <p class="text-xs text-cloud/40">This page is not a legal domicile service of process notice. For formal service, use counsel-coordinated channels.</p>
-
-  <script type="module">const cv=document.getElementById("starfield-canvas");if(cv)import("/lib/p31-starfield-static-plate.js").then(({initStaticStarPlate})=>initStaticStarPlate(cv,{preset:"hub"})).catch(()=>{});</script>
   <script src="/lib/atmosphere/p31-atmosphere-client.js" defer></script>
+<!-- P31:mission-ebc:start -->
+<footer id="ebc" class="p31-mission-trio p31-mission-trio--ebc" role="contentinfo" aria-label="Mission — build, create, connect">
+  <a class="p31-mission-trio__link p31-mission-trio__link--build p31-mesh-tap" id="ebc-build" href="/build" title="Initial Build — intake, subject scope, verify-gated bake">
+    <span class="p31-mission-trio__head">
+      <span class="p31-mission-trio__dot" aria-hidden="true"></span>
+      <span class="p31-mission-trio__verb">Build</span>
+    </span>
+    <span class="p31-mission-trio__desc">Intake and bake on the same verify chain—not a decoupled mock.</span>
+  </a>
+  <a class="p31-mission-trio__link p31-mission-trio__link--create p31-mesh-tap" id="ebc-create" href="/geodesic.html" title="GEODESIC — snap grid, Maxwell rigidity, scene export">
+    <span class="p31-mission-trio__head">
+      <span class="p31-mission-trio__dot" aria-hidden="true"></span>
+      <span class="p31-mission-trio__verb">Create</span>
+    </span>
+    <span class="p31-mission-trio__desc">One lab surface, honest rigidity—generate or prove; don't fork the same truth twice (ephemeralization).</span>
+  </a>
+  <a class="p31-mission-trio__link p31-mission-trio__link--connect p31-mesh-tap" id="ebc-connect" href="/mesh" title="Mesh navigator — K₄ cage and product graph">
+    <span class="p31-mission-trio__head">
+      <span class="p31-mission-trio__dot" aria-hidden="true"></span>
+      <span class="p31-mission-trio__verb">Connect</span>
+    </span>
+    <span class="p31-mission-trio__desc"><span class="p31-mission-trio__now">Now</span> — live cage and edges: mesh, hubs, and money follow the same published contracts (ethical monetization).</span>
+  </a>
+</footer>
+<!-- P31:mission-ebc:end -->
   <script src="/lib/p31-return-ribbon.js" defer></script>
 </body>
 </html>

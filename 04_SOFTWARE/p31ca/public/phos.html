@@ -22,7 +22,6 @@
   <link rel="stylesheet" href="/p31-shared-surface.css" />
   <link rel="stylesheet" href="/p31-responsive-surface.css" />
 
-
   
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -386,21 +385,24 @@
   <script src="/lib/p31-subject-prefs.js"></script>
 </head>
 <body>
-  <!-- Starfield ambient layer (Gray Rock until interaction) -->
-  <canvas id="starfield-canvas" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:0.45;" aria-hidden="true"></canvas>
-  <a class="p31-skip-link" href="#main">Skip to content</a>
-  <!-- ── Top app bar ──────────────────────────────────────────────────────── -->
-  <header class="p31-q-surface p31-top-bar" data-p31-elev="2" role="banner">
-    <a href="/" class="p31-top-bar__wordmark" aria-label="P31 Labs home">P31 <span class="p31-top-bar__accent">Labs</span></a>
-    <nav class="p31-top-bar__nav" aria-label="Global">
-      <a href="/hub.html">Hub</a>
-      <a href="/connect.html">Connect</a>
-    </nav>
-  </header>
+<div class="ambient-radial-fixed" aria-hidden="true"></div>
 
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="/" class="nav-brand" title="P31 Labs hub">
+      <span class="nav-mark" aria-hidden="true">P31</span>
+      <span class="nav-brand-label">P31 Labs</span>
+    </a>
+    <div class="nav-links">
+      <span class="nav-prompt" aria-hidden="true">..</span>
+      <a href="/" class="nav-link">Hub</a>
+      <a href="https://github.com/p31labs/andromeda" target="_blank" rel="noopener" class="nav-link">GitHub</a>
+      <a href="/connect.html" class="nav-link">Connect</a>
+    </div>
+  </div>
+</nav>
 
-
-  <div class="phos-container" id="phosApp">
+    <div class="phos-container" id="phosApp">
     <!-- Header -->
     <header class="phos-header">
       <a href="/" class="phos-logo">
@@ -723,17 +725,32 @@
     // Start
     init();
   </script>
-
-  <!-- Starfield init -->
-  <script type="module">
-    const cv = document.getElementById("starfield-canvas");
-    if (cv) {
-      import("/lib/p31-starfield-static-plate.js")
-        .then(({ initStaticStarPlate }) => initStaticStarPlate(cv, { preset: "hub" }))
-        .catch(() => {});
-    }
-  </script>
   <script src="/lib/atmosphere/p31-atmosphere-client.js" defer></script>
+<!-- P31:mission-ebc:start -->
+<footer id="ebc" class="p31-mission-trio p31-mission-trio--ebc" role="contentinfo" aria-label="Mission — build, create, connect">
+  <a class="p31-mission-trio__link p31-mission-trio__link--build p31-mesh-tap" id="ebc-build" href="/build" title="Initial Build — intake, subject scope, verify-gated bake">
+    <span class="p31-mission-trio__head">
+      <span class="p31-mission-trio__dot" aria-hidden="true"></span>
+      <span class="p31-mission-trio__verb">Build</span>
+    </span>
+    <span class="p31-mission-trio__desc">Intake and bake on the same verify chain—not a decoupled mock.</span>
+  </a>
+  <a class="p31-mission-trio__link p31-mission-trio__link--create p31-mesh-tap" id="ebc-create" href="/geodesic.html" title="GEODESIC — snap grid, Maxwell rigidity, scene export">
+    <span class="p31-mission-trio__head">
+      <span class="p31-mission-trio__dot" aria-hidden="true"></span>
+      <span class="p31-mission-trio__verb">Create</span>
+    </span>
+    <span class="p31-mission-trio__desc">One lab surface, honest rigidity—generate or prove; don't fork the same truth twice (ephemeralization).</span>
+  </a>
+  <a class="p31-mission-trio__link p31-mission-trio__link--connect p31-mesh-tap" id="ebc-connect" href="/mesh" title="Mesh navigator — K₄ cage and product graph">
+    <span class="p31-mission-trio__head">
+      <span class="p31-mission-trio__dot" aria-hidden="true"></span>
+      <span class="p31-mission-trio__verb">Connect</span>
+    </span>
+    <span class="p31-mission-trio__desc"><span class="p31-mission-trio__now">Now</span> — live cage and edges: mesh, hubs, and money follow the same published contracts (ethical monetization).</span>
+  </a>
+</footer>
+<!-- P31:mission-ebc:end -->
   <script src="/lib/p31-return-ribbon.js" defer></script>
 </body>
 </html>

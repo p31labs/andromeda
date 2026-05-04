@@ -4,10 +4,14 @@
  *
  * REQUIRED on every page (in order):
  *   1. p31-gray-rock      inline Gray Rock script in <head>
- *   2. qmu-tokens         /public/lib/p31-qmu-tokens.css
+ *   2. qmu-tokens         /lib/p31-qmu-tokens.css
  *   3. p31-style          /p31-style.css
  *   4. shared-surface     /p31-shared-surface.css
  *   5. data-p31-appearance  <html data-p31-appearance="hub|org|auto">
+ *   6. return-ribbon      /lib/p31-return-ribbon.js
+ *   7. ambient-radial     ambient-radial-fixed div (CSS ambient background)
+ *   8. nav                canonical <nav class="nav"> header
+ *   9. ebc-footer         P31:mission-ebc footer
  *
  * FORBIDDEN on every page:
  *   - terminal-glass      old CRT scanline aesthetic
@@ -15,6 +19,8 @@
  *   - Tailwind CDN        cdn.tailwindcss.com (use canon tokens instead)
  *   - Playfair Display    off-canon display font (use Atkinson Hyperlegible)
  *   - Inter / Roboto      off-canon body fonts
+ *   - p31-top-bar         old injected top-bar (replaced by .nav)
+ *   - starfield-canvas    old injected canvas (replaced by ambient-radial-fixed)
  *
  * BACKLOG: pages in surface-canon-backlog.json are grandfathered (WARN, not FAIL).
  *   They existed before this gate. New pages not in the backlog must pass or deploy is blocked.
@@ -38,22 +44,24 @@ const backlogPath = path.join(__dirname, "surface-canon-backlog.json");
 const STRICT = process.env.SURFACE_CANON_STRICT === "1";
 
 const REQUIRED = [
-  { id: "gray-rock",     needle: "p31-gray-rock",           label: "Gray Rock inline script"     },
-  { id: "qmu-tokens",    needle: "p31-qmu-tokens.css",      label: "QMU tokens stylesheet"        },
-  { id: "p31-style",     needle: "/p31-style.css",           label: "p31-style.css"                },
-  { id: "shared-surface",needle: "p31-shared-surface.css",  label: "p31-shared-surface.css"       },
-  { id: "appearance",    needle: "data-p31-appearance",      label: "data-p31-appearance on <html>"},
-  { id: "return-ribbon", needle: "p31-return-ribbon",        label: "return-ribbon footer"         },
-  { id: "starfield",     needle: "starfield-canvas",         label: "starfield canvas"             },
-  { id: "skip-link",     needle: "p31-skip-link",            label: "skip-link (a11y)"             },
-  { id: "top-bar",       needle: "p31-top-bar",              label: "top-bar header"               },
+  { id: "gray-rock",      needle: "p31-gray-rock",          label: "Gray Rock inline script"      },
+  { id: "qmu-tokens",     needle: "p31-qmu-tokens.css",     label: "QMU tokens stylesheet"         },
+  { id: "p31-style",      needle: "/p31-style.css",          label: "p31-style.css"                 },
+  { id: "shared-surface", needle: "p31-shared-surface.css", label: "p31-shared-surface.css"        },
+  { id: "appearance",     needle: "data-p31-appearance",     label: "data-p31-appearance on <html>" },
+  { id: "return-ribbon",  needle: "p31-return-ribbon",       label: "return-ribbon footer"          },
+  { id: "ambient",        needle: "ambient-radial-fixed",    label: "ambient-radial-fixed background"},
+  { id: "nav",            needle: 'class="nav"',             label: "canonical .nav header"         },
+  { id: "ebc-footer",     needle: "p31-mission-trio--ebc",   label: "EBC mission footer"            },
 ];
 
 const FORBIDDEN = [
-  { id: "terminal-glass", needle: "terminal-glass",        label: "terminal-glass class (use p31-q-surface)" },
-  { id: "ede-vars",        needle: "--ede-",                label: "--ede-* local vars (use canon tokens)" },
-  { id: "tailwind-cdn",   needle: "cdn.tailwindcss.com",   label: "Tailwind CDN (use p31-style.css tokens)" },
-  { id: "playfair",        needle: "Playfair Display",      label: "Playfair Display font (use Atkinson Hyperlegible)" },
+  { id: "terminal-glass", needle: "terminal-glass",         label: "terminal-glass class (use p31-q-surface)" },
+  { id: "ede-vars",        needle: "--ede-",                 label: "--ede-* local vars (use canon tokens)"    },
+  { id: "tailwind-cdn",    needle: "cdn.tailwindcss.com",    label: "Tailwind CDN (use p31-style.css tokens)"  },
+  { id: "playfair",        needle: "Playfair Display",       label: "Playfair Display font (use Atkinson Hyperlegible)" },
+  { id: "old-top-bar",     needle: "p31-top-bar",            label: "p31-top-bar (use canonical .nav)"         },
+  { id: "old-starfield",   needle: '<canvas id="starfield-canvas"', label: "starfield-canvas HTML element (use ambient-radial-fixed)" },
 ];
 
 if (!fs.existsSync(publicDir)) {

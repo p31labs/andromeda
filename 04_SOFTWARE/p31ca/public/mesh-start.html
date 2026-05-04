@@ -23,7 +23,6 @@
   <link rel="stylesheet" href="/p31-shared-surface.css" />
   <link rel="stylesheet" href="/p31-responsive-surface.css" />
 
-
     <link rel="stylesheet" href="/p31-tw.css" />
     <script src="/p31-tailwind-extend.js"></script>
   <script>
@@ -39,35 +38,26 @@
   <script src="/lib/p31-subject-prefs.js"></script>
 </head>
 <body class="bg-void text-cloud min-h-screen font-sans antialiased">
-  <!-- Starfield ambient layer -->
-  <canvas id="starfield-canvas" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:0.45;" aria-hidden="true">
-  <a class="p31-skip-link" href="#main">Skip to content</a>
-  <!-- ── Top app bar ──────────────────────────────────────── -->
-  <header class="p31-q-surface p31-top-bar" data-p31-elev="2" role="banner"><a href="/" class="p31-top-bar__wordmark" aria-label="P31 Labs home">P31 <span class="p31-top-bar__accent">Labs</span></a><nav class="p31-top-bar__nav" aria-label="Global"><a href="/hub.html">Hub</a><a href="/connect.html">Connect</a></nav></header>
+<div class="ambient-radial-fixed" aria-hidden="true"></div>
 
-</canvas>
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="/" class="nav-brand" title="P31 Labs hub">
+      <span class="nav-mark" aria-hidden="true">P31</span>
+      <span class="nav-brand-label">P31 Labs</span>
+    </a>
+    <div class="nav-links">
+      <span class="nav-prompt" aria-hidden="true">..</span>
+      <a href="/" class="nav-link">Hub</a>
+      <a href="https://github.com/p31labs/andromeda" target="_blank" rel="noopener" class="nav-link">GitHub</a>
+      <a href="/connect.html" class="nav-link">Connect</a>
+    </div>
+  </div>
+</nav>
 
-<a href="#main" style="position:absolute;left:-9999px;top:0;padding:0.5rem 1rem;background:var(--p31-void);color:var(--p31-teal);font-size:0.875rem;z-index:9999;border-radius:0 0 4px 4px;text-decoration:none" onfocus="this.style.left='0'" onblur="this.style.left='-9999px'">Skip to main content</a>
+
   <div class="min-h-screen flex flex-col">
     <!-- Top bar — EDE family -->
-    <header class="shrink-0 border-b border-white/[0.07] bg-surface/90 backdrop-blur-sm">
-      <div class="max-w-5xl mx-auto px-4 py-3 flex flex-wrap items-center gap-3">
-        <div class="flex items-center gap-2 min-w-0">
-          <span class="text-coral font-bold tracking-wider text-sm whitespace-nowrap" aria-hidden="true">⬡</span>
-          <div class="min-w-0">
-            <p class="font-mono text-[0.65rem] text-cloud/45 tracking-widest uppercase leading-tight">EDE · Personal</p>
-            <h1 id="welcome-headline" class="text-lg sm:text-xl font-bold text-paper leading-tight truncate">Your private assistant</h1>
-            <p class="p31-host-mind text-[0.8rem] text-cloud/50 mt-1 max-w-xl">Host mind: <strong>Operator · Builder</strong> — PAR mesh home on one sky.</p>
-          </div>
-        </div>
-        <p id="welcome-sub" class="text-xs text-cloud/55 max-w-xl sm:ml-2 flex-1 min-w-[12rem]">
-          <span class="text-teal/80 font-mono text-[0.65rem] tracking-wide">Wye → Delta</span>
-          — you closed the star into a personal loop. One surface: your <strong class="text-cloud/80 font-semibold">isolated</strong> agent, energy, and the browser IDE — without dumping your state into the shared family mesh.
-          <a href="/delta.html" class="text-teal/70 hover:text-teal underline decoration-teal/30 ml-1 whitespace-nowrap">Why this shape →</a>
-        </p>
-      </div>
-    </header>
-
     <div id="gate" class="hidden flex-1 flex items-center justify-center px-4 py-12">
       <div class="max-w-md w-full rounded-2xl border border-white/10 bg-surface shadow-ede p-6 text-center">
         <p class="text-coral font-semibold mb-2">No mesh session yet</p>
@@ -699,8 +689,6 @@
   startGrandfatherPhaseVar();
 </script>
   <script src="/lib/p31-return-ribbon.js" defer></script>
-
-  <script type="module">const cv=document.getElementById("starfield-canvas");if(cv)import("/lib/p31-starfield-static-plate.js").then(({initStaticStarPlate})=>initStaticStarPlate(cv,{preset:"hub"})).catch(()=>{});</script>
   <script src="/lib/atmosphere/p31-atmosphere-client.js" defer></script>
 </body>
 </html>

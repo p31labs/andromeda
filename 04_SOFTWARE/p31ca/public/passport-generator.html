@@ -567,19 +567,29 @@
   </style>
 </head>
 <body class="p31-mesh-m-first p31-responsive-surface p31-has-return-ribbon">
+  <div class="ambient-radial-fixed" aria-hidden="true"></div>
   <a class="cp-skip skip-link p31-doc-skip p31-skip-link" href="#fill">Skip to passport form</a>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="/" class="nav-brand" title="P31 Labs hub">
+      <span class="nav-mark" aria-hidden="true">P31</span>
+      <span class="nav-brand-label">P31 Labs</span>
+    </a>
+    <div class="nav-links">
+      <span class="nav-prompt" aria-hidden="true">..</span>
+      <a href="/" class="nav-link">Hub</a>
+      <a href="https://github.com/p31labs/andromeda" target="_blank" rel="noopener" class="nav-link">GitHub</a>
+      <a href="/connect.html" class="nav-link">Connect</a>
+    </div>
+  </div>
+</nav>
 
   <div id="passport-starfield-wrap" aria-hidden="true" style="position:fixed;inset:0;z-index:0;pointer-events:none">
     <canvas id="passport-starfield" class="p31-starfield-canvas" style="display:block;width:100%;height:100%;opacity:0.5"></canvas>
   </div>
 
-  <!-- ── Canonical top app bar ──────────────────────────────────────────── -->
-  <header class="p31-q-surface p31-top-bar" data-p31-elev="2" role="banner">
-    <a href="/" class="p31-top-bar__wordmark" aria-label="P31 Labs home">P31 <span class="p31-top-bar__accent">Labs</span></a>
-    <nav class="p31-top-bar__nav" aria-label="Global"><a href="/hub.html">Hub</a><a href="/connect.html">Connect</a></nav>
-  </header>
-
-  <div class="p31-shell">
+    <div class="p31-shell">
     <header class="cp-hero p31-q-card" data-p31-tone="teal">
       <h1>Cognitive Passport</h1>
       <p class="p31-host-mind">Host mind: <strong>Operator · Parent</strong> — accommodation slice of the same night sky.</p>
@@ -1066,7 +1076,7 @@
         },
         // v1.1.0 additive overlay (additive over /1.0.0 — backward compatible).
         // Coordinates with andromeda/04_SOFTWARE/p31ca/ground-truth/cognitive-passport-v1-1.schema.json
-        // and andromeda/04_SOFTWARE/p31ca/public/lib/p31-cogpass-reader.mjs (the activator).
+        // and andromeda/04_SOFTWARE/p31ca/lib/p31-cogpass-reader.mjs (the activator).
         // The reader normalizes legacy /1.0.0 documents (which only have uiComfort)
         // into the same shape, so emitting both keys is honest, not redundant.
         accessibility: {
@@ -1379,5 +1389,30 @@
   </script>
   <script src="/lib/atmosphere/p31-atmosphere-client.js" defer></script>
   <script src="/lib/p31-return-ribbon.js" data-local-soup="../soup.html" defer></script>
+<!-- P31:mission-ebc:start -->
+<footer id="ebc" class="p31-mission-trio p31-mission-trio--ebc" role="contentinfo" aria-label="Mission — build, create, connect">
+  <a class="p31-mission-trio__link p31-mission-trio__link--build p31-mesh-tap" id="ebc-build" href="/build" title="Initial Build — intake, subject scope, verify-gated bake">
+    <span class="p31-mission-trio__head">
+      <span class="p31-mission-trio__dot" aria-hidden="true"></span>
+      <span class="p31-mission-trio__verb">Build</span>
+    </span>
+    <span class="p31-mission-trio__desc">Intake and bake on the same verify chain—not a decoupled mock.</span>
+  </a>
+  <a class="p31-mission-trio__link p31-mission-trio__link--create p31-mesh-tap" id="ebc-create" href="/geodesic.html" title="GEODESIC — snap grid, Maxwell rigidity, scene export">
+    <span class="p31-mission-trio__head">
+      <span class="p31-mission-trio__dot" aria-hidden="true"></span>
+      <span class="p31-mission-trio__verb">Create</span>
+    </span>
+    <span class="p31-mission-trio__desc">One lab surface, honest rigidity—generate or prove; don't fork the same truth twice (ephemeralization).</span>
+  </a>
+  <a class="p31-mission-trio__link p31-mission-trio__link--connect p31-mesh-tap" id="ebc-connect" href="/mesh" title="Mesh navigator — K₄ cage and product graph">
+    <span class="p31-mission-trio__head">
+      <span class="p31-mission-trio__dot" aria-hidden="true"></span>
+      <span class="p31-mission-trio__verb">Connect</span>
+    </span>
+    <span class="p31-mission-trio__desc"><span class="p31-mission-trio__now">Now</span> — live cage and edges: mesh, hubs, and money follow the same published contracts (ethical monetization).</span>
+  </a>
+</footer>
+<!-- P31:mission-ebc:end -->
 </body>
 </html>
