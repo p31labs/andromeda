@@ -194,6 +194,16 @@
       "role": "p31.rainbow/1.0.0 \u2014 ANSI 256-color rainbow utility used by scripts/p31-launch.mjs --full to print the assembly-complete celebration. Six-hue palette (red/orange/yellow/green/cyan/violet). Respects NO_COLOR + non-TTY (degrades to plain text). Self-contained, zero dependencies. Public API: rainbowText, rainbowLine, rainbowBanner, celebrate, isRainbowEnabled."
     },
     {
+      "id": "p31-cheat-sheet-html",
+      "path": "p31-cheat-sheet.html",
+      "role": "Operator command cheat sheet \u2014 single page covering every npm script + every `p31` CLI verb + every entry point (boot, verify, launch:full rainbow tier, connect, command-center, local services, CLI, office/foundry, git/PR, build/deploy, TRIPER, joy/self-care, 911 e-stop, canonical numbers). Same p31-doc-* canon as p31-personal-howto.html / p31-device-setup.html. data-p31-appearance=hub. Loaded via `npm run demo` at http://127.0.0.1:8080/p31-cheat-sheet.html. Sister markdown for doc-library indexing: docs/P31-CHEAT-SHEET.md."
+    },
+    {
+      "id": "p31-cheat-sheet-md",
+      "path": "docs/P31-CHEAT-SHEET.md",
+      "role": "Markdown counterpart of p31-cheat-sheet.html \u2014 same 15 sections, indexed in docs/doc-library/index.json (verify:doc-index). Use the HTML for daily reference; this file is for searchable doc-library + offline / non-graphical contexts."
+    },
+    {
       "id": "p31-deep-dive-doc",
       "path": "docs/P31-DEEP-DIVE.md",
       "role": "Curator's walk through the codebase highlighting the mind-bending primitives (K\u2084, ephemeralization, Larmor canon, sovereign layers, glass box, SMART suite, reports). Anchor doc for journalists, grants, future operators."
@@ -1582,7 +1592,7 @@
       ],
       "apply": "npm run launch -- --full   (or: npm run launch:full \u00b7 p31 launch --full \u00b7 VS Code task \u201cP31: launch \u2014 FULL ASSEMBLY (rainbows, ~2-3min)\u201d \u00b7 command-center button home-launch-full)",
       "verify": "npm run launch:status  (read-only \u2014 shows deliverables panel + per-probe detail when last sweep ran in full mode)",
-      "note": "Extends p31-launch-package-pipeline with 10 extra non-critical deliverable builds (fleet-portal, contract-registry, smart-evm, phos-voice, wiring-ci-ladder, verify-pipeline, nav-tree, glass-box, shipbox, mcp-verify, fleet-ten verify) and 6 local service probes (ollama :11434, mcp-bridge pgrep, command-center :3131, demo-server :8080, tailscale, ecosystem-glass). Total 31 steps. Probes are informational and do not gate ship readiness; they surface in launch.html \u00a707 + launch:status. The ANSI rainbow celebration fires in the terminal when every standard step + every full-build step is green; same condition triggers the gradient-bordered banner on launch.html. Does NOT start any local service. Does NOT deploy. Does NOT push remotes (still gated by P31_LAUNCH_PUBLISH=I_UNDERSTAND)."
+      "note": "Extends p31-launch-package-pipeline with 10 extra non-critical deliverable builds (fleet-portal, contract-registry, smart-evm, phos-voice, wiring-ci-ladder, verify-pipeline, nav-tree, glass-box, shipbox, mcp-verify, fleet-ten verify) and 6 local service probes (ollama :11434, mcp-bridge pgrep, command-center :3131, demo-server :8080, tailscale, ecosystem-glass). Total 31 steps. Warm time ~85s (build:smart-evm fingerprint-cache via contracts/p31-smart-evm.json `sourceFingerprint` cuts the 5\u00d7 npx solc step from ~30-40s to <1s when .sol sources unchanged \u2014 see p31-contract-registry-from-alignment derivation). Probes are informational and do not gate ship readiness; they surface in launch.html \u00a707 + launch:status. The ANSI rainbow celebration fires in the terminal when every standard step + every full-build step is green; same condition triggers the gradient-bordered banner on launch.html. Does NOT start any local service. Does NOT deploy. Does NOT push remotes (still gated by P31_LAUNCH_PUBLISH=I_UNDERSTAND)."
     },
     {
       "id": "p31ca-design-spec-bundle",
@@ -2628,15 +2638,21 @@
     {
       "id": "p31-contract-registry-from-alignment",
       "from": [
-        "p31-alignment.json"
+        "p31-alignment.json",
+        "packages/p31-sovereign-chain/src/P31TransparencyAnchor.sol",
+        "packages/p31-sovereign-chain/src/P31ManifestRegistry.sol",
+        "packages/p31-sovereign-chain/src/P31AccessAllowlist.sol",
+        "packages/p31-sovereign-chain/src/P31ContentRoot.sol",
+        "packages/p31-sovereign-chain/src/P31TreasuryConfig.sol"
       ],
       "to": [
         "contracts/p31-contract-registry.json",
+        "contracts/p31-smart-evm.json",
         "andromeda/04_SOFTWARE/p31ca/public/p31-contract-registry.json"
       ],
       "apply": "npm run build:contract-registry",
       "verify": "npm run verify:contract-registry",
-      "note": "Hub mirror is written only when andromeda/04_SOFTWARE/p31ca/public exists. Static UI: contract-builder.html; short /contracts."
+      "note": "Hub mirror is written only when andromeda/04_SOFTWARE/p31ca/public exists. Static UI: contract-builder.html; short /contracts. The SMART EVM step (5 \u00d7 npx solc@0.8.24) is fingerprint-cached via contracts/p31-smart-evm.json `sourceFingerprint` (sha256 over suite version + solidity pin + ordered .sol contents) \u2014 cache hit drops from ~30-40s to <1s. Bypass: P31_FORCE_SMART_EVM_BUILD=1. Skip entirely: P31_SKIP_SMART_EVM_BUILD=1. This makes warm `npm run launch -- --full` ~85s (was ~110-225s)."
     },
     {
       "id": "p31-peer-comp-trust-transparency-layer",
@@ -2848,7 +2864,8 @@
       "verify:edge-lab",
       "build",
       "soup:prep:check",
-      "verify:triper"
+      "verify:triper",
+      "verify:public-line"
     ]
   },
   "canonLocks": {
