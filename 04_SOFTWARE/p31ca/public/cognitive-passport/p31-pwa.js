@@ -64,7 +64,7 @@
       display: "inline-flex",
       alignItems: "stretch",
       background: "rgba(15, 17, 21, 0.92)",
-      color: "#25897d",
+      color: "#5DCAA5",
       border: "1px solid rgba(37, 137, 125, 0.4)",
       borderRadius: "8px",
       font: "600 12px/1 ui-monospace, 'SF Mono', Menlo, Consolas, monospace",
