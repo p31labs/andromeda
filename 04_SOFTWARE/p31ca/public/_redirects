@@ -39,8 +39,8 @@
 /transparency-report /#transparency          301
 
 # CWP-P31-VIBE-2026-06 Phase 1 — vibcoding tetra-hub dev environment
-/vibe          /vibe.html               301
-/vibcoding     /vibe.html               301
+/vibe          /god                     301
+/vibcoding     /god                     301
 /super-centaur /ops#centaur             301
 /cars          /connect#social          301
 /canon         /p31-canon-demo.html     301

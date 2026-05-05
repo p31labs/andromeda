@@ -558,12 +558,12 @@
     },
     {
       "from": "/vibe",
-      "to": "/vibe.html",
+      "to": "/god",
       "status": 301
     },
     {
       "from": "/vibcoding",
-      "to": "/vibe.html",
+      "to": "/god",
       "status": 301
     },
     {
