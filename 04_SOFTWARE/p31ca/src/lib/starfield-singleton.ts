@@ -31,7 +31,14 @@ export type RouteId =
   | 'messaging-hub'
   | 'demo-labs'
   | 'delta-hiring'
-  | 'p31-canon-demo';
+  | 'p31-canon-demo'
+  | '404'
+  | 'geodesic-math'
+  | 'god'
+  | 'grants'
+  | 'integrations'
+  | 'mesh-observatory'
+  | 'orchestrator';
 
 interface RouteCam {
   z: number;      // camera dolly Z
@@ -55,7 +62,14 @@ const ROUTE_CAM: Record<RouteId, RouteCam> = {
    'messaging-hub':  { z:  0.2,  hue: 0.444, count: 450, speed: 0.06 }, // Emerald (E2E Secure)
    'demo-labs':      { z: -0.1,  hue: 0.105, count: 600, speed: 0.12 }, // Amber (Experimental)
    'delta-hiring':   { z:  0.5,  hue: 0.600, count: 150, speed: 0.02 }, // Slate (Corporate/Org)
-   'p31-canon-demo': { z:  0.0,  hue: 0.718, count: 350, speed: 0.08 }; // Violet (Design Canon)
+   'p31-canon-demo': { z:  0.0,  hue: 0.718, count: 350, speed: 0.08 }, // Violet (Design Canon)
+   '404':            { z:  0.6,  hue: 0.000, count:  80, speed: 0.02 }, // sparse/lost — coral
+   'geodesic-math':  { z: -0.3,  hue: 0.444, count: 300, speed: 0.06 }, // Emerald (geometry)
+   'god':            { z:  0.2,  hue: 0.600, count: 180, speed: 0.03 }, // Slate (operator shell)
+   'grants':         { z: -0.2,  hue: 0.333, count: 480, speed: 0.10 }, // Green (growth/funding)
+   'integrations':   { z: -0.4,  hue: 0.718, count: 530, speed: 0.11 }, // Violet (mesh/connect)
+   'mesh-observatory':{ z: -0.5, hue: 0.552, count: 620, speed: 0.12 }, // Sky (live data)
+   'orchestrator':   { z:  0.3,  hue: 0.000, count: 160, speed: 0.03 }, // Coral (cockpit/alert)
 };
 
 // ── GLSL shaders ──────────────────────────────────────────────────────────────

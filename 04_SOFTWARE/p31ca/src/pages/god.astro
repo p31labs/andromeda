@@ -3,7 +3,7 @@
  * CWP-P31-UI-2026-01 — Operator shell
  * Phase A: density dial, ambient status strip, focus mode (WBS UI-A.1–A.3)
  */
-import BaseLayout from '../layouts/BaseLayout.astro'
+import AppShell from '../layouts/AppShell.astro'
 import mesh from '../data/p31-mesh-constants.json'
 import opsGlass from '../data/ops-glass-probes.json'
 
@@ -14,9 +14,11 @@ const k4HealthUrl = new URL('/api/health', mesh.k4PersonalWorkerUrl).toString()
 const orchestratorStatusUrl = new URL('/api/orchestrator/status', mesh.orchestratorWorkerUrl).toString()
 ---
 
-<BaseLayout
+<AppShell
   title="G.O.D. / Operator shell | p31ca"
   description="Grounded Operator Deck — /ops/ glass + local 127.0.0.1:3131 + EPCP edge. CWP-P31-UI-2026-01."
+  routeName="god"
+  suppressEbc={true}
 >
   <div
     class="ops-root relative z-10 max-w-6xl mx-auto px-4 py-8 transition-[padding,gap] duration-200"
@@ -703,4 +705,4 @@ const orchestratorStatusUrl = new URL('/api/orchestrator/status', mesh.orchestra
       color: rgb(255 255 255);
     }
   </style>
-</BaseLayout>
+</AppShell>

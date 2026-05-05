@@ -4,7 +4,7 @@
  * three@0.183.0 — fleet pin (no WebGL; synergetic manifest)
  * Styling: p31.universalCanon/1.0.0 (Tailwind theme from design-tokens)
  */
-import BaseLayout from '../layouts/BaseLayout.astro';
+import AppShell from '../layouts/AppShell.astro';
 import mesh from '../data/p31-mesh-constants.json';
 import { P31_LARMOR_HZ } from '../lib/dome/p31-dome-constants';
 
@@ -14,19 +14,11 @@ const cageMesh = new URL('/api/mesh', mesh.k4CageWorkerUrl).href;
 const larmorHz = P31_LARMOR_HZ;
 ---
 
-<BaseLayout title="Mesh Observatory | P31">
-  <link
-    rel="preconnect"
-    href={mesh.k4PersonalWorkerUrl}
-    crossorigin
-    slot="head"
-  />
-  <link
-    rel="preconnect"
-    href={mesh.k4CageWorkerUrl}
-    crossorigin
-    slot="head"
-  />
+<AppShell title="Mesh Observatory | P31" routeName="mesh-observatory">
+  <Fragment slot="head">
+    <link rel="preconnect" href={mesh.k4PersonalWorkerUrl} crossorigin />
+    <link rel="preconnect" href={mesh.k4CageWorkerUrl} crossorigin />
+  </Fragment>
   <div
     class="p31-mesh-obs p31-quantum-veil min-h-screen text-p31-cloud pb-[max(2rem,env(safe-area-inset-bottom))] pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))] pt-28 text-base sm:pt-32 md:px-8"
   >
@@ -301,4 +293,4 @@ const larmorHz = P31_LARMOR_HZ;
         radial-gradient(ellipse 55% 55% at 50% 100%, rgba(77, 184, 168, 0.07) 0%, transparent 50%);
     }
   </style>
-</BaseLayout>
+</AppShell>

@@ -3,7 +3,7 @@
  * Strict reference: icosahedron → sphere subdivision used by /dome.
  * three@0.183.0 (string required by verify:synergetic + ground-truth)
  */
-import BaseLayout from '../layouts/BaseLayout.astro';
+import AppShell from '../layouts/AppShell.astro';
 import { buildIcosaSphereDome, edgeLengthStats, uniqueChordBuckets } from '../lib/dome/icosphere-geometry';
 import { P31_LARMOR_HZ } from '../lib/dome/p31-dome-constants';
 
@@ -17,7 +17,7 @@ const vertN = built.vertices.length;
 /* three@0.183.0 */
 ---
 
-<BaseLayout title="Geodesic math reference | P31 Labs">
+<AppShell title="Geodesic math reference | P31 Labs" routeName="geodesic-math">
   <div class="min-h-screen bg-p31-void text-p31-cloud px-5 py-10 max-w-3xl mx-auto font-sans">
     <p class="text-xs font-mono text-cyan/80 mb-2">p31ca · icosa shell mathematics</p>
     <h1 class="text-2xl font-bold text-p31-cloud mb-2">Subdivided icosa (cockpit shell)</h1>
@@ -58,4 +58,4 @@ const vertN = built.vertices.length;
       Operator Larmor copy (p31-constants <code>physics.larmorHz</code>): {P31_LARMOR_HZ}Hz
     </p>
   </div>
-</BaseLayout>
+</AppShell>

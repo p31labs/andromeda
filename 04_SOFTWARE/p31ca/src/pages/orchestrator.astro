@@ -1,11 +1,12 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
+import AppShell from '../layouts/AppShell.astro';
 import OrchestratorDashboard from '../components/OrchestratorDashboard.astro';
 ---
 
-<BaseLayout
+<AppShell
   title="P31 Orchestrator | Sovereign Cockpit"
   description="Orchestrator control panel · Workers-edge posture"
+  routeName="orchestrator"
 >
   <OrchestratorDashboard />
-</BaseLayout>
+</AppShell>
