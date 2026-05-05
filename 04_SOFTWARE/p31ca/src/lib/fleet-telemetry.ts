@@ -77,8 +77,10 @@ const TICK_MS        = 5_000;  // single interval resolution
 // PLASMA threshold: if this many critical probes are simultaneously down → alert
 const PLASMA_THRESHOLD = 2;
 
-// ── Probe catalog (curated 8/42 from ops-glass-probes.json) ──────────────────
-// Criteria: highest signal, CORS-enabled, non-POST, non-Access-required for GET.
+// ── Probe catalog (curated 7/42 from ops-glass-probes.json) ──────────────────
+// Criteria: highest signal, CORS-enabled, non-POST.
+// command-center is CF Access gated: fetch uses redirect:'manual' so the 302→
+// cloudflareaccess.com never follows; opaqueredirect response = edge is up.
 const PROBE_CATALOG: ProbeSpec[] = [
   // ── CRITICAL — starfield enters PLASMA if ≥2 simultaneously down ──────────
   {
@@ -97,11 +99,6 @@ const PROBE_CATALOG: ProbeSpec[] = [
     tier: 'critical',
   },
   // ── HIGH — SMART warning atoms; no starfield override ────────────────────
-  {
-    id:  'orchestrator',
-    url: 'https://p31-orchestrator.trimtab-signal.workers.dev/api/orchestrator/status',
-    tier: 'high',
-  },
   {
     id:  'bonding-relay',
     url: 'https://bonding-relay.trimtab-signal.workers.dev/health',
@@ -163,10 +160,11 @@ async function runProbe(ps: ProbeState): Promise<void> {
     let res: Response;
     try {
       res = await fetch(spec.url, {
-        method:  'GET',
-        signal:  ctrl.signal,
-        cache:   'no-store',
-        mode:    'cors',
+        method:   'GET',
+        signal:   ctrl.signal,
+        cache:    'no-store',
+        mode:     'cors',
+        redirect: 'manual',
       });
     } finally {
       clearTimeout(timerId);
@@ -175,8 +173,8 @@ async function runProbe(ps: ProbeState): Promise<void> {
     const latency = performance.now() - t0;
     ps.latencyMs = latency;
 
-    // 401/403/302 = Cloudflare Access gating = edge is up
-    const edgeUp = res.ok || res.status === 401 || res.status === 403 || res.status === 302;
+    // opaqueredirect = CF Access 302 blocked by redirect:'manual' = edge is up
+    const edgeUp = res.ok || res.status === 401 || res.status === 403 || res.status === 302 || res.type === 'opaqueredirect';
     if (!edgeUp) {
       next = 'down';
     } else if (latency > (spec.latencyDegradedMs ?? 3_000)) {

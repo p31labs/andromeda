@@ -7,11 +7,6 @@
   Permissions-Policy: camera=(), microphone=(), geolocation=()
   Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://unpkg.com https://cdn.jsdelivr.net https://cdn.tailwindcss.com https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https: wss: blob: data:; worker-src 'self' blob:; frame-ancestors 'none';
 
-# Clear-Site-Data on navigations only (not on /_astro assets — avoids console noise and over-clearing).
-# Omit executionContexts: not universally recognized and triggers browser warnings.
-/
-  Clear-Site-Data: "cache", "storage"
-
 # Disable directory listing
 /indexes/
   X-Robots-Tag: noindex, nofollow
@@ -29,7 +24,6 @@
 # HTML pages
 /*.html
   Cache-Control: no-cache, no-store, must-revalidate
-  Clear-Site-Data: "cache", "storage"
 
 # Static assets below — no Clear-Site-Data (navigation semantics belong on HTML only).
 # Helps DevTools: avoids attributing Clear-Site-Data warnings to favicon.svg subresource fetches.
