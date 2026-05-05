@@ -554,7 +554,7 @@ export const registry = [
       'DID appears on Node Zero display and in serial monitor after first WiFi connect'
     ],
     techNotes: 'Firmware: 05_FIRMWARE/node-zero/. Key fix: AXS15231B QSPI requires dc_gpio_num=GPIO_NUM_NC (not GPIO 0=BOOT button). Hardware MADCTL rotation causes silicon blank-screen bug at non-8-pixel boundaries — use LVGL sw_rotate=1. GPIO 26-37 reserved for Octal PSRAM. LoRa on GPIO 38-45 (repurposed camera pins).',
-    related: ['vault', 'node-one', 'genesis-gate', 'q-factor']
+    related: ['vault', 'node-one', 'genesis-gate']
   },
   {
     id: 'sovereign', title: 'SOVEREIGN', tagline: 'Sovereign OS 3D Cockpit',
