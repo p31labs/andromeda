@@ -25,7 +25,7 @@ new_classes = ["K4Topology", "FamilyMeshRoom"]
 [[d1_databases]]
 binding = "DB"
 database_name = "p31-telemetry"
-database_id = "REPLACE_WITH_YOUR_D1_DATABASE_ID"
+database_id = "fc3b2ffb-4de4-4843-88b1-50e5c788dc50"
 
 # KV — same binding as legacy k4-cage (cache + fallback telemetry when DB unbound)
 [[kv_namespaces]]
