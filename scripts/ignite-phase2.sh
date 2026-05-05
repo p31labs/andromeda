@@ -207,15 +207,27 @@ else
   fi
 fi
 
+# ── STEP 6: Worker secrets bootstrap ─────────────────────────────────────────
+log "STEP 6 — Worker secrets (q-factor + FHIR + HA token)"
+bash "$REPO_ROOT/scripts/bootstrap-secrets.sh" || warn "Secrets bootstrap had errors — check output above"
+
+# ── STEP 7: Matrix VPS (requires HETZNER_API_TOKEN) ──────────────────────────
+log "STEP 7 — Matrix VPS provisioning"
+if [ -n "${HETZNER_API_TOKEN:-}" ]; then
+  bash "$REPO_ROOT/scripts/provision-matrix-vps.sh" && ok "Matrix VPS provisioned" \
+    || warn "VPS provisioning failed — check hetzner credentials and re-run: bash scripts/provision-matrix-vps.sh"
+else
+  warn "HETZNER_API_TOKEN not set — skipping VPS provisioning"
+  info "To provision: export HETZNER_API_TOKEN=<token> && bash scripts/provision-matrix-vps.sh"
+fi
+
 echo ""
 echo -e "${G}══════════════════════════════════════════════════════════════${N}"
 echo -e "${G}  IGNITION COMPLETE                                           ${N}"
 echo -e "${G}══════════════════════════════════════════════════════════════${N}"
 echo ""
-echo -e "  ${C}Remaining manual steps:${N}"
-echo -e "  1. FHIR secrets:    cd 04_SOFTWARE/p31ca/workers/fhir && wrangler secret put EPIC_CLIENT_ID"
-echo -e "  2. Epic FHIR auth:  visit https://api.p31ca.org/fhir/auth on iPhone"
-echo -e "  3. eSIM:            iPhone → Settings → Cellular → Add eSIM → US Mobile Warp"
-echo -e "  4. Matrix VPS:      Hetzner → copy matrix/ → bash matrix/scripts/deploy.sh"
-echo -e "  5. Meshtastic flash: pip install meshtastic && meshtastic --configure 05_FIRMWARE/meshtastic/p31-mesh-config.yaml"
+echo -e "  ${C}Requires physical device (cannot automate):${N}"
+echo -e "  1. Epic FHIR auth:   https://api.p31ca.org/fhir/auth  (iPhone Safari)"
+echo -e "  2. eSIM:             iPhone → Settings → Cellular → Add eSIM → US Mobile Warp"
+echo -e "  3. Meshtastic flash: pip install meshtastic && meshtastic --configure 05_FIRMWARE/meshtastic/p31-mesh-config.yaml"
 echo ""
