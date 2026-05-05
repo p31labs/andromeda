@@ -4,6 +4,7 @@
  * Full 3D interactive K4 topology visualization
  */
 import AppShell from '../layouts/AppShell.astro';
+import { POSNER_PRISM_SVG } from '../lib/phos-assets';
 ---
 
 <AppShell title="P31 Labs | Sovereign Cockpit" routeName="dome">
@@ -302,11 +303,16 @@ import AppShell from '../layouts/AppShell.astro';
        <span id="nd-state" class="px-2 py-0.5 rounded border uppercase" data-i18n="nodeDetail.state">State</span>
        <span id="nd-bus" class="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-p31-cloud-70 uppercase" data-i18n="nodeDetail.bus">Bus</span>
      </div>
-    <div id="nd-notes" class="text-sm text-p31-cloud-80 mb-5 leading-relaxed font-sans">Select a node in the geodesic dome to inspect its architectural state and entangled edges.</div>
-    <div class="text-[10px] font-mono text-p31-muted mb-2 uppercase tracking-widest">Entangled Edges</div>
-    <div id="nd-conns" class="flex flex-wrap gap-2 pointer-events-auto">
-      <span class="text-xs text-p31-muted-50 italic">No node selected</span>
+    <!-- Empty state: Posner Prism shown before any node is selected -->
+    <div id="nd-empty" class="flex flex-col items-center gap-3 py-4">
+      <div class="w-14 h-14 opacity-40" aria-hidden="true">
+        <Fragment set:html={POSNER_PRISM_SVG} />
+      </div>
+      <p class="font-mono text-[9px] tracking-widest uppercase text-center" style="color: rgba(16,185,129,0.5);">Ca₉(PO₄)₆ · Select a node</p>
     </div>
+    <div id="nd-notes" class="text-sm text-p31-cloud-80 mb-5 leading-relaxed font-sans hidden">—</div>
+    <div class="text-[10px] font-mono text-p31-muted mb-2 uppercase tracking-widest hidden" id="nd-edges-label">Entangled Edges</div>
+    <div id="nd-conns" class="flex flex-wrap gap-2 pointer-events-auto hidden"></div>
   </aside>
 
    <!-- LAYER 0: Somatic Breathing Mode (Full Screen Takeover) -->

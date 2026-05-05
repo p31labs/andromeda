@@ -1443,21 +1443,28 @@ if (prefersReducedMotion) {
       if (ndState) { ndState.innerText = n.state; ndState.style.color = STATE_CSS[stateKey] || "#d8d6d0"; ndState.style.borderColor = STATE_CSS[stateKey] || "#d8d6d0"; }
 
       const ndBus = $("nd-bus"); if (ndBus) ndBus.innerText = n.bus;
-      const ndNotes = $("nd-notes"); if (ndNotes) ndNotes.innerText = n.notes || "Core topology node verified by K4 edge network.";
+      // Toggle empty-state vs populated-state
+      $("nd-empty")?.classList.add("hidden");
+      const ndNotes = $("nd-notes");
+      if (ndNotes) { ndNotes.classList.remove("hidden"); ndNotes.innerText = n.notes || "Core topology node verified by K4 edge network."; }
+      $("nd-edges-label")?.classList.remove("hidden");
 
       const edges = EDGES.filter((ed) => ed[0] === n.id || ed[1] === n.id);
       const ndConns = $("nd-conns");
-      if (ndConns) ndConns.innerHTML = edges.length
-        ? edges
-            .map((ed) => {
-              const otherId = ed[0] === n.id ? ed[1] : ed[0];
-              const other = VERTICES[otherId as keyof typeof VERTICES];
-              return other
-                ? `<span class="px-2 py-1 bg-white/5 border border-white/10 rounded text-[9px] hover:bg-white/10 transition-colors">${other[0]}</span>`
-                : "";
-            })
-            .join("")
-        : '<span class="text-xs text-p31-muted-50 italic">Isolated Node</span>';
+      if (ndConns) {
+        ndConns.classList.remove("hidden");
+        ndConns.innerHTML = edges.length
+          ? edges
+              .map((ed) => {
+                const otherId = ed[0] === n.id ? ed[1] : ed[0];
+                const other = VERTICES[otherId as keyof typeof VERTICES];
+                return other
+                  ? `<span class="px-2 py-1 bg-white/5 border border-white/10 rounded text-[9px] hover:bg-white/10 transition-colors">${other[0]}</span>`
+                  : "";
+              })
+              .join("")
+          : '<span class="text-xs text-p31-muted-50 italic">Isolated Node</span>';
+      }
 
       panel?.classList.remove("opacity-0", "pointer-events-none");
       sheetController.mitigateRibbon();
@@ -1466,6 +1473,11 @@ if (prefersReducedMotion) {
       camera.position.lerp(targetPos, 0.1);
     } else {
       selectedNode = null;
+      // Restore empty state
+      $("nd-empty")?.classList.remove("hidden");
+      $("nd-notes")?.classList.add("hidden");
+      $("nd-edges-label")?.classList.add("hidden");
+      $("nd-conns")?.classList.add("hidden");
       if (panel) {
         panel.style.transform = '';
         panel.style.opacity = '';

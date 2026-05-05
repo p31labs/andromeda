@@ -11,6 +11,7 @@
  */
 import { ClientRouter } from 'astro:transitions';
 import type { RouteId } from '../lib/starfield-singleton';
+import { PHOS_FAMILIAR_SVG } from '../lib/phos-assets';
 import '../styles/global.css';
 
 interface Props {
@@ -136,7 +137,9 @@ const isGarden = routeName === 'garden';
       <nav id="p31-bottom-ribbon" class="nav">
         <div class="nav-inner">
           <a href="/" class="nav-brand" title="P31 Labs hub">
-            <span class="nav-mark" aria-hidden="true">P31</span>
+            <span class="nav-mark" aria-hidden="true" style="display:inline-flex;width:28px;height:20px;align-items:center;image-rendering:pixelated;">
+              <Fragment set:html={PHOS_FAMILIAR_SVG} />
+            </span>
             <span class="nav-brand-label">P31 Labs</span>
           </a>
           <div class="nav-links">
