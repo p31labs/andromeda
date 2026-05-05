@@ -20,7 +20,7 @@ const PUBLIC = path.join(P31CA, "public");
 const regPath = path.join(P31CA, "scripts", "hub", "registry.mjs");
 const { registry } = await import(pathToFileURL(regPath).href);
 
-const SKIP_IDS = new Set(["integrations"]);
+const SKIP_IDS = new Set(["integrations", "node-zero"]);
 const SKIP_STATUSES = new Set(["concept", "draft"]);
 
 let errs = 0;

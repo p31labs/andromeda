@@ -18,7 +18,7 @@ const regPath = path.join(P31CA, 'scripts', 'hub', 'registry.mjs');
 const { registry } = await import(pathToFileURL(regPath).href);
 
 /** Astro routes under `src/pages/` — absent from `public/` until `astro build`; hub Launch still targets final URL */
-const SKIP_IDS = new Set(['integrations']);
+const SKIP_IDS = new Set(['integrations', 'node-zero']);
 /** Status values that don't require a live file (concept/draft are not shipped) */
 const SKIP_STATUSES = new Set(['concept', 'draft']);
 let errs = 0;

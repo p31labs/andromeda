@@ -358,54 +358,137 @@ const pageDescription =
     id="scroll-container"
     class="pointer-events-none relative z-10 mx-auto max-w-7xl px-4 pt-28 pb-12 font-sans text-p31-cloud sm:px-6 sm:pb-20 md:pt-24"
   >
-    <!-- Lobby threshold — geometry first, then nameplate (hub shell; tokens via p31-style.css) -->
+    <!-- ═══════════════════════════════════════════════════════════════
+         POSNER HUB — Ca₉(PO₄)₆ sovereign entry point
+         Q-Factor live vitals (left) × Posner molecule spatial nav (right)
+         Everything branches from here.
+    ═══════════════════════════════════════════════════════════════ -->
     <header
-      id="technical-hub-boundary"
-      class="animate-fade-in-up relative z-10 mb-8 text-center sm:mb-12 md:mb-14"
-      style="animation-delay: 0.08s;"
+      id="posner-hub"
+      class="interactive-zone pointer-events-auto relative z-10 flex min-h-[calc(100vh-5rem)] flex-col items-center justify-center gap-8 px-4 pt-20 pb-10 text-center lg:flex-row lg:items-center lg:justify-center lg:gap-16 lg:text-left"
     >
-      <div class="lobby-hero pointer-events-auto mx-auto max-w-xl px-4 pt-16 sm:pt-20 md:pt-24">
-        <div class="lobby-k4-wrap mb-6 flex justify-center" aria-hidden="true">
-          <svg
-            class="lobby-k4 lobby-k4--static text-teal"
-            width="120"
-            height="120"
-            viewBox="-100 -100 200 200"
-            role="img"
-            aria-label="K₄ tetrahedron wireframe — four vertices, six edges"
-          >
-            <!-- Schlegel-style projection: triangle + interior hub = K₄ -->
-            <line x1="0" y1="-72" x2="-62" y2="52" stroke="currentColor" stroke-width="1.25" vector-effect="non-scaling-stroke" opacity="0.85" />
-            <line x1="0" y1="-72" x2="62" y2="52" stroke="currentColor" stroke-width="1.25" vector-effect="non-scaling-stroke" opacity="0.85" />
-            <line x1="-62" y1="52" x2="62" y2="52" stroke="currentColor" stroke-width="1.25" vector-effect="non-scaling-stroke" opacity="0.85" />
-            <line x1="0" y1="-8" x2="0" y2="-72" stroke="currentColor" stroke-width="1.25" vector-effect="non-scaling-stroke" opacity="0.85" />
-            <line x1="0" y1="-8" x2="-62" y2="52" stroke="currentColor" stroke-width="1.25" vector-effect="non-scaling-stroke" opacity="0.85" />
-            <line x1="0" y1="-8" x2="62" y2="52" stroke="currentColor" stroke-width="1.25" vector-effect="non-scaling-stroke" opacity="0.85" />
-          </svg>
+      <!-- Q-Factor vitals -->
+      <div class="flex flex-col items-center gap-4 lg:items-start">
+        <!-- Status -->
+        <div class="flex items-center gap-2">
+          <div id="hub-q-dot" class="h-1.5 w-1.5 rounded-full transition-all duration-300" style="background:#333"></div>
+          <span id="hub-q-label" class="font-mono text-[9px] uppercase tracking-widest text-p31-muted">CONNECTING</span>
         </div>
-        <h1
-          id="technical-hub-heading"
-          class="hub-operator-title mb-4 text-balance text-[clamp(1.85rem,4vw+0.5rem,2.85rem)] leading-[1.12] tracking-tight text-p31-cloud"
+
+        <!-- Q-ring -->
+        <div class="relative" style="width:160px;height:160px">
+          <svg viewBox="0 0 160 160" width="160" height="160" style="transform:rotate(-90deg)">
+            <circle fill="none" stroke="#16181f" stroke-width="10" cx="80" cy="80" r="68"/>
+            <circle id="hub-q-ring" fill="none" stroke-width="10" stroke-linecap="round"
+                    cx="80" cy="80" r="68" stroke-dasharray="427.26" stroke-dashoffset="427.26"
+                    stroke="#10b981" style="transition:stroke-dashoffset .8s ease,stroke .4s"/>
+          </svg>
+          <div class="absolute inset-0 flex flex-col items-center justify-center gap-0.5">
+            <span id="hub-q-score" class="font-mono text-4xl leading-none" style="color:#10b981">—</span>
+            <span class="font-mono text-[9px] tracking-widest text-p31-muted">Q-SCORE</span>
+          </div>
+        </div>
+
+        <!-- Q-badge + label -->
+        <div class="flex flex-col items-center gap-1 lg:items-start">
+          <span id="hub-q-badge" class="font-mono text-[11px] tracking-widest px-3 py-1 rounded-full border"
+                style="color:#10b981;border-color:rgba(16,185,129,0.3);background:rgba(16,185,129,0.08)">LOADING</span>
+          <a href="/qfactor/" class="font-mono text-[10px] tracking-widest text-p31-muted hover:text-phosphorus transition-colors">
+            full dashboard →
+          </a>
+        </div>
+      </div>
+
+      <!-- Posner Ca₉(PO₄)₆ spatial navigation -->
+      <div class="posner-nav-wrap">
+        <svg
+          id="posner-svg"
+          viewBox="-190 -190 380 380"
+          width="340"
+          height="340"
+          class="posner-svg"
+          role="navigation"
+          aria-label="P31 spatial navigation — Posner Ca₉(PO₄)₆ cluster"
         >
-          P31 Labs
-        </h1>
-        <p class="mx-auto mb-8 max-w-xl font-sans text-base leading-relaxed text-p31-cloud-80 sm:text-lg">
-          Open-source assistive technology for neurodivergent individuals.
-        </p>
-        <p class="font-mono text-[10px] uppercase tracking-[0.16em] text-p31-muted">
-          <a href="#lobby-rooms" class="text-teal/90 no-underline hover:underline">Rooms</a>
-          <span class="mx-2 opacity-40" aria-hidden="true">·</span>
-          <a href="#core-products" class="text-p31-muted no-underline hover:text-teal/90">Full catalog</a>
-          <span class="mx-2 opacity-40" aria-hidden="true">·</span>
-          <button
-            id="btn-explore-dome"
-            type="button"
-            class="border-0 bg-transparent p-0 font-mono text-[10px] uppercase tracking-[0.16em] text-p31-muted hover:text-teal/90"
-          >
-            Dome
-          </button>
+          <!-- PO₄ bond lines -->
+          <g class="posner-bonds" stroke="rgba(77,184,168,0.18)" stroke-width="1.2" fill="none">
+            <!-- Inner Ca triangle -->
+            <line x1="0" y1="-72" x2="62" y2="36"/>
+            <line x1="62" y1="36" x2="-62" y2="36"/>
+            <line x1="-62" y1="36" x2="0" y2="-72"/>
+            <!-- Radial bridges (inner → outer same-angle) -->
+            <line x1="0" y1="-72" x2="0" y2="-152"/>
+            <line x1="62" y1="36" x2="132" y2="76"/>
+            <line x1="-62" y1="36" x2="-132" y2="76"/>
+            <!-- Cross bridges -->
+            <line x1="0" y1="-72" x2="-132" y2="-76"/>
+            <line x1="62" y1="36" x2="132" y2="-76"/>
+            <line x1="-62" y1="36" x2="0" y2="152"/>
+          </g>
+
+          <!-- Outer Ca²⁺ nodes (r=152) -->
+          <!-- Ca4 top → BONDING -->
+          <a href="https://bonding.p31ca.org" target="_blank" rel="noopener" class="posner-node" data-label="BONDING">
+            <circle cx="0" cy="-152" r="13" fill="rgba(16,185,129,0.12)" stroke="rgba(16,185,129,0.5)" stroke-width="1.5" class="posner-ca"/>
+            <text x="0" y="-168" text-anchor="middle" class="posner-lbl">BONDING</text>
+          </a>
+          <!-- Ca5 top-right → Node Zero -->
+          <a href="/node-zero" class="posner-node" data-label="NODE ZERO">
+            <circle cx="132" cy="-76" r="13" fill="rgba(205,168,82,0.12)" stroke="rgba(205,168,82,0.5)" stroke-width="1.5" class="posner-ca"/>
+            <text x="148" y="-76" text-anchor="start" dominant-baseline="middle" class="posner-lbl">NODE ZERO</text>
+          </a>
+          <!-- Ca6 bottom-right → Glass Box -->
+          <a href="/glass-box" class="posner-node" data-label="GLASS BOX">
+            <circle cx="132" cy="76" r="13" fill="rgba(14,165,233,0.12)" stroke="rgba(14,165,233,0.5)" stroke-width="1.5" class="posner-ca"/>
+            <text x="148" y="76" text-anchor="start" dominant-baseline="middle" class="posner-lbl">GLASS BOX</text>
+          </a>
+          <!-- Ca7 bottom → Mesh -->
+          <a href="/connect" class="posner-node" data-label="MESH">
+            <circle cx="0" cy="152" r="13" fill="rgba(139,92,246,0.12)" stroke="rgba(139,92,246,0.5)" stroke-width="1.5" class="posner-ca"/>
+            <text x="0" y="170" text-anchor="middle" class="posner-lbl">MESH</text>
+          </a>
+          <!-- Ca8 bottom-left → Q-Factor -->
+          <a href="/qfactor/" class="posner-node" data-label="Q-FACTOR">
+            <circle cx="-132" cy="76" r="13" fill="rgba(16,185,129,0.12)" stroke="rgba(16,185,129,0.5)" stroke-width="1.5" class="posner-ca"/>
+            <text x="-148" y="76" text-anchor="end" dominant-baseline="middle" class="posner-lbl">Q-FACTOR</text>
+          </a>
+          <!-- Ca9 top-left → Research -->
+          <a href="/research" class="posner-node" data-label="RESEARCH">
+            <circle cx="-132" cy="-76" r="13" fill="rgba(244,63,94,0.12)" stroke="rgba(244,63,94,0.5)" stroke-width="1.5" class="posner-ca"/>
+            <text x="-148" y="-76" text-anchor="end" dominant-baseline="middle" class="posner-lbl">RESEARCH</text>
+          </a>
+
+          <!-- Inner Ca²⁺ nodes (r=72) — core navigation -->
+          <!-- Ca1 top → Dome -->
+          <a href="/dome" class="posner-node posner-node--inner" data-label="DOME">
+            <circle cx="0" cy="-72" r="16" fill="rgba(14,165,233,0.15)" stroke="rgba(14,165,233,0.65)" stroke-width="2" class="posner-ca-inner"/>
+            <text x="0" y="-54" text-anchor="middle" class="posner-lbl-inner">DOME</text>
+          </a>
+          <!-- Ca2 bottom-right → Ops -->
+          <a href="/ops/" class="posner-node posner-node--inner" data-label="OPS">
+            <circle cx="62" cy="36" r="16" fill="rgba(139,92,246,0.15)" stroke="rgba(139,92,246,0.65)" stroke-width="2" class="posner-ca-inner"/>
+            <text x="80" y="44" text-anchor="start" class="posner-lbl-inner">OPS</text>
+          </a>
+          <!-- Ca3 bottom-left → Passport -->
+          <a href="/passport" class="posner-node posner-node--inner" data-label="PASSPORT">
+            <circle cx="-62" cy="36" r="16" fill="rgba(167,139,250,0.15)" stroke="rgba(167,139,250,0.65)" stroke-width="2" class="posner-ca-inner"/>
+            <text x="-80" y="44" text-anchor="end" class="posner-lbl-inner">PASSPORT</text>
+          </a>
+        </svg>
+
+        <p class="font-mono text-[9px] tracking-widest text-p31-muted text-center mt-2 opacity-60">
+          Ca₉(PO₄)₆ · sovereign mesh topology
         </p>
       </div>
+
+      <!-- Scroll indicator -->
+      <a
+        href="#lobby-rooms"
+        class="absolute bottom-6 left-1/2 -translate-x-1/2 font-mono text-[10px] tracking-widest text-p31-muted opacity-40 hover:opacity-80 transition-opacity hidden sm:block"
+        aria-label="Scroll to catalog"
+      >
+        ↓ catalog
+      </a>
     </header>
 
     <section
@@ -1107,9 +1190,135 @@ const pageDescription =
   @keyframes l0-inhale { to { transform: scale(1.3); opacity: 1; } }
   @keyframes l0-hold   { from { transform: scale(1.3); opacity: 1; } to { transform: scale(1.3); opacity: 1; } }
   @keyframes l0-exhale { to { transform: scale(0.75); opacity: 0.4; } }
+
+  /* ── Posner Ca₉(PO₄)₆ hub ─────────────────────────────────────── */
+  .posner-nav-wrap { position: relative; display: flex; flex-direction: column; align-items: center; }
+
+  .posner-svg { overflow: visible; }
+
+  .posner-bonds { pointer-events: none; }
+
+  .posner-node { cursor: pointer; }
+  .posner-node .posner-ca,
+  .posner-node .posner-ca-inner {
+    transition: fill 0.15s, stroke 0.15s, r 0.15s;
+  }
+  .posner-node:hover .posner-ca     { fill: rgba(77,184,168,0.28); stroke: rgba(77,184,168,0.9); }
+  .posner-node:hover .posner-ca-inner { fill: rgba(77,184,168,0.32); stroke: rgba(77,184,168,0.95); }
+  .posner-node:focus-within .posner-ca,
+  .posner-node:focus-within .posner-ca-inner { outline: none; stroke: var(--p31-cyan, #4db8a8); }
+
+  .posner-lbl {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8px;
+    letter-spacing: 0.14em;
+    fill: var(--p31-muted, #555566);
+    text-transform: uppercase;
+    transition: fill 0.15s;
+    pointer-events: none;
+    user-select: none;
+  }
+  .posner-lbl-inner {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    fill: var(--p31-cloud-70, #9ba3b0);
+    text-transform: uppercase;
+    transition: fill 0.15s;
+    pointer-events: none;
+    user-select: none;
+  }
+  .posner-node:hover .posner-lbl,
+  .posner-node:hover .posner-lbl-inner { fill: var(--p31-cloud, #ede8e0); }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .posner-ca, .posner-ca-inner {
+      animation: posner-pulse 4s ease-in-out infinite;
+    }
+    .posner-ca-inner {
+      animation-duration: 3.2s;
+      animation-delay: -0.8s;
+    }
+  }
+  @keyframes posner-pulse {
+    0%, 100% { opacity: 0.72; }
+    50%       { opacity: 1; }
+  }
 </style>
 
 <!-- Landing: src/scripts/landing-cockpit.ts (telemetry + trimtab + 2D particle canvas); full Three.js dome: /dome -->
 <script>
   import '../scripts/landing-cockpit.ts';
+</script>
+
+<!-- Posner hub: wire Q-ring to cached telemetry (landing-cockpit fills p31_cache_qfactor) -->
+<script is:inline>
+(function () {
+  const CIRC = 427.26;
+  const Q_COLORS = {
+    Q1_FLOW:'#10b981',Q2_BURN:'#f43f5e',Q3_DEPLETED:'#64748b',Q4_RECOVERY:'#8b5cf6',
+    Q2_ANXIOUS:'#f59e0b',Q3_EXHAUSTED:'#f43f5e',Q4_CALM:'#8b5cf6',
+  };
+  const Q_LABELS = {
+    Q1_FLOW:'Q1 · FLOW',Q2_BURN:'Q2 · BURN',Q3_DEPLETED:'Q3 · DEPLETED',Q4_RECOVERY:'Q4 · RECOVERY',
+    Q2_ANXIOUS:'Q2 · BURN',Q3_EXHAUSTED:'Q3 · DEPLETED',Q4_CALM:'Q4 · RECOVERY',
+  };
+
+  function applyHubQ(score100, quadrant, offline) {
+    var color = (quadrant && Q_COLORS[quadrant]) || '#10b981';
+    var ring = document.getElementById('hub-q-ring');
+    var scoreEl = document.getElementById('hub-q-score');
+    var badgeEl = document.getElementById('hub-q-badge');
+    var dotEl   = document.getElementById('hub-q-dot');
+    var lblEl   = document.getElementById('hub-q-label');
+    if (ring) {
+      ring.style.strokeDashoffset = CIRC - (score100 / 100) * CIRC;
+      ring.style.stroke = color;
+    }
+    if (scoreEl) { scoreEl.textContent = Math.round(score100); scoreEl.style.color = color; }
+    if (badgeEl) {
+      badgeEl.textContent = (Q_LABELS[quadrant] || quadrant || 'UNKNOWN').toUpperCase();
+      badgeEl.style.color = color;
+      badgeEl.style.borderColor = color + '4d';
+      badgeEl.style.background  = color + '14';
+    }
+    if (dotEl) {
+      dotEl.style.background  = offline ? '#444' : color;
+      dotEl.style.boxShadow   = offline ? 'none' : '0 0 5px ' + color;
+    }
+    if (lblEl) lblEl.textContent = offline ? 'OFFLINE — LOCAL STORE' : 'HARDWARE OFFLINE — CLOUD RELAY ACTIVE';
+  }
+
+  function loadFromCache() {
+    try {
+      var s = localStorage.getItem('p31-qstate');
+      if (!s) return false;
+      var d = JSON.parse(s);
+      if (d && d.qScore != null) {
+        applyHubQ(d.qScore, d.quadrant, true);
+        return true;
+      }
+    } catch (_) {}
+    return false;
+  }
+
+  function pollTelemetry() {
+    try {
+      var raw = localStorage.getItem('p31_cache_qfactor');
+      if (!raw) return;
+      var d = JSON.parse(raw);
+      if (d && typeof d.score === 'number') {
+        applyHubQ(d.score * 100, d.quadrant || null, false);
+      }
+    } catch (_) {}
+  }
+
+  document.addEventListener('astro:page-load', function () {
+    if (!document.getElementById('hub-q-ring')) return;
+    loadFromCache();
+    // Poll the telemetry cache every 10s (landing-cockpit refreshes it every 30s)
+    setInterval(pollTelemetry, 10000);
+    setTimeout(pollTelemetry, 800);
+  });
+})();
 </script>

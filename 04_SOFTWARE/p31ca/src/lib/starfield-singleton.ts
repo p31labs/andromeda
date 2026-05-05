@@ -25,7 +25,9 @@ export type RouteId =
   | 'connect'
   | 'ops'
   | 'garden'
-  | 'passport';
+  | 'passport'
+  | 'qfactor'
+  | 'node-zero';
 
 interface RouteCam {
   z: number;      // camera dolly Z
@@ -43,7 +45,9 @@ const ROUTE_CAM: Record<RouteId, RouteCam> = {
   connect:  { z: -0.6,  hue: 0.718, count: 700, speed: 0.13 }, // #8b5cf6 violet
   ops:      { z:  0.4,  hue: 0.600, count: 150, speed: 0.01 }, // #64748b slate
   garden:   { z:  0.8,  hue: 0.105, count:  25, speed: 0.05 }, // #f59e0b amber
-  passport: { z: -0.2,  hue: 0.710, count: 500, speed: 0.10 }, // #a78bfa violet-400
+  passport:   { z: -0.2,  hue: 0.710, count: 500, speed: 0.10 }, // #a78bfa violet-400
+  qfactor:    { z: -0.3,  hue: 0.444, count: 420, speed: 0.09 }, // #10b981 emerald (vitality)
+  'node-zero':{ z:  0.1,  hue: 0.552, count: 580, speed: 0.11 }, // #0ea5e9 sky (hardware mesh)
 };
 
 // ── GLSL shaders ──────────────────────────────────────────────────────────────

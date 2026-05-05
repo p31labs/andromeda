@@ -537,7 +537,7 @@ export const registry = [
   {
     id: 'node-zero', title: 'Node Zero', tagline: 'Sovereign Mesh Hardware Node',
     icon: '📡', accent: '#cda852', status: 'beta', statusLabel: 'BETA',
-    appUrl: 'node-zero.html',
+    appUrl: '/node-zero',
     tech: ['ESP-IDF 5.5.x', 'LVGL 8.4', 'AXS15231B QSPI', 'SX1262 LoRa 915MHz', 'Meshtastic LONG_FAST', 'Q-Factor API'],
     features: [
       'Waveshare ESP32-S3 N16R8: 16MB flash, 8MB Octal PSRAM, 480×320 QSPI touch display',

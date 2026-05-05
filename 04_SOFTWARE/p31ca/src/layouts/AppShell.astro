@@ -19,6 +19,8 @@ interface Props {
   description?: string;
   routeName: RouteId;
   phosPage?: string;
+  suppressEbc?: boolean;
+  preserveSW?: boolean;
 }
 
 const {
@@ -26,6 +28,8 @@ const {
   description = 'P31 Labs — Isostatically Rigid. Cognitively Sovereign.',
   routeName,
   phosPage,
+  suppressEbc = false,
+  preserveSW = false,
 } = Astro.props;
 
 const isGarden = routeName === 'garden';
@@ -40,15 +44,17 @@ const isGarden = routeName === 'garden';
   style="color-scheme: dark;"
 >
   <head>
-    <!-- Unregister stale service workers from old hearing-ops deployment -->
-    <script is:inline>
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.getRegistrations().then(function (regs) {
-          regs.forEach(function (reg) { reg.unregister(); });
-        });
-        if (navigator.serviceWorker.controller) window.location.reload(true);
-      }
-    </script>
+    <!-- Unregister stale service workers from old hearing-ops deployment (skipped on routes with own SW) -->
+    {!preserveSW && (
+      <script is:inline>
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.getRegistrations().then(function (regs) {
+            regs.forEach(function (reg) { reg.unregister(); });
+          });
+          if (navigator.serviceWorker.controller) window.location.reload(true);
+        }
+      </script>
+    )}
 
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
@@ -160,8 +166,8 @@ const isGarden = routeName === 'garden';
       <slot />
     </div>
 
-    <!-- EBC footer: Build · Create · Connect — suppressed on garden -->
-    {!isGarden && (
+    <!-- EBC footer: Build · Create · Connect — suppressed on garden or when suppressEbc is set -->
+    {!isGarden && !suppressEbc && (
       <footer
         id="ebc"
         class="p31-mission-trio p31-mission-trio--ebc"
