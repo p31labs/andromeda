@@ -179,8 +179,9 @@ html { color-scheme: dark; }
   left: 0;
   right: 0;
   z-index: 50;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  display: flex;
+  align-items: stretch;
+  height: 2.25rem;
   border-top: 1px solid var(--p31-glass-border);
   background: var(--p31-glass-surface);
   backdrop-filter: blur(12px);
@@ -194,14 +195,19 @@ html { color-scheme: dark; }
   gap: var(--p31-space-3);
 }
 .p31-mission-trio__link {
-  display: block;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
   text-decoration: none;
   color: inherit;
   border-right: 1px solid rgba(255, 255, 255, 0.06);
-  padding: var(--p31-space-4) var(--p31-space-4);
+  padding: 0 var(--p31-space-3);
   min-width: 0;
   transition: background var(--p31-duration-base, 200ms) var(--p31-ease-out, ease);
 }
+.p31-mission-trio--ebc .p31-mission-trio__desc { display: none; }
 .p31-mission-trio--ebc .p31-mission-trio__link:last-child { border-right: none; }
 .p31-mission-trio__link[aria-current="page"] {
   background: rgba(77, 184, 168, 0.1);
@@ -211,7 +217,7 @@ html { color-scheme: dark; }
   display: flex;
   align-items: center;
   gap: 0.35rem;
-  margin-bottom: 0.35rem;
+  margin-bottom: 0;
 }
 .p31-mission-trio__dot {
   width: 0.35rem;
