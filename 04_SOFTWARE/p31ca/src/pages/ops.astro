@@ -1,0 +1,105 @@
+---
+import AppShell from '../layouts/AppShell.astro';
+
+// Sourced from the Phase 2 redirect map (ops route)
+const TOOLS: Array<{ id: string; label: string }> = [
+  { id: 'agents',              label: 'Agents'           },
+  { id: 'appointment-tracker', label: 'Appt Tracker'     },
+  { id: 'attractor',           label: 'Attractor'        },
+  { id: 'axiom',               label: 'Axiom'            },
+  { id: 'budget-tracker',      label: 'Budget Tracker'   },
+  { id: 'buffer',              label: 'Buffer'           },
+  { id: 'builder',             label: 'Builder'          },
+  { id: 'contact-locker',      label: 'Contact Locker'   },
+  { id: 'content-forge',       label: 'Content Forge'    },
+  { id: 'cortex',              label: 'Cortex'           },
+  { id: 'discord',             label: 'Discord Bot'      },
+  { id: 'docs',                label: 'Doc Suite'        },
+  { id: 'ede',                 label: 'EDE'              },
+  { id: 'editor',              label: 'Editor'           },
+  { id: 'forge',               label: 'Forge'            },
+  { id: 'integrations',        label: 'Integrations'     },
+  { id: 'legal-evidence',      label: 'Legal Evidence'   },
+  { id: 'medical-tracker',     label: 'Medical Tracker'  },
+  { id: 'observatory',         label: 'Observatory'      },
+  { id: 'centaur',             label: 'Super Centaur'    },
+  { id: 'onboard',             label: 'Onboard'          },
+  { id: 'prism',               label: 'Prism'            },
+  { id: 'sleep-tracker',       label: 'Sleep Tracker'    },
+  { id: 'somatic',             label: 'Somatic Anchor'   },
+  { id: 'style',               label: 'Style Generator'  },
+  { id: 'switches',            label: 'Switches'         },
+  { id: 'theme',               label: 'Theme Showcase'   },
+  { id: 'vault',               label: 'Vault'            },
+];
+---
+
+<AppShell title="Command Dashboard — P31 Labs" routeName="ops">
+  <div class="max-w-7xl mx-auto w-full px-4 md:px-6 flex flex-col">
+
+    <header class="mb-4 pb-4 flex justify-between items-end" style="border-bottom: 1px solid var(--p31-border-subtle);">
+      <h1 class="text-3xl md:text-4xl font-serif" style="color: var(--p31-cloud, #ede8e0);">Command</h1>
+      <span class="font-mono text-[10px] tracking-widest uppercase px-3 py-1 rounded" style="color: var(--p31-slate, #64748b); background: rgba(100,116,139,0.1); border: 1px solid rgba(100,116,139,0.3);">Restricted Surface</span>
+    </header>
+
+    <div class="flex flex-col md:flex-row gap-4 flex-grow">
+
+      <!-- Dense tool nav — horizontal scroll on mobile, vertical on desktop -->
+      <nav
+        id="ops-nav"
+        aria-label="Ops tools"
+        class="md:w-52 shrink-0 p31-glass p-2 rounded-xl flex flex-row md:flex-col gap-1 overflow-x-auto md:overflow-y-auto md:max-h-[70vh]"
+        style="scrollbar-width: none;"
+      >
+        {TOOLS.map(({ id, label }) => (
+          <a
+            href={`#${id}`}
+            class="shrink-0 px-3 py-2 rounded-lg text-[10px] font-mono tracking-widest uppercase whitespace-nowrap hover:bg-white/5 hover:text-[color:var(--p31-cloud,#ede8e0)] transition-colors aria-[current=true]:font-bold"
+            style="color: var(--p31-cloud-muted, rgba(237,232,224,0.5));"
+          >
+            {label}
+          </a>
+        ))}
+      </nav>
+
+      <!-- Section panel -->
+      <div class="relative flex-grow min-h-[55vh]">
+        {TOOLS.map(({ id, label }) => (
+          <section
+            id={id}
+            class="hash-section hidden absolute inset-0 w-full h-full"
+            aria-label={label}
+          >
+            <div class="p31-q-surface h-full flex flex-col" data-p31-elev="1">
+              <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl md:text-2xl font-serif uppercase tracking-widest" style="color: var(--p31-cloud, #ede8e0);">{label}</h2>
+                <div class="h-2 w-2 rounded-full" style="background: var(--p31-slate, #64748b);"></div>
+              </div>
+              <div class="flex-grow rounded-xl flex items-center justify-center p-6" style="background: rgba(0,0,0,0.5); border: 1px solid var(--p31-border-subtle);">
+                <div class="text-center max-w-xs">
+                  <p class="font-mono text-[10px] tracking-widest uppercase px-3 py-1 rounded inline-block mb-4" style="color: var(--p31-slate, #64748b); border: 1px solid rgba(100,116,139,0.3);">Mount Point</p>
+                  <p class="text-sm leading-relaxed" style="color: rgba(237,232,224,0.4);">
+                    Surface absorbed into the unified AppShell routing topology.
+                    Client-side state prevents WebGL context thrashing.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+        ))}
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    import { mountHashRouterAuto } from '../lib/hash-router';
+    document.addEventListener('astro:page-load', () => {
+      mountHashRouterAuto({
+        defaultHash: 'agents',
+        navSelector: '#ops-nav',
+        sectionSelector: '.hash-section',
+      });
+    });
+  </script>
+</AppShell>

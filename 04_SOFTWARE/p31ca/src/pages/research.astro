@@ -19,8 +19,7 @@
  * Bus bar nav role gating works automatically: this is a public page, so
  * it appears in `navByRole.stranger` and is reachable from every role.
  */
-import BaseLayout from '../layouts/BaseLayout.astro';
-import BusBarNav from '../components/BusBarNav.astro';
+import AppShell from '../layouts/AppShell.astro';
 import researchData from '../data/p31-research.json';
 import groundTruth from '../../ground-truth/p31.ground-truth.json';
 
@@ -47,8 +46,7 @@ const phosVoiceFromGround = (groundTruth as { busBar?: { slots?: Record<string, 
 const groundDescription = phosVoiceFromGround?.description ?? '';
 ---
 
-<BaseLayout title="Research — P31 Labs">
-  <BusBarNav current={phosKey} />
+<AppShell title="Research — P31 Labs" routeName="research">
 
   <main class="p31-research" data-p31-phos-voice-key={phosKey}>
     {/*
@@ -253,4 +251,4 @@ const groundDescription = phosVoiceFromGround?.description ?? '';
       transition: none;
     }
   </style>
-</BaseLayout>
+</AppShell>

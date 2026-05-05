@@ -423,27 +423,22 @@
   "edgeRedirects": [
     {
       "from": "/app/ede",
-      "to": "/ede-about.html",
+      "to": "/ops#ede",
       "status": 302
     },
     {
       "from": "/app/buffer",
-      "to": "/buffer-about.html",
+      "to": "/ops#buffer",
       "status": 302
     },
     {
       "from": "/app/larmor",
-      "to": "/larmor.html",
+      "to": "/dome#larmor",
       "status": 302
     },
     {
-      "from": "/integrations",
-      "to": "/integrations/",
-      "status": 301
-    },
-    {
       "from": "/dome.html",
-      "to": "/dome/",
+      "to": "/dome",
       "status": 301
     },
     {
@@ -457,28 +452,28 @@
       "status": 301
     },
     {
-      "from": "/onboard",
-      "to": "/planetary-onboard.html",
+      "from": "/integrations",
+      "to": "/integrations/",
       "status": 301
     },
     {
-      "from": "/passport",
-      "to": "/passport-generator.html",
+      "from": "/onboard",
+      "to": "/ops#onboard",
       "status": 301
     },
     {
       "from": "/launch",
-      "to": "/launch.html",
+      "to": "/#launch",
       "status": 301
     },
     {
       "from": "/together",
-      "to": "/welcome",
+      "to": "/#welcome",
       "status": 301
     },
     {
       "from": "/start",
-      "to": "/mesh-start.html",
+      "to": "/connect#mesh",
       "status": 301
     },
     {
@@ -493,12 +488,12 @@
     },
     {
       "from": "/mesh",
-      "to": "/connect.html",
+      "to": "/connect",
       "status": 301
     },
     {
       "from": "/why",
-      "to": "/delta.html",
+      "to": "/research#delta",
       "status": 301
     },
     {
@@ -508,17 +503,12 @@
     },
     {
       "from": "/doc-suite",
-      "to": "/open-doc-suite.html",
+      "to": "/ops#docs",
       "status": 301
     },
     {
       "from": "/centaur",
-      "to": "/p31-super-centaur-starter.html",
-      "status": 301
-    },
-    {
-      "from": "/super-centaur",
-      "to": "/p31-super-centaur-starter.html",
+      "to": "/ops#centaur",
       "status": 301
     },
     {
@@ -563,7 +553,7 @@
     },
     {
       "from": "/transparency-report",
-      "to": "/transparency.html",
+      "to": "/#transparency",
       "status": 301
     },
     {
@@ -577,13 +567,18 @@
       "status": 301
     },
     {
-      "from": "/canon",
-      "to": "/p31-canon-demo.html",
+      "from": "/super-centaur",
+      "to": "/ops#centaur",
       "status": 301
     },
     {
       "from": "/cars",
-      "to": "/social-molecules.html",
+      "to": "/connect#social",
+      "status": 301
+    },
+    {
+      "from": "/canon",
+      "to": "/p31-canon-demo.html",
       "status": 301
     },
     {
@@ -648,28 +643,13 @@
     },
     {
       "from": "/agents",
-      "to": "/fleet-agents.html",
+      "to": "/ops#agents",
       "status": 301
     },
     {
       "from": "/demos",
       "to": "/demo-labs.html",
       "status": 301
-    },
-    {
-      "from": "/lab",
-      "to": "/p31-sovereign-lab.html",
-      "status": 301
-    },
-    {
-      "from": "/lab2",
-      "to": "/p31-sovereign-lab-v2.html",
-      "status": 301
-    },
-    {
-      "from": "/glass",
-      "to": "/glass-box.html",
-      "status": 200
     },
     {
       "from": "/visuals",
@@ -679,6 +659,21 @@
     {
       "from": "/demos-public",
       "to": "/demos/index.html",
+      "status": 301
+    },
+    {
+      "from": "/glass",
+      "to": "/dome#glass",
+      "status": 200
+    },
+    {
+      "from": "/lab",
+      "to": "/p31-sovereign-lab.html",
+      "status": 301
+    },
+    {
+      "from": "/lab2",
+      "to": "/p31-sovereign-lab-v2.html",
       "status": 301
     },
     {
@@ -693,12 +688,12 @@
     },
     {
       "from": "/growth",
-      "to": "/kids-growth.html",
+      "to": "/garden#growth",
       "status": 301
     },
     {
       "from": "/kids",
-      "to": "/kids-home.html",
+      "to": "/garden#kids",
       "status": 301
     },
     {
@@ -708,17 +703,17 @@
     },
     {
       "from": "/d20",
-      "to": "/d20-omnibus-icosa.html",
+      "to": "/dome#d20",
       "status": 301
     },
     {
       "from": "/quantum-clock",
-      "to": "/quantum-clock.html",
+      "to": "/dome#clock",
       "status": 301
     },
     {
       "from": "/deck",
-      "to": "/quantum-deck.html",
+      "to": "/dome#deck",
       "status": 301
     },
     {
@@ -734,6 +729,531 @@
     {
       "from": "/edu",
       "to": "/education/",
+      "status": 301
+    },
+    {
+      "from": "/donate.html",
+      "to": "/#donate",
+      "status": 301
+    },
+    {
+      "from": "/ecosystem.html",
+      "to": "/#ecosystem",
+      "status": 301
+    },
+    {
+      "from": "/fleet-portal.html",
+      "to": "/#fleet",
+      "status": 301
+    },
+    {
+      "from": "/initial-build.html",
+      "to": "/",
+      "status": 301
+    },
+    {
+      "from": "/launch-readiness.html",
+      "to": "/#launch",
+      "status": 301
+    },
+    {
+      "from": "/launch.html",
+      "to": "/#launch",
+      "status": 301
+    },
+    {
+      "from": "/maintenance.html",
+      "to": "/",
+      "status": 301
+    },
+    {
+      "from": "/transparency.html",
+      "to": "/#transparency",
+      "status": 301
+    },
+    {
+      "from": "/welcome.html",
+      "to": "/#welcome",
+      "status": 301
+    },
+    {
+      "from": "/attractor-sim.html",
+      "to": "/dome#attractor-sim",
+      "status": 301
+    },
+    {
+      "from": "/cockpit.html",
+      "to": "/dome",
+      "status": 301
+    },
+    {
+      "from": "/d20-omnibus-icosa.html",
+      "to": "/dome#d20",
+      "status": 301
+    },
+    {
+      "from": "/fluid.html",
+      "to": "/dome#fluid",
+      "status": 301
+    },
+    {
+      "from": "/geodesic-about.html",
+      "to": "/dome#geodesic",
+      "status": 301
+    },
+    {
+      "from": "/geodesic.html",
+      "to": "/dome#geodesic",
+      "status": 301
+    },
+    {
+      "from": "/glass-box-widget.html",
+      "to": "/dome#glass",
+      "status": 301
+    },
+    {
+      "from": "/glass-box.html",
+      "to": "/dome#glass",
+      "status": 301
+    },
+    {
+      "from": "/larmor.html",
+      "to": "/dome#larmor",
+      "status": 301
+    },
+    {
+      "from": "/lattice.html",
+      "to": "/dome#lattice",
+      "status": 301
+    },
+    {
+      "from": "/looper.html",
+      "to": "/dome#looper",
+      "status": 301
+    },
+    {
+      "from": "/magic-crystal.html",
+      "to": "/dome#oracle",
+      "status": 301
+    },
+    {
+      "from": "/oqe-icosa.html",
+      "to": "/dome#d20",
+      "status": 301
+    },
+    {
+      "from": "/orbits.html",
+      "to": "/dome#orbits",
+      "status": 301
+    },
+    {
+      "from": "/spatial.html",
+      "to": "/dome#spatial",
+      "status": 301
+    },
+    {
+      "from": "/alchemy-about.html",
+      "to": "/research#alchemy",
+      "status": 301
+    },
+    {
+      "from": "/alchemy.html",
+      "to": "/research#alchemy",
+      "status": 301
+    },
+    {
+      "from": "/book-about.html",
+      "to": "/research#book",
+      "status": 301
+    },
+    {
+      "from": "/book.html",
+      "to": "/research#book",
+      "status": 301
+    },
+    {
+      "from": "/delta-language.html",
+      "to": "/research#delta",
+      "status": 301
+    },
+    {
+      "from": "/delta.html",
+      "to": "/research#delta",
+      "status": 301
+    },
+    {
+      "from": "/economy.html",
+      "to": "/research#economy",
+      "status": 301
+    },
+    {
+      "from": "/education-about.html",
+      "to": "/research#education",
+      "status": 301
+    },
+    {
+      "from": "/phos.html",
+      "to": "/research#phos",
+      "status": 301
+    },
+    {
+      "from": "/psych-e2e-live.html",
+      "to": "/research#psych",
+      "status": 301
+    },
+    {
+      "from": "/resonance-about.html",
+      "to": "/research#resonance",
+      "status": 301
+    },
+    {
+      "from": "/resonance-engine.html",
+      "to": "/research#resonance",
+      "status": 301
+    },
+    {
+      "from": "/resonance.html",
+      "to": "/research#resonance",
+      "status": 301
+    },
+    {
+      "from": "/sovereign-about.html",
+      "to": "/research#sovereign",
+      "status": 301
+    },
+    {
+      "from": "/sovereign.html",
+      "to": "/research#sovereign",
+      "status": 301
+    },
+    {
+      "from": "/bonding-about.html",
+      "to": "/connect#bonding",
+      "status": 301
+    },
+    {
+      "from": "/bonding.html",
+      "to": "/connect#bonding",
+      "status": 301
+    },
+    {
+      "from": "/bridge-about.html",
+      "to": "/connect#bridge",
+      "status": 301
+    },
+    {
+      "from": "/bridge.html",
+      "to": "/connect#bridge",
+      "status": 301
+    },
+    {
+      "from": "/connect-about.html",
+      "to": "/connect",
+      "status": 301
+    },
+    {
+      "from": "/connect.html",
+      "to": "/connect",
+      "status": 301
+    },
+    {
+      "from": "/contact.html",
+      "to": "/connect#contact",
+      "status": 301
+    },
+    {
+      "from": "/echo-about.html",
+      "to": "/connect#echo",
+      "status": 301
+    },
+    {
+      "from": "/echo.html",
+      "to": "/connect#echo",
+      "status": 301
+    },
+    {
+      "from": "/family.html",
+      "to": "/connect#family",
+      "status": 301
+    },
+    {
+      "from": "/guardian.html",
+      "to": "/connect#guardian",
+      "status": 301
+    },
+    {
+      "from": "/mesh-start.html",
+      "to": "/connect#mesh",
+      "status": 301
+    },
+    {
+      "from": "/poets-about.html",
+      "to": "/connect#poets",
+      "status": 301
+    },
+    {
+      "from": "/poets.html",
+      "to": "/connect#poets",
+      "status": 301
+    },
+    {
+      "from": "/quantum-family.html",
+      "to": "/connect#family",
+      "status": 301
+    },
+    {
+      "from": "/signal-about.html",
+      "to": "/connect#signal",
+      "status": 301
+    },
+    {
+      "from": "/signal.html",
+      "to": "/connect#signal",
+      "status": 301
+    },
+    {
+      "from": "/social-molecules-about.html",
+      "to": "/connect#social",
+      "status": 301
+    },
+    {
+      "from": "/social-molecules.html",
+      "to": "/connect#social",
+      "status": 301
+    },
+    {
+      "from": "/tactile-about.html",
+      "to": "/connect#tactile",
+      "status": 301
+    },
+    {
+      "from": "/tactile.html",
+      "to": "/connect#tactile",
+      "status": 301
+    },
+    {
+      "from": "/tether-about.html",
+      "to": "/connect#tether",
+      "status": 301
+    },
+    {
+      "from": "/tether.html",
+      "to": "/connect#tether",
+      "status": 301
+    },
+    {
+      "from": "/agents.html",
+      "to": "/ops#agents",
+      "status": 301
+    },
+    {
+      "from": "/appointment-tracker-about.html",
+      "to": "/ops#appointment-tracker",
+      "status": 301
+    },
+    {
+      "from": "/attractor-about.html",
+      "to": "/ops#attractor",
+      "status": 301
+    },
+    {
+      "from": "/attractor.html",
+      "to": "/ops#attractor",
+      "status": 301
+    },
+    {
+      "from": "/axiom-about.html",
+      "to": "/ops#axiom",
+      "status": 301
+    },
+    {
+      "from": "/axiom.html",
+      "to": "/ops#axiom",
+      "status": 301
+    },
+    {
+      "from": "/budget-tracker-about.html",
+      "to": "/ops#budget-tracker",
+      "status": 301
+    },
+    {
+      "from": "/buffer-about.html",
+      "to": "/ops#buffer",
+      "status": 301
+    },
+    {
+      "from": "/buffer.html",
+      "to": "/ops#buffer",
+      "status": 301
+    },
+    {
+      "from": "/builder.html",
+      "to": "/ops#builder",
+      "status": 301
+    },
+    {
+      "from": "/contact-locker-about.html",
+      "to": "/ops#contact-locker",
+      "status": 301
+    },
+    {
+      "from": "/content-forge-about.html",
+      "to": "/ops#content-forge",
+      "status": 301
+    },
+    {
+      "from": "/content-forge.html",
+      "to": "/ops#content-forge",
+      "status": 301
+    },
+    {
+      "from": "/cortex-about.html",
+      "to": "/ops#cortex",
+      "status": 301
+    },
+    {
+      "from": "/cortex.html",
+      "to": "/ops#cortex",
+      "status": 301
+    },
+    {
+      "from": "/discord-bot-about.html",
+      "to": "/ops#discord",
+      "status": 301
+    },
+    {
+      "from": "/discord-bot.html",
+      "to": "/ops#discord",
+      "status": 301
+    },
+    {
+      "from": "/ede-about.html",
+      "to": "/ops#ede",
+      "status": 301
+    },
+    {
+      "from": "/ede.html",
+      "to": "/ops#ede",
+      "status": 301
+    },
+    {
+      "from": "/editor.html",
+      "to": "/ops#editor",
+      "status": 301
+    },
+    {
+      "from": "/fleet-agents.html",
+      "to": "/ops#agents",
+      "status": 301
+    },
+    {
+      "from": "/forge-about.html",
+      "to": "/ops#forge",
+      "status": 301
+    },
+    {
+      "from": "/forge.html",
+      "to": "/ops#forge",
+      "status": 301
+    },
+    {
+      "from": "/integrations-about.html",
+      "to": "/ops#integrations",
+      "status": 301
+    },
+    {
+      "from": "/legal-evidence-about.html",
+      "to": "/ops#legal-evidence",
+      "status": 301
+    },
+    {
+      "from": "/medical-tracker-about.html",
+      "to": "/ops#medical-tracker",
+      "status": 301
+    },
+    {
+      "from": "/observatory.html",
+      "to": "/ops#observatory",
+      "status": 301
+    },
+    {
+      "from": "/open-doc-suite.html",
+      "to": "/ops#docs",
+      "status": 301
+    },
+    {
+      "from": "/p31-super-centaur-starter.html",
+      "to": "/ops#centaur",
+      "status": 301
+    },
+    {
+      "from": "/planetary-onboard-about.html",
+      "to": "/ops#onboard",
+      "status": 301
+    },
+    {
+      "from": "/planetary-onboard.html",
+      "to": "/ops#onboard",
+      "status": 301
+    },
+    {
+      "from": "/prism-about.html",
+      "to": "/ops#prism",
+      "status": 301
+    },
+    {
+      "from": "/prism.html",
+      "to": "/ops#prism",
+      "status": 301
+    },
+    {
+      "from": "/sleep-tracker-about.html",
+      "to": "/ops#sleep-tracker",
+      "status": 301
+    },
+    {
+      "from": "/somatic-anchor-about.html",
+      "to": "/ops#somatic",
+      "status": 301
+    },
+    {
+      "from": "/style-generator.html",
+      "to": "/ops#style",
+      "status": 301
+    },
+    {
+      "from": "/super-centaur-about.html",
+      "to": "/ops#centaur",
+      "status": 301
+    },
+    {
+      "from": "/switches.html",
+      "to": "/ops#switches",
+      "status": 301
+    },
+    {
+      "from": "/theme-showcase.html",
+      "to": "/ops#theme",
+      "status": 301
+    },
+    {
+      "from": "/vault.html",
+      "to": "/ops#vault",
+      "status": 301
+    },
+    {
+      "from": "/cogpass-bridge.html",
+      "to": "/passport#bridge",
+      "status": 301
+    },
+    {
+      "from": "/passport-generator.html",
+      "to": "/passport",
+      "status": 301
+    },
+    {
+      "from": "/ops/",
+      "to": "/god",
       "status": 301
     },
     {
@@ -1169,10 +1689,6 @@
     "verify": "npm run verify:bus-bar (planned) — checks that productSlots covers all registry IDs, navByRole references only declared slots, and product count ≤ constraints.maxProducts. Until that script lands, validate manually: every key in productSlots must exist in registryAppUrlInvariants OR be flagged as 'subdomain-only' (e.g. bonding); every value in productSlots must be a key in slots; every entry in navByRole must be a key in slots."
   },
   "threejs": {
-    "dome.astro": {
-      "path": "src/pages/dome.astro",
-      "mustIncludeSubstring": "three@0.183.0"
-    },
     "connect.html": {
       "path": "public/connect.html",
       "mustIncludeSubstring": "three@0.160.0"

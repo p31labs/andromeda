@@ -1,40 +1,31 @@
-# Legacy /app/* paths used to collide with an SPA deploy. Send users to real static assets.
-/app/ede    /ede-about.html   302
-/app/buffer /buffer-about.html 302
-/app/larmor /larmor.html      302
-/dome.html  /dome/            301
+# Legacy /app/* paths — updated to bypass .html double-hop (Phase 2)
+/app/ede    /ops#ede      302
+/app/buffer /ops#buffer   302
+/app/larmor /dome#larmor  302
+/dome.html  /dome         301
 
 # Retired static legacy hub; canonical home is / (Astro + hub-landing)
 /legacy-mvp-hub.html  /  301
-/legacy-mvp-hub  /  301
+/legacy-mvp-hub       /  301
 
 # /integrations/ — Astro static folder; short path without trailing slash
 /integrations  /integrations/  301
 
-# Short-path aliases for public release surfaces
-/onboard    /planetary-onboard.html  301
-/passport   /passport-generator.html  301
-# Market launch package (CWP-P31-LAUNCH-2026-05) — readiness dashboard.
-# Source of truth: bonding-soup launch.html · runbook docs/LAUNCH-PACKAGE-2026-05.md
-/launch     /launch.html             301
-# /welcome — no rule: Pages clean URL serves welcome.html at /welcome; a /welcome→welcome.html rule ping-pongs with .html→/welcome (308) → ERR_TOO_MANY_REDIRECTS.
-/together   /welcome                  301
-/start      /mesh-start.html         301
+# Short-path aliases — updated to direct routes (Phase 2: single-hop)
+/onboard    /ops#onboard      301
+# /passport — Astro serves /passport directly; rule omitted (would loop)
+/launch     /#launch          301
+/together   /#welcome         301
+/start      /connect#mesh     301
 /branding   /branding/index.html   301
-# /donate — omit (Pages clean URL serves donate.html at /donate; explicit rule loops with 308 .html → /donate).
-/kofi-forge   /p31-kofi-forge.html   301
-/mesh       /connect.html            301
-
-# /delta, /auth: do not redirect here — Pages serves *.html at /basename; adding /delta → delta.html
-# loops with CF 308 delta.html → /delta (same for auth.html → /auth).
-/why        /delta.html              301
-/oracle     /magic-crystal.html      301
-/doc-suite  /open-doc-suite.html     301
-/centaur    /p31-super-centaur-starter.html  301
+/kofi-forge /p31-kofi-forge.html   301
+/mesh       /connect              301
+/why        /research#delta       301
+/oracle     /magic-crystal.html   301
+/doc-suite  /ops#docs             301
+/centaur    /ops#centaur          301
 
 # CWP-P31-PEER-COMP-2026-05 Phase 1 — trust & transparency layer
-# (/security stays mapped to the existing /security-disclosure.html — see line below;
-#  the richer hub-style policy lives at /security-policy → /security.html.)
 /manifesto         /manifesto.html         301
 /code-of-conduct   /code-of-conduct.html   301
 /coc               /code-of-conduct.html   301
@@ -44,55 +35,171 @@
 /security-policy   /security.html          301
 
 # CWP-P31-PEER-COMP-2026-05 Phase 2 — independent verification layer
-# (annual transparency report + no-telemetry posture, both public)
-# /telemetry stays mapped to the existing internal telemetry dashboard at /telemetry.html;
-# the new no-telemetry POSTURE page lives at /telemetry-policy → /telemetry-policy.html
-# so the existing dashboard URL is preserved.
-/telemetry-policy  /telemetry-policy.html  301
-/transparency-report /transparency.html    301
+/telemetry-policy    /telemetry-policy.html  301
+/transparency-report /#transparency          301
 
-# CWP-P31-VIBE-2026-06 Phase 1 — vibcoding tetra-hub dev environment (operator entry)
-/vibe              /vibe.html              301
-/vibcoding         /vibe.html              301
-/super-centaur  /p31-super-centaur-starter.html  301
-/cars   /social-molecules.html   301
-/canon    /p31-canon-demo.html  301
-/tokens   /p31-canon-demo.html  301
-/dev      /dev-workbench.html  301
-/build    /initial-build.html  200
-/hiring   /delta-hiring/index.html  301
-/messages   /messaging-hub.html  301
-/comms   /messaging-hub.html  301
-/contracts   /contract-builder.html  301
-/composer   /quantum-composer.html  301
+# CWP-P31-VIBE-2026-06 Phase 1 — vibcoding tetra-hub dev environment
+/vibe          /vibe.html               301
+/vibcoding     /vibe.html               301
+/super-centaur /ops#centaur             301
+/cars          /connect#social          301
+/canon         /p31-canon-demo.html     301
+/tokens        /p31-canon-demo.html     301
+/dev           /dev-workbench.html      301
+/build         /initial-build.html      200
+/hiring        /delta-hiring/index.html 301
+/messages      /messaging-hub.html      301
+/comms         /messaging-hub.html      301
+/contracts     /contract-builder.html   301
+/composer      /quantum-composer.html   301
 /family-pack   /family-sovereign-pack.html  301
-# /accessibility, /contact, /privacy, /terms — omit (Pages 308 file.html → /file; reverse rule loops).
-/oss   /open-source.html   301
-/security   /security-disclosure.html   301
-/fleet   /live-fleet-demo.html   301
-/agents   /fleet-agents.html   301
-/demos   /demo-labs.html   301
-/visuals   /demos/index.html   301
-/demos-public   /demos/index.html   301
-# /glass-box — omit (Pages clean URL serves glass-box.html at /glass-box; explicit rule loops with 308 .html → /glass-box).
-/glass   /glass-box.html   200
-# /transparency now serves the formal transparency report (PEER-2A); the operator-facing
-# glass box continues to live at /glass-box and short /glass.
-# /transparency — omit (Pages clean URL serves transparency.html at /transparency; explicit rule loops with 308 .html → /transparency).
-/lab   /p31-sovereign-lab.html   301
-/lab2   /p31-sovereign-lab-v2.html   301
-/slicer   /p31-slicer.html   301
-/journey   /vision.html   301
-/growth   /kids-growth.html   301
-/kids   /kids-home.html   301
-/oqe   /oqe-icosa.html   301
-/d20   /d20-omnibus-icosa.html   301
-/quantum-clock   /quantum-clock.html   301
-/deck   /quantum-deck.html   301
+/oss           /open-source.html        301
+/security      /security-disclosure.html   301
+/fleet         /live-fleet-demo.html    301
+/agents        /ops#agents              301
+/demos         /demo-labs.html          301
+/visuals       /demos/index.html        301
+/demos-public  /demos/index.html        301
+/glass         /dome#glass              200
+/lab           /p31-sovereign-lab.html  301
+/lab2          /p31-sovereign-lab-v2.html  301
+/slicer        /p31-slicer.html         301
+/journey       /vision.html             301
+/growth        /garden#growth           301
+/kids          /garden#kids             301
+/oqe           /oqe-icosa.html          301
+/d20           /dome#d20                301
+/quantum-clock /dome#clock              301
+/deck          /dome#deck               301
 # Education — canonical trailing slash (static tree under public/education/)
-/education  /education/   301
-/learn  /education/   301
-/edu  /education/   301
+/education  /education/  301
+/learn      /education/  301
+/edu        /education/  301
+
+# =================================================================
+# Phase 2: Surface Consolidation — 103 HTML surfaces → 7-route 301
+# Scaffold date: 2026-05-04
+# Safe to delete public/*.html after verify-surface-canon passes.
+# =================================================================
+
+# Route: / (home)
+/donate.html                     /#donate         301
+/ecosystem.html                  /#ecosystem      301
+/fleet-portal.html               /#fleet          301
+/initial-build.html              /                301
+/launch-readiness.html           /#launch         301
+/launch.html                     /#launch         301
+/maintenance.html                /                301
+/transparency.html               /#transparency   301
+/welcome.html                    /#welcome        301
+
+# Route: /dome
+/attractor-sim.html              /dome#attractor-sim  301
+/cockpit.html                    /dome                301
+/d20-omnibus-icosa.html          /dome#d20            301
+/fluid.html                      /dome#fluid          301
+/geodesic-about.html             /dome#geodesic       301
+/geodesic.html                   /dome#geodesic       301
+/glass-box-widget.html           /dome#glass          301
+/glass-box.html                  /dome#glass          301
+/larmor.html                     /dome#larmor         301
+/lattice.html                    /dome#lattice        301
+/looper.html                     /dome#looper         301
+/magic-crystal.html              /dome#oracle         301
+/oqe-icosa.html                  /dome#d20            301
+/orbits.html                     /dome#orbits         301
+/spatial.html                    /dome#spatial        301
+
+# Route: /research
+/alchemy-about.html              /research#alchemy    301
+/alchemy.html                    /research#alchemy    301
+/book-about.html                 /research#book       301
+/book.html                       /research#book       301
+/delta-language.html             /research#delta      301
+/delta.html                      /research#delta      301
+/economy.html                    /research#economy    301
+/education-about.html            /research#education  301
+/phos.html                       /research#phos       301
+/psych-e2e-live.html             /research#psych      301
+/resonance-about.html            /research#resonance  301
+/resonance-engine.html           /research#resonance  301
+/resonance.html                  /research#resonance  301
+/sovereign-about.html            /research#sovereign  301
+/sovereign.html                  /research#sovereign  301
+
+# Route: /connect
+/bonding-about.html              /connect#bonding     301
+/bonding.html                    /connect#bonding     301
+/bridge-about.html               /connect#bridge      301
+/bridge.html                     /connect#bridge      301
+/connect-about.html              /connect             301
+/connect.html                    /connect             301
+/contact.html                    /connect#contact     301
+/echo-about.html                 /connect#echo        301
+/echo.html                       /connect#echo        301
+/family.html                     /connect#family      301
+/guardian.html                   /connect#guardian    301
+/mesh-start.html                 /connect#mesh        301
+/poets-about.html                /connect#poets       301
+/poets.html                      /connect#poets       301
+/quantum-family.html             /connect#family      301
+/signal-about.html               /connect#signal      301
+/signal.html                     /connect#signal      301
+/social-molecules-about.html     /connect#social      301
+/social-molecules.html           /connect#social      301
+/tactile-about.html              /connect#tactile     301
+/tactile.html                    /connect#tactile     301
+/tether-about.html               /connect#tether      301
+/tether.html                     /connect#tether      301
+
+# Route: /ops
+/agents.html                     /ops#agents              301
+/appointment-tracker-about.html  /ops#appointment-tracker 301
+/attractor-about.html            /ops#attractor           301
+/attractor.html                  /ops#attractor           301
+/axiom-about.html                /ops#axiom               301
+/axiom.html                      /ops#axiom               301
+/budget-tracker-about.html       /ops#budget-tracker      301
+/buffer-about.html               /ops#buffer              301
+/buffer.html                     /ops#buffer              301
+/builder.html                    /ops#builder             301
+/contact-locker-about.html       /ops#contact-locker      301
+/content-forge-about.html        /ops#content-forge       301
+/content-forge.html              /ops#content-forge       301
+/cortex-about.html               /ops#cortex              301
+/cortex.html                     /ops#cortex              301
+/discord-bot-about.html          /ops#discord             301
+/discord-bot.html                /ops#discord             301
+/ede-about.html                  /ops#ede                 301
+/ede.html                        /ops#ede                 301
+/editor.html                     /ops#editor              301
+/fleet-agents.html               /ops#agents              301
+/forge-about.html                /ops#forge               301
+/forge.html                      /ops#forge               301
+/integrations-about.html         /ops#integrations        301
+/legal-evidence-about.html       /ops#legal-evidence      301
+/medical-tracker-about.html      /ops#medical-tracker     301
+/observatory.html                /ops#observatory         301
+/open-doc-suite.html             /ops#docs                301
+/p31-super-centaur-starter.html  /ops#centaur             301
+/planetary-onboard-about.html    /ops#onboard             301
+/planetary-onboard.html          /ops#onboard             301
+/prism-about.html                /ops#prism               301
+/prism.html                      /ops#prism               301
+/sleep-tracker-about.html        /ops#sleep-tracker       301
+/somatic-anchor-about.html       /ops#somatic             301
+/style-generator.html            /ops#style               301
+/super-centaur-about.html        /ops#centaur             301
+/switches.html                   /ops#switches            301
+/theme-showcase.html             /ops#theme               301
+/vault.html                      /ops#vault               301
+
+# Route: /passport
+/cogpass-bridge.html             /passport#bridge         301
+/passport-generator.html         /passport                301
+
+# G.O.D. Operator shell — moved from /ops/ to /god (route collision resolved Phase 2)
+/ops/  /god  301
 
 # @generated begin worker-spa-launch — do not edit by hand; npm run sync:worker-spa-launch
 /appointment-tracker  https://p31-appointment-tracker.trimtab-signal.workers.dev  302

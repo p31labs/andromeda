@@ -3,10 +3,10 @@
  * Sovereign Cockpit Dome Page
  * Full 3D interactive K4 topology visualization
  */
-import BaseLayout from '../layouts/BaseLayout.astro';
+import AppShell from '../layouts/AppShell.astro';
 ---
 
-<BaseLayout title="P31 Labs | Sovereign Cockpit" data-i18n-title="page.title" shellBackdrop={false}>
+<AppShell title="P31 Labs | Sovereign Cockpit" routeName="dome">
   <!-- Noscript fallback for JS-disabled users -->
   <noscript>
     <div class="fixed inset-0 bg-black/90 flex flex-col items-center justify-center z-50 p-6 text-center">
@@ -25,16 +25,6 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     </div>
   </noscript>
 
-    <!-- Three.js Import Map -->
-   <script type="importmap" is:inline>
-     {
-       "imports": {
-         "three": "https://unpkg.com/three@0.183.0/build/three.module.js",
-         "three/addons/": "https://unpkg.com/three@0.183.0/examples/jsm/"
-       }
-     }
-   </script>
-   
    <!-- Dev-only: axe-core for accessibility testing -->
    <script>
     (function() {
@@ -298,11 +288,13 @@ import BaseLayout from '../layouts/BaseLayout.astro';
      </div>
   </aside>
 
-  <!-- RIGHT HUD: Node Inspector -->
+  <!-- RIGHT HUD: Node Inspector — mobile: bottom sheet; desktop (sm+): right side card -->
   <aside
      id="node-detail-panel"
-     class="hud-element pointer-events-none fixed left-4 right-4 top-20 z-40 mx-auto w-full max-w-sm translate-x-10 transform rounded-xl border-t border-l border-white/10 bg-p31-void-95 p-5 opacity-0 shadow-[0_10px_40px_rgba(0,0,0,0.8)] backdrop-blur-sm transition-all duration-300 sm:left-auto sm:right-6 sm:top-16 sm:mx-0 sm:max-w-none sm:w-80 sm:translate-x-10 glass-panel"
+     class="hud-element pointer-events-none fixed bottom-0 left-0 right-0 z-40 w-full rounded-t-2xl border-t border-white/10 bg-p31-void-95 px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-4 opacity-0 shadow-[0_-10px_40px_rgba(0,0,0,0.8)] backdrop-blur-sm transition-all duration-300 sm:bottom-auto sm:left-auto sm:right-6 sm:top-16 sm:w-80 sm:rounded-xl sm:shadow-[0_10px_40px_rgba(0,0,0,0.8)] glass-panel"
    >
+     <!-- Drag handle — touch-swipe affordance on mobile only -->
+     <div id="node-detail-handle" class="sm:hidden mx-auto mb-4 h-1 w-10 rounded-full bg-white/25 cursor-grab active:cursor-grabbing touch-none" aria-hidden="true"></div>
      <button id="node-detail-close" class="absolute top-4 right-4 text-p31-muted hover:text-p31-cloud transition-colors pointer-events-auto" data-i18n-aria-label="nodeDetail.close" aria-label="Close node details">✕</button>
      <div class="text-cyan font-bold text-lg mb-1 tracking-tight" id="nd-title" data-i18n="nodeDetail.title">Node Name</div>
      <div class="flex items-center gap-2 text-[10px] font-mono mb-4 pb-3 border-b border-white/10">
@@ -339,7 +331,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
        <div class="text-[9px] font-mono text-cyan tracking-widest uppercase opacity-50 mt-2" data-i18n="layer0.larmorFreq">Larmor Frequency: 863Hz Active</div>
      </div>
    </div>
-</BaseLayout>
+</AppShell>
 
 <style is:global>
   body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: var(--p31-void); color: var(--p31-cloud); }
@@ -351,6 +343,19 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     -webkit-backdrop-filter: blur(16px);
     border: 1px solid rgba(255, 255, 255, 0.08);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  }
+
+  /*
+   * Node detail panel — CSS-driven transform for two-axis show/hide.
+   * Mobile: slides up from bottom (Y axis). Desktop (sm+): slides in from right (X axis).
+   * Kinematics sets inline style.transform during drag; clearing it reverts to CSS.
+   * No !important — translate-x-10 Tailwind class removed from HTML, so no conflict.
+   */
+  #node-detail-panel { transform: translateY(100%); }
+  #node-detail-panel:not(.opacity-0) { transform: translateY(0); }
+  @media (min-width: 640px) {
+    #node-detail-panel { transform: translateX(2.5rem); }
+    #node-detail-panel:not(.opacity-0) { transform: translateX(0); }
   }
 
   .ambient-grid {
@@ -485,6 +490,19 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   </style>
 
 <!-- Client cockpit: src/scripts/dome-cockpit.ts; geometry: src/lib/dome/ -->
+<!-- dome-cockpit.ts evaluates once per session (ES module caching).
+     astro:page-load wires remount on every return visit; astro:before-swap tears down. -->
 <script>
   import '../scripts/dome-cockpit.ts';
+
+  type DomeHandle = { unmount(): void; remount(): void };
+  const W = window as Record<string, unknown>;
+
+  document.addEventListener('astro:page-load', () => {
+    (W['__p31Dome'] as DomeHandle | undefined)?.remount();
+  });
+
+  document.addEventListener('astro:before-swap', () => {
+    (W['__p31Dome'] as DomeHandle | undefined)?.unmount();
+  }, { once: true });
 </script>

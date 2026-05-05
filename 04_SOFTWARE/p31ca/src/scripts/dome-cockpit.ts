@@ -25,11 +25,12 @@ import {
   fetchPersonalMeshForHud,
   formatMeshHudLine,
 } from "../lib/mesh/mesh-snapshot";
+import { BottomSheetController } from '../lib/kinematics';
 
 // ================================================================
 // 1. TELEMETRY & HUD STATE
 // ================================================================
-const $ = (id) => document.getElementById(id);
+const $ = (id: string) => document.getElementById(id);
 
 /** Hide boot splash and set `body.loaded` so dome.astro paints #webgl-container / HUD visible. */
 function dismissDomeSplash(options?: { fadeMs?: number }) {
@@ -258,26 +259,26 @@ const i18n = {
       'theme.toggle': 'Theme: A'
     }
   },
-  t(key) {
-    return this.messages[this.currentLang][key] || key;
+  t(key: string) {
+    return ((this.messages as Record<string, Record<string, string>>)[this.currentLang])[key] || key;
   },
   // Apply translations to DOM elements with data-i18n attributes
   apply() {
     document.querySelectorAll('[data-i18n]').forEach(el => {
       const key = el.getAttribute('data-i18n');
-      el.textContent = this.t(key);
+      el.textContent = this.t(key ?? '');
     });
     document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
       const key = el.getAttribute('data-i18n-placeholder');
-      el.placeholder = this.t(key);
+      (el as HTMLInputElement).placeholder = this.t(key ?? '');
     });
     document.querySelectorAll('[data-i18n-aria-label]').forEach(el => {
       const key = el.getAttribute('data-i18n-aria-label');
-      el.setAttribute('aria-label', this.t(key));
+      el.setAttribute('aria-label', this.t(key ?? ''));
     });
     document.querySelectorAll('[data-i18n-title]').forEach(el => {
       const key = el.getAttribute('data-i18n-title');
-      el.title = this.t(key);
+      (el as HTMLElement).title = this.t(key ?? '');
     });
   }
 };
@@ -290,14 +291,14 @@ const i18n = {
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 // Audio system singleton
-let audioContext = null;
-let masterGain = null;
-let ambientOscillator = null;
+let audioContext: AudioContext | null = null;
+let masterGain: GainNode | null = null;
+let ambientOscillator: OscillatorNode | null = null;
 let isAudioInitialized = false;
 
 // Load volume from localStorage or default to 70%
 const savedVolume = localStorage.getItem('p31:dome:volume') || '70';
-const volumeSlider = $("hud-volume-slider");
+const volumeSlider = $("hud-volume-slider") as HTMLInputElement | null;
 if (volumeSlider) volumeSlider.value = savedVolume;
 const volumeValue = $("hud-volume-value");
 if (volumeValue) volumeValue.textContent = `${savedVolume}%`;
@@ -307,7 +308,8 @@ if (volumeValue) volumeValue.textContent = `${savedVolume}%`;
    if (isAudioInitialized || prefersReducedMotion) return;
    
    try {
-    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+    audioContext = new AudioCtx();
     masterGain = audioContext.createGain();
     
     // Create ambient music oscillator (sine wave at 110Hz - A2 harmonic)
@@ -358,7 +360,7 @@ const volumeIcon = document.getElementById('volume-icon');
 const muteIcon = document.getElementById('mute-icon');
 let currentVolume = parseInt(savedVolume);
 
-function updateVolumeUI(vol, isMute = false) {
+function updateVolumeUI(vol: number, isMute = false) {
   const percent = isMute ? 0 : vol;
   if (volumeFill) volumeFill.style.width = `${percent}%`;
   if (volumeThumb) {
@@ -381,16 +383,16 @@ updateVolumeUI(currentVolume, isMuted);
 if (volumeSliderContainer) {
   // Disable if reduced motion is preferred (audio disabled)
   if (prefersReducedMotion) {
-    volumeSliderContainer.disabled = true;
+    (volumeSliderContainer as unknown as { disabled: boolean }).disabled = true;
     volumeSliderContainer.title = "Ambient audio disabled (prefers-reduced-motion)";
   }
   
   let isDragging = false;
   
-  function handleVolumeInteraction(e) {
+  function handleVolumeInteraction(e: PointerEvent | MouseEvent | TouchEvent) {
     e.preventDefault();
-    const rect = volumeSliderContainer.getBoundingClientRect();
-    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const rect = volumeSliderContainer!.getBoundingClientRect();
+    const clientX = 'touches' in e ? (e as TouchEvent).touches[0].clientX : (e as MouseEvent | PointerEvent).clientX;
     let percent = Math.max(0, Math.min(100, ((clientX - rect.left) / rect.width) * 100));
     
     currentVolume = Math.round(percent);
@@ -621,7 +623,7 @@ initAudioOnInteraction();
       } else {
         const loveData = await fetchWithCache(TELEMETRY_URLS.love, "p31_cache_love", { availableBalance: 3.28 });
         const v =
-          loveData.availableBalance ?? loveData.balance ?? (loveData as { available?: number }).available;
+          loveData.availableBalance ?? (loveData as { balance?: number }).balance ?? (loveData as { available?: number }).available;
         if (typeof v === "number" && Number.isFinite(v)) setDockLove(v);
       }
     } else {
@@ -648,7 +650,7 @@ initAudioOnInteraction();
 
       const loveData = await fetchWithCache(TELEMETRY_URLS.love, "p31_cache_love", { availableBalance: 3.28 });
       const lv =
-        loveData.availableBalance ?? loveData.balance ?? (loveData as { available?: number }).available;
+        loveData.availableBalance ?? (loveData as { balance?: number }).balance ?? (loveData as { available?: number }).available;
       if (typeof lv === "number" && Number.isFinite(lv)) setDockLove(lv);
 
       const spoonData = await fetchWithCache(TELEMETRY_URLS.spoons, "p31_cache_spoons", { spoons: currentSpoons });
@@ -711,17 +713,19 @@ initAudioOnInteraction();
   // ================================================================
   // 2. EDE TRIMTAB & LAYER 0 (Somatic Breathing)
   // ================================================================
-  const $trimCanvas = $("trimtab-canvas");
+  const $trimCanvas = $("trimtab-canvas") as HTMLCanvasElement | null;
   const $trimFreq = $("trimtab-freq");
-  let trimValue = 1.0; 
+  let trimValue = 1.0;
   let trimOn = false;
-  let trimAudioCtx = null, trimOsc = null, trimGain = null;
-  let _trimIsDown = false, _trimAngle = null;
+  let trimAudioCtx: AudioContext | null = null, trimOsc: OscillatorNode | null = null, trimGain: GainNode | null = null;
+  let _trimIsDown = false, _trimAngle: number | null = null;
 
   function trimFreq() { return trimHzFromKnob(trimValue); }
 
   function drawTrimtab() {
+ if (!$trimCanvas) return;
  const ctx = $trimCanvas.getContext("2d");
+ if (!ctx) return;
  ctx.clearRect(0, 0, 24, 24);
  const cx = 12, cy = 12, r = 8, start = 3*Math.PI/4, sweep = 3*Math.PI/2;
  
@@ -743,7 +747,8 @@ initAudioOnInteraction();
  trimOn = !trimOn;
  if (trimOn) {
    try {
-     if (!trimAudioCtx) trimAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+     const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+     if (!trimAudioCtx) trimAudioCtx = new AudioCtx();
      if(trimAudioCtx.state === "suspended") trimAudioCtx.resume();
      trimOsc = trimAudioCtx.createOscillator(); trimGain = trimAudioCtx.createGain();
      trimOsc.type = "sine"; trimOsc.frequency.setValueAtTime(trimFreq(), trimAudioCtx.currentTime);
@@ -753,71 +758,76 @@ initAudioOnInteraction();
      trimOsc.start();
    } catch(e) { trimOn = false; }
  } else if (trimOsc) {
-   try { trimGain.gain.linearRampToValueAtTime(0, trimAudioCtx.currentTime + 0.1); trimOsc.stop(trimAudioCtx.currentTime + 0.15); } catch(e){}
+   try { if (trimGain && trimAudioCtx) { trimGain.gain.linearRampToValueAtTime(0, trimAudioCtx.currentTime + 0.1); trimOsc.stop(trimAudioCtx.currentTime + 0.15); } } catch(e){}
    trimOsc = null; trimGain = null;
  }
  drawTrimtab();
   }
 
-  $trimCanvas.addEventListener("pointerdown", e => {
- e.preventDefault(); $trimCanvas.setPointerCapture(e.pointerId);
- _trimIsDown = true;
- const rect = $trimCanvas.getBoundingClientRect();
- _trimAngle = Math.atan2(e.clientY - rect.top - 12, e.clientX - rect.left - 12);
-  });
-  $trimCanvas.addEventListener("pointermove", e => {
- if (!_trimIsDown) return;
- const rect = $trimCanvas.getBoundingClientRect();
- const a = Math.atan2(e.clientY - rect.top - 12, e.clientX - rect.left - 12);
- let d = a - _trimAngle;
- if (d > Math.PI) d -= 2*Math.PI; if (d < -Math.PI) d += 2*Math.PI;
- trimValue = Math.max(0, Math.min(1, trimValue + d / (3*Math.PI/2)));
- if (trimOn && trimOsc) try { trimOsc.frequency.setValueAtTime(trimFreq(), trimAudioCtx.currentTime); } catch(e){}
- _trimAngle = a; drawTrimtab();
-  });
-  const trimUp = () => { _trimIsDown = false; _trimAngle = null; };
-  $trimCanvas.addEventListener("pointerup", trimUp);
-  $trimCanvas.addEventListener("pointercancel", trimUp);
-  
-  $("trimtab-trigger").addEventListener("click", (e) => { 
- if (e.target !== $trimCanvas) activateLayer0(); 
- else if (!_trimIsDown) trimToggleAudio(); 
+  if ($trimCanvas) {
+    $trimCanvas.addEventListener("pointerdown", e => {
+      e.preventDefault(); $trimCanvas.setPointerCapture(e.pointerId);
+      _trimIsDown = true;
+      const rect = $trimCanvas.getBoundingClientRect();
+      _trimAngle = Math.atan2(e.clientY - rect.top - 12, e.clientX - rect.left - 12);
+    });
+    $trimCanvas.addEventListener("pointermove", e => {
+      if (!_trimIsDown) return;
+      const rect = $trimCanvas.getBoundingClientRect();
+      const a = Math.atan2(e.clientY - rect.top - 12, e.clientX - rect.left - 12);
+      let d = a - (_trimAngle ?? 0);
+      if (d > Math.PI) d -= 2*Math.PI; if (d < -Math.PI) d += 2*Math.PI;
+      trimValue = Math.max(0, Math.min(1, trimValue + d / (3*Math.PI/2)));
+      if (trimOn && trimOsc && trimAudioCtx) try { trimOsc.frequency.setValueAtTime(trimFreq(), trimAudioCtx.currentTime); } catch(e){}
+      _trimAngle = a; drawTrimtab();
+    });
+    const trimUp = () => { _trimIsDown = false; _trimAngle = null; };
+    $trimCanvas.addEventListener("pointerup", trimUp);
+    $trimCanvas.addEventListener("pointercancel", trimUp);
+  }
+
+  $("trimtab-trigger")?.addEventListener("click", (e) => {
+    if (e.target !== $trimCanvas) activateLayer0();
+    else if (!_trimIsDown) trimToggleAudio();
   });
   
   drawTrimtab();
 
   // Layer 0 Logic
-  let l0Timer = null, l0Audio = null, escStart = null, escTimer = null, spoons = 15;
-  
+  let l0Timer: ReturnType<typeof setTimeout> | null = null;
+  let l0Audio: AudioContext | null = null;
+  let escStart: number | null = null;
+  let escTimer: ReturnType<typeof setTimeout> | null = null;
+  let spoons = 15;
+
   function activateLayer0() {
- $("layer0").classList.remove("opacity-0", "pointer-events-none");
- if (!l0Timer) runBreathCycle();
- if (!trimOn) trimToggleAudio(); // start hum
-  }
-  
-  function deactivateLayer0() {
- $("layer0").classList.add("opacity-0", "pointer-events-none");
- clearTimeout(l0Timer); l0Timer = null;
- if (l0Audio) { try { l0Audio.close(); } catch(e){} l0Audio = null; }
+    $("layer0")?.classList.remove("opacity-0", "pointer-events-none");
+    if (!l0Timer) runBreathCycle();
+    if (!trimOn) trimToggleAudio();
   }
 
-  function playBreath(phase, durMs, freq) {
- $("l0-phase").innerText = phase;
- const dot = $("l0-dot");
- dot.style.animation = "none"; void dot.offsetWidth;
- dot.style.animation = `l0-${phase.toLowerCase()} ${durMs}ms ease-in-out forwards`;
- 
- // Regen spoons slowly
- if (phase === "INHALE" && spoons < maxSpoonsHud) {
-   spoons += 0.5;
-   $("l0-spoon-fill").style.width = `${(spoons / maxSpoonsHud) * 100}%`;
-   $("l0-spoon-pct").innerText = `${Math.round((spoons / maxSpoonsHud) * 100)}%`;
-   setDockSpoonArc(Math.min(spoons, maxSpoonsHud), maxSpoonsHud);
- }
+  function deactivateLayer0() {
+    $("layer0")?.classList.add("opacity-0", "pointer-events-none");
+    if (l0Timer !== null) clearTimeout(l0Timer); l0Timer = null;
+    if (l0Audio) { try { l0Audio.close(); } catch(e){} l0Audio = null; }
+  }
+
+  function playBreath(phase: string, durMs: number, freq: number | null) {
+    const phaseEl = $("l0-phase"); if (phaseEl) phaseEl.innerText = phase;
+    const dot = $("l0-dot");
+    if (dot) { dot.style.animation = "none"; void dot.offsetWidth; dot.style.animation = `l0-${phase.toLowerCase()} ${durMs}ms ease-in-out forwards`; }
+
+    if (phase === "INHALE" && spoons < maxSpoonsHud) {
+      spoons += 0.5;
+      const sf = $("l0-spoon-fill"); if (sf) sf.style.width = `${(spoons / maxSpoonsHud) * 100}%`;
+      const sp = $("l0-spoon-pct"); if (sp) sp.innerText = `${Math.round((spoons / maxSpoonsHud) * 100)}%`;
+      setDockSpoonArc(Math.min(spoons, maxSpoonsHud), maxSpoonsHud);
+    }
 
  if (!freq) return;
  try {
-   if (!l0Audio) l0Audio = new (window.AudioContext || window.webkitAudioContext)();
+   const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+   if (!l0Audio) l0Audio = new AudioCtx();
    if(l0Audio.state === "suspended") l0Audio.resume();
    const osc = l0Audio.createOscillator(), gain = l0Audio.createGain();
    osc.frequency.setValueAtTime(freq, l0Audio.currentTime); osc.type = "sine";
@@ -841,28 +851,33 @@ initAudioOnInteraction();
   }
 
   document.addEventListener("keydown", e => {
- if (e.key !== "Escape" || $("layer0").classList.contains("pointer-events-none")) return;
- e.preventDefault();
- if (escStart) return;
- escStart = Date.now();
- $("l0-escape-fill").style.transition = "width 3s linear";
- $("l0-escape-fill").style.width = "100%";
- escTimer = setTimeout(() => { deactivateLayer0(); escStart = null; $("l0-escape-fill").style.width = "0%"; }, 3000);
+    if (e.key !== "Escape" || $("layer0")?.classList.contains("pointer-events-none")) return;
+    e.preventDefault();
+    if (escStart) return;
+    escStart = Date.now();
+    const ef = $("l0-escape-fill");
+    if (ef) { ef.style.transition = "width 3s linear"; ef.style.width = "100%"; }
+    escTimer = setTimeout(() => { deactivateLayer0(); escStart = null; const el = $("l0-escape-fill"); if (el) el.style.width = "0%"; }, 3000);
   });
   document.addEventListener("keyup", e => {
- if (e.key === "Escape") { clearTimeout(escTimer); escStart = null; $("l0-escape-fill").style.transition = "width 0.15s linear"; $("l0-escape-fill").style.width = "0%"; }
+    if (e.key === "Escape") {
+      if (escTimer !== null) clearTimeout(escTimer);
+      escStart = null;
+      const ef = $("l0-escape-fill");
+      if (ef) { ef.style.transition = "width 0.15s linear"; ef.style.width = "0%"; }
+    }
   });
 
   // Global toggle UI
-  window.toggleUI = () => {
- const isHidden = $("top-hud").classList.contains("-translate-y-full");
- $("top-hud").classList.toggle("-translate-y-full", !isHidden);
- $("left-hud").classList.toggle("opacity-0", !isHidden);
- $("left-hud").classList.toggle("pointer-events-none", !isHidden);
+  (window as unknown as { toggleUI: () => void }).toggleUI = () => {
+    const isHidden = $("top-hud")?.classList.contains("-translate-y-full") ?? false;
+    $("top-hud")?.classList.toggle("-translate-y-full", !isHidden);
+    $("left-hud")?.classList.toggle("opacity-0", !isHidden);
+    $("left-hud")?.classList.toggle("pointer-events-none", !isHidden);
   };
 
   document.addEventListener("keydown", (e) => {
- if(e.key === "Tab") { e.preventDefault(); window.toggleUI(); }
+    if(e.key === "Tab") { e.preventDefault(); (window as unknown as { toggleUI: () => void }).toggleUI(); }
   });
 
 // ================================================================
@@ -943,7 +958,7 @@ const container = $("webgl-container");
   const maxPR = domePerfLite ? 1 : Math.min(window.devicePixelRatio, 2);
   renderer.setPixelRatio(maxPR);
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
-container.appendChild(renderer.domElement);
+if (!container) { showLoadingError(); } else { container.appendChild(renderer.domElement); }
 
 // Camera Controls (Orbit) — cockpit policy: left = select (raycast-wins); orbit = Alt+left or right-drag; zoom = scroll.
 const controls = new OrbitControls(camera, renderer.domElement);
@@ -1055,27 +1070,31 @@ if (prefersReducedMotion) {
  ['oqe-icosa', 'context-engine', 'forensic_index'],
   ];
 
-  $("node-count").innerText = `${Object.keys(VERTICES).length} ${i18n.t('stats.nodes')}`;
+  const ncEl = $("node-count"); if (ncEl) ncEl.innerText = `${Object.keys(VERTICES).length} ${i18n.t('stats.nodes')}`;
 
-  function getDominantAxis(a,b,c,d) { const v={a,b,c,d}; let m=-1, ax='a'; for(let k of ['a','b','c','d']) { if(v[k]>m) { m=v[k]; ax=k; } } return ax; }
-  function getNodeColor(a,b,c,d) { const s=a+b+c+d||1, col=new THREE.Color(0); const ac={a:new THREE.Color(AXIS_COLORS.a),b:new THREE.Color(AXIS_COLORS.b),c:new THREE.Color(AXIS_COLORS.c),d:new THREE.Color(AXIS_COLORS.d)}; for(let k of ['a','b','c','d']) { const w=({a,b,c,d})[k]/s; col.r+=ac[k].r*w; col.g+=ac[k].g*w; col.b+=ac[k].b*w; } return col; }
+  type AxisKey = 'a' | 'b' | 'c' | 'd';
+  type AssignmentData = { faceIdx: number; node: unknown; color: THREE.Color; glow: number };
+
+  function getDominantAxis(a: number, b: number, c: number, d: number) { const v: Record<AxisKey, number>={a,b,c,d}; let m=-1, ax: AxisKey='a'; for(const k of ['a','b','c','d'] as AxisKey[]) { if(v[k]>m) { m=v[k]; ax=k; } } return ax; }
+  function getNodeColor(a: number, b: number, c: number, d: number) { const s=a+b+c+d||1, col=new THREE.Color(0); const ac: Record<AxisKey, THREE.Color>={a:new THREE.Color(AXIS_COLORS.a),b:new THREE.Color(AXIS_COLORS.b),c:new THREE.Color(AXIS_COLORS.c),d:new THREE.Color(AXIS_COLORS.d)}; for(const k of ['a','b','c','d'] as AxisKey[]) { const w=({a,b,c,d} as Record<AxisKey, number>)[k]/s; col.r+=ac[k].r*w; col.g+=ac[k].g*w; col.b+=ac[k].b*w; } return col; }
 
   const TETRA = [new THREE.Vector3(0,1,0), new THREE.Vector3(0,-1/3,Math.sqrt(8/9)), new THREE.Vector3(-Math.sqrt(2/3),-1/3,-Math.sqrt(2/9)), new THREE.Vector3(Math.sqrt(2/3),-1/3,-Math.sqrt(2/9))];
-  function nodeDir(a,b,c,d) { const s=a+b+c+d||1, dir=new THREE.Vector3(0,0,0); dir.addScaledVector(TETRA[0],a/s); dir.addScaledVector(TETRA[1],b/s); dir.addScaledVector(TETRA[2],c/s); dir.addScaledVector(TETRA[3],d/s); return dir.normalize(); }
+  function nodeDir(a: number, b: number, c: number, d: number) { const s=a+b+c+d||1, dir=new THREE.Vector3(0,0,0); dir.addScaledVector(TETRA[0],a/s); dir.addScaledVector(TETRA[1],b/s); dir.addScaledVector(TETRA[2],c/s); dir.addScaledVector(TETRA[3],d/s); return dir.normalize(); }
 
   // Build Geodesic Geometry (see src/lib/dome/icosphere-geometry.ts)
   const RADIUS = 3.5;
   const geo = buildGeoThree(RADIUS, 2);
-  const faceMeshes = [];
+  const faceMeshes: THREE.Mesh[] = [];
   const nodeToFace = new Map();
 
   const domeGroup = new THREE.Group();
   scene.add(domeGroup);
 
   // Map Nodes to Faces
-  const sortedNodes = Object.entries(VERTICES).map(([id,d])=>({id, label:d[0], a:d[1], b:d[2], c:d[3], d:d[4], state:d[5], bus:d[6], notes:d[7], dir:nodeDir(d[1],d[2],d[3],d[4]), p:d[5]==='countdown'?0:1})).sort((x,y)=>x.p-y.p);
-  const usedFaces = new Set();
-  const assignments = [];
+  const sortedNodes = Object.entries(VERTICES).map(([id,d])=>({id, label:String(d[0]), a:Number(d[1]), b:Number(d[2]), c:Number(d[3]), d:Number(d[4]), state:String(d[5]), bus:String(d[6]), notes:d[7] ? String(d[7]) : undefined, dir:nodeDir(Number(d[1]),Number(d[2]),Number(d[3]),Number(d[4])), p:d[5]==='countdown'?0:1})).sort((x,y)=>x.p-y.p);
+  type NodeData = typeof sortedNodes[0];
+  const usedFaces = new Set<number>();
+  const assignments: AssignmentData[] = [];
   for(const n of sortedNodes) {
  let best=-1, bd=-2;
  for(let i=0; i<geo.faces.length; i++) {
@@ -1085,7 +1104,7 @@ if (prefersReducedMotion) {
  }
  if(best>=0) {
    usedFaces.add(best);
-   const a={faceIdx:best, node:n, color:getNodeColor(n.a,n.b,n.c,n.d), glow:STATE_GLOW[n.state]||0.5};
+   const a: AssignmentData = {faceIdx:best, node:n, color:getNodeColor(n.a,n.b,n.c,n.d), glow:(STATE_GLOW as Record<string,number>)[n.state]||0.5};
    assignments.push(a);
    nodeToFace.set(n.id, a);
    geo.faces[best].assignment = a;
@@ -1094,7 +1113,7 @@ if (prefersReducedMotion) {
 
   // 1. Construct 3D Tetrahedral Blocks
   for(let i=0; i<geo.faces.length; i++) {
- const f=geo.faces[i], a=f.assignment, [ai,bi,ci]=f.indices;
+ const f=geo.faces[i], a=f.assignment as AssignmentData | undefined, [ai,bi,ci]=f.indices;
 
  const va=geo.verts[ai].clone();
  const vb=geo.verts[bi].clone();
@@ -1329,28 +1348,30 @@ if (prefersReducedMotion) {
   // ================================================================
   const raycaster = new THREE.Raycaster();
   const pointer = new THREE.Vector2();
-  let selectedNode = null;
+  let selectedNode: NodeData | null = null;
   let activeAxis = 'all';
 
   // Filter Logic
   document.querySelectorAll('#axis-filters button').forEach(btn => {
  btn.addEventListener('click', (e) => {
+   const t = e.target as HTMLButtonElement | null;
+   if (!t) return;
    document.querySelectorAll('#axis-filters button').forEach(b => {
      b.classList.remove('bg-white/10', 'border-white/20');
      b.classList.add('bg-p31-void', 'border-white/5');
    });
-   e.target.classList.add('bg-white/10', 'border-white/20');
-   e.target.classList.remove('bg-p31-void', 'border-white/5');
+   t.classList.add('bg-white/10', 'border-white/20');
+   t.classList.remove('bg-p31-void', 'border-white/5');
 
-   activeAxis = e.target.dataset.axis;
+   activeAxis = t.dataset.axis ?? 'all';
    applyFilters();
  });
   });
 
-  $('search-input').addEventListener('input', applyFilters);
+  ($('search-input') as HTMLInputElement | null)?.addEventListener('input', applyFilters);
 
   function applyFilters() {
- const q = $('search-input').value.toLowerCase().trim();
+ const q = (($('search-input') as HTMLInputElement | null)?.value ?? '').toLowerCase().trim();
 
  for(const m of faceMeshes) {
    const a = m.userData.a;
@@ -1362,12 +1383,13 @@ if (prefersReducedMotion) {
    if(q && ![n.label, n.id, n.notes||'', n.state].some(s => s.toLowerCase().includes(q))) visible = false;
 
    m.visible = visible;
+   const mat = m.material as THREE.MeshPhysicalMaterial;
    if(visible) {
-     m.material.opacity = 0.9;
-     m.material.emissiveIntensity = a.glow >= 1.0 ? 3.0 : 1.2;
+     mat.opacity = 0.9;
+     mat.emissiveIntensity = a.glow >= 1.0 ? 3.0 : 1.2;
    } else {
-     m.material.opacity = 0.05;
-     m.material.emissiveIntensity = 0;
+     mat.opacity = 0.05;
+     mat.emissiveIntensity = 0;
    }
  }
     syncDomeGrayRockVisuals?.();
@@ -1390,13 +1412,15 @@ if (prefersReducedMotion) {
     for (const m of faceMeshes) {
       const a = m.userData.a;
       if (!a) continue;
-      if (selectedNode && a.node.id === selectedNode.id) {
-        m.material.emissiveIntensity = 4.0;
-        m.material.opacity = 1.0;
+      const rmat = m.material as THREE.MeshPhysicalMaterial;
+      const rNode = a.node as NodeData;
+      if (selectedNode && rNode.id === selectedNode.id) {
+        rmat.emissiveIntensity = 4.0;
+        rmat.opacity = 1.0;
         m.userData.targetOffset = 0.5;
       } else {
-        m.material.emissiveIntensity = a.glow >= 1.0 ? 2.5 : 0.8;
-        m.material.opacity = selectedNode ? 0.2 : 0.9;
+        rmat.emissiveIntensity = a.glow >= 1.0 ? 2.5 : 0.8;
+        rmat.opacity = selectedNode ? 0.2 : 0.9;
         m.userData.targetOffset = 0.0;
       }
     }
@@ -1406,27 +1430,28 @@ if (prefersReducedMotion) {
   function applyHitSelection(hit: THREE.Intersection | null) {
     const panel = $("node-detail-panel");
     if (hit && hit.object.userData.a) {
-      const n = hit.object.userData.a.node;
+      const n = hit.object.userData.a.node as NodeData;
       selectedNode = n;
-      $("nd-title").innerText = n.label;
+      const ndTitle = $("nd-title"); if (ndTitle) ndTitle.innerText = n.label;
 
       const ax = getDominantAxis(n.a, n.b, n.c, n.d);
-      $("nd-axis").innerText = AXIS_LABELS[ax];
-      $("nd-axis").style.color = "#" + AXIS_COLORS[ax].toString(16);
+      const ndAxis = $("nd-axis");
+      if (ndAxis) { ndAxis.innerText = AXIS_LABELS[ax]; ndAxis.style.color = "#" + AXIS_COLORS[ax].toString(16); }
 
-      $("nd-state").innerText = n.state;
-      $("nd-state").style.color = STATE_CSS[n.state] || "#d8d6d0";
-      $("nd-state").style.borderColor = STATE_CSS[n.state] || "#d8d6d0";
+      const stateKey = n.state as keyof typeof STATE_CSS;
+      const ndState = $("nd-state");
+      if (ndState) { ndState.innerText = n.state; ndState.style.color = STATE_CSS[stateKey] || "#d8d6d0"; ndState.style.borderColor = STATE_CSS[stateKey] || "#d8d6d0"; }
 
-      $("nd-bus").innerText = n.bus;
-      $("nd-notes").innerText = n.notes || "Core topology node verified by K4 edge network.";
+      const ndBus = $("nd-bus"); if (ndBus) ndBus.innerText = n.bus;
+      const ndNotes = $("nd-notes"); if (ndNotes) ndNotes.innerText = n.notes || "Core topology node verified by K4 edge network.";
 
       const edges = EDGES.filter((ed) => ed[0] === n.id || ed[1] === n.id);
-      $("nd-conns").innerHTML = edges.length
+      const ndConns = $("nd-conns");
+      if (ndConns) ndConns.innerHTML = edges.length
         ? edges
             .map((ed) => {
               const otherId = ed[0] === n.id ? ed[1] : ed[0];
-              const other = VERTICES[otherId];
+              const other = VERTICES[otherId as keyof typeof VERTICES];
               return other
                 ? `<span class="px-2 py-1 bg-white/5 border border-white/10 rounded text-[9px] hover:bg-white/10 transition-colors">${other[0]}</span>`
                 : "";
@@ -1434,13 +1459,20 @@ if (prefersReducedMotion) {
             .join("")
         : '<span class="text-xs text-p31-muted-50 italic">Isolated Node</span>';
 
-      panel.classList.remove("opacity-0", "translate-x-10", "pointer-events-none");
+      panel?.classList.remove("opacity-0", "pointer-events-none");
+      sheetController.mitigateRibbon();
 
       const targetPos = hit.object.userData.centroidDir.clone().multiplyScalar(7);
       camera.position.lerp(targetPos, 0.1);
     } else {
       selectedNode = null;
-      panel.classList.add("opacity-0", "translate-x-10", "pointer-events-none");
+      if (panel) {
+        panel.style.transform = '';
+        panel.style.opacity = '';
+        panel.style.transition = '';
+        panel.classList.add("opacity-0", "pointer-events-none");
+      }
+      sheetController.restoreRibbon();
     }
     refreshFaceHighlight();
   }
@@ -1522,25 +1554,70 @@ if (prefersReducedMotion) {
     document.body.style.cursor = over ? "pointer" : "default";
   });
 
-$('node-detail-close').addEventListener('click', () => {
+$('node-detail-close')?.addEventListener('click', () => {
   selectedNode = null;
-  $('node-detail-panel').classList.add('opacity-0', 'translate-x-10', 'pointer-events-none');
+  const closePanel = $('node-detail-panel');
+  if (closePanel) {
+    closePanel.style.transform = '';
+    closePanel.style.opacity = '';
+    closePanel.style.transition = '';
+    closePanel.classList.add('opacity-0', 'pointer-events-none');
+  }
+  sheetController.restoreRibbon();
   for(const m of faceMeshes) {
     const a = m.userData.a;
     if(a) {
-      m.material.emissiveIntensity = a.glow >= 1.0 ? 3.0 : 1.2;
-      m.material.opacity = 0.9;
+      const cmat = m.material as THREE.MeshPhysicalMaterial;
+      cmat.emissiveIntensity = a.glow >= 1.0 ? 3.0 : 1.2;
+      cmat.opacity = 0.9;
     }
     m.userData.targetOffset = 0.0;
   }
   syncDomeGrayRockVisuals?.();
 });
 
+// ── Bottom sheet kinematics (mobile) ─────────────────────────────────────
+// Instantiated here; re-instantiated in remount() so fresh DOM refs are used
+// after each SPA navigation back to the dome page.
+function attachSheetController() {
+  const ctrl = new BottomSheetController({
+    panelId: 'node-detail-panel',
+    handleId: 'node-detail-handle',
+    ribbonId: 'p31-bottom-ribbon',
+    dismissThreshold: 120,
+  });
+  const sheetPanel = document.getElementById('node-detail-panel');
+  sheetPanel?.addEventListener('p31:sheet-dismissed', () => {
+    selectedNode = null;
+    for (const m of faceMeshes) {
+      const a = m.userData.a;
+      if (a) {
+        const mat = m.material as THREE.MeshPhysicalMaterial;
+        mat.emissiveIntensity = a.glow >= 1.0 ? 3.0 : 1.2;
+        mat.opacity = 0.9;
+      }
+      m.userData.targetOffset = 0.0;
+    }
+    syncDomeGrayRockVisuals?.();
+    // Defer state reset until spring throw animation completes (~400ms).
+    setTimeout(() => {
+      if (sheetPanel) {
+        sheetPanel.classList.add('opacity-0', 'pointer-events-none');
+        sheetPanel.style.transform = '';
+        sheetPanel.style.opacity = '';
+        sheetPanel.style.transition = '';
+      }
+    }, 420);
+  });
+  return ctrl;
+}
+let sheetController = attachSheetController();
+
 // ================================================================
 // 5. ANIMATION & RENDER LOOP
 // ================================================================
 let time = 0;
-let animationFrameId = null;
+let animationFrameId: ReturnType<typeof requestAnimationFrame> | ReturnType<typeof setTimeout> | null = null;
 const FPS_LIMIT = 60;
 const FRAME_TIME = 1000 / FPS_LIMIT;
 let lastTime = performance.now();
@@ -1614,7 +1691,7 @@ window.addEventListener('resize', () => {
  // ================================================================
  
  // HUD Auto-hide after 3s of inactivity
- let hudTimer = null;
+ let hudTimer: ReturnType<typeof setTimeout> | null = null;
  const hud = $('top-hud');
  const hudContent = $('hud-content');
  let isHudHidden = false;
@@ -1636,13 +1713,13 @@ window.addEventListener('resize', () => {
  }
  
  function resetHUDTimer() {
-   if (hudTimer) clearTimeout(hudTimer);
+   if (hudTimer !== null) clearTimeout(hudTimer);
    if (isHudHidden) showHUD();
    hudTimer = setTimeout(() => {
      if (!isHudHidden) hideHUD();
    }, 3000);
  }
- 
+
  // Show HUD on hover/touch/focus
  if (hud) {
    hud.addEventListener('mouseenter', resetHUDTimer);
@@ -1650,7 +1727,7 @@ window.addEventListener('resize', () => {
    hud.addEventListener('touchstart', resetHUDTimer);
    hud.addEventListener('focusin', resetHUDTimer);
    hud.addEventListener('mouseleave', () => {
-     if (hudTimer) clearTimeout(hudTimer);
+     if (hudTimer !== null) clearTimeout(hudTimer);
      hudTimer = setTimeout(() => {
        if (!isHudHidden) hideHUD();
      }, 3000);
@@ -1676,9 +1753,9 @@ window.addEventListener('resize', () => {
  // Render time tracking
  let frameCount = 0;
  let lastFpsTime = performance.now();
- let fpsValues = [];
- 
- function updatePerformanceMetrics(dt) {
+ let fpsValues: number[] = [];
+
+ function updatePerformanceMetrics(dt: number) {
    if (!isDevMode) return;
    
    // Render time
@@ -1692,7 +1769,7 @@ window.addEventListener('resize', () => {
      fpsValues.push(fps);
      if (fpsValues.length > 10) fpsValues.shift();
      const avgFps = fpsValues.reduce((a, b) => a + b, 0) / fpsValues.length;
-     if (fpsCounterEl) fpsCounterEl.textContent = Math.round(avgFps);
+     if (fpsCounterEl) fpsCounterEl.textContent = String(Math.round(avgFps));
      frameCount = 0;
      lastFpsTime = now;
    }
@@ -1715,7 +1792,7 @@ window.addEventListener('resize', () => {
      failed: { color: 'bg-red-400', title: 'Connection failed', ariaLabel: 'Failed' }
    };
    
-   const config = statusConfig[connectionState] || statusConfig.connected;
+   const config = statusConfig[connectionState as keyof typeof statusConfig] || statusConfig.connected;
    connectionStatusEl.className = `w-2 h-2 rounded-full ${config.color}`;
    connectionStatusEl.title = config.title;
    connectionStatusEl.setAttribute('aria-label', config.ariaLabel);
@@ -1734,7 +1811,7 @@ window.addEventListener('resize', () => {
  
  // Hook into animation loop to measure performance
  let animationStartTime = 0;
- function measureFramePerformance(timestamp) {
+ function measureFramePerformance(timestamp: number) {
    if (animationStartTime === 0) animationStartTime = timestamp;
    const dt = (timestamp - animationStartTime) / 1000 || 0.016;
    animationStartTime = timestamp;
@@ -1752,14 +1829,16 @@ window.addEventListener('resize', () => {
  
  // Focus-visible styles via JS (for browsers that don't support :focus-visible)
  document.addEventListener('focusin', (e) => {
-   if (e.target.matches('button, [role="button"], input, [tabindex]')) {
-     e.target.classList.add('focus-visible');
+   const t = e.target as HTMLElement | null;
+   if (t?.matches('button, [role="button"], input, [tabindex]')) {
+     t.classList.add('focus-visible');
    }
  });
- 
+
  document.addEventListener('focusout', (e) => {
-   if (e.target.matches('button, [role="button"], input, [tabindex]')) {
-     e.target.classList.remove('focus-visible');
+   const t = e.target as HTMLElement | null;
+   if (t?.matches('button, [role="button"], input, [tabindex]')) {
+     t.classList.remove('focus-visible');
    }
  });
  
@@ -1795,7 +1874,7 @@ window.addEventListener('resize', () => {
   const uiToggleBtn = $('ui-toggle-btn');
   if (uiToggleBtn) {
     uiToggleBtn.addEventListener('click', () => {
-      const isCurrentlyHidden = hud.classList.contains('translate-y-[-100%]');
+      const isCurrentlyHidden = hud?.classList.contains('translate-y-[-100%]') ?? false;
       if (isCurrentlyHidden) {
         showHUD();
         resetHUDTimer();
@@ -1818,11 +1897,12 @@ window.addEventListener('resize', () => {
   const defaultVariant = 'tm'; // teal-magenta
   const variants = { tm: 'A (teal-magenta)', cv: 'B (cyan-violet)' };
   
-  function applyTheme(variant) {
+  function applyTheme(variant: string) {
     document.documentElement.setAttribute('data-palette', variant);
     if (themeToggleBtn) {
-      themeToggleBtn.textContent = `Theme: ${variants[variant]}`;
-      themeToggleBtn.title = `Current: ${variants[variant]}`;
+      const vLabel = (variants as Record<string, string>)[variant] ?? variant;
+      themeToggleBtn.textContent = `Theme: ${vLabel}`;
+      themeToggleBtn.title = `Current: ${vLabel}`;
     }
     localStorage.setItem(THEME_KEY, variant);
   }
@@ -1850,7 +1930,7 @@ window.addEventListener('resize', () => {
   const shortcutsOverlay = $('keyboard-shortcuts-overlay');
   const closeShortcutsBtn = $('close-shortcuts');
   let shortcutsVisible = false;
-  let shortcutsTimeout = null;
+  let shortcutsTimeout: ReturnType<typeof setTimeout> | null = null;
   
   function showShortcuts(autoClose = true) {
     if (!shortcutsOverlay) return;
@@ -1872,7 +1952,7 @@ window.addEventListener('resize', () => {
     if (!shortcutsOverlay) return;
     shortcutsOverlay.classList.add('opacity-0', 'pointer-events-none');
     shortcutsVisible = false;
-    if (shortcutsTimeout) {
+    if (shortcutsTimeout !== null) {
       clearTimeout(shortcutsTimeout);
       shortcutsTimeout = null;
     }
@@ -1881,7 +1961,8 @@ window.addEventListener('resize', () => {
   // Toggle with "/" key
   document.addEventListener('keydown', (e) => {
     // Ignore if typing in input
-    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    const kT = e.target as HTMLElement | null;
+    if (kT?.tagName === 'INPUT' || kT?.tagName === 'TEXTAREA') return;
     
     if (e.key === '/' && !shortcutsVisible) {
       e.preventDefault();
@@ -1919,15 +2000,18 @@ window.addEventListener('resize', () => {
   // ================================================================
   // 8. AXE-CORE ACCESSIBILITY SCANNER (DEV ONLY)
   // ================================================================
+  type AxeViolation = { impact: string; id: string; description: string };
+  type AxeLib = { run: (opts: unknown) => Promise<{ violations: AxeViolation[] }> };
   const a11yScanBtn = $('a11y-scan-btn');
-  
+
   if (a11yScanBtn) {
     a11yScanBtn.addEventListener('click', async () => {
-      if (typeof axe === 'undefined') {
+      const axe = (globalThis as Record<string, unknown>)['axe'] as AxeLib | undefined;
+      if (!axe) {
         alert('axe-core not loaded. Please refresh to load the accessibility scanner.');
         return;
       }
-      
+
       try {
         const results = await axe.run({
           runOnly: {
@@ -1935,12 +2019,12 @@ window.addEventListener('resize', () => {
             values: ['wcag2aa']
           }
         });
-        
+
         if (results.violations.length === 0) {
           alert(i18n.t('a11y.noViolations'));
         } else {
           const msg = `${i18n.t('a11y.violationsTitle')}\n\n` +
-            results.violations.map(v => `${v.impact.toUpperCase()}: ${v.id} - ${v.description}`).join('\n');
+            results.violations.map((v: AxeViolation) => `${v.impact.toUpperCase()}: ${v.id} - ${v.description}`).join('\n');
           alert(msg);
           console.group('Accessibility Violations');
           console.table(results.violations);
@@ -1973,5 +2057,37 @@ window.addEventListener('resize', () => {
       document.documentElement.classList.remove('reduced-motion');
     }
   });
-  
+
+  // ── Dome lifecycle handle (astro:before-swap / astro:page-load) ───────────────
+  // Captured via closure so unmount/remount can stop/restart the animate loop and
+  // re-attach the renderer canvas without rebuilding the Three.js scene.
+  (window as unknown as Record<string, unknown>)['__p31Dome'] = {
+    unmount() {
+      sheetController.dispose();
+      if (animationFrameId !== null) {
+        cancelAnimationFrame(animationFrameId as number);
+        clearTimeout(animationFrameId as ReturnType<typeof setTimeout>);
+        animationFrameId = null;
+      }
+      renderer.domElement.parentElement?.removeChild(renderer.domElement);
+    },
+    remount() {
+      const cont = document.getElementById('webgl-container');
+      if (!cont) return;
+      // Guard: canvas already live in the container — first-mount case, nothing to do.
+      if (renderer.domElement.parentElement === cont) return;
+      cont.appendChild(renderer.domElement);
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      composer.setSize(window.innerWidth, window.innerHeight);
+      if (bloomPass) bloomPass.resolution.set(window.innerWidth, window.innerHeight);
+      animationFrameId = requestAnimationFrame(animate);
+      document.body.classList.remove('loaded');
+      dismissDomeSplash({ fadeMs: 200 });
+      // Re-attach kinematics to fresh DOM nodes after SPA navigation.
+      sheetController = attachSheetController();
+    },
+  };
+
 } // WebGL branch (else opened when webglSupported)
