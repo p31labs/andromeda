@@ -28,6 +28,7 @@
   <title>P31 K₄ agent hubs — Forge · Counsel · Scholar · Scribe</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="/lib/p31-qmu-tokens.css">
   <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700&family=JetBrains+Mono:ital,wght@0,400;0,600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/p31-style.css" />
   <link rel="stylesheet" href="/p31-shared-surface.css" />
@@ -87,7 +88,7 @@
       position: relative; z-index: 1;
       max-width: var(--ag-shell-max);
       margin: 0 auto;
-      padding: clamp(1rem, 3vw, 2rem) clamp(1rem, 3vw, 1.5rem) calc(var(--p31-space-24) + 3rem);
+      padding: clamp(0.75rem, 2vw, 1.5rem) clamp(0.75rem, 2vw, 1.25rem) calc(var(--p31-space-16) + 2rem);
     }
 
     .ag-hero { margin-bottom: var(--p31-space-6); }
@@ -275,15 +276,46 @@
       body::before { transition: none; }
     }
   </style>
+  <style>
+    .safe-toggle { position: fixed; top: 1rem; right: 1rem; z-index: 9999; padding: 0.5rem 0.75rem; border: 1px solid rgba(204,98,71,0.3); border-radius: 6px; background: rgba(204,98,71,0.08); color: var(--p31-coral); font-family: var(--p31-font-mono); font-size: 0.75rem; text-transform: uppercase; cursor: pointer; transition: all 150ms; }
+    .safe-toggle:hover { background: rgba(204,98,71,0.15); }
+    body.safe-mode { --p31-void: #000; --p31-surface: #0a0a0a; --p31-cloud: #fff; }
+    body.safe-mode * { animation: none !important; transition: none !important; }
+  </style>
+  <style>
+    .safe-toggle { position: fixed; top: 1rem; right: 1rem; z-index: 9999; padding: 0.5rem 0.75rem; border: 1px solid rgba(204,98,71,0.3); border-radius: 6px; background: rgba(204,98,71,0.08); color: var(--p31-coral); font-family: var(--p31-font-mono); font-size: 0.75rem; text-transform: uppercase; cursor: pointer; transition: all 150ms; }
+    .safe-toggle:hover { background: rgba(204,98,71,0.15); }
+    body.safe-mode { --p31-void: #000; --p31-surface: #0a0a0a; --p31-cloud: #fff; }
+    body.safe-mode * { animation: none !important; transition: none !important; }
+    body.safe-mode #starfield-canvas { display: none !important; }
+  </style>
+  <link rel="stylesheet" href="/lib/p31-molecular-field.css">
 </head>
 <body class="p31-mesh-m-first p31-responsive-surface">
-  <canvas id="ds-star-plate" width="4" height="4" aria-hidden="true" style="position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;display:block"></canvas>
+<div class="ambient-radial-fixed" aria-hidden="true"></div>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="/" class="nav-brand" title="P31 Labs hub">
+      <span class="nav-mark" aria-hidden="true">P31</span>
+      <span class="nav-brand-label">P31 Labs</span>
+    </a>
+    <div class="nav-links">
+      <span class="nav-prompt" aria-hidden="true">..</span>
+      <a href="/" class="nav-link">Hub</a>
+      <a href="https://github.com/p31labs/andromeda" target="_blank" rel="noopener" class="nav-link">GitHub</a>
+      <a href="/connect.html" class="nav-link">Connect</a>
+    </div>
+  </div>
+</nav>
+
+    <canvas id="ds-star-plate" width="4" height="4" aria-hidden="true" style="position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;display:block"></canvas>
   <script type="module">
     const cv = document.getElementById("ds-star-plate");
     if (cv instanceof HTMLCanvasElement) {
       try {
-        const mod = await import("/design-assets/starfield/p31-starfield-static-plate.js");
-        mod.initStaticStarPlate(cv, { preset: "hub" });
+        const mod = await import("/lib/p31-starfield-live.js");
+        mod.initLiveStarfield(cv, { preset: "hub" });
       } catch (_e) { /* offline-friendly */ }
     }
   </script>
@@ -684,5 +716,74 @@
       bootTetra();
     }
   </script>
+  
+  <!-- PHOS Atmosphere Core — Voice-first navigation wrapper -->
+  <script src="public/lib/p31-smart-starfield.js"></script>
+<script src="public/lib/p31-atmosphere-core.js"></script>
+  <script>
+    // Safe Mode Toggle with WebGL destruction for tetra canvas
+    const safeToggle = document.createElement('button');
+    safeToggle.className = 'safe-toggle';
+    safeToggle.innerText = 'Safe Mode';
+    safeToggle.style.cssText = 'position:fixed;top:1rem;right:1rem;z-index:9999;padding:0.5rem 0.75rem;border:1px solid rgba(204,98,71,0.3);border-radius:6px;background:rgba(204,98,71,0.08);color:#cc6247;font-family:"JetBrains Mono",monospace;font-size:0.75rem;text-transform:uppercase;cursor:pointer;transition:all 150ms;';
+    safeToggle.onclick = () => {
+      const isSafe = document.body.classList.toggle('safe-mode');
+      const tetra = document.getElementById('tetra-canvas');
+      if (isSafe && tetra) {
+        // WebGL destruction protocol
+        const gl = tetra.getContext('webgl') || tetra.getContext('webgl2');
+        if (gl) {
+          const ext = gl.getExtension('WEBGL_lose_context');
+          if (ext) ext.loseContext();
+        }
+        tetra.style.display = 'none';
+      }
+    };
+    document.body.appendChild(safeToggle);
+    
+    if (localStorage.getItem('p31_safe_mode') === 'true') document.body.classList.add('safe-mode');
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      document.body.classList.add('safe-mode');
+      const tetra = document.getElementById('tetra-canvas');
+      if (tetra) tetra.style.display = 'none';
+    }
+  </script>
+<script>
+    // Initialize Smart Starfield
+    const starfield = new SmartStarfield('starfield-canvas', {
+      surfaceId: 'surface-agents',
+      meshSync: true,
+      starCount: 100
+    });
+  </script>
+  <script src="/lib/atmosphere/p31-atmosphere-client.js" defer></script>
+<!-- P31:mission-ebc:start -->
+<footer id="ebc" class="p31-mission-trio p31-mission-trio--ebc" role="contentinfo" aria-label="Mission — build, create, connect">
+  <a class="p31-mission-trio__link p31-mission-trio__link--build p31-mesh-tap" id="ebc-build" href="/build" title="Initial Build — intake, subject scope, verify-gated bake">
+    <span class="p31-mission-trio__head">
+      <span class="p31-mission-trio__dot" aria-hidden="true"></span>
+      <span class="p31-mission-trio__verb">Build</span>
+    </span>
+    <span class="p31-mission-trio__desc">Intake and bake on the same verify chain—not a decoupled mock.</span>
+  </a>
+  <a class="p31-mission-trio__link p31-mission-trio__link--create p31-mesh-tap" id="ebc-create" href="/geodesic.html" title="GEODESIC — snap grid, Maxwell rigidity, scene export">
+    <span class="p31-mission-trio__head">
+      <span class="p31-mission-trio__dot" aria-hidden="true"></span>
+      <span class="p31-mission-trio__verb">Create</span>
+    </span>
+    <span class="p31-mission-trio__desc">One lab surface, honest rigidity—generate or prove; don't fork the same truth twice (ephemeralization).</span>
+  </a>
+  <a class="p31-mission-trio__link p31-mission-trio__link--connect p31-mesh-tap" id="ebc-connect" href="/mesh" title="Mesh navigator — K₄ cage and product graph">
+    <span class="p31-mission-trio__head">
+      <span class="p31-mission-trio__dot" aria-hidden="true"></span>
+      <span class="p31-mission-trio__verb">Connect</span>
+    </span>
+    <span class="p31-mission-trio__desc"><span class="p31-mission-trio__now">Now</span> — live cage and edges: mesh, hubs, and money follow the same published contracts (ethical monetization).</span>
+  </a>
+</footer>
+<!-- P31:mission-ebc:end -->
+  <script src="/lib/p31-return-ribbon.js" defer></script>
+  <script type="module" src="/lib/p31-molecular-field.js"></script>
+
 </body>
 </html>

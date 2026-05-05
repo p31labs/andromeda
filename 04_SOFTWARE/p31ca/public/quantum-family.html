@@ -16,20 +16,15 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/p31-style.css">
-    <script src="https://cdn.tailwindcss.com"></script>
+      <link rel="stylesheet" href="/lib/p31-qmu-tokens.css" />
+<link rel="stylesheet" href="/p31-style.css">
+  <link rel="stylesheet" href="/p31-shared-surface.css" />
+  <link rel="stylesheet" href="/p31-responsive-surface.css" />
+
+    <link rel="stylesheet" href="/p31-tw.css" />
     <script src="/p31-tailwind-extend.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    ...window.P31_TAILWIND_EXTEND,
-                    boxShadow: { 'soft': '0 6px 30px rgba(93,78,55,0.07)', 'inner-soft': 'inset 0 2px 8px rgba(93,78,55,0.06)' }
-                }
-            }
-        }
-    </script>
+    <!-- tailwind.config removed: using compiled p31-tw.css instead -->
     <style>
         body { background-color: #F8F5F0; color: #3A3632; overflow-x: hidden; transition: background-color 0.3s, color 0.3s; }
         body.dark { background-color: var(--p31-void); color: var(--p31-cloud); }
@@ -55,9 +50,36 @@
         body.dark #courier-wrap { border-color: rgba(255,255,255,0.12); }
     </style>
 <link rel="canonical" href="https://p31ca.org/quantum-family.html">
+  <script src="/lib/p31-subject-prefs.js"></script>
+  <link rel="stylesheet" href="/lib/p31-molecular-field.css">
 </head>
 <body class="min-h-screen flex flex-col">
-<a href="#main" style="position:absolute;left:-9999px;top:0;padding:0.5rem 1rem;background:var(--p31-void);color:var(--p31-teal);font-size:0.875rem;z-index:9999;border-radius:0 0 4px 4px;text-decoration:none" onfocus="this.style.left='0'" onblur="this.style.left='-9999px'">Skip to main content</a>
+<div class="ambient-radial-fixed" aria-hidden="true"></div>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="/" class="nav-brand" title="P31 Labs hub">
+      <span class="nav-mark" aria-hidden="true">P31</span>
+      <span class="nav-brand-label">P31 Labs</span>
+    </a>
+    <div class="nav-links">
+      <span class="nav-prompt" aria-hidden="true">..</span>
+      <a href="/" class="nav-link">Hub</a>
+      <a href="https://github.com/p31labs/andromeda" target="_blank" rel="noopener" class="nav-link">GitHub</a>
+      <a href="/connect.html" class="nav-link">Connect</a>
+    </div>
+  </div>
+</nav>
+<canvas id="p31-star-plate" width="4" height="4" aria-hidden="true" style="position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;display:block"></canvas>
+<script type="module">
+  const cv = document.getElementById("p31-star-plate");
+  if (cv instanceof HTMLCanvasElement) {
+    try {
+      const mod = await import("/lib/p31-starfield-live.js");
+      mod.initLiveStarfield(cv, { preset: "hub" });
+    } catch (_e) { /* offline-friendly */ }
+  }
+</script>
 
     <nav class="sticky top-0 z-50 bg-[#F8F5F0]/90 backdrop-blur-md px-4 py-3 flex items-center gap-3 overflow-x-auto border-b border-[#5D4E37]/10" style="-webkit-overflow-scrolling:touch;">
         <a href="family.html" class="nav-pill px-4 py-2.5 rounded-2xl border-2 border-[#F0EBE3] bg-white font-display font-semibold text-[#7A7570] text-sm shrink-0">← Hub</a>
@@ -1772,5 +1794,34 @@
         import { startGrandfatherPhaseVar } from "/lib/p31-quantum-grandfather-boot.mjs";
         startGrandfatherPhaseVar();
     </script>
+  <script src="/lib/atmosphere/p31-atmosphere-client.js" defer></script>
+<!-- P31:mission-ebc:start -->
+<footer id="ebc" class="p31-mission-trio p31-mission-trio--ebc" role="contentinfo" aria-label="Mission — build, create, connect">
+  <a class="p31-mission-trio__link p31-mission-trio__link--build p31-mesh-tap" id="ebc-build" href="/build" title="Initial Build — intake, subject scope, verify-gated bake">
+    <span class="p31-mission-trio__head">
+      <span class="p31-mission-trio__dot" aria-hidden="true"></span>
+      <span class="p31-mission-trio__verb">Build</span>
+    </span>
+    <span class="p31-mission-trio__desc">Intake and bake on the same verify chain—not a decoupled mock.</span>
+  </a>
+  <a class="p31-mission-trio__link p31-mission-trio__link--create p31-mesh-tap" id="ebc-create" href="/geodesic.html" title="GEODESIC — snap grid, Maxwell rigidity, scene export">
+    <span class="p31-mission-trio__head">
+      <span class="p31-mission-trio__dot" aria-hidden="true"></span>
+      <span class="p31-mission-trio__verb">Create</span>
+    </span>
+    <span class="p31-mission-trio__desc">One lab surface, honest rigidity—generate or prove; don't fork the same truth twice (ephemeralization).</span>
+  </a>
+  <a class="p31-mission-trio__link p31-mission-trio__link--connect p31-mesh-tap" id="ebc-connect" href="/mesh" title="Mesh navigator — K₄ cage and product graph">
+    <span class="p31-mission-trio__head">
+      <span class="p31-mission-trio__dot" aria-hidden="true"></span>
+      <span class="p31-mission-trio__verb">Connect</span>
+    </span>
+    <span class="p31-mission-trio__desc"><span class="p31-mission-trio__now">Now</span> — live cage and edges: mesh, hubs, and money follow the same published contracts (ethical monetization).</span>
+  </a>
+</footer>
+<!-- P31:mission-ebc:end -->
+  <script src="/lib/p31-return-ribbon.js" defer></script>
+  <script type="module" src="/lib/p31-molecular-field.js"></script>
+
 </body>
 </html>

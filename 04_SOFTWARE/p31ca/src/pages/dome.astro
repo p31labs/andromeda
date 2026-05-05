@@ -3,10 +3,11 @@
  * Sovereign Cockpit Dome Page
  * Full 3D interactive K4 topology visualization
  */
-import BaseLayout from '../layouts/BaseLayout.astro';
+import AppShell from '../layouts/AppShell.astro';
+import { POSNER_PRISM_SVG } from '../lib/phos-assets';
 ---
 
-<BaseLayout title="P31 Labs | Sovereign Cockpit" data-i18n-title="page.title" shellBackdrop={false}>
+<AppShell title="P31 Labs | Sovereign Cockpit" routeName="dome">
   <!-- Noscript fallback for JS-disabled users -->
   <noscript>
     <div class="fixed inset-0 bg-black/90 flex flex-col items-center justify-center z-50 p-6 text-center">
@@ -25,16 +26,6 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     </div>
   </noscript>
 
-    <!-- Three.js Import Map -->
-   <script type="importmap" is:inline>
-     {
-       "imports": {
-         "three": "https://unpkg.com/three@0.183.0/build/three.module.js",
-         "three/addons/": "https://unpkg.com/three@0.183.0/examples/jsm/"
-       }
-     }
-   </script>
-   
    <!-- Dev-only: axe-core for accessibility testing -->
    <script>
     (function() {
@@ -158,6 +149,12 @@ import BaseLayout from '../layouts/BaseLayout.astro';
             <!-- Theme Variant Switcher (A/B test) -->
             <button id="theme-toggle-btn" class="ml-2 px-2 py-1 bg-white/5 hover:bg-white/10 rounded text-xs" data-i18n="theme.toggle" type="button">Theme: A</button>
           </div>
+
+          <!-- View switcher: Cockpit ↔ Posner -->
+          <nav id="dome-view-nav" class="flex items-center gap-1" aria-label="Dome view switcher">
+            <a href="#dome" data-hash-nav="dome" class="px-1.5 py-0.5 rounded text-[9px] font-mono border border-white/15 text-p31-muted hover:text-p31-cloud hover:border-teal/30 transition-colors" aria-label="K4 cockpit view">K4</a>
+            <a href="#spatial" data-hash-nav="spatial" class="px-1.5 py-0.5 rounded text-[9px] font-mono border border-white/15 text-p31-muted hover:text-p31-cloud hover:border-emerald/30 transition-colors" aria-label="Posner molecule view">Ca₉</a>
+          </nav>
 
           <!-- UI Toggle -->
           <button id="ui-toggle-btn" class="text-p31-muted hover:text-p31-cloud transition-colors p-1" aria-label="Toggle heads-up display" data-i18n-aria-label="hud.toggleUI" type="button">[UI]</button>
@@ -298,11 +295,13 @@ import BaseLayout from '../layouts/BaseLayout.astro';
      </div>
   </aside>
 
-  <!-- RIGHT HUD: Node Inspector -->
+  <!-- RIGHT HUD: Node Inspector — mobile: bottom sheet; desktop (sm+): right side card -->
   <aside
      id="node-detail-panel"
-     class="hud-element pointer-events-none fixed left-4 right-4 top-20 z-40 mx-auto w-full max-w-sm translate-x-10 transform rounded-xl border-t border-l border-white/10 bg-p31-void-95 p-5 opacity-0 shadow-[0_10px_40px_rgba(0,0,0,0.8)] backdrop-blur-sm transition-all duration-300 sm:left-auto sm:right-6 sm:top-16 sm:mx-0 sm:max-w-none sm:w-80 sm:translate-x-10 glass-panel"
+     class="hud-element pointer-events-none fixed bottom-0 left-0 right-0 z-40 w-full rounded-t-2xl border-t border-white/10 bg-p31-void-95 px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-4 opacity-0 shadow-[0_-10px_40px_rgba(0,0,0,0.8)] backdrop-blur-sm transition-all duration-300 sm:bottom-auto sm:left-auto sm:right-6 sm:top-16 sm:w-80 sm:rounded-xl sm:shadow-[0_10px_40px_rgba(0,0,0,0.8)] glass-panel"
    >
+     <!-- Drag handle — touch-swipe affordance on mobile only -->
+     <div id="node-detail-handle" class="sm:hidden mx-auto mb-4 h-1 w-10 rounded-full bg-white/25 cursor-grab active:cursor-grabbing touch-none" aria-hidden="true"></div>
      <button id="node-detail-close" class="absolute top-4 right-4 text-p31-muted hover:text-p31-cloud transition-colors pointer-events-auto" data-i18n-aria-label="nodeDetail.close" aria-label="Close node details">✕</button>
      <div class="text-cyan font-bold text-lg mb-1 tracking-tight" id="nd-title" data-i18n="nodeDetail.title">Node Name</div>
      <div class="flex items-center gap-2 text-[10px] font-mono mb-4 pb-3 border-b border-white/10">
@@ -310,12 +309,45 @@ import BaseLayout from '../layouts/BaseLayout.astro';
        <span id="nd-state" class="px-2 py-0.5 rounded border uppercase" data-i18n="nodeDetail.state">State</span>
        <span id="nd-bus" class="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-p31-cloud-70 uppercase" data-i18n="nodeDetail.bus">Bus</span>
      </div>
-    <div id="nd-notes" class="text-sm text-p31-cloud-80 mb-5 leading-relaxed font-sans">Select a node in the geodesic dome to inspect its architectural state and entangled edges.</div>
-    <div class="text-[10px] font-mono text-p31-muted mb-2 uppercase tracking-widest">Entangled Edges</div>
-    <div id="nd-conns" class="flex flex-wrap gap-2 pointer-events-auto">
-      <span class="text-xs text-p31-muted-50 italic">No node selected</span>
+    <!-- Empty state: Posner Prism shown before any node is selected -->
+    <div id="nd-empty" class="flex flex-col items-center gap-3 py-4">
+      <div class="w-14 h-14 opacity-40" aria-hidden="true">
+        <Fragment set:html={POSNER_PRISM_SVG} />
+      </div>
+      <p class="font-mono text-[9px] tracking-widest uppercase text-center" style="color: rgba(16,185,129,0.5);">Ca₉(PO₄)₆ · Select a node</p>
     </div>
+    <div id="nd-notes" class="text-sm text-p31-cloud-80 mb-5 leading-relaxed font-sans hidden">—</div>
+    <div class="text-[10px] font-mono text-p31-muted mb-2 uppercase tracking-widest hidden" id="nd-edges-label">Entangled Edges</div>
+    <div id="nd-conns" class="flex flex-wrap gap-2 pointer-events-auto hidden"></div>
   </aside>
+
+  <!-- SPATIAL: Posner Molecule Ca₉(PO₄)₆ spring-physics navigator
+       z-[150] covers all HUD (z-40/50/100) but stays below keyboard-shortcuts (z-900).
+       Shown/hidden by hash-router; rAF loop starts only when this section is active. -->
+  <section
+    id="spatial"
+    class="hash-section hidden fixed inset-0 z-[150] bg-p31-void flex flex-col items-center justify-center gap-3 touch-none"
+    aria-label="Posner Molecule — Ca₉(PO₄)₆ spring physics"
+  >
+    <p class="font-mono text-[9px] tracking-widest uppercase select-none" style="color:rgba(167,139,250,0.6)">
+      Ca₉(PO₄)₆ · Posner Molecule · Spring Physics
+    </p>
+    <div style="width:min(88vw,540px);height:min(88vw,540px)">
+      <svg
+        id="spatial-svg"
+        viewBox="0 0 600 600"
+        class="w-full h-full"
+        style="touch-action:none;display:block"
+        role="img"
+        aria-label="Interactive Posner molecule — drag cyan Ca²⁺ and violet PO₄³⁻ nodes to perturb the spring lattice"
+      ></svg>
+    </div>
+    <p class="font-mono text-[9px] text-p31-muted tracking-widest select-none">
+      drag · <span style="color:rgba(14,165,233,0.7)">●</span> Ca²⁺ &nbsp;
+             <span style="color:rgba(167,139,250,0.7)">●</span> PO₄³⁻ &nbsp;·&nbsp;
+      <a href="#dome" class="underline underline-offset-2 hover:text-p31-cloud transition-colors">← cockpit</a>
+    </p>
+  </section>
 
    <!-- LAYER 0: Somatic Breathing Mode (Full Screen Takeover) -->
    <div id="layer0" class="fixed inset-0 z-[100] bg-p31-void-95 backdrop-blur-md flex flex-col items-center justify-center gap-6 transition-all duration-1000 opacity-0 pointer-events-none">
@@ -339,7 +371,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
        <div class="text-[9px] font-mono text-cyan tracking-widest uppercase opacity-50 mt-2" data-i18n="layer0.larmorFreq">Larmor Frequency: 863Hz Active</div>
      </div>
    </div>
-</BaseLayout>
+</AppShell>
 
 <style is:global>
   body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: var(--p31-void); color: var(--p31-cloud); }
@@ -351,6 +383,19 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     -webkit-backdrop-filter: blur(16px);
     border: 1px solid rgba(255, 255, 255, 0.08);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  }
+
+  /*
+   * Node detail panel — CSS-driven transform for two-axis show/hide.
+   * Mobile: slides up from bottom (Y axis). Desktop (sm+): slides in from right (X axis).
+   * Kinematics sets inline style.transform during drag; clearing it reverts to CSS.
+   * No !important — translate-x-10 Tailwind class removed from HTML, so no conflict.
+   */
+  #node-detail-panel { transform: translateY(100%); }
+  #node-detail-panel:not(.opacity-0) { transform: translateY(0); }
+  @media (min-width: 640px) {
+    #node-detail-panel { transform: translateX(2.5rem); }
+    #node-detail-panel:not(.opacity-0) { transform: translateX(0); }
   }
 
   .ambient-grid {
@@ -470,6 +515,10 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       stroke: #d946ef !important;
     }
 
+    /* View switcher active states */
+    #dome-view-nav a[aria-current="true"][data-hash-nav="dome"]    { color:#0ea5e9; border-color:rgba(14,165,233,0.4); }
+    #dome-view-nav a[aria-current="true"][data-hash-nav="spatial"] { color:#a78bfa; border-color:rgba(167,139,250,0.4); }
+
     /* Gray Rock — doctrine §1 / §7 (`?alive=1` skips 3D + HUD withholding in dome-cockpit.ts) */
     body.dome-gray-rock #connection-status {
       filter: grayscale(1);
@@ -484,7 +533,49 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     }
   </style>
 
-<!-- Client cockpit: src/scripts/dome-cockpit.ts; geometry: src/lib/dome/ -->
+<!-- Client cockpit: src/scripts/dome-cockpit.ts; geometry: src/lib/dome/
+     Hash-router switches between #dome (Three.js cockpit) and #spatial (Posner physics).
+     rAF loops are mutually exclusive — only the active view consumes CPU. -->
 <script>
   import '../scripts/dome-cockpit.ts';
+  import { mountHashRouter, type HashRouterHandle } from '../lib/hash-router';
+  import { createSpatialNavigator, type SpatialHandle } from '../scripts/spatial-navigator';
+
+  type DomeHandle = { unmount(): void; remount(): void };
+  const W = window as Record<string, unknown>;
+
+  // One spatial navigator per session (survives SPA navigations).
+  if (!W['__p31Spatial']) W['__p31Spatial'] = createSpatialNavigator();
+  const spatial = W['__p31Spatial'] as SpatialHandle;
+  let router: HashRouterHandle | null = null;
+
+  document.addEventListener('astro:page-load', () => {
+    const svgEl = document.getElementById('spatial-svg') as SVGSVGElement | null;
+
+    router = mountHashRouter([
+      {
+        id: 'dome',
+        // No el — cockpit elements are fixed/global; managed via DomeHandle only.
+        onEnter: () => (W['__p31Dome'] as DomeHandle | undefined)?.remount(),
+        onLeave: () => (W['__p31Dome'] as DomeHandle | undefined)?.unmount(),
+      },
+      {
+        id: 'spatial',
+        el: '#spatial',
+        title: 'P31 Labs | Posner Ca₉(PO₄)₆',
+        onEnter: () => {
+          // Stop Three.js rAF before starting physics loop.
+          (W['__p31Dome'] as DomeHandle | undefined)?.unmount();
+          if (svgEl) spatial.mount(svgEl);
+        },
+        onLeave: () => spatial.unmount(),
+      },
+    ], { defaultId: 'dome', navSelector: '#dome-view-nav a' });
+  });
+
+  document.addEventListener('astro:before-swap', () => {
+    router?.destroy(); router = null;
+    spatial.unmount();
+    (W['__p31Dome'] as DomeHandle | undefined)?.unmount();
+  }, { once: true });
 </script>

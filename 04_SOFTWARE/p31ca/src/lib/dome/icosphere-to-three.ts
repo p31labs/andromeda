@@ -7,7 +7,8 @@ export function buildGeoThree(rad: number, subs: number) {
   const verts = built.vertices.map(
     ([x, y, z]) => new THREE.Vector3(x, y, z)
   );
-  const faces = built.faces.map((f) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const faces: Array<{ indices: [number, number, number]; centroid: THREE.Vector3; assignment?: any }> = built.faces.map((f) => {
     const [a, b, c] = f;
     return {
       indices: f as [number, number, number],

@@ -57,6 +57,101 @@ export const P31CA_WEB_APP_ICONS = `  <link rel="manifest" href="/p31-mesh.webma
 export const STARFIELD_MAIN_CSS_HREF_SOURCE = 'href="/design-assets/starfield/p31-starfield.css"';
 export const STARFIELD_MAIN_CSS_HREF_P31CA = 'href="/lib/p31-starfield.css"';
 
+/** Home demo links QMU tokens under /public/lib/; hub serves them from /lib/. */
+export const QMU_TOKENS_HREF_SOURCE = 'href="/public/lib/p31-qmu-tokens.css"';
+export const QMU_TOKENS_HREF_P31CA  = 'href="/lib/p31-qmu-tokens.css"';
+
+/** Comment in source references the public/lib path; strip /public/ for hub mirror. */
+export const COGPASS_READER_COMMENT_SOURCE = 'andromeda/04_SOFTWARE/p31ca/public/lib/p31-cogpass-reader.mjs';
+export const COGPASS_READER_COMMENT_P31CA  = 'andromeda/04_SOFTWARE/p31ca/lib/p31-cogpass-reader.mjs';
+
+/** Playfair Display is off-canon; replace with canon serif stack. */
+export const PLAYFAIR_SOURCE = '"Playfair Display", Georgia, "Times New Roman", serif';
+export const PLAYFAIR_P31CA  = 'Georgia, "Times New Roman", serif';
+
+/**
+ * Source body opening + skip link anchor — chrome is injected between body tag and skip link.
+ * If this anchor changes in the source, update both SOURCE_BODY_ANCHOR and P31CA_BODY_WITH_CHROME.
+ */
+export const SOURCE_BODY_ANCHOR = `<body class="p31-mesh-m-first p31-responsive-surface p31-has-return-ribbon">
+  <a class="cp-skip skip-link p31-doc-skip" href="#fill">Skip to passport form</a>`;
+
+export const P31CA_BODY_WITH_CHROME = `<body class="p31-mesh-m-first p31-responsive-surface p31-has-return-ribbon">
+<div class="ambient-radial-fixed" aria-hidden="true"></div>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="/" class="nav-brand" title="P31 Labs hub">
+      <span class="nav-mark" aria-hidden="true">P31</span>
+      <span class="nav-brand-label">P31 Labs</span>
+    </a>
+    <div class="nav-links">
+      <span class="nav-prompt" aria-hidden="true">..</span>
+      <a href="/" class="nav-link">Hub</a>
+      <a href="https://github.com/p31labs/andromeda" target="_blank" rel="noopener" class="nav-link">GitHub</a>
+      <a href="/connect.html" class="nav-link">Connect</a>
+    </div>
+  </div>
+</nav>
+
+    <canvas id="p31-star-plate" width="4" height="4" aria-hidden="true" style="position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;display:block"></canvas>
+  <script type="module">
+    const cv = document.getElementById("p31-star-plate");
+    if (cv instanceof HTMLCanvasElement) {
+      try {
+        const mod = await import("/lib/p31-starfield-live.js");
+        mod.initLiveStarfield(cv, { preset: "hub" });
+      } catch (_e) { /* offline-friendly */ }
+    }
+  </script>
+  <a class="cp-skip skip-link p31-doc-skip" href="#fill">Skip to passport form</a>`;
+
+/**
+ * Source tail: atmosphere hints client + old local return-ribbon.
+ * Replace with canonical EBC footer + return-ribbon + molecular field.
+ */
+export const SOURCE_TAIL = `  <script type="module">
+    const hub = ["p31ca.org", "www.p31ca.org"].includes(location.hostname) || /\\.pages\\.dev$/i.test(location.hostname);
+    const { bootAtmosphereStarfieldCanvas } = await import(
+      (hub ? "/lib/atmosphere/" : "/design-assets/atmosphere/") + "p31-atmosphere-hints-boot.js"
+    );
+    const cv = document.getElementById("passport-starfield");
+    if (cv instanceof HTMLCanvasElement) void bootAtmosphereStarfieldCanvas("cognitive-passport", cv);
+  </script>
+  <script src="lib/p31-return-ribbon.js" data-local-soup="../soup.html" defer></script>
+</body>
+</html>`;
+
+export const P31CA_TAIL = `<footer id="ebc" class="p31-mission-trio p31-mission-trio--ebc" role="contentinfo" aria-label="Mission — build, create, connect">
+  <a class="p31-mission-trio__link p31-mission-trio__link--build p31-mesh-tap" id="ebc-build" href="/build" title="Initial Build — intake, subject scope, verify-gated bake">
+    <span class="p31-mission-trio__head">
+      <span class="p31-mission-trio__dot" aria-hidden="true"></span>
+      <span class="p31-mission-trio__verb">Build</span>
+    </span>
+    <span class="p31-mission-trio__desc">Intake and bake on the same verify chain—not a decoupled mock.</span>
+  </a>
+  <a class="p31-mission-trio__link p31-mission-trio__link--create p31-mesh-tap" id="ebc-create" href="/geodesic.html" title="GEODESIC — snap grid, Maxwell rigidity, scene export">
+    <span class="p31-mission-trio__head">
+      <span class="p31-mission-trio__dot" aria-hidden="true"></span>
+      <span class="p31-mission-trio__verb">Create</span>
+    </span>
+    <span class="p31-mission-trio__desc">One lab surface, honest rigidity—generate or prove; don't fork the same truth twice (ephemeralization).</span>
+  </a>
+  <a class="p31-mission-trio__link p31-mission-trio__link--connect p31-mesh-tap" id="ebc-connect" href="/mesh" title="Mesh navigator — K₄ cage and product graph">
+    <span class="p31-mission-trio__head">
+      <span class="p31-mission-trio__dot" aria-hidden="true"></span>
+      <span class="p31-mission-trio__verb">Connect</span>
+    </span>
+    <span class="p31-mission-trio__desc"><span class="p31-mission-trio__now">Now</span> — live cage and edges: mesh, hubs, and money follow the same published contracts (ethical monetization).</span>
+  </a>
+</footer>
+<!-- P31:mission-ebc:end -->
+  <script src="/lib/p31-return-ribbon.js" defer></script>
+  <script type="module" src="/lib/p31-molecular-field.js"></script>
+
+</body>
+</html>`;
+
 /** @returns {string | null} error message, or null if OK */
 export function validateSourceHtml(html) {
   if (!html.includes(HEADER_SOURCE)) {
@@ -79,5 +174,10 @@ export function toP31caMirror(sourceHtml) {
     .replace(HEADER_SOURCE, HEADER_P31CA)
     .replace(FOOTER_SOURCE, FOOTER_P31CA)
     .replace(SOURCE_WEB_APP_ICONS, P31CA_WEB_APP_ICONS)
-    .replace(STARFIELD_MAIN_CSS_HREF_SOURCE, STARFIELD_MAIN_CSS_HREF_P31CA);
+    .replace(STARFIELD_MAIN_CSS_HREF_SOURCE, STARFIELD_MAIN_CSS_HREF_P31CA)
+    .replace(QMU_TOKENS_HREF_SOURCE, QMU_TOKENS_HREF_P31CA)
+    .replace(COGPASS_READER_COMMENT_SOURCE, COGPASS_READER_COMMENT_P31CA)
+    .replace(PLAYFAIR_SOURCE, PLAYFAIR_P31CA)
+    .replace(SOURCE_BODY_ANCHOR, P31CA_BODY_WITH_CHROME)
+    .replace(SOURCE_TAIL, P31CA_TAIL);
 }

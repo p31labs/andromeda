@@ -13,7 +13,7 @@ function landingMain() {
 // ================================================================
 // 1. TELEMETRY & HUD STATE
 // ================================================================
-const $ = (id) => document.getElementById(id);
+const $ = (id: string) => document.getElementById(id);
 
 let currentSpoons = 10;
 const MAX_SPOONS = 20;
@@ -50,13 +50,13 @@ const updateTelemetry = async () => {
     if (nd) { nd.className = `w-2 h-2 rounded-full animate-pulse ${bgClass}`; nd.style.boxShadow = `0 0 8px ${isOpt?'#3ba372':isStab?'#cda852':'#E8636F'}`; }
     
     const activeVerts = Object.values(qData.vertexHealth || {}).filter(v => v > 0).length;
-    if ($('nav-fleet-val')) $('nav-fleet-val').innerText = `${activeVerts}/4`;
+    const fleetEl = $('nav-fleet-val'); if (fleetEl) fleetEl.innerText = `${activeVerts}/4`;
     if (typeof qData.score === "number" && Number.isFinite(qData.score)) applyQFavicon(qData.score);
   }
 
   // LOVE
   const loveData = await fetchWithCache(TELEMETRY_URLS.love, "p31_cache_love", { availableBalance: 3.28 });
-  const lv = loveData?.availableBalance ?? loveData?.balance;
+  const lv = loveData?.availableBalance ?? (loveData as { balance?: number })?.balance;
   const loveEl = $('nav-love-val');
   if (typeof lv === "number" && Number.isFinite(lv) && loveEl) {
     loveEl.textContent = lv.toFixed(2);
@@ -76,8 +76,8 @@ const updateTelemetry = async () => {
     }
     prevSpoonsForSunrise = sn;
     currentSpoons = spoonData.spoons;
-    if ($('nav-spoon-val')) $('nav-spoon-val').innerText = currentSpoons;
-    if ($('nav-spoon-fill')) $('nav-spoon-fill').style.width = `${(currentSpoons/MAX_SPOONS)*100}%`;
+    const spoonValEl = $('nav-spoon-val'); if (spoonValEl) spoonValEl.innerText = String(currentSpoons);
+    const spoonFillEl = $('nav-spoon-fill'); if (spoonFillEl) spoonFillEl.style.width = `${(currentSpoons/MAX_SPOONS)*100}%`;
   }
 
   await refreshMeshHud();
@@ -107,18 +107,19 @@ updateTelemetry();
 // ================================================================
 // 2. EDE TRIMTAB & LAYER 0 (Somatic Mode)
 // ================================================================
-const $trimCanvas = $('trimtab-canvas');
+const $trimCanvas = $('trimtab-canvas') as HTMLCanvasElement | null;
 const $trimFreq = $('trimtab-freq');
 let trimValue = 1.0; 
 let trimOn = false;
-let trimAudioCtx = null, trimOsc = null, trimGain = null;
-let _trimIsDown = false, _trimAngle = null;
+let trimAudioCtx: AudioContext | null = null, trimOsc: OscillatorNode | null = null, trimGain: GainNode | null = null;
+let _trimIsDown = false, _trimAngle: number | null = null;
 
 function trimFreq() { return trimHzFromKnob(trimValue); }
 
 function drawTrimtab() {
   if (!$trimCanvas) return;
   const ctx = $trimCanvas.getContext('2d');
+  if (!ctx) return;
   ctx.clearRect(0, 0, 24, 24);
   const cx = 12, cy = 12, r = 8, start = 3*Math.PI/4, sweep = 3*Math.PI/2;
   
@@ -142,7 +143,8 @@ function trimToggleAudio() {
   trimOn = !trimOn;
   if (trimOn) {
     try {
-      if (!trimAudioCtx) trimAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      if (!trimAudioCtx) trimAudioCtx = new AudioCtx();
       trimOsc = trimAudioCtx.createOscillator(); trimGain = trimAudioCtx.createGain();
       trimOsc.type = 'sine'; trimOsc.frequency.setValueAtTime(trimFreq(), trimAudioCtx.currentTime);
       trimGain.gain.setValueAtTime(0, trimAudioCtx.currentTime);
@@ -151,7 +153,7 @@ function trimToggleAudio() {
       trimOsc.start();
     } catch(e) { trimOn = false; }
   } else if (trimOsc) {
-    try { trimGain.gain.linearRampToValueAtTime(0, trimAudioCtx.currentTime + 0.1); trimOsc.stop(trimAudioCtx.currentTime + 0.15); } catch(e){}
+    try { trimGain!.gain.linearRampToValueAtTime(0, trimAudioCtx!.currentTime + 0.1); trimOsc.stop(trimAudioCtx!.currentTime + 0.15); } catch(e){}
     trimOsc = null; trimGain = null;
   }
   drawTrimtab();
@@ -168,10 +170,11 @@ if ($trimCanvas) {
     if (!_trimIsDown) return;
     const rect = $trimCanvas.getBoundingClientRect();
     const a = Math.atan2(e.clientY - rect.top - 12, e.clientX - rect.left - 12);
+    if (_trimAngle === null) return;
     let d = a - _trimAngle;
     if (d > Math.PI) d -= 2*Math.PI; if (d < -Math.PI) d += 2*Math.PI;
     trimValue = Math.max(0, Math.min(1, trimValue + d / (3*Math.PI/2)));
-    if (trimOn && trimOsc) try { trimOsc.frequency.setValueAtTime(trimFreq(), trimAudioCtx.currentTime); } catch(e){}
+    if (trimOn && trimOsc && trimAudioCtx) try { trimOsc.frequency.setValueAtTime(trimFreq(), trimAudioCtx.currentTime); } catch(e){}
     _trimAngle = a; drawTrimtab();
   });
   const trimUp = () => { _trimIsDown = false; _trimAngle = null; };
@@ -182,29 +185,32 @@ if ($trimCanvas) {
 drawTrimtab();
 
 // Layer 0 Logic
-let l0Timer = null, l0Audio = null, escStart = null, escTimer = null;
+let l0Timer: ReturnType<typeof setTimeout> | null = null;
+let l0Audio: AudioContext | null = null;
+let escStart: number | null = null;
+let escTimer: ReturnType<typeof setTimeout> | null = null;
 
 function activateLayer0() {
-  $('layer0').classList.remove('opacity-0', 'pointer-events-none');
-  $('l0-spoon-fill').style.width = `${(currentSpoons/MAX_SPOONS)*100}%`;
-  $('l0-spoon-pct').innerText = `${Math.round((currentSpoons/MAX_SPOONS)*100)}%`;
+  $('layer0')?.classList.remove('opacity-0', 'pointer-events-none');
+  const sf = $('l0-spoon-fill'); if (sf) sf.style.width = `${(currentSpoons/MAX_SPOONS)*100}%`;
+  const sp = $('l0-spoon-pct'); if (sp) sp.innerText = `${Math.round((currentSpoons/MAX_SPOONS)*100)}%`;
   if (!l0Timer) runBreathCycle();
 }
 
 function deactivateLayer0() {
-  $('layer0').classList.add('opacity-0', 'pointer-events-none');
-  clearTimeout(l0Timer); l0Timer = null;
+  $('layer0')?.classList.add('opacity-0', 'pointer-events-none');
+  if (l0Timer !== null) clearTimeout(l0Timer); l0Timer = null;
   if (l0Audio) { try { l0Audio.close(); } catch(e){} l0Audio = null; }
 }
 
-function playBreath(phase, durMs, freq) {
-  $('l0-phase').innerText = phase;
+function playBreath(phase: string, durMs: number, freq: number | null) {
+  const phaseEl = $('l0-phase'); if (phaseEl) phaseEl.innerText = phase;
   const dot = $('l0-dot');
-  dot.style.animation = 'none'; void dot.offsetWidth;
-  dot.style.animation = `l0-${phase.toLowerCase()} ${durMs}ms ease-in-out forwards`;
+  if (dot) { dot.style.animation = 'none'; void dot.offsetWidth; dot.style.animation = `l0-${phase.toLowerCase()} ${durMs}ms ease-in-out forwards`; }
   if (!freq) return;
   try {
-    if (!l0Audio) l0Audio = new (window.AudioContext || window.webkitAudioContext)();
+    const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+    if (!l0Audio) l0Audio = new AudioCtx();
     const osc = l0Audio.createOscillator(), gain = l0Audio.createGain();
     osc.frequency.setValueAtTime(freq, l0Audio.currentTime); osc.type = 'sine';
     gain.gain.setValueAtTime(0, l0Audio.currentTime);
@@ -227,16 +233,21 @@ function runBreathCycle() {
 }
 
 document.addEventListener('keydown', e => {
-  if (e.key !== 'Escape' || $('layer0').classList.contains('pointer-events-none')) return;
+  if (e.key !== 'Escape' || $('layer0')?.classList.contains('pointer-events-none')) return;
   e.preventDefault();
   if (escStart) return;
   escStart = Date.now();
-  $('l0-escape-fill').style.transition = 'width 3s linear';
-  $('l0-escape-fill').style.width = '100%';
-  escTimer = setTimeout(() => { deactivateLayer0(); escStart = null; $('l0-escape-fill').style.width = '0%'; }, 3000);
+  const ef = $('l0-escape-fill');
+  if (ef) { ef.style.transition = 'width 3s linear'; ef.style.width = '100%'; }
+  escTimer = setTimeout(() => { deactivateLayer0(); escStart = null; const el = $('l0-escape-fill'); if (el) el.style.width = '0%'; }, 3000);
 });
 document.addEventListener('keyup', e => {
-  if (e.key === 'Escape') { clearTimeout(escTimer); escStart = null; $('l0-escape-fill').style.transition = 'width 0.15s linear'; $('l0-escape-fill').style.width = '0%'; }
+  if (e.key === 'Escape') {
+    if (escTimer !== null) clearTimeout(escTimer);
+    escStart = null;
+    const ef = $('l0-escape-fill');
+    if (ef) { ef.style.transition = 'width 0.15s linear'; ef.style.width = '0%'; }
+  }
 });
 
 // ================================================================
@@ -275,7 +286,7 @@ async function refreshStarfieldFromApi() {
   if (!starfieldApi || !starfieldMod) return;
   try {
     const { config, hints } = await starfieldMod.resolveStarfieldConfig();
-    starfieldApi.setConfig(config);
+    starfieldApi.setConfig(config as Record<string, unknown>);
     starfieldApi.ingestTouchHints(hints);
     const mt = await import("../../public/lib/p31-mesh-touches.js");
     let lastMed: number | null = null;

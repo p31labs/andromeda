@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en" data-p31-appearance="hub" style="color-scheme: dark;">
+<head>
+  <script>(function(){var r=document.documentElement;if(/[?&]alive=1(?:&|$)/.test(location.search))return;r.classList.add("p31-gray-rock");function wake(){r.classList.remove("p31-gray-rock")}document.addEventListener("pointerdown",wake,{once:true,capture:true});document.addEventListener("keydown",wake,{once:true,capture:true})})();</script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b0d10" />
+  <meta name="description" content="PHOS — Voice-first navigation. Tell us what you need, we'll show you the door." />
+  <title>PHOS · P31 Labs</title>
+  <link rel="canonical" href="https://p31ca.org/phos" />
+  
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="PHOS · P31 Labs" />
+  <meta property="og:description" content="Voice-first navigation. Tell us what you need, we'll show you the door." />
+  <meta property="og:url" content="https://p31ca.org/phos" />
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/lib/p31-qmu-tokens.css" />
+<link rel="stylesheet" href="/p31-style.css" />
+  <link rel="stylesheet" href="/p31-shared-surface.css" />
+  <link rel="stylesheet" href="/p31-responsive-surface.css" />
+
+  
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    html, body {
+      min-height: 100vh;
+      background: #0b0d10;
+      color: #e8e6e1;
+      font-family: 'Atkinson Hyperlegible', system-ui, sans-serif;
+      line-height: 1.5;
+    }
+    
+    /* No grid background — clean void */
+    
+    /* ─── Container ─── */
+    .phos-container {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 1.5rem;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    
+    /* ─── Header ─── */
+    .phos-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 3rem;
+      padding-top: 0.5rem;
+    }
+    
+    .phos-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: inherit;
+    }
+    
+    .phos-mark {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #25897d 0%, #1a6b62 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      color: #fff;
+    }
+    
+    .phos-logo-text {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      opacity: 0.7;
+    }
+    
+    .phos-safe {
+      padding: 0.5rem 0.75rem;
+      border: 1px solid rgba(255, 100, 100, 0.3);
+      border-radius: 6px;
+      background: rgba(255, 100, 100, 0.08);
+      color: #ff8080;
+      font-size: 0.7rem;
+      font-family: 'JetBrains Mono', monospace;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .phos-safe:hover {
+      background: rgba(255, 100, 100, 0.15);
+      border-color: rgba(255, 100, 100, 0.5);
+    }
+    
+    /* ─── Main Content ─── */
+    .phos-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    
+    /* ─── State: Greeting (brief, auto-advances) ─── */
+    .phos-greeting {
+      text-align: center;
+      animation: fadeIn 0.8s ease-out;
+    }
+    
+    .phos-greeting h1 {
+      font-size: 2.5rem;
+      font-weight: 400;
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.02em;
+    }
+    
+    .phos-greeting p {
+      color: #888;
+      font-size: 1rem;
+    }
+    
+    /* ─── State: Question ─── */
+    .phos-question {
+      animation: fadeInUp 0.5s ease-out;
+    }
+    
+    .phos-question h2 {
+      font-size: clamp(1.5rem, 5vw, 2rem);
+      font-weight: 400;
+      margin-bottom: 2.5rem;
+      line-height: 1.3;
+      color: #fff;
+    }
+    
+    /* ─── Choice Cards ─── */
+    .phos-choices {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    
+    .phos-choice {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1.25rem 1.5rem;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.03);
+      color: inherit;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: left;
+    }
+    
+    .phos-choice:hover {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: rgba(37, 137, 125, 0.5);
+      transform: translateY(-2px);
+    }
+    
+    .phos-choice-icon {
+      font-size: 1.75rem;
+      flex-shrink: 0;
+    }
+    
+    .phos-choice-text {
+      flex: 1;
+    }
+    
+    .phos-choice-label {
+      display: block;
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+    
+    .phos-choice-hint {
+      display: block;
+      font-size: 0.85rem;
+      color: #888;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    
+    .phos-choice-arrow {
+      font-size: 1.25rem;
+      opacity: 0.4;
+      transition: opacity 0.2s ease;
+    }
+    
+    .phos-choice:hover .phos-choice-arrow {
+      opacity: 0.8;
+    }
+    
+    /* ─── Voice Input ─── */
+    .phos-voice {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 1.5rem;
+      border: 1px dashed rgba(255, 255, 255, 0.15);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.02);
+    }
+    
+    .phos-voice-btn {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      border: 2px solid rgba(37, 137, 125, 0.4);
+      background: rgba(37, 137, 125, 0.1);
+      color: #4db8a8;
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .phos-voice-btn:hover {
+      background: rgba(37, 137, 125, 0.2);
+      border-color: rgba(37, 137, 125, 0.6);
+      transform: scale(1.05);
+    }
+    
+    .phos-voice-btn.listening {
+      background: rgba(204, 98, 71, 0.2);
+      border-color: rgba(204, 98, 71, 0.6);
+      animation: pulse-ring 1.5s ease-out infinite;
+    }
+    
+    @keyframes pulse-ring {
+      0% { box-shadow: 0 0 0 0 rgba(204, 98, 71, 0.4); }
+      100% { box-shadow: 0 0 0 20px rgba(204, 98, 71, 0); }
+    }
+    
+    .phos-voice-label {
+      font-size: 0.8rem;
+      color: #666;
+      font-family: 'JetBrains Mono', monospace;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+    
+    .phos-voice-hint {
+      font-size: 0.85rem;
+      color: #555;
+      font-style: italic;
+    }
+    
+    /* ─── Safe Mode Screen ─── */
+    .phos-safe-mode {
+      display: none;
+      animation: fadeIn 0.3s ease-out;
+    }
+    
+    .phos-safe-mode.active {
+      display: block;
+    }
+    
+    .phos-safe-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+    
+    .phos-safe-icon {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+    }
+    
+    .phos-safe-title {
+      font-size: 1.75rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .phos-safe-desc {
+      color: #888;
+      font-size: 1rem;
+    }
+    
+    .phos-safe-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    
+    .phos-safe-btn {
+      padding: 1.25rem;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.05);
+      color: inherit;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .phos-safe-btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
+    
+    .phos-safe-btn.primary {
+      background: rgba(37, 137, 125, 0.2);
+      border-color: rgba(37, 137, 125, 0.4);
+    }
+    
+    /* ─── Transcript display ─── */
+    .phos-transcript {
+      margin-top: 1rem;
+      padding: 1rem;
+      border-radius: 8px;
+      background: rgba(37, 137, 125, 0.1);
+      border: 1px solid rgba(37, 137, 125, 0.3);
+      font-size: 0.95rem;
+      color: #4db8a8;
+      min-height: 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .phos-transcript:empty {
+      display: none;
+    }
+    
+    .phos-transcript::before {
+      content: '"';
+      opacity: 0.5;
+      margin-right: 0.25rem;
+    }
+    
+    .phos-transcript::after {
+      content: '"';
+      opacity: 0.5;
+      margin-left: 0.25rem;
+    }
+    
+    /* ─── Animations ─── */
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* ─── Hidden utility ─── */
+    .hidden { display: none !important; }
+    
+    /* ─── Footer ─── */
+    .phos-footer {
+      margin-top: auto;
+      padding-top: 2rem;
+      text-align: center;
+      font-size: 0.75rem;
+      color: #555;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    
+    .phos-footer a {
+      color: #25897d;
+      text-decoration: none;
+    }
+  </style>
+  <script src="/lib/p31-subject-prefs.js"></script>
+  <link rel="stylesheet" href="/lib/p31-molecular-field.css">
+</head>
+<body>
+<div class="ambient-radial-fixed" aria-hidden="true"></div>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="/" class="nav-brand" title="P31 Labs hub">
+      <span class="nav-mark" aria-hidden="true">P31</span>
+      <span class="nav-brand-label">P31 Labs</span>
+    </a>
+    <div class="nav-links">
+      <span class="nav-prompt" aria-hidden="true">..</span>
+      <a href="/" class="nav-link">Hub</a>
+      <a href="https://github.com/p31labs/andromeda" target="_blank" rel="noopener" class="nav-link">GitHub</a>
+      <a href="/connect.html" class="nav-link">Connect</a>
+    </div>
+  </div>
+</nav>
+<canvas id="p31-star-plate" width="4" height="4" aria-hidden="true" style="position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;display:block"></canvas>
+<script type="module">
+  const cv = document.getElementById("p31-star-plate");
+  if (cv instanceof HTMLCanvasElement) {
+    try {
+      const mod = await import("/lib/p31-starfield-live.js");
+      mod.initLiveStarfield(cv, { preset: "hub" });
+    } catch (_e) { /* offline-friendly */ }
+  }
+</script>
+
+    <div class="phos-container" id="phosApp">
+    <!-- Header -->
+    <header class="phos-header">
+      <a href="/" class="phos-logo">
+        <div class="phos-mark">P31</div>
+        <span class="phos-logo-text">PHOS</span>
+      </a>
+      <button class="phos-safe" id="safeBtn">Safe Mode</button>
+    </header>
+    
+    <!-- Main -->
+    <main class="phos-main">
+      <!-- Greeting (auto-advances) -->
+      <div id="greeting" class="phos-greeting">
+        <h1>Hello.</h1>
+        <p>Initializing...</p>
+      </div>
+      
+      <!-- Question (the main interface) -->
+      <div id="question" class="phos-question hidden">
+        <h2>Whose mesh are we building today?</h2>
+        
+        <div class="phos-choices">
+          <a href="/passport" class="phos-choice" data-choice="self">
+            <span class="phos-choice-icon">🙋</span>
+            <span class="phos-choice-text">
+              <span class="phos-choice-label">For Myself</span>
+              <span class="phos-choice-hint">Cognitive passport, sovereign tools</span>
+            </span>
+            <span class="phos-choice-arrow">→</span>
+          </a>
+          
+          <a href="/lab" class="phos-choice" data-choice="family">
+            <span class="phos-choice-icon">🏠</span>
+            <span class="phos-choice-text">
+              <span class="phos-choice-label">For My Family</span>
+              <span class="phos-choice-hint">Bonding, coordination, shared tools</span>
+            </span>
+            <span class="phos-choice-arrow">→</span>
+          </a>
+          
+          <a href="/glass-box" class="phos-choice" data-choice="pro">
+            <span class="phos-choice-icon">💼</span>
+            <span class="phos-choice-text">
+              <span class="phos-choice-label">I'm a Professional</span>
+              <span class="phos-choice-hint">Research, documentation, operator tools</span>
+            </span>
+            <span class="phos-choice-arrow">→</span>
+          </a>
+        </div>
+        
+        <!-- Voice input -->
+        <div class="phos-voice">
+          <button class="phos-voice-btn" id="voiceBtn" aria-label="Speak to navigate">🎤</button>
+          <span class="phos-voice-label">Or just speak</span>
+          <span class="phos-voice-hint">"I need help with my kid's IEP"</span>
+        </div>
+        
+        <div id="transcript" class="phos-transcript hidden"></div>
+      </div>
+      
+      <!-- Safe Mode Screen -->
+      <div id="safeMode" class="phos-safe-mode">
+        <div class="phos-safe-header">
+          <div class="phos-safe-icon">🛡️</div>
+          <h2 class="phos-safe-title">Safe Mode</h2>
+          <p class="phos-safe-desc">Minimal interface. No animations.</p>
+        </div>
+        
+        <div class="phos-safe-actions">
+          <a href="/welcome" class="phos-safe-btn primary">
+            <span>Go to welcome page</span>
+            <span>→</span>
+          </a>
+          <a href="/passport" class="phos-safe-btn">
+            <span>Open Cognitive Passport</span>
+            <span>→</span>
+          </a>
+          <a href="/layer0" class="phos-safe-btn">
+            <span>Start grounding exercise</span>
+            <span>→</span>
+          </a>
+        </div>
+        
+        <button id="exitSafe" class="phos-safe-btn" style="margin-top: 2rem; justify-content: center; opacity: 0.6;">
+          Exit Safe Mode (hold 2 seconds)
+        </button>
+      </div>
+    </main>
+    
+    <!-- Footer -->
+    <footer class="phos-footer">
+      P31 Labs, Inc. · <a href="/">Hub</a> · <a href="/welcome">Welcome</a>
+    </footer>
+  </div>
+  
+  <script>
+    // ─── State ───
+    const state = {
+      isListening: false,
+      recognition: null,
+      safeMode: false
+    };
+    
+    // ─── Elements ───
+    const greeting = document.getElementById('greeting');
+    const question = document.getElementById('question');
+    const safeModeScreen = document.getElementById('safeMode');
+    const voiceBtn = document.getElementById('voiceBtn');
+    const safeBtn = document.getElementById('safeBtn');
+    const transcript = document.getElementById('transcript');
+    const exitSafeBtn = document.getElementById('exitSafe');
+    
+    // ─── Intent catalog (for voice matching) ───
+    const intents = [
+      { 
+        id: 'self', 
+        patterns: ['myself', 'me', 'my', 'personal', 'alone', 'individual', 'self', 'i am', 'passport'],
+        url: '/passport',
+        label: 'For Myself'
+      },
+      { 
+        id: 'family', 
+        patterns: ['family', 'household', 'kids', 'children', 'parents', 'home', 'together', 'us', 'we', 'partner', 'kid', 'my child', 'my kid'],
+        url: '/lab',
+        label: 'For My Family'
+      },
+      { 
+        id: 'pro', 
+        patterns: ['professional', 'work', 'job', 'career', 'developer', 'engineer', 'doctor', 'therapist', 'clinician', 'researcher', 'teacher', 'educator'],
+        url: '/glass-box',
+        label: 'For Professionals'
+      },
+      { 
+        id: 'help', 
+        patterns: ['help', 'support', 'emergency', 'crisis', 'panic', 'anxiety', 'overwhelm', 'too much'],
+        url: '/welcome',
+        label: 'Help'
+      }
+    ];
+    
+    // ─── Initialize ───
+    function init() {
+      // Check for urgent/safe mode in URL
+      const params = new URLSearchParams(window.location.search);
+      if (params.has('safe') || params.has('urgent') || params.has('crisis')) {
+        enterSafeMode();
+        return;
+      }
+      
+      // Auto-advance from greeting after 800ms
+      setTimeout(() => {
+        greeting.classList.add('hidden');
+        question.classList.remove('hidden');
+      }, 800);
+      
+      // Initialize speech recognition
+      initVoice();
+    }
+    
+    // ─── Voice Recognition ───
+    function initVoice() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        voiceBtn.style.display = 'none';
+        return;
+      }
+      
+      state.recognition = new SpeechRecognition();
+      state.recognition.continuous = false;
+      state.recognition.interimResults = false;
+      state.recognition.lang = 'en-US';
+      
+      state.recognition.onresult = (event) => {
+        const text = event.results[0][0].transcript;
+        handleVoiceInput(text);
+        stopListening();
+      };
+      
+      state.recognition.onerror = (event) => {
+        console.log('Voice error:', event.error);
+        stopListening();
+        transcript.textContent = "Didn't catch that. Try again?";
+        transcript.classList.remove('hidden');
+      };
+      
+      state.recognition.onend = () => {
+        stopListening();
+      };
+    }
+    
+    function startListening() {
+      if (!state.recognition) return;
+      
+      try {
+        state.recognition.start();
+        state.isListening = true;
+        voiceBtn.classList.add('listening');
+        voiceBtn.textContent = '🔴';
+        transcript.textContent = 'Listening...';
+        transcript.classList.remove('hidden');
+      } catch (err) {
+        console.error('Failed to start listening:', err);
+      }
+    }
+    
+    function stopListening() {
+      state.isListening = false;
+      voiceBtn.classList.remove('listening');
+      voiceBtn.textContent = '🎤';
+    }
+    
+    function handleVoiceInput(text) {
+      transcript.textContent = text;
+      transcript.classList.remove('hidden');
+      
+      // Match intent
+      const normalized = text.toLowerCase().trim();
+      let matchedIntent = null;
+      let bestScore = 0;
+      
+      for (const intent of intents) {
+        let score = 0;
+        for (const pattern of intent.patterns) {
+          if (normalized.includes(pattern)) {
+            score += pattern.length > 4 ? 0.3 : 0.2;
+          }
+        }
+        if (score > bestScore) {
+          bestScore = score;
+          matchedIntent = intent;
+        }
+      }
+      
+      // Crisis words override everything
+      const crisisWords = ['help', 'crisis', 'panic', 'emergency', 'stop', 'overwhelm'];
+      if (crisisWords.some(w => normalized.includes(w))) {
+        enterSafeMode();
+        return;
+      }
+      
+      if (matchedIntent && bestScore > 0.2) {
+        transcript.innerHTML = `${text} <span style="opacity:0.6">→ ${matchedIntent.label}</span>`;
+        setTimeout(() => {
+          window.location.href = matchedIntent.url;
+        }, 800);
+      } else {
+        transcript.textContent = `${text} — try "myself", "family", or "professional"`;
+      }
+    }
+    
+    // ─── Safe Mode ───
+    function enterSafeMode() {
+      state.safeMode = true;
+      question.classList.add('hidden');
+      greeting.classList.add('hidden');
+      safeModeScreen.classList.add('active');
+      document.body.style.background = '#050505';
+    }
+    
+    function exitSafeMode() {
+      state.safeMode = false;
+      safeModeScreen.classList.remove('active');
+      question.classList.remove('hidden');
+      document.body.style.background = '';
+    }
+    
+    // ─── Event Listeners ───
+    voiceBtn.addEventListener('click', () => {
+      if (state.isListening) {
+        state.recognition?.stop();
+        stopListening();
+      } else {
+        startListening();
+      }
+    });
+    
+    safeBtn.addEventListener('click', enterSafeMode);
+    
+    // Exit safe mode with hold
+    let exitTimer = null;
+    exitSafeBtn.addEventListener('mousedown', () => {
+      exitSafeBtn.style.opacity = '1';
+      exitTimer = setTimeout(() => {
+        exitSafeMode();
+      }, 2000);
+    });
+    
+    exitSafeBtn.addEventListener('mouseup', () => {
+      clearTimeout(exitTimer);
+      exitSafeBtn.style.opacity = '';
+    });
+    
+    exitSafeBtn.addEventListener('mouseleave', () => {
+      clearTimeout(exitTimer);
+      exitSafeBtn.style.opacity = '';
+    });
+    
+    // Touch support for mobile
+    exitSafeBtn.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      exitSafeBtn.style.opacity = '1';
+      exitTimer = setTimeout(() => {
+        exitSafeMode();
+      }, 2000);
+    });
+    
+    exitSafeBtn.addEventListener('touchend', () => {
+      clearTimeout(exitTimer);
+      exitSafeBtn.style.opacity = '';
+    });
+    
+    // Choice cards — capture clicks for analytics
+    document.querySelectorAll('.phos-choice').forEach(choice => {
+      choice.addEventListener('click', (e) => {
+        // Let the link work normally, but we could add analytics here
+        console.log('Choice:', choice.dataset.choice);
+      });
+    });
+    
+    // Start
+    init();
+  </script>
+  <script src="/lib/atmosphere/p31-atmosphere-client.js" defer></script>
+<!-- P31:mission-ebc:start -->
+<footer id="ebc" class="p31-mission-trio p31-mission-trio--ebc" role="contentinfo" aria-label="Mission — build, create, connect">
+  <a class="p31-mission-trio__link p31-mission-trio__link--build p31-mesh-tap" id="ebc-build" href="/build" title="Initial Build — intake, subject scope, verify-gated bake">
+    <span class="p31-mission-trio__head">
+      <span class="p31-mission-trio__dot" aria-hidden="true"></span>
+      <span class="p31-mission-trio__verb">Build</span>
+    </span>
+    <span class="p31-mission-trio__desc">Intake and bake on the same verify chain—not a decoupled mock.</span>
+  </a>
+  <a class="p31-mission-trio__link p31-mission-trio__link--create p31-mesh-tap" id="ebc-create" href="/geodesic.html" title="GEODESIC — snap grid, Maxwell rigidity, scene export">
+    <span class="p31-mission-trio__head">
+      <span class="p31-mission-trio__dot" aria-hidden="true"></span>
+      <span class="p31-mission-trio__verb">Create</span>
+    </span>
+    <span class="p31-mission-trio__desc">One lab surface, honest rigidity—generate or prove; don't fork the same truth twice (ephemeralization).</span>
+  </a>
+  <a class="p31-mission-trio__link p31-mission-trio__link--connect p31-mesh-tap" id="ebc-connect" href="/mesh" title="Mesh navigator — K₄ cage and product graph">
+    <span class="p31-mission-trio__head">
+      <span class="p31-mission-trio__dot" aria-hidden="true"></span>
+      <span class="p31-mission-trio__verb">Connect</span>
+    </span>
+    <span class="p31-mission-trio__desc"><span class="p31-mission-trio__now">Now</span> — live cage and edges: mesh, hubs, and money follow the same published contracts (ethical monetization).</span>
+  </a>
+</footer>
+<!-- P31:mission-ebc:end -->
+  <script src="/lib/p31-return-ribbon.js" defer></script>
+  <script type="module" src="/lib/p31-molecular-field.js"></script>
+
+</body>
+</html>

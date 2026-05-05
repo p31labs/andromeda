@@ -3,9 +3,9 @@
  * CWP-P31-UI-2026-01 — Operator shell
  * Phase A: density dial, ambient status strip, focus mode (WBS UI-A.1–A.3)
  */
-import BaseLayout from '../../layouts/BaseLayout.astro'
-import mesh from '../../data/p31-mesh-constants.json'
-import opsGlass from '../../data/ops-glass-probes.json'
+import BaseLayout from '../layouts/BaseLayout.astro'
+import mesh from '../data/p31-mesh-constants.json'
+import opsGlass from '../data/ops-glass-probes.json'
 
 const commandCenterBase = 'https://command-center.trimtab-signal.workers.dev'
 const commandCenterHealth = `${commandCenterBase}/api/health`
@@ -101,11 +101,9 @@ const orchestratorStatusUrl = new URL('/api/orchestrator/status', mesh.orchestra
       >
         <a href="/" class="hover:text-teal-300/90 transition-colors">Cockpit home</a>
         <a href="/demos" class="hover:text-teal-300/90 transition-colors">Demo lobby</a>
-        <a href="/fleet" class="hover:text-teal-300/90 transition-colors">Fleet map</a>
+        <a href="/glass-box" class="hover:text-teal-300/90 transition-colors">Glass Box</a>
         <a href="/integrations" class="hover:text-teal-300/90 transition-colors">Integrations</a>
-        <a href="/privacy" class="hover:text-teal-300/90 transition-colors">Privacy</a>
         <a href="/contact" class="hover:text-teal-300/90 transition-colors">Contact</a>
-        <a href="/accessibility" class="hover:text-teal-300/90 transition-colors">Accessibility</a>
       </nav>
     </header>
 
@@ -192,11 +190,11 @@ const orchestratorStatusUrl = new URL('/api/orchestrator/status', mesh.orchestra
         <span class="block text-sm font-medium mt-1">Orchestrator</span>
       </a>
       <a
-        href="/lattice.html"
+        href="/lab"
         class="block rounded-lg border border-white/10 bg-white/5 px-3 py-4 hover:border-teal-500/40 transition-colors"
       >
         <span class="text-xs text-p31-muted-50 uppercase tracking-wide">Explore</span>
-        <span class="block text-sm font-medium mt-1">Lattice</span>
+        <span class="block text-sm font-medium mt-1">Lab</span>
       </a>
     </nav>
 
@@ -311,11 +309,11 @@ const orchestratorStatusUrl = new URL('/api/orchestrator/status', mesh.orchestra
           <span>Hub</span>
         </a>
         <a
-          href="/fleet-portal"
+          href="/glass-box"
           class="flex min-h-[3.4rem] flex-col items-center justify-center gap-0.5 border-r border-white/[0.06] py-2 text-center text-[0.7rem] font-medium text-paper/90 active:bg-lavender/15"
         >
           <span class="text-[0.9rem] leading-none text-lavender/80" aria-hidden="true">◇</span>
-          <span>Fleet</span>
+          <span>Glass</span>
         </a>
         <a
           href="/orchestrator"

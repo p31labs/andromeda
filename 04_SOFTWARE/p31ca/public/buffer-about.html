@@ -19,7 +19,11 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/lib/p31-qmu-tokens.css" />
 <link rel="stylesheet" href="/p31-style.css">
+  <link rel="stylesheet" href="/p31-shared-surface.css" />
+  <link rel="stylesheet" href="/p31-responsive-surface.css" />
+
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -164,9 +168,10 @@ p{font-size:15px;color:color-mix(in srgb,var(--p31-cloud) 88%,transparent);margi
 .mini-footer a:hover{color:var(--cloud)}
 .footer-links{display:flex;gap:18px;flex-wrap:wrap}
 </style>
+  <script src="/lib/p31-subject-prefs.js"></script>
 </head>
 <body>
-<div class="ambient-radial-fixed" aria-hidden="true"></div>
+  <div class="ambient-radial-fixed" aria-hidden="true"></div>
 
 <nav class="nav">
   <div class="nav-inner">
@@ -182,6 +187,16 @@ p{font-size:15px;color:color-mix(in srgb,var(--p31-cloud) 88%,transparent);margi
     </div>
   </div>
 </nav>
+<canvas id="p31-star-plate" width="4" height="4" aria-hidden="true" style="position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;display:block"></canvas>
+<script type="module">
+  const cv = document.getElementById("p31-star-plate");
+  if (cv instanceof HTMLCanvasElement) {
+    try {
+      const mod = await import("/lib/p31-starfield-live.js");
+      mod.initLiveStarfield(cv, { preset: "hub" });
+    } catch (_e) { /* offline-friendly */ }
+  }
+</script>
 
 <div class="hero">
   <div class="hero-inner">
@@ -349,5 +364,7 @@ p{font-size:15px;color:color-mix(in srgb,var(--p31-cloud) 88%,transparent);margi
   </a>
 </footer>
 <!-- P31:mission-ebc:end -->
+  <script src="/lib/atmosphere/p31-atmosphere-client.js" defer></script>
+  <script src="/lib/p31-return-ribbon.js" defer></script>
 </body>
 </html>

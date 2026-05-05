@@ -22,7 +22,7 @@
       --line: #20302480;
       --green: #62d979;
       --green-dim: #3aa653;
-      --teal: #25897d;
+      --teal: #5DCAA5;
       --cyan: #4db8a8;
       --amber: #f0b25a;
       --butter: #cda852;
@@ -155,9 +155,15 @@
     footer { margin-top:50px; padding-top:24px; border-top:1px solid var(--line); color:var(--grey); font-size:12px; display:flex; gap:14px; flex-wrap:wrap; justify-content:space-between }
     footer a { margin-right:14px }
     .pill { display:inline-block; background:#1a2420; border:1px solid var(--line); padding:1px 7px; border-radius:99px; font-size:11px; color:var(--grey) }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+    }
+    .skip-link { position: absolute; left: -9999px; top: auto; width: 1px; height: 1px; overflow: hidden; }
+    .skip-link:focus { position: static; width: auto; height: auto; }
   </style>
 </head>
 <body>
+  <a class="skip-link p31-doc-skip" href="#main">Skip to main content</a>
 <div class="wrap">
 
 <header>

@@ -156,3 +156,6 @@
     border-color: color-mix(in srgb, var(--p31-muted) 35%, transparent);
   }
 }
+
+/* PHOS orbital loader keyframe — used by PHOS_LOADER_HTML from phos-assets.ts */
+@keyframes phos-orbit { to { transform: rotate(360deg); } }

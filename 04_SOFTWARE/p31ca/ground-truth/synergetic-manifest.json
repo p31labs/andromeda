@@ -6,11 +6,11 @@
   "entries": [
     {
       "id": "dome-astro",
-      "type": "astro",
-      "path": "src/pages/dome.astro",
-      "threeRevision": "0.183.0",
-      "status": "LIVE",
-      "groundTruthThreejsKey": "dome.astro"
+      "type": "pwa",
+      "path": "package.json",
+      "threeDependency": "^0.183.0",
+      "note": "Three.js imported via npm (dome-cockpit.ts). CDN importmap removed Phase 3 — version locked in package.json.",
+      "status": "LIVE"
     },
     {
       "id": "spaceship-earth-pwa",

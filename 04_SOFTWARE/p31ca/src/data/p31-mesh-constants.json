@@ -12,6 +12,8 @@
   "geodesicRoomWorkerUrl": "https://geodesic-room.trimtab-signal.workers.dev",
   "googleBridgeWorkerUrl": "https://p31-google-bridge.trimtab-signal.workers.dev",
   "bondingRelayWorkerUrl": "https://bonding-relay.trimtab-signal.workers.dev",
+  "ecosystemBridgeWorkerUrl": "https://ecosystem-bridge.trimtab-signal.workers.dev",
+  "bufferApiWorkerUrl": "https://p31-buffer-api.trimtab-signal.workers.dev",
   "remembranceWarmWhite": "#f5f0e8",
   "remembranceBereavementKvKey": "mesh_bereavement_until",
   "vertexStateRemembered": "remembered"

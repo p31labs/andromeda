@@ -1,58 +1,108 @@
 /**
- * starfield-singleton.ts — module-level singleton for the AppShell spike.
+ * starfield-singleton.ts — WebGL2 starfield for the AppShell production layout.
  *
- * Owns:
- *   - one HTMLCanvasElement
- *   - one WebGL2RenderingContext (or WebGL1 fallback)
- *   - one rAF loop
- *   - one camera state with smooth lerp on route change
+ * Owns one canvas, one GL context, one rAF loop.
+ * Per-route: camera Z, hue, particle count, speed — all smooth-lerp on route change.
  *
- * Exposes diagnostics on `window.__p31AppShell` for the Playwright spike test:
- *   {
- *     canvasId: string         // UUID set on first paint, must persist
- *     navCount: number         // number of setStarfieldRoute() calls
- *     ctxLost: number          // count of webglcontextlost events
- *     fps: number              // rolling 60-frame average
- *     route: 'home' | 'dome' | null
- *     bytes: number            // approx GPU buffers (vbo size)
- *   }
- *
- * The visual is intentionally minimal — this spike is about WebGL **persistence**,
- * not aesthetics. A few hundred slowly drifting points, a slow camera dolly that
- * lerps over ~600ms when route changes. If the canvas survives navigation, the
- * camera dolly transitions smoothly between routes. If it does not, the point
- * cloud either flashes black or the camera teleports.
+ * Diagnostics on `window.__p31AppShell`:
+ *   { canvasId, navCount, canvasAttachCount, ctxLost, ctxRestored, ctxHealthy,
+ *     fps, route, bytes, countCurrent, speedCurrent }
  */
 
 const CANVAS_ID = (() => {
-  /* generate once per module instance */
   if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) {
     return (crypto as Crypto).randomUUID();
   }
   return `appshell-${Math.random().toString(36).slice(2, 10)}`;
 })();
 
+// ── Route config ──────────────────────────────────────────────────────────────
+
+export type RouteId =
+  | 'home'
+  | 'dome'
+  | 'research'
+  | 'connect'
+  | 'ops'
+  | 'garden'
+  | 'passport';
+
+interface RouteCam {
+  z: number;      // camera dolly Z
+  hue: number;    // HSV hue [0-1] for particle color
+  count: number;  // target particle count (≤ MAX_PARTICLES)
+  speed: number;  // animation speed multiplier fed to uSpeed uniform
+}
+
+const MAX_PARTICLES = 800;
+
+const ROUTE_CAM: Record<RouteId, RouteCam> = {
+  home:     { z:  0.0,  hue: 0.971, count: 800, speed: 0.15 }, // #f43f5e rose
+  dome:     { z: -1.2,  hue: 0.552, count: 400, speed: 0.08 }, // #0ea5e9 sky
+  research: { z: -0.4,  hue: 0.444, count: 600, speed: 0.12 }, // #10b981 emerald
+  connect:  { z: -0.6,  hue: 0.718, count: 700, speed: 0.13 }, // #8b5cf6 violet
+  ops:      { z:  0.4,  hue: 0.600, count: 150, speed: 0.01 }, // #64748b slate
+  garden:   { z:  0.8,  hue: 0.105, count:  25, speed: 0.05 }, // #f59e0b amber
+  passport: { z: -0.2,  hue: 0.710, count: 500, speed: 0.10 }, // #a78bfa violet-400
+};
+
+// ── GLSL shaders ──────────────────────────────────────────────────────────────
+// Defined once at module level so getOrInit and rebuildGpuResources share them.
+
+const VS = `
+  #version 100
+  attribute vec3 aPos;
+  uniform float uTime;
+  uniform float uCamZ;
+  uniform float uAspect;
+  uniform float uSpeed;
+  varying float vDepth;
+  void main() {
+    float t = uTime * uSpeed;
+    float x = aPos.x + sin(aPos.z * 4.0 + t) * 0.08;
+    float y = aPos.y + cos(aPos.z * 3.0 + t * 1.2) * 0.08;
+    float z = aPos.z + uCamZ;
+    vDepth = clamp(0.5 - z * 0.5, 0.05, 1.0);
+    float scale = 1.0 / max(0.2, 1.0 + z);
+    gl_Position = vec4(x * scale / uAspect, y * scale, z * 0.4, 1.0);
+    gl_PointSize = mix(1.2, 3.0, vDepth);
+  }
+`;
+
+const FS = `
+  #version 100
+  precision mediump float;
+  uniform float uHue;
+  varying float vDepth;
+  vec3 hsv2rgb(vec3 c) {
+    vec4 K = vec4(1.0, 2.0/3.0, 1.0/3.0, 3.0);
+    vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
+    return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
+  }
+  void main() {
+    vec2 uv = gl_PointCoord - 0.5;
+    float r = length(uv);
+    if (r > 0.5) discard;
+    float a = (1.0 - r * 2.0) * vDepth;
+    vec3 rgb = hsv2rgb(vec3(uHue, 0.45, 0.95));
+    gl_FragColor = vec4(rgb, a);
+  }
+`;
+
+// ── State types ───────────────────────────────────────────────────────────────
+
 interface ShellStats {
   canvasId: string;
   navCount: number;
-  /** Count of distinct HTMLCanvasElement instances ever seen by the
-   * singleton. If transition:persist works correctly, this is 1 forever.
-   * If Astro creates a new canvas on each nav, this grows. */
   canvasAttachCount: number;
-  /** Count of webglcontextlost events on the underlying GL context. Real
-   * devices also lose contexts (background tab, GPU driver, low memory) —
-   * production code must implement webglcontextrestored, which this
-   * singleton does. The pass condition is `ctxRestored >= ctxLost`, not
-   * `ctxLost === 0`. */
   ctxLost: number;
-  /** Count of webglcontextrestored events handled. */
   ctxRestored: number;
-  /** True if the GL context is currently usable (not lost-and-not-yet-
-   * restored). The render loop pauses when this is false. */
   ctxHealthy: boolean;
   fps: number;
-  route: 'home' | 'dome' | null;
+  route: RouteId | null;
   bytes: number;
+  countCurrent: number;
+  speedCurrent: number;
 }
 
 interface ShellState {
@@ -65,7 +115,7 @@ interface ShellState {
   uCamZ: WebGLUniformLocation | null;
   uAspect: WebGLUniformLocation | null;
   uHue: WebGLUniformLocation | null;
-  numPoints: number;
+  uSpeed: WebGLUniformLocation | null;
   rafId: number;
   startedAt: number;
   lastFrameAt: number;
@@ -75,45 +125,41 @@ interface ShellState {
   ctxLost: number;
   ctxRestored: number;
   ctxHealthy: boolean;
-  route: 'home' | 'dome' | null;
-  /** camera target Z + current Z (smooth lerp) */
+  route: RouteId | null;
   camTarget: number;
   camCurrent: number;
   hueTarget: number;
   hueCurrent: number;
+  countTarget: number;
+  countCurrent: number;
+  speedTarget: number;
+  speedCurrent: number;
   bytes: number;
   stopped: boolean;
 }
 
-const ROUTE_CAM: Record<'home' | 'dome', { z: number; hue: number }> = {
-  home: { z: 0, hue: 0.55 }, // gentle teal
-  dome: { z: -1.2, hue: 0.05 }, // pulled deeper, coral-warm
-};
+// ── Module singleton ──────────────────────────────────────────────────────────
 
 let state: ShellState | null = null;
-/* WeakSet tracks every HTMLCanvasElement we've ever attached to. If
- * transition:persist works, every nav yields the SAME canvas, the WeakSet
- * already has it, and canvasAttachCount stays at 1. If Astro creates a new
- * canvas on each nav, the WeakSet misses, canvasAttachCount grows. */
+
+// Alert overlay — saves route targets so clearStarfieldAlert() can restore them.
+type RouteCamSnapshot = Pick<ShellState, 'camTarget' | 'hueTarget' | 'countTarget' | 'speedTarget'>;
+let alertSaved: RouteCamSnapshot | null = null;
+/* WeakSet: if transition:persist works, every nav yields the SAME canvas instance.
+ * canvasAttachCount stays at 1. If Astro creates a fresh canvas on each nav, it grows. */
 const seenCanvases = new WeakSet<HTMLCanvasElement>();
 let canvasAttachCount = 0;
 
 function getOrInit(canvas: HTMLCanvasElement): ShellState {
-  /* Same canvas, already initialised → return existing singleton. */
   if (state && state.canvas === canvas) return state;
 
-  /* New canvas observed. Decide whether this is the *first* canvas ever
-   * (canvasAttachCount goes 0 → 1, normal first paint) or a subsequent
-   * fresh canvas (canvasAttachCount > 1, the architectural failure mode). */
   if (!seenCanvases.has(canvas)) {
     seenCanvases.add(canvas);
     canvasAttachCount += 1;
   }
+
   if (state && state.canvas !== canvas) {
-    /* Canvas got re-created across navigation. Tear down old GL context
-     * cleanly before rebuilding. Do NOT bump ctxLost — that counter is
-     * reserved for actual webglcontextlost events. canvasAttachCount above
-     * tells the test this happened. */
+    /* Canvas re-created across navigation — tear down old GL context. */
     cancelAnimationFrame(state.rafId);
     const old = state;
     if (old.gl) {
@@ -123,15 +169,10 @@ function getOrInit(canvas: HTMLCanvasElement): ShellState {
         if (old.vao && 'deleteVertexArray' in old.gl) {
           (old.gl as WebGL2RenderingContext).deleteVertexArray(old.vao);
         }
-      } catch {
-        /* GL context may already be lost — ignore. */
-      }
+      } catch { /* GL context may already be lost */ }
     }
   }
 
-  /* Hint for context stability: high-performance discourages the browser
-   * from migrating off the GPU; failIfMajorPerformanceCaveat=false lets
-   * SwiftShader still serve a context in headless. */
   const ctxAttribs: WebGLContextAttributes = {
     powerPreference: 'high-performance',
     failIfMajorPerformanceCaveat: false,
@@ -144,50 +185,11 @@ function getOrInit(canvas: HTMLCanvasElement): ShellState {
 
   resizeCanvasToDisplay(canvas);
 
-  const VS = `
-    #version 100
-    attribute vec3 aPos;
-    uniform float uTime;
-    uniform float uCamZ;
-    uniform float uAspect;
-    varying float vDepth;
-    void main() {
-      float t = uTime * 0.05;
-      float x = aPos.x + sin(aPos.z * 4.0 + t) * 0.08;
-      float y = aPos.y + cos(aPos.z * 3.0 + t * 1.2) * 0.08;
-      float z = aPos.z + uCamZ;
-      vDepth = clamp(0.5 - z * 0.5, 0.05, 1.0);
-      float scale = 1.0 / max(0.2, 1.0 + z);
-      gl_Position = vec4(x * scale / uAspect, y * scale, z * 0.4, 1.0);
-      gl_PointSize = mix(1.2, 3.0, vDepth);
-    }
-  `;
-  const FS = `
-    #version 100
-    precision mediump float;
-    uniform float uHue;
-    varying float vDepth;
-    vec3 hsv2rgb(vec3 c) {
-      vec4 K = vec4(1.0, 2.0/3.0, 1.0/3.0, 3.0);
-      vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
-      return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
-    }
-    void main() {
-      vec2 uv = gl_PointCoord - 0.5;
-      float r = length(uv);
-      if (r > 0.5) discard;
-      float a = (1.0 - r * 2.0) * vDepth;
-      vec3 rgb = hsv2rgb(vec3(uHue, 0.45, 0.95));
-      gl_FragColor = vec4(rgb, a);
-    }
-  `;
-
   const program = compileProgram(gl, VS, FS);
   if (!program) throw new Error('starfield-singleton: program failed to link');
 
-  const N = 600;
-  const positions = new Float32Array(N * 3);
-  for (let i = 0; i < N; i++) {
+  const positions = new Float32Array(MAX_PARTICLES * 3);
+  for (let i = 0; i < MAX_PARTICLES; i++) {
     positions[i * 3 + 0] = (Math.random() - 0.5) * 2;
     positions[i * 3 + 1] = (Math.random() - 0.5) * 2;
     positions[i * 3 + 2] = (Math.random() - 0.5) * 1.5;
@@ -206,14 +208,16 @@ function getOrInit(canvas: HTMLCanvasElement): ShellState {
     gl.vertexAttribPointer(aPos, 3, gl.FLOAT, false, 0, 0);
   }
 
-  const uTime = gl.getUniformLocation(program, 'uTime');
-  const uCamZ = gl.getUniformLocation(program, 'uCamZ');
+  const uTime   = gl.getUniformLocation(program, 'uTime');
+  const uCamZ   = gl.getUniformLocation(program, 'uCamZ');
   const uAspect = gl.getUniformLocation(program, 'uAspect');
-  const uHue = gl.getUniformLocation(program, 'uHue');
+  const uHue    = gl.getUniformLocation(program, 'uHue');
+  const uSpeed  = gl.getUniformLocation(program, 'uSpeed');
 
   gl.enable(gl.BLEND);
   gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
+  const homeConfig = ROUTE_CAM.home;
   const next: ShellState = {
     canvas,
     gl,
@@ -224,7 +228,7 @@ function getOrInit(canvas: HTMLCanvasElement): ShellState {
     uCamZ,
     uAspect,
     uHue,
-    numPoints: N,
+    uSpeed,
     rafId: 0,
     startedAt: performance.now(),
     lastFrameAt: performance.now(),
@@ -235,10 +239,14 @@ function getOrInit(canvas: HTMLCanvasElement): ShellState {
     ctxRestored: state?.ctxRestored ?? 0,
     ctxHealthy: true,
     route: null,
-    camTarget: ROUTE_CAM.home.z,
-    camCurrent: ROUTE_CAM.home.z,
-    hueTarget: ROUTE_CAM.home.hue,
-    hueCurrent: ROUTE_CAM.home.hue,
+    camTarget: homeConfig.z,
+    camCurrent: homeConfig.z,
+    hueTarget: homeConfig.hue,
+    hueCurrent: homeConfig.hue,
+    countTarget: homeConfig.count,
+    countCurrent: homeConfig.count,
+    speedTarget: homeConfig.speed,
+    speedCurrent: homeConfig.speed,
     bytes: positions.byteLength,
     stopped: false,
   };
@@ -246,8 +254,6 @@ function getOrInit(canvas: HTMLCanvasElement): ShellState {
   canvas.addEventListener(
     'webglcontextlost',
     (e) => {
-      /* Standard WebGL pattern: preventDefault on lost so the browser will
-       * fire `webglcontextrestored` once the GPU is available again. */
       e.preventDefault();
       next.ctxLost += 1;
       next.ctxHealthy = false;
@@ -259,9 +265,6 @@ function getOrInit(canvas: HTMLCanvasElement): ShellState {
   canvas.addEventListener(
     'webglcontextrestored',
     () => {
-      /* On restore, all GPU resources (programs, buffers, textures) are
-       * gone and must be rebuilt. Easiest path: re-run getOrInit which
-       * detects the same canvas, sees state.gl is gone, and rebuilds. */
       next.ctxRestored += 1;
       rebuildGpuResources(next);
       next.ctxHealthy = true;
@@ -319,66 +322,24 @@ function resizeCanvasToDisplay(canvas: HTMLCanvasElement): void {
 }
 
 function rebuildGpuResources(s: ShellState): void {
-  /* Called after webglcontextrestored. The browser keeps the same GL
-   * object reference but every resource (program/buffer/vao/textures) is
-   * lost. We re-create them against the existing context. */
   if (!s.canvas) return;
   const ctxAttribs: WebGLContextAttributes = {
     powerPreference: 'high-performance',
     failIfMajorPerformanceCaveat: false,
     preserveDrawingBuffer: false,
   };
-  /* getContext on a restored canvas returns the *same* gl reference. */
   const gl =
     (s.canvas.getContext('webgl2', ctxAttribs) as WebGL2RenderingContext | null) ||
     (s.canvas.getContext('webgl', ctxAttribs) as WebGLRenderingContext | null);
   if (!gl) return;
   s.gl = gl;
 
-  const VS = `
-    #version 100
-    attribute vec3 aPos;
-    uniform float uTime;
-    uniform float uCamZ;
-    uniform float uAspect;
-    varying float vDepth;
-    void main() {
-      float t = uTime * 0.05;
-      float x = aPos.x + sin(aPos.z * 4.0 + t) * 0.08;
-      float y = aPos.y + cos(aPos.z * 3.0 + t * 1.2) * 0.08;
-      float z = aPos.z + uCamZ;
-      vDepth = clamp(0.5 - z * 0.5, 0.05, 1.0);
-      float scale = 1.0 / max(0.2, 1.0 + z);
-      gl_Position = vec4(x * scale / uAspect, y * scale, z * 0.4, 1.0);
-      gl_PointSize = mix(1.2, 3.0, vDepth);
-    }
-  `;
-  const FS = `
-    #version 100
-    precision mediump float;
-    uniform float uHue;
-    varying float vDepth;
-    vec3 hsv2rgb(vec3 c) {
-      vec4 K = vec4(1.0, 2.0/3.0, 1.0/3.0, 3.0);
-      vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
-      return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
-    }
-    void main() {
-      vec2 uv = gl_PointCoord - 0.5;
-      float r = length(uv);
-      if (r > 0.5) discard;
-      float a = (1.0 - r * 2.0) * vDepth;
-      vec3 rgb = hsv2rgb(vec3(uHue, 0.45, 0.95));
-      gl_FragColor = vec4(rgb, a);
-    }
-  `;
   const program = compileProgram(gl, VS, FS);
   if (!program) return;
   s.program = program;
 
-  const N = s.numPoints;
-  const positions = new Float32Array(N * 3);
-  for (let i = 0; i < N; i++) {
+  const positions = new Float32Array(MAX_PARTICLES * 3);
+  for (let i = 0; i < MAX_PARTICLES; i++) {
     positions[i * 3 + 0] = (Math.random() - 0.5) * 2;
     positions[i * 3 + 1] = (Math.random() - 0.5) * 2;
     positions[i * 3 + 2] = (Math.random() - 0.5) * 1.5;
@@ -397,11 +358,12 @@ function rebuildGpuResources(s: ShellState): void {
     gl.enableVertexAttribArray(aPos);
     gl.vertexAttribPointer(aPos, 3, gl.FLOAT, false, 0, 0);
   }
-  s.vao = vao;
-  s.uTime = gl.getUniformLocation(program, 'uTime');
-  s.uCamZ = gl.getUniformLocation(program, 'uCamZ');
+  s.vao   = vao;
+  s.uTime   = gl.getUniformLocation(program, 'uTime');
+  s.uCamZ   = gl.getUniformLocation(program, 'uCamZ');
   s.uAspect = gl.getUniformLocation(program, 'uAspect');
-  s.uHue = gl.getUniformLocation(program, 'uHue');
+  s.uHue    = gl.getUniformLocation(program, 'uHue');
+  s.uSpeed  = gl.getUniformLocation(program, 'uSpeed');
 
   gl.enable(gl.BLEND);
   gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
@@ -409,11 +371,8 @@ function rebuildGpuResources(s: ShellState): void {
 
 function loop(): void {
   if (!state || state.stopped) return;
-  if (!state.ctxHealthy) {
-    /* Context lost; pause until restore handler kicks the loop back. */
-    return;
-  }
-  const { canvas, gl, program, vao, uTime, uCamZ, uAspect, uHue, numPoints } = state;
+  if (!state.ctxHealthy) return;
+  const { canvas, gl, program, vao, uTime, uCamZ, uAspect, uHue, uSpeed } = state;
   if (!canvas || !gl || !program) return;
   if (gl.isContextLost && gl.isContextLost()) {
     state.ctxHealthy = false;
@@ -429,14 +388,17 @@ function loop(): void {
   state.frameAccum.push(dt);
   if (state.frameAccum.length > 60) state.frameAccum.shift();
 
-  /* Camera lerp — ~600ms half-life. */
+  /* ~600ms half-life lerp for all four dimensions. */
   const k = 1 - Math.pow(0.5, dt / 600);
-  state.camCurrent += (state.camTarget - state.camCurrent) * k;
-  state.hueCurrent += (state.hueTarget - state.hueCurrent) * k;
+  state.camCurrent   += (state.camTarget   - state.camCurrent)   * k;
+  state.hueCurrent   += (state.hueTarget   - state.hueCurrent)   * k;
+  state.countCurrent += (state.countTarget - state.countCurrent) * k;
+  state.speedCurrent += (state.speedTarget - state.speedCurrent) * k;
 
-  gl.clearColor(0.058, 0.066, 0.082, 1.0);
+  gl.clearColor(0.020, 0.020, 0.020, 1.0); // #050505 void
   gl.clear(gl.COLOR_BUFFER_BIT);
   gl.useProgram(program);
+
   if (vao && 'bindVertexArray' in gl) {
     (gl as WebGL2RenderingContext).bindVertexArray(vao);
   } else {
@@ -445,11 +407,15 @@ function loop(): void {
     gl.enableVertexAttribArray(aPos);
     gl.vertexAttribPointer(aPos, 3, gl.FLOAT, false, 0, 0);
   }
-  if (uTime) gl.uniform1f(uTime, (now - state.startedAt) / 1000);
-  if (uCamZ) gl.uniform1f(uCamZ, state.camCurrent);
+
+  if (uTime)   gl.uniform1f(uTime,   (now - state.startedAt) / 1000);
+  if (uCamZ)   gl.uniform1f(uCamZ,   state.camCurrent);
   if (uAspect) gl.uniform1f(uAspect, canvas.width / canvas.height);
-  if (uHue) gl.uniform1f(uHue, state.hueCurrent);
-  gl.drawArrays(gl.POINTS, 0, numPoints);
+  if (uHue)    gl.uniform1f(uHue,    state.hueCurrent);
+  if (uSpeed)  gl.uniform1f(uSpeed,  state.speedCurrent);
+
+  /* Count is lerped, not discrete — drawArrays(0, N) naturally fades count in/out. */
+  gl.drawArrays(gl.POINTS, 0, Math.round(state.countCurrent));
 
   state.rafId = requestAnimationFrame(loop);
 }
@@ -460,34 +426,80 @@ function exposeWindow(): void {
     configurable: true,
     enumerable: false,
     get(): ShellStats {
-      const stats = snapshotStarfieldStats();
-      return stats || ({} as ShellStats);
+      return snapshotStarfieldStats() || ({} as ShellStats);
     },
   });
 }
 
+// ── Public API ────────────────────────────────────────────────────────────────
+
 export function startStarfield(canvas: HTMLCanvasElement): void {
-  /* Set canvasId as a data-attribute so the test can compare across navs. */
   if (!canvas.dataset.p31AppshellId) {
     canvas.dataset.p31AppshellId = CANVAS_ID;
   }
   getOrInit(canvas);
 }
 
-export function setStarfieldRoute(route: 'home' | 'dome'): void {
+export function setStarfieldRoute(route: RouteId): void {
   if (!state) return;
+  // Navigation supersedes any active alert state — clear before applying route.
+  alertSaved = null;
   state.navCount += 1;
   state.route = route;
-  state.camTarget = ROUTE_CAM[route].z;
-  state.hueTarget = ROUTE_CAM[route].hue;
+  const cfg = ROUTE_CAM[route];
+  state.camTarget   = cfg.z;
+  state.hueTarget   = cfg.hue;
+  state.countTarget = cfg.count;
+  state.speedTarget = cfg.speed;
+}
+
+/**
+ * Temporarily overrides starfield targets for telemetry alert feedback.
+ * Saves current targets so clearStarfieldAlert() can restore them.
+ * 'warning' → amber, faster.  'critical' → coral, max particles, violent speed.
+ */
+export function alertStarfield(level: 'warning' | 'critical'): void {
+  if (!state) return;
+  if (!alertSaved) {
+    alertSaved = {
+      camTarget:   state.camTarget,
+      hueTarget:   state.hueTarget,
+      countTarget: state.countTarget,
+      speedTarget: state.speedTarget,
+    };
+  }
+  if (level === 'critical') {
+    state.camTarget   = 0.0;
+    state.hueTarget   = 0.971; // #f43f5e coral/rose — alarm hue
+    state.countTarget = MAX_PARTICLES;
+    state.speedTarget = 0.55;
+  } else {
+    // warning: restore camZ, push amber hue + modest speed boost
+    state.camTarget   = alertSaved.camTarget;
+    state.hueTarget   = 0.105;  // #f59e0b amber
+    state.countTarget = Math.min(alertSaved.countTarget * 1.5, MAX_PARTICLES);
+    state.speedTarget = Math.min(alertSaved.speedTarget * 2.5, 0.40);
+  }
+}
+
+/**
+ * Restores starfield to the targets that were active before the last alertStarfield() call.
+ * No-op if no alert is active.
+ */
+export function clearStarfieldAlert(): void {
+  if (!state || !alertSaved) return;
+  state.camTarget   = alertSaved.camTarget;
+  state.hueTarget   = alertSaved.hueTarget;
+  state.countTarget = alertSaved.countTarget;
+  state.speedTarget = alertSaved.speedTarget;
+  alertSaved = null;
 }
 
 export function snapshotStarfieldStats(): ShellStats | null {
   if (!state) return null;
-  const fpsAvg =
-    state.frameAccum.length > 0
-      ? Math.round(1000 / (state.frameAccum.reduce((a, b) => a + b, 0) / state.frameAccum.length))
-      : 0;
+  const avg = state.frameAccum.length > 0
+    ? state.frameAccum.reduce((a, b) => a + b, 0) / state.frameAccum.length
+    : 0;
   return {
     canvasId: state.canvas?.dataset.p31AppshellId ?? '',
     navCount: state.navCount,
@@ -495,13 +507,26 @@ export function snapshotStarfieldStats(): ShellStats | null {
     ctxLost: state.ctxLost,
     ctxRestored: state.ctxRestored,
     ctxHealthy: state.ctxHealthy,
-    fps: fpsAvg,
+    fps: avg > 0 ? Math.round(1000 / avg) : 0,
     route: state.route,
     bytes: state.bytes,
+    countCurrent: Math.round(state.countCurrent),
+    speedCurrent: state.speedCurrent,
   };
 }
 
-/* For tests / teardown. Not used in normal navigation. */
+export function suspendStarfield(): void {
+  if (!state || state.stopped) return;
+  state.stopped = true;
+  cancelAnimationFrame(state.rafId);
+}
+
+export function resumeStarfield(): void {
+  if (!state || !state.stopped) return;
+  state.stopped = false;
+  loop();
+}
+
 export function disposeStarfield(): void {
   if (!state) return;
   state.stopped = true;

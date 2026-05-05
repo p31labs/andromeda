@@ -43,14 +43,17 @@
   <link rel="manifest" href="/p31-mesh.webmanifest" crossorigin="anonymous" />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   <title>P31 Cognitive Passport — Generator (v1)</title>
+  <!-- ── Canonical style stack ──────────────────────────────────────────── -->
+  <link rel="stylesheet" href="/lib/p31-qmu-tokens.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital@1&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/p31-style.css" />
   <link rel="stylesheet" href="/p31-shared-surface.css" />
   <link rel="stylesheet" href="p31-responsive-surface.css" />
   <link rel="stylesheet" href="/design-assets/starfield/p31-larmor-fields.css" />
   <link rel="stylesheet" href="/lib/p31-starfield.css" />
+  <!-- ── End canonical stack ─────────────────────────────────────────── -->
   <script src="lib/p31-subject-prefs.js"></script>
   <script type="application/ld+json">
   {
@@ -217,7 +220,7 @@
     /* Audience picker — composes p31-q-chip with audience-card so existing JS keeps working */
     .audience-vault { margin-bottom: var(--p31-space-5); }
     .vault-lede {
-      font-family: "Playfair Display", Georgia, "Times New Roman", serif;
+      font-family: Georgia, "Times New Roman", serif;
       font-style: italic;
       font-size: clamp(1.2rem, 2.2vw + 0.75rem, 1.55rem);
       color: color-mix(in srgb, var(--p31-cloud) 94%, var(--p31-muted));
@@ -373,9 +376,19 @@
       box-shadow: 0 0 0 2px color-mix(in srgb, var(--p31-cyan) 22%, transparent);
     }
     textarea {
-      min-height: 12rem;
+      min-height: 8rem;
+      max-height: 16rem;
       font-family: var(--p31-font-mono), ui-monospace, monospace;
       font-size: var(--p31-text-sm);
+      resize: vertical;
+    }
+    /* Export pane - reduce dead space */
+    .cp-export .out-panel textarea {
+      min-height: 6rem;
+      max-height: 12rem;
+    }
+    .cp-export {
+      padding: var(--p31-space-4);
     }
     textarea[readonly] {
       background: var(--p31-elev-1-tone, var(--p31-surface2));
@@ -556,7 +569,34 @@
   </style>
 </head>
 <body class="p31-mesh-m-first p31-responsive-surface p31-has-return-ribbon">
-  <a class="cp-skip" href="#fill">Skip to passport form</a>
+<div class="ambient-radial-fixed" aria-hidden="true"></div>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="/" class="nav-brand" title="P31 Labs hub">
+      <span class="nav-mark" aria-hidden="true">P31</span>
+      <span class="nav-brand-label">P31 Labs</span>
+    </a>
+    <div class="nav-links">
+      <span class="nav-prompt" aria-hidden="true">..</span>
+      <a href="/" class="nav-link">Hub</a>
+      <a href="https://github.com/p31labs/andromeda" target="_blank" rel="noopener" class="nav-link">GitHub</a>
+      <a href="/connect.html" class="nav-link">Connect</a>
+    </div>
+  </div>
+</nav>
+
+    <canvas id="p31-star-plate" width="4" height="4" aria-hidden="true" style="position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;display:block"></canvas>
+  <script type="module">
+    const cv = document.getElementById("p31-star-plate");
+    if (cv instanceof HTMLCanvasElement) {
+      try {
+        const mod = await import("/lib/p31-starfield-live.js");
+        mod.initLiveStarfield(cv, { preset: "hub" });
+      } catch (_e) { /* offline-friendly */ }
+    }
+  </script>
+  <a class="cp-skip skip-link p31-doc-skip" href="#fill">Skip to passport form</a>
 
   <div id="passport-starfield-wrap" aria-hidden="true" style="position:fixed;inset:0;z-index:0;pointer-events:none">
     <canvas id="passport-starfield" class="p31-starfield-canvas" style="display:block;width:100%;height:100%;opacity:0.5"></canvas>
@@ -761,7 +801,7 @@
           <legend><span class="cp-step-num">6.</span> Notes &amp; optional contact</legend>
           <div class="row">
             <label for="customNotes">Notes for assistants (optional)</label>
-            <textarea id="customNotes" class="p31-larmor-field" rows="3" placeholder="e.g. I process visually and need extra time on verbal-only calls; triggers include…"></textarea>
+            <textarea id="customNotes" class="p31-larmor-field" rows="3" aria-label="Notes for assistants" placeholder="e.g. I process visually and need extra time on verbal-only calls; triggers include…"></textarea>
           </div>
           <div class="row">
             <label for="email">Email (optional — omit when sharing exports)</label>
@@ -788,13 +828,13 @@
           <button type="button" class="p31-q-chip p31-q-chip--filter tab" role="tab" aria-selected="false" aria-controls="out-agent" data-panel="agent">Plain text</button>
         </div>
         <div class="out-panel on" id="out-md" role="tabpanel">
-          <textarea id="outMd" readonly placeholder="Your Markdown summary appears here as you type. Use it for emails, intake forms, or sharing with new clinicians."></textarea>
+          <textarea id="outMd" readonly aria-label="Markdown output" placeholder="Your Markdown summary appears here as you type. Use it for emails, intake forms, or sharing with new clinicians."></textarea>
         </div>
         <div class="out-panel" id="out-json" role="tabpanel">
-          <textarea id="outJson" readonly placeholder="JSON appears here — schema p31.cognitivePassport/1.1.0 with SHA-256 genesis."></textarea>
+          <textarea id="outJson" readonly aria-label="JSON output" placeholder="JSON appears here — schema p31.cognitivePassport/1.1.0 with SHA-256 genesis."></textarea>
         </div>
         <div class="out-panel" id="out-agent" role="tabpanel">
-          <textarea id="outAgent" readonly placeholder="Plain-text agent block appears here — paste into ChatGPT custom instructions, Claude project rules, or any assistant."></textarea>
+          <textarea id="outAgent" readonly aria-label="Agent block output" placeholder="Plain-text agent block appears here — paste into ChatGPT custom instructions, Claude project rules, or any assistant."></textarea>
         </div>
         <div class="cp-actions">
           <button type="button" class="p31-q-button p31-q-button--filled" data-p31-tone="phosphorus" id="cpyAgent">Copy for ChatGPT / Claude</button>
@@ -1049,7 +1089,7 @@
         },
         // v1.1.0 additive overlay (additive over /1.0.0 — backward compatible).
         // Coordinates with andromeda/04_SOFTWARE/p31ca/ground-truth/cognitive-passport-v1-1.schema.json
-        // and andromeda/04_SOFTWARE/p31ca/public/lib/p31-cogpass-reader.mjs (the activator).
+        // and andromeda/04_SOFTWARE/p31ca/lib/p31-cogpass-reader.mjs (the activator).
         // The reader normalizes legacy /1.0.0 documents (which only have uiComfort)
         // into the same shape, so emitting both keys is honest, not redundant.
         accessibility: {
@@ -1352,14 +1392,32 @@
     void render();
     applySubjectPrefsToSite(readSubjectPrefs());
   </script>
-  <script type="module">
-    const hub = ["p31ca.org", "www.p31ca.org"].includes(location.hostname) || /\.pages\.dev$/i.test(location.hostname);
-    const { bootAtmosphereStarfieldCanvas } = await import(
-      (hub ? "/lib/atmosphere/" : "/design-assets/atmosphere/") + "p31-atmosphere-hints-boot.js"
-    );
-    const cv = document.getElementById("passport-starfield");
-    if (cv instanceof HTMLCanvasElement) void bootAtmosphereStarfieldCanvas("cognitive-passport", cv);
-  </script>
-  <script src="lib/p31-return-ribbon.js" data-local-soup="../soup.html" defer></script>
+<footer id="ebc" class="p31-mission-trio p31-mission-trio--ebc" role="contentinfo" aria-label="Mission — build, create, connect">
+  <a class="p31-mission-trio__link p31-mission-trio__link--build p31-mesh-tap" id="ebc-build" href="/build" title="Initial Build — intake, subject scope, verify-gated bake">
+    <span class="p31-mission-trio__head">
+      <span class="p31-mission-trio__dot" aria-hidden="true"></span>
+      <span class="p31-mission-trio__verb">Build</span>
+    </span>
+    <span class="p31-mission-trio__desc">Intake and bake on the same verify chain—not a decoupled mock.</span>
+  </a>
+  <a class="p31-mission-trio__link p31-mission-trio__link--create p31-mesh-tap" id="ebc-create" href="/geodesic.html" title="GEODESIC — snap grid, Maxwell rigidity, scene export">
+    <span class="p31-mission-trio__head">
+      <span class="p31-mission-trio__dot" aria-hidden="true"></span>
+      <span class="p31-mission-trio__verb">Create</span>
+    </span>
+    <span class="p31-mission-trio__desc">One lab surface, honest rigidity—generate or prove; don't fork the same truth twice (ephemeralization).</span>
+  </a>
+  <a class="p31-mission-trio__link p31-mission-trio__link--connect p31-mesh-tap" id="ebc-connect" href="/mesh" title="Mesh navigator — K₄ cage and product graph">
+    <span class="p31-mission-trio__head">
+      <span class="p31-mission-trio__dot" aria-hidden="true"></span>
+      <span class="p31-mission-trio__verb">Connect</span>
+    </span>
+    <span class="p31-mission-trio__desc"><span class="p31-mission-trio__now">Now</span> — live cage and edges: mesh, hubs, and money follow the same published contracts (ethical monetization).</span>
+  </a>
+</footer>
+<!-- P31:mission-ebc:end -->
+  <script src="/lib/p31-return-ribbon.js" defer></script>
+  <script type="module" src="/lib/p31-molecular-field.js"></script>
+
 </body>
 </html>
