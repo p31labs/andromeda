@@ -11,7 +11,8 @@
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
-    "test": "vitest run"
+    "test": "vitest run",
+    "sync:p31ca": "node scripts/sync-p31ca-public.mjs"
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.1.0",
