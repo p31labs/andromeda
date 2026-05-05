@@ -150,6 +150,12 @@ import { POSNER_PRISM_SVG } from '../lib/phos-assets';
             <button id="theme-toggle-btn" class="ml-2 px-2 py-1 bg-white/5 hover:bg-white/10 rounded text-xs" data-i18n="theme.toggle" type="button">Theme: A</button>
           </div>
 
+          <!-- View switcher: Cockpit ↔ Posner -->
+          <nav id="dome-view-nav" class="flex items-center gap-1" aria-label="Dome view switcher">
+            <a href="#dome" data-hash-nav="dome" class="px-1.5 py-0.5 rounded text-[9px] font-mono border border-white/15 text-p31-muted hover:text-p31-cloud hover:border-teal/30 transition-colors" aria-label="K4 cockpit view">K4</a>
+            <a href="#spatial" data-hash-nav="spatial" class="px-1.5 py-0.5 rounded text-[9px] font-mono border border-white/15 text-p31-muted hover:text-p31-cloud hover:border-emerald/30 transition-colors" aria-label="Posner molecule view">Ca₉</a>
+          </nav>
+
           <!-- UI Toggle -->
           <button id="ui-toggle-btn" class="text-p31-muted hover:text-p31-cloud transition-colors p-1" aria-label="Toggle heads-up display" data-i18n-aria-label="hud.toggleUI" type="button">[UI]</button>
        </div>
@@ -314,6 +320,34 @@ import { POSNER_PRISM_SVG } from '../lib/phos-assets';
     <div class="text-[10px] font-mono text-p31-muted mb-2 uppercase tracking-widest hidden" id="nd-edges-label">Entangled Edges</div>
     <div id="nd-conns" class="flex flex-wrap gap-2 pointer-events-auto hidden"></div>
   </aside>
+
+  <!-- SPATIAL: Posner Molecule Ca₉(PO₄)₆ spring-physics navigator
+       z-[150] covers all HUD (z-40/50/100) but stays below keyboard-shortcuts (z-900).
+       Shown/hidden by hash-router; rAF loop starts only when this section is active. -->
+  <section
+    id="spatial"
+    class="hash-section hidden fixed inset-0 z-[150] bg-p31-void flex flex-col items-center justify-center gap-3 touch-none"
+    aria-label="Posner Molecule — Ca₉(PO₄)₆ spring physics"
+  >
+    <p class="font-mono text-[9px] tracking-widest uppercase select-none" style="color:rgba(167,139,250,0.6)">
+      Ca₉(PO₄)₆ · Posner Molecule · Spring Physics
+    </p>
+    <div style="width:min(88vw,540px);height:min(88vw,540px)">
+      <svg
+        id="spatial-svg"
+        viewBox="0 0 600 600"
+        class="w-full h-full"
+        style="touch-action:none;display:block"
+        role="img"
+        aria-label="Interactive Posner molecule — drag cyan Ca²⁺ and violet PO₄³⁻ nodes to perturb the spring lattice"
+      ></svg>
+    </div>
+    <p class="font-mono text-[9px] text-p31-muted tracking-widest select-none">
+      drag · <span style="color:rgba(14,165,233,0.7)">●</span> Ca²⁺ &nbsp;
+             <span style="color:rgba(167,139,250,0.7)">●</span> PO₄³⁻ &nbsp;·&nbsp;
+      <a href="#dome" class="underline underline-offset-2 hover:text-p31-cloud transition-colors">← cockpit</a>
+    </p>
+  </section>
 
    <!-- LAYER 0: Somatic Breathing Mode (Full Screen Takeover) -->
    <div id="layer0" class="fixed inset-0 z-[100] bg-p31-void-95 backdrop-blur-md flex flex-col items-center justify-center gap-6 transition-all duration-1000 opacity-0 pointer-events-none">
@@ -481,6 +515,10 @@ import { POSNER_PRISM_SVG } from '../lib/phos-assets';
       stroke: #d946ef !important;
     }
 
+    /* View switcher active states */
+    #dome-view-nav a[aria-current="true"][data-hash-nav="dome"]    { color:#0ea5e9; border-color:rgba(14,165,233,0.4); }
+    #dome-view-nav a[aria-current="true"][data-hash-nav="spatial"] { color:#a78bfa; border-color:rgba(167,139,250,0.4); }
+
     /* Gray Rock — doctrine §1 / §7 (`?alive=1` skips 3D + HUD withholding in dome-cockpit.ts) */
     body.dome-gray-rock #connection-status {
       filter: grayscale(1);
@@ -495,20 +533,49 @@ import { POSNER_PRISM_SVG } from '../lib/phos-assets';
     }
   </style>
 
-<!-- Client cockpit: src/scripts/dome-cockpit.ts; geometry: src/lib/dome/ -->
-<!-- dome-cockpit.ts evaluates once per session (ES module caching).
-     astro:page-load wires remount on every return visit; astro:before-swap tears down. -->
+<!-- Client cockpit: src/scripts/dome-cockpit.ts; geometry: src/lib/dome/
+     Hash-router switches between #dome (Three.js cockpit) and #spatial (Posner physics).
+     rAF loops are mutually exclusive — only the active view consumes CPU. -->
 <script>
   import '../scripts/dome-cockpit.ts';
+  import { mountHashRouter, type HashRouterHandle } from '../lib/hash-router';
+  import { createSpatialNavigator, type SpatialHandle } from '../scripts/spatial-navigator';
 
   type DomeHandle = { unmount(): void; remount(): void };
   const W = window as Record<string, unknown>;
 
+  // One spatial navigator per session (survives SPA navigations).
+  if (!W['__p31Spatial']) W['__p31Spatial'] = createSpatialNavigator();
+  const spatial = W['__p31Spatial'] as SpatialHandle;
+  let router: HashRouterHandle | null = null;
+
   document.addEventListener('astro:page-load', () => {
-    (W['__p31Dome'] as DomeHandle | undefined)?.remount();
+    const svgEl = document.getElementById('spatial-svg') as SVGSVGElement | null;
+
+    router = mountHashRouter([
+      {
+        id: 'dome',
+        // No el — cockpit elements are fixed/global; managed via DomeHandle only.
+        onEnter: () => (W['__p31Dome'] as DomeHandle | undefined)?.remount(),
+        onLeave: () => (W['__p31Dome'] as DomeHandle | undefined)?.unmount(),
+      },
+      {
+        id: 'spatial',
+        el: '#spatial',
+        title: 'P31 Labs | Posner Ca₉(PO₄)₆',
+        onEnter: () => {
+          // Stop Three.js rAF before starting physics loop.
+          (W['__p31Dome'] as DomeHandle | undefined)?.unmount();
+          if (svgEl) spatial.mount(svgEl);
+        },
+        onLeave: () => spatial.unmount(),
+      },
+    ], { defaultId: 'dome', navSelector: '#dome-view-nav a' });
   });
 
   document.addEventListener('astro:before-swap', () => {
+    router?.destroy(); router = null;
+    spatial.unmount();
     (W['__p31Dome'] as DomeHandle | undefined)?.unmount();
   }, { once: true });
 </script>
