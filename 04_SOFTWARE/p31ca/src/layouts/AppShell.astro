@@ -144,9 +144,12 @@ const isGarden = routeName === 'garden';
           </a>
           <div class="nav-links">
             <span class="nav-prompt" aria-hidden="true">..</span>
-            <a href="/" class="nav-link">Hub</a>
-            <a href="https://github.com/p31labs/andromeda" target="_blank" rel="noopener" class="nav-link">GitHub</a>
-            <a href="/connect.html" class="nav-link">Connect</a>
+            <a href="/"         class="nav-link" aria-current={routeName === 'home'     ? 'page' : undefined}>Hub</a>
+            <a href="/dome"     class="nav-link" aria-current={routeName === 'dome'     ? 'page' : undefined}>Dome</a>
+            <a href="/research" class="nav-link" aria-current={routeName === 'research' ? 'page' : undefined}>Research</a>
+            <a href="/ops"      class="nav-link" aria-current={routeName === 'ops'      ? 'page' : undefined}>Ops</a>
+            <a href="/connect"  class="nav-link" aria-current={routeName === 'connect'  ? 'page' : undefined}>Mesh</a>
+            <a href="https://github.com/p31labs/andromeda" target="_blank" rel="noopener" class="nav-link" aria-label="GitHub">GH↗</a>
           </div>
         </div>
       </nav>

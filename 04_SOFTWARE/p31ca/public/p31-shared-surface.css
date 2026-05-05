@@ -1012,6 +1012,7 @@ body.p31-has-top-bar { padding-top: 3rem; }
   transition: color 0.15s;
 }
 .nav-link:hover { color: var(--p31-cloud, #d8d6d0); text-decoration: none; }
+.nav-link[aria-current="page"] { color: var(--p31-cloud, #d8d6d0); font-weight: 600; }
 .nav-cta {
   font-family: var(--p31-font-mono, "JetBrains Mono", monospace);
   font-size: 11px;
