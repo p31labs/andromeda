@@ -251,6 +251,9 @@ importers:
       '@astrojs/tailwind':
         specifier: ^6.0.2
         version: 6.0.2(astro@5.18.1(@types/node@25.6.0)(idb-keyval@6.2.2)(ioredis@5.10.1)(jiti@1.21.7)(lightningcss@1.32.0)(rollup@4.60.0)(terser@5.46.1)(typescript@5.9.3)(yaml@2.8.3))(tailwindcss@3.4.19(yaml@2.8.3))
+      '@electric-sql/pglite':
+        specifier: ^0.4.5
+        version: 0.4.5
       '@types/d3-force':
         specifier: ^3.0.10
         version: 3.0.10
@@ -260,12 +263,21 @@ importers:
       d3-force:
         specifier: ^3.0.0
         version: 3.0.0
+      idb-keyval:
+        specifier: ^6.2.2
+        version: 6.2.2
       tailwindcss:
         specifier: ^3.4.19
         version: 3.4.19(yaml@2.8.3)
       three:
         specifier: ^0.183.0
         version: 0.183.2
+      y-indexeddb:
+        specifier: ^9.0.12
+        version: 9.0.12(yjs@13.6.30)
+      yjs:
+        specifier: ^13.6.30
+        version: 13.6.30
     devDependencies:
       '@playwright/test':
         specifier: ^1.59.1
@@ -468,6 +480,9 @@ importers:
 
   packages/shared:
     dependencies:
+      '@noble/post-quantum':
+        specifier: ^0.2.1
+        version: 0.2.1
       idb-keyval:
         specifier: ^6.2.1
         version: 6.2.2
@@ -1444,6 +1459,9 @@ packages:
 
   '@electric-sql/pglite@0.1.5':
     resolution: {integrity: sha512-eymv4ONNvoPZQTvOQIi5dbpR+J5HzEv0qQH9o/y3gvNheJV/P/NFcrbsfJZYTsDKoq7DKrTiFNexsRkJKy8x9Q==}
+
+  '@electric-sql/pglite@0.4.5':
+    resolution: {integrity: sha512-aGG2zGEyZzGWKy8P+9ZoNUV0jxt1+hgbeTf+bVAYyxVZZLXg3/9aFlfLxb08AYZVAfAkQlQIysmWjhc5hwDG8g==}
 
   '@emnapi/core@1.9.1':
     resolution: {integrity: sha512-mukuNALVsoix/w1BJwFzwXBN/dHeejQtuVzcDsfOEsdpCumXb/E9j8w11h5S54tT1xhifGfbbSm/ICrObRb3KA==}
@@ -2533,9 +2551,16 @@ packages:
     resolution: {integrity: sha512-T/BoHgFXirb0ENSPBquzX0rcjXeM6Lo892a2jlYJkqk83LqZx0l1Of7DzlKJ6jkpvMrkHSnAcgb5JegL8SeIkQ==}
     engines: {node: '>= 20.19.0'}
 
+  '@noble/hashes@1.6.0':
+    resolution: {integrity: sha512-YUULf0Uk4/mAA89w+k3+yUYh6NrEvxZa5T6SY3wlMvE2chHkxFUUIDI8/XW1QSC357iA5pSnqt7XEhvFOqmDyQ==}
+    engines: {node: ^14.21.3 || >=16}
+
   '@noble/hashes@2.2.0':
     resolution: {integrity: sha512-IYqDGiTXab6FniAgnSdZwgWbomxpy9FtYvLKs7wCUs2a8RkITG+DFGO1DM9cr+E3/RgADRpFjrKVaJ1z6sjtEg==}
     engines: {node: '>= 20.19.0'}
+
+  '@noble/post-quantum@0.2.1':
+    resolution: {integrity: sha512-ImgfMp9notXSEocz464o1AefYfFWEkkszKMGO+ZiTn73yIBFeNyEHKQUMS+SheJwSNymldSts6YyVcQDjcnVVg==}
 
   '@noble/post-quantum@0.6.1':
     resolution: {integrity: sha512-+pormrDZwjRw05U8ADK4JpHejo87+gBd+muRBB/ozztH5yhDLMDF4jHQWN3NQQAsu1zBNPWTG0ZwVI0CR29H0A==}
@@ -9513,6 +9538,8 @@ snapshots:
 
   '@electric-sql/pglite@0.1.5': {}
 
+  '@electric-sql/pglite@0.4.5': {}
+
   '@emnapi/core@1.9.1':
     dependencies:
       '@emnapi/wasi-threads': 1.2.0
@@ -10349,7 +10376,13 @@ snapshots:
     dependencies:
       '@noble/hashes': 2.2.0
 
+  '@noble/hashes@1.6.0': {}
+
   '@noble/hashes@2.2.0': {}
+
+  '@noble/post-quantum@0.2.1':
+    dependencies:
+      '@noble/hashes': 1.6.0
 
   '@noble/post-quantum@0.6.1':
     dependencies:
