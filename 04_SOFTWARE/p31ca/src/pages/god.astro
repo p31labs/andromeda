@@ -200,6 +200,45 @@ const orchestratorStatusUrl = new URL('/api/orchestrator/status', mesh.orchestra
       </a>
     </nav>
 
+    <!-- ORR DIRECTIVE 2+5: SEV-tiered fleet probes + one-click re-check -->
+    <section
+      class="mb-8 rounded-xl border border-rose-500/25 bg-rose-950/10 p-5"
+      aria-labelledby="orr-diag-title"
+      id="orr-diag"
+    >
+      <div class="flex items-center justify-between mb-3">
+        <h2 id="orr-diag-title" class="text-sm font-mono uppercase tracking-widest text-rose-300/80">
+          Fleet diagnostics · SEV tiers
+        </h2>
+        <button
+          type="button"
+          id="orr-recheck"
+          class="text-xs font-mono px-3 py-1.5 rounded border border-teal-500/30 text-teal-300/80 hover:bg-teal-500/10 transition-colors"
+        >Re-check all</button>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-3">
+        <div class="rounded-lg border border-rose-500/30 bg-rose-500/5 p-3">
+          <div class="text-[10px] font-mono uppercase tracking-widest text-rose-400/70 mb-1">SEV-0 CRITICAL</div>
+          <div class="text-[10px] text-rose-300/60 leading-relaxed">Ca²⁺ &lt; 7.8 · Node Zero offline &gt;5m<br>Haptics + DND override + Discord/SMS</div>
+          <div id="orr-sev0-probes" class="mt-2 space-y-1"></div>
+        </div>
+        <div class="rounded-lg border border-amber-500/20 bg-amber-950/10 p-3">
+          <div class="text-[10px] font-mono uppercase tracking-widest text-amber-400/70 mb-1">SEV-1 WARNING</div>
+          <div class="text-[10px] text-amber-300/60 leading-relaxed">Matrix bridge · Worker 500s<br>Silent push → Ops Desk</div>
+          <div id="orr-sev1-probes" class="mt-2 space-y-1"></div>
+        </div>
+        <div class="rounded-lg border border-white/8 bg-white/[0.02] p-3">
+          <div class="text-[10px] font-mono uppercase tracking-widest text-p31-cloud-40 mb-1">SEV-2 INFO</div>
+          <div class="text-[10px] text-p31-muted-50 leading-relaxed">Background syncs · Routine backups<br>Log only — no alert</div>
+          <div id="orr-sev2-probes" class="mt-2 space-y-1"></div>
+        </div>
+      </div>
+      <div class="text-[10px] text-p31-cloud-30 font-mono">
+        Live data from <code>window.__p31Fleet</code> · Severity source: fleet-telemetry.ts ProbeTier →
+        critical=SEV-0, high=SEV-1, monitor=SEV-2
+      </div>
+    </section>
+
     <section
       class="mb-10 rounded-xl border border-white/10 bg-white/[0.03] p-5 ops-aux"
       aria-labelledby="glass-title"
@@ -644,6 +683,60 @@ const orchestratorStatusUrl = new URL('/api/orchestrator/status', mesh.orchestra
           .catch(function () {
             shiftLine.textContent = 'Edge shift: unavailable (network or CORS). Deploy /api/operator/shift on command-center.'
           })
+      }
+    })()
+
+    // ── ORR Directive 2+5: Fleet diagnostics panel ─────────────────────────
+    ;(function () {
+      var SEV_MAP = { critical: 'sev0', high: 'sev1', monitor: 'sev2' }
+      var STATUS_COLOR = { healthy:'text-teal-300', degraded:'text-amber-300', down:'text-rose-400', unknown:'text-p31-cloud-30' }
+
+      function renderProbe(id, status, latencyMs) {
+        var color = STATUS_COLOR[status] || STATUS_COLOR.unknown
+        var lat   = latencyMs > 0 ? ' · ' + latencyMs + 'ms' : ''
+        return '<div class="text-[10px] font-mono flex items-center gap-1.5"><span class="' + color + '">' +
+          (status === 'healthy' ? '✓' : status === 'down' ? '✗' : status === 'degraded' ? '⚡' : '?') +
+          '</span><span class="text-p31-cloud-60">' + id + '</span><span class="text-p31-cloud-30">' + lat + '</span></div>'
+      }
+
+      function populateDiag() {
+        var fleet = (window).__p31Fleet
+        if (!fleet) {
+          ['orr-sev0-probes','orr-sev1-probes','orr-sev2-probes'].forEach(function (id) {
+            var el = document.getElementById(id)
+            if (el) el.innerHTML = '<div class="text-[10px] font-mono text-p31-cloud-30">Fleet not started</div>'
+          })
+          return
+        }
+        var snap = fleet.snapshot()
+        var buckets = { sev0: '', sev1: '', sev2: '' }
+        snap.forEach(function (v, id) {
+          // Derive tier from id: criticals match k4-cage, k4-personal, command-center; high=bonding-relay,social-worker; rest=monitor
+          var tier = 'monitor'
+          if (id === 'command-center' || id === 'k4-cage' || id === 'k4-personal') tier = 'critical'
+          else if (id === 'bonding-relay' || id === 'social-worker') tier = 'high'
+          var sev = SEV_MAP[tier] || 'sev2'
+          buckets[sev] += renderProbe(id, v.status, v.latencyMs)
+        })
+        Object.keys(buckets).forEach(function (sev) {
+          var el = document.getElementById('orr-' + sev + '-probes')
+          if (el) el.innerHTML = buckets[sev] || '<div class="text-[10px] font-mono text-p31-cloud-20">—</div>'
+        })
+      }
+
+      // Populate on load + on re-check button
+      setTimeout(populateDiag, 1500) // give fleet telemetry time to first-poll
+      var recheckBtn = document.getElementById('orr-recheck')
+      if (recheckBtn) {
+        recheckBtn.addEventListener('click', function () {
+          recheckBtn.textContent = 'Checking…'
+          recheckBtn.disabled = true
+          setTimeout(function () {
+            populateDiag()
+            recheckBtn.textContent = 'Re-check all'
+            recheckBtn.disabled = false
+          }, 2000)
+        })
       }
     })()
   </script>

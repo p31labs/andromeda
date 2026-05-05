@@ -206,12 +206,14 @@ async function runProbe(ps: ProbeState): Promise<void> {
 
   // ── State-transition SMART atoms (suppressed on very first poll) ──────────
   if (!ps.firstPoll && spec.tier !== 'monitor') {
+    // SEV-0 = critical tier down; SEV-1 = high tier down
+    const sevLabel = spec.tier === 'critical' ? 'SEV-0' : 'SEV-1';
     if (prev !== 'down' && next === 'down') {
       notify({
         id:       `fleet-${spec.id}-down`,
         groupId:  'fleet',
         severity: spec.tier === 'critical' ? 'critical' : 'warning',
-        title:    `${spec.id} offline`,
+        title:    `[${sevLabel}] ${spec.id} offline`,
         message:  `Unreachable after ${Math.round(ps.latencyMs)}ms`,
         lifespan: 14_000,
       });
@@ -220,7 +222,7 @@ async function runProbe(ps: ProbeState): Promise<void> {
         id:       `fleet-${spec.id}-restored`,
         groupId:  'fleet',
         severity: 'success',
-        title:    `${spec.id} restored`,
+        title:    `[${sevLabel}] ${spec.id} restored`,
         message:  `${Math.round(ps.latencyMs)}ms`,
         lifespan:  7_000,
       });
@@ -229,7 +231,7 @@ async function runProbe(ps: ProbeState): Promise<void> {
         id:       `fleet-${spec.id}-slow`,
         groupId:  'fleet',
         severity: 'warning',
-        title:    `${spec.id} degraded`,
+        title:    `[${sevLabel}] ${spec.id} degraded`,
         message:  `${Math.round(ps.latencyMs)}ms response`,
         lifespan:  9_000,
       });
