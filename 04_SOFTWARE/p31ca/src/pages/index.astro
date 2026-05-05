@@ -399,82 +399,15 @@ const pageDescription =
         </div>
       </div>
 
-      <!-- Posner Ca₉(PO₄)₆ spatial navigation -->
+      <!-- Posner Ca₉(PO₄)₆ spatial navigation — physics by spatial-navigator.ts -->
       <div class="posner-nav-wrap">
         <svg
           id="posner-svg"
-          viewBox="-190 -190 380 380"
-          width="340"
-          height="340"
+          viewBox="0 0 600 600"
           class="posner-svg"
-          role="navigation"
-          aria-label="P31 spatial navigation — Posner Ca₉(PO₄)₆ cluster"
-        >
-          <!-- PO₄ bond lines -->
-          <g class="posner-bonds" stroke="rgba(77,184,168,0.18)" stroke-width="1.2" fill="none">
-            <!-- Inner Ca triangle -->
-            <line x1="0" y1="-72" x2="62" y2="36"/>
-            <line x1="62" y1="36" x2="-62" y2="36"/>
-            <line x1="-62" y1="36" x2="0" y2="-72"/>
-            <!-- Radial bridges (inner → outer same-angle) -->
-            <line x1="0" y1="-72" x2="0" y2="-152"/>
-            <line x1="62" y1="36" x2="132" y2="76"/>
-            <line x1="-62" y1="36" x2="-132" y2="76"/>
-            <!-- Cross bridges -->
-            <line x1="0" y1="-72" x2="-132" y2="-76"/>
-            <line x1="62" y1="36" x2="132" y2="-76"/>
-            <line x1="-62" y1="36" x2="0" y2="152"/>
-          </g>
-
-          <!-- Outer Ca²⁺ nodes (r=152) -->
-          <!-- Ca4 top → BONDING -->
-          <a href="https://bonding.p31ca.org" target="_blank" rel="noopener" class="posner-node" data-label="BONDING">
-            <circle cx="0" cy="-152" r="13" fill="rgba(16,185,129,0.12)" stroke="rgba(16,185,129,0.5)" stroke-width="1.5" class="posner-ca"/>
-            <text x="0" y="-168" text-anchor="middle" class="posner-lbl">BONDING</text>
-          </a>
-          <!-- Ca5 top-right → Node Zero -->
-          <a href="/node-zero" class="posner-node" data-label="NODE ZERO">
-            <circle cx="132" cy="-76" r="13" fill="rgba(205,168,82,0.12)" stroke="rgba(205,168,82,0.5)" stroke-width="1.5" class="posner-ca"/>
-            <text x="148" y="-76" text-anchor="start" dominant-baseline="middle" class="posner-lbl">NODE ZERO</text>
-          </a>
-          <!-- Ca6 bottom-right → Glass Box -->
-          <a href="/glass-box" class="posner-node" data-label="GLASS BOX">
-            <circle cx="132" cy="76" r="13" fill="rgba(14,165,233,0.12)" stroke="rgba(14,165,233,0.5)" stroke-width="1.5" class="posner-ca"/>
-            <text x="148" y="76" text-anchor="start" dominant-baseline="middle" class="posner-lbl">GLASS BOX</text>
-          </a>
-          <!-- Ca7 bottom → Mesh -->
-          <a href="/connect" class="posner-node" data-label="MESH">
-            <circle cx="0" cy="152" r="13" fill="rgba(139,92,246,0.12)" stroke="rgba(139,92,246,0.5)" stroke-width="1.5" class="posner-ca"/>
-            <text x="0" y="170" text-anchor="middle" class="posner-lbl">MESH</text>
-          </a>
-          <!-- Ca8 bottom-left → Q-Factor -->
-          <a href="/qfactor/" class="posner-node" data-label="Q-FACTOR">
-            <circle cx="-132" cy="76" r="13" fill="rgba(16,185,129,0.12)" stroke="rgba(16,185,129,0.5)" stroke-width="1.5" class="posner-ca"/>
-            <text x="-148" y="76" text-anchor="end" dominant-baseline="middle" class="posner-lbl">Q-FACTOR</text>
-          </a>
-          <!-- Ca9 top-left → Research -->
-          <a href="/research" class="posner-node" data-label="RESEARCH">
-            <circle cx="-132" cy="-76" r="13" fill="rgba(244,63,94,0.12)" stroke="rgba(244,63,94,0.5)" stroke-width="1.5" class="posner-ca"/>
-            <text x="-148" y="-76" text-anchor="end" dominant-baseline="middle" class="posner-lbl">RESEARCH</text>
-          </a>
-
-          <!-- Inner Ca²⁺ nodes (r=72) — core navigation -->
-          <!-- Ca1 top → Dome -->
-          <a href="/dome" class="posner-node posner-node--inner" data-label="DOME">
-            <circle cx="0" cy="-72" r="16" fill="rgba(14,165,233,0.15)" stroke="rgba(14,165,233,0.65)" stroke-width="2" class="posner-ca-inner"/>
-            <text x="0" y="-54" text-anchor="middle" class="posner-lbl-inner">DOME</text>
-          </a>
-          <!-- Ca2 bottom-right → Ops -->
-          <a href="/ops/" class="posner-node posner-node--inner" data-label="OPS">
-            <circle cx="62" cy="36" r="16" fill="rgba(139,92,246,0.15)" stroke="rgba(139,92,246,0.65)" stroke-width="2" class="posner-ca-inner"/>
-            <text x="80" y="44" text-anchor="start" class="posner-lbl-inner">OPS</text>
-          </a>
-          <!-- Ca3 bottom-left → Passport -->
-          <a href="/passport" class="posner-node posner-node--inner" data-label="PASSPORT">
-            <circle cx="-62" cy="36" r="16" fill="rgba(167,139,250,0.15)" stroke="rgba(167,139,250,0.65)" stroke-width="2" class="posner-ca-inner"/>
-            <text x="-80" y="44" text-anchor="end" class="posner-lbl-inner">PASSPORT</text>
-          </a>
-        </svg>
+          style="touch-action:none;display:block"
+          aria-label="P31 Labs — Ca₉(PO₄)₆ spring-physics navigator. Tap Ca²⁺ nodes to navigate."
+        ></svg>
 
         <p class="font-mono text-[9px] tracking-widest text-p31-muted text-center mt-2 opacity-60">
           Ca₉(PO₄)₆ · sovereign mesh topology
@@ -1191,64 +1124,131 @@ const pageDescription =
   @keyframes l0-hold   { from { transform: scale(1.3); opacity: 1; } to { transform: scale(1.3); opacity: 1; } }
   @keyframes l0-exhale { to { transform: scale(0.75); opacity: 0.4; } }
 
-  /* ── Posner Ca₉(PO₄)₆ hub ─────────────────────────────────────── */
+  /* ── Posner Ca₉(PO₄)₆ hub — physics rendered by spatial-navigator.ts ── */
   .posner-nav-wrap { position: relative; display: flex; flex-direction: column; align-items: center; }
-
-  .posner-svg { overflow: visible; }
-
-  .posner-bonds { pointer-events: none; }
-
-  .posner-node { cursor: pointer; }
-  .posner-node .posner-ca,
-  .posner-node .posner-ca-inner {
-    transition: fill 0.15s, stroke 0.15s, r 0.15s;
+  .posner-svg {
+    width: min(80vw, 340px);
+    height: min(80vw, 340px);
+    overflow: visible;
+    cursor: grab;
   }
-  .posner-node:hover .posner-ca     { fill: rgba(77,184,168,0.28); stroke: rgba(77,184,168,0.9); }
-  .posner-node:hover .posner-ca-inner { fill: rgba(77,184,168,0.32); stroke: rgba(77,184,168,0.95); }
-  .posner-node:focus-within .posner-ca,
-  .posner-node:focus-within .posner-ca-inner { outline: none; stroke: var(--p31-cyan, #4db8a8); }
-
-  .posner-lbl {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 8px;
-    letter-spacing: 0.14em;
-    fill: var(--p31-muted, #555566);
-    text-transform: uppercase;
-    transition: fill 0.15s;
-    pointer-events: none;
-    user-select: none;
-  }
-  .posner-lbl-inner {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 9px;
-    letter-spacing: 0.12em;
-    fill: var(--p31-cloud-70, #9ba3b0);
-    text-transform: uppercase;
-    transition: fill 0.15s;
-    pointer-events: none;
-    user-select: none;
-  }
-  .posner-node:hover .posner-lbl,
-  .posner-node:hover .posner-lbl-inner { fill: var(--p31-cloud, #ede8e0); }
-
-  @media (prefers-reduced-motion: no-preference) {
-    .posner-ca, .posner-ca-inner {
-      animation: posner-pulse 4s ease-in-out infinite;
-    }
-    .posner-ca-inner {
-      animation-duration: 3.2s;
-      animation-delay: -0.8s;
-    }
-  }
-  @keyframes posner-pulse {
-    0%, 100% { opacity: 0.72; }
-    50%       { opacity: 1; }
-  }
+  .posner-svg:active { cursor: grabbing; }
 </style>
 
 <!-- Landing: src/scripts/landing-cockpit.ts (telemetry + trimtab + 2D particle canvas); full Three.js dome: /dome -->
 <script>
   import '../scripts/landing-cockpit.ts';
+</script>
+
+<!-- Posner Ca₉(PO₄)₆ spring-physics navigator — real physics via spatial-navigator.ts.
+     Ca node tap → route. Same module used by /dome#spatial. -->
+<script>
+  import { createSpatialNavigator, type SpatialHandle } from '../scripts/spatial-navigator';
+
+  // Ca node index → { label, href, ext }
+  // Inner Ca (idx 0–2): primary routes. Outer Ca (idx 9–14): secondary routes.
+  const NAV: Record<number, { label: string; href: string; ext?: true }> = {
+    0:  { label: 'DOME',      href: '/dome' },
+    1:  { label: 'OPS',       href: '/ops/' },
+    2:  { label: 'PASSPORT',  href: '/passport' },
+    9:  { label: 'NODE ZERO', href: '/node-zero' },
+    10: { label: 'Q-FACTOR',  href: '/qfactor/' },
+    11: { label: 'MESH',      href: '/connect' },
+    12: { label: 'RESEARCH',  href: '#research-papers' },
+    13: { label: 'GLASS BOX', href: '/glass-box' },
+    14: { label: 'BONDING',   href: 'https://bonding.p31ca.org', ext: true },
+  };
+
+  const W = window as Record<string, unknown>;
+  if (!W.__p31LandingNav) W.__p31LandingNav = createSpatialNavigator();
+  const spatial = W.__p31LandingNav as SpatialHandle;
+
+  let labelEls: SVGTextElement[] = [];
+  let labelRaf = 0;
+
+  function mountLabels(svg: SVGSVGElement) {
+    const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    g.setAttribute('id', 'posner-nav-labels');
+    labelEls = Object.entries(NAV).map(([idxStr, { label }]) => {
+      const t = document.createElementNS('http://www.w3.org/2000/svg', 'text') as SVGTextElement;
+      t.dataset.nodeIdx = idxStr;
+      t.textContent = label;
+      t.setAttribute('font-family', "'JetBrains Mono', monospace");
+      t.setAttribute('font-size', '18');
+      t.setAttribute('letter-spacing', '1.5');
+      t.setAttribute('fill', 'rgba(237,232,224,0.42)');
+      t.setAttribute('text-anchor', 'middle');
+      t.style.pointerEvents = 'none';
+      t.style.userSelect = 'none';
+      g.appendChild(t);
+      return t;
+    });
+    svg.appendChild(g);
+  }
+
+  function tickLabels(svg: SVGSVGElement) {
+    const circles = svg.querySelectorAll('#spatial-nodes circle');
+    for (const el of labelEls) {
+      const idx = parseInt(el.dataset.nodeIdx ?? '0');
+      const circle = circles[idx] as SVGCircleElement | undefined;
+      if (!circle) continue;
+      const cx = parseFloat(circle.getAttribute('cx') ?? '300');
+      const cy = parseFloat(circle.getAttribute('cy') ?? '300');
+      // Offset above node; inner Ca (larger radius 9) get more clearance
+      const offset = idx <= 2 ? 22 : 18;
+      el.setAttribute('x', String(cx));
+      el.setAttribute('y', String(cy - offset));
+    }
+    labelRaf = requestAnimationFrame(() => tickLabels(svg));
+  }
+
+  document.addEventListener('astro:page-load', () => {
+    const svg = document.getElementById('posner-svg') as SVGSVGElement | null;
+    if (!svg) return;
+
+    spatial.mount(svg);
+    mountLabels(svg);
+    tickLabels(svg);
+
+    // Tap-to-navigate: distinguish tap (pointer stayed near) from drag
+    let downPt: [number, number] | null = null;
+    svg.addEventListener('pointerdown', (e) => { downPt = [e.clientX, e.clientY]; });
+    svg.addEventListener('pointerup', (e) => {
+      if (!downPt) return;
+      const moved = Math.hypot(e.clientX - downPt[0], e.clientY - downPt[1]);
+      downPt = null;
+      if (moved > 8) return; // was a drag, not a tap
+
+      const rect = svg.getBoundingClientRect();
+      const sx = (e.clientX - rect.left) * (600 / rect.width);
+      const sy = (e.clientY - rect.top) * (600 / rect.height);
+
+      const circles = svg.querySelectorAll('#spatial-nodes circle');
+      let best = -1, bestD = 32;
+      for (let i = 0; i < circles.length; i++) {
+        if (!NAV[i]) continue;
+        const cx = parseFloat((circles[i] as SVGCircleElement).getAttribute('cx') ?? '0');
+        const cy = parseFloat((circles[i] as SVGCircleElement).getAttribute('cy') ?? '0');
+        const d = Math.hypot(cx - sx, cy - sy);
+        if (d < bestD) { best = i; bestD = d; }
+      }
+      if (best === -1) return;
+
+      const { href, ext } = NAV[best];
+      if (ext) window.open(href, '_blank', 'noopener');
+      else if (href.startsWith('#')) {
+        document.querySelector(href)?.scrollIntoView({ behavior: 'smooth' });
+      } else {
+        window.location.href = href;
+      }
+    });
+
+    document.addEventListener('astro:before-swap', () => {
+      cancelAnimationFrame(labelRaf); labelRaf = 0;
+      labelEls = [];
+      spatial.unmount();
+    }, { once: true });
+  });
 </script>
 
 <!-- Posner hub: wire Q-ring to cached telemetry (landing-cockpit fills p31_cache_qfactor) -->

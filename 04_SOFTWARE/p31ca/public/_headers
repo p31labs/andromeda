@@ -43,6 +43,30 @@
 # Verified by: bonding-soup verify:pwa
 # ────────────────────────────────────────────────────────────────────
 
+/spaceship-earth/index.html
+  Cache-Control: no-cache, must-revalidate
+
+/spaceship-earth/sw.js
+  Cache-Control: no-cache, must-revalidate
+  Content-Type: application/javascript; charset=utf-8
+
+/pwa/manifest-spaceship-earth.json
+  Cache-Control: public, max-age=600
+  Content-Type: application/manifest+json; charset=utf-8
+
+# ────────────────────────────────────────────────────────────────────
+
+/qfactor/index.html
+  Cache-Control: no-cache, must-revalidate
+
+/qfactor/sw.js
+  Cache-Control: no-cache, must-revalidate
+  Content-Type: application/javascript; charset=utf-8
+
+/pwa/manifest-qfactor.json
+  Cache-Control: public, max-age=600
+  Content-Type: application/manifest+json; charset=utf-8
+
 /cognitive-passport/index.html
   Cache-Control: no-cache, must-revalidate
 
@@ -114,3 +138,19 @@
 /p31-delta-language.json
   Cache-Control: public, max-age=600
   Content-Type: application/json; charset=utf-8
+
+# Matrix federation delegation — required for @will:p31ca.org to resolve to matrix.p31ca.org
+/.well-known/did.json
+  Content-Type: application/json; charset=utf-8
+  Access-Control-Allow-Origin: *
+  Cache-Control: public, max-age=3600
+
+/.well-known/matrix/server
+  Content-Type: application/json; charset=utf-8
+  Access-Control-Allow-Origin: *
+  Cache-Control: public, max-age=3600
+
+/.well-known/matrix/client
+  Content-Type: application/json; charset=utf-8
+  Access-Control-Allow-Origin: *
+  Cache-Control: public, max-age=3600

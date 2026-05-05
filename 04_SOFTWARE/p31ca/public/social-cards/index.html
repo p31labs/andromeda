@@ -6,8 +6,8 @@
   <title>P31 social cards — screenshot-ready, 1080×1080, P31 canon</title>
   <meta name="description" content="Ten share-ready cards: stat flex, fleet status, the quote, perception vs reality, ethics-as-architecture, the closer, the dev flex, K4 geometry, the trim tab, ASCII tetrahedron. Open the page, screenshot a card, share it. The geometry holds." />
   <meta name="color-scheme" content="dark" />
-  <meta name="theme-color" content="#25897d" />
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='75' x='10' font-size='75' font-weight='bold' fill='%2325897d' font-family='monospace'%3E◍%3C/text%3E%3C/svg%3E" />
+  <meta name="theme-color" content="#5DCAA5" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='75' x='10' font-size='75' font-weight='bold' fill='%235DCAA5' font-family='monospace'%3E◍%3C/text%3E%3C/svg%3E" />
   <!-- P31 PWA contract — installable to phone home screen for one-tap screenshot sessions. -->
   <link rel="manifest" href="/pwa/manifest-social-cards.json" />
   <link rel="apple-touch-icon" href="/pwa/p31-tetra-icon.svg" />
@@ -19,7 +19,7 @@
       --p31-surface: #161920;
       --p31-surface2: #1c2028;
       --p31-coral: #cc6247;
-      --p31-teal: #25897d;
+      --p31-teal: #5DCAA5;
       --p31-cyan: #4db8a8;
       --p31-cloud: #d8d6d0;
       --p31-butter: #cda852;
@@ -28,7 +28,7 @@
       --p31-muted: #6b7280;
       --p31-border: rgba(255, 255, 255, 0.06);
       --p31-glass: rgba(255, 255, 255, 0.04);
-      --font-sans: "Atkinson Hyperlegible", "Inter", system-ui, -apple-system, sans-serif;
+      --font-sans: "Inter", system-ui, -apple-system, sans-serif;
       --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
       --font-serif: "Cormorant Garamond", "Iowan Old Style", "Hoefler Text", Georgia, serif;
     }
@@ -640,7 +640,7 @@
       letter-spacing: -0.01em;
     }
     .card--trimtab .quote .pull {
-      color: #25897d;
+      color: #5DCAA5;
       font-weight: 600;
     }
     .card--trimtab .attr {
@@ -663,7 +663,7 @@
       letter-spacing: 0.06em;
       display: flex; justify-content: space-between; align-items: baseline;
     }
-    .card--trimtab .footer .right { color: #25897d; font-weight: 600; }
+    .card--trimtab .footer .right { color: #5DCAA5; font-weight: 600; }
 
     /* Card 10: ASCII tetrahedron (copy-pasteable) */
     .card--ascii .canvas-inner {
@@ -736,7 +736,7 @@
     .card-canvas .corner-mark .tetra { color: var(--p31-teal); }
     /* light cards (trimtab) get a dark corner mark */
     .card--trimtab .corner-mark { color: #6b7280; }
-    .card--trimtab .corner-mark .tetra { color: #25897d; }
+    .card--trimtab .corner-mark .tetra { color: #5DCAA5; }
 
     /* Print + screenshot helpers */
     @media print {
@@ -766,6 +766,11 @@
       color: var(--p31-cyan);
     }
   </style>
+  <link rel="preconnect" href="https://rsms.me/">
+  <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
 <div class="page">
@@ -987,7 +992,7 @@
   </div>
   <div class="card-canvas card--closer">
     <div class="canvas-inner">
-      <div class="tag">P31 Labs · 501(c)(3) pending</div>
+      <div class="tag">P31 Labs · 501(c)(3) determined May 2026</div>
       <h2>For every family out there figuring it out as they go —</h2>
       <p class="sub">Open source. No ads. No tracking. No streaks. The flowers don't wilt. The cage holds. The phosphorus is for all of us.</p>
       <div class="url">
@@ -1050,7 +1055,7 @@
       <div class="svg-wrap">
         <svg viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg" aria-label="K₄ tetrahedron — four vertices, six edges">
           <!-- six edges, drawn first so vertices sit on top -->
-          <g stroke="#25897d" stroke-width="3" stroke-linecap="round" opacity="0.85">
+          <g stroke="#5DCAA5" stroke-width="3" stroke-linecap="round" opacity="0.85">
             <!-- edges: top↔bot-left, top↔bot-right, top↔center, bot-left↔bot-right, bot-left↔center, bot-right↔center -->
             <line x1="300" y1="80"  x2="100" y2="500" />
             <line x1="300" y1="80"  x2="500" y2="500" />
@@ -1061,13 +1066,13 @@
           </g>
           <!-- vertex glow halo -->
           <g opacity="0.35">
-            <circle cx="300" cy="80"  r="40" fill="#25897d" />
+            <circle cx="300" cy="80"  r="40" fill="#5DCAA5" />
             <circle cx="100" cy="500" r="40" fill="#cc6247" />
             <circle cx="500" cy="500" r="40" fill="#3ba372" />
             <circle cx="300" cy="350" r="40" fill="#cda852" />
           </g>
           <!-- vertex circles (the four nodes) -->
-          <circle cx="300" cy="80"  r="22" fill="#25897d" stroke="#d8d6d0" stroke-width="2" />
+          <circle cx="300" cy="80"  r="22" fill="#5DCAA5" stroke="#d8d6d0" stroke-width="2" />
           <circle cx="100" cy="500" r="22" fill="#cc6247" stroke="#d8d6d0" stroke-width="2" />
           <circle cx="500" cy="500" r="22" fill="#3ba372" stroke="#d8d6d0" stroke-width="2" />
           <circle cx="300" cy="350" r="22" fill="#cda852" stroke="#d8d6d0" stroke-width="2" />

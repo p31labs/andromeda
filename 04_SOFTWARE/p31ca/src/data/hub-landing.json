@@ -34,6 +34,19 @@
       "url": "/social-molecules-about.html"
     },
     {
+      "id": "spaceship-earth",
+      "title": "Spaceship Earth",
+      "status": "ALPHA",
+      "desc": "Sovereign Command Center",
+      "tags": [
+        "PWA",
+        "PGlite (WASM PostgreSQL)",
+        "Three.js R3F",
+        "IndexedDB"
+      ],
+      "url": "/spaceship-earth-about.html"
+    },
+    {
       "id": "ede",
       "title": "EDE",
       "status": "ALPHA",
@@ -188,6 +201,19 @@
         "Workers Analytics"
       ],
       "url": "/cortex-about.html"
+    },
+    {
+      "id": "node-zero",
+      "title": "Node Zero",
+      "status": "CONCEPT",
+      "desc": "Sovereign Mesh Hardware Node",
+      "tags": [
+        "ESP-IDF 5.5.x",
+        "LVGL 8.4",
+        "AXS15231B QSPI",
+        "SX1262 LoRa 915MHz"
+      ],
+      "url": "/node-zero-about.html"
     },
     {
       "id": "connect",
