@@ -38,7 +38,8 @@ export type RouteId =
   | 'grants'
   | 'integrations'
   | 'mesh-observatory'
-  | 'orchestrator';
+  | 'orchestrator'
+  | 'atmosphere';
 
 interface RouteCam {
   z: number;      // camera dolly Z
@@ -70,6 +71,7 @@ const ROUTE_CAM: Record<RouteId, RouteCam> = {
    'integrations':   { z: -0.4,  hue: 0.718, count: 530, speed: 0.11 }, // Violet (mesh/connect)
    'mesh-observatory':{ z: -0.5, hue: 0.552, count: 620, speed: 0.12 }, // Sky (live data)
    'orchestrator':   { z:  0.3,  hue: 0.000, count: 160, speed: 0.03 }, // Coral (cockpit/alert)
+   'atmosphere':     { z:  0.0,  hue: 0.444, count:   0, speed: 0.00 }, // Suspended — owns its own canvas
 };
 
 // ── GLSL shaders ──────────────────────────────────────────────────────────────
