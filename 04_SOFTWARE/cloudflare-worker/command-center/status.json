@@ -1,10 +1,10 @@
 {
-  "updated": "2026-04-26T00:55:00-04:00",
+  "updated": "2026-05-05T14:00:32-04:00",
   "audit": {
     "probed_at": "2026-04-26T00:24:05-04:00",
     "method": "curl \u2014 GET -L, 5\u20138s timeout; OPTIONS/POST where noted",
     "environment": "linux workspace (real network)",
-    "summary": "25 fleet rows. All 22 probed roots return 2xx. genesis-gate /health. p31-telemetry API-only. api.phosphorus31.org DNS unverified in this env.",
+    "summary": "26 fleet rows. All 22 probed roots return 2xx. genesis-gate /health. p31-telemetry API-only. api.phosphorus31.org DNS unverified in this env.",
     "anomalies": [
       {
         "name": "p31-telemetry",
@@ -150,6 +150,12 @@
       "name": "p31-technical-library",
       "status": "online",
       "url": "https://p31-technical-library.pages.dev"
+    },
+    {
+      "name": "node-zero-firmware",
+      "status": "beta",
+      "url": "local://node-zero",
+      "note": "ESP32-S3 N16R8 hardware node. Telemetry POSTs to api.p31ca.org/qfactor/event every 5min. DID auto-generated from esp_random() on first boot. Flash: 05_FIRMWARE/node-zero/flash.sh. Provision WiFi: provision.sh."
     }
   ],
   "legal": {

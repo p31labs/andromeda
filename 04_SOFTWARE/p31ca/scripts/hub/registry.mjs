@@ -75,7 +75,7 @@ export const registry = [
   },
   {
     id: 'spaceship-earth', title: 'Spaceship Earth', tagline: 'Sovereign Command Center',
-    icon: '🌐', accent: '#3ba372', status: 'concept', statusLabel: 'CONCEPT',
+    icon: '🌐', accent: '#3ba372', status: 'live', statusLabel: 'LIVE',
     appUrl: 'spaceship-earth.html',
     tech: ['PWA', 'PGlite (WASM PostgreSQL)', 'Three.js R3F', 'IndexedDB', 'Service Worker'],
     features: [
@@ -535,24 +535,26 @@ export const registry = [
     related: ['buffer', 'somatic-anchor', 'node-zero']
   },
   {
-    id: 'node-zero', title: 'Node Zero', tagline: 'Cryptographic Mesh Node',
-    icon: '📡', accent: '#cda852', status: 'concept', statusLabel: 'CONCEPT',
+    id: 'node-zero', title: 'Node Zero', tagline: 'Sovereign Mesh Hardware Node',
+    icon: '📡', accent: '#cda852', status: 'beta', statusLabel: 'BETA',
     appUrl: 'node-zero.html',
-    tech: ['WebCrypto API', 'WebSocket', 'IndexedDB Vault', 'Ed25519-equivalent'],
+    tech: ['ESP-IDF 5.5.x', 'LVGL 8.4', 'AXS15231B QSPI', 'SX1262 LoRa 915MHz', 'Meshtastic LONG_FAST', 'Q-Factor API'],
     features: [
-      'Ed25519-equivalent keypair generation entirely in the browser via WebCrypto',
-      'Encrypted IndexedDB vault: private key never touches plaintext storage',
-      'Channel management: create, rotate, and revoke named communication channels',
-      'Transport adapters: WebSocket, BroadcastChannel, and localhost HTTP',
-      'Identity export: portable encrypted bundle for cold storage'
+      'Waveshare ESP32-S3 N16R8: 16MB flash, 8MB Octal PSRAM, 480×320 QSPI touch display',
+      'SX1262 LoRa 915MHz — Meshtastic LONG_FAST (SF11 BW250 CR4/5): ~5.5 km mesh range',
+      'Q-Factor integration: POSTs spoon events to api.p31ca.org every 5 minutes, mirrors Q-score on display',
+      'Device DID auto-generated on first boot, stored in NVS — same hex schema as browser p31-did',
+      'Full-frame PSRAM double buffer: eliminates DMA underrun, smooth 60fps LVGL rendering',
+      'AXP2101 PMIC + ES8311 codec on shared I2C mutex — concurrent-safe at 60Hz touch polling'
     ],
     howTo: [
-      'Generate a keypair on first open — public key displays as a QR code for sharing',
-      'Create a channel: name it, choose a transport, and share the channel ID',
-      'Export your identity bundle: set a passphrase, download the encrypted JSON'
+      'Flash: cd 05_FIRMWARE/node-zero && ./flash.sh — nukes ghost firmware, rebuilds clean',
+      'Provision WiFi: ./provision.sh --port /dev/ttyUSB0 — writes SSID/pass to NVS partition',
+      'Mesh: meshtastic --configure 05_FIRMWARE/meshtastic/p31-mesh-config.yaml (after ./ignite-phase2.sh)',
+      'DID appears on Node Zero display and in serial monitor after first WiFi connect'
     ],
-    techNotes: 'Pure TypeScript compiled to a single-file HTML. WebCrypto SubtleCrypto handles all key operations. IndexedDB stores only encrypted blobs — the plaintext key is only in-memory during active use.',
-    related: ['vault', 'node-one', 'genesis-gate']
+    techNotes: 'Firmware: 05_FIRMWARE/node-zero/. Key fix: AXS15231B QSPI requires dc_gpio_num=GPIO_NUM_NC (not GPIO 0=BOOT button). Hardware MADCTL rotation causes silicon blank-screen bug at non-8-pixel boundaries — use LVGL sw_rotate=1. GPIO 26-37 reserved for Octal PSRAM. LoRa on GPIO 38-45 (repurposed camera pins).',
+    related: ['vault', 'node-one', 'genesis-gate', 'q-factor']
   },
   {
     id: 'sovereign', title: 'SOVEREIGN', tagline: 'Sovereign OS 3D Cockpit',
