@@ -326,30 +326,6 @@
       "registryId": null
     },
     {
-      "slug": "k4-personal",
-      "kind": "worker",
-      "title": "k4-personal",
-      "subtitle": "pnpm --filter k4-personal deploy (04_SOFTWARE)",
-      "tier": "verified",
-      "workersDevUrl": "https://k4-personal.trimtab-signal.workers.dev",
-      "prodUrl": "",
-      "healthPaths": [
-        "/api/health"
-      ],
-      "meshPaths": [
-        "/api/mesh"
-      ],
-      "constantsKey": "mesh.k4PersonalWorkerUrl",
-      "deployHints": [
-        "pnpm --filter k4-personal deploy (04_SOFTWARE)"
-      ],
-      "probeUrls": [
-        "https://k4-personal.trimtab-signal.workers.dev/api/health"
-      ],
-      "hubPagePath": null,
-      "registryId": null
-    },
-    {
       "slug": "kenosis-mesh",
       "kind": "worker",
       "title": "kenosis-mesh",
@@ -507,6 +483,28 @@
       ],
       "probeUrls": [
         "https://ecosystem-bridge.trimtab-signal.workers.dev/health"
+      ],
+      "hubPagePath": null,
+      "registryId": null
+    },
+    {
+      "slug": "p31-fhir",
+      "kind": "worker",
+      "title": "p31-fhir",
+      "subtitle": "FHIR Worker for medical data integration; D1: p31-fhir-db",
+      "tier": "verified",
+      "workersDevUrl": "https://p31-fhir.trimtab-signal.workers.dev",
+      "prodUrl": "",
+      "healthPaths": [
+        "/health"
+      ],
+      "meshPaths": [],
+      "constantsKey": "mesh.fhirWorkerUrl",
+      "deployHints": [
+        "04_SOFTWARE/p31ca/workers/fhir"
+      ],
+      "probeUrls": [
+        "https://p31-fhir.trimtab-signal.workers.dev/health"
       ],
       "hubPagePath": null,
       "registryId": null
@@ -746,24 +744,44 @@
       "registryId": null
     },
     {
+      "slug": "p31-sync",
+      "kind": "worker",
+      "title": "p31-sync",
+      "subtitle": "Yjs/PGLite sync Worker; real-time collaborative editing infrastructure",
+      "tier": "verified",
+      "workersDevUrl": "https://p31-sync.trimtab-signal.workers.dev",
+      "prodUrl": "",
+      "healthPaths": [
+        "/health"
+      ],
+      "meshPaths": [],
+      "constantsKey": "mesh.syncWorkerUrl",
+      "deployHints": [
+        "04_SOFTWARE/p31ca/workers/sync"
+      ],
+      "probeUrls": [
+        "https://p31-sync.trimtab-signal.workers.dev/health"
+      ],
+      "hubPagePath": null,
+      "registryId": null
+    },
+    {
       "slug": "p31-telemetry",
       "kind": "worker",
       "title": "p31-telemetry",
-      "subtitle": "04_SOFTWARE/telemetry-worker",
-      "tier": "allowlisted",
+      "subtitle": "Telemetry ingestion Worker; receives and processes mesh telemetry events",
+      "tier": "verified_allowlisted",
       "workersDevUrl": "https://p31-telemetry.trimtab-signal.workers.dev",
       "prodUrl": "",
       "healthPaths": [
-        "/health",
-        "/api/health"
+        "/health"
       ],
       "meshPaths": [],
-      "constantsKey": null,
+      "constantsKey": "mesh.telemetryWorkerUrl",
       "deployHints": [
         "04_SOFTWARE/telemetry-worker"
       ],
       "probeUrls": [
-        "https://p31-telemetry.trimtab-signal.workers.dev/api/health",
         "https://p31-telemetry.trimtab-signal.workers.dev/health"
       ],
       "hubPagePath": null,
@@ -818,21 +836,19 @@
       "slug": "spaceship-relay",
       "kind": "worker",
       "title": "spaceship-relay",
-      "subtitle": "04_SOFTWARE/spaceship-earth",
-      "tier": "allowlisted",
+      "subtitle": "Spaceship Earth PWA relay Worker; GlobeRoom + Three.js coordination",
+      "tier": "verified_allowlisted",
       "workersDevUrl": "https://spaceship-relay.trimtab-signal.workers.dev",
       "prodUrl": "",
       "healthPaths": [
-        "/health",
-        "/api/health"
+        "/health"
       ],
       "meshPaths": [],
-      "constantsKey": null,
+      "constantsKey": "mesh.spaceshipRelayWorkerUrl",
       "deployHints": [
         "04_SOFTWARE/spaceship-earth"
       ],
       "probeUrls": [
-        "https://spaceship-relay.trimtab-signal.workers.dev/api/health",
         "https://spaceship-relay.trimtab-signal.workers.dev/health"
       ],
       "hubPagePath": null,

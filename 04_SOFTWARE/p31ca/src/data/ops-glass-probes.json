@@ -274,6 +274,34 @@
       "note": "BONDING telemetry Worker (telemetry.ts); body.status === ok",
       "url": "https://bonding-relay.trimtab-signal.workers.dev/health",
       "expectJsonKey": "status"
+    },
+    {
+      "id": "p31-telemetry-health",
+      "group": "mesh",
+      "note": "Telemetry ingestion Worker; JSON { service, version, status }",
+      "url": "https://p31-telemetry.trimtab-signal.workers.dev/health",
+      "expectJsonKey": "service"
+    },
+    {
+      "id": "p31-fhir-health",
+      "group": "mesh",
+      "note": "FHIR Worker for medical data integration; JSON readiness check",
+      "url": "https://p31-fhir.trimtab-signal.workers.dev/health",
+      "expectJsonKey": "ok"
+    },
+    {
+      "id": "p31-sync-health",
+      "group": "mesh",
+      "note": "Yjs/PGLite sync Worker; JSON { service, version, status }",
+      "url": "https://p31-sync.trimtab-signal.workers.dev/health",
+      "expectJsonKey": "service"
+    },
+    {
+      "id": "spaceship-relay-health",
+      "group": "mesh",
+      "note": "Spaceship Earth PWA relay Worker; JSON readiness for GlobeRoom",
+      "url": "https://spaceship-relay.trimtab-signal.workers.dev/health",
+      "expectJsonKey": "ok"
     }
   ]
 }

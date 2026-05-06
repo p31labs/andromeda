@@ -132,6 +132,10 @@
     "bondingRelayWorkerUrl": "https://bonding-relay.trimtab-signal.workers.dev",
     "ecosystemBridgeWorkerUrl": "https://ecosystem-bridge.trimtab-signal.workers.dev",
     "bufferApiWorkerUrl": "https://p31-buffer-api.trimtab-signal.workers.dev",
+    "telemetryWorkerUrl": "https://p31-telemetry.trimtab-signal.workers.dev",
+    "fhirWorkerUrl": "https://p31-fhir.trimtab-signal.workers.dev",
+    "syncWorkerUrl": "https://p31-sync.trimtab-signal.workers.dev",
+    "spaceshipRelayWorkerUrl": "https://spaceship-relay.trimtab-signal.workers.dev",
     "passkeyHubApiRoot": "https://p31ca.org/api/passkey"
   },
   "sovereignWorkerSpas": [
