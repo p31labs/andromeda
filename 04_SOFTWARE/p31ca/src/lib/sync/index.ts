@@ -30,3 +30,6 @@ export {
   type SpoonEntry,
   type AccommodationLog,
 } from './yjs-to-pglite-bridge';
+
+export { SCHEMA, type CaRow, type SpoonRow, type ShiftRow, type EvidenceRow } from './schema';
+export { detectConflict, type SyncConflict, type ConflictResolution } from './conflict';
