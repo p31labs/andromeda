@@ -56,9 +56,9 @@ const tools = TOOLS.map((t) => {
 });
 
 const statusColor: Record<string, string> = {
-  live:    'var(--p31-phosphorus, #3ba372)',
+  live:    'var(--p31-phosphorus, var(--p31-phosphorus))',
   concept: 'var(--p31-slate, #64748b)',
-  dev:     'var(--p31-butter, #cda852)',
+  dev:     'var(--p31-amber, #cda852)',
 };
 ---
 
@@ -70,8 +70,8 @@ const statusColor: Record<string, string> = {
       <a
         href="/god"
         class="font-mono text-[10px] tracking-widest uppercase px-3 py-1 rounded transition-colors hover:bg-white/5"
-        style="color: var(--p31-teal, #25897d); border: 1px solid rgba(37,137,125,0.4);"
-      >G.O.D. Shell →</a>
+        style="color: var(--p31-teal, var(--p31-teal)); border: 1px solid rgba(37,137,125,0.4);"
+      >Command Center →</a>
     </header>
 
     <div class="flex flex-col md:flex-row gap-4 flex-grow">

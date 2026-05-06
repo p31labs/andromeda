@@ -1,5 +1,5 @@
 /**
- * P31CA PHOS Asset Library — Quantum Material U (QMU) Identity Core
+ * P31CA PHOS Asset Library — Shared Surface Design System
  *
  * Exports ready-to-inject SVG strings and a Node/Worker CLI logger.
  * All strings are pre-trimmed with no leading/trailing whitespace.
@@ -52,7 +52,7 @@ export const PHOS_FAMILIAR_SVG = `<svg viewBox="-2 -2 14 11" xmlns="http://www.w
     <rect x="8" y="1" width="1" height="1"/>
   </g>
   <!-- Data body -->
-  <g fill="#10b981" filter="url(#glow-heavy)">
+  <g fill="var(--p31-teal)" filter="url(#glow-heavy)">
     <rect x="3" y="1" width="4" height="1"/>
     <rect x="1" y="2" width="8" height="1"/>
     <rect x="0" y="3" width="10" height="2"/>
@@ -82,20 +82,20 @@ export const POSNER_PRISM_SVG = `<svg viewBox="0 0 100 100" xmlns="http://www.w3
     </filter>
   </defs>
   <!-- Ambient fill -->
-  <circle cx="50" cy="50" r="30" fill="#10b981" opacity="0.1"/>
+  <circle cx="50" cy="50" r="30" fill="var(--p31-teal)" opacity="0.1"/>
   <g filter="url(#prismGlow)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round">
     <!-- Outer hexagon -->
     <polygon
       points="50,10 85,30 85,70 50,90 15,70 15,30"
-      fill="rgba(16,185,129,0.05)" stroke="#10b981" opacity="0.7"/>
+      fill="rgba(16,185,129,0.05)" stroke="var(--p31-teal)" opacity="0.7"/>
     <!-- Front face diagonal -->
-    <polygon points="50,10 85,70 15,70" fill="none" stroke="#10b981"/>
+    <polygon points="50,10 85,70 15,70" fill="none" stroke="var(--p31-teal)"/>
     <!-- Rear face diagonal -->
-    <polygon points="50,90 85,30 15,30" fill="none" stroke="#10b981" opacity="0.4"/>
+    <polygon points="50,90 85,30 15,30" fill="none" stroke="var(--p31-teal)" opacity="0.4"/>
     <!-- K₄ centroid spokes -->
-    <line x1="50" y1="10" x2="50" y2="50" stroke="#10b981" opacity="0.8"/>
-    <line x1="15" y1="70" x2="50" y2="50" stroke="#10b981" opacity="0.8"/>
-    <line x1="85" y1="70" x2="50" y2="50" stroke="#10b981" opacity="0.8"/>
+    <line x1="50" y1="10" x2="50" y2="50" stroke="var(--p31-teal)" opacity="0.8"/>
+    <line x1="15" y1="70" x2="50" y2="50" stroke="var(--p31-teal)" opacity="0.8"/>
+    <line x1="85" y1="70" x2="50" y2="50" stroke="var(--p31-teal)" opacity="0.8"/>
   </g>
   <!-- Centroid: coral outer, white inner -->
   <circle cx="50" cy="50" r="5" fill="#f43f5e" filter="url(#prismGlow)"/>
@@ -127,7 +127,7 @@ export const PHOS_LOADER_HTML = `<div class="relative w-20 h-20" role="status" a
     <!-- Ring 3: emerald, 120° offset via SVG transform -->
     <g transform="rotate(120 50 50)">
       <ellipse cx="50" cy="50" rx="40" ry="12"
-        fill="none" stroke="#10b981" stroke-width="2" opacity="0.6"
+        fill="none" stroke="var(--p31-teal)" stroke-width="2" opacity="0.6"
         style="animation: phos-orbit 5s linear infinite; transform-origin: 50px 50px;"/>
     </g>
     <!-- Core: coral outer, white inner -->
@@ -147,7 +147,7 @@ export const PHOS_LOADER_HTML = `<div class="relative w-20 h-20" role="status" a
  */
 export function printPhosGreeting(version: string): void {
   const c = '\x1b[38;2;244;63;94m';   // coral  (#f43f5e)
-  const e = '\x1b[38;2;16;185;129m';  // emerald (#10b981)
+  const e = '\x1b[38;2;16;185;129m';  // emerald (var(--p31-teal))
   const p = '\x1b[38;2;139;92;246m';  // violet  (#8b5cf6)
   const d = '\x1b[38;2;6;78;59m';     // dim emerald
   const r = '\x1b[0m';                // reset

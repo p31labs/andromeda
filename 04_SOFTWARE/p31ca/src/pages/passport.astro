@@ -63,7 +63,7 @@ import AppShell from '../layouts/AppShell.astro';
     #cp-level-group button[data-value="operator"].active {
       background: rgba(245,158,11,0.15);
       border-color: rgba(245,158,11,0.5);
-      color: var(--p31-amber, #f59e0b);
+      color: var(--p31-amber, var(--p31-amber));
     }
     .cp-fingerprint {
       font-family: var(--p31-font-mono, 'JetBrains Mono', monospace);
@@ -202,9 +202,9 @@ import AppShell from '../layouts/AppShell.astro';
       cursor: not-allowed;
     }
     .cp-init-btn.ready {
-      background: rgba(74,222,128,0.1);
-      border-color: rgba(74,222,128,0.4);
-      color: #4ade80;
+      background: color-mix(in srgb, var(--p31-phosphorus) 10%, transparent);
+      border-color: color-mix(in srgb, var(--p31-phosphorus) 40%, transparent);
+      color: var(--p31-phosphorus);
     }
     .cp-init-btn.ready:hover {
       background: rgba(74,222,128,0.2);
@@ -497,9 +497,9 @@ import AppShell from '../layouts/AppShell.astro';
         const colors: Record<StatusColor, string> = {
           muted:  'rgba(237,232,224,0.25)',
           violet: 'var(--p31-violet,#a78bfa)',
-          amber:  'var(--p31-amber,#f59e0b)',
-          green:  '#4ade80',
-          red:    '#f87171',
+          amber:  'var(--p31-amber,var(--p31-amber))',
+          green:  'var(--p31-phosphorus)',
+          red:    'var(--p31-coral)',
         };
         el.status.textContent = msg;
         el.status.style.color = colors[color];

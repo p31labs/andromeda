@@ -12,8 +12,8 @@ const STORAGE_KEY = "p31-epcp-state";
 const T = {
   void: "#0f1115", surface: "#161920", surface2: "#1c2028",
   teal: "#4db8a8", coral: "#cc6247", amber: "#cda852",
-  lavender: "#8b7cc9", phosphorus: "#3ba372", cyan: "#5DCAA5",
-  cloud: "#d8d6d0", muted: "#6b7280", glass: "rgba(255,255,255,0.06)",
+  lavender: "#8b7cc9", phosphorus: "var(--p31-phosphorus)", cyan: "#5DCAA5",
+  cloud: "var(--p31-cloud)", muted: "#6b7280", glass: "rgba(255,255,255,0.06)",
   glassBorder: "rgba(255,255,255,0.08)",
 };
 

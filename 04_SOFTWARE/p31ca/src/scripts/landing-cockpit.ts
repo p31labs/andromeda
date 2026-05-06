@@ -42,12 +42,12 @@ const updateTelemetry = async () => {
   if (qData && qData.score) {
     const score = qData.score.toFixed(3);
     const isOpt = qData.score >= 0.9, isStab = qData.score >= 0.7;
-    const colorClass = isOpt ? 'text-[#3ba372]' : isStab ? 'text-[#cda852]' : 'text-[#E8636F]';
-    const bgClass = isOpt ? 'bg-[#3ba372]' : isStab ? 'bg-[#cda852]' : 'bg-[#E8636F]';
+    const colorClass = isOpt ? 'text-[var(--p31-phosphorus)]' : isStab ? 'text-[#cda852]' : 'text-[#E8636F]';
+    const bgClass = isOpt ? 'bg-[var(--p31-phosphorus)]' : isStab ? 'bg-[#cda852]' : 'bg-[#E8636F]';
     
     const nq = $('nav-q-factor'), nd = $('nav-status-dot');
     if (nq) { nq.innerText = score; nq.className = `font-bold tracking-wider ${colorClass}`; }
-    if (nd) { nd.className = `w-2 h-2 rounded-full animate-pulse ${bgClass}`; nd.style.boxShadow = `0 0 8px ${isOpt?'#3ba372':isStab?'#cda852':'#E8636F'}`; }
+    if (nd) { nd.className = `w-2 h-2 rounded-full animate-pulse ${bgClass}`; nd.style.boxShadow = `0 0 8px ${isOpt?'var(--p31-phosphorus)':isStab?'#cda852':'#E8636F'}`; }
     
     const activeVerts = Object.values(qData.vertexHealth || {}).filter(v => v > 0).length;
     const fleetEl = $('nav-fleet-val'); if (fleetEl) fleetEl.innerText = `${activeVerts}/4`;

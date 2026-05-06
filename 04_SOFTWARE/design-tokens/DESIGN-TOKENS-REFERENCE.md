@@ -2,7 +2,7 @@
 
 <!-- AUTO-GENERATED — do not hand-edit. Source: p31-universal-canon.json -->
 
-**Schema:** `p31.universalCanon/1.0.0` · **Canon version:** `1.2.0` · **Generated:** `2026-05-06T12:45:14.387Z`
+**Schema:** `p31.universalCanon/1.0.0` · **Canon version:** `1.2.0` · **Generated:** `2026-05-06T15:12:08.876Z`
 
 *P31 universal design canon — shared tokens, ring-local appearance*
 
@@ -28,7 +28,7 @@ Single source for typography, spacing, motion, and brand palette. Ring A (p31ca 
 | coral | `#cc6247` | `--p31-coral` (in :root) |
 | teal | `#5DCAA5` | `--p31-teal` (in :root) |
 | cyan | `#4db8a8` | `--p31-cyan` (in :root) |
-| butter | `#cda852` | `--p31-butter` (in :root) |
+| amber | `#cda852` | `--p31-amber` (in :root) |
 | lavender | `#8b7cc9` | `--p31-lavender` (in :root) |
 | phosphorus | `#3ba372` | `--p31-phosphorus` (in :root) |
 | phosphor | `#00FF88` | `--p31-phosphor` (in :root) |
@@ -177,7 +177,7 @@ Brand accents must match the palette above; neutrals differ. Hub is default; org
 | teal | #5DCAA5 | --p31-teal |
 | cyan | #4db8a8 | --p31-cyan |
 | cloud | #d8d6d0 | --p31-cloud |
-| butter | #cda852 | --p31-butter |
+| amber | #cda852 | --p31-amber |
 | lavender | #8b7cc9 | --p31-lavender |
 | phosphorus | #3ba372 | --p31-phosphorus |
 | paper | #f4f4f5 | --p31-paper |
@@ -218,7 +218,7 @@ Brand accents must match the palette above; neutrals differ. Hub is default; org
 | teal | #5DCAA5 | --p31-teal |
 | cyan | #4db8a8 | --p31-cyan |
 | cloud | #1e293b | --p31-cloud |
-| butter | #cda852 | --p31-butter |
+| amber | #cda852 | --p31-amber |
 | lavender | #8b7cc9 | --p31-lavender |
 | phosphorus | #3ba372 | --p31-phosphorus |
 | paper | #fdfcfa | --p31-paper |

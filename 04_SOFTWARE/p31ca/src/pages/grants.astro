@@ -107,7 +107,7 @@ const description =
       z-index: 1;
     }
     .kpi-card {
-      background: #111827;
+      background: var(--p31-surface);
       border: 1px solid #1e293b;
       border-radius: 12px;
       padding: 20px;
@@ -132,7 +132,7 @@ const description =
       border-bottom: 2px solid #22d3ee;
     }
     .grant-card {
-      background: #111827;
+      background: var(--p31-surface);
       border: 1px solid #1e293b;
       border-radius: 12px;
       padding: 20px;
@@ -154,8 +154,8 @@ const description =
       white-space: nowrap;
     }
     .badge-pending { background: #eab30820; color: #eab308; border: 1px solid #eab308; }
-    .badge-submitted { background: #22c55e20; color: #22c55e; border: 1px solid #22c55e; }
-    .badge-awarded { background: #3b82f620; color: #22c55e; border: 1px solid #22c55e; }
+    .badge-submitted { background: color-mix(in srgb, var(--p31-phosphorus) 12%, transparent); color: var(--p31-phosphorus); border: 1px solid var(--p31-phosphorus); }
+    .badge-awarded { background: #3b82f620; color: var(--p31-phosphorus); border: 1px solid var(--p31-phosphorus); }
     .badge-researching { background: #6366f120; color: #818cf8; border: 1px solid #6366f1; }
     .grant-card .meta {
       display: flex;
@@ -243,7 +243,7 @@ const description =
       <div class="label">Active Grants</div>
     </div>
     <div class="kpi-card">
-      <div class="value" style="color: #22c55e;">${totalRequested.toLocaleString()}</div>
+      <div class="value" style="color: var(--p31-phosphorus);">${totalRequested.toLocaleString()}</div>
       <div class="label">Total Requested (USD-equiv)</div>
     </div>
     <div class="kpi-card">

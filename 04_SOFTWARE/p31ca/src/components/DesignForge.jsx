@@ -997,7 +997,7 @@ William R. Johnson
 /* NEVER hardcode hex values. ALWAYS use var(--p31-*) */
 
 /* BACKGROUNDS */
---p31-void:         #0f1115;  /* Deep canvas. THE background. NOT #0b0d10. */
+--p31-void:         #0f1115;  /* Deep canvas. THE background. NOT var(--p31-void). */
 --p31-surface:      #161920;  /* Panel background */
 --p31-surface2:     #1c2028;  /* Elevated card background */
 --p31-glass-border: rgba(255,255,255,0.06); /* Subtle structural outline */
@@ -1016,8 +1016,8 @@ William R. Johnson
 --p31-phosphorus:   #5dca5d;  /* Success/growth/confirmation. */
 
 /* CORRECTIONS LOG */
-/* ❌ --p31-void: #0b0d10     → ✅ #0f1115 (Kimi used wrong value) */
-/* ❌ --p31-teal: #25897d     → ✅ #5DCAA5 (Gemini used wrong value) */
+/* ❌ --p31-void: var(--p31-void)     → ✅ #0f1115 (Kimi used wrong value) */
+/* ❌ --p31-teal: var(--p31-teal)     → ✅ #5DCAA5 (Gemini used wrong value) */
 /* ❌ Border radius: 3rem/48px → ✅ 12px (Kimi too aggressive) */
 /* ❌ Font: Inter only         → ✅ Inter + Atkinson Hyperlegible (a11y) */`,
     },

@@ -23,13 +23,13 @@ export type MeshLivingBgOptions = {
 
 const AXIS_COLORS = { a: 0xff9944, b: 0x44aaff, c: 0x44ffaa, d: 0xff4466 };
 const STATE_CSS: Record<string, string> = {
-  active: "#3ba372",
-  deployed: "#25897d",
+  active: "var(--p31-phosphorus)",
+  deployed: "var(--p31-teal)",
   countdown: "#cda852",
-  complete: "#25897d",
+  complete: "var(--p31-teal)",
   missing: "#cc6247",
-  ongoing: "#25897d",
-  prototype: "#25897d",
+  ongoing: "var(--p31-teal)",
+  prototype: "var(--p31-teal)",
 };
 const STATE_GLOW: Record<string, number> = {
   countdown: 2.0,

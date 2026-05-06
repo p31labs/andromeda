@@ -40,7 +40,7 @@ import AppShell from '../../layouts/AppShell.astro';
       <div class="qf-ring-wrap">
         <svg viewBox="0 0 160 160" width="144" height="144" style="transform:rotate(-90deg)">
           <circle class="rg" cx="80" cy="80" r="68"/>
-          <circle id="ring" class="rf" cx="80" cy="80" r="68" stroke-dasharray="427.26" stroke-dashoffset="427.26" stroke="#10b981"/>
+          <circle id="ring" class="rf" cx="80" cy="80" r="68" stroke-dasharray="427.26" stroke-dashoffset="427.26" stroke="var(--p31-teal)"/>
         </svg>
         <div class="qf-ring-center">
           <span id="q-num" class="qf-q-num" style="color:var(--q)">—</span>
@@ -95,7 +95,7 @@ import AppShell from '../../layouts/AppShell.astro';
           <span id="ca-badge" class="qf-ca-badge">—</span>
         </div>
       </div>
-      <div class="ca-track"><div id="ca-fill" class="ca-fill" style="width:0%;background:#10b981"></div></div>
+      <div class="ca-track"><div id="ca-fill" class="ca-fill" style="width:0%;background:var(--p31-teal)"></div></div>
     </div>
 
     <!-- Recommendations -->
@@ -132,7 +132,7 @@ import AppShell from '../../layouts/AppShell.astro';
 </AppShell>
 
 <style>
-  :root { --q: #10b981; --safe-top: env(safe-area-inset-top, 0px); --safe-bottom: env(safe-area-inset-bottom, 20px); }
+  :root { --q: var(--p31-teal); --safe-top: env(safe-area-inset-top, 0px); --safe-bottom: env(safe-area-inset-bottom, 20px); }
   * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
 
   /* Dot-grid overlay on this page only */
@@ -233,7 +233,7 @@ import AppShell from '../../layouts/AppShell.astro';
   .age-fill { height: 100%; background: var(--q); transition: width 300s linear; }
 
   /* Toast */
-  .qf-toast { position: fixed; bottom: calc(90px + var(--safe-bottom, 20px)); left: 50%; transform: translateX(-50%) translateY(10px); background: #111827; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 1px; padding: 9px 16px; opacity: 0; transition: opacity .2s, transform .2s; pointer-events: none; white-space: nowrap; z-index: 100; }
+  .qf-toast { position: fixed; bottom: calc(90px + var(--safe-bottom, 20px)); left: 50%; transform: translateX(-50%) translateY(10px); background: var(--p31-surface); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 1px; padding: 9px 16px; opacity: 0; transition: opacity .2s, transform .2s; pointer-events: none; white-space: nowrap; z-index: 100; }
   .qf-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 </style>
 
@@ -256,8 +256,8 @@ const USER = getLocalDid();
 const CIRC = 427.26;
 
 const Q_COLORS = {
-  Q1_FLOW: '#10b981', Q2_BURN: '#f43f5e', Q3_DEPLETED: '#64748b', Q4_RECOVERY: '#8b5cf6',
-  Q2_ANXIOUS: '#f59e0b', Q3_EXHAUSTED: '#f43f5e', Q4_CALM: '#8b5cf6',
+  Q1_FLOW: 'var(--p31-teal)', Q2_BURN: '#f43f5e', Q3_DEPLETED: '#64748b', Q4_RECOVERY: '#8b5cf6',
+  Q2_ANXIOUS: 'var(--p31-amber)', Q3_EXHAUSTED: '#f43f5e', Q4_CALM: '#8b5cf6',
 };
 const Q_LABELS = {
   Q1_FLOW: 'Q1 · FLOW', Q2_BURN: 'Q2 · BURN', Q3_DEPLETED: 'Q3 · DEPLETED', Q4_RECOVERY: 'Q4 · RECOVERY',
@@ -354,9 +354,9 @@ function recomputeLocal() {
   st.qScore = qScore;
   st.quadrant = quadrant;
   applyColor();
-  setRing(qScore, Q_COLORS[quadrant] || '#10b981');
+  setRing(qScore, Q_COLORS[quadrant] || 'var(--p31-teal)');
   const el = document.getElementById('q-num');
-  if (el) { el.textContent = qScore; el.style.color = Q_COLORS[quadrant] || '#10b981'; }
+  if (el) { el.textContent = qScore; el.style.color = Q_COLORS[quadrant] || 'var(--p31-teal)'; }
   const osq = document.getElementById('out-score');
   const oqd = document.getElementById('out-quad');
   if (osq) osq.textContent = qScore;
@@ -364,7 +364,7 @@ function recomputeLocal() {
 }
 
 function applyColor() {
-  const c = Q_COLORS[st.quadrant] || '#10b981';
+  const c = Q_COLORS[st.quadrant] || 'var(--p31-teal)';
   document.documentElement.style.setProperty('--q', c);
   return c;
 }
@@ -416,12 +416,12 @@ function render() {
   const caFill = document.getElementById('ca-fill');
   if (caFill && ca != null) {
     caFill.style.width = Math.max(0, Math.min(100, ((ca - 7.0) / 3.5) * 100)) + '%';
-    caFill.style.background = ca < 7.8 ? '#f43f5e' : ca < 8.0 ? '#f59e0b' : '#10b981';
+    caFill.style.background = ca < 7.8 ? '#f43f5e' : ca < 8.0 ? 'var(--p31-amber)' : 'var(--p31-teal)';
   }
   const caBadge = document.getElementById('ca-badge');
   if (caBadge) {
     const s = st.calciumStatus || 'unknown';
-    const map = { critical:['CRITICAL','#f43f5e'], warning:['WARNING','#f59e0b'], normal:['NORMAL','#10b981'], unknown:['—','#64748b'] };
+    const map = { critical:['CRITICAL','#f43f5e'], warning:['WARNING','var(--p31-amber)'], normal:['NORMAL','var(--p31-teal)'], unknown:['—','#64748b'] };
     const [txt, clr] = map[s] || map.unknown;
     caBadge.textContent = txt; caBadge.style.color = clr;
     caBadge.style.borderColor = clr + '4d'; caBadge.style.background = clr + '14';
@@ -433,7 +433,7 @@ function render() {
   if (recsCard) recsCard.style.display = recs.length ? 'flex' : 'none';
   if (recsEl) recsEl.innerHTML = recs.map(r => {
     const u = /CRITICAL|CALCIUM/.test(r);
-    return `<div style="font-size:12px;color:${u?'#f43f5e':'#9ca3af'};line-height:1.5;padding-left:14px;position:relative;margin-bottom:4px"><span style="position:absolute;left:0;font-size:10px;top:2px;color:${u?'#f43f5e':'#10b981'}">${u?'!':'▸'}</span>${r}</div>`;
+    return `<div style="font-size:12px;color:${u?'#f43f5e':'#9ca3af'};line-height:1.5;padding-left:14px;position:relative;margin-bottom:4px"><span style="position:absolute;left:0;font-size:10px;top:2px;color:${u?'#f43f5e':'var(--p31-teal)'}">${u?'!':'▸'}</span>${r}</div>`;
   }).join('');
 
   const ha = st.haPayload;

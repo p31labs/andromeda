@@ -289,7 +289,7 @@ export function createSpatialNavigator(): SpatialHandle {
 
       const c = ns_<SVGCircleElement>('circle', {
         cx: n.x, cy: n.y, r: st.r,
-        fill: isNav && nav!.live ? '#10b981' : st.fill,
+        fill: isNav && nav!.live ? 'var(--p31-teal)' : st.fill,
         stroke: isNav && nav!.live ? '#059669' : st.stroke,
         'stroke-width': '1.8',
         ...(st.glow || (isNav && nav!.live) ? { filter: 'url(#sg-glow)' } : {}),
