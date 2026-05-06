@@ -28,7 +28,7 @@ const NAV: Partial<Record<number, { label: string; href: string; live: boolean }
   2:  { label: 'INTEGR.',  href: '/integrations-about.html',      live: true  },
   // Outer Ca (6) — ALPHA apps in orbit
   9:  { label: 'S·EARTH',  href: '/spaceship-earth-about.html',   live: false },
-  10: { label: 'EDE',      href: '/ede-about.html',               live: false },
+  10: { label: 'Spaceship Earth',      href: '/dome',               live: false },
   11: { label: 'BUFFER',   href: '/buffer-about.html',            live: false },
   12: { label: 'CORTEX',   href: '/cortex-about.html',            live: false },
   13: { label: 'POETS',    href: '/poets-about.html',             live: false },

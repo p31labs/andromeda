@@ -98,7 +98,7 @@ const STATS = [
 const PRODUCTS = [
   { n: "BONDING", s: "Shipped", d: "Chemistry game. Father builds molecules with his children. Every atom is a court-admissible engagement log.", e: "\u2697\uFE0F" },
   { n: "PHOS Router", s: "Shipped", d: "Deterministic navigation. 18 intents. Zero LLM. Zero network calls. Fully offline.", e: "\uD83D\uDD2E" },
-  { n: "The Buffer", s: "85%", d: "Detects when you\u2019re people-pleasing in a text and flags it before you hit send.", e: "\uD83D\uDEE1\uFE0F" },
+  { n: "Buffer", s: "85%", d: "Detects when you\u2019re people-pleasing in a text and flags it before you hit send.", e: "\uD83D\uDEE1\uFE0F" },
   { n: "Node One", s: "Prototype", d: "Palm-sized haptic device. Vibrates when calcium drops. The warning between stability and a seizure.", e: "\uD83D\uDCE1" },
   { n: "Spaceship Earth", s: "Building", d: "See your own executive function rendered as a geodesic dome in real time.", e: "\uD83D\uDE80" },
   { n: "Genesis Block", s: "Live", d: "Append-only SHA-256 audit trail. 1,847 records. Court-ready forensic metadata.", e: "\u26D3\uFE0F" },

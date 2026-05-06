@@ -711,7 +711,7 @@ initAudioOnInteraction();
   updateTelemetry();
 
   // ================================================================
-  // 2. EDE TRIMTAB & LAYER 0 (Somatic Breathing)
+  // 2. TRIMTAB & LAYER 0 (Somatic Breathing)
   // ================================================================
   const $trimCanvas = $("trimtab-canvas") as HTMLCanvasElement | null;
   const $trimFreq = $("trimtab-freq");
@@ -1034,8 +1034,8 @@ if (prefersReducedMotion) {
  'shield-engine': ['Vertex D: Shield', 0, 0, 0, 4, 'active', 'ac', 'AI Orchestration, Synthesis'],
  'bonding': ['BONDING', 0, 3, 1, 0, 'deployed', 'ac', 'WebRTC Social Protocol'],
  'spaceship': ['Spaceship Earth', 0, 1, 3, 0, 'deployed', 'ac', 'Sovereign Command Center'],
- 'ede': ['EDE', 1, 1, 2, 0, 'deployed', 'ac', 'Browser IDE & Compiler'],
- 'buffer': ['The Buffer', 2, 1, 1, 0, 'active', 'dc', 'Voltage Gate'],
+ 'ede': ['Spaceship Earth', 1, 1, 2, 0, 'deployed', 'ac', 'Browser IDE & Compiler'],
+ 'buffer': ['Buffer', 2, 1, 1, 0, 'active', 'dc', 'Voltage Gate'],
  'love-econ': ['L.O.V.E. Ledger', 1, 1, 2, 0, 'deployed', 'ac', 'Care Economy'],
  'genesis': ['Genesis Gate', 0, 1, 3, 0, 'building', 'ac', 'Auth Node'],
  'fawn': ['Fawn Guard', 0, 3, 0, 1, 'active', 'ac', 'Trauma Interceptor'],

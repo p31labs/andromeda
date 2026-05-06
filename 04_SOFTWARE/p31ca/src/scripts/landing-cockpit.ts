@@ -105,7 +105,7 @@ setInterval(() => {
 updateTelemetry();
 
 // ================================================================
-// 2. EDE TRIMTAB & LAYER 0 (Somatic Mode)
+// 2. TRIMTAB & LAYER 0 (Somatic Mode)
 // ================================================================
 const $trimCanvas = $('trimtab-canvas') as HTMLCanvasElement | null;
 const $trimFreq = $('trimtab-freq');

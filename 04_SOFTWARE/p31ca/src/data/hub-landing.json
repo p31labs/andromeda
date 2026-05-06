@@ -24,7 +24,7 @@
       "id": "social-molecules",
       "title": "Social Molecules",
       "status": "LIVE",
-      "desc": "C.A.R.S. — Collaborative Affective Realtime Sim",
+      "desc": "C.A.R.S. \u2014 Collaborative Affective Realtime Sim",
       "tags": [
         "SoupEngine",
         "p31.carsWire/0.1.0",
@@ -47,8 +47,8 @@
       "url": "/spaceship-earth-about.html"
     },
     {
-      "id": "ede",
-      "title": "EDE",
+      "id": "spaceship-earth",
+      "title": "Spaceship Earth",
       "status": "ALPHA",
       "desc": "Everything Development Environment",
       "tags": [
@@ -61,7 +61,7 @@
     },
     {
       "id": "buffer",
-      "title": "The Buffer",
+      "title": "Buffer",
       "status": "ALPHA",
       "desc": "Message Guardian & Fawn Guard",
       "tags": [
@@ -80,7 +80,7 @@
       "tags": [
         "Thermodynamics",
         "Periodic Table Mapping",
-        "K₄ Graph Theory",
+        "K\u2084 Graph Theory",
         "Zenodo DOI"
       ],
       "url": "/alchemy-about.html"
@@ -219,10 +219,10 @@
       "id": "connect",
       "title": "THE MESH",
       "status": "BETA",
-      "desc": "K₄ cage + product graph",
+      "desc": "K\u2084 cage + product graph",
       "tags": [
         "Three.js r160",
-        "K₄ tetrahedron",
+        "K\u2084 tetrahedron",
         "Product satellites",
         "Static HTML"
       ],
@@ -232,7 +232,7 @@
       "id": "planetary-onboard",
       "title": "Planetary onboard",
       "status": "BETA",
-      "desc": "Threshold — four doors, no funnel",
+      "desc": "Threshold \u2014 four doors, no funnel",
       "tags": [
         "Static HTML",
         "Gray Rock first paint",
@@ -258,7 +258,7 @@
       "id": "poets",
       "title": "Poets Room",
       "status": "ALPHA",
-      "desc": "Void, a daily line, a shelf — nothing to verify here but the door",
+      "desc": "Void, a daily line, a shelf \u2014 nothing to verify here but the door",
       "tags": [
         "Static",
         "No crew APIs",
@@ -440,7 +440,7 @@
       "id": "super-centaur",
       "title": "Super-Centaur pack",
       "status": "BETA",
-      "desc": "Data health · MAP · mesh fleet · sovereignty",
+      "desc": "Data health \u00b7 MAP \u00b7 mesh fleet \u00b7 sovereignty",
       "tags": [
         "Static HTML",
         "Machine JSON",
@@ -486,7 +486,7 @@
       "doi": "10.5281/zenodo.19782977"
     },
     {
-      "title": "Topological History of Camden County: Institutional Capture and the K₄ Counter-Architecture",
+      "title": "Topological History of Camden County: Institutional Capture and the K\u2084 Counter-Architecture",
       "doi": "10.5281/zenodo.19782979"
     },
     {
@@ -510,7 +510,7 @@
       "doi": "10.5281/zenodo.19782971"
     },
     {
-      "title": "The Sovereign Stack: Open-Source Hardware–Software Architecture for Neurodivergent Assistive Technology",
+      "title": "The Sovereign Stack: Open-Source Hardware\u2013Software Architecture for Neurodivergent Assistive Technology",
       "doi": "10.5281/zenodo.19782969"
     },
     {
@@ -538,7 +538,7 @@
       "doi": "10.5281/zenodo.19782999"
     },
     {
-      "title": "The SOULSAFE Protocol: High-Reliability Engineering for Human–AI Cognitive Symbiosis",
+      "title": "The SOULSAFE Protocol: High-Reliability Engineering for Human\u2013AI Cognitive Symbiosis",
       "doi": "10.5281/zenodo.19782973"
     },
     {

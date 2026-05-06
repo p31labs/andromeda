@@ -48,7 +48,7 @@ const STATS = [
 
 const PRODUCTS = [
   { name: "BONDING", status: "Shipped", desc: "Chemistry game. Father builds molecules with his children. Every atom is a court-admissible engagement log.", emoji: "⚗️" },
-  { name: "The Buffer", status: "85%", desc: "Communication processing. Detects when you're people-pleasing in a text and flags it before you hit send.", emoji: "🛡️" },
+  { name: "Buffer", status: "85%", desc: "Communication processing. Detects when you're people-pleasing in a text and flags it before you hit send.", emoji: "🛡️" },
   { name: "PHOS Router", status: "Shipped", desc: "Deterministic navigation. 18 intents. Zero LLM. Zero network calls. Fully offline.", emoji: "🔮" },
   { name: "Spaceship Earth", status: "Building", desc: "3D cognitive dashboard. See your own executive function rendered as a geodesic dome.", emoji: "🚀" },
   { name: "Node One", status: "Prototype", desc: "Palm-sized haptic device. Vibrates when calcium drops. The warning between stability and a seizure.", emoji: "📡" },
