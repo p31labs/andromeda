@@ -95,6 +95,8 @@ const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET, POST, PUT, OPTIONS',
   'Access-Control-Allow-Headers': 'Content-Type',
+  'X-P31-QFactor': '1',
+  'X-P31-Routing-Protocol': 'custom_dsdv',
 };
 
 function corsResponse(body: string, status = 200, extra?: Record<string, string>): Response {

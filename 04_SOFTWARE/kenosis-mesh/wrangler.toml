@@ -4,8 +4,8 @@ account_id = "ee05f70c889cb6f876b9925257e3a2fa"
 compatibility_date = "2026-03-17"
 workers_dev = true
 
-[vars]
-AUTH_TOKEN = "kenosis-1743586400"
+# AUTH_TOKEN: set via `npx wrangler secret put AUTH_TOKEN` — rotate the old value
+# (was erroneously committed as plaintext [vars]; see bouncer/SECURITY_SECRETS_MANIFEST.md)
 
 [build]
 command = ""

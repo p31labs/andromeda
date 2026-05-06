@@ -20,9 +20,9 @@ jobs:
 
       - uses: ./.github/actions/toolchain-constants
 
-      - uses: ./.github/actions/pnpm-andromeda-full
+       - uses: ./.github/actions/pnpm-andromeda-full
 
-      - uses: ./.github/actions/eslint-bonding-shared
+       - uses: ./.github/actions/eslint-bonding-shared
 
       - name: Security audit (high+, informational)
         continue-on-error: true

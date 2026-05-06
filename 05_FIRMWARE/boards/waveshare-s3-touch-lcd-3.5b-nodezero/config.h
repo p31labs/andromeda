@@ -1,82 +1,76 @@
 #ifndef _BOARD_CONFIG_H_
 #define _BOARD_CONFIG_H_
 
-#include <driver/gpio.h>
-#include <driver/spi_master.h>
-#include "lvgl.h"
+// ── P31 Node Zero — Waveshare ESP32-S3-Touch-LCD-3.5B (Type B, N16R8) ────────
+// Board: 480×320 AXS15231B display + touch, ES8311 codec, AXP2101 PMIC
+// Kill zone: GPIO 26-37 reserved for Octal PSRAM — NEVER route anything here
+// ─────────────────────────────────────────────────────────────────────────────
 
-#define AUDIO_INPUT_SAMPLE_RATE 24000
-#define AUDIO_OUTPUT_SAMPLE_RATE 24000
+// ── I2C (shared bus — AXP2101 PMIC + ES8311 codec + AXS15231B touch) ────────
+// All I2C transactions must acquire g_i2c_mutex (bus_mutex.h) before use
+#define I2C_MASTER_SDA      GPIO_NUM_8
+#define I2C_MASTER_SCL      GPIO_NUM_7
+#define I2C_MASTER_NUM      I2C_NUM_0
+#define I2C_MASTER_FREQ_HZ  400000      // Fast Mode
 
-#define AUDIO_I2S_GPIO_MCLK GPIO_NUM_44
-#define AUDIO_I2S_GPIO_WS GPIO_NUM_15
-#define AUDIO_I2S_GPIO_BCLK GPIO_NUM_13
-#define AUDIO_I2S_GPIO_DIN GPIO_NUM_14
-#define AUDIO_I2S_GPIO_DOUT GPIO_NUM_16
+// ── Display: AXS15231B via QSPI (SPI2_HOST) ──────────────────────────────────
+// DC pin: GPIO_NUM_NC — AXS15231B QSPI encodes cmd/data in transaction header.
+// Do NOT set DC to any GPIO (original config used GPIO 0 = BOOT button — WRONG)
+#define DISPLAY_HOST        SPI2_HOST
+#define DISPLAY_CS          GPIO_NUM_12
+#define DISPLAY_CLK         GPIO_NUM_5
+#define DISPLAY_D0          GPIO_NUM_1
+#define DISPLAY_D1          GPIO_NUM_2
+#define DISPLAY_D2          GPIO_NUM_3
+#define DISPLAY_D3          GPIO_NUM_4
+#define DISPLAY_DC          GPIO_NUM_NC  // No DC pin for QSPI mode
+#define DISPLAY_RST         GPIO_NUM_NC  // Power-on reset sufficient
+#define DISPLAY_BACKLIGHT   GPIO_NUM_6
+#define DISPLAY_BL_INVERT   false
+#define DISPLAY_CLK_HZ      (40 * 1000 * 1000)
 
-#define AUDIO_CODEC_PA_PIN      GPIO_NUM_NC
-#define AUDIO_CODEC_I2C_SDA_PIN GPIO_NUM_8
-#define AUDIO_CODEC_I2C_SCL_PIN GPIO_NUM_7
-#define AUDIO_CODEC_ES8311_ADDR ES8311_CODEC_DEFAULT_ADDR
+// Physical panel dimensions (portrait native)
+#define DISPLAY_H_RES       480
+#define DISPLAY_V_RES       320
 
-#define BUILTIN_LED_GPIO        GPIO_NUM_NC
-#define BOOT_BUTTON_GPIO        GPIO_NUM_0
-#define VOLUME_UP_BUTTON_GPIO   GPIO_NUM_NC
-#define VOLUME_DOWN_BUTTON_GPIO GPIO_NUM_NC
+// Rotation: 90° CW via LVGL SOFTWARE rotation — hardware MADCTL swap causes
+// blank screen on AXS15231B (silicon boundary alignment bug — see display.c)
+#define DISPLAY_LVGL_ROT    LV_DISP_ROT_90
 
-#define DISPLAY_SPI_MODE        0
-#define DISPLAY_CS_PIN          GPIO_NUM_12
-#define DISPLAY_CLK_PIN         GPIO_NUM_5
-#define DISPLAY_DATA0_PIN       GPIO_NUM_1
-#define DISPLAY_DATA1_PIN       GPIO_NUM_2
-#define DISPLAY_DATA2_PIN       GPIO_NUM_3
-#define DISPLAY_DATA3_PIN       GPIO_NUM_4
-#define DISPLAY_DC_PIN          GPIO_NUM_0   // Data/Command pin for SPI (verify with schematic)
+// ── Touch: AXS15231B integrated DDIC via I2C ─────────────────────────────────
+#define TOUCH_I2C_ADDR      0x3B
+#define TOUCH_INT           GPIO_NUM_NC  // Interrupt not wired on Type B
+#define TOUCH_RST           GPIO_NUM_NC
 
-#define DISPLAY_RST_PIN         GPIO_NUM_NC
+// ── LoRa: Semtech SX1262 via FSPI (SPI3_HOST) ────────────────────────────────
+// Repurposed camera pins — no camera on Type B board
+// All GPIOs above 37: clear of Octal PSRAM kill zone (26-37)
+#define LORA_HOST           SPI3_HOST
+#define LORA_SCK            GPIO_NUM_41  // CAM_PCLK repurposed
+#define LORA_MOSI           GPIO_NUM_42  // CAM_Y6 repurposed
+#define LORA_MISO           GPIO_NUM_39  // CAM_Y8 repurposed
+#define LORA_NSS            GPIO_NUM_40  // CAM_Y7 repurposed (severs HW TE — OK, SW DMA used)
+#define LORA_BUSY           GPIO_NUM_21  // CAM_Y9 repurposed
+#define LORA_DIO1           GPIO_NUM_38  // CAM_XCLK repurposed
+#define LORA_NRST           GPIO_NUM_45  // CAM_Y2 repurposed
+#define LORA_CLK_HZ         (8 * 1000 * 1000)
 
-#define DISPLAY_WIDTH           480
-#define DISPLAY_HEIGHT          320
-#define DISPLAY_TRANS_SIZE      (DISPLAY_WIDTH * 10)
+// ── Audio: ES8311 codec ───────────────────────────────────────────────────────
+#define AUDIO_SAMPLE_RATE   24000
+#define AUDIO_I2S_MCLK      GPIO_NUM_44
+#define AUDIO_I2S_WS        GPIO_NUM_15
+#define AUDIO_I2S_BCLK      GPIO_NUM_13
+#define AUDIO_I2S_DIN       GPIO_NUM_14   // ESP32 → codec (speaker)
+#define AUDIO_I2S_DOUT      GPIO_NUM_16   // codec → ESP32 (mic)
+#define AUDIO_ES8311_ADDR   0x18          // I2C address (ADDR pin tied low)
+#define AUDIO_PA_PIN        GPIO_NUM_NC   // No PA on this board
 
-#define DISPLAY_MIRROR_X        false
-#define DISPLAY_MIRROR_Y        false
-#define DISPLAY_SWAP_XY         false
-#define DISPLAY_RGB_ORDER       LCD_RGB_ELEMENT_ORDER_RGB
-#define DISPLAY_INVERT_COLOR    false
+// ── PMIC: X-Powers AXP2101 ───────────────────────────────────────────────────
+#define PMIC_I2C_ADDR       0x34
+#define PMIC_ENABLE         1
 
-#define DISPLAY_OFFSET_X        0
-#define DISPLAY_OFFSET_Y        0
-
-#define LV_DISPLAY_ROTATION LV_DISP_ROT_90
-
-#define DISPLAY_BACKLIGHT_PIN   GPIO_NUM_6
-#define DISPLAY_BACKLIGHT_OUTPUT_INVERT false
-
-#define PMIC_ENABLE 0
-#define TOUCH_ENABLE 1
-
-#define CAM_PIN_PWDN    GPIO_NUM_NC
-#define CAM_PIN_RESET   GPIO_NUM_NC
-#define CAM_PIN_VSYNC   GPIO_NUM_17
-#define CAM_PIN_HREF    GPIO_NUM_18
-#define CAM_PIN_PCLK    GPIO_NUM_41
-#define CAM_PIN_XCLK    GPIO_NUM_38
-#define CAM_PIN_SIOD    GPIO_NUM_NC
-#define CAM_PIN_SIOC    GPIO_NUM_NC
-#define CAM_PIN_D0      GPIO_NUM_45
-#define CAM_PIN_D1      GPIO_NUM_47
-#define CAM_PIN_D2      GPIO_NUM_48
-#define CAM_PIN_D3      GPIO_NUM_46
-#define CAM_PIN_D4      GPIO_NUM_42
-#define CAM_PIN_D5      GPIO_NUM_40
-#define CAM_PIN_D6      GPIO_NUM_39
-#define CAM_PIN_D7      GPIO_NUM_21
-
-// NodeZero specific
-#define NODEZERO_ENABLE 1
-#define NODEZERO_I2C_SDA_PIN GPIO_NUM_8
-#define NODEZERO_I2C_SCL_PIN GPIO_NUM_7  // Same as audio codec, shared bus
-#define NODEZERO_I2C_NUM I2C_NUM_0
+// ── System ────────────────────────────────────────────────────────────────────
+#define BOOT_BUTTON         GPIO_NUM_0
+#define BUILTIN_LED         GPIO_NUM_NC
 
 #endif // _BOARD_CONFIG_H_

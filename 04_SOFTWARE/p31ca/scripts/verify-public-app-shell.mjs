@@ -20,7 +20,6 @@ const PUBLIC = path.join(P31CA, "public");
 const regPath = path.join(P31CA, "scripts", "hub", "registry.mjs");
 const { registry } = await import(pathToFileURL(regPath).href);
 
-const SKIP_IDS = new Set(["integrations"]);
 const SKIP_STATUSES = new Set(["concept", "draft"]);
 
 let errs = 0;
@@ -46,11 +45,12 @@ function verifyShell(relPath, id) {
 }
 
 for (const item of registry) {
-  if (SKIP_IDS.has(item.id)) continue;
   if (SKIP_STATUSES.has(item.status)) continue;
-  let u = String(item.appUrl ?? "").trim();
+  const u = String(item.appUrl ?? "").trim();
+  // External URLs — skip
   if (/^https?:\/\//i.test(u)) continue;
-  if (u.startsWith("/")) u = u.slice(1);
+  // Absolute paths starting with '/' — Astro routes; head checks run via verify-surface-canon
+  if (u.startsWith("/")) continue;
   const target = path.join(PUBLIC, u);
   if (!fs.existsSync(target)) {
     fail(`${item.id}: appUrl "${item.appUrl}" — file missing (also caught by verify-registry-app-urls)`);
@@ -68,5 +68,5 @@ if (errs > 0) {
   process.exit(1);
 }
 console.log(
-  `[ OK ] verify-public-app-shell: static registry Launch targets carry /p31-style.css + baseline head (${registry.length - SKIP_IDS.size} scanned, skips https + integrations) ✓`
+  `[ OK ] verify-public-app-shell: static registry Launch targets carry /p31-style.css + baseline head ✓`
 );

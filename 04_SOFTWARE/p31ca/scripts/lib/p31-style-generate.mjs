@@ -25,7 +25,7 @@ function fontStack(arr) {
 }
 
 function emitColorAliases(lines, prefix = "") {
-  const keys = ["void", "surface", "surface2", "coral", "teal", "cyan", "phosphorus", "cloud", "muted", "butter"];
+  const keys = ["void", "surface", "surface2", "coral", "teal", "cyan", "phosphorus", "cloud", "muted", "amber"];
   for (const name of keys) {
     lines.push(`  ${prefix}--${name}: var(--p31-${name});`);
   }
@@ -311,8 +311,9 @@ function emitMissionTrioBlock(lines) {
   lines.push("  left: 0;");
   lines.push("  right: 0;");
   lines.push("  z-index: 50;");
-  lines.push("  display: grid;");
-  lines.push("  grid-template-columns: repeat(3, minmax(0, 1fr));");
+  lines.push("  display: flex;");
+  lines.push("  align-items: stretch;");
+  lines.push("  height: 2.25rem;");
   lines.push("  border-top: 1px solid var(--p31-glass-border);");
   lines.push("  background: var(--p31-glass-surface);");
   lines.push("  backdrop-filter: blur(12px);");
@@ -326,14 +327,19 @@ function emitMissionTrioBlock(lines) {
   lines.push("  gap: var(--p31-space-3);");
   lines.push("}");
   lines.push(".p31-mission-trio__link {");
-  lines.push("  display: block;");
+  lines.push("  flex: 1;");
+  lines.push("  display: flex;");
+  lines.push("  align-items: center;");
+  lines.push("  justify-content: center;");
+  lines.push("  gap: 0.4rem;");
   lines.push("  text-decoration: none;");
   lines.push("  color: inherit;");
   lines.push("  border-right: 1px solid rgba(255, 255, 255, 0.06);");
-  lines.push("  padding: var(--p31-space-4) var(--p31-space-4);");
+  lines.push("  padding: 0 var(--p31-space-3);");
   lines.push("  min-width: 0;");
   lines.push("  transition: background var(--p31-duration-base, 200ms) var(--p31-ease-out, ease);");
   lines.push("}");
+  lines.push(".p31-mission-trio--ebc .p31-mission-trio__desc { display: none; }");
   lines.push(".p31-mission-trio--ebc .p31-mission-trio__link:last-child { border-right: none; }");
   lines.push('.p31-mission-trio__link[aria-current="page"] {');
   lines.push("  background: rgba(77, 184, 168, 0.1);");
@@ -343,7 +349,7 @@ function emitMissionTrioBlock(lines) {
   lines.push("  display: flex;");
   lines.push("  align-items: center;");
   lines.push("  gap: 0.35rem;");
-  lines.push("  margin-bottom: 0.35rem;");
+  lines.push("  margin-bottom: 0;");
   lines.push("}");
   lines.push(".p31-mission-trio__dot {");
   lines.push("  width: 0.35rem;");
@@ -353,7 +359,7 @@ function emitMissionTrioBlock(lines) {
   lines.push("  flex-shrink: 0;");
   lines.push("}");
   lines.push(".p31-mission-trio__link--build .p31-mission-trio__dot { background: var(--p31-phosphorus); }");
-  lines.push(".p31-mission-trio__link--create .p31-mission-trio__dot { background: var(--p31-butter); }");
+  lines.push(".p31-mission-trio__link--create .p31-mission-trio__dot { background: var(--p31-amber); }");
   lines.push(".p31-mission-trio__link--connect .p31-mission-trio__dot { background: var(--p31-coral); }");
   lines.push(".p31-mission-trio__verb {");
   lines.push("  font-family: var(--p31-font-mono);");
@@ -512,7 +518,7 @@ function emitDesignDoctrineBlock(lines) {
     ".p31-badge--research { background: color-mix(in srgb, var(--p31-lavender) 15%, transparent); color: var(--p31-lavender); }",
   );
   lines.push(
-    ".p31-badge--prototype { background: color-mix(in srgb, var(--p31-butter) 15%, transparent); color: var(--p31-butter); }",
+    ".p31-badge--prototype { background: color-mix(in srgb, var(--p31-amber) 15%, transparent); color: var(--p31-amber); }",
   );
   lines.push(".p31-badge--pending { background: var(--p31-surface2); color: var(--p31-muted); }");
   lines.push("");
@@ -657,7 +663,7 @@ function emitDesignDoctrineBlock(lines) {
 }
 
 /**
- * P31 Quantum Material U — additive Material 3 grammar refracted through K\u2084 anchors.
+ * P31 Extended Surface Styles — additive Material 3 grammar refracted through K\u2084 anchors.
  *
  * Emits ONLY tokens + opt-in `.p31-q-*` classes. Existing `.p31-card`, `.p31-btn`,
  * `.p31-glass`, `.p31-mission-trio*`, `.p31-return-ribbon` remain untouched.
@@ -681,7 +687,7 @@ function emitQuantumMaterialUBlock(lines, canon) {
   const motion = q.motionBudget || {};
 
   lines.push("");
-  lines.push("/* P31 Quantum Material U \u2014 docs/P31-QUANTUM-MATERIAL-U.md (additive, opt-in via .p31-q-*). */");
+  lines.push("/* P31 Extended Surface Styles (additive, opt-in via .p31-q-*). */");
 
   lines.push(":root {");
   for (const a of anchors) {
@@ -790,7 +796,7 @@ function emitQuantumMaterialUBlock(lines, canon) {
   lines.push(".p31-q-card[data-p31-tone=\"teal\"] { border-color: var(--p31-tone-teal-1); }");
   lines.push(".p31-q-card[data-p31-tone=\"coral\"] { border-color: var(--p31-tone-coral-1); }");
   lines.push(".p31-q-card[data-p31-tone=\"phosphorus\"] { border-color: var(--p31-tone-phosphorus-1); }");
-  lines.push(".p31-q-card[data-p31-tone=\"butter\"] { border-color: var(--p31-tone-butter-1); }");
+  lines.push(".p31-q-card[data-p31-tone=\"amber\"] { border-color: var(--p31-tone-amber-1); }");
   lines.push(".p31-q-card[data-p31-tone=\"lavender\"] { border-color: var(--p31-tone-lavender-1); }");
   lines.push("@media (prefers-reduced-motion: reduce) {");
   lines.push("  .p31-q-card,");
@@ -872,9 +878,9 @@ function emitQuantumMaterialUBlock(lines, canon) {
   lines.push(".p31-q-button[data-p31-tone=\"phosphorus\"].p31-q-button--filled { background: var(--p31-phosphorus); }");
   lines.push(".p31-q-button[data-p31-tone=\"phosphorus\"].p31-q-button--tonal { background: var(--p31-tone-phosphorus-2); }");
   lines.push(".p31-q-button[data-p31-tone=\"phosphorus\"].p31-q-button--text { color: var(--p31-phosphorus); }");
-  lines.push(".p31-q-button[data-p31-tone=\"butter\"].p31-q-button--filled { background: var(--p31-butter); color: var(--p31-ink); }");
-  lines.push(".p31-q-button[data-p31-tone=\"butter\"].p31-q-button--tonal { background: var(--p31-tone-butter-2); }");
-  lines.push(".p31-q-button[data-p31-tone=\"butter\"].p31-q-button--text { color: var(--p31-butter); }");
+  lines.push(".p31-q-button[data-p31-tone=\"amber\"].p31-q-button--filled { background: var(--p31-amber); color: var(--p31-ink); }");
+  lines.push(".p31-q-button[data-p31-tone=\"amber\"].p31-q-button--tonal { background: var(--p31-tone-amber-2); }");
+  lines.push(".p31-q-button[data-p31-tone=\"amber\"].p31-q-button--text { color: var(--p31-amber); }");
   lines.push(".p31-q-button[data-p31-tone=\"lavender\"].p31-q-button--filled { background: var(--p31-lavender); color: var(--p31-void); }");
   lines.push(".p31-q-button[data-p31-tone=\"lavender\"].p31-q-button--tonal { background: var(--p31-tone-lavender-2); }");
   lines.push(".p31-q-button[data-p31-tone=\"lavender\"].p31-q-button--text { color: var(--p31-lavender); }");
@@ -989,7 +995,7 @@ function emitQuantumMaterialUBlock(lines, canon) {
   lines.push("    radial-gradient(circle at 0% 0%, var(--p31-tone-teal-1), transparent 55%),");
   lines.push("    radial-gradient(circle at 100% 0%, var(--p31-tone-coral-1), transparent 55%),");
   lines.push("    radial-gradient(circle at 0% 100%, var(--p31-tone-phosphorus-1), transparent 55%),");
-  lines.push("    radial-gradient(circle at 100% 100%, var(--p31-tone-butter-1), transparent 55%);");
+  lines.push("    radial-gradient(circle at 100% 100%, var(--p31-tone-amber-1), transparent 55%);");
   lines.push("  opacity: 0;");
   lines.push("  pointer-events: none;");
   lines.push("  z-index: -1;");
@@ -1026,7 +1032,7 @@ export function buildAstroTailwindThemeExtend(canon) {
   const colorExt = {
     ...colors,
     emerald: colors.phosphorus,
-    amber: colors.butter,
+    amber: colors.amber,
     glass: {
       border: glass.border,
       surface: glass.surface,

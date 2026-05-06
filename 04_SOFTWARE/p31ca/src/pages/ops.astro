@@ -1,4 +1,5 @@
 ---
+// @p31-layout: Gallery
 import AppShell from '../layouts/AppShell.astro';
 import { registry } from '../../scripts/hub/registry.mjs';
 
@@ -19,7 +20,7 @@ const TOOLS = [
   { hash: 'cortex',              label: 'Cortex',           regId: 'cortex'                                                                                                                               },
   { hash: 'discord',             label: 'Discord Bot',      regId: 'discord-bot'                                                                                                                          },
   { hash: 'docs',                label: 'Doc Suite',        regId: null,                  icon: '📄', accent: '#4db8a8', tagline: 'P31 Open Doc Suite',             appUrl: '/doc-suite', status: 'live'  },
-  { hash: 'ede',                 label: 'EDE',              regId: 'ede'                                                                                                                                  },
+  { hash: 'spaceship-earth',                 label: 'Spaceship Earth',              regId: 'spaceship-earth'                                                                                                                                  },
   { hash: 'editor',              label: 'Editor',           regId: null,                  icon: '✏️', accent: '#8b7cc9', tagline: 'Minimal markdown editor',        appUrl: 'editor.html', status: 'concept' },
   { hash: 'forge',               label: 'Forge',            regId: 'forge'                                                                                                                                },
   { hash: 'integrations',        label: 'Integrations',     regId: 'integrations'                                                                                                                         },
@@ -56,9 +57,9 @@ const tools = TOOLS.map((t) => {
 });
 
 const statusColor: Record<string, string> = {
-  live:    'var(--p31-phosphorus, #3ba372)',
+  live:    'var(--p31-phosphorus, var(--p31-phosphorus))',
   concept: 'var(--p31-slate, #64748b)',
-  dev:     'var(--p31-butter, #cda852)',
+  dev:     'var(--p31-amber, #cda852)',
 };
 ---
 
@@ -70,8 +71,8 @@ const statusColor: Record<string, string> = {
       <a
         href="/god"
         class="font-mono text-[10px] tracking-widest uppercase px-3 py-1 rounded transition-colors hover:bg-white/5"
-        style="color: var(--p31-teal, #25897d); border: 1px solid rgba(37,137,125,0.4);"
-      >G.O.D. Shell →</a>
+        style="color: var(--p31-teal, var(--p31-teal)); border: 1px solid rgba(37,137,125,0.4);"
+      >Command Center →</a>
     </header>
 
     <div class="flex flex-col md:flex-row gap-4 flex-grow">

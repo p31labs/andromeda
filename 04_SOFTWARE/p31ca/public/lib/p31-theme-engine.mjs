@@ -120,7 +120,7 @@ export const P31_THEMES = {
       surface: '#ffffff',
       surface2: '#f5f2eb',
       surface3: '#ebe7de',
-      cloud: '#1a1a1a',
+      cloud: '#0f1115',
       paper: '#fffefd',
       ink: '#0a0a0a',
       muted: '#555555',

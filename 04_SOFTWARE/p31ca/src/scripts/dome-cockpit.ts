@@ -50,7 +50,7 @@ function showWebGLError() {
   if (container) {
     container.innerHTML = `
        <div class="flex flex-col items-center justify-center h-full text-center p-6">
-         <svg width="64" height="64" viewBox="0 0 512 512" class="mb-6"><rect width="512" height="512" rx="112" fill="#25897d"/><circle cx="390" cy="120" r="48" fill="#cc6247"/><text x="256" y="340" font-family="system-ui" font-weight="900" font-size="220" fill="#d8d6d0" text-anchor="middle">P31</text><rect x="156" y="380" width="200" height="16" rx="8" fill="#cda852"/></svg>
+         <svg width="64" height="64" viewBox="0 0 512 512" class="mb-6"><rect width="512" height="512" rx="112" fill="var(--p31-teal)"/><circle cx="390" cy="120" r="48" fill="#cc6247"/><text x="256" y="340" font-family="system-ui" font-weight="900" font-size="220" fill="var(--p31-cloud)" text-anchor="middle">P31</text><rect x="156" y="380" width="200" height="16" rx="8" fill="#cda852"/></svg>
          <h2 class="text-2xl font-bold text-red-400 mb-3" data-i18n="error.webgl.title">WebGL Not Supported</h2>
          <p class="text-p31-cloud mb-6" data-i18n="error.webgl.message">Your browser or device does not support WebGL, which is required for the 3D visualization. Please try a modern browser like Chrome, Firefox, or Edge.</p>
          <button onclick="location.reload()" class="px-6 py-3 bg-white/20 hover:bg-white/30 text-p31-cloud rounded transition-colors" data-i18n="error.retry">Retry</button>
@@ -65,7 +65,7 @@ function showLoadingError() {
   if (container) {
     container.innerHTML = `
      <div class="flex flex-col items-center justify-center h-full text-center p-6">
-       <svg width="64" height="64" viewBox="0 0 512 512" class="mb-8"><rect width="512" height="512" rx="112" fill="#25897d"/><circle cx="390" cy="120" r="48" fill="#cc6247"/><text x="256" y="340" font-family="system-ui" font-weight="900" font-size="220" fill="#d8d6d0" text-anchor="middle">P31</text><rect x="156" y="380" width="200" height="16" rx="8" fill="#cda852"/></svg>
+       <svg width="64" height="64" viewBox="0 0 512 512" class="mb-8"><rect width="512" height="512" rx="112" fill="var(--p31-teal)"/><circle cx="390" cy="120" r="48" fill="#cc6247"/><text x="256" y="340" font-family="system-ui" font-weight="900" font-size="220" fill="var(--p31-cloud)" text-anchor="middle">P31</text><rect x="156" y="380" width="200" height="16" rx="8" fill="#cda852"/></svg>
        <div class="text-red-400 font-bold mb-4" data-i18n="error.loading.title">Loading Failed</div>
        <div class="text-p31-cloud mb-6" data-i18n="error.loading.message">Failed to load 3D resources. Please check your connection and try again.</div>
        <button onclick="location.reload()" class="px-6 py-3 bg-white/20 hover:bg-white/30 text-p31-cloud rounded transition-colors" data-i18n="error.retry">Retry</button>
@@ -476,8 +476,8 @@ initAudioOnInteraction();
   function applyQFactorHud(score: number) {
     const isOpt = score >= 0.9;
     const isStab = score >= 0.7;
-    const colorClass = isOpt ? "text-[#3ba372]" : isStab ? "text-[#cda852]" : "text-[#E8636F]";
-    const bgClass = isOpt ? "bg-[#3ba372]" : isStab ? "bg-[#cda852]" : "bg-[#E8636F]";
+    const colorClass = isOpt ? "text-[var(--p31-phosphorus)]" : isStab ? "text-[#cda852]" : "text-[#E8636F]";
+    const bgClass = isOpt ? "bg-[var(--p31-phosphorus)]" : isStab ? "bg-[#cda852]" : "bg-[#E8636F]";
     const s = score.toFixed(3);
     const nq = $("dock-q-mini") || $("hud-q-val");
     const nd = $("dock-q-dot") || $("hud-q-dot");
@@ -487,7 +487,7 @@ initAudioOnInteraction();
     }
     if (nd) {
       nd.className = `h-1.5 w-1.5 shrink-0 rounded-full ${bgClass}`;
-      nd.style.boxShadow = `0 0 8px ${isOpt ? "#3ba372" : isStab ? "#cda852" : "#E8636F"}`;
+      nd.style.boxShadow = `0 0 8px ${isOpt ? "var(--p31-phosphorus)" : isStab ? "#cda852" : "#E8636F"}`;
     }
   }
 
@@ -711,7 +711,7 @@ initAudioOnInteraction();
   updateTelemetry();
 
   // ================================================================
-  // 2. EDE TRIMTAB & LAYER 0 (Somatic Breathing)
+  // 2. TRIMTAB & LAYER 0 (Somatic Breathing)
   // ================================================================
   const $trimCanvas = $("trimtab-canvas") as HTMLCanvasElement | null;
   const $trimFreq = $("trimtab-freq");
@@ -1024,7 +1024,7 @@ if (prefersReducedMotion) {
   // Data
   const AXIS_COLORS = { a: 0xff9944, b: 0x44aaff, c: 0x44ffaa, d: 0xff4466 };
   const AXIS_LABELS = { a: 'Operator', b: 'Signals', c: 'Context', d: 'Shield' };
-  const STATE_CSS = { active: '#3ba372', deployed: '#25897d', countdown: '#cda852', complete: '#4db8a8', missing: '#cc6247', ongoing: '#25897d', prototype: '#cda852', research: '#4db8a8' };
+  const STATE_CSS = { active: 'var(--p31-phosphorus)', deployed: 'var(--p31-teal)', countdown: '#cda852', complete: '#4db8a8', missing: '#cc6247', ongoing: 'var(--p31-teal)', prototype: '#cda852', research: '#4db8a8' };
   const STATE_GLOW = { countdown: 2.0, critical: 2.5, complete: 0.4, active: 1.0, ongoing: 0.6, deployed: 0.7, prototype: 0.8, missing: 1.2, research: 0.5 };
 
   const VERTICES = {
@@ -1034,8 +1034,8 @@ if (prefersReducedMotion) {
  'shield-engine': ['Vertex D: Shield', 0, 0, 0, 4, 'active', 'ac', 'AI Orchestration, Synthesis'],
  'bonding': ['BONDING', 0, 3, 1, 0, 'deployed', 'ac', 'WebRTC Social Protocol'],
  'spaceship': ['Spaceship Earth', 0, 1, 3, 0, 'deployed', 'ac', 'Sovereign Command Center'],
- 'ede': ['EDE', 1, 1, 2, 0, 'deployed', 'ac', 'Browser IDE & Compiler'],
- 'buffer': ['The Buffer', 2, 1, 1, 0, 'active', 'dc', 'Voltage Gate'],
+ 'ede': ['Spaceship Earth', 1, 1, 2, 0, 'deployed', 'ac', 'Browser IDE & Compiler'],
+ 'buffer': ['Buffer', 2, 1, 1, 0, 'active', 'dc', 'Voltage Gate'],
  'love-econ': ['L.O.V.E. Ledger', 1, 1, 2, 0, 'deployed', 'ac', 'Care Economy'],
  'genesis': ['Genesis Gate', 0, 1, 3, 0, 'building', 'ac', 'Auth Node'],
  'fawn': ['Fawn Guard', 0, 3, 0, 1, 'active', 'ac', 'Trauma Interceptor'],
@@ -1440,7 +1440,7 @@ if (prefersReducedMotion) {
 
       const stateKey = n.state as keyof typeof STATE_CSS;
       const ndState = $("nd-state");
-      if (ndState) { ndState.innerText = n.state; ndState.style.color = STATE_CSS[stateKey] || "#d8d6d0"; ndState.style.borderColor = STATE_CSS[stateKey] || "#d8d6d0"; }
+      if (ndState) { ndState.innerText = n.state; ndState.style.color = STATE_CSS[stateKey] || "var(--p31-cloud)"; ndState.style.borderColor = STATE_CSS[stateKey] || "var(--p31-cloud)"; }
 
       const ndBus = $("nd-bus"); if (ndBus) ndBus.innerText = n.bus;
       // Toggle empty-state vs populated-state

@@ -19,7 +19,7 @@
     "teal": "var(--p31-teal)",
     "cyan": "var(--p31-cyan)",
     "cloud": "var(--p31-cloud)",
-    "butter": "var(--p31-butter)",
+    "amber": "var(--p31-amber)",
     "lavender": "var(--p31-lavender)",
     "phosphorus": "var(--p31-phosphorus)",
     "paper": "var(--p31-paper)",
@@ -51,13 +51,13 @@
         "4": "var(--p31-tone-phosphorus-4)",
         "5": "var(--p31-tone-phosphorus-5)"
       },
-      "butter": {
-        "0": "var(--p31-tone-butter-0)",
-        "1": "var(--p31-tone-butter-1)",
-        "2": "var(--p31-tone-butter-2)",
-        "3": "var(--p31-tone-butter-3)",
-        "4": "var(--p31-tone-butter-4)",
-        "5": "var(--p31-tone-butter-5)"
+      "amber": {
+        "0": "var(--p31-tone-amber-0)",
+        "1": "var(--p31-tone-amber-1)",
+        "2": "var(--p31-tone-amber-2)",
+        "3": "var(--p31-tone-amber-3)",
+        "4": "var(--p31-tone-amber-4)",
+        "5": "var(--p31-tone-amber-5)"
       },
       "lavender": {
         "0": "var(--p31-tone-lavender-0)",
@@ -110,7 +110,7 @@
       "teal",
       "coral",
       "phosphorus",
-      "butter",
+      "amber",
       "lavender"
     ],
     "steps": [

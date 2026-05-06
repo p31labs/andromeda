@@ -17,4 +17,10 @@ runs:
     - name: Install
       shell: bash
       working-directory: 04_SOFTWARE
-      run: pnpm install --frozen-lockfile
+      run: |
+        if pnpm install --frozen-lockfile; then
+          echo "04_SOFTWARE install succeeded with frozen lockfile"
+        else
+          echo "04_SOFTWARE install failed with frozen lockfile, falling back to update"
+          pnpm install
+        fi

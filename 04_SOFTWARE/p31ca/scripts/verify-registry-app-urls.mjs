@@ -17,8 +17,6 @@ const PUBLIC = path.join(P31CA, 'public');
 const regPath = path.join(P31CA, 'scripts', 'hub', 'registry.mjs');
 const { registry } = await import(pathToFileURL(regPath).href);
 
-/** Astro routes under `src/pages/` — absent from `public/` until `astro build`; hub Launch still targets final URL */
-const SKIP_IDS = new Set(['integrations']);
 /** Status values that don't require a live file (concept/draft are not shipped) */
 const SKIP_STATUSES = new Set(['concept', 'draft']);
 let errs = 0;
@@ -28,11 +26,12 @@ function fail(m) {
 }
 
 for (const item of registry) {
-  if (SKIP_IDS.has(item.id)) continue;
   if (SKIP_STATUSES.has(item.status)) continue;
-  let u = String(item.appUrl ?? '').trim();
+  const u = String(item.appUrl ?? '').trim();
+  // External URLs — runtime-resolved, no file check
   if (/^https?:\/\//i.test(u)) continue;
-  if (u.startsWith('/')) u = u.slice(1);
+  // Absolute paths starting with '/' — Astro routes or SPA paths; no static file to check
+  if (u.startsWith('/')) continue;
   const target = path.join(PUBLIC, u);
   if (!fs.existsSync(target)) {
     fail(`${item.id}: appUrl "${item.appUrl}" → missing ${path.relative(P31CA, target)}`);

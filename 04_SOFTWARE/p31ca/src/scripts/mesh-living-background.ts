@@ -23,13 +23,13 @@ export type MeshLivingBgOptions = {
 
 const AXIS_COLORS = { a: 0xff9944, b: 0x44aaff, c: 0x44ffaa, d: 0xff4466 };
 const STATE_CSS: Record<string, string> = {
-  active: "#3ba372",
-  deployed: "#25897d",
+  active: "var(--p31-phosphorus)",
+  deployed: "var(--p31-teal)",
   countdown: "#cda852",
-  complete: "#25897d",
+  complete: "var(--p31-teal)",
   missing: "#cc6247",
-  ongoing: "#25897d",
-  prototype: "#25897d",
+  ongoing: "var(--p31-teal)",
+  prototype: "var(--p31-teal)",
 };
 const STATE_GLOW: Record<string, number> = {
   countdown: 2.0,
@@ -49,7 +49,7 @@ const VERTICES: Record<string, [string, number, number, number, number, string, 
   "bonding-game": ["BONDING", 0, 3, 1, 0, "deployed", "ac", "WebRTC Mesh"],
   "p31-labs": ["P31 Labs", 1, 1, 2, 0, "active", "ac", "501(c)(3)"],
   spaceship: ["Spaceship Earth", 0, 1, 3, 0, "deployed", "ac", "Observatory Dome"],
-  buffer: ["The Buffer", 2, 1, 1, 0, "active", "dc", "Voltage Filter"],
+  buffer: ["Buffer", 2, 1, 1, 0, "active", "dc", "Voltage Filter"],
   "node-one": ["Node One", 1, 0, 3, 0, "prototype", "dc", "ESP32-S3"],
   centaur: ["The Centaur", 1, 1, 2, 0, "active", "ac"],
   "love-econ": ["L.O.V.E.", 1, 1, 2, 0, "deployed", "ac", "Ledger"],

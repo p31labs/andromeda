@@ -165,6 +165,10 @@ nodevars.bat
 stripe_backup_code.txt
 *.backup_code.txt
 
+# DID / PQC private keys
+*.pem
+did-signing-key.pem
+
 # Wrangler local state
 .wrangler/
 

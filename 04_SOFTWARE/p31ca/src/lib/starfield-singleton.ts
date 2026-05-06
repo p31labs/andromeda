@@ -25,7 +25,20 @@ export type RouteId =
   | 'connect'
   | 'ops'
   | 'garden'
-  | 'passport';
+  | 'passport'
+  | 'qfactor'
+  | 'node-zero'
+  | 'messaging-hub'
+  | 'demo-labs'
+  | 'p31-canon-demo'
+  | '404'
+  | 'geodesic-math'
+  | 'god'
+  | 'grants'
+  | 'integrations'
+  | 'mesh-observatory'
+  | 'orchestrator'
+  | 'atmosphere';
 
 interface RouteCam {
   z: number;      // camera dolly Z
@@ -37,13 +50,26 @@ interface RouteCam {
 const MAX_PARTICLES = 800;
 
 const ROUTE_CAM: Record<RouteId, RouteCam> = {
-  home:     { z:  0.0,  hue: 0.971, count: 800, speed: 0.15 }, // #f43f5e rose
-  dome:     { z: -1.2,  hue: 0.552, count: 400, speed: 0.08 }, // #0ea5e9 sky
-  research: { z: -0.4,  hue: 0.444, count: 600, speed: 0.12 }, // #10b981 emerald
-  connect:  { z: -0.6,  hue: 0.718, count: 700, speed: 0.13 }, // #8b5cf6 violet
-  ops:      { z:  0.4,  hue: 0.600, count: 150, speed: 0.01 }, // #64748b slate
-  garden:   { z:  0.8,  hue: 0.105, count:  25, speed: 0.05 }, // #f59e0b amber
-  passport: { z: -0.2,  hue: 0.710, count: 500, speed: 0.10 }, // #a78bfa violet-400
+   home:     { z:  0.0,  hue: 0.971, count: 800, speed: 0.15 }, // #f43f5e rose
+   dome:     { z: -1.2,  hue: 0.552, count: 400, speed: 0.08 }, // #0ea5e9 sky
+   research: { z: -0.4,  hue: 0.444, count: 600, speed: 0.12 }, // var(--p31-teal) emerald
+   connect:  { z: -0.6,  hue: 0.718, count: 700, speed: 0.13 }, // #8b5cf6 violet
+   ops:      { z:  0.4,  hue: 0.600, count: 150, speed: 0.01 }, // #64748b slate
+   garden:   { z:  0.8,  hue: 0.105, count:  25, speed: 0.05 }, // var(--p31-amber) amber
+   passport:   { z: -0.2,  hue: 0.710, count: 500, speed: 0.10 }, // #a78bfa violet-400
+   qfactor:    { z: -0.3,  hue: 0.444, count: 420, speed: 0.09 }, // var(--p31-teal) emerald (vitality)
+   'node-zero':{ z:  0.1,  hue: 0.552, count: 580, speed: 0.11 }, // #0ea5e9 sky (hardware mesh)
+   'messaging-hub':  { z:  0.2,  hue: 0.444, count: 450, speed: 0.06 }, // Emerald (E2E Secure)
+   'demo-labs':      { z: -0.1,  hue: 0.105, count: 600, speed: 0.12 }, // Amber (Experimental)
+   'p31-canon-demo': { z:  0.0,  hue: 0.718, count: 350, speed: 0.08 }, // Violet (Design Canon)
+   '404':            { z:  0.6,  hue: 0.000, count:  80, speed: 0.02 }, // sparse/lost — coral
+   'geodesic-math':  { z: -0.3,  hue: 0.444, count: 300, speed: 0.06 }, // Emerald (geometry)
+   'god':            { z:  0.2,  hue: 0.600, count: 180, speed: 0.03 }, // Slate (operator shell)
+   'grants':         { z: -0.2,  hue: 0.333, count: 480, speed: 0.10 }, // Green (growth/funding)
+   'integrations':   { z: -0.4,  hue: 0.718, count: 530, speed: 0.11 }, // Violet (mesh/connect)
+   'mesh-observatory':{ z: -0.5, hue: 0.552, count: 620, speed: 0.12 }, // Sky (live data)
+   'orchestrator':   { z:  0.3,  hue: 0.000, count: 160, speed: 0.03 }, // Coral (cockpit/alert)
+   'atmosphere':     { z:  0.0,  hue: 0.444, count:   0, speed: 0.00 }, // Suspended — owns its own canvas
 };
 
 // ── GLSL shaders ──────────────────────────────────────────────────────────────
@@ -476,7 +502,7 @@ export function alertStarfield(level: 'warning' | 'critical'): void {
   } else {
     // warning: restore camZ, push amber hue + modest speed boost
     state.camTarget   = alertSaved.camTarget;
-    state.hueTarget   = 0.105;  // #f59e0b amber
+    state.hueTarget   = 0.105;  // var(--p31-amber) amber
     state.countTarget = Math.min(alertSaved.countTarget * 1.5, MAX_PARTICLES);
     state.speedTarget = Math.min(alertSaved.speedTarget * 2.5, 0.40);
   }

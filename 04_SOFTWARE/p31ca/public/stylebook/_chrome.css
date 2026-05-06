@@ -522,11 +522,11 @@
 .sb-code-block .tk-comment { color: var(--p31-muted); font-style: italic; }
 .sb-code-block .tk-keyword { color: var(--p31-coral); }
 .sb-code-block .tk-string { color: var(--p31-phosphorus); }
-.sb-code-block .tk-number { color: var(--p31-butter); }
+.sb-code-block .tk-number { color: var(--p31-amber); }
 .sb-code-block .tk-prop { color: var(--p31-cyan); }
 .sb-code-block .tk-func { color: var(--p31-lavender); }
 .sb-code-block .tk-tag { color: var(--p31-coral); }
-.sb-code-block .tk-attr { color: var(--p31-butter); }
+.sb-code-block .tk-attr { color: var(--p31-amber); }
 
 /* ═══════════════════════════════════════════════════════════════
    PREVIEW PANELS
@@ -641,7 +641,7 @@
 }
 
 .sb-callout-warn {
-  border-color: var(--p31-butter);
+  border-color: var(--p31-amber);
   background: rgba(205, 168, 82, 0.05);
 }
 

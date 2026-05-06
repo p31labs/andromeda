@@ -492,7 +492,7 @@ body.p31-doc a:hover {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: var(--p31-tracking-caps);
-  color: var(--p31-butter);
+  color: var(--p31-amber);
 }
 
 .p31-doc-card {
@@ -594,7 +594,7 @@ body.p31-doc code,
   background: var(--p31-surface2);
   border-radius: var(--p31-radius-sm);
   border: 1px solid var(--p31-border-subtle);
-  color: var(--p31-butter);
+  color: var(--p31-amber);
 }
 .p31-doc-cmd code {
   background: transparent;
@@ -830,7 +830,7 @@ body.p31-doc-no-spy .p31-doc-section {
        lightweight hint. Default cmd colors stay legible without it. */
 .p31-doc-cmd b { font-weight: inherit; }
 .p31-tok-cmd  { color: var(--p31-cyan); font-weight: 600; }
-.p31-tok-flag { color: var(--p31-butter); }
+.p31-tok-flag { color: var(--p31-amber); }
 .p31-tok-env  { color: var(--p31-phosphorus); font-weight: 600; }
 .p31-tok-path { color: var(--p31-lavender); }
 
@@ -968,7 +968,7 @@ body.p31-has-top-bar { padding-top: 3rem; }
   align-items: center;
   gap: 12px;
   text-decoration: none;
-  color: var(--p31-cloud, #d8d6d0);
+  color: var(--p31-cloud, #e8e6e3);
 }
 .nav-brand:hover { text-decoration: none; }
 .nav-mark {
@@ -991,7 +991,7 @@ body.p31-has-top-bar { padding-top: 3rem; }
   font-size: 11px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: color-mix(in srgb, var(--p31-cloud, #d8d6d0) 82%, transparent);
+  color: color-mix(in srgb, var(--p31-cloud, #e8e6e3) 82%, transparent);
 }
 .nav-links {
   display: flex;
@@ -1011,8 +1011,8 @@ body.p31-has-top-bar { padding-top: 3rem; }
   text-decoration: none;
   transition: color 0.15s;
 }
-.nav-link:hover { color: var(--p31-cloud, #d8d6d0); text-decoration: none; }
-.nav-link[aria-current="page"] { color: var(--p31-cloud, #d8d6d0); font-weight: 600; }
+.nav-link:hover { color: var(--p31-cloud, #e8e6e3); text-decoration: none; }
+.nav-link[aria-current="page"] { color: var(--p31-cloud, #e8e6e3); font-weight: 600; }
 .nav-cta {
   font-family: var(--p31-font-mono, "JetBrains Mono", monospace);
   font-size: 11px;

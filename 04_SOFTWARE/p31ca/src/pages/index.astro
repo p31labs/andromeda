@@ -1,1115 +1,727 @@
 ---
 /**
- * P31 Labs Unified Landing Page
- * Product grid + prototypes + research: single source via hub-landing.json
- * (scripts/hub/build-landing-data.mjs from registry.mjs). CWP D2.
+  * @p31-layout: Gallery
+ * index.astro — P31 Labs root landing page
+ *
+ * Ca₉(PO₄)₆ Posner Molecule: 9 Ca²⁺ ions in 3 orbital rings around a
+ * K₄ tetrahedron PHOS phosphorus core.
+ *
+ * Layer stack:
+ *   Z=0  AppShell WebGL starfield (persists across SPA navigations)
+ *   Z=5  #c1 — 2D bond/tether canvas (DPR-scaled)
+ *   Z=10 #node-layer — 9 DOM <a> nodes (transform3d, elliptical orbit y*0.6)
+ *   Z=40 #phos-wrap — K₄ tetrahedron PHOS mascot (JS parallax + float)
+ *   Z=60 #speech — speech bubble
+ *   Z=100 PHOS Router (whisperpanel, chip tree)
+ *   Z=9000 #akinator-overlay — Bayesian intent router
+ *   Z=300 #safe-view — Gray Rock static fallback (SOULSAFE / Gray Rock Protocol)
+ *
+ * Orbital mechanics (p31_final/P31_TECHNICAL_BUILD_SPECIFICATION.md §Surface 01):
+ *   Ring 1 (inner/family):   CW  60s period  r≈120px  y*0.6
+ *   Ring 2 (middle/ops):     CCW 90s period  r≈200px  y*0.6
+ *   Ring 3 (outer/creation): CW  120s period r≈280px  y*0.6
+ *
+ * Egg anchors (verify:egg-hunt — HUB-LAYER0):
+ *   id="trimtab-trigger"  — operator Easter egg (Bucky Fuller / call me trimtab)
+ *   activateLayer0()      — fn restores starfield from safe mode
+ *   "Hold ESC to exit"    — safe view exit hint
+ *
+ * Token canon: var(--p31-*) from /p31-style.css.
+ * verify:surface-canon requires routeName="home" — do not change.
  */
 import AppShell from '../layouts/AppShell.astro';
-import hubLanding from '../data/hub-landing.json';
-import groundTruth from '../../ground-truth/p31.ground-truth.json';
-import docLibIndex from '../../public/doc-library/index.json';
 
-const coreProducts = hubLanding.coreProducts;
-const prototypes = hubLanding.prototypes;
-const research = hubLanding.research;
-
-const bondingTests =
-  (groundTruth as { canonicalNumbering?: { bondingTestBaseline?: { tests?: number } } }).canonicalNumbering
-    ?.bondingTestBaseline?.tests ?? 424;
-const docCount =
-  typeof (docLibIndex as { count?: unknown }).count === 'number'
-    ? (docLibIndex as { count: number }).count
-    : 0;
-const researchPaperCount = research.length;
-const doiCount = new Set(research.map((p: { doi: string }) => p.doi)).size;
-
-/** Curated threshold “doors” — same building, different rooms (live = phosphor, warm = butter). */
-const lobbyDoors: {
-  title: string;
-  meta: string;
-  sub: string;
-  href: string;
-  external?: boolean;
-  dot: 'live' | 'warm';
-}[] = [
-  {
-    title: 'BONDING',
-    meta: `Known molecular catalog · ${bondingTests} tests · live`,
-    sub: 'Build what the body needs — together.',
-    href: 'https://bonding.p31ca.org',
-    external: true,
-    dot: 'live',
-  },
-  {
-    title: 'Cognitive Passport',
-    meta: '8 profiles · p31.cognitivePassport/1.0.0 · live',
-    sub: 'Control what the world knows about your mind.',
-    href: '/passport',
-    dot: 'live',
-  },
-  {
-    title: 'Dome / Cockpit',
-    meta: '16 face nodes · Q-Factor readout · live',
-    sub: 'See the whole mesh at once.',
-    href: '/dome/',
-    dot: 'live',
-  },
-  {
-    title: 'C.A.R.S.',
-    meta: 'your people · no strangers · live',
-    sub: 'Same bowl, same room.',
-    href: 'https://bonding.p31ca.org/soup',
-    external: true,
-    dot: 'live',
-  },
-  {
-    title: 'Document Library',
-    meta: `${docCount} documents · searchable · live`,
-    sub: "Everything we've written down.",
-    href: '/doc-library/',
-    dot: 'live',
-  },
-  {
-    title: 'Research',
-    meta: `${researchPaperCount} papers · ${doiCount} DOIs · live`,
-    sub: 'The proof is public.',
-    href: '#research-papers',
-    dot: 'live',
-  },
-];
-
-const getStatusStyles = (status: string) => {
-  if (status === 'LIVE')
-    return {
-      text: 'text-phosphorus',
-      bg: 'bg-phosphorus/10',
-      border: 'border-phosphorus/30',
-      glow: 'group-hover:shadow-[0_12px_40px_rgba(59,163,114,0.2),inset_0_1px_0_rgba(255,255,255,0.08)]',
-    };
-  if (status === 'BUILDING')
-    return {
-      text: 'text-butter',
-      bg: 'bg-butter/10',
-      border: 'border-butter/30',
-      glow: 'group-hover:shadow-[0_12px_40px_rgba(205,168,82,0.2),inset_0_1px_0_rgba(255,255,255,0.08)]',
-    };
-  if (status === 'HARDWARE')
-    return {
-      text: 'text-butter',
-      bg: 'bg-butter/15',
-      border: 'border-butter/35',
-      glow: 'group-hover:shadow-[0_12px_40px_rgba(205,168,82,0.25),inset_0_1px_0_rgba(255,255,255,0.08)]',
-    };
-  if (status === 'RESEARCH' || status === 'TOOL')
-    return {
-      text: 'text-teal',
-      bg: 'bg-teal/10',
-      border: 'border-teal/30',
-      glow: 'group-hover:shadow-[0_12px_40px_rgba(37,137,125,0.22),inset_0_1px_0_rgba(255,255,255,0.08)]',
-    };
-  return {
-    text: 'text-p31-muted',
-    bg: 'bg-p31-muted-10',
-    border: 'border-p31-muted-30',
-    glow: 'group-hover:shadow-[0_12px_40px_rgba(107,114,128,0.2),inset_0_1px_0_rgba(255,255,255,0.08)]',
-  };
-};
-
-/** CWP D3 — filter counts from hub-landing (registry-driven) */
-const FILTER_ORDER = ['LIVE', 'BUILDING', 'HARDWARE', 'RESEARCH', 'TOOL'] as const;
-const countByStatus = coreProducts.reduce(
-  (acc, p) => {
-    acc[p.status] = (acc[p.status] || 0) + 1;
-    return acc;
-  },
-  {} as Record<string, number>
-);
-
-const pageDescription =
-  'P31 Labs technical hub — sovereign operator surface, verify-gated mesh, Georgia nonprofit.';
+const desc = 'P31 Labs — Ca₉(PO₄)₆ Posner Molecule. 9 calcium ions. 1 phosphorus core. Infinite coherence.';
 ---
 
 <AppShell
-  title="P31 Labs — Technical hub"
-  description={pageDescription}
+  title="P31 Labs"
+  description={desc}
   routeName="home"
 >
   <Fragment slot="head">
-    <link rel="stylesheet" href="/lib/p31-starfield.css" />
-    <link rel="stylesheet" href="/lib/p31-larmor-fields.css" />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1;500;1;600&display=swap"
-      rel="stylesheet"
-    />
     <link rel="canonical" href="https://p31ca.org/" />
-    <meta property="og:site_name" content="P31 Labs" />
-    <meta
-      property="og:title"
-      content="P31 Labs — Technical hub"
-    />
-    <meta property="og:description" content={pageDescription} />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://p31ca.org/" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta
-      name="twitter:title"
-      content="P31 Labs — Technical hub"
-    />
-    <meta name="twitter:description" content={pageDescription} />
-    <script is:inline>
-      (function () {
-        if (/[?&]alive=1(?:&|$)/.test(location.search)) {
-          document.documentElement.classList.add('p31-hub-alive');
-          return;
-        }
-        document.documentElement.classList.add('p31-hub-gray-rock');
-        function wake() {
-          document.documentElement.classList.remove('p31-hub-gray-rock');
-          document.documentElement.classList.add('p31-hub-alive');
-        }
-        document.addEventListener('pointerdown', wake, { once: true, capture: true });
-        document.addEventListener('keydown', wake, { once: true, capture: true });
-      })();
-    </script>
-  </Fragment>
+    <meta property="og:title"        content="P31 Labs" />
+    <meta property="og:description"  content={desc} />
+    <meta property="og:url"          content="https://p31ca.org/" />
+    <meta property="og:type"         content="website" />
+    <meta name="twitter:card"        content="summary" />
+    <meta name="twitter:title"       content="P31 Labs" />
+    <meta name="twitter:description" content={desc} />
 
-  <!-- Hub landing: 2D particle canvas (no WebGL — full dome lives at /dome) -->
-  <div
-    id="hub-gl-backdrop"
-    class="pointer-events-none fixed inset-0 z-0 isolate overflow-hidden bg-[#05080c]"
-    aria-hidden="true"
-  >
-    <canvas id="hub-particle-canvas" class="p31-starfield-canvas absolute inset-0 h-full w-full"></canvas>
-    <div
-      class="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-b from-[rgba(37,137,125,0.03)] via-transparent to-[rgba(204,98,71,0.035)]"
-      aria-hidden="true"
-    ></div>
-    <div
-      class="pointer-events-none absolute inset-0 z-[2] bg-[#05080c]/50"
-      aria-hidden="true"
-    ></div>
-  </div>
-
-  <!-- Top nav: public actions always visible; operator instruments in <details> (mobile-first) -->
-  <nav
-    class="fixed top-0 left-0 right-0 z-50 glass-panel border-b border-white/[0.07] flex flex-col gap-3 pt-[max(0.5rem,env(safe-area-inset-top))] pb-2 pl-[max(0.75rem,env(safe-area-inset-left))] pr-[max(0.75rem,env(safe-area-inset-right))] sm:px-5 lg:flex-row lg:items-center lg:justify-between lg:gap-4 text-sm font-mono text-p31-cloud shadow-[0_4px_30px_rgba(0,0,0,0.5)] md:text-xs"
-    aria-label="Primary"
-  >
-    <div class="flex min-w-0 flex-wrap items-center justify-between gap-3 lg:flex-1 lg:justify-start">
-      <a href="/" class="group flex min-w-0 shrink-0 items-center gap-3 no-underline" title="P31 Labs hub">
-        <div
-          class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-teal/40 bg-teal/10 font-mono text-[11px] font-bold tracking-tight text-cyan transition-all group-hover:border-teal group-hover:bg-teal group-hover:text-p31-cloud group-hover:shadow-[0_0_15px_rgba(77,184,168,0.35)]"
-        >
-          P31
-        </div>
-        <span
-          class="hidden font-mono text-[11px] font-semibold uppercase leading-tight tracking-[0.2em] text-p31-cloud/70 transition-colors group-hover:text-p31-cloud sm:inline sm:max-w-[14rem]"
-        >
-          P31 Labs</span>
-      </a>
-
-      <details
-        id="hub-instruments"
-        class="group relative min-w-0 max-w-full flex-1 sm:max-w-md lg:max-w-lg [&_summary::-webkit-details-marker]:hidden"
-      >
-        <summary
-          class="flex min-h-[2.75rem] cursor-pointer list-none items-center justify-center gap-2 rounded-lg border border-white/[0.1] bg-p31-void-50 px-3 py-2 text-[10px] font-bold uppercase tracking-widest text-p31-muted transition-colors hover:border-teal/25 hover:text-p31-cloud lg:min-h-0 lg:py-1.5"
-        >
-          Instruments
-          <span class="text-p31-muted/50" aria-hidden="true">▾</span>
-        </summary>
-        <div
-          class="absolute left-0 right-0 top-full z-[60] mt-2 flex max-h-[min(70vh,28rem)] flex-col gap-4 overflow-y-auto rounded-lg border border-white/[0.08] bg-p31-void-95 p-4 shadow-[0_12px_40px_rgba(0,0,0,0.65)] backdrop-blur-md sm:left-auto sm:right-0 sm:min-w-[22rem]"
-        >
-          <div class="flex flex-wrap items-center gap-2" title="Fisher-Escolà Coherence Score">
-            <span class="w-2 h-2 shrink-0 rounded-full bg-phosphorus shadow-[0_0_8px_rgba(59,163,114,0.55)] animate-pulse" id="nav-status-dot"></span>
-            <span class="text-p31-muted">Q-FACTOR:</span>
-            <span class="font-bold text-phosphorus tracking-wider" id="nav-q-factor">0.925</span>
-          </div>
-          <div
-            class="flex flex-wrap items-center gap-x-4 gap-y-3 overflow-x-auto rounded-md border border-white/[0.07] bg-p31-void-50 px-3 py-2.5 [scrollbar-width:thin]"
-          >
-            <div class="flex items-center gap-2" title="Vertex A: Operator State">
-              <span class="text-p31-muted">SPOONS</span>
-              <div class="w-16 h-1.5 bg-surface2 rounded-full overflow-hidden">
-                <div id="nav-spoon-fill" class="h-full bg-coral transition-all duration-500" style="width: 50%;"></div>
-              </div>
-              <span id="nav-spoon-val" class="text-coral font-bold">10</span>
-            </div>
-            <div class="h-3 w-px bg-white/10"></div>
-            <div class="flex items-center gap-2" title="L.O.V.E. Ledger Balance">
-              <span class="text-p31-muted">L.O.V.E.</span>
-              <span id="nav-love-val" class="text-teal font-bold">3.28</span>
-            </div>
-            <div class="h-3 w-px bg-white/10 hidden sm:block"></div>
-            <div class="hidden sm:flex items-center gap-2">
-              <span class="text-p31-muted">FLEET:</span>
-              <span id="nav-fleet-val" class="text-p31-cloud">4/4</span>
-            </div>
-            <div class="h-3 w-px bg-white/10 hidden lg:block"></div>
-            <div
-              class="hidden lg:flex flex-wrap items-center gap-2"
-              title="As above, so below — p31ca HUD ↔ k4-personal edge (vitality, V/E L♥)"
-            >
-              <span class="text-p31-muted">MESH</span>
-              <span id="nav-mesh-vit" class="text-lavender font-bold">—</span>
-              <span class="text-p31-muted text-[10px]">L♥</span>
-              <span id="nav-mesh-ve" class="text-p31-cloud text-[10px] font-mono">—</span>
-              <span id="nav-mesh-detail" class="text-p31-muted text-[9px] font-mono max-w-[7rem] truncate hidden 2xl:inline" title=""> </span>
-              <a href="/mesh-observatory/" class="text-lavender hover:text-lavender/85 hover:underline text-[10px] font-bold" title="Mesh Observatory">OBS</a>
-            </div>
-          </div>
-          <div
-            class="group inline-flex min-h-[3rem] cursor-pointer items-center gap-3 rounded-md border border-white/[0.06] px-2 py-2 md:min-h-0"
-            id="trimtab-trigger"
-            title="Drag to tune · Click for Layer 0"
-          >
-            <canvas id="trimtab-canvas" width="24" height="24" class="opacity-80 transition-opacity group-hover:opacity-100"></canvas>
-            <span id="trimtab-freq" class="text-butter font-bold">863Hz</span>
-            <span class="text-[9px] text-p31-muted">Trim · breath</span>
-          </div>
-        </div>
-      </details>
-    </div>
-
-    <div
-      class="flex w-full flex-wrap items-center justify-center gap-2 sm:justify-end lg:w-auto lg:flex-nowrap lg:justify-end"
-    >
-      <a
-        href="/passport"
-        class="inline-flex min-h-[2.75rem] items-center justify-center rounded border border-phosphorus/35 bg-phosphorus/10 px-3 py-2 text-xs font-bold uppercase tracking-widest text-phosphorus hover:bg-phosphorus/25 hover:text-phosphorus md:min-h-0 md:px-2 md:py-1 md:text-[10px]"
-        title="AI context card — free, runs in your browser">Context Card</a>
-      <a
-        href="/dome"
-        class="inline-flex min-h-[2.75rem] items-center justify-center rounded border border-teal/30 bg-teal/10 px-3 py-2 text-xs font-bold uppercase tracking-widest text-teal hover:bg-teal/20 hover:text-phosphorus md:min-h-0 md:px-2 md:py-1 md:text-[10px]"
-        title="Sovereign Cockpit K₄ dome">Dome</a>
-      <a
-        href="/demos"
-        class="inline-flex min-h-[2.75rem] items-center justify-center rounded border border-butter/35 bg-butter/10 px-3 py-2 text-xs font-bold uppercase tracking-widest text-butter hover:bg-butter/20 hover:text-butter/90 md:min-h-0 md:px-2 md:py-1 md:text-[10px]"
-        title="Visual demos gallery — K₄ mesh, alignment graph (111 sources × 53 derivations), Larmor pulse, glass box (also at /visuals)">Demos</a>
-      <a
-        href="/glass-box"
-        class="inline-flex min-h-[2.75rem] items-center justify-center rounded border border-cloud/30 bg-cloud/5 px-3 py-2 text-xs font-bold uppercase tracking-widest text-cloud/80 hover:bg-cloud/10 hover:text-cloud md:min-h-0 md:px-2 md:py-1 md:text-[10px]"
-        title="Public transparency terminal — synthetic CLI playbacks + verify pulse + promoted reports (also at /glass and /transparency)">Glass</a>
-      <a
-        href="/journey"
-        class="inline-flex min-h-[2.75rem] items-center justify-center rounded border border-phosphorus/35 bg-phosphorus/10 px-3 py-2 text-xs font-bold uppercase tracking-widest text-phosphorus hover:bg-phosphorus/20 hover:brightness-110 md:min-h-0 md:px-2 md:py-1 md:text-[10px]"
-        title="Core path — onboard, authenticate, EDE home">Journey</a>
-      <a
-        href="/ops/"
-        class="inline-flex min-h-[2.75rem] items-center justify-center rounded border border-lavender/35 bg-lavender/10 px-3 py-2 text-xs font-bold uppercase tracking-widest text-lavender hover:bg-lavender/20 hover:text-lavender/90 md:min-h-0 md:px-2 md:py-1 md:text-[10px]"
-        title="G.O.D. operator shell — glass + shift">Ops</a>
-      <a
-        href="/mesh-start"
-        class="inline-flex min-h-[2.75rem] items-center justify-center rounded border border-coral/30 bg-coral/10 px-3 py-2 text-xs font-bold uppercase tracking-widest text-coral hover:bg-coral/20 hover:brightness-110 md:min-h-0 md:py-1 md:text-[10px]"
-      >
-        Authenticate
-      </a>
-    </div>
-  </nav>
-
-  <!-- Node Detail Panel -->
-  <aside
-    id="node-detail-panel"
-    class="pointer-events-none fixed bottom-[max(1rem,env(safe-area-inset-bottom))] left-4 right-4 z-40 w-auto max-w-sm translate-y-4 transform rounded-xl border-l border-t border-white/10 bg-p31-void-95 p-5 opacity-0 shadow-[0_10px_40px_rgba(0,0,0,0.8)] backdrop-blur-sm transition-all duration-300 sm:left-6 sm:right-auto sm:w-80"
-  >
-    <button
-      id="node-detail-close"
-      class="text-p31-muted pointer-events-auto absolute right-2 top-2 inline-flex min-h-[2.75rem] min-w-[2.75rem] items-center justify-center rounded-md hover:bg-white/10 hover:text-p31-cloud"
-      type="button"
-      aria-label="Close details"
-    >
-      ✕
-    </button>
-    <div class="text-teal font-bold text-lg mb-1" id="nd-title">Node Name</div>
-    <div class="flex items-center gap-3 text-[10px] font-mono mb-4 pb-3 border-b border-white/10">
-      <span id="nd-axis" class="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-p31-cloud-70">Axis</span>
-      <span id="nd-state" class="px-2 py-0.5 rounded border">State</span>
-      <span id="nd-bus" class="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-p31-cloud-70">Bus</span>
-    </div>
-    <div id="nd-notes" class="text-sm text-p31-cloud mb-4 leading-relaxed font-sans">Node description goes here.</div>
-    <div class="text-[10px] font-mono text-p31-muted mb-2 uppercase tracking-widest">Entangled Edges</div>
-    <div id="nd-conns" class="flex flex-wrap gap-2 pointer-events-auto"></div>
-  </aside>
-
-  <!-- LAYER 0: Somatic Mode Overlay -->
-  <div id="layer0" class="fixed inset-0 z-[100] bg-p31-void flex flex-col items-center justify-center gap-6 transition-opacity duration-1000 opacity-0 pointer-events-none">
-    <!-- Hub Layer0 POVM latch — string anchor for egg-hunt; handler: activateLayer0 in landing-cockpit.ts -->
-    <div class="absolute top-8 left-1/2 -translate-x-1/2 flex items-center gap-4 font-mono text-xs text-p31-muted">
-      <span>SPOONS</span>
-      <div class="w-32 h-1 bg-surface2 rounded-full overflow-hidden">
-        <div id="l0-spoon-fill" class="h-full bg-coral transition-all duration-500"></div>
-      </div>
-      <span id="l0-spoon-pct">50%</span>
-    </div>
-    <div id="l0-dot" class="w-16 h-16 rounded-full bg-coral opacity-40 transform scale-75"></div>
-    <div id="l0-phase" class="text-xl font-mono text-coral tracking-[0.2em] uppercase">INHALE</div>
-    <div class="absolute bottom-12 flex flex-col items-center gap-3">
-      <div class="w-32 h-1 bg-surface2 rounded-full overflow-hidden">
-        <div id="l0-escape-fill" class="h-full w-0 bg-coral"></div>
-      </div>
-      <div class="text-[10px] font-mono text-p31-muted tracking-widest uppercase">Hold ESC to exit</div>
-    </div>
-  </div>
-
-  <!-- MAIN SCROLLING CONTENT -->
-  <!-- pointer-events-none allows background clicking, but we restore it on .interactive-zone -->
-  <main
-    id="scroll-container"
-    class="pointer-events-none relative z-10 mx-auto max-w-7xl px-4 pt-28 pb-12 font-sans text-p31-cloud sm:px-6 sm:pb-20 md:pt-24"
-  >
-    <!-- Lobby threshold — geometry first, then nameplate (hub shell; tokens via p31-style.css) -->
-    <header
-      id="technical-hub-boundary"
-      class="animate-fade-in-up relative z-10 mb-8 text-center sm:mb-12 md:mb-14"
-      style="animation-delay: 0.08s;"
-    >
-      <div class="lobby-hero pointer-events-auto mx-auto max-w-xl px-4 pt-16 sm:pt-20 md:pt-24">
-        <div class="lobby-k4-wrap mb-6 flex justify-center" aria-hidden="true">
-          <svg
-            class="lobby-k4 lobby-k4--static text-teal"
-            width="120"
-            height="120"
-            viewBox="-100 -100 200 200"
-            role="img"
-            aria-label="K₄ tetrahedron wireframe — four vertices, six edges"
-          >
-            <!-- Schlegel-style projection: triangle + interior hub = K₄ -->
-            <line x1="0" y1="-72" x2="-62" y2="52" stroke="currentColor" stroke-width="1.25" vector-effect="non-scaling-stroke" opacity="0.85" />
-            <line x1="0" y1="-72" x2="62" y2="52" stroke="currentColor" stroke-width="1.25" vector-effect="non-scaling-stroke" opacity="0.85" />
-            <line x1="-62" y1="52" x2="62" y2="52" stroke="currentColor" stroke-width="1.25" vector-effect="non-scaling-stroke" opacity="0.85" />
-            <line x1="0" y1="-8" x2="0" y2="-72" stroke="currentColor" stroke-width="1.25" vector-effect="non-scaling-stroke" opacity="0.85" />
-            <line x1="0" y1="-8" x2="-62" y2="52" stroke="currentColor" stroke-width="1.25" vector-effect="non-scaling-stroke" opacity="0.85" />
-            <line x1="0" y1="-8" x2="62" y2="52" stroke="currentColor" stroke-width="1.25" vector-effect="non-scaling-stroke" opacity="0.85" />
-          </svg>
-        </div>
-        <h1
-          id="technical-hub-heading"
-          class="hub-operator-title mb-4 text-balance text-[clamp(1.85rem,4vw+0.5rem,2.85rem)] leading-[1.12] tracking-tight text-p31-cloud"
-        >
-          P31 Labs
-        </h1>
-        <p class="mx-auto mb-8 max-w-xl font-sans text-base leading-relaxed text-p31-cloud-80 sm:text-lg">
-          Open-source assistive technology for neurodivergent individuals.
-        </p>
-        <p class="font-mono text-[10px] uppercase tracking-[0.16em] text-p31-muted">
-          <a href="#lobby-rooms" class="text-teal/90 no-underline hover:underline">Rooms</a>
-          <span class="mx-2 opacity-40" aria-hidden="true">·</span>
-          <a href="#core-products" class="text-p31-muted no-underline hover:text-teal/90">Full catalog</a>
-          <span class="mx-2 opacity-40" aria-hidden="true">·</span>
-          <button
-            id="btn-explore-dome"
-            type="button"
-            class="border-0 bg-transparent p-0 font-mono text-[10px] uppercase tracking-[0.16em] text-p31-muted hover:text-teal/90"
-          >
-            Dome
-          </button>
-        </p>
-      </div>
-    </header>
-
-    <section
-      id="lobby-rooms"
-      class="interactive-zone animate-fade-in-up relative z-10 mx-auto mb-12 max-w-3xl px-4 sm:mb-16"
-      style="animation-delay: 0.12s;"
-      aria-labelledby="lobby-rooms-heading"
-    >
-      <h2 id="lobby-rooms-heading" class="sr-only">Rooms</h2>
-      <ul class="m-0 list-none space-y-3 p-0">
-        {lobbyDoors.map((door) => (
-          <li>
-            <a
-              href={door.href}
-              {...(door.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-              class={`hub-door group flex min-h-[3.25rem] flex-col gap-1 rounded-lg border border-white/[0.06] border-l-4 bg-p31-void/40 py-3 pl-4 pr-3 no-underline transition-colors hover:bg-surface2/50 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:py-3.5 ${
-                door.title === 'Research'
-                  ? 'border-l-coral/45 hover:border-l-coral hover:border-coral/25'
-                  : 'border-l-teal/55 hover:border-l-teal hover:border-teal/25'
-              }`}
-            >
-              <div class="min-w-0 text-left">
-                <div class="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-p31-cloud">
-                  {door.title}
-                </div>
-                <div class="font-mono text-[10px] leading-snug text-p31-muted">{door.meta}</div>
-                <p class="mb-0 mt-1 font-sans text-sm leading-snug text-p31-cloud-75">{door.sub}</p>
-              </div>
-              <span
-                class="mt-1 inline-flex shrink-0 items-center gap-1.5 self-end font-mono text-[10px] uppercase tracking-wider text-p31-muted sm:mt-0 sm:self-center"
-                aria-hidden="true"
-              >
-                {door.dot === 'live' ? (
-                  <span class="h-2 w-2 rounded-full bg-phosphorus shadow-[0_0_10px_rgba(59,163,114,0.45)]" title="Live" />
-                ) : (
-                  <span class="h-2 w-2 rounded-full bg-butter shadow-[0_0_8px_rgba(205,168,82,0.35)]" title="Warm" />
-                )}
-              </span>
-            </a>
-          </li>
-        ))}
-      </ul>
-    </section>
-
-    <!-- Priority routes — operator first (left / top), mesh story second -->
-    <section
-      class="animate-fade-in-up interactive-zone mb-12 sm:mb-14"
-      style="animation-delay: 0.12s;"
-      aria-label="Priority routes"
-    >
-      <div class="mb-4 flex items-center gap-3">
-        <div class="h-px min-w-[1.5rem] flex-grow bg-white/15 sm:min-w-[2rem]"></div>
-        <p class="m-0 shrink-0 font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-teal/80">
-          Priority
-        </p>
-        <div class="h-px flex-grow bg-white/15"></div>
-      </div>
-      <div class="grid gap-4 sm:grid-cols-2 lg:gap-6">
-        <div class="min-w-0">
-          <a
-            href="/ops/"
-            class="group flex h-full min-h-[12rem] flex-col justify-between gap-4 rounded-[12px] border border-lavender/35 p-5 no-underline transition-all duration-300 hover:border-lavender/55 hover:bg-surface2/90 sm:min-h-0 sm:p-6 glass-panel"
-          >
-            <div>
-              <div class="mb-2 font-mono text-xs uppercase tracking-widest text-lavender sm:text-[10px]">/ operator</div>
-              <h2 class="mb-2 font-bold text-p31-cloud text-lg leading-snug group-hover:text-lavender/90 transition-colors">
-                G.O.D. — operator shell
-              </h2>
-              <p class="text-sm text-p31-cloud-70 leading-relaxed">
-                Glass-box probes from <span class="font-mono text-p31-cloud-90">p31-ecosystem.json</span>, system pulse,
-                density dial, and edge shift readout. Pair with <span class="font-mono text-teal/90">npm run command-center</span> on your machine.
-              </p>
-            </div>
-            <span
-              class="inline-flex min-h-[2.75rem] w-full shrink-0 items-center justify-center rounded-[6px] bg-lavender/90 px-5 py-2.5 text-sm font-bold tracking-wide text-p31-cloud sm:min-h-0 sm:w-auto sm:self-start"
-            >
-              Open /ops →
-            </span>
-          </a>
-        </div>
-        <div class="min-w-0">
-          <a
-            href="/delta.html"
-            class="group flex h-full min-h-[12rem] flex-col justify-between gap-4 rounded-[12px] border border-teal/30 p-5 no-underline transition-all duration-300 hover:border-teal/60 hover:bg-surface2/90 sm:min-h-0 sm:p-6 glass-panel"
-          >
-            <div>
-              <div class="mb-2 font-mono text-xs uppercase tracking-widest text-teal sm:text-[10px]">/ new_here</div>
-              <h2 class="mb-2 font-bold text-p31-cloud text-lg leading-snug group-hover:text-teal transition-colors">
-                Why a mesh instead of an app?
-              </h2>
-              <p class="text-sm text-p31-cloud-70 leading-relaxed">
-                P31 runs on a K₄ tetrahedron — four vertices, six edges, zero central authority. The Wye→Delta story
-                explains why that matters.
-              </p>
-            </div>
-            <div class="flex flex-wrap gap-2 sm:gap-3">
-              <span
-                class="inline-flex min-h-[2.5rem] items-center justify-center rounded-[6px] bg-teal/90 px-4 py-2 text-p31-cloud text-sm font-bold tracking-wide"
-              >
-                Wye → Delta
-              </span>
-              <span
-                class="inline-flex min-h-[2.5rem] items-center justify-center rounded-[6px] border border-white/10 px-4 py-2 text-p31-cloud text-sm font-bold tracking-wide"
-              >
-                Join the mesh →
-              </span>
-            </div>
-          </a>
-        </div>
-      </div>
-    </section>
-
-    <!-- 2. Core Products Grid (CWP D3 — client filter by status) -->
-    <section id="core-products" class="mb-24 pt-4 animate-fade-in-up interactive-zone sm:pt-6" style="animation-delay: 0.22s;" aria-label="Core architecture products">
-      <div class="mb-8 flex items-center gap-4">
-        <div class="h-px flex-grow bg-white/10"></div>
-        <h2 class="m-0 whitespace-nowrap font-mono text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-p31-muted">
-          Labs &amp; demos
-        </h2>
-        <div class="h-px flex-grow bg-white/10"></div>
-      </div>
-      <div
-        class="mb-6 flex flex-wrap items-stretch gap-2 font-mono text-sm uppercase tracking-wider sm:items-center md:text-[11px]"
-        role="toolbar"
-        aria-label="Filter products by status"
-        id="hub-core-filters"
-      >
-        <span class="mr-1 hidden self-center text-p31-muted sm:inline">Filter</span>
-        <button
-          type="button"
-          data-filter="all"
-          class="hub-filter-btn rounded border border-teal/50 bg-teal/10 px-4 py-2.5 text-teal transition-colors md:px-3 md:py-1.5"
-          aria-pressed="true"
-        >All ({coreProducts.length})</button>
-        {FILTER_ORDER.map((st) => {
-          const n = countByStatus[st] || 0;
-          if (n === 0) return null;
-          return (
-            <button
-              type="button"
-              data-filter={st.toLowerCase()}
-              class="hub-filter-btn rounded border border-white/10 px-4 py-2.5 text-p31-muted transition-colors hover:border-white/20 hover:text-p31-cloud md:px-3 md:py-1.5"
-              aria-pressed="false"
-            >
-              {st} ({n})
-            </button>
-          );
-        })}
-      </div>
-      <div id="hub-core-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {coreProducts.map((product) => {
-          const styles = getStatusStyles(product.status);
-          return (
-            <a
-              href={product.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              data-product-status={product.status}
-              class={`hub-product-card ede-mission-card glass-panel p-6 rounded-[12px] flex flex-col group hover:bg-surface2/98 transition-all duration-200 hover:-translate-y-1 hover:translate-z-12 border border-white/[0.07] hover:border-white/20 ${styles.glow} transform-gpu shadow-[0_8px_32px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.06)] hover:shadow-[0_16px_44px_rgba(0,0,0,0.55),inset_0_1px_0_rgba(255,255,255,0.1)]`}
-            >
-              <div class="flex justify-between items-start mb-4">
-                <h3 class="font-bold text-p31-cloud text-lg transition-colors">{product.title}</h3>
-                <span class={`text-[9px] font-mono px-2 py-1 rounded-[4px] border uppercase tracking-wider ${styles.text} ${styles.bg} ${styles.border}`}>
-                  {product.status}
-                </span>
-              </div>
-              <p class="text-sm text-p31-cloud-80 mb-8 leading-relaxed flex-grow">{product.desc}</p>
-              <div class="flex gap-2 flex-wrap mt-auto">
-                {product.tags.map(tag => (
-                  <span class="text-[10px] font-mono text-p31-muted bg-white/5 border border-white/5 px-2 py-1 rounded-[4px]">{tag}</span>
-                ))}
-              </div>
-            </a>
-          );
-        })}
-      </div>
-    </section>
-
-    <script is:inline>
-      (function () {
-        var root = document.getElementById("hub-core-grid");
-        var bar = document.getElementById("hub-core-filters");
-        if (!root || !bar) return;
-        var cards = root.querySelectorAll("[data-product-status]");
-        var buttons = bar.querySelectorAll(".hub-filter-btn");
-        function apply(filter) {
-          var f = (filter || "all").toLowerCase();
-          cards.forEach(function (el) {
-            var st = (el.getAttribute("data-product-status") || "").toLowerCase();
-            var show = f === "all" || st === f;
-            if (show) {
-              el.classList.remove("hidden");
-              el.removeAttribute("aria-hidden");
-            } else {
-              el.classList.add("hidden");
-              el.setAttribute("aria-hidden", "true");
-            }
-          });
-          buttons.forEach(function (btn) {
-            var isAll = f === "all" && (btn.getAttribute("data-filter") || "") === "all";
-            var isSt = f !== "all" && (btn.getAttribute("data-filter") || "").toLowerCase() === f;
-            var active = isAll || isSt;
-            btn.setAttribute("aria-pressed", active ? "true" : "false");
-            if (active) {
-              btn.className =
-                "hub-filter-btn rounded border border-teal/50 bg-teal/10 px-4 py-2.5 text-teal transition-colors md:px-3 md:py-1.5";
-            } else {
-              btn.className =
-                "hub-filter-btn rounded border border-white/10 px-4 py-2.5 text-p31-muted transition-colors hover:border-white/20 hover:text-p31-cloud md:px-3 md:py-1.5";
-            }
-          });
-        }
-        buttons.forEach(function (btn) {
-          btn.addEventListener("click", function () {
-            apply(btn.getAttribute("data-filter"));
-          });
-        });
-      })();
-    </script>
-
-    <!-- 3. In Development & Research (Side by Side on Large Screens when prototypes exist) -->
-    <div
-      class:list={[
-        'grid grid-cols-1 gap-12 mb-24 animate-fade-in-up interactive-zone',
-        prototypes.length > 0 ? 'lg:grid-cols-2' : '',
-      ]}
-      style="animation-delay: 0.28s;"
-    >
-      {
-        prototypes.length > 0 && (
-          <section>
-              <div class="mb-8 flex items-center gap-4">
-                <div class="h-px flex-grow bg-white/10"></div>
-                <h2 class="m-0 whitespace-nowrap font-mono text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-p31-muted">
-                  Prototypes
-                </h2>
-                <div class="h-px flex-grow bg-white/10"></div>
-              </div>
-              <div class="flex flex-col gap-4">
-                {prototypes.map((proto) => (
-                  <a href={proto.url} target="_blank" rel="noopener noreferrer" class="ede-mission-card glass-panel p-5 rounded-[8px] flex items-center justify-between group hover:bg-surface2/95 transition-all duration-300 border border-[rgba(255,255,255,0.06)] hover:border-white/12">
-                    <div>
-                      <h3 class="font-bold text-p31-cloud mb-1 group-hover:text-butter transition-colors">{proto.title}</h3>
-                      <p class="text-sm text-p31-muted">{proto.desc}</p>
-                    </div>
-                    <span class="text-butter font-mono text-xl opacity-0 group-hover:opacity-100 transition-all duration-300 transform -translate-x-2 group-hover:translate-x-0">→</span>
-                  </a>
-                ))}
-              </div>
-          </section>
-        )
+    <style is:global>
+      /* ── TETHER CANVAS (above AppShell starfield at z=0) ─────────────── */
+      #c1 {
+        position: fixed; top: 0; left: 0;
+        width: 100vw; height: 100vh;
+        pointer-events: none; z-index: 5;
+        view-transition-name: none;
       }
 
-      {/* Whitepapers */}
-      <section id="research-papers" class:list={[prototypes.length === 0 ? 'lg:col-span-2' : '']}>
-        <div class="mb-8 flex items-center gap-4">
-          <div class="h-px flex-grow bg-white/10"></div>
-          <h2 class="m-0 whitespace-nowrap font-mono text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-p31-muted">
-            Whitepapers
-          </h2>
-          <div class="h-px flex-grow bg-white/10"></div>
-        </div>
-        <div class="flex flex-col gap-4">
-          {research.map((paper) => (
-            <a href={`https://doi.org/${paper.doi}`} target="_blank" rel="noopener noreferrer" class="ede-mission-card glass-panel p-6 rounded-[8px] group hover:bg-surface2/95 transition-all duration-300 border border-[rgba(255,255,255,0.06)] hover:border-teal/30">
-              <h3 class="font-bold text-teal mb-3 text-sm leading-relaxed group-hover:text-p31-cloud-90 transition-colors">{paper.title}</h3>
-              <div class="flex items-center gap-2 text-xs font-mono text-p31-muted">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-70"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
-                DOI: {paper.doi}
-              </div>
-            </a>
-          ))}
-        </div>
-      </section>
-    </div>
+      /* ── NODE LAYER ───────────────────────────────────────────────────── */
+      #node-layer { position: fixed; inset: 0; z-index: 10; pointer-events: none; }
 
-    <div
-      class="interactive-zone mx-auto mb-10 flex max-w-7xl flex-wrap items-center gap-x-4 gap-y-2 rounded-lg border border-white/10 px-4 py-2.5 font-mono text-[10px] uppercase tracking-[0.18em] text-p31-muted shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] sm:gap-5"
-      role="status"
-      aria-live="polite"
-    >
-      <span class="inline-flex items-center gap-2 text-phosphorus">
-        <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-phosphorus shadow-[0_0_10px_rgba(59,163,114,0.45)]" aria-hidden="true"></span>
-        EDE · ship bar
-      </span>
-      <span class="hidden h-4 w-px bg-white/10 sm:inline" aria-hidden="true"></span>
-      <span class="normal-case tracking-normal text-p31-muted">
-        Card badges follow PRS tiers when p31-production-readiness.json is present · verify-gated CI
-      </span>
-      <span class="hidden text-p31-muted/85 normal-case tracking-normal xl:inline">
-        Local command center: npm run command-center · 127.0.0.1:3131
-      </span>
-    </div>
+      .nd {
+        position: absolute; top: 0; left: 0;
+        width: 72px; height: 72px; margin-left: -36px; margin-top: -36px;
+        border-radius: 50%; pointer-events: auto; cursor: pointer;
+        text-decoration: none; display: flex; justify-content: center; align-items: center;
+        will-change: transform;
+        background:
+          radial-gradient(circle at 30% 28%, rgba(255,255,255,0.2) 0%, transparent 38%),
+          radial-gradient(circle at 66% 70%, color-mix(in srgb, var(--nc) 26%, transparent) 0%, transparent 44%),
+          radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--nc) 11%, rgba(22,25,32,0.96)) 0%, rgba(11,13,16,0.97) 75%);
+        border: 1px solid color-mix(in srgb, var(--nc) 58%, transparent);
+        box-shadow:
+          inset 0 1px 0 rgba(255,255,255,0.16),
+          inset 0 0 22px color-mix(in srgb, var(--nc) 48%, transparent),
+          inset -5px -5px 14px rgba(0,0,0,0.72),
+          0 12px 28px rgba(0,0,0,0.65),
+          0 0 38px color-mix(in srgb, var(--nc) 17%, transparent);
+        backdrop-filter: blur(12px);
+        transition: box-shadow 0.4s ease, border-color 0.35s ease;
+        animation: nd-ambient 4s ease-in-out infinite;
+      }
+      .nd:nth-child(1) { animation-delay:  0.0s; }
+      .nd:nth-child(2) { animation-delay: -0.7s; }
+      .nd:nth-child(3) { animation-delay: -1.4s; }
+      .nd:nth-child(4) { animation-delay: -2.1s; }
+      .nd:nth-child(5) { animation-delay: -2.8s; }
+      .nd:nth-child(6) { animation-delay: -0.3s; }
+      .nd:nth-child(7) { animation-delay: -3.5s; }
+      .nd:nth-child(8) { animation-delay: -1.8s; }
+      .nd:nth-child(9) { animation-delay: -1.1s; }
+      @keyframes nd-ambient {
+        0%, 100% { filter: brightness(1)   saturate(1);    }
+        50%       { filter: brightness(1.2) saturate(1.25); }
+      }
+      .nd::before {
+        content: ''; position: absolute; inset: -10px; border-radius: 50%;
+        border: 1px dashed color-mix(in srgb, var(--nc) 52%, transparent);
+        animation: spin-cw 12s linear infinite; pointer-events: none;
+      }
+      .nd::after {
+        content: ''; position: absolute; inset: -19px; border-radius: 50%;
+        border: 1px solid color-mix(in srgb, var(--nc) 24%, transparent);
+        animation: spin-ccw 20s linear infinite;
+        pointer-events: none; opacity: 0; transition: opacity 0.4s;
+      }
+      .nd:hover {
+        border-color: var(--nc); z-index: 50;
+        box-shadow:
+          inset 0 1px 0 rgba(255,255,255,0.28),
+          inset 0 0 42px color-mix(in srgb, var(--nc) 85%, transparent),
+          0 15px 35px rgba(0,0,0,0.72),
+          0 0 72px color-mix(in srgb, var(--nc) 36%, transparent);
+      }
+      .nd:hover::after { opacity: 1; }
+      @keyframes spin-cw  { to { transform: rotate(360deg);  } }
+      @keyframes spin-ccw { to { transform: rotate(-360deg); } }
 
-    <!-- 4. Footer -->
-    <footer
-      class="animate-fade-in-up interactive-zone flex flex-col items-start gap-8 border-t border-white/10 pt-10 pb-[max(2rem,env(safe-area-inset-bottom))] text-sm text-p31-muted sm:text-xs font-mono md:flex-row md:items-center md:justify-between"
-      style="animation-delay: 0.34s;"
-    >
-      <div>
-        <p class="text-p31-cloud font-bold mb-2 text-sm tracking-wide">P31 Labs, Inc.</p>
-        <p class="mb-1 text-p31-muted">Georgia nonprofit · 501(c)(3) determination pending</p>
-        <p class="text-p31-cloud-60">EIN: 42-1888158 · © 2026</p>
-      </div>
-      <div class="flex flex-wrap gap-x-4 gap-y-1 sm:gap-x-6 md:gap-x-8">
-        <a href="/manifesto" class="inline-flex min-h-[2.5rem] items-center py-1 uppercase tracking-widest transition-colors hover:text-teal" title="P31 Manifesto — five doctrines, ten principles">Manifesto</a>
-        <a href="/roadmap" class="inline-flex min-h-[2.5rem] items-center py-1 uppercase tracking-widest transition-colors hover:text-teal">Roadmap</a>
-        <a href="/code-of-conduct" class="inline-flex min-h-[2.5rem] items-center py-1 uppercase tracking-widest transition-colors hover:text-teal">CoC</a>
-        <a href="/status" class="inline-flex min-h-[2.5rem] items-center py-1 uppercase tracking-widest transition-colors hover:text-teal" title="Live probes — no auth, no tracking">Status</a>
-        <a href="/financials" class="inline-flex min-h-[2.5rem] items-center py-1 uppercase tracking-widest transition-colors hover:text-teal">Financials</a>
-        <a href="/contact" class="inline-flex min-h-[2.5rem] items-center py-1 uppercase tracking-widest transition-colors hover:text-teal">Contact</a>
-        <a href="/security" class="inline-flex min-h-[2.5rem] items-center py-1 uppercase tracking-widest transition-colors hover:text-teal">Security</a>
-        <a href="/oss" class="inline-flex min-h-[2.5rem] items-center py-1 uppercase tracking-widest transition-colors hover:text-teal">OSS</a>
-        <a href="/dome" class="inline-flex min-h-[2.5rem] items-center py-1 uppercase tracking-widest transition-colors hover:text-teal" title="Sovereign Cockpit K₄">/dome</a>
-        <a href="/geodesic-math/" class="inline-flex min-h-[2.5rem] items-center py-1 uppercase tracking-widest transition-colors hover:text-teal" title="Icosa subdivision stats (same math as hub + /dome shell)">Geodesic math</a>
-        <a href="https://github.com/p31labs" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-[2.5rem] items-center py-1 uppercase tracking-widest transition-colors hover:text-teal">GitHub</a>
-        <a href="https://orcid.org/0009-0002-2492-9079" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-[2.5rem] items-center py-1 uppercase tracking-widest transition-colors hover:text-teal">ORCID</a>
-        <a href="https://ko-fi.com/trimtab69420" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-[2.5rem] items-center py-1 uppercase tracking-widest transition-colors hover:text-teal">Ko-fi</a>
-        <a href="https://phosphorus31.org" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-[2.5rem] items-center py-1 uppercase tracking-widest transition-colors hover:text-teal">phosphorus31.org</a>
-        <a href="/donate" class="inline-flex min-h-[2.5rem] items-center rounded border border-coral/30 bg-coral/5 px-2 py-1 font-bold uppercase tracking-widest text-coral transition-colors hover:brightness-110">Donate</a>
-      </div>
-    </footer>
+      .nd-icon {
+        font-size: 1.8rem; position: relative; z-index: 2;
+        filter: drop-shadow(0 2px 6px rgba(0,0,0,0.88));
+        transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+      }
+      .nd:hover .nd-icon { transform: scale(1.22); }
+      .nd-lbl {
+        position: absolute; bottom: -42px; white-space: nowrap; left: 50%;
+        transform: translateX(-50%) translateY(-6px);
+        background: rgba(11,13,16,0.97); border: 1px solid var(--nc);
+        padding: 5px 14px; border-radius: 7px; color: #fff;
+        font-family: var(--p31-font-mono); font-size: 0.75rem; font-weight: 700;
+        opacity: 0; transition: all 0.32s cubic-bezier(0.34,1.56,0.64,1);
+        pointer-events: none; box-shadow: 0 4px 14px rgba(0,0,0,0.65);
+      }
+      .nd:hover .nd-lbl { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-  </main>
+      /* ── PHOS CORE MASCOT ─────────────────────────────────────────────── */
+      #phos-wrap {
+        position: fixed; top: 50%; left: 50%;
+        width: 160px; height: 160px; margin-left: -80px; margin-top: -80px;
+        z-index: 40; cursor: pointer; pointer-events: auto;
+        display: flex; align-items: center; justify-content: center;
+      }
+      #phos-wrap::before {
+        content: ''; position: absolute; inset: -55px; border-radius: 50%; z-index: 0;
+        background: radial-gradient(circle, rgba(77,184,168,0.2) 0%, transparent 68%);
+        animation: aura 4.5s ease-in-out infinite; pointer-events: none;
+      }
+      #phos-wrap::after {
+        content: ''; position: absolute; inset: -22px; border-radius: 50%; z-index: 0;
+        border: 1px solid rgba(77,184,168,0.25);
+        animation: aura-ring 3.5s ease-in-out infinite; pointer-events: none;
+      }
+      #phos-svg {
+        width: 100%; height: 100%; position: relative; z-index: 1;
+        filter: drop-shadow(0 10px 28px rgba(77,184,168,0.45));
+        transition: transform 0.42s cubic-bezier(0.34,1.56,0.64,1), filter 0.42s;
+      }
+      #phos-wrap:hover #phos-svg {
+        transform: scale(1.1) rotate(8deg);
+        filter: drop-shadow(0 16px 36px rgba(77,184,168,0.75));
+      }
+      #phos-wrap:active #phos-svg { transform: scale(0.93); }
 
-  <!-- =========================================================================
-       5-SECOND ONBOARDING MODAL — One-Way Door
-       z-[90]: sits above content, below layer0 (z-[100]) and below any somatic overlays.
-       Once localStorage key is written, the setTimeout is never registered again.
-  ========================================================================== -->
-  <div
-    id="p31-onboarding-modal"
-    class="fixed inset-0 z-[90] flex items-center justify-center p-6 bg-black/65 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-500 ease-out"
-    aria-modal="true"
-    role="dialog"
-    aria-labelledby="p31-onboard-heading"
-  >
-    <div
-      id="p31-onboarding-card"
-      class="glass-panel p-8 md:p-12 rounded-[2rem] max-w-lg w-full border border-white/10 shadow-[0_0_50px_rgba(14,165,233,0.12)] relative transform scale-95 transition-transform duration-500 ease-out"
-    >
-      <button
-        id="p31-onboard-close"
-        class="absolute top-5 right-5 text-white/30 hover:text-white/80 transition-colors"
-        aria-label="Skip orientation"
-        type="button"
-      >
-        <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <line x1="18" y1="6" x2="6" y2="18"></line>
-          <line x1="6" y1="6" x2="18" y2="18"></line>
-        </svg>
-      </button>
+      .pb   { fill: rgba(22,25,32,0.96); stroke: var(--p31-teal); stroke-width: 3; stroke-linejoin: round; transition: fill 0.35s; }
+      .pb-b { fill: rgba(11,13,16,0.88); stroke: rgba(37,137,125,0.25); stroke-width: 1.5; }
+      .pg   { fill: rgba(255,255,255,0.14); }
+      .pe   { fill: #070a0a; transition: rx 0.22s, ry 0.22s; }
+      .pi   { fill: none; stroke: var(--p31-teal); stroke-width: 1.2; }
+      .pp   { fill: rgba(200,255,235,0.92); transition: transform 0.12s ease-out; }
+      .pbl  { fill: var(--p31-coral); opacity: 0; filter: blur(3px); transition: opacity 0.4s; }
+      .pm   { stroke: var(--p31-teal); stroke-width: 2.2; fill: none; stroke-linecap: round; }
+      .peg  { animation: blink 8s infinite; transform-origin: 50px 58px; }
+      #phos-wrap:hover .pb  { fill: rgba(77,184,168,0.14); }
+      #phos-wrap:hover .pbl { opacity: 0.68; }
+      #phos-wrap:hover .pe  { rx: 6; ry: 10; }
+      @keyframes aura      { 0%,100% { transform: scale(1);   opacity: 0.55; } 50% { transform: scale(1.14); opacity: 1;    } }
+      @keyframes aura-ring { 0%,100% { transform: scale(1);   opacity: 0.4;  } 50% { transform: scale(1.1);  opacity: 0.78; } }
+      @keyframes blink     { 0%,93%,97% { transform: scaleY(1); } 94%,96% { transform: scaleY(0.07); } }
 
-      <h2 id="p31-onboard-heading" class="font-serif text-3xl md:text-4xl mb-3 text-[color:var(--p31-cloud,#ede8e0)]">Welcome to P31CA</h2>
-      <p class="font-mono text-xs text-white/50 leading-relaxed mb-8">
-        One sky, one mesh. Information is denser and structurally coherent. Select a vector to interface with the network:
-      </p>
+      /* ── SPEECH BUBBLE ────────────────────────────────────────────────── */
+      #speech {
+        position: fixed; top: 50%; left: 50%; margin-left: 90px; margin-top: -95px;
+        background: rgba(22,25,32,0.97); border: 1px solid var(--p31-teal);
+        border-radius: 16px 16px 16px 2px; padding: 1.1rem 1.4rem; max-width: 270px;
+        color: #fff; font-family: var(--p31-font-mono); font-size: 0.88rem; line-height: 1.55;
+        box-shadow: 0 14px 36px rgba(0,0,0,0.72), 0 0 24px rgba(77,184,168,0.1);
+        z-index: 60; pointer-events: none;
+        opacity: 0; transform: translateY(10px) scale(0.95);
+        transform-origin: bottom left;
+        transition: all 0.4s cubic-bezier(0.34,1.56,0.64,1);
+      }
+      #speech.on { opacity: 1; transform: translateY(0) scale(1); }
 
-      <div class="flex flex-col gap-3">
-        <a
-          href="/research"
-          class="p31-onboard-opt group p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-[#10b981]/50 transition-all flex items-center justify-between no-underline"
-        >
-          <div>
-            <div class="font-bold text-sm text-white group-hover:text-[#10b981] transition-colors">Understand</div>
-            <div class="text-[10px] font-mono text-white/40 uppercase tracking-widest mt-1">Research Portal · {researchPaperCount} papers</div>
-          </div>
-          <span class="text-[#10b981] opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all font-mono" aria-hidden="true">→</span>
-        </a>
+      /* ── AKINATOR OVERLAY ─────────────────────────────────────────────── */
+      #akinator-overlay {
+        position: fixed; inset: 0; background: rgba(5,6,8,0.88);
+        backdrop-filter: blur(20px); z-index: 9000;
+        display: flex; flex-direction: column; justify-content: center; align-items: center;
+        opacity: 0; pointer-events: none; transition: opacity 0.4s ease;
+      }
+      #akinator-overlay.active { opacity: 1; pointer-events: auto; }
+      .aki-dialog {
+        background: var(--p31-surface2); border: 1px solid var(--p31-glass-border);
+        border-top: 4px solid var(--p31-teal); border-radius: 16px; padding: 3rem;
+        width: 100%; max-width: 650px; box-shadow: 0 25px 50px rgba(0,0,0,0.6);
+        transform: translateY(20px); transition: transform 0.4s cubic-bezier(0.19,1,0.22,1);
+        position: relative;
+      }
+      #akinator-overlay.active .aki-dialog { transform: translateY(0); }
+      .aki-q  {
+        font-size: 1.75rem; color: #fff; text-align: center;
+        margin-bottom: 2.5rem; font-weight: 700; letter-spacing: -0.02em;
+      }
+      .aki-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+      .aki-btn  {
+        background: rgba(255,255,255,0.03); border: 1px solid var(--p31-glass-border);
+        color: var(--p31-cloud); padding: 1.25rem; border-radius: 8px;
+        font-family: var(--p31-font-mono); font-size: 0.95rem; cursor: pointer;
+        transition: all 0.2s; text-align: left; min-height: 44px;
+        display: flex; justify-content: space-between; align-items: center;
+      }
+      .aki-btn:hover {
+        background: rgba(77,184,168,0.1); border-color: var(--p31-teal);
+        transform: translateX(5px); color: #fff;
+      }
+      .aki-close {
+        position: absolute; top: 1.25rem; right: 1.25rem;
+        background: none; border: none; color: var(--p31-muted);
+        font-size: 2rem; cursor: pointer; line-height: 1; transition: color 0.2s;
+        min-width: 44px; min-height: 44px; display: flex; align-items: center; justify-content: center;
+      }
+      .aki-close:hover { color: var(--p31-coral); }
 
-        <a
-          href="/dome"
-          class="p31-onboard-opt group p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-[#0ea5e9]/50 transition-all flex items-center justify-between no-underline"
-        >
-          <div>
-            <div class="font-bold text-sm text-white group-hover:text-[#0ea5e9] transition-colors">Use</div>
-            <div class="text-[10px] font-mono text-white/40 uppercase tracking-widest mt-1">Sovereign Dome · K₄ cockpit</div>
-          </div>
-          <span class="text-[#0ea5e9] opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all font-mono" aria-hidden="true">→</span>
-        </a>
+      /* ── STATUS + SAFE TOGGLE ─────────────────────────────────────────── */
+      #phos-ctrl {
+        position: fixed; top: 3.75rem; right: 1rem; z-index: 200;
+        display: flex; align-items: center; gap: 0.75rem;
+      }
+      #run-status {
+        font-family: var(--p31-font-mono); font-size: 0.78rem;
+        color: var(--p31-phosphorus); transition: color 0.3s;
+      }
+      #btn-safe {
+        min-height: 44px; padding: 0.45rem 1rem;
+        border: 1px solid rgba(204,98,71,0.42);
+        border-radius: 8px; background: rgba(204,98,71,0.08); color: var(--p31-coral);
+        font-family: var(--p31-font-mono); font-size: 0.72rem;
+        text-transform: uppercase; letter-spacing: 0.08em;
+        transition: all 0.2s; backdrop-filter: blur(8px); cursor: pointer;
+      }
+      #btn-safe:hover { background: rgba(204,98,71,0.2); box-shadow: 0 0 18px rgba(204,98,71,0.28); }
 
-        <a
-          href="/ops"
-          class="p31-onboard-opt group p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-[#8b5cf6]/50 transition-all flex items-center justify-between no-underline"
-        >
-          <div>
-            <div class="font-bold text-sm text-white group-hover:text-[#8b5cf6] transition-colors">Build</div>
-            <div class="text-[10px] font-mono text-white/40 uppercase tracking-widest mt-1">Command Operations · G.O.D. shell</div>
-          </div>
-          <span class="text-[#8b5cf6] opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all font-mono" aria-hidden="true">→</span>
-        </a>
-      </div>
+      /* ── TRIMTAB TRIGGER (operator Easter egg — Bucky Fuller) ─────────── */
+      #trimtab-trigger {
+        position: fixed; bottom: 0.5rem; left: 50%; transform: translateX(-50%);
+        width: 1px; height: 1px; overflow: hidden; opacity: 0; pointer-events: none;
+        font-family: var(--p31-font-mono); font-size: 0;
+      }
 
-      <div class="mt-8 text-center">
-        <button
-          id="p31-onboard-skip"
-          class="text-[10px] font-mono tracking-widest uppercase text-white/30 hover:text-white/70 transition-colors"
-          type="button"
-        >
-          Skip Orientation
-        </button>
-      </div>
+      /* ── SAFE VIEW (Gray Rock Protocol) ──────────────────────────────── */
+      #safe-view {
+        display: none; position: fixed; inset: 0; z-index: 300;
+        padding: 5rem 2rem 5rem; overflow-y: auto; background: var(--p31-void);
+      }
+      body.safe #safe-view { display: block; }
+      body.safe #c1,
+      body.safe #node-layer,
+      body.safe #phos-wrap,
+      body.safe #speech { display: none !important; }
+
+      .safe-hdr { margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); }
+      .safe-hdr h1 { font-size: 2rem; color: #fff; letter-spacing: -0.02em; margin-bottom: 0.4rem; }
+      .safe-hdr p  { color: var(--p31-muted); font-family: var(--p31-font-mono); font-size: 0.82rem; }
+      .safe-hint {
+        display: inline-block; margin-top: 0.75rem;
+        color: var(--p31-muted); font-family: var(--p31-font-mono); font-size: 0.75rem;
+        border: 1px solid rgba(255,255,255,0.08); border-radius: 4px; padding: 3px 8px;
+      }
+      .safe-cards  { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px,1fr)); gap: 1.25rem; max-width: 1100px; margin: 0 auto; }
+      .safe-card   {
+        display: flex; align-items: center; gap: 1.25rem; padding: 1.4rem;
+        border: 1px solid rgba(255,255,255,0.08); border-radius: 12px;
+        background: rgba(255,255,255,0.025); text-decoration: none; color: inherit;
+        transition: all 0.2s; min-height: 44px;
+      }
+      .safe-card:hover { border-color: var(--nc); background: rgba(255,255,255,0.045); transform: translateY(-2px); }
+      .safe-ico  {
+        width: 52px; height: 52px; border-radius: 50%; flex-shrink: 0;
+        border: 1px solid var(--nc); background: rgba(0,0,0,0.5);
+        display: flex; align-items: center; justify-content: center; font-size: 1.7rem;
+      }
+      .safe-name { font-weight: 700; color: #fff; margin-bottom: 0.22rem; }
+      .safe-desc { font-family: var(--p31-font-mono); font-size: 0.78rem; color: var(--p31-muted); }
+      .safe-restore {
+        margin-top: 2.5rem; text-align: center;
+      }
+      .safe-restore button {
+        min-height: 44px; padding: 0.6rem 2rem;
+        border: 1px solid var(--p31-teal); border-radius: 8px;
+        background: rgba(77,184,168,0.08); color: var(--p31-teal);
+        font-family: var(--p31-font-mono); font-size: 0.85rem; cursor: pointer;
+        transition: all 0.2s;
+      }
+      .safe-restore button:hover { background: rgba(77,184,168,0.18); }
+
+      @media (prefers-reduced-motion: reduce) {
+        .nd, .nd::before, .nd::after,
+        #phos-wrap::before, #phos-wrap::after, #phos-svg,
+        .peg, #speech { animation: none !important; transition: none !important; }
+      }
+    </style>
+  </Fragment>
+
+  <!-- ── TETHER CANVAS (Layer 1, z=5) ──────────────────────────────────── -->
+  <canvas id="c1" aria-hidden="true"></canvas>
+
+  <!-- ── NODE LAYER (Layer 2, z=10) ────────────────────────────────────── -->
+  <div id="node-layer" role="navigation" aria-label="P31 Labs orbital navigation"></div>
+
+  <!-- ── PHOS CORE MASCOT (K₄ tetrahedron SVG, z=40) ──────────────────── -->
+  <div id="phos-wrap" role="button" tabindex="0" aria-label="Open intent navigator — PHOS">
+    <svg id="phos-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <polygon class="pb-b" points="15,80 85,80 50,53"/>
+      <polygon class="pb"   points="50,13 15,80 50,53"/>
+      <polygon class="pb"   points="50,13 85,80 50,53"/>
+      <polygon class="pg"   points="50,13 39,42 50,37"/>
+      <g class="peg">
+        <ellipse class="pe"  cx="38" cy="57" rx="4.5" ry="7.5"/>
+        <ellipse class="pi"  cx="38" cy="57" rx="3"   ry="5"/>
+        <ellipse class="pp"  id="pl" cx="38" cy="57" rx="2.2" ry="3.2"/>
+        <ellipse class="pe"  cx="62" cy="57" rx="4.5" ry="7.5"/>
+        <ellipse class="pi"  cx="62" cy="57" rx="3"   ry="5"/>
+        <ellipse class="pp"  id="pr" cx="62" cy="57" rx="2.2" ry="3.2"/>
+        <ellipse class="pbl" cx="27" cy="63" rx="5.5" ry="2.8"/>
+        <ellipse class="pbl" cx="73" cy="63" rx="5.5" ry="2.8"/>
+        <path class="pm" d="M 41 68 Q 50 74 59 68"/>
+      </g>
+    </svg>
+  </div>
+
+  <!-- ── SPEECH BUBBLE (z=60) ──────────────────────────────────────────── -->
+  <div id="speech" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- ── AKINATOR OVERLAY (z=9000) ─────────────────────────────────────── -->
+  <div id="akinator-overlay" role="dialog" aria-modal="true" aria-labelledby="aki-q">
+    <div class="aki-dialog">
+      <button class="aki-close" id="aki-close" aria-label="Close navigator">×</button>
+      <div class="aki-q" id="aki-q">What do you need?</div>
+      <div class="aki-grid" id="aki-opts"></div>
     </div>
   </div>
 
+  <!-- ── GRAY ROCK — SAFE VIEW (SOULSAFE, z=300) ───────────────────────── -->
+  <div id="safe-view">
+    <div class="safe-hdr">
+      <h1>Ca₉(PO₄)₆ Calcium Cage</h1>
+      <p>Spatial fluid dynamics suspended. Executive function preserved. Geometry still holds.</p>
+      <span class="safe-hint">Hold ESC to exit · Click Restore to resume</span>
+    </div>
+    <div class="safe-cards" id="safe-cards"></div>
+    <div class="safe-restore">
+      <button id="btn-restore" type="button" onclick="activateLayer0()">
+        Restore — Hold ESC to exit safe mode
+      </button>
+    </div>
+  </div>
+
+  <!-- ── STATUS + SAFE TOGGLE ──────────────────────────────────────────── -->
+  <div id="phos-ctrl" aria-label="System status">
+    <span id="run-status" aria-live="polite">● RUNNING</span>
+    <button id="btn-safe" type="button">Safe Mode</button>
+  </div>
+
+  <!-- ── TRIMTAB TRIGGER (operator Easter egg) ─────────────────────────── -->
+  <!-- ³¹P Larmor precession: 863Hz (Larmor coherence anchor) -->
+  <span id="trimtab-trigger" aria-hidden="true" tabindex="-1"
+        data-larmor="863Hz" data-nucleus="P-31">
+    Call me trimtab. — R. Buckminster Fuller
+  </span>
+
+  <!-- ── NOSCRIPT FALLBACK ──────────────────────────────────────────────── -->
+  <noscript>
+    <div style="position:fixed;inset:0;z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;background:#0f1115;font-family:monospace;color:#4db8a8;padding:2rem;text-align:center">
+      <p style="font-size:14px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;margin:0">P31 Labs</p>
+      <a href="/passport"      style="color:#8b7cc9">Cognitive Passport</a>
+      <a href="https://bonding.p31ca.org/soup" style="color:#cc6247">C.A.R.S.</a>
+      <a href="/garden/"       style="color:#cda852">Garden</a>
+      <a href="/god"           style="color:#4db8a8">Ops Desk</a>
+      <a href="/god#buffer"    style="color:#cc6247">Buffer</a>
+      <a href="/dome#glass"    style="color:var(--p31-teal)">Transparency</a>
+      <a href="/dome#geodesic" style="color:#4db8a8">Geodesic</a>
+      <a href="/god"           style="color:var(--p31-phosphorus)">Vibe IDE</a>
+      <a href="/doc-library/"  style="color:#8b7cc9">Library</a>
+    </div>
+  </noscript>
+
+  <!-- ── CA₉(PO₄)₆ POSNER MOLECULE ENGINE ─────────────────────────────── -->
   <script>
-    document.addEventListener('astro:page-load', () => {
-      if (document.documentElement.getAttribute('data-p31-route') !== 'home') return;
-      if (localStorage.getItem('p31_onboard_complete') === 'true') return;
+    // ── ORBITAL DATA ───────────────────────────────────────────────────────
+    // Orbital periods per spec: Ring1=60s CW, Ring2=90s CCW, Ring3=120s CW
+    // At ~60fps: Δθ = 2π / (period * 60)
+    // Elliptical compression: y *= 0.6
 
-      const modal = document.getElementById('p31-onboarding-modal');
-      const card  = document.getElementById('p31-onboarding-card');
-      if (!modal || !card) return;
+    interface NodeDef {
+      id: string; label: string; icon: string; hex: string;
+      ring: 1|2|3; a0: number; href: string; prompt: string; ext?: boolean;
+    }
 
-      let timerId: ReturnType<typeof setTimeout> | null = null;
+    const NODES: NodeDef[] = [
+      { id:'cog',  label:'Passport',     icon:'🧠', hex:'var(--p31-lavender)', ring:1, a0:0,                       href:'/passport',                      prompt:'Identity accommodations' },
+      { id:'soup', label:'C.A.R.S.',     icon:'🍲', hex:'var(--p31-coral)',    ring:1, a0:Math.PI*2/3,             href:'https://bonding.p31ca.org/soup', prompt:'Relational substrate', ext:true },
+      { id:'grd',  label:'Garden',       icon:'👶', hex:'var(--p31-amber)',    ring:1, a0:Math.PI*4/3,             href:'/garden/',                       prompt:'Kid-safe operations' },
+      { id:'ops',  label:'Ops Desk',     icon:'🌐', hex:'var(--p31-cyan)',     ring:2, a0:Math.PI/6,              href:'/god',                           prompt:'Triad fleet status' },
+      { id:'buf',  label:'Buffer',       icon:'🛡️', hex:'var(--p31-coral)',   ring:2, a0:Math.PI/6+Math.PI*2/3,  href:'/god#buffer',                    prompt:'Fawn-guard proxy' },
+      { id:'gls',  label:'Transparency', icon:'📊', hex:'var(--p31-teal)',     ring:2, a0:Math.PI/6+Math.PI*4/3,  href:'/dome#glass',                    prompt:'System telemetry' },
+      { id:'forg', label:'Geodesic',     icon:'⚒️', hex:'var(--p31-cyan)',    ring:3, a0:Math.PI/3,              href:'/dome#geodesic',                 prompt:'Spatial architecture' },
+      { id:'vibe', label:'Vibe IDE',     icon:'🔮', hex:'var(--p31-phosphorus)',ring:3, a0:Math.PI/3+Math.PI*2/3, href:'/god',                           prompt:'Coding substrate' },
+      { id:'lib',  label:'Library',      icon:'📚', hex:'var(--p31-lavender)', ring:3, a0:Math.PI/3+Math.PI*4/3,  href:'/doc-library/',                  prompt:'Architectural canon' },
+    ];
 
-      const dismiss = () => {
-        localStorage.setItem('p31_onboard_complete', 'true');
-        modal.classList.remove('opacity-100');
-        modal.classList.add('opacity-0', 'pointer-events-none');
-        card.classList.remove('scale-100');
-        card.classList.add('scale-95');
-      };
+    // Δθ per animation frame (60fps assumption) — 2π / (period_s * 60fps)
+    const RING_SPEED: Record<1|2|3, number> = {
+      1:  (2 * Math.PI) / (60  * 60),   // CW, 60s period
+      2: -(2 * Math.PI) / (90  * 60),   // CCW, 90s period
+      3:  (2 * Math.PI) / (120 * 60),   // CW, 120s period
+    };
 
-      const show = () => {
-        // Guard: page must still be home and the gate must still be open.
-        if (document.documentElement.getAttribute('data-p31-route') !== 'home') return;
-        if (localStorage.getItem('p31_onboard_complete') === 'true') return;
-        // Guard: don't paint on top of gray-rock mode (operator hasn't woken the surface yet).
-        if (document.documentElement.classList.contains('p31-hub-gray-rock')) return;
+    interface AkiNode { q: string; opts: AkiOpt[]; }
+    interface AkiOpt  { label: string; href?: string; next?: AkiNode; }
 
-        modal.classList.remove('opacity-0', 'pointer-events-none');
-        modal.classList.add('opacity-100');
-        card.classList.remove('scale-95');
-        card.classList.add('scale-100');
-      };
+    const AKI_TREE: AkiNode = {
+      q: 'What do you need?',
+      opts: [
+        { label: 'Family Mesh', next: { q: 'Which node?', opts: [
+          { label: 'Cognitive Passport', href: '/passport' },
+          { label: 'C.A.R.S. Molecule',  href: 'https://bonding.p31ca.org/soup' },
+          { label: 'The Garden (Kids)',  href: '/garden/' },
+        ]}},
+        { label: 'Infrastructure', next: { q: 'Which layer?', opts: [
+          { label: 'Command Center', href: '/god' },
+          { label: 'Buffer',     href: '/god#buffer' },
+          { label: 'Transparency',   href: '/dome#glass' },
+        ]}},
+        { label: 'Build / Create', next: { q: 'Build what?', opts: [
+          { label: 'Geodesic Builder', href: '/dome#geodesic' },
+          { label: 'Vibe IDE',         href: '/god' },
+        ]}},
+        { label: 'Documentation', href: '/doc-library/' },
+      ],
+    };
 
-      document.getElementById('p31-onboard-close')?.addEventListener('click', dismiss);
-      document.getElementById('p31-onboard-skip')?.addEventListener('click', dismiss);
-      // Navigating via a vector card counts as orientation complete.
-      document.querySelectorAll('.p31-onboard-opt').forEach(el =>
-        el.addEventListener('click', dismiss)
-      );
+    // ── DOM REFS ───────────────────────────────────────────────────────────
+    const nlayer     = document.getElementById('node-layer')       as HTMLElement;
+    const scards     = document.getElementById('safe-cards')       as HTMLElement;
+    const phosEl     = document.getElementById('phos-wrap')        as HTMLElement;
+    const speechEl   = document.getElementById('speech')           as HTMLElement;
+    const pl         = document.getElementById('pl')               as SVGEllipseElement | null;
+    const pr         = document.getElementById('pr')               as SVGEllipseElement | null;
+    const akiOverlay = document.getElementById('akinator-overlay') as HTMLElement;
+    const akiQ       = document.getElementById('aki-q')            as HTMLElement;
+    const akiOpts    = document.getElementById('aki-opts')         as HTMLElement;
+    const c1         = document.getElementById('c1')               as HTMLCanvasElement;
+    const ctx1       = c1.getContext('2d')!;
 
-      timerId = setTimeout(show, 5000);
+    // ── NODE STATE ─────────────────────────────────────────────────────────
+    interface NS {
+      data: NodeDef; el: HTMLAnchorElement;
+      angle: number; hovered: boolean; x: number; y: number; packets: Packet[];
+    }
+    const state: NS[] = [];
 
-      // Disarm fuse if the operator leaves before 5 seconds.
-      document.addEventListener('astro:before-swap', () => {
-        if (timerId !== null) clearTimeout(timerId);
-      }, { once: true });
+    NODES.forEach(n => {
+      const a = document.createElement('a') as HTMLAnchorElement;
+      a.href = n.href; a.className = 'nd';
+      a.style.setProperty('--nc', n.hex);
+      a.setAttribute('aria-label', n.label);
+      if (n.ext) { a.target = '_blank'; a.rel = 'noopener'; }
+      a.innerHTML = `<div class="nd-icon">${n.icon}</div><div class="nd-lbl">${n.label}</div>`;
+
+      let dragX = 0, dragY = 0, wasDrag = false;
+      a.addEventListener('pointerdown', (e) => { dragX = e.clientX; dragY = e.clientY; wasDrag = false; });
+      a.addEventListener('pointermove', (e) => { if (Math.hypot(e.clientX - dragX, e.clientY - dragY) > 6) wasDrag = true; });
+      a.addEventListener('click', (e) => { if (wasDrag) { e.preventDefault(); e.stopPropagation(); } });
+
+      const s: NS = { data: n, el: a, angle: n.a0, hovered: false, x: 0, y: 0, packets: [] };
+      a.addEventListener('mouseenter', () => { speak(`Ca-Ion: ${n.prompt}`, n.hex); s.hovered = true; });
+      a.addEventListener('mouseleave', () => { quieten(); s.hovered = false; });
+      nlayer.appendChild(a);
+      state.push(s);
+
+      const c = document.createElement('a') as HTMLAnchorElement;
+      c.href = n.href; c.className = 'safe-card';
+      c.style.setProperty('--nc', n.hex);
+      if (n.ext) { c.target = '_blank'; c.rel = 'noopener'; }
+      c.innerHTML = `<div class="safe-ico">${n.icon}</div><div><div class="safe-name">${n.label}</div><div class="safe-desc">${n.prompt}</div></div>`;
+      scards.appendChild(c);
     });
+
+    // ── SPEECH ─────────────────────────────────────────────────────────────
+    let speakTimer: ReturnType<typeof setTimeout>;
+    function speak(txt: string, color = 'var(--p31-teal)') {
+      speechEl.textContent = txt;
+      speechEl.style.borderColor = color;
+      speechEl.classList.add('on');
+      clearTimeout(speakTimer);
+    }
+    function quieten(delay = 0) {
+      clearTimeout(speakTimer);
+      speakTimer = setTimeout(() => speechEl.classList.remove('on'), delay);
+    }
+    phosEl.addEventListener('mouseenter', () => speak('I am the bond at the center. The Phosphorus.', 'var(--p31-amber)'));
+    phosEl.addEventListener('mouseleave', () => quieten(400));
+
+    // ── EYE TRACKING ───────────────────────────────────────────────────────
+    let mx = 0, my = 0;
+    window.addEventListener('mousemove', (e) => {
+      if (document.body.classList.contains('safe')) return;
+      mx = e.clientX; my = e.clientY;
+      const r   = phosEl.getBoundingClientRect();
+      const ex  = r.left + r.width  / 2;
+      const ey  = r.top  + r.height / 2;
+      const ang = Math.atan2(e.clientY - ey, e.clientX - ex);
+      const d   = Math.min(3, Math.hypot(e.clientX - ex, e.clientY - ey) * 0.014);
+      const ox  = Math.cos(ang) * d, oy = Math.sin(ang) * d;
+      if (pl) pl.style.transform = `translate(${ox}px,${oy}px)`;
+      if (pr) pr.style.transform = `translate(${ox}px,${oy}px)`;
+    }, { passive: true });
+
+    // ── CANVAS SETUP ────────────────────────────────────────────────────────
+    let W = 0, H = 0, CX = 0, CY = 0, R1 = 0, R2 = 0, R3 = 0, raf = 0;
+    const dpr = window.devicePixelRatio || 1;
+
+    function resize() {
+      W = window.innerWidth; H = window.innerHeight;
+      CX = W / 2; CY = H / 2;
+      c1.width  = W * dpr; c1.height = H * dpr;
+      c1.style.width  = W + 'px'; c1.style.height = H + 'px';
+      ctx1.setTransform(dpr, 0, 0, dpr, 0, 0);
+      const m = Math.min(W, H);
+      // Spec radii: 120/200/280 — scale to viewport
+      R1 = Math.max(110, m * 0.22);
+      R2 = Math.max(185, m * 0.35);
+      R3 = Math.max(260, m * 0.48);
+    }
+
+    // ── DATA PACKETS (light streaks flowing along tethers toward core) ─────
+    class Packet {
+      t: number; speed: number; len: number;
+      constructor(ring: number) {
+        this.t     = Math.random();
+        this.speed = (0.003 + (4 - ring) * 0.001) * (0.7 + Math.random() * 0.6);
+        this.len   = 8 + Math.random() * 12;
+      }
+      tick(x1: number, y1: number, x2: number, y2: number, cpx: number, cpy: number) {
+        this.t += this.speed;
+        if (this.t > 1) this.t = 0;
+        const tm = 1 - this.t;
+        const x  = tm*tm*x1 + 2*tm*this.t*cpx + this.t*this.t*x2;
+        const y  = tm*tm*y1 + 2*tm*this.t*cpy + this.t*this.t*y2;
+        const dx = 2*tm*(cpx - x1) + 2*this.t*(x2 - cpx);
+        const dy = 2*tm*(cpy - y1) + 2*this.t*(y2 - cpy);
+        ctx1.save();
+        ctx1.translate(x, y);
+        ctx1.rotate(Math.atan2(dy, dx));
+        const g = ctx1.createLinearGradient(-this.len/2, 0, this.len/2, 0);
+        g.addColorStop(0,   'rgba(255,255,255,0)');
+        g.addColorStop(0.5, 'rgba(255,255,255,0.88)');
+        g.addColorStop(1,   'rgba(255,255,255,0)');
+        ctx1.fillStyle = g;
+        ctx1.fillRect(-this.len/2, -1.5, this.len, 3);
+        ctx1.restore();
+      }
+    }
+    state.forEach(s => {
+      s.packets = [new Packet(s.data.ring), new Packet(s.data.ring), new Packet(s.data.ring)];
+    });
+
+    // ── MOLECULE DRAW ───────────────────────────────────────────────────────
+    function drawMolecule(t: number) {
+      ctx1.clearRect(0, 0, W, H);
+      const px = (mx - CX) * 0.02;
+      const py = (my - CY) * 0.02;
+
+      // Orbital shell rings (dashed, counter-rotating, elliptical)
+      ([R1, R2, R3] as const).forEach((r, i) => {
+        ctx1.beginPath();
+        ctx1.ellipse(CX, CY, r, r * 0.6, 0, 0, Math.PI * 2);
+        ctx1.strokeStyle = `rgba(77,184,168,${0.042 + i * 0.016})`;
+        ctx1.lineWidth   = 0.8;
+        ctx1.setLineDash([4, 12]);
+        ctx1.lineDashOffset = -t * 8 * (i % 2 === 0 ? 1 : -1);
+        ctx1.stroke();
+        ctx1.setLineDash([]);
+      });
+
+      // Node orbits + tethers + packets (elliptical: y *= 0.6)
+      state.forEach((s, i) => {
+        if (!s.hovered) s.angle += RING_SPEED[s.data.ring];
+        const R   = [R1, R2, R3][s.data.ring - 1] + Math.sin(t * 1.6 + i) * 4;
+        const dep = s.data.ring;
+        s.x = CX + Math.cos(s.angle) * R - px * dep;
+        s.y = CY + Math.sin(s.angle) * R * 0.6 - py * dep;
+        s.el.style.transform = `translate3d(${s.x}px,${s.y}px,0)`;
+
+        // Organic quadratic bezier tether: node → PHOS core
+        const dx  = s.x - CX, dy = s.y - CY;
+        const dl  = Math.hypot(dx, dy) || 1;
+        const dir = i % 2 === 0 ? 1 : -1;
+        const cpx = (CX + s.x) / 2 + (-dy / dl * 50 * dir);
+        const cpy = (CY + s.y) / 2 + ( dx / dl * 50 * dir);
+
+        ctx1.beginPath();
+        ctx1.moveTo(CX, CY);
+        ctx1.quadraticCurveTo(cpx, cpy, s.x, s.y);
+        const g = ctx1.createLinearGradient(CX, CY, s.x, s.y);
+        g.addColorStop(0, 'rgba(77,184,168,0.55)');
+        g.addColorStop(1, 'rgba(77,184,168,0)');
+        ctx1.strokeStyle = g; ctx1.lineWidth = 2;
+        ctx1.setLineDash([6, 8]); ctx1.lineDashOffset = -t * 26;
+        ctx1.stroke(); ctx1.setLineDash([]);
+
+        s.packets.forEach(p => p.tick(s.x, s.y, CX, CY, cpx, cpy));
+      });
+
+      // PHOS parallax + float (JS-driven)
+      const floatY = Math.sin(t * (Math.PI / 3)) * 14;
+      phosEl.style.transform = `translate3d(${-px}px,${-(floatY + py)}px,0)`;
+    }
+
+    // ── RENDER LOOP ─────────────────────────────────────────────────────────
+    function loop() {
+      if (document.body.classList.contains('safe')) return;
+      if (!c1.isConnected) return;
+      drawMolecule(Date.now() * 0.001);
+      raf = requestAnimationFrame(loop);
+    }
+
+    // ── AKINATOR ────────────────────────────────────────────────────────────
+    function openAkinator() { renderAki(AKI_TREE); akiOverlay.classList.add('active'); quieten(); }
+    function closeAkinator() { akiOverlay.classList.remove('active'); }
+
+    function renderAki(node: AkiNode) {
+      akiQ.textContent = node.q;
+      akiOpts.innerHTML = '';
+      node.opts.forEach(o => {
+        const b = document.createElement('button');
+        b.className = 'aki-btn';
+        b.innerHTML = `<span>${o.label}</span><span style="color:var(--p31-teal)">→</span>`;
+        b.onclick = () => o.href ? (window.location.href = o.href) : renderAki(o.next!);
+        akiOpts.appendChild(b);
+      });
+    }
+
+    phosEl.addEventListener('click', openAkinator);
+    phosEl.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openAkinator(); }
+    });
+    document.getElementById('aki-close')?.addEventListener('click', closeAkinator);
+    akiOverlay.addEventListener('click', (e) => { if (e.target === akiOverlay) closeAkinator(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeAkinator(); });
+
+    // ── SAFE MODE ────────────────────────────────────────────────────────────
+    function setSafe(on: boolean) {
+      document.body.classList.toggle('safe', on);
+      const statusEl = document.getElementById('run-status') as HTMLElement;
+      const btnEl    = document.getElementById('btn-safe')   as HTMLButtonElement;
+      statusEl.textContent = on ? '○ SUSPENDED' : '● RUNNING';
+      statusEl.style.color = on ? 'var(--p31-muted)' : 'var(--p31-phosphorus)';
+      btnEl.textContent    = on ? 'Restore' : 'Safe Mode';
+      if (on) {
+        cancelAnimationFrame(raf);
+        ctx1.clearRect(0, 0, W, H);
+        quieten();
+        phosEl.style.transform = '';
+        localStorage.setItem('p31_safe_mode', 'true');
+      } else {
+        localStorage.removeItem('p31_safe_mode');
+        resize(); loop();
+        speak('Ca₉(PO₄)₆ coherence rebuilding.', 'var(--p31-teal)');
+        quieten(4000);
+      }
+    }
+
+    // activateLayer0 — restores Layer 0 (starfield) from safe mode
+    // Required anchor: verify:egg-hunt HUB-LAYER0
+    function activateLayer0() { setSafe(false); }
+
+    document.getElementById('btn-safe')?.addEventListener('click', () =>
+      setSafe(!document.body.classList.contains('safe'))
+    );
+    document.getElementById('btn-restore')?.addEventListener('click', activateLayer0);
+
+    // Hold ESC for 1s to exit safe mode
+    let escTimer: ReturnType<typeof setTimeout> | null = null;
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && document.body.classList.contains('safe')) {
+        if (!escTimer) {
+          escTimer = setTimeout(() => { activateLayer0(); escTimer = null; }, 1000);
+        }
+      }
+    });
+    document.addEventListener('keyup', (e) => {
+      if (e.key === 'Escape' && escTimer) { clearTimeout(escTimer); escTimer = null; }
+    });
+
+    // ── INIT ─────────────────────────────────────────────────────────────────
+    try {
+      const pass = JSON.parse(localStorage.getItem('p31_cognitive_passport') || '{}');
+      if (pass.preferences?.screenComfort === 0 || localStorage.getItem('p31_safe_mode') === 'true') {
+        setSafe(true);
+      }
+    } catch (_) {}
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) setSafe(true);
+    if (new URLSearchParams(location.search).get('safe') === '1') setSafe(true);
+
+    window.addEventListener('resize', resize, { passive: true });
+    resize();
+
+    if (!document.body.classList.contains('safe')) {
+      loop();
+      speak('Ca₉(PO₄)₆ coherence stabilized. PHOS is listening.', 'var(--p31-teal)');
+      quieten(5000);
+    }
   </script>
 </AppShell>
-
-<style is:global>
-  body {
-    background-color: var(--p31-void);
-    color: var(--p31-cloud);
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
-
-  /* Glass Panels — cockpit-adjacent tint (still driven by --p31-surface* via prefs) */
-  .glass-panel {
-    background: color-mix(in srgb, var(--p31-surface2) 78%, transparent);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-  }
-
-  /** Hero — matches donate.html / connect.html terminal-glass (Operator Console readability) */
-  .terminal-glass {
-    position: relative;
-    overflow: hidden;
-    border-radius: 12px;
-    background: linear-gradient(180deg, rgba(26, 31, 41, 0.72) 0%, rgba(17, 21, 28, 0.88) 100%);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    border-top: 1px solid rgba(255, 255, 255, 0.09);
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
-  }
-  .terminal-glass > * {
-    position: relative;
-    z-index: 1;
-  }
-
-  /** EDE mission cards — denser panels + teal hairline accent (Super-Centaur parity) */
-  .ede-mission-card {
-    position: relative;
-    overflow: hidden;
-    background: color-mix(in srgb, var(--p31-surface2) 82%, transparent);
-  }
-  .ede-mission-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(77, 184, 168, 0.28), transparent);
-    opacity: 0;
-    transition: opacity 0.25s ease;
-    pointer-events: none;
-  }
-  .group:hover.ede-mission-card::before,
-  a.ede-mission-card:hover::before {
-    opacity: 1;
-  }
-
-  /* Pointer events control */
-  .interactive-zone {
-    pointer-events: auto;
-  }
-  @media (prefers-reduced-motion: no-preference) {
-    html { scroll-behavior: smooth; }
-  }
-
-  /* Typography */
-  .font-mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
-  .font-sans { font-family: 'Atkinson Hyperlegible', sans-serif; }
-
-  /** Page h1 — Playfair italic (docs/P31-BRAND-GUIDELINES.md) — loaded via slot head on this page */
-  .hub-operator-title {
-    font-family: "Playfair Display", Georgia, serif;
-    font-style: italic;
-    font-weight: 600;
-    letter-spacing: -0.02em;
-  }
-
-  .lobby-k4-wrap {
-    filter: drop-shadow(0 0 12px color-mix(in srgb, var(--p31-cyan, #4db8a8) 28%, transparent));
-  }
-  @keyframes lobby-k4-slow {
-    to {
-      transform: rotate(360deg);
-    }
-  }
-  /** Hub lobby: calm signature glyph — no idle spin (full dome lives at /dome). */
-  .lobby-k4--static {
-    animation: none !important;
-  }
-  @keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  .animate-fade-in-up { opacity: 0; animation: fadeInUp 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-
-  /** Wye-Delta hero glyph — slow spin; engineering schematic (Super-Centaur parity) */
-  @keyframes hub-wye-spin {
-    to {
-      transform: rotate(360deg);
-    }
-  }
-  @media (prefers-reduced-motion: no-preference) {
-    svg.wye-delta-spin {
-      transform-origin: 50px 50px;
-      animation: hub-wye-spin 32s linear infinite;
-    }
-    .hub-wye-node {
-      animation: hub-wye-node-pulse 4s ease-in-out infinite;
-    }
-  }
-  @keyframes hub-wye-node-pulse {
-    0%, 100% { fill-opacity: 0.75; }
-    50% { fill-opacity: 1; }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    svg.wye-delta-spin {
-      animation: none;
-    }
-  }
-
-  .skip-to-content {
-    position: absolute;
-    left: 50%;
-    z-index: 60;
-    padding: 0.5rem 1rem;
-    font-family: "JetBrains Mono", ui-monospace, monospace;
-    font-size: 0.75rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--p31-void);
-    background: var(--p31-cyan);
-    border-radius: 0.25rem;
-    transform: translate(-50%, -160%);
-    transition: transform 0.2s ease;
-  }
-  .skip-to-content:focus {
-    transform: translate(-50%, 0.5rem);
-  }
-
-  /* Gray Rock hub landing — doctrine §1 / §7 (`?alive=1` skips) */
-  html.p31-hub-gray-rock #hub-gl-backdrop {
-    opacity: 0 !important;
-    visibility: hidden !important;
-  }
-  html.p31-hub-gray-rock .lobby-k4-wrap {
-    filter: none;
-  }
-  html.p31-hub-gray-rock .lobby-k4 {
-    color: rgba(180, 188, 202, 0.42) !important;
-    animation: none !important;
-  }
-  html.p31-hub-gray-rock #technical-hub-boundary a {
-    color: rgba(148, 156, 170, 0.88) !important;
-  }
-  html.p31-hub-gray-rock #technical-hub-boundary a:hover {
-    color: rgba(200, 206, 218, 0.95) !important;
-  }
-  html.p31-hub-gray-rock #scroll-container > #technical-hub-boundary ~ * {
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-    height: 0 !important;
-    min-height: 0 !important;
-    max-height: 0 !important;
-    margin-block: 0 !important;
-    padding-block: 0 !important;
-    overflow: hidden !important;
-    border: none !important;
-  }
-  html.p31-hub-gray-rock main#scroll-container {
-    min-height: 70vh;
-  }
-  html.p31-hub-gray-rock #nav-status-dot {
-    animation: none !important;
-    background: rgba(130, 136, 148, 0.4) !important;
-    box-shadow: none !important;
-  }
-  html.p31-hub-gray-rock #nav-q-factor,
-  html.p31-hub-gray-rock #nav-spoon-val,
-  html.p31-hub-gray-rock #nav-love-val {
-    color: rgba(232, 234, 240, 0.72) !important;
-  }
-  html.p31-hub-gray-rock #nav-spoon-fill {
-    background: rgba(118, 124, 136, 0.45) !important;
-  }
-  html.p31-hub-gray-rock nav a.border-phosphorus,
-  html.p31-hub-gray-rock nav a.border-teal,
-  html.p31-hub-gray-rock nav a.border-butter,
-  html.p31-hub-gray-rock nav a.border-lavender,
-  html.p31-hub-gray-rock nav a.border-coral {
-    border-color: rgba(255, 255, 255, 0.08) !important;
-    background: rgba(255, 255, 255, 0.04) !important;
-    color: rgba(232, 234, 240, 0.78) !important;
-  }
-
-  .hub-cta-primary {
-    border: 1px solid color-mix(in srgb, var(--p31-coral) 50%, transparent);
-    background: linear-gradient(
-      168deg,
-      color-mix(in srgb, var(--p31-coral) 88%, white) 0%,
-      var(--p31-coral) 45%,
-      color-mix(in srgb, var(--p31-coral) 72%, black) 100%
-    );
-    box-shadow:
-      0 0 0 1px rgba(0, 0, 0, 0.18) inset,
-      0 4px 28px color-mix(in srgb, var(--p31-coral) 32%, transparent);
-    transition: box-shadow 0.25s ease, transform 0.2s ease, filter 0.2s ease;
-  }
-  .hub-cta-primary:hover {
-    box-shadow:
-      0 0 0 1px rgba(0, 0, 0, 0.12) inset,
-      0 8px 36px color-mix(in srgb, var(--p31-coral) 42%, transparent);
-    filter: brightness(1.05);
-  }
-  @media (prefers-reduced-motion: no-preference) {
-    .hub-cta-primary:hover {
-      transform: translateY(-2px);
-    }
-  }
-  .hub-cta-primary:focus-visible {
-    outline: 2px solid var(--p31-cyan);
-    outline-offset: 3px;
-  }
-
-  .hub-cta-secondary:focus-visible {
-    outline: 2px solid var(--p31-cyan);
-    outline-offset: 2px;
-  }
-
-  a.hub-product-card:focus-visible {
-    outline: 2px solid var(--p31-cyan);
-    outline-offset: 2px;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .skip-to-content {
-      transition: none;
-    }
-    .hub-cta-primary:hover {
-      transform: none;
-    }
-  }
-
-  /* Layer 0 Animations */
-  @keyframes l0-inhale { to { transform: scale(1.3); opacity: 1; } }
-  @keyframes l0-hold   { from { transform: scale(1.3); opacity: 1; } to { transform: scale(1.3); opacity: 1; } }
-  @keyframes l0-exhale { to { transform: scale(0.75); opacity: 0.4; } }
-</style>
-
-<!-- Landing: src/scripts/landing-cockpit.ts (telemetry + trimtab + 2D particle canvas); full Three.js dome: /dome -->
-<script>
-  import '../scripts/landing-cockpit.ts';
-</script>

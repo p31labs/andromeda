@@ -84,9 +84,9 @@
   }
 
   .status-dev {
-    background: color-mix(in srgb, var(--p31-butter) 12%, transparent);
-    border-color: color-mix(in srgb, var(--p31-butter) 28%, transparent);
-    color: var(--p31-butter);
+    background: color-mix(in srgb, var(--p31-amber) 12%, transparent);
+    border-color: color-mix(in srgb, var(--p31-amber) 28%, transparent);
+    color: var(--p31-amber);
   }
 
   /** Optional: pair with `md:min-h-0 md:min-w-0` on the same element for dense desktop HUD. */

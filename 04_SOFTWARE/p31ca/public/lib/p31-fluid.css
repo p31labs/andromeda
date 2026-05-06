@@ -22,7 +22,7 @@
   --p31-coral: #cc6247;
   --p31-teal: #25897d;
   --p31-cyan: #4db8a8;
-  --p31-butter: #cda852;
+  --p31-amber: #cda852;
   --p31-lavender: #8b7cc9;
   --p31-phosphorus: #3ba372;
   --p31-phosphor: #00FF88;
@@ -313,7 +313,7 @@ h1.p31-heading, h2.p31-heading, h3.p31-heading {
 .p31-text-coral { color: var(--p31-coral); }
 .p31-text-teal { color: var(--p31-teal); }
 .p31-text-cyan { color: var(--p31-cyan); }
-.p31-text-butter { color: var(--p31-butter); }
+.p31-text-butter { color: var(--p31-amber); }
 .p31-text-lavender { color: var(--p31-lavender); }
 .p31-text-phosphorus { color: var(--p31-phosphorus); }
 

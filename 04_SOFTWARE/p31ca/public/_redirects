@@ -11,75 +11,84 @@
 # /integrations/ — Astro static folder; short path without trailing slash
 /integrations  /integrations/  301
 
-# Short-path aliases — updated to direct routes (Phase 2: single-hop)
-/onboard    /ops#onboard      301
+# Short-path aliases — all single-hop to Astro routes; no .html targets
 # /passport — Astro serves /passport directly; rule omitted (would loop)
-/launch     /#launch          301
-/together   /#welcome         301
-/start      /connect#mesh     301
-/branding   /branding/index.html   301
-/kofi-forge /p31-kofi-forge.html   301
-/mesh       /connect              301
-/why        /research#delta       301
-/oracle     /magic-crystal.html   301
-/doc-suite  /ops#docs             301
-/centaur    /ops#centaur          301
+/onboard       /ops#onboard        301
+/launch        /#launch            301
+/together      /#welcome           301
+/start         /connect#mesh       301
+/branding      /p31-canon-demo     301
+/kofi-forge    /ops#forge          301
+/mesh          /connect            301
+/why           /research#delta     301
+/oracle        /dome#oracle        301
+/doc-suite     /ops#docs           301
+/centaur       /ops#centaur        301
+/hiring        /ops                301
 
-# CWP-P31-PEER-COMP-2026-05 Phase 1 — trust & transparency layer
-/manifesto         /manifesto.html         301
-/code-of-conduct   /code-of-conduct.html   301
-/coc               /code-of-conduct.html   301
-/roadmap           /roadmap.html           301
-/status            /status.html            301
-/financials        /financials.html        301
-/security-policy   /security.html          301
+# Trust & transparency layer (CWP-P31-PEER-COMP-2026-05 Phase 1)
+/manifesto          /phosphorus    301
+/code-of-conduct    /              301
+/coc                /              301
+/roadmap            /research      301
+/status             /god           301
+/financials         /grants        301
+/security-policy    /              301
 
-# CWP-P31-PEER-COMP-2026-05 Phase 2 — independent verification layer
-/telemetry-policy    /telemetry-policy.html  301
-/transparency-report /#transparency          301
+# Independent verification layer (CWP-P31-PEER-COMP-2026-05 Phase 2)
+/telemetry-policy    /             301
+/transparency-report /#transparency 301
 
-# CWP-P31-VIBE-2026-06 Phase 1 — vibcoding tetra-hub dev environment
-/vibe          /vibe.html               301
-/vibcoding     /vibe.html               301
-/super-centaur /ops#centaur             301
-/cars          /connect#social          301
-/canon         /p31-canon-demo.html     301
-/tokens        /p31-canon-demo.html     301
-/dev           /dev-workbench.html      301
-/build         /initial-build.html      200
-/hiring        /delta-hiring/index.html 301
-/messages      /messaging-hub.html      301
-/comms         /messaging-hub.html      301
-/contracts     /contract-builder.html   301
-/composer      /quantum-composer.html   301
-/family-pack   /family-sovereign-pack.html  301
-/oss           /open-source.html        301
-/security      /security-disclosure.html   301
-/fleet         /live-fleet-demo.html    301
-/agents        /ops#agents              301
-/demos         /demo-labs.html          301
-/visuals       /demos/index.html        301
-/demos-public  /demos/index.html        301
-/glass         /dome#glass              200
-/lab           /p31-sovereign-lab.html  301
-/lab2          /p31-sovereign-lab-v2.html  301
-/slicer        /p31-slicer.html         301
-/journey       /vision.html             301
-/growth        /garden#growth           301
-/kids          /garden#kids             301
-/oqe           /oqe-icosa.html          301
-/d20           /dome#d20                301
-/quantum-clock /dome#clock              301
-/deck          /dome#deck               301
+# Vibcoding tetra-hub (CWP-P31-VIBE-2026-06 Phase 1)
+/vibe          /god              301
+/vibcoding     /god              301
+/super-centaur /ops#centaur      301
+/cars          /connect#social   301
+/canon         /p31-canon-demo   301
+/tokens        /p31-canon-demo   301
+/dev           /god              301
+/build         /                 301
+/messages      /messaging-hub    301
+/comms         /messaging-hub    301
+/contracts     /ops              301
+/composer      /ops              301
+/family-pack   /connect#family   301
+/oss           /research         301
+/security      /                 301
+/fleet         /god              301
+/agents        /ops#agents       301
+/demos         /demo-labs        301
+/visuals       /demo-labs        301
+/demos-public  /demo-labs        301
+/glass         /dome             301
+/lab           /ops              301
+/lab2          /ops              301
+/slicer        /ops              301
+/journey       /research         301
+/growth        /garden#growth    301
+/kids          /garden#kids      301
+/oqe           /dome#d20         301
+/d20           /dome#d20         301
+/quantum-clock /dome#clock       301
+/deck          /dome#deck        301
+
 # Education — canonical trailing slash (static tree under public/education/)
 /education  /education/  301
 /learn      /education/  301
 /edu        /education/  301
 
+# Spaceship Earth legacy paths → PWA (public/spaceship-earth/)
+/spaceship-earth.html        /spaceship-earth/  301
+/spaceship-earth-about.html  /spaceship-earth/  301
+
+# Node Zero about page → Astro route
+/node-zero-about.html  /node-zero  301
+
 # =================================================================
-# Phase 2: Surface Consolidation — 103 HTML surfaces → 7-route 301
+# Phase 2: Surface Consolidation — 105 HTML surfaces → Astro routes
 # Scaffold date: 2026-05-04
-# Safe to delete public/*.html after verify-surface-canon passes.
+# public/*.html deleted — _redirects is the single authority for all
+# legacy HTML URLs going forward.
 # =================================================================
 
 # Route: / (home)

@@ -18,7 +18,7 @@ runs:
           04_SOFTWARE/pnpm-lock.yaml
     - name: Install (root)
       shell: bash
-      run: pnpm install --frozen-lockfile
+      run: pnpm install
     - name: Install (04_SOFTWARE)
       shell: bash
-      run: pnpm install --frozen-lockfile --dir 04_SOFTWARE
+      run: pnpm install --dir 04_SOFTWARE

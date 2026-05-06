@@ -344,10 +344,10 @@
       "note": "POST /api/hardware/challenge (KV hw_pair:+6-digit code), POST /api/hardware/pair (D1 hardware_pairings), POST /api/hardware/telemetry (shape-validated stub). HTTPS only — no MQTT or cloud IoT. Contract docs/NODE-ZERO-FIRMWARE-CONTRACT.md — production zone route p31ca.org/api/hardware/* → p31-passkey."
     },
     "latticeOracle": {
-      "path": "/magic-crystal.html",
-      "implementation": "public/magic-crystal.html",
+      "path": "/dome#oracle",
+      "implementation": "src/pages/dome.astro",
       "label": "Lattice Oracle — toy crystallomancy (CSPRNG, client-only)",
-      "note": "No network. Short URL /oracle via _redirects. Not medical, legal, or financial advice."
+      "note": "Hosted inside /dome Astro route. Short URL /oracle via _redirects → /dome#oracle. Not medical, legal, or financial advice."
     },
     "creatorEconomy": {
       "path": "/creator-economy.json",
@@ -478,12 +478,12 @@
     },
     {
       "from": "/branding",
-      "to": "/branding/index.html",
+      "to": "/p31-canon-demo",
       "status": 301
     },
     {
       "from": "/kofi-forge",
-      "to": "/p31-kofi-forge.html",
+      "to": "/ops#forge",
       "status": 301
     },
     {
@@ -498,7 +498,7 @@
     },
     {
       "from": "/oracle",
-      "to": "/magic-crystal.html",
+      "to": "/dome#oracle",
       "status": 301
     },
     {
@@ -513,42 +513,42 @@
     },
     {
       "from": "/manifesto",
-      "to": "/manifesto.html",
+      "to": "/phosphorus",
       "status": 301
     },
     {
       "from": "/code-of-conduct",
-      "to": "/code-of-conduct.html",
+      "to": "/",
       "status": 301
     },
     {
       "from": "/coc",
-      "to": "/code-of-conduct.html",
+      "to": "/",
       "status": 301
     },
     {
       "from": "/roadmap",
-      "to": "/roadmap.html",
+      "to": "/research",
       "status": 301
     },
     {
       "from": "/status",
-      "to": "/status.html",
+      "to": "/god",
       "status": 301
     },
     {
       "from": "/financials",
-      "to": "/financials.html",
+      "to": "/grants",
       "status": 301
     },
     {
       "from": "/security-policy",
-      "to": "/security.html",
+      "to": "/",
       "status": 301
     },
     {
       "from": "/telemetry-policy",
-      "to": "/telemetry-policy.html",
+      "to": "/",
       "status": 301
     },
     {
@@ -558,12 +558,12 @@
     },
     {
       "from": "/vibe",
-      "to": "/vibe.html",
+      "to": "/god",
       "status": 301
     },
     {
       "from": "/vibcoding",
-      "to": "/vibe.html",
+      "to": "/god",
       "status": 301
     },
     {
@@ -578,67 +578,67 @@
     },
     {
       "from": "/canon",
-      "to": "/p31-canon-demo.html",
+      "to": "/p31-canon-demo",
       "status": 301
     },
     {
       "from": "/tokens",
-      "to": "/p31-canon-demo.html",
+      "to": "/p31-canon-demo",
       "status": 301
     },
     {
       "from": "/dev",
-      "to": "/dev-workbench.html",
+      "to": "/god",
       "status": 301
     },
     {
       "from": "/build",
-      "to": "/initial-build.html",
-      "status": 200
+      "to": "/",
+      "status": 301
     },
     {
       "from": "/hiring",
-      "to": "/delta-hiring/index.html",
+      "to": "/ops",
       "status": 301
     },
     {
       "from": "/messages",
-      "to": "/messaging-hub.html",
+      "to": "/messaging-hub",
       "status": 301
     },
     {
       "from": "/comms",
-      "to": "/messaging-hub.html",
+      "to": "/messaging-hub",
       "status": 301
     },
     {
       "from": "/contracts",
-      "to": "/contract-builder.html",
+      "to": "/ops",
       "status": 301
     },
     {
       "from": "/composer",
-      "to": "/quantum-composer.html",
+      "to": "/ops",
       "status": 301
     },
     {
       "from": "/family-pack",
-      "to": "/family-sovereign-pack.html",
+      "to": "/connect#family",
       "status": 301
     },
     {
       "from": "/oss",
-      "to": "/open-source.html",
+      "to": "/research",
       "status": 301
     },
     {
       "from": "/security",
-      "to": "/security-disclosure.html",
+      "to": "/",
       "status": 301
     },
     {
       "from": "/fleet",
-      "to": "/live-fleet-demo.html",
+      "to": "/god",
       "status": 301
     },
     {
@@ -648,42 +648,42 @@
     },
     {
       "from": "/demos",
-      "to": "/demo-labs.html",
+      "to": "/demo-labs",
       "status": 301
     },
     {
       "from": "/visuals",
-      "to": "/demos/index.html",
+      "to": "/demo-labs",
       "status": 301
     },
     {
       "from": "/demos-public",
-      "to": "/demos/index.html",
+      "to": "/demo-labs",
       "status": 301
     },
     {
       "from": "/glass",
-      "to": "/dome#glass",
-      "status": 200
+      "to": "/dome",
+      "status": 301
     },
     {
       "from": "/lab",
-      "to": "/p31-sovereign-lab.html",
+      "to": "/ops",
       "status": 301
     },
     {
       "from": "/lab2",
-      "to": "/p31-sovereign-lab-v2.html",
+      "to": "/ops",
       "status": 301
     },
     {
       "from": "/slicer",
-      "to": "/p31-slicer.html",
+      "to": "/ops",
       "status": 301
     },
     {
       "from": "/journey",
-      "to": "/vision.html",
+      "to": "/research",
       "status": 301
     },
     {
@@ -698,7 +698,7 @@
     },
     {
       "from": "/oqe",
-      "to": "/oqe-icosa.html",
+      "to": "/dome#d20",
       "status": 301
     },
     {
@@ -1300,6 +1300,21 @@
       "from": "/genesis-gate",
       "to": "https://genesis-gate.trimtab-signal.workers.dev",
       "status": 302
+    },
+    {
+      "from": "/spaceship-earth.html",
+      "to": "/spaceship-earth/",
+      "status": 301
+    },
+    {
+      "from": "/spaceship-earth-about.html",
+      "to": "/spaceship-earth/",
+      "status": 301
+    },
+    {
+      "from": "/node-zero-about.html",
+      "to": "/node-zero",
+      "status": 301
     }
   ],
   "fileSnippets": [
@@ -1312,11 +1327,6 @@
       "id": "dome.noscriptBackToHub",
       "path": "src/pages/dome.astro",
       "mustIncludeSubstring": "<a href=\"/\" class=\"px-6 py-3 bg-white/20"
-    },
-    {
-      "id": "openDocSuite.page",
-      "path": "public/open-doc-suite.html",
-      "mustIncludeSubstring": "P31 Open Doc Suite"
     },
     {
       "id": "_devWorkbench.archived",
@@ -1353,11 +1363,6 @@
       "path": "public/archive/2025-early/quantum-deck.html",
       "mustIncludeSubstring": "p31.quantumDeckPage/0.1.0",
       "note": "ARCHIVED 2026-05-03 — concept status, not live"
-    },
-    {
-      "id": "initialBuild.page",
-      "path": "public/initial-build.html",
-      "mustIncludeSubstring": "CWP-P31-IB-2026-01"
     },
     {
       "id": "subjectIdDerivation.lib",
@@ -1397,11 +1402,6 @@
       "mustIncludeSubstring": "\"messagingHub\""
     },
     {
-      "id": "cognitivePassport.generator",
-      "path": "public/passport-generator.html",
-      "mustIncludeSubstring": "p31.cognitivePassport/1.1.0"
-    },
-    {
       "id": "meshConstants.publicMirror",
       "path": "public/p31-mesh-constants.json",
       "mustIncludeSubstring": "passkeyApiBasePath"
@@ -1426,11 +1426,6 @@
       "id": "fleet.entities.bundle",
       "path": "public/p31-fleet-entities.json",
       "mustIncludeSubstring": "p31.fleetEntities/1.0.0"
-    },
-    {
-      "id": "fleet.agents.console",
-      "path": "public/fleet-agents.html",
-      "mustIncludeSubstring": "p31-fleet-entities.json"
     },
     {
       "id": "_demoLabs.archived",
@@ -1467,11 +1462,11 @@
   "registryAppUrlInvariants": [
     {
       "id": "ede",
-      "appUrl": "ede.html"
+      "appUrl": "/ops#ede"
     },
     {
       "id": "sovereign",
-      "appUrl": "sovereign.html"
+      "appUrl": "/research#sovereign"
     },
     {
       "id": "quantum-clock",
@@ -1479,23 +1474,23 @@
     },
     {
       "id": "super-centaur",
-      "appUrl": "p31-super-centaur-starter.html"
+      "appUrl": "/ops#centaur"
     },
     {
       "id": "integrations",
-      "appUrl": "integrations/index.html"
+      "appUrl": "/integrations/"
     },
     {
       "id": "education",
-      "appUrl": "education/index.html"
+      "appUrl": "/education/"
     },
     {
       "id": "poets",
-      "appUrl": "poets.html"
+      "appUrl": "/connect#poets"
     },
     {
       "id": "social-molecules",
-      "appUrl": "social-molecules.html"
+      "appUrl": "/connect#social"
     }
   ],
   "busBar": {
@@ -1689,10 +1684,6 @@
     "verify": "npm run verify:bus-bar (planned) — checks that productSlots covers all registry IDs, navByRole references only declared slots, and product count ≤ constraints.maxProducts. Until that script lands, validate manually: every key in productSlots must exist in registryAppUrlInvariants OR be flagged as 'subdomain-only' (e.g. bonding); every value in productSlots must be a key in slots; every entry in navByRole must be a key in slots."
   },
   "threejs": {
-    "connect.html": {
-      "path": "public/connect.html",
-      "mustIncludeSubstring": "three@0.160.0"
-    },
     "geodesic-math.astro": {
       "path": "src/pages/geodesic-math.astro",
       "mustIncludeSubstring": "three@0.183.0"
