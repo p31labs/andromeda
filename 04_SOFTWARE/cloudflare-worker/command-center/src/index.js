@@ -556,6 +556,8 @@ function jsonResponse(obj, status = 200, extraHeaders = {}) {
       'Content-Security-Policy': CSP,
       'X-Frame-Options': 'DENY',
       'Referrer-Policy': 'strict-origin-when-cross-origin',
+      'X-P31-QFactor': '1',
+      'X-P31-Routing-Protocol': 'custom_dsdv',
       ...extraHeaders,
     },
   });
