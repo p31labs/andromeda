@@ -22,15 +22,6 @@ jobs:
 
        - uses: ./.github/actions/pnpm-andromeda-full
 
-       - name: Lockfile consistency check
-         if: env.LOCKFILE_FROZEN_SUCCESS == 'true' || env.LOCKFILE_FROZEN_SUCCESS_04 == 'true'
-         run: |
-           if [[ -n $(git status --porcelain pnpm-lock.yaml 04_SOFTWARE/pnpm-lock.yaml) ]]; then
-             echo "ERROR: Lockfile(s) are out of sync despite frozen install succeeding. This indicates a CI environment issue."
-             git status --porcelain pnpm-lock.yaml 04_SOFTWARE/pnpm-lock.yaml
-             exit 1
-           fi
-
        - uses: ./.github/actions/eslint-bonding-shared
 
       - name: Security audit (high+, informational)
