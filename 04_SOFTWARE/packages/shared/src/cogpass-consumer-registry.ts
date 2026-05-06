@@ -38,7 +38,7 @@ export interface CogPassConsumer {
 export const COGPASS_CONSUMER_REGISTRY: CogPassConsumer[] = [
   {
     name: 'p31-subject-prefs.js',
-    location: 'andromeda/04_SOFTWARE/p31ca/public/p31-subject-prefs.js',
+    location: 'andromeda/04_SOFTWARE/p31ca/public/lib/p31-subject-prefs.js',
     reads: ['accessibility'],
     notes: 'localStorage → CSS custom properties → every P31 surface',
   },
@@ -69,8 +69,8 @@ export const COGPASS_CONSUMER_REGISTRY: CogPassConsumer[] = [
   {
     name: 'k4-personal Worker',
     location: 'andromeda/04_SOFTWARE/k4-personal/',
-    reads: ['subject', 'communication'],
-    notes: 'Agent personality and response style initialization',
+    reads: ['subject', 'communication', 'ai_allocation'],
+    notes: 'Agent personality, response style, and AI triad lane assignments',
   },
   {
     name: 'Spaceship Earth (dome)',
