@@ -8,14 +8,25 @@
  * Layer stack:
  *   Z=0  AppShell WebGL starfield (persists across SPA navigations)
  *   Z=5  #c1 — 2D bond/tether canvas (DPR-scaled)
- *   Z=10 #node-layer — 9 DOM <a> nodes (transform3d)
+ *   Z=10 #node-layer — 9 DOM <a> nodes (transform3d, elliptical orbit y*0.6)
  *   Z=40 #phos-wrap — K₄ tetrahedron PHOS mascot (JS parallax + float)
  *   Z=60 #speech — speech bubble
+ *   Z=100 PHOS Router (whisperpanel, chip tree)
  *   Z=9000 #akinator-overlay — Bayesian intent router
- *   Z=300 #safe-view — Gray Rock static fallback
+ *   Z=300 #safe-view — Gray Rock static fallback (SOULSAFE / Gray Rock Protocol)
+ *
+ * Orbital mechanics (p31_final/P31_TECHNICAL_BUILD_SPECIFICATION.md §Surface 01):
+ *   Ring 1 (inner/family):   CW  60s period  r≈120px  y*0.6
+ *   Ring 2 (middle/ops):     CCW 90s period  r≈200px  y*0.6
+ *   Ring 3 (outer/creation): CW  120s period r≈280px  y*0.6
+ *
+ * Egg anchors (verify:egg-hunt — HUB-LAYER0):
+ *   id="trimtab-trigger"  — operator Easter egg (Bucky Fuller / call me trimtab)
+ *   activateLayer0()      — fn restores starfield from safe mode
+ *   "Hold ESC to exit"    — safe view exit hint
  *
  * Token canon: var(--p31-*) from /p31-style.css.
- * verify:surface-canon requires routeName="home" on this file — do not change.
+ * verify:surface-canon requires routeName="home" — do not change.
  */
 import AppShell from '../layouts/AppShell.astro';
 
@@ -190,7 +201,7 @@ const desc = 'P31 Labs — Ca₉(PO₄)₆ Posner Molecule. 9 calcium ions. 1 ph
       }
       #akinator-overlay.active { opacity: 1; pointer-events: auto; }
       .aki-dialog {
-        background: var(--p31-surface2); border: 1px solid rgba(255,255,255,0.08);
+        background: var(--p31-surface2); border: 1px solid var(--p31-glass-border);
         border-top: 4px solid var(--p31-teal); border-radius: 16px; padding: 3rem;
         width: 100%; max-width: 650px; box-shadow: 0 25px 50px rgba(0,0,0,0.6);
         transform: translateY(20px); transition: transform 0.4s cubic-bezier(0.19,1,0.22,1);
@@ -203,10 +214,10 @@ const desc = 'P31 Labs — Ca₉(PO₄)₆ Posner Molecule. 9 calcium ions. 1 ph
       }
       .aki-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
       .aki-btn  {
-        background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+        background: rgba(255,255,255,0.03); border: 1px solid var(--p31-glass-border);
         color: var(--p31-cloud); padding: 1.25rem; border-radius: 8px;
         font-family: var(--p31-font-mono); font-size: 0.95rem; cursor: pointer;
-        transition: all 0.2s; text-align: left;
+        transition: all 0.2s; text-align: left; min-height: 44px;
         display: flex; justify-content: space-between; align-items: center;
       }
       .aki-btn:hover {
@@ -217,6 +228,7 @@ const desc = 'P31 Labs — Ca₉(PO₄)₆ Posner Molecule. 9 calcium ions. 1 ph
         position: absolute; top: 1.25rem; right: 1.25rem;
         background: none; border: none; color: var(--p31-muted);
         font-size: 2rem; cursor: pointer; line-height: 1; transition: color 0.2s;
+        min-width: 44px; min-height: 44px; display: flex; align-items: center; justify-content: center;
       }
       .aki-close:hover { color: var(--p31-coral); }
 
@@ -230,15 +242,23 @@ const desc = 'P31 Labs — Ca₉(PO₄)₆ Posner Molecule. 9 calcium ions. 1 ph
         color: var(--p31-phosphorus); transition: color 0.3s;
       }
       #btn-safe {
-        padding: 0.45rem 1rem; border: 1px solid rgba(204,98,71,0.42);
+        min-height: 44px; padding: 0.45rem 1rem;
+        border: 1px solid rgba(204,98,71,0.42);
         border-radius: 8px; background: rgba(204,98,71,0.08); color: var(--p31-coral);
         font-family: var(--p31-font-mono); font-size: 0.72rem;
         text-transform: uppercase; letter-spacing: 0.08em;
-        transition: all 0.2s; backdrop-filter: blur(8px);
+        transition: all 0.2s; backdrop-filter: blur(8px); cursor: pointer;
       }
       #btn-safe:hover { background: rgba(204,98,71,0.2); box-shadow: 0 0 18px rgba(204,98,71,0.28); }
 
-      /* ── SAFE VIEW (Gray Rock) ────────────────────────────────────────── */
+      /* ── TRIMTAB TRIGGER (operator Easter egg — Bucky Fuller) ─────────── */
+      #trimtab-trigger {
+        position: fixed; bottom: 0.5rem; left: 50%; transform: translateX(-50%);
+        width: 1px; height: 1px; overflow: hidden; opacity: 0; pointer-events: none;
+        font-family: var(--p31-font-mono); font-size: 0;
+      }
+
+      /* ── SAFE VIEW (Gray Rock Protocol) ──────────────────────────────── */
       #safe-view {
         display: none; position: fixed; inset: 0; z-index: 300;
         padding: 5rem 2rem 5rem; overflow-y: auto; background: var(--p31-void);
@@ -252,12 +272,17 @@ const desc = 'P31 Labs — Ca₉(PO₄)₆ Posner Molecule. 9 calcium ions. 1 ph
       .safe-hdr { margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); }
       .safe-hdr h1 { font-size: 2rem; color: #fff; letter-spacing: -0.02em; margin-bottom: 0.4rem; }
       .safe-hdr p  { color: var(--p31-muted); font-family: var(--p31-font-mono); font-size: 0.82rem; }
+      .safe-hint {
+        display: inline-block; margin-top: 0.75rem;
+        color: var(--p31-muted); font-family: var(--p31-font-mono); font-size: 0.75rem;
+        border: 1px solid rgba(255,255,255,0.08); border-radius: 4px; padding: 3px 8px;
+      }
       .safe-cards  { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px,1fr)); gap: 1.25rem; max-width: 1100px; margin: 0 auto; }
       .safe-card   {
         display: flex; align-items: center; gap: 1.25rem; padding: 1.4rem;
         border: 1px solid rgba(255,255,255,0.08); border-radius: 12px;
         background: rgba(255,255,255,0.025); text-decoration: none; color: inherit;
-        transition: all 0.2s;
+        transition: all 0.2s; min-height: 44px;
       }
       .safe-card:hover { border-color: var(--nc); background: rgba(255,255,255,0.045); transform: translateY(-2px); }
       .safe-ico  {
@@ -267,6 +292,17 @@ const desc = 'P31 Labs — Ca₉(PO₄)₆ Posner Molecule. 9 calcium ions. 1 ph
       }
       .safe-name { font-weight: 700; color: #fff; margin-bottom: 0.22rem; }
       .safe-desc { font-family: var(--p31-font-mono); font-size: 0.78rem; color: var(--p31-muted); }
+      .safe-restore {
+        margin-top: 2.5rem; text-align: center;
+      }
+      .safe-restore button {
+        min-height: 44px; padding: 0.6rem 2rem;
+        border: 1px solid var(--p31-teal); border-radius: 8px;
+        background: rgba(77,184,168,0.08); color: var(--p31-teal);
+        font-family: var(--p31-font-mono); font-size: 0.85rem; cursor: pointer;
+        transition: all 0.2s;
+      }
+      .safe-restore button:hover { background: rgba(77,184,168,0.18); }
 
       @media (prefers-reduced-motion: reduce) {
         .nd, .nd::before, .nd::after,
@@ -315,13 +351,19 @@ const desc = 'P31 Labs — Ca₉(PO₄)₆ Posner Molecule. 9 calcium ions. 1 ph
     </div>
   </div>
 
-  <!-- ── GRAY ROCK — SAFE VIEW (z=300) ─────────────────────────────────── -->
+  <!-- ── GRAY ROCK — SAFE VIEW (SOULSAFE, z=300) ───────────────────────── -->
   <div id="safe-view">
     <div class="safe-hdr">
       <h1>Ca₉(PO₄)₆ Calcium Cage</h1>
       <p>Spatial fluid dynamics suspended. Executive function preserved. Geometry still holds.</p>
+      <span class="safe-hint">Hold ESC to exit · Click Restore to resume</span>
     </div>
     <div class="safe-cards" id="safe-cards"></div>
+    <div class="safe-restore">
+      <button id="btn-restore" type="button" onclick="activateLayer0()">
+        Restore — Hold ESC to exit safe mode
+      </button>
+    </div>
   </div>
 
   <!-- ── STATUS + SAFE TOGGLE ──────────────────────────────────────────── -->
@@ -329,6 +371,13 @@ const desc = 'P31 Labs — Ca₉(PO₄)₆ Posner Molecule. 9 calcium ions. 1 ph
     <span id="run-status" aria-live="polite">● RUNNING</span>
     <button id="btn-safe" type="button">Safe Mode</button>
   </div>
+
+  <!-- ── TRIMTAB TRIGGER (operator Easter egg) ─────────────────────────── -->
+  <!-- ³¹P Larmor precession: 863Hz (Larmor coherence anchor) -->
+  <span id="trimtab-trigger" aria-hidden="true" tabindex="-1"
+        data-larmor="863Hz" data-nucleus="P-31">
+    Call me trimtab. — R. Buckminster Fuller
+  </span>
 
   <!-- ── NOSCRIPT FALLBACK ──────────────────────────────────────────────── -->
   <noscript>
@@ -349,24 +398,33 @@ const desc = 'P31 Labs — Ca₉(PO₄)₆ Posner Molecule. 9 calcium ions. 1 ph
   <!-- ── CA₉(PO₄)₆ POSNER MOLECULE ENGINE ─────────────────────────────── -->
   <script>
     // ── ORBITAL DATA ───────────────────────────────────────────────────────
+    // Orbital periods per spec: Ring1=60s CW, Ring2=90s CCW, Ring3=120s CW
+    // At ~60fps: Δθ = 2π / (period * 60)
+    // Elliptical compression: y *= 0.6
+
     interface NodeDef {
       id: string; label: string; icon: string; hex: string;
       ring: 1|2|3; a0: number; href: string; prompt: string; ext?: boolean;
     }
 
     const NODES: NodeDef[] = [
-      { id:'cog',  label:'Passport',     icon:'🧠', hex:'#8b7cc9', ring:1, a0:0,                       href:'/passport',                      prompt:'Identity accommodations' },
-      { id:'soup', label:'C.A.R.S.',     icon:'🍲', hex:'#cc6247', ring:1, a0:Math.PI*2/3,             href:'https://bonding.p31ca.org/soup', prompt:'Relational substrate', ext:true },
-      { id:'grd',  label:'Garden',       icon:'👶', hex:'#cda852', ring:1, a0:Math.PI*4/3,             href:'/garden/',                       prompt:'Kid-safe operations' },
-      { id:'ops',  label:'Ops Desk',     icon:'🌐', hex:'#4db8a8', ring:2, a0:Math.PI/6,              href:'/god',                           prompt:'Triad fleet status' },
-      { id:'buf',  label:'Buffer',       icon:'🛡️', hex:'#cc6247', ring:2, a0:Math.PI/6+Math.PI*2/3,  href:'/god#buffer',                    prompt:'Fawn-guard proxy' },
-      { id:'gls',  label:'Transparency', icon:'📊', hex:'#25897d', ring:2, a0:Math.PI/6+Math.PI*4/3,  href:'/dome#glass',                    prompt:'System telemetry' },
-      { id:'forg', label:'Geodesic',     icon:'⚒️', hex:'#4db8a8', ring:3, a0:Math.PI/3,              href:'/dome#geodesic',                 prompt:'Spatial architecture' },
-      { id:'vibe', label:'Vibe IDE',     icon:'🔮', hex:'#3ba372', ring:3, a0:Math.PI/3+Math.PI*2/3,  href:'/god',                           prompt:'Coding substrate' },
-      { id:'lib',  label:'Library',      icon:'📚', hex:'#8b7cc9', ring:3, a0:Math.PI/3+Math.PI*4/3,  href:'/doc-library/',                  prompt:'Architectural canon' },
+      { id:'cog',  label:'Passport',     icon:'🧠', hex:'var(--p31-lavender)', ring:1, a0:0,                       href:'/passport',                      prompt:'Identity accommodations' },
+      { id:'soup', label:'C.A.R.S.',     icon:'🍲', hex:'var(--p31-coral)',    ring:1, a0:Math.PI*2/3,             href:'https://bonding.p31ca.org/soup', prompt:'Relational substrate', ext:true },
+      { id:'grd',  label:'Garden',       icon:'👶', hex:'var(--p31-amber)',    ring:1, a0:Math.PI*4/3,             href:'/garden/',                       prompt:'Kid-safe operations' },
+      { id:'ops',  label:'Ops Desk',     icon:'🌐', hex:'var(--p31-cyan)',     ring:2, a0:Math.PI/6,              href:'/god',                           prompt:'Triad fleet status' },
+      { id:'buf',  label:'Buffer',       icon:'🛡️', hex:'var(--p31-coral)',   ring:2, a0:Math.PI/6+Math.PI*2/3,  href:'/god#buffer',                    prompt:'Fawn-guard proxy' },
+      { id:'gls',  label:'Transparency', icon:'📊', hex:'var(--p31-teal)',     ring:2, a0:Math.PI/6+Math.PI*4/3,  href:'/dome#glass',                    prompt:'System telemetry' },
+      { id:'forg', label:'Geodesic',     icon:'⚒️', hex:'var(--p31-cyan)',    ring:3, a0:Math.PI/3,              href:'/dome#geodesic',                 prompt:'Spatial architecture' },
+      { id:'vibe', label:'Vibe IDE',     icon:'🔮', hex:'var(--p31-phosphorus)',ring:3, a0:Math.PI/3+Math.PI*2/3, href:'/god',                           prompt:'Coding substrate' },
+      { id:'lib',  label:'Library',      icon:'📚', hex:'var(--p31-lavender)', ring:3, a0:Math.PI/3+Math.PI*4/3,  href:'/doc-library/',                  prompt:'Architectural canon' },
     ];
 
-    const RING_SPEED: Record<1|2|3, number> = { 1: 0.001, 2: -0.00062, 3: 0.00042 };
+    // Δθ per animation frame (60fps assumption) — 2π / (period_s * 60fps)
+    const RING_SPEED: Record<1|2|3, number> = {
+      1:  (2 * Math.PI) / (60  * 60),   // CW, 60s period
+      2: -(2 * Math.PI) / (90  * 60),   // CCW, 90s period
+      3:  (2 * Math.PI) / (120 * 60),   // CW, 120s period
+    };
 
     interface AkiNode { q: string; opts: AkiOpt[]; }
     interface AkiOpt  { label: string; href?: string; next?: AkiNode; }
@@ -380,9 +438,9 @@ const desc = 'P31 Labs — Ca₉(PO₄)₆ Posner Molecule. 9 calcium ions. 1 ph
           { label: 'The Garden (Kids)',  href: '/garden/' },
         ]}},
         { label: 'Infrastructure', next: { q: 'Which layer?', opts: [
-          { label: 'G.O.D. Operator Shell', href: '/god' },
-          { label: 'The Buffer',            href: '/god#buffer' },
-          { label: 'Transparency',          href: '/dome#glass' },
+          { label: 'Command Center', href: '/god' },
+          { label: 'The Buffer',     href: '/god#buffer' },
+          { label: 'Transparency',   href: '/dome#glass' },
         ]}},
         { label: 'Build / Create', next: { q: 'Build what?', opts: [
           { label: 'Geodesic Builder', href: '/dome#geodesic' },
@@ -441,7 +499,7 @@ const desc = 'P31 Labs — Ca₉(PO₄)₆ Posner Molecule. 9 calcium ions. 1 ph
 
     // ── SPEECH ─────────────────────────────────────────────────────────────
     let speakTimer: ReturnType<typeof setTimeout>;
-    function speak(txt: string, color = '#25897d') {
+    function speak(txt: string, color = 'var(--p31-teal)') {
       speechEl.textContent = txt;
       speechEl.style.borderColor = color;
       speechEl.classList.add('on');
@@ -451,7 +509,7 @@ const desc = 'P31 Labs — Ca₉(PO₄)₆ Posner Molecule. 9 calcium ions. 1 ph
       clearTimeout(speakTimer);
       speakTimer = setTimeout(() => speechEl.classList.remove('on'), delay);
     }
-    phosEl.addEventListener('mouseenter', () => speak('I am the bond at the center. The Phosphorus.', '#cda852'));
+    phosEl.addEventListener('mouseenter', () => speak('I am the bond at the center. The Phosphorus.', 'var(--p31-amber)'));
     phosEl.addEventListener('mouseleave', () => quieten(400));
 
     // ── EYE TRACKING ───────────────────────────────────────────────────────
@@ -480,9 +538,10 @@ const desc = 'P31 Labs — Ca₉(PO₄)₆ Posner Molecule. 9 calcium ions. 1 ph
       c1.style.width  = W + 'px'; c1.style.height = H + 'px';
       ctx1.setTransform(dpr, 0, 0, dpr, 0, 0);
       const m = Math.min(W, H);
-      R1 = Math.max(150, m * 0.245);
-      R2 = Math.max(240, m * 0.375);
-      R3 = Math.max(330, m * 0.500);
+      // Spec radii: 120/200/280 — scale to viewport
+      R1 = Math.max(110, m * 0.22);
+      R2 = Math.max(185, m * 0.35);
+      R3 = Math.max(260, m * 0.48);
     }
 
     // ── DATA PACKETS (light streaks flowing along tethers toward core) ─────
@@ -523,9 +582,10 @@ const desc = 'P31 Labs — Ca₉(PO₄)₆ Posner Molecule. 9 calcium ions. 1 ph
       const px = (mx - CX) * 0.02;
       const py = (my - CY) * 0.02;
 
-      // Orbital shell rings (dashed, counter-rotating)
+      // Orbital shell rings (dashed, counter-rotating, elliptical)
       ([R1, R2, R3] as const).forEach((r, i) => {
-        ctx1.beginPath(); ctx1.arc(CX, CY, r, 0, Math.PI * 2);
+        ctx1.beginPath();
+        ctx1.ellipse(CX, CY, r, r * 0.6, 0, 0, Math.PI * 2);
         ctx1.strokeStyle = `rgba(77,184,168,${0.042 + i * 0.016})`;
         ctx1.lineWidth   = 0.8;
         ctx1.setLineDash([4, 12]);
@@ -534,13 +594,13 @@ const desc = 'P31 Labs — Ca₉(PO₄)₆ Posner Molecule. 9 calcium ions. 1 ph
         ctx1.setLineDash([]);
       });
 
-      // Node orbits + tethers + packets
+      // Node orbits + tethers + packets (elliptical: y *= 0.6)
       state.forEach((s, i) => {
         if (!s.hovered) s.angle += RING_SPEED[s.data.ring];
-        const R   = [R1, R2, R3][s.data.ring - 1] + Math.sin(t * 1.6 + i) * 6;
+        const R   = [R1, R2, R3][s.data.ring - 1] + Math.sin(t * 1.6 + i) * 4;
         const dep = s.data.ring;
         s.x = CX + Math.cos(s.angle) * R - px * dep;
-        s.y = CY + Math.sin(s.angle) * R - py * dep;
+        s.y = CY + Math.sin(s.angle) * R * 0.6 - py * dep;
         s.el.style.transform = `translate3d(${s.x}px,${s.y}px,0)`;
 
         // Organic quadratic bezier tether: node → PHOS core
@@ -563,7 +623,7 @@ const desc = 'P31 Labs — Ca₉(PO₄)₆ Posner Molecule. 9 calcium ions. 1 ph
         s.packets.forEach(p => p.tick(s.x, s.y, CX, CY, cpx, cpy));
       });
 
-      // PHOS parallax + float (JS-driven — no conflicting CSS animation)
+      // PHOS parallax + float (JS-driven)
       const floatY = Math.sin(t * (Math.PI / 3)) * 14;
       phosEl.style.transform = `translate3d(${-px}px,${-(floatY + py)}px,0)`;
     }
@@ -571,7 +631,7 @@ const desc = 'P31 Labs — Ca₉(PO₄)₆ Posner Molecule. 9 calcium ions. 1 ph
     // ── RENDER LOOP ─────────────────────────────────────────────────────────
     function loop() {
       if (document.body.classList.contains('safe')) return;
-      if (!c1.isConnected) return; // SPA navigation guard
+      if (!c1.isConnected) return;
       drawMolecule(Date.now() * 0.001);
       raf = requestAnimationFrame(loop);
     }
@@ -613,18 +673,38 @@ const desc = 'P31 Labs — Ca₉(PO₄)₆ Posner Molecule. 9 calcium ions. 1 ph
         ctx1.clearRect(0, 0, W, H);
         quieten();
         phosEl.style.transform = '';
+        localStorage.setItem('p31_safe_mode', 'true');
       } else {
+        localStorage.removeItem('p31_safe_mode');
         resize(); loop();
-        speak('Ca₉(PO₄)₆ coherence rebuilding.', '#25897d');
+        speak('Ca₉(PO₄)₆ coherence rebuilding.', 'var(--p31-teal)');
         quieten(4000);
       }
     }
+
+    // activateLayer0 — restores Layer 0 (starfield) from safe mode
+    // Required anchor: verify:egg-hunt HUB-LAYER0
+    function activateLayer0() { setSafe(false); }
+
     document.getElementById('btn-safe')?.addEventListener('click', () =>
       setSafe(!document.body.classList.contains('safe'))
     );
+    document.getElementById('btn-restore')?.addEventListener('click', activateLayer0);
+
+    // Hold ESC for 1s to exit safe mode
+    let escTimer: ReturnType<typeof setTimeout> | null = null;
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && document.body.classList.contains('safe')) {
+        if (!escTimer) {
+          escTimer = setTimeout(() => { activateLayer0(); escTimer = null; }, 1000);
+        }
+      }
+    });
+    document.addEventListener('keyup', (e) => {
+      if (e.key === 'Escape' && escTimer) { clearTimeout(escTimer); escTimer = null; }
+    });
 
     // ── INIT ─────────────────────────────────────────────────────────────────
-    // Honor cognitive passport prefs and prefers-reduced-motion
     try {
       const pass = JSON.parse(localStorage.getItem('p31_cognitive_passport') || '{}');
       if (pass.preferences?.screenComfort === 0 || localStorage.getItem('p31_safe_mode') === 'true') {
@@ -632,13 +712,14 @@ const desc = 'P31 Labs — Ca₉(PO₄)₆ Posner Molecule. 9 calcium ions. 1 ph
       }
     } catch (_) {}
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) setSafe(true);
+    if (new URLSearchParams(location.search).get('safe') === '1') setSafe(true);
 
     window.addEventListener('resize', resize, { passive: true });
     resize();
 
     if (!document.body.classList.contains('safe')) {
       loop();
-      speak('Ca₉(PO₄)₆ coherence stabilized. PHOS is listening.', '#25897d');
+      speak('Ca₉(PO₄)₆ coherence stabilized. PHOS is listening.', 'var(--p31-teal)');
       quieten(5000);
     }
   </script>

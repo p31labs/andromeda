@@ -15,31 +15,31 @@
 // ── Types ──────────────────────────────────────────────────────────────────
 
 export interface HybridKeyPair {
-  classical: { publicKey: Uint8Array; privateKey: Uint8Array };
-  pqc: { publicKey: Uint8Array; privateKey: Uint8Array };
+  classical: { publicKey: Uint8Array<ArrayBuffer>; privateKey: Uint8Array<ArrayBuffer> };
+  pqc: { publicKey: Uint8Array<ArrayBuffer>; privateKey: Uint8Array<ArrayBuffer> };
   algorithm: 'Ed25519+ML-DSA-65' | 'X25519+ML-KEM-768';
   createdAt: number;
 }
 
 export interface HybridSignature {
-  classical: Uint8Array;   // Ed25519
-  pqc: Uint8Array;         // ML-DSA-65
+  classical: Uint8Array<ArrayBuffer>;
+  pqc: Uint8Array<ArrayBuffer>;
   algorithm: 'Ed25519+ML-DSA-65';
 }
 
 export interface HybridEncrypted {
-  ciphertext: Uint8Array;   // AES-256-GCM
-  iv: Uint8Array;
-  kemCiphertext: Uint8Array; // ML-KEM-768 encapsulation
+  ciphertext: Uint8Array<ArrayBuffer>;
+  iv: Uint8Array<ArrayBuffer>;
+  kemCiphertext: Uint8Array<ArrayBuffer>;
   algorithm: 'AES-256-GCM+ML-KEM-768';
 }
 
 // ── WebCrypto helpers (universal: browser, CF Workers, Node 18+) ──────────
 
 async function aesEncrypt(
-  plaintext: Uint8Array,
-  key: Uint8Array,
-): Promise<{ ciphertext: Uint8Array; iv: Uint8Array }> {
+  plaintext: Uint8Array<ArrayBuffer>,
+  key: Uint8Array<ArrayBuffer>,
+): Promise<{ ciphertext: Uint8Array<ArrayBuffer>; iv: Uint8Array<ArrayBuffer> }> {
   const iv = crypto.getRandomValues(new Uint8Array(12));
   const cryptoKey = await crypto.subtle.importKey(
     'raw', key.slice(0, 32), { name: 'AES-GCM' }, false, ['encrypt'],
@@ -49,10 +49,10 @@ async function aesEncrypt(
 }
 
 async function aesDecrypt(
-  ciphertext: Uint8Array,
-  iv: Uint8Array,
-  key: Uint8Array,
-): Promise<Uint8Array> {
+  ciphertext: Uint8Array<ArrayBuffer>,
+  iv: Uint8Array<ArrayBuffer>,
+  key: Uint8Array<ArrayBuffer>,
+): Promise<Uint8Array<ArrayBuffer>> {
   const cryptoKey = await crypto.subtle.importKey(
     'raw', key.slice(0, 32), { name: 'AES-GCM' }, false, ['decrypt'],
   );
@@ -61,10 +61,10 @@ async function aesDecrypt(
 }
 
 async function hkdf(
-  material: Uint8Array,
+  material: Uint8Array<ArrayBuffer>,
   info: string,
   length = 32,
-): Promise<Uint8Array> {
+): Promise<Uint8Array<ArrayBuffer>> {
   const key = await crypto.subtle.importKey(
     'raw', material, { name: 'HKDF' }, false, ['deriveBits'],
   );
@@ -79,15 +79,15 @@ async function hkdf(
 // ── Attempt lazy import of @noble/post-quantum ────────────────────────────
 
 interface MlKem768 {
-  keygen(): { publicKey: Uint8Array; secretKey: Uint8Array };
-  encapsulate(pk: Uint8Array): { cipherText: Uint8Array; sharedSecret: Uint8Array };
-  decapsulate(ct: Uint8Array, sk: Uint8Array): Uint8Array;
+  keygen(): { publicKey: Uint8Array<ArrayBuffer>; secretKey: Uint8Array<ArrayBuffer> };
+  encapsulate(pk: Uint8Array<ArrayBuffer>): { cipherText: Uint8Array<ArrayBuffer>; sharedSecret: Uint8Array<ArrayBuffer> };
+  decapsulate(ct: Uint8Array<ArrayBuffer>, sk: Uint8Array<ArrayBuffer>): Uint8Array<ArrayBuffer>;
 }
 
 interface MlDsa65 {
-  keygen(): { publicKey: Uint8Array; secretKey: Uint8Array };
-  sign(msg: Uint8Array, sk: Uint8Array): Uint8Array;
-  verify(msg: Uint8Array, sig: Uint8Array, pk: Uint8Array): boolean;
+  keygen(): { publicKey: Uint8Array<ArrayBuffer>; secretKey: Uint8Array<ArrayBuffer> };
+  sign(msg: Uint8Array<ArrayBuffer>, sk: Uint8Array<ArrayBuffer>): Uint8Array<ArrayBuffer>;
+  verify(msg: Uint8Array<ArrayBuffer>, sig: Uint8Array<ArrayBuffer>, pk: Uint8Array<ArrayBuffer>): boolean;
 }
 
 let mlKem768: MlKem768 | null = null;
@@ -162,7 +162,7 @@ export async function generateKEMKeyPair(): Promise<HybridKeyPair> {
 // ── Signing ───────────────────────────────────────────────────────────────
 
 export async function hybridSign(
-  message: Uint8Array,
+  message: Uint8Array<ArrayBuffer>,
   keyPair: HybridKeyPair,
 ): Promise<HybridSignature> {
   // Classical Ed25519
@@ -186,9 +186,9 @@ export async function hybridSign(
 }
 
 export async function hybridVerify(
-  message: Uint8Array,
+  message: Uint8Array<ArrayBuffer>,
   sig: HybridSignature,
-  publicKeys: { classical: Uint8Array; pqc: Uint8Array },
+  publicKeys: { classical: Uint8Array<ArrayBuffer>; pqc: Uint8Array<ArrayBuffer> },
 ): Promise<{ classicalValid: boolean; pqcValid: boolean | null }> {
   // Classical
   const classicalKey = await crypto.subtle.importKey(
@@ -211,8 +211,8 @@ export async function hybridVerify(
 // ── Encryption / KEM ──────────────────────────────────────────────────────
 
 export async function hybridEncrypt(
-  plaintext: Uint8Array,
-  recipientPublicKeys: { classical: Uint8Array; pqc: Uint8Array },
+  plaintext: Uint8Array<ArrayBuffer>,
+  recipientPublicKeys: { classical: Uint8Array<ArrayBuffer>; pqc: Uint8Array<ArrayBuffer> },
 ): Promise<HybridEncrypted> {
   // Classical ECDH key exchange
   const ephemeral = await crypto.subtle.generateKey(
@@ -250,9 +250,9 @@ export async function hybridEncrypt(
 
 export async function hybridDecrypt(
   encrypted: HybridEncrypted,
-  privateKeys: { classical: Uint8Array; pqc: Uint8Array },
-  senderPublicKey: Uint8Array,
-): Promise<Uint8Array> {
+  privateKeys: { classical: Uint8Array<ArrayBuffer>; pqc: Uint8Array<ArrayBuffer> },
+  senderPublicKey: Uint8Array<ArrayBuffer>,
+): Promise<Uint8Array<ArrayBuffer>> {
   // Classical ECDH
   const myClassical = await crypto.subtle.importKey(
     'pkcs8', privateKeys.classical, { name: 'ECDH', namedCurve: 'P-256' }, false, ['deriveBits'],

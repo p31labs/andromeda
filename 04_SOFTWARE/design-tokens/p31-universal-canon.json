@@ -18,7 +18,7 @@
   "palette": {
     "comment": "Brand anchors — appearances should keep these identical for cross-ring recognition.",
     "coral": "#cc6247",
-    "teal": "#25897d",
+    "teal": "#5DCAA5",
     "cyan": "#4db8a8",
     "butter": "#cda852",
     "lavender": "#8b7cc9",
@@ -179,22 +179,22 @@
     "hub": {
       "colorScheme": "dark",
       "themeColor": "#0f1115",
-      "colors": {
-        "void": "#0f1115",
-        "surface": "#161920",
-        "surface2": "#1c2028",
-        "coral": "#cc6247",
-        "teal": "#25897d",
-        "cyan": "#4db8a8",
-        "cloud": "#d8d6d0",
-        "butter": "#cda852",
-        "lavender": "#8b7cc9",
-        "phosphorus": "#3ba372",
-        "paper": "#f4f4f5",
-        "ink": "#1e293b",
-        "muted": "#6b7280",
-        "phosphor": "#00FF88"
-      },
+        "colors": {
+          "void": "#0f1115",
+          "surface": "#161920",
+          "surface2": "#1c2028",
+          "coral": "#cc6247",
+          "teal": "#5DCAA5",
+          "cyan": "#4db8a8",
+          "cloud": "#d8d6d0",
+          "butter": "#cda852",
+          "lavender": "#8b7cc9",
+          "phosphorus": "#3ba372",
+          "paper": "#f4f4f5",
+          "ink": "#1e293b",
+          "muted": "#6b7280",
+          "phosphor": "#00FF88"
+        },
       "semantic": {
         "borderSubtle": "rgba(255, 255, 255, 0.06)"
       },
@@ -207,22 +207,22 @@
       "colorScheme": "light",
       "themeColor": "#f5f4f0",
       "comment": "Light, warm paper field; ink-forward text. Brand hues MUST match palette.* — only neutrals (void/surface/cloud/ink/muted/paper) differ from hub.",
-      "colors": {
-        "void": "#f5f4f0",
-        "surface": "#ffffff",
-        "surface2": "#ebeae4",
-        "coral": "#cc6247",
-        "teal": "#25897d",
-        "cyan": "#4db8a8",
-        "cloud": "#1e293b",
-        "butter": "#cda852",
-        "lavender": "#8b7cc9",
-        "phosphorus": "#3ba372",
-        "paper": "#fdfcfa",
-        "ink": "#0f172a",
-        "muted": "#64748b",
-        "phosphor": "#00FF88"
-      },
+        "colors": {
+          "void": "#f5f4f0",
+          "surface": "#ffffff",
+          "surface2": "#ebeae4",
+          "coral": "#cc6247",
+          "teal": "#5DCAA5",
+          "cyan": "#4db8a8",
+          "cloud": "#1e293b",
+          "butter": "#cda852",
+          "lavender": "#8b7cc9",
+          "phosphorus": "#3ba372",
+          "paper": "#fdfcfa",
+          "ink": "#0f172a",
+          "muted": "#64748b",
+          "phosphor": "#00FF88"
+        },
       "semantic": {
         "borderSubtle": "rgba(15, 23, 42, 0.09)"
       },

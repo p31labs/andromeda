@@ -2,7 +2,7 @@
 
 <!-- AUTO-GENERATED — do not hand-edit. Source: p31-universal-canon.json -->
 
-**Schema:** `p31.universalCanon/1.0.0` · **Canon version:** `1.2.0` · **Generated:** `2026-05-05T20:54:09.589Z`
+**Schema:** `p31.universalCanon/1.0.0` · **Canon version:** `1.2.0` · **Generated:** `2026-05-06T12:45:14.387Z`
 
 *P31 universal design canon — shared tokens, ring-local appearance*
 
@@ -26,7 +26,7 @@ Single source for typography, spacing, motion, and brand palette. Ring A (p31ca 
 | Token | Hex (canonical) | CSS variable |
 | --- | --- | --- |
 | coral | `#cc6247` | `--p31-coral` (in :root) |
-| teal | `#25897d` | `--p31-teal` (in :root) |
+| teal | `#5DCAA5` | `--p31-teal` (in :root) |
 | cyan | `#4db8a8` | `--p31-cyan` (in :root) |
 | butter | `#cda852` | `--p31-butter` (in :root) |
 | lavender | `#8b7cc9` | `--p31-lavender` (in :root) |
@@ -174,7 +174,7 @@ Brand accents must match the palette above; neutrals differ. Hub is default; org
 | surface | #161920 | --p31-surface |
 | surface2 | #1c2028 | --p31-surface2 |
 | coral | #cc6247 | --p31-coral |
-| teal | #25897d | --p31-teal |
+| teal | #5DCAA5 | --p31-teal |
 | cyan | #4db8a8 | --p31-cyan |
 | cloud | #d8d6d0 | --p31-cloud |
 | butter | #cda852 | --p31-butter |
@@ -215,7 +215,7 @@ Brand accents must match the palette above; neutrals differ. Hub is default; org
 | surface | #ffffff | --p31-surface |
 | surface2 | #ebeae4 | --p31-surface2 |
 | coral | #cc6247 | --p31-coral |
-| teal | #25897d | --p31-teal |
+| teal | #5DCAA5 | --p31-teal |
 | cyan | #4db8a8 | --p31-cyan |
 | cloud | #1e293b | --p31-cloud |
 | butter | #cda852 | --p31-butter |
