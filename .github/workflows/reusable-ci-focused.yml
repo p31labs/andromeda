@@ -20,9 +20,17 @@ jobs:
 
       - uses: ./.github/actions/toolchain-constants
 
-      - uses: ./.github/actions/pnpm-andromeda-full
+       - uses: ./.github/actions/pnpm-andromeda-full
 
-      - uses: ./.github/actions/eslint-bonding-shared
+       - name: Lockfile consistency check
+         run: |
+           if [[ -n $(git status --porcelain pnpm-lock.yaml 04_SOFTWARE/pnpm-lock.yaml) ]]; then
+             echo "ERROR: Lockfile(s) are out of sync. Run 'pnpm install' locally and commit the updated lockfile(s)."
+             git status --porcelain pnpm-lock.yaml 04_SOFTWARE/pnpm-lock.yaml
+             exit 1
+           fi
+
+       - uses: ./.github/actions/eslint-bonding-shared
 
       - name: Security audit (high+, informational)
         continue-on-error: true
