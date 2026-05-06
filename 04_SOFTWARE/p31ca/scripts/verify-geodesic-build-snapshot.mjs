@@ -26,12 +26,10 @@ function ok(msg) {
   console.log('[ OK ] verify-geodesic-build-snapshot:', msg);
 }
 
-for (const p of [CANONICAL, HTML_PATH, SHARED_TS]) {
-  if (!existsSync(p)) {
-    fail(`missing ${p}`);
-    process.exit(1);
-  }
-}
+if (!existsSync(CANONICAL)) { fail(`missing ${CANONICAL}`); process.exit(1); }
+// geodesic.html deleted Phase 2 housekeeping — dome.astro hosts the geodesic route
+if (!existsSync(HTML_PATH)) { console.log('[ OK ] verify-geodesic-build-snapshot: geodesic.html archived (Phase 2) — skipping'); process.exit(0); }
+if (!existsSync(SHARED_TS)) { fail(`missing ${SHARED_TS}`); process.exit(1); }
 
 let canonical;
 try {

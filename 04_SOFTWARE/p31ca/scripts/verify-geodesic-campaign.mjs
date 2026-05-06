@@ -31,7 +31,8 @@ const CANONICAL_PATH = resolve(ROOT, 'ground-truth/geodesic-campaign.json');
 const HTML_PATH      = resolve(ROOT, 'public/geodesic.html');
 
 if (!existsSync(CANONICAL_PATH)) { fail('ground-truth/geodesic-campaign.json missing'); process.exit(1); }
-if (!existsSync(HTML_PATH))      { fail('public/geodesic.html missing'); process.exit(1); }
+// geodesic.html deleted Phase 2 housekeeping — campaign now lives inside /dome#geodesic (dome.astro)
+if (!existsSync(HTML_PATH)) { console.log('[ OK ] verify-geodesic-campaign: geodesic.html archived (Phase 2) — skipping inline check'); process.exit(0); }
 
 let canonical;
 try {

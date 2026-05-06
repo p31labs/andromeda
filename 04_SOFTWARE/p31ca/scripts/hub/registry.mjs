@@ -5,7 +5,7 @@ export const registry = [
   {
     id: 'ede', title: 'EDE', tagline: 'Everything Development Environment',
     icon: '⬡', accent: '#cc6247', status: 'live', statusLabel: 'LIVE',
-    appUrl: 'ede.html',
+    appUrl: '/ops#ede',
     tech: ['Babel Standalone', 'Sandboxed iframe', "Samson's Law Linter", 'Q Distribution', 'Offline-First'],
     features: [
       'JSX transpilation with Babel — zero npm, runs entirely in the browser',
@@ -50,7 +50,7 @@ export const registry = [
     accent: '#3ba372',
     status: 'live',
     statusLabel: 'LIVE',
-    appUrl: 'social-molecules.html',
+    appUrl: '/connect#social',
     tech: ['SoupEngine', 'p31.carsWire/0.1.0', 'WebSocket', 'Three.js', 'Ghost molecules'],
     features: [
       'Operator shell: boot screen, load menu (live sim vs mesh assistant), and settings without leaving the page',
@@ -76,7 +76,7 @@ export const registry = [
   {
     id: 'spaceship-earth', title: 'Spaceship Earth', tagline: 'Sovereign Command Center',
     icon: '🌐', accent: '#3ba372', status: 'live', statusLabel: 'LIVE',
-    appUrl: 'spaceship-earth.html',
+    appUrl: '/spaceship-earth/',
     tech: ['PWA', 'PGlite (WASM PostgreSQL)', 'Three.js R3F', 'IndexedDB', 'Service Worker'],
     features: [
       'WebAssembly PostgreSQL (PGlite) persists via IndexedDB — full SQL offline',
@@ -96,7 +96,7 @@ export const registry = [
   {
     id: 'buffer', title: 'The Buffer', tagline: 'Message Guardian & Fawn Guard',
     icon: '🛡️', accent: '#cda852', status: 'live', statusLabel: 'LIVE',
-    appUrl: 'buffer.html',
+    appUrl: '/ops#buffer',
     tech: ['Voltage Scoring', 'Fawn Guard Algorithm', 'BLUF Extraction', '4-2-6 Breathwork'],
     features: [
       'Educational drafting aid only — not therapy, diagnosis, or legal advice; Fawn Guard flags language patterns from public literature, not a clinical assessment',
@@ -179,7 +179,7 @@ export const registry = [
   {
     id: 'cortex', title: 'p31-cortex', tagline: 'AI Agent Orchestration',
     icon: '🧠', accent: '#3ba372', status: 'live', statusLabel: 'LIVE',
-    appUrl: 'cortex.html',
+    appUrl: '/ops#cortex',
     tech: ['Cloudflare Durable Objects', 'D1 Database', 'CF AI Bindings', 'Workers Analytics'],
     features: [
       'Six autonomous agents: benefits, finance, grant, legal, content, ko-fi',
@@ -199,7 +199,7 @@ export const registry = [
   {
     id: 'attractor', title: 'NANO-07 Attractor', tagline: 'Kenosis Mesh Visualizer',
     icon: '🌀', accent: '#00ffff', status: 'live', statusLabel: 'LIVE',
-    appUrl: 'attractor.html',
+    appUrl: '/ops#attractor',
     tech: ['Three.js', 'SIC-POVM', 'Byzantine Fault Sim', 'Chaos Injector'],
     features: [
       '1500 human VFD agents tether to nearest online Cloudflare Worker node in real time',
@@ -219,7 +219,7 @@ export const registry = [
   {
     id: 'discord-bot', title: 'p31-bot', tagline: 'Community Command Plane',
     icon: '🤖', accent: '#3ba372', status: 'live', statusLabel: 'LIVE',
-    appUrl: 'discord-bot.html',
+    appUrl: '/ops#discord',
     tech: ['Discord.js v14', 'TypeScript', 'Railway Deploy', 'CF Workers KV'],
     features: [
       '20+ slash commands covering the full P31 ecosystem',
@@ -266,7 +266,7 @@ export const registry = [
   {
     id: 'book', title: 'Mother Nature & Father Time', tagline: "Children's Picture Book",
     icon: '📖', accent: '#3ba372', status: 'live', statusLabel: 'LIVE',
-    appUrl: 'book.html',
+    appUrl: '/research#book',
     tech: ['Vite 8', 'React 19', 'CF Pages', 'Touch Navigation'],
     features: [
       '14-page illustrated digital reader dedicated to S.J. and W.J.',
@@ -559,7 +559,7 @@ export const registry = [
   {
     id: 'sovereign', title: 'SOVEREIGN', tagline: 'Sovereign OS 3D Cockpit',
     icon: '🔑', accent: '#4db8a8', status: 'live', statusLabel: 'LIVE',
-    appUrl: 'sovereign.html',
+    appUrl: '/research#sovereign',
     tech: ['Three.js r183', 'Bloom Postprocessing', 'Jitterbug Transform', 'SIC-POVM'],
     features: [
       'Interactive 3D cockpit: Tetrix Group, SIC-POVM vectors, Bloch sphere rendered simultaneously',
@@ -599,7 +599,7 @@ export const registry = [
   {
     id: 'bridge', title: 'BRIDGE', tagline: 'LOVE Economy Dashboard',
     icon: '🌐', accent: '#cda852', status: 'live', statusLabel: 'LIVE',
-    appUrl: 'bridge.html',
+    appUrl: '/connect#bridge',
     tech: ['SVG Gauges', 'Phenix Wallet', 'Vesting Schedules', 'Stealth Addresses'],
     features: [
       'Circular SVG gauges for LOVE token supply, velocity, and distribution',
@@ -659,7 +659,7 @@ export const registry = [
   {
     id: 'axiom', title: 'AXIOM', tagline: 'Physics & Chemistry Lab',
     icon: '⚛️', accent: '#3ba372', status: 'live', statusLabel: 'LIVE',
-    appUrl: 'axiom.html',
+    appUrl: '/ops#axiom',
     tech: ['Rapier.js', 'Three.js', 'NIST ASD Data', 'Offline-First'],
     features: [
       'Posner molecule explorer: Ca₉(PO₄)₆ rendered in full 3D with bond lengths from NIST data',
@@ -739,7 +739,7 @@ export const registry = [
   {
     id: 'resonance', title: 'RESONANCE', tagline: 'Conversation-to-Music Engine',
     icon: '🎵', accent: '#8b7cc9', status: 'live', statusLabel: 'LIVE',
-    appUrl: 'resonance.html',
+    appUrl: '/research#resonance',
     tech: ['Web Audio API', 'Pentatonic Synthesis', '172.35 Hz P31 NMR', 'SVG Molecule'],
     features: [
       'Type any word or paste text — each word hashes to a pentatonic note at P31\'s 172.35 Hz base',
@@ -857,7 +857,7 @@ export const registry = [
   {
     id: 'geodesic', title: 'GEODESIC', tagline: '3D Structure Builder',
     icon: '🔷', accent: '#3ba372', status: 'live', statusLabel: 'LIVE',
-    appUrl: 'geodesic.html',
+    appUrl: '/dome#geodesic',
     tech: ['Three.js r183', 'OrbitControls', 'Snap Grid', 'Rigidity Scoring'],
     features: [
       'Place tetrahedra, octahedra, icosahedra, struts, and hubs in 3D snap-grid space',
@@ -906,7 +906,7 @@ export const registry = [
     accent: '#25897d',
     status: 'live',
     statusLabel: 'LIVE',
-    appUrl: 'p31-super-centaur-starter.html',
+    appUrl: '/ops#centaur',
     tech: ['Static HTML', 'Machine JSON', 'CWP index', 'mesh-bridge sync'],
     features: [
       'Single operator page tying SUPER-CENTAUR, monetary pipeline (MAP), and ecosystem CWPs to live p31ca URLs',
@@ -970,7 +970,7 @@ export const registry = [
   {
     id: 'content-forge', title: 'CONTENT FORGE', tagline: 'Editorial Publishing Suite',
     icon: '✍️', accent: '#4db8a8', status: 'live', statusLabel: 'LIVE',
-    appUrl: 'content-forge.html',
+    appUrl: '/ops#content-forge',
     tech: ['Markdown Editor', 'Seed Bank', '8-Point Checklist', 'LocalStorage'],
     features: [
       'Seed bank: capture ideas and move them through Draft → Review → Publish lifecycle',
@@ -990,7 +990,7 @@ export const registry = [
   {
     id: 'tactile', title: 'TACTILE', tagline: 'Mechanical Keyboard Builder & Typing Lab',
     icon: '⌨️', accent: '#cda852', status: 'live', statusLabel: 'LIVE',
-    appUrl: 'tactile.html',
+    appUrl: '/connect#tactile',
     tech: ['Web Audio API', 'Haptics', 'Keyboard Layout Engine', 'Typing Games'],
     features: [
       'Per-key switch assignment: Kailh Choc Navy, Brown, Red, Blue — each with authentic audio',
@@ -1010,7 +1010,7 @@ export const registry = [
   {
     id: 'forge', title: 'FORGE', tagline: 'Special Interest Vault',
     icon: '🗄️', accent: '#3ba372', status: 'live', statusLabel: 'LIVE',
-    appUrl: 'forge.html',
+    appUrl: '/ops#forge',
     tech: ['SQLite WASM', 'D3.js Skill Tree', 'Local-First', 'RPG Aesthetic'],
     features: [
       'SQLite WASM: local relational database for special interests — query your hyperfixations',
@@ -1030,7 +1030,7 @@ export const registry = [
   {
     id: 'signal', title: 'SIGNAL', tagline: 'Stim Room & Mini Games',
     icon: '🎮', accent: '#cda852', status: 'live', statusLabel: 'LIVE',
-    appUrl: 'signal.html',
+    appUrl: '/connect#signal',
     tech: ['WebGL Shaders', 'Cellular Automaton', 'Rapier.js', '12-Spoon Budget'],
     features: [
       'WebGL fluid pool: drag to create flow currents — infinite stimming surface',
@@ -1050,7 +1050,7 @@ export const registry = [
   {
     id: 'prism', title: 'PRISM', tagline: 'Sensory Diet Synthesizer',
     icon: '🌈', accent: '#4db8a8', status: 'live', statusLabel: 'LIVE',
-    appUrl: 'prism.html',
+    appUrl: '/ops#prism',
     tech: ['Web Audio API', 'WebGL', 'Binaural Beats', 'Offline PWA'],
     features: [
       'Brown noise and pink noise generation — locally synthesized, no streaming required',
@@ -1070,7 +1070,7 @@ export const registry = [
   {
     id: 'tether', title: 'TETHER', tagline: 'Spatial Executive Function Map',
     icon: '🪐', accent: '#cda852', status: 'live', statusLabel: 'LIVE',
-    appUrl: 'tether.html',
+    appUrl: '/connect#tether',
     tech: ['Matter.js', 'Canvas API', 'IndexedDB', 'Gravity Well Physics'],
     features: [
       'Tasks rendered as planets orbiting a sun — gravity well = cognitive energy cost',
@@ -1090,7 +1090,7 @@ export const registry = [
   {
     id: 'echo', title: 'ECHO', tagline: 'Vocal Looper & Script Rehearsal',
     icon: '🗣️', accent: '#8b7cc9', status: 'live', statusLabel: 'LIVE',
-    appUrl: 'echo.html',
+    appUrl: '/connect#echo',
     tech: ['Web Audio API', 'MediaRecorder', 'BufferSource playbackRate', 'Offline-First'],
     features: [
       'Private loop station: mic → WebM → decoded AudioBuffers, layered up to 6 loops',
@@ -1155,7 +1155,7 @@ export const registry = [
     accent: '#4db8a8',
     status: 'live',
     statusLabel: 'LIVE',
-    appUrl: 'connect.html',
+    appUrl: '/connect',
     tech: ['Three.js r160', 'K₄ tetrahedron', 'Product satellites', 'Static HTML'],
     features: [
       'Family K₄ rendered as a tetrahedron with four vertices and product satellites you can open',
@@ -1177,7 +1177,7 @@ export const registry = [
     accent: '#25897d',
     status: 'live',
     statusLabel: 'LIVE',
-    appUrl: 'planetary-onboard.html',
+    appUrl: '/ops#onboard',
     tech: ['Static HTML', 'Gray Rock first paint', 'No analytics', 'Door 4 invite / room gates'],
     features: [
       'Void + still K₄ + one sentence, then four doors (understand · use · build · know someone)',
@@ -1202,7 +1202,7 @@ export const registry = [
     accent: '#4db8a8',
     status: 'live',
     statusLabel: 'LIVE',
-    appUrl: 'integrations/index.html',
+    appUrl: '/integrations/',
     tech: ['Astro', 'p31.integrationsBridge/1.0.0', 'apply:constants', 'p31-constants.json'],
     features: [
       'Single place for which bridges exist (e.g. Home Assistant, Nostr, calendar) and their status',
@@ -1224,7 +1224,7 @@ export const registry = [
     accent: '#25897d',
     status: 'concept',
     statusLabel: 'CONCEPT',
-    appUrl: 'education/index.html',
+    appUrl: '/education/',
     tech: [
       'Static HTML',
       'p31.labsEducation/0.2.0',
@@ -1251,7 +1251,7 @@ export const registry = [
     accent: '#8a9aa8',
     status: 'live',
     statusLabel: 'LIVE',
-    appUrl: 'poets.html',
+    appUrl: '/connect#poets',
     tech: ['Static', 'No crew APIs', 'localStorage only', 'Quotes JSON'],
     features: [
       'First paint is quiet; one quote fades in by calendar day (`poets-room-quotes.json`)',
@@ -1292,7 +1292,7 @@ export const registry = [
   {
     id: 'alchemy', title: 'Neuro-Cognition Alchemy', tagline: 'Theoretical Research Framework',
     icon: '📐', accent: '#4db8a8', status: 'research', statusLabel: 'PUBLISHED',
-    appUrl: 'alchemy.html',
+    appUrl: '/research#alchemy',
     tech: ['Thermodynamics', 'Periodic Table Mapping', 'K₄ Graph Theory', 'Zenodo DOI'],
     features: [
       'Bridges the epistemic gap between neurobiological reality and sociological interaction',

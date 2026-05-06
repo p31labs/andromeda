@@ -30,7 +30,6 @@ export type RouteId =
   | 'node-zero'
   | 'messaging-hub'
   | 'demo-labs'
-  | 'delta-hiring'
   | 'p31-canon-demo'
   | '404'
   | 'geodesic-math'
@@ -62,7 +61,6 @@ const ROUTE_CAM: Record<RouteId, RouteCam> = {
    'node-zero':{ z:  0.1,  hue: 0.552, count: 580, speed: 0.11 }, // #0ea5e9 sky (hardware mesh)
    'messaging-hub':  { z:  0.2,  hue: 0.444, count: 450, speed: 0.06 }, // Emerald (E2E Secure)
    'demo-labs':      { z: -0.1,  hue: 0.105, count: 600, speed: 0.12 }, // Amber (Experimental)
-   'delta-hiring':   { z:  0.5,  hue: 0.600, count: 150, speed: 0.02 }, // Slate (Corporate/Org)
    'p31-canon-demo': { z:  0.0,  hue: 0.718, count: 350, speed: 0.08 }, // Violet (Design Canon)
    '404':            { z:  0.6,  hue: 0.000, count:  80, speed: 0.02 }, // sparse/lost — coral
    'geodesic-math':  { z: -0.3,  hue: 0.444, count: 300, speed: 0.06 }, // Emerald (geometry)
