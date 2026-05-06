@@ -21,16 +21,20 @@ runs:
       run: |
         if pnpm install --frozen-lockfile; then
           echo "Root install succeeded with frozen lockfile"
+          echo "LOCKFILE_FROZEN_SUCCESS=true" >> $GITHUB_ENV
         else
           echo "Root install failed with frozen lockfile, falling back to update"
           pnpm install
+          echo "LOCKFILE_FALLBACK_USED=true" >> $GITHUB_ENV
         fi
     - name: Install (04_SOFTWARE)
       shell: bash
       run: |
         if pnpm install --frozen-lockfile --dir 04_SOFTWARE; then
           echo "04_SOFTWARE install succeeded with frozen lockfile"
+          echo "LOCKFILE_FROZEN_SUCCESS_04=true" >> $GITHUB_ENV
         else
           echo "04_SOFTWARE install failed with frozen lockfile, falling back to update"
           pnpm install --dir 04_SOFTWARE
+          echo "LOCKFILE_FALLBACK_USED_04=true" >> $GITHUB_ENV
         fi
