@@ -1,0 +1,14 @@
+---
+import AppShell from '../../layouts/AppShell.astro';
+import MissionControl from '../../components/MissionControl.jsx';
+---
+
+<AppShell
+  title="Mission Control | P31 Ops"
+  description="Shift clock, spoon tracker, Ca²⁺ logger, evidence cataloger"
+  routeName="ops"
+  phosPage="mission-control"
+>
+  <meta slot="head" name="robots" content="noindex" />
+  <MissionControl client:only="react" />
+</AppShell>
