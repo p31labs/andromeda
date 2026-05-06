@@ -66,7 +66,7 @@ const isGarden = routeName === 'garden';
     <link rel="stylesheet" href="/lib/p31-qmu-tokens.css" />
     {!isGarden && <link rel="stylesheet" href="/lib/p31-molecular-field.css" />}
 
-    <!-- Fonts: Atkinson (UI) + JetBrains Mono (data/code) — EDE canon -->
+    <!-- Fonts: Atkinson (UI) + JetBrains Mono (data/code) — P31 canon -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -111,10 +111,11 @@ const isGarden = routeName === 'garden';
         pointer-events: none;
         view-transition-name: none;
       }
-      /* Slot content sits above the canvas. */
+      /* Slot content sits above the canvas, clear of the thin EBC footer (2.25rem). */
       .p31-shell-content {
         position: relative;
         z-index: 1;
+        padding-bottom: calc(2.25rem + env(safe-area-inset-bottom, 0px));
       }
     </style>
   </head>
@@ -154,7 +155,8 @@ const isGarden = routeName === 'garden';
             <a href="/dome"     class="nav-link" aria-current={routeName === 'dome'     ? 'page' : undefined}>Dome</a>
             <a href="/research" class="nav-link" aria-current={routeName === 'research' ? 'page' : undefined}>Research</a>
             <a href="/ops"      class="nav-link" aria-current={routeName === 'ops'      ? 'page' : undefined}>Ops</a>
-            <a href="/connect"  class="nav-link" aria-current={routeName === 'connect'  ? 'page' : undefined}>Mesh</a>
+            <a href="/connect"    class="nav-link" aria-current={routeName === 'connect'    ? 'page' : undefined}>Mesh</a>
+            <a href="/atmosphere" class="nav-link" aria-current={routeName === 'atmosphere' ? 'page' : undefined}>Atm</a>
             <a href="https://github.com/p31labs/andromeda" target="_blank" rel="noopener" class="nav-link" aria-label="GitHub">GH↗</a>
           </div>
         </div>
@@ -243,7 +245,7 @@ const isGarden = routeName === 'garden';
         startStarfield(canvas);
         const route = document.documentElement.getAttribute('data-p31-route') as RouteId | null;
         if (route) setStarfieldRoute(route);
-        if (route === 'dome') suspendStarfield();
+        if (route === 'dome' || route === 'atmosphere') suspendStarfield();
       }
 
       /* Re-wire route on every ClientRouter navigation.
@@ -254,7 +256,7 @@ const isGarden = routeName === 'garden';
       document.addEventListener('astro:after-swap', () => {
         const newRoute = document.documentElement.getAttribute('data-p31-route') as RouteId | null;
         if (newRoute) setStarfieldRoute(newRoute);
-        if (newRoute === 'dome') {
+        if (newRoute === 'dome' || newRoute === 'atmosphere') {
           suspendStarfield();
         } else {
           resumeStarfield();

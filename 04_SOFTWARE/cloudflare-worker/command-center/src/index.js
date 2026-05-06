@@ -174,6 +174,17 @@ async function withAccess(request, env, requiredRole, handler) {
 export default {
   async scheduled(event, env, ctx) {
     ctx.waitUntil(pingFleet(env));
+    // Calcium check at :15 of each hour (free plan has no cron slot for p31-fhir)
+    const minute = new Date(event.scheduledTime).getUTCMinutes();
+    if (minute === 15 && env.FHIR_CHECK_URL && env.P31_FHIR_SECRET) {
+      ctx.waitUntil(
+        fetch(env.FHIR_CHECK_URL, {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${env.P31_FHIR_SECRET}` },
+          signal: AbortSignal.timeout(20_000),
+        }).catch(() => {}) // never crash the fleet ping on FHIR failure
+      );
+    }
   },
 
   async fetch(request, env) {
@@ -545,6 +556,8 @@ function jsonResponse(obj, status = 200, extraHeaders = {}) {
       'Content-Security-Policy': CSP,
       'X-Frame-Options': 'DENY',
       'Referrer-Policy': 'strict-origin-when-cross-origin',
+      'X-P31-QFactor': '1',
+      'X-P31-Routing-Protocol': 'custom_dsdv',
       ...extraHeaders,
     },
   });

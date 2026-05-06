@@ -1,7 +1,10 @@
 #!/usr/bin/env node
 /**
- * Fails the build if Cloudflare Pages `dist/` is missing critical static assets from `public/`.
+ * Fails the build if Cloudflare Pages `dist/` is missing critical assets.
  * Run as npm `postbuild` (after `astro build`). Catches empty/partial output before deploy.
+ *
+ * Phase 2 (2026-05-05): 105 static HTML pages deleted; Astro routes build to dist/[route]/index.html.
+ * Top-level HTML check updated to count Astro route directories instead.
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -13,9 +16,6 @@ const dist = path.join(p31ca, "dist");
 
 const requiredFiles = [
   "_redirects",
-  "mesh-start.html",
-  "initial-build.html",
-  "planetary-onboard.html",
   "passport-generator.html",
   "p31-public-surface.json",
   "p31-mesh-constants.json",
@@ -27,7 +27,6 @@ const requiredFiles = [
   ".well-known/security.txt",
   "robots.txt",
   "sitemap.xml",
-  // ARCHIVED 2026-05-03: auth.html, privacy.html, family-sovereign-pack.html, p31-canon-demo.html, live-fleet-demo.html, demo-labs.html
 ];
 
 let failed = 0;
@@ -51,29 +50,35 @@ for (const rel of requiredFiles) {
 const redirects = path.join(dist, "_redirects");
 if (fs.existsSync(redirects)) {
   const t = fs.readFileSync(redirects, "utf8");
-  if (!t.includes("/build") || !t.includes("initial-build")) {
-    err("_redirects must include /build → initial-build");
+  if (!t.includes("/build")) {
+    err("_redirects must include /build short-path");
   }
-  if (!t.includes("/passport") || !t.includes("passport-generator")) {
-    err("_redirects must include /passport → passport-generator");
+  if (!t.includes("/family-pack")) {
+    err("_redirects must include /family-pack short-path");
   }
-  if (!t.includes("/family-pack") || !t.includes("family-sovereign")) {
-    err("_redirects must include /family-pack → family-sovereign-pack");
-  }
-  // /privacy, /terms, /contact, /accessibility, /auth, /delta: served at clean path by Pages
-  // (do not add foo → foo.html — loops with CF 308 foo.html → /foo).
-  if (!t.includes("/security") || !t.includes("security-disclosure")) {
-    err("_redirects must include /security → security-disclosure");
+  if (!t.includes("/security")) {
+    err("_redirects must include /security short-path");
   }
 }
 
-const htmlN = fs.readdirSync(dist).filter((f) => f.endsWith(".html")).length;
-if (htmlN < 20) {
-  err(`expected many static *.html in dist/ (got ${htmlN}) — partial export?`);
+// Phase 2: Astro routes compile to dist/*/index.html — check route count not top-level HTML count
+function countAstroRoutes(dir) {
+  try {
+    return fs.readdirSync(dir, { withFileTypes: true }).filter(
+      (e) => e.isDirectory() && fs.existsSync(path.join(dir, e.name, "index.html"))
+    ).length;
+  } catch {
+    return 0;
+  }
+}
+const astroRoutes = countAstroRoutes(dist);
+if (astroRoutes < 6) {
+  err(`expected ≥6 Astro route dirs in dist/ (got ${astroRoutes}) — partial export?`);
 }
 
 if (failed) {
   process.exit(1);
 }
-console.log(`verify-p31ca-dist: OK (${htmlN} top-level html, +lib +_redirects)`);
+const topHtml = fs.readdirSync(dist).filter((f) => f.endsWith(".html")).length;
+console.log(`verify-p31ca-dist: OK (${topHtml} top-level html, ${astroRoutes} Astro routes, +lib +_redirects)`);
 process.exit(0);

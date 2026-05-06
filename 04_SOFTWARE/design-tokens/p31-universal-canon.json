@@ -5,12 +5,20 @@
   "description": "Single source for typography, spacing, motion, and brand palette. Ring A (p31ca hub) defaults to appearance \"hub\" (dark). Ring D (phosphorus31.org) uses appearance \"org\" (light) via data-p31-appearance on <html> — same brand colors, inverted surfaces so it feels related but not identical. BONDING (bonding.p31ca.org) stays out of this file by operator policy.",
   "rings": {
     "hub": {
-      "hosts": ["p31ca.org", "www.p31ca.org", "*.p31ca.pages.dev"],
+      "hosts": [
+        "p31ca.org",
+        "www.p31ca.org",
+        "*.p31ca.pages.dev"
+      ],
       "defaultAppearance": "hub",
       "notes": "Technical hub, static tools, Astro + Tailwind CDN pages."
     },
     "org": {
-      "hosts": ["phosphorus31.org", "www.phosphorus31.org", "api.phosphorus31.org"],
+      "hosts": [
+        "phosphorus31.org",
+        "www.phosphorus31.org",
+        "api.phosphorus31.org"
+      ],
       "defaultAppearance": "org",
       "notes": "Public org narrative + MAP surfaces. Opt in with data-p31-appearance=\"org\" (or server-render default)."
     }
@@ -18,17 +26,23 @@
   "palette": {
     "comment": "Brand anchors — appearances should keep these identical for cross-ring recognition.",
     "coral": "#cc6247",
-    "teal": "#25897d",
+    "teal": "#5DCAA5",
     "cyan": "#4db8a8",
-    "butter": "#cda852",
+    "amber": "#cda852",
     "lavender": "#8b7cc9",
     "phosphorus": "#3ba372",
     "phosphor": "#00FF88"
   },
   "typography": {
     "fontFamilies": {
-      "sans": ["Atkinson Hyperlegible", "sans-serif"],
-      "mono": ["JetBrains Mono", "monospace"]
+      "sans": [
+        "Atkinson Hyperlegible",
+        "sans-serif"
+      ],
+      "mono": [
+        "JetBrains Mono",
+        "monospace"
+      ]
     },
     "scaleRem": {
       "xs": "0.75rem",
@@ -87,25 +101,56 @@
     "glowTeal": "0 0 24px rgba(37, 137, 125, 0.25)"
   },
   "quantum": {
-    "comment": "P31 Quantum Material U — Material 3 grammar refracted through K\u2084 anchors. Optional, additive, opt-in via .p31-q-* classes. Never paints brand chroma at Layer 1 (Gray Rock); never self-starts motion. See docs/P31-QUANTUM-MATERIAL-U.md.",
+    "comment": "P31 Extended Surface Styles — Material 3 grammar refracted through K₄ anchors. Optional, additive, opt-in via .p31-q-* classes. Never paints brand chroma at Layer 1 (Gray Rock); never self-starts motion. See docs/P31-SHARED-SURFACE-STYLES.md.",
     "version": "1.0.0",
-    "tonalAnchors": ["teal", "coral", "phosphorus", "butter", "lavender"],
-    "tonalSteps": [6, 12, 22, 36, 54, 78],
+    "tonalAnchors": [
+      "teal",
+      "coral",
+      "phosphorus",
+      "amber",
+      "lavender"
+    ],
+    "tonalSteps": [
+      6,
+      12,
+      22,
+      36,
+      54,
+      78
+    ],
     "tonalNote": "Each anchor produces 6 calm tones via color-mix(srgb, var(--p31-{anchor}) STEP%, var(--p31-void)) on hub; org appearance mixes with --p31-paper. Step 0 is barely-visible (Gray Rock-friendly); step 5 is the loudest tone any quantum surface should touch.",
     "elevation": {
-      "0": { "tone": 0, "shadow": "none" },
-      "1": { "tone": 4, "shadow": "0 1px 2px rgba(0,0,0,0.20)" },
-      "2": { "tone": 8, "shadow": "0 2px 6px rgba(0,0,0,0.22)" },
-      "3": { "tone": 12, "shadow": "0 6px 14px rgba(0,0,0,0.24)" },
-      "4": { "tone": 16, "shadow": "0 12px 24px rgba(0,0,0,0.26)" },
-      "5": { "tone": 22, "shadow": "0 24px 40px rgba(0,0,0,0.28)" }
+      "0": {
+        "tone": 0,
+        "shadow": "none"
+      },
+      "1": {
+        "tone": 4,
+        "shadow": "0 1px 2px rgba(0,0,0,0.20)"
+      },
+      "2": {
+        "tone": 8,
+        "shadow": "0 2px 6px rgba(0,0,0,0.22)"
+      },
+      "3": {
+        "tone": 12,
+        "shadow": "0 6px 14px rgba(0,0,0,0.24)"
+      },
+      "4": {
+        "tone": 16,
+        "shadow": "0 12px 24px rgba(0,0,0,0.26)"
+      },
+      "5": {
+        "tone": 22,
+        "shadow": "0 24px 40px rgba(0,0,0,0.28)"
+      }
     },
     "elevationNote": "tone is the % surface lift over --p31-surface (hub) / --p31-paper (org). shadow is hub-tuned; org appearance softens shadows via the generator.",
     "stateLayer": {
       "hover": 0.08,
       "focus": 0.12,
       "pressed": 0.16,
-      "selected": 0.10,
+      "selected": 0.1,
       "dragged": 0.14,
       "disabled": 0.38
     },
@@ -136,16 +181,41 @@
     "layer": "1.5",
     "globalOffStorageKey": "p31.starfield.off",
     "presets": {
-      "soup": { "baseAlphaCap": 0.35, "maxFps": 24, "motion": "animated" },
-      "hub": { "baseAlphaCap": 0.22, "maxFps": 20, "motion": "animated" },
-      "commandCenter": { "baseAlphaCap": 0.14, "dotCount": 140, "motion": "staticPlate" },
-      "operatorDesk": { "baseAlphaCap": 0.11, "dotCount": 120, "motion": "staticPlate" }
+      "soup": {
+        "baseAlphaCap": 0.35,
+        "maxFps": 24,
+        "motion": "animated"
+      },
+      "hub": {
+        "baseAlphaCap": 0.22,
+        "maxFps": 20,
+        "motion": "animated"
+      },
+      "commandCenter": {
+        "baseAlphaCap": 0.14,
+        "dotCount": 140,
+        "motion": "staticPlate"
+      },
+      "operatorDesk": {
+        "baseAlphaCap": 0.11,
+        "dotCount": 120,
+        "motion": "staticPlate"
+      }
     }
   },
   "returnRibbon": {
     "comment": "Fixed spine: soup · hub · passport · connection · mesh —see cognitive-passport/lib/p31-return-ribbon.js",
-    "order": ["soup", "hub", "passport", "connection", "mesh"],
-    "typography": { "fontSizePx": 11, "fontFamily": "mono" }
+    "order": [
+      "soup",
+      "hub",
+      "passport",
+      "connection",
+      "mesh"
+    ],
+    "typography": {
+      "fontSizePx": 11,
+      "fontFamily": "mono"
+    }
   },
   "motion": {
     "durationMs": {
@@ -184,10 +254,10 @@
         "surface": "#161920",
         "surface2": "#1c2028",
         "coral": "#cc6247",
-        "teal": "#25897d",
+        "teal": "#5DCAA5",
         "cyan": "#4db8a8",
         "cloud": "#d8d6d0",
-        "butter": "#cda852",
+        "amber": "#cda852",
         "lavender": "#8b7cc9",
         "phosphorus": "#3ba372",
         "paper": "#f4f4f5",
@@ -212,10 +282,10 @@
         "surface": "#ffffff",
         "surface2": "#ebeae4",
         "coral": "#cc6247",
-        "teal": "#25897d",
+        "teal": "#5DCAA5",
         "cyan": "#4db8a8",
         "cloud": "#1e293b",
-        "butter": "#cda852",
+        "amber": "#cda852",
         "lavender": "#8b7cc9",
         "phosphorus": "#3ba372",
         "paper": "#fdfcfa",

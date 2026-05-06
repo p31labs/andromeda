@@ -39,6 +39,9 @@ class_name = "CrdtSessionDO"
 
 [vars]
 ENVIRONMENT = "production"
+# FHIR calcium check — called at :15 of each hour via the existing */5 cron
+FHIR_CHECK_URL = "https://api.p31ca.org/fhir/check"
+# P31_FHIR_SECRET: set via `wrangler secret put P31_FHIR_SECRET` (matches p31-fhir P31_API_SECRET)
 # Set to 1 only when debugging routing: enables per-request console logging
 # DEBUG_ACCESS_LOG = "0"
 # Public account id (same as Cloudflare dashboard URL)

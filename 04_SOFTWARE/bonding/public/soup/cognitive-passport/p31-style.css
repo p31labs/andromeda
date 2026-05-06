@@ -73,7 +73,7 @@
   --p31-teal: #25897d;
   --p31-cyan: #4db8a8;
   --p31-cloud: #d8d6d0;
-  --p31-butter: #cda852;
+  --p31-amber: #cda852;
   --p31-lavender: #8b7cc9;
   --p31-phosphorus: #3ba372;
   --p31-paper: #f4f4f5;
@@ -94,7 +94,7 @@
   --phosphorus: var(--p31-phosphorus);
   --cloud: var(--p31-cloud);
   --muted: var(--p31-muted);
-  --butter: var(--p31-butter);
+  --amber: var(--p31-amber);
   --border: var(--p31-border-subtle);
 }
 
@@ -108,7 +108,7 @@
   --p31-teal: #25897d;
   --p31-cyan: #4db8a8;
   --p31-cloud: #1e293b;
-  --p31-butter: #cda852;
+  --p31-amber: #cda852;
   --p31-lavender: #8b7cc9;
   --p31-phosphorus: #3ba372;
   --p31-paper: #fdfcfa;
@@ -128,7 +128,7 @@
   --phosphorus: var(--p31-phosphorus);
   --cloud: var(--p31-cloud);
   --muted: var(--p31-muted);
-  --butter: var(--p31-butter);
+  --amber: var(--p31-amber);
   --border: var(--p31-border-subtle);
 }
 
@@ -143,7 +143,7 @@
     --p31-teal: #25897d;
     --p31-cyan: #4db8a8;
     --p31-cloud: #1e293b;
-    --p31-butter: #cda852;
+    --p31-amber: #cda852;
     --p31-lavender: #8b7cc9;
     --p31-phosphorus: #3ba372;
     --p31-paper: #fdfcfa;
@@ -163,7 +163,7 @@
     --phosphorus: var(--p31-phosphorus);
     --cloud: var(--p31-cloud);
     --muted: var(--p31-muted);
-    --butter: var(--p31-butter);
+    --amber: var(--p31-amber);
     --border: var(--p31-border-subtle);
   }
 }
@@ -221,7 +221,7 @@ html { color-scheme: dark; }
   flex-shrink: 0;
 }
 .p31-mission-trio__link--build .p31-mission-trio__dot { background: var(--p31-phosphorus); }
-.p31-mission-trio__link--create .p31-mission-trio__dot { background: var(--p31-butter); }
+.p31-mission-trio__link--create .p31-mission-trio__dot { background: var(--p31-amber); }
 .p31-mission-trio__link--connect .p31-mission-trio__dot { background: var(--p31-coral); }
 .p31-mission-trio__verb {
   font-family: var(--p31-font-mono);
@@ -363,7 +363,7 @@ html { color-scheme: dark; }
 }
 .p31-badge--live { background: color-mix(in srgb, var(--p31-phosphorus) 15%, transparent); color: var(--p31-phosphorus); }
 .p31-badge--research { background: color-mix(in srgb, var(--p31-lavender) 15%, transparent); color: var(--p31-lavender); }
-.p31-badge--prototype { background: color-mix(in srgb, var(--p31-butter) 15%, transparent); color: var(--p31-butter); }
+.p31-badge--prototype { background: color-mix(in srgb, var(--p31-amber) 15%, transparent); color: var(--p31-amber); }
 .p31-badge--pending { background: var(--p31-surface2); color: var(--p31-muted); }
 
 /* Buttons */

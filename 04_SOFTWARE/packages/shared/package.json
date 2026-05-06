@@ -13,6 +13,7 @@
   "main": "src/index.ts",
   "types": "src/index.ts",
   "dependencies": {
+    "@noble/post-quantum": "^0.2.1",
     "idb-keyval": "^6.2.1",
     "pino": "^9.0.0",
     "pino-pretty": "^11.0.0",
@@ -53,6 +54,10 @@
     "./geodesic-build-snapshot": "./src/geodesic-build-snapshot.ts",
     "./cars-wire": "./src/cars-wire.ts",
     "./cognitive-passport-schema": "./src/cognitive-passport-schema.ts",
-    "./cognitive-passport-profiles": "./src/cognitive-passport-profiles.ts"
+    "./cognitive-passport-profiles": "./src/cognitive-passport-profiles.ts",
+    "./qfactor": "./src/qfactor/index.ts",
+    "./buffer": "./src/buffer/scorer.ts",
+    "./crypto/pqc": "./src/crypto/postQuantum.ts",
+    "./telemetry/daubert": "./src/telemetry/daubert-export.ts"
   }
 }

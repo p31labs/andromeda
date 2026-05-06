@@ -9,8 +9,8 @@ test.describe("p31ca hub (built dist)", () => {
     expect(res?.ok()).toBeTruthy();
   });
 
-  test("static canon demo loads and toggles org appearance", async ({ page }) => {
-    await page.goto("/p31-canon-demo.html", nav);
+  test("canon demo loads and toggles org appearance", async ({ page }) => {
+    await page.goto("/p31-canon-demo", nav);
     await expect(page.getByRole("heading", { name: /One canon/i })).toBeVisible();
     const html = page.locator("html");
     await expect(html).toHaveAttribute("data-p31-appearance", /hub|org|auto/);
@@ -20,9 +20,8 @@ test.describe("p31ca hub (built dist)", () => {
     await expect(html).toHaveAttribute("data-p31-appearance", "hub");
   });
 
-  test("short /canon redirect target loads", async ({ page }) => {
-    // Preview may not apply Cloudflare _redirects; hit canonical path.
-    await page.goto("/p31-canon-demo.html", nav);
+  test("canon demo live tokens visible", async ({ page }) => {
+    await page.goto("/p31-canon-demo", nav);
     await expect(page.getByText(/live tokens/i)).toBeVisible();
   });
 
@@ -62,9 +61,9 @@ test.describe("p31ca hub (built dist)", () => {
     expect(t).toContain("p31.buildRecord/0.1.0");
   });
 
-  test("messaging hub page and schema anchor", async ({ page }) => {
-    await page.goto("/messaging-hub.html", nav);
-    await expect(page.getByRole("heading", { level: 1, name: /Messaging hub/i })).toBeVisible();
-    await expect(page.getByText(/p31\.messagingHub\/0\.1\.0/)).toBeVisible();
-  });
+   test("messaging hub page and schema anchor", async ({ page }) => {
+     await page.goto("/messaging-hub", nav);
+     await expect(page.getByRole("heading", { level: 1, name: /Messaging hub/i })).toBeVisible();
+     await expect(page.getByText(/p31\.messagingHub\/0\.1\.0/)).toBeVisible();
+   });
 });

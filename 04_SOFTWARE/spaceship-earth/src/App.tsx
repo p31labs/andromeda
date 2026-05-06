@@ -20,6 +20,7 @@ import { CatchersMitt } from './components/hud/CatchersMitt';
 import { ProofOfCare } from './components/hud/ProofOfCare';
 import { DeltaMesh } from './components/mesh/DeltaMesh';
 import { PosnerMolecule } from './components/mesh/PosnerMolecule';
+import { GlobeRoom } from './components/rooms/GlobeRoom';
 
 const useAppStore = create<{ spoons: number; setSpoons: (n: number) => void }>((set) => ({
   spoons: 12,
@@ -28,7 +29,10 @@ const useAppStore = create<{ spoons: number; setSpoons: (n: number) => void }>((
 
 export default function App() {
   const { isMeshActive } = useMesh('p31-alpha-node');
-  const [viewMode, setViewMode] = useState<'DELTA' | 'POSNER'>('DELTA');
+  const [viewMode, setViewMode] = useState<'DELTA' | 'POSNER' | 'GLOBE'>(() => {
+    const v = new URLSearchParams(window.location.search).get('view')?.toUpperCase();
+    return (v === 'POSNER' || v === 'GLOBE') ? v : 'DELTA';
+  });
   const [isLarmorActive, setIsLarmorActive] = useState(false);
   const spoons = useAppStore((s) => s.spoons);
   const setSpoons = useAppStore((s) => s.setSpoons);
@@ -40,7 +44,7 @@ export default function App() {
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       if (e.key.toLowerCase() === 'l' && document.activeElement?.tagName !== 'TEXTAREA') {
-        setViewMode((p) => (p === 'DELTA' ? 'POSNER' : 'DELTA'));
+        setViewMode((p) => p === 'DELTA' ? 'POSNER' : p === 'POSNER' ? 'GLOBE' : 'DELTA');
       }
     };
     window.addEventListener('keydown', handleKey);
@@ -75,7 +79,7 @@ export default function App() {
           <OrbitControls enableZoom={false} autoRotate autoRotateSpeed={0.5} enablePan={false} />
           <primitive object={new THREE.AmbientLight(0.2)} />
           <primitive object={new THREE.PointLight(0x00D4FF, 1.5)} position={[10, 10, 10]} />
-          {viewMode === 'DELTA' ? <DeltaMesh networkStress={1 - curvature} /> : <PosnerMolecule spoons={spoons} />}
+          {viewMode === 'DELTA' ? <DeltaMesh networkStress={1 - curvature} /> : viewMode === 'POSNER' ? <PosnerMolecule spoons={spoons} /> : <GlobeRoom />}
         </Canvas>
       </div>
 

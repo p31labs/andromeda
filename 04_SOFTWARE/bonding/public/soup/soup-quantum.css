@@ -206,8 +206,8 @@ html.soup-app body::after {
   border-bottom: 1px solid color-mix(in srgb, var(--p31-cyan) 32%, transparent);
 }
 .soup-aaso a:hover {
-  color: var(--p31-butter, #cda852);
-  border-bottom-color: color-mix(in srgb, var(--p31-butter) 50%, transparent);
+  color: var(--p31-amber, #cda852);
+  border-bottom-color: color-mix(in srgb, var(--p31-amber) 50%, transparent);
 }
 .soup-aaso .aaso-love,
 .soup-aaso .aaso-3 {
@@ -673,7 +673,7 @@ html.soup-app .disconnected {
   background: var(--p31-coral);
 }
 html.soup-app .reconnecting {
-  background: var(--p31-butter);
+  background: var(--p31-amber);
 }
 
 html.soup-app #as-above-so-below {
@@ -737,7 +737,7 @@ html.soup-app #new-family-room {
   border-radius: var(--p31-radius-md);
   border: 1px solid rgba(204, 98, 71, 0.45) !important;
   background: var(--p31-surface2) !important;
-  color: var(--p31-butter) !important;
+  color: var(--p31-amber) !important;
   cursor: pointer;
   touch-action: manipulation;
 }

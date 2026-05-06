@@ -1,8 +1,9 @@
 ---
 /**
+  * @p31-layout: Gallery
  * OSS smart home + wearables + operator tools — catalog from p31-constants.json (apply:constants).
  */
-import BaseLayout from '../layouts/BaseLayout.astro';
+import AppShell from '../layouts/AppShell.astro';
 import integ from '../data/p31-integrations.json';
 
 const catalog = integ.openCatalog || [];
@@ -12,9 +13,10 @@ const edgeMesh = integ.edgeMesh || {};
 const sovereignWorkerSpas = integ.sovereignWorkerSpas || [];
 ---
 
-<BaseLayout
+<AppShell
   title="Integrations bridge | p31ca"
   description="Open-source smart home, wearables, and operator tools — catalog and LAN endpoint slots from p31-constants.json."
+  routeName="integrations"
 >
   <div class="max-w-4xl mx-auto px-4 py-10 text-p31-cloud-90">
     <p class="text-xs font-mono uppercase tracking-widest text-teal-400/90 mb-2">p31.integrationsBridge/1.0.0</p>
@@ -187,4 +189,4 @@ const sovereignWorkerSpas = integ.sovereignWorkerSpas || [];
       <a href="/" class="text-teal-400/80 hover:underline">Cockpit home</a>
     </p>
   </div>
-</BaseLayout>
+</AppShell>

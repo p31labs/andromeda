@@ -9,8 +9,8 @@ import {
 } from './cognitive-passport-profiles';
 
 describe('cognitive-passport-profiles (audience matrix v1.0.0)', () => {
-  it('has 8 profiles and 18 field groups', () => {
-    expect(PROFILE_IDS.length).toBe(8);
+  it('has 12 profiles and 18 field groups', () => {
+    expect(PROFILE_IDS.length).toBe(12);
     expect(FIELD_GROUPS.length).toBe(18);
     for (const id of PROFILE_IDS) {
       expect(Object.keys(COGNITIVE_PASSPORT_AUDIENCE_MATRIX[id]).length).toBe(18);

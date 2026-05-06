@@ -18,6 +18,19 @@ const LANDING = path.join(P31CA, 'src', 'data', 'hub-landing.json');
 const byId = new Map(registry.map((r) => [r.id, r]));
 let errors = 0;
 
+// Build set of about-page paths covered by _redirects (Phase 2: static files deleted)
+const redirectsText = fs.readFileSync(path.join(PUBLIC, '_redirects'), 'utf8');
+const redirectedAbout = new Set(
+  [...redirectsText.matchAll(/^(\/[\w-]+-about\.html)\s/gm)].map((m) => m[1])
+);
+
+/** Returns true if the about page exists as a file OR is covered by _redirects */
+function aboutOk(id) {
+  const file = path.join(PUBLIC, `${id}-about.html`);
+  if (fs.existsSync(file)) return true;
+  return redirectedAbout.has(`/${id}-about.html`);
+}
+
 const regSet = new Set(registry.map((r) => r.id));
 const hubSet = new Set(HUB_ALL_CARD_ORDER);
 if (regSet.size !== hubSet.size) {
@@ -51,11 +64,9 @@ for (const item of registry) {
 }
 
 for (const item of registry) {
-  // Skip about page check for concept/draft products
   if (item.status === 'concept' || item.status === 'draft') continue;
-  const about = path.join(PUBLIC, `${item.id}-about.html`);
-  if (!fs.existsSync(about)) {
-    fail(`missing about page for registry id "${item.id}" (${path.basename(about)})`);
+  if (!aboutOk(item.id)) {
+    fail(`missing about page for registry id "${item.id}" (${item.id}-about.html — add to public/ or _redirects)`);
   }
 }
 
@@ -65,20 +76,16 @@ if (fs.existsSync(LANDING)) {
   for (const p of data.coreProducts || []) {
     if (seen.has(p.id)) fail(`duplicate cockpit id: ${p.id}`);
     seen.add(p.id);
-    // Skip about page check for concept/draft products
     const item = byId.get(p.id);
     if (item && (item.status === 'concept' || item.status === 'draft')) continue;
-    const about = path.join(PUBLIC, `${p.id}-about.html`);
-    if (!fs.existsSync(about)) {
+    if (!aboutOk(p.id)) {
       fail(`cockpit card "${p.id}" has no ${p.id}-about.html`);
     }
   }
   for (const p of data.prototypes || []) {
-    // Skip about page check for concept/draft products
     const item = byId.get(p.id);
     if (item && (item.status === 'concept' || item.status === 'draft')) continue;
-    const about = path.join(PUBLIC, `${p.id}-about.html`);
-    if (!fs.existsSync(about)) {
+    if (!aboutOk(p.id)) {
       fail(`prototype "${p.id}" has no ${p.id}-about.html`);
     }
   }

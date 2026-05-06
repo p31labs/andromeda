@@ -21,14 +21,6 @@
       "roomId": "observatory"
     },
     {
-      "id": "connect-static",
-      "type": "static",
-      "path": "public/connect.html",
-      "threeRevision": "0.160.0",
-      "status": "LIVE",
-      "groundTruthThreejsKey": "connect.html"
-    },
-    {
       "id": "geodesic-math-astro",
       "type": "astro",
       "path": "src/pages/geodesic-math.astro",
