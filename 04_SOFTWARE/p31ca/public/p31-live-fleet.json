@@ -240,38 +240,6 @@
       "note": "Production mount: zone route p31ca.org/api/passkey/*; workers.dev may exist for direct tests"
     },
     {
-      "id": "p31-telemetry",
-      "workersDev": "https://p31-telemetry.trimtab-signal.workers.dev",
-      "healthPaths": ["/health"],
-      "constantsKey": "mesh.telemetryWorkerUrl",
-      "deploy": "04_SOFTWARE/telemetry-worker",
-      "note": "Telemetry ingestion Worker; receives and processes mesh telemetry events"
-    },
-    {
-      "id": "p31-fhir",
-      "workersDev": "https://p31-fhir.trimtab-signal.workers.dev",
-      "healthPaths": ["/health"],
-      "constantsKey": "mesh.fhirWorkerUrl",
-      "deploy": "04_SOFTWARE/p31ca/workers/fhir",
-      "note": "FHIR Worker for medical data integration; D1: p31-fhir-db"
-    },
-    {
-      "id": "p31-sync",
-      "workersDev": "https://p31-sync.trimtab-signal.workers.dev",
-      "healthPaths": ["/health"],
-      "constantsKey": "mesh.syncWorkerUrl",
-      "deploy": "04_SOFTWARE/p31ca/workers/sync",
-      "note": "Yjs/PGLite sync Worker; real-time collaborative editing infrastructure"
-    },
-    {
-      "id": "spaceship-relay",
-      "workersDev": "https://spaceship-relay.trimtab-signal.workers.dev",
-      "healthPaths": ["/health"],
-      "constantsKey": "mesh.spaceshipRelayWorkerUrl",
-      "deploy": "04_SOFTWARE/spaceship-earth",
-      "note": "Spaceship Earth PWA relay Worker; GlobeRoom + Three.js coordination"
-    },
-    {
       "id": "p31-buffer-api",
       "workersDev": "https://p31-buffer-api.trimtab-signal.workers.dev",
       "healthPaths": ["/health"],
