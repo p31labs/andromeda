@@ -8,9 +8,71 @@
   html {
     background-color: var(--p31-void, #0f1115);
     color: var(--p31-cloud, rgba(255, 255, 255, 0.9));
-    font-family: "Atkinson Hyperlegible", "Inter", system-ui, sans-serif;
+    /* Start with system font stack for fast first paint */
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    /* Smooth transition when fonts load */
+    transition: font-family 0.15s ease-out;
+  }
+
+  /* When fonts are loaded (via JS detection), switch to Atkinson */
+  .fonts-loaded html {
+    font-family: "Atkinson Hyperlegible", system-ui, sans-serif;
+  }
+
+  /* Ensure text remains visible during webfont load (font-display: swap behavior) */
+  @font-face {
+    font-family: "Atkinson Hyperlegible";
+    font-display: swap;
+    src: local("Atkinson Hyperlegible");
+    /* Metric overrides to reduce FOUT reflow: Atkinson is ~5% narrower than system fonts */
+    size-adjust: 105%;
+    ascent-override: 96%;
+    descent-override: 24%;
+    line-gap-override: 3%;
+  }
+
+  @font-face {
+    font-family: "JetBrains Mono";
+    font-display: swap;
+    src: local("JetBrains Mono");
+    /* Mono fonts typically taller, adjust to match line heights */
+    size-adjust: 98%;
+    ascent-override: 102%;
+    descent-override: 26%;
+  }
+
+  /* Skeleton screen for loading states - prevents CLS during data fetch */
+  .p31-skeleton {
+    background: linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--p31-muted) 8%, transparent) 25%,
+      color-mix(in srgb, var(--p31-muted) 15%, transparent) 50%,
+      color-mix(in srgb, var(--p31-muted) 8%, transparent) 75%
+    );
+    background-size: 200% 100%;
+    animation: p31-skeleton-shimmer 1.5s ease-in-out infinite;
+    border-radius: 4px;
+  }
+
+  @keyframes p31-skeleton-shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  /* Reduce motion for skeleton if user prefers */
+  @media (prefers-reduced-motion: reduce) {
+    .p31-skeleton {
+      animation: none;
+      background: color-mix(in srgb, var(--p31-muted) 10%, transparent);
+    }
+  }
+
+  /* Canvas containment: isolate WebGL from layout to prevent resize-based CLS */
+  canvas[data-p31-appshell-canvas] {
+    contain: strict;
+    content-visibility: auto;
   }
 
   @media (prefers-reduced-motion: no-preference) {
@@ -24,7 +86,28 @@
   }
 
   :where(a, button, input, select, textarea, summary) {
-    touch-action: manipulation;
+    touch-action: manipulation; /* Optimize for tap without double-tap zoom */
+  }
+
+  /* Scroll containers: enable momentum scrolling on iOS */
+  .p31-scroll {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: contain; /* Prevent body scroll chaining */
+  }
+
+  /* Horizontal scroll (e.g., carousels): enable momentum + prevent vertical chaining */
+  .p31-scroll-x {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+  }
+
+  /* Pull-to-refresh container: special overscroll handling */
+  .p31-scroll-refresh {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: auto; /* Allow bounce at top for PTR */
   }
 
   :where(a, button, [role="button"]):focus-visible,
@@ -94,6 +177,117 @@
     min-height: 2.75rem;
     min-width: 2.75rem;
   }
+
+  /* Input responsiveness: CSS containment for interaction isolation */
+  .p31-interactive {
+    contain: layout style paint;
+    content-visibility: auto;
+  }
+
+  /* Ensure touch targets are accessible on all interactive elements */
+  .p31-interactive:focus-visible {
+    outline: 2px solid var(--p31-cyan);
+    outline-offset: 3px;
+  }
+
+  /* ── Touch Target Standards ───────────────────────────────────────────────── */
+  /* Minimum 48×48dp (device-independent pixels) per Material Design / iOS HIG */
+
+  .p31-touch-48 {
+    min-height: 48px;
+    min-width: 48px;
+    padding: 12px 16px;
+  }
+
+  /* Compact touch target for dense layouts: 44×44px (iOS minimum) */
+  .p31-touch-44 {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 10px 12px;
+  }
+
+  /* Touch target grid: maintains minimum spacing between tappable elements */
+  .p31-touch-grid {
+    --touch-min: 48px;
+    --touch-gap: 8px;
+    display: grid;
+    gap: var(--touch-gap);
+    grid-template-columns: repeat(auto-fill, minmax(var(--touch-min), 1fr));
+  }
+
+  /* Touch feedback: immediate visual response on press (mobile) */
+  @media (hover: none) and (pointer: coarse) {
+    .p31-touch-feedback {
+      transition: transform 0.1s ease, opacity 0.1s ease;
+    }
+
+    .p31-touch-feedback:active {
+      transform: scale(0.96);
+      opacity: 0.9;
+    }
+
+    /* Ensure minimum touch target size even if visual element is smaller */
+    .p31-touch-minimum {
+      position: relative;
+    }
+
+    .p31-touch-minimum::before {
+      content: '';
+      position: absolute;
+      inset: calc((48px - 100%) / -2);
+      min-height: 48px;
+      min-width: 48px;
+      z-index: -1;
+    }
+  }
+
+  /* High-contrast focus for touch/keyboard navigation */
+  .p31-touch-focus:focus-visible {
+    outline: 3px solid var(--p31-cyan);
+    outline-offset: 4px;
+    border-radius: 4px;
+  }
+
+  /* ── Safe Area Insets (iPhone notch, Android status bar, home indicator) ───── */
+
+  /* Base safe area support */
+  .p31-safe-area {
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    padding-left: env(safe-area-inset-left, 0px);
+    padding-right: env(safe-area-inset-right, 0px);
+  }
+
+  /* Safe area margins for absolute positioned elements */
+  .p31-safe-margin-top {
+    margin-top: env(safe-area-inset-top, 0px);
+  }
+
+  .p31-safe-margin-bottom {
+    margin-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  /* Bottom navigation that respects home indicator */
+  .p31-nav-bottom {
+    padding-bottom: max(env(safe-area-inset-bottom, 0px), 8px);
+    height: calc(3.5rem + env(safe-area-inset-bottom, 0px));
+    min-height: calc(48px + env(safe-area-inset-bottom, 0px));
+  }
+
+  /* Viewport height that accounts for mobile browser chrome */
+  .p31-vh-safe {
+    height: 100vh;
+    height: 100dvh; /* Dynamic viewport height - handles mobile chrome */
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+
+  /* Prevent content from being obscured by notch/rounded corners */
+  .p31-inset-safe {
+    max-width: calc(100vw - env(safe-area-inset-left, 0px) - env(safe-area-inset-right, 0px));
+    margin-left: env(safe-area-inset-left, 0px);
+    margin-right: env(safe-area-inset-right, 0px);
+  }
 }
 
 /* Passport-driven prefs override --p31-* on :root (see /lib/p31-subject-prefs.js + p31-style.css) */
@@ -159,3 +353,45 @@
 
 /* PHOS orbital loader keyframe — used by PHOS_LOADER_HTML from phos-assets.ts */
 @keyframes phos-orbit { to { transform: rotate(360deg); } }
+
+/* ── Battery-Aware & Thermal Optimization ───────────────────────────────── */
+
+/* Low power mode: disable all animations */
+.p31-low-power *,
+.p31-low-power *::before,
+.p31-low-power *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+}
+
+/* Critical power mode: additional reductions */
+.p31-critical-power canvas[data-p31-appshell-canvas] {
+  display: none !important;
+}
+
+.p31-critical-power .animate-pulse,
+.p31-critical-power .animate-spin,
+.p31-critical-power [class*="animate-"] {
+  animation: none !important;
+}
+
+/* Thermal throttling detected: reduce visual effects */
+.p31-thermal-throttle .glass-panel,
+.p31-thermal-throttle .glass-panel-hover {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* GPU-efficient animation alternatives */
+.p31-gpu-efficient {
+  will-change: transform;
+  transform: translateZ(0); /* Force GPU layer */
+}
+
+/* Disable will-change when not needed (battery saving) */
+@media (prefers-reduced-motion: reduce) {
+  .p31-gpu-efficient {
+    will-change: auto;
+  }
+}

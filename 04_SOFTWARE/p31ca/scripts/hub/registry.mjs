@@ -40,7 +40,12 @@ export const registry = [
       'Each bond logs a timestamp; export the session JSON for evidence documentation'
     ],
     techNotes: 'React 19 + Three.js R3F renders the 3D molecular graph. Zustand v5 manages bond state with immer patches. The relay is Cloudflare Workers KV — no WebSocket, no Durable Objects, offline-tolerant.',
-    related: ['attractor', 'collider', 'axiom']
+    related: ['attractor', 'collider', 'axiom'],
+    certification: {
+      triper: { task: true, resilience: true, interface: true, purity: true, e2e: true, regression: true, date: '2026-05-15' },
+      tetra: { level: 3, sierpinski: 4, date: '2026-05-18' },
+      score: 98
+    }
   },
   {
     id: 'social-molecules',
@@ -91,7 +96,12 @@ export const registry = [
       'Use the mission log panel to annotate events — each entry is SHA-256 timestamped'
     ],
     techNotes: 'PGlite runs PostgreSQL in a Web Worker via WASM. Service Worker caches the full asset bundle. The R3F tetrahedron reflects live mesh state from k4-cage via periodic fetch.',
-    related: ['buffer', 'cortex', 'tether']
+    related: ['buffer', 'cortex', 'tether'],
+    certification: {
+      triper: { task: true, resilience: true, interface: true, purity: true, e2e: true, regression: true, date: '2026-05-14' },
+      tetra: { level: 4, sierpinski: 4, date: '2026-05-16' },
+      score: 96
+    }
   },
   {
     id: 'buffer', title: 'The Buffer', tagline: 'Message Guardian & Fawn Guard',
@@ -1266,6 +1276,158 @@ export const registry = [
     techNotes:
       'Home source `poets-room.html` + `poets-room-quotes.json`; hub `public/poets.html` + `public/poets-room-quotes.json`. Ground-truth `routes.poetsLobby`. No `/poets`→`poets.html` in `_redirects` (CF Pages ping-pong).',
     related: ['planetary-onboard', 'education', 'connect'],
+  },
+  // ── P31 Arcade — Four physics games at 10000% ──────────────────────────────
+  {
+    id: 'arcade-hub',
+    title: 'P31 Arcade',
+    tagline: 'Four physics games at 10000%',
+    icon: '🎮',
+    accent: '#ff6b35',
+    status: 'live',
+    statusLabel: 'LIVE',
+    appUrl: 'https://p31-arcade-hub.pages.dev',
+    tech: ['Cloudflare Pages', 'Astro', 'React', 'PGLite', 'WebGL'],
+    features: [
+      'Central hub for five physics-based arcade games: Smallball, Gridiron, Strategy, Cards, Liquid Sculptor',
+      'K₄ mesh integration — games share unified authentication and player progression',
+      'Spoon Theory UX across all games — energy-aware interfaces that adapt to player capacity',
+      'Local-first architecture with PGLite WebAssembly PostgreSQL',
+      'AAA graphics system with WebGL particle effects and volumetric rendering'
+    ],
+    howTo: [
+      'Open the Arcade Hub at https://p31-arcade-hub.pages.dev',
+      'Choose a game tile — each game loads with your unified player profile',
+      'Use Spoon Selector to set your energy level — UI adapts accordingly'
+    ],
+    techNotes: 'Astro-based static site with React islands. Each game is a separate deployment with shared p31-arcade-shared package for common components. PGLite provides local PostgreSQL via WebAssembly.',
+    related: ['arcade-smallball', 'arcade-gridiron', 'arcade-strategy', 'arcade-cards', 'arcade-liquid-sculptor']
+  },
+  {
+    id: 'arcade-smallball',
+    title: 'Smallball',
+    tagline: '2.5D baseball with Spoon Theory UX',
+    icon: '⚾',
+    accent: '#3b82f6',
+    status: 'live',
+    statusLabel: 'LIVE',
+    appUrl: 'https://p31-smallball.pages.dev',
+    tech: ['React 18', 'PGLite', 'Markov Chains', 'Three.js', 'AAA Graphics'],
+    features: [
+      'Local-first baseball simulation with PGLite database for franchise persistence',
+      'Markov chain-driven pitching AI with realistic pitch selection logic',
+      'Spoon-based energy system — low spoons reduces pitch precision and batting power',
+      'AAA Graphics Core: WebGL particles, volumetric lighting, post-processing effects',
+      'Iron Mike training game — practice batting against legendary pitching machine'
+    ],
+    howTo: [
+      'Select your spoon level from the selector — determines UI complexity and game pacing',
+      'Create a franchise — owner pubkey secures your team data locally',
+      'Play games or enter Iron Mike mode for training'
+    ],
+    techNotes: 'PGLite runs PostgreSQL in browser via WebAssembly. Markov chains model pitch sequences. Three.js handles 2.5D perspective. Graphics system supports 8 rendering tiers from mobile to desktop.',
+    related: ['arcade-hub', 'arcade-gridiron', 'arcade-strategy']
+  },
+  {
+    id: 'arcade-gridiron',
+    title: 'Gridiron',
+    tagline: 'Strategic football with energy management',
+    icon: '🏈',
+    accent: '#8b5cf6',
+    status: 'live',
+    statusLabel: 'LIVE',
+    appUrl: 'https://p31-gridiron.pages.dev',
+    tech: ['React 18', 'PGLite', 'Spoon Shell', 'CF Pages', 'TypeScript'],
+    features: [
+      'Strategic American football with spoon-based play calling system',
+      'Franchise persistence via PGLite — seasons, stats, and achievements stored locally',
+      'Energy-aware UI — Spoon Shell adapts interface to cognitive load',
+      'Probability-driven outcomes with deterministic replay capability',
+      'Tactical depth with formation selection, playbooks, and in-game adjustments'
+    ],
+    howTo: [
+      'Set your spoon level — determines available play complexity and decision time',
+      'Create your franchise and build your team roster',
+      'Call plays using the spoon-adaptive interface — simpler at low energy, full depth at high energy'
+    ],
+    techNotes: 'Uses shared Spoon Shell component library for energy-aware UX. PGLite provides local SQL database. Deterministic RNG enables replay of any game state.',
+    related: ['arcade-hub', 'arcade-smallball', 'arcade-strategy']
+  },
+  {
+    id: 'arcade-strategy',
+    title: 'Strategy Board',
+    tagline: 'Turn-based tactical warfare',
+    icon: '♟️',
+    accent: '#10b981',
+    status: 'live',
+    statusLabel: 'LIVE',
+    appUrl: 'https://p31-strategy.pages.dev',
+    tech: ['React 18', 'Canvas API', 'Pathfinding', 'CF Pages'],
+    features: [
+      'Turn-based tactical strategy with unit positioning and resource management',
+      'Hex-based grid system with line-of-sight and terrain modifiers',
+      'AI opponents with varying difficulty using minimax + heuristics',
+      'Campaign mode with persistent progress via localStorage',
+      'Quick battle mode for short spoon-friendly sessions'
+    ],
+    howTo: [
+      'Select game mode — Campaign for story progress, Quick Battle for instant action',
+      'Move units on hex grid — consider terrain and line of sight',
+      'Manage resources — balance offense, defense, and economy'
+    ],
+    techNotes: 'Canvas-based rendering for smooth animations. A* pathfinding for unit movement. AI uses minimax with alpha-beta pruning.',
+    related: ['arcade-hub', 'arcade-cards', 'arcade-gridiron']
+  },
+  {
+    id: 'arcade-cards',
+    title: 'Card Table',
+    tagline: 'Strategic card game collection',
+    icon: '🃏',
+    accent: '#f59e0b',
+    status: 'live',
+    statusLabel: 'LIVE',
+    appUrl: 'https://p31-cards.pages.dev',
+    tech: ['React 18', 'Game Theory', 'Probability Engine', 'CF Pages'],
+    features: [
+      'Collection of strategic card games with probability-based decision making',
+      'Poker, Blackjack, and original P31 card variants',
+      'Deck analysis tools showing odds and expected values',
+      'Tournament mode with bracket tracking',
+      'Spoon-adaptive — simpler games suggested at low energy'
+    ],
+    howTo: [
+      'Choose a game from the card table menu',
+      'Review probability hints if enabled in settings',
+      'Track your win/loss record and bankroll over time'
+    ],
+    techNotes: 'Game theory optimal play suggestions. Monte Carlo simulation for probability estimation. Card counting tracking for skill-based games.',
+    related: ['arcade-hub', 'arcade-strategy', 'arcade-smallball']
+  },
+  {
+    id: 'arcade-liquid-sculptor',
+    title: 'Liquid Sculptor',
+    tagline: 'Fluid dynamics sandbox',
+    icon: '💧',
+    accent: '#06b6d4',
+    status: 'live',
+    statusLabel: 'LIVE',
+    appUrl: 'https://p31-liquid-sculptor.pages.dev',
+    tech: ['WebGL', 'Navier-Stokes', 'React 18', 'Three.js', 'CF Pages'],
+    features: [
+      'Real-time fluid dynamics simulation using Navier-Stokes equations',
+      'Interactive sculpting — add forces, obstacles, and dye injectors',
+      'WebGL compute shaders for GPU-accelerated particle systems',
+      'Save and share fluid sculptures as JSON snapshots',
+      'Zen mode — no UI, just the flowing simulation for relaxation'
+    ],
+    howTo: [
+      'Click and drag to add forces to the fluid',
+      'Add obstacles to create interesting flow patterns',
+      'Inject dye to visualize the flow dynamics',
+      'Export your sculpture as a shareable snapshot'
+    ],
+    techNotes: 'WebGL 2.0 compute shaders for fluid simulation. Double-buffered render targets for stable integration. Optimized for 60fps on mid-range GPUs.',
+    related: ['arcade-hub', 'signal', 'prism']
   },
   // ── Research / quantum tooling ────────────────────────────────────────────
   {

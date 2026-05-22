@@ -418,6 +418,48 @@
       "implementation": "public/poets.html",
       "label": "Poets Room — void, daily quote, shelf, private local writing",
       "note": "No crew APIs; quotes from public/poets-room-quotes.json; localStorage only for draft/photo. Clean URL /poets served from poets.html — no _redirects row /poets→poets.html (CF Pages 308 ping-pong). Hub registry id poets."
+    },
+    "arcadeHub": {
+      "path": "/arcade",
+      "implementation": "public/arcade/index.html",
+      "label": "P31 Arcade — Four physics games at 10000%",
+      "note": "Arcade hub linking four physics games: Gridiron, Smallball, Strategy, Cards, and Liquid Sculptor. Schema p31.arcadeHub/1.0.0. Short /arcade in _redirects. Live at https://p31-arcade-hub.pages.dev",
+      "registryId": "arcade-hub"
+    },
+    "arcadeSmallball": {
+      "path": "/arcade/smallball",
+      "implementation": "https://p31-smallball.pages.dev",
+      "label": "Smallball — 2.5D baseball simulation with Spoon Theory UX",
+      "note": "Local-first baseball simulation with PGLite database, Markov chain pitching, and AAA graphics. Schema p31.arcadeGame/1.0.0. Live at https://p31-smallball.pages.dev",
+      "registryId": "arcade-smallball"
+    },
+    "arcadeGridiron": {
+      "path": "/arcade/gridiron",
+      "implementation": "https://p31-gridiron.pages.dev",
+      "label": "Gridiron — Strategic football with spoon-based play calling",
+      "note": "American football strategy game with energy management, play calling, and franchise persistence. Schema p31.arcadeGame/1.0.0. Live at https://p31-gridiron.pages.dev",
+      "registryId": "arcade-gridiron"
+    },
+    "arcadeStrategy": {
+      "path": "/arcade/strategy",
+      "implementation": "https://p31-strategy.pages.dev",
+      "label": "Strategy Board — Turn-based tactical strategy",
+      "note": "Turn-based strategy game with unit positioning, resource management, and tactical decision making. Schema p31.arcadeGame/1.0.0. Live at https://p31-strategy.pages.dev",
+      "registryId": "arcade-strategy"
+    },
+    "arcadeCards": {
+      "path": "/arcade/cards",
+      "implementation": "https://p31-cards.pages.dev",
+      "label": "Card Table — Strategic card games",
+      "note": "Strategic card game collection with probability-based decision making and game theory mechanics. Schema p31.arcadeGame/1.0.0. Live at https://p31-cards.pages.dev",
+      "registryId": "arcade-cards"
+    },
+    "arcadeLiquidSculptor": {
+      "path": "/arcade/liquid-sculptor",
+      "implementation": "https://p31-liquid-sculptor.pages.dev",
+      "label": "Liquid Sculptor — Fluid dynamics sandbox",
+      "note": "WebGL-based fluid dynamics simulation with interactive sculpting and physics-based particle systems. Schema p31.arcadeGame/1.0.0. Live at https://p31-liquid-sculptor.pages.dev",
+      "registryId": "arcade-liquid-sculptor"
     }
   },
   "edgeRedirects": [

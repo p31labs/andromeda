@@ -470,6 +470,8 @@ export function startStarfield(canvas: HTMLCanvasElement): void {
     canvas.dataset.p31AppshellId = CANVAS_ID;
   }
   getOrInit(canvas);
+  // Install Page Visibility handler once to suspend/resume on tab change
+  installVisibilityHandler();
 }
 
 export function setStarfieldRoute(route: RouteId): void {
@@ -570,4 +572,87 @@ export function disposeStarfield(): void {
     if (vao && 'deleteVertexArray' in gl) (gl as WebGL2RenderingContext).deleteVertexArray(vao);
   }
   state = null;
+}
+
+// ── Page Visibility API integration ───────────────────────────────────────────
+// Suspend starfield when tab is hidden to free GPU and stop RAF battery drain.
+
+let visibilityHandlerInstalled = false;
+
+function installVisibilityHandler(): void {
+  if (visibilityHandlerInstalled || typeof document === 'undefined') return;
+  visibilityHandlerInstalled = true;
+
+  document.addEventListener('visibilitychange', () => {
+    if (!state) return;
+    if (document.hidden) {
+      // Tab hidden: suspend immediately to save battery/GPU
+      suspendStarfield();
+      // Optional: release GL context entirely on mobile
+      if (state.gl && 'getExtension' in state.gl) {
+        const loseExt = state.gl.getExtension('WEBGL_lose_context');
+        if (loseExt) {
+          // Defer context loss to allow any pending draws to complete
+          setTimeout(() => loseExt.loseContext(), 50);
+        }
+      }
+    } else {
+      // Tab visible: restore context and resume
+      if (state.gl) {
+        const canvas = state.canvas;
+        if (canvas) {
+          const loseExt = state.gl.getExtension('WEBGL_lose_context');
+          if (loseExt) {
+            loseExt.restoreContext();
+          }
+        }
+      }
+      resumeStarfield();
+    }
+  });
+}
+
+
+// ── Battery-Aware Quality Adjustment ──────────────────────────────────────────
+// Reduce starfield quality when battery is low or thermal throttling detected.
+
+if (typeof window !== "undefined") {
+  window.addEventListener("p31:power-mode", (e: Event) => {
+    const detail = (e as CustomEvent).detail;
+    if (!detail || !state) return;
+
+    // Get current route config
+    const currentRoute = state.route || "home";
+    const baseConfig = ROUTE_CAM[currentRoute];
+
+    switch (detail.mode) {
+      case "critical":
+        // Disable starfield completely
+        suspendStarfield();
+        break;
+      case "low":
+        // Reduce to 1/4 of normal particle count, half speed
+        state.countTarget = Math.round(baseConfig.count * 0.25);
+        state.speedTarget = baseConfig.speed * 0.5;
+        break;
+      case "balanced":
+        // Normal operation
+        state.countTarget = baseConfig.count;
+        state.speedTarget = baseConfig.speed;
+        break;
+      case "high":
+        // Full quality (but capped at config max)
+        state.countTarget = baseConfig.count;
+        state.speedTarget = baseConfig.speed;
+        break;
+    }
+  });
+
+  // Also listen for motion preference
+  window.addEventListener("p31:motion-preference", (e: Event) => {
+    const detail = (e as CustomEvent).detail;
+    if (detail?.reduced && state) {
+      suspendStarfield();
+    }
+  });
 }

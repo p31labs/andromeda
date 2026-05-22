@@ -8,6 +8,7 @@
  * Mobile-first + neuro-inclusive: @/styles/global.css (safe areas, focus, motion).
  */
 import '../styles/global.css';
+import StarfieldSettings from '../components/StarfieldSettings.astro';
 
 interface Props {
   title: string;
@@ -99,6 +100,10 @@ const {
     <script type="module" src="/lib/p31-phos-guide.mjs"></script>
     <script type="module" src="/lib/p31-theme-switcher.mjs"></script>
 
+    {/* Starfield Notifications — persistent notification system */}
+    <script type="module" src="/lib/starfield-notifications.ts"></script>
+    <script src="/lib/starfield-settings-ui.js" defer></script>
+
     <slot name="head" />
     <!-- External import maps go here -->
     <slot name="importmaps" />
@@ -121,6 +126,10 @@ const {
     }
 
     <slot />
+
+    {/* Starfield Notification Settings — floating settings panel */}
+    <StarfieldSettings />
+
     <script type="module" is:inline>
       import { startGrandfatherPhaseVar } from "/lib/p31-quantum-grandfather-boot.mjs";
       startGrandfatherPhaseVar();

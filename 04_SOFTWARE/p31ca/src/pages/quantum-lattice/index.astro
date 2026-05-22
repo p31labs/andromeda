@@ -47,13 +47,15 @@ import { FreezeBreakerOverlay } from '../../components/games/FreezeBreakerOverla
 </AppShell>
 
 <script client:load>
+  import { logAction } from '../../lib/storage';
+
   // Chat state + simple mock AI
   const chatMessages = document.getElementById('chat-messages');
   const chatForm = document.getElementById('chat-form');
   const messages = [];
 
   function addMessage(sender, text) {
-    messages.push({ sender, text, ts: Date.now() });
+    messages.push({ role: sender === 'You' ? 'user' : 'assistant', content: text });
     const p = document.createElement('p');
     p.className = 'text-p31-cloud-60 leading-relaxed';
     p.innerHTML = `<span class="text-p31-amber">${sender}:</span> ${text}`;
@@ -70,19 +72,33 @@ import { FreezeBreakerOverlay } from '../../components/games/FreezeBreakerOverla
     if (!text) return;
     input.value = '';
     addMessage('You', text);
-    
-    // Placeholder for Cloudflare AI call — when available, POST to /ai/quark
-    // For now, a short mock response
-    setTimeout(() => {
-      const responses = [
-        "I'm detecting elevated beta waves. Have you tried drinking water?",
-        "Your coherence time is dropping. Maybe a 5-minute dark room break?",
-        "I could inject a photon, but I'd just get absorbed. You do the breathing.",
-        "The lattice is jittering. Coolant = water + rest.",
-        "Wave function collapse imminent. Press space. No, really.",
-      ];
-      addMessage('Quark', responses[Math.floor(Math.random() * responses.length)]);
-    }, 600);
+    messages.push({ role: 'user', content: text });
+
+    try {
+      const resp = await fetch('https://command-center.trimtab-signal.workers.dev/api/ai/quark', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages })
+      });
+      if (!resp.ok) throw new Error('HTTP ' + resp.status);
+      const data = await resp.json();
+      addMessage('Quark', data.reply || '');
+      messages.push({ role: 'assistant', content: data.reply || '' });
+    } catch (err) {
+      console.error('Quark AI error:', err);
+      addMessage('Quark', 'Quark is momentarily offline. Try again.');
+    }
+  });
+
+  // Self-care buttons → log to IndexedDB (namespace: quantum-lattice)
+  document.querySelectorAll('[data-action]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const action = btn.getAttribute('data-action');
+      try { await logAction('quantum-lattice', action); } catch {}
+      btn.classList.add('bg-p31-teal/40');
+      setTimeout(() => btn.classList.remove('bg-p31-teal/40'), 500);
+    });
   });
 
   // Decoherence bar demo
@@ -95,16 +111,4 @@ import { FreezeBreakerOverlay } from '../../components/games/FreezeBreakerOverla
     requestAnimationFrame(animateBar);
   }
   requestAnimationFrame(animateBar);
-
-  // Self-care buttons → log to localStorage (namespace: quantum-lattice:log)
-  document.querySelectorAll('[data-action]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const action = btn.getAttribute('data-action');
-      const record = { action, ts: Date.now() };
-      const key = `quantum-lattice:log:${Date.now()}`;
-      try { localStorage.setItem(key, JSON.stringify(record)); } catch {}
-      btn.classList.add('bg-p31-teal/40');
-      setTimeout(() => btn.classList.remove('bg-p31-teal/40'), 500);
-    });
-  });
 </script>

@@ -26,6 +26,7 @@
     "ink": "var(--p31-ink)",
     "muted": "var(--p31-muted)",
     "phosphor": "var(--p31-phosphor)",
+    "fuchsia": "var(--p31-fuchsia)",
     "tone": {
       "teal": {
         "0": "var(--p31-tone-teal-0)",

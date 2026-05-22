@@ -14,6 +14,8 @@ export * from './rules';
 export * from './zui';
 export * from './ble';
 export * from './theme';
+export * from './trust';
+export * from './hibernation';
 
 // Re-export shared types to avoid conflicts
 export type { ZoneConfig, ZoneEnergy } from './zui/types';

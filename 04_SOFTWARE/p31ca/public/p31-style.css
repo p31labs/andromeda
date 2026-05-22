@@ -80,6 +80,7 @@
   --p31-ink: #1e293b;
   --p31-muted: #6b7280;
   --p31-phosphor: #00FF88;
+  --p31-fuchsia: #e879f9;
   --p31-border-subtle: rgba(255, 255, 255, 0.06);
   --p31-glass-border: rgba(255, 255, 255, 0.08);
   --p31-glass-surface: rgba(255, 255, 255, 0.04);
@@ -115,6 +116,7 @@
   --p31-ink: #0f172a;
   --p31-muted: #64748b;
   --p31-phosphor: #00FF88;
+  --p31-fuchsia: #e879f9;
   --p31-border-subtle: rgba(15, 23, 42, 0.09);
   --p31-glass-border: rgba(15, 23, 42, 0.07);
   --p31-glass-surface: rgba(255, 255, 255, 0.82);
@@ -150,6 +152,7 @@
     --p31-ink: #0f172a;
     --p31-muted: #64748b;
     --p31-phosphor: #00FF88;
+    --p31-fuchsia: #e879f9;
     --p31-border-subtle: rgba(15, 23, 42, 0.09);
     --p31-glass-border: rgba(15, 23, 42, 0.07);
     --p31-glass-surface: rgba(255, 255, 255, 0.82);

@@ -5,6 +5,12 @@
  */
 export const HUB_COCKPIT_ORDER = [
   "bonding",
+  "arcade-hub",
+  "arcade-smallball",
+  "arcade-gridiron",
+  "arcade-strategy",
+  "arcade-cards",
+  "arcade-liquid-sculptor",
   "social-molecules",
   "spaceship-earth",
   "ede",

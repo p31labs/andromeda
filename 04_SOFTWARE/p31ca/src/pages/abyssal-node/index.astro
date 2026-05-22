@@ -47,39 +47,56 @@ import { FreezeBreakerOverlay } from '../../components/games/FreezeBreakerOverla
 </AppShell>
 
 <script client:load>
+  import { logAction } from '../../lib/storage';
+
   const chatMessages = document.getElementById('chat-messages');
   const chatForm = document.getElementById('chat-form');
   const messages = [];
 
   function addMessage(sender, text) {
-    messages.push({ sender, text, ts: Date.now() });
+    messages.push({ role: sender === 'You' ? 'user' : 'assistant', content: text });
     const p = document.createElement('p');
     p.className = 'text-p31-cloud-60 leading-relaxed';
     p.innerHTML = `<span class="text-p31-amber">${sender}:</span> ${text}`;
     chatMessages.appendChild(p);
     chatMessages.scrollTop = chatMessages.scrollHeight;
   }
-
   addMessage('Nudi', 'I\'m processing your existential dread. Converting to network expansion energy.');
 
-  chatForm?.addEventListener('submit', (e) => {
+  chatForm?.addEventListener('submit', async (e) => {
     e.preventDefault();
     const input = chatForm.querySelector('input');
     const text = input.value.trim();
     if (!text) return;
     input.value = '';
     addMessage('You', text);
-    setTimeout(() => {
-      addMessage('Nudi', `Ingested ${text.length} characters of raw feeling. Converting to ${Math.floor(Math.random()*80+20)}% growth energy.`);
-    }, 500);
+    messages.push({ role: 'user', content: text });
+
+    try {
+      const resp = await fetch('https://command-center.trimtab-signal.workers.dev/api/ai/nudi', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages })
+      });
+      if (!resp.ok) throw new Error('HTTP ' + resp.status);
+      const data = await resp.json();
+      addMessage('Nudi', data.reply || '');
+      messages.push({ role: 'assistant', content: data.reply || '' });
+    } catch (err) {
+      console.error('Nudi AI error:', err);
+      addMessage('Nudi', 'Nudi is currently offline.');
+    }
   });
 
-  // Self-care logging
+  // Self-care buttons
   document.querySelectorAll('[data-action]').forEach(btn => {
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', async () => {
       const action = btn.getAttribute('data-action');
-      const key = `abyssal-node:log:${Date.now()}`;
-      try { localStorage.setItem(key, JSON.stringify({ action, ts: Date.now() })); } catch {}
+      if (action === 'meal') {
+        window.dispatchEvent(new Event('p31:nutrientBurst'));
+      }
+      try { await logAction('abyssal-node', action); } catch {}
       btn.classList.add('bg-p31-lavender/40');
       setTimeout(() => btn.classList.remove('bg-p31-lavender/40'), 500);
     });

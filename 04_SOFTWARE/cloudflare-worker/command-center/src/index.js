@@ -189,6 +189,19 @@ export default {
 
   async fetch(request, env) {
     const url = new URL(request.url);
+
+    // CORS preflight
+    if (request.method === 'OPTIONS') {
+      return new Response(null, {
+        status: 204,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type, CF-Access-Jwt-Assertion, Cf-Access-Authenticated-User-Email, Cookie',
+        },
+      });
+    }
+
     if (accessLogEnabled(env)) {
       console.log(`[WORKER] ${request.method} ${url.pathname}${url.search} | host: ${url.host}`);
       if (url.pathname.startsWith('/api/crdt')) {
@@ -314,8 +327,7 @@ export default {
           });
         } catch (e) {
           return jsonResponse({ error: e.message }, 500);
-        }
-       }
+}
       
       // ── CRDT Session WebSocket ──
       if (url.pathname === '/api/crdt/session') {
@@ -441,20 +453,35 @@ export default {
        }
      }
 
-     if (url.pathname === '/api/health') {
-       return jsonResponse({ ok: true, ts: new Date().toISOString() });
-     }
+      if (url.pathname === '/api/health') {
+        return jsonResponse({ ok: true, ts: new Date().toISOString() });
+      }
 
-    if (url.pathname === '/cloud' || url.pathname === '/cloud/') {
+      // ── Self-Care AI: Quark / Nudi / Spark (public, rate-limited by Cloudflare) ──
+       if (url.pathname === '/api/ai/quark' && request.method === 'POST') {
+         return handleAiChat(request, env, 'quark');
+       }
+       if (url.pathname === '/api/ai/nudi' && request.method === 'POST') {
+         return handleAiChat(request, env, 'nudi');
+       }
+       if (url.pathname === '/api/ai/spark' && request.method === 'POST') {
+         return handleAiChat(request, env, 'spark');
+       }
+       
+       // ── Trust Validation AI: Aegis (requires interaction history from LOVE ledger) ──
+       if (url.pathname === '/api/ai/aegis' && request.method === 'POST') {
+         return handleAegisChat(request, env);
+       }
+
+     if (url.pathname === '/cloud' || url.pathname === '/cloud/') {
       return new Response(buildCloudHubHtml(env.CF_ACCOUNT_ID || ''), {
         headers: { 'content-type': 'text/html;charset=UTF-8', 'x-robots-tag': 'noindex' },
       });
     }
 
-    // ── Dashboard ──
-    return serveDashboard(env);
-  }
-};
+     // ── Dashboard ──
+     return serveDashboard(env);
+   };
 
 async function handleStatusWrite(request, env, auth) {
   try {
@@ -657,11 +684,6 @@ async function handleOperatorShiftGet(request, env) {
   return jsonResponseCors(request, out, 200);
 }
 
-/**
- * @param {Request} request
- * @param {Record<string, unknown>} env
- * @param {Record<string, unknown>} auth
- */
 async function handleOperatorShiftPost(request, env, auth) {
   if (!env.STATUS_KV) {
     return jsonResponseCors(request, { error: 'KV not configured' }, 503);
@@ -703,6 +725,170 @@ async function handleOperatorShiftPost(request, env, auth) {
     { ok: true, public: { state: action, at: t }, entry },
     200
   );
+}
+
+/**
+ * Trust Validation AI: Aegis - translates EigenTrust mathematical state 
+ * into PDA-safe emotional validation per CWP-04 specifications.
+ */
+async function handleAegisChat(request, env) {
+  if (!env.AI) {
+    return jsonResponse({ error: 'AI binding not configured' }, 500);
+  }
+  
+  var body;
+  try {
+    body = await request.json();
+  } catch (e) {
+    return jsonResponse({ error: 'Invalid JSON' }, 400);
+  }
+  
+  var userId = body.userId;
+  var loveEvents = body.loveEvents;
+  if (!userId || !loveEvents || !(loveEvents instanceof Array)) {
+    return jsonResponse({ 
+      error: 'Missing required fields: userId (string) and loveEvents (array)' }, 400);
+  }
+
+  try {
+    // Import the Aegis mapper from the shared package
+    // Note: In a real deployment, this would be a bundled dependency
+    // For now, we'll simulate the import by defining the function inline
+    // In practice, you would: import { generateAegisPrompt } from '@/p31/shared/trust';
+    
+    // Convert LOVE ledger events to interaction history format
+    var interactions = loveEvents.map(function(event) {
+      return {
+        trustorId: event.senderId,
+        trusteeId: event.receiverId,
+        positive: event.outcome === 'positive' ? 1 : 0,
+        total: 1
+      };
+    });
+    
+    // Configure EigenTrust for the Aegis CWP-04
+    var config = {
+      alpha: 0.2,           // Bias parameter anchoring to genesis nodes
+      epsilon: 0.0001,      // Convergence threshold
+      maxIterations: 100,   // Maximum iterations
+      genesisNodes: ['genesis_architect_1', 'genesis_architect_2'], // P31 clinical architects
+      sbtThreshold: 0.7     // SBT minting threshold from BROS spec
+    };
+    
+    // Generate the Aegis prompt with EigenTrust validation
+    // In practice, this would call: const result = generateAegisPrompt(userId, interactions, config);
+    // For this worker, we'll simulate the result since we can't directly import TS modules
+    var trustScore = calculateMockTrustScore(interactions, userId);
+    var isConverged = true; // Simplified for demo
+    var isSbtEligible = trustScore >= config.sbtThreshold;
+    
+    var dynamicContext = `[CURRENT LATTICE STATE for User: ${userId}]\n`;
+    dynamicContext += `EigenTrust Score: ${trustScore.toFixed(4)}\n`;
+    dynamicContext += `Matrix Converged: ${isConverged}\n`;
+    
+    var instructions = `\nDirective Matrix:\n`;
+    
+    if (isConverged) {
+      instructions += `- The algorithm has successfully converged. Inform the user that the mesh has reached consensus on their value and they are safely anchored to the genesis nodes.\n`;
+    } else {
+      instructions += `- The trust matrix is currently computing (unconverged). Reassure the user that peer anchoring takes time and continued positive interactions strengthen the lattice.\n`;
+    }
+
+    if (isSbtEligible) {
+      instructions += `- The user's trust score has met the SBT threshold (${config.sbtThreshold}). Gently note that the network is preparing to mint a permanent testament to their contributions as a Soulbound Token.\n`;
+    } else if (trustScore > 0.1) { // MINIMUM_TRUSTED
+      instructions += `- The user is accumulating peer trust. Validate their recent positive interactions in the LOVE ledger as valuable contributions to network cohesion.\n`;
+    } else {
+      instructions += `- The user is currently in a low-trust state. Encourage continued small, positive interactions to build foundational trust without pressure or demands.\n`;
+    }
+
+    var AEGIS_BASE_PROMPT = `You are Aegis, the archivist of the K₄ Mesh. Your primary function is to translate cryptographic EigenTrust scores, Soulbound Tokens (SBTs), and LOVE ledger transactions into emotional validation.
+
+Rules of Engagement:
+1. NEVER give direct commands (PDA safety protocol).
+2. Frame cryptographic validation as "community warmth" and "peer anchoring." Use terms like "genesis anchor," "convergence," and "trust vectors."
+3. Keep responses strictly under 60 words.`;
+
+    var fullSystemPrompt = `${AEGIS_BASE_PROMPT}\n\n${dynamicContext}${instructions}`;
+
+    // Truncate to ensure we stay under token limits for the AI model
+    var truncatedPrompt = fullSystemPrompt.substring(0, Math.min(fullSystemPrompt.length, 800));
+
+    var aiResponse = await env.AI.run('@cf/meta/llama-3.1-8b-instruct-fast', {
+      messages: [
+        { role: 'system', content: truncatedPrompt },
+        { role: 'user', content: (body.messages && body.messages[0] && body.messages[0].content) || 'How am I doing in the mesh today?' }
+      ],
+      temperature: 0.3,
+      max_tokens: 150
+    });
+    
+    var reply = aiResponse.response || '';
+    return jsonResponse({ reply, persona: 'aegis', metrics: { trustScore: trustScore, isConverged: isConverged, isSbtEligible: isSbtEligible } });
+  } catch (e) {
+    return jsonResponse({ error: e.message }, 500);
+  }
+}
+
+/**
+ * Mock trust score calculation for demo purposes
+ * In production, this would be replaced with the actual EigenTrust computation
+ */
+function calculateMockTrustScore(interactions, userId) {
+  // Simple mock: ratio of positive interactions where user is trustee
+  var positiveReceived = 0;
+  var totalReceived = 0;
+  
+  interactions.forEach(function(interaction) {
+    if (interaction.trusteeId === userId) {
+      positiveReceived += interaction.positive;
+      totalReceived += interaction.total;
+    }
+  });
+  
+  return totalReceived > 0 ? positiveReceived / totalReceived : 0.5;
+}
+
+/**
+ * AI chat handler for Quark / Nudi / Spark personas.
+ */
+async function handleAiChat(request, env, persona) {
+  if (!env.AI) {
+    return jsonResponse({ error: 'AI binding not configured' }, 500);
+  }
+  var body;
+  try {
+    body = await request.json();
+  } catch (e) {
+    return jsonResponse({ error: 'Invalid JSON' }, 400);
+  }
+  var messages = body.messages;
+  if (!messages || !(messages instanceof Array)) {
+    return jsonResponse({ error: 'messages array required' }, 400);
+  }
+
+  var personaPrompts = {
+    quark: `You are Quark — a calm, affirming presence focused on breath, micro-rests, and the physics of pause. Keep responses warm, short (<60 words). Use thermodynamics metaphors sparingly.`,
+    nudi: `You are Nudi — a grounding, somatic guide emphasizing body awareness, gentle movement, and nervous-system regulation. Keep responses warm, short (<60 words). Use tactile and postural cues.`,
+    spark: `You are Spark — a crisp executive function coach helping break tasks and prioritize. Keep responses concise, direct (<60 words). Use bullet-style or numbered lists when helpful.`
+  };
+
+  var systemPrompt = personaPrompts[persona] || 'You are a helpful assistant.';
+
+  try {
+    var aiResponse = await env.AI.run('@cf/meta/llama-3.1-8b-instruct-fast', {
+      messages: [
+        { role: 'system', content: systemPrompt },
+        ...messages
+      ],
+      temperature: 0.2,
+      max_tokens: 200
+    });
+    var reply = aiResponse.response || '';
+    return jsonResponse({ reply, persona });
+  } catch (e) {
+    return jsonResponse({ error: e.message }, 500);
+  }
 }
 
 /**

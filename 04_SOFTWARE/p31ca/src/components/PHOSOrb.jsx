@@ -12,15 +12,15 @@ const rand = (a, b) => Math.random() * (b - a) + a;
 const randInt = (a, b) => Math.floor(rand(a, b + 1));
 
 const NODES = [
-  { id: "passport", label: "Passport", icon: "🧬", hex: T.teal, ring: 1, angle: 0 },
-  { id: "garden", label: "Garden", icon: "👶", hex: T.amber, ring: 1, angle: 2.094 },
-  { id: "ping", label: "Ping", icon: "💚", hex: T.phosphorus, ring: 1, angle: 4.189 },
-  { id: "ops", label: "Ops", icon: "🌐", hex: T.teal, ring: 2, angle: 0.524 },
-  { id: "buffer", label: "Buffer", icon: "🛡️", hex: T.coral, ring: 2, angle: 2.618 },
-  { id: "glass", label: "Glass Box", icon: "📊", hex: T.cyan, ring: 2, angle: 4.712 },
-  { id: "geodesic", label: "Geodesic", icon: "⚒️", hex: T.lavender, ring: 2, angle: 1.571 },
-  { id: "library", label: "Library", icon: "📚", hex: T.lavender, ring: 3, angle: 1.047 },
-  { id: "vibe", label: "Vibe", icon: "🔮", hex: T.phosphorus, ring: 3, angle: 3.665 },
+  { id: "passport", label: "Passport", icon: "🧬", hex: T.teal, ring: 1, angle: 0, href: "/passport" },
+  { id: "garden", label: "Garden", icon: "👶", hex: T.amber, ring: 1, angle: 2.094, href: "/garden" },
+  { id: "ping", label: "Ping", icon: "💚", hex: T.phosphorus, ring: 1, angle: 4.189, href: "/ops#ping" },
+  { id: "ops", label: "Ops", icon: "🌐", hex: T.teal, ring: 2, angle: 0.524, href: "/ops" },
+  { id: "buffer", label: "Buffer", icon: "🛡️", hex: T.coral, ring: 2, angle: 2.618, href: "/ops#buffer" },
+  { id: "glass", label: "Glass Box", icon: "📊", hex: T.cyan, ring: 2, angle: 4.712, href: "/glass-box" },
+  { id: "geodesic", label: "Geodesic", icon: "⚒️", hex: T.lavender, ring: 2, angle: 1.571, href: "/geodesic.html" },
+  { id: "library", label: "Library", icon: "📚", hex: T.lavender, ring: 3, angle: 1.047, href: "/doc-library/" },
+  { id: "vibe", label: "Vibe", icon: "🔮", hex: T.phosphorus, ring: 3, angle: 3.665, href: "/atmosphere" },
 ];
 const RING_R = { 1: 90, 2: 155, 3: 210 };
 const RING_SPEED = { 1: 0.0003, 2: -0.00018, 3: 0.00012 };
@@ -163,7 +163,7 @@ function OrbitalHub({ onSelect, safe }) {
         const y = cy + Math.sin(a) * RING_R[n.ring] * 0.65;
         const isHover = hover === n.id;
         return (
-          <button key={n.id} onClick={() => onSelect(n.id)}
+          <a key={n.id} href={n.href}
             onMouseEnter={() => setHover(n.id)} onMouseLeave={() => setHover(null)}
             style={{ position: "absolute", left: x - 28, top: y - 28, width: 56, height: 56,
               borderRadius: "50%", border: `1px solid ${isHover ? n.hex : T.glass}`,
@@ -171,23 +171,23 @@ function OrbitalHub({ onSelect, safe }) {
               backdropFilter: "blur(8px)", display: "flex", flexDirection: "column",
               alignItems: "center", justifyContent: "center", cursor: "pointer",
               transition: "border-color 150ms, background 150ms", zIndex: 10,
-              boxShadow: isHover ? `0 0 20px ${n.hex}30` : "none" }}>
+              boxShadow: isHover ? `0 0 20px ${n.hex}30` : "none",
+              textDecoration: "none" }}>
             <span style={{ fontSize: 18, lineHeight: 1 }}>{n.icon}</span>
             <span style={{ fontSize: 8, fontFamily: "'JetBrains Mono', monospace", color: T.muted, marginTop: 2 }}>{n.label}</span>
-          </button>
+          </a>
         );
       })}
-      <div style={{ position: "absolute", left: cx - 24, top: cy - 24, width: 48, height: 48,
+      <a href="/" style={{ position: "absolute", left: cx - 24, top: cy - 24, width: 48, height: 48,
         borderRadius: "50%", background: `radial-gradient(circle, ${T.teal}40 0%, ${T.void} 70%)`,
         border: `2px solid ${T.teal}60`, display: "flex", alignItems: "center", justifyContent: "center",
-        zIndex: 20, cursor: "pointer", boxShadow: `0 0 30px ${T.teal}20` }}
-        onClick={() => onSelect("phos")}>
+        zIndex: 20, cursor: "pointer", boxShadow: `0 0 30px ${T.teal}20`, textDecoration: "none" }}>
         <svg viewBox="0 0 100 100" width={22} height={22} fill="none">
           <path d="M50 10 L90 85 L10 85 Z" stroke={T.teal} strokeWidth="5" strokeLinejoin="round" />
           <path d="M50 10 L50 60 L90 85" stroke={T.coral} strokeWidth="5" strokeLinejoin="round" opacity="0.7" />
           <path d="M50 60 L10 85" stroke={T.amber} strokeWidth="5" strokeLinejoin="round" opacity="0.5" />
         </svg>
-      </div>
+      </a>
       {hover && (
         <div style={{ position: "absolute", left: cx - 100, top: cy + 40, width: 200, textAlign: "center",
           fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: T.muted, zIndex: 5 }}>
@@ -420,18 +420,18 @@ export default function PHOSForUS() {
             </p>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
               {NODES.map(n => (
-                <button key={n.id} onClick={() => { setSafe(false); setView("hub"); }}
+                <a key={n.id} href={n.href}
                   style={{ display: "flex", alignItems: "center", gap: 10, padding: 14, borderRadius: 10,
                     border: `1px solid ${T.glass}`, background: `${T.surface}80`, cursor: "pointer",
-                    textAlign: "left", color: T.cloud }}>
+                    textAlign: "left", color: T.cloud, textDecoration: "none" }}>
                   <span style={{ fontSize: 20, width: 36, height: 36, borderRadius: "50%", display: "flex",
                     alignItems: "center", justifyContent: "center", border: `1px solid ${n.hex}40`,
                     background: `${n.hex}10`, flexShrink: 0 }}>{n.icon}</span>
                   <div>
                     <div style={{ fontWeight: 600, fontSize: 13 }}>{n.label}</div>
-                    <div style={{ fontSize: 10, color: T.muted, fontFamily: "'JetBrains Mono', monospace" }}>/{n.id}</div>
+                    <div style={{ fontSize: 10, color: T.muted, fontFamily: "'JetBrains Mono', monospace" }}>{n.href}</div>
                   </div>
-                </button>
+                </a>
               ))}
             </div>
           </div>

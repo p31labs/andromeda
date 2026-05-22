@@ -31,7 +31,8 @@
     "amber": "#cda852",
     "lavender": "#8b7cc9",
     "phosphorus": "#3ba372",
-    "phosphor": "#00FF88"
+    "phosphor": "#00FF88",
+    "fuchsia": "#e879f9"
   },
   "typography": {
     "fontFamilies": {
@@ -263,7 +264,8 @@
         "paper": "#f4f4f5",
         "ink": "#1e293b",
         "muted": "#6b7280",
-        "phosphor": "#00FF88"
+        "phosphor": "#00FF88",
+        "fuchsia": "#e879f9"
       },
       "semantic": {
         "borderSubtle": "rgba(255, 255, 255, 0.06)"
@@ -291,7 +293,8 @@
         "paper": "#fdfcfa",
         "ink": "#0f172a",
         "muted": "#64748b",
-        "phosphor": "#00FF88"
+        "phosphor": "#00FF88",
+        "fuchsia": "#e879f9"
       },
       "semantic": {
         "borderSubtle": "rgba(15, 23, 42, 0.09)"

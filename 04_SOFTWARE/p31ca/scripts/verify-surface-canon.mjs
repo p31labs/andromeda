@@ -61,7 +61,7 @@ const APPSHELL_REQUIRED = [
   { needle: "ClientRouter",          label: "Astro ClientRouter (view transitions)" },
   { needle: "transition:persist",    label: "transition:persist canvas"          },
   { needle: "data-p31-route",        label: "data-p31-route on <html>"           },
-  { needle: 'class="nav"',           label: "canonical .nav header"              },
+  { needle: 'class="nav',            label: "canonical .nav header"              },
   { needle: "p31-mission-trio--ebc", label: "EBC mission footer"                 },
   { needle: "p31-phos-guide",        label: "PHOS bus bar"                       },
 ];

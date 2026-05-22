@@ -75,6 +75,64 @@ function toTags(tech) {
   return t;
 }
 
+// Category mapping for hub cards (derived from product id patterns)
+const CATEGORY_MAP = {
+  // Arcade games
+  'arcade-hub': 'arcade',
+  'arcade-smallball': 'arcade',
+  'arcade-gridiron': 'arcade',
+  'arcade-strategy': 'arcade',
+  'arcade-cards': 'arcade',
+  'arcade-liquid-sculptor': 'arcade',
+  // Core products
+  'ede': 'core',
+  'spaceship-earth': 'core',
+  'buffer': 'core',
+  'content-forge': 'core',
+  'geodesic': 'core',
+  'signal': 'core',
+  'connect': 'core',
+  'planetary-onboard': 'core',
+  'bridge': 'core',
+  'sovereign': 'core',
+  'tether': 'core',
+  // Social
+  'bonding': 'social',
+  'social-molecules': 'social',
+  'discord-bot': 'social',
+  'poets': 'social',
+  'book': 'social',
+  'forge': 'social',
+  // Infra
+  'cortex': 'infra',
+  'node-zero': 'infra',
+  'integrations': 'infra',
+  'super-centaur': 'infra',
+  // Research
+  'alchemy': 'research',
+  'attractor': 'research',
+  'axiom': 'research',
+  'resonance': 'research',
+  // Utility
+  'tactile': 'utility',
+  'appointment-tracker': 'utility',
+  'budget-tracker': 'utility',
+  'contact-locker': 'utility',
+  'echo': 'utility',
+  'legal-evidence': 'utility',
+  'medical-tracker': 'utility',
+  'prism': 'utility',
+  'sleep-tracker': 'utility',
+  'somatic-anchor': 'utility',
+};
+
+function deriveCategory(id, r) {
+  // Use explicit category from registry if available
+  if (r.category) return r.category;
+  // Otherwise use map
+  return CATEGORY_MAP[id] || 'core';
+}
+
 function productRow(id) {
   const r = byId.get(id);
   if (!r) {
@@ -88,6 +146,8 @@ function productRow(id) {
     id,
     title: r.title,
     status,
+    category: deriveCategory(id, r),
+    icon: r.icon || '◆',
     desc: r.tagline,
     tags: toTags(r.tech),
     url: `/${id}-about.html`,

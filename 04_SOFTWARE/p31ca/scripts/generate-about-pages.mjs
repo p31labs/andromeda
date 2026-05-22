@@ -30,6 +30,35 @@ function badgeClass(status) {
   );
 }
 
+// Category color mapping (aligned with BentoGrid.astro)
+const CATEGORY_MAP = {
+  'arcade-hub': 'arcade', 'arcade-smallball': 'arcade', 'arcade-gridiron': 'arcade',
+  'arcade-strategy': 'arcade', 'arcade-cards': 'arcade', 'arcade-liquid-sculptor': 'arcade',
+  'bonding': 'social', 'social-molecules': 'social', 'discord-bot': 'social',
+  'poets': 'social', 'book': 'social', 'forge': 'social',
+  'ede': 'core', 'spaceship-earth': 'core', 'buffer': 'core', 'content-forge': 'core',
+  'geodesic': 'core', 'signal': 'core', 'connect': 'core', 'planetary-onboard': 'core',
+  'bridge': 'core', 'sovereign': 'core', 'tether': 'core',
+  'cortex': 'infra', 'node-zero': 'infra', 'integrations': 'infra', 'super-centaur': 'infra',
+  'alchemy': 'research', 'attractor': 'research', 'axiom': 'research', 'resonance': 'research',
+  'tactile': 'utility', 'appointment-tracker': 'utility', 'budget-tracker': 'utility',
+  'contact-locker': 'utility', 'echo': 'utility', 'legal-evidence': 'utility',
+  'medical-tracker': 'utility', 'prism': 'utility', 'sleep-tracker': 'utility', 'somatic-anchor': 'utility',
+};
+
+const CATEGORY_CSS = {
+  arcade:    { color: '#10b981', var: '--p31-phosphorus', iconClass: 'icon-arcade' },
+  core:      { color: '#8b5cf6', var: '--p31-violet', iconClass: 'icon-core' },
+  infra:     { color: '#f59e0b', var: '--p31-amber', iconClass: 'icon-infra' },
+  social:    { color: '#3b82f6', var: '--p31-blue', iconClass: 'icon-social' },
+  research:  { color: '#f43f5e', var: '--p31-rose', iconClass: 'icon-research' },
+  utility:   { color: '#f97316', var: '--p31-orange', iconClass: 'icon-utility' },
+};
+
+function getCategory(id, item) {
+  return item.category || CATEGORY_MAP[id] || 'core';
+}
+
 /** Escape text for double-quoted HTML attributes (meta / Open Graph). */
 function escAttr(s) {
   return String(s ?? '')
@@ -65,11 +94,46 @@ const EBC_FOOTER = `<!-- P31:mission-ebc:start -->
 </footer>
 <!-- P31:mission-ebc:end -->`;
 
-// ─── HTML template (EDE / Super-Centaur family — tokens from p31-style.css) ─
+// ─── HTML template (Category-colored — aligned with BentoGrid.astro) ─
+function renderCertBadges(cert) {
+  if (!cert) return '';
+  const triper = cert.triper;
+  const tetra = cert.tetra;
+  if (!triper && !tetra) return '';
+
+  let badges = [];
+
+  // TRIPER letter badges
+  if (triper) {
+    if (triper.task) badges.push('<span class="cert-badge cert-badge--t" title="Task tests passing">T</span>');
+    if (triper.resilience) badges.push('<span class="cert-badge cert-badge--r" title="Resilience tests passing">R</span>');
+    if (triper.interface) badges.push('<span class="cert-badge cert-badge--i" title="Interface tests passing">I</span>');
+    if (triper.purity) badges.push('<span class="cert-badge cert-badge--p" title="Purity tests passing">P</span>');
+    if (triper.e2e) badges.push('<span class="cert-badge cert-badge--e" title="E2E tests passing">E</span>');
+    if (triper.regression) badges.push('<span class="cert-badge cert-badge--reg" title="Regression tests passing">R</span>');
+  }
+
+  // Tetra level badge
+  if (tetra && tetra.level) {
+    badges.push(`<span class="cert-badge" style="border-color:rgba(245,158,11,0.5);color:#fbbf24" title="Tetra-Cert Level ${tetra.level}">L${tetra.level}</span>`);
+  }
+
+  return `<div class="cert-badges">${badges.join('')}</div>`;
+}
+
+function renderCertScore(cert) {
+  if (!cert || !cert.score) return '';
+  return `<div class="cert-score">Certification Score: ${cert.score}/100</div>`;
+}
+
 function renderAboutPage(item) {
   const appUrl = getAppUrl(item);
   const badgeStatusClass = badgeClass(item.status);
+  const category = getCategory(item.id, item);
+  const catStyle = CATEGORY_CSS[category] || CATEGORY_CSS.core;
   const nodeCycle = ['', ' coral', ' butter', ''];
+  const certBadges = renderCertBadges(item.certification);
+  const certScore = renderCertScore(item.certification);
   const featureMeshItems = item.features
     .map(
       (f, i) => `          <div class="mesh-item">
@@ -89,9 +153,10 @@ function renderAboutPage(item) {
     .map((r) => {
       const rel = registry.find((x) => x.id === r);
       if (!rel) return '';
-      // Skip concept/draft products in related links
       if (rel.status === 'concept' || rel.status === 'draft') return '';
-      return `            <a href="/${r}-about.html" class="related-link">${rel.icon} ${rel.title}</a>`;
+      const relCat = getCategory(r, rel);
+      const relStyle = CATEGORY_CSS[relCat] || CATEGORY_CSS.core;
+      return `            <a href="/${r}-about.html" class="related-link"><span style="color:${relStyle.color}">${rel.icon}</span> ${rel.title}</a>`;
     })
     .filter(Boolean)
     .join('\n');
@@ -131,29 +196,43 @@ function renderAboutPage(item) {
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --product-accent:${item.accent};
+  --product-accent:${catStyle.color};
+  --category-color:${catStyle.color};
   --font:var(--p31-font-sans);
   --mono:var(--p31-font-mono);
 }
 html,body{
   min-height:100%;
   background:var(--void);
-  background-image:
-    linear-gradient(to right,rgba(255,255,255,0.02) 1px,transparent 1px),
-    linear-gradient(to bottom,rgba(255,255,255,0.02) 1px,transparent 1px);
-  background-size:40px 40px;
-  background-position:center top;
   color:var(--cloud);
   font-family:var(--font);
   line-height:1.65;
   -webkit-font-smoothing:antialiased;
+}
+/*
+ * Persistent canvas — fixed full-viewport, z=0, never captures pointer events.
+ * Matches AppShell.astro exactly.
+ */
+canvas[data-p31-appshell-canvas] {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  display: block;
+  z-index: 0;
+  pointer-events: none;
+}
+/* Content sits above canvas */
+.page-wrapper {
+  position: relative;
+  z-index: 1;
 }
 a{color:var(--p31-teal);text-decoration:none;transition:color .15s}
 a:hover{color:var(--p31-cyan);text-decoration:underline}
 
 .ambient-radial-fixed{
   pointer-events:none;position:fixed;inset:0;z-index:0;
-  background:radial-gradient(circle at top left,rgba(77,184,168,0.12),transparent 42%);
+  background:radial-gradient(circle at top left,color-mix(in srgb,var(--category-color) 15%,transparent),transparent 42%);
 }
 
 .nav,.hero,.page-body{position:relative;z-index:1}
@@ -174,18 +253,18 @@ a:hover{color:var(--p31-cyan);text-decoration:underline}
 .nav-link:hover{color:var(--cloud);text-decoration:none}
 .nav-cta{
   font-family:var(--mono);font-size:11px;font-weight:700;
-  background:transparent;color:var(--p31-coral);
+  background:transparent;color:var(--category-color);
   padding:8px 16px;border-radius:6px;
-  border:1px solid var(--p31-coral);
+  border:1px solid var(--category-color);
   text-decoration:none;transition:background .18s,color .18s;
 }
-.nav-cta:hover{background:var(--p31-coral);color:var(--void);text-decoration:none}
+.nav-cta:hover{background:var(--category-color);color:var(--void);text-decoration:none}
 
 .hero{border-bottom:1px solid var(--border);padding:48px 24px 40px}
 .hero-inner{max-width:1100px;margin:0 auto}
 .hero-eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:0.25em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
 .hero-top{display:flex;align-items:flex-start;gap:20px;margin-bottom:20px;flex-wrap:wrap}
-.hero-icon{font-size:48px;line-height:1;flex-shrink:0}
+.hero-icon{font-size:48px;line-height:1;flex-shrink:0;color:var(--category-color);text-shadow:0 0 20px color-mix(in srgb,var(--category-color) 40%,transparent)}
 .hero-text h1{
   font-size:clamp(1.75rem,3vw + 0.5rem,2.5rem);
   font-weight:700;
@@ -203,13 +282,27 @@ a:hover{color:var(--p31-cyan);text-decoration:underline}
 .badge--research{background:color-mix(in srgb,var(--p31-cyan) 12%,transparent);color:var(--p31-cyan);border:1px solid color-mix(in srgb,var(--p31-cyan) 30%,transparent)}
 .badge--hardware{background:color-mix(in srgb,var(--p31-butter) 12%,transparent);color:var(--p31-butter);border:1px solid color-mix(in srgb,var(--p31-butter) 30%,transparent)}
 .badge--muted-tech{background:color-mix(in srgb,var(--p31-cloud) 4%,transparent);color:var(--p31-muted);border:1px solid var(--p31-border-subtle)}
+.badge--category{background:color-mix(in srgb,var(--category-color) 15%,transparent);color:var(--category-color);border:1px solid color-mix(in srgb,var(--category-color) 35%,transparent)}
+/* TRIPER/Tetra Certification Badges */
+.badge--triper{background:color-mix(in srgb,#8b5cf6 15%,transparent);color:#a78bfa;border:1px solid color-mix(in srgb,#8b5cf6 35%,transparent)}
+.badge--tetra{background:color-mix(in srgb,#f59e0b 15%,transparent);color:#fbbf24;border:1px solid color-mix(in srgb,#f59e0b 35%,transparent)}
+.badge--certified{background:color-mix(in srgb,#10b981 15%,transparent);color:#34d399;border:1px solid color-mix(in srgb,#10b981 35%,transparent)}
+.cert-badges{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.cert-badge{display:inline-flex;align-items:center;gap:4px;font-family:var(--mono);font-size:9px;font-weight:600;padding:3px 8px;border-radius:4px;letter-spacing:0.05em;text-transform:uppercase;background:rgba(15,17,21,0.8);border:1px solid rgba(139,92,246,0.3);color:#c4b5fd}
+.cert-badge--t{border-color:rgba(59,130,246,0.4);color:#60a5fa}
+.cert-badge--r{border-color:rgba(16,185,129,0.4);color:#34d399}
+.cert-badge--i{border-color:rgba(245,158,11,0.4);color:#fbbf24}
+.cert-badge--p{border-color:rgba(236,72,153,0.4);color:#f472b6}
+.cert-badge--e{border-color:rgba(6,182,212,0.4);color:#22d3ee}
+.cert-badge--reg{border-color:rgba(168,85,247,0.4);color:#c084fc}
+.cert-score{font-family:var(--mono);font-size:11px;font-weight:700;color:#fbbf24;margin-top:8px;padding:6px 10px;background:rgba(245,158,11,0.1);border-radius:4px;border:1px solid rgba(245,158,11,0.2)}
 .hero-cta{margin-top:24px;display:flex;gap:14px;flex-wrap:wrap;align-items:center}
 .cta-btn{
-  display:inline-block;background:var(--p31-coral);color:var(--void);border:1px solid var(--p31-coral);
+  display:inline-block;background:var(--category-color);color:var(--void);border:1px solid var(--category-color);
   font-family:var(--mono);font-weight:700;font-size:13px;letter-spacing:0.05em;padding:13px 28px;border-radius:6px;text-decoration:none;
-  transition:background .18s,color .18s,border-color .18s;
+  transition:background .18s,color .18s,border-color .18s,box-shadow .18s;
 }
-.cta-btn:hover{background:transparent;color:var(--p31-coral);text-decoration:none;box-shadow:0 0 15px rgba(204,98,71,0.15)}
+.cta-btn:hover{background:transparent;color:var(--category-color);text-decoration:none;box-shadow:0 0 15px color-mix(in srgb,var(--category-color) 30%,transparent)}
 .cta-secondary{font-family:var(--mono);font-size:12px;color:var(--muted);text-decoration:none;transition:color .15s;border-bottom:1px solid transparent;padding-bottom:2px}
 .cta-secondary:hover{color:var(--cloud);border-bottom-color:color-mix(in srgb,var(--p31-teal) 40%,transparent);text-decoration:none}
 
@@ -227,44 +320,44 @@ p{font-size:15px;color:color-mix(in srgb,var(--p31-cloud) 88%,transparent);margi
 .mesh-list{position:relative;padding-left:1.35rem}
 .mesh-list::before{
   content:'';position:absolute;left:0.42rem;top:0.35rem;bottom:0.6rem;width:1px;
-  background:linear-gradient(to bottom,var(--p31-teal),rgba(37,137,125,0.08));
+  background:linear-gradient(to bottom,var(--category-color),color-mix(in srgb,var(--category-color) 10%,transparent));
 }
 .mesh-item{position:relative;margin-bottom:1.35rem}
 .mesh-item:last-child{margin-bottom:0}
 .mesh-node{
   position:absolute;left:-1.35rem;top:0.25rem;width:11px;height:11px;background:var(--void);
-  border:2px solid var(--p31-teal);border-radius:50%;transition:background .18s,box-shadow .18s;
+  border:2px solid var(--category-color);border-radius:50%;transition:background .18s,box-shadow .18s;
 }
-.mesh-item:hover .mesh-node{background:var(--p31-teal);box-shadow:0 0 8px var(--p31-cyan)}
-.mesh-node.coral{border-color:var(--p31-coral)}
-.mesh-item:hover .mesh-node.coral{background:var(--p31-coral);box-shadow:0 0 8px rgba(204,98,71,0.35)}
-.mesh-node.butter{border-color:var(--p31-butter)}
-.mesh-item:hover .mesh-node.butter{background:var(--p31-butter);box-shadow:0 0 8px rgba(205,168,82,0.25)}
+.mesh-item:hover .mesh-node{background:var(--category-color);box-shadow:0 0 12px color-mix(in srgb,var(--category-color) 60%,transparent)}
+.mesh-node.coral{border-color:color-mix(in srgb,var(--p31-coral) 70%,var(--category-color))}
+.mesh-item:hover .mesh-node.coral{background:color-mix(in srgb,var(--p31-coral) 70%,var(--category-color));box-shadow:0 0 12px color-mix(in srgb,var(--p31-coral) 50%,transparent)}
+.mesh-node.butter{border-color:color-mix(in srgb,var(--p31-butter) 70%,var(--category-color))}
+.mesh-item:hover .mesh-node.butter{background:color-mix(in srgb,var(--p31-butter) 70%,var(--category-color));box-shadow:0 0 12px color-mix(in srgb,var(--p31-butter) 50%,transparent)}
 .mesh-item-body{font-size:15px;color:color-mix(in srgb,var(--p31-cloud) 86%,transparent);line-height:1.72;margin:0}
 
 .step{display:flex;gap:14px;align-items:flex-start;margin-bottom:14px}
-.step-num{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--p31-cyan);border:1px solid color-mix(in srgb,var(--p31-teal) 35%,transparent);border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;background:color-mix(in srgb,var(--p31-teal) 8%,transparent)}
+.step-num{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--category-color);border:1px solid color-mix(in srgb,var(--category-color) 35%,transparent);border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;background:color-mix(in srgb,var(--category-color) 12%,transparent)}
 .step span:last-child{font-size:15px;color:color-mix(in srgb,var(--p31-cloud) 86%,transparent);line-height:1.68}
-.tech-note{font-size:13px;color:color-mix(in srgb,var(--p31-cloud) 65%,transparent);background:rgba(22,25,32,0.55);backdrop-filter:blur(8px);border:1px solid var(--border);border-left:3px solid var(--product-accent);border-radius:0 10px 10px 0;padding:14px 16px;line-height:1.68}
+.tech-note{font-size:13px;color:color-mix(in srgb,var(--p31-cloud) 65%,transparent);background:rgba(22,25,32,0.55);backdrop-filter:blur(8px);border:1px solid var(--border);border-left:3px solid var(--category-color);border-radius:0 10px 10px 0;padding:14px 16px;line-height:1.68}
 
 .sidebar{position:sticky;top:88px;display:flex;flex-direction:column;gap:18px}
 .sidebar-card{
   background:rgba(22,25,32,0.6);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
-  border:1px solid rgba(255,255,255,0.05);border-top:1px solid rgba(255,255,255,0.1);
+  border:1px solid rgba(255,255,255,0.05);border-top:2px solid var(--category-color);
   border-radius:12px;padding:18px;
   box-shadow:0 8px 28px -8px rgba(0,0,0,0.45);
 }
 .sidebar-card-title{font-family:var(--mono);font-size:9px;font-weight:600;letter-spacing:0.25em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,0.06)}
 .tech-stack{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px}
-.tech-stack li{font-family:var(--mono);font-size:11px;color:var(--p31-teal);display:flex;align-items:center;gap:8px}
-.tech-stack li::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--p31-teal);flex-shrink:0}
+.tech-stack li{font-family:var(--mono);font-size:11px;color:var(--category-color);display:flex;align-items:center;gap:8px}
+.tech-stack li::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--category-color);flex-shrink:0}
 .sidebar-link{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12px;color:var(--muted);text-decoration:none;padding:9px 0;border-bottom:1px solid rgba(255,255,255,0.05);transition:color .15s}
 .sidebar-link:hover{color:var(--cloud);border-bottom-color:rgba(77,184,168,0.25);text-decoration:none}
 .related-link{display:block;font-size:14px;color:color-mix(in srgb,var(--p31-cloud) 72%,transparent);text-decoration:none;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.05)}
 .related-link:last-child{border-bottom:none}
 .related-link:hover{color:var(--cloud);text-decoration:none}
 
-.callout-p31{font-size:13px;color:color-mix(in srgb,var(--p31-cloud) 80%,transparent);border-left:3px solid var(--p31-teal);padding:14px 16px;margin:28px 0 0;background:color-mix(in srgb,var(--p31-teal) 9%,transparent);border-radius:0 12px 12px 0;line-height:1.68}
+.callout-p31{font-size:13px;color:color-mix(in srgb,var(--p31-cloud) 80%,transparent);border-left:3px solid var(--category-color);padding:14px 16px;margin:28px 0 0;background:color-mix(in srgb,var(--category-color) 12%,transparent);border-radius:0 12px 12px 0;line-height:1.68}
 .callout-p31 a{color:var(--p31-teal)}
 
 .mini-footer{margin-top:40px;padding-top:22px;border-top:1px solid var(--border);display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;font-size:11px;font-family:var(--mono);color:var(--muted)}
@@ -274,6 +367,10 @@ p{font-size:15px;color:color-mix(in srgb,var(--p31-cloud) 88%,transparent);margi
 </style>
 </head>
 <body>
+<!-- Persistent starfield canvas (matches AppShell.astro exactly) -->
+<canvas data-p31-appshell-canvas aria-hidden="true"></canvas>
+
+<div class="page-wrapper">
 <div class="ambient-radial-fixed" aria-hidden="true"></div>
 
 <nav class="nav">
@@ -301,8 +398,11 @@ p{font-size:15px;color:color-mix(in srgb,var(--p31-cloud) 88%,transparent);margi
         <div class="tagline">${item.tagline}</div>
         <div class="hero-badges">
           <span class="badge badge--${badgeStatusClass}">${item.statusLabel}</span>
+          <span class="badge badge--category">${category}</span>
           ${item.tech.slice(0, 3).map((t) => `<span class="badge badge--muted-tech">${t}</span>`).join('')}
         </div>
+        ${certBadges}
+        ${certScore}
       </div>
     </div>
     <div class="hero-cta">
@@ -381,6 +481,20 @@ ${howToItems}
       <p style="margin-top:12px;font-size:13px;color:color-mix(in srgb,var(--muted) 95%,transparent);line-height:1.55">Deployed on P31 Labs infrastructure · EIN 42-1888158.</p>
     </div>
 
+    ${item.certification ? `<div class="sidebar-card">
+      <div class="sidebar-card-title">TRIPER Certification</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">
+        ${item.certification.triper?.task ? '<span class="cert-badge cert-badge--t">T</span>' : ''}
+        ${item.certification.triper?.resilience ? '<span class="cert-badge cert-badge--r">R</span>' : ''}
+        ${item.certification.triper?.interface ? '<span class="cert-badge cert-badge--i">I</span>' : ''}
+        ${item.certification.triper?.purity ? '<span class="cert-badge cert-badge--p">P</span>' : ''}
+        ${item.certification.triper?.e2e ? '<span class="cert-badge cert-badge--e">E</span>' : ''}
+        ${item.certification.triper?.regression ? '<span class="cert-badge cert-badge--reg">R</span>' : ''}
+      </div>
+      ${item.certification.tetra?.level ? `<div style="font-family:var(--mono);font-size:10px;color:#fbbf24;margin-bottom:6px">Tetra Level: ${item.certification.tetra.level}/4</div>` : ''}
+      ${item.certification.score ? `<div style="font-family:var(--mono);font-size:11px;font-weight:700;color:var(--p31-cloud)">Score: ${item.certification.score}/100</div>` : ''}
+    </div>` : ''}
+
     <div class="sidebar-card">
       <div class="sidebar-card-title">Tech stack</div>
       <ul class="tech-stack">
@@ -403,7 +517,19 @@ ${relatedItems}
   </aside>
 </div>
 
+</div><!-- /page-wrapper -->
+
 ${EBC_FOOTER}
+
+<!-- Starfield initialization (matches AppShell.astro) -->
+<script type="module">
+import { startStarfield, setStarfieldRoute } from '/lib/starfield-singleton.js';
+const canvas = document.querySelector('canvas[data-p31-appshell-canvas]');
+if (canvas) {
+  startStarfield(canvas);
+  setStarfieldRoute('${item.id}');
+}
+</script>
 </body>
 </html>`;
 }

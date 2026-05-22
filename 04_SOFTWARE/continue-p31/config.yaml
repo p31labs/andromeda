@@ -128,6 +128,30 @@ models:
       topP: 0.9
       contextLength: 8192
 
+  - name: P31 Mobile
+    provider: ollama
+    model: p31-mobile
+    apiBase: http://localhost:11434
+    roles:
+      - chat
+      - edit
+      - apply
+    defaultCompletionOptions:
+      temperature: 0.25
+      topP: 0.85
+      contextLength: 8192
+
+  - name: P31 Centaur
+    provider: ollama
+    model: p31-centaur
+    apiBase: http://localhost:11434
+    roles:
+      - chat
+    defaultCompletionOptions:
+      temperature: 0.45
+      topP: 0.9
+      contextLength: 8192
+
 context:
   - provider: code
   - provider: diff

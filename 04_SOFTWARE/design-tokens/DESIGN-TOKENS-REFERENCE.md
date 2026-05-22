@@ -2,7 +2,7 @@
 
 <!-- AUTO-GENERATED — do not hand-edit. Source: p31-universal-canon.json -->
 
-**Schema:** `p31.universalCanon/1.0.0` · **Canon version:** `1.2.0` · **Generated:** `2026-05-13T21:16:25.409Z`
+**Schema:** `p31.universalCanon/1.0.0` · **Canon version:** `1.2.0` · **Generated:** `2026-05-18T17:02:49.738Z`
 
 *P31 universal design canon — shared tokens, ring-local appearance*
 
@@ -32,6 +32,7 @@ Single source for typography, spacing, motion, and brand palette. Ring A (p31ca 
 | lavender | `#8b7cc9` | `--p31-lavender` (in :root) |
 | phosphorus | `#3ba372` | `--p31-phosphorus` (in :root) |
 | phosphor | `#00FF88` | `--p31-phosphor` (in :root) |
+| fuchsia | `#e879f9` | `--p31-fuchsia` (in :root) |
 
 ## Typography
 
@@ -184,6 +185,7 @@ Brand accents must match the palette above; neutrals differ. Hub is default; org
 | ink | #1e293b | --p31-ink |
 | muted | #6b7280 | --p31-muted |
 | phosphor | #00FF88 | --p31-phosphor |
+| fuchsia | #e879f9 | --p31-fuchsia |
 
 **Semantic**
 
@@ -225,6 +227,7 @@ Brand accents must match the palette above; neutrals differ. Hub is default; org
 | ink | #0f172a | --p31-ink |
 | muted | #64748b | --p31-muted |
 | phosphor | #00FF88 | --p31-phosphor |
+| fuchsia | #e879f9 | --p31-fuchsia |
 
 **Semantic**
 
