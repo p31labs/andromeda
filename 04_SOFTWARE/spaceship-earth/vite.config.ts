@@ -6,6 +6,7 @@ import { visualizer } from 'rollup-plugin-visualizer';
 import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
+  base: '/spaceship-earth/',
   plugins: [
     react(),
     visualizer({
@@ -15,10 +16,11 @@ export default defineConfig({
       brotliSize: true,
     }),
     VitePWA({
-      // 'prompt' — shows an in-app update toast instead of silently reloading.
-      // The PwaUpdateToast component (see src/components/PwaUpdateToast.tsx) handles it.
       registerType: 'prompt',
-      includeAssets: ['favicon.ico', 'icons/*.png'],
+      // useRegisterSW (virtual:pwa-register/react) handles SW registration via the bundle.
+      // Disable HTML script injection — Rolldown silently drops generateBundle output.
+      injectRegister: null,
+      includeAssets: ['favicon.ico', 'icons/*.png', 'fonts/*.ttf'],
       manifest: {
         name: 'SPACESHIP EARTH — P31 Labs',
         short_name: 'SpaceshipEarth',

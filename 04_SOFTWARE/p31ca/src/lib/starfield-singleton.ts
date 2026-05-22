@@ -38,7 +38,10 @@ export type RouteId =
   | 'integrations'
   | 'mesh-observatory'
   | 'orchestrator'
-  | 'atmosphere';
+  | 'atmosphere'
+  | 'quantum-lattice'
+  | 'abyssal-node'
+  | 'cybernetic-bonsai';
 
 interface RouteCam {
   z: number;      // camera dolly Z
@@ -70,6 +73,9 @@ const ROUTE_CAM: Record<RouteId, RouteCam> = {
    'mesh-observatory':{ z: -0.5, hue: 0.552, count: 620, speed: 0.12 }, // Sky (live data)
    'orchestrator':   { z:  0.3,  hue: 0.000, count: 160, speed: 0.03 }, // Coral (cockpit/alert)
    'atmosphere':     { z:  0.0,  hue: 0.444, count:   0, speed: 0.00 }, // Suspended — owns its own canvas
+   'quantum-lattice':{ z: -0.8,  hue: 0.250, count: 500, speed: 0.10 }, // Deep cyan for quantum lattice
+   'abyssal-node':   { z: -0.6,  hue: 0.620, count: 600, speed: 0.12 }, // Violet-purple for abyss
+   'cybernetic-bonsai':{ z: -0.4, hue: 0.105, count: 200, speed: 0.08 }, // Amber for PID/bonsai glow
 };
 
 // ── GLSL shaders ──────────────────────────────────────────────────────────────

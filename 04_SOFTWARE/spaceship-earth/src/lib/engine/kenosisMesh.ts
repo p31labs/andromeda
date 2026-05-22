@@ -23,10 +23,9 @@ export interface KenosisMeshConfig {
   persistenceKey?: string;
 }
 
-const DEFAULT_SIGNALING = [
-  'wss://signaling.yjs.dev',
-  'wss://y-webrtc-signaling-eu.herokuapp.com'
-];
+// Public signaling servers are unreliable — default to local-only (IndexedDB).
+// Pass signalingServers in config to enable cross-device WebRTC sync.
+const DEFAULT_SIGNALING: string[] = [];
 const MAX_SPOONS = 12;
 const CONNECTION_TIMEOUT_MS = 15000;
 
@@ -105,36 +104,41 @@ class KenosisMesh {
         this.lastError = err.message;
       });
 
-      this.provider = new WebrtcProvider(roomName, this.doc, { signaling });
-
-      this.provider.on('synced', () => {
-        console.log('[KenosisMesh] WebRTC synced');
-        this.setConnectionState('connected');
-        this.clearConnectionTimeout();
-        this.syncToZustand();
-      });
-
-      this.provider.on('peers', (event: { webrtcPeers: string[] }) => {
-        console.log(`[KenosisMesh] Peers: ${event.webrtcPeers?.length || 0}`);
-      });
-
-      this.provider.on('status', (event: { connected: boolean }) => {
-        if (!event.connected) {
-          console.warn('[KenosisMesh] WebRTC disconnected');
-          this.setConnectionState('disconnected');
-        }
-      });
-
       this.stateMap.observeDeep(() => {
         if (!this.isDestroyed) this.syncToZustand();
       });
 
-      this.connectionTimeoutId = setTimeout(() => {
-        if (this.connectionState === 'connecting') {
-          console.warn('[KenosisMesh] Connection timeout, falling back to local-only');
+      if (signaling.length > 0) {
+        this.provider = new WebrtcProvider(roomName, this.doc, { signaling });
+
+        this.provider.on('synced', () => {
+          console.log('[KenosisMesh] WebRTC synced');
           this.setConnectionState('connected');
-        }
-      }, CONNECTION_TIMEOUT_MS);
+          this.clearConnectionTimeout();
+          this.syncToZustand();
+        });
+
+        this.provider.on('peers', (event: { webrtcPeers: string[] }) => {
+          console.log(`[KenosisMesh] Peers: ${event.webrtcPeers?.length || 0}`);
+        });
+
+        this.provider.on('status', (event: { connected: boolean }) => {
+          if (!event.connected) {
+            console.warn('[KenosisMesh] WebRTC disconnected');
+            this.setConnectionState('disconnected');
+          }
+        });
+
+        this.connectionTimeoutId = setTimeout(() => {
+          if (this.connectionState === 'connecting') {
+            console.warn('[KenosisMesh] Connection timeout, falling back to local-only');
+            this.setConnectionState('connected');
+          }
+        }, CONNECTION_TIMEOUT_MS);
+      } else {
+        // Local-only mode: IndexedDB persistence without WebRTC
+        this.setConnectionState('connected');
+      }
 
       return true;
     } catch (err) {

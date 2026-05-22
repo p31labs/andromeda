@@ -16,13 +16,15 @@
 // ── Display: AXS15231B via QSPI (SPI2_HOST) ──────────────────────────────────
 // DC pin: GPIO_NUM_NC — AXS15231B QSPI encodes cmd/data in transaction header.
 // Do NOT set DC to any GPIO (original config used GPIO 0 = BOOT button — WRONG)
+// Pin remap (CWP-046 / WCD-FW10): moved from GPIO 1-4 (I2S_D0-3 conflict)
+// to camera header pins 9-14 — above PSRAM kill zone (26-37) and clear of I2S.
 #define DISPLAY_HOST        SPI2_HOST
-#define DISPLAY_CS          GPIO_NUM_12
-#define DISPLAY_CLK         GPIO_NUM_5
-#define DISPLAY_D0          GPIO_NUM_1
-#define DISPLAY_D1          GPIO_NUM_2
-#define DISPLAY_D2          GPIO_NUM_3
-#define DISPLAY_D3          GPIO_NUM_4
+#define DISPLAY_CS          GPIO_NUM_9
+#define DISPLAY_CLK         GPIO_NUM_10
+#define DISPLAY_D0          GPIO_NUM_11
+#define DISPLAY_D1          GPIO_NUM_12
+#define DISPLAY_D2          GPIO_NUM_13
+#define DISPLAY_D3          GPIO_NUM_14
 #define DISPLAY_DC          GPIO_NUM_NC  // No DC pin for QSPI mode
 #define DISPLAY_RST         GPIO_NUM_NC  // Power-on reset sufficient
 #define DISPLAY_BACKLIGHT   GPIO_NUM_6
@@ -55,13 +57,15 @@
 #define LORA_NRST           GPIO_NUM_45  // CAM_Y2 repurposed
 #define LORA_CLK_HZ         (8 * 1000 * 1000)
 
-// ── Audio: ES8311 codec ───────────────────────────────────────────────────────
+// ── Audio: ES8311 codec (I2S) ─────────────────────────────────────────────────────
+// Audio pins occupy GPIO 2–5 to stay clear of QSPI (9–14) and LoRa (38–45).
+// DOUT (mic) kept on GPIO 16 to avoid conflict with LoRa NSS (GPIO 40).
 #define AUDIO_SAMPLE_RATE   24000
-#define AUDIO_I2S_MCLK      GPIO_NUM_44
-#define AUDIO_I2S_WS        GPIO_NUM_15
-#define AUDIO_I2S_BCLK      GPIO_NUM_13
-#define AUDIO_I2S_DIN       GPIO_NUM_14   // ESP32 → codec (speaker)
-#define AUDIO_I2S_DOUT      GPIO_NUM_16   // codec → ESP32 (mic)
+#define AUDIO_I2S_MCLK      GPIO_NUM_5    // master clock -> codec
+#define AUDIO_I2S_WS        GPIO_NUM_4    // word select (L/R)
+#define AUDIO_I2S_BCLK      GPIO_NUM_3    // bit clock
+#define AUDIO_I2S_DIN       GPIO_NUM_2    // ESP32 → codec (speaker)
+#define AUDIO_I2S_DOUT      GPIO_NUM_16   // codec → ESP32 (mic), not GPIO 40
 #define AUDIO_ES8311_ADDR   0x18          // I2C address (ADDR pin tied low)
 #define AUDIO_PA_PIN        GPIO_NUM_NC   // No PA on this board
 

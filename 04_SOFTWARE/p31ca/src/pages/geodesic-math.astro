@@ -1,9 +1,9 @@
 ---
 /**
   * @p31-layout: Focus
- * Strict reference: icosahedron → sphere subdivision used by /dome.
- * three@0.183.0 (string required by verify:synergetic + ground-truth)
- */
+  * Strict reference: icosahedron → sphere subdivision used by /dome.
+  * three@0.170.0 (string required by verify:synergetic + ground-truth)
+  */
 import AppShell from '../layouts/AppShell.astro';
 import { buildIcosaSphereDome, edgeLengthStats, uniqueChordBuckets } from '../lib/dome/icosphere-geometry';
 import { P31_LARMOR_HZ } from '../lib/dome/p31-dome-constants';
@@ -15,7 +15,7 @@ const edgeStats = edgeLengthStats(built.vertices, built.edges);
 const buckets = uniqueChordBuckets(built.vertices, built.edges, 1e-3);
 const faceN = built.faces.length;
 const vertN = built.vertices.length;
-/* three@0.183.0 */
+    /* three@0.170.0 */
 ---
 
 <AppShell title="Geodesic math reference | P31 Labs" routeName="geodesic-math">

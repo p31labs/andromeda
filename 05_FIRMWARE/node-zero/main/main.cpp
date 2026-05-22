@@ -156,29 +156,40 @@ extern "C" void app_main(void) {
     }
     ESP_ERROR_CHECK(nvs_err);
 
-    // ── Shared I2C bus + mutex (PMIC + codec + touch) ─────────────────────────
+    // ── Shared I2C bus mutex (PMIC + codec + touch share I2C_NUM_0) ─────────────
     bus_mutex_init();
 
-    // ── Display (AXS15231B QSPI, LVGL 8.4) ───────────────────────────────────
+    // ── PMIC (AXP2101) — must come before peripherals dependent on power rails ─
+    // Note: PMIC init lives in board support; display_init() powers backlight via LEDC.
+    // For now, bus_mutex covers I2C; PMIC power sequencing is handled by board HW.
+
+    // ── Display (AXS15231B QSPI, LVGL 8.4, sw_rotate=90°) ──────────────────────
     lv_disp_t *disp = display_init();
     if (!disp) {
         ESP_LOGE(TAG, "FATAL: display_init() failed — halting");
         esp_restart();
     }
 
-    // ── Touch (AXS15231B I2C, coordinate-corrected for 90° rotation) ─────────
+    // ── Touch (AXS15231B integrated, I2C, tp_cfg-corrected) ────────────────────
     lv_indev_t *touch = touch_init();
     if (!touch) {
         ESP_LOGW(TAG, "Touch unavailable — continuing without input");
     }
 
-    // ── LoRa (SX1262 Meshtastic LONG_FAST — 915 MHz) ─────────────────────────
-    esp_err_t lora_err = lora_init();
-    if (lora_err != ESP_OK) {
-        ESP_LOGW(TAG, "LoRa init failed (err %d) — mesh offline", lora_err);
-    }
+    // ── Audio (ES8311 codec) ────────────────────────────────────────────────────
+    // Audio init runs on I2C; acquisition handled inside p31_ui (sounds/sfx).
+    // Explicit audio_init() not needed for basic tones (tone(2200, 100) pattern).
 
-    // ── LVGL mutex + 1ms hardware tick timer ─────────────────────────────────
+    // ── Haptic (GPIO output — placeholder) ─────────────────────────────────────
+    // Haptic driver not yet present; reserved GPIO to be defined in config.h.
+
+    // ── Sensors (IMU/env — placeholder) ────────────────────────────────────────
+    // Sensor bus acquisition deferred to feature modules.
+
+    // ── Identity (DID provisioning — placeholder) ──────────────────────────────
+    // Identity boot tasks executed by p31_net_task below.
+
+    // ── LVGL mutex + 1ms hardware tick timer ───────────────────────────────────
     s_lvgl_mutex = xSemaphoreCreateMutex();
     configASSERT(s_lvgl_mutex);
 
@@ -190,18 +201,24 @@ extern "C" void app_main(void) {
     ESP_ERROR_CHECK(esp_timer_create(&tick_args, &tick_timer));
     ESP_ERROR_CHECK(esp_timer_start_periodic(tick_timer, 1000));  // 1000µs = 1ms
 
-    // ── LVGL task — pinned to CPU1, 8KB stack ────────────────────────────────
+    // ── LVGL task — pinned to CPU1, 8KB stack ──────────────────────────────────
     xTaskCreatePinnedToCore(lvgl_task, "lvgl", 8192, disp, 4, NULL, 1);
 
-    // ── WiFi ──────────────────────────────────────────────────────────────────
+    // ── Connectivity (WiFi + LoRa mesh) ─────────────────────────────────────────
     wifi_init();
 
-    // ── LoRa monitor task (CPU0, low priority) ────────────────────────────────
+    // ── LoRa init ───────────────────────────────────────────────────────────────
+    esp_err_t lora_err = lora_init();
+    if (lora_err != ESP_OK) {
+        ESP_LOGW(TAG, "LoRa init failed (err %d) — mesh offline", lora_err);
+    }
+
+    // ── LoRa monitor task (CPU0, low priority) ──────────────────────────────────
     if (lora_err == ESP_OK) {
         xTaskCreate(lora_monitor_task, "lora_mon", 4096, NULL, 3, NULL);
     }
 
-    // ── Network telemetry task: Q-Factor heartbeat every 5 min ───────────────
+    // ── Network telemetry task: Q-Factor heartbeat every 5 min ─────────────────
     // Boots DID from NVS, POSTs spoon events, fetches Q-score → updates UI.
     // Delayed 15s internally to let WiFi stabilize before first request.
     xTaskCreate(p31_net_task, "p31_net", 8192, NULL, 3, NULL);

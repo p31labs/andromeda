@@ -58,6 +58,7 @@
     "./qfactor": "./src/qfactor/index.ts",
     "./buffer": "./src/buffer/scorer.ts",
     "./crypto/pqc": "./src/crypto/postQuantum.ts",
-    "./telemetry/daubert": "./src/telemetry/daubert-export.ts"
+    "./telemetry/daubert": "./src/telemetry/daubert-export.ts",
+    "./trust": "./src/trust/index.ts"
   }
 }

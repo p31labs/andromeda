@@ -4,6 +4,7 @@ import AppShell from '../layouts/AppShell.astro';
 
 const SECTIONS = [
   { id: 'mesh',     label: 'Mesh Start'   },
+  { id: 'auth',     label: 'Identify'     },
   { id: 'bonding',  label: 'BONDING'      },
   { id: 'bridge',   label: 'Bridge'       },
   { id: 'echo',     label: 'Echo'         },
@@ -102,6 +103,26 @@ const SECTIONS = [
                 <div class="absolute bottom-4 right-4 z-10 pointer-events-none flex items-center gap-2 rounded-full px-3 py-1.5 border border-white/10" style="background: rgba(0,0,0,0.6); backdrop-filter: blur(12px);">
                   <div class="w-1.5 h-1.5 rounded-full bg-[var(--p31-teal)] animate-pulse"></div>
                   <span id="mesh-footer-stat" class="text-[8px] font-mono text-white/50 uppercase tracking-widest">Polling k4-cage.trimtab-signal</span>
+                </div>
+              </div>
+            ) : id === 'auth' ? (
+              <div class="p31-q-surface h-full flex flex-col p-6 md:p-10" data-p31-elev="1" style="border-left: 2px solid var(--p31-violet,#8b5cf6); border-radius: var(--p31-shape-lg,16px); background: rgba(0,0,0,0.3);">
+                <h2 class="text-2xl md:text-3xl font-serif mb-2" style="color: var(--p31-cloud,#ede8e0);">Identify</h2>
+                <p class="text-[10px] font-mono tracking-widest uppercase mb-8" style="color: var(--p31-violet,#8b5cf6);">Passkey Identity Anchor</p>
+
+                <div class="flex-grow flex flex-col items-center justify-center rounded-2xl gap-8" style="border: 1px dashed var(--p31-violet); background: rgba(139,92,246,0.02);">
+                   <div class="flex flex-col gap-4 w-full max-w-xs">
+                     <button id="passkey-register" class="p31-btn p31-btn--primary py-4 text-xs tracking-[0.2em] font-bold uppercase transition-all hover:scale-[1.02] active:scale-[0.98]">
+                       Register Passkey
+                     </button>
+                     <button id="passkey-login" class="p31-btn border border-white/10 py-4 text-xs tracking-[0.2em] font-bold uppercase transition-all hover:bg-white/5 hover:scale-[1.02] active:scale-[0.98]">
+                       Login with Passkey
+                     </button>
+                   </div>
+                   <div id="auth-result-box" class="hidden w-full max-w-sm p-4 rounded-xl border border-white/5 bg-black/20 font-mono text-[10px] overflow-auto max-h-48">
+                     <p id="auth-status" class="text-[color:var(--p31-violet,#8b5cf6)] mb-2 uppercase tracking-widest">Ready</p>
+                     <pre id="auth-json" class="text-white/40 whitespace-pre-wrap break-all"></pre>
+                   </div>
                 </div>
               </div>
             ) : (
@@ -377,7 +398,147 @@ const SECTIONS = [
       });
 
       initMeshGraph();
+      setupAuthHandlers();
     });
+
+    function setupAuthHandlers() {
+      const regBtn = document.getElementById('passkey-register');
+      const logBtn = document.getElementById('passkey-login');
+      if (regBtn) regBtn.addEventListener('click', handleRegister);
+      if (logBtn) logBtn.addEventListener('click', handleLogin);
+    }
+
+    const API_BASE = '/api/passkey';
+    const PERSONAL_URL = 'https://k4-personal.trimtab-signal.workers.dev';
+
+    function b64url(buf) {
+      const bytes = new Uint8Array(buf);
+      return btoa(String.fromCharCode(...bytes))
+        .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+    }
+
+    function fromB64url(s) {
+      const b = s.replace(/-/g, '+').replace(/_/g, '/');
+      const pad = (4 - (b.length % 4)) % 4;
+      const str = atob(b + '='.repeat(pad));
+      const bin = new Uint8Array(str.length);
+      for (let i = 0; i < str.length; i++) bin[i] = str.charCodeAt(i);
+      return bin;
+    }
+
+    async function handleRegister() {
+      const status = document.getElementById('auth-status');
+      const json   = document.getElementById('auth-json');
+      const box    = document.getElementById('auth-result-box');
+      if (status) status.textContent = 'REGISTERING...';
+      if (box) box.classList.remove('hidden');
+
+      try {
+        const beginRes = await fetch(`${API_BASE}/register-begin`, { method: 'POST' });
+        const options = await beginRes.json();
+        
+        // Fix up options for WebAuthn API
+        options.challenge = fromB64url(options.challenge);
+        options.user.id   = fromB64url(options.user.id);
+        if (options.excludeCredentials) {
+          for (const cred of options.excludeCredentials) cred.id = fromB64url(cred.id);
+        }
+
+        const cred = await navigator.credentials.create({ publicKey: options });
+        const attestation = {
+          id: cred.id,
+          rawId: b64url(cred.rawId),
+          type: cred.type,
+          response: {
+            attestationObject: b64url(cred.response.attestationObject),
+            clientDataJSON:    b64url(cred.response.clientDataJSON),
+          },
+        };
+
+        const finishRes = await fetch(`${API_BASE}/register-finish`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(attestation),
+        });
+        const result = await finishRes.json();
+        
+        if (json) json.textContent = JSON.stringify(result, null, 2);
+        if (result.ok) {
+          if (status) status.textContent = 'REGISTERED · BINDING...';
+          await bindSubjectId(result.userId);
+          if (status) status.textContent = 'LIVE · IDENTITY ANCHORED';
+        } else {
+          if (status) status.textContent = 'ERROR: ' + (result.error || 'Unknown');
+        }
+      } catch (err) {
+        console.error('[P31] Register failed', err);
+        if (status) status.textContent = 'FAILED: ' + err.message;
+      }
+    }
+
+    async function handleLogin() {
+      const status = document.getElementById('auth-status');
+      const json   = document.getElementById('auth-json');
+      const box    = document.getElementById('auth-result-box');
+      if (status) status.textContent = 'AUTHENTICATING...';
+      if (box) box.classList.remove('hidden');
+
+      try {
+        const beginRes = await fetch(`${API_BASE}/auth-begin`, { method: 'POST' });
+        const options = await beginRes.json();
+        
+        options.challenge = fromB64url(options.challenge);
+        if (options.allowCredentials) {
+          for (const cred of options.allowCredentials) cred.id = fromB64url(cred.id);
+        }
+
+        const assertion = await navigator.credentials.get({ publicKey: options });
+        const response = {
+          id: assertion.id,
+          rawId: b64url(assertion.rawId),
+          type: assertion.type,
+          response: {
+            authenticatorData: b64url(assertion.response.authenticatorData),
+            clientDataJSON:    b64url(assertion.response.clientDataJSON),
+            signature:         b64url(assertion.response.signature),
+            userHandle:        assertion.response.userHandle ? b64url(assertion.response.userHandle) : null,
+          },
+        };
+
+        const finishRes = await fetch(`${API_BASE}/auth-finish`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(response),
+        });
+        const result = await finishRes.json();
+
+        if (json) json.textContent = JSON.stringify(result, null, 2);
+        if (result.ok) {
+          if (status) status.textContent = 'LOGGED IN · BINDING...';
+          await bindSubjectId(result.userId);
+          if (status) status.textContent = 'LIVE · IDENTITY ANCHORED';
+        } else {
+          if (status) status.textContent = 'ERROR: ' + (result.error || 'Unknown');
+        }
+      } catch (err) {
+        console.error('[P31] Login failed', err);
+        if (status) status.textContent = 'FAILED: ' + err.message;
+      }
+    }
+
+    async function bindSubjectId(userId) {
+      try {
+        const res = await fetch(`${PERSONAL_URL}/api/identity/anchor`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ subject_id: userId }),
+        });
+        const out = await res.json();
+        console.log('[P31] Identity anchored to k4-personal', out);
+      } catch (err) {
+        console.warn('[P31] k4-personal identity binding failed', err);
+      }
+    }
 
     document.addEventListener('astro:before-swap', () => {
       if (sim) { sim.stop(); sim = null; }

@@ -169,7 +169,7 @@ export function DeltaMesh({
               color="#E8ECF4"
               anchorX="center"
               anchorY="middle"
-              font="/fonts/JetBrainsMono-Bold.ttf"
+              font={`${import.meta.env.BASE_URL}fonts/JetBrainsMono-Bold.ttf`}
             >
               {node.label}
             </Text>

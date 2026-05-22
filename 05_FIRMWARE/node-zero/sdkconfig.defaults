@@ -48,3 +48,8 @@ CONFIG_SECURE_FLASH_ENC_ENABLED=n
 
 # ── LVGL task stack (enlarged for PSRAM buffer ops) ──────────────────────────
 CONFIG_ESP_MAIN_TASK_STACK_SIZE=8192
+
+# ── LVGL colour order ─────────────────────────────────────────────────────────
+# AXS15231B outputs RGB565 in hardware; ESP-IDF/LVGL buffer is native BGR565.
+# Without this swap, greens acquire pink/purple halos (chromatic aberration).
+CONFIG_LV_COLOR_16_SWAP=y
