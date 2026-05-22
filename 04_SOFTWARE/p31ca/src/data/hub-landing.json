@@ -578,6 +578,21 @@
       "url": "/somatic-anchor-about.html"
     },
     {
+      "id": "larmor",
+      "title": "LARMOR",
+      "status": "LIVE",
+      "category": "core",
+      "icon": "╯",
+      "desc": "863 Hz Somatic Regulation",
+      "tags": [
+        "Web Audio API",
+        "863 Hz Oscillator",
+        "Vibration API",
+        "4-4-6 Breathwork"
+      ],
+      "url": "/larmor-about.html"
+    },
+    {
       "id": "sovereign",
       "title": "SOVEREIGN",
       "status": "LIVE",

@@ -115,7 +115,7 @@ function renderCertBadges(cert) {
 
   // Tetra level badge
   if (tetra && tetra.level) {
-    badges.push(`<span class="cert-badge" style="border-color:rgba(245,158,11,0.5);color:#fbbf24" title="Tetra-Cert Level ${tetra.level}">L${tetra.level}</span>`);
+    badges.push(`<span class="cert-badge cert-badge--tetra" title="Tetra-Cert Level ${tetra.level}">L${tetra.level}</span>`);
   }
 
   return `<div class="cert-badges">${badges.join('')}</div>`;

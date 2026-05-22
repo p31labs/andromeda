@@ -65,6 +65,7 @@ export const HUB_COCKPIT_ORDER = [
   "simple-sovereignty",
   "sleep-tracker",
   "somatic-anchor",
+  "larmor",
   "sovereign",
   "super-centaur",
   "tether",
