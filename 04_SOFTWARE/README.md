@@ -30,10 +30,12 @@ Use project-local scripts per package as documented in each project README.
 
 ## Applications and sites
 
+Ecosystem map (nonprofit vs technical hub vs Workers): [`../docs/SITE_MAP_AND_OWNERSHIP.md`](../docs/SITE_MAP_AND_OWNERSHIP.md).
+
 | Project | Stack | Notes |
 |---------|--------|--------|
 | `bonding/` | Vite + React + R3F | BONDING game; Vitest. |
-| `p31ca/` | Astro | p31ca.org technical hub. |
+| `p31ca/` | Astro | p31ca.org technical hub — see `p31ca/README.md`. |
 | `p31-hearing-ops/` | Vite + React PWA | ops.p31ca.org — Pages project **`p31-hearing-ops`** (never `p31ca`). |
 | `spaceship-earth/` | Vite + R3F | Dashboard. |
 | `frontend/` | Vite | Legacy/aux UI. |

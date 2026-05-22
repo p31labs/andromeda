@@ -1,36 +1,26 @@
 <!DOCTYPE html>
-<html lang="en" data-p31-appearance="hub" style="color-scheme: dark;">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-<script>(function(){var r=document.documentElement;if(/[?&]alive=1(?:&|$)/.test(location.search))return;r.classList.add("p31-gray-rock");function wake(){r.classList.remove("p31-gray-rock")}document.addEventListener("pointerdown",wake,{once:true,capture:true});document.addEventListener("keydown",wake,{once:true,capture:true})})();</script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>LIMINAL | Node Poetry Canvas</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/assets/p31-operator-tailwind.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/p31-style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap">
     <style>
-        body { margin: 0; overflow: hidden; background-color: var(--p31-void); color: var(--p31-cloud); font-family: var(--p31-font-sans), 'Atkinson Hyperlegible', sans-serif; }
+        body { margin: 0; overflow: hidden; background-color: #050505; color: #d8d6d0; font-family: 'Inter', sans-serif; }
         #canvas-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
         #ui-layer { position: absolute; top: 0; left: 0; width: 100%; z-index: 10; pointer-events: none; padding: 1.25rem; box-sizing: border-box; display: flex; flex-direction: column; gap: 0.75rem; }
-        .glass-input { background: rgba(22, 25, 32, 0.85); border: 1px solid rgba(139, 124, 201, 0.3); border-radius: 99px; padding: 0.9rem 1.4rem; color: var(--p31-cloud); width: 100%; font-family: var(--p31-font-sans), 'Atkinson Hyperlegible', sans-serif; font-size: 1rem; outline: none; pointer-events: auto; backdrop-filter: blur(10px); transition: border-color 0.2s; }
+        .glass-input { background: rgba(22, 25, 32, 0.85); border: 1px solid rgba(139, 124, 201, 0.3); border-radius: 99px; padding: 0.9rem 1.4rem; color: #d8d6d0; width: 100%; font-family: 'Inter', sans-serif; font-size: 1rem; outline: none; pointer-events: auto; backdrop-filter: blur(10px); transition: border-color 0.2s; }
         .glass-input:focus { border-color: #8b7cc9; }
-        .btn { background: rgba(139, 124, 201, 0.12); border: 1px solid rgba(139, 124, 201, 0.3); color: #8b7cc9; padding: 0.5rem 1.1rem; border-radius: 99px; cursor: pointer; font-size: 0.85rem; font-family: var(--p31-font-sans), 'Atkinson Hyperlegible', sans-serif; transition: all 0.2s; pointer-events: auto; }
+        .btn { background: rgba(139, 124, 201, 0.12); border: 1px solid rgba(139, 124, 201, 0.3); color: #8b7cc9; padding: 0.5rem 1.1rem; border-radius: 99px; cursor: pointer; font-size: 0.85rem; font-family: 'Inter', sans-serif; transition: all 0.2s; pointer-events: auto; }
         .btn:hover { background: rgba(139, 124, 201, 0.22); }
-        .btn.active { background: #8b7cc9; color: var(--p31-void); }
-        .back-link { color: rgba(139,124,201,0.6); font-size: 11px; text-decoration: none; letter-spacing: 0.08em; font-family: var(--p31-font-mono), 'JetBrains Mono', monospace; pointer-events: auto; background: rgba(22,25,32,0.7); padding: 4px 10px; border-radius: 99px; border: 1px solid rgba(139,124,201,0.15); }
+        .btn.active { background: #8b7cc9; color: #050505; }
+        .back-link { color: rgba(139,124,201,0.6); font-size: 11px; text-decoration: none; letter-spacing: 0.08em; font-family: 'Space Mono', monospace; pointer-events: auto; background: rgba(22,25,32,0.7); padding: 4px 10px; border-radius: 99px; border: 1px solid rgba(139,124,201,0.15); }
     </style>
-<meta property="og:type" content="website">
-<meta property="og:title" content="LIMINAL | Node Poetry Canvas">
-<meta property="og:description" content="LIMINAL | Node Poetry Canvas">
-<meta property="og:url" content="https://p31ca.org/poetry.html">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="LIMINAL | Node Poetry Canvas">
-<meta name="twitter:description" content="LIMINAL | Node Poetry Canvas">
-<link rel="canonical" href="https://p31ca.org/poetry.html">
 </head>
 <body>
-<a href="#main" style="position:absolute;left:-9999px;top:0;padding:0.5rem 1rem;background:var(--p31-void);color:var(--p31-teal);font-size:0.875rem;z-index:9999;border-radius:0 0 4px 4px;text-decoration:none" onfocus="this.style.left='0'" onblur="this.style.left='-9999px'">Skip to main content</a>
     <div id="canvas-container"></div>
 
     <div id="ui-layer">
@@ -86,7 +76,7 @@
             const text = document.getElementById('word-input').value.trim();
             if (!text) return;
 
-            ctx.font = "18px 'Atkinson Hyperlegible'";
+            ctx.font = "18px 'Inter'";
             const tw = ctx.measureText(text).width;
             const radius = Math.max(tw / 2 + 18, 32);
 
@@ -168,7 +158,7 @@
 
                 // Text
                 ctx.fillStyle = '#d8d6d0';
-                ctx.font = "17px 'Atkinson Hyperlegible'";
+                ctx.font = "17px 'Inter'";
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
                 ctx.fillText(body.text, 0, 0);

@@ -45,6 +45,7 @@ const navItems = [
   { href: '/dome', label: 'Dome', route: 'dome', short: 'Dome' },
   { href: '/arcade-hub-about.html', label: 'Arcade', route: 'arcade', short: 'Play' },
   { href: '/bonding-about.html', label: 'BONDING', route: 'bonding', short: 'Bond' },
+  { href: '/syllabus', label: 'Syllabus', route: 'syllabus', short: 'Learn' },
   { href: '/research', label: 'Research', route: 'research', short: 'R&D' },
   { href: '/ops', label: 'Ops', route: 'ops', short: 'Ops' },
   { href: '/connect', label: 'Mesh', route: 'connect', short: 'Mesh' },
@@ -281,7 +282,7 @@ const ebcLinks = [
         z-index: 1;
         padding-bottom: calc(2.25rem + env(safe-area-inset-bottom, 0px));
       }
-      
+
       /* Mobile navigation menu - hidden by default */
       #p31-mobile-menu {
         transform: translateX(100%);
@@ -290,7 +291,7 @@ const ebcLinks = [
       #p31-mobile-menu[data-open="true"] {
         transform: translateX(0);
       }
-      
+
       /* Overlay backdrop */
       #p31-menu-overlay {
         opacity: 0;
@@ -385,13 +386,13 @@ const ebcLinks = [
         </nav>
 
         {/* Mobile: Slide-out menu */}
-        <div 
-          id="p31-menu-overlay" 
+        <div
+          id="p31-menu-overlay"
           class="fixed inset-0 z-40 bg-p31-void/60 backdrop-blur-sm md:hidden"
           data-open="false"
           aria-hidden="true"
         ></div>
-        
+
         <div
           id="p31-mobile-menu"
           class="fixed top-0 right-0 bottom-0 w-64 max-w-[80vw] z-50 bg-p31-void/95 backdrop-blur-xl border-l border-white/10 md:hidden flex flex-col"
@@ -426,7 +427,7 @@ const ebcLinks = [
               </a>
             </div>
           </div>
-          
+
           {/* Menu footer */}
           <div class="px-4 py-3 border-t border-white/10">
             <div class="text-xs text-p31-cloud-40 font-mono">
@@ -484,7 +485,7 @@ const ebcLinks = [
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" class="ebc-chevron-up hidden" />
           </svg>
         </button>
-        
+
         {/* EBC Content */}
         <div id="ebc-content" class="p31-mission-trio p31-mission-trio--ebc px-4 py-3">
           <div class="max-w-4xl mx-auto flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-6">
@@ -571,53 +572,53 @@ const ebcLinks = [
         const hamburger = document.getElementById('p31-hamburger');
         const mobileMenu = document.getElementById('p31-mobile-menu');
         const overlay = document.getElementById('p31-menu-overlay');
-        
+
         function toggleMenu() {
           const isOpen = mobileMenu?.getAttribute('data-open') === 'true';
           const newState = !isOpen;
-          
+
           mobileMenu?.setAttribute('data-open', String(newState));
           overlay?.setAttribute('data-open', String(newState));
           hamburger?.setAttribute('aria-expanded', String(newState));
-          
+
           // Prevent body scroll when menu is open
           document.body.style.overflow = newState ? 'hidden' : '';
         }
-        
+
         function closeMenu() {
           mobileMenu?.setAttribute('data-open', 'false');
           overlay?.setAttribute('data-open', 'false');
           hamburger?.setAttribute('aria-expanded', 'false');
           document.body.style.overflow = '';
         }
-        
+
         hamburger?.addEventListener('click', toggleMenu);
         overlay?.addEventListener('click', closeMenu);
-        
+
         // Close menu on navigation
         document.addEventListener('astro:before-swap', closeMenu);
-        
+
         // Close menu on escape key
         document.addEventListener('keydown', (e) => {
           if (e.key === 'Escape') closeMenu();
         });
-        
+
         // EBC footer toggle
         const ebcToggle = document.getElementById('ebc-toggle');
         const ebc = document.getElementById('ebc');
         const chevronDown = ebcToggle?.querySelector('.ebc-chevron-down');
         const chevronUp = ebcToggle?.querySelector('.ebc-chevron-up');
-        
+
         ebcToggle?.addEventListener('click', () => {
           const isCollapsed = ebc?.getAttribute('data-collapsed') === 'true';
           ebc?.setAttribute('data-collapsed', String(!isCollapsed));
           ebcToggle.setAttribute('aria-expanded', String(isCollapsed));
-          
+
           // Swap chevrons
           chevronDown?.classList.toggle('hidden');
           chevronUp?.classList.toggle('hidden');
         });
-        
+
         // Store EBC state in session
         const savedEbcState = sessionStorage.getItem('p31:ebc-collapsed');
         if (savedEbcState === 'true') {
@@ -626,7 +627,7 @@ const ebcLinks = [
           chevronDown?.classList.add('hidden');
           chevronUp?.classList.remove('hidden');
         }
-        
+
         // Save EBC state on toggle
         ebcToggle?.addEventListener('click', () => {
           const currentState = ebc?.getAttribute('data-collapsed');

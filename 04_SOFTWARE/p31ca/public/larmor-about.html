@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#050505">
+<title>LARMOR &mdash; ³¹P Larmor Audio | P31 Labs</title>
+<meta name="description" content="863 Hz somatic regulation aligned with phosphorus-31 Larmor precession in Earth field. Web Audio oscillator, trimtab encoder, Bloch sphere viz, breathing mode.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap">
+<link rel="stylesheet" href="/assets/hub-skin.css">
+<link rel="stylesheet" href="/assets/hub-about-shell.css">
+<style>
+:root {
+  --accent: #cc6247;
+}
+</style>
+</head>
+<body class="hub-about-page">
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-brand">
+      <svg width="24" height="24" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"><rect width="512" height="512" rx="112" fill="#25897d"/><circle cx="390" cy="120" r="48" fill="#cc6247"/><text x="256" y="340" font-family="system-ui" font-weight="900" font-size="220" fill="#d8d6d0" text-anchor="middle">P31</text><rect x="156" y="380" width="200" height="16" rx="8" fill="#cda852"/></svg>
+      <span class="nav-brand-label">P31 Labs</span>
+    </a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">&larr; Hub</a>
+      <a href="lattice.html" class="nav-link">Lattice &#x2B21;</a>
+      <a href="https://github.com/p31labs/andromeda" target="_blank" rel="noopener" class="nav-link">GitHub</a>
+      <a href="larmor.html" class="nav-cta">&#x2B21; Launch LARMOR</a>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+
+  <div class="hero">
+    <div class="hero-mark">◎</div>
+    <h1>LARMOR</h1>
+    <div class="subtitle">³¹P NMR · Virtual Trimtab</div>
+    <p class="tagline">Browser-based audio aligned with the phosphorus-31 Larmor frequency in Earth&rsquo;s field (~863 Hz). Optional harmonics, Bloch-sphere readout, and a breathing mode for down-regulation. General wellness / focus support only, not a medical device.</p>
+    <span class="badge">LIVE</span>
+  </div>
+
+  <div class="cta-wrap">
+    <a href="larmor.html" class="cta-btn">&#x2B21; Launch LARMOR</a>
+    <a href="index.html" class="cta-secondary">&larr; Back to Hub</a>
+  </div>
+
+  <h2>What is it?</h2>
+  <p>Static Web Audio app on <code>p31ca.org/larmor.html</code>: tone generation, rotary &ldquo;trimtab&rdquo; tuning, SIC-POVM Bloch visualization, and an optional breath cadence. Tap-to-start overlay satisfies autoplay policies.</p>
+
+  <h2>Technical stack</h2>
+  <table class="stack">
+    <thead><tr><th>Component</th><th>Technology</th></tr></thead>
+    <tbody>
+      <tr><td>Audio</td><td>Web Audio API · OscillatorNode</td></tr>
+      <tr><td>UI</td><td>Vanilla JS · SVG</td></tr>
+      <tr><td>Modes</td><td>863 Hz · 172.35 Hz · Breathing</td></tr>
+    </tbody>
+  </table>
+
+  <div class="detail-grid">
+    <div class="detail-card">
+      <h3>Hub alignment</h3>
+      <p>Same navigation and fleet strip as other P31 about pages. Launch the live app from this page or from the Technical Hub card.</p>
+    </div>
+    <div class="detail-card">
+      <h3>Related</h3>
+      <ul>
+        <li><a href="buffer-about.html">The Buffer</a> &mdash; voltage + BLUF + breathing</li>
+        <li><a href="spaceship-earth-about.html">Spaceship Earth</a> &mdash; full cognitive cockpit</li>
+      </ul>
+    </div>
+  </div>
+
+  <p class="callout-p31"><strong>P31 Labs, Inc.</strong> (Georgia nonprofit, EIN 42-1888158) builds open tools for cognitive load and family coordination. This page is technical documentation, not medical or legal advice. Donations: <a href="https://phosphorus31.org" target="_blank" rel="noopener">phosphorus31.org</a>.</p>
+
+  <div class="cta-wrap">
+    <a href="larmor.html" class="cta-btn">&#x2B21; Launch LARMOR</a>
+    <a href="index.html" class="cta-secondary">&larr; Back to Hub</a>
+  </div>
+
+  <div class="footer">
+    <span>P31 Labs, Inc. &middot; LARMOR</span>
+    <div class="footer-links">
+      <a href="index.html">Hub</a>
+      <a href="larmor.html">LARMOR</a>
+      <a href="lattice.html">Lattice</a>
+      <a href="https://phosphorus31.org/donate" target="_blank" rel="noopener">Support</a>
+    </div>
+  </div>
+
+</div>
+  <script type="module" src="/assets/hub-about-boot.js"></script>
+</body>
+</html>

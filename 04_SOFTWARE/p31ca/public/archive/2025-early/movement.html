@@ -1,22 +1,20 @@
 <!DOCTYPE html>
-<html lang="en" data-p31-appearance="hub" style="color-scheme: dark;">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-<script>(function(){var r=document.documentElement;if(/[?&]alive=1(?:&|$)/.test(location.search))return;r.classList.add("p31-gray-rock");function wake(){r.classList.remove("p31-gray-rock")}document.addEventListener("pointerdown",wake,{once:true,capture:true});document.addEventListener("keydown",wake,{once:true,capture:true})})();</script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>KINEMATICS | Movement Synthesizer</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/p31-style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root { --coral: #cc6247; }
-        body { min-height: 100svh; background: var(--p31-void); color: var(--p31-cloud); font-family: var(--p31-font-sans), 'Atkinson Hyperlegible', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.5rem; transition: filter 2s ease; overflow: hidden; }
+        body { min-height: 100svh; background: #050505; color: #d8d6d0; font-family: 'Inter', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.5rem; transition: filter 2s ease; overflow: hidden; }
         body.dim { filter: brightness(0.08); }
         .glass { background: rgba(22,25,32,0.85); backdrop-filter: blur(14px); border: 1px solid rgba(255,255,255,0.08); border-radius: 18px; padding: 2rem; width: 100%; max-width: 400px; position: relative; z-index: 10; }
-        h1 { font-size: 2rem; font-weight: 700; color: var(--coral); font-family: var(--p31-font-mono), 'JetBrains Mono', monospace; margin-bottom: 2px; }
-        .sub { font-size: 10px; color: rgba(216,214,208,0.4); font-family: var(--p31-font-mono), 'JetBrains Mono', monospace; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 1.5rem; }
-        .start-btn { width: 100%; padding: 1rem; border: none; border-radius: 10px; font-size: 1.05rem; font-weight: 700; cursor: pointer; font-family: var(--p31-font-sans), 'Atkinson Hyperlegible', sans-serif; transition: 0.2s; background: var(--coral); color: var(--p31-void); margin-bottom: 1.5rem; }
+        h1 { font-size: 2rem; font-weight: 700; color: var(--coral); font-family: 'Space Mono', monospace; margin-bottom: 2px; }
+        .sub { font-size: 10px; color: rgba(216,214,208,0.4); font-family: 'Space Mono', monospace; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 1.5rem; }
+        .start-btn { width: 100%; padding: 1rem; border: none; border-radius: 10px; font-size: 1.05rem; font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; transition: 0.2s; background: var(--coral); color: #050505; margin-bottom: 1.5rem; }
         .start-btn:disabled { opacity: 0.4; cursor: not-allowed; }
         .start-btn.active { background: rgba(204,98,71,0.3); color: var(--coral); border: 1px solid var(--coral); }
 
@@ -32,31 +30,22 @@
         /* Waveform canvas */
         #waveform { width: 100%; height: 60px; border-radius: 8px; display: block; }
 
-        .stat-row { display: flex; justify-content: space-between; margin-top: 1rem; font-size: 11px; font-family: 'JetBrains Mono', monospace; }
+        .stat-row { display: flex; justify-content: space-between; margin-top: 1rem; font-size: 11px; font-family: 'Space Mono', monospace; }
         .stat { text-align: center; }
         .stat-val { color: var(--coral); font-size: 1.1rem; font-weight: 700; }
         .stat-lbl { color: rgba(216,214,208,0.35); font-size: 9px; text-transform: uppercase; letter-spacing: 0.1em; }
 
         .note { font-size: 11px; color: rgba(216,214,208,0.35); line-height: 1.5; margin-top: 1rem; }
         .note strong { color: var(--coral); }
-        .back { display: inline-block; margin-top: 1.25rem; color: rgba(204,98,71,0.5); font-family: 'JetBrains Mono', monospace; font-size: 11px; text-decoration: none; letter-spacing: 0.08em; }
+        .back { display: inline-block; margin-top: 1.25rem; color: rgba(204,98,71,0.5); font-family: 'Space Mono', monospace; font-size: 11px; text-decoration: none; letter-spacing: 0.08em; }
         .back:hover { color: var(--coral); }
 
         #archive { margin-top: 1rem; max-height: 80px; overflow-y: auto; }
-        .arc-item { font-size: 10px; color: rgba(216,214,208,0.3); font-family: 'JetBrains Mono', monospace; padding: 2px 0; display: flex; justify-content: space-between; }
+        .arc-item { font-size: 10px; color: rgba(216,214,208,0.3); font-family: 'Space Mono', monospace; padding: 2px 0; display: flex; justify-content: space-between; }
         .arc-item span { color: rgba(204,98,71,0.6); }
     </style>
-<meta property="og:type" content="website">
-<meta property="og:title" content="KINEMATICS | Movement Synthesizer">
-<meta property="og:description" content="KINEMATICS | Movement Synthesizer">
-<meta property="og:url" content="https://p31ca.org/movement.html">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="KINEMATICS | Movement Synthesizer">
-<meta name="twitter:description" content="KINEMATICS | Movement Synthesizer">
-<link rel="canonical" href="https://p31ca.org/movement.html">
 </head>
 <body>
-<a href="#main" style="position:absolute;left:-9999px;top:0;padding:0.5rem 1rem;background:var(--p31-void);color:var(--p31-teal);font-size:0.875rem;z-index:9999;border-radius:0 0 4px 4px;text-decoration:none" onfocus="this.style.left='0'" onblur="this.style.left='-9999px'">Skip to main content</a>
     <div class="glass">
         <h1>KINEMATICS</h1>
         <p class="sub">Proprioceptive Movement Synthesizer</p>
@@ -184,7 +173,7 @@
             wfData.copyWithin(0, 1);
             wfData[wfData.length - 1] = Math.min(mag / 20, 1);
             const w = wfCanvas.width, h = wfCanvas.height;
-            wfCtx.fillStyle = '#0f1115';
+            wfCtx.fillStyle = '#050505';
             wfCtx.fillRect(0, 0, w, h);
             wfCtx.beginPath();
             const step = w / wfData.length;

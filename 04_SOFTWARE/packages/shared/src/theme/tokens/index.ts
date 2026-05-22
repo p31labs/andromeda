@@ -1,6 +1,7 @@
 // packages/shared/src/theme/tokens/index.ts
 
 export * from './brand';
+export * from './operatorLane';
 export * from './axis';
 export * from './semantic';
 export * from './typography';

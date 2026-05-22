@@ -1,30 +1,20 @@
 <!DOCTYPE html>
-<html lang="en" data-p31-appearance="hub" class="scroll-smooth" style="color-scheme: dark;">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
-<script>(function(){var r=document.documentElement;if(/[?&]alive=1(?:&|$)/.test(location.search))return;r.classList.add("p31-gray-rock");function wake(){r.classList.remove("p31-gray-rock")}document.addEventListener("pointerdown",wake,{once:true,capture:true});document.addEventListener("keydown",wake,{once:true,capture:true})})();</script>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="theme-color" content="#0f1115">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#050505">
     <title>Lattice View | P31 Labs</title>
-    <meta name="description" content="Interactive 3D lattice of 39 P31 Labs MVP nodes — rotating Fibonacci sphere. K₄ Sovereign Cockpit: /dome. Geodesic panel map (search, filters): /observatory.html.">
-<link rel="canonical" href="https://p31ca.org/lattice.html">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Lattice View">
-<meta property="og:description" content="Interactive 3D lattice of 39 P31 Labs MVP nodes — rotating Fibonacci sphere. K₄ Sovereign Cockpit: /dome. Geodesic panel map (search, filters): /observatory.html.">
-<meta property="og:url" content="https://p31ca.org/lattice.html">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Lattice View">
-<meta name="twitter:description" content="Interactive 3D lattice of 39 P31 Labs MVP nodes — rotating Fibonacci sphere. K₄ Sovereign Cockpit: /dome. Geodesic panel map (search, filters): /observatory.html.">
+    <meta name="description" content="Interactive 3D lattice of 39 P31 Labs MVP nodes — rotating Fibonacci sphere. For the geodesic dome lattice (search, filters, detail), see observatory.html → dome.html.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/p31-style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            background-color: var(--p31-void);
-            color: var(--p31-cloud);
-            font-family: var(--p31-font-sans), 'Atkinson Hyperlegible', sans-serif;
+            background-color: #050505;
+            color: #d8d6d0;
+            font-family: 'Inter', sans-serif;
             overflow: hidden;
             height: 100vh;
             width: 100vw;
@@ -32,17 +22,17 @@
         canvas { display: block; }
         #navbar {
             position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-            background: color-mix(in srgb, var(--p31-surface) 90%, transparent); backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(255,255,255,0.07);
+            background: rgba(15,17,21,0.85); backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
             padding: 14px 24px;
             display: flex; align-items: center; justify-content: space-between;
         }
-        #navbar a { text-decoration: none; color: var(--p31-cloud); }
+        #navbar a { text-decoration: none; color: #d8d6d0; }
         .nav-logo { display: flex; align-items: center; gap: 10px; }
-        .nav-mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.7; }
-        .nav-back { font-family: 'JetBrains Mono', monospace; font-size: 12px; opacity: 0.5; transition: opacity 0.15s; }
+        .nav-mono { font-family: 'Space Mono', monospace; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.7; }
+        .nav-back { font-family: 'Space Mono', monospace; font-size: 12px; opacity: 0.5; transition: opacity 0.15s; }
         .nav-back:hover { opacity: 1; }
-        .logo-text { fill: var(--p31-cloud); }
+        .logo-text { fill: #d8d6d0; }
 
         #tooltip {
             position: fixed; z-index: 200;
@@ -53,32 +43,31 @@
         }
         #tooltip.visible { opacity: 1; }
         #tooltip .t-icon { font-size: 22px; margin-bottom: 4px; }
-        #tooltip .t-title { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 13px; margin-bottom: 2px; }
-        #tooltip .t-status { font-family: 'JetBrains Mono', monospace; font-size: 10px; opacity: 0.55; }
-        #tooltip .t-hint { font-family: 'JetBrains Mono', monospace; font-size: 10px; opacity: 0.35; margin-top: 6px; }
+        #tooltip .t-title { font-family: 'Space Mono', monospace; font-weight: 700; font-size: 13px; margin-bottom: 2px; }
+        #tooltip .t-status { font-family: 'Space Mono', monospace; font-size: 10px; opacity: 0.55; }
+        #tooltip .t-hint { font-family: 'Space Mono', monospace; font-size: 10px; opacity: 0.35; margin-top: 6px; }
 
         #legend {
             position: fixed; bottom: 24px; left: 24px; z-index: 100;
             display: flex; flex-direction: column; gap: 8px;
         }
-        .legend-row { display: flex; align-items: center; gap: 8px; font-family: 'JetBrains Mono', monospace; font-size: 11px; opacity: 0.5; }
+        .legend-row { display: flex; align-items: center; gap: 8px; font-family: 'Space Mono', monospace; font-size: 11px; opacity: 0.5; }
         .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
 
         #counter {
             position: fixed; bottom: 24px; right: 24px; z-index: 100;
-            font-family: 'JetBrains Mono', monospace; font-size: 11px;
+            font-family: 'Space Mono', monospace; font-size: 11px;
             opacity: 0.35; text-align: right;
         }
 
         #hint {
             position: fixed; top: 80px; left: 50%; transform: translateX(-50%);
-            font-family: 'JetBrains Mono', monospace; font-size: 11px;
+            font-family: 'Space Mono', monospace; font-size: 11px;
             opacity: 0.3; pointer-events: none; white-space: nowrap;
         }
     </style>
 </head>
 <body>
-<a href="#main" style="position:absolute;left:-9999px;top:0;padding:0.5rem 1rem;background:var(--p31-void);color:var(--p31-teal);font-size:0.875rem;z-index:9999;border-radius:0 0 4px 4px;text-decoration:none" onfocus="this.style.left='0'" onblur="this.style.left='-9999px'">Skip to main content</a>
 <nav id="navbar">
     <a href="/" class="nav-logo">
         <svg width="24" height="24" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
@@ -90,8 +79,7 @@
         <span class="nav-mono">P31 Labs</span>
     </a>
     <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap;justify-content:flex-end">
-        <a href="/dome" class="nav-back">Sovereign Cockpit /dome</a>
-        <a href="/observatory.html" class="nav-back">OBSERVATORY (panels)</a>
+        <a href="/observatory.html" class="nav-back">Observatory dome</a>
         <a href="/" class="nav-back">← Hub</a>
     </div>
 </nav>
@@ -106,7 +94,7 @@
 </div>
 
 <div id="legend">
-    <div class="legend-row"><div class="legend-dot" style="background:#3ba372"></div>Live</div>
+    <div class="legend-row"><div class="legend-dot" style="background:#00FF88"></div>Live</div>
     <div class="legend-row"><div class="legend-dot" style="background:#cda852"></div>In Dev</div>
     <div class="legend-row"><div class="legend-dot" style="background:#4db8a8"></div>Research</div>
 </div>
@@ -119,16 +107,16 @@
 const N = 39;
 
 const mvpNodes = [
-    { id: 'bonding',           title: 'BONDING',           icon: '⚛️',  url: 'bonding.html',           color: '#3ba372', status: '🟢 LIVE' },
-    { id: 'spaceship-earth',   title: 'Spaceship Earth',   icon: '🌐',  url: 'spaceship-earth.html',   color: '#3ba372', status: '🟢 LIVE' },
-    { id: 'book',              title: 'Book',               icon: '📖',  url: 'book.html',              color: '#3ba372', status: '🟢 LIVE' },
-    { id: 'kenosis',           title: 'Project Kenosis',   icon: '🕸️',  url: 'kenosis.html',           color: '#3ba372', status: '🟢 EDGE-LIVE' },
-    { id: 'genesis-gate',      title: 'Genesis Gate',      icon: '🔬',  url: 'genesis-gate.html',      color: '#3ba372', status: '🟢 LIVE' },
-    { id: 'cortex',            title: 'p31-cortex',        icon: '🧠',  url: 'cortex.html',            color: '#3ba372', status: '🟢 LIVE' },
-    { id: 'donate',            title: 'Donate Pipeline',   icon: '💚',  url: 'donate.html',            color: '#3ba372', status: '🟢 LIVE' },
-    { id: 'discord-bot',       title: 'p31-bot',           icon: '🤖',  url: 'discord-bot.html',       color: '#3ba372', status: '🟢 LIVE' },
-    { id: 'buffer',            title: 'The Buffer',        icon: '🛡️',  url: 'guardian.html',          color: '#3ba372', status: '🟢 LIVE' },
-    { id: 'attractor',         title: 'NANO-07 Attractor', icon: '🌀',  url: 'attractor.html',         color: '#3ba372', status: '🟢 LIVE' },
+    { id: 'bonding',           title: 'BONDING',           icon: '⚛️',  url: 'bonding.html',           color: '#00FF88', status: '🟢 LIVE' },
+    { id: 'spaceship-earth',   title: 'Spaceship Earth',   icon: '🌐',  url: 'spaceship-earth.html',   color: '#00FF88', status: '🟢 LIVE' },
+    { id: 'book',              title: 'Book',               icon: '📖',  url: 'book.html',              color: '#00FF88', status: '🟢 LIVE' },
+    { id: 'kenosis',           title: 'Project Kenosis',   icon: '🕸️',  url: 'kenosis.html',           color: '#00FF88', status: '🟢 EDGE-LIVE' },
+    { id: 'genesis-gate',      title: 'Genesis Gate',      icon: '🔬',  url: 'genesis-gate.html',      color: '#00FF88', status: '🟢 LIVE' },
+    { id: 'cortex',            title: 'p31-cortex',        icon: '🧠',  url: 'cortex.html',            color: '#00FF88', status: '🟢 LIVE' },
+    { id: 'donate',            title: 'Donate Pipeline',   icon: '💚',  url: 'donate.html',            color: '#00FF88', status: '🟢 LIVE' },
+    { id: 'discord-bot',       title: 'p31-bot',           icon: '🤖',  url: 'discord-bot.html',       color: '#00FF88', status: '🟢 LIVE' },
+    { id: 'buffer',            title: 'The Buffer',        icon: '🛡️',  url: 'guardian.html',          color: '#00FF88', status: '🟢 LIVE' },
+    { id: 'attractor',         title: 'NANO-07 Attractor', icon: '🌀',  url: 'attractor.html',         color: '#00FF88', status: '🟢 LIVE' },
     { id: 'node-one',          title: 'Node One',          icon: '📟',  url: 'node-one.html',          color: '#cda852', status: '🟡 PROTOTYPE' },
     { id: 'node-zero',         title: 'Node Zero',         icon: '📡',  url: 'node-zero.html',         color: '#cda852', status: '🟡 IN DEV' },
     { id: 'axiom',             title: 'AXIOM',             icon: '⚗️',  url: 'axiom.html',             color: '#cda852', status: '🔵 PROTOTYPE' },
@@ -146,11 +134,7 @@ const mvpNodes = [
     { id: 'bridge',            title: 'BRIDGE',            icon: '🌉',  url: 'bridge.html',            color: '#cda852', status: '🔵 PROTOTYPE' },
     { id: 'vault',             title: 'VAULT',             icon: '🔐',  url: 'vault-room.html',        color: '#cda852', status: '🔵 PROTOTYPE' },
     { id: 'sovereign',         title: 'SOVEREIGN',         icon: '🔑',  url: 'sovereign.html',         color: '#cda852', status: '🔵 PROTOTYPE' },
-    { id: 'k4market',          title: 'K4 MARKET',         icon: '📐',  url: 'k4market.html',          color: '#3ba372', status: '🟢 LIVE' },
-    { id: 'tomography',        title: 'K4 TOMOGRAPHY',     icon: '🔬',  url: 'tomography.html',        color: '#3ba372', status: '🟢 LIVE' },
-    { id: 'connect',           title: 'THE MESH',          icon: '⬡',   url: 'connect.html',           color: '#3ba372', status: '🟢 LIVE' },
-    { id: 'planetary-onboard', title: 'ONBOARDING',        icon: '🌍',  url: 'planetary-onboard.html', color: '#3ba372', status: '🟢 LIVE' },
-    { id: 'delta',             title: 'WYE→DELTA',         icon: '△',   url: 'delta.html',             color: '#3ba372', status: '🟢 LIVE' },
+    { id: 'k4market',          title: 'K4 MARKET',         icon: '📊',  url: 'k4market.html',          color: '#cda852', status: '🔵 PROTOTYPE' },
     { id: 'content-forge',     title: 'CONTENT FORGE',     icon: '✍️',  url: 'content-forge.html',     color: '#cda852', status: '🔵 PROTOTYPE' },
     { id: 'resonance',         title: 'RESONANCE',         icon: '🎵',  url: 'resonance.html',         color: '#cda852', status: '🔵 PROTOTYPE' },
     { id: 'qg-ide',            title: 'QG-IDE',            icon: '💻',  url: 'qg-ide.html',            color: '#cda852', status: '🔵 PROTOTYPE' },
@@ -160,9 +144,8 @@ const mvpNodes = [
     { id: 'mission-control',   title: 'Mission Control',   icon: '🚀',  url: 'wonky.html',             color: '#cda852', status: '🔵 PROTOTYPE' },
     { id: 'quantum-life-os',   title: 'Quantum Life OS',   icon: '✨',  url: 'quantum-os.html',        color: '#cda852', status: '🔵 PROTOTYPE' },
     { id: 'quantum-core',      title: 'Quantum Core',      icon: '🔮',  url: 'quantum-core.html',      color: '#4db8a8', status: '🔵 RESEARCH' },
-    { id: 'lattice-oracle',    title: 'ORACLE',            icon: '💎',  url: 'magic-crystal.html',      color: '#a78bfa', status: '✨ TOY' },
     { id: 'alchemy',           title: 'Alchemy',           icon: '📐',  url: 'alchemy.html',           color: '#4db8a8', status: '🔵 PUBLISHED' },
-    { id: 'the-quantum-family',title: 'THE QUANTUM FAMILY',icon: '🔺',  url: 'quantum-family-about.html', color: '#3ba372', status: '🟢 LIVE' },
+    { id: 'the-quantum-family',title: 'THE QUANTUM FAMILY',icon: '🔺',  url: 'quantum-family-about.html', color: '#00FF88', status: '🟢 LIVE' },
 ];
 
 const canvas = document.getElementById('c');
@@ -291,7 +274,7 @@ function draw() {
 
         // Label on hover or for large enough scale
         if (isHovered || p.scale > 0.92) {
-            ctx.font = `bold ${Math.round(9 * p.scale)}px 'JetBrains Mono', monospace`;
+            ctx.font = `bold ${Math.round(9 * p.scale)}px 'Space Mono', monospace`;
             ctx.fillStyle = `rgba(${rgb},${alpha})`;
             ctx.textAlign = 'center';
             ctx.textBaseline = 'top';
