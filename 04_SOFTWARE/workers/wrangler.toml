@@ -31,10 +31,7 @@ id = "dbc13218ee314f0e988f51d2618e6061"
 # binding = "MESH_R2"
 
 # D1 databases - commented out until provisioned
-[[d1_databases]]
-binding = "LOVE_D1"
-database_name = "love-ledger"
-database_id = "592e3e2e-3203-4e0a-8342-9e85215ec8a6"
+# LOVE_D1 removed — love-ledger is now the exclusive owner of this DB
 
 # [[d1_databases]]
 # binding = "SPOONS_D1"
