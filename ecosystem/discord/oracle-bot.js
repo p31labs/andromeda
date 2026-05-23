@@ -4,12 +4,12 @@
  * P31 Oracle Discord Bot
  * Community interface for the Dual-Ledger Economy (Spoons/Karma)
  * Handles Posner molecule assembly, Larmor frequency verification, and academic hash validation
- * 
+ *
  * Updated to support Discord Message Components for Crew Manual onboarding flow
  */
 
 const { Client, GatewayIntentBits, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, MessageComponentInteraction } = require('discord.js');
-const Redis = require('ioredis');
+const { Redis } = require('@upstash/redis');
 const crypto = require('crypto');
 require('dotenv').config();
 
@@ -24,8 +24,23 @@ class P31OracleBot {
             ]
         });
 
-        this.redis = new Redis(process.env.UPSTASH_REDIS_URL || 'redis://localhost:6379');
-        
+        // Upstash Redis connection using @upstash/redis REST client
+        const redisUrl = process.env.UPSTASH_REDIS_URL || 'redis://localhost:6379';
+        const redisToken = process.env.UPSTASH_REDIS_TOKEN;
+
+        if (redisUrl.includes('upstash.io')) {
+            console.log(`Connecting to Upstash Redis (REST API)`);
+            // Use @upstash/redis REST client - automatically handles auth
+            this.redis = new Redis({
+                url: redisUrl,
+                token: redisToken,
+            });
+        } else {
+            // Fallback for local Redis (would need ioredis for this)
+            console.log(`Connecting to local Redis: ${redisUrl}`);
+            this.redis = new Redis(redisUrl);
+        }
+
         // Configuration
         this.config = {
             posnerRequirements: {
@@ -108,7 +123,7 @@ class P31OracleBot {
         });
 
         this.client.on('interactionCreate', this.handleInteraction.bind(this));
-        
+
         await this.client.login(process.env.DISCORD_BOT_TOKEN);
     }
 
@@ -179,6 +194,18 @@ class P31OracleBot {
             {
                 name: 'start-crew-manual',
                 description: 'Start or resume the P31 Crew Manual onboarding journey'
+            },
+            {
+                name: 'alert',
+                description: 'Send an alert to the discord-alerter worker',
+                options: [
+                    {
+                        name: 'message',
+                        type: 3, // STRING
+                        description: 'The message to send',
+                        required: true
+                    }
+                ]
             }
         ];
 
@@ -221,6 +248,9 @@ class P31OracleBot {
                 case 'start-crew-manual':
                     await this.sendCrewManualStart(interaction);
                     break;
+                case 'alert':
+                    await this.handleAlert(interaction);
+                    break;
                 default:
                     await interaction.reply('Unknown command');
             }
@@ -261,24 +291,46 @@ class P31OracleBot {
         await interaction.reply({ embeds: [embed] });
     }
 
+    async handleAlert(interaction) {
+        const message = interaction.options.getString('message');
+
+        // The URL for the discord-alerter worker.
+        // This should be stored in a config file or environment variable.
+        const alerterUrl = 'https://discord-alerter.trimtab-signal.workers.dev';
+
+        const response = await fetch(alerterUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ message }),
+        });
+
+        if (!response.ok) {
+            await interaction.reply({ content: 'Failed to send alert.', ephemeral: true });
+        } else {
+            await interaction.reply({ content: 'Alert sent.', ephemeral: true });
+        }
+    }
+
     /**
      * Handle /contribute-ion command
      */
     async handleContributeIon(interaction) {
         const userId = interaction.user.id;
         const ionType = interaction.options.getString('ion_type');
-        
+
         // Check if user has enough spoons
         const user = await this.getUserData(userId);
         const spoonsCost = this.config.spoonsCost[ionType + 'Ion'];
-        
+
         if (user.spoons < spoonsCost) {
             const embed = new EmbedBuilder()
                 .setTitle('⚠️ Insufficient Spoons')
                 .setDescription(`You need ${spoonsCost} Spoons to contribute a ${ionType === 'calcium' ? 'Calcium' : 'Phosphate'} ion.\n\nYou currently have ${user.spoons} Spoons.\n\n**Tip:** Rest to regenerate Spoons, or contribute to other community activities to earn more Karma.`)
                 .setColor('#f59e0b')
                 .setFooter({ text: 'P31 Oracle Bot • Neurodivergent-friendly pacing' });
-            
+
             return await interaction.reply({ embeds: [embed], ephemeral: true });
         }
 
@@ -288,7 +340,7 @@ class P31OracleBot {
                 .setTitle('⚠️ Contribution Limit Reached')
                 .setDescription(`You have already contributed the maximum of 3 Calcium ions.\n\nTry contributing a Phosphate ion instead, or help other community members!`)
                 .setColor('#f59e0b');
-            
+
             return await interaction.reply({ embeds: [embed], ephemeral: true });
         }
 
@@ -297,13 +349,13 @@ class P31OracleBot {
                 .setTitle('⚠️ Contribution Limit Reached')
                 .setDescription(`You have already contributed the maximum of 3 Phosphate ions.\n\nTry contributing a Calcium ion instead, or help other community members!`)
                 .setColor('#f59e0b');
-            
+
             return await interaction.reply({ embeds: [embed], ephemeral: true });
         }
 
         // Process contribution
         const result = await this.processIonContribution(userId, ionType);
-        
+
         const embed = new EmbedBuilder()
             .setTitle('🎉 Ion Contribution Successful')
             .setDescription(`**${interaction.user.username}** contributed a **${ionType === 'calcium' ? 'Calcium' : 'Phosphate'} ion**!`)
@@ -346,23 +398,23 @@ class P31OracleBot {
     async handleLarmorSync(interaction) {
         const userId = interaction.user.id;
         const timestamps = JSON.parse(interaction.options.getString('timestamps'));
-        
+
         // Check if user has enough spoons
         const user = await this.getUserData(userId);
-        
+
         if (user.spoons < this.config.spoonsCost.larmorSync) {
             const embed = new EmbedBuilder()
                 .setTitle('⚠️ Insufficient Spoons')
                 .setDescription(`You need ${this.config.spoonsCost.larmorSync} Spoon to attempt Larmor synchronization.\n\nYou currently have ${user.spoons} Spoons.`)
                 .setColor('#f59e0b')
                 .setFooter({ text: 'P31 Oracle Bot • Take your time, the frequency will wait' });
-            
+
             return await interaction.reply({ embeds: [embed], ephemeral: true });
         }
 
         // Validate synchronization
         const validation = await this.validateLarmorSync(timestamps);
-        
+
         if (!validation.valid) {
             const embed = new EmbedBuilder()
                 .setTitle('🎵 Larmor Synchronization Failed')
@@ -374,7 +426,7 @@ class P31OracleBot {
                 })
                 .setColor('#ef4444')
                 .setFooter({ text: 'P31 Oracle Bot • Quantum precision takes practice' });
-            
+
             // Deduct spoon for attempt
             await this.updateUserSpoons(userId, -this.config.spoonsCost.larmorSync);
             return await interaction.reply({ embeds: [embed] });
@@ -382,7 +434,7 @@ class P31OracleBot {
 
         // Process successful synchronization
         const result = await this.processLarmorSync(userId, validation);
-        
+
         const embed = new EmbedBuilder()
             .setTitle('🎵 Larmor Frequency Lock Achieved!')
             .setDescription(`**${interaction.user.username}** successfully synchronized to the Larmor frequency!`)
@@ -415,16 +467,16 @@ class P31OracleBot {
      */
     async handleVerifyTetrahedron(interaction) {
         const hash = interaction.options.getString('hash');
-        
+
         // Verify hash against Zenodo records
         const verification = await this.verifyTetrahedronHash(hash);
-        
+
         const embed = new EmbedBuilder()
             .setTitle('🔍 Tetrahedron Protocol Verification')
             .setDescription(`Verifying hash: \`${hash}\``)
             .addFields({
                 name: '📊 Verification Result',
-                value: verification.valid 
+                value: verification.valid
                     ? `✅ **VALID** - Hash matches academic content\n**DOI:** ${verification.doi}\n**Title:** ${verification.title}`
                     : '❌ **INVALID** - Hash not found in academic records',
                 inline: false
@@ -441,7 +493,7 @@ class P31OracleBot {
      */
     async handleLeaderboard(interaction) {
         const leaderboard = await this.getLeaderboard();
-        
+
         const embed = new EmbedBuilder()
             .setTitle('🏆 P31 Community Leaderboard')
             .setDescription('Top contributors to the quantum biological network')
@@ -449,21 +501,21 @@ class P31OracleBot {
             .addFields(
                 {
                     name: '🥇 Top Contributors',
-                    value: leaderboard.topContributors.map((user, index) => 
+                    value: leaderboard.topContributors.map((user, index) =>
                         `${index + 1}. **${user.username}** - ${user.contributions.total} ions`
                     ).join('\n') || 'No contributors yet',
                     inline: false
                 },
                 {
                     name: '⚡ Top Karma Earners',
-                    value: leaderboard.topKarma.map((user, index) => 
+                    value: leaderboard.topKarma.map((user, index) =>
                         `${index + 1}. **${user.username}** - ${user.karma} karma`
                     ).join('\n') || 'No karma earned yet',
                     inline: false
                 },
                 {
                     name: '🎵 Larmor Masters',
-                    value: leaderboard.larmorMasters.map((user, index) => 
+                    value: leaderboard.larmorMasters.map((user, index) =>
                         `${index + 1}. **${user.username}** - ${user.larmorSyncs} successful synchronizations`
                     ).join('\n') || 'No synchronizations yet',
                     inline: false
@@ -481,7 +533,7 @@ class P31OracleBot {
     async handleProfile(interaction) {
         const targetUser = interaction.options.getUser('user') || interaction.user;
         const user = await this.getUserData(targetUser.id);
-        
+
         const embed = new EmbedBuilder()
             .setTitle(`👤 ${targetUser.username}'s P31 Profile`)
             .setThumbnail(targetUser.displayAvatarURL())
@@ -515,15 +567,15 @@ class P31OracleBot {
     async handleButtonInteraction(interaction) {
         const customId = interaction.customId;
         const userId = interaction.user.id;
-        
+
         try {
             // Acknowledge button press immediately
             await interaction.deferUpdate();
-            
+
             // Get user data and progression state
             const user = await this.getUserData(userId);
             const progress = await this.getCrewProgress(userId);
-            
+
             // Route to appropriate handler based on button customId
             switch (customId) {
                 case this.crewButtonIds.L0_READY:
@@ -560,21 +612,21 @@ class P31OracleBot {
     async handleCrewL0Ready(interaction, user, progress) {
         // Update progress to L0.5
         await this.updateCrewProgress(interaction.user.id, 'L0.5');
-        
+
         const msg = this.crewManualMessages.L0_5;
         const embed = new EmbedBuilder()
             .setTitle(msg.title)
             .setDescription(msg.description)
             .setColor('#00FF88')
             .setFooter({ text: 'P31 Oracle Bot • Crew Manual' });
-        
+
         const button = new ButtonBuilder()
             .setCustomId(msg.buttonId)
             .setLabel(msg.button)
             .setStyle(ButtonStyle.Secondary);
-        
+
         const row = new ActionRowBuilder().addComponents(button);
-        
+
         await interaction.editReply({ embeds: [embed], components: [row] });
     }
 
@@ -584,23 +636,23 @@ class P31OracleBot {
     async handleCrewL05Understand(interaction, user, progress) {
         // Update progress to L1
         await this.updateCrewProgress(interaction.user.id, 'L1');
-        
+
         const msg = this.crewManualMessages.L1;
         const description = msg.description.replace('{spoons}', user.spoons);
-        
+
         const embed = new EmbedBuilder()
             .setTitle(msg.title)
             .setDescription(description)
             .setColor('#00D4FF')
             .setFooter({ text: 'P31 Oracle Bot • Crew Manual' });
-        
+
         const button = new ButtonBuilder()
             .setCustomId(msg.buttonId)
             .setLabel(msg.button)
             .setStyle(ButtonStyle.Primary);
-        
+
         const row = new ActionRowBuilder().addComponents(button);
-        
+
         await interaction.editReply({ embeds: [embed], components: [row] });
     }
 
@@ -610,10 +662,10 @@ class P31OracleBot {
     async handleCrewL1Pocket(interaction, user, progress) {
         // Update progress to L2
         await this.updateCrewProgress(interaction.user.id, 'L2');
-        
+
         const msg = this.crewManualMessages.L2;
         const description = msg.description.replace('{karma}', user.karma);
-        
+
         const embed = new EmbedBuilder()
             .setTitle(msg.title)
             .setDescription(description)
@@ -624,14 +676,14 @@ class P31OracleBot {
                 inline: false
             })
             .setFooter({ text: 'P31 Oracle Bot • Crew Manual' });
-        
+
         const button = new ButtonBuilder()
             .setCustomId(msg.buttonId)
             .setLabel(msg.button)
             .setStyle(ButtonStyle.Primary);
-        
+
         const row = new ActionRowBuilder().addComponents(button);
-        
+
         await interaction.editReply({ embeds: [embed], components: [row] });
     }
 
@@ -641,10 +693,10 @@ class P31OracleBot {
     async handleCrewL2Key(interaction, user, progress) {
         // Update progress to L3
         await this.updateCrewProgress(interaction.user.id, 'L3');
-        
+
         const msg = this.crewManualMessages.L3;
         const description = msg.description.replace('{resonance}', user.bestResonanceLevel);
-        
+
         const embed = new EmbedBuilder()
             .setTitle(msg.title)
             .setDescription(description)
@@ -655,14 +707,14 @@ class P31OracleBot {
                 inline: false
             })
             .setFooter({ text: 'P31 Oracle Bot • Crew Manual' });
-        
+
         const button = new ButtonBuilder()
             .setCustomId(msg.buttonId)
             .setLabel(msg.button)
             .setStyle(ButtonStyle.Primary);
-        
+
         const row = new ActionRowBuilder().addComponents(button);
-        
+
         await interaction.editReply({ embeds: [embed], components: [row] });
     }
 
@@ -672,9 +724,9 @@ class P31OracleBot {
     async handleCrewL3Engine(interaction, user, progress) {
         // Mark as complete
         await this.updateCrewProgress(interaction.user.id, 'complete');
-        
+
         const msg = this.crewManualMessages.complete;
-        
+
         const embed = new EmbedBuilder()
             .setTitle(msg.title)
             .setDescription(msg.description)
@@ -685,7 +737,7 @@ class P31OracleBot {
                 inline: true
             })
             .setFooter({ text: 'P31 Oracle Bot • Welcome to the network!' });
-        
+
         // Clear buttons (no more navigation)
         await interaction.editReply({ embeds: [embed], components: [] });
     }
@@ -695,31 +747,31 @@ class P31OracleBot {
      */
     async sendCrewManualStart(interaction) {
         const userId = interaction.user.id;
-        
+
         // Check if already in progress or complete
         const progress = await this.getCrewProgress(userId);
         if (progress && progress !== 'L0') {
             // Resume from current position
             return await this.resumeCrewManual(interaction, userId, progress);
         }
-        
+
         // Start at L0
         await this.updateCrewProgress(userId, 'L0');
-        
+
         const msg = this.crewManualMessages.L0;
         const embed = new EmbedBuilder()
             .setTitle(msg.title)
             .setDescription(msg.description)
             .setColor('#00FF88')
             .setFooter({ text: 'P31 Oracle Bot • Crew Manual' });
-        
+
         const button = new ButtonBuilder()
             .setCustomId(msg.buttonId)
             .setLabel(msg.button)
             .setStyle(ButtonStyle.Primary);
-        
+
         const row = new ActionRowBuilder().addComponents(button);
-        
+
         // Check if this is a slash command or button interaction
         if (interaction.isChatInputCommand()) {
             // For slash commands, send as DM
@@ -742,9 +794,9 @@ class P31OracleBot {
      */
     async resumeCrewManual(interaction, userId, progress) {
         const user = await this.getUserData(userId);
-        
+
         let msg, embed, button, row;
-        
+
         switch (progress) {
             case 'L0.5':
                 msg = this.crewManualMessages.L0_5;
@@ -819,7 +871,7 @@ class P31OracleBot {
                 // Start fresh if unknown state
                 return await this.sendCrewManualStart(interaction);
         }
-        
+
         if (interaction.isChatInputCommand()) {
             try {
                 const dmChannel = await interaction.user.createDM();
@@ -851,7 +903,7 @@ class P31OracleBot {
     /**
      * Helper methods for data management
      */
-    
+
     async getStatus() {
         const [
             posnerStatus,
@@ -876,7 +928,7 @@ class P31OracleBot {
         if (userData) {
             return JSON.parse(userData);
         }
-        
+
         return this.createUser(userId);
     }
 
@@ -954,10 +1006,10 @@ class P31OracleBot {
         for (let i = 1; i < timestamps.length; i++) {
             const interval = timestamps[i] - timestamps[i - 1];
             intervals.push(interval);
-            
+
             const deviation = Math.abs(interval - TARGET_INTERVAL);
             deviations.push(deviation);
-            
+
             if (deviation <= TOLERANCE) {
                 consecutiveValid++;
                 totalValid++;
@@ -967,7 +1019,7 @@ class P31OracleBot {
         }
 
         const valid = consecutiveValid >= REQUIRED_RESONANCE;
-        
+
         return {
             valid: valid,
             metrics: {
@@ -981,7 +1033,7 @@ class P31OracleBot {
 
     async processLarmorSync(userId, validation) {
         const user = await this.getUserData(userId);
-        
+
         // Update user stats
         user.larmorSyncs++;
         user.bestResonanceLevel = Math.max(user.bestResonanceLevel, validation.metrics.resonanceLevel);
@@ -1006,7 +1058,7 @@ class P31OracleBot {
             timestamp: new Date().toISOString(),
             userId: 'discord_user'
         }));
-        
+
         return `bafybeih${hash.digest('hex').slice(0, 52)}`;
     }
 

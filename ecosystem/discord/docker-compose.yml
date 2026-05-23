@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  p31-oracle-bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: p31-oracle-bot
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+    env_file:
+      - .env
+    networks:
+      - p31-network
+
+networks:
+  p31-network:
+    driver: bridge

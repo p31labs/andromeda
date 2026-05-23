@@ -8,10 +8,10 @@
  * framed as "community warmth" and "peer anchoring" per CWP-04 specifications.
  */
 
-import { 
-  computeEigenTrust, 
-  interactionsToTrustMatrix, 
-  TrustMatrix, 
+import {
+  computeEigenTrust,
+  interactionsToTrustMatrix,
+  LocalTrustMatrix,
   TrustVector,
   EigenTrustOptions,
   TRUST_THRESHOLDS
@@ -76,7 +76,7 @@ export function generateAegisPrompt(
 ): AegisPromptPayload {
   
   // 1. Convert interaction history to local trust matrix (C)
-  const trustMatrix: TrustMatrix = interactionsToTrustMatrix(
+  const trustMatrix: LocalTrustMatrix = interactionsToTrustMatrix(
     interactions.reduce((acc, interaction) => {
       if (!acc[interaction.trustorId]) {
         acc[interaction.trustorId] = {};

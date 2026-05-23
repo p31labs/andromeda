@@ -158,9 +158,9 @@ export abstract class HibernatableDurableObject {
   /**
    * Record activity to reset hibernation timer
    */
-  protected recordActivity(): void {
+  public recordActivity(): void {
     this.lastActivity = Date.now();
-    
+
     if (this.isHibernating) {
       // Wake from hibernation
       this.wake();

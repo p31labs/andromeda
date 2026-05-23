@@ -1,0 +1,105 @@
+:root {
+  --p31-void: #0D1117;
+  --p31-cloud: #161B22;
+  --p31-teal: #5DCAA5;   /* Home Context */
+  --p31-coral: #CC6247;  /* Business Context */
+  --p31-text: #E6EDF3;
+  --p31-muted: #8B949E;
+  --p31-surface: #21262D;
+}
+
+* { box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; }
+
+body {
+  background-color: var(--p31-void);
+  color: var(--p31-text);
+  margin: 0;
+  padding: 0;
+  overscroll-behavior-y: none; /* Prevents accidental pull-to-refresh */
+}
+
+/* Massive Context Toggle */
+.context-toggle {
+  display: flex;
+  width: 100%;
+  height: 120px; /* Over-engineered touch target */
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--p31-void);
+  border-bottom: 2px solid var(--p31-cloud);
+}
+
+.context-btn {
+  flex: 1;
+  font-size: 1.5rem;
+  font-weight: 800;
+  border: none;
+  background: var(--p31-void);
+  color: var(--p31-muted);
+  transition: all 0.2s ease-out;
+  cursor: pointer;
+  letter-spacing: 1px;
+}
+
+.context-btn[data-active="true"][data-context="home"] {
+  background: var(--p31-cloud);
+  color: var(--p31-teal);
+  border-bottom: 8px solid var(--p31-teal);
+}
+
+.context-btn[data-active="true"][data-context="business"] {
+  background: var(--p31-cloud);
+  color: var(--p31-coral);
+  border-bottom: 8px solid var(--p31-coral);
+}
+
+/* Prep List Cards */
+.prep-container {
+  padding: 16px;
+  padding-bottom: 120px; /* Space for ambient voice UI */
+}
+
+.prep-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px;
+  margin-bottom: 16px;
+  background: var(--p31-cloud);
+  border-radius: 16px;
+  border: 1px solid var(--p31-surface);
+}
+
+.prep-card-info h2 {
+  margin: 0 0 8px 0;
+  font-size: 1.75rem;
+}
+
+.prep-card-info p {
+  margin: 0;
+  font-size: 1.25rem;
+  color: var(--p31-muted);
+}
+
+/* 80x80px action buttons for arthritic or busy hands */
+.btn-complete {
+  width: 80px;
+  height: 80px;
+  border-radius: 16px;
+  border: none;
+  font-weight: bold;
+  font-size: 1.1rem;
+  color: var(--p31-void);
+  cursor: pointer;
+}
+
+.btn-complete.home { background: var(--p31-teal); }
+.btn-complete.business { background: var(--p31-coral); }
+
+.empty-state {
+  text-align: center;
+  padding: 48px 24px;
+  font-size: 1.5rem;
+  color: var(--p31-muted);
+}

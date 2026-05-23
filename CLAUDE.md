@@ -33,7 +33,7 @@ The operator is Will Johnson — AuDHD, direct communication style, no fluff. Pr
 
 ### Infrastructure (ALL LIVE)
 15 Cloudflare endpoints deployed:
-- bonding.p31ca.org — BONDING chemistry game (413 tests / 30 suites)
+- bonding.p31ca.org — BONDING chemistry game (424 tests / 32 suites)
 - phosphorus31.org — Institutional research site (dark-warm redesign deployed tonight)
 - p31ca.org — Technical hub (redesigned tonight)
 - ops.p31ca.org — Hearing Ops PWA (offline contempt prep; `04_SOFTWARE/p31-hearing-ops`, `npm run deploy`)
@@ -72,7 +72,7 @@ The operator is Will Johnson — AuDHD, direct communication style, no fluff. Pr
 
 | Fact | Correct Value | Common Hallucination |
 |------|---------------|---------------------|
-| BONDING test count | 413 tests / 30 suites | 558 or 659 |
+| BONDING test count | 424 tests / 32 suites | 558 or 659 |
 | CogPass version | v4.1 | v2.6 or v3.0 |
 | Relay architecture | Cloudflare KV polling (3-10s intervals) | Durable Objects or WebSocket |
 | SE050 PQC | Does NOT support (50KB flash insufficient) | "Supports CRYSTALS-Kyber" |

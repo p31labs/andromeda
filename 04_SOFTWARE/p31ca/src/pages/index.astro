@@ -1,11 +1,10 @@
 ---
 /**
- * P31CA.ORG — Technical Hub Landing Page
+ * P31CA.ORG - Technical Hub Landing Page
  * Redesigned: structured layout, live fleet status, coral accent, correct EIN.
  * Cross-linked to phosphorus31.org (nonprofit portal).
  */
 
-import BaseLayout from '../layouts/BaseLayout.astro';
 import SharedFooter from '../components/SharedFooter.astro';
 import {
   liveProducts,
@@ -21,12 +20,15 @@ const researchItems = [
   { title: 'Papers V-XIX', doi: null, desc: '13 additional papers styled and ready for Zenodo batch upload. Topics: calcium biophysics, cognitive sovereignty, AT design.' },
   { title: '5 Defensive Publications', doi: null, desc: 'Prior art deposited to Internet Archive Feb 25, 2026. Freedom-to-operate protection.' },
 ];
+
+export const routeName = 'home';
 ---
 
-<BaseLayout
+<AppShell
   title="P31 Labs | Technical Hub"
   description="Technical hub for P31 Labs — open-source assistive tools, fleet status, and links to edge deployments. EIN 42-1888158."
   canonical="https://p31ca.org/"
+  routeName="home"
 >
   <!-- Navbar -->
   <nav class="sticky top-0 z-50 bg-hubNav/85 backdrop-blur-md border-b border-white/[0.05]">
@@ -326,7 +328,7 @@ const researchItems = [
   </main>
 
   <SharedFooter />
-</BaseLayout>
+</AppShell>
 
 <script>
   // Fleet status — vanilla JS fetch from command-center API

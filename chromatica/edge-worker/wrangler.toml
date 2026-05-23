@@ -1,0 +1,71 @@
+# Chromatica - Production Cloudflare Worker Configuration
+# Arthritis-Optimized Creative Workstation
+# P31 12-Pillar MVP - Tier A
+
+name = "chromatica"
+main = "src/index.ts"
+compatibility_date = "2024-06-01"
+
+# Node.js compatibility for PQC
+node_compat = true
+
+[vars]
+ENVIRONMENT = "production"
+ACCESSIBILITY_MODE = "arthritis_optimized"
+VOICE_ENABLED = "true"
+TOUCH_TARGET_SIZE = "96"
+CONTRAST_MODE = "high"
+FONT_SIZE_BASE = "24"
+
+[[d1_databases]]
+binding = "CHROMA_DB"
+database_name = "chromatica-prod"
+database_id = "REPLACE_WITH_REAL_ID"
+
+[[d1_databases]]
+binding = "ACCESSIBILITY_DB"
+database_name = "chromatica-accessibility"
+database_id = "REPLACE_WITH_ACCESSIBILITY_D1_ID"
+
+[[r2_buckets]]
+binding = "ASSET_STORAGE"
+bucket_name = "chroma-assets-prod"
+
+[[r2_buckets]]
+binding = "THUMBNAIL_STORAGE"
+bucket_name = "chroma-thumbnails-prod"
+
+[[kv_namespaces]]
+binding = "SESSION_CACHE"
+id = "REPLACE_WITH_KV_ID"
+
+[[kv_namespaces]]
+binding = "VOICE_CACHE"
+id = "REPLACE_WITH_KV_ID_2"
+
+[env.production]
+name = "chromatica-prod"
+
+[env.production.vars]
+ENVIRONMENT = "production"
+PQC_ENABLED = "true"
+
+[env.staging]
+name = "chromatica-staging"
+
+[env.staging.vars]
+ENVIRONMENT = "staging"
+PQC_ENABLED = "true"
+
+[build]
+command = "npm run build:worker"
+
+[build.upload]
+format = "modules"
+
+[triggers]
+crons = ["0 */6 * * *"]  # Every 6 hours
+
+[observability]
+enabled = true
+head_sampling_rate = 0.1

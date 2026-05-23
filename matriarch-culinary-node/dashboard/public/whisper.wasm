@@ -1,0 +1,3 @@
+// Placeholder for compiled C++ WebAssembly binary
+// This file would typically contain binary data.
+console.log("whisper.wasm placeholder loaded");

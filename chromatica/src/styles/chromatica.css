@@ -1,0 +1,308 @@
+/* P31 Chromatica — Vertical Theme v2.0.0 (Canonical)
+ * Pain and activity tracker for fibromyalgia
+ * Aligned with p31-universal-canon.json
+ * Gray Rock compliant — no self-starting motion
+ */
+
+/* Import canonical arcade tokens */
+@import '../../../packages/p31-arcade-theme/arcade-theme.css';
+
+/* ============================================
+   CHROMATICA-SPECIFIC EXTENSIONS
+   ============================================ */
+
+/* Medical/pain tracking colors */
+:root {
+  --chromatica-pain-low: var(--p31-teal);
+  --chromatica-pain-moderate: var(--p31-amber);
+  --chromatica-pain-high: var(--p31-coral);
+  --chromatica-pain-extreme: var(--p31-fuchsia);
+  --chromatica-activity: var(--p31-phosphorus);
+  --chromatica-rest: var(--p31-lavender);
+}
+
+/* Override base - already has good foundation in index.css */
+body {
+  background: var(--p31-void);
+  font-family: var(--p31-font-sans);
+}
+
+/* Pain level selector */
+.pain-scale {
+  display: flex;
+  gap: var(--p31-space-2);
+  padding: var(--p31-space-4);
+  background: var(--p31-surface);
+  border-radius: var(--p31-radius-lg);
+}
+
+.pain-level {
+  flex: 1;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--p31-radius-md);
+  font-family: var(--p31-font-mono);
+  font-size: var(--p31-text-lg);
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--p31-motion-fast) var(--p31-ease-standard);
+  border: 2px solid transparent;
+}
+
+.pain-level:hover {
+  transform: scale(1.1);
+}
+
+.pain-level.selected {
+  border-color: var(--p31-cloud);
+  box-shadow: 0 0 0 3px currentColor;
+}
+
+/* Pain gradient 0-10 using canon colors */
+.pain-level[data-level="0"] { background: rgba(93, 202, 165, 0.2); color: var(--p31-teal); }
+.pain-level[data-level="1"] { background: rgba(130, 224, 170, 0.25); color: #82E0AA; }
+.pain-level[data-level="2"] { background: rgba(130, 224, 170, 0.3); color: #82E0AA; }
+.pain-level[data-level="3"] { background: rgba(255, 234, 167, 0.3); color: #FFEAA7; }
+.pain-level[data-level="4"] { background: rgba(255, 234, 167, 0.35); color: #FFEAA7; }
+.pain-level[data-level="5"] { background: rgba(205, 168, 82, 0.4); color: var(--p31-amber); }
+.pain-level[data-level="6"] { background: rgba(241, 148, 138, 0.4); color: #F1948A; }
+.pain-level[data-level="7"] { background: rgba(241, 148, 138, 0.45); color: #F1948A; }
+.pain-level[data-level="8"] { background: rgba(204, 98, 71, 0.5); color: var(--p31-coral); }
+.pain-level[data-level="9"] { background: rgba(204, 98, 71, 0.55); color: var(--p31-coral); }
+.pain-level[data-level="10"] { background: rgba(220, 38, 38, 0.6); color: #dc2626; }
+
+/* Big buttons for accessibility */
+.big-button {
+  min-height: 64px;
+  padding: var(--p31-space-4) var(--p31-space-6);
+  font-size: var(--p31-text-lg);
+  font-weight: 600;
+  border-radius: var(--p31-radius-lg);
+  border: none;
+  cursor: pointer;
+  transition: all var(--p31-motion-fast) var(--p31-ease-standard);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--p31-space-3);
+}
+
+.big-button:active {
+  transform: scale(0.98);
+}
+
+.big-button.primary {
+  background: var(--p31-teal);
+  color: var(--p31-void);
+}
+
+.big-button.secondary {
+  background: var(--p31-surface);
+  color: var(--p31-cloud);
+  border: 2px solid var(--p31-glass-border);
+}
+
+/* Rest timer circle */
+.rest-timer {
+  width: 200px;
+  height: 200px;
+  border-radius: var(--p31-radius-full);
+  background: conic-gradient(var(--p31-teal) var(--progress, 0%), var(--p31-surface) 0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  margin: var(--p31-space-6) auto;
+}
+
+.rest-timer-inner {
+  width: 170px;
+  height: 170px;
+  border-radius: var(--p31-radius-full);
+  background: var(--p31-void);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.rest-timer-value {
+  font-family: var(--p31-font-mono);
+  font-size: var(--p31-text-3xl);
+  font-weight: 700;
+  color: var(--p31-teal);
+}
+
+/* Project/activity cards */
+.project-card {
+  background: var(--p31-surface);
+  border: 1px solid var(--p31-glass-border);
+  border-radius: var(--p31-radius-lg);
+  padding: var(--p31-space-4);
+  margin-bottom: var(--p31-space-3);
+  transition: all var(--p31-motion-fast) var(--p31-ease-standard);
+}
+
+.project-card:hover {
+  border-color: var(--p31-glass-border);
+}
+
+.project-card.active {
+  border-color: var(--p31-teal);
+  background: rgba(93, 202, 165, 0.05);
+}
+
+.project-energy {
+  display: flex;
+  gap: var(--p31-space-1);
+  margin-top: var(--p31-space-3);
+}
+
+.energy-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: var(--p31-radius-full);
+  background: var(--p31-muted);
+}
+
+.energy-dot.filled {
+  background: var(--p31-teal);
+}
+
+/* Color picker for project tagging */
+.color-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: var(--p31-space-2);
+}
+
+.color-swatch {
+  aspect-ratio: 1;
+  border-radius: var(--p31-radius-md);
+  cursor: pointer;
+  transition: transform var(--p31-motion-fast) var(--p31-ease-standard);
+  border: 2px solid transparent;
+}
+
+.color-swatch:hover {
+  transform: scale(1.1);
+}
+
+.color-swatch.selected {
+  border-color: var(--p31-cloud);
+  box-shadow: 0 0 0 2px var(--p31-void);
+}
+
+/* Accessibility toggles */
+.accessibility-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--p31-space-3);
+  background: var(--p31-surface);
+  border-radius: var(--p31-radius-md);
+  margin-bottom: var(--p31-space-2);
+}
+
+.toggle-switch {
+  width: 48px;
+  height: 28px;
+  border-radius: var(--p31-radius-full);
+  background: var(--p31-surface2);
+  position: relative;
+  cursor: pointer;
+  transition: background var(--p31-motion-fast) var(--p31-ease-standard);
+}
+
+.toggle-switch.active {
+  background: var(--p31-teal);
+}
+
+.toggle-knob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--p31-radius-full);
+  background: var(--p31-cloud);
+  transition: transform var(--p31-motion-fast) var(--p31-ease-standard);
+}
+
+.toggle-switch.active .toggle-knob {
+  transform: translateX(20px);
+}
+
+/* Status light indicator */
+.status-light {
+  width: 12px;
+  height: 12px;
+  border-radius: var(--p31-radius-full);
+  background: var(--p31-muted);
+}
+
+.status-light.online {
+  background: var(--p31-phosphorus);
+  box-shadow: 0 0 8px var(--p31-phosphorus);
+}
+
+.status-light.syncing {
+  background: var(--p31-amber);
+  animation: pulse 1s ease-in-out infinite;
+}
+
+.status-light.offline {
+  background: var(--p31-coral);
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .status-light.syncing {
+    animation: none;
+  }
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .pain-scale {
+    gap: var(--p31-space-1);
+    padding: var(--p31-space-2);
+  }
+
+  .pain-level {
+    font-size: var(--p31-text-sm);
+  }
+
+  .rest-timer {
+    width: 150px;
+    height: 150px;
+  }
+
+  .rest-timer-inner {
+    width: 125px;
+    height: 125px;
+  }
+
+  .big-button {
+    min-height: 56px;
+    font-size: var(--p31-text-base);
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .project-card,
+  .pain-scale {
+    border-width: 2px;
+  }
+
+  .pain-level.selected {
+    border-width: 3px;
+  }
+}

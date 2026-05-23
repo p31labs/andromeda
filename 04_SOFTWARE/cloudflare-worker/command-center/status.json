@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-22T19:47:00-04:00",
+  "updated": "2026-05-23T07:47:39-04:00",
   "audit": {
     "probed_at": "2026-04-26T00:24:05-04:00",
     "method": "curl \u2014 GET -L, 5\u20138s timeout; OPTIONS/POST where noted",
@@ -182,7 +182,9 @@
     "k4_viz_url": "https://k4-cage.trimtab-signal.workers.dev/viz",
     "k4_api_url": "https://k4-cage.trimtab-signal.workers.dev/api",
     "phenix_url": "https://p31-phenix.pages.dev",
-    "hearing_ops_url": "https://ops.p31ca.org"
+    "hearing_ops_url": "https://ops.p31ca.org",
+    "love_ledger_worker": "deployed with CWP-042 GME tracking",
+    "cwp_042_status": "implemented and deployed"
   },
   "dates": [
     {
@@ -264,6 +266,10 @@
     {
       "date": "2026-09-30",
       "event": "FERS filing deadline"
+    },
+    {
+      "date": "2026-05-22",
+      "event": "VS Code Webview CSP blackout patched across all extensions — p31ca, p31-vs-code-ai-extension, packages/vscode-extension: added unsafe-eval, joinPath portable URIs"
     },
     {
       "date": "2026-05-22",

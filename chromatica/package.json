@@ -1,0 +1,58 @@
+{
+  "name": "chromatica",
+  "version": "2.0.0",
+  "description": "Chromatica - Arthritis-Optimized Creative Workstation for Wife",
+  "type": "module",
+  "author": "P31 Labs <will@p31ca.org>",
+  "license": "AGPL-3.0",
+  "keywords": [
+    "p31",
+    "12-pillar",
+    "mvp",
+    "accessibility",
+    "arthritis",
+    "creative-tools"
+  ],
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint . --ext ts,tsx",
+    "format": "prettier --write \"src/**/*.{ts,tsx,css}\"",
+    "deploy": "wrangler pages deploy dist"
+  },
+  "dependencies": {
+    "@p31/arcade-theme": "workspace:*",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "zustand": "^4.5.2",
+    "lucide-react": "^0.400.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "typescript": "^5.4.5",
+    "vite": "^5.3.1",
+    "vitest": "^1.6.0",
+    "wrangler": "^3.60.0"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

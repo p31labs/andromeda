@@ -1,0 +1,470 @@
+
+> p31_andromeda@1.0.0 build C:\Users\sandra\Documents\P31_Andromeda
+> astro build "--recursive"
+
+Missing "./sha256" specifier in "@noble/hashes" package
+  Location:
+    C:\Users\sandra\Documents\P31_Andromeda\node_modules\.pnpm\vite@5.4.21_@types+node@25._8fd7ca6cecef90376d9b4ce6f64f8d67\node_modules\vite\dist\node\chunks\dep-BK3b2jBa.js:46042:25
+  Stack trace:
+    at e (file:///C:/Users/sandra/Documents/P31_Andromeda/node_modules/.pnpm/vite@5.4.21_@types+node@25._8fd7ca6cecef90376d9b4ce6f64f8d67/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:46042:25)
+    at o (file:///C:/Users/sandra/Documents/P31_Andromeda/node_modules/.pnpm/vite@5.4.21_@types+node@25._8fd7ca6cecef90376d9b4ce6f64f8d67/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:46042:1297)
+    at resolveDeepImport (file:///C:/Users/sandra/Documents/P31_Andromeda/node_modules/.pnpm/vite@5.4.21_@types+node@25._8fd7ca6cecef90376d9b4ce6f64f8d67/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:46686:25)
+    at ResolveIdContext.resolveId (file:///C:/Users/sandra/Documents/P31_Andromeda/node_modules/.pnpm/vite@5.4.21_@types+node@25._8fd7ca6cecef90376d9b4ce6f64f8d67/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:46201:19)
+    at async file:///C:/Users/sandra/Documents/P31_Andromeda/node_modules/.pnpm/vite@5.4.21_@types+node@25._8fd7ca6cecef90376d9b4ce6f64f8d67/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:66542:15
+ΓÇëELIFECYCLEΓÇë Command failed with exit code 1.
+
+> p31_andromeda@1.0.0 build C:\Users\sandra\Documents\P31_Andromeda
+> pnpm run build -r
+
+04_SOFTWARE                              | ΓÇëWARNΓÇë The field "pnpm.overrides" was found in C:\Users\sandra\Documents\P31_Andromeda\04_SOFTWARE/package.json. This will not take effect. You should configure "pnpm.overrides" at the root of the workspace instead.
+
+> p31_andromeda@1.0.0 build C:\Users\sandra\Documents\P31_Andromeda
+> pnpm run build -r "-r"
+
+04_SOFTWARE                              | ΓÇëWARNΓÇë The field "pnpm.overrides" was found in C:\Users\sandra\Documents\P31_Andromeda\04_SOFTWARE/package.json. This will not take effect. You should configure "pnpm.overrides" at the root of the workspace instead.
+
+> p31_andromeda@1.0.0 build C:\Users\sandra\Documents\P31_Andromeda
+> pnpm run build -r "-r" "-r"
+
+04_SOFTWARE                              | ΓÇëWARNΓÇë The field "pnpm.overrides" was found in C:\Users\sandra\Documents\P31_Andromeda\04_SOFTWARE/package.json. This will not take effect. You should configure "pnpm.overrides" at the root of the workspace instead.
+
+> p31_andromeda@1.0.0 build C:\Users\sandra\Documents\P31_Andromeda
+> pnpm run build -r "-r" "-r" "-r"
+
+04_SOFTWARE                              | ΓÇëWARNΓÇë The field "pnpm.overrides" was found in C:\Users\sandra\Documents\P31_Andromeda\04_SOFTWARE/package.json. This will not take effect. You should configure "pnpm.overrides" at the root of the workspace instead.
+
+> p31_andromeda@1.0.0 build C:\Users\sandra\Documents\P31_Andromeda
+> pnpm run build -r "-r" "-r" "-r" "-r"
+
+04_SOFTWARE                              | ΓÇëWARNΓÇë The field "pnpm.overrides" was found in C:\Users\sandra\Documents\P31_Andromeda\04_SOFTWARE/package.json. This will not take effect. You should configure "pnpm.overrides" at the root of the workspace instead.
+
+> p31_andromeda@1.0.0 build C:\Users\sandra\Documents\P31_Andromeda
+> pnpm run build -r "-r" "-r" "-r" "-r" "-r"
+
+04_SOFTWARE                              | ΓÇëWARNΓÇë The field "pnpm.overrides" was found in C:\Users\sandra\Documents\P31_Andromeda\04_SOFTWARE/package.json. This will not take effect. You should configure "pnpm.overrides" at the root of the workspace instead.
+
+> p31_andromeda@1.0.0 build C:\Users\sandra\Documents\P31_Andromeda
+> pnpm run build -r "-r" "-r" "-r" "-r" "-r" "-r"
+
+04_SOFTWARE                              | ΓÇëWARNΓÇë The field "pnpm.overrides" was found in C:\Users\sandra\Documents\P31_Andromeda\04_SOFTWARE/package.json. This will not take effect. You should configure "pnpm.overrides" at the root of the workspace instead.
+
+> p31_andromeda@1.0.0 build C:\Users\sandra\Documents\P31_Andromeda
+> pnpm run build -r "-r" "-r" "-r" "-r" "-r" "-r" "-r"
+
+04_SOFTWARE                              | ΓÇëWARNΓÇë The field "pnpm.overrides" was found in C:\Users\sandra\Documents\P31_Andromeda\04_SOFTWARE/package.json. This will not take effect. You should configure "pnpm.overrides" at the root of the workspace instead.
+
+> p31_andromeda@1.0.0 build C:\Users\sandra\Documents\P31_Andromeda
+> pnpm run build -r "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r"
+
+04_SOFTWARE                              | ΓÇëWARNΓÇë The field "pnpm.overrides" was found in C:\Users\sandra\Documents\P31_Andromeda\04_SOFTWARE/package.json. This will not take effect. You should configure "pnpm.overrides" at the root of the workspace instead.
+
+> p31_andromeda@1.0.0 build C:\Users\sandra\Documents\P31_Andromeda
+> pnpm run build -r "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r"
+
+04_SOFTWARE                              | ΓÇëWARNΓÇë The field "pnpm.overrides" was found in C:\Users\sandra\Documents\P31_Andromeda\04_SOFTWARE/package.json. This will not take effect. You should configure "pnpm.overrides" at the root of the workspace instead.
+
+> p31_andromeda@1.0.0 build C:\Users\sandra\Documents\P31_Andromeda
+> pnpm run build -r "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r"
+
+04_SOFTWARE                              | ΓÇëWARNΓÇë The field "pnpm.overrides" was found in C:\Users\sandra\Documents\P31_Andromeda\04_SOFTWARE/package.json. This will not take effect. You should configure "pnpm.overrides" at the root of the workspace instead.
+
+> p31_andromeda@1.0.0 build C:\Users\sandra\Documents\P31_Andromeda
+> pnpm run build -r "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r"
+
+04_SOFTWARE                              | ΓÇëWARNΓÇë The field "pnpm.overrides" was found in C:\Users\sandra\Documents\P31_Andromeda\04_SOFTWARE/package.json. This will not take effect. You should configure "pnpm.overrides" at the root of the workspace instead.
+
+> p31_andromeda@1.0.0 build C:\Users\sandra\Documents\P31_Andromeda
+> pnpm run build -r "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r"
+
+04_SOFTWARE                              | ΓÇëWARNΓÇë The field "pnpm.overrides" was found in C:\Users\sandra\Documents\P31_Andromeda\04_SOFTWARE/package.json. This will not take effect. You should configure "pnpm.overrides" at the root of the workspace instead.
+
+> p31_andromeda@1.0.0 build C:\Users\sandra\Documents\P31_Andromeda
+> pnpm run build -r "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r"
+
+04_SOFTWARE                              | ΓÇëWARNΓÇë The field "pnpm.overrides" was found in C:\Users\sandra\Documents\P31_Andromeda\04_SOFTWARE/package.json. This will not take effect. You should configure "pnpm.overrides" at the root of the workspace instead.
+
+> p31_andromeda@1.0.0 build C:\Users\sandra\Documents\P31_Andromeda
+> pnpm run build -r "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r"
+
+04_SOFTWARE                              | ΓÇëWARNΓÇë The field "pnpm.overrides" was found in C:\Users\sandra\Documents\P31_Andromeda\04_SOFTWARE/package.json. This will not take effect. You should configure "pnpm.overrides" at the root of the workspace instead.
+
+> p31_andromeda@1.0.0 build C:\Users\sandra\Documents\P31_Andromeda
+> pnpm run build -r "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r"
+
+04_SOFTWARE                              | ΓÇëWARNΓÇë The field "pnpm.overrides" was found in C:\Users\sandra\Documents\P31_Andromeda\04_SOFTWARE/package.json. This will not take effect. You should configure "pnpm.overrides" at the root of the workspace instead.
+
+> p31_andromeda@1.0.0 build C:\Users\sandra\Documents\P31_Andromeda
+> pnpm run build -r "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r"
+
+04_SOFTWARE                              | ΓÇëWARNΓÇë The field "pnpm.overrides" was found in C:\Users\sandra\Documents\P31_Andromeda\04_SOFTWARE/package.json. This will not take effect. You should configure "pnpm.overrides" at the root of the workspace instead.
+
+> p31_andromeda@1.0.0 build C:\Users\sandra\Documents\P31_Andromeda
+> pnpm run build -r "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r"
+
+04_SOFTWARE                              | ΓÇëWARNΓÇë The field "pnpm.overrides" was found in C:\Users\sandra\Documents\P31_Andromeda\04_SOFTWARE/package.json. This will not take effect. You should configure "pnpm.overrides" at the root of the workspace instead.
+
+> p31_andromeda@1.0.0 build C:\Users\sandra\Documents\P31_Andromeda
+> pnpm run build -r "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r"
+
+04_SOFTWARE                              | ΓÇëWARNΓÇë The field "pnpm.overrides" was found in C:\Users\sandra\Documents\P31_Andromeda\04_SOFTWARE/package.json. This will not take effect. You should configure "pnpm.overrides" at the root of the workspace instead.
+
+> p31_andromeda@1.0.0 build C:\Users\sandra\Documents\P31_Andromeda
+> pnpm run build -r "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r"
+
+04_SOFTWARE                              | ΓÇëWARNΓÇë The field "pnpm.overrides" was found in C:\Users\sandra\Documents\P31_Andromeda\04_SOFTWARE/package.json. This will not take effect. You should configure "pnpm.overrides" at the root of the workspace instead.
+
+> p31_andromeda@1.0.0 build C:\Users\sandra\Documents\P31_Andromeda
+> pnpm run build -r "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r"
+
+04_SOFTWARE                              | ΓÇëWARNΓÇë The field "pnpm.overrides" was found in C:\Users\sandra\Documents\P31_Andromeda\04_SOFTWARE/package.json. This will not take effect. You should configure "pnpm.overrides" at the root of the workspace instead.
+
+> p31_andromeda@1.0.0 build C:\Users\sandra\Documents\P31_Andromeda
+> pnpm run build -r "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r"
+
+04_SOFTWARE                              | ΓÇëWARNΓÇë The field "pnpm.overrides" was found in C:\Users\sandra\Documents\P31_Andromeda\04_SOFTWARE/package.json. This will not take effect. You should configure "pnpm.overrides" at the root of the workspace instead.
+
+> p31_andromeda@1.0.0 build C:\Users\sandra\Documents\P31_Andromeda
+> pnpm run build -r "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r"
+
+04_SOFTWARE                              | ΓÇëWARNΓÇë The field "pnpm.overrides" was found in C:\Users\sandra\Documents\P31_Andromeda\04_SOFTWARE/package.json. This will not take effect. You should configure "pnpm.overrides" at the root of the workspace instead.
+
+> p31_andromeda@1.0.0 build C:\Users\sandra\Documents\P31_Andromeda
+> pnpm run build -r "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r"
+
+04_SOFTWARE                              | ΓÇëWARNΓÇë The field "pnpm.overrides" was found in C:\Users\sandra\Documents\P31_Andromeda\04_SOFTWARE/package.json. This will not take effect. You should configure "pnpm.overrides" at the root of the workspace instead.
+
+> p31_andromeda@1.0.0 build C:\Users\sandra\Documents\P31_Andromeda
+> pnpm run build -r "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r"
+
+04_SOFTWARE                              | ΓÇëWARNΓÇë The field "pnpm.overrides" was found in C:\Users\sandra\Documents\P31_Andromeda\04_SOFTWARE/package.json. This will not take effect. You should configure "pnpm.overrides" at the root of the workspace instead.
+
+> p31_andromeda@1.0.0 build C:\Users\sandra\Documents\P31_Andromeda
+> pnpm run build -r "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r"
+
+04_SOFTWARE                              | ΓÇëWARNΓÇë The field "pnpm.overrides" was found in C:\Users\sandra\Documents\P31_Andromeda\04_SOFTWARE/package.json. This will not take effect. You should configure "pnpm.overrides" at the root of the workspace instead.
+
+> p31_andromeda@1.0.0 build C:\Users\sandra\Documents\P31_Andromeda
+> pnpm run build -r "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r"
+
+04_SOFTWARE                              | ΓÇëWARNΓÇë The field "pnpm.overrides" was found in C:\Users\sandra\Documents\P31_Andromeda\04_SOFTWARE/package.json. This will not take effect. You should configure "pnpm.overrides" at the root of the workspace instead.
+
+> p31_andromeda@1.0.0 build C:\Users\sandra\Documents\P31_Andromeda
+> pnpm run build -r "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r"
+
+04_SOFTWARE                              | ΓÇëWARNΓÇë The field "pnpm.overrides" was found in C:\Users\sandra\Documents\P31_Andromeda\04_SOFTWARE/package.json. This will not take effect. You should configure "pnpm.overrides" at the root of the workspace instead.
+
+> p31_andromeda@1.0.0 build C:\Users\sandra\Documents\P31_Andromeda
+> pnpm run build -r "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r"
+
+04_SOFTWARE                              | ΓÇëWARNΓÇë The field "pnpm.overrides" was found in C:\Users\sandra\Documents\P31_Andromeda\04_SOFTWARE/package.json. This will not take effect. You should configure "pnpm.overrides" at the root of the workspace instead.
+
+> p31_andromeda@1.0.0 build C:\Users\sandra\Documents\P31_Andromeda
+> pnpm run build -r "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r"
+
+04_SOFTWARE                              | ΓÇëWARNΓÇë The field "pnpm.overrides" was found in C:\Users\sandra\Documents\P31_Andromeda\04_SOFTWARE/package.json. This will not take effect. You should configure "pnpm.overrides" at the root of the workspace instead.
+
+> p31_andromeda@1.0.0 build C:\Users\sandra\Documents\P31_Andromeda
+> pnpm run build -r "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r"
+
+04_SOFTWARE                              | ΓÇëWARNΓÇë The field "pnpm.overrides" was found in C:\Users\sandra\Documents\P31_Andromeda\04_SOFTWARE/package.json. This will not take effect. You should configure "pnpm.overrides" at the root of the workspace instead.
+
+> p31_andromeda@1.0.0 build C:\Users\sandra\Documents\P31_Andromeda
+> pnpm run build -r "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r"
+
+04_SOFTWARE                              | ΓÇëWARNΓÇë The field "pnpm.overrides" was found in C:\Users\sandra\Documents\P31_Andromeda\04_SOFTWARE/package.json. This will not take effect. You should configure "pnpm.overrides" at the root of the workspace instead.
+
+> p31_andromeda@1.0.0 build C:\Users\sandra\Documents\P31_Andromeda
+> pnpm run build -r "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r"
+
+04_SOFTWARE                              | ΓÇëWARNΓÇë The field "pnpm.overrides" was found in C:\Users\sandra\Documents\P31_Andromeda\04_SOFTWARE/package.json. This will not take effect. You should configure "pnpm.overrides" at the root of the workspace instead.
+
+> p31_andromeda@1.0.0 build C:\Users\sandra\Documents\P31_Andromeda
+> pnpm run build -r "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r"
+
+04_SOFTWARE                              | ΓÇëWARNΓÇë The field "pnpm.overrides" was found in C:\Users\sandra\Documents\P31_Andromeda\04_SOFTWARE/package.json. This will not take effect. You should configure "pnpm.overrides" at the root of the workspace instead.
+
+> p31_andromeda@1.0.0 build C:\Users\sandra\Documents\P31_Andromeda
+> pnpm run build -r "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r" "-r"
+
+'pnpm' is not recognized as an internal or external command,
+operable program or batch file.
+ΓÇëELIFECYCLEΓÇë Command failed with exit code 1.
+ΓÇëELIFECYCLEΓÇë Command failed with exit code 1.
+ΓÇëELIFECYCLEΓÇë Command failed with exit code 1.
+ΓÇëELIFECYCLEΓÇë Command failed with exit code 1.
+ΓÇëELIFECYCLEΓÇë Command failed with exit code 1.
+ΓÇëELIFECYCLEΓÇë Command failed with exit code 1.
+ΓÇëELIFECYCLEΓÇë Command failed with exit code 1.
+ΓÇëELIFECYCLEΓÇë Command failed with exit code 1.
+ΓÇëELIFECYCLEΓÇë Command failed with exit code 1.
+ΓÇëELIFECYCLEΓÇë Command failed with exit code 1.
+ΓÇëELIFECYCLEΓÇë Command failed with exit code 1.
+ΓÇëELIFECYCLEΓÇë Command failed with exit code 1.
+ΓÇëELIFECYCLEΓÇë Command failed with exit code 1.
+ΓÇëELIFECYCLEΓÇë Command failed with exit code 1.
+ΓÇëELIFECYCLEΓÇë Command failed with exit code 1.
+ΓÇëELIFECYCLEΓÇë Command failed with exit code 1.
+ΓÇëELIFECYCLEΓÇë Command failed with exit code 1.
+ΓÇëELIFECYCLEΓÇë Command failed with exit code 1.
+ΓÇëELIFECYCLEΓÇë Command failed with exit code 1.
+ΓÇëELIFECYCLEΓÇë Command failed with exit code 1.
+ΓÇëELIFECYCLEΓÇë Command failed with exit code 1.
+ΓÇëELIFECYCLEΓÇë Command failed with exit code 1.
+ΓÇëELIFECYCLEΓÇë Command failed with exit code 1.
+ΓÇëELIFECYCLEΓÇë Command failed with exit code 1.
+ΓÇëELIFECYCLEΓÇë Command failed with exit code 1.
+ΓÇëELIFECYCLEΓÇë Command failed with exit code 1.
+ΓÇëELIFECYCLEΓÇë Command failed with exit code 1.
+ΓÇëELIFECYCLEΓÇë Command failed with exit code 1.
+ΓÇëELIFECYCLEΓÇë Command failed with exit code 1.
+ΓÇëELIFECYCLEΓÇë Command failed with exit code 1.
+ΓÇëELIFECYCLEΓÇë Command failed with exit code 1.
+ΓÇëELIFECYCLEΓÇë Command failed with exit code 1.
+ΓÇëELIFECYCLEΓÇë Command failed with exit code 1.
+ΓÇëELIFECYCLEΓÇë Command failed with exit code 1.
+ΓÇëELIFECYCLEΓÇë Command failed with exit code 1.
+
+> p31_andromeda@1.0.0 build C:\Users\sandra\Documents\P31_Andromeda
+> pnpm -r run build
+
+04_SOFTWARE                              | ΓÇëWARNΓÇë The field "pnpm.overrides" was found in C:\Users\sandra\Documents\P31_Andromeda\04_SOFTWARE/package.json. This will not take effect. You should configure "pnpm.overrides" at the root of the workspace instead.
+Scope: 59 of 60 workspace projects
+04_SOFTWARE/cloudflare-worker build$ echo 'Build complete - Workers are JS only'
+04_SOFTWARE build$ turbo run build
+04_SOFTWARE/discord/p31-bot build$ tsc
+04_SOFTWARE/docs build$ astro build
+04_SOFTWARE/cloudflare-worker build: 'Build complete - Workers are JS only'
+04_SOFTWARE/cloudflare-worker build: Done
+04_SOFTWARE/frontend prebuild$ mkdir -p public/omnibus && cp ../p31-forge/out/*.docx public/omnibus/ 2>/dev/null || true
+04_SOFTWARE/frontend prebuild: The syntax of the command is incorrect.
+04_SOFTWARE/frontend prebuild: 'true' is not recognized as an internal or external command,
+04_SOFTWARE/frontend prebuild: operable program or batch file.
+04_SOFTWARE/frontend prebuild: Failed
+C:\Users\sandra\Documents\P31_Andromeda\04_SOFTWARE\frontend:
+ΓÇëERR_PNPM_RECURSIVE_RUN_FIRST_FAILΓÇë p31-frontend@0.1.0 prebuild: `mkdir -p public/omnibus && cp ../p31-forge/out/*.docx public/omnibus/ 2>/dev/null || true`
+Exit status 1
+04_SOFTWARE/p31-delta-hiring build$ tsc -p tsconfig.json --noEmit && vite build
+ΓÇëELIFECYCLEΓÇë Command failed with exit code 1.
+
+> p31_andromeda@1.0.0 build C:\Users\sandra\Documents\P31_Andromeda
+> pnpm -r run build
+
+04_SOFTWARE                              | ΓÇëWARNΓÇë The field "pnpm.overrides" was found in C:\Users\sandra\Documents\P31_Andromeda\04_SOFTWARE/package.json. This will not take effect. You should configure "pnpm.overrides" at the root of the workspace instead.
+Scope: 59 of 60 workspace projects
+04_SOFTWARE build$ turbo run build
+04_SOFTWARE/cloudflare-worker build$ echo 'Build complete - Workers are JS only'
+04_SOFTWARE/discord/p31-bot build$ tsc
+04_SOFTWARE/docs build$ astro build
+04_SOFTWARE/cloudflare-worker build: 'Build complete - Workers are JS only'
+04_SOFTWARE/cloudflare-worker build: Done
+04_SOFTWARE/frontend prebuild$ if not exist public\omnibus mkdir public\omnibus && xcopy /Y ..\p31-forge\out\*.docx public\omnibus\ >nul 2>&1
+04_SOFTWARE/frontend prebuild: Done
+04_SOFTWARE/frontend build$ tsc --noEmit && vite build
+04_SOFTWARE build: ΓÇó turbo 2.9.6
+04_SOFTWARE build:    ΓÇó Packages in scope: @p31/agent-engine, @p31/bonding, @p31/game-engine, @p31/harmonic-linter, @p31/k4-mesh-core, @p31/love-ledger, @p31/node-zero, @p31/oracle-terminal, @p31/q-distribution, @p31/quantum-core, @p31/quantum-edge, @p31/shared, @p31/sovereign, @p31/sovereign-sdk, @p31/spaceship-earth, k4-personal, p31-centaur-ede, p31-cockpit-panel, p31-cognitive-shield, p31-delta-hiring, p31-progressive-disclosure, p31-spoon-gauge, p31-workers, p31ca
+04_SOFTWARE build:    ΓÇó Running build in 24 packages
+04_SOFTWARE build:    ΓÇó Remote caching disabled
+04_SOFTWARE build: p31ca:build: cache miss, executing becda076642eff6e
+04_SOFTWARE build: @p31/shared:build: cache miss, executing 68747801feb4c690
+04_SOFTWARE build: @p31/quantum-core:build: cache miss, executing 07c76d7a8cb0229b
+04_SOFTWARE build: @p31/harmonic-linter:build: cache miss, executing 60785cfc402d7cba
+04_SOFTWARE build: @p31/oracle-terminal:build: cache miss, executing 3bbc58ef452785c8
+04_SOFTWARE build: @p31/game-engine:build: cache miss, executing d7ff4b1dad852ace
+04_SOFTWARE build: p31-delta-hiring:build: cache miss, executing caa79f9d04476884
+04_SOFTWARE build: @p31/node-zero:build: cache miss, executing 4410a96be94db638
+04_SOFTWARE build: @p31/q-distribution:build: cache miss, executing bc4743afe7df622e
+04_SOFTWARE build: @p31/love-ledger:build: cache miss, executing 5aaee14a96f5ad40
+04_SOFTWARE build: @p31/quantum-core:build: 
+04_SOFTWARE build: @p31/quantum-core:build: > @p31/quantum-core@1.0.0 build C:\Users\sandra\Documents\P31_Andromeda\04_SOFTWARE\packages\quantum-core
+04_SOFTWARE build: @p31/quantum-core:build: > tsc --noEmit
+04_SOFTWARE build: @p31/quantum-core:build: 
+04_SOFTWARE build: @p31/game-engine:build: 
+04_SOFTWARE build: @p31/game-engine:build: > @p31/game-engine@0.1.0-alpha.0 build C:\Users\sandra\Documents\P31_Andromeda\04_SOFTWARE\packages\game-engine
+04_SOFTWARE build: @p31/game-engine:build: > tsc
+04_SOFTWARE build: @p31/game-engine:build: 
+04_SOFTWARE build: @p31/node-zero:build: 
+04_SOFTWARE build: @p31/node-zero:build: > @p31/node-zero@0.2.0-alpha.0 build C:\Users\sandra\Documents\P31_Andromeda\04_SOFTWARE\packages\node-zero
+04_SOFTWARE build: @p31/node-zero:build: > tsc
+04_SOFTWARE build: @p31/node-zero:build: 
+04_SOFTWARE build: @p31/love-ledger:build: 
+04_SOFTWARE build: @p31/love-ledger:build: > @p31/love-ledger@0.1.0-alpha.0 build C:\Users\sandra\Documents\P31_Andromeda\04_SOFTWARE\packages\love-ledger
+04_SOFTWARE build: @p31/love-ledger:build: > tsc
+04_SOFTWARE build: @p31/love-ledger:build: 
+04_SOFTWARE build: p31ca:build: 
+04_SOFTWARE build: p31ca:build: > p31ca@0.0.1 prebuild C:\Users\sandra\Documents\P31_Andromeda\04_SOFTWARE\p31ca
+04_SOFTWARE build: p31ca:build: > node scripts/ops/ingest-glass-probes.mjs && node scripts/verify-p31-style.mjs && node scripts/verify-style-alignment.mjs && node scripts/verify-surface-canon.mjs && node scripts/build-fleet-entities.mjs && node scripts/verify-fleet-entities.mjs && node scripts/verify-ground-truth.mjs && node scripts/verify-worker-spa-launch.mjs && node scripts/verify-live-fleet-mesh.mjs && node scripts/verify-super-centaur-pack.mjs && node scripts/verify-synergetic.mjs && node scripts/verify-lattice-oracle.mjs && node scripts/verify-oqe-icosa.mjs && node scripts/verify-creator-economy.mjs && node scripts/verify-garden-zone-8b.mjs && node scripts/verify-geodesic-campaign.mjs && node scripts/verify-geodesic-room-wire.mjs && node scripts/verify-geodesic-build-snapshot.mjs && npm run verify:registry-urls && npm run verify:public-app-shell && npm run verify:delta-hiring && node scripts/verify-education.mjs && node scripts/hub/build-landing-data.mjs && node scripts/hub/verify.mjs && node scripts/hub/diff-index-sources.mjs
+04_SOFTWARE build: p31ca:build: 
+04_SOFTWARE build: @p31/harmonic-linter:build: 
+04_SOFTWARE build: @p31/harmonic-linter:build: > @p31/harmonic-linter@0.1.0-alpha.0 build C:\Users\sandra\Documents\P31_Andromeda\04_SOFTWARE\packages\harmonic-linter
+04_SOFTWARE build: @p31/harmonic-linter:build: > tsc
+04_SOFTWARE build: @p31/harmonic-linter:build: 
+04_SOFTWARE build: @p31/shared:build: 
+04_SOFTWARE build: @p31/shared:build: > @p31/shared@0.0.1 build C:\Users\sandra\Documents\P31_Andromeda\04_SOFTWARE\packages\shared
+04_SOFTWARE build: @p31/shared:build: > tsc
+04_SOFTWARE build: @p31/shared:build: 
+04_SOFTWARE build: @p31/q-distribution:build: 
+04_SOFTWARE build: @p31/q-distribution:build: > @p31/q-distribution@1.0.0 build C:\Users\sandra\Documents\P31_Andromeda\04_SOFTWARE\packages\q-distribution
+04_SOFTWARE build: @p31/q-distribution:build: > tsc --noEmit
+04_SOFTWARE build: @p31/q-distribution:build: 
+04_SOFTWARE build: p31-delta-hiring:build: 
+04_SOFTWARE build: p31-delta-hiring:build: > p31-delta-hiring@1.0.0 build C:\Users\sandra\Documents\P31_Andromeda\04_SOFTWARE\p31-delta-hiring
+04_SOFTWARE build: p31-delta-hiring:build: > tsc -p tsconfig.json --noEmit && vite build
+04_SOFTWARE build: p31-delta-hiring:build: 
+04_SOFTWARE build: @p31/oracle-terminal:build: 
+04_SOFTWARE build: @p31/oracle-terminal:build: > @p31/oracle-terminal@1.0.0 build C:\Users\sandra\Documents\P31_Andromeda\04_SOFTWARE\packages\oracle-terminal
+04_SOFTWARE build: @p31/oracle-terminal:build: > tsc
+04_SOFTWARE build: @p31/oracle-terminal:build: 
+04_SOFTWARE build: p31ca:build: ingest-glass-probes: skip (no home p31-ecosystem.json ΓÇö using committed C:\Users\sandra\Documents\P31_Andromeda\04_SOFTWARE\p31ca\src\data\ops-glass-probes.json)
+04_SOFTWARE build: p31ca:build: verify-p31-style: OK
+04_SOFTWARE build: p31ca:build: verify-style-alignment: OK ΓÇö 42 file(s) (scope: *-about.html)
+04_SOFTWARE build: @p31/sovereign-sdk:build: cache miss, executing 886f938a01bc3913
+04_SOFTWARE build: p31ca:build:   Γ£ô  AppShell.astro structural checks pass
+04_SOFTWARE build: p31ca:build:   Γ£ô  /pages/dome.astro ΓåÆ routeName="dome"
+04_SOFTWARE build: p31ca:build:   Γ£ô  /pages/research.astro ΓåÆ routeName="research"
+04_SOFTWARE build: p31ca:build:   Γ£ô  /pages/connect.astro ΓåÆ routeName="connect"
+04_SOFTWARE build: p31ca:build:   Γ£ô  /pages/ops.astro ΓåÆ routeName="ops"
+04_SOFTWARE build: p31ca:build:   Γ£ô  /pages/garden.astro ΓåÆ routeName="garden"
+04_SOFTWARE build: p31ca:build:   Γ£ô  /pages/passport.astro ΓåÆ routeName="passport"
+04_SOFTWARE build: p31ca:build:   ΓÜá  public/arcade-cards-about.html has no _redirects entry ΓÇö add redirect or delete file
+04_SOFTWARE build: p31ca:build:   ΓÜá  public/arcade-gridiron-about.html has no _redirects entry ΓÇö add redirect or delete file
+04_SOFTWARE build: p31ca:build:   ΓÜá  public/arcade-hub-about.html has no _redirects entry ΓÇö add redirect or delete file
+04_SOFTWARE build: p31ca:build:   ΓÜá  public/arcade-liquid-sculptor-about.html has no _redirects entry ΓÇö add redirect or delete file
+04_SOFTWARE build: p31ca:build:   ΓÜá  public/arcade-smallball-about.html has no _redirects entry ΓÇö add redirect or delete file
+04_SOFTWARE build: p31ca:build:   ΓÜá  public/arcade-strategy-about.html has no _redirects entry ΓÇö add redirect or delete file
+04_SOFTWARE build: p31ca:build:   ΓÜá  public/dome-generator.html has no _redirects entry ΓÇö add redirect or delete file
+04_SOFTWARE build: p31ca:build:   ΓÜá  public/fawn-guard.html has no _redirects entry ΓÇö add redirect or delete file
+04_SOFTWARE build: p31ca:build:   ΓÜá  public/larmor-about.html has no _redirects entry ΓÇö add redirect or delete file
+04_SOFTWARE build: p31ca:build:   ΓÜá  public/mvp-hub-legacy.html has no _redirects entry ΓÇö add redirect or delete file
+04_SOFTWARE build: p31ca:build:   ΓÜá  public/offline.html has no _redirects entry ΓÇö add redirect or delete file
+04_SOFTWARE build: p31ca:build:   ΓÜá  public/support.html has no _redirects entry ΓÇö add redirect or delete file
+04_SOFTWARE build: p31ca:build:   Γ£ù  src/pages/index.astro: does not use AppShell layout
+04_SOFTWARE build: p31ca:build:   Γ£ù  src/pages/index.astro: routeName="home" not found
+04_SOFTWARE build: p31ca:build: verify-surface-canon: FAIL ΓÇö 7/7 routes ┬╖ 7 pass ┬╖ 12 warn ┬╖ 2 fail
+04_SOFTWARE build: p31ca:build: ΓÇëELIFECYCLEΓÇë Command failed with exit code 1.
+04_SOFTWARE build:  ERROR  p31ca#build: command (C:\Users\sandra\Documents\P31_Andromeda\04_SOFTWARE\p31ca) C:\Users\sandra\AppData\Roaming\npm\pnpm.cmd run build exited (1)
+04_SOFTWARE build:  Tasks:    3 successful, 11 total
+04_SOFTWARE build: Cached:    0 cached, 11 total
+04_SOFTWARE build:   Time:    19.35s 
+04_SOFTWARE build: Failed:    p31ca#build
+04_SOFTWARE build:  WARNING  no output files found for task @p31/harmonic-linter#build. Please check your `outputs` key in `turbo.json`
+04_SOFTWARE build:  WARNING  no output files found for task @p31/q-distribution#build. Please check your `outputs` key in `turbo.json`
+04_SOFTWARE build:  ERROR  run failed: command  exited (1)
+04_SOFTWARE build: Failed
+C:\Users\sandra\Documents\P31_Andromeda\04_SOFTWARE:
+ΓÇëERR_PNPM_RECURSIVE_RUN_FIRST_FAILΓÇë p31-software@ build: `turbo run build`
+Exit status 1
+04_SOFTWARE/p31-delta-hiring build$ tsc -p tsconfig.json --noEmit && vite build
+ΓÇëELIFECYCLEΓÇë Command failed with exit code 1.
+
+> p31_andromeda@1.0.0 build C:\Users\sandra\Documents\P31_Andromeda
+> pnpm -r run build
+
+04_SOFTWARE                              | ΓÇëWARNΓÇë The field "pnpm.overrides" was found in C:\Users\sandra\Documents\P31_Andromeda\04_SOFTWARE/package.json. This will not take effect. You should configure "pnpm.overrides" at the root of the workspace instead.
+Scope: 59 of 60 workspace projects
+04_SOFTWARE build$ turbo run build
+04_SOFTWARE/cloudflare-worker build$ echo 'Build complete - Workers are JS only'
+04_SOFTWARE/discord/p31-bot build$ tsc
+04_SOFTWARE/docs build$ astro build
+04_SOFTWARE/cloudflare-worker build: 'Build complete - Workers are JS only'
+04_SOFTWARE/cloudflare-worker build: Done
+04_SOFTWARE/frontend prebuild$ if not exist public\omnibus mkdir public\omnibus && xcopy /Y ..\p31-forge\out\*.docx public\omnibus\ >nul 2>&1
+04_SOFTWARE/frontend prebuild: Done
+04_SOFTWARE/frontend build$ tsc --noEmit && vite build
+04_SOFTWARE build: ΓÇó turbo 2.9.6
+04_SOFTWARE build:    ΓÇó Packages in scope: @p31/agent-engine, @p31/bonding, @p31/game-engine, @p31/harmonic-linter, @p31/k4-mesh-core, @p31/love-ledger, @p31/node-zero, @p31/oracle-terminal, @p31/q-distribution, @p31/quantum-core, @p31/quantum-edge, @p31/shared, @p31/sovereign, @p31/sovereign-sdk, @p31/spaceship-earth, k4-personal, p31-centaur-ede, p31-cockpit-panel, p31-cognitive-shield, p31-delta-hiring, p31-progressive-disclosure, p31-spoon-gauge, p31-workers, p31ca
+04_SOFTWARE build:    ΓÇó Running build in 24 packages
+04_SOFTWARE build:    ΓÇó Remote caching disabled
+04_SOFTWARE build: @p31/shared:build: cache miss, executing 68747801feb4c690
+04_SOFTWARE build: p31ca:build: cache miss, executing ae4fdf24b60fe9ed
+04_SOFTWARE build: @p31/oracle-terminal:build: cache miss, executing 3bbc58ef452785c8
+04_SOFTWARE build: @p31/game-engine:build: cache miss, executing d7ff4b1dad852ace
+04_SOFTWARE build: p31-delta-hiring:build: cache miss, executing caa79f9d04476884
+04_SOFTWARE build: @p31/harmonic-linter:build: cache hit, replaying logs 60785cfc402d7cba
+04_SOFTWARE build: @p31/harmonic-linter:build: 
+04_SOFTWARE build: @p31/harmonic-linter:build: > @p31/harmonic-linter@0.1.0-alpha.0 build C:\Users\sandra\Documents\P31_Andromeda\04_SOFTWARE\packages\harmonic-linter
+04_SOFTWARE build: @p31/harmonic-linter:build: > tsc
+04_SOFTWARE build: @p31/harmonic-linter:build: 
+04_SOFTWARE build: @p31/node-zero:build: cache miss, executing 4410a96be94db638
+04_SOFTWARE build: @p31/q-distribution:build: cache hit, replaying logs bc4743afe7df622e
+04_SOFTWARE build: @p31/q-distribution:build: 
+04_SOFTWARE build: @p31/q-distribution:build: > @p31/q-distribution@1.0.0 build C:\Users\sandra\Documents\P31_Andromeda\04_SOFTWARE\packages\q-distribution
+04_SOFTWARE build: @p31/q-distribution:build: > tsc --noEmit
+04_SOFTWARE build: @p31/q-distribution:build: 
+04_SOFTWARE build: @p31/quantum-core:build: cache hit, replaying logs 07c76d7a8cb0229b
+04_SOFTWARE build: @p31/quantum-core:build: 
+04_SOFTWARE build: @p31/quantum-core:build: > @p31/quantum-core@1.0.0 build C:\Users\sandra\Documents\P31_Andromeda\04_SOFTWARE\packages\quantum-core
+04_SOFTWARE build: @p31/quantum-core:build: > tsc --noEmit
+04_SOFTWARE build: @p31/quantum-core:build: 
+04_SOFTWARE build: @p31/love-ledger:build: cache miss, executing 5aaee14a96f5ad40
+04_SOFTWARE build: @p31/sovereign-sdk:build: cache miss, executing 886f938a01bc3913
+04_SOFTWARE build: @p31/love-ledger:build: 
+04_SOFTWARE build: @p31/love-ledger:build: > @p31/love-ledger@0.1.0-alpha.0 build C:\Users\sandra\Documents\P31_Andromeda\04_SOFTWARE\packages\love-ledger
+04_SOFTWARE build: @p31/love-ledger:build: > tsc
+04_SOFTWARE build: @p31/love-ledger:build: 
+04_SOFTWARE build: @p31/node-zero:build: 
+04_SOFTWARE build: @p31/node-zero:build: > @p31/node-zero@0.2.0-alpha.0 build C:\Users\sandra\Documents\P31_Andromeda\04_SOFTWARE\packages\node-zero
+04_SOFTWARE build: @p31/node-zero:build: > tsc
+04_SOFTWARE build: @p31/node-zero:build: 
+04_SOFTWARE build: @p31/sovereign-sdk:build: 
+04_SOFTWARE build: @p31/sovereign-sdk:build: > @p31/sovereign-sdk@1.0.0 build C:\Users\sandra\Documents\P31_Andromeda\04_SOFTWARE\packages\sovereign-sdk
+04_SOFTWARE build: @p31/sovereign-sdk:build: > tsc
+04_SOFTWARE build: @p31/sovereign-sdk:build: 
+04_SOFTWARE build: @p31/game-engine:build: 
+04_SOFTWARE build: @p31/game-engine:build: > @p31/game-engine@0.1.0-alpha.0 build C:\Users\sandra\Documents\P31_Andromeda\04_SOFTWARE\packages\game-engine
+04_SOFTWARE build: @p31/game-engine:build: > tsc
+04_SOFTWARE build: @p31/game-engine:build: 
+04_SOFTWARE build: @p31/oracle-terminal:build: 
+04_SOFTWARE build: @p31/oracle-terminal:build: > @p31/oracle-terminal@1.0.0 build C:\Users\sandra\Documents\P31_Andromeda\04_SOFTWARE\packages\oracle-terminal
+04_SOFTWARE build: @p31/oracle-terminal:build: > tsc
+04_SOFTWARE build: @p31/oracle-terminal:build: 
+04_SOFTWARE build: p31-delta-hiring:build: 
+04_SOFTWARE build: p31-delta-hiring:build: > p31-delta-hiring@1.0.0 build C:\Users\sandra\Documents\P31_Andromeda\04_SOFTWARE\p31-delta-hiring
+04_SOFTWARE build: p31-delta-hiring:build: > tsc -p tsconfig.json --noEmit && vite build
+04_SOFTWARE build: p31-delta-hiring:build: 
+04_SOFTWARE build: @p31/shared:build: 
+04_SOFTWARE build: @p31/shared:build: > @p31/shared@0.0.1 build C:\Users\sandra\Documents\P31_Andromeda\04_SOFTWARE\packages\shared
+04_SOFTWARE build: @p31/shared:build: > tsc
+04_SOFTWARE build: @p31/shared:build: 
+04_SOFTWARE build: p31ca:build: 
+04_SOFTWARE build: p31ca:build: > p31ca@0.0.1 prebuild C:\Users\sandra\Documents\P31_Andromeda\04_SOFTWARE\p31ca
+04_SOFTWARE build: p31ca:build: > node scripts/ops/ingest-glass-probes.mjs && node scripts/verify-p31-style.mjs && node scripts/verify-style-alignment.mjs && node scripts/verify-surface-canon.mjs && node scripts/build-fleet-entities.mjs && node scripts/verify-fleet-entities.mjs && node scripts/verify-ground-truth.mjs && node scripts/verify-worker-spa-launch.mjs && node scripts/verify-live-fleet-mesh.mjs && node scripts/verify-super-centaur-pack.mjs && node scripts/verify-synergetic.mjs && node scripts/verify-lattice-oracle.mjs && node scripts/verify-oqe-icosa.mjs && node scripts/verify-creator-economy.mjs && node scripts/verify-garden-zone-8b.mjs && node scripts/verify-geodesic-campaign.mjs && node scripts/verify-geodesic-room-wire.mjs && node scripts/verify-geodesic-build-snapshot.mjs && npm run verify:registry-urls && npm run verify:public-app-shell && npm run verify:delta-hiring && node scripts/verify-education.mjs && node scripts/hub/build-landing-data.mjs && node scripts/hub/verify.mjs && node scripts/hub/diff-index-sources.mjs
+04_SOFTWARE build: p31ca:build: 
+04_SOFTWARE build: p31ca:build: ingest-glass-probes: skip (no home p31-ecosystem.json ΓÇö using committed C:\Users\sandra\Documents\P31_Andromeda\04_SOFTWARE\p31ca\src\data\ops-glass-probes.json)
+04_SOFTWARE build: p31ca:build: verify-p31-style: OK
+04_SOFTWARE build: p31ca:build: verify-style-alignment: OK ΓÇö 42 file(s) (scope: *-about.html)
+04_SOFTWARE build: p31ca:build:   Γ£ô  AppShell.astro structural checks pass
+04_SOFTWARE build: p31ca:build:   Γ£ô  /pages/dome.astro ΓåÆ routeName="dome"
+04_SOFTWARE build: p31ca:build:   Γ£ô  /pages/research.astro ΓåÆ routeName="research"
+04_SOFTWARE build: p31ca:build:   Γ£ô  /pages/connect.astro ΓåÆ routeName="connect"
+04_SOFTWARE build: p31ca:build:   ΓÜá  public/arcade-cards-about.html has no _redirects entry ΓÇö add redirect or delete file
+04_SOFTWARE build: p31ca:build:   Γ£ô  /pages/ops.astro ΓåÆ routeName="ops"
+04_SOFTWARE build: p31ca:build:   Γ£ô  /pages/garden.astro ΓåÆ routeName="garden"
+04_SOFTWARE build: p31ca:build:   Γ£ô  /pages/passport.astro ΓåÆ routeName="passport"
+04_SOFTWARE build: p31ca:build:   ΓÜá  public/arcade-gridiron-about.html has no _redirects entry ΓÇö add redirect or delete file
+04_SOFTWARE build: p31ca:build:   ΓÜá  public/arcade-hub-about.html has no _redirects entry ΓÇö add redirect or delete file
+04_SOFTWARE build: p31ca:build:   ΓÜá  public/arcade-liquid-sculptor-about.html has no _redirects entry ΓÇö add redirect or delete file
+04_SOFTWARE build: p31ca:build:   ΓÜá  public/arcade-smallball-about.html has no _redirects entry ΓÇö add redirect or delete file
+04_SOFTWARE build: p31ca:build:   ΓÜá  public/arcade-strategy-about.html has no _redirects entry ΓÇö add redirect or delete file
+04_SOFTWARE build: p31ca:build:   ΓÜá  public/dome-generator.html has no _redirects entry ΓÇö add redirect or delete file
+04_SOFTWARE build: p31ca:build:   ΓÜá  public/fawn-guard.html has no _redirects entry ΓÇö add redirect or delete file
+04_SOFTWARE build: p31ca:build:   ΓÜá  public/larmor-about.html has no _redirects entry ΓÇö add redirect or delete file
+04_SOFTWARE build: p31ca:build:   ΓÜá  public/mvp-hub-legacy.html has no _redirects entry ΓÇö add redirect or delete file
+04_SOFTWARE build: p31ca:build:   ΓÜá  public/offline.html has no _redirects entry ΓÇö add redirect or delete file
+04_SOFTWARE build: p31ca:build:   ΓÜá  public/support.html has no _redirects entry ΓÇö add redirect or delete file
+04_SOFTWARE build: p31ca:build:   Γ£ù  src/pages/index.astro: does not use AppShell layout
+04_SOFTWARE build: p31ca:build:   Γ£ù  src/pages/index.astro: routeName="home" not found
+04_SOFTWARE build: p31ca:build: verify-surface-canon: FAIL ΓÇö 7/7 routes ┬╖ 7 pass ┬╖ 12 warn ┬╖ 2 fail
+04_SOFTWARE build: p31ca:build: ΓÇëELIFECYCLEΓÇë Command failed with exit code 1.
+04_SOFTWARE build:  ERROR  p31ca#build: command (C:\Users\sandra\Documents\P31_Andromeda\04_SOFTWARE\p31ca) C:\Users\sandra\AppData\Roaming\npm\pnpm.cmd run build exited (1)
+04_SOFTWARE build:  Tasks:    4 successful, 11 total
+04_SOFTWARE build: Cached:    3 cached, 11 total
+04_SOFTWARE build:   Time:    8.367s 
+04_SOFTWARE build: Failed:    p31ca#build
+04_SOFTWARE build:  WARNING  no output files found for task @p31/sovereign-sdk#build. Please check your `outputs` key in `turbo.json`
+04_SOFTWARE build:  ERROR  run failed: command  exited (1)
+04_SOFTWARE build: Failed
+C:\Users\sandra\Documents\P31_Andromeda\04_SOFTWARE:
+ΓÇëERR_PNPM_RECURSIVE_RUN_FIRST_FAILΓÇë p31-software@ build: `turbo run build`
+Exit status 1
+04_SOFTWARE/p31-delta-hiring build$ tsc -p tsconfig.json --noEmit && vite build
+ΓÇëELIFECYCLEΓÇë Command failed with exit code 1.

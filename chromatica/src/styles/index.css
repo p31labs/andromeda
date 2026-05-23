@@ -1,0 +1,331 @@
+/**
+ * P31 12-Pillar MVP Template - Global Styles
+ * Version: 1.0.0
+ * 
+ * Pillar 5: UI - Global styles and CSS variables
+ * Reference: docs/P31-ARCHITECTURAL-CANON.md
+ */
+
+/* ============================================
+   P31 CANONICAL DESIGN TOKENS
+   ============================================ */
+
+:root {
+  /* Core Colors (Posner Cage: Ca9/PO4/6 topology) */
+  --p31-void: #0f1115;
+  --p31-teal: #5DCAA5;
+  --p31-coral: #cc6247;
+  --p31-blue: #6B8DD6;
+  
+  /* Extended Palette */
+  --p31-white: #ffffff;
+  --p31-gray-100: #f5f5f5;
+  --p31-gray-200: #e5e5e5;
+  --p31-gray-300: #d4d4d4;
+  --p31-gray-400: #a3a3a3;
+  --p31-gray-500: #737373;
+  --p31-gray-600: #525252;
+  --p31-gray-700: #404040;
+  --p31-gray-800: #262626;
+  --p31-gray-900: #171717;
+  
+  /* Semantic Colors */
+  --p31-text-primary: #171717;
+  --p31-text-secondary: #525252;
+  --p31-text-tertiary: #737373;
+  --p31-text-inverse: #ffffff;
+  
+  --p31-bg-primary: #ffffff;
+  --p31-bg-secondary: #f5f5f5;
+  --p31-bg-tertiary: #e5e5e5;
+  
+  --p31-border-light: #e5e5e5;
+  --p31-border-medium: #d4d4d4;
+  --p31-border-dark: #a3a3a3;
+  
+  /* Status Colors */
+  --p31-success: #5DCAA5;
+  --p31-warning: #f59e0b;
+  --p31-error: #cc6247;
+  --p31-info: #6B8DD6;
+  
+  /* Sizing (Pillar 5: Touch targets) */
+  --p31-touch-min: 48px;
+  --p31-touch-large: 64px;
+  --p31-touch-elderly: 64px;
+  
+  /* Spacing */
+  --p31-space-xs: 4px;
+  --p31-space-sm: 8px;
+  --p31-space-md: 16px;
+  --p31-space-lg: 24px;
+  --p31-space-xl: 32px;
+  --p31-space-2xl: 48px;
+  
+  /* Typography */
+  --p31-font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --p31-font-mono: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', monospace;
+  
+  --p31-text-xs: 0.75rem;
+  --p31-text-sm: 0.875rem;
+  --p31-text-base: 1rem;
+  --p31-text-lg: 1.125rem;
+  --p31-text-xl: 1.25rem;
+  --p31-text-2xl: 1.5rem;
+  --p31-text-3xl: 1.875rem;
+  
+  /* Elderly Mode (Pillar 5) */
+  --p31-text-elderly: 1.5rem;
+  --p31-text-elderly-large: 2rem;
+  
+  /* Border Radius */
+  --p31-radius-sm: 4px;
+  --p31-radius-md: 6px;
+  --p31-radius-lg: 8px;
+  --p31-radius-xl: 12px;
+  --p31-radius-full: 9999px;
+  
+  /* Shadows */
+  --p31-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --p31-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  --p31-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+  
+  /* Transitions (Pillar 5: Reduced motion) */
+  --p31-transition-fast: 150ms ease;
+  --p31-transition-base: 250ms ease;
+  --p31-transition-slow: 350ms ease;
+  
+  /* Z-Index Scale */
+  --p31-z-base: 0;
+  --p31-z-dropdown: 100;
+  --p31-z-sticky: 200;
+  --p31-z-fixed: 300;
+  --p31-z-modal-backdrop: 400;
+  --p31-z-modal: 500;
+  --p31-z-popover: 600;
+  --p31-z-tooltip: 700;
+}
+
+/* ============================================
+   DARK MODE
+   ============================================ */
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --p31-text-primary: #f5f5f5;
+    --p31-text-secondary: #a3a3a3;
+    --p31-text-tertiary: #737373;
+    
+    --p31-bg-primary: #0f1115;
+    --p31-bg-secondary: #1a1a1a;
+    --p31-bg-tertiary: #262626;
+    
+    --p31-border-light: #404040;
+    --p31-border-medium: #525252;
+    --p31-border-dark: #737373;
+  }
+}
+
+/* Manual dark mode override */
+[data-theme="dark"] {
+  --p31-text-primary: #f5f5f5;
+  --p31-text-secondary: #a3a3a3;
+  --p31-text-tertiary: #737373;
+  
+  --p31-bg-primary: #0f1115;
+  --p31-bg-secondary: #1a1a1a;
+  --p31-bg-tertiary: #262626;
+  
+  --p31-border-light: #404040;
+  --p31-border-medium: #525252;
+  --p31-border-dark: #737373;
+}
+
+/* ============================================
+   RESET & BASE
+   ============================================ */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-family: var(--p31-font-sans);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--p31-bg-primary);
+  color: var(--p31-text-primary);
+  min-height: 100vh;
+}
+
+/* ============================================
+   ACCESSIBILITY
+   ============================================ */
+
+/* Focus styles */
+:focus-visible {
+  outline: 3px solid var(--p31-teal);
+  outline-offset: 2px;
+}
+
+/* Reduced motion (Pillar 5) */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  :root {
+    --p31-border-light: #000;
+    --p31-border-medium: #000;
+    --p31-border-dark: #000;
+  }
+}
+
+/* Screen reader only */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+
+/* Touch targets */
+.p31-touch-target {
+  min-width: var(--p31-touch-min);
+  min-height: var(--p31-touch-min);
+}
+
+.p31-touch-target-large {
+  min-width: var(--p31-touch-large);
+  min-height: var(--p31-touch-large);
+}
+
+/* Text utilities */
+.p31-text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.p31-text-balance {
+  text-wrap: balance;
+}
+
+/* Layout utilities */
+.p31-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--p31-space-md);
+}
+
+.p31-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+/* ============================================
+   P31 SPECIFIC COMPONENTS
+   ============================================ */
+
+/* PQC Badge */
+.p31-pqc-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--p31-space-xs);
+  padding: var(--p31-space-xs) var(--p31-space-sm);
+  background-color: rgba(93, 202, 165, 0.1);
+  color: var(--p31-teal);
+  font-size: var(--p31-text-xs);
+  font-weight: 600;
+  border-radius: var(--p31-radius-md);
+  border: 1px solid rgba(93, 202, 165, 0.3);
+}
+
+/* Context indicators */
+.p31-context-home {
+  color: var(--p31-teal);
+}
+
+.p31-context-business {
+  color: var(--p31-coral);
+}
+
+.p31-context-family {
+  color: var(--p31-blue);
+}
+
+/* Loading spinner */
+@keyframes p31-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.p31-spinner {
+  animation: p31-spin 1s linear infinite;
+}
+
+/* Pulse animation for live indicators */
+@keyframes p31-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.p31-pulse {
+  animation: p31-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* ============================================
+   PRINT STYLES
+   ============================================ */
+
+@media print {
+  * {
+    background: transparent !important;
+    color: black !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+  
+  .p31-help-support,
+  .p31-navigation {
+    display: none !important;
+  }
+}

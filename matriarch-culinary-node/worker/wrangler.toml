@@ -1,0 +1,18 @@
+name = "matriarch-culinary-node-worker"
+type = "javascript"
+dev_asset_paths = ["./public"]
+
+[vars]
+PGLITE_DB_NAME = "matriarch_db"
+
+[durable_objects]
+bindings = [{ name = "DB_OBJECT", class_name = "PGLiteDurableObject" }]
+
+[migrations]
+table = "durable_objects_migrations"
+script = "./migrations.js"
+
+# PGLite specific settings
+[[kv_namespaces]]
+binding = "PGLITE_PERSISTENCE"
+id = "<YOUR_KV_NAMESPACE_ID>" # Replace with your KV Namespace ID

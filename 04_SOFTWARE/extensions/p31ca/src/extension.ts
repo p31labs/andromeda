@@ -164,13 +164,11 @@ export function activate(context: vscode.ExtensionContext) {
         );
 
         // compute URI for bundled script
-        const scriptPathOnDisk = vscode.Uri.file(
-            path.join(context.extensionPath, 'dist', 'webview', 'bundle.js')
-        );
+        const scriptPathOnDisk = vscode.Uri.joinPath(context.extensionUri, 'dist', 'webview', 'bundle.js');
         const scriptUri = panel.webview.asWebviewUri(scriptPathOnDisk);
 
         // Set the initial HTML payload
-        panel.webview.html = getWebviewContent(scriptUri);
+        panel.webview.html = getWebviewContent(scriptUri, panel.webview.cspSource);
 
         // --- 1. ESTABLISH THE BUFFER AGENT LINK ---
         function connectToBuffer() {
@@ -296,14 +294,13 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(disposable);
 }
 
-function getWebviewContent(scriptUri?: vscode.Uri) {
-    // This is a placeholder shell until the React/Three.js bundle is loaded.
-    // When compilation succeeds the bundle will mount into the <div id="root"/>.
+function getWebviewContent(scriptUri: vscode.Uri, cspSource: string) {
     return `<!DOCTYPE html>
     <html lang="en">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${cspSource} https: data:; script-src ${cspSource} 'unsafe-inline' 'unsafe-eval'; style-src ${cspSource} 'unsafe-inline'; connect-src wss: https: ws:;">
         <title>Spaceship Earth</title>
         <style>
             body { 

@@ -1,0 +1,23 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Transducer from "../components/core/Transducer.tsx";
+import InputControls from "../components/core/InputControls.tsx";
+import ControlPanel from "../components/core/ControlPanel.tsx";
+---
+
+<Layout title="Transducer Interface">
+  <main className="flex flex-col items-center justify-center min-h-screen p-4 bg-gray-900 text-white">
+    <h1 className="text-4xl font-bold mb-8">P31 Transducer</h1>
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl w-full">
+      <div className="md:col-span-1 lg:col-span-1">
+        <InputControls client:load />
+      </div>
+      <div className="md:col-span-1 lg:col-span-1">
+        <ControlPanel client:load />
+      </div>
+      <div className="md:col-span-1 lg:col-span-1">
+        <Transducer client:load />
+      </div>
+    </div>
+  </main>
+</Layout>

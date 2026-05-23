@@ -1,0 +1,374 @@
+{
+  "schema": "p31.apiContract/1.0.0",
+  "version": "1.0.0",
+  "system": {
+    "id": "mvp-template",
+    "name": "P31 MVP Template",
+    "description": "12-pillar MVP completeness template with PQC security",
+    "basePath": "/api/v1/mvp-template",
+    "documentation": "https://docs.p31ca.org/mvp-template"
+  },
+  "pqc": {
+    "encryption": "ML-KEM-768",
+    "signatures": "ML-DSA-65",
+    "audit": "SLH-DSA-SHA2-128s",
+    "description": "All mutations require ML-DSA-65 signatures. Sensitive data encrypted with ML-KEM-768. 50-year audit trail with SLH-DSA-SHA2-128s."
+  },
+  "endpoints": [
+    {
+      "path": "/entities",
+      "method": "GET",
+      "description": "List all entities",
+      "pqc": "none",
+      "auth": "optional",
+      "queryParams": [
+        {
+          "name": "context",
+          "type": "string",
+          "enum": ["home", "business", "family"],
+          "description": "Filter by context"
+        },
+        {
+          "name": "limit",
+          "type": "integer",
+          "default": 100,
+          "description": "Maximum results to return"
+        },
+        {
+          "name": "offset",
+          "type": "integer",
+          "default": 0,
+          "description": "Number of results to skip"
+        }
+      ],
+      "response": {
+        "status": 200,
+        "schema": {
+          "type": "object",
+          "properties": {
+            "entities": {
+              "type": "array",
+              "items": { "$ref": "#/definitions/Entity" }
+            },
+            "count": { "type": "integer" },
+            "limit": { "type": "integer" },
+            "offset": { "type": "integer" }
+          }
+        }
+      }
+    },
+    {
+      "path": "/entities",
+      "method": "POST",
+      "description": "Create new entity",
+      "pqc": "signatures required",
+      "auth": "required",
+      "requestBody": {
+        "required": true,
+        "schema": {
+          "type": "object",
+          "properties": {
+            "context": {
+              "type": "string",
+              "enum": ["home", "business", "family"]
+            },
+            "data": {
+              "type": "object"
+            },
+            "pqcSignature": {
+              "type": "string",
+              "description": "ML-DSA-65 signature of canonical entity data"
+            }
+          },
+          "required": ["context", "data"]
+        }
+      },
+      "response": {
+        "201": {
+          "description": "Entity created",
+          "schema": { "$ref": "#/definitions/Entity" }
+        },
+        "400": {
+          "description": "Invalid request"
+        },
+        "401": {
+          "description": "Unauthorized - signature required"
+        }
+      }
+    },
+    {
+      "path": "/entities/:id",
+      "method": "GET",
+      "description": "Get entity by ID",
+      "pqc": "none",
+      "auth": "optional",
+      "params": [
+        {
+          "name": "id",
+          "in": "path",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "response": {
+        "200": {
+          "schema": { "$ref": "#/definitions/Entity" }
+        },
+        "404": {
+          "description": "Entity not found"
+        }
+      }
+    },
+    {
+      "path": "/entities/:id",
+      "method": "PUT",
+      "description": "Update entity",
+      "pqc": "signatures required",
+      "auth": "required",
+      "params": [
+        {
+          "name": "id",
+          "in": "path",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "schema": {
+          "type": "object",
+          "properties": {
+            "data": {
+              "type": "object"
+            },
+            "pqcSignature": {
+              "type": "string",
+              "description": "ML-DSA-65 signature of change"
+            }
+          }
+        }
+      },
+      "response": {
+        "200": {
+          "schema": { "$ref": "#/definitions/Entity" }
+        },
+        "401": {
+          "description": "Unauthorized - signature required"
+        }
+      }
+    },
+    {
+      "path": "/entities/:id",
+      "method": "DELETE",
+      "description": "Delete entity",
+      "pqc": "signatures required",
+      "auth": "required",
+      "params": [
+        {
+          "name": "id",
+          "in": "path",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "requestBody": {
+        "schema": {
+          "type": "object",
+          "properties": {
+            "pqcSignature": {
+              "type": "string",
+              "description": "ML-DSA-65 signature of deletion intent"
+            }
+          }
+        }
+      },
+      "response": {
+        "204": {
+          "description": "Entity deleted"
+        },
+        "401": {
+          "description": "Unauthorized - signature required"
+        }
+      }
+    },
+    {
+      "path": "/sync",
+      "method": "POST",
+      "description": "Synchronize local state with server",
+      "pqc": "encryption + signatures required",
+      "auth": "required",
+      "requestBody": {
+        "required": true,
+        "schema": {
+          "type": "object",
+          "properties": {
+            "entities": {
+              "type": "array",
+              "items": { "$ref": "#/definitions/Entity" }
+            },
+            "stateChanges": {
+              "type": "array",
+              "items": { "$ref": "#/definitions/StateChange" }
+            },
+            "lastSync": {
+              "type": "integer",
+              "description": "Timestamp of last sync"
+            }
+          }
+        }
+      },
+      "response": {
+        "200": {
+          "schema": {
+            "type": "object",
+            "properties": {
+              "synced": { "type": "integer" },
+              "conflicts": { "type": "array" },
+              "serverTimestamp": { "type": "integer" }
+            }
+          }
+        }
+      }
+    },
+    {
+      "path": "/voice",
+      "method": "POST",
+      "description": "Process voice command",
+      "pqc": "signatures required",
+      "auth": "required",
+      "requestBody": {
+        "required": true,
+        "schema": {
+          "type": "object",
+          "properties": {
+            "command": {
+              "type": "string",
+              "description": "Voice command text"
+            },
+            "confidence": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "pqcSignature": {
+              "type": "string",
+              "description": "ML-DSA-65 signature of command"
+            }
+          },
+          "required": ["command", "pqcSignature"]
+        }
+      },
+      "response": {
+        "200": {
+          "schema": {
+            "type": "object",
+            "properties": {
+              "success": { "type": "boolean" },
+              "action": { "type": "string" },
+              "message": { "type": "string" },
+              "data": { "type": "object" }
+            }
+          }
+        }
+      }
+    },
+    {
+      "path": "/audit",
+      "method": "GET",
+      "description": "Get audit trail",
+      "pqc": "none",
+      "auth": "required",
+      "queryParams": [
+        {
+          "name": "entityId",
+          "type": "string",
+          "description": "Filter by entity ID"
+        },
+        {
+          "name": "startTime",
+          "type": "integer",
+          "description": "Start timestamp (Unix ms)"
+        },
+        {
+          "name": "endTime",
+          "type": "integer",
+          "description": "End timestamp (Unix ms)"
+        },
+        {
+          "name": "level",
+          "type": "string",
+          "enum": ["info", "warn", "error", "critical"]
+        }
+      ],
+      "response": {
+        "200": {
+          "schema": {
+            "type": "object",
+            "properties": {
+              "entries": {
+                "type": "array",
+                "items": { "$ref": "#/definitions/AuditEntry" }
+              },
+              "chainValid": { "type": "boolean" },
+              "verifiedCount": { "type": "integer" }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "definitions": {
+    "Entity": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "context": { "type": "string", "enum": ["home", "business", "family"] },
+        "createdAt": { "type": "integer" },
+        "updatedAt": { "type": "integer" },
+        "data": { "type": "object" },
+        "pqcSignature": { "type": "string" }
+      },
+      "required": ["id", "context", "createdAt", "updatedAt", "data"]
+    },
+    "StateChange": {
+      "type": "object",
+      "properties": {
+        "entityType": { "type": "string" },
+        "entityId": { "type": "string" },
+        "action": { "type": "string", "enum": ["create", "update", "delete"] },
+        "timestamp": { "type": "integer" },
+        "signature": { "type": "string" }
+      }
+    },
+    "AuditEntry": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "sequence": { "type": "integer" },
+        "timestamp": { "type": "integer" },
+        "level": { "type": "string" },
+        "category": { "type": "string" },
+        "action": { "type": "string" },
+        "actor": { "type": "string" },
+        "entryHash": { "type": "string" },
+        "slhSignature": { "type": "string" },
+        "previousHash": { "type": "string" }
+      }
+    }
+  },
+  "security": {
+    "schemes": {
+      "pqcSignature": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-PQC-Signature",
+        "description": "ML-DSA-65 base64-encoded signature"
+      },
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}
