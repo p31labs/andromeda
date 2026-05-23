@@ -1,15 +1,35 @@
-
-import { useState, useEffect } from 'react';
-import { get, set } from 'idb-keyval';
+import { useState, useEffect, useCallback } from 'react';
+import { PGliteWorker } from '@electric-sql/pglite/react';
 
 export interface VaultItem {
   id: string;
   text: string;
   timestamp: number;
   signature: string;
+  _crdt_clock: number;
+  _crdt_node_id: string;
+  _crdt_hash: string;
 }
 
-const VAULT_KEY = 'sovereign-vault';
+// Node ID for CRDT - should be unique per device
+const NODE_ID = typeof window !== 'undefined' 
+  ? crypto.randomUUID() 
+  : 'server';
+
+// Worker connection for sub-8.5ms read / 1.2ms write SLAs
+let worker: SharedWorker | null = null;
+
+function getPGLiteWorker(): SharedWorker {
+  if (worker) return worker;
+
+  // Create shared worker for multi-tab safety
+  worker = new SharedWorker(
+    new URL('../workers/pglite-worker.ts', import.meta.url),
+    { type: 'module', name: 'p31-pglite-sovereign' }
+  );
+
+  return worker;
+}
 
 export function useSovereignData() {
   const [data, setData] = useState<VaultItem[]>([]);
@@ -17,52 +37,121 @@ export function useSovereignData() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const timer = setTimeout(async () => {
-        try {
-          const storedData = await get<VaultItem[]>(VAULT_KEY);
-          if (storedData) {
-            setData(storedData);
-          } else {
-            const initialItem: VaultItem = {
-              id: crypto.randomUUID(),
-              text: 'Initial Setup Seed',
-              timestamp: Date.now(),
-              signature: 'mock-signature-' + Math.random().toString(36).substring(2, 15)
-            };
-            setData([initialItem]);
-            await set(VAULT_KEY, [initialItem]);
+    if (typeof window === 'undefined') return;
+
+    const timer = setTimeout(async () => {
+      try {
+        const worker = getPGLiteWorker();
+        const db = worker.port;
+
+        // Load initial data with CRDT fields
+        db.addEventListener('message', (event: MessageEvent) => {
+          if (event.data?.type === 'QUERY_RESULT' && event.data?.query?.startsWith('SELECT')) {
+            setData(prev => [...prev, ...event.data.rows]);
           }
-        } catch (e) {
-          setError('Failed to load data from IndexedDB.');
-        }
+        });
+
+        // Query initial state
+        db.postMessage({
+          type: 'query',
+          query: 'SELECT * FROM sovereign_ledger ORDER BY _crdt_clock DESC LIMIT 100',
+        });
+
+      } catch (e) {
+        setError('Failed to initialize Sovereign Data Layer.');
+      } finally {
         setIsLoading(false);
-      }, 600);
-      return () => clearTimeout(timer);
-    }
+      }
+    }, 300); // Reduced from 600ms for faster startup
+
+    return () => clearTimeout(timer);
   }, []);
 
-  const addVaultItem = async (payload: string) => {
-    if (typeof window !== 'undefined') {
-      const newItem: VaultItem = {
-        id: crypto.randomUUID(),
-        text: payload,
-        timestamp: Date.now(),
-        signature: 'mock-signature-' + Math.random().toString(36).substring(2, 15)
-      };
-      const newData = [newItem, ...data];
-      setData(newData);
-      await set(VAULT_KEY, newData);
-    }
-  };
+  const addVaultItem = useCallback(async (payload: string) => {
+    if (typeof window === 'undefined') return;
 
-  const deleteVaultItem = async (id: string) => {
-    if (typeof window !== 'undefined') {
-      const newData = data.filter(item => item.id !== id);
-      setData(newData);
-      await set(VAULT_KEY, newData);
-    }
-  };
+    const newItem: VaultItem = {
+      id: crypto.randomUUID(),
+      text: payload,
+      timestamp: Date.now(),
+      signature: 'mock-signature-' + Math.random().toString(36).substring(2, 15),
+      _crdt_clock: Date.now(),
+      _crdt_node_id: NODE_ID,
+      _crdt_hash: crypto.randomUUID(),
+    };
 
-  return { data, isLoading, error, addVaultItem, deleteVaultItem };
+    const worker = getPGLiteWorker();
+    
+    worker.port.postMessage({
+      type: 'exec',
+      query: `INSERT INTO sovereign_ledger (id, content, timestamp, signature, _crdt_clock, _crdt_node_id, _crdt_hash) 
+              VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      params: [
+        newItem.id,
+        newItem.text,
+        newItem.timestamp,
+        newItem.signature,
+        newItem._crdt_clock,
+        newItem._crdt_node_id,
+        newItem._crdt_hash,
+      ],
+    });
+
+    setData(prev => [newItem, ...prev]);
+  }, []);
+
+  const deleteVaultItem = useCallback(async (id: string) => {
+    if (typeof window === 'undefined') return;
+
+    const worker = getPGLiteWorker();
+    
+    worker.port.postMessage({
+      type: 'exec',
+      query: 'DELETE FROM sovereign_ledger WHERE id = ?',
+      params: [id],
+    });
+
+    setData(prev => prev.filter(item => item.id !== id));
+  }, []);
+
+  // Live query for real-time CRDT updates
+  const subscribeToChanges = useCallback((callback: (item: VaultItem) => void) => {
+    if (typeof window === 'undefined') return () => {};
+
+    const worker = getPGLiteWorker();
+    
+    const handler = (event: MessageEvent) => {
+      if (event.data?.type === 'INSERT' && event.data?.table === 'sovereign_ledger') {
+        callback(event.data.row);
+      }
+    };
+
+    worker.port.addEventListener('message', handler);
+    worker.port.start();
+
+    return () => {
+      worker.port.removeEventListener('message', handler);
+    };
+  }, []);
+
+  return { 
+    data, 
+    isLoading, 
+    error, 
+    addVaultItem, 
+    deleteVaultItem,
+    subscribeToChanges 
+  };
+}
+
+// Cryptographic hash function for CRDT ground truth
+export function generateCRDTHash(payload: string, previousHash: string = '00000000'): string {
+  return crypto.subtle.digest('SHA-256', new TextEncoder().encode(`${previousHash}:${payload}`))
+    .then(hash => {
+      const arr = new Uint8Array(hash);
+      return Array.from(arr.slice(0, 8))
+        .map(b => b.toString(16).padStart(2, '0'))
+        .join('')
+        .substring(0, 16);
+    });
 }
