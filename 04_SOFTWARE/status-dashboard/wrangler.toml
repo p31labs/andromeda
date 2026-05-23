@@ -1,0 +1,8 @@
+name = "status-dashboard"
+type = "javascript"
+compatibility_date = "2026-05-22"
+
+# Deploy as Pages project pointing to 04_SOFTWARE/status-dashboard
+# GitHub integration: https://dash.cloudflare.com/pages
+# Build command: None (static HTML only)
+# Build output directory: /

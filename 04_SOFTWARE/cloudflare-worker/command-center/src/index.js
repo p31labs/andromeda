@@ -990,6 +990,31 @@ async function serveDashboard(env) {
   });
 }
 
+async function sendDiscordAlert(env, endpoint, status, code) {
+  if (!env.DISCORD_WEBHOOK_URL) return; // Silent if webhook not configured
+  try {
+    const color = status === 'offline' ? 16711680 : 16776960; // red or yellow
+    const emoji = status === 'offline' ? '🚨' : '⚠️';
+    const message = {
+      content: `${emoji} **${endpoint.name}** returned ${code || status}`,
+      embeds: [{
+        title: 'P31 Endpoint Alert',
+        description: `Health check failed for **${endpoint.name}**\nURL: ${endpoint.url}\nStatus: ${status}`,
+        color: color,
+        footer: { text: 'P31 Command Center', icon_url: 'https://p31ca.org/favicon.ico' },
+        timestamp: new Date().toISOString()
+      }]
+    };
+    await fetch(env.DISCORD_WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(message)
+    });
+  } catch (e) {
+    console.error('Discord alert failed:', e);
+  }
+}
+
 async function pingFleet(env) {
   const endpoints = [
     { name: "phosphorus31-org", url: "https://phosphorus31.org" },
@@ -1027,8 +1052,11 @@ async function pingFleet(env) {
         const timeout = setTimeout(() => controller.abort(), 5000);
         const res = await fetch(ep.url, { method: 'GET', signal: controller.signal, redirect: 'follow' });
         clearTimeout(timeout);
-        return { name: ep.name, url: ep.url, status: res.ok ? 'online' : 'error', code: res.status, ts: new Date().toISOString() };
+        const status = res.ok ? 'online' : 'error';
+        if (!res.ok) await sendDiscordAlert(env, ep, status, res.status);
+        return { name: ep.name, url: ep.url, status: status, code: res.status, ts: new Date().toISOString() };
       } catch (e) {
+        await sendDiscordAlert(env, ep, 'offline', 'timeout');
         return { name: ep.name, url: ep.url, status: 'offline', ts: new Date().toISOString() };
       }
     })
@@ -1074,11 +1102,12 @@ async function pingFleet(env) {
         if (sortedActive.length > 0) grantsData.daysToNextDeadline = sortedActive[0].daysLeft;
       }
     } catch (e) { console.error('Grant fetch failed:', e); }
+    let status = {};
     status.grants = grantsData;
 
   try {
     const raw = await env.STATUS_KV.get('status');
-    const status = raw ? JSON.parse(raw) : {};
+    status = raw ? JSON.parse(raw) : {};
     status.workers = workers;
     status.last_ping = new Date().toISOString();
     status.research = status.research || {};

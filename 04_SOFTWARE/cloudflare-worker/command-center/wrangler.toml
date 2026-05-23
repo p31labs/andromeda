@@ -50,3 +50,5 @@ CF_ACCOUNT_ID = "ee05f70c889cb6f876b9925257e3a2fa"
 CF_TEAM_DOMAIN = "trimtab-signal"
 # STATUS_TOKEN: set via `wrangler secret put STATUS_TOKEN`
 # CF_API_TOKEN: set via `wrangler secret put CF_API_TOKEN` — see CLOUD_HUB.md
+# DISCORD_WEBHOOK_URL: set via `wrangler secret put DISCORD_WEBHOOK_URL` (for health alerts)
+# Alert threshold: endpoint down >5 min triggers Discord notification

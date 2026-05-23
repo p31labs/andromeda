@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>P31 Status Dashboard</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0f0f0f;
+      color: #e0e0e0;
+      padding: 1rem;
+    }
+    .container { max-width: 1200px; margin: 0 auto; }
+    header { margin-bottom: 2rem; border-bottom: 1px solid #333; padding-bottom: 1rem; }
+    h1 { font-size: 1.8rem; margin-bottom: 0.5rem; }
+    .meta { font-size: 0.85rem; color: #888; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; }
+    .card {
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 1rem;
+      background: #1a1a1a;
+      transition: all 0.3s ease;
+    }
+    .card:hover { border-color: #555; background: #222; }
+    .card-title { font-weight: 600; margin-bottom: 0.5rem; }
+    .status {
+      display: inline-block;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+    .status.online { background: #2d5f2e; color: #4ade80; }
+    .status.offline { background: #5f2d2d; color: #ef4444; }
+    .status.error { background: #5f4f2d; color: #fbbf24; }
+    .url { font-size: 0.85rem; color: #666; margin-top: 0.5rem; word-break: break-all; }
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .stat {
+      text-align: center;
+      border: 1px solid #333;
+      padding: 1rem;
+      border-radius: 8px;
+      background: #1a1a1a;
+    }
+    .stat-value { font-size: 2rem; font-weight: bold; color: #4ade80; }
+    .stat-label { font-size: 0.85rem; color: #888; }
+    .updated { text-align: right; color: #666; font-size: 0.8rem; margin-top: 1rem; }
+    @media (max-width: 768px) {
+      .grid { grid-template-columns: 1fr; }
+      .summary { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>P31 Ecosystem Status</h1>
+      <p class="meta">Real-time health check | Updated every 5 minutes</p>
+    </header>
+
+    <div class="summary">
+      <div class="stat">
+        <div class="stat-value" id="online-count">0</div>
+        <div class="stat-label">Online</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value" id="error-count">0</div>
+        <div class="stat-label">Errors</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value" id="offline-count">0</div>
+        <div class="stat-label">Offline</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value" id="uptime">--</div>
+        <div class="stat-label">Fleet Uptime</div>
+      </div>
+    </div>
+
+    <div class="grid" id="status-grid"></div>
+    <div class="updated" id="last-updated"></div>
+  </div>
+
+  <script>
+    const API_URL = 'https://command-center.trimtab-signal.workers.dev/api/status';
+    const REFRESH_INTERVAL = 30000; // 30 seconds
+
+    async function fetchStatus() {
+      try {
+        const res = await fetch(API_URL);
+        const data = await res.json();
+        renderStatus(data);
+      } catch (e) {
+        console.error('Failed to fetch status:', e);
+        document.getElementById('status-grid').innerHTML = `
+          <div class="card" style="grid-column: 1/-1;">
+            <p style="color: #ef4444;">Unable to load status. Check your connection and try refreshing.</p>
+          </div>
+        `;
+      }
+    }
+
+    function renderStatus(data) {
+      const workers = data.workers || [];
+      const grid = document.getElementById('status-grid');
+
+      let online = 0, error = 0, offline = 0;
+
+      grid.innerHTML = workers.map(w => {
+        if (w.status === 'online') online++;
+        else if (w.status === 'error') error++;
+        else if (w.status === 'offline') offline++;
+
+        return `
+          <div class="card">
+            <div class="card-title">${w.name}</div>
+            <div><span class="status ${w.status}">${w.status.toUpperCase()}</span></div>
+            ${w.code ? `<div style="font-size: 0.8rem; color: #888; margin-top: 0.25rem;">HTTP ${w.code}</div>` : ''}
+            <div class="url"><a href="${w.url}" target="_blank" style="color: #666; text-decoration: none;">${w.url}</a></div>
+          </div>
+        `;
+      }).join('');
+
+      const total = workers.length;
+      const uptime = total > 0 ? Math.round((online / total) * 100) : 0;
+
+      document.getElementById('online-count').textContent = online;
+      document.getElementById('error-count').textContent = error;
+      document.getElementById('offline-count').textContent = offline;
+      document.getElementById('uptime').textContent = uptime + '%';
+
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString('en-US', { hour12: true, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      document.getElementById('last-updated').innerHTML = `<span>Last updated: ${timeStr}</span>`;
+    }
+
+    // Initial load + auto-refresh
+    fetchStatus();
+    setInterval(fetchStatus, REFRESH_INTERVAL);
+  </script>
+</body>
+</html>
