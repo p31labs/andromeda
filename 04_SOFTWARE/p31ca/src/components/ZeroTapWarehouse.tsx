@@ -402,8 +402,8 @@ export function ZeroTapWarehouse({
       style={{
         position: 'fixed',
         inset: 0,
-        background: '#0f1115',
-        color: '#D8D6D0',
+        background: 'var(--p31-void)',
+        color: 'var(--p31-cloud)',
         fontFamily: 'system-ui, -apple-system, sans-serif',
         display: 'flex',
         flexDirection: 'column',
@@ -416,8 +416,8 @@ export function ZeroTapWarehouse({
       <div
         style={{
           padding: '16px 20px',
-          background: '#161920',
-          borderBottom: '1px solid #2a2e35',
+          background: 'var(--p31-surface)',
+          borderBottom: '1px solid var(--p31-border-subtle)',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
@@ -427,7 +427,7 @@ export function ZeroTapWarehouse({
           <div style={{ fontSize: '12px', opacity: 0.6, textTransform: 'uppercase' }}>
             Current Zone
           </div>
-          <div style={{ fontSize: '18px', fontWeight: 600, color: '#5DCAA5' }}>
+          <div style={{ fontSize: '18px', fontWeight: 600, color: 'var(--p31-teal)' }}>
             {activeZone.name}
           </div>
         </div>
@@ -436,7 +436,7 @@ export function ZeroTapWarehouse({
           <div
             style={{
               fontSize: '12px',
-              color: isOnline ? '#5DCAA5' : '#cc6247',
+              color: isOnline ? 'var(--p31-teal)' : 'var(--p31-coral)',
               display: 'flex',
               alignItems: 'center',
               gap: '6px',
@@ -473,7 +473,7 @@ export function ZeroTapWarehouse({
                 width: '120px',
                 height: '120px',
                 borderRadius: '50%',
-                background: 'linear-gradient(135deg, #5DCAA5 0%, #4aa884 100%)',
+                background: 'linear-gradient(135deg, var(--p31-teal) 0%, color-mix(in srgb, var(--p31-teal) 65%, black) 100%)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -489,8 +489,8 @@ export function ZeroTapWarehouse({
                 padding: '20px 48px',
                 fontSize: '20px',
                 fontWeight: 600,
-                background: '#5DCAA5',
-                color: '#0f1115',
+                background: 'var(--p31-teal)',
+                color: 'var(--p31-void)',
                 border: 'none',
                 borderRadius: '16px',
                 cursor: 'pointer',
@@ -501,7 +501,7 @@ export function ZeroTapWarehouse({
             </button>
 
             {cameraError && (
-              <div style={{ color: '#cc6247', textAlign: 'center', maxWidth: '280px' }}>
+              <div style={{ color: 'var(--p31-coral)', textAlign: 'center', maxWidth: '280px' }}>
                 Camera error: {cameraError}
                 <br />
                 <small>Check permissions and try again</small>
@@ -530,7 +530,7 @@ export function ZeroTapWarehouse({
               style={{
                 width: '100%',
                 height: '100%',
-                background: '#000',
+                background: 'var(--p31-void)',
               }}
             />
 
@@ -567,14 +567,14 @@ export function ZeroTapWarehouse({
                   padding: '16px',
                   background: '#161920',
                   borderRadius: '12px',
-                  border: '1px solid #5DCAA5',
+                  border: '1px solid var(--p31-teal)',
                 }}
               >
                 <div style={{ fontSize: '12px', opacity: 0.6 }}>Last Scan</div>
                 <div style={{ fontSize: '18px', fontWeight: 600, marginTop: '4px' }}>
                   {lastScan.qrData}
                 </div>
-                <div style={{ fontSize: '14px', color: '#5DCAA5', marginTop: '4px' }}>
+                <div style={{ fontSize: '14px', color: 'var(--p31-teal)', marginTop: '4px' }}>
                   → {lastScan.zone.name}
                 </div>
               </div>
@@ -591,7 +591,7 @@ export function ZeroTapWarehouse({
                 padding: '16px 32px',
                 fontSize: '16px',
                 fontWeight: 600,
-                background: '#cc6247',
+                background: 'var(--p31-coral)',
                 color: 'white',
                 border: 'none',
                 borderRadius: '12px',
@@ -617,7 +617,7 @@ export function ZeroTapWarehouse({
           }}
         >
           <span>← Swipe Left: Sold</span>
-          <span style={{ color: '#5DCAA5' }}>↑↓ Zones</span>
+          <span style={{ color: 'var(--p31-teal)' }}>↑↓ Zones</span>
           <span>Swipe Right: Receive →</span>
         </div>
       )}

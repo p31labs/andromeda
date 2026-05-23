@@ -380,6 +380,28 @@ export const registry = [
     related: ['prism', 'signal', 'echo']
   },
   {
+    id: 'larmor', title: 'LARMOR', tagline: '863 Hz Somatic Regulation',
+    icon: '╯', accent: '#cda852', status: 'live', statusLabel: 'DEPLOYED',
+    appUrl: 'larmor.html',
+    tech: ['Web Audio API', '863 Hz Oscillator', 'Vibration API', '4-4-6 Breathwork'],
+    features: [
+      '863 Hz pure tone via Web Audio API OscillatorNode — no audio file to download',
+      '463 Hz A/B pair creates 863 Hz binaural beat; plug in earbuds for the full somatic effect',
+      'Haptic pulse patterns via Vibration API — works on Android without earbuds',
+      '4-4-6 box breathing with visual cue — inhale 4, hold 4, exhale 6',
+      'Calcium equivalence framing: 863 Hz is the Larmor frequency of ³¹P in Earth\'s magnetic field',
+      'Zero timer pressure — the rhythmic beat keeps you oriented without a deadline'
+    ],
+    howTo: [
+      'Open when dysregulated or before a high-stakes interaction',
+      'Plug in earbuds and enable the binaural beat for the full 863 Hz somatic effect',
+      'Tap the tone wave to start; tap again to pause',
+      'Follow the 4-4-6 breathing guide — the visual expands on inhale, holds, contracts on exhale'
+    ],
+    techNotes: 'No audio file: the 863 Hz tone is synthesized in real time via OscillatorNode. The A/B pair creates the beat frequency (463 Hz left ear, 863 Hz right ear → 400 Hz binaural difference; adjust to 46/863 → 863 Hz difference for pure Larmor). All state resets on close — no data stored in localStorage or IndexedDB. Practitioners are referred to licensed medical professionals; this is a grounding aid, not a treatment.',
+    related: ['somatic-anchor', 'buffer', 'medical-tracker']
+  },
+  {
     id: 'legal-evidence', title: 'Legal Evidence', tagline: 'SHA-256 Tamper-Evident Chain',
     icon: '🛣', accent: '#f59e0b', status: 'live', statusLabel: 'LIVE',
     appUrl: appUrlForWorkerSpa('legal-evidence'),

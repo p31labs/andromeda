@@ -1,21 +1,10 @@
 <!DOCTYPE html>
-<html lang="en" data-p31-appearance="hub" style="color-scheme: dark;">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-<script>(function(){var r=document.documentElement;if(/[?&]alive=1(?:&|$)/.test(location.search))return;r.classList.add("p31-gray-rock");function wake(){r.classList.remove("p31-gray-rock")}document.addEventListener("pointerdown",wake,{once:true,capture:true});document.addEventListener("keydown",wake,{once:true,capture:true})})();</script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>P31 | K4 Market Tomography</title>
-    <meta property="og:type" content="website">
-<meta property="og:title" content="P31 | K4 Market Tomography">
-<meta property="og:description" content="P31 | K4 Market Tomography">
-<meta property="og:url" content="https://p31ca.org/tomography.html">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="P31 | K4 Market Tomography">
-<meta name="twitter:description" content="P31 | K4 Market Tomography">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/p31-style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap">
     <script type="importmap">
     {
         "imports": {
@@ -28,13 +17,13 @@
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             overflow: hidden;
-            background: var(--p31-void);
-            color: var(--p31-cloud);
-            font-family: var(--p31-font-sans), 'Atkinson Hyperlegible', sans-serif;
+            background: #050505;
+            color: #d8d6d0;
+            font-family: 'Inter', sans-serif;
         }
         canvas { display: block; }
 
-        .mono { font-family: var(--p31-font-mono), 'JetBrains Mono', monospace; }
+        .mono { font-family: 'Space Mono', monospace; }
 
         #ui-layer {
             position: absolute; inset: 0; z-index: 10;
@@ -49,28 +38,28 @@
             pointer-events: auto;
         }
         .top-bar a {
-            color: rgba(59,163,114,0.6); font-size: 13px;
+            color: rgba(0,255,136,0.6); font-size: 13px;
             text-decoration: none; letter-spacing: 0.06em;
-            font-family: 'JetBrains Mono', monospace; font-weight: 700;
+            font-family: 'Space Mono', monospace; font-weight: 700;
         }
-        .top-bar a:hover { color: #3ba372; }
+        .top-bar a:hover { color: #00FF88; }
 
         .field-input, .field-select {
-            background: var(--p31-surface); color: #3ba372;
-            border: 1px solid rgba(59,163,114,0.25);
+            background: #161920; color: #00FF88;
+            border: 1px solid rgba(0,255,136,0.25);
             padding: 6px 10px; border-radius: 4px;
-            font-family: 'JetBrains Mono', monospace;
+            font-family: 'Space Mono', monospace;
             font-size: 12px; outline: none;
         }
         .field-input:focus, .field-select:focus {
-            border-color: #3ba372;
+            border-color: #00FF88;
         }
         .field-input { width: 80px; text-transform: uppercase; }
 
         .btn {
-            background: #3ba372; color: var(--p31-void);
+            background: #00FF88; color: #050505;
             border: none; padding: 6px 14px; border-radius: 4px;
-            font-family: 'JetBrains Mono', monospace;
+            font-family: 'Space Mono', monospace;
             font-size: 12px; font-weight: 700; cursor: pointer;
         }
         .btn:hover { background: #4bb882; }
@@ -79,7 +68,7 @@
         .error-msg {
             margin-left: auto;
             font-size: 11px; color: #cc6247;
-            font-family: 'JetBrains Mono', monospace;
+            font-family: 'Space Mono', monospace;
         }
 
         .top-right {
@@ -89,15 +78,15 @@
         }
         .toggle-row {
             display: flex; align-items: center; gap: 8px;
-            font-size: 11px; font-family: 'JetBrains Mono', monospace;
+            font-size: 11px; font-family: 'Space Mono', monospace;
             color: #888; cursor: pointer; user-select: none;
         }
-        .toggle-row input { accent-color: #3ba372; cursor: pointer; }
+        .toggle-row input { accent-color: #00FF88; cursor: pointer; }
 
         .bottom-bar {
             display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
             pointer-events: auto;
-            font-family: 'JetBrains Mono', monospace;
+            font-family: 'Space Mono', monospace;
             font-size: 11px; color: #666;
         }
         .legend-item { display: flex; align-items: center; gap: 5px; }
@@ -107,14 +96,12 @@
         }
         .price-display {
             margin-left: auto;
-            font-size: 13px; color: var(--p31-cloud); font-weight: 700;
+            font-size: 13px; color: #d8d6d0; font-weight: 700;
         }
         .data-count { color: #555; }
     </style>
-<link rel="canonical" href="https://p31ca.org/tomography.html">
 </head>
 <body>
-<a href="#main" style="position:absolute;left:-9999px;top:0;padding:0.5rem 1rem;background:var(--p31-void);color:var(--p31-teal);font-size:0.875rem;z-index:9999;border-radius:0 0 4px 4px;text-decoration:none" onfocus="this.style.left='0'" onblur="this.style.left='-9999px'">Skip to main content</a>
 
 <div id="ui-layer">
     <div class="top-bar">
@@ -131,7 +118,7 @@
     </div>
 
     <div class="bottom-bar">
-        <div class="legend-item"><span class="legend-dot" style="background:#3ba372;box-shadow:0 0 6px #3ba372"></span> Support</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#00FF88;box-shadow:0 0 6px #00FF88"></span> Support</div>
         <div class="legend-item"><span class="legend-dot" style="background:#cc6247;box-shadow:0 0 6px #cc6247"></span> Resistance</div>
         <div class="legend-item"><span class="legend-dot" style="background:#4db8a8;box-shadow:0 0 6px #4db8a8"></span> Volume</div>
         <div class="legend-item"><span class="legend-dot" style="background:#cda852;box-shadow:0 0 6px #cda852"></span> Larmor ring</div>
@@ -250,7 +237,7 @@ function classifyPoint(d, data) {
 }
 
 const COLOR_MAP = {
-    support:    new THREE.Color(0x3ba372),
+    support:    new THREE.Color(0x00ff88),
     resistance: new THREE.Color(0xcc6247),
     volume:     new THREE.Color(0x4db8a8),
 };
@@ -294,7 +281,7 @@ for (const [a, b] of edgeIndices) {
     edgePositions.push(...TETRA_VERTICES[a].toArray(), ...TETRA_VERTICES[b].toArray());
 }
 edgeGeo.setAttribute('position', new THREE.Float32BufferAttribute(edgePositions, 3));
-const edgeMat = new THREE.LineBasicMaterial({ color: 0x3ba372, opacity: 0.4, transparent: true });
+const edgeMat = new THREE.LineBasicMaterial({ color: 0x00ff88, opacity: 0.4, transparent: true });
 const edgeLines = new THREE.LineSegments(edgeGeo, edgeMat);
 tetraGroup.add(edgeLines);
 
@@ -310,7 +297,7 @@ for (const tri of faceIdx) {
 faceCustomGeo.setAttribute('position', new THREE.Float32BufferAttribute(faceVerts, 3));
 faceCustomGeo.computeVertexNormals();
 const faceMat = new THREE.MeshStandardMaterial({
-    color: 0x3ba372, opacity: 0.08, transparent: true,
+    color: 0x00ff88, opacity: 0.08, transparent: true,
     side: THREE.DoubleSide, depthWrite: false,
 });
 const faceMesh = new THREE.Mesh(faceCustomGeo, faceMat);
@@ -323,7 +310,7 @@ const vertexSpheres = [];
 for (let i = 0; i < 4; i++) {
     const sphere = new THREE.Mesh(
         new THREE.SphereGeometry(0.08, 16, 16),
-        new THREE.MeshStandardMaterial({ color: 0x3ba372, emissive: 0x3ba372, emissiveIntensity: 0.6 })
+        new THREE.MeshStandardMaterial({ color: 0x00ff88, emissive: 0x00ff88, emissiveIntensity: 0.6 })
     );
     sphere.position.copy(TETRA_VERTICES[i]);
     tetraGroup.add(sphere);
@@ -333,7 +320,7 @@ for (let i = 0; i < 4; i++) {
     const canvas = document.createElement('canvas');
     canvas.width = 128; canvas.height = 48;
     const ctx = canvas.getContext('2d');
-    ctx.fillStyle = '#3ba372';
+    ctx.fillStyle = '#00FF88';
     ctx.font = 'bold 22px JetBrains Mono, monospace';
     ctx.textAlign = 'center';
     ctx.fillText(VERTEX_LABELS[i], 64, 30);
@@ -432,8 +419,7 @@ document.getElementById('autoRotateToggle').addEventListener('change', e => {
 });
 
 // ── Animation loop ───────────────────────────────────────────────
-// Must stay in sync with TRIM_HZ_MIN in src/lib/dome/p31-dome-constants.ts (verify-quantum-clock).
-const TRIM_HZ_MIN = 0.86;
+const LARMOR_HZ = 0.86;
 const clock = new THREE.Clock();
 
 function animate() {
@@ -441,8 +427,8 @@ function animate() {
     const dt = clock.getDelta();
     const elapsed = clock.getElapsedTime();
 
-    // Grandfather / trim floor rotation: TRIM_HZ_MIN Hz (see quantum clock plan)
-    larmorRing.rotation.z = elapsed * TRIM_HZ_MIN * Math.PI * 2;
+    // Larmor rotation: 0.86 Hz = 0.86 * 2PI rad/s
+    larmorRing.rotation.z = elapsed * LARMOR_HZ * Math.PI * 2;
 
     controls.update();
     renderer.render(scene, camera);
@@ -458,35 +444,6 @@ window.addEventListener('resize', () => {
 // ── Boot ─────────────────────────────────────────────────────────
 refresh();
 animate();
-</script>
-<!-- P31:mission-ebc:start -->
-<footer id="ebc" class="p31-mission-trio p31-mission-trio--ebc" role="contentinfo" aria-label="Mission — build, create, connect">
-    <a class="p31-mission-trio__link p31-mission-trio__link--build p31-mesh-tap" id="ebc-build" href="/build" title="Initial Build — intake, subject scope, verify-gated bake">
-        <span class="p31-mission-trio__head">
-            <span class="p31-mission-trio__dot" aria-hidden="true"></span>
-            <span class="p31-mission-trio__verb">Build</span>
-        </span>
-        <span class="p31-mission-trio__desc">Intake and bake on the same verify chain—not a decoupled mock.</span>
-    </a>
-    <a class="p31-mission-trio__link p31-mission-trio__link--create p31-mesh-tap" id="ebc-create" href="/geodesic.html" title="GEODESIC — snap grid, Maxwell rigidity, scene export">
-        <span class="p31-mission-trio__head">
-            <span class="p31-mission-trio__dot" aria-hidden="true"></span>
-            <span class="p31-mission-trio__verb">Create</span>
-        </span>
-        <span class="p31-mission-trio__desc">One lab surface, honest rigidity—generate or prove; don’t fork the same truth twice (ephemeralization).</span>
-    </a>
-    <a class="p31-mission-trio__link p31-mission-trio__link--connect p31-mesh-tap" id="ebc-connect" href="/mesh" title="Mesh navigator — K₄ cage and product graph">
-        <span class="p31-mission-trio__head">
-            <span class="p31-mission-trio__dot" aria-hidden="true"></span>
-            <span class="p31-mission-trio__verb">Connect</span>
-        </span>
-        <span class="p31-mission-trio__desc"><span class="p31-mission-trio__now">Now</span> — live cage and edges: mesh, hubs, and money follow the same published contracts (ethical monetization).</span>
-    </a>
-</footer>
-<!-- P31:mission-ebc:end -->
-<script type="module">
-  import { startGrandfatherPhaseVar } from "/lib/p31-quantum-grandfather-boot.mjs";
-  startGrandfatherPhaseVar();
 </script>
 </body>
 </html>

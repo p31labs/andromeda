@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-05T14:00:32-04:00",
+  "updated": "2026-05-22T19:47:00-04:00",
   "audit": {
     "probed_at": "2026-04-26T00:24:05-04:00",
     "method": "curl \u2014 GET -L, 5\u20138s timeout; OPTIONS/POST where noted",
@@ -264,6 +264,10 @@
     {
       "date": "2026-09-30",
       "event": "FERS filing deadline"
+    },
+    {
+      "date": "2026-05-22",
+      "event": "Hub + about-page refactor: larmor first-class (K4 Hub), 29 about-page design-token alignment, fawn-guard→Buffer merge, pnpm migration, CI/CD pnpm-aligned pipeline, ZeroTapWarehouse exports fixed, extensions/pkg alignment"
     },
     {
       "date": "2026-04-26",

@@ -6,8 +6,8 @@ const RED = '#ef4444'
 const DARK = '#050510'
 const TEXT = '#e8e6e3'
 const TEXT_DIM = '#8a8a95'
-const FONT_MONO = "'JetBrains Mono', ui-monospace, monospace"
-const FONT_SANS = "'Space Grotesk', sans-serif"
+const FONT_MONO = "'Space Mono', ui-monospace, monospace"
+const FONT_SANS = "Inter, system-ui, sans-serif"
 
 const D20_FACES = [
   {

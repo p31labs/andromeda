@@ -10,7 +10,6 @@ export default defineConfig({
       injectRegister: null,
       manifest: false,
       includeAssets: [
-        'fonts/*.woff2',
         'manifest.json',
         'icon-192.png',
         'icon-512.png',

@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "prebuild": "node scripts/copy-fonts.mjs && node scripts/generate-icons.mjs",
+    "prebuild": "node scripts/generate-icons.mjs",
     "build": "vite build",
     "deploy": "npm run build && npx wrangler pages deploy dist --project-name p31-hearing-ops --branch=main --commit-dirty=true",
     "lint": "eslint .",
@@ -17,8 +17,6 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",
-    "@fontsource/jetbrains-mono": "^5.2.8",
-    "@fontsource/space-grotesk": "^5.2.10",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.1",

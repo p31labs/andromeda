@@ -1,38 +1,28 @@
 <!DOCTYPE html>
-<html lang="en" data-p31-appearance="hub" style="color-scheme: dark;">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-<script>(function(){var r=document.documentElement;if(/[?&]alive=1(?:&|$)/.test(location.search))return;r.classList.add("p31-gray-rock");function wake(){r.classList.remove("p31-gray-rock")}document.addEventListener("pointerdown",wake,{once:true,capture:true});document.addEventListener("keydown",wake,{once:true,capture:true})})();</script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>AXIOM | Posner Molecule</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/assets/p31-operator-tailwind.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/p31-style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap">
     <style>
-        body { margin: 0; overflow: hidden; background-color: var(--p31-void); color: var(--p31-cloud); font-family: var(--p31-font-mono), 'JetBrains Mono', monospace; }
+        body { margin: 0; overflow: hidden; background-color: #050505; color: #d8d6d0; font-family: 'Space Mono', monospace; }
         #canvas-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
         #ui-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; pointer-events: none; padding: 1.5rem; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between; }
-        .glass-panel { background: rgba(22, 25, 32, 0.6); backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, 0.07); border-radius: 12px; padding: 1.5rem; pointer-events: auto; }
+        .glass-panel { background: rgba(22, 25, 32, 0.6); backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 12px; padding: 1.5rem; pointer-events: auto; }
         .tol-ca { color: #332288; font-weight: bold; }
         .tol-p { color: #88CCEE; font-weight: bold; }
         .tol-o { color: #CC6677; font-weight: bold; }
-        .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; background: #3ba372; margin-right: 8px; box-shadow: 0 0 8px #3ba372; }
-        .back-link { color: rgba(59,163,114,0.6); font-size: 12px; text-decoration: none; letter-spacing: 0.08em; pointer-events: auto; }
-        .back-link:hover { color: #3ba372; }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; background: #00FF88; margin-right: 8px; box-shadow: 0 0 8px #00FF88; }
+        .back-link { color: rgba(0,255,136,0.6); font-size: 12px; text-decoration: none; letter-spacing: 0.08em; pointer-events: auto; }
+        .back-link:hover { color: #00FF88; }
     </style>
-<meta property="og:type" content="website">
-<meta property="og:title" content="AXIOM | Posner Molecule">
-<meta property="og:description" content="AXIOM | Posner Molecule">
-<meta property="og:url" content="https://p31ca.org/posner.html">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="AXIOM | Posner Molecule">
-<meta name="twitter:description" content="AXIOM | Posner Molecule">
-<link rel="canonical" href="https://p31ca.org/posner.html">
 </head>
 <body>
-<a href="#main" style="position:absolute;left:-9999px;top:0;padding:0.5rem 1rem;background:var(--p31-void);color:var(--p31-teal);font-size:0.875rem;z-index:9999;border-radius:0 0 4px 4px;text-decoration:none" onfocus="this.style.left='0'" onblur="this.style.left='-9999px'">Skip to main content</a>
     <div id="canvas-container"></div>
 
     <div id="ui-layer">
@@ -89,7 +79,7 @@
 
         // Larmor pulse ring
         const ringGeo = new THREE.TorusGeometry(1.5, 0.06, 8, 64);
-        const ringMat = new THREE.MeshBasicMaterial({ color: 0x3ba372, transparent: true, opacity: 0.7 });
+        const ringMat = new THREE.MeshBasicMaterial({ color: 0x00ff88, transparent: true, opacity: 0.7 });
         const larmorRing = new THREE.Mesh(ringGeo, ringMat);
         scene.add(larmorRing);
 

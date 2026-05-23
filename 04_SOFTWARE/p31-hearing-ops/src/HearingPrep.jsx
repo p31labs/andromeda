@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import P31OmnibusVault from './P31OmnibusVault.jsx'
 
-const CORAL = '#FF6B4A'
+const CORAL = '#cc6247'
 const DARK = '#0A0A0F'
 const DARKER = '#06060A'
 const SURFACE = '#12121A'
@@ -288,10 +288,8 @@ const folderChecklist = [
   { item: 'Medication (calcium, prescribed meds)', checked: false },
 ]
 
-const fontSans =
-  "'Space Grotesk', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif"
-const fontMono =
-  "'JetBrains Mono', 'SF Mono', 'Menlo', ui-monospace, monospace"
+const fontSans = "Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
+const fontMono = "'Space Mono', 'SF Mono', 'Menlo', ui-monospace, monospace"
 
 function StatusBadge({ status }) {
   const colors = {

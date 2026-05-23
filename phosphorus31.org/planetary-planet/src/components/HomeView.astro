@@ -14,9 +14,12 @@
       <p class="text-lg md:text-xl text-espresso/70 max-w-xl">
         <strong class="text-teal-600">Bottom Line Up Front:</strong> We build free, open-source tools for neurodivergent families to manage energy, facilitate co-parenting, and foster connection without sensory overload.
       </p>
-      <div class="flex flex-col sm:flex-row gap-4 pt-4">
+      <div class="flex flex-col sm:flex-row flex-wrap gap-4 pt-4">
         <a href="/products" class="bg-coral-500 hover:bg-coral-600 text-white font-bold text-lg py-4 px-8 rounded-2xl shadow-lg transition-transform hover:-translate-y-1 text-center no-underline">
           Find Tools for My Family
+        </a>
+        <a href="https://p31ca.org/" target="_blank" rel="noopener noreferrer" class="bg-teal-600 hover:bg-teal-700 text-white font-bold text-lg py-4 px-8 rounded-2xl shadow-md transition-transform hover:-translate-y-1 text-center no-underline border-2 border-teal-700/50">
+          Technical Hub ↗
         </a>
         <a href="https://discord.gg/uYW5rTCuZ" target="_blank" rel="noopener noreferrer" class="bg-white hover:bg-cloud text-espresso font-bold text-lg py-4 px-8 rounded-2xl border-2 border-espresso/10 transition-colors text-center no-underline">
           Join Discord
@@ -53,16 +56,16 @@
   <section class="bg-teal-900 text-white py-12">
     <div class="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8 divide-x divide-teal-700/50">
       <div class="text-center">
-        <div class="text-4xl font-black font-heading text-butter mb-2">659+</div>
-        <div class="text-sm font-medium text-cloud/80 uppercase tracking-widest">Passing Tests</div>
+        <div class="text-4xl font-black font-heading text-butter mb-2">413</div>
+        <div class="text-sm font-medium text-cloud/80 uppercase tracking-widest">BONDING Tests</div>
       </div>
       <div class="text-center">
         <div class="text-4xl font-black font-heading text-lavender mb-2">100%</div>
         <div class="text-sm font-medium text-cloud/80 uppercase tracking-widest">Open Source</div>
       </div>
       <div class="text-center">
-        <div class="text-4xl font-black font-heading text-coral-500 mb-2">12+</div>
-        <div class="text-sm font-medium text-cloud/80 uppercase tracking-widest">Live Products</div>
+        <div class="text-4xl font-black font-heading text-coral-500 mb-2">26+</div>
+        <div class="text-sm font-medium text-cloud/80 uppercase tracking-widest">Hub + Suite Routes</div>
       </div>
       <div class="text-center">
         <div class="text-4xl font-black font-heading text-teal-500 mb-2">$0</div>
@@ -93,11 +96,43 @@
         <div class="text-coral-500 font-bold flex items-center gap-2">Explore EDE <span class="text-xl">&#x2192;</span></div>
       </a>
 
-      <div class="glass-box p-8 rounded-3xl border-t-4 border-t-butter hover:shadow-xl transition-shadow cursor-pointer group">
+      <a href="https://p31ca.org/buffer-about.html" target="_blank" rel="noopener noreferrer" class="glass-box p-8 rounded-3xl border-t-4 border-t-butter hover:shadow-xl transition-shadow cursor-pointer group no-underline block">
         <div class="w-14 h-14 bg-butter/20 rounded-2xl flex items-center justify-center text-3xl mb-6 group-hover:scale-110 transition-transform">&#x1F6E1;&#xFE0F;</div>
         <h3 class="font-heading font-bold text-2xl mb-3 text-espresso">Communication Shields</h3>
         <p class="text-espresso/70 mb-6 text-sm">AI-powered tools that strip emotional hostility from high-conflict emails and texts. The Fawn Guard Buffer detects passive-aggression, scores voltage, activates protective protocols.</p>
         <div class="text-yellow-600 font-bold flex items-center gap-2">See The Buffer <span class="text-xl">&#x2192;</span></div>
+      </a>
+    </div>
+  </section>
+
+  {/* ONE ORG, THREE DOORS — vision bridge (see docs/SITE_MAP_AND_OWNERSHIP.md) */}
+  <section class="bg-espresso text-cloud py-16 border-y border-cloud/10">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="text-center mb-12">
+        <div class="inline-block bg-teal-600/30 text-teal-300 font-bold text-xs px-4 py-1.5 rounded-full border border-teal-500/40 mb-4">
+          One organization, three doors
+        </div>
+        <h2 class="text-3xl md:text-4xl font-heading font-black text-white mb-3">Same mission — different entry points</h2>
+        <p class="text-cloud/70 max-w-2xl mx-auto">
+          Trust and fundraising live here. Tools, repos, and fleet status live on the technical hub. Authoritative mesh state and agents run on Cloudflare Workers (linked from the hub, not duplicated on static pages).
+        </p>
+      </div>
+      <div class="grid md:grid-cols-3 gap-6">
+        <div class="rounded-2xl bg-white/5 border border-white/10 p-6">
+          <div class="text-butter font-heading font-bold text-lg mb-2">Nonprofit portal</div>
+          <p class="text-sm text-cloud/75 mb-4">Mission, donate, research narrative, transparency — you are here.</p>
+          <a href="/donate" class="text-coral-400 font-bold text-sm hover:text-coral-300 no-underline">Donate →</a>
+        </div>
+        <div class="rounded-2xl bg-teal-900/40 border border-teal-500/30 p-6">
+          <div class="text-teal-300 font-heading font-bold text-lg mb-2">Technical hub</div>
+          <p class="text-sm text-cloud/75 mb-4">Hub cards, static apps, Production Suite links, command-center fleet strip.</p>
+          <a href="https://p31ca.org/" target="_blank" rel="noopener noreferrer" class="text-white font-bold text-sm hover:underline no-underline">p31ca.org ↗</a>
+        </div>
+        <div class="rounded-2xl bg-white/5 border border-white/10 p-6">
+          <div class="text-cloud font-heading font-bold text-lg mb-2">Edge runtime</div>
+          <p class="text-sm text-cloud/75 mb-4">K₄ cage, agent hub, Carrie, Fawn API — Wrangler deploys; KV is source of truth for mesh.</p>
+          <a href="https://github.com/p31labs/andromeda/blob/main/docs/SITE_MAP_AND_OWNERSHIP.md" target="_blank" rel="noopener noreferrer" class="text-cyan-400 font-bold text-sm hover:text-cyan-300 no-underline">Site map &amp; ownership ↗</a>
+        </div>
       </div>
     </div>
   </section>

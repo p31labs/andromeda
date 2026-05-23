@@ -40,6 +40,16 @@ const Navbar = () => {
 
           <nav className="hidden md:flex items-center gap-8 font-medium text-sm text-espresso/80">
             {navLink('/', 'Home')}
+            <a
+              href="https://p31ca.org/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-teal-600 hover:text-teal-700 font-semibold"
+              style={{ textDecoration: 'none' }}
+              title="Tools, fleet, and engineering hub"
+            >
+              Technical Hub ↗
+            </a>
             {navLink('/products', 'Products')}
             {navLink('/research', 'Research')}
             {navLink('/about', 'About')}
@@ -114,6 +124,16 @@ const Navbar = () => {
       {menuOpen && (
         <div className="md:hidden border-t border-espresso/10 bg-white/95 backdrop-blur-sm absolute top-full left-0 right-0">
           <nav className="max-w-7xl mx-auto px-6 py-4 flex flex-col gap-1">
+            <a
+              href="https://p31ca.org/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="py-3 px-4 rounded-xl font-medium text-sm text-teal-600 bg-teal-600/5 hover:bg-teal-600/10"
+              style={{ textDecoration: 'none' }}
+              onClick={() => setMenuOpen(false)}
+            >
+              Technical Hub ↗
+            </a>
             {[
               ['/', 'Home'],
               ['/products', 'Products'],

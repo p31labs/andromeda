@@ -3,40 +3,59 @@
  * BaseLayout.astro — P31 Command Center root layout.
  *
  * Enforces the dark-mode glassmorphism theme across all children.
- * Baseline colors from /p31-style.css (--p31-void / --p31-cloud). Fonts: Atkinson + JetBrains Mono.
+ * Void (#050505) baseline, Inter + Space Mono (matches operator static HTML).
  * Google Fonts loaded via preconnect + display=swap for FOUT prevention.
- * Mobile-first + neuro-inclusive: @/styles/global.css (safe areas, focus, motion).
  */
-import '../styles/global.css';
-import StarfieldSettings from '../components/StarfieldSettings.astro';
-
 interface Props {
   title: string;
   description?: string;
-  /** When false, omit the z-[1] void+grid shell (use on full-viewport WebGL routes so the canvas is not covered). Default true. */
-  shellBackdrop?: boolean;
-  /** Page identifier for PHOS voice targeting (e.g., 'lab', 'passport', 'glass-box') */
-  phosPage?: string;
+  /** Prefer absolute URL, e.g. https://p31ca.org/ — defaults from this page path on p31ca.org */
+  canonical?: string;
 }
 
-const {
-  title,
-  description = 'P31 Labs — Isostatically Rigid. Cognitively Sovereign.',
-  shellBackdrop = true,
-  phosPage,
-} = Astro.props;
+const { title, description = 'P31 Labs — Isostatically Rigid. Cognitively Sovereign.', canonical } = Astro.props;
+
+const canonicalHref =
+  canonical ??
+  new URL(Astro.url.pathname.replace(/\/index\.html$/, '/') || '/', 'https://p31ca.org').href;
 ---
 
 <!doctype html>
-<html
-  lang="en"
-  data-i18n-lang="en"
-  class="dark"
-  data-p31-appearance="hub"
-  style="color-scheme: dark;"
->
+<html lang="en" class="dark">
   <head>
-    <!-- CRITICAL: UNREGISTER OLD HEARING OPS SERVICE WORKER FIRST THING -->
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalHref} />
+    <meta name="theme-color" content="#050505" />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- Fonts: Inter + Space Mono (hub + static p31ca) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <title>{title}</title>
+  </head>
+  <body class="bg-void min-h-screen text-white/85 font-sans antialiased">
+    <!-- Ambient grid background -->
+    <div
+      class="fixed inset-0 pointer-events-none opacity-[0.03]"
+      style="background-image: radial-gradient(rgba(255,255,255,0.3) 1px, transparent 1px); background-size: 32px 32px;"
+    >
+    </div>
+
+    <slot />
+    <!--
+      If another app (e.g. Hearing Ops PWA) was ever deployed to the same Pages project + domain,
+      browsers may keep a service worker that serves the wrong shell. Hub is static Astro — no hub SW.
+      Unregister so the current deployment’s HTML is what users see.
+    -->
     <script is:inline>
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.getRegistrations().then(function (regs) {
@@ -44,95 +63,7 @@ const {
             reg.unregister();
           });
         });
-        // Hard reload if service worker was active
-        if (navigator.serviceWorker.controller) {
-          window.location.reload(true);
-        }
       }
-    </script>
-    
-     <meta charset="utf-8" />
-     <meta
-       name="viewport"
-       content="width=device-width, initial-scale=1, viewport-fit=cover"
-     />
-     <meta name="description" content={description} />
-     <meta name="theme-color" content="#0f1115" />
-
-    <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="stylesheet" href="/p31-style.css" />
-
-    <!-- Fonts: Atkinson (UI) + JetBrains Mono (data / code) — P31 canon -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:wght@400;500;700;800&display=swap"
-      rel="stylesheet"
-    />
-
-    <title>{title}</title>
-
-    {/*
-      ─── Bus bar nervous system (CWP-PHOS-2026-01) ──────────────────────────
-      Load order MATTERS for the suppression handshake; do NOT reorder without
-      reading docs/CWP-PHOS-2026-01.md §4 + the suppression doctrine in
-      04_SOFTWARE/p31ca/public/lib/p31-phos-guide.mjs.
-
-        1. p31-subject-prefs.js  (inline, sync, before-paint accessibility axes)
-        2. p31-theme-engine.mjs  (defines window.p31Theme — required by 3 + 5)
-        3. p31-cogpass-reader.mjs (reads p31-cogpass-v1, configures
-                                    window.p31SubjectPrefs + window.p31Theme;
-                                    sets data-p31-cogpass / -role on <html>)
-        4. p31-phos-guide.mjs    (PRE-EMPTIVELY claims window.p31ThemeSwitcher
-                                    in its boot() before the switcher's
-                                    setTimeout(100) auto-mount fires)
-        5. p31-theme-switcher.mjs (sees window.p31ThemeSwitcher already taken
-                                    and self-suppresses cleanly)
-
-      Single-affordance result: PHOS is the only floating personalization
-      element on every page, and the theme engine remains importable for
-      stylebook / theme-showcase pages that need it directly.
-    */}
-    <script is:inline src="/lib/p31-subject-prefs.js"></script>
-    <script type="module" src="/lib/p31-theme-engine.mjs"></script>
-    <script type="module" src="/lib/p31-cogpass-reader.mjs"></script>
-    <script type="module" src="/lib/p31-phos-guide.mjs"></script>
-    <script type="module" src="/lib/p31-theme-switcher.mjs"></script>
-
-    {/* Starfield Notifications — persistent notification system */}
-    <script type="module" src="/lib/starfield-notifications.ts"></script>
-    <script src="/lib/starfield-settings-ui.js" defer></script>
-
-    <slot name="head" />
-    <!-- External import maps go here -->
-    <slot name="importmaps" />
-  </head>
-  <body
-    class="bg-p31-void min-h-screen text-base leading-relaxed text-p31-cloud font-sans antialiased p31-root [padding-bottom:env(safe-area-inset-bottom,0px)]"
-    data-p31-phos-page={phosPage}
-  >
-    {
-      shellBackdrop && (
-        <>
-          <div
-            class="fixed top-0 left-0 w-[800px] h-[800px] pointer-events-none z-[1]"
-            aria-hidden="true"
-            style="background: radial-gradient(circle at top left, rgba(77, 184, 168, 0.12), transparent 40%);"
-          >
-          </div>
-        </>
-      )
-    }
-
-    <slot />
-
-    {/* Starfield Notification Settings — floating settings panel */}
-    <StarfieldSettings />
-
-    <script type="module" is:inline>
-      import { startGrandfatherPhaseVar } from "/lib/p31-quantum-grandfather-boot.mjs";
-      startGrandfatherPhaseVar();
     </script>
   </body>
 </html>

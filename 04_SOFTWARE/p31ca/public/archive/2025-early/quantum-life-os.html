@@ -1,38 +1,20 @@
 <!DOCTYPE html>
-<html lang="en" data-p31-appearance="hub" class="scroll-smooth" style="color-scheme: dark;">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
-<script>(function(){var r=document.documentElement;if(/[?&]alive=1(?:&|$)/.test(location.search))return;r.classList.add("p31-gray-rock");function wake(){r.classList.remove("p31-gray-rock")}document.addEventListener("pointerdown",wake,{once:true,capture:true});document.addEventListener("keydown",wake,{once:true,capture:true})})();</script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#000000">
     <title>Quantum Life OS | P31 Labs</title>
-    <meta property="og:type" content="website">
-<meta property="og:title" content="Quantum Life OS">
-<meta property="og:description" content="Quantum Life OS">
-<meta property="og:url" content="https://p31ca.org/quantum-life-os.html">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Quantum Life OS">
-<meta name="twitter:description" content="Quantum Life OS">
-<link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/p31-style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="/p31-tailwind-extend.js"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    ...window.P31_TAILWIND_EXTEND
-                }
-            }
-        }
-    </script>
+    <script src="/assets/p31-operator-tailwind.js"></script>
     <style>
         :root { color-scheme: dark; }
         body {
-            background-color: var(--p31-void);
-            color: var(--p31-cloud);
+            background-color: #05050b;
+            color: #ffffff;
             overflow-x: hidden;
             transition: background-color 0.3s, color 0.3s;
         }
@@ -104,10 +86,8 @@
         .terminal-blink { animation: blink 1s step-end infinite; }
         @keyframes blink { 50% { opacity: 0; } }
     </style>
-<link rel="canonical" href="https://p31ca.org/quantum-life-os.html">
 </head>
 <body id="qlos-body">
-<a href="#main" style="position:absolute;left:-9999px;top:0;padding:0.5rem 1rem;background:var(--p31-void);color:var(--p31-teal);font-size:0.875rem;z-index:9999;border-radius:0 0 4px 4px;text-decoration:none" onfocus="this.style.left='0'" onblur="this.style.left='-9999px'">Skip to main content</a>
     <div class="quantum-bg"></div>
 
     <header class="w-full border-b border-white/10 bg-[#05050b]/80 backdrop-blur-md sticky top-0 z-50" id="qlos-header">
@@ -128,7 +108,7 @@
         </div>
     </header>
 
-    <main id="main" class="flex-grow max-w-7xl mx-auto px-6 py-12 w-full flex flex-col gap-12">
+    <main class="flex-grow max-w-7xl mx-auto px-6 py-12 w-full flex flex-col gap-12">
 
         <section class="text-center mt-4">
             <h1 class="text-4xl md:text-5xl font-light mb-6 quantum-text leading-tight">
@@ -163,23 +143,23 @@
             </div>
         </section>
 
-        <!-- Portals: link to real hub surfaces (no # placeholders) -->
-        <section class="grid grid-cols-1 md:grid-cols-3 gap-6" aria-label="Hub portals">
-            <a href="/mesh-start.html" class="portal-card rounded-xl p-8 block">
+        <!-- Portals -->
+        <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <a href="#" class="portal-card rounded-xl p-8 block">
                 <div class="portal-content">
                     <div class="text-4xl mb-4">🧘</div>
                     <h3 class="text-xl font-bold mb-3 quantum-text">Consciousness Bridge</h3>
                     <p class="text-gray-400 text-sm leading-relaxed">Connect to higher consciousness through quantum meditation and insight generation.</p>
                 </div>
             </a>
-            <a href="/phenix-os.html" class="portal-card rounded-xl p-8 block">
+            <a href="#" class="portal-card rounded-xl p-8 block">
                 <div class="portal-content">
                     <div class="text-4xl mb-4">🧬</div>
                     <h3 class="text-xl font-bold mb-3 quantum-text">Quantum Healing</h3>
                     <p class="text-gray-400 text-sm leading-relaxed">Restore balance and coherence through quantum-level healing sessions.</p>
                 </div>
             </a>
-            <a href="/k4market.html" class="portal-card rounded-xl p-8 block">
+            <a href="#" class="portal-card rounded-xl p-8 block">
                 <div class="portal-content">
                     <div class="text-4xl mb-4">🎯</div>
                     <h3 class="text-xl font-bold mb-3 quantum-text">Quantum Patterns</h3>
@@ -233,7 +213,7 @@
         <p class="mb-4 font-light">"Trust the pattern. The geometry does not negotiate."</p>
         <div class="flex justify-center gap-6 font-mono text-xs">
             <a href="quantum-os.html" class="text-[#00ffff] hover:text-[#8a2be2] transition-colors">← About</a>
-            <a href="/" class="text-[#00ffff] hover:text-[#8a2be2] transition-colors">Hub</a>
+            <a href="index.html" class="text-[#00ffff] hover:text-[#8a2be2] transition-colors">Hub</a>
             <a href="simple-sovereignty.html" class="text-[#00ffff] hover:text-[#8a2be2] transition-colors">Sovereign Stack</a>
         </div>
     </footer>

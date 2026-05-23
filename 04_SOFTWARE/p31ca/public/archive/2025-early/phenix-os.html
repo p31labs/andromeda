@@ -1,30 +1,25 @@
 <!DOCTYPE html>
-<html lang="en" data-p31-appearance="hub" class="scroll-smooth" style="color-scheme: dark;">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
-<script>(function(){var r=document.documentElement;if(/[?&]alive=1(?:&|$)/.test(location.search))return;r.classList.add("p31-gray-rock");function wake(){r.classList.remove("p31-gray-rock")}document.addEventListener("pointerdown",wake,{once:true,capture:true});document.addEventListener("keydown",wake,{once:true,capture:true})})();</script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#0f1115">
+    <meta name="theme-color" content="#050505">
     <title>Phenix OS | Node Zero</title>
-    <meta property="og:type" content="website">
-<meta property="og:title" content="Phenix OS | Node Zero">
-<meta property="og:description" content="Phenix OS | Node Zero">
-<meta property="og:url" content="https://p31ca.org/phenix-os.html">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Phenix OS | Node Zero">
-<meta name="twitter:description" content="Phenix OS | Node Zero">
-<link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/p31-style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="/p31-tailwind-extend.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    ...window.P31_TAILWIND_EXTEND,
+                    fontFamily: { sans: ['"Inter"', 'sans-serif'], mono: ['"Space Mono"', 'monospace'] },
+                    colors: {
+                        void: '#050505', surface: '#161920', elevated: '#1e222e',
+                        coral: '#cc6247', teal: '#25897d', cyan: '#4db8a8',
+                        cloud: '#d8d6d0', butter: '#cda852', lavender: '#8b7cc9', phosphorus: '#00FF88',
+                    },
                     animation: { 'scanline': 'scan 10s linear infinite', 'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite' },
                     keyframes: { scan: { '0%': { backgroundPosition: '0 0' }, '100%': { backgroundPosition: '0 120px' } } }
                 }
@@ -32,10 +27,10 @@
         }
     </script>
     <style>
-        body { background-color: var(--p31-void); color: var(--p31-cloud); overflow-x: hidden; }
+        body { background-color: #050505; color: #d8d6d0; overflow-x: hidden; }
         body::before {
             content: ''; position: fixed; inset: 0; z-index: 9999; pointer-events: none;
-            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(37, 137, 125, 0.04) 2px, rgba(37, 137, 125, 0.04) 4px);
+            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(77, 184, 168, 0.03) 2px, rgba(77, 184, 168, 0.03) 4px);
             animation: scan 10s linear infinite;
         }
         body::after {
@@ -45,7 +40,7 @@
         .glass-panel { background: rgba(22, 25, 32, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(77, 184, 168, 0.1); border-radius: 12px; }
         .glass-btn {
             background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.2s; border-radius: 8px; cursor: pointer; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; text-transform: uppercase;
+            transition: all 0.2s; border-radius: 8px; cursor: pointer; font-family: 'Space Mono', monospace; font-size: 0.75rem; text-transform: uppercase;
         }
         .glass-btn:hover { background: rgba(255, 255, 255, 0.08); border-color: #4db8a8; }
         .tab-content { display: none; }
@@ -56,10 +51,8 @@
         ::-webkit-scrollbar-thumb { background: #8b7cc9; border-radius: 4px; }
         #ambient-canvas { position: fixed; inset: 0; z-index: 0; opacity: 0.4; pointer-events: none; }
     </style>
-<link rel="canonical" href="https://p31ca.org/phenix-os.html">
 </head>
 <body class="min-h-screen flex flex-col relative">
-<a href="#main" style="position:absolute;left:-9999px;top:0;padding:0.5rem 1rem;background:var(--p31-void);color:var(--p31-teal);font-size:0.875rem;z-index:9999;border-radius:0 0 4px 4px;text-decoration:none" onfocus="this.style.left='0'" onblur="this.style.left='-9999px'">Skip to main content</a>
 
     <canvas id="ambient-canvas"></canvas>
     <div id="toast-container" class="fixed bottom-6 right-6 z-[10000] flex flex-col gap-2 pointer-events-none"></div>
@@ -79,9 +72,9 @@
                 <div class="flex items-center gap-3">
                     <span class="font-mono text-xs text-cloud/50">ENERGY</span>
                     <div class="w-24 h-1.5 bg-black/50 rounded-full overflow-hidden border border-white/10">
-                        <div id="nav-spoon-fill" class="h-full bg-gradient-to-r from-butter to-teal transition-all duration-500" style="width: 70%;"></div>
+                        <div id="nav-spoon-fill" class="h-full bg-gradient-to-r from-butter to-cyan transition-all duration-500" style="width: 70%;"></div>
                     </div>
-                    <span id="nav-spoon-text" class="font-mono text-xs text-teal font-bold">7/10</span>
+                    <span id="nav-spoon-text" class="font-mono text-xs text-cyan font-bold">7/10</span>
                 </div>
                 <div class="font-mono text-xs text-lavender font-bold">
                     ♥ <span id="nav-love-text">0</span>
@@ -93,7 +86,7 @@
             </div>
         </div>
         <nav class="flex overflow-x-auto border-t border-white/5 bg-black/40 px-2" id="main-tabs">
-            <button class="tab-btn px-6 py-3 font-mono text-xs font-bold text-teal border-b-2 border-teal transition-colors" data-target="core">◈ CORE</button>
+            <button class="tab-btn px-6 py-3 font-mono text-xs font-bold text-cyan border-b-2 border-cyan transition-colors" data-target="core">◈ CORE</button>
             <button class="tab-btn px-6 py-3 font-mono text-xs font-bold text-cloud/50 border-b-2 border-transparent hover:text-cloud transition-colors" data-target="mesh">◈ MESH</button>
             <button class="tab-btn px-6 py-3 font-mono text-xs font-bold text-cloud/50 border-b-2 border-transparent hover:text-cloud transition-colors" data-target="forge">◈ FORGE</button>
             <button class="tab-btn px-6 py-3 font-mono text-xs font-bold text-cloud/50 border-b-2 border-transparent hover:text-cloud transition-colors" data-target="health">◈ HEALTH</button>
@@ -101,15 +94,15 @@
         </nav>
     </header>
 
-    <main id="main" class="flex-grow p-4 md:p-6 lg:p-8 z-10 w-full max-w-screen-2xl mx-auto">
+    <main class="flex-grow p-4 md:p-6 lg:p-8 z-10 w-full max-w-screen-2xl mx-auto">
 
         <!-- CORE TAB -->
         <div id="tab-core" class="tab-content active">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div class="glass-panel flex flex-col">
-                    <div class="px-4 py-3 border-b border-white/5 flex justify-between items-center bg-teal/5">
-                        <h2 class="font-sans text-[10px] tracking-[0.2em] text-teal font-bold">◈ TETRAHEDRON NAVIGATOR</h2>
-                        <span class="font-mono text-[9px] px-2 py-0.5 rounded bg-teal/10 text-teal/70">SIC-POVM</span>
+                    <div class="px-4 py-3 border-b border-white/5 flex justify-between items-center bg-cyan/5">
+                        <h2 class="font-mono text-[10px] tracking-[0.2em] text-cyan font-bold">◈ TETRAHEDRON NAVIGATOR</h2>
+                        <span class="font-mono text-[9px] px-2 py-0.5 rounded bg-cyan/10 text-cyan/70">SIC-POVM</span>
                     </div>
                     <div class="h-64 w-full relative cursor-grab active:cursor-grabbing" id="tetra-container"></div>
                     <div class="p-4 border-t border-white/5 grid grid-cols-2 gap-4">
@@ -128,14 +121,14 @@
                             </div>
                         </div>
                         <div class="flex items-center gap-3 bg-elevated p-2 rounded-lg">
-                            <div class="w-2 h-2 rounded-full bg-teal shadow-[0_0_5px_#4db8a8]"></div>
+                            <div class="w-2 h-2 rounded-full bg-cyan shadow-[0_0_5px_#4db8a8]"></div>
                             <div>
-                                <div class="font-mono text-[8px] font-bold text-teal tracking-widest">THE FORGE</div>
+                                <div class="font-mono text-[8px] font-bold text-cyan tracking-widest">THE FORGE</div>
                                 <div class="font-mono text-xs text-cloud/60 mt-0.5" id="vtx-forge">Build Mode</div>
                             </div>
                         </div>
                         <div class="flex items-center gap-3 bg-elevated p-2 rounded-lg">
-                            <div class="w-2 h-2 rounded-full bg-phosphorus shadow-[0_0_5px_#3ba372]"></div>
+                            <div class="w-2 h-2 rounded-full bg-phosphorus shadow-[0_0_5px_#00FF88]"></div>
                             <div>
                                 <div class="font-mono text-[8px] font-bold text-phosphorus tracking-widest">THE SHIELD</div>
                                 <div class="font-mono text-xs text-cloud/60 mt-0.5" id="vtx-shield">Nominal</div>
@@ -146,7 +139,7 @@
 
                 <div class="flex flex-col gap-6">
                     <div class="glass-panel p-5">
-                        <h2 class="font-sans text-[10px] tracking-[0.2em] text-butter font-bold mb-4">◈ ENERGY MANAGEMENT</h2>
+                        <h2 class="font-mono text-[10px] tracking-[0.2em] text-butter font-bold mb-4">◈ ENERGY MANAGEMENT</h2>
                         <div class="flex items-center justify-between mb-2">
                             <span class="font-mono text-sm text-cloud/70" id="main-spoon-label">SPOONS: 7/10</span>
                             <div class="flex gap-2">
@@ -155,13 +148,13 @@
                             </div>
                         </div>
                         <div class="h-4 bg-void rounded-full overflow-hidden border border-white/5 relative">
-                            <div id="main-spoon-fill" class="h-full bg-gradient-to-r from-coral via-butter to-teal transition-all duration-700" style="width: 70%;"></div>
+                            <div id="main-spoon-fill" class="h-full bg-gradient-to-r from-coral via-butter to-cyan transition-all duration-700" style="width: 70%;"></div>
                         </div>
                     </div>
 
                     <div class="glass-panel flex flex-col flex-1">
                         <div class="px-4 py-3 border-b border-white/5 flex justify-between items-center bg-lavender/5">
-                            <h2 class="font-sans text-[10px] tracking-[0.2em] text-lavender font-bold">◈ MISSION QUEUE</h2>
+                            <h2 class="font-mono text-[10px] tracking-[0.2em] text-lavender font-bold">◈ MISSION QUEUE</h2>
                             <span class="font-mono text-[9px] px-2 py-0.5 rounded bg-lavender/10 text-lavender/70" id="task-count">0 ACTIVE</span>
                         </div>
                         <div class="p-4 flex-1 flex flex-col gap-4">
@@ -181,7 +174,7 @@
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div class="glass-panel flex flex-col">
                     <div class="px-4 py-3 border-b border-white/5 flex justify-between items-center bg-coral/5">
-                        <h2 class="font-sans text-[10px] tracking-[0.2em] text-coral font-bold">◈ FAWN GUARD</h2>
+                        <h2 class="font-mono text-[10px] tracking-[0.2em] text-coral font-bold">◈ FAWN GUARD</h2>
                         <span class="font-mono text-[9px] px-2 py-0.5 rounded bg-coral/10 text-coral/70">COMM SHIELD</span>
                     </div>
                     <div class="p-5 flex flex-col gap-4">
@@ -192,16 +185,16 @@
                             <button onclick="addFawnKw()" class="glass-btn px-3 py-2 text-coral border-coral/30 hover:bg-coral/10">+</button>
                         </div>
                         <div class="mt-4 border-t border-white/5 pt-4">
-                            <h3 class="font-sans text-xs text-teal mb-2">📝 Test Sandbox</h3>
-                            <textarea id="fawn-test" rows="3" placeholder="Draft a message to check..." class="w-full bg-void border border-white/10 rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:border-teal transition-colors"></textarea>
-                            <button onclick="testFawn()" class="glass-btn w-full mt-2 py-2 text-teal border-teal/30 hover:bg-teal/10">⚡ SCAN MESSAGE</button>
+                            <h3 class="font-mono text-xs text-cyan mb-2">📝 Test Sandbox</h3>
+                            <textarea id="fawn-test" rows="3" placeholder="Draft a message to check..." class="w-full bg-void border border-white/10 rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:border-cyan transition-colors"></textarea>
+                            <button onclick="testFawn()" class="glass-btn w-full mt-2 py-2 text-cyan border-cyan/30 hover:bg-cyan/10">⚡ SCAN MESSAGE</button>
                         </div>
                     </div>
                 </div>
 
                 <div class="glass-panel flex flex-col">
                     <div class="px-4 py-3 border-b border-white/5 flex justify-between items-center bg-lavender/5">
-                        <h2 class="font-sans text-[10px] tracking-[0.2em] text-lavender font-bold">◈ ENCRYPTED BOTTLES</h2>
+                        <h2 class="font-mono text-[10px] tracking-[0.2em] text-lavender font-bold">◈ ENCRYPTED BOTTLES</h2>
                         <span class="font-mono text-[9px] px-2 py-0.5 rounded bg-lavender/10 text-lavender/70">ASYNC LOVE</span>
                     </div>
                     <div class="p-5 flex flex-col gap-4">
@@ -226,7 +219,7 @@
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div class="glass-panel flex flex-col">
                     <div class="px-4 py-3 border-b border-white/5 flex justify-between items-center bg-butter/5">
-                        <h2 class="font-sans text-[10px] tracking-[0.2em] text-butter font-bold">◈ THE CHUNKER</h2>
+                        <h2 class="font-mono text-[10px] tracking-[0.2em] text-butter font-bold">◈ THE CHUNKER</h2>
                         <span class="font-mono text-[9px] px-2 py-0.5 rounded bg-butter/10 text-butter/70">EXEC FUNCTION</span>
                     </div>
                     <div class="p-5 flex flex-col gap-4">
@@ -240,20 +233,20 @@
                 </div>
 
                 <div class="glass-panel flex flex-col">
-                    <div class="px-4 py-3 border-b border-white/5 flex justify-between items-center bg-teal/5">
-                        <h2 class="font-sans text-[10px] tracking-[0.2em] text-teal font-bold">◈ FOCUS TIMER</h2>
-                        <span class="font-mono text-[9px] px-2 py-0.5 rounded bg-teal/10 text-teal/70">FUEL BURN</span>
+                    <div class="px-4 py-3 border-b border-white/5 flex justify-between items-center bg-cyan/5">
+                        <h2 class="font-mono text-[10px] tracking-[0.2em] text-cyan font-bold">◈ FOCUS TIMER</h2>
+                        <span class="font-mono text-[9px] px-2 py-0.5 rounded bg-cyan/10 text-cyan/70">FUEL BURN</span>
                     </div>
                     <div class="p-5 flex items-center gap-8">
                         <div class="relative w-32 h-32 shrink-0">
                             <canvas id="timer-canvas" width="128" height="128" class="w-full h-full"></canvas>
                             <div class="absolute inset-0 flex flex-col items-center justify-center">
-                                <div class="font-mono text-2xl font-bold text-teal" id="timer-text">25:00</div>
+                                <div class="font-mono text-2xl font-bold text-cyan" id="timer-text">25:00</div>
                                 <div class="font-mono text-[8px] text-cloud/50 tracking-widest mt-1" id="timer-phase">STANDBY</div>
                             </div>
                         </div>
                         <div class="flex-1 flex flex-col gap-3">
-                            <button onclick="toggleTimer()" id="btn-timer" class="glass-btn w-full py-3 text-teal border-teal/30 hover:bg-teal/10 text-sm font-bold">▶ IGNITE</button>
+                            <button onclick="toggleTimer()" id="btn-timer" class="glass-btn w-full py-3 text-cyan border-cyan/30 hover:bg-cyan/10 text-sm font-bold">▶ IGNITE</button>
                             <button onclick="resetTimer()" class="glass-btn w-full py-2 text-cloud/50 border-white/10 hover:text-cloud hover:border-white/30">↻ RESET</button>
                         </div>
                     </div>
@@ -261,7 +254,7 @@
 
                 <div class="glass-panel lg:col-span-2 flex flex-col">
                     <div class="px-4 py-3 border-b border-white/5 flex justify-between items-center bg-lavender/5">
-                        <h2 class="font-sans text-[10px] tracking-[0.2em] text-lavender font-bold">◈ CHAOS INGESTION</h2>
+                        <h2 class="font-mono text-[10px] tracking-[0.2em] text-lavender font-bold">◈ CHAOS INGESTION</h2>
                         <span class="font-mono text-[9px] px-2 py-0.5 rounded bg-lavender/20 text-lavender/70">ENTROPY → LOVE</span>
                     </div>
                     <div class="p-5 flex flex-col gap-3">
@@ -281,7 +274,7 @@
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div class="glass-panel flex flex-col">
                     <div class="px-4 py-3 border-b border-white/5 flex justify-between items-center bg-phosphorus/5">
-                        <h2 class="font-sans text-[10px] tracking-[0.2em] text-phosphorus font-bold">◈ MEDICATION TRACKER</h2>
+                        <h2 class="font-mono text-[10px] tracking-[0.2em] text-phosphorus font-bold">◈ MEDICATION TRACKER</h2>
                     </div>
                     <div class="p-5 flex flex-col gap-4">
                         <div class="flex gap-2">
@@ -295,9 +288,9 @@
                 </div>
 
                 <div class="glass-panel flex flex-col">
-                    <div class="px-4 py-3 border-b border-white/5 flex justify-between items-center bg-teal/5">
-                        <h2 class="font-sans text-[10px] tracking-[0.2em] text-teal font-bold">◈ CALCIUM MONITOR</h2>
-                        <span class="font-mono text-[9px] px-2 py-0.5 rounded bg-teal/10 text-teal/70">Ca₉(PO₄)₆</span>
+                    <div class="px-4 py-3 border-b border-white/5 flex justify-between items-center bg-cyan/5">
+                        <h2 class="font-mono text-[10px] tracking-[0.2em] text-cyan font-bold">◈ CALCIUM MONITOR</h2>
+                        <span class="font-mono text-[9px] px-2 py-0.5 rounded bg-cyan/10 text-cyan/70">Ca₉(PO₄)₆</span>
                     </div>
                     <div class="p-5 flex flex-col gap-4">
                         <div class="h-6 bg-void rounded-full border border-white/10 relative overflow-hidden">
@@ -309,8 +302,8 @@
                             <span class="text-butter">Target: 1500 mg</span>
                         </div>
                         <div class="flex gap-2 mt-2">
-                            <input type="number" id="calcium-input" placeholder="mg" class="w-20 bg-void border border-white/10 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:border-teal" onkeypress="if(event.key === 'Enter') addCalcium()">
-                            <button onclick="addCalcium()" class="glass-btn px-4 text-teal border-teal/30 hover:bg-teal/10">+ LOG</button>
+                            <input type="number" id="calcium-input" placeholder="mg" class="w-20 bg-void border border-white/10 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:border-cyan" onkeypress="if(event.key === 'Enter') addCalcium()">
+                            <button onclick="addCalcium()" class="glass-btn px-4 text-cyan border-cyan/30 hover:bg-cyan/10">+ LOG</button>
                             <button onclick="addCalcium(600)" class="glass-btn px-4 text-butter border-butter/30 hover:bg-butter/10">+600</button>
                             <button onclick="resetCalcium()" class="glass-btn px-3 ml-auto text-coral border-coral/30 hover:bg-coral/10">↻</button>
                         </div>
@@ -323,15 +316,15 @@
         <div id="tab-library" class="tab-content">
             <div class="max-w-4xl mx-auto flex flex-col gap-6">
                 <div class="glass-panel p-6 border-l-4 border-l-cyan">
-                    <h3 class="font-sans text-sm font-bold text-teal mb-2">🔺 SIC-POVM: The Tetrahedron</h3>
+                    <h3 class="font-mono text-sm font-bold text-cyan mb-2">🔺 SIC-POVM: The Tetrahedron</h3>
                     <p class="text-sm text-cloud/70 leading-relaxed">A Symmetric Informationally Complete Positive Operator-Valued Measure (SIC-POVM) extracts <strong>maximum information</strong> from a quantum state using exactly 4 measurement directions forming a tetrahedron. Your 4 life domains do the same—providing <em>informationally complete</em> self-awareness without redundancy.</p>
                 </div>
                 <div class="glass-panel p-6 border-l-4 border-l-lavender">
-                    <h3 class="font-sans text-sm font-bold text-lavender mb-2">🧬 Posner Molecules</h3>
+                    <h3 class="font-mono text-sm font-bold text-lavender mb-2">🧬 Posner Molecules</h3>
                     <p class="text-sm text-cloud/70 leading-relaxed">Physicist Matthew Fisher proposed that Posner molecules (Ca₉(PO₄)₆) can protect quantum entanglement in the brain for hours. The calcium in your bones might be the biological substrate of quantum cognition. This is why we track calcium so strictly.</p>
                 </div>
                 <div class="glass-panel p-6 border-l-4 border-l-butter">
-                    <h3 class="font-sans text-sm font-bold text-butter mb-2">🌊 Decoherence & The Fawn Guard</h3>
+                    <h3 class="font-mono text-sm font-bold text-butter mb-2">🌊 Decoherence & The Fawn Guard</h3>
                     <p class="text-sm text-cloud/70 leading-relaxed">In physics, <em>decoherence</em> is when a quantum state collapses due to environmental noise. Psychologically, the <em>fawn response</em> (people-pleasing) is social decoherence—your authentic state collapses to match external pressure. The Fawn Guard intercepts this.</p>
                 </div>
             </div>
@@ -348,7 +341,7 @@
         </div>
         <div id="modal-focus" class="hidden flex-col items-center justify-center">
             <p class="text-cloud/50 mb-6 tracking-widest text-sm">DEEP WORK — FUEL BURN IN PROGRESS</p>
-            <div class="font-mono text-7xl font-bold text-teal mb-2" id="focus-time">25:00</div>
+            <div class="font-mono text-7xl font-bold text-cyan mb-2" id="focus-time">25:00</div>
             <div class="font-mono text-xs text-cloud/50 tracking-widest mb-12">IGNITION SEQUENCE</div>
             <button onclick="toggleTimer()" class="glass-btn px-6 py-3 text-coral border-coral bg-coral/10 hover:bg-coral/20">⬛ ABORT BURN</button>
         </div>
@@ -378,7 +371,7 @@
         function showToast(msg, type = 'info') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
-            const colors = { success: 'border-phosphorus text-phosphorus bg-phosphorus/10', warn: 'border-butter text-butter bg-butter/10', error: 'border-coral text-coral bg-coral/10', info: 'border-teal text-teal bg-teal/10' };
+            const colors = { success: 'border-phosphorus text-phosphorus bg-phosphorus/10', warn: 'border-butter text-butter bg-butter/10', error: 'border-coral text-coral bg-coral/10', info: 'border-cyan text-cyan bg-cyan/10' };
             toast.className = `glass-panel px-4 py-3 font-mono text-xs border ${colors[type]} transform translate-y-10 opacity-0 transition-all duration-300`;
             toast.innerHTML = msg;
             container.appendChild(toast);
@@ -388,11 +381,11 @@
 
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
-                document.querySelectorAll('.tab-btn').forEach(b => { b.classList.remove('border-teal', 'text-teal'); b.classList.add('border-transparent', 'text-cloud/50'); });
+                document.querySelectorAll('.tab-btn').forEach(b => { b.classList.remove('border-cyan', 'text-cyan'); b.classList.add('border-transparent', 'text-cloud/50'); });
                 document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
                 const target = e.target.dataset.target;
                 e.target.classList.remove('border-transparent', 'text-cloud/50');
-                e.target.classList.add('border-teal', 'text-teal');
+                e.target.classList.add('border-cyan', 'text-cyan');
                 document.getElementById('tab-' + target).classList.add('active');
             });
         });
@@ -454,7 +447,7 @@
             const container = document.getElementById('grounding-steps');
             container.innerHTML = gSteps.map((step, i) => `
                 <div onclick="completeMeltStep(${i})" class="glass-panel p-4 flex items-center gap-4 cursor-pointer transition-colors ${meltProgress[i] ? 'border-phosphorus bg-phosphorus/5' : 'hover:bg-white/5'} text-left">
-                    <div class="w-10 h-10 rounded-full flex items-center justify-center font-mono text-xl font-bold ${meltProgress[i] ? 'text-phosphorus bg-phosphorus/20' : 'text-teal bg-teal/10'}">${step.n}</div>
+                    <div class="w-10 h-10 rounded-full flex items-center justify-center font-mono text-xl font-bold ${meltProgress[i] ? 'text-phosphorus bg-phosphorus/20' : 'text-cyan bg-cyan/10'}">${step.n}</div>
                     <div>
                         <div class="font-mono text-[8px] font-bold tracking-widest ${meltProgress[i] ? 'text-phosphorus' : 'text-butter'}">${step.s}</div>
                         <div class="text-sm text-cloud/80">${step.t}</div>
@@ -517,7 +510,7 @@
             const btn = document.getElementById('btn-timer');
             if(timerInt) {
                 clearInterval(timerInt); timerInt = null;
-                btn.innerText = '▶ IGNITE'; btn.className = 'glass-btn w-full py-3 text-teal border-teal/30 hover:bg-teal/10 text-sm font-bold';
+                btn.innerText = '▶ IGNITE'; btn.className = 'glass-btn w-full py-3 text-cyan border-cyan/30 hover:bg-cyan/10 text-sm font-bold';
                 document.getElementById('timer-phase').innerText = 'STANDBY';
                 document.getElementById('modal-overlay').classList.replace('flex', 'hidden');
                 document.getElementById('modal-focus').classList.replace('flex', 'hidden');
@@ -638,7 +631,7 @@
             group.add(new THREE.Mesh(new THREE.SphereGeometry(2, 32, 32), new THREE.MeshBasicMaterial({ color: 0x4db8a8, wireframe: true, transparent: true, opacity: 0.05 })));
             const tetGeo = new THREE.TetrahedronGeometry(2);
             group.add(new THREE.Mesh(tetGeo, new THREE.MeshBasicMaterial({ color: 0x8b7cc9, wireframe: true, transparent: true, opacity: 0.3 })));
-            const vCols = [0xcda852, 0x8b7cc9, 0x4db8a8, 0x3ba372];
+            const vCols = [0xcda852, 0x8b7cc9, 0x4db8a8, 0x00ff88];
             const pos = tetGeo.attributes.position.array;
             for(let i=0; i<4; i++) {
                 const m = new THREE.Mesh(new THREE.SphereGeometry(0.15, 16, 16), new THREE.MeshBasicMaterial({ color: vCols[i] }));
