@@ -1,0 +1,10 @@
+---
+import AppShell from '../layouts/AppShell.astro';
+import { FacetSwitchboard } from 'ui-facets';
+---
+
+<AppShell title="Facets — The DELTA" routeName="home">
+  <div class="min-h-[calc(100vh-6rem)]">
+    <FacetSwitchboard client:load />
+  </div>
+</AppShell>

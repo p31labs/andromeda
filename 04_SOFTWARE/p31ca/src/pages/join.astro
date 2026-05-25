@@ -1,0 +1,20 @@
+---
+import AppShell from '../layouts/AppShell.astro';
+import { GenesisFlow } from '../../../shared-components/onboarding';
+
+const params = new URL(Astro.request.url).searchParams;
+const inviteCode = params.get('code') ?? '';
+const invitedAlias = params.get('alias') ?? '';
+---
+
+<AppShell title="Join P31 — Genesis Flow" routeName="home">
+  <GenesisFlow
+    client:load
+    inviteCode={inviteCode}
+    invitedAlias={invitedAlias}
+    onComplete={(identity: any) => {
+      console.log('[join] GenesisFlow complete:', identity);
+      window.location.href = '/';
+    }}
+  />
+</AppShell>
