@@ -1,0 +1,6 @@
+# Copy to .dev.vars (gitignored) for local `npm run dev`.
+# When set, all /v1/* routes require: Authorization: Bearer <same value>
+# FOUNDRY_AUTH_SECRET=your-local-secret
+#
+# Optional: disable mutation rate limit (default 120/min/IP in wrangler.toml [vars])
+# FOUNDRY_RL_PER_MINUTE=0

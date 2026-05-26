@@ -1,0 +1,195 @@
+/* P31 Smallball — Arcade Theme v2.0.0 (Canonical)
+ * Aligned with p31-universal-canon.json
+ * Gray Rock compliant — no self-starting motion
+ */
+
+/* Import canonical arcade tokens */
+@import '../../packages/p31-arcade-theme/arcade-theme.css';
+
+/* ============================================
+   SMALLBALL-SPECIFIC EXTENSIONS
+   ============================================ */
+
+/* Team accent color (uses canon cyan) */
+:root {
+  --smallball-accent: var(--p31-cyan);
+  --smallball-accent-dim: rgba(77, 184, 168, 0.2);
+}
+
+/* Baseball-themed gradients using canon colors */
+.gradient-diamond {
+  background: linear-gradient(
+    135deg,
+    var(--p31-cyan) 0%,
+    var(--p31-lavender) 50%,
+    var(--p31-teal) 100%
+  );
+}
+
+/* Scoreboard styling */
+.scoreboard {
+  font-family: var(--p31-font-mono);
+  background: var(--p31-surface);
+  border: 2px solid var(--p31-glass-border);
+  border-radius: var(--p31-radius-md);
+  padding: var(--p31-space-3) var(--p31-space-4);
+}
+
+.scoreboard-score {
+  font-size: var(--p31-text-3xl);
+  font-weight: 700;
+  color: var(--p31-phosphor);
+}
+
+/* Play button (large touch target for mobile) */
+.play-button {
+  min-width: 120px;
+  min-height: 48px;
+  padding: var(--p31-space-3) var(--p31-space-6);
+  font-size: var(--p31-text-lg);
+  border-radius: var(--p31-radius-xl);
+}
+
+/* Inning indicator */
+.inning-indicator {
+  display: flex;
+  align-items: center;
+  gap: var(--p31-space-2);
+  font-family: var(--p31-font-mono);
+  font-size: var(--p31-text-sm);
+  color: var(--p31-cloud);
+}
+
+.inning-arrow {
+  color: var(--p31-coral);
+  font-size: var(--p31-text-xs);
+}
+
+.inning-arrow.top {
+  color: var(--p31-teal);
+}
+
+/* Bases display (uses Unicode diamonds) */
+.bases-display {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--p31-space-2);
+  font-size: var(--p31-text-lg);
+}
+
+.base {
+  color: var(--p31-muted);
+  transition: color var(--p31-motion-fast) var(--p31-ease-standard);
+}
+
+.base.occupied {
+  color: var(--p31-phosphor);
+}
+
+/* Count display (balls, strikes, outs) */
+.count-display {
+  font-family: var(--p31-font-mono);
+  font-size: var(--p31-text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--p31-muted);
+}
+
+.count-value {
+  color: var(--p31-cloud);
+  font-weight: 600;
+}
+
+/* Player card */
+.player-card {
+  background: var(--p31-surface);
+  border: 1px solid var(--p31-glass-border);
+  border-radius: var(--p31-radius-md);
+  padding: var(--p31-space-3);
+}
+
+.player-name {
+  font-size: var(--p31-text-md);
+  font-weight: 600;
+  color: var(--p31-cloud);
+}
+
+.player-stats {
+  font-family: var(--p31-font-mono);
+  font-size: var(--p31-text-xs);
+  color: var(--p31-muted);
+}
+
+.stat-value {
+  color: var(--p31-teal);
+}
+
+/* Game log / feed */
+.game-log {
+  font-family: var(--p31-font-mono);
+  font-size: var(--p31-text-xs);
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.log-entry {
+  padding: var(--p31-space-1) 0;
+  border-bottom: 1px solid var(--p31-glass-border);
+}
+
+.log-entry:last-child {
+  border-bottom: none;
+}
+
+.log-time {
+  color: var(--p31-muted);
+  font-size: 0.7rem;
+}
+
+/* Energy bar (for pitcher stamina) */
+.energy-bar {
+  height: 4px;
+  background: var(--p31-surface2);
+  border-radius: var(--p31-radius-full);
+  overflow: hidden;
+}
+
+.energy-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--p31-teal), var(--p31-cyan));
+  border-radius: var(--p31-radius-full);
+  transition: width var(--p31-motion-normal) var(--p31-ease-standard);
+}
+
+.energy-fill.low {
+  background: var(--p31-coral);
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .arcade-header {
+    padding: var(--p31-space-3);
+  }
+
+  .play-button {
+    min-width: 100px;
+    min-height: 44px;
+    padding: var(--p31-space-2) var(--p31-space-4);
+    font-size: var(--p31-text-base);
+  }
+
+  .scoreboard-score {
+    font-size: var(--p31-text-2xl);
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .glass-card {
+    border: 2px solid var(--p31-cloud);
+  }
+
+  .arcade-button {
+    border: 2px solid var(--p31-cloud);
+  }
+}

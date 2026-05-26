@@ -1,0 +1,20 @@
+{
+  "name": "@p31/k4-agent-hub-client",
+  "version": "1.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Operator-side client for the K₄ agent worker tetrahedron — Ed25519 signed dock + per-call envelope, dock/call/cross/topology/federation methods. Pairs with packages/k4-agent-hub/ (schema p31.k4AgentHub/1.1.0).",
+  "main": "src/index.mjs",
+  "exports": {
+    ".": "./src/index.mjs",
+    "./keypair": "./src/keypair.mjs",
+    "./envelope": "./src/envelope.mjs",
+    "./anchor-pact": "./src/anchor-pact.mjs"
+  },
+  "scripts": {
+    "test": "node --test --test-reporter=spec test/*.test.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

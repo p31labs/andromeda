@@ -1,0 +1,6 @@
+name = "p31-smallball-signal"
+main = "src/index-simple.ts"
+compatibility_date = "2024-04-01"
+
+[vars]
+ENVIRONMENT = "development"

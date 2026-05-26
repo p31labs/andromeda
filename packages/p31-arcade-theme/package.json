@@ -1,0 +1,10 @@
+{
+  "name": "@p31/arcade-theme",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "index.ts",
+  "files": ["components", "arcade-theme.css", "index.ts"],
+  "exports": {
+    ".": "./index.ts"
+  }
+}

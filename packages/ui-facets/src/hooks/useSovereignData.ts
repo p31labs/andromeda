@@ -1,0 +1,2 @@
+export { useSovereignData, type VaultItem } from '../../../../04_SOFTWARE/p31ca/src/hooks/useSovereignData';
+export { generateCRDTHash } from '../../../../04_SOFTWARE/p31ca/src/hooks/useSovereignData';

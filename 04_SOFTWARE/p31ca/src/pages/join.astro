@@ -1,6 +1,6 @@
 ---
 import AppShell from '../layouts/AppShell.astro';
-import { GenesisFlow } from '../../../shared-components/onboarding';
+import { GenesisFlow } from '@shared-components/onboarding';
 
 const params = new URL(Astro.request.url).searchParams;
 const inviteCode = params.get('code') ?? '';

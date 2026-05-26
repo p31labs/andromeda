@@ -1,0 +1,14 @@
+{
+  "name": "p31-foundry-worker",
+  "private": true,
+  "version": "1.3.0",
+  "description": "Minimal edge stub for P31 Document Foundry (health + job intake placeholder).",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "check": "wrangler deploy --dry-run"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  }
+}

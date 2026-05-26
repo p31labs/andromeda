@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "p31-office"
+version = "0.1.0"
+description = "P31 local ops: discovery exhibit PDF assembly, Zenodo inventory scan, environment doctor."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "reportlab>=4.0,<5",
+  "pypdf>=4.0,<6",
+]
+
+[project.optional-dependencies]
+dev = ["ruff>=0.4"]
+
+[project.scripts]
+p31-office = "p31_office.cli:entrypoint"
+
+[tool.setuptools.packages.find]
+where = ["src"]

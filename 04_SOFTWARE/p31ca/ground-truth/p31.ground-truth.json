@@ -1354,6 +1354,36 @@
       "status": 301
     },
     {
+      "from": "/arcade-hub-about.html",
+      "to": "/arcade#hub",
+      "status": 301
+    },
+    {
+      "from": "/arcade-smallball-about.html",
+      "to": "/arcade#smallball",
+      "status": 301
+    },
+    {
+      "from": "/arcade-gridiron-about.html",
+      "to": "/arcade#gridiron",
+      "status": 301
+    },
+    {
+      "from": "/arcade-strategy-about.html",
+      "to": "/arcade#strategy",
+      "status": 301
+    },
+    {
+      "from": "/arcade-cards-about.html",
+      "to": "/arcade#cards",
+      "status": 301
+    },
+    {
+      "from": "/arcade-liquid-sculptor-about.html",
+      "to": "/arcade#liquid",
+      "status": 301
+    },
+    {
       "from": "/node-zero-about.html",
       "to": "/node-zero",
       "status": 301

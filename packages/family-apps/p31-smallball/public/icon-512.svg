@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect fill="#1a1a2e" width="512" height="512" rx="48"/>
+  <circle cx="256" cy="256" r="160" fill="#3b82f6" opacity="0.2"/>
+  <circle cx="256" cy="256" r="110" fill="none" stroke="#3b82f6" stroke-width="8"/>
+  <path d="M256 146 L256 366 M146 256 L366 256" stroke="#3b82f6" stroke-width="8"/>
+  <circle cx="256" cy="256" r="32" fill="#fbbf24"/>
+  <path d="M256 190 L270 230 L312 230 L278 256 L292 296 L256 270 L220 296 L234 256 L200 230 L242 230 Z" fill="#fff" opacity="0.1"/>
+  <text x="256" y="420" text-anchor="middle" fill="#fff" font-size="36" font-family="system-ui" font-weight="bold">P31 SMALLBALL</text>
+</svg>

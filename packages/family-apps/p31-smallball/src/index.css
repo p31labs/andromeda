@@ -1,0 +1,63 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --phos-green: #39ff14;
+    --cyan-vibe: #00f5ff;
+    --orchid-soul: #da70d6;
+    --chump-gold: #feca57;
+    --sentinel-blue: #54a0ff;
+    --dirt-brown: #c19a6b;
+    --grass-dark: #2d4c1e;
+    --bg-dark: #0a101a;
+  }
+
+  * {
+    @apply border-white/10;
+  }
+
+  body {
+    @apply bg-bg text-white antialiased;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+  }
+}
+
+@layer components {
+  .glass-panel {
+    @apply bg-white/5 backdrop-blur-md border border-white/10 shadow-xl;
+  }
+
+  .glass-button {
+    @apply bg-white/5 backdrop-blur-sm border border-white/20 
+           transition-all duration-200 ease-out
+           hover:bg-white/10 hover:-translate-y-0.5 hover:shadow-lg
+           active:translate-y-0;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Selection color */
+::selection {
+  background: rgba(218, 112, 214, 0.3);
+  color: white;
+}

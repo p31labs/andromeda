@@ -1,0 +1,562 @@
+/* P31 Arcade Theme — Canonical v1.0.0
+ * Derived from p31-universal-canon.json
+ * Gray Rock compliant: no self-starting motion
+ */
+
+/* ============================================
+   CANON TOKEN IMPORT (values from p31-universal-canon.json)
+   ============================================ */
+
+:root {
+  /* Core Palette (brand anchors) */
+  --p31-coral: #cc6247;
+  --p31-teal: #5DCAA5;
+  --p31-cyan: #4db8a8;
+  --p31-amber: #cda852;
+  --p31-lavender: #8b7cc9;
+  --p31-phosphorus: #3ba372;
+  --p31-phosphor: #00FF88;
+  --p31-fuchsia: #e879f9;
+
+  /* Hub Appearance (arcade default) */
+  --p31-void: #0f1115;
+  --p31-surface: #161920;
+  --p31-surface2: #1c2028;
+  --p31-cloud: #d8d6d0;
+  --p31-paper: #f4f4f5;
+  --p31-ink: #1e293b;
+  --p31-muted: #6b7280;
+
+  /* Semantic */
+  --p31-border-subtle: rgba(255, 255, 255, 0.06);
+  --p31-glass-border: rgba(255, 255, 255, 0.08);
+  --p31-glass-surface: rgba(255, 255, 255, 0.04);
+
+  /* Typography */
+  --p31-font-sans: "Atkinson Hyperlegible", sans-serif;
+  --p31-font-mono: "JetBrains Mono", monospace;
+
+  /* Scale (rem) */
+  --p31-text-xs: 0.75rem;
+  --p31-text-sm: 0.875rem;
+  --p31-text-base: 1rem;
+  --p31-text-md: 1.0625rem;
+  --p31-text-lg: 1.125rem;
+  --p31-text-xl: 1.25rem;
+  --p31-text-2xl: 1.5rem;
+  --p31-text-3xl: 1.875rem;
+  --p31-text-4xl: 2.25rem;
+
+  /* Spacing (rem) */
+  --p31-space-1: 0.25rem;
+  --p31-space-2: 0.5rem;
+  --p31-space-3: 0.75rem;
+  --p31-space-4: 1rem;
+  --p31-space-5: 1.25rem;
+  --p31-space-6: 1.5rem;
+  --p31-space-8: 2rem;
+  --p31-space-10: 2.5rem;
+  --p31-space-12: 3rem;
+  --p31-space-16: 4rem;
+
+  /* Radius */
+  --p31-radius-sm: 4px;
+  --p31-radius-md: 8px;
+  --p31-radius-lg: 12px;
+  --p31-radius-xl: 16px;
+  --p31-radius-full: 9999px;
+
+  /* Shadows */
+  --p31-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
+  --p31-shadow-md: 0 4px 14px rgba(0, 0, 0, 0.08);
+  --p31-shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.12);
+  --p31-shadow-glow-teal: 0 0 24px rgba(37, 137, 125, 0.25);
+
+  /* Motion (ms) - Material 3 grammar */
+  --p31-motion-instant: 100ms;
+  --p31-motion-fast: 150ms;
+  --p31-motion-normal: 250ms;
+  --p31-motion-slow: 400ms;
+  --p31-motion-glacial: 800ms;
+
+  /* Easing */
+  --p31-ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --p31-ease-emphasized: cubic-bezier(0.2, 0, 0, 1);
+  --p31-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+
+  /* Focus */
+  --p31-focus-ring: 2px solid rgba(77, 184, 168, 0.55);
+  --p31-focus-offset: 2px;
+
+  /* Z-index scale */
+  --p31-z-base: 0;
+  --p31-z-dropdown: 50;
+  --p31-z-sticky: 100;
+  --p31-z-overlay: 200;
+  --p31-z-modal: 300;
+  --p31-z-toast: 400;
+}
+
+/* ============================================
+   BASE RESET
+   ============================================ */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: var(--p31-font-sans);
+  background: var(--p31-void);
+  color: var(--p31-cloud);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ============================================
+   ARCADE BACKGROUND (Gray Rock compliant)
+   Static until user interaction
+   ============================================ */
+
+.arcade-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--p31-void);
+  z-index: -1;
+  overflow: hidden;
+}
+
+/* Subtle radial glow — no animation, no motion */
+.arcade-background::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(
+    ellipse at top,
+    rgba(93, 202, 165, 0.08) 0%,
+    transparent 50%
+  ),
+  radial-gradient(
+    ellipse at bottom,
+    rgba(139, 124, 201, 0.05) 0%,
+    transparent 50%
+  );
+  /* No animation — Gray Rock compliant */
+}
+
+/* Grid pattern overlay */
+.arcade-background::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%235DCAA5' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  opacity: 0.4;
+}
+
+/* Gray Rock mode — further reduces visual noise */
+.p31-gray-rock .arcade-background::before,
+.p31-gray-rock .arcade-background::after {
+  opacity: 0;
+}
+
+/* Alive mode — motion enabled via ?alive=1 or user interaction */
+.p31-alive .arcade-background::before {
+  animation: arcadeMeshPulse 12s ease-in-out infinite;
+}
+
+@keyframes arcadeMeshPulse {
+  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.6; }
+  50% { transform: translate(-1%, -1%) scale(1.02); opacity: 0.8; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .p31-alive .arcade-background::before {
+    animation: none;
+  }
+}
+
+/* ============================================
+   GLASS CARD (canonical quantum surface)
+   ============================================ */
+
+.glass-card {
+  background: var(--p31-glass-surface);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--p31-glass-border);
+  border-radius: var(--p31-radius-lg);
+  box-shadow: var(--p31-shadow-lg);
+  transition: all var(--p31-motion-fast) var(--p31-ease-standard);
+}
+
+.glass-card:hover {
+  border-color: rgba(93, 202, 165, 0.2);
+  box-shadow: 0 8px 32px rgba(93, 202, 165, 0.1);
+}
+
+/* ============================================
+   BUTTONS
+   ============================================ */
+
+.arcade-button {
+  padding: var(--p31-space-2) var(--p31-space-4);
+  background: var(--p31-glass-surface);
+  border: 1px solid var(--p31-glass-border);
+  border-radius: var(--p31-radius-md);
+  color: var(--p31-cloud);
+  font-family: var(--p31-font-sans);
+  font-size: var(--p31-text-sm);
+  cursor: pointer;
+  transition: all var(--p31-motion-fast) var(--p31-ease-standard);
+}
+
+.arcade-button:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(93, 202, 165, 0.3);
+}
+
+.arcade-button:focus-visible {
+  outline: var(--p31-focus-ring);
+  outline-offset: var(--p31-focus-offset);
+}
+
+.arcade-button.primary {
+  background: var(--p31-cyan);
+  border-color: var(--p31-cyan);
+  color: var(--p31-void);
+}
+
+.arcade-button.primary:hover {
+  background: #3aa89a;
+  box-shadow: 0 4px 12px rgba(77, 184, 168, 0.3);
+}
+
+.arcade-button.success {
+  background: var(--p31-phosphorus);
+  border-color: var(--p31-phosphorus);
+  color: var(--p31-cloud);
+}
+
+.arcade-button.danger {
+  background: var(--p31-coral);
+  border-color: var(--p31-coral);
+  color: var(--p31-cloud);
+}
+
+/* ============================================
+   HEADER
+   ============================================ */
+
+.arcade-header {
+  padding: var(--p31-space-4) var(--p31-space-6);
+  background: var(--p31-glass-surface);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--p31-glass-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* ============================================
+   LOADING STATE
+   ============================================ */
+
+.arcade-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: var(--p31-void);
+  color: var(--p31-cloud);
+}
+
+.arcade-loading-spinner {
+  font-size: var(--p31-text-4xl);
+  margin-bottom: var(--p31-space-4);
+  /* Unicode spinner — no emoji */
+}
+
+.arcade-loading-spinner::before {
+  content: '◐';
+  animation: arcadeSpin 1s linear infinite;
+}
+
+@keyframes arcadeSpin {
+  0% { content: '◐'; }
+  25% { content: '◓'; }
+  50% { content: '◑'; }
+  75% { content: '◒'; }
+  100% { content: '◐'; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .arcade-loading-spinner::before {
+    animation: none;
+    content: '◐';
+  }
+}
+
+/* ============================================
+   SCROLLBAR (canonical)
+   ============================================ */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: var(--p31-radius-sm);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(77, 184, 168, 0.3);
+  border-radius: var(--p31-radius-sm);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(77, 184, 168, 0.5);
+}
+
+/* ============================================
+   UTILITY ANIMATIONS
+   ============================================ */
+
+@keyframes slideIn {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.slide-in {
+  animation: slideIn var(--p31-motion-normal) var(--p31-ease-standard);
+}
+
+.slide-up {
+  animation: slideUp var(--p31-motion-normal) var(--p31-ease-standard);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .slide-in,
+  .slide-up {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ============================================
+   GRADIENT TEXT (canonical)
+   ============================================ */
+
+.gradient-text {
+  background: linear-gradient(135deg, var(--p31-cyan) 0%, var(--p31-lavender) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ============================================
+   FOCUS STATES
+   ============================================ */
+
+:focus-visible {
+  outline: var(--p31-focus-ring);
+  outline-offset: var(--p31-focus-offset);
+}
+
+/* ============================================
+   SPOON INDICATOR (canonical)
+   ============================================ */
+
+.spoon-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--p31-space-1);
+  padding: var(--p31-space-1) var(--p31-space-2);
+  background: var(--p31-glass-surface);
+  border-radius: var(--p31-radius-lg);
+  font-family: var(--p31-font-mono);
+  font-size: var(--p31-text-xs);
+}
+
+.spoon-high { color: var(--p31-teal); }
+.spoon-medium { color: var(--p31-amber); }
+.spoon-low { color: var(--p31-coral); }
+.spoon-empty { color: var(--p31-muted); }
+
+/* Unicode spoon states (no emoji) */
+.spoon-icon-loading::before { content: '◐'; }
+.spoon-icon-inactive::before { content: '○'; }
+.spoon-icon-active::before { content: '●'; }
+
+/* ============================================
+   P31 RETURN RIBBON — Canonical Navigation Spine
+   soup · hub · passport · connection · mesh
+   ============================================ */
+
+.p31-return-ribbon {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 48px;
+  background: var(--p31-glass-surface);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid var(--p31-glass-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--p31-space-1);
+  padding: 0 var(--p31-space-4);
+  z-index: var(--p31-z-sticky);
+  font-family: var(--p31-font-sans);
+  font-size: var(--p31-text-sm);
+  transition: transform var(--p31-motion-normal) var(--p31-ease-standard),
+              opacity var(--p31-motion-normal) var(--p31-ease-standard);
+}
+
+/* Gray Rock mode — ribbon hidden */
+.p31-gray-rock .p31-return-ribbon {
+  transform: translateY(100%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Alive mode — ribbon visible */
+.p31-alive .p31-return-ribbon {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Default state (no mode class) — visible for accessibility */
+.p31-return-ribbon {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* Ribbon navigation items */
+.p31-ribbon-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--p31-space-1);
+}
+
+.p31-ribbon-link {
+  display: flex;
+  align-items: center;
+  gap: var(--p31-space-1);
+  padding: var(--p31-space-2) var(--p31-space-3);
+  color: var(--p31-cloud);
+  text-decoration: none;
+  border-radius: var(--p31-radius-md);
+  transition: all var(--p31-motion-fast) var(--p31-ease-standard);
+  white-space: nowrap;
+}
+
+.p31-ribbon-link:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--p31-teal);
+}
+
+.p31-ribbon-link:focus-visible {
+  outline: var(--p31-focus-ring);
+  outline-offset: var(--p31-focus-offset);
+}
+
+.p31-ribbon-link.active {
+  background: rgba(93, 202, 165, 0.15);
+  color: var(--p31-teal);
+}
+
+/* Ribbon separator */
+.p31-ribbon-separator {
+  color: var(--p31-muted);
+  opacity: 0.4;
+  font-size: var(--p31-text-xs);
+  padding: 0 var(--p31-space-1);
+  user-select: none;
+}
+
+/* Ribbon home indicator */
+.p31-ribbon-home {
+  display: flex;
+  align-items: center;
+  gap: var(--p31-space-2);
+  font-weight: 600;
+  color: var(--p31-teal);
+  margin-right: var(--p31-space-2);
+}
+
+/* Keyboard focus indicator for accessibility */
+.p31-ribbon-link:focus-visible {
+  outline: var(--p31-focus-ring);
+  outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .p31-return-ribbon {
+    background: var(--p31-ink);
+    border-top: 2px solid var(--p31-cloud);
+  }
+  
+  .p31-ribbon-link:hover,
+  .p31-ribbon-link.active {
+    background: var(--p31-cloud);
+    color: var(--p31-ink);
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .p31-return-ribbon {
+    transition: none;
+  }
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 640px) {
+  .p31-return-ribbon {
+    height: 44px;
+    padding: 0 var(--p31-space-2);
+    gap: 0;
+  }
+  
+  .p31-ribbon-link {
+    padding: var(--p31-space-1) var(--p31-space-2);
+    font-size: var(--p31-text-xs);
+  }
+  
+  .p31-ribbon-link span:not(:first-child) {
+    display: none;
+  }
+  
+  .p31-ribbon-home span {
+    display: none;
+  }
+}

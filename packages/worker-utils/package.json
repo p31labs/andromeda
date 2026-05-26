@@ -1,0 +1,57 @@
+{
+  "name": "@p31/worker-utils",
+  "version": "1.0.0",
+  "description": "Shared utilities for P31 Cloudflare Workers — ephemeralization package",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./cors": {
+      "import": "./dist/cors.js",
+      "types": "./dist/cors.d.ts"
+    },
+    "./response": {
+      "import": "./dist/response.js",
+      "types": "./dist/response.d.ts"
+    },
+    "./crypto": {
+      "import": "./dist/crypto.js",
+      "types": "./dist/crypto.d.ts"
+    },
+    "./mesh": {
+      "import": "./dist/mesh.js",
+      "types": "./dist/mesh.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc --declaration --outDir dist",
+    "dev": "tsc --watch --declaration --outDir dist",
+    "typecheck": "tsc --noEmit",
+    "verify": "npm run typecheck",
+    "clean": "rm -rf dist"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250327.0",
+    "typescript": "^5.8.0"
+  },
+  "peerDependencies": {
+    "@cloudflare/workers-types": "^4.20250327.0"
+  },
+  "keywords": [
+    "p31",
+    "cloudflare-workers",
+    "utilities",
+    "ephemeralization"
+  ],
+  "author": "P31 Labs",
+  "license": "AGPL-3.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/p31labs/bonding-soup.git",
+    "directory": "packages/worker-utils"
+  }
+}

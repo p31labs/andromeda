@@ -1,0 +1,65 @@
+{
+  "volumes": [
+    {
+      "id": "escaping-wye",
+      "title": "VOLUME 1: ESCAPING THE WYE",
+      "description": "Understanding the extraction machine and how we built our sanctuary",
+      "modules": [
+        {
+          "id": "extraction-machine",
+          "title": "Module 01: The Extraction Machine (The WYE)",
+          "description": "The normal internet is a giant, noisy shopping mall designed to extract your attention and your data. We call this 'The WYE.' Every time you type a recipe, log a medical symptom, or save a photo, a billionaire's server in California reads it, sells it, and charges you for the privilege. We are leaving the mall."
+        },
+        {
+          "id": "sanctuary",
+          "title": "Module 02: The Sanctuary (The DELTA)",
+          "description": "We built our own private universe called The DELTA. It is a digital fortress designed exclusively for our family. There are no ads, no trackers, and no extraction. It is a quiet, peaceful room where the doors are locked from the inside."
+        },
+        {
+          "id": "brain-pocket",
+          "title": "Module 03: The Brain in Your Pocket (PGLite)",
+          "description": "Normally, apps stop working when the internet dies. Not ours. We took the giant 'Engine' that normally lives in a sweaty server farm and shrank it down until it fits inside your phone's browser. It is called a Local Vault. Even if the entire WYE internet goes down, your phone still remembers your data instantly."
+        }
+      ]
+    },
+    {
+      "id": "biological-machine",
+      "title": "VOLUME 2: THE BIOLOGICAL MACHINE",
+      "description": "The biological realities that shape our technology",
+      "modules": [
+        {
+          "id": "invisible-referee",
+          "title": "Module 04: The Invisible Referee (CRDT)",
+          "description": "What happens if two of us edit the family grocery list at the exact same time while our phones are offline? When the Wi-Fi comes back, the WYE would normally panic and delete someone's work. Our system uses 'Magic Clock Math' (a Hybrid Logical Clock). It acts as an invisible, perfectly fair referee that merges our homework together seamlessly. Nobody's voice is ever overwritten."
+        },
+        {
+          "id": "spoon-dial",
+          "title": "Module 05: The Spoon Dial",
+          "description": "Technology should mold to human biology, not the other way around. Because of our family's biological realities (like calcium fluctuations and brain fog), our apps measure energy in 'Spoons.' If you are tired, the app physically changes shape: buttons get massive, animations stop, and the noise disappears. It protects your energy."
+        },
+        {
+          "id": "karma-economy",
+          "title": "Module 06: The Karma Economy (LOVE Ledger)",
+          "description": "Instead of paying a corporation to use our own network, we pay each other in a private economy. You earn reputation (Karma) and credits by contributing to the family ecosystem. It is a completely private, cryptographically secure ledger that tracks real-world assets, and it answers to no one but us."
+        }
+      ]
+    },
+    {
+      "id": "ignition",
+      "title": "VOLUME 3: THE IGNITION",
+      "description": "Your entry into the DELTA",
+      "modules": [
+        {
+          "id": "vip-pass",
+          "title": "Module 07: The VIP Pass",
+          "description": "We do not use passwords. Passwords are for people who leave their house keys under the welcome mat. To enter the DELTA, you will scan a physical QR envelope."
+        },
+        {
+          "id": "sealing-vault",
+          "title": "Module 08: Sealing the Vault",
+          "description": "When you tap the button, your device does intense, un-stealable math. It glues a cryptographic soul to your specific phone. It inflates your Local Vault. From that moment on, you are a sovereign node in the family mesh."
+        }
+      ]
+    }
+  ]
+}

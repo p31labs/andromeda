@@ -1,0 +1,17 @@
+{
+  "name": "@p31/quantum-deck",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "P31 card-suite core — standard deck, CSPRNG shuffle, saved-game JSON schema stub (hub suite groundwork)",
+  "scripts": {
+    "test": "node --test --test-reporter=spec test/deck.test.mjs"
+  },
+  "exports": {
+    ".": "./src/deck.mjs",
+    "./schema": "./schema/quantum-deck-save.schema.json"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

@@ -1,0 +1,36 @@
+name = "p31-smallball-signal"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+[[triggers]]
+crons = ["0 0 * * *"]
+
+[[kv_namespaces]]
+binding = "MATCH_STATE"
+id = "4ec0c5f3ba674cb18521afb88f294ee8"
+
+[[kv_namespaces]]
+binding = "ANALYTICS"
+id = "ecc4fa78f2e44f8caee38cd0c950041e"
+
+[[kv_namespaces]]
+binding = "PLAYER_CACHE"
+id = "77b87e38b20740ca8244da59e7aae1ad"
+
+[[kv_namespaces]]
+binding = "TENDENCIES"
+id = "2045af4f7cc2450680c7ed71cd844926"
+
+[[kv_namespaces]]
+binding = "CROSS_GAME"
+id = "d6f0d6eb9a1640ca928ecaef29b5ffb6"
+
+[[r2_buckets]]
+binding = "ASSETS"
+bucket_name = "p31-game-assets"
+
+# Migration: Delete Durable Object class (moving to KV for free tier)
+[[migrations]]
+tag = "v2-kv-migration"
+deleted_classes = ["MatchCoordinator"]

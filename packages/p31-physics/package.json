@@ -1,0 +1,31 @@
+{
+  "name": "@p31/physics",
+  "version": "1.0.0",
+  "description": "Shared physics engines for P31 Arcade games",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./types": {
+      "import": "./dist/types/physics.js",
+      "types": "./dist/types/physics.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "lint": "eslint src/**/*.ts",
+    "clean": "rm -rf dist"
+  },
+  "keywords": ["physics", "sph", "waves", "gravity", "p31"],
+  "author": "P31 Labs",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.3.0",
+    "@types/node": "^20.0.0"
+  }
+}

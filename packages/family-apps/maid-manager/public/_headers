@@ -1,0 +1,12 @@
+/*
+  P31 Security Headers
+  Add to _headers file in public/ or wrangler.toml
+*/
+
+/*
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=self, microphone=self, geolocation=self
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob:; style-src 'self' 'unsafe-inline'; connect-src 'self' https://*.p31ca.workers.dev https://*.phosphorus31.org; img-src 'self' data: blob:; font-src 'self'; media-src 'self' blob:; worker-src 'self' blob:;
+*/

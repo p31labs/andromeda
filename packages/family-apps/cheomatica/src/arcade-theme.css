@@ -1,0 +1,339 @@
+/* P31 Cheomatica — Vertical Theme v2.0.0 (Canonical)
+ * Hair color formulation system for Christyn
+ * Aligned with p31-universal-canon.json
+ * Gray Rock compliant — no self-starting motion
+ */
+
+/* Import canonical arcade tokens */
+@import '../../packages/p31-arcade-theme/arcade-theme.css';
+
+/* ============================================
+   COLOR FORMULATION EXTENSIONS
+   ============================================ */
+
+/* Hair color specific (canonical coral/pink as primary brand) */
+:root {
+  --cheo-primary: var(--p31-coral);
+  --cheo-developer: var(--p31-teal);
+  --cheo-neutral: var(--p31-lavender);
+  --cheo-ash: var(--p31-cyan);
+  --cheo-gold: var(--p31-amber);
+  --cheo-red: var(--p31-coral);
+}
+
+/* Override base */
+body {
+  background: var(--p31-void);
+  font-family: var(--p31-font-sans);
+}
+
+/* Dashboard container */
+.cheo-dashboard {
+  min-height: 100vh;
+  background: var(--p31-void);
+  color: var(--p31-cloud);
+  padding: var(--p31-space-4);
+}
+
+/* Header */
+.cheo-header {
+  text-align: center;
+  padding: var(--p31-space-6) 0;
+  margin-bottom: var(--p31-space-4);
+}
+
+.cheo-title {
+  font-size: var(--p31-text-3xl);
+  font-weight: 800;
+  color: var(--p31-coral);
+  letter-spacing: 4px;
+  margin: 0;
+}
+
+.cheo-subtitle {
+  font-size: var(--p31-text-xs);
+  color: var(--p31-muted);
+  margin-top: var(--p31-space-2);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+/* Card base */
+.cheo-card {
+  background: var(--p31-surface);
+  border-radius: var(--p31-radius-xl);
+  padding: var(--p31-space-5);
+  margin-bottom: var(--p31-space-4);
+  border: 1px solid var(--p31-glass-border);
+}
+
+.cheo-section-title {
+  font-family: var(--p31-font-mono);
+  font-size: var(--p31-text-xs);
+  color: var(--p31-muted);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: var(--p31-space-4);
+}
+
+/* Client selection */
+.client-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p31-space-3);
+}
+
+.cheo-client-card {
+  background: var(--p31-surface2);
+  padding: var(--p31-space-4);
+  border-radius: var(--p31-radius-lg);
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all var(--p31-motion-fast) var(--p31-ease-standard);
+}
+
+.cheo-client-card:hover {
+  border-color: var(--p31-glass-border);
+}
+
+.cheo-client-card.selected {
+  border-color: var(--p31-coral);
+  background: rgba(204, 98, 71, 0.05);
+}
+
+.cheo-client-name {
+  font-size: var(--p31-text-lg);
+  font-weight: 600;
+  color: var(--p31-cloud);
+}
+
+.cheo-client-phone {
+  font-size: var(--p31-text-sm);
+  color: var(--p31-muted);
+  margin-top: var(--p31-space-1);
+}
+
+/* Color grid (base colors) */
+.color-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--p31-space-3);
+  margin-bottom: var(--p31-space-4);
+}
+
+.color-btn {
+  padding: var(--p31-space-4) var(--p31-space-2);
+  font-family: var(--p31-font-mono);
+  font-size: var(--p31-text-base);
+  font-weight: 700;
+  border: none;
+  border-radius: var(--p31-radius-lg);
+  cursor: pointer;
+  background: var(--p31-surface2);
+  color: var(--p31-cloud);
+  transition: all var(--p31-motion-fast) var(--p31-ease-standard);
+}
+
+.color-btn:hover {
+  background: var(--p31-surface);
+}
+
+.color-btn.selected {
+  background: var(--p31-coral);
+  color: var(--p31-cloud);
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(204, 98, 71, 0.3);
+}
+
+/* Developer grid */
+.dev-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--p31-space-3);
+  margin-bottom: var(--p31-space-4);
+}
+
+.dev-btn {
+  padding: var(--p31-space-4) var(--p31-space-3);
+  font-family: var(--p31-font-mono);
+  font-size: var(--p31-text-sm);
+  font-weight: 700;
+  border: none;
+  border-radius: var(--p31-radius-lg);
+  cursor: pointer;
+  background: var(--p31-surface2);
+  color: var(--p31-cloud);
+  transition: all var(--p31-motion-fast) var(--p31-ease-standard);
+}
+
+.dev-btn:hover {
+  background: var(--p31-surface);
+}
+
+.dev-btn.selected {
+  background: var(--p31-teal);
+  color: var(--p31-void);
+}
+
+/* Input fields */
+.cheo-input {
+  width: 100%;
+  padding: var(--p31-space-3);
+  font-size: var(--p31-text-base);
+  background: var(--p31-surface2);
+  border: 2px solid var(--p31-glass-border);
+  border-radius: var(--p31-radius-lg);
+  color: var(--p31-cloud);
+  font-family: var(--p31-font-sans);
+  transition: border-color var(--p31-motion-fast) var(--p31-ease-standard);
+}
+
+.cheo-input:focus {
+  outline: none;
+  border-color: var(--p31-coral);
+}
+
+.cheo-textarea {
+  composes: cheo-input;
+  min-height: 100px;
+  resize: vertical;
+}
+
+/* Mic button for voice notes */
+.mic-btn {
+  width: 100%;
+  padding: var(--p31-space-4);
+  font-size: var(--p31-text-base);
+  border: none;
+  border-radius: var(--p31-radius-lg);
+  cursor: pointer;
+  background: var(--p31-surface2);
+  color: var(--p31-cloud);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--p31-space-2);
+  transition: all var(--p31-motion-fast) var(--p31-ease-standard);
+}
+
+.mic-btn:hover {
+  background: var(--p31-surface);
+}
+
+.mic-btn.recording {
+  background: var(--p31-coral);
+  color: var(--p31-cloud);
+  animation: recordingPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes recordingPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(204, 98, 71, 0.4); }
+  50% { box-shadow: 0 0 0 12px rgba(204, 98, 71, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mic-btn.recording {
+    animation: none;
+  }
+}
+
+/* Primary action button */
+.cheo-action-btn {
+  width: 100%;
+  padding: var(--p31-space-5);
+  font-size: var(--p31-text-xl);
+  font-weight: 800;
+  border: none;
+  border-radius: var(--p31-radius-xl);
+  cursor: pointer;
+  background: var(--p31-coral);
+  color: var(--p31-cloud);
+  margin-top: var(--p31-space-4);
+  transition: all var(--p31-motion-fast) var(--p31-ease-standard);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.cheo-action-btn:hover {
+  opacity: 0.9;
+}
+
+.cheo-action-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Formula history cards */
+.formula-card {
+  background: var(--p31-surface2);
+  padding: var(--p31-space-4);
+  border-radius: var(--p31-radius-lg);
+  margin-bottom: var(--p31-space-3);
+}
+
+.formula-badges {
+  display: flex;
+  gap: var(--p31-space-2);
+  margin-bottom: var(--p31-space-3);
+}
+
+.formula-badge {
+  padding: var(--p31-space-1) var(--p31-space-3);
+  border-radius: var(--p31-radius-sm);
+  font-family: var(--p31-font-mono);
+  font-size: var(--p31-text-xs);
+  font-weight: 700;
+  background: var(--p31-coral);
+  color: var(--p31-cloud);
+}
+
+.formula-badge.dev {
+  background: var(--p31-teal);
+  color: var(--p31-void);
+}
+
+.formula-badge.target {
+  background: var(--p31-surface);
+  color: var(--p31-muted);
+}
+
+.formula-notes {
+  font-size: var(--p31-text-sm);
+  color: var(--p31-muted);
+  margin: 0;
+}
+
+.formula-date {
+  font-family: var(--p31-font-mono);
+  font-size: var(--p31-text-xs);
+  color: var(--p31-muted);
+  marginTop: var(--p31-space-2);
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .color-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .dev-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cheo-title {
+    font-size: var(--p31-text-2xl);
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .cheo-client-card,
+  .formula-card {
+    border-width: 3px;
+  }
+
+  .color-btn.selected,
+  .dev-btn.selected {
+    border: 2px solid var(--p31-cloud);
+  }
+}

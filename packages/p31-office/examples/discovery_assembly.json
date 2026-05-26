@@ -1,0 +1,13 @@
+{
+  "input_dir": "/path/to/Discovery",
+  "output_dir": "/path/to/Discovery/assembled_exhibits",
+  "production_date": "April 29, 2026",
+  "production_cover": "",
+  "combined_output": "WRJ_Supplemental_Production_S00_through_S18.pdf",
+  "strict_files": false,
+  "no_prefer_manifest": false,
+  "no_combined_volume": false,
+  "verbose": false,
+  "quiet": false,
+  "dry_run": false
+}

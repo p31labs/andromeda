@@ -1,0 +1,26 @@
+name = "p31-foundry-worker"
+main = "src/index.js"
+compatibility_date = "2026-04-01"
+
+# Per-edge-isolate POST/PUT cap per client IP (see worker README). Set "0" or "off" to disable.
+[vars]
+FOUNDRY_RL_PER_MINUTE = "120"
+
+# Create before first deploy: wrangler r2 bucket create p31-foundry-artifacts
+[[r2_buckets]]
+binding = "FOUNDRY_BUCKET"
+bucket_name = "p31-foundry-artifacts"
+
+# Optional: set FOUNDRY_AUTH_SECRET via `wrangler secret put FOUNDRY_AUTH_SECRET`
+# or .dev.vars (see .dev.vars.example). When unset, /v1/* is open (dev only).
+
+# Create once: wrangler queues create p31-foundry-jobs
+[[queues.producers]]
+binding = "FOUNDRY_JOBS"
+queue = "p31-foundry-jobs"
+
+[[queues.consumers]]
+queue = "p31-foundry-jobs"
+max_batch_size = 10
+max_batch_timeout = 2
+max_retries = 5

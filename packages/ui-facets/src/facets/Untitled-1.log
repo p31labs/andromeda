@@ -1,0 +1,67 @@
+04_SOFTWARE                              |  WARN  The field "pnpm.overrides" was found in C:\Users\sandra\Documents\P31_Andromeda\04_SOFTWARE/package.json. This will not take effect. You should configure "pnpm.overrides" at the root of the workspace instead.
+Scope: all 56 workspace projects
+Lockfile is up to date, resolution step is skipped
+Progress: resolved 1, reused 0, downloaded 0, added 0
+Packages: +2680
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Progress: resolved 2680, reused 0, downloaded 0, added 0
+Progress: resolved 2680, reused 83, downloaded 0, added 0
+Progress: resolved 2680, reused 158, downloaded 0, added 0
+Progress: resolved 2680, reused 214, downloaded 0, added 0
+Progress: resolved 2680, reused 217, downloaded 0, added 0
+Progress: resolved 2680, reused 220, downloaded 0, added 0
+Progress: resolved 2680, reused 221, downloaded 0, added 0
+Progress: resolved 2680, reused 222, downloaded 0, added 0
+Progress: resolved 2680, reused 223, downloaded 0, added 0
+Progress: resolved 2680, reused 225, downloaded 0, added 0
+Progress: resolved 2680, reused 226, downloaded 0, added 0
+Progress: resolved 2680, reused 227, downloaded 0, added 0
+Progress: resolved 2680, reused 228, downloaded 0, added 0
+Progress: resolved 2680, reused 229, downloaded 0, added 0
+Progress: resolved 2680, reused 230, downloaded 0, added 0
+Progress: resolved 2680, reused 237, downloaded 0, added 0
+Progress: resolved 2680, reused 238, downloaded 0, added 0
+Progress: resolved 2680, reused 248, downloaded 0, added 0
+Progress: resolved 2680, reused 304, downloaded 0, added 0
+Progress: resolved 2680, reused 389, downloaded 0, added 0
+Progress: resolved 2680, reused 482, downloaded 0, added 0
+Progress: resolved 2680, reused 568, downloaded 0, added 0
+Progress: resolved 2680, reused 679, downloaded 0, added 0
+Progress: resolved 2680, reused 758, downloaded 0, added 0
+Progress: resolved 2680, reused 763, downloaded 0, added 0
+Progress: resolved 2680, reused 768, downloaded 0, added 0
+Progress: resolved 2680, reused 780, downloaded 0, added 0
+Progress: resolved 2680, reused 788, downloaded 0, added 0
+Progress: resolved 2680, reused 809, downloaded 0, added 0
+Progress: resolved 2680, reused 821, downloaded 0, added 0
+Progress: resolved 2680, reused 840, downloaded 0, added 0
+Progress: resolved 2680, reused 855, downloaded 0, added 0
+Progress: resolved 2680, reused 867, downloaded 0, added 0
+Progress: resolved 2680, reused 869, downloaded 0, added 0
+Progress: resolved 2680, reused 875, downloaded 0, added 0
+Progress: resolved 2680, reused 877, downloaded 0, added 0
+Progress: resolved 2680, reused 890, downloaded 0, added 0
+Progress: resolved 2680, reused 896, downloaded 0, added 0
+Progress: resolved 2680, reused 900, downloaded 0, added 0
+Progress: resolved 2680, reused 901, downloaded 0, added 0
+Progress: resolved 2680, reused 942, downloaded 0, added 0
+Progress: resolved 2680, reused 1025, downloaded 0, added 0
+Progress: resolved 2680, reused 1128, downloaded 0, added 0
+Progress: resolved 2680, reused 1330, downloaded 0, added 0
+Progress: resolved 2680, reused 1430, downloaded 0, added 0
+Progress: resolved 2680, reused 1454, downloaded 0, added 0
+Progress: resolved 2680, reused 1475, downloaded 0, added 0
+Progress: resolved 2680, reused 1484, downloaded 0, added 0
+Progress: resolved 2680, reused 1499, downloaded 0, added 0
+Progress: resolved 2680, reused 1513, downloaded 0, added 0
+Progress: resolved 2680, reused 1546, downloaded 0, added 0
+Progress: resolved 2680, reused 1574, downloaded 0, added 0
+Progress: resolved 2680, reused 1597, downloaded 0, added 0
+Progress: resolved 2680, reused 1609, downloaded 0, added 0
+Progress: resolved 2680, reused 1613, downloaded 0, added 0
+Progress: resolved 2680, reused 1624, downloaded 0, added 0
+Progress: resolved 2680, reused 1636, downloaded 0, added 0
+Progress: resolved 2680, reused 1669, downloaded 0, added 0
+Progress: resolved 2680, reused 1697, downloaded 0, added 0
+Progress: 
+… (truncated, 5232 chars omitted)

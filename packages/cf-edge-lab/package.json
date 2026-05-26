@@ -1,0 +1,15 @@
+{
+  "name": "cf-edge-lab",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Playground Worker: CF request metadata, Workers AI, WebSocket echo.",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "check": "wrangler deploy --dry-run"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0",
+    "@cloudflare/workers-types": "^4.20250401.0"
+  }
+}

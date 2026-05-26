@@ -1,0 +1,25 @@
+{
+  "name": "@p31/mesh",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "P31 K₄ mesh client, probes, and CLI (k4-personal /api/* + config from p31-constants.json)",
+  "bin": {
+    "p31-mesh": "./src/cli.mjs"
+  },
+  "exports": {
+    ".": "./src/index.mjs",
+    "./config": "./src/config.mjs",
+    "./client": "./src/client.mjs",
+    "./probe": "./src/probe.mjs",
+    "./agent": "./src/agent.mjs",
+    "./fleet": "./src/fleet.mjs",
+    "./browser": "./src/browser.mjs"
+  },
+  "scripts": {
+    "test": "node --test --test-reporter=spec test/*.test.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

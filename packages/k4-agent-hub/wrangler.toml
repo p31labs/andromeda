@@ -1,0 +1,54 @@
+# K4 agent worker tetrahedron — four hub Durable Objects (FORGE, COUNSEL, SCHOLAR, SCRIBE).
+# Source of truth for vertex identities, edge map, and dock protocol: ../../p31-k4-agent-hub.json.
+# Operator deploy:  cd packages/k4-agent-hub && npx wrangler deploy
+# Dry-run for CI:   npm run dry
+
+name = "k4-agent-hub"
+main = "src/index.js"
+compatibility_date = "2025-10-01"
+
+[vars]
+ENVIRONMENT = "production"
+WORKER_VERSION = "1.1.0"
+TOPOLOGY = "K4_AGENT"
+SCHEMA = "p31.k4AgentHub/1.1.0"
+# Session lifetime in seconds (24h). Renewable.
+SESSION_TTL_SECONDS = "86400"
+# Per-client RPM (dock protocol policy default).
+RATE_LIMIT_RPM = "30"
+# Allow inter-hub /v1/cross/{from}/{to} calls (K4 edges). "0" disables.
+ALLOW_CROSS_EDGES = "1"
+# When "1", /v1/dock REQUIRES { publicKey, ts, nonce, sig } — Ed25519 signed envelope.
+REQUIRE_SIGNED_DOCK = "1"
+# Optional: HTTP base URL to a local Ollama (e.g., http://127.0.0.1:11434).
+# When set, hubs route skills to the matching persona via /api/generate; otherwise structured echo.
+OLLAMA_BASE_URL = ""
+OLLAMA_TIMEOUT_MS = "8000"
+# Cloud fallback: simplex-v7 Worker URL + shared operator secret.
+# When set, dispatch falls through Ollama → simplex-cloud → echo.
+# SIMPLEX_OPERATOR_SECRET should be set via `wrangler secret put SIMPLEX_OPERATOR_SECRET`.
+SIMPLEX_BASE_URL = ""
+# Federation peer TTL — peer registry KV expiration in seconds.
+PEER_TTL_SECONDS = "86400"
+
+[durable_objects]
+bindings = [
+  { name = "FORGE",   class_name = "ForgeHub" },
+  { name = "COUNSEL", class_name = "CounselHub" },
+  { name = "SCHOLAR", class_name = "ScholarHub" },
+  { name = "SCRIBE",  class_name = "ScribeHub" },
+]
+
+# v1 SQLite-backed DOs (Cloudflare free plan: new_sqlite_classes required).
+[[migrations]]
+tag = "v1-agent-hub"
+new_sqlite_classes = ["ForgeHub", "CounselHub", "ScholarHub", "ScribeHub"]
+
+# Shared KV for cross-hub session pinning + dock registry.
+# Operator: `wrangler kv:namespace create K4_AGENT_HUB` — paste id below before deploy.
+[[kv_namespaces]]
+binding = "K4_AGENT_HUB"
+id = "7201e9818f344a92b87305dcd632d8d1"
+
+[observability]
+enabled = true

@@ -1,0 +1,269 @@
+/* P31 Maid Manager — Vertical Theme v2.0.0 (Canonical)
+ * Solo operator console for Carrie's cleaning business
+ * Aligned with p31-universal-canon.json
+ * Gray Rock compliant — no self-starting motion
+ */
+
+/* Import canonical arcade tokens */
+@import '../../packages/p31-arcade-theme/arcade-theme.css';
+
+/* ============================================
+   MAID-SPECIFIC EXTENSIONS
+   ============================================ */
+
+/* Business/pacing colors (canonical with job status semantics) */
+:root {
+  --maid-active: var(--p31-teal);
+  --maid-rest: var(--p31-phosphorus);
+  --maid-warning: var(--p31-amber);
+  --maid-alert: var(--p31-coral);
+  --maid-client: var(--p31-lavender);
+}
+
+/* Override base */
+body {
+  background: var(--p31-void);
+  font-family: var(--p31-font-sans);
+}
+
+/* Main dashboard container */
+.maid-dashboard {
+  min-height: 100vh;
+  background: var(--p31-void);
+  color: var(--p31-cloud);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+.maid-header {
+  text-align: center;
+  padding: var(--p31-space-6);
+  border-bottom: 1px solid var(--p31-glass-border);
+}
+
+.maid-title {
+  font-size: var(--p31-text-3xl);
+  font-weight: 800;
+  color: var(--p31-teal);
+  letter-spacing: 2px;
+  margin: 0;
+}
+
+.maid-subtitle {
+  font-size: var(--p31-text-sm);
+  color: var(--p31-muted);
+  margin-top: var(--p31-space-2);
+}
+
+/* Status card (active job/rest/selection) */
+.status-card {
+  background: var(--p31-surface);
+  border-radius: var(--p31-radius-xl);
+  padding: var(--p31-space-6);
+  margin: var(--p31-space-4);
+  border: 2px solid transparent;
+}
+
+.status-card.warning {
+  background: rgba(204, 98, 71, 0.1);
+  border-color: var(--p31-coral);
+}
+
+.status-card.rest {
+  background: rgba(59, 163, 114, 0.1);
+  border-color: var(--p31-phosphorus);
+}
+
+.status-label {
+  font-family: var(--p31-font-mono);
+  font-size: var(--p31-text-xs);
+  color: var(--p31-muted);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: var(--p31-space-3);
+}
+
+/* Big timer display */
+.maid-timer {
+  font-size: var(--p31-text-4xl);
+  font-weight: 800;
+  color: var(--p31-teal);
+  text-align: center;
+  margin: var(--p31-space-4) 0;
+  font-family: var(--p31-font-mono);
+}
+
+.maid-timer.warning {
+  color: var(--p31-coral);
+  animation: timerPulse 1s ease-in-out infinite;
+}
+
+@keyframes timerPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .maid-timer.warning {
+    animation: none;
+  }
+}
+
+/* Client selection cards */
+.client-card {
+  background: var(--p31-surface2);
+  padding: var(--p31-space-4);
+  border-radius: var(--p31-radius-lg);
+  margin-bottom: var(--p31-space-3);
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all var(--p31-motion-fast) var(--p31-ease-standard);
+}
+
+.client-card:hover {
+  border-color: var(--p31-glass-border);
+}
+
+.client-card.selected {
+  border-color: var(--p31-teal);
+  background: rgba(93, 202, 165, 0.05);
+}
+
+.client-name {
+  font-size: var(--p31-text-lg);
+  font-weight: 600;
+  color: var(--p31-cloud);
+  margin-bottom: var(--p31-space-1);
+}
+
+.client-addr {
+  font-size: var(--p31-text-sm);
+  color: var(--p31-muted);
+}
+
+.client-est {
+  font-family: var(--p31-font-mono);
+  font-size: var(--p31-text-xs);
+  color: var(--p31-teal);
+  margin-top: var(--p31-space-2);
+}
+
+/* Big action buttons */
+.action-btn {
+  width: 100%;
+  padding: var(--p31-space-6) var(--p31-space-4);
+  font-size: var(--p31-text-xl);
+  font-weight: 800;
+  border: none;
+  border-radius: var(--p31-radius-xl);
+  cursor: pointer;
+  margin: var(--p31-space-4);
+  transition: all var(--p31-motion-fast) var(--p31-ease-standard);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.action-btn:active {
+  transform: scale(0.98);
+}
+
+.action-btn.start {
+  background: var(--p31-teal);
+  color: var(--p31-void);
+}
+
+.action-btn.stop {
+  background: var(--p31-coral);
+  color: var(--p31-cloud);
+}
+
+.action-btn.rest {
+  background: var(--p31-amber);
+  color: var(--p31-void);
+}
+
+.action-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Warning box for pacing alerts */
+.pacing-warning {
+  background: var(--p31-coral);
+  color: var(--p31-cloud);
+  padding: var(--p31-space-4);
+  border-radius: var(--p31-radius-lg);
+  margin: var(--p31-space-4);
+  text-align: center;
+}
+
+.pacing-warning-title {
+  font-size: var(--p31-text-lg);
+  font-weight: 700;
+  margin: 0;
+}
+
+.pacing-warning-sub {
+  font-size: var(--p31-text-sm);
+  margin-top: var(--p31-space-2);
+  opacity: 0.9;
+}
+
+/* Rest break card */
+.rest-card {
+  background: rgba(59, 163, 114, 0.1);
+  border: 2px solid var(--p31-phosphorus);
+  border-radius: var(--p31-radius-xl);
+  padding: var(--p31-space-6);
+  margin: var(--p31-space-4);
+  text-align: center;
+}
+
+.rest-title {
+  font-size: var(--p31-text-2xl);
+  color: var(--p31-phosphorus);
+  margin: 0;
+}
+
+.rest-timer {
+  font-size: var(--p31-text-4xl);
+  font-weight: 800;
+  color: var(--p31-teal);
+  margin: var(--p31-space-4) 0;
+  font-family: var(--p31-font-mono);
+}
+
+.rest-message {
+  font-size: var(--p31-text-sm);
+  color: var(--p31-muted);
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .maid-title {
+    font-size: var(--p31-text-2xl);
+  }
+
+  .maid-timer {
+    font-size: var(--p31-text-3xl);
+  }
+
+  .action-btn {
+    padding: var(--p31-space-5) var(--p31-space-3);
+    font-size: var(--p31-text-lg);
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .status-card,
+  .client-card,
+  .rest-card {
+    border-width: 3px;
+  }
+
+  .action-btn {
+    border: 2px solid var(--p31-cloud);
+  }
+}

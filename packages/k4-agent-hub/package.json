@@ -1,0 +1,20 @@
+{
+  "name": "@p31/k4-agent-hub",
+  "version": "1.1.0",
+  "private": true,
+  "type": "module",
+  "description": "K₄ agent worker tetrahedron — four hub Durable Objects (FORGE, COUNSEL, SCHOLAR, SCRIBE) the personal tetrahedron docks to. v1.1.0: signed Ed25519 dock + per-call envelope, K₄,₄,₄ family triadic cover, federation peer registry, real Ollama dispatcher with structured-echo fallback. Schema p31.k4AgentHub/1.1.0; canon at p31-k4-agent-hub.json.",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "wrangler dev --local",
+    "deploy": "wrangler deploy",
+    "test": "node --test --test-reporter=spec test/*.test.mjs",
+    "dry": "wrangler deploy --dry-run --outdir=.tmp"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "wrangler": "^3.95.0"
+  }
+}

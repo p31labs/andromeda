@@ -1,0 +1,7 @@
+{
+  "mesh": {
+    "k4PersonalWorkerUrl": "https://k4-personal.fixture.test",
+    "k4CageWorkerUrl": "https://k4-cage.fixture.test",
+    "k4HubsWorkerUrl": "https://k4-hubs.fixture.test"
+  }
+}
