@@ -3,8 +3,21 @@
 // Supports: biometrics, medications, spoon tracking, accommodations, BONDING data
 
 import * as Y from 'yjs';
-import { PGlite } from '@electric-sql/pglite';
 import type { Namespace } from './p31-sync';
+
+// PGlite is a WASM module — dynamic import only, never static
+let PGliteCtor: typeof import('@electric-sql/pglite').PGlite | null = null;
+async function getPGliteCtor() {
+  if (!PGliteCtor) {
+    if (typeof window === 'undefined') throw new Error('PGLite requires a browser environment');
+    const mod = await import('@electric-sql/pglite');
+    PGliteCtor = mod.PGlite;
+  }
+  return PGliteCtor;
+}
+
+// Re-export type for consumers
+export type { PGlite } from '@electric-sql/pglite';
 
 // Data types that sync from Yjs to PGLite
 export interface BiometricReading {
@@ -45,10 +58,14 @@ export interface AccommodationLog {
   deviceId: string;
 }
 
+// Local type alias for all function signatures — typed as any to avoid
+// complex generic resolution from dynamic import. Runtime is correct.
+type PGliteDb = any;
+
 /**
  * Initialize PGLite with sync schema
  */
-export async function initPGLite(db: PGlite): Promise<void> {
+export async function initPGLite(db: PGliteDb): Promise<void> {
   // Create tables for each data type
   await db.exec(`
     CREATE TABLE IF NOT EXISTS biometrics (
@@ -132,7 +149,7 @@ export async function initPGLite(db: PGlite): Promise<void> {
  */
 export async function syncYjsToPGLite(
   ydoc: Y.Doc,
-  db: PGlite,
+  db: PGliteDb,
   namespace: Namespace,
   deviceId: string
 ): Promise<void> {
@@ -174,7 +191,7 @@ export async function syncYjsToPGLite(
 
 async function syncBiometrics(
   map: Y.Map<unknown>,
-  db: PGlite,
+  db: PGliteDb,
   deviceId: string
 ): Promise<void> {
   const readings = map.get('biometrics') as Y.Array<BiometricReading> | undefined;
@@ -195,7 +212,7 @@ async function syncBiometrics(
 
 async function syncMedications(
   map: Y.Map<unknown>,
-  db: PGlite,
+  db: PGliteDb,
   deviceId: string
 ): Promise<void> {
   const doses = map.get('medications') as Y.Array<MedicationDose> | undefined;
@@ -216,7 +233,7 @@ async function syncMedications(
 
 async function syncSpoonEntries(
   map: Y.Map<unknown>,
-  db: PGlite,
+  db: PGliteDb,
   deviceId: string
 ): Promise<void> {
   const entries = map.get('spoons') as Y.Array<SpoonEntry> | undefined;
@@ -238,7 +255,7 @@ async function syncSpoonEntries(
 
 async function syncAccommodationLogs(
   map: Y.Map<unknown>,
-  db: PGlite,
+  db: PGliteDb,
   deviceId: string
 ): Promise<void> {
   const logs = map.get('accommodations') as Y.Array<AccommodationLog> | undefined;
@@ -271,7 +288,7 @@ interface BondingSession {
 
 async function syncBondingData(
   map: Y.Map<unknown>,
-  db: PGlite,
+  db: PGliteDb,
   namespace: 'p31:child:sj' | 'p31:child:wj',
   deviceId: string
 ): Promise<void> {
@@ -300,7 +317,7 @@ async function syncBondingData(
 /**
  * Query calcium levels for safety monitoring (Gap C integration)
  */
-export async function getLatestCalciumReading(db: PGlite): Promise<BiometricReading | null> {
+export async function getLatestCalciumReading(db: PGliteDb): Promise<BiometricReading | null> {
   const result = await db.query(
     `SELECT * FROM biometrics
      WHERE type = 'calcium_proxy'
@@ -328,7 +345,7 @@ export async function getLatestCalciumReading(db: PGlite): Promise<BiometricRead
  * Simple model for Gap C medical integration
  */
 export async function estimateCalciumLevel(
-  db: PGlite,
+  db: PGliteDb,
   hoursSinceLastLab: number
 ): Promise<number | null> {
   const lastLab = await db.query(

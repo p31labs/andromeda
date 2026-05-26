@@ -22,6 +22,12 @@ esp_err_t p31_net_report_spoons(uint8_t value);
 // Blocks the calling task.
 esp_err_t p31_net_fetch_q(float *q_out);
 
+// POST telemetry payload to the PHOS Node Zero endpoint.
+// Contract: { env_temp, mesh_nodes_active, ambient_light, power_draw }.
+// device_id is auto-populated from the DID.
+// Blocks the calling task.
+esp_err_t p31_net_report_telemetry(float env_temp, uint8_t mesh_nodes, uint8_t ambient_light, float power_draw);
+
 // Periodic telemetry task entry point — call via xTaskCreate.
 // Reports spoon level every 5 minutes and updates UI with fetched Q-score.
 void p31_net_task(void *arg);

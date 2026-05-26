@@ -34,7 +34,7 @@ class VirtualKeyboardManager {
       this.visualViewport?.addEventListener('scroll', this.handleVisualViewportChange);
     } else {
       // Fallback: window resize detection (less accurate)
-      window.addEventListener('resize', this.handleWindowResize);
+      (window as Window).addEventListener('resize', this.handleWindowResize);
     }
 
     // Track focus/blur on inputs

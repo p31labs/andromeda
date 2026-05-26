@@ -1,0 +1,15 @@
+---
+import PHOSLayout from '../layouts/PHOSLayout.astro';
+---
+
+<PHOSLayout>
+  <!--
+    Page-specific content rendered inside the layout's <slot />.
+    The PHOSShell, PHOSGuide, and StarfieldCanvas are all managed
+    by PHOSRoot inside PHOSLayout with transition:persist.
+    This page only provides surface-specific content.
+  -->
+  <main>
+    <!-- Surface content will be rendered by PHOSShell inside the persistent root -->
+  </main>
+</PHOSLayout>

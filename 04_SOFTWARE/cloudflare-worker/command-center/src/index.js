@@ -501,7 +501,12 @@ async function handleStatusWrite(request, env, auth) {
 }
 
 async function handleStatusRead(env) {
-  const data = await env.STATUS_KV.get('status');
+  let data;
+  try {
+    data = await env.STATUS_KV.get('status');
+  } catch {
+    data = null;
+  }
   if (!data) {
     return new Response(JSON.stringify(DEFAULT_STATUS), {
       headers: { 'content-type': 'application/json', 'access-control-allow-origin': '*' }

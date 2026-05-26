@@ -31,6 +31,11 @@ async function getDB(): Promise<PGlite> {
       _crdt_hash TEXT NOT NULL
     );
     
+    CREATE TABLE IF NOT EXISTS vault_metadata (
+      key TEXT PRIMARY KEY,
+      value TEXT NOT NULL
+    );
+    
     CREATE INDEX IF NOT EXISTS idx_crdt_clock ON sovereign_ledger(_crdt_clock);
     CREATE INDEX IF NOT EXISTS idx_crdt_node ON sovereign_ledger(_crdt_node_id);
   `);

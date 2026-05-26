@@ -5,7 +5,7 @@
  * Success: AI predicts user needs across all phases, surfaces proactive suggestions
  */
 
-import type { PHOSMasterRuntime, ConvergenceReport, IntegrationCheck } from '../master';
+import type { PHOSMasterRuntime, ConvergenceReport, IntegrationCheck } from '../master/index.ts';
 
 export interface Week6ConvergenceInput {
   enablePredictions?: boolean;

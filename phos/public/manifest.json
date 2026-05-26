@@ -1,0 +1,20 @@
+{
+  "name": "PHOS — Phosphorus Human Operating Surface",
+  "short_name": "PHOS",
+  "description": "Your central UI character and routing mesh for the P31 Labs ecosystem.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#39ff14",
+  "orientation": "portrait",
+  "categories": ["productivity", "utilities"],
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any monochrome"
+    }
+  ]
+}

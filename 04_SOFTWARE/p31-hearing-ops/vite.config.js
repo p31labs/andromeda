@@ -3,6 +3,11 @@ import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
+  build: {
+    rolldownOptions: {
+      external: ['workbox-window'],
+    },
+  },
   plugins: [
     react(),
     VitePWA({

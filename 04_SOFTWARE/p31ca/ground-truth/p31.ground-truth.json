@@ -1387,6 +1387,12 @@
       "from": "/node-zero-about.html",
       "to": "/node-zero",
       "status": 301
+    },
+    {
+      "from": "/chump",
+      "to": "https://chump-dashboard.pages.dev",
+      "status": 302,
+      "note": "CHUMP Tier S Critical Infrastructure dashboard (CWP-CHUMP-2026)"
     }
   ],
   "fileSnippets": [

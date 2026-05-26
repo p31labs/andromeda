@@ -42,6 +42,33 @@ npx vite build
 
 ---
 
+## Sync Worker (Cloud Persistence)
+
+| Item | Value |
+|------|-------|
+| Worker | `p31-sync-edge` |
+| URL | `https://p31-sync-edge.trimtab-signal.workers.dev` |
+| D1 DB | `p31-smallball-sync` (7 tables) |
+| Source | `04_SOFTWARE/cloudflare-worker/p31-sync-edge/` |
+
+**Deploy:**
+```powershell
+# After schema changes:
+npx wrangler d1 execute p31-smallball-sync --remote --file="04_SOFTWARE/cloudflare-worker/p31-sync-edge/schema.sql"
+
+# Deploy worker:
+npx wrangler deploy --config="04_SOFTWARE/cloudflare-worker/p31-sync-edge/wrangler.toml" --name p31-sync-edge
+```
+
+**Verified architecture:**
+- Local-First: gameplay runs at 0ms latency (PGLite IndexedDB)
+- Cloud sync: async, non-blocking, cursor-based incremental
+- Push: POST `/api/sync/push` (upsert players/facilities/energy/schedules, append-only events/mutations)
+- Pull: GET `/api/sync/pull?franchiseId=` (full state for new-device restore)
+- Auto-save: 2-second debounce trigger on training events + energy changes
+
+---
+
 ## Infrastructure Context
 
 - Cloudflare Pages project uses `vite build` output (skipping `tsc` due to ~187 pre-existing type errors in orphaned AAA graphics)

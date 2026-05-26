@@ -5,10 +5,11 @@
 packages:
   # The Core IDE Infrastructure
   - 'p31-vs-code-ai-extension'
-  
+
   # The UI Middleware and Styling
   - 'packages/ui-facets'
-  
+  - 'packages/p31-arcade-theme'
+
   # The K4 Family Apps (Tier 2 Nodes)
   - 'packages/family-apps/culinary-matria'
   - 'packages/family-apps/warehouse-aj'
@@ -16,12 +17,21 @@ packages:
   - 'packages/family-apps/cheomatica'
   - 'packages/family-apps/voice-bug-reporter'
   - 'packages/family-apps/p31-smallball'
-  
+
+  # PHOS — Human Operating Surface
+  - 'phos'
+
+  # Arcade Hub — CHUMP Active Infrastructure
+  - 'p31-arcade-hub'
+
+  # Shared Packages
+  - 'packages/p31-unified'
+
   # Edge and Ledger Oracles
   - 'workers/love-ledger'
   - 'workers/discord'
   - 'workers/discord-alerter'
-  
+
   # Shared Libraries / Data Layer
   - '04_SOFTWARE'
   - '04_SOFTWARE/*'
@@ -30,6 +40,19 @@ packages:
   - '04_SOFTWARE/cloudflare-worker/*'
   - '04_SOFTWARE/discord/*'
   - '04_SOFTWARE/spaceship-earth/astro-landing'
+allowBuilds:
+  '@playwright/browser-chromium': false
+  '@serialport/bindings-cpp': false
+  '@vscode/vsce-sign': false
+  esbuild: false
+  keytar: false
+  leveldown: false
+  protobufjs: false
+  sharp: false
+  sqlite3: false
+  unix-dgram: false
+  unrs-resolver: false
+  workerd: false
 
 # EXCLUSION LIST: Explicitly denying build access to legacy artifacts
 # This guarantees that old transducer errors do not leak into the build cache.

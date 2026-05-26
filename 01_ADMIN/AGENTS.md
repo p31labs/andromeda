@@ -54,3 +54,19 @@ Molecule builder with real chemistry. See `context.md` Section 4 for full spec.
 - **Spoons:** Cognitive energy units (disability framework)
 - **Larmor frequency:** 863 Hz (³¹P in Earth's field, system constant)
 - **SOULSAFE:** Safety-critical QA principles from nuclear industry applied to cognitive systems
+
+## pnpm Setup
+
+The project requires pnpm 10.32.1 (specified in `package.json` `"packageManager"` field).
+
+### Setup
+1. Run `pnpm setup` to configure PNPM_HOME in your shell profile
+2. Ensure `C:\Users\sandra\AppData\Local\pnpm\bin` is in your PATH
+3. Install the required version: `pnpm add -g pnpm@10.32.1`
+
+### Environment Variables
+```powershell
+$env:PNPM_HOME = "C:\Users\sandra\AppData\Local\pnpm"
+$env:PATH = "$env:PNPM_HOME\bin;$env:PATH"
+$env:CI = "true"  # Required for non-interactive installs
+```

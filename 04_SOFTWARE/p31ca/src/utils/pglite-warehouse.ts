@@ -4,35 +4,52 @@
  * @module
  */
 
-import { PGlite } from '@electric-sql/pglite';
-import { InventoryItem, Zone } from '../components/ZeroTapWarehouse';
+import type { InventoryItem, Zone } from '../components/ZeroTapWarehouse';
+
+// PGlite is a WASM module that must only load in the browser.
+// Dynamic import prevents Vite from resolving it at build time for SSR.
+let PGliteCtor: typeof import('@electric-sql/pglite').PGlite | null = null;
+async function getPGliteCtor() {
+  if (!PGliteCtor) {
+    if (typeof window === 'undefined') throw new Error('PGLite requires a browser environment');
+    const mod = await import('@electric-sql/pglite');
+    PGliteCtor = mod.PGlite;
+  }
+  return PGliteCtor;
+}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // SINGLETON INSTANCE
 // ─────────────────────────────────────────────────────────────────────────────
 
-let dbInstance: PGlite | null = null;
-let initPromise: Promise<PGlite> | null = null;
+let dbInstance: any = null;
+let initPromise: Promise<any> | null = null;
 
 /**
  * Initialize or return existing PGLite instance
  * Creates tables on first run
  */
-export async function getWarehouseDB(): Promise<PGlite> {
+export async function getWarehouseDB(): Promise<any> {
   if (dbInstance) return dbInstance;
   if (initPromise) return initPromise;
 
   initPromise = (async () => {
-    const db = new PGlite('idb://p31-warehouse-aj', {
-      // Debug only in development
-      debug: import.meta.env.DEV ? 1 : 0,
-    });
+    try {
+      const PGlite = await getPGliteCtor();
+      const db = new PGlite('idb://p31-warehouse-aj', {
+        debug: import.meta.env.DEV ? 1 : 0,
+      });
 
-    await db.waitReady;
-    await migrateSchema(db);
+      await db.waitReady;
+      await migrateSchema(db);
 
-    dbInstance = db;
-    return db;
+      dbInstance = db;
+      return db;
+    } catch {
+      initPromise = null;
+      dbInstance = null;
+      return null;
+    }
   })();
 
   return initPromise;
@@ -42,7 +59,7 @@ export async function getWarehouseDB(): Promise<PGlite> {
 // SCHEMA MIGRATIONS
 // ─────────────────────────────────────────────────────────────────────────────
 
-async function migrateSchema(db: PGlite): Promise<void> {
+async function migrateSchema(db: any): Promise<void> {
   // Zones table
   await db.exec(`
     CREATE TABLE IF NOT EXISTS zones (
@@ -99,7 +116,7 @@ async function migrateSchema(db: PGlite): Promise<void> {
   `);
 
   // Seed zones if empty
-  const { rows } = await db.query<{ count: number }>(
+  const { rows } = await db.query(
     `SELECT COUNT(*) as count FROM zones`
   );
 
@@ -108,7 +125,7 @@ async function migrateSchema(db: PGlite): Promise<void> {
   }
 }
 
-async function seedZones(db: PGlite): Promise<void> {
+async function seedZones(db: any): Promise<void> {
   const zones: Zone[] = [
     { id: 1, name: 'Zone 1: Seating', pluPrefix: '01', count: 0 },
     { id: 2, name: 'Zone 2: Tables', pluPrefix: '02', count: 0 },
@@ -137,12 +154,12 @@ async function seedZones(db: PGlite): Promise<void> {
  * Log an inventory scan
  */
 export async function logInventoryItem(
-  db: PGlite,
+  db: any,
   item: Omit<InventoryItem, 'synced'>
 ): Promise<void> {
   await db.exec(
     `
-    INSERT INTO inventory_items 
+    INSERT INTO inventory_items
       (qr_data, category, zone_id, status, scanned_at, synced)
     VALUES (?, ?, ?, ?, ?, FALSE)
     ON CONFLICT (qr_data) DO UPDATE SET
@@ -168,15 +185,10 @@ export async function logInventoryItem(
  * Get zone summary (cycle count view)
  */
 export async function getZoneSummary(
-  db: PGlite
+  db: any
 ): Promise<Array<{ id: number; name: string; inStock: number; pending: number }>> {
-  const { rows } = await db.query<{
-    id: number;
-    name: string;
-    in_stock: number;
-    pending: number;
-  }>(`
-    SELECT 
+  const { rows } = await db.query(`
+    SELECT
       z.id,
       z.name,
       COUNT(i.qr_data) FILTER (WHERE i.status = 'received') as in_stock,
@@ -187,7 +199,7 @@ export async function getZoneSummary(
     ORDER BY z.id
   `);
 
-  return rows.map((r) => ({
+  return rows.map((r: any) => ({
     id: r.id,
     name: r.name,
     inStock: Number(r.in_stock),
@@ -198,21 +210,15 @@ export async function getZoneSummary(
 /**
  * Get unsynced items for batch push
  */
-export async function getUnsyncedItems(db: PGlite): Promise<InventoryItem[]> {
-  const { rows } = await db.query<{
-    qr_data: string;
-    category: string;
-    zone_id: number;
-    status: 'received' | 'sold' | 'moved';
-    scanned_at: number;
-  }>(`
+export async function getUnsyncedItems(db: any): Promise<InventoryItem[]> {
+  const { rows } = await db.query(`
     SELECT qr_data, category, zone_id, status, scanned_at
     FROM inventory_items
     WHERE synced = FALSE
     ORDER BY scanned_at ASC
   `);
 
-  return rows.map((r) => ({
+  return rows.map((r: any) => ({
     qrData: r.qr_data,
     category: r.category,
     zoneId: r.zone_id,
@@ -226,17 +232,17 @@ export async function getUnsyncedItems(db: PGlite): Promise<InventoryItem[]> {
  * Mark items as synced after successful push
  */
 export async function markItemsSynced(
-  db: PGlite,
+  db: any,
   qrDataList: string[]
 ): Promise<void> {
   if (qrDataList.length === 0) return;
 
   // PGlite doesn't support IN (?) with arrays directly
   // Build parameterized query
-  const placeholders = qrDataList.map((_, i) => `?`).join(',');
+  const placeholders = qrDataList.map((_: string, i: number) => `?`).join(',');
   await db.exec(
     `
-    UPDATE inventory_items 
+    UPDATE inventory_items
     SET synced = TRUE, synced_at = (EXTRACT(EPOCH FROM NOW()) * 1000)
     WHERE qr_data IN (${placeholders})
   `,
@@ -248,7 +254,7 @@ export async function markItemsSynced(
  * Get recent activity (last 50 scans)
  */
 export async function getRecentActivity(
-  db: PGlite,
+  db: any,
   limit: number = 50
 ): Promise<
   Array<{
@@ -259,13 +265,7 @@ export async function getRecentActivity(
     category: string;
   }>
 > {
-  const { rows } = await db.query<{
-    scanned_at: number;
-    qr_data: string;
-    action: string;
-    zone_name: string;
-    category: string;
-  }>(`
+  const { rows } = await db.query(`
     SELECT
       s.scanned_at,
       s.qr_data,
@@ -279,7 +279,7 @@ export async function getRecentActivity(
     LIMIT ?
   `, [limit]);
 
-  return rows.map((r) => ({
+  return rows.map((r: any) => ({
     scannedAt: r.scanned_at,
     qrData: r.qr_data,
     action: r.action,
@@ -291,7 +291,7 @@ export async function getRecentActivity(
 /**
  * Clear all data (nuclear option for testing)
  */
-export async function clearAllData(db: PGlite): Promise<void> {
+export async function clearAllData(db: any): Promise<void> {
   await db.exec(`DELETE FROM inventory_items`);
   await db.exec(`DELETE FROM scan_log`);
   await db.exec(`DELETE FROM sync_queue`);
@@ -302,7 +302,7 @@ export async function clearAllData(db: PGlite): Promise<void> {
 // ─────────────────────────────────────────────────────────────────────────────
 
 export async function queueForSync(
-  db: PGlite,
+  db: any,
   table: string,
   operation: 'INSERT' | 'UPDATE',
   payload: Record<string, unknown>,
@@ -318,36 +318,33 @@ export async function queueForSync(
 }
 
 export async function getPendingSyncQueue(
-  db: PGlite
+  db: any
 ): Promise<Array<{ id: number; payload: Record<string, unknown> }>> {
-  const { rows } = await db.query<{
-    id: number;
-    payload_json: string;
-  }>(`
+  const { rows } = await db.query(`
     SELECT id, payload_json
     FROM sync_queue
     WHERE retry_count < 5
     ORDER BY created_at ASC
   `);
 
-  return rows.map((r) => ({
+  return rows.map((r: any) => ({
     id: r.id,
     payload: JSON.parse(r.payload_json),
   }));
 }
 
-export async function markSyncSuccess(db: PGlite, id: number): Promise<void> {
+export async function markSyncSuccess(db: any, id: number): Promise<void> {
   await db.exec(`DELETE FROM sync_queue WHERE id = ?`, [id]);
 }
 
 export async function markSyncError(
-  db: PGlite,
+  db: any,
   id: number,
   error: string
 ): Promise<void> {
   await db.exec(
     `
-    UPDATE sync_queue 
+    UPDATE sync_queue
     SET retry_count = retry_count + 1, last_error = ?
     WHERE id = ?
   `,
@@ -355,9 +352,4 @@ export async function markSyncError(
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// EXPORTS
-// ─────────────────────────────────────────────────────────────────────────────
-
-export type { PGlite };
 export default getWarehouseDB;

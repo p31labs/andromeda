@@ -1,0 +1,15 @@
+name = "p31-sync-edge"
+main = "index.js"
+compatibility_date = "2024-05-25"
+
+[dev]
+port = 8787
+
+[[d1_databases]]
+binding = "p31_smallball_sync"
+database_name = "p31-smallball-sync"
+database_id = "0706758b-a348-4a62-bd44-3036ff854194"
+
+[vars]
+ENVIRONMENT = "production"
+SYNC_API_KEY = "p31-sync-dev-key"

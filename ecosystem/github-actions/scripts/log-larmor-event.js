@@ -107,7 +107,7 @@ class LarmorEventLogger {
                 decryptedCID: decryptedCID,
                 publishedCID: publishedCID,
                 accessUrls: {
-                    ipfs: `https://ipfs.io/ipfs/${publishedCID}`,
+                    ipfs: `https://cloudflare-ipfs.com/ipfs/${publishedCID}`,
                     ipns: `ipns://andromeda.p31.eth`,
                     ens: `https://andromeda.p31.eth`
                 }

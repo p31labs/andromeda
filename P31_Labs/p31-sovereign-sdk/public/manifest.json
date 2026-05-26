@@ -1,0 +1,123 @@
+{
+  "name": "P31 Sovereign Node",
+  "short_name": "P31 Node",
+  "description": "Local-first, hardware-anchored sovereign stack for P31 Node One devices",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#667eea",
+  "theme_color": "#764ba2",
+  "orientation": "portrait-primary",
+  "categories": ["productivity", "utilities", "developer-tools"],
+  "scope": "/",
+  "lang": "en-US",
+  "id": "/",
+  
+  "icons": [
+    {
+      "src": "/vite.svg",
+      "sizes": "48x48 72x72 96x96 128x128 192x192 256x256 384x384 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-maskable.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  
+  "screenshots": [
+    {
+      "src": "/screenshot-mobile.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "platform": "narrow",
+      "label": "P31 Sovereign Node mobile interface"
+    }
+  ],
+  
+  "shortcuts": [
+    {
+      "name": "New Telemetry Entry",
+      "short_name": "New Entry",
+      "description": "Create a new telemetry entry",
+      "url": "/?new-telemetry",
+      "icons": [{ "src": "/icon-new.svg", "sizes": "96x96" }]
+    },
+    {
+      "name": "Genesis Block",
+      "short_name": "Genesis",
+      "description": "View Genesis Block",
+      "url": "/?genesis",
+      "icons": [{ "src": "/icon-genesis.svg", "sizes": "96x96" }]
+    },
+    {
+      "name": "Hardware Control",
+      "short_name": "Hardware",
+      "description": "Control Node One hardware",
+      "url": "/?hardware",
+      "icons": [{ "src": "/icon-hardware.svg", "sizes": "96x96" }]
+    }
+  ],
+  
+  "protocol_handlers": [
+    {
+      "protocol": "p31",
+      "url": "/?protocol=%s"
+    }
+  ],
+  
+  "related_applications": [],
+  
+  "prefer_related_applications": false,
+  
+  "display_override": ["window-controls-overlay", "standalone"],
+  
+  "edge_side_panel": {
+    "preferred_width": 360
+  },
+  
+  "launch_handler": {
+    "client_mode": ["focus-existing", "auto"]
+  },
+  
+  "file_handlers": [
+    {
+      "action": "/import",
+      "accept": {
+        "application/json": [".p31", ".json"]
+      }
+    }
+  ],
+  
+  "share_target": {
+    "action": "/share",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url",
+      "files": [
+        {
+          "name": "telemetry",
+          "accept": ["application/json", "text/plain"]
+        }
+      ]
+    }
+  },
+  
+  "permissions": [
+    "storage",
+    "clipboard-write",
+    "clipboard-read",
+    "bluetooth",
+    "notifications",
+    "periodic-background-sync"
+  ],
+  
+  "background_color": "#ffffff",
+  
+  "handle_links": "preferred"
+}

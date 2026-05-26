@@ -68,6 +68,27 @@ const ebcLinks = [
   style="color-scheme: dark;"
 >
   <head>
+    {/* Blocking dark mode init — must run before any paint to prevent FOUC */}
+    <script is:inline>
+      (function() {
+        try {
+          var stored = localStorage.getItem('p31.theme.v2');
+          var theme = 'hub';
+          if (stored) {
+            var parsed = JSON.parse(stored);
+            if (parsed.theme) theme = parsed.theme;
+          }
+          var scheme = 'dark';
+          if (theme === 'org' || theme === 'paper') scheme = 'light';
+          document.documentElement.setAttribute('data-p31-theme', theme);
+          document.documentElement.setAttribute('data-p31-scheme', scheme);
+          document.documentElement.setAttribute('data-theme', scheme);
+          if (scheme === 'dark') document.documentElement.classList.add('dark');
+          else document.documentElement.classList.remove('dark');
+        } catch(e) {}
+      })();
+    </script>
+
     <!-- P31 PWA Service Worker Registration -->
     {!preserveSW && (
       <script is:inline>
@@ -105,7 +126,7 @@ const ebcLinks = [
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="apple-touch-icon" href="/icons/p31-192.png" />
+    <link rel="apple-touch-icon" href="/favicon.svg" />
     <link rel="manifest" href="/manifest.json" />
     <link rel="stylesheet" href="/p31-style.css" />
     <link rel="stylesheet" href="/lib/p31-qmu-tokens.css" />
@@ -261,7 +282,9 @@ const ebcLinks = [
     <script type="module" src="/lib/p31-theme-switcher.mjs"></script>
 
     <!-- Starfield Notifications -->
-    <script type="module" src="/lib/starfield-notifications.ts"></script>
+    <script type="module">
+      import('/lib/starfield-notifications.ts').catch(() => {});
+    </script>
     <script src="/lib/starfield-settings-ui.js" defer></script>
 
     <slot name="head" />
@@ -643,10 +666,14 @@ const ebcLinks = [
     </script>
 
     {/* Touch gestures */}
-    <script type="module" src="/lib/p31-gestures.ts"></script>
+    <script type="module">
+      import('/lib/p31-gestures.ts').catch(() => {});
+    </script>
 
     {/* Battery awareness */}
-    <script type="module" src="/lib/p31-battery-aware.ts"></script>
+    <script type="module">
+      import('/lib/p31-battery-aware.ts').catch(() => {});
+    </script>
     <script is:inline>
       (function() {
         function updatePowerClasses(e) {
@@ -750,39 +777,49 @@ const ebcLinks = [
 
     {/* Starfield + Fleet telemetry */}
     <script>
-      import type { RouteId } from '../lib/starfield-singleton';
-      import { startStarfield, setStarfieldRoute, suspendStarfield, resumeStarfield } from '../lib/starfield-singleton';
-      import { startFleetTelemetry } from '../lib/fleet-telemetry';
+      (async () => {
+        const canvas = document.querySelector('canvas[data-p31-appshell-canvas]');
+        if (!canvas) return;
+        try {
+          const { startStarfield, setStarfieldRoute, suspendStarfield, resumeStarfield } = await import('/lib/starfield-singleton.js');
+          startStarfield(canvas);
+          const route = document.documentElement.getAttribute('data-p31-route');
+          if (route) setStarfieldRoute(route);
+          if (route === 'dome' || route === 'atmosphere') suspendStarfield();
 
-      const canvas = document.querySelector<HTMLCanvasElement>('canvas[data-p31-appshell-canvas]');
-      if (canvas) {
-        startStarfield(canvas);
-        const route = document.documentElement.getAttribute('data-p31-route') as RouteId | null;
-        if (route) setStarfieldRoute(route);
-        if (route === 'dome' || route === 'atmosphere') suspendStarfield();
-      }
+          document.addEventListener('astro:after-swap', () => {
+            const newRoute = document.documentElement.getAttribute('data-p31-route');
+            if (newRoute) setStarfieldRoute(newRoute);
+            if (newRoute === 'dome' || newRoute === 'atmosphere') suspendStarfield();
+            else resumeStarfield();
+          });
+        } catch (e) {
+          console.warn('[P31] Starfield init failed:', e);
+        }
+      })();
+    </script>
 
-      document.addEventListener('astro:after-swap', () => {
-        const newRoute = document.documentElement.getAttribute('data-p31-route') as RouteId | null;
-        if (newRoute) setStarfieldRoute(newRoute);
-        if (newRoute === 'dome' || newRoute === 'atmosphere') suspendStarfield();
-        else resumeStarfield();
-      });
-
-      const W = window as Record<string, unknown>;
-      if (!W['__p31Fleet']) {
-        const currentRoute = document.documentElement.getAttribute('data-p31-route');
-        if (currentRoute !== 'garden') {
+    {/* Fleet telemetry — loaded from public lib */}
+    <script>
+      (async () => {
+        try {
+          const W = window;
+          if (W['__p31Fleet']) return;
+          const currentRoute = document.documentElement.getAttribute('data-p31-route');
+          if (currentRoute === 'garden') return;
+          const { startFleetTelemetry } = await import('/lib/fleet-telemetry.js');
           const handle = startFleetTelemetry();
           W['__p31Fleet'] = handle;
           document.addEventListener('astro:after-swap', () => {
             const route = document.documentElement.getAttribute('data-p31-route');
-            const stored = W['__p31Fleet'] as typeof handle | null;
+            const stored = W['__p31Fleet'];
             if (route === 'garden' && stored) { stored.stop(); W['__p31Fleet'] = null; }
             else if (route !== 'garden' && !W['__p31Fleet']) W['__p31Fleet'] = startFleetTelemetry();
           });
+        } catch (e) {
+          // fleet-telemetry.js may not be built as a standalone; non-critical
         }
-      }
+      })();
     </script>
   </body>
 </html>

@@ -27,36 +27,43 @@ const GRANTS_LAST_KEY    = 'scan:grants:last';
  */
 async function logActivity(env, entry) {
   if (!env?.FORGE_KV) return null;
-  const timestamp = new Date().toISOString();
-  const id = `activity:${timestamp}:${randomSuffix()}`;
-  const record = { id, timestamp, ...entry };
-  await env.FORGE_KV.put(id, JSON.stringify(record), {
-    expirationTtl: 60 * 60 * 24 * 90 // 90 days
-  });
-  // Update index (newest first, capped)
-  const indexRaw = await env.FORGE_KV.get(ACTIVITY_INDEX_KEY);
-  const index = indexRaw ? JSON.parse(indexRaw) : [];
-  index.unshift(id);
-  const capped = index.slice(0, ACTIVITY_INDEX_CAP);
-  await env.FORGE_KV.put(ACTIVITY_INDEX_KEY, JSON.stringify(capped));
-  return { id, timestamp };
+  try {
+    const timestamp = new Date().toISOString();
+    const id = `activity:${timestamp}:${randomSuffix()}`;
+    const record = { id, timestamp, ...entry };
+    await env.FORGE_KV.put(id, JSON.stringify(record), {
+      expirationTtl: 60 * 60 * 24 * 90
+    });
+    const indexRaw = await env.FORGE_KV.get(ACTIVITY_INDEX_KEY);
+    const index = indexRaw ? JSON.parse(indexRaw) : [];
+    index.unshift(id);
+    const capped = index.slice(0, ACTIVITY_INDEX_CAP);
+    await env.FORGE_KV.put(ACTIVITY_INDEX_KEY, JSON.stringify(capped));
+    return { id, timestamp };
+  } catch {
+    return null;
+  }
 }
 
 async function listActivity(env, { limit = 50, kind = null } = {}) {
   if (!env?.FORGE_KV) return { entries: [], bound: false };
-  const indexRaw = await env.FORGE_KV.get(ACTIVITY_INDEX_KEY);
-  const index = indexRaw ? JSON.parse(indexRaw) : [];
-  const ids = index.slice(0, Math.min(limit * 3, index.length)); // overfetch for kind filter
-  const entries = [];
-  for (const id of ids) {
-    const raw = await env.FORGE_KV.get(id);
-    if (!raw) continue;
-    const entry = JSON.parse(raw);
-    if (kind && entry.kind !== kind) continue;
-    entries.push(entry);
-    if (entries.length >= limit) break;
+  try {
+    const indexRaw = await env.FORGE_KV.get(ACTIVITY_INDEX_KEY);
+    const index = indexRaw ? JSON.parse(indexRaw) : [];
+    const ids = index.slice(0, Math.min(limit * 3, index.length));
+    const entries = [];
+    for (const id of ids) {
+      const raw = await env.FORGE_KV.get(id);
+      if (!raw) continue;
+      const entry = JSON.parse(raw);
+      if (kind && entry.kind !== kind) continue;
+      entries.push(entry);
+      if (entries.length >= limit) break;
+    }
+    return { entries, bound: true, total: index.length };
+  } catch {
+    return { entries: [], bound: true, total: 0 };
   }
-  return { entries, bound: true, total: index.length };
 }
 
 /**
@@ -65,9 +72,26 @@ async function listActivity(env, { limit = 50, kind = null } = {}) {
  */
 async function diffGrants(env, hits) {
   if (!env?.FORGE_KV) {
-    // Without KV, everything is "new"
     return { newHits: hits, firstScan: true };
   }
+  try {
+    const seenRaw = await env.FORGE_KV.get(GRANTS_SEEN_KEY);
+    const seen = seenRaw ? JSON.parse(seenRaw) : {};
+    const firstScan = Object.keys(seen).length === 0;
+    const now = new Date().toISOString();
+    const newHits = [];
+    for (const h of hits) {
+      if (!seen[h.id]) {
+        seen[h.id] = now;
+        newHits.push(h);
+      }
+    }
+    await env.FORGE_KV.put(GRANTS_SEEN_KEY, JSON.stringify(seen));
+    return { newHits, firstScan };
+  } catch {
+    return { newHits: hits, firstScan: false };
+  }
+}
   const seenRaw = await env.FORGE_KV.get(GRANTS_SEEN_KEY);
   const seen = seenRaw ? JSON.parse(seenRaw) : {};
   const firstScan = Object.keys(seen).length === 0;
@@ -85,16 +109,24 @@ async function diffGrants(env, hits) {
 
 async function saveLastGrantsScan(env, summary) {
   if (!env?.FORGE_KV) return;
-  await env.FORGE_KV.put(GRANTS_LAST_KEY, JSON.stringify({
-    ...summary,
-    runAt: new Date().toISOString()
-  }));
+  try {
+    await env.FORGE_KV.put(GRANTS_LAST_KEY, JSON.stringify({
+      ...summary,
+      runAt: new Date().toISOString()
+    }));
+  } catch {
+    /* optional — next cron will retry */
+  }
 }
 
 async function getLastGrantsScan(env) {
   if (!env?.FORGE_KV) return null;
-  const raw = await env.FORGE_KV.get(GRANTS_LAST_KEY);
-  return raw ? JSON.parse(raw) : null;
+  try {
+    const raw = await env.FORGE_KV.get(GRANTS_LAST_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
 }
 
 function randomSuffix() {

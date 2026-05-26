@@ -20,7 +20,6 @@ const CACHE_API = `p31-hub-api-${CACHE_VERSION}`;
 // Core app shell - must be available offline
 const SHELL_URLS = [
   "/",
-  "/index.html",
   "/p31-style.css",
   "/p31-tailwind-extend.js",
   "/lib/p31-subject-prefs.js",
@@ -30,9 +29,7 @@ const SHELL_URLS = [
 
 // Static assets - cached on install
 const ASSET_URLS = [
-  "/favicon.svg",
-  "/icons/p31-192.png",
-  "/icons/p31-512.png"
+  "/favicon.svg"
 ];
 
 // Install: cache shell and critical assets
@@ -222,8 +219,8 @@ self.addEventListener("push", (event) => {
   event.waitUntil(
     self.registration.showNotification(data.title || "P31 Constellation", {
       body: data.body || "",
-      icon: "/icons/p31-192.png",
-      badge: "/icons/p31-72.png",
+      icon: "/favicon.svg",
+      badge: "/favicon.svg",
       tag: data.tag || "p31-notification",
       data: data.url || "/"
     })

@@ -1,0 +1,31 @@
+name = "p31-gridiron-signal"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+[[triggers]]
+crons = ["0 0 * * *"]
+
+[[kv_namespaces]]
+binding = "MATCH_STATE"
+id = "90de65ef1ee14e4e8e147fc23bbd610b"
+
+[[kv_namespaces]]
+binding = "ANALYTICS"
+id = "7ea4c66889854d658a51ad1d694ead3c"
+
+[[kv_namespaces]]
+binding = "GAMEPLAN_CACHE"
+id = "04faed1994fe4ca8af4bb6ade73501de"
+
+[[kv_namespaces]]
+binding = "TENDENCIES"
+id = "844c3108105148c3a9ad6d23d1cce5aa"
+
+[[kv_namespaces]]
+binding = "CROSS_GAME"
+id = "6b5f91a6966546f3af7565e79ae3f025"
+
+[[r2_buckets]]
+binding = "ASSETS"
+bucket_name = "p31-game-assets"

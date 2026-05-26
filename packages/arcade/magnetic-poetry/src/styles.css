@@ -1,0 +1,28 @@
+/**
+ * Magnetic Poetry Styles — Canonical v2.0.0
+ * Imports from p31-arcade-theme with app-specific extensions
+ */
+
+@import './arcade-theme.css';
+
+/* Legacy animation keyframes (kept for backward compatibility,
+   but only used when .p31-alive class is present) */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+  }
+  @keyframes float {
+    0%, 100% { transform: none; }
+  }
+}

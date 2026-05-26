@@ -159,7 +159,7 @@ class EcosystemConnectivityTester {
 
         const endpoints = [
             { name: 'GitHub API', url: 'https://api.github.com', timeout: 5000 },
-            { name: 'IPFS Gateway', url: 'https://ipfs.io', timeout: 10000 },
+            { name: 'IPFS Gateway', url: 'https://cloudflare-ipfs.com', timeout: 10000 },
             { name: 'Zenodo API', url: 'https://zenodo.org/api', timeout: 8000 },
             { name: 'Upstash Redis', url: 'https://upstash.com', timeout: 5000 },
             { name: 'Discord API', url: 'https://discord.com/api', timeout: 5000 }
@@ -288,7 +288,7 @@ class EcosystemConnectivityTester {
     async testIPFSGateway() {
         return new Promise((resolve) => {
             const options = {
-                hostname: 'ipfs.io',
+                hostname: 'cloudflare-ipfs.com',
                 path: '/api/v0/version',
                 method: 'GET'
             };

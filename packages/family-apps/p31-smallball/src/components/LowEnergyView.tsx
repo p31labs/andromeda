@@ -3,6 +3,7 @@ import { ArrowLeft, FileText, Gift, Clock, Plus, Trash2, Play, CheckCircle, X, L
 import { useFranchise, useScoutReports, useClaimScoutReport, useInitDemoData, usePlayers, useScheduledTraining, useSetScheduledTraining, useDeleteScheduledTraining, useToggleScheduledTraining, useExecuteScheduledTraining } from '../db/hooks';
 import type { ScoutReport, ScheduledTrainingRow } from '../db/hooks';
 import { ATTRIBUTE_DISPLAY_NAMES, STATION_CONFIGS } from '../data/facilities';
+import { useAutoSave } from '../engine/useAutoSave';
 import type { TrainingStation } from '../types';
 
 interface LowEnergyViewProps {
@@ -29,6 +30,7 @@ export const LowEnergyView: React.FC<LowEnergyViewProps> = ({ onBack }) => {
   const { toggle } = useToggleScheduledTraining();
   const { executeAll } = useExecuteScheduledTraining();
 
+  const { triggerSync } = useAutoSave(franchise?.id);
   const [claiming, setClaiming] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [formPlayer, setFormPlayer] = useState<string>('');
@@ -49,9 +51,10 @@ export const LowEnergyView: React.FC<LowEnergyViewProps> = ({ onBack }) => {
     if (result.executed.length > 0) {
       setAutoResults(result.results);
       refreshSchedules();
+      triggerSync();
     }
     setAutoRunning(false);
-  }, [franchise?.id, executeAll, autoRunning, refreshSchedules]);
+  }, [franchise?.id, executeAll, autoRunning, refreshSchedules, triggerSync]);
 
   // Auto-execute when franchise loads
   useEffect(() => {

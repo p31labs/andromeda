@@ -203,6 +203,14 @@
 /theme-showcase.html             /ops#theme               301
 /vault.html                      /ops#vault               301
 
+# Route: /arcade
+/arcade-hub-about.html            /arcade#hub             301
+/arcade-smallball-about.html     /arcade#smallball       301
+/arcade-gridiron-about.html      /arcade#gridiron        301
+/arcade-strategy-about.html      /arcade#strategy        301
+/arcade-cards-about.html         /arcade#cards           301
+/arcade-liquid-sculptor-about.html /arcade#liquid         301
+
 # Route: /passport
 /cogpass-bridge.html             /passport#bridge         301
 /passport-generator.html         /passport                301
@@ -221,3 +229,5 @@
 /budget-tracker  https://p31-budget-tracker.trimtab-signal.workers.dev  302
 /genesis-gate  https://genesis-gate.trimtab-signal.workers.dev  302
 # @generated end worker-spa-launch
+# CHUMP — Tier S Critical Infrastructure
+/chump  https://chump-dashboard.pages.dev  302

@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from 'react';
-import { PGliteWorker } from '@electric-sql/pglite/react';
 
 export interface VaultItem {
   id: string;
@@ -12,8 +11,8 @@ export interface VaultItem {
 }
 
 // Node ID for CRDT - should be unique per device
-const NODE_ID = typeof window !== 'undefined' 
-  ? crypto.randomUUID() 
+const NODE_ID = typeof window !== 'undefined'
+  ? crypto.randomUUID()
   : 'server';
 
 // Worker connection for sub-8.5ms read / 1.2ms write SLAs
@@ -47,7 +46,12 @@ export function useSovereignData() {
         // Load initial data with CRDT fields
         db.addEventListener('message', (event: MessageEvent) => {
           if (event.data?.type === 'QUERY_RESULT' && event.data?.query?.startsWith('SELECT')) {
-            setData(prev => [...prev, ...event.data.rows]);
+            // Map content to text for consistent interface
+            const rows = event.data.rows.map((row: any) => ({
+              ...row,
+              text: row.content || row.text,
+            }));
+            setData(prev => [...prev, ...rows]);
           }
         });
 
@@ -65,6 +69,30 @@ export function useSovereignData() {
     }, 300); // Reduced from 600ms for faster startup
 
     return () => clearTimeout(timer);
+  }, []);
+
+  const initializeVault = useCallback(async (publicKey: string) => {
+    if (typeof window === 'undefined') return;
+
+    try {
+      const worker = getPGLiteWorker();
+      worker.port.start();
+
+      // Initialize vault with the public key stored in metadata table
+      await new Promise<void>((resolve) => {
+        worker.port.postMessage({
+          type: 'exec',
+          query: `INSERT OR REPLACE INTO vault_metadata (key, value) VALUES ('public_key', ?)`,
+          params: [publicKey],
+        });
+        setTimeout(resolve, 100);
+      });
+
+      setData([]);
+      setError(null);
+    } catch (e) {
+      setError('Failed to initialize vault.');
+    }
   }, []);
 
   const addVaultItem = useCallback(async (payload: string) => {
@@ -134,13 +162,14 @@ export function useSovereignData() {
     };
   }, []);
 
-  return { 
-    data, 
-    isLoading, 
-    error, 
-    addVaultItem, 
+  return {
+    data,
+    isLoading,
+    error,
+    addVaultItem,
     deleteVaultItem,
-    subscribeToChanges 
+    subscribeToChanges,
+    initializeVault
   };
 }
 

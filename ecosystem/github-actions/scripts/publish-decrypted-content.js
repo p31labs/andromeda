@@ -11,7 +11,7 @@ const crypto = require('crypto');
 
 class DecryptedContentPublisher {
     constructor() {
-        this.ipfsGateway = process.env.IPFS_GATEWAY || 'https://ipfs.io';
+        this.ipfsGateway = process.env.IPFS_GATEWAY || 'https://cloudflare-ipfs.com';
         this.ensDomain = process.env.ENS_DOMAIN || 'andromeda.p31.eth';
     }
 

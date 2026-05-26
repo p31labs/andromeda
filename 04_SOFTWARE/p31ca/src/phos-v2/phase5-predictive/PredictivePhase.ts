@@ -25,8 +25,16 @@ export class PredictivePhase implements PHOSPhase {
   async initialize(config: PHOSConfig): Promise<void> {
     this.config = config;
     console.log('[PredictivePhase] Initializing ML predictor...');
+    this.startSpoonPolling();
     // TODO: Load TensorFlow.js or ONNX model
     this.lastActivity = Date.now();
+  }
+
+  // Week 6: Subscribe to spoon-state updates
+  private startSpoonPolling(): void {
+    this.on('spoon.state.changed', (event: PHOSEvent) => {
+      this.updateSpoonLevel(event.payload.level);
+    });
   }
 
   activate(): void {

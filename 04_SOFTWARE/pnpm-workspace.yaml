@@ -7,6 +7,7 @@ packages:
   - 'workers'
   - 'packages/*'
   - 'extensions/*'
+  - '../../packages/ui-facets'
 
 onlyBuiltDependencies:
   - '@react-three/fiber'

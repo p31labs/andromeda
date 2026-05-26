@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CHUMP for CHANGE — Tier S Critical Infrastructure</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#09090b;color:#e4e4e7;min-height:100vh}
+header{border-bottom:1px solid #27272a;background:rgba(24,24,27,0.5);backdrop-filter:blur(12px);position:sticky;top:0;z-index:50}
+.header-inner{max-width:1280px;margin:0 auto;padding:16px 24px;display:flex;align-items:center;justify-content:space-between}
+.logo{display:flex;align-items:center;gap:12px}
+.logo-icon{width:40px;height:40px;border-radius:12px;background:#f59e0b;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;color:#09090b;box-shadow:0 0 15px rgba(245,158,11,0.4)}
+.logo-text h1{font-size:20px;font-weight:700;color:#fff}
+.logo-text h1 span{color:#f59e0b}
+.logo-text p{font-size:11px;color:#a1a1aa;text-transform:uppercase;letter-spacing:.1em;font-weight:600}
+.status-dot{display:flex;align-items:center;gap:8px;font-size:14px;color:#a1a1aa}
+.status-dot .dot{width:10px;height:10px;border-radius:50%;background:#22c55e;position:relative}
+.status-dot .dot::before{content:'';position:absolute;width:100%;height:100%;border-radius:50%;background:#22c55e;animation:pulse 2s infinite;opacity:.75}
+@keyframes pulse{0%{transform:scale(1);opacity:.75}50%{transform:scale(1.8);opacity:0}100%{transform:scale(1);opacity:.75}}
+main{max-width:1280px;margin:0 auto;padding:32px 24px}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:40px}
+.stat-card{background:#18181b;border:1px solid #27272a;border-radius:16px;padding:24px;position:relative;overflow:hidden}
+.stat-card .glow{position:absolute;top:0;right:0;width:128px;height:128px;border-radius:50%;filter:blur(48px);transform:translate(30%,-30%);transition:transform .3s}
+.stat-card:hover .glow{transform:translate(20%,-20%) scale(1.1)}
+.stat-label{font-size:14px;color:#a1a1aa;font-weight:500;margin-bottom:8px}
+.stat-value{font-size:36px;font-weight:700;color:#fff}
+.stat-unit{font-size:14px;font-weight:600;color:#a1a1aa;margin-left:8px}
+.panel-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-bottom:40px}
+@media(max-width:768px){.panel-grid{grid-template-columns:1fr}}
+.panel h3{font-size:18px;font-weight:600;color:#fff;margin-bottom:16px}
+.panel-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.badge{font-size:11px;padding:4px 8px;border-radius:6px;font-weight:600;border:1px solid}
+.badge-green{background:rgba(34,197,94,0.1);color:#22c55e;border-color:rgba(34,197,94,0.2)}
+.badge-blue{background:rgba(59,130,246,0.1);color:#3b82f6;border-color:rgba(59,130,246,0.2)}
+.badge-amber{background:rgba(245,158,11,0.1);color:#f59e0b;border-color:rgba(245,158,11,0.2)}
+.stream-item{display:flex;align-items:center;justify-content:space-between;padding:16px;border-radius:12px;background:#18181b;border:1px solid #27272a;margin-bottom:8px;transition:border-color .2s}
+.stream-item:hover{border-color:#3f3f46}
+.stream-left{display:flex;align-items:center;gap:16px}
+.stream-icon{width:40px;height:40px;border-radius:10px;background:#27272a;display:flex;align-items:center;justify-content:center;font-size:18px}
+.stream-icon.amber{color:#f59e0b}
+.stream-info h4{color:#e4e4e7;font-weight:500;font-size:14px}
+.stream-info p{color:#71717a;font-size:12px}
+.stream-right{text-align:right;display:flex;align-items:center;gap:12px}
+.stream-dot{width:8px;height:8px;border-radius:50%;background:#22c55e}
+.stream-earnings{font-size:14px;font-weight:600;color:#22c55e}
+.stream-period{font-size:11px;color:#71717a}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;padding:12px 8px;color:#a1a1aa;font-weight:500;border-bottom:1px solid #27272a}
+td{padding:12px 8px;border-bottom:1px solid rgba(39,39,42,0.5)}
+td.name{color:#e4e4e7;font-weight:500}
+td.cat{color:#a1a1aa}
+td.yield{color:#22c55e;text-align:right}
+td.barrier{color:#a1a1aa;text-align:right}
+td.priority{text-align:right}
+.prio{font-size:11px;padding:2px 8px;border-radius:4px;font-weight:600}
+.prio-high{background:rgba(34,197,94,0.1);color:#22c55e}
+.prio-med{background:rgba(245,158,11,0.1);color:#f59e0b}
+.prio-low{background:rgba(113,113,122,0.2);color:#a1a1aa}
+footer{border-top:1px solid #27272a;padding:24px;text-align:center;font-size:12px;color:#52525b}
+tr:hover td{background:rgba(39,39,42,0.2)}
+</style>
+</head>
+<body>
+<header>
+<div class="header-inner">
+<div class="logo">
+<div class="logo-icon">$</div>
+<div class="logo-text">
+<h1>CHUMP <span>for CHANGE</span></h1>
+<p>Tier S Critical Infrastructure</p>
+</div>
+</div>
+<div class="status-dot">
+<span class="dot"></span>
+System Live
+</div>
+</div>
+</header>
+<main>
+<div class="stats-grid" id="statsGrid">
+<div class="stat-card">
+<div class="glow" style="background:rgba(245,158,11,0.15)"></div>
+<div class="stat-label">Monthly MRR</div>
+<div><span class="stat-value" id="monthlyEstimate">$230</span><span class="stat-unit">USD</span></div>
+</div>
+<div class="stat-card">
+<div class="glow" style="background:rgba(34,197,94,0.15)"></div>
+<div class="stat-label">Active Streams</div>
+<div><span class="stat-value" id="activeStreams">4</span><span class="stat-unit">sources</span></div>
+</div>
+<div class="stat-card">
+<div class="glow" style="background:rgba(59,130,246,0.15)"></div>
+<div class="stat-label">DePIN Nodes</div>
+<div><span class="stat-value" id="nodesOnline">0</span><span class="stat-unit">online</span></div>
+</div>
+<div class="stat-card">
+<div class="glow" style="background:rgba(168,85,247,0.15)"></div>
+<div class="stat-label">Uptime</div>
+<div><span class="stat-value">99.7</span><span class="stat-unit">%</span></div>
+</div>
+</div>
+
+<div class="panel-grid">
+<div class="panel">
+<div class="panel-header">
+<h3>Live Revenue Streams</h3>
+<span class="badge badge-green">Operational</span>
+</div>
+<div id="streamsList"></div>
+</div>
+<div class="panel">
+<div class="panel-header">
+<h3>Expansion Pipeline — Phase 2</h3>
+<span class="badge badge-blue">Staged</span>
+</div>
+<div id="expansionList"></div>
+</div>
+</div>
+
+<div style="background:#18181b;border:1px solid #27272a;border-radius:16px;padding:24px">
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+<h3 style="font-size:18px;font-weight:600;color:#fff">DePIN Expansion Targets</h3>
+<span class="badge badge-amber" id="yieldEstimate">~$415–$1,040/mo at scale</span>
+</div>
+<div style="overflow-x:auto">
+<table>
+<thead><tr><th>Platform</th><th>Category</th><th style="text-align:right">Est. Yield</th><th style="text-align:right">Barrier</th><th style="text-align:right">Priority</th></tr></thead>
+<tbody>
+<tr><td class="name">Honeygain</td><td class="cat">Bandwidth</td><td class="yield">$20-40/mo</td><td class="barrier">Low</td><td class="priority"><span class="prio prio-high">High</span></td></tr>
+<tr><td class="name">EarnApp</td><td class="cat">Bandwidth</td><td class="yield">$30-60/mo</td><td class="barrier">Low</td><td class="priority"><span class="prio prio-high">High</span></td></tr>
+<tr><td class="name">Pawns.app</td><td class="cat">Bandwidth</td><td class="yield">$25-50/mo</td><td class="barrier">Low</td><td class="priority"><span class="prio prio-high">High</span></td></tr>
+<tr><td class="name">PacketStream</td><td class="cat">Proxy Resell</td><td class="yield">$50-200/mo</td><td class="barrier">Medium</td><td class="priority"><span class="prio prio-high">High</span></td></tr>
+<tr><td class="name">Grass</td><td class="cat">AI Data</td><td class="yield">$10-50/mo</td><td class="barrier">Low</td><td class="priority"><span class="prio prio-med">Medium</span></td></tr>
+<tr><td class="name">Nodepay</td><td class="cat">AI Mesh</td><td class="yield">$10-40/mo</td><td class="barrier">Low</td><td class="priority"><span class="prio prio-med">Medium</span></td></tr>
+<tr><td class="name">Storj</td><td class="cat">Storage</td><td class="yield">$5-15/TB/mo</td><td class="barrier">High</td><td class="priority"><span class="prio prio-low">Low</span></td></tr>
+<tr><td class="name">Render Network</td><td class="cat">GPU Compute</td><td class="yield">$40-100/mo</td><td class="barrier">High</td><td class="priority"><span class="prio prio-low">Low</span></td></tr>
+</tbody>
+</table>
+</div>
+</div>
+</main>
+<footer>CHUMP Infrastructure v1.0 — Tier S Critical Asset — <a href="https://chump.p31ca.org" style="color:#52525b;text-decoration:none">chump.p31ca.org</a></footer>
+
+<script>
+const API = 'https://chump-edge.trimtab-signal.workers.dev';
+
+const STREAMS = [
+  { name: 'Chrome Extension', type: 'Passive Data', est: '$15-30', icon: '🗄️' },
+  { name: 'Data Labeling', type: 'AI Training', est: '$50-100', icon: '🧩' },
+  { name: 'Survey Panel', type: 'Research', est: '$20-40', icon: '📊' },
+  { name: 'Content Mod', type: 'Community', est: '$30-60', icon: '🛡️' }
+];
+
+const EXPANSION = [
+  { name: 'Honeygain', type: 'Bandwidth Sharing', status: 'Pending Config', icon: '📡' },
+  { name: 'EarnApp', type: 'Bandwidth Sharing', status: 'Pending Config', icon: '📡' },
+  { name: 'Pawns.app', type: 'Bandwidth + Surveys', status: 'Pending Config', icon: '🌐' },
+  { name: 'PacketStream', type: 'Proxy Reseller', status: 'Pending Config', icon: '🔗' },
+  { name: 'Grass', type: 'AI Data Rollup', status: 'Pending Config', icon: '📈' },
+  { name: 'Nodepay', type: 'AI Training Mesh', status: 'Pending Config', icon: '📈' },
+  { name: 'Storj', type: 'Storage Node', status: 'Hardware Audit', icon: '💾' },
+  { name: 'Render Network', type: 'GPU Compute', status: 'Hardware Audit', icon: '⚡' },
+];
+
+async function loadStats() {
+  try {
+    const r = await fetch(`${API}/api/stats`);
+    if (!r.ok) throw new Error('API error');
+    const data = await r.json();
+    document.getElementById('monthlyEstimate').textContent = `$${data.monthly_estimate}`;
+    document.getElementById('activeStreams').textContent = data.active_streams;
+    document.getElementById('nodesOnline').textContent = data.nodes_online;
+  } catch (e) {
+    document.getElementById('monthlyEstimate').textContent = '$--';
+    document.querySelector('.status-dot').innerHTML = '<span style="color:#ef4444;">⚠ Offline</span>';
+  }
+}
+
+function renderStreams() {
+  const el = document.getElementById('streamsList');
+  el.innerHTML = STREAMS.map(s => `
+    <div class="stream-item">
+      <div class="stream-left">
+        <div class="stream-icon amber">${s.icon}</div>
+        <div class="stream-info"><h4>${s.name}</h4><p>${s.type}</p></div>
+      </div>
+      <div class="stream-right">
+        <span class="stream-dot"></span>
+        <div><div class="stream-earnings">${s.est}</div><div class="stream-period">/mo</div></div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderExpansion() {
+  const el = document.getElementById('expansionList');
+  const statusClass = s => s === 'Pending Config' ? 'badge-amber' : 'badge-blue';
+  el.innerHTML = EXPANSION.map(t => `
+    <div class="stream-item" style="border-style:dashed;opacity:.8">
+      <div class="stream-left">
+        <div class="stream-icon" style="color:#3b82f6">${t.icon}</div>
+        <div class="stream-info"><h4>${t.name}</h4><p>${t.type}</p></div>
+      </div>
+      <span class="badge ${statusClass(t.status)}">${t.status}</span>
+    </div>
+  `).join('');
+}
+
+loadStats();
+renderStreams();
+renderExpansion();
+setInterval(loadStats, 60000);
+</script>
+</body>
+</html>

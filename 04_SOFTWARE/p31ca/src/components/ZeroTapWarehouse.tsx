@@ -10,8 +10,10 @@
 
 import React, { useRef, useState, useCallback, useEffect } from 'react';
 import { Html5Qrcode, Html5QrcodeSupportedFormats } from 'html5-qrcode';
-import { getWarehouseDB, logInventoryItem, getUnsyncedItems, markItemsSynced } from '../utils/pglite-warehouse';
-import type { PGlite } from '../utils/pglite-warehouse';
+
+// PGlite is loaded dynamically to avoid WASM resolution at build time
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type PGliteDb = any;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // TYPES
@@ -83,7 +85,8 @@ export function ZeroTapWarehouse({
   showDashboard = false,
 }: ZeroTapWarehouseProps): React.ReactElement {
   // Real PGLite instance (lazy loaded)
-  const pgLiteRef = useRef<PGlite | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const pgLiteRef = useRef<any>(null);
   // Scanner state
   const scannerRef = useRef<Html5Qrcode | null>(null);
   const scannerDivId = 'warehouse-scanner';
@@ -101,13 +104,32 @@ export function ZeroTapWarehouse({
   const touchStartY = useRef<number | null>(null);
   const SWIPE_THRESHOLD = 50; // pixels
 
+  // Dynamic warehouse helper — avoids static import of WASM module
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const warehouse = {
+    logItem: async (db: any, item: any) => {
+      const { logInventoryItem } = await import('../utils/pglite-warehouse');
+      return logInventoryItem(db, item);
+    },
+    getUnsynced: async (db: any) => {
+      const { getUnsyncedItems } = await import('../utils/pglite-warehouse');
+      return getUnsyncedItems(db);
+    },
+    markSynced: async (db: any, qrList: string[]) => {
+      const { markItemsSynced } = await import('../utils/pglite-warehouse');
+      return markItemsSynced(db, qrList);
+    },
+  };
+
   // Initialize PGLite on mount
   useEffect(() => {
-    getWarehouseDB().then((db) => {
-      pgLiteRef.current = db;
-      console.log('[Warehouse] PGLite ready');
-    }).catch((err) => {
-      console.error('[Warehouse] PGLite init failed:', err);
+    import('../utils/pglite-warehouse').then(({ getWarehouseDB }) => {
+      getWarehouseDB().then((db) => {
+        pgLiteRef.current = db;
+        console.log('[Warehouse] PGLite ready');
+      }).catch((err) => {
+        console.error('[Warehouse] PGLite init failed:', err);
+      });
     });
   }, []);
 
@@ -212,7 +234,7 @@ export function ZeroTapWarehouse({
 
       // Persist to PGLite
       if (pgLiteRef.current) {
-        await logInventoryItem(pgLiteRef.current, {
+        await warehouse.logItem(pgLiteRef.current, {
           qrData: decodedText,
           category: inferred.category,
           zoneId: targetZone.id,
@@ -248,7 +270,7 @@ export function ZeroTapWarehouse({
 
     try {
       // Fetch unsynced items
-      const unsynced = await getUnsyncedItems(pgLiteRef.current);
+      const unsynced = await warehouse.getUnsynced(pgLiteRef.current);
 
       if (unsynced.length === 0) {
         setPendingCount(0);
@@ -259,7 +281,7 @@ export function ZeroTapWarehouse({
       await onSync(unsynced);
 
       // Mark synced
-      await markItemsSynced(
+      await warehouse.markSynced(
         pgLiteRef.current,
         unsynced.map((i) => i.qrData)
       );
@@ -325,7 +347,7 @@ export function ZeroTapWarehouse({
 
     // Re-log with new action
     if (pgLiteRef.current) {
-      await logInventoryItem(pgLiteRef.current, {
+      await warehouse.logItem(pgLiteRef.current, {
         qrData: lastScan.qrData,
         category: inferCategoryFromQR(lastScan.qrData).category,
         zoneId: activeZone.id,

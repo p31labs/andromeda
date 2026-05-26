@@ -1,11 +1,47 @@
 {
-  "name": "p31_andromeda",
+  "name": "p31-andromeda",
   "version": "1.0.0",
   "private": true,
-  "scripts": {
-    "build": "pnpm -r run build",
-    "dev": "pnpm -r run dev --parallel",
-    "test": "pnpm -r run test"
+  "type": "module",
+  "description": "P31 Labs monorepo — software, research tooling, and infrastructure",
+  "license": "MIT",
+  "packageManager": "pnpm@10.32.1",
+  "engines": {
+    "node": ">=20.0.0"
   },
-  "dependencies": {}
+  "scripts": {
+    "install:all": "pnpm install",
+    "build": "pnpm --dir 04_SOFTWARE run build",
+    "test": "pnpm --dir 04_SOFTWARE run test",
+    "cf:verify": "node scripts/verify-cloudflare-token.mjs",
+    "lockfile:check": "pnpm install --frozen-lockfile && pnpm install --frozen-lockfile --dir 04_SOFTWARE",
+    "verify:stack-links": "node 04_SOFTWARE/scripts/verify-stack-links.mjs",
+    "verify:ci-local:static": "pnpm run lockfile:check && pnpm run quality",
+    "verify:ci-local": "pnpm run verify:ci-local:static && pnpm run verify:stack-links",
+    "build:phosphorus31": "pnpm -C phosphorus31.org/planetary-planet run build",
+    "ship:pr": "node scripts/ship-pr.mjs",
+    "gh:pr:automerge": "node scripts/gh-pr-automerge.mjs",
+    "pr": "node scripts/pr.mjs",
+    "fix:gh": "node scripts/gh-setup-git.mjs",
+    "git:hooks": "node scripts/git-hooks-config.mjs",
+    "git:autopush": "node scripts/git-autopush.mjs",
+    "git:autopush:on": "node scripts/git-autopush.mjs on",
+    "git:autopush:off": "node scripts/git-autopush.mjs off",
+    "git:autopush:status": "node scripts/git-autopush.mjs status",
+    "prepush:check": "node scripts/git-scrub-bad-gh-credential.mjs",
+    "verify:ground-truth": "node 04_SOFTWARE/p31ca/scripts/verify-ground-truth.mjs",
+    "verify:monetary": "node scripts/verify-monetary-surface.mjs",
+    "polish": "npm run quality && npm run hub:ci --prefix 04_SOFTWARE/p31ca && npm run security:check --prefix 04_SOFTWARE/p31ca"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@vitest/coverage-v8": "^4.1.7",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6",
+    "vitest": "^4.1.7"
+  },
+  "dependencies": {
+    "jsdom": "^29.1.1"
+  }
 }

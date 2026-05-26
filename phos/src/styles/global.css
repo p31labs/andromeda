@@ -1,0 +1,14 @@
+/**
+ * Global Tailwind CSS entry point.
+ *
+ * This file is processed by the @astrojs/tailwind integration.
+ * applyBaseStyles is disabled in astro.config.mjs, so we must
+ * explicitly import all three Tailwind layers here.
+ *
+ * DO NOT REMOVE this import. Without it, no Tailwind classes
+ * (flex, grid, fixed, bg-black, text-sm, etc.) will exist in
+ * the production build, and the entire UI will collapse.
+ */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

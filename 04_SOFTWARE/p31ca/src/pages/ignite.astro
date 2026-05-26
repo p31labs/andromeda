@@ -1,0 +1,13 @@
+---
+import AppShell from '../layouts/AppShell.astro';
+import DeltaRunwayIgnition from '../components/DeltaRunwayIgnition';
+---
+
+<AppShell
+  title="Delta Runway Ignition"
+  description="The live cryptographic onboarding ceremony for the P31 Delta. The Spoon Dial directs the ritual."
+  routeName="ignite"
+  suppressEbc={true}
+>
+  <DeltaRunwayIgnition client:load />
+</AppShell>

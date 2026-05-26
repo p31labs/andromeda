@@ -5,7 +5,7 @@
  * Success: Guardian oversight dashboard monitors and protects across all phases
  */
 
-import type { PHOSMasterRuntime, ConvergenceReport, IntegrationCheck } from '../master';
+import type { PHOSMasterRuntime, ConvergenceReport, IntegrationCheck } from '../master/index.ts';
 
 export interface Week7ConvergenceInput {
   enableGuardian?: boolean;

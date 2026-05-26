@@ -4,6 +4,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useDatabase } from '../db/PGLiteProvider';
 import { useSpoons } from './SpoonShell';
+import { useAutoSave } from '../engine/useAutoSave';
 import type { 
   Player, 
   TrainingStation, 
@@ -43,6 +44,8 @@ export function TrainingHub({ franchiseId }: TrainingHubProps) {
   const [activeGame, setActiveGame] = useState(false);
   const [lastResult, setLastResult] = useState<MinigameResult | null>(null);
   const [message, setMessage] = useState('');
+  const [resolvedFranchiseId, setResolvedFranchiseId] = useState<string | undefined>(franchiseId);
+  const { triggerSync } = useAutoSave(resolvedFranchiseId);
 
   // Load players and facilities
   useEffect(() => {
@@ -59,6 +62,7 @@ export function TrainingHub({ franchiseId }: TrainingHubProps) {
           );
           franchiseIdResolved = result.rows[0]?.id;
         }
+        if (franchiseIdResolved) setResolvedFranchiseId(franchiseIdResolved);
         
         if (!franchiseIdResolved) {
           setLoading(false);
@@ -213,6 +217,8 @@ export function TrainingHub({ franchiseId }: TrainingHubProps) {
         ? `+${xpEntries[0][1]} XP ${ATTRIBUTE_DISPLAY_NAMES[xpEntries[0][0] as Attribute]}`
         : 'Training complete';
       setMessage(`${xpMsg} (${result.score}/100 score)`);
+
+      triggerSync();
       
       setTimeout(() => setMessage(''), 3000);
     } catch (err) {

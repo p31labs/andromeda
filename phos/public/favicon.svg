@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <linearGradient id="phos-glow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#39ff14;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00e5ff;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <circle cx="50" cy="50" r="45" fill="none" stroke="url(#phos-glow)" stroke-width="3" />
+  <circle cx="50" cy="50" r="8" fill="#39ff14" opacity="0.9" />
+  <line x1="50" y1="15" x2="50" y2="35" stroke="url(#phos-glow)" stroke-width="2" opacity="0.6" />
+  <line x1="50" y1="65" x2="50" y2="85" stroke="url(#phos-glow)" stroke-width="2" opacity="0.6" />
+  <line x1="15" y1="50" x2="35" y2="50" stroke="url(#phos-glow)" stroke-width="2" opacity="0.6" />
+  <line x1="65" y1="50" x2="85" y2="50" stroke="url(#phos-glow)" stroke-width="2" opacity="0.6" />
+</svg>

@@ -481,6 +481,7 @@ export function setStarfieldRoute(route: RouteId): void {
   state.navCount += 1;
   state.route = route;
   const cfg = ROUTE_CAM[route];
+  if (!cfg) return; // unknown route — keep current params
   state.camTarget   = cfg.z;
   state.hueTarget   = cfg.hue;
   state.countTarget = cfg.count;

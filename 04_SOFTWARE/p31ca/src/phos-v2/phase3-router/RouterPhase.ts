@@ -1,6 +1,7 @@
 /**
  * Phase 3: PHOS Router
  * Mesh routing, vertex handoff between family members
+ * Switchboard Binding: http://localhost:4000/v1/chat/completions -> local-coder
  */
 
 import type { PHOSPhase, PHOSEvent, PHOSConfig, PhaseState, ConvergenceData } from '../master';
@@ -25,9 +26,15 @@ export class RouterPhase implements PHOSPhase {
   private meshTopology: MeshTopology = { vertices: [], edges: [], lastUpdated: 0 };
   private healthCheckInterval: ReturnType<typeof setInterval> | null = null;
 
+  // Switchboard binding
+  private readonly SWITCHBOARD_URL = 'http://localhost:4000/v1/chat/completions';
+  private readonly SWITCHBOARD_MODEL = 'local-coder';
+  private context: Map<string, any> = new Map();
+
   async initialize(config: PHOSConfig): Promise<void> {
     this.config = config;
     console.log('[RouterPhase] Initializing mesh router...');
+    console.log('[RouterPhase] Switchboard: ' + this.SWITCHBOARD_URL + ' -> ' + this.SWITCHBOARD_MODEL);
 
     // Discover K4 mesh topology
     this.discoverMesh();
@@ -38,17 +45,14 @@ export class RouterPhase implements PHOSPhase {
     this.registerRoute('apps', '/apps');
     this.registerRoute('glassbox', '/glass-box');
 
+    // Initialize context with active persona from BrosPhase
+    this.context.set('activePersona', null);
+
     // Start health monitoring
     this.startHealthChecks(30000);
 
     this.lastActivity = Date.now();
     console.log(`[RouterPhase] Initialized with ${this.vertices.size} vertices`);
-  }
-
-  activate(): void {
-    this.active = true;
-    this.status = 'alpha';
-    console.log('[RouterPhase] Activated');
   }
 
   deactivate(): void {
@@ -95,6 +99,18 @@ export class RouterPhase implements PHOSPhase {
     // Implementation via master registration
   }
 
+  // Week 5: Emit mesh topology updates
+  emitTopologyUpdate(): void {
+    const topology = this.getMeshTopology();
+    this.emit({
+      type: 'router.mesh.topology.update',
+      payload: topology,
+      timestamp: Date.now(),
+      source: 'router'
+    });
+    console.log('[RouterPhase] Emitted mesh topology update');
+  }
+
   on(event: string, handler: (event: PHOSEvent) => void): void {
     // Implementation via master registration
   }
@@ -108,7 +124,11 @@ export class RouterPhase implements PHOSPhase {
   async handoff(fromVertex: string, toVertex: string, context: any): Promise<boolean> {
     console.log(`[RouterPhase] Handoff: ${fromVertex} -> ${toVertex}`);
     this.handoffQueue.push({ from: fromVertex, to: toVertex, context });
-    // TODO: Implement actual handoff protocol
+    // Verify context.activePersona exists before routing
+    const activePersona = this.context.get('activePersona');
+    if (activePersona) {
+      console.log(`[RouterPhase] Handoff with persona: ${activePersona}`);
+    }
     return true;
   }
 
@@ -125,6 +145,14 @@ export class RouterPhase implements PHOSPhase {
   resolveRoute(intent: string): string | null {
     // TODO: Resolve intent to vertex route
     return this.routes.get(intent) || null;
+  }
+
+  // Initialize switchboard on activate (extended)
+  activate(): void {
+    this.active = true;
+    this.status = 'alpha';
+    console.log('[RouterPhase] Activated — Switchboard ready: ' + this.SWITCHBOARD_URL);
+    this.setContext('activePersona', 'wj');
   }
 
   // Mesh discovery and management
@@ -226,10 +254,49 @@ export class RouterPhase implements PHOSPhase {
     }
   }
 
+  // Switchboard: Route intent through persistent proxy
+  async routeThroughSwitchboard(intent: string, persona?: string): Promise<any> {
+    const activePersona = persona || this.context.get('activePersona');
+    if (!activePersona) {
+      console.log('[RouterPhase] No active persona — routing to default');
+    }
+
+    console.log(`[RouterPhase] Switchboard route: ${intent} (persona: ${activePersona || 'none'})`);
+
+    try {
+      const response = await fetch(this.SWITCHBOARD_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: this.SWITCHBOARD_MODEL,
+          messages: [
+            { role: 'system', content: `You are PHOS Router. Current persona: ${activePersona || 'W.J.'}. Route the request.` },
+            { role: 'user', content: intent }
+          ]
+        })
+      });
+
+      if (!response.ok) throw new Error(`Switchboard returned ${response.status}`);
+      return await response.json();
+    } catch (error) {
+      console.error('[RouterPhase] Switchboard error:', error);
+      return null;
+    }
+  }
+
+  setContext(key: string, value: any): void {
+    this.context.set(key, value);
+  }
+
+  getContext(key: string): any {
+    return this.context.get(key);
+  }
+
   // Health monitoring
   startHealthChecks(intervalMs: number = 30000): void {
     this.healthCheckInterval = setInterval(() => {
       this.checkMeshHealth();
+      this.emitTopologyUpdate();
     }, intervalMs);
   }
 

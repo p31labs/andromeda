@@ -293,7 +293,14 @@ export class PHOSMasterRuntime {
     }
     return [...this.eventHistory];
   }
-  
+
+  /**
+   * Get a phase by ID
+   */
+  getPhase(phaseId: string): PHOSPhase | undefined {
+    return this.phases.get(phaseId);
+  }
+
   /**
    * Get all phase states
    */
@@ -352,6 +359,16 @@ export interface ConvergenceReport {
   }>;
   integrations: IntegrationCheck[];
   blockers: string[];
+  summary?: string;
+  crdtSyncInterval?: number;
+  topologyRefreshMs?: number;
+  majorDemoReady?: boolean;
+  mockTopology?: { vertices: unknown[]; edges: unknown[] };
+  topologyRefreshInterval?: number;
+  predictionModel?: string;
+  contextWindow?: number;
+  guardianLevel?: string;
+  gaReady?: boolean;
 }
 
 export interface IntegrationCheck {

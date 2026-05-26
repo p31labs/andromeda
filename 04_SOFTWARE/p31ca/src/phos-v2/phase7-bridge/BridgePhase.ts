@@ -26,7 +26,25 @@ export class BridgePhase implements PHOSPhase {
     this.config = config;
     console.log('[BridgePhase] Initializing cross-platform bridge...');
     this.detectPlatform();
+    this.setupPushIntegration();
     this.lastActivity = Date.now();
+  }
+
+  // Week 8: Push notification integration
+  private setupPushIntegration(): void {
+    this.on('notification.push', (event: PHOSEvent) => {
+      this.handlePushNotification(event.payload);
+    });
+  }
+
+  private handlePushNotification(payload: { title: string; body: string; data?: any }): void {
+    console.log(`[BridgePhase] Push notification: ${payload.title}`);
+    this.requestPushPermission().then(granted => {
+      if (granted) {
+        // TODO: Show actual push notification
+        console.log('[BridgePhase] Would show push notification now');
+      }
+    });
   }
 
   activate(): void {
@@ -83,6 +101,11 @@ export class BridgePhase implements PHOSPhase {
 
   // Bridge-specific methods
   private detectPlatform(): void {
+    if (typeof window === 'undefined') {
+      this.currentPlatform = 'web';
+      console.log('[BridgePhase] Platform detected: web (Node.js)');
+      return;
+    }
     const userAgent = navigator.userAgent.toLowerCase();
     if (/iphone|ipad|ipod/.test(userAgent)) {
       this.currentPlatform = 'ios';

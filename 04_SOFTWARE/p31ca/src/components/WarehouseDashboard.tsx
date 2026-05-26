@@ -5,8 +5,11 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { getWarehouseDB, getZoneSummary, getRecentActivity } from '../utils/pglite-warehouse';
+// PGlite is loaded dynamically to avoid WASM resolution at build time
 import type { Zone } from './ZeroTapWarehouse';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type PGliteDb = any;
 
 interface ZoneSummary {
   id: number;
@@ -35,6 +38,7 @@ export function WarehouseDashboard(): React.ReactElement {
 
   const loadDashboard = async () => {
     try {
+      const { getWarehouseDB, getZoneSummary, getRecentActivity } = await import('../utils/pglite-warehouse');
       const db = await getWarehouseDB();
 
       // Load zone summaries

@@ -1,0 +1,32 @@
+{
+  "name": "phos",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "PHOS — Phosphorus Human Operating Surface. Central UI character and routing mesh for P31 Labs.",
+  "scripts": {
+    "dev": "astro dev --port 4321",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "cf:build": "wrangler build",
+    "cf:deploy": "wrangler deploy",
+    "cf:dev": "wrangler dev"
+  },
+  "dependencies": {
+    "@astrojs/react": "^4.0.0",
+    "@astrojs/tailwind": "^6.0.0",
+    "@electric-sql/pglite": "^0.4.6",
+    "astro": "^5.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "tailwindcss": "^3.4.0"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250109.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "typescript": "^5.7.0",
+    "wrangler": "^3.99.0"
+  }
+}

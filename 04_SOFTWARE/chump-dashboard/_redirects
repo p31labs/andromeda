@@ -1,0 +1,6 @@
+# CHUMP Dashboard - chump.p31ca.org
+# Add custom domain in Cloudflare Dashboard:
+# Pages > chump-dashboard > Custom domains > Add: chump.p31ca.org
+
+# Root serves the dashboard
+/  /index.html  200

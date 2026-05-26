@@ -2,8 +2,13 @@
   "extends": "astro/tsconfigs/strict",
   "compilerOptions": {
     "jsx": "react-jsx",
-    "jsxImportSource": "@astrojs/react"
+    "jsxImportSource": "@astrojs/react",
+    "paths": {
+      "ui-facets": ["../../packages/ui-facets/src/index.ts"],
+      "ui-facets/*": ["../../packages/ui-facets/src/*"],
+      "@/shared-components": ["../../shared-components/onboarding"]
+    }
   },
   "include": [".astro/types.d.ts", "**/*"],
-  "exclude": ["dist", "workers"]
+  "exclude": ["dist", "workers", "src/App.tsx"]
 }

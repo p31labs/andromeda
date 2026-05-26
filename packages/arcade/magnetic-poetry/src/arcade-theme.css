@@ -1,0 +1,262 @@
+/* P31 Magnetic Poetry — Arcade Theme v2.0.0 (Canonical)
+ * Aligned with p31-universal-canon.json
+ * Gray Rock compliant — no self-starting motion
+ */
+
+/* Import canonical arcade tokens */
+@import '../../../p31-arcade-theme/arcade-theme.css';
+
+/* ============================================
+   MAGNETIC POETRY-SPECIFIC EXTENSIONS
+   ============================================ */
+
+/* Word tile colors (canonical palette) */
+:root {
+  --poetry-noun: var(--p31-coral);
+  --poetry-verb: var(--p31-teal);
+  --poetry-adj: var(--p31-amber);
+  --poetry-adv: var(--p31-lavender);
+  --poetry-prep: var(--p31-muted);
+  --poetry-article: var(--p31-cyan);
+}
+
+/* Override base */
+body {
+  background: var(--p31-void);
+  font-family: var(--p31-font-sans);
+}
+
+/* Word canvas (the refrigerator) */
+.poetry-canvas {
+  background:
+    radial-gradient(circle at 20% 20%, rgba(204, 98, 71, 0.05) 0%, transparent 40%),
+    radial-gradient(circle at 80% 80%, rgba(93, 202, 165, 0.05) 0%, transparent 40%),
+    var(--p31-surface);
+  border: 2px solid var(--p31-glass-border);
+  border-radius: var(--p31-radius-lg);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Magnetic word tile */
+.word-tile {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--p31-space-2) var(--p31-space-3);
+  background: var(--p31-paper);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: var(--p31-radius-sm);
+  font-family: var(--p31-font-sans);
+  font-size: var(--p31-text-base);
+  color: var(--p31-ink);
+  cursor: grab;
+  user-select: none;
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.15),
+    0 1px 2px rgba(0, 0, 0, 0.1);
+  transition: transform var(--p31-motion-fast) var(--p31-ease-standard),
+              box-shadow var(--p31-motion-fast) var(--p31-ease-standard);
+}
+
+.word-tile:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 4px 8px rgba(0, 0, 0, 0.2),
+    0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.word-tile.dragging {
+  cursor: grabbing;
+  transform: rotate(3deg) scale(1.05);
+  box-shadow:
+    0 8px 16px rgba(0, 0, 0, 0.25),
+    0 4px 8px rgba(0, 0, 0, 0.2);
+  z-index: 100;
+}
+
+.word-tile.placed {
+  position: absolute;
+  transform: rotate(var(--tile-rotation, 0deg));
+}
+
+/* Part-of-speech indicators */
+.word-tile.noun {
+  border-top: 3px solid var(--poetry-noun);
+}
+
+.word-tile.verb {
+  border-top: 3px solid var(--poetry-verb);
+}
+
+.word-tile.adjective {
+  border-top: 3px solid var(--poetry-adj);
+}
+
+.word-tile.adverb {
+  border-top: 3px solid var(--poetry-adv);
+}
+
+.word-tile.preposition {
+  border-top: 3px solid var(--poetry-prep);
+}
+
+.word-tile.article {
+  border-top: 3px solid var(--poetry-article);
+}
+
+/* Word palette (source tray) */
+.word-palette {
+  background: var(--p31-glass-surface);
+  border-top: 1px solid var(--p31-glass-border);
+  padding: var(--p31-space-4);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--p31-space-2);
+  align-content: flex-start;
+  overflow-y: auto;
+}
+
+/* Category tabs */
+.category-tabs {
+  display: flex;
+  gap: var(--p31-space-1);
+  background: var(--p31-glass-surface);
+  border: 1px solid var(--p31-glass-border);
+  border-radius: var(--p31-radius-md);
+  padding: var(--p31-space-1);
+}
+
+.category-tab {
+  padding: var(--p31-space-2) var(--p31-space-3);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--p31-radius-sm);
+  font-family: var(--p31-font-sans);
+  font-size: var(--p31-text-xs);
+  color: var(--p31-muted);
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all var(--p31-motion-fast) var(--p31-ease-standard);
+}
+
+.category-tab:hover {
+  color: var(--p31-cloud);
+  border-color: var(--p31-glass-border);
+}
+
+.category-tab.active {
+  background: var(--p31-coral);
+  border-color: var(--p31-coral);
+  color: var(--p31-cloud);
+}
+
+/* Poem display area */
+.poem-display {
+  min-height: 200px;
+  padding: var(--p31-space-4);
+  font-family: var(--p31-font-sans);
+  font-size: var(--p31-text-lg);
+  line-height: 1.8;
+  color: var(--p31-cloud);
+}
+
+/* Synonym suggestion popup */
+.synonym-popup {
+  position: absolute;
+  background: var(--p31-surface);
+  border: 1px solid var(--p31-glass-border);
+  border-radius: var(--p31-radius-md);
+  padding: var(--p31-space-2);
+  box-shadow: var(--p31-shadow-lg);
+  z-index: 200;
+  min-width: 120px;
+}
+
+.synonym-option {
+  padding: var(--p31-space-2) var(--p31-space-3);
+  border-radius: var(--p31-radius-sm);
+  font-size: var(--p31-text-sm);
+  color: var(--p31-cloud);
+  cursor: pointer;
+  transition: background var(--p31-motion-fast) var(--p31-ease-standard);
+}
+
+.synonym-option:hover {
+  background: var(--p31-surface2);
+}
+
+/* Action bar */
+.poetry-actions {
+  display: flex;
+  gap: var(--p31-space-3);
+  padding: var(--p31-space-3) var(--p31-space-4);
+  background: var(--p31-glass-surface);
+  border-top: 1px solid var(--p31-glass-border);
+}
+
+.action-btn {
+  padding: var(--p31-space-2) var(--p31-space-4);
+  font-size: var(--p31-text-sm);
+}
+
+.action-btn.clear {
+  background: var(--p31-coral);
+  border-color: var(--p31-coral);
+  color: var(--p31-cloud);
+}
+
+.action-btn.share {
+  background: var(--p31-teal);
+  border-color: var(--p31-teal);
+  color: var(--p31-void);
+}
+
+/* Word count / stats */
+.word-stats {
+  display: flex;
+  gap: var(--p31-space-4);
+  font-family: var(--p31-font-mono);
+  font-size: var(--p31-text-xs);
+  color: var(--p31-muted);
+}
+
+.stat-count {
+  color: var(--p31-cloud);
+  font-weight: 600;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .word-tile {
+    padding: var(--p31-space-1) var(--p31-space-2);
+    font-size: var(--p31-text-sm);
+  }
+
+  .word-palette {
+    padding: var(--p31-space-2);
+  }
+
+  .category-tabs {
+    flex-wrap: wrap;
+  }
+
+  .poem-display {
+    font-size: var(--p31-text-base);
+    padding: var(--p31-space-3);
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .word-tile {
+    border: 2px solid var(--p31-ink);
+  }
+
+  .word-tile.noun {
+    border-color: var(--poetry-noun);
+  }
+
+  .poetry-canvas {
+    border-width: 3px;
+  }
+}

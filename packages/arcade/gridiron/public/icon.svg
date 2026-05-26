@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- P31 Icon: Phosphorus-31 Mesh Network -->
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0a0a0f"/>
+      <stop offset="100%" style="stop-color:#1a1a2e"/>
+    </linearGradient>
+    <linearGradient id="glowGrad" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%" style="stop-color:#06b6d4"/>
+      <stop offset="100%" style="stop-color:#a855f7"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Background circle -->
+  <circle cx="256" cy="256" r="240" fill="url(#bgGrad)"/>
+  <circle cx="256" cy="256" r="230" fill="none" stroke="#06b6d4" stroke-width="2" opacity="0.3"/>
+  
+  <!-- K4 Mesh: 4 nodes forming tetrahedron projection -->
+  <!-- Top node -->
+  <circle cx="256" cy="120" r="20" fill="url(#glowGrad)"/>
+  <circle cx="256" cy="120" r="20" fill="none" stroke="#fff" stroke-width="2" opacity="0.5"/>
+  
+  <!-- Bottom left -->
+  <circle cx="136" cy="340" r="20" fill="url(#glowGrad)"/>
+  <circle cx="136" cy="340" r="20" fill="none" stroke="#fff" stroke-width="2" opacity="0.5"/>
+  
+  <!-- Bottom right -->
+  <circle cx="376" cy="340" r="20" fill="url(#glowGrad)"/>
+  <circle cx="376" cy="340" r="20" fill="none" stroke="#fff" stroke-width="2" opacity="0.5"/>
+  
+  <!-- Center -->
+  <circle cx="256" cy="240" r="25" fill="#f59e0b"/>
+  <circle cx="256" cy="240" r="25" fill="none" stroke="#fff" stroke-width="3" opacity="0.6"/>
+  
+  <!-- Connections (edges of K4) -->
+  <line x1="256" y1="120" x2="256" y2="240" stroke="#06b6d4" stroke-width="3" opacity="0.8"/>
+  <line x1="256" y1="120" x2="136" y2="340" stroke="#06b6d4" stroke-width="3" opacity="0.6"/>
+  <line x1="256" y1="120" x2="376" y2="340" stroke="#06b6d4" stroke-width="3" opacity="0.6"/>
+  <line x1="256" y1="240" x2="136" y2="340" stroke="#a855f7" stroke-width="3" opacity="0.8"/>
+  <line x1="256" y1="240" x2="376" y2="340" stroke="#a855f7" stroke-width="3" opacity="0.8"/>
+  <line x1="136" y1="340" x2="376" y2="340" stroke="#a855f7" stroke-width="2" opacity="0.5"/>
+  
+  <!-- P31 text -->
+  <text x="256" y="420" font-family="system-ui, -apple-system, sans-serif" font-size="48" font-weight="bold" text-anchor="middle" fill="#fafafa">P31</text>
+  <text x="256" y="445" font-family="system-ui, -apple-systxm, sans-serif" font-size="14" text-anchor="middle" fill="#a1a1aa">mesh</text>
+  
+  <!-- Outer glow ring -->
+  <circle cx="256" cy="256" r="240" fill="none" stroke="url(#glowGrad)" stroke-width="4" opacity="0.4"/>
+</svg>

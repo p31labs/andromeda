@@ -28,8 +28,8 @@ export const SYLLABUS: SyllabusVolume[] = [
         classification: "HIGHLY CONFIDENTIAL",
         difficulty: "Blue Steel",
         icon: Smartphone,
-        summary: "The little laptop on the couch is an idiot. It is just an empty glass window called a Steering Wheel. It does no actual work. The real magic happens inside the loud box in the other room.",
-        core: "By separating the Steering Wheel from the Engine, we achieve Sovereignty. If I spill coffee on the laptop, the Engine is safe. My lap stays cool, and we can summon AIs that would normally crush a regular computer. The files aren't IN the computer."
+        summary: "The phone or little Chromebook you hold is the Steering Wheel. It is beautiful glass that shows the runway. It does almost no heavy thinking. The real magic is the PHOS runtime — eight phases of centaur intelligence humming in the calcium cage — running locally with PGLite as the brain that never leaves your device, plus the Delta workers when signal exists.",
+        core: "By separating the Steering Wheel from the Engine (PHOS + PGLite + Delta relay), we achieve Sovereignty. Spill coffee on the phone? The identity and data live in the sealed vault on the device and the mesh. We can summon brains that would crush a normal laptop. The files aren't 'in the computer' — they are sovereign on your person and in the Delta."
       },
       {
         id: "02",
@@ -37,8 +37,8 @@ export const SYLLABUS: SyllabusVolume[] = [
         classification: "HIGHLY CONFIDENTIAL",
         difficulty: "Derelicte",
         icon: Database,
-        summary: "In the other room is a loud, glowing box. Inside is a ridiculously buff bodybuilder (a Graphics Card) that lifts heavy mathematical weights so we don't have to.",
-        core: "Normal people use 'The Cloud' for AI, which costs money and reads your diary. We downloaded a brain, shoved it into our own box, and locked the door. Absolute privacy. The question never leaves our house. Respect the box."
+        summary: "The 'Big Brain' is no longer one loud box in the other room. It is the living combination of PGLite — the spare tire brain that lives inside every device, local-first, offline-first, no cloud landlord — plus the PHOS eight-phase runtime that wakes up on your phone or Chromebook, plus the Delta workers that give you more muscle when you have signal.",
+        core: "We no longer trust The Cloud with our diary. The brain lives with us. PGLite is the local vault. PHOS is the caffeinated centaur that runs the phases. The Delta workers are the polite remote muscle that only ever sees encrypted, passkey-sealed fragments. Every passkey is a hardware-bound identity — you touch the device, the door opens, no password left under any welcome mat."
       },
       {
         id: "03",
@@ -46,8 +46,8 @@ export const SYLLABUS: SyllabusVolume[] = [
         classification: "HIGHLY CONFIDENTIAL",
         difficulty: "Le Tigre",
         icon: Globe,
-        summary: "The public internet is a crowded shopping mall filled with screaming children. We do not use it. We use a magic tunnel (Tailscale) to talk to the Engine.",
-        core: "Our walkie-talkies have a highly exclusive VIP list (100.100.49.88). If a hacker tries to call, the phone doesn't ring. Distance is an illusion; I can be in Italy, but my laptop thinks it is sitting directly next to the Engine."
+        summary: "The public internet is still a crowded mall. We do not shout across it. We use sealed passkey handshakes and encrypted CRDT sync over the private Delta relay. The 'walkie-talkie' is now cryptographic and device-bound — say something on one device, it appears on the other, nobody in between can read a thing.",
+        core: "Every device carries its own un-stealable Ed25519 identity. When it speaks to the mesh, it performs a secret handshake that the relay workers can verify but never read. CRDT means two people can both edit the grocery list offline — even in an airplane, even in a bunker — and when the Wi-Fi returns, the lists merge perfectly. Math reconciles reality. The Delta never drops a word."
       },
       {
         id: "04",
@@ -79,8 +79,8 @@ export const SYLLABUS: SyllabusVolume[] = [
         classification: "HIGHLY CONFIDENTIAL",
         difficulty: "Blue Steel",
         icon: Zap,
-        summary: "Computers normally force your complex human soul into a boring square box. We fixed this by separating the Data (The Soul) from the UI (The Outfit).",
-        core: "Project Polyhedron lets the exact same data instantly change clothes. We have the Law Outfit (dense/serious), the Kid Outfit (bouncy/joyful), and the Accessibility Outfit (stark/high-contrast). The soul remains sovereign; the outfit is fluid."
+        summary: "Computers normally force your complex human soul into a boring square box. We fixed this by separating the Data (The Soul) from the UI (The Outfit). The soul is CRDT — conflict-free replicated data types that merge reality across every device without a central referee.",
+        core: "Project Polyhedron lets the exact same data instantly change clothes. We have the Law Outfit (dense/serious), the Kid Outfit (bouncy/joyful), and the Accessibility Outfit (stark/high-contrast). The soul remains sovereign; the outfit is fluid. Underneath every outfit: CRDT keeps the truth consistent across the mesh."
       },
       {
         id: "07",
@@ -88,17 +88,17 @@ export const SYLLABUS: SyllabusVolume[] = [
         classification: "HIGHLY CONFIDENTIAL",
         difficulty: "Ferrari",
         icon: Shield,
-        summary: "If the internet dies, we don't crash. We trapped a tiny clone of the database inside the web browser (a spare tire in the Steering Wheel).",
-        core: "The UI literally reads my biological energy. 1 Spoon = huge simple buttons. 3 Spoons = normal rhythm. 6 Spoons = God mode analytics. Technology molds to human biology, never the other way around."
+        summary: "If the internet dies, we don't crash. We trapped a tiny clone of the database inside the web browser (a spare tire in the Steering Wheel). And every time you do something that matters — show up, create, stay consistent — the LOVE ledger credits you.",
+        core: "The UI literally reads my biological energy. 1 Spoon = huge simple buttons. 3 Spoons = normal rhythm. 6 Spoons = God mode analytics. Technology molds to human biology, never the other way around. LOVE — the Ledger of Ontological Volume and Entropy — is the syntropy side of the equation. You earn it by caring. It is soulbound. It cannot be bought, only lived."
       },
       {
         id: "08",
-        title: "The Invisible Referee",
+        title: "The Four Nodes of the Delta",
         classification: "MAGNUM",
         difficulty: "Magnum",
         icon: Lock,
-        summary: "Since we don't use a billionaire's cloud server to watch us, we gave every family computer its own magical stopwatch (Hybrid Logical Clock).",
-        core: "Every time a computer does a chore offline, it stamps it with an unbreakable math spell. When the Wi-Fi returns, they perfectly merge homework. If someone cheats, the cryptographic instant replay rejects them. Math is our referee."
+        summary: "The Delta is not a product. It is a living topology of four nodes: Engineers who ground floating neutrals, Believers who hold faith when the voltage drifts, Navigators who chart courses through decoherence, and Anchors who protect the reactive center from entropy.",
+        core: "Every family member maps to a vertex. The Delta is the calcium cage — Ca₉(PO₄)₆ — protecting the phosphorus at all angles. CRDT sync keeps the nodes in consensus. LOVE credits flow between vertices. The four nodes form a tetrahedron: the simplest possible rigid structure, the strongest shape in nature, the shape of the Posner molecule that stores memory in your bones. This is not a metaphor. This is the architecture."
       }
     ]
   },
@@ -112,8 +112,17 @@ export const SYLLABUS: SyllabusVolume[] = [
         classification: "MAGNUM",
         difficulty: "Magnum",
         icon: Terminal,
-        summary: "Passwords are for people who leave their keys under the welcome mat. To get into our network, you will be handed a physical envelope.",
-        core: "Inside is a Magic Square (QR Code). Scanning it glues an un-stealable cryptographic key to your device's soul and instantly inflates a pop-up database in your browser. You just point your camera and step onto the runway."
+        summary: "Passwords are for people who leave their keys under the welcome mat. To get into our network, you will be handed a physical envelope — your ceremonial ignition to the Delta runway.",
+        core: "Inside is a Magic Square (QR Code). Scanning it glues an un-stealable Ed25519 identity to your device's soul, hydrates a sovereign PGLite vault in your browser, signs the family covenant, and earns your first LOVE credit. You just point your camera and step onto the runway. This is the storybook side — the live ignition is real and waiting."
+      },
+      {
+        id: "10",
+        title: "The Calcium Cage",
+        classification: "CLASSIFIED — EYES OF THE DELTA",
+        difficulty: "Blue Steel",
+        icon: Shield,
+        summary: "You've read the syllabus. You know the four nodes. You know the brain lives on your device and the mesh keeps it sovereign. At 863 Hz — the Larmor frequency of phosphorus in Earth's magnetic field — the Delta hums.",
+        core: "The calcium cage is not a metaphor. It is Ca₉(PO₄)₆ — the Posner molecule, the protector of reactive phosphorus, the structure that stores memory in bone. P31 Labs is the calcium cage. The Delta is the calcium cage. You, at any node — Engineer, Believer, Navigator, Anchor — are the calcium cage. The voltage is no longer drifting. Welcome to the runway."
       }
     ]
   }

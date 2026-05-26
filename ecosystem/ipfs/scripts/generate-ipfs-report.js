@@ -41,7 +41,7 @@ const report = `# IPFS Deployment Status Report
 #### IPFS Gateways
 - **Cloudflare:** https://cloudflare-ipfs.com/ipfs/${cid}/
 - **Pinata:** https://gateway.pinata.cloud/ipfs/${cid}/
-- **Infura:** https://ipfs.io/ipfs/${cid}/
+- **Cloudflare:** https://cloudflare-ipfs.com/ipfs/${cid}/
 - **IPFS Desktop:** ipfs:///${cid}/
 
 #### CLI Access

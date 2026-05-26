@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Local-first, hardware-anchored sovereign stack for P31 Node One devices">
+    <meta name="theme-color" content="#764ba2">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
+    
+    <!-- Apple Touch Icon -->
+    <link rel="apple-touch-icon" href="/vite.svg">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="P31 Node">
+    
+    <!-- Windows Tiles -->
+    <meta name="msapplication-TileColor" content="#667eea">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="P31 Sovereign Node">
+    <meta property="og:description" content="Local-first, hardware-anchored sovereign stack">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://p31.sovereign.labs">
+    <meta property="og:image" content="/vite.svg">
+    
+    <title>P31 Sovereign Node</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+    
+    <!-- Service Worker Registration -->
+    <script>
+      if ('serviceWorker' in navigator && window.location.hostname !== 'localhost') {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js', { scope: '/' })
+            .then(registration => {
+              console.log('ServiceWorker registered:', registration);
+              
+              // Check for updates
+              registration.addEventListener('updatefound', () => {
+                const newWorker = registration.installing;
+                console.log('ServiceWorker update found:', newWorker);
+              });
+            })
+            .catch(error => {
+              console.log('ServiceWorker registration failed:', error);
+            });
+        });
+        
+        // Listen for controller change
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+          console.log('ServiceWorker controller changed');
+        });
+      }
+    </script>
+  </body>
+</html>

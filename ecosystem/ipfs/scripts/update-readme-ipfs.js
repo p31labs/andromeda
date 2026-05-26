@@ -33,7 +33,7 @@ const newIPFSSection = `## 🌐 Decentralized Access
 **Access Methods:**
 - [Cloudflare IPFS Gateway](https://cloudflare-ipfs.com/ipfs/${cid}/)
 - [Pinata IPFS Gateway](https://gateway.pinata.cloud/ipfs/${cid}/)
-- [Infura IPFS Gateway](https://ipfs.io/ipfs/${cid}/)
+- [Cloudflare IPFS Gateway](https://cloudflare-ipfs.com/ipfs/${cid}/)
 
 **IPFS CLI:**
 \`\`\`bash

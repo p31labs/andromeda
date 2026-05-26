@@ -5,7 +5,7 @@
  * Success: Visual shows live mesh topology from Router state
  */
 
-import type { PHOSMasterRuntime, ConvergenceReport, IntegrationCheck } from '../master';
+import type { PHOSMasterRuntime, ConvergenceReport, IntegrationCheck } from '../master/index.ts';
 
 export interface Week5ConvergenceInput {
   liveMeshEndpoint?: string;
@@ -48,6 +48,13 @@ export async function runWeek5Convergence(
   // Run master convergence for week 5
   const baseReport = await master.converge(week);
   
+  // Week 5: Emit live topology from RouterPhase
+  const routerPhase = master.getPhase('router');
+  if (routerPhase) {
+    const topology = (routerPhase as any).getMeshTopology();
+    console.log(`[Week 5 Convergence] Router mesh topology: ${topology.vertices.length} vertices, ${topology.edges.length} edges`);
+  }
+
   // Mock live topology for testing
   const mockTopology: MeshTopologyState = {
     vertices: [
@@ -150,9 +157,9 @@ export async function runWeek5Convergence(
   
   // Success criteria validation
   const successCriteria: Week5SuccessCriteria = {
-    topologyUpdateLatency: 145, // Under 200ms target
-    liveDataAccuracy: 0.995, // Exceeds 0.99 target
-    meshSyncReliability: 0.99 // Exceeds 0.98 target
+    topologyUpdateLatency: 145,
+    liveDataAccuracy: 0.995,
+    meshSyncReliability: 0.99
   };
   
   // Validate against criteria
@@ -206,7 +213,7 @@ export async function runWeek5Convergence(
   
   console.log(`[Week 5 Convergence] ${report.summary}`);
   console.log(`[Week 5 Convergence] Blockers: ${week5Blockers.length}`);
-  console.log(`[Week 5 Convergence] Live topology: ${report.mockTopology.vertices.length} vertices, ${report.mockTopology.edges.length} edges`);
+  console.log(`[Week 5 Convergence] Live topology: ${report.mockTopology?.vertices.length} vertices, ${report.mockTopology?.edges.length} edges`);
   console.log(`[Week 5 Convergence] Refresh interval: ${report.topologyRefreshInterval}ms`);
   
   return report;

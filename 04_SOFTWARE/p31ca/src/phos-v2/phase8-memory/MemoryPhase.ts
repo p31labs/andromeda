@@ -26,7 +26,37 @@ export class MemoryPhase implements PHOSPhase {
     this.config = config;
     console.log('[MemoryPhase] Initializing memory layer...');
     await this.initStorage();
+    this.setupLoveLedgerIntegration();
     this.lastActivity = Date.now();
+  }
+
+  // Week 8: LOVE ledger integration
+  private setupLoveLedgerIntegration(): void {
+    this.on('love.action.completed', (event: PHOSEvent) => {
+      this.recordLoveAction(event.payload);
+    });
+    this.on('love.ledger.query', (event: PHOSEvent) => {
+      this.handleLoveLedgerQuery(event.payload);
+    });
+  }
+
+  private recordLoveAction(payload: { action: string; persona: string; timestamp: number; loveEarned: number }): void {
+    this.logSessionEvent('love_action', payload);
+    console.log(`[MemoryPhase] Recorded LOVE action: ${payload.action} (+${payload.loveEarned} LOVE)`);
+  }
+
+  private handleLoveLedgerQuery(payload: { queryType: string; persona?: string }): void {
+    const history = this.getSessionLog().filter(e => e.event === 'love_action');
+    if (payload.persona) {
+      // Filter by persona if specified
+    }
+    // Emit result back
+    this.emit({
+      type: 'love.ledger.response',
+      payload: { history, query: payload },
+      timestamp: Date.now(),
+      source: 'memory'
+    });
   }
 
   activate(): void {
@@ -87,7 +117,7 @@ export class MemoryPhase implements PHOSPhase {
   // Memory-specific methods
   private async initStorage(): Promise<void> {
     // Check for IndexedDB support
-    if ('indexedDB' in window) {
+    if (typeof window !== 'undefined' && 'indexedDB' in window) {
       this.storageBackend = 'indexeddb';
     }
     console.log(`[MemoryPhase] Storage backend: ${this.storageBackend}`);

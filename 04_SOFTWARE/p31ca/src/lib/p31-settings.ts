@@ -286,7 +286,7 @@ export function getSetting<T>(path: string): T | undefined {
 export function setSetting(path: string, value: unknown): void {
   const settings = getSettings();
   const parts = path.split('.');
-  let current: Record<string, unknown> = settings;
+  let current: Record<string, unknown> = settings as unknown as Record<string, unknown>;
 
   for (let i = 0; i < parts.length - 1; i++) {
     const part = parts[i];
@@ -323,7 +323,7 @@ export function getSettingsHealth() {
 
 // Make available globally for console debugging
 if (typeof window !== 'undefined') {
-  (window as Record<string, unknown>).__p31Settings = {
+  (window as unknown as Record<string, unknown>).__p31Settings = {
     get: getSettings,
     save: saveSettings,
     getPath: getSetting,

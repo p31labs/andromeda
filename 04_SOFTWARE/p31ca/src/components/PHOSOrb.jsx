@@ -136,28 +136,33 @@ function K4Art({ w, h, accent }) {
   );
 }
 
-function OrbitalHub({ onSelect, safe }) {
+function OrbitalHub({ onSelect, safe, currentSpoons }) {
   const [t, setT] = useState(0);
   const raf = useRef(null);
   const [hover, setHover] = useState(null);
 
+  // CWP-VISUAL-1: Bind frameloop to spoon state
+  const frameloop = currentSpoons !== undefined
+    ? (currentSpoons <= 1 ? 'none' : currentSpoons <= 3 ? 'demand' : 'always')
+    : (safe ? 'none' : 'always');
+
   useEffect(() => {
-    if (safe) return;
+    if (frameloop === 'none') return;
     let running = true;
     const loop = () => { if (!running) return; setT(Date.now()); raf.current = requestAnimationFrame(loop); };
     loop();
     return () => { running = false; if (raf.current) cancelAnimationFrame(raf.current); };
-  }, [safe]);
+  }, [frameloop]);
 
   const cx = 240, cy = 220;
   return (
     <div style={{ position: "relative", width: 480, height: 440 }}>
-      <svg width={480} height={440} viewBox="0 0 480 440" style={{ position: "absolute", inset: 0 }}>
+      <svg width={480} height={440} viewBox="0 0 480 440" style={{ position: "absolute", inset: 0, willChange: 'transform' }}>
         {[1, 2, 3].map(r => (
           <circle key={r} cx={cx} cy={cy} r={RING_R[r]} fill="none" stroke={T.glass} strokeWidth={0.5} strokeDasharray="4 6" />
         ))}
       </svg>
-      {!safe && NODES.map(n => {
+      {frameloop !== 'none' && !safe && NODES.map(n => {
         const a = n.angle + t * RING_SPEED[n.ring];
         const x = cx + Math.cos(a) * RING_R[n.ring];
         const y = cy + Math.sin(a) * RING_R[n.ring] * 0.65;
@@ -375,11 +380,41 @@ const VIEWS = [
 export default function PHOSForUS() {
   const [view, setView] = useState("hub");
   const [safe, setSafe] = useState(false);
+  const [currentSpoons, setCurrentSpoons] = useState(6);
+
+  // CWP-VISUAL-1: Poll spoon state
+  useEffect(() => {
+    const interval = setInterval(() => {
+      try {
+        // @ts-ignore — window extension for CWP-VISUAL-1 spoon store polling
+        const store = window.__SPOON_STORE__;
+        if (store?.getState) {
+          setCurrentSpoons(store.getState().currentSpoons || 6);
+        }
+      } catch {
+        // Keep default
+      }
+    }, 500);
+    return () => clearInterval(interval);
+  }, []);
+
+  // CWP-VISUAL-3: CSS paint isolation
+  const canvasWrapperStyle = {
+    willChange: 'transform',
+    position: 'relative',
+    zIndex: 0,
+  };
+
+  const uiOverlayStyle = {
+    willChange: 'transform',
+    position: 'relative',
+    zIndex: 10,
+  };
 
   return (
     <div style={{ background: safe ? "#000" : T.void, color: T.cloud, fontFamily: "'Inter', -apple-system, sans-serif",
       minHeight: "100vh", WebkitFontSmoothing: "antialiased" }}>
-      <nav style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 20px",
+      <nav style={{ willChange: 'transform', display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 20px",
         borderBottom: `1px solid ${T.glass}`, background: safe ? "#0a0a0a" : `${T.surface}cc`, position: "sticky", top: 0, zIndex: 50 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <svg viewBox="0 0 100 100" width={22} height={22} fill="none">
@@ -438,8 +473,8 @@ export default function PHOSForUS() {
         ) : (
           <>
             {view === "hub" && (
-              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "8px 0" }}>
-                <OrbitalHub onSelect={id => {}} safe={safe} />
+              <div style={canvasWrapperStyle}>
+                <OrbitalHub onSelect={id => {}} safe={safe} currentSpoons={currentSpoons} />
                 <div style={{ textAlign: "center", marginTop: 4, maxWidth: 360 }}>
                   <p style={{ fontSize: 13, color: T.muted, lineHeight: 1.6 }}>
                     9 calcium nodes orbit the phosphorus core. Three rings: family, ops, creation.
@@ -458,7 +493,7 @@ export default function PHOSForUS() {
         )}
       </main>
 
-      <footer style={{ position: "fixed", bottom: 0, left: 0, right: 0, padding: "8px 20px",
+      <footer style={{ willChange: 'transform', position: "fixed", bottom: 0, left: 0, right: 0, padding: "8px 20px",
         borderTop: `1px solid ${T.glass}`, background: safe ? "#0a0a0a" : `${T.surface}ee`,
         display: "flex", justifyContent: "center", gap: 16, fontFamily: "'JetBrains Mono', monospace",
         fontSize: 9, color: T.muted, textTransform: "uppercase", letterSpacing: "0.08em", zIndex: 40 }}>

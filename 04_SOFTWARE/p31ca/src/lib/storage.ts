@@ -26,7 +26,7 @@ export async function getLogs(route: string): Promise<Array<{action: string; ts:
     
     // Fetch all log entries
     const entries = await Promise.all(
-      keys.map(key => get(key, logStore))
+      keys.map((key: string) => get(key, logStore))
     );
     
     // Filter out null/undefined entries and sort by timestamp (most recent first)
@@ -49,7 +49,7 @@ export async function clearLogs(route: string): Promise<void> {
     
     // Delete all log entries
     await Promise.all(
-      keys.map(key => del(key, logStore))
+      keys.map((key: string) => del(key, logStore))
     );
     
     // Clear the index

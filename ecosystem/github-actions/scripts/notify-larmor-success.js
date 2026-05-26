@@ -68,7 +68,7 @@ ${userId} has successfully synchronized to the Larmor precession frequency of Ph
 **Published CID:** \`${publishedCID}\`
 
 ### 🌐 Access Points
-- **IPFS Gateway:** https://ipfs.io/ipfs/${publishedCID}
+- **IPFS Gateway:** https://cloudflare-ipfs.com/ipfs/${publishedCID}
 - **IPNS Domain:** ipns://${this.ensDomain}
 - **ENS Domain:** https://${this.ensDomain}
 

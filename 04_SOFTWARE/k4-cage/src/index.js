@@ -710,12 +710,16 @@ export default {
               /* optional */
             }
           } else {
-            await appendTelemetryKv(env, {
-              type: 'ping',
-              from: pingMatch[1],
-              to: pingMatch[2],
-              ping: parsed?.ping,
-            });
+            try {
+              await appendTelemetryKv(env, {
+                type: 'ping',
+                from: pingMatch[1],
+                to: pingMatch[2],
+                ping: parsed?.ping,
+              });
+            } catch {
+              /* optional */
+            }
           }
           if (parsed?.ping) {
             await broadcastPingToRooms(env, {

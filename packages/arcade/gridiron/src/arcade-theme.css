@@ -1,0 +1,307 @@
+/* P31 Gridiron — Arcade Theme v2.0.0 (Canonical)
+ * Aligned with p31-universal-canon.json
+ * Gray Rock compliant — no self-starting motion
+ */
+
+/* Import canonical arcade tokens */
+@import '../../packages/p31-arcade-theme/arcade-theme.css';
+
+/* ============================================
+   GRIDIRON-SPECIFIC EXTENSIONS
+   ============================================ */
+
+/* Football field colors (uses canon greens) */
+:root {
+  --gridiron-field: var(--p31-phosphorus);
+  --gridiron-field-dark: #2d8a5e;
+  --gridiron-yard-line: rgba(255, 255, 255, 0.4);
+  --gridiron-endzone: var(--p31-coral);
+}
+
+/* Field background pattern */
+.gridiron-field {
+  background:
+    repeating-linear-gradient(
+      90deg,
+      var(--gridiron-field) 0px,
+      var(--gridiron-field) 40px,
+      var(--gridiron-field-dark) 40px,
+      var(--gridiron-field-dark) 80px
+    );
+  position: relative;
+}
+
+/* Yard markers */
+.yard-marker {
+  font-family: var(--p31-font-mono);
+  font-size: var(--p31-text-xs);
+  color: var(--p31-cloud);
+  position: absolute;
+  transform: translateX(-50%);
+}
+
+/* Down & distance display */
+.down-distance {
+  font-family: var(--p31-font-mono);
+  font-size: var(--p31-text-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--p31-cloud);
+  background: var(--p31-surface);
+  border: 1px solid var(--p31-glass-border);
+  border-radius: var(--p31-radius-md);
+  padding: var(--p31-space-2) var(--p31-space-3);
+}
+
+.down-distance .down {
+  color: var(--p31-teal);
+  font-weight: 700;
+}
+
+.down-distance .distance {
+  color: var(--p31-coral);
+  font-weight: 700;
+}
+
+.down-distance .redzone {
+  color: var(--p31-coral);
+  animation: redzonePulse 1s ease-in-out infinite;
+}
+
+@keyframes redzonePulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .down-distance .redzone {
+    animation: none;
+    opacity: 1;
+  }
+}
+
+/* Play button grid (large touch targets) */
+.play-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--p31-space-3);
+}
+
+.play-option {
+  min-height: 64px;
+  padding: var(--p31-space-3);
+  background: var(--p31-surface);
+  border: 2px solid var(--p31-glass-border);
+  border-radius: var(--p31-radius-lg);
+  font-family: var(--p31-font-sans);
+  font-size: var(--p31-text-sm);
+  color: var(--p31-cloud);
+  cursor: pointer;
+  transition: all var(--p31-motion-fast) var(--p31-ease-standard);
+}
+
+.play-option:hover {
+  border-color: var(--p31-cyan);
+  background: var(--p31-surface2);
+}
+
+.play-option:focus-visible {
+  outline: var(--p31-focus-ring);
+  outline-offset: var(--p31-focus-offset);
+}
+
+.play-option.run {
+  border-left: 4px solid var(--p31-teal);
+}
+
+.play-option.pass {
+  border-left: 4px solid var(--p31-lavender);
+}
+
+.play-option.special {
+  border-left: 4px solid var(--p31-amber);
+}
+
+/* Scoreboard */
+.scoreboard-gridiron {
+  display: flex;
+  align-items: center;
+  gap: var(--p31-space-4);
+  background: var(--p31-surface);
+  border: 2px solid var(--p31-glass-border);
+  border-radius: var(--p31-radius-md);
+  padding: var(--p31-space-3) var(--p31-space-4);
+}
+
+.team-score {
+  text-align: center;
+}
+
+.team-name {
+  font-family: var(--p31-font-mono);
+  font-size: var(--p31-text-xs);
+  color: var(--p31-muted);
+  text-transform: uppercase;
+}
+
+.team-points {
+  font-size: var(--p31-text-2xl);
+  font-weight: 700;
+  color: var(--p31-cloud);
+}
+
+.team-points.winning {
+  color: var(--p31-phosphor);
+}
+
+.game-clock {
+  font-family: var(--p31-font-mono);
+  font-size: var(--p31-text-lg);
+  color: var(--p31-amber);
+  padding: 0 var(--p31-space-4);
+  border-left: 1px solid var(--p31-glass-border);
+  border-right: 1px solid var(--p31-glass-border);
+}
+
+/* Quarter indicator */
+.quarter {
+  font-family: var(--p31-font-mono);
+  font-size: var(--p31-text-xs);
+  color: var(--p31-muted);
+}
+
+.quarter-value {
+  color: var(--p31-cloud);
+  font-weight: 600;
+}
+
+/* Possession indicator */
+.possession {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--p31-space-1);
+  font-family: var(--p31-font-mono);
+  font-size: var(--p31-text-xs);
+}
+
+.possession-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--p31-radius-full);
+  background: var(--p31-phosphor);
+  box-shadow: 0 0 8px var(--p31-phosphor);
+}
+
+/* Drive summary */
+.drive-summary {
+  font-family: var(--p31-font-mono);
+  font-size: var(--p31-text-xs);
+  color: var(--p31-muted);
+  background: var(--p31-surface);
+  padding: var(--p31-space-2) var(--p31-space-3);
+  border-radius: var(--p31-radius-sm);
+}
+
+.drive-plays {
+  color: var(--p31-cloud);
+}
+
+.drive-yards.positive {
+  color: var(--p31-teal);
+}
+
+.drive-yards.negative {
+  color: var(--p31-coral);
+}
+
+/* Timeout indicators */
+.timeouts {
+  display: flex;
+  gap: var(--p31-space-1);
+}
+
+.timeout {
+  width: 10px;
+  height: 10px;
+  border-radius: var(--p31-radius-full);
+  background: var(--p31-coral);
+}
+
+.timeout.used {
+  background: var(--p31-surface2);
+}
+
+/* Momentum meter (Gridiron's unique spoon variant) */
+.momentum-meter {
+  width: 100%;
+  height: 6px;
+  background: var(--p31-surface2);
+  border-radius: var(--p31-radius-full);
+  overflow: hidden;
+  position: relative;
+}
+
+.momentum-fill {
+  height: 100%;
+  border-radius: var(--p31-radius-full);
+  transition: width var(--p31-motion-normal) var(--p31-ease-standard),
+              background var(--p31-motion-fast) var(--p31-ease-standard);
+}
+
+.momentum-fill.high {
+  background: var(--p31-teal);
+}
+
+.momentum-fill.medium {
+  background: var(--p31-amber);
+}
+
+.momentum-fill.low {
+  background: var(--p31-coral);
+}
+
+/* Streak indicator */
+.streak {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--p31-space-1);
+  font-family: var(--p31-font-mono);
+  font-size: var(--p31-text-xs);
+  color: var(--p31-amber);
+}
+
+.streak-value {
+  font-weight: 700;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .play-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .play-option {
+    min-height: 56px;
+  }
+
+  .scoreboard-gridiron {
+    flex-direction: column;
+    gap: var(--p31-space-2);
+  }
+
+  .game-clock {
+    border: none;
+    padding: var(--p31-space-1) 0;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .play-option {
+    border-width: 3px;
+  }
+
+  .scoreboard-gridiron {
+    border-width: 3px;
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "name": "p31-cards",
+  "version": "0.0.1",
+  "type": "module",
+  "description": "P31 Card Table - Family card game pack with Spoon Theory accessibility",
+  "scripts": {
+    "dev": "vite",
+    "build": "npx vite build",
+    "preview": "vite preview",
+    "test": "vitest",
+    "validate:prng": "node tests/prng/validate-determinism.mjs",
+    "validate:cards": "node tests/validate-cards.mjs",
+    "validate:all": "node scripts/full-test-suite.mjs",
+    "worker:dev": "cd workers/signal && wrangler dev -c wrangler-simple.toml",
+    "worker:deploy": "cd workers/signal && wrangler deploy -c wrangler-simple.toml",
+    "automation:test": "node scripts/full-test-suite.mjs",
+    "deploy:ci": "wrangler pages deploy dist --project-name=p31-cards --branch=main",
+    "deploy:staging": "wrangler pages deploy dist --project-name=p31-cards --branch=staging",
+    "wrangler:check": "wrangler whoami"
+  },
+  "dependencies": {
+    "@electric-sql/pglite": "^0.2.0",
+    "@p31/arcade-theme": "file:../../p31-arcade-theme",
+    "@react-three/drei": "^9.105.0",
+    "@react-three/fiber": "^8.16.0",
+    "hls.js": "^1.6.16",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "seedrandom": "^3.0.5",
+    "three": "^0.164.0",
+    "zustand": "^4.5.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.0",
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
+    "@types/seedrandom": "^3.0.8",
+    "@types/three": "^0.164.0",
+    "@vitejs/plugin-react": "^4.2.1",
+    "jsdom": "^29.1.1",
+    "typescript": "^5.4.5",
+    "vite": "^5.2.10",
+    "vite-plugin-pwa": "^0.19.8",
+    "vitest": "^1.5.0",
+    "wrangler": "^4.94.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

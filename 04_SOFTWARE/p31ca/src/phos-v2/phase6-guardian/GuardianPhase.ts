@@ -25,8 +25,23 @@ export class GuardianPhase implements PHOSPhase {
   async initialize(config: PHOSConfig): Promise<void> {
     this.config = config;
     console.log('[GuardianPhase] Initializing guardian system...');
+    this.loadSafetyRules();
     // TODO: Load safety rules and parent settings
+    this.on('love.earned', (event: PHOSEvent) => {
+      this.handleLoveEarned(event.payload);
+    });
     this.lastActivity = Date.now();
+  }
+
+  // Week 7: Love ledger integration
+  private loadSafetyRules(): void {
+    this.safetyRules.set('no_offensive_content', { type: 'filter', action: 'block' });
+    this.safetyRules.set('time_limit', { type: 'timeout', condition: 1440, action: 'alert' });
+  }
+
+  private handleLoveEarned(payload: { action: string; persona: string }): void {
+    console.log(`[GuardianPhase] Love earned for action: ${payload.action} by ${payload.persona}`);
+    // Adjust restrictions based on positive behavior
   }
 
   activate(): void {

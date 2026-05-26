@@ -16,6 +16,7 @@
 static const char *TAG = "p31_net";
 
 #define QFACTOR_API_BASE  "https://api.p31ca.org"
+#define PHOS_API_BASE     "https://phos.trimtab-signal.workers.dev"
 #define REPORT_INTERVAL_S 300   // POST spoon update every 5 minutes
 #define HTTP_TIMEOUT_MS   8000
 
@@ -159,6 +160,37 @@ esp_err_t p31_net_report_spoons(uint8_t value) {
     return err;
 }
 
+// ── Public: report PHOS telemetry ───────────────────────────────────────────────
+esp_err_t p31_net_report_telemetry(float env_temp, uint8_t mesh_nodes, uint8_t ambient_light, float power_draw) {
+    char body[256];
+    snprintf(body, sizeof(body),
+             "{\"device_id\":\"%s\",\"env_temp\":%.1f,\"mesh_nodes_active\":%d,\"ambient_light\":%d,\"power_draw\":%.1f}",
+             p31_net_did(), (double)env_temp, (int)mesh_nodes, (int)ambient_light, (double)power_draw);
+
+    // Optional: read HARDWARE_SECRET from NVS namespace "p31" key "hw_secret"
+    // If not set, POST without auth header (worker allows if HARDWARE_SECRET is unset)
+    char auth_header[128] = {0};
+    nvs_handle_t nvs;
+    if (nvs_open("p31", NVS_READONLY, &nvs) == ESP_OK) {
+        size_t secret_len = sizeof(auth_header) - 8; // leave room for "Bearer "
+        char secret[120] = {0};
+        if (nvs_get_str(nvs, "hw_secret", secret, &secret_len) == ESP_OK) {
+            snprintf(auth_header, sizeof(auth_header), "Bearer %s", secret);
+        }
+        nvs_close(nvs);
+    }
+
+    char *resp = NULL;
+    size_t resp_len = 0;
+    esp_err_t err = http_post_json(PHOS_API_BASE "/api/phos/telemetry", body, &resp, &resp_len);
+
+    if (err == ESP_OK && resp) {
+        ESP_LOGD(TAG, "telemetry OK: %.*s", (int)resp_len, resp);
+        free(resp);
+    }
+    return err;
+}
+
 // ── Public: fetch Q-score ──────────────────────────────────────────────────────
 esp_err_t p31_net_fetch_q(float *q_out) {
     char url[96];
@@ -215,6 +247,16 @@ void p31_net_task(void *arg) {
         } else {
             ESP_LOGW(TAG, "Spoon report failed: %d", err);
             p31_ui_update_status("mesh: offline");
+        }
+
+        // ── Report PHOS telemetry ─────────────────────────────────────────────
+        // Placeholder sensor values — replace with actual ADC/I2C reads when
+        // environmental sensors (BME280, BH1750, INA219) are wired.
+        esp_err_t tel_err = p31_net_report_telemetry(72.4f, 3, 45, 12.0f);
+        if (tel_err == ESP_OK) {
+            ESP_LOGI(TAG, "Telemetry → phos.trimtab-signal.workers.dev OK");
+        } else {
+            ESP_LOGW(TAG, "Telemetry report failed: %d", tel_err);
         }
 
         // ── Fetch Q-score and update display ──────────────────────────────────

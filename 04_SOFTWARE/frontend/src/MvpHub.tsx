@@ -12,10 +12,12 @@ export const MvpHub: React.FC = () => {
   const [mvps, setMvps] = useState<Mvp[]>([]);
 
   useEffect(() => {
+    let mounted = true;
     fetch('/mvps.json')
       .then(response => response.json())
-      .then(data => setMvps(data))
+      .then(data => { if (mounted) setMvps(data); })
       .catch(error => console.error('Error loading MVPs:', error));
+    return () => { mounted = false; };
   }, []);
 
   return (

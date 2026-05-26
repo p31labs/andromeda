@@ -1,0 +1,42 @@
+# Opus Phenix - Git Ignore
+# "Only the essential geometry remains"
+
+# Build artifacts
+.pio/
+build/
+.cache/
+__pycache__/
+
+# IDE
+.vscode/
+*.code-workspace
+.idea/
+
+# ESP-IDF
+sdkconfig.old
+managed_components/
+
+# Binaries (build these fresh)
+*.bin
+*.elf
+*.map
+
+# Logs
+*.log
+logs/
+
+# OS junk
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Secrets (never commit!)
+secrets.h
+*_secrets.h
+*.pem
+*.key
+
+# But DO track these
+!partitions_phenix.csv
+!sdkconfig.defaults
+

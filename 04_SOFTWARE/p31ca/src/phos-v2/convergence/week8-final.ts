@@ -6,7 +6,7 @@
  * Success: PHOS v2.0 ready for general availability
  */
 
-import type { PHOSMasterRuntime, ConvergenceReport, IntegrationCheck } from '../master';
+import type { PHOSMasterRuntime, ConvergenceReport, IntegrationCheck } from '../master/index.ts';
 
 export interface Week8ConvergenceInput {
   enableAllPhases?: boolean;

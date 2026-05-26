@@ -1,0 +1,364 @@
+/* P31 Cards — Arcade Theme v2.0.0 (Canonical)
+ * Aligned with p31-universal-canon.json
+ * Gray Rock compliant — no self-starting motion
+ */
+
+/* Import canonical arcade tokens */
+@import '../../../p31-arcade-theme/arcade-theme.css';
+
+/* ============================================
+   CARDS-SPECIFIC EXTENSIONS
+   ============================================ */
+
+/* Card table felt (dark canon surface) */
+:root {
+  --cards-felt: var(--p31-surface);
+  --cards-felt-pattern: rgba(255, 255, 255, 0.02);
+  --card-width: 80px;
+  --card-height: 112px;
+}
+
+/* Card table background */
+.card-table {
+  background-color: var(--cards-felt);
+  background-image:
+    radial-gradient(circle at 20% 30%, rgba(93, 202, 165, 0.03) 0%, transparent 40%),
+    radial-gradient(circle at 80% 70%, rgba(139, 124, 201, 0.03) 0%, transparent 40%);
+  position: relative;
+}
+
+/* Playing card */
+.playing-card {
+  width: var(--card-width);
+  height: var(--card-height);
+  background: var(--p31-paper);
+  border-radius: var(--p31-radius-md);
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.3),
+    0 1px 2px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: var(--p31-space-1);
+  font-family: var(--p31-font-sans);
+  cursor: pointer;
+  transition: transform var(--p31-motion-fast) var(--p31-ease-standard),
+              box-shadow var(--p31-motion-fast) var(--p31-ease-standard);
+  user-select: none;
+}
+
+.playing-card:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 8px 16px rgba(0, 0, 0, 0.3),
+    0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.playing-card.selected {
+  transform: translateY(-12px);
+  box-shadow: 0 0 0 2px var(--p31-cyan);
+}
+
+.playing-card.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Card faces */
+.card-corner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1;
+}
+
+.card-rank {
+  font-size: var(--p31-text-sm);
+  font-weight: 700;
+}
+
+.card-suit {
+  font-size: var(--p31-text-xs);
+}
+
+/* Red suits (hearts, diamonds) */
+.card-red .card-rank,
+.card-red .card-suit {
+  color: var(--p31-coral);
+}
+
+/* Black suits (spades, clubs) */
+.card-black .card-rank,
+.card-black .card-suit {
+  color: var(--p31-ink);
+}
+
+/* Card back pattern */
+.card-back {
+  background:
+    repeating-linear-gradient(
+      45deg,
+      var(--p31-cyan),
+      var(--p31-cyan) 4px,
+      var(--p31-teal) 4px,
+      var(--p31-teal) 8px
+    );
+  border: 2px solid var(--p31-paper);
+}
+
+/* Card center (for face cards or large pips) */
+.card-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--p31-text-2xl);
+  flex: 1;
+}
+
+/* Hand container */
+.card-hand {
+  display: flex;
+  gap: calc(var(--p31-space-1) * -1); /* Overlap cards slightly */
+  padding: var(--p31-space-4);
+}
+
+.card-hand .playing-card:hover {
+  z-index: 10;
+}
+
+/* Card stack (deck/discard) */
+.card-stack {
+  position: relative;
+  width: var(--card-width);
+  height: var(--card-height);
+}
+
+.card-stack .playing-card {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+/* Offset stacked cards slightly */
+.card-stack .playing-card:nth-child(2) { transform: translate(2px, 2px); }
+.card-stack .playing-card:nth-child(3) { transform: translate(4px, 4px); }
+.card-stack .playing-card:nth-child(4) { transform: translate(6px, 6px); }
+
+/* Game status bar */
+.game-status {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--p31-glass-surface);
+  border-top: 1px solid var(--p31-glass-border);
+  padding: var(--p31-space-2) var(--p31-space-4);
+  font-family: var(--p31-font-mono);
+  font-size: var(--p31-text-xs);
+}
+
+.status-item {
+  display: flex;
+  align-items: center;
+  gap: var(--p31-space-2);
+}
+
+.status-label {
+  color: var(--p31-muted);
+  text-transform: uppercase;
+}
+
+.status-value {
+  color: var(--p31-cloud);
+  font-weight: 600;
+}
+
+/* Chip stack */
+.chip-stack {
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  position: relative;
+}
+
+.poker-chip {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--p31-radius-full);
+  border: 4px dashed var(--p31-paper);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  position: relative;
+}
+
+.poker-chip.white {
+  background: #f5f5f5;
+  border-color: var(--p31-ink);
+}
+
+.poker-chip.red {
+  background: var(--p31-coral);
+}
+
+.poker-chip.blue {
+  background: var(--p31-cyan);
+}
+
+.poker-chip.green {
+  background: var(--p31-phosphorus);
+}
+
+.poker-chip.black {
+  background: #1a1a1a;
+  border-color: var(--p31-paper);
+}
+
+/* Action buttons */
+.card-action {
+  min-width: 80px;
+  min-height: 44px;
+  padding: var(--p31-space-2) var(--p31-space-4);
+  font-size: var(--p31-text-sm);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.card-action.check {
+  background: var(--p31-surface);
+  border-color: var(--p31-glass-border);
+}
+
+.card-action.call {
+  background: var(--p31-cyan);
+  border-color: var(--p31-cyan);
+  color: var(--p31-void);
+}
+
+.card-action.raise {
+  background: var(--p31-lavender);
+  border-color: var(--p31-lavender);
+  color: var(--p31-cloud);
+}
+
+.card-action.fold {
+  background: var(--p31-coral);
+  border-color: var(--p31-coral);
+  color: var(--p31-cloud);
+}
+
+/* Dealer button */
+.dealer-button {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--p31-radius-full);
+  background: var(--p31-amber);
+  color: var(--p31-void);
+  font-family: var(--p31-font-sans);
+  font-size: 10px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Pot display */
+.pot-display {
+  background: var(--p31-surface);
+  border: 2px solid var(--p31-glass-border);
+  border-radius: var(--p31-radius-xl);
+  padding: var(--p31-space-2) var(--p31-space-6);
+  text-align: center;
+}
+
+.pot-label {
+  font-family: var(--p31-font-mono);
+  font-size: 10px;
+  color: var(--p31-muted);
+  text-transform: uppercase;
+}
+
+.pot-amount {
+  font-size: var(--p31-text-xl);
+  font-weight: 700;
+  color: var(--p31-phosphor);
+}
+
+/* Player seat */
+.player-seat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--p31-space-2);
+  padding: var(--p31-space-3);
+  border-radius: var(--p31-radius-lg);
+  transition: background var(--p31-motion-fast) var(--p31-ease-standard);
+}
+
+.player-seat.active {
+  background: rgba(93, 202, 165, 0.1);
+  box-shadow: 0 0 0 2px var(--p31-teal);
+}
+
+.player-seat.folded {
+  opacity: 0.5;
+}
+
+.player-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--p31-radius-full);
+  background: var(--p31-surface2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--p31-font-mono);
+  font-size: var(--p31-text-lg);
+  color: var(--p31-cloud);
+}
+
+.player-name {
+  font-family: var(--p31-font-sans);
+  font-size: var(--p31-text-xs);
+  color: var(--p31-cloud);
+  max-width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.player-stack {
+  font-family: var(--p31-font-mono);
+  font-size: var(--p31-text-xs);
+  color: var(--p31-teal);
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  :root {
+    --card-width: 60px;
+    --card-height: 84px;
+  }
+
+  .card-hand {
+    gap: calc(var(--p31-space-1) * -2);
+    padding: var(--p31-space-2);
+  }
+
+  .card-action {
+    min-width: 64px;
+    min-height: 40px;
+    padding: var(--p31-space-1) var(--p31-space-2);
+    font-size: var(--p31-text-xs);
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .playing-card {
+    border: 2px solid var(--p31-ink);
+  }
+
+  .playing-card.selected {
+    box-shadow: 0 0 0 4px var(--p31-cyan);
+  }
+}

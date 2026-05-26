@@ -11,12 +11,12 @@ export type {
   ConvergenceData,
   ConvergenceReport,
   IntegrationCheck
-} from './PHOSMasterRuntime';
+} from './PHOSMasterRuntime.ts';
 
 export {
   PHOSMasterRuntime,
   getPHOSMaster,
   resetPHOSMaster
-} from './PHOSMasterRuntime';
+} from './PHOSMasterRuntime.ts';
 
-export { PHOS_V2_CONFIG, PHOS_DEV_CONFIG, PHOS_PROD_CONFIG } from './PHOSConfig';
+export { PHOS_V2_CONFIG, PHOS_DEV_CONFIG, PHOS_PROD_CONFIG } from './PHOSConfig.ts';

@@ -451,7 +451,7 @@ class P31OracleBot {
                 },
                 {
                     name: '🔬 Content Unlocked',
-                    value: `**Decrypted CID:** \`${result.decryptedCID}\`\n**Access:** https://ipfs.io/ipfs/${result.decryptedCID}`,
+                    value: `**Decrypted CID:** \`${result.decryptedCID}\`\n**Access:** https://cloudflare-ipfs.com/ipfs/${result.decryptedCID}`,
                     inline: true
                 }
             )
@@ -1111,7 +1111,7 @@ class P31OracleBot {
 
     getDefaultIPFSStatus() {
         return {
-            gateway: 'https://ipfs.io',
+            gateway: process.env.IPFS_GATEWAY || 'https://cloudflare-ipfs.com',
             domain: 'andromeda.p31.eth',
             latestCID: 'bafybeih6h7d2x6j3j4x2p2y7b2m4z6q2w8v5n4c3k9j8h7g6f5d4s3a2'
         };
