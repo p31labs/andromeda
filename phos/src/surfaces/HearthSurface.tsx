@@ -49,7 +49,7 @@ interface Props {
   onPainAlert: () => void;
 }
 
-export const HearthSurface: React.FC<Props> = ({ className, grayRock, onPainAlert }) => {
+export const HearthSurface: React.FC<Props> = ({ className, spoons, grayRock, onPainAlert }) => {
   const [data, setData] = useState<HearthData | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'overview' | 'chores' | 'kitchen'>('overview');

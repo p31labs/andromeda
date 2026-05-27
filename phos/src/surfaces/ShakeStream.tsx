@@ -10,8 +10,8 @@
 
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { useAtmosphere } from '../components/AtmosphereProvider';
-import { embedText } from './Embedder';
-import { getChaosVault } from './ChaosVault';
+import { embedText } from '../lib/Embedder';
+import { getChaosVault } from '../lib/ChaosVault';
 
 interface StreamMessage {
   role: 'user' | 'assistant' | 'system';
