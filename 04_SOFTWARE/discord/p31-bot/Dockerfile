@@ -1,20 +1,12 @@
 FROM node:20-alpine
-
-WORKDIR /app
+WORKDIR /usr/src/app
 
 COPY package*.json ./
-RUN npm install
+RUN npm install --omit=dev
 
-COPY tsconfig.json ./
-COPY src/ ./src/
-
-RUN npx tsc
-
-USER node
+COPY . .
+RUN npm run build
 
 EXPOSE 3000
-
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-  CMD wget -q --spider http://localhost:3000/health || exit 1
 
 CMD ["node", "dist/index.js"]

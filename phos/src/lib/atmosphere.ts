@@ -19,7 +19,10 @@ export type SurfaceKey =
   | 'IGNITION'
   | 'LEDGER'
   | 'LOVE'
-  | 'ARCHIVE';
+  | 'ARCHIVE'
+  | 'HEARTH'
+  | 'SANCTUARY'
+  | 'FORGE';
 
 export interface AtmospherePreset {
   starfield: 'dense' | 'sparse' | 'static' | 'void';
@@ -243,6 +246,48 @@ const SURFACE_PRESETS: Record<SurfaceKey, AtmospherePreset> = {
     motion: { enabled: true, speed: 0.15, particleCount: 30, transitionMs: 2000 },
     tracking: true,
     voice: true,
+  },
+  HEARTH: {
+    starfield: 'sparse',
+    palette: {
+      primary: '#ff6b6b',
+      secondary: '#ffa07a',
+      accent: '#ff4757',
+      background: '#0a0505',
+      text: '#f0d0d0',
+      muted: '#664444',
+    },
+    motion: { enabled: true, speed: 0.2, particleCount: 50, transitionMs: 1500 },
+    tracking: true,
+    voice: true,
+  },
+  SANCTUARY: {
+    starfield: 'void',
+    palette: {
+      primary: '#a78bfa',
+      secondary: '#7c3aed',
+      accent: '#c4b5fd',
+      background: '#050208',
+      text: '#e0d8f0',
+      muted: '#3b2e54',
+    },
+    motion: { enabled: false, speed: 0, particleCount: 0, transitionMs: 3000 },
+    tracking: false,
+    voice: false,
+  },
+  FORGE: {
+    starfield: 'static',
+    palette: {
+      primary: '#f59e0b',
+      secondary: '#d97706',
+      accent: '#fbbf24',
+      background: '#0a0600',
+      text: '#f0e0c0',
+      muted: '#5a4020',
+    },
+    motion: { enabled: false, speed: 0, particleCount: 0, transitionMs: 2000 },
+    tracking: false,
+    voice: false,
   },
 };
 

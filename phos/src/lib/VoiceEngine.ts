@@ -85,6 +85,16 @@ const SURFACE_SCRIPTS: Record<SurfaceKey, VoiceScript> = {
     entry: 'Sovereign archive accessed. What do you seek?',
     narrative: 'Local embeddings ready. Query at your own pace.',
   },
+  HEARTH: {
+    greeting: 'The Hearth is warm.',
+    entry: 'Family and care mesh active. You are not alone.',
+    narrative: 'Chores, recipes, and pain levels consolidated.',
+  },
+  SANCTUARY: {
+    greeting: 'The Sanctuary is sealed.',
+    entry: 'Zero-telemetry journal active. Your words stay here.',
+    narrative: 'Encrypted local storage. No cloud. No witnesses.',
+  },
 };
 
 export { SURFACE_SCRIPTS };

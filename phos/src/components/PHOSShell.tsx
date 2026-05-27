@@ -13,9 +13,14 @@ import { ChaosIngest } from '../surfaces/ChaosIngest';
 import { WarehouseSurface } from '../surfaces/WarehouseSurface';
 import { RetroVaultSurface } from '../surfaces/RetroVaultSurface';
 import { LedgerSurface } from '../surfaces/LedgerSurface';
+import { SanctuarySurface } from '../surfaces/SanctuarySurface';
 import { ArcadeSurface } from '../surfaces/ArcadeSurface';
 import { NodeZeroSurface } from '../surfaces/NodeZeroSurface';
 import { HearthSurface } from '../surfaces/HearthSurface';
+import { ForgeSurface } from '../surfaces/ForgeSurface';
+import { ShakeStream } from '../surfaces/ShakeStream';
+import BondingSurface from './BondingSurface';
+import DonationCta from './DonationCta';
 
 // --- BIOLOGICAL THEME ENGINE ---
 const getBiologicalTheme = (spoons: number, grayRock: boolean) => {
@@ -71,14 +76,17 @@ const getBiologicalTheme = (spoons: number, grayRock: boolean) => {
   };
 };
 
+import type { SurfaceKey } from '../lib/atmosphere';
+
 // --- SURFACE CONTENT RENDERERS ---
 const SurfaceContent: React.FC<{
   surface: string;
   theme: ReturnType<typeof getBiologicalTheme>;
   spoons: number;
   grayRock: boolean;
-  setSurface: (s: string) => void;
-}> = ({ surface, theme, spoons, grayRock, setSurface }) => {
+  setSurface: (s: SurfaceKey) => void;
+  setSpoons: (s: number) => void;
+}> = ({ surface, theme, spoons, grayRock, setSurface, setSpoons }) => {
   if (grayRock || spoons === 0) {
     return (
       <div className="text-center space-y-4">
@@ -134,6 +142,20 @@ const SurfaceContent: React.FC<{
         </div>
       );
 
+    case 'SANCTUARY':
+      return (
+        <div className="max-w-2xl w-full">
+          <SanctuarySurface />
+        </div>
+      );
+
+    case 'FORGE':
+      return (
+        <div className="max-w-3xl w-full">
+          <ForgeSurface />
+        </div>
+      );
+
     case 'HEARTH':
       return (
         <div className="max-w-3xl w-full">
@@ -150,10 +172,11 @@ const SurfaceContent: React.FC<{
           </p>
           <div className="grid grid-cols-2 gap-3 pt-4">
             {[
-              { label: 'I need to rest', surface: 'THE_BUFFER' as const },
+              { label: 'I need to rest', surface: 'SANCTUARY' as const },
               { label: 'I need to work', surface: 'NODE_ZERO' as const },
               { label: 'I need to play', surface: 'ARCADE' as const },
               { label: 'I need to connect', surface: 'BONDING' as const },
+              { label: 'I need to build', surface: 'FORGE' as const },
             ].map(({ label, surface: s }) => (
               <button key={label} onClick={() => setSurface(s)} className={`py-4 text-sm ${theme.button}`}>
                 {label}
@@ -191,22 +214,9 @@ const SurfaceContent: React.FC<{
         </div>
       );
 
-    case 'ARCHIVE':
-      return (
-        <div className="text-center space-y-6 max-w-lg">
-          <h1 className={`text-3xl ${theme.heading}`}>Archive</h1>
-          <p className={theme.body}>
-            Sovereign archive. Local embeddings ready. Query your knowledge.
-          </p>
-          <div className="pt-4">
-            <input
-              type="text"
-              placeholder="Search your knowledge..."
-              className={`w-full py-4 px-6 text-base ${theme.input}`}
-            />
-          </div>
-        </div>
-      );
+    case 'ARCHIVE': {
+      return <ArchiveSurface theme={theme} spoons={spoons} grayRock={grayRock} />;
+    }
 
     case 'SETTINGS':
       return (
@@ -227,14 +237,8 @@ const SurfaceContent: React.FC<{
 
     case 'BONDING':
       return (
-        <div className="text-center space-y-6 max-w-lg">
-          <h1 className={`text-3xl ${theme.heading}`}>Bonding</h1>
-          <p className={theme.body}>
-            Channel open. You are held in safe connection.
-          </p>
-          <div className="pt-4">
-            <LoveLedger />
-          </div>
+        <div className="max-w-3xl w-full h-full min-h-[60vh]">
+          <BondingSurface />
         </div>
       );
 
@@ -245,6 +249,67 @@ const SurfaceContent: React.FC<{
         </div>
       );
   }
+};
+
+// --- ARCHIVE SURFACE (RAG-powered knowledge search) ---
+const ArchiveSurface: React.FC<{
+  theme: ReturnType<typeof getBiologicalTheme>;
+  spoons: number;
+  grayRock: boolean;
+}> = ({ theme, spoons }) => {
+  const [query, setQuery] = useState('');
+  const [activeQuery, setActiveQuery] = useState('');
+  const [error, setError] = useState('');
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!query.trim()) return;
+    setError('');
+    setActiveQuery(query.trim());
+  };
+
+  const handleClear = () => {
+    setQuery('');
+    setActiveQuery('');
+    setError('');
+  };
+
+  return (
+    <div className="space-y-6 max-w-2xl w-full">
+      <h1 className={`text-3xl ${theme.heading}`}>Archive</h1>
+      <p className={theme.body}>
+        Sovereign archive. Local embeddings ready. Query your knowledge.
+      </p>
+      <form onSubmit={handleSubmit} className="pt-2">
+        <div className="flex gap-3">
+          <input
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search your knowledge..."
+            className={`flex-1 py-4 px-6 text-base ${theme.input}`}
+          />
+          <button type="submit" className={`px-6 py-4 text-sm tracking-widest ${theme.button}`}>
+            Ask
+          </button>
+        </div>
+      </form>
+
+      {error && (
+        <p className="text-sm text-red-400">{error}</p>
+      )}
+
+      {activeQuery && (
+        <div className={`p-4 ${theme.card}`}>
+          <ShakeStream
+            query={activeQuery}
+            onComplete={handleClear}
+            onError={(msg) => setError(msg)}
+          />
+        </div>
+      )}
+    </div>
+  );
 };
 
 // --- IGNITION SURFACE ---
@@ -295,6 +360,41 @@ const IgnitionSurface: React.FC<{
     </div>
   );
 };
+
+// --- GUARDIAN RECOVERY OVERLAY (post-breathing) ---
+const GuardianRecovery: React.FC<{
+  theme: ReturnType<typeof getBiologicalTheme>;
+  onDismiss: () => void;
+  onDonate: () => void;
+  setDonationContext: (ctx: string) => void;
+}> = ({ theme, onDismiss, onDonate, setDonationContext }) => (
+  <div className="fixed inset-0 z-[200] flex flex-col items-center justify-center bg-black/95">
+    <div className="max-w-md text-center space-y-6 p-8">
+      <p className={`text-2xl ${theme.heading}`}>Grounding complete.</p>
+      <p className={theme.body}>
+        You just used a tool that exists because someone funded it.
+      </p>
+      <p className={`text-sm opacity-60 ${theme.body}`}>
+        This crisis protocol is free. Keep it alive for the next person.
+      </p>
+      <div className="flex flex-col gap-3 pt-4">
+        <button
+          onClick={() => { setDonationContext('POST_GUARDIAN'); onDonate(); }}
+          className="px-8 py-3 text-sm font-bold rounded-xl transition-all"
+          style={{ backgroundColor: '#7c3aed', color: '#f5f3ff' }}
+        >
+          ♥ SUPPORT P31 — $5/mo
+        </button>
+        <button
+          onClick={onDismiss}
+          className={`px-8 py-2 text-xs tracking-widest ${theme.button}`}
+        >
+          DISMISS
+        </button>
+      </div>
+    </div>
+  </div>
+);
 
 // --- GUARDIAN BREATHING OVERLAY ---
 const GuardianOverlay: React.FC<{
@@ -398,6 +498,9 @@ export default function PHOSShell() {
 
   const [hudOpen, setHudOpen] = useState(false);
   const [guardianActive, setGuardianActive] = useState(false);
+  const [guardianRecovery, setGuardianRecovery] = useState(false);
+  const [donationOpen, setDonationOpen] = useState(false);
+  const [donationContext, setDonationContext] = useState('ESCAPE_HATCH');
   const [isIgnition, setIsIgnition] = useState(
     !CryptoEngine.isDeviceSealed() && currentSurface === 'IGNITION'
   );
@@ -426,8 +529,13 @@ export default function PHOSShell() {
 
   const handleGuardianComplete = useCallback(() => {
     setGuardianActive(false);
+    setGuardianRecovery(true);
     setSpoons(2);
   }, [setSpoons]);
+
+  const handleGuardianRecoveryDismiss = useCallback(() => {
+    setGuardianRecovery(false);
+  }, []);
 
   const handleGuardianCancel = useCallback(() => {
     setGuardianActive(false);
@@ -475,9 +583,28 @@ export default function PHOSShell() {
             <button onClick={() => setSurface('NODE_ZERO')} className={`py-3 text-xs tracking-widest ${theme.button}`}>NODE ZERO</button>
             <button onClick={() => setSurface('ARCADE')} className={`py-3 text-xs tracking-widest ${theme.button}`}>ARCADE</button>
             <button onClick={() => setSurface('HEARTH')} className={`py-3 text-xs tracking-widest ${theme.button}`}>HEARTH</button>
+            <button onClick={() => setSurface('SANCTUARY')} className={`py-3 text-xs tracking-widest ${theme.button}`}>SANCTUARY</button>
             <button onClick={() => setSurface('THE_BUFFER')} className={`py-3 text-xs tracking-widest ${theme.button}`}>BUFFER</button>
             <button onClick={() => setSurface('COMPASS')} className={`py-3 text-xs tracking-widest ${theme.button}`}>COMPASS</button>
             <button onClick={() => setSurface('ARCHIVE')} className={`py-3 text-xs tracking-widest ${theme.button}`}>ARCHIVE</button>
+            <button onClick={() => setSurface('FORGE')} className={`py-3 text-xs tracking-widest ${theme.button}`}>FORGE</button>
+            <button
+              onClick={() => { setDonationContext('ESCAPE_HATCH'); setDonationOpen(true); }}
+              className={`py-3 text-xs tracking-widest col-span-2 ${theme.button}`}
+              style={{ color: '#c084fc', borderColor: '#5b21b6' }}
+            >
+              ♥ SUPPORT P31
+            </button>
+            <div className={`py-2 text-xs text-center col-span-2 ${theme.body}`}>
+              <a
+                href="https://discord.gg/uYW5rTCuZ"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="opacity-50 hover:opacity-100 transition-opacity"
+              >
+                💬 Discord Mesh →
+              </a>
+            </div>
             <button
               onClick={handlePanic}
               className={`py-3 text-xs tracking-widest col-span-2 ${theme.button} text-red-400 border-red-900/30 hover:bg-red-950/30`}
@@ -529,6 +656,21 @@ export default function PHOSShell() {
         onCancel={handleGuardianCancel}
       />
 
+      {guardianRecovery && (
+        <GuardianRecovery
+          theme={theme}
+          onDismiss={handleGuardianRecoveryDismiss}
+          onDonate={() => setDonationOpen(true)}
+          setDonationContext={setDonationContext}
+        />
+      )}
+
+      <DonationCta
+        isOpen={donationOpen}
+        onClose={() => setDonationOpen(false)}
+        surfaceContext={donationContext}
+      />
+
       <EscapeHatch />
 
       <main className="h-screen flex flex-col items-center justify-center p-6">
@@ -545,6 +687,7 @@ export default function PHOSShell() {
             spoons={spoons}
             grayRock={grayRock}
             setSurface={setSurface}
+            setSpoons={setSpoons}
           />
         </div>
       </main>

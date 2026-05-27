@@ -80,7 +80,7 @@ export async function updateEmbedding(id: string, embedding: number[]): Promise<
   const blob = new Float32Array(embedding);
   await db.query(
     `UPDATE unified_knowledge_graph SET embedding = $1 WHERE id = $2`,
-    [Buffer.from(blob.buffer), id]
+    [new Uint8Array(blob.buffer), id]
   );
 }
 

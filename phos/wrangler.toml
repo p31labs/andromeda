@@ -19,10 +19,26 @@ binding = "PHOS_CACHE"
 id = "5530628220d74314bad9867ccd8fece4"
 preview_id = "5530628220d74314bad9867ccd8fece4"
 
+# D1 Database
 [[d1_databases]]
 binding = "PHOS_EVENT_LOG"
 database_name = "phos-event-log"
 database_id = "1554838e-6f6e-48fa-80cf-1ab1f2fab549"
+
+# Durable Objects
+[durable_objects]
+bindings = [
+  { name = "WS_HUB", class_name = "WebSocketHub" }
+]
+
+# Durable Objects migrations (required for DO creation)
+[[migrations]]
+tag = "v1"
+new_classes = [ "WebSocketHub" ]
+
+# Secrets (set via `npx wrangler secret put`)
+# DISCORD_WEBHOOK_URL
+# HARDWARE_SECRET
 
 [env.production]
 routes = ["phos.p31labs.com/*"]

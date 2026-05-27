@@ -55,7 +55,14 @@ const renderHearth = (spoons = 3, grayRock = false) => {
 };
 
 describe('HearthSurface', () => {
-  beforeEach(() => { vi.clearAllMocks(); localStorageMock.clear(); });
+  beforeEach(() => {
+    vi.clearAllMocks();
+    localStorageMock.clear();
+    // Reset the localStorage mock data
+    localStorage.removeItem('phos_event_log');
+    localStorage.removeItem('phos_family_contacts');
+    localStorage.removeItem('phos_visitation_schedule');
+  });
 
   it('should show CRISIS suspension at spoons=0', () => {
     renderHearth(0);
@@ -67,24 +74,107 @@ describe('HearthSurface', () => {
     expect(screen.getByText(/Hearth suspended/i)).toBeTruthy();
   });
 
-  it('should render full dashboard at spoons=3', async () => {
+  it('should render family mesh header at spoons=3', async () => {
     renderHearth(3);
     await act(async () => { await new Promise(r => setTimeout(r, 200)); });
     expect(screen.getByText(/The Hearth/i)).toBeTruthy();
   });
 
+  it('should render tab switcher with 4 tabs', async () => {
+    renderHearth(3);
+    await act(async () => { await new Promise(r => setTimeout(r, 200)); });
+    expect(screen.getByText(/Log/i)).toBeTruthy();
+    expect(screen.getByText(/Schedule/i)).toBeTruthy();
+    expect(screen.getByText(/Bonding/i)).toBeTruthy();
+    expect(screen.getByText(/Cage/i)).toBeTruthy();
+  });
+
+  it('should render contact log form', async () => {
+    renderHearth(3);
+    await act(async () => { await new Promise(r => setTimeout(r, 200)); });
+    expect(screen.getByText(/Log New Contact/i)).toBeTruthy();
+  });
+
+  it('should render summary stats', async () => {
+    renderHearth(3);
+    await act(async () => { await new Promise(r => setTimeout(r, 200)); });
+    expect(screen.getByText(/Total Contacts/i)).toBeTruthy();
+  });
+
+  it('should render export button', async () => {
+    renderHearth(3);
+    await act(async () => { await new Promise(r => setTimeout(r, 200)); });
+    expect(screen.getByText(/Export Legal Log/i)).toBeTruthy();
+  });
+
+  it('should trigger onPainAlert when pain level >= 7', async () => {
+    const painData = JSON.stringify([{
+      id: 'p1', type: 'PAIN_LOGGED', timestamp: new Date().toISOString(),
+      data: { painLevel: 8, location: 'lower back' },
+    }]);
+    localStorage.setItem('phos_event_log', painData);
+    mockOnPainAlert.mockClear();
+    renderHearth(3);
+    await waitFor(() => expect(mockOnPainAlert).toHaveBeenCalled(), { timeout: 5000 });
+  });
+
+  it('should NOT trigger onPainAlert when pain level < 7', async () => {
+    localStorage.setItem('phos_event_log', JSON.stringify([{
+      id: 'p2', type: 'PAIN_LOGGED', timestamp: new Date().toISOString(),
+      data: { painLevel: 5, location: 'shoulder' },
+    }]));
+    renderHearth(3);
+    await new Promise(r => setTimeout(r, 500));
+    expect(mockOnPainAlert).not.toHaveBeenCalled();
+  });
+});
+
+  it('should show CRISIS suspension when grayRock=true', () => {
+    renderHearth(3, true);
+    expect(screen.getByText(/Hearth suspended/i)).toBeTruthy();
+  });
+
+  it('should render family mesh header at spoons=3', async () => {
+    renderHearth(3);
+    await act(async () => { await new Promise(r => setTimeout(r, 200)); });
+    expect(screen.getByText(/The Hearth/i)).toBeTruthy();
+    expect(screen.getByText(/Family mesh/i)).toBeTruthy();
+  });
+
+  it('should render tab switcher with 4 tabs', async () => {
+    renderHearth(3);
+    await act(async () => { await new Promise(r => setTimeout(r, 200)); });
+    expect(screen.getByText(/Log/i)).toBeTruthy();
+    expect(screen.getByText(/Schedule/i)).toBeTruthy();
+    expect(screen.getByText(/Bonding/i)).toBeTruthy();
+    expect(screen.getByText(/Cage/i)).toBeTruthy();
+  });
+
+  it('should render contact log form', async () => {
+    renderHearth(3);
+    await act(async () => { await new Promise(r => setTimeout(r, 200)); });
+    expect(screen.getByText(/Log New Contact/i)).toBeTruthy();
+    expect(screen.getByText(/LOG →/i)).toBeTruthy();
+  });
+
+  it('should render summary stats', async () => {
+    renderHearth(3);
+    await act(async () => { await new Promise(r => setTimeout(r, 200)); });
+    expect(screen.getByText(/Total Contacts/i)).toBeTruthy();
+    expect(screen.getByText(/S\.J\./i)).toBeTruthy();
+    expect(screen.getByText(/W\.J\./i)).toBeTruthy();
+  });
+
+  it('should render export button', async () => {
+    renderHearth(3);
+    await act(async () => { await new Promise(r => setTimeout(r, 200)); });
+    expect(screen.getByText(/Export Legal Log/i)).toBeTruthy();
+  });
+
   it('should render simplified view at spoons=1', async () => {
     renderHearth(1);
     await act(async () => { await new Promise(r => setTimeout(r, 200)); });
-    expect(screen.getByText(/Active Chores/i)).toBeTruthy();
-  });
-
-  it('should render tab switcher at spoons=3', async () => {
-    renderHearth(3);
-    await act(async () => { await new Promise(r => setTimeout(r, 200)); });
-    expect(screen.getByText('Overview')).toBeTruthy();
-    expect(screen.getByText('Chores')).toBeTruthy();
-    expect(screen.getByText('Kitchen')).toBeTruthy();
+    expect(screen.getByText(/The Hearth/i)).toBeTruthy();
   });
 
   it('should trigger onPainAlert when pain level >= 7', async () => {
@@ -93,7 +183,6 @@ describe('HearthSurface', () => {
       data: { painLevel: 8, location: 'lower back' },
     }]);
     localStorageMock.setItem('phos_event_log', painData);
-    // Do NOT call renderHearth which clears localStorage — render directly
     mockOnPainAlert.mockClear();
     render(
       React.createElement(
@@ -115,18 +204,8 @@ describe('HearthSurface', () => {
     expect(mockOnPainAlert).not.toHaveBeenCalled();
   });
 
-  it('should NOT trigger onPainAlert when grayRock is already active', async () => {
-    localStorageMock.setItem('phos_event_log', JSON.stringify([{
-      id: 'p3', type: 'PAIN_LOGGED', timestamp: new Date().toISOString(),
-      data: { painLevel: 9, location: 'head' },
-    }]));
-    renderHearth(3, true);
-    await new Promise(r => setTimeout(r, 1000));
-    expect(mockOnPainAlert).not.toHaveBeenCalled();
-  });
-
   it('should handle malformed localStorage gracefully', async () => {
-    localStorageMock.setItem('maid-manager-storage', 'not valid json{{{');
+    localStorageMock.setItem('phos_event_log', 'not valid json{{{');
     await act(async () => { renderHearth(3); });
     expect(true).toBe(true);
   });

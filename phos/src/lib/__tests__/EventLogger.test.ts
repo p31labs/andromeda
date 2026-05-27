@@ -4,7 +4,7 @@ import {
   logEvent, 
   logIntentRouted, 
   logGuardianActivated, 
-  logSpoonStateChanged,
+  logSpokenStateChanged,
   logSurfaceNavigated,
   logVoiceToggled,
   logDeviceSealed,
@@ -16,12 +16,13 @@ import {
 } from '../EventLogger';
 
 describe('EventLogger', () => {
-  const STORAGE_KEY = 'phos_event_log';
+  const STORAGE_KEY = 'phos_event_ring';
+  const CHAIN_KEY = 'phos_hash_chain';
   
   beforeEach(() => {
-    // Clear localStorage before each test
     window.localStorage.removeItem(STORAGE_KEY);
-    // Mock console.log to avoid output during tests
+    window.localStorage.removeItem(CHAIN_KEY);
+    window.localStorage.removeItem('phos_site_id');
     vi.spyOn(console, 'log').mockImplementation(() => {});
   });
   
@@ -49,13 +50,13 @@ describe('EventLogger', () => {
   describe('logEvent', () => {
     it('should create and persist an event with correct structure', () => {
       const testData = { key: 'value', number: 42, flag: true };
-      logEvent('TEST_EVENT', testData);
+      logEvent('INTENT_ROUTED', testData);
       
       const logs = getEventLog();
       expect(logs).toHaveLength(1);
       
       const event = logs[0];
-      expect(event.type).toBe('TEST_EVENT');
+      expect(event.type).toBe('INTENT_ROUTED');
       expect(event.data).toEqual(testData);
       expect(event.id).toMatch(/\d+-\w+/);
       expect(event.timestamp).toMatch(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/);
@@ -64,7 +65,7 @@ describe('EventLogger', () => {
     it('should respect MAX_EVENTS limit (50)', () => {
       // Log 55 events
       for (let i = 0; i < 55; i++) {
-        logEvent('TEST_EVENT', { index: i });
+        logEvent('INTENT_ROUTED', { index: i });
       }
       
       const logs = getEventLog();
@@ -101,8 +102,8 @@ describe('EventLogger', () => {
       });
     });
     
-    it('logSpoonStateChanged should log correct data', () => {
-      logSpoonStateChanged(4, 2);
+    it('logSpokenStateChanged should log correct data', () => {
+      logSpokenStateChanged(4, 2);
       
       const logs = getEventLog();
       expect(logs).toHaveLength(1);
@@ -184,13 +185,13 @@ describe('EventLogger', () => {
 
   describe('getLogs and clearLogs', () => {
     it('getLogs should return event log', () => {
-      logEvent('TEST', { data: 'test' });
+      logEvent('INTENT_ROUTED', { data: 'test' });
       expect(getLogs()).toHaveLength(1);
     });
     
     it('clearLogs should remove all events', () => {
-      logEvent('TEST1', { data: 'test1' });
-      logEvent('TEST2', { data: 'test2' });
+      logEvent('SURFACE_NAVIGATED', { data: 'test1' });
+      logEvent('VOICE_TOGGLED', { data: 'test2' });
       expect(getLogs()).toHaveLength(2);
       
       clearLogs();

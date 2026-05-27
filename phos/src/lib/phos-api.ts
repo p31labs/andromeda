@@ -57,6 +57,13 @@ export interface CrisisAlertResponse {
   timestamp: string;
 }
 
+export interface DiscordStatusResponse {
+  bot: 'online' | 'degraded' | 'offline';
+  botLatencyMs: number;
+  webhookConfigured: boolean;
+  timestamp: string;
+}
+
 export interface APIStatusResponse {
   status: 'PHOS Online';
   version: string;
@@ -94,13 +101,46 @@ export interface SyncMessage {
 }
 
 /**
- * Connection handle returned by connectStream.
+ * CRDT sync message types for PGLite mesh synchronization.
  */
+export interface StateVector {
+  [siteId: string]: number;
+}
+
+export interface SyncHandshake {
+  type: 'HANDSHAKE';
+  siteId: string;
+  stateVector: StateVector;
+}
+
+export interface SyncDelta {
+  type: 'DELTA';
+  siteId: string;
+  events: Array<{
+    id: string;
+    tableName: string;
+    operation: string;
+    rowId: string;
+    rowData: string;
+    lamportClock: number;
+    siteId: string;
+    createdAt: string;
+  }>;
+}
+
+export interface SyncAck {
+  type: 'ACK';
+  siteId: string;
+  stateVector: StateVector;
+}
+
+export type CRDTMessage = SyncHandshake | SyncDelta | SyncAck;
+
 export interface StreamConnection {
-  /** Close the WebSocket and cancel reconnection. */
   disconnect: () => void;
-  /** Send a state sync up the socket. */
   send: (state: SyncPayload) => void;
+  sendCRDT: (msg: CRDTMessage) => void;
+  onCRDT: (handler: (msg: CRDTMessage) => void) => void;
 }
 
 /**
@@ -142,6 +182,7 @@ export class PHOSAPIClient {
     let isActive = true;
     let ws: WebSocket | null = null;
     let reconnectTimer: ReturnType<typeof setTimeout> | null = null;
+    const crdtHandlers: Array<(msg: CRDTMessage) => void> = [];
 
     const wsUrl = this.apiBase.replace('https://', 'wss://') + '/api/phos/stream';
 
@@ -157,9 +198,13 @@ export class PHOSAPIClient {
 
         ws.onmessage = (event: MessageEvent) => {
           try {
-            const msg: SyncMessage = JSON.parse(event.data);
-            if (msg.type === 'SYNC' && msg.payload) {
-              onMessage(msg.payload);
+            const parsed = JSON.parse(event.data);
+            if (parsed.type === 'SYNC' && parsed.payload) {
+              onMessage(parsed.payload as SyncPayload);
+            } else if (['HANDSHAKE', 'DELTA', 'ACK'].includes(parsed.type)) {
+              for (const handler of crdtHandlers) {
+                handler(parsed as CRDTMessage);
+              }
             }
           } catch {
             // Ignore malformed messages
@@ -178,7 +223,6 @@ export class PHOSAPIClient {
           ws?.close();
         };
       } catch {
-        // WebSocket unavailable (SSR or unsupported browser)
         if (!isActive) return;
         const delay = Math.min(1000 * Math.pow(2, reconnectAttempt), 30000);
         reconnectAttempt++;
@@ -203,6 +247,14 @@ export class PHOSAPIClient {
           const msg: SyncMessage = { type: 'SYNC', payload: state };
           ws.send(JSON.stringify(msg));
         }
+      },
+      sendCRDT: (msg: CRDTMessage) => {
+        if (ws && ws.readyState === WebSocket.OPEN) {
+          ws.send(JSON.stringify(msg));
+        }
+      },
+      onCRDT: (handler: (msg: CRDTMessage) => void) => {
+        crdtHandlers.push(handler);
       },
     };
   }
@@ -242,6 +294,14 @@ export class PHOSAPIClient {
    */
   async getMeshStatus(): Promise<APIStatusResponse> {
     return this._fetch<APIStatusResponse>(this.apiBase, 'phos-api');
+  }
+
+  /**
+   * Check Discord bot status for PHOS HUD.
+   */
+  async getDiscordStatus(): Promise<DiscordStatusResponse> {
+    const url = `${this.apiBase}/api/phos/discord-status`;
+    return this._fetch<DiscordStatusResponse>(url, 'phos-api-discord');
   }
 
   /**

@@ -10,7 +10,7 @@ import React, {
 import type { SurfaceKey, AtmospherePreset } from '../lib/atmosphere';
 import { resolveAtmosphere, detectGrayRock } from '../lib/atmosphere';
 import { phosAPI, type AtmosphereResponse, PHOSAPIError, type StreamConnection } from '../lib/phos-api';
-import { logSpoonStateChanged } from '../lib/EventLogger';
+import { logSpokenStateChanged } from '../lib/EventLogger';
 
 export interface AtmosphereContextValue {
   currentSurface: SurfaceKey;
@@ -162,7 +162,7 @@ export const AtmosphereProvider: React.FC<AtmosphereProviderProps> = ({
       setSpoonsState((prev) => {
         try { localStorage.setItem('phos_spoons', String(level)); } catch { /* ignore */ }
         if (prev !== level) {
-          logSpoonStateChanged(prev, level);
+          logSpokenStateChanged(prev, level);
         }
         return level;
       });

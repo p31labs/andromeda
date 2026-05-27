@@ -17,6 +17,7 @@ interface Env {
   PHOS_EVENT_LOG: D1Database;
   PHOS_ATMOSPHERE: Fetcher;
   DISCORD_WEBHOOK_URL?: string;
+  DISCORD_BOT_TOKEN?: string;
   HARDWARE_SECRET?: string;
   WS_HUB: DurableObjectNamespace;
 }
@@ -122,6 +123,7 @@ const STATIC_MESH: { name: string; description: string }[] = [
 const EXTERNAL_PROBES: { name: string; url: string }[] = [
   { name: 'Arcade Hub', url: 'https://bonding.p31ca.org' },
   { name: 'Mesh Monitor', url: 'https://phosphorus31.org' },
+  { name: 'Discord Bot', url: 'https://discord.com/api/v10/guilds/1449826533089742962' },
 ];
 
 /**
@@ -315,6 +317,31 @@ export default {
         JSON.stringify({ status: 'telemetry_received', timestamp: new Date().toISOString() }),
         { status: 200, headers }
       );
+    }
+
+    // ── GET /api/phos/discord-status — Bot health for PHOS HUD ──
+    if (path === '/api/phos/discord-status') {
+      const botUrl = 'https://discord.com/api/v10/guilds/1449826533089742962';
+      let botStatus: 'online' | 'degraded' | 'offline' = 'offline';
+      let botLatency = 0;
+      try {
+        const start = Date.now();
+        const r = await fetch(botUrl, {
+          headers: { Authorization: `Bot ${env.DISCORD_BOT_TOKEN || ''}` },
+          cf: { cacheTtl: 0 },
+        } as RequestInit);
+        botLatency = Date.now() - start;
+        if (r.ok) botStatus = 'online';
+        else if (r.status < 500) botStatus = 'degraded';
+      } catch { botStatus = 'offline'; }
+
+      const whUrl = env.DISCORD_WEBHOOK_URL || '';
+      return new Response(JSON.stringify({
+        bot: botStatus,
+        botLatencyMs: botLatency,
+        webhookConfigured: whUrl.length > 0,
+        timestamp: new Date().toISOString(),
+      }, null, 2), { status: 200, headers });
     }
 
     // ── GET / — Status + Mesh ──
