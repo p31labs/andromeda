@@ -47,7 +47,22 @@ export const AtmosphereProvider: React.FC<AtmosphereProviderProps> = ({
   remoteEnabled = true,
   initialSpoons = 3,
 }) => {
-  const [currentSurface, setCurrentSurface] = useState<SurfaceKey>(initialSurface);
+  // Parse URL params synchronously before first render to avoid hydration flash
+  const urlParams = typeof window !== 'undefined'
+    ? new URLSearchParams(window.location.search)
+    : new URLSearchParams();
+
+  const urlSpoons = urlParams.has('spoons')
+    ? Math.max(0, Math.min(5, parseInt(urlParams.get('spoons') || '3', 10)))
+    : null;
+
+  const urlSurface = urlParams.has('surface')
+    ? urlParams.get('surface')!.toUpperCase() as SurfaceKey
+    : null;
+
+  const [currentSurface, setCurrentSurface] = useState<SurfaceKey>(
+    urlSurface || initialSurface
+  );
   const [grayRock, setGrayRockState] = useState<boolean>(() =>
     detectGrayRock(
       typeof window !== 'undefined' ? window.location.search : '',
@@ -55,6 +70,8 @@ export const AtmosphereProvider: React.FC<AtmosphereProviderProps> = ({
     )
   );
   const [spoons, setSpoonsState] = useState<number>(() => {
+    // URL param takes highest priority, then localStorage, then prop default
+    if (urlSpoons !== null) return urlSpoons;
     if (typeof window === 'undefined') return initialSpoons;
     try {
       const stored = localStorage.getItem('phos_spoons');
@@ -66,10 +83,13 @@ export const AtmosphereProvider: React.FC<AtmosphereProviderProps> = ({
     return initialSpoons;
   });
   const [preset, setPreset] = useState<AtmospherePreset>(() =>
-    resolveAtmosphere(currentSurface, detectGrayRock(
-      typeof window !== 'undefined' ? window.location.search : '',
-      undefined
-    ))
+    resolveAtmosphere(
+      urlSurface || initialSurface,
+      detectGrayRock(
+        typeof window !== 'undefined' ? window.location.search : '',
+        undefined
+      )
+    )
   );
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
