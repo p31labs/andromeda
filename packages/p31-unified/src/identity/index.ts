@@ -7,7 +7,6 @@ import type {
   GameProgress,
   Achievement,
   XPBreakdown,
-  SkillTrack,
 } from '../types.js';
 
 export class UnifiedIdentityManager {
@@ -72,6 +71,7 @@ export class UnifiedIdentityManager {
         'resonance-rings': this.createEmptyProgress(),
         'magnetic-poetry': this.createEmptyProgress(),
         'orbital-drift': this.createEmptyProgress(),
+        'water-parksimulator': this.createEmptyProgress(),
       },
       achievements: [],
       lastPlayed: {},

@@ -1,0 +1,167 @@
+{
+  "apps": [
+    {
+      "id": "retro-vault",
+      "name": "Retro Vault",
+      "tagline": "Secure marketplace for buying & selling used goods",
+      "description": "End-to-end encrypted used goods marketplace with voice-first interface, PQC protection, and offline-first sync",
+      "category": "marketplace",
+      "tier": "A",
+      "status": "ready-for-launch",
+      "icon": "🏪",
+      "color": "#5DCAA5",
+      "url": "https://retro-vault.p31ca.org",
+      "repo": "02_Client_or_Misc/retro-vault",
+      "pillar_status": 12,
+      "features": [
+        "Multi-context (Personal/Business/Family)",
+        "ML-KEM-768 + ML-DSA-65 encryption",
+        "Voice commands (10+ commands)",
+        "Offline-first with PGLite",
+        "Messaging & ratings",
+        "Seller analytics dashboard"
+      ],
+      "entities": ["User", "ItemListing", "Transaction", "Offer", "Message", "Rating"],
+      "apis": 17,
+      "tests": 29,
+      "owner": "p31labs",
+      "deployment": "retro-vault.p31ca.org (Cloudflare Pages)",
+      "worker": "retro-vault-api.trimtab-signal.workers.dev"
+    },
+    {
+      "id": "fence-pro",
+      "name": "Fence Pro",
+      "tagline": "Property boundary & fence management app",
+      "description": "Professional fence/boundary management with PQC security, offline capability, and voice-driven workflows",
+      "category": "property",
+      "tier": "A",
+      "status": "ready-for-launch",
+      "icon": "🏞️",
+      "color": "#cc6247",
+      "url": "https://fence-pro.p31ca.org",
+      "repo": "02_Client_or_Misc/fence-pro",
+      "pillar_status": 12,
+      "features": [
+        "Boundary mapping",
+        "Full PQC protection",
+        "Voice documentation",
+        "Offline sync",
+        "Inspection reports"
+      ],
+      "tests": 25,
+      "owner": "p31labs",
+      "deployment": "fence-pro.p31ca.org"
+    },
+    {
+      "id": "shakebackk-studio",
+      "name": "Shakebackk Studio",
+      "tagline": "Family network state management hub",
+      "description": "Secure family node orchestration with end-to-end encryption, shared calendars, and mesh communication",
+      "category": "family",
+      "tier": "A",
+      "status": "ready-for-customization",
+      "icon": "👨‍👩‍👧‍👦",
+      "color": "#6B8DD6",
+      "url": "https://shakebackk-studio.p31ca.org",
+      "repo": "04_Archives/shakebackk-studio",
+      "pillar_status": 12,
+      "features": [
+        "Family mesh networking",
+        "Shared event calendar",
+        "PQC group messaging",
+        "Role-based access",
+        "Activity logging"
+      ],
+      "tests": 24,
+      "owner": "p31labs",
+      "deployment": "shakebackk-studio.p31ca.org"
+    },
+    {
+      "id": "warehouse-mvp",
+      "name": "Warehouse MVP",
+      "tagline": "Zero-tap QR inventory scanner",
+      "description": "Real-time warehouse inventory with voice feedback, offline-first PGLite sync, and haptic responses",
+      "category": "inventory",
+      "tier": "A",
+      "status": "ready-for-deployment",
+      "icon": "📦",
+      "color": "#4CAF50",
+      "url": "https://warehouse.p31ca.org",
+      "repo": "02_Client_or_Misc/warehouse-mvp",
+      "pillar_status": 12,
+      "features": [
+        "QR code scanning",
+        "Real-time zone logging",
+        "Voice feedback (200-400Hz)",
+        "Haptic responses",
+        "Offline-first database",
+        "Edge worker sync"
+      ],
+      "tests": 22,
+      "owner": "p31labs",
+      "deployment": "warehouse.p31ca.org"
+    },
+    {
+      "id": "matriarch-culinary",
+      "name": "Matriarch Culinary Node",
+      "tagline": "Family recipe & meal planning network",
+      "description": "Encrypted recipe sharing, meal planning, and kitchen node orchestration with voice command interface",
+      "category": "family",
+      "tier": "A",
+      "status": "ready-for-deployment",
+      "icon": "🍳",
+      "color": "#FF6B6B",
+      "url": "https://culinary.p31ca.org",
+      "repo": "02_Client_or_Misc/matriarch-culinary-node-mvp",
+      "pillar_status": 12,
+      "features": [
+        "Recipe management",
+        "Meal planning calendar",
+        "Family sharing",
+        "PQC encryption",
+        "Voice recipe lookup",
+        "Nutrition tracking"
+      ],
+      "tests": 23,
+      "owner": "p31labs",
+      "deployment": "culinary.p31ca.org"
+    },
+    {
+      "id": "education",
+      "name": "Education Platform",
+      "tagline": "Sovereign technology literacy curriculum",
+      "description": "Free open-source education: digital literacy, web development, mesh networking for neurodivergent learners",
+      "category": "education",
+      "tier": "A",
+      "status": "ready-for-launch",
+      "icon": "🎓",
+      "color": "#7B68EE",
+      "url": "https://education.phosphorus31.org",
+      "repo": "02_Client_or_Misc/phosphorus31-org",
+      "pillar_status": 12,
+      "features": [
+        "3 learning tracks",
+        "Accessibility-first",
+        "Video + transcripts",
+        "Interactive labs",
+        "Demo projects",
+        "Open source curriculum"
+      ],
+      "owner": "p31labs",
+      "deployment": "phosphorus31.org/education"
+    }
+  ],
+  "categories": {
+    "marketplace": { "label": "Marketplace", "icon": "🏪" },
+    "property": { "label": "Property", "icon": "🏞️" },
+    "family": { "label": "Family", "icon": "👨‍👩‍👧‍👦" },
+    "inventory": { "label": "Inventory", "icon": "📦" },
+    "education": { "label": "Education", "icon": "🎓" }
+  },
+  "statuses": {
+    "ready-for-launch": { "label": "Ready to Launch", "color": "#4CAF50", "badge": "✓ Ready" },
+    "ready-for-deployment": { "label": "Ready for Deployment", "color": "#2196F3", "badge": "→ Deploy" },
+    "ready-for-customization": { "label": "Ready for Customization", "color": "#FF9800", "badge": "⚙ Customize" },
+    "in-development": { "label": "In Development", "color": "#9C27B0", "badge": "🔨 Building" }
+  }
+}

@@ -117,11 +117,17 @@ const StarfieldCanvas: React.FC = () => {
           const screenX = (star.x + 1) * width * 0.5;
           const screenY = (star.y + 1) * height * 0.5;
 
-          ctx.beginPath();
+      ctx.beginPath();
           ctx.arc(screenX, screenY, star.size, 0, Math.PI * 2);
-          ctx.fillStyle = primaryColor
-            ? `${primaryColor}${Math.round(alpha * 255).toString(16).padStart(2, '0')}`
-            : `rgba(255, 255, 255, ${alpha})`;
+
+          // Sanctuary state: warm amber stars instead of cold neon
+          const isWarm = spoons <= 2 && !grayRock;
+          const starColor = isWarm
+            ? `rgba(251, 191, 120, ${alpha})`
+            : primaryColor
+              ? `${primaryColor}${Math.round(alpha * 255).toString(16).padStart(2, '0')}`
+              : `rgba(255, 255, 255, ${alpha})`;
+          ctx.fillStyle = starColor;
           ctx.fill();
         }
       }

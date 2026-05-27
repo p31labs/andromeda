@@ -1,0 +1,8 @@
+name = "p31-waterparksimulator"
+compatibility_date = "2024-01-01"
+
+# Pages configuration
+pages_build_output_dir = "dist"
+
+# Custom domain will be configured via Cloudflare dashboard
+# Production: water-park-simulator.p31ca.org

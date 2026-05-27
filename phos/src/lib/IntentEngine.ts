@@ -181,3 +181,15 @@ export function containsCrisis(input: string): boolean {
   const cleaned = input.toLowerCase();
   return ['help', 'panic', 'stop', 'crisis', 'urgent'].some((w) => cleaned.includes(w));
 }
+
+/**
+ * Detect if the input is a RAG query (? or /ask prefix).
+ * Returns the cleaned query string, or null if not a RAG query.
+ */
+export function parseRagQuery(input: string): string | null {
+  const trimmed = input.trim();
+  if (trimmed.startsWith('?')) return trimmed.slice(1).trim();
+  if (trimmed.startsWith('/ask ')) return trimmed.slice(5).trim();
+  if (trimmed.startsWith('/ask')) return trimmed.slice(4).trim();
+  return null;
+}

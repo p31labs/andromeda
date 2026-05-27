@@ -8,7 +8,124 @@
  * DO NOT REMOVE this import. Without it, no Tailwind classes
  * (flex, grid, fixed, bg-black, text-sm, etc.) will exist in
  * the production build, and the entire UI will collapse.
+ *
+ * ── Biological Interface Animations ──────────────────────────
+ * These @keyframes define the biomimetic motion physics that
+ * transform the interface from a static machine into a living,
+ * breathing digital organism. Each animation is calibrated to
+ * human parasympathetic rhythms.
  */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer utilities {
+  /**
+   * BIOMIMETIC BREATH (6-second vagus nerve entrainment)
+   * Paced at exactly 6s per cycle (≈10 breaths/min) to match the
+   * resonance frequency of the human baroreflex system. This
+   * stimulates the vagus nerve and maximizes Heart Rate Variability.
+   *
+   * Phase timing:
+   *   0-33%  → Inhalation (expand, brighten)
+   *   33-66% → Hold (sustain peak)
+   *   66-100% → Exhalation (contract, soften)
+   */
+  @keyframes biomimetic-breath {
+    0%, 100% {
+      transform: scale(0.92);
+      opacity: 0.75;
+      filter: brightness(0.9) saturate(0.8);
+    }
+    33% {
+      transform: scale(1.08);
+      opacity: 1;
+      filter: brightness(1.15) saturate(1.1);
+    }
+    66% {
+      transform: scale(1.05);
+      opacity: 0.95;
+      filter: brightness(1.05) saturate(1.0);
+    }
+  }
+  .animate-biomimetic-breath {
+    animation: biomimetic-breath 6s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  /**
+   * SLOW BREATHE (Legacy compatibility)
+   * A gentler 4-second cycle used as fallback for non-critical
+   * elements. Provides a subtle living texture without demanding
+   * focal attention.
+   */
+  @keyframes breathe-slow {
+    0%, 100% { transform: scale(1); opacity: 0.9; }
+    50% { transform: scale(1.04); opacity: 1; }
+  }
+  .animate-breathe-slow {
+    animation: breathe-slow 4s ease-in-out infinite;
+  }
+
+  /**
+   * FADE IN (Smooth appearance, 800ms)
+   * Prevents the saccadic shock of elements abruptly appearing
+   * in the viewport. Used for all surface transitions and HUD
+   * expansions.
+   */
+  @keyframes fade-in {
+    0% {
+      opacity: 0;
+      transform: translateY(8px);
+      filter: blur(4px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+      filter: blur(0);
+    }
+  }
+  .animate-fade-in {
+    animation: fade-in 0.8s cubic-bezier(0.4, 0, 0.2, 1) both;
+  }
+
+  /**
+   * GLOW PULSE (Soft ambient halo)
+   * Used for the hover/active state of glassmorphic elements.
+   * Creates a slow, living luminescence that mimics natural
+   * bioluminescence rather than artificial LED flicker.
+   */
+  @keyframes glow-pulse {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 0.8; }
+  }
+  .animate-glow-pulse {
+    animation: glow-pulse 3s ease-in-out infinite;
+  }
+
+  /**
+   * QUANTUM SPIN (Used in QUANTUM state)
+   * A slow, constant rotation that signals machine precision
+   * and computational throughput without inducing vertigo.
+   */
+  @keyframes quantum-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  .animate-quantum-spin {
+    animation: quantum-spin 8s linear infinite;
+  }
+
+  /**
+   * SANCTUARY DRIFT (Ambient micro-motion for deep calm)
+   * Imperceptible vertical oscillation (floating) that keeps
+   * the interface feeling alive without engaging focal attention.
+   * Displacement is under 15px to remain in peripheral awareness.
+   */
+  @keyframes sanctuary-drift {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+  .animate-sanctuary-drift {
+    animation: sanctuary-drift 7s ease-in-out infinite;
+  }
+}

@@ -6,8 +6,7 @@ import type {
   SpoonBudget,
   GameId,
   GameRecommendation,
-  GAME_MODES,
-  ZEN_MODES,
+  SkillTrack,
 } from '../types.js';
 
 export class GlobalSpoonManager {
@@ -265,7 +264,7 @@ interface GameModeWithSpoonCost {
   gameId: GameId;
   mode: string;
   spoonCost: number;
-  skillTrack: string;
+  skillTrack: SkillTrack;
   description: string;
 }
 

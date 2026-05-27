@@ -1,0 +1,6 @@
+# LiteLLM configuration for Aider
+openai-api-base: http://localhost:4000
+model: local-coder
+weak-model: local-coder
+editor: code --wait
+map-refresh: auto

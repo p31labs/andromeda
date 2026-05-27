@@ -13,8 +13,8 @@
  * Garden isolation: `routeName="garden"` strips molecular field + EBC footer.
  */
 import { ClientRouter } from 'astro:transitions';
-import type { RouteId } from '../lib/starfield-singleton';
-import { PHOS_FAMILIAR_SVG } from '../lib/phos-assets';
+import type { RouteId } from '@lib/starfield-singleton';
+import { PHOS_FAMILIAR_SVG } from '@lib/phos-assets';
 import P31SettingsPanel from '../components/P31SettingsPanel.astro';
 import '../styles/global.css';
 
@@ -129,8 +129,8 @@ const ebcLinks = [
     <link rel="apple-touch-icon" href="/favicon.svg" />
     <link rel="manifest" href="/manifest.json" />
     <link rel="stylesheet" href="/p31-style.css" />
-    <link rel="stylesheet" href="/lib/p31-qmu-tokens.css" />
-    {!isGarden && <link rel="stylesheet" href="/lib/p31-molecular-field.css" />}
+     <link rel="stylesheet" href="@/lib/p31-qmu-tokens.css" />
+    {!isGarden &&      <link rel="stylesheet" href="@/lib/p31-molecular-field.css" />}
 
     <!-- Resource hints -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -275,17 +275,17 @@ const ebcLinks = [
     </script>
 
     <!-- PHOS bus bar (load order is load-bearing) -->
-    <script is:inline src="/lib/p31-subject-prefs.js"></script>
-    <script type="module" src="/lib/p31-theme-engine.mjs"></script>
-    <script type="module" src="/lib/p31-cogpass-reader.mjs"></script>
-    <script type="module" src="/lib/p31-phos-guide.mjs"></script>
-    <script type="module" src="/lib/p31-theme-switcher.mjs"></script>
+     <script is:inline src="@/lib/p31-subject-prefs.js"></script>
+     <script type="module" src="@/lib/p31-theme-engine.mjs"></script>
+     <script type="module" src="@/lib/p31-cogpass-reader.mjs"></script>
+     <script type="module" src="@/lib/p31-phos-guide.mjs"></script>
+     <script type="module" src="@/lib/p31-theme-switcher.mjs"></script>
 
     <!-- Starfield Notifications -->
-    <script type="module">
-      import('/lib/starfield-notifications.ts').catch(() => {});
-    </script>
-    <script src="/lib/starfield-settings-ui.js" defer></script>
+     <script type="module">
+       import('@/lib/starfield-notifications.ts').catch(() => {});
+     </script>
+     <script src="@/lib/starfield-settings-ui.js" defer></script>
 
     <slot name="head" />
 
@@ -661,18 +661,18 @@ const ebcLinks = [
 
     {/* Quantum grandfather boot */}
     <script type="module" is:inline>
-      import { startGrandfatherPhaseVar } from "/lib/p31-quantum-grandfather-boot.mjs";
+       import { startGrandfatherPhaseVar } from "@lib/p31-quantum-grandfather-boot.mjs";
       startGrandfatherPhaseVar();
     </script>
 
     {/* Touch gestures */}
     <script type="module">
-      import('/lib/p31-gestures.ts').catch(() => {});
+      import('@/lib/p31-gestures.ts').catch(() => {});
     </script>
 
     {/* Battery awareness */}
     <script type="module">
-      import('/lib/p31-battery-aware.ts').catch(() => {});
+      import('@/lib/p31-battery-aware.ts').catch(() => {});
     </script>
     <script is:inline>
       (function() {
@@ -770,10 +770,10 @@ const ebcLinks = [
     {!isGarden && <P31SettingsPanel />}
 
     {/* Return ribbon */}
-    <script src="/lib/p31-return-ribbon.js" defer></script>
+    <script src="@/lib/p31-return-ribbon.js" defer></script>
 
     {/* Molecular field */}
-    {!isGarden && <script type="module" src="/lib/p31-molecular-field.js"></script>}
+    {!isGarden && <script type="module" src="@/lib/p31-molecular-field.js"></script>}
 
     {/* Starfield + Fleet telemetry */}
     <script>
@@ -781,7 +781,7 @@ const ebcLinks = [
         const canvas = document.querySelector('canvas[data-p31-appshell-canvas]');
         if (!canvas) return;
         try {
-          const { startStarfield, setStarfieldRoute, suspendStarfield, resumeStarfield } = await import('/lib/starfield-singleton.js');
+           const { startStarfield, setStarfieldRoute, suspendStarfield, resumeStarfield } = await import('@/lib/starfield-singleton.js');
           startStarfield(canvas);
           const route = document.documentElement.getAttribute('data-p31-route');
           if (route) setStarfieldRoute(route);
@@ -807,7 +807,7 @@ const ebcLinks = [
           if (W['__p31Fleet']) return;
           const currentRoute = document.documentElement.getAttribute('data-p31-route');
           if (currentRoute === 'garden') return;
-          const { startFleetTelemetry } = await import('/lib/fleet-telemetry.js');
+          const { startFleetTelemetry } = await import('@/lib/fleet-telemetry.js');
           const handle = startFleetTelemetry();
           W['__p31Fleet'] = handle;
           document.addEventListener('astro:after-swap', () => {

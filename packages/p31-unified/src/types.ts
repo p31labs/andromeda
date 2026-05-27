@@ -9,7 +9,8 @@ export type GameId =
   | 'liquid-sculptor'
   | 'resonance-rings'
   | 'magnetic-poetry'
-  | 'orbital-drift';
+  | 'orbital-drift'
+  | 'water-parksimulator';
 
 export type SkillTrack =
   | 'athletics'

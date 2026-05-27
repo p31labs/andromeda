@@ -1,41 +1,31 @@
 name: P31 Delta Topology
-version: 1
+version: 2
 models:
-  - name: Claude (Reasoning)
-    provider: anthropic
-    model: claude-sonnet-4-20250514
-    apiKey: "{{ANTHROPIC_API_KEY}}"
-    roles: [chat, edit]
-  - name: DeepSeek (Code)
+  - name: PHOS Local (Qwen 7B)
     provider: openai
-    model: deepseek-coder-v2
-    apiBase: https://api.deepseek.com/v1
-    apiKey: "{{DEEPSEEK_API_KEY}}"
-    roles: [autocomplete]
-  - name: Gemini (Vision)
-    provider: google
-    model: gemini-2.5-pro
-    apiKey: "{{GOOGLE_API_KEY}}"
+    model: local-coder
+    apiBase: http://localhost:4000
+    apiKey: sk-local
+    roles: [chat, edit]
+  - name: Jump Up (GPT-4o)
+    provider: openai
+    model: openrouter-openai
+    apiBase: http://localhost:4000
+    apiKey: sk-local
     roles: [chat]
-  - name: Local (Offline)
+  - name: Local Autocomplete
     provider: ollama
-    model: qwen2.5-coder:7b
+    model: qwen2.5-coder:7b-instruct-q4_K_M
     apiBase: http://localhost:11434
-    roles: [apply, summarize]
-  - name: Embeddings
-    provider: transformers.js
-    roles: [embed]
+    roles: [autocomplete]
 
 rules:
-  - When filepath contains "firmware" or extension is ".c", ".h", or name is "platformio.ini", use DeepSeek
-  - When filepath contains "frontend" or extension is ".tsx", ".jsx", ".ts", ".js", use Claude
-  - When user asks about images or schematics, use Gemini
-  - Always use Local for summarization to preserve privacy
+  - When filepath contains "firmware" or extension is ".c", ".h", use Local Autocomplete
+  - When filepath contains "frontend" or extension is ".tsx", ".jsx", ".ts", ".js", use PHOS Local (Qwen 7B)
+  - Always use Local Autocomplete for code generation to preserve privacy
 
 contextProviders:
   - name: google
-    params:
-      model: gemini-2.5-pro
   - name: diff
   - name: terminal
   - name: problems

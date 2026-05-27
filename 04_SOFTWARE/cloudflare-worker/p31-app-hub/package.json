@@ -1,0 +1,19 @@
+{
+  "name": "p31-app-hub",
+  "version": "1.0.0",
+  "description": "P31 Ecosystem App Hub - unified discovery, status, and developer console",
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@cloudflare/workers-types": "^4.20240815.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3",
+    "wrangler": "^3.60.0"
+  }
+}
