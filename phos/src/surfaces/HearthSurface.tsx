@@ -28,7 +28,7 @@ import {
 } from '../lib/FamilyContactLog';
 import { logEvent } from '../lib/EventLogger';
 
-type HearthTab = 'contacts' | 'schedule' | 'bonding' | 'cage';
+type HearthTab = 'contacts' | 'schedule' | 'bonding' | 'cage' | 'income';
 
 interface Props {
   className?: string;
@@ -215,6 +215,7 @@ export const HearthSurface: React.FC<Props> = ({ className, spoons, grayRock, on
           { key: 'schedule', label: '📅 Schedule' },
           { key: 'bonding', label: '🎮 Bonding' },
           { key: 'cage', label: '🔗 Cage' },
+          { key: 'income', label: '💰 Income' },
         ] as const).map((t) => (
           <button
             key={t.key}
@@ -424,6 +425,35 @@ export const HearthSurface: React.FC<Props> = ({ className, spoons, grayRock, on
               Cage wire deployment requires k4-cage CF worker with K4_MESH + K4_MESH_K4CAGE namespaces.
               Contact P31_AGENT_HUB administrator to provision child nodes.
             </p>
+          </div>
+        </div>
+      )}
+
+      {tab === 'income' && (
+        <div className="space-y-3">
+          <div className="p-3 rounded-xl" style={{ backgroundColor: 'rgba(10,5,5,0.4)', border: '1px solid rgba(102,68,68,0.3)' }}>
+            <div className="text-xs mb-3" style={{ color: '#ff6b6b' }}>Passive Income Dashboard</div>
+            <p className="text-[10px] mb-3" style={{ color: '#664444' }}>
+              Aggregated from CashPilot worker polling Grass, Honeygain, and Pawns APIs.
+              Updates every 15 minutes.
+            </p>
+            <div className="grid grid-cols-3 gap-2 text-center">
+              <div className="p-2 rounded-lg" style={{ backgroundColor: 'rgba(255,107,107,0.08)' }}>
+                <div className="text-lg font-bold" style={{ color: '#ff6b6b' }}>$0.01</div>
+                <div className="text-[9px]" style={{ color: '#664444' }}>Total</div>
+              </div>
+              <div className="p-2 rounded-lg" style={{ backgroundColor: 'rgba(255,107,107,0.08)' }}>
+                <div className="text-lg font-bold" style={{ color: '#ffa07a' }}>3</div>
+                <div className="text-[9px]" style={{ color: '#664444' }}>Platforms</div>
+              </div>
+              <div className="p-2 rounded-lg" style={{ backgroundColor: 'rgba(255,107,107,0.08)' }}>
+                <div className="text-lg font-bold" style={{ color: '#6ee7b7' }}>Live</div>
+                <div className="text-[9px]" style={{ color: '#664444' }}>Status</div>
+              </div>
+            </div>
+            <div className="mt-3 pt-3 text-[10px]" style={{ borderTop: '1px solid #1a1020', color: '#443333' }}>
+              Platform breakdown: Grass, Honeygain, Pawns (EarnApp pending API key)
+            </div>
           </div>
         </div>
       )}
