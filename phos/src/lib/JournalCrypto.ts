@@ -53,7 +53,7 @@ async function deriveOrGenerateKey(): Promise<CryptoKey> {
       localStorage.setItem(
         KEY_MATERIAL_STORAGE,
         JSON.stringify({
-          salt: toBase64(salt.buffer),
+          salt: toBase64(salt.buffer as ArrayBuffer),
           iterations: 100_000,
           createdAt: Date.now(),
         })
@@ -86,7 +86,7 @@ async function deriveOrGenerateKey(): Promise<CryptoKey> {
   return crypto.subtle.deriveKey(
     {
       name: "PBKDF2",
-      salt,
+      salt: salt as unknown as BufferSource,
       iterations: 100_000,
       hash: "SHA-256",
     },

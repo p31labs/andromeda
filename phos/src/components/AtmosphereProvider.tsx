@@ -36,7 +36,7 @@ export function useAtmosphere(): AtmosphereContextValue {
 
 export interface AtmosphereProviderProps {
   initialSurface?: SurfaceKey;
-  children: ReactNode;
+  children?: ReactNode;
   remoteEnabled?: boolean;
   initialSpoons?: number;
 }

@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { resolveAtmosphere, AtmospherePreset, SurfaceKey, GRAY_ROCK_PRESET } from '../atmosphere';
+import { resolveAtmosphere, GRAY_ROCK_PRESET } from '../atmosphere';
+import type { SurfaceKey } from '../atmosphere';
 
 describe('resolveAtmosphere', () => {
   it('should return the correct preset for a given surface', () => {

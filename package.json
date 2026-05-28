@@ -44,10 +44,26 @@
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
     "typescript": "^6.0.3",
-    "vitest": "^4.1.7"
+    "vitest": "^4.1.7",
+    "wrangler": "^4.95.0"
   },
   "dependencies": {
     "jsdom": "^29.1.1",
     "lucide-react": "^1.17.0"
-  }
+  },
+  "main": "p31-ignite.js",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/p31labs/andromeda.git"
+  },
+  "keywords": [],
+  "author": "",
+  "bugs": {
+    "url": "https://github.com/p31labs/andromeda/issues"
+  },
+  "homepage": "https://github.com/p31labs/andromeda#readme"
 }

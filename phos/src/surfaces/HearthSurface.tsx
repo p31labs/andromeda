@@ -40,6 +40,14 @@ export const HearthSurface: React.FC<Props> = ({ className, spoons, grayRock, on
   const [chainStatus, setChainStatus] = useState<{ valid: boolean; anchored: number } | null>(null);
   const [showVerifyResult, setShowVerifyResult] = useState(false);
 
+  const refresh = useCallback(async () => {
+    setContacts(getContactLog());
+    setSummary(getContactSummary());
+    const sched = getVisitationSchedule();
+    setSchedule(sched);
+    setNextVisitation(getNextVisitation());
+  }, []);
+
   useEffect(function() { refresh(); var i = setInterval(refresh, 60000); return function() { return clearInterval(i); }; }, [refresh]);
 
   useEffect(() => {

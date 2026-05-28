@@ -95,6 +95,26 @@ const SURFACE_SCRIPTS: Record<SurfaceKey, VoiceScript> = {
     entry: 'Zero-telemetry journal active. Your words stay here.',
     narrative: 'Encrypted local storage. No cloud. No witnesses.',
   },
+  FORGE: {
+    greeting: 'The Forge is hot.',
+    entry: 'Commerce layer active. All transactions are integer-math.',
+    narrative: 'Revenue engine online. SHA-256 chained audit trail.',
+  },
+  DRIVE: {
+    greeting: 'Drive surface connected.',
+    entry: 'Google Drive browser active. Select files for local ingestion.',
+    narrative: 'Documents flow into the knowledge graph.',
+  },
+  LEGAL: {
+    greeting: 'Legal vault accessed.',
+    entry: 'Court documents and filings. Chain of custody intact.',
+    narrative: 'Discovery materials. Tamper-evident logs.',
+  },
+  CONSTELLATION: {
+    greeting: 'Constellation surface active.',
+    entry: 'Agent mesh topology visible. All nodes accounted for.',
+    narrative: 'Multi-agent coordination layer.',
+  },
 };
 
 export { SURFACE_SCRIPTS };

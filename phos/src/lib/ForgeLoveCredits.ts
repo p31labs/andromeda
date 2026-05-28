@@ -39,7 +39,7 @@ export class ForgeLoveCredits {
   /**
    * Check if the cart can be paid with LOVE credits.
    */
-  static canPay(cartTotalCents: boolean): boolean {
+  static canPay(cartTotalCents: number): boolean {
     if (!cartTotalCents) return true;
     return KarmaEngine.getBalanceCents() >= (cartTotalCents as unknown as number);
   }

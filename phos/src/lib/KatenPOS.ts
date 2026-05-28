@@ -65,7 +65,7 @@ export function cartUpdateQuantity(cart: CartState, cartId: string, quantity: nu
   }
   const newItems = cart.items.map((i) =>
     i.cartId === cartId
-      ? applyLineItemTax({ sku: i.sku, name: i.name, quantity, unitPriceCents: i.unitPriceCents })
+      ? { ...applyLineItemTax({ sku: i.sku, name: i.name, quantity, unitPriceCents: i.unitPriceCents }), cartId: i.cartId, addedAt: i.addedAt }
       : i
   );
   return recalcCart(newItems);

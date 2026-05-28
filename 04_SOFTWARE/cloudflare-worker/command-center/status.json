@@ -1,10 +1,10 @@
 {
-  "updated": "2026-05-28T20:45:00-04:00",
+  "updated": "2026-05-28T23:05:00-04:00",
   "audit": {
     "probed_at": "2026-05-24T22:00:00-04:00",
     "method": "curl -- GET -L, 5-8s timeout; OPTIONS/POST where noted",
     "environment": "windows workspace",
-    "summary": "LANE 1+2 (May 28): simplex-worker AI activated on free tier (Gemini + OpenRouter). SSE sync rewritten (ReadableStream, auto-reconnect). HMAC auth gate fixed (allowlist for browsers, HMAC for server-to-server). ph-os PWA deployed. Discord + Stripe keys injected. 13 worker secrets, 11 production-ready.",
+    "summary": "DISCORD ORACLE BOT (May 28): Full bot integration deployed. 21 slash commands registered. Bot tools on HERALD/STEWARD/SENTINEL. Interaction handler live. phos-api migrated to bot API. All 15 Discord secrets injected.",
     "anomalies": [
       {
         "name": "p31-telemetry",

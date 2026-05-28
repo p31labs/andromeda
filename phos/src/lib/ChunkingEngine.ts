@@ -224,7 +224,7 @@ export function paragraphChunker(rawText: string, options: ChunkingOptions = {})
 
   if (segments.length === 0) return [];
 
-  const chunks: TextChunk[] = [];
+  const chunks: string[] = [];
   let buffer = '';
 
   for (const seg of segments) {

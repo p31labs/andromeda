@@ -186,7 +186,7 @@ export const DriveSurface: React.FC<Props> = ({ className }) => {
             { headers: { Authorization: `Bearer ${accessToken}` } }
           );
           if (exportRes.ok) {
-            const doc = await exportRes.json();
+            const doc = await exportRes.json() as Parameters<typeof extractTextFromGoogleDoc>[0];
             content = extractTextFromGoogleDoc(doc);
           }
         } else if (file.mimeType.startsWith('text/') || file.mimeType === 'application/json') {
