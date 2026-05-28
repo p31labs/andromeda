@@ -32,6 +32,15 @@ packages:
   - 'workers/discord'
   - 'workers/discord-alerter'
 
+  # Family Apps (standalone deployables)
+  - '02_Client_or_Misc/chromatica'
+  - '02_Client_or_Misc/matriarch-culinary-node/dashboard'
+  - '02_Client_or_Misc/fantasy-sports'
+  - '02_Client_or_Misc/fence-pro'
+  - '02_Client_or_Misc/cashpilot/ui'
+  - '02_Client_or_Misc/lighthouse-edu'
+  - 'p31-vibe-studio'
+
   # Shared Libraries / Data Layer
   - '04_SOFTWARE'
   - '04_SOFTWARE/*'
