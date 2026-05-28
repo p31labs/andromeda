@@ -1,9 +1,8 @@
 name = "p31-app-hub"
 type = "javascript"
-account_id = "your-account-id"
+account_id = "ee05f70c889cb6f876b9925257e3a2fa"
 workers_dev = true
-route = ""
-zone_id = ""
+main = "dist/index.mjs"
 
 [env.production]
 vars = { ENVIRONMENT = "production" }
@@ -11,21 +10,9 @@ routes = [
   { pattern = "app-hub.trimtab-signal.workers.dev", zone_name = "trimtab-signal.workers.dev" }
 ]
 
-[[kv_namespaces]]
-binding = "APP_REGISTRY"
-id = "app-registry-kv"
-preview_id = "app-registry-preview"
-
-[[kv_namespaces]]
-binding = "APP_STATUS"
-id = "app-status-kv"
-preview_id = "app-status-preview"
-
 [build]
 command = "npm run build"
 cwd = "."
-main = "src/index.ts"
 
 [build.upload]
 format = "modules"
-main = "./dist/index.mjs"

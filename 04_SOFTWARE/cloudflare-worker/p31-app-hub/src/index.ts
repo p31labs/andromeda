@@ -423,7 +423,7 @@ function handleAppsBrowse(searchParams: URLSearchParams): Response {
 
       <script>
         async function load() {
-          const url = ${query ? \`'/api/search?q=' + '\${decodeURIComponent(\`${query}\`)}'\` : "'/api/apps'"};
+          const url = ${query ? "'/api/search?q=' + encodeURIComponent('" + query + "')" : "'/api/apps'"};
           const res = await fetch(url);
           const data = await res.json();
 

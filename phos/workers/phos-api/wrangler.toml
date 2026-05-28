@@ -1,17 +1,12 @@
 name = "phos-api"
-main = "index.ts"
+main = "src/worker.ts"
 compatibility_date = "2025-04-01"
 compatibility_flags = ["nodejs_compat"]
 
-[vars]
-# Non-secret env vars go here
+[build]
+command = "if (-not (Test-Path dist)) { New-Item -ItemType Directory -Path dist }; Copy-Item src/worker.ts dist/_worker.js"
 
-# Secrets (set via `npx wrangler secret put <NAME>`):
-# DISCORD_WEBHOOK_URL
-# DISCORD_BOT_TOKEN
-# HARDWARE_SECRET
-# GOOGLE_CLIENT_ID
-# GOOGLE_CLIENT_SECRET
+[vars]
 
 [[kv_namespaces]]
 binding = "PHOS_STATE"
