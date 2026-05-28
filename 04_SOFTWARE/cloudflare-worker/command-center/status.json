@@ -1,10 +1,10 @@
 {
-  "updated": "2026-05-25T23:15:00-04:00",
+  "updated": "2026-05-28T20:45:00-04:00",
   "audit": {
     "probed_at": "2026-05-24T22:00:00-04:00",
     "method": "curl -- GET -L, 5-8s timeout; OPTIONS/POST where noted",
     "environment": "windows workspace",
-    "summary": "CWP-077 MESH HARDENING: 6 patches across 6 subsystems. CRITICAL: pglite-warehouse stale rejection lock reset, hearing-ops ErrorBoundary, MvpHub mounted guard. MEDIUM: command-center handleStatusRead try/catch, p31-forge store.js KV try/catch. LOW: k4-cage telemetry KV try/catch. Build verified: p31-hearing-ops ✅, BONDING 424/32 ✅.",
+    "summary": "LANE 1+2 (May 28): simplex-worker AI activated on free tier (Gemini + OpenRouter). SSE sync rewritten (ReadableStream, auto-reconnect). HMAC auth gate fixed (allowlist for browsers, HMAC for server-to-server). ph-os PWA deployed. Discord + Stripe keys injected. 13 worker secrets, 11 production-ready.",
     "anomalies": [
       {
         "name": "p31-telemetry",
@@ -184,6 +184,29 @@
       "url": "https://p31-technical-library.pages.dev"
     },
     {
+      "name": "simplex-worker",
+      "status": "online",
+      "url": "https://simplex-worker.trimtab-signal.workers.dev",
+      "endpoints": {
+        "health": "GET /api/health",
+        "phos": "POST /api/phos/respond (HMAC or allowlist)",
+        "biometric": "POST /api/biometric (HMAC)",
+        "state": "GET /api/state (JSON or SSE)",
+        "skills": "POST /api/* (operator auth)"
+      },
+      "secrets": 13,
+      "secrets_ready": 11,
+      "ai_providers": ["Google Gemini (free)", "OpenRouter (free)", "Ollama (local)"],
+      "ai_status": "online (free tier)"
+    },
+    {
+      "name": "ph-os",
+      "status": "online",
+      "url": "https://6fc5030d.ph-os.pages.dev",
+      "custom_domain": "willow-garden.trimtab-signal.workers.dev (add in CF Dashboard)",
+      "note": "PWA. SSE sync to simplex-worker. Gray Rock emergency mode. Bio-state tracking (spoons, calcium, HRV)."
+    },
+    {
       "name": "love_ledger_worker",
       "status": "deployed with CWP-042 GME tracking",
     "cwp_042_status": "implemented and deployed",
@@ -333,12 +356,12 @@
       "event": "Smallball v2 — HighEnergyView wired to Markov Chain engine. 12-attribute DB schema fixed (5→12). SpoonProvider context mounted. Build deployed to p31-smallball.pages.dev. Game log, score bug, pitch-by-pitch simulation live."
     },
     {
-      "date": "2026-05-25",
-      "event": "Cloud Sync pipeline built: p31-sync-edge worker (D1-backed push/pull endpoints), CloudSyncEngine.ts client class (cursor-based incremental sync), useAutoSave React hook (2s debounce). TrainingHub + LowEnergyView both wired. Build verified (2151 modules). Push/pull roundtrip confirmed."
+      "date": "2026-05-28",
+      "event": "LANE 1: SSE sync rewritten (ReadableStream + auto-reconnect). HMAC auth gate locked. PHOS_HMAC_SECRET + OPERATOR_SECRET injected. ph-os PWA deployed with_signed_requests."
     },
     {
-      "date": "2026-05-25",
-      "event": "CWP-077 MESH HARDENING: 6 patches applied. CRITICAL: pglite-warehouse stale rejection lock, hearing-ops ErrorBoundary, MvpHub mounted guard. MEDIUM: command-center KV try/catch, p31-forge KV try/catch. LOW: k4-cage telemetry KV try/catch. BONDING test count corrected to 424."
+      "date": "2026-05-28",
+      "event": "LANE 2: GOOGLE_API_KEY + OPENROUTER_API_KEY injected (free tier AI online). DISCORD_TOKEN + STRIPE_SECRET_KEY + STRIPE_WEBHOOK_SECRET injected from .env.master vault. simplex-worker AI responding live."
     }
   ]
 }
