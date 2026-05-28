@@ -1,0 +1,443 @@
+/**
+ * ArchiveSurface.tsx — The Archive (Local RAG Knowledge System).
+ *
+ * Three sub-modes:
+ * 1. Search — RAG query interface: type a question → embed → vector search → stream LLM response
+ * 2. Browser — View/search stored knowledge graph entries by door, text, date
+ * 3. Ingest — Batch import text/files into the knowledge graph with auto-embedding
+ *
+ * All queries run locally via LiteLLM proxy (localhost:4000).
+ * No API tokens burned. All data stays in-browser via PGLite.
+ */
+
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { useAtmosphere } from '../components/AtmosphereProvider';
+import { embedText } from '../lib/Embedder';
+import { getChaosVault, getDoorStats, recentEntries, queryByDoor, type KnowledgeEntry } from '../lib/ChaosVault';
+import { logEvent } from '../lib/EventLogger';
+
+type ArchiveTab = 'search' | 'browse' | 'ingest';
+
+interface Props {
+  className?: string;
+}
+
+const LITELLM_CHAT_URL = 'http://localhost:4000/v1/chat/completions';
+
+function cosineSimilarity(a: number[], b: number[]): number {
+  if (a.length === 0 || b.length === 0 || a.length !== b.length) return 0;
+  let dot = 0, magA = 0, magB = 0;
+  for (let i = 0; i < a.length; i++) {
+    dot += a[i] * b[i]; magA += a[i] * a[i]; magB += b[i] * b[i];
+  }
+  const denom = Math.sqrt(magA) * Math.sqrt(magB);
+  return denom === 0 ? 0 : dot / denom;
+}
+
+export const ArchiveSurface: React.FC<Props> = ({ className }) => {
+  const { spoons, grayRock } = useAtmosphere();
+  const [tab, setTab] = useState<ArchiveTab>('search');
+
+  // Search state
+  const [query, setQuery] = useState('');
+  const [response, setResponse] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [contextMatches, setContextMatches] = useState(0);
+  const [error, setError] = useState('');
+  const abortRef = useRef<AbortController | null>(null);
+
+  // Browse state
+  const [entries, setEntries] = useState<KnowledgeEntry[]>([]);
+  const [doorStats, setDoorStats] = useState<Record<string, number>>({});
+  const [browseFilter, setBrowseFilter] = useState('');
+  const [browseDoor, setBrowseDoor] = useState<string>('all');
+  const [browseLoading, setBrowseLoading] = useState(false);
+
+  // Ingest state
+  const [ingestText, setIngestText] = useState('');
+  const [ingestDoor, setIngestDoor] = useState('archive');
+  const [ingestStatus, setIngestStatus] = useState<'idle' | 'ingesting' | 'done' | 'error'>('idle');
+  const [ingestCount, setIngestCount] = useState(0);
+
+  // Load browse data when tab changes
+  const loadBrowseData = useCallback(async () => {
+    setBrowseLoading(true);
+    try {
+      const [stats, recent] = await Promise.all([
+        getDoorStats(),
+        recentEntries(50),
+      ]);
+      setDoorStats(stats);
+      setEntries(recent);
+    } catch {
+      setEntries([]);
+    }
+    setBrowseLoading(false);
+  }, []);
+
+  useEffect(() => {
+    if (tab === 'browse') loadBrowseData();
+  }, [tab, loadBrowseData]);
+
+  // --- SEARCH (RAG) ---
+
+  const handleSearch = useCallback(async (e: React.FormEvent) => {
+    e.preventDefault();
+    const trimmed = query.trim();
+    if (!trimmed) return;
+
+    setLoading(true);
+    setResponse('');
+    setError('');
+    setContextMatches(0);
+    abortRef.current = new AbortController();
+
+    try {
+      // 1. Embed the query
+      const queryEmbedding = await embedText(trimmed);
+      if (queryEmbedding.length === 0) {
+        throw new Error('Embedding failed — is LiteLLM running on localhost:4000?');
+      }
+
+      // 2. Search ChaosVault for top-3 matches
+      const db = await getChaosVault();
+      const { rows } = await db.query<{
+        id: string; raw_text: string; embedding: Buffer | null; source_door: string;
+      }>(
+        `SELECT id, raw_text, embedding, source_door FROM unified_knowledge_graph WHERE embedding IS NOT NULL`
+      );
+
+      const scored = rows
+        .filter((r) => r.embedding && r.embedding.byteLength > 0)
+        .map((r) => {
+          const emb = Array.from(new Float32Array(r.embedding!.buffer));
+          return { id: r.id, rawText: r.raw_text, sourceDoor: r.source_door, score: cosineSimilarity(queryEmbedding, emb) };
+        })
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 3);
+
+      setContextMatches(scored.length);
+
+      const contextStr = scored.length > 0
+        ? scored.map((s, i) => `[${i + 1}] (from ${s.sourceDoor}, score:${s.score.toFixed(2)}): ${s.rawText.slice(0, 300)}`).join('\n')
+        : '';
+
+      // 3. Stream from local LiteLLM
+      const messages = [
+        {
+          role: 'system' as const,
+          content: `You are PHOS-01, the Phosphorus Human Operating Surface. You are the sovereign AI operating locally on the operator's machine. You have direct read access to the operator's personal knowledge graph, warehouse inventory, retro vault, family care mesh, and event history.\n\nCRITICAL RULES:\n- Answer ONLY from the provided context. Do not hallucinate.\n- If context is insufficient, say "I don't have enough data on that yet. Try ingesting more into the Buffer."\n- Be direct, technical, and concise. No fluff. No "As an AI."\n- The operator has AuDHD. Be precise. Don't overwhelm.\n- Current spoon state: ${spoons}/5 (${grayRock ? 'CRISIS' : spoons <= 2 ? 'SANCTUARY' : spoons === 3 ? 'BRIDGE' : 'QUANTUM'}).\n\nAvailable context:\n${contextStr || '(no matching entries)'}`,
+        },
+        { role: 'user' as const, content: trimmed },
+      ];
+
+      const res = await fetch(LITELLM_CHAT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ model: 'ollama/qwen2.5-coder:7b', messages, stream: true, temperature: 0.3, max_tokens: 1024 }),
+        signal: abortRef.current.signal,
+      });
+
+      if (!res.ok) throw new Error(`LiteLLM error: ${res.status}`);
+
+      const reader = res.body?.getReader();
+      if (!reader) throw new Error('No response stream');
+
+      const decoder = new TextDecoder();
+      let buffer = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || '';
+        for (const line of lines) {
+          const trimmed = line.trim();
+          if (!trimmed || !trimmed.startsWith('data: ')) continue;
+          const data = trimmed.slice(6);
+          if (data === '[DONE]') break;
+          try {
+            const parsed = JSON.parse(data);
+            const delta = parsed.choices?.[0]?.delta?.content;
+            if (delta) setResponse((prev) => prev + delta);
+          } catch { /* skip malformed SSE */ }
+        }
+      }
+
+      setLoading(false);
+      logEvent('INTENT_ROUTED' as any, { action: 'archive_search', query: trimmed, contextMatches: scored.length });
+    } catch (err) {
+      setLoading(false);
+      const msg = err instanceof Error ? err.message : 'RAG pipeline failed';
+      setError(msg);
+    }
+  }, [query, spoons, grayRock]);
+
+  const filteredBrowseEntries = entries.filter((e) => {
+    const matchesDoor = browseDoor === 'all' || e.sourceDoor === browseDoor;
+    const matchesText = !browseFilter.trim() || e.rawText.toLowerCase().includes(browseFilter.toLowerCase());
+    return matchesDoor && matchesText;
+  });
+
+  // --- INGEST ---
+
+  const handleIngest = useCallback(async () => {
+    const trimmed = ingestText.trim();
+    if (!trimmed) return;
+
+    setIngestStatus('ingesting');
+    let count = 0;
+
+    try {
+      const db = await getChaosVault();
+      // Split on double newlines or numbered entries
+      const chunks = trimmed.split(/\n\n+/).filter((c) => c.trim().length > 10);
+
+      for (const chunk of chunks) {
+        const id = `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+        await db.query(
+          `INSERT INTO unified_knowledge_graph (id, source_door, raw_text, metadata, created_at) VALUES ($1, $2, $3, $4, $5)`,
+          [id, ingestDoor, chunk.trim(), JSON.stringify({ ingested: true }), Date.now()]
+        );
+        count++;
+      }
+
+      setIngestCount(count);
+      setIngestStatus('done');
+      setIngestText('');
+      logEvent('DEVICE_SEALED' as any, { action: 'archive_ingest', door: ingestDoor, count });
+      loadBrowseData();
+    } catch {
+      setIngestStatus('error');
+    }
+  }, [ingestText, ingestDoor, loadBrowseData]);
+
+  const formatTs = (ts: number) => new Date(ts).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit' });
+
+  return (
+    <div className={className}>
+      <div className="flex items-center justify-between mb-4">
+        <div>
+          <h1 className="text-2xl font-semibold mb-1" style={{ color: '#00e5ff' }}>The Archive</h1>
+          <p className="text-[10px]" style={{ color: '#224466' }}>Local RAG · Zero API tokens · PGLite backed</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-[9px] px-2 py-0.5 rounded-full" style={{ backgroundColor: 'rgba(0,229,255,0.1)', color: '#00e5ff' }}>
+            {Object.values(doorStats).reduce((a, b) => a + b, 0)} entries
+          </span>
+          <span className="text-[9px] px-2 py-0.5 rounded-full" style={{ backgroundColor: 'rgba(0,229,255,0.1)', color: '#39ff14' }}>
+            LLM: localhost:4000
+          </span>
+        </div>
+      </div>
+
+      {/* Tab Switcher */}
+      <div className="flex gap-1 mb-4">
+        {([
+          { key: 'search', label: '🔍 Search', desc: 'Ask PHOS' },
+          { key: 'browse', label: '📚 Browse', desc: 'Knowledge graph' },
+          { key: 'ingest', label: '⬇ Ingest', desc: 'Import data' },
+        ] as const).map((t) => (
+          <button
+            key={t.key}
+            onClick={() => setTab(t.key)}
+            className="flex-1 py-2 text-center rounded-lg"
+            style={{
+              backgroundColor: tab === t.key ? 'rgba(0,229,255,0.12)' : 'transparent',
+              border: `1px solid ${tab === t.key ? 'rgba(0,229,255,0.3)' : 'rgba(34,68,102,0.3)'}`,
+            }}
+          >
+            <div className="text-xs" style={{ color: tab === t.key ? '#00e5ff' : '#224466' }}>{t.label}</div>
+            <div className="text-[9px]" style={{ color: tab === t.key ? '#00e5ff' : '#1a3355' }}>{t.desc}</div>
+          </button>
+        ))}
+      </div>
+
+      {/* SEARCH TAB */}
+      {tab === 'search' && (
+        <div className="space-y-4">
+          <form onSubmit={handleSearch}>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Ask PHOS about your data..."
+                className="flex-1 py-3 px-4 text-sm rounded-xl"
+                style={{ backgroundColor: 'rgba(0,17,34,0.8)', border: '1px solid #224466', color: '#cce0ff' }}
+              />
+              <button
+                type="submit"
+                disabled={loading || !query.trim()}
+                className="px-5 py-3 text-xs rounded-xl font-semibold disabled:opacity-30"
+                style={{ backgroundColor: loading ? '#1a3355' : '#00e5ff', color: loading ? '#224466' : '#001122' }}
+              >
+                {loading ? '◉ Searching…' : '🔍 Ask'}
+              </button>
+            </div>
+          </form>
+
+          {contextMatches > 0 && (
+            <p className="text-[10px]" style={{ color: '#39ff14' }}>
+              Found {contextMatches} matching entries in knowledge graph.
+            </p>
+          )}
+
+          {error && <p className="text-xs" style={{ color: '#ef4444' }}>{error}</p>}
+
+          {response && (
+            <div className="p-4 rounded-xl" style={{ backgroundColor: 'rgba(0,17,34,0.5)', border: '1px solid #224466' }}>
+              <div className="flex items-start gap-3">
+                <span className="text-xs mt-0.5" style={{ color: '#00e5ff' }}>▶</span>
+                <p className="text-sm whitespace-pre-wrap" style={{ color: '#cce0ff' }}>
+                  {response}
+                  {loading && <span className="animate-pulse ml-0.5">▊</span>}
+                </p>
+              </div>
+            </div>
+          )}
+
+          {!response && !loading && !error && (
+            <div className="p-6 rounded-xl text-center" style={{ border: '1px dashed #224466' }}>
+              <p className="text-xs" style={{ color: '#224466' }}>
+                Search your knowledge graph using your local LLM.
+              </p>
+              <p className="text-[10px] mt-2" style={{ color: '#1a3355' }}>
+                Ingest documents first via the Ingest tab. The more you feed it, the smarter PHOS gets.
+              </p>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* BROWSE TAB */}
+      {tab === 'browse' && (
+        <div className="space-y-3">
+          {/* Door stats */}
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={() => setBrowseDoor('all')}
+              className="text-[10px] px-2 py-1 rounded-md"
+              style={{
+                backgroundColor: browseDoor === 'all' ? 'rgba(0,229,255,0.15)' : 'transparent',
+                border: `1px solid ${browseDoor === 'all' ? '#00e5ff' : '#224466'}`,
+                color: browseDoor === 'all' ? '#00e5ff' : '#445566',
+              }}
+            >
+              all ({Object.values(doorStats).reduce((a, b) => a + b, 0)})
+            </button>
+            {Object.entries(doorStats).sort((a, b) => b[1] - a[1]).map(([door, count]) => (
+              <button
+                key={door}
+                onClick={() => setBrowseDoor(door)}
+                className="text-[10px] px-2 py-1 rounded-md"
+                style={{
+                  backgroundColor: browseDoor === door ? 'rgba(0,229,255,0.15)' : 'transparent',
+                  border: `1px solid ${browseDoor === door ? '#00e5ff' : '#224466'}`,
+                  color: browseDoor === door ? '#00e5ff' : '#445566',
+                }}
+              >
+                {door} ({count})
+              </button>
+            ))}
+          </div>
+
+          {/* Filter */}
+          <input
+            type="text"
+            value={browseFilter}
+            onChange={(e) => setBrowseFilter(e.target.value)}
+            placeholder="Filter entries..."
+            className="w-full py-2 px-3 text-xs rounded-lg"
+            style={{ backgroundColor: 'rgba(0,17,34,0.6)', border: '1px solid #224466', color: '#cce0ff' }}
+          />
+
+          {/* Entries */}
+          {browseLoading ? (
+            <p className="text-xs text-center py-4" style={{ color: '#224466' }}>Loading…</p>
+          ) : filteredBrowseEntries.length === 0 ? (
+            <div className="p-4 rounded-xl text-center" style={{ border: '1px dashed #224466' }}>
+              <p className="text-xs" style={{ color: '#224466' }}>
+                {entries.length === 0 ? 'Knowledge graph is empty. Ingest data to begin.' : 'No matching entries.'}
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-2 max-h-[400px] overflow-y-auto">
+              {filteredBrowseEntries.map((e) => (
+                <div key={e.id} className="p-3 rounded-xl text-xs"
+                  style={{ backgroundColor: 'rgba(0,17,34,0.4)', border: '1px solid #1a3355' }}>
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="font-mono text-[9px] px-1.5 py-0.5 rounded"
+                      style={{ backgroundColor: 'rgba(0,229,255,0.1)', color: '#00e5ff' }}>
+                      {e.sourceDoor}
+                    </span>
+                    <span className="text-[9px]" style={{ color: '#224466' }}>{formatTs(e.createdAt)}</span>
+                  </div>
+                  <p className="text-[11px] leading-relaxed line-clamp-3" style={{ color: '#8899aa' }}>
+                    {e.rawText.slice(0, 200)}{e.rawText.length > 200 ? '…' : ''}
+                  </p>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* INGEST TAB */}
+      {tab === 'ingest' && (
+        <div className="space-y-3">
+          <p className="text-xs" style={{ color: '#224466' }}>
+            Paste text below. Each paragraph (separated by blank line) becomes a knowledge graph entry.
+            Entries are embedded and stored locally — nothing leaves your device.
+          </p>
+
+          <select
+            value={ingestDoor}
+            onChange={(e) => setIngestDoor(e.target.value)}
+            className="w-full py-2 px-3 text-xs rounded-lg"
+            style={{ backgroundColor: 'rgba(0,17,34,0.8)', border: '1px solid #224466', color: '#cce0ff' }}
+          >
+            <option value="archive">Archive</option>
+            <option value="hearth">Hearth</option>
+            <option value="sanctuary">Sanctuary</option>
+            <option value="forge">Forge</option>
+            <option value="buffer">Buffer</option>
+            <option value="legal">Legal</option>
+            <option value="firmware">Firmware</option>
+            <option value="medical">Medical</option>
+          </select>
+
+          <textarea
+            value={ingestText}
+            onChange={(e) => setIngestText(e.target.value)}
+            placeholder={"Paste documents, notes, logs here...\n\nEach paragraph becomes a searchable entry.\n\nSeparate entries with blank lines."}
+            rows={10}
+            className="w-full p-3 text-xs rounded-xl resize-none font-mono"
+            style={{ backgroundColor: 'rgba(0,17,34,0.8)', border: '1px solid #224466', color: '#cce0ff' }}
+          />
+
+          <div className="flex items-center justify-between">
+            <span className="text-[10px]" style={{ color: '#224466' }}>
+              {ingestText.trim() ? `${ingestText.trim().split(/\n\n+/).filter(c => c.trim().length > 10).length} entries detected` : ''}
+            </span>
+            <button
+              onClick={handleIngest}
+              disabled={!ingestText.trim() || ingestStatus === 'ingesting'}
+              className="px-4 py-2 text-xs rounded-lg font-semibold disabled:opacity-30"
+              style={{ backgroundColor: ingestStatus === 'done' ? '#059669' : '#00e5ff', color: ingestStatus === 'done' ? '#f0fdf4' : '#001122' }}
+            >
+              {ingestStatus === 'ingesting' ? 'Ingesting…' : ingestStatus === 'done' ? `✓ ${ingestCount} entries added` : 'Ingest →'}
+            </button>
+          </div>
+
+          {ingestStatus === 'error' && (
+            <p className="text-xs" style={{ color: '#ef4444' }}>Ingest failed. Check PGLite connection.</p>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default ArchiveSurface;

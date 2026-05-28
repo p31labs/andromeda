@@ -14,6 +14,7 @@ import { WarehouseSurface } from '../surfaces/WarehouseSurface';
 import { RetroVaultSurface } from '../surfaces/RetroVaultSurface';
 import { LedgerSurface } from '../surfaces/LedgerSurface';
 import { SanctuarySurface } from '../surfaces/SanctuarySurface';
+import { ArchiveSurface } from '../surfaces/ArchiveSurface';
 import { ArcadeSurface } from '../surfaces/ArcadeSurface';
 import { NodeZeroSurface } from '../surfaces/NodeZeroSurface';
 import { HearthSurface } from '../surfaces/HearthSurface';
@@ -215,7 +216,7 @@ const SurfaceContent: React.FC<{
       );
 
     case 'ARCHIVE': {
-      return <ArchiveSurface theme={theme} spoons={spoons} grayRock={grayRock} />;
+      return <ArchiveSurface />;
     }
 
     case 'SETTINGS':
@@ -250,69 +251,7 @@ const SurfaceContent: React.FC<{
       );
   }
 };
-
-// --- ARCHIVE SURFACE (RAG-powered knowledge search) ---
-const ArchiveSurface: React.FC<{
-  theme: ReturnType<typeof getBiologicalTheme>;
-  spoons: number;
-  grayRock: boolean;
-}> = ({ theme, spoons }) => {
-  const [query, setQuery] = useState('');
-  const [activeQuery, setActiveQuery] = useState('');
-  const [error, setError] = useState('');
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!query.trim()) return;
-    setError('');
-    setActiveQuery(query.trim());
-  };
-
-  const handleClear = () => {
-    setQuery('');
-    setActiveQuery('');
-    setError('');
-  };
-
-  return (
-    <div className="space-y-6 max-w-2xl w-full">
-      <h1 className={`text-3xl ${theme.heading}`}>Archive</h1>
-      <p className={theme.body}>
-        Sovereign archive. Local embeddings ready. Query your knowledge.
-      </p>
-      <form onSubmit={handleSubmit} className="pt-2">
-        <div className="flex gap-3">
-          <input
-            type="text"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search your knowledge..."
-            className={`flex-1 py-4 px-6 text-base ${theme.input}`}
-          />
-          <button type="submit" className={`px-6 py-4 text-sm tracking-widest ${theme.button}`}>
-            Ask
-          </button>
-        </div>
-      </form>
-
-      {error && (
-        <p className="text-sm text-red-400">{error}</p>
-      )}
-
-      {activeQuery && (
-        <div className={`p-4 ${theme.card}`}>
-          <ShakeStream
-            query={activeQuery}
-            onComplete={handleClear}
-            onError={(msg) => setError(msg)}
-          />
-        </div>
-      )}
-    </div>
-  );
-};
-
-// --- IGNITION SURFACE ---
+  // --- IGNITION SURFACE ---
 const IgnitionSurface: React.FC<{
   theme: ReturnType<typeof getBiologicalTheme>;
   spoons: number;
