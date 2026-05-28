@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { PhosOrb } from './PhosOrb';
 import { PassportProvider, useHardenedPassport } from '../lib/PassportContext';
+import { SurfaceRouter } from './SurfaceRouter';
 import type { OrbState } from '../types/phos';
 
 export interface PhosShellProps {
@@ -70,7 +71,7 @@ const PhosShellInner: React.FC<PhosShellProps> = ({
       )}
 
       <main className="relative z-10 w-full max-w-md mx-auto px-4 pt-6 h-full flex flex-col">
-        {children}
+        <SurfaceRouter />
       </main>
 
       <PhosOrb

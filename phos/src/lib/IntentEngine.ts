@@ -107,6 +107,12 @@ const INTENT_RULES: IntentRule[] = [
     keywords: ['setting', 'config', 'preference', 'tune', 'customize', 'adjust'],
     surface: 'SETTINGS',
   },
+
+  // ---- CONSTELLATION / APP LAUNCHER ----
+  {
+    keywords: ['app', 'apps', 'launch', 'open', 'tool', 'tools', 'constellation', 'launcher', 'dashboard', 'suite', 'family'],
+    surface: 'CONSTELLATION',
+  },
 ];
 
 // ---- Fallback keyword clusters for "I don't know" ----
