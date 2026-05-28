@@ -147,7 +147,7 @@ export function getContactLog(): FamilyContactEntry[] {
 export async function addContactEntry(
   entry: Omit<FamilyContactEntry, 'id' | 'hash' | 'previousHash' | 'chainEventId'>
 ): Promise<FamilyContactEntry> {
-  const id = c__;
+  const id = crypto.randomUUID();
   const log = getRawLog();
   const previousHash = log.length > 0 ? log[0].hash : 'GENESIS';
   const canonical = canonicalize(entry);

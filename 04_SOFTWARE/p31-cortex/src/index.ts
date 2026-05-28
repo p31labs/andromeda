@@ -191,6 +191,39 @@ async function handleRunAgent(
   });
 }
 
+async function handleKofiWebhook(
+  request: Request,
+  env: CortexEnv,
+): Promise<Response> {
+  const body = await request.json<Record<string, unknown>>();
+  const data = body.data as Record<string, unknown> | undefined;
+
+  const kofiPayload = {
+    id: (data?.kofi_transaction_id as string) ?? crypto.randomUUID(),
+    type: (data?.type as string) ?? "donation",
+    amount: parseFloat((data?.amount as string) ?? "0"),
+    currency: (data?.currency as string) ?? "USD",
+    supporterName: (data?.from_name as string) ?? "Anonymous",
+    supporterEmail: (data?.email as string) ?? "",
+    message: (data?.message as string) ?? undefined,
+    productName: (data?.shop_items as string) ?? undefined,
+    timestamp: new Date().toISOString(),
+  };
+
+  const binding = env.KOFI_AGENT as DurableObjectNamespace;
+  const id = binding.idFromName("kofi-primary");
+  const stub = binding.get(id);
+  const resp = await stub.fetch("http://internal/init", {
+    method: "POST",
+    body: JSON.stringify(kofiPayload),
+    headers: { "Content-Type": "application/json" },
+  });
+  return new Response(await resp.text(), {
+    status: resp.status,
+    headers: { "Content-Type": "application/json" },
+  });
+}
+
 async function handleListDeadlines(
   env: CortexEnv,
   url: URL,

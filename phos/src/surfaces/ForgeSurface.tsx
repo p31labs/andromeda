@@ -187,7 +187,7 @@ function POSTab() {
       // Decrement stock for each item in catalog
       for (const item of cart.items) {
         try {
-          await recordStockMovement({ sku: item.sku, quantity: -item.reason: `Sale: ${item.name}` });
+          await recordStockMovement({ sku: item.sku, quantity: -(item.quantity ?? 1), reason: `Sale: ${item.name}` });
         } catch { /* inventory tracking is best-effort */ }
       }
 

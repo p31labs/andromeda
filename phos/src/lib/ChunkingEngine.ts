@@ -239,13 +239,13 @@ export function paragraphChunker(rawText: string, options: ChunkingOptions = {})
   }
   if (buffer.length >= opts.minChunkSize) chunks.push(buffer);
 
-  return chunks.map((text, i) => ({
-    text: restoreCodeBlocks(text, blocks),
+  return chunks.map((chunkText, i) => ({
+    text: restoreCodeBlocks(chunkText, blocks),
     heading: null,
     chunkIndex: i,
     totalChunks: chunks.length,
-    charCount: text.length,
-    isCodeBlock: text.includes('```'),
+    charCount: chunkText.length,
+    isCodeBlock: chunkText.includes('```'),
     sourceLineRange: [0, 0] as [number, number],
   }));
 }

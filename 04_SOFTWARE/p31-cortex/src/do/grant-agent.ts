@@ -25,7 +25,7 @@ export class GrantAgentDO extends BaseAgent {
         headers: { 'Content-Type': 'application/json', 'Retry-After': '60' },
       });
     }
-    await this.storage.put(rateKey, (count || 0) + 1, { expirationTtl: 60 });
+    await this.storage.put(rateKey, (count || 0) + 1, { ttl: 60 });
 
     const body = await request.json<Partial<GrantRecord>>();
     const id = this.generateId();
@@ -48,9 +48,10 @@ export class GrantAgentDO extends BaseAgent {
 
     let deadline: string;
     try {
+      if (!body.deadline) throw new Error();
       const d = new Date(body.deadline);
       if (isNaN(d.getTime())) throw new Error();
-      deadline = d.toISOString().split('T')[0]; // store YYYY-MM-DD only
+      deadline = d.toISOString().split('T')[0];
     } catch {
       return new Response(JSON.stringify({ error: 'invalid_deadline', reason: 'ISO date required (YYYY-MM-DD)' }), {
         status: 400, headers: { 'Content-Type': 'application/json' }
@@ -58,7 +59,7 @@ export class GrantAgentDO extends BaseAgent {
     }
 
     const validStatuses: readonly string[] = ["researching", "assembling", "submitted", "awarded", "rejected"];
-    const status = validStatuses.includes(body.status) ? body.status : "researching";
+    const status = validStatuses.includes(body.status ?? "") ? (body.status as GrantRecord["status"]) : "researching";
 
     const requirements = Array.isArray(body.requirements) ? body.requirements : [];
     const notes = body.notes?.trim() || '';

@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang=\"en\">
+<head>
+    <meta charset=\"UTF-8\">
+    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
+    <title>Phos Probe UI</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+            color: #333;
+        }
+        .container {
+            background: #f9f9f9;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            color: #2c3e50;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 10px 5px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .response {
+            background: #ecf0f1;
+            border-left: 4px color: #3498db;
+            padding: 15px;
+            margin-top: 20px;
+            white-space: pre-wrap;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        .error {
+            background-color: #fadbd8;
+            border-left-color: #e74c3c;
+        }
+        .success {
+            background-color: #d5f5e3;
+            border-left-color: #2ecc71;
+        }
+        .field-group {
+            margin-bottom: 15px;
+        }
+        .inline-fields {
+            display: flex;
+            gap: 10px;
+        }
+        .inline-fields > div {
+            flex: 1;
+        }
+        .note {
+            font-size: 0.9em;
+            color: #7f8c8d;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class=\"container\">
+        <h1>Phos Probe UI</h1>
+        <p>Tool for testing the Phos garden companion API endpoint</p>
+        
+        <div class=\"field-group\">
+            <label for=\"phosUrl\">Phos URL:</label>
+            <input type=\"text\" id=\"phosUrl\" value=\"https://willow-garden.trimtab-signal.workers.dev/api/phos/respond\" placeholder=\"https://willow-garden.trimtab-signal.workers.dev/api/phos/respond\">
+        </div>
+        
+        <div class=\"field-group\">
+            <label for=\"hmacSecret\">PHOS HMAC Secret:</label>
+            <input type=\"password\" id=\"hmacSecret\" placeholder=\"Enter your PHOS_HMAC_SECRET\">
+            <p class=\"note\">Leave blank to use PHOS_CHILD_IDS allowlist instead</p>
+        </div>
+        
+        <div class=\"field-group\">
+            <label for=\"childId\">Child ID:</label>
+            <input type=\"text\" id=\"childId\" placeholder=\"e.g., willow-001\" value=\"willow-001\">
+            <p class=\"note\">Used for both HMAC verification and allowlist checking</p>
+        </div>
+        
+        <div class=\"field-group\">
+            <label for=\"localHour\">Local Hour (0-23):</label>
+            <input type=\"number\" id=\"localHour\" min=\"0\" max=\"23\" value=\"10\" placeholder=\"10\">
+            <p class=\"note\">Used for wake window checking (default 7-20)</p>
+        </div>
+        
+        <div class=\"field-group\">
+            <label for=\"exchangeCount\">Exchange Count:</label>
+            <input type=\"number\" id=\"exchangeCount\" min=\"0\" value=\"0\" placeholder=\"0\">
+            <p class=\"note\">Used for exchange cap checking (default limit 10)</p>
+        </div>
+        
+        <div class=\"field-group\">
+            <label for=\"preReader\">Pre-Reader Mode:</label>
+            <input type=\"checkbox\" id=\"preReader\">
+            <p class=\"note\">When checked, limits response to 12 words and 256 max tokens</p>
+        </div>
+        
+        <div class=\"field-group\">
+            <label for=\"inputType\">Input Type:</label>
+            <select id=\"inputType\">
+                <option value=\"text\">text</option>
+                <option value=\"voice\">voice</option>
+                <option value=\"haptic\">haptic</option>
+                <option value=\"color\">color</option>
+            </select>
+        </div>
+        
+        <div class=\"field-group\">
+            <label for=\"input\">Input (Child's Message):</label>
+            <textarea id=\"input\" rows=\"3\" placeholder=\"Enter child's message or observation...\"></textarea>
+        </div>
+        
+        <div class=\"field-group\">
+            <label for=\"gardenState\">Garden State (JSON):</label>
+            <textarea id=\"gardenState\" rows=\"5\" placeholder='{\"molecules\":[{\"type\":\"H2O\",\"count\":2}],\"actions\":[\"poured\",\"mixed\"],\"sensoryProfile\":{\"temperature\":\"warm\",\"light\":\"bright\"}}'></textarea>
+            <p class=\"note\">JSON object describing the garden state</p>
+        </div>
+        
+        <button id=\"sendBtn\">Send Request to Phos</button>
+        <button id=\"clearBtn\">Clear Form</button>
+        <button id=\"exampleBtn\">Load Example</button>
+        
+        <div class=\"field-group\">
+            <h2>Response:</h2>
+            <div id=\"response\" class=\"response\">
+                Response will appear here...
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('sendBtn').addEventListener('click', async () => {
+            const responseDiv = document.getElementById('response');
+            responseDiv.textContent = 'Sending request...';
+            responseDiv.className = 'response';
+            
+            try {
+                const phosUrl = document.getElementById('phosUrl').value;
+                const hmacSecret = document.getElementById('hmacSecret').value;
+                const childId = document.getElementById('childId').value;
+                const localHour = document.getElementById('localHour').value;
+                const exchangeCount = parseInt(document.getElementById('exchangeCount').value) || 0;
+                const preReader = document.getElementById('preReader').checked;
+                const inputType = document.getElementById('inputType').value;
+                const input = document.getElementById('input').value;
+                const gardenStateText = document.getElementById('gardenState').value;
+                
+                let gardenState = {};
+                if (gardenStateText.trim()) {
+                    try {
+                        gardenState = JSON.parse(gardenStateText);
+                    } catch (e) {
+                        responseDiv.textContent = 'Error: Invalid JSON in Garden State field';
+                        responseDiv.className = 'response error';
+                        return;
+                    }
+                }
+                
+                const body = {
+                    child_id: childId,
+                    local_hour: localHour !== '' ? parseInt(localHour) : undefined,
+                    exchange_count: exchangeCount,
+                    pre_reader: preReader,
+                    input_type: inputType,
+                    input: input,
+                    garden_state: gardenState
+                };
+                
+                // Remove undefined values
+                Object.keys(body).forEach(key => body[key] === undefined && delete body[key]);
+                
+                const bodyText = JSON.stringify(body);
+                
+                let headers = {
+                    'Content-Type': 'application/json'
+                };
+                
+                if (hmacSecret) {
+                    // Simple HMAC-SHA256 implementation for demo
+                    // In production, use proper crypto library
+                    const encoder = new TextEncoder();
+                    const keyData = encoder.encode(hmacSecret);
+                    const bodyData = encoder.encode(bodyText);
+                    
+                    // This is a simplified version - real implementation would use SubtleCrypto
+                    // For demo purposes, we'll just show what would be sent
+                    headers['X-Phos-Signature'] = 'demo-signature-' + btoa(String.fromCharCode(...bodyData));
+                }
+                
+                const response = await fetch(phosUrl, {
+                    method: 'POST',
+                    headers: headers,
+                    body: bodyText
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    responseDiv.textContent = JSON.stringify(result, null, 2);
+                    responseDiv.className = 'response success';
+                } else {
+                    responseDiv.textContent = Error :\\n;
+                    responseDiv.className = 'response error';
+                }
+            } catch (error) {
+                responseDiv.textContent = 'Error: ' + error.message;
+                responseDiv.className = 'response error';
+            }
+        });
+        
+        document.getElementById('clearBtn').addEventListener('click', () => {
+            document.getElementById('phosUrl').value = 'https://willow-garden.trimtab-signal.workers.dev/api/phos/respond';
+            document.getElementById('hmacSecret').value = '';
+            document.getElementById('childId').value = 'willow-001';
+            document.getElementById('localHour').value = '10';
+            document.getElementById('exchangeCount').value = '0';
+            document.getElementById('preReader').checked = false;
+            document.getElementById('inputType').value = 'text';
+            document.getElementById('input').value = '';
+            document.getElementById('gardenState').value = '';
+            document.getElementById('response').textContent = 'Response will appear here...';
+            document.getElementById('response').className = 'response';
+        });
+        
+        document.getElementById('exampleBtn').addEventListener('click', () => {
+            document.getElementById('phosUrl').value = 'https://willow-garden.trimtab-signal.workers.dev/api/phos/respond';
+            document.getElementById('hmacSecret').value = 'test-secret-123';
+            document.getElementById('childId').value = 'willow-001';
+            document.getElementById('localHour').value = '10';
+            document.getElementById('exchangeCount').value = '0';
+            document.getElementById('preReader').checked = false;
+            document.getElementById('inputType').value = 'text';
+            document.getElementById('input').value = 'I built a water molecule!';
+            document.getElementById('gardenState').value = '{\"molecules\":[{\"type\":\"H2O\",\"count\":1}],\"actions\":[\"built\"],\"sensoryProfile\":{\"temperature\":\"cool\",\"light\":\"dim\"}}';
+        });
+    </script>
+</body>
+</html>

@@ -16,8 +16,11 @@ interface Env {
   PHOS_CACHE: KVNamespace;
   PHOS_EVENT_LOG: D1Database;
   PHOS_ATMOSPHERE: Fetcher;
-  DISCORD_WEBHOOK_URL?: string;
   DISCORD_BOT_TOKEN?: string;
+  /** Channel ID for crisis alerts (announcements). */
+  DISCORD_ALERT_CHANNEL_ID?: string;
+  /** Fallback webhook URL for environments where bot token isn't configured. */
+  DISCORD_WEBHOOK_URL?: string;
   HARDWARE_SECRET?: string;
   GOOGLE_CLIENT_ID?: string;
   GOOGLE_CLIENT_SECRET?: string;
@@ -293,28 +296,36 @@ export default {
         );
       }
 
-      // Non-blocking Discord webhook (fire and forget)
-      if (env.DISCORD_WEBHOOK_URL) {
-        const discordBody = JSON.stringify({
-          username: 'PHOS Guardian',
-          embeds: [
-            {
-              title: '🚨 Guardian Protocol Activated',
-              description: `**Surface:** ${payload.surface}\n**Spoons:** ${payload.spoons}/5\n**Message:** ${payload.message}`,
-              color: 0xff3355,
-              timestamp: new Date().toISOString(),
-            },
-          ],
-        });
+      // Non-blocking Discord notification — prefer bot API, fall back to webhook
+      const alertChannelId = env.DISCORD_ALERT_CHANNEL_ID || '1486966043128893492';
+      const discordBody = JSON.stringify({
+        username: 'PHOS Guardian',
+        embeds: [{
+          title: '\u{1f6a8} Guardian Protocol Activated',
+          description: `**Surface:** ${payload.surface}\n**Spoons:** ${payload.spoons}/5\n**Message:** ${payload.message}`,
+          color: 0xff3355,
+          timestamp: new Date().toISOString(),
+        }],
+      });
 
-        // Fire-and-forget: don't await, just catch errors
+      if (env.DISCORD_BOT_TOKEN) {
+        // Bot API path → send to announcements channel
+        const chId = alertChannelId;
+        fetch(`https://discord.com/api/v10/channels/${chId}/messages`, {
+          method: 'POST',
+          headers: {
+            Authorization: `Bot ${env.DISCORD_BOT_TOKEN}`,
+            'Content-Type': 'application/json',
+          },
+          body: discordBody,
+        }).catch(() => {});
+      } else if (env.DISCORD_WEBHOOK_URL) {
+        // Legacy webhook fallback
         fetch(env.DISCORD_WEBHOOK_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: discordBody,
-        }).catch(() => {
-          // Silently fail — never block the client response
-        });
+        }).catch(() => {});
       }
 
       return new Response(
@@ -358,25 +369,25 @@ export default {
 
     // ── GET /api/phos/discord-status — Bot health for PHOS HUD ──
     if (path === '/api/phos/discord-status') {
-      const botUrl = 'https://discord.com/api/v10/guilds/1449826533089742962';
       let botStatus: 'online' | 'degraded' | 'offline' = 'offline';
       let botLatency = 0;
-      try {
-        const start = Date.now();
-        const r = await fetch(botUrl, {
-          headers: { Authorization: `Bot ${env.DISCORD_BOT_TOKEN || ''}` },
-          cf: { cacheTtl: 0 },
-        } as RequestInit);
-        botLatency = Date.now() - start;
-        if (r.ok) botStatus = 'online';
-        else if (r.status < 500) botStatus = 'degraded';
-      } catch { botStatus = 'offline'; }
-
-      const whUrl = env.DISCORD_WEBHOOK_URL || '';
+      if (env.DISCORD_BOT_TOKEN) {
+        try {
+          const start = Date.now();
+          const r = await fetch('https://discord.com/api/v10/users/@me', {
+            headers: { Authorization: `Bot ${env.DISCORD_BOT_TOKEN}` },
+            cf: { cacheTtl: 0 },
+          });
+          botLatency = Date.now() - start;
+          botStatus = r.ok ? 'online' : r.status < 500 ? 'degraded' : 'offline';
+        } catch { botStatus = 'offline'; }
+      }
       return new Response(JSON.stringify({
         bot: botStatus,
         botLatencyMs: botLatency,
-        webhookConfigured: whUrl.length > 0,
+        botTokenConfigured: !!env.DISCORD_BOT_TOKEN,
+        webhookConfigured: !!(env.DISCORD_WEBHOOK_URL && env.DISCORD_WEBHOOK_URL.length > 0),
+        alertChannelId: env.DISCORD_ALERT_CHANNEL_ID || '1486966043128893492',
         timestamp: new Date().toISOString(),
       }, null, 2), { status: 200, headers });
     }

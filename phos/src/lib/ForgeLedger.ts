@@ -14,6 +14,8 @@
  *   forge_daily_totals(date TEXT PK, revenue_cents, tax_cents, tx_count, synced BOOLEAN)
  */
 
+import type { PGlite } from '@electric-sql/pglite';
+
 export type TxType = "SALE" | "REFUND" | "VOID" | "CASH_ADD" | "CASH_REMOVE";
 export type PaymentMethod = "cash" | "stripe_terminal" | "manual" | "venmo" | "love_credits";
 
@@ -329,7 +331,7 @@ export async function getDailyTotals(days = 7): Promise<DailyTotal[]> {
     `SELECT * FROM forge_daily_totals ORDER BY date DESC LIMIT $1`,
     [days]
   );
-  return rows.map((r) => ({
+  return rows.map((r: { date: string; revenue_cents: number; tax_cents: number; tx_count: number; synced: boolean }) => ({
     date: r.date, revenueCents: r.revenue_cents, taxCents: r.tax_cents,
     txCount: r.tx_count, synced: r.synced,
   }));

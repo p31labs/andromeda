@@ -242,12 +242,17 @@ export async function getAllEmbeddedRows(): Promise<
   const { rows } = await db.query<{
     id: string;
     raw_text: string;
-    embedding: Buffer | null;
+    embedding: ArrayBuffer | null;
     source_door: string;
   }>(
     `SELECT id, raw_text, embedding, source_door FROM unified_knowledge_graph WHERE embedding IS NOT NULL`
   );
-  return rows;
+  return rows.map((r) => ({
+    id: r.id,
+    raw_text: r.raw_text,
+    embedding: r.embedding,
+    source_door: r.source_door,
+  }));
 }
 
 /**

@@ -1,0 +1,52 @@
+---
+import Layout from '../layouts/BaseLayout.astro';
+const isProd = import.meta.env.PROD;
+---
+<Layout
+  title="Garden AI Companion — Phos"
+  description="The Garden AI Companion (Phos) is a safe, educational companion for children ages 6-10 that lives in a digital garden environment."
+  noIndex={!isProd}
+>
+  {/*
+    The companion page serves as the entry point to the Garden AI Companion.
+    In production, it redirects to the willow-garden worker.
+    In development, it can embed the ph-os PWA directly for testing.
+  */}
+  
+  {/*
+    Uncomment the following for direct embedding during development:
+    <div id="phos-embed" style="width: 100%; height: 100vh;">
+      <iframe
+        src="https://12e597d6.ph-os.pages.dev"
+        style="width: 100%; height: 100%; border: none;"
+        title="Garden AI Companion"
+      ></iframe>
+    </div>
+  */}
+  
+  {/* Production redirect to willow-garden worker */}
+  <div class="p-8 text-center">
+    <h1 class="text-2xl font-bold mb-4">Garden AI Companion</h1>
+    <p class="mb-6">
+      The Garden AI Companion (Phos) is a safe, educational companion for 
+      children ages 6-10 that lives in a digital garden environment.
+    </p>
+    {/*
+      In production, this would auto-redirect to the willow-garden worker.
+      For now, we provide a link.
+    */}
+    <a 
+      href="https://12e597d6.ph-os.pages.dev" 
+      class="btn btn-primary btn-lg"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      Open Companion
+    </a>
+    
+    <div class="mt-6 text-sm text-muted">
+      <p>Works best on tablets and mobile devices.</p>
+      <p>Add to home screen for full-screen experience.</p>
+    </div>
+  </div>
+</Layout>

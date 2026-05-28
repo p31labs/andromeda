@@ -73,7 +73,11 @@ export async function pushUnsyncedToEdge(edgeBaseUrl: string): Promise<Reconcile
 
     if (rows.length === 0) return result;
 
-    const payloads: EdgeTransactionPayload[] = rows.map((r) => ({
+    const payloads: EdgeTransactionPayload[] = rows.map((r: {
+      id: string; type: string; amount_cents: number; tax_cents: number;
+      total_cents: number; items_json: string; payment_method: string;
+      note: string; hash: string; previous_hash: string; created_at: number;
+    }) => ({
       id: r.id,
       type: r.type as ForgeTransaction["type"],
       amount_cents: r.amount_cents,

@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { PhosOrb } from './PhosOrb';
+import { PhosOrb } from './PHOSOrb';
 import { PassportProvider, useHardenedPassport } from '../lib/PassportContext';
 import { SurfaceRouter } from './SurfaceRouter';
 import type { OrbState } from '../types/phos';

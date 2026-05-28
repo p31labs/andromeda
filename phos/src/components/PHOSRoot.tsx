@@ -27,13 +27,10 @@ interface PHOSRootProps {
 const PHOSRoot: React.FC<PHOSRootProps> = ({ initialSurface = 'GREETING' }) => {
   return (
     <AtmosphereProvider initialSurface={initialSurface}>
-      {/* Starfield: background layer */}
       <StarfieldCanvas />
-
-      {/* Foreground: z-10 ensures it floats above the canvas */}
       <div className="relative z-10 w-full min-h-screen flex flex-col">
         <ErrorBoundary>
-          <PHOSShell />
+          <PHOSShell>{null}</PHOSShell>
         </ErrorBoundary>
         <PHOSGuide />
       </div>

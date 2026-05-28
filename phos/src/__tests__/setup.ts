@@ -26,13 +26,13 @@ Object.defineProperty(window, 'matchMedia', {
 
 // �� localStorage mock ��
 const localStorageMock = (() => {
-  let store = {};
+  let store: Record<string, string> = {};
   return {
-    getItem: vi.fn((key) => store[key] ?? null),
-    setItem: vi.fn((key, value) => {
+    getItem: vi.fn((key: string) => store[key] ?? null),
+    setItem: vi.fn((key: string, value: string) => {
       store[key] = value.toString();
     }),
-    removeItem: vi.fn((key) => {
+    removeItem: vi.fn((key: string) => {
       delete store[key];
     }),
     clear: vi.fn(() => {
@@ -46,8 +46,8 @@ Object.defineProperty(window, 'localStorage', { value: localStorageMock });
 vi.mock('@electric-sql/pglite', () => {
   const mockPgliteInstance = {
     query: vi.fn().mockResolvedValue({ rows: [] }),
-    execute: vi.fn().mockResolvedValue(),
-    close: vi.fn().mockResolvedValue(),
+    execute: vi.fn().mockResolvedValue(undefined),
+    close: vi.fn().mockResolvedValue(undefined),
   };
   return {
     PGLite: vi.fn(() => mockPgliteInstance),
