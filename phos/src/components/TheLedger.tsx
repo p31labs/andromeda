@@ -1,111 +1,57 @@
-import React, { useEffect, useState } from 'react';
-import { useAtmosphere } from './AtmosphereProvider';
-import { getLogs, clearLogs } from '../lib/EventLogger';
-import type { PHOSEvent } from '../lib/EventLogger';
+import React, { useMemo, useState } from 'react';
+import { Calculator, Receipt } from 'lucide-react';
+import type { LaborEvent } from '../types/phos';
 
-const TheLedger: React.FC = () => {
-  const { spoons } = useAtmosphere();
-  const [events, setEvents] = useState<PHOSEvent[]>([]);
-  const [cleared, setCleared] = useState(false);
+const FMV_RATES = {
+  vault_maintenance: { ratePerHour: 65, minutesPerAction: 15, title: 'Cryptographic Architecture Audits' },
+  security_audit: { ratePerHour: 85, minutesPerAction: 30, title: 'Systems Infrastructure Defense' },
+  data_ingestion: { ratePerHour: 45, minutesPerAction: 10, title: 'Evidentiary Chain Processing' },
+};
 
-  useEffect(() => {
-    setEvents(getLogs());
-  }, []);
+export const TheLedger: React.FC<{ laborEvents: LaborEvent[]; dunaName: string }> = ({ laborEvents, dunaName }) => {
+  const [isMinting, setIsMinting] = useState(false);
 
-  const formatTimestamp = (iso: string): string => {
-    const d = new Date(iso);
-    return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-  };
-
-  const eventClass = (type: string): string => {
-    switch (type) {
-      case 'GUARDIAN_ACTIVATED': return 'text-red-400';
-      case 'SPOON_STATE_CHANGED': return 'text-amber-400';
-      case 'DEVICE_SEALED':
-      case 'DEVICE_UNLOCKED': return 'text-cyan-400';
-      case 'INTENT_ROUTED': return 'text-emerald-400';
-      case 'SURFACE_NAVIGATED': return 'text-sky-400';
-      case 'VOICE_TOGGLED': return 'text-purple-400';
-      default: return 'text-gray-400';
-    }
-  };
-
-  if (spoons <= 2) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen text-center px-6 animate-fade-in"
-        style={{ backgroundColor: '#0a0a0f', color: '#667788' }}
-      >
-        <div className="max-w-md">
-          <div className="mb-6 text-4xl font-thin tracking-[0.3em] uppercase opacity-30">
-            ●
-          </div>
-          <p className="text-lg font-mono leading-relaxed">
-            Data review is best saved for higher energy states.<br />
-            You are safe now.
-          </p>
-        </div>
-      </div>
-    );
-  }
+  const comp = useMemo(() => {
+    let totalValue = 0;
+    let totalMinutes = 0;
+    const breakdown = laborEvents.reduce((acc, event) => {
+      const metrics = FMV_RATES[event.actionType];
+      const val = (metrics.ratePerHour / 60) * metrics.minutesPerAction;
+      totalValue += val;
+      totalMinutes += metrics.minutesPerAction;
+      if (!acc[event.actionType]) acc[event.actionType] = { count: 0, value: 0, title: metrics.title };
+      acc[event.actionType].count += 1;
+      acc[event.actionType].value += val;
+      return acc;
+    }, {} as Record<string, { count: number; value: number; title: string }>);
+    return { totalValue, totalMinutes, breakdown };
+  }, [laborEvents]);
 
   return (
-    <div className="w-full min-h-screen px-4 py-16 animate-fade-in"
-      style={{ backgroundColor: '#0a0a0f', color: '#667788' }}
-    >
-      <div className="max-w-2xl mx-auto">
-        <div className="text-center mb-10">
-          <div className="text-3xl font-thin tracking-[0.3em] uppercase opacity-30 mb-4">●</div>
-          <h1 className="text-2xl font-light mb-2" style={{ color: '#c0c8d0' }}>Memory</h1>
-          <p className="text-sm font-mono opacity-50">Last {events.length} events</p>
-        </div>
-
-        {events.length === 0 ? (
-          <div className="text-center py-16 font-mono text-sm opacity-40">
-            {cleared ? 'Memory cleared.' : 'No events recorded yet.'}
-          </div>
-        ) : (
-          <div className="space-y-1 font-mono text-xs">
-            {[...events].reverse().map((evt) => (
-              <div
-                key={evt.id}
-                className={`flex items-start gap-3 py-2 px-3 rounded transition-colors hover:bg-white/[0.02] ${eventClass(evt.type)}`}
-              >
-                <span className="shrink-0 w-16 opacity-50" style={{ color: '#556677' }}>
-                  {formatTimestamp(evt.timestamp)}
-                </span>
-                <span className="shrink-0 w-28 font-semibold">{evt.type}</span>
-                <span className="opacity-70 truncate">
-                  {Object.entries(evt.data)
-                    .map(([k, v]) => `${k}=${v}`)
-                    .join('  ')}
-                </span>
-              </div>
-            ))}
-          </div>
-        )}
-
-        <div className="mt-10 text-center">
-          {events.length > 0 && (
-            <button
-              onClick={() => {
-                clearLogs();
-                setEvents([]);
-                setCleared(true);
-              }}
-              className="px-6 py-2 text-xs font-mono uppercase tracking-widest transition-all hover:opacity-80"
-              style={{
-                backgroundColor: '#111111',
-                color: '#667788',
-                border: '1px solid #333333',
-              }}
-            >
-              Clear Memory
-            </button>
-          )}
-        </div>
+    <div className="flex flex-col h-full w-full bg-zinc-950 p-6 space-y-6">
+      <div className="bg-indigo-950/20 border border-indigo-900/50 rounded-xl p-6 flex flex-col items-center">
+        <span className="text-zinc-500 font-mono text-xs mb-2 flex items-center gap-2"><Calculator size={14} /> ACCOUNT LIABILITY RECORDED</span>
+        <span className="text-4xl font-mono text-indigo-300">${comp.totalValue.toFixed(2)}</span>
       </div>
+      <div className="flex-grow space-y-3 overflow-y-auto">
+        {Object.entries(comp.breakdown).map(([key, data]) => (
+          <div key={key} className="flex justify-between p-4 bg-zinc-900/50 border border-zinc-800 rounded-lg text-sm font-mono">
+            <div>
+              <div className="text-zinc-300">{data.title}</div>
+              <div className="text-[10px] text-zinc-500 mt-1">{data.count} ATTESTED SUBMISSIONS</div>
+            </div>
+            <span className="text-emerald-400">${data.value.toFixed(2)}</span>
+          </div>
+        ))}
+      </div>
+      <button
+        disabled={isMinting || laborEvents.length === 0}
+        onClick={() => { setIsMinting(true); setTimeout(() => setIsMinting(false), 2000); }}
+        className="w-full py-4 bg-indigo-950 border border-indigo-800 text-indigo-300 font-mono rounded-lg flex items-center justify-center gap-2"
+      >
+        <Receipt size={18} />
+        <span>{isMinting ? 'SEALING IMMUTABLE SETTLEMENT...' : 'COMPILE COMPENSABLE INVOICE'}</span>
+      </button>
     </div>
   );
 };
-
-export default TheLedger;

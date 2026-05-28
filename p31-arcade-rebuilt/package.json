@@ -1,0 +1,32 @@
+{
+  "name": "p31-arcade-monorepo",
+  "version": "2.0.0",
+  "private": true,
+  "description": "P31 Arcade — Unified Family Gaming OS",
+  "scripts": {
+    "build:packages": "pnpm -r --filter @p31/* build",
+    "build:apps": "pnpm -r --filter ./apps/* build",
+    "build": "pnpm build:packages && pnpm build:apps",
+    "test": "pnpm -r test",
+    "test:perf": "pnpm --filter arcade-games exec vitest run --config vitest.perf.config.ts",
+    "test:e2e": "pnpm --filter arcade-hub exec playwright test",
+    "dev:hub": "pnpm --filter arcade-hub dev",
+    "dev:games": "pnpm --filter arcade-games dev",
+    "dev:astro": "pnpm --filter arcade-astro dev",
+    "clean": "rm -rf packages/*/dist apps/*/dist"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.44.0",
+    "@types/node": "^25.9.1",
+    "@types/react": "^18.3.29",
+    "@types/react-dom": "^18.3.7",
+    "prettier": "^3.2.0",
+    "typescript": "^5.4.0",
+    "vite": "^5.4.0",
+    "vitest": "^1.6.0"
+  },
+  "engines": {
+    "node": ">=20",
+    "pnpm": ">=9"
+  }
+}

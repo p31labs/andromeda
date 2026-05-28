@@ -119,6 +119,7 @@ const STATIC_MESH: { name: string; description: string }[] = [
   { name: 'Event Log', description: 'Oracle ledger' },
   { name: 'State KV', description: 'Session cache' },
   { name: 'Vault', description: 'Asset storage' },
+  { name: 'Forge', description: 'Commerce & POS ledger' },
   { name: 'Love Ledger', description: 'Value accounting' },
 ];
 
@@ -211,6 +212,40 @@ async function buildMeshStatus(): Promise<MeshNode[]> {
   }
 
   return nodes;
+}
+
+interface ForgeTransactionPayload {
+  id: string;
+  type: string;
+  amount_cents: number;
+  tax_cents: number;
+  total_cents: number;
+  items_json: string;
+  payment_method: string;
+  note: string;
+  hash: string;
+  previous_hash: string;
+  created_at: number;
+  site_id: string;
+}
+
+function hashForgeTx(tx: ForgeTransactionPayload): string {
+  const input = JSON.stringify({
+    id: tx.id, type: tx.type, totalCents: tx.total_cents,
+    previousHash: tx.previous_hash, createdAt: tx.created_at,
+  });
+  return String(
+    Array.from(input).reduce((h, c) => ((h << 5) - h + c.charCodeAt(0)) | 0, 5381) >>> 0
+  );
+}
+
+function validateForgeTx(tx: ForgeTransactionPayload, expectedPreviousHash: string): string | null {
+  if (!tx.id || !tx.type) return "Missing id or type";
+  if (typeof tx.total_cents !== "number") return "total_cents must be number";
+  if (typeof tx.amount_cents !== "number") return "amount_cents must be number";
+  if (typeof tx.tax_cents !== "number") return "tax_cents must be number";
+  if (tx.previous_hash !== expectedPreviousHash) return `Hash chain broken: expected ${expectedPreviousHash}, got ${tx.previous_hash}`;
+  return null;
 }
 
 export default {
@@ -349,7 +384,7 @@ export default {
     // ── GOOGLE DRIVE OAUTH ──
     // Step 1: Generate OAuth consent URL
     if (path === '/api/drive/auth-url') {
-      const redirectUri = 'https://phos.p31labs.com/api/drive/callback';
+      const redirectUri = 'https://phos.p31ca.org/api/drive/callback';
       const scopes = [
         'https://www.googleapis.com/auth/drive.readonly',
         'https://www.googleapis.com/auth/documents.readonly',
@@ -362,7 +397,7 @@ export default {
     if (path === '/api/drive/callback') {
       const code = url.searchParams.get('code');
       if (!code) return new Response(JSON.stringify({ error: 'Missing code' }), { status: 400, headers });
-      const redirectUri = 'https://phos.p31labs.com/api/drive/callback';
+      const redirectUri = 'https://phos.p31ca.org/api/drive/callback';
       const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -384,6 +419,107 @@ export default {
         refreshToken: tokens.refresh_token,
         expiresIn: tokens.expires_in,
       }, null, 2), { status: 200, headers });
+    }
+
+    // ── POST /api/forge/transactions — Batch push from client ──
+    if (request.method === "POST" && path === "/api/forge/transactions") {
+      let body: { transactions?: ForgeTransactionPayload[] };
+      try {
+        body = (await request.json()) as { transactions?: ForgeTransactionPayload[] };
+      } catch {
+        return new Response(JSON.stringify({ error: "Invalid JSON" }), { status: 400, headers });
+      }
+
+      const txs = body.transactions;
+      if (!txs || !Array.isArray(txs) || txs.length === 0) {
+        return new Response(JSON.stringify({ error: "Expected transactions array" }), { status: 400, headers });
+      }
+      if (txs.length > 50) {
+        return new Response(JSON.stringify({ error: "Max 50 transactions per batch" }), { status: 400, headers });
+      }
+
+      const confirmedIds: string[] = [];
+      const rejectedIds: string[] = [];
+      let lastHash = "GENESIS";
+
+      // Get the last hash from D1 if available
+      try {
+        const lastRow = await env.PHOS_EVENT_LOG
+          .prepare("SELECT hash FROM forge_edge_transactions ORDER BY created_at DESC LIMIT 1")
+          .first<{ hash: string }>();
+        if (lastRow?.hash) lastHash = lastRow.hash;
+      } catch {
+        /* D1 table may not exist yet — use GENESIS */
+      }
+
+      for (const tx of txs) {
+        const validationError = validateForgeTx(tx, lastHash);
+        if (validationError) {
+          rejectedIds.push(tx.id);
+          continue;
+        }
+        // Accept transaction
+        confirmedIds.push(tx.id);
+        lastHash = tx.hash;
+
+        // Persist to D1 if available (fire-and-forget)
+        try {
+          await env.PHOS_EVENT_LOG
+            .prepare(`INSERT OR IGNORE INTO forge_edge_transactions
+              (id, site_id, type, amount_cents, tax_cents, total_cents, hash, previous_hash, created_at, received_at)
+              VALUES (?,?,?,?,?,?,?,?,?,?)`)
+            .bind(tx.id, tx.site_id, tx.type, tx.amount_cents, tx.tax_cents, tx.total_cents, tx.hash, tx.previous_hash, tx.created_at, Date.now())
+            .run();
+        } catch {
+          /* D1 optional — accept anyway */
+        }
+      }
+
+      return new Response(
+        JSON.stringify({ confirmed_ids: confirmedIds, rejected_ids: rejectedIds }),
+        { status: 200, headers }
+      );
+    }
+
+    // ── GET /api/forge/reconcile — Pull transactions since timestamp ──
+    if (request.method === "GET" && path === "/api/forge/reconcile") {
+      const since = parseInt(url.searchParams.get("since") || "0", 10);
+      try {
+        const { results } = await env.PHOS_EVENT_LOG
+          .prepare(`SELECT id, site_id, type, amount_cents, tax_cents, total_cents,
+                    items_json, payment_method, note, hash, previous_hash, created_at
+                    FROM forge_edge_transactions
+                    WHERE created_at > ?
+                    ORDER BY created_at ASC LIMIT 100`)
+          .bind(since)
+          .all();
+
+        const transactions: ForgeTransactionPayload[] = (results || []).map((r) => ({
+          id: r.id as string,
+          type: r.type as string,
+          amount_cents: r.amount_cents as number,
+          tax_cents: r.tax_cents as number,
+          total_cents: r.total_cents as number,
+          items_json: r.items_json as string || "[]",
+          payment_method: r.payment_method as string || "cash",
+          note: r.note as string || "",
+          hash: r.hash as string,
+          previous_hash: r.previous_hash as string,
+          created_at: r.created_at as number,
+          site_id: r.site_id as string,
+        }));
+
+        return new Response(
+          JSON.stringify({ transactions }),
+          { status: 200, headers }
+        );
+      } catch {
+        /* D1 table may not exist — return empty */
+        return new Response(
+          JSON.stringify({ transactions: [] }),
+          { status: 200, headers }
+        );
+      }
     }
 
     // ── GET / — Status + Mesh ──

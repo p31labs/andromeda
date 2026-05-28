@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>P31 PHOS: FORENSIC ADMISSIBILITY EVIDENCE MATRIX</title>
+  <style>
+    body { background: #09090b; color: #a1a1aa; font-family: monospace; padding: 3rem; line-height: 1.6; }
+    .wrapper { max-width: 800px; margin: 0 auto; }
+    h1 { color: #f4f4f5; font-size: 1.2rem; letter-spacing: 0.15em; border-bottom: 1px solid #27272a; padding-bottom: 1rem; }
+    .dropzone { border: 2px dashed #3f3f46; border-radius: 8px; padding: 4rem 2rem; text-align: center; color: #71717a; margin: 2rem 0; cursor: pointer; transition: all 0.3s; }
+    .dropzone.hovering { border-color: #10b981; color: #e4e4e7; background: #042f2e/10; }
+    .log-item { background: #18181b; border: 1px solid #27272a; padding: 1rem; border-radius: 6px; margin-bottom: 1rem; font-size: 0.85rem; }
+    .valid { border-left: 4px solid #10b981; }
+    .invalid { border-left: 4px solid #ef4444; }
+    .badge { float: right; font-weight: bold; text-transform: uppercase; font-size: 0.75rem; padding: 0.2rem 0.5rem; border-radius: 4px; }
+    .badge.green { background: #064e3b; color: #34d399; }
+    .badge.red { background: #7f1d1d; color: #f87171; }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <h1>P31 PHOS // CRITICAL EVIDENCE CHAIN-OF-CUSTODY AUDIT</h1>
+    <p style="font-size: 0.8rem; color: #52525b;">Offline Verification Engine. Zero structural network requests required. Verifies cryptographic immutability of logged notes against target fabrication or spoliation claims.</p>
+
+    <div class="dropzone" id="dropzone">DRAG &amp; DROP MANIFEST.JSON CONTAINER FILE HERE</div>
+    <div id="output"></div>
+  </div>
+
+  <script>
+    const zone = document.getElementById('dropzone');
+    const out = document.getElementById('output');
+
+    zone.addEventListener('dragover', (e) => { e.preventDefault(); zone.classList.add('hovering'); });
+    zone.addEventListener('dragleave', () => zone.classList.remove('hovering'));
+    zone.addEventListener('drop', async (e) => {
+      e.preventDefault();
+      zone.classList.remove('hovering');
+      out.innerHTML = '';
+
+      try {
+        const file = e.dataTransfer.files[0];
+        const text = await file.text();
+        const manifest = JSON.parse(text);
+
+        if (!manifest.entries || !Array.isArray(manifest.entries)) {
+          throw new Error("Invalid schema tracking parameters.");
+        }
+
+        const textEncoder = new TextEncoder();
+        let expectedPrevHash = null;
+
+        for (let i = 0; i < manifest.entries.length; i++) {
+          const entry = manifest.entries[i];
+
+          const payloadString = JSON.stringify(entry.payloadFields);
+          const rawPayloadBytes = textEncoder.encode(payloadString);
+
+          let integrityBytes = new Uint8Array(rawPayloadBytes.length + (entry.previousHash ? entry.previousHash.length : 0));
+          integrityBytes.set(rawPayloadBytes, 0);
+          if (entry.previousHash) {
+            integrityBytes.set(textEncoder.encode(entry.previousHash), rawPayloadBytes.length);
+          }
+
+          const calculatedBuffer = await window.crypto.subtle.digest('SHA-256', integrityBytes);
+          const calculatedHash = Array.from(new Uint8Array(calculatedBuffer))
+            .map(b => b.toString(16).padStart(2, '0'))
+            .join('');
+
+          const isHashValid = calculatedHash === entry.currentHash;
+          const isChainValid = entry.previousHash === expectedPrevHash;
+          const pass = isHashValid && isChainValid;
+
+          const item = document.createElement('div');
+          item.className = 'log-item ' + (pass ? 'valid' : 'invalid');
+          item.innerHTML = '<span class="badge ' + (pass ? 'green' : 'red') + '">' + (pass ? 'Verified Secure' : 'Chain Fractured') + '</span>' +
+            '<strong>INDEX BLOCK #' + i + ' // ID: ' + entry.id + '</strong><br/>' +
+            '<span style="color:#52525b">TIMESTAMP UTC:</span> ' + entry.timestamp + '<br/>' +
+            '<span style="color:#52525b">DATA ENTRY:</span> "' + entry.payloadFields.content + '"<br/>' +
+            '<span style="color:#52525b">BLOCK HASH:</span> <code style="color:' + (pass ? '#34d399' : '#f87171') + '">' + entry.currentHash + '</code>';
+          out.appendChild(item);
+
+          expectedPrevHash = entry.currentHash;
+        }
+      } catch (err) {
+        out.innerHTML = '<div class="log-item invalid" style="color:#f87171"><strong>PARSING EXCEPTION:</strong> ' + err.message + '</div>';
+      }
+    });
+  </script>
+</body>
+</html>

@@ -11,7 +11,10 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { useAtmosphere } from '../components/AtmosphereProvider';
 import { embedText } from '../lib/Embedder';
-import { getChaosVault } from '../lib/ChaosVault';
+import {
+  rankSearchResults, formatContext, buildSystemPrompt, isValidEmbedding,
+} from '../lib/VectorMath';
+import { getAllEmbeddedRows } from '../lib/ChaosVault';
 
 interface StreamMessage {
   role: 'user' | 'assistant' | 'system';
@@ -25,21 +28,6 @@ interface Props {
 }
 
 const LITELLM_CHAT_URL = 'http://localhost:4000/v1/chat/completions';
-
-/**
- * Perform cosine similarity between two vectors.
- */
-function cosineSimilarity(a: number[], b: number[]): number {
-  if (a.length === 0 || b.length === 0 || a.length !== b.length) return 0;
-  let dot = 0, magA = 0, magB = 0;
-  for (let i = 0; i < a.length; i++) {
-    dot += a[i] * b[i];
-    magA += a[i] * a[i];
-    magB += b[i] * b[i];
-  }
-  const denom = Math.sqrt(magA) * Math.sqrt(magB);
-  return denom === 0 ? 0 : dot / denom;
-}
 
 export const ShakeStream: React.FC<Props> = ({ query, onComplete, onError }) => {
   const { spoons, grayRock } = useAtmosphere();
@@ -55,49 +43,22 @@ export const ShakeStream: React.FC<Props> = ({ query, onComplete, onError }) => 
     try {
       // 1. Embed the query
       const queryEmbedding = await embedText(query);
-      if (queryEmbedding.length === 0) {
+      if (!isValidEmbedding(queryEmbedding)) {
         throw new Error('Embedding failed — is LiteLLM running on localhost:4000?');
       }
 
-      // 2. Search ChaosVault for top-3 similar entries
-      const db = await getChaosVault();
-      const { rows } = await db.query<{
-        id: string; raw_text: string; embedding: Buffer | null; source_door: string;
-      }>(
-        `SELECT id, raw_text, embedding, source_door FROM unified_knowledge_graph WHERE embedding IS NOT NULL`
-      );
+      // 2. Search ChaosVault for top-3 similar entries using shared VectorMath
+      const rows = await getAllEmbeddedRows();
+      const results = rankSearchResults(queryEmbedding, rows, { topK: 3, threshold: 0.0 });
+      setContextUsed(results.length);
 
-      const scored = rows
-        .filter((r) => r.embedding && r.embedding.byteLength > 0)
-        .map((r) => {
-          const emb = Array.from(new Float32Array(r.embedding!.buffer));
-          return { ...r, score: cosineSimilarity(queryEmbedding, emb) };
-        })
-        .sort((a, b) => b.score - a.score)
-        .slice(0, 3);
-
-      setContextUsed(scored.length);
-
-      // 3. Build context string from top matches
-      const contextStr = scored.length > 0
-        ? scored.map((s, i) => `[${i + 1}] (from ${s.source_door}, score:${s.score.toFixed(2)}): ${s.rawText}`).join('\n')
-        : '';
+      const contextStr = formatContext(results, { maxPerChunk: 300, maxTotalChars: 2000 });
 
       // 4. Stream from local LiteLLM
       const messages: StreamMessage[] = [
         {
           role: 'system',
-          content: `You are PHOS-01, the Phosphorus Human Operating Surface. You are the sovereign AI operating locally on the operator's machine. You have direct read access to the operator's personal knowledge graph, warehouse inventory, retro vault, family care mesh, and event history.
-
-CRITICAL RULES:
-- Answer ONLY from the provided context. Do not hallucinate.
-- If context is empty or insufficient, say "I don't have enough data on that yet. Try ingesting more info into the Buffer or Warehouse."
-- Be direct, technical, and concise. No fluff, no "As an AI."
-- The operator has AuDHD. Be precise. Don't overwhelm.
-- Current spoon state: ${spoons}/5 (${grayRock ? 'CRISIS/GRAY_ROCK' : spoons <= 2 ? 'SANCTUARY' : spoons === 3 ? 'BRIDGE' : 'QUANTUM'}).
-
-Available context from knowledge graph:
-${contextStr || '(no matching entries found)'}`,
+          content: buildSystemPrompt(contextStr, { spoons, grayRock }),
         },
         { role: 'user', content: query },
       ];

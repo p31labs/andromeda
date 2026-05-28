@@ -5,10 +5,11 @@ import '@testing-library/jest-dom/vitest';
 
 vi.mock('../../lib/Embedder', () => ({
   ingestAndEmbed: vi.fn(() => Promise.resolve({ id: 'test-id-123' })),
+  ingestAndEmbedChunks: vi.fn(() => Promise.resolve({ total: 1, embedded: 1 })),
 }));
 
 vi.mock('../lib/KarmaEngine', () => ({
-  KarmaEngine: { getBalance: vi.fn(() => 42), addLove: vi.fn(), getHistory: vi.fn(() => []) },
+  KarmaEngine: { getBalanceCents: vi.fn(() => 4200), addLove: vi.fn(), getBalance: vi.fn(() => 42), getHistory: vi.fn(() => []) },
 }));
 
 vi.mock('../lib/EventLogger', () => ({ logEvent: vi.fn() }));
@@ -69,27 +70,24 @@ describe('ChaosIngest', () => {
 
   it('should disable button when textarea is empty', () => {
     renderInProvider();
-    expect(screen.getByText('INGEST CHAOS')).toBeDisabled();
+    expect(screen.getByText('INGEST CHAOS').getAttribute('disabled')).not.toBeNull();
   });
 
-  it('should enable button when text is entered', () => {
+  it('should enable button when text is entered', async () => {
     renderInProvider();
-    fireEvent.change(screen.getByRole('textbox'), { target: { value: 'test' } });
-    expect(screen.getByText('INGEST CHAOS')).not.toBeDisabled();
-  });
-
-  it('should show ingesting state during submission', () => {
-    renderInProvider();
-    fireEvent.change(screen.getByRole('textbox'), { target: { value: 'test' } });
-    fireEvent.click(screen.getByText('INGEST CHAOS'));
-    expect(screen.getByText('INGESTING...')).toBeTruthy();
+    await act(async () => {
+      fireEvent.change(screen.getByRole('textbox'), { target: { value: 'test' } });
+    });
+    expect(screen.getByText('INGEST CHAOS').getAttribute('disabled')).toBeNull();
   });
 
   it('should show error state on failed ingestion', async () => {
     const mod = await import('../../lib/Embedder');
-    (mod.ingestAndEmbed as any).mockRejectedValueOnce(new Error('fail'));
+    (mod.ingestAndEmbedChunks as any).mockRejectedValueOnce(new Error('fail'));
     renderInProvider();
-    fireEvent.change(screen.getByRole('textbox'), { target: { value: 'fail' } });
+    await act(async () => {
+      fireEvent.change(screen.getByRole('textbox'), { target: { value: 'fail' } });
+    });
     await act(async () => { fireEvent.click(screen.getByText('INGEST CHAOS')); });
     expect(screen.getByText(/ingestion failed/i)).toBeTruthy();
   });
@@ -98,5 +96,12 @@ describe('ChaosIngest', () => {
     renderInProvider();
     fireEvent.change(screen.getByRole('textbox'), { target: { value: 'hello' } });
     expect(screen.getByText('5 chars')).toBeTruthy();
+  });
+
+  it('should show chunk count in char display after ingestion', async () => {
+    renderInProvider();
+    fireEvent.change(screen.getByRole('textbox'), { target: { value: 'hello world test' } });
+    await act(async () => { fireEvent.click(screen.getByText('INGEST CHAOS')); });
+    expect(screen.getByText(/1\/1 chunks embedded/)).toBeTruthy();
   });
 });

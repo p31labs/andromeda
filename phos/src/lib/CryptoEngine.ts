@@ -105,3 +105,70 @@ export class CryptoEngine {
     }
   }
 }
+
+export class DropSafeCrypto {
+  static async sealForDropSafe(
+    payloadBuffer: ArrayBuffer,
+    vaultPublicKey: CryptoKey
+  ): Promise<{ encryptedPayload: ArrayBuffer; iv: Uint8Array; encryptedAesKey: ArrayBuffer }> {
+    const ephemeralAesKey = await window.crypto.subtle.generateKey(
+      { name: 'AES-GCM', length: 256 },
+      true,
+      ['encrypt']
+    );
+
+    const iv = window.crypto.getRandomValues(new Uint8Array(12));
+    const encryptedPayload = await window.crypto.subtle.encrypt(
+      { name: 'AES-GCM', iv },
+      ephemeralAesKey,
+      payloadBuffer
+    );
+
+    const rawAesKey = await window.crypto.subtle.exportKey('raw', ephemeralAesKey);
+    const encryptedAesKey = await window.crypto.subtle.encrypt(
+      { name: 'RSA-OAEP' },
+      vaultPublicKey,
+      rawAesKey
+    );
+
+    return { encryptedPayload, iv, encryptedAesKey };
+  }
+
+  static async generateVaultKeyPair(): Promise<CryptoKeyPair> {
+    return window.crypto.subtle.generateKey(
+      {
+        name: 'RSA-OAEP',
+        modulusLength: 4096,
+        publicExponent: new Uint8Array([1, 0, 1]),
+        hash: 'SHA-256',
+      },
+      true,
+      ['encrypt', 'decrypt']
+    );
+  }
+
+  static async exportPublicKey(key: CryptoKey): Promise<string> {
+    const exported = await window.crypto.subtle.exportKey('spki', key);
+    const bytes = new Uint8Array(exported);
+    let binary = '';
+    for (let i = 0; i < bytes.byteLength; i++) {
+      binary += String.fromCharCode(bytes[i]);
+    }
+    return btoa(binary);
+  }
+
+  static async importPublicKey(pem: string): Promise<CryptoKey> {
+    const binary = atob(pem);
+    const buf = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) {
+      buf[i] = binary.charCodeAt(i);
+    }
+    return window.crypto.subtle.importKey(
+      'spki',
+      buf.buffer,
+      { name: 'RSA-OAEP', hash: 'SHA-256' },
+      false,
+      ['encrypt']
+    );
+  }
+}

@@ -1,183 +1,208 @@
-/**
- * NodeZeroSurface.tsx — Live ESP32-S3 IoT telemetry via WebSocket.
- *
- * Connects to the Node Zero firmware WebSocket endpoint.
- * Parses JSON telemetry payloads and renders them spoon-aware.
- *
- * QUANTUM: dense monospace grid with raw values.
- * SANCTUARY: abstracted "Environmental Comfort" gauge.
- * CRISIS: minimal, only critical alerts.
- */
+import React, { useState } from 'react';
+import { Shield, Activity, Briefcase, Eye, Fingerprint } from 'lucide-react';
+import { BiologicalAnchor } from '../components/BiologicalAnchor';
+import { TheLedger } from '../components/TheLedger';
+import { LoveLedger } from '../components/TheLoveLedger';
+import { useHardenedPassport } from '../lib/PassportContext';
+import type { ActivePanel, OrbState } from '../types/phos';
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+const ActivePanelType = {
+  none: 'none',
+  biological: 'biological',
+  ledger: 'ledger',
+  archive: 'archive',
+  cogpass: 'cogpass',
+} as const;
 
-interface TelemetryData {
-  hvac_temp: number;
-  power_draw_kw: number;
-  ambient_lux: number;
-  mesh_status: string;
-  uptime_s: number;
-  free_heap: number;
-  wifi_rssi: number;
-  timestamp: number;
-}
+type ActivePanelNodeZero = (typeof ActivePanelType)[keyof typeof ActivePanelType];
 
-interface Props {
-  className?: string;
-  spoons: number;
-  grayRock: boolean;
-}
+export const NodeZeroSurface: React.FC<{ orbStatus: OrbState; spoonLevel: number }> = ({ orbStatus, spoonLevel }) => {
+  const [activePanel, setActivePanel] = useState<ActivePanelNodeZero>('none');
+  const isTriageMode = spoonLevel <= 1;
+  const { state: passport, isHydrated, refresh } = useHardenedPassport();
 
-const WS_URL = 'ws://node-zero.local:81';
-const WS_FALLBACK = 'ws://192.168.1.100:81';
-const RECONNECT_MS = 5000;
+  const togglePanel = (panel: ActivePanelNodeZero) => {
+    setActivePanel(prev => prev === panel ? 'none' : panel);
+  };
 
-export const NodeZeroSurface: React.FC<Props> = ({ className, spoons, grayRock }) => {
-  const [data, setData] = useState<TelemetryData | null>(null);
-  const [connected, setConnected] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const wsRef = useRef<WebSocket | null>(null);
-  const reconnectRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const connect = useCallback(() => {
-    if (wsRef.current?.readyState === WebSocket.OPEN) return;
-
-    try {
-      const ws = new WebSocket(WS_URL);
-      wsRef.current = ws;
-
-      ws.onopen = () => {
-        setConnected(true);
-        setError(null);
-      };
-
-      ws.onmessage = (event) => {
-        try {
-          const payload = JSON.parse(event.data);
-          setData({
-            hvac_temp: payload.hvac_temp ?? payload.temp ?? 0,
-            power_draw_kw: payload.power_draw_kw ?? payload.power ?? 0,
-            ambient_lux: payload.ambient_lux ?? payload.lux ?? 0,
-            mesh_status: payload.mesh_status ?? payload.mesh ?? 'unknown',
-            uptime_s: payload.uptime_s ?? payload.uptime ?? 0,
-            free_heap: payload.free_heap ?? payload.heap ?? 0,
-            wifi_rssi: payload.wifi_rssi ?? payload.rssi ?? 0,
-            timestamp: payload.timestamp ?? Date.now(),
-          });
-        } catch {
-          // malformed payload — ignore
-        }
-      };
-
-      ws.onclose = () => {
-        setConnected(false);
-        reconnectRef.current = setTimeout(connect, RECONNECT_MS);
-      };
-
-      ws.onerror = () => {
-        ws.close();
-        // Try fallback IP
-        try {
-          const ws2 = new WebSocket(WS_FALLBACK);
-          wsRef.current = ws2;
-          ws2.onopen = () => { setConnected(true); setError(null); };
-          ws2.onmessage = ws.onmessage;
-          ws2.onclose = ws.onclose;
-          ws2.onerror = () => {
-            setConnected(false);
-            setError('Node Zero unreachable. Check WiFi or flash firmware.');
-          };
-        } catch {
-          setError('Node Zero unreachable. Check WiFi or flash firmware.');
-        }
-      };
-    } catch {
-      setError('WebSocket unavailable.');
-    }
-  }, []);
-
-  useEffect(() => {
-    connect();
-    return () => {
-      wsRef.current?.close();
-      if (reconnectRef.current) clearTimeout(reconnectRef.current);
-    };
-  }, [connect]);
-
-  if (grayRock || spoons === 0) {
-    return (
-      <div className={className}>
-        <p className="text-xs opacity-50">Node Zero telemetry suspended. Gray Rock active.</p>
-      </div>
-    );
-  }
-
-  if (error && !data) {
-    return (
-      <div className={className}>
-        <p className="text-xs text-amber-500">{error}</p>
-        <p className="text-xs text-gray-600 mt-1">Showing last known state or simulation.</p>
-      </div>
-    );
-  }
-
-  // SANCTUARY: abstracted comfort gauge
-  if (spoons <= 2) {
-    const comfort = data
-      ? (data.hvac_temp >= 68 && data.hvac_temp <= 76 ? 'Comfortable' : 'Adjusting…')
-      : 'Connecting…';
-    return (
-      <div className={className}>
-        <div className="text-center space-y-4">
-          <div className="w-24 h-24 mx-auto rounded-full bg-gradient-to-br from-amber-400/20 to-rose-400/20 flex items-center justify-center">
-            <span className="text-3xl">{comfort === 'Comfortable' ? '✓' : '◉'}</span>
-          </div>
-          <p className="text-lg">{comfort}</p>
-          <p className="text-xs text-gray-500">Environment stable. Rest.</p>
-        </div>
-      </div>
-    );
-  }
-
-  // QUANTIUM/BRIDGE: dense telemetry grid
   return (
-    <div className={className}>
-      <div className="flex items-center gap-2 mb-4">
-        <span className={`w-2 h-2 rounded-full ${connected ? 'bg-emerald-400' : 'bg-red-400'} animate-pulse`} />
-        <span className="text-xs text-gray-500">{connected ? 'LIVE' : 'RECONNECTING'}</span>
-      </div>
-
-      {data ? (
-        <div className={`grid grid-cols-2 gap-3 ${spoons >= 4 ? 'font-mono text-xs' : 'text-sm'}`}>
-          <TelemetryCard label="HVAC Temp" value={`${data.hvac_temp.toFixed(1)}°F`} alert={data.hvac_temp > 80 || data.hvac_temp < 60} />
-          <TelemetryCard label="Power" value={`${data.power_draw_kw.toFixed(2)} kW`} alert={data.power_draw_kw > 5} />
-          <TelemetryCard label="Ambient Light" value={`${data.ambient_lux} lux`} />
-          <TelemetryCard label="WiFi Signal" value={`${data.wifi_rssi} dBm`} alert={data.wifi_rssi < -70} />
-          <TelemetryCard label="Free Heap" value={`${(data.free_heap / 1024).toFixed(0)} KB`} alert={data.free_heap < 50000} />
-          <TelemetryCard label="Mesh" value={data.mesh_status} alert={data.mesh_status !== 'online'} />
-          <TelemetryCard label="Uptime" value={formatUptime(data.uptime_s)} />
-          <TelemetryCard label="Last Ping" value={new Date(data.timestamp).toLocaleTimeString()} />
+    <div className="relative w-full h-full flex flex-col justify-start bg-zinc-950 select-none">
+      <header className="flex justify-between items-center py-4 mb-6 border-b border-zinc-900 font-mono text-xs text-zinc-500 tracking-widest">
+        <div className="flex items-center gap-2">
+          <Shield size={14} className={orbStatus === 'crisis' ? 'text-purple-500 animate-pulse' : 'text-zinc-600'} />
+          <span>PHOS SYSTEM LAYER ALPHA</span>
         </div>
-      ) : (
-        <div className="text-sm text-gray-500 animate-pulse">Waiting for telemetry…</div>
-      )}
+        <span>SPARKS: {spoonLevel}/5</span>
+      </header>
+
+      <div className="flex flex-col gap-4 w-full flex-grow pb-24">
+
+        {/* PANEL 1: MEDICAL ANCHOR */}
+        <div className="w-full border border-zinc-900 rounded-xl overflow-hidden">
+          <button
+            onClick={() => togglePanel('biological')}
+            className="w-full flex items-center justify-between p-5 bg-zinc-900/20 font-mono text-sm tracking-wide text-zinc-400"
+          >
+            <span className="flex items-center gap-3"><Activity size={16} className="text-blue-500" /> ENDOCRINE TRACKS</span>
+            <span className="text-xs text-zinc-600">{activePanel === 'biological' ? 'CLOSE' : 'OPEN'}</span>
+          </button>
+          {activePanel === 'biological' && (
+            <div className="bg-zinc-950 border-t border-zinc-900">
+              <BiologicalAnchor onLogTelemetry={(p) => console.log('Telemetry payload locked:', p)} />
+            </div>
+          )}
+        </div>
+
+        {/* PANEL 2: COMPENSABLE CORPORATE ENTITY */}
+        <div className="w-full border border-zinc-900 rounded-xl overflow-hidden">
+          <button
+            onClick={() => togglePanel('ledger')}
+            className="w-full flex items-center justify-between p-5 bg-zinc-900/20 font-mono text-sm tracking-wide text-zinc-400"
+          >
+            <span className="flex items-center gap-3"><Briefcase size={16} className="text-indigo-500" /> DEFERRED INVOICING CORE</span>
+            <span className="text-xs text-zinc-600">{activePanel === 'ledger' ? 'CLOSE' : 'OPEN'}</span>
+          </button>
+          {activePanel === 'ledger' && (
+            <div className="bg-zinc-950 border-t border-zinc-900 max-h-[40vh] overflow-y-auto">
+              <TheLedger laborEvents={[]} dunaName="P31 Sanctuary DUNA" />
+            </div>
+          )}
+        </div>
+
+        {/* PANEL 3: EVIDENCE ARCHIVE */}
+        <div className="w-full border border-zinc-900 rounded-xl overflow-hidden">
+          <button
+            onClick={() => togglePanel('archive')}
+            className="w-full flex items-center justify-between p-5 bg-zinc-900/20 font-mono text-sm tracking-wide text-zinc-400"
+          >
+            <span className="flex items-center gap-3"><Eye size={16} className="text-amber-500" /> OMNI OBJECT ARCHIVE</span>
+            <span className="text-xs text-zinc-600">{activePanel === 'archive' ? 'CLOSE' : 'OPEN'}</span>
+          </button>
+          {activePanel === 'archive' && (
+            <div className="bg-zinc-950 border-t border-zinc-900 max-h-[40vh] overflow-y-auto">
+              <LoveLedger artifacts={[]} />
+            </div>
+          )}
+        </div>
+
+        {/* PANEL 4: COGNITIVE PASSPORT */}
+        <div className="w-full border border-zinc-900 rounded-xl overflow-hidden">
+          <button
+            onClick={() => { togglePanel('cogpass'); if (!isHydrated) refresh(); }}
+            className="w-full flex items-center justify-between p-5 bg-zinc-900/20 font-mono text-sm tracking-wide text-zinc-400"
+          >
+            <span className="flex items-center gap-3"><Fingerprint size={16} className="text-purple-500" /> COGNITIVE PASSPORT</span>
+            <span className="text-xs text-zinc-600">{activePanel === 'cogpass' ? 'CLOSE' : 'OPEN'}</span>
+          </button>
+          {activePanel === 'cogpass' && (
+            <div className="bg-zinc-950 border-t border-zinc-900 p-4 space-y-3 font-mono text-xs">
+              {/* Identity */}
+              <div className="border border-zinc-800 rounded-lg p-3 space-y-2">
+                <div className="text-zinc-500 text-[10px] tracking-widest uppercase">Identity</div>
+                <div className="flex justify-between">
+                  <span className="text-zinc-500">NAME:</span>
+                  <span className="text-zinc-300">{passport.identity.displayName || '—'}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-zinc-500">ROLE:</span>
+                  <span className={passport.identity.isOperator ? 'text-amber-400' : 'text-zinc-400'}>
+                    {passport.identity.isOperator ? 'OPERATOR' : 'USER'}
+                  </span>
+                </div>
+                {passport.identity.truncatedKeyId && (
+                  <div className="flex justify-between">
+                    <span className="text-zinc-500">KEY:</span>
+                    <span className="text-purple-400">{passport.identity.truncatedKeyId}…</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Visual State */}
+              <div className="border border-zinc-800 rounded-lg p-3 space-y-2">
+                <div className="text-zinc-500 text-[10px] tracking-widest uppercase">Visual State</div>
+                <div className="flex justify-between">
+                  <span className="text-zinc-500">THEME:</span>
+                  <span className="text-zinc-300">{passport.visuals.theme}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-zinc-500">MOTION:</span>
+                  <span className="text-zinc-300">{passport.visuals.motion}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-zinc-500">COMFORT:</span>
+                  <div className="flex items-center gap-2">
+                    <div className="w-16 h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-purple-500 rounded-full transition-all duration-300"
+                        style={{ width: `${passport.visuals.screenComfort}%` }}
+                      />
+                    </div>
+                    <span className="text-zinc-300">{passport.visuals.screenComfort}</span>
+                  </div>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-zinc-500">ANIMATIONS:</span>
+                  <span className={passport.visuals.animationsEnabled ? 'text-emerald-400' : 'text-zinc-600'}>
+                    {passport.visuals.animationsEnabled ? 'ON' : 'OFF'}
+                  </span>
+                </div>
+              </div>
+
+              {/* Linguistic Profile */}
+              <div className="border border-zinc-800 rounded-lg p-3 space-y-2">
+                <div className="text-zinc-500 text-[10px] tracking-widest uppercase">Linguistic Profile</div>
+                <div className="flex justify-between">
+                  <span className="text-zinc-500">TONE:</span>
+                  <span className="text-zinc-300">{passport.linguistics.tone}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-zinc-500">FORMAT:</span>
+                  <span className="text-zinc-300">{passport.linguistics.formatPreference}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-zinc-500">LENGTH:</span>
+                  <span className="text-zinc-300">{passport.linguistics.responseLength}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-zinc-500">PATTERNS:</span>
+                  <span className="text-zinc-300">{passport.linguistics.avoidPatterns.length} active</span>
+                </div>
+              </div>
+
+              {/* AI Context */}
+              <div className="border border-zinc-800 rounded-lg p-3 space-y-2">
+                <div className="text-zinc-500 text-[10px] tracking-widest uppercase">AI Context</div>
+                <div className="flex justify-between">
+                  <span className="text-zinc-500">FOCUS:</span>
+                  <span className="text-zinc-300">{passport.context.currentFocus || '—'}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-zinc-500">DOMAIN:</span>
+                  <span className="text-zinc-300">{passport.context.domain || '—'}</span>
+                </div>
+                {passport.context.toolsUsed.length > 0 && (
+                  <div className="flex flex-wrap gap-1 mt-1">
+                    {passport.context.toolsUsed.map((tool, i) => (
+                      <span key={i} className="px-2 py-0.5 bg-zinc-800 text-zinc-400 text-[10px] rounded">
+                        {tool}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Status footer */}
+              <div className="text-[10px] text-zinc-600 text-center pt-1 border-t border-zinc-800/50">
+                {isHydrated
+                  ? (passport.identity.isOperator ? 'PASSPORT ACTIVE — OPERATOR' : 'PASSPORT ACTIVE — USER')
+                  : 'NO PASSPORT LOADED — VISIT P31CA.ORG/PASSPORT TO GENERATE'
+                }
+              </div>
+            </div>
+          )}
+        </div>
+
+      </div>
     </div>
   );
 };
-
-function TelemetryCard({ label, value, alert }: { label: string; value: string; alert?: boolean }) {
-  return (
-    <div className={`p-3 rounded-lg border ${alert ? 'border-red-800/50 bg-red-950/20' : 'border-white/10 bg-white/5'}`}>
-      <div className="text-[10px] text-gray-500 uppercase tracking-wider">{label}</div>
-      <div className={`mt-1 font-medium ${alert ? 'text-red-400' : 'text-emerald-400'}`}>{value}</div>
-    </div>
-  );
-}
-
-function formatUptime(s: number): string {
-  const h = Math.floor(s / 3600);
-  const m = Math.floor((s % 3600) / 60);
-  return `${h}h ${m}m`;
-}
-
-export default NodeZeroSurface;

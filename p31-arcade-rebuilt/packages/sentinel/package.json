@@ -1,0 +1,9 @@
+{
+  "name": "@p31/sentinel",
+  "version": "2.0.0",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": { "build": "tsc", "test": "vitest run" },
+  "dependencies": { "@p31/core": "workspace:*" },
+  "devDependencies": { "typescript": "^5.4.0", "vitest": "^1.6.0" }
+}

@@ -1,88 +1,47 @@
-/**
- * ChaosIngest.tsx — The Buffer surface component.
- *
- * Allows free-text chaos ingestion. On submit:
- * 1. Stores raw text in ChaosVault (PGLite)
- * 2. Triggers local embedding via nomic-embed-text
- * 3. Awards LOVE credits for consistency
- */
+import React, { useState, useRef, useEffect } from 'react';
+import { Mic, Shield } from 'lucide-react';
 
-import React, { useState, useCallback } from 'react';
-import { useAtmosphere } from '../components/AtmosphereProvider';
-import { KarmaEngine } from '../lib/KarmaEngine';
-import { logEvent } from '../lib/EventLogger';
-import { ingestAndEmbed } from '../lib/Embedder';
+export const ChaosIngest: React.FC = () => {
+  const [content, setContent] = useState('');
+  const [isRecording, setIsRecording] = useState(false);
+  const textAreaRef = useRef<HTMLTextAreaElement>(null);
 
-interface Props {
-  className?: string;
-}
-
-export const ChaosIngest: React.FC<Props> = ({ className }) => {
-  const { spoons } = useAtmosphere();
-  const [text, setText] = useState('');
-  const [status, setStatus] = useState<'idle' | 'ingesting' | 'done' | 'error'>('idle');
-  const [lastId, setLastId] = useState<string | null>(null);
-
-  const handleSubmit = useCallback(async () => {
-    const trimmed = text.trim();
-    if (!trimmed) return;
-
-    setStatus('ingesting');
-    try {
-      const result = await ingestAndEmbed('hearth', trimmed, {
-        spoons,
-        source: 'buffer',
-      });
-      setLastId(result.id);
-      KarmaEngine.addLove(2, 'Chaos ingested to Buffer');
-      logEvent('DEVICE_SEALED', { action: 'chaos_ingest', id: result.id });
-      setStatus('done');
-      setText('');
-    } catch {
-      setStatus('error');
-    }
-  }, [text, spoons]);
-
-  const placeholder = spoons <= 1
-    ? 'What\'s weighing on you? Just put it here...'
-    : spoons <= 2
-      ? 'Offload what\'s in your head. This is your space.'
-      : 'What\'s on your mind? Dump it here — thoughts, frustrations, ideas.';
+  useEffect(() => {
+    const handlePaste = (e: ClipboardEvent) => {
+      if (e.clipboardData?.files.length) {
+        console.log('Intercepted file paste event.');
+      }
+    };
+    window.addEventListener('paste', handlePaste);
+    return () => window.removeEventListener('paste', handlePaste);
+  }, []);
 
   return (
-    <div className={className}>
+    <div className="relative flex flex-col h-full w-full bg-zinc-950 text-zinc-200">
       <textarea
-        value={text}
-        onChange={(e) => setText(e.target.value)}
-        placeholder={placeholder}
-        rows={6}
-        className="w-full p-4 rounded-xl bg-black/30 border border-white/10 text-white placeholder-gray-500 resize-none focus:outline-none focus:border-white/30 text-base leading-relaxed"
+        ref={textAreaRef}
+        value={content}
+        onChange={(e) => setContent(e.target.value)}
+        placeholder="Brain dump. Paste evidence logs. Hold trigger to dictate."
+        className="flex-grow w-full bg-transparent resize-none outline-none p-4 text-xl leading-relaxed text-zinc-300 placeholder:text-zinc-700 selection:bg-purple-900/50"
+        autoFocus
       />
-
-      <div className="flex items-center justify-between mt-4">
-        <div className="text-xs text-gray-600">
-          {text.length > 0 && `${text.length} chars`}
-          {lastId && <span className="ml-2 text-emerald-600">✓ saved</span>}
-        </div>
-
-        <button
-          onClick={handleSubmit}
-          disabled={!text.trim() || status === 'ingesting'}
-          className="px-6 py-3 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-sm tracking-widest disabled:opacity-30 transition-all"
-        >
-          {status === 'ingesting' ? 'INGESTING...' : status === 'done' ? 'INGESTED ✓' : 'INGEST CHAOS'}
-        </button>
+      <div className="flex items-center gap-2 p-4 text-xs text-zinc-500 font-mono border-t border-zinc-900">
+        <Shield size={14} className="text-purple-500" />
+        <span>FL TWO-PARTY CONSENT PROTECTED ENVIRONMENT. TRANSCRIPTION PROCESSES LOCALLY.</span>
       </div>
-
-      {status === 'error' && (
-        <p className="mt-2 text-xs text-red-400">Ingestion failed. Data saved locally.</p>
-      )}
-
-      <p className="mt-4 text-xs text-gray-600 text-center">
-        Every entry is embedded locally and becomes part of your knowledge graph. +2 LOVE per entry.
-      </p>
+      <button
+        onPointerDown={() => setIsRecording(true)}
+        onPointerUp={() => setIsRecording(false)}
+        onPointerLeave={() => setIsRecording(false)}
+        className={`
+          absolute bottom-16 right-4 w-16 h-16 rounded-full flex items-center justify-center
+          transition-all duration-300 select-none touch-manipulation
+          ${isRecording ? 'bg-purple-900 text-white scale-110 shadow-[0_0_30px_rgba(147,51,234,0.3)]' : 'bg-zinc-900 text-zinc-400'}
+        `}
+      >
+        <Mic size={24} />
+      </button>
     </div>
   );
 };
-
-export default ChaosIngest;

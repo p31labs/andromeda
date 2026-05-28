@@ -6,14 +6,23 @@
  * 2. Browser — View/search stored knowledge graph entries by door, text, date
  * 3. Ingest — Batch import text/files into the knowledge graph with auto-embedding
  *
- * All queries run locally via LiteLLM proxy (localhost:4000).
- * No API tokens burned. All data stays in-browser via PGLite.
+ * Uses shared VectorMath utilities for cosine similarity (no duplication).
+ * Auto-embeds chunks on ingest for immediate searchability.
+ * Configurable similarity threshold and top-k for search tuning.
  */
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useAtmosphere } from '../components/AtmosphereProvider';
-import { embedText } from '../lib/Embedder';
-import { getChaosVault, getDoorStats, recentEntries, queryByDoor, type KnowledgeEntry } from '../lib/ChaosVault';
+import { embedText, ingestAndEmbedChunks } from '../lib/Embedder';
+import {
+  getChaosVault, getDoorStats, recentEntries, queryByDoor,
+  getAllEmbeddedRows, ingestChunks,
+  type KnowledgeEntry,
+} from '../lib/ChaosVault';
+import { semanticChunker } from '../lib/ChunkingEngine';
+import {
+  rankSearchResults, formatContext, buildSystemPrompt, isValidEmbedding,
+} from '../lib/VectorMath';
 import { logEvent } from '../lib/EventLogger';
 import biologicalTdp from '../data/biological-tdp.json';
 
@@ -24,16 +33,6 @@ interface Props {
 }
 
 const LITELLM_CHAT_URL = 'http://localhost:4000/v1/chat/completions';
-
-function cosineSimilarity(a: number[], b: number[]): number {
-  if (a.length === 0 || b.length === 0 || a.length !== b.length) return 0;
-  let dot = 0, magA = 0, magB = 0;
-  for (let i = 0; i < a.length; i++) {
-    dot += a[i] * b[i]; magA += a[i] * a[i]; magB += b[i] * b[i];
-  }
-  const denom = Math.sqrt(magA) * Math.sqrt(magB);
-  return denom === 0 ? 0 : dot / denom;
-}
 
 export const ArchiveSurface: React.FC<Props> = ({ className }) => {
   const { spoons, grayRock } = useAtmosphere();
@@ -46,6 +45,8 @@ export const ArchiveSurface: React.FC<Props> = ({ className }) => {
   const [contextMatches, setContextMatches] = useState(0);
   const [error, setError] = useState('');
   const abortRef = useRef<AbortController | null>(null);
+  const [topK, setTopK] = useState(3);
+  const [threshold, setThreshold] = useState(0.0);
 
   // Browse state
   const [entries, setEntries] = useState<KnowledgeEntry[]>([]);
@@ -57,8 +58,9 @@ export const ArchiveSurface: React.FC<Props> = ({ className }) => {
   // Ingest state
   const [ingestText, setIngestText] = useState('');
   const [ingestDoor, setIngestDoor] = useState('archive');
-  const [ingestStatus, setIngestStatus] = useState<'idle' | 'ingesting' | 'done' | 'error'>('idle');
+  const [ingestStatus, setIngestStatus] = useState<'idle' | 'chunking' | 'embedding' | 'done' | 'error'>('idle');
   const [ingestCount, setIngestCount] = useState(0);
+  const [ingestEmbedded, setIngestEmbedded] = useState(0);
 
   // Load browse data when tab changes
   const loadBrowseData = useCallback(async () => {
@@ -92,7 +94,7 @@ export const ArchiveSurface: React.FC<Props> = ({ className }) => {
             );
           }
           sessionStorage.setItem('btp_ingested', 'true');
-          logEvent('DEVICE_SEALED' as any, { action: 'btp_ingest', entriesIngested: biologicalTdp.entries.length });
+          logEvent('DEVICE_SEALED' as never, { action: 'btp_ingest', entriesIngested: biologicalTdp.entries.length });
         } catch { /* silent — Archive works without BTP */ }
       })();
     }
@@ -114,38 +116,23 @@ export const ArchiveSurface: React.FC<Props> = ({ className }) => {
     try {
       // 1. Embed the query
       const queryEmbedding = await embedText(trimmed);
-      if (queryEmbedding.length === 0) {
+      if (!isValidEmbedding(queryEmbedding)) {
         throw new Error('Embedding failed — is LiteLLM running on localhost:4000?');
       }
 
-      // 2. Search ChaosVault for top-3 matches
-      const db = await getChaosVault();
-      const { rows } = await db.query<{
-        id: string; raw_text: string; embedding: Buffer | null; source_door: string;
-      }>(
-        `SELECT id, raw_text, embedding, source_door FROM unified_knowledge_graph WHERE embedding IS NOT NULL`
-      );
+      // 2. Fetch all embedded rows and rank via shared VectorMath
+      const rows = await getAllEmbeddedRows();
+      const results = rankSearchResults(queryEmbedding, rows, { topK, threshold });
 
-      const scored = rows
-        .filter((r) => r.embedding && r.embedding.byteLength > 0)
-        .map((r) => {
-          const emb = Array.from(new Float32Array(r.embedding!.buffer));
-          return { id: r.id, rawText: r.raw_text, sourceDoor: r.source_door, score: cosineSimilarity(queryEmbedding, emb) };
-        })
-        .sort((a, b) => b.score - a.score)
-        .slice(0, 3);
+      setContextMatches(results.length);
 
-      setContextMatches(scored.length);
-
-      const contextStr = scored.length > 0
-        ? scored.map((s, i) => `[${i + 1}] (from ${s.sourceDoor}, score:${s.score.toFixed(2)}): ${s.rawText.slice(0, 300)}`).join('\n')
-        : '';
+      const contextStr = formatContext(results, { maxPerChunk: 300, maxTotalChars: 2000 });
 
       // 3. Stream from local LiteLLM
       const messages = [
         {
           role: 'system' as const,
-          content: `You are PHOS-01, the Phosphorus Human Operating Surface. You are the sovereign AI operating locally on the operator's machine. You have direct read access to the operator's personal knowledge graph, warehouse inventory, retro vault, family care mesh, and event history.\n\nCRITICAL RULES:\n- Answer ONLY from the provided context. Do not hallucinate.\n- If context is insufficient, say "I don't have enough data on that yet. Try ingesting more into the Buffer."\n- Be direct, technical, and concise. No fluff. No "As an AI."\n- The operator has AuDHD. Be precise. Don't overwhelm.\n- Current spoon state: ${spoons}/5 (${grayRock ? 'CRISIS' : spoons <= 2 ? 'SANCTUARY' : spoons === 3 ? 'BRIDGE' : 'QUANTUM'}).\n\nAvailable context:\n${contextStr || '(no matching entries)'}`,
+          content: buildSystemPrompt(contextStr, { spoons, grayRock }),
         },
         { role: 'user' as const, content: trimmed },
       ];
@@ -185,13 +172,13 @@ export const ArchiveSurface: React.FC<Props> = ({ className }) => {
       }
 
       setLoading(false);
-      logEvent('INTENT_ROUTED' as any, { action: 'archive_search', query: trimmed, contextMatches: scored.length });
+      logEvent('INTENT_ROUTED' as never, { action: 'archive_search', query: trimmed, contextMatches: results.length });
     } catch (err) {
       setLoading(false);
       const msg = err instanceof Error ? err.message : 'RAG pipeline failed';
       setError(msg);
     }
-  }, [query, spoons, grayRock]);
+  }, [query, spoons, grayRock, topK, threshold]);
 
   const filteredBrowseEntries = entries.filter((e) => {
     const matchesDoor = browseDoor === 'all' || e.sourceDoor === browseDoor;
@@ -199,33 +186,54 @@ export const ArchiveSurface: React.FC<Props> = ({ className }) => {
     return matchesDoor && matchesText;
   });
 
-  // --- INGEST ---
+  // --- INGEST (auto-embed) ---
 
   const handleIngest = useCallback(async () => {
     const trimmed = ingestText.trim();
     if (!trimmed) return;
 
-    setIngestStatus('ingesting');
-    let count = 0;
+    setIngestStatus('chunking');
+    setIngestCount(0);
+    setIngestEmbedded(0);
 
     try {
-      const db = await getChaosVault();
-      // Split on double newlines or numbered entries
-      const chunks = trimmed.split(/\n\n+/).filter((c) => c.trim().length > 10);
-
-      for (const chunk of chunks) {
-        const id = `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
-        await db.query(
-          `INSERT INTO unified_knowledge_graph (id, source_door, raw_text, metadata, created_at) VALUES ($1, $2, $3, $4, $5)`,
-          [id, ingestDoor, chunk.trim(), JSON.stringify({ ingested: true }), Date.now()]
-        );
-        count++;
+      // 1. Chunk semantically
+      const chunks = semanticChunker(trimmed, { targetSize: 700, minChunkSize: 40 });
+      if (chunks.length === 0) {
+        setIngestStatus('done');
+        return;
       }
 
-      setIngestCount(count);
+      setIngestStatus('embedding');
+
+      // 2. Prepare ingest format
+      const ingestChunks = chunks.map((c) => ({
+        text: c.text,
+        sourceDoor: ingestDoor,
+        metadata: {
+          ingested: true,
+          heading: c.heading,
+          chunkIndex: c.chunkIndex,
+          totalChunks: c.totalChunks,
+          charCount: c.charCount,
+          isCodeBlock: c.isCodeBlock,
+        },
+      }));
+
+      // 3. Batch embed + store
+      const result = await ingestAndEmbedChunks(ingestChunks);
+
+      setIngestCount(result.total);
+      setIngestEmbedded(result.embedded);
       setIngestStatus('done');
       setIngestText('');
-      logEvent('DEVICE_SEALED' as any, { action: 'archive_ingest', door: ingestDoor, count });
+
+      logEvent('DEVICE_SEALED' as never, {
+        action: 'archive_ingest_chunks',
+        door: ingestDoor,
+        totalChunks: result.total,
+        embeddedChunks: result.embedded,
+      });
       loadBrowseData();
     } catch {
       setIngestStatus('error');
@@ -276,6 +284,24 @@ export const ArchiveSurface: React.FC<Props> = ({ className }) => {
       {/* SEARCH TAB */}
       {tab === 'search' && (
         <div className="space-y-4">
+          {/* Search params */}
+          <div className="flex items-center gap-3 text-[10px]" style={{ color: '#224466' }}>
+            <label className="flex items-center gap-1">
+              top-k:
+              <select value={topK} onChange={(e) => setTopK(Number(e.target.value))}
+                className="bg-transparent border rounded px-1" style={{ borderColor: '#224466', color: '#445566' }}>
+                {[3, 5, 7, 10].map((n) => <option key={n} value={n}>{n}</option>)}
+              </select>
+            </label>
+            <label className="flex items-center gap-1">
+              threshold:
+              <select value={threshold} onChange={(e) => setThreshold(Number(e.target.value))}
+                className="bg-transparent border rounded px-1" style={{ borderColor: '#224466', color: '#445566' }}>
+                {[0, 0.1, 0.2, 0.3, 0.4, 0.5].map((n) => <option key={n} value={n}>{n.toFixed(1)}</option>)}
+              </select>
+            </label>
+          </div>
+
           <form onSubmit={handleSearch}>
             <div className="flex gap-2">
               <input
@@ -299,7 +325,7 @@ export const ArchiveSurface: React.FC<Props> = ({ className }) => {
 
           {contextMatches > 0 && (
             <p className="text-[10px]" style={{ color: '#39ff14' }}>
-              Found {contextMatches} matching entries in knowledge graph.
+              Found {contextMatches} matching entries in knowledge graph (threshold ≥ {threshold.toFixed(1)}).
             </p>
           )}
 
@@ -391,7 +417,15 @@ export const ArchiveSurface: React.FC<Props> = ({ className }) => {
                       style={{ backgroundColor: 'rgba(0,229,255,0.1)', color: '#00e5ff' }}>
                       {e.sourceDoor}
                     </span>
-                    <span className="text-[9px]" style={{ color: '#224466' }}>{formatTs(e.createdAt)}</span>
+                    <div className="flex items-center gap-2">
+                      {e.embedding && (
+                        <span className="text-[8px] px-1 py-0.5 rounded"
+                          style={{ backgroundColor: 'rgba(57,255,20,0.1)', color: '#39ff14' }}>
+                          embedded
+                        </span>
+                      )}
+                      <span className="text-[9px]" style={{ color: '#224466' }}>{formatTs(e.createdAt)}</span>
+                    </div>
                   </div>
                   <p className="text-[11px] leading-relaxed line-clamp-3" style={{ color: '#8899aa' }}>
                     {e.rawText.slice(0, 200)}{e.rawText.length > 200 ? '…' : ''}
@@ -407,8 +441,8 @@ export const ArchiveSurface: React.FC<Props> = ({ className }) => {
       {tab === 'ingest' && (
         <div className="space-y-3">
           <p className="text-xs" style={{ color: '#224466' }}>
-            Paste text below. Each paragraph (separated by blank line) becomes a knowledge graph entry.
-            Entries are embedded and stored locally — nothing leaves your device.
+            Paste text below. Text is chunked at semantic boundaries (headers, paragraphs, code blocks),
+            then each chunk is embedded and stored — nothing leaves your device.
           </p>
 
           <select
@@ -430,7 +464,7 @@ export const ArchiveSurface: React.FC<Props> = ({ className }) => {
           <textarea
             value={ingestText}
             onChange={(e) => setIngestText(e.target.value)}
-            placeholder={"Paste documents, notes, logs here...\n\nEach paragraph becomes a searchable entry.\n\nSeparate entries with blank lines."}
+            placeholder={"Paste documents, notes, logs here...\n\nHeaders (# ## ###), paragraphs, code blocks, and lists are detected automatically.\n\nEach semantic chunk gets its own embedding for precise retrieval."}
             rows={10}
             className="w-full p-3 text-xs rounded-xl resize-none font-mono"
             style={{ backgroundColor: 'rgba(0,17,34,0.8)', border: '1px solid #224466', color: '#cce0ff' }}
@@ -438,15 +472,26 @@ export const ArchiveSurface: React.FC<Props> = ({ className }) => {
 
           <div className="flex items-center justify-between">
             <span className="text-[10px]" style={{ color: '#224466' }}>
-              {ingestText.trim() ? `${ingestText.trim().split(/\n\n+/).filter(c => c.trim().length > 10).length} entries detected` : ''}
+              {ingestText.trim()
+                ? `${semanticChunker(ingestText).length} chunks detected`
+                : ''}
             </span>
             <button
               onClick={handleIngest}
-              disabled={!ingestText.trim() || ingestStatus === 'ingesting'}
+              disabled={!ingestText.trim() || ingestStatus === 'chunking' || ingestStatus === 'embedding'}
               className="px-4 py-2 text-xs rounded-lg font-semibold disabled:opacity-30"
-              style={{ backgroundColor: ingestStatus === 'done' ? '#059669' : '#00e5ff', color: ingestStatus === 'done' ? '#f0fdf4' : '#001122' }}
+              style={{
+                backgroundColor: ingestStatus === 'done' ? '#059669' : '#00e5ff',
+                color: ingestStatus === 'done' ? '#f0fdf4' : '#001122',
+              }}
             >
-              {ingestStatus === 'ingesting' ? 'Ingesting…' : ingestStatus === 'done' ? `✓ ${ingestCount} entries added` : 'Ingest →'}
+              {ingestStatus === 'chunking'
+                ? 'Chunking…'
+                : ingestStatus === 'embedding'
+                  ? `Embedding (${ingestEmbedded}/${ingestCount})…`
+                  : ingestStatus === 'done'
+                    ? `✓ ${ingestEmbedded}/${ingestCount} embedded`
+                    : 'Ingest →'}
             </button>
           </div>
 
