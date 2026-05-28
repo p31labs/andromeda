@@ -22,7 +22,8 @@ export type SurfaceKey =
   | 'ARCHIVE'
   | 'HEARTH'
   | 'SANCTUARY'
-  | 'FORGE';
+  | 'FORGE'
+  | 'LEGAL';
 
 export interface AtmospherePreset {
   starfield: 'dense' | 'sparse' | 'static' | 'void';
@@ -286,6 +287,20 @@ const SURFACE_PRESETS: Record<SurfaceKey, AtmospherePreset> = {
       muted: '#5a4020',
     },
     motion: { enabled: false, speed: 0, particleCount: 0, transitionMs: 2000 },
+    tracking: false,
+    voice: false,
+  },
+  LEGAL: {
+    starfield: 'void',
+    palette: {
+      primary: '#c084fc',
+      secondary: '#9333ea',
+      accent: '#e9d5ff',
+      background: '#080210',
+      text: '#e0d0f0',
+      muted: '#4a2d6e',
+    },
+    motion: { enabled: false, speed: 0, particleCount: 0, transitionMs: 3000 },
     tracking: false,
     voice: false,
   },
