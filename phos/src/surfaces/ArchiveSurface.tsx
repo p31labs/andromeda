@@ -15,6 +15,7 @@ import { useAtmosphere } from '../components/AtmosphereProvider';
 import { embedText } from '../lib/Embedder';
 import { getChaosVault, getDoorStats, recentEntries, queryByDoor, type KnowledgeEntry } from '../lib/ChaosVault';
 import { logEvent } from '../lib/EventLogger';
+import biologicalTdp from '../data/biological-tdp.json';
 
 type ArchiveTab = 'search' | 'browse' | 'ingest';
 
@@ -77,6 +78,24 @@ export const ArchiveSurface: React.FC<Props> = ({ className }) => {
 
   useEffect(() => {
     if (tab === 'browse') loadBrowseData();
+    // Ingest Biological TDP on first Archive mount (one-time)
+    if (!sessionStorage.getItem('btp_ingested')) {
+      (async () => {
+        try {
+          const db = await getChaosVault();
+          for (const entry of biologicalTdp.entries) {
+            const id = `btp_${entry.id}_${Date.now()}`;
+            const embedding = await embedText(entry.summary);
+            await db.query(
+              'INSERT INTO unified_knowledge_graph (id, source_door, raw_text, embedding, metadata, created_at) VALUES ($1, $2, $3, $4, $5, $6) ON CONFLICT DO NOTHING',
+              [id, 'biological-tdp', entry.summary, embedding ? Buffer.from(new Float32Array(embedding).buffer) : null, JSON.stringify({ category: entry.category, tags: entry.tags, source: 'biological-tdp' }), Date.now()]
+            );
+          }
+          sessionStorage.setItem('btp_ingested', 'true');
+          logEvent('DEVICE_SEALED' as any, { action: 'btp_ingest', entriesIngested: biologicalTdp.entries.length });
+        } catch { /* silent — Archive works without BTP */ }
+      })();
+    }
   }, [tab, loadBrowseData]);
 
   // --- SEARCH (RAG) ---

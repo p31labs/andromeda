@@ -15,6 +15,7 @@ import { RetroVaultSurface } from '../surfaces/RetroVaultSurface';
 import { LedgerSurface } from '../surfaces/LedgerSurface';
 import { SanctuarySurface } from '../surfaces/SanctuarySurface';
 import { ArchiveSurface } from '../surfaces/ArchiveSurface';
+import { DriveSurface } from '../surfaces/DriveSurface';
 import { LegalVaultSurface } from '../surfaces/LegalVaultSurface';
 import { ArcadeSurface } from '../surfaces/ArcadeSurface';
 import { NodeZeroSurface } from '../surfaces/NodeZeroSurface';
@@ -241,6 +242,13 @@ const SurfaceContent: React.FC<{
       return (
         <div className="max-w-2xl w-full">
           <LegalVaultSurface />
+        </div>
+      );
+
+    case 'DRIVE':
+      return (
+        <div className="max-w-3xl w-full">
+          <DriveSurface />
         </div>
       );
 
@@ -535,6 +543,7 @@ export default function PHOSShell() {
             <button onClick={() => setSurface('COMPASS')} className={`py-3 text-xs tracking-widest ${theme.button}`}>COMPASS</button>
             <button onClick={() => setSurface('ARCHIVE')} className={`py-3 text-xs tracking-widest ${theme.button}`}>ARCHIVE</button>
             <button onClick={() => setSurface('LEGAL')} className={`py-3 text-xs tracking-widest ${theme.button}`}>LEGAL</button>
+            <button onClick={() => setSurface('DRIVE')} className={`py-3 text-xs tracking-widest ${theme.button}`}>DRIVE</button>
             <button onClick={() => setSurface('FORGE')} className={`py-3 text-xs tracking-widest ${theme.button}`}>FORGE</button>
             <button
               onClick={() => { setDonationContext('ESCAPE_HATCH'); setDonationOpen(true); }}

@@ -375,6 +375,29 @@ export class PHOSAPIClient {
       clearTimeout(timeoutId);
     }
   }
+
+  // ── GOOGLE DRIVE ──
+
+  async getDriveAuthUrl(): Promise<{ authUrl: string }> {
+    return this._fetch<{ authUrl: string }>(`${this.apiBase}/api/drive/auth-url`, 'drive-auth-url');
+  }
+
+  async exchangeDriveCode(code: string): Promise<{ accessToken: string; refreshToken?: string; expiresIn: number }> {
+    return this._fetch(`${this.apiBase}/api/drive/callback?code=${encodeURIComponent(code)}`, 'drive-callback');
+  }
+
+  async refreshDriveToken(refreshToken: string): Promise<string | null> {
+    try {
+      const res = await fetch('https://oauth2.googleapis.com/token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ refresh_token: refreshToken, grant_type: 'refresh_token' }).toString(),
+      });
+      if (!res.ok) return null;
+      const data = await res.json() as { access_token: string };
+      return data.access_token;
+    } catch { return null; }
+  }
 }
 
 // Singleton export for convenient use across the app

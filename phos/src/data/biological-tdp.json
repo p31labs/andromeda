@@ -1,0 +1,50 @@
+{
+  "id": "biological-tdp-seed",
+  "version": "1.0",
+  "exportedAt": "2026-05-27T22:50:00Z",
+  "entries": [
+    {
+      "id": "btp_section_1_overview",
+      "source": "biological-tdp",
+      "summary": "System Designation W.JOHNSON-001 overview: male age 40, former US Navy submarine electrical technician 16 years GS-0802-12 at TRIREFFAC Kings Bay. Primary diagnoses: Hypoparathyroidism ICD-10 E20.9, ADHD F90.0, Autism Spectrum Disorder F84.0. Three interdependent subsystems require simultaneous monitoring: endocrine calcium homeostasis, AuDHD neurological architecture, pharmacological maintenance. Six month monitoring gap prior to legal proceedings represents Class A maintenance violation with documented neurocognitive instability as predictable consequence.",
+      "category": "medical-overview",
+      "tags": ["hypoparathyroidism", "AuDHD", "medical-baseline", "legal"]
+    },
+    {
+      "id": "btp_section_2_endocrine",
+      "source": "biological-tdp",
+      "summary": "Hypoparathyroidism pathophysiology: PTH deficiency causes loss of renal calcium conservation, hyperphosphatemia, impaired calcitriol synthesis creating negative feedback loop. Medical Baseline target total serum calcium 8.2-8.8 mg/dL. Critical threshold below 7.6 mg/dL emergency. Documented crisis 7.8 mg/dL on May 14 2025. Symptom cascade: paresthesias to tetany to seizures to cardiac arrhythmias. Calcitriol dosing 0.5-2.0ug daily. Calcium supplementation 1000-3000mg elemental daily divided doses TID. Monitoring every 3 months minimum. Calcium citrate preferred formulation for acid-independent absorption. ICU history: May 14 2025 calcium crash with undetectable PTH.",
+      "category": "endocrine",
+      "tags": ["calcium", "calcitriol", "PTH", "monitoring", "crisis"]
+    },
+    {
+      "id": "btp_section_3_neurological",
+      "source": "biological-tdp",
+      "summary": "AuDHD architecture: Autism+ADHD co-occurrence in 50-70% with 72% shared genetic factors. Neurological mechanism of hypocalcemia cognitive effects: extracellular calcium stabilizes voltage-gated sodium channels. Hypocalcemia shifts activation threshold more negative causing spontaneous neuronal firing. Results: neuromuscular irritability, cognitive confusion, emotional lability, reduced GABAergic inhibition, increased AMPA excitatory transmission. Processing speed is most commonly impaired domain. Working memory buffer 7+/-2 items. Task switching costs disproportionate vs neurotypical. Time blindness. Masking is metabolically expensive with documented hair cortisol elevation. Autistic burnout lasts months to years. Rejection Sensitive Dysphoria affects 99% of ADHD adults. By age 12 children with ADHD receive 20000+ more critical messages than neurotypical peers.",
+      "category": "neurological",
+      "tags": ["AuDHD", "hypocalcemia-cognition", "masking", "burnout", "RSD", "executive-function"]
+    },
+    {
+      "id": "btp_section_5_fawn_guard",
+      "source:": "biological-tdp",
+      "summary": "Fawn Guard: real-time local-first AI detection of trauma-based people-pleasing patterns in digital text. Fawning is clinically recognized trauma response: hyper-apologetic language (I am sorry I know I should not bother), boundary self-erasure (never mind it does not matter), excessive acquiescence (you are absolutely right of course), suppression of personal needs to appease authority. Detection triggers on 2+ pattern matches. All processing runs locally on device via embedded LiteLLM switchboard — zero data leaves device. Addresses core problem: AuDHD executive dysfunction prevents short boundaried emails, traps operator in over-explaining loops that drain cognitive battery.",
+      "category": "technical",
+      "tags": ["fawn-guard", "local-first", "AI", "trauma", "boundaries", "RAG"]
+    },
+    {
+      "id": "btp_section_6_pharmacology",
+      "source": "biological-tdp",
+      "summary": "Current medication protocol: Calcitriol 0.5-2.0ug daily (active vitamin D bypassing impaired renal 1alpha-hydroxylase), Calcium Citrate 1000-3000mg elemental daily divided TID (acid-independent absorption), Vyvanse lisdexamfetamine prodrug dextroamphetamine released in RBCs via peptidase CYP450-independent, Effexor XR venlafaxine SNRI dose-dependent SSRI at low dose SNRI at 150mg+ CRITICAL: Effexor cannot be abruptly discontinued — 78% incidence of withdrawal syndrome with brain zaps dizziness emotional lability peaking days 2-7. Vyvanse discontinuation causes severe fatigue depression cognitive impairment. Any medication access interruption constitutes medical emergency.",
+      "category": "pharmacology",
+      "tags": ["calcitriol", "calcium-citrate", "vyvanse", "effexor", "discontinuation", "drug-interactions"]
+    },
+    {
+      "id": "btp_section_7_legal_ada",
+      "source": "biological-tdp",
+      "summary": "Legal analysis: treating metabolic crisis as psychiatric deficit violates ADA Title II. 7.8 mg/dL calcium crash produces neurocognitive symptoms that mimic psychiatric conditions but are fundamentally metabolic. Court-ordered psychiatric evaluation does not establish medical baseline for permanent disability. Consent Order 10/23/25 void ab initio: signed by attorney Joseph East who was terminated and withdrawn by court order on 10/20/25 — extrinsic fraud and zombie authority. Material misrepresentation of federal tax law: 26 USC 72(t)(2)(C) explicitly exempts QDRO/RBCO distributions from 10% early withdrawal penalty. Financial damage: $7,079.19 early withdrawal penalty, $14,158.37 federal tax withholding, $77,079.00 total TSP asset loss. Medication access interruption produces predictable functional impairment incompatible with legal proceedings or parenting.",
+      "category": "legal",
+      "tags": ["ADA", "fraud", "TSP", "consent-order", "disability-rights", "parental-fitness"],
+      "priority": "critical"
+    }
+  ]
+}

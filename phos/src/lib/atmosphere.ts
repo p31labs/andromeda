@@ -23,6 +23,7 @@ export type SurfaceKey =
   | 'HEARTH'
   | 'SANCTUARY'
   | 'FORGE'
+  | 'DRIVE'
   | 'LEGAL';
 
 export interface AtmospherePreset {
@@ -301,6 +302,20 @@ const SURFACE_PRESETS: Record<SurfaceKey, AtmospherePreset> = {
       muted: '#4a2d6e',
     },
     motion: { enabled: false, speed: 0, particleCount: 0, transitionMs: 3000 },
+    tracking: false,
+    voice: false,
+  },
+  DRIVE: {
+    starfield: 'sparse',
+    palette: {
+      primary: '#4ade80',
+      secondary: '#22c55e',
+      accent: '#86efac',
+      background: '#020a02',
+      text: '#d0f0d0',
+      muted: '#2d4a2d',
+    },
+    motion: { enabled: false, speed: 0, particleCount: 10, transitionMs: 2000 },
     tracking: false,
     voice: false,
   },

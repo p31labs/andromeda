@@ -19,6 +19,8 @@ interface Env {
   DISCORD_WEBHOOK_URL?: string;
   DISCORD_BOT_TOKEN?: string;
   HARDWARE_SECRET?: string;
+  GOOGLE_CLIENT_ID?: string;
+  GOOGLE_CLIENT_SECRET?: string;
   WS_HUB: DurableObjectNamespace;
 }
 
@@ -341,6 +343,46 @@ export default {
         botLatencyMs: botLatency,
         webhookConfigured: whUrl.length > 0,
         timestamp: new Date().toISOString(),
+      }, null, 2), { status: 200, headers });
+    }
+
+    // ── GOOGLE DRIVE OAUTH ──
+    // Step 1: Generate OAuth consent URL
+    if (path === '/api/drive/auth-url') {
+      const redirectUri = 'https://phos.p31labs.com/api/drive/callback';
+      const scopes = [
+        'https://www.googleapis.com/auth/drive.readonly',
+        'https://www.googleapis.com/auth/documents.readonly',
+      ].join(' ');
+      const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${env.GOOGLE_CLIENT_ID}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=${encodeURIComponent(scopes)}&access_type=offline&prompt=consent&state=${surface}`;
+      return new Response(JSON.stringify({ authUrl }, null, 2), { status: 200, headers });
+    }
+
+    // Step 2: OAuth callback — exchange code for tokens
+    if (path === '/api/drive/callback') {
+      const code = url.searchParams.get('code');
+      if (!code) return new Response(JSON.stringify({ error: 'Missing code' }), { status: 400, headers });
+      const redirectUri = 'https://phos.p31labs.com/api/drive/callback';
+      const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+          code,
+          client_id: env.GOOGLE_CLIENT_ID || '',
+          client_secret: env.GOOGLE_CLIENT_SECRET || '',
+          redirect_uri: redirectUri,
+          grant_type: 'authorization_code',
+        }).toString(),
+      });
+      if (!tokenRes.ok) {
+        const errText = await tokenRes.text().catch(() => 'unknown');
+        return new Response(JSON.stringify({ error: 'Token exchange failed', detail: errText }), { status: 400, headers });
+      }
+      const tokens = await tokenRes.json() as { access_token: string; refresh_token?: string; expires_in: number };
+      return new Response(JSON.stringify({
+        accessToken: tokens.access_token,
+        refreshToken: tokens.refresh_token,
+        expiresIn: tokens.expires_in,
       }, null, 2), { status: 200, headers });
     }
 
