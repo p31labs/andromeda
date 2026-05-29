@@ -31,6 +31,7 @@ import { DriftCommand } from "../commands/drift";
 import { LoreCommand } from "../commands/lore";
 import { TetraCommand } from "../commands/tetra";
 import { QClockCommand } from "../commands/qclock";
+import { DigestCommand } from "../commands/digest";
 
 /** Single source of truth for command registration (runtime + QA simulation). */
 export function registerAllCommands(registry: CommandRegistry): void {
@@ -65,6 +66,7 @@ export function registerAllCommands(registry: CommandRegistry): void {
   registry.register(new LoreCommand());
   registry.register(new TetraCommand());
   registry.register(new QClockCommand());
+  registry.register(new DigestCommand());
   registry.register(new HelpCommand(registry));
 }
 

@@ -22,6 +22,7 @@ import {
   CommandContext,
 } from "./commands/base";
 import { registerAllCommands } from "./boot/registerCommands";
+import { generateDigestMessage } from "./services/digestFormatter";
 import { handleScaffoldCommand } from "./services/serverScaffold";
 import * as spoonLedger from "./services/spoonLedger";
 import { startSubstackIntegration, initSubstackPoller } from "./services/substackPoller";
@@ -70,6 +71,52 @@ const bondingChannelId = process.env.BONDING_CHANNEL_ID;
 const nodeOneChannelId = process.env.NODE_ONE_CHANNEL_ID;
 const announcementsChannelId = process.env.ANNOUNCEMENTS_CHANNEL_ID;
 let showcaseChannelId = process.env.SHOWCASE_CHANNEL_ID;
+const digestChannelId = process.env.DIGEST_CHANNEL_ID;
+const digestEnabled = process.env.DIGEST_ENABLED !== "false";
+let digestInterval: ReturnType<typeof setInterval> | null = null;
+
+function msUntilNext7amEt(): number {
+  const now = new Date();
+  const et = new Date(now.toLocaleString("en-US", { timeZone: "America/New_York" }));
+  const next = new Date(et);
+  next.setHours(7, 0, 0, 0);
+  if (et.getHours() >= 7) {
+    next.setDate(next.getDate() + 1);
+  }
+  return Math.max(0, next.getTime() - et.getTime());
+}
+
+async function postDailyDigest(): Promise<void> {
+  if (!digestEnabled || !digestChannelId) return;
+  const channel = client.channels.cache.get(digestChannelId);
+  if (!channel || !(channel instanceof TextChannel)) return;
+  try {
+    const msg = await generateDigestMessage();
+    await channel.send(msg);
+  } catch (error) {
+    console.error("[DIGEST] Failed to post daily digest:", error);
+  }
+}
+
+function startDigestCron(): void {
+  if (!digestEnabled) {
+    console.log("[DIGEST] Digest cron disabled (DIGEST_ENABLED=false)");
+    return;
+  }
+  if (!digestChannelId) {
+    console.log("[DIGEST] Digest cron disabled (DIGEST_CHANNEL_ID not set)");
+    return;
+  }
+  const firstDelay = msUntilNext7amEt();
+  console.log(`[DIGEST] Next digest in ${Math.round(firstDelay / 60000)} minutes`);
+  setTimeout(() => {
+    postDailyDigest().catch(console.error);
+    digestInterval = setInterval(() => {
+      postDailyDigest().catch(console.error);
+    }, 86400000);
+  }, firstDelay);
+  console.log("[DIGEST] Daily digest cron scheduled (7:00 AM ET)");
+}
 
 // Initialize Quantum Egg Hunt service (may be rebound after scaffold)
 let quantumEggHunt = new QuantumEggHunt({
@@ -476,6 +523,8 @@ client.on(Events.ClientReady, async () => {
   } else {
     console.log('[BOT] Substack poller not configured (SUBSTACK_WEBHOOK_URL missing)');
   }
+
+  startDigestCron();
 });
 
 // Error handlers
