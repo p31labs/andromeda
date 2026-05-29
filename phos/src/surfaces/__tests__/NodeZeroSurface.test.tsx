@@ -1,6 +1,6 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 vi.mock('../lib/phos-api', () => ({
   phosAPI: {
@@ -24,25 +24,6 @@ vi.mock('../lib/KarmaEngine', () => ({
 }));
 vi.mock('../lib/CryptoEngine', () => ({
   CryptoEngine: { sealDevice: vi.fn(() => Promise.resolve()), isSealed: vi.fn(() => false) },
-}));
-vi.mock('../components/BiologicalAnchor', () => ({
-  BiologicalAnchor: () => React.createElement('div', { 'data-testid': 'bio-anchor' }, 'BiologicalAnchor'),
-}));
-vi.mock('../components/TheLedger', () => ({
-  TheLedger: () => React.createElement('div', { 'data-testid': 'the-ledger' }, 'TheLedger'),
-}));
-vi.mock('../components/TheLoveLedger', () => ({
-  LoveLedger: () => React.createElement('div', { 'data-testid': 'love-ledger' }, 'LoveLedger'),
-}));
-vi.mock('lucide-react', () => ({
-  Shield: () => 'shield',
-  Activity: () => 'activity',
-  Briefcase: () => 'briefcase',
-  Eye: () => 'eye',
-  Fingerprint: () => 'fingerprint',
-  Bone: () => 'bone',
-  Calculator: () => 'calc',
-  Anchor: () => 'anchor',
 }));
 
 import { AtmosphereProvider } from '../../components/AtmosphereProvider';
@@ -83,37 +64,23 @@ describe('TRIPER: T - Task', () => {
     expect(screen.getByText(/COGNITIVE PASSPORT/)).toBeTruthy();
   });
 
-  it('toggles biological panel open', () => {
-    renderNodeZero();
-    fireEvent.click(screen.getByText(/ENDOCRINE TRACKS/));
-    expect(screen.getByTestId('bio-anchor')).toBeTruthy();
-  });
-
-  it('toggles ledger panel open', () => {
-    renderNodeZero();
-    fireEvent.click(screen.getByText(/DEFERRED INVOICING CORE/));
-    expect(screen.getByTestId('the-ledger')).toBeTruthy();
-  });
-
-  it('toggles archive panel open', () => {
-    renderNodeZero();
-    fireEvent.click(screen.getByText(/OMNI OBJECT ARCHIVE/));
-    expect(screen.getByTestId('love-ledger')).toBeTruthy();
-  });
-
   it('toggles cognitive passport panel open', () => {
     renderNodeZero();
     fireEvent.click(screen.getByText(/COGNITIVE PASSPORT/));
     expect(screen.getByText(/Identity/)).toBeTruthy();
     expect(screen.getByText(/Visual State/)).toBeTruthy();
+    expect(screen.getByText(/Linguistic Profile/)).toBeTruthy();
+    expect(screen.getByText(/AI Context/)).toBeTruthy();
   });
 
-  it('toggles panel close', () => {
+  it('expansion indicator changes on toggle', () => {
     renderNodeZero();
-    fireEvent.click(screen.getByText(/ENDOCRINE TRACKS/));
-    expect(screen.getByTestId('bio-anchor')).toBeTruthy();
-    fireEvent.click(screen.getByText(/ENDOCRINE TRACKS/));
-    expect(screen.queryByTestId('bio-anchor')).toBeNull();
+    const btn = screen.getByText(/COGNITIVE PASSPORT/).closest('button')!;
+    expect(btn.textContent).toContain('OPEN');
+    fireEvent.click(btn);
+    expect(btn.textContent).toContain('CLOSE');
+    fireEvent.click(btn);
+    expect(btn.textContent).toContain('OPEN');
   });
 });
 
@@ -152,8 +119,8 @@ describe('TRIPER: E - E2E', () => {
 
   it('full render cycle with panel toggle', () => {
     const { unmount } = renderNodeZero();
-    fireEvent.click(screen.getByText(/ENDOCRINE TRACKS/));
-    fireEvent.click(screen.getByText(/ENDOCRINE TRACKS/));
+    fireEvent.click(screen.getByText(/COGNITIVE PASSPORT/));
+    fireEvent.click(screen.getByText(/COGNITIVE PASSPORT/));
     unmount();
   });
 });

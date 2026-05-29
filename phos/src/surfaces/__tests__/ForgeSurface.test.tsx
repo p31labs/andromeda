@@ -2,6 +2,17 @@ import React from 'react';
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
+vi.mock('@electric-sql/pglite', () => {
+  const mockQuery = vi.fn(() => Promise.resolve({ rows: [] }));
+  const mockImpl = vi.fn(() => ({
+    waitReady: Promise.resolve(),
+    query: mockQuery,
+    exec: vi.fn().mockResolvedValue(undefined),
+    close: vi.fn().mockResolvedValue(undefined),
+  }));
+  return { PGlite: mockImpl, _mockQuery: mockQuery };
+});
+
 vi.mock('../lib/phos-api', () => ({
   phosAPI: {
     connectStream: () => ({ disconnect: () => {}, send: vi.fn() }),

@@ -47,10 +47,12 @@ vi.mock('@electric-sql/pglite', () => {
   const mockPgliteInstance = {
     query: vi.fn().mockResolvedValue({ rows: [] }),
     execute: vi.fn().mockResolvedValue(undefined),
+    exec: vi.fn().mockResolvedValue(undefined),
     close: vi.fn().mockResolvedValue(undefined),
+    waitReady: Promise.resolve(),
   };
   return {
-    PGLite: vi.fn(() => mockPgliteInstance),
+    PGlite: vi.fn(() => mockPgliteInstance),
   };
 });
 
