@@ -25,6 +25,14 @@ vi.mock('../lib/KarmaEngine', () => ({
 vi.mock('../lib/CryptoEngine', () => ({
   CryptoEngine: { sealDevice: vi.fn(() => Promise.resolve()), isSealed: vi.fn(() => false) },
 }));
+vi.mock('@electric-sql/pglite', () => {
+  const mockQuery = vi.fn(() => Promise.resolve({ rows: [] }));
+  const mockImpl = vi.fn(() => ({
+    waitReady: Promise.resolve(),
+    query: mockQuery,
+  }));
+  return { PGlite: mockImpl, _mockQuery: mockQuery };
+}));
 vi.mock('../lib/PassportContext', () => ({
   useHardenedPassport: () => ({
     state: {
@@ -41,22 +49,18 @@ vi.mock('../components/BiologicalAnchor', () => ({
   BiologicalAnchor: () => React.createElement('div', { 'data-testid': 'bio-anchor' }, 'BiologicalAnchor'),
 }));
 vi.mock('../components/TheLedger', () => ({
-  TheLedger: ({ laborEvents }: any) => React.createElement('div', { 'data-testid': 'the-ledger' }, 'TheLedger'),
+  TheLedger: () => React.createElement('div', { 'data-testid': 'the-ledger' }, 'TheLedger'),
 }));
 vi.mock('../components/TheLoveLedger', () => ({
-  LoveLedger: ({ artifacts }: any) => React.createElement('div', { 'data-testid': 'love-ledger' }, 'LoveLedger'),
+  LoveLedger: () => React.createElement('div', { 'data-testid': 'love-ledger' }, 'LoveLedger'),
 }));
-
-const iconNames = [
-  'Shield', 'Activity', 'Briefcase', 'Eye', 'Fingerprint',
-  'Bone', 'Calculator', 'Anchor', 'Heart', 'Star',
-  'Lock', 'Unlock', 'Settings', 'Wifi', 'Zap',
-];
-const iconMocks: Record<string, any> = {};
-for (const name of iconNames) {
-  iconMocks[name] = () => React.createElement('span', null, name);
-}
-vi.mock('lucide-react', () => iconMocks);
+vi.mock('lucide-react', () => {
+  const icons: Record<string, any> = {};
+  for (const name of ['Shield', 'Activity', 'Briefcase', 'Eye', 'Fingerprint', 'Bone', 'Calculator', 'Anchor', 'Heart', 'Star', 'Lock', 'Unlock', 'Settings', 'Wifi', 'Zap']) {
+    icons[name] = () => React.createElement('span', null, name);
+  }
+  return icons;
+});
 
 import { AtmosphereProvider } from '../../components/AtmosphereProvider';
 import { NodeZeroSurface } from '../NodeZeroSurface';

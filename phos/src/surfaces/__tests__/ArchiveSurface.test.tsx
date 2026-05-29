@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent, act } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 vi.mock('../lib/phos-api', () => ({
@@ -86,12 +86,12 @@ describe('TRIPER: T - Task', () => {
 
   it('renders three tab buttons', () => {
     renderArchive();
-    const tabContainer = screen.getAllByRole('button').filter((btn) =>
+    const tabBtns = screen.getAllByRole('button').filter((btn) =>
       btn.getAttribute('class')?.includes('flex-1') &&
       btn.getAttribute('class')?.includes('py-2') &&
-      btn.getAttribute('class')?.includes('rounded-lg')
+      btn.getAttribute('class')?.includes('text-center')
     );
-    expect(tabContainer.length).toBeGreaterThanOrEqual(3);
+    expect(tabBtns.length).toBeGreaterThanOrEqual(3);
   });
 
   it('renders search input in search tab', () => {
@@ -106,19 +106,29 @@ describe('TRIPER: T - Task', () => {
     expect(askBtn).toBeTruthy();
   });
 
-  it('switches to browse tab', () => {
+  it('switches to browse tab', async () => {
     renderArchive();
-    const allBtns = screen.getAllByRole('button');
-    const browseBtn = allBtns.find((b) => b.textContent?.includes('\uD83D\uDC\uDA Browse'));
-    if (browseBtn) fireEvent.click(browseBtn);
-    expect(screen.getByText(/Filter entries/)).toBeTruthy();
+    const tabBtns = screen.getAllByRole('button').filter((btn) =>
+      btn.getAttribute('class')?.includes('flex-1') &&
+      btn.getAttribute('class')?.includes('text-center')
+    );
+    if (tabBtns.length >= 2) {
+      fireEvent.click(tabBtns[1]);
+      await new Promise(r => setTimeout(r, 100));
+    }
+    expect(screen.getByPlaceholderText(/Filter entries/)).toBeTruthy();
   });
 
-  it('switches to ingest tab', () => {
+  it('switches to ingest tab', async () => {
     renderArchive();
-    const allBtns = screen.getAllByRole('button');
-    const ingestBtn = allBtns.find((b) => b.textContent?.includes('\u2B07 Ingest'));
-    if (ingestBtn) fireEvent.click(ingestBtn);
+    const tabBtns = screen.getAllByRole('button').filter((btn) =>
+      btn.getAttribute('class')?.includes('flex-1') &&
+      btn.getAttribute('class')?.includes('text-center')
+    );
+    if (tabBtns.length >= 3) {
+      fireEvent.click(tabBtns[2]);
+      await new Promise(r => setTimeout(r, 100));
+    }
     expect(screen.getByPlaceholderText(/Paste documents/)).toBeTruthy();
   });
 
@@ -172,15 +182,16 @@ describe('TRIPER: E - E2E', () => {
     unmount();
   });
 
-  it('full render cycle through all tabs', () => {
+  it('full render cycle through all tabs', async () => {
     const { unmount } = renderArchive();
-    const allBtns = screen.getAllByRole('button');
-    const browseBtn = allBtns.find((b) => b.textContent?.includes('\uD83D\uDC\uDA Browse'));
-    const ingestBtn = allBtns.find((b) => b.textContent?.includes('\u2B07 Ingest'));
-    const searchBtn = allBtns.find((b) => b.textContent?.includes('\uD83D\uDD0D Search'));
-    if (browseBtn) fireEvent.click(browseBtn);
-    if (ingestBtn) fireEvent.click(ingestBtn);
-    if (searchBtn) fireEvent.click(searchBtn);
+    const tabBtns = screen.getAllByRole('button').filter((btn) =>
+      btn.getAttribute('class')?.includes('flex-1') &&
+      btn.getAttribute('class')?.includes('text-center')
+    );
+    if (tabBtns.length >= 2) fireEvent.click(tabBtns[1]);
+    if (tabBtns.length >= 3) fireEvent.click(tabBtns[2]);
+    if (tabBtns.length >= 1) fireEvent.click(tabBtns[0]);
+    await new Promise(r => setTimeout(r, 100));
     unmount();
   });
 });

@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 vi.mock('../lib/phos-api', () => ({
@@ -61,9 +61,10 @@ describe('TRIPER: T - Task', () => {
     expect(screen.getByText(/L\.O\.V\.E\. Ledger/)).toBeTruthy();
   });
 
-  it('renders balance display', () => {
-    renderLedger();
-    expect(screen.getByText(/\$42\.00/)).toBeTruthy();
+  it('renders balance display', async () => {
+    const { container } = renderLedger();
+    await act(async () => { await new Promise(r => setTimeout(r, 200)); });
+    expect(container.textContent).toContain('$42.00');
   });
 
   it('renders balance subtitle', () => {

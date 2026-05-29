@@ -66,7 +66,8 @@ describe('TRIPER: T - Task', () => {
 
   it('renders Google Drive header', () => {
     renderDrive();
-    expect(screen.getByText(/Google Drive/)).toBeTruthy();
+    const els = screen.getAllByText((_: string, el) => el?.textContent?.includes('Google Drive') === true);
+    expect(els.length).toBeGreaterThanOrEqual(1);
   });
 
   it('renders description text', () => {
