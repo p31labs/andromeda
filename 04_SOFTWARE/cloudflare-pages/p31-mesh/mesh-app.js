@@ -58,6 +58,8 @@ const S = {
   breathInterval: null,
   breathStart: 0,
   sigReconnect: null,
+  reconnectAttempts: 0,
+  maxReconnectAttempts: 5,
   spoons: 6,
   spoonDecayTimer: null,
   spoonRecoveryTimer: null,
@@ -233,6 +235,7 @@ function connectSignaling(roomId, peerId) {
   S.sigWs = new WebSocket(url);
   S.sigWs.onopen = function () {
     clearTimeout(S.sigReconnect);
+    S.reconnectAttempts = 0;
     meshSetStatus("on", "Online — waiting for peers");
     document.getElementById("meshBtnConnect").disabled = false;
     document.getElementById("meshBtnJoin").disabled = false;
@@ -245,10 +248,17 @@ function connectSignaling(roomId, peerId) {
     handleSignalingMsg(msg);
   };
   S.sigWs.onclose = function (e) {
-    meshLog("Signaling closed (" + e.code + ") — reconnecting in 3s", "err");
-    meshSetStatus("init", "Reconnecting...");
+    meshLog("Signaling closed (" + e.code + ")", "err");
     document.getElementById("meshBtnConnect").disabled = true;
-    S.sigReconnect = setTimeout(function () { connectSignaling(roomId, peerId); }, 3000);
+    if (S.reconnectAttempts >= S.maxReconnectAttempts) {
+      meshSetStatus("off", "Offline — click to retry");
+      meshLog("Max reconnect attempts reached. Tap status to retry.", "err");
+      return;
+    }
+    var delay = Math.min(1000 * Math.pow(2, S.reconnectAttempts), 30000);
+    S.reconnectAttempts++;
+    meshSetStatus("init", "Reconnecting in " + (delay / 1000) + "s...");
+    S.sigReconnect = setTimeout(function () { connectSignaling(roomId, peerId); }, delay);
   };
   S.sigWs.onerror = function () { meshLog("Signaling error", "err"); };
 }
@@ -842,8 +852,18 @@ function renderNoc() {
   document.addEventListener("click", onMeaningfulInteraction);
   document.addEventListener("touchstart", onMeaningfulInteraction);
 
-  meshVibrate([80, 40, 80]);
   meshLog("K4 Family Mesh initialized — Larmor " + LARMOR_HZ + " Hz", "sys");
+
+  var statusCard = document.getElementById("meshStatusCard");
+  if (statusCard) {
+    statusCard.style.cursor = "pointer";
+    statusCard.addEventListener("click", function () {
+      if (S.reconnectAttempts >= S.maxReconnectAttempts) {
+        S.reconnectAttempts = 0;
+        connectSignaling(S.myRoomId, S.myId);
+      }
+    });
+  }
 
   if (S.nocMode) renderNoc();
 
