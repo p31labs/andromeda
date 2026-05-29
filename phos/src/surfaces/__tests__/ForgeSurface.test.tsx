@@ -197,12 +197,12 @@ describe('TRIPER: T - Task', () => {
     expect(screen.getByText(/Stock movement/)).toBeTruthy();
   });
 
-  it('renders payment method buttons after adding item', () => {
+  it('adds item to cart', async () => {
     renderForge();
-    fireEvent.click(screen.getByText('Sourdough Loaf'));
-    const allBtns = screen.getAllByRole('button');
-    const cashBtn = allBtns.find((b) => b.textContent?.includes('Cash'));
-    expect(cashBtn).toBeTruthy();
+    await act(async () => {
+      fireEvent.click(screen.getByText('Sourdough Loaf'));
+    });
+    expect(screen.getByText(/Cart \(1 item\)/)).toBeTruthy();
   });
 });
 

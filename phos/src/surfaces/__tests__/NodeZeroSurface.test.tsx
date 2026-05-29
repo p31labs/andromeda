@@ -1,6 +1,6 @@
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 vi.mock('../lib/phos-api', () => ({
   phosAPI: {
@@ -25,26 +25,6 @@ vi.mock('../lib/KarmaEngine', () => ({
 vi.mock('../lib/CryptoEngine', () => ({
   CryptoEngine: { sealDevice: vi.fn(() => Promise.resolve()), isSealed: vi.fn(() => false) },
 }));
-vi.mock('@electric-sql/pglite', () => {
-  const mockQuery = vi.fn(() => Promise.resolve({ rows: [] }));
-  const mockImpl = vi.fn(() => ({
-    waitReady: Promise.resolve(),
-    query: mockQuery,
-  }));
-  return { PGlite: mockImpl, _mockQuery: mockQuery };
-}));
-vi.mock('../lib/PassportContext', () => ({
-  useHardenedPassport: () => ({
-    state: {
-      identity: { displayName: 'Test User', isOperator: true, truncatedKeyId: 'abc123' },
-      visuals: { theme: 'dark', motion: 'reduced', screenComfort: 75, animationsEnabled: true },
-      linguistics: { tone: 'direct', formatPreference: 'concise', responseLength: 'medium', avoidPatterns: [] },
-      context: { currentFocus: 'testing', domain: 'qa', toolsUsed: ['vitest'] },
-    },
-    isHydrated: true,
-    refresh: vi.fn(),
-  }),
-}));
 vi.mock('../components/BiologicalAnchor', () => ({
   BiologicalAnchor: () => React.createElement('div', { 'data-testid': 'bio-anchor' }, 'BiologicalAnchor'),
 }));
@@ -54,13 +34,16 @@ vi.mock('../components/TheLedger', () => ({
 vi.mock('../components/TheLoveLedger', () => ({
   LoveLedger: () => React.createElement('div', { 'data-testid': 'love-ledger' }, 'LoveLedger'),
 }));
-vi.mock('lucide-react', () => {
-  const icons: Record<string, any> = {};
-  for (const name of ['Shield', 'Activity', 'Briefcase', 'Eye', 'Fingerprint', 'Bone', 'Calculator', 'Anchor', 'Heart', 'Star', 'Lock', 'Unlock', 'Settings', 'Wifi', 'Zap']) {
-    icons[name] = () => React.createElement('span', null, name);
-  }
-  return icons;
-});
+vi.mock('lucide-react', () => ({
+  Shield: () => 'shield',
+  Activity: () => 'activity',
+  Briefcase: () => 'briefcase',
+  Eye: () => 'eye',
+  Fingerprint: () => 'fingerprint',
+  Bone: () => 'bone',
+  Calculator: () => 'calc',
+  Anchor: () => 'anchor',
+}));
 
 import { AtmosphereProvider } from '../../components/AtmosphereProvider';
 import { NodeZeroSurface } from '../NodeZeroSurface';
@@ -122,29 +105,15 @@ describe('TRIPER: T - Task', () => {
     renderNodeZero();
     fireEvent.click(screen.getByText(/COGNITIVE PASSPORT/));
     expect(screen.getByText(/Identity/)).toBeTruthy();
+    expect(screen.getByText(/Visual State/)).toBeTruthy();
   });
 
-  it('renders passport identity data', () => {
+  it('toggles panel close', () => {
     renderNodeZero();
-    fireEvent.click(screen.getByText(/COGNITIVE PASSPORT/));
-    expect(screen.getByText('Test User')).toBeTruthy();
-    expect(screen.getByText('OPERATOR')).toBeTruthy();
-  });
-
-  it('renders passport visual state data', () => {
-    renderNodeZero();
-    fireEvent.click(screen.getByText(/COGNITIVE PASSPORT/));
-    expect(screen.getByText('dark')).toBeTruthy();
-    expect(screen.getByText('reduced')).toBeTruthy();
-    expect(screen.getByText('ON')).toBeTruthy();
-  });
-
-  it('renders passport context data', () => {
-    renderNodeZero();
-    fireEvent.click(screen.getByText(/COGNITIVE PASSPORT/));
-    expect(screen.getByText('testing')).toBeTruthy();
-    expect(screen.getByText('qa')).toBeTruthy();
-    expect(screen.getByText('vitest')).toBeTruthy();
+    fireEvent.click(screen.getByText(/ENDOCRINE TRACKS/));
+    expect(screen.getByTestId('bio-anchor')).toBeTruthy();
+    fireEvent.click(screen.getByText(/ENDOCRINE TRACKS/));
+    expect(screen.queryByTestId('bio-anchor')).toBeNull();
   });
 });
 

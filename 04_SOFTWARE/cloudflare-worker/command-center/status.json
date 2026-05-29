@@ -1,10 +1,10 @@
 {
-  "updated": "2026-05-29T00:15:00-04:00",
+  "updated": "2026-05-29T00:52:00-04:00",
   "audit": {
     "probed_at": "2026-05-24T22:00:00-04:00",
     "method": "curl -- GET -L, 5-8s timeout; OPTIONS/POST where noted",
     "environment": "windows workspace",
-    "summary": "DISCORD ORACLE BOT complete: 21 slash commands, interaction handler with Ed25519 verification, bot tools on HERALD/STEWARD/SENTINEL. phos-api deployed with bot API. CLOUDFLARE_API_TOKEN persisted. All 15 Discord secrets injected. DISCORD_PUBLIC_KEY locked.",
+    "summary": "STRIPE WEBHOOK (May 29): /api/stripe/webhook deployed with HMAC-SHA256 verification, D1 event logging, Discord payment alerts, /api/treasury balance tracker. Ed25519 enforced on Discord interactions. phos-api deployed. All systems nominal.",
     "anomalies": [
       {
         "name": "p31-telemetry",
