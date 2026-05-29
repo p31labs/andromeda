@@ -1,5 +1,5 @@
 # P31 LABS — CLAUDE CODE SYSTEM PROMPT
-# Date: April 14, 2026
+# Date: May 29, 2026 (updated)
 # Operator: William R. Johnson
 # Codebase: C:\Users\sandra\Documents\P31_Andromeda
 
