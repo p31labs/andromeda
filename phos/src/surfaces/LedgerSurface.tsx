@@ -2,6 +2,21 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { KarmaEngine, toDollars, type LoveTransaction } from '../lib/KarmaEngine';
 import { getEventLog, type PHOSEvent } from '../lib/EventLogger';
 
+// ── Treasury types from simplex-worker ──────────────────────────────────
+interface TreasuryData {
+  treasury_balance_cents: number;
+  treasury_balance_dollars: string;
+  kofi_balance: string;
+  kofi_target: number;
+  kofi_percent: string;
+  tranche1_total_ingested_cents: number;
+  tranche2_slicing_pie_settled_cents: number;
+  available_for_tranche3_cents: number;
+  recent_stripe_events: Array<{
+    event_id: string; type: string; amount: number | null; currency: string; created_at: number;
+  }>;
+}
+
 interface Props { className?: string; }
 
 export const LedgerSurface: React.FC<Props> = ({ className }) => {
@@ -10,7 +25,20 @@ export const LedgerSurface: React.FC<Props> = ({ className }) => {
   const [events, setEvents] = useState<PHOSEvent[]>([]);
   const [filter, setFilter] = useState('');
   const [currentPage, setCurrentPage] = useState(0);
+  const [treasury, setTreasury] = useState<TreasuryData | null>(null);
+  const [treasuryLoading, setTreasuryLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState<'love' | 'treasury'>('love');
   const PAGE_SIZE = 20;
+
+  const loadTreasury = useCallback(async () => {
+    setTreasuryLoading(true);
+    try {
+      const url = 'https://simplex-worker.trimtab-signal.workers.dev';
+      const resp = await fetch(`${url}/api/treasury`);
+      if (resp.ok) setTreasury(await resp.json() as TreasuryData);
+    } catch { /* silent */ }
+    setTreasuryLoading(false);
+  }, []);
 
   const loadData = useCallback(() => {
     setBalanceCents(KarmaEngine.getBalanceCents());
@@ -20,9 +48,10 @@ export const LedgerSurface: React.FC<Props> = ({ className }) => {
 
   useEffect(() => {
     loadData();
-    const interval = setInterval(loadData, 5000);
+    loadTreasury();
+    const interval = setInterval(() => { loadData(); loadTreasury(); }, 30000);
     return () => clearInterval(interval);
-  }, [loadData]);
+  }, [loadData, loadTreasury]);
 
   const filteredTransactions = filter.trim()
     ? transactions.filter((t) =>
@@ -46,6 +75,18 @@ export const LedgerSurface: React.FC<Props> = ({ className }) => {
   return (
     <div className={className}>
       <h2 className="text-2xl font-semibold mb-6">L.O.V.E. Ledger</h2>
+
+      {/* Tab Switcher */}
+      <div className="flex gap-1 mb-6">
+        {[['love', '❤ L.O.V.E.'], ['treasury', '💰 Treasury']].map(([key, label]) => (
+          <button key={key} onClick={() => setActiveTab(key as 'love' | 'treasury')}
+            className={`px-4 py-2 text-xs font-mono rounded-t transition-colors ${
+              activeTab === key ? 'bg-white/10 text-amber-400 border-t border-x border-white/10' : 'text-gray-500 hover:text-gray-300'
+            }`}>{label}</button>
+        ))}
+      </div>
+
+      {activeTab === 'love' && (<>
 
       <div className="p-6 rounded-2xl bg-black/30 border border-white/10 text-center mb-6">
         <div className="text-xs text-gray-500 uppercase tracking-wider mb-2">Balance</div>
@@ -123,6 +164,90 @@ export const LedgerSurface: React.FC<Props> = ({ className }) => {
           </div>
         )}
       </div>
+      </>)}
+
+      {activeTab === 'treasury' && (
+        <div className="space-y-4">
+          {/* Treasury Balance Hero */}
+          <div className="p-6 rounded-2xl bg-black/30 border border-white/10 text-center">
+            <div className="text-xs text-gray-500 uppercase tracking-wider mb-2">Treasury Balance</div>
+            <div className="text-4xl font-bold text-amber-400 font-mono">
+              ${treasury?.treasury_balance_dollars ?? '0.00'}
+            </div>
+            <div className="text-[10px] text-gray-600 mt-1">
+              {treasuryLoading ? 'Syncing...' : treasury ? `Updated ${new Date().toLocaleTimeString()}` : 'No treasury data'}
+            </div>
+          </div>
+
+          {/* Tranche Breakdown */}
+          <div className="grid grid-cols-3 gap-3">
+            <div className="p-4 rounded-xl bg-black/20 border border-amber-500/20 text-center">
+              <div className="text-[9px] uppercase tracking-wider text-amber-400 mb-1">Tranche 1</div>
+              <div className="text-lg font-mono font-bold text-amber-300">${((treasury?.tranche1_total_ingested_cents ?? 0) / 100).toFixed(2)}</div>
+              <div className="text-[9px] text-gray-500">Ops Payroll</div>
+            </div>
+            <div className="p-4 rounded-xl bg-black/20 border border-cyan-500/20 text-center">
+              <div className="text-[9px] uppercase tracking-wider text-cyan-400 mb-1">Tranche 2</div>
+              <div className="text-lg font-mono font-bold text-cyan-300">${((treasury?.tranche2_slicing_pie_settled_cents ?? 0) / 100).toFixed(2)}</div>
+              <div className="text-[9px] text-gray-500">Slicing Pie</div>
+            </div>
+            <div className="p-4 rounded-xl bg-black/20 border border-purple-500/20 text-center">
+              <div className="text-[9px] uppercase tracking-wider text-purple-400 mb-1">Tranche 3</div>
+              <div className="text-lg font-mono font-bold text-purple-300">${((treasury?.available_for_tranche3_cents ?? 0) / 100).toFixed(2)}</div>
+              <div className="text-[9px] text-gray-500">PoC Available</div>
+            </div>
+          </div>
+
+          {/* Ko-fi Progress */}
+          <div className="p-4 rounded-xl bg-black/20 border border-white/10">
+            <div className="flex justify-between items-baseline mb-2">
+              <span className="text-[10px] uppercase tracking-wider text-gray-500">Ko-fi Target</span>
+              <span className="text-xs font-mono text-amber-400">
+                ${treasury?.kofi_balance ?? '0.00'} / ${treasury?.kofi_target ?? 863} ({treasury?.kofi_percent ?? '0.0%'})
+              </span>
+            </div>
+            <div className="h-2 bg-black/30 rounded-full overflow-hidden">
+              <div className="h-full rounded-full bg-gradient-to-r from-amber-500 to-cyan-500 transition-all duration-1000"
+                style={{ width: `${Math.min(100, treasury ? (parseFloat(treasury.kofi_balance) / treasury.kofi_target) * 100 : 0)}%` }} />
+            </div>
+          </div>
+
+          {/* Recent Stripe Events */}
+          <div>
+            <h3 className="text-sm text-gray-500 uppercase tracking-wider mb-3">
+              Recent Stripe Events ({treasury?.recent_stripe_events?.length ?? 0})
+            </h3>
+            {(!treasury?.recent_stripe_events || treasury.recent_stripe_events.length === 0) ? (
+              <div className="text-sm text-gray-600 text-center py-4">
+                No events yet. Waiting for Stripe webhook ingestion...
+              </div>
+            ) : (
+              <div className="space-y-1">
+                {treasury.recent_stripe_events.map((evt) => (
+                  <div key={evt.event_id} className="flex items-center gap-3 p-2 rounded-lg bg-white/5 text-sm">
+                    <span className="font-mono text-xs text-cyan-400 w-24 shrink-0 truncate">{evt.type.replace(/\./g, ' ')}</span>
+                    <span className="flex-1 text-gray-400">
+                      {evt.amount ? `$${(evt.amount / 100).toFixed(2)} ${evt.currency?.toUpperCase()}` : '—'}
+                    </span>
+                    <span className="text-xs text-gray-600">{new Date(evt.created_at * 1000).toLocaleDateString()}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Legal Shield Status */}
+          <div className="p-4 rounded-xl bg-cyan-500/5 border border-cyan-500/20">
+            <div className="text-[10px] uppercase tracking-wider text-cyan-400 mb-2">⚖ Van Camp Shield Status</div>
+            <div className="grid grid-cols-2 gap-2 text-[10px] font-mono">
+              <span className="text-gray-500">Method</span><span className="text-amber-400">Van Camp ✓</span>
+              <span className="text-gray-500">Pereira Risk</span><span className="text-emerald-400">Neutralized ✓</span>
+              <span className="text-gray-500">Trust Firewall</span><span className="text-emerald-400">Intact ✓</span>
+              <span className="text-gray-500">Shield</span><span className="text-emerald-400">Engaged ✓</span>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

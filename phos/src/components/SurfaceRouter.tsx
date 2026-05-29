@@ -1,9 +1,13 @@
 import React from 'react';
 import { useAtmosphere } from './AtmosphereProvider';
 import { ConstellationSurface } from '../surfaces/ConstellationSurface';
+import { LedgerSurface } from '../surfaces/LedgerSurface';
+import { ForgeSurface } from '../surfaces/ForgeSurface';
 
 const SURFACE_COMPONENTS: Record<string, React.FC<{ className?: string }>> = {
   CONSTELLATION: ConstellationSurface,
+  LEDGER: LedgerSurface,
+  FORGE: ForgeSurface,
 };
 
 export const SurfaceRouter: React.FC = () => {

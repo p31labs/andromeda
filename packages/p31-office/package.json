@@ -1,0 +1,7 @@
+{
+  "private": true,
+  "description": "P31 package",
+  "name": "@p31/p31-office",
+  "main": "index.js",
+  "version": "0.0.0"
+}

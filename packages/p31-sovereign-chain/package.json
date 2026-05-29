@@ -1,0 +1,7 @@
+{
+  "private": true,
+  "description": "P31 package",
+  "name": "@p31/p31-sovereign-chain",
+  "main": "index.js",
+  "version": "0.0.0"
+}
