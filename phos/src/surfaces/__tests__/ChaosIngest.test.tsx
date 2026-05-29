@@ -1,6 +1,36 @@
 import React from 'react';
+
+vi.mock('@electric-sql/pglite', () => ({
+  PGlite: vi.fn().mockImplementation(() => ({
+    query: vi.fn().mockResolvedValue({ rows: [] }),
+    exec: vi.fn().mockResolvedValue(undefined),
+    close: vi.fn().mockResolvedValue(undefined),
+    waitReady: Promise.resolve(),
+    connected: true,
+  })),
+}));
 import { render, screen, fireEvent, act } from '@testing-library/react';
+
+vi.mock('@electric-sql/pglite', () => ({
+  PGlite: vi.fn().mockImplementation(() => ({
+    query: vi.fn().mockResolvedValue({ rows: [] }),
+    exec: vi.fn().mockResolvedValue(undefined),
+    close: vi.fn().mockResolvedValue(undefined),
+    waitReady: Promise.resolve(),
+    connected: true,
+  })),
+}));
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+
+vi.mock('@electric-sql/pglite', () => ({
+  PGlite: vi.fn().mockImplementation(() => ({
+    query: vi.fn().mockResolvedValue({ rows: [] }),
+    exec: vi.fn().mockResolvedValue(undefined),
+    close: vi.fn().mockResolvedValue(undefined),
+    waitReady: Promise.resolve(),
+    connected: true,
+  })),
+}));
 import '@testing-library/jest-dom/vitest';
 
 vi.mock('@electric-sql/pglite', () => {
@@ -46,8 +76,28 @@ vi.mock('../lib/CryptoEngine', () => ({
 }));
 
 import { AtmosphereProvider } from '../../components/AtmosphereProvider';
+
+vi.mock('@electric-sql/pglite', () => ({
+  PGlite: vi.fn().mockImplementation(() => ({
+    query: vi.fn().mockResolvedValue({ rows: [] }),
+    exec: vi.fn().mockResolvedValue(undefined),
+    close: vi.fn().mockResolvedValue(undefined),
+    waitReady: Promise.resolve(),
+    connected: true,
+  })),
+}));
 import { ChaosIngest } from '../ChaosIngest';
 
+
+vi.mock('@electric-sql/pglite', () => ({
+  PGlite: vi.fn().mockImplementation(() => ({
+    query: vi.fn().mockResolvedValue({ rows: [] }),
+    exec: vi.fn().mockResolvedValue(undefined),
+    close: vi.fn().mockResolvedValue(undefined),
+    waitReady: Promise.resolve(),
+    connected: true,
+  })),
+}));
 const renderInProvider = (spoons = 3) => {
   return render(
     React.createElement(
@@ -61,58 +111,61 @@ const renderInProvider = (spoons = 3) => {
 describe('ChaosIngest', () => {
   beforeEach(() => { vi.clearAllMocks(); });
 
-  it('should render textarea and submit button', () => {
+  it('should render textarea and mic button', () => {
     renderInProvider();
     expect(screen.getByRole('textbox')).toBeTruthy();
-    expect(screen.getByText('INGEST CHAOS')).toBeTruthy();
+    expect(screen.getByRole('button')).toBeTruthy();
   });
 
-  it('should adapt placeholder for SANCTUARY (spoons <= 2)', () => {
+  it('should render static placeholder', () => {
+    renderInProvider();
+    const textarea = screen.getByRole('textbox') as HTMLTextAreaElement;
+    expect(textarea.placeholder).toContain('Brain dump');
+  });
+
+  it('should render placeholder at spoons=1', () => {
     renderInProvider(1);
     const textarea = screen.getByRole('textbox') as HTMLTextAreaElement;
-    expect(textarea.placeholder).toContain('weighing on you');
+    expect(textarea.placeholder).toContain('Brain dump');
   });
 
-  it('should adapt placeholder for BRIDGE (spoons = 3)', () => {
+  it('should render placeholder at spoons=3', () => {
     renderInProvider(3);
     const textarea = screen.getByRole('textbox') as HTMLTextAreaElement;
-    expect(textarea.placeholder).toContain('on your mind');
+    expect(textarea.placeholder).toContain('Brain dump');
   });
 
-  it('should disable button when textarea is empty', () => {
+  it('should accept text input', async () => {
     renderInProvider();
-    expect(screen.getByText('INGEST CHAOS').getAttribute('disabled')).not.toBeNull();
-  });
-
-  it('should enable button when text is entered', async () => {
-    renderInProvider();
+    const textarea = screen.getByRole('textbox') as HTMLTextAreaElement;
     await act(async () => {
-      fireEvent.change(screen.getByRole('textbox'), { target: { value: 'test' } });
+      fireEvent.change(textarea, { target: { value: 'test chaos' } });
     });
-    expect(screen.getByText('INGEST CHAOS').getAttribute('disabled')).toBeNull();
+    expect(textarea.value).toBe('test chaos');
   });
 
-  it('should show error state on failed ingestion', async () => {
-    const mod = await import('../../lib/Embedder');
-    (mod.ingestAndEmbedChunks as any).mockRejectedValueOnce(new Error('fail'));
+  it('should render shield banner', () => {
     renderInProvider();
+    expect(screen.getByText(/FL TWO-PARTY CONSENT/)).toBeTruthy();
+  });
+
+  it('should render mic button', () => {
+    renderInProvider();
+    const btn = screen.getByRole('button');
+    expect(btn).toBeTruthy();
+    expect(btn.querySelector('svg')).toBeTruthy();
+  });
+
+  it('should update text and clear', async () => {
+    renderInProvider();
+    const textarea = screen.getByRole('textbox') as HTMLTextAreaElement;
     await act(async () => {
-      fireEvent.change(screen.getByRole('textbox'), { target: { value: 'fail' } });
+      fireEvent.change(textarea, { target: { value: 'some chaos data' } });
     });
-    await act(async () => { fireEvent.click(screen.getByText('INGEST CHAOS')); });
-    expect(screen.getByText(/ingestion failed/i)).toBeTruthy();
-  });
-
-  it('should show character count', () => {
-    renderInProvider();
-    fireEvent.change(screen.getByRole('textbox'), { target: { value: 'hello' } });
-    expect(screen.getByText('5 chars')).toBeTruthy();
-  });
-
-  it('should show chunk count in char display after ingestion', async () => {
-    renderInProvider();
-    fireEvent.change(screen.getByRole('textbox'), { target: { value: 'hello world test' } });
-    await act(async () => { fireEvent.click(screen.getByText('INGEST CHAOS')); });
-    expect(screen.getByText(/1\/1 chunks embedded/)).toBeTruthy();
+    expect(textarea.value).toBe('some chaos data');
+    await act(async () => {
+      fireEvent.change(textarea, { target: { value: '' } });
+    });
+    expect(textarea.value).toBe('');
   });
 });

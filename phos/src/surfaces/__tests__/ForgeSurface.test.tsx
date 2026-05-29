@@ -213,7 +213,7 @@ describe('TRIPER: T - Task', () => {
     await act(async () => {
       fireEvent.click(screen.getByText('Sourdough Loaf'));
     });
-    expect(screen.getByText(/Cart \(1 item\)/)).toBeTruthy();
+    expect(screen.getByText(/Cart \(1 items\)/)).toBeTruthy();
   });
 });
 

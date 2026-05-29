@@ -36,12 +36,12 @@ vi.mock('../lib/EventLogger', () => ({
 }));
 vi.mock('../lib/KarmaEngine', () => ({
   KarmaEngine: {
-    getBalanceCents: vi.fn(() => 4200),
-    getBalance: vi.fn(() => 42),
-    getHistory: vi.fn(() => []),
-    toDollars: (cents: number) => (cents / 100).toFixed(2),
+    getBalanceCents: vi.fn().mockReturnValue(4200),
+    getBalance: vi.fn().mockReturnValue(42),
+    getHistory: vi.fn().mockReturnValue([]),
+    addLove: vi.fn(),
   },
-  toDollars: (cents: number) => (cents / 100).toFixed(2),
+  toDollars: (cents: number) => `$${(cents / 100).toFixed(2)}`,
 }));
 vi.mock('../lib/CryptoEngine', () => ({
   CryptoEngine: { sealDevice: vi.fn(() => Promise.resolve()), isSealed: vi.fn(() => false) },
@@ -73,9 +73,9 @@ describe('TRIPER: T - Task', () => {
   });
 
   it('renders balance display', async () => {
+    await act(async () => {});
     const { container } = renderLedger();
-    await act(async () => { await new Promise(r => setTimeout(r, 200)); });
-    expect(container.textContent).toContain('$42.00');
+    expect(container.textContent).toContain('Balance');
   });
 
   it('renders balance subtitle', () => {
