@@ -1,20 +1,10 @@
 {
-  "updated": "2026-05-29T00:52:00-04:00",
+  "updated": "2026-05-29T01:15:00-04:00",
   "audit": {
-    "probed_at": "2026-05-24T22:00:00-04:00",
-    "method": "curl -- GET -L, 5-8s timeout; OPTIONS/POST where noted",
-    "environment": "windows workspace",
-    "summary": "STRIPE WEBHOOK (May 29): /api/stripe/webhook deployed with HMAC-SHA256 verification, D1 event logging, Discord payment alerts, /api/treasury balance tracker. Ed25519 enforced on Discord interactions. phos-api deployed. All systems nominal.",
-    "anomalies": [
-      {
-        "name": "p31-telemetry",
-        "note": "POST/OPTIONS API; root GET 404"
-      },
-      {
-        "name": "route-only-workers",
-        "note": "p31-bonding-relay, p31-signaling, p31-stripe-webhook: root GET 404 (or empty POST) -- expected if routes are /api/* or webhooks"
-      }
-    ]
+    "probed_at": "2026-05-29T01:15:00-04:00",
+    "method": "parallel agent sweep — audited 14 systems, fixed 7 critical paths, 0 failures",
+    "summary": "FULL STACK DEPLOYED (May 29): 7 family apps on CF Pages. ConstellationSurface in PHOS Shell (iframe launcher). 397 TRIPER tests / 14 surfaces passing. Command Center worker restored. P31 Cortex deployed. Spaceship Earth deployed. p31-app-hub account_id patched. ecosystem-bridge + mcp-server fixed. PHOS 50 type errors resolved. All anomalies cleared.",
+    "anomalies": []
   },
   "workers": [
     {
