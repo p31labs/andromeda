@@ -1,0 +1,12 @@
+name = "p31-arcade-hub"
+compatibility_date = "2024-01-01"
+pages_build_output_dir = "dist"
+
+# Production deployment to Cloudflare Pages
+# URL: https://p31-arcade-hub.pages.dev (or custom domain)
+
+[env.production]
+# Production-specific settings
+
+[env.preview]
+# Preview branch settings

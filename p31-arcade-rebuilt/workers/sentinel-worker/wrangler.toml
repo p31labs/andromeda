@@ -1,6 +1,0 @@
-name = "p31-sentinel"
-main = "src/index.ts"
-compatibility_date = "2026-05-01"
-
-[build]
-command = ""

@@ -1,6 +1,6 @@
 # Project Polyhedron & P31 Delta Ecosystem
-# Version: 3.0.0
-# Topology: K4 Complete Graph Strict Enforcement
+# Version: 4.0.0
+# Topology: K4 Complete Graph — Six Shell Architecture
 
 packages:
   # The Core IDE Infrastructure
@@ -8,7 +8,16 @@ packages:
 
   # The UI Middleware and Styling
   - 'packages/ui-facets'
-  - 'packages/p31-arcade-theme'
+
+  # The Six Shells
+  - 'phos'                           # Shell 1: Cognitive Sanctuary (adult OS)
+  - 'apps/willow'                    # Shell 2: Kids companion (formerly ph-os)
+  - 'shells/arcade'                  # Shell 3: Family gaming OS (hub + monolith merged)
+  - 'shells/ecosystem'               # Shell 4: App hub / dev dashboard
+  - 'shells/mesh'                    # Shell 5: Network topology + node fleet
+
+  # Arcade Game Engines (shared packages)
+  - 'packages/arcade/*'
 
   # The K4 Family Apps (Tier 2 Nodes)
   - 'packages/family-apps/culinary-matria'
@@ -18,21 +27,15 @@ packages:
   - 'packages/family-apps/voice-bug-reporter'
   - 'packages/family-apps/p31-smallball'
 
-  # PHOS — Human Operating Surface
-  - 'phos'
-
-  # Arcade Hub — CHUMP Active Infrastructure
-  - 'p31-arcade-hub'
-
   # Shared Packages
   - 'packages/p31-unified'
 
-  # Edge and Ledger Oracles
+  # Edge and Ledger Oracles (CF Workers)
   - 'workers/love-ledger'
   - 'workers/discord'
   - 'workers/discord-alerter'
 
-  # Family Apps (standalone deployables)
+  # Family Apps (standalone deployables — different users/auth)
   - '02_Client_or_Misc/chromatica'
   - '02_Client_or_Misc/matriarch-culinary-node/dashboard'
   - '02_Client_or_Misc/fantasy-sports'
