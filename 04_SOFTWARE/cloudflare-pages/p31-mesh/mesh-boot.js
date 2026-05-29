@@ -3,7 +3,9 @@
   var TIMEOUT = 6000;
 
   function esc(s) {
-    return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    return String(s)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
   }
 
   function workerUp(w) {
@@ -16,8 +18,10 @@
     var tsEl = document.getElementById("about-fleet-ts");
     var dot = document.getElementById("about-fleet-indicator");
     if (!grid) return;
+
     var ac = new AbortController();
     var timer = setTimeout(function () { ac.abort(); }, TIMEOUT);
+
     fetch(STATUS_API, { signal: ac.signal })
       .then(function (r) {
         clearTimeout(timer);
@@ -36,10 +40,15 @@
           a.href = w.url || "#";
           a.target = "_blank";
           a.rel = "noopener noreferrer";
-          a.innerHTML = '<span class="mesh-fleet-name">' + esc(w.name || "—") + '</span><span class="mesh-fleet-dot ' + (ok ? "up" : "down") + '"></span>';
+          a.innerHTML =
+            '<span class="mesh-fleet-name">' + esc(w.name || "—") + '</span>' +
+            '<span class="mesh-fleet-dot ' + (ok ? "up" : "down") + '"></span>';
           grid.appendChild(a);
         });
-        if (dot) dot.className = "mesh-fleet-indicator " + (workers.length > 0 && up === workers.length ? "ok" : up > 0 ? "partial" : "off");
+        if (dot) {
+          dot.className = "mesh-fleet-indicator " +
+            (workers.length > 0 && up === workers.length ? "ok" : up > 0 ? "partial" : "off");
+        }
         if (tsEl) tsEl.textContent = "Last: " + new Date().toLocaleTimeString();
       })
       .catch(function () {

@@ -25,8 +25,8 @@
       <canvas id="meshCanvas"></canvas>
     </div>
 
-    <div class="mesh-hud mesh-hud-layer10" id="meshHud">
-      <nav class="mesh-nav" id="meshNav">
+    <div class="mesh-hud" id="meshHud">
+      <nav class="mesh-nav mesh-layer-10" id="meshNav">
         <div class="mesh-nav-inner">
           <a href="https://p31ca.org/" class="mesh-nav-brand">
             <span class="mesh-brand-mark" aria-hidden="true"></span>
@@ -39,39 +39,38 @@
         </div>
       </nav>
 
-      <div class="mesh-hud-top" id="meshHudTop">
-        <div class="mesh-hud-card glass-thin" id="meshStatusCard">
-          <div class="mesh-status-row">
-            <div class="mesh-dot" id="meshStatusDot"></div>
-            <span class="mesh-status-text" id="meshStatusText">Initializing...</span>
-          </div>
-          <div class="mesh-label" style="margin-top:10px">Your node</div>
-          <div class="mesh-id-display" id="meshMyId">...</div>
-          <div class="mesh-peer-count" id="meshPeerCount"></div>
+      <div class="mesh-hud-top-left glass-thin mesh-layer-20" id="meshStatusCard">
+        <div class="mesh-status-row">
+          <div class="mesh-dot" id="meshStatusDot"></div>
+          <span class="mesh-status-text" id="meshStatusText">Initializing...</span>
         </div>
+        <div class="mesh-label" style="margin-top:10px">Your node</div>
+        <div class="mesh-id-display" id="meshMyId">...</div>
+        <div class="mesh-peer-count" id="meshPeerCount"></div>
       </div>
 
-      <div class="mesh-hud-left glass-thin" id="meshNodePanel">
+      <div class="mesh-hud-left glass-thin mesh-layer-20" id="meshNodePanel">
         <div class="mesh-panel-title">Family nodes</div>
         <div class="mesh-node-list" id="meshNodeList"></div>
       </div>
 
-      <div class="mesh-hud-right glass-thin" id="meshControlPanel">
+      <div class="mesh-hud-right glass-thin mesh-layer-20" id="meshControlPanel">
         <div class="mesh-panel-title">Controls</div>
         <div class="mesh-label">Join room</div>
         <input type="text" id="meshRoomInput" class="mesh-input" placeholder="Room code" autocomplete="off" spellcheck="false" />
-        <button type="button" class="mesh-btn mesh-btn-primary" id="meshBtnJoin" onclick="meshJoinRoom()" disabled>JOIN</button>
+        <button type="button" class="mesh-btn mesh-btn-primary" id="meshBtnJoin" disabled>JOIN</button>
 
-        <div class="mesh-label" style="margin-top:16px">Connect to peer</div>
+        <div class="mesh-label" style="margin-top:14px">Connect to peer</div>
         <input type="text" id="meshPeerInput" class="mesh-input" placeholder="Paste peer ID" autocomplete="off" spellcheck="false" />
-        <button type="button" class="mesh-btn mesh-btn-primary" id="meshBtnConnect" onclick="meshConnect()" disabled>LINK</button>
+        <button type="button" class="mesh-btn mesh-btn-primary" id="meshBtnConnect" disabled>LINK</button>
 
-        <div id="meshSpectateCard" style="display:none;margin-top:16px">
+        <div id="meshSpectateCard" style="display:none;margin-top:14px">
           <div class="mesh-label">Cooperative spectate</div>
-          <button type="button" class="mesh-btn mesh-btn-love" id="meshBtnSpectate" onclick="meshSpectate()" disabled>SPECTATE SIBLING</button>
+          <button type="button" class="mesh-btn mesh-btn-love" id="meshBtnSpectate" disabled>SPECTATE SIBLING</button>
+          <button type="button" class="mesh-btn mesh-btn-close-spectate" id="meshBtnCloseSpectate" style="display:none;margin-top:6px" onclick="meshCloseSpectate()">✕ CLOSE</button>
         </div>
 
-        <div id="meshBreathCard" style="display:none;margin-top:16px">
+        <div id="meshBreathCard" style="display:none;margin-top:14px">
           <div class="mesh-label" style="text-align:center">Vagal sync — 4-4-6</div>
           <div class="mesh-breath-ring" id="meshBreathRing">
             <div class="mesh-breath-label" id="meshBreathLabel">READY</div>
@@ -79,25 +78,32 @@
           </div>
           <button type="button" class="mesh-btn mesh-btn-vagal" id="meshBtnBreath" onclick="meshToggleBreath()">START SYNC</button>
         </div>
+
+        <div class="mesh-sim-section" id="meshSimSection">
+          <div class="mesh-label" style="margin-top:14px">Simulation</div>
+          <button type="button" class="mesh-btn mesh-btn-sim" onclick="meshSimConnect()">⚡ Sim Connect</button>
+          <button type="button" class="mesh-btn mesh-btn-sim" style="margin-top:6px" onclick="meshSimCareFlow()">💜 Sim CareFlow</button>
+          <button type="button" class="mesh-btn mesh-btn-sim" style="margin-top:6px" onclick="meshSimSiblingPlaying()">🎮 Sim Sibling Playing</button>
+        </div>
       </div>
 
-      <div class="mesh-hud-bottom glass-thin" id="meshLogPanel">
+      <div class="mesh-hud-bottom glass-thin mesh-layer-20" id="meshLogPanel">
         <div class="mesh-panel-title">Mesh log</div>
         <div class="mesh-log" id="meshLog"></div>
       </div>
 
-      <div class="mesh-spoon-tracker glass-thin" id="meshSpoonTracker">
+      <div class="mesh-spoon-tracker glass-thin mesh-layer-20" id="meshSpoonTracker">
         <div class="mesh-spoon-label">Spoons</div>
         <div class="mesh-spoon-bars" id="meshSpoonBars"></div>
         <div class="mesh-spoon-zone" id="meshSpoonZone">—</div>
       </div>
     </div>
 
-    <iframe class="mesh-spectate-frame" id="meshSpectateFrame" sandbox="allow-scripts allow-same-origin" tabindex="-1" aria-hidden="true"></iframe>
+    <iframe class="mesh-spectate-frame mesh-layer-50" id="meshSpectateFrame" sandbox="allow-scripts allow-same-origin" tabindex="-1" aria-hidden="true"></iframe>
 
-    <div class="mesh-noc" id="meshNoc" style="display:none"></div>
+    <div class="mesh-noc mesh-layer-60" id="meshNoc" style="display:none"></div>
 
-    <p class="mesh-footer-callout">
+    <p class="mesh-footer-callout mesh-layer-20">
       <strong>P31 Labs, Inc.</strong> — K4 Family Mesh. Cognitive prosthetic interface. Not medical advice. <a href="https://p31ca.org/">p31ca.org</a>
     </p>
 
