@@ -1,9 +1,9 @@
 {
-  "updated": "2026-05-29T02:52:00-04:00",
+  "updated": "2026-05-29T03:30:00-04:00",
   "audit": {
     "probed_at": "2026-05-29T02:45:00-04:00",
     "method": "full stack audit complete — 14 systems, 552 tests, 23 commits, 0 failures",
-    "summary": "ALL SYSTEMS GREEN (May 29): 397 TRIPER tests / 14 PHOS surfaces. 7 family apps on CF Pages. ConstellationSurface wired. Command Center restored. P31 Cortex + Spaceship Earth deployed. p31-mcp-server + p31-app-hub live. ui-facets tsconfig added. 5 stub packages scaffolded. 23 commits ahead. FERS deadline ~150 days.",
+    "summary": "ALL SYSTEMS GREEN (May 29): Piggyback Beacon live. MCP server deployed. Digest command + treasury bridge active. 27 workers, 14 PHOS surfaces, 0 anomalies.",
     "anomalies": []
   },
   "workers": [
@@ -350,8 +350,8 @@
       "event": "LANE 1: SSE sync rewritten (ReadableStream + auto-reconnect). HMAC auth gate locked. PHOS_HMAC_SECRET + OPERATOR_SECRET injected. ph-os PWA deployed with_signed_requests."
     },
     {
-      "date": "2026-05-28",
-      "event": "LANE 2: GOOGLE_API_KEY + OPENROUTER_API_KEY injected (free tier AI online). DISCORD_TOKEN + STRIPE_SECRET_KEY + STRIPE_WEBHOOK_SECRET injected from .env.master vault. simplex-worker AI responding live."
+      "date": "2026-05-29",
+      "event": "Piggyback Beacon + MCP Treasury Bridge live. Oracle Bot digest command deployed. Ed25519 TOFU secured. CashPilot auto-sync on transaction writes."
     }
   ]
 }

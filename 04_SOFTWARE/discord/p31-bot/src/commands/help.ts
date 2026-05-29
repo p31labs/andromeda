@@ -55,6 +55,7 @@ export class HelpCommand implements P31Command {
         },
       )
       .addFields(
+        { name: '\u{1F305} Oracle', value: `\`${prefix} digest\` - P31 morning digest (health, FERS, treasury)`, inline: true },
         { name: 'Webhooks', value: 'Receives events from Ko-fi, Node One, and BONDING', inline: false }
       )
       .setFooter({ text: '🔺 P31 Labs • p31 help [command] for details' });

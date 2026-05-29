@@ -1,6 +1,9 @@
 import { EmbedBuilder } from "discord.js";
+import { randomUUID } from "crypto";
 import { defaultRetryableFetch } from "./retryUtility";
 import * as spoonLedger from "./spoonLedger";
+
+const MCP_SERVER_URL = process.env.MCP_SERVER_URL || "https://p31-mcp-server.trimtab-signal.workers.dev";
 
 const FERS_DEADLINE = new Date("2026-09-30T23:59:59-04:00");
 
@@ -111,11 +114,41 @@ export async function gatherDigestData(): Promise<DigestData> {
   const fersDays = daysUntilFers();
   const fers = fersCompletion();
 
-  const health = await checkSystemHealth();
-  const greenCount = health.filter((h) => h.online).length;
-  const offline = health.filter((h) => !h.online).map((h) => h.name);
+const health = await checkSystemHealth();
+   const greenCount = health.filter((h) => h.online).length;
+   const offline = health.filter((h) => !h.online).map((h) => h.name);
 
-  const needsAttention: string[] = [];
+   const treasuryResp = await defaultRetryableFetch.fetchWithRetry(
+     `${MCP_SERVER_URL}/mcp`,
+     {
+       method: "POST",
+       headers: {
+         "Content-Type": "application/json",
+         "Accept": "application/json, text/event-stream",
+       },
+body: JSON.stringify({
+          jsonrpc: "2.0",
+          id: randomUUID(),
+          method: "tools/call",
+          params: { name: "read_treasury_balance", arguments: {} },
+        }),
+     },
+     "MCP_treasury"
+   ).catch(() => null);
+
+   let treasuryBalance = "TBD";
+   if (treasuryResp?.ok) {
+     const treasuryData = await treasuryResp.json().catch(() => null) as {
+       result?: { content?: [{ text?: string }] };
+     };
+     const treasuryJson = treasuryData.result?.content?.[0]?.text;
+     if (treasuryJson) {
+       const bal = JSON.parse(treasuryJson).balance;
+       treasuryBalance = typeof bal === "number" ? `$${Math.round(bal * 100) / 100}` : "TBD";
+     }
+   }
+
+   const needsAttention: string[] = [];
   if (fersDays <= 30) needsAttention.push(`FERS deadline (${fersDays} days)`);
   if (fersDays <= 0) needsAttention.push("FERS DEADLINE PASSED");
   for (const sys of offline) {
@@ -128,7 +161,7 @@ export async function gatherDigestData(): Promise<DigestData> {
     fersDaysRemaining: fersDays,
     fersCompletionPercent: fers.percent,
     fersNextAction: fers.nextBlocking,
-    treasuryBalance: "TBD",
+    treasuryBalance,
     systemHealth: health,
     greenCount,
     totalSystemCount: health.length,
@@ -175,7 +208,7 @@ export function buildDigestEmbed(data: DigestData): EmbedBuilder {
 
   embed.addFields({
     name: "\u{1F3E6} Treasury",
-    value: `$${data.treasuryBalance}`,
+    value: data.treasuryBalance,
     inline: true,
   });
 
