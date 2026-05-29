@@ -125,7 +125,7 @@ P31_Andromeda/
 1. **10-Gap Social Audit** — Run the forensic audit prompt (in docs or provided separately) against the codebase. Investigate all 10 gaps: missing CWP-2026-013, Omnibus Protocol, Twitter API status, SCE broadcaster health, cron budget, node count, KPI tracking, LinkedIn/YouTube/Instagram, cortex agent health, egg hunt post-mortem.
 2. **Zenodo Upload Post-Hearing** — After April 16: upload Paper XII to Zenodo, capture DOI, update XI and XIX references, upload all 13 papers via zenodo_batch/upload_batch.py
 3. **Form 1023-EZ Prep** — When $275 is available: research pay.gov filing process, prepare the application data (EIN, Articles, mission statement)
-4. **FERS SF-3107** — Deadline Sep 30 2026. SF-3112A/B/C complete. Need SF-3107 from Will. Navy Benefits Center: 1-888-320-2917
+4. **FERS Disability Retirement** — Deadline Sep 30 2026 (~150 days). CashPilot FERS pipeline live (592-line schema + FersIngest dropzone). Status: SF-3112A/B/C COMPLETE. SF-3107 not started. SSA determination: DENIED (exams Feb 2026, denial received). Does not block FERS — OPM requires only proof of SSA application. SSA appeal deadline: 60 days from denial notice. Remaining: complete SF-3107, request SF-3112D/E from agency HR, gather medical records, mail packet to OPM Boyers. Navy Benefits Center: 1-888-320-2917. OPM: 1-888-767-6738.
 
 ### Priority 2 — By April 30
 1. **Paper Shells XIII, XVIII, XX** — Do NOT expand or publish. Legally risky. Park them.
@@ -308,7 +308,9 @@ node forge.js social "Post content" all
 | CWP-062 | ASAN Teighlor McGee mini-grant | Will | July 31 (opens May 15) |
 | CWP-046 | Node Zero display boot | DeepSeek | Ongoing |
 | CWP-053 | Paper XI expansion | Opus | Post-hearing |
-| CWP-052 | FERS SF-3107 | Will | Sep 30, 2026 |
+| CWP-052 | FERS Disability Retirement | Will | Sep 30, 2026 |
+| CWP-052a | FERS CashPilot Pipeline | Sonnet | Complete — schema + dropzone built |
+| CWP-052b | SSA Appeal (if pursuing) | Will | 60 days from denial |
 | CWP-074 | Georgia Tech CIDI/TFL outreach | Will | April 25 |
 | CWP-075 | ASSETS 2026 Experience Report | Will + Gemini | June 10 |
 | CWP-072 | VS Code extension verification | Will | April 20 |
