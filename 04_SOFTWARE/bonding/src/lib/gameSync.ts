@@ -24,6 +24,9 @@ export interface PlayerState {
   achievements: string[];
   breathing?: boolean;
   updatedAt: string;
+  // WCD-QM-01: Quantum entanglement fields
+  quantumPhase?: number;
+  entangledPairId?: string;
 }
 
 export interface Player {

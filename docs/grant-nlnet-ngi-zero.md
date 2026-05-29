@@ -12,10 +12,10 @@
 PHOS OS is a local-first, zero-telemetry operating system for neurodivergent individuals. It runs entirely on the user's device — no cloud dependencies, no telemetry, no data exfiltration. The system runs its own AI inference locally via an embedded LiteLLM switchboard connecting to local models (currently qwen2.5-coder:7b), and stores all data in an embedded WebAssembly PostgreSQL database (PGLite) that never leaves the browser.
 
 The project is fully deployed and operational:
-- **phos.p31labs.com** — live at Cloudflare Edge
+- **phos.p31ca.org** — live at Cloudflare Edge
 - **155 unit tests** passing across 10 test suites
 - **56 TypeScript source files**, ~9,400 lines of application code
-- **10 deployed Cloudflare Workers** handling API, donations, multi-player relay, Discord integration, content publishing, and telemetry orchestration
+- **21+ deployed Cloudflare Workers** handling API, donations, multi-player relay, Discord integration, content publishing, treasury management, and telemetry orchestration
 - **BONDING** — a molecular chemistry multiplayer game (32 test suites, 488+ tests) that generates timestamped parental engagement logs for family court documentation
 
 ## 2. Technical Architecture
@@ -81,5 +81,5 @@ We request €25,000 to secure, document, and open-source this infrastructure so
 ---
 
 **Contact:**
-William R. Johnson | will@p31ca.org | (912) 227-4980
+William R. Johnson | will@p31ca.org | (904) 684-9491
 GitHub: github.com/p31labs | Zenodo: 10.5281/zenodo.18627420

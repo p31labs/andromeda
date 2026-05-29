@@ -175,6 +175,40 @@ async function broadcastPingToRooms(env, pingPayload) {
   }
 }
 
+// ── Quantum Entanglement Handlers (WCD-QM-01) ───────────────────────────────
+const QUANTUM_PAIRS = new Map();
+
+async function entanglePlayers(roomId, playerA, playerB) {
+  const pairId = [playerA, playerB].sort().join('-');
+  const bellState = ['phi-plus', 'phi-minus', 'psi-plus', 'psi-minus'][Math.floor(Math.random() * 4)];
+  
+  const pair = {
+    id: pairId,
+    roomId,
+    playerA,
+    playerB,
+    bellState,
+    createdAt: Date.now(),
+    sharedState: {
+      atoms: {},
+      love: 0,
+      quantumPhase: (Date.now() * 863 / 1000) % (2 * Math.PI)
+    }
+  };
+  
+  QUANTUM_PAIRS.set(pairId, pair);
+  
+  if (env?.K4_MESH) {
+    await env.K4_MESH.put(
+      `quantum:pair:${pairId}`,
+      JSON.stringify(pair),
+      { expirationTtl: 4 * 3600 }
+    );
+  }
+  
+  return pair;
+}
+
 // ═══ K4Topology DO ═══════════════════════════════════════════════════
 export class K4Topology extends DurableObject {
   /** @param {DurableObjectState} ctx @param {Env} env */
@@ -740,6 +774,37 @@ export default {
           mesh,
           room,
           generated: new Date().toISOString(),
+        });
+      }
+
+      // ── Quantum Routes (WCD-QM-01) ────────────────────────────────────────
+      const entangleMatch = path.match(/^\/api\/quantum\/entangle\/(\w+)\/(\w+)$/);
+      if (entangleMatch && method === 'POST') {
+        const playerA = entangleMatch[1];
+        const playerB = entangleMatch[2];
+        const pair = await entanglePlayers(roomId ?? 'k4-cage', playerA, playerB);
+        return json({ ok: true, pair });
+      }
+
+      const larmorMatch = path.match(/^\/api\/larmor$/);
+      if (larmorMatch && method === 'GET') {
+        const phase = (Date.now() * 863 / 1000) % (2 * Math.PI);
+        return json({
+          frequency: 863,
+          phase,
+          timestamp: Date.now(),
+          signature: 'Ca₉(PO₄)₆',
+        });
+      }
+
+      const qkdMatch = path.match(/^\/api\/qkd\/key$/);
+      if (qkdMatch && method === 'GET') {
+        const { QuantumKeyDistribution } = await import('./quantumSync.js');
+        const key = QuantumKeyDistribution.generateSessionKey();
+        return json({ 
+          key,
+          nonce: QuantumKeyDistribution.generateNonce(),
+          larmorPhase: (Date.now() * 863 / 1000) % (2 * Math.PI),
         });
       }
 

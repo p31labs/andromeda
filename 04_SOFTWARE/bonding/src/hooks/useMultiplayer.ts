@@ -4,6 +4,7 @@
 //
 // WCD-08: Base polling + auto-push
 // WCD-15: Connection events, room expired, breathing push
+// WCD-QM-01: Quantum entanglement sync
 // ═══════════════════════════════════════════════════════
 
 import { useEffect, useRef } from 'react';
@@ -20,11 +21,26 @@ import {
   displayFormula,
   calculateStability,
 } from '../engine/chemistry';
+import { QuantumEntanglementManager, LarmorHeartbeat } from '../engine/quantumChemistry';
 
 export function useMultiplayer(): void {
   const roomCode = useGameStore((s) => s.roomCode);
   const playerId = useGameStore((s) => s.playerId);
   const seenPingIds = useRef(new Set<string>());
+  const quantumEntanglement = useRef(new QuantumEntanglementManager()).current;
+
+  // ── Quantum entanglement: initialize on room join ──
+  useEffect(() => {
+    if (!roomCode || !playerId) return;
+
+    // Find partner and create entanglement
+    const partner = useGameStore.getState().remotePlayers[0]?.id;
+    if (partner) {
+      const pair = quantumEntanglement.entangle(playerId, partner);
+      // Store pair ID in session for correlated sync
+      sessionStorage.setItem('quantum_pair_id', pair.id);
+    }
+  }, [roomCode, playerId, quantumEntanglement]);
 
   // ── Polling: update remote players + detect new pings ──
 
@@ -137,6 +153,10 @@ export function useMultiplayer(): void {
         prev = curr;
         const state = useGameStore.getState();
         const formula = generateFormula(state.atoms);
+        const larmor = LarmorHeartbeat.getInstance();
+        const quantumPhase = larmor.getPhase();
+        const entangledPairId = sessionStorage.getItem('quantum_pair_id') ?? undefined;
+        
         const ps: PlayerState = {
           formula,
           displayFormula: displayFormula(formula),
@@ -147,6 +167,8 @@ export function useMultiplayer(): void {
           achievements: state.unlockedAchievements.map((a) => a.id),
           breathing: state.breathing,
           updatedAt: new Date().toISOString(),
+          quantumPhase,
+          entangledPairId,
         };
         void pushState(ps);
       }
@@ -158,11 +180,13 @@ export function useMultiplayer(): void {
 
 function snapshotState() {
   const s = useGameStore.getState();
+  const larmor = LarmorHeartbeat.getInstance();
   return {
     atoms: s.atoms.length,
     love: s.loveTotal,
     phase: s.gamePhase,
     achievementCount: s.unlockedAchievements.length,
     breathing: s.breathing,
+    quantumPhase: larmor.getPhase(),
   };
 }

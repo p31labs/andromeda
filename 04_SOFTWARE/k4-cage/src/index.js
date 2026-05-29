@@ -29,7 +29,6 @@ const VERTEX_NAMES = {
   christyn: 'Christyn',
 };
 
-/** Public API + validate-p31-full.sh (HEAD /api/mesh, COOP substring probe). */
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET, POST, OPTIONS, HEAD',
@@ -102,12 +101,9 @@ async function getTelemetryKvChain(env, count) {
     return { chain: [], head: null, verified: true, source: 'kv' };
   }
   const head = JSON.parse(headRaw);
-  const floor = Math.max(0, head.index - count);
-  const indices = [];
-  for (let i = head.index; i > floor; i--) indices.push(i);
-  const raws = await Promise.all(indices.map((i) => env.K4_MESH.get(`telemetry:${i}`)));
   const chain = [];
-  for (const raw of raws) {
+  for (let i = head.index; i > Math.max(0, head.index - count); i--) {
+    const raw = await env.K4_MESH.get(`telemetry:${i}`);
     if (raw) chain.push(JSON.parse(raw));
   }
   let verified = true;
@@ -162,24 +158,55 @@ async function broadcastPingToRooms(env, pingPayload) {
     'Content-Type': 'application/json',
     Authorization: `Bearer ${token}`,
   };
-  const body = JSON.stringify(pingPayload);
-  await Promise.all(
-    rooms.map((roomId) => {
-      const id = env.FAMILY_MESH_ROOM.idFromName(roomId);
-      const stub = env.FAMILY_MESH_ROOM.get(id);
-      return stub
-        .fetch(
-          new Request('https://internal/broadcast', {
-            method: 'POST',
-            headers,
-            body,
-          }),
-        )
-        .catch(() => {
-          /* non-fatal */
-        });
-    }),
-  );
+  for (const roomId of rooms) {
+    const id = env.FAMILY_MESH_ROOM.idFromName(roomId);
+    const stub = env.FAMILY_MESH_ROOM.get(id);
+    try {
+      await stub.fetch(
+        new Request('https://internal/broadcast', {
+          method: 'POST',
+          headers,
+          body: JSON.stringify(pingPayload),
+        }),
+      );
+    } catch {
+      /* non-fatal */
+    }
+  }
+}
+
+// ── Quantum Entanglement Handlers (WCD-QM-01) ───────────────────────────────
+const QUANTUM_PAIRS = new Map();
+
+async function entanglePlayers(roomId, playerA, playerB) {
+  const pairId = [playerA, playerB].sort().join('-');
+  const bellState = ['phi-plus', 'phi-minus', 'psi-plus', 'psi-minus'][Math.floor(Math.random() * 4)];
+  
+  const pair = {
+    id: pairId,
+    roomId,
+    playerA,
+    playerB,
+    bellState,
+    createdAt: Date.now(),
+    sharedState: {
+      atoms: {},
+      love: 0,
+      quantumPhase: (Date.now() * 863 / 1000) % (2 * Math.PI)
+    }
+  };
+  
+  QUANTUM_PAIRS.set(pairId, pair);
+  
+  if (env?.K4_MESH) {
+    await env.K4_MESH.put(
+      `quantum:pair:${pairId}`,
+      JSON.stringify(pair),
+      { expirationTtl: 4 * 3600 }
+    );
+  }
+  
+  return pair;
 }
 
 // ═══ K4Topology DO ═══════════════════════════════════════════════════
@@ -228,27 +255,20 @@ export class K4Topology extends DurableObject {
     }
 
     if (path === '/mesh' && method === 'GET') {
-      const vRaws = await Promise.all(
-        VERTICES.map((v) => this.ctx.storage.get(`vertex:${v}`)),
-      );
-      const eRaws = await Promise.all(
-        EDGES.map(([a, b]) => this.ctx.storage.get(`edge:${edgeKey(a, b)}`)),
-      );
       const vertices = {};
       const edges = {};
       let totalLove = 0;
-      VERTICES.forEach((v, i) => {
-        const raw = vRaws[i];
+      for (const v of VERTICES) {
+        const raw = await this.ctx.storage.get(`vertex:${v}`);
         vertices[v] = raw ? JSON.parse(raw) : this.defaultVertex(v);
         totalLove += vertices[v].love || 0;
-      });
-      EDGES.forEach(([a, b], i) => {
+      }
+      for (const [a, b] of EDGES) {
         const k = edgeKey(a, b);
-        const raw = eRaws[i];
+        const raw = await this.ctx.storage.get(`edge:${k}`);
         edges[k] = raw ? JSON.parse(raw) : this.defaultEdge(a, b);
         totalLove += edges[k].love || 0;
-      });
-      /** Normalized link-quality scalar for ops scorecards (isostatic K₄ ≡ full observability). */
+      }
       const qFactor = 1;
       return Response.json({
         topology: 'K4',
@@ -269,23 +289,16 @@ export class K4Topology extends DurableObject {
     if (vertexGet && method === 'GET') {
       const id = vertexGet[1];
       if (!isValidVertex(id)) return Response.json({ error: 'Unknown vertex' }, { status: 404 });
-      const touch = [];
+      const raw = await this.ctx.storage.get(`vertex:${id}`);
+      const vertex = raw ? JSON.parse(raw) : this.defaultVertex(id);
+      const connectedEdges = {};
       for (const [v1, v2] of EDGES) {
         if (v1 === id || v2 === id) {
           const k = edgeKey(v1, v2);
-          touch.push([v1, v2, k]);
+          const er = await this.ctx.storage.get(`edge:${k}`);
+          connectedEdges[k] = er ? JSON.parse(er) : this.defaultEdge(v1, v2);
         }
       }
-      const [raw, ...eRaws] = await Promise.all([
-        this.ctx.storage.get(`vertex:${id}`),
-        ...touch.map((t) => this.ctx.storage.get(`edge:${t[2]}`)),
-      ]);
-      const vertex = raw ? JSON.parse(raw) : this.defaultVertex(id);
-      const connectedEdges = {};
-      touch.forEach(([v1, v2, k], i) => {
-        const er = eRaws[i];
-        connectedEdges[k] = er ? JSON.parse(er) : this.defaultEdge(v1, v2);
-      });
       return Response.json({ vertex, edges: connectedEdges });
     }
 
@@ -312,11 +325,7 @@ export class K4Topology extends DurableObject {
       const body = await request.json().catch(() => ({}));
       const emoji = typeof body.emoji === 'string' && body.emoji.length < 32 ? body.emoji : '💚';
       const k = edgeKey(from, to);
-      const [eraw, fromRaw, toRaw] = await Promise.all([
-        this.ctx.storage.get(`edge:${k}`),
-        this.ctx.storage.get(`vertex:${from}`),
-        this.ctx.storage.get(`vertex:${to}`),
-      ]);
+      const eraw = await this.ctx.storage.get(`edge:${k}`);
       const edge = eraw ? JSON.parse(eraw) : this.defaultEdge(from, to);
       const pingObj = {
         from,
@@ -330,16 +339,16 @@ export class K4Topology extends DurableObject {
       edge.lastActivity = pingObj.timestamp;
       edge.messageCount = (edge.messageCount || 0) + 1;
 
+      const fromRaw = await this.ctx.storage.get(`vertex:${from}`);
+      const toRaw = await this.ctx.storage.get(`vertex:${to}`);
       const fromV = fromRaw ? JSON.parse(fromRaw) : this.defaultVertex(from);
       const toV = toRaw ? JSON.parse(toRaw) : this.defaultVertex(to);
       fromV.love = (fromV.love || 0) + 1;
       toV.love = (toV.love || 0) + 1;
 
-      await Promise.all([
-        this.ctx.storage.put(`edge:${k}`, JSON.stringify(edge)),
-        this.ctx.storage.put(`vertex:${from}`, JSON.stringify(fromV)),
-        this.ctx.storage.put(`vertex:${to}`, JSON.stringify(toV)),
-      ]);
+      await this.ctx.storage.put(`edge:${k}`, JSON.stringify(edge));
+      await this.ctx.storage.put(`vertex:${from}`, JSON.stringify(fromV));
+      await this.ctx.storage.put(`vertex:${to}`, JSON.stringify(toV));
 
       return Response.json({
         ping: pingObj,
@@ -541,9 +550,6 @@ export class FamilyMeshRoom extends DurableObject {
   }
 }
 
-/** Legacy DO class name still referenced by existing k4-cage Durable Objects in Cloudflare. */
-export class FamilyMessagingDO extends FamilyMeshRoom {}
-
 // ═══ Worker router ═════════════════════════════════════════════════════
 /** @typedef {{ K4_TOPOLOGY: DurableObjectNamespace, FAMILY_MESH_ROOM: DurableObjectNamespace, K4_MESH: KVNamespace, DB?: D1Database, ADMIN_TOKEN?: string, INTERNAL_FANOUT_TOKEN?: string, MESH_ROOM_IDS?: string, WORKER_VERSION?: string, TOPOLOGY?: string, ENVIRONMENT?: string }} Env */
 
@@ -554,9 +560,6 @@ export class FamilyMessagingDO extends FamilyMeshRoom {}
  * @param {string} method
  */
 async function topologyFetch(request, env, path, method) {
-  if (!env.K4_TOPOLOGY) {
-    return new Response(JSON.stringify({ error: 'DO not configured', code: 'NO_DO' }), { status: 503 });
-  }
   const id = env.K4_TOPOLOGY.idFromName('family');
   const stub = env.K4_TOPOLOGY.get(id);
   const internalPath = path.replace(/^\/api/, '') || '/';
@@ -602,9 +605,6 @@ export default {
       }
 
       if (path === '/api/mesh' && method === 'HEAD') {
-        if (!env.K4_TOPOLOGY) {
-          return new Response(null, { status: 200, headers: { ...CORS_HEADERS, 'Content-Type': 'application/json; charset=utf-8' } });
-        }
         const r = await topologyFetch(request, env, '/api/mesh', 'HEAD');
         return new Response(null, {
           status: r.status,
@@ -613,16 +613,6 @@ export default {
       }
 
       if (path === '/api/mesh' && method === 'GET') {
-        if (!env.K4_TOPOLOGY) {
-          return json({
-            vertices: VERTICES.map(v => ({ id: v, name: VERTEX_NAMES[v] })),
-            edges: EDGES.map(([a, b]) => ({ source: a, target: b, qFactor: 1 })),
-            topology: 'K4',
-            qFactor: 1,
-            routing_protocol: 'custom_dsdv',
-            timestamp: new Date().toISOString(),
-          });
-        }
         const r = await topologyFetch(request, env, '/api/mesh', 'GET');
         return new Response(r.body, { status: r.status, headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' } });
       }
@@ -633,57 +623,28 @@ export default {
         return new Response(r.body, { status: r.status, headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' } });
       }
 
-       const pMatch = path.match(/^\/api\/presence\/(\w+)$/);
-       if (pMatch && method === 'POST') {
-         const r = await topologyFetch(request, env, `/api/presence/${pMatch[1]}`, 'POST');
-         const out = await r.text();
-         if (r.ok && env.FAMILY_MESH_ROOM) {
-           try {
-             const body = JSON.parse(out);
-             await broadcastPingToRooms(env, {
-               type: 'presence',
-               vertex: pMatch[1],
-               vertexRecord: body.vertex,
-               ts: Date.now(),
-             });
-           } catch {
-             /* ignore */
-           }
-         }
-
-         // Forward presence event to orchestrator webhook
-         if (r.ok && env.ORCHESTRATOR_WEBHOOK) {
-           try {
-             const body = JSON.parse(out);
-             await fetch(env.ORCHESTRATOR_WEBHOOK, {
-               method: 'POST',
-               headers: { 'Content-Type': 'application/json' },
-               body: JSON.stringify({
-                 type: 'presence',
-                 vertex: pMatch[1],
-                 vertexRecord: body.vertex,
-                 ts: Date.now()
-               })
-             }).catch(() => { /* optional, non-fatal */ });
-           } catch {
-             /* ignore */
-           }
-         }
-
-         return new Response(out, { status: r.status, headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' } });
-       }
+      const pMatch = path.match(/^\/api\/presence\/(\w+)$/);
+      if (pMatch && method === 'POST') {
+        const r = await topologyFetch(request, env, `/api/presence/${pMatch[1]}`, 'POST');
+        const out = await r.text();
+        if (r.ok && env.FAMILY_MESH_ROOM) {
+          try {
+            const body = JSON.parse(out);
+            await broadcastPingToRooms(env, {
+              type: 'presence',
+              vertex: pMatch[1],
+              vertexRecord: body.vertex,
+              ts: Date.now(),
+            });
+          } catch {
+            /* ignore */
+          }
+        }
+        return new Response(out, { status: r.status, headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' } });
+      }
 
       const pingMatch = path.match(/^\/api\/ping\/(\w+)\/(\w+)$/);
       if (pingMatch && method === 'POST') {
-        if (!env.K4_TOPOLOGY) {
-          const [from, to] = pingMatch.slice(1);
-          const edgeKey = [from, to].sort().join('-');
-          const edgeCountKey = `edge:${edgeKey}:count`;
-          const currentCount = await env.K4_MESH.get(edgeCountKey);
-          const newCount = (parseInt(currentCount || '0', 10) + 1).toString();
-          await env.K4_MESH.put(edgeCountKey, newCount);
-          return json({ ok: true, from, to, love: parseInt(newCount, 10), ts: new Date().toISOString() });
-        }
         const r = await topologyFetch(
           request,
           env,
@@ -710,16 +671,12 @@ export default {
               /* optional */
             }
           } else {
-            try {
-              await appendTelemetryKv(env, {
-                type: 'ping',
-                from: pingMatch[1],
-                to: pingMatch[2],
-                ping: parsed?.ping,
-              });
-            } catch {
-              /* optional */
-            }
+            await appendTelemetryKv(env, {
+              type: 'ping',
+              from: pingMatch[1],
+              to: pingMatch[2],
+              ping: parsed?.ping,
+            });
           }
           if (parsed?.ping) {
             await broadcastPingToRooms(env, {
@@ -808,17 +765,46 @@ export default {
 
       if (path === '/api/admin/dashboard' && method === 'GET') {
         if (!isAdmin(request, env)) return err('Unauthorized', 401);
-        const roomStub = env.FAMILY_MESH_ROOM.get(env.FAMILY_MESH_ROOM.idFromName('family-mesh'));
-        const [meshR, statsR] = await Promise.all([
-          topologyFetch(request, env, '/api/mesh', 'GET'),
-          roomStub.fetch(new Request('https://room/stats')),
-        ]);
+        const meshR = await topologyFetch(request, env, '/api/mesh', 'GET');
         const mesh = meshR.ok ? await meshR.json() : null;
+        const roomStub = env.FAMILY_MESH_ROOM.get(env.FAMILY_MESH_ROOM.idFromName('family-mesh'));
+        const statsR = await roomStub.fetch(new Request('https://room/stats'));
         const room = statsR.ok ? await statsR.json() : null;
         return json({
           mesh,
           room,
           generated: new Date().toISOString(),
+        });
+      }
+
+      // ── Quantum Routes (WCD-QM-01) ────────────────────────────────────────
+      const entangleMatch = path.match(/^\/api\/quantum\/entangle\/(\w+)\/(\w+)$/);
+      if (entangleMatch && method === 'POST') {
+        const playerA = entangleMatch[1];
+        const playerB = entangleMatch[2];
+        const pair = await entanglePlayers(roomId ?? 'k4-cage', playerA, playerB);
+        return json({ ok: true, pair });
+      }
+
+      const larmorMatch = path.match(/^\/api\/larmor$/);
+      if (larmorMatch && method === 'GET') {
+        const phase = (Date.now() * 863 / 1000) % (2 * Math.PI);
+        return json({
+          frequency: 863,
+          phase,
+          timestamp: Date.now(),
+          signature: 'Ca₉(PO₄)₆',
+        });
+      }
+
+      const qkdMatch = path.match(/^\/api\/qkd\/key$/);
+      if (qkdMatch && method === 'GET') {
+        const { QuantumKeyDistribution } = await import('./quantumSync.js');
+        const key = QuantumKeyDistribution.generateSessionKey();
+        return json({ 
+          key,
+          nonce: QuantumKeyDistribution.generateNonce(),
+          larmorPhase: (Date.now() * 863 / 1000) % (2 * Math.PI),
         });
       }
 

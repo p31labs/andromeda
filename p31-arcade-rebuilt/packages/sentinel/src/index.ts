@@ -3,7 +3,7 @@
  * Enforces game access, session caps, and age-appropriate content
  */
 
-import { isGameAllowed, GAME_CATALOG } from '@p31/core';
+import { isGameAllowed, GAME_CATALOG, isQuantumEnabled, QUANTUM_CONFIG } from '@p31/core';
 import type { GameId } from '@p31/core';
 
 export interface SentinelEnforcement {
@@ -12,12 +12,33 @@ export interface SentinelEnforcement {
   maxMinutes?: number;
 }
 
+// WCD-QM-01: Quantum enforcement
+export interface QuantumEnforcement {
+  quantumEnabled: boolean;
+  syncInterval: number;
+  correlation: boolean;
+  entangled: boolean;
+}
+
 export function checkGameAccess(gameId: GameId, playerId: string): SentinelEnforcement {
   if (!isGameAllowed(gameId, playerId)) {
     return { allowed: false, reason: 'SENTINEL: Game not appropriate for this player' };
   }
   const config = GAME_CATALOG[gameId];
   return { allowed: true, maxMinutes: config.maxSessionMinutes };
+}
+
+// WCD-QM-01: Quantum game check
+export function checkQuantumAccess(gameId: GameId, playerId: string): QuantumEnforcement {
+  const quantumEnabled = isQuantumEnabled(gameId);
+  const { syncInterval, correlation } = QUANTUM_CONFIG[gameId] || { syncInterval: 5000, correlation: false };
+  
+  return {
+    quantumEnabled,
+    syncInterval,
+    correlation,
+    entangled: false, // Set when session starts
+  };
 }
 
 export function generateSessionToken(playerId: string, gameId: GameId): string {

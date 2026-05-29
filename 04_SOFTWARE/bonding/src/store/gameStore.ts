@@ -159,58 +159,11 @@ interface GameStore {
   // UX Audit: Age-based UI scaling
   ageGroup: 'child' | 'adult' | 'senior' | null;
 
-  // Kid Mode
+// Kid Mode
   simpleMode: boolean;
 
-  // Kid Mode actions
-  setSimpleMode: (enabled: boolean) => void;
-
-  // Actions
-  setGameMode: (mode: DifficultyId | null, questId?: string) => void;
-  setAgeGroup: (age: 'child' | 'adult' | 'senior') => void;
-  setPlayerName: (name: string) => void;
-  startDrag: (element: ElementSymbol) => void;
-  updateDragPointer: (x: number, y: number) => void;
-  snapToSite: (atomId: number | null, position: { x: number; y: number; z: number }) => void;
-  unsnapFromSite: () => void;
-  endDrag: () => void;
-  reset: () => void;
-  initAudio: () => void;
-  dismissToast: (id: string) => void;
-  nameDiscovery: (name: string) => void;
-  dismissDiscovery: () => void;
-  fireTutorialEvent: (event: { type: string; mode?: string; element?: string; button?: string }) => void;
-  showMoleculeFact: (formula: string) => void;
-  continueBuilding: () => void;
-
-  // Multiplayer actions
-  setLobbyActive: (active: boolean) => void;
-  setMultiplayer: (roomCode: string, playerId: string) => void;
-  leaveMultiplayer: () => void;
-  updateRemotePlayers: (players: Player[]) => void;
-  addIncomingPing: (ping: Ping) => void;
-  clearIncomingPings: () => void;
-  setConnectionStatus: (status: 'connected' | 'reconnecting' | 'disconnected') => void;
-  toggleBreathing: () => void;
-
-  // Calcium logging
-  toggleCalciumLogged: () => void;
-
-  // Ambient reward actions (shooting stars, missing node)
-  pushToast: (toast: Omit<ToastMessage, 'id' | 'createdAt'>) => void;
-  addLove: (amount: number) => void;
-
-  // Ghost site preview from palette tap
-  previewElement: ElementSymbol | null;
-  setPreviewElement: (el: ElementSymbol | null) => void;
-
-  // Blood Moon haze toggle
-  bloodMoonActive: boolean;
-  toggleBloodMoon: () => void;
-
-  // Molecular warp field (double-tap easter egg)
-  warpActive: boolean;
-  triggerWarp: () => void;
+  // Quantum state
+  larmorPhase: number;
 
   // K4 tetrahedron detection — fires once per session
   k4Detected: boolean;
@@ -288,6 +241,9 @@ export const useGameStore = create<GameStore>()((set, get) => ({
   simpleMode: false,
 
   k4Detected: false,
+
+  // Quantum state
+  larmorPhase: 0,
 
   // ── Mode selection ──
 
@@ -1379,5 +1335,10 @@ export const useGameStore = create<GameStore>()((set, get) => ({
     playWarp();
     haptic.snap();
     setTimeout(() => set({ warpActive: false }), 2500);
+  },
+
+  // Quantum state update
+  updateLarmorPhase: (phase) => {
+    set({ larmorPhase: phase });
   },
 }));

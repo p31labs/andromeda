@@ -8,6 +8,14 @@ const GRIDIRON_API = 'https://api-gridiron.p31ca.org';
 const CHUMP_EDGE = 'https://chump-edge.trimtab-signal.workers.dev';
 const K4_MESH = 'https://k4-cage.p31ca.org';
 
+// WCD-QM-01: Quantum frequencies
+const LARMOR_PRIMARY = 863; // ³¹P in Earth's magnetic field
+const LARMOR_SECONDARY = 172.35; // Phosphorus-31 nucleus resonance
+
+function getLarmorPhase(): number {
+  return (Date.now() * LARMOR_PRIMARY / 1000) % (2 * Math.PI);
+}
+
 async function fetchJson<T>(url: string, fallback: T, signal?: AbortSignal): Promise<T> {
   try {
     const res = await fetch(url, { signal, headers: { Accept: 'application/json' } });
@@ -78,4 +86,62 @@ export async function submitCareFlow(flow: {
     });
     return res.ok;
   } catch { return false; }
+}
+
+// WCD-QM-01: Quantum API functions
+export interface QuantumStateResponse {
+  frequency: number;
+  phase: number;
+  timestamp: number;
+  signature: string;
+}
+
+export interface QuantumEntangledPair {
+  pairId: string;
+  playerA: string;
+  playerB: string;
+  bellState: string;
+  sharedState: {
+    quantumPhase: number;
+    atoms: Record<string, unknown>;
+  };
+}
+
+export async function getQuantumState(): Promise<QuantumStateResponse> {
+  return fetchJson(
+    `${K4_MESH}/api/larmor`,
+    {
+      frequency: 863,
+      phase: getLarmorPhase(),
+      timestamp: Date.now(),
+      signature: 'Ca₉(PO₄)₆',
+    },
+  );
+}
+
+export async function createEntangledPair(
+  playerA: string,
+  playerB: string,
+): Promise<QuantumEntangledPair | null> {
+  try {
+    const res = await fetch(`${K4_MESH}/api/quantum/entangle/${playerA}/${playerB}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    if (res.ok) return res.json();
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+export async function getQuantumKey(): Promise<{ key: string; nonce: string; larmorPhase: number }> {
+  return fetchJson(
+    `${K4_MESH}/api/qkd/key`,
+    {
+      key: btoa(String.fromCharCode(...crypto.getRandomValues(new Uint8Array(32)))),
+      nonce: `${Date.now()}-${Math.round(getLarmorPhase() * 1000)}`,
+      larmorPhase: getLarmorPhase(),
+    },
+  );
 }

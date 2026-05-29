@@ -68,10 +68,17 @@ export const GAME_CATALOG: Record<GameId, GameConfig> = {
     description: 'Cooperative 3D construction with Love Economy avatars',
     icon: '🔷', color: '#22c55e', url: 'https://p31ca.org/geodesic',
   },
+  bonding: {
+    id: 'bonding', name: 'BONDING', category: 'creative',
+    maxSessionMinutes: 90, baseRate: 0.15, learningBonus: 2.0,
+    coopEnabled: true, spectateEnabled: true,
+    description: 'Molecular chemistry game with quantum entanglement multiplayer',
+    icon: '⚛️', color: '#00FF88', url: 'https://bonding.p31ca.org',
+  },
 };
 
 export const WJ_WHITELIST: GameId[] = [
-  'smallball', 'gridiron', 'liquid-sculptor', 'magnetic-poetry', 'geodesic-builder',
+  'smallball', 'gridiron', 'liquid-sculptor', 'magnetic-poetry', 'geodesic-builder', 'bonding',
 ];
 
 export function getGameConfig(gameId: GameId): GameConfig {
@@ -82,3 +89,26 @@ export function isGameAllowed(gameId: GameId, playerId: string): boolean {
   if (playerId === 'wj' && !WJ_WHITELIST.includes(gameId)) return false;
   return true;
 }
+
+// WCD-QM-01: Quantum-enabled games (support entanglement sync)
+export const QUANTUM_GAMES: GameId[] = [
+  'bonding', 'geodesic-builder', 'resonance-rings', 'orbital-drift',
+];
+
+export function isQuantumEnabled(gameId: GameId): boolean {
+  return QUANTUM_GAMES.includes(gameId);
+}
+
+// WCD-QM-01: Quantum sync configuration per game
+export const QUANTUM_CONFIG: Record<GameId, { syncInterval: number; correlation: boolean }> = {
+  smallball: { syncInterval: 5000, correlation: false },
+  gridiron: { syncInterval: 5000, correlation: false },
+  cards: { syncInterval: 3000, correlation: false },
+  strategy: { syncInterval: 3000, correlation: false },
+  'liquid-sculptor': { syncInterval: 2000, correlation: true },
+  'resonance-rings': { syncInterval: 1000, correlation: true }, // Quantum-native
+  'magnetic-poetry': { syncInterval: 4000, correlation: false },
+  'orbital-drift': { syncInterval: 2000, correlation: true }, // Gravity waves = quantum
+  'geodesic-builder': { syncInterval: 3000, correlation: true },
+  bonding: { syncInterval: 1000, correlation: true }, // Quantum chemistry core
+};

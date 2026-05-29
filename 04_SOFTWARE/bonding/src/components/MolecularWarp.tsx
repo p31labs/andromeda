@@ -15,6 +15,7 @@ import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { ELEMENTS_ARRAY } from '../data/elements';
 import { useGameStore } from '../store/gameStore';
+import { LarmorHeartbeat, QuantumChemistry } from '../engine/quantumChemistry';
 
 const BASE_COUNT = 200;
 const DEFAULT_COHERENCE = 6.5 / 12;
@@ -44,9 +45,12 @@ interface MolecularWarpProps {
 
 export function MolecularWarp({ coherence = DEFAULT_COHERENCE }: MolecularWarpProps) {
   const warpActive = useGameStore((s) => s.warpActive);
+  const larmorPhase = useGameStore((s) => s.larmorPhase);
+  const updateLarmorPhase = useGameStore((s) => s.updateLarmorPhase);
   const ref = useRef<THREE.LineSegments>(null);
   const phase = useRef(0);
   const c = Math.max(0.08, Math.min(1, coherence));
+  const quantumChemistry = useMemo(() => new QuantumChemistry(), []);
 
   const effectiveCount = useMemo(() => {
     const n = Math.round(BASE_COUNT * (0.45 + 0.55 * c));
@@ -100,6 +104,14 @@ export function MolecularWarp({ coherence = DEFAULT_COHERENCE }: MolecularWarpPr
     const col = (geo.getAttribute('color') as THREE.BufferAttribute)
       .array as Float32Array;
 
+    // Update Larmor phase for quantum modulation
+    const larmor = LarmorHeartbeat.getInstance();
+    const quantumPhase = larmor.getPhase();
+    updateLarmorPhase(quantumPhase);
+
+    // Quantum modulation factor: sin(phase) modulates particle distribution
+    const quantumMod = Math.sin(quantumPhase) * 0.5 + 0.5;
+
     // Smooth intensity envelope
     if (warpActive) {
       phase.current = Math.min(phase.current + delta * 3, 1);
@@ -117,14 +129,30 @@ export function MolecularWarp({ coherence = DEFAULT_COHERENCE }: MolecularWarpPr
 
     for (let i = 0; i < n; i++) {
       const m = motes[i];
-      m.z += speed * m.s * delta;
+      // Quantum-enhanced speed: faster during phase peaks
+      const quantumBoost = 1 + quantumMod * 0.3;
+      m.z += speed * m.s * delta * quantumBoost;
 
       // Recycle past camera
       if (m.z > CAMERA_Z + 2) {
         m.z = -TUNNEL_Z + Math.random() * 5;
         m.a = Math.random() * Math.PI * 2;
         m.r = 0.5 + Math.random() * TUNNEL_R;
-        m.ci = Math.floor(Math.random() * PALETTE.length);
+        
+        // Quantum-modulated color selection based on Larmor phase
+        const probs = quantumChemistry.getElementProbabilities(0);
+        const probArray = [...probs.values()];
+        const total = probArray.reduce((s, v) => s + v, 0);
+        let rand = Math.random() * total;
+        let selectedCi = 0;
+        for (let j = 0; j < probArray.length; j++) {
+          rand -= probArray[j];
+          if (rand <= 0) {
+            selectedCi = j;
+            break;
+          }
+        }
+        m.ci = selectedCi % PALETTE.length;
         const nc = PALETTE[m.ci];
         col[i * 6] = nc.r;
         col[i * 6 + 1] = nc.g;

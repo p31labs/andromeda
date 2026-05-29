@@ -5,7 +5,20 @@
 
 import type { GameState, GameOptions } from './types';
 
+// WCD-QM-01: Larmor frequency constant (863 Hz - phosphorus resonance)
+export const LARMOR_FREQUENCY = 863;
+
+/**
+ * Quantum-aware game engine extensions
+ */
+export interface QuantumGameEngine extends IGameEngine {
+  updateQuantumState(phase: number, correlation?: number): void;
+  getEntangledWith(): PlayerId | undefined;
+  setEntangledWith(player: PlayerId): void;
+}
+
 type EventHandler = (...args: unknown[]) => void;
+type PlayerId = 'sj' | 'wj' | 'will' | 'christyn';
 
 export interface IGameEngine {
   init(canvas: HTMLCanvasElement, options?: GameOptions): void;
@@ -23,6 +36,8 @@ export abstract class BaseGameEngine implements IGameEngine {
   protected canvas!: HTMLCanvasElement;
   protected running = false;
   protected eventHandlers = new Map<string, Set<EventHandler>>();
+  protected quantumPhase: number = 0;
+  protected entangledWith: PlayerId | undefined;
 
   abstract init(canvas: HTMLCanvasElement, options?: GameOptions): void;
   abstract getState(): GameState;
@@ -44,5 +59,27 @@ export abstract class BaseGameEngine implements IGameEngine {
 
   protected emit(event: string, ...args: unknown[]): void {
     this.eventHandlers.get(event)?.forEach((h) => h(...args));
+  }
+
+  // WCD-QM-01: Quantum state methods
+  updateQuantumState(phase: number, correlation?: number): void {
+    this.quantumPhase = phase;
+    if (correlation !== undefined) {
+      // Apply quantum correlation to game state
+      this.applyQuantumCorrelation(correlation);
+    }
+  }
+
+  getEntangledWith(): PlayerId | undefined {
+    return this.entangledWith;
+  }
+
+  setEntangledWith(player: PlayerId): void {
+    this.entangledWith = player;
+  }
+
+  protected applyQuantumCorrelation(correlation: number): void {
+    // Override in subclasses to apply quantum effects
+    // correlation is in range [0, 1] from quantum coherence
   }
 }

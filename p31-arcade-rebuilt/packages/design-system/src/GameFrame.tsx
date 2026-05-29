@@ -2,6 +2,13 @@ import React, { useEffect, useRef, useState } from 'react';
 import { ReturnRibbon } from './ReturnRibbon';
 import { P31Colors } from './tokens';
 
+// WCD-QM-01: Larmor frequency (863 Hz - phosphorus resonance)
+const LARMOR_FREQUENCY = 863;
+
+function getLarmorPhase(): number {
+  return (Date.now() * LARMOR_FREQUENCY / 1000) % (2 * Math.PI);
+}
+
 export interface GameFrameProps {
   gameName: string;
   children?: React.ReactNode;
@@ -11,6 +18,9 @@ export interface GameFrameProps {
   maxMinutes?: number;
   /** If true, wrap children in an iframe with this URL */
   externalUrl?: string;
+  /** WCD-QM-01: Quantum state for this session */
+  quantumEnabled?: boolean;
+  larmorPhase?: number;
 }
 
 const frameStyle: React.CSSProperties = {
@@ -62,10 +72,13 @@ export const GameFrame: React.FC<GameFrameProps> = ({
   sessionId,
   maxMinutes = 0,
   externalUrl,
+  quantumEnabled = false,
+  larmorPhase,
 }) => {
   const frameRef = useRef<HTMLDivElement>(null);
   const [remaining, setRemaining] = useState<number>(maxMinutes * 60);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [localLarmorPhase, setLocalLarmorPhase] = useState(0);
 
   // Escape closes game
   useEffect(() => {
@@ -114,6 +127,20 @@ export const GameFrame: React.FC<GameFrameProps> = ({
     }
   }, []);
 
+  // WCD-QM-01: Larmor phase heartbeat for quantum games
+  useEffect(() => {
+    if (!quantumEnabled) return;
+    const iv = setInterval(() => {
+      setLocalLarmorPhase(larmorPhase ?? getLarmorPhase());
+    }, 1000 / 60);
+    return () => clearInterval(iv);
+  }, [quantumEnabled, larmorPhase]);
+
+  // Pass quantum state to iframe
+  const quantumIframeUrl = externalUrl && quantumEnabled
+    ? `${externalUrl}?player=${playerId || ''}&session=${sessionId || ''}&quantum=1&phase=${localLarmorPhase.toFixed(2)}`
+    : undefined;
+
   const toggleFullscreen = () => {
     if (!document.fullscreenElement) {
       frameRef.current?.requestFullscreen();
@@ -158,7 +185,16 @@ export const GameFrame: React.FC<GameFrameProps> = ({
 
       {/* Game viewport */}
       <div className="game-viewport" style={viewportStyle}>
-        {externalUrl ? (
+        {quantumIframeUrl ? (
+          <iframe
+            src={quantumIframeUrl}
+            title={`${gameName} game`}
+            allow="camera; microphone; autoplay; fullscreen"
+            sandbox="allow-scripts allow-same-origin allow-forms"
+            loading="lazy"
+            style={{ width: '100%', height: '100%', border: 'none' }}
+          />
+        ) : externalUrl ? (
           <iframe
             src={`${externalUrl}?player=${playerId || ''}&session=${sessionId || ''}`}
             title={`${gameName} game`}

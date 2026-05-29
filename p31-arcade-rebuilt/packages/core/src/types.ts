@@ -3,7 +3,7 @@
  * Single source of truth for all game/player/session types
  */
 
-export type PlayerId = 'sj' | 'wj';
+export type PlayerId = 'sj' | 'wj' | 'will' | 'christyn';
 export type GameId =
   | 'smallball'
   | 'gridiron'
@@ -13,7 +13,8 @@ export type GameId =
   | 'resonance-rings'
   | 'magnetic-poetry'
   | 'orbital-drift'
-  | 'geodesic-builder';
+  | 'geodesic-builder'
+  | 'bonding';
 export type GameCategory = 'sports' | 'strategy' | 'physics' | 'creative';
 export type DomainMode = 'industry' | 'arcade' | 'chump' | 'love' | 'hybrid';
 export type SpoonLevel = 1 | 3 | 6;
@@ -90,7 +91,35 @@ export interface GameState {
   outs: number;
   inning: number;
   score: { home: number; away: number };
+  // WCD-QM-01: Quantum state
+  larmorPhase?: number;
+  quantumCorrelation?: number;
+  entangledWith?: PlayerId;
   [key: string]: unknown;
+}
+
+// WCD-QM-01: Quantum types for arcade hub
+export interface QuantumState {
+  amplitudes: Record<string, number>;
+  phase: number;
+  collapsed: boolean;
+  timestamp: number;
+}
+
+export interface EntangledPair {
+  playerA: PlayerId;
+  playerB: PlayerId;
+  sharedState: QuantumState;
+  bellState: 'phi-plus' | 'phi-minus' | 'psi-plus' | 'psi-minus';
+}
+
+export interface QuantumSyncPayload {
+  type: 'quantum_sync' | 'state_sync';
+  playerId: PlayerId;
+  state: GameState;
+  correlatedState?: GameState;
+  partnerId?: PlayerId;
+  larmorPhase: number;
 }
 
 export interface GameOptions {

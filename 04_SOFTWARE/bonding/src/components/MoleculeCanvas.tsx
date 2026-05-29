@@ -5,6 +5,7 @@
 // Contains:
 //   - R3F Canvas with PerspectiveCamera
 //   - CoherenceArc (background color shift over 37min)
+//   - LarmorHeartbeat (863 Hz quantum modulation)
 //   - MolecularWarp (molecular particle field + warp)
 //   - All VoxelAtoms
 //   - All BondBeams
@@ -32,6 +33,7 @@ import { ELEMENTS } from '../data/elements';
 import { useGameStore } from '../store/gameStore';
 import { getAvailableBondSitePositions, generateFormula } from '../engine/chemistry';
 import { getPersonality } from '../engine/personalities';
+import { LarmorHeartbeat, QuantumChemistry } from '../engine/quantumChemistry';
 import type { PersonalityAnimationHint } from './VoxelAtom';
 
 const COHERENCE_MS = 37 * 60 * 1000;
@@ -152,6 +154,9 @@ function Scene({ atmosphereCoherence }: { atmosphereCoherence: number }) {
   const snappedSite = useGameStore((s) => s.snappedSite);
   const gamePhase = useGameStore((s) => s.gamePhase);
   const previewElement = useGameStore((s) => s.previewElement);
+  
+  // Quantum: Larmor heartbeat phase for particle field modulation
+  const larmorPhase = useGameStore((s) => s.larmorPhase);
 
   // Bond site positions — expensive chemistry calc, depends only on atoms
   const bondSitePositions = useMemo(() => {
