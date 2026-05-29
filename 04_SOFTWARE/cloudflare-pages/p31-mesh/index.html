@@ -2,104 +2,106 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"
-    />
-    <meta name="theme-color" content="#050505" />
-    <title>P31 Mesh | P31 Labs</title>
-    <meta
-      name="description"
-      content="WebRTC data channel mesh with Cloudflare signaling — vagal breath sync. Part of the P31 technical hub fleet."
-    />
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <meta name="theme-color" content="#050510" />
+    <title>P31 Family Mesh | P31 Labs</title>
+    <meta name="description" content="K4 Family Mesh — real-time co-presence, autonomic regulation, and inter-relational care flows. P31 Labs cognitive prosthetic interface." />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap"
-    />
-    <link rel="stylesheet" href="https://p31ca.org/assets/hub-skin.css" />
-    <link rel="stylesheet" href="https://p31ca.org/assets/hub-about-shell.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" />
     <link rel="stylesheet" href="./mesh-overrides.css" />
+    <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+      }
+    }
+    </script>
   </head>
-  <body class="hub-about-page">
-    <nav class="nav">
-      <div class="nav-inner">
-        <a href="https://p31ca.org/" class="nav-brand">
-          <span class="hub-brand-mark" aria-hidden="true"></span>
-          <span class="nav-brand-label">P31 Labs</span>
-        </a>
-        <div class="nav-links">
-          <a href="https://p31ca.org/index.html" class="nav-link">← Hub</a>
-          <a href="https://github.com/p31labs" class="nav-link" target="_blank" rel="noopener noreferrer"
-            >GitHub</a
-          >
-          <a href="https://p31ca.org/index.html" class="nav-cta">Technical hub</a>
-        </div>
-      </div>
-    </nav>
-
-    <div class="container">
-      <div class="hero mesh-hero-tight">
-        <h1>P31 Mesh</h1>
-        <div class="subtitle">WebRTC Data Channel — 0.1 Hz Vagal Sync</div>
-        <p class="tagline">
-          Peer data channels through <code>p31-signaling</code> — same topology as the hub fleet. Share node IDs,
-          link, then run shared exhale cues when the channel opens.
-        </p>
-        <span class="badge">LIVE</span>
-      </div>
-
-      <div class="detail-grid" style="grid-template-columns: 1fr">
-        <div class="detail-card">
-          <div class="mesh-status">
-            <div class="dot" id="statusDot"></div>
-            <span id="statusText" style="font-size: 13px">Initializing...</span>
-          </div>
-          <div class="mesh-label">Your node ID</div>
-          <div class="id-display" id="myId">...</div>
-          <div class="peer-count" id="peerCount"></div>
-        </div>
-
-        <div class="detail-card">
-          <div class="mesh-label">Connect to peer</div>
-          <input
-            type="text"
-            id="remoteId"
-            class="mesh-input"
-            placeholder="Paste peer ID here"
-            autocomplete="off"
-            spellcheck="false"
-          />
-          <button type="button" class="mesh-btn mesh-btn-primary" id="btnConnect" onclick="connect()" disabled>
-            LINK
-          </button>
-        </div>
-
-        <div class="detail-card" id="breathCard" style="display: none">
-          <div class="mesh-label" style="text-align: center">Vagal sync — 4-4-6</div>
-          <div class="breath-ring" id="breathRing">
-            <div class="breath-label" id="breathLabel">READY</div>
-            <div class="breath-timer" id="breathTimer">—</div>
-          </div>
-          <button type="button" class="mesh-btn mesh-btn-vagal" id="btnPulse" onclick="startBreath()">
-            START SYNC
-          </button>
-        </div>
-
-        <div class="detail-card">
-          <div class="mesh-label">Mesh log</div>
-          <div class="mesh-log" id="log"></div>
-        </div>
-      </div>
-
-      <p class="callout-p31" style="margin-top: 2rem">
-        <strong>P31 Labs, Inc.</strong> (EIN 42-1888158) — edge-deployed tools, no accounts. Fleet status above is
-        shared with <a href="https://p31ca.org/">p31ca.org</a>. This interface is not medical advice.
-      </p>
+  <body class="mesh-body">
+    <div class="mesh-bg" aria-hidden="true"></div>
+    <div class="mesh-canvas-wrap" id="meshCanvasWrap">
+      <canvas id="meshCanvas"></canvas>
     </div>
 
-    <script defer src="./mesh-app.js"></script>
-    <script type="module" src="./mesh-boot.js"></script>
+    <div class="mesh-hud mesh-hud-layer10" id="meshHud">
+      <nav class="mesh-nav" id="meshNav">
+        <div class="mesh-nav-inner">
+          <a href="https://p31ca.org/" class="mesh-nav-brand">
+            <span class="mesh-brand-mark" aria-hidden="true"></span>
+            <span class="mesh-nav-brand-label">P31 Labs</span>
+          </a>
+          <div class="mesh-nav-links">
+            <a href="https://p31ca.org/index.html" class="mesh-nav-link">← Hub</a>
+            <a href="https://github.com/p31labs" class="mesh-nav-link" target="_blank" rel="noopener noreferrer">GitHub</a>
+          </div>
+        </div>
+      </nav>
+
+      <div class="mesh-hud-top" id="meshHudTop">
+        <div class="mesh-hud-card glass-thin" id="meshStatusCard">
+          <div class="mesh-status-row">
+            <div class="mesh-dot" id="meshStatusDot"></div>
+            <span class="mesh-status-text" id="meshStatusText">Initializing...</span>
+          </div>
+          <div class="mesh-label" style="margin-top:10px">Your node</div>
+          <div class="mesh-id-display" id="meshMyId">...</div>
+          <div class="mesh-peer-count" id="meshPeerCount"></div>
+        </div>
+      </div>
+
+      <div class="mesh-hud-left glass-thin" id="meshNodePanel">
+        <div class="mesh-panel-title">Family nodes</div>
+        <div class="mesh-node-list" id="meshNodeList"></div>
+      </div>
+
+      <div class="mesh-hud-right glass-thin" id="meshControlPanel">
+        <div class="mesh-panel-title">Controls</div>
+        <div class="mesh-label">Join room</div>
+        <input type="text" id="meshRoomInput" class="mesh-input" placeholder="Room code" autocomplete="off" spellcheck="false" />
+        <button type="button" class="mesh-btn mesh-btn-primary" id="meshBtnJoin" onclick="meshJoinRoom()" disabled>JOIN</button>
+
+        <div class="mesh-label" style="margin-top:16px">Connect to peer</div>
+        <input type="text" id="meshPeerInput" class="mesh-input" placeholder="Paste peer ID" autocomplete="off" spellcheck="false" />
+        <button type="button" class="mesh-btn mesh-btn-primary" id="meshBtnConnect" onclick="meshConnect()" disabled>LINK</button>
+
+        <div id="meshSpectateCard" style="display:none;margin-top:16px">
+          <div class="mesh-label">Cooperative spectate</div>
+          <button type="button" class="mesh-btn mesh-btn-love" id="meshBtnSpectate" onclick="meshSpectate()" disabled>SPECTATE SIBLING</button>
+        </div>
+
+        <div id="meshBreathCard" style="display:none;margin-top:16px">
+          <div class="mesh-label" style="text-align:center">Vagal sync — 4-4-6</div>
+          <div class="mesh-breath-ring" id="meshBreathRing">
+            <div class="mesh-breath-label" id="meshBreathLabel">READY</div>
+            <div class="mesh-breath-timer" id="meshBreathTimer">—</div>
+          </div>
+          <button type="button" class="mesh-btn mesh-btn-vagal" id="meshBtnBreath" onclick="meshToggleBreath()">START SYNC</button>
+        </div>
+      </div>
+
+      <div class="mesh-hud-bottom glass-thin" id="meshLogPanel">
+        <div class="mesh-panel-title">Mesh log</div>
+        <div class="mesh-log" id="meshLog"></div>
+      </div>
+
+      <div class="mesh-spoon-tracker glass-thin" id="meshSpoonTracker">
+        <div class="mesh-spoon-label">Spoons</div>
+        <div class="mesh-spoon-bars" id="meshSpoonBars"></div>
+        <div class="mesh-spoon-zone" id="meshSpoonZone">—</div>
+      </div>
+    </div>
+
+    <iframe class="mesh-spectate-frame" id="meshSpectateFrame" sandbox="allow-scripts allow-same-origin" tabindex="-1" aria-hidden="true"></iframe>
+
+    <div class="mesh-noc" id="meshNoc" style="display:none"></div>
+
+    <p class="mesh-footer-callout">
+      <strong>P31 Labs, Inc.</strong> — K4 Family Mesh. Cognitive prosthetic interface. Not medical advice. <a href="https://p31ca.org/">p31ca.org</a>
+    </p>
+
+    <script type="module" src="./mesh-app.js"></script>
+    <script defer src="./mesh-boot.js"></script>
   </body>
 </html>
