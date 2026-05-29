@@ -796,6 +796,10 @@ function renderNoc() {
   auditLink.style.cssText = "margin:12px 0;padding:12px;background:rgba(182,90,216,0.08);border:1px solid rgba(182,90,216,0.2);border-radius:8px";
   auditLink.innerHTML = '<strong style="color:#b65ad8;font-size:13px">NOC Audit Suite</strong><p style="font-size:11px;color:rgba(216,214,208,0.7);margin:4px 0 8px">Run full E2E loopback tests: signaling, STUN/ICE, WebRTC handshake, data channel stress.</p><a href="./mesh-audit.html" style="font-size:12px;color:#22d3ee;text-decoration:none;font-family:monospace;padding:6px 14px;background:rgba(34,211,238,0.1);border:1px solid rgba(34,211,238,0.25);border-radius:6px;display:inline-block">OPEN AUDIT SUITE →</a>';
   el.appendChild(auditLink);
+  const auditLink = document.createElement("div");
+  auditLink.style.cssText = "margin:12px 0;padding:12px;background:rgba(182,90,216,0.08);border:1px solid rgba(182,90,216,0.2);border-radius:8px";
+  auditLink.innerHTML = '<strong style="color:#b65ad8;font-size:13px">NOC Audit Suite</strong><p style="font-size:11px;color:rgba(216,214,208,0.7);margin:4px 0 8px">Run full E2E loopback tests: signaling, STUN/ICE, WebRTC handshake, data channel stress.</p><a href="./mesh-audit.html" style="font-size:12px;color:#22d3ee;text-decoration:none;font-family:monospace;padding:6px 14px;background:rgba(34,211,238,0.1);border:1px solid rgba(34,211,238,0.25);border-radius:6px;display:inline-block">OPEN AUDIT SUITE →</a>';
+  el.appendChild(auditLink);
   const sections = [
     { name: "Identity", data: { myId: S.myId, myNodeKey: S.myNodeKey, room: S.myRoomId } },
     { name: "Connections", data: { peers: S.simPeerId ? [S.simPeerId] : [...S.peerConns.keys()], channels: [...S.dataChannels.keys()], spoons: S.spoons } },

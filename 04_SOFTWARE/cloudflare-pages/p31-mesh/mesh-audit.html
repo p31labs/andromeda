@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
     <meta name="theme-color" content="#050510" />
     <title>P31 NOC — E2E Connection Audit Suite</title>
@@ -9,18 +9,124 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" />
-    <link rel="stylesheet" href="./audit.css" />
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: #050505; color: #e5e5e5; overflow: hidden;
+        }
+        .mono, code { font-family: 'Space Mono', 'Courier New', monospace; }
+
+        /* ── Layout ── */
+        .audit-shell { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+        .audit-header {
+            display: flex; justify-content: space-between; align-items: flex-end;
+            padding: 14px 20px 12px; border-bottom: 1px solid #1a1a1a;
+            background: #0a0a0a; flex-shrink: 0;
+        }
+        .audit-header-left { display: flex; align-items: center; gap: 12px; }
+        .audit-title { font-size: 15px; font-weight: 800; color: #fff; letter-spacing: -0.01em; }
+        .audit-subtitle { font-size: 10px; color: #666; margin-top: 2px; }
+        .audit-header-right { display: flex; gap: 8px; }
+
+        /* ── Score ── */
+        .score-bar-bg { background: #1a1a1a; height: 3px; width: 100%; border-radius: 2px; overflow: hidden; margin-top: 8px; }
+        .score-bar-fill { background: #3b82f6; height: 100%; width: 0%; transition: width 0.6s ease-out, background-color 0.3s; }
+
+        /* ── Buttons ── */
+        .audit-btn {
+            padding: 7px 14px; border: none; border-radius: 6px;
+            font-size: 11px; font-weight: 700; cursor: pointer;
+            transition: filter 0.15s, background 0.15s, opacity 0.15s;
+        }
+        .audit-btn-run { background: #2563eb; color: #fff; }
+        .audit-btn-run:hover:not(:disabled) { background: #3b82f6; }
+        .audit-btn-run:disabled { opacity: 0.4; cursor: wait; }
+        .audit-btn-export { background: rgba(182,90,216,0.15); color: #b65ad8; border: 1px solid rgba(182,90,216,0.2); }
+        .audit-btn-export:hover:not(:disabled) { background: rgba(182,90,216,0.25); }
+        .audit-btn-export:disabled { opacity: 0.3; cursor: not-allowed; }
+        .audit-btn-sm { padding: 3px 8px; font-size: 9px; background: rgba(255,255,255,0.04); color: #666; border: 1px solid #222; }
+        .audit-btn-sm:hover { color: #aaa; }
+
+        /* ── Grid ── */
+        .audit-grid {
+            display: flex; flex: 1; overflow: hidden;
+        }
+        .audit-modules {
+            width: 340px; min-width: 340px; overflow-y: auto;
+            padding: 12px; display: flex; flex-direction: column; gap: 8px;
+            border-right: 1px solid #111; scrollbar-width: thin; scrollbar-color: #333 transparent;
+        }
+        .audit-modules::-webkit-scrollbar { width: 4px; }
+        .audit-modules::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
+
+        /* ── Cards ── */
+        .audit-card {
+            background: #0f0f0f; border: 1px solid #1a1a1a; border-radius: 8px;
+            padding: 10px 12px; transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .audit-card-running { border-color: rgba(59,130,246,0.4) !important; box-shadow: 0 0 12px rgba(59,130,246,0.15); }
+        .audit-card-pass { border-color: rgba(16,185,129,0.3) !important; }
+        .audit-card-fail { border-color: rgba(239,68,68,0.3) !important; }
+        .audit-card-head { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+        .audit-card-num { font-size: 9px; color: #555; min-width: 16px; font-weight: 700; }
+        .audit-card-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: #ccc; flex: 1; }
+        .audit-metric { font-size: 9px; color: #555; background: rgba(0,0,0,0.4); border-radius: 4px; padding: 4px 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        /* ── Status badges ── */
+        .audit-status { font-size: 9px; font-weight: 700; letter-spacing: 0.05em; }
+        .audit-status-pending { color: #555; }
+        .audit-status-running { color: #3b82f6; animation: audit-pulse 1.5s infinite; }
+        .audit-status-pass { color: #10b981; }
+        .audit-status-fail { color: #ef4444; }
+        @keyframes audit-pulse { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
+
+        /* ── Live dot ── */
+        .audit-live-dot { width: 8px; height: 8px; border-radius: 50%; background: #3b82f6; box-shadow: 0 0 6px rgba(59,130,246,0.5); flex-shrink: 0; }
+
+        /* ── Terminal ── */
+        .audit-terminal { flex: 1; display: flex; flex-direction: column; background: #080808; overflow: hidden; }
+        .audit-term-head {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 6px 12px; background: #0f0f0f; border-bottom: 1px solid #111; flex-shrink: 0;
+        }
+        .audit-term-body {
+            flex: 1; overflow-y: auto; padding: 10px 12px;
+            scrollbar-width: thin; scrollbar-color: #222 #080808;
+        }
+        .audit-term-body::-webkit-scrollbar { width: 5px; }
+        .audit-term-body::-webkit-scrollbar-thumb { background: #222; border-radius: 3px; }
+
+        /* ── Terminal lines ── */
+        .audit-line { font-size: 11px; line-height: 1.6; margin-bottom: 1px; word-break: break-all; }
+        .audit-ts { color: #333; margin-right: 6px; }
+        .audit-dim { color: #444; }
+        .audit-line-system { color: #555; }
+        .audit-line-info { color: #3b82f6; }
+        .audit-line-success { color: #10b981; }
+        .audit-line-warn { color: #eab308; }
+        .audit-line-error { color: #ef4444; }
+
+        /* ── Responsive ── */
+        @media (max-width: 800px) {
+            .audit-grid { flex-direction: column; }
+            .audit-modules { width: 100%; min-width: unset; max-height: 42%; border-right: none; border-bottom: 1px solid #111; flex-direction: row; overflow-x: auto; padding: 8px; gap: 6px; }
+            .audit-card { min-width: 240px; padding: 8px 10px; }
+            .audit-terminal { height: 58%; }
+        }
+    </style>
 </head>
-<body class="audit-body">
+<body>
 
 <div class="audit-shell">
     <!-- Header -->
     <header class="audit-header">
         <div class="audit-header-left">
-            <div class="audit-live-dot" id="auditLiveDot" aria-hidden="true"></div>
+            <div class="audit-live-dot" id="statusDot"></div>
             <div>
                 <h1 class="audit-title">NOC Audit Suite — P31 Family Mesh</h1>
-                <p class="audit-subtitle mono" id="auditSubtitle">TARGET: p31-signaling.trimtab-signal.workers.dev / PROTOCOL: WebRTC P2P / K4</p>
+                <p class="audit-subtitle mono">TARGET: p31-signaling.trimtab-signal.workers.dev / PROTOCOL: WebRTC P2P / K4</p>
+                <div class="score-bar-bg"><div id="scoreBar" class="score-bar-fill"></div></div>
             </div>
         </div>
         <div class="audit-header-right">
@@ -29,83 +135,63 @@
         </div>
     </header>
 
-    <!-- Score Banner -->
-    <div class="audit-score-banner" id="scoreBanner" style="display:none">
-        <div class="audit-score" id="auditScore">—</div>
-        <div class="audit-score-label" id="auditScoreLabel">Awaiting audit</div>
-        <div class="audit-score-bar" id="scoreBar"><div class="audit-score-bar-fill" id="scoreBarFill"></div></div>
-    </div>
-
-    <!-- Main Grid -->
+    <!-- Grid -->
     <div class="audit-grid">
-
-        <!-- Left: Test Modules -->
+        <!-- Left: Modules -->
         <div class="audit-modules">
 
-            <!-- Module 1: Signaling -->
             <div class="audit-card" id="cardSig">
                 <div class="audit-card-head">
                     <span class="audit-card-num">01</span>
                     <h3 class="audit-card-title">Signaling Server</h3>
                     <span class="audit-status audit-status-pending" id="statusSig">[ PENDING ]</span>
                 </div>
-                <p class="audit-card-desc">WebSocket handshake to p31-signaling worker. Validates SDP relay path.</p>
                 <div class="audit-metric mono" id="metricSig">Latency: — ms · Path: /signal/audit-suite</div>
             </div>
 
-            <!-- Module 2: STUN/ICE -->
             <div class="audit-card" id="cardIce">
                 <div class="audit-card-head">
                     <span class="audit-card-num">02</span>
                     <h3 class="audit-card-title">Cloudflare STUN / ICE</h3>
                     <span class="audit-status audit-status-pending" id="statusIce">[ PENDING ]</span>
                 </div>
-                <p class="audit-card-desc">Candidate gathering via stun:stun.cloudflare.com:3478. Requires srflx candidates.</p>
-                <div class="audit-metric mono" id="metricIce">Candidates: 0 · srflx: 0 · host: 0 · relay: 0</div>
+                <div class="audit-metric mono" id="metricIce">Candidates: 0 · srflx: 0 · host: 0</div>
             </div>
 
-            <!-- Module 3: K4 Protocol Logic -->
-            <div class="audit-card" id="cardLogic">
-                <div class="audit-card-head">
-                    <span class="audit-card-num">03</span>
-                    <h3 class="audit-card-title">K4 Protocol & SENTINEL</h3>
-                    <span class="audit-status audit-status-pending" id="statusLogic">[ PENDING ]</span>
-                </div>
-                <p class="audit-card-desc">Unit tests: family node map, SENTINEL whitelist, breath timing, spoon tiers, care-flow schema.</p>
-                <div class="audit-metric mono" id="metricLogic">Assertions: 0 / 0</div>
-            </div>
-
-            <!-- Module 4: WebRTC Loopback -->
             <div class="audit-card" id="cardRtc">
                 <div class="audit-card-head">
-                    <span class="audit-card-num">04</span>
+                    <span class="audit-card-num">03</span>
                     <h3 class="audit-card-title">WebRTC Loopback</h3>
                     <span class="audit-status audit-status-pending" id="statusRtc">[ PENDING ]</span>
                 </div>
-                <p class="audit-card-desc">Full SDP offer/answer handshake. Peer A ↔ Peer B ICE negotiation with local candidates only.</p>
                 <div class="audit-metric mono" id="metricRtc">State: new · ICE: gathering</div>
             </div>
 
-            <!-- Module 5: Data Channel Stress -->
             <div class="audit-card" id="cardData">
                 <div class="audit-card-head">
-                    <span class="audit-card-num">05</span>
+                    <span class="audit-card-num">04</span>
                     <h3 class="audit-card-title">p31-k4 Data Channel</h3>
                     <span class="audit-status audit-status-pending" id="statusData">[ PENDING ]</span>
                 </div>
-                <p class="audit-card-desc">200-packet stress test. CareFlow payload echo. Measures latency, jitter, loss.</p>
-                <div class="audit-metric mono" id="metricData">Tx: 0 · Rx: 0 · Loss: —% · Avg: — ms · Jitter: — ms</div>
+                <div class="audit-metric mono" id="metricData">Tx: 0 · Rx: 0 · Loss: —% · Avg: — ms</div>
             </div>
 
-            <!-- Module 6: Offline Resilience -->
+            <div class="audit-card" id="cardLogic">
+                <div class="audit-card-head">
+                    <span class="audit-card-num">05</span>
+                    <h3 class="audit-card-title">K4 Protocol & SENTINEL</h3>
+                    <span class="audit-status audit-status-pending" id="statusLogic">[ PENDING ]</span>
+                </div>
+                <div class="audit-metric mono" id="metricLogic">Assertions: 0 / 0</div>
+            </div>
+
             <div class="audit-card" id="cardOffline">
                 <div class="audit-card-head">
                     <span class="audit-card-num">06</span>
                     <h3 class="audit-card-title">Offline Resilience</h3>
                     <span class="audit-status audit-status-pending" id="statusOffline">[ PENDING ]</span>
                 </div>
-                <p class="audit-card-desc">CRDT localStorage persistence, reconnection backoff, tap-to-retry lifecycle.</p>
-                <div class="audit-metric mono" id="metricOffline">localStorage: — · CRDT snapshot: —</div>
+                <div class="audit-metric mono" id="metricOffline">localStorage: — · CRDT: —</div>
             </div>
 
         </div>
@@ -113,19 +199,15 @@
         <!-- Right: Terminal -->
         <div class="audit-terminal">
             <div class="audit-term-head">
-                <span class="audit-term-title mono">Terminal Telemetry</span>
-                <div class="audit-term-actions">
-                    <span class="audit-term-count mono" id="logCount">0 lines</span>
-                    <button class="audit-btn audit-btn-sm" id="btnClear">Clear</button>
-                </div>
+                <span class="mono audit-subtitle">Terminal Telemetry</span>
+                <button class="audit-btn audit-btn-sm" id="btnClear">Clear</button>
             </div>
             <div class="audit-term-body" id="terminalBody">
-                <div class="audit-line audit-line-system">P31 MESH E2E AUDIT SYSTEM v2.0.0 initialized.</div>
-                <div class="audit-line audit-line-system">Platform: <span id="platformInfo">detecting...</span></div>
+                <div class="audit-line audit-line-system">P31 MESH E2E AUDIT SYSTEM v2.2.0 initialized.</div>
+                <div class="audit-line audit-line-system" id="platformLine">Platform: detecting...</div>
                 <div class="audit-line audit-line-system">Waiting for audit initiation...</div>
             </div>
         </div>
-
     </div>
 </div>
 
@@ -133,8 +215,7 @@
 (function() {
     "use strict";
 
-    // ══════════════════════════════════════════════════════════════════════════
-    CONFIG = {
+    var CONFIG = {
         SIGNAL_BASE: "wss://p31-signaling.trimtab-signal.workers.dev",
         SIGNAL_PATH: "/signal/audit-suite",
         STUN: [{ urls: "stun:stun.cloudflare.com:3478" }],
@@ -145,58 +226,27 @@
             wj:       { label: "W.J.",     color: 0xc084fc, vertexIndex: 2 },
             christyn: { label: "Christyn", color: 0xf472b6, vertexIndex: 3 },
         },
-        SIBLING_KEYS: ["sj", "wj"],
         SENTINEL: ["smallball", "gridiron", "liquid-sculptor", "magnetic-poetry", "geodesic-builder"],
-        BREATH_CYCLE: { inhale: 4000, hold: 4000, exhale: 6000 },
         CRDT_KEY: "p31-mesh-state-v2",
-        TIMEOUTS: { ws: 8000, ice: 12000, rtc: 15000, dc: 10000 },
-        STRESS_COUNT: 200,
+        BREATH: { inhale: 4000, hold: 4000, exhale: 6000 },
+        STRESS_N: 200,
+        TIMEOUTS: { ws: 8000, ice: 12000, rtc: 15000, stress: 8000 },
     };
 
-    // State
-    var report = {
-        version: "2.0.0",
-        timestamp: null,
-        platform: navigator.userAgent,
-        webkit: !!window.webkitRTCPeerConnection,
-        results: {},
-    };
-
-    var terminal, logCountEl, logIdx = 0;
+    var report = { version: "2.2.0", timestamp: null, platform: navigator.userAgent, score: 0, results: {} };
+    var terminal = document.getElementById("terminalBody");
+    var logIdx = 0;
 
     function el(id) { return document.getElementById(id); }
-
-    function init() {
-        terminal = el("terminalBody");
-        logCountEl = el("logCount");
-        el("platformInfo").textContent =
-            (navigator.platform || "?") + " / " +
-            (navigator.connection ? (navigator.connection.effectiveType || "?") : "no API") + " / " +
-            ("serviceWorker" in navigator ? "SW" : "no SW");
-        el("btnRun").addEventListener("click", runAudit);
-        el("btnClear").addEventListener("click", clearTerminal);
-        el("btnExport").addEventListener("click", exportReport);
-    }
-
-    // ═══ Terminal ═══
-    function log(msg, level, data) {
+    function log(msg, cls, data) {
         var line = document.createElement("div");
-        line.className = "audit-line " + (level || "audit-line-system");
+        line.className = "audit-line " + (cls || "audit-line-system");
         var ts = new Date().toISOString().split("T")[1].slice(0, 12);
-        var extra = data != null
-            ? ' <span class="audit-dim">' + (typeof data === "object" ? JSON.stringify(data, null, 0).slice(0, 120) : String(data).slice(0, 80)) + '</span>'
-            : "";
+        var extra = data != null ? ' <span class="audit-dim">' + (typeof data === "object" ? JSON.stringify(data, null, 0).slice(0, 100) : String(data).slice(0, 80)) + '</span>' : "";
         line.innerHTML = '<span class="audit-ts">[' + ts + ']</span> ' + msg + extra;
         terminal.appendChild(line);
         logIdx++;
-        logCountEl.textContent = logIdx + " lines";
         terminal.scrollTop = terminal.scrollHeight;
-    }
-
-    function clearTerminal() {
-        terminal.innerHTML = "";
-        logIdx = 0;
-        logCountEl.textContent = "0 lines";
     }
 
     function setStatus(mod, text, state) {
@@ -214,294 +264,118 @@
 
     function setMetric(mod, text) { el("metric" + mod).textContent = text; }
 
-    function updateScore() {
-        var banner = el("scoreBanner");
-        var fill = el("scoreBarFill");
-        var scoreEl = el("auditScore");
-        var labelEl = el("auditScoreLabel");
-        banner.style.display = "flex";
-        var total = 0, passed = 0;
-        Object.keys(report.results).forEach(function(k) {
-            total++;
-            if (report.results[k].pass) passed++;
-        });
-        var pct = total > 0 ? Math.round((passed / total) * 100) : 0;
-        fill.style.width = pct + "%";
-        scoreEl.textContent = passed + "/" + total;
-        if (pct === 100) { labelEl.textContent = "ALL SYSTEMS NOMINAL"; scoreEl.style.color = "#10b981"; }
-        else if (pct >= 60) { labelEl.textContent = "DEGRADED — REVIEW WARNINGS"; scoreEl.style.color = "#eab308"; }
-        else { labelEl.textContent = "CRITICAL — INFRASTRUCTURE FAILURE"; scoreEl.style.color = "#ef4444"; }
-    }
-
-    function exportReport() {
-        try {
-            var blob = new Blob([JSON.stringify(report, null, 2)], { type: "application/json" });
-            var url = URL.createObjectURL(blob);
-            var a = document.createElement("a");
-            a.href = url;
-            a.download = "p31_audit_" + Date.now() + ".json";
-            a.click();
-            URL.revokeObjectURL(url);
-            log("Audit report exported.", "audit-line-success");
-        } catch (e) {
-            log("Export failed: " + e.message, "audit-line-error");
-        }
+    function addScore(n) {
+        report.score += n;
+        var pct = Math.min((report.score / 6) * 100, 100);
+        var bar = el("scoreBar");
+        bar.style.width = pct + "%";
+        if (pct >= 100) bar.style.backgroundColor = "#10b981";
+        else if (pct >= 60) bar.style.backgroundColor = "#eab308";
     }
 
     function sleep(ms) { return new Promise(function(r) { setTimeout(r, ms); }); }
+
+    function withTimeout(promise, ms, errText) {
+        return Promise.race([
+            promise,
+            new Promise(function(_, rej) { setTimeout(function() { rej(new Error(errText)); }, ms); })
+        ]);
+    }
 
     // ═══ Test 1: Signaling ═══
     function testSignaling() {
         setStatus("Sig", "RUNNING", "running");
         log("Connecting to " + CONFIG.SIGNAL_BASE + CONFIG.SIGNAL_PATH, "audit-line-info");
         var start = performance.now();
-        return new Promise(function(resolve) {
-            var ws, timer;
-            timer = setTimeout(function() {
-                try { ws.close(); } catch(e) {}
-                log("WebSocket timeout after " + CONFIG.TIMEOUTS.ws + "ms", "audit-line-error");
-                setStatus("Sig", "FAILED", "fail");
-                setMetric("Sig", "Latency: TIMEOUT");
-                report.results.signaling = { pass: false, error: "timeout" };
-                resolve(false);
-            }, CONFIG.TIMEOUTS.ws);
-
+        var wsPromise = new Promise(function(resolve, reject) {
+            var ws;
             try {
                 ws = new WebSocket(CONFIG.SIGNAL_BASE + CONFIG.SIGNAL_PATH + "?peerId=audit-node");
-            } catch (e) {
-                clearTimeout(timer);
-                log("WebSocket constructor error: " + e.message, "audit-line-error");
-                setStatus("Sig", "FAILED", "fail");
-                report.results.signaling = { pass: false, error: e.message };
-                resolve(false);
-                return;
-            }
-
+            } catch (e) { reject(e); return; }
             ws.onopen = function() {
-                clearTimeout(timer);
                 var lat = (performance.now() - start).toFixed(1);
                 log("WebSocket connected. Latency: " + lat + "ms", "audit-line-success");
-                setStatus("Sig", "PASSED", "pass");
                 setMetric("Sig", "Latency: " + lat + "ms · relay: active");
-                report.results.signaling = { pass: true, latencyMs: parseFloat(lat) };
-                ws.close(1000, "audit-complete");
-                resolve(true);
+                ws.close(1000, "audit-done");
+                resolve({ pass: true, latencyMs: parseFloat(lat) });
             };
             ws.onmessage = function(ev) {
                 try {
-                    var msg = JSON.parse(ev.data);
-                    if (msg.type === "peer-joined") {
-                        log("Signaling relay confirmed. Peers in room: " + msg.peerCount, "audit-line-info");
-                    }
+                    var m = JSON.parse(ev.data);
+                    if (m.type === "peer-joined") log("Relay confirmed. Peers in room: " + m.peerCount, "audit-line-info");
                 } catch(e) {}
             };
-            ws.onerror = function() {
-                clearTimeout(timer);
-                log("WebSocket error — worker may be unreachable", "audit-line-error");
-                setStatus("Sig", "FAILED", "fail");
-                setMetric("Sig", "Connection refused / CORS");
-                report.results.signaling = { pass: false, error: "connection_refused" };
-                resolve(false);
-            };
+            ws.onerror = function() { reject(new Error("Connection refused / worker unreachable")); };
         });
+        return withTimeout(wsPromise, CONFIG.TIMEOUTS.ws, "WebSocket timed out (" + CONFIG.TIMEOUTS.ws + "ms)")
+            .then(function(res) {
+                setStatus("Sig", "PASSED", "pass");
+                report.results.signaling = res;
+                addScore(1); return true;
+            })
+            .catch(function(err) {
+                log("Signaling error: " + err.message, "audit-line-error");
+                setStatus("Sig", "FAILED", "fail");
+                setMetric("Sig", "Connection failed");
+                report.results.signaling = { pass: false, error: err.message };
+                return false;
+            });
     }
 
-    // ═══ Test 2: STUN / ICE ═══
+    // ═══ Test 2: ICE ═══
     function testICE() {
         setStatus("Ice", "RUNNING", "running");
-        log("Creating RTCPeerConnection with Cloudflare STUN", "audit-line-info");
-        var candidates = { host: 0, srflx: 0, relay: 0, total: 0 };
+        log("Gathering ICE candidates via Cloudflare STUN...", "audit-line-info");
+        var cands = { host: 0, srflx: 0, relay: 0, total: 0 };
         var pc = new RTCPeerConnection({ iceServers: CONFIG.STUN });
-        pc.createDataChannel("ice-probe");
-
-        return new Promise(function(resolve) {
-            var timer = setTimeout(function() {
-                log("ICE gathering partial timeout (" + CONFIG.TIMEOUTS.ice + "ms). Candidates found: " + candidates.total,
-                    candidates.srflx > 0 ? "audit-line-success" : "audit-line-warn");
-                setStatus("Ice", candidates.srflx > 0 ? "PASSED" : candidates.total > 0 ? "WARN" : "FAILED",
-                    candidates.srflx > 0 ? "pass" : candidates.total > 0 ? "pass" : "fail");
-                setMetric("Ice", "Candidates: " candidates.total + " · srflx: " + candidates.srflx + " · host: " + candidates.host + " · relay: " + candidates.relay);
-                report.results.ice = {
-                    pass: candidates.total > 0,
-                    srflx: candidates.srflx,
-                    host: candidates.host,
-                    relay: candidates.relay,
-                    total: candidates.total,
-                    srflxOk: candidates.srflx > 0,
-                };
-                pc.close();
-                resolve(candidates.total > 0);
-            }, CONFIG.TIMEOUTS.ice);
-
+        pc.createDataChannel("probe");
+        var icePromise = new Promise(function(resolve) {
             pc.onicecandidate = function(ev) {
-                if (!ev.candidate) { return; }
-                candidates.total++;
+                if (!ev.candidate) { pc.close(); resolve(cands); return; }
+                cands.total++;
                 var c = ev.candidate.candidate;
-                if (c.indexOf("typ srflx") !== -1) candidates.srflx++;
-                else if (c.indexOf("typ host") !== -1) candidates.host++;
-                else if (c.indexOf("typ relay") !== -1) candidates.relay++;
-                setMetric("Ice", "Candidates: " + candidates.total + " · srflx: " + candidates.srflx + " · host: " + candidates.host);
-                log("ICE: " + c.split(" ").slice(0, 8).join(" "), "audit-line-system");
+                if (c.indexOf("srflx") !== -1) cands.srflx++;
+                else if (c.indexOf("host") !== -1) cands.host++;
+                else if (c.indexOf("relay") !== -1) cands.relay++;
+                setMetric("Ice", "Candidates: " + cands.total + " · srflx: " + cands.srflx + " · host: " + cands.host);
             };
-
-            pc.createOffer().then(function(o) { return pc.setLocalDescription(o); })
-                .catch(function(e) { log("Offer failed: " + e.message, "audit-line-error"); });
+            pc.createOffer().then(function(o) { return pc.setLocalDescription(o); }).catch(function() {});
         });
+        return withTimeout(icePromise, CONFIG.TIMEOUTS.ice, "ICE timed out (" + CONFIG.TIMEOUTS.ice + "ms)")
+            .then(function(res) {
+                var ok = res.total > 0;
+                var srflxOk = res.srflx > 0;
+                log("ICE complete. " + res.total + " candidates (srflx: " + res.srflx + ")", ok ? "audit-line-success" : "audit-line-warn");
+                setStatus("Ice", ok ? "PASSED" : "FAILED", ok ? "pass" : "fail");
+                setMetric("Ice", "Candidates: " + res.total + " · srflx: " + res.srflx + " · host: " + res.host);
+                report.results.ice = { pass: ok, srflxOk: srflxOk, total: res.total, srflx: res.srflx, host: res.host, relay: res.relay };
+                if (ok) addScore(1); return ok;
+            })
+            .catch(function(err) {
+                log("ICE error: " + err.message, "audit-line-error");
+                setStatus("Ice", "FAILED", "fail");
+                report.results.ice = { pass: false, error: err.message };
+                return false;
+            });
     }
 
-    // ═══ Test 3: K4 Protocol + SENTINEL ═══
-    function testProtocol() {
-        setStatus("Logic", "RUNNING", "running");
-        log("Running K4 protocol assertions...", "audit-line-info");
-        var pass = 0, total = 0, details = [];
-
-        function assert(name, cond) {
-            total++;
-            if (cond) {
-                pass++;
-                log("  ✓ " + name, "audit-line-success");
-            } else {
-                log("  ✗ " + name, "audit-line-error");
-            }
-            details.push({ name: name, pass: cond });
-        }
-
-        assert("4 family nodes defined", Object.keys(CONFIG.FAMILY_NODES).length === 4);
-        assert("All nodes have vertexIndex [0-3]", Object.keys(CONFIG.FAMILY_NODES).every(function(k) {
-            var vi = CONFIG.FAMILY_NODES[k].vertexIndex;
-            return vi === 0 || vi === 1 || vi === 2 || vi === 3;
-        }));
-        assert("Vertex indices are unique", new Set(Object.keys(CONFIG.FAMILY_NODES).map(function(k) { return CONFIG.FAMILY_NODES[k].vertexIndex; })).size === 4);
-        assert("SENTINEL whitelist has 5 entries", CONFIG.SENTINEL.length === 5);
-        assert("'gridiron' is whitelisted", CONFIG.SENTINEL.indexOf("gridiron") !== -1);
-        assert("'unauthorized_game' blocked", CONFIG.SENTINEL.indexOf("unauthorized_game") === -1);
-        assert("Sibling keys are sj + wj", CONFIG.SIBLING_KEYS.length === 2 && CONFIG.SIBLING_KEYS.indexOf("sj") !== -1 && CONFIG.SIBLING_KEYS.indexOf("wj") !== -1);
-        assert("Breath cycle = 14s (4+4+6)", (CONFIG.BREATH_CYCLE.inhale + CONFIG.BREATH_CYCLE.hold + CONFIG.BREATH_CYCLE.exhale) === 14000);
-        assert("CareFlow schema has required fields", (function() {
-            var sample = { flowId: "x", sourceNode: "will", targetNode: "sj", type: "coop_bonus", value: 1, ts: Date.now() };
-            return sample.flowId && sample.sourceNode && sample.targetNode && sample.type && sample.value && sample.ts;
-        })());
-        assert("Spoon tiers: 1 (red), 3 (yellow), 6 (green)",
-            true);
-        assert("WebRTC config has exactly 1 STUN server", CONFIG.STUN.length === 1 && CONFIG.STUN[0].urls === "stun:stun.cloudflare.com:3478");
-        assert("No Google STUN servers", CONFIG.STUN.every(function(s) { return s.urls.indexOf("google") === -1; }));
-        assert("Data channel name is p31-k4", CONFIG.DC_NAME === "p31-k4");
-
-        setMetric("Logic", "Assertions: " + pass + "/" + total);
-        setStatus("Logic", pass === total ? "PASSED" : pass >= total * 0.7 ? "WARN" : "FAILED",
-            pass === total ? "pass" : pass >= total * 0.7 ? "pass" : "fail");
-        report.results.protocol = { pass: pass === total, passed: pass, total: total, details: details };
-        log("Protocol: " + pass + "/" + total + " assertions passed.", pass === total ? "audit-line-success" : "audit-line-warn");
-        return (pass === total);
-    }
-
-    // ═══ Test 4: WebRTC Loopback ═══
+    // ═══ Test 3+4: WebRTC Loopback + Data Channel ═══
     function testWebRTC() {
         setStatus("Rtc", "RUNNING", "running");
-        log("Starting WebRTC loopback: Peer A ↔ Peer B", "audit-line-info");
-
-        var pcA = null, pcB = null;
-
-        return new Promise(function(function_) {
-            var resolved = false;
-            var timer = setTimeout(function() {
-                if (resolved) return;
-                resolved = true;
-                log("WebRTC loopback timeout (" + CONFIG.TIMEOUTS.rtc + "ms)", "audit-line-error");
-                setStatus("Rtc", "FAILED", "fail");
-                setMetric("Rtc", "State: timeout · ICE: incomplete");
-                report.results.webrtc = { pass: false, state: "timeout", error: "timeout" };
-                cleanup();
-                resolve(false);
-            }, CONFIG.TIMEOUTS.rtc);
-
-            function cleanup() {
-                try { if (pcA) pcA.close(); } catch(e) {}
-                try { if (pcB) pcB.close(); } catch(e) {}
-            }
-
-            pcA = new RTCPeerConnection({ iceServers: CONFIG.STUN });
-            pcB = new RTCPeerConnection({ iceServers: CONFIG.STUN });
-
-            pcA.onicecandidate = function(e) { if (e.candidate) { try { pcB.addIceCandidate(e.candidate); } catch(ex) {} } };
-            pcB.onicecandidate = function(e) { if (e.candidate) { try { pcA.addIceCandidate(e.candidate); } catch(ex) {} } };
-
-            pcA.onconnectionstatechange = function() {
-                setMetric("Rtc", "State: " + pcA.connectionState + " · gathered");
-                log("Peer A state: " + pcA.connectionState,
-                    pcA.connectionState === "connected" ? "audit-line-success" : "audit-line-info");
-                if ((pcA.connectionState === "connected" || pcA.connectionState === "completed") && !resolved) {
-                    resolved = true;
-                    clearTimeout(timer);
-                    setStatus("Rtc", "PASSED", "pass");
-                    report.results.webrtc = { pass: true, state: pcA.connectionState };
-                    cleanup();
-                    resolve(true);
-                }
-                if (pcA.connectionState === "failed" || pcA.connectionState === "disconnected") {
-                    if (!resolved) {
-                        resolved = true;
-                        clearTimeout(timer);
-                        setStatus("Rtc", "FAILED", "fail");
-                        report.results.webrtc = { pass: false, state: pcA.connectionState };
-                        cleanup();
-                        resolve(false);
-                    }
-                }
-            };
-
-            pcA.createOffer()
-                .then(function(offer) { return pcA.setLocalDescription(offer); })
-                .then(function() { return pcB.setRemoteDescription(pcA.localDescription); })
-                .then(function() { return pcB.createAnswer(); })
-                .then(function(answer) { return pcB.setLocalDescription(answer); })
-                .then(function() { return pcA.setRemoteDescription(pcB.localDescription); })
-                .then(function() { log("SDP exchange complete. Awaiting ICE...", "audit-line-info"); })
-                .catch(function(e) {
-                    if (!resolved) {
-                        resolved = true;
-                        clearTimeout(timer);
-                        log("SDP handshake failed: " + e.message, "audit-line-error");
-                        setStatus("Rtc", "FAILED", "fail");
-                        report.results.webrtc = { pass: false, error: e.message };
-                        cleanup();
-                        resolve(false);
-                    }
-                });
-        });
-    }
-
-    // ═══ Test 5: Data Channel + Stress ═══
-    function testDataChannel() {
-        setStatus("Data", "RUNNING", "running");
-        log("Establishing data channel and running " + CONFIG.STRESS_COUNT + "-packet stress test...", "audit-line-info");
+        log("Starting WebRTC loopback: Peer A <-> Peer B", "audit-line-info");
 
         var pcA = null, pcB = null, dcA = null, dcB = null;
 
         return new Promise(function(resolve) {
             var resolved = false;
-            var rxCount = 0, latencies = [];
-            var startTime = 0;
+            function done(val) { if (!resolved) { resolved = true; resolve(val); } }
 
             var timer = setTimeout(function() {
-                if (resolved) return;
-                resolved = true;
-                var loss = CONFIG.STRESS_COUNT > 0 ? ((CONFIG.STRESS_COUNT - rxCount) / CONFIG.STRESS_COUNT * 100).toFixed(1) : "100";
-                var avg = latencies.length > 0 ? (latencies.reduce(function(a,b){return a+b;},0)/latencies.length).toFixed(2) : "—";
-                log("Stress test timeout. Received " + rxCount + "/" + CONFIG.STRESS_COUNT + " (" + loss + "% loss)", "audit-line-warn");
-                setStatus("Data", rxCount > 0 ? "WARN" : "FAILED", rxCount > 0 ? "pass" : "fail");
-                setMetric("Data", "Tx: " + CONFIG.STRESS_COUNT + " · Rx: " + rxCount + " · Loss: " + loss + "% · Avg: " + avg + "ms");
-                report.results.dataChannel = {
-                    pass: rxCount > 0,
-                    sent: CONFIG.STRESS_COUNT,
-                    received: rxCount,
-                    lossPct: parseFloat(loss),
-                    avgLatencyMs: parseFloat(avg) || null,
-                    timedOut: true,
-                };
-                cleanup();
-                resolve(rxCount > 0);
-            }, CONFIG.TIMEOUTS.dc + 5000);
+                log("WebRTC loopback timeout (" + CONFIG.TIMEOUTS.rtc + "ms)", "audit-line-error");
+                setStatus("Rtc", "FAILED", "fail");
+                report.results.webrtc = { pass: false, state: "timeout" };
+                cleanup(); done(false);
+            }, CONFIG.TIMEOUTS.rtc);
 
             function cleanup() {
                 try { if (dcA) dcA.close(); } catch(e) {}
@@ -514,64 +388,32 @@
             pcB = new RTCPeerConnection({ iceServers: CONFIG.STUN });
             dcA = pcA.createDataChannel(CONFIG.DC_NAME, { ordered: true });
 
-            pcB.ondatachannel = function(ev) {
-                dcB = ev.channel;
-                log("Peer B received data channel: " + dcB.label, "audit-line-info");
-            };
-
             pcA.onicecandidate = function(e) { if (e.candidate) { try { pcB.addIceCandidate(e.candidate); } catch(ex) {} } };
             pcB.onicecandidate = function(e) { if (e.candidate) { try { pcA.addIceCandidate(e.candidate); } catch(ex) {} } };
 
-            dcA.onopen = function() {
-                log("Data channel OPEN. Sending " + CONFIG.STRESS_COUNT + " packets...", "audit-line-info");
-                startTime = performance.now();
-                for (var i = 0; i < CONFIG.STRESS_COUNT; i++) {
-                    try {
-                        dcA.send(JSON.stringify({
-                            type: "PING", id: i,
-                            payload: "CareFlow_" + (i % 4 === 0 ? "coop_bonus" : i % 4 === 1 ? "parent_sponsor" : i % 4 === 2 ? "sibling_spectate" : "checkin"),
-                            t: performance.now(),
-                        }));
-                    } catch(ex) {}
-                }
-                log("All " + CONFIG.STRESS_COUNT + " packets fired in " + (performance.now() - startTime).toFixed(1) + "ms", "audit-line-info");
+            pcB.ondatachannel = function(ev) {
+                dcB = ev.channel;
+                dcB.onmessage = function(e) {
+                    var msg; try { msg = JSON.parse(e.data); } catch(ex) { return; }
+                    if (msg.type === "PING") { try { dcB.send(JSON.stringify({ type: "PONG", id: msg.id, t: msg.t })); } catch(ex) {} }
+                };
             };
 
-            dcB.onmessage = function(ev) {
-                var msg; try { msg = JSON.parse(ev.data); } catch(ex) { return; }
-                if (msg.type === "PING") {
-                    try { dcB.send(JSON.stringify({ type: "PONG", id: msg.id, t: msg.t })); } catch(ex) {}
+            pcA.onconnectionstatechange = function() {
+                setMetric("Rtc", "State: " + pcA.connectionState);
+                log("Peer A: " + pcA.connectionState, pcA.connectionState === "connected" || pcA.connectionState === "completed" ? "audit-line-success" : "audit-line-info");
+                if ((pcA.connectionState === "connected" || pcA.connectionState === "completed") && !resolved) {
+                    clearTimeout(timer);
+                    setStatus("Rtc", "PASSED", "pass");
+                    report.results.webrtc = { pass: true, state: pcA.connectionState };
+                    addScore(1);
                 }
-            };
-
-            dcA.onmessage = function(ev) {
-                var msg; try { msg = JSON.parse(ev.data); } catch(ex) { return; }
-                if (msg.type === "PONG") {
-                    rxCount++;
-                    latencies.push(performance.now() - msg.t);
-                    if (rxCount % 50 === 0) {
-                        var avg = (latencies.reduce(function(a,b){return a+b;},0)/latencies.length).toFixed(2);
-                        setMetric("Data", "Tx: " + CONFIG.STRESS_COUNT + " · Rx: " + rxCount + " · Avg: " + avg + "ms");
-                    }
-                    if (rxCount >= CONFIG.STRESS_COUNT && !resolved) {
-                        resolved = true;
+                if (pcA.connectionState === "failed" || pcA.connectionState === "disconnected") {
+                    if (!resolved) {
                         clearTimeout(timer);
-                        var avgLat = (latencies.reduce(function(a,b){return a+b;},0)/latencies.length).toFixed(2);
-                        var minLat = Math.min.apply(null, latencies).toFixed(2);
-                        var maxLat = Math.max.apply(null, latencies).toFixed(2);
-                        var jitter = latencies.length > 1 ? (maxLat - minLat).toFixed(2) : "0.00";
-                        log("Stress test COMPLETE. " + CONFIG.STRESS_COUNT + "/" + CONFIG.STRESS_COUNT + " packets.",
-                            "audit-line-success");
-                        setMetric("Data", "Tx: " + CONFIG.STRESS_COUNT + " · Rx: " + rxCount + " · Loss: 0% · Avg: " + avgLat + "ms · Jitter: " + jitter + "ms");
-                        setStatus("Data", "PASSED", "pass");
-                        report.results.dataChannel = {
-                            pass: true, sent: CONFIG.STRESS_COUNT, received: rxCount,
-                            lossPct: 0, avgLatencyMs: parseFloat(avgLat),
-                            minLatencyMs: parseFloat(minLat), maxLatencyMs: parseFloat(maxLat),
-                            jitterMs: parseFloat(jitter),
-                        };
-                        cleanup();
-                        resolve(true);
+                        setStatus("Rtc", "FAILED", "fail");
+                        report.results.webrtc = { pass: false, state: pcA.connectionState };
+                        cleanup(); done(false);
                     }
                 }
             };
@@ -582,132 +424,218 @@
                 .then(function() { return pcB.createAnswer(); })
                 .then(function(a) { return pcB.setLocalDescription(a); })
                 .then(function() { return pcA.setRemoteDescription(pcB.localDescription); })
-                .then(function() { log("Loopback SDP complete. Waiting for DC open...", "audit-line-info"); })
+                .then(function() { log("SDP exchange complete. Awaiting ICE...", "audit-line-info"); })
                 .catch(function(e) {
-                    if (!resolved) {
-                        resolved = true; clearTimeout(timer);
-                        log("DC handshake failed: " + e.message, "audit-line-error");
-                        setStatus("Data", "FAILED", "fail");
-                        report.results.dataChannel = { pass: false, error: e.message };
-                        cleanup(); resolve(false);
-                    }
+                    log("SDP failed: " + e.message, "audit-line-error");
+                    setStatus("Rtc", "FAILED", "fail");
+                    report.results.webrtc = { pass: false, error: e.message };
+                    cleanup(); done(false);
                 });
+
+            // ═══ Test 4: Data Channel Stress ═══
+            dcA.onopen = function() {
+                setStatus("Data", "RUNNING", "running");
+                log("Data channel OPEN. Firing " + CONFIG.STRESS_N + " packets...", "audit-line-info");
+
+                var rx = 0, lats = [];
+                var stressTimer = setTimeout(function() {
+                    var loss = CONFIG.STRESS_N > 0 ? ((CONFIG.STRESS_N - rx) / CONFIG.STRESS_N * 100).toFixed(1) : "100";
+                    var avg = lats.length > 0 ? (lats.reduce(function(a,b){return a+b;},0) / lats.length).toFixed(2) : "—";
+                    log("Stress timeout. Rx: " + rx + "/" + CONFIG.STRESS_N + " (" + loss + "% loss)", "audit-line-warn");
+                    setStatus("Data", rx > 0 ? "WARN" : "FAILED", rx > 0 ? "pass" : "fail");
+                    setMetric("Data", "Tx: " + CONFIG.STRESS_N + " · Rx: " + rx + " · Loss: " + loss + "% · Avg: " + avg + "ms");
+                    report.results.dataChannel = { pass: rx > 0, sent: CONFIG.STRESS_N, received: rx, lossPct: parseFloat(loss), avgLatencyMs: parseFloat(avg) || null, timedOut: true };
+                    if (rx > 0) addScore(1);
+                    cleanup(); done(rx > 0);
+                }, CONFIG.TIMEOUTS.stress);
+
+                dcA.onmessage = function(e) {
+                    var msg; try { msg = JSON.parse(e.data); } catch(ex) { return; }
+                    if (msg.type === "PONG") {
+                        rx++;
+                        lats.push(performance.now() - msg.t);
+                        if (rx % 50 === 0) {
+                            var a = (lats.reduce(function(a,b){return a+b;},0) / lats.length).toFixed(2);
+                            setMetric("Data", "Tx: " + CONFIG.STRESS_N + " · Rx: " + rx + " · Avg: " + a + "ms");
+                        }
+                        if (rx >= CONFIG.STRESS_N) {
+                            clearTimeout(stressTimer);
+                            var avgLat = (lats.reduce(function(a,b){return a+b;},0) / lats.length).toFixed(2);
+                            var minLat = Math.min.apply(null, lats).toFixed(2);
+                            var maxLat = Math.max.apply(null, lats).toFixed(2);
+                            log("Stress complete. " + CONFIG.STRESS_N + "/" + CONFIG.STRESS_N + ". Avg: " + avgLat + "ms, min: " + minLat + "ms, max: " + maxLat + "ms", "audit-line-success");
+                            setStatus("Data", "PASSED", "pass");
+                            setMetric("Data", "Tx: " + CONFIG.STRESS_N + " · Rx: " + rx + " · Loss: 0% · Avg: " + avgLat + "ms");
+                            report.results.dataChannel = { pass: true, sent: CONFIG.STRESS_N, received: rx, lossPct: 0, avgLatencyMs: parseFloat(avgLat), minLatencyMs: parseFloat(minLat), maxLatencyMs: parseFloat(maxLat) };
+                            addScore(1);
+                            cleanup(); done(true);
+                        }
+                    }
+                };
+
+                for (var i = 0; i < CONFIG.STRESS_N; i++) {
+                    try { dcA.send(JSON.stringify({ type: "PING", id: i, payload: "CareFlow_" + (i % 4), t: performance.now() })); } catch(ex) {}
+                }
+            };
         });
     }
 
-    // ═══ Test 6: Offline resilience ═══
+    // ═══ Test 5: Protocol Logic ═══
+    function testProtocol() {
+        setStatus("Logic", "RUNNING", "running");
+        log("Running K4 protocol assertions...", "audit-line-info");
+        var pass = 0, total = 0, detail = [];
+        function check(name, ok) {
+            total++;
+            if (ok) { pass++; log("  ✓ " + name, "audit-line-success"); }
+            else { log("  ✗ " + name, "audit-line-error"); }
+            detail.push({ n: name, ok: ok });
+        }
+
+        check("4 family nodes defined", Object.keys(CONFIG.FAMILY_NODES).length === 4);
+        check("All vertexIndex values are [0-3]", Object.keys(CONFIG.FAMILY_NODES).every(function(k) { var v = CONFIG.FAMILY_NODES[k].vertexIndex; return v === 0 || v === 1 || v === 2 || v === 3; }));
+        check("Vertex indices are unique", new Set(Object.keys(CONFIG.FAMILY_NODES).map(function(k) { return CONFIG.FAMILY_NODES[k].vertexIndex; })).size === 4);
+        check("SENTINEL has 5 entries", CONFIG.SENTINEL.length === 5);
+        check("'gridiron' whitelisted", CONFIG.SENTINEL.indexOf("gridiron") !== -1);
+        check("'unauthorized_game' blocked", CONFIG.SENTINEL.indexOf("unauthorized_game") === -1);
+        check("Breath cycle = 14s", (CONFIG.BREATH.inhale + CONFIG.BREATH.hold + CONFIG.BREATH.exhale) === 14000);
+        check("DC name is p31-k4", CONFIG.DC_NAME === "p31-k4");
+        check("1 STUN server, no Google", CONFIG.STUN.length === 1 && CONFIG.STUN[0].urls.indexOf("google") === -1);
+
+        setMetric("Logic", "Assertions: " + pass + "/" + total);
+        setStatus("Logic", pass === total ? "PASSED" : pass >= total * 0.7 ? "WARN" : "FAILED", pass === total ? "pass" : "fail");
+        report.results.protocol = { pass: pass === total, passed: pass, total: total, checks: detail };
+        addScore(pass === total ? 1 : 0);
+        return (pass === total);
+    }
+
+    // ═══ Test 6: Offline Resilience ═══
     function testOffline() {
         setStatus("Offline", "RUNNING", "running");
         log("Testing offline resilience layer...", "audit-line-info");
-        var pass = true, details = [];
+        var checks = [];
+        var ok = true;
 
+        // localStorage
         try {
-            var storeOk = typeof localStorage !== "undefined";
-            details.push({ name: "localStorage API", pass: storeOk });
-            if (storeOk) {
-                var testKey = "__audit_test__";
-                localStorage.setItem(testKey, "ok");
-                var val = localStorage.getItem(testKey);
-                localStorage.removeItem(testKey);
-                var rwOk = val === "ok";
-                details.push({ name: "localStorage R/W", pass: rwOk });
-                if (!rwOk) pass = false;
-
-                var crdt = localStorage.getItem(CONFIG.CRDT_KEY);
-                var crdtOk = true;
-                if (crdt) {
-                    try {
-                        var parsed = JSON.parse(crdt);
-                        var hasNodes = parsed.nodeStatus && typeof parsed.nodeStatus === "object";
-                        var hasFlows = Array.isArray(parsed.careFlows);
-                        crdtOk = hasNodes && hasFlows;
-                        details.push({ name: "CRDT snapshot parseable", pass: crdtOk });
-                        details.push({ name: "CRDT has nodeStatus", pass: hasNodes });
-                        details.push({ name: "CRDT has careFlows", pass: hasFlows });
-                        log("Existing CRDT snapshot found (" + Object.keys(parsed.nodeStatus).length + " nodes, " + parsed.careFlows.length + " flows)", "audit-line-info");
-                    } catch(e) {
-                        crdtOk = false;
-                        details.push({ name: "CRDT snapshot parseable", pass: false });
-                        log("CRDT snapshot corrupt: " + e.message, "audit-line-warn");
-                    }
-                } else {
-                    details.push({ name: "CRDT snapshot exists", pass: true });
-                    log("No existing CRDT snapshot (fresh session)", "audit-line-info");
-                }
-                if (!crdtOk) pass = false;
-            } else {
-                pass = false;
-            }
-
-            var indexedDbOk = typeof indexedDB !== "undefined";
-            details.push({ name: "IndexedDB API", pass: indexedDbOk });
+            var key = "__audit_test_rw__";
+            localStorage.setItem(key, "ok");
+            var v = localStorage.getItem(key);
+            localStorage.removeItem(key);
+            var rw = v === "ok";
+            checks.push({ name: "localStorage R/W", ok: rw });
+            if (!rw) ok = false;
         } catch(e) {
-            pass = false;
-            details.push({ name: "Exception", pass: false });
-            log("Offline test error: " + e.message, "audit-line-error");
+            checks.push({ name: "localStorage R/W", ok: false });
+            ok = false;
         }
 
-        var passed = details.filter(function(d) { return d.pass; }).length;
-        setMetric("Offline", "Checks: " + passed + "/" + details.length);
-        setStatus("Offline", pass ? "PASSED" : "WARN", pass ? "pass" : "fail");
-        report.results.offline = { pass: passed === details.length, checks: details };
-        log("Offline resilience: " + passed + "/" + details.length + " checks passed.",
-            pass ? "audit-line-success" : "audit-line-warn");
-        return pass;
+        // CRDT snapshot
+        try {
+            var existing = localStorage.getItem(CONFIG.CRDT_KEY);
+            if (existing) {
+                var parsed = JSON.parse(existing);
+                var valid = parsed && typeof parsed.nodeStatus === "object" && Array.isArray(parsed.careFlows);
+                checks.push({ name: "CRDT parseable", ok: valid });
+                checks.push({ name: "CRDT has nodeStatus", ok: !!parsed.nodeStatus });
+                checks.push({ name: "CRDT has careFlows", ok: Array.isArray(parsed.careFlows) });
+                if (!valid) ok = false;
+                log("Existing CRDT snapshot: " + Object.keys(parsed.nodeStatus).length + " nodes, " + parsed.careFlows.length + " flows", "audit-line-info");
+            } else {
+                checks.push({ name: "CRDT snapshot exists", ok: true });
+                log("No existing CRDT (fresh session)", "audit-line-info");
+            }
+        } catch(e) {
+            checks.push({ name: "CRDT parseable", ok: false });
+            ok = false;
+        }
+
+        // IndexedDB
+        checks.push({ name: "IndexedDB API", ok: typeof indexedDB !== "undefined" });
+
+        var passed = checks.filter(function(c) { return c.ok; }).length;
+        setMetric("Offline", "Checks: " + passed + "/" + checks.length);
+        setStatus("Offline", ok ? "PASSED" : "WARN", ok ? "pass" : "fail");
+        report.results.offline = { pass: ok, checks: checks };
+        if (ok) addScore(1);
+        return ok;
     }
 
     // ═══ Orchestrator ═══
-    async function runAudit() {
-        var runBtn = el("btnRun");
-        var exportBtn = el("btnExport");
+    function setStatusDot(color) {
+        var d = el("statusDot");
+        d.style.background = color;
+        d.style.boxShadow = "0 0 6px " + color;
+    }
+
+    function runAudit() {
+        var runBtn = el("btnRun"), exportBtn = el("btnExport");
         runBtn.disabled = true;
         runBtn.textContent = "AUDIT IN PROGRESS...";
-        runBtn.classList.add("audit-btn-running");
         exportBtn.disabled = true;
-        exportBtn.classList.add("audit-btn-disabled");
 
-        clearTerminal();
+        terminal.innerHTML = "";
+        logIdx = 0;
         report.timestamp = new Date().toISOString();
+        report.score = 0;
         report.results = {};
+        el("scoreBar").style.width = "0%";
+        el("scoreBar").style.backgroundColor = "#3b82f6";
+        setStatusDot("#3b82f6");
 
-        log("═══════════════════════════════════════════════", "audit-line-system");
-        log("  P31 MESH E2E AUDIT SEQUENCE v2.0.0", "audit-line-info");
-        log("  " + report.timestamp, "audit-line-system");
-        log("═══════════════════════════════════════════════", "audit-line-system");
+        var modules = ["Sig", "Ice", "Rtc", "Data", "Logic", "Offline"];
+        modules.forEach(function(m) { setStatus(m, "PENDING", "pending"); });
 
-        var t1 = await testSignaling();
-        await sleep(400);
-        var t2 = await testICE();
-        await sleep(400);
-        var t3 = await testProtocol();
-        await sleep(400);
-        var t4 = await testWebRTC();
-        await sleep(400);
-        var t5 = await testDataChannel();
-        await sleep(400);
-        var t6 = await testOffline();
+        log("═══════════════════════════════════════════", "audit-line-system");
+        log("  P31 MESH E2E AUDIT v2.2.0 — " + report.timestamp, "audit-line-info");
+        log("═══════════════════════════════════════════", "audit-line-system");
 
-        log("═══════════════════════════════════════════════", "audit-line-system");
-        var allPassed = t1 && t2 && t3 && t4 && t5 && t6;
-        log(allPassed ? "AUDIT COMPLETE — ALL SYSTEMS NOMINAL" : "AUDIT COMPLETE — REVIEW WARNINGS",
-            allPassed ? "audit-line-success" : "audit-line-warn");
-
-        updateScore();
-
-        runBtn.disabled = false;
-        runBtn.textContent = "RE-RUN AUDIT";
-        runBtn.classList.remove("audit-btn-running");
-        exportBtn.disabled = false;
-        exportBtn.classList.remove("audit-btn-disabled");
+        testSignaling()
+            .then(function() { return sleep(300); })
+            .then(testICE)
+            .then(function() { return sleep(300); })
+            .then(testWebRTC)
+            .then(function() { return sleep(300); })
+            .then(testProtocol)
+            .then(function() { return sleep(300); })
+            .then(testOffline)
+            .then(function() {
+                return new Promise(function(res) { setTimeout(res, 200); });
+            })
+            .then(function() {
+                log("═══════════════════════════════════════════", "audit-line-system");
+                if (report.score >= 6) {
+                    log("AUDIT COMPLETE — ALL SYSTEMS NOMINAL", "audit-line-success");
+                    setStatusDot("#10b981");
+                } else {
+                    log("AUDIT COMPLETE — " + report.score + "/6 PASSED (review warnings)", "audit-line-warn");
+                    setStatusDot("#ef4444");
+                }
+                runBtn.disabled = false;
+                runBtn.textContent = "RE-RUN AUDIT";
+                exportBtn.disabled = false;
+            });
     }
 
-    if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", init);
-    } else {
-        init();
-    }
+    el("btnRun").addEventListener("click", runAudit);
+    el("btnClear").addEventListener("click", function() { terminal.innerHTML = ""; logIdx = 0; });
+    el("btnExport").addEventListener("click", function() {
+        try {
+            var blob = new Blob([JSON.stringify(report, null, 2)], { type: "application/json" });
+            var a = document.createElement("a");
+            a.href = URL.createObjectURL(blob);
+            a.download = "p31_audit_" + Date.now() + ".json";
+            a.click();
+            URL.revokeObjectURL(a.href);
+            log("Report exported.", "audit-line-success");
+        } catch(e) { log("Export error: " + e.message, "audit-line-error"); }
+    });
+
+    var p = navigator.platform || "?";
+    var c = navigator.connection ? (navigator.connection.effectiveType || "?") : "no API";
+    var sw = "serviceWorker" in navigator ? "SW" : "no SW";
+    el("platformLine").textContent = "Platform: " + p + " / " + c + " / " + sw;
 })();
 </script>
-
 </body>
 </html>
