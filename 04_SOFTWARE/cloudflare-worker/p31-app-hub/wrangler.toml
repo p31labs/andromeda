@@ -1,8 +1,8 @@
 name = "p31-app-hub"
-type = "javascript"
 account_id = "ee05f70c889cb6f876b9925257e3a2fa"
+compatibility_date = "2026-05-28"
 workers_dev = true
-main = "dist/index.mjs"
+main = "dist/index.js"
 
 [env.production]
 vars = { ENVIRONMENT = "production" }
@@ -13,6 +13,3 @@ routes = [
 [build]
 command = "npm run build"
 cwd = "."
-
-[build.upload]
-format = "modules"

@@ -1,10 +1,10 @@
 {
-  "updated": "2026-05-28T23:05:00-04:00",
+  "updated": "2026-05-29T00:15:00-04:00",
   "audit": {
     "probed_at": "2026-05-24T22:00:00-04:00",
     "method": "curl -- GET -L, 5-8s timeout; OPTIONS/POST where noted",
     "environment": "windows workspace",
-    "summary": "DISCORD ORACLE BOT (May 28): Full bot integration deployed. 21 slash commands registered. Bot tools on HERALD/STEWARD/SENTINEL. Interaction handler live. phos-api migrated to bot API. All 15 Discord secrets injected.",
+    "summary": "DISCORD ORACLE BOT complete: 21 slash commands, interaction handler with Ed25519 verification, bot tools on HERALD/STEWARD/SENTINEL. phos-api deployed with bot API. CLOUDFLARE_API_TOKEN persisted. All 15 Discord secrets injected. DISCORD_PUBLIC_KEY locked.",
     "anomalies": [
       {
         "name": "p31-telemetry",

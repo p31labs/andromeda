@@ -68,10 +68,15 @@ describe('TRIPER: T - Task', () => {
 
   it('renders category filter buttons', () => {
     renderArcade();
-    expect(screen.getByText(/Sports/)).toBeTruthy();
-    expect(screen.getByText(/Strategy/)).toBeTruthy();
-    expect(screen.getByText(/Physics/)).toBeTruthy();
-    expect(screen.getByText(/Creative/)).toBeTruthy();
+    const allBtns = screen.getAllByRole('button');
+    const sportsBtn = allBtns.find((b) => b.textContent?.includes('\uD83C\uDFC8 Sports'));
+    const strategyBtn = allBtns.find((b) => b.textContent?.includes('\uD83E\uDDE0 Strategy'));
+    const physicsBtn = allBtns.find((b) => b.textContent?.includes('\u269B\uFE0F Physics'));
+    const creativeBtn = allBtns.find((b) => b.textContent?.includes('\uD83C\uDFA8 Creative'));
+    expect(sportsBtn).toBeTruthy();
+    expect(strategyBtn).toBeTruthy();
+    expect(physicsBtn).toBeTruthy();
+    expect(creativeBtn).toBeTruthy();
   });
 
   it('renders all 10 games in the catalog', () => {
@@ -143,8 +148,8 @@ describe('TRIPER: I - Interface', () => {
     expect(ArcadeSurface).toBeDefined();
   });
 
-  it('exports ArcadeSurface as default export', () => {
-    const mod = require('../ArcadeSurface');
+  it('exports ArcadeSurface as default export', async () => {
+    const mod = await import('../ArcadeSurface');
     expect(mod.default).toBeDefined();
   });
 });
