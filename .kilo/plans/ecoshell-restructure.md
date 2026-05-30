@@ -357,6 +357,39 @@ Each shell has a persistent nav node to hop between shells. Auth is shell-specif
 
 ---
 
+## EXECUTION STATUS (Updated 2026-05-29)
+
+### ✅ Phase 1-7: COMPLETE
+- Deleted 38 duplicate CF Pages projects
+- Deleted 11 stale source directories  
+- Created 4 new shells (WILLOW, ARCADE, MESH, ECOSYSTEM) — all build clean
+- Merged p31-arcade-hub + p31-arcade-monolith → shells/arcade/
+- Wired spoon/grayRock/bio into all 15 PHOS surfaces
+- PHOS builds clean (1771 modules)
+- 3 commits ready to push
+
+### ⏳ Phase 8: Deploy (PENDING)
+- Deploy all 4 new shells to Cloudflare Pages
+- Configure custom domains (willow.p31ca.org, arcade.p31ca.org, mesh.p31ca.org, ecosystem.p31ca.org)
+- Set up p31ca.org as shell router gateway
+
+### ⏳ Phase 8: Deploy (IN PROGRESS)
+
+#### Deployed to Cloudflare Pages:
+| Shell | CF Project | Temp URL | Custom Domain (pending) |
+|-------|-----------|----------|------------------------|
+| **WILLOW** | willow | willow-a23.pages.dev | willow.p31ca.org (exists) |
+| **ARCADE** | arcade | arcade-70u.pages.dev | arcade.p31ca.org (add via dashboard) |
+| **MESH** | mesh | mesh-f4b.pages.dev | mesh.p31ca.org (add via dashboard) |
+| **ECOSYSTEM** | ecosystem | ecosystem-cds.pages.dev | ecosystem.p31ca.org (add via dashboard) |
+| **PHOS** | phos | phos-btn.pages.dev | phos.p31ca.org (exists) |
+
+#### Manual steps needed:
+1. Add custom domains via Cloudflare Dashboard (wrangler 3.x `domain add` is broken)
+2. Set up p31ca.org as shell router gateway page
+3. Delete old unused CF projects (p31-arcade, p31-mesh-monitor, etc.)
+4. Remove custom domains from old projects before adding to new ones
+
 ## EXECUTION ORDER
 
 ### Phase 1: Clean Up (Day 1)
