@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { useBioStore } from '../stores/bioStore';
+import { useBioStore } from '../../lib/bioStore';
 
 interface Props {
   compact?: boolean;

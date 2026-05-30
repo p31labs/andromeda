@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { generateVoiceResponse, quickConscienceCheck, useVoiceSynthesis } from '../services/ollama';
-import { useCompanionStore } from '../stores/companionStore';
+import { generateVoiceResponse, quickConscienceCheck, useVoiceSynthesis } from '../../lib/ollama';
+import { useCompanionStore } from '../../lib/companionStore';
 
 interface Props {
   isAwake: boolean;
@@ -162,23 +161,15 @@ export function CompanionVoice({
   return (
     <div className="w-full space-y-4">
       {/* Current voice line */}
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={currentLine + isStreaming}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -10 }}
-          className="text-center"
-        >
-          <p className={`text-lg md:text-xl leading-relaxed font-light min-h-[3rem]
-                       ${qmuState === 'critical' ? 'text-red-300' : 'text-white/90'}`}>
-            {currentLine || (isStreaming ? '...' : '')}
-            {isTyping && !isStreaming && (
-              <span className="inline-block w-0.5 h-5 bg-p31-teal ml-1 animate-pulse" />
-            )}
-          </p>
-        </motion.div>
-      </AnimatePresence>
+      <div className="text-center">
+        <p className={`text-lg md:text-xl leading-relaxed font-light min-h-[3rem]
+                      ${qmuState === 'critical' ? 'text-red-300' : 'text-white/90'}`}>
+          {currentLine || (isStreaming ? '...' : '')}
+          {isTyping && !isStreaming && (
+            <span className="inline-block w-0.5 h-5 bg-p31-teal ml-1 animate-pulse" />
+          )}
+        </p>
+      </div>
       
       {/* Recent history - fades out */}
       {history.length > 1 && (
@@ -206,11 +197,7 @@ export function CompanionVoice({
       
       {/* Quick responses - tap to speak */}
       {!isTyping && !isStreaming && (
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="flex flex-wrap justify-center gap-2 mt-4"
-        >
+        <div className="flex flex-wrap justify-center gap-2 mt-4">
           {qmuState === 'critical' ? (
             <>
               <ResponseChip 
@@ -266,7 +253,7 @@ export function CompanionVoice({
               />
             </>
           )}
-        </motion.div>
+        </div>
       )}
     </div>
   );

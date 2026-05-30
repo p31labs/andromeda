@@ -1,7 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Mic, Shield } from 'lucide-react';
+import { useAtmosphere } from '../components/AtmosphereProvider';
 
 export const ChaosIngest: React.FC = () => {
+  const { spoons, grayRock } = useAtmosphere();
   const [content, setContent] = useState('');
   const [isRecording, setIsRecording] = useState(false);
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
@@ -18,11 +20,14 @@ export const ChaosIngest: React.FC = () => {
 
   return (
     <div className="relative flex flex-col h-full w-full bg-zinc-950 text-zinc-200">
+      {grayRock ? (
+        <div className="flex-grow flex items-center justify-center text-zinc-500 font-mono text-sm">Chaos Ingest suspended.</div>
+      ) : (<>
       <textarea
         ref={textAreaRef}
         value={content}
         onChange={(e) => setContent(e.target.value)}
-        placeholder="Brain dump. Paste evidence logs. Hold trigger to dictate."
+        placeholder={spoons <= 1 ? "Quick note. One line. That's enough." : spoons >= 4 ? "Brain dump. Paste evidence logs. Hold trigger to dictate." : "Brain dump. Paste evidence logs."}
         className="flex-grow w-full bg-transparent resize-none outline-none p-4 text-xl leading-relaxed text-zinc-300 placeholder:text-zinc-700 selection:bg-purple-900/50"
         autoFocus
       />
@@ -42,6 +47,7 @@ export const ChaosIngest: React.FC = () => {
       >
         <Mic size={24} />
       </button>
+      </>)}
     </div>
   );
 };

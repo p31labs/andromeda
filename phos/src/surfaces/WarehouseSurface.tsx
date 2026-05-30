@@ -7,6 +7,7 @@
 
 import React, { useEffect, useState, useCallback } from 'react';
 import { PGlite } from '@electric-sql/pglite';
+import { useAtmosphere } from '../components/AtmosphereProvider';
 
 interface ZoneSummary {
   id: number;
@@ -28,6 +29,7 @@ interface Props {
 }
 
 export const WarehouseSurface: React.FC<Props> = ({ className }) => {
+  const { spoons, grayRock } = useAtmosphere();
   const [zones, setZones] = useState<ZoneSummary[]>([]);
   const [activities, setActivities] = useState<ActivityItem[]>([]);
   const [totalPending, setTotalPending] = useState(0);
@@ -87,6 +89,33 @@ export const WarehouseSurface: React.FC<Props> = ({ className }) => {
 
   if (loading) return <div className={className}>Loading warehouse data...</div>;
   if (error) return <div className={className}>Warehouse unavailable: {error}</div>;
+
+  if (grayRock) {
+    return (
+      <div className={className}>
+        <div className="text-center py-12 text-zinc-500 font-mono text-sm">Warehouse suspended.</div>
+      </div>
+    );
+  }
+
+  if (spoons <= 2) {
+    return (
+      <div className={className}>
+        <h2 className="text-2xl font-semibold mb-6">The Forge — Warehouse</h2>
+        <div className="space-y-2">
+          {zones.map((z) => (
+            <div key={z.id} className="p-3 rounded-lg bg-white/5 border border-white/10">
+              <div className="text-sm font-medium truncate">{z.name.replace(`Zone ${z.id}: `, '')}</div>
+              <div className="flex gap-3 mt-1">
+                <span className="text-xs text-emerald-400">{z.inStock} in</span>
+                {z.pending > 0 && <span className="text-xs text-amber-400">{z.pending} pending</span>}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   const totalStock = zones.reduce((s, z) => s + z.inStock, 0);
 

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { useMeshStore } from '../stores/meshStore';
+import { useMeshStore } from '../../lib/meshStore';
 
 export function FamilyCagePanel() {
   const { vertices, edges, getTotalLove, recordLove } = useMeshStore();

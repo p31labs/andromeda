@@ -21,8 +21,19 @@ import { ForgeLoveCredits } from "../lib/ForgeLoveCredits";
 type ForgeTab = "pos" | "vault" | "warehouse";
 
 export const ForgeSurface: React.FC<{ className?: string }> = ({ className }) => {
-  const grayRock = false;
+  const { grayRock, spoons } = useAtmosphere();
   const [tab, setTab] = useState<ForgeTab>("pos");
+
+  if (grayRock) {
+    return (
+      <div className={className}>
+        <div className="text-center py-12 text-zinc-500 font-mono text-sm">Forge suspended. Gray Rock active.</div>
+      </div>
+    );
+  }
+
+  const visibleTabs: ForgeTab[] = spoons <= 1 ? ['pos'] : ['pos', 'vault', 'warehouse'];
+
   return (
     <div className={className}>
       <div className="flex items-center justify-between mb-4">
@@ -38,7 +49,7 @@ export const ForgeSurface: React.FC<{ className?: string }> = ({ className }) =>
           { key: "pos" as const, label: "\uD83D\uDECB POS" },
           { key: "vault" as const, label: "\uD83C\uDDFE Vault" },
           { key: "warehouse" as const, label: "\uD83D\uDCE6 Warehouse" },
-        ]).map((t) => (
+        ]).filter((t) => visibleTabs.includes(t.key)).map((t) => (
           <button key={t.key} onClick={() => setTab(t.key)}
             className="flex-1 py-2 text-[10px] rounded-lg"
             style={{

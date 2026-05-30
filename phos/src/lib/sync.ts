@@ -4,8 +4,8 @@
  */
 
 import { useState, useEffect } from 'react';
-import { useBioStore } from '../stores/bioStore';
-import { useCompanionStore } from '../stores/companionStore';
+import { useBioStore } from './bioStore';
+import { useCompanionStore } from './companionStore';
 
 const SYNC_INTERVAL = 5000;
 const SIMPLEX_URL = 'https://simplex-worker.trimtab-signal.workers.dev';

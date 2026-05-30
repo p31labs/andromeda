@@ -2,7 +2,7 @@ import { useRef, useMemo } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Text } from '@react-three/drei';
 import * as THREE from 'three';
-import { useBioStore } from '../stores/bioStore';
+import { useBioStore } from '../../lib/bioStore';
 
 function Tetrahedron() {
   const meshRef = useRef<THREE.Group>(null);

@@ -7,6 +7,7 @@
 
 import React, { useEffect, useState, useCallback } from 'react';
 import { PGlite } from '@electric-sql/pglite';
+import { useAtmosphere } from '../components/AtmosphereProvider';
 
 interface EntityStats {
   context: string;
@@ -24,6 +25,7 @@ interface Props {
 }
 
 export const RetroVaultSurface: React.FC<Props> = ({ className }) => {
+  const { spoons, grayRock } = useAtmosphere();
   const [stats, setStats] = useState<EntityStats[]>([]);
   const [recent, setRecent] = useState<EntityRow[]>([]);
   const [total, setTotal] = useState(0);
@@ -69,6 +71,34 @@ export const RetroVaultSurface: React.FC<Props> = ({ className }) => {
       <p className="text-gray-500 text-sm">Vault database not yet initialized. Open the Retro-Vault app first to create the database.</p>
     </div>
   );
+
+  if (grayRock) {
+    return (
+      <div className={className}>
+        <div className="text-center py-12 text-zinc-500 font-mono text-sm">Retro Vault suspended.</div>
+      </div>
+    );
+  }
+
+  if (spoons <= 2) {
+    return (
+      <div className={className}>
+        <h2 className="text-2xl font-semibold mb-6">Retro Vault</h2>
+        <div className="grid grid-cols-2 gap-4 mb-6">
+          <div className="p-4 rounded-xl bg-black/30 border border-white/10 text-center">
+            <div className="text-3xl font-bold text-purple-400">{total}</div>
+            <div className="text-xs text-gray-500 mt-1">Total Items</div>
+          </div>
+          {stats.map((s) => (
+            <div key={s.context} className="p-4 rounded-xl bg-black/30 border border-white/10 text-center">
+              <div className="text-3xl font-bold text-cyan-400">{s.count}</div>
+              <div className="text-xs text-gray-500 mt-1 capitalize">{s.context}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={className}>

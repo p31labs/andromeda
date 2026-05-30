@@ -40,7 +40,7 @@ interface Props {
 }
 
 export const DriveSurface: React.FC<Props> = ({ className }) => {
-  const { spoons } = useAtmosphere();
+  const { spoons, grayRock } = useAtmosphere();
   const [connected, setConnected] = useState(false);
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [files, setFiles] = useState<DriveFile[]>([]);
@@ -277,6 +277,14 @@ export const DriveSurface: React.FC<Props> = ({ className }) => {
           </button>
         </div>
         {error && <p className="text-xs mt-3" style={{ color: '#ef4444' }}>{error}</p>}
+      </div>
+    );
+  }
+
+  if (grayRock) {
+    return (
+      <div className={className}>
+        <div className="text-center py-12 text-zinc-500 font-mono text-sm">Drive suspended. Gray Rock active.</div>
       </div>
     );
   }

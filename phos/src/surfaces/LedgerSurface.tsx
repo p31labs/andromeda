@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { KarmaEngine, toDollars, type LoveTransaction } from '../lib/KarmaEngine';
 import { getEventLog, type PHOSEvent } from '../lib/EventLogger';
+import { useAtmosphere } from '../components/AtmosphereProvider';
+import { CompanionVoice } from '../components/bio/CompanionVoice';
 
 // ── Treasury types from simplex-worker ──────────────────────────────────
 interface TreasuryData {
@@ -20,6 +22,7 @@ interface TreasuryData {
 interface Props { className?: string; }
 
 export const LedgerSurface: React.FC<Props> = ({ className }) => {
+  const { spoons, grayRock } = useAtmosphere();
   const [balanceCents, setBalanceCents] = useState(0);
   const [transactions, setTransactions] = useState<LoveTransaction[]>([]);
   const [events, setEvents] = useState<PHOSEvent[]>([]);
@@ -72,13 +75,23 @@ export const LedgerSurface: React.FC<Props> = ({ className }) => {
   const txPage = filteredTransactions.slice(currentPage * PAGE_SIZE, (currentPage + 1) * PAGE_SIZE);
   const txPages = Math.ceil(filteredTransactions.length / PAGE_SIZE);
 
+  if (grayRock) {
+    return (
+      <div className={className}>
+        <div className="text-center py-12 text-zinc-500 font-mono text-sm">Ledger suspended. Gray Rock active.</div>
+      </div>
+    );
+  }
+
+  const showTreasury = spoons > 2;
+
   return (
     <div className={className}>
       <h2 className="text-2xl font-semibold mb-6">L.O.V.E. Ledger</h2>
 
       {/* Tab Switcher */}
       <div className="flex gap-1 mb-6">
-        {[['love', '❤ L.O.V.E.'], ['treasury', '💰 Treasury']].map(([key, label]) => (
+        {[['love', '❤ L.O.V.E.']].concat(showTreasury ? [['treasury', '💰 Treasury']] : []).map(([key, label]) => (
           <button key={key} onClick={() => setActiveTab(key as 'love' | 'treasury')}
             className={`px-4 py-2 text-xs font-mono rounded-t transition-colors ${
               activeTab === key ? 'bg-white/10 text-amber-400 border-t border-x border-white/10' : 'text-gray-500 hover:text-gray-300'
@@ -246,9 +259,19 @@ export const LedgerSurface: React.FC<Props> = ({ className }) => {
               <span className="text-gray-500">Shield</span><span className="text-emerald-400">Engaged ✓</span>
             </div>
           </div>
-        </div>
-      )}
-    </div>
+          </div>
+        )}
+        {spoons >= 3 && !grayRock && (
+          <CompanionVoice
+            isAwake={spoons >= 3}
+            calcium={8.5}
+            spoons={spoons / 5}
+            qmuState={spoons <= 1 ? 'critical' : spoons <= 2 ? 'low' : 'normal'}
+            pendingAction={null}
+            onAcknowledge={() => {}}
+          />
+        )}
+      </div>
   );
 };
 

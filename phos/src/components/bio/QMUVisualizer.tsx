@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { useBioStore } from '../stores/bioStore';
+import { useBioStore } from '../../lib/bioStore';
 
 export function QMUVisualizer() {
   const { spoons, getQMUState } = useBioStore();
