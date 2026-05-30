@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ECOSYSTEM — P31 App Hub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+      :root {
+        --p31-void: #0a0b0d;
+        --p31-cloud: #e8e8e8;
+        --p31-teal: #5DCAA5;
+        --p31-cyan: #00d4ff;
+        --p31-purple: #a78bfa;
+        --p31-gold: #fbbf24;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: 'Atkinson Hyperlegible', system-ui, sans-serif;
+        background: var(--p31-void);
+        color: var(--p31-cloud);
+      }
+      ::selection {
+        background: rgba(93, 202, 165, 0.3);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

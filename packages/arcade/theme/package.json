@@ -1,0 +1,13 @@
+{
+  "name": "@p31/arcade-theme",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Shared design tokens and visual components for P31 Arcade",
+  "main": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./tokens": "./src/tokens.ts"
+  },
+  "dependencies": {}
+}

@@ -1,18 +1,16 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
+import { fileURLToPath } from 'url';
 
-// https://vitejs.dev/config/
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
 export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      '@p31/unified': path.resolve(__dirname, '../packages/p31-unified/src/index.ts'),
+      '@p31/unified': path.resolve(__dirname, '../../packages/p31-unified/src/index.ts'),
     },
-  },
-  server: {
-    port: 5173,
-    open: true,
   },
   build: {
     outDir: 'dist',

@@ -1,0 +1,106 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --p31-void: #0a0b0d;
+  --p31-cloud: #e8e8e8;
+  --p31-muted: #6b7280;
+  --p31-teal: #5DCAA5;
+  --p31-cyan: #00d4ff;
+  --p31-purple: #a78bfa;
+  --p31-gold: #fbbf24;
+  --p31-red: #ef4444;
+}
+
+@layer base {
+  body {
+    @apply bg-[#0a0b0d] text-[#e8e8e8] antialiased;
+    font-family: 'Atkinson Hyperlegible', system-ui, sans-serif;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.03);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  ::selection {
+    background: rgba(93, 202, 165, 0.3);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--p31-teal);
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  .glass {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .btn-primary {
+    @apply px-4 py-2 rounded-lg bg-[#5DCAA5] text-[#0a0b0d] font-semibold
+           hover:bg-[#4db894] transition-colors;
+  }
+
+  .btn-secondary {
+    @apply px-4 py-2 rounded-lg bg-white/10 text-[#e8e8e8] font-medium
+           hover:bg-white/15 transition-colors border border-white/10;
+  }
+}
+
+@layer utilities {
+  [data-qmu-state="critical"] {
+    --qmu-motion: 0.1;
+    --qmu-chroma: 0;
+  }
+
+  [data-qmu-state="low"] {
+    --qmu-motion: 0.3;
+    --qmu-chroma: 0.5;
+  }
+
+  [data-qmu-state="normal"] {
+    --qmu-motion: 1;
+    --qmu-chroma: 1;
+  }
+
+  .animate-pulse-slow {
+    animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "name": "@p31/design-system",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Shared design system components for P31 Arcade",
+  "main": "src/index.tsx",
+  "exports": {
+    ".": "./src/index.tsx",
+    "./GameFrame": "./src/GameFrame.tsx",
+    "./ReturnRibbon": "./src/ReturnRibbon.tsx"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0"
+  }
+}

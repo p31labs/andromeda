@@ -1,0 +1,12 @@
+{
+  "name": "@p31/arcade-identity",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Shared identity management for P31 Arcade",
+  "main": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {}
+}
