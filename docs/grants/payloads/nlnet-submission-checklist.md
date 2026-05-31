@@ -31,9 +31,8 @@
 | Resource | URL |
 |----------|-----|
 | PHOS demo | https://phos-btn.pages.dev |
-| k4-agent-hub worker | https://k4-agent-hub.trimtab-signal.workers.dev |
-| BONDING demo | https://bonding.p31ca.org |
 | PHOS API | https://phos-api.trimtab-signal.workers.dev |
+| k4-agent-hub | Planned — mesh protocol reference worker (in development) |
 | Zenodo papers | https://zenodo.org/search?q=creators.name:%22Johnson%2C%20William%20R.%22 |
 | Institutional site | https://phosphorus31.org |
 | GitHub org | https://github.com/p31labs |
