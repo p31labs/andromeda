@@ -7,7 +7,8 @@
     "stateOfIncorporation": "GA",
     "incorporationDate": "2026-04-03",
     "einAssignedDate": "2026-04-13",
-    "status501c3": "pending"
+    "status501c3": "determined_active",
+    "determinationDate": "2026-05-04"
   },
   "contact": {
     "primaryEmail": "will@p31ca.org",
