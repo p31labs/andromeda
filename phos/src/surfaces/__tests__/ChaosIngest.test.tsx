@@ -47,7 +47,22 @@ describe('ChaosIngest', () => {
     await act(async () => {
       fireEvent.click(btn);
     });
-    // After click + microtask flush, syncing is true and status shows COMMITTING
     expect(screen.getAllByText(/COMMITTING|PROCESSING/).length).toBeGreaterThan(0);
+  });
+
+  it('should render sanctuary placeholder when theme is SANCTUARY', () => {
+    const sanctuaryTheme = { ...mockTheme, name: 'SANCTUARY' };
+    render(<ChaosIngest theme={sanctuaryTheme} />);
+    expect(screen.getByPlaceholderText('Write anything here. It stays on this device. It is safe.')).toBeTruthy();
+  });
+
+  it('should render default placeholder for non-sanctuary theme', () => {
+    render(<ChaosIngest theme={mockTheme} />);
+    expect(screen.getByPlaceholderText('ENTER_JOURNAL_ENTRY // LOCAL_STORAGE_ONLY')).toBeTruthy();
+  });
+
+  it('should show ready status initially', () => {
+    render(<ChaosIngest theme={mockTheme} />);
+    expect(screen.getByText('READY // WAITING FOR SENSOR DATA')).toBeTruthy();
   });
 });
