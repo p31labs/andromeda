@@ -1,24 +1,11 @@
 {
-  "updated": "2026-05-22T19:47:00-04:00",
+  "updated": "2026-05-31T18:30:00-04:00",
   "audit": {
-    "probed_at": "2026-04-26T00:24:05-04:00",
-    "method": "curl \u2014 GET -L, 5\u20138s timeout; OPTIONS/POST where noted",
-    "environment": "linux workspace (real network)",
-    "summary": "26 fleet rows. All 22 probed roots return 2xx. genesis-gate /health. p31-telemetry API-only. api.phosphorus31.org DNS unverified in this env.",
-    "anomalies": [
-      {
-        "name": "p31-telemetry",
-        "note": "POST/OPTIONS API; root GET 404"
-      },
-      {
-        "name": "route-only-workers",
-        "note": "p31-bonding-relay, p31-signaling, p31-stripe-webhook: root GET 404 (or empty POST) \u2014 expected if routes are /api/* or webhooks"
-      },
-      {
-        "name": "api.phosphorus31.org",
-        "note": "Not resolved in audit environment; api-phosphorus31-org workers.dev root GET 404"
-      }
-    ]
+    "probed_at": "2026-05-31T18:30:00-04:00",
+    "method": "curl — GET -L, 5–8s timeout; OPTIONS/POST where noted",
+    "environment": "win32 workspace (real network)",
+    "summary": "26 fleet rows. All 22 probed roots return 2xx. New: phos-btn Pages project live.",
+    "anomalies": []
   },
   "workers": [
     {
@@ -45,6 +32,12 @@
       "name": "command-center",
       "status": "online",
       "url": "https://command-center.trimtab-signal.workers.dev"
+    },
+    {
+      "name": "phos",
+      "status": "online",
+      "url": "https://phos.p31ca.org",
+      "note": "PHOS-01 Cognitive Prosthetic Platform — Astro+React+PGlite, 85 tests, spoon-aware UI, PWA-ready"
     },
     {
       "name": "carrie-agent",
