@@ -3,10 +3,6 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { GrantNarrativeOverlay } from '../GrantNarrativeOverlay';
 
-vi.mock('../DemoController', () => ({
-  DemoController: () => <div data-testid="demo-controller">Demo</div>,
-}));
-
 describe('GrantNarrativeOverlay', () => {
   beforeEach(() => {
     localStorage.clear();
@@ -57,10 +53,11 @@ describe('GrantNarrativeOverlay', () => {
     expect(screen.queryByText('PHOS-Sovereign')).toBeNull();
   });
 
-  it('should show DemoController after Begin Demo Tour', () => {
-    render(<GrantNarrativeOverlay />);
+  it('should dismiss and return null after Begin Demo Tour', () => {
+    const { container } = render(<GrantNarrativeOverlay />);
     fireEvent.click(screen.getByText('Begin Demo Tour'));
-    expect(screen.getByTestId('demo-controller')).toBeTruthy();
+    expect(screen.queryByText('PHOS-Sovereign')).toBeNull();
+    expect(container.innerHTML).toBe('');
   });
 
   it('should persist dismissal in localStorage', () => {

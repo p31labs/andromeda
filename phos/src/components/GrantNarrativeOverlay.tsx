@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import { DemoController } from './DemoController';
+import React, { useState } from 'react';
 
 export function GrantNarrativeOverlay() {
   const [dismissed, setDismissed] = useState(() => {
@@ -22,7 +21,7 @@ export function GrantNarrativeOverlay() {
   };
 
   if (dismissed) {
-    return demoStarted ? <DemoController /> : null;
+    return null;
   }
 
   return (

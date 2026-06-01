@@ -92,7 +92,6 @@ function PHOSShellInner() {
       `}</style>
 
       <GrantNarrativeOverlay />
-      <DemoController />
 
       <EscapeHatch
         theme={theme}
@@ -105,7 +104,7 @@ function PHOSShellInner() {
         onSetSurface={(s) => { setSurface(s); setHudOpen(false); }}
       />
 
-      <main className="min-h-screen pt-28 pb-12 px-4 flex flex-col items-center justify-start z-10 relative" aria-live="polite" aria-label={`${surfaceNames[currentSurface] || currentSurface} surface`}>
+      <main className="min-h-screen pt-28 pb-32 px-4 flex flex-col items-center justify-start z-10 relative" aria-live="polite" aria-label={`${surfaceNames[currentSurface] || currentSurface} surface`}>
         <div className="mb-10 flex flex-col items-center justify-center">
           <PHOSOrb />
         </div>
@@ -114,6 +113,7 @@ function PHOSShellInner() {
             <SurfaceContent currentSurface={currentSurface} setSurface={setSurface} spoons={spoons} theme={theme} />
           </SurfaceErrorBoundary>
         </div>
+        <DemoController />
       </main>
     </div>
   );
