@@ -11,17 +11,41 @@ import { EscapeHatch } from './EscapeHatch';
 
 export { getBiologicalTheme };
 
+const VALID_SURFACES = new Set([
+  'GREETING', 'IGNITION', 'BONDING', 'THE_BUFFER', 'VAULT', 'GRID',
+  'NODE_ZERO', 'LEDGER', 'LOVE', 'HEARTH', 'ARCADE', 'ARCHIVE',
+  'COMPASS', 'SETTINGS',
+]);
+
+function hydrateFromURL(): { spoons: number; surface: string } {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const spoonsParam = params.get('spoons');
+    const surfaceParam = params.get('surface');
+    const spoons = spoonsParam !== null
+      ? Math.max(0, Math.min(5, parseInt(spoonsParam, 10) || 0))
+      : 3;
+    const surface = surfaceParam !== null && VALID_SURFACES.has(surfaceParam.toUpperCase())
+      ? surfaceParam.toUpperCase()
+      : 'GREETING';
+    return { spoons, surface };
+  } catch {
+    return { spoons: 3, surface: 'GREETING' };
+  }
+}
+
 /* v8 ignore start */
-function PHOSShellInner() {
+function PHOSShellInner({ skipLoading = false }: { skipLoading?: boolean }) {
   const { spoons, setSpoons, grayRock, currentSurface, setSurface } = useAtmosphere();
   const [hudOpen, setHudOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(!skipLoading);
   const theme = getBiologicalTheme(spoons, grayRock);
 
   useEffect(() => {
+    if (skipLoading) return;
     const timer = setTimeout(() => setIsLoading(false), 300);
     return () => clearTimeout(timer);
-  }, []);
+  }, [skipLoading]);
 
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
     if (e.key === 'Escape') {
@@ -120,9 +144,10 @@ function PHOSShellInner() {
 }
 
 export default function PHOSShell() {
+  const { spoons, surface } = hydrateFromURL();
   return (
-    <AtmosphereProvider initialSpoons={3} initialSurface="GREETING">
-      <PHOSShellInner />
+    <AtmosphereProvider initialSpoons={spoons} initialSurface={surface}>
+      <PHOSShellInner skipLoading={spoons !== 3 || surface !== 'GREETING'} />
     </AtmosphereProvider>
   );
 }
