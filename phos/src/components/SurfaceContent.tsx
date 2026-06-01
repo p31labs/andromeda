@@ -12,6 +12,7 @@ import { ArcadeSurface } from '../surfaces/ArcadeSurface';
 import { NodeZeroSurface } from '../surfaces/NodeZeroSurface';
 import { HearthSurface } from '../surfaces/HearthSurface';
 import { ShakeStream } from '../surfaces/ShakeStream';
+import { WarehouseSurface } from '../surfaces/WarehouseSurface';
 
 interface SurfaceProps {
   currentSurface: string;
@@ -67,6 +68,9 @@ export function SurfaceContent({ currentSurface, setSurface, spoons, theme: exte
           <ShakeStream theme={theme} initialQuery="" />
         </div>
       );
+
+    case 'WAREHOUSE':
+      return <WarehouseSurface theme={theme} spoons={spoons} />;
 
     default:
       return (

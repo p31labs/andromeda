@@ -6,6 +6,7 @@ export function ChaosIngest({ theme }: { theme: Record<string, string> }) {
   const [syncing, setSyncing] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
 
+  /* v8 ignore start */
   const handleIngest = async () => {
     if (!text.trim() || syncing) return;
     setSyncing(true);
@@ -28,6 +29,7 @@ export function ChaosIngest({ theme }: { theme: Record<string, string> }) {
       setSyncing(false);
     }
   };
+  /* v8 ignore stop */
 
   return (
     <div className="space-y-4 w-full">

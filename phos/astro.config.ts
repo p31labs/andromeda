@@ -6,4 +6,9 @@ export default defineConfig({
   integrations: [react(), tailwind()],
   output: 'static',
   trailingSlash: 'always',
+  vite: {
+    optimizeDeps: {
+      exclude: ['@electric-sql/pglite']
+    }
+  }
 });

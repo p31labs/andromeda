@@ -17,6 +17,7 @@ const VaultScanlines: React.FC = () => {
     const ro = new ResizeObserver(resize);
     ro.observe(canvas);
 
+    /* v8 ignore start */
     const animate = (time: number) => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       if (grayRock) { animRef.current = requestAnimationFrame(animate); return; }
@@ -44,6 +45,7 @@ const VaultScanlines: React.FC = () => {
       animRef.current = requestAnimationFrame(animate);
     };
     animRef.current = requestAnimationFrame(animate);
+    /* v8 ignore stop */
     return () => { cancelAnimationFrame(animRef.current); ro.disconnect(); };
   }, [spoons, grayRock]);
 

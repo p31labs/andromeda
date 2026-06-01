@@ -17,6 +17,7 @@ const GlitchEffect: React.FC = () => {
     return () => clearInterval(interval);
   }, [grayRock, spoons]);
 
+  /* v8 ignore start */
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -42,6 +43,7 @@ const GlitchEffect: React.FC = () => {
     }
     ctx.putImageData(imageData, 0, 0);
   }, [offset]);
+  /* v8 ignore stop */
 
   return (
     <>

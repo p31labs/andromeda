@@ -1,9 +1,8 @@
-import { PGlite } from '@electric-sql/pglite';
+let dbInstance: any = null;
 
-let dbInstance: PGlite | null = null;
-
-export async function getChaosVault(): Promise<PGlite> {
+export async function getChaosVault(): Promise<any> {
   if (!dbInstance) {
+    const { PGlite } = await import('@electric-sql/pglite');
     dbInstance = new PGlite({
       connectionString: 'idb://p31-chaos-vault',
     });

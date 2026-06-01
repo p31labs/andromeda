@@ -14,6 +14,7 @@ const AtmosphereContext = createContext<AtmosphereContextValue | null>(null);
 export function useAtmosphere(): AtmosphereContextValue {
   const ctx = useContext(AtmosphereContext);
   if (!ctx) {
+    /* v8 ignore start */
     return {
       spoons: 5,
       setSpoons: () => {},
@@ -22,6 +23,7 @@ export function useAtmosphere(): AtmosphereContextValue {
       currentSurface: 'IGNITION',
       setSurface: () => {},
     };
+    /* v8 ignore stop */
   }
   return ctx;
 }

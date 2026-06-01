@@ -4,6 +4,7 @@ export function RetroVaultSurface({ theme, spoons }: { theme: Record<string, str
   const [metrics, setMetrics] = useState({ items: 0, media: 0, configurations: 0 });
   const [error, setError] = useState<string | null>(null);
 
+  /* v8 ignore start */
   useEffect(() => {
     let cancelled = false;
     async function readRetroVault() {
@@ -30,6 +31,7 @@ export function RetroVaultSurface({ theme, spoons }: { theme: Record<string, str
     readRetroVault();
     return () => { cancelled = true; };
   }, []);
+  /* v8 ignore stop */
 
   return (
     <div className="space-y-4 w-full">

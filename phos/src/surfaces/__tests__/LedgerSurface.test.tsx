@@ -26,4 +26,33 @@ describe('LedgerSurface', () => {
     render(<LedgerSurface theme={mockTheme} />);
     expect(screen.getByText(/No transactions yet/)).toBeTruthy();
   });
+
+  it('should show ledger header', () => {
+    render(<LedgerSurface theme={mockTheme} />);
+    expect(screen.getByText('LOVE Ledger')).toBeTruthy();
+  });
+
+  it('should show Care Economy Credits label', () => {
+    render(<LedgerSurface theme={mockTheme} />);
+    expect(screen.getByText('Care Economy Credits')).toBeTruthy();
+  });
+
+  it('should show balance in large format', () => {
+    render(<LedgerSurface theme={mockTheme} />);
+    expect(screen.getByText('0')).toBeTruthy();
+  });
+
+  it('should show Transaction History header', () => {
+    render(<LedgerSurface theme={mockTheme} />);
+    expect(screen.getByText('Transaction History')).toBeTruthy();
+  });
+
+  it('should persist balance across renders', () => {
+    const { unmount } = render(<LedgerSurface theme={mockTheme} />);
+    act(() => { fireEvent.click(screen.getByText(/Daily Check-in/)); });
+    expect(screen.getByText('5 LOVE')).toBeTruthy();
+    unmount();
+    render(<LedgerSurface theme={mockTheme} />);
+    expect(screen.getByText('5 LOVE')).toBeTruthy();
+  });
 });

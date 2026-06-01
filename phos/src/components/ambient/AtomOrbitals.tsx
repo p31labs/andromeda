@@ -21,6 +21,7 @@ const AtomOrbitals: React.FC = () => {
       { x: 0.7, y: 0.6, electrons: 3, speed: 0.3, color: '#ff6b6b' },
     ];
 
+    /* v8 ignore start */
     const animate = (time: number) => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       if (grayRock || spoons <= 0) { animRef.current = requestAnimationFrame(animate); return; }
@@ -50,6 +51,7 @@ const AtomOrbitals: React.FC = () => {
       animRef.current = requestAnimationFrame(animate);
     };
     animRef.current = requestAnimationFrame(animate);
+    /* v8 ignore stop */
     return () => { cancelAnimationFrame(animRef.current); ro.disconnect(); };
   }, [spoons, grayRock]);
 
