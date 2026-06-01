@@ -1,3 +1,8 @@
 name = "phos-btn"
 pages_build_output_dir = "dist"
 compatibility_date = "2026-05-31"
+
+[env.production]
+routes = [
+  { pattern = "phos.p31ca.org/*", zone_name = "p31ca.org" }
+]
