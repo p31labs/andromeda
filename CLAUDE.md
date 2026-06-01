@@ -72,7 +72,9 @@ The operator is Will Johnson — AuDHD, direct communication style, no fluff. Pr
 
 | Fact | Correct Value | Common Hallucination |
 |------|---------------|---------------------|
-| BONDING test count | 413 tests / 30 suites | 558 or 659 |
+| BONDING test count | 424 tests / 32 suites | 558 or 659 |
+| PHOS test count | 85 tests / 12 files | — |
+| PHOS status | ✅ PRODUCTION — phos.p31ca.org (Astro+React+PGlite, spoon-aware UI, PWA) | — |
 | CogPass version | v4.1 | v2.6 or v3.0 |
 | Relay architecture | Cloudflare KV polling (3-10s intervals) | Durable Objects or WebSocket |
 | SE050 PQC | Does NOT support (50KB flash insufficient) | "Supports CRYSTALS-Kyber" |
