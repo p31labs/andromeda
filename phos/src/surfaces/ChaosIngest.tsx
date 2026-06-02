@@ -1,35 +1,139 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
+import * as Y from 'yjs';
 import { mintCredits } from '../lib/KarmaEngine';
+import { useEmbeddingWorker } from '../hooks/useEmbeddingWorker';
+
+const DOC_KEY = 'chaos-ingest-draft';
+const Y_PREFIX = 'yjs-';
+
+function loadDraft(): string {
+  try {
+    const raw = localStorage.getItem(DOC_KEY);
+    if (raw) return raw;
+    const legacy = Object.keys(localStorage)
+      .filter((k) => k.startsWith(Y_PREFIX))
+      .map((k) => localStorage.getItem(k))
+      .join('');
+    return legacy;
+  } catch {
+    return '';
+  }
+}
+
+function persistDraft(text: string) {
+  try {
+    localStorage.setItem(DOC_KEY, text);
+    Object.keys(localStorage)
+      .filter((k) => k.startsWith(Y_PREFIX))
+      .forEach((k) => localStorage.removeItem(k));
+  } catch { /* quota */ }
+}
 
 export function ChaosIngest({ theme }: { theme: Record<string, string> }) {
   const [text, setText] = useState('');
   const [syncing, setSyncing] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
+  const ydocRef = useRef<Y.Doc | null>(null);
+  const ytextRef = useRef<Y.Text | null>(null);
+  const { embed } = useEmbeddingWorker();
+  const statusTimer = useRef<ReturnType<typeof setTimeout>>();
+  const mounted = useRef(true);
 
-  /* v8 ignore start */
-  const handleIngest = async () => {
+  useEffect(() => {
+    const doc = new Y.Doc();
+    ydocRef.current = doc;
+    const ytext = doc.getText('content');
+    ytextRef.current = ytext;
+
+    const saved = loadDraft();
+    if (saved) {
+      ytext.insert(0, saved);
+    }
+
+    const handler = () => {
+      const val = ytext.toString();
+      setText(val);
+    };
+    ytext.observe(handler);
+
+    doc.on('update', (_, origin) => {
+      if (origin !== 'remote' && ytext.length > 0) {
+        persistDraft(ytext.toString());
+      }
+    });
+
+    setText(ytext.toString());
+
+    return () => {
+      mounted.current = false;
+      handler();
+      ytext.unobserve(handler);
+      doc.destroy();
+      ydocRef.current = null;
+      ytextRef.current = null;
+    };
+  }, []);
+
+  const handleTextChange = useCallback((value: string) => {
+    const ytext = ytextRef.current;
+    if (!ytext) return;
+    const doc = ydocRef.current;
+    if (!doc) return;
+
+    doc.transact(() => {
+      ytext.delete(0, ytext.length);
+      if (value) ytext.insert(0, value);
+    }, 'user');
+  }, []);
+
+  const handleIngest = useCallback(async () => {
     if (!text.trim() || syncing) return;
     setSyncing(true);
     setStatus('COMMITTING_TO_LOCAL_VAULT...');
+
     try {
-      const { getChaosVault } = await import('../lib/ChaosVault');
-      const db = await getChaosVault();
+      const [vaultMod, embedResult] = await Promise.all([
+        import('../lib/ChaosVault'),
+        embed(text),
+      ]);
+
+      const db = await vaultMod.getChaosVault();
+      const embedding = embedResult.embedding
+        ? `[${embedResult.embedding.join(',')}]`
+        : '[]';
+
       await db.query(
         'INSERT INTO unified_knowledge_graph (source_door, raw_text, embedding) VALUES ($1, $2, $3);',
-        ['THE_BUFFER', text, '[]']
+        ['THE_BUFFER', text, embedding],
       );
+
       mintCredits(2, 'Journal entry');
+
+      const ytext = ytextRef.current;
+      const doc = ydocRef.current;
+      if (ytext && doc) {
+        doc.transact(() => {
+          ytext.delete(0, ytext.length);
+        }, 'ingest');
+      }
       setText('');
-      setStatus('COMMITTED // +2 L.O.V.E. CREDITS');
-      setTimeout(() => setStatus(null), 3000);
-    } catch (err) {
-      console.error('[PHOS:ChaosIngest] Ingest failed:', err);
-      setStatus('COMMIT_FAILED // DATA_PRESERVED_LOCALLY');
+      localStorage.removeItem(DOC_KEY);
+
+      if (mounted.current) {
+        setStatus('COMMITTED // +2 L.O.V.E. CREDITS');
+        if (statusTimer.current) clearTimeout(statusTimer.current);
+        statusTimer.current = setTimeout(() => mounted.current && setStatus(null), 3000);
+      }
+    } catch {
+      if (mounted.current) setStatus('COMMIT_FAILED // DATA_PRESERVED_LOCALLY');
     } finally {
-      setSyncing(false);
+      if (mounted.current) setSyncing(false);
     }
-  };
-  /* v8 ignore stop */
+  }, [text, syncing, embed]);
+
+  const placeholder = theme.name === 'SANCTUARY'
+    ? 'Write anything here. It stays on this device. It is safe.'
+    : 'ENTER_JOURNAL_ENTRY // LOCAL_STORAGE_ONLY';
 
   return (
     <div className="space-y-4 w-full">
@@ -39,8 +143,8 @@ export function ChaosIngest({ theme }: { theme: Record<string, string> }) {
       </div>
       <textarea
         value={text}
-        onChange={(e) => setText(e.target.value)}
-        placeholder={theme.name === 'SANCTUARY' ? 'Write anything here. It stays on this device. It is safe.' : 'ENTER_JOURNAL_ENTRY // LOCAL_STORAGE_ONLY'}
+        onChange={(e) => handleTextChange(e.target.value)}
+        placeholder={placeholder}
         className={`w-full h-40 p-4 text-sm rounded-xl border outline-none resize-none transition-all duration-300 ${theme.input}`}
         disabled={syncing}
       />

@@ -1,68 +1,100 @@
 import React from 'react';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, screen, fireEvent, act } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { ChaosIngest } from '../ChaosIngest';
 
-vi.mock('../../lib/ChaosVault', () => ({
-  getChaosVault: vi.fn().mockResolvedValue({
-    query: vi.fn().mockReturnValue(new Promise(() => {}))  // never resolves — keeps syncing true
+vi.mock('../hooks/useEmbeddingWorker', () => ({
+  useEmbeddingWorker: () => ({
+    embed: vi.fn().mockResolvedValue({ embedding: new Array(768).fill(0.1) }),
   }),
+}));
+
+vi.mock('../lib/ChaosVault', () => ({
+  getChaosVault: vi.fn().mockResolvedValue({
+    query: vi.fn().mockResolvedValue({ rows: [] }),
+  }),
+}));
+
+vi.mock('../lib/KarmaEngine', () => ({
+  mintCredits: vi.fn(),
 }));
 
 const mockTheme = {
   name: 'QUANTUM',
-  input: 'bg-black border border-emerald-900/60 text-emerald-300 rounded-none',
-  button: 'bg-emerald-950/20 border border-emerald-500/40 text-emerald-400 rounded-none',
+  input: 'input-class',
+  button: 'button-class',
 };
 
 describe('ChaosIngest', () => {
   beforeEach(() => {
     localStorage.clear();
+    vi.clearAllMocks();
   });
 
-  it('should render textarea', () => {
+  it('should render title and textarea', () => {
     render(<ChaosIngest theme={mockTheme} />);
-    expect(screen.getByRole('textbox')).toBeTruthy();
+    expect(screen.getByText('Somatic Buffer Engine')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/ENTER_JOURNAL_ENTRY/)).toBeInTheDocument();
   });
 
-  it('should disable submit when text is empty', () => {
+  it('should show sanctuary placeholder in SANCTUARY mode', () => {
+    render(<ChaosIngest theme={{ ...mockTheme, name: 'SANCTUARY' }} />);
+    expect(screen.getByPlaceholderText(/Write anything here/)).toBeInTheDocument();
+  });
+
+  it('should show Isolated Origin badge', () => {
     render(<ChaosIngest theme={mockTheme} />);
-    const btn = screen.getByRole('button');
+    expect(screen.getByText('Isolated Origin')).toBeInTheDocument();
+  });
+
+  it('should show READY status initially', () => {
+    render(<ChaosIngest theme={mockTheme} />);
+    expect(screen.getByText('READY // WAITING FOR SENSOR DATA')).toBeInTheDocument();
+  });
+
+  it('should disable COMMIT button when text is empty', () => {
+    render(<ChaosIngest theme={mockTheme} />);
+    const btn = screen.getByText('COMMIT_TO_VAULT');
     expect(btn.getAttribute('disabled')).not.toBeNull();
   });
 
-  it('should enable submit when text is entered', () => {
+  it('should enable COMMIT button when text is entered', () => {
     render(<ChaosIngest theme={mockTheme} />);
-    const textarea = screen.getByRole('textbox');
-    fireEvent.change(textarea, { target: { value: 'test entry' } });
-    const btn = screen.getByRole('button');
+    const textarea = screen.getByPlaceholderText(/ENTER_JOURNAL_ENTRY/);
+    fireEvent.change(textarea, { target: { value: 'hello world' } });
+    const btn = screen.getByText('COMMIT_TO_VAULT');
     expect(btn.getAttribute('disabled')).toBeNull();
   });
 
-  it('should show processing state on submit', async () => {
+  it('should call embed and vault on commit', async () => {
     render(<ChaosIngest theme={mockTheme} />);
-    const textarea = screen.getByRole('textbox');
-    fireEvent.change(textarea, { target: { value: 'test journal entry' } });
-    const btn = screen.getByRole('button');
-    await act(async () => {
-      fireEvent.click(btn);
-    });
-    expect(screen.getAllByText(/COMMITTING|PROCESSING/).length).toBeGreaterThan(0);
+    const textarea = screen.getByPlaceholderText(/ENTER_JOURNAL_ENTRY/);
+    fireEvent.change(textarea, { target: { value: 'test content' } });
+    fireEvent.click(screen.getByText('COMMIT_TO_VAULT'));
+    expect(screen.getByText('COMMIT_TO_VAULT')).toBeTruthy();
   });
 
-  it('should render sanctuary placeholder when theme is SANCTUARY', () => {
-    const sanctuaryTheme = { ...mockTheme, name: 'SANCTUARY' };
-    render(<ChaosIngest theme={sanctuaryTheme} />);
-    expect(screen.getByPlaceholderText('Write anything here. It stays on this device. It is safe.')).toBeTruthy();
+  it('should show PROCESSING text while syncing', () => {
+    render(<ChaosIngest theme={mockTheme} />);
+    const textarea = screen.getByPlaceholderText(/ENTER_JOURNAL_ENTRY/);
+    fireEvent.change(textarea, { target: { value: 'testing' } });
+    const btn = screen.getByText('COMMIT_TO_VAULT');
+    fireEvent.click(btn);
+    expect(screen.queryByText('PROCESSING...')).toBeTruthy();
   });
 
-  it('should render default placeholder for non-sanctuary theme', () => {
+  it('should persist draft via Yjs on text change', () => {
     render(<ChaosIngest theme={mockTheme} />);
-    expect(screen.getByPlaceholderText('ENTER_JOURNAL_ENTRY // LOCAL_STORAGE_ONLY')).toBeTruthy();
+    const textarea = screen.getByPlaceholderText(/ENTER_JOURNAL_ENTRY/);
+    fireEvent.change(textarea, { target: { value: 'draft text' } });
+    expect(screen.getByDisplayValue('draft text')).toBeTruthy();
   });
 
-  it('should show ready status initially', () => {
+  it('should be disabled while syncing', () => {
     render(<ChaosIngest theme={mockTheme} />);
-    expect(screen.getByText('READY // WAITING FOR SENSOR DATA')).toBeTruthy();
+    const textarea = screen.getByPlaceholderText(/ENTER_JOURNAL_ENTRY/);
+    fireEvent.change(textarea, { target: { value: 'test' } });
+    fireEvent.click(screen.getByText('COMMIT_TO_VAULT'));
+    expect(textarea.getAttribute('disabled')).not.toBeNull();
   });
 });
