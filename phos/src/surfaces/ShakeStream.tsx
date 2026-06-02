@@ -1,7 +1,9 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { getChaosVault } from '../lib/ChaosVault';
 
-const RAG_PROXY = 'http://localhost:4001';
+import { endpoints } from '../config/endpoints';
+
+const RAG_PROXY = endpoints.ragProxy;
 const STREAM_TIMEOUT = 120_000;
 
 interface SearchResult {

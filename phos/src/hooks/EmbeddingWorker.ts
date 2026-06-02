@@ -1,4 +1,6 @@
-const VECTOR_PROXY = 'http://localhost:4000/v1/embeddings';
+import { endpoints } from '../config/endpoints';
+
+const VECTOR_PROXY = endpoints.vectorProxy;
 const MODEL = 'nomic-embed-text:latest';
 const DIMENSIONS = 768;
 

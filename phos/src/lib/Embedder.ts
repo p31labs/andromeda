@@ -1,4 +1,7 @@
+import { endpoints } from '../config/endpoints';
 import { ingestToChaosVault } from './ChaosVault';
+
+const VECTOR_PROXY = endpoints.vectorProxy;
 
 export async function generateEmbedding(text: string): Promise<number[]> {
   try {
