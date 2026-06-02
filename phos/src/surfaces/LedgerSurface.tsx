@@ -1,7 +1,14 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAtmosphere } from '../components/AtmosphereProvider';
-import { getBalance, mintCredits } from '../lib/KarmaEngine';
-import { getHistory } from '../lib/EventLogger';
+import { getBalanceAtomic, mintCreditsAtomic, getLedgerHistory, verifyLedgerIntegrity } from '../lib/KarmaEngine';
+
+interface LedgerEntry {
+  kind: string;
+  delta: number;
+  timestamp: number;
+  signature: string;
+  prevSignature: string;
+}
 
 function relativeTime(ts: number): string {
   const diff = Date.now() - ts;
@@ -15,60 +22,71 @@ function relativeTime(ts: number): string {
 }
 
 export function LedgerSurface({ theme }: { theme: Record<string, string> }) {
-  const [balance, setBalance] = useState(getBalance());
-  const [logs, setLogs] = useState(() => getHistory());
+  const [balance, setBalance] = useState(0);
+  const [logs, setLogs] = useState<LedgerEntry[]>([]);
+  const [integrity, setIntegrity] = useState<{ valid: boolean; count: number } | null>(null);
 
-  const refresh = useCallback(() => {
-    setBalance(getBalance());
-    setLogs(getHistory());
+  const refresh = useCallback(async () => {
+    const [b, h, i] = await Promise.all([
+      getBalanceAtomic(),
+      getLedgerHistory(20),
+      verifyLedgerIntegrity(),
+    ]);
+    setBalance(b);
+    setLogs(h);
+    setIntegrity(i);
   }, []);
 
   useEffect(() => {
+    refresh();
     const interval = setInterval(refresh, 2000);
     return () => clearInterval(interval);
   }, [refresh]);
-
-  const handleCheckIn = () => {
-    mintCredits(5, 'Daily check-in');
-    refresh();
-  };
 
   return (
     <div className="space-y-4 w-full">
       <div className="flex justify-between items-center border-b border-white/5 pb-2">
         <h3 className="text-xs font-mono tracking-widest uppercase opacity-60">LOVE Ledger</h3>
-        <span className="text-sm font-mono font-bold text-orange-400">{balance} LOVE</span>
+        <div className="flex items-center gap-2">
+          {integrity && (
+            <span className={`text-[9px] font-mono ${integrity.valid ? 'text-emerald-400' : 'text-red-400'}`}>
+              {integrity.valid ? '✓ CHAIN VALID' : '⚠ TAMPERED'} ({integrity.count})
+            </span>
+          )}
+          <span className="text-[10px] font-mono rounded px-2 py-0.5 bg-emerald-950/40 text-emerald-400 border border-emerald-900/30">Atomic</span>
+        </div>
       </div>
 
-      <div className="p-4 bg-white/5 border border-white/5 rounded-xl text-center">
-        <div className="text-2xl font-mono font-bold text-orange-300 mb-1">{balance}</div>
-        <div className="text-[10px] font-mono uppercase opacity-40 mb-3">Care Economy Credits</div>
-        <button
-          onClick={handleCheckIn}
-          className="px-4 py-2 text-xs font-mono border border-orange-500/30 text-orange-400 rounded-lg hover:bg-orange-900/20 transition-all"
-        >
-          + Daily Check-in (+5)
-        </button>
+      <div className={`p-6 rounded-xl border border-white/5 text-center ${theme.name === 'CRISIS' ? 'bg-black' : 'bg-white/5'}`}>
+        <span className="text-[9px] font-mono uppercase opacity-40 block mb-1">Care Economy Credits</span>
+        <span className="text-3xl font-mono font-bold tracking-tight">{balance} <span className="text-sm opacity-50">LOVE</span></span>
       </div>
 
-      <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
-        <div className="text-[10px] font-mono uppercase opacity-40 mb-1">Transaction History</div>
+      <div className="space-y-2">
+        <span className="text-[10px] font-mono uppercase opacity-40 block">Transaction History</span>
         {logs.length === 0 ? (
-          <div className="p-4 bg-white/5 border border-white/5 rounded-xl text-center text-xs opacity-40 font-mono">
-            No transactions yet. Complete a daily check-in or journal entry to earn LOVE credits.
-          </div>
+          <p className="text-xs opacity-40 font-mono italic">No transactions yet. Start earning LOVE.</p>
         ) : (
-          [...logs].reverse().map((log, index) => (
-            <div key={index} className="p-2.5 rounded-lg bg-white/5 border border-white/5 font-mono text-[11px] flex justify-between items-start gap-4">
-              <div className="space-y-0.5 flex-1 min-w-0">
-                <span className="text-cyan-400 uppercase font-bold block truncate">{log.type}</span>
-                {log.message && <p className="opacity-80 text-white/70 truncate">{log.message}</p>}
+          <div className="space-y-1.5 max-h-48 overflow-y-auto">
+            {logs.map((entry, i) => (
+              <div key={i} className="flex justify-between items-center text-xs font-mono p-2 rounded bg-white/5 border border-white/5">
+                <div className="flex items-center gap-2">
+                  <span className={entry.delta >= 0 ? 'text-emerald-400' : 'text-red-400'}>
+                    {entry.delta >= 0 ? '+' : ''}{entry.delta}
+                  </span>
+                  <span className="opacity-70">{entry.kind}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  {entry.signature && (
+                    <span className="text-[8px] font-mono opacity-20">
+                      {entry.signature.substring(0, 8)}…
+                    </span>
+                  )}
+                  <span className="opacity-40 text-[10px]">{relativeTime(entry.timestamp)}</span>
+                </div>
               </div>
-              <div className="text-right shrink-0">
-                <div className="text-[9px] opacity-30">{relativeTime(log.timestamp)}</div>
-              </div>
-            </div>
-          ))
+            ))}
+          </div>
         )}
       </div>
     </div>
