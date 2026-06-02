@@ -89,4 +89,9 @@ describe('SurfaceContent', () => {
     expect(screen.getByText('NODE_ZERO // TELEMETRY')).toBeTruthy();
     expect(screen.getByText('LOAD_DEMO_DATA')).toBeTruthy();
   });
+
+  it('should render GRID surface separately from NODE_ZERO', () => {
+    renderSurface('GRID');
+    expect(screen.getByText(/Mesh Topology Loading/)).toBeTruthy();
+  });
 });

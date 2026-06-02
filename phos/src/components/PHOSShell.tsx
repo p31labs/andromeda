@@ -81,8 +81,8 @@ function PHOSShellInner({ skipLoading = false }: { skipLoading?: boolean }) {
 
   if (isLoading) {
     return (
-      <div className={`min-h-screen w-full relative overflow-x-hidden transition-all duration-1000 select-none ${theme.wrapper}`}>
-        <div className="min-h-screen pt-28 pb-12 px-4 flex flex-col items-center justify-start">
+      <div className={`h-screen w-screen overflow-hidden flex flex-col transition-all duration-1000 select-none ${theme.wrapper}`}>
+        <div className="flex-1 overflow-y-auto pt-28 pb-12 px-4 flex flex-col items-center justify-start">
           <div className="mb-10"><PHOSOrb /></div>
           <div className={`w-full ${theme.container}`}>
             <div className="space-y-4 w-full">
@@ -102,7 +102,7 @@ function PHOSShellInner({ skipLoading = false }: { skipLoading?: boolean }) {
   }
 
   return (
-    <div className={`min-h-screen w-full relative overflow-x-hidden transition-all duration-1000 select-none ${theme.wrapper}`}>
+    <div className={`h-screen w-screen overflow-hidden flex flex-col transition-all duration-1000 select-none ${theme.wrapper}`}>
       <style>{`
         @keyframes biomimetic-breath {
           0%, 100% { transform: scale(0.96); opacity: 0.8; box-shadow: 0 0 35px rgba(251,146,60,0.15); }
@@ -128,7 +128,7 @@ function PHOSShellInner({ skipLoading = false }: { skipLoading?: boolean }) {
         onSetSurface={(s) => { setSurface(s); setHudOpen(false); }}
       />
 
-      <main className="min-h-screen pt-28 pb-32 px-4 flex flex-col items-center justify-start z-10 relative" aria-live="polite" aria-label={`${surfaceNames[currentSurface] || currentSurface} surface`}>
+      <main className="flex-1 overflow-y-auto pt-28 pb-32 px-4 flex flex-col items-center justify-start z-10 relative" aria-live="polite" aria-label={`${surfaceNames[currentSurface] || currentSurface} surface`}>
         <div className="mb-10 flex flex-col items-center justify-center">
           <PHOSOrb />
         </div>
@@ -137,8 +137,11 @@ function PHOSShellInner({ skipLoading = false }: { skipLoading?: boolean }) {
             <SurfaceContent currentSurface={currentSurface} setSurface={setSurface} spoons={spoons} theme={theme} />
           </SurfaceErrorBoundary>
         </div>
-        <DemoController />
       </main>
+
+      <div className="relative z-50 flex justify-center pb-4">
+        <DemoController />
+      </div>
     </div>
   );
 }

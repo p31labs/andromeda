@@ -10,6 +10,7 @@ import { RetroVaultSurface } from '../surfaces/RetroVaultSurface';
 import { LedgerSurface } from '../surfaces/LedgerSurface';
 import { ArcadeSurface } from '../surfaces/ArcadeSurface';
 import { NodeZeroSurface } from '../surfaces/NodeZeroSurface';
+import { ConnectionGridSurface } from '../surfaces/ConnectionGridSurface';
 import { HearthSurface } from '../surfaces/HearthSurface';
 import { ShakeStream } from '../surfaces/ShakeStream';
 import { WarehouseSurface } from '../surfaces/WarehouseSurface';
@@ -48,6 +49,8 @@ export function SurfaceContent({ currentSurface, setSurface, spoons, theme: exte
       return <RetroVaultSurface theme={theme} spoons={spoons} />;
 
     case 'GRID':
+      return <ConnectionGridSurface theme={theme} spoons={spoons} />;
+
     case 'NODE_ZERO':
       return <NodeZeroSurface theme={theme} spoons={spoons} />;
 

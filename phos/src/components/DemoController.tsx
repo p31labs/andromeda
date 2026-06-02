@@ -92,9 +92,9 @@ export function DemoController() {
   }, [playing, nextStage]);
 
   return (
-    <div className="sticky bottom-4 z-50 w-full flex justify-center">
+    <div className="w-full max-w-lg">
       <div
-        className="bg-gray-900/80 backdrop-blur-md rounded-lg px-4 py-3 border border-gray-700/50 max-w-lg w-full"
+        className="bg-gray-900/80 backdrop-blur-md rounded-lg px-4 py-3 border border-gray-700/50 w-full"
         style={{ fontFamily: 'monospace', fontSize: '11px', textTransform: 'uppercase' }}
       >
         <div className="flex items-center gap-3 mb-2">
