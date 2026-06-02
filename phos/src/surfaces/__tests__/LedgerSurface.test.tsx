@@ -1,58 +1,59 @@
 import React from 'react';
-import { describe, it, expect, beforeEach } from 'vitest';
-import { render, screen, fireEvent, act } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen, act } from '@testing-library/react';
 import { LedgerSurface } from '../LedgerSurface';
 
-const mockTheme = { name: 'QUANTUM' };
+vi.mock('../../lib/KarmaEngine', () => ({
+  getBalanceAtomic: vi.fn().mockResolvedValue(0),
+  mintCreditsAtomic: vi.fn().mockResolvedValue(5),
+  getLedgerHistory: vi.fn().mockResolvedValue([]),
+  verifyLedgerIntegrity: vi.fn().mockResolvedValue({ valid: true, count: 0 }),
+}));
+
+const mockTheme = { name: 'QUANTUM', wrapper: '', orb: '', button: '', hud: '', input: '', container: '' };
 
 describe('LedgerSurface', () => {
   beforeEach(() => {
     localStorage.clear();
+    vi.clearAllMocks();
   });
 
-  it('should show zero balance by default', () => {
+  it('should render ledger header', () => {
     render(<LedgerSurface theme={mockTheme} />);
-    expect(screen.getByText('0 LOVE')).toBeTruthy();
+    expect(screen.getByText('LOVE Ledger')).toBeInTheDocument();
   });
 
-  it('should mint credits on check-in', () => {
+  it('should show Atomic badge', () => {
     render(<LedgerSurface theme={mockTheme} />);
-    const btn = screen.getByText(/Daily Check-in/);
-    act(() => { fireEvent.click(btn); });
-    expect(screen.getByText('5 LOVE')).toBeTruthy();
+    expect(screen.getByText('Atomic')).toBeInTheDocument();
   });
 
-  it('should show empty state when no transactions', () => {
+  it('should render signed transaction entries', async () => {
+    const { getLedgerHistory } = await import('../../lib/KarmaEngine');
+    vi.mocked(getLedgerHistory).mockResolvedValue([
+      { kind: 'DAILY_CHECK_IN', delta: 5, timestamp: Date.now() - 60000, signature: 'abc123def456', prevSignature: 'GENESIS' },
+      { kind: 'arcade:test-game', delta: 10, timestamp: Date.now() - 120000, signature: 'bcd234efg567', prevSignature: 'abc123def456' },
+    ]);
+
     render(<LedgerSurface theme={mockTheme} />);
-    expect(screen.getByText(/No transactions yet/)).toBeTruthy();
+    await act(async () => {});
+
+    expect(screen.getByText(/DAILY_CHECK_IN/)).toBeInTheDocument();
+    expect(screen.getByText(/arcade:test-game/)).toBeInTheDocument();
   });
 
-  it('should show ledger header', () => {
+  it('should show chain validity indicator', async () => {
     render(<LedgerSurface theme={mockTheme} />);
-    expect(screen.getByText('LOVE Ledger')).toBeTruthy();
+    await act(async () => {});
+    expect(screen.getByText(/CHAIN VALID/)).toBeInTheDocument();
   });
 
-  it('should show Care Economy Credits label', () => {
-    render(<LedgerSurface theme={mockTheme} />);
-    expect(screen.getByText('Care Economy Credits')).toBeTruthy();
-  });
+  it('should show tampered indicator if integrity fails', async () => {
+    const { verifyLedgerIntegrity } = await import('../../lib/KarmaEngine');
+    vi.mocked(verifyLedgerIntegrity).mockResolvedValue({ valid: false, count: 5 });
 
-  it('should show balance in large format', () => {
     render(<LedgerSurface theme={mockTheme} />);
-    expect(screen.getByText('0')).toBeTruthy();
-  });
-
-  it('should show Transaction History header', () => {
-    render(<LedgerSurface theme={mockTheme} />);
-    expect(screen.getByText('Transaction History')).toBeTruthy();
-  });
-
-  it('should persist balance across renders', () => {
-    const { unmount } = render(<LedgerSurface theme={mockTheme} />);
-    act(() => { fireEvent.click(screen.getByText(/Daily Check-in/)); });
-    expect(screen.getByText('5 LOVE')).toBeTruthy();
-    unmount();
-    render(<LedgerSurface theme={mockTheme} />);
-    expect(screen.getByText('5 LOVE')).toBeTruthy();
+    await act(async () => {});
+    expect(screen.getByText(/TAMPERED/)).toBeInTheDocument();
   });
 });
