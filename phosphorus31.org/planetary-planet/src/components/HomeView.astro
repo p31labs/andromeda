@@ -1,4 +1,5 @@
 ---
+import { SITE_DATA } from '../data/site-data';
 ---
 
 <main class="animate-[fadeIn_0.4s_ease-out]">
@@ -56,7 +57,7 @@
   <section class="bg-teal-900 text-white py-12">
     <div class="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8 divide-x divide-teal-700/50">
       <div class="text-center">
-        <div class="text-4xl font-black font-heading text-butter mb-2">413</div>
+        <div class="text-4xl font-black font-heading text-butter mb-2">{SITE_DATA.metrics.bondingTestCount}</div>
         <div class="text-sm font-medium text-cloud/80 uppercase tracking-widest">BONDING Tests</div>
       </div>
       <div class="text-center">
@@ -64,7 +65,7 @@
         <div class="text-sm font-medium text-cloud/80 uppercase tracking-widest">Open Source</div>
       </div>
       <div class="text-center">
-        <div class="text-4xl font-black font-heading text-coral-500 mb-2">26+</div>
+        <div class="text-4xl font-black font-heading text-coral-500 mb-2">{SITE_DATA.metrics.phosSurfaces}</div>
         <div class="text-sm font-medium text-cloud/80 uppercase tracking-widest">Hub + Suite Routes</div>
       </div>
       <div class="text-center">
@@ -241,3 +242,6 @@
     </div>
   </section>
 </main>
+
+
+
