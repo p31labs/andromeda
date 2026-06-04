@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useAtmosphere } from '../components/AtmosphereProvider';
-import { getBalanceAtomic, mintCreditsAtomic, getLedgerHistory, verifyLedgerIntegrity } from '../lib/KarmaEngine';
+import { getBalanceAtomic, getLedgerHistory, verifyLedgerIntegrity } from '../lib/KarmaEngine';
 
 interface LedgerEntry {
   kind: string;
@@ -8,6 +7,14 @@ interface LedgerEntry {
   timestamp: number;
   signature: string;
   prevSignature: string;
+}
+
+interface LedgerData {
+  loveTokens: number;
+  deferredSlices: number;
+  sablierStreamRate: string;
+  integrity: { valid: boolean; count: number } | null;
+  history: LedgerEntry[];
 }
 
 function relativeTime(ts: number): string {
@@ -22,20 +29,21 @@ function relativeTime(ts: number): string {
 }
 
 export function LedgerSurface({ theme }: { theme: Record<string, string> }) {
-  const [balance, setBalance] = useState(0);
-  const [logs, setLogs] = useState<LedgerEntry[]>([]);
-  const [integrity, setIntegrity] = useState<{ valid: boolean; count: number } | null>(null);
+  const [data, setData] = useState<LedgerData>({
+    loveTokens: 0,
+    deferredSlices: 0,
+    sablierStreamRate: '0.000000',
+    integrity: null,
+    history: [],
+  });
 
-  /* v8 ignore start */
   const refresh = useCallback(async () => {
     const [b, h, i] = await Promise.all([
       getBalanceAtomic(),
       getLedgerHistory(20),
       verifyLedgerIntegrity(),
     ]);
-    setBalance(b);
-    setLogs(h);
-    setIntegrity(i);
+    setData((prev) => ({ ...prev, loveTokens: b, history: h, integrity: i }));
   }, []);
 
   useEffect(() => {
@@ -43,34 +51,70 @@ export function LedgerSurface({ theme }: { theme: Record<string, string> }) {
     const interval = setInterval(refresh, 2000);
     return () => clearInterval(interval);
   }, [refresh]);
-  /* v8 ignore stop */
 
   return (
-    <div className="space-y-4 w-full">
-      <div className="flex justify-between items-center border-b border-white/5 pb-2">
-        <h3 className="text-xs font-mono tracking-widest uppercase opacity-60">LOVE Ledger</h3>
-        <div className="flex items-center gap-2">
-          {integrity && (
-            <span className={`text-[9px] font-mono ${integrity.valid ? 'text-emerald-400' : 'text-red-400'}`}>
-              {integrity.valid ? '✓ CHAIN VALID' : '⚠ TAMPERED'} ({integrity.count})
-            </span>
-          )}
-          <span className="text-[10px] font-mono rounded px-2 py-0.5 bg-emerald-950/40 text-emerald-400 border border-emerald-900/30">Atomic</span>
-        </div>
+    <div className="p-6 bg-purple-950/20 text-slate-100 min-h-screen font-mono border border-purple-500/30">
+      <header className="border-b border-purple-500/30 pb-4 mb-6">
+        <h1 className="text-2xl text-purple-400 font-bold tracking-wider">PHOS BIFURCATED BALANCE LEDGER</h1>
+        <p className="text-xs text-slate-400">STATUS: AUDIT-COMPLIANT | JURISPRUDENTIAL ISOLATION ACTIVE</p>
+      </header>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* TRANCHE 1: OPERATIONAL LEDGER (THE VAN CAMP SHIELD) */}
+        <section className="border border-purple-500/20 bg-black/40 p-4 rounded-sm shadow-inner">
+          <h2 className="text-sm tracking-widest text-purple-300 font-bold uppercase mb-3 border-b border-purple-500/10 pb-1">
+            Tranche 1: Operational Base Payroll (Intellectual Energy)
+          </h2>
+          <div className="space-y-2 text-xs">
+            <div className="flex justify-between">
+              <span className="text-slate-400">SABLIER STREAM RATE:</span>
+              <span className="text-green-400 font-bold">{data.sablierStreamRate} USDC/sec</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-slate-400">DEFERRED SLICING PIE DEBT:</span>
+              <span className="text-amber-400 font-bold">{data.deferredSlices} SLICES (2x/4x Multiplier Loaded)</span>
+            </div>
+          </div>
+          <p className="text-[10px] text-slate-500 mt-4 leading-normal italic">
+            Notice: This data tracks corporate operational inputs at fair market rates, fully compensating the marital community and triggering the Van Camp protective shield.
+          </p>
+        </section>
+
+        {/* TRANCHE 3: ONTOLOGICAL LEDGER (THE L.O.V.E. ECONOMY) */}
+        <section className="border border-purple-500/20 bg-black/40 p-4 rounded-sm shadow-inner">
+          <h2 className="text-sm tracking-widest text-purple-300 font-bold uppercase mb-3 border-b border-purple-500/10 pb-1">
+            Tranche 3: Ontological Care Ledger (Emotional Energy)
+          </h2>
+          <div className="space-y-2 text-xs">
+            <div className="flex justify-between">
+              <span className="text-slate-400">FOUNDING NODE DIVIDEND WEIGHT:</span>
+              <span className="text-purple-400 font-bold">50.00% (Sovereignty Pool Locked)</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-slate-400">ACCUMULATED L.O.V.E. BALANCE:</span>
+              <span className="text-purple-300 font-bold">{data.loveTokens} PoC Tokens</span>
+            </div>
+            {data.integrity && (
+              <div className="flex justify-between">
+                <span className="text-slate-400">CHAIN INTEGRITY:</span>
+                <span className={data.integrity.valid ? 'text-emerald-400' : 'text-red-400'}>
+                  {data.integrity.valid ? '✓ VALID' : '⚠ TAMPERED'} ({data.integrity.count} entries)
+                </span>
+              </div>
+            )}
+          </div>
+          <p className="text-[10px] text-slate-500 mt-4 leading-normal italic">
+            Notice: L.O.V.E. tokens are soulbound assets tracking direct biological and physical care metrics via Proof of Care consensus. Completely separate from business labor assets.
+          </p>
+        </section>
       </div>
 
-      <div className={`p-6 rounded-xl border border-white/5 text-center ${theme.name === 'CRISIS' ? 'bg-black' : 'bg-white/5'}`}>
-        <span className="text-[9px] font-mono uppercase opacity-40 block mb-1">Care Economy Credits</span>
-        <span className="text-3xl font-mono font-bold tracking-tight">{balance} <span className="text-sm opacity-50">LOVE</span></span>
-      </div>
-
-      <div className="space-y-2">
-        <span className="text-[10px] font-mono uppercase opacity-40 block">Transaction History</span>
-        {logs.length === 0 ? (
-          <p className="text-xs opacity-40 font-mono italic">No transactions yet. Start earning LOVE.</p>
-        ) : (
+      {/* TRANSACTION HISTORY */}
+      {data.history.length > 0 && (
+        <div className="mt-6 space-y-2">
+          <h3 className="text-xs font-mono uppercase opacity-40">Transaction History</h3>
           <div className="space-y-1.5 max-h-48 overflow-y-auto">
-            {logs.map((entry, i) => (
+            {data.history.map((entry, i) => (
               <div key={i} className="flex justify-between items-center text-xs font-mono p-2 rounded bg-white/5 border border-white/5">
                 <div className="flex items-center gap-2">
                   <span className={entry.delta >= 0 ? 'text-emerald-400' : 'text-red-400'}>
@@ -89,8 +133,8 @@ export function LedgerSurface({ theme }: { theme: Record<string, string> }) {
               </div>
             ))}
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }
