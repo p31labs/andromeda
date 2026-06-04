@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import { useAtmosphere } from '../components/AtmosphereProvider';
 
 const TELEMETRY_DB = 'idb://p31-telemetry';
 const NAV_LOG_KEY = 'phos-nav-log';

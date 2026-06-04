@@ -43,7 +43,6 @@ export function NodeZeroSurface({ theme, spoons }: { theme: Record<string, strin
     if (now - throttleRef.current < UI_THROTTLE_MS) return;
     throttleRef.current = now;
 
-    // Circular buffer: push new, trim to max
     bufferRef.current.push(telemetry);
     if (bufferRef.current.length > TELEMETRY_BUFFER_SIZE) {
       bufferRef.current = bufferRef.current.slice(-TELEMETRY_BUFFER_SIZE);

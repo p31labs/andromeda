@@ -178,6 +178,67 @@ vi.mock('lucide-react', () => {
   };
 });
 
+// Mock WebWorker for ChaosIngest embedding worker
+class MockWorker {
+  onmessage: ((e: MessageEvent) => void) | null = null;
+  onerror: ((e: ErrorEvent) => void) | null = null;
+  private _url: string;
+
+  constructor(url: string | URL, options?: WorkerOptions) {
+    this._url = typeof url === 'string' ? url : url.toString();
+  }
+
+  postMessage(_message: unknown) {
+    // Simulate async embedding response
+    setTimeout(() => {
+      if (this.onmessage) {
+        this.onmessage(new MessageEvent('message', {
+          data: {
+            type: 'embed-result',
+            id: 'mock-1',
+            embedding: new Array(768).fill(0.001),
+          },
+        }));
+      }
+    }, 10);
+  }
+
+  terminate() {}
+  addEventListener() {}
+  removeEventListener() {}
+  dispatchEvent() { return false; }
+}
+
+Object.defineProperty(globalThis, 'Worker', { value: MockWorker, writable: true, configurable: true });
+
+// Mock Y.js for ChaosIngest CRDT textarea
+const mockYDoc = {
+  getText: () => ({
+    insert: () => {},
+    delete: () => {},
+    toString: () => '',
+    length: 0,
+    observe: () => {},
+    unobserve: () => {},
+    _observers: [],
+  }),
+  transact: (fn: Function) => fn(),
+  on: () => {},
+  off: () => {},
+  destroy: () => {},
+  whenLoaded: Promise.resolve(),
+};
+
+vi.mock('yjs', () => ({
+  Doc: class {
+    getText(name: string) { return mockYDoc.getText(name); }
+    transact(fn: Function) { return fn(); }
+    on() {}
+    off() {}
+    destroy() {}
+  },
+}));
+
 beforeEach(() => {
   window.localStorage.clear();
   vi.clearAllMocks();

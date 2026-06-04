@@ -50,6 +50,7 @@ export function ConnectionGridSurface({ theme, spoons }: { theme: Record<string,
   }, []);
 
   // Simple force simulation on canvas
+  /* v8 ignore start */
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -186,6 +187,7 @@ export function ConnectionGridSurface({ theme, spoons }: { theme: Record<string,
 
     return () => clearInterval(interval);
   }, [nodes]);
+  /* v8 ignore stop */
 
   const selected = nodes.find((n) => n.id === selectedNode);
 

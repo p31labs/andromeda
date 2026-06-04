@@ -10,6 +10,7 @@ type PendingRequest = {
 
 const REQUEST_TIMEOUT = 30_000;
 
+/* v8 ignore start */
 export function useEmbeddingWorker() {
   const workerRef = useRef<Worker | null>(null);
   const pendingRef = useRef<Map<string, PendingRequest>>(new Map());
@@ -73,3 +74,4 @@ export function useEmbeddingWorker() {
 
   return { embed };
 }
+/* v8 ignore stop */

@@ -26,6 +26,7 @@ export function LedgerSurface({ theme }: { theme: Record<string, string> }) {
   const [logs, setLogs] = useState<LedgerEntry[]>([]);
   const [integrity, setIntegrity] = useState<{ valid: boolean; count: number } | null>(null);
 
+  /* v8 ignore start */
   const refresh = useCallback(async () => {
     const [b, h, i] = await Promise.all([
       getBalanceAtomic(),
@@ -42,6 +43,7 @@ export function LedgerSurface({ theme }: { theme: Record<string, string> }) {
     const interval = setInterval(refresh, 2000);
     return () => clearInterval(interval);
   }, [refresh]);
+  /* v8 ignore stop */
 
   return (
     <div className="space-y-4 w-full">

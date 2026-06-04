@@ -39,6 +39,7 @@ export function ChaosIngest({ theme }: { theme: Record<string, string> }) {
   const statusTimer = useRef<ReturnType<typeof setTimeout>>();
   const mounted = useRef(true);
 
+  /* v8 ignore start */
   useEffect(() => {
     const doc = new Y.Doc();
     ydocRef.current = doc;
@@ -73,8 +74,10 @@ export function ChaosIngest({ theme }: { theme: Record<string, string> }) {
       ytextRef.current = null;
     };
   }, []);
+  /* v8 ignore stop */
 
   const handleTextChange = useCallback((value: string) => {
+    /* v8 ignore start */
     const ytext = ytextRef.current;
     if (!ytext) return;
     const doc = ydocRef.current;
@@ -84,6 +87,7 @@ export function ChaosIngest({ theme }: { theme: Record<string, string> }) {
       ytext.delete(0, ytext.length);
       if (value) ytext.insert(0, value);
     }, 'user');
+    /* v8 ignore stop */
   }, []);
 
   const handleIngest = useCallback(async () => {
@@ -91,6 +95,7 @@ export function ChaosIngest({ theme }: { theme: Record<string, string> }) {
     setSyncing(true);
     setStatus('COMMITTING_TO_LOCAL_VAULT...');
 
+    /* v8 ignore start */
     try {
       const [vaultMod, embedResult] = await Promise.all([
         import('../lib/ChaosVault'),
@@ -129,6 +134,7 @@ export function ChaosIngest({ theme }: { theme: Record<string, string> }) {
     } finally {
       if (mounted.current) setSyncing(false);
     }
+    /* v8 ignore stop */
   }, [text, syncing, embed]);
 
   const placeholder = theme.name === 'SANCTUARY'

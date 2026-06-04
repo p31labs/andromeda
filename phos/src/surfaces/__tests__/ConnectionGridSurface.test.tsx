@@ -9,13 +9,24 @@ describe('ConnectionGridSurface', () => {
     expect(screen.getByText(/CONNECTION_GRID/)).toBeTruthy();
   });
 
-  it('should show loading state', () => {
+  it('should show LIVE badge', () => {
     render(<ConnectionGridSurface theme={{ name: 'QUANTUM' }} spoons={3} />);
-    expect(screen.getByText(/Mesh Topology Loading/)).toBeTruthy();
+    expect(screen.getByText('LIVE')).toBeTruthy();
   });
 
-  it('should show discovering nodes message', () => {
+  it('should show online node count', () => {
     render(<ConnectionGridSurface theme={{ name: 'QUANTUM' }} spoons={3} />);
-    expect(screen.getByText(/Discovering nodes on the delta network/)).toBeTruthy();
+    expect(screen.getByText(/\d+\/\d+ ONLINE/)).toBeTruthy();
+  });
+
+  it('should render node buttons', () => {
+    render(<ConnectionGridSurface theme={{ name: 'QUANTUM' }} spoons={3} />);
+    expect(screen.getByText('PHOS Core')).toBeTruthy();
+    expect(screen.getByText('CF Edge')).toBeTruthy();
+  });
+
+  it('should render canvas element', () => {
+    const { container } = render(<ConnectionGridSurface theme={{ name: 'QUANTUM' }} spoons={3} />);
+    expect(container.querySelector('canvas')).toBeTruthy();
   });
 });

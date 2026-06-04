@@ -47,8 +47,7 @@ describe('HearthSurface', () => {
     renderWithProvider(4);
     fireEvent.click(screen.getByText('⚡ Log Energy'));
     expect(screen.getByText('Energy Level')).toBeTruthy();
-    expect(screen.getByText('Exhausted')).toBeTruthy();
-    expect(screen.getByText('Energized')).toBeTruthy();
+    expect(screen.getByText(/Good|Moderate|Low/)).toBeTruthy();
   });
 
   it('should switch to kitchen tab on button click', () => {

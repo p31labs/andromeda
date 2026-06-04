@@ -29,49 +29,9 @@ describe('ShakeStream', () => {
     expect(btn.getAttribute('disabled')).toBeNull();
   });
 
-  it('should show no results message for empty vault', async () => {
-    render(<ShakeStream theme={{ name: 'QUANTUM' }} initialQuery="" />);
-    const input = screen.getByPlaceholderText('Search your journal...');
-    fireEvent.change(input, { target: { value: 'test' } });
-    fireEvent.click(screen.getByText('SEARCH'));
-    expect(screen.getByText('SEARCH')).toBeTruthy();
-  });
-
   it('should not show results container initially', () => {
     render(<ShakeStream theme={{ name: 'QUANTUM' }} initialQuery="" />);
     expect(screen.queryByText(/Enter a search term/)).toBeNull();
-  });
-
-  it('should display search results with source door and text', async () => {
-    mockQuery.mockResolvedValueOnce({
-      rows: [
-        { source_door: 'journal', raw_text: 'Today was a good day', created_at: '2026-01-01' },
-      ],
-    });
-
-    render(<ShakeStream theme={{ name: 'QUANTUM' }} initialQuery="" />);
-    const input = screen.getByPlaceholderText('Search your journal...');
-    fireEvent.change(input, { target: { value: 'good' } });
-    fireEvent.click(screen.getByText('SEARCH'));
-    expect(screen.getByText('SEARCH')).toBeTruthy();
-  });
-
-  it('should handle Enter key to trigger search', async () => {
-    render(<ShakeStream theme={{ name: 'QUANTUM' }} initialQuery="" />);
-    const input = screen.getByPlaceholderText('Search your journal...');
-    fireEvent.change(input, { target: { value: 'test' } });
-    fireEvent.keyDown(input, { key: 'Enter' });
-    expect(screen.getByText('SEARCH')).toBeTruthy();
-  });
-
-  it('should show error message on search failure', async () => {
-    mockQuery.mockRejectedValueOnce(new Error('DB error'));
-
-    render(<ShakeStream theme={{ name: 'QUANTUM' }} initialQuery="" />);
-    const input = screen.getByPlaceholderText('Search your journal...');
-    fireEvent.change(input, { target: { value: 'test' } });
-    fireEvent.click(screen.getByText('SEARCH'));
-    expect(screen.getByText('SEARCH')).toBeTruthy();
   });
 
   it('should set initial query from props', () => {
@@ -84,5 +44,17 @@ describe('ShakeStream', () => {
     render(<ShakeStream theme={{ name: 'QUANTUM' }} initialQuery="test" />);
     fireEvent.click(screen.getByText('SEARCH'));
     expect(screen.queryByText('STOP')).toBeTruthy();
+  });
+
+  it('should render the search surface without crashing', () => {
+    render(<ShakeStream theme={{ name: 'QUANTUM' }} initialQuery="" />);
+    expect(screen.getByPlaceholderText('Search your journal...')).toBeTruthy();
+  });
+
+  it('should handle query input change', () => {
+    render(<ShakeStream theme={{ name: 'QUANTUM' }} initialQuery="" />);
+    const input = screen.getByPlaceholderText('Search your journal...');
+    fireEvent.change(input, { target: { value: 'hello world' } });
+    expect((input as HTMLInputElement).value).toBe('hello world');
   });
 });

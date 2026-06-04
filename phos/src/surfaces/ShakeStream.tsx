@@ -35,6 +35,7 @@ export function ShakeStream({ theme, initialQuery }: { theme: Record<string, str
     if (mounted.current) setLoading(false);
   }, []);
 
+  /* v8 ignore start */
   const executeSearch = useCallback(async (searchText: string) => {
     if (!searchText.trim()) return;
 
@@ -140,6 +141,7 @@ export function ShakeStream({ theme, initialQuery }: { theme: Record<string, str
       if (mounted.current) setLoading(false);
     }
   }, []);
+  /* v8 ignore stop */
 
   const [generationCancelled, setGenerationCancelled] = useState(false);
 

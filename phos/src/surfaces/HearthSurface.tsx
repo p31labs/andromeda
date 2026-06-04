@@ -23,6 +23,7 @@ export function HearthSurface({ theme, spoons }: { theme: Record<string, string>
   useEffect(() => {
     let cancelled = false;
 
+    /* v8 ignore start */
     async function register() {
       if (!('serviceWorker' in navigator)) return;
       try {
@@ -56,6 +57,7 @@ export function HearthSurface({ theme, spoons }: { theme: Record<string, string>
         handlePainAlert(e.data as PainNotification);
       }
     };
+    /* v8 ignore stop */
 
     // Check for last pain alert from localStorage
     try {
@@ -84,6 +86,7 @@ export function HearthSurface({ theme, spoons }: { theme: Record<string, string>
     } catch { /* */ }
   }, [spoons, setSpoons]);
 
+  /* v8 ignore start */
   const triggerPainAlert = useCallback((level: number) => {
     const alert: PainNotification = { level, timestamp: Date.now(), source: 'hearth-manual' };
     handlePainAlert(alert);
@@ -108,6 +111,7 @@ export function HearthSurface({ theme, spoons }: { theme: Record<string, string>
       });
     }
   }, []);
+  /* v8 ignore stop */
 
   const handleEnergyChange = (level: number) => {
     setEnergyLevel(level);

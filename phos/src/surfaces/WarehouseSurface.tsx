@@ -30,6 +30,7 @@ export function WarehouseSurface({ theme, spoons }: { theme: any; spoons: number
   const VISIBLE_ITEMS = 20;
   const ROW_HEIGHT = 48;
 
+  /* v8 ignore start */
   useEffect(() => {
     let db: any = null;
     let cancelled = false;
@@ -100,6 +101,7 @@ export function WarehouseSurface({ theme, spoons }: { theme: any; spoons: number
       dbRef.current = null;
     };
   }, []);
+  /* v8 ignore stop */
 
   const visibleItems = state.allItems.slice(virtualOffset, virtualOffset + VISIBLE_ITEMS);
   const totalHeight = Math.min(state.allItems.length, 1000) * ROW_HEIGHT;

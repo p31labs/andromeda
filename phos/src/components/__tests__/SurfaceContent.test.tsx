@@ -86,12 +86,13 @@ describe('SurfaceContent', () => {
 
   it('should render NODE_ZERO surface', () => {
     renderSurface('NODE_ZERO');
-    expect(screen.getByText('NODE_ZERO // TELEMETRY')).toBeTruthy();
-    expect(screen.getByText('LOAD_DEMO_DATA')).toBeTruthy();
+    expect(screen.getByText('Node Zero Bridge')).toBeTruthy();
+    expect(screen.getByText('DISCOVERING')).toBeTruthy();
   });
 
   it('should render GRID surface separately from NODE_ZERO', () => {
     renderSurface('GRID');
-    expect(screen.getByText(/Mesh Topology Loading/)).toBeTruthy();
+    expect(screen.getByText(/CONNECTION_GRID/)).toBeTruthy();
+    expect(screen.getByText(/MESH_TOPOLOGY/)).toBeTruthy();
   });
 });

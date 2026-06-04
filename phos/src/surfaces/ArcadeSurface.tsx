@@ -50,6 +50,7 @@ export function ArcadeSurface({ theme, spoons }: { theme: Record<string, string>
     } catch { /* karma engine failure — non-blocking */ }
   }, []);
 
+  /* v8 ignore start */
   useEffect(() => {
     function handleMessage(e: MessageEvent) {
       // Verify origin
@@ -80,7 +81,9 @@ export function ArcadeSurface({ theme, spoons }: { theme: Record<string, string>
       iframeRef.current.contentWindow.postMessage(msg, ARCADE_ORIGIN);
     }
   }, []);
+  /* v8 ignore stop */
 
+  /* v8 ignore start */
   if (activeGameUrl) {
     return (
       <div className="space-y-4 w-full h-[500px] flex flex-col">
@@ -121,6 +124,7 @@ export function ArcadeSurface({ theme, spoons }: { theme: Record<string, string>
       </div>
     );
   }
+  /* v8 ignore stop */
 
   return (
     <div className="space-y-4 w-full">

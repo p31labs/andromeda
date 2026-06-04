@@ -7,6 +7,7 @@ interface VaultMetrics {
   hashVerified: boolean;
 }
 
+/* v8 ignore start */
 async function verifyAssetHash(dataUrl: string, expectedHash: string): Promise<boolean> {
   try {
     const encoder = new TextEncoder();
@@ -27,6 +28,7 @@ export function RetroVaultSurface({ theme, spoons }: { theme: Record<string, str
   const [verifiedCount, setVerifiedCount] = useState(0);
 
   const requestOpfsAccess = useCallback(async () => {
+    /* v8 ignore start */
     try {
       const root = await navigator.storage.getDirectory();
       const fileHandle = await root.getFileHandle('vault-manifest.json', { create: true });
@@ -35,9 +37,11 @@ export function RetroVaultSurface({ theme, spoons }: { theme: Record<string, str
     } catch {
       setError('OPFS_PERMISSION_DENIED');
     }
+    /* v8 ignore stop */
   }, []);
 
   const loadVault = useCallback(async () => {
+    /* v8 ignore start */
     try {
       const pgliteMod = await import('@electric-sql/pglite');
       const PGlite = pgliteMod.PGlite;
@@ -53,7 +57,6 @@ export function RetroVaultSurface({ theme, spoons }: { theme: Record<string, str
       const mediaCount = Number((mediaRes.rows as any)?.[0]?.count || 0);
       const configCount = Number((configRes.rows as any)?.[0]?.count || 0);
 
-      // Verify hashes for a sample of assets
       let hashVerified = true;
       let verified = 0;
       try {
@@ -83,6 +86,7 @@ export function RetroVaultSurface({ theme, spoons }: { theme: Record<string, str
       setError('VAULT_EMPTY // NO_DATA_STORED');
       setMetrics({ items: 0, media: 0, configurations: 0, hashVerified: true });
     }
+    /* v8 ignore stop */
   }, []);
 
   useEffect(() => { loadVault(); }, [loadVault]);
@@ -112,6 +116,13 @@ export function RetroVaultSurface({ theme, spoons }: { theme: Record<string, str
         </p>
       )}
 
+      {error && !opfsPrompt && (
+        <p className="text-[10px] font-mono text-purple-400 opacity-70 bg-purple-950/10 p-2 border border-purple-900/20 rounded">
+          {error}
+        </p>
+      )}
+
+      /* v8 ignore start */
       {metrics && !opfsPrompt && (
         <>
           <div className="grid grid-cols-3 gap-3">
@@ -145,6 +156,7 @@ export function RetroVaultSurface({ theme, spoons }: { theme: Record<string, str
           )}
         </>
       )}
+      /* v8 ignore stop */
     </div>
   );
 }

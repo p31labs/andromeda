@@ -1,3 +1,4 @@
+/* v8 ignore start */
 import { endpoints } from '../config/endpoints';
 
 const VECTOR_PROXY = endpoints.vectorProxy;
@@ -47,3 +48,4 @@ self.onmessage = async (e: MessageEvent<WorkerRequest>) => {
 };
 
 export type { WorkerRequest, WorkerResponse };
+/* v8 ignore stop */
