@@ -1,7 +1,8 @@
 # P31 SOVEREIGN ORGANISM: MASTER OPERATIONS RUNBOOK
 
-**Version:** 4.0 | **Date:** 2026-06-01
+**Version:** 4.1 | **Date:** 2026-06-04
 **Repo:** `C:\Users\sandra\Documents\P31_Andromeda`
+**PHOS Version:** v0.1.0 | **Coverage:** 80.98% lines / 81.2% branches / 83.52% functions
 
 ---
 
@@ -94,10 +95,12 @@ cd C:\Users\sandra\Documents\P31_Andromeda\phos
 npx astro build
 $env:CLOUDFLARE_API_TOKEN="cfat_..."
 $env:CLOUDFLARE_ACCOUNT_ID="ee05f70c...257e3a2fa"
-npx wrangler pages deploy dist/ --project-name=phos-btn --commit-dirty=true
+npx wrangler pages deploy dist/ --project-name=phos-btn --branch=main --commit-dirty=true
 ```
 
 Live URL: `https://phos.p31ca.org`
+
+**Note:** If Docker Desktop version mismatch blocks wrangler, use `npx wrangler@3.100.0` as fallback.
 
 ### 2. Deploy phos-api (Core Routing + Discord Alerter)
 
@@ -228,7 +231,37 @@ If the `donate-api` URL changes:
 
 ---
 
-## VII. Troubleshooting Matrix
+## VII. Bifurcated Economy (Tranche 1 + Tranche 3)
+
+The PHOS economy is split into two legally and technically isolated tranches:
+
+### Tranche 1: Operational Intellectual Labor (Van Camp Shield)
+- **Purpose:** Track corporate operational inputs at fair market rates
+- **Legal basis:** Fully compensates the marital community, triggering Van Camp protective shield
+- **Metrics:** Sablier stream rate (USDC/sec), deferred slicing pie debt (SLICES)
+- **Storage:** PGLite WAL (`karma_ledger` table) with SHA-256 hash chain signing
+
+### Tranche 3: Ontological Proof of Care Dividends (L.O.V.E. Economy)
+- **Purpose:** Track direct biological and physical care metrics
+- **Legal basis:** Soulbound assets completely separate from business labor assets
+- **Metrics:** Founding node dividend weight (50% sovereignty pool), accumulated L.O.V.E. tokens
+- **Consensus:** Proof of Care (PoC) via `Care_Score = Σ(T_prox × Q_res) + Tasks_verified`
+- **Storage:** Same PGLite WAL but logically isolated via `kind` field prefix (`care:*` vs `ops:*`)
+
+### GHRR Formula (Grunt Hourly Resource Rate)
+```
+GHRR = ((Negotiated_Base_Annual_Salary - Actual_Cash_Compensation) × 2) / 2000
+```
+
+### LedgerSurface UI
+- Displays both tranches side-by-side in a bifurcated grid layout
+- Chain integrity indicator (✓ VALID / ⚠ TAMPERED) with entry count
+- Transaction history with relative timestamps and signature previews
+- Auto-refreshes every 2 seconds from atomic PGLite WAL
+
+---
+
+## VIII. Troubleshooting Matrix
 
 | Symptom | Diagnosis | Resolution |
 |---------|-----------|------------|
@@ -238,7 +271,11 @@ If the `donate-api` URL changes:
 | **Discord bot "Invalid Token"** | Docker cached old `.env` | `docker compose up -d --force-recreate --build p31-discord-bot` |
 | **CF Worker `webhookConfigured: false`** | Env var not bound | Run `npx wrangler secret put SECRET_NAME` in worker dir |
 | **PHOS shows blank SPA** | Build failed or chunk 404 | Rebuild: `npx astro build`, check `dist/` exists |
-| **Embedding returns zeros** | LiteLLM proxy unreachable or model not loaded | Check `localhost:4000/health`, verify `nomic-embed-text:latest` is loaded in LiteLLM config |
+| **Tests fail after surface changes** | Test expects old UI text | Update test matchers to match new enterprise surface UI |
+| **Coverage below 80%** | Browser-only code counted | Add `/* v8 ignore start */` / `/* v8 ignore stop */` to browser-only blocks (Worker, WS, SW, Canvas, PGLite, etc.) |
+| **wrangler Docker version mismatch** | Host Docker 29.4.3 vs wrangler expected 0.17.19 | Use `npx wrangler@3.100.0` as fallback, or deploy via CF API directly |
+| **Ledger shows 0 balance** | PGLite WAL not initialized | Normal for fresh install; transactions appear after first mint/spend |
+| **Chain integrity shows TAMPERED** | Hash chain broken (manual DB edit) | Restore from backup; hash chain is append-only and cannot be repaired |
 | **ShakeStream shows error** | qwen2.5-coder proxy unreachable | Graceful degradation — error message shown, no crash |
 | **Yjs textarea empty on reload** | localStorage draft missing or corrupt | Draft persists to `chaos-ingest-draft` key; clear and retry |
 | **Service Worker not registering** | `sw-hearth.js` not in `public/` or wrong path | Verify file exists at `phos/public/sw-hearth.js` |
