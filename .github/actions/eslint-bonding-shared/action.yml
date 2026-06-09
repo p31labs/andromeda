@@ -11,6 +11,6 @@ runs:
       shell: bash
       run: |
         set -euo pipefail
-        cd 04_SOFTWARE
+        cd software
         pnpm -C bonding run lint
         pnpm -C packages/shared run lint

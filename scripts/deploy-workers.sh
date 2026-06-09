@@ -7,7 +7,7 @@ set -euo pipefail
 DRY_RUN=false
 [[ "${1:-}" == "--dry-run" ]] && DRY_RUN=true
 
-BASE="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/04_SOFTWARE"
+BASE="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/software"
 
 PASS=0
 FAIL=0

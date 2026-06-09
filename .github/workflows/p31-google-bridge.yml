@@ -1,17 +1,17 @@
-# Config + bundle validation for 04_SOFTWARE/p31-google-bridge (no Cloudflare auth required)
+# Config + bundle validation for software/p31-google-bridge (no Cloudflare auth required)
 name: p31-google-bridge
 
 on:
   push:
     branches: [main, develop]
     paths:
-      - "04_SOFTWARE/p31-google-bridge/**"
+      - "software/p31-google-bridge/**"
       - ".github/actions/**"
       - ".github/workflows/p31-google-bridge.yml"
   pull_request:
     branches: [main]
     paths:
-      - "04_SOFTWARE/p31-google-bridge/**"
+      - "software/p31-google-bridge/**"
       - ".github/actions/**"
       - ".github/workflows/p31-google-bridge.yml"
 
@@ -29,9 +29,9 @@ jobs:
 
       - uses: ./.github/actions/npm-ci-project
         with:
-          working-directory: 04_SOFTWARE/p31-google-bridge
-          cache-dependency-path: 04_SOFTWARE/p31-google-bridge/package-lock.json
+          working-directory: software/p31-google-bridge
+          cache-dependency-path: software/p31-google-bridge/package-lock.json
 
       - name: Verify (print redirect + preflight + wrangler dry-run)
-        working-directory: 04_SOFTWARE/p31-google-bridge
+        working-directory: software/p31-google-bridge
         run: node scripts/verify.mjs

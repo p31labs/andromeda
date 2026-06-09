@@ -67,7 +67,7 @@ z-0:   Void Starfield   → #050505 background ✅
 |----------|----------|--------|
 | GODConstitution.sol | [`contracts/GODConstitution.sol`](p31-surrogate-backend/contracts/GODConstitution.sol) | Ready for deployment |
 | WebSocket Bridge | [`src/server.cjs`](p31-surrogate-backend/src/server.cjs) | Running on port 8080 |
-| Frontend Cockpit | [`04_SOFTWARE/frontend`](04_SOFTWARE/frontend) | Running on port 5173 |
+| Frontend Cockpit | [`software/frontend`](software/frontend) | Running on port 5173 |
 
 ---
 
@@ -77,7 +77,7 @@ z-0:   Void Starfield   → #050505 background ✅
 - **Detection:** Client-side regex pattern matching
 - **Modal:** z-60 "Are these your words?"
 - **Threshold:** 40% confidence
-- **Hooks:** [`useFawnDetection.ts`](04_SOFTWARE/frontend/src/hooks/useFawnDetection.ts)
+- **Hooks:** [`useFawnDetection.ts`](software/frontend/src/hooks/useFawnDetection.ts)
 
 ### Voltage Score (Cognitive Axis)
 - **Tiers:** LOW (0-30%), MODERATE (30-70%), HIGH (70-100%)
@@ -88,7 +88,7 @@ z-0:   Void Starfield   → #050505 background ✅
 ### Alignment Guard (Register P)
 - **Detection:** Prompt injection pattern matching
 - **Refusal:** Blocked with immutable constraint message
-- **Hooks:** [`useAlignmentGuard.ts`](04_SOFTWARE/frontend/src/hooks/useAlignmentGuard.ts)
+- **Hooks:** [`useAlignmentGuard.ts`](software/frontend/src/hooks/useAlignmentGuard.ts)
 
 ---
 

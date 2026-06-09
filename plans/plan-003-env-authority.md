@@ -7,9 +7,9 @@ Two candidates exist for storing API keys. No authoritative source is establishe
 | Candidate     | Path                                           | Status                                               |
 | ------------- | ---------------------------------------------- | ---------------------------------------------------- |
 | A (candidate) | `c:/Users/sandra/Documents/P31_Andromeda/.env` | Existing                                             |
-| B (candidate) | `04_SOFTWARE/.env`                             | No `.env` found, only `config.env` in build/ subdirs |
+| B (candidate) | `software/.env`                             | No `.env` found, only `config.env` in build/ subdirs |
 
-Build artifacts (`04_SOFTWARE/*/build/config.env`) are gitignored (toolchain outputs). No `.env` or `.env.example` currently exists in `04_SOFTWARE/`.
+Build artifacts (`software/*/build/config.env`) are gitignored (toolchain outputs). No `.env` or `.env.example` currently exists in `software/`.
 
 ## Audit Result
 
@@ -19,7 +19,7 @@ All actual env vars live in three places:
 2. **`[vars]` blocks in `wrangler.toml`** — static vars like `ENVIRONMENT`, `BRENDA_PHONE`, `OPERATOR_USER_ID`
 3. **Cloudflare Workers dashboard** — secrets via `wrangler secret put`
 
-No root-level `.env` or `04_SOFTWARE/.env` was found. All `.env` files in the scan are build artifact `config.env` files in `*/build/` — gitignored, transient, non-authoritative.
+No root-level `.env` or `software/.env` was found. All `.env` files in the scan are build artifact `config.env` files in `*/build/` — gitignored, transient, non-authoritative.
 
 ## Decision
 
@@ -66,7 +66,7 @@ Template above. Documents what vars exist without exposing values.
 ### Step 4 — Audit All `wrangler.toml` `[vars]` Blocks
 
 ```bash
-grep -n "\[vars\]" 04_SOFTWARE/*/wrangler.toml 04_SOFTWARE/workers/wrangler.toml
+grep -n "\[vars\]" software/*/wrangler.toml software/workers/wrangler.toml
 ```
 
 Move any non-secret defaults to `[vars]`. Move secrets (API tokens) to `wrangler secret put`.

@@ -6,21 +6,21 @@ on:
   push:
     branches: [main, "feat/**"]
     paths:
-      - "04_SOFTWARE/frontend/**"
-      - "04_SOFTWARE/p31-forge/**"
-      - "04_SOFTWARE/ops/update-dois.js"
-      - "04_SOFTWARE/scripts/forge-omnibus-all.cjs"
-      - "04_SOFTWARE/package.json"
+      - "software/frontend/**"
+      - "software/p31-forge/**"
+      - "software/ops/update-dois.js"
+      - "software/scripts/forge-omnibus-all.cjs"
+      - "software/package.json"
       - ".github/actions/**"
       - ".github/workflows/omnibus-frontend.yml"
   pull_request:
     branches: [main]
     paths:
-      - "04_SOFTWARE/frontend/**"
-      - "04_SOFTWARE/p31-forge/**"
-      - "04_SOFTWARE/ops/update-dois.js"
-      - "04_SOFTWARE/scripts/forge-omnibus-all.cjs"
-      - "04_SOFTWARE/package.json"
+      - "software/frontend/**"
+      - "software/p31-forge/**"
+      - "software/ops/update-dois.js"
+      - "software/scripts/forge-omnibus-all.cjs"
+      - "software/package.json"
       - ".github/actions/**"
       - ".github/workflows/omnibus-frontend.yml"
 
@@ -45,28 +45,28 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
-          cache-dependency-path: 04_SOFTWARE/frontend/package-lock.json
+          cache-dependency-path: software/frontend/package-lock.json
 
       - name: Install p31-forge (docx)
-        run: cd 04_SOFTWARE/p31-forge && npm install
+        run: cd software/p31-forge && npm install
 
       - name: Forge omnibus 25 papers
-        run: node 04_SOFTWARE/scripts/forge-omnibus-all.cjs
+        run: node software/scripts/forge-omnibus-all.cjs
 
       - name: Install frontend
-        run: cd 04_SOFTWARE/frontend && npm ci
+        run: cd software/frontend && npm ci
 
       - name: Build frontend
-        run: cd 04_SOFTWARE/frontend && npm run build
+        run: cd software/frontend && npm run build
 
       - name: update-dois.js (empty map, exit 0)
-        run: cd 04_SOFTWARE && node ops/update-dois.js
+        run: cd software && node ops/update-dois.js
 
       - name: Upload dist (Pages artifact)
         uses: actions/upload-artifact@v4
         with:
           name: omnibus-frontend-dist
-          path: 04_SOFTWARE/frontend/dist
+          path: software/frontend/dist
           retention-days: 14
           if-no-files-found: error
 
@@ -77,6 +77,6 @@ jobs:
           api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           account-id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           project-name: andromeda-ui
-          directory: 04_SOFTWARE/frontend/dist
+          directory: software/frontend/dist
           github-token: ${{ secrets.GITHUB_TOKEN }}
           branch: main

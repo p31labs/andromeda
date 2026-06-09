@@ -5,10 +5,10 @@ on:
     branches:
       - main
     paths:
-      - "04_SOFTWARE/k4-cage/**"
-      - "04_SOFTWARE/k4-personal/**"
-      - "04_SOFTWARE/k4-hubs/**"
-      - "04_SOFTWARE/p31-agent-hub/**"
+      - "software/k4-cage/**"
+      - "software/k4-personal/**"
+      - "software/k4-hubs/**"
+      - "software/p31-agent-hub/**"
       - ".github/actions/**"
       - ".github/workflows/deploy-workers.yml"
   workflow_dispatch:
@@ -35,7 +35,7 @@ jobs:
       - name: Deploy k4-cage
         uses: ./.github/actions/wrangler-run
         with:
-          working-directory: 04_SOFTWARE/k4-cage
+          working-directory: software/k4-cage
           command: deploy
           api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           account-id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -43,7 +43,7 @@ jobs:
       - name: Deploy k4-personal
         uses: ./.github/actions/wrangler-run
         with:
-          working-directory: 04_SOFTWARE/k4-personal
+          working-directory: software/k4-personal
           command: deploy
           api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           account-id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -51,7 +51,7 @@ jobs:
       - name: Deploy k4-hubs
         uses: ./.github/actions/wrangler-run
         with:
-          working-directory: 04_SOFTWARE/k4-hubs
+          working-directory: software/k4-hubs
           command: deploy
           api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           account-id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -59,7 +59,7 @@ jobs:
       - name: Deploy p31-agent-hub
         uses: ./.github/actions/wrangler-run
         with:
-          working-directory: 04_SOFTWARE/p31-agent-hub
+          working-directory: software/p31-agent-hub
           command: deploy
           api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           account-id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

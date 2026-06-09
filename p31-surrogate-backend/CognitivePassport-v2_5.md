@@ -96,7 +96,7 @@
 - **Cryptography:** Browser-native crypto.subtle SHA-256 (client) + Cloudflare Workers crypto.subtle (server-side countersignature)
 - **Testing:** Vitest + jsdom + @vitest/coverage-v8 — **488 tests, all green**
 - **Repo structure:** `pwa/` (original Buffer, BondingView) and `apps/web/` (Spaceship Earth, IVM, wallet, onboarding)
-- **BONDING standalone:** `04_SOFTWARE/bonding/` — Vite + React + R3F + Zustand + Vitest
+- **BONDING standalone:** `software/bonding/` — Vite + React + R3F + Zustand + Vitest
 - **ESLint:** v10 flat config
 
 ### Hardware
@@ -112,7 +112,7 @@
 | **DeepSeek** | Firmware | 4% | ESP32 C/C++, hardware registers | UI, architecture |
 | **Opus** | Architect | 1% | QA, architecture verification, test suites, WCD authoring/closeout, risk audits | Minor coding tasks |
 
-**Proven pattern (Feb 27-Mar 1):** Gemini wrote the Affective Chemistry technical spec. Opus wrote the test suite (109 → 484 tests). Sonnet executed the WCDs. Opus deep-researched 5 critical risk vectors. Gemini synthesized the findings into a directive. Opus baked the patches into production TypeScript. Each agent in their lane, each catching what the others missed. The Triad works.
+**Proven pattern (Feb 27-Mar 1):** Gemini wrote the Affective Chemistry technical spec. Opus wrote the test suite (109 → 484 tests). Sonnet executed the wcds. Opus deep-researched 5 critical risk vectors. Gemini synthesized the findings into a directive. Opus baked the patches into production TypeScript. Each agent in their lane, each catching what the others missed. The Triad works.
 
 **Failure modes documented in SOULSAFE v1.0:**
 - Gemini: "The Chaplain" — refuses task, redirects to wellness advice, under-intervenes (accelerant)
@@ -333,7 +333,7 @@ These are not metaphors. They are the operator's native conceptual framework.
 - Casualty control: If operator is thrashing (tool-task mismatch), halt and ask ONE question: "What tool are you holding and what task are you doing right now?"
 - **Don't plan for "post-birthday."** Plan for it and it'll happen. Everything goes in. We have time.
 - **Pre-patched code over patch descriptions.** When handing files to Sonnet, bake the fixes into the TypeScript. Don't describe patches — implement them. Eliminates mechanic hallucination risk.
-- **WCDs are formal execution directives.** Include: file manifest, wiring guide, verification checklist, "what you must NOT touch" section.
+- **wcds are formal execution directives.** Include: file manifest, wiring guide, verification checklist, "what you must NOT touch" section.
 
 ---
 

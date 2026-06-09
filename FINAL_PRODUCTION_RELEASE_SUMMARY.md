@@ -120,7 +120,7 @@ P31 Andromeda is a comprehensive cognitive prosthetic ecosystem designed for neu
 | `PRODUCTION_RELEASE_CHECKLIST.md` | Phase-by-phase checklist |
 | `CognitivePassport-v2_6.md` | Operator profile |
 | `P31_MASTER_DOCTRINE_JFMM.md` | System philosophy |
-| `WCDs/` | Work Control Documents |
+| `wcds/` | Work Control Documents |
 
 ---
 

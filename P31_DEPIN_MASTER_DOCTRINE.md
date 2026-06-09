@@ -384,7 +384,7 @@ Standard Operating Procedures (SOPs) are indexed geometrically by their **"Spoon
 | High Load Operations | 7.5 – 11.0 | Prohibited unless near-maximum cognitive reserves |
 | Critical Maneuvers | ≥ 11.5 | Emergency structural overrides only |
 
-### 7.2 Work Control Documents (WCDs)
+### 7.2 Work Control Documents (wcds)
 
 | WCD | Function | Trigger |
 |-----|----------|---------|

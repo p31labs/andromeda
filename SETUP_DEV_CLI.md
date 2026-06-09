@@ -404,7 +404,7 @@ async function startFrontend() {
   console.log(chalk.blue('🌐 Starting frontend...'));
   
   const frontend = spawn('pnpm', ['dev'], {
-    cwd: '04_SOFTWARE/spaceship-earth',
+    cwd: 'software/spaceship-earth',
     stdio: 'inherit'
   });
   
@@ -417,7 +417,7 @@ async function startBackend() {
   console.log(chalk.blue('⚙️ Starting backend services...'));
   
   const backend = spawn('pnpm', ['dev'], {
-    cwd: '04_SOFTWARE',
+    cwd: 'software',
     stdio: 'inherit'
   });
   
@@ -443,7 +443,7 @@ async function launchProduction() {
   console.log(chalk.blue('🚀 Launching production environment...'));
   
   // Run production build
-  await runCommand('pnpm', ['build'], '04_SOFTWARE');
+  await runCommand('pnpm', ['build'], 'software');
   
   // Deploy website
   await launchWebsite();

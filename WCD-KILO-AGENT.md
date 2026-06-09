@@ -37,8 +37,8 @@ You are one of two specialized co-founders sharing an office (VS Code workspace)
 - Generate folder structure for:
   - `BONDING` game
   - `P31-SOVEREIGN-SDK`
-  - `NODE-ONE-FIRMWARE`
-  - `GOVERNANCE/`
+  - `node-one-firmware`
+  - `governance/`
   - `interfaces/`
   - `docs/`
 

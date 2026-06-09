@@ -37,7 +37,7 @@ jobs:
 
       - name: Parse and Dispatch Wave
         run: |
-          FILE="01_ADMIN/OPERATION_TRIMTAB_DEPLOYMENT.yaml"
+          FILE="admin/OPERATION_TRIMTAB_DEPLOYMENT.yaml"
           SELECTOR="${{ github.event.inputs.wave_selector }}"
 
           echo "========================================"

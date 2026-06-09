@@ -1,56 +1,52 @@
-# P31 Andromeda
-
-**Phosphorus31 / P31 Labs** — open-source assistive-technology and research software. Georgia nonprofit (**P31 Labs, Inc.**). 501(c)(3) pending.
+# P31 Andromeda Cognitive OS
 
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/p31labs/andromeda/badge)](https://securityscorecards.dev/viewer/?uri=github.com/p31labs/andromeda)
 [![Open Collective](https://opencollective.com/p31-labs/backers.svg)](https://opencollective.com/p31-labs)
 [![Ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/trimtab69420)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18627420.svg)](https://doi.org/10.5281/zenodo.18627420)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19411363.svg)](https://doi.org/10.5281/zenodo.19411363)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-| | |
-|---|---|
-| **Tests (BONDING)** | **413 tests / 30 suites** (canonical — see `CLAUDE.md`) |
-| **Edge / Pages** | Inventory: [`docs/WORKER_PAGES_MANIFEST.md`](docs/WORKER_PAGES_MANIFEST.md) |
-| **Layout** | [`docs/REPOSITORY_LAYOUT.md`](docs/REPOSITORY_LAYOUT.md) |
-| **Engineering** | [`docs/ENGINEERING.md`](docs/ENGINEERING.md) |
-| **Sites & ownership** (phosphorus31 vs p31ca vs Workers) | [`docs/SITE_MAP_AND_OWNERSHIP.md`](docs/SITE_MAP_AND_OWNERSHIP.md) |
-| **Observatory dome JSON** (`p31ca.org/dome`) | [`docs/DOME_DATA_FORMAT.md`](docs/DOME_DATA_FORMAT.md) |
+**P31 Andromeda** is the decentralized, zero-telemetry cognitive operating system engineered by P31 Labs, Inc. -- a Georgia domestic nonprofit (501(c)(3) pending). It provides local-first mesh networking, verifiable ADA Title II compliance tools, and autonomic cognitive insulation for neurodivergent operators.
 
-## Quick start (developers)
+## Repository Topology (K4 Invariant)
 
-**Prerequisites:** Node **20** (see `.nvmrc`), **pnpm** 8+.
+```
+andromeda/
+├── admin/                     # Corporate governance, board resolutions
+├── apps/                      # Standalone edge apps (Willow, PHOS)
+├── cwp-*/                     # Ecosystem alignment & jitterbug telemetry
+├── firmware/                  # ESP32-S3, LVGL, LoRa (Node Zero / Node One)
+├── governance/                # Decision logs, code of conduct
+├── infrastructure/            # Cloudflare Workers, Terraform
+├── legal-instruments/         # ADA Title II firewalls, court filings
+├── packages/                  # Shared TypeScript libraries
+├── software/                  # Web apps (p31ca, bonding)
+└── wcds/                      # Work Control Documents (immutable runbooks)
+```
+
+## Getting Started
 
 ```bash
 git clone https://github.com/p31labs/andromeda.git
 cd andromeda
 pnpm install
+pnpm run build
+cd software/p31ca
+pnpm run dev
 ```
 
-Build and test the main software tree (Turbo under `04_SOFTWARE`):
+## Security & Compliance
 
-```bash
-pnpm --dir 04_SOFTWARE run build
-pnpm --dir 04_SOFTWARE run test
-```
+- **OpenSSF Scorecard** -- ensures supply chain integrity.
+- **Branch protection** -- `main` requires PR + 1 approval + passing status checks.
+- **Vulnerability reporting** -- via [GitHub Security Advisories](https://github.com/p31labs/andromeda/security/advisories).
 
-Individual apps (BONDING, p31ca, hearing-ops, etc.) live under **`04_SOFTWARE/`** — see [`04_SOFTWARE/README.md`](04_SOFTWARE/README.md).
+## Funding
 
-## Repository structure
+P31 Labs operates without venture capital or IP-NFT extraction. Support open-source assistive tech:
 
-- **`04_SOFTWARE/`** — Primary applications, Cloudflare Workers, shared packages, VS Code extensions.
-- **`05_FIRMWARE/`** — ESP32 / embedded documentation and prompts.
-- **`02_RESEARCH/`**, **`zenodo_batch/`** — Papers and publication tooling.
-- **`docs/`** — Engineering layout, worker manifest, tutorials.
-- **`Legal_Instruments/`**, **`Discovery_Production_*`** (gitignored) — legal drafts and production; not reviewed here.
-
-Extended product narrative: [`docs/ECOSYSTEM_OVERVIEW.md`](docs/ECOSYSTEM_OVERVIEW.md).
-
-## Contributing
-
-See **[CONTRIBUTING.md](CONTRIBUTING.md)** (CI, secrets, Pages deploy safety).
+- [Open Collective](https://opencollective.com/p31-labs) (fiscal sponsor)
+- [Ko-fi](https://ko-fi.com/trimtab69420) (one-time)
 
 ## License
 
-[MIT](LICENSE)
+MIT (c) P31 Labs, Inc. Hardware designs are CERN-OHL-S. See [LICENSE](LICENSE).

@@ -114,7 +114,7 @@ npx wrangler deploy
 ### 3. Deploy donate-api (Revenue Pipeline)
 
 ```powershell
-cd C:\Users\sandra\Documents\P31_Andromeda\04_SOFTWARE\donate-api
+cd C:\Users\sandra\Documents\P31_Andromeda\software\donate-api
 $env:CLOUDFLARE_API_TOKEN="cfat_..."
 $env:CLOUDFLARE_ACCOUNT_ID="ee05f70c...257e3a2fa"
 npx wrangler deploy
@@ -123,7 +123,7 @@ npx wrangler deploy
 ### 4. Deploy BONDING Relay Worker
 
 ```powershell
-cd C:\Users\sandra\Documents\P31_Andromeda\04_SOFTWARE\bonding
+cd C:\Users\sandra\Documents\P31_Andromeda\software\bonding
 $env:CLOUDFLARE_API_TOKEN="cfat_..."
 $env:CLOUDFLARE_ACCOUNT_ID="ee05f70c...257e3a2fa"
 npx wrangler deploy

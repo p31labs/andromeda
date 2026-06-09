@@ -10,20 +10,20 @@ This document outlines a comprehensive plan for implementing a centralized theme
 
 ### 1.1 Existing Theme Infrastructure
 
-**Spaceship Earth** (`04_SOFTWARE/spaceship-earth/src/stores/themeStore.ts`):
+**Spaceship Earth** (`software/spaceship-earth/src/stores/themeStore.ts`):
 - Zustand store with persist middleware
 - 6 preset themes: OPERATOR, KIDS, GRAY_ROCK, AURORA, HIGH_CONTRAST, LOW_MOTION
 - Import/export JSON functionality
 - `data-theme` attribute on document root for CSS cascade
 - Partial config with background, primary, secondary, accent, glassOpacity, reduceMotion
 
-**BONDING** (`04_SOFTWARE/bonding/src/index.css`):
+**BONDING** (`software/bonding/src/index.css`):
 - Tailwind CSS v4 with `@theme` block
 - Custom design tokens: void, phosphor, amber, cyan, rose, violet, love, green, seed, sprout, sapling
 - Toast animations and touch optimization
 - No runtime theme switching
 
-**Frontend** (`04_SOFTWARE/frontend/src/styles.css`):
+**Frontend** (`software/frontend/src/styles.css`):
 - Vanilla CSS with `:root` variables
 - Simple palette: void, bg, phosphorus, teal, coral, gold, purple, text, panel-bg, panel-border
 

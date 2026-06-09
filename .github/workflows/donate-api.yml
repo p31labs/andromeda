@@ -5,7 +5,7 @@ on:
   push:
     branches: [main, develop]
     paths:
-      - "04_SOFTWARE/donate-api/**"
+      - "software/donate-api/**"
       - "phosphorus31.org/planetary-planet/src/pages/donate.astro"
       - "scripts/verify-monetary-surface.mjs"
       - ".github/actions/**"
@@ -13,7 +13,7 @@ on:
   pull_request:
     branches: [main]
     paths:
-      - "04_SOFTWARE/donate-api/**"
+      - "software/donate-api/**"
       - "phosphorus31.org/planetary-planet/src/pages/donate.astro"
       - "scripts/verify-monetary-surface.mjs"
       - ".github/actions/**"
@@ -33,11 +33,11 @@ jobs:
 
       - uses: ./.github/actions/npm-ci-project
         with:
-          working-directory: 04_SOFTWARE/donate-api
-          cache-dependency-path: 04_SOFTWARE/donate-api/package-lock.json
+          working-directory: software/donate-api
+          cache-dependency-path: software/donate-api/package-lock.json
 
       - name: Test (vitest)
-        working-directory: 04_SOFTWARE/donate-api
+        working-directory: software/donate-api
         run: npm test
 
       - name: MAP static verify (from repo root)

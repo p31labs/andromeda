@@ -51,16 +51,16 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
-          cache-dependency-path: 04_SOFTWARE/docs/package-lock.json
+          cache-dependency-path: software/docs/package-lock.json
 
       - name: k4-mesh-core unit tests
-        run: cd 04_SOFTWARE/packages/k4-mesh-core && node --test test/*.test.mjs
+        run: cd software/packages/k4-mesh-core && node --test test/*.test.mjs
 
       - name: Install + build Starlight docs
-        run: cd 04_SOFTWARE/docs && npm ci && npm run build
+        run: cd software/docs && npm ci && npm run build
 
       - name: Stack link check (optional fleet URLs warn-only — see verify-stack-links.mjs)
-        run: node 04_SOFTWARE/scripts/verify-stack-links.mjs
+        run: node software/scripts/verify-stack-links.mjs
 
   paths:
     if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
@@ -78,9 +78,9 @@ jobs:
         with:
           filters: |
             bouncer:
-              - '04_SOFTWARE/cloudflare-worker/bouncer/**'
+              - 'software/cloudflare-worker/bouncer/**'
             command_center:
-              - '04_SOFTWARE/cloudflare-worker/command-center/**'
+              - 'software/cloudflare-worker/command-center/**'
 
   deploy-bouncer:
     needs: paths
@@ -98,10 +98,10 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
 
       - name: Install wrangler (bouncer)
-        run: cd 04_SOFTWARE/cloudflare-worker/bouncer && npm install
+        run: cd software/cloudflare-worker/bouncer && npm install
 
       - name: Push BOUNCER_GATE_TOKEN from GitHub secret → Cloudflare Workers
-        working-directory: 04_SOFTWARE/cloudflare-worker/bouncer
+        working-directory: software/cloudflare-worker/bouncer
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -116,7 +116,7 @@ jobs:
       - name: Deploy p31-bouncer
         uses: ./.github/actions/wrangler-run
         with:
-          working-directory: 04_SOFTWARE/cloudflare-worker/bouncer
+          working-directory: software/cloudflare-worker/bouncer
           command: deploy
           api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           account-id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -135,7 +135,7 @@ jobs:
       - name: Deploy command-center
         uses: ./.github/actions/wrangler-run
         with:
-          working-directory: 04_SOFTWARE/cloudflare-worker/command-center
+          working-directory: software/cloudflare-worker/command-center
           command: deploy
           api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           account-id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -151,17 +151,17 @@ jobs:
 
       - uses: ./.github/actions/npm-ci-project
         with:
-          working-directory: 04_SOFTWARE/docs
-          cache-dependency-path: 04_SOFTWARE/docs/package-lock.json
+          working-directory: software/docs
+          cache-dependency-path: software/docs/package-lock.json
 
       - name: Build Starlight
-        working-directory: 04_SOFTWARE/docs
+        working-directory: software/docs
         run: npm run build
 
       - name: Deploy to Cloudflare Pages
         uses: ./.github/actions/wrangler-run
         with:
-          working-directory: 04_SOFTWARE/docs
+          working-directory: software/docs
           command: pages deploy dist --project-name=p31-technical-library
           api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           account-id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -177,24 +177,24 @@ jobs:
 
       - uses: ./.github/actions/npm-ci-project
         with:
-          working-directory: 04_SOFTWARE/p31ca
-          cache-dependency-path: 04_SOFTWARE/p31ca/package-lock.json
+          working-directory: software/p31ca
+          cache-dependency-path: software/p31ca/package-lock.json
 
       - name: Verify passport mirror
         env:
           P31_STRICT_PASSPORT: ${{ (github.event_name == 'workflow_dispatch' && github.event.inputs.p31ca_strict_passport == 'true') && '1' || '0' }}
           P31_WORKSPACE_ROOT: ${{ github.workspace }}
-        working-directory: 04_SOFTWARE/p31ca
+        working-directory: software/p31ca
         run: npm run passport:verify
 
       - name: Build p31ca.org
-        working-directory: 04_SOFTWARE/p31ca
+        working-directory: software/p31ca
         run: npm run build
 
       - name: Deploy to Cloudflare Pages
         uses: ./.github/actions/wrangler-run
         with:
-          working-directory: 04_SOFTWARE/p31ca
+          working-directory: software/p31ca
           command: pages deploy dist --project-name=p31ca
           api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           account-id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

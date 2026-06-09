@@ -82,7 +82,7 @@ This document summarizes the complete implementation of Spaceship Earth, a sover
                                 │ WebRTC
                                 ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│                    INFRASTRUCTURE LAYER                         │
+│                    infrastructure LAYER                         │
 ├─────────────────────────────────────────────────────────────────┤
 │  Cloudflare KV Relay (Signaling Only)                          │
 │  ┌─────────────────────────────────────────────────────────────┐ │
@@ -226,15 +226,15 @@ This document summarizes the complete implementation of Spaceship Earth, a sover
 ## 📚 Documentation Index
 
 ### Core Implementation
-- [IMPLEMENTATION_SUMMARY.md](04_SOFTWARE/spaceship-earth/IMPLEMENTATION_SUMMARY.md) - Phase 1 details
-- [DEPLOYMENT_GUIDE.md](04_SOFTWARE/spaceship-earth/DEPLOYMENT_GUIDE.md) - Setup instructions
-- [WEBGPU_IMPLEMENTATION_GUIDE.md](04_SOFTWARE/spaceship-earth/WEBGPU_IMPLEMENTATION_GUIDE.md) - Technical deep dive
-- [END_USER_MANUAL.md](04_SOFTWARE/spaceship-earth/END_USER_MANUAL.md) - User documentation
+- [IMPLEMENTATION_SUMMARY.md](software/spaceship-earth/IMPLEMENTATION_SUMMARY.md) - Phase 1 details
+- [DEPLOYMENT_GUIDE.md](software/spaceship-earth/DEPLOYMENT_GUIDE.md) - Setup instructions
+- [WEBGPU_IMPLEMENTATION_GUIDE.md](software/spaceship-earth/WEBGPU_IMPLEMENTATION_GUIDE.md) - Technical deep dive
+- [END_USER_MANUAL.md](software/spaceship-earth/END_USER_MANUAL.md) - User documentation
 
 ### Hardware Integration
-- [esp32-ble-proxy-network/README.md](05_FIRMWARE/esp32-ble-proxy-network/README.md) - Hardware setup
-- [esp32-ble-proxy-network/INTEGRATION_GUIDE.md](05_FIRMWARE/esp32-ble-proxy-network/INTEGRATION_GUIDE.md) - Software integration
-- [SOVEREIGN_MESH_GUIDE.md](04_SOFTWARE/spaceship-earth/SOVEREIGN_MESH_GUIDE.md) - P2P networking
+- [esp32-ble-proxy-network/README.md](firmware/esp32-ble-proxy-network/README.md) - Hardware setup
+- [esp32-ble-proxy-network/INTEGRATION_GUIDE.md](firmware/esp32-ble-proxy-network/INTEGRATION_GUIDE.md) - Software integration
+- [SOVEREIGN_MESH_GUIDE.md](software/spaceship-earth/SOVEREIGN_MESH_GUIDE.md) - P2P networking
 
 ### Sovereign Architecture
 - [P31-MASTER-OPS-MANUAL.md](docs/P31-MASTER-OPS-MANUAL.md) - Operational procedures

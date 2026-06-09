@@ -4,8 +4,8 @@ on:
   push:
     branches: [main]
     paths:
-      - "04_SOFTWARE/bonding/**"
-      - "04_SOFTWARE/packages/shared/**"
+      - "software/bonding/**"
+      - "software/packages/shared/**"
       - ".github/actions/**"
       - ".github/workflows/bonding.yml"
   workflow_dispatch:
@@ -26,14 +26,14 @@ jobs:
       - uses: ./.github/actions/pnpm-04-software
 
       - name: Build
-        working-directory: 04_SOFTWARE
+        working-directory: software
         run: pnpm --filter @p31/bonding run build
 
       - name: Deploy to Cloudflare Pages
         if: github.ref == 'refs/heads/main'
         uses: ./.github/actions/wrangler-run
         with:
-          working-directory: 04_SOFTWARE/bonding
+          working-directory: software/bonding
           command: pages deploy dist --project-name=bonding --branch=main
           api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           account-id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

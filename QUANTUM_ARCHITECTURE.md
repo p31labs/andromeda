@@ -43,7 +43,7 @@ The quantum architecture is built around a comprehensive five-phase optimization
   - Quantum-safe cryptographic audit
   - Performance monitoring and deviation detection
 - **Key Files**:
-  - `04_SOFTWARE/packages/quantum-core/src/optimization/performanceBaseline.ts`
+  - `software/packages/quantum-core/src/optimization/performanceBaseline.ts`
   - `scripts/pqc-audit.js`
 
 #### Phase 2: Quantum Algorithm Development
@@ -54,7 +54,7 @@ The quantum architecture is built around a comprehensive five-phase optimization
   - Quantum Machine Learning (QML) for classification tasks
   - Performance optimization for quantum circuit execution
 - **Key Files**:
-  - `04_SOFTWARE/packages/quantum-core/src/algorithms/quantumAlgorithms.ts`
+  - `software/packages/quantum-core/src/algorithms/quantumAlgorithms.ts`
 
 #### Phase 3: PQC Enhancement (FIPS 203 ML-KEM and FIPS 204 ML-DSA)
 - **Purpose**: Upgrade cryptographic implementations to quantum-resistant standards
@@ -64,7 +64,7 @@ The quantum architecture is built around a comprehensive five-phase optimization
   - Hybrid PQC schemes combining classical and post-quantum cryptography
   - Quantum-safe key generation and management
 - **Key Files**:
-  - `04_SOFTWARE/packages/quantum-core/src/pqc/fips203-204.ts`
+  - `software/packages/quantum-core/src/pqc/fips203-204.ts`
 
 #### Phase 4: Microservices Architecture and Load Balancing
 - **Purpose**: Implement microservices architecture with intelligent load balancing
@@ -75,7 +75,7 @@ The quantum architecture is built around a comprehensive five-phase optimization
   - Health checks and service discovery
   - Dynamic scaling capabilities
 - **Key Files**:
-  - `04_SOFTWARE/packages/quantum-core/src/microservices/quantumServiceManager.ts`
+  - `software/packages/quantum-core/src/microservices/quantumServiceManager.ts`
 
 #### Phase 5: Comprehensive Quantum System Monitoring
 - **Purpose**: Implement comprehensive monitoring and observability
@@ -87,7 +87,7 @@ The quantum architecture is built around a comprehensive five-phase optimization
   - Performance reporting and metrics export
   - Health status monitoring and system diagnostics
 - **Key Files**:
-  - `04_SOFTWARE/packages/quantum-core/src/monitoring/quantumSystemMonitor.ts`
+  - `software/packages/quantum-core/src/monitoring/quantumSystemMonitor.ts`
 
 ## 🔄 Integration Architecture
 
@@ -314,10 +314,10 @@ The quantum architecture is built around a comprehensive five-phase optimization
 ## 📚 References and Resources
 
 ### Technical Documentation
-- [Quantum Core Implementation](04_SOFTWARE/packages/quantum-core/)
-- [Performance Baseline Documentation](04_SOFTWARE/packages/quantum-core/src/optimization/performanceBaseline.ts)
-- [Quantum Algorithms Documentation](04_SOFTWARE/packages/quantum-core/src/algorithms/quantumAlgorithms.ts)
-- [PQC Implementation Documentation](04_SOFTWARE/packages/quantum-core/src/pqc/fips203-204.ts)
+- [Quantum Core Implementation](software/packages/quantum-core/)
+- [Performance Baseline Documentation](software/packages/quantum-core/src/optimization/performanceBaseline.ts)
+- [Quantum Algorithms Documentation](software/packages/quantum-core/src/algorithms/quantumAlgorithms.ts)
+- [PQC Implementation Documentation](software/packages/quantum-core/src/pqc/fips203-204.ts)
 
 ### Standards and Specifications
 - [FIPS 203 ML-KEM Standard](https://csrc.nist.gov/projects/post-quantum-cryptography/fips-203)

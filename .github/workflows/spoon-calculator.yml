@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
     paths:
-      - "04_SOFTWARE/spoon-calculator/**"
+      - "software/spoon-calculator/**"
       - ".github/actions/**"
       - ".github/workflows/spoon-calculator.yml"
   workflow_dispatch:
@@ -24,18 +24,18 @@ jobs:
 
       - uses: ./.github/actions/npm-ci-project
         with:
-          working-directory: 04_SOFTWARE/spoon-calculator
-          cache-dependency-path: 04_SOFTWARE/spoon-calculator/package-lock.json
+          working-directory: software/spoon-calculator
+          cache-dependency-path: software/spoon-calculator/package-lock.json
 
       - name: Build
-        working-directory: 04_SOFTWARE/spoon-calculator
+        working-directory: software/spoon-calculator
         run: npm run build
 
       - name: Deploy to Cloudflare Pages
         if: github.ref == 'refs/heads/main'
         uses: ./.github/actions/wrangler-run
         with:
-          working-directory: 04_SOFTWARE/spoon-calculator
+          working-directory: software/spoon-calculator
           command: pages deploy dist --project-name=spoon-calculator --branch=main
           api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           account-id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

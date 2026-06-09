@@ -36,7 +36,7 @@ The operator is Will Johnson — AuDHD, direct communication style, no fluff. Pr
 - bonding.p31ca.org — BONDING chemistry game (413 tests / 30 suites)
 - phosphorus31.org — Institutional research site (dark-warm redesign deployed tonight)
 - p31ca.org — Technical hub (redesigned tonight)
-- ops.p31ca.org — Hearing Ops PWA (offline contempt prep; `04_SOFTWARE/p31-hearing-ops`, `npm run deploy`)
+- ops.p31ca.org — Hearing Ops PWA (offline contempt prep; `software/p31-hearing-ops`, `npm run deploy`)
 - p31-vault.pages.dev — Interactive component gallery
 - p31-mesh.pages.dev — WebRTC P2P vagal sync
 - command-center.trimtab-signal.workers.dev — KV-backed dashboard with health pinger (*/5 cron)
@@ -61,10 +61,10 @@ The operator is Will Johnson — AuDHD, direct communication style, no fluff. Pr
 - ORCID: 0009-0002-2492-9079
 
 ### Firmware
-- GOD Firmware Documentation v1.1 at 05_FIRMWARE/GOD_Firmware_Documentation_v1.1.md
+- GOD Firmware Documentation v1.1 at firmware/GOD_Firmware_Documentation_v1.1.md
 - Three hallucinations corrected: SX1262 link budget (178→~170 dB), SE050 PQC (removed), FDA classification (removed)
 - Target: Waveshare ESP32-S3-Touch-LCD-3.5B (N16R8), ESP-IDF 5.5.x, LVGL 8.4
-- CWP-046 prompt at WCDs/CWP-046_DeepSeek_Prompt.md — hand to DeepSeek for execution
+- CWP-046 prompt at wcds/CWP-046_DeepSeek_Prompt.md — hand to DeepSeek for execution
 
 ---
 
@@ -89,13 +89,13 @@ The operator is Will Johnson — AuDHD, direct communication style, no fluff. Pr
 
 ## REPO STRUCTURE
 
-**Canonical map:** `docs/REPOSITORY_LAYOUT.md` — **Software index:** `04_SOFTWARE/README.md` — **Engineering standards:** `docs/ENGINEERING.md` — **Production merge bar:** `docs/ENTERPRISE_QUALITY.md`
+**Canonical map:** `docs/REPOSITORY_LAYOUT.md` — **Software index:** `software/README.md` — **Engineering standards:** `docs/ENGINEERING.md` — **Production merge bar:** `docs/ENTERPRISE_QUALITY.md`
 
 ```
 P31_Andromeda/
 ├── 02_RESEARCH/               # Paper shells, expanded markdowns, convert_papers.py
-├── 03_OPERATIONS/             # CWPs, WCDs, ops docs
-├── 04_SOFTWARE/
+├── 03_OPERATIONS/             # CWPs, wcds, ops docs
+├── software/
 │   ├── bonding/               # BONDING game (Vite + React + R3F + Zustand + Vitest)
 │   ├── p31ca/                 # p31ca.org Astro site
 │   ├── p31-hearing-ops/       # ops.p31ca.org — Vite PWA (hearing prep)
@@ -103,9 +103,9 @@ P31_Andromeda/
 │   ├── cloudflare-worker/     # Workers (command-center, …) + status push scripts
 │   │   └── command-center/    # status.json, update-status.ps1 (Win), update-status.sh (Bash)
 │   └── cloudflare-pages/      # Pages: p31-mesh, p31-vault
-├── 05_FIRMWARE/               # GOD doc, DeepSeek prompts, MCD
+├── firmware/               # GOD doc, DeepSeek prompts, MCD
 ├── Discovery_Production_2025CV936/  # Legal discovery (local tree; root .gitignore `Discovery_Production_*/`) — README inside
-├── WCDs/                      # Court template, CWP docs
+├── wcds/                      # Court template, CWP docs
 ├── docs/social/               # Social media content, strategy docs
 ├── donation-wallet-v2/        # Phenix Wallet Chrome Extension
 ├── phosphorus31.org/          # phosphorus31.org Astro site
@@ -173,9 +173,9 @@ P31_Andromeda/
 
 ## STATUS.JSON UPDATE PROTOCOL
 
-After completing significant work, edit `04_SOFTWARE/cloudflare-worker/command-center/status.json` and push:
+After completing significant work, edit `software/cloudflare-worker/command-center/status.json` and push:
 ```powershell
-cd C:\Users\sandra\Documents\P31_Andromeda\04_SOFTWARE\cloudflare-worker\command-center
+cd C:\Users\sandra\Documents\P31_Andromeda\software\cloudflare-worker\command-center
 .\update-status.ps1
 # Or from Git Bash: ./update-status.sh
 # Dashboard: https://command-center.trimtab-signal.workers.dev
@@ -187,7 +187,7 @@ cd C:\Users\sandra\Documents\P31_Andromeda\04_SOFTWARE\cloudflare-worker\command
 
 Use the court template module:
 ```powershell
-cd WCDs
+cd wcds
 node court_template.js "MOTION TITLE" "16th day of April, 2026"
 # Outputs a properly formatted .docx with table-based caption (never drifts)
 ```
@@ -214,8 +214,8 @@ Exports: `courtCaption()`, `signatureBlock()`, `certOfService()`, `courtFooter()
 - **SoS Expedite**: $120 two-business-day upgrade submitted. Control number expected by April 16 (hearing day).
 - **Computershare**: Chime ACH confirmed on file (Bancorp Bank, routing 031101279, acct ending 0099). Ready to sell 101 GME shares.
 - **K₄ Cage Worker built**: Single Cloudflare Worker implementing K₄ complete graph. Ready to deploy.
-- **P31 Forge built**: Document generation engine (brand.js + forge.js). All document types. CLI ready. (Now at `04_SOFTWARE/p31-forge/` — channels, Worker, cron triggers, activity log, Ko-fi webhook all wired in.)
-- **Sierpinski Operations Manifest**: Full CWP structure (CWP-041 through CWP-075) with sync matrix. Lives at `01_ADMIN/P31_OPS_2026_Q2_SIERPINSKI_MANIFEST.md`.
+- **P31 Forge built**: Document generation engine (brand.js + forge.js). All document types. CLI ready. (Now at `software/p31-forge/` — channels, Worker, cron triggers, activity log, Ko-fi webhook all wired in.)
+- **Sierpinski Operations Manifest**: Full CWP structure (CWP-041 through CWP-075) with sync matrix. Lives at `admin/P31_OPS_2026_Q2_SIERPINSKI_MANIFEST.md`.
 - **Drive audit completed**: 105 distinct artifacts across 7 product bundles cataloged.
 - **Gemini research fired**: 7 tracks completed (grants, HAAT, competitive landscape, regulatory, fiscal sponsorship, narrative, academic partnerships).
 - **Verified research completed**: Shuttleworth DEAD (permanently closed 2024), Gates confirmed open (April 28), NLnet confirmed (June 1), ASAN confirmed ($6,250, opens May 15).
@@ -248,7 +248,7 @@ curl -X POST https://k4-cage.trimtab-signal.workers.dev/api/ping/will/sj \
   -d '{"emoji":"💚"}' -H 'Content-Type: application/json'
 ```
 
-### P31 Forge — SHIPPED to `04_SOFTWARE/p31-forge/`
+### P31 Forge — SHIPPED to `software/p31-forge/`
 Move task complete. Current scope in-repo:
 - `brand.js` / `forge.js` — CLI + renderers + compile() + publish()
 - `channels/` — twitter, bluesky, mastodon, devto, hashnode, zenodo, grants, substack, discord
@@ -257,7 +257,7 @@ Move task complete. Current scope in-repo:
 
 Install and test:
 ```bash
-cd 04_SOFTWARE/p31-forge
+cd software/p31-forge
 npm install
 node forge.js brand
 node forge.js court "MOTION TITLE" "16th day of April, 2026"
@@ -335,11 +335,11 @@ CWP-2026-002_.../01_REFERENCES/01.1_Core_Doctrine/Cognitive_Passport_v3.2.md:69
 CWP-2026-002_.../02_STANDARD_OPERATING_PROCEDURES/P31_Genesis_Whitepaper_v1.md:187,269
 CWP-2026-002_.../01_REFERENCES/01.2_White_Papers/P31_Genesis_Whitepaper_v1.md:192,289
 CWP-2026-002_.../03_WORK_CONTROL_DOCUMENTS/WCD-12_.../WCD-12_Authorization.md:31
-CWP-2026-003_P31_JITTERBUG/CWP-2026-003_INDEX.md:106
+cwp-2026-003-p31-jitterbug/CWP-2026-003_INDEX.md:106
 P31_Genesis_Whitepaper_v1.html:92,133
 ```
 
-**p31ca.org public HTML footers (~40 files, all in `04_SOFTWARE/p31ca/public/`):**
+**p31ca.org public HTML footers (~40 files, all in `software/p31ca/public/`):**
 ```
 index.html, buffer.html, echo.html, bridge.html, book.html, bonding.html, axiom.html,
 discord-bot.html, cortex.html, attractor.html, content-forge.html, alchemy.html,
@@ -391,7 +391,7 @@ tether.html, spaceship-earth.html, vault-room.html, wonky.html, kenosis.html
 
 ---
 
-## INFRASTRUCTURE (21 Endpoints + 1 Pending)
+## infrastructure (21 Endpoints + 1 Pending)
 
 ### Pending Deploy (1)
 - `k4-cage.trimtab-signal.workers.dev` — K₄ Unified Worker (files needed at `k4-worker/`)
@@ -406,7 +406,7 @@ Superseded by the K₄ Cage but still running:
 
 ## HEARING — APRIL 16, 11:00 AM, WOODBINE
 
-- **PWA (offline):** https://ops.p31ca.org — `04_SOFTWARE/p31-hearing-ops`; Cloudflare Pages project **`p31-hearing-ops`** (not `p31ca`). `npm run deploy` (production branch must match dashboard)
+- **PWA (offline):** https://ops.p31ca.org — `software/p31-hearing-ops`; Cloudflare Pages project **`p31-hearing-ops`** (not `p31ca`). `npm run deploy` (production branch must match dashboard)
 - Judge: Chief Judge Scarlett
 - McGhan via WebEx
 - ADA support: Brenda O'Dell
@@ -424,8 +424,8 @@ Superseded by the K₄ Cage but still running:
 3. ~~**CWP-065**: Buffer FDA reclassification~~ — **DONE April 14**. All CFR citations removed. No classification claimed anywhere in repo.
 4. **CWP-066**: Node Zero marketing audit — grep for "diagnose" / "treat" / "mitigate" / "cure" across public-facing files. Replace with "stress resilience" / "relaxation" / "focus support"
 5. **CWP-071**: LinkedIn banner swap (Wonky Sprout → K₄ branding), Facebook page launch from scaffold
-6. ~~Move `p31-forge/` into repo at `04_SOFTWARE/p31-forge/`~~ — **DONE**
-7. ~~Move `P31_Sierpinski_Operations_Manifest.md` into `01_ADMIN/`~~ — **DONE** (file present at `01_ADMIN/P31_OPS_2026_Q2_SIERPINSKI_MANIFEST.md`)
+6. ~~Move `p31-forge/` into repo at `software/p31-forge/`~~ — **DONE**
+7. ~~Move `P31_Sierpinski_Operations_Manifest.md` into `admin/`~~ — **DONE** (file present at `admin/P31_OPS_2026_Q2_SIERPINSKI_MANIFEST.md`)
 8. Update `docs/GOD_GROUND_TRUTH.md` with all corrections from today (EIN, FDA, C-100, ASAN amount, Shuttleworth dead)
 9. Run social engine audit — verify pacemaker is firing at 17:05 UTC
 

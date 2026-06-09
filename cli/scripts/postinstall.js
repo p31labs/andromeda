@@ -31,11 +31,11 @@ const defaultConfig = {
   services: {
     frontend: {
       port: 3000,
-      path: '04_SOFTWARE/spaceship-earth'
+      path: 'software/spaceship-earth'
     },
     backend: {
       port: 3001,
-      path: '04_SOFTWARE'
+      path: 'software'
     },
     monitoring: {
       port: 3002,

@@ -8,7 +8,7 @@ inputs:
   project-name:
     required: true
   directory:
-    description: Path to static output (e.g. 04_SOFTWARE/frontend/dist)
+    description: Path to static output (e.g. software/frontend/dist)
     required: true
   branch:
     required: false

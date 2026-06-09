@@ -7,14 +7,14 @@ All "Floating Neutrals" identified in the 122-file PR review have been successfu
 
 ### 1. ✅ WebGPU Typecheck Issue Resolved
 **Problem**: WebGPU rules engine failing typecheck due to missing `Navigator.gpu` interface
-**Solution**: Created comprehensive global type definitions in `04_SOFTWARE/frontend/src/global.d.ts`
+**Solution**: Created comprehensive global type definitions in `software/frontend/src/global.d.ts`
 - Added complete WebGPU interface definitions
 - Extended Navigator interface with optional `gpu` property
 - Ensures strict TypeScript compilation compatibility
 
 ### 2. ✅ Strict TypeScript Build Process Restored
 **Problem**: `tsc --noEmit` removed from build script allowing structural flaws to pass
-**Solution**: Updated `04_SOFTWARE/frontend/package.json` build configuration
+**Solution**: Updated `software/frontend/package.json` build configuration
 - Restored `tsc --noEmit &&` prefix to build and compile scripts
 - Added TypeScript as dev dependency (`typescript: ^5.0.0`)
 - Added Node.js types (`@types/node: ^20.0.0`)
