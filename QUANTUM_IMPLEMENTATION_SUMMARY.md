@@ -12,7 +12,7 @@ This document summarizes the P31 Labs quantum optimization architecture implemen
 
 ## 1. Quantum Core Package
 
-**Location:** `04_SOFTWARE/packages/quantum-core/`
+**Location:** `software/packages/quantum-core/`
 
 ### Implemented Components
 
@@ -49,7 +49,7 @@ export class CalciumHomeostasisCost implements QAOACostFunction {
 
 ## 2. Sovereign SDK Package
 
-**Location:** `04_SOFTWARE/packages/sovereign-sdk/`
+**Location:** `software/packages/sovereign-sdk/`
 
 ### Implemented Components
 
@@ -163,7 +163,7 @@ All implementations align with `IQuantumSystemGovernance`:
 
 ```bash
 # Deploy to Cloudflare Workers
-cd 04_SOFTWARE/packages/quantum-edge
+cd software/packages/quantum-edge
 npx wrangler deploy
 ```
 
@@ -177,18 +177,18 @@ SIC-POVM Swarm runs at the global edge:
 ## 7. Files Created
 
 ### Quantum Core
-- `04_SOFTWARE/packages/quantum-core/package.json`
-- `04_SOFTWARE/packages/quantum-core/src/index.ts`
-- `04_SOFTWARE/packages/quantum-core/examples/optimization-demo.ts`
+- `software/packages/quantum-core/package.json`
+- `software/packages/quantum-core/src/index.ts`
+- `software/packages/quantum-core/examples/optimization-demo.ts`
 
 ### Sovereign SDK
-- `04_SOFTWARE/packages/sovereign-sdk/package.json`
-- `04_SOFTWARE/packages/sovereign-sdk/src/index.ts`
+- `software/packages/sovereign-sdk/package.json`
+- `software/packages/sovereign-sdk/src/index.ts`
 
 ### Quantum Edge (Cloudflare Worker)
-- `04_SOFTWARE/packages/quantum-edge/package.json`
-- `04_SOFTWARE/packages/quantum-edge/worker.ts`
-- `04_SOFTWARE/packages/quantum-edge/wrangler.toml`
+- `software/packages/quantum-edge/package.json`
+- `software/packages/quantum-edge/worker.ts`
+- `software/packages/quantum-edge/wrangler.toml`
 
 ---
 

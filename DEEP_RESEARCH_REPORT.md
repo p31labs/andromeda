@@ -53,8 +53,8 @@ P31 Labs builds open-source assistive technology for neurodivergent individuals.
 
 ```
 P31_Andromeda/
-├── 01_ADMIN/           # Operational protocols, CWPs, agent instructions
-├── 04_SOFTWARE/        # Codebase
+├── admin/           # Operational protocols, CWPs, agent instructions
+├── software/        # Codebase
 │   ├── bonding/        # BONDING game (shipped)
 │   ├── spaceship-earth/# Cognitive dashboard
 │   ├── packages/       # Shared packages (love-ledger, shared types)
@@ -88,7 +88,7 @@ P31_Andromeda/
 ### Detailed CWP Status
 
 ```
-CWP-BONDING-001   ✅ COMPLETE   Shipped March 10, 2026. All WCDs closed.
+CWP-BONDING-001   ✅ COMPLETE   Shipped March 10, 2026. All wcds closed.
 CWP-WYE-001       🔴 ACTIVE     Legal defense. Gates W3 (Mar 24), W4 (Mar 26).
 CWP-DELTA-001     🟡 ACTIVE     Ko-fi, SuperStonk, festival, content calendar.
 CWP-FUND-001      🟡 BLOCKED    $425 incorporation → SAM.gov → federal grants.
@@ -333,12 +333,12 @@ Federal grants (NIDILRR, NSF, etc.)
 
 | Component | Path | Status |
 |-----------|------|--------|
-| BONDING game | `04_SOFTWARE/bonding/` | ✅ Shipped |
+| BONDING game | `software/bonding/` | ✅ Shipped |
 | N0 PWA | `C:\Users\sandra\Documents\N0\pwa\` | Active dev |
-| Spaceship Earth | `04_SOFTWARE/spaceship-earth/` | In dev |
-| LOVE Ledger (package) | `04_SOFTWARE/packages/love-ledger/` | ✅ Done |
-| Shared (types/stores) | `04_SOFTWARE/packages/shared/` | Active |
-| Workers | `04_SOFTWARE/workers/` | Design done |
+| Spaceship Earth | `software/spaceship-earth/` | In dev |
+| LOVE Ledger (package) | `software/packages/love-ledger/` | ✅ Done |
+| Shared (types/stores) | `software/packages/shared/` | Active |
+| Workers | `software/workers/` | Design done |
 
 ### How to Pick Up Workstreams
 

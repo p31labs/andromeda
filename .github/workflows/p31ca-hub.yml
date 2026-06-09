@@ -6,14 +6,14 @@ on:
   pull_request:
     branches: [main]
     paths:
-      - "04_SOFTWARE/p31ca/**"
+      - "software/p31ca/**"
       - ".github/actions/**"
       - ".github/workflows/p31ca-hub.yml"
   push:
     branches: [main]
     paths:
-      - "04_SOFTWARE/p31ca/**"
-      - "04_SOFTWARE/packages/shared/**"
+      - "software/p31ca/**"
+      - "software/packages/shared/**"
       - ".github/actions/**"
       - ".github/workflows/p31ca-hub.yml"
 
@@ -26,20 +26,20 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: 04_SOFTWARE/p31ca
+        working-directory: software/p31ca
     steps:
       - uses: actions/checkout@v4
 
       - uses: ./.github/actions/toolchain-constants
 
       - name: Install shared package (activates PQC)
-        working-directory: 04_SOFTWARE/packages/shared
+        working-directory: software/packages/shared
         run: npm ci --prefer-offline 2>/dev/null || npm install --silent
 
       - uses: ./.github/actions/npm-ci-project
         with:
-          working-directory: 04_SOFTWARE/p31ca
-          cache-dependency-path: 04_SOFTWARE/p31ca/package-lock.json
+          working-directory: software/p31ca
+          cache-dependency-path: software/p31ca/package-lock.json
           install-mode: ci-prefer-offline
 
       - name: Hub CI (generate about pages + hub JSON + verify + Astro build)
@@ -49,7 +49,7 @@ jobs:
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: ./.github/actions/wrangler-run
         with:
-          working-directory: 04_SOFTWARE/p31ca
+          working-directory: software/p31ca
           command: pages deploy dist --project-name=p31ca --branch=main
           api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           account-id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

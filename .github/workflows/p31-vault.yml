@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
     paths:
-      - "04_SOFTWARE/cloudflare-pages/p31-vault/**"
+      - "software/cloudflare-pages/p31-vault/**"
       - ".github/actions/**"
       - ".github/workflows/p31-vault.yml"
   workflow_dispatch:
@@ -26,6 +26,6 @@ jobs:
         uses: ./.github/actions/wrangler-run
         with:
           working-directory: "."
-          command: pages deploy 04_SOFTWARE/cloudflare-pages/p31-vault --project-name=p31-vault --branch=main --commit-dirty=true
+          command: pages deploy software/cloudflare-pages/p31-vault --project-name=p31-vault --branch=main --commit-dirty=true
           api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           account-id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

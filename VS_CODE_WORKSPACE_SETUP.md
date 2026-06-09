@@ -4,17 +4,17 @@
 
 This guide provides the exact terminal commands and folder tree structure that Kilo should generate first to prepare your VS Code workspace for parallel agentic development.
 
-**Canonical layout (current repo):** Application packages live under `04_SOFTWARE/` (for example `04_SOFTWARE/bonding`, `04_SOFTWARE/spaceship-earth`). Do not recreate obsolete root-level `BONDING/` or `SPACESHIP-EARTH/` stub folders. Install dependencies from the monorepo root with `pnpm install`. See `docs/REPOSITORY_LAYOUT.md` and `docs/ENGINEERING.md`.
+**Canonical layout (current repo):** Application packages live under `software/` (for example `software/bonding`, `software/spaceship-earth`). Do not recreate obsolete root-level `BONDING/` or `SPACESHIP-EARTH/` stub folders. Install dependencies from the monorepo root with `pnpm install`. See `docs/REPOSITORY_LAYOUT.md` and `docs/ENGINEERING.md`.
 
 ## 📁 Complete Folder Tree Structure
 
 ```
 p31labs-andromeda/
-├── 📋 GOVERNANCE/
+├── 📋 governance/
 │   ├── CONSTITUTION.md                    # Generated from P31_LABS_ECOSYSTEM_DESCRIPTION.md
 │   ├── ARCHITECTURE.md                    # System architecture documentation
 │   ├── ROADMAP.md                         # Development roadmap and milestones
-│   ├── GOVERNANCE.md                      # Governance processes and decision making
+│   ├── governance.md                      # Governance processes and decision making
 │   └── CODE_OF_CONDUCT.md                 # Community behavior guidelines
 ├── 🎮 BONDING/
 │   ├── README.md                          # Game purpose and development guide
@@ -76,7 +76,7 @@ p31labs-andromeda/
 │       ├── SDK_API.md                     # Complete SDK API documentation
 │       ├── QUICK_START.md                 # Quick start guide
 │       └── BEST_PRACTICES.md              # Security and usage best practices
-├── 📡 NODE-ONE-FIRMWARE/
+├── 📡 node-one-firmware/
 │   ├── README.md                          # Firmware documentation
 │   ├── package.json                       # Firmware package configuration
 │   ├── firmware/
@@ -151,7 +151,7 @@ p31labs-andromeda/
 │       ├── concurrent-requests.test.ts    # Concurrent request handling
 │       ├── memory-leaks.test.ts           # Memory leak detection
 │       └── scalability.test.ts            # Scalability tests
-└── 🛠️ INFRASTRUCTURE/
+└── 🛠️ infrastructure/
     ├── docker-compose.yml                 # Docker container orchestration
     ├── kubernetes/
     │   ├── deployment.yaml                # Kubernetes deployment configuration
@@ -181,12 +181,12 @@ mkdir p31labs-andromeda
 cd p31labs-andromeda
 
 # Create governance structure
-mkdir -p GOVERNANCE
-touch GOVERNANCE/CONSTITUTION.md
-touch GOVERNANCE/ARCHITECTURE.md
-touch GOVERNANCE/ROADMAP.md
-touch GOVERNANCE/GOVERNANCE.md
-touch GOVERNANCE/CODE_OF_CONDUCT.md
+mkdir -p governance
+touch governance/CONSTITUTION.md
+touch governance/ARCHITECTURE.md
+touch governance/ROADMAP.md
+touch governance/governance.md
+touch governance/CODE_OF_CONDUCT.md
 
 # Create BONDING game structure
 mkdir -p BONDING/{src/{game-engine,ui,logic},assets/{images,sounds,fonts},docs}
@@ -236,26 +236,26 @@ touch "P31-SOVEREIGN-SDK"/docs/QUICK_START.md
 touch "P31-SOVEREIGN-SDK"/docs/BEST_PRACTICES.md
 
 # Create Node One Firmware structure
-mkdir -p "NODE-ONE-FIRMWARE"/{firmware/{main,components,tests},hardware/{schematics,pcb},docs,tests}
-touch "NODE-ONE-FIRMWARE"/README.md
-touch "NODE-ONE-FIRMWARE"/package.json
-touch "NODE-ONE-FIRMWARE"/firmware/main/main.cpp
-touch "NODE-ONE-FIRMWARE"/firmware/main/power_manager.cpp
-touch "NODE-ONE-FIRMWARE"/firmware/main/telemetry_manager.cpp
-touch "NODE-ONE-FIRMWARE"/firmware/main/audio_manager.cpp
-touch "NODE-ONE-FIRMWARE"/firmware/main/websocket_manager.cpp
-touch "NODE-ONE-FIRMWARE"/firmware/main/haptic_manager.cpp
-touch "NODE-ONE-FIRMWARE"/firmware/components/sensors/index.cpp
-touch "NODE-ONE-FIRMWARE"/firmware/components/actuators/index.cpp
-touch "NODE-ONE-FIRMWARE"/firmware/components/communication/index.cpp
-touch "NODE-ONE-FIRMWARE"/firmware/tests/unit_tests/test_runner.cpp
-touch "NODE-ONE-FIRMWARE"/firmware/tests/integration_tests/test_runner.cpp
-touch "NODE-ONE-FIRMWARE"/hardware/bill-of-materials.md
-touch "NODE-ONE-FIRMWARE"/docs/FIRMWARE_API.md
-touch "NODE-ONE-FIRMWARE"/docs/HARDWARE_GUIDE.md
-touch "NODE-ONE-FIRMWARE"/docs/TROUBLESHOOTING.md
-touch "NODE-ONE-FIRMWARE"/tests/firmware_tests.cpp
-touch "NODE-ONE-FIRMWARE"/tests/integration_tests.cpp
+mkdir -p "node-one-firmware"/{firmware/{main,components,tests},hardware/{schematics,pcb},docs,tests}
+touch "node-one-firmware"/README.md
+touch "node-one-firmware"/package.json
+touch "node-one-firmware"/firmware/main/main.cpp
+touch "node-one-firmware"/firmware/main/power_manager.cpp
+touch "node-one-firmware"/firmware/main/telemetry_manager.cpp
+touch "node-one-firmware"/firmware/main/audio_manager.cpp
+touch "node-one-firmware"/firmware/main/websocket_manager.cpp
+touch "node-one-firmware"/firmware/main/haptic_manager.cpp
+touch "node-one-firmware"/firmware/components/sensors/index.cpp
+touch "node-one-firmware"/firmware/components/actuators/index.cpp
+touch "node-one-firmware"/firmware/components/communication/index.cpp
+touch "node-one-firmware"/firmware/tests/unit_tests/test_runner.cpp
+touch "node-one-firmware"/firmware/tests/integration_tests/test_runner.cpp
+touch "node-one-firmware"/hardware/bill-of-materials.md
+touch "node-one-firmware"/docs/FIRMWARE_API.md
+touch "node-one-firmware"/docs/HARDWARE_GUIDE.md
+touch "node-one-firmware"/docs/TROUBLESHOOTING.md
+touch "node-one-firmware"/tests/firmware_tests.cpp
+touch "node-one-firmware"/tests/integration_tests.cpp
 
 # Create Spaceship Earth structure
 mkdir -p SPACESHIP-EARTH/{src/{components,services,stores,utils,types},config,assets/{styles,images,icons}}
@@ -301,19 +301,19 @@ touch TESTS/LOAD/memory-leaks.test.ts
 touch TESTS/LOAD/scalability.test.ts
 
 # Create infrastructure structure
-mkdir -p INFRASTRUCTURE/{kubernetes,terraform,scripts,monitoring/grafana}
-touch INFRASTRUCTURE/docker-compose.yml
-touch INFRASTRUCTURE/kubernetes/deployment.yaml
-touch INFRASTRUCTURE/kubernetes/service.yaml
-touch INFRASTRUCTURE/kubernetes/ingress.yaml
-touch INFRASTRUCTURE/terraform/main.tf
-touch INFRASTRUCTURE/terraform/variables.tf
-touch INFRASTRUCTURE/terraform/outputs.tf
-touch INFRASTRUCTURE/scripts/setup.sh
-touch INFRASTRUCTURE/scripts/deploy.sh
-touch INFRASTRUCTURE/scripts/monitor.sh
-touch INFRASTRUCTURE/monitoring/prometheus.yml
-touch INFRASTRUCTURE/monitoring/alerts.yml
+mkdir -p infrastructure/{kubernetes,terraform,scripts,monitoring/grafana}
+touch infrastructure/docker-compose.yml
+touch infrastructure/kubernetes/deployment.yaml
+touch infrastructure/kubernetes/service.yaml
+touch infrastructure/kubernetes/ingress.yaml
+touch infrastructure/terraform/main.tf
+touch infrastructure/terraform/variables.tf
+touch infrastructure/terraform/outputs.tf
+touch infrastructure/scripts/setup.sh
+touch infrastructure/scripts/deploy.sh
+touch infrastructure/scripts/monitor.sh
+touch infrastructure/monitoring/prometheus.yml
+touch infrastructure/monitoring/alerts.yml
 ```
 
 ### **Step 2: Initialize Package.json Files**
@@ -1225,14 +1225,14 @@ P31 Labs Andromeda is a revolutionary ecosystem designed to empower individuals,
 
 ```
 p31labs-andromeda/
-├── 📋 GOVERNANCE/          # Constitution, architecture, governance
+├── 📋 governance/          # Constitution, architecture, governance
 ├── 🎮 BONDING/             # Cooperative space exploration game
 ├── 🔧 P31-SOVEREIGN-SDK/   # Digital sovereignty tools
-├── 📡 NODE-ONE-FIRMWARE/   # Hardware firmware and drivers
+├── 📡 node-one-firmware/   # Hardware firmware and drivers
 ├── 🌐 SPACESHIP-EARTH/     # Main application interface
 ├── 📚 DOCS/                # Documentation and tutorials
 ├── 🧪 TESTS/               # Comprehensive testing
-└── 🛠️ INFRASTRUCTURE/      # Deployment and monitoring
+└── 🛠️ infrastructure/      # Deployment and monitoring
 ```
 
 ## 🚀 Quick Start
@@ -1317,7 +1317,7 @@ We welcome contributions from everyone! Please read our [Contributing Guide](./D
 - [API Documentation](./DOCS/API.md)
 - [Architecture Decisions](./DOCS/REFERENCE/architecture.md)
 - [Development Guide](./DOCS/DEVELOPMENT.md)
-- [Community Guidelines](./GOVERNANCE/CODE_OF_CONDUCT.md)
+- [Community Guidelines](./governance/CODE_OF_CONDUCT.md)
 
 ## 🔒 Security
 

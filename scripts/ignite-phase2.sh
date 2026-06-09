@@ -31,8 +31,8 @@ else
 fi
 
 # ── STEP 1: Shared package (activates @noble/post-quantum) ───────────────────
-log "STEP 1 — PQC activation (04_SOFTWARE/packages/shared)"
-SHARED="04_SOFTWARE/packages/shared"
+log "STEP 1 — PQC activation (software/packages/shared)"
+SHARED="software/packages/shared"
 if [ -d "$SHARED" ]; then
   (cd "$SHARED" && npm install --prefer-offline --silent 2>&1 | grep -v "^npm warn" || true)
   ok "PQC libraries active"
@@ -42,7 +42,7 @@ fi
 
 # ── STEP 2: Meshtastic PSK injection ─────────────────────────────────────────
 log "STEP 2 — Meshtastic radio provisioning"
-MESH_CONF="05_FIRMWARE/meshtastic/p31-mesh-config.yaml"
+MESH_CONF="firmware/meshtastic/p31-mesh-config.yaml"
 
 if [ -f "$MESH_CONF" ]; then
   if grep -q "REPLACE_with_base64_32byte_key" "$MESH_CONF"; then
@@ -118,10 +118,10 @@ fi
 
 # ── STEP 3: Matrix / Postmoogle court email credentials ───────────────────────
 log "STEP 3 — Matrix bridge credentials"
-MATRIX_ENV="04_SOFTWARE/matrix/.env"
+MATRIX_ENV="software/matrix/.env"
 
-if [ ! -f "$MATRIX_ENV" ] && [ -f "04_SOFTWARE/matrix/.env.example" ]; then
-  cp "04_SOFTWARE/matrix/.env.example" "$MATRIX_ENV"
+if [ ! -f "$MATRIX_ENV" ] && [ -f "software/matrix/.env.example" ]; then
+  cp "software/matrix/.env.example" "$MATRIX_ENV"
   info "Bootstrapped $MATRIX_ENV from template"
 fi
 
@@ -150,10 +150,10 @@ fi
 
 if command -v docker >/dev/null 2>&1 && docker info >/dev/null 2>&1; then
   info "Docker active — deploying Matrix..."
-  (cd "04_SOFTWARE/matrix/scripts" && bash deploy.sh) && ok "Matrix deployed" || warn "Matrix deploy had errors"
+  (cd "software/matrix/scripts" && bash deploy.sh) && ok "Matrix deployed" || warn "Matrix deploy had errors"
 else
   warn "Docker not running locally — Matrix deploy skipped"
-  info "VPS deploy: scp -r 04_SOFTWARE/matrix/ user@matrix.p31ca.org:~/matrix && ssh user@matrix.p31ca.org 'bash ~/matrix/scripts/deploy.sh'"
+  info "VPS deploy: scp -r software/matrix/ user@matrix.p31ca.org:~/matrix && ssh user@matrix.p31ca.org 'bash ~/matrix/scripts/deploy.sh'"
 fi
 
 # ── STEP 4: p31 launch (asset pipeline + verify gate) ────────────────────────
@@ -182,8 +182,8 @@ else
     fi
   }
 
-  deploy_worker "q-factor"  "04_SOFTWARE/cloudflare-worker/q-factor"         "deploy"
-  deploy_worker "fhir"      "04_SOFTWARE/p31ca/workers/fhir"                 "deploy"
+  deploy_worker "q-factor"  "software/cloudflare-worker/q-factor"         "deploy"
+  deploy_worker "fhir"      "software/p31ca/workers/fhir"                 "deploy"
 
   # Full ecosystem deploy — covers all 34 workers + p31ca pages
   if is_tty; then
@@ -229,5 +229,5 @@ echo ""
 echo -e "  ${C}Requires physical device (cannot automate):${N}"
 echo -e "  1. Epic FHIR auth:   https://api.p31ca.org/fhir/auth  (iPhone Safari)"
 echo -e "  2. eSIM:             iPhone → Settings → Cellular → Add eSIM → US Mobile Warp"
-echo -e "  3. Meshtastic flash: pip install meshtastic && meshtastic --configure 05_FIRMWARE/meshtastic/p31-mesh-config.yaml"
+echo -e "  3. Meshtastic flash: pip install meshtastic && meshtastic --configure firmware/meshtastic/p31-mesh-config.yaml"
 echo ""

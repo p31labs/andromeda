@@ -2,7 +2,7 @@
 
 This document contains the terminal commands and folder tree structure that Kilo (Systems Architect) should generate to scaffold the P31 Labs ecosystem for parallel agentic work.
 
-**Canonical paths:** The BONDING game and Spaceship Earth app are maintained under `04_SOFTWARE/bonding` and `04_SOFTWARE/spaceship-earth`, not a root-level `BONDING/` folder. See `docs/REPOSITORY_LAYOUT.md`.
+**Canonical paths:** The BONDING game and Spaceship Earth app are maintained under `software/bonding` and `software/spaceship-earth`, not a root-level `BONDING/` folder. See `docs/REPOSITORY_LAYOUT.md`.
 
 ---
 
@@ -14,18 +14,18 @@ p31labs-andromeda/
 ├── README.md                    # Project overview
 ├── .vscode/
 │   └── settings.json           # Workspace settings
-├── GOVERNANCE/                  # Governance documents
+├── governance/                  # Governance documents
 │   ├── ABDICATION_PROTOCOL.md
 │   ├── KNOWN_TRUTHS.md
 │   └── NODE_ROSTER.md
-├── 04_SOFTWARE/bonding/         # BONDING game (canonical)
+├── software/bonding/         # BONDING game (canonical)
 │   └── ...
 ├── P31-SOVEREIGN-SDK/           # SDK for sovereign identity
 │   ├── src/
 │   │   ├── index.ts
 │   │   └── types.ts
 │   └── package.json
-├── NODE-ONE-FIRMWARE/           # ESP32 firmware
+├── node-one-firmware/           # ESP32 firmware
 │   ├── src/
 │   │   └── main.cpp
 │   └── platformio.ini
@@ -50,7 +50,7 @@ p31labs-andromeda/
 
 ```bash
 # Create main directories
-mkdir -p GOVERNANCE BONDING P31-SOVEREIGN-SDK NODE-ONE-FIRMWARE interfaces docs tests/INTEGRATION
+mkdir -p governance BONDING P31-SOVEREIGN-SDK node-one-firmware interfaces docs tests/INTEGRATION
 
 # Create .vscode directory
 mkdir -p .vscode
@@ -117,7 +117,7 @@ ls -la CONSTITUTION.md README.md
 
 ```bash
 # Full scaffold (run from project root)
-mkdir -p GOVERNANCE BONDING P31-SOVEREIGN-SDK NODE-ONE-FIRMWARE interfaces docs tests/INTEGRATION .vscode
+mkdir -p governance BONDING P31-SOVEREIGN-SDK node-one-firmware interfaces docs tests/INTEGRATION .vscode
 
 # List structure
 tree -L 2 --dirsfirst

@@ -9,8 +9,8 @@
 | Action | Use when |
 |--------|-----------|
 | `toolchain-constants` | Always first (unless job is shell-only). |
-| `pnpm-andromeda-full` | Root + `04_SOFTWARE` frozen install (same as `pnpm run lockfile:check`). |
-| `pnpm-04-software` | Only the nested Turbo workspace under `04_SOFTWARE`. |
+| `pnpm-andromeda-full` | Root + `software` frozen install (same as `pnpm run lockfile:check`). |
+| `pnpm-04-software` | Only the nested Turbo workspace under `software`. |
 | `npm-ci-project` | One package with `package-lock.json` + npm cache. |
 | `wrangler-run` | `cloudflare/wrangler-action@v3` + shared Wrangler version. |
 | `cloudflare-pages-v1` | `cloudflare/pages-action@v1` + shared Wrangler version. |

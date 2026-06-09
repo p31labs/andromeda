@@ -23,11 +23,11 @@ This WCD consolidates, fixes, tests, and deploys the quantum stack across 6 phas
 ### 1.1 — Delete `packages/quantum-core/` (slim duplicate)
 
 - Remove the 7-file slim package entirely
-- Update `04_SOFTWARE/packages/quantum-edge/package.json` dependency reference
-- Update `04_SOFTWARE/packages/sovereign-sdk/package.json` dependency reference
+- Update `software/packages/quantum-edge/package.json` dependency reference
+- Update `software/packages/sovereign-sdk/package.json` dependency reference
 - Verify no other imports reference the deleted path
 
-### 1.2 — Deduplicate `04_SOFTWARE/packages/quantum-core/src/index.ts`
+### 1.2 — Deduplicate `software/packages/quantum-core/src/index.ts`
 
 - The 930-line monolith re-implements classes that already exist in src/ subdirectories
 - Decision: src/ subdirectory files are MORE complete (real circuit breaker, real monitoring, real baseline)

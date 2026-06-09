@@ -18,11 +18,11 @@ jobs:
       - uses: ./.github/actions/pnpm-andromeda-full
 
       - name: Generate coverage for shared
-        working-directory: 04_SOFTWARE
+        working-directory: software
         run: pnpm --filter @p31/shared test --run --coverage
 
       - name: Generate coverage for game-engine
-        working-directory: 04_SOFTWARE
+        working-directory: software
         run: pnpm --filter @p31/game-engine test --run --coverage
 
       - name: Upload coverage reports
@@ -30,6 +30,6 @@ jobs:
         with:
           name: coverage-reports
           path: |
-            04_SOFTWARE/packages/shared/coverage
-            04_SOFTWARE/packages/game-engine/coverage
+            software/packages/shared/coverage
+            software/packages/game-engine/coverage
           retention-days: 7

@@ -31,9 +31,9 @@
 - Created `.github/workflows/social-dispatch.yml` (manual + WCD triggers)
 
 ### Phase 4 — Discord Bot
-- Created `04_SOFTWARE/discord/p31-bot/DEPLOY.md`
-- Created `04_SOFTWARE/discord/p31-bot/docker-compose.yml`
-- Created `04_SOFTWARE/discord/p31-bot/Dockerfile`
+- Created `software/discord/p31-bot/DEPLOY.md`
+- Created `software/discord/p31-bot/docker-compose.yml`
+- Created `software/discord/p31-bot/Dockerfile`
 
 ### Phase 5 — Social Posts Verified
 - `docs/superstonk_post.md` — Ready for r/Superstonk (175-line DD)
@@ -45,7 +45,7 @@
 
 The Workers can't deploy until real Cloudflare IDs replace placeholders.
 
-**File:** `04_SOFTWARE/PHASE2_WRANGLER_COMMANDS.sh`
+**File:** `software/PHASE2_WRANGLER_COMMANDS.sh`
 
 Run these commands in terminal:
 ```bash
@@ -77,9 +77,9 @@ gh secret set TURBO_TEAM
 ```
 
 Then update these files with real IDs:
-- `04_SOFTWARE/telemetry-worker/wrangler.toml`
-- `04_SOFTWARE/workers/wrangler.toml`
-- `04_SOFTWARE/packages/quantum-edge/wrangler.toml`
+- `software/telemetry-worker/wrangler.toml`
+- `software/workers/wrangler.toml`
+- `software/packages/quantum-edge/wrangler.toml`
 
 ---
 

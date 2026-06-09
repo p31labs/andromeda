@@ -16,13 +16,13 @@ hdr()  { echo -e "\n${C}── $1 ───────────────�
 # ── Locate wrangler ──────────────────────────────────────────────────────────
 WRANGLER="$(command -v wrangler 2>/dev/null || echo "")"
 if [ -z "$WRANGLER" ]; then
-  WRANGLER="$(cd "$REPO/04_SOFTWARE/p31ca" && npx --yes wrangler --version >/dev/null 2>&1 && echo "npx wrangler")"
+  WRANGLER="$(cd "$REPO/software/p31ca" && npx --yes wrangler --version >/dev/null 2>&1 && echo "npx wrangler")"
   [ -n "$WRANGLER" ] || die "wrangler not found — npm install -g wrangler"
 fi
 ok "wrangler: $WRANGLER $(${WRANGLER} --version 2>/dev/null | head -1 || true)"
 
 # ── Load .env.master ─────────────────────────────────────────────────────────
-for f in "$REPO/.env.master" "$REPO/04_SOFTWARE/.env.master" "/home/p31/.env.master"; do
+for f in "$REPO/.env.master" "$REPO/software/.env.master" "/home/p31/.env.master"; do
   if [ -f "$f" ]; then
     set -a; source "$f"; set +a
     ok "Loaded secrets from $f"
@@ -77,13 +77,13 @@ set_secret_noenv() {
 
 # ── Q-Factor Coherence Worker ─────────────────────────────────────────────────
 hdr "Q-Factor (api.p31ca.org/qfactor/*)"
-QF="$REPO/04_SOFTWARE/cloudflare-worker/q-factor"
+QF="$REPO/software/cloudflare-worker/q-factor"
 set_secret "$QF" "P31_API_SECRET"   "" "production"
 set_secret "$QF" "P31_FHIR_SECRET"  "" "production"
 
 # ── FHIR Worker (api.p31ca.org/fhir/*) ───────────────────────────────────────
 hdr "FHIR (api.p31ca.org/fhir/*)"
-FHIR="$REPO/04_SOFTWARE/p31ca/workers/fhir"
+FHIR="$REPO/software/p31ca/workers/fhir"
 if [ -d "$FHIR" ]; then
   # P31_FHIR_SECRET is the fhir-side name for the shared token
   local _fhir_secret="${P31_FHIR_SECRET:-}"
@@ -100,25 +100,25 @@ fi
 
 # ── Command-Center ────────────────────────────────────────────────────────────
 hdr "Command-Center"
-CC="$REPO/04_SOFTWARE/cloudflare-worker/command-center"
+CC="$REPO/software/cloudflare-worker/command-center"
 set_secret_noenv "$CC" "P31_FHIR_SECRET"
 set_secret_noenv "$CC" "STATUS_TOKEN"
 set_secret_noenv "$CC" "CF_API_TOKEN"
 
 # ── Edge Gate (Bouncer) ───────────────────────────────────────────────────────
 hdr "Bouncer"
-set_secret_noenv "$REPO/04_SOFTWARE/cloudflare-worker/bouncer" "BOUNCER_GATE_TOKEN"
+set_secret_noenv "$REPO/software/cloudflare-worker/bouncer" "BOUNCER_GATE_TOKEN"
 
 # ── Genesis Gate ──────────────────────────────────────────────────────────────
 hdr "Genesis Gate"
 # .env.master stores as GENESIS_ADMIN_TOKEN; worker expects ADMIN_TOKEN
 local _gat="${GENESIS_ADMIN_TOKEN:-}"
-[ -n "$_gat" ] && (cd "$REPO/04_SOFTWARE/genesis-gate" && echo "$_gat" | ${WRANGLER} secret put "ADMIN_TOKEN" 2>&1 \
+[ -n "$_gat" ] && (cd "$REPO/software/genesis-gate" && echo "$_gat" | ${WRANGLER} secret put "ADMIN_TOKEN" 2>&1 \
   | grep -qE "Success|already|Updated" && ok "ADMIN_TOKEN → genesis-gate") || warn "ADMIN_TOKEN genesis-gate skipped"
 
 # ── K4 Cage ───────────────────────────────────────────────────────────────────
 hdr "K4 Cage"
-K4C="$REPO/04_SOFTWARE/k4-cage"
+K4C="$REPO/software/k4-cage"
 local _k4at="${K4_CAGE_ADMIN_TOKEN:-}"
 local _k4ft="${K4_CAGE_FANOUT_TOKEN:-}"
 [ -n "$_k4at" ] && (cd "$K4C" && echo "$_k4at" | ${WRANGLER} secret put "ADMIN_TOKEN" 2>&1 \
@@ -128,24 +128,24 @@ local _k4ft="${K4_CAGE_FANOUT_TOKEN:-}"
 
 # ── K4 Hubs ───────────────────────────────────────────────────────────────────
 hdr "K4 Hubs"
-set_secret_noenv "$REPO/04_SOFTWARE/k4-hubs" "HUBS_WRITE_TOKEN"
-set_secret_noenv "$REPO/04_SOFTWARE/k4-hubs" "HUB_LIVE_RELAY_SECRET"
+set_secret_noenv "$REPO/software/k4-hubs" "HUBS_WRITE_TOKEN"
+set_secret_noenv "$REPO/software/k4-hubs" "HUB_LIVE_RELAY_SECRET"
 
 # ── Agent Hub ─────────────────────────────────────────────────────────────────
 hdr "Agent Hub"
-set_secret_noenv "$REPO/04_SOFTWARE/p31-agent-hub" "AGENT_HUB_SECRET"
-set_secret_noenv "$REPO/04_SOFTWARE/p31-agent-hub" "HUBS_WRITE_TOKEN"
+set_secret_noenv "$REPO/software/p31-agent-hub" "AGENT_HUB_SECRET"
+set_secret_noenv "$REPO/software/p31-agent-hub" "HUBS_WRITE_TOKEN"
 
 # ── Kenosis Mesh ──────────────────────────────────────────────────────────────
 hdr "Kenosis Mesh"
 local _kat="${KENOSIS_AUTH_TOKEN:-}"
-[ -n "$_kat" ] && (cd "$REPO/04_SOFTWARE/kenosis-mesh" && echo "$_kat" | ${WRANGLER} secret put "AUTH_TOKEN" 2>&1 \
+[ -n "$_kat" ] && (cd "$REPO/software/kenosis-mesh" && echo "$_kat" | ${WRANGLER} secret put "AUTH_TOKEN" 2>&1 \
   | grep -qE "Success|already|Updated" && ok "AUTH_TOKEN → kenosis-mesh (rotated)") || warn "AUTH_TOKEN kenosis-mesh skipped"
-set_secret_noenv "$REPO/04_SOFTWARE/kenosis-mesh" "SIMPLEX_OPERATOR_SECRET"
+set_secret_noenv "$REPO/software/kenosis-mesh" "SIMPLEX_OPERATOR_SECRET"
 
 # ── P31 Forge ─────────────────────────────────────────────────────────────────
 hdr "P31 Forge"
-FORGE="$REPO/04_SOFTWARE/p31-forge"
+FORGE="$REPO/software/p31-forge"
 set_secret_noenv "$FORGE" "FORGE_API_KEY"
 set_secret_noenv "$FORGE" "DISCORD_WEBHOOK_SECRET"
 set_secret_noenv "$FORGE" "GITHUB_WEBHOOK_SECRET"
@@ -171,17 +171,17 @@ set_secret_noenv "$FORGE" "ZENODO_TOKEN"
 
 # ── Google Bridge ─────────────────────────────────────────────────────────────
 hdr "Google Bridge"
-set_secret "$REPO/04_SOFTWARE/p31-google-bridge" "GOOGLE_CLIENT_SECRET" "" "production"
+set_secret "$REPO/software/p31-google-bridge" "GOOGLE_CLIENT_SECRET" "" "production"
 
 # ── Donate API ────────────────────────────────────────────────────────────────
 hdr "Donate API"
-set_secret_noenv "$REPO/04_SOFTWARE/donate-api" "STRIPE_SECRET_KEY"
-set_secret_noenv "$REPO/04_SOFTWARE/donate-api" "STRIPE_WEBHOOK_SECRET"
-set_secret_noenv "$REPO/04_SOFTWARE/donate-api" "DISCORD_WEBHOOK_URL"
+set_secret_noenv "$REPO/software/donate-api" "STRIPE_SECRET_KEY"
+set_secret_noenv "$REPO/software/donate-api" "STRIPE_WEBHOOK_SECRET"
+set_secret_noenv "$REPO/software/donate-api" "DISCORD_WEBHOOK_URL"
 
 # ── Node Zero M2M ─────────────────────────────────────────────────────────────
 hdr "Node Zero M2M"
-NZM="$REPO/04_SOFTWARE/p31ca/workers/node-zero-m2m"
+NZM="$REPO/software/p31ca/workers/node-zero-m2m"
 [ -d "$NZM" ] && set_secret_noenv "$NZM" "M2M_BEARER_TOKEN"
 
 # ── K4 Agent Hub (home root packages/) ───────────────────────────────────────
@@ -193,7 +193,7 @@ fi
 
 # ── Buffer Worker ─────────────────────────────────────────────────────────────
 hdr "Buffer Worker"
-for d in "$REPO/04_SOFTWARE/p31ca/workers/buffer" "$REPO/04_SOFTWARE/cloudflare-worker/buffer"; do
+for d in "$REPO/software/p31ca/workers/buffer" "$REPO/software/cloudflare-worker/buffer"; do
   if [ -d "$d" ] && [ -f "$d/wrangler.toml" ]; then
     set_secret_noenv "$d" "P31_API_SECRET"
     break
@@ -202,7 +202,7 @@ done
 
 # ── Home Assistant MQTT bridge token ─────────────────────────────────────────
 hdr "HA long-lived access token (for Meshtastic bridge)"
-MQTT_CONF="$REPO/05_FIRMWARE/meshtastic/ha-mqtt-bridge.yaml"
+MQTT_CONF="$REPO/firmware/meshtastic/ha-mqtt-bridge.yaml"
 if [ -f "$MQTT_CONF" ] && grep -q "REPLACE_HA_LONG_LIVED_TOKEN" "$MQTT_CONF"; then
   HA_TOKEN="${HA_LONG_LIVED_TOKEN:-}"
   if [ -z "$HA_TOKEN" ] && [ -t 0 ] && [ -t 1 ]; then
@@ -229,6 +229,6 @@ echo ""
 echo -e "  ${C}Still manual (requires physical device):${N}"
 echo -e "  1. Epic FHIR auth:   https://api.p31ca.org/fhir/auth  (iPhone Safari)"
 echo -e "  2. eSIM:             iPhone → Settings → Cellular → Add eSIM → US Mobile Warp"
-echo -e "  3. Meshtastic flash: meshtastic --configure 05_FIRMWARE/meshtastic/p31-mesh-config.yaml"
+echo -e "  3. Meshtastic flash: meshtastic --configure firmware/meshtastic/p31-mesh-config.yaml"
 echo -e "  4. Matrix VPS:       bash scripts/provision-matrix-vps.sh  (needs HETZNER_API_TOKEN)"
 echo ""

@@ -1,5 +1,5 @@
 # phosphorus31.org (planetary-planet) — build on every PR; deploy Pages on main only.
-# Parallel to 04_SOFTWARE/p31ca (separate team/path); shared actions for toolchain + Wrangler.
+# Parallel to software/p31ca (separate team/path); shared actions for toolchain + Wrangler.
 
 name: Phosphorus31 site
 

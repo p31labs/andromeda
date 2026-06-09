@@ -43,7 +43,7 @@ All critical dependencies and components for the cryptographic kenosis protocol 
 - **Neo4j Phantom Dependencies**: Verified elimination from codebase
 
 ### 6. 🐍 Backend API Stability
-- **04_SOFTWARE/backend/spoons_api.py**: Race condition protection implemented
+- **software/backend/spoons_api.py**: Race condition protection implemented
   - Atomic Lua script execution in Redis
   - Idempotency keys to prevent double-spending
   - Hard stop at 0 spoons (medical safety requirement)

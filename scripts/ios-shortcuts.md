@@ -105,7 +105,7 @@ npm install -g wrangler
 
 # Deploy Q-Factor worker from iPhone
 cd /root && git clone https://github.com/p31labs/andromeda
-cd andromeda/04_SOFTWARE/cloudflare-worker/q-factor
+cd andromeda/software/cloudflare-worker/q-factor
 wrangler deploy --env production
 ```
 

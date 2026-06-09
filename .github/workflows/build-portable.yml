@@ -17,7 +17,7 @@ jobs:
       - name: Prep Portable Directory
         run: |
           mkdir p31-sovereign-node
-          cp -r 04_SOFTWARE p31-sovereign-node/04_SOFTWARE
+          cp -r software p31-sovereign-node/software
           cp docker-compose.yml p31-sovereign-node/
           cp -r scripts p31-sovereign-node/scripts
           cp README_PORTABLE.md p31-sovereign-node/README.md

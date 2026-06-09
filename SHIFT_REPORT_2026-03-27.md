@@ -13,12 +13,12 @@
 **Component**: `@p31/shared` economyStore + BONDING genesis
 
 **Files Modified**:
-- [`economyStore.ts`](04_SOFTWARE/packages/shared/src/economy/economyStore.ts) — Added `initLoveSync()` and `syncEarn()` fire-and-forget cloud sync
-- [`economy/index.ts`](04_SOFTWARE/packages/shared/src/economy/index.ts) — Exported `initLoveSync`
-- [`bonding/economyStore.ts`](04_SOFTWARE/bonding/src/genesis/economyStore.ts) — Re-exported `initLoveSync`
-- [`genesis.ts`](04_SOFTWARE/bonding/src/genesis/genesis.ts) — Added stable device ID + initLoveSync call + PING→earnLove fix
-- [`bonding/.env`](04_SOFTWARE/bonding/.env) — Added `VITE_LOVE_LEDGER_URL=`
-- [`wrangler.toml`](04_SOFTWARE/workers/wrangler.toml) — Fixed main entry point, added routes placeholder
+- [`economyStore.ts`](software/packages/shared/src/economy/economyStore.ts) — Added `initLoveSync()` and `syncEarn()` fire-and-forget cloud sync
+- [`economy/index.ts`](software/packages/shared/src/economy/index.ts) — Exported `initLoveSync`
+- [`bonding/economyStore.ts`](software/bonding/src/genesis/economyStore.ts) — Re-exported `initLoveSync`
+- [`genesis.ts`](software/bonding/src/genesis/genesis.ts) — Added stable device ID + initLoveSync call + PING→earnLove fix
+- [`bonding/.env`](software/bonding/.env) — Added `VITE_LOVE_LEDGER_URL=`
+- [`wrangler.toml`](software/workers/wrangler.toml) — Fixed main entry point, added routes placeholder
 
 **Test Results**:
 - love-ledger: 126/126 ✅
@@ -125,7 +125,7 @@ Worker deployed successfully:
 3. Added care_score bump on earn: +0.03 care-type, +0.005 passive
 
 **Files Modified**:
-- [`love-ledger.ts`](04_SOFTWARE/workers/love-ledger.ts) — Added care score automation
+- [`love-ledger.ts`](software/workers/love-ledger.ts) — Added care score automation
 
 **Tests**: 539 tests green (BONDING 413 + love-ledger 126)
 

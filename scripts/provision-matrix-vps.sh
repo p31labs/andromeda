@@ -16,7 +16,7 @@ die()  { echo -e "${R}  ✗${N} $*"; exit 1; }
 hdr()  { echo -e "\n${C}── $1 ──────────────────────────────────${N}"; }
 
 # ── Load secrets ─────────────────────────────────────────────────────────────
-for f in "$REPO/.env.master" "$REPO/04_SOFTWARE/.env.master" "/home/p31/.env.master"; do
+for f in "$REPO/.env.master" "$REPO/software/.env.master" "/home/p31/.env.master"; do
   [ -f "$f" ] && { set -a; source "$f"; set +a; ok "Loaded $f"; break; }
 done
 
@@ -28,7 +28,7 @@ SERVER_NAME="matrix-p31"
 SERVER_TYPE="cx22"          # 2 vCPU / 4 GB / 40 GB — sufficient for Synapse + 5 bridges
 LOCATION="ash"              # Ashburn VA — low latency to I-95 corridor
 IMAGE="ubuntu-24.04"
-MATRIX_DIR="$REPO/04_SOFTWARE/matrix"
+MATRIX_DIR="$REPO/software/matrix"
 DOMAIN="matrix.p31ca.org"
 
 hetzner() { curl -sSf -H "Authorization: Bearer $HETZNER_API_TOKEN" \

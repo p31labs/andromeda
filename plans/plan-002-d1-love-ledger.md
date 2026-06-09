@@ -2,7 +2,7 @@
 
 ## Problem
 
-`04_SOFTWARE/workers/wrangler.toml` has `LOVE_D1` commented out (L34-37). The `love-ledger.ts` worker is fully implemented — it reads `env.LOVE_D1`, runs migrations, executes all SQL. It just needs a bound D1 database to exist.
+`software/workers/wrangler.toml` has `LOVE_D1` commented out (L34-37). The `love-ledger.ts` worker is fully implemented — it reads `env.LOVE_D1`, runs migrations, executes all SQL. It just needs a bound D1 database to exist.
 
 ## D1 Schema (from `love-ledger.ts` L106-157)
 
@@ -57,7 +57,7 @@ CREATE TABLE care_logs (
 ### Step 1 — Provision D1 Database (CLI)
 
 ```bash
-cd 04_SOFTWARE/workers
+cd software/workers
 
 # Create the database
 wrangler d1 create love-ledger
@@ -69,7 +69,7 @@ wrangler d1 create love-ledger
 
 ### Step 2 — Update `wrangler.toml` (automated below)
 
-Uncomment the `LOVE_D1` block in `04_SOFTWARE/workers/wrangler.toml` and insert the real `database_id`:
+Uncomment the `LOVE_D1` block in `software/workers/wrangler.toml` and insert the real `database_id`:
 
 ```toml
 [[d1_databases]]
@@ -81,7 +81,7 @@ database_id = "REPLACE_WITH_ACTUAL_ID"
 ### Step 3 — Apply Schema via Wrangler
 
 ```bash
-cd 04_SOFTWARE/workers
+cd software/workers
 
 # Apply the inline schema (tables defined at top of love-ledger.ts)
 wrangler d1 execute love-ledger --remote --file=./schema.sql
@@ -100,7 +100,7 @@ wrangler d1 execute love-ledger --remote --command="
 ### Step 4 — Deploy Worker
 
 ```bash
-cd 04_SOFTWARE/workers
+cd software/workers
 wrangler deploy
 ```
 

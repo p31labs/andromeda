@@ -5,9 +5,9 @@ on:
     branches:
       - main
     paths:
-      - "04_SOFTWARE/cloudflare-worker/q-factor/**"
-      - "04_SOFTWARE/p31ca/workers/fhir/**"
-      - "04_SOFTWARE/cloudflare-worker/command-center/**"
+      - "software/cloudflare-worker/q-factor/**"
+      - "software/p31ca/workers/fhir/**"
+      - "software/cloudflare-worker/command-center/**"
       - ".github/workflows/deploy-p31-workers.yml"
   workflow_dispatch:
     inputs:
@@ -35,11 +35,11 @@ jobs:
         with:
           filters: |
             qfactor:
-              - '04_SOFTWARE/cloudflare-worker/q-factor/**'
+              - 'software/cloudflare-worker/q-factor/**'
             fhir:
-              - '04_SOFTWARE/p31ca/workers/fhir/**'
+              - 'software/p31ca/workers/fhir/**'
             command_center:
-              - '04_SOFTWARE/cloudflare-worker/command-center/**'
+              - 'software/cloudflare-worker/command-center/**'
 
   # ── Q-Factor Worker ───────────────────────────────────────────────────────
   deploy-qfactor:
@@ -57,11 +57,11 @@ jobs:
         run: npm install -g wrangler@${{ env.WRANGLER_VERSION }}
 
       - name: Install Q-Factor dependencies
-        working-directory: 04_SOFTWARE/cloudflare-worker/q-factor
+        working-directory: software/cloudflare-worker/q-factor
         run: npm install
 
       - name: TypeScript check
-        working-directory: 04_SOFTWARE/cloudflare-worker/q-factor
+        working-directory: software/cloudflare-worker/q-factor
         run: npx tsc --noEmit 2>/dev/null || echo "tsc skipped (no tsconfig or minor)"
 
       # Create KV namespace idempotently — wrangler exits 1 if already exists,
@@ -84,7 +84,7 @@ jobs:
       - name: Deploy Q-Factor worker
         uses: ./.github/actions/wrangler-run
         with:
-          working-directory: 04_SOFTWARE/cloudflare-worker/q-factor
+          working-directory: software/cloudflare-worker/q-factor
           command: deploy --env production
           api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           account-id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -116,17 +116,17 @@ jobs:
         run: npm install -g wrangler@${{ env.WRANGLER_VERSION }}
 
       - name: Install FHIR dependencies
-        working-directory: 04_SOFTWARE/p31ca/workers/fhir
+        working-directory: software/p31ca/workers/fhir
         run: npm install
 
       - name: TypeScript check
-        working-directory: 04_SOFTWARE/p31ca/workers/fhir
+        working-directory: software/p31ca/workers/fhir
         run: npx tsc --noEmit 2>/dev/null || echo "tsc skipped"
 
       - name: Deploy FHIR worker
         uses: ./.github/actions/wrangler-run
         with:
-          working-directory: 04_SOFTWARE/p31ca/workers/fhir
+          working-directory: software/p31ca/workers/fhir
           command: deploy
           api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           account-id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -160,7 +160,7 @@ jobs:
       - name: Deploy command-center
         uses: ./.github/actions/wrangler-run
         with:
-          working-directory: 04_SOFTWARE/cloudflare-worker/command-center
+          working-directory: software/cloudflare-worker/command-center
           command: deploy
           api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           account-id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

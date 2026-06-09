@@ -3,7 +3,7 @@
 **Author:** Architect Mode  
 **Created:** 2026-03-24  
 **Status:** Implementation Plan  
-**Target:** P31 Labs software ecosystem (04_SOFTWARE)
+**Target:** P31 Labs software ecosystem (software)
 
 ---
 
@@ -81,7 +81,7 @@ jobs:
 
 ### 1.2 Configure Turborepo Remote Caching
 
-**File:** `04_SOFTWARE/turbo.json`
+**File:** `software/turbo.json`
 
 ```json
 {
@@ -108,7 +108,7 @@ jobs:
 
 ### 1.3 Add pnpm-workspace.yaml with Audit Overrides
 
-**File:** `04_SOFTWARE/pnpm-workspace.yaml`
+**File:** `software/pnpm-workspace.yaml`
 
 ```yaml
 packages:
@@ -162,7 +162,7 @@ audit:
 
 ### 1.5 Add Dependencies for CI
 
-**File:** `04_SOFTWARE/package.json` (additions)
+**File:** `software/package.json` (additions)
 
 ```json
 {
@@ -196,7 +196,7 @@ audit:
 
 ### 2.1 Standardize Vitest Configurations with v8 AST Coverage
 
-**File:** `04_SOFTWARE/packages/game-engine/vitest.config.ts`
+**File:** `software/packages/game-engine/vitest.config.ts`
 
 ```typescript
 import { defineConfig } from 'vitest/config';
@@ -226,7 +226,7 @@ export default defineConfig({
 });
 ```
 
-**File:** `04_SOFTWARE/packages/node-zero/vitest.config.ts`
+**File:** `software/packages/node-zero/vitest.config.ts`
 
 ```typescript
 import { defineConfig } from 'vitest/config';
@@ -255,7 +255,7 @@ export default defineConfig({
 - buffer-core (shared package): 95%
 - game-engine: 80%
 
-**File:** `04_SOFTWARE/packages/shared/vitest.config.ts` (create)
+**File:** `software/packages/shared/vitest.config.ts` (create)
 
 ```typescript
 import { defineConfig } from 'vitest/config';
@@ -284,7 +284,7 @@ export default defineConfig({
 });
 ```
 
-**Update:** `04_SOFTWARE/packages/game-engine/vitest.config.ts`
+**Update:** `software/packages/game-engine/vitest.config.ts`
 
 ```typescript
 export default defineConfig({
@@ -366,11 +366,11 @@ jobs:
 **Install Pino in shared package:**
 
 ```bash
-cd 04_SOFTWARE/packages/shared
+cd software/packages/shared
 pnpm add pino pino-pretty
 ```
 
-**File:** `04_SOFTWARE/packages/shared/src/telemetry/logger.ts`
+**File:** `software/packages/shared/src/telemetry/logger.ts`
 
 ```typescript
 import pino from 'pino';
@@ -418,14 +418,14 @@ export function setLogLevel(level: string) {
 2. Create ESLint rule to flag console.* usage
 3. Run find/replace across codebase
 
-**File:** `04_SOFTWARE/packages/shared/src/telemetry/index.ts`
+**File:** `software/packages/shared/src/telemetry/index.ts`
 
 ```typescript
 export { logger, useLogger, setLogLevel } from './logger';
 export { createSpoonMetric, createVoltageMetric } from './metrics';
 ```
 
-**File:** `04_SOFTWARE/.eslintrc.json` (additions)
+**File:** `software/.eslintrc.json` (additions)
 
 ```json
 {
@@ -438,7 +438,7 @@ export { createSpoonMetric, createVoltageMetric } from './metrics';
 
 ### 3.3 Implement localStorage Dynamic Log Level Synced with p31-progressive-disclosure
 
-**File:** `04_SOFTWARE/packages/shared/src/telemetry/logger.ts` (extension)
+**File:** `software/packages/shared/src/telemetry/logger.ts` (extension)
 
 ```typescript
 // Sync with p31-progressive-disclosure feature flag
@@ -485,11 +485,11 @@ if (typeof window !== 'undefined') {
 **Install in bonding:**
 
 ```bash
-cd 04_SOFTWARE/bonding
+cd software/bonding
 pnpm add @sentry/react
 ```
 
-**File:** `04_SOFTWARE/bonding/src/main.tsx` (additions)
+**File:** `software/bonding/src/main.tsx` (additions)
 
 ```typescript
 import * as Sentry from '@sentry/react';
@@ -521,7 +521,7 @@ export function App() {
 
 ### 4.2 Configure sourcemap: 'hidden' for Vite Pipelines
 
-**File:** `04_SOFTWARE/bonding/vite.config.ts` (additions)
+**File:** `software/bonding/vite.config.ts` (additions)
 
 ```typescript
 export default defineConfig({
@@ -538,7 +538,7 @@ export default defineConfig({
 
 **Apply to node-zero PWA as well:**
 
-**File:** `04_SOFTWARE/packages/node-zero/pwa/vite.config.ts`
+**File:** `software/packages/node-zero/pwa/vite.config.ts`
 
 ```typescript
 export default defineConfig({
@@ -550,7 +550,7 @@ export default defineConfig({
 
 ### 4.3 Implement makeBrowserOfflineTransport for Air-Gapped Scenarios
 
-**File:** `04_SOFTWARE/packages/shared/src/telemetry/offlineTransport.ts`
+**File:** `software/packages/shared/src/telemetry/offlineTransport.ts`
 
 ```typescript
 import { BaseTransport } from '@sentry/core';
@@ -635,7 +635,7 @@ export function makeBrowserOfflineTransport(
 
 ### 4.4 Calibrate beforeSend Hook with Spoon/Voltage Metrics as Custom Tags
 
-**File:** `04_SOFTWARE/bonding/src/main.tsx` (extension)
+**File:** `software/bonding/src/main.tsx` (extension)
 
 ```typescript
 import { useEffect } from 'react';
@@ -710,22 +710,22 @@ Sentry.init({
 | `.github/workflows/coverage.yml` | PR coverage reporting |
 | `turbo.json` | Turborepo configuration |
 | `pnpm-workspace.yaml` | pnpm workspace with audit overrides |
-| `04_SOFTWARE/packages/shared/src/telemetry/logger.ts` | Pino logger implementation |
-| `04_SOFTWARE/packages/shared/src/telemetry/offlineTransport.ts` | Offline Sentry transport |
-| `04_SOFTWARE/packages/shared/vitest.config.ts` | Shared package vitest config |
+| `software/packages/shared/src/telemetry/logger.ts` | Pino logger implementation |
+| `software/packages/shared/src/telemetry/offlineTransport.ts` | Offline Sentry transport |
+| `software/packages/shared/vitest.config.ts` | Shared package vitest config |
 
 ### Modified Files
 
 | File | Modification |
 |------|--------------|
-| `04_SOFTWARE/package.json` | Add turbo, scripts |
-| `04_SOFTWARE/bonding/vite.config.ts` | Add sourcemap: 'hidden' |
-| `04_SOFTWARE/bonding/package.json` | Add @sentry/react |
-| `04_SOFTWARE/bonding/src/main.tsx` | Add Sentry init |
-| `04_SOFTWARE/packages/node-zero/pwa/vite.config.ts` | Add sourcemap: 'hidden' |
-| `04_SOFTWARE/packages/game-engine/vitest.config.ts` | Add coverage thresholds |
-| `04_SOFTWARE/packages/node-zero/vitest.config.ts` | Standardize coverage config |
-| `04_SOFTWARE/.eslintrc.json` | Add console.* rule |
+| `software/package.json` | Add turbo, scripts |
+| `software/bonding/vite.config.ts` | Add sourcemap: 'hidden' |
+| `software/bonding/package.json` | Add @sentry/react |
+| `software/bonding/src/main.tsx` | Add Sentry init |
+| `software/packages/node-zero/pwa/vite.config.ts` | Add sourcemap: 'hidden' |
+| `software/packages/game-engine/vitest.config.ts` | Add coverage thresholds |
+| `software/packages/node-zero/vitest.config.ts` | Standardize coverage config |
+| `software/.eslintrc.json` | Add console.* rule |
 
 ---
 

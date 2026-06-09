@@ -224,12 +224,12 @@ Each selection immediately adjusts:
 
 | File | Changes |
 |------|---------|
-| `04_SOFTWARE/bonding/src/index.css` | Font sizes, touch targets |
-| `04_SOFTWARE/bonding/src/components/hud/BootSequence.tsx` | Add age selector |
-| `04_SOFTWARE/packages/shared/src/theme/presets/kids.ts` | Contrast fixes |
-| `04_SOFTWARE/packages/shared/src/theme/presets/operator.ts` | Senior font sizes |
-| `04_SOFTWARE/bonding/src/store/gameStore.ts` | Add simpleMode state |
-| `04_SOFTWARE/bonding/src/components/ElementPalette.tsx` | Simplified for kids |
+| `software/bonding/src/index.css` | Font sizes, touch targets |
+| `software/bonding/src/components/hud/BootSequence.tsx` | Add age selector |
+| `software/packages/shared/src/theme/presets/kids.ts` | Contrast fixes |
+| `software/packages/shared/src/theme/presets/operator.ts` | Senior font sizes |
+| `software/bonding/src/store/gameStore.ts` | Add simpleMode state |
+| `software/bonding/src/components/ElementPalette.tsx` | Simplified for kids |
 
 ---
 

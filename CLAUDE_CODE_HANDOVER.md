@@ -131,12 +131,12 @@ $425 → Georgia incorporation → IRS 1023-EZ → SAM.gov → Federal grants
 
 | Component | Path |
 |-----------|------|
-| BONDING game | `04_SOFTWARE/bonding/` |
+| BONDING game | `software/bonding/` |
 | N0 PWA | `C:\Users\sandra\Documents\N0\pwa\` |
-| Spaceship Earth | `04_SOFTWARE/spaceship-earth/` |
-| LOVE Ledger (package) | `04_SOFTWARE/packages/love-ledger/` |
-| Shared (types/stores) | `04_SOFTWARE/packages/shared/` |
-| Workers | `04_SOFTWARE/workers/` |
+| Spaceship Earth | `software/spaceship-earth/` |
+| LOVE Ledger (package) | `software/packages/love-ledger/` |
+| Shared (types/stores) | `software/packages/shared/` |
+| Workers | `software/workers/` |
 
 ---
 

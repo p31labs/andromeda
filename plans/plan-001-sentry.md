@@ -8,8 +8,8 @@
 
 | App             | Bundle                                        | Entry Point       |
 | --------------- | --------------------------------------------- | ----------------- |
-| BONDING         | `04_SOFTWARE/bonding/src/main.tsx` L11        | `VITE_SENTRY_DSN` |
-| Spaceship Earth | `04_SOFTWARE/spaceship-earth/src/main.tsx` L9 | `VITE_SENTRY_DSN` |
+| BONDING         | `software/bonding/src/main.tsx` L11        | `VITE_SENTRY_DSN` |
+| Spaceship Earth | `software/spaceship-earth/src/main.tsx` L9 | `VITE_SENTRY_DSN` |
 
 Both use `@sentry/browser` via `SENTRY_DSN` env var. SDK init is wrapped in `if (sentryDsn) { ... }` — fails open if DSN absent.
 

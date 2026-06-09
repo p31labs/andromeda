@@ -42,10 +42,10 @@ This document provides a comprehensive audit of the P31 Labs codebase, identifyi
 - `@playwright/test` - E2E testing (bonding only)
 
 **Test Configuration Files:**
-- `04_SOFTWARE/bonding/vitest.config.ts`
-- `04_SOFTWARE/bonding/playwright.config.ts`
-- `04_SOFTWARE/frontend/vite.config.js` (has vitest)
-- `04_SOFTWARE/spaceship-earth/` (has vitest)
+- `software/bonding/vitest.config.ts`
+- `software/bonding/playwright.config.ts`
+- `software/frontend/vite.config.js` (has vitest)
+- `software/spaceship-earth/` (has vitest)
 
 **Coverage:**
 - BONDING has `__tests__` directory with component tests
@@ -74,7 +74,7 @@ This document provides a comprehensive audit of the P31 Labs codebase, identifyi
 - No log shipping to external service
 
 **Existing Telemetry:**
-- `04_SOFTWARE/telemetry-worker/src/worker.ts` - Basic telemetry endpoint
+- `software/telemetry-worker/src/worker.ts` - Basic telemetry endpoint
 - `cartridgeSandbox.ts` - PostMessage telemetry hijacking
 - `exhibitA.ts` in BONDING - Engagement logging
 
@@ -136,7 +136,7 @@ This document provides a comprehensive audit of the P31 Labs codebase, identifyi
 - Some `any` usage in older code
 
 **Linting:**
-- `04_SOFTWARE/eslint.config.mjs` exists with minimal rules
+- `software/eslint.config.mjs` exists with minimal rules
 - No pre-commit hooks visible
 - Branch protection exists in `.github/`
 
@@ -157,7 +157,7 @@ This document provides a comprehensive audit of the P31 Labs codebase, identifyi
 
 **Documentation:**
 - README.md files in each package
-- WCD documents in 01_ADMIN/
+- WCD documents in admin/
 - No API documentation generation
 - No component library docs
 
@@ -242,7 +242,7 @@ Need to audit package.json files for:
 - **Status:** Core infrastructure complete, integration in progress
 
 ### Telemetry Worker
-- `04_SOFTWARE/telemetry-worker/` - Basic telemetry endpoint
+- `software/telemetry-worker/` - Basic telemetry endpoint
 - **Status:** Exists but not fully integrated into production flow
 
 ### Error Reporter  
@@ -308,9 +308,9 @@ Need to audit package.json files for:
 ## Appendix: File Paths Reference
 
 ### Test Configurations
-- `04_SOFTWARE/bonding/vitest.config.ts`
-- `04_SOFTWARE/bonding/playwright.config.ts`
-- `04_SOFTWARE/eslint.config.mjs`
+- `software/bonding/vitest.config.ts`
+- `software/bonding/playwright.config.ts`
+- `software/eslint.config.mjs`
 
 ### CI/CD
 - `.github/workflows/broadcast.yml`
@@ -319,14 +319,14 @@ Need to audit package.json files for:
 - `.github/branch-protection.json`
 
 ### Build & Bundling
-- `04_SOFTWARE/bonding/vite.config.ts`
-- `04_SOFTWARE/spaceship-earth/vite.config.ts`
-- `04_SOFTWARE/frontend/vite.config.js`
+- `software/bonding/vite.config.ts`
+- `software/spaceship-earth/vite.config.ts`
+- `software/frontend/vite.config.js`
 
 ### Logging & Monitoring
-- `04_SOFTWARE/telemetry-worker/src/worker.ts`
-- `04_SOFTWARE/spaceship-earth/src/services/errorReporter.ts`
-- `04_SOFTWARE/spaceship-earth/src/services/telemetry.ts`
+- `software/telemetry-worker/src/worker.ts`
+- `software/spaceship-earth/src/services/errorReporter.ts`
+- `software/spaceship-earth/src/services/telemetry.ts`
 
 ---
 

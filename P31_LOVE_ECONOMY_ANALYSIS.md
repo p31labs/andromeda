@@ -289,13 +289,13 @@ Response to client
 
 | File | Purpose |
 |------|---------|
-| [`economyStore.ts`](04_SOFTWARE/packages/shared/src/economy/economyStore.ts) | Local IDB store + cloud sync |
-| [`love-ledger.ts`](04_SOFTWARE/workers/love-ledger.ts) | Cloudflare Worker |
-| [`genesis.ts`](04_SOFTWARE/bonding/src/genesis/genesis.ts) | BONDING init + event wiring |
-| [`wrangler.toml`](04_SOFTWARE/workers/wrangler.toml) | Worker config + DO bindings |
-| [`D1_MIGRATION.md`](04_SOFTWARE/workers/D1_MIGRATION.md) | Schema migration script |
-| [`LOVE_TRANSACTION_DO.md`](04_SOFTWARE/workers/LOVE_TRANSACTION_DO.md) | DO design doc |
-| [`TWO_POOL_WORKER.md`](04_SOFTWARE/workers/TWO_POOL_WORKER.md) | Two-pool model doc |
+| [`economyStore.ts`](software/packages/shared/src/economy/economyStore.ts) | Local IDB store + cloud sync |
+| [`love-ledger.ts`](software/workers/love-ledger.ts) | Cloudflare Worker |
+| [`genesis.ts`](software/bonding/src/genesis/genesis.ts) | BONDING init + event wiring |
+| [`wrangler.toml`](software/workers/wrangler.toml) | Worker config + DO bindings |
+| [`D1_MIGRATION.md`](software/workers/D1_MIGRATION.md) | Schema migration script |
+| [`LOVE_TRANSACTION_DO.md`](software/workers/LOVE_TRANSACTION_DO.md) | DO design doc |
+| [`TWO_POOL_WORKER.md`](software/workers/TWO_POOL_WORKER.md) | Two-pool model doc |
 
 ---
 

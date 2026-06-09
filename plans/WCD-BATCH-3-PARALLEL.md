@@ -4,7 +4,7 @@
 
 ---
 
-## GLOBAL CONSTRAINTS (Apply to ALL WCDs)
+## GLOBAL CONSTRAINTS (Apply to ALL wcds)
 
 ```yaml
 three_js_version: r128 # FROZEN. Do not upgrade. Do not use r160+ APIs.
@@ -1088,5 +1088,5 @@ WCD-31 ───────> WCD-32 (AI in docs)
 - **WCD-27 depends on WCD-26** for spatial audio positioning of particles
 - **WCD-28 provides FPS data** needed by WCD-27 for auto-performance scaling
 - **WCD-29 theming** should complete before WCD-31 to ensure agent tools can persist theme changes
-- **Testing**: Prioritize Android Chrome for WCD-31 (voice input), all WCDs for tablet performance (WCD-28)
+- **Testing**: Prioritize Android Chrome for WCD-31 (voice input), all wcds for tablet performance (WCD-28)
 - **Accessibility**: Ensure all new features respect `prefers-reduced-motion` and `prefers-reduced-audio`

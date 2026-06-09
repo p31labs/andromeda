@@ -24,7 +24,7 @@ An engaging, safe, and accessible companion ecosystem that enables:
 - **Features:** Multiplayer molecular building, quest chains, achievements
 
 ### 2. P31 Discord Bot (Just Built ✅)
-- **Status:** Ready at 04_SOFTWARE/discord/p31-bot/
+- **Status:** Ready at software/discord/p31-bot/
 - **Commands:** spoon, bonding, status, help
 - **Automation:** Webhooks for Ko-fi, Node One, BONDING events
 
