@@ -62,11 +62,11 @@ build/
 *.elf
 *.bin
 .git-backup/
-04_SOFTWARE/docs/.astro/
+software/docs/.astro/
 
 # Claude / AI agent artifacts
 .claude/
-04_SOFTWARE/.claude/
+software/.claude/
 roomodes
 
 # Google Drive numbered duplicates
@@ -108,8 +108,8 @@ esp-idf-v5.5.3/
 
 # Large firmware projects - use submodules
 GrokPhenix/
-05_FIRMWARE/maker-variant/
-05_FIRMWARE/nodezero-hal/
+firmware/maker-variant/
+firmware/nodezero-hal/
 
 # Node firmware variants
 node_one_firmware/
@@ -123,7 +123,7 @@ phenix-xiaozhi-v2/
 /donation-wallet-v2/
 
 # Next.js export (local build artifact; not source of truth)
-04_SOFTWARE/sovereign-command-center/out/
+software/sovereign-command-center/out/
 
 # WCD duplicates in root - keep in WCDs/ only
 /WCDs/eslint.config.mjs
@@ -145,11 +145,10 @@ phosphorus31.org/planetary-planet/src/worker/
 # Package lock - use yarn/pnpm or commit intentionally
 package-lock.json
 # npm-ci workflows use npm ci + setup-node cache for these standalone Workers
-!04_SOFTWARE/donate-api/package-lock.json
-!04_SOFTWARE/p31-google-bridge/package-lock.json
+!software/donate-api/package-lock.json
+!software/p31-google-bridge/package-lock.json
 
 # Research and documentation
-02_RESEARCH/
 LICENSE
 P31-OS-Sovereign-Stack-Spec.md
 P31-Operations/
