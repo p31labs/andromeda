@@ -1,10 +1,10 @@
 # P31 Maturity Model — Repository Grading Report
 
-**Generated:** 2026-06-15T14:40:43
+**Generated:** 2026-06-15T15:30:54
 **Schema:** PMM_SCHEMA=1.1
 **Total artifacts graded:** 72
 **Overrides applied:** 3
-**Scan duration:** 16.13s
+**Scan duration:** 16.48s
 
 ## Summary
 
@@ -175,18 +175,18 @@
 ## Jitterbug Tick Report
 
 **Tick:** 1
-**Time:** 2026-06-15T14:40:44
+**Time:** 2026-06-15T15:30:58
 **Spoon level:** 4 (Focus 🎯)
-**Duration:** 0.21s
+**Duration:** 0.25s
 **Git data:** yes
 **Signals processed:** 15
-**Entanglement hits:** 0
+**Entanglement hits:** 10
 
 ### Stage Transitions
 
 | Artifact | From | To | Old Score | New Score |
 |----------|------|----|-----------|-----------|
-| `software/frontend` | BLOOM | SAPLING | 4.00 | 3.48 |
+| `software/frontend` | BLOOM | SAPLING | 4.00 | 3.44 |
 
 ### Current Distribution
 
@@ -196,37 +196,4 @@
 | 🌸 **BLOOM** | 6 |
 | 🌳 **SAPLING** | 32 |
 | 🌿 **SPROUT** | 28 |
-| 🌱 **SEED** | 6 |
-
-
----
-
-## Jitterbug Tick Report
-
-**Tick:** 2
-**Time:** 2026-06-15T14:41:25
-**Spoon level:** 4 (Focus 🎯)
-**Duration:** 0.14s
-**Git data:** yes
-**Signals processed:** 15
-**Entanglement hits:** 7
-
-### Stage Transitions
-
-| Artifact | From | To | Old Score | New Score |
-|----------|------|----|-----------|-----------|
-| `software/discord/p31-bot` | SAPLING | SPROUT | 2.75 | 2.48 |
-| `software/donate-api` | SAPLING | SPROUT | 2.74 | 2.46 |
-| `software/packages/quantum-core` | SAPLING | SPROUT | 2.72 | 2.45 |
-| `software/workers` | SAPLING | SPROUT | 2.68 | 2.40 |
-| `software/packages/game-engine` | BLOOM | SAPLING | 3.55 | 3.12 |
-
-### Current Distribution
-
-| Stage | Count |
-|-------|-------|
-| 🍎 **FRUIT** | 0 |
-| 🌸 **BLOOM** | 5 |
-| 🌳 **SAPLING** | 29 |
-| 🌿 **SPROUT** | 32 |
 | 🌱 **SEED** | 6 |

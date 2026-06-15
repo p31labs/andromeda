@@ -1,22 +1,22 @@
 {
   "meta": {
     "schema": "PMM_SCHEMA=1.1",
-    "generated": "2026-06-15T14:19:05",
+    "generated": "2026-06-15T15:30:54",
     "repo_root": "/home/p31/andromeda",
-    "git_sha": "fd3485203e20fe7591cf3f8fdae544d94a792e50",
+    "git_sha": "52634be25a59538a2e772f0f3689bd9220b69714",
     "total_artifacts": 72,
     "overrides_applied": 3,
-    "scan_duration_seconds": 0.19,
+    "scan_duration_seconds": 0.25,
     "baseline_overrides_parsed": 6,
     "json_overrides_parsed": 0,
     "jitterbug_version": "PMM_JITTERBUG=1.0",
     "jitterbug_tick": 1,
-    "last_jitterbug": "2026-06-15T14:19:06",
-    "spoon_level": 5,
-    "spoon_label": "Flow \ud83d\ude80",
+    "last_jitterbug": "2026-06-15T15:30:58",
+    "spoon_level": 4,
+    "spoon_label": "Focus \ud83c\udfaf",
     "depressed_artifacts": 0,
     "entanglement_pairs": 20,
-    "transitions_this_tick": 15
+    "transitions_this_tick": 1
   },
   "artifacts": [
     {
@@ -26,13 +26,13 @@
       "stage": "SEED",
       "stage_icon": "\ud83c\udf31",
       "scores": {
-        "CODE": 4.778,
-        "TEST": 1.001,
-        "DOCS": 1.148,
-        "OPS": 3.568,
-        "SEC": 1.358
+        "CODE": 5.0,
+        "TEST": 1.004,
+        "DOCS": 2.003,
+        "OPS": 4.004,
+        "SEC": 2.003
       },
-      "overall": 1.001,
+      "overall": 1.004,
       "weakest": [
         "TEST"
       ],
@@ -48,72 +48,24 @@
       "evidence": {
         "CODE": "837 lines, mature codebase",
         "TEST": "No test files",
-        "DOCS": "README exists (35 lines) but no usage examples",
+        "DOCS": "README exists (43 lines) but no usage examples",
         "OPS": "CI/CD pipeline",
         "SEC": "Lockfile present (lockfile (pnpm-lock.yaml))"
       },
       "source_files": 1,
       "test_files": 0,
       "continuous_scores": {
-        "CODE": 4.778324885483171,
-        "TEST": 1.001,
-        "DOCS": 1.1481885084111343,
-        "OPS": 3.5682794264591586,
-        "SEC": 1.3582339674351465
+        "CODE": 5.0,
+        "TEST": 1.0043979723035097,
+        "DOCS": 2.003125947954403,
+        "OPS": 4.003761960128956,
+        "SEC": 2.0034439540416797
       },
       "depressed": false,
-      "last_refreshed": 1781043437.0,
-      "jitter": -0.011629655492817175,
-      "peak_overall": 1.001,
-      "overall_score": 1.001
-    },
-    {
-      "path": "cli",
-      "type": "directory",
-      "name": "cli",
-      "stage": "SEED",
-      "stage_icon": "\ud83c\udf31",
-      "scores": {
-        "CODE": 2.791,
-        "TEST": 2.581,
-        "DOCS": 4.161,
-        "OPS": 3.581,
-        "SEC": 1.371
-      },
-      "overall": 1.371,
-      "weakest": [
-        "SEC"
-      ],
-      "auto_scores": {
-        "CODE": 3,
-        "TEST": 3,
-        "DOCS": 5,
-        "OPS": 4,
-        "SEC": 2
-      },
-      "auto_overall": 2,
-      "override": null,
-      "evidence": {
-        "CODE": "82 lines of real logic",
-        "TEST": "Basic tests (9 assertions)",
-        "DOCS": "Comprehensive docs (313 lines, examples, TOC)",
-        "OPS": "CI/CD pipeline",
-        "SEC": "Lockfile present (lockfile (pnpm-lock.yaml))"
-      },
-      "source_files": 1,
-      "test_files": 1,
-      "continuous_scores": {
-        "CODE": 2.7907109595720625,
-        "TEST": 2.5806655005480503,
-        "DOCS": 4.160574582500026,
-        "OPS": 3.5806655005480503,
-        "SEC": 1.3706200415240384
-      },
-      "depressed": false,
-      "last_refreshed": 1781043437.0,
-      "jitter": 0.0007564185960746857,
-      "peak_overall": 1.3706200415240384,
-      "overall_score": 1.371
+      "last_refreshed": 1781550713.0,
+      "jitter": 0.004397972303509665,
+      "peak_overall": 1.0043979723035097,
+      "overall_score": 1.004
     },
     {
       "path": "firmware",
@@ -122,11 +74,11 @@
       "stage": "SEED",
       "stage_icon": "\ud83c\udf31",
       "scores": {
-        "CODE": 4.785,
+        "CODE": 4.845,
         "TEST": 1.001,
-        "DOCS": 2.155,
-        "OPS": 3.575,
-        "SEC": 1.365
+        "DOCS": 3.421,
+        "OPS": 3.704,
+        "SEC": 1.562
       },
       "overall": 1.001,
       "weakest": [
@@ -135,7 +87,7 @@
       "auto_scores": {
         "CODE": 5,
         "TEST": 1,
-        "DOCS": 3,
+        "DOCS": 4,
         "OPS": 4,
         "SEC": 2
       },
@@ -144,168 +96,24 @@
       "evidence": {
         "CODE": "108092 lines, mature codebase",
         "TEST": "No test files",
-        "DOCS": "README with usage (41 lines)",
+        "DOCS": "Detailed docs (52 lines, examples)",
         "OPS": "CI/CD pipeline",
         "SEC": "Lockfile present (lockfile (pnpm-lock.yaml))"
       },
       "source_files": 211,
       "test_files": 0,
       "continuous_scores": {
-        "CODE": 4.785256229653613,
+        "CODE": 4.844740772706347,
         "TEST": 1.001,
-        "DOCS": 2.1551198525815765,
-        "OPS": 3.575210770629601,
-        "SEC": 1.3651653116055886
+        "DOCS": 3.4210567544445167,
+        "OPS": 3.7035127666190704,
+        "SEC": 1.5622847605317933
       },
       "depressed": false,
       "last_refreshed": 1781043437.0,
-      "jitter": -0.004698311322375009,
+      "jitter": -0.014031221206376596,
       "peak_overall": 1.001,
       "overall_score": 1.001
-    },
-    {
-      "path": "p31-surrogate-backend",
-      "type": "directory",
-      "name": "p31-surrogate-backend",
-      "stage": "SEED",
-      "stage_icon": "\ud83c\udf31",
-      "scores": {
-        "CODE": 4.816,
-        "TEST": 1.606,
-        "DOCS": 2.186,
-        "OPS": 3.606,
-        "SEC": 1.396
-      },
-      "overall": 1.396,
-      "weakest": [
-        "SEC"
-      ],
-      "auto_scores": {
-        "CODE": 5,
-        "TEST": 2,
-        "DOCS": 3,
-        "OPS": 4,
-        "SEC": 2
-      },
-      "auto_overall": 2,
-      "override": null,
-      "evidence": {
-        "CODE": "2193 lines, mature codebase",
-        "TEST": "Minimal tests (0 assertions)",
-        "DOCS": "README with usage (41 lines)",
-        "OPS": "CI/CD pipeline",
-        "SEC": "Lockfile present (lockfile (pnpm-lock.yaml))"
-      },
-      "source_files": 8,
-      "test_files": 1,
-      "continuous_scores": {
-        "CODE": 4.81608761376912,
-        "TEST": 1.6060421547451074,
-        "DOCS": 2.185951236697083,
-        "OPS": 3.6060421547451074,
-        "SEC": 1.3959966957210954
-      },
-      "depressed": false,
-      "last_refreshed": 1781043437.0,
-      "jitter": 0.02613307279313181,
-      "peak_overall": 1.3959966957210954,
-      "overall_score": 1.396
-    },
-    {
-      "path": "phosphorus31.org",
-      "type": "directory",
-      "name": "phosphorus31.org",
-      "stage": "SEED",
-      "stage_icon": "\ud83c\udf31",
-      "scores": {
-        "CODE": 1.806,
-        "TEST": 2.596,
-        "DOCS": 2.176,
-        "OPS": 3.596,
-        "SEC": 1.386
-      },
-      "overall": 1.386,
-      "weakest": [
-        "SEC"
-      ],
-      "auto_scores": {
-        "CODE": 2,
-        "TEST": 3,
-        "DOCS": 3,
-        "OPS": 4,
-        "SEC": 2
-      },
-      "auto_overall": 2,
-      "override": null,
-      "evidence": {
-        "CODE": "Minimal implementation",
-        "TEST": "Basic tests (9 assertions)",
-        "DOCS": "README with usage (41 lines)",
-        "OPS": "CI/CD pipeline",
-        "SEC": "Lockfile present (lockfile (pnpm-lock.yaml))"
-      },
-      "source_files": 1,
-      "test_files": 1,
-      "continuous_scores": {
-        "CODE": 1.805949115510416,
-        "TEST": 2.5959036564864038,
-        "DOCS": 2.1758127384383794,
-        "OPS": 3.5959036564864038,
-        "SEC": 1.3858581974623918
-      },
-      "depressed": false,
-      "last_refreshed": 1781043437.0,
-      "jitter": 0.01599457453442807,
-      "peak_overall": 1.3858581974623918,
-      "overall_score": 1.386
-    },
-    {
-      "path": "phosphorus31.org/planetary-planet",
-      "type": "directory",
-      "name": "planetary-planet",
-      "stage": "SEED",
-      "stage_icon": "\ud83c\udf31",
-      "scores": {
-        "CODE": 3.753,
-        "TEST": 1.543,
-        "DOCS": 2.123,
-        "OPS": 3.543,
-        "SEC": 1.333
-      },
-      "overall": 1.333,
-      "weakest": [
-        "SEC"
-      ],
-      "auto_scores": {
-        "CODE": 4,
-        "TEST": 2,
-        "DOCS": 3,
-        "OPS": 4,
-        "SEC": 2
-      },
-      "auto_overall": 2,
-      "override": null,
-      "evidence": {
-        "CODE": "472 lines of real logic",
-        "TEST": "Minimal tests (0 assertions)",
-        "DOCS": "README with usage (41 lines)",
-        "OPS": "CI/CD with wrangler deploy",
-        "SEC": "Lockfile present (lockfile (pnpm-lock.yaml))"
-      },
-      "source_files": 9,
-      "test_files": 1,
-      "continuous_scores": {
-        "CODE": 3.7528899078403866,
-        "TEST": 1.5428444488163742,
-        "DOCS": 2.12275353076835,
-        "OPS": 3.5428444488163744,
-        "SEC": 1.3327989897923622
-      },
-      "depressed": false,
-      "last_refreshed": 1781043437.0,
-      "jitter": -0.03706463313560142,
-      "peak_overall": 1.3327989897923622,
-      "overall_score": 1.333
     },
     {
       "path": "scripts",
@@ -314,11 +122,11 @@
       "stage": "SEED",
       "stage_icon": "\ud83c\udf31",
       "scores": {
-        "CODE": 4.783,
+        "CODE": 4.986,
         "TEST": 1.001,
-        "DOCS": 2.153,
-        "OPS": 3.573,
-        "SEC": 1.363
+        "DOCS": 3.985,
+        "OPS": 3.986,
+        "SEC": 1.985
       },
       "overall": 1.001,
       "weakest": [
@@ -327,31 +135,31 @@
       "auto_scores": {
         "CODE": 5,
         "TEST": 1,
-        "DOCS": 3,
+        "DOCS": 4,
         "OPS": 4,
         "SEC": 2
       },
       "auto_overall": 1,
       "override": null,
       "evidence": {
-        "CODE": "5447 lines, mature codebase",
+        "CODE": "5914 lines, mature codebase",
         "TEST": "No test files",
-        "DOCS": "README with usage (41 lines)",
+        "DOCS": "Detailed docs (52 lines, examples)",
         "OPS": "CI/CD pipeline",
         "SEC": "Lockfile present (lockfile (pnpm-lock.yaml))"
       },
-      "source_files": 28,
+      "source_files": 30,
       "test_files": 0,
       "continuous_scores": {
-        "CODE": 4.782977712287905,
+        "CODE": 4.985959744848283,
         "TEST": 1.001,
-        "DOCS": 2.153376335215868,
-        "OPS": 3.5731105865972257,
-        "SEC": 1.363243460906547
+        "DOCS": 3.985005726586452,
+        "OPS": 3.9856417387610055,
+        "SEC": 1.985323732673729
       },
       "depressed": false,
-      "last_refreshed": 1781043865.0,
-      "jitter": -0.007155162021416797,
+      "last_refreshed": 1781550713.0,
+      "jitter": -0.013722249064440981,
       "peak_overall": 1.001,
       "overall_score": 1.001
     },
@@ -362,13 +170,13 @@
       "stage": "SEED",
       "stage_icon": "\ud83c\udf31",
       "scores": {
-        "CODE": 4.995,
-        "TEST": 1.001,
-        "DOCS": 3.989,
-        "OPS": 4.067,
-        "SEC": 4.29
+        "CODE": 5.0,
+        "TEST": 1.004,
+        "DOCS": 4.003,
+        "OPS": 4.054,
+        "SEC": 4.203
       },
-      "overall": 1.001,
+      "overall": 1.004,
       "weakest": [
         "TEST"
       ],
@@ -384,24 +192,24 @@
       "evidence": {
         "CODE": "8666 lines, mature codebase",
         "TEST": "No test files",
-        "DOCS": "Detailed docs (60 lines, examples)",
+        "DOCS": "Detailed docs (75 lines, examples)",
         "OPS": "CI/CD pipeline",
         "SEC": "Lockfile + lint + CI security audit"
       },
       "source_files": 46,
       "test_files": 0,
       "continuous_scores": {
-        "CODE": 4.995485919693155,
-        "TEST": 1.001,
-        "DOCS": 3.9887724169304395,
-        "OPS": 4.067129168311797,
-        "SEC": 4.290450792621119
+        "CODE": 5.0,
+        "TEST": 1.0041594338340991,
+        "DOCS": 4.002887409484992,
+        "OPS": 4.053523421659546,
+        "SEC": 4.203205415572269
       },
       "depressed": false,
-      "last_refreshed": 1781547546.1016576,
-      "jitter": -0.004514080306845404,
-      "peak_overall": 1.001,
-      "overall_score": 1.001
+      "last_refreshed": 1781551857.8219142,
+      "jitter": 0.004159433834099019,
+      "peak_overall": 1.0041594338340991,
+      "overall_score": 1.004
     },
     {
       "path": "software/cloudflare-worker",
@@ -410,13 +218,13 @@
       "stage": "SEED",
       "stage_icon": "\ud83c\udf31",
       "scores": {
-        "CODE": 4.798,
-        "TEST": 1.008,
-        "DOCS": 4.167,
-        "OPS": 3.588,
-        "SEC": 3.377
+        "CODE": 5.0,
+        "TEST": 1.02,
+        "DOCS": 5.0,
+        "OPS": 4.019,
+        "SEC": 4.018
       },
-      "overall": 1.008,
+      "overall": 1.02,
       "weakest": [
         "TEST"
       ],
@@ -432,120 +240,24 @@
       "evidence": {
         "CODE": "1073 lines, mature codebase",
         "TEST": "No test files",
-        "DOCS": "Comprehensive docs (130 lines, examples, TOC)",
+        "DOCS": "Comprehensive docs (163 lines, examples, TOC)",
         "OPS": "CI/CD with wrangler deploy",
         "SEC": "Lockfile + lint + CI security audit"
       },
       "source_files": 9,
       "test_files": 0,
       "continuous_scores": {
-        "CODE": 4.797554930803719,
-        "TEST": 1.0076003898277308,
-        "DOCS": 4.167418553731682,
-        "OPS": 3.5875094717797067,
-        "SEC": 3.377464012755695
+        "CODE": 5.0,
+        "TEST": 1.020399601447814,
+        "DOCS": 5.0,
+        "OPS": 4.018685811495483,
+        "SEC": 4.017828916519317
       },
       "depressed": false,
-      "last_refreshed": 1781043437.0,
-      "jitter": 0.0076003898277308204,
-      "peak_overall": 1.0076003898277308,
-      "overall_score": 1.008
-    },
-    {
-      "path": "software/extensions/p31ca",
-      "type": "directory",
-      "name": "p31ca",
-      "stage": "SEED",
-      "stage_icon": "\ud83c\udf31",
-      "scores": {
-        "CODE": 3.761,
-        "TEST": 2.551,
-        "DOCS": 1.13,
-        "OPS": 3.551,
-        "SEC": 3.34
-      },
-      "overall": 1.13,
-      "weakest": [
-        "DOCS"
-      ],
-      "auto_scores": {
-        "CODE": 4,
-        "TEST": 3,
-        "DOCS": 2,
-        "OPS": 4,
-        "SEC": 4
-      },
-      "auto_overall": 2,
-      "override": null,
-      "evidence": {
-        "CODE": "444 lines of real logic",
-        "TEST": "Basic tests (9 assertions)",
-        "DOCS": "README exists (10 lines) but no usage examples",
-        "OPS": "CI/CD pipeline",
-        "SEC": "Lockfile + lint + CI security audit"
-      },
-      "source_files": 3,
-      "test_files": 1,
-      "continuous_scores": {
-        "CODE": 3.760545877100076,
-        "TEST": 2.550500418076064,
-        "DOCS": 1.13040950002804,
-        "OPS": 3.550500418076064,
-        "SEC": 3.3404549590520523
-      },
-      "depressed": false,
-      "last_refreshed": 1781043437.0,
-      "jitter": -0.02940866387591152,
-      "peak_overall": 1.13040950002804,
-      "overall_score": 1.13
-    },
-    {
-      "path": "software/spaceship-earth/astro-landing",
-      "type": "directory",
-      "name": "astro-landing",
-      "stage": "SEED",
-      "stage_icon": "\ud83c\udf31",
-      "scores": {
-        "CODE": 1.795,
-        "TEST": 1.585,
-        "DOCS": 1.165,
-        "OPS": 3.585,
-        "SEC": 3.375
-      },
-      "overall": 1.165,
-      "weakest": [
-        "DOCS"
-      ],
-      "auto_scores": {
-        "CODE": 2,
-        "TEST": 2,
-        "DOCS": 2,
-        "OPS": 4,
-        "SEC": 4
-      },
-      "auto_overall": 2,
-      "override": null,
-      "evidence": {
-        "CODE": "Minimal implementation",
-        "TEST": "Minimal tests (0 assertions)",
-        "DOCS": "README exists (8 lines) but no usage examples",
-        "OPS": "CI/CD with wrangler deploy",
-        "SEC": "Lockfile + lint + CI security audit"
-      },
-      "source_files": 3,
-      "test_files": 1,
-      "continuous_scores": {
-        "CODE": 1.7954130182066723,
-        "TEST": 1.5853675591826601,
-        "DOCS": 1.165276641134636,
-        "OPS": 3.58536755918266,
-        "SEC": 3.375322100158648
-      },
-      "depressed": false,
-      "last_refreshed": 1781043437.0,
-      "jitter": 0.005458477230684481,
-      "peak_overall": 1.165276641134636,
-      "overall_score": 1.165
+      "last_refreshed": 1781548773.0,
+      "jitter": 0.020399601447814053,
+      "peak_overall": 1.020399601447814,
+      "overall_score": 1.02
     },
     {
       "path": "wcds",
@@ -554,20 +266,20 @@
       "stage": "SEED",
       "stage_icon": "\ud83c\udf31",
       "scores": {
-        "CODE": 3.794,
-        "TEST": 1.004,
-        "DOCS": 2.163,
-        "OPS": 3.584,
-        "SEC": 1.374
+        "CODE": 3.847,
+        "TEST": 1.001,
+        "DOCS": 3.424,
+        "OPS": 3.706,
+        "SEC": 1.565
       },
-      "overall": 1.004,
+      "overall": 1.001,
       "weakest": [
         "TEST"
       ],
       "auto_scores": {
         "CODE": 4,
         "TEST": 1,
-        "DOCS": 3,
+        "DOCS": 4,
         "OPS": 4,
         "SEC": 2
       },
@@ -576,24 +288,24 @@
       "evidence": {
         "CODE": "348 lines of real logic",
         "TEST": "No test files",
-        "DOCS": "README with usage (41 lines)",
+        "DOCS": "Detailed docs (52 lines, examples)",
         "OPS": "CI/CD pipeline",
         "SEC": "Lockfile present (lockfile (pnpm-lock.yaml))"
       },
       "source_files": 8,
       "test_files": 0,
       "continuous_scores": {
-        "CODE": 3.7935967898046106,
-        "TEST": 1.0036422488286227,
-        "DOCS": 2.163460412732574,
-        "OPS": 3.5835513307805984,
-        "SEC": 1.3735058717565864
+        "CODE": 3.847294162710402,
+        "TEST": 1.001,
+        "DOCS": 3.423610144448572,
+        "OPS": 3.7060661566231254,
+        "SEC": 1.5648381505358488
       },
       "depressed": false,
       "last_refreshed": 1781043437.0,
-      "jitter": 0.0036422488286227657,
-      "peak_overall": 1.0036422488286227,
-      "overall_score": 1.004
+      "jitter": -0.011477831202321155,
+      "peak_overall": 1.001,
+      "overall_score": 1.001
     },
     {
       "path": "apps",
@@ -602,20 +314,20 @@
       "stage": "SPROUT",
       "stage_icon": "\ud83c\udf3f",
       "scores": {
-        "CODE": 1.943,
-        "TEST": 3.899,
-        "DOCS": 2.81,
-        "OPS": 3.899,
-        "SEC": 1.854
+        "CODE": 1.955,
+        "TEST": 3.924,
+        "DOCS": 3.863,
+        "OPS": 3.924,
+        "SEC": 1.894
       },
-      "overall": 1.854,
+      "overall": 1.894,
       "weakest": [
         "SEC"
       ],
       "auto_scores": {
         "CODE": 2,
         "TEST": 4,
-        "DOCS": 3,
+        "DOCS": 4,
         "OPS": 4,
         "SEC": 2
       },
@@ -624,24 +336,72 @@
       "evidence": {
         "CODE": "Minimal implementation",
         "TEST": "Comprehensive tests (394 assertions) + vitest thresholds",
-        "DOCS": "README with usage (41 lines)",
+        "DOCS": "Detailed docs (52 lines, examples)",
         "OPS": "CI/CD pipeline",
         "SEC": "Lockfile present (lockfile (pnpm-lock.yaml))"
       },
       "source_files": 1,
       "test_files": 12,
       "continuous_scores": {
-        "CODE": 1.9431017301915305,
-        "TEST": 3.8986129378341854,
-        "DOCS": 2.8096353531194946,
-        "OPS": 3.8986129378341854,
-        "SEC": 1.8541241454768396
+        "CODE": 1.955350947592806,
+        "TEST": 3.9244940526166405,
+        "DOCS": 3.8627802626643093,
+        "OPS": 3.9244940526166405,
+        "SEC": 1.893637157640475
       },
       "depressed": false,
       "last_refreshed": 1781440773.0,
-      "jitter": -0.01240947745112403,
-      "peak_overall": 1.8541241454768396,
-      "overall_score": 1.854
+      "jitter": -0.01379215743102836,
+      "peak_overall": 1.893637157640475,
+      "overall_score": 1.894
+    },
+    {
+      "path": "cli",
+      "type": "directory",
+      "name": "cli",
+      "stage": "SPROUT",
+      "stage_icon": "\ud83c\udf3f",
+      "scores": {
+        "CODE": 3.01,
+        "TEST": 3.009,
+        "DOCS": 5.0,
+        "OPS": 4.009,
+        "SEC": 2.008
+      },
+      "overall": 2.008,
+      "weakest": [
+        "SEC"
+      ],
+      "auto_scores": {
+        "CODE": 3,
+        "TEST": 3,
+        "DOCS": 5,
+        "OPS": 4,
+        "SEC": 2
+      },
+      "auto_overall": 2,
+      "override": null,
+      "evidence": {
+        "CODE": "82 lines of real logic",
+        "TEST": "Basic tests (9 assertions)",
+        "DOCS": "Comprehensive docs (394 lines, examples, TOC)",
+        "OPS": "CI/CD pipeline",
+        "SEC": "Lockfile present (lockfile (pnpm-lock.yaml))"
+      },
+      "source_files": 1,
+      "test_files": 1,
+      "continuous_scores": {
+        "CODE": 3.0095067378799865,
+        "TEST": 3.0086498429038206,
+        "DOCS": 5.0,
+        "OPS": 4.008649842903821,
+        "SEC": 2.0077929479276553
+      },
+      "depressed": false,
+      "last_refreshed": 1781548773.0,
+      "jitter": 0.010363632856152036,
+      "peak_overall": 2.0077929479276553,
+      "overall_score": 2.008
     },
     {
       "path": "ecosystem",
@@ -650,16 +410,15 @@
       "stage": "SPROUT",
       "stage_icon": "\ud83c\udf3f",
       "scores": {
-        "CODE": 5.0,
-        "TEST": 3.007,
-        "DOCS": 2.007,
-        "OPS": 4.007,
-        "SEC": 2.007
+        "CODE": 4.997,
+        "TEST": 2.996,
+        "DOCS": 1.994,
+        "OPS": 3.996,
+        "SEC": 1.995
       },
-      "overall": 2.007,
+      "overall": 1.994,
       "weakest": [
-        "DOCS",
-        "SEC"
+        "DOCS"
       ],
       "auto_scores": {
         "CODE": 5,
@@ -673,24 +432,24 @@
       "evidence": {
         "CODE": "5395 lines, mature codebase",
         "TEST": "Basic tests (9 assertions)",
-        "DOCS": "README with minimal content",
+        "DOCS": "README exists (6 lines) but no usage examples",
         "OPS": "CI/CD pipeline",
         "SEC": "Lockfile present (lockfile (pnpm-lock.yaml))"
       },
       "source_files": 21,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 5.0,
-        "TEST": 3.0071636189331787,
-        "DOCS": 2.0071636189331787,
-        "OPS": 4.007163618933179,
-        "SEC": 2.0071636189331787
+        "CODE": 4.996682347905799,
+        "TEST": 2.9958254529296338,
+        "DOCS": 1.9941116629773026,
+        "OPS": 3.9958254529296338,
+        "SEC": 1.994968557953468
       },
       "depressed": false,
-      "last_refreshed": 1781547546.1016576,
-      "jitter": 0.007163618933178735,
-      "peak_overall": 2.0071636189331787,
-      "overall_score": 2.007
+      "last_refreshed": 1781548773.0,
+      "jitter": -0.00246075711803526,
+      "peak_overall": 1.9941116629773026,
+      "overall_score": 1.994
     },
     {
       "path": "ecosystem/analytics",
@@ -699,16 +458,15 @@
       "stage": "SPROUT",
       "stage_icon": "\ud83c\udf3f",
       "scores": {
-        "CODE": 5.0,
-        "TEST": 3.021,
-        "DOCS": 2.021,
-        "OPS": 4.021,
-        "SEC": 2.021
+        "CODE": 4.981,
+        "TEST": 2.981,
+        "DOCS": 1.979,
+        "OPS": 3.981,
+        "SEC": 1.98
       },
-      "overall": 2.021,
+      "overall": 1.979,
       "weakest": [
-        "DOCS",
-        "SEC"
+        "DOCS"
       ],
       "auto_scores": {
         "CODE": 5,
@@ -722,24 +480,24 @@
       "evidence": {
         "CODE": "1018 lines, mature codebase",
         "TEST": "Basic tests (9 assertions)",
-        "DOCS": "README with minimal content",
+        "DOCS": "README exists (6 lines) but no usage examples",
         "OPS": "CI/CD pipeline",
         "SEC": "Lockfile present (lockfile (pnpm-lock.yaml))"
       },
       "source_files": 2,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 5.0,
-        "TEST": 3.0212327453123478,
-        "DOCS": 2.0212327453123478,
-        "OPS": 4.021232745312347,
-        "SEC": 2.0212327453123478
+        "CODE": 4.981485506263681,
+        "TEST": 2.9806286112875156,
+        "DOCS": 1.9789148213351846,
+        "OPS": 3.9806286112875156,
+        "SEC": 1.97977171631135
       },
       "depressed": false,
-      "last_refreshed": 1781547546.1016576,
-      "jitter": 0.021232745312347735,
-      "peak_overall": 2.0212327453123478,
-      "overall_score": 2.021
+      "last_refreshed": 1781548773.0,
+      "jitter": -0.017657598760153343,
+      "peak_overall": 1.9789148213351846,
+      "overall_score": 1.979
     },
     {
       "path": "ecosystem/discord",
@@ -748,13 +506,13 @@
       "stage": "SPROUT",
       "stage_icon": "\ud83c\udf3f",
       "scores": {
-        "CODE": 4.97,
-        "TEST": 2.97,
-        "DOCS": 4.97,
-        "OPS": 3.97,
-        "SEC": 1.97
+        "CODE": 4.986,
+        "TEST": 2.985,
+        "DOCS": 4.984,
+        "OPS": 3.985,
+        "SEC": 1.984
       },
-      "overall": 1.97,
+      "overall": 1.984,
       "weakest": [
         "SEC"
       ],
@@ -770,24 +528,24 @@
       "evidence": {
         "CODE": "830 lines, mature codebase",
         "TEST": "Basic tests (9 assertions)",
-        "DOCS": "Comprehensive docs (246 lines, examples, TOC)",
+        "DOCS": "Comprehensive docs (307 lines, examples, TOC)",
         "OPS": "CI/CD pipeline",
         "SEC": "Lockfile present (lockfile (pnpm-lock.yaml))"
       },
       "source_files": 1,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 4.969575602364106,
-        "TEST": 2.9695756023641056,
-        "DOCS": 4.969575602364106,
-        "OPS": 3.9695756023641056,
-        "SEC": 1.9695756023641058
+        "CODE": 4.986173011990904,
+        "TEST": 2.9853161170147393,
+        "DOCS": 4.983602327062408,
+        "OPS": 3.9853161170147393,
+        "SEC": 1.9844592220385737
       },
       "depressed": false,
-      "last_refreshed": 1781547546.1016576,
-      "jitter": -0.030424397635894298,
-      "peak_overall": 1.9695756023641058,
-      "overall_score": 1.97
+      "last_refreshed": 1781548773.0,
+      "jitter": -0.012970093032929515,
+      "peak_overall": 1.9844592220385737,
+      "overall_score": 1.984
     },
     {
       "path": "ecosystem/gamification",
@@ -796,16 +554,15 @@
       "stage": "SPROUT",
       "stage_icon": "\ud83c\udf3f",
       "scores": {
-        "CODE": 4.994,
-        "TEST": 2.994,
-        "DOCS": 1.994,
-        "OPS": 3.994,
-        "SEC": 1.994
+        "CODE": 5.0,
+        "TEST": 3.016,
+        "DOCS": 2.014,
+        "OPS": 4.016,
+        "SEC": 2.015
       },
-      "overall": 1.994,
+      "overall": 2.014,
       "weakest": [
-        "DOCS",
-        "SEC"
+        "DOCS"
       ],
       "auto_scores": {
         "CODE": 5,
@@ -819,24 +576,24 @@
       "evidence": {
         "CODE": "708 lines, mature codebase",
         "TEST": "Basic tests (9 assertions)",
-        "DOCS": "README with minimal content",
+        "DOCS": "README exists (6 lines) but no usage examples",
         "OPS": "CI/CD pipeline",
         "SEC": "Lockfile present (lockfile (pnpm-lock.yaml))"
       },
       "source_files": 3,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 4.993884968088166,
-        "TEST": 2.993884968088166,
-        "DOCS": 1.993884968088166,
-        "OPS": 3.993884968088166,
-        "SEC": 1.993884968088166
+        "CODE": 5.0,
+        "TEST": 3.0158914150270277,
+        "DOCS": 2.014177625074697,
+        "OPS": 4.015891415027028,
+        "SEC": 2.0150345200508624
       },
       "depressed": false,
-      "last_refreshed": 1781547546.1016576,
-      "jitter": -0.006115031911833942,
-      "peak_overall": 1.993884968088166,
-      "overall_score": 1.994
+      "last_refreshed": 1781548773.0,
+      "jitter": 0.01760520497935896,
+      "peak_overall": 2.014177625074697,
+      "overall_score": 2.014
     },
     {
       "path": "ecosystem/ipfs",
@@ -845,13 +602,13 @@
       "stage": "SPROUT",
       "stage_icon": "\ud83c\udf3f",
       "scores": {
-        "CODE": 3.99,
-        "TEST": 2.99,
-        "DOCS": 1.99,
-        "OPS": 3.99,
-        "SEC": 1.99
+        "CODE": 3.999,
+        "TEST": 2.998,
+        "DOCS": 1.997,
+        "OPS": 3.998,
+        "SEC": 1.997
       },
-      "overall": 1.99,
+      "overall": 1.997,
       "weakest": [
         "DOCS",
         "SEC"
@@ -868,24 +625,24 @@
       "evidence": {
         "CODE": "319 lines of real logic",
         "TEST": "Basic tests (9 assertions)",
-        "DOCS": "README with minimal content",
+        "DOCS": "README exists (6 lines) but no usage examples",
         "OPS": "CI/CD pipeline",
         "SEC": "Lockfile present (lockfile (pnpm-lock.yaml))"
       },
       "source_files": 3,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 3.990394187284343,
-        "TEST": 2.990394187284343,
-        "DOCS": 1.9903941872843431,
-        "OPS": 3.990394187284343,
-        "SEC": 1.9903941872843431
+        "CODE": 3.9991567673721193,
+        "TEST": 2.9982998723959535,
+        "DOCS": 1.9965860824436226,
+        "OPS": 3.9982998723959535,
+        "SEC": 1.997442977419788
       },
       "depressed": false,
-      "last_refreshed": 1781547546.1016576,
-      "jitter": -0.009605812715656931,
-      "peak_overall": 1.9903941872843431,
-      "overall_score": 1.99
+      "last_refreshed": 1781548773.0,
+      "jitter": 1.3662348284631642e-05,
+      "peak_overall": 1.9965860824436226,
+      "overall_score": 1.997
     },
     {
       "path": "ecosystem/middleware",
@@ -894,16 +651,15 @@
       "stage": "SPROUT",
       "stage_icon": "\ud83c\udf3f",
       "scores": {
-        "CODE": 4.032,
-        "TEST": 3.032,
-        "DOCS": 2.032,
-        "OPS": 4.032,
-        "SEC": 2.032
+        "CODE": 4.006,
+        "TEST": 3.005,
+        "DOCS": 2.004,
+        "OPS": 4.005,
+        "SEC": 2.005
       },
-      "overall": 2.032,
+      "overall": 2.004,
       "weakest": [
-        "DOCS",
-        "SEC"
+        "DOCS"
       ],
       "auto_scores": {
         "CODE": 4,
@@ -917,24 +673,24 @@
       "evidence": {
         "CODE": "491 lines of real logic",
         "TEST": "Basic tests (9 assertions)",
-        "DOCS": "README with minimal content",
+        "DOCS": "README exists (6 lines) but no usage examples",
         "OPS": "CI/CD pipeline",
         "SEC": "Lockfile present (lockfile (pnpm-lock.yaml))"
       },
       "source_files": 2,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 4.031552307730723,
-        "TEST": 3.031552307730723,
-        "DOCS": 2.031552307730723,
-        "OPS": 4.031552307730723,
-        "SEC": 2.031552307730723
+        "CODE": 4.006228900175971,
+        "TEST": 3.0053720051998054,
+        "DOCS": 2.0036582152474747,
+        "OPS": 4.005372005199805,
+        "SEC": 2.00451511022364
       },
       "depressed": false,
-      "last_refreshed": 1781547546.1016576,
-      "jitter": 0.031552307730723345,
-      "peak_overall": 2.031552307730723,
-      "overall_score": 2.032
+      "last_refreshed": 1781548773.0,
+      "jitter": 0.0070857951521366295,
+      "peak_overall": 2.0036582152474747,
+      "overall_score": 2.004
     },
     {
       "path": "interfaces",
@@ -943,20 +699,20 @@
       "stage": "SPROUT",
       "stage_icon": "\ud83c\udf3f",
       "scores": {
-        "CODE": 3.993,
-        "TEST": 2.993,
-        "DOCS": 2.993,
-        "OPS": 3.993,
-        "SEC": 1.993
+        "CODE": 3.997,
+        "TEST": 2.997,
+        "DOCS": 3.995,
+        "OPS": 3.997,
+        "SEC": 1.996
       },
-      "overall": 1.993,
+      "overall": 1.996,
       "weakest": [
         "SEC"
       ],
       "auto_scores": {
         "CODE": 4,
         "TEST": 3,
-        "DOCS": 3,
+        "DOCS": 4,
         "OPS": 4,
         "SEC": 2
       },
@@ -965,24 +721,72 @@
       "evidence": {
         "CODE": "140 lines of real logic",
         "TEST": "Basic tests (9 assertions)",
-        "DOCS": "README with usage (41 lines)",
+        "DOCS": "Detailed docs (52 lines, examples)",
         "OPS": "CI/CD pipeline",
         "SEC": "Lockfile present (lockfile (pnpm-lock.yaml))"
       },
       "source_files": 3,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 3.9931283216659677,
-        "TEST": 2.9931283216659677,
-        "DOCS": 2.9931283216659677,
-        "OPS": 3.9931283216659677,
-        "SEC": 1.9931283216659679
+        "CODE": 3.9974503531210637,
+        "TEST": 2.996593458144898,
+        "DOCS": 3.9948796681925667,
+        "OPS": 3.996593458144898,
+        "SEC": 1.9957365631687325
       },
       "depressed": false,
-      "last_refreshed": 1781547546.1016576,
-      "jitter": -0.006871678334032135,
-      "peak_overall": 1.9931283216659679,
-      "overall_score": 1.993
+      "last_refreshed": 1781548773.0,
+      "jitter": -0.0016927519027707721,
+      "peak_overall": 1.9957365631687325,
+      "overall_score": 1.996
+    },
+    {
+      "path": "p31-surrogate-backend",
+      "type": "directory",
+      "name": "p31-surrogate-backend",
+      "stage": "SPROUT",
+      "stage_icon": "\ud83c\udf3f",
+      "scores": {
+        "CODE": 4.991,
+        "TEST": 1.991,
+        "DOCS": 3.989,
+        "OPS": 3.991,
+        "SEC": 1.99
+      },
+      "overall": 1.99,
+      "weakest": [
+        "SEC"
+      ],
+      "auto_scores": {
+        "CODE": 5,
+        "TEST": 2,
+        "DOCS": 4,
+        "OPS": 4,
+        "SEC": 2
+      },
+      "auto_overall": 2,
+      "override": null,
+      "evidence": {
+        "CODE": "2193 lines, mature codebase",
+        "TEST": "Minimal tests (0 assertions)",
+        "DOCS": "Detailed docs (52 lines, examples)",
+        "OPS": "CI/CD pipeline",
+        "SEC": "Lockfile present (lockfile (pnpm-lock.yaml))"
+      },
+      "source_files": 8,
+      "test_files": 1,
+      "continuous_scores": {
+        "CODE": 4.991458266737151,
+        "TEST": 1.9906013717609854,
+        "DOCS": 3.988887581808654,
+        "OPS": 3.9906013717609854,
+        "SEC": 1.9897444767848198
+      },
+      "depressed": false,
+      "last_refreshed": 1781548773.0,
+      "jitter": -0.007684838286683393,
+      "peak_overall": 1.9897444767848198,
+      "overall_score": 1.99
     },
     {
       "path": "p31labs",
@@ -991,21 +795,20 @@
       "stage": "SPROUT",
       "stage_icon": "\ud83c\udf3f",
       "scores": {
-        "CODE": 2.01,
-        "TEST": 3.01,
-        "DOCS": 3.01,
-        "OPS": 4.01,
-        "SEC": 2.01
+        "CODE": 1.99,
+        "TEST": 2.989,
+        "DOCS": 3.987,
+        "OPS": 3.989,
+        "SEC": 1.988
       },
-      "overall": 2.01,
+      "overall": 1.988,
       "weakest": [
-        "CODE",
         "SEC"
       ],
       "auto_scores": {
         "CODE": 2,
         "TEST": 3,
-        "DOCS": 3,
+        "DOCS": 4,
         "OPS": 4,
         "SEC": 2
       },
@@ -1014,24 +817,24 @@
       "evidence": {
         "CODE": "Minimal implementation",
         "TEST": "Basic tests (9 assertions)",
-        "DOCS": "README with usage (41 lines)",
+        "DOCS": "Detailed docs (52 lines, examples)",
         "OPS": "CI/CD pipeline",
         "SEC": "Lockfile present (lockfile (pnpm-lock.yaml))"
       },
       "source_files": 1,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 2.0096378793262653,
-        "TEST": 3.0096378793262653,
-        "DOCS": 3.0096378793262653,
-        "OPS": 4.009637879326265,
-        "SEC": 2.0096378793262653
+        "CODE": 1.9897941861606547,
+        "TEST": 2.9889372911844894,
+        "DOCS": 3.987223501232158,
+        "OPS": 3.9889372911844894,
+        "SEC": 1.9880803962083236
       },
       "depressed": false,
-      "last_refreshed": 1781547546.1016576,
-      "jitter": 0.009637879326265105,
-      "peak_overall": 2.0096378793262653,
-      "overall_score": 2.01
+      "last_refreshed": 1781548773.0,
+      "jitter": -0.009348918863179621,
+      "peak_overall": 1.9880803962083236,
+      "overall_score": 1.988
     },
     {
       "path": "p31labs/social-content-engine",
@@ -1040,21 +843,20 @@
       "stage": "SPROUT",
       "stage_icon": "\ud83c\udf3f",
       "scores": {
-        "CODE": 4.018,
-        "TEST": 2.018,
-        "DOCS": 3.018,
-        "OPS": 4.018,
-        "SEC": 2.018
+        "CODE": 3.988,
+        "TEST": 1.987,
+        "DOCS": 3.986,
+        "OPS": 3.987,
+        "SEC": 1.986
       },
-      "overall": 2.018,
+      "overall": 1.986,
       "weakest": [
-        "TEST",
         "SEC"
       ],
       "auto_scores": {
         "CODE": 4,
         "TEST": 2,
-        "DOCS": 3,
+        "DOCS": 4,
         "OPS": 4,
         "SEC": 2
       },
@@ -1063,24 +865,24 @@
       "evidence": {
         "CODE": "326 lines of real logic",
         "TEST": "Minimal tests (0 assertions)",
-        "DOCS": "README with usage (41 lines)",
+        "DOCS": "Detailed docs (52 lines, examples)",
         "OPS": "CI/CD pipeline",
         "SEC": "Lockfile present (lockfile (pnpm-lock.yaml))"
       },
       "source_files": 3,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 4.018319158737733,
-        "TEST": 2.0183191587377336,
-        "DOCS": 3.0183191587377336,
-        "OPS": 4.018319158737733,
-        "SEC": 2.0183191587377336
+        "CODE": 3.9881001669841964,
+        "TEST": 1.9872432720080309,
+        "DOCS": 3.9855294820556995,
+        "OPS": 3.9872432720080306,
+        "SEC": 1.9863863770318653
       },
       "depressed": false,
-      "last_refreshed": 1781547546.1016576,
-      "jitter": 0.018319158737733533,
-      "peak_overall": 2.0183191587377336,
-      "overall_score": 2.018
+      "last_refreshed": 1781548773.0,
+      "jitter": -0.011042938039638007,
+      "peak_overall": 1.9863863770318653,
+      "overall_score": 1.986
     },
     {
       "path": "phos",
@@ -1089,46 +891,142 @@
       "stage": "SPROUT",
       "stage_icon": "\ud83c\udf3f",
       "scores": {
-        "CODE": 4.952,
-        "TEST": 3.908,
-        "DOCS": 2.819,
-        "OPS": 3.908,
-        "SEC": 1.863
+        "CODE": 4.965,
+        "TEST": 3.934,
+        "DOCS": 3.873,
+        "OPS": 3.934,
+        "SEC": 1.904
       },
-      "overall": 1.863,
+      "overall": 1.904,
       "weakest": [
         "SEC"
       ],
       "auto_scores": {
         "CODE": 5,
         "TEST": 4,
-        "DOCS": 3,
+        "DOCS": 4,
         "OPS": 4,
         "SEC": 2
       },
       "auto_overall": 2,
       "override": null,
       "evidence": {
-        "CODE": "4186 lines, mature codebase",
+        "CODE": "4179 lines, mature codebase",
         "TEST": "Comprehensive tests (794 assertions) + vitest thresholds",
-        "DOCS": "README with usage (41 lines)",
+        "DOCS": "Detailed docs (52 lines, examples)",
         "OPS": "CI/CD with wrangler deploy",
         "SEC": "Lockfile present (lockfile (pnpm-lock.yaml))"
       },
       "source_files": 51,
       "test_files": 40,
       "continuous_scores": {
-        "CODE": 4.952271290884269,
-        "TEST": 3.907782498526924,
-        "DOCS": 2.818804913812233,
-        "OPS": 3.907782498526924,
-        "SEC": 1.8632937061695782
+        "CODE": 4.965351589179765,
+        "TEST": 3.9344946942035985,
+        "DOCS": 3.8727809042512673,
+        "OPS": 3.9344946942035985,
+        "SEC": 1.9036377992274331
       },
       "depressed": false,
       "last_refreshed": 1781440773.0,
-      "jitter": -0.003239916758385429,
-      "peak_overall": 1.8632937061695782,
-      "overall_score": 1.863
+      "jitter": -0.003791515844070221,
+      "peak_overall": 1.9036377992274331,
+      "overall_score": 1.904
+    },
+    {
+      "path": "phosphorus31.org",
+      "type": "directory",
+      "name": "phosphorus31.org",
+      "stage": "SPROUT",
+      "stage_icon": "\ud83c\udf3f",
+      "scores": {
+        "CODE": 2.012,
+        "TEST": 3.011,
+        "DOCS": 4.01,
+        "OPS": 4.011,
+        "SEC": 2.01
+      },
+      "overall": 2.01,
+      "weakest": [
+        "SEC"
+      ],
+      "auto_scores": {
+        "CODE": 2,
+        "TEST": 3,
+        "DOCS": 4,
+        "OPS": 4,
+        "SEC": 2
+      },
+      "auto_overall": 2,
+      "override": null,
+      "evidence": {
+        "CODE": "Minimal implementation",
+        "TEST": "Basic tests (9 assertions)",
+        "DOCS": "Detailed docs (52 lines, examples)",
+        "OPS": "CI/CD pipeline",
+        "SEC": "Lockfile present (lockfile (pnpm-lock.yaml))"
+      },
+      "source_files": 1,
+      "test_files": 1,
+      "continuous_scores": {
+        "CODE": 2.0121600754076314,
+        "TEST": 3.011303180431466,
+        "DOCS": 4.009589390479134,
+        "OPS": 4.011303180431466,
+        "SEC": 2.0104462854553002
+      },
+      "depressed": false,
+      "last_refreshed": 1781548773.0,
+      "jitter": 0.013016970383797127,
+      "peak_overall": 2.0104462854553002,
+      "overall_score": 2.01
+    },
+    {
+      "path": "phosphorus31.org/planetary-planet",
+      "type": "directory",
+      "name": "planetary-planet",
+      "stage": "SPROUT",
+      "stage_icon": "\ud83c\udf3f",
+      "scores": {
+        "CODE": 3.986,
+        "TEST": 1.985,
+        "DOCS": 3.983,
+        "OPS": 3.985,
+        "SEC": 1.984
+      },
+      "overall": 1.984,
+      "weakest": [
+        "SEC"
+      ],
+      "auto_scores": {
+        "CODE": 4,
+        "TEST": 2,
+        "DOCS": 4,
+        "OPS": 4,
+        "SEC": 2
+      },
+      "auto_overall": 2,
+      "override": null,
+      "evidence": {
+        "CODE": "472 lines of real logic",
+        "TEST": "Minimal tests (0 assertions)",
+        "DOCS": "Detailed docs (50 lines, examples)",
+        "OPS": "CI/CD with wrangler deploy",
+        "SEC": "Lockfile present (lockfile (pnpm-lock.yaml))"
+      },
+      "source_files": 9,
+      "test_files": 1,
+      "continuous_scores": {
+        "CODE": 3.9857157079763583,
+        "TEST": 1.9848588130001925,
+        "DOCS": 3.9831450230478613,
+        "OPS": 3.9848588130001925,
+        "SEC": 1.984001918024027
+      },
+      "depressed": false,
+      "last_refreshed": 1781548773.0,
+      "jitter": -0.013427397047476324,
+      "peak_overall": 1.984001918024027,
+      "overall_score": 1.984
     },
     {
       "path": "software/cloudflare-worker/bouncer",
@@ -1137,13 +1035,13 @@
       "stage": "SPROUT",
       "stage_icon": "\ud83c\udf3f",
       "scores": {
-        "CODE": 2.815,
-        "TEST": 1.605,
-        "DOCS": 2.185,
-        "OPS": 3.605,
-        "SEC": 3.395
+        "CODE": 2.984,
+        "TEST": 1.983,
+        "DOCS": 2.982,
+        "OPS": 3.983,
+        "SEC": 3.982
       },
-      "overall": 1.605,
+      "overall": 1.983,
       "weakest": [
         "TEST"
       ],
@@ -1159,24 +1057,24 @@
       "evidence": {
         "CODE": "77 lines of real logic",
         "TEST": "Minimal tests (0 assertions)",
-        "DOCS": "README with usage (30 lines)",
+        "DOCS": "README with usage (33 lines)",
         "OPS": "CI/CD with wrangler deploy",
         "SEC": "Lockfile + lint + CI security audit"
       },
       "source_files": 1,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 2.8152662410341724,
-        "TEST": 1.6052207820101605,
-        "DOCS": 2.185129863962136,
-        "OPS": 3.6052207820101603,
-        "SEC": 3.3951753229861485
+        "CODE": 2.9842108767136954,
+        "TEST": 1.9833539817375299,
+        "DOCS": 2.9816401917851985,
+        "OPS": 3.9833539817375296,
+        "SEC": 3.9824970867613643
       },
       "depressed": false,
-      "last_refreshed": 1781043437.0,
-      "jitter": 0.02531170005818477,
-      "peak_overall": 1.6052207820101605,
-      "overall_score": 1.605
+      "last_refreshed": 1781548773.0,
+      "jitter": -0.014932228310139002,
+      "peak_overall": 1.9833539817375299,
+      "overall_score": 1.983
     },
     {
       "path": "software/docs",
@@ -1185,13 +1083,13 @@
       "stage": "SPROUT",
       "stage_icon": "\ud83c\udf3f",
       "scores": {
-        "CODE": 2.798,
-        "TEST": 1.588,
-        "DOCS": 3.167,
-        "OPS": 3.588,
-        "SEC": 3.377
+        "CODE": 3.002,
+        "TEST": 2.002,
+        "DOCS": 4.0,
+        "OPS": 4.002,
+        "SEC": 4.001
       },
-      "overall": 1.588,
+      "overall": 2.002,
       "weakest": [
         "TEST"
       ],
@@ -1207,120 +1105,72 @@
       "evidence": {
         "CODE": "50 lines of real logic",
         "TEST": "Minimal tests (0 assertions)",
-        "DOCS": "Detailed docs (60 lines, examples)",
+        "DOCS": "Detailed docs (75 lines, examples)",
         "OPS": "CI/CD pipeline",
         "SEC": "Lockfile + lint + CI security audit"
       },
       "source_files": 2,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 2.7975543865348604,
-        "TEST": 1.5875089275108483,
-        "DOCS": 3.167418009462824,
-        "OPS": 3.5875089275108483,
-        "SEC": 3.3774634684868365
+        "CODE": 3.0023765329898002,
+        "TEST": 2.0015196380136344,
+        "DOCS": 3.9998058480613032,
+        "OPS": 4.001519638013634,
+        "SEC": 4.000662743037469
       },
       "depressed": false,
-      "last_refreshed": 1781043437.0,
-      "jitter": 0.007599845558872599,
-      "peak_overall": 1.5875089275108483,
-      "overall_score": 1.588
+      "last_refreshed": 1781548773.0,
+      "jitter": 0.003233427965965459,
+      "peak_overall": 2.0015196380136344,
+      "overall_score": 2.002
     },
     {
-      "path": "software/geodesic-room",
+      "path": "software/extensions/p31ca",
       "type": "directory",
-      "name": "geodesic-room",
+      "name": "p31ca",
       "stage": "SPROUT",
       "stage_icon": "\ud83c\udf3f",
       "scores": {
-        "CODE": 4.811,
-        "TEST": 2.601,
-        "DOCS": 2.181,
-        "OPS": 3.601,
-        "SEC": 3.391
+        "CODE": 4.011,
+        "TEST": 3.01,
+        "DOCS": 2.008,
+        "OPS": 4.01,
+        "SEC": 4.009
       },
-      "overall": 2.181,
+      "overall": 2.008,
       "weakest": [
         "DOCS"
       ],
       "auto_scores": {
-        "CODE": 5,
+        "CODE": 4,
         "TEST": 3,
-        "DOCS": 3,
+        "DOCS": 2,
         "OPS": 4,
         "SEC": 4
       },
-      "auto_overall": 3,
+      "auto_overall": 2,
       "override": null,
       "evidence": {
-        "CODE": "603 lines, mature codebase",
+        "CODE": "444 lines of real logic",
         "TEST": "Basic tests (9 assertions)",
-        "DOCS": "README with usage (29 lines)",
-        "OPS": "CI/CD with wrangler deploy",
+        "DOCS": "README exists (5 lines) but no usage examples",
+        "OPS": "CI/CD pipeline",
         "SEC": "Lockfile + lint + CI security audit"
       },
-      "source_files": 2,
+      "source_files": 3,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 4.811233112161167,
-        "TEST": 2.6011876531371545,
-        "DOCS": 2.18109673508913,
-        "OPS": 3.6011876531371545,
-        "SEC": 3.3911421941131428
+        "CODE": 4.0107316847933445,
+        "TEST": 3.0098747898171787,
+        "DOCS": 2.0081609998648475,
+        "OPS": 4.009874789817179,
+        "SEC": 4.009017894841013
       },
       "depressed": false,
-      "last_refreshed": 1781043437.0,
-      "jitter": 0.021278571185178966,
-      "peak_overall": 2.18109673508913,
-      "overall_score": 2.181
-    },
-    {
-      "path": "software/k4-personal",
-      "type": "directory",
-      "name": "k4-personal",
-      "stage": "SPROUT",
-      "stage_icon": "\ud83c\udf3f",
-      "scores": {
-        "CODE": 4.78,
-        "TEST": 2.57,
-        "DOCS": 2.149,
-        "OPS": 3.57,
-        "SEC": 3.359
-      },
-      "overall": 2.149,
-      "weakest": [
-        "DOCS"
-      ],
-      "auto_scores": {
-        "CODE": 5,
-        "TEST": 3,
-        "DOCS": 3,
-        "OPS": 4,
-        "SEC": 4
-      },
-      "auto_overall": 3,
-      "override": null,
-      "evidence": {
-        "CODE": "953 lines, mature codebase",
-        "TEST": "Basic tests (9 assertions)",
-        "DOCS": "README with usage (40 lines)",
-        "OPS": "CI/CD with wrangler deploy",
-        "SEC": "Lockfile + lint + CI security audit"
-      },
-      "source_files": 5,
-      "test_files": 1,
-      "continuous_scores": {
-        "CODE": 4.779554551869832,
-        "TEST": 2.569509092845819,
-        "DOCS": 2.1494181747977947,
-        "OPS": 3.569509092845819,
-        "SEC": 3.3594636338218073
-      },
-      "depressed": false,
-      "last_refreshed": 1781043437.0,
-      "jitter": -0.010399989106156476,
-      "peak_overall": 2.1494181747977947,
-      "overall_score": 2.149
+      "last_refreshed": 1781548773.0,
+      "jitter": 0.01158857976950983,
+      "peak_overall": 2.0081609998648475,
+      "overall_score": 2.008
     },
     {
       "path": "software/p31-agent-hub",
@@ -1329,13 +1179,13 @@
       "stage": "SPROUT",
       "stage_icon": "\ud83c\udf3f",
       "scores": {
-        "CODE": 4.789,
-        "TEST": 1.579,
-        "DOCS": 2.159,
-        "OPS": 3.579,
-        "SEC": 3.369
+        "CODE": 5.0,
+        "TEST": 2.007,
+        "DOCS": 3.005,
+        "OPS": 4.007,
+        "SEC": 4.006
       },
-      "overall": 1.579,
+      "overall": 2.007,
       "weakest": [
         "TEST"
       ],
@@ -1351,24 +1201,24 @@
       "evidence": {
         "CODE": "603 lines, mature codebase",
         "TEST": "Minimal tests (0 assertions)",
-        "DOCS": "README with usage (28 lines)",
+        "DOCS": "README with usage (30 lines)",
         "OPS": "CI/CD with wrangler deploy",
         "SEC": "Lockfile + lint + CI security audit"
       },
       "source_files": 2,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 4.789487212535562,
-        "TEST": 1.5794417535115497,
-        "DOCS": 2.1593508354635254,
-        "OPS": 3.5794417535115497,
-        "SEC": 3.369396294487538
+        "CODE": 5.0,
+        "TEST": 2.0071445342372973,
+        "DOCS": 3.0054307442849657,
+        "OPS": 4.007144534237297,
+        "SEC": 4.0062876392611315
       },
       "depressed": false,
-      "last_refreshed": 1781043437.0,
-      "jitter": -0.0004673284404260623,
-      "peak_overall": 1.5794417535115497,
-      "overall_score": 1.579
+      "last_refreshed": 1781548773.0,
+      "jitter": 0.008858324189628286,
+      "peak_overall": 2.0071445342372973,
+      "overall_score": 2.007
     },
     {
       "path": "software/p31-hearing-ops",
@@ -1377,13 +1227,13 @@
       "stage": "SPROUT",
       "stage_icon": "\ud83c\udf3f",
       "scores": {
-        "CODE": 4.859,
-        "TEST": 1.574,
-        "DOCS": 2.154,
-        "OPS": 3.874,
-        "SEC": 3.364
+        "CODE": 5.0,
+        "TEST": 2.003,
+        "DOCS": 3.001,
+        "OPS": 4.203,
+        "SEC": 4.002
       },
-      "overall": 1.574,
+      "overall": 2.003,
       "weakest": [
         "TEST"
       ],
@@ -1399,24 +1249,24 @@
       "evidence": {
         "CODE": "2277 lines, mature codebase",
         "TEST": "Minimal tests (0 assertions)",
-        "DOCS": "README with usage (32 lines)",
+        "DOCS": "README with usage (41 lines)",
         "OPS": "CI/CD with wrangler deploy",
         "SEC": "Lockfile + lint + CI security audit"
       },
       "source_files": 8,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 4.858943883363505,
-        "TEST": 1.573898424339492,
-        "DOCS": 2.1538075062914674,
-        "OPS": 3.8738984243394916,
-        "SEC": 3.36385296531548
+        "CODE": 5.0,
+        "TEST": 2.0029315278263224,
+        "DOCS": 3.0012177378739913,
+        "OPS": 4.202931527826322,
+        "SEC": 4.002074632850157
       },
       "depressed": false,
-      "last_refreshed": 1781547546.1016576,
-      "jitter": -0.006010657612483686,
-      "peak_overall": 1.573898424339492,
-      "overall_score": 1.574
+      "last_refreshed": 1781551857.8219142,
+      "jitter": 0.004645317778653584,
+      "peak_overall": 2.0029315278263224,
+      "overall_score": 2.003
     },
     {
       "path": "software/p31ca/workers/fhir",
@@ -1425,13 +1275,13 @@
       "stage": "SPROUT",
       "stage_icon": "\ud83c\udf3f",
       "scores": {
-        "CODE": 4.774,
-        "TEST": 1.564,
-        "DOCS": 2.144,
-        "OPS": 3.564,
-        "SEC": 3.354
+        "CODE": 4.999,
+        "TEST": 1.998,
+        "DOCS": 2.997,
+        "OPS": 3.998,
+        "SEC": 3.998
       },
-      "overall": 1.564,
+      "overall": 1.998,
       "weakest": [
         "TEST"
       ],
@@ -1447,24 +1297,24 @@
       "evidence": {
         "CODE": "594 lines, mature codebase",
         "TEST": "Minimal tests (0 assertions)",
-        "DOCS": "README with usage (29 lines)",
+        "DOCS": "README with usage (34 lines)",
         "OPS": "CI/CD with wrangler deploy",
         "SEC": "Lockfile + lint + CI security audit"
       },
       "source_files": 6,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 4.774184870998484,
-        "TEST": 1.5641394119744711,
-        "DOCS": 2.1440484939264466,
-        "OPS": 3.564139411974471,
-        "SEC": 3.354093952950459
+        "CODE": 4.9992193303076675,
+        "TEST": 1.9983624353315024,
+        "DOCS": 2.996648645379171,
+        "OPS": 3.998362435331502,
+        "SEC": 3.997505540355337
       },
       "depressed": false,
-      "last_refreshed": 1781043437.0,
-      "jitter": -0.015769669977504567,
-      "peak_overall": 1.5641394119744711,
-      "overall_score": 1.564
+      "last_refreshed": 1781548773.0,
+      "jitter": 7.622528383353999e-05,
+      "peak_overall": 1.9983624353315024,
+      "overall_score": 1.998
     },
     {
       "path": "software/p31ca/workers/glass-box-ws",
@@ -1473,13 +1323,13 @@
       "stage": "SPROUT",
       "stage_icon": "\ud83c\udf3f",
       "scores": {
-        "CODE": 3.775,
-        "TEST": 1.565,
-        "DOCS": 2.145,
-        "OPS": 3.565,
-        "SEC": 3.355
+        "CODE": 3.999,
+        "TEST": 1.998,
+        "DOCS": 2.997,
+        "OPS": 3.998,
+        "SEC": 3.998
       },
-      "overall": 1.565,
+      "overall": 1.998,
       "weakest": [
         "TEST"
       ],
@@ -1495,24 +1345,24 @@
       "evidence": {
         "CODE": "317 lines of real logic",
         "TEST": "Minimal tests (0 assertions)",
-        "DOCS": "README with usage (29 lines)",
+        "DOCS": "README with usage (34 lines)",
         "OPS": "CI/CD with wrangler deploy",
         "SEC": "Lockfile + lint + CI security audit"
       },
       "source_files": 1,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 3.7747305448593096,
-        "TEST": 1.5646850858352972,
-        "DOCS": 2.144594167787273,
-        "OPS": 3.5646850858352974,
-        "SEC": 3.3546396268112857
+        "CODE": 3.9993435316289574,
+        "TEST": 1.9984866366527914,
+        "DOCS": 2.9967728467004604,
+        "OPS": 3.9984866366527916,
+        "SEC": 3.997629741676626
       },
       "depressed": false,
-      "last_refreshed": 1781043437.0,
-      "jitter": -0.01522399611667842,
-      "peak_overall": 1.5646850858352972,
-      "overall_score": 1.565
+      "last_refreshed": 1781548773.0,
+      "jitter": 0.00020042660512261827,
+      "peak_overall": 1.9984866366527914,
+      "overall_score": 1.998
     },
     {
       "path": "software/p31ca/workers/sync",
@@ -1521,13 +1371,13 @@
       "stage": "SPROUT",
       "stage_icon": "\ud83c\udf3f",
       "scores": {
-        "CODE": 2.782,
-        "TEST": 1.572,
-        "DOCS": 2.151,
-        "OPS": 3.572,
-        "SEC": 3.361
+        "CODE": 3.003,
+        "TEST": 2.002,
+        "DOCS": 3.0,
+        "OPS": 4.002,
+        "SEC": 4.001
       },
-      "overall": 1.572,
+      "overall": 2.002,
       "weakest": [
         "TEST"
       ],
@@ -1543,24 +1393,24 @@
       "evidence": {
         "CODE": "97 lines of real logic",
         "TEST": "Minimal tests (0 assertions)",
-        "DOCS": "README with usage (29 lines)",
+        "DOCS": "README with usage (34 lines)",
         "OPS": "CI/CD with wrangler deploy",
         "SEC": "Lockfile + lint + CI security audit"
       },
       "source_files": 1,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 2.781545899031475,
-        "TEST": 1.571500440007463,
-        "DOCS": 2.1514095219594385,
-        "OPS": 3.571500440007463,
-        "SEC": 3.361454980983451
+        "CODE": 3.002572687453881,
+        "TEST": 2.0017157924777154,
+        "DOCS": 3.000002002525384,
+        "OPS": 4.001715792477715,
+        "SEC": 4.00085889750155
       },
       "depressed": false,
-      "last_refreshed": 1781043437.0,
-      "jitter": -0.008408641944512659,
-      "peak_overall": 1.571500440007463,
-      "overall_score": 1.572
+      "last_refreshed": 1781548773.0,
+      "jitter": 0.0034295824300467023,
+      "peak_overall": 2.0017157924777154,
+      "overall_score": 2.002
     },
     {
       "path": "software/packages/node-zero/pwa",
@@ -1569,13 +1419,13 @@
       "stage": "SPROUT",
       "stage_icon": "\ud83c\udf3f",
       "scores": {
-        "CODE": 4.824,
-        "TEST": 1.613,
-        "DOCS": 3.193,
-        "OPS": 3.613,
-        "SEC": 3.403
+        "CODE": 4.989,
+        "TEST": 1.988,
+        "DOCS": 3.986,
+        "OPS": 3.988,
+        "SEC": 3.987
       },
-      "overall": 1.613,
+      "overall": 1.988,
       "weakest": [
         "TEST"
       ],
@@ -1598,17 +1448,17 @@
       "source_files": 9,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 4.8235195239359685,
-        "TEST": 1.6134740649119554,
-        "DOCS": 3.193383146863931,
-        "OPS": 3.6134740649119554,
-        "SEC": 3.4034286058879437
+        "CODE": 4.9886486217370365,
+        "TEST": 1.9877917267608713,
+        "DOCS": 3.98607793680854,
+        "OPS": 3.987791726760871,
+        "SEC": 3.9869348317847058
       },
       "depressed": false,
-      "last_refreshed": 1781043437.0,
-      "jitter": 0.03356498295997979,
-      "peak_overall": 1.6134740649119554,
-      "overall_score": 1.613
+      "last_refreshed": 1781548773.0,
+      "jitter": -0.0104944832867975,
+      "peak_overall": 1.9877917267608713,
+      "overall_score": 1.988
     },
     {
       "path": "software/packages/sovereign",
@@ -1617,13 +1467,13 @@
       "stage": "SPROUT",
       "stage_icon": "\ud83c\udf3f",
       "scores": {
-        "CODE": 3.805,
-        "TEST": 1.595,
-        "DOCS": 3.175,
-        "OPS": 3.595,
-        "SEC": 3.385
+        "CODE": 3.987,
+        "TEST": 1.986,
+        "DOCS": 3.984,
+        "OPS": 3.986,
+        "SEC": 3.985
       },
-      "overall": 1.595,
+      "overall": 1.986,
       "weakest": [
         "TEST"
       ],
@@ -1639,168 +1489,73 @@
       "evidence": {
         "CODE": "373 lines of real logic",
         "TEST": "Minimal tests (0 assertions)",
-        "DOCS": "Detailed docs (60 lines, examples)",
+        "DOCS": "Detailed docs (75 lines, examples)",
         "OPS": "CI/CD pipeline",
         "SEC": "Lockfile + lint + CI security audit"
       },
       "source_files": 6,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 3.804861123130104,
-        "TEST": 1.5948156641060918,
-        "DOCS": 3.1747247460580676,
-        "OPS": 3.594815664106092,
-        "SEC": 3.3847702050820803
+        "CODE": 3.986648022568731,
+        "TEST": 1.9857911275925653,
+        "DOCS": 3.984077337640234,
+        "OPS": 3.9857911275925653,
+        "SEC": 3.9849342326164
       },
       "depressed": false,
-      "last_refreshed": 1781043437.0,
-      "jitter": 0.014906582154116195,
-      "peak_overall": 1.5948156641060918,
-      "overall_score": 1.595
+      "last_refreshed": 1781548773.0,
+      "jitter": -0.012495082455103643,
+      "peak_overall": 1.9857911275925653,
+      "overall_score": 1.986
     },
     {
-      "path": "software/spin-mesh",
+      "path": "software/spaceship-earth/astro-landing",
       "type": "directory",
-      "name": "spin-mesh",
+      "name": "astro-landing",
       "stage": "SPROUT",
       "stage_icon": "\ud83c\udf3f",
       "scores": {
-        "CODE": 4.812,
-        "TEST": 2.602,
-        "DOCS": 3.182,
-        "OPS": 3.602,
-        "SEC": 2.392
+        "CODE": 2.009,
+        "TEST": 2.008,
+        "DOCS": 2.008,
+        "OPS": 4.008,
+        "SEC": 4.008
       },
-      "overall": 2.392,
+      "overall": 2.008,
       "weakest": [
-        "SEC"
+        "TEST",
+        "DOCS"
       ],
       "auto_scores": {
-        "CODE": 5,
-        "TEST": 3,
-        "DOCS": 4,
+        "CODE": 2,
+        "TEST": 2,
+        "DOCS": 2,
         "OPS": 4,
-        "SEC": 3
+        "SEC": 4
       },
-      "auto_overall": 3,
+      "auto_overall": 2,
       "override": null,
       "evidence": {
-        "CODE": "1083 lines, mature codebase",
-        "TEST": "Basic tests (16 assertions)",
-        "DOCS": "Detailed docs (143 lines, examples)",
-        "OPS": "CI/CD pipeline",
-        "SEC": "Lockfile + lint config (lockfile (pnpm-lock.yaml), eslint.config.mjs)"
-      },
-      "source_files": 15,
-      "test_files": 1,
-      "continuous_scores": {
-        "CODE": 4.81232375994979,
-        "TEST": 2.6022783009257777,
-        "DOCS": 3.1821873828777534,
-        "OPS": 3.6022783009257777,
-        "SEC": 2.392232841901766
-      },
-      "depressed": false,
-      "last_refreshed": 1781043437.0,
-      "jitter": 0.022369218973802046,
-      "peak_overall": 2.392232841901766,
-      "overall_score": 2.392
-    },
-    {
-      "path": "software/spin-mesh/logistics-do",
-      "type": "directory",
-      "name": "logistics-do",
-      "stage": "SPROUT",
-      "stage_icon": "\ud83c\udf3f",
-      "scores": {
-        "CODE": 3.79,
-        "TEST": 2.58,
-        "DOCS": 3.159,
-        "OPS": 3.58,
-        "SEC": 2.369
-      },
-      "overall": 2.369,
-      "weakest": [
-        "SEC"
-      ],
-      "auto_scores": {
-        "CODE": 4,
-        "TEST": 3,
-        "DOCS": 4,
-        "OPS": 4,
-        "SEC": 3
-      },
-      "auto_overall": 3,
-      "override": null,
-      "evidence": {
-        "CODE": "114 lines of real logic",
-        "TEST": "Basic tests (9 assertions)",
-        "DOCS": "Detailed docs (143 lines, examples)",
+        "CODE": "Minimal implementation",
+        "TEST": "Minimal tests (0 assertions)",
+        "DOCS": "README exists (9 lines) but no usage examples",
         "OPS": "CI/CD with wrangler deploy",
-        "SEC": "Lockfile + lint config (lockfile (pnpm-lock.yaml), eslint.config.mjs)"
+        "SEC": "Lockfile + lint + CI security audit"
       },
-      "source_files": 1,
+      "source_files": 3,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 3.7895719233950422,
-        "TEST": 2.57952646437103,
-        "DOCS": 3.1594355463230057,
-        "OPS": 3.57952646437103,
-        "SEC": 2.3694810053470183
+        "CODE": 2.0088031653799416,
+        "TEST": 2.0084851592926647,
+        "DOCS": 2.0078491471181117,
+        "OPS": 4.008485159292665,
+        "SEC": 4.008167153205388
       },
       "depressed": false,
-      "last_refreshed": 1781043437.0,
-      "jitter": -0.0003826175809453985,
-      "peak_overall": 2.3694810053470183,
-      "overall_score": 2.369
-    },
-    {
-      "path": "software/spin-mesh/matchmaking-do",
-      "type": "directory",
-      "name": "matchmaking-do",
-      "stage": "SPROUT",
-      "stage_icon": "\ud83c\udf3f",
-      "scores": {
-        "CODE": 3.8,
-        "TEST": 2.59,
-        "DOCS": 3.17,
-        "OPS": 3.59,
-        "SEC": 2.38
-      },
-      "overall": 2.38,
-      "weakest": [
-        "SEC"
-      ],
-      "auto_scores": {
-        "CODE": 4,
-        "TEST": 3,
-        "DOCS": 4,
-        "OPS": 4,
-        "SEC": 3
-      },
-      "auto_overall": 3,
-      "override": null,
-      "evidence": {
-        "CODE": "144 lines of real logic",
-        "TEST": "Basic tests (9 assertions)",
-        "DOCS": "Detailed docs (143 lines, examples)",
-        "OPS": "CI/CD with wrangler deploy",
-        "SEC": "Lockfile + lint config (lockfile (pnpm-lock.yaml), eslint.config.mjs)"
-      },
-      "source_files": 1,
-      "test_files": 1,
-      "continuous_scores": {
-        "CODE": 3.800024652026012,
-        "TEST": 2.5899791930019997,
-        "DOCS": 3.1698882749539754,
-        "OPS": 3.5899791930019997,
-        "SEC": 2.379933733977988
-      },
-      "depressed": false,
-      "last_refreshed": 1781043437.0,
-      "jitter": 0.010070111050024038,
-      "peak_overall": 2.379933733977988,
-      "overall_score": 2.38
+      "last_refreshed": 1781550713.0,
+      "jitter": 0.009121171467218244,
+      "peak_overall": 2.0078491471181117,
+      "overall_score": 2.008
     },
     {
       "path": "src",
@@ -1809,13 +1564,13 @@
       "stage": "SPROUT",
       "stage_icon": "\ud83c\udf3f",
       "scores": {
-        "CODE": 4.969,
-        "TEST": 1.969,
-        "DOCS": 2.969,
-        "OPS": 3.969,
-        "SEC": 1.969
+        "CODE": 4.997,
+        "TEST": 1.997,
+        "DOCS": 3.997,
+        "OPS": 3.997,
+        "SEC": 1.997
       },
-      "overall": 1.969,
+      "overall": 1.997,
       "weakest": [
         "TEST",
         "SEC"
@@ -1823,7 +1578,7 @@
       "auto_scores": {
         "CODE": 5,
         "TEST": 2,
-        "DOCS": 3,
+        "DOCS": 4,
         "OPS": 4,
         "SEC": 2
       },
@@ -1832,24 +1587,24 @@
       "evidence": {
         "CODE": "1933 lines, mature codebase",
         "TEST": "Minimal tests (0 assertions)",
-        "DOCS": "README with usage (41 lines)",
+        "DOCS": "Detailed docs (52 lines, examples)",
         "OPS": "CI/CD pipeline",
         "SEC": "Lockfile present (lockfile (pnpm-lock.yaml))"
       },
       "source_files": 7,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 4.969451032356475,
-        "TEST": 1.9694510323564753,
-        "DOCS": 2.9694510323564756,
-        "OPS": 3.9694510323564756,
-        "SEC": 1.9694510323564753
+        "CODE": 4.997386643776473,
+        "TEST": 1.9973866437764731,
+        "DOCS": 3.997386643776473,
+        "OPS": 3.997386643776473,
+        "SEC": 1.9973866437764731
       },
       "depressed": false,
-      "last_refreshed": 1781547546.1016576,
-      "jitter": -0.030548967643524657,
-      "peak_overall": 1.9694510323564753,
-      "overall_score": 1.969
+      "last_refreshed": 1781551857.8219142,
+      "jitter": -0.0026133562235269277,
+      "peak_overall": 1.9973866437764731,
+      "overall_score": 1.997
     },
     {
       "path": "tests",
@@ -1858,13 +1613,13 @@
       "stage": "SPROUT",
       "stage_icon": "\ud83c\udf3f",
       "scores": {
-        "CODE": 1.963,
-        "TEST": 3.918,
-        "DOCS": 1.829,
-        "OPS": 3.918,
-        "SEC": 1.874
+        "CODE": 1.985,
+        "TEST": 3.954,
+        "DOCS": 1.892,
+        "OPS": 3.954,
+        "SEC": 1.923
       },
-      "overall": 1.829,
+      "overall": 1.892,
       "weakest": [
         "DOCS"
       ],
@@ -1880,72 +1635,24 @@
       "evidence": {
         "CODE": "Minimal implementation",
         "TEST": "Comprehensive tests (91 assertions) + vitest thresholds",
-        "DOCS": "README exists (13 lines) but no usage examples",
+        "DOCS": "README exists (11 lines) but no usage examples",
         "OPS": "CI/CD pipeline",
         "SEC": "Lockfile present (lockfile (pnpm-lock.yaml))"
       },
       "source_files": 2,
       "test_files": 8,
       "continuous_scores": {
-        "CODE": 1.9628394057212644,
-        "TEST": 3.918350613363919,
-        "DOCS": 1.829373028649228,
-        "OPS": 3.918350613363919,
-        "SEC": 1.8738618210065734
+        "CODE": 1.984533409290752,
+        "TEST": 3.9536765143145867,
+        "DOCS": 1.8919627243622554,
+        "OPS": 3.9536765143145867,
+        "SEC": 1.922819619338421
       },
       "depressed": false,
       "last_refreshed": 1781440773.0,
-      "jitter": 0.007328198078609805,
-      "peak_overall": 1.829373028649228,
-      "overall_score": 1.829
-    },
-    {
-      "path": "software/cloudflare-worker/command-center",
-      "type": "directory",
-      "name": "command-center",
-      "stage": "SAPLING",
-      "stage_icon": "\ud83c\udf33",
-      "scores": {
-        "CODE": 4.872,
-        "TEST": 3.587,
-        "DOCS": 3.167,
-        "OPS": 3.887,
-        "SEC": 3.377
-      },
-      "overall": 3.167,
-      "weakest": [
-        "DOCS"
-      ],
-      "auto_scores": {
-        "CODE": 5,
-        "TEST": 4,
-        "DOCS": 4,
-        "OPS": 4,
-        "SEC": 4
-      },
-      "auto_overall": 4,
-      "override": null,
-      "evidence": {
-        "CODE": "7876 lines, mature codebase",
-        "TEST": "Comprehensive tests (241 assertions) + vitest thresholds",
-        "DOCS": "Detailed docs (91 lines, examples)",
-        "OPS": "CI/CD with wrangler deploy",
-        "SEC": "Lockfile + lint + CI security audit"
-      },
-      "source_files": 13,
-      "test_files": 6,
-      "continuous_scores": {
-        "CODE": 4.872453177413143,
-        "TEST": 3.58740771838913,
-        "DOCS": 3.167316800341106,
-        "OPS": 3.88740771838913,
-        "SEC": 3.3773622593651185
-      },
-      "depressed": false,
-      "last_refreshed": 1781547546.1016576,
-      "jitter": 0.007498636437154455,
-      "peak_overall": 3.167316800341106,
-      "overall_score": 3.167
+      "jitter": 0.015390304266917733,
+      "peak_overall": 1.8919627243622554,
+      "overall_score": 1.892
     },
     {
       "path": "software/cloudflare-worker/social-drop-automation",
@@ -1954,13 +1661,13 @@
       "stage": "SAPLING",
       "stage_icon": "\ud83c\udf33",
       "scores": {
-        "CODE": 4.828,
-        "TEST": 2.618,
-        "DOCS": 4.198,
-        "OPS": 3.618,
-        "SEC": 3.408
+        "CODE": 4.987,
+        "TEST": 2.986,
+        "DOCS": 4.984,
+        "OPS": 3.986,
+        "SEC": 3.985
       },
-      "overall": 2.618,
+      "overall": 2.986,
       "weakest": [
         "TEST"
       ],
@@ -1976,24 +1683,24 @@
       "evidence": {
         "CODE": "766 lines, mature codebase",
         "TEST": "Basic tests (9 assertions)",
-        "DOCS": "Comprehensive docs (130 lines, examples, TOC)",
+        "DOCS": "Comprehensive docs (163 lines, examples, TOC)",
         "OPS": "CI/CD with wrangler deploy",
         "SEC": "Lockfile + lint + CI security audit"
       },
       "source_files": 1,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 4.8284094899296965,
-        "TEST": 2.6183640309056844,
-        "DOCS": 4.19827311285766,
-        "OPS": 3.6183640309056844,
-        "SEC": 3.4083185718816726
+        "CODE": 4.986806582279808,
+        "TEST": 2.985949687303643,
+        "DOCS": 4.9842358973513115,
+        "OPS": 3.985949687303643,
+        "SEC": 3.9850927923274777
       },
       "depressed": false,
-      "last_refreshed": 1781043437.0,
-      "jitter": 0.038454948953708705,
-      "peak_overall": 2.6183640309056844,
-      "overall_score": 2.618
+      "last_refreshed": 1781548773.0,
+      "jitter": -0.012336522744025795,
+      "peak_overall": 2.985949687303643,
+      "overall_score": 2.986
     },
     {
       "path": "software/discord/p31-bot",
@@ -2002,13 +1709,13 @@
       "stage": "SAPLING",
       "stage_icon": "\ud83c\udf33",
       "scores": {
-        "CODE": 4.817,
-        "TEST": 2.607,
-        "DOCS": 4.187,
-        "OPS": 3.607,
-        "SEC": 3.397
+        "CODE": 4.853,
+        "TEST": 2.712,
+        "DOCS": 4.43,
+        "OPS": 3.712,
+        "SEC": 3.571
       },
-      "overall": 2.607,
+      "overall": 2.712,
       "weakest": [
         "TEST"
       ],
@@ -2024,24 +1731,24 @@
       "evidence": {
         "CODE": "6431 lines, mature codebase",
         "TEST": "Core paths tested (169 assertions)",
-        "DOCS": "Comprehensive docs (132 lines, examples, TOC)",
+        "DOCS": "Comprehensive docs (156 lines, examples, TOC)",
         "OPS": "CI/CD with Docker deploy",
         "SEC": "Lockfile + lint + CI security audit"
       },
       "source_files": 59,
       "test_files": 10,
       "continuous_scores": {
-        "CODE": 4.817190490553782,
-        "TEST": 2.607145031529769,
-        "DOCS": 4.187054113481745,
-        "OPS": 3.607145031529769,
-        "SEC": 3.3970995725057573
+        "CODE": 4.853217229776617,
+        "TEST": 2.71198922368934,
+        "DOCS": 4.429533211514787,
+        "OPS": 3.71198922368934,
+        "SEC": 3.570761217602063
       },
       "depressed": false,
       "last_refreshed": 1781043437.0,
-      "jitter": 0.02723594957779359,
-      "peak_overall": 2.607145031529769,
-      "overall_score": 2.607
+      "jitter": -0.005554764136106763,
+      "peak_overall": 2.71198922368934,
+      "overall_score": 2.712
     },
     {
       "path": "software/donate-api",
@@ -2050,13 +1757,13 @@
       "stage": "SAPLING",
       "stage_icon": "\ud83c\udf33",
       "scores": {
-        "CODE": 3.765,
-        "TEST": 2.555,
-        "DOCS": 3.135,
-        "OPS": 3.555,
-        "SEC": 3.345
+        "CODE": 3.871,
+        "TEST": 2.73,
+        "DOCS": 3.447,
+        "OPS": 3.73,
+        "SEC": 3.588
       },
-      "overall": 2.555,
+      "overall": 2.73,
       "weakest": [
         "TEST"
       ],
@@ -2072,24 +1779,24 @@
       "evidence": {
         "CODE": "275 lines of real logic",
         "TEST": "Core paths tested (77 assertions)",
-        "DOCS": "Detailed docs (60 lines, examples)",
+        "DOCS": "Detailed docs (75 lines, examples)",
         "OPS": "CI/CD with wrangler deploy",
         "SEC": "Lockfile + lint + CI security audit"
       },
       "source_files": 2,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 3.7649286335072807,
-        "TEST": 2.5548831744832685,
-        "DOCS": 3.134792256435244,
-        "OPS": 3.5548831744832685,
-        "SEC": 3.344837715459257
+        "CODE": 3.870819811673681,
+        "TEST": 2.729591805586405,
+        "DOCS": 3.447135793411851,
+        "OPS": 3.729591805586405,
+        "SEC": 3.588363799499128
       },
       "depressed": false,
       "last_refreshed": 1781043437.0,
-      "jitter": -0.025025907468706945,
-      "peak_overall": 2.5548831744832685,
-      "overall_score": 2.555
+      "jitter": 0.012047817760958113,
+      "peak_overall": 2.729591805586405,
+      "overall_score": 2.73
     },
     {
       "path": "software/extensions/p31-cockpit-panel",
@@ -2098,13 +1805,13 @@
       "stage": "SAPLING",
       "stage_icon": "\ud83c\udf33",
       "scores": {
-        "CODE": 2.795,
-        "TEST": 2.585,
-        "DOCS": 3.165,
-        "OPS": 3.585,
-        "SEC": 3.375
+        "CODE": 2.993,
+        "TEST": 2.992,
+        "DOCS": 3.99,
+        "OPS": 3.992,
+        "SEC": 3.991
       },
-      "overall": 2.585,
+      "overall": 2.992,
       "weakest": [
         "TEST"
       ],
@@ -2120,24 +1827,24 @@
       "evidence": {
         "CODE": "75 lines of real logic",
         "TEST": "Basic tests (9 assertions)",
-        "DOCS": "Detailed docs (60 lines, examples)",
+        "DOCS": "Detailed docs (75 lines, examples)",
         "OPS": "CI/CD pipeline",
         "SEC": "Lockfile + lint + CI security audit"
       },
       "source_files": 1,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 2.795184706890799,
-        "TEST": 2.585139247866787,
-        "DOCS": 3.1650483298187626,
-        "OPS": 3.585139247866787,
-        "SEC": 3.375093788842775
+        "CODE": 2.9929534416183867,
+        "TEST": 2.992096546642221,
+        "DOCS": 3.9903827566898897,
+        "OPS": 3.992096546642221,
+        "SEC": 3.9912396516660555
       },
       "depressed": false,
-      "last_refreshed": 1781043437.0,
-      "jitter": 0.005230165914811147,
-      "peak_overall": 2.585139247866787,
-      "overall_score": 2.585
+      "last_refreshed": 1781548773.0,
+      "jitter": -0.006189663405447741,
+      "peak_overall": 2.992096546642221,
+      "overall_score": 2.992
     },
     {
       "path": "software/extensions/p31-cognitive-shield",
@@ -2146,13 +1853,13 @@
       "stage": "SAPLING",
       "stage_icon": "\ud83c\udf33",
       "scores": {
-        "CODE": 2.781,
-        "TEST": 2.571,
-        "DOCS": 3.151,
-        "OPS": 3.571,
-        "SEC": 3.361
+        "CODE": 3.008,
+        "TEST": 3.007,
+        "DOCS": 4.005,
+        "OPS": 4.007,
+        "SEC": 4.006
       },
-      "overall": 2.571,
+      "overall": 3.007,
       "weakest": [
         "TEST"
       ],
@@ -2168,24 +1875,24 @@
       "evidence": {
         "CODE": "68 lines of real logic",
         "TEST": "Basic tests (9 assertions)",
-        "DOCS": "Detailed docs (60 lines, examples)",
+        "DOCS": "Detailed docs (75 lines, examples)",
         "OPS": "CI/CD pipeline",
         "SEC": "Lockfile + lint + CI security audit"
       },
       "source_files": 1,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 2.7812794771366716,
-        "TEST": 2.5712340181126594,
-        "DOCS": 3.151143100064635,
-        "OPS": 3.5712340181126594,
-        "SEC": 3.3611885590886477
+        "CODE": 3.0080069844686883,
+        "TEST": 3.0071500894925225,
+        "DOCS": 4.005436299540191,
+        "OPS": 4.007150089492523,
+        "SEC": 4.006293194516357
       },
       "depressed": false,
-      "last_refreshed": 1781043437.0,
-      "jitter": -0.008675063839316124,
-      "peak_overall": 2.5712340181126594,
-      "overall_score": 2.571
+      "last_refreshed": 1781548773.0,
+      "jitter": 0.008863879444853676,
+      "peak_overall": 3.0071500894925225,
+      "overall_score": 3.007
     },
     {
       "path": "software/extensions/p31-progressive-disclosure",
@@ -2194,13 +1901,13 @@
       "stage": "SAPLING",
       "stage_icon": "\ud83c\udf33",
       "scores": {
-        "CODE": 3.773,
-        "TEST": 2.563,
-        "DOCS": 3.143,
-        "OPS": 3.563,
-        "SEC": 3.353
+        "CODE": 4.002,
+        "TEST": 3.001,
+        "DOCS": 3.999,
+        "OPS": 4.001,
+        "SEC": 4.0
       },
-      "overall": 2.563,
+      "overall": 3.001,
       "weakest": [
         "TEST"
       ],
@@ -2216,24 +1923,24 @@
       "evidence": {
         "CODE": "105 lines of real logic",
         "TEST": "Basic tests (9 assertions)",
-        "DOCS": "Detailed docs (60 lines, examples)",
+        "DOCS": "Detailed docs (75 lines, examples)",
         "OPS": "CI/CD pipeline",
         "SEC": "Lockfile + lint + CI security audit"
       },
       "source_files": 1,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 3.7732649614420946,
-        "TEST": 2.5632195024180824,
-        "DOCS": 3.143128584370058,
-        "OPS": 3.5632195024180824,
-        "SEC": 3.3531740433940707
+        "CODE": 4.001727678230795,
+        "TEST": 3.0008707832546295,
+        "DOCS": 3.9991569933022983,
+        "OPS": 4.000870783254629,
+        "SEC": 4.000013888278464
       },
       "depressed": false,
-      "last_refreshed": 1781043437.0,
-      "jitter": -0.016689579533893485,
-      "peak_overall": 2.5632195024180824,
-      "overall_score": 2.563
+      "last_refreshed": 1781548773.0,
+      "jitter": 0.00258457320696053,
+      "peak_overall": 3.0008707832546295,
+      "overall_score": 3.001
     },
     {
       "path": "software/extensions/p31-spoon-gauge",
@@ -2242,13 +1949,13 @@
       "stage": "SAPLING",
       "stage_icon": "\ud83c\udf33",
       "scores": {
-        "CODE": 2.778,
-        "TEST": 2.568,
-        "DOCS": 3.148,
-        "OPS": 3.568,
-        "SEC": 3.358
+        "CODE": 2.999,
+        "TEST": 2.998,
+        "DOCS": 3.996,
+        "OPS": 3.998,
+        "SEC": 3.997
       },
-      "overall": 2.568,
+      "overall": 2.998,
       "weakest": [
         "TEST"
       ],
@@ -2264,24 +1971,24 @@
       "evidence": {
         "CODE": "69 lines of real logic",
         "TEST": "Basic tests (9 assertions)",
-        "DOCS": "Detailed docs (60 lines, examples)",
+        "DOCS": "Detailed docs (75 lines, examples)",
         "OPS": "CI/CD pipeline",
         "SEC": "Lockfile + lint + CI security audit"
       },
       "source_files": 1,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 2.7779216177454633,
-        "TEST": 2.567876158721451,
-        "DOCS": 3.147785240673427,
-        "OPS": 3.567876158721451,
-        "SEC": 3.3578306996974394
+        "CODE": 2.9985430747426918,
+        "TEST": 2.997686179766526,
+        "DOCS": 3.995972389814195,
+        "OPS": 3.997686179766526,
+        "SEC": 3.9968292847903606
       },
       "depressed": false,
-      "last_refreshed": 1781043437.0,
-      "jitter": -0.012032923230524418,
-      "peak_overall": 2.567876158721451,
-      "overall_score": 2.568
+      "last_refreshed": 1781548773.0,
+      "jitter": -0.0006000302811430721,
+      "peak_overall": 2.997686179766526,
+      "overall_score": 2.998
     },
     {
       "path": "software/frontend",
@@ -2290,13 +1997,13 @@
       "stage": "SAPLING",
       "stage_icon": "\ud83c\udf33",
       "scores": {
-        "CODE": 4.809,
-        "TEST": 3.599,
-        "DOCS": 3.179,
-        "OPS": 3.599,
-        "SEC": 3.389
+        "CODE": 4.862,
+        "TEST": 3.721,
+        "DOCS": 3.438,
+        "OPS": 3.721,
+        "SEC": 3.58
       },
-      "overall": 3.179,
+      "overall": 3.438,
       "weakest": [
         "DOCS"
       ],
@@ -2312,24 +2019,120 @@
       "evidence": {
         "CODE": "9943 lines, mature codebase",
         "TEST": "Comprehensive tests (74 assertions) + vitest thresholds",
-        "DOCS": "Detailed docs (60 lines, examples)",
+        "DOCS": "Detailed docs (75 lines, examples)",
         "OPS": "CI/CD with Docker deploy",
         "SEC": "Lockfile + lint + CI security audit"
       },
       "source_files": 60,
       "test_files": 2,
       "continuous_scores": {
-        "CODE": 4.80944599536283,
-        "TEST": 3.599400536338817,
-        "DOCS": 3.1793096182907927,
-        "OPS": 3.599400536338817,
-        "SEC": 3.3893550773148053
+        "CODE": 4.862165436505514,
+        "TEST": 3.7209374304182368,
+        "DOCS": 3.438481418243683,
+        "OPS": 3.7209374304182368,
+        "SEC": 3.57970942433096
       },
       "depressed": false,
       "last_refreshed": 1781043437.0,
-      "jitter": 0.019491454386841214,
-      "peak_overall": 3.1793096182907927,
-      "overall_score": 3.179
+      "jitter": 0.0033934425927897873,
+      "peak_overall": 3.438481418243683,
+      "overall_score": 3.438
+    },
+    {
+      "path": "software/geodesic-room",
+      "type": "directory",
+      "name": "geodesic-room",
+      "stage": "SAPLING",
+      "stage_icon": "\ud83c\udf33",
+      "scores": {
+        "CODE": 4.989,
+        "TEST": 2.988,
+        "DOCS": 2.986,
+        "OPS": 3.988,
+        "SEC": 3.987
+      },
+      "overall": 2.986,
+      "weakest": [
+        "DOCS"
+      ],
+      "auto_scores": {
+        "CODE": 5,
+        "TEST": 3,
+        "DOCS": 3,
+        "OPS": 4,
+        "SEC": 4
+      },
+      "auto_overall": 3,
+      "override": null,
+      "evidence": {
+        "CODE": "603 lines, mature codebase",
+        "TEST": "Basic tests (9 assertions)",
+        "DOCS": "README with usage (34 lines)",
+        "OPS": "CI/CD with wrangler deploy",
+        "SEC": "Lockfile + lint + CI security audit"
+      },
+      "source_files": 2,
+      "test_files": 1,
+      "continuous_scores": {
+        "CODE": 4.98868554489715,
+        "TEST": 2.9878286499209845,
+        "DOCS": 2.9861148599686533,
+        "OPS": 3.9878286499209845,
+        "SEC": 3.986971754944819
+      },
+      "depressed": false,
+      "last_refreshed": 1781548773.0,
+      "jitter": -0.01045756012668409,
+      "peak_overall": 2.9861148599686533,
+      "overall_score": 2.986
+    },
+    {
+      "path": "software/k4-personal",
+      "type": "directory",
+      "name": "k4-personal",
+      "stage": "SAPLING",
+      "stage_icon": "\ud83c\udf33",
+      "scores": {
+        "CODE": 4.999,
+        "TEST": 3.048,
+        "DOCS": 3.996,
+        "OPS": 3.998,
+        "SEC": 3.997
+      },
+      "overall": 3.048,
+      "weakest": [
+        "TEST"
+      ],
+      "auto_scores": {
+        "CODE": 5,
+        "TEST": 3,
+        "DOCS": 4,
+        "OPS": 4,
+        "SEC": 4
+      },
+      "auto_overall": 3,
+      "override": null,
+      "evidence": {
+        "CODE": "953 lines, mature codebase",
+        "TEST": "Basic tests (9 assertions)",
+        "DOCS": "Detailed docs (52 lines, examples)",
+        "OPS": "CI/CD with wrangler deploy",
+        "SEC": "Lockfile + lint + CI security audit"
+      },
+      "source_files": 5,
+      "test_files": 1,
+      "continuous_scores": {
+        "CODE": 4.998619143640694,
+        "TEST": 3.047762248664528,
+        "DOCS": 3.996048458712197,
+        "OPS": 3.9977622486645283,
+        "SEC": 3.996905353688363
+      },
+      "depressed": false,
+      "last_refreshed": 1781548773.0,
+      "jitter": -0.0005239613831403217,
+      "peak_overall": 3.047762248664528,
+      "overall_score": 3.048
     },
     {
       "path": "software/kenosis-mesh",
@@ -2338,13 +2141,13 @@
       "stage": "SAPLING",
       "stage_icon": "\ud83c\udf33",
       "scores": {
-        "CODE": 3.771,
-        "TEST": 2.561,
-        "DOCS": 3.141,
-        "OPS": 3.561,
-        "SEC": 3.351
+        "CODE": 3.995,
+        "TEST": 3.044,
+        "DOCS": 3.993,
+        "OPS": 3.994,
+        "SEC": 3.993
       },
-      "overall": 2.561,
+      "overall": 3.044,
       "weakest": [
         "TEST"
       ],
@@ -2360,24 +2163,24 @@
       "evidence": {
         "CODE": "400 lines of real logic",
         "TEST": "Basic tests (9 assertions)",
-        "DOCS": "Detailed docs (120 lines, examples)",
+        "DOCS": "Detailed docs (148 lines, examples)",
         "OPS": "CI/CD with wrangler deploy",
         "SEC": "Lockfile + lint + CI security audit"
       },
       "source_files": 2,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 3.771219091374456,
-        "TEST": 2.5611736323504437,
-        "DOCS": 3.1410827143024194,
-        "OPS": 3.5611736323504437,
-        "SEC": 3.351128173326432
+        "CODE": 3.995139974690937,
+        "TEST": 3.044283079714771,
+        "DOCS": 3.99256928976244,
+        "OPS": 3.994283079714771,
+        "SEC": 3.9934261847386057
       },
       "depressed": false,
-      "last_refreshed": 1781043437.0,
-      "jitter": -0.01873544960153177,
-      "peak_overall": 2.5611736323504437,
-      "overall_score": 2.561
+      "last_refreshed": 1781548773.0,
+      "jitter": -0.004003130332897991,
+      "peak_overall": 3.044283079714771,
+      "overall_score": 3.044
     },
     {
       "path": "software/p31-cortex",
@@ -2386,13 +2189,13 @@
       "stage": "SAPLING",
       "stage_icon": "\ud83c\udf33",
       "scores": {
-        "CODE": 4.785,
-        "TEST": 2.575,
-        "DOCS": 3.155,
-        "OPS": 3.575,
-        "SEC": 3.365
+        "CODE": 4.988,
+        "TEST": 2.988,
+        "DOCS": 3.986,
+        "OPS": 3.988,
+        "SEC": 3.987
       },
-      "overall": 2.575,
+      "overall": 2.988,
       "weakest": [
         "TEST"
       ],
@@ -2408,24 +2211,24 @@
       "evidence": {
         "CODE": "2086 lines, mature codebase",
         "TEST": "Basic tests (9 assertions)",
-        "DOCS": "Detailed docs (60 lines, examples)",
+        "DOCS": "Detailed docs (75 lines, examples)",
         "OPS": "CI/CD with wrangler deploy",
         "SEC": "Lockfile + lint + CI security audit"
       },
       "source_files": 13,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 4.785099868870201,
-        "TEST": 2.5750544098461887,
-        "DOCS": 3.1549634917981644,
-        "OPS": 3.5750544098461887,
-        "SEC": 3.365008950822177
+        "CODE": 4.988430436376166,
+        "TEST": 2.9875735414,
+        "DOCS": 3.985859751447669,
+        "OPS": 3.9875735414,
+        "SEC": 3.986716646423835
       },
       "depressed": false,
-      "last_refreshed": 1781043437.0,
-      "jitter": -0.004854672105786785,
-      "peak_overall": 2.5750544098461887,
-      "overall_score": 2.575
+      "last_refreshed": 1781548773.0,
+      "jitter": -0.010712668647668426,
+      "peak_overall": 2.9875735414,
+      "overall_score": 2.988
     },
     {
       "path": "software/p31-delta-hiring",
@@ -2458,7 +2261,7 @@
       "evidence": {
         "CODE": "1743 lines, mature codebase",
         "TEST": "Core paths tested (32 assertions)",
-        "DOCS": "Detailed docs (73 lines, examples)",
+        "DOCS": "Detailed docs (98 lines, examples)",
         "OPS": "CI/CD pipeline",
         "SEC": "Lockfile + lint + CI security audit"
       },
@@ -2482,13 +2285,13 @@
       "stage": "SAPLING",
       "stage_icon": "\ud83c\udf33",
       "scores": {
-        "CODE": 4.807,
-        "TEST": 2.597,
-        "DOCS": 3.177,
-        "OPS": 3.597,
-        "SEC": 3.387
+        "CODE": 5.0,
+        "TEST": 3.004,
+        "DOCS": 4.002,
+        "OPS": 4.004,
+        "SEC": 4.003
       },
-      "overall": 2.597,
+      "overall": 3.004,
       "weakest": [
         "TEST"
       ],
@@ -2504,24 +2307,24 @@
       "evidence": {
         "CODE": "2284 lines, mature codebase",
         "TEST": "Basic tests (9 assertions)",
-        "DOCS": "Detailed docs (408 lines, examples)",
+        "DOCS": "Detailed docs (512 lines, examples)",
         "OPS": "CI/CD with wrangler deploy",
         "SEC": "Lockfile + lint + CI security audit"
       },
       "source_files": 16,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 4.807037296560127,
-        "TEST": 2.5969918375361143,
-        "DOCS": 3.17690091948809,
-        "OPS": 3.5969918375361143,
-        "SEC": 3.3869463785121026
+        "CODE": 5.0,
+        "TEST": 3.0041526929090145,
+        "DOCS": 4.002438902956683,
+        "OPS": 4.004152692909015,
+        "SEC": 4.003295797932849
       },
       "depressed": false,
-      "last_refreshed": 1781043437.0,
-      "jitter": 0.017082755584138753,
-      "peak_overall": 2.5969918375361143,
-      "overall_score": 2.597
+      "last_refreshed": 1781548773.0,
+      "jitter": 0.00586648286134583,
+      "peak_overall": 3.0041526929090145,
+      "overall_score": 3.004
     },
     {
       "path": "software/p31-google-bridge",
@@ -2530,13 +2333,13 @@
       "stage": "SAPLING",
       "stage_icon": "\ud83c\udf33",
       "scores": {
-        "CODE": 4.78,
-        "TEST": 2.57,
-        "DOCS": 3.15,
-        "OPS": 3.57,
-        "SEC": 3.36
+        "CODE": 4.995,
+        "TEST": 2.994,
+        "DOCS": 3.992,
+        "OPS": 3.994,
+        "SEC": 3.993
       },
-      "overall": 2.57,
+      "overall": 2.994,
       "weakest": [
         "TEST"
       ],
@@ -2552,24 +2355,24 @@
       "evidence": {
         "CODE": "656 lines, mature codebase",
         "TEST": "Basic tests (9 assertions)",
-        "DOCS": "Detailed docs (68 lines, examples)",
+        "DOCS": "Detailed docs (86 lines, examples)",
         "OPS": "CI/CD with wrangler deploy",
         "SEC": "Lockfile + lint + CI security audit"
       },
       "source_files": 4,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 4.780187010627622,
-        "TEST": 2.5701415516036095,
-        "DOCS": 3.150050633555585,
-        "OPS": 3.5701415516036095,
-        "SEC": 3.3600960925795977
+        "CODE": 4.994597301424986,
+        "TEST": 2.9937404064488207,
+        "DOCS": 3.9920266164964895,
+        "OPS": 3.9937404064488207,
+        "SEC": 3.9928835114726553
       },
       "depressed": false,
-      "last_refreshed": 1781043437.0,
-      "jitter": -0.009767530348366353,
-      "peak_overall": 2.5701415516036095,
-      "overall_score": 2.57
+      "last_refreshed": 1781548773.0,
+      "jitter": -0.004545803598847993,
+      "peak_overall": 2.9937404064488207,
+      "overall_score": 2.994
     },
     {
       "path": "software/p31ca",
@@ -2578,13 +2381,13 @@
       "stage": "SAPLING",
       "stage_icon": "\ud83c\udf33",
       "scores": {
-        "CODE": 4.962,
-        "TEST": 3.918,
-        "DOCS": 2.829,
-        "OPS": 3.918,
-        "SEC": 3.873
+        "CODE": 5.0,
+        "TEST": 4.109,
+        "DOCS": 3.008,
+        "OPS": 4.009,
+        "SEC": 4.008
       },
-      "overall": 2.829,
+      "overall": 3.008,
       "weakest": [
         "DOCS"
       ],
@@ -2599,25 +2402,25 @@
       "override": null,
       "evidence": {
         "CODE": "35016 lines, mature codebase",
-        "TEST": "Comprehensive tests (416 assertions) + vitest thresholds",
-        "DOCS": "README with usage (29 lines)",
+        "TEST": "Comprehensive tests (462 assertions) + vitest thresholds",
+        "DOCS": "README with usage (34 lines)",
         "OPS": "CI/CD with wrangler deploy",
         "SEC": "Lockfile + lint + CI security audit"
       },
       "source_files": 193,
-      "test_files": 14,
+      "test_files": 15,
       "continuous_scores": {
-        "CODE": 4.961994459628034,
-        "TEST": 3.9175056672706883,
-        "DOCS": 2.8285280825559975,
-        "OPS": 3.9175056672706883,
-        "SEC": 3.873016874913343
+        "CODE": 5.0,
+        "TEST": 4.108507846977776,
+        "DOCS": 3.007871834803223,
+        "OPS": 4.008507846977777,
+        "SEC": 4.0081898408905
       },
       "depressed": false,
-      "last_refreshed": 1781440773.0,
-      "jitter": 0.006483251985379038,
-      "peak_overall": 2.8285280825559975,
-      "overall_score": 2.829
+      "last_refreshed": 1781550713.0,
+      "jitter": 0.009143859152329917,
+      "peak_overall": 3.007871834803223,
+      "overall_score": 3.008
     },
     {
       "path": "software/packages/agent-engine",
@@ -2646,9 +2449,9 @@
       "auto_overall": 4,
       "override": "operator baseline",
       "evidence": {
-        "CODE": "2674 lines, mature codebase",
-        "TEST": "Comprehensive tests (113 assertions) + vitest thresholds",
-        "DOCS": "Comprehensive docs (395 lines, examples, TOC)",
+        "CODE": "2659 lines, mature codebase",
+        "TEST": "Tests with coverage tracking (113 assertions)",
+        "DOCS": "Comprehensive docs (502 lines, examples, TOC)",
         "OPS": "CI/CD pipeline",
         "SEC": "Lockfile + lint + CI security audit"
       },
@@ -2666,67 +2469,19 @@
       "jitter": 0.0
     },
     {
-      "path": "software/packages/game-engine",
-      "type": "directory",
-      "name": "game-engine",
-      "stage": "SAPLING",
-      "stage_icon": "\ud83c\udf33",
-      "scores": {
-        "CODE": 4.812,
-        "TEST": 3.602,
-        "DOCS": 4.182,
-        "OPS": 3.602,
-        "SEC": 3.392
-      },
-      "overall": 3.392,
-      "weakest": [
-        "SEC"
-      ],
-      "auto_scores": {
-        "CODE": 5,
-        "TEST": 4,
-        "DOCS": 5,
-        "OPS": 4,
-        "SEC": 4
-      },
-      "auto_overall": 4,
-      "override": null,
-      "evidence": {
-        "CODE": "1115 lines, mature codebase",
-        "TEST": "Comprehensive tests (341 assertions) + vitest thresholds",
-        "DOCS": "Comprehensive docs (153 lines, examples, TOC)",
-        "OPS": "CI/CD pipeline",
-        "SEC": "Lockfile + lint + CI security audit"
-      },
-      "source_files": 7,
-      "test_files": 4,
-      "continuous_scores": {
-        "CODE": 4.812369463950554,
-        "TEST": 3.602324004926541,
-        "DOCS": 4.182233086878517,
-        "OPS": 3.602324004926541,
-        "SEC": 3.392278545902529
-      },
-      "depressed": false,
-      "last_refreshed": 1781043437.0,
-      "jitter": 0.022414922974565314,
-      "peak_overall": 3.392278545902529,
-      "overall_score": 3.392
-    },
-    {
       "path": "software/packages/harmonic-linter",
       "type": "directory",
       "name": "harmonic-linter",
       "stage": "SAPLING",
       "stage_icon": "\ud83c\udf33",
       "scores": {
-        "CODE": 3.77,
-        "TEST": 2.56,
-        "DOCS": 4.14,
-        "OPS": 3.56,
-        "SEC": 3.35
+        "CODE": 3.995,
+        "TEST": 3.044,
+        "DOCS": 4.992,
+        "OPS": 3.994,
+        "SEC": 3.993
       },
-      "overall": 2.56,
+      "overall": 3.044,
       "weakest": [
         "TEST"
       ],
@@ -2742,24 +2497,24 @@
       "evidence": {
         "CODE": "156 lines of real logic",
         "TEST": "Basic tests (9 assertions)",
-        "DOCS": "Comprehensive docs (129 lines, examples, TOC)",
+        "DOCS": "Comprehensive docs (177 lines, examples, TOC)",
         "OPS": "CI/CD pipeline",
         "SEC": "Lockfile + lint + CI security audit"
       },
       "source_files": 1,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 3.769716498793876,
-        "TEST": 2.5596710397698637,
-        "DOCS": 4.139580121721839,
-        "OPS": 3.5596710397698637,
-        "SEC": 3.349625580745852
+        "CODE": 3.9949408278583816,
+        "TEST": 3.0440839328822156,
+        "DOCS": 4.992370142929884,
+        "OPS": 3.9940839328822157,
+        "SEC": 3.9932270379060504
       },
       "depressed": false,
-      "last_refreshed": 1781043437.0,
-      "jitter": -0.02023804218211197,
-      "peak_overall": 2.5596710397698637,
-      "overall_score": 2.56
+      "last_refreshed": 1781548773.0,
+      "jitter": -0.004202277165453106,
+      "peak_overall": 3.0440839328822156,
+      "overall_score": 3.044
     },
     {
       "path": "software/packages/node-zero",
@@ -2768,13 +2523,13 @@
       "stage": "SAPLING",
       "stage_icon": "\ud83c\udf33",
       "scores": {
-        "CODE": 4.759,
-        "TEST": 2.549,
-        "DOCS": 3.129,
-        "OPS": 3.549,
-        "SEC": 3.339
+        "CODE": 4.995,
+        "TEST": 2.994,
+        "DOCS": 3.993,
+        "OPS": 3.994,
+        "SEC": 3.993
       },
-      "overall": 2.549,
+      "overall": 2.994,
       "weakest": [
         "TEST"
       ],
@@ -2790,24 +2545,24 @@
       "evidence": {
         "CODE": "5558 lines, mature codebase",
         "TEST": "Core paths tested (524 assertions)",
-        "DOCS": "Detailed docs (80 lines, examples)",
+        "DOCS": "Detailed docs (114 lines, examples)",
         "OPS": "CI/CD pipeline",
         "SEC": "Lockfile + lint + CI security audit"
       },
       "source_files": 35,
       "test_files": 9,
       "continuous_scores": {
-        "CODE": 4.7591618310868204,
-        "TEST": 2.549116372062808,
-        "DOCS": 3.1290254540147835,
-        "OPS": 3.549116372062808,
-        "SEC": 3.339070913038796
+        "CODE": 4.99510905604557,
+        "TEST": 2.9942521610694053,
+        "DOCS": 3.992538371117074,
+        "OPS": 3.9942521610694053,
+        "SEC": 3.99339526609324
       },
       "depressed": false,
-      "last_refreshed": 1781043437.0,
-      "jitter": -0.03079270988916804,
-      "peak_overall": 2.549116372062808,
-      "overall_score": 2.549
+      "last_refreshed": 1781548773.0,
+      "jitter": -0.004034048978263654,
+      "peak_overall": 2.9942521610694053,
+      "overall_score": 2.994
     },
     {
       "path": "software/packages/oracle-terminal",
@@ -2816,13 +2571,13 @@
       "stage": "SAPLING",
       "stage_icon": "\ud83c\udf33",
       "scores": {
-        "CODE": 3.788,
-        "TEST": 2.578,
-        "DOCS": 4.158,
-        "OPS": 3.578,
-        "SEC": 3.368
+        "CODE": 4.001,
+        "TEST": 3.05,
+        "DOCS": 4.999,
+        "OPS": 4.0,
+        "SEC": 3.999
       },
-      "overall": 2.578,
+      "overall": 3.05,
       "weakest": [
         "TEST"
       ],
@@ -2838,24 +2593,24 @@
       "evidence": {
         "CODE": "419 lines of real logic",
         "TEST": "Basic tests (9 assertions)",
-        "DOCS": "Comprehensive docs (371 lines, examples, TOC)",
+        "DOCS": "Comprehensive docs (501 lines, examples, TOC)",
         "OPS": "CI/CD pipeline",
         "SEC": "Lockfile + lint + CI security audit"
       },
       "source_files": 3,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 3.7883541564728236,
-        "TEST": 2.5783086974488114,
-        "DOCS": 4.158217779400787,
-        "OPS": 3.5783086974488114,
-        "SEC": 3.3682632384247997
+        "CODE": 4.0011062601108005,
+        "TEST": 3.0502493651346345,
+        "DOCS": 4.998535575182304,
+        "OPS": 4.000249365134635,
+        "SEC": 3.9993924701584693
       },
       "depressed": false,
-      "last_refreshed": 1781043437.0,
-      "jitter": -0.0016003845031642761,
-      "peak_overall": 2.5783086974488114,
-      "overall_score": 2.578
+      "last_refreshed": 1781548773.0,
+      "jitter": 0.001963155086965998,
+      "peak_overall": 3.0502493651346345,
+      "overall_score": 3.05
     },
     {
       "path": "software/packages/q-distribution",
@@ -2864,15 +2619,15 @@
       "stage": "SAPLING",
       "stage_icon": "\ud83c\udf33",
       "scores": {
-        "CODE": 2.761,
-        "TEST": 2.551,
-        "DOCS": 4.131,
-        "OPS": 3.551,
-        "SEC": 3.341
+        "CODE": 3.0,
+        "TEST": 3.05,
+        "DOCS": 4.998,
+        "OPS": 4.0,
+        "SEC": 3.999
       },
-      "overall": 2.551,
+      "overall": 3.0,
       "weakest": [
-        "TEST"
+        "CODE"
       ],
       "auto_scores": {
         "CODE": 3,
@@ -2886,24 +2641,24 @@
       "evidence": {
         "CODE": "51 lines of real logic",
         "TEST": "Basic tests (9 assertions)",
-        "DOCS": "Comprehensive docs (127 lines, examples, TOC)",
+        "DOCS": "Comprehensive docs (177 lines, examples, TOC)",
         "OPS": "CI/CD pipeline",
         "SEC": "Lockfile + lint + CI security audit"
       },
       "source_files": 1,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 2.760877556688901,
-        "TEST": 2.550832097664889,
-        "DOCS": 4.130741179616864,
-        "OPS": 3.550832097664889,
-        "SEC": 3.340786638640877
+        "CODE": 3.0003963494796504,
+        "TEST": 3.0495394545034844,
+        "DOCS": 4.997825664551153,
+        "OPS": 3.9995394545034846,
+        "SEC": 3.998682559527319
       },
       "depressed": false,
-      "last_refreshed": 1781043437.0,
-      "jitter": -0.029076984287086948,
-      "peak_overall": 2.550832097664889,
-      "overall_score": 2.551
+      "last_refreshed": 1781548773.0,
+      "jitter": 0.0012532444558158737,
+      "peak_overall": 3.0003963494796504,
+      "overall_score": 3.0
     },
     {
       "path": "software/packages/quantum-core",
@@ -2912,13 +2667,13 @@
       "stage": "SAPLING",
       "stage_icon": "\ud83c\udf33",
       "scores": {
-        "CODE": 4.772,
-        "TEST": 2.562,
-        "DOCS": 4.142,
-        "OPS": 3.562,
-        "SEC": 3.352
+        "CODE": 4.842,
+        "TEST": 2.851,
+        "DOCS": 4.418,
+        "OPS": 3.701,
+        "SEC": 3.559
       },
-      "overall": 2.562,
+      "overall": 2.851,
       "weakest": [
         "TEST"
       ],
@@ -2934,24 +2689,24 @@
       "evidence": {
         "CODE": "1990 lines, mature codebase",
         "TEST": "Core paths tested (128 assertions)",
-        "DOCS": "Comprehensive docs (149 lines, examples, TOC)",
+        "DOCS": "Comprehensive docs (196 lines, examples, TOC)",
         "OPS": "CI/CD with Docker deploy",
         "SEC": "Lockfile + lint + CI security audit"
       },
       "source_files": 12,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 4.772212944403026,
-        "TEST": 2.5621674853790126,
-        "DOCS": 4.142076567330989,
-        "OPS": 3.5621674853790126,
-        "SEC": 3.352122026355001
+        "CODE": 4.841881562797762,
+        "TEST": 2.8506535567104847,
+        "DOCS": 4.418197544535932,
+        "OPS": 3.7006535567104852,
+        "SEC": 3.5594255506232084
       },
       "depressed": false,
       "last_refreshed": 1781043437.0,
-      "jitter": -0.017741596572963023,
-      "peak_overall": 2.5621674853790126,
-      "overall_score": 2.562
+      "jitter": -0.016890431114961732,
+      "peak_overall": 2.8506535567104847,
+      "overall_score": 2.851
     },
     {
       "path": "software/packages/quantum-edge",
@@ -2960,13 +2715,13 @@
       "stage": "SAPLING",
       "stage_icon": "\ud83c\udf33",
       "scores": {
-        "CODE": 3.793,
-        "TEST": 2.583,
-        "DOCS": 3.163,
-        "OPS": 3.583,
-        "SEC": 3.373
+        "CODE": 3.996,
+        "TEST": 3.095,
+        "DOCS": 3.993,
+        "OPS": 3.995,
+        "SEC": 3.994
       },
-      "overall": 2.583,
+      "overall": 3.095,
       "weakest": [
         "TEST"
       ],
@@ -2982,24 +2737,24 @@
       "evidence": {
         "CODE": "358 lines of real logic",
         "TEST": "Basic tests (9 assertions)",
-        "DOCS": "Detailed docs (60 lines, examples)",
+        "DOCS": "Detailed docs (75 lines, examples)",
         "OPS": "CI/CD with wrangler deploy",
         "SEC": "Lockfile + lint + CI security audit"
       },
       "source_files": 1,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 3.7928379519410176,
-        "TEST": 2.5827924929170054,
-        "DOCS": 3.162701574868981,
-        "OPS": 3.5827924929170054,
-        "SEC": 3.3727470338929937
+        "CODE": 3.9960130942349115,
+        "TEST": 3.0951561992587453,
+        "DOCS": 3.9934424093064145,
+        "OPS": 3.9951561992587457,
+        "SEC": 3.9942993042825803
       },
       "depressed": false,
-      "last_refreshed": 1781043437.0,
-      "jitter": 0.0028834109650297136,
-      "peak_overall": 2.5827924929170054,
-      "overall_score": 2.583
+      "last_refreshed": 1781548773.0,
+      "jitter": -0.0031300107889233675,
+      "peak_overall": 3.0951561992587453,
+      "overall_score": 3.095
     },
     {
       "path": "software/packages/sovereign-sdk",
@@ -3008,13 +2763,13 @@
       "stage": "SAPLING",
       "stage_icon": "\ud83c\udf33",
       "scores": {
-        "CODE": 3.8,
-        "TEST": 2.59,
-        "DOCS": 3.17,
-        "OPS": 3.59,
-        "SEC": 3.38
+        "CODE": 4.009,
+        "TEST": 3.108,
+        "DOCS": 4.006,
+        "OPS": 4.008,
+        "SEC": 4.007
       },
-      "overall": 2.59,
+      "overall": 3.108,
       "weakest": [
         "TEST"
       ],
@@ -3030,24 +2785,24 @@
       "evidence": {
         "CODE": "328 lines of real logic",
         "TEST": "Basic tests (9 assertions)",
-        "DOCS": "Detailed docs (60 lines, examples)",
+        "DOCS": "Detailed docs (75 lines, examples)",
         "OPS": "CI/CD pipeline",
         "SEC": "Lockfile + lint + CI security audit"
       },
       "source_files": 1,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 3.8004322497453655,
-        "TEST": 2.5903867907213534,
-        "DOCS": 3.170295872673329,
-        "OPS": 3.5903867907213534,
-        "SEC": 3.3803413316973416
+        "CODE": 4.00878204758967,
+        "TEST": 3.1079251526135043,
+        "DOCS": 4.0062113626611735,
+        "OPS": 4.007925152613504,
+        "SEC": 4.007068257637339
       },
       "depressed": false,
-      "last_refreshed": 1781043437.0,
-      "jitter": 0.010477708769377519,
-      "peak_overall": 2.5903867907213534,
-      "overall_score": 2.59
+      "last_refreshed": 1781548773.0,
+      "jitter": 0.009638942565835808,
+      "peak_overall": 3.1079251526135043,
+      "overall_score": 3.108
     },
     {
       "path": "software/sovereign-command-center",
@@ -3056,13 +2811,13 @@
       "stage": "SAPLING",
       "stage_icon": "\ud83c\udf33",
       "scores": {
-        "CODE": 3.781,
-        "TEST": 2.571,
-        "DOCS": 4.151,
-        "OPS": 3.571,
-        "SEC": 3.361
+        "CODE": 3.995,
+        "TEST": 2.995,
+        "DOCS": 4.993,
+        "OPS": 3.995,
+        "SEC": 3.994
       },
-      "overall": 2.571,
+      "overall": 2.995,
       "weakest": [
         "TEST"
       ],
@@ -3078,24 +2833,24 @@
       "evidence": {
         "CODE": "409 lines of real logic",
         "TEST": "Basic tests (9 assertions)",
-        "DOCS": "Comprehensive docs (192 lines, examples, TOC)",
+        "DOCS": "Comprehensive docs (240 lines, examples, TOC)",
         "OPS": "CI/CD with wrangler deploy",
         "SEC": "Lockfile + lint + CI security audit"
       },
       "source_files": 18,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 3.7811582776770956,
-        "TEST": 2.5711128186530834,
-        "DOCS": 4.151021900605059,
-        "OPS": 3.5711128186530834,
-        "SEC": 3.3610673596290717
+        "CODE": 3.9953828944123733,
+        "TEST": 2.9945259994362075,
+        "DOCS": 4.992812209483876,
+        "OPS": 3.9945259994362075,
+        "SEC": 3.993669104460042
       },
       "depressed": false,
-      "last_refreshed": 1781043437.0,
-      "jitter": -0.008796263298892174,
-      "peak_overall": 2.5711128186530834,
-      "overall_score": 2.571
+      "last_refreshed": 1781548773.0,
+      "jitter": -0.003760210611461444,
+      "peak_overall": 2.9945259994362075,
+      "overall_score": 2.995
     },
     {
       "path": "software/spaceship-earth",
@@ -3104,13 +2859,13 @@
       "stage": "SAPLING",
       "stage_icon": "\ud83c\udf33",
       "scores": {
-        "CODE": 4.865,
-        "TEST": 2.58,
-        "DOCS": 3.46,
-        "OPS": 3.88,
-        "SEC": 3.37
+        "CODE": 5.0,
+        "TEST": 3.109,
+        "DOCS": 4.209,
+        "OPS": 4.209,
+        "SEC": 4.009
       },
-      "overall": 2.58,
+      "overall": 3.109,
       "weakest": [
         "TEST"
       ],
@@ -3124,26 +2879,171 @@
       "auto_overall": 3,
       "override": null,
       "evidence": {
-        "CODE": "14324 lines, mature codebase",
+        "CODE": "14322 lines, mature codebase",
         "TEST": "Core paths tested (127 assertions)",
-        "DOCS": "Detailed docs (60 lines, examples)",
+        "DOCS": "Detailed docs (75 lines, examples)",
         "OPS": "CI/CD with wrangler deploy",
         "SEC": "Lockfile + lint + CI security audit"
       },
       "source_files": 107,
       "test_files": 5,
       "continuous_scores": {
-        "CODE": 4.864810286134057,
-        "TEST": 2.5797648271100444,
-        "DOCS": 3.45967390906202,
-        "OPS": 3.8797648271100442,
-        "SEC": 3.3697193680860327
+        "CODE": 5.0,
+        "TEST": 3.1094402280427156,
+        "DOCS": 4.208804215868163,
+        "OPS": 4.209440228042716,
+        "SEC": 4.009122221955439
       },
       "depressed": false,
-      "last_refreshed": 1781547546.1016576,
-      "jitter": -0.00014425484193134617,
-      "peak_overall": 2.5797648271100444,
-      "overall_score": 2.58
+      "last_refreshed": 1781551857.8219142,
+      "jitter": 0.010076240217269456,
+      "peak_overall": 3.1094402280427156,
+      "overall_score": 3.109
+    },
+    {
+      "path": "software/spin-mesh",
+      "type": "directory",
+      "name": "spin-mesh",
+      "stage": "SAPLING",
+      "stage_icon": "\ud83c\udf33",
+      "scores": {
+        "CODE": 5.0,
+        "TEST": 3.0,
+        "DOCS": 3.998,
+        "OPS": 4.0,
+        "SEC": 2.999
+      },
+      "overall": 2.999,
+      "weakest": [
+        "SEC"
+      ],
+      "auto_scores": {
+        "CODE": 5,
+        "TEST": 3,
+        "DOCS": 4,
+        "OPS": 4,
+        "SEC": 3
+      },
+      "auto_overall": 3,
+      "override": null,
+      "evidence": {
+        "CODE": "1083 lines, mature codebase",
+        "TEST": "Basic tests (16 assertions)",
+        "DOCS": "Detailed docs (180 lines, examples)",
+        "OPS": "CI/CD pipeline",
+        "SEC": "Lockfile + lint config (lockfile (pnpm-lock.yaml), eslint.config.mjs)"
+      },
+      "source_files": 15,
+      "test_files": 1,
+      "continuous_scores": {
+        "CODE": 5.0,
+        "TEST": 2.999762537171054,
+        "DOCS": 3.9980487472187227,
+        "OPS": 3.999762537171054,
+        "SEC": 2.9989056421948885
+      },
+      "depressed": false,
+      "last_refreshed": 1781548773.0,
+      "jitter": 0.0014763271233849105,
+      "peak_overall": 2.9989056421948885,
+      "overall_score": 2.999
+    },
+    {
+      "path": "software/spin-mesh/logistics-do",
+      "type": "directory",
+      "name": "logistics-do",
+      "stage": "SAPLING",
+      "stage_icon": "\ud83c\udf33",
+      "scores": {
+        "CODE": 4.002,
+        "TEST": 3.001,
+        "DOCS": 4.0,
+        "OPS": 4.001,
+        "SEC": 3.001
+      },
+      "overall": 3.001,
+      "weakest": [
+        "TEST",
+        "SEC"
+      ],
+      "auto_scores": {
+        "CODE": 4,
+        "TEST": 3,
+        "DOCS": 4,
+        "OPS": 4,
+        "SEC": 3
+      },
+      "auto_overall": 3,
+      "override": null,
+      "evidence": {
+        "CODE": "114 lines of real logic",
+        "TEST": "Basic tests (9 assertions)",
+        "DOCS": "Detailed docs (180 lines, examples)",
+        "OPS": "CI/CD with wrangler deploy",
+        "SEC": "Lockfile + lint config (lockfile (pnpm-lock.yaml), eslint.config.mjs)"
+      },
+      "source_files": 1,
+      "test_files": 1,
+      "continuous_scores": {
+        "CODE": 4.002302746817111,
+        "TEST": 3.001445851840945,
+        "DOCS": 3.9997320618886136,
+        "OPS": 4.001445851840945,
+        "SEC": 3.0005889568647794
+      },
+      "depressed": false,
+      "last_refreshed": 1781548773.0,
+      "jitter": 0.0031596417932761574,
+      "peak_overall": 3.0005889568647794,
+      "overall_score": 3.001
+    },
+    {
+      "path": "software/spin-mesh/matchmaking-do",
+      "type": "directory",
+      "name": "matchmaking-do",
+      "stage": "SAPLING",
+      "stage_icon": "\ud83c\udf33",
+      "scores": {
+        "CODE": 4.002,
+        "TEST": 3.001,
+        "DOCS": 3.999,
+        "OPS": 4.001,
+        "SEC": 3.0
+      },
+      "overall": 3.0,
+      "weakest": [
+        "SEC"
+      ],
+      "auto_scores": {
+        "CODE": 4,
+        "TEST": 3,
+        "DOCS": 4,
+        "OPS": 4,
+        "SEC": 3
+      },
+      "auto_overall": 3,
+      "override": null,
+      "evidence": {
+        "CODE": "144 lines of real logic",
+        "TEST": "Basic tests (9 assertions)",
+        "DOCS": "Detailed docs (180 lines, examples)",
+        "OPS": "CI/CD with wrangler deploy",
+        "SEC": "Lockfile + lint config (lockfile (pnpm-lock.yaml), eslint.config.mjs)"
+      },
+      "source_files": 1,
+      "test_files": 1,
+      "continuous_scores": {
+        "CODE": 4.001676135994658,
+        "TEST": 3.0008192410184917,
+        "DOCS": 3.9991054510661606,
+        "OPS": 4.000819241018492,
+        "SEC": 2.9999623460423264
+      },
+      "depressed": false,
+      "last_refreshed": 1781548773.0,
+      "jitter": 0.0025330309708230985,
+      "peak_overall": 2.9999623460423264,
+      "overall_score": 3.0
     },
     {
       "path": "software/spoon-calculator",
@@ -3152,20 +3052,20 @@
       "stage": "SAPLING",
       "stage_icon": "\ud83c\udf33",
       "scores": {
-        "CODE": 3.796,
-        "TEST": 2.586,
-        "DOCS": 3.166,
-        "OPS": 3.586,
-        "SEC": 3.376
+        "CODE": 3.988,
+        "TEST": 2.987,
+        "DOCS": 4.985,
+        "OPS": 3.987,
+        "SEC": 3.986
       },
-      "overall": 2.586,
+      "overall": 2.987,
       "weakest": [
         "TEST"
       ],
       "auto_scores": {
         "CODE": 4,
         "TEST": 3,
-        "DOCS": 4,
+        "DOCS": 5,
         "OPS": 4,
         "SEC": 4
       },
@@ -3174,24 +3074,24 @@
       "evidence": {
         "CODE": "331 lines of real logic",
         "TEST": "Basic tests (9 assertions)",
-        "DOCS": "Detailed docs (83 lines, examples)",
+        "DOCS": "Comprehensive docs (103 lines, examples, TOC)",
         "OPS": "CI/CD pipeline",
         "SEC": "Lockfile + lint + CI security audit"
       },
       "source_files": 3,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 3.7961107050330547,
-        "TEST": 2.5860652460090425,
-        "DOCS": 3.165974327961018,
-        "OPS": 3.5860652460090425,
-        "SEC": 3.376019786985031
+        "CODE": 3.9875035220093817,
+        "TEST": 2.986646627033216,
+        "DOCS": 4.984932837080884,
+        "OPS": 3.986646627033216,
+        "SEC": 3.9857897320570506
       },
       "depressed": false,
-      "last_refreshed": 1781043437.0,
-      "jitter": 0.006156164057067042,
-      "peak_overall": 2.5860652460090425,
-      "overall_score": 2.586
+      "last_refreshed": 1781548773.0,
+      "jitter": -0.011639583014452988,
+      "peak_overall": 2.986646627033216,
+      "overall_score": 2.987
     },
     {
       "path": "software/telemetry-worker",
@@ -3200,14 +3100,15 @@
       "stage": "SAPLING",
       "stage_icon": "\ud83c\udf33",
       "scores": {
-        "CODE": 2.764,
-        "TEST": 2.554,
-        "DOCS": 3.134,
-        "OPS": 3.554,
-        "SEC": 3.344
+        "CODE": 3.007,
+        "TEST": 3.007,
+        "DOCS": 4.005,
+        "OPS": 4.007,
+        "SEC": 4.006
       },
-      "overall": 2.554,
+      "overall": 3.007,
       "weakest": [
+        "CODE",
         "TEST"
       ],
       "auto_scores": {
@@ -3222,24 +3123,24 @@
       "evidence": {
         "CODE": "82 lines of real logic",
         "TEST": "Basic tests (9 assertions)",
-        "DOCS": "Detailed docs (60 lines, examples)",
+        "DOCS": "Detailed docs (75 lines, examples)",
         "OPS": "CI/CD with wrangler deploy",
         "SEC": "Lockfile + lint + CI security audit"
       },
       "source_files": 1,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 2.7642162829352084,
-        "TEST": 2.554170823911196,
-        "DOCS": 3.134079905863172,
-        "OPS": 3.554170823911196,
-        "SEC": 3.3441253648871845
+        "CODE": 3.0074688284143214,
+        "TEST": 3.0066119334381556,
+        "DOCS": 4.004898143485824,
+        "OPS": 4.006611933438156,
+        "SEC": 4.00575503846199
       },
       "depressed": false,
-      "last_refreshed": 1781043437.0,
-      "jitter": -0.0257382580407794,
-      "peak_overall": 2.554170823911196,
-      "overall_score": 2.554
+      "last_refreshed": 1781548773.0,
+      "jitter": 0.008325723390486619,
+      "peak_overall": 3.0066119334381556,
+      "overall_score": 3.007
     },
     {
       "path": "software/workers",
@@ -3248,13 +3149,13 @@
       "stage": "SAPLING",
       "stage_icon": "\ud83c\udf33",
       "scores": {
-        "CODE": 4.765,
-        "TEST": 2.555,
-        "DOCS": 4.135,
-        "OPS": 3.555,
-        "SEC": 3.345
+        "CODE": 4.86,
+        "TEST": 2.719,
+        "DOCS": 4.436,
+        "OPS": 3.719,
+        "SEC": 3.577
       },
-      "overall": 2.555,
+      "overall": 2.719,
       "weakest": [
         "TEST"
       ],
@@ -3270,24 +3171,24 @@
       "evidence": {
         "CODE": "3008 lines, mature codebase",
         "TEST": "Core paths tested (57 assertions)",
-        "DOCS": "Comprehensive docs (165 lines, examples, TOC)",
+        "DOCS": "Comprehensive docs (206 lines, examples, TOC)",
         "OPS": "CI/CD with wrangler deploy",
         "SEC": "Lockfile + lint + CI security audit"
       },
       "source_files": 11,
       "test_files": 3,
       "continuous_scores": {
-        "CODE": 4.765229373839431,
-        "TEST": 2.5551839148154185,
-        "DOCS": 4.135092996767394,
-        "OPS": 3.5551839148154185,
-        "SEC": 3.345138455791407
+        "CODE": 4.859840156538108,
+        "TEST": 2.718612150450831,
+        "DOCS": 4.436156138276278,
+        "OPS": 3.718612150450831,
+        "SEC": 3.5773841443635543
       },
       "depressed": false,
       "last_refreshed": 1781043437.0,
-      "jitter": -0.024725167136557313,
-      "peak_overall": 2.5551839148154185,
-      "overall_score": 2.555
+      "jitter": 0.0010681626253842855,
+      "peak_overall": 2.718612150450831,
+      "overall_score": 2.719
     },
     {
       "path": "software/bonding",
@@ -3319,7 +3220,7 @@
       "evidence": {
         "CODE": "19561 lines, mature codebase",
         "TEST": "Core paths tested (1270 assertions)",
-        "DOCS": "Detailed docs (141 lines, examples)",
+        "DOCS": "Detailed docs (177 lines, examples)",
         "OPS": "CI/CD with wrangler deploy",
         "SEC": "Lockfile + lint + CI security audit"
       },
@@ -3337,6 +3238,102 @@
       "jitter": 0.0
     },
     {
+      "path": "software/cloudflare-worker/command-center",
+      "type": "directory",
+      "name": "command-center",
+      "stage": "BLOOM",
+      "stage_icon": "\ud83c\udf38",
+      "scores": {
+        "CODE": 4.906,
+        "TEST": 3.715,
+        "DOCS": 4.432,
+        "OPS": 3.915,
+        "SEC": 3.573
+      },
+      "overall": 3.573,
+      "weakest": [
+        "SEC"
+      ],
+      "auto_scores": {
+        "CODE": 5,
+        "TEST": 4,
+        "DOCS": 5,
+        "OPS": 4,
+        "SEC": 4
+      },
+      "auto_overall": 4,
+      "override": null,
+      "evidence": {
+        "CODE": "7876 lines, mature codebase",
+        "TEST": "Comprehensive tests (241 assertions) + vitest thresholds",
+        "DOCS": "Comprehensive docs (115 lines, examples, TOC)",
+        "OPS": "CI/CD with wrangler deploy",
+        "SEC": "Lockfile + lint + CI security audit"
+      },
+      "source_files": 13,
+      "test_files": 6,
+      "continuous_scores": {
+        "CODE": 4.905909495456957,
+        "TEST": 3.7146814893696796,
+        "DOCS": 4.432225477195127,
+        "OPS": 3.9146814893696797,
+        "SEC": 3.5734534832824028
+      },
+      "depressed": false,
+      "last_refreshed": 1781551857.8219142,
+      "jitter": -0.002862498455767087,
+      "peak_overall": 3.5734534832824028,
+      "overall_score": 3.573
+    },
+    {
+      "path": "software/packages/game-engine",
+      "type": "directory",
+      "name": "game-engine",
+      "stage": "BLOOM",
+      "stage_icon": "\ud83c\udf38",
+      "scores": {
+        "CODE": 4.874,
+        "TEST": 3.733,
+        "DOCS": 4.45,
+        "OPS": 3.733,
+        "SEC": 3.591
+      },
+      "overall": 3.591,
+      "weakest": [
+        "SEC"
+      ],
+      "auto_scores": {
+        "CODE": 5,
+        "TEST": 4,
+        "DOCS": 5,
+        "OPS": 4,
+        "SEC": 4
+      },
+      "auto_overall": 4,
+      "override": null,
+      "evidence": {
+        "CODE": "1115 lines, mature codebase",
+        "TEST": "Comprehensive tests (341 assertions) + vitest thresholds",
+        "DOCS": "Comprehensive docs (198 lines, examples, TOC)",
+        "OPS": "CI/CD pipeline",
+        "SEC": "Lockfile + lint + CI security audit"
+      },
+      "source_files": 7,
+      "test_files": 4,
+      "continuous_scores": {
+        "CODE": 4.873813652121978,
+        "TEST": 3.732585646034701,
+        "DOCS": 4.450129633860148,
+        "OPS": 3.732585646034701,
+        "SEC": 3.5913576399474243
+      },
+      "depressed": false,
+      "last_refreshed": 1781043437.0,
+      "jitter": 0.01504165820925441,
+      "peak_overall": 3.5913576399474243,
+      "overall_score": 3.591
+    },
+    {
       "path": "software/packages/k4-mesh-core",
       "type": "directory",
       "name": "k4-mesh-core",
@@ -3344,45 +3341,45 @@
       "stage_icon": "\ud83c\udf38",
       "scores": {
         "CODE": 5.0,
-        "TEST": 3.74,
-        "DOCS": 4.481,
-        "OPS": 4.185,
-        "SEC": 4.033
+        "TEST": 4.574,
+        "DOCS": 4.304,
+        "OPS": 4.104,
+        "SEC": 4.004
       },
-      "overall": 3.74,
+      "overall": 4.004,
       "weakest": [
-        "TEST"
+        "SEC"
       ],
       "auto_scores": {
         "CODE": 5,
-        "TEST": 3,
+        "TEST": 4,
         "DOCS": 4,
         "OPS": 4,
         "SEC": 4
       },
-      "auto_overall": 3,
+      "auto_overall": 4,
       "override": null,
       "evidence": {
         "CODE": "1531 lines, mature codebase",
-        "TEST": "Core paths tested (44 assertions)",
-        "DOCS": "Detailed docs (60 lines, examples)",
+        "TEST": "Comprehensive tests (53 assertions) + vitest thresholds",
+        "DOCS": "Detailed docs (75 lines, examples)",
         "OPS": "CI/CD pipeline",
         "SEC": "Lockfile + lint + CI security audit"
       },
       "source_files": 10,
-      "test_files": 4,
+      "test_files": 5,
       "continuous_scores": {
         "CODE": 5.0,
-        "TEST": 3.7397701230168567,
-        "DOCS": 4.481167538302166,
-        "OPS": 4.184770123016857,
-        "SEC": 4.032968830659511
+        "TEST": 4.574226362959453,
+        "DOCS": 4.3035903507849005,
+        "OPS": 4.104226362959454,
+        "SEC": 4.003908356872177
       },
       "depressed": false,
-      "last_refreshed": 1781547546.1016576,
-      "jitter": 0.03837270773154729,
-      "peak_overall": 3.7397701230168567,
-      "overall_score": 3.74
+      "last_refreshed": 1781551857.8219142,
+      "jitter": 0.004862375134007291,
+      "peak_overall": 4.003908356872177,
+      "overall_score": 4.004
     },
     {
       "path": "software/packages/love-ledger",
@@ -3391,13 +3388,13 @@
       "stage": "BLOOM",
       "stage_icon": "\ud83c\udf38",
       "scores": {
-        "CODE": 4.976,
-        "TEST": 3.973,
-        "DOCS": 4.976,
-        "OPS": 4.123,
-        "SEC": 3.971
+        "CODE": 4.992,
+        "TEST": 3.991,
+        "DOCS": 4.992,
+        "OPS": 4.091,
+        "SEC": 3.99
       },
-      "overall": 3.971,
+      "overall": 3.99,
       "weakest": [
         "SEC"
       ],
@@ -3413,24 +3410,24 @@
       "evidence": {
         "CODE": "541 lines, mature codebase",
         "TEST": "Comprehensive tests (402 assertions) + vitest thresholds",
-        "DOCS": "Comprehensive docs (129 lines, examples, TOC)",
+        "DOCS": "Comprehensive docs (163 lines, examples, TOC)",
         "OPS": "CI/CD pipeline",
         "SEC": "Lockfile + lint + CI security audit"
       },
       "source_files": 5,
       "test_files": 5,
       "continuous_scores": {
-        "CODE": 4.976416604853532,
-        "TEST": 3.9730598534721744,
-        "DOCS": 4.976416604853532,
-        "OPS": 4.123059853472174,
-        "SEC": 3.9713814777814958
+        "CODE": 4.992317753966927,
+        "TEST": 3.990603964014596,
+        "DOCS": 4.992317753966927,
+        "OPS": 4.090603964014596,
+        "SEC": 3.9897470690384305
       },
       "depressed": false,
-      "last_refreshed": 1781547546.1016576,
-      "jitter": -0.023583395146467734,
-      "peak_overall": 3.9713814777814958,
-      "overall_score": 3.971
+      "last_refreshed": 1781551857.8219142,
+      "jitter": -0.007682246033072927,
+      "peak_overall": 3.9897470690384305,
+      "overall_score": 3.99
     },
     {
       "path": "software/packages/shared",
@@ -3439,13 +3436,13 @@
       "stage": "BLOOM",
       "stage_icon": "\ud83c\udf38",
       "scores": {
-        "CODE": 4.985,
-        "TEST": 4.646,
-        "DOCS": 4.985,
-        "OPS": 4.046,
-        "SEC": 3.852
+        "CODE": 4.993,
+        "TEST": 4.531,
+        "DOCS": 4.993,
+        "OPS": 4.031,
+        "SEC": 3.9
       },
-      "overall": 3.852,
+      "overall": 3.9,
       "weakest": [
         "SEC"
       ],
@@ -3460,25 +3457,25 @@
       "override": null,
       "evidence": {
         "CODE": "8058 lines, mature codebase",
-        "TEST": "Comprehensive tests (125 assertions) + vitest thresholds",
-        "DOCS": "Comprehensive docs (242 lines, examples, TOC)",
+        "TEST": "Comprehensive tests (123 assertions) + vitest thresholds",
+        "DOCS": "Comprehensive docs (309 lines, examples, TOC)",
         "OPS": "CI/CD pipeline",
         "SEC": "Lockfile + lint + CI security audit"
       },
       "source_files": 89,
       "test_files": 3,
       "continuous_scores": {
-        "CODE": 4.985219091074775,
-        "TEST": 4.646241506360084,
-        "DOCS": 4.985219091074775,
-        "OPS": 4.046241506360085,
-        "SEC": 3.851752714002739
+        "CODE": 4.992665749371706,
+        "TEST": 4.530951959419374,
+        "DOCS": 4.992665749371706,
+        "OPS": 4.030951959419374,
+        "SEC": 3.900095064443209
       },
       "depressed": false,
-      "last_refreshed": 1781547546.1016576,
-      "jitter": -0.01478090892522468,
-      "peak_overall": 3.851752714002739,
-      "overall_score": 3.852
+      "last_refreshed": 1781551857.8219142,
+      "jitter": -0.00733425062829443,
+      "peak_overall": 3.900095064443209,
+      "overall_score": 3.9
     }
   ]
 }
