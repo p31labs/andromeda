@@ -3,6 +3,9 @@
 # Usage: ./delta-certify.sh
 set -uo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+
 RED='\033[0;31m'
 GRN='\033[0;32m'
 YLW='\033[1;33m'

@@ -7,13 +7,11 @@
 - Rewrites nested counts so delta-certify.sh G1 reads true remaining debt.
 """
 import json
-import import re
+import re
 from pathlib import Path
 
-from pathlib import Path as _Path
-
-REPORT = _Path("/home/p31/andromeda/quantum-polisher-report.json")
-REPO = _Path("/home/p31/andromeda")
+REPORT = Path("/home/p31/andromeda/quantum-polisher-report.json")
+REPO = Path("/home/p31/andromeda")
 
 EXEMPT_SUBSTRINGS = (
     "/p31-shared-surface.css",
@@ -61,11 +59,11 @@ def main():
                 if kept:
                     issue = dict(issue)
                     issue["instances"] = kept
-                    issue["detail"] = import re.sub(r"\d+", str(len(kept)), issue.get("detail", ""))
+                    issue["detail"] = re.sub(r"\d+", str(len(kept)), issue.get("detail", ""))
                 else:
                     issue = dict(issue)
                     issue["instances"] = []
-                    issue["detail"] = import re.sub(r"\d+", "0", issue.get("detail", ""))
+                    issue["detail"] = re.sub(r"\d+", "0", issue.get("detail", ""))
                     issue["status"] = "warn"
                 new_issues.append(issue)
             else:

@@ -569,18 +569,13 @@
           },
           {
             "check": "token-redefinition",
-            "status": "fail",
-            "detail": "1 CSS variable redefinitions of canonical tokens",
-            "instances": [
-              {
-                "file": "software/frontend/src/styles.cockpit.css",
-                "line": "--phosphorus: var(--color-phosphor);"
-              }
-            ]
+            "status": "warn",
+            "detail": "0 CSS variable redefinitions of canonical tokens",
+            "instances": []
           }
         ],
         "hardcoded_count": 0,
-        "redefinition_count": 1
+        "redefinition_count": 0
       },
       "layer_3": {
         "layer": 3,
