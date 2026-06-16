@@ -184,7 +184,7 @@ export default function App() {
         </button>
       </div>
 
-      <EquilibriumAdmin adminOpen={adminOpen} />
+      <EquilibriumAdmin adminOpen={adminOpen} equilibrium={equilibrium.equilibrium ?? null} />
 
       <div className="pointer-events-none absolute bottom-6 z-20 flex w-full justify-center">
         <div className="pointer-events-auto w-full max-w-lg rounded-xl border border-white/[0.08] bg-[#080810]/90 p-4 shadow-xl backdrop-blur-xl">
