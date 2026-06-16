@@ -5,7 +5,7 @@
  * Polls medical-log.json, spoon-state.json, grading-index.json,
  * and computes a weighted recommendation with jitterbug-stage mapping.
  */
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 
 export interface DecisionInput {
   spoonLevel: number;
@@ -82,6 +82,12 @@ function scoreActions(inputs: DecisionInput): ActionScore[] {
   return scored;
 }
 
+function computeDataConfidence(inputs: DecisionInput): number {
+  if (inputs.calcium <= 7.8) return 0.95;
+  if (inputs.ecosystemFidelity < 50) return 0.8;
+  return 0.5;
+}
+
 function computeConfidence(stage: DecisionResult['stage'], inputs: DecisionInput): number {
   const isCritical = inputs.calcium <= 7.8;
   if (isCritical) return 0.95;
@@ -92,18 +98,23 @@ function computeConfidence(stage: DecisionResult['stage'], inputs: DecisionInput
   return 0.2;
 }
 
+const BASE = import.meta.env.BASE_URL || '/';
+
 export function useDecisionEngine(pollIntervalMs = 30000) {
   const [result, setResult] = useState<DecisionResult | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const isFetching = useRef(false);
 
   const evaluate = useCallback(async () => {
+    if (isFetching.current) return;
+    isFetching.current = true;
     try {
       const [spoonRes, medicalRes, gradingRes, polisherRes] = await Promise.all([
-        fetch('/spoon-state.json').then((r) => (r.ok ? r.json() : { level: 4 })),
-        fetch('/medical-log.json').then((r) => (r.ok ? r.json() : { serum_calcium_mg_dL: 8.2, albumin_g_dL: 4.0, notes: '' })),
-        fetch('/grading-index.json').then((r) => (r.ok ? r.json() : { artifacts: [] })),
-        fetch('/quantum-polisher-report.json').then((r) => (r.ok ? r.json() : { ecosystem_fidelity: 62.4, projects: {} })),
+        fetch(`${BASE}spoon-state.json`).then((r) => (r.ok ? r.json() : { level: 4 })),
+        fetch(`${BASE}medical-log.json`).then((r) => (r.ok ? r.json() : { serum_calcium_mg_dL: 8.2, albumin_g_dL: 4.0, notes: '' })),
+        fetch(`${BASE}grading-index.json`).then((r) => (r.ok ? r.json() : { artifacts: [] })),
+        fetch(`${BASE}quantum-polisher-report.json`).then((r) => (r.ok ? r.json() : { ecosystem_fidelity: 62.4, projects: {} })),
       ]);
 
       const spoonLevel = spoonRes.level ?? 4;
@@ -117,7 +128,7 @@ export function useDecisionEngine(pollIntervalMs = 30000) {
       const scored = scoreActions(inputs);
       const top = scored[0];
       const altGap = scored[1] ? top.score - scored[1].score : 0;
-      const stage = computeStage(1, top.score, altGap);
+      const stage = computeStage(computeDataConfidence(inputs), top.score, altGap);
       const confidence = computeConfidence(stage, inputs);
 
       setResult({
@@ -132,6 +143,7 @@ export function useDecisionEngine(pollIntervalMs = 30000) {
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Decision engine failed');
     } finally {
+      isFetching.current = false;
       setLoading(false);
     }
   }, []);

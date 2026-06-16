@@ -9,7 +9,7 @@
  *
  * CWP-JITTERBUG-12: Proof of Care (PoC) UI Engine
  */
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useSovereignStore } from '../../sovereign/useSovereignStore';
 import { haptic } from '../../services/haptic';
 import {
@@ -27,6 +27,10 @@ interface ProofOfCareProps {
 export function ProofOfCare({ userAge = 25 }: ProofOfCareProps) {
   const [pocState, setPocState] = useState<PoCState>(createEmptyPoCState);
   const [isExpanded, setIsExpanded] = useState(false);
+  const pocStateRef = useRef<PoCState | null>(null);
+
+  // Keep ref in sync with latest state
+  pocStateRef.current = pocState;
 
   // Subscribe to somatic tether data from sovereign store
   const somaticHrv = useSovereignStore((s) => s.somaticHrv);
@@ -38,7 +42,7 @@ export function ProofOfCare({ userAge = 25 }: ProofOfCareProps) {
   // Update PoC state when biometric data changes
   useEffect(() => {
     const updatedState: PoCState = {
-      ...pocState,
+      ...(pocStateRef.current ?? pocState),
       currentHRV: somaticHrv || 35,
       currentHR: somaticHr || 68,
       respirationRate: simulatedRespiration,
@@ -48,7 +52,8 @@ export function ProofOfCare({ userAge = 25 }: ProofOfCareProps) {
     setPocState(calculated);
 
     // Trigger haptic on green coherence (0.1 Hz)
-    const wasCoherent = Math.abs(pocState.respirationRate - 6) <= 0.5;
+    const prior = pocStateRef.current!;
+    const wasCoherent = Math.abs(prior.respirationRate - 6) <= 0.5;
     const isCoherent = Math.abs(calculated.respirationRate - 6) <= 0.5;
     if (isCoherent && !wasCoherent) {
       haptic.coherence();

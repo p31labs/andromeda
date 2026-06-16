@@ -396,16 +396,20 @@ export function useSkipNavigation() {
       skipNav.style.letterSpacing = '1px';
       skipNav.style.textShadow = 'var(--glow-cyan)';
       skipNav.style.transition = 'top var(--trans-base)';
-
-      skipNav.addEventListener('focus', () => {
+      const handleFocus = () => {
         skipNav.style.top = '8px';
-      });
-
-      skipNav.addEventListener('blur', () => {
+      };
+      const handleBlur = () => {
         skipNav.style.top = '-100%';
-      });
-
+      };
+      skipNav.addEventListener('focus', handleFocus);
+      skipNav.addEventListener('blur', handleBlur);
       document.body.appendChild(skipNav);
+      return () => {
+        skipNav.removeEventListener('focus', handleFocus);
+        skipNav.removeEventListener('blur', handleBlur);
+        document.body.removeChild(skipNav);
+      };
     }
   }, []);
 }

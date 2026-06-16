@@ -60,6 +60,8 @@ class NodeZeroBridge {
 
   private onStateChange: StateChangeCallback | null = null;
   private onIMUData: IMUCallback | null = null;
+  private _notifyHandlers = new Map<BluetoothRemoteGATTCharacteristic, EventListener>();
+  private _disconnectHandler?: EventListener;
 
   private _connected = false;
   get connected(): boolean {
@@ -87,10 +89,12 @@ class NodeZeroBridge {
       });
 
       // Handle disconnect
-      this.device.addEventListener('gattserverdisconnected', () => {
+      const onDisconnect = () => {
         this._connected = false;
         this.onStateChange?.({ connected: false });
-      });
+      };
+      this._disconnectHandler = onDisconnect;
+      this.device.addEventListener('gattserverdisconnected', onDisconnect);
 
       // Connect to server
       this.server = this.device.gatt!;
@@ -145,49 +149,57 @@ class NodeZeroBridge {
     // Subscribe to coherence notifications
     if (this.coherenceChar) {
       await this.coherenceChar.startNotifications();
-      this.coherenceChar.addEventListener('characteristicvaluechanged', (e) => {
+      const handler = (e: Event) => {
         const view = (e.target as BluetoothRemoteGATTCharacteristic).value!;
         const coherence = view.getFloat32(0, true);
         this.onStateChange?.({ coherence });
-      });
+      };
+      this.coherenceChar.addEventListener('characteristicvaluechanged', handler);
+      this._notifyHandlers.set(this.coherenceChar, handler);
     }
 
     // Subscribe to spoons notifications
     if (this.spoonsChar) {
       await this.spoonsChar.startNotifications();
-      this.spoonsChar.addEventListener('characteristicvaluechanged', (e) => {
+      const handler = (e: Event) => {
         const view = (e.target as BluetoothRemoteGATTCharacteristic).value!;
         const spoons = view.getUint8(0);
         this.onStateChange?.({ spoons });
-      });
+      };
+      this.spoonsChar.addEventListener('characteristicvaluechanged', handler);
+      this._notifyHandlers.set(this.spoonsChar, handler);
     }
 
     // Subscribe to room notifications
     if (this.roomChar) {
       await this.roomChar.startNotifications();
-      this.roomChar.addEventListener('characteristicvaluechanged', (e) => {
+      const handler = (e: Event) => {
         const view = (e.target as BluetoothRemoteGATTCharacteristic).value!;
         const decoder = new TextDecoder();
         const room = decoder.decode(view).replace(/\0/g, '');
         this.onStateChange?.({ room });
-      });
+      };
+      this.roomChar.addEventListener('characteristicvaluechanged', handler);
+      this._notifyHandlers.set(this.roomChar, handler);
     }
 
     // Subscribe to theme notifications
     if (this.themeChar) {
       await this.themeChar.startNotifications();
-      this.themeChar.addEventListener('characteristicvaluechanged', (e) => {
+      const handler = (e: Event) => {
         const view = (e.target as BluetoothRemoteGATTCharacteristic).value!;
         const decoder = new TextDecoder();
         const theme = decoder.decode(view).replace(/\0/g, '');
         this.onStateChange?.({ theme });
-      });
+      };
+      this.themeChar.addEventListener('characteristicvaluechanged', handler);
+      this._notifyHandlers.set(this.themeChar, handler);
     }
 
     // Subscribe to IMU notifications
     if (this.imuChar) {
       await this.imuChar.startNotifications();
-      this.imuChar.addEventListener('characteristicvaluechanged', (e) => {
+      const handler = (e: Event) => {
         const view = (e.target as BluetoothRemoteGATTCharacteristic).value!;
         const data: IMUData = {
           ax: view.getInt16(0, true),
@@ -198,17 +210,21 @@ class NodeZeroBridge {
           gz: view.getInt16(10, true)
         };
         this.onIMUData?.(data);
-      });
+      };
+      this.imuChar.addEventListener('characteristicvaluechanged', handler);
+      this._notifyHandlers.set(this.imuChar, handler);
     }
 
     // Subscribe to battery notifications
     if (this.batteryChar) {
       await this.batteryChar.startNotifications();
-      this.batteryChar.addEventListener('characteristicvaluechanged', (e) => {
+      const handler = (e: Event) => {
         const view = (e.target as BluetoothRemoteGATTCharacteristic).value!;
         const battery = view.getUint8(0);
         this.onStateChange?.({ battery });
-      });
+      };
+      this.batteryChar.addEventListener('characteristicvaluechanged', handler);
+      this._notifyHandlers.set(this.batteryChar, handler);
     }
   }
 
@@ -257,6 +273,17 @@ class NodeZeroBridge {
 
   // Disconnect
   async disconnect(): Promise<void> {
+    // Remove all notification listeners
+    for (const [target, handler] of this._notifyHandlers) {
+      target.removeEventListener('characteristicvaluechanged', handler);
+    }
+    this._notifyHandlers.clear();
+
+    if (this.device && this._disconnectHandler) {
+      this.device.removeEventListener('gattserverdisconnected', this._disconnectHandler);
+      this._disconnectHandler = undefined;
+    }
+
     if (this.server?.connected) {
       await this.server.disconnect();
     }

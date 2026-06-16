@@ -164,8 +164,17 @@ export class FawnGuard {
   }
 }
 
+let evictionInterval: ReturnType<typeof setInterval> | undefined;
+
+export function stopCacheEviction(): void {
+  if (evictionInterval !== undefined) {
+    clearInterval(evictionInterval);
+    evictionInterval = undefined;
+  }
+}
+
 if (typeof setInterval !== 'undefined') {
-  setInterval(() => {
+  evictionInterval = setInterval(() => {
     const now = Date.now();
     for (const [key, entry] of cache.entries()) {
       if (now - entry.timestamp > CACHE_TTL_MS) {

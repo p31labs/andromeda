@@ -8,18 +8,19 @@
   --color-coral: #cc6247;
   --color-cyan: #4db8a8;
   --color-fuchsia: #e879f9;
-  --color-ink: var(--color-ink);
   --color-lavender: #8b7cc9;
   --color-muted: #64748b;
   --color-paper: #fdfcfa;
-  --color-phosphor: var(--color-phosphor);
+  --color-phosphor: #00FF88;
   --color-phosphorus: #3ba372;
-  --color-surface: var(--color-surface);
+  --color-surface: #e2e8f0;
   --color-surface2: #ebeae4;
   --color-teal: #5dcaa5;
   --color-themeColor: #f5f4f0;
   --color-void: #f5f4f0;
 }
+
+/* ═══════════════════════════════════════════════════════
    SPACESHIP EARTH — P31 Labs
    Brand-aligned: Oxanium + Space Mono, P31 color system
    ═══════════════════════════════════════════════════════ */

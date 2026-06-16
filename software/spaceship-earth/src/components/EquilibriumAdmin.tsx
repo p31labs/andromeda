@@ -7,16 +7,16 @@ export interface EquilibriumAdminProps {
 }
 
 export function EquilibriumAdmin({ adminOpen, equilibrium }: EquilibriumAdminProps) {
-  const [calcium, setCalcium] = useState(equilibrium?.mandatory?.calcium_mg_dL ?? 8.2);
-  const [spoons, setSpoons] = useState(equilibrium?.mandatory?.spoons ?? 4);
+  const [calcium, setCalcium] = useState(equilibrium?.calcium ?? 8.2);
+  const [spoons, setSpoons] = useState(equilibrium?.spoon ?? 4);
   const [forceServer, setForceServer] = useState(true);
 
   useEffect(() => {
     if (equilibrium) {
-      setCalcium(equilibrium.mandatory?.calcium_mg_dL ?? 8.2);
-      setSpoons(equilibrium.mandatory?.spoons ?? 4);
+      setCalcium(equilibrium.calcium);
+      setSpoons(equilibrium.spoon);
     }
-  }, [adminOpen, equilibrium?.mandatory?.calcium_mg_dL, equilibrium?.mandatory?.spoons]);
+  }, [adminOpen, equilibrium?.calcium, equilibrium?.spoon]);
 
   const applyPhaseShift = () => {
     localStorage.setItem('p31_medical_override', JSON.stringify({ serum_calcium_mg_dL: calcium }));

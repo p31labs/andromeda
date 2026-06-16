@@ -19,7 +19,11 @@ export function useMesh(roomName: string) {
       setConnectionState(meshInstance.getConnectionState());
     }
 
-    init();
+    init().catch((err) => {
+      console.error('[useMesh] ignite failed:', err);
+      setIsMeshActive(false);
+      setConnectionState('disconnected');
+    });
 
     const unsubscribe = useSovereignStore.subscribe((state, prevState) => {
       if (state.spoons !== prevState.spoons) {

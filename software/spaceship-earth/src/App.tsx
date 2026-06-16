@@ -1,22 +1,24 @@
 /**
  * @file App.tsx — P31 Spaceship Earth cockpit shell
  */
-import { useState, useMemo, useCallback, useEffect } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, PerspectiveCamera } from '@react-three/drei';
+import { useState, useMemo, useEffect } from 'react';
+import { Canvas } from '@react-three/fiber';
+import { OrbitControls, PerspectiveCamera, Stars } from '@react-three/drei';
 import { Globe, Battery, Volume2, VolumeX } from 'lucide-react';
 import { create } from 'zustand';
 import { haptic } from './services/haptic';
 import { getLarmorEngine } from './lib/engine/larmor';
-import { RicciMath, getAnimatedCurvature } from './lib/engine/ricci';
+import { RicciMath } from './lib/engine/ricci';
 import { FawnGuard } from './lib/engine/fawn';
+import { STAGE_COLORS } from './lib/theme/stageColors';
 
 import { CatchersMitt } from './components/hud/CatchersMitt';
 import { ProofOfCare } from './components/hud/ProofOfCare';
 import { DeltaMesh } from './components/mesh/DeltaMesh';
 import { PosnerMolecule } from './components/mesh/PosnerMolecule';
-import { MolecularField } from './components/MolecularField';
+
 import { DecisionIcosahedron } from './components/rooms/DecisionIcosahedron';
+import { EquilibriumMeter } from './components/hud/EquilibriumMeter';
 import { EquilibriumAdmin } from './components/EquilibriumAdmin';
 import { useDecisionEngine, type DecisionResult } from './hooks/useDecisionEngine';
 import { useEquilibrium } from './hooks/useEquilibrium';
@@ -26,10 +28,7 @@ const useAppStore = create<{ spoons: number; setSpoons: (n: number) => void }>((
   setSpoons: (n) => set({ spoons: n }),
 }));
 
-function CurvatureDriver({ onTick }: { onTick: (t: number) => void }) {
-  useFrame(({ clock }) => onTick(clock.getElapsedTime()));
-  return null;
-}
+
 
 export default function App() {
   const [viewMode, setViewMode] = useState<'DELTA' | 'POSNER' | 'DECIDE'>('DELTA');
@@ -38,15 +37,10 @@ export default function App() {
   const setSpoons = useAppStore((s) => s.setSpoons);
   const [input, setInput] = useState('');
   const [warning, setWarning] = useState<string | null>(null);
-  const [curvature, setCurvature] = useState(1.0);
   const [adminOpen, setAdminOpen] = useState(false);
   const larmorEngine = useMemo(() => getLarmorEngine(), []);
-  const { result, loading } = useDecisionEngine(30000);
-  const { stage: eqStage, entropy, equilibrium } = useEquilibrium(30000);
-
-  const onCurvatureTick = useCallback((t: number) => {
-    setCurvature(getAnimatedCurvature(1.0, t));
-  }, []);
+  const { result } = useDecisionEngine(30000);
+  const { equilibrium } = useEquilibrium(30000);
 
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
@@ -81,35 +75,30 @@ export default function App() {
   const resilience = useMemo(() => RicciMath.getResilience(4), []);
 
   const stageColor = useMemo(() => {
-    const map: Record<string, string> = {
-      VOID: 'var(--color-muted)',
-      SEED: '#94a3b8',
-      SPROUT: '#4ade80',
-      SAPLING: '#facc15',
-      BLOOM: '#f97316',
-      FRUIT: '#8b5cf6',
-    };
-    return map[result?.stage ?? 'VOID'] ?? map.VOID;
+    const stage = (result?.stage ?? 'VOID') as keyof typeof STAGE_COLORS;
+    return STAGE_COLORS[stage] ?? STAGE_COLORS.VOID;
   }, [result?.stage]);
 
   return (
     <div className="relative w-full h-screen overflow-hidden bg-[#050505] text-[var(--color-cloud)] font-mono">
-      <MolecularField />
       <div className="absolute inset-0 z-[1]">
         <Canvas
+          className="absolute inset-0"
+          style={{ position: 'absolute', top: 0, left: 0, width: '100vw', height: '100vh' }}
           gl={{ alpha: true, antialias: true, powerPreference: 'high-performance' }}
           onCreated={({ gl, scene }) => {
             scene.background = null;
             gl.setClearColor(0x000000, 0);
           }}
         >
-          <CurvatureDriver onTick={onCurvatureTick} />
-          <PerspectiveCamera makeDefault position={[0, 0, 5]} />
-          <OrbitControls enableZoom={false} autoRotate autoRotateSpeed={0.5} enablePan={false} />
+
+          <PerspectiveCamera makeDefault position={[0, 0, 12]} />
+          <OrbitControls enableZoom={false} enablePan={false} />
+          <Stars radius={100} depth={50} count={2500} factor={4} saturation={0} fade speed={1} />
           <ambientLight intensity={0.35} />
           <pointLight position={[10, 10, 10]} intensity={1.2} color={0x22d3ee} />
           {viewMode === 'DELTA' ? (
-            <DeltaMesh networkStress={1 - curvature} />
+            <DeltaMesh scale={6} equilibrium={equilibrium} />
           ) : viewMode === 'POSNER' ? (
             <PosnerMolecule spoons={spoons} calcium={8.2} />
           ) : (
@@ -164,8 +153,12 @@ export default function App() {
         </div>
       </div>
 
-      <div className="pointer-events-auto absolute right-6 top-6 z-20">
-        <div className="flex items-center gap-3 rounded-xl border border-white/[0.08] bg-[#080810]/85 p-4 shadow-lg backdrop-blur-md">
+      <div className="pointer-events-auto absolute right-6 top-6 z-20 flex flex-col gap-3">
+        <div className="rounded-xl border border-white/[0.08] bg-[#080810]/85 p-4 shadow-lg backdrop-blur-md">
+          <EquilibriumMeter />
+        </div>
+        <div className="rounded-xl border border-white/[0.08] bg-[#080810]/85 p-3 shadow-lg backdrop-blur-md">
+          <div className="flex items-center gap-3">
           <span className="text-xs uppercase text-white/45">Larmor</span>
           <button
             type="button"
@@ -175,14 +168,15 @@ export default function App() {
             {isLarmorActive ? <Volume2 size={20} /> : <VolumeX size={20} />}
           </button>
         </div>
-        <button
-          type="button"
-          onClick={() => setAdminOpen(!adminOpen)}
-          className="absolute right-0 top-full mt-2 rounded-lg bg-white/5 px-3 py-1 font-mono text-xs font-bold text-white/50 hover:bg-white/10"
-        >
-          Admin
-        </button>
       </div>
+      <button
+        type="button"
+        onClick={() => setAdminOpen(!adminOpen)}
+        className="absolute right-0 top-full mt-2 rounded-lg bg-white/5 px-3 py-1 font-mono text-xs font-bold text-white/50 hover:bg-white/10"
+      >
+        Admin
+      </button>
+    </div>
 
       <EquilibriumAdmin adminOpen={adminOpen} equilibrium={equilibrium} />
 

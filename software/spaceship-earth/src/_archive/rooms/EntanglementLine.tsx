@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
@@ -19,12 +19,19 @@ export function EntanglementLine({ start, end }: EntanglementLineProps) {
   }, [start, end]);
 
   const material = useMemo(() => new THREE.LineBasicMaterial({
-    color: 'var(--color-phosphor)',
+    color: '#00FF88',
     transparent: true,
     opacity: 0.15,
     blending: THREE.AdditiveBlending,
     depthWrite: false,
   }), []);
+
+  useEffect(() => {
+    return () => {
+      geometry.dispose();
+      material.dispose();
+    };
+  }, [geometry, material]);
 
   useFrame(({ clock }) => {
     material.opacity = 0.08 + 0.1 * Math.sin(clock.getElapsedTime() * 0.5);

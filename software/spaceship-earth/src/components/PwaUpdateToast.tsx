@@ -11,17 +11,29 @@
  * CSS entrance: `@starting-style` slide-up (Chrome 117+, graceful fallback).
  */
 
+import { useRef, useEffect } from 'react';
 import { useRegisterSW } from 'virtual:pwa-register/react';
 
 const NEON = '#00FFFF';
 const VOID = 'rgba(3, 3, 8, 0.95)';
 
 export function PwaUpdateToast() {
+  const swUpdateInterval = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (swUpdateInterval.current !== null) {
+        clearInterval(swUpdateInterval.current);
+        swUpdateInterval.current = null;
+      }
+    };
+  }, []);
+
   const { needRefresh: [needRefresh, setNeedRefresh], updateServiceWorker } = useRegisterSW({
     onRegisteredSW(swUrl: string, r: ServiceWorkerRegistration | undefined) {
       // Poll for updates every 60 minutes when app is in background
       if (r) {
-        setInterval(() => {
+        swUpdateInterval.current = setInterval(() => {
           if (!(!r.installing && navigator.onLine)) return;
           r.update().catch(console.error);
         }, 60 * 60 * 1000);

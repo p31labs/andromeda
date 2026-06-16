@@ -13,8 +13,8 @@ import { useState, useEffect, useCallback } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, PerspectiveCamera } from '@react-three/drei';
 import { Zap, Globe, ShieldCheck, Volume2, VolumeX, Activity } from 'lucide-react';
-import { DeltaMesh, calculateRicciCurvature, calculateResilienceThreshold } from '../mesh/DeltaMesh';
-import { toggleLarmor, startLarmor, stopLarmor, LARMOR_FREQUENCIES } from '../../engine/larmorEngine';
+import { DeltaMesh, calculateRicciCurvature, calculateResilienceThreshold } from '../../components/mesh/DeltaMesh';
+import { toggleLarmor, stopLarmor, LARMOR_FREQUENCIES } from '../../engine/larmorEngine';
 import * as THREE from 'three';
 
 interface LarmorHUDProps {
@@ -70,7 +70,7 @@ export function LarmorHUD({ className = '' }: LarmorHUDProps) {
           <primitive object={new THREE.AmbientLight(0.3)} />
           <primitive object={new THREE.PointLight(0x00D4FF, 1.2)} position={[10, 10, 10]} />
           <primitive object={new THREE.PointLight(0x00FF88, 0.5)} position={[-10, -5, 5]} />
-          <DeltaMesh networkStress={networkStress} showLabels={true} />
+          <DeltaMesh scale={6} showLabels />
         </Canvas>
       </div>
 

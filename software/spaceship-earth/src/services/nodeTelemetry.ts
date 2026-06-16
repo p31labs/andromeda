@@ -50,11 +50,45 @@ export interface TelemetryConfig {
   debugMode: boolean;
 }
 
+interface TelemetryEvent {
+  type: string;
+  timestamp: number;
+  data: Record<string, unknown>;
+}
+
+interface MemoryInfo extends Record<string, unknown> {
+  usedJSHeapSize: number;
+  totalJSHeapSize: number;
+  jsHeapSizeLimit: number;
+}
+
+interface ConnectionInfo {
+  effectiveType: string;
+  downlink: number;
+  rtt: number;
+  saveData: boolean;
+}
+
+interface TelemetrySummary {
+  sessionDuration: number;
+  activeTime: number;
+  interactionCount: number;
+  errorCount: number;
+  bootTime: number;
+  avgLatency: number;
+  avgCoherence: number;
+  memoryUsage: number;
+  featureUsage: Record<string, number>;
+  subsystemHealth: Record<string, number | boolean>;
+}
+
 class NodeTelemetry {
   private metrics: NodeTelemetryMetrics;
   private config: TelemetryConfig;
-  private batch: any[] = [];
+  private batch: TelemetryEvent[] = [];
   private flushTimer?: number;
+  private resourceInterval?: number;
+  private sessionInterval?: number;
   private startTime: number;
   private activeTimeStart: number;
   private interactionTimer?: number;
@@ -126,12 +160,12 @@ class NodeTelemetry {
     }, this.config.flushInterval);
 
     // Track resource usage periodically
-    setInterval(() => {
+    this.resourceInterval = window.setInterval(() => {
       this.trackResourceUsage();
     }, 10000); // Every 10 seconds
 
     // Track session duration
-    setInterval(() => {
+    this.sessionInterval = window.setInterval(() => {
       this.metrics.sessionDuration = Date.now() - this.startTime;
     }, 1000);
 
@@ -149,6 +183,14 @@ class NodeTelemetry {
     if (this.flushTimer) {
       clearInterval(this.flushTimer);
       this.flushTimer = undefined;
+    }
+    if (this.resourceInterval) {
+      clearInterval(this.resourceInterval);
+      this.resourceInterval = undefined;
+    }
+    if (this.sessionInterval) {
+      clearInterval(this.sessionInterval);
+      this.sessionInterval = undefined;
     }
 
     this.flush(); // Final flush
@@ -468,7 +510,7 @@ class NodeTelemetry {
   /**
    * Add event to batch
    */
-  private addToBatch(event: any): void {
+  private addToBatch(event: TelemetryEvent): void {
     // Apply sampling
     if (Math.random() > this.config.samplingRate) {
       return;
@@ -513,7 +555,7 @@ class NodeTelemetry {
   /**
    * Send events to telemetry endpoint
    */
-  private async sendToEndpoint(events: any[]): Promise<void> {
+  private async sendToEndpoint(events: TelemetryEvent[]): Promise<void> {
     // This would send to your actual telemetry endpoint
     // For now, we'll use the existing trackEvent function
     events.forEach(event => {
@@ -524,7 +566,7 @@ class NodeTelemetry {
   /**
    * Get memory information
    */
-  private getMemoryInfo(): any {
+  private getMemoryInfo(): MemoryInfo | null {
     if (typeof window !== 'undefined' && 'performance' in window && 'memory' in window.performance) {
       const mem = (window.performance as any).memory;
       return {
@@ -539,7 +581,7 @@ class NodeTelemetry {
   /**
    * Get connection information
    */
-  private getConnectionInfo(): any {
+  private getConnectionInfo(): ConnectionInfo | null {
     if ('connection' in navigator) {
       const connection = (navigator as any).connection;
       return {
@@ -595,7 +637,7 @@ class NodeTelemetry {
   /**
    * Get telemetry summary
    */
-  getSummary(): any {
+  getSummary(): TelemetrySummary {
     return {
       sessionDuration: this.metrics.sessionDuration,
       activeTime: this.metrics.activeTime,

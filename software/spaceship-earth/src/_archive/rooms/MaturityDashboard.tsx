@@ -56,7 +56,7 @@ function SpoonGaugeRing({ level, maxLevel = 5 }: { level: number; maxLevel?: num
       <Text
         position={[0, -0.5, 0]}
         fontSize={0.15}
-        color="var(--color-cloud)"
+        color="#1e293b"
         anchorX="center"
         anchorY="top"
       >
@@ -191,7 +191,7 @@ export function MaturityDashboard() {
         <Text
           position={[0, coreRadius + 0.4, 0]}
           fontSize={0.15}
-          color="var(--color-cloud)"
+          color="#1e293b"
           anchorX="center"
           anchorY="bottom"
           outlineWidth={0.01}

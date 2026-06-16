@@ -14,6 +14,7 @@ import * as Y from 'yjs';
 import { IndexeddbPersistence } from 'y-indexeddb';
 import { WebrtcProvider } from 'y-webrtc';
 import { useSovereignStore } from '../../sovereign/useSovereignStore';
+import type { GenesisSyncStatus } from '../../sovereign/types';
 
 export type MeshConnectionState = 'disconnected' | 'connecting' | 'connected' | 'error';
 
@@ -173,7 +174,7 @@ class KenosisMesh {
       }
 
       if (typeof remoteStatus === 'string') {
-        useSovereignStore.setState({ genesisSyncStatus: remoteStatus as any });
+        useSovereignStore.setState({ genesisSyncStatus: remoteStatus as GenesisSyncStatus });
       }
     } catch (err) {
       console.error('[KenosisMesh] Sync error:', err);

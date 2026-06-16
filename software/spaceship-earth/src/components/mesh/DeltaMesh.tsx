@@ -17,9 +17,10 @@
  */
 import { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { Float, Text } from '@react-three/drei';
+import { Float, Text, Line } from '@react-three/drei';
 import * as THREE from 'three';
-import { RicciMath } from '../../lib/engine/ricci';
+import type { EquilibriumState } from '../../hooks/useEquilibrium';
+import { getStageColor, type GrowthStage } from '../../lib/theme/stageColors';
 
 export interface DeltaMeshNode {
   id: string;
@@ -38,8 +39,6 @@ export interface DeltaMeshEdge {
  * Vertices of a regular tetrahedron inscribed in a sphere of radius 1
  */
 export function generateK4Nodes(): DeltaMeshNode[] {
-  const phi = (1 + Math.sqrt(5)) / 2; // Golden ratio
-
   // Regular tetrahedron vertices (normalized)
   const positions = [
     new THREE.Vector3(0, 1, 0),
@@ -97,50 +96,53 @@ export function calculateResilienceThreshold(lostNodes: number): number {
 }
 
 interface DeltaMeshProps {
-  networkStress?: number;
   showLabels?: boolean;
-  autoRotate?: boolean;
+  scale?: number;
+  equilibrium?: EquilibriumState;
 }
 
 export function DeltaMesh({
-  networkStress = 0,
   showLabels = true,
-  autoRotate = true
+  scale = 6,
+  equilibrium,
 }: DeltaMeshProps) {
   const groupRef = useRef<THREE.Group>(null);
-  const curvatureRef = useRef(1.0);
 
-  // Generate static K4 topology
   const nodes = useMemo(() => generateK4Nodes(), []);
   const edges = useMemo(() => generateK4Edges(), []);
 
-  // Animate curvature and scale each frame
-  useFrame(({ clock }) => {
-    const t = clock.getElapsedTime();
-    curvatureRef.current = calculateRicciCurvature(t, networkStress);
+  const stage = equilibrium?.stage ?? 'VOID';
+  const baseColor = getStageColor(stage as GrowthStage);
+  const rotationSpeed = equilibrium ? 0.1 + equilibrium.entropy * 0.3 : 0.15;
+  const nodeScale = equilibrium ? 0.8 + (equilibrium.spoon / 10) * 0.4 : 1;
 
-    // Apply dRfge scale oscillation using RicciMath
+  useFrame(({ clock }, delta) => {
     if (groupRef.current) {
-      const scale = RicciMath.getScaleFactor(curvatureRef.current);
-      groupRef.current.scale.setScalar(scale);
+      const t = clock.getElapsedTime();
+      const pulse = 1 + Math.sin(t * (1 + (equilibrium?.entropy || 1))) * 0.03 * (equilibrium?.entropy || 1);
+      groupRef.current.scale.setScalar(pulse);
+      groupRef.current.rotation.y += delta * rotationSpeed;
+      groupRef.current.rotation.x += delta * rotationSpeed * 0.3;
     }
   });
 
-  // Curvature-based color scheme: κ maps to color
-  // κ > 0.9 = green (healthy), κ 0.7-0.9 = cyan (stable), κ < 0.7 = red (degraded)
-  const curvatureColor = useMemo(() => {
-    const k = curvatureRef.current;
-    if (k >= 0.9) return 'var(--color-phosphor)';      // Green - isostatic
-    if (k >= 0.7) return '#00D4FF';     // Cyan - stable
-    return '#EF4444';                   // Red - degraded
-  }, []);
+  const gatewayColor = '#00FF88';
+  const nodeColor = baseColor;
+  const edgeColor = '#7A27FF';
+  const emissiveIntensity = 0.3 + (equilibrium?.entropy || 0.5) * 0.5;
 
-  const gatewayColor = curvatureColor;   // Gateway reflects health
-  const nodeColor = '#00D4FF';           // Cyan for regular nodes
-  const edgeColor = curvatureRef.current >= 0.8 ? '#1f2937' : '#7A27FF'; // Purple edge on stress
-  const edgeHighlightColor = curvatureRef.current >= 0.8 ? 'var(--color-cyan)' : '#EF4444';
+  const edgeEntries = useMemo(() => edges.map((edge) => {
+    const startNode = nodes[edge.from];
+    const endNode = nodes[edge.to];
+    return {
+      key: `edge_${edge.from}_${edge.to}`,
+      start: [startNode.position.x, startNode.position.y, startNode.position.z] as [number, number, number],
+      end: [endNode.position.x, endNode.position.y, endNode.position.z] as [number, number, number],
+    };
+  }), [edges, nodes]);
 
   return (
+    <group scale={scale}>
     <group ref={groupRef}>
       {/* Render Nodes */}
       {nodes.map((node, index) => (
@@ -151,13 +153,13 @@ export function DeltaMesh({
           floatIntensity={0.4}
         >
           <mesh position={node.position}>
-            <sphereGeometry args={[0.12, 32, 32]} />
+            <sphereGeometry args={[0.12 * nodeScale, 32, 32]} />
             <meshStandardMaterial
               color={node.isGateway ? gatewayColor : nodeColor}
               emissive={node.isGateway ? gatewayColor : nodeColor}
-              emissiveIntensity={1.5}
-              roughness={0.3}
-              metalness={0.7}
+              emissiveIntensity={emissiveIntensity}
+              roughness={0.2}
+              metalness={0.5}
             />
           </mesh>
 
@@ -178,38 +180,29 @@ export function DeltaMesh({
       ))}
 
       {/* Render Edges (K4 = 6 edges) */}
-      {edges.map((edge, index) => {
-        const startNode = nodes[edge.from];
-        const endNode = nodes[edge.to];
-
-        // Create line geometry
-        const points = [startNode.position, endNode.position];
-        const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
-
-        return (
-          <line key={`edge_${index}`}>
-            <bufferGeometry {...lineGeometry} />
-            <lineBasicMaterial
-              color={edgeColor}
-              transparent
-              opacity={0.6}
-              linewidth={1}
-            />
-          </line>
-        );
-      })}
+      {edgeEntries.map(({ key, start, end }) => (
+        <Line
+          key={key}
+          points={[start, end]}
+          color={edgeColor}
+          lineWidth={0.02}
+          transparent
+          opacity={0.6}
+        />
+      ))}
 
       {/* Central stress indicator (shows network health) */}
       <mesh position={[0, 0, 0]}>
-        <sphereGeometry args={[0.08, 16, 16]} />
+        <sphereGeometry args={[0.08 * nodeScale, 16, 16]} />
         <meshStandardMaterial
-          color={curvatureRef.current >= 0.8 ? gatewayColor : '#EF4444'}
-          emissive={curvatureRef.current >= 0.8 ? gatewayColor : '#EF4444'}
-          emissiveIntensity={curvatureRef.current >= 0.8 ? 1.0 : 2.0}
+          color={baseColor}
+          emissive={baseColor}
+          emissiveIntensity={emissiveIntensity}
           transparent
           opacity={0.8}
         />
       </mesh>
+    </group>
     </group>
   );
 }
