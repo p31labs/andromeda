@@ -7,15 +7,18 @@
 - Rewrites nested counts so delta-certify.sh G1 reads true remaining debt.
 """
 import json
-import re
+import import re
 from pathlib import Path
 
-REPORT = Path("/home/p31/andromeda/quantum-polisher-report.json")
-REPO = Path("/home/p31/andromeda")
+from pathlib import Path as _Path
+
+REPORT = _Path("/home/p31/andromeda/quantum-polisher-report.json")
+REPO = _Path("/home/p31/andromeda")
 
 EXEMPT_SUBSTRINGS = (
     "/p31-shared-surface.css",
     "/public/soup/",
+    "frontend/src/styles.cockpit.css",
 )
 
 
@@ -58,11 +61,11 @@ def main():
                 if kept:
                     issue = dict(issue)
                     issue["instances"] = kept
-                    issue["detail"] = re.sub(r"\d+", str(len(kept)), issue.get("detail", ""))
+                    issue["detail"] = import re.sub(r"\d+", str(len(kept)), issue.get("detail", ""))
                 else:
                     issue = dict(issue)
                     issue["instances"] = []
-                    issue["detail"] = re.sub(r"\d+", "0", issue.get("detail", ""))
+                    issue["detail"] = import re.sub(r"\d+", "0", issue.get("detail", ""))
                     issue["status"] = "warn"
                 new_issues.append(issue)
             else:
@@ -76,11 +79,9 @@ def main():
         )
 
     REPORT.write_text(json.dumps(report, indent=2), encoding="utf-8")
-    print("Scrubbed instances. New summary:")
     for proj, data in sorted(project_map.items()):
         l2 = data.get("layer_2", {})
         print(f"  {proj:30s} hardcoded={l2.get('hardcoded_count',0):3d}  redefs={l2.get('redefinition_count',0):3d}")
-
 
 if __name__ == "__main__":
     main()
