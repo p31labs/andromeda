@@ -17,7 +17,9 @@ import { DeltaMesh } from './components/mesh/DeltaMesh';
 import { PosnerMolecule } from './components/mesh/PosnerMolecule';
 import { MolecularField } from './components/MolecularField';
 import { DecisionIcosahedron } from './components/rooms/DecisionIcosahedron';
+import { EquilibriumAdmin } from './components/EquilibriumAdmin';
 import { useDecisionEngine, type DecisionResult } from './hooks/useDecisionEngine';
+import { useEquilibrium } from './hooks/useEquilibrium';
 
 const useAppStore = create<{ spoons: number; setSpoons: (n: number) => void }>((set) => ({
   spoons: 12,
@@ -37,8 +39,10 @@ export default function App() {
   const [input, setInput] = useState('');
   const [warning, setWarning] = useState<string | null>(null);
   const [curvature, setCurvature] = useState(1.0);
+  const [adminOpen, setAdminOpen] = useState(false);
   const larmorEngine = useMemo(() => getLarmorEngine(), []);
   const { result, loading } = useDecisionEngine(30000);
+  const { stage: eqStage, entropy, equilibrium } = useEquilibrium(30000);
 
   const onCurvatureTick = useCallback((t: number) => {
     setCurvature(getAnimatedCurvature(1.0, t));
@@ -171,7 +175,16 @@ export default function App() {
             {isLarmorActive ? <Volume2 size={20} /> : <VolumeX size={20} />}
           </button>
         </div>
+        <button
+          type="button"
+          onClick={() => setAdminOpen(!adminOpen)}
+          className="absolute right-0 top-full mt-2 rounded-lg bg-white/5 px-3 py-1 font-mono text-xs font-bold text-white/50 hover:bg-white/10"
+        >
+          Admin
+        </button>
       </div>
+
+      <EquilibriumAdmin adminOpen={adminOpen} />
 
       <div className="pointer-events-none absolute bottom-6 z-20 flex w-full justify-center">
         <div className="pointer-events-auto w-full max-w-lg rounded-xl border border-white/[0.08] bg-[#080810]/90 p-4 shadow-xl backdrop-blur-xl">
