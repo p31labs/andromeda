@@ -31,7 +31,7 @@ const CarbonCard = ({ playerId, onBond }) => {
         <div className="stability">Stability: High</div>
       </div>
       <div className="element-description">
-        The backbone of organic chemistry. 
+        The backbone of organic chemistry.
         Forms 4 bonds. Creates complex molecular structures.
       </div>
       <div className="bonding-capacity">

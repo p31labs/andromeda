@@ -154,8 +154,8 @@ describe('Element colors â visibility', () => {
   it('each element has a visually distinct emissive color', () => {
     // No two emissive colors should be identical
     const emissives = ALL_SYMBOLS.map((s) => ELEMENTS[s].emissive);
-    // Allow H and Ca to share white (#FFFFFF) â they differ in size
-    const nonWhite = emissives.filter((e) => e !== '#FFFFFF');
+    // Allow H and Ca to share white (var(--color-surface)) â they differ in size
+    const nonWhite = emissives.filter((e) => e !== 'var(--color-surface)');
     expect(
       new Set(nonWhite).size,
       'Non-white emissive colors should be unique',

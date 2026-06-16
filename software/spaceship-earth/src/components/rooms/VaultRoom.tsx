@@ -1,11 +1,11 @@
 /**
  * @file VaultRoom.tsx — OQE Export Room (The Vault)
- * 
+ *
  * Daubert-standard evidence exporter:
  * - Queries IndexedDB for genesis-telemetry
  * - Calculates SHA-256 hash for integrity
  * - Downloads cryptographically verifiable JSON
- * 
+ *
  * CWP-JITTERBUG-13: The Vault (Daubert-Standard OQE Export)
  */
 import { useState } from 'react';
@@ -33,11 +33,11 @@ export function VaultRoom() {
     try {
       const filename = await exportOQE(didKey);
       console.log('[Vault] Export complete:', filename);
-      
+
       // Fetch last export metadata for display
       const exportData = await fetch(`data:text/plain;charset=utf-8,${encodeURIComponent(JSON.stringify({ getMetadata: true }))}`)
         .catch(() => null);
-      
+
       setLastExport({
         exportId: filename,
         timestamp: new Date().toISOString(),
@@ -64,7 +64,7 @@ export function VaultRoom() {
         transform: 'translate(-50%, -50%)',
         zIndex: 200,
         fontFamily: 'monospace',
-        color: '#4db8a8',
+        color: 'var(--color-cyan)',
         background: 'rgba(5, 5, 11, 0.95)',
         border: '1px solid rgba(77, 184, 168, 0.4)',
         borderRadius: '12px',
@@ -81,7 +81,7 @@ export function VaultRoom() {
             width: '16px',
             height: '16px',
             borderRadius: '4px',
-            background: 'linear-gradient(135deg, #4db8a8, #2a6b62)',
+            background: 'linear-gradient(135deg, var(--color-cyan), #2a6b62)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -101,10 +101,10 @@ export function VaultRoom() {
       </div>
 
       {/* Stats */}
-      <div style={{ 
-        display: 'grid', 
-        gridTemplateColumns: '1fr 1fr', 
-        gap: '12px', 
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: '1fr 1fr',
+        gap: '12px',
         marginBottom: '20px',
         padding: '12px',
         background: 'rgba(77, 184, 168, 0.05)',
@@ -112,17 +112,17 @@ export function VaultRoom() {
       }}>
         <div>
           <div style={{ fontSize: '10px', color: '#666' }}>DID Key</div>
-          <div style={{ fontSize: '11px', color: '#4db8a8', wordBreak: 'break-all' }}>
+          <div style={{ fontSize: '11px', color: 'var(--color-cyan)', wordBreak: 'break-all' }}>
             {didKey === 'UNINITIALIZED' ? 'Not initialized' : didKey.slice(0, 16) + '...'}
           </div>
         </div>
         <div>
           <div style={{ fontSize: '10px', color: '#666' }}>Telemetry Records</div>
-          <div style={{ fontSize: '11px', color: '#4db8a8' }}>{crdtVersion}</div>
+          <div style={{ fontSize: '11px', color: 'var(--color-cyan)' }}>{crdtVersion}</div>
         </div>
         <div>
           <div style={{ fontSize: '10px', color: '#666' }}>Hash Chain Length</div>
-          <div style={{ fontSize: '11px', color: '#4db8a8' }}>{telemetryHashes.length}</div>
+          <div style={{ fontSize: '11px', color: 'var(--color-cyan)' }}>{telemetryHashes.length}</div>
         </div>
         <div>
           <div style={{ fontSize: '10px', color: '#666' }}>Last Export</div>
@@ -134,11 +134,11 @@ export function VaultRoom() {
 
       {/* Error display */}
       {error && (
-        <div style={{ 
-          fontSize: '11px', 
-          color: '#ff6b6b', 
-          padding: '8px 12px', 
-          background: 'rgba(255, 107, 107, 0.1)', 
+        <div style={{
+          fontSize: '11px',
+          color: '#ff6b6b',
+          padding: '8px 12px',
+          background: 'rgba(255, 107, 107, 0.1)',
           borderRadius: '4px',
           marginBottom: '16px',
         }}>
@@ -157,7 +157,7 @@ export function VaultRoom() {
           fontWeight: 600,
           letterSpacing: '1px',
           color: '#05050b',
-          background: didKey === 'UNINITIALIZED' ? '#333' : 'linear-gradient(90deg, #4db8a8, #cda852)',
+          background: didKey === 'UNINITIALIZED' ? '#333' : 'linear-gradient(90deg, var(--color-cyan), var(--color-amber))',
           border: 'none',
           borderRadius: '6px',
           cursor: isExporting || didKey === 'UNINITIALIZED' ? 'default' : 'pointer',
@@ -170,16 +170,16 @@ export function VaultRoom() {
       </button>
 
       {/* Legal disclaimer */}
-      <div style={{ 
-        marginTop: '16px', 
-        paddingTop: '12px', 
+      <div style={{
+        marginTop: '16px',
+        paddingTop: '12px',
         borderTop: '1px solid rgba(77, 184, 168, 0.15)',
         fontSize: '9px',
         color: '#555',
         lineHeight: 1.5,
       }}>
-        <strong>Chain of Custody:</strong> This export includes operator DID key, timestamp, 
-        SHA-256 payload hash, and all stored telemetry. Designed for court submissions 
+        <strong>Chain of Custody:</strong> This export includes operator DID key, timestamp,
+        SHA-256 payload hash, and all stored telemetry. Designed for court submissions
         and medical evidence per Daubert standard.
       </div>
     </div>

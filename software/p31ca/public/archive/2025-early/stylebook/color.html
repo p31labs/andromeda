@@ -64,7 +64,7 @@
       opacity: 0.6;
       margin-top: 4px;
     }
-    
+
     /* Semantic color usage */
     .role-grid {
       display: grid;
@@ -99,7 +99,7 @@
       font-size: 11px;
       color: var(--p31-muted);
     }
-    
+
     /* Contrast checker */
     .contrast-grid {
       display: grid;
@@ -130,11 +130,11 @@
     import { renderShell, code, callout } from '/stylebook/_chrome.js';
     import { P31ThemeController } from '/lib/p31-theme-engine.mjs';
     window.p31Theme = new P31ThemeController({ defaultTheme: 'hub' });
-    
+
     function makeColorBlock(name, token, contrast = 'light') {
       const textColor = contrast === 'light' ? '#fff' : '#000';
       return `
-        <div class="color-block" 
+        <div class="color-block"
              style="background: var(--p31-${token}); color: ${textColor};"
              onclick="navigator.clipboard.writeText('var(--p31-${token})').then(()=>{this.classList.add('copied');setTimeout(()=>this.classList.remove('copied'),1500)})">
           <div>
@@ -145,7 +145,7 @@
         </div>
       `;
     }
-    
+
     const content = `
       <section class="sb-section">
         <div class="sb-section-header">
@@ -161,7 +161,7 @@
           ${makeColorBlock('Surface 3', 'surface3', 'light')}
         </div>
       </section>
-      
+
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">Content</div>
@@ -176,7 +176,7 @@
           ${makeColorBlock('Ink', 'ink', 'light')}
         </div>
       </section>
-      
+
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">Brand accents</div>
@@ -196,7 +196,7 @@
           ${makeColorBlock('Phosphor', 'phosphor', 'dark')}
         </div>
       </section>
-      
+
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">Semantic roles</div>
@@ -204,7 +204,7 @@
           <p class="sb-text">Each color has a psychological role. Use the role token, not the brand token,
           when you want intent to track theme changes.</p>
         </div>
-        
+
         <div class="role-grid">
           <div class="role-card">
             <div class="role-swatch" style="background: var(--p31-teal); box-shadow: 0 4px 14px rgba(37,137,125,0.3);"></div>
@@ -238,7 +238,7 @@
           </div>
         </div>
       </section>
-      
+
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">Accessibility</div>
@@ -246,7 +246,7 @@
           <p class="sb-text">Every color combination shipped passes WCAG 2.1 AA for body text (4.5:1)
           or AAA for large text (3:1). Test below.</p>
         </div>
-        
+
         <div class="contrast-grid">
           <div class="contrast-card" style="background: var(--p31-void); color: var(--p31-paper);">
             <span class="contrast-ratio">15.2 : 1</span>
@@ -280,13 +280,13 @@
           </div>
         </div>
       </section>
-      
+
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">Usage</div>
           <h2 class="sb-h2">In your CSS</h2>
         </div>
-        
+
         ${code(`/* Always reach for tokens, never hex */
 .my-card {
   background: var(--p31-surface);
@@ -310,11 +310,11 @@
   backdrop-filter: blur(12px);
   border: 1px solid var(--p31-glass-border);
 }`, 'css', 'Color tokens')}
-        
+
         ${callout('warn', 'Common mistake', 'Don\'t use brand colors for state. <code>--p31-coral</code> isn\'t "warning" — it\'s coral. For state, use semantic roles like <code>--p31-primary</code> or pair with text and icons.')}
       </section>
     `;
-    
+
     renderShell({
       activeId: 'color',
       breadcrumb: [
@@ -331,7 +331,7 @@
       ],
       content
     });
-    
+
     // Compute hex values from CSS vars
     setTimeout(() => {
       const tokens = ['void','surface','surface2','surface3','paper','cloud','muted','ink','coral','teal','cyan','butter','lavender','phosphorus','phosphor'];
@@ -342,7 +342,7 @@
         el.textContent = v;
       });
     }, 100);
-    
+
     window.p31Theme.onChange(() => {
       setTimeout(() => {
         const tokens = ['void','surface','surface2','surface3','paper','cloud','muted','ink','coral','teal','cyan','butter','lavender','phosphorus','phosphor'];

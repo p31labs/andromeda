@@ -20,7 +20,7 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    
+
     /* Additional strict checks */
     "noImplicitAny": true,
     "noImplicitReturns": true,
@@ -28,10 +28,10 @@
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,
     "noUncheckedIndexedAccess": true,
-    
+
     /* WebGPU & React types */
     "types": ["@webgpu/types", "@types/node", "@types/react", "@types/react-dom"],
-    
+
     /* Path mapping */
     "baseUrl": ".",
     "paths": {

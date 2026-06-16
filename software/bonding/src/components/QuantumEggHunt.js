@@ -8,7 +8,7 @@ const QuantumEggHunt = ({ userId }) => {
   const [isHuntActive, setIsHuntActive] = useState(false);
   const [huntPhase, setHuntPhase] = useState('superposition'); // superposition, measurement, triadic_closure, payload
   const [showColliderMode, setShowColliderMode] = useState(false);
-  
+
   // Hook integrations
   const {
     position,

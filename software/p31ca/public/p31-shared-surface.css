@@ -34,7 +34,7 @@
   --p31-cloud-dim: color-mix(in srgb, var(--p31-cloud) 50%, transparent);
   --p31-cloud-faint: color-mix(in srgb, var(--p31-cloud) 25%, transparent);
   --p31-phosphor-dim: color-mix(in srgb, var(--p31-phosphorus) 30%, transparent);
-  /* `--p31-phosphor` already exists in canon (#00FF88 vibrant variant);
+  /* `--p31-phosphor` already exists in canon (var(--color-phosphor) vibrant variant);
      we keep it as-is and use --p31-phosphorus for the calmer status green. */
 
   /* Spacing scale — one rhythm everywhere */
@@ -190,7 +190,7 @@ details.p31-details[open] > summary::before {
   vertical-align: middle;
 }
 .p31-dot--live { background: var(--p31-phosphorus); }
-.p31-dot--warn { background: #cda852; }
+.p31-dot--warn { background: var(--color-amber); }
 .p31-dot--down { background: var(--p31-coral); }
 .p31-dot--idle { background: var(--p31-cloud-faint); }
 
@@ -501,8 +501,8 @@ body.p31-doc a:hover {
   border: 1px solid var(--p31-glass-border);
   border-radius: var(--p31-radius-lg);
   box-shadow: var(--p31-shadow-sm);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 .p31-doc-card + .p31-doc-card { margin-top: var(--p31-space-4); }
 .p31-doc-card p { margin: 0 0 var(--p31-space-3); font-size: var(--p31-text-sm); }
@@ -873,8 +873,8 @@ body.p31-doc-no-spy .p31-doc-section {
   height: 3rem;
   background: color-mix(in srgb, var(--p31-void) 88%, transparent);
   border-bottom: 1px solid var(--p31-border-subtle);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 .p31-top-bar__wordmark {
   font-family: var(--p31-font-mono);
@@ -951,8 +951,8 @@ body.p31-has-top-bar { padding-top: 3rem; }
   z-index: 50;
   background: color-mix(in srgb, var(--p31-surface, #161920) 92%, transparent);
   border-bottom: 1px solid rgba(255, 255, 255, 0.07);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 .nav-inner {
   max-width: 1100px;
@@ -978,12 +978,12 @@ body.p31-has-top-bar { padding-top: 3rem; }
   align-items: center;
   justify-content: center;
   border-radius: 6px;
-  border: 1px solid color-mix(in srgb, var(--p31-teal, #4db8a8) 40%, transparent);
-  background: color-mix(in srgb, var(--p31-teal, #4db8a8) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--p31-teal, var(--color-cyan)) 40%, transparent);
+  background: color-mix(in srgb, var(--p31-teal, var(--color-cyan)) 12%, transparent);
   font-family: var(--p31-font-mono, "JetBrains Mono", monospace);
   font-size: 11px;
   font-weight: 700;
-  color: var(--p31-cyan, #4db8a8);
+  color: var(--p31-cyan, var(--color-cyan));
 }
 .nav-brand-label {
   font-family: var(--p31-font-mono, "JetBrains Mono", monospace);
@@ -1002,7 +1002,7 @@ body.p31-has-top-bar { padding-top: 3rem; }
 .nav-prompt {
   font-family: var(--p31-font-mono, "JetBrains Mono", monospace);
   font-size: 11px;
-  color: color-mix(in srgb, var(--p31-teal, #4db8a8) 50%, transparent);
+  color: color-mix(in srgb, var(--p31-teal, var(--color-cyan)) 50%, transparent);
 }
 .nav-link {
   font-family: var(--p31-font-mono, "JetBrains Mono", monospace);
@@ -1018,11 +1018,11 @@ body.p31-has-top-bar { padding-top: 3rem; }
   font-size: 11px;
   font-weight: 700;
   background: transparent;
-  color: var(--p31-coral, #cc6247);
+  color: var(--p31-coral, var(--color-coral));
   padding: 8px 16px;
   border-radius: 6px;
-  border: 1px solid var(--p31-coral, #cc6247);
+  border: 1px solid var(--p31-coral, var(--color-coral));
   text-decoration: none;
   transition: background 0.18s, color 0.18s;
 }
-.nav-cta:hover { background: var(--p31-coral, #cc6247); color: var(--p31-void, #0f1115); text-decoration: none; }
+.nav-cta:hover { background: var(--p31-coral, var(--color-coral)); color: var(--p31-void, #0f1115); text-decoration: none; }

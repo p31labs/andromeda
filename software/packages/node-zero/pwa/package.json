@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "description": "P31 installable PWA — Quantum Hello World + Shelter, wired to @p31 stack",
+  "description": "P31 installable PWA \u2014 Quantum Hello World + Shelter, wired to @p31 stack",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -16,7 +16,8 @@
     "@p31/love-ledger": "^0.1.0-alpha.0",
     "@p31/node-zero": "^0.2.0-alpha.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "@p31/shared": "workspace:*"
   },
   "devDependencies": {
     "@types/react": "^18.2.0",

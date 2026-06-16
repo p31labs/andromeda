@@ -16,14 +16,14 @@
     import { renderShell, callout } from '/stylebook/_chrome.js';
     import { P31ThemeController } from '/lib/p31-theme-engine.mjs';
     window.p31Theme = new P31ThemeController({ defaultTheme: 'hub' });
-    
+
     const content = `
       <section class="sb-section">
         <p class="sb-text-lead">For the human-readable release notes, see the <a href="/stylebook/whats-new.html" style="color: var(--p31-primary);">What's new</a> page.</p>
         ${callout('info', 'Want machine-readable?', 'The full token derivation history lives in <code>p31-alignment.json</code> at the workspace root. Every change here is verified against that registry by <code>verify:alignment</code>.')}
       </section>
     `;
-    
+
     renderShell({
       activeId: 'changelog',
       breadcrumb: [

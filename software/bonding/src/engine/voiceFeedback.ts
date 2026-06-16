@@ -95,11 +95,11 @@ class VoiceFeedbackService {
   private createUtterance(text: string): SpeechSynthesisUtterance | null {
     const synth = this.getSynth();
     if (!synth) return null;
-    
+
     // Use the native SpeechSynthesisUtterance constructor
     const SpeechSynthesisUtteranceClass = (window as unknown as { SpeechSynthesisUtterance?: new (text: string) => SpeechSynthesisUtterance }).SpeechSynthesisUtterance;
     if (!SpeechSynthesisUtteranceClass) return null;
-    
+
     const utterance = new SpeechSynthesisUtteranceClass(text);
     return utterance;
   }
@@ -117,7 +117,7 @@ class VoiceFeedbackService {
     if (!utterance) return;
 
     const voices = this.getVoices();
-    const preferredVoice = voices.find(v => 
+    const preferredVoice = voices.find(v =>
       v.name.includes('Google') || v.name.includes('Samantha') || v.name.includes('English')
     ) || voices[0] || null;
 

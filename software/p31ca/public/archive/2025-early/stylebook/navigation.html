@@ -36,7 +36,7 @@
       color: var(--p31-paper);
       box-shadow: 0 1px 3px rgba(0,0,0,0.2);
     }
-    
+
     .p31-breadcrumb {
       display: flex;
       align-items: center;
@@ -50,7 +50,7 @@
     .p31-breadcrumb a:hover { color: var(--p31-cloud); }
     .p31-breadcrumb-sep { color: var(--p31-muted); opacity: 0.4; }
     .p31-breadcrumb-current { color: var(--p31-paper); font-weight: 500; }
-    
+
     .p31-pagination {
       display: flex;
       align-items: center;
@@ -76,7 +76,7 @@
       color: var(--p31-void);
       border-color: var(--p31-primary);
     }
-    
+
     .p31-tabbar {
       display: flex;
       gap: 4px;
@@ -99,7 +99,7 @@
       color: var(--p31-primary);
       border-bottom-color: var(--p31-primary);
     }
-    
+
     .p31-mock-sidebar {
       width: 220px;
       background: var(--p31-surface);
@@ -130,7 +130,7 @@
     import { renderShell, code, callout } from '/stylebook/_chrome.js';
     import { P31ThemeController } from '/lib/p31-theme-engine.mjs';
     window.p31Theme = new P31ThemeController({ defaultTheme: 'hub' });
-    
+
     const content = `
       <section class="sb-section">
         <div class="sb-section-header">
@@ -139,7 +139,7 @@
           <p class="sb-text">Use <strong>segmented</strong> tabs for view switching (compact, set-like).
           Use <strong>tabbar</strong> for primary section navigation (visual hierarchy).</p>
         </div>
-        
+
         <div class="sb-preview">
           <div class="sb-preview-header"><span>Segmented control</span></div>
           <div class="sb-preview-body">
@@ -151,7 +151,7 @@
             </div>
           </div>
         </div>
-        
+
         <div class="sb-preview">
           <div class="sb-preview-header"><span>Tabbar (section nav)</span></div>
           <div class="sb-preview-body dense">
@@ -164,13 +164,13 @@
           </div>
         </div>
       </section>
-      
+
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">Breadcrumb</div>
           <h2 class="sb-h2">Where am I?</h2>
         </div>
-        
+
         <div class="sb-preview">
           <div class="sb-preview-header"><span>Breadcrumb</span></div>
           <div class="sb-preview-body">
@@ -186,13 +186,13 @@
           </div>
         </div>
       </section>
-      
+
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">Pagination</div>
           <h2 class="sb-h2">Long lists</h2>
         </div>
-        
+
         <div class="sb-preview">
           <div class="sb-preview-header"><span>Numbered</span></div>
           <div class="sb-preview-body">
@@ -208,13 +208,13 @@
           </div>
         </div>
       </section>
-      
+
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">Sidebar</div>
           <h2 class="sb-h2">Persistent navigation</h2>
         </div>
-        
+
         <div class="sb-preview">
           <div class="sb-preview-header"><span>Sidebar nav</span></div>
           <div class="sb-preview-body">
@@ -230,16 +230,16 @@
             </div>
           </div>
         </div>
-        
+
         ${callout('info', 'You\'re looking at one', 'The sidebar in this stylebook is a real implementation of this pattern — see <code>_chrome.css</code> for the source.')}
       </section>
-      
+
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">CSS</div>
           <h2 class="sb-h2">Markup</h2>
         </div>
-        
+
         ${code(`<!-- Segmented tabs -->
 <div class="p31-tabs" role="tablist">
   <button class="p31-tab active" role="tab" aria-selected="true">Overview</button>
@@ -261,7 +261,7 @@
 </nav>`, 'html', 'Navigation')}
       </section>
     `;
-    
+
     renderShell({
       activeId: 'navigation',
       breadcrumb: [

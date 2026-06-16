@@ -30,7 +30,7 @@
       -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
     }
     .hero-grid-bg > * { position: relative; z-index: 1; }
-    
+
     .hero-aurora-bg {
       position: relative;
       padding: 64px 32px;
@@ -47,7 +47,7 @@
         radial-gradient(ellipse at bottom left, rgba(37, 137, 125, 0.2), transparent 50%);
     }
     .hero-aurora-bg > * { position: relative; z-index: 1; }
-    
+
     .hero-mesh-bg {
       position: relative;
       padding: 64px 32px;
@@ -65,7 +65,7 @@
       pointer-events: none;
     }
     .hero-mesh-bg > * { position: relative; z-index: 1; }
-    
+
     .hero-eyebrow {
       display: inline-flex;
       align-items: center;
@@ -135,7 +135,7 @@
       cursor: pointer;
       font-size: 14px;
     }
-    
+
     .hero-split {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -161,7 +161,7 @@
     import { renderShell, code, callout } from '/stylebook/_chrome.js';
     import { P31ThemeController } from '/lib/p31-theme-engine.mjs';
     window.p31Theme = new P31ThemeController({ defaultTheme: 'hub' });
-    
+
     const content = `
       <section class="sb-section">
         <div class="sb-section-header">
@@ -169,7 +169,7 @@
           <h2 class="sb-h2">Grid background</h2>
           <p class="sb-text">Subtle grid with center fade. Quiet, technical, inviting curiosity. The default for product pages.</p>
         </div>
-        
+
         <div class="hero-grid-bg">
           <div class="hero-eyebrow">P31 Hub · Live</div>
           <div class="hero-title">Build a calm <span class="accent">family mesh</span> — without the cloud lock-in.</div>
@@ -179,7 +179,7 @@
             <button class="hero-cta-secondary">View architecture</button>
           </div>
         </div>
-        
+
         ${code(`<div class="hero-grid-bg">
   <div class="hero-eyebrow">P31 Hub · Live</div>
   <h1 class="hero-title">Build a calm <span class="accent">family mesh</span></h1>
@@ -190,7 +190,7 @@
   </div>
 </div>`, 'html', 'Grid hero')}
       </section>
-      
+
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">Pattern 2</div>
@@ -198,7 +198,7 @@
           <p class="sb-text">Dual radial gradients in opposite corners. Warmer, more emotional. Use for landings,
           marketing pages, "welcome" moments.</p>
         </div>
-        
+
         <div class="hero-aurora-bg">
           <div class="hero-eyebrow">P31 Labs · 501(c)(3)</div>
           <div class="hero-title">Calm comes from <span class="accent">structure</span>, not silence.</div>
@@ -209,7 +209,7 @@
           </div>
         </div>
       </section>
-      
+
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">Pattern 3</div>
@@ -217,7 +217,7 @@
           <p class="sb-text">Asymmetric radial glow from one corner. Subtler than aurora, hints at activity without
           shouting. Use for sparing emphasis.</p>
         </div>
-        
+
         <div class="hero-mesh-bg">
           <div class="hero-eyebrow">SIMPLEX v7 · Online</div>
           <div class="hero-title">Six agents, one operator, <span class="accent">infinite execution</span>.</div>
@@ -228,7 +228,7 @@
           </div>
         </div>
       </section>
-      
+
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">Pattern 4</div>
@@ -236,7 +236,7 @@
           <p class="sb-text">Text on one side, visual on the other. The visual can be an image, illustration, glyph,
           or interactive demo. Stack on mobile.</p>
         </div>
-        
+
         <div style="background: var(--p31-surface); border: 1px solid var(--p31-border-subtle); border-radius: 16px; padding: 48px;">
           <div class="hero-split">
             <div>
@@ -251,13 +251,13 @@
           </div>
         </div>
       </section>
-      
+
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">Anti-patterns</div>
           <h2 class="sb-h2">What hero sections shouldn't do</h2>
         </div>
-        
+
         <table class="sb-table">
           <thead><tr><th>Don't</th><th>Why</th></tr></thead>
           <tbody>
@@ -268,11 +268,11 @@
             <tr><td>Animated text typewriter effects</td><td>Feels gimmicky. Lets visitors finish reading before continuing.</td></tr>
           </tbody>
         </table>
-        
+
         ${callout('info', 'One headline, one CTA', 'A hero section\'s job is to explain who this is for and what to do next. Anything else is decoration.')}
       </section>
     `;
-    
+
     renderShell({
       activeId: 'hero',
       breadcrumb: [

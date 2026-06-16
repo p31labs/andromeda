@@ -144,7 +144,7 @@ export function FreezeBreakerOverlay({ onComplete, thresholdTime = 3 }: FreezeBr
           }}
         />
       </div>
-      
+
       {/* Central instruction */}
       <div className="relative z-10 text-center">
         <p className="text-p31-cyan text-2xl font-bold mb-2">HOLD SPACE</p>

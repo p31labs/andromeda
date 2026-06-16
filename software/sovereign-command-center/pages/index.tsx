@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Radio, 
-  Activity, 
-  Shield, 
-  Send, 
-  CheckCircle2, 
-  Server, 
+import {
+  Radio,
+  Activity,
+  Shield,
+  Send,
+  CheckCircle2,
+  Server,
   Cpu,
   Zap,
   Globe,
@@ -43,7 +43,7 @@ export default function App() {
 
   // Toggle platform selection for broadcasting
   const togglePlatform = (id: string) => {
-    setSelectedPlatforms(prev => 
+    setSelectedPlatforms(prev =>
       prev.includes(id) ? prev.filter(p => p !== id) : [...prev, id]
     );
   };
@@ -51,15 +51,15 @@ export default function App() {
   // Live broadcast function connecting to Cloudflare Worker
   const handleBroadcast = async () => {
     if (!broadcastText.trim() || selectedPlatforms.length === 0) return;
-    
+
     setIsBroadcasting(true);
     setBroadcastStatus(null);
-    
+
     try {
       // Live connection to your Cloudflare Worker
       const response = await fetch('https://p31-social-broadcast.trimtab-signal.workers.dev', {
         method: 'POST',
-        headers: { 
+        headers: {
           'Content-Type': 'application/json',
           'X-Client-ID': 'sovereign-command-center',
           'X-Request-Timestamp': new Date().toISOString()
@@ -74,7 +74,7 @@ export default function App() {
           }
         })
       });
-      
+
       if (response.ok) {
         const result = await response.json();
         console.log('Broadcast successful:', result);
@@ -98,12 +98,12 @@ export default function App() {
     try {
       // Simulate IBM QPU latency
       await new Promise(resolve => setTimeout(resolve, 2000));
-      
+
       // Generate a secure-looking mock hash
       const array = new Uint8Array(32);
       crypto.getRandomValues(array);
       const hash = Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
-      
+
       setEntropySeed(hash);
       setIsGeneratingEntropy(false);
     } catch (error) {
@@ -115,10 +115,10 @@ export default function App() {
   useEffect(() => {
     const handleOnline = () => setIsOnline(true);
     const handleOffline = () => setIsOnline(false);
-    
+
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
-    
+
     return () => {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
@@ -164,7 +164,7 @@ export default function App() {
 
       {/* Main Content Area */}
       <main className="max-w-md mx-auto p-4 pb-24">
-        
+
         {/* TAB: BROADCAST */}
         {activeTab === 'broadcast' && (
           <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
@@ -239,7 +239,7 @@ export default function App() {
               <Server className="w-4 h-4 text-emerald-400" />
               Edge Worker Topology
             </h2>
-            
+
             <div className="grid gap-3">
               {WORKERS.map(worker => (
                 <div key={worker.id} className="bg-slate-900 border border-slate-800 rounded-xl p-3 flex items-center justify-between">
@@ -329,21 +329,21 @@ export default function App() {
       {/* Bottom Mobile Navigation */}
       <nav className="fixed bottom-0 left-0 right-0 bg-slate-900 border-t border-slate-800 pb-safe">
         <div className="max-w-md mx-auto flex justify-around p-2">
-          <button 
+          <button
             onClick={() => setActiveTab('broadcast')}
             className={`flex flex-col items-center p-2 rounded-xl transition-colors ${activeTab === 'broadcast' ? 'text-emerald-400 bg-emerald-400/10' : 'text-slate-500 hover:text-slate-400'}`}
           >
             <Send className="w-5 h-5 mb-1" />
             <span className="text-[10px] font-medium">Broadcast</span>
           </button>
-          <button 
+          <button
             onClick={() => setActiveTab('status')}
             className={`flex flex-col items-center p-2 rounded-xl transition-colors ${activeTab === 'status' ? 'text-emerald-400 bg-emerald-400/10' : 'text-slate-500 hover:text-slate-400'}`}
           >
             <Activity className="w-5 h-5 mb-1" />
             <span className="text-[10px] font-medium">Mesh Status</span>
           </button>
-          <button 
+          <button
             onClick={() => setActiveTab('quantum')}
             className={`flex flex-col items-center p-2 rounded-xl transition-colors ${activeTab === 'quantum' ? 'text-purple-400 bg-purple-400/10' : 'text-slate-500 hover:text-slate-400'}`}
           >

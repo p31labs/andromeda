@@ -60,7 +60,7 @@
       color: var(--p31-cloud);
       line-height: 1.4;
     }
-    
+
     .twitter-preview {
       max-width: 540px;
       background: var(--p31-surface);
@@ -68,8 +68,8 @@
       border-radius: 16px;
       overflow: hidden;
     }
-    .twitter-preview .meta-preview-img { 
-      border-radius: 0; 
+    .twitter-preview .meta-preview-img {
+      border-radius: 0;
       margin-bottom: 0;
       border-bottom: 1px solid var(--p31-border-subtle);
     }
@@ -81,7 +81,7 @@
     import { renderShell, code, callout } from '/stylebook/_chrome.js';
     import { P31ThemeController } from '/lib/p31-theme-engine.mjs';
     window.p31Theme = new P31ThemeController({ defaultTheme: 'hub' });
-    
+
     const content = `
       <section class="sb-section">
         <div class="sb-section-header">
@@ -90,44 +90,44 @@
           <p class="sb-text">These nine tags are the non-negotiable head metadata. Add them to every page.
           The verifier blocks ships that drop one.</p>
         </div>
-        
+
         ${code(`<!DOCTYPE html>
 <html lang="en" data-p31-appearance="hub">
 <head>
   <!-- 1. Encoding & viewport (always first) -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
+
   <!-- 2. Theme color for browser chrome -->
   <meta name="theme-color" content="#0f1115">
-  
+
   <!-- 3. Page identity -->
   <title>Page name · Site name</title>
   <meta name="description" content="160-char max. Honest. Not keyword-stuffed.">
-  
+
   <!-- 4. Canonical URL (avoid duplicate-content penalties) -->
   <link rel="canonical" href="https://p31ca.org/this-page">
-  
+
   <!-- 5. Open Graph (Facebook, LinkedIn, Slack, Discord) -->
   <meta property="og:title" content="Page name · Site name">
   <meta property="og:description" content="Same as meta description.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://p31ca.org/this-page">
   <meta property="og:image" content="https://p31ca.org/og/this-page.png">
-  
+
   <!-- 6. Twitter (uses og: as fallback but explicit is better) -->
   <meta name="twitter:card" content="summary_large_image">
-  
+
   <!-- 7. Favicon -->
   <link rel="icon" href="/favicon.ico">
-  
+
   <!-- 8. CSS (theme tokens before everything) -->
   <link rel="stylesheet" href="/p31-style.css">
 </head>`, 'html', 'Required head')}
-        
+
         ${callout('warn', 'Description truncates at 160', 'Search engines and social cards usually display ~155–160 characters. Plan the cut. The first 60 are most important.')}
       </section>
-      
+
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">Social preview</div>
@@ -135,7 +135,7 @@
           <p class="sb-text">When someone pastes a P31 link into Slack, Discord, iMessage, or Twitter,
           they should see exactly what we want them to see.</p>
         </div>
-        
+
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px;">
           <div>
             <div style="font-family: var(--p31-font-mono); font-size: 11px; color: var(--p31-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px;">iMessage / Slack</div>
@@ -148,7 +148,7 @@
               <div class="meta-preview-desc">The complete design system for p31ca.org. Six themes, smart adaptive engine, fluid motion.</div>
             </div>
           </div>
-          
+
           <div>
             <div style="font-family: var(--p31-font-mono); font-size: 11px; color: var(--p31-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px;">Twitter / X</div>
             <div class="twitter-preview">
@@ -163,10 +163,10 @@
             </div>
           </div>
         </div>
-        
+
         ${callout('info', 'OG image dimensions', 'Use 1200 × 630 (1.91:1 ratio). Smaller will get pixelated; larger gets cropped. Keep critical text within the central 1080 × 540 safe area.')}
       </section>
-      
+
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">Structured data</div>
@@ -174,7 +174,7 @@
           <p class="sb-text">Search engines parse JSON-LD to surface rich results — knowledge panels,
           breadcrumb trails, FAQ accordions. Use the schema.org vocabulary.</p>
         </div>
-        
+
         ${code(`<!-- Organization (place once on home + about pages) -->
 <script type="application/ld+json">
 {
@@ -234,13 +234,13 @@
 }
 <\/script>`, 'html', 'JSON-LD')}
       </section>
-      
+
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">Crawlers</div>
           <h2 class="sb-h2">robots.txt &amp; sitemap.xml</h2>
         </div>
-        
+
         ${code(`# robots.txt — at p31ca.org/robots.txt
 User-agent: *
 Allow: /
@@ -259,7 +259,7 @@ Disallow: /admin/
 
 Sitemap: https://p31ca.org/sitemap.xml
 Sitemap: https://p31ca.org/llms.txt`, 'plain', '/robots.txt')}
-        
+
         ${code(`<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
@@ -275,16 +275,16 @@ Sitemap: https://p31ca.org/llms.txt`, 'plain', '/robots.txt')}
   </url>
   <!-- ... auto-generated from canonical route catalog ... -->
 </urlset>`, 'html', '/sitemap.xml')}
-        
+
         ${callout('info', 'Generate, never hand-write', 'Both files should derive from <code>p31-constants.json</code> + ground-truth + registry. See the Site map page for the canonical generator.')}
       </section>
-      
+
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">Quality gates</div>
           <h2 class="sb-h2">What we check in CI</h2>
         </div>
-        
+
         <table class="sb-table">
           <thead><tr><th>Check</th><th>Failure</th></tr></thead>
           <tbody>
@@ -302,13 +302,13 @@ Sitemap: https://p31ca.org/llms.txt`, 'plain', '/robots.txt')}
           </tbody>
         </table>
       </section>
-      
+
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">What we don't do</div>
           <h2 class="sb-h2">No dark SEO</h2>
         </div>
-        
+
         <table class="sb-table">
           <thead><tr><th>Banned</th><th>Why</th></tr></thead>
           <tbody>
@@ -322,7 +322,7 @@ Sitemap: https://p31ca.org/llms.txt`, 'plain', '/robots.txt')}
         </table>
       </section>
     `;
-    
+
     renderShell({
       activeId: 'metadata',
       breadcrumb: [

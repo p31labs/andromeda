@@ -1,7 +1,7 @@
 /**
  * K⁴ Mesh Frontend API Client
  * Centralized service for interacting with the messaging infrastructure.
- * 
+ *
  * Handles:
  * - REST API calls with error handling
  * - WebSocket connection management
@@ -77,7 +77,7 @@ class MeshClient {
 
     try {
       const response = await fetch(url, config);
-      
+
       // Handle 401 unauthorized
       if (response.status === 401) {
         this.handleUnauthorized();
@@ -273,14 +273,14 @@ class MeshClient {
 
     // Build URL with userId
     const url = `${this.wsUrl}?userId=${encodeURIComponent(this.userId)}`;
-    
+
     this.ws = new WebSocket(url);
     this.reconnectAttempts = 0;
 
     this.ws.onopen = () => {
       console.log('[MeshClient] WebSocket connected');
       this.reconnectAttempts = 0;
-      
+
       // Send auth if token present
       if (this.token) {
         this.ws.send(JSON.stringify({
@@ -293,7 +293,7 @@ class MeshClient {
       if (onMessage) {
         onMessage({ type: 'connected', userId: this.userId, timestamp: Date.now() });
       }
-      
+
       // Call all open callbacks
       this.connectionCallbacks.onOpen.forEach(cb => cb());
     };
@@ -301,7 +301,7 @@ class MeshClient {
     this.ws.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
-        
+
         switch (data.type) {
           case 'message:new':
             if (onMessage) onMessage(data.message);
@@ -332,12 +332,12 @@ class MeshClient {
     this.ws.onclose = (event) => {
       console.log(`[MeshClient] WebSocket closed (code: ${event.code})`);
       this.ws = null;
-      
+
       // Attempt reconnection with exponential backoff
       if (this.reconnectAttempts < this.maxReconnectAttempts) {
         const delay = this.reconnectDelay * Math.pow(2, this.reconnectAttempts);
         console.log(`[MeshClient] Reconnecting in ${delay}ms (attempt ${this.reconnectAttempts + 1})`);
-        
+
         setTimeout(() => {
           this.reconnectAttempts++;
           this.connectWebSocket(onMessage, onTyping, onPresence, onError);
@@ -453,9 +453,9 @@ class MeshClient {
    * Format timestamp for display
    */
   formatTime(timestamp) {
-    return new Date(timestamp).toLocaleTimeString([], { 
-      hour: '2-digit', 
-      minute: '2-digit' 
+    return new Date(timestamp).toLocaleTimeString([], {
+      hour: '2-digit',
+      minute: '2-digit'
     });
   }
 

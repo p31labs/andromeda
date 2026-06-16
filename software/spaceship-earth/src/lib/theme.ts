@@ -6,8 +6,8 @@
 
 import * as THREE from 'three';
 
-export type ThemeVar = 
-  | '--cyan' | '--magenta' | '--amber' | '--violet' 
+export type ThemeVar =
+  | '--cyan' | '--magenta' | '--amber' | '--violet'
   | '--mint' | '--coral' | '--orange' | '--blue' | '--lavender'
   | '--s1' | '--s2' | '--s3' | '--s4' | '--text' | '--dim';
 
@@ -41,9 +41,9 @@ class ThemeBridge {
     this.cache.clear();
     this.colorCache.clear();
     const style = getComputedStyle(document.documentElement);
-    
+
     const vars: ThemeVar[] = [
-      '--cyan', '--magenta', '--amber', '--violet', 
+      '--cyan', '--magenta', '--amber', '--violet',
       '--mint', '--coral', '--orange', '--blue', '--lavender',
       '--s1', '--s2', '--s3', '--s4', '--text', '--dim'
     ];

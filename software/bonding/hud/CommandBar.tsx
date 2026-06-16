@@ -1,10 +1,10 @@
 /**
  * WCD-08 Phase A: CommandBar — Bottom command bar.
- * 
+ *
  * Left:   Ping reaction buttons (💚🤔😂🔺)
  * Center: Stability gauge (thin progress bar + percentage)
  * Right:  Difficulty selector (seed/sprout/sapling)
- * 
+ *
  * Sonnet: Wire callbacks from gameStore.
  * onPing → fires eventBus.emit(PING_SENT, ...)
  * onDifficultyChange → fires eventBus.emit(DIFFICULTY_CHANGED, ...)
@@ -29,7 +29,7 @@ interface CommandBarProps {
 }
 
 function stabilityColor(pct: number): string {
-  if (pct === 100) return '#00FF88';   // phosphor green — complete
+  if (pct === 100) return 'var(--color-phosphor)';   // phosphor green — complete
   if (pct > 60)   return '#FFD700';    // amber — progressing
   return '#EF4444';                     // red — unstable
 }

@@ -142,7 +142,7 @@ export async function logInventoryItem(
 ): Promise<void> {
   await db.exec(
     `
-    INSERT INTO inventory_items 
+    INSERT INTO inventory_items
       (qr_data, category, zone_id, status, scanned_at, synced)
     VALUES (?, ?, ?, ?, ?, FALSE)
     ON CONFLICT (qr_data) DO UPDATE SET
@@ -176,7 +176,7 @@ export async function getZoneSummary(
     in_stock: number;
     pending: number;
   }>(`
-    SELECT 
+    SELECT
       z.id,
       z.name,
       COUNT(i.qr_data) FILTER (WHERE i.status = 'received') as in_stock,
@@ -236,7 +236,7 @@ export async function markItemsSynced(
   const placeholders = qrDataList.map((_, i) => `?`).join(',');
   await db.exec(
     `
-    UPDATE inventory_items 
+    UPDATE inventory_items
     SET synced = TRUE, synced_at = (EXTRACT(EPOCH FROM NOW()) * 1000)
     WHERE qr_data IN (${placeholders})
   `,
@@ -347,7 +347,7 @@ export async function markSyncError(
 ): Promise<void> {
   await db.exec(
     `
-    UPDATE sync_queue 
+    UPDATE sync_queue
     SET retry_count = retry_count + 1, last_error = ?
     WHERE id = ?
   `,

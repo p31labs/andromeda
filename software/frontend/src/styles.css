@@ -1,4 +1,25 @@
 /* P31 Spaceship Earth — HUD Layout */
+@import '@p31/shared/src/theme/css-variables.css';
+
+/* P31 Canon — injected by Quantum Polisher */
+:root {
+  --color-amber: #cda852;
+  --color-cloud: #1e293b;
+  --color-coral: #cc6247;
+  --color-cyan: #4db8a8;
+  --color-fuchsia: #e879f9;
+  --color-ink: #0f172a;
+  --color-lavender: #8b7cc9;
+  --color-muted: #64748b;
+  --color-paper: #fdfcfa;
+  --color-phosphor: #00ff88;
+  --color-phosphorus: #3ba372;
+  --color-surface: #ffffff;
+  --color-surface2: #ebeae4;
+  --color-teal: #5dcaa5;
+  --color-themeColor: #f5f4f0;
+  --color-void: #f5f4f0;
+}
 
 :root {
   --void: #050510;
@@ -101,8 +122,8 @@ canvas.dome-canvas {
   border: 1px solid var(--panel-border);
   border-radius: 8px;
   padding: 12px 14px;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .panel-title {
@@ -424,8 +445,8 @@ canvas.dome-canvas {
   border: 1px solid var(--panel-border);
   border-radius: 12px;
   overflow: hidden;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .cmd-input {
@@ -501,8 +522,8 @@ canvas.dome-canvas {
   border: 1px solid var(--panel-border);
   border-radius: 12px;
   padding: 20px;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .ingest-textarea {
@@ -726,8 +747,8 @@ canvas.dome-canvas {
   border: 1px solid var(--panel-border);
   border-radius: 12px;
   padding: 20px;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .export-buttons {
@@ -814,8 +835,8 @@ canvas.dome-canvas {
   background: var(--panel-bg);
   border: 1px solid var(--panel-border);
   border-radius: 8px;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   color: var(--text);
   font-size: 13px;
   pointer-events: auto;

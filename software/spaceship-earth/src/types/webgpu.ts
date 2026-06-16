@@ -1,6 +1,6 @@
 /**
  * WebGPU Type Definitions
- * 
+ *
  * Provides TypeScript definitions for WebGPU APIs that may not be available
  * in all TypeScript environments or browser versions.
  */
@@ -200,7 +200,7 @@ export interface GPUShaderModule {
 }
 
 // WebGPU Texture Format
-export type GPUTextureFormat = 
+export type GPUTextureFormat =
   | 'rgba8unorm'
   | 'rgba8snorm'
   | 'rgba8uint'
@@ -373,7 +373,7 @@ export interface GPULimits {
 }
 
 // WebGPU Feature Name
-export type GPUFeatureName = 
+export type GPUFeatureName =
   | 'depth-clip-control'
   | 'depth32float-stencil8'
   | 'timestamp-query'
@@ -399,7 +399,7 @@ export interface GPUQueueDescriptor {
 }
 
 // WebGPU Bindable Resource
-export type GPUBindableResource = 
+export type GPUBindableResource =
   | GPUBuffer
   | GPUSampler
   | GPUTextureView
@@ -432,13 +432,13 @@ export interface GPUAdapterInfo {
   backendType: GPUBackendType;
 }
 
-export type GPUAdapterType = 
+export type GPUAdapterType =
   | 'discrete'
   | 'integrated'
   | 'cpu'
   | 'unknown';
 
-export type GPUBackendType = 
+export type GPUBackendType =
   | 'd3d11'
   | 'd3d12'
   | 'metal'

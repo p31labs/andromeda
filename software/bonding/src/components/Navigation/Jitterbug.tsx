@@ -51,7 +51,7 @@ const RAD_PER_SEC = (0.3 / 60) * 2 * Math.PI;
 // ── Pod configuration ──────────────────────────────────
 
 const PODS: Pod[] = [
-  { name: 'calcium',    label: 'SHELTER',     color: '#FFFFFF', href: '#shelter'     },
+  { name: 'calcium',    label: 'SHELTER',     color: 'var(--color-surface)', href: '#shelter'     },
   { name: 'phosphorus', label: 'TASKS',       color: '#B080FF', href: '#tasks'       },
   { name: 'oxygen',     label: 'ENVIRONMENT', color: '#FF3030', href: '#environment' },
   { name: 'nitrogen',   label: 'CREATION',    color: '#4488FF', href: '#creation'    },

@@ -4,27 +4,64 @@
     "module": "ESNext",
     "moduleResolution": "bundler",
     "baseUrl": ".",
-    "strict": false,
+    "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "jsx": "react-jsx",
-    "types": ["vite/client", "@webgpu/types", "@types/web-bluetooth"],
-    "lib": ["DOM", "ES2020"],
+    "types": [
+      "vite/client",
+      "@webgpu/types",
+      "@types/web-bluetooth"
+    ],
+    "lib": [
+      "DOM",
+      "ES2020"
+    ],
     "paths": {
-      "@p31/shared": ["../packages/shared/src"],
-      "@p31/shared/*": ["../packages/shared/src/*"],
-      "@p31/node-zero": ["../packages/node-zero/src"],
-      "@p31/node-zero/*": ["../packages/node-zero/src/*"],
-      "@p31/love-ledger": ["../packages/love-ledger/src"],
-      "@p31/love-ledger/*": ["../packages/love-ledger/src/*"],
-      "@p31/game-engine": ["../packages/game-engine/src"],
-      "@p31/game-engine/*": ["../packages/game-engine/src/*"],
-      "@p31/sovereign": ["../packages/sovereign/src"],
-      "@p31/sovereign/*": ["../packages/sovereign/src/*"],
-      "@p31/tetra": ["src/lib/tetra"],
-      "@p31/tetra/*": ["src/lib/tetra/*"]
+      "@p31/shared": [
+        "../packages/shared/src"
+      ],
+      "@p31/shared/*": [
+        "../packages/shared/src/*"
+      ],
+      "@p31/node-zero": [
+        "../packages/node-zero/src"
+      ],
+      "@p31/node-zero/*": [
+        "../packages/node-zero/src/*"
+      ],
+      "@p31/love-ledger": [
+        "../packages/love-ledger/src"
+      ],
+      "@p31/love-ledger/*": [
+        "../packages/love-ledger/src/*"
+      ],
+      "@p31/game-engine": [
+        "../packages/game-engine/src"
+      ],
+      "@p31/game-engine/*": [
+        "../packages/game-engine/src/*"
+      ],
+      "@p31/sovereign": [
+        "../packages/sovereign/src"
+      ],
+      "@p31/sovereign/*": [
+        "../packages/sovereign/src/*"
+      ],
+      "@p31/tetra": [
+        "src/lib/tetra"
+      ],
+      "@p31/tetra/*": [
+        "src/lib/tetra/*"
+      ]
     }
   },
-  "include": ["src", "src/types/**/*.d.ts"],
-  "exclude": ["src/services/webgpu/**/*", "src/__tests__/**/*"]
+  "include": [
+    "src",
+    "src/types/**/*.d.ts"
+  ],
+  "exclude": [
+    "src/services/webgpu/**/*",
+    "src/__tests__/**/*"
+  ]
 }

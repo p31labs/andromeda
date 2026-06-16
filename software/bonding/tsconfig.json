@@ -2,7 +2,11 @@
   "compilerOptions": {
     "target": "ES2022",
     "useDefineForClassFields": true,
-    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
     "module": "ESNext",
     "skipLibCheck": true,
     "allowJs": true,
@@ -12,17 +16,32 @@
     "moduleDetection": "force",
     "noEmit": true,
     "jsx": "react-jsx",
-    "strict": false,
+    "strict": true,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": true,
-    "types": ["vite/client", "@webgpu/types"],
+    "types": [
+      "vite/client",
+      "@webgpu/types"
+    ],
     "paths": {
-      "@p31/shared": ["../packages/shared/src"],
-      "@p31/shared/*": ["../packages/shared/src/*"]
+      "@p31/shared": [
+        "../packages/shared/src"
+      ],
+      "@p31/shared/*": [
+        "../packages/shared/src/*"
+      ]
     },
     "baseUrl": "."
   },
-  "include": ["src"],
-  "exclude": ["src/__tests__", "src/**/*.test.ts", "src/**/*.test.tsx", "../spaceship-earth", "src/components/QuantumEggHunt.js"]
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "src/__tests__",
+    "src/**/*.test.ts",
+    "src/**/*.test.tsx",
+    "../spaceship-earth",
+    "src/components/QuantumEggHunt.js"
+  ]
 }

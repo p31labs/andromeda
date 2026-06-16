@@ -47,7 +47,7 @@
       );
       border-radius: inherit;
     }
-    
+
     .radius-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -77,7 +77,7 @@
       font-size: 11px;
       color: var(--p31-muted);
     }
-    
+
     .layout-demo {
       padding: 20px;
       background: var(--p31-surface);
@@ -102,7 +102,7 @@
     import { renderShell, code, callout } from '/stylebook/_chrome.js';
     import { P31ThemeController } from '/lib/p31-theme-engine.mjs';
     window.p31Theme = new P31ThemeController({ defaultTheme: 'hub' });
-    
+
     function spaceRow(token, multiplier, usage) {
       return `
         <div class="space-row">
@@ -114,7 +114,7 @@
         </div>
       `;
     }
-    
+
     const content = `
       <section class="sb-section">
         <div class="sb-section-header">
@@ -125,7 +125,7 @@
             On phones it's tight (4px). On desktops it expands (8px). The whole scale follows.
           </p>
         </div>
-        
+
         <div style="background: var(--p31-surface); border: 1px solid var(--p31-border-subtle); border-radius: 12px; padding: 24px;">
           ${spaceRow('1', 1, 'Tight inline gaps, icon padding')}
           ${spaceRow('2', 2, 'Compact UI, badge padding')}
@@ -141,7 +141,7 @@
           ${spaceRow('24', 24, 'Maximum rhythm')}
         </div>
       </section>
-      
+
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">Section spacing</div>
@@ -149,7 +149,7 @@
           <p class="sb-text">For page-level sections, use the dedicated section tokens. They scale more aggressively
           than space tokens — sections feel different on phone vs desktop on purpose.</p>
         </div>
-        
+
         <table class="sb-table">
           <thead><tr><th>Token</th><th>Phone</th><th>Desktop</th><th>Usage</th></tr></thead>
           <tbody>
@@ -159,7 +159,7 @@
           </tbody>
         </table>
       </section>
-      
+
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">Containers</div>
@@ -167,7 +167,7 @@
           <p class="sb-text">Content has a maximum width. Beyond it, lines become too long for comfortable reading.
           Containers handle that constraint.</p>
         </div>
-        
+
         <div class="layout-demo">
           <div style="max-width: var(--p31-container-sm); margin: 0 auto;">
             <div class="layout-block">--p31-container-sm · 640px · narrow forms</div>
@@ -188,10 +188,10 @@
             <div class="layout-block">--p31-container-xl · 1280px · wide dashboards</div>
           </div>
         </div>
-        
+
         ${callout('info', 'Reading width', 'For long-form prose, prefer <code>max-width: 65ch</code> over a container token. Character-based widths track the actual font size, not pixels.')}
       </section>
-      
+
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">Corners</div>
@@ -199,7 +199,7 @@
           <p class="sb-text">Soft, organic rounding. The system avoids sharp 90° corners on interactive surfaces —
           they read as aggressive in a humane interface.</p>
         </div>
-        
+
         <div class="radius-grid">
           <div class="radius-card">
             <div class="radius-shape" style="border-radius: var(--p31-radius-none);"></div>
@@ -243,13 +243,13 @@
           </div>
         </div>
       </section>
-      
+
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">In code</div>
           <h2 class="sb-h2">Use it</h2>
         </div>
-        
+
         ${code(`/* Component padding */
 .card {
   padding: var(--p31-space-6);
@@ -281,7 +281,7 @@ section {
 }`, 'css', 'Spacing tokens')}
       </section>
     `;
-    
+
     renderShell({
       activeId: 'space',
       breadcrumb: [

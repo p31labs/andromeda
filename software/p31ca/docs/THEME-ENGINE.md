@@ -1,6 +1,6 @@
 # P31 Fluid Design System
 
-**Version:** 2.0.0  
+**Version:** 2.0.0
 **Schema:** `p31.fluidDesign/2.0.0` / `p31.themeEngine/2.0.0`
 
 A smart, flowing, adaptive design system for p31ca.org with 6 themes, 5 adaptive modes, and fluid animations.
@@ -39,7 +39,7 @@ A smart, flowing, adaptive design system for p31ca.org with 6 themes, 5 adaptive
 ```html
 <script type="module">
   import { P31ThemeController } from '/lib/p31-theme-engine.mjs';
-  
+
   const theme = new P31ThemeController({
     defaultTheme: 'hub',
     defaultMode: 'default',

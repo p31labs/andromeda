@@ -1,7 +1,7 @@
 // @ts-nocheck — CockpitStore type reconciliation deferred (WCD-L02 parking lot)
 /**
  * Fawn Guard Interceptor — Submission Pattern Detection
- * 
+ *
  * Vertex 3 (Interface Node) — "Are these your words?" modal
  * Monitors outbound text input for submissive linguistic markers
  * When detected: blocks submit, shows draft read-only, requires boolean confirmation
@@ -87,21 +87,21 @@ interface FawnGuardModalProps {
  * Fawn Guard Interceptor Modal
  * Displays when submissive linguistic markers are detected
  */
-export default function FawnGuardModal({ 
-  draft, 
-  markers, 
-  confidence, 
-  onConfirm, 
-  onReject 
+export default function FawnGuardModal({
+  draft,
+  markers,
+  confidence,
+  onConfirm,
+  onReject
 }: FawnGuardModalProps) {
   const [showDraft, setShowDraft] = useState(false);
-  
+
   // Calculate confidence percentage
   const confidencePercent = Math.round(confidence * 100);
-  
+
   // Get marker info
   const markerList = markers.map(m => MARKER_DISPLAY[m]).filter(Boolean);
-  
+
   return (
     <div className="fawn-guard-modal" style={{ zIndex: 60 }}>
       <div className="fawn-guard-card">
@@ -110,7 +110,7 @@ export default function FawnGuardModal({
           <span className="fawn-guard-icon">🛡️</span>
           <h2>Are these your words?</h2>
         </div>
-        
+
         {/* Explanation */}
         <div className="fawn-guard-explanation">
           <p>
@@ -123,7 +123,7 @@ export default function FawnGuardModal({
             </strong>
           </p>
         </div>
-        
+
         {/* Detected markers */}
         <div className="fawn-guard-markers">
           <h3>Detected Patterns:</h3>
@@ -140,40 +140,40 @@ export default function FawnGuardModal({
             ))}
           </ul>
         </div>
-        
+
         {/* Draft preview toggle */}
         <div className="fawn-guard-draft-section">
-          <button 
+          <button
             className="fawn-guard-toggle-draft"
             onClick={() => setShowDraft(!showDraft)}
           >
             {showDraft ? 'Hide Draft' : 'Show Draft'}
           </button>
-          
+
           {showDraft && (
             <div className="fawn-guard-draft-preview">
               <p>{draft}</p>
             </div>
           )}
         </div>
-        
+
         {/* Context hint */}
         <div className="fawn-guard-context">
           <p>
-            <strong>Remember:</strong> Your words represent your actual thoughts. 
+            <strong>Remember:</strong> Your words represent your actual thoughts.
             Are you writing what you truly think, or what you think others want to hear?
           </p>
         </div>
-        
+
         {/* Actions */}
         <div className="fawn-guard-actions">
-          <button 
+          <button
             className="fawn-guard-btn reject"
             onClick={onReject}
           >
             Not My Words - Clear
           </button>
-          <button 
+          <button
             className="fawn-guard-btn confirm"
             onClick={onConfirm}
           >
@@ -204,32 +204,32 @@ interface FawnGuardInputProps {
  * Input wrapper that monitors for fawn patterns
  * Integrates with the cockpit store
  */
-export function FawnGuardInputWrapper({ 
-  children, 
-  onSubmit, 
-  value, 
-  onChange 
+export function FawnGuardInputWrapper({
+  children,
+  onSubmit,
+  value,
+  onChange
 }: FawnGuardInputProps) {
-  const { 
-    fawnGuardEnabled, 
-    pendingDraft, 
-    fawnMarkers, 
+  const {
+    fawnGuardEnabled,
+    pendingDraft,
+    fawnMarkers,
     fawnConfidence,
     checkForFawnMarkers,
     confirmOwnWords,
     rejectOwnWords,
   } = useCockpitStore();
-  
+
   const isPending = useFawnPending();
   const [showModal, setShowModal] = useState(false);
-  
+
   // Check for fawn markers when input changes
   useEffect(() => {
     if (fawnGuardEnabled && value.length > 10) {
       checkForFawnMarkers(value);
     }
   }, [value, fawnGuardEnabled, checkForFawnMarkers]);
-  
+
   // Show modal when pending draft detected; play Larmor tone on activation
   useEffect(() => {
     if (isPending && pendingDraft) {
@@ -237,45 +237,45 @@ export function FawnGuardInputWrapper({
       playLarmorTone();
     }
   }, [isPending, pendingDraft]);
-  
+
   const handleSubmit = (e?: React.FormEvent) => {
     e?.preventDefault();
-    
+
     if (!fawnGuardEnabled) {
       onSubmit(value);
       return;
     }
-    
+
     // Check for fawn patterns before submit
     if (value.length > 10) {
       checkForFawnMarkers(value);
-      
+
       // If pending, the modal will handle confirmation
       if (pendingDraft) {
         setShowModal(true);
         return;
       }
     }
-    
+
     onSubmit(value);
   };
-  
+
   const handleConfirm = () => {
     setShowModal(false);
     confirmOwnWords();
     onSubmit(value);
   };
-  
+
   const handleReject = () => {
     setShowModal(false);
     rejectOwnWords();
     onChange('');
   };
-  
+
   return (
     <div className="fawn-guard-input-wrapper">
       {children}
-      
+
       {showModal && pendingDraft && (
         <FawnGuardModal
           draft={pendingDraft}
@@ -307,14 +307,14 @@ function getConfidenceColor(confidence: number): string {
  * Hook to programmatically check text for fawn patterns
  */
 export function useFawnGuard() {
-  const { 
-    fawnGuardEnabled, 
-    fawnMarkers, 
+  const {
+    fawnGuardEnabled,
+    fawnMarkers,
     fawnConfidence,
     checkForFawnMarkers,
     enableFawnGuard,
   } = useCockpitStore();
-  
+
   return {
     enabled: fawnGuardEnabled,
     markers: fawnMarkers,

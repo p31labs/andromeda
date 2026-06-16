@@ -81,18 +81,18 @@ export function saveFriends(friends: Friend[]): void {
 
 export function addFriend(did: string, displayName: string): Friend | null {
   const friends = loadFriends();
-  
+
   // Check if already exists
   if (friends.some(f => f.did === did)) {
     return null;
   }
-  
+
   const friend: Friend = {
     did,
     displayName,
     addedAt: Date.now(),
   };
-  
+
   friends.push(friend);
   saveFriends(friends);
   return friend;
@@ -129,10 +129,10 @@ function encodeBase64Url(str: string): string {
   // Use TextEncoder for proper UTF-8 encoding
   const encoder = new TextEncoder();
   const data = encoder.encode(str);
-  
+
   // Convert to base64
   let base64 = btoa(String.fromCharCode(...data));
-  
+
   // Make URL-safe and remove padding
   return base64
     .replace(/\+/g, '-')
@@ -149,13 +149,13 @@ function decodeBase64Url(str: string): string {
   while (base64.length % 4) {
     base64 += '=';
   }
-  
+
   const decoded = atob(base64);
   const bytes = new Uint8Array(decoded.length);
   for (let i = 0; i < decoded.length; i++) {
     bytes[i] = decoded.charCodeAt(i);
   }
-  
+
   const decoder = new TextDecoder('utf-8');
   return decoder.decode(bytes);
 }
@@ -176,7 +176,7 @@ export function generateUCANToken(
     exp: Date.now() + expiresInMs,
     cat: cartridgeId,
   };
-  
+
   // Use proper Base64Url encoding (handles Unicode, replaces +/ with -_)
   const token: UCANToken = {
     id: crypto.randomUUID(),
@@ -187,11 +187,11 @@ export function generateUCANToken(
     expiresAt: Date.now() + expiresInMs,
     token: encodeBase64Url(JSON.stringify(payload)),
   };
-  
+
   const tokens = loadUCANTokens();
   tokens.push(token);
   saveUCANTokens(tokens);
-  
+
   return token;
 }
 
@@ -202,13 +202,13 @@ export function verifyUCANToken(tokenString: string): UCANToken | null {
   try {
     const decoded = JSON.parse(decodeBase64Url(tokenString));
     const tokens = loadUCANTokens();
-    
+
     // Find matching token
-    const token = tokens.find(t => 
-      t.token === tokenString && 
+    const token = tokens.find(t =>
+      t.token === tokenString &&
       t.expiresAt > Date.now()
     );
-    
+
     return token || null;
   } catch {
     return null;

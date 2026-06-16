@@ -1,10 +1,10 @@
 /**
  * WCD-08 Phase A: TopBar — Navigation, title, and LOVE counter.
- * 
+ *
  * Left:   Jitterbug nav trigger (collapsed tetrahedron icon)
  * Center: "BONDING" title
  * Right:  LoveCounter (from CWP-03 Rev B, positioning stripped)
- * 
+ *
  * The JitterbugNavigator full animation opens as a modal overlay
  * on tap — that's a SEPARATE WCD. Phase A just shows the icon.
  */
@@ -50,13 +50,13 @@ function NavTrigger({ onClick }: { onClick?: () => void }) {
       <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
         <path
           d="M10 3L17 16H3Z"
-          stroke="#00FF88"
+          stroke="var(--color-phosphor)"
           strokeWidth="1.5"
           strokeLinejoin="round"
           opacity="0.6"
         />
         {/* Center dot — the phosphorus atom */}
-        <circle cx="10" cy="12" r="1.5" fill="#00FF88" opacity="0.4" />
+        <circle cx="10" cy="12" r="1.5" fill="var(--color-phosphor)" opacity="0.4" />
       </svg>
     </button>
   );

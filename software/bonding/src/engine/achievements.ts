@@ -256,16 +256,16 @@ export function getLevelForBonds(bonds: number): LevelInfo {
 export function getLevelProgress(bonds: number): number {
   const currentLevel = getLevelForBonds(bonds);
   const levelIndex = LEVELS.findIndex((l) => l.level === currentLevel.level);
-  
+
   // Max level has no next level
   if (levelIndex >= LEVELS.length - 1) {
     return 1;
   }
-  
+
   const currentRequired = currentLevel.requiredBonds;
   const nextRequired = LEVELS[levelIndex + 1].requiredBonds;
   const progress = (bonds - currentRequired) / (nextRequired - currentRequired);
-  
+
   return Math.min(1, Math.max(0, progress));
 }
 
@@ -275,11 +275,11 @@ export function getLevelProgress(bonds: number): number {
 export function getNextLevel(bonds: number): LevelInfo | undefined {
   const currentLevel = getLevelForBonds(bonds);
   const levelIndex = LEVELS.findIndex((l) => l.level === currentLevel.level);
-  
+
   if (levelIndex >= LEVELS.length - 1) {
     return undefined;
   }
-  
+
   return LEVELS[levelIndex + 1];
 }
 
@@ -290,7 +290,7 @@ export function getNextLevel(bonds: number): LevelInfo | undefined {
  */
 export function createBadgeCollection(): BadgeCollection {
   const badges = new Map<string, BadgeProgress>();
-  
+
   for (const badge of BADGES) {
     let target = 0;
     if (badge.criteria.type === 'bonds_total') {
@@ -308,7 +308,7 @@ export function createBadgeCollection(): BadgeCollection {
     } else if (badge.criteria.type === 'element_used') {
       target = badge.criteria.count;
     }
-    
+
     badges.set(badge.id, {
       badgeId: badge.id,
       current: 0,
@@ -316,7 +316,7 @@ export function createBadgeCollection(): BadgeCollection {
       earned: false,
     });
   }
-  
+
   return {
     badges,
     totalBonds: 0,
@@ -344,25 +344,25 @@ export function updateBadgeProgress(
   updated.totalMolecules = newMolecules;
   updated.totalPlayMinutes += sessionMinutes;
   updated.lastUpdated = new Date().toISOString();
-  
+
   if (formula && !updated.uniqueMolecules.has(formula)) {
     updated.uniqueMolecules.add(formula);
   }
-  
+
   if (isFamilySession) {
     updated.familyPlaySessions += 1;
   }
-  
+
   const newlyEarned: Badge[] = [];
   const newBadges = new Map(updated.badges);
-  
+
   for (const badge of BADGES) {
     const progress = newBadges.get(badge.id)!;
     if (progress.earned) continue;
-    
+
     let current = 0;
     let shouldEarn = false;
-    
+
     switch (badge.criteria.type) {
       case 'bonds_total':
         current = updated.totalBonds;
@@ -393,21 +393,21 @@ export function updateBadgeProgress(
         current = 0;
         break;
     }
-    
+
     newBadges.set(badge.id, {
       ...progress,
       current,
       earned: shouldEarn,
       earnedAt: shouldEarn ? new Date().toISOString() : undefined,
     });
-    
+
     if (shouldEarn) {
       newlyEarned.push(badge);
     }
   }
-  
+
   updated.badges = newBadges;
-  
+
   return { updated, newlyEarned };
 }
 

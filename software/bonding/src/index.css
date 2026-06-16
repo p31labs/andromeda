@@ -1,4 +1,21 @@
 @import "tailwindcss";
+@import '@p31/shared/src/theme/css-variables.css';
+
+/* P31 Canon — injected by Quantum Polisher */
+:root {
+  --color-cloud: #1e293b;
+  --color-coral: #cc6247;
+  --color-fuchsia: #e879f9;
+  --color-ink: #0f172a;
+  --color-lavender: #8b7cc9;
+  --color-muted: #64748b;
+  --color-paper: #fdfcfa;
+  --color-phosphorus: #3ba372;
+  --color-surface: #ffffff;
+  --color-surface2: #ebeae4;
+  --color-teal: #5dcaa5;
+  --color-themeColor: #f5f4f0;
+}
 
 /* ── WCD-CC03: Font @import removed — loaded via <link> in index.html
    to avoid @import-after-rules CSS warning from Tailwind expansion ── */
@@ -544,8 +561,8 @@ input, textarea, [contenteditable] {
     rgba(255, 255, 255, 0.08) 0%,
     rgba(255, 255, 255, 0.02) 100%
   );
-  -webkit-backdrop-filter: blur(20px);
-  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-top-color: rgba(255, 255, 255, 0.25);
   box-shadow:

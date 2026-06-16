@@ -56,7 +56,7 @@ describe('Engagement Statistics Engine', () => {
         const report = computeEngagementReport(events, gallery);
         expect(Object.keys(report).length).toBe(28);
     });
-    
+
     it('totalSessions counts correctly with 30min gap rule', () => {
         const report = computeEngagementReport(events, gallery);
         expect(report.totalSessions).toBe(3);
@@ -76,17 +76,17 @@ describe('Engagement Statistics Engine', () => {
         const report = computeEngagementReport(events, gallery);
         expect(report.totalAtomsPlaced).toBe(3);
     });
-    
+
     it('totalPingsSent counts ping_sent events', () => {
         const report = computeEngagementReport(events, gallery);
         expect(report.totalPingsSent).toBe(1);
     });
-    
+
     it('totalMessagesExchanged counts events with message metadata', () => {
         const report = computeEngagementReport(events, gallery);
         expect(report.totalMessagesExchanged).toBe(1);
     });
-    
+
     it('averageSessionLength computes correctly', () => {
         const report = computeEngagementReport(events, gallery);
         // 2min + 0min + 2min = 4min total. 4/3 = 1.33 => 1m
@@ -153,7 +153,7 @@ describe('Engagement Statistics Engine', () => {
         const summary = generateCourtSummary(report);
         expect(summary.keyMetrics.length).toBe(7);
     });
-    
+
     it('empty events returns zeroed report', () => {
         const report = computeEngagementReport([], []);
         expect(report.totalSessions).toBe(0);

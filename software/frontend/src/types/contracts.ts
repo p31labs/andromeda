@@ -1,6 +1,6 @@
 /**
  * P31 Digital Consciousness Surrogate — TypeScript Data Contracts
- * 
+ *
  * Vertex 3 (Interface Node) — Data contracts binding UI to Vertex 2's output
  * These interfaces bind the Cockpit UI to the backend's async data streams.
  */
@@ -144,7 +144,7 @@ export interface FawnGuardResult {
 /**
  * Submissive linguistic markers
  */
-export type FawnMarker = 
+export type FawnMarker =
   | 'apologetic_language'
   | 'self_deprecation'
   | 'passive_voice'
@@ -159,7 +159,7 @@ export const FAWN_GUARD_CONFIG = {
   MIN_CONFIDENCE: 0.6,
   MARKERS: [
     'apologetic_language',
-    'self_deprecation', 
+    'self_deprecation',
     'passive_voice',
     'excessive_pleasing',
     'hedging',
@@ -186,7 +186,7 @@ export const FAWN_PATTERNS: Record<FawnMarker, RegExp> = {
 /**
  * Room types available in the cockpit
  */
-export type RoomType = 
+export type RoomType =
   | 'observatory'
   | 'collider'
   | 'bonding'
@@ -220,7 +220,7 @@ export const ROOMS: RoomDefinition[] = [
 // ═══════════════════════════════════════════════════════════════════
 
 export const COCKPIT_COLORS = {
-  phosphorus: '#00FF88',
+  phosphorus: 'var(--color-phosphor)',
   quantum_cyan: '#00D4FF',
   quantum_violet: '#7A27FF',
   phosphorus_orange: '#FF6600',

@@ -19,8 +19,8 @@ export const MvpHub: React.FC = () => {
   }, []);
 
   return (
-    <div style={{ minHeight: '100vh', padding: '2rem', background: '#0f1115', color: '#d8d6d0' }}>
-      <h1 style={{ fontSize: '2rem', fontWeight: 700, textAlign: 'center', marginBottom: '2rem', color: '#d8d6d0' }}>
+    <div style={{ minHeight: '100vh', padding: '2rem', background: '#0f1115', color: 'var(--color-cloud)' }}>
+      <h1 style={{ fontSize: '2rem', fontWeight: 700, textAlign: 'center', marginBottom: '2rem', color: 'var(--color-cloud)' }}>
         P31 Ecosystem Hub
       </h1>
       <div style={{

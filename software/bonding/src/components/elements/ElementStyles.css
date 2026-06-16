@@ -236,7 +236,7 @@
   .element-grid-container {
     grid-template-columns: 1fr;
   }
-  
+
   .molecule-card {
     grid-template-columns: 1fr;
   }

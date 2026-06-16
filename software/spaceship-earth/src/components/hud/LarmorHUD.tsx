@@ -1,12 +1,12 @@
 /**
  * @file LarmorHUD.tsx — Somatic Grounding Integration HUD
- * 
+ *
  * Combines Larmor Resonance audio with Delta Mesh 3D visualization.
  * Provides complete somatic grounding suite for the cockpit.
- * 
+ *
  * Section 2.2: Larmor Frequency Hardware Synchronization
  * Section 1.2: Tetrahedron Topology Visualizer
- * 
+ *
  * CWP-JITTERBUG-14/15: Somatic Grounding Suite
  */
 import { useState, useEffect, useCallback } from 'react';
@@ -61,9 +61,9 @@ export function LarmorHUD({ className = '' }: LarmorHUDProps) {
       <div className="absolute inset-0 z-0">
         <Canvas>
           <PerspectiveCamera makeDefault position={[0, 1, 4]} />
-          <OrbitControls 
-            enableZoom={false} 
-            autoRotate 
+          <OrbitControls
+            enableZoom={false}
+            autoRotate
             autoRotateSpeed={0.3}
             enablePan={false}
           />
@@ -76,12 +76,12 @@ export function LarmorHUD({ className = '' }: LarmorHUDProps) {
 
       {/* HUD Overlay Layer */}
       <div className="absolute inset-0 z-10 p-6 pointer-events-none flex flex-col justify-between">
-        
+
         {/* Top Left: Delta Topology Info */}
         <div className="pointer-events-auto">
           <div className="bg-[#050510]/80 backdrop-blur-md border border-[#1f2937] p-4 rounded-lg">
             <div className="flex items-center gap-2 mb-3">
-              <Globe className="text-[#00FF88]" size={18} />
+              <Globe className="text-[var(--color-phosphor)]" size={18} />
               <h1 className="text-lg font-bold tracking-widest uppercase text-[#E8ECF4]">
                 Delta Topology
               </h1>
@@ -91,8 +91,8 @@ export function LarmorHUD({ className = '' }: LarmorHUDProps) {
               <div>Nodes: 4 | Edges: 6</div>
               <div>Resilience: {resilience.toFixed(1)}% Threshold</div>
               <div className="flex items-center gap-2 mt-2">
-                <ShieldCheck className={curvature >= 0.8 ? "text-[#00FF88]" : "text-[#EF4444]"} size={12} />
-                <span className={curvature >= 0.8 ? "text-[#00FF88]" : "text-[#EF4444]"}>
+                <ShieldCheck className={curvature >= 0.8 ? "text-[var(--color-phosphor)]" : "text-[#EF4444]"} size={12} />
+                <span className={curvature >= 0.8 ? "text-[var(--color-phosphor)]" : "text-[#EF4444]"}>
                   {curvature >= 0.8 ? 'Isostatically Rigid' : 'Bottleneck Detected'}
                 </span>
               </div>
@@ -105,11 +105,11 @@ export function LarmorHUD({ className = '' }: LarmorHUDProps) {
           <div className="bg-[#050510]/80 backdrop-blur-md border border-[#1f2937] p-4 rounded-lg flex flex-col gap-3">
             <div className="flex items-center gap-3">
               <span className="text-xs text-gray-400 uppercase tracking-widest">Somatic Resonator</span>
-              <button 
+              <button
                 onClick={handleToggleLarmor}
                 className={`p-2 rounded-full transition-all ${
-                  isLarmorActive 
-                    ? 'bg-[#EF4444]/20 text-[#EF4444] shadow-[0_0_10px_#EF4444]' 
+                  isLarmorActive
+                    ? 'bg-[#EF4444]/20 text-[#EF4444] shadow-[0_0_10px_#EF4444]'
                     : 'bg-[#1f2937] text-gray-400 hover:bg-[#1f2937]/80'
                 }`}
                 title={isLarmorActive ? 'Stop Larmor Resonance' : 'Start Larmor Resonance'}
@@ -117,7 +117,7 @@ export function LarmorHUD({ className = '' }: LarmorHUDProps) {
                 {isLarmorActive ? <Volume2 size={20} /> : <VolumeX size={20} />}
               </button>
             </div>
-            
+
             {isLarmorActive && (
               <div className="flex flex-col items-end gap-1">
                 <div className="text-[10px] text-[#EF4444] animate-pulse">
@@ -140,19 +140,19 @@ export function LarmorHUD({ className = '' }: LarmorHUDProps) {
             <div className="flex items-center gap-2 mb-3 text-[#00D4FF]">
               <Zap size={16} />
               <span className="text-xs font-bold uppercase tracking-widest">Grounding Protocol</span>
-              <Activity 
-                size={14} 
-                className={isLarmorActive ? "text-[#00FF88] animate-pulse" : "text-gray-600"} 
+              <Activity
+                size={14}
+                className={isLarmorActive ? "text-[var(--color-phosphor)] animate-pulse" : "text-gray-600"}
               />
             </div>
-            
+
             <div className="text-[11px] text-gray-400 leading-relaxed uppercase">
               <p>
-                κ (Curvature): {curvature.toFixed(2)} | 
+                κ (Curvature): {curvature.toFixed(2)} |
                 dRfge: {curvature >= 0.8 ? 'Optimal' : 'Adapting'}
               </p>
               <p className="mt-1">
-                {isLarmorActive 
+                {isLarmorActive
                   ? `Larmor frequencies active: ${LARMOR_FREQUENCIES.PRIMARY}Hz + ${LARMOR_FREQUENCIES.SECONDARY}Hz`
                   : 'Larmor inactive — click speaker to engage somatic grounding'}
               </p>
@@ -165,9 +165,9 @@ export function LarmorHUD({ className = '' }: LarmorHUDProps) {
                 <span>{resilience.toFixed(1)}%</span>
               </div>
               <div className="h-1.5 bg-[#1f2937] rounded-full overflow-hidden">
-                <div 
+                <div
                   className={`h-full transition-all duration-500 ${
-                    resilience >= 50 ? 'bg-gradient-to-r from-[#00FF88] to-[#00D4FF]' : 'bg-[#EF4444]'
+                    resilience >= 50 ? 'bg-gradient-to-r from-[var(--color-phosphor)] to-[#00D4FF]' : 'bg-[#EF4444]'
                   }`}
                   style={{ width: `${resilience}%` }}
                 />

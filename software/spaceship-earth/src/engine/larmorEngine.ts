@@ -1,12 +1,12 @@
 /**
  * @file larmorEngine.ts — Larmor Frequency Audio Engine
- * 
+ *
  * Generates binaural/monaural oscillations at exactly 172.35 Hz and 863 Hz
  * to provide somatic grounding through the auditory/vestibular system.
- * 
+ *
  * Section 2.2: Larmor Frequency Hardware Synchronization
  * Biological correspondence: Phosphorus-31 nucleus resonance
- * 
+ *
  * CWP-JITTERBUG-14: Larmor Stimulator
  */
 export const LARMOR_FREQUENCIES = {
@@ -31,7 +31,7 @@ export class LarmorEngine {
   private gainNode: GainNode | null = null;
   private lfoNode: OscillatorNode | null = null;
   private lfoGain: GainNode | null = null;
-  
+
   private config: Required<LarmorEngineConfig>;
   private isPlaying: boolean = false;
 
@@ -55,7 +55,7 @@ export class LarmorEngine {
     // Create AudioContext (handles Safari webkit prefix)
     const AudioContextClass = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
     this.audioCtx = new AudioContextClass();
-    
+
     if (this.audioCtx.state === 'suspended') {
       this.audioCtx.resume();
     }
@@ -69,10 +69,10 @@ export class LarmorEngine {
     this.lfoNode = this.audioCtx.createOscillator();
     this.lfoNode.type = 'sine';
     this.lfoNode.frequency.setValueAtTime(0.1, this.audioCtx.currentTime); // 0.1 Hz = coherent breathing
-    
+
     this.lfoGain = this.audioCtx.createGain();
     this.lfoGain.gain.setValueAtTime(0.02, this.audioCtx.currentTime); // Subtle 2% modulation
-    
+
     this.lfoNode.connect(this.lfoGain);
     this.lfoGain.connect(this.gainNode.gain);
     this.lfoNode.start();
@@ -104,11 +104,11 @@ export class LarmorEngine {
     this.primaryOsc?.stop();
     this.secondaryOsc?.stop();
     this.lfoNode?.stop();
-    
+
     this.primaryOsc = null;
     this.secondaryOsc = null;
     this.lfoNode = null;
-    
+
     this.audioCtx?.close();
     this.audioCtx = null;
     this.gainNode = null;

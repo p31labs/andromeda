@@ -160,7 +160,7 @@ import { meshSync } from './services/meshSync';
 // Initialize mesh synchronization
 useEffect(() => {
   meshSync.initialize().catch(console.error);
-  
+
   return () => {
     meshSync.disconnect();
   };
@@ -176,7 +176,7 @@ import { useMeshSync } from './services/meshSync';
 
 function MeshStatus() {
   const { isInitialized, peerCount, connectionState, peers } = useMeshSync();
-  
+
   return (
     <div className="mesh-status">
       <h3>Sovereign Mesh Status</h3>

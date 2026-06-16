@@ -2,10 +2,10 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 
 /**
  * useFrequencySynthesis - Audio frequency synthesis for 31P NMR resonance
- * 
+ *
  * Generates tones at 172.35 Hz (phosphorus-31 NMR frequency in Earth's field)
  * and other relevant frequencies from the P31 research.
- * 
+ *
  * Frequencies:
  * - 172.35 Hz: Phosphorus-31 NMR (Larmor frequency in 50μT field)
  * - 863 Hz: 31P Larmor frequency calculation (17.235 MHz/T × 50.07 μT)
@@ -17,7 +17,7 @@ export function useFrequencySynthesis() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentFrequency, setCurrentFrequency] = useState(null);
   const [gain, setGain] = useState(0.5); // Default 50% volume
-  
+
   const audioContextRef = useRef(null);
   const oscillatorRef = useRef(null);
   const gainNodeRef = useRef(null);
@@ -51,7 +51,7 @@ export function useFrequencySynthesis() {
    */
   const play = useCallback((frequency = FREQUENCIES.P31_NMR, options = {}) => {
     const ctx = initAudio();
-    
+
     // Stop any existing oscillator
     if (oscillatorRef.current) {
       oscillatorRef.current.stop();

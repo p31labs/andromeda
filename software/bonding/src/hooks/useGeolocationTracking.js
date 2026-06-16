@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 
 /**
  * useGeolocationTracking - GPS tracking with Haversine distance calculation
- * 
+ *
  * Tracks user position and calculates distance to a target coordinate.
  * Returns current location, distance in meters, and grounded status.
  */
@@ -12,7 +12,7 @@ export function useGeolocationTracking({ targetLat, targetLon, groundThreshold =
   const [isGrounded, setIsGrounded] = useState(false);
   const [error, setError] = useState(null);
   const [isTracking, setIsTracking] = useState(false);
-  
+
   const watchIdRef = useRef(null);
 
   /**
@@ -55,7 +55,7 @@ export function useGeolocationTracking({ targetLat, targetLon, groundThreshold =
     watchIdRef.current = navigator.geolocation.watchPosition(
       (position) => {
         const { latitude, longitude, accuracy } = position.coords;
-        
+
         setCurrentLocation({
           lat: latitude,
           lon: longitude,

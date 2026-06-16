@@ -201,17 +201,17 @@ html.soup-app body::after {
   }
 }
 .soup-aaso a {
-  color: var(--p31-cyan, #4db8a8);
+  color: var(--p31-cyan, var(--color-cyan));
   text-decoration: none;
   border-bottom: 1px solid color-mix(in srgb, var(--p31-cyan) 32%, transparent);
 }
 .soup-aaso a:hover {
-  color: var(--p31-amber, #cda852);
+  color: var(--p31-amber, var(--color-amber));
   border-bottom-color: color-mix(in srgb, var(--p31-amber) 50%, transparent);
 }
 .soup-aaso .aaso-love,
 .soup-aaso .aaso-3 {
-  color: var(--p31-coral, #cc6247);
+  color: var(--p31-coral, var(--color-coral));
   font-style: normal;
   white-space: nowrap;
 }
@@ -318,7 +318,7 @@ html.soup-app #container {
   color: var(--p31-cloud);
   border: 1px solid var(--p31-glass-border);
   background: var(--p31-glass-surface);
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(10px);
   max-width: 100%;
   box-sizing: border-box;
 }

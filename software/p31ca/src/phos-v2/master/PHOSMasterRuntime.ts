@@ -1,7 +1,7 @@
 /**
  * PHOS Master Runtime v2.0
  * Event bus and coordinator for all 8 parallel phases
- * 
+ *
  * The glow that guides without burning — converging from 8 paths to 1
  */
 
@@ -9,17 +9,17 @@ export interface PHOSPhase {
   id: string;
   version: string;
   status: 'alpha' | 'beta' | 'stable' | 'disabled';
-  
+
   // Lifecycle
   initialize(config: PHOSConfig): Promise<void>;
   activate(): void;
   deactivate(): void;
   destroy(): void;
-  
+
   // Convergence
   onConvergence(week: number, data: ConvergenceData): void;
   getState(): PhaseState;
-  
+
   // Events
   emit(event: PHOSEvent): void;
   on(event: string, handler: (event: PHOSEvent) => void): void;
@@ -84,38 +84,38 @@ export class PHOSMasterRuntime {
   private convergenceWeek: number = 1;
   private eventHistory: PHOSEvent[] = [];
   private maxHistorySize: number = 1000;
-  
+
   constructor(config: PHOSConfig) {
     this.config = config;
     this.convergenceWeek = config.convergenceWeek;
     console.log(`[PHOS Master] v${config.version} initialized — Week ${config.convergenceWeek} convergence`);
   }
-  
+
   /**
    * Register a phase with the master runtime
    */
   registerPhase(phase: PHOSPhase): void {
     const phaseConfig = this.config.phases[phase.id];
-    
+
     if (!phaseConfig || !phaseConfig.enabled) {
       console.log(`[PHOS Master] Phase ${phase.id} disabled in config`);
       phase.status = 'disabled';
       return;
     }
-    
+
     this.phases.set(phase.id, phase);
     console.log(`[PHOS Master] Phase ${phase.id} v${phase.version} registered`);
-    
+
     // Set up phase-to-master event forwarding
     phase.on = (event: string, handler: (event: PHOSEvent) => void) => {
       this.on(event, handler);
     };
-    
+
     phase.emit = (event: PHOSEvent) => {
       this.emit(event);
     };
   }
-  
+
   /**
    * Emit event to all registered listeners
    */
@@ -125,12 +125,12 @@ export class PHOSMasterRuntime {
     if (this.eventHistory.length > this.maxHistorySize) {
       this.eventHistory.shift();
     }
-    
+
     // Log high priority events
     if (event.priority === 'high' || event.priority === 'urgent') {
       console.log(`[PHOS Event] ${event.type} from ${event.source}`, event.payload);
     }
-    
+
     // Notify listeners
     const listeners = this.eventListeners.get(event.type);
     if (listeners) {
@@ -142,7 +142,7 @@ export class PHOSMasterRuntime {
         }
       });
     }
-    
+
     // Also notify wildcard listeners
     const wildcards = this.eventListeners.get('*');
     if (wildcards) {
@@ -155,7 +155,7 @@ export class PHOSMasterRuntime {
       });
     }
   }
-  
+
   /**
    * Subscribe to events
    */
@@ -165,7 +165,7 @@ export class PHOSMasterRuntime {
     }
     this.eventListeners.get(eventType)!.add(handler);
   }
-  
+
   /**
    * Unsubscribe from events
    */
@@ -175,13 +175,13 @@ export class PHOSMasterRuntime {
       listeners.delete(handler);
     }
   }
-  
+
   /**
    * Trigger convergence point for all phases
    */
   async converge(week: number): Promise<ConvergenceReport> {
     console.log(`[PHOS Master] Convergence Week ${week} initiated`);
-    
+
     const report: ConvergenceReport = {
       week,
       timestamp: Date.now(),
@@ -189,7 +189,7 @@ export class PHOSMasterRuntime {
       integrations: [],
       blockers: []
     };
-    
+
     // Collect data from all phases
     for (const [id, phase] of this.phases) {
       const state = phase.getState();
@@ -201,34 +201,34 @@ export class PHOSMasterRuntime {
         blockers: [],
         confidence: 0
       };
-      
+
       phase.onConvergence(week, data);
-      
+
       report.phaseReports.push({
         phaseId: id,
         state,
         data
       });
-      
+
       if (data.blockers.length > 0) {
         report.blockers.push(...data.blockers);
       }
     }
-    
+
     // Check cross-phase integrations
     report.integrations = this.checkIntegrations(week);
-    
+
     console.log(`[PHOS Master] Convergence Week ${week} complete — ${report.blockers.length} blockers`);
-    
+
     return report;
   }
-  
+
   /**
    * Check which phases can integrate at this convergence point
    */
   private checkIntegrations(week: number): IntegrationCheck[] {
     const integrations: IntegrationCheck[] = [];
-    
+
     // Week 1: Core (Voice + Bros + Router)
     if (week >= 1) {
       integrations.push({
@@ -238,7 +238,7 @@ export class PHOSMasterRuntime {
         demo: 'Voice command switches Bros persona'
       });
     }
-    
+
     // Week 2: Voice-Persona
     if (week >= 2) {
       integrations.push({
@@ -248,7 +248,7 @@ export class PHOSMasterRuntime {
         demo: '"Switch to S.J. mode" → UI transforms'
       });
     }
-    
+
     // Week 4: Visual Core
     if (week >= 4) {
       integrations.push({
@@ -258,7 +258,7 @@ export class PHOSMasterRuntime {
         demo: 'Voice moves 3D nodes, Bros changes avatar'
       });
     }
-    
+
     // Week 8: Full PHOS v2.0
     if (week >= 8) {
       integrations.push({
@@ -268,10 +268,10 @@ export class PHOSMasterRuntime {
         demo: 'Complete ecosystem — all 8 phases integrated'
       });
     }
-    
+
     return integrations;
   }
-  
+
   /**
    * Check if specified phases are ready
    */
@@ -283,7 +283,7 @@ export class PHOSMasterRuntime {
       return state.status === 'active' && state.errorCount === 0;
     });
   }
-  
+
   /**
    * Get event history
    */
@@ -293,7 +293,7 @@ export class PHOSMasterRuntime {
     }
     return [...this.eventHistory];
   }
-  
+
   /**
    * Get all phase states
    */
@@ -304,22 +304,22 @@ export class PHOSMasterRuntime {
     }
     return states;
   }
-  
+
   /**
    * Enable/disable a phase at runtime
    */
   setPhaseEnabled(phaseId: string, enabled: boolean): void {
     const phase = this.phases.get(phaseId);
     if (!phase) return;
-    
+
     if (enabled) {
       phase.activate();
     } else {
       phase.deactivate();
     }
-    
+
     this.config.phases[phaseId].enabled = enabled;
-    
+
     this.emit({
       type: 'phase.status.changed',
       payload: { phaseId, enabled },
@@ -327,7 +327,7 @@ export class PHOSMasterRuntime {
       source: 'master'
     });
   }
-  
+
   /**
    * Destroy all phases and clean up
    */

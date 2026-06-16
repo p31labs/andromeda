@@ -9,7 +9,7 @@ const logStore = createStore('p31-logs', 'log-index');
 export async function logAction(route: string, action: string): Promise<void> {
   const key = `${route}:log:${Date.now()}`;
   await set(key, { action, ts: Date.now() }, logStore);
-  
+
   // Also maintain an index of keys for this route for efficient enumeration
   const indexKey = `${route}:log-index`;
   const existingKeys = await get(indexKey, logStore) || [];
@@ -23,12 +23,12 @@ export async function getLogs(route: string): Promise<Array<{action: string; ts:
   try {
     const indexKey = `${route}:log-index`;
     const keys = await get(indexKey, logStore) || [];
-    
+
     // Fetch all log entries
     const entries = await Promise.all(
       keys.map(key => get(key, logStore))
     );
-    
+
     // Filter out null/undefined entries and sort by timestamp (most recent first)
     return entries
       .filter((entry): entry is {action: string; ts: number} => entry !== null)
@@ -46,12 +46,12 @@ export async function clearLogs(route: string): Promise<void> {
   try {
     const indexKey = `${route}:log-index`;
     const keys = await get(indexKey, logStore) || [];
-    
+
     // Delete all log entries
     await Promise.all(
       keys.map(key => del(key, logStore))
     );
-    
+
     // Clear the index
     await del(indexKey, logStore);
   } catch (error) {

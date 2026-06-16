@@ -16,7 +16,8 @@
     "sync:p31ca": "node scripts/sync-p31ca-public.mjs"
   },
   "dependencies": {
-    "fuse.js": "^7.3.0"
+    "fuse.js": "^7.3.0",
+    "@p31/shared": "workspace:*"
   },
   "devDependencies": {
     "@eslint/js": "^9.15.0",

@@ -17,12 +17,12 @@ export class SyncEngine {
 
   public start() {
     if (this.syncInterval) return;
-    
+
     console.log(`[SyncEngine] Connecting to Delta Mesh. Room: ${this.roomId}`);
     telemetry.log({ eventType: 'session_start', payload: { roomId: this.roomId } });
 
     this.syncInterval = setInterval(() => this.sync(), SYNC_INTERVAL_MS);
-    
+
     this.sync();
   }
 

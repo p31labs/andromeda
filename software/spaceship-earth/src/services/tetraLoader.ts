@@ -1,9 +1,9 @@
 /**
  * @file tetraLoader.ts — Tetrahedron data loading and caching service
- * 
+ *
  * Central service for Spaceship Earth to fetch tetrahedron data from
  * various sources (bonding-relay, k4-personal, p31ca APIs, local simulation).
- * 
+ *
  * Maintains an LRU cache of tetrahedrons by id and scale.
  * Polls for updates at configurable intervals.
  * Handles recursive subdivision on demand.
@@ -31,12 +31,12 @@ class TetraLoader {
    */
   async initialize(): Promise<void> {
     if (this.isInitialized) return;
-    
+
     // Start polling for personal physiological tetrahedron
     this.startPolling('will', 'personal', 30_000);
     this.startPolling('family-cage', 'family', 60_000);
     this.startPolling('p31-hub', 'hub', 60_000);
-    
+
     this.isInitialized = true;
     console.log('[TetraLoader] Initialized — synergetic coordinate system active');
   }
@@ -56,7 +56,7 @@ class TetraLoader {
         console.error(`[TetraLoader] Polling error for ${key}:`, err);
       }
     }, intervalMs);
-    
+
     this.pollingIntervals.set(key, interval);
   }
 
@@ -66,7 +66,7 @@ class TetraLoader {
   private async fetchTetra(id: string, scale: string): Promise<TetraData | null> {
     // Build cache key
     const cacheKey = `${scale}:${id}`;
-    
+
      // Check cache first
      const cached = this.cache.get(cacheKey);
      if (cached && Date.now() - cached.fetchedAt < CACHE_TTL) {
@@ -98,7 +98,7 @@ class TetraLoader {
        }
 
        const json = await res.json();
-       
+
        // Handle SpIn DO responses by converting to tetrahedron
        if (scale === 'marketplace' && json.intentId) {
          // SpIn Matchmaking DO active intent response
@@ -110,7 +110,7 @@ class TetraLoader {
            json.trustScore || 0.5
          );
        }
-       
+
        if (scale === 'hub' && json.cycleId) {
          // SpIn Logistics DO active cycle response
          return this.createSpinHandshakeTetra(
@@ -162,12 +162,12 @@ class TetraLoader {
    */
   private simulateTetra(id: string, scale: string): TetraData {
     const now = new Date().toISOString();
-    
+
     if (scale === 'personal') {
       // Simulate fluctuating calcium around 8.4 with occasional dips
       const calcium = 7.8 + Math.random() * 2.0;
       const isCritical = calcium < 8.0;
-      
+
       return createPhysiologicalTetra(
         `k4-personal-${id}`,
         calcium,
@@ -176,7 +176,7 @@ class TetraLoader {
         isCritical ? 0.2 : 0.95
       );
     }
-    
+
     if (scale === 'hub') {
       return {
         schema: TETRA_SCHEMA,
@@ -190,7 +190,7 @@ class TetraLoader {
         },
         vertices: [
           { id: 'v0', label: 'Active Nodes', val: 0.3 + Math.random() * 0.5, color: '#00D4FF' },
-          { id: 'v1', label: 'Connections', val: 0.4 + Math.random() * 0.4, color: '#00FF88' },
+          { id: 'v1', label: 'Connections', val: 0.4 + Math.random() * 0.4, color: 'var(--color-phosphor)' },
           { id: 'v2', label: 'Queue Depth', val: Math.random() * 0.3, color: '#FFD93D' },
           { id: 'v3', label: 'Health',    val: 0.5 + Math.random() * 0.5, color: '#EF4444' },
         ],
@@ -204,7 +204,7 @@ class TetraLoader {
         ],
       };
     }
-    
+
     // Generic tetra for other scales
     return {
       schema: TETRA_SCHEMA,
@@ -266,7 +266,7 @@ class TetraLoader {
    */
   generateChildren(parent: TetraData): Record<string, TetraData> {
     const children: Record<string, TetraData> = {};
-    
+
     for (const vertex of parent.vertices) {
       // Create a new tetrahedron centered on this vertex
       // In full implementation, this would use barycentric subdivision
@@ -287,7 +287,7 @@ class TetraLoader {
       };
       children[vertex.id] = child;
     }
-    
+
     return children;
   }
 
@@ -352,7 +352,7 @@ class TetraLoader {
         { id: 'v0', label: 'Alice X25519', val: progress > 0.3 ? 1 : 0.2, color: '#9B59B6' },
         { id: 'v1', label: 'Bob X25519', val: progress > 0.6 ? 1 : 0.2, color: '#9B59B6' },
         { id: 'v2', label: 'Carol X25519', val: progress > 0.9 ? 1 : 0.2, color: '#9B59B6' },
-        { id: 'v3', label: 'L.O.V.E. Mint', val: progress, color: '#00FF88' }
+        { id: 'v3', label: 'L.O.V.E. Mint', val: progress, color: 'var(--color-phosphor)' }
       ],
       edges: [
         { source: 'v0', target: 'v1', weight: 1.0 },

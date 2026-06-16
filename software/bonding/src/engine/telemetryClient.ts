@@ -17,7 +17,7 @@ class TelemetryClient {
 
   constructor() {
     this.sessionId = crypto.randomUUID();
-    
+
     let storedId = localStorage.getItem('p31_player_id');
     if (!storedId) {
       storedId = crypto.randomUUID();
@@ -52,7 +52,7 @@ class TelemetryClient {
   public getPlayerId() {
     return this.playerId;
   }
-  
+
   public getSessionId() {
     return this.sessionId;
   }

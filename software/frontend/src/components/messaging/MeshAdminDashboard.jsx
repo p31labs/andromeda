@@ -27,7 +27,7 @@ export const MeshAdminDashboard = ({ userId }) => {
   const [logs, setLogs] = useState([]);
   const [selectedConversation, setSelectedConversation] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
-  
+
   const ws = useWebSocket();
 
   // Fetch metrics on interval
@@ -72,10 +72,10 @@ export const MeshAdminDashboard = ({ userId }) => {
 
   const fetchConversations = async (query = '') => {
     try {
-      const url = query 
+      const url = query
         ? `/api/admin/conversations?search=${encodeURIComponent(query)}`
         : '/api/admin/conversations';
-      
+
       const response = await fetch(url);
       if (response.ok) {
         const data = await response.json();
@@ -187,7 +187,7 @@ export const MeshAdminDashboard = ({ userId }) => {
 
   const getHealthColor = (status) => {
     switch (status) {
-      case 'healthy': return '#4db8a8';
+      case 'healthy': return 'var(--color-cyan)';
       case 'degraded': return '#ffd700';
       case 'unhealthy': return '#e8863a';
       default: return '#666';
@@ -204,31 +204,31 @@ export const MeshAdminDashboard = ({ userId }) => {
       </div>
 
       <div className="admin-tabs">
-        <button 
+        <button
           className={`tab ${activeTab === 'overview' ? 'active' : ''}`}
           onClick={() => setActiveTab('overview')}
         >
           Overview
         </button>
-        <button 
+        <button
           className={`tab ${activeTab === 'conversations' ? 'active' : ''}`}
           onClick={() => { setActiveTab('conversations'); fetchConversations(); }}
         >
           Conversations
         </button>
-        <button 
+        <button
           className={`tab ${activeTab === 'members' ? 'active' : ''}`}
           onClick={() => { setActiveTab('members'); fetchMembers(); }}
         >
           Family Members
         </button>
-        <button 
+        <button
           className={`tab ${activeTab === 'health' ? 'active' : ''}`}
           onClick={() => { setActiveTab('health'); fetchSystemHealth(); }}
         >
           System Health
         </button>
-        <button 
+        <button
           className={`tab ${activeTab === 'logs' ? 'active' : ''}`}
           onClick={() => { setActiveTab('logs'); fetchLogs(); }}
         >
@@ -238,7 +238,7 @@ export const MeshAdminDashboard = ({ userId }) => {
 
       <div className="admin-content">
         {activeTab === 'overview' && (
-          <OverviewTab 
+          <OverviewTab
             metrics={metrics}
             conversations={conversations}
             members={members}
@@ -247,7 +247,7 @@ export const MeshAdminDashboard = ({ userId }) => {
         )}
 
         {activeTab === 'conversations' && (
-          <ConversationsTab 
+          <ConversationsTab
             conversations={conversations}
             onSearch={setSearchQuery}
             onMute={muteConversation}
@@ -258,14 +258,14 @@ export const MeshAdminDashboard = ({ userId }) => {
         )}
 
         {activeTab === 'members' && (
-          <MembersTab 
+          <MembersTab
             members={members}
             onBlock={blockMember}
           />
         )}
 
         {activeTab === 'health' && (
-          <HealthTab 
+          <HealthTab
             health={systemHealth}
             metrics={metrics}
           />
@@ -311,7 +311,7 @@ export const MeshAdminDashboard = ({ userId }) => {
         <div className="overview-sections">
           <div className="recent-conversations">
             <h3>Recent Conversations</h3>
-            <ConversationsTable 
+            <ConversationsTable
               conversations={conversations.slice(0, 10)}
               onMute={muteConversation}
               onExport={exportConversation}
@@ -343,7 +343,7 @@ export const MeshAdminDashboard = ({ userId }) => {
   function ConversationsTab({ conversations, onMute, onExport, onSelect, selected }) {
     const [localSearch, setLocalSearch] = useState('');
 
-    const filtered = conversations.filter(c => 
+    const filtered = conversations.filter(c =>
       c.name?.toLowerCase().includes(localSearch.toLowerCase()) ||
       c.participants?.some(p => p.toLowerCase().includes(localSearch.toLowerCase()))
     );
@@ -374,8 +374,8 @@ export const MeshAdminDashboard = ({ userId }) => {
             </thead>
             <tbody>
               {filtered.map(conv => (
-                <tr 
-                  key={conv.id} 
+                <tr
+                  key={conv.id}
                   className={selected === conv.id ? 'selected' : ''}
                   onClick={() => onSelect(conv.id)}
                 >
@@ -398,13 +398,13 @@ export const MeshAdminDashboard = ({ userId }) => {
                     </span>
                   </td>
                   <td>
-                    <button 
+                    <button
                       className="btn btn-sm"
                       onClick={(e) => { e.stopPropagation(); onMute(conv.id); }}
                     >
                       {conv.muted ? 'Unmute' : 'Mute'}
                     </button>
-                    <button 
+                    <button
                       className="btn btn-sm btn-secondary"
                       onClick={(e) => { e.stopPropagation(); onExport(conv.id); }}
                     >
@@ -465,7 +465,7 @@ export const MeshAdminDashboard = ({ userId }) => {
                 {member.email && <div className="member-email">{member.email}</div>}
               </div>
               <div className="member-actions">
-                <button 
+                <button
                   className={`btn btn-sm ${member.status === 'blocked' ? 'btn-unblock' : 'btn-block'}`}
                   onClick={() => onBlock(member.id)}
                 >
@@ -485,7 +485,7 @@ export const MeshAdminDashboard = ({ userId }) => {
         <div className="health-cards">
           <div className="health-card">
             <div className="card-title">K4-Cage Worker</div>
-            <div 
+            <div
               className="health-indicator"
               style={{ color: getHealthColor(health.worker) }}
             >
@@ -494,7 +494,7 @@ export const MeshAdminDashboard = ({ userId }) => {
           </div>
           <div className="health-card">
             <div className="card-title">D1 Database</div>
-            <div 
+            <div
               className="health-indicator"
               style={{ color: getHealthColor(health.d1) }}
             >
@@ -503,7 +503,7 @@ export const MeshAdminDashboard = ({ userId }) => {
           </div>
           <div className="health-card">
             <div className="card-title">KV Storage</div>
-            <div 
+            <div
               className="health-indicator"
               style={{ color: getHealthColor(health.kv) }}
             >
@@ -512,7 +512,7 @@ export const MeshAdminDashboard = ({ userId }) => {
           </div>
           <div className="health-card">
             <div className="card-title">WebSocket</div>
-            <div 
+            <div
               className="health-indicator"
               style={{ color: getHealthColor(health.websocket) }}
             >
@@ -558,7 +558,7 @@ export const MeshAdminDashboard = ({ userId }) => {
       switch (level) {
         case 'error': return '#e8863a';
         case 'warn': return '#ffd700';
-        case 'info': return '#4db8a8';
+        case 'info': return 'var(--color-cyan)';
         default: return '#666';
       }
     };
@@ -566,7 +566,7 @@ export const MeshAdminDashboard = ({ userId }) => {
     return (
       <div className="logs-tab">
         <div className="tab-header">
-          <select 
+          <select
             value={levelFilter}
             onChange={(e) => setLevelFilter(e.target.value)}
             className="level-filter"
@@ -582,7 +582,7 @@ export const MeshAdminDashboard = ({ userId }) => {
           {filtered.slice(0, 100).map((log, i) => (
             <div key={i} className="log-entry">
               <span className="log-time">{formatTime(log.timestamp)}</span>
-              <span 
+              <span
                 className="log-level"
                 style={{ color: getLogColor(log.level) }}
               >

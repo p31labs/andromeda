@@ -82,7 +82,7 @@ const NAV_TREE = [
 
 export function renderShell({ activeId, breadcrumb, title, subtitle, meta, content }) {
   const root = document.body;
-  
+
   root.innerHTML = `
     <div class="sb-layout">
       <aside class="sb-sidebar" id="sb-sidebar">
@@ -95,23 +95,23 @@ export function renderShell({ activeId, breadcrumb, title, subtitle, meta, conte
         </a>
         ${renderNav(activeId)}
       </aside>
-      
+
       <header class="sb-topbar">
         <button class="sb-topbar-btn" id="sb-menu-toggle" style="display: none;" aria-label="Toggle menu">☰</button>
-        
+
         <div class="sb-topbar-search">
           <span class="sb-topbar-search-icon">⌕</span>
           <input type="search" placeholder="Search components, tokens, patterns..." id="sb-search">
           <span class="sb-topbar-search-kbd">⌘K</span>
         </div>
-        
+
         <div class="sb-topbar-actions">
           <button class="sb-topbar-btn" id="sb-theme-cycle" title="Cycle theme (T)">◐</button>
           <button class="sb-topbar-btn" id="sb-mode-cycle" title="Cycle mode (M)">⚙</button>
           <a href="https://github.com/p31labs" class="sb-topbar-btn" title="GitHub">⌥</a>
         </div>
       </header>
-      
+
       <main class="sb-main">
         <div class="sb-content">
           ${breadcrumb ? renderBreadcrumb(breadcrumb) : ''}
@@ -125,10 +125,10 @@ export function renderShell({ activeId, breadcrumb, title, subtitle, meta, conte
         </div>
       </main>
     </div>
-    
+
     <div class="sb-search-overlay" id="sb-search-overlay" style="display: none;"></div>
   `;
-  
+
   attachListeners();
   highlightCode();
   attachCopyButtons();
@@ -178,12 +178,12 @@ function renderPageNav(activeId) {
   NAV_TREE.forEach(s => s.items.forEach(i => flat.push(i)));
   const idx = flat.findIndex(i => i.id === activeId);
   if (idx === -1) return '';
-  
+
   const prev = flat[idx - 1];
   const next = flat[idx + 1];
-  
+
   if (!prev && !next) return '';
-  
+
   return `
     <nav class="sb-page-nav" aria-label="Page navigation">
       ${prev ? `
@@ -212,23 +212,23 @@ function attachListeners() {
     }
     menuBtn.addEventListener('click', () => sidebar.classList.toggle('open'));
   }
-  
+
   // Theme cycle
   const themeCycle = document.getElementById('sb-theme-cycle');
   if (themeCycle && window.p31Theme) {
     themeCycle.addEventListener('click', () => window.p31Theme.cycleTheme());
   }
-  
+
   // Mode cycle
   const modeCycle = document.getElementById('sb-mode-cycle');
   if (modeCycle && window.p31Theme) {
     modeCycle.addEventListener('click', () => window.p31Theme.cycleMode());
   }
-  
+
   // Keyboard shortcuts
   document.addEventListener('keydown', (e) => {
     if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-    
+
     if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
       e.preventDefault();
       document.getElementById('sb-search')?.focus();
@@ -241,7 +241,7 @@ function attachListeners() {
       document.getElementById('sb-search')?.focus();
     }
   });
-  
+
   // Search
   const search = document.getElementById('sb-search');
   if (search) {
@@ -266,12 +266,12 @@ function highlightCode() {
   document.querySelectorAll('.sb-code-block code').forEach(code => {
     if (code.dataset.highlighted) return;
     code.dataset.highlighted = 'true';
-    
+
     let html = code.innerHTML;
-    
+
     // Already escaped, work with HTML
     const lang = code.parentElement.parentElement.dataset.lang || 'plain';
-    
+
     if (lang === 'css' || lang === 'CSS') {
       html = html.replace(/(\/\*[\s\S]*?\*\/)/g, '<span class="tk-comment">$1</span>');
       html = html.replace(/(--[\w-]+)(?=\s*:)/g, '<span class="tk-prop">$1</span>');
@@ -286,7 +286,7 @@ function highlightCode() {
       html = html.replace(/(&lt;\/?)([\w-]+)/g, '$1<span class="tk-tag">$2</span>');
       html = html.replace(/([\w-]+)(=)(&quot;[^&]*&quot;)/g, '<span class="tk-attr">$1</span>$2<span class="tk-string">$3</span>');
     }
-    
+
     code.innerHTML = html;
   });
 }
@@ -297,7 +297,7 @@ function attachCopyButtons() {
       const block = btn.closest('.sb-code-block');
       const code = block.querySelector('code');
       const text = code.textContent;
-      
+
       try {
         await navigator.clipboard.writeText(text);
         btn.classList.add('copied');

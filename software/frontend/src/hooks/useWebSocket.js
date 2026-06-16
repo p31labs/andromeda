@@ -4,7 +4,7 @@ import { MeshClient } from '../api/mesh-client';
 /**
  * useWebSocket Hook
  * Manages WebSocket connection for real-time messaging
- * 
+ *
  * Features:
  * - Auto-reconnection with exponential backoff
  * - Event subscription system
@@ -17,7 +17,7 @@ export function useWebSocket(userId, options = {}) {
   const [isConnected, setIsConnected] = useState(false);
   const [connectionError, setConnectionError] = useState(null);
   const [lastPong, setLastPong] = useState(null);
-  
+
   const clientRef = useRef(null);
   const wsRef = useRef(null);
   const handlersRef = useRef(new Map());
@@ -125,7 +125,7 @@ export function useWebSocket(userId, options = {}) {
    */
   const startHeartbeat = useCallback(() => {
     stopHeartbeat(); // Clear existing
-    
+
     pingIntervalRef.current = setInterval(() => {
       if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
         // Send ping (optional, server handles it)

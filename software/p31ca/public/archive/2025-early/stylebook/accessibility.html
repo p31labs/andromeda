@@ -57,7 +57,7 @@
       color: var(--p31-muted);
       margin-left: 8px;
     }
-    
+
     .kbd-map {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -102,7 +102,7 @@
     import { renderShell, code, callout } from '/stylebook/_chrome.js';
     import { P31ThemeController } from '/lib/p31-theme-engine.mjs';
     window.p31Theme = new P31ThemeController({ defaultTheme: 'hub' });
-    
+
     const WCAG = [
       ['Atkinson Hyperlegible default', 'Designed for low-vision readers. Distinct b/d, p/q, 1/I/l.', '1.4.3'],
       ['Body text ≥ 4.5:1 contrast', 'All theme/text combinations verified. Token reference shows ratios.', '1.4.3'],
@@ -125,7 +125,7 @@
       ['Tab order matches visual order', 'No positive tabindex values. DOM order = visual order.', '2.4.3'],
       ['Page title is unique &amp; descriptive', 'Format: "Section · Site name".', '2.4.2']
     ];
-    
+
     const KEYBOARD = [
       [['Tab'], 'Move forward through interactive elements'],
       [['Shift', 'Tab'], 'Move backward'],
@@ -140,7 +140,7 @@
       [['T'], 'Cycle theme (stylebook only)'],
       [['M'], 'Cycle mode (stylebook only)']
     ];
-    
+
     const checkList = WCAG.map(([title, desc, crit]) => `
       <div class="check-item">
         <div class="check-icon">✓</div>
@@ -150,7 +150,7 @@
         </div>
       </div>
     `).join('');
-    
+
     const kbdMap = KEYBOARD.map(([keys, action]) => `
       <div class="kbd-row">
         <div class="kbd-keys">
@@ -159,7 +159,7 @@
         <div class="kbd-action">${action}</div>
       </div>
     `).join('');
-    
+
     const content = `
       <section class="sb-section">
         <div class="sb-section-header">
@@ -170,12 +170,12 @@
             and the verifier blocks merges that regress them.
           </p>
         </div>
-        
+
         <div class="check-list">${checkList}</div>
-        
+
         ${callout('info', 'Why AA, not just A?', 'Single-A is the legal minimum in most jurisdictions. Double-A is the practical minimum. We don\'t ship for the legal floor.')}
       </section>
-      
+
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">Keyboard map</div>
@@ -183,12 +183,12 @@
           <p class="sb-text">These bindings are stable across every P31 surface. Local pages may add more,
           but never override these.</p>
         </div>
-        
+
         <div class="kbd-map">${kbdMap}</div>
-        
+
         ${callout('warn', 'Test without a mouse', 'Unplug your mouse for a day. The bugs you find are the bugs every screen-reader user lives with daily.')}
       </section>
-      
+
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">ARIA</div>
@@ -199,7 +199,7 @@
             <code>&lt;div role="navigation"&gt;</code>. ARIA is the last resort.
           </p>
         </div>
-        
+
         ${code(`<!-- BAD: invented from scratch with ARIA -->
 <div role="button" tabindex="0" onclick="..." onkeydown="...">
   Save
@@ -232,13 +232,13 @@
 <!-- Decorative icon that has nothing to convey -->
 <span aria-hidden="true">✦</span> Welcome back`, 'html', 'ARIA usage')}
       </section>
-      
+
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">Focus management</div>
           <h2 class="sb-h2">Where the keyboard cursor lives</h2>
         </div>
-        
+
         <table class="sb-table">
           <thead><tr><th>Action</th><th>Focus moves to</th></tr></thead>
           <tbody>
@@ -252,7 +252,7 @@
             <tr><td>Route navigation (SPA)</td><td>h1 of new page (with tabindex="-1")</td></tr>
           </tbody>
         </table>
-        
+
         ${code(`/* Required for every page using the system */
 
 /* 1. Skip link visible on focus only */
@@ -288,13 +288,13 @@
   }
 }`, 'css', 'A11y essentials')}
       </section>
-      
+
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">Test it</div>
           <h2 class="sb-h2">Verification</h2>
         </div>
-        
+
         <table class="sb-table">
           <thead><tr><th>Tool</th><th>What it catches</th><th>How to run</th></tr></thead>
           <tbody>
@@ -308,7 +308,7 @@
           </tbody>
         </table>
       </section>
-      
+
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">Cognitive accessibility</div>
@@ -318,7 +318,7 @@
             and processing speed all factor in.
           </p>
         </div>
-        
+
         <table class="sb-table">
           <thead><tr><th>Need</th><th>Pattern</th></tr></thead>
           <tbody>
@@ -332,7 +332,7 @@
         </table>
       </section>
     `;
-    
+
     renderShell({
       activeId: 'accessibility',
       breadcrumb: [

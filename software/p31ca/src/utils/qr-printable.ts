@@ -97,20 +97,20 @@ export function generatePrintableHTML(stickers: QRSticker[]): string {
       size: ${LABEL_WIDTH_MM}mm ${LABEL_HEIGHT_MM}mm;
       margin: 0;
     }
-    
+
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
     }
-    
+
     body {
       font-family: 'Courier New', monospace;
       font-size: 8pt;
       line-height: 1.1;
       background: white;
     }
-    
+
     .sticker {
       width: ${LABEL_WIDTH_MM}mm;
       height: ${LABEL_HEIGHT_MM}mm;
@@ -122,41 +122,41 @@ export function generatePrintableHTML(stickers: QRSticker[]): string {
       page-break-inside: avoid;
       break-inside: avoid;
     }
-    
+
     .sticker:not(:last-child) {
       border-bottom: 0.5pt dashed #ddd;
     }
-    
+
     .qr-section {
       flex-shrink: 0;
     }
-    
+
     .qr-code {
       width: ${QR_SIZE_MM}mm;
       height: ${QR_SIZE_MM}mm;
     }
-    
+
     .info-section {
       flex: 1;
       display: flex;
       flex-direction: column;
       justify-content: center;
     }
-    
+
     .plu-code {
       font-size: 10pt;
       font-weight: bold;
       color: #000;
       letter-spacing: 0.5pt;
     }
-    
+
     .category {
       font-size: 7pt;
       color: #666;
       text-transform: uppercase;
       margin-top: 1mm;
     }
-    
+
     .zone-pill {
       display: inline-block;
       background: #000;
@@ -167,38 +167,38 @@ export function generatePrintableHTML(stickers: QRSticker[]): string {
       margin-top: 1mm;
       width: fit-content;
     }
-    
+
     .qr-data {
       font-size: 5pt;
       color: #999;
       margin-top: 1mm;
       word-break: break-all;
     }
-    
+
     @media print {
       body {
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
       }
-      
+
       .no-print {
         display: none !important;
       }
     }
-    
+
     /* Screen preview styles */
     @media screen {
       body {
         background: #f5f5f5;
         padding: 20px;
       }
-      
+
       .sticker {
         background: white;
         margin-bottom: 10px;
         box-shadow: 0 2px 4px rgba(0,0,0,0.1);
       }
-      
+
       .preview-controls {
         position: fixed;
         top: 20px;
@@ -209,17 +209,17 @@ export function generatePrintableHTML(stickers: QRSticker[]): string {
         box-shadow: 0 2px 8px rgba(0,0,0,0.15);
         z-index: 1000;
       }
-      
+
       .preview-controls button {
         padding: 10px 20px;
-        background: #5DCAA5;
+        background: var(--color-teal);
         color: #0f1115;
         border: none;
         border-radius: 6px;
         font-size: 14px;
         cursor: pointer;
       }
-      
+
       .preview-controls button:hover {
         background: #4aa884;
       }
@@ -234,15 +234,15 @@ export function generatePrintableHTML(stickers: QRSticker[]): string {
       Printer: 2" × 1" thermal labels
     </p>
   </div>
-  
+
   ${stickerHTML}
-  
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script>
     // Generate QR codes after DOM loads
     document.addEventListener('DOMContentLoaded', function() {
       const qrContainers = document.querySelectorAll('.qr-code');
-      
+
       qrContainers.forEach(function(container) {
         const qrData = container.dataset.qr;
         if (qrData && window.QRCode) {
@@ -251,7 +251,7 @@ export function generatePrintableHTML(stickers: QRSticker[]): string {
             width: ${QR_SIZE_MM * 4},
             height: ${QR_SIZE_MM * 4},
             colorDark: '#000000',
-            colorLight: '#ffffff',
+            colorLight: 'var(--color-surface)',
             correctLevel: QRCode.CorrectLevel.M
           });
         }

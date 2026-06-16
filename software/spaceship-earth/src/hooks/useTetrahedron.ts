@@ -1,6 +1,6 @@
 /**
  * @file useTetrahedron.ts — React hook for tetrahedron state management
- * 
+ *
  * Manages:
  * - Current tetrahedron data (by scale and id)
  * - Recursive zoom (drilling into sub_tetras)
@@ -31,7 +31,7 @@ export function useTetrahedron(
     depth: 0,
     parentChain: [],
   });
-  
+
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [transform, setTransform] = useState({
@@ -43,21 +43,21 @@ export function useTetrahedron(
   // Load tetrahedron data on mount and when scale/id changes
   useEffect(() => {
     let cancelled = false;
-    
+
     const load = async () => {
       setIsLoading(true);
       setError(null);
-      
+
       try {
         // Initialize loader on first load
         if (!tetraLoader['isInitialized']) {
           await tetraLoader.initialize();
         }
-        
+
         const data = await tetraLoader.refresh(initialScale, initialId);
-        
+
         if (cancelled) return;
-        
+
         if (data) {
           setViewState({
             data,
@@ -79,9 +79,9 @@ export function useTetrahedron(
         }
       }
     };
-    
+
     load();
-    
+
     return () => { cancelled = true; };
   }, [initialScale, initialId]);
 
@@ -93,7 +93,7 @@ export function useTetrahedron(
         setViewState(prev => ({ ...prev, data: tetra }));
       }
     });
-    
+
     return unsubscribe;
   }, [viewState.id]);
 
@@ -103,7 +103,7 @@ export function useTetrahedron(
       // If children not loaded yet, generate them
       const children = tetraLoader.generateChildren(viewState.data);
       const childData = children[vertex.id];
-      
+
       if (childData) {
         setViewState(prev => ({
           ...prev,
@@ -137,10 +137,10 @@ export function useTetrahedron(
   // Zoom out to parent
   const zoomOut = useCallback(() => {
     if (viewState.parentChain.length === 0) return;
-    
+
     const newParentChain = [...viewState.parentChain];
     const parent = newParentChain.pop()!;
-    
+
     // Re-fetch parent data (it might have updated)
     tetraLoader.refresh(parent.id.split('-').pop() || parent.id, viewState.data?.metadata.parent_id || 'personal').then(parentData => {
       if (parentData) {

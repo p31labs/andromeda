@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import P31OmnibusVault from './P31OmnibusVault.jsx'
 
-const CORAL = '#cc6247'
+const CORAL = 'var(--color-coral)'
 const DARK = '#0A0A0F'
 const DARKER = '#06060A'
 const SURFACE = '#12121A'

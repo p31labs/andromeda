@@ -1,18 +1,18 @@
 /**
  * @file DeltaMesh.tsx — Tetrahedron K4 Mesh 3D Visualizer
- * 
+ *
  * Renders the K4 complete graph (4 nodes, 6 edges) in 3D space.
  * Visualizes the Delta topology for systemic resilience awareness.
- * 
+ *
  * Section 1.2: Tetrahedron Protocol - K4 Complete Graph
  * Mathematical Foundation: Isostatic rigidity, 57.7% capacity at single-node loss
- * 
+ *
  * Features:
  * - 4-node tetrahedron with floating animation
  * - Edge rendering (6 equidistant edges)
  * - Ollivier-Ricci curvature proxy (κ) calculation
  * - Discrete Ricci Flow Graph Embedding (dRfge) scale oscillation
- * 
+ *
  * CWP-JITTERBUG-15: Delta Topology Visualizer
  */
 import { useRef, useMemo } from 'react';
@@ -39,7 +39,7 @@ export interface DeltaMeshEdge {
  */
 export function generateK4Nodes(): DeltaMeshNode[] {
   const phi = (1 + Math.sqrt(5)) / 2; // Golden ratio
-  
+
   // Regular tetrahedron vertices (normalized)
   const positions = [
     new THREE.Vector3(0, 1, 0),
@@ -47,7 +47,7 @@ export function generateK4Nodes(): DeltaMeshNode[] {
     new THREE.Vector3(0.4714, -0.3333, 0.8165),
     new THREE.Vector3(0.4714, -0.3333, -0.8165),
   ];
-  
+
   return positions.map((pos, i) => ({
     id: `node_${i}`,
     position: pos.multiplyScalar(1.5), // Scale up for visibility
@@ -72,7 +72,7 @@ export function generateK4Edges(): DeltaMeshEdge[] {
 /**
  * Calculate Ollivier-Ricci Curvature proxy (κ)
  * Based on local edge stress and network noise
- * 
+ *
  * @param time - Current time for oscillation
  * @param networkStress - Optional stress factor from mesh
  * @returns κ value 0-2 (1 = optimal, <1 bottleneck, >1 expansive)
@@ -82,7 +82,7 @@ export function calculateRicciCurvature(time: number, networkStress: number = 0)
   const baseCurvature = 1.0;
   const dRfgeOscillation = Math.sin(time * 0.5) * 0.2; // Slow breathing
   const stressImpact = networkStress * 0.3;
-  
+
   return Math.max(0.2, Math.min(2.0, baseCurvature + dRfgeOscillation + stressImpact));
 }
 
@@ -102,23 +102,23 @@ interface DeltaMeshProps {
   autoRotate?: boolean;
 }
 
-export function DeltaMesh({ 
-  networkStress = 0, 
-  showLabels = true, 
-  autoRotate = true 
+export function DeltaMesh({
+  networkStress = 0,
+  showLabels = true,
+  autoRotate = true
 }: DeltaMeshProps) {
   const groupRef = useRef<THREE.Group>(null);
   const curvatureRef = useRef(1.0);
-  
+
   // Generate static K4 topology
   const nodes = useMemo(() => generateK4Nodes(), []);
   const edges = useMemo(() => generateK4Edges(), []);
-  
+
   // Animate curvature and scale each frame
   useFrame(({ clock }) => {
     const t = clock.getElapsedTime();
     curvatureRef.current = calculateRicciCurvature(t, networkStress);
-    
+
     // Apply dRfge scale oscillation using RicciMath
     if (groupRef.current) {
       const scale = RicciMath.getScaleFactor(curvatureRef.current);
@@ -130,15 +130,15 @@ export function DeltaMesh({
   // κ > 0.9 = green (healthy), κ 0.7-0.9 = cyan (stable), κ < 0.7 = red (degraded)
   const curvatureColor = useMemo(() => {
     const k = curvatureRef.current;
-    if (k >= 0.9) return '#00FF88';      // Green - isostatic
+    if (k >= 0.9) return 'var(--color-phosphor)';      // Green - isostatic
     if (k >= 0.7) return '#00D4FF';     // Cyan - stable
     return '#EF4444';                   // Red - degraded
   }, []);
-  
+
   const gatewayColor = curvatureColor;   // Gateway reflects health
   const nodeColor = '#00D4FF';           // Cyan for regular nodes
   const edgeColor = curvatureRef.current >= 0.8 ? '#1f2937' : '#7A27FF'; // Purple edge on stress
-  const edgeHighlightColor = curvatureRef.current >= 0.8 ? '#4db8a8' : '#EF4444';
+  const edgeHighlightColor = curvatureRef.current >= 0.8 ? 'var(--color-cyan)' : '#EF4444';
 
   return (
     <group ref={groupRef}>
@@ -160,7 +160,7 @@ export function DeltaMesh({
               metalness={0.7}
             />
           </mesh>
-          
+
           {/* Node Label */}
           {showLabels && (
             <Text
@@ -181,17 +181,17 @@ export function DeltaMesh({
       {edges.map((edge, index) => {
         const startNode = nodes[edge.from];
         const endNode = nodes[edge.to];
-        
+
         // Create line geometry
         const points = [startNode.position, endNode.position];
         const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
-        
+
         return (
           <line key={`edge_${index}`}>
             <bufferGeometry {...lineGeometry} />
-            <lineBasicMaterial 
-              color={edgeColor} 
-              transparent 
+            <lineBasicMaterial
+              color={edgeColor}
+              transparent
               opacity={0.6}
               linewidth={1}
             />

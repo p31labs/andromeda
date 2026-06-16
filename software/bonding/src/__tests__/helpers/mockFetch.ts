@@ -94,9 +94,9 @@ export function resetCallCount(): void {
 export function createMockFetch(): typeof fetch {
   return vi.fn(async (url: string | URL | Request, _init?: RequestInit): Promise<Response> => {
     callCount++;
-    
+
     const urlStr = url.toString();
-    
+
     // Check for URL-specific response first
     for (const [pattern, response] of Object.entries(mockConfig.responses)) {
       if (urlStr.includes(pattern)) {
@@ -104,12 +104,12 @@ export function createMockFetch(): typeof fetch {
         return new MockResponse(response.body, response.status);
       }
     }
-    
+
     // Handle configured throw error
     if (mockConfig.throwError) {
       throw mockConfig.throwError;
     }
-    
+
     // Auto-fail mode: increment failure count and return error
     if (mockConfig.autoFail) {
       mockConfig.failureCount++;
@@ -117,14 +117,14 @@ export function createMockFetch(): typeof fetch {
       await delay(mockConfig.latency);
       return new MockResponse({ error: 'Network error' }, status);
     }
-    
+
     // Check failure count threshold for triggering backoff
     if (mockConfig.failureCount > 0 && callCount <= mockConfig.failureCount) {
       const status = mockConfig.status !== undefined ? mockConfig.status : 500;
       await delay(mockConfig.latency);
       return new MockResponse({ error: 'Network error' }, status);
     }
-    
+
     // Normal response
     const status = mockConfig.status !== undefined ? mockConfig.status : 200;
     await delay(mockConfig.latency);
@@ -147,7 +147,7 @@ export const mockResponses = {
       players: [{
         id: 'p_0',
         name: 'Test Player',
-        color: '#00FF88',
+        color: 'var(--color-phosphor)',
         mode: 'seed',
         joinedAt: new Date().toISOString(),
         state: {
@@ -175,7 +175,7 @@ export const mockResponses = {
       players: Array.from({ length: playerCount + 1 }, (_, i) => ({
         id: `p_${i}`,
         name: i === 0 ? 'Host' : 'Test Player',
-        color: i === 0 ? '#00FF88' : '#00D4FF',
+        color: i === 0 ? 'var(--color-phosphor)' : '#00D4FF',
         mode: 'seed',
         joinedAt: new Date().toISOString(),
         state: {
@@ -203,7 +203,7 @@ export const mockResponses = {
       players: [{
         id: 'p_0',
         name: 'Test Player',
-        color: '#00FF88',
+        color: 'var(--color-phosphor)',
         mode: 'seed',
         joinedAt: new Date().toISOString(),
         state: {

@@ -1,7 +1,7 @@
 /**
  * Week 5 Convergence Checkpoint: Mesh Topology Live
  * Integration: Router + Visual (live mesh data)
- * 
+ *
  * Success: Visual shows live mesh topology from Router state
  */
 
@@ -42,12 +42,12 @@ export async function runWeek5Convergence(
 ): Promise<ConvergenceReport> {
   const week = 5;
   const timestamp = Date.now();
-  
+
   console.log(`[Week 5 Convergence] Mesh-Visual Live Topology checkpoint starting...`);
-  
+
   // Run master convergence for week 5
   const baseReport = await master.converge(week);
-  
+
   // Mock live topology for testing
   const mockTopology: MeshTopologyState = {
     vertices: [
@@ -66,15 +66,15 @@ export async function runWeek5Convergence(
     ],
     timestamp
   };
-  
+
   // Week 5 specific integration validation
   const integrationChecks: IntegrationCheck[] = [
     {
       phases: ['router', 'visual'],
       name: 'Live Mesh Topology',
-      ready: baseReport.phaseReports.some(p => 
+      ready: baseReport.phaseReports.some(p =>
         p.phaseId === 'router' && p.state.status === 'active'
-      ) && baseReport.phaseReports.some(p => 
+      ) && baseReport.phaseReports.some(p =>
         p.phaseId === 'visual' && p.state.status === 'active'
       ),
       demo: 'Router provides live mesh state → Visual renders real-time topology with status colors'
@@ -96,7 +96,7 @@ export async function runWeek5Convergence(
       demo: 'S.J. persona sees sibling-prioritized mesh view with relevant edges emphasized'
     }
   ];
-  
+
   // Demo scenarios for Week 5
   const demoScenarios = [
     {
@@ -147,38 +147,38 @@ export async function runWeek5Convergence(
       successIndicator: 'Smooth 300ms color/opacity transition on affected nodes'
     }
   ];
-  
+
   // Success criteria validation
   const successCriteria: Week5SuccessCriteria = {
     topologyUpdateLatency: 145, // Under 200ms target
     liveDataAccuracy: 0.995, // Exceeds 0.99 target
     meshSyncReliability: 0.99 // Exceeds 0.98 target
   };
-  
+
   // Validate against criteria
-  const passed = 
+  const passed =
     successCriteria.topologyUpdateLatency < 200 &&
     successCriteria.liveDataAccuracy > 0.99 &&
     successCriteria.meshSyncReliability > 0.98 &&
     integrationChecks[0].ready;
-  
+
   // Week 5 specific blockers
   const week5Blockers = [
     ...baseReport.blockers,
-    ...(successCriteria.topologyUpdateLatency >= 200 
-      ? ['Topology update latency too high for live feel'] 
+    ...(successCriteria.topologyUpdateLatency >= 200
+      ? ['Topology update latency too high for live feel']
       : []),
-    ...(successCriteria.liveDataAccuracy <= 0.99 
-      ? ['Live data accuracy below 99% threshold'] 
+    ...(successCriteria.liveDataAccuracy <= 0.99
+      ? ['Live data accuracy below 99% threshold']
       : []),
-    ...(successCriteria.meshSyncReliability <= 0.98 
-      ? ['Mesh sync reliability insufficient'] 
+    ...(successCriteria.meshSyncReliability <= 0.98
+      ? ['Mesh sync reliability insufficient']
       : []),
-    ...(!integrationChecks[0].ready 
-      ? ['Router-Visual integration not ready - live topology unavailable'] 
+    ...(!integrationChecks[0].ready
+      ? ['Router-Visual integration not ready - live topology unavailable']
       : [])
   ];
-  
+
   const report: ConvergenceReport = {
     week,
     timestamp,
@@ -191,10 +191,10 @@ export async function runWeek5Convergence(
     mockTopology,
     topologyRefreshInterval: input?.refreshInterval || 5000,
     liveEndpoint: input?.liveMeshEndpoint || '/api/mesh/live',
-    summary: passed 
+    summary: passed
       ? 'Week 5: Mesh-Visual Live Topology CONVERGED'
       : 'Week 5: Mesh-Visual Live Topology DIVERGED - blockers detected'
-  } as ConvergenceReport & { 
+  } as ConvergenceReport & {
     demoScenarios: typeof demoScenarios;
     successCriteria: typeof successCriteria;
     passed: boolean;
@@ -203,12 +203,12 @@ export async function runWeek5Convergence(
     liveEndpoint: string;
     summary: string;
   };
-  
+
   console.log(`[Week 5 Convergence] ${report.summary}`);
   console.log(`[Week 5 Convergence] Blockers: ${week5Blockers.length}`);
   console.log(`[Week 5 Convergence] Live topology: ${report.mockTopology.vertices.length} vertices, ${report.mockTopology.edges.length} edges`);
   console.log(`[Week 5 Convergence] Refresh interval: ${report.topologyRefreshInterval}ms`);
-  
+
   return report;
 }
 

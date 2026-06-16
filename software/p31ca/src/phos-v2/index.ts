@@ -9,7 +9,7 @@ export * from './master';
 // Phase 1: Voice
 export { VoicePhase } from './phase1-voice/VoicePhase';
 
-// Phase 2: Bros  
+// Phase 2: Bros
 export { BrosPhase, type BrosPersona } from './phase2-bros/BrosPhase';
 
 // Phase 3: Router

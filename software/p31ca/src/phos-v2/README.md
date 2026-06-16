@@ -87,17 +87,17 @@ interface PHOSPhase {
   id: string;
   version: string;
   status: 'alpha' | 'beta' | 'stable' | 'disabled';
-  
+
   // Lifecycle
   initialize(config: PHOSConfig): Promise<void>;
   activate(): void;
   deactivate(): void;
   destroy(): void;
-  
+
   // Convergence
   onConvergence(week: number, data: ConvergenceData): void;
   getState(): PhaseState;
-  
+
   // Events (set by master registration)
   emit(event: PHOSEvent): void;
   on(event: string, handler: Function): void;

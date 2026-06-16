@@ -93,7 +93,7 @@ export function useAccessibility() {
   // Apply CSS custom properties for accessibility preferences
   useEffect(() => {
     const root = document.documentElement;
-    
+
     // Reduced motion
     if (preferences.reducedMotion || preferences.skipAnimations) {
       root.style.setProperty('--reduce-motion', '1');
@@ -156,7 +156,7 @@ export function useAccessibility() {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       // Skip if typing in input/textarea
-      if (e.target instanceof HTMLInputElement || 
+      if (e.target instanceof HTMLInputElement ||
           e.target instanceof HTMLTextAreaElement ||
           e.target instanceof HTMLSelectElement) {
         return;
@@ -205,11 +205,11 @@ export function useAccessibility() {
   const focusManagement: FocusManagement = {
     focusTrap: (container: HTMLElement) => {
       focusHistory.current.push(document.activeElement as HTMLElement);
-      
+
       const focusableElements = container.querySelectorAll(
         'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
       ) as NodeListOf<HTMLElement>;
-      
+
       const firstElement = focusableElements[0];
       const lastElement = focusableElements[focusableElements.length - 1];
 
@@ -230,7 +230,7 @@ export function useAccessibility() {
       };
 
       container.addEventListener('keydown', handleKeydown);
-      
+
       // Focus first element
       if (firstElement) {
         firstElement.focus();
@@ -303,7 +303,7 @@ export function useAccessibility() {
 
     addDwellClick: (element: HTMLElement, callback: () => void, delay = 1000) => {
       let timer: number;
-      
+
       const handleMouseEnter = () => {
         timer = window.setTimeout(() => {
           callback();
@@ -396,11 +396,11 @@ export function useSkipNavigation() {
       skipNav.style.letterSpacing = '1px';
       skipNav.style.textShadow = 'var(--glow-cyan)';
       skipNav.style.transition = 'top var(--trans-base)';
-      
+
       skipNav.addEventListener('focus', () => {
         skipNav.style.top = '8px';
       });
-      
+
       skipNav.addEventListener('blur', () => {
         skipNav.style.top = '-100%';
       });
@@ -442,11 +442,11 @@ export function useFocusManagement() {
 
   const trapFocus = useCallback((container: HTMLElement) => {
     const activeElement = document.activeElement as HTMLElement;
-    
+
     const focusableElements = container.querySelectorAll(
       'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
     ) as NodeListOf<HTMLElement>;
-    
+
     const firstElement = focusableElements[0];
     const lastElement = focusableElements[focusableElements.length - 1];
 
@@ -473,7 +473,7 @@ export function useFocusManagement() {
     };
 
     container.addEventListener('keydown', handleKeydown);
-    
+
     if (firstElement) {
       firstElement.focus();
     }

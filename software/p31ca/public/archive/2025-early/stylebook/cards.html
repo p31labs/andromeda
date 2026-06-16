@@ -48,7 +48,7 @@
       height: 3px;
       background: linear-gradient(90deg, var(--p31-coral), var(--p31-teal), var(--p31-phosphor));
     }
-    
+
     .p31-card-header {
       display: flex;
       align-items: flex-start;
@@ -97,7 +97,7 @@
       color: var(--p31-primary);
       flex-shrink: 0;
     }
-    
+
     .p31-stat-card {
       background: var(--p31-surface);
       border: 1px solid var(--p31-border-subtle);
@@ -133,7 +133,7 @@
     import { renderShell, code, callout } from '/stylebook/_chrome.js';
     import { P31ThemeController } from '/lib/p31-theme-engine.mjs';
     window.p31Theme = new P31ThemeController({ defaultTheme: 'hub' });
-    
+
     const content = `
       <section class="sb-section">
         <div class="sb-section-header">
@@ -142,7 +142,7 @@
           <p class="sb-text">Cards are the workhorse of the system. They group related content
           and create rhythm on a page. Use them sparingly — too many cards becomes noise.</p>
         </div>
-        
+
         <div class="sb-preview">
           <div class="sb-preview-header"><span>Standard</span></div>
           <div class="sb-preview-body" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px;">
@@ -160,7 +160,7 @@
             </div>
           </div>
         </div>
-        
+
         <div class="sb-preview">
           <div class="sb-preview-header"><span>Special</span></div>
           <div class="sb-preview-body" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px;">
@@ -175,7 +175,7 @@
           </div>
         </div>
       </section>
-      
+
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">Composition</div>
@@ -183,7 +183,7 @@
           <p class="sb-text">Header, body, footer. Optional icon. Optional metadata. Build complex cards
           from these primitives.</p>
         </div>
-        
+
         <div class="sb-preview">
           <div class="sb-preview-header"><span>Full composition</span></div>
           <div class="sb-preview-body" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
@@ -222,13 +222,13 @@
           </div>
         </div>
       </section>
-      
+
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">Stat cards</div>
           <h2 class="sb-h2">Numbers worth seeing</h2>
         </div>
-        
+
         <div class="sb-preview">
           <div class="sb-preview-header"><span>Metrics</span></div>
           <div class="sb-preview-body" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; width: 100%;">
@@ -255,13 +255,13 @@
           </div>
         </div>
       </section>
-      
+
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">CSS</div>
           <h2 class="sb-h2">Drop in</h2>
         </div>
-        
+
         ${code(`<div class="p31-card p31-card-interactive">
   <div class="p31-card-header">
     <div>
@@ -278,11 +278,11 @@
     <span style="color: var(--p31-phosphor);">● Stable</span>
   </div>
 </div>`, 'html', 'Card markup')}
-        
+
         ${callout('info', 'Hierarchy by elevation', 'Cards naturally create visual layers. Resist stacking glass-on-glass-on-glass. One layer of elevation per visual zone.')}
       </section>
     `;
-    
+
     renderShell({
       activeId: 'cards',
       breadcrumb: [

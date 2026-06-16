@@ -48,7 +48,7 @@
       background: rgba(0,255,136,0.05);
     }
     .icon-cell.copied .icon-name { color: var(--p31-phosphor); }
-    
+
     .role-icons {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -93,7 +93,7 @@
     import { renderShell, code, callout } from '/stylebook/_chrome.js';
     import { P31ThemeController } from '/lib/p31-theme-engine.mjs';
     window.p31Theme = new P31ThemeController({ defaultTheme: 'hub' });
-    
+
     const ICONS = [
       { glyph: '◇', name: 'diamond' },
       { glyph: '◈', name: 'diamond.dot' },
@@ -158,7 +158,7 @@
       { glyph: '@', name: 'mention' },
       { glyph: '#', name: 'tag' }
     ];
-    
+
     const SEMANTIC = [
       { glyph: '✓', label: 'Success', tone: 'phosphorus' },
       { glyph: '⚠', label: 'Warning', tone: 'butter' },
@@ -169,7 +169,7 @@
       { glyph: '◐', label: 'Loading', tone: 'lavender' },
       { glyph: '◇', label: 'Default', tone: 'cloud' }
     ];
-    
+
     const iconCells = ICONS.map(i => `
       <div class="icon-cell" data-glyph="${i.glyph}" data-name="${i.name}"
            onclick="navigator.clipboard.writeText('${i.glyph}').then(()=>{this.classList.add('copied');setTimeout(()=>this.classList.remove('copied'),1200)})">
@@ -177,7 +177,7 @@
         <div class="icon-name">${i.name}</div>
       </div>
     `).join('');
-    
+
     const semanticCells = SEMANTIC.map(s => `
       <div class="role-icon">
         <div class="role-icon-box" style="color: var(--p31-${s.tone}); background: rgba(255,255,255,0.05);">
@@ -189,7 +189,7 @@
         </div>
       </div>
     `).join('');
-    
+
     const content = `
       <section class="sb-section">
         <div class="sb-section-header">
@@ -204,7 +204,7 @@
           ${callout('info', 'Click any glyph', 'Single click copies the glyph to your clipboard. Paste anywhere — they\'re plain text.')}
         </div>
       </section>
-      
+
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">Semantic</div>
@@ -213,7 +213,7 @@
         </div>
         <div class="role-icons">${semanticCells}</div>
       </section>
-      
+
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">The catalog</div>
@@ -222,13 +222,13 @@
         </div>
         <div class="icon-grid">${iconCells}</div>
       </section>
-      
+
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">Use it</div>
           <h2 class="sb-h2">In code</h2>
         </div>
-        
+
         ${code(`<!-- Plain glyph -->
 <span class="icon">◇</span>
 
@@ -246,10 +246,10 @@
   <span style="color: var(--p31-phosphor);">●</span>
   <span>System operational</span>
 </span>`, 'html', 'Icon usage')}
-        
+
         ${callout('warn', 'Color is not enough', 'Never carry meaning by color alone. The same dot at <code>--p31-phosphor</code> green and <code>--p31-coral</code> red is invisible to a colorblind user. Always pair with text or a distinct shape.')}
       </section>
-      
+
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">When you need real SVGs</div>
@@ -262,7 +262,7 @@
         </div>
       </section>
     `;
-    
+
     renderShell({
       activeId: 'iconography',
       breadcrumb: [

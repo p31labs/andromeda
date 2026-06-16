@@ -114,7 +114,7 @@ export function RoomModal({ onClose }: RoomModalProps) {
       : `Online: ${playerCount} Player${playerCount !== 1 ? 's' : ''}`;
     const statusColor = connectionStatus === 'reconnecting'
       ? 'text-[#FFD700]'
-      : 'text-[#00FF88]';
+      : 'text-[var(--color-phosphor)]';
 
     return (
       <div
@@ -136,7 +136,7 @@ export function RoomModal({ onClose }: RoomModalProps) {
             </button>
           </div>
 
-          <div className="bg-white/[0.06] rounded-xl px-6 py-3 font-mono text-2xl text-[#00FF88] tracking-[0.2em] text-center select-all">
+          <div className="bg-white/[0.06] rounded-xl px-6 py-3 font-mono text-2xl text-[var(--color-phosphor)] tracking-[0.2em] text-center select-all">
             {roomCode}
           </div>
 
@@ -186,7 +186,7 @@ export function RoomModal({ onClose }: RoomModalProps) {
         <button
           onClick={handleCreate}
           disabled={loading}
-          className="w-full py-3 rounded-xl bg-[#00FF88]/10 border border-[#00FF88]/20 text-[#00FF88]/80 hover:bg-[#00FF88]/15 transition-all text-sm font-medium disabled:opacity-30"
+          className="w-full py-3 rounded-xl bg-[var(--color-phosphor)]/10 border border-[var(--color-phosphor)]/20 text-[var(--color-phosphor)]/80 hover:bg-[var(--color-phosphor)]/15 transition-all text-sm font-medium disabled:opacity-30"
         >
           {loading ? 'Creating...' : 'Start Room'}
         </button>

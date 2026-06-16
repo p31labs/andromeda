@@ -92,7 +92,7 @@ describe('Molecule Soundtrack Engine', () => {
     expect(consonance).toBeGreaterThanOrEqual(0);
     expect(consonance).toBeLessThanOrEqual(1);
   });
-  
+
   it('getChordName identifies major sixth', () => {
     const name = getChordName([330, 523]);
     expect(name).toContain('major sixth');

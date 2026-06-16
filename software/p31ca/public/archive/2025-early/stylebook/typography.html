@@ -29,7 +29,7 @@
     }
     .type-meta strong { color: var(--p31-paper); display: block; margin-bottom: 4px; }
     .type-display { color: var(--p31-paper); flex: 1; }
-    
+
     .pangram-card {
       padding: 48px;
       background: var(--p31-surface);
@@ -51,7 +51,7 @@
       font-size: 13px;
       color: var(--p31-muted);
     }
-    
+
     .glyph-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
@@ -72,7 +72,7 @@
       color: var(--p31-cloud);
     }
     .glyph.mono { font-family: var(--p31-font-mono); }
-    
+
     .demo-text {
       padding: 24px;
       background: var(--p31-surface);
@@ -95,7 +95,7 @@
     import { renderShell, code, callout } from '/stylebook/_chrome.js';
     import { P31ThemeController } from '/lib/p31-theme-engine.mjs';
     window.p31Theme = new P31ThemeController({ defaultTheme: 'hub' });
-    
+
     const content = `
       <section class="sb-section">
         <div class="sb-section-header">
@@ -107,7 +107,7 @@
             <strong>JetBrains Mono</strong> for code, data, timestamps, and metadata.
           </p>
         </div>
-        
+
         <div class="pangram-card">
           <div class="pangram-display" style="font-family: var(--p31-font-sans);">
             The quick brown fox<br>jumps over the lazy dog.
@@ -116,7 +116,7 @@
             Atkinson Hyperlegible · 700 weight · -0.02em tracking · 1.05 line-height
           </div>
         </div>
-        
+
         <div class="pangram-card">
           <div class="pangram-display" style="font-family: var(--p31-font-mono); font-weight: 500; letter-spacing: 0;">
             const result = await<br>fetch('/api/health');
@@ -126,7 +126,7 @@
           </div>
         </div>
       </section>
-      
+
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">Type scale</div>
@@ -135,7 +135,7 @@
             Every size uses <code>clamp()</code> — small on phones, generous on desktops, no breakpoint jumps.
           </p>
         </div>
-        
+
         <div style="background: var(--p31-surface); border: 1px solid var(--p31-border-subtle); border-radius: 12px; padding: 0 32px;">
           <div class="type-spec">
             <div class="type-meta">
@@ -203,43 +203,43 @@
           </div>
         </div>
       </section>
-      
+
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">In context</div>
           <h2 class="sb-h2">A typical article</h2>
           <p class="sb-text">How the scale composes when you actually write something.</p>
         </div>
-        
+
         <div class="demo-text">
           <h1>The shape of stable systems</h1>
-          <p>Lead paragraph sits at <code>--p31-text-base</code> with relaxed line-height (1.65). 
+          <p>Lead paragraph sits at <code>--p31-text-base</code> with relaxed line-height (1.65).
           Long-form content stays under 65ch wide so the eye doesn't lose its place returning from line to line.</p>
-          
+
           <h2>Section break</h2>
-          <p>H2 introduces a new conceptual area. Notice the breathing room above (32px margin) and below (12px). 
+          <p>H2 introduces a new conceptual area. Notice the breathing room above (32px margin) and below (12px).
           Sectioning is structural — it tells the reader "we're moving."</p>
-          
+
           <h3>Sub-section</h3>
-          <p>H3 organizes within a section. Code references like <code>verify:p31-style</code> use mono 
+          <p>H3 organizes within a section. Code references like <code>verify:p31-style</code> use mono
           to clearly distinguish from prose. Inline emphasis is achieved via weight, not color.</p>
-          
+
           <blockquote>
-            "Style is not a luxury. Constraints are choreography." — A pulled quote uses the primary color 
+            "Style is not a luxury. Constraints are choreography." — A pulled quote uses the primary color
             as a left bar plus italic body. Used sparingly, never decoratively.
           </blockquote>
-          
-          <p>Final paragraph closes the example. Notice how <code>--p31-cloud</code> body never 
+
+          <p>Final paragraph closes the example. Notice how <code>--p31-cloud</code> body never
           overpowers <code>--p31-paper</code> headings — but it remains comfortable to read.</p>
         </div>
       </section>
-      
+
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">Tracking</div>
           <h2 class="sb-h2">Letter spacing</h2>
         </div>
-        
+
         <table class="sb-table">
           <thead><tr><th>Token</th><th>Value</th><th>Usage</th><th>Example</th></tr></thead>
           <tbody>
@@ -250,13 +250,13 @@
           </tbody>
         </table>
       </section>
-      
+
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">Use it</div>
           <h2 class="sb-h2">CSS reference</h2>
         </div>
-        
+
         ${code(`/* Display headline */
 h1 {
   font-family: var(--p31-font-sans);
@@ -290,11 +290,11 @@ code {
   letter-spacing: var(--p31-tracking-caps);
   color: var(--p31-primary);
 }`, 'css', 'Typography')}
-        
+
         ${callout('info', 'Why Atkinson?', 'Atkinson Hyperlegible was commissioned by the Braille Institute specifically to be readable for people with low vision. The b/d, p/q, 1/I/l forms are visually distinct in ways most fonts merely approximate. Choosing it as the default isn\'t accessibility theater — it\'s a structural choice.')}
       </section>
     `;
-    
+
     renderShell({
       activeId: 'typography',
       breadcrumb: [

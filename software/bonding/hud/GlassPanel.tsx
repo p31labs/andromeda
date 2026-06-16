@@ -1,9 +1,9 @@
 /**
  * WCD-08 Phase A: GlassPanel — Base glassmorphism material component.
- * 
+ *
  * Every HUD panel in The Cockpit uses this as its container.
  * Material: bg-black/40, backdrop-blur-[12px], border-white/[0.08], rounded-2xl.
- * 
+ *
  * pointer-events default: auto (interactive). Set interactive={false}
  * for display-only panels that should pass clicks to the canvas below.
  */

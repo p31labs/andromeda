@@ -85,7 +85,7 @@ export function AnalyticsConsent() {
           </button>
           <button
             onClick={handleAccept}
-            className="flex-1 py-2 px-4 bg-phosphor/20 hover:bg-phosphor/30 
+            className="flex-1 py-2 px-4 bg-phosphor/20 hover:bg-phosphor/30
                        border border-phosphor/50 rounded-lg text-phosphor
                        transition-colors font-medium"
           >

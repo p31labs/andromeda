@@ -1,6 +1,6 @@
 /**
  * @file fawn.ts — FawnGuard: detect fawn response patterns in text
- * 
+ *
  * Hardened with:
  * - Input sanitization (null/undefined, trimming, max length)
  * - Caching for repeated analyses
@@ -125,7 +125,7 @@ export function safeAnalyze(text: unknown): FawnAnalysis {
 
 export function getWarning(text: string): string {
   if (!text || typeof text !== 'string') return '';
-  
+
   const result = analyze(text);
   if (!result.triggered) return '';
 
@@ -149,7 +149,7 @@ export function getWarning(text: string): string {
 export class FawnGuard {
   static analyze = analyze;
   static getWarning = getWarning;
-  
+
   static grayRock(text: string): string {
     let clean = text;
     clean = clean.replace(/\b(I'm so sorry|sorry if this is|so sorry to bother|sorry to bother you)\b/gi, 'Note:');

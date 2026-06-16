@@ -27,7 +27,7 @@ interface ThemeMaterialTargets {
 const MATERIAL_TARGETS: ThemeMaterialTargets = {
   OPERATOR: { emissiveIntensity: 2.5, roughness: 0.2, color: '#C9B1FF', emissive: '#C9B1FF' },
   KIDS: { emissiveIntensity: 0.5, roughness: 0.8, color: '#E9C46A', emissive: '#E9C46A' },
-  GRAY_ROCK: { emissiveIntensity: 0.0, roughness: 1.0, color: '#64748B', emissive: '#000000' },
+  GRAY_ROCK: { emissiveIntensity: 0.0, roughness: 1.0, color: 'var(--color-muted)', emissive: '#000000' },
   AURORA: { emissiveIntensity: 3.5, roughness: 0.1, color: '#a78bfa', emissive: '#a78bfa' },
   HIGH_CONTRAST: { emissiveIntensity: 3.0, roughness: 0.1, color: '#00FFFF', emissive: '#00FFFF' },
   LOW_MOTION: { emissiveIntensity: 2.5, roughness: 0.2, color: '#C9B1FF', emissive: '#C9B1FF' },

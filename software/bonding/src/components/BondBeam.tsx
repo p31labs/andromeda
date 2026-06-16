@@ -152,7 +152,7 @@ export const BondBeam = memo(function BondBeam({ start, end, fromElement, toElem
       if (completionBoost > 0.1) {
         const whiteAmount = completionBoost / 2.0;
         const baseColor = color.clone();
-        baseColor.lerp(new THREE.Color('#ffffff'), whiteAmount * 0.7);
+        baseColor.lerp(new THREE.Color('var(--color-surface)'), whiteAmount * 0.7);
         lineRef.current.material.color = baseColor;
       }
     }

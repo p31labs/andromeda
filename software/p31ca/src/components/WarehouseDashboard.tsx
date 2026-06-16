@@ -87,7 +87,7 @@ export function WarehouseDashboard(): React.ReactElement {
         </div>
 
         <div style={{ ...styles.statCard, background: totalPending > 0 ? '#fff8e1' : '#f0f9f4' }}>
-          <div style={{ ...styles.statValue, color: totalPending > 0 ? '#f9a825' : '#5DCAA5' }}>
+          <div style={{ ...styles.statValue, color: totalPending > 0 ? '#f9a825' : 'var(--color-teal)' }}>
             {totalPending}
           </div>
           <div style={styles.statLabel}>Pending Sync</div>
@@ -189,7 +189,7 @@ const styles: Record<string, React.CSSProperties> = {
   statValue: {
     fontSize: '32px',
     fontWeight: 'bold',
-    color: '#5DCAA5',
+    color: 'var(--color-teal)',
   },
   statLabel: {
     fontSize: '13px',

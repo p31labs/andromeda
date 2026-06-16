@@ -21,15 +21,15 @@ const APPS = [
 const SKINS: Array<{ id: SkinTheme; label: string; accent: string }> = [
   { id: 'OPERATOR', label: 'Operator', accent: '#22d3ee' },
   { id: 'KIDS', label: 'Solar', accent: '#E9C46A' },
-  { id: 'GRAY_ROCK', label: 'Gray Rock', accent: '#64748B' },
+  { id: 'GRAY_ROCK', label: 'Gray Rock', accent: 'var(--color-muted)' },
 ];
 
 const P31_LOGO = (
   <svg width="22" height="22" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
     <rect width="512" height="512" rx="112" fill="#25897d"/>
-    <circle cx="390" cy="120" r="48" fill="#cc6247"/>
-    <text x="256" y="340" fontFamily="system-ui" fontWeight="900" fontSize="220" fill="#d8d6d0" textAnchor="middle">P31</text>
-    <rect x="156" y="380" width="200" height="16" rx="8" fill="#cda852"/>
+    <circle cx="390" cy="120" r="48" fill="var(--color-coral)"/>
+    <text x="256" y="340" fontFamily="system-ui" fontWeight="900" fontSize="220" fill="var(--color-cloud)" textAnchor="middle">P31</text>
+    <rect x="156" y="380" width="200" height="16" rx="8" fill="var(--color-amber)"/>
   </svg>
 );
 
@@ -100,7 +100,7 @@ export function P31Portal() {
       <div style={panelStyle} role="dialog" aria-label="P31 Portal">
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
-          <span style={{ color: '#d8d6d0', fontFamily: 'system-ui', fontWeight: 700, fontSize: 16, letterSpacing: 1 }}>
+          <span style={{ color: 'var(--color-cloud)', fontFamily: 'system-ui', fontWeight: 700, fontSize: 16, letterSpacing: 1 }}>
             P31 Labs
           </span>
           <button
@@ -189,7 +189,7 @@ export function P31Portal() {
                       width: 6,
                       height: 6,
                       borderRadius: '50%',
-                      background: app.status === 'live' ? '#3ba372' : '#cda852',
+                      background: app.status === 'live' ? 'var(--color-phosphorus)' : 'var(--color-amber)',
                       flexShrink: 0,
                     }}
                     title={app.status}

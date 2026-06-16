@@ -1,8 +1,8 @@
 # Node Zero firmware contract (Phase 4)
 
-**Status:** Draft v0.1.0 (`p31.nodeZero.contract/0.1.0`)  
-**Scope:** Firmware repository + `p31ca` Workers (`p31-passkey`) HTTPS surface  
-**Audience:** Operators, firmware authors, edge integrators  
+**Status:** Draft v0.1.0 (`p31.nodeZero.contract/0.1.0`)
+**Scope:** Firmware repository + `p31ca` Workers (`p31-passkey`) HTTPS surface
+**Audience:** Operators, firmware authors, edge integrators
 
 Node Zero defines the **hardware boundary**: no browser, no biometric WebAuthn. Pairing uses **machine-to-machine (M2M) HTTPS POSTs** to Cloudflare Workers only — **no** AWS IoT Core, GCP IoT, MQTT broker, or third-party telemetry clouds.
 

@@ -19,7 +19,7 @@ export function EntanglementLine({ start, end }: EntanglementLineProps) {
   }, [start, end]);
 
   const material = useMemo(() => new THREE.LineBasicMaterial({
-    color: '#00FF88',
+    color: 'var(--color-phosphor)',
     transparent: true,
     opacity: 0.15,
     blending: THREE.AdditiveBlending,

@@ -16,24 +16,24 @@ const ElementSelector = ({ playerId, onBond }) => {
     <div className="element-selector">
       <h3>Choose Your Element</h3>
       <div className="element-grid">
-        <HydrogenCard 
-          playerId={playerId} 
+        <HydrogenCard
+          playerId={playerId}
           onBond={handleElementSelect}
         />
-        <CarbonCard 
-          playerId={playerId} 
+        <CarbonCard
+          playerId={playerId}
           onBond={handleElementSelect}
         />
-        <OxygenCard 
-          playerId={playerId} 
+        <OxygenCard
+          playerId={playerId}
           onBond={handleElementSelect}
         />
-        <PhosphorusCard 
-          playerId={playerId} 
+        <PhosphorusCard
+          playerId={playerId}
           onBond={handleElementSelect}
         />
       </div>
-      
+
       {selectedElement && (
         <div className="element-info">
           <h4>Selected: {selectedElement}</h4>

@@ -45,7 +45,7 @@ export const THEME_CONFIG_PRESETS: Record<SkinTheme, ThemeConfig> = {
     name: 'Gray Rock',
     skin: 'GRAY_ROCK',
     background: '#1a1a2e',
-    primary: '#64748B',
+    primary: 'var(--color-muted)',
     secondary: '#475569',
     accent: '#94a3b8',
     glassOpacity: 0.05,

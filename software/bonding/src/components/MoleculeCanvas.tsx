@@ -186,7 +186,7 @@ function Scene({ atmosphereCoherence }: { atmosphereCoherence: number }) {
     ? ELEMENTS[dragging].color
     : previewElement
       ? ELEMENTS[previewElement].color
-      : '#ffffff';
+      : 'var(--color-surface)';
 
   return (
     <>

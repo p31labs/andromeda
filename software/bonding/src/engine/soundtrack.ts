@@ -86,10 +86,10 @@ export function calculateConsonance(frequencies: number[]): number {
     for (let j = i + 1; j < frequencies.length; j++) {
       let ratio = frequencies[j]! / frequencies[i]!;
       while (ratio > 2) ratio /= 2; // bring into one octave
-      
-      const closest = CONSONANT_RATIOS.reduce((prev, curr) => 
+
+      const closest = CONSONANT_RATIOS.reduce((prev, curr) =>
           (Math.abs(curr.ratio - ratio) < Math.abs(prev.ratio - ratio) ? curr : prev));
-      
+
       const distance = Math.abs(closest.ratio - ratio);
       // score is higher the closer the distance (max score for distance 0)
       const score = closest.score * (1 - distance / closest.ratio);
@@ -103,12 +103,12 @@ export function calculateConsonance(frequencies: number[]): number {
 export function getChordName(frequencies: number[]): string {
     if (frequencies.length === 0) return "Silence";
     if (frequencies.length === 1) return "Unison";
-    
+
     const names: string[] = [];
     for (let i = 1; i < frequencies.length; i++) {
         let ratio = frequencies[i]! / frequencies[0]!;
          while (ratio > 2) ratio /= 2;
-        const closest = CONSONANT_RATIOS.reduce((prev, curr) => 
+        const closest = CONSONANT_RATIOS.reduce((prev, curr) =>
             (Math.abs(curr.ratio - ratio) < Math.abs(prev.ratio - ratio) ? curr : prev));
         names.push(closest.name);
     }

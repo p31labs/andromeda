@@ -40,7 +40,7 @@ const COLORS = [
   { name: 'amber', hex: '#f59e0b' },
   { name: 'magenta', hex: '#ec4899' },
   { name: 'violet', hex: '#8b5cf6' },
-  { name: 'white', hex: '#ffffff' },
+  { name: 'white', hex: 'var(--color-surface)' },
 ];
 
 export function Lobby() {
@@ -283,7 +283,7 @@ export function Lobby() {
               dangerouslySetInnerHTML={{
                 __html: generateQRSvg(roomCode, {
                   size: 120,
-                  fgColor: '#FFFFFF',
+                  fgColor: 'var(--color-surface)',
                   bgColor: 'transparent',
                 }),
               }}

@@ -59,7 +59,7 @@
     .smap-tree > ul > li::before,
     .smap-tree > ul > li::after { display: none; }
     .smap-tree > ul > li { padding-left: 0; }
-    
+
     .smap-node {
       display: inline-flex;
       align-items: center;
@@ -92,7 +92,7 @@
     .smap-tag.api { background: rgba(77,184,168,0.12); color: var(--p31-cyan); }
     .smap-tag.worker { background: rgba(204,98,71,0.12); color: var(--p31-coral); }
     .smap-tag.redirect { background: var(--p31-surface2); color: var(--p31-muted); }
-    
+
     .smap-domain {
       display: flex;
       align-items: center;
@@ -123,7 +123,7 @@
       font-size: 11px;
       color: var(--p31-muted);
     }
-    
+
     /* Visual map (graph) */
     .smap-graph {
       width: 100%;
@@ -146,7 +146,7 @@
       -webkit-mask-image: radial-gradient(ellipse at center, black 60%, transparent 100%);
       opacity: 0.4;
     }
-    
+
     /* Routes table */
     .smap-routes {
       width: 100%;
@@ -215,12 +215,12 @@
     import { renderShell, code, callout } from '/stylebook/_chrome.js';
     import { P31ThemeController } from '/lib/p31-theme-engine.mjs';
     window.p31Theme = new P31ThemeController({ defaultTheme: 'hub' });
-    
+
     // ═══════════════════════════════════════════════════════════
     // CANONICAL ROUTE CATALOG
     // Source of truth: p31-constants.json + p31.ground-truth.json
     // ═══════════════════════════════════════════════════════════
-    
+
     const ROUTES = [
       // p31ca.org (technical hub)
       { domain: 'p31ca.org', path: '/', label: 'Hub home', tag: 'live', purpose: 'Product grid + onboarding entry' },
@@ -247,25 +247,25 @@
       { domain: 'p31ca.org', path: '/api/passkey/register-finish', label: 'Passkey register finish', tag: 'api', purpose: 'WebAuthn registration' },
       { domain: 'p31ca.org', path: '/api/passkey/auth-begin', label: 'Passkey auth begin', tag: 'api', purpose: 'WebAuthn challenge' },
       { domain: 'p31ca.org', path: '/api/passkey/auth-finish', label: 'Passkey auth finish', tag: 'api', purpose: 'WebAuthn assertion' },
-      
+
       // phosphorus31.org (org light)
       { domain: 'phosphorus31.org', path: '/', label: 'Mission home', tag: 'live', purpose: '501(c)(3) public face' },
       { domain: 'phosphorus31.org', path: '/donate', label: 'Donation page', tag: 'live', purpose: 'Stripe Checkout entry' },
       { domain: 'donate-api.phosphorus31.org', path: '/checkout', label: 'Checkout Worker', tag: 'worker', purpose: 'Stripe session creation' },
-      
+
       // K4 mesh workers
       { domain: 'k4-cage.workers.dev', path: '/api/health', label: 'Cage health', tag: 'api', purpose: 'Family mesh status' },
       { domain: 'k4-cage.workers.dev', path: '/api/mesh', label: 'Cage state', tag: 'api', purpose: 'Family graph snapshot' },
       { domain: 'k4-personal.workers.dev', path: '/api/health', label: 'Personal health', tag: 'api', purpose: 'Personal mesh status' },
       { domain: 'k4-personal.workers.dev', path: '/api/mesh', label: 'Personal state', tag: 'api', purpose: 'Personal graph (a/b/c/d)' },
       { domain: 'k4-personal.workers.dev', path: '/agent/:userId/...', label: 'Per-user agent DO', tag: 'api', purpose: 'Personal DO endpoint' },
-      
+
       // SIMPLEX-v7
       { domain: 'simplex.workers.dev', path: '/api/agent/:lane/run', label: 'SIMPLEX dispatch', tag: 'worker', purpose: 'FORGE/COUNSEL/SCRIBE/etc.' },
-      
+
       // Geodesic Room
       { domain: 'geodesic-room.trimtab-signal.workers.dev', path: '/ws', label: 'Geodesic WebSocket', tag: 'worker', purpose: 'p31.geodesicRoomWire/0.2.1' },
-      
+
       // Local development
       { domain: 'localhost', path: ':3131/', label: 'Command center', tag: 'dev', purpose: 'Operator control plane' },
       { domain: 'localhost', path: ':3131/desk', label: 'Operator desk', tag: 'dev', purpose: 'Read-only CONNECTION + glass' },
@@ -273,7 +273,7 @@
       { domain: 'localhost', path: ':3131/api/run', label: 'CC run', tag: 'dev', purpose: 'POST whitelisted action' },
       { domain: 'localhost', path: ':8080/', label: 'Static demo', tag: 'dev', purpose: 'npm run demo (root)' }
     ];
-    
+
     const TREE = `
       <ul>
         <li>
@@ -312,7 +312,7 @@
             </li>
           </ul>
         </li>
-        
+
         <li style="margin-top: 16px;">
           <span class="smap-node">
             <span class="smap-tag live">●</span>
@@ -325,7 +325,7 @@
             <li><span class="smap-node"><span class="smap-tag worker">worker</span> <code>donate-api.phosphorus31.org</code> <span class="smap-label">Stripe session Worker</span></span></li>
           </ul>
         </li>
-        
+
         <li style="margin-top: 16px;">
           <span class="smap-node">
             <span class="smap-tag worker">●</span>
@@ -339,7 +339,7 @@
             <li><span class="smap-node"><code>geodesic-room.trimtab-signal.workers.dev</code> <span class="smap-label">DO + WebSocket (Maxwell rigidity)</span></span></li>
           </ul>
         </li>
-        
+
         <li style="margin-top: 16px;">
           <span class="smap-node">
             <span class="smap-tag dev">●</span>
@@ -355,13 +355,13 @@
         </li>
       </ul>
     `;
-    
+
     const routesByDomain = {};
     ROUTES.forEach(r => {
       if (!routesByDomain[r.domain]) routesByDomain[r.domain] = [];
       routesByDomain[r.domain].push(r);
     });
-    
+
     const routesTable = `
       <div class="smap-routes-search-wrap">
         <input type="search" class="smap-routes-search" id="smap-search" placeholder="Search ${ROUTES.length} routes...">
@@ -385,7 +385,7 @@
         </tbody>
       </table>
     `;
-    
+
     const content = `
       <section class="sb-section">
         <div class="sb-section-header">
@@ -396,12 +396,12 @@
             anything claiming to be P31 lives somewhere on this map.
           </p>
         </div>
-        
+
         <div class="smap-tree">${TREE}</div>
-        
+
         ${callout('info', 'Single source of truth', 'Domains and worker URLs are pinned in <code>p31-constants.json</code> and <code>p31-live-fleet.json</code>. Adding a new public route means editing the constant + ground-truth, not just the HTML.')}
       </section>
-      
+
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">All routes</div>
@@ -410,13 +410,13 @@
         </div>
         ${routesTable}
       </section>
-      
+
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">Naming conventions</div>
           <h2 class="sb-h2">URL grammar</h2>
         </div>
-        
+
         <table class="sb-table">
           <thead><tr><th>Pattern</th><th>Use for</th><th>Example</th></tr></thead>
           <tbody>
@@ -430,7 +430,7 @@
           </tbody>
         </table>
       </section>
-      
+
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">Production sitemap.xml</div>
@@ -438,7 +438,7 @@
           <p class="sb-text">Search engines and AI crawlers want a sitemap. Generate one mechanically from the
           canonical route list — never hand-write.</p>
         </div>
-        
+
         ${code(`<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
@@ -469,10 +469,10 @@ node scripts/build-sitemap.mjs \\
 
 # Verify in CI: every route in the sitemap must resolve to 200
 npm run verify:sitemap`, 'shell', 'Build script')}
-        
+
         ${callout('info', 'robots.txt', 'Always pair sitemap.xml with a <code>robots.txt</code> that points to it: <code>Sitemap: https://p31ca.org/sitemap.xml</code>. Without that, most crawlers won\'t find it.')}
       </section>
-      
+
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">For agents</div>
@@ -482,7 +482,7 @@ npm run verify:sitemap`, 'shell', 'Build script')}
             domain root that summarizes the site in markdown.
           </p>
         </div>
-        
+
         ${code(`# P31 Labs
 
 > Operator-led nonprofit building decentralized family infrastructure.
@@ -503,13 +503,13 @@ npm run verify:sitemap`, 'shell', 'Build script')}
 ## What we don't do
 
 - No third-party tracking
-- No ad pixels  
+- No ad pixels
 - No engagement-driven dark patterns
 
 EIN: 42-1888158 (501(c)(3) pending).`, 'plain', '/llms.txt')}
       </section>
     `;
-    
+
     renderShell({
       activeId: 'sitemap',
       breadcrumb: [
@@ -526,7 +526,7 @@ EIN: 42-1888158 (501(c)(3) pending).`, 'plain', '/llms.txt')}
       ],
       content
     });
-    
+
     // Search filter
     const searchInput = document.getElementById('smap-search');
     if (searchInput) {

@@ -1,6 +1,6 @@
 /**
  * Node Zero Enhanced Telemetry System
- * 
+ *
  * Comprehensive telemetry and monitoring system for Node Zero that provides
  * detailed performance metrics, error tracking, user behavior analytics,
  * and system health monitoring.
@@ -14,18 +14,18 @@ export interface NodeTelemetryMetrics {
   stateUpdateLatency: number[];
   memoryUsage: number[];
   networkLatency: number[];
-  
+
   // Error tracking
   errorCount: number;
   errorTypes: Record<string, number>;
   errorStacks: string[];
-  
+
   // User behavior
   sessionDuration: number;
   activeTime: number;
   interactionCount: number;
   featureUsage: Record<string, number>;
-  
+
   // System health
   subsystemHealth: Record<string, boolean>;
   resourceUsage: {
@@ -33,7 +33,7 @@ export interface NodeTelemetryMetrics {
     memory: number[];
     network: number[];
   };
-  
+
   // Node Zero specific
   coherenceLevels: number[];
   spoonsLevels: number[];
@@ -59,7 +59,7 @@ class NodeTelemetry {
   private activeTimeStart: number;
   private interactionTimer?: number;
   private isTracking = false;
-  
+
   constructor() {
     this.config = {
       enabled: true,
@@ -69,7 +69,7 @@ class NodeTelemetry {
       samplingRate: 1.0, // 100% sampling
       debugMode: false,
     };
-    
+
     this.metrics = {
       bootTime: 0,
       stateUpdateLatency: [],
@@ -93,71 +93,71 @@ class NodeTelemetry {
       tierChanges: [],
       bondEvents: [],
     };
-    
+
     this.startTime = performance.now();
     this.activeTimeStart = Date.now();
-    
+
     this.setupEventListeners();
     this.startTracking();
   }
-  
+
   /**
    * Configure telemetry settings
    */
   configure(config: Partial<TelemetryConfig>): void {
     this.config = { ...this.config, ...config };
-    
+
     if (this.config.debugMode) {
       console.log('[NodeTelemetry] Configuration updated:', this.config);
     }
   }
-  
+
   /**
    * Start telemetry tracking
    */
   startTracking(): void {
     if (this.isTracking) return;
-    
+
     this.isTracking = true;
-    
+
     // Start periodic flushing
     this.flushTimer = window.setInterval(() => {
       this.flush();
     }, this.config.flushInterval);
-    
+
     // Track resource usage periodically
     setInterval(() => {
       this.trackResourceUsage();
     }, 10000); // Every 10 seconds
-    
+
     // Track session duration
     setInterval(() => {
       this.metrics.sessionDuration = Date.now() - this.startTime;
     }, 1000);
-    
+
     if (this.config.debugMode) {
       console.log('[NodeTelemetry] Tracking started');
     }
   }
-  
+
   /**
    * Stop telemetry tracking
    */
   stopTracking(): void {
     this.isTracking = false;
-    
+
     if (this.flushTimer) {
       clearInterval(this.flushTimer);
       this.flushTimer = undefined;
     }
-    
+
     this.flush(); // Final flush
-    
+
     if (this.config.debugMode) {
       console.log('[NodeTelemetry] Tracking stopped');
     }
   }
-  
+
   /**
    * Setup event listeners for user interactions
    */
@@ -168,7 +168,7 @@ class NodeTelemetry {
         this.trackInteraction();
       }, { passive: true });
     });
-    
+
     // Track visibility changes
     document.addEventListener('visibilitychange', () => {
       if (document.hidden) {
@@ -177,23 +177,23 @@ class NodeTelemetry {
         this.activeTimeStart = Date.now();
       }
     });
-    
+
     // Track errors
     window.addEventListener('error', (event) => {
       this.trackError('unhandled_error', event.message, event.error?.stack);
     });
-    
+
     window.addEventListener('unhandledrejection', (event) => {
       this.trackError('unhandled_promise_rejection', event.reason?.message, event.reason?.stack);
     });
   }
-  
+
   /**
    * Track Node Zero boot metrics
    */
   trackBoot(bootTime: number): void {
     this.metrics.bootTime = bootTime;
-    
+
     this.addToBatch({
       type: 'boot',
       timestamp: Date.now(),
@@ -204,23 +204,23 @@ class NodeTelemetry {
         connection: this.getConnectionInfo(),
       },
     });
-    
+
     if (this.config.debugMode) {
       console.log(`[NodeTelemetry] Boot tracked: ${bootTime}ms`);
     }
   }
-  
+
   /**
    * Track state update performance
    */
   trackStateUpdate(latency: number): void {
     this.metrics.stateUpdateLatency.push(latency);
-    
+
     // Keep only last 100 measurements
     if (this.metrics.stateUpdateLatency.length > 100) {
       this.metrics.stateUpdateLatency.shift();
     }
-    
+
     this.addToBatch({
       type: 'state_update',
       timestamp: Date.now(),
@@ -230,7 +230,7 @@ class NodeTelemetry {
       },
     });
   }
-  
+
   /**
    * Track memory usage
    */
@@ -239,7 +239,7 @@ class NodeTelemetry {
     if (memory) {
       this.metrics.memoryUsage.push(memory.usedJSHeapSize);
       this.metrics.resourceUsage.memory.push(memory.usedJSHeapSize);
-      
+
       // Keep only last 100 measurements
       if (this.metrics.memoryUsage.length > 100) {
         this.metrics.memoryUsage.shift();
@@ -247,7 +247,7 @@ class NodeTelemetry {
       if (this.metrics.resourceUsage.memory.length > 100) {
         this.metrics.resourceUsage.memory.shift();
       }
-      
+
       this.addToBatch({
         type: 'memory_usage',
         timestamp: Date.now(),
@@ -255,18 +255,18 @@ class NodeTelemetry {
       });
     }
   }
-  
+
   /**
    * Track network latency
    */
   trackNetworkLatency(latency: number, url?: string): void {
     this.metrics.networkLatency.push(latency);
-    
+
     // Keep only last 50 measurements
     if (this.metrics.networkLatency.length > 50) {
       this.metrics.networkLatency.shift();
     }
-    
+
     this.addToBatch({
       type: 'network_latency',
       timestamp: Date.now(),
@@ -277,14 +277,14 @@ class NodeTelemetry {
       },
     });
   }
-  
+
   /**
    * Track errors with context
    */
   trackError(type: string, message: string, stack?: string): void {
     this.metrics.errorCount++;
     this.metrics.errorTypes[type] = (this.metrics.errorTypes[type] || 0) + 1;
-    
+
     if (stack) {
       this.metrics.errorStacks.push(stack);
       // Keep only last 20 stacks
@@ -292,7 +292,7 @@ class NodeTelemetry {
         this.metrics.errorStacks.shift();
       }
     }
-    
+
     this.addToBatch({
       type: 'error',
       timestamp: Date.now(),
@@ -304,18 +304,18 @@ class NodeTelemetry {
         userAgent: navigator.userAgent,
       },
     });
-    
+
     if (this.config.debugMode) {
       console.error(`[NodeTelemetry] Error tracked: ${type} - ${message}`);
     }
   }
-  
+
   /**
    * Track feature usage
    */
   trackFeatureUsage(feature: string): void {
     this.metrics.featureUsage[feature] = (this.metrics.featureUsage[feature] || 0) + 1;
-    
+
     this.addToBatch({
       type: 'feature_usage',
       timestamp: Date.now(),
@@ -324,18 +324,18 @@ class NodeTelemetry {
         count: this.metrics.featureUsage[feature],
       },
     });
-    
+
     if (this.config.debugMode) {
       console.log(`[NodeTelemetry] Feature usage: ${feature}`);
     }
   }
-  
+
   /**
    * Track subsystem health
    */
   trackSubsystemHealth(subsystem: string, healthy: boolean): void {
     this.metrics.subsystemHealth[subsystem] = healthy;
-    
+
     this.addToBatch({
       type: 'subsystem_health',
       timestamp: Date.now(),
@@ -345,18 +345,18 @@ class NodeTelemetry {
       },
     });
   }
-  
+
   /**
    * Track Node Zero specific metrics
    */
   trackCoherenceLevel(level: number): void {
     this.metrics.coherenceLevels.push(level);
-    
+
     // Keep only last 200 measurements
     if (this.metrics.coherenceLevels.length > 200) {
       this.metrics.coherenceLevels.shift();
     }
-    
+
     this.addToBatch({
       type: 'coherence_level',
       timestamp: Date.now(),
@@ -366,15 +366,15 @@ class NodeTelemetry {
       },
     });
   }
-  
+
   trackSpoonsLevel(level: number): void {
     this.metrics.spoonsLevels.push(level);
-    
+
     // Keep only last 200 measurements
     if (this.metrics.spoonsLevels.length > 200) {
       this.metrics.spoonsLevels.shift();
     }
-    
+
     this.addToBatch({
       type: 'spoons_level',
       timestamp: Date.now(),
@@ -383,19 +383,19 @@ class NodeTelemetry {
       },
     });
   }
-  
+
   trackTierChange(from: string, to: string): void {
     this.metrics.tierChanges.push({
       from,
       to,
       timestamp: Date.now(),
     });
-    
+
     // Keep only last 50 changes
     if (this.metrics.tierChanges.length > 50) {
       this.metrics.tierChanges.shift();
     }
-    
+
     this.addToBatch({
       type: 'tier_change',
       timestamp: Date.now(),
@@ -405,19 +405,19 @@ class NodeTelemetry {
       },
     });
   }
-  
+
   trackBondEvent(type: string, peerId: string): void {
     this.metrics.bondEvents.push({
       type,
       peerId,
       timestamp: Date.now(),
     });
-    
+
     // Keep only last 100 events
     if (this.metrics.bondEvents.length > 100) {
       this.metrics.bondEvents.shift();
     }
-    
+
     this.addToBatch({
       type: 'bond_event',
       timestamp: Date.now(),
@@ -427,44 +427,44 @@ class NodeTelemetry {
       },
     });
   }
-  
+
   /**
    * Track user interaction
    */
   private trackInteraction(): void {
     this.metrics.interactionCount++;
-    
+
     // Reset active time tracking
     this.activeTimeStart = Date.now();
-    
+
     // Clear existing timer
     if (this.interactionTimer) {
       clearTimeout(this.interactionTimer);
     }
-    
+
     // Set new timer to track active time
     this.interactionTimer = window.setTimeout(() => {
       this.metrics.activeTime = Date.now() - this.startTime;
     }, 1000);
   }
-  
+
   /**
    * Track resource usage
    */
   private trackResourceUsage(): void {
     // Track memory
     this.trackMemoryUsage();
-    
+
     // Track CPU (approximation)
     const cpuUsage = this.getCpuUsage();
     this.metrics.resourceUsage.cpu.push(cpuUsage);
-    
+
     // Keep only last 100 measurements
     if (this.metrics.resourceUsage.cpu.length > 100) {
       this.metrics.resourceUsage.cpu.shift();
     }
   }
-  
+
   /**
    * Add event to batch
    */
@@ -473,14 +473,14 @@ class NodeTelemetry {
     if (Math.random() > this.config.samplingRate) {
       return;
     }
-    
+
     this.batch.push(event);
-    
+
     if (this.batch.length >= this.config.batchSize) {
       this.flush();
     }
   }
-  
+
   /**
    * Flush batch to telemetry endpoint
    */
@@ -488,20 +488,20 @@ class NodeTelemetry {
     if (this.batch.length === 0 || !this.config.enabled) {
       return;
     }
-    
+
     const events = [...this.batch];
     this.batch = [];
-    
+
     try {
       // Send to telemetry endpoint
       await this.sendToEndpoint(events);
-      
+
       if (this.config.debugMode) {
         console.log(`[NodeTelemetry] Flushed ${events.length} events`);
       }
     } catch (error) {
       console.error('[NodeTelemetry] Failed to flush events:', error);
-      
+
       // Retry logic
       if (this.config.maxRetries > 0) {
         this.config.maxRetries--;
@@ -509,7 +509,7 @@ class NodeTelemetry {
       }
     }
   }
-  
+
   /**
    * Send events to telemetry endpoint
    */
@@ -520,7 +520,7 @@ class NodeTelemetry {
       trackEvent(event.type, event.data);
     });
   }
-  
+
   /**
    * Get memory information
    */
@@ -535,7 +535,7 @@ class NodeTelemetry {
     }
     return null;
   }
-  
+
   /**
    * Get connection information
    */
@@ -551,7 +551,7 @@ class NodeTelemetry {
     }
     return null;
   }
-  
+
   /**
    * Get CPU usage approximation
    */
@@ -559,14 +559,14 @@ class NodeTelemetry {
     // Simple CPU usage approximation
     const start = performance.now();
     let iterations = 0;
-    
+
     while (performance.now() - start < 10) { // 10ms test
       iterations++;
     }
-    
+
     return iterations;
   }
-  
+
   /**
    * Get average state update latency
    */
@@ -575,7 +575,7 @@ class NodeTelemetry {
     const sum = this.metrics.stateUpdateLatency.reduce((a, b) => a + b, 0);
     return sum / this.metrics.stateUpdateLatency.length;
   }
-  
+
   /**
    * Get average coherence level
    */
@@ -584,14 +584,14 @@ class NodeTelemetry {
     const sum = this.metrics.coherenceLevels.reduce((a, b) => a + b, 0);
     return sum / this.metrics.coherenceLevels.length;
   }
-  
+
   /**
    * Get current telemetry metrics
    */
   getMetrics(): NodeTelemetryMetrics {
     return { ...this.metrics };
   }
-  
+
   /**
    * Get telemetry summary
    */
@@ -609,7 +609,7 @@ class NodeTelemetry {
       subsystemHealth: { ...this.metrics.subsystemHealth },
     };
   }
-  
+
   /**
    * Export telemetry data
    */
@@ -621,7 +621,7 @@ class NodeTelemetry {
       summary: this.getSummary(),
     }, null, 2);
   }
-  
+
   /**
    * Reset telemetry data
    */
