@@ -27,8 +27,6 @@ export interface DecisionIcosahedronProps {
   topScore?: number;
   onClick?: () => void;
   position?: [number, number, number];
-  entropy?: number;
-  equilibrium?: EquilibriumState;
 }
 
 const STAGE_COLORS: Record<string, string> = {

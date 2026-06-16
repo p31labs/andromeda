@@ -1,14 +1,5 @@
 import { useState, useEffect } from 'react';
-
-export interface EquilibriumState {
-  spoon: number;
-  calcium: number;
-  entropy: number;
-  fidelity: number;
-  stage: string;
-  serverTruth: boolean;
-  forceServerStage: boolean;
-}
+import type { EquilibriumState } from '../hooks/useEquilibrium';
 
 export interface EquilibriumAdminProps {
   adminOpen: boolean;
@@ -16,17 +7,16 @@ export interface EquilibriumAdminProps {
 }
 
 export function EquilibriumAdmin({ adminOpen, equilibrium }: EquilibriumAdminProps) {
-  const [calcium, setCalcium] = useState(equilibrium?.calcium ?? 8.2);
-  const [spoons, setSpoons] = useState(equilibrium?.spoon ?? 4);
-  const [forceServer, setForceServer] = useState(equilibrium?.forceServerStage ?? true);
+  const [calcium, setCalcium] = useState(equilibrium?.mandatory?.calcium_mg_dL ?? 8.2);
+  const [spoons, setSpoons] = useState(equilibrium?.mandatory?.spoons ?? 4);
+  const [forceServer, setForceServer] = useState(true);
 
   useEffect(() => {
     if (equilibrium) {
-      setCalcium(equilibrium.calcium);
-      setSpoons(equilibrium.spoon);
-      setForceServer(equilibrium.forceServerStage);
+      setCalcium(equilibrium.mandatory?.calcium_mg_dL ?? 8.2);
+      setSpoons(equilibrium.mandatory?.spoons ?? 4);
     }
-  }, [adminOpen, equilibrium?.calcium, equilibrium?.spoon, equilibrium?.forceServerStage]);
+  }, [adminOpen, equilibrium?.mandatory?.calcium_mg_dL, equilibrium?.mandatory?.spoons]);
 
   const applyPhaseShift = () => {
     localStorage.setItem('p31_medical_override', JSON.stringify({ serum_calcium_mg_dL: calcium }));
@@ -49,6 +39,9 @@ export function EquilibriumAdmin({ adminOpen, equilibrium }: EquilibriumAdminPro
 
   if (!adminOpen) return null;
 
+  const stage = equilibrium?.stage ?? 'SAPLING';
+  const entropy = equilibrium?.entropy ?? 0;
+
   return (
     <div style={{
       position: 'absolute',
@@ -70,7 +63,7 @@ export function EquilibriumAdmin({ adminOpen, equilibrium }: EquilibriumAdminPro
       <div style={{ marginBottom: '1rem' }}>
         <div style={{ fontSize: '0.6rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'rgba(255,255,255,0.4)', marginBottom: '0.2rem' }}>Current Stage</div>
         <div style={{ fontSize: '1.75rem', fontWeight: 'bold', fontFamily: 'monospace', color: '#00ff88', letterSpacing: '0.04em' }}>
-          {equilibrium.stage}
+          {stage}
         </div>
       </div>
 
@@ -101,8 +94,7 @@ export function EquilibriumAdmin({ adminOpen, equilibrium }: EquilibriumAdminPro
       </div>
 
       <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '0.5rem', fontSize: '0.6rem', color: 'rgba(255,255,255,0.4)', lineHeight: 1.6 }}>
-        <div>Entropy: {equilibrium.entropy}x</div>
-        <div>Fidelity: {equilibrium.fidelity}%</div>
+        <div>Entropy: {entropy}x</div>
       </div>
     </div>
   );

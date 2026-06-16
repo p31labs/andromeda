@@ -101,11 +101,12 @@ export function useTetrahedron(
   const zoomIntoVertex = useCallback((vertex: TetraVertex) => {
     if (!viewState.data?.sub_tetras?.[vertex.id]) {
       // If children not loaded yet, generate them
-      const children = tetraLoader.generateChildren(viewState.data);
-      const childData = children[vertex.id];
+      if (viewState.data) {
+        const children = tetraLoader.generateChildren(viewState.data);
+        const childData = children[vertex.id];
 
-      if (childData) {
-        setViewState(prev => ({
+        if (childData) {
+          setViewState(prev => ({
           ...prev,
           data: childData,
           scale: childData.metadata.scale,
@@ -116,6 +117,7 @@ export function useTetrahedron(
             { id: prev.id, label: prev.data?.metadata.class || prev.id }
           ],
         }));
+        }
       }
     } else {
       // Children already exist

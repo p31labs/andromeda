@@ -6,13 +6,8 @@
     "baseUrl": ".",
     "strict": true,
     "esModuleInterop": true,
-    "skipLibCheck": true,
+"skipLibCheck": true,
     "jsx": "react-jsx",
-    "types": [
-      "vite/client",
-      "@webgpu/types",
-      "@types/web-bluetooth"
-    ],
     "lib": [
       "DOM",
       "ES2020"

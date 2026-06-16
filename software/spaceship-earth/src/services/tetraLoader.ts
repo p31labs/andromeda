@@ -145,10 +145,10 @@ class TetraLoader {
        });
 
        // Trim cache if too large
-       if (this.cache.size > MAX_CACHE_SIZE) {
-         const firstKey = this.cache.keys().next().value;
-         this.cache.delete(firstKey);
-       }
+        if (this.cache.size > MAX_CACHE_SIZE) {
+          const firstKey = this.cache.keys().next().value;
+          this.cache.delete(firstKey!);
+        }
 
        return tetra;
      } catch (err) {
