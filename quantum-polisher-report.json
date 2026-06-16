@@ -239,97 +239,15 @@
         "issues": [
           {
             "check": "hardcoded-colors",
-            "status": "fail",
-            "detail": "23 instances of canonical colors used as hardcoded hex instead of CSS variables",
-            "instances": [
-              {
-                "file": "software/bonding/src/index.css",
-                "color": "#cc6247",
-                "canonical_name": "coral",
-                "line": 7
-              },
-              {
-                "file": "software/bonding/src/index.css",
-                "color": "#e879f9",
-                "canonical_name": "fuchsia",
-                "line": 8
-              },
-              {
-                "file": "software/bonding/src/index.css",
-                "color": "#0f172a",
-                "canonical_name": "ink",
-                "line": 9
-              },
-              {
-                "file": "software/bonding/src/index.css",
-                "color": "#8b7cc9",
-                "canonical_name": "lavender",
-                "line": 10
-              },
-              {
-                "file": "software/bonding/src/index.css",
-                "color": "#64748b",
-                "canonical_name": "muted",
-                "line": 11
-              },
-              {
-                "file": "software/bonding/src/index.css",
-                "color": "#fdfcfa",
-                "canonical_name": "paper",
-                "line": 12
-              },
-              {
-                "file": "software/bonding/src/index.css",
-                "color": "#3ba372",
-                "canonical_name": "phosphorus",
-                "line": 13
-              },
-              {
-                "file": "software/bonding/src/index.css",
-                "color": "#ffffff",
-                "canonical_name": "surface",
-                "line": 14
-              },
-              {
-                "file": "software/bonding/src/index.css",
-                "color": "#ebeae4",
-                "canonical_name": "surface2",
-                "line": 15
-              },
-              {
-                "file": "software/bonding/src/index.css",
-                "color": "#5dcaa5",
-                "canonical_name": "teal",
-                "line": 16
-              }
-            ]
+            "status": "warn",
+            "detail": "0 instances of canonical colors used as hardcoded hex instead of CSS variables",
+            "instances": []
           },
           {
             "check": "token-redefinition",
-            "status": "fail",
-            "detail": "103 CSS variable redefinitions of canonical tokens",
-            "instances": [
-              {
-                "file": "software/bonding/src/index.css",
-                "line": "--color-cloud: #1e293b;"
-              },
-              {
-                "file": "software/bonding/src/index.css",
-                "line": "--color-coral: #cc6247;"
-              },
-              {
-                "file": "software/bonding/src/index.css",
-                "line": "--color-fuchsia: #e879f9;"
-              },
-              {
-                "file": "software/bonding/src/index.css",
-                "line": "--color-ink: #0f172a;"
-              },
-              {
-                "file": "software/bonding/src/index.css",
-                "line": "--color-lavender: #8b7cc9;"
-              }
-            ]
+            "status": "warn",
+            "detail": "0 CSS variable redefinitions of canonical tokens",
+            "instances": []
           },
           {
             "check": "glass-drift",
@@ -345,8 +263,8 @@
             ]
           }
         ],
-        "hardcoded_count": 23,
-        "redefinition_count": 103
+        "hardcoded_count": 0,
+        "redefinition_count": 0
       },
       "layer_3": {
         "layer": 3,
@@ -645,101 +563,24 @@
         "issues": [
           {
             "check": "hardcoded-colors",
-            "status": "fail",
-            "detail": "15 instances of canonical colors used as hardcoded hex instead of CSS variables",
-            "instances": [
-              {
-                "file": "software/frontend/src/styles.css",
-                "color": "#cda852",
-                "canonical_name": "amber",
-                "line": 6
-              },
-              {
-                "file": "software/frontend/src/styles.css",
-                "color": "#cc6247",
-                "canonical_name": "coral",
-                "line": 8
-              },
-              {
-                "file": "software/frontend/src/styles.css",
-                "color": "#4db8a8",
-                "canonical_name": "cyan",
-                "line": 9
-              },
-              {
-                "file": "software/frontend/src/styles.css",
-                "color": "#e879f9",
-                "canonical_name": "fuchsia",
-                "line": 10
-              },
-              {
-                "file": "software/frontend/src/styles.css",
-                "color": "#0f172a",
-                "canonical_name": "ink",
-                "line": 11
-              },
-              {
-                "file": "software/frontend/src/styles.css",
-                "color": "#8b7cc9",
-                "canonical_name": "lavender",
-                "line": 12
-              },
-              {
-                "file": "software/frontend/src/styles.css",
-                "color": "#64748b",
-                "canonical_name": "muted",
-                "line": 13
-              },
-              {
-                "file": "software/frontend/src/styles.css",
-                "color": "#fdfcfa",
-                "canonical_name": "paper",
-                "line": 14
-              },
-              {
-                "file": "software/frontend/src/styles.css",
-                "color": "#00ff88",
-                "canonical_name": "phosphor",
-                "line": 15
-              },
-              {
-                "file": "software/frontend/src/styles.css",
-                "color": "#3ba372",
-                "canonical_name": "phosphorus",
-                "line": 16
-              }
-            ]
+            "status": "warn",
+            "detail": "0 instances of canonical colors used as hardcoded hex instead of CSS variables",
+            "instances": []
           },
           {
             "check": "token-redefinition",
             "status": "fail",
-            "detail": "17 CSS variable redefinitions of canonical tokens",
+            "detail": "1 CSS variable redefinitions of canonical tokens",
             "instances": [
               {
                 "file": "software/frontend/src/styles.cockpit.css",
                 "line": "--phosphorus: var(--color-phosphor);"
-              },
-              {
-                "file": "software/frontend/src/styles.css",
-                "line": "--color-amber: #cda852;"
-              },
-              {
-                "file": "software/frontend/src/styles.css",
-                "line": "--color-cloud: #1e293b;"
-              },
-              {
-                "file": "software/frontend/src/styles.css",
-                "line": "--color-coral: #cc6247;"
-              },
-              {
-                "file": "software/frontend/src/styles.css",
-                "line": "--color-cyan: #4db8a8;"
               }
             ]
           }
         ],
-        "hardcoded_count": 15,
-        "redefinition_count": 17
+        "hardcoded_count": 0,
+        "redefinition_count": 1
       },
       "layer_3": {
         "layer": 3,
@@ -1032,101 +873,19 @@
         "issues": [
           {
             "check": "hardcoded-colors",
-            "status": "fail",
-            "detail": "15 instances of canonical colors used as hardcoded hex instead of CSS variables",
-            "instances": [
-              {
-                "file": "software/p31-delta-hiring/src/style.css",
-                "color": "#cda852",
-                "canonical_name": "amber",
-                "line": 5
-              },
-              {
-                "file": "software/p31-delta-hiring/src/style.css",
-                "color": "#cc6247",
-                "canonical_name": "coral",
-                "line": 7
-              },
-              {
-                "file": "software/p31-delta-hiring/src/style.css",
-                "color": "#4db8a8",
-                "canonical_name": "cyan",
-                "line": 8
-              },
-              {
-                "file": "software/p31-delta-hiring/src/style.css",
-                "color": "#e879f9",
-                "canonical_name": "fuchsia",
-                "line": 9
-              },
-              {
-                "file": "software/p31-delta-hiring/src/style.css",
-                "color": "#8b7cc9",
-                "canonical_name": "lavender",
-                "line": 11
-              },
-              {
-                "file": "software/p31-delta-hiring/src/style.css",
-                "color": "#fdfcfa",
-                "canonical_name": "paper",
-                "line": 13
-              },
-              {
-                "file": "software/p31-delta-hiring/src/style.css",
-                "color": "#00ff88",
-                "canonical_name": "phosphor",
-                "line": 14
-              },
-              {
-                "file": "software/p31-delta-hiring/src/style.css",
-                "color": "#3ba372",
-                "canonical_name": "phosphorus",
-                "line": 15
-              },
-              {
-                "file": "software/p31-delta-hiring/src/style.css",
-                "color": "#ffffff",
-                "canonical_name": "surface",
-                "line": 16
-              },
-              {
-                "file": "software/p31-delta-hiring/src/style.css",
-                "color": "#ebeae4",
-                "canonical_name": "surface2",
-                "line": 17
-              }
-            ]
+            "status": "warn",
+            "detail": "0 instances of canonical colors used as hardcoded hex instead of CSS variables",
+            "instances": []
           },
           {
             "check": "token-redefinition",
-            "status": "fail",
-            "detail": "22 CSS variable redefinitions of canonical tokens",
-            "instances": [
-              {
-                "file": "software/p31-delta-hiring/src/style.css",
-                "line": "--color-amber: #cda852;"
-              },
-              {
-                "file": "software/p31-delta-hiring/src/style.css",
-                "line": "--color-cloud: #1e293b;"
-              },
-              {
-                "file": "software/p31-delta-hiring/src/style.css",
-                "line": "--color-coral: #cc6247;"
-              },
-              {
-                "file": "software/p31-delta-hiring/src/style.css",
-                "line": "--color-cyan: #4db8a8;"
-              },
-              {
-                "file": "software/p31-delta-hiring/src/style.css",
-                "line": "--color-fuchsia: #e879f9;"
-              }
-            ]
+            "status": "warn",
+            "detail": "0 CSS variable redefinitions of canonical tokens",
+            "instances": []
           }
         ],
-        "hardcoded_count": 15,
-        "redefinition_count": 22
+        "hardcoded_count": 0,
+        "redefinition_count": 0
       },
       "layer_3": {
         "layer": 3,
@@ -1409,101 +1168,19 @@
         "issues": [
           {
             "check": "hardcoded-colors",
-            "status": "fail",
-            "detail": "15 instances of canonical colors used as hardcoded hex instead of CSS variables",
-            "instances": [
-              {
-                "file": "software/p31-hearing-ops/src/fonts.css",
-                "color": "#cda852",
-                "canonical_name": "amber",
-                "line": 5
-              },
-              {
-                "file": "software/p31-hearing-ops/src/fonts.css",
-                "color": "#cc6247",
-                "canonical_name": "coral",
-                "line": 7
-              },
-              {
-                "file": "software/p31-hearing-ops/src/fonts.css",
-                "color": "#4db8a8",
-                "canonical_name": "cyan",
-                "line": 8
-              },
-              {
-                "file": "software/p31-hearing-ops/src/fonts.css",
-                "color": "#e879f9",
-                "canonical_name": "fuchsia",
-                "line": 9
-              },
-              {
-                "file": "software/p31-hearing-ops/src/fonts.css",
-                "color": "#0f172a",
-                "canonical_name": "ink",
-                "line": 10
-              },
-              {
-                "file": "software/p31-hearing-ops/src/fonts.css",
-                "color": "#8b7cc9",
-                "canonical_name": "lavender",
-                "line": 11
-              },
-              {
-                "file": "software/p31-hearing-ops/src/fonts.css",
-                "color": "#64748b",
-                "canonical_name": "muted",
-                "line": 12
-              },
-              {
-                "file": "software/p31-hearing-ops/src/fonts.css",
-                "color": "#fdfcfa",
-                "canonical_name": "paper",
-                "line": 13
-              },
-              {
-                "file": "software/p31-hearing-ops/src/fonts.css",
-                "color": "#00ff88",
-                "canonical_name": "phosphor",
-                "line": 14
-              },
-              {
-                "file": "software/p31-hearing-ops/src/fonts.css",
-                "color": "#3ba372",
-                "canonical_name": "phosphorus",
-                "line": 15
-              }
-            ]
+            "status": "warn",
+            "detail": "0 instances of canonical colors used as hardcoded hex instead of CSS variables",
+            "instances": []
           },
           {
             "check": "token-redefinition",
-            "status": "fail",
-            "detail": "16 CSS variable redefinitions of canonical tokens",
-            "instances": [
-              {
-                "file": "software/p31-hearing-ops/src/fonts.css",
-                "line": "--color-amber: #cda852;"
-              },
-              {
-                "file": "software/p31-hearing-ops/src/fonts.css",
-                "line": "--color-cloud: #1e293b;"
-              },
-              {
-                "file": "software/p31-hearing-ops/src/fonts.css",
-                "line": "--color-coral: #cc6247;"
-              },
-              {
-                "file": "software/p31-hearing-ops/src/fonts.css",
-                "line": "--color-cyan: #4db8a8;"
-              },
-              {
-                "file": "software/p31-hearing-ops/src/fonts.css",
-                "line": "--color-fuchsia: #e879f9;"
-              }
-            ]
+            "status": "warn",
+            "detail": "0 CSS variable redefinitions of canonical tokens",
+            "instances": []
           }
         ],
-        "hardcoded_count": 15,
-        "redefinition_count": 16
+        "hardcoded_count": 0,
+        "redefinition_count": 0
       },
       "layer_3": {
         "layer": 3,
@@ -1802,101 +1479,19 @@
         "issues": [
           {
             "check": "hardcoded-colors",
-            "status": "fail",
-            "detail": "15 instances of canonical colors used as hardcoded hex instead of CSS variables",
-            "instances": [
-              {
-                "file": "software/packages/node-zero/pwa/src/index.css",
-                "color": "#cda852",
-                "canonical_name": "amber",
-                "line": 5
-              },
-              {
-                "file": "software/packages/node-zero/pwa/src/index.css",
-                "color": "#cc6247",
-                "canonical_name": "coral",
-                "line": 7
-              },
-              {
-                "file": "software/packages/node-zero/pwa/src/index.css",
-                "color": "#4db8a8",
-                "canonical_name": "cyan",
-                "line": 8
-              },
-              {
-                "file": "software/packages/node-zero/pwa/src/index.css",
-                "color": "#e879f9",
-                "canonical_name": "fuchsia",
-                "line": 9
-              },
-              {
-                "file": "software/packages/node-zero/pwa/src/index.css",
-                "color": "#0f172a",
-                "canonical_name": "ink",
-                "line": 10
-              },
-              {
-                "file": "software/packages/node-zero/pwa/src/index.css",
-                "color": "#8b7cc9",
-                "canonical_name": "lavender",
-                "line": 11
-              },
-              {
-                "file": "software/packages/node-zero/pwa/src/index.css",
-                "color": "#64748b",
-                "canonical_name": "muted",
-                "line": 12
-              },
-              {
-                "file": "software/packages/node-zero/pwa/src/index.css",
-                "color": "#fdfcfa",
-                "canonical_name": "paper",
-                "line": 13
-              },
-              {
-                "file": "software/packages/node-zero/pwa/src/index.css",
-                "color": "#00ff88",
-                "canonical_name": "phosphor",
-                "line": 14
-              },
-              {
-                "file": "software/packages/node-zero/pwa/src/index.css",
-                "color": "#3ba372",
-                "canonical_name": "phosphorus",
-                "line": 15
-              }
-            ]
+            "status": "warn",
+            "detail": "0 instances of canonical colors used as hardcoded hex instead of CSS variables",
+            "instances": []
           },
           {
             "check": "token-redefinition",
-            "status": "fail",
-            "detail": "16 CSS variable redefinitions of canonical tokens",
-            "instances": [
-              {
-                "file": "software/packages/node-zero/pwa/src/index.css",
-                "line": "--color-amber: #cda852;"
-              },
-              {
-                "file": "software/packages/node-zero/pwa/src/index.css",
-                "line": "--color-cloud: #1e293b;"
-              },
-              {
-                "file": "software/packages/node-zero/pwa/src/index.css",
-                "line": "--color-coral: #cc6247;"
-              },
-              {
-                "file": "software/packages/node-zero/pwa/src/index.css",
-                "line": "--color-cyan: #4db8a8;"
-              },
-              {
-                "file": "software/packages/node-zero/pwa/src/index.css",
-                "line": "--color-fuchsia: #e879f9;"
-              }
-            ]
+            "status": "warn",
+            "detail": "0 CSS variable redefinitions of canonical tokens",
+            "instances": []
           }
         ],
-        "hardcoded_count": 15,
-        "redefinition_count": 16
+        "hardcoded_count": 0,
+        "redefinition_count": 0
       },
       "layer_3": {
         "layer": 3,
@@ -2186,97 +1781,15 @@
         "issues": [
           {
             "check": "hardcoded-colors",
-            "status": "fail",
-            "detail": "19 instances of canonical colors used as hardcoded hex instead of CSS variables",
-            "instances": [
-              {
-                "file": "software/p31ca/tailwind.build.css",
-                "color": "#cda852",
-                "canonical_name": "amber",
-                "line": 5
-              },
-              {
-                "file": "software/p31ca/tailwind.build.css",
-                "color": "#cc6247",
-                "canonical_name": "coral",
-                "line": 7
-              },
-              {
-                "file": "software/p31ca/tailwind.build.css",
-                "color": "#4db8a8",
-                "canonical_name": "cyan",
-                "line": 8
-              },
-              {
-                "file": "software/p31ca/tailwind.build.css",
-                "color": "#e879f9",
-                "canonical_name": "fuchsia",
-                "line": 9
-              },
-              {
-                "file": "software/p31ca/tailwind.build.css",
-                "color": "#0f172a",
-                "canonical_name": "ink",
-                "line": 10
-              },
-              {
-                "file": "software/p31ca/tailwind.build.css",
-                "color": "#8b7cc9",
-                "canonical_name": "lavender",
-                "line": 11
-              },
-              {
-                "file": "software/p31ca/tailwind.build.css",
-                "color": "#64748b",
-                "canonical_name": "muted",
-                "line": 12
-              },
-              {
-                "file": "software/p31ca/tailwind.build.css",
-                "color": "#fdfcfa",
-                "canonical_name": "paper",
-                "line": 13
-              },
-              {
-                "file": "software/p31ca/tailwind.build.css",
-                "color": "#00ff88",
-                "canonical_name": "phosphor",
-                "line": 14
-              },
-              {
-                "file": "software/p31ca/tailwind.build.css",
-                "color": "#3ba372",
-                "canonical_name": "phosphorus",
-                "line": 15
-              }
-            ]
+            "status": "warn",
+            "detail": "0 instances of canonical colors used as hardcoded hex instead of CSS variables",
+            "instances": []
           },
           {
             "check": "token-redefinition",
-            "status": "fail",
-            "detail": "152 CSS variable redefinitions of canonical tokens",
-            "instances": [
-              {
-                "file": "software/p31ca/tailwind.build.css",
-                "line": "--color-amber: #cda852;"
-              },
-              {
-                "file": "software/p31ca/tailwind.build.css",
-                "line": "--color-cloud: #1e293b;"
-              },
-              {
-                "file": "software/p31ca/tailwind.build.css",
-                "line": "--color-coral: #cc6247;"
-              },
-              {
-                "file": "software/p31ca/tailwind.build.css",
-                "line": "--color-cyan: #4db8a8;"
-              },
-              {
-                "file": "software/p31ca/tailwind.build.css",
-                "line": "--color-fuchsia: #e879f9;"
-              }
-            ]
+            "status": "warn",
+            "detail": "0 CSS variable redefinitions of canonical tokens",
+            "instances": []
           },
           {
             "check": "glass-drift",
@@ -2298,8 +1811,8 @@
             ]
           }
         ],
-        "hardcoded_count": 19,
-        "redefinition_count": 152
+        "hardcoded_count": 0,
+        "redefinition_count": 0
       },
       "layer_3": {
         "layer": 3,
@@ -2536,101 +2049,19 @@
         "issues": [
           {
             "check": "hardcoded-colors",
-            "status": "fail",
-            "detail": "15 instances of canonical colors used as hardcoded hex instead of CSS variables",
-            "instances": [
-              {
-                "file": "software/sovereign-command-center/styles/globals.css",
-                "color": "#cda852",
-                "canonical_name": "amber",
-                "line": 5
-              },
-              {
-                "file": "software/sovereign-command-center/styles/globals.css",
-                "color": "#cc6247",
-                "canonical_name": "coral",
-                "line": 7
-              },
-              {
-                "file": "software/sovereign-command-center/styles/globals.css",
-                "color": "#4db8a8",
-                "canonical_name": "cyan",
-                "line": 8
-              },
-              {
-                "file": "software/sovereign-command-center/styles/globals.css",
-                "color": "#e879f9",
-                "canonical_name": "fuchsia",
-                "line": 9
-              },
-              {
-                "file": "software/sovereign-command-center/styles/globals.css",
-                "color": "#8b7cc9",
-                "canonical_name": "lavender",
-                "line": 11
-              },
-              {
-                "file": "software/sovereign-command-center/styles/globals.css",
-                "color": "#64748b",
-                "canonical_name": "muted",
-                "line": 12
-              },
-              {
-                "file": "software/sovereign-command-center/styles/globals.css",
-                "color": "#fdfcfa",
-                "canonical_name": "paper",
-                "line": 13
-              },
-              {
-                "file": "software/sovereign-command-center/styles/globals.css",
-                "color": "#00ff88",
-                "canonical_name": "phosphor",
-                "line": 14
-              },
-              {
-                "file": "software/sovereign-command-center/styles/globals.css",
-                "color": "#3ba372",
-                "canonical_name": "phosphorus",
-                "line": 15
-              },
-              {
-                "file": "software/sovereign-command-center/styles/globals.css",
-                "color": "#ebeae4",
-                "canonical_name": "surface2",
-                "line": 17
-              }
-            ]
+            "status": "warn",
+            "detail": "0 instances of canonical colors used as hardcoded hex instead of CSS variables",
+            "instances": []
           },
           {
             "check": "token-redefinition",
-            "status": "fail",
-            "detail": "17 CSS variable redefinitions of canonical tokens",
-            "instances": [
-              {
-                "file": "software/sovereign-command-center/styles/globals.css",
-                "line": "--color-amber: #cda852;"
-              },
-              {
-                "file": "software/sovereign-command-center/styles/globals.css",
-                "line": "--color-cloud: #1e293b;"
-              },
-              {
-                "file": "software/sovereign-command-center/styles/globals.css",
-                "line": "--color-coral: #cc6247;"
-              },
-              {
-                "file": "software/sovereign-command-center/styles/globals.css",
-                "line": "--color-cyan: #4db8a8;"
-              },
-              {
-                "file": "software/sovereign-command-center/styles/globals.css",
-                "line": "--color-fuchsia: #e879f9;"
-              }
-            ]
+            "status": "warn",
+            "detail": "0 CSS variable redefinitions of canonical tokens",
+            "instances": []
           }
         ],
-        "hardcoded_count": 15,
-        "redefinition_count": 17
+        "hardcoded_count": 0,
+        "redefinition_count": 0
       },
       "layer_3": {
         "layer": 3,
@@ -2895,101 +2326,19 @@
         "issues": [
           {
             "check": "hardcoded-colors",
-            "status": "fail",
-            "detail": "14 instances of canonical colors used as hardcoded hex instead of CSS variables",
-            "instances": [
-              {
-                "file": "software/spaceship-earth/src/styles.css",
-                "color": "#cda852",
-                "canonical_name": "amber",
-                "line": 6
-              },
-              {
-                "file": "software/spaceship-earth/src/styles.css",
-                "color": "#cc6247",
-                "canonical_name": "coral",
-                "line": 8
-              },
-              {
-                "file": "software/spaceship-earth/src/styles.css",
-                "color": "#4db8a8",
-                "canonical_name": "cyan",
-                "line": 9
-              },
-              {
-                "file": "software/spaceship-earth/src/styles.css",
-                "color": "#e879f9",
-                "canonical_name": "fuchsia",
-                "line": 10
-              },
-              {
-                "file": "software/spaceship-earth/src/styles.css",
-                "color": "#8b7cc9",
-                "canonical_name": "lavender",
-                "line": 12
-              },
-              {
-                "file": "software/spaceship-earth/src/styles.css",
-                "color": "#64748b",
-                "canonical_name": "muted",
-                "line": 13
-              },
-              {
-                "file": "software/spaceship-earth/src/styles.css",
-                "color": "#fdfcfa",
-                "canonical_name": "paper",
-                "line": 14
-              },
-              {
-                "file": "software/spaceship-earth/src/styles.css",
-                "color": "#3ba372",
-                "canonical_name": "phosphorus",
-                "line": 16
-              },
-              {
-                "file": "software/spaceship-earth/src/styles.css",
-                "color": "#ebeae4",
-                "canonical_name": "surface2",
-                "line": 18
-              },
-              {
-                "file": "software/spaceship-earth/src/styles.css",
-                "color": "#5dcaa5",
-                "canonical_name": "teal",
-                "line": 19
-              }
-            ]
+            "status": "warn",
+            "detail": "0 instances of canonical colors used as hardcoded hex instead of CSS variables",
+            "instances": []
           },
           {
             "check": "token-redefinition",
-            "status": "fail",
-            "detail": "23 CSS variable redefinitions of canonical tokens",
-            "instances": [
-              {
-                "file": "software/spaceship-earth/src/styles.css",
-                "line": "--color-amber: #cda852;"
-              },
-              {
-                "file": "software/spaceship-earth/src/styles.css",
-                "line": "--color-cloud: #1e293b;"
-              },
-              {
-                "file": "software/spaceship-earth/src/styles.css",
-                "line": "--color-coral: #cc6247;"
-              },
-              {
-                "file": "software/spaceship-earth/src/styles.css",
-                "line": "--color-cyan: #4db8a8;"
-              },
-              {
-                "file": "software/spaceship-earth/src/styles.css",
-                "line": "--color-fuchsia: #e879f9;"
-              }
-            ]
+            "status": "warn",
+            "detail": "0 CSS variable redefinitions of canonical tokens",
+            "instances": []
           }
         ],
-        "hardcoded_count": 14,
-        "redefinition_count": 23
+        "hardcoded_count": 0,
+        "redefinition_count": 0
       },
       "layer_3": {
         "layer": 3,
@@ -3288,101 +2637,19 @@
         "issues": [
           {
             "check": "hardcoded-colors",
-            "status": "fail",
-            "detail": "15 instances of canonical colors used as hardcoded hex instead of CSS variables",
-            "instances": [
-              {
-                "file": "software/spoon-calculator/src/index.css",
-                "color": "#cda852",
-                "canonical_name": "amber",
-                "line": 5
-              },
-              {
-                "file": "software/spoon-calculator/src/index.css",
-                "color": "#cc6247",
-                "canonical_name": "coral",
-                "line": 7
-              },
-              {
-                "file": "software/spoon-calculator/src/index.css",
-                "color": "#4db8a8",
-                "canonical_name": "cyan",
-                "line": 8
-              },
-              {
-                "file": "software/spoon-calculator/src/index.css",
-                "color": "#e879f9",
-                "canonical_name": "fuchsia",
-                "line": 9
-              },
-              {
-                "file": "software/spoon-calculator/src/index.css",
-                "color": "#8b7cc9",
-                "canonical_name": "lavender",
-                "line": 11
-              },
-              {
-                "file": "software/spoon-calculator/src/index.css",
-                "color": "#64748b",
-                "canonical_name": "muted",
-                "line": 12
-              },
-              {
-                "file": "software/spoon-calculator/src/index.css",
-                "color": "#fdfcfa",
-                "canonical_name": "paper",
-                "line": 13
-              },
-              {
-                "file": "software/spoon-calculator/src/index.css",
-                "color": "#00ff88",
-                "canonical_name": "phosphor",
-                "line": 14
-              },
-              {
-                "file": "software/spoon-calculator/src/index.css",
-                "color": "#3ba372",
-                "canonical_name": "phosphorus",
-                "line": 15
-              },
-              {
-                "file": "software/spoon-calculator/src/index.css",
-                "color": "#ffffff",
-                "canonical_name": "surface",
-                "line": 16
-              }
-            ]
+            "status": "warn",
+            "detail": "0 instances of canonical colors used as hardcoded hex instead of CSS variables",
+            "instances": []
           },
           {
             "check": "token-redefinition",
-            "status": "fail",
-            "detail": "16 CSS variable redefinitions of canonical tokens",
-            "instances": [
-              {
-                "file": "software/spoon-calculator/src/index.css",
-                "line": "--color-amber: #cda852;"
-              },
-              {
-                "file": "software/spoon-calculator/src/index.css",
-                "line": "--color-cloud: #1e293b;"
-              },
-              {
-                "file": "software/spoon-calculator/src/index.css",
-                "line": "--color-coral: #cc6247;"
-              },
-              {
-                "file": "software/spoon-calculator/src/index.css",
-                "line": "--color-cyan: #4db8a8;"
-              },
-              {
-                "file": "software/spoon-calculator/src/index.css",
-                "line": "--color-fuchsia: #e879f9;"
-              }
-            ]
+            "status": "warn",
+            "detail": "0 CSS variable redefinitions of canonical tokens",
+            "instances": []
           }
         ],
-        "hardcoded_count": 15,
-        "redefinition_count": 16
+        "hardcoded_count": 0,
+        "redefinition_count": 0
       },
       "layer_3": {
         "layer": 3,
