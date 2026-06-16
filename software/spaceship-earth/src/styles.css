@@ -1,5 +1,10 @@
 /* ═══════════════════════════════════════════════════════
 @import '@p31/shared/src/theme/css-variables.css';
+   SPACESHIP EARTH — P31 Labs
+   Brand-aligned: Oxanium + Space Mono, P31 color system
+   ═══════════════════════════════════════════════════════ */
+
+@import '@p31/shared/theme/css-variables.css';
 
 /* P31 Canon — injected by Quantum Polisher */
 :root {
@@ -12,7 +17,7 @@
   --color-lavender: #8b7cc9;
   --color-muted: #64748b;
   --color-paper: #fdfcfa;
-  --color-phosphor: var(--color-phosphor);
+  --color-phosphor: #00FF88;
   --color-phosphorus: #3ba372;
   --color-surface: var(--color-surface);
   --color-surface2: #ebeae4;
@@ -20,9 +25,6 @@
   --color-themeColor: #f5f4f0;
   --color-void: #f5f4f0;
 }
-   SPACESHIP EARTH — P31 Labs
-   Brand-aligned: Oxanium + Space Mono, P31 color system
-   ═══════════════════════════════════════════════════════ */
 
 @import url('https://fonts.googleapis.com/css2?family=Oxanium:wght@200;300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
 
@@ -51,7 +53,7 @@
 [data-theme="operator"] { --p31-bg: #020617; --p31-primary: #22d3ee; --p31-secondary: #d946ef; --p31-accent: #C9B1FF; }
 [data-theme="kids"] { --p31-bg: #1e1b4b; --p31-primary: #E9C46A; --p31-secondary: #E76F51; --p31-accent: #2A9D8F; }
 [data-theme="gray_rock"] { --p31-bg: #1a1a2e; --p31-primary: var(--color-muted); --p31-secondary: #475569; --p31-accent: #94a3b8; }
-[data-theme="aurora"] { --p31-bg: #0f172a; --p31-primary: #a78bfa; --p31-secondary: #34d399; --p31-accent: #f472b6; }
+[data-theme="aurora"] { --p31-bg: var(--color-ink); --p31-primary: #a78bfa; --p31-secondary: #34d399; --p31-accent: #f472b6; }
 [data-theme="high_contrast"] { --p31-bg: #000000; --p31-primary: #00FFFF; --p31-secondary: #FF00FF; --p31-accent: #FFFF00; }
 [data-theme="low_motion"] { --p31-bg: #020617; --p31-primary: #22d3ee; --p31-secondary: #d946ef; --p31-accent: #C9B1FF; }
 
@@ -250,7 +252,7 @@
 /* P04.7: Light mode — sensory toggle */
 [data-theme="light"] {
   --void: #f0f2f5;
-  --s1: #ffffff;
+  --s1: var(--color-surface);
   --s2: #f5f5f5;
   --s3: #e8eaed;
   --s4: #dcdfe3;

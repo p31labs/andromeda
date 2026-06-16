@@ -42,7 +42,7 @@ export default function App() {
   const [adminOpen, setAdminOpen] = useState(false);
   const larmorEngine = useMemo(() => getLarmorEngine(), []);
   const { result, loading } = useDecisionEngine(30000);
-  const { stage: eqStage, entropy, equilibrium } = useEquilibrium(30000);
+  const { equilibrium } = useEquilibrium(30000);
 
   const onCurvatureTick = useCallback((t: number) => {
     setCurvature(getAnimatedCurvature(1.0, t));

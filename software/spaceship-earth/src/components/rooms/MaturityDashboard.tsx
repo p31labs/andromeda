@@ -5,6 +5,8 @@ import * as THREE from 'three';
 import { ArtifactNode } from './ArtifactNode';
 import type { ArtifactData } from './ArtifactNode';
 
+const BASE = import.meta.env.BASE_URL || '/';
+
 const STAGE_ORDER = ['SEED', 'SPROUT', 'SAPLING', 'BLOOM', 'FRUIT'] as const;
 const STAGE_RING_RADIUS: Record<string, number> = {
   SEED: 2.5,
@@ -78,9 +80,9 @@ export function MaturityDashboard() {
     const load = async () => {
       try {
         const [gradingRes, spoonRes, entRes] = await Promise.all([
-          fetch('/grading-index.json'),
-          fetch('/spoon-state.json'),
-          fetch('/jitterbug-entanglements.json').catch(() => null),
+          fetch(`${BASE}grading-index.json`),
+          fetch(`${BASE}spoon-state.json`),
+          fetch(`${BASE}jitterbug-entanglements.json`).catch(() => null),
         ]);
 
         if (cancelled) return;

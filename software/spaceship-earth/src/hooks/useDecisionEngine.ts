@@ -7,6 +7,8 @@
  */
 import { useState, useEffect, useCallback } from 'react';
 
+const BASE = import.meta.env.BASE_URL || '/';
+
 export interface DecisionInput {
   spoonLevel: number;
   calcium: number;
@@ -100,10 +102,10 @@ export function useDecisionEngine(pollIntervalMs = 30000) {
   const evaluate = useCallback(async () => {
     try {
       const [spoonRes, medicalRes, gradingRes, polisherRes] = await Promise.all([
-        fetch('/spoon-state.json').then((r) => (r.ok ? r.json() : { level: 4 })),
-        fetch('/medical-log.json').then((r) => (r.ok ? r.json() : { serum_calcium_mg_dL: 8.2, albumin_g_dL: 4.0, notes: '' })),
-        fetch('/grading-index.json').then((r) => (r.ok ? r.json() : { artifacts: [] })),
-        fetch('/quantum-polisher-report.json').then((r) => (r.ok ? r.json() : { ecosystem_fidelity: 62.4, projects: {} })),
+        fetch(`${BASE}spoon-state.json`).then((r) => (r.ok ? r.json() : { level: 4 })),
+        fetch(`${BASE}medical-log.json`).then((r) => (r.ok ? r.json() : { serum_calcium_mg_dL: 8.2, albumin_g_dL: 4.0, notes: '' })),
+        fetch(`${BASE}grading-index.json`).then((r) => (r.ok ? r.json() : { artifacts: [] })),
+        fetch(`${BASE}quantum-polisher-report.json`).then((r) => (r.ok ? r.json() : { ecosystem_fidelity: 62.4, projects: {} })),
       ]);
 
       const spoonLevel = spoonRes.level ?? 4;

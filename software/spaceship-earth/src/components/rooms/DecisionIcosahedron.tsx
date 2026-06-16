@@ -26,6 +26,7 @@ export interface DecisionIcosahedronProps {
   topLabel?: string;
   topScore?: number;
   onClick?: () => void;
+  scale?: number | [number, number, number];
   position?: [number, number, number];
 }
 
@@ -44,7 +45,8 @@ export function DecisionIcosahedron({
   topLabel = 'awaiting evaluation',
   topScore,
   onClick,
-  position = [0, 1.2, -2.2],
+  scale = 8,
+  position = [0, 1.5, -2],
 }: DecisionIcosahedronProps) {
   const groupRef = useRef<THREE.Group>(null);
   const rollRef = useRef<{ speed: number; t: number }>({ speed: 0, t: 0 });
@@ -86,49 +88,48 @@ export function DecisionIcosahedron({
   };
 
   return (
-    <Float speed={baseRotationSpeed * 1.3} floatIntensity={glowIntensity * 0.6} position={position}>
-      <group ref={groupRef} onClick={handleClick}>
-        {/* Glass icosahedron */}
-        <mesh>
-          <icosahedronGeometry args={[1.15, 0]} />
-          <MeshTransmissionMaterial
-            backside
-            thickness={0.55}
-            roughness={0.08}
-            transmission={0.85}
-            ior={1.35}
-            chromaticAberration={0.25}
-            color={color}
-            transparent
-          />
-        </mesh>
-        {/* Inner glow wireframe */}
-        <mesh>
-          <icosahedronGeometry args={[1.05, 0]} />
-          <meshBasicMaterial
-            color={color}
-            wireframe
-            toneMapped={false}
-            blending={THREE.AdditiveBlending}
-            transparent
-            opacity={0.15 + glowIntensity * 0.35}
-          />
-        </mesh>
-        {/* Label floating inside */}
-        <Text
-          position={[0, 0, 0]}
-          fontSize={0.22}
-          color="#e2e8f0"
-          anchorX="center"
-          anchorY="middle"
-          maxWidth={2.4}
-          lineHeight={1.1}
-        >
-          {topLabel}
-          {typeof topScore === 'number' ? `\n${topScore}` : ''}
-        </Text>
-      </group>
-    </Float>
+    <group scale={scale}>
+      <Float speed={baseRotationSpeed * 1.3} floatIntensity={glowIntensity * 0.6} position={position}>
+        <group ref={groupRef} onClick={handleClick}>
+          <mesh>
+            <icosahedronGeometry args={[1.15, 0]} />
+            <MeshTransmissionMaterial
+              backside
+              thickness={0.55}
+              roughness={0.08}
+              transmission={0.85}
+              ior={1.35}
+              chromaticAberration={0.25}
+              color={color}
+              transparent
+            />
+          </mesh>
+          <mesh>
+            <icosahedronGeometry args={[1.05, 0]} />
+            <meshBasicMaterial
+              color={color}
+              wireframe
+              toneMapped={false}
+              blending={THREE.AdditiveBlending}
+              transparent
+              opacity={0.15 + glowIntensity * 0.35}
+            />
+          </mesh>
+          <Text
+            position={[0, 0, 0]}
+            fontSize={0.22}
+            color="#e2e8f0"
+            anchorX="center"
+            anchorY="middle"
+            maxWidth={2.4}
+            lineHeight={1.1}
+          >
+            {topLabel}
+            {typeof topScore === 'number' ? `\n${topScore}` : ''}
+          </Text>
+        </group>
+      </Float>
+    </group>
   );
 }
 
