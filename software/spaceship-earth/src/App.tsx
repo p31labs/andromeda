@@ -133,13 +133,13 @@ export default function App() {
           <div className="text-[10px] text-white/40">
             <div className="text-[var(--color-phosphor)]">{resilience}</div>
             <div className="mt-2 flex items-center gap-3">
-              <Battery size={14} className={spoons > 4 ? 'text-[#22d3ee]' : 'text-[#E8636F]'} />
+              <Battery size={14} className={spoons > 4 ? 'text-[var(--color-cyan)]' : 'text-[#E8636F]'} />
               <div className="flex gap-1">
                 {[...Array(12)].map((_, i) => (
                   <div
                     key={i}
                     className={`h-4 w-1.5 rounded-sm ${
-                      i < spoons ? (spoons > 4 ? 'bg-[#22d3ee]' : 'bg-[#E8636F]') : 'bg-white/10'
+                      i < spoons ? (spoons > 4 ? 'bg-[var(--color-cyan)]' : 'bg-[#E8636F]') : 'bg-white/10'
                     }`}
                   />
                 ))}
@@ -176,7 +176,7 @@ export default function App() {
       <div className="pointer-events-none absolute bottom-6 z-20 flex w-full justify-center">
         <div className="pointer-events-auto w-full max-w-lg rounded-xl border border-white/[0.08] bg-[#080810]/90 p-4 shadow-xl backdrop-blur-xl">
           <div className="mb-3 flex items-center justify-between border-b border-white/[0.06] pb-2">
-            <h2 className="font-mono text-xs font-bold uppercase tracking-wide text-[#22d3ee]">
+            <h2 className="font-mono text-xs font-bold uppercase tracking-wide text-[var(--color-cyan)]">
               Whale Channel
             </h2>
             <div className="text-[10px] uppercase text-white/35">Fawn Guard</div>
@@ -188,7 +188,7 @@ export default function App() {
             placeholder="Prepare transmission..."
           />
           {warning && (
-            <div className="mb-3 rounded-lg border border-[#fbbf24]/40 bg-[#fbbf24]/10 p-3 font-mono text-[10px] text-[#fbbf24]">
+            <div className="mb-3 rounded-lg border border-[var(--color-amber)]/40 bg-[var(--color-amber)]/10 p-3 font-mono text-[10px] text-[var(--color-amber)]">
               {warning}
             </div>
           )}
@@ -204,7 +204,7 @@ export default function App() {
               className={`rounded-lg px-6 py-2 font-mono text-xs font-bold ${
                 warning || !input.trim()
                   ? 'cursor-not-allowed bg-white/5 text-white/25'
-                  : 'bg-[#22d3ee]/20 text-[#22d3ee]'
+                  : 'bg-[var(--color-cyan)]/20 text-[var(--color-cyan)]'
               }`}
             >
               {warning ? 'INTERCEPTED' : 'TRANSMIT'}

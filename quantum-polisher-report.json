@@ -1,5 +1,5 @@
 {
-  "generated": "2026-06-16T00:26:51.999096+00:00",
+  "generated": "2026-06-16T01:16:45.123184+00:00",
   "ecosystem_fidelity": 62.2,
   "projects": {
     "bonding": {
@@ -8,16 +8,6 @@
         "framework": "react",
         "css": "tailwind-v4",
         "strict_ts": false
-      },
-      "remediation": {
-        "css_vars_injected": 0,
-        "colors_replaced": 56,
-        "glass_normalized": 0,
-        "ts_strict_fixed": 0,
-        "shared_dep_added": false,
-        "css_import_added": 0,
-        "tw_preset_added": 0,
-        "total_fixes": 56
       },
       "layer_1_pre": {
         "layer": 1,
@@ -45,7 +35,7 @@
           {
             "check": "hardcoded-colors",
             "status": "fail",
-            "detail": "59 instances of canonical colors used as hardcoded hex instead of CSS variables",
+            "detail": "23 instances of canonical colors used as hardcoded hex instead of CSS variables",
             "instances": [
               {
                 "file": "software/bonding/src/index.css",
@@ -112,7 +102,7 @@
           {
             "check": "token-redefinition",
             "status": "fail",
-            "detail": "67 CSS variable redefinitions of canonical tokens",
+            "detail": "103 CSS variable redefinitions of canonical tokens",
             "instances": [
               {
                 "file": "software/bonding/src/index.css",
@@ -150,8 +140,8 @@
             ]
           }
         ],
-        "hardcoded_count": 59,
-        "redefinition_count": 67
+        "hardcoded_count": 23,
+        "redefinition_count": 103
       },
       "layer_3_pre": {
         "layer": 3,
@@ -437,16 +427,6 @@
         "framework": "react",
         "css": "vanilla",
         "strict_ts": true
-      },
-      "remediation": {
-        "css_vars_injected": 0,
-        "colors_replaced": 5,
-        "glass_normalized": 0,
-        "ts_strict_fixed": 0,
-        "shared_dep_added": false,
-        "css_import_added": 0,
-        "tw_preset_added": 0,
-        "total_fixes": 5
       },
       "layer_1_pre": {
         "layer": 1,
@@ -841,16 +821,6 @@
         "css": "vanilla",
         "strict_ts": false
       },
-      "remediation": {
-        "css_vars_injected": 0,
-        "colors_replaced": 14,
-        "glass_normalized": 0,
-        "ts_strict_fixed": 0,
-        "shared_dep_added": false,
-        "css_import_added": 0,
-        "tw_preset_added": 0,
-        "total_fixes": 14
-      },
       "layer_1_pre": {
         "layer": 1,
         "name": "surface",
@@ -877,7 +847,7 @@
           {
             "check": "hardcoded-colors",
             "status": "fail",
-            "detail": "29 instances of canonical colors used as hardcoded hex instead of CSS variables",
+            "detail": "15 instances of canonical colors used as hardcoded hex instead of CSS variables",
             "instances": [
               {
                 "file": "software/p31-delta-hiring/src/style.css",
@@ -905,21 +875,9 @@
               },
               {
                 "file": "software/p31-delta-hiring/src/style.css",
-                "color": "#0f172a",
-                "canonical_name": "ink",
-                "line": 10
-              },
-              {
-                "file": "software/p31-delta-hiring/src/style.css",
                 "color": "#8b7cc9",
                 "canonical_name": "lavender",
                 "line": 11
-              },
-              {
-                "file": "software/p31-delta-hiring/src/style.css",
-                "color": "#64748b",
-                "canonical_name": "muted",
-                "line": 12
               },
               {
                 "file": "software/p31-delta-hiring/src/style.css",
@@ -938,13 +896,25 @@
                 "color": "#3ba372",
                 "canonical_name": "phosphorus",
                 "line": 15
+              },
+              {
+                "file": "software/p31-delta-hiring/src/style.css",
+                "color": "#ffffff",
+                "canonical_name": "surface",
+                "line": 16
+              },
+              {
+                "file": "software/p31-delta-hiring/src/style.css",
+                "color": "#ebeae4",
+                "canonical_name": "surface2",
+                "line": 17
               }
             ]
           },
           {
             "check": "token-redefinition",
             "status": "fail",
-            "detail": "16 CSS variable redefinitions of canonical tokens",
+            "detail": "22 CSS variable redefinitions of canonical tokens",
             "instances": [
               {
                 "file": "software/p31-delta-hiring/src/style.css",
@@ -969,8 +939,8 @@
             ]
           }
         ],
-        "hardcoded_count": 29,
-        "redefinition_count": 16
+        "hardcoded_count": 15,
+        "redefinition_count": 22
       },
       "layer_3_pre": {
         "layer": 3,
@@ -1231,16 +1201,6 @@
         "framework": "react",
         "css": "vanilla",
         "strict_ts": false
-      },
-      "remediation": {
-        "css_vars_injected": 0,
-        "colors_replaced": 0,
-        "glass_normalized": 0,
-        "ts_strict_fixed": 0,
-        "shared_dep_added": false,
-        "css_import_added": 0,
-        "tw_preset_added": 0,
-        "total_fixes": 0
       },
       "layer_1_pre": {
         "layer": 1,
@@ -1624,16 +1584,6 @@
         "framework": "react",
         "css": "vanilla",
         "strict_ts": false
-      },
-      "remediation": {
-        "css_vars_injected": 0,
-        "colors_replaced": 0,
-        "glass_normalized": 0,
-        "ts_strict_fixed": 0,
-        "shared_dep_added": false,
-        "css_import_added": 0,
-        "tw_preset_added": 0,
-        "total_fixes": 0
       },
       "layer_1_pre": {
         "layer": 1,
@@ -2028,16 +1978,6 @@
         "css": "tailwind-v3",
         "strict_ts": true
       },
-      "remediation": {
-        "css_vars_injected": 0,
-        "colors_replaced": 70,
-        "glass_normalized": 0,
-        "ts_strict_fixed": 0,
-        "shared_dep_added": false,
-        "css_import_added": 0,
-        "tw_preset_added": 0,
-        "total_fixes": 70
-      },
       "layer_1_pre": {
         "layer": 1,
         "name": "surface",
@@ -2064,7 +2004,7 @@
           {
             "check": "hardcoded-colors",
             "status": "fail",
-            "detail": "80 instances of canonical colors used as hardcoded hex instead of CSS variables",
+            "detail": "19 instances of canonical colors used as hardcoded hex instead of CSS variables",
             "instances": [
               {
                 "file": "software/p31ca/tailwind.build.css",
@@ -2131,7 +2071,7 @@
           {
             "check": "token-redefinition",
             "status": "fail",
-            "detail": "105 CSS variable redefinitions of canonical tokens",
+            "detail": "152 CSS variable redefinitions of canonical tokens",
             "instances": [
               {
                 "file": "software/p31ca/tailwind.build.css",
@@ -2175,8 +2115,8 @@
             ]
           }
         ],
-        "hardcoded_count": 80,
-        "redefinition_count": 105
+        "hardcoded_count": 19,
+        "redefinition_count": 152
       },
       "layer_3_pre": {
         "layer": 3,
@@ -2413,16 +2353,6 @@
         "css": "tailwind-v3",
         "strict_ts": true
       },
-      "remediation": {
-        "css_vars_injected": 0,
-        "colors_replaced": 8,
-        "glass_normalized": 0,
-        "ts_strict_fixed": 0,
-        "shared_dep_added": false,
-        "css_import_added": 0,
-        "tw_preset_added": 0,
-        "total_fixes": 8
-      },
       "layer_1_pre": {
         "layer": 1,
         "name": "surface",
@@ -2449,7 +2379,7 @@
           {
             "check": "hardcoded-colors",
             "status": "fail",
-            "detail": "20 instances of canonical colors used as hardcoded hex instead of CSS variables",
+            "detail": "15 instances of canonical colors used as hardcoded hex instead of CSS variables",
             "instances": [
               {
                 "file": "software/sovereign-command-center/styles/globals.css",
@@ -2474,12 +2404,6 @@
                 "color": "#e879f9",
                 "canonical_name": "fuchsia",
                 "line": 9
-              },
-              {
-                "file": "software/sovereign-command-center/styles/globals.css",
-                "color": "#0f172a",
-                "canonical_name": "ink",
-                "line": 10
               },
               {
                 "file": "software/sovereign-command-center/styles/globals.css",
@@ -2510,13 +2434,19 @@
                 "color": "#3ba372",
                 "canonical_name": "phosphorus",
                 "line": 15
+              },
+              {
+                "file": "software/sovereign-command-center/styles/globals.css",
+                "color": "#ebeae4",
+                "canonical_name": "surface2",
+                "line": 17
               }
             ]
           },
           {
             "check": "token-redefinition",
             "status": "fail",
-            "detail": "16 CSS variable redefinitions of canonical tokens",
+            "detail": "17 CSS variable redefinitions of canonical tokens",
             "instances": [
               {
                 "file": "software/sovereign-command-center/styles/globals.css",
@@ -2541,8 +2471,8 @@
             ]
           }
         ],
-        "hardcoded_count": 20,
-        "redefinition_count": 16
+        "hardcoded_count": 15,
+        "redefinition_count": 17
       },
       "layer_3_pre": {
         "layer": 3,
@@ -2748,16 +2678,6 @@
         "css": "vanilla",
         "strict_ts": false
       },
-      "remediation": {
-        "css_vars_injected": 0,
-        "colors_replaced": 21,
-        "glass_normalized": 0,
-        "ts_strict_fixed": 0,
-        "shared_dep_added": false,
-        "css_import_added": 0,
-        "tw_preset_added": 0,
-        "total_fixes": 21
-      },
       "layer_1_pre": {
         "layer": 1,
         "name": "surface",
@@ -2784,7 +2704,7 @@
           {
             "check": "hardcoded-colors",
             "status": "fail",
-            "detail": "19 instances of canonical colors used as hardcoded hex instead of CSS variables",
+            "detail": "14 instances of canonical colors used as hardcoded hex instead of CSS variables",
             "instances": [
               {
                 "file": "software/spaceship-earth/src/styles.css",
@@ -2812,12 +2732,6 @@
               },
               {
                 "file": "software/spaceship-earth/src/styles.css",
-                "color": "#0f172a",
-                "canonical_name": "ink",
-                "line": 11
-              },
-              {
-                "file": "software/spaceship-earth/src/styles.css",
                 "color": "#8b7cc9",
                 "canonical_name": "lavender",
                 "line": 12
@@ -2842,16 +2756,22 @@
               },
               {
                 "file": "software/spaceship-earth/src/styles.css",
-                "color": "#ffffff",
-                "canonical_name": "surface",
-                "line": 17
+                "color": "#ebeae4",
+                "canonical_name": "surface2",
+                "line": 18
+              },
+              {
+                "file": "software/spaceship-earth/src/styles.css",
+                "color": "#5dcaa5",
+                "canonical_name": "teal",
+                "line": 19
               }
             ]
           },
           {
             "check": "token-redefinition",
             "status": "fail",
-            "detail": "21 CSS variable redefinitions of canonical tokens",
+            "detail": "23 CSS variable redefinitions of canonical tokens",
             "instances": [
               {
                 "file": "software/spaceship-earth/src/styles.css",
@@ -2876,8 +2796,8 @@
             ]
           }
         ],
-        "hardcoded_count": 19,
-        "redefinition_count": 21
+        "hardcoded_count": 14,
+        "redefinition_count": 23
       },
       "layer_3_pre": {
         "layer": 3,
@@ -3151,16 +3071,6 @@
         "css": "vanilla",
         "strict_ts": false
       },
-      "remediation": {
-        "css_vars_injected": 0,
-        "colors_replaced": 1,
-        "glass_normalized": 0,
-        "ts_strict_fixed": 0,
-        "shared_dep_added": false,
-        "css_import_added": 0,
-        "tw_preset_added": 0,
-        "total_fixes": 1
-      },
       "layer_1_pre": {
         "layer": 1,
         "name": "surface",
@@ -3187,7 +3097,7 @@
           {
             "check": "hardcoded-colors",
             "status": "fail",
-            "detail": "16 instances of canonical colors used as hardcoded hex instead of CSS variables",
+            "detail": "15 instances of canonical colors used as hardcoded hex instead of CSS variables",
             "instances": [
               {
                 "file": "software/spoon-calculator/src/index.css",
@@ -3212,12 +3122,6 @@
                 "color": "#e879f9",
                 "canonical_name": "fuchsia",
                 "line": 9
-              },
-              {
-                "file": "software/spoon-calculator/src/index.css",
-                "color": "#0f172a",
-                "canonical_name": "ink",
-                "line": 10
               },
               {
                 "file": "software/spoon-calculator/src/index.css",
@@ -3248,6 +3152,12 @@
                 "color": "#3ba372",
                 "canonical_name": "phosphorus",
                 "line": 15
+              },
+              {
+                "file": "software/spoon-calculator/src/index.css",
+                "color": "#ffffff",
+                "canonical_name": "surface",
+                "line": 16
               }
             ]
           },
@@ -3279,7 +3189,7 @@
             ]
           }
         ],
-        "hardcoded_count": 16,
+        "hardcoded_count": 15,
         "redefinition_count": 16
       },
       "layer_3_pre": {

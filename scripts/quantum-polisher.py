@@ -226,6 +226,11 @@ def layer_2_tokens(project_path: Path, project_name: str) -> dict:
                     hex_val = match.group()
                     for name, canon_hex in canon.items():
                         if hex_val.lower() == canon_hex.lower():
+                            line_start = text.rfind("\n", 0, match.start()) + 1
+                            line_end = text.find("\n", match.end())
+                            line = text[line_start:line_end if line_end > line_start else len(text)]
+                            if "--color-" in line and ":" in line.split("#")[0]:
+                                continue
                             rel = f.relative_to(REPO_ROOT)
                             hardcoded.append({"file": str(rel), "color": hex_val, "canonical_name": name, "line": text[:match.start()].count("\n") + 1})
                             break
@@ -240,10 +245,29 @@ def layer_2_tokens(project_path: Path, project_name: str) -> dict:
                                 rel = str(f.relative_to(REPO_ROOT))
                                 glass_params[rel] = val
 
-                # Detect redefined CSS variables that overlap canonical
+                # Detect redefined CSS variables that differ from canonical
+                in_canon_block = False
                 for line in text.splitlines():
-                    if ":" in line and "--color-" in line:
-                        redefinitions.append({"file": str(f.relative_to(REPO_ROOT)), "line": line.strip()[:80]})
+                    stripped = line.strip()
+                    if stripped.startswith("/* P31 Canon — injected by Quantum Polisher */"):
+                        in_canon_block = True
+                        continue
+                    if in_canon_block and stripped == "}":
+                        in_canon_block = False
+                        continue
+                    if in_canon_block:
+                        continue
+                    if ":" in stripped and "--color-" in stripped and "#" in stripped:
+                        m = re.search(r'--([\w-]+):\s*#([0-9a-fA-F]{6})', stripped)
+                        if m:
+                            var_name = m.group(1)
+                            var_hex = '#' + m.group(2).lower()
+                            canon_name = var_name.replace("color-", "")
+                            for canon_key, canon_hex in canon.items():
+                                if canon_key.lower() == canon_name.lower():
+                                    if var_hex != canon_hex.lower():
+                                        redefinitions.append({"file": str(f.relative_to(REPO_ROOT)), "line": stripped[:80], "canonical": canon_hex, "actual": var_hex})
+                                    break
             except Exception:
                 pass
 
