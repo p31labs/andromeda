@@ -37,6 +37,8 @@ class NodeMemoryManager {
   private gcStats = { count: 0, totalTime: 0 };
   private thresholds: MemoryThresholds;
   private isMonitoring = false;
+  private _onVisibilityChange?: () => void;
+  private _onBeforeUnload?: () => void;
 
   constructor() {
     this.thresholds = {
@@ -65,16 +67,18 @@ class NodeMemoryManager {
     }, 10000);
 
     // Cleanup on visibility change
-    document.addEventListener('visibilitychange', () => {
+    this._onVisibilityChange = () => {
       if (document.hidden) {
         this.performAggressiveCleanup();
       }
-    });
+    };
+    document.addEventListener('visibilitychange', this._onVisibilityChange);
 
     // Cleanup on beforeunload
-    window.addEventListener('beforeunload', () => {
+    this._onBeforeUnload = () => {
       this.performEmergencyCleanup();
-    });
+    };
+    window.addEventListener('beforeunload', this._onBeforeUnload);
   }
 
   /**
@@ -86,6 +90,16 @@ class NodeMemoryManager {
     if (this.cleanupInterval) {
       clearInterval(this.cleanupInterval);
       this.cleanupInterval = undefined;
+    }
+
+    if (this._onVisibilityChange) {
+      document.removeEventListener('visibilitychange', this._onVisibilityChange);
+      this._onVisibilityChange = undefined;
+    }
+
+    if (this._onBeforeUnload) {
+      window.removeEventListener('beforeunload', this._onBeforeUnload);
+      this._onBeforeUnload = undefined;
     }
 
     if (this.gcObserver) {

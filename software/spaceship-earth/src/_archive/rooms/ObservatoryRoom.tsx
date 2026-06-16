@@ -556,6 +556,16 @@ export default function ObservatoryRoom() {
       el.removeEventListener('mouseup', onUp);
       el.removeEventListener('click', onClick);
       window.removeEventListener('resize', onResize);
+      scene.traverse((child) => {
+        if (child instanceof THREE.Mesh || child instanceof THREE.Points || child instanceof THREE.Line || child instanceof THREE.LineSegments) {
+          child.geometry?.dispose();
+          if (Array.isArray(child.material)) {
+            child.material.forEach((m) => m.dispose());
+          } else {
+            child.material?.dispose();
+          }
+        }
+      });
       renderer.dispose();
       if (el.contains(renderer.domElement)) el.removeChild(renderer.domElement);
     };

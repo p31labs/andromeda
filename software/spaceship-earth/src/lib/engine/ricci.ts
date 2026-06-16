@@ -138,8 +138,18 @@ export function getAnimatedCurvature(baseCurvature: number, time: number): numbe
   return clamp(result, 0.5, 1.5);
 }
 
+declare global {
+  interface Window {
+    __P31_RICCI_DEBUG?: {
+      enable: () => void;
+      disable: () => void;
+      status: () => boolean;
+    };
+  }
+}
+
 if (typeof window !== 'undefined') {
-  (window as any).__P31_RICCI_DEBUG = {
+  window.__P31_RICCI_DEBUG = {
     enable: () => localStorage.setItem(DEBUG_KEY, 'true'),
     disable: () => localStorage.removeItem(DEBUG_KEY),
     status: () => debugEnabled()

@@ -179,7 +179,7 @@ class NodePerformanceMonitor {
   /**
    * Record errors with context
    */
-  recordError(message: string, type: string, context?: any) {
+  recordError(message: string, type: string, context?: string | number | Record<string, unknown>) {
     this.metrics.errorCount++;
     this.errorHistory.push({
       timestamp: Date.now(),

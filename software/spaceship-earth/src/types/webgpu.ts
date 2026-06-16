@@ -547,7 +547,7 @@ declare global {
 
   interface Navigator {
     gpu?: {
-      requestAdapter(options?: GPURequestAdapterOptions): Promise<any>;
+      requestAdapter(options?: GPURequestAdapterOptions): Promise<GPUAdapter | null>;
     };
   }
 }

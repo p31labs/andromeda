@@ -174,7 +174,7 @@ export function createHubTetra(
     },
     vertices: [
       { id: 'v0', label: 'Nodes',     val: nodeCount / 100,       color: '#00D4FF' },
-      { id: 'v1', label: 'Connections', val: activeConnections / 1000, color: 'var(--color-phosphor)' },
+      { id: 'v1', label: 'Connections', val: activeConnections / 1000, color: '#00FF88' },
       { id: 'v2', label: 'Throughput', val: messageRate / 10000,   color: '#FFD93D' },
       { id: 'v3', label: 'Health',    val: healthScore,           color: '#EF4444' },
     ],

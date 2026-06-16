@@ -19,6 +19,7 @@ import * as THREE from 'three';
 import { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Float, MeshTransmissionMaterial, Text } from '@react-three/drei';
+import { getStageColor } from '../../lib/theme/stageColors';
 
 export interface DecisionIcosahedronProps {
   stage: 'VOID' | 'SEED' | 'SPROUT' | 'SAPLING' | 'BLOOM' | 'FRUIT';
@@ -26,17 +27,9 @@ export interface DecisionIcosahedronProps {
   topLabel?: string;
   topScore?: number;
   onClick?: () => void;
+  scale?: number | [number, number, number];
   position?: [number, number, number];
 }
-
-const STAGE_COLORS: Record<string, string> = {
-  VOID: 'var(--color-muted)',
-  SEED: '#94a3b8',
-  SPROUT: '#4ade80',
-  SAPLING: '#facc15',
-  BLOOM: '#f97316',
-  FRUIT: '#8b5cf6',
-};
 
 export function DecisionIcosahedron({
   stage,
@@ -44,13 +37,14 @@ export function DecisionIcosahedron({
   topLabel = 'awaiting evaluation',
   topScore,
   onClick,
-  position = [0, 1.2, -2.2],
+  position = [0, 0, 0],
+  scale = 6,
 }: DecisionIcosahedronProps) {
   const groupRef = useRef<THREE.Group>(null);
   const rollRef = useRef<{ speed: number; t: number }>({ speed: 0, t: 0 });
   const isRolling = useRef(false);
 
-  const color = useMemo(() => STAGE_COLORS[stage] ?? STAGE_COLORS.VOID, [stage]);
+  const color = useMemo(() => getStageColor(stage), [stage]);
   const glowIntensity = useMemo(() => {
     const map: Record<string, number> = { VOID: 0.05, SEED: 0.15, SPROUT: 0.35, SAPLING: 0.6, BLOOM: 0.9, FRUIT: 0.7 };
     return map[stage] ?? 0.1;
@@ -86,8 +80,9 @@ export function DecisionIcosahedron({
   };
 
   return (
-    <Float speed={baseRotationSpeed * 1.3} floatIntensity={glowIntensity * 0.6} position={position}>
-      <group ref={groupRef} onClick={handleClick}>
+    <group position={position} scale={scale}>
+      <Float speed={baseRotationSpeed * 1.3} floatIntensity={glowIntensity * 0.6}>
+        <group ref={groupRef} onClick={handleClick}>
         {/* Glass icosahedron */}
         <mesh>
           <icosahedronGeometry args={[1.15, 0]} />
@@ -129,6 +124,7 @@ export function DecisionIcosahedron({
         </Text>
       </group>
     </Float>
+  </group>
   );
 }
 

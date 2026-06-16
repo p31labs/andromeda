@@ -65,7 +65,7 @@ export function UniversalTetra({
 
   const getVertexColor = (vertex: TetraVertex): string => {
     let base = vertex.color;
-    if (hoveredVertex === vertex.id) base = lerpColor(base, 'var(--color-surface)', 0.5);
+    if (hoveredVertex === vertex.id) base = lerpColor(base, '#e2e8f0', 0.5);
     if (vertex.val < 0.2) base = lerpColor(base, '#EF4444', 0.6);
     return base;
   };
@@ -160,7 +160,7 @@ export function UniversalTetra({
                 <Text
                   position={[0, size * 3.0, 0]}
                   fontSize={0.10}
-                  color="var(--color-surface)"
+                  color="#e2e8f0"
                   anchorX="center"
                   anchorY="middle"
                   font={`${import.meta.env.BASE_URL}fonts/JetBrainsMono-Bold.ttf`}

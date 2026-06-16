@@ -1,4 +1,4 @@
-import { useMemo, useRef } from 'react';
+import { useMemo, useRef, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
@@ -53,6 +53,13 @@ export function NotificationStarfield({ isUrgent = false, count = 2000 }: Notifi
     blending: THREE.AdditiveBlending,
     depthWrite: false,
   }), []);
+
+  useEffect(() => {
+    return () => {
+      geometry.dispose();
+      material.dispose();
+    };
+  }, [geometry, material]);
 
   useFrame((_, delta) => {
     timeRef.current += delta * (isUrgent ? 2.5 : 0.4);

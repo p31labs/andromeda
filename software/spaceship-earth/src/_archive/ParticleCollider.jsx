@@ -582,6 +582,18 @@ export default function ParticleCollider() {
       el.removeEventListener('mousemove', onMove);
       el.removeEventListener('mouseup', onUp);
       window.removeEventListener('resize', onResize);
+      if (sceneRef.current) {
+        sceneRef.current.traverse((child) => {
+          if (child instanceof THREE.Mesh || child instanceof THREE.Points || child instanceof THREE.Line || child instanceof THREE.LineSegments) {
+            child.geometry?.dispose();
+            if (Array.isArray(child.material)) {
+              child.material.forEach((m) => m.dispose());
+            } else {
+              child.material?.dispose();
+            }
+          }
+        });
+      }
       renderer.dispose();
       if (el.contains(renderer.domElement)) el.removeChild(renderer.domElement);
     };

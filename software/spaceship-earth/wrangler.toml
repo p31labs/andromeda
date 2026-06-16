@@ -1,6 +1,6 @@
 name = "spaceship-relay"
 main = "worker/index.ts"
-compatibility_date = "2024-01-01"
+compatibility_date = "2026-04-01"
 
 [[kv_namespaces]]
 binding = "SPACESHIP_TELEMETRY"
