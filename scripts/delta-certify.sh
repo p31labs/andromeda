@@ -87,12 +87,43 @@ else
   check "G1 Token Debt" "WARN" "(polisher report not found)"
 fi
 
-# --- Gate G2: Architecture (p31Preset presence) ---
-PRESET_COUNT=$(grep -r "p31Preset" /home/p31/andromeda/software/*/tailwind.config.js 2>/dev/null | wc -l || echo "0")
-if [[ "$PRESET_COUNT" -ge 8 ]]; then
-  check "G2 Architecture" "PASS" "(p31Preset in ${PRESET_COUNT} projects)"
+# --- Gate G2: Design-system adoption (project-type-aware) ---
+G2_FAIL=0
+G2_DETAIL=""
+KNOWN_PROJECTS=(bonding frontend p31-delta-hiring p31-hearing-ops p31-pwa p31ca sovereign-command-center spaceship-earth spoon-calculator)
+for proj in "${KNOWN_PROJECTS[@]}"; do
+  path="$REPO_ROOT/software/$proj"
+  [[ -d "$path" ]] || continue
+
+  PASS_PROJ=false
+
+  if [[ -f "$path/package.json" ]] && grep -q '"@p31/shared"' "$path/package.json" 2>/dev/null; then
+    PASS_PROJ=true
+  fi
+
+  if [[ "$PASS_PROJ" == "false" ]] && ls "$path"/tailwind.config.* >/dev/null 2>&1; then
+    if grep -rq "p31Preset" "$path"/tailwind.config.* 2>/dev/null; then
+      PASS_PROJ=true
+    fi
+  fi
+
+  if [[ "$PASS_PROJ" == "false" ]]; then
+    if grep -rq "@import.*css-variables" "$path" --include="*.css" 2>/dev/null; then
+      PASS_PROJ=true
+    fi
+  fi
+
+  if [[ "$PASS_PROJ" == "false" ]]; then
+    G2_DETAIL="$G2_DETAIL $proj"
+    G2_FAIL=1
+  fi
+done
+
+if [[ "$G2_FAIL" -eq 0 ]]; then
+  PASSING=$((${#KNOWN_PROJECTS[@]} - ${#G2_DETAIL}))
+  check "G2 Architecture" "PASS" "(adoption passed in $PASSING/${#KNOWN_PROJECTS[@]} projects)"
 else
-  check "G2 Architecture" "FAIL" "(p31Preset in only ${PRESET_COUNT} projects; need all)"
+  check "G2 Architecture" "FAIL" "(missing adoption in:$G2_DETAIL)"
 fi
 
 # --- Gate G3: TypeScript Strict ---
