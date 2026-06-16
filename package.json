@@ -32,7 +32,7 @@
     "verify:ground-truth": "node software/p31ca/scripts/verify-ground-truth.mjs",
     "verify:monetary": "node scripts/verify-monetary-surface.mjs",
     "polish": "npm run quality && npm run hub:ci --prefix software/p31ca && npm run security:check --prefix software/p31ca",
-    "quality": "node scripts/enterprise-deploy-guard.mjs && node software/p31ca/scripts/verify-ground-truth.mjs && node scripts/verify-monetary-surface.mjs",
+    "quality": "node scripts/enterprise-deploy-guard.mjs && node software/p31ca/scripts/verify-ground-truth.mjs && node scripts/verify-monetary-surface.mjs && pnpm run audit:ui",
     "google-bridge:verify": "pnpm -C software/p31-google-bridge run verify",
     "test:unit": "vitest run --config vitest.config.ts",
     "test:unit:ci": "vitest run --config vitest.config.ts --coverage",
@@ -41,7 +41,8 @@
     "lighthouse:ci": "lhci autorun",
     "test:all": "pnpm test:unit && pnpm test:e2e",
     "lint": "echo \"Lint per package: cd software/<project> && pnpm run lint (if defined)\"",
-    "audit": "pnpm audit"
+    "audit": "pnpm audit",
+    "audit:ui": "tsx software/spaceship-earth/scripts/audit-ui-fidelity.ts"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.11.3",
@@ -54,6 +55,7 @@
     "@types/react-dom": "^18",
     "@vitejs/plugin-react": "^6.0.2",
     "@vitest/coverage-v8": "^4.1.8",
+    "glob": "^13.0.6",
     "jsdom": "^29.1.1",
     "playwright": "^1.60.0",
     "react": "^18",

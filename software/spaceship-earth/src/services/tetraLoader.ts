@@ -190,7 +190,7 @@ class TetraLoader {
         },
         vertices: [
           { id: 'v0', label: 'Active Nodes', val: 0.3 + Math.random() * 0.5, color: '#00D4FF' },
-          { id: 'v1', label: 'Connections', val: 0.4 + Math.random() * 0.4, color: '#00FF88' },
+          { id: 'v1', label: 'Connections', val: 0.4 + Math.random() * 0.4, color: 'var(--color-phosphor)' },
           { id: 'v2', label: 'Queue Depth', val: Math.random() * 0.3, color: '#FFD93D' },
           { id: 'v3', label: 'Health',    val: 0.5 + Math.random() * 0.5, color: '#EF4444' },
         ],
@@ -352,7 +352,7 @@ class TetraLoader {
         { id: 'v0', label: 'Alice X25519', val: progress > 0.3 ? 1 : 0.2, color: '#9B59B6' },
         { id: 'v1', label: 'Bob X25519', val: progress > 0.6 ? 1 : 0.2, color: '#9B59B6' },
         { id: 'v2', label: 'Carol X25519', val: progress > 0.9 ? 1 : 0.2, color: '#9B59B6' },
-        { id: 'v3', label: 'L.O.V.E. Mint', val: progress, color: '#00FF88' }
+        { id: 'v3', label: 'L.O.V.E. Mint', val: progress, color: 'var(--color-phosphor)' }
       ],
       edges: [
         { source: 'v0', target: 'v1', weight: 1.0 },

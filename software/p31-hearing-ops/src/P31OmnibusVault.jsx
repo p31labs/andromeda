@@ -1,11 +1,12 @@
+import { tokens } from '@p31/ui';
 import { useState, useEffect } from 'react'
 
-const CYAN = '#00e8ff'
-const GOLD = '#ffbf00'
-const RED = '#ef4444'
-const DARK = '#050510'
-const TEXT = '#e8e6e3'
-const TEXT_DIM = '#8a8a95'
+const CYAN = 'tokens.color.accent.cyan'
+const GOLD = 'tokens.color.status.warning'
+const RED = 'tokens.color.status.error'
+const DARK = 'tokens.color.background.vaultDark'
+const TEXT = 'tokens.color.text.bright2'
+const TEXT_DIM = 'tokens.color.text.dimmed'
 const FONT_MONO = "'Space Mono', ui-monospace, monospace"
 const FONT_SANS = "Inter, system-ui, sans-serif"
 
@@ -305,7 +306,7 @@ function HolographicD20() {
                       ? `2px solid ${RED}`
                       : '1px solid rgba(0,232,255,0.45)',
                     background: isActive ? 'rgba(69,10,10,0.85)' : 'rgba(0,0,0,0.82)',
-                    color: isActive ? '#fff' : CYAN,
+                    color: isActive ? 'tokens.color.text.bright' : CYAN,
                     fontSize: 10,
                     fontWeight: 800,
                     fontFamily: FONT_MONO,
@@ -355,8 +356,8 @@ function HolographicD20() {
             style={{
               padding: '6px 10px',
               borderRadius: 8,
-              border: `1px solid ${autoRotate ? CYAN : '#333'}`,
-              background: autoRotate ? 'rgba(0,232,255,0.12)' : '#111',
+              border: `1px solid ${autoRotate ? CYAN : 'tokens.color.background.vaultSurface2'}`,
+              background: autoRotate ? 'rgba(0,232,255,0.12)' : 'tokens.color.background.vaultCore2',
               color: autoRotate ? CYAN : TEXT_DIM,
               fontSize: 10,
               fontFamily: FONT_MONO,
@@ -397,7 +398,7 @@ function HolographicD20() {
           >
             WYE-TOPOLOGY ACTION
           </div>
-          <p style={{ fontSize: 13, color: '#fecaca', margin: 0, lineHeight: 1.5, fontWeight: 600 }}>
+          <p style={{ fontSize: 13, color: 'tokens.color.status.errorLight', margin: 0, lineHeight: 1.5, fontWeight: 600 }}>
             &ldquo;{face.wye}&rdquo;
           </p>
         </div>
@@ -469,7 +470,7 @@ const navBtn = {
   padding: '8px 14px',
   borderRadius: 8,
   border: '1px solid rgba(0,232,255,0.35)',
-  background: '#0a0a12',
+  background: 'tokens.color.background.vaultDeep',
   color: CYAN,
   fontSize: 16,
   cursor: 'pointer',
@@ -579,7 +580,7 @@ function VagalCore() {
             width: 100,
             height: 100,
             borderRadius: '50%',
-            border: `4px solid ${pulse ? '#fff' : 'rgba(0,232,255,0.4)'}`,
+            border: `4px solid ${pulse ? 'tokens.color.text.bright' : 'rgba(0,232,255,0.4)'}`,
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
@@ -648,7 +649,7 @@ function K4Seal() {
       <div style={{ position: 'absolute', top: 40, left: 16, fontSize: 9, color: GOLD }}>
         Willow
       </div>
-      <div style={{ position: 'absolute', top: 56, left: 16, fontSize: 9, color: '#4ade80' }}>
+      <div style={{ position: 'absolute', top: 56, left: 16, fontSize: 9, color: 'tokens.color.stage.sprout' }}>
         Bash
       </div>
       <div style={{ position: 'absolute', bottom: 56, right: 16, fontSize: 9, color: RED }}>
@@ -710,8 +711,8 @@ function K4Seal() {
               width: 10,
               height: 10,
               borderRadius: '50%',
-              background: '#4ade80',
-              boxShadow: '0 0 12px #4ade80',
+              background: 'tokens.color.stage.sprout',
+              boxShadow: '0 0 12px tokens.color.stage.sprout',
             }}
           />
           <div
@@ -743,7 +744,7 @@ function K4Seal() {
             style={{
               position: 'absolute',
               inset: 0,
-              border: `2px solid ${pulse ? '#fff' : 'rgba(0,232,255,0.35)'}`,
+              border: `2px solid ${pulse ? 'tokens.color.text.bright' : 'rgba(0,232,255,0.35)'}`,
               transform: 'rotate(45deg) skewX(12deg)',
               transition: 'border-color 0.5s',
             }}
@@ -752,7 +753,7 @@ function K4Seal() {
             style={{
               position: 'absolute',
               inset: 0,
-              border: `2px solid ${pulse ? '#fff' : 'rgba(0,232,255,0.35)'}`,
+              border: `2px solid ${pulse ? 'tokens.color.text.bright' : 'rgba(0,232,255,0.35)'}`,
               transform: 'rotate(-12deg) skewY(-6deg)',
               transition: 'border-color 0.5s',
             }}
@@ -791,9 +792,9 @@ export default function P31OmnibusVault() {
         style={{
           textAlign: 'center',
           marginBottom: 16,
-          padding: '12px',
-          borderRadius: 12,
-          background: 'linear-gradient(135deg, #0a0a14, #050510)',
+          padding: tokens.space.base,
+          borderRadius: tokens.space.base,
+          background: 'linear-gradient(135deg, tokens.color.background.vaultDeeper, tokens.color.background.vaultDark)',
           border: `1px solid ${CYAN}33`,
         }}
       >
@@ -824,8 +825,8 @@ export default function P31OmnibusVault() {
               minWidth: 90,
               padding: '10px 8px',
               borderRadius: 10,
-              border: `1px solid ${sub === t.id ? CYAN : '#2a2a35'}`,
-              background: sub === t.id ? 'rgba(0,232,255,0.12)' : '#0c0c14',
+              border: `1px solid ${sub === t.id ? CYAN : 'tokens.color.background.vaultSurface'}`,
+              background: sub === t.id ? 'rgba(0,232,255,0.12)' : 'tokens.color.background.vaultCore',
               color: sub === t.id ? CYAN : TEXT_DIM,
               fontSize: 10,
               fontWeight: 800,
@@ -854,7 +855,7 @@ export default function P31OmnibusVault() {
         }}
       >
         <span style={{ fontSize: 18 }}>🔒</span>
-        <div style={{ fontSize: 8, color: '#86efac', fontWeight: 700, letterSpacing: '0.15em', lineHeight: 1.4 }}>
+        <div style={{ fontSize: 8, color: 'tokens.color.status.successLight', fontWeight: 700, letterSpacing: '0.15em', lineHeight: 1.4 }}>
           ISOSTATIC RIGIDITY MAINTAINED — LOCAL ONLY — NO CLOUD
         </div>
       </div>

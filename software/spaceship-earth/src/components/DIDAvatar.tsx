@@ -15,7 +15,7 @@ const PALETTE = [
   '#FF00FF', // magenta
   '#BF5FFF', // violet
   '#FFD700', // amber
-  '#00FF88', // mint
+  'var(--color-phosphor)', // mint
   '#FF6B6B', // coral
   '#00ccff', // blue
   '#FF00CC', // pink

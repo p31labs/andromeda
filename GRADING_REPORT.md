@@ -1,10 +1,10 @@
 # P31 Maturity Model — Repository Grading Report
 
-**Generated:** 2026-06-15T18:00:18
+**Generated:** 2026-06-16T18:00:19
 **Schema:** PMM_SCHEMA=1.1
-**Total artifacts graded:** 72
+**Total artifacts graded:** 73
 **Overrides applied:** 3
-**Scan duration:** 15.86s
+**Scan duration:** 16.92s
 
 ## Summary
 
@@ -14,7 +14,7 @@
 | 🌸 **BLOOM** | 7 |
 | 🌳 **SAPLING** | 31 |
 | 🌿 **SPROUT** | 28 |
-| 🌱 **SEED** | 6 |
+| 🌱 **SEED** | 7 |
 
 ## Full Artifact Index
 
@@ -25,6 +25,7 @@
 | 🌱 SEED | `scripts` | 5 | 1 | 4 | 4 | 2 | 1 | TEST |  |
 | 🌱 SEED | `software` | 5 | 1 | 4 | 4 | 4 | 1 | TEST |  |
 | 🌱 SEED | `software/cloudflare-worker` | 5 | 1 | 5 | 4 | 4 | 1 | TEST |  |
+| 🌱 SEED | `software/spaceship-earth/packages/ui` | 4 | 1 | 4 | 4 | 4 | 1 | TEST |  |
 | 🌱 SEED | `wcds` | 4 | 1 | 4 | 4 | 2 | 1 | TEST |  |
 | 🌿 SPROUT | `apps` | 2 | 4 | 4 | 4 | 2 | 2 | CODE, SEC |  |
 | 🌿 SPROUT | `cli` | 3 | 3 | 5 | 4 | 2 | 2 | SEC |  |
@@ -99,9 +100,10 @@
 |------|------|------|------|-----|-----|
 | `admin` | 837 lines, mature codebase | No test files | README exists (43 lines) but no usage examples | CI/CD pipeline | Lockfile present (lockfile (pnpm-lock.yaml)) |
 | `firmware` | 108092 lines, mature codebase | No test files | Detailed docs (52 lines, examples) | CI/CD pipeline | Lockfile present (lockfile (pnpm-lock.yaml)) |
-| `scripts` | 6619 lines, mature codebase | No test files | Detailed docs (52 lines, examples) | CI/CD pipeline | Lockfile present (lockfile (pnpm-lock.yaml)) |
+| `scripts` | 7069 lines, mature codebase | No test files | Detailed docs (52 lines, examples) | CI/CD pipeline | Lockfile present (lockfile (pnpm-lock.yaml)) |
 | `software` | 8666 lines, mature codebase | No test files | Detailed docs (75 lines, examples) | CI/CD pipeline | Lockfile + lint + CI security audit |
 | `software/cloudflare-worker` | 1073 lines, mature codebase | No test files | Comprehensive docs (163 lines, examples, TOC) | CI/CD with wrangler deploy | Lockfile + lint + CI security audit |
+| `software/spaceship-earth/packages/ui` | 163 lines of real logic | No test files | Detailed docs (75 lines, examples) | CI/CD with wrangler deploy | Lockfile + lint + CI security audit |
 | `wcds` | 348 lines of real logic | No test files | Detailed docs (52 lines, examples) | CI/CD pipeline | Lockfile present (lockfile (pnpm-lock.yaml)) |
 | `apps` | Minimal implementation | Comprehensive tests (394 assertions) + vitest thresholds | Detailed docs (52 lines, examples) | CI/CD pipeline | Lockfile present (lockfile (pnpm-lock.yaml)) |
 | `cli` | 82 lines of real logic | Basic tests (9 assertions) | Comprehensive docs (394 lines, examples, TOC) | CI/CD pipeline | Lockfile present (lockfile (pnpm-lock.yaml)) |
@@ -155,7 +157,7 @@
 | `software/packages/quantum-edge` | 358 lines of real logic | Basic tests (9 assertions) | Detailed docs (75 lines, examples) | CI/CD with wrangler deploy | Lockfile + lint + CI security audit |
 | `software/packages/sovereign-sdk` | 328 lines of real logic | Basic tests (9 assertions) | Detailed docs (75 lines, examples) | CI/CD pipeline | Lockfile + lint + CI security audit |
 | `software/sovereign-command-center` | 410 lines of real logic | Basic tests (9 assertions) | Comprehensive docs (240 lines, examples, TOC) | CI/CD with wrangler deploy | Lockfile + lint + CI security audit |
-| `software/spaceship-earth` | 14322 lines, mature codebase | Core paths tested (127 assertions) | Detailed docs (75 lines, examples) | CI/CD with wrangler deploy | Lockfile + lint + CI security audit |
+| `software/spaceship-earth` | 15275 lines, mature codebase | Core paths tested (127 assertions) | Detailed docs (75 lines, examples) | CI/CD with wrangler deploy | Lockfile + lint + CI security audit |
 | `software/spin-mesh` | 1083 lines, mature codebase | Basic tests (16 assertions) | Detailed docs (180 lines, examples) | CI/CD pipeline | Lockfile + lint config (lockfile (pnpm-lock.yaml), eslint.config.mjs) |
 | `software/spin-mesh/logistics-do` | 114 lines of real logic | Basic tests (9 assertions) | Detailed docs (180 lines, examples) | CI/CD with wrangler deploy | Lockfile + lint config (lockfile (pnpm-lock.yaml), eslint.config.mjs) |
 | `software/spin-mesh/matchmaking-do` | 144 lines of real logic | Basic tests (9 assertions) | Detailed docs (180 lines, examples) | CI/CD with wrangler deploy | Lockfile + lint config (lockfile (pnpm-lock.yaml), eslint.config.mjs) |
@@ -169,25 +171,3 @@
 | `software/packages/k4-mesh-core` | 1531 lines, mature codebase | Comprehensive tests (53 assertions) + vitest thresholds | Detailed docs (75 lines, examples) | CI/CD pipeline | Lockfile + lint + CI security audit |
 | `software/packages/love-ledger` | 541 lines, mature codebase | Comprehensive tests (402 assertions) + vitest thresholds | Comprehensive docs (163 lines, examples, TOC) | CI/CD pipeline | Lockfile + lint + CI security audit |
 | `software/packages/shared` | 8058 lines, mature codebase | Comprehensive tests (123 assertions) + vitest thresholds | Comprehensive docs (309 lines, examples, TOC) | CI/CD pipeline | Lockfile + lint + CI security audit |
-
----
-
-## Jitterbug Tick Report
-
-**Tick:** 1
-**Time:** 2026-06-15T18:00:44
-**Spoon level:** 4 (Focus 🎯)
-**Duration:** 0.33s
-**Git data:** yes
-**Signals processed:** 22
-**Entanglement hits:** 10
-
-### Current Distribution
-
-| Stage | Count |
-|-------|-------|
-| 🍎 **FRUIT** | 0 |
-| 🌸 **BLOOM** | 7 |
-| 🌳 **SAPLING** | 31 |
-| 🌿 **SPROUT** | 28 |
-| 🌱 **SEED** | 6 |

@@ -1,0 +1,17 @@
+{
+  "projects": {
+    "unknown": {
+      "hex": 0,
+      "inline": 0,
+      "spacing": 0,
+      "score": 100
+    }
+  },
+  "globalFidelity": 100,
+  "totals": {
+    "hex": 0,
+    "inline": 0,
+    "spacing": 0,
+    "totalDebt": 0
+  }
+}
