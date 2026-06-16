@@ -24,7 +24,7 @@ A mobile-first, React-based Progressive Web App (PWA) designed as the central op
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js 18+ 
+- Node.js 18+
 - npm or pnpm
 
 ### Installation

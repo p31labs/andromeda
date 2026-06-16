@@ -31,7 +31,7 @@ const HydrogenCard = ({ playerId, onBond }) => {
         <div className="stability">Stability: Low</div>
       </div>
       <div className="element-description">
-        The simplest atom. High mobility, low stability. 
+        The simplest atom. High mobility, low stability.
         Forms 1 bond. Acts as catalyst for complex molecules.
       </div>
       <div className="bonding-capacity">

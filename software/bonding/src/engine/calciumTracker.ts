@@ -40,7 +40,7 @@ export function logDose(state: CalciumState, timestamp = new Date().toISOString(
   const streak = calculateStreak(logs);
   const nextDueAt = getNextDue({ ...state, lastDose: timestamp });
   const glowIntensity = calculateGlow({ ...state, lastDose: timestamp });
-  
+
   return { ...state, logs, streak, lastDose: timestamp, nextDueAt, glowIntensity };
 }
 

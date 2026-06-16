@@ -1,22 +1,22 @@
 {
   "meta": {
     "schema": "PMM_SCHEMA=1.1",
-    "generated": "2026-06-15T15:30:54",
+    "generated": "2026-06-15T18:00:18",
     "repo_root": "/home/p31/andromeda",
-    "git_sha": "52634be25a59538a2e772f0f3689bd9220b69714",
+    "git_sha": "e51b3cc313184420866c600c4b0347a4034098a5",
     "total_artifacts": 72,
     "overrides_applied": 3,
-    "scan_duration_seconds": 0.25,
+    "scan_duration_seconds": 0.33,
     "baseline_overrides_parsed": 6,
     "json_overrides_parsed": 0,
     "jitterbug_version": "PMM_JITTERBUG=1.0",
     "jitterbug_tick": 1,
-    "last_jitterbug": "2026-06-15T15:30:58",
+    "last_jitterbug": "2026-06-15T18:00:44",
     "spoon_level": 4,
     "spoon_label": "Focus \ud83c\udfaf",
     "depressed_artifacts": 0,
     "entanglement_pairs": 20,
-    "transitions_this_tick": 1
+    "transitions_this_tick": 0
   },
   "artifacts": [
     {
@@ -26,13 +26,13 @@
       "stage": "SEED",
       "stage_icon": "\ud83c\udf31",
       "scores": {
-        "CODE": 5.0,
-        "TEST": 1.004,
-        "DOCS": 2.003,
-        "OPS": 4.004,
-        "SEC": 2.003
+        "CODE": 4.997,
+        "TEST": 1.001,
+        "DOCS": 1.989,
+        "OPS": 3.995,
+        "SEC": 1.992
       },
-      "overall": 1.004,
+      "overall": 1.001,
       "weakest": [
         "TEST"
       ],
@@ -55,17 +55,17 @@
       "source_files": 1,
       "test_files": 0,
       "continuous_scores": {
-        "CODE": 5.0,
-        "TEST": 1.0043979723035097,
-        "DOCS": 2.003125947954403,
-        "OPS": 4.003761960128956,
-        "SEC": 2.0034439540416797
+        "CODE": 4.997325895000781,
+        "TEST": 1.001,
+        "DOCS": 1.9888830724345496,
+        "OPS": 3.994511620812037,
+        "SEC": 1.9916973466232932
       },
       "depressed": false,
       "last_refreshed": 1781550713.0,
-      "jitter": 0.004397972303509665,
-      "peak_overall": 1.0043979723035097,
-      "overall_score": 1.004
+      "jitter": 0.0001401691895244768,
+      "peak_overall": 1.001,
+      "overall_score": 1.001
     },
     {
       "path": "firmware",
@@ -74,13 +74,13 @@
       "stage": "SEED",
       "stage_icon": "\ud83c\udf31",
       "scores": {
-        "CODE": 4.845,
-        "TEST": 1.001,
-        "DOCS": 3.421,
-        "OPS": 3.704,
-        "SEC": 1.562
+        "CODE": 4.874,
+        "TEST": 1.018,
+        "DOCS": 3.443,
+        "OPS": 3.731,
+        "SEC": 1.587
       },
-      "overall": 1.001,
+      "overall": 1.018,
       "weakest": [
         "TEST"
       ],
@@ -103,17 +103,17 @@
       "source_files": 211,
       "test_files": 0,
       "continuous_scores": {
-        "CODE": 4.844740772706347,
-        "TEST": 1.001,
-        "DOCS": 3.4210567544445167,
-        "OPS": 3.7035127666190704,
-        "SEC": 1.5622847605317933
+        "CODE": 4.874412963721587,
+        "TEST": 1.0181372379103306,
+        "DOCS": 3.4432401411553557,
+        "OPS": 3.730688689532843,
+        "SEC": 1.5869644153440996
       },
       "depressed": false,
       "last_refreshed": 1781043437.0,
-      "jitter": -0.014031221206376596,
-      "peak_overall": 1.001,
-      "overall_score": 1.001
+      "jitter": 0.018137237910330596,
+      "peak_overall": 1.0181372379103306,
+      "overall_score": 1.018
     },
     {
       "path": "scripts",
@@ -122,13 +122,13 @@
       "stage": "SEED",
       "stage_icon": "\ud83c\udf31",
       "scores": {
-        "CODE": 4.986,
-        "TEST": 1.001,
-        "DOCS": 3.985,
-        "OPS": 3.986,
-        "SEC": 1.985
+        "CODE": 5.0,
+        "TEST": 1.002,
+        "DOCS": 3.993,
+        "OPS": 3.998,
+        "SEC": 1.996
       },
-      "overall": 1.001,
+      "overall": 1.002,
       "weakest": [
         "TEST"
       ],
@@ -142,26 +142,26 @@
       "auto_overall": 1,
       "override": null,
       "evidence": {
-        "CODE": "5914 lines, mature codebase",
+        "CODE": "6619 lines, mature codebase",
         "TEST": "No test files",
         "DOCS": "Detailed docs (52 lines, examples)",
         "OPS": "CI/CD pipeline",
         "SEC": "Lockfile present (lockfile (pnpm-lock.yaml))"
       },
-      "source_files": 30,
+      "source_files": 31,
       "test_files": 0,
       "continuous_scores": {
-        "CODE": 4.985959744848283,
-        "TEST": 1.001,
-        "DOCS": 3.985005726586452,
-        "OPS": 3.9856417387610055,
-        "SEC": 1.985323732673729
+        "CODE": 4.999985939909813,
+        "TEST": 1.0022146585430005,
+        "DOCS": 3.9932997840102478,
+        "OPS": 3.997757221276624,
+        "SEC": 1.9955285026434362
       },
       "depressed": false,
-      "last_refreshed": 1781550713.0,
-      "jitter": -0.013722249064440981,
-      "peak_overall": 1.001,
-      "overall_score": 1.001
+      "last_refreshed": 1781552821.0,
+      "jitter": 0.0022146585430005295,
+      "peak_overall": 1.0022146585430005,
+      "overall_score": 1.002
     },
     {
       "path": "software",
@@ -170,13 +170,13 @@
       "stage": "SEED",
       "stage_icon": "\ud83c\udf31",
       "scores": {
-        "CODE": 5.0,
-        "TEST": 1.004,
-        "DOCS": 4.003,
-        "OPS": 4.054,
-        "SEC": 4.203
+        "CODE": 4.978,
+        "TEST": 1.001,
+        "DOCS": 3.968,
+        "OPS": 4.023,
+        "SEC": 4.171
       },
-      "overall": 1.004,
+      "overall": 1.001,
       "weakest": [
         "TEST"
       ],
@@ -199,17 +199,17 @@
       "source_files": 46,
       "test_files": 0,
       "continuous_scores": {
-        "CODE": 5.0,
-        "TEST": 1.0041594338340991,
-        "DOCS": 4.002887409484992,
-        "OPS": 4.053523421659546,
-        "SEC": 4.203205415572269
+        "CODE": 4.978268019831595,
+        "TEST": 1.001,
+        "DOCS": 3.968389811965509,
+        "OPS": 4.023328915898552,
+        "SEC": 4.17085936393203
       },
       "depressed": false,
-      "last_refreshed": 1781551857.8219142,
-      "jitter": 0.004159433834099019,
-      "peak_overall": 1.0041594338340991,
-      "overall_score": 1.004
+      "last_refreshed": 1781560844.3870795,
+      "jitter": -0.02173198016840484,
+      "peak_overall": 1.001,
+      "overall_score": 1.001
     },
     {
       "path": "software/cloudflare-worker",
@@ -219,12 +219,12 @@
       "stage_icon": "\ud83c\udf31",
       "scores": {
         "CODE": 5.0,
-        "TEST": 1.02,
-        "DOCS": 5.0,
-        "OPS": 4.019,
-        "SEC": 4.018
+        "TEST": 1.012,
+        "DOCS": 4.999,
+        "OPS": 4.005,
+        "SEC": 4.002
       },
-      "overall": 1.02,
+      "overall": 1.012,
       "weakest": [
         "TEST"
       ],
@@ -248,16 +248,16 @@
       "test_files": 0,
       "continuous_scores": {
         "CODE": 5.0,
-        "TEST": 1.020399601447814,
-        "DOCS": 5.0,
-        "OPS": 4.018685811495483,
-        "SEC": 4.017828916519317
+        "TEST": 1.0122003028834816,
+        "DOCS": 4.998787650572951,
+        "OPS": 4.005493976728216,
+        "SEC": 4.002140813650584
       },
       "depressed": false,
       "last_refreshed": 1781548773.0,
-      "jitter": 0.020399601447814053,
-      "peak_overall": 1.020399601447814,
-      "overall_score": 1.02
+      "jitter": 0.012200302883481663,
+      "peak_overall": 1.0122003028834816,
+      "overall_score": 1.012
     },
     {
       "path": "wcds",
@@ -266,11 +266,11 @@
       "stage": "SEED",
       "stage_icon": "\ud83c\udf31",
       "scores": {
-        "CODE": 3.847,
+        "CODE": 3.857,
         "TEST": 1.001,
-        "DOCS": 3.424,
-        "OPS": 3.706,
-        "SEC": 1.565
+        "DOCS": 3.426,
+        "OPS": 3.714,
+        "SEC": 1.57
       },
       "overall": 1.001,
       "weakest": [
@@ -295,16 +295,16 @@
       "source_files": 8,
       "test_files": 0,
       "continuous_scores": {
-        "CODE": 3.847294162710402,
-        "TEST": 1.001,
-        "DOCS": 3.423610144448572,
-        "OPS": 3.7060661566231254,
-        "SEC": 1.5648381505358488
+        "CODE": 3.857306169537375,
+        "TEST": 1.0010304437261193,
+        "DOCS": 3.4261333469711444,
+        "OPS": 3.7135818953486317,
+        "SEC": 1.5698576211598883
       },
       "depressed": false,
       "last_refreshed": 1781043437.0,
-      "jitter": -0.011477831202321155,
-      "peak_overall": 1.001,
+      "jitter": 0.0010304437261192004,
+      "peak_overall": 1.0010304437261193,
       "overall_score": 1.001
     },
     {
@@ -314,13 +314,13 @@
       "stage": "SPROUT",
       "stage_icon": "\ud83c\udf3f",
       "scores": {
-        "CODE": 1.955,
-        "TEST": 3.924,
-        "DOCS": 3.863,
-        "OPS": 3.924,
-        "SEC": 1.894
+        "CODE": 1.947,
+        "TEST": 3.913,
+        "DOCS": 3.847,
+        "OPS": 3.913,
+        "SEC": 1.88
       },
-      "overall": 1.894,
+      "overall": 1.88,
       "weakest": [
         "SEC"
       ],
@@ -343,17 +343,17 @@
       "source_files": 1,
       "test_files": 12,
       "continuous_scores": {
-        "CODE": 1.955350947592806,
-        "TEST": 3.9244940526166405,
-        "DOCS": 3.8627802626643093,
-        "OPS": 3.9244940526166405,
-        "SEC": 1.893637157640475
+        "CODE": 1.946708497046039,
+        "TEST": 3.9133553339684064,
+        "DOCS": 3.8466490078131415,
+        "OPS": 3.9133553339684064,
+        "SEC": 1.8800021708907741
       },
       "depressed": false,
       "last_refreshed": 1781440773.0,
-      "jitter": -0.01379215743102836,
-      "peak_overall": 1.893637157640475,
-      "overall_score": 1.894
+      "jitter": -0.0199383398763283,
+      "peak_overall": 1.8800021708907741,
+      "overall_score": 1.88
     },
     {
       "path": "cli",
@@ -362,13 +362,13 @@
       "stage": "SPROUT",
       "stage_icon": "\ud83c\udf3f",
       "scores": {
-        "CODE": 3.01,
-        "TEST": 3.009,
-        "DOCS": 5.0,
-        "OPS": 4.009,
-        "SEC": 2.008
+        "CODE": 2.999,
+        "TEST": 2.995,
+        "DOCS": 4.989,
+        "OPS": 3.995,
+        "SEC": 1.992
       },
-      "overall": 2.008,
+      "overall": 1.992,
       "weakest": [
         "SEC"
       ],
@@ -391,17 +391,17 @@
       "source_files": 1,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 3.0095067378799865,
-        "TEST": 3.0086498429038206,
-        "DOCS": 5.0,
-        "OPS": 4.008649842903821,
-        "SEC": 2.0077929479276553
+        "CODE": 2.9987710690396474,
+        "TEST": 2.9954179059620145,
+        "DOCS": 4.98871157980675,
+        "OPS": 3.9954179059620145,
+        "SEC": 1.9920647428843823
       },
       "depressed": false,
       "last_refreshed": 1781548773.0,
-      "jitter": 0.010363632856152036,
-      "peak_overall": 2.0077929479276553,
-      "overall_score": 2.008
+      "jitter": 0.0021242321172800535,
+      "peak_overall": 1.9920647428843823,
+      "overall_score": 1.992
     },
     {
       "path": "ecosystem",
@@ -410,13 +410,13 @@
       "stage": "SPROUT",
       "stage_icon": "\ud83c\udf3f",
       "scores": {
-        "CODE": 4.997,
-        "TEST": 2.996,
-        "DOCS": 1.994,
-        "OPS": 3.996,
-        "SEC": 1.995
+        "CODE": 5.0,
+        "TEST": 3.014,
+        "DOCS": 2.007,
+        "OPS": 4.014,
+        "SEC": 2.01
       },
-      "overall": 1.994,
+      "overall": 2.007,
       "weakest": [
         "DOCS"
       ],
@@ -439,17 +439,17 @@
       "source_files": 21,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 4.996682347905799,
-        "TEST": 2.9958254529296338,
-        "DOCS": 1.9941116629773026,
-        "OPS": 3.9958254529296338,
-        "SEC": 1.994968557953468
+        "CODE": 5.0,
+        "TEST": 3.0137256939516184,
+        "DOCS": 2.0070193677963535,
+        "OPS": 4.013725693951619,
+        "SEC": 2.010372530873986
       },
       "depressed": false,
       "last_refreshed": 1781548773.0,
-      "jitter": -0.00246075711803526,
-      "peak_overall": 1.9941116629773026,
-      "overall_score": 1.994
+      "jitter": 0.020432020106883754,
+      "peak_overall": 2.0070193677963535,
+      "overall_score": 2.007
     },
     {
       "path": "ecosystem/analytics",
@@ -458,13 +458,13 @@
       "stage": "SPROUT",
       "stage_icon": "\ud83c\udf3f",
       "scores": {
-        "CODE": 4.981,
-        "TEST": 2.981,
-        "DOCS": 1.979,
-        "OPS": 3.981,
-        "SEC": 1.98
+        "CODE": 5.0,
+        "TEST": 3.003,
+        "DOCS": 1.996,
+        "OPS": 4.003,
+        "SEC": 1.999
       },
-      "overall": 1.979,
+      "overall": 1.996,
       "weakest": [
         "DOCS"
       ],
@@ -487,17 +487,17 @@
       "source_files": 2,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 4.981485506263681,
-        "TEST": 2.9806286112875156,
-        "DOCS": 1.9789148213351846,
-        "OPS": 3.9806286112875156,
-        "SEC": 1.97977171631135
+        "CODE": 5.0,
+        "TEST": 3.0026499413295333,
+        "DOCS": 1.9959436151742682,
+        "OPS": 4.002649941329533,
+        "SEC": 1.9992967782519007
       },
       "depressed": false,
       "last_refreshed": 1781548773.0,
-      "jitter": -0.017657598760153343,
-      "peak_overall": 1.9789148213351846,
-      "overall_score": 1.979
+      "jitter": 0.00935626748479849,
+      "peak_overall": 1.9959436151742682,
+      "overall_score": 1.996
     },
     {
       "path": "ecosystem/discord",
@@ -506,13 +506,13 @@
       "stage": "SPROUT",
       "stage_icon": "\ud83c\udf3f",
       "scores": {
-        "CODE": 4.986,
-        "TEST": 2.985,
-        "DOCS": 4.984,
-        "OPS": 3.985,
-        "SEC": 1.984
+        "CODE": 5.0,
+        "TEST": 2.998,
+        "DOCS": 4.991,
+        "OPS": 3.998,
+        "SEC": 1.995
       },
-      "overall": 1.984,
+      "overall": 1.995,
       "weakest": [
         "SEC"
       ],
@@ -535,17 +535,17 @@
       "source_files": 1,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 4.986173011990904,
-        "TEST": 2.9853161170147393,
-        "DOCS": 4.983602327062408,
-        "OPS": 3.9853161170147393,
-        "SEC": 1.9844592220385737
+        "CODE": 5.0,
+        "TEST": 2.99791321095961,
+        "DOCS": 4.9912068848043445,
+        "OPS": 3.99791321095961,
+        "SEC": 1.9945600478819776
       },
       "depressed": false,
       "last_refreshed": 1781548773.0,
-      "jitter": -0.012970093032929515,
-      "peak_overall": 1.9844592220385737,
-      "overall_score": 1.984
+      "jitter": 0.004619537114875297,
+      "peak_overall": 1.9945600478819776,
+      "overall_score": 1.995
     },
     {
       "path": "ecosystem/gamification",
@@ -554,13 +554,13 @@
       "stage": "SPROUT",
       "stage_icon": "\ud83c\udf3f",
       "scores": {
-        "CODE": 5.0,
-        "TEST": 3.016,
-        "DOCS": 2.014,
-        "OPS": 4.016,
-        "SEC": 2.015
+        "CODE": 4.986,
+        "TEST": 2.982,
+        "DOCS": 1.976,
+        "OPS": 3.982,
+        "SEC": 1.979
       },
-      "overall": 2.014,
+      "overall": 1.976,
       "weakest": [
         "DOCS"
       ],
@@ -583,17 +583,17 @@
       "source_files": 3,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 5.0,
-        "TEST": 3.0158914150270277,
-        "DOCS": 2.014177625074697,
-        "OPS": 4.015891415027028,
-        "SEC": 2.0150345200508624
+        "CODE": 4.985653907587909,
+        "TEST": 2.9823007445102765,
+        "DOCS": 1.9755944183550118,
+        "OPS": 3.9823007445102765,
+        "SEC": 1.9789475814326443
       },
       "depressed": false,
       "last_refreshed": 1781548773.0,
-      "jitter": 0.01760520497935896,
-      "peak_overall": 2.014177625074697,
-      "overall_score": 2.014
+      "jitter": -0.010992929334457993,
+      "peak_overall": 1.9755944183550118,
+      "overall_score": 1.976
     },
     {
       "path": "ecosystem/ipfs",
@@ -602,16 +602,15 @@
       "stage": "SPROUT",
       "stage_icon": "\ud83c\udf3f",
       "scores": {
-        "CODE": 3.999,
-        "TEST": 2.998,
-        "DOCS": 1.997,
-        "OPS": 3.998,
-        "SEC": 1.997
+        "CODE": 3.989,
+        "TEST": 2.986,
+        "DOCS": 1.979,
+        "OPS": 3.986,
+        "SEC": 1.982
       },
-      "overall": 1.997,
+      "overall": 1.979,
       "weakest": [
-        "DOCS",
-        "SEC"
+        "DOCS"
       ],
       "auto_scores": {
         "CODE": 4,
@@ -632,17 +631,17 @@
       "source_files": 3,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 3.9991567673721193,
-        "TEST": 2.9982998723959535,
-        "DOCS": 1.9965860824436226,
-        "OPS": 3.9982998723959535,
-        "SEC": 1.997442977419788
+        "CODE": 3.988948019338907,
+        "TEST": 2.985594856261274,
+        "DOCS": 1.9788885301060095,
+        "OPS": 3.985594856261274,
+        "SEC": 1.982241693183642
       },
       "depressed": false,
       "last_refreshed": 1781548773.0,
-      "jitter": 1.3662348284631642e-05,
-      "peak_overall": 1.9965860824436226,
-      "overall_score": 1.997
+      "jitter": -0.007698817583460347,
+      "peak_overall": 1.9788885301060095,
+      "overall_score": 1.979
     },
     {
       "path": "ecosystem/middleware",
@@ -651,13 +650,13 @@
       "stage": "SPROUT",
       "stage_icon": "\ud83c\udf3f",
       "scores": {
-        "CODE": 4.006,
-        "TEST": 3.005,
-        "DOCS": 2.004,
-        "OPS": 4.005,
-        "SEC": 2.005
+        "CODE": 3.988,
+        "TEST": 2.984,
+        "DOCS": 1.978,
+        "OPS": 3.984,
+        "SEC": 1.981
       },
-      "overall": 2.004,
+      "overall": 1.978,
       "weakest": [
         "DOCS"
       ],
@@ -680,17 +679,17 @@
       "source_files": 2,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 4.006228900175971,
-        "TEST": 3.0053720051998054,
-        "DOCS": 2.0036582152474747,
-        "OPS": 4.005372005199805,
-        "SEC": 2.00451511022364
+        "CODE": 3.9875856155962053,
+        "TEST": 2.9842324525185724,
+        "DOCS": 1.9775261263633073,
+        "OPS": 3.9842324525185724,
+        "SEC": 1.9808792894409397
       },
       "depressed": false,
       "last_refreshed": 1781548773.0,
-      "jitter": 0.0070857951521366295,
-      "peak_overall": 2.0036582152474747,
-      "overall_score": 2.004
+      "jitter": -0.009061221326162473,
+      "peak_overall": 1.9775261263633073,
+      "overall_score": 1.978
     },
     {
       "path": "interfaces",
@@ -699,13 +698,13 @@
       "stage": "SPROUT",
       "stage_icon": "\ud83c\udf3f",
       "scores": {
-        "CODE": 3.997,
-        "TEST": 2.997,
-        "DOCS": 3.995,
-        "OPS": 3.997,
-        "SEC": 1.996
+        "CODE": 3.983,
+        "TEST": 2.98,
+        "DOCS": 3.973,
+        "OPS": 3.98,
+        "SEC": 1.977
       },
-      "overall": 1.996,
+      "overall": 1.977,
       "weakest": [
         "SEC"
       ],
@@ -728,17 +727,17 @@
       "source_files": 3,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 3.9974503531210637,
-        "TEST": 2.996593458144898,
-        "DOCS": 3.9948796681925667,
-        "OPS": 3.996593458144898,
-        "SEC": 1.9957365631687325
+        "CODE": 3.9833430743192935,
+        "TEST": 2.9799899112416606,
+        "DOCS": 3.9732835850863957,
+        "OPS": 3.9799899112416606,
+        "SEC": 1.9766367481640281
       },
       "depressed": false,
       "last_refreshed": 1781548773.0,
-      "jitter": -0.0016927519027707721,
-      "peak_overall": 1.9957365631687325,
-      "overall_score": 1.996
+      "jitter": -0.013303762603074034,
+      "peak_overall": 1.9766367481640281,
+      "overall_score": 1.977
     },
     {
       "path": "p31-surrogate-backend",
@@ -747,13 +746,13 @@
       "stage": "SPROUT",
       "stage_icon": "\ud83c\udf3f",
       "scores": {
-        "CODE": 4.991,
-        "TEST": 1.991,
-        "DOCS": 3.989,
-        "OPS": 3.991,
-        "SEC": 1.99
+        "CODE": 4.992,
+        "TEST": 1.989,
+        "DOCS": 3.982,
+        "OPS": 3.989,
+        "SEC": 1.985
       },
-      "overall": 1.99,
+      "overall": 1.985,
       "weakest": [
         "SEC"
       ],
@@ -776,17 +775,17 @@
       "source_files": 8,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 4.991458266737151,
-        "TEST": 1.9906013717609854,
-        "DOCS": 3.988887581808654,
-        "OPS": 3.9906013717609854,
-        "SEC": 1.9897444767848198
+        "CODE": 4.991999115203522,
+        "TEST": 1.9886459521258895,
+        "DOCS": 3.9819396259706243,
+        "OPS": 3.9886459521258892,
+        "SEC": 1.9852927890482568
       },
       "depressed": false,
       "last_refreshed": 1781548773.0,
-      "jitter": -0.007684838286683393,
-      "peak_overall": 1.9897444767848198,
-      "overall_score": 1.99
+      "jitter": -0.004647721718845386,
+      "peak_overall": 1.9852927890482568,
+      "overall_score": 1.985
     },
     {
       "path": "p31labs",
@@ -796,12 +795,12 @@
       "stage_icon": "\ud83c\udf3f",
       "scores": {
         "CODE": 1.99,
-        "TEST": 2.989,
-        "DOCS": 3.987,
-        "OPS": 3.989,
-        "SEC": 1.988
+        "TEST": 2.987,
+        "DOCS": 3.98,
+        "OPS": 3.987,
+        "SEC": 1.984
       },
-      "overall": 1.988,
+      "overall": 1.984,
       "weakest": [
         "SEC"
       ],
@@ -824,17 +823,17 @@
       "source_files": 1,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 1.9897941861606547,
-        "TEST": 2.9889372911844894,
-        "DOCS": 3.987223501232158,
-        "OPS": 3.9889372911844894,
-        "SEC": 1.9880803962083236
+        "CODE": 1.9903102397520473,
+        "TEST": 2.9869570766744147,
+        "DOCS": 3.98025075051915,
+        "OPS": 3.9869570766744147,
+        "SEC": 1.9836039135967822
       },
       "depressed": false,
       "last_refreshed": 1781548773.0,
-      "jitter": -0.009348918863179621,
-      "peak_overall": 1.9880803962083236,
-      "overall_score": 1.988
+      "jitter": -0.006336597170320062,
+      "peak_overall": 1.9836039135967822,
+      "overall_score": 1.984
     },
     {
       "path": "p31labs/social-content-engine",
@@ -843,13 +842,13 @@
       "stage": "SPROUT",
       "stage_icon": "\ud83c\udf3f",
       "scores": {
-        "CODE": 3.988,
-        "TEST": 1.987,
-        "DOCS": 3.986,
-        "OPS": 3.987,
-        "SEC": 1.986
+        "CODE": 4.008,
+        "TEST": 2.005,
+        "DOCS": 3.998,
+        "OPS": 4.005,
+        "SEC": 2.002
       },
-      "overall": 1.986,
+      "overall": 2.002,
       "weakest": [
         "SEC"
       ],
@@ -872,17 +871,17 @@
       "source_files": 3,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 3.9881001669841964,
-        "TEST": 1.9872432720080309,
-        "DOCS": 3.9855294820556995,
-        "OPS": 3.9872432720080306,
-        "SEC": 1.9863863770318653
+        "CODE": 4.008475769080241,
+        "TEST": 2.005122606002608,
+        "DOCS": 3.9984162798473433,
+        "OPS": 4.005122606002608,
+        "SEC": 2.0017694429249757
       },
       "depressed": false,
       "last_refreshed": 1781548773.0,
-      "jitter": -0.011042938039638007,
-      "peak_overall": 1.9863863770318653,
-      "overall_score": 1.986
+      "jitter": 0.01182893215787348,
+      "peak_overall": 2.0017694429249757,
+      "overall_score": 2.002
     },
     {
       "path": "phos",
@@ -891,13 +890,13 @@
       "stage": "SPROUT",
       "stage_icon": "\ud83c\udf3f",
       "scores": {
-        "CODE": 4.965,
-        "TEST": 3.934,
-        "DOCS": 3.873,
-        "OPS": 3.934,
-        "SEC": 1.904
+        "CODE": 4.979,
+        "TEST": 3.946,
+        "DOCS": 3.879,
+        "OPS": 3.946,
+        "SEC": 1.913
       },
-      "overall": 1.904,
+      "overall": 1.913,
       "weakest": [
         "SEC"
       ],
@@ -920,17 +919,17 @@
       "source_files": 51,
       "test_files": 40,
       "continuous_scores": {
-        "CODE": 4.965351589179765,
-        "TEST": 3.9344946942035985,
-        "DOCS": 3.8727809042512673,
-        "OPS": 3.9344946942035985,
-        "SEC": 1.9036377992274331
+        "CODE": 4.979245017725933,
+        "TEST": 3.9458918546483,
+        "DOCS": 3.879185528493035,
+        "OPS": 3.9458918546483,
+        "SEC": 1.9125386915706681
       },
       "depressed": false,
       "last_refreshed": 1781440773.0,
-      "jitter": -0.003791515844070221,
-      "peak_overall": 1.9036377992274331,
-      "overall_score": 1.904
+      "jitter": 0.012598180803565704,
+      "peak_overall": 1.9125386915706681,
+      "overall_score": 1.913
     },
     {
       "path": "phosphorus31.org",
@@ -939,13 +938,13 @@
       "stage": "SPROUT",
       "stage_icon": "\ud83c\udf3f",
       "scores": {
-        "CODE": 2.012,
-        "TEST": 3.011,
-        "DOCS": 4.01,
-        "OPS": 4.011,
-        "SEC": 2.01
+        "CODE": 2.01,
+        "TEST": 3.007,
+        "DOCS": 4.0,
+        "OPS": 4.007,
+        "SEC": 2.003
       },
-      "overall": 2.01,
+      "overall": 2.003,
       "weakest": [
         "SEC"
       ],
@@ -968,17 +967,17 @@
       "source_files": 1,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 2.0121600754076314,
-        "TEST": 3.011303180431466,
-        "DOCS": 4.009589390479134,
-        "OPS": 4.011303180431466,
-        "SEC": 2.0104462854553002
+        "CODE": 2.0100924494815815,
+        "TEST": 3.0067392864039486,
+        "DOCS": 4.000032960248684,
+        "OPS": 4.006739286403949,
+        "SEC": 2.003386123326316
       },
       "depressed": false,
       "last_refreshed": 1781548773.0,
-      "jitter": 0.013016970383797127,
-      "peak_overall": 2.0104462854553002,
-      "overall_score": 2.01
+      "jitter": 0.013445612559214077,
+      "peak_overall": 2.003386123326316,
+      "overall_score": 2.003
     },
     {
       "path": "phosphorus31.org/planetary-planet",
@@ -987,13 +986,13 @@
       "stage": "SPROUT",
       "stage_icon": "\ud83c\udf3f",
       "scores": {
-        "CODE": 3.986,
-        "TEST": 1.985,
-        "DOCS": 3.983,
-        "OPS": 3.985,
-        "SEC": 1.984
+        "CODE": 4.003,
+        "TEST": 2.0,
+        "DOCS": 3.993,
+        "OPS": 4.0,
+        "SEC": 1.996
       },
-      "overall": 1.984,
+      "overall": 1.996,
       "weakest": [
         "SEC"
       ],
@@ -1016,17 +1015,17 @@
       "source_files": 9,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 3.9857157079763583,
-        "TEST": 1.9848588130001925,
-        "DOCS": 3.9831450230478613,
-        "OPS": 3.9848588130001925,
-        "SEC": 1.984001918024027
+        "CODE": 4.002905099846566,
+        "TEST": 1.9995519367689332,
+        "DOCS": 3.992845610613668,
+        "OPS": 3.999551936768933,
+        "SEC": 1.9961987736913005
       },
       "depressed": false,
       "last_refreshed": 1781548773.0,
-      "jitter": -0.013427397047476324,
-      "peak_overall": 1.984001918024027,
-      "overall_score": 1.984
+      "jitter": 0.006258262924198208,
+      "peak_overall": 1.9961987736913005,
+      "overall_score": 1.996
     },
     {
       "path": "software/cloudflare-worker/bouncer",
@@ -1035,13 +1034,13 @@
       "stage": "SPROUT",
       "stage_icon": "\ud83c\udf3f",
       "scores": {
-        "CODE": 2.984,
-        "TEST": 1.983,
-        "DOCS": 2.982,
-        "OPS": 3.983,
-        "SEC": 3.982
+        "CODE": 3.003,
+        "TEST": 1.999,
+        "DOCS": 2.993,
+        "OPS": 3.999,
+        "SEC": 3.996
       },
-      "overall": 1.983,
+      "overall": 1.999,
       "weakest": [
         "TEST"
       ],
@@ -1064,17 +1063,17 @@
       "source_files": 1,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 2.9842108767136954,
-        "TEST": 1.9833539817375299,
-        "DOCS": 2.9816401917851985,
-        "OPS": 3.9833539817375296,
-        "SEC": 3.9824970867613643
+        "CODE": 3.0026616762374867,
+        "TEST": 1.9993085131598538,
+        "DOCS": 2.992602187004589,
+        "OPS": 3.999308513159854,
+        "SEC": 3.9959553500822214
       },
       "depressed": false,
       "last_refreshed": 1781548773.0,
-      "jitter": -0.014932228310139002,
-      "peak_overall": 1.9833539817375299,
-      "overall_score": 1.983
+      "jitter": 0.006014839315118936,
+      "peak_overall": 1.9993085131598538,
+      "overall_score": 1.999
     },
     {
       "path": "software/docs",
@@ -1084,12 +1083,12 @@
       "stage_icon": "\ud83c\udf3f",
       "scores": {
         "CODE": 3.002,
-        "TEST": 2.002,
-        "DOCS": 4.0,
-        "OPS": 4.002,
-        "SEC": 4.001
+        "TEST": 1.999,
+        "DOCS": 3.992,
+        "OPS": 3.999,
+        "SEC": 3.996
       },
-      "overall": 2.002,
+      "overall": 1.999,
       "weakest": [
         "TEST"
       ],
@@ -1112,17 +1111,17 @@
       "source_files": 2,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 3.0023765329898002,
-        "TEST": 2.0015196380136344,
-        "DOCS": 3.9998058480613032,
-        "OPS": 4.001519638013634,
-        "SEC": 4.000662743037469
+        "CODE": 3.0022351918403363,
+        "TEST": 1.9988820287627036,
+        "DOCS": 3.9921757026074385,
+        "OPS": 3.9988820287627034,
+        "SEC": 3.995528865685071
       },
       "depressed": false,
       "last_refreshed": 1781548773.0,
-      "jitter": 0.003233427965965459,
-      "peak_overall": 2.0015196380136344,
-      "overall_score": 2.002
+      "jitter": 0.005588354917968825,
+      "peak_overall": 1.9988820287627036,
+      "overall_score": 1.999
     },
     {
       "path": "software/extensions/p31ca",
@@ -1131,13 +1130,13 @@
       "stage": "SPROUT",
       "stage_icon": "\ud83c\udf3f",
       "scores": {
-        "CODE": 4.011,
-        "TEST": 3.01,
-        "DOCS": 2.008,
-        "OPS": 4.01,
-        "SEC": 4.009
+        "CODE": 3.995,
+        "TEST": 2.991,
+        "DOCS": 1.985,
+        "OPS": 3.991,
+        "SEC": 3.988
       },
-      "overall": 2.008,
+      "overall": 1.985,
       "weakest": [
         "DOCS"
       ],
@@ -1160,17 +1159,17 @@
       "source_files": 3,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 4.0107316847933445,
-        "TEST": 3.0098747898171787,
-        "DOCS": 2.0081609998648475,
-        "OPS": 4.009874789817179,
-        "SEC": 4.009017894841013
+        "CODE": 3.9946261100175304,
+        "TEST": 2.9912729469398975,
+        "DOCS": 1.9845666207846326,
+        "OPS": 3.9912729469398975,
+        "SEC": 3.987919783862265
       },
       "depressed": false,
       "last_refreshed": 1781548773.0,
-      "jitter": 0.01158857976950983,
-      "peak_overall": 2.0081609998648475,
-      "overall_score": 2.008
+      "jitter": -0.002020726904837177,
+      "peak_overall": 1.9845666207846326,
+      "overall_score": 1.985
     },
     {
       "path": "software/p31-agent-hub",
@@ -1180,12 +1179,12 @@
       "stage_icon": "\ud83c\udf3f",
       "scores": {
         "CODE": 5.0,
-        "TEST": 2.007,
-        "DOCS": 3.005,
-        "OPS": 4.007,
-        "SEC": 4.006
+        "TEST": 2.001,
+        "DOCS": 2.994,
+        "OPS": 4.001,
+        "SEC": 3.997
       },
-      "overall": 2.007,
+      "overall": 2.001,
       "weakest": [
         "TEST"
       ],
@@ -1209,16 +1208,16 @@
       "test_files": 1,
       "continuous_scores": {
         "CODE": 5.0,
-        "TEST": 2.0071445342372973,
-        "DOCS": 3.0054307442849657,
-        "OPS": 4.007144534237297,
-        "SEC": 4.0062876392611315
+        "TEST": 2.000501506301773,
+        "DOCS": 2.9937951801465075,
+        "OPS": 4.000501506301773,
+        "SEC": 3.99714834322414
       },
       "depressed": false,
       "last_refreshed": 1781548773.0,
-      "jitter": 0.008858324189628286,
-      "peak_overall": 2.0071445342372973,
-      "overall_score": 2.007
+      "jitter": 0.0072078324570378815,
+      "peak_overall": 2.000501506301773,
+      "overall_score": 2.001
     },
     {
       "path": "software/p31-hearing-ops",
@@ -1227,13 +1226,13 @@
       "stage": "SPROUT",
       "stage_icon": "\ud83c\udf3f",
       "scores": {
-        "CODE": 5.0,
-        "TEST": 2.003,
-        "DOCS": 3.001,
-        "OPS": 4.203,
-        "SEC": 4.002
+        "CODE": 4.986,
+        "TEST": 1.98,
+        "DOCS": 3.136,
+        "OPS": 4.18,
+        "SEC": 3.976
       },
-      "overall": 2.003,
+      "overall": 1.98,
       "weakest": [
         "TEST"
       ],
@@ -1256,17 +1255,17 @@
       "source_files": 8,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 5.0,
-        "TEST": 2.0029315278263224,
-        "DOCS": 3.0012177378739913,
-        "OPS": 4.202931527826322,
-        "SEC": 4.002074632850157
+        "CODE": 4.986417696957593,
+        "TEST": 1.9797113708023284,
+        "DOCS": 3.135505044647063,
+        "OPS": 4.179711370802328,
+        "SEC": 3.9763582077246955
       },
       "depressed": false,
-      "last_refreshed": 1781551857.8219142,
-      "jitter": 0.004645317778653584,
-      "peak_overall": 2.0029315278263224,
-      "overall_score": 2.003
+      "last_refreshed": 1781560844.3870795,
+      "jitter": -0.013582303042406594,
+      "peak_overall": 1.9797113708023284,
+      "overall_score": 1.98
     },
     {
       "path": "software/p31ca/workers/fhir",
@@ -1275,13 +1274,13 @@
       "stage": "SPROUT",
       "stage_icon": "\ud83c\udf3f",
       "scores": {
-        "CODE": 4.999,
-        "TEST": 1.998,
-        "DOCS": 2.997,
-        "OPS": 3.998,
-        "SEC": 3.998
+        "CODE": 4.991,
+        "TEST": 1.987,
+        "DOCS": 2.98,
+        "OPS": 3.987,
+        "SEC": 3.984
       },
-      "overall": 1.998,
+      "overall": 1.987,
       "weakest": [
         "TEST"
       ],
@@ -1304,17 +1303,17 @@
       "source_files": 6,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 4.9992193303076675,
-        "TEST": 1.9983624353315024,
-        "DOCS": 2.996648645379171,
-        "OPS": 3.998362435331502,
-        "SEC": 3.997505540355337
+        "CODE": 4.9905230016097315,
+        "TEST": 1.9871698385320993,
+        "DOCS": 2.980463512376834,
+        "OPS": 3.987169838532099,
+        "SEC": 3.9838166754544666
       },
       "depressed": false,
       "last_refreshed": 1781548773.0,
-      "jitter": 7.622528383353999e-05,
-      "peak_overall": 1.9983624353315024,
-      "overall_score": 1.998
+      "jitter": -0.006123835312635632,
+      "peak_overall": 1.9871698385320993,
+      "overall_score": 1.987
     },
     {
       "path": "software/p31ca/workers/glass-box-ws",
@@ -1323,13 +1322,13 @@
       "stage": "SPROUT",
       "stage_icon": "\ud83c\udf3f",
       "scores": {
-        "CODE": 3.999,
-        "TEST": 1.998,
-        "DOCS": 2.997,
-        "OPS": 3.998,
-        "SEC": 3.998
+        "CODE": 3.976,
+        "TEST": 1.973,
+        "DOCS": 2.966,
+        "OPS": 3.973,
+        "SEC": 3.97
       },
-      "overall": 1.998,
+      "overall": 1.973,
       "weakest": [
         "TEST"
       ],
@@ -1352,17 +1351,17 @@
       "source_files": 1,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 3.9993435316289574,
-        "TEST": 1.9984866366527914,
-        "DOCS": 2.9967728467004604,
-        "OPS": 3.9984866366527916,
-        "SEC": 3.997629741676626
+        "CODE": 3.976483834877887,
+        "TEST": 1.9731306718002541,
+        "DOCS": 2.966424345644989,
+        "OPS": 3.973130671800254,
+        "SEC": 3.9697775087226215
       },
       "depressed": false,
       "last_refreshed": 1781548773.0,
-      "jitter": 0.00020042660512261827,
-      "peak_overall": 1.9984866366527914,
-      "overall_score": 1.998
+      "jitter": -0.020163002044480842,
+      "peak_overall": 1.9731306718002541,
+      "overall_score": 1.973
     },
     {
       "path": "software/p31ca/workers/sync",
@@ -1371,13 +1370,13 @@
       "stage": "SPROUT",
       "stage_icon": "\ud83c\udf3f",
       "scores": {
-        "CODE": 3.003,
-        "TEST": 2.002,
-        "DOCS": 3.0,
-        "OPS": 4.002,
-        "SEC": 4.001
+        "CODE": 2.997,
+        "TEST": 1.994,
+        "DOCS": 2.987,
+        "OPS": 3.994,
+        "SEC": 3.991
       },
-      "overall": 2.002,
+      "overall": 1.994,
       "weakest": [
         "TEST"
       ],
@@ -1400,17 +1399,17 @@
       "source_files": 1,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 3.002572687453881,
-        "TEST": 2.0017157924777154,
-        "DOCS": 3.000002002525384,
-        "OPS": 4.001715792477715,
-        "SEC": 4.00085889750155
+        "CODE": 2.9972498789438764,
+        "TEST": 1.9938967158662435,
+        "DOCS": 2.9871903897109786,
+        "OPS": 3.9938967158662435,
+        "SEC": 3.990543552788611
       },
       "depressed": false,
       "last_refreshed": 1781548773.0,
-      "jitter": 0.0034295824300467023,
-      "peak_overall": 2.0017157924777154,
-      "overall_score": 2.002
+      "jitter": 0.0006030420215086584,
+      "peak_overall": 1.9938967158662435,
+      "overall_score": 1.994
     },
     {
       "path": "software/packages/node-zero/pwa",
@@ -1419,13 +1418,13 @@
       "stage": "SPROUT",
       "stage_icon": "\ud83c\udf3f",
       "scores": {
-        "CODE": 4.989,
-        "TEST": 1.988,
-        "DOCS": 3.986,
-        "OPS": 3.988,
-        "SEC": 3.987
+        "CODE": 4.996,
+        "TEST": 1.989,
+        "DOCS": 4.141,
+        "OPS": 3.989,
+        "SEC": 3.986
       },
-      "overall": 1.988,
+      "overall": 1.989,
       "weakest": [
         "TEST"
       ],
@@ -1448,17 +1447,17 @@
       "source_files": 9,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 4.9886486217370365,
-        "TEST": 1.9877917267608713,
-        "DOCS": 3.98607793680854,
-        "OPS": 3.987791726760871,
-        "SEC": 3.9869348317847058
+        "CODE": 4.995677638498426,
+        "TEST": 1.9889713123431612,
+        "DOCS": 4.141064986187896,
+        "OPS": 3.988971312343161,
+        "SEC": 3.9856181492655285
       },
       "depressed": false,
-      "last_refreshed": 1781548773.0,
-      "jitter": -0.0104944832867975,
-      "peak_overall": 1.9877917267608713,
-      "overall_score": 1.988
+      "last_refreshed": 1781560844.3870795,
+      "jitter": -0.004322361501573723,
+      "peak_overall": 1.9889713123431612,
+      "overall_score": 1.989
     },
     {
       "path": "software/packages/sovereign",
@@ -1467,13 +1466,13 @@
       "stage": "SPROUT",
       "stage_icon": "\ud83c\udf3f",
       "scores": {
-        "CODE": 3.987,
-        "TEST": 1.986,
-        "DOCS": 3.984,
-        "OPS": 3.986,
-        "SEC": 3.985
+        "CODE": 3.988,
+        "TEST": 1.984,
+        "DOCS": 3.978,
+        "OPS": 3.984,
+        "SEC": 3.981
       },
-      "overall": 1.986,
+      "overall": 1.984,
       "weakest": [
         "TEST"
       ],
@@ -1496,17 +1495,17 @@
       "source_files": 6,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 3.986648022568731,
-        "TEST": 1.9857911275925653,
-        "DOCS": 3.984077337640234,
-        "OPS": 3.9857911275925653,
-        "SEC": 3.9849342326164
+        "CODE": 3.9877553342163194,
+        "TEST": 1.9844021711386868,
+        "DOCS": 3.9776958449834217,
+        "OPS": 3.9844021711386866,
+        "SEC": 3.981049008061054
       },
       "depressed": false,
       "last_refreshed": 1781548773.0,
-      "jitter": -0.012495082455103643,
-      "peak_overall": 1.9857911275925653,
-      "overall_score": 1.986
+      "jitter": -0.008891502706048007,
+      "peak_overall": 1.9844021711386868,
+      "overall_score": 1.984
     },
     {
       "path": "software/spaceship-earth/astro-landing",
@@ -1515,15 +1514,14 @@
       "stage": "SPROUT",
       "stage_icon": "\ud83c\udf3f",
       "scores": {
-        "CODE": 2.009,
-        "TEST": 2.008,
-        "DOCS": 2.008,
-        "OPS": 4.008,
-        "SEC": 4.008
+        "CODE": 1.989,
+        "TEST": 1.986,
+        "DOCS": 1.981,
+        "OPS": 3.986,
+        "SEC": 3.983
       },
-      "overall": 2.008,
+      "overall": 1.981,
       "weakest": [
-        "TEST",
         "DOCS"
       ],
       "auto_scores": {
@@ -1545,17 +1543,17 @@
       "source_files": 3,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 2.0088031653799416,
-        "TEST": 2.0084851592926647,
-        "DOCS": 2.0078491471181117,
-        "OPS": 4.008485159292665,
-        "SEC": 4.008167153205388
+        "CODE": 1.9889966668144508,
+        "TEST": 1.9861823926257072,
+        "DOCS": 1.9805538442482198,
+        "OPS": 3.986182392625707,
+        "SEC": 3.9833681184369634
       },
       "depressed": false,
       "last_refreshed": 1781550713.0,
-      "jitter": 0.009121171467218244,
-      "peak_overall": 2.0078491471181117,
-      "overall_score": 2.008
+      "jitter": -0.008189058996805523,
+      "peak_overall": 1.9805538442482198,
+      "overall_score": 1.981
     },
     {
       "path": "src",
@@ -1564,13 +1562,13 @@
       "stage": "SPROUT",
       "stage_icon": "\ud83c\udf3f",
       "scores": {
-        "CODE": 4.997,
-        "TEST": 1.997,
-        "DOCS": 3.997,
-        "OPS": 3.997,
-        "SEC": 1.997
+        "CODE": 4.994,
+        "TEST": 1.994,
+        "DOCS": 3.994,
+        "OPS": 3.994,
+        "SEC": 1.994
       },
-      "overall": 1.997,
+      "overall": 1.994,
       "weakest": [
         "TEST",
         "SEC"
@@ -1594,17 +1592,17 @@
       "source_files": 7,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 4.997386643776473,
-        "TEST": 1.9973866437764731,
-        "DOCS": 3.997386643776473,
-        "OPS": 3.997386643776473,
-        "SEC": 1.9973866437764731
+        "CODE": 4.994278449681641,
+        "TEST": 1.994278449681641,
+        "DOCS": 3.994278449681641,
+        "OPS": 3.994278449681641,
+        "SEC": 1.994278449681641
       },
       "depressed": false,
-      "last_refreshed": 1781551857.8219142,
-      "jitter": -0.0026133562235269277,
-      "peak_overall": 1.9973866437764731,
-      "overall_score": 1.997
+      "last_refreshed": 1781560844.3870795,
+      "jitter": -0.005721550318358973,
+      "peak_overall": 1.994278449681641,
+      "overall_score": 1.994
     },
     {
       "path": "tests",
@@ -1613,13 +1611,13 @@
       "stage": "SPROUT",
       "stage_icon": "\ud83c\udf3f",
       "scores": {
-        "CODE": 1.985,
-        "TEST": 3.954,
-        "DOCS": 1.892,
-        "OPS": 3.954,
-        "SEC": 1.923
+        "CODE": 1.975,
+        "TEST": 3.942,
+        "DOCS": 1.875,
+        "OPS": 3.942,
+        "SEC": 1.908
       },
-      "overall": 1.892,
+      "overall": 1.875,
       "weakest": [
         "DOCS"
       ],
@@ -1642,17 +1640,17 @@
       "source_files": 2,
       "test_files": 8,
       "continuous_scores": {
-        "CODE": 1.984533409290752,
-        "TEST": 3.9536765143145867,
-        "DOCS": 1.8919627243622554,
-        "OPS": 3.9536765143145867,
-        "SEC": 1.922819619338421
+        "CODE": 1.9751666839185826,
+        "TEST": 3.94181352084095,
+        "DOCS": 1.875107194685685,
+        "OPS": 3.94181352084095,
+        "SEC": 1.9084603577633177
       },
       "depressed": false,
       "last_refreshed": 1781440773.0,
-      "jitter": 0.015390304266917733,
-      "peak_overall": 1.8919627243622554,
-      "overall_score": 1.892
+      "jitter": 0.008519846996215413,
+      "peak_overall": 1.875107194685685,
+      "overall_score": 1.875
     },
     {
       "path": "software/cloudflare-worker/social-drop-automation",
@@ -1661,13 +1659,13 @@
       "stage": "SAPLING",
       "stage_icon": "\ud83c\udf33",
       "scores": {
-        "CODE": 4.987,
-        "TEST": 2.986,
-        "DOCS": 4.984,
-        "OPS": 3.986,
-        "SEC": 3.985
+        "CODE": 4.977,
+        "TEST": 2.974,
+        "DOCS": 4.967,
+        "OPS": 3.974,
+        "SEC": 3.971
       },
-      "overall": 2.986,
+      "overall": 2.974,
       "weakest": [
         "TEST"
       ],
@@ -1690,17 +1688,17 @@
       "source_files": 1,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 4.986806582279808,
-        "TEST": 2.985949687303643,
-        "DOCS": 4.9842358973513115,
-        "OPS": 3.985949687303643,
-        "SEC": 3.9850927923274777
+        "CODE": 4.977287394370308,
+        "TEST": 2.9739342312926764,
+        "DOCS": 4.967227905137411,
+        "OPS": 3.9739342312926764,
+        "SEC": 3.970581068215044
       },
       "depressed": false,
       "last_refreshed": 1781548773.0,
-      "jitter": -0.012336522744025795,
-      "peak_overall": 2.985949687303643,
-      "overall_score": 2.986
+      "jitter": -0.019359442552058317,
+      "peak_overall": 2.9739342312926764,
+      "overall_score": 2.974
     },
     {
       "path": "software/discord/p31-bot",
@@ -1709,13 +1707,13 @@
       "stage": "SAPLING",
       "stage_icon": "\ud83c\udf33",
       "scores": {
-        "CODE": 4.853,
-        "TEST": 2.712,
-        "DOCS": 4.43,
-        "OPS": 3.712,
-        "SEC": 3.571
+        "CODE": 4.845,
+        "TEST": 2.701,
+        "DOCS": 4.413,
+        "OPS": 3.701,
+        "SEC": 3.557
       },
-      "overall": 2.712,
+      "overall": 2.701,
       "weakest": [
         "TEST"
       ],
@@ -1738,17 +1736,17 @@
       "source_files": 59,
       "test_files": 10,
       "continuous_scores": {
-        "CODE": 4.853217229776617,
-        "TEST": 2.71198922368934,
-        "DOCS": 4.429533211514787,
-        "OPS": 3.71198922368934,
-        "SEC": 3.570761217602063
+        "CODE": 4.8446045759389005,
+        "TEST": 2.700880301750157,
+        "DOCS": 4.413431753372669,
+        "OPS": 3.700880301750157,
+        "SEC": 3.557156027561413
       },
       "depressed": false,
       "last_refreshed": 1781043437.0,
-      "jitter": -0.005554764136106763,
-      "peak_overall": 2.71198922368934,
-      "overall_score": 2.712
+      "jitter": -0.011671149872355797,
+      "peak_overall": 2.700880301750157,
+      "overall_score": 2.701
     },
     {
       "path": "software/donate-api",
@@ -1757,13 +1755,13 @@
       "stage": "SAPLING",
       "stage_icon": "\ud83c\udf33",
       "scores": {
-        "CODE": 3.871,
-        "TEST": 2.73,
-        "DOCS": 3.447,
-        "OPS": 3.73,
-        "SEC": 3.588
+        "CODE": 3.838,
+        "TEST": 2.694,
+        "DOCS": 3.407,
+        "OPS": 3.694,
+        "SEC": 3.551
       },
-      "overall": 2.73,
+      "overall": 2.694,
       "weakest": [
         "TEST"
       ],
@@ -1786,17 +1784,17 @@
       "source_files": 2,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 3.870819811673681,
-        "TEST": 2.729591805586405,
-        "DOCS": 3.447135793411851,
-        "OPS": 3.729591805586405,
-        "SEC": 3.588363799499128
+        "CODE": 3.8381244017032174,
+        "TEST": 2.694400127514474,
+        "DOCS": 3.4069515791369867,
+        "OPS": 3.694400127514474,
+        "SEC": 3.55067585332573
       },
       "depressed": false,
       "last_refreshed": 1781043437.0,
-      "jitter": 0.012047817760958113,
-      "peak_overall": 2.729591805586405,
-      "overall_score": 2.73
+      "jitter": -0.01815132410803874,
+      "peak_overall": 2.694400127514474,
+      "overall_score": 2.694
     },
     {
       "path": "software/extensions/p31-cockpit-panel",
@@ -1805,13 +1803,13 @@
       "stage": "SAPLING",
       "stage_icon": "\ud83c\udf33",
       "scores": {
-        "CODE": 2.993,
-        "TEST": 2.992,
-        "DOCS": 3.99,
-        "OPS": 3.992,
-        "SEC": 3.991
+        "CODE": 3.002,
+        "TEST": 2.999,
+        "DOCS": 3.992,
+        "OPS": 3.999,
+        "SEC": 3.995
       },
-      "overall": 2.992,
+      "overall": 2.999,
       "weakest": [
         "TEST"
       ],
@@ -1834,17 +1832,17 @@
       "source_files": 1,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 2.9929534416183867,
-        "TEST": 2.992096546642221,
-        "DOCS": 3.9903827566898897,
-        "OPS": 3.992096546642221,
-        "SEC": 3.9912396516660555
+        "CODE": 3.0021507713300877,
+        "TEST": 2.998797608252455,
+        "DOCS": 3.99209128209719,
+        "OPS": 3.998797608252455,
+        "SEC": 3.9954444451748223
       },
       "depressed": false,
       "last_refreshed": 1781548773.0,
-      "jitter": -0.006189663405447741,
-      "peak_overall": 2.992096546642221,
-      "overall_score": 2.992
+      "jitter": 0.00550393440772017,
+      "peak_overall": 2.998797608252455,
+      "overall_score": 2.999
     },
     {
       "path": "software/extensions/p31-cognitive-shield",
@@ -1853,13 +1851,13 @@
       "stage": "SAPLING",
       "stage_icon": "\ud83c\udf33",
       "scores": {
-        "CODE": 3.008,
-        "TEST": 3.007,
-        "DOCS": 4.005,
-        "OPS": 4.007,
-        "SEC": 4.006
+        "CODE": 2.998,
+        "TEST": 2.994,
+        "DOCS": 3.988,
+        "OPS": 3.994,
+        "SEC": 3.991
       },
-      "overall": 3.007,
+      "overall": 2.994,
       "weakest": [
         "TEST"
       ],
@@ -1882,17 +1880,17 @@
       "source_files": 1,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 3.0080069844686883,
-        "TEST": 3.0071500894925225,
-        "DOCS": 4.005436299540191,
-        "OPS": 4.007150089492523,
-        "SEC": 4.006293194516357
+        "CODE": 2.997838368403959,
+        "TEST": 2.9944852053263262,
+        "DOCS": 3.9877788791710613,
+        "OPS": 3.9944852053263262,
+        "SEC": 3.991132042248694
       },
       "depressed": false,
       "last_refreshed": 1781548773.0,
-      "jitter": 0.008863879444853676,
-      "peak_overall": 3.0071500894925225,
-      "overall_score": 3.007
+      "jitter": 0.0011915314815916503,
+      "peak_overall": 2.9944852053263262,
+      "overall_score": 2.994
     },
     {
       "path": "software/extensions/p31-progressive-disclosure",
@@ -1901,13 +1899,13 @@
       "stage": "SAPLING",
       "stage_icon": "\ud83c\udf33",
       "scores": {
-        "CODE": 4.002,
-        "TEST": 3.001,
-        "DOCS": 3.999,
-        "OPS": 4.001,
-        "SEC": 4.0
+        "CODE": 4.01,
+        "TEST": 3.006,
+        "DOCS": 4.0,
+        "OPS": 4.006,
+        "SEC": 4.003
       },
-      "overall": 3.001,
+      "overall": 3.006,
       "weakest": [
         "TEST"
       ],
@@ -1930,17 +1928,17 @@
       "source_files": 1,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 4.001727678230795,
-        "TEST": 3.0008707832546295,
-        "DOCS": 3.9991569933022983,
-        "OPS": 4.000870783254629,
-        "SEC": 4.000013888278464
+        "CODE": 4.0096651424327066,
+        "TEST": 3.0063119793550737,
+        "DOCS": 3.9996056531998088,
+        "OPS": 4.006311979355074,
+        "SEC": 4.002958816277441
       },
       "depressed": false,
       "last_refreshed": 1781548773.0,
-      "jitter": 0.00258457320696053,
-      "peak_overall": 3.0008707832546295,
-      "overall_score": 3.001
+      "jitter": 0.01301830551033884,
+      "peak_overall": 3.0063119793550737,
+      "overall_score": 3.006
     },
     {
       "path": "software/extensions/p31-spoon-gauge",
@@ -1949,13 +1947,13 @@
       "stage": "SAPLING",
       "stage_icon": "\ud83c\udf33",
       "scores": {
-        "CODE": 2.999,
-        "TEST": 2.998,
-        "DOCS": 3.996,
-        "OPS": 3.998,
-        "SEC": 3.997
+        "CODE": 2.989,
+        "TEST": 2.986,
+        "DOCS": 3.979,
+        "OPS": 3.986,
+        "SEC": 3.982
       },
-      "overall": 2.998,
+      "overall": 2.986,
       "weakest": [
         "TEST"
       ],
@@ -1978,65 +1976,17 @@
       "source_files": 1,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 2.9985430747426918,
-        "TEST": 2.997686179766526,
-        "DOCS": 3.995972389814195,
-        "OPS": 3.997686179766526,
-        "SEC": 3.9968292847903606
+        "CODE": 2.988996950876503,
+        "TEST": 2.98564378779887,
+        "DOCS": 3.9789374616436053,
+        "OPS": 3.98564378779887,
+        "SEC": 3.9822906247212377
       },
       "depressed": false,
       "last_refreshed": 1781548773.0,
-      "jitter": -0.0006000302811430721,
-      "peak_overall": 2.997686179766526,
-      "overall_score": 2.998
-    },
-    {
-      "path": "software/frontend",
-      "type": "directory",
-      "name": "frontend",
-      "stage": "SAPLING",
-      "stage_icon": "\ud83c\udf33",
-      "scores": {
-        "CODE": 4.862,
-        "TEST": 3.721,
-        "DOCS": 3.438,
-        "OPS": 3.721,
-        "SEC": 3.58
-      },
-      "overall": 3.438,
-      "weakest": [
-        "DOCS"
-      ],
-      "auto_scores": {
-        "CODE": 5,
-        "TEST": 4,
-        "DOCS": 4,
-        "OPS": 4,
-        "SEC": 4
-      },
-      "auto_overall": 4,
-      "override": null,
-      "evidence": {
-        "CODE": "9943 lines, mature codebase",
-        "TEST": "Comprehensive tests (74 assertions) + vitest thresholds",
-        "DOCS": "Detailed docs (75 lines, examples)",
-        "OPS": "CI/CD with Docker deploy",
-        "SEC": "Lockfile + lint + CI security audit"
-      },
-      "source_files": 60,
-      "test_files": 2,
-      "continuous_scores": {
-        "CODE": 4.862165436505514,
-        "TEST": 3.7209374304182368,
-        "DOCS": 3.438481418243683,
-        "OPS": 3.7209374304182368,
-        "SEC": 3.57970942433096
-      },
-      "depressed": false,
-      "last_refreshed": 1781043437.0,
-      "jitter": 0.0033934425927897873,
-      "peak_overall": 3.438481418243683,
-      "overall_score": 3.438
+      "jitter": -0.007649886045864576,
+      "peak_overall": 2.98564378779887,
+      "overall_score": 2.986
     },
     {
       "path": "software/geodesic-room",
@@ -2045,13 +1995,13 @@
       "stage": "SAPLING",
       "stage_icon": "\ud83c\udf33",
       "scores": {
-        "CODE": 4.989,
-        "TEST": 2.988,
-        "DOCS": 2.986,
-        "OPS": 3.988,
-        "SEC": 3.987
+        "CODE": 5.0,
+        "TEST": 3.013,
+        "DOCS": 3.006,
+        "OPS": 4.013,
+        "SEC": 4.01
       },
-      "overall": 2.986,
+      "overall": 3.006,
       "weakest": [
         "DOCS"
       ],
@@ -2074,17 +2024,17 @@
       "source_files": 2,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 4.98868554489715,
-        "TEST": 2.9878286499209845,
-        "DOCS": 2.9861148599686533,
-        "OPS": 3.9878286499209845,
-        "SEC": 3.986971754944819
+        "CODE": 5.0,
+        "TEST": 3.012992554823486,
+        "DOCS": 3.006286228668221,
+        "OPS": 4.0129925548234855,
+        "SEC": 4.0096393917458535
       },
       "depressed": false,
       "last_refreshed": 1781548773.0,
-      "jitter": -0.01045756012668409,
-      "peak_overall": 2.9861148599686533,
-      "overall_score": 2.986
+      "jitter": 0.019698880978751096,
+      "peak_overall": 3.006286228668221,
+      "overall_score": 3.006
     },
     {
       "path": "software/k4-personal",
@@ -2093,13 +2043,13 @@
       "stage": "SAPLING",
       "stage_icon": "\ud83c\udf33",
       "scores": {
-        "CODE": 4.999,
-        "TEST": 3.048,
-        "DOCS": 3.996,
-        "OPS": 3.998,
-        "SEC": 3.997
+        "CODE": 5.0,
+        "TEST": 3.055,
+        "DOCS": 3.998,
+        "OPS": 4.005,
+        "SEC": 4.002
       },
-      "overall": 3.048,
+      "overall": 3.055,
       "weakest": [
         "TEST"
       ],
@@ -2122,17 +2072,17 @@
       "source_files": 5,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 4.998619143640694,
-        "TEST": 3.047762248664528,
-        "DOCS": 3.996048458712197,
-        "OPS": 3.9977622486645283,
-        "SEC": 3.996905353688363
+        "CODE": 5.0,
+        "TEST": 3.0551124477109717,
+        "DOCS": 3.998406121555707,
+        "OPS": 4.005112447710972,
+        "SEC": 4.00175928463334
       },
       "depressed": false,
       "last_refreshed": 1781548773.0,
-      "jitter": -0.0005239613831403217,
-      "peak_overall": 3.047762248664528,
-      "overall_score": 3.048
+      "jitter": 0.011818773866237385,
+      "peak_overall": 3.0551124477109717,
+      "overall_score": 3.055
     },
     {
       "path": "software/kenosis-mesh",
@@ -2141,13 +2091,13 @@
       "stage": "SAPLING",
       "stage_icon": "\ud83c\udf33",
       "scores": {
-        "CODE": 3.995,
-        "TEST": 3.044,
-        "DOCS": 3.993,
-        "OPS": 3.994,
-        "SEC": 3.993
+        "CODE": 3.991,
+        "TEST": 3.037,
+        "DOCS": 3.981,
+        "OPS": 3.987,
+        "SEC": 3.984
       },
-      "overall": 3.044,
+      "overall": 3.037,
       "weakest": [
         "TEST"
       ],
@@ -2170,17 +2120,17 @@
       "source_files": 2,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 3.995139974690937,
-        "TEST": 3.044283079714771,
-        "DOCS": 3.99256928976244,
-        "OPS": 3.994283079714771,
-        "SEC": 3.9934261847386057
+        "CODE": 3.9908081229340704,
+        "TEST": 3.0374549598564373,
+        "DOCS": 3.9807486337011726,
+        "OPS": 3.9874549598564375,
+        "SEC": 3.984101796778805
       },
       "depressed": false,
       "last_refreshed": 1781548773.0,
-      "jitter": -0.004003130332897991,
-      "peak_overall": 3.044283079714771,
-      "overall_score": 3.044
+      "jitter": -0.005838713988297166,
+      "peak_overall": 3.0374549598564373,
+      "overall_score": 3.037
     },
     {
       "path": "software/p31-cortex",
@@ -2189,13 +2139,13 @@
       "stage": "SAPLING",
       "stage_icon": "\ud83c\udf33",
       "scores": {
-        "CODE": 4.988,
-        "TEST": 2.988,
-        "DOCS": 3.986,
-        "OPS": 3.988,
-        "SEC": 3.987
+        "CODE": 4.99,
+        "TEST": 2.986,
+        "DOCS": 3.98,
+        "OPS": 3.986,
+        "SEC": 3.983
       },
-      "overall": 2.988,
+      "overall": 2.986,
       "weakest": [
         "TEST"
       ],
@@ -2218,17 +2168,17 @@
       "source_files": 13,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 4.988430436376166,
-        "TEST": 2.9875735414,
-        "DOCS": 3.985859751447669,
-        "OPS": 3.9875735414,
-        "SEC": 3.986716646423835
+        "CODE": 4.989695259503929,
+        "TEST": 2.986342096426296,
+        "DOCS": 3.979635770271031,
+        "OPS": 3.986342096426296,
+        "SEC": 3.9829889333486634
       },
       "depressed": false,
       "last_refreshed": 1781548773.0,
-      "jitter": -0.010712668647668426,
-      "peak_overall": 2.9875735414,
-      "overall_score": 2.988
+      "jitter": -0.006951577418438627,
+      "peak_overall": 2.986342096426296,
+      "overall_score": 2.986
     },
     {
       "path": "software/p31-delta-hiring",
@@ -2285,13 +2235,13 @@
       "stage": "SAPLING",
       "stage_icon": "\ud83c\udf33",
       "scores": {
-        "CODE": 5.0,
-        "TEST": 3.004,
-        "DOCS": 4.002,
-        "OPS": 4.004,
-        "SEC": 4.003
+        "CODE": 4.996,
+        "TEST": 2.993,
+        "DOCS": 3.986,
+        "OPS": 3.993,
+        "SEC": 3.989
       },
-      "overall": 3.004,
+      "overall": 2.993,
       "weakest": [
         "TEST"
       ],
@@ -2314,17 +2264,17 @@
       "source_files": 16,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 5.0,
-        "TEST": 3.0041526929090145,
-        "DOCS": 4.002438902956683,
-        "OPS": 4.004152692909015,
-        "SEC": 4.003295797932849
+        "CODE": 4.99613505081961,
+        "TEST": 2.992781887741977,
+        "DOCS": 3.9860755615867123,
+        "OPS": 3.992781887741977,
+        "SEC": 3.9894287246643447
       },
       "depressed": false,
       "last_refreshed": 1781548773.0,
-      "jitter": 0.00586648286134583,
-      "peak_overall": 3.0041526929090145,
-      "overall_score": 3.004
+      "jitter": -0.0005117861027576353,
+      "peak_overall": 2.992781887741977,
+      "overall_score": 2.993
     },
     {
       "path": "software/p31-google-bridge",
@@ -2333,13 +2283,13 @@
       "stage": "SAPLING",
       "stage_icon": "\ud83c\udf33",
       "scores": {
-        "CODE": 4.995,
-        "TEST": 2.994,
-        "DOCS": 3.992,
-        "OPS": 3.994,
-        "SEC": 3.993
+        "CODE": 5.0,
+        "TEST": 3.011,
+        "DOCS": 4.004,
+        "OPS": 4.011,
+        "SEC": 4.007
       },
-      "overall": 2.994,
+      "overall": 3.011,
       "weakest": [
         "TEST"
       ],
@@ -2362,17 +2312,17 @@
       "source_files": 4,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 4.994597301424986,
-        "TEST": 2.9937404064488207,
-        "DOCS": 3.9920266164964895,
-        "OPS": 3.9937404064488207,
-        "SEC": 3.9928835114726553
+        "CODE": 5.0,
+        "TEST": 3.01064168913333,
+        "DOCS": 4.003935362978065,
+        "OPS": 4.01064168913333,
+        "SEC": 4.007288526055698
       },
       "depressed": false,
       "last_refreshed": 1781548773.0,
-      "jitter": -0.004545803598847993,
-      "peak_overall": 2.9937404064488207,
-      "overall_score": 2.994
+      "jitter": 0.017348015288595343,
+      "peak_overall": 3.01064168913333,
+      "overall_score": 3.011
     },
     {
       "path": "software/p31ca",
@@ -2382,12 +2332,12 @@
       "stage_icon": "\ud83c\udf33",
       "scores": {
         "CODE": 5.0,
-        "TEST": 4.109,
-        "DOCS": 3.008,
-        "OPS": 4.009,
-        "SEC": 4.008
+        "TEST": 4.099,
+        "DOCS": 3.155,
+        "OPS": 3.999,
+        "SEC": 3.997
       },
-      "overall": 3.008,
+      "overall": 3.155,
       "weakest": [
         "DOCS"
       ],
@@ -2411,16 +2361,16 @@
       "test_files": 15,
       "continuous_scores": {
         "CODE": 5.0,
-        "TEST": 4.108507846977776,
-        "DOCS": 3.007871834803223,
-        "OPS": 4.008507846977777,
-        "SEC": 4.0081898408905
+        "TEST": 4.099412144363198,
+        "DOCS": 3.15498359598571,
+        "OPS": 3.9994121443631974,
+        "SEC": 3.996597870174454
       },
       "depressed": false,
-      "last_refreshed": 1781550713.0,
-      "jitter": 0.009143859152329917,
-      "peak_overall": 3.007871834803223,
-      "overall_score": 3.008
+      "last_refreshed": 1781560844.3870795,
+      "jitter": 0.0050406927406851385,
+      "peak_overall": 3.15498359598571,
+      "overall_score": 3.155
     },
     {
       "path": "software/packages/agent-engine",
@@ -2475,13 +2425,13 @@
       "stage": "SAPLING",
       "stage_icon": "\ud83c\udf33",
       "scores": {
-        "CODE": 3.995,
-        "TEST": 3.044,
-        "DOCS": 4.992,
-        "OPS": 3.994,
-        "SEC": 3.993
+        "CODE": 3.992,
+        "TEST": 3.039,
+        "DOCS": 4.982,
+        "OPS": 3.989,
+        "SEC": 3.986
       },
-      "overall": 3.044,
+      "overall": 3.039,
       "weakest": [
         "TEST"
       ],
@@ -2504,17 +2454,17 @@
       "source_files": 1,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 3.9949408278583816,
-        "TEST": 3.0440839328822156,
-        "DOCS": 4.992370142929884,
-        "OPS": 3.9940839328822157,
-        "SEC": 3.9932270379060504
+        "CODE": 3.992485551608373,
+        "TEST": 3.03913238853074,
+        "DOCS": 4.982426062375475,
+        "OPS": 3.98913238853074,
+        "SEC": 3.9857792254531077
       },
       "depressed": false,
       "last_refreshed": 1781548773.0,
-      "jitter": -0.004202277165453106,
-      "peak_overall": 3.0440839328822156,
-      "overall_score": 3.044
+      "jitter": -0.004161285313994693,
+      "peak_overall": 3.03913238853074,
+      "overall_score": 3.039
     },
     {
       "path": "software/packages/node-zero",
@@ -2523,13 +2473,13 @@
       "stage": "SAPLING",
       "stage_icon": "\ud83c\udf33",
       "scores": {
-        "CODE": 4.995,
-        "TEST": 2.994,
-        "DOCS": 3.993,
-        "OPS": 3.994,
-        "SEC": 3.993
+        "CODE": 5.0,
+        "TEST": 3.009,
+        "DOCS": 4.003,
+        "OPS": 4.009,
+        "SEC": 4.006
       },
-      "overall": 2.994,
+      "overall": 3.009,
       "weakest": [
         "TEST"
       ],
@@ -2552,17 +2502,17 @@
       "source_files": 35,
       "test_files": 9,
       "continuous_scores": {
-        "CODE": 4.99510905604557,
-        "TEST": 2.9942521610694053,
-        "DOCS": 3.992538371117074,
-        "OPS": 3.9942521610694053,
-        "SEC": 3.99339526609324
+        "CODE": 5.0,
+        "TEST": 3.0093154140727183,
+        "DOCS": 4.002609087917453,
+        "OPS": 4.009315414072718,
+        "SEC": 4.005962250995085
       },
       "depressed": false,
       "last_refreshed": 1781548773.0,
-      "jitter": -0.004034048978263654,
-      "peak_overall": 2.9942521610694053,
-      "overall_score": 2.994
+      "jitter": 0.016021740227983524,
+      "peak_overall": 3.0093154140727183,
+      "overall_score": 3.009
     },
     {
       "path": "software/packages/oracle-terminal",
@@ -2571,13 +2521,13 @@
       "stage": "SAPLING",
       "stage_icon": "\ud83c\udf33",
       "scores": {
-        "CODE": 4.001,
-        "TEST": 3.05,
-        "DOCS": 4.999,
-        "OPS": 4.0,
-        "SEC": 3.999
+        "CODE": 3.995,
+        "TEST": 3.041,
+        "DOCS": 4.985,
+        "OPS": 3.991,
+        "SEC": 3.988
       },
-      "overall": 3.05,
+      "overall": 3.041,
       "weakest": [
         "TEST"
       ],
@@ -2600,17 +2550,17 @@
       "source_files": 3,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 4.0011062601108005,
-        "TEST": 3.0502493651346345,
-        "DOCS": 4.998535575182304,
-        "OPS": 4.000249365134635,
-        "SEC": 3.9993924701584693
+        "CODE": 3.99464062962121,
+        "TEST": 3.0412874665435767,
+        "DOCS": 4.984581140388311,
+        "OPS": 3.991287466543577,
+        "SEC": 3.9879343034659445
       },
       "depressed": false,
       "last_refreshed": 1781548773.0,
-      "jitter": 0.001963155086965998,
-      "peak_overall": 3.0502493651346345,
-      "overall_score": 3.05
+      "jitter": -0.0020062073011578698,
+      "peak_overall": 3.0412874665435767,
+      "overall_score": 3.041
     },
     {
       "path": "software/packages/q-distribution",
@@ -2619,13 +2569,13 @@
       "stage": "SAPLING",
       "stage_icon": "\ud83c\udf33",
       "scores": {
-        "CODE": 3.0,
-        "TEST": 3.05,
-        "DOCS": 4.998,
-        "OPS": 4.0,
-        "SEC": 3.999
+        "CODE": 2.999,
+        "TEST": 3.045,
+        "DOCS": 4.989,
+        "OPS": 3.995,
+        "SEC": 3.992
       },
-      "overall": 3.0,
+      "overall": 2.999,
       "weakest": [
         "CODE"
       ],
@@ -2648,17 +2598,17 @@
       "source_files": 1,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 3.0003963494796504,
-        "TEST": 3.0495394545034844,
-        "DOCS": 4.997825664551153,
-        "OPS": 3.9995394545034846,
-        "SEC": 3.998682559527319
+        "CODE": 2.998708228842942,
+        "TEST": 3.045355065765309,
+        "DOCS": 4.988648739610044,
+        "OPS": 3.995355065765309,
+        "SEC": 3.9920019026876767
       },
       "depressed": false,
       "last_refreshed": 1781548773.0,
-      "jitter": 0.0012532444558158737,
-      "peak_overall": 3.0003963494796504,
-      "overall_score": 3.0
+      "jitter": 0.0020613919205744245,
+      "peak_overall": 2.998708228842942,
+      "overall_score": 2.999
     },
     {
       "path": "software/packages/quantum-core",
@@ -2667,13 +2617,13 @@
       "stage": "SAPLING",
       "stage_icon": "\ud83c\udf33",
       "scores": {
-        "CODE": 4.842,
-        "TEST": 2.851,
-        "DOCS": 4.418,
-        "OPS": 3.701,
-        "SEC": 3.559
+        "CODE": 4.829,
+        "TEST": 2.835,
+        "DOCS": 4.398,
+        "OPS": 3.685,
+        "SEC": 3.541
       },
-      "overall": 2.851,
+      "overall": 2.835,
       "weakest": [
         "TEST"
       ],
@@ -2696,17 +2646,17 @@
       "source_files": 12,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 4.841881562797762,
-        "TEST": 2.8506535567104847,
-        "DOCS": 4.418197544535932,
-        "OPS": 3.7006535567104852,
-        "SEC": 3.5594255506232084
+        "CODE": 4.828872843749153,
+        "TEST": 2.8351485695604084,
+        "DOCS": 4.397700021182922,
+        "OPS": 3.685148569560409,
+        "SEC": 3.541424295371665
       },
       "depressed": false,
       "last_refreshed": 1781043437.0,
-      "jitter": -0.016890431114961732,
-      "peak_overall": 2.8506535567104847,
-      "overall_score": 2.851
+      "jitter": -0.0274028820621039,
+      "peak_overall": 2.8351485695604084,
+      "overall_score": 2.835
     },
     {
       "path": "software/packages/quantum-edge",
@@ -2715,13 +2665,13 @@
       "stage": "SAPLING",
       "stage_icon": "\ud83c\udf33",
       "scores": {
-        "CODE": 3.996,
-        "TEST": 3.095,
-        "DOCS": 3.993,
-        "OPS": 3.995,
-        "SEC": 3.994
+        "CODE": 3.991,
+        "TEST": 3.087,
+        "DOCS": 3.981,
+        "OPS": 3.987,
+        "SEC": 3.984
       },
-      "overall": 3.095,
+      "overall": 3.087,
       "weakest": [
         "TEST"
       ],
@@ -2744,17 +2694,17 @@
       "source_files": 1,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 3.9960130942349115,
-        "TEST": 3.0951561992587453,
-        "DOCS": 3.9934424093064145,
-        "OPS": 3.9951561992587457,
-        "SEC": 3.9942993042825803
+        "CODE": 3.990759956560669,
+        "TEST": 3.087406793483036,
+        "DOCS": 3.9807004673277713,
+        "OPS": 3.987406793483036,
+        "SEC": 3.9840536304054037
       },
       "depressed": false,
       "last_refreshed": 1781548773.0,
-      "jitter": -0.0031300107889233675,
-      "peak_overall": 3.0951561992587453,
-      "overall_score": 3.095
+      "jitter": -0.005886880361698458,
+      "peak_overall": 3.087406793483036,
+      "overall_score": 3.087
     },
     {
       "path": "software/packages/sovereign-sdk",
@@ -2763,13 +2713,13 @@
       "stage": "SAPLING",
       "stage_icon": "\ud83c\udf33",
       "scores": {
-        "CODE": 4.009,
-        "TEST": 3.108,
-        "DOCS": 4.006,
-        "OPS": 4.008,
-        "SEC": 4.007
+        "CODE": 3.982,
+        "TEST": 3.079,
+        "DOCS": 3.972,
+        "OPS": 3.979,
+        "SEC": 3.976
       },
-      "overall": 3.108,
+      "overall": 3.079,
       "weakest": [
         "TEST"
       ],
@@ -2792,17 +2742,17 @@
       "source_files": 1,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 4.00878204758967,
-        "TEST": 3.1079251526135043,
-        "DOCS": 4.0062113626611735,
-        "OPS": 4.007925152613504,
-        "SEC": 4.007068257637339
+        "CODE": 3.982485341436896,
+        "TEST": 3.079132178359263,
+        "DOCS": 3.9724258522039984,
+        "OPS": 3.9791321783592632,
+        "SEC": 3.975779015281631
       },
       "depressed": false,
       "last_refreshed": 1781548773.0,
-      "jitter": 0.009638942565835808,
-      "peak_overall": 3.1079251526135043,
-      "overall_score": 3.108
+      "jitter": -0.014161495485471621,
+      "peak_overall": 3.079132178359263,
+      "overall_score": 3.079
     },
     {
       "path": "software/sovereign-command-center",
@@ -2811,13 +2761,13 @@
       "stage": "SAPLING",
       "stage_icon": "\ud83c\udf33",
       "scores": {
-        "CODE": 3.995,
-        "TEST": 2.995,
-        "DOCS": 4.993,
-        "OPS": 3.995,
-        "SEC": 3.994
+        "CODE": 4.172,
+        "TEST": 2.999,
+        "DOCS": 5.0,
+        "OPS": 3.999,
+        "SEC": 3.995
       },
-      "overall": 2.995,
+      "overall": 2.999,
       "weakest": [
         "TEST"
       ],
@@ -2831,7 +2781,7 @@
       "auto_overall": 3,
       "override": null,
       "evidence": {
-        "CODE": "409 lines of real logic",
+        "CODE": "410 lines of real logic",
         "TEST": "Basic tests (9 assertions)",
         "DOCS": "Comprehensive docs (240 lines, examples, TOC)",
         "OPS": "CI/CD with wrangler deploy",
@@ -2840,17 +2790,17 @@
       "source_files": 18,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 3.9953828944123733,
-        "TEST": 2.9945259994362075,
-        "DOCS": 4.992812209483876,
-        "OPS": 3.9945259994362075,
-        "SEC": 3.993669104460042
+        "CODE": 4.171920057479174,
+        "TEST": 2.9985668944015416,
+        "DOCS": 5.0,
+        "OPS": 3.9985668944015416,
+        "SEC": 3.995213731323909
       },
       "depressed": false,
-      "last_refreshed": 1781548773.0,
-      "jitter": -0.003760210611461444,
-      "peak_overall": 2.9945259994362075,
-      "overall_score": 2.995
+      "last_refreshed": 1781560844.3870795,
+      "jitter": 0.005273220556806779,
+      "peak_overall": 2.9985668944015416,
+      "overall_score": 2.999
     },
     {
       "path": "software/spaceship-earth",
@@ -2859,13 +2809,13 @@
       "stage": "SAPLING",
       "stage_icon": "\ud83c\udf33",
       "scores": {
-        "CODE": 5.0,
-        "TEST": 3.109,
-        "DOCS": 4.209,
-        "OPS": 4.209,
-        "SEC": 4.009
+        "CODE": 4.999,
+        "TEST": 3.094,
+        "DOCS": 4.355,
+        "OPS": 4.194,
+        "SEC": 3.992
       },
-      "overall": 3.109,
+      "overall": 3.094,
       "weakest": [
         "TEST"
       ],
@@ -2888,17 +2838,17 @@
       "source_files": 107,
       "test_files": 5,
       "continuous_scores": {
-        "CODE": 5.0,
-        "TEST": 3.1094402280427156,
-        "DOCS": 4.208804215868163,
-        "OPS": 4.209440228042716,
-        "SEC": 4.009122221955439
+        "CODE": 4.999386356046652,
+        "TEST": 3.094447252113609,
+        "DOCS": 4.3545081481805665,
+        "OPS": 4.194447252113609,
+        "SEC": 3.9919777001470877
       },
       "depressed": false,
-      "last_refreshed": 1781551857.8219142,
-      "jitter": 0.010076240217269456,
-      "peak_overall": 3.1094402280427156,
-      "overall_score": 3.109
+      "last_refreshed": 1781560844.3870795,
+      "jitter": -0.0006136439533480611,
+      "peak_overall": 3.094447252113609,
+      "overall_score": 3.094
     },
     {
       "path": "software/spin-mesh",
@@ -2907,13 +2857,13 @@
       "stage": "SAPLING",
       "stage_icon": "\ud83c\udf33",
       "scores": {
-        "CODE": 5.0,
-        "TEST": 3.0,
-        "DOCS": 3.998,
-        "OPS": 4.0,
-        "SEC": 2.999
+        "CODE": 4.972,
+        "TEST": 2.969,
+        "DOCS": 3.962,
+        "OPS": 3.969,
+        "SEC": 2.965
       },
-      "overall": 2.999,
+      "overall": 2.965,
       "weakest": [
         "SEC"
       ],
@@ -2936,17 +2886,17 @@
       "source_files": 15,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 5.0,
-        "TEST": 2.999762537171054,
-        "DOCS": 3.9980487472187227,
-        "OPS": 3.999762537171054,
-        "SEC": 2.9989056421948885
+        "CODE": 4.9719906928941375,
+        "TEST": 2.968637529816505,
+        "DOCS": 3.96193120366124,
+        "OPS": 3.968637529816505,
+        "SEC": 2.9652843667388726
       },
       "depressed": false,
       "last_refreshed": 1781548773.0,
-      "jitter": 0.0014763271233849105,
-      "peak_overall": 2.9989056421948885,
-      "overall_score": 2.999
+      "jitter": -0.02465614402822964,
+      "peak_overall": 2.9652843667388726,
+      "overall_score": 2.965
     },
     {
       "path": "software/spin-mesh/logistics-do",
@@ -2955,15 +2905,14 @@
       "stage": "SAPLING",
       "stage_icon": "\ud83c\udf33",
       "scores": {
-        "CODE": 4.002,
-        "TEST": 3.001,
-        "DOCS": 4.0,
-        "OPS": 4.001,
-        "SEC": 3.001
+        "CODE": 3.984,
+        "TEST": 2.981,
+        "DOCS": 3.974,
+        "OPS": 3.981,
+        "SEC": 2.977
       },
-      "overall": 3.001,
+      "overall": 2.977,
       "weakest": [
-        "TEST",
         "SEC"
       ],
       "auto_scores": {
@@ -2985,17 +2934,17 @@
       "source_files": 1,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 4.002302746817111,
-        "TEST": 3.001445851840945,
-        "DOCS": 3.9997320618886136,
-        "OPS": 4.001445851840945,
-        "SEC": 3.0005889568647794
+        "CODE": 3.9839158068215204,
+        "TEST": 2.9805626437438875,
+        "DOCS": 3.9738563175886226,
+        "OPS": 3.9805626437438875,
+        "SEC": 2.977209480666255
       },
       "depressed": false,
       "last_refreshed": 1781548773.0,
-      "jitter": 0.0031596417932761574,
-      "peak_overall": 3.0005889568647794,
-      "overall_score": 3.001
+      "jitter": -0.012731030100847415,
+      "peak_overall": 2.977209480666255,
+      "overall_score": 2.977
     },
     {
       "path": "software/spin-mesh/matchmaking-do",
@@ -3004,13 +2953,13 @@
       "stage": "SAPLING",
       "stage_icon": "\ud83c\udf33",
       "scores": {
-        "CODE": 4.002,
-        "TEST": 3.001,
-        "DOCS": 3.999,
-        "OPS": 4.001,
-        "SEC": 3.0
+        "CODE": 4.016,
+        "TEST": 3.012,
+        "DOCS": 4.006,
+        "OPS": 4.012,
+        "SEC": 3.009
       },
-      "overall": 3.0,
+      "overall": 3.009,
       "weakest": [
         "SEC"
       ],
@@ -3033,17 +2982,17 @@
       "source_files": 1,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 4.001676135994658,
-        "TEST": 3.0008192410184917,
-        "DOCS": 3.9991054510661606,
-        "OPS": 4.000819241018492,
-        "SEC": 2.9999623460423264
+        "CODE": 4.015834273541925,
+        "TEST": 3.0124811104642926,
+        "DOCS": 4.005774784309027,
+        "OPS": 4.012481110464292,
+        "SEC": 3.00912794738666
       },
       "depressed": false,
       "last_refreshed": 1781548773.0,
-      "jitter": 0.0025330309708230985,
-      "peak_overall": 2.9999623460423264,
-      "overall_score": 3.0
+      "jitter": 0.019187436619557775,
+      "peak_overall": 3.00912794738666,
+      "overall_score": 3.009
     },
     {
       "path": "software/spoon-calculator",
@@ -3052,13 +3001,13 @@
       "stage": "SAPLING",
       "stage_icon": "\ud83c\udf33",
       "scores": {
-        "CODE": 3.988,
-        "TEST": 2.987,
-        "DOCS": 4.985,
-        "OPS": 3.987,
-        "SEC": 3.986
+        "CODE": 4.149,
+        "TEST": 2.983,
+        "DOCS": 4.99,
+        "OPS": 3.983,
+        "SEC": 3.98
       },
-      "overall": 2.987,
+      "overall": 2.983,
       "weakest": [
         "TEST"
       ],
@@ -3081,17 +3030,17 @@
       "source_files": 3,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 3.9875035220093817,
-        "TEST": 2.986646627033216,
-        "DOCS": 4.984932837080884,
-        "OPS": 3.986646627033216,
-        "SEC": 3.9857897320570506
+        "CODE": 4.149185163368319,
+        "TEST": 2.9833320002906865,
+        "DOCS": 4.990038326445951,
+        "OPS": 3.9833320002906865,
+        "SEC": 3.979978837213054
       },
       "depressed": false,
-      "last_refreshed": 1781548773.0,
-      "jitter": -0.011639583014452988,
-      "peak_overall": 2.986646627033216,
-      "overall_score": 2.987
+      "last_refreshed": 1781560844.3870795,
+      "jitter": -0.009961673554048393,
+      "peak_overall": 2.9833320002906865,
+      "overall_score": 2.983
     },
     {
       "path": "software/telemetry-worker",
@@ -3100,15 +3049,14 @@
       "stage": "SAPLING",
       "stage_icon": "\ud83c\udf33",
       "scores": {
-        "CODE": 3.007,
-        "TEST": 3.007,
-        "DOCS": 4.005,
-        "OPS": 4.007,
-        "SEC": 4.006
+        "CODE": 3.005,
+        "TEST": 3.002,
+        "DOCS": 3.995,
+        "OPS": 4.002,
+        "SEC": 3.999
       },
-      "overall": 3.007,
+      "overall": 3.002,
       "weakest": [
-        "CODE",
         "TEST"
       ],
       "auto_scores": {
@@ -3130,17 +3078,17 @@
       "source_files": 1,
       "test_files": 1,
       "continuous_scores": {
-        "CODE": 3.0074688284143214,
-        "TEST": 3.0066119334381556,
-        "DOCS": 4.004898143485824,
-        "OPS": 4.006611933438156,
-        "SEC": 4.00575503846199
+        "CODE": 3.0053311856027696,
+        "TEST": 3.0019780225251367,
+        "DOCS": 3.995271696369872,
+        "OPS": 4.001978022525137,
+        "SEC": 3.9986248594475042
       },
       "depressed": false,
       "last_refreshed": 1781548773.0,
-      "jitter": 0.008325723390486619,
-      "peak_overall": 3.0066119334381556,
-      "overall_score": 3.007
+      "jitter": 0.008684348680401825,
+      "peak_overall": 3.0019780225251367,
+      "overall_score": 3.002
     },
     {
       "path": "software/workers",
@@ -3149,13 +3097,13 @@
       "stage": "SAPLING",
       "stage_icon": "\ud83c\udf33",
       "scores": {
-        "CODE": 4.86,
-        "TEST": 2.719,
-        "DOCS": 4.436,
-        "OPS": 3.719,
-        "SEC": 3.577
+        "CODE": 4.847,
+        "TEST": 2.703,
+        "DOCS": 4.416,
+        "OPS": 3.703,
+        "SEC": 3.56
       },
-      "overall": 2.719,
+      "overall": 2.703,
       "weakest": [
         "TEST"
       ],
@@ -3178,17 +3126,17 @@
       "source_files": 11,
       "test_files": 3,
       "continuous_scores": {
-        "CODE": 4.859840156538108,
-        "TEST": 2.718612150450831,
-        "DOCS": 4.436156138276278,
-        "OPS": 3.718612150450831,
-        "SEC": 3.5773841443635543
+        "CODE": 4.847027573652114,
+        "TEST": 2.70330329946337,
+        "DOCS": 4.415854751085883,
+        "OPS": 3.70330329946337,
+        "SEC": 3.559579025274626
       },
       "depressed": false,
       "last_refreshed": 1781043437.0,
-      "jitter": 0.0010681626253842855,
-      "peak_overall": 2.718612150450831,
-      "overall_score": 2.719
+      "jitter": -0.009248152159142528,
+      "peak_overall": 2.70330329946337,
+      "overall_score": 2.703
     },
     {
       "path": "software/bonding",
@@ -3244,13 +3192,13 @@
       "stage": "BLOOM",
       "stage_icon": "\ud83c\udf38",
       "scores": {
-        "CODE": 4.906,
-        "TEST": 3.715,
-        "DOCS": 4.432,
-        "OPS": 3.915,
-        "SEC": 3.573
+        "CODE": 4.896,
+        "TEST": 3.702,
+        "DOCS": 4.415,
+        "OPS": 3.902,
+        "SEC": 3.558
       },
-      "overall": 3.573,
+      "overall": 3.558,
       "weakest": [
         "SEC"
       ],
@@ -3273,17 +3221,65 @@
       "source_files": 13,
       "test_files": 6,
       "continuous_scores": {
-        "CODE": 4.905909495456957,
-        "TEST": 3.7146814893696796,
-        "DOCS": 4.432225477195127,
-        "OPS": 3.9146814893696797,
-        "SEC": 3.5734534832824028
+        "CODE": 4.895892360248784,
+        "TEST": 3.70216808606004,
+        "DOCS": 4.4147195376825525,
+        "OPS": 3.90216808606004,
+        "SEC": 3.558443811871296
       },
       "depressed": false,
-      "last_refreshed": 1781551857.8219142,
-      "jitter": -0.002862498455767087,
-      "peak_overall": 3.5734534832824028,
-      "overall_score": 3.573
+      "last_refreshed": 1781560844.3870795,
+      "jitter": -0.010383365562472822,
+      "peak_overall": 3.558443811871296,
+      "overall_score": 3.558
+    },
+    {
+      "path": "software/frontend",
+      "type": "directory",
+      "name": "frontend",
+      "stage": "BLOOM",
+      "stage_icon": "\ud83c\udf38",
+      "scores": {
+        "CODE": 5.0,
+        "TEST": 3.73,
+        "DOCS": 3.601,
+        "OPS": 3.73,
+        "SEC": 3.586
+      },
+      "overall": 3.586,
+      "weakest": [
+        "SEC"
+      ],
+      "auto_scores": {
+        "CODE": 5,
+        "TEST": 4,
+        "DOCS": 4,
+        "OPS": 4,
+        "SEC": 4
+      },
+      "auto_overall": 4,
+      "override": null,
+      "evidence": {
+        "CODE": "9943 lines, mature codebase",
+        "TEST": "Comprehensive tests (74 assertions) + vitest thresholds",
+        "DOCS": "Detailed docs (75 lines, examples)",
+        "OPS": "CI/CD with Docker deploy",
+        "SEC": "Lockfile + lint + CI security audit"
+      },
+      "source_files": 60,
+      "test_files": 2,
+      "continuous_scores": {
+        "CODE": 5.0,
+        "TEST": 3.729865996064658,
+        "DOCS": 3.601217447687171,
+        "OPS": 3.729865996064658,
+        "SEC": 3.586141721875914
+      },
+      "depressed": false,
+      "last_refreshed": 1781560844.3870795,
+      "jitter": 0.017314544442145263,
+      "peak_overall": 3.586141721875914,
+      "overall_score": 3.586
     },
     {
       "path": "software/packages/game-engine",
@@ -3292,13 +3288,13 @@
       "stage": "BLOOM",
       "stage_icon": "\ud83c\udf38",
       "scores": {
-        "CODE": 4.874,
-        "TEST": 3.733,
-        "DOCS": 4.45,
-        "OPS": 3.733,
-        "SEC": 3.591
+        "CODE": 4.842,
+        "TEST": 3.698,
+        "DOCS": 4.411,
+        "OPS": 3.698,
+        "SEC": 3.555
       },
-      "overall": 3.591,
+      "overall": 3.555,
       "weakest": [
         "SEC"
       ],
@@ -3321,17 +3317,17 @@
       "source_files": 7,
       "test_files": 4,
       "continuous_scores": {
-        "CODE": 4.873813652121978,
-        "TEST": 3.732585646034701,
-        "DOCS": 4.450129633860148,
-        "OPS": 3.732585646034701,
-        "SEC": 3.5913576399474243
+        "CODE": 4.842131341092317,
+        "TEST": 3.698407066903574,
+        "DOCS": 4.410958518526086,
+        "OPS": 3.698407066903574,
+        "SEC": 3.55468279271483
       },
       "depressed": false,
       "last_refreshed": 1781043437.0,
-      "jitter": 0.01504165820925441,
-      "peak_overall": 3.5913576399474243,
-      "overall_score": 3.591
+      "jitter": -0.014144384718938925,
+      "peak_overall": 3.55468279271483,
+      "overall_score": 3.555
     },
     {
       "path": "software/packages/k4-mesh-core",
@@ -3340,13 +3336,13 @@
       "stage": "BLOOM",
       "stage_icon": "\ud83c\udf38",
       "scores": {
-        "CODE": 5.0,
-        "TEST": 4.574,
-        "DOCS": 4.304,
-        "OPS": 4.104,
-        "SEC": 4.004
+        "CODE": 4.995,
+        "TEST": 4.559,
+        "DOCS": 4.283,
+        "OPS": 4.089,
+        "SEC": 3.986
       },
-      "overall": 4.004,
+      "overall": 3.986,
       "weakest": [
         "SEC"
       ],
@@ -3369,17 +3365,17 @@
       "source_files": 10,
       "test_files": 5,
       "continuous_scores": {
-        "CODE": 5.0,
-        "TEST": 4.574226362959453,
-        "DOCS": 4.3035903507849005,
-        "OPS": 4.104226362959454,
-        "SEC": 4.003908356872177
+        "CODE": 4.994590623163768,
+        "TEST": 4.55896207478628,
+        "DOCS": 4.283333526408794,
+        "OPS": 4.088962074786281,
+        "SEC": 3.986147800597537
       },
       "depressed": false,
-      "last_refreshed": 1781551857.8219142,
-      "jitter": 0.004862375134007291,
-      "peak_overall": 4.003908356872177,
-      "overall_score": 4.004
+      "last_refreshed": 1781560844.3870795,
+      "jitter": -0.00540937683623158,
+      "peak_overall": 3.986147800597537,
+      "overall_score": 3.986
     },
     {
       "path": "software/packages/love-ledger",
@@ -3388,13 +3384,13 @@
       "stage": "BLOOM",
       "stage_icon": "\ud83c\udf38",
       "scores": {
-        "CODE": 4.992,
-        "TEST": 3.991,
-        "DOCS": 4.992,
-        "OPS": 4.091,
-        "SEC": 3.99
+        "CODE": 4.986,
+        "TEST": 3.979,
+        "DOCS": 4.986,
+        "OPS": 4.079,
+        "SEC": 3.976
       },
-      "overall": 3.99,
+      "overall": 3.976,
       "weakest": [
         "SEC"
       ],
@@ -3417,17 +3413,17 @@
       "source_files": 5,
       "test_files": 5,
       "continuous_scores": {
-        "CODE": 4.992317753966927,
-        "TEST": 3.990603964014596,
-        "DOCS": 4.992317753966927,
-        "OPS": 4.090603964014596,
-        "SEC": 3.9897470690384305
+        "CODE": 4.985667222329983,
+        "TEST": 3.978960896174718,
+        "DOCS": 4.985667222329983,
+        "OPS": 4.078960896174718,
+        "SEC": 3.9756077330970854
       },
       "depressed": false,
-      "last_refreshed": 1781551857.8219142,
-      "jitter": -0.007682246033072927,
-      "peak_overall": 3.9897470690384305,
-      "overall_score": 3.99
+      "last_refreshed": 1781560844.3870795,
+      "jitter": -0.014332777670016672,
+      "peak_overall": 3.9756077330970854,
+      "overall_score": 3.976
     },
     {
       "path": "software/packages/shared",
@@ -3436,13 +3432,13 @@
       "stage": "BLOOM",
       "stage_icon": "\ud83c\udf38",
       "scores": {
-        "CODE": 4.993,
-        "TEST": 4.531,
-        "DOCS": 4.993,
-        "OPS": 4.031,
-        "SEC": 3.9
+        "CODE": 5.0,
+        "TEST": 4.535,
+        "DOCS": 5.0,
+        "OPS": 4.035,
+        "SEC": 3.902
       },
-      "overall": 3.9,
+      "overall": 3.902,
       "weakest": [
         "SEC"
       ],
@@ -3465,17 +3461,17 @@
       "source_files": 89,
       "test_files": 3,
       "continuous_scores": {
-        "CODE": 4.992665749371706,
-        "TEST": 4.530951959419374,
-        "DOCS": 4.992665749371706,
-        "OPS": 4.030951959419374,
-        "SEC": 3.900095064443209
+        "CODE": 5.0,
+        "TEST": 4.5353802746363625,
+        "DOCS": 5.0,
+        "OPS": 4.0353802746363625,
+        "SEC": 3.902027111558731
       },
       "depressed": false,
-      "last_refreshed": 1781551857.8219142,
-      "jitter": -0.00733425062829443,
-      "peak_overall": 3.900095064443209,
-      "overall_score": 3.9
+      "last_refreshed": 1781560844.3870795,
+      "jitter": 0.002086600791628502,
+      "peak_overall": 3.902027111558731,
+      "overall_score": 3.902
     }
   ]
 }

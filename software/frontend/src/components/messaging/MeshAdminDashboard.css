@@ -14,7 +14,7 @@
   padding: 16px 24px;
   background: rgba(5, 5, 8, 0.95);
   border-bottom: 1px solid var(--border);
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(10px);
 }
 
 .admin-header h2 {
@@ -523,11 +523,11 @@
     overflow-x: auto;
     padding: 8px 16px;
   }
-  
+
   .metrics-grid {
     grid-template-columns: repeat(2, 1fr);
   }
-  
+
   .members-grid {
     grid-template-columns: 1fr;
   }

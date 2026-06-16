@@ -1,6 +1,6 @@
 /**
  * Node Zero Startup Optimizer
- * 
+ *
  * Advanced startup performance optimization system that implements
  * lazy loading, dependency optimization, and startup sequence management
  * for Node Zero initialization.
@@ -37,33 +37,33 @@ class NodeStartupOptimizer {
   private optimizations: StartupOptimization[] = [];
   private startTime: number = 0;
   private isOptimizing = false;
-  
+
   constructor() {
     this.initializeOptimizations();
   }
-  
+
   /**
    * Start startup optimization
    */
   async optimizeStartup(): Promise<void> {
     if (this.isOptimizing) return;
-    
+
     this.isOptimizing = true;
     this.startTime = performance.now();
-    
+
     try {
       // Apply optimizations in priority order
       const sortedOptimizations = this.optimizations
         .filter(opt => opt.enabled)
         .sort((a, b) => a.priority - b.priority);
-      
+
       for (const optimization of sortedOptimizations) {
         await this.executeOptimization(optimization);
       }
-      
+
       // Record startup completion
       const totalBootTime = performance.now() - this.startTime;
-      
+
       // Telemetry
       trackEvent('startup_optimization_complete', {
         totalBootTime,
@@ -72,7 +72,7 @@ class NodeStartupOptimizer {
         memoryUsage: this.getMemoryUsage(),
         networkRequests: this.getNetworkRequests(),
       });
-      
+
     } catch (error) {
       console.error('[NodeStartupOptimizer] Startup optimization failed:', error);
       trackEvent('startup_optimization_error', {
@@ -82,7 +82,7 @@ class NodeStartupOptimizer {
       this.isOptimizing = false;
     }
   }
-  
+
   /**
    * Record a startup phase
    */
@@ -94,9 +94,9 @@ class NodeStartupOptimizer {
       error,
       dependencies,
     };
-    
+
     this.phases.push(phase);
-    
+
     // Telemetry
     trackEvent('startup_phase', {
       name,
@@ -106,7 +106,7 @@ class NodeStartupOptimizer {
       dependencies: dependencies.length,
     });
   }
-  
+
   /**
    * Initialize startup optimizations
    */
@@ -120,7 +120,7 @@ class NodeStartupOptimizer {
         await this.preloadCriticalResources();
       },
     });
-    
+
     // 2. Dependency ordering optimization
     this.optimizations.push({
       name: 'dependency_ordering',
@@ -130,7 +130,7 @@ class NodeStartupOptimizer {
         await this.optimizeDependencyOrder();
       },
     });
-    
+
     // 3. Lazy loading optimization
     this.optimizations.push({
       name: 'lazy_loading',
@@ -140,7 +140,7 @@ class NodeStartupOptimizer {
         await this.setupLazyLoading();
       },
     });
-    
+
     // 4. Cache optimization
     this.optimizations.push({
       name: 'cache_optimization',
@@ -150,7 +150,7 @@ class NodeStartupOptimizer {
         await this.optimizeCaching();
       },
     });
-    
+
     // 5. Network optimization
     this.optimizations.push({
       name: 'network_optimization',
@@ -160,7 +160,7 @@ class NodeStartupOptimizer {
         await this.optimizeNetwork();
       },
     });
-    
+
     // 6. Memory optimization
     this.optimizations.push({
       name: 'memory_optimization',
@@ -171,19 +171,19 @@ class NodeStartupOptimizer {
       },
     });
   }
-  
+
   /**
    * Execute an optimization with error handling
    */
   private async executeOptimization(optimization: StartupOptimization): Promise<void> {
     const startTime = performance.now();
-    
+
     try {
       await optimization.apply();
-      
+
       const duration = performance.now() - startTime;
       this.recordPhase(optimization.name, duration, true, undefined, []);
-      
+
     } catch (error) {
       const duration = performance.now() - startTime;
       this.recordPhase(
@@ -193,11 +193,11 @@ class NodeStartupOptimizer {
         error instanceof Error ? error.message : 'Unknown error',
         []
       );
-      
+
       console.warn(`[NodeStartupOptimizer] Optimization ${optimization.name} failed:`, error);
     }
   }
-  
+
   /**
    * Preload critical resources
    */
@@ -208,7 +208,7 @@ class NodeStartupOptimizer {
       '/node-zero/storage',
       '/node-zero/network',
     ];
-    
+
     const promises = criticalResources.map(async (resource) => {
       try {
         // Use fetch with high priority
@@ -220,10 +220,10 @@ class NodeStartupOptimizer {
         console.warn(`[NodeStartupOptimizer] Failed to preload ${resource}:`, error);
       }
     });
-    
+
     await Promise.allSettled(promises);
   }
-  
+
   /**
    * Optimize dependency loading order
    */
@@ -235,13 +235,13 @@ class NodeStartupOptimizer {
       'web-bluetooth',
       'web-usb',
     ];
-    
+
     // Load in order of criticality
     for (const dep of criticalDeps) {
       await this.loadDependency(dep);
     }
   }
-  
+
   /**
    * Setup lazy loading for non-critical components
    */
@@ -253,7 +253,7 @@ class NodeStartupOptimizer {
       'vault-sync',
       'bridge-adapter',
     ];
-    
+
     // Setup intersection observer for lazy loading
     if ('IntersectionObserver' in window) {
       const observer = new IntersectionObserver((entries) => {
@@ -264,7 +264,7 @@ class NodeStartupOptimizer {
           }
         });
       });
-      
+
       // Observe elements that should be lazy loaded
       lazyComponents.forEach((component) => {
         const element = document.querySelector(`[data-lazy-component="${component}"]`);
@@ -274,7 +274,7 @@ class NodeStartupOptimizer {
       });
     }
   }
-  
+
   /**
    * Optimize caching strategy
    */
@@ -287,26 +287,26 @@ class NodeStartupOptimizer {
         console.warn('[NodeStartupOptimizer] Service worker registration failed:', error);
       }
     }
-    
+
     // Setup cache API for critical data
     if ('caches' in window) {
       try {
         const cache = await caches.open('node-zero-v1');
-        
+
         // Cache critical resources
         const criticalResources = [
           '/node-zero/identity',
           '/node-zero/crypto',
           '/node-zero/storage',
         ];
-        
+
         await cache.addAll(criticalResources);
       } catch (error) {
         console.warn('[NodeStartupOptimizer] Cache setup failed:', error);
       }
     }
   }
-  
+
   /**
    * Optimize network requests
    */
@@ -322,11 +322,11 @@ class NodeStartupOptimizer {
         }
       }
     }
-    
+
     // Setup request deduplication
     this.setupRequestDeduplication();
   }
-  
+
   /**
    * Optimize memory usage during startup
    */
@@ -339,11 +339,11 @@ class NodeStartupOptimizer {
         // Ignore if GC is not available
       }
     }
-    
+
     // Setup memory monitoring
     this.setupMemoryMonitoring();
   }
-  
+
   /**
    * Load a specific dependency
    */
@@ -354,37 +354,37 @@ class NodeStartupOptimizer {
       setTimeout(resolve, Math.random() * 100);
     });
   }
-  
+
   /**
    * Load a lazy component
    */
   private async loadLazyComponent(element: HTMLElement): Promise<void> {
     const componentName = element.getAttribute('data-lazy-component');
     if (!componentName) return;
-    
+
     try {
       // Simulate dynamic import
       await new Promise(resolve => setTimeout(resolve, 100));
-      
+
       // Mark as loaded
       element.classList.add('loaded');
       element.removeAttribute('data-lazy-component');
-      
+
     } catch (error) {
       console.error(`[NodeStartupOptimizer] Failed to load lazy component ${componentName}:`, error);
     }
   }
-  
+
   /**
    * Minimize startup for slow connections
    */
   private async minimizeStartupForSlowConnection(): Promise<void> {
     // Skip non-critical optimizations
-    this.optimizations = this.optimizations.filter(opt => 
+    this.optimizations = this.optimizations.filter(opt =>
       ['resource_preloading', 'dependency_ordering'].includes(opt.name)
     );
   }
-  
+
   /**
    * Setup request deduplication
    */
@@ -392,7 +392,7 @@ class NodeStartupOptimizer {
     // Implement request deduplication logic
     // This would prevent duplicate requests during startup
   }
-  
+
   /**
    * Setup memory monitoring
    */
@@ -403,12 +403,12 @@ class NodeStartupOptimizer {
       if (mem) {
         // Monitor memory usage during startup
         const initialMemory = mem.usedJSHeapSize;
-        
+
         // Check memory after startup
         setTimeout(() => {
           const finalMemory = mem.usedJSHeapSize;
           const memoryGrowth = finalMemory - initialMemory;
-          
+
           trackEvent('startup_memory_growth', {
             initialMemory,
             finalMemory,
@@ -418,13 +418,13 @@ class NodeStartupOptimizer {
       }
     }
   }
-  
+
   /**
    * Get startup metrics
    */
   getStartupMetrics(): StartupMetrics {
     const totalBootTime = this.phases.reduce((sum, phase) => sum + phase.duration, 0);
-    
+
     return {
       totalBootTime,
       phases: [...this.phases],
@@ -434,7 +434,7 @@ class NodeStartupOptimizer {
       cacheHits: this.getCacheHits(),
     };
   }
-  
+
   /**
    * Get current memory usage
    */
@@ -445,7 +445,7 @@ class NodeStartupOptimizer {
     }
     return 0;
   }
-  
+
   /**
    * Get network request count
    */
@@ -454,7 +454,7 @@ class NodeStartupOptimizer {
     // For now, return a placeholder
     return 0;
   }
-  
+
   /**
    * Get cache hit count
    */
@@ -463,48 +463,48 @@ class NodeStartupOptimizer {
     // For now, return a placeholder
     return 0;
   }
-  
+
   /**
    * Export startup report
    */
   exportStartupReport(): string {
     const metrics = this.getStartupMetrics();
-    
+
     return JSON.stringify({
       timestamp: Date.now(),
       metrics,
       recommendations: this.getStartupRecommendations(metrics),
     }, null, 2);
   }
-  
+
   /**
    * Get startup optimization recommendations
    */
   private getStartupRecommendations(metrics: StartupMetrics): string[] {
     const recommendations: string[] = [];
-    
+
     // Check boot time
     if (metrics.totalBootTime > 5000) {
       recommendations.push('Consider reducing startup time by optimizing critical path');
       recommendations.push('Review dependency loading order');
     }
-    
+
     // Check memory usage
     if (metrics.memoryUsage > 50 * 1024 * 1024) { // 50MB
       recommendations.push('High memory usage during startup detected');
       recommendations.push('Consider lazy loading non-critical components');
     }
-    
+
     // Check failed phases
     const failedPhases = metrics.phases.filter(p => !p.success);
     if (failedPhases.length > 0) {
       recommendations.push('Review failed startup phases for optimization opportunities');
       recommendations.push('Consider making failed phases optional or retryable');
     }
-    
+
     return recommendations;
   }
-  
+
   /**
    * Reset optimizer state
    */

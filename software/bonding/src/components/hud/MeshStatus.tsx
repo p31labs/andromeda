@@ -30,8 +30,8 @@ export const MeshStatus: React.FC = () => {
   return (
     <div className="fixed top-4 right-4 flex flex-col items-end gap-2 font-mono text-xs z-50">
       <div className="flex items-center gap-2 bg-[#050510] border border-[#1f2937] p-2 rounded-md shadow-lg">
-        <div className={`w-2 h-2 rounded-full ${isOnline ? 'bg-[#00FF88] shadow-[0_0_8px_#00FF88]' : 'bg-[#EF4444] shadow-[0_0_8px_#EF4444] animate-pulse'}`} />
-        <span className={isOnline ? 'text-[#00FF88]' : 'text-[#EF4444]'}>
+        <div className={`w-2 h-2 rounded-full ${isOnline ? 'bg-[var(--color-phosphor)] shadow-[0_0_8px_var(--color-phosphor)]' : 'bg-[#EF4444] shadow-[0_0_8px_#EF4444] animate-pulse'}`} />
+        <span className={isOnline ? 'text-[var(--color-phosphor)]' : 'text-[#EF4444]'}>
           {isOnline ? 'DELTA MESH : CONNECTED' : 'WYE SEVERED : OFFLINE'}
         </span>
       </div>
@@ -46,13 +46,13 @@ export const MeshStatus: React.FC = () => {
         <span className="text-[#00D4FF]">SPOONS:</span>
         <div className="flex gap-1">
           {[...Array(12)].map((_, i) => (
-            <div 
-              key={i} 
+            <div
+              key={i}
               className={`w-1.5 h-4 rounded-sm transition-all duration-300 ${
-                i < spoons 
-                  ? 'bg-[#00D4FF] shadow-[0_0_5px_#00D4FF]' 
+                i < spoons
+                  ? 'bg-[#00D4FF] shadow-[0_0_5px_#00D4FF]'
                   : 'bg-[#1f2937]'
-              }`} 
+              }`}
             />
           ))}
         </div>

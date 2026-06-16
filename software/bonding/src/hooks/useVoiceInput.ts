@@ -162,7 +162,7 @@ export function useVoiceInput(options: VoiceInputOptions = {}): VoiceInputReturn
 
   const parseCommand = useCallback((text: string): VoiceCommand | null => {
     const normalized = text.toLowerCase().trim();
-    
+
     // Check element commands
     if (normalized in ELEMENT_COMMANDS) {
       return {
@@ -257,7 +257,7 @@ export function useVoiceInput(options: VoiceInputOptions = {}): VoiceInputReturn
     };
 
     recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
-      const errorMsg = event.error === 'no-speech' ? 'No speech detected' : 
+      const errorMsg = event.error === 'no-speech' ? 'No speech detected' :
                        event.error === 'not-allowed' ? 'Microphone access denied' :
                        `Speech error: ${event.error}`;
       setError(errorMsg);

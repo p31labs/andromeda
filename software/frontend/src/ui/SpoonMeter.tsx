@@ -1,6 +1,6 @@
 /**
  * Spoon Meter HUD — Metabolic Economics Display
- * 
+ *
  * Vertex 3 (Interface Node) — Spoon economy visualizer
  * Displays current spoons with visual state management
  */
@@ -26,11 +26,11 @@ interface SpoonMeterProps {
 /**
  * Spoon Meter HUD element - shows current metabolic capacity
  */
-export default function SpoonMeter({ 
-  compact = false, 
+export default function SpoonMeter({
+  compact = false,
   showControls = false,
   size = 'md',
-  hideLabel = false 
+  hideLabel = false
 }: SpoonMeterProps) {
   const metabolicState = useCockpitStore(s => s.metabolicState);
   const updateMetabolicState = useCockpitStore(s => s.updateMetabolicState);
@@ -50,7 +50,7 @@ export default function SpoonMeter({
       current_spoons: Math.min(maxSpoons, spoons + amount),
     });
   };
-  
+
   // Determine state based on percentage
   const getState = () => {
     if (percentage < 25) return 'critical';
@@ -58,9 +58,9 @@ export default function SpoonMeter({
     if (percentage < 75) return 'moderate';
     return 'optimal';
   };
-  
+
   const state = getState();
-  
+
   // Color mapping based on state
   const getColor = () => {
     switch (state) {
@@ -70,16 +70,16 @@ export default function SpoonMeter({
       case 'optimal': return COCKPIT_COLORS.phosphorus;
     }
   };
-  
+
   const color = getColor();
-  
+
   // Size classes
   const sizeClasses = {
     sm: 'spoon-meter-sm',
-    md: 'spoon-meter-md', 
+    md: 'spoon-meter-md',
     lg: 'spoon-meter-lg',
   };
-  
+
   // Label based on state
   const getLabel = () => {
     if (percentage < 25) return 'BREATHE';
@@ -87,7 +87,7 @@ export default function SpoonMeter({
     if (percentage < 75) return 'BUILD';
     return 'COMMAND';
   };
-  
+
   return (
     <div className={`spoon-meter ${sizeClasses[size]} spoon-meter-${state}`}>
       {!hideLabel && (
@@ -95,8 +95,8 @@ export default function SpoonMeter({
           {getLabel()}
         </span>
       )}
-      
-      <div 
+
+      <div
         className="spoon-meter-bar"
         role="progressbar"
         aria-valuenow={spoons}
@@ -104,20 +104,20 @@ export default function SpoonMeter({
         aria-valuemax={maxSpoons}
         aria-label={`Energy: ${spoons.toFixed(1)} of ${maxSpoons} spoons`}
       >
-        <div 
+        <div
           className="spoon-meter-fill"
-          style={{ 
+          style={{
             width: `${percentage}%`,
             background: color,
           }}
         />
-        <div 
+        <div
           className="spoon-meter-threshold"
           style={{ left: `${SPOON_CONFIG.LOW_THRESHOLD * 100}%` }}
           title="Heartbeat Lockout Threshold"
         />
       </div>
-      
+
       {showControls && (
         <div className="spoon-meter-controls">
           <button
@@ -138,11 +138,11 @@ export default function SpoonMeter({
           </button>
         </div>
       )}
-      
+
       <span className="spoon-meter-value" style={{ color }}>
         {spoons.toFixed(1)}
       </span>
-      
+
       {!compact && (
         <span className="spoon-meter-max">
           / {maxSpoons}
@@ -172,9 +172,9 @@ export function CompactSpoonMeter() {
  */
 export function FullSpoonMeter() {
   return (
-    <SpoonMeter 
-      showControls 
-      size="lg" 
+    <SpoonMeter
+      showControls
+      size="lg"
     />
   );
 }

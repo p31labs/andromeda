@@ -1,7 +1,7 @@
 /**
  * Week 6 Convergence Checkpoint: Predictive Suggestions Across All
  * Integration: Predictive + Voice + Bros + Router + Visual
- * 
+ *
  * Success: AI predicts user needs across all phases, surfaces proactive suggestions
  */
 
@@ -53,12 +53,12 @@ export async function runWeek6Convergence(
 ): Promise<ConvergenceReport> {
   const week = 6;
   const timestamp = Date.now();
-  
+
   console.log(`[Week 6 Convergence] Predictive Suggestions Across All Phases checkpoint starting...`);
-  
+
   // Run master convergence for week 6
   const baseReport = await master.converge(week);
-  
+
   // Mock predictive context
   const mockContext: PredictiveContext = {
     recentEvents: ['voice:constellation_rotate', 'visual:node_select', 'bros:persona_wj'],
@@ -72,7 +72,7 @@ export async function runWeek6Convergence(
       { pattern: 'sibling_chat_evening', frequency: 0.7, lastTriggered: timestamp - 172800000 }
     ]
   };
-  
+
   // Mock suggestions
   const mockSuggestions: PredictiveSuggestion[] = [
     {
@@ -115,7 +115,7 @@ export async function runWeek6Convergence(
       priority: 'high'
     }
   ];
-  
+
   // Week 6 specific integration validation - PREDICTIVE ACROSS ALL
   const integrationChecks: IntegrationCheck[] = [
     {
@@ -154,7 +154,7 @@ export async function runWeek6Convergence(
       demo: 'Predictive suggests persona switch: "Switch to dad mode for admin tasks?"'
     }
   ];
-  
+
   // Demo scenarios for Week 6
   const demoScenarios = [
     {
@@ -222,41 +222,41 @@ export async function runWeek6Convergence(
       successIndicator: 'Coordinated suggestions appear across all active phases'
     }
   ];
-  
+
   // Success criteria validation
   const successCriteria: Week6SuccessCriteria = {
     predictionAccuracy: 0.84, // Exceeds 0.80 target
     suggestionRelevance: 0.88, // Exceeds 0.85 target
     predictionLatency: 380 // Under 500ms target
   };
-  
+
   // Validate against criteria
   const enabled = input?.enablePredictions !== false;
-  const passed = 
+  const passed =
     enabled &&
     successCriteria.predictionAccuracy > 0.80 &&
     successCriteria.suggestionRelevance > 0.85 &&
     successCriteria.predictionLatency < 500 &&
     integrationChecks[0].ready;
-  
+
   // Week 6 specific blockers
   const week6Blockers = [
     ...baseReport.blockers,
     ...(enabled ? [] : ['Predictive phase disabled - cannot test suggestions']),
-    ...(successCriteria.predictionAccuracy <= 0.80 
-      ? ['Prediction accuracy below 80% threshold'] 
+    ...(successCriteria.predictionAccuracy <= 0.80
+      ? ['Prediction accuracy below 80% threshold']
       : []),
-    ...(successCriteria.suggestionRelevance <= 0.85 
-      ? ['Suggestion relevance below 85% threshold'] 
+    ...(successCriteria.suggestionRelevance <= 0.85
+      ? ['Suggestion relevance below 85% threshold']
       : []),
-    ...(successCriteria.predictionLatency >= 500 
-      ? ['Prediction latency too high for real-time suggestions'] 
+    ...(successCriteria.predictionLatency >= 500
+      ? ['Prediction latency too high for real-time suggestions']
       : []),
-    ...(!integrationChecks[0].ready 
-      ? ['Predictive integration with core phases not ready'] 
+    ...(!integrationChecks[0].ready
+      ? ['Predictive integration with core phases not ready']
       : [])
   ];
-  
+
   const report: ConvergenceReport = {
     week,
     timestamp,
@@ -270,10 +270,10 @@ export async function runWeek6Convergence(
     mockSuggestions,
     predictionModel: input?.predictionModel || 'hybrid',
     contextWindow: input?.contextWindowMinutes || 15,
-    summary: passed 
+    summary: passed
       ? 'Week 6: Predictive Suggestions Across All CONVERGED'
       : 'Week 6: Predictive Suggestions Across All DIVERGED - blockers detected'
-  } as ConvergenceReport & { 
+  } as ConvergenceReport & {
     demoScenarios: typeof demoScenarios;
     successCriteria: typeof successCriteria;
     passed: boolean;
@@ -283,13 +283,13 @@ export async function runWeek6Convergence(
     contextWindow: number;
     summary: string;
   };
-  
+
   console.log(`[Week 6 Convergence] ${report.summary}`);
   console.log(`[Week 6 Convergence] Blockers: ${week6Blockers.length}`);
   console.log(`[Week 6 Convergence] Active suggestions: ${mockSuggestions.length}`);
   console.log(`[Week 6 Convergence] Prediction model: ${report.predictionModel}`);
   console.log(`[Week 6 Convergence] Context window: ${report.contextWindow} minutes`);
-  
+
   return report;
 }
 

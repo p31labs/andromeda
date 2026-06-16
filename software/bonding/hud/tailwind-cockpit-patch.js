@@ -1,6 +1,6 @@
 /**
  * WCD-08 Phase A: Tailwind Config Patch
- * 
+ *
  * Sonnet: MERGE these additions into the existing tailwind.config.js.
  * Do NOT replace the entire config. Add to theme.extend.
  */
@@ -8,7 +8,7 @@
 // Add to theme.extend.colors:
 const colors = {
   void: '#050505',
-  phosphor: '#00FF88',
+  phosphor: 'var(--color-phosphor)',
   amber: '#FFD700',
   cyan: '#06B6D4',
 };
@@ -36,7 +36,7 @@ const animation = {
 
 /**
  * Example merged config:
- * 
+ *
  * export default {
  *   content: ['./src/** /*.{ts,tsx}'],
  *   theme: {
@@ -44,7 +44,7 @@ const animation = {
  *       colors: {
  *         ...existingColors,
  *         void: '#050505',
- *         phosphor: '#00FF88',
+ *         phosphor: 'var(--color-phosphor)',
  *         amber: '#FFD700',
  *         cyan: '#06B6D4',
  *       },

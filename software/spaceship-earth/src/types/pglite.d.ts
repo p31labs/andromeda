@@ -25,27 +25,27 @@ declare module '@electric-sql/pglite' {
      * @param dataDir The IndexedDB URL (e.g., 'idb://spaceship-earth-ledger') or memory path
      */
     constructor(dataDir?: string);
-    
+
     /**
      * Initialize the database (async).
      */
     ready: Promise<void>;
-    
+
     /**
      * Execute a parameterized SQL query.
      */
     query<T = any>(query: string, params?: any[]): Promise<QueryResult & { rows: T[] }>;
-    
+
     /**
      * Execute a raw SQL string (multiple statements allowed).
      */
     exec(query: string): Promise<void>;
-    
+
     /**
      * Close the database connection.
      */
     close(): Promise<void>;
-    
+
     /**
      * Add a custom extension or function.
      */
@@ -56,7 +56,7 @@ declare module '@electric-sql/pglite' {
    * Create a new PGlite database instance.
    */
   export function createDB(dataDir?: string): PGlite;
-  
+
   /**
    * Utility to run migrations.
    */

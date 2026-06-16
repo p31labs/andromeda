@@ -3,8 +3,8 @@ import { useState, useEffect, useCallback, useRef } from "react";
 const T = {
   void: "#0f1115", surface: "#161920", surface2: "#1c2028",
   glass: "rgba(255,255,255,0.06)", cloud: "#e8e6e3", muted: "#6b7280",
-  teal: "#5DCAA5", cyan: "#4db8a8", coral: "#cc6247",
-  amber: "#cda852", lavender: "#8b7cc9", phosphorus: "#5dca5d",
+  teal: "var(--color-teal)", cyan: "var(--color-cyan)", coral: "var(--color-coral)",
+  amber: "var(--color-amber)", lavender: "var(--color-lavender)", phosphorus: "#5dca5d",
 };
 
 const KEY = "p31_mission_control";

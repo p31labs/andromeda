@@ -11,12 +11,12 @@ interface VoiceSettings {
   // Speech recognition
   voiceInputEnabled: boolean;
   continuousListening: boolean;
-  
+
   // Text-to-speech
   voiceOutputEnabled: boolean;
   speechRate: number;  // 0.5 - 2.0
   speechVolume: number; // 0.0 - 1.0
-  
+
   // Actions
   toggleVoiceInput: () => void;
   toggleVoiceOutput: () => void;
@@ -33,19 +33,19 @@ export const useVoiceSettings = create<VoiceSettings>()(
       voiceOutputEnabled: true,
       speechRate: 0.9,
       speechVolume: 1.0,
-      
+
       toggleVoiceInput: () => set((state) => ({
         voiceInputEnabled: !state.voiceInputEnabled
       })),
-      
+
       toggleVoiceOutput: () => set((state) => ({
         voiceOutputEnabled: !state.voiceOutputEnabled
       })),
-      
+
       setSpeechRate: (rate: number) => set({
         speechRate: Math.max(0.5, Math.min(2.0, rate))
       }),
-      
+
       setSpeechVolume: (volume: number) => set({
         speechVolume: Math.max(0, Math.min(1.0, volume))
       }),

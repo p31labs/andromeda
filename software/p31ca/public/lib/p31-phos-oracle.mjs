@@ -1,13 +1,13 @@
 /**
  * p31-phos-oracle.mjs — PHOS Akinator Engine v1.0
- * 
+ *
  * The WOW-factor upgrade to PHOS. Adds:
  * - Akinator-style app deduction (20 questions to find the right tool)
  * - Particle effects and holographic UI
  * - Proactive suggestions based on time/patterns
  * - Voice synthesis for spoken responses
  * - Easter eggs and delight moments
- * 
+ *
  * Extends p31-phos-guide.mjs — can be loaded alongside or as replacement.
  * Schema: p31.phosOracle/1.0.0
  */
@@ -20,7 +20,7 @@ const APP_DATABASE = [
   { id: 'calendar', name: 'Calendar', category: 'productivity', keywords: ['date', 'event', 'plan', 'schedule', 'appointment', 'when'], emoji: '📅', description: 'See what\'s coming up' },
   { id: 'pomodoro', name: 'Pomodoro', category: 'productivity', keywords: ['focus', 'timer', 'work', 'study', 'concentrate', 'break'], emoji: '🍅', description: 'Focus with timed intervals' },
   { id: 'focus', name: 'Focus Mode', category: 'productivity', keywords: ['write', 'distraction', 'clean', 'simple', 'minimal', 'concentrate'], emoji: '🎯', description: 'Distraction-free writing' },
-  
+
   // Health
   { id: 'water', name: 'Water', category: 'health', keywords: ['drink', 'hydrate', 'thirsty', 'bottle', 'ml', 'hydration'], emoji: '💧', description: 'Track your water intake' },
   { id: 'mood', name: 'Mood', category: 'health', keywords: ['feel', 'emotion', 'happy', 'sad', 'track', 'mental'], emoji: '🎭', description: 'Track how you feel' },
@@ -28,14 +28,14 @@ const APP_DATABASE = [
   { id: 'sleep', name: 'Sleep', category: 'health', keywords: ['tired', 'rest', 'bed', 'wake', 'cycle', 'nap'], emoji: '😴', description: 'Calculate optimal sleep times' },
   { id: 'zen', name: 'Zen', category: 'health', keywords: ['meditate', 'calm', 'breathe', 'relax', 'peace', 'mindful'], emoji: '🧘', description: 'Meditation and breathing' },
   { id: 'meals', name: 'Meals', category: 'health', keywords: ['food', 'eat', 'cook', 'recipe', 'plan', 'nutrition'], emoji: '🥗', description: 'Plan your meals' },
-  
+
   // Creativity
   { id: 'canvas', name: 'Canvas', category: 'creative', keywords: ['draw', 'paint', 'art', 'sketch', 'create', 'doodle'], emoji: '🎨', description: 'Draw and create art' },
   { id: 'book', name: 'Book', category: 'creative', keywords: ['read', 'library', 'novel', 'story', 'author'], emoji: '📚', description: 'Track your reading' },
   { id: 'voice', name: 'Voice Notes', category: 'creative', keywords: ['record', 'speak', 'audio', 'sound', 'memo'], emoji: '🎤', description: 'Record your voice' },
   { id: 'white-noise', name: 'White Noise', category: 'creative', keywords: ['sound', 'sleep', 'focus', 'ambient', 'noise', 'calm'], emoji: '🌊', description: 'Ambient background sounds' },
   { id: 'resonance', name: 'Resonance', category: 'creative', keywords: ['healing', 'frequency', 'binaural', 'therapy', 'sound'], emoji: '🔊', description: 'Therapeutic sound generator' },
-  
+
   // Tools
   { id: 'calc', name: 'Calculator', category: 'tools', keywords: ['math', 'number', 'add', 'subtract', 'calculate', 'sum'], emoji: '🧮', description: 'Do math problems' },
   { id: 'converter', name: 'Converter', category: 'tools', keywords: ['convert', 'unit', 'measure', 'temperature', 'length', 'weight'], emoji: '⚖️', description: 'Convert between units' },
@@ -46,17 +46,17 @@ const APP_DATABASE = [
   { id: 'decide', name: 'Decide', category: 'tools', keywords: ['choose', 'pick', 'coin', 'flip', 'decision', 'random'], emoji: '🪙', description: 'Make decisions' },
   { id: 'chart', name: 'Chart', category: 'tools', keywords: ['graph', 'data', 'visualize', 'bar', 'pie', 'statistics'], emoji: '📊', description: 'Make simple charts' },
   { id: 'split', name: 'Split', category: 'tools', keywords: ['bill', 'money', 'divide', 'pay', 'share', 'cost'], emoji: '💰', description: 'Split bills fairly' },
-  
+
   // Communication
   { id: 'cipher', name: 'Cipher', category: 'comms', keywords: ['secret', 'code', 'encrypt', 'hide', 'message', 'decode'], emoji: '🔏', description: 'Secret codes' },
   { id: 'echo', name: 'Echo', category: 'comms', keywords: ['speak', 'text', 'voice', 'read', 'aloud', 'tts'], emoji: '🗣️', description: 'Text to speech' },
   { id: 'voice-recognition', name: 'Voice', category: 'comms', keywords: ['transcribe', 'dictate', 'speech', 'write', 'listen'], emoji: '👂', description: 'Speech to text' },
-  
+
   // Exploration
   { id: 'compass', name: 'Compass', category: 'explore', keywords: ['direction', 'north', 'lost', 'navigate', 'orient'], emoji: '🧭', description: 'Find your direction' },
   { id: 'level', name: 'Level', category: 'explore', keywords: ['straight', 'flat', 'bubble', 'align', 'horizontal'], emoji: '📐', description: 'Check if things are level' },
   { id: 'stims', name: 'Stims', category: 'explore', keywords: ['sensory', 'calm', 'breathe', 'visual', 'pattern'], emoji: '✨', description: 'Sensory tools' },
-  
+
   // Fun
   { id: 'pet', name: 'Pet', category: 'fun', keywords: ['virtual', 'tamagotchi', 'care', 'feed', 'play', 'animal'], emoji: '🐣', description: 'Care for a virtual pet' },
   { id: 'fish', name: 'Fish', category: 'fun', keywords: ['aquarium', 'relax', 'watch', 'calm', 'ocean'], emoji: '🐠', description: 'Watch virtual fish' },
@@ -108,11 +108,11 @@ class PhosOracle {
 
     for (const q of QUESTIONS) {
       if (this.askedQuestions.has(q.id)) continue;
-      
+
       const matching = this.candidates.filter(q.filter).length;
       const nonMatching = this.candidates.length - matching;
       const imbalance = Math.abs(matching - nonMatching);
-      
+
       if (imbalance < bestScore && matching > 0 && nonMatching > 0) {
         bestScore = imbalance;
         bestQuestion = q;
@@ -125,7 +125,7 @@ class PhosOracle {
 
     this.currentQuestion = bestQuestion;
     this.askedQuestions.add(bestQuestion.id);
-    
+
     return {
       type: 'question',
       text: bestQuestion.text,
@@ -248,14 +248,14 @@ class ParticleSystem {
         z-index: 10000;
         opacity: 1;
       `;
-      
+
       const angle = (Math.PI * 2 * i) / count;
       const velocity = 50 + Math.random() * 100;
       const vx = Math.cos(angle) * velocity;
       const vy = Math.sin(angle) * velocity;
-      
+
       this.container.appendChild(particle);
-      
+
       particle.animate([
         { transform: 'translate(0, 0) scale(1)', opacity: 1 },
         { transform: `translate(${vx}px, ${vy}px) scale(0)`, opacity: 0 }
@@ -269,7 +269,7 @@ class ParticleSystem {
   sparkle(element) {
     const rect = element.getBoundingClientRect();
     const colors = ['#22d3ee', '#fbbf24', '#34d399', '#fb7185'];
-    
+
     for (let i = 0; i < 15; i++) {
       setTimeout(() => {
         const x = rect.left + Math.random() * rect.width;

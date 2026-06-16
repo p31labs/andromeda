@@ -1,6 +1,6 @@
 /**
  * P31 Cockpit Layout — Z-Index Master Contract
- * 
+ *
  * Vertex 3 (Interface Node) — Z-index layer enforcement
  * Digital equivalent of OS kernel ring privileges
  * Higher Z values always supersede lower Z values
@@ -25,11 +25,11 @@ interface ZLayerProps {
  */
 export function ZLayer({ children, layer, visible = true, className = '' }: ZLayerProps) {
   const zIndex = Z_LAYERS[layer];
-  
+
   if (!visible) return null;
-  
+
   return (
-    <div 
+    <div
       className={`z-layer z-layer-${layer.toLowerCase()} ${className}`}
       style={{ zIndex }}
       data-layer={Z_LAYER_NAMES[layer]}
@@ -70,8 +70,8 @@ export function CanvasLayer({ children }: { children?: React.ReactNode }) {
  */
 export function RoomHUDLayer({ children }: { children?: React.ReactNode }) {
   return (
-    <div 
-      className="room-hud-layer" 
+    <div
+      className="room-hud-layer"
       style={{ zIndex: Z_LAYERS.ROOM_HUD }}
     >
       {children}
@@ -84,8 +84,8 @@ export function RoomHUDLayer({ children }: { children?: React.ReactNode }) {
  */
 export function RouterNavLayer({ children }: { children?: React.ReactNode }) {
   return (
-    <div 
-      className="router-nav-layer" 
+    <div
+      className="router-nav-layer"
       style={{ zIndex: Z_LAYERS.ROUTER_NAV }}
     >
       {children}
@@ -98,8 +98,8 @@ export function RouterNavLayer({ children }: { children?: React.ReactNode }) {
  */
 export function ToastLayer({ children }: { children?: React.ReactNode }) {
   return (
-    <div 
-      className="toast-layer" 
+    <div
+      className="toast-layer"
       style={{ zIndex: Z_LAYERS.TOAST }}
     >
       {children}
@@ -112,8 +112,8 @@ export function ToastLayer({ children }: { children?: React.ReactNode }) {
  */
 export function ModalLayer({ children }: { children?: React.ReactNode }) {
   return (
-    <div 
-      className="modal-layer" 
+    <div
+      className="modal-layer"
       style={{ zIndex: Z_LAYERS.MODAL }}
     >
       {children}
@@ -126,8 +126,8 @@ export function ModalLayer({ children }: { children?: React.ReactNode }) {
  */
 export function CentaurLayer({ children }: { children?: React.ReactNode }) {
   return (
-    <div 
-      className="centaur-layer" 
+    <div
+      className="centaur-layer"
       style={{ zIndex: Z_LAYERS.CENTAUR }}
     >
       {children}
@@ -140,8 +140,8 @@ export function CentaurLayer({ children }: { children?: React.ReactNode }) {
  */
 export function BootLayer({ children }: { children?: React.ReactNode }) {
   return (
-    <div 
-      className="boot-layer" 
+    <div
+      className="boot-layer"
       style={{ zIndex: Z_LAYERS.BOOT }}
     >
       {children}
@@ -154,8 +154,8 @@ export function BootLayer({ children }: { children?: React.ReactNode }) {
  */
 export function OnboardingLayer({ children }: { children?: React.ReactNode }) {
   return (
-    <div 
-      className="onboarding-layer" 
+    <div
+      className="onboarding-layer"
       style={{ zIndex: Z_LAYERS.ONBOARDING }}
     >
       {children}
@@ -210,35 +210,35 @@ export default function CockpitLayout({
   const hasToasts = !!toasts;
   const hasRouterNav = !!routerNav;
   const hasRoomHUD = !!roomHUD;
-  
+
   return (
     <div className="cockpit-layout">
       {/* Z-0: Void Starfield */}
       {showVoid && <VoidLayer />}
-      
+
       {/* Z-1: Canvas (main content) */}
       <CanvasLayer>
         {children}
       </CanvasLayer>
-      
+
       {/* Z-10: Room HUD */}
       {hasRoomHUD && <RoomHUDLayer>{roomHUD}</RoomHUDLayer>}
-      
+
       {/* Z-11: Router Nav */}
       {hasRouterNav && <RouterNavLayer>{routerNav}</RouterNavLayer>}
-      
+
       {/* Z-50: System Toasts */}
       {hasToasts && <ToastLayer>{toasts}</ToastLayer>}
-      
+
       {/* Z-60: Modals */}
       {hasModals && <ModalLayer>{modals}</ModalLayer>}
-      
+
       {/* Z-80: Centaur Terminal */}
       {hasCentaur && <CentaurLayer>{centaur}</CentaurLayer>}
-      
+
       {/* Z-100: Boot Screen */}
       {hasBoot && <BootLayer>{boot}</BootLayer>}
-      
+
       {/* Z-200: Onboarding */}
       {hasOnboarding && <OnboardingLayer>{onboarding}</OnboardingLayer>}
     </div>
@@ -265,14 +265,14 @@ export function shouldShowLayer(
   activeLayers: Set<keyof typeof Z_LAYERS>
 ): boolean {
   const targetZ = Z_LAYERS[targetLayer];
-  
+
   for (const layer of activeLayers) {
     const layerZ = Z_LAYERS[layer];
     if (layerZ > targetZ) {
       return false;
     }
   }
-  
+
   return true;
 }
 

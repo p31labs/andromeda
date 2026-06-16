@@ -17,11 +17,11 @@ geometry: margin=1in
 
 \section*{THE PROBLEM: POC PURGATORY \& IP LEAKAGE}
 
-Enterprises are wasting millions trying to integrate Generative AI. The current market solutions force a dangerous compromise: either rely on bloated SaaS wrappers that exfiltrate your proprietary data to third-party models, or spend 12+ months trying to build an internal AI team from scratch. The result is a landscape of brittle prototypes that never reach production. 
+Enterprises are wasting millions trying to integrate Generative AI. The current market solutions force a dangerous compromise: either rely on bloated SaaS wrappers that exfiltrate your proprietary data to third-party models, or spend 12+ months trying to build an internal AI team from scratch. The result is a landscape of brittle prototypes that never reach production.
 
 \section*{THE SOLUTION: THE P31 AGENT ENGINE}
 
-We bypass the prototype phase entirely. We deploy a production-ready, edge-native Multi-Agent Orchestration system directly into your existing infrastructure. 
+We bypass the prototype phase entirely. We deploy a production-ready, edge-native Multi-Agent Orchestration system directly into your existing infrastructure.
 
 \subsection*{Absolute Data Sovereignty}
 Our \texttt{node-zero} runtime is a zero-dependency architecture. Your vectors, your embeddings, and your proprietary context never leave your Virtual Private Cloud (VPC).
@@ -30,7 +30,7 @@ Our \texttt{node-zero} runtime is a zero-dependency architecture. Your vectors, 
 We don't build chat interfaces; we build cybernetic employees. From automated legal discovery to sales pipeline synthesis, our agents execute multi-step reasoning, tool-use, and external API calls autonomously.
 
 \subsection*{Physiological Guardrails}
-Built on our proprietary Orchestrator engine, our agents operate with strict safety levels, hysteresis, and human-in-the-loop (HITL) approval gates for any destructive action. 
+Built on our proprietary Orchestrator engine, our agents operate with strict safety levels, hysteresis, and human-in-the-loop (HITL) approval gates for any destructive action.
 
 \section*{THE DELIVERABLE: 7-DAY DEPLOYMENT}
 
@@ -44,7 +44,7 @@ Because our infrastructure is already built, tested, and mathematically verified
 
 \section*{THE ECONOMICS}
 
-We sell results, not hours. 
+We sell results, not hours.
 
 \begin{itemize}
 \item \textbf{Implementation:} \$15,000 - \$25,000 flat fee for the 7-day deployment and agent wiring.

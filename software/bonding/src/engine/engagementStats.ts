@@ -117,7 +117,7 @@ export function getDailyBreakdown(
         dailyMap[sessionDate]!.minTime = Math.min(dailyMap[sessionDate]!.minTime, sessionStart);
         dailyMap[sessionDate]!.maxTime = Math.max(dailyMap[sessionDate]!.maxTime, sessionEnd);
     }
-    
+
     for (const entry of gallery) {
         const entryDate = entry.completedAt.split('T')[0]!;
         if (dailyMap[entryDate]) {
@@ -125,7 +125,7 @@ export function getDailyBreakdown(
             dailyMap[entryDate]!.love += entry.love;
         }
     }
-    
+
     for (const event of events) {
         const eventDate = event.timestamp.split('T')[0]!;
         if (dailyMap[eventDate] && (event.event.type === 'ping_sent' || event.event.type === 'ping_received')) {
@@ -201,9 +201,9 @@ export function computeEngagementReport(
 export function generateCourtSummary(report: EngagementReport): CourtSummary {
     const interactions = report.totalPingsSent + report.totalPingsReceived + report.totalMessagesExchanged;
     const headline = `${report.totalSessions} sessions across ${report.activeDays} days — ${report.totalMoleculesBuilt} molecules built together`;
-    
+
     const narrative = `Between ${new Date(report.firstActivity!).toLocaleDateString()} and ${new Date(report.lastActivity!).toLocaleDateString()}, the parent engaged in ${report.totalSessions} interactive sessions using the BONDING educational chemistry application. During these sessions, ${report.totalMoleculesBuilt} molecules were collaboratively built with the children, including ${report.scientificNames.slice(0,3).join(", ")}. ${report.totalPingsSent + report.totalPingsReceived} affirmation signals (pings) and ${report.totalMessagesExchanged} text messages were exchanged across devices. The parent's average response time to child interactions was ${report.averagePingResponseTime}. All activity was logged with timestamps and is independently verifiable.`;
-    
+
     return {
         headline,
         narrative,

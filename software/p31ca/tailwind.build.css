@@ -1,3 +1,24 @@
+@import '@p31/shared/src/theme/css-variables.css';
+
+/* P31 Canon — injected by Quantum Polisher */
+:root {
+  --color-amber: #cda852;
+  --color-cloud: #1e293b;
+  --color-coral: #cc6247;
+  --color-cyan: #4db8a8;
+  --color-fuchsia: #e879f9;
+  --color-ink: #0f172a;
+  --color-lavender: #8b7cc9;
+  --color-muted: #64748b;
+  --color-paper: #fdfcfa;
+  --color-phosphor: #00ff88;
+  --color-phosphorus: #3ba372;
+  --color-surface: #ffffff;
+  --color-surface2: #ebeae4;
+  --color-teal: #5dcaa5;
+  --color-themeColor: #f5f4f0;
+  --color-void: #f5f4f0;
+}
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

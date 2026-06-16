@@ -108,7 +108,7 @@
       display: none;
     }
     .theme-card.active .theme-card-active-badge { display: block; }
-    
+
     .mode-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -146,12 +146,12 @@
     import { renderShell, code, callout } from '/stylebook/_chrome.js';
     import { P31ThemeController, P31_THEMES, P31_MODES } from '/lib/p31-theme-engine.mjs';
     window.p31Theme = new P31ThemeController({ defaultTheme: 'hub' });
-    
+
     const themeCards = Object.values(P31_THEMES).map(t => {
       const accent = t.colors[t.emphasis.primary] || t.colors.teal;
       const secondary = t.colors[t.emphasis.secondary] || t.colors.coral;
       return `
-        <div class="theme-card ${t.id === window.p31Theme.state.theme ? 'active' : ''}" data-theme-id="${t.id}" 
+        <div class="theme-card ${t.id === window.p31Theme.state.theme ? 'active' : ''}" data-theme-id="${t.id}"
              onclick="window.p31Theme.setTheme('${t.id}'); document.querySelectorAll('.theme-card').forEach(c=>c.classList.remove('active')); this.classList.add('active');">
           <div class="theme-card-active-badge">Active</div>
           <div class="theme-card-preview" style="background: ${t.colors.void}; color: ${t.colors.paper};">
@@ -176,7 +176,7 @@
         </div>
       `;
     }).join('');
-    
+
     const modeCards = Object.values(P31_MODES).map(m => `
       <div class="mode-card ${m.id === window.p31Theme.state.mode ? 'active' : ''}" data-mode-id="${m.id}"
            onclick="window.p31Theme.setMode('${m.id}'); document.querySelectorAll('.mode-card').forEach(c=>c.classList.remove('active')); this.classList.add('active');">
@@ -185,7 +185,7 @@
         <div class="mode-card-when">${m.when || 'always available'}</div>
       </div>
     `).join('');
-    
+
     const content = `
       <section class="sb-section">
         <div class="sb-section-header">
@@ -196,7 +196,7 @@
         </div>
         <div class="theme-card-grid">${themeCards}</div>
       </section>
-      
+
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">Adaptive modes</div>
@@ -206,13 +206,13 @@
         </div>
         <div class="mode-grid">${modeCards}</div>
       </section>
-      
+
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">Use it</div>
           <h2 class="sb-h2">JS API</h2>
         </div>
-        
+
         ${code(`import { P31ThemeController } from '/lib/p31-theme-engine.mjs';
 
 const theme = new P31ThemeController({
@@ -239,10 +239,10 @@ theme.applyOverrides({
   '--p31-primary': '#ff6b9d',
   '--p31-radius-lg': '20px'
 });`, 'js', 'Theme controller')}
-        
+
         ${callout('info', 'Persistence', 'Theme and mode choices save to <code>localStorage</code> under <code>p31:theme</code> and <code>p31:mode</code>. Setting <code>autoSync: false</code> disables system preference following — useful when the operator has manually overridden.')}
       </section>
-      
+
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">Make your own</div>
@@ -250,7 +250,7 @@ theme.applyOverrides({
           <p class="sb-text">Themes are JSON-shaped. Author one in the playground, export the CSS, register it
           in your app's bootstrap.</p>
         </div>
-        
+
         ${code(`// my-themes.mjs
 export const SUNRISE_THEME = {
   id: 'sunrise',
@@ -282,7 +282,7 @@ P31_THEMES.sunrise = SUNRISE_THEME;
 const theme = new P31ThemeController({ defaultTheme: 'sunrise' });`, 'js', 'Custom theme')}
       </section>
     `;
-    
+
     renderShell({
       activeId: 'themes',
       breadcrumb: [

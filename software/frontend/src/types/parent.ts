@@ -14,7 +14,7 @@ export interface Child {
 }
 
 // Activity types from BONDING
-export type ActivityActionType = 
+export type ActivityActionType =
   | 'element_place'
   | 'bond_create'
   | 'molecule_complete'
@@ -52,7 +52,7 @@ export interface ChildTimeSettings {
 }
 
 // Webhook events from Discord Bot
-export type WebhookEventType = 
+export type WebhookEventType =
   | 'bonding-match'
   | 'kofi-purchase'
   | 'node-one-status'
@@ -100,7 +100,7 @@ export interface ActivityFilter {
 }
 
 // Time control actions
-export type TimeControlAction = 
+export type TimeControlAction =
   | { type: 'SET_LIMIT'; childId: string; limit: TimeLimit }
   | { type: 'PAUSE_ACCESS'; childId: string }
   | { type: 'RESUME_ACCESS'; childId: string }
@@ -108,7 +108,7 @@ export type TimeControlAction =
   | { type: 'RESET_DAILY_USAGE'; childId: string };
 
 // Family management actions
-export type FamilyAction = 
+export type FamilyAction =
   | { type: 'ADD_CHILD'; child: Child }
   | { type: 'REMOVE_CHILD'; childId: string }
   | { type: 'UPDATE_CHILD'; child: Child }

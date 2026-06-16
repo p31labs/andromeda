@@ -8,7 +8,7 @@
  * WCD-29: Glassmorphism removed. Text-shadow for legibility.
  * WCD-31: 🤝 multiplayer button restored between mode and mute.
  *         Shows 👥{n} when in an active room.
- * 
+ *
  * Phase 5: Voice controls added for pre-readers (mic button + voice toggle)
  */
 

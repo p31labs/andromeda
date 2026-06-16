@@ -185,7 +185,7 @@ export class MockAudioContext {
   constructor() {
     this.destination = this._createNode();
     this.listener = new MockAudioListener();
-    
+
     // Advance time automatically
     this._timeInterval = setInterval(() => {
       this.currentTime += 0.1;

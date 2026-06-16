@@ -1,4 +1,25 @@
 /* ═══════════════════════════════════════════════════════
+@import '@p31/shared/src/theme/css-variables.css';
+
+/* P31 Canon — injected by Quantum Polisher */
+:root {
+  --color-amber: #cda852;
+  --color-cloud: #1e293b;
+  --color-coral: #cc6247;
+  --color-cyan: #4db8a8;
+  --color-fuchsia: #e879f9;
+  --color-ink: var(--color-ink);
+  --color-lavender: #8b7cc9;
+  --color-muted: #64748b;
+  --color-paper: #fdfcfa;
+  --color-phosphor: var(--color-phosphor);
+  --color-phosphorus: #3ba372;
+  --color-surface: var(--color-surface);
+  --color-surface2: #ebeae4;
+  --color-teal: #5dcaa5;
+  --color-themeColor: #f5f4f0;
+  --color-void: #f5f4f0;
+}
    SPACESHIP EARTH — P31 Labs
    Brand-aligned: Oxanium + Space Mono, P31 color system
    ═══════════════════════════════════════════════════════ */
@@ -29,7 +50,7 @@
 /* Theme overrides */
 [data-theme="operator"] { --p31-bg: #020617; --p31-primary: #22d3ee; --p31-secondary: #d946ef; --p31-accent: #C9B1FF; }
 [data-theme="kids"] { --p31-bg: #1e1b4b; --p31-primary: #E9C46A; --p31-secondary: #E76F51; --p31-accent: #2A9D8F; }
-[data-theme="gray_rock"] { --p31-bg: #1a1a2e; --p31-primary: #64748B; --p31-secondary: #475569; --p31-accent: #94a3b8; }
+[data-theme="gray_rock"] { --p31-bg: #1a1a2e; --p31-primary: var(--color-muted); --p31-secondary: #475569; --p31-accent: #94a3b8; }
 [data-theme="aurora"] { --p31-bg: #0f172a; --p31-primary: #a78bfa; --p31-secondary: #34d399; --p31-accent: #f472b6; }
 [data-theme="high_contrast"] { --p31-bg: #000000; --p31-primary: #00FFFF; --p31-secondary: #FF00FF; --p31-accent: #FFFF00; }
 [data-theme="low_motion"] { --p31-bg: #020617; --p31-primary: #22d3ee; --p31-secondary: #d946ef; --p31-accent: #C9B1FF; }
@@ -52,7 +73,7 @@
   --s2: #0a0a0a;
   --s3: #111111;
   --s4: #1a1a1a;
-  
+
   /* Brand Colors */
   --text: #e0e0e0;
   --dim: #555555;
@@ -62,9 +83,9 @@
   --magenta: #FF00FF;
   --violet: #BF5FFF;
   --amber: #FFD700;
-  
+
   /* Semantic Additions */
-  --mint: #00FF88;
+  --mint: var(--color-phosphor);
   --coral: #FF6B6B;
   --orange: #FF8C42;
   --blue: #00D4FF;
@@ -98,7 +119,7 @@
   --glow-magenta: 0 0 6px #FF00FF, 0 0 20px rgba(255,0,255,0.3);
   --glow-violet: 0 0 6px #BF5FFF, 0 0 20px rgba(191,95,255,0.3);
   --glow-amber: 0 0 6px #FFD700, 0 0 20px rgba(255,215,0,0.3);
-  --glow-mint: 0 0 6px #00FF88, 0 0 20px rgba(0,255,136,0.3);
+  --glow-mint: 0 0 6px var(--color-phosphor), 0 0 20px rgba(0,255,136,0.3);
   --glow-coral: 0 0 6px #FF6B6B, 0 0 20px rgba(255,107,107,0.3);
 
   --neon: var(--cyan);
@@ -136,11 +157,11 @@
   --neon-dim: rgba(0,255,136,0.35);
   --neon-faint: rgba(0,255,136,0.08);
   --neon-ghost: rgba(0,255,136,0.03);
-  --cyan: #00FF88;
+  --cyan: var(--color-phosphor);
   --magenta: #7700ff;
   --violet: #00ccff;
-  --amber: #00ff88;
-  --glow-cyan: 0 0 6px #00FF88, 0 0 20px rgba(0,255,136,0.3);
+  --amber: var(--color-phosphor);
+  --glow-cyan: 0 0 6px var(--color-phosphor), 0 0 20px rgba(0,255,136,0.3);
   --glow-magenta: 0 0 6px #7700ff, 0 0 20px rgba(119,0,255,0.3);
   --glow-violet: 0 0 6px #00ccff, 0 0 20px rgba(0,204,255,0.3);
 }
@@ -285,8 +306,8 @@ html, body, #root {
 .glass-card {
   background: var(--neon-ghost);
   /* 12px max — 20px+ creates GPU memory pressure on Android tablets with shared VRAM */
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
   border: 1px solid var(--neon-faint);
   border-radius: var(--radius-lg);
   box-shadow: 0 8px 32px rgba(0,0,0,0.4);
@@ -303,8 +324,8 @@ html, body, #root {
 
 .glass-nav {
   background: rgba(0,0,0,0.45);
-  -webkit-backdrop-filter: blur(12px); /* reduced from 24px — Android GPU budget */
-  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(10px); /* reduced from 24px — Android GPU budget */
+  backdrop-filter: blur(10px);
   border-top: 1px solid var(--neon-faint);
   box-shadow: 0 -4px 24px rgba(0,0,0,0.3);
 }
@@ -313,8 +334,8 @@ html, body, #root {
 
 .glass-input {
   background: var(--s2);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
   border: 1px solid var(--neon-faint);
   border-radius: var(--radius-sm);
   color: var(--text);
@@ -338,8 +359,8 @@ html, body, #root {
 
 .glass-btn {
   background: var(--neon-ghost);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
   border: 1px solid var(--neon-faint);
   border-radius: var(--radius-md);
   color: var(--text);
@@ -530,8 +551,8 @@ html, body, #root {
   font-family: var(--font-data);
   font-size: 13px;
   background: rgba(0,0,0,0.5);
-  -webkit-backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
   border: 1px solid var(--neon-dim);
   border-radius: var(--radius-sm);
   padding: 10px 16px;
@@ -873,8 +894,8 @@ html, body, #root {
   border: 1px solid var(--neon-ghost);
   border-radius: var(--radius-md);
   background: var(--neon-ghost);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
   color: var(--cyan);
   cursor: pointer;
   font-family: var(--font-data);
@@ -912,8 +933,8 @@ html, body, #root {
   border: 1px solid var(--neon-ghost);
   border-radius: var(--radius-md);
   background: rgba(0, 0, 0, 0.5);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
   color: var(--dim);
   cursor: pointer;
   font-family: var(--font-data);
@@ -1143,6 +1164,6 @@ summary:focus-visible,
   background: rgba(0,0,0,0.7);
   border: 1px solid var(--neon-faint);
   border-radius: var(--radius-md);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
 }

@@ -47,14 +47,14 @@
     .dash-stat-delta.up { color: var(--p31-phosphorus); }
     .dash-stat-delta.down { color: var(--p31-coral); }
     .dash-stat-delta.flat { color: var(--p31-muted); }
-    
+
     .dash-mock {
       background: var(--p31-void);
       border: 1px solid var(--p31-border-subtle);
       border-radius: 14px;
       padding: 24px;
     }
-    
+
     .dash-stats-row {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -62,14 +62,14 @@
       margin-bottom: 16px;
     }
     @media (max-width: 700px) { .dash-stats-row { grid-template-columns: repeat(2, 1fr); } }
-    
+
     .dash-main {
       display: grid;
       grid-template-columns: 2fr 1fr;
       gap: 16px;
     }
     @media (max-width: 700px) { .dash-main { grid-template-columns: 1fr; } }
-    
+
     .dash-chart {
       padding: 20px;
       background: var(--p31-surface);
@@ -89,7 +89,7 @@
       background: linear-gradient(0deg, var(--p31-primary) 0%, var(--p31-cyan) 100%);
       border-radius: 3px 3px 0 0;
     }
-    
+
     .dash-feed {
       padding: 0;
       background: var(--p31-surface);
@@ -124,10 +124,10 @@
     import { renderShell, code, callout } from '/stylebook/_chrome.js';
     import { P31ThemeController } from '/lib/p31-theme-engine.mjs';
     window.p31Theme = new P31ThemeController({ defaultTheme: 'hub' });
-    
+
     const data = [42, 68, 35, 78, 52, 89, 71, 95, 64, 82, 78, 91];
     const max = Math.max(...data);
-    
+
     const content = `
       <section class="sb-section">
         <div class="sb-section-header">
@@ -136,7 +136,7 @@
           <p class="sb-text">A complete dashboard composed entirely from the design system.
           Stats row + main visualization + side feed.</p>
         </div>
-        
+
         <div class="dash-mock">
           <div class="dash-header">
             <div>
@@ -148,7 +148,7 @@
               <button class="p31-btn p31-btn-secondary p31-btn-sm">⇣</button>
             </div>
           </div>
-          
+
           <div class="dash-stats-row">
             <div class="dash-stat">
               <div class="dash-stat-label">Active nodes</div>
@@ -171,7 +171,7 @@
               <div class="dash-stat-delta up">↓ 3 from yesterday</div>
             </div>
           </div>
-          
+
           <div class="dash-main">
             <div class="dash-chart">
               <div style="display: flex; justify-content: space-between; align-items: flex-start;">
@@ -191,7 +191,7 @@
                 <span>0:00</span><span>3:00</span><span>6:00</span><span>9:00</span><span>12:00</span>
               </div>
             </div>
-            
+
             <div class="dash-feed">
               <div class="dash-feed-header">Recent events</div>
               <div class="dash-feed-item">
@@ -213,16 +213,16 @@
             </div>
           </div>
         </div>
-        
+
         ${callout('info', 'Modular by design', 'Every block above is a stand-alone component. Mix and match them — stat cards, charts, feeds — to build any operator surface.')}
       </section>
-      
+
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">Layout principles</div>
           <h2 class="sb-h2">Building dashboards</h2>
         </div>
-        
+
         <table class="sb-table">
           <thead><tr><th>Principle</th><th>Why</th></tr></thead>
           <tbody>
@@ -236,7 +236,7 @@
         </table>
       </section>
     `;
-    
+
     renderShell({
       activeId: 'dashboards',
       breadcrumb: [

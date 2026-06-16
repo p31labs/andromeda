@@ -173,14 +173,14 @@ export function HelpOverlay({ onClose }: HelpOverlayProps) {
               ✕
             </button>
           </div>
-          
+
           {/* Search */}
           <input
             type="text"
             placeholder="Search help..."
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="w-full px-4 py-2 bg-void/50 border border-quantum-cyan/30 rounded-lg 
+            className="w-full px-4 py-2 bg-void/50 border border-quantum-cyan/30 rounded-lg
                        text-white placeholder-gray-500 focus:outline-none focus:border-quantum-cyan"
           />
         </div>
@@ -204,7 +204,7 @@ export function HelpOverlay({ onClose }: HelpOverlayProps) {
                   {expandedSection === section.id ? '▼' : '▶'}
                 </span>
               </button>
-              
+
               {expandedSection === section.id && (
                 <div className="p-4 bg-void/30">
                   <div className="prose prose-invert prose-sm max-w-none">
@@ -231,7 +231,7 @@ export function HelpOverlay({ onClose }: HelpOverlayProps) {
               )}
             </div>
           ))}
-          
+
           {filteredSections.length === 0 && (
             <p className="text-center text-gray-500 py-8">
               No results found for "{search}"

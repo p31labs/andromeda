@@ -78,7 +78,7 @@
     import { renderShell, code, callout } from '/stylebook/_chrome.js';
     import { P31ThemeController } from '/lib/p31-theme-engine.mjs';
     window.p31Theme = new P31ThemeController({ defaultTheme: 'hub' });
-    
+
     const PRINCIPLES = [
       {
         num: '01',
@@ -137,7 +137,7 @@
         dont: 'Hardcode colors in component CSS'
       }
     ];
-    
+
     const principlesGrid = `
       <div class="principles-grid">
         ${PRINCIPLES.map(p => `
@@ -151,7 +151,7 @@
         `).join('')}
       </div>
     `;
-    
+
     const content = `
       <section class="sb-section">
         <div class="sb-section-header">
@@ -164,7 +164,7 @@
         </div>
         ${principlesGrid}
       </section>
-      
+
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">In practice</div>
@@ -173,7 +173,7 @@
             Each principle has mechanical enforcement. We don't trust intent — we trust verification.
           </p>
         </div>
-        
+
         <table class="sb-table">
           <thead>
             <tr><th>Principle</th><th>Mechanism</th><th>Verifier</th></tr>
@@ -188,16 +188,16 @@
             <tr><td>Ephemeralization</td><td>Token-only colors</td><td><code>verify:style-alignment</code></td></tr>
           </tbody>
         </table>
-        
+
         ${callout('info', 'Living document', 'These principles evolve. When a new edge case demands a new rule, we add it to the system — not as an exception, but as a constraint that every future component honors.')}
       </section>
-      
+
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">For contributors</div>
           <h2 class="sb-h2">The pre-ship checklist</h2>
         </div>
-        
+
         ${code(`Before merging any UI change:
 
 [ ] Initial paint is Gray Rock (muted, no chroma, no motion)
@@ -213,7 +213,7 @@
 [ ] verify:style-alignment passes`, 'plain', 'Checklist')}
       </section>
     `;
-    
+
     renderShell({
       activeId: 'principles',
       breadcrumb: [

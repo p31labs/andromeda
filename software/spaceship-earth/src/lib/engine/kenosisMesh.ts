@@ -1,6 +1,6 @@
 /**
  * @file kenosisMesh.ts — Kenosis Mesh (Delta Topology CRDT Engine)
- * 
+ *
  * Hardened with:
  * - Input validation & sanitization
  * - Error boundaries for WebRTC/IndexedDB failures
@@ -45,7 +45,7 @@ class KenosisMesh {
   private persistence: IndexeddbPersistence | null = null;
   private stateMap: Y.Map<any> | null = null;
   private telemetryArray: Y.Array<any> | null = null;
-  
+
   private connectionState: MeshConnectionState = 'disconnected';
   private lastError: string | null = null;
   private connectionTimeoutId: ReturnType<typeof setTimeout> | null = null;
@@ -207,7 +207,7 @@ class KenosisMesh {
 
   public halt() {
     this.clearConnectionTimeout();
-    
+
     if (this.provider) {
       try {
         this.provider.disconnect();

@@ -23,7 +23,7 @@ interface SkinDef {
 const SKINS: SkinDef[] = [
   { id: 'OPERATOR', label: 'Operator',  accent: '#22d3ee', desc: 'Neon cyan — default' },
   { id: 'KIDS',     label: 'Solar',     accent: '#E9C46A', desc: 'Warm amber tones' },
-  { id: 'GRAY_ROCK', label: 'Gray Rock', accent: '#64748B', desc: 'Low-stimulation mono' },
+  { id: 'GRAY_ROCK', label: 'Gray Rock', accent: 'var(--color-muted)', desc: 'Low-stimulation mono' },
 ];
 
 export function ThemePanel() {

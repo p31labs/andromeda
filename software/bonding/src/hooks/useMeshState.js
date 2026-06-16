@@ -7,7 +7,7 @@ export const useMeshState = (userId) => {
   const [edges, setEdges] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  
+
   // Configuration
   const KV_ENDPOINT = 'https://mesh.p31ca.org';
   const KV_NAMESPACE = 'P31_MESH_STATE';
@@ -64,7 +64,7 @@ export const useMeshState = (userId) => {
   const updateNodeData = useCallback(async (updates) => {
     try {
       setError(null);
-      
+
       const currentData = nodeData || {};
       const updatedData = {
         ...currentData,
@@ -93,9 +93,9 @@ export const useMeshState = (userId) => {
 
       // Get current edges
       const currentEdges = await getKVData('k4_edges') || [];
-      
+
       // Check for duplicates
-      const isDuplicate = currentEdges.some(edge => 
+      const isDuplicate = currentEdges.some(edge =>
         (edge.from === edgeData.from && edge.to === edgeData.to) ||
         (edge.from === edgeData.to && edge.to === edgeData.from)
       );
@@ -138,7 +138,7 @@ export const useMeshState = (userId) => {
     try {
       const currentStatus = await getKVData('mesh_status') || {};
       const updatedStatus = { ...currentStatus, ...updates };
-      
+
       await setKVData('mesh_status', updatedStatus);
       setMeshState(updatedStatus);
     } catch (err) {
@@ -214,7 +214,7 @@ export const useMeshState = (userId) => {
         },
         body: JSON.stringify(data)
       });
-      
+
       if (!response.ok) {
         throw new Error(`KV set failed: ${response.status}`);
       }
@@ -261,7 +261,7 @@ export const useMeshState = (userId) => {
   // Initialize on mount
   useEffect(() => {
     initializeNode();
-    
+
     // Cleanup on unmount
     return () => {
       cleanup();
@@ -295,7 +295,7 @@ export const meshUtils = {
     const R = 6371000; // Earth's radius in meters
     const dLat = (lat2 - lat1) * Math.PI / 180;
     const dLon = (lon2 - lon1) * Math.PI / 180;
-    const a = 
+    const a =
       Math.sin(dLat / 2) * Math.sin(dLat / 2) +
       Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
       Math.sin(dLon / 2) * Math.sin(dLon / 2);
@@ -312,13 +312,13 @@ export const meshUtils = {
   // Validate K4 tetrahedron completion
   validateK4: (edges) => {
     if (edges.length < 6) return false;
-    
+
     const uniqueNodes = new Set();
     edges.forEach(edge => {
       uniqueNodes.add(edge.from);
       uniqueNodes.add(edge.to);
     });
-    
+
     return uniqueNodes.size === 4;
   },
 

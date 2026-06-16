@@ -17,7 +17,7 @@ export function CalciumHUD() {
         const data = await res.json();
         setCalcium(data.calcium);
         setError(null);
-        
+
         // Determine status based on thresholds
         if (data.calcium < 8.0) {
           setStatus('critical');

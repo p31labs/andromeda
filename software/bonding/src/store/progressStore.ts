@@ -9,8 +9,8 @@
 
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import { 
-  createBadgeCollection, 
+import {
+  createBadgeCollection,
   updateBadgeProgress,
   type BadgeCollection,
   type Badge,
@@ -26,16 +26,16 @@ interface ProgressState {
   familyPlaySessions: number;
   totalPlayMinutes: number;
   lastSessionDate: string | null;
-  
+
   // Badge collection
   badgeCollection: BadgeCollection;
-  
+
   // Recently earned badges (for celebration)
   recentBadges: string[];
-  
+
   // Family challenge progress
   familyChallengeProgress: FamilyChallengeProgress | null;
-  
+
   // Actions
   addBond: () => void;
   addBonds: (count: number) => void;
@@ -45,7 +45,7 @@ interface ProgressState {
   checkAndUpdateBadges: () => { newlyEarned: Badge[] };
   clearRecentBadges: () => void;
   resetProgress: () => void;
-  
+
   // Family challenge actions
   startFamilyChallenge: (challengeId: string) => void;
   updateFamilyChallenge: (progress: number) => void;
@@ -97,9 +97,9 @@ export const useProgressStore = create<ProgressState>()(
   persist(
     (set, get) => ({
       ...createInitialState(),
-      
+
       // ── Core stat actions ──
-      
+
       addBond: () => {
         set((state) => {
           const newBonds = state.totalBonds + 1;
@@ -111,20 +111,20 @@ export const useProgressStore = create<ProgressState>()(
             false,
             0
           );
-          
+
           const newlyEarned = newCollection.newlyEarned.map(b => b.id);
-          
+
           return {
             totalBonds: newBonds,
             badgeCollection: newCollection.updated,
             recentBadges: [...state.recentBadges, ...newlyEarned].slice(-5),
           };
         });
-        
+
         // Check for new badge unlocks
         return get().checkAndUpdateBadges();
       },
-      
+
       addBonds: (count: number) => {
         set((state) => {
           const newBonds = state.totalBonds + count;
@@ -136,9 +136,9 @@ export const useProgressStore = create<ProgressState>()(
             false,
             0
           );
-          
+
           const newlyEarned = newCollection.newlyEarned.map(b => b.id);
-          
+
           return {
             totalBonds: newBonds,
             badgeCollection: newCollection.updated,
@@ -146,14 +146,14 @@ export const useProgressStore = create<ProgressState>()(
           };
         });
       },
-      
+
       addMolecule: (formula: string) => {
         set((state) => {
           const isNew = !state.uniqueMolecules.includes(formula);
-          const newUnique = isNew 
+          const newUnique = isNew
             ? [...state.uniqueMolecules, formula]
             : state.uniqueMolecules;
-          
+
           const newCollection = updateBadgeProgress(
             state.badgeCollection,
             state.totalBonds,
@@ -162,9 +162,9 @@ export const useProgressStore = create<ProgressState>()(
             false,
             0
           );
-          
+
           const newlyEarned = newCollection.newlyEarned.map(b => b.id);
-          
+
           return {
             totalMolecules: state.totalMolecules + 1,
             uniqueMolecules: newUnique,
@@ -173,7 +173,7 @@ export const useProgressStore = create<ProgressState>()(
           };
         });
       },
-      
+
       addFamilyPlaySession: () => {
         set((state) => {
           const newCollection = updateBadgeProgress(
@@ -184,9 +184,9 @@ export const useProgressStore = create<ProgressState>()(
             true,
             0
           );
-          
+
           const newlyEarned = newCollection.newlyEarned.map(b => b.id);
-          
+
           return {
             familyPlaySessions: state.familyPlaySessions + 1,
             badgeCollection: newCollection.updated,
@@ -194,7 +194,7 @@ export const useProgressStore = create<ProgressState>()(
           };
         });
       },
-      
+
       addPlayMinutes: (minutes: number) => {
         set((state) => {
           const newCollection = updateBadgeProgress(
@@ -205,9 +205,9 @@ export const useProgressStore = create<ProgressState>()(
             false,
             minutes
           );
-          
+
           const newlyEarned = newCollection.newlyEarned.map(b => b.id);
-          
+
           return {
             totalPlayMinutes: state.totalPlayMinutes + minutes,
             lastSessionDate: new Date().toISOString(),
@@ -216,7 +216,7 @@ export const useProgressStore = create<ProgressState>()(
           };
         });
       },
-      
+
       // Check for newly earned badges (called after any action)
       checkAndUpdateBadges: () => {
         const state = get();
@@ -228,39 +228,39 @@ export const useProgressStore = create<ProgressState>()(
           state.familyPlaySessions > 0,
           0
         );
-        
+
         const newlyEarned = newCollection.newlyEarned;
-        
+
         if (newlyEarned.length > 0) {
           set({
             badgeCollection: newCollection.updated,
             recentBadges: [
-              ...state.recentBadges, 
+              ...state.recentBadges,
               ...newlyEarned.map(b => b.id)
             ].slice(-5),
           });
         }
-        
+
         return { newlyEarned };
       },
-      
+
       clearRecentBadges: () => {
         set({ recentBadges: [] });
       },
-      
+
       resetProgress: () => {
         set({
           ...createInitialState(),
           badgeCollection: createBadgeCollection(),
         });
       },
-      
+
       // ── Family Challenge actions ──
-      
+
       startFamilyChallenge: (challengeId: string) => {
         const challenge = getFamilyChallengeById(challengeId);
         if (!challenge) return;
-        
+
         set({
           familyChallengeProgress: {
             challengeId,
@@ -271,28 +271,28 @@ export const useProgressStore = create<ProgressState>()(
           },
         });
       },
-      
+
       updateFamilyChallenge: (progress: number) => {
         set((state) => {
           if (!state.familyChallengeProgress) return state;
-          
+
           const newProgress = {
             ...state.familyChallengeProgress,
             current: Math.min(progress, state.familyChallengeProgress.target),
             completed: progress >= state.familyChallengeProgress.target,
           };
-          
+
           return { familyChallengeProgress: newProgress };
         });
       },
-      
+
       completeFamilyChallenge: () => {
         set((state) => {
           if (!state.familyChallengeProgress) return state;
-          
+
           // Add sparks/rewards
           // TODO: Add to LOVE balance
-          
+
           return {
             familyChallengeProgress: {
               ...state.familyChallengeProgress,
@@ -330,7 +330,7 @@ export const useProgressStore = create<ProgressState>()(
 export function getFamilyChallenges(): FamilyChallenge[] {
   const now = new Date();
   const weekEnd = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
-  
+
   return [
     {
       id: 'water_weekly',
@@ -396,7 +396,7 @@ function getFamilyChallengeById(id: string): FamilyChallenge | undefined {
 export function getCurrentChallenge(): FamilyChallenge | null {
   const challenges = getFamilyChallenges();
   const now = new Date();
-  
+
   // Return first non-expired challenge
   return challenges.find(c => new Date(c.expiresAt) > now) || null;
 }

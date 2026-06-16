@@ -1,9 +1,9 @@
 /**
  * WCD-08 Phase A: AchievementToast — Glassmorphism achievement notification.
- * 
+ *
  * Rendered inside CockpitLayout's toast layer (z-50, pointer-events: none).
  * Auto-dismisses after 3 seconds via CSS animation.
- * 
+ *
  * Sonnet: Wire to the existing achievement system. When an achievement fires,
  * set visible=true with the achievement data. After animation completes (3s),
  * set visible=false. Queue multiple toasts — show one at a time.
@@ -24,7 +24,7 @@ export function AchievementToast({ title, description, visible }: AchievementToa
   return (
     <div
       className="bg-black/60 backdrop-blur-[16px]
-                 border border-[#00FF88]/20
+                 border border-[var(--color-phosphor)]/20
                  rounded-2xl px-5 py-3.5 max-w-[320px] w-full
                  animate-toast-slide"
       role="alert"

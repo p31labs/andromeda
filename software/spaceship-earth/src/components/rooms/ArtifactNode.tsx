@@ -99,7 +99,7 @@ Weakest: ${data.weakest.join(', ')}`;
             border: `1px solid ${color}`,
             borderRadius: 8,
             padding: '6px 10px',
-            color: '#d8d6d0',
+            color: 'var(--color-cloud)',
             fontSize: 10,
             fontFamily: 'monospace',
             whiteSpace: 'pre',

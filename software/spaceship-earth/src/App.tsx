@@ -16,6 +16,8 @@ import { ProofOfCare } from './components/hud/ProofOfCare';
 import { DeltaMesh } from './components/mesh/DeltaMesh';
 import { PosnerMolecule } from './components/mesh/PosnerMolecule';
 import { MolecularField } from './components/MolecularField';
+import { DecisionIcosahedron } from './components/rooms/DecisionIcosahedron';
+import { useDecisionEngine, type DecisionResult } from './hooks/useDecisionEngine';
 
 const useAppStore = create<{ spoons: number; setSpoons: (n: number) => void }>((set) => ({
   spoons: 12,
@@ -28,7 +30,7 @@ function CurvatureDriver({ onTick }: { onTick: (t: number) => void }) {
 }
 
 export default function App() {
-  const [viewMode, setViewMode] = useState<'DELTA' | 'POSNER'>('DELTA');
+  const [viewMode, setViewMode] = useState<'DELTA' | 'POSNER' | 'DECIDE'>('DELTA');
   const [isLarmorActive, setIsLarmorActive] = useState(false);
   const spoons = useAppStore((s) => s.spoons);
   const setSpoons = useAppStore((s) => s.setSpoons);
@@ -36,6 +38,7 @@ export default function App() {
   const [warning, setWarning] = useState<string | null>(null);
   const [curvature, setCurvature] = useState(1.0);
   const larmorEngine = useMemo(() => getLarmorEngine(), []);
+  const { result, loading } = useDecisionEngine(30000);
 
   const onCurvatureTick = useCallback((t: number) => {
     setCurvature(getAnimatedCurvature(1.0, t));
@@ -43,8 +46,12 @@ export default function App() {
 
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
-      if (e.key.toLowerCase() === 'l' && document.activeElement?.tagName !== 'TEXTAREA') {
+      const key = e.key.toLowerCase();
+      if (key === 'l' && document.activeElement?.tagName !== 'TEXTAREA') {
         setViewMode((p) => (p === 'DELTA' ? 'POSNER' : 'DELTA'));
+      }
+      if (key === 'd' && document.activeElement?.tagName !== 'TEXTAREA') {
+        setViewMode((p) => (p === 'DECIDE' ? 'POSNER' : 'DECIDE'));
       }
     };
     window.addEventListener('keydown', handleKey);
@@ -69,8 +76,20 @@ export default function App() {
 
   const resilience = useMemo(() => RicciMath.getResilience(4), []);
 
+  const stageColor = useMemo(() => {
+    const map: Record<string, string> = {
+      VOID: 'var(--color-muted)',
+      SEED: '#94a3b8',
+      SPROUT: '#4ade80',
+      SAPLING: '#facc15',
+      BLOOM: '#f97316',
+      FRUIT: '#8b5cf6',
+    };
+    return map[result?.stage ?? 'VOID'] ?? map.VOID;
+  }, [result?.stage]);
+
   return (
-    <div className="relative w-full h-screen overflow-hidden bg-[#050505] text-[#d8d6d0] font-mono">
+    <div className="relative w-full h-screen overflow-hidden bg-[#050505] text-[var(--color-cloud)] font-mono">
       <MolecularField />
       <div className="absolute inset-0 z-[1]">
         <Canvas
@@ -87,8 +106,16 @@ export default function App() {
           <pointLight position={[10, 10, 10]} intensity={1.2} color={0x22d3ee} />
           {viewMode === 'DELTA' ? (
             <DeltaMesh networkStress={1 - curvature} />
+          ) : viewMode === 'POSNER' ? (
+            <PosnerMolecule spoons={spoons} calcium={8.2} />
           ) : (
-            <PosnerMolecule spoons={spoons} />
+            <DecisionIcosahedron
+              stage={result?.stage ?? 'VOID'}
+              confidence={result?.confidence ?? 0}
+              topLabel={result?.recommendation?.name ?? 'evaluating...'}
+              topScore={result?.recommendation?.score}
+              onClick={() => haptic.transmit()}
+            />
           )}
         </Canvas>
       </div>
@@ -96,14 +123,15 @@ export default function App() {
       <CatchersMitt />
       <ProofOfCare userAge={25} />
 
+      {/* Mode indicator + status */}
       <div className="absolute top-6 left-6 z-20 pointer-events-auto">
         <div className="rounded-xl border border-white/[0.08] bg-[#080810]/85 p-4 shadow-lg backdrop-blur-md">
           <div className="mb-2 flex items-center gap-2">
-            <Globe className="text-[#00FF88]" size={18} />
-            <h1 className="text-lg font-bold uppercase tracking-tight text-white">{viewMode} [L]</h1>
+            <Globe className="text-[var(--color-phosphor)]" size={18} />
+            <h1 className="text-lg font-bold uppercase tracking-tight text-white">{viewMode} [L/D]</h1>
           </div>
           <div className="text-[10px] text-white/40">
-            <div className="text-[#00FF88]">{resilience}</div>
+            <div className="text-[var(--color-phosphor)]">{resilience}</div>
             <div className="mt-2 flex items-center gap-3">
               <Battery size={14} className={spoons > 4 ? 'text-[#22d3ee]' : 'text-[#E8636F]'} />
               <div className="flex gap-1">
@@ -117,6 +145,17 @@ export default function App() {
                 ))}
               </div>
             </div>
+            {result && (
+              <div className="mt-3 rounded-lg border border-white/[0.08] bg-[#050505]/80 p-3">
+                <div className="text-[10px] uppercase text-white/35">Decision Stage</div>
+                <div className="text-xs font-bold" style={{ color: stageColor }}>
+                  {result.stage}
+                </div>
+                <div className="mt-2 text-[10px] uppercase text-white/35">Top Action</div>
+                <div className="text-[11px] text-white/85">{result.recommendation.name}</div>
+                <div className="text-[10px] text-white/35">confidence {(result.confidence * 100).toFixed(0)}%</div>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -145,7 +184,7 @@ export default function App() {
           <textarea
             value={input}
             onChange={handleInput}
-            className="mb-3 h-24 w-full resize-none rounded-lg border border-white/[0.08] bg-[#050505]/90 p-3 font-mono text-[11px] text-[#d8d6d0] placeholder:text-white/25"
+            className="mb-3 h-24 w-full resize-none rounded-lg border border-white/[0.08] bg-[#050505]/90 p-3 font-mono text-[11px] text-[var(--color-cloud)] placeholder:text-white/25"
             placeholder="Prepare transmission..."
           />
           {warning && (
@@ -170,6 +209,10 @@ export default function App() {
             >
               {warning ? 'INTERCEPTED' : 'TRANSMIT'}
             </button>
+          </div>
+          <div className="mt-2 text-center text-[10px] text-white/25">
+            Press <span className="text-white/50">[L]</span> Delta/POSNER ·{' '}
+            <span className="text-white/50">[D]</span> Decision Icosahedron
           </div>
         </div>
       </div>

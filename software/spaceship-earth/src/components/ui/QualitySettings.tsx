@@ -105,7 +105,7 @@ export function QualitySettings({ onClose, onQualityChange }: QualitySettingsPro
         <div className="space-y-3">
           <button
             onClick={handleEnableLowQuality}
-            className="w-full py-3 px-4 bg-quantum-cyan/20 hover:bg-quantum-cyan/30 
+            className="w-full py-3 px-4 bg-quantum-cyan/20 hover:bg-quantum-cyan/30
                        border border-quantum-cyan/50 rounded-lg text-quantum-cyan
                        transition-colors font-medium"
           >
@@ -114,7 +114,7 @@ export function QualitySettings({ onClose, onQualityChange }: QualitySettingsPro
 
           <button
             onClick={handleAutoMode}
-            className="w-full py-3 px-4 bg-phosphor/10 hover:bg-phosphor/20 
+            className="w-full py-3 px-4 bg-phosphor/10 hover:bg-phosphor/20
                        border border-phosphor/30 rounded-lg text-phosphor
                        transition-colors font-medium"
           >

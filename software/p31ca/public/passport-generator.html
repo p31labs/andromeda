@@ -95,14 +95,14 @@
       const diagnosis = document.getElementById('diagnosis').value;
       const commStyle = document.getElementById('commStyle').value;
       const execStatus = document.getElementById('execStatus').value;
-      
+
       const constraints = [];
       if (document.getElementById('noMilitary').checked) constraints.push('NO military/naval metaphors');
       if (document.getElementById('handwriting').checked) constraints.push('Prefers handwriting');
       if (document.getElementById('lowVerbal').checked) constraints.push('Verbal serialization is lossy');
-      
+
       const date = new Date().toISOString().split('T')[0];
-      
+
       const output = `# P31 COGNITIVE PASSPORT — ${date}
 
 ## The Operator
@@ -135,7 +135,7 @@ When interacting with this node:
 
 *Generated: ${date} | P31 Labs*
 `;
-      
+
       document.getElementById('output').value = output;
     }
 

@@ -219,7 +219,7 @@ export function ModeSelect() {
                 key={age.id}
                 type="button"
                 onClick={() => setAgeGroup(age.id)}
-                className="flex flex-col items-center gap-2 p-4 rounded-2xl glass-card hover:border-[#00FF88] transition-all cursor-pointer"
+                className="flex flex-col items-center gap-2 p-4 rounded-2xl glass-card hover:border-[var(--color-phosphor)] transition-all cursor-pointer"
                 style={{ minWidth: 80, minHeight: 80 }}
               >
                 <span className="text-3xl">{age.emoji}</span>

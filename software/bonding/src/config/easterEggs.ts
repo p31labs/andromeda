@@ -7,7 +7,7 @@
 export function logBirthdayConsole(): void {
   console.log(
     '%c\u{1F53A} BONDING v1.0 \u2014 P31 Labs',
-    'color: #00FF88; font-size: 14px; font-weight: bold;'
+    'color: var(--color-phosphor); font-size: 14px; font-weight: bold;'
   );
   console.log(
     '%c  Built with love for Bash\'s 10th birthday\n  March 10, 2026\n  "Every atom placed is a connection. Every molecule is a conversation."\n  phosphorus31.org',

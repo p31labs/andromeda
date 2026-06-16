@@ -266,7 +266,7 @@ interface EngagementEvent {
   sessionId: string;
   playerId: number;
   playerName: string;
-  eventType: 'atom_placed' | 'bond_formed' | 'ping_sent' | 'ping_received' | 
+  eventType: 'atom_placed' | 'bond_formed' | 'ping_sent' | 'ping_received' |
              'molecule_completed' | 'achievement_earned' | 'session_start' | 'session_end';
   metadata: Record<string, any>;  // element, position, achievement name, etc.
 }

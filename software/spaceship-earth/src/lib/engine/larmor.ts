@@ -1,6 +1,6 @@
 /**
  * @file larmor.ts — Larmor Audio Engine (LarmorShift)
- * 
+ *
  * Hardened with:
  * - AudioContext resume error handling (user gesture required)
  * - Browser autoplay policy compliance
@@ -31,7 +31,7 @@ export class LarmorEngine {
   constructor() {}
 
   public static isSupported(): boolean {
-    return typeof window !== 'undefined' && 
+    return typeof window !== 'undefined' &&
            (window.AudioContext || (window as any).webkitAudioContext) !== undefined;
   }
 

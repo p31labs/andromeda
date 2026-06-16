@@ -32,7 +32,7 @@ export function StatsPanel({ initialX = 20, initialY = 20 }: StatsProps) {
 
   if (!metrics) return null;
 
-  const fpsColor = metrics.fps >= 55 ? '#00FF88' : metrics.fps >= 40 ? '#FFD700' : '#FF4444';
+  const fpsColor = metrics.fps >= 55 ? 'var(--color-phosphor)' : metrics.fps >= 40 ? '#FFD700' : '#FF4444';
 
   const handleMouseDown = (e: React.MouseEvent) => {
     setIsDragging(true);
@@ -44,16 +44,16 @@ export function StatsPanel({ initialX = 20, initialY = 20 }: StatsProps) {
 
   useEffect(() => {
     if (!isDragging) return;
-    
+
     const handleMouseMove = (e: MouseEvent) => {
       setPosition({
         x: e.clientX - dragOffset.x,
         y: e.clientY - dragOffset.y,
       });
     };
-    
+
     const handleMouseUp = () => setIsDragging(false);
-    
+
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('mouseup', handleMouseUp);
     return () => {
@@ -83,9 +83,9 @@ export function StatsPanel({ initialX = 20, initialY = 20 }: StatsProps) {
       onMouseDown={handleMouseDown}
     >
       {/* Header with minimize toggle */}
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'space-between', 
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
         alignItems: 'center',
         marginBottom: minimized ? 0 : 8,
         cursor: 'pointer',
@@ -143,14 +143,14 @@ export function StatsPanel({ initialX = 20, initialY = 20 }: StatsProps) {
           </div>
 
           {/* Performance level */}
-          <div style={{ 
-            display: 'flex', 
+          <div style={{
+            display: 'flex',
             justifyContent: 'center',
             paddingTop: 8,
             borderTop: '1px solid #333',
           }}>
-            <span style={{ 
-              color: performanceMonitor.getPerformanceLevel() === 'high' ? '#00FF88' : 
+            <span style={{
+              color: performanceMonitor.getPerformanceLevel() === 'high' ? 'var(--color-phosphor)' :
                      performanceMonitor.getPerformanceLevel() === 'medium' ? '#FFD700' : '#FF4444',
               fontSize: 10,
               letterSpacing: 2,

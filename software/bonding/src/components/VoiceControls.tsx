@@ -1,14 +1,14 @@
 /**
  * BONDING — P31 Labs
  * VoiceControls: Voice UI for pre-readers (Phase 5)
- * 
+ *
  * Features:
  * - Large microphone button (64px for kids)
  * - Pulsing animation when listening
  * - Speaking indicator
  * - Mute/unmute toggle
  * - Visual command feedback
- * 
+ *
  * Z-index: Cockpit layer (z10) — part of HUD layer
  */
 
@@ -55,7 +55,7 @@ export function VoiceControls({
 }: VoiceControlsProps) {
   const [lastCommandText, setLastCommandText] = useState<string>('');
   const [showFeedback, setShowFeedback] = useState(false);
-  
+
   const {
     isListening,
     isSupported: speechRecognitionSupported,
@@ -130,7 +130,7 @@ export function VoiceControls({
   const iconSize = compact ? 'text-xl' : 'text-3xl';
 
   return (
-    <div 
+    <div
       className="flex items-center gap-2 pointer-events-auto"
       style={{ zIndex: 10 }}
     >
@@ -142,8 +142,8 @@ export function VoiceControls({
           relative flex items-center justify-center rounded-full
           transition-all duration-200 ease-out
           ${size}
-          ${isListening 
-            ? 'bg-red-500/80 animate-pulse shadow-lg shadow-red-500/50' 
+          ${isListening
+            ? 'bg-red-500/80 animate-pulse shadow-lg shadow-red-500/50'
             : 'bg-slate-700/80 hover:bg-slate-600/80'
           }
           ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
@@ -156,7 +156,7 @@ export function VoiceControls({
         <span className={`${iconSize} select-none`}>
           {isListening ? '🎤' : '🫦'}
         </span>
-        
+
         {/* Pulsing ring when listening */}
         {isListening && (
           <span className="absolute inset-0 rounded-full animate-ping bg-red-400/30" />
@@ -172,8 +172,8 @@ export function VoiceControls({
             flex items-center justify-center rounded-full
             transition-all duration-200
             ${compact ? 'w-10 h-10' : 'w-12 h-12'}
-            ${voiceFeedback.isMuted() 
-              ? 'bg-slate-800/80 text-red-400' 
+            ${voiceFeedback.isMuted()
+              ? 'bg-slate-800/80 text-red-400'
               : 'bg-slate-700/80 text-green-400 hover:bg-slate-600/80'
             }
             ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
@@ -189,7 +189,7 @@ export function VoiceControls({
 
       {/* Speaking Indicator */}
       {voiceFeedback.isSpeaking() && (
-        <div 
+        <div
           className={`
             flex items-center gap-1 px-3 py-1 rounded-full
             bg-green-500/80 text-white text-sm font-medium
@@ -204,7 +204,7 @@ export function VoiceControls({
 
       {/* Command Feedback Toast */}
       {showFeedback && lastCommandText && (
-        <div 
+        <div
           className={`
             absolute top-full mt-2 left-1/2 -translate-x-1/2
             px-4 py-2 rounded-lg bg-slate-800/90 text-white
@@ -238,17 +238,17 @@ export function VoiceHelpOverlay({ onClose }: { onClose: () => void }) {
   ];
 
   return (
-    <div 
+    <div
       className="fixed inset-0 flex items-center justify-center bg-black/60 z-50"
       onClick={onClose}
     >
-      <div 
+      <div
         className="bg-slate-800 rounded-2xl p-6 max-w-md w-full mx-4 border-2 border-slate-600"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-bold text-white">🎤 Voice Commands</h2>
-          <button 
+          <button
             onClick={onClose}
             className="text-slate-400 hover:text-white text-2xl"
           >
@@ -262,7 +262,7 @@ export function VoiceHelpOverlay({ onClose }: { onClose: () => void }) {
 
         <ul className="space-y-2 mb-6">
           {commands.map((item, i) => (
-            <li 
+            <li
               key={i}
               className="flex items-center gap-3 text-slate-200"
             >

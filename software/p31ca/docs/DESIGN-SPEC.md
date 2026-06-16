@@ -1,9 +1,9 @@
 # P31CA.ORG Canonical Design Specification
 
-**Version:** 1.0.0  
-**Schema:** `p31.designSpec/1.0.0`  
-**Date:** 2026-05-01  
-**Status:** LIVE  
+**Version:** 1.0.0
+**Schema:** `p31.designSpec/1.0.0`
+**Date:** 2026-05-01
+**Status:** LIVE
 
 ---
 

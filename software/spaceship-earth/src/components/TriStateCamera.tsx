@@ -7,7 +7,7 @@ const { Vector3 } = THREE;
 
 /**
  * Tri-State Camera System for Delta Cockpit
- * 
+ *
  * Implements three distinct contextual modes for spatial navigation:
  * - Free Orbit: For omnidirectional exploration
  * - Dome Mode: Locked to bounded orbit around central 80-face icosphere
@@ -61,7 +61,7 @@ export const TriStateCamera: React.FC<TriStateCameraProps> = ({
   useEffect(() => {
     if (controlsRef.current) {
       const controls = controlsRef.current;
-      
+
       switch (mode) {
         case 'free':
           // Standard orbit controls
@@ -107,7 +107,7 @@ export const TriStateCamera: React.FC<TriStateCameraProps> = ({
     if (!controlsRef.current) return;
 
     const controls = controlsRef.current;
-    
+
     switch (cameraState.mode) {
       case 'dome':
         // Enforce dome constraints
@@ -184,7 +184,7 @@ export const CameraModeSwitcher: React.FC<{
 }> = ({ currentMode, onModeChange }) => {
   const modeLabels = {
     free: 'Free Orbit',
-    dome: 'Dome Mode', 
+    dome: 'Dome Mode',
     screen: 'Screen Mode'
   };
 

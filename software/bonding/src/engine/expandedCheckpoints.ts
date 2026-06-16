@@ -6,12 +6,12 @@ export interface ExpandedCheckpoint {
   displayName: string;      // Common name
   category: 'gas' | 'liquid' | 'solid' | 'acid' | 'base' | 'salt' | 'organic' | 'mineral' | 'biological' | 'industrial';
   difficulty: 'seed' | 'sprout' | 'sapling' | 'advanced';
-  atomCount: number;        
+  atomCount: number;
   funFacts: {
-    simple: string;         
-    intermediate: string;   
-    scientific: string;     
-    research: string;       
+    simple: string;
+    intermediate: string;
+    scientific: string;
+    research: string;
   };
 }
 

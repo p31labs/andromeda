@@ -40,7 +40,7 @@ const ElementGrid = ({ playerId }) => {
   return (
     <div className="element-grid-container">
       <ElementSelector playerId={playerId} onBond={handleBond} />
-      
+
       <div className="player-status">
         <h3>Your Atoms</h3>
         {atoms.length === 0 ? (
@@ -61,8 +61,8 @@ const ElementGrid = ({ playerId }) => {
                 </div>
                 <div className="bond-slots">
                   {Array.from({ length: atom.valence }, (_, i) => (
-                    <div 
-                      key={i} 
+                    <div
+                      key={i}
                       className={`bond-slot ${i < atom.bonds.length ? 'filled' : 'empty'}`}
                     />
                   ))}

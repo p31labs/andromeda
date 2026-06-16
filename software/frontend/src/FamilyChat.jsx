@@ -138,8 +138,8 @@ export default function FamilyChat({ client, userId, onNetworkEvent }) {
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #1a1a24; border-radius: 3px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #4db8a8; }
-        .e2ee-badge { font-size: 10px; padding: 2px 6px; border-radius: 4px; background: #0a3d3d; color: #4db8a8; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: var(--color-cyan); }
+        .e2ee-badge { font-size: 10px; padding: 2px 6px; border-radius: 4px; background: #0a3d3d; color: var(--color-cyan); }
         .e2ee-off { background: #3d1a1a !important; color: #c84b4b !important; }
       `}</style>
       <div className="h-screen w-full flex bg-[#050508] text-white font-sans">
@@ -147,7 +147,7 @@ export default function FamilyChat({ client, userId, onNetworkEvent }) {
         <div className="w-80 border-r border-[#1a1a24] bg-[#12121a] flex flex-col">
           <div className="p-4 border-b border-[#1a1a24]">
             <div className="flex items-center justify-between">
-              <h2 className="text-[#4db8a8] font-bold tracking-widest text-sm">K⁴ CONVERSATIONS</h2>
+              <h2 className="text-[var(--color-cyan)] font-bold tracking-widest text-sm">K⁴ CONVERSATIONS</h2>
               <div className="flex gap-2">
                 <span className={`e2ee-badge ${!e2eeEnabled ? 'e2ee-off' : ''}`}>
                   {e2eeEnabled ? 'E2EE ON' : 'E2EE OFF'}
@@ -163,7 +163,7 @@ export default function FamilyChat({ client, userId, onNetworkEvent }) {
               <button
                 key={conv.id}
                 onClick={() => setCurrentConv(conv.id)}
-                className={`w-full text-left p-3 rounded-lg mb-1 transition-colors ${currentConv === conv.id ? 'bg-[#4db8a8]/10 border-l-2 border-[#4db8a8]' : 'hover:bg-white/5'}`}
+                className={`w-full text-left p-3 rounded-lg mb-1 transition-colors ${currentConv === conv.id ? 'bg-[var(--color-cyan)]/10 border-l-2 border-[var(--color-cyan)]' : 'hover:bg-white/5'}`}
               >
                 <div className="font-bold text-sm">{conv.name || conv.participants.filter(p => p !== userId).join(', ')}</div>
                 {conv.last_message_content && (
@@ -175,7 +175,7 @@ export default function FamilyChat({ client, userId, onNetworkEvent }) {
           <div className="p-2 border-t border-[#1a1a24] space-y-1">
             <button
               onClick={rotateEpoch}
-              className="w-full text-xs text-[#4db8a8] hover:bg-[#4db8a8]/10 rounded px-2 py-1 transition-colors"
+              className="w-full text-xs text-[var(--color-cyan)] hover:bg-[var(--color-cyan)]/10 rounded px-2 py-1 transition-colors"
               title="Rotate epoch (new TreeKEM keys)"
             >
               🔄 Rotate Epoch
@@ -201,7 +201,7 @@ export default function FamilyChat({ client, userId, onNetworkEvent }) {
                 <div className="flex gap-4">
                   {['will', 'sj', 'wj', 'christyn'].map(user => (
                     <div key={user} className="flex items-center gap-1.5 text-xs font-mono">
-                      <div className={`w-2 h-2 rounded-full ${presence[user] === 'online' ? 'bg-[#4db8a8] shadow-[0_0_8px_#4db8a8]' : 'bg-gray-600'}`} />
+                      <div className={`w-2 h-2 rounded-full ${presence[user] === 'online' ? 'bg-[var(--color-cyan)] shadow-[0_0_8px_var(--color-cyan)]' : 'bg-gray-600'}`} />
                       <span className={presence[user] === 'online' ? 'text-gray-300' : 'text-gray-600'}>{user}</span>
                     </div>
                   ))}
@@ -215,9 +215,9 @@ export default function FamilyChat({ client, userId, onNetworkEvent }) {
                   return (
                     <div key={msg.id} className={`flex flex-col ${isMe ? 'items-end' : 'items-start'}`}>
                       <div className="text-[10px] text-gray-500 mb-1 ml-1 font-mono uppercase tracking-widest">
-                        {msg.senderId} {isEncrypted && <span className="text-[#4db8a8]">🔒</span>}
+                        {msg.senderId} {isEncrypted && <span className="text-[var(--color-cyan)]">🔒</span>}
                       </div>
-                      <div className={`px-4 py-2.5 rounded-2xl max-w-[70%] text-sm ${isMe ? 'bg-[#4db8a8] text-[#050508] rounded-br-sm font-medium' : 'bg-[#12121a] border border-[#1a1a24] rounded-bl-sm shadow-md'}`}>
+                      <div className={`px-4 py-2.5 rounded-2xl max-w-[70%] text-sm ${isMe ? 'bg-[var(--color-cyan)] text-[#050508] rounded-br-sm font-medium' : 'bg-[#12121a] border border-[#1a1a24] rounded-bl-sm shadow-md'}`}>
                         {msg.content}
                       </div>
                     </div>
@@ -239,12 +239,12 @@ export default function FamilyChat({ client, userId, onNetworkEvent }) {
                     onChange={handleTyping}
                     onKeyDown={e => e.key === 'Enter' && handleSend()}
                     placeholder="Transmit encrypted payload to mesh..."
-                    className="flex-1 bg-[#050508] border border-[#1a1a24] rounded-full px-5 py-2.5 text-sm focus:outline-none focus:border-[#4db8a8] transition-colors"
+                    className="flex-1 bg-[#050508] border border-[#1a1a24] rounded-full px-5 py-2.5 text-sm focus:outline-none focus:border-[var(--color-cyan)] transition-colors"
                   />
                   <button
                     onClick={handleSend}
                     disabled={!newMessage.trim()}
-                    className="bg-[#4db8a8] text-[#050508] font-bold tracking-widest px-6 py-2.5 rounded-full text-xs disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#3ca394] transition-colors"
+                    className="bg-[var(--color-cyan)] text-[#050508] font-bold tracking-widest px-6 py-2.5 rounded-full text-xs disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#3ca394] transition-colors"
                   >
                     SEND
                   </button>

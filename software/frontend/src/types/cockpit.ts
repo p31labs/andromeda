@@ -1,10 +1,10 @@
 /**
  * P31 Z-Index Cockpit Types
  * =========================
- * 
+ *
  * TypeScript type definitions for the Z-Index Cockpit frontend state management.
  * These types define the complete state structure for the cockpit interface.
- * 
+ *
  * Author: P31 Labs
  * License: MIT
  */
@@ -18,21 +18,21 @@ export interface CockpitState {
   isLocked: boolean;
   lockoutReason: string | null;
   lockoutUntil: number | null;
-  
+
   // Voltage & Metabolic State
   voltageLevel: number;
   metabolicState: MetabolicState;
   voltageLogs: VoltageLogPayload[];
-  
+
   // Fawn Guard
   fawnGuard: FawnGuardState;
-  
+
   // Catcher's Mitt
   catchersMitt: CatchersMittState;
-  
+
   // System Status
   systemStatus: SystemStatus;
-  
+
   // UI State
   ui: UIState;
 }
@@ -89,35 +89,35 @@ export interface CockpitActions {
   initialize: () => void;
   setLockout: (reason: string | null, until: number | null) => void;
   checkLockout: () => void;
-  
+
   // Voltage Management
   updateVoltage: (level: number) => void;
   addVoltageLog: (log: VoltageLogPayload) => void;
   updateMetabolicState: (state: MetabolicState) => void;
   drainSpoons: (taskCost: number, lambda?: number) => void;
-  
+
   // Fawn Guard Actions
   activateFawnGuard: (signal: CatchersMittSignal) => void;
   deactivateFawnGuard: () => void;
   setFawnGuardMode: (mode: 'passive' | 'active') => void;
-  
+
   // Catcher's Mitt Actions
   processVoltageSignal: (signal: CatchersMittSignal) => void;
   setProcessing: (isProcessing: boolean) => void;
-  
+
   // System Status
   setBackendConnected: (connected: boolean) => void;
   setWebsocketConnected: (connected: boolean) => void;
   incrementErrorCount: () => void;
   resetErrorCount: () => void;
-  
+
   // UI Actions
   setActiveRoom: (room: string) => void;
   toggleFullscreen: () => void;
   setTheme: (theme: 'light' | 'dark') => void;
   addNotification: (notification: NotificationItem) => void;
   removeNotification: (id: string) => void;
-  
+
   // Reset function
   reset: () => void;
 }
@@ -138,7 +138,7 @@ export type RoomType = 'z-10' | 'z-20' | 'z-30' | 'z-40' | 'z-50' | 'z-60';
 export type ThemeType = 'light' | 'dark';
 
 // Lockout Reason Types
-export type LockoutReason = 
+export type LockoutReason =
   | 'CRITICAL_VOLTAGE'
   | 'SYSTEM_ERROR'
   | 'MANUAL_LOCKOUT'

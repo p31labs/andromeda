@@ -14,11 +14,11 @@ export class PHOSShell {
     this.container = container;
     this.phos = phosController;
     this.unsubscribe = null;
-    
+
     this.render();
     this.bind();
   }
-  
+
   render() {
     this.container.innerHTML = `
       <div id="phos-shell" class="phos-shell">
@@ -33,12 +33,12 @@ export class PHOSShell {
             <span class="phos-safe-text">Safe</span>
           </button>
         </header>
-        
+
         <!-- Main content area -->
         <main class="phos-main" id="phos-main">
           <!-- States render here -->
         </main>
-        
+
         <!-- Voice island (bottom) -->
         <div class="phos-voice-island" id="phos-voice-island">
           <button class="phos-voice-btn" id="phos-voice-btn" aria-label="Speak to navigate">
@@ -46,12 +46,12 @@ export class PHOSShell {
             <span class="phos-voice-text">Or just speak</span>
           </button>
         </div>
-        
+
         <!-- Content mount (for loaded pages) -->
         <div id="phos-content-mount" class="phos-content-mount" hidden></div>
       </div>
     `;
-    
+
     this.elements = {
       shell: document.getElementById('phos-shell'),
       main: document.getElementById('phos-main'),
@@ -63,13 +63,13 @@ export class PHOSShell {
       contentMount: document.getElementById('phos-content-mount'),
     };
   }
-  
+
   bind() {
     // Subscribe to PHOS state changes
     this.unsubscribe = this.phos.subscribe((state) => {
       this.update(state);
     });
-    
+
     // Brand click = reset
     this.elements.brand?.addEventListener('click', () => {
       this.phos.exitUrgentMode();
@@ -77,34 +77,34 @@ export class PHOSShell {
       this.elements.contentMount.hidden = true;
       this.elements.main.hidden = false;
     });
-    
+
     // Safe mode button
     this.elements.safeMode?.addEventListener('click', () => {
       this.phos.enterUrgentMode();
     });
-    
+
     // Voice button
     this.elements.voiceBtn?.addEventListener('click', () => {
       this.toggleVoice();
     });
   }
-  
+
   update(state) {
     const { state: currentState, profile, intent, urgent } = state;
-    
+
     // Update profile classes
     this.elements.shell.className = `phos-shell ${profile.bg} ${profile.text}`;
-    
+
     // Update pulse color based on state
     if (this.elements.pulse) {
       this.elements.pulse.className = `phos-pulse ${urgent ? 'phos-pulse--urgent' : 'phos-pulse--normal'}`;
     }
-    
+
     // Hide safe mode button when already in urgent mode
     if (this.elements.safeMode) {
       this.elements.safeMode.hidden = urgent;
     }
-    
+
     // Render current state
     switch (currentState) {
       case PHOS_STATES.GREETING:
@@ -124,7 +124,7 @@ export class PHOSShell {
         break;
     }
   }
-  
+
   renderGreeting() {
     this.elements.main.innerHTML = `
       <div class="phos-greeting">
@@ -133,15 +133,15 @@ export class PHOSShell {
       </div>
     `;
   }
-  
+
   renderIntent(intent) {
     const chips = intent?.chips || this.getDefaultChips();
-    
+
     const chipsHtml = chips.map((chip, i) => {
       const isPrimary = chip.primary || i === 0;
       const cls = isPrimary ? 'phos-chip phos-chip--primary' : 'phos-chip';
       const iconHtml = chip.icon ? `<span class="phos-chip-icon">${chip.icon}</span>` : '';
-      
+
       if (chip.path) {
         return `<a href="${chip.path}" class="${cls}" data-chip-id="${chip.id}" data-chip-path="${chip.path}">
           ${iconHtml}
@@ -155,7 +155,7 @@ export class PHOSShell {
         </button>`;
       }
     }).join('');
-    
+
     this.elements.main.innerHTML = `
       <div class="phos-intent">
         <h2 class="phos-intent-question">Whose mesh are we building today?</h2>
@@ -164,27 +164,27 @@ export class PHOSShell {
         </div>
       </div>
     `;
-    
+
     // Bind chip clicks
     this.elements.main.querySelectorAll('[data-chip-id]').forEach(chip => {
       chip.addEventListener('click', (e) => {
         e.preventDefault();
-        
+
         const chipData = {
           id: chip.dataset.chipId,
           path: chip.dataset.chipPath,
           action: chip.dataset.chipAction,
           label: chip.querySelector('.phos-chip-label')?.textContent,
         };
-        
+
         this.phos.handleChipSelection(chipData);
       });
     });
   }
-  
+
   renderRouting(intent) {
     const label = intent?.label || 'destination';
-    
+
     this.elements.main.innerHTML = `
       <div class="phos-routing">
         <div class="phos-spinner"></div>
@@ -192,13 +192,13 @@ export class PHOSShell {
       </div>
     `;
   }
-  
+
   renderContentState() {
     // Main shows the content mount
     this.elements.main.hidden = true;
     this.elements.contentMount.hidden = false;
   }
-  
+
   renderUrgent() {
     this.elements.main.innerHTML = `
       <div class="phos-urgent">
@@ -218,16 +218,16 @@ export class PHOSShell {
         </button>
       </div>
     `;
-    
+
     // Bind urgent actions
     document.getElementById('phos-urgent-home')?.addEventListener('click', () => {
       window.location.href = '/welcome';
     });
-    
+
     document.getElementById('phos-urgent-grounding')?.addEventListener('click', () => {
       window.location.href = '/layer0';
     });
-    
+
     let exitTimer = null;
     const exitBtn = document.getElementById('phos-urgent-exit');
     if (exitBtn) {
@@ -244,7 +244,7 @@ export class PHOSShell {
       });
     }
   }
-  
+
   getDefaultChips() {
     return [
       { id: 'SELF', label: 'For Myself', icon: '🙋', path: '/passport', hint: 'Passport, tools' },
@@ -253,7 +253,7 @@ export class PHOSShell {
       { id: 'DECIDE', label: 'Help me decide →', icon: '❓', action: 'decide' },
     ];
   }
-  
+
   toggleVoice() {
     if (this.phos.voice?.isListening) {
       this.phos.stopVoice();
@@ -267,7 +267,7 @@ export class PHOSShell {
       }
     }
   }
-  
+
   destroy() {
     if (this.unsubscribe) {
       this.unsubscribe();
@@ -282,7 +282,7 @@ export class PHOSShell {
 
 export function injectPHOSStyles() {
   if (document.getElementById('phos-styles')) return;
-  
+
   const style = document.createElement('style');
   style.id = 'phos-styles';
   style.textContent = `
@@ -293,7 +293,7 @@ export function injectPHOSStyles() {
       font-family: var(--p31-font-sans, 'Atkinson Hyperlegible', system-ui, sans-serif);
       transition: background-color 0.5s ease, color 0.5s ease;
     }
-    
+
     /* Header */
     .phos-header {
       display: flex;
@@ -302,7 +302,7 @@ export function injectPHOSStyles() {
       padding: 1.5rem;
       border-bottom: 1px solid rgba(255, 255, 255, 0.07);
     }
-    
+
     .phos-brand {
       display: flex;
       align-items: center;
@@ -310,31 +310,31 @@ export function injectPHOSStyles() {
       cursor: pointer;
       user-select: none;
     }
-    
+
     .phos-pulse {
       width: 12px;
       height: 12px;
       border-radius: 50%;
       transition: all 0.3s ease;
     }
-    
+
     .phos-pulse--normal {
       background: #22d3ee;
       box-shadow: 0 0 15px rgba(34, 211, 238, 0.6);
       animation: phos-pulse 2s ease-in-out infinite;
     }
-    
+
     .phos-pulse--urgent {
       background: #f87171;
       box-shadow: none;
       animation: none;
     }
-    
+
     @keyframes phos-pulse {
       0%, 100% { transform: scale(1); opacity: 1; }
       50% { transform: scale(1.1); opacity: 0.8; }
     }
-    
+
     .phos-brand-text {
       font-family: var(--p31-font-mono, 'JetBrains Mono', monospace);
       font-size: 0.75rem;
@@ -343,7 +343,7 @@ export function injectPHOSStyles() {
       text-transform: uppercase;
       opacity: 0.8;
     }
-    
+
     .phos-safe-mode {
       display: flex;
       align-items: center;
@@ -357,12 +357,12 @@ export function injectPHOSStyles() {
       cursor: pointer;
       transition: all 0.2s ease;
     }
-    
+
     .phos-safe-mode:hover {
       border-color: rgba(248, 113, 113, 0.5);
       color: #f87171;
     }
-    
+
     /* Main content */
     .phos-main {
       flex: 1;
@@ -372,26 +372,26 @@ export function injectPHOSStyles() {
       align-items: center;
       padding: 2rem;
     }
-    
+
     /* Greeting state */
     .phos-greeting {
       text-align: center;
       animation: phos-fade-in 1s ease-out;
     }
-    
+
     .phos-greeting-title {
       font-size: clamp(2rem, 5vw, 3.5rem);
       font-weight: 300;
       margin: 0 0 1rem;
       letter-spacing: -0.02em;
     }
-    
+
     .phos-greeting-subtitle {
       font-size: 1.125rem;
       opacity: 0.6;
       margin: 0;
     }
-    
+
     /* Intent state */
     .phos-intent {
       width: 100%;
@@ -399,20 +399,20 @@ export function injectPHOSStyles() {
       text-align: center;
       animation: phos-fade-in-up 0.7s ease-out;
     }
-    
+
     .phos-intent-question {
       font-size: clamp(1.5rem, 4vw, 2.25rem);
       font-weight: 400;
       margin: 0 0 2.5rem;
       line-height: 1.3;
     }
-    
+
     .phos-chips-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
       gap: 1rem;
     }
-    
+
     .phos-chip {
       display: flex;
       flex-direction: column;
@@ -428,45 +428,45 @@ export function injectPHOSStyles() {
       transition: all 0.25s ease;
       backdrop-filter: blur(10px);
     }
-    
+
     .phos-chip:hover {
       background: rgba(255, 255, 255, 0.08);
       border-color: rgba(34, 211, 238, 0.4);
       transform: translateY(-2px);
     }
-    
+
     .phos-chip--primary {
       background: rgba(34, 211, 238, 0.15);
       border-color: rgba(34, 211, 238, 0.4);
       font-weight: 600;
     }
-    
+
     .phos-chip--primary:hover {
       background: rgba(34, 211, 238, 0.25);
     }
-    
+
     .phos-chip-icon {
       font-size: 1.5rem;
       line-height: 1;
     }
-    
+
     .phos-chip-label {
       font-size: 1rem;
       font-weight: 500;
     }
-    
+
     .phos-chip-hint {
       font-size: 0.75rem;
       opacity: 0.6;
       font-family: var(--p31-font-mono, 'JetBrains Mono', monospace);
     }
-    
+
     /* Routing state */
     .phos-routing {
       text-align: center;
       animation: phos-fade-in 0.3s ease-out;
     }
-    
+
     .phos-spinner {
       width: 48px;
       height: 48px;
@@ -476,47 +476,47 @@ export function injectPHOSStyles() {
       animation: phos-spin 1s linear infinite;
       margin: 0 auto 1.5rem;
     }
-    
+
     @keyframes phos-spin {
       to { transform: rotate(360deg); }
     }
-    
+
     .phos-routing-text {
       font-size: 1.125rem;
       opacity: 0.8;
     }
-    
+
     /* Urgent state */
     .phos-urgent {
       text-align: center;
       max-width: 400px;
       padding: 2rem;
     }
-    
+
     .phos-urgent-icon {
       font-size: 3rem;
       margin-bottom: 1rem;
     }
-    
+
     .phos-urgent-title {
       font-size: 1.75rem;
       font-weight: 600;
       margin: 0 0 0.5rem;
     }
-    
+
     .phos-urgent-desc {
       font-size: 1rem;
       opacity: 0.7;
       margin: 0 0 2rem;
     }
-    
+
     .phos-urgent-actions {
       display: flex;
       flex-direction: column;
       gap: 0.75rem;
       margin-bottom: 2rem;
     }
-    
+
     .phos-urgent-btn {
       padding: 1rem 1.5rem;
       border: 1px solid rgba(255, 255, 255, 0.2);
@@ -530,22 +530,22 @@ export function injectPHOSStyles() {
       align-items: center;
       justify-content: space-between;
     }
-    
+
     .phos-urgent-btn:hover {
       background: rgba(255, 255, 255, 0.1);
       border-color: rgba(255, 255, 255, 0.3);
     }
-    
+
     .phos-urgent-btn--primary {
       background: rgba(34, 211, 238, 0.2);
       border-color: rgba(34, 211, 238, 0.4);
       font-weight: 600;
     }
-    
+
     .phos-urgent-btn--primary:hover {
       background: rgba(34, 211, 238, 0.3);
     }
-    
+
     .phos-urgent-exit {
       padding: 0.75rem;
       border: 1px dashed rgba(255, 255, 255, 0.2);
@@ -556,12 +556,12 @@ export function injectPHOSStyles() {
       cursor: pointer;
       transition: all 0.3s ease;
     }
-    
+
     .phos-urgent-exit:active {
       background: rgba(255, 255, 255, 0.1);
       color: rgba(255, 255, 255, 0.8);
     }
-    
+
     /* Voice island */
     .phos-voice-island {
       position: fixed;
@@ -570,7 +570,7 @@ export function injectPHOSStyles() {
       transform: translateX(-50%);
       z-index: 100;
     }
-    
+
     .phos-voice-btn {
       display: flex;
       align-items: center;
@@ -585,57 +585,57 @@ export function injectPHOSStyles() {
       cursor: pointer;
       transition: all 0.3s ease;
     }
-    
+
     .phos-voice-btn:hover {
       border-color: rgba(34, 211, 238, 0.4);
       background: rgba(34, 211, 238, 0.1);
     }
-    
+
     .phos-voice-btn--listening {
       border-color: rgba(248, 113, 113, 0.5);
       background: rgba(248, 113, 113, 0.1);
       animation: phos-listening 1.5s ease-in-out infinite;
     }
-    
+
     @keyframes phos-listening {
       0%, 100% { box-shadow: 0 0 0 0 rgba(248, 113, 113, 0.4); }
       50% { box-shadow: 0 0 0 10px rgba(248, 113, 113, 0); }
     }
-    
+
     .phos-voice-icon {
       font-size: 1.25rem;
       line-height: 1;
     }
-    
+
     .phos-voice-text {
       font-size: 0.75rem;
       text-transform: uppercase;
       letter-spacing: 0.1em;
       opacity: 0.7;
     }
-    
+
     /* Content mount */
     .phos-content-mount {
       flex: 1;
       overflow-y: auto;
       padding: 2rem;
     }
-    
+
     .phos-content-mount:not([hidden]) {
       animation: phos-fade-in 0.5s ease-out;
     }
-    
+
     /* Animations */
     @keyframes phos-fade-in {
       from { opacity: 0; }
       to { opacity: 1; }
     }
-    
+
     @keyframes phos-fade-in-up {
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    
+
     /* Reduced motion */
     @media (prefers-reduced-motion: reduce) {
       .phos-shell *,
@@ -646,25 +646,25 @@ export function injectPHOSStyles() {
         transition-duration: 0.01ms !important;
       }
     }
-    
+
     /* Gray rock mode */
     .phos-gray-rock .phos-pulse {
       animation: none !important;
       background: rgba(130, 136, 148, 0.4) !important;
       box-shadow: none !important;
     }
-    
+
     .phos-gray-rock .phos-chip {
       border-color: rgba(255, 255, 255, 0.08) !important;
       background: rgba(255, 255, 255, 0.02) !important;
     }
-    
+
     .phos-gray-rock .phos-chip--primary {
       background: rgba(255, 255, 255, 0.05) !important;
       border-color: rgba(255, 255, 255, 0.15) !important;
     }
   `;
-  
+
   document.head.appendChild(style);
 }
 
@@ -675,7 +675,7 @@ export function injectPHOSStyles() {
 export function initPHOS(containerId = 'phos-root', options = {}) {
   // Inject styles
   injectPHOSStyles();
-  
+
   // Find or create container
   let container = document.getElementById(containerId);
   if (!container) {
@@ -683,15 +683,15 @@ export function initPHOS(containerId = 'phos-root', options = {}) {
     container.id = containerId;
     document.body.appendChild(container);
   }
-  
+
   // Import and create PHOS controller
   import('./p31-phos-core.mjs').then(({ createPHOS }) => {
     const phos = createPHOS(options);
     const ui = new PHOSShell(container, phos);
-    
+
     // Expose for debugging
     window.p31PHOS = { phos, ui };
-    
+
     console.log('PHOS initialized');
   });
 }

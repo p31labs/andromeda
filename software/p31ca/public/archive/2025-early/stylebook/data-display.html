@@ -39,7 +39,7 @@
     }
     .p31-table tr:last-child td { border-bottom: none; }
     .p31-table tr:hover td { background: var(--p31-surface2); }
-    
+
     .p31-list {
       background: var(--p31-surface);
       border: 1px solid var(--p31-border-subtle);
@@ -72,7 +72,7 @@
     .p31-list-title { font-size: 14px; font-weight: 500; color: var(--p31-paper); }
     .p31-list-meta { font-size: 12px; color: var(--p31-muted); margin-top: 2px; font-family: var(--p31-font-mono); }
     .p31-list-trail { color: var(--p31-muted); font-size: 12px; font-family: var(--p31-font-mono); }
-    
+
     .p31-kv {
       display: grid;
       grid-template-columns: 140px 1fr;
@@ -93,7 +93,7 @@
       font-size: 14px;
       color: var(--p31-paper);
     }
-    
+
     .p31-bar-chart {
       display: flex;
       align-items: flex-end;
@@ -128,7 +128,7 @@
       transition: opacity 0.2s;
     }
     .p31-bar:hover::after { opacity: 1; }
-    
+
     .p31-sparkline {
       stroke: var(--p31-primary);
       stroke-width: 2;
@@ -140,7 +140,7 @@
       fill: var(--p31-primary);
       opacity: 0.1;
     }
-    
+
     .p31-avatar {
       width: 32px;
       height: 32px;
@@ -168,25 +168,25 @@
     import { renderShell, code, callout } from '/stylebook/_chrome.js';
     import { P31ThemeController } from '/lib/p31-theme-engine.mjs';
     window.p31Theme = new P31ThemeController({ defaultTheme: 'hub' });
-    
+
     const data = [78, 92, 65, 88, 71, 95, 82, 90, 68, 85, 78, 96];
     const max = Math.max(...data);
     const bars = data.map(v => `<div class="p31-bar" style="height: ${(v/max)*100}%;" data-value="${v}"></div>`).join('');
-    
+
     // Sparkline
     const sparkW = 200, sparkH = 50;
-    const sparkPoints = data.map((v, i) => 
+    const sparkPoints = data.map((v, i) =>
       `${(i / (data.length - 1)) * sparkW},${sparkH - (v/max) * (sparkH - 4) - 2}`
     ).join(' ');
     const sparkFill = `0,${sparkH} ${sparkPoints} ${sparkW},${sparkH}`;
-    
+
     const content = `
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">Tables</div>
           <h2 class="sb-h2">Tabular data</h2>
         </div>
-        
+
         <div class="sb-preview">
           <div class="sb-preview-header"><span>Standard table</span></div>
           <div class="sb-preview-body dense">
@@ -234,13 +234,13 @@
           </div>
         </div>
       </section>
-      
+
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">Lists</div>
           <h2 class="sb-h2">Structured rows</h2>
         </div>
-        
+
         <div class="sb-preview">
           <div class="sb-preview-header"><span>Activity list</span></div>
           <div class="sb-preview-body dense" style="max-width: 540px;">
@@ -281,13 +281,13 @@
           </div>
         </div>
       </section>
-      
+
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">Key-value</div>
           <h2 class="sb-h2">Definition lists</h2>
         </div>
-        
+
         <div class="sb-preview">
           <div class="sb-preview-header"><span>Metadata</span></div>
           <div class="sb-preview-body dense" style="max-width: 480px;">
@@ -316,21 +316,21 @@
           </div>
         </div>
       </section>
-      
+
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">Charts</div>
           <h2 class="sb-h2">Lightweight visualization</h2>
           <p class="sb-text">For dashboards, embed minimal SVG charts. The system stays light — no chart library required.</p>
         </div>
-        
+
         <div class="sb-preview">
           <div class="sb-preview-header"><span>Bar chart</span></div>
           <div class="sb-preview-body dense" style="max-width: 480px;">
             <div class="p31-bar-chart">${bars}</div>
           </div>
         </div>
-        
+
         <div class="sb-preview">
           <div class="sb-preview-header"><span>Sparkline</span></div>
           <div class="sb-preview-body" style="gap: 24px;">
@@ -345,13 +345,13 @@
           </div>
         </div>
       </section>
-      
+
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">People</div>
           <h2 class="sb-h2">Avatars</h2>
         </div>
-        
+
         <div class="sb-preview">
           <div class="sb-preview-header"><span>Avatar group</span></div>
           <div class="sb-preview-body" style="gap: 24px;">
@@ -367,7 +367,7 @@
         </div>
       </section>
     `;
-    
+
     renderShell({
       activeId: 'data',
       breadcrumb: [

@@ -5,7 +5,7 @@ import * as __MIDDLEWARE_1__ from "/home/p31/.npm/_npx/32026684e21afda6/node_mod
 				export * from "/home/p31/andromeda/software/bonding/worker/telemetry.ts";
 				const MIDDLEWARE_TEST_INJECT = "__INJECT_FOR_TESTING_WRANGLER_MIDDLEWARE__";
 				export const __INTERNAL_WRANGLER_MIDDLEWARE__ = [
-					
+
 					__MIDDLEWARE_0__.default,__MIDDLEWARE_1__.default
 				]
 				export default worker;

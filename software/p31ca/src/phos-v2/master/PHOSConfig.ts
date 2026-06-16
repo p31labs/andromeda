@@ -8,7 +8,7 @@ import type { PHOSConfig } from './PHOSMasterRuntime';
 export const PHOS_V2_CONFIG: PHOSConfig = {
   version: '2.0.0-alpha.1',
   convergenceWeek: 1,
-  
+
   phases: {
     voice: {
       enabled: true,
@@ -59,7 +59,7 @@ export const PHOS_V2_CONFIG: PHOSConfig = {
       mock: true
     }
   },
-  
+
   features: {
     voice: true,
     bros: true,

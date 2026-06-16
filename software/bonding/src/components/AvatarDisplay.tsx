@@ -30,26 +30,26 @@ interface AvatarDisplayProps {
 // ── Sub-components ──
 
 /** Single badge display with progress ring */
-function BadgeItem({ 
-  badge, 
+function BadgeItem({
+  badge,
   progress,
   isNew,
-}: { 
+}: {
   badge: Badge;
   progress: { current: number; target: number; earned: boolean };
   isNew?: boolean;
 }) {
   const [showCelebration, setShowCelebration] = useState(isNew);
-  
+
   useEffect(() => {
     if (isNew) {
       const timer = setTimeout(() => setShowCelebration(false), 2000);
       return () => clearTimeout(timer);
     }
   }, [isNew]);
-  
+
   return (
-    <div 
+    <div
       className={`badge-item ${progress.earned ? 'earned' : 'locked'} ${showCelebration ? 'celebrating' : ''}`}
       style={{
         display: 'flex',
@@ -58,10 +58,10 @@ function BadgeItem({
         padding: '8px',
         margin: '4px',
         borderRadius: '12px',
-        background: progress.earned 
+        background: progress.earned
           ? 'linear-gradient(135deg, rgba(0,255,136,0.2), rgba(0,212,255,0.1))'
           : 'rgba(255,255,255,0.05)',
-        border: progress.earned 
+        border: progress.earned
           ? '2px solid rgba(0,255,136,0.5)'
           : '2px solid rgba(255,255,255,0.1)',
         opacity: progress.earned ? 1 : 0.5,
@@ -73,8 +73,8 @@ function BadgeItem({
       <div className="badge-icon" style={{ fontSize: '32px' }}>
         {progress.earned ? badge.icon : '🔒'}
       </div>
-      <div className="badge-name" style={{ 
-        fontSize: '12px', 
+      <div className="badge-name" style={{
+        fontSize: '12px',
         color: '#E8ECF4',
         marginTop: '4px',
         textAlign: 'center',
@@ -100,7 +100,7 @@ function LevelProgress({ bonds }: { bonds: number }) {
   const level = getLevelForBonds(bonds);
   const progress = getLevelProgress(bonds);
   const nextLevel = getNextLevel(bonds);
-  
+
   return (
     <div className="level-progress" style={{
       padding: '16px',
@@ -117,15 +117,15 @@ function LevelProgress({ bonds }: { bonds: number }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <span style={{ fontSize: '28px' }}>{level.icon}</span>
           <div>
-            <div style={{ 
-              fontSize: '18px', 
-              fontWeight: 'bold', 
-              color: '#00FF88',
+            <div style={{
+              fontSize: '18px',
+              fontWeight: 'bold',
+              color: 'var(--color-phosphor)',
             }}>
               {level.title}
             </div>
-            <div style={{ 
-              fontSize: '12px', 
+            <div style={{
+              fontSize: '12px',
               color: 'rgba(232,236,244,0.7)',
             }}>
               Level {level.level}
@@ -137,16 +137,16 @@ function LevelProgress({ bonds }: { bonds: number }) {
           flexDirection: 'column',
           alignItems: 'flex-end',
         }}>
-          <div style={{ 
-            fontSize: '14px', 
+          <div style={{
+            fontSize: '14px',
             color: '#00D4FF',
             fontWeight: 'bold',
           }}>
             {bonds} bonds
           </div>
           {nextLevel && (
-            <div style={{ 
-              fontSize: '11px', 
+            <div style={{
+              fontSize: '11px',
               color: 'rgba(232,236,244,0.6)',
             }}>
               {nextLevel.requiredBonds - bonds} to {nextLevel.title} {nextLevel.icon}
@@ -154,7 +154,7 @@ function LevelProgress({ bonds }: { bonds: number }) {
           )}
         </div>
       </div>
-      
+
       {/* Progress bar */}
       <div style={{
         height: '12px',
@@ -169,7 +169,7 @@ function LevelProgress({ bonds }: { bonds: number }) {
           top: 0,
           height: '100%',
           width: `${progress * 100}%`,
-          background: 'linear-gradient(90deg, #00FF88, #00D4FF)',
+          background: 'linear-gradient(90deg, var(--color-phosphor), #00D4FF)',
           borderRadius: '6px',
           transition: 'width 0.5s ease-out',
         }} />
@@ -179,13 +179,13 @@ function LevelProgress({ bonds }: { bonds: number }) {
 }
 
 /** Stats summary component */
-function StatsSummary({ 
-  bonds, 
-  molecules, 
+function StatsSummary({
+  bonds,
+  molecules,
   unique,
   familySessions,
   playMinutes,
-}: { 
+}: {
   bonds: number;
   molecules: number;
   unique: number;
@@ -199,7 +199,7 @@ function StatsSummary({
     { icon: '👨‍👩‍👧‍👦', value: familySessions, label: 'Family Play' },
     { icon: '⏱️', value: playMinutes, label: 'Minutes' },
   ];
-  
+
   return (
     <div className="stats-summary" style={{
       display: 'flex',
@@ -217,15 +217,15 @@ function StatsSummary({
           gap: '4px',
         }}>
           <span style={{ fontSize: '20px' }}>{stat.icon}</span>
-          <span style={{ 
-            fontSize: '16px', 
+          <span style={{
+            fontSize: '16px',
             fontWeight: 'bold',
-            color: '#00FF88',
+            color: 'var(--color-phosphor)',
           }}>
             {stat.value}
           </span>
-          <span style={{ 
-            fontSize: '10px', 
+          <span style={{
+            fontSize: '10px',
             color: 'rgba(232,236,244,0.6)',
           }}>
             {stat.label}
@@ -237,18 +237,18 @@ function StatsSummary({
 }
 
 /** Celebration animation overlay */
-function CelebrationOverlay({ 
-  badge, 
-  onComplete 
-}: { 
-  badge: Badge; 
+function CelebrationOverlay({
+  badge,
+  onComplete
+}: {
+  badge: Badge;
   onComplete: () => void;
 }) {
   useEffect(() => {
     const timer = setTimeout(onComplete, 3000);
     return () => clearTimeout(timer);
   }, [onComplete]);
-  
+
   return (
     <div className="celebration-overlay" style={{
       position: 'fixed',
@@ -273,7 +273,7 @@ function CelebrationOverlay({
       <div style={{
         fontSize: '48px',
         marginTop: '16px',
-        color: '#00FF88',
+        color: 'var(--color-phosphor)',
         fontWeight: 'bold',
       }}>
         {badge.name}!
@@ -299,7 +299,7 @@ function CelebrationOverlay({
 
 export function AvatarDisplay({ expanded = false, onBadgeEarn }: AvatarDisplayProps) {
   const [showCelebration, setShowCelebration] = useState<Badge | null>(null);
-  
+
   // Get state from progress store
   const totalBonds = useProgressStore((s) => s.totalBonds);
   const totalMolecules = useProgressStore((s) => s.totalMolecules);
@@ -308,11 +308,11 @@ export function AvatarDisplay({ expanded = false, onBadgeEarn }: AvatarDisplayPr
   const totalPlayMinutes = useProgressStore((s) => s.totalPlayMinutes);
   const badgeCollection = useProgressStore((s) => s.badgeCollection);
   const recentBadges = useProgressStore((s) => s.recentBadges);
-  
+
   const earnedCount = getEarnedBadgesCount(badgeCollection);
   const totalBadges = getTotalBadgesCount();
   const level = getLevelForBonds(totalBonds);
-  
+
   // Show celebration when new badge earned
   useEffect(() => {
     if (recentBadges.length > 0) {
@@ -324,7 +324,7 @@ export function AvatarDisplay({ expanded = false, onBadgeEarn }: AvatarDisplayPr
       }
     }
   }, [recentBadges, onBadgeEarn]);
-  
+
   return (
     <div className="avatar-display" style={{
       padding: '16px',
@@ -372,7 +372,7 @@ export function AvatarDisplay({ expanded = false, onBadgeEarn }: AvatarDisplayPr
           border-radius: 3px;
         }
       `}</style>
-      
+
       {/* Header */}
       <div style={{
         display: 'flex',
@@ -385,7 +385,7 @@ export function AvatarDisplay({ expanded = false, onBadgeEarn }: AvatarDisplayPr
             width: '60px',
             height: '60px',
             borderRadius: '50%',
-            background: 'linear-gradient(135deg, #00FF88, #00D4FF)',
+            background: 'linear-gradient(135deg, var(--color-phosphor), #00D4FF)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -395,22 +395,22 @@ export function AvatarDisplay({ expanded = false, onBadgeEarn }: AvatarDisplayPr
             {level.icon}
           </div>
           <div>
-            <div style={{ 
-              fontSize: '14px', 
+            <div style={{
+              fontSize: '14px',
               color: 'rgba(232,236,244,0.7)',
             }}>
               Your Avatar
             </div>
-            <div style={{ 
-              fontSize: '20px', 
+            <div style={{
+              fontSize: '20px',
               fontWeight: 'bold',
-              color: '#00FF88',
+              color: 'var(--color-phosphor)',
             }}>
               {level.title}
             </div>
           </div>
         </div>
-        
+
         {/* Badge count */}
         <div style={{
           display: 'flex',
@@ -421,13 +421,13 @@ export function AvatarDisplay({ expanded = false, onBadgeEarn }: AvatarDisplayPr
           borderRadius: '20px',
         }}>
           <span>🏆</span>
-          <span style={{ 
-            fontWeight: 'bold', 
-            color: '#00FF88',
+          <span style={{
+            fontWeight: 'bold',
+            color: 'var(--color-phosphor)',
           }}>
             {earnedCount}
           </span>
-          <span style={{ 
+          <span style={{
             color: 'rgba(232,236,244,0.6)',
             fontSize: '12px',
           }}>
@@ -435,19 +435,19 @@ export function AvatarDisplay({ expanded = false, onBadgeEarn }: AvatarDisplayPr
           </span>
         </div>
       </div>
-      
+
       {/* Level progress */}
       <LevelProgress bonds={totalBonds} />
-      
+
       {/* Stats summary */}
-      <StatsSummary 
+      <StatsSummary
         bonds={totalBonds}
         molecules={totalMolecules}
         unique={uniqueMolecules.length}
         familySessions={familyPlaySessions}
         playMinutes={totalPlayMinutes}
       />
-      
+
       {/* Badge grid - only show when expanded */}
       {expanded && (
         <div className="badge-grid">
@@ -459,7 +459,7 @@ export function AvatarDisplay({ expanded = false, onBadgeEarn }: AvatarDisplayPr
             };
             const isNew = recentBadges.includes(badge.id);
             return (
-              <BadgeItem 
+              <BadgeItem
                 key={badge.id}
                 badge={badge}
                 progress={progress}
@@ -469,10 +469,10 @@ export function AvatarDisplay({ expanded = false, onBadgeEarn }: AvatarDisplayPr
           })}
         </div>
       )}
-      
+
       {/* Celebration overlay */}
       {showCelebration && (
-        <CelebrationOverlay 
+        <CelebrationOverlay
           badge={showCelebration}
           onComplete={() => setShowCelebration(null)}
         />
@@ -483,13 +483,13 @@ export function AvatarDisplay({ expanded = false, onBadgeEarn }: AvatarDisplayPr
 
 // ── Compact version for HUD ──
 
-export function AvatarCompact({ 
-  bonds = 0, 
+export function AvatarCompact({
+  bonds = 0,
   badgeCount = 0,
   level = 'Seed',
   levelIcon = '🌱',
   onClick,
-}: { 
+}: {
   bonds?: number;
   badgeCount?: number;
   level?: string;
@@ -497,7 +497,7 @@ export function AvatarCompact({
   onClick?: () => void;
 }) {
   return (
-    <button 
+    <button
       onClick={onClick}
       style={{
         display: 'flex',

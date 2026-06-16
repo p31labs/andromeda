@@ -9,7 +9,7 @@ export function useLit() {
 
   useEffect(() => {
     let client = null;
-    
+
     async function initLit() {
       try {
         setLitStatus('Connecting...');
@@ -18,7 +18,7 @@ export function useLit() {
           litNetwork: LIT_NETWORK.DatilDev,
           debug: false
         });
-        
+
         await client.connect();
         setLitClient(client);
         setLitStatus('Connected');

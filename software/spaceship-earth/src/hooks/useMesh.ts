@@ -12,7 +12,7 @@ export function useMesh(roomName: string) {
 
   useEffect(() => {
     const meshInstance = getKenosisMesh();
-    
+
     async function init() {
       const success = await meshInstance.ignite({ persistenceKey: roomName });
       setIsMeshActive(success);

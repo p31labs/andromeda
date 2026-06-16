@@ -40,17 +40,17 @@ const ruleEvaluationShader = `
 fn main(@builtin(global_invocation_id) id: vec3<u32>) {
     let ruleIndex = id.x;
     if (ruleIndex >= rules.length()) { return; }
-    
+
     let rule = rules[ruleIndex];
     let ctx = context[0];
-    
+
     // Evaluate conditions in parallel
     var allowed = true;
     for (var i = 0; i < rule.conditionCount; i++) {
         let condition = rule.conditions[i];
         allowed = allowed && evaluateCondition(condition, ctx);
     }
-    
+
     results[ruleIndex] = RuleResult(rule.id, allowed);
 }
 `;
@@ -123,15 +123,15 @@ const trilaterationShader = `
 fn main(@builtin(global_invocation_id) id: vec3<u32>) {
     let beaconIndex = id.x;
     if (beaconIndex >= beacons.length()) { return; }
-    
+
     let beacon = beacons[beaconIndex];
-    
+
     // Calculate distance using RSSI
     let distance = pow(10.0, (beacon.txPower - beacon.rssi) / (10.0 * 2.5));
-    
+
     // Trilateration calculation
     let position = calculatePosition(beacon, distance);
-    
+
     results[beaconIndex] = PositionResult(beacon.id, position, distance);
 }
 `;
@@ -201,14 +201,14 @@ const collisionShader = `
 fn main(@builtin(global_invocation_id) id: vec3<u32>) {
     let obstacleIndex = id.x;
     if (obstacleIndex >= obstacles.length()) { return; }
-    
+
     let obstacle = obstacles[obstacleIndex];
     let cameraPos = cameraState.position;
-    
+
     // Calculate distance to obstacle
     let distance = length(cameraPos - obstacle.position);
     let minDistance = obstacle.radius + cameraState.radius;
-    
+
     if (distance < minDistance) {
         // Calculate collision response
         let normal = normalize(cameraPos - obstacle.position);
@@ -292,16 +292,16 @@ const userAction = async (zoneId: string) => {
     context: getCurrentContext(),
     zoneId
   });
-  
+
   if (!ruleResult.allowed) {
     showRuleViolation(ruleResult.deniedBy);
     return;
   }
-  
+
   // Process any BLE data
   const bleData = await getBLEData();
   const position = await bleProcessor.processBeacons(bleData);
-  
+
   // Update camera based on position
   cameraSystem.updateCameraPosition(position);
 };

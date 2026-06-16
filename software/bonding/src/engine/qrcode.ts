@@ -25,13 +25,13 @@ export function generateQRSvg(
   data: string,
   options?: {
     size?: number;        // px, default 200
-    fgColor?: string;     // default '#FFFFFF'
+    fgColor?: string;     // default 'var(--color-surface)'
     bgColor?: string;     // default 'transparent'
     quiet?: number;       // quiet zone modules, default 2
   }
 ): string {
   const size = options?.size ?? 200;
-  const fgColor = options?.fgColor ?? '#FFFFFF';
+  const fgColor = options?.fgColor ?? 'var(--color-surface)';
   const bgColor = options?.bgColor ?? 'transparent';
   const quiet = options?.quiet ?? 2;
 

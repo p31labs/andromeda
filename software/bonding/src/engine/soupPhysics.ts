@@ -83,7 +83,7 @@ export function tickSoup(state: SoupState, config: SoupConfig): SoupState {
             vx = (vx / speed) * config.maxSpeed;
             vy = (vy / speed) * config.maxSpeed;
         }
-        
+
         // Update position
         let x = m.x + vx;
         let y = m.y + vy;

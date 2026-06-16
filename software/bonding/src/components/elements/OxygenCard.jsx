@@ -31,7 +31,7 @@ const OxygenCard = ({ playerId, onBond }) => {
         <div className="stability">Stability: Medium</div>
       </div>
       <div className="element-description">
-        Highly electronegative. Forms 2 bonds. 
+        Highly electronegative. Forms 2 bonds.
         Essential for energy transfer and stability.
       </div>
       <div className="bonding-capacity">

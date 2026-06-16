@@ -58,11 +58,11 @@
   .subtitle {
     font-size: 1rem;
   }
-  
+
   .modifiers {
     grid-template-columns: 1fr;
   }
-  
+
   .export-controls {
     flex-direction: column;
     width: 100%;

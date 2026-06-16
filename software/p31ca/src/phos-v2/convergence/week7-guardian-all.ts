@@ -1,7 +1,7 @@
 /**
  * Week 7 Convergence Checkpoint: Guardian Dashboard Across All
  * Integration: Guardian + Voice + Bros + Router + Visual + Predictive
- * 
+ *
  * Success: Guardian oversight dashboard monitors and protects across all phases
  */
 
@@ -46,12 +46,12 @@ export async function runWeek7Convergence(
 ): Promise<ConvergenceReport> {
   const week = 7;
   const timestamp = Date.now();
-  
+
   console.log(`[Week 7 Convergence] Guardian Dashboard Across All Phases checkpoint starting...`);
-  
+
   // Run master convergence for week 7
   const baseReport = await master.converge(week);
-  
+
   // Mock guardian alerts
   const mockAlerts: GuardianAlert[] = [
     {
@@ -87,7 +87,7 @@ export async function runWeek7Convergence(
       recommendedAction: 'Require re-authentication'
     }
   ];
-  
+
   // Mock metrics
   const mockMetrics: GuardianMetrics = {
     activeAlerts: 2,
@@ -108,7 +108,7 @@ export async function runWeek7Convergence(
     systemHealth: 'degraded',
     lastScan: timestamp
   };
-  
+
   // Week 7 specific integration validation - GUARDIAN ACROSS ALL
   const integrationChecks: IntegrationCheck[] = [
     {
@@ -154,7 +154,7 @@ export async function runWeek7Convergence(
       demo: 'Guardian audits navigation requests, blocks suspicious routes'
     }
   ];
-  
+
   // Demo scenarios for Week 7
   const demoScenarios = [
     {
@@ -235,41 +235,41 @@ export async function runWeek7Convergence(
       successIndicator: 'Critical alert spoken aloud and displayed visually'
     }
   ];
-  
+
   // Success criteria validation
   const successCriteria: Week7SuccessCriteria = {
     alertDetectionAccuracy: 0.97, // Exceeds 0.95 target
     responseTime: 380, // Under 1000ms target
     dashboardReliability: 0.995 // Exceeds 0.99 target
   };
-  
+
   // Validate against criteria
   const enabled = input?.enableGuardian !== false;
-  const passed = 
+  const passed =
     enabled &&
     successCriteria.alertDetectionAccuracy > 0.95 &&
     successCriteria.responseTime < 1000 &&
     successCriteria.dashboardReliability > 0.99 &&
     integrationChecks[0].ready;
-  
+
   // Week 7 specific blockers
   const week7Blockers = [
     ...baseReport.blockers,
     ...(enabled ? [] : ['Guardian phase disabled - oversight unavailable']),
-    ...(successCriteria.alertDetectionAccuracy <= 0.95 
-      ? ['Alert detection accuracy below 95% threshold'] 
+    ...(successCriteria.alertDetectionAccuracy <= 0.95
+      ? ['Alert detection accuracy below 95% threshold']
       : []),
-    ...(successCriteria.responseTime >= 1000 
-      ? ['Guardian response time exceeds 1 second'] 
+    ...(successCriteria.responseTime >= 1000
+      ? ['Guardian response time exceeds 1 second']
       : []),
-    ...(successCriteria.dashboardReliability <= 0.99 
-      ? ['Dashboard reliability below 99% threshold'] 
+    ...(successCriteria.dashboardReliability <= 0.99
+      ? ['Dashboard reliability below 99% threshold']
       : []),
-    ...(!integrationChecks[0].ready 
-      ? ['Guardian integration with core phases not ready'] 
+    ...(!integrationChecks[0].ready
+      ? ['Guardian integration with core phases not ready']
       : [])
   ];
-  
+
   const report: ConvergenceReport = {
     week,
     timestamp,
@@ -283,10 +283,10 @@ export async function runWeek7Convergence(
     mockMetrics,
     guardianLevel: input?.guardianLevel || 'active',
     alertChannels: input?.alertChannels || ['visual', 'voice', 'notification'],
-    summary: passed 
+    summary: passed
       ? 'Week 7: Guardian Dashboard Across All CONVERGED'
       : 'Week 7: Guardian Dashboard Across All DIVERGED - blockers detected'
-  } as ConvergenceReport & { 
+  } as ConvergenceReport & {
     demoScenarios: typeof demoScenarios;
     successCriteria: typeof successCriteria;
     passed: boolean;
@@ -296,13 +296,13 @@ export async function runWeek7Convergence(
     alertChannels: string[];
     summary: string;
   };
-  
+
   console.log(`[Week 7 Convergence] ${report.summary}`);
   console.log(`[Week 7 Convergence] Blockers: ${week7Blockers.length}`);
   console.log(`[Week 7 Convergence] Active alerts: ${mockMetrics.activeAlerts}`);
   console.log(`[Week 7 Convergence] System health: ${mockMetrics.systemHealth}`);
   console.log(`[Week 7 Convergence] Guardian level: ${report.guardianLevel}`);
-  
+
   return report;
 }
 

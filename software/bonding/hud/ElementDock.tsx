@@ -1,11 +1,11 @@
 /**
  * WCD-08 Phase A: ElementDock — Element palette.
- * 
+ *
  * Horizontal scrolling row of element buttons.
  * - Default: 48×48 (w-12 h-12)
  * - Kid Mode (ageGroup === 'child'): 64×64 for easier tapping
  * - Senior Mode (ageGroup === 'senior'): 56×56
- * 
+ *
  * Sonnet: Wire `elements` from the existing palette data filtered by difficulty.
  * Wire `selected` and `onSelect` from gameStore.
  */
@@ -44,14 +44,14 @@ export function ElementDock({
   difficulty,
 }: ElementDockProps) {
   const { ageGroup, simpleMode } = useGameStore();
-  
+
   // Determine button size based on age group
   const getButtonSize = () => {
     if (ageGroup === 'child' || simpleMode) return 'w-16 h-16 text-lg';
     if (ageGroup === 'senior') return 'w-14 h-14 text-base';
     return 'w-12 h-12 text-base';
   };
-  
+
   // Bounce animation for kids
   const getAnimationClass = () => {
     if (ageGroup === 'child' || simpleMode) return 'active:scale-90 animate-bounce-kid';

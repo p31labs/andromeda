@@ -15,18 +15,18 @@
   --p31-surface: #161920;
   --p31-surface2: #1c2028;
   --p31-surface3: #232830;
-  --p31-cloud: #d8d6d0;
+  --p31-cloud: var(--color-cloud);
   --p31-paper: #f4f4f5;
   --p31-ink: #1e293b;
   --p31-muted: #6b7280;
-  --p31-coral: #cc6247;
+  --p31-coral: var(--color-coral);
   --p31-teal: #25897d;
-  --p31-cyan: #4db8a8;
-  --p31-amber: #cda852;
-  --p31-lavender: #8b7cc9;
-  --p31-phosphorus: #3ba372;
-  --p31-phosphor: #00FF88;
-  
+  --p31-cyan: var(--color-cyan);
+  --p31-amber: var(--color-amber);
+  --p31-lavender: var(--color-lavender);
+  --p31-phosphorus: var(--color-phosphorus);
+  --p31-phosphor: var(--color-phosphor);
+
   /* Emphasis roles */
   --p31-primary: var(--p31-teal);
   --p31-secondary: var(--p31-coral);
@@ -37,7 +37,7 @@
   --p31-surface-pressed: var(--p31-surface3);
   --p31-border-subtle: rgba(255, 255, 255, 0.06);
   --p31-border-focus: rgba(77, 184, 168, 0.5);
-  
+
   /* Glass surfaces */
   --p31-glass-surface: rgba(255, 255, 255, 0.04);
   --p31-glass-border: rgba(255, 255, 255, 0.08);
@@ -59,7 +59,7 @@
 :root {
   --p31-font-sans: 'Atkinson Hyperlegible', -apple-system, BlinkMacSystemFont, sans-serif;
   --p31-font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
-  
+
   /* Fluid type scale - responsive to viewport */
   --p31-text-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
   --p31-text-sm: clamp(0.875rem, 0.8rem + 0.35vw, 1rem);
@@ -70,14 +70,14 @@
   --p31-text-2xl: clamp(1.5rem, 1.3rem + 1vw, 2.25rem);
   --p31-text-3xl: clamp(1.875rem, 1.6rem + 1.4vw, 3rem);
   --p31-text-4xl: clamp(2.25rem, 1.9rem + 1.75vw, 4rem);
-  
+
   /* Line heights */
   --p31-leading-tight: 1.2;
   --p31-leading-snug: 1.4;
   --p31-leading-normal: 1.6;
   --p31-leading-relaxed: 1.75;
   --p31-leading-loose: 2;
-  
+
   /* Letter spacing */
   --p31-tracking-tight: -0.02em;
   --p31-tracking-normal: 0;
@@ -93,7 +93,7 @@
 :root {
   /* Base unit scales with viewport */
   --p31-space-unit: clamp(0.25rem, 0.2rem + 0.25vw, 0.5rem);
-  
+
   /* Space scale */
   --p31-space-0: 0;
   --p31-space-1: calc(var(--p31-space-unit) * 1);
@@ -109,19 +109,19 @@
   --p31-space-20: calc(var(--p31-space-unit) * 20);
   --p31-space-24: calc(var(--p31-space-unit) * 24);
   --p31-space-32: calc(var(--p31-space-unit) * 32);
-  
+
   /* Section spacing */
   --p31-section-sm: clamp(2rem, 5vw, 4rem);
   --p31-section-md: clamp(4rem, 8vw, 8rem);
   --p31-section-lg: clamp(6rem, 12vw, 12rem);
-  
+
   /* Container widths */
   --p31-container-sm: 640px;
   --p31-container-md: 768px;
   --p31-container-lg: 1024px;
   --p31-container-xl: 1280px;
   --p31-container-2xl: 1536px;
-  
+
   /* Content width for readability */
   --p31-prose-width: 65ch;
 }
@@ -139,12 +139,12 @@
   --p31-radius-2xl: 24px;
   --p31-radius-3xl: 32px;
   --p31-radius-full: 9999px;
-  
+
   /* Organic shapes (squircles) */
   --p31-shape-soft: 16px 16px 4px 16px;
   --p31-shape-bubble: 24px 24px 24px 4px;
   --p31-shape-egg: 60% 40% 30% 70% / 60% 30% 70% 40%;
-  
+
   /* Shadows that lift */
   --p31-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.06);
   --p31-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
@@ -170,7 +170,7 @@
   --p31-duration-slower: 600ms;
   --p31-duration-cinematic: 800ms;
   --p31-duration-ambient: 1200ms;
-  
+
   /* Easing curves */
   --p31-ease-linear: linear;
   --p31-ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
@@ -180,7 +180,7 @@
   --p31-ease-fluid: cubic-bezier(0.23, 1, 0.32, 1);
   --p31-ease-snap: cubic-bezier(0.77, 0, 0.175, 1);
   --p31-ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  
+
   /* Pre-built transitions */
   --p31-transition-colors: color var(--p31-duration-fast) var(--p31-ease-smooth),
                            background-color var(--p31-duration-fast) var(--p31-ease-smooth),
@@ -247,18 +247,18 @@ html {
   line-height: var(--p31-leading-normal);
   color: var(--p31-cloud);
   background-color: var(--p31-void);
-  
+
   /* Smooth scrolling */
   scroll-behavior: smooth;
-  
+
   /* Better text rendering */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
-  
+
   /* Prevent text size adjustment on mobile */
   -webkit-text-size-adjust: 100%;
-  
+
   /* Theme transition for smooth theme switching */
   transition: background-color var(--p31-duration-slower) var(--p31-ease-fluid),
               color var(--p31-duration-slower) var(--p31-ease-fluid);
@@ -370,14 +370,14 @@ h1.p31-heading, h2.p31-heading, h3.p31-heading {
 .p31-glass {
   background: var(--p31-glass-surface);
   border: 1px solid var(--p31-glass-border);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .p31-glass-strong {
   background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 /* ═══════════════════════════════════════════════════════════════

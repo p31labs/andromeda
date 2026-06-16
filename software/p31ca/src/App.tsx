@@ -7,7 +7,7 @@ import * as THREE from 'three';
 
 export default function App() {
   const meshRef = useRef<THREE.Mesh>(null);
-  
+
   // Fixed: Moved useFrame inside Canvas component via custom controller
   useFrame((state, delta) => {
     if (meshRef.current) {
@@ -18,7 +18,7 @@ export default function App() {
   });
 
   return (
-    <Canvas 
+    <Canvas
       ref={meshRef}
       camera={{ position: [0, 0, 5] }}
       style={{ height: '100vh', width: '100vw' }}

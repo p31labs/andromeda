@@ -22,7 +22,7 @@
     @media (max-width: 1100px) {
       .pg-layout { grid-template-columns: 1fr; }
     }
-    
+
     .pg-controls {
       position: sticky;
       top: 88px;
@@ -35,7 +35,7 @@
     }
     .pg-controls::-webkit-scrollbar { width: 6px; }
     .pg-controls::-webkit-scrollbar-thumb { background: var(--p31-surface3); border-radius: 3px; }
-    
+
     .pg-control-group {
       margin-bottom: 20px;
       padding-bottom: 20px;
@@ -50,7 +50,7 @@
       color: var(--p31-muted);
       margin-bottom: 12px;
     }
-    
+
     .pg-color-field {
       display: flex;
       align-items: center;
@@ -87,7 +87,7 @@
       flex-shrink: 0;
       width: 80px;
     }
-    
+
     .pg-slider-field {
       margin-bottom: 12px;
     }
@@ -122,7 +122,7 @@
       cursor: pointer;
       border: none;
     }
-    
+
     .pg-preset-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -148,7 +148,7 @@
       font-size: 11px;
       color: var(--p31-paper);
     }
-    
+
     .pg-actions {
       display: flex;
       flex-direction: column;
@@ -174,7 +174,7 @@
       color: var(--p31-void);
       border-color: var(--p31-primary);
     }
-    
+
     /* Preview canvas */
     .pg-canvas {
       display: flex;
@@ -195,7 +195,7 @@
       color: var(--p31-muted);
       margin-bottom: 16px;
     }
-    
+
     /* Mock UI */
     .mock-hero {
       padding: 32px;
@@ -243,7 +243,7 @@
       cursor: pointer;
       font-size: 13px;
     }
-    
+
     .mock-cards {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -277,7 +277,7 @@
       color: var(--p31-muted);
       font-family: var(--p31-font-mono);
     }
-    
+
     .mock-stats {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -302,7 +302,7 @@
       font-family: var(--p31-font-mono);
       text-transform: uppercase;
     }
-    
+
     .pg-export {
       background: var(--p31-void);
       border: 1px solid var(--p31-border-subtle);
@@ -323,7 +323,7 @@
     import { renderShell, code, callout } from '/stylebook/_chrome.js';
     import { P31ThemeController, P31_THEMES } from '/lib/p31-theme-engine.mjs';
     window.p31Theme = new P31ThemeController({ defaultTheme: 'hub' });
-    
+
     const COLOR_TOKENS = [
       { key: 'void', label: 'Void' },
       { key: 'surface', label: 'Surface' },
@@ -340,7 +340,7 @@
       { key: 'phosphorus', label: 'Phos' },
       { key: 'phosphor', label: 'Glow' }
     ];
-    
+
     const colorInputs = COLOR_TOKENS.map(t => `
       <div class="pg-color-field">
         <input type="color" class="pg-color-swatch" data-token="${t.key}" id="cs-${t.key}">
@@ -348,14 +348,14 @@
         <input type="text" class="pg-color-input" data-token="${t.key}" id="ct-${t.key}">
       </div>
     `).join('');
-    
+
     const themePresets = Object.values(P31_THEMES).map(t => `
       <div class="pg-preset" data-theme="${t.id}">
         <div class="pg-preset-preview" style="background: linear-gradient(135deg, ${t.colors.void}, ${t.colors.primary || t.colors.teal});"></div>
         <div class="pg-preset-name">${t.label}</div>
       </div>
     `).join('');
-    
+
     const content = `
       <div class="pg-layout">
         <aside class="pg-controls">
@@ -363,12 +363,12 @@
             <div class="pg-control-heading">Quick presets</div>
             <div class="pg-preset-grid">${themePresets}</div>
           </div>
-          
+
           <div class="pg-control-group">
             <div class="pg-control-heading">Colors</div>
             ${colorInputs}
           </div>
-          
+
           <div class="pg-control-group">
             <div class="pg-control-heading">Geometry</div>
             <div class="pg-slider-field">
@@ -386,7 +386,7 @@
               <input type="range" class="pg-slider" min="80" max="150" value="100" id="spacing-slider">
             </div>
           </div>
-          
+
           <div class="pg-control-group">
             <div class="pg-control-heading">Adaptive mode</div>
             <select class="p31-select" id="mode-select" style="width:100%; padding: 8px 12px; background: var(--p31-surface2); border: 1px solid var(--p31-border-subtle); border-radius: 8px; color: var(--p31-cloud); font-size: 12px;">
@@ -397,7 +397,7 @@
               <option value="muted">Muted (greyed)</option>
             </select>
           </div>
-          
+
           <div class="pg-control-group">
             <div class="pg-control-heading">Actions</div>
             <div class="pg-actions">
@@ -407,7 +407,7 @@
             </div>
           </div>
         </aside>
-        
+
         <div class="pg-canvas">
           <div class="pg-canvas-section">
             <div class="pg-canvas-label">Hero pattern</div>
@@ -418,7 +418,7 @@
               <button class="mock-cta">Continue →</button>
             </div>
           </div>
-          
+
           <div class="pg-canvas-section">
             <div class="pg-canvas-label">Stat row</div>
             <div class="mock-stats">
@@ -440,7 +440,7 @@
               </div>
             </div>
           </div>
-          
+
           <div class="pg-canvas-section">
             <div class="pg-canvas-label">Card grid</div>
             <div class="mock-cards">
@@ -466,7 +466,7 @@
               </div>
             </div>
           </div>
-          
+
           <div class="pg-canvas-section" id="export-section" style="display:none;">
             <div class="pg-canvas-label">Export · CSS variables</div>
             <pre class="pg-export" id="export-output"></pre>
@@ -475,7 +475,7 @@
         </div>
       </div>
     `;
-    
+
     renderShell({
       activeId: 'playground',
       breadcrumb: [
@@ -492,9 +492,9 @@
       ],
       content
     });
-    
+
     // === Playground logic ===
-    
+
     function getCurrentTokens() {
       const result = {};
       const cs = getComputedStyle(document.documentElement);
@@ -503,7 +503,7 @@
       });
       return result;
     }
-    
+
     function syncInputsFromCSS() {
       const tokens = getCurrentTokens();
       COLOR_TOKENS.forEach(t => {
@@ -520,11 +520,11 @@
         }
       });
     }
-    
+
     function applyTokenOverride(token, value) {
       document.documentElement.style.setProperty('--p31-' + token, value);
     }
-    
+
     // Color inputs
     COLOR_TOKENS.forEach(t => {
       const sw = document.getElementById('cs-' + t.key);
@@ -542,7 +542,7 @@
         });
       }
     });
-    
+
     // Theme presets
     document.querySelectorAll('.pg-preset').forEach(p => {
       p.addEventListener('click', () => {
@@ -550,13 +550,13 @@
         setTimeout(syncInputsFromCSS, 100);
       });
     });
-    
+
     // Mode select
     document.getElementById('mode-select').addEventListener('change', (e) => {
       window.p31Theme.setMode(e.target.value);
       setTimeout(syncInputsFromCSS, 100);
     });
-    
+
     // Geometry sliders
     document.getElementById('radius-slider').addEventListener('input', (e) => {
       const v = e.target.value + 'px';
@@ -564,13 +564,13 @@
       document.documentElement.style.setProperty('--p31-radius-lg', v);
       document.documentElement.style.setProperty('--p31-radius-xl', (parseInt(v) * 1.33) + 'px');
     });
-    
+
     document.getElementById('spacing-slider').addEventListener('input', (e) => {
       const scale = e.target.value / 100;
       document.getElementById('spacing-val').textContent = scale.toFixed(1) + '×';
       document.documentElement.style.setProperty('--p31-space-unit', `calc(0.25rem * ${scale})`);
     });
-    
+
     // Reset
     document.getElementById('reset-btn').addEventListener('click', () => {
       COLOR_TOKENS.forEach(t => {
@@ -588,7 +588,7 @@
       document.getElementById('mode-select').value = 'default';
       setTimeout(syncInputsFromCSS, 100);
     });
-    
+
     // Random
     document.getElementById('random-btn').addEventListener('click', () => {
       const themes = Object.keys(P31_THEMES);
@@ -600,15 +600,15 @@
       document.documentElement.style.setProperty('--p31-radius-lg', radius + 'px');
       setTimeout(syncInputsFromCSS, 100);
     });
-    
+
     // Export
     document.getElementById('export-btn').addEventListener('click', () => {
       const sec = document.getElementById('export-section');
       const out = document.getElementById('export-output');
       sec.style.display = 'block';
-      
+
       const tokens = getCurrentTokens();
-      const css = ':root {\n' + 
+      const css = ':root {\n' +
         COLOR_TOKENS.map(t => `  --p31-${t.key}: ${tokens[t.key]};`).join('\n') +
         '\n  --p31-radius-lg: ' + getComputedStyle(document.documentElement).getPropertyValue('--p31-radius-lg').trim() +
         ';\n  --p31-space-unit: ' + getComputedStyle(document.documentElement).getPropertyValue('--p31-space-unit').trim() +
@@ -616,7 +616,7 @@
       out.textContent = css;
       sec.scrollIntoView({ behavior: 'smooth' });
     });
-    
+
     document.getElementById('copy-export-btn').addEventListener('click', async () => {
       const text = document.getElementById('export-output').textContent;
       try {
@@ -626,7 +626,7 @@
         setTimeout(() => { btn.textContent = '⎘ Copy to clipboard'; }, 1500);
       } catch (e) {}
     });
-    
+
     // Initial sync
     setTimeout(syncInputsFromCSS, 200);
     window.p31Theme.onChange(() => setTimeout(syncInputsFromCSS, 100));

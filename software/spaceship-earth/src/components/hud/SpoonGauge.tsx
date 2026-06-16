@@ -23,8 +23,8 @@ export const SpoonGauge = memo(function SpoonGauge({ spoons, maxSpoons, love, ti
       <div className="spoon-gauge-row" style={{ marginBottom: '8px' }}>
         <span className="spoon-gauge-label" style={{ fontSize: '16px', opacity: 0.8 }}>spoons</span>
         <span className="spoon-gauge-value" style={{ fontSize: '18px', fontWeight: '700' }}>{spoons}/{maxSpoons}</span>
-        <span className="spoon-gauge-tier" style={{ 
-          color: tierColor, 
+        <span className="spoon-gauge-tier" style={{
+          color: tierColor,
           textShadow: `0 0 8px ${tierColor}44`,
           fontSize: '16px',
           fontWeight: '700',

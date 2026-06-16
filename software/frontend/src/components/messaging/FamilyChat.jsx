@@ -17,10 +17,10 @@ export const FamilyChat = ({ userId, userName }) => {
   const [onlineUsers, setOnlineUsers] = useState({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  
+
   const messagesEndRef = useRef(null);
   const clientRef = useRef(null);
-  
+
   // Initialize API client
   const client = useMemo(() => {
     if (!userId) return null;
@@ -31,7 +31,7 @@ export const FamilyChat = ({ userId, userName }) => {
 
   // WebSocket connection
   const ws = useWebSocket(userId, { autoConnect: true });
-  
+
   // Message queue for offline support
   const { queueMessage, flushQueue, queueSize } = useWebSocketQueue(ws);
 
@@ -90,7 +90,7 @@ export const FamilyChat = ({ userId, userName }) => {
       const data = await response.json();
       setMessages(data.messages || []);
       setCurrentConversation(conversationId);
-      
+
       // Mark as read
       markConversationAsRead(conversationId);
     } catch (err) {
@@ -121,7 +121,7 @@ export const FamilyChat = ({ userId, userName }) => {
         delivered: false,
         read: false
       };
-      
+
       setMessages(prev => [...prev, optimisticMessage]);
       setNewMessage('');
 
@@ -145,7 +145,7 @@ export const FamilyChat = ({ userId, userName }) => {
 
         const data = await response.json();
         // Replace temp message with real one
-        setMessages(prev => prev.map(m => 
+        setMessages(prev => prev.map(m =>
           m.id === tempId ? { ...m, id: data.messageId, delivered: true } : m
         ));
       }
@@ -157,11 +157,11 @@ export const FamilyChat = ({ userId, userName }) => {
 
   const handleNewMessage = (data) => {
     const { message } = data;
-    
+
     setMessages(prev => {
       // Avoid duplicates
       if (prev.some(m => m.id === message.id)) return prev;
-      
+
       const updated = [...prev, message];
       return updated.sort((a, b) => a.timestamp - b.timestamp);
     });
@@ -174,21 +174,21 @@ export const FamilyChat = ({ userId, userName }) => {
 
   const handleMessageDelivered = (data) => {
     const { messageId } = data;
-    setMessages(prev => prev.map(m => 
+    setMessages(prev => prev.map(m =>
       m.id === messageId ? { ...m, delivered: true } : m
     ));
   };
 
   const handleMessageRead = (data) => {
     const { messageId } = data;
-    setMessages(prev => prev.map(m => 
+    setMessages(prev => prev.map(m =>
       m.id === messageId ? { ...m, read: true } : m
     ));
   };
 
   const handleTypingIndicator = (data) => {
     const { userId, conversationId, typing } = data;
-    
+
     if (conversationId === currentConversation) {
       setTypingUsers(prev => ({
         ...prev,
@@ -211,13 +211,13 @@ export const FamilyChat = ({ userId, userName }) => {
       if (m.id === messageId) {
         const reactions = [...(m.reactions || [])];
         const existing = reactions.find(r => r.userId === userId);
-        
+
         if (existing) {
           existing.emoji = emoji;
         } else {
           reactions.push({ userId, emoji });
         }
-        
+
         return { ...m, reactions };
       }
       return m;
@@ -226,7 +226,7 @@ export const FamilyChat = ({ userId, userName }) => {
 
   const handleTyping = (e) => {
     setNewMessage(e.target.value);
-    
+
     if (ws && currentConversation) {
       // Send typing start
       ws.send(JSON.stringify({
@@ -284,18 +284,18 @@ export const FamilyChat = ({ userId, userName }) => {
       <div className="chat-sidebar">
         <div className="sidebar-header">
           <h3>Family Messages</h3>
-          <button 
+          <button
             className="btn btn-primary"
             onClick={() => {/* Open new conversation modal */}}
           >
             New Chat
           </button>
         </div>
-        
+
         <div className="conversations-list">
           {loading && <div className="loading">Loading...</div>}
           {error && <div className="error">{error}</div>}
-          
+
           {conversations.map(conv => (
             <div
               key={conv.id}
@@ -312,7 +312,7 @@ export const FamilyChat = ({ userId, userName }) => {
                     </div>
                   ))}
               </div>
-              
+
               <div className="conversation-info">
                 <div className="conversation-name">
                   {conv.name || conv.participants
@@ -320,14 +320,14 @@ export const FamilyChat = ({ userId, userName }) => {
                     .map(id => id.charAt(0).toUpperCase())
                     .join(', ')}
                 </div>
-                
+
                 {conv.lastMessage && (
                   <div className="last-message">
                     {conv.lastMessage.content.substring(0, 50)}
                   </div>
                 )}
               </div>
-              
+
               {conv.unreadCount > 0 && (
                 <div className="unread-badge">{conv.unreadCount}</div>
               )}
@@ -361,16 +361,16 @@ export const FamilyChat = ({ userId, userName }) => {
                   <div className="message-content">
                     {msg.content}
                   </div>
-                  
+
                   <div className="message-meta">
                     <span className="message-time">{formatTime(msg.timestamp)}</span>
-                    
+
                     {msg.senderId === userId && (
                       <span className="message-status">
                         {msg.read ? '✓✓' : msg.delivered ? '✓' : ''}
                       </span>
                     )}
-                    
+
                     {msg.reactions && msg.reactions.length > 0 && (
                       <span className="message-reactions">
                         {msg.reactions.map((r, i) => (
@@ -381,13 +381,13 @@ export const FamilyChat = ({ userId, userName }) => {
                   </div>
                 </div>
               ))}
-              
+
               {Object.entries(typingUsers).some(([_, typing]) => typing) && (
                 <div className="typing-indicator">
                   <span>Someone is typing...</span>
                 </div>
               )}
-              
+
               <div ref={messagesEndRef} />
             </div>
 
@@ -400,7 +400,7 @@ export const FamilyChat = ({ userId, userName }) => {
                 placeholder="Type a message..."
                 disabled={loading}
               />
-              <button 
+              <button
                 onClick={sendMessage}
                 disabled={!newMessage.trim() || loading}
               >

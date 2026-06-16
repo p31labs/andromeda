@@ -71,7 +71,7 @@ export function scoreFreestyle(
 
   const stabilityMult = 1 + (stability / 100);
   let baseLove = Math.round(atoms.length * scoring.basePerAtom * stabilityMult);
-  
+
   const bonuses: FreestyleResult['bonuses'] = [];
 
   const elemBonus = uniqueElements * scoring.uniqueElementBonus;

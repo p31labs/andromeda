@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>P31 Quantum Magic 8 Ball · Live Dashboard</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            background: #0a0c12;
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 2rem;
+            color: #e2e8f0;
+        }
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+        h1 {
+            font-size: 2rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, #a5f3fc, #c084fc);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 0.25rem;
+        }
+        .sub {
+            color: #7f8ea3;
+            margin-bottom: 2rem;
+            border-left: 3px solid #3b82f6;
+            padding-left: 1rem;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .card {
+            background: rgba(18, 22, 35, 0.7);
+            backdrop-filter: blur(8px);
+            border-radius: 1.5rem;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            padding: 1.25rem 1.5rem;
+            transition: all 0.2s;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+        .card h2 {
+            font-size: 1.25rem;
+            font-weight: 500;
+            margin-top: 0;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border-bottom: 1px solid #2d3a5e;
+            padding-bottom: 0.5rem;
+        }
+        .badge {
+            background: #1e2a4a;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        .stat {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 0.5rem 0;
+        }
+        .critical {
+            color: #f97316;
+            text-shadow: 0 0 4px rgba(249,115,22,0.4);
+        }
+        .ok {
+            color: #4ade80;
+        }
+        .warning {
+            color: #facc15;
+        }
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+        }
+        button, .copy-btn {
+            background: #1f2937;
+            border: 1px solid #3b82f6;
+            color: #e2e8f0;
+            padding: 0.4rem 1rem;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: 0.1s;
+            margin-top: 0.5rem;
+        }
+        button:hover, .copy-btn:hover {
+            background: #2d3a5e;
+            border-color: #60a5fa;
+        }
+        input, textarea {
+            background: #111827;
+            border: 1px solid #334155;
+            color: #f1f5f9;
+            padding: 0.5rem;
+            border-radius: 12px;
+            width: 100%;
+            margin: 0.5rem 0;
+            font-family: monospace;
+        }
+        .recommendation {
+            background: linear-gradient(145deg, #0f172a, #0a0f1c);
+            border-left: 5px solid #8b5cf6;
+            padding: 1rem;
+            border-radius: 1rem;
+            margin-top: 0.75rem;
+        }
+        .score {
+            font-family: monospace;
+            font-size: 1.2rem;
+        }
+        hr {
+            border-color: #2d3a5e;
+            margin: 1rem 0;
+        }
+        .footer {
+            text-align: center;
+            font-size: 0.75rem;
+            color: #5b6e8c;
+            margin-top: 2rem;
+        }
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #10b981;
+            color: #0f172a;
+            padding: 0.5rem 1rem;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            z-index: 1000;
+            transition: opacity 0.3s;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>🌀 QUANTUM MAGIC 8 BALL</h1>
+    <div class="sub">context‑aware decision engine · spoon‑coupled · real‑time</div>
+
+    <div class="grid" id="dashboardGrid">
+        <!-- spoon & health card -->
+        <div class="card" id="healthCard">
+            <h2>🥄 BIOLOGICAL STATE</h2>
+            <div class="flex-between"><span>Spoon level</span><span id="spoonValue" class="stat">—</span></div>
+            <div class="flex-between"><span>Serum calcium (mg/dL)</span><span id="calciumValue" class="stat">—</span></div>
+            <div class="flex-between"><span>Albumin (g/dL)</span><span id="albuminValue">—</span></div>
+            <div id="calciumAlert" style="margin-top: 8px;"></div>
+        </div>
+
+        <!-- 8 ball recommendation card -->
+        <div class="card" id="recommendationCard">
+            <h2>🎱 TOP RECOMMENDATION</h2>
+            <div id="recommendationContent">loading...</div>
+        </div>
+
+        <!-- medical log editor card -->
+        <div class="card" id="medicalEditorCard">
+            <h2>📝 UPDATE MEDICAL LOG</h2>
+            <label>Calcium (mg/dL)</label>
+            <input type="number" step="0.1" id="inputCalcium" placeholder="e.g., 7.8">
+            <label>Albumin (g/dL)</label>
+            <input type="number" step="0.1" id="inputAlbumin" placeholder="e.g., 4.0">
+            <label>Notes</label>
+            <textarea id="inputNotes" rows="2" placeholder="critical, normal, post-meds..."></textarea>
+            <button id="saveMedicalBtn">💾 Save & Re‑evaluate</button>
+            <div id="saveHelp" style="font-size:0.7rem; margin-top:8px;">⚠️ Saves to browser local storage. To persist to disk, run: <code id="diskCommand"></code></div>
+        </div>
+    </div>
+
+    <div class="grid">
+        <div class="card">
+            <h2>📊 ECOSYSTEM FIDELITY</h2>
+            <div class="stat" id="ecoFidelity">—</div>
+            <div id="worstProjects"></div>
+            <button id="copyPolisherCmd">📋 Copy polisher command</button>
+        </div>
+        <div class="card">
+            <h2>⚡ QUICK ACTIONS</h2>
+            <button id="copyMedicalCmd">📋 Copy command to write medical.json</button>
+            <button id="copy8ballCmd">📋 Copy 8‑ball CLI command</button>
+            <button id="viewPRsBtn" style="margin-top: 0.5rem;">🔍 View open PRs (GitHub)</button>
+            <div style="margin-top: 12px;"><span class="badge">PARALLEL PATHS</span> The cron runs every 6h — polisher & jitterbug are autonomous.</div>
+        </div>
+    </div>
+
+    <div class="footer">
+        Data sources: spoon-state.json, medical-log.json, quantum-polisher-report.json, grading-index.json<br>
+        Quantum Magic 8 Ball uses cognitive passport (~/.p31/cognitive-passport.json)
+    </div>
+</div>
+<div id="toast" style="display:none;" class="toast"></div>
+
+<script>
+    // --------------------------------------------------------------
+    // 1. fetch all JSON files (assume served from current origin)
+    // --------------------------------------------------------------
+    const BASE = window.location.origin;
+    let spoonData = { level: 4 };
+    let medicalData = { serum_calcium_mg_dL: 8.2, albumin_g_dL: 4.0, notes: "" };
+    let polisherReport = { ecosystem_fidelity: 62.4, projects: {} };
+    let gradingData = { artifacts: [] };
+
+    async function fetchAll() {
+        try {
+            const spoonRes = await fetch('/spoon-state.json');
+            if (spoonRes.ok) spoonData = await spoonRes.json();
+        } catch(e) { console.warn("spoon-state.json not reachable", e); }
+        try {
+            const medicalRes = await fetch('/medical-log.json');
+            if (medicalRes.ok) medicalData = await medicalRes.json();
+        } catch(e) { console.warn("medical-log.json not reachable", e); }
+        try {
+            const polisherRes = await fetch('/quantum-polisher-report.json');
+            if (polisherRes.ok) polisherReport = await polisherRes.json();
+        } catch(e) { console.warn("polisher report not reachable", e); }
+        try {
+            const gradingRes = await fetch('/grading-index.json');
+            if (gradingRes.ok) gradingData = await gradingRes.json();
+        } catch(e) { console.warn("grading index not reachable", e); }
+        renderUI();
+        evaluate8Ball();
+    }
+
+    // --------------------------------------------------------------
+    // 2. render health & spoon
+    // --------------------------------------------------------------
+    function renderUI() {
+        const spoon = spoonData.level !== undefined ? spoonData.level : 4;
+        const calcium = medicalData.serum_calcium_mg_dL || 8.2;
+        const albumin = medicalData.albumin_g_dL || 4.0;
+        document.getElementById('spoonValue').innerHTML = spoon + '/5';
+        document.getElementById('calciumValue').innerHTML = calcium;
+        document.getElementById('albuminValue').innerHTML = albumin;
+        const critical = calcium <= 7.8;
+        const calElem = document.getElementById('calciumValue');
+        if (critical) {
+            calElem.className = 'stat critical';
+            document.getElementById('calciumAlert').innerHTML = '<span style="color:#f97316;">⚠️ CRITICAL – action required</span>';
+        } else {
+            calElem.className = 'stat ok';
+            document.getElementById('calciumAlert').innerHTML = '<span style="color:#4ade80;">✓ within threshold</span>';
+        }
+        // populate editor fields
+        document.getElementById('inputCalcium').value = calcium;
+        document.getElementById('inputAlbumin').value = albumin;
+        document.getElementById('inputNotes').value = medicalData.notes || '';
+        // ecosystem fidelity
+        const fidelity = polisherReport.ecosystem_fidelity || 62.4;
+        document.getElementById('ecoFidelity').innerHTML = fidelity + '/100';
+        const projects = polisherReport.projects || {};
+        const worst = Object.entries(projects).sort((a,b) => (a[1]?.overall||0) - (b[1]?.overall||0)).slice(0,3);
+        let worstHtml = '<div style="margin-top:8px;"><strong>lowest fidelity</strong><ul style="margin-top:4px;">';
+        for (let [name, data] of worst) {
+            worstHtml += `<li>${name} : ${data?.overall || 0}/100</li>`;
+        }
+        worstHtml += '</ul></div>';
+        document.getElementById('worstProjects').innerHTML = worstHtml;
+        // command to write medical log to disk
+        const cmd = `echo '${JSON.stringify(medicalData)}' > medical-log.json`;
+        document.getElementById('diskCommand').innerText = cmd;
+    }
+
+    // --------------------------------------------------------------
+    // 3. Quantum Magic 8 Ball decision engine (client-side replica)
+    // --------------------------------------------------------------
+    async function evaluate8Ball() {
+        const spoon = spoonData.level || 4;
+        const calcium = medicalData.serum_calcium_mg_dL || 8.2;
+        const criticalCa = 7.8;
+        const isCritical = calcium <= criticalCa;
+        const now = new Date();
+        const hour = now.getHours();
+        const isPeak = (hour >= 10 && hour < 12) || (hour >= 14 && hour < 16);
+        // cognitive passport defaults (same as server)
+        const taskInitWeight = 0.8;
+        const execPenalty = taskInitWeight;
+        const actions = [
+            { id: "medical_call", name: "📞 Call Coastal Community Health", base: 10, urgency: isCritical ? 2.0 : 1.0, spoonCost: 3, parallelBenefit: 0.5 },
+            { id: "polisher", name: "🧹 Run Quantum Polisher (scan only)", base: 5, urgency: 1.0, spoonCost: 1, parallelBenefit: 0.8 },
+            { id: "dashboard", name: "📊 Review Jitterbug Dashboard", base: 2, urgency: 1.0, spoonCost: 1, parallelBenefit: 0.9 },
+            { id: "macrophage", name: "🔬 Review Macrophage PRs", base: 3, urgency: 1.0, spoonCost: 2, parallelBenefit: 0.6 },
+            { id: "prep_medical", name: "📋 Prepare medical log for endo", base: 4, urgency: isCritical ? 1.5 : 1.0, spoonCost: 2, parallelBenefit: 0.7 },
+            { id: "rest", name: "😴 Rest / recover spoons", base: 1, urgency: spoon <= 2 ? 2.0 : 1.0, spoonCost: 0.5, parallelBenefit: 0.0 }
+        ];
+        const scored = actions.map(act => {
+            const timeBonus = (act.id === "rest" && hour >= 15 && hour < 17) ? 0.8 : (isPeak && act.id !== "rest" ? 1.2 : 1.0);
+            let effectiveCost = (act.spoonCost * execPenalty);
+            if (effectiveCost <= 0) effectiveCost = 0.1;
+            let score = (act.base * act.urgency * timeBonus * (1 + act.parallelBenefit)) / effectiveCost;
+            if (act.id === "rest" && spoon <= 2) score *= 1.5;
+            return { ...act, score: parseFloat(score.toFixed(2)), timeBonus };
+        });
+        scored.sort((a,b) => b.score - a.score);
+        const top = scored[0];
+        const recDiv = document.getElementById('recommendationContent');
+        recDiv.innerHTML = `
+            <div class="recommendation">
+                <strong style="font-size:1.3rem;">🎯 ${top.name}</strong><br>
+                <span class="score">score: ${top.score}</span><br>
+                <span style="font-size:0.8rem;">base ${top.base} · urgency ${top.urgency} · spoonCost ${top.spoonCost} · execPenalty ${execPenalty}</span><br>
+                <span style="font-size:0.75rem; color:#94a3b8;">${top.id === "medical_call" ? 'calcium critical, spoon moderate → high priority' :
+                    top.id === "rest" ? 'low spoons → rest recommended' : 'system stable, polishing is optimal'}</span>
+            </div>
+            <hr>
+            <div><strong>🔄 ALTERNATIVES</strong><br>
+            ${scored.slice(1,4).map(a => `• ${a.name} (score ${a.score})`).join('<br>')}
+            </div>
+        `;
+    }
+
+    // --------------------------------------------------------------
+    // 4. Medical log editor (localStorage + show disk command)
+    // --------------------------------------------------------------
+    document.getElementById('saveMedicalBtn').addEventListener('click', () => {
+        const newCa = parseFloat(document.getElementById('inputCalcium').value);
+        const newAlb = parseFloat(document.getElementById('inputAlbumin').value);
+        const newNotes = document.getElementById('inputNotes').value;
+        if (!isNaN(newCa) && !isNaN(newAlb)) {
+            medicalData.serum_calcium_mg_dL = newCa;
+            medicalData.albumin_g_dL = newAlb;
+            medicalData.notes = newNotes;
+            medicalData.last_updated = new Date().toISOString();
+            // Save to localStorage for session
+            localStorage.setItem('p31_medical_override', JSON.stringify(medicalData));
+            renderUI();
+            evaluate8Ball();
+            showToast("Medical log updated in browser (localStorage). Use command below to persist to disk.");
+            const cmd = `echo '${JSON.stringify(medicalData)}' > medical-log.json`;
+            document.getElementById('diskCommand').innerText = cmd;
+        } else {
+            showToast("❌ Invalid calcium or albumin", true);
+        }
+    });
+
+    // load any localStorage override on start
+    const storedMedical = localStorage.getItem('p31_medical_override');
+    if (storedMedical) {
+        try {
+            medicalData = JSON.parse(storedMedical);
+        } catch(e) {}
+    }
+
+    // --------------------------------------------------------------
+    // 5. copy & helper commands
+    // --------------------------------------------------------------
+    function showToast(msg, isError=false) {
+        const toast = document.getElementById('toast');
+        toast.style.backgroundColor = isError ? '#dc2626' : '#10b981';
+        toast.innerText = msg;
+        toast.style.display = 'block';
+        setTimeout(() => { toast.style.display = 'none'; }, 3000);
+    }
+    function copyToClipboard(text, msg) {
+        navigator.clipboard.writeText(text).then(() => showToast(msg));
+    }
+    document.getElementById('copyMedicalCmd').addEventListener('click', () => {
+        const cmd = `echo '${JSON.stringify(medicalData)}' > medical-log.json`;
+        copyToClipboard(cmd, "✅ Command copied – paste in terminal");
+    });
+    document.getElementById('copyPolisherCmd').addEventListener('click', () => {
+        copyToClipboard("python3 scripts/quantum-polisher.py --remediate --create-pr", "✅ Polisher command copied");
+    });
+    document.getElementById('copy8ballCmd').addEventListener('click', () => {
+        copyToClipboard("python3 scripts/quantum-8ball.py", "✅ 8‑ball CLI copied");
+    });
+    document.getElementById('viewPRsBtn').addEventListener('click', () => {
+        window.open('https://github.com/p31labs/andromeda/pulls', '_blank');
+    });
+
+    // initial fetch
+    fetchAll();
+    // refresh every 60 seconds (optional)
+    setInterval(fetchAll, 60000);
+</script>
+</body>
+</html>

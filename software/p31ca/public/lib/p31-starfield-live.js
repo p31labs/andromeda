@@ -8,12 +8,12 @@
  *   social  — external account (github · bluesky)
  *
  * Star states → colors:
- *   healthy  → teal   (#4db8a8)
- *   degraded → amber  (#cda852)
- *   down     → coral  (#cc6247)
+ *   healthy  → teal   (var(--color-cyan))
+ *   degraded → amber  (var(--color-amber))
+ *   down     → coral  (var(--color-coral))
  *   active   → white flash then back to base
  *   cold     → muted teal (dim)
- *   family   → phosphor (#3ba372)
+ *   family   → phosphor (var(--color-phosphorus))
  *   social   → purple  (#8b5cf6)
  *   unknown  → slate   (#94a3b8)
  *
