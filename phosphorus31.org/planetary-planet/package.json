@@ -23,5 +23,13 @@
     "stripe": "^20.4.1",
     "tailwindcss": "^4.2.1",
     "wrangler": "^4.97.0"
+  },
+  "devDependencies": {
+    "@vite-pwa/astro": "^1.2.0",
+    "@p31/shared": "workspace:*",
+    "workbox-precaching": "^7.4.1",
+    "workbox-recipes": "^7.4.1",
+    "workbox-routing": "^7.4.1",
+    "workbox-strategies": "^7.4.1"
   }
 }

@@ -121,7 +121,7 @@ export function GeodesicDome({ isUrgent = false, radius = 8, detail = 3 }: Geode
     }
   });
 
-  const accentColor = isUrgent ? '#cc6247' : '#00D4FF';
+  const accentColor = isUrgent ? 'var(--color-coral)' : '#00D4FF';
 
   return (
     <group>

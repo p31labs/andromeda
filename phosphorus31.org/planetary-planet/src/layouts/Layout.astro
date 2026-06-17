@@ -1,15 +1,32 @@
 ---
+/**
+ * Layout.astro — phosphorus31.org root layout.
+ *
+ * Islands Architecture: ViewTransitions enabled for SPA-like navigation.
+ * Safari 18 WebKit bug mitigated via astro:before-swap listener.
+ */
 import Head from '../components/Head.astro';
 import Navbar from '../components/Navbar.jsx';
 import Footer from '../components/Footer.astro';
 const { hideNav = false, ...headProps } = Astro.props;
 ---
 
+<!DOCTYPE html>
 <html lang="en">
   <Head {...headProps} />
   <body class="min-h-screen flex flex-col relative selection:bg-teal-600 selection:text-white">
     {!hideNav && <Navbar client:load />}
     <slot />
     <Footer />
+
+    <!-- Safari 18 WebKit Bug Mitigation: force CSS-animated fallback to prevent FOUC -->
+    <script is:inline>
+      document.addEventListener('astro:before-swap', function() {
+        var isSafari18 = /^((?!chrome|android).)*safari/i.test(navigator.userAgent) && /Version\/18/.test(navigator.userAgent);
+        if (isSafari18) {
+          document.startViewTransition = undefined;
+        }
+      }, { once: true });
+    </script>
   </body>
 </html>

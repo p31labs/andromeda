@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang='en' data-p31-appearance='hub' style='color-scheme: dark;'>
+<head>
+  <meta charset='UTF-8'>
+  <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+  <meta name='theme-color' content='#0f1115'>
+  <title>LARMOR — 863 Hz Somatic Regulation | P31 Labs</title>
+  <link rel='canonical' href='https://p31ca.org/larmor.html'>
+  <link rel='preconnect' href='https://fonts.googleapis.com'>
+  <link rel='preconnect' href='https://fonts.gstatic.com' crossorigin>
+  <link href='https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:wght@400;500;700;800&display=swap' rel='stylesheet'>
+  <link rel='stylesheet' href='/p31-style.css'>
+</head>
+<body>
+  <!-- Persistent starfield canvas (matches AppShell.astro exactly) -->
+  <canvas data-p31-appshell-canvas aria-hidden='true'></canvas>
+
+  <div class='page-wrapper'>
+    <div class='ambient-radial-fixed' aria-hidden='true'></div>
+
+    <nav class='nav'>
+      <div class='nav-inner'>
+        <a href='/' class='nav-brand' title='P31 Labs hub'>
+          <span class='nav-mark' aria-hidden='true'>P31</span>
+          <span class='nav-brand-label'>P31 Labs</span>
+        </a>
+        <div class='nav-links'>
+          <span class='nav-prompt' aria-hidden='true'>..</span>
+          <a href='/api/status' class='nav-link'>Hub</a>
+          <a href='https://github.com/p31labs/andromeda' target='_blank' rel='noopener' class='nav-link'>GitHub</a>
+          <a href='/larmor.html' class='nav-cta'>Launch &#8212; LARMOR</a>
+        </div>
+      </div>
+    </nav>
+
+    <div class='hero'>
+      <div class='hero-inner'>
+        <div class='hero-eyebrow'>LIVE · Product</div>
+        <div class='hero-top'>
+          <div class='hero-icon'>╯</div>
+          <div class='hero-text'>
+            <h1>LARMOR</h1>
+            <div class='tagline'>863 Hz Somatic Regulation</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class='mini-footer'>
+      <span>P31 Labs · LARMOR</span>
+      <div class='footer-links'>
+        <a href='/'>Hub</a>
+        <a href='/larmor.html'>LARMOR</span>
+        <a href='https://phosphorus31.org/donate' target='_blank' rel='noopener'>Support</a>
+        <a href='https://github.com/p31labs/andromeda' target='_blank' rel='noopener'>GitHub</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Starfield initialization (matches AppShell.astro) -->
+  <script type='module'>
+    import { startStarfield, setStarfieldRoute } from '/lib/starfield-singleton.js';
+    const canvas = document.querySelector('canvas[data-p31-appshell-canvas]');
+    if (canvas) {
+      startStarfield(canvas);
+      setStarfieldRoute('larmor');
+    }
+  </script>
+</body>
+</html>

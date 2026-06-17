@@ -5,6 +5,9 @@
  * Enforces the dark-mode glassmorphism theme across all children.
  * Void (#050505) baseline, Inter + Space Mono (matches operator static HTML).
  * Google Fonts loaded via preconnect + display=swap for FOUT prevention.
+ *
+ * Islands Architecture: ViewTransitions enabled globally for WebGL context preservation.
+ * Safari 18 WebKit bug mitigated via astro:before-swap listener.
  */
 interface Props {
   title: string;
@@ -40,6 +43,16 @@ const canonicalHref =
       rel="stylesheet"
     />
 
+    <!-- Safari 18 WebKit Bug Mitigation: force CSS-animated fallback to prevent WebGL FOUC -->
+    <script is:inline>
+      document.addEventListener('astro:before-swap', function(e) {
+        var isSafari18 = /^((?!chrome|android).)*safari/i.test(navigator.userAgent) && /Version\/18/.test(navigator.userAgent);
+        if (isSafari18) {
+          document.startViewTransition = undefined;
+        }
+      }, { once: true });
+    </script>
+
     <title>{title}</title>
   </head>
   <body class="bg-void min-h-screen text-white/85 font-sans antialiased">
@@ -54,7 +67,7 @@ const canonicalHref =
     <!--
       If another app (e.g. Hearing Ops PWA) was ever deployed to the same Pages project + domain,
       browsers may keep a service worker that serves the wrong shell. Hub is static Astro — no hub SW.
-      Unregister so the current deployment’s HTML is what users see.
+      Unregister so the current deployment's HTML is what users see.
     -->
     <script is:inline>
       if ('serviceWorker' in navigator) {

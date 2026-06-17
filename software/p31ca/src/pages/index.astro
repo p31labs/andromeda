@@ -5,7 +5,7 @@
  * Cross-linked to phosphorus31.org (nonprofit portal).
  */
 
-import BaseLayout from '../layouts/BaseLayout.astro';
+import AppShell from '../layouts/AppShell.astro';
 import SharedFooter from '../components/SharedFooter.astro';
 import {
   liveProducts,
@@ -23,11 +23,12 @@ const researchItems = [
 ];
 ---
 
-<BaseLayout
-  title="P31 Labs | Technical Hub"
-  description="Technical hub for P31 Labs — open-source assistive tools, fleet status, and links to edge deployments. EIN 42-1888158."
-  canonical="https://p31ca.org/"
->
+  <AppShell
+    routeName="home"
+    title="P31 Labs | Technical Hub"
+    description="Technical hub for P31 Labs — open-source assistive tools, fleet status, and links to edge deployments. EIN 42-1888158."
+    canonical="https://p31ca.org/"
+  >
   <!-- Navbar -->
   <nav class="sticky top-0 z-50 bg-hubNav/85 backdrop-blur-md border-b border-white/[0.05]">
     <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">

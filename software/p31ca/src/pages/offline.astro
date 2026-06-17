@@ -1,0 +1,22 @@
+---
+/**
+ * Offline fallback page for PWA Service Worker.
+ * Served when network is unreachable and no precached route matches.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Offline — P31 Labs">
+  <main class="flex items-center justify-center min-h-screen">
+    <div class="text-center glass-panel p-8 max-w-md">
+      <div class="text-4xl mb-4">◈</div>
+      <h1 class="text-xl font-bold text-white mb-2">Offline</h1>
+      <p class="text-sm text-white/50">
+        You are currently offline. All local data remains encrypted in the Chaos Vault.
+      </p>
+      <p class="text-xs text-white/30 mt-4 font-mono">
+        Equilibrium meter resumes on reconnect
+      </p>
+    </div>
+  </main>
+</BaseLayout>
