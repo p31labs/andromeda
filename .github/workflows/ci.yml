@@ -1,21 +1,40 @@
-# Focused turbo + compliance — implementation in reusable-ci-focused.yml
-name: P31 Labs CI
-
-permissions:
-  contents: read
+name: CI — Verify All
 
 on:
-  workflow_dispatch:
   push:
-    branches: [main]
+    branches: [master]
   pull_request:
-    branches: [main]
-
-concurrency:
-  group: p31-ci-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+    branches: [master]
 
 jobs:
-  ci:
-    uses: ./.github/workflows/reusable-ci-focused.yml
-    secrets: inherit
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - name: Build BONDING chemistry game
+        run: pnpm --dir software/bonding build
+      - name: Build BONDING mobile
+        run: pnpm --dir bonding/apps/mobile build
+      - name: Build BONDING onboarding
+        run: pnpm --dir bonding/apps/onboarding build
+      - name: Build p31ca.org
+        run: npx astro build --dir software/p31ca
+      - name: Build Sovereign CC
+        run: npx next build --dir software/sovereign-command-center
+      - name: Build PHOS
+        run: npm run build --dir phos
+      - name: Test BONDING chemistry
+        run: npx vitest run --dir software/bonding
+      - name: Test BONDING mobile
+        run: npx vitest run --dir bonding/apps/mobile
+      - name: Deploy onboarding (master only)
+        if: github.ref == 'refs/heads/master'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CF_API_TOKEN }}
+          command: pages deploy bonding/apps/onboarding/dist --project-name bonding-meatspace --branch master

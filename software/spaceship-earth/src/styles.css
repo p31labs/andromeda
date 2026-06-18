@@ -1,5 +1,11 @@
 /* ═══════════════════════════════════════════════════════
+@import '../../packages/shared/src/theme/css-variables.css';
 @import '@p31/shared/src/theme/css-variables.css';
+
+/* P31 Canon — injected by Quantum Polisher */
+:root {
+  --color-ink: var(--color-ink);
+}
 
 /* P31 Canon — injected by Quantum Polisher */
 :root {
@@ -251,7 +257,7 @@
 /* P04.7: Light mode — sensory toggle */
 [data-theme="light"] {
   --void: #f0f2f5;
-  --s1: #ffffff;
+  --s1: var(--color-surface);
   --s2: #f5f5f5;
   --s3: #e8eaed;
   --s4: #dcdfe3;

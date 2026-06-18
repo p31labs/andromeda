@@ -97,7 +97,7 @@
         "transform": "lodash/{{member}}"
       }
     },
-    "outputFileTracingRoot": "/home/p31/andromeda/software/sovereign-command-center",
+    "outputFileTracingRoot": "/home/p31/andromeda/software",
     "experimental": {
       "allowedDevOrigins": [],
       "nodeMiddleware": false,
@@ -155,7 +155,7 @@
       "middlewarePrefetch": "flexible",
       "optimisticClientCache": true,
       "manualClientBasePath": false,
-      "cpus": 7,
+      "cpus": 3,
       "memoryBasedWorkersCount": false,
       "imgOptConcurrency": null,
       "imgOptTimeoutInSeconds": 7,
@@ -176,7 +176,7 @@
       "forceSwcTransforms": false,
       "largePageDataBytes": 128000,
       "turbo": {
-        "root": "/home/p31/andromeda/software/sovereign-command-center"
+        "root": "/home/p31/andromeda/software"
       },
       "typedRoutes": true,
       "typedEnv": false,
@@ -283,7 +283,7 @@
     "configFileName": "next.config.js"
   },
   "appDir": "/home/p31/andromeda/software/sovereign-command-center",
-  "relativeAppDir": "",
+  "relativeAppDir": "sovereign-command-center",
   "files": [
     ".next/routes-manifest.json",
     ".next/server/pages-manifest.json",
@@ -301,6 +301,6 @@
     ".next/server/next-font-manifest.json"
   ],
   "ignore": [
-    "node_modules/next/dist/compiled/@ampproject/toolbox-optimizer/**/*"
+    "../../node_modules/.pnpm/next@15.2.4_@opentelemetry+api@1.9.1_@playwright+test@1.60.0_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/next/dist/compiled/@ampproject/toolbox-optimizer/**/*"
   ]
 }

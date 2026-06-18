@@ -14,9 +14,36 @@ import '../styles/globals.css';
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="manifest" href="/manifest.json" />
     <link rel="apple-touch-icon" href="/icon-192.png" />
+    <meta name="description" content="PHOS — Cognitive prosthetic platform with spoon-aware UI for neurodivergent individuals. Service-portable, data-decoupled, zero telemetry. Part of P31 Labs ecosystem: BONDING meatspace social, 8-Ball decision engine, PMM maturity grader." />
     <title>PHOS — Phosphorus Human Operating Surface</title>
+    <style is:inline>
+      .ecosystem-bar {
+        position: fixed; bottom: 0; left: 0; right: 0;
+        background: rgba(255,255,255,0.03);
+        backdrop-filter: blur(8px);
+        border-top: 1px solid rgba(255,255,255,0.06);
+        padding: 0.5rem 1rem;
+        display: flex;
+        justify-content: center;
+        gap: 1.5rem;
+        font-size: 0.8rem;
+        z-index: 9999;
+      }
+      .ecosystem-bar a {
+        color: rgba(255,255,255,0.5);
+        text-decoration: none;
+        transition: color 0.2s;
+      }
+      .ecosystem-bar a:hover { color: #39ff14; }
+    </style>
   </head>
   <body>
     <PHOSShell client:only="react" />
+    <div class="ecosystem-bar">
+      <span style="color:rgba(255,255,255,0.3)">P31 Labs</span>
+      <a href="https://bonding.p31ca.org" target="_blank" rel="noopener">🧬 BONDING</a>
+      <a href="https://github.com/p31labs/p31-andromeda" target="_blank" rel="noopener">🔧 8-Ball</a>
+      <a href="https://p31ca.org" target="_blank" rel="noopener">🌐 p31ca.org</a>
+    </div>
   </body>
 </html>

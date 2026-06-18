@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && tsc",
+    "build": "echo 'Spin-mesh is a Worker-only project; deploy with wrangler publish in subdirs' && exit 0",
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",

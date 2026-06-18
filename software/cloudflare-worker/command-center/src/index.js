@@ -1088,3 +1088,6 @@ async function pingFleet(env) {
     console.error('Health pinger KV write failed:', e);
   }
 }
+
+}
+}

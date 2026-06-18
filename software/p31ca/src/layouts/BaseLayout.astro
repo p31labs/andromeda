@@ -50,6 +50,31 @@ const canonicalHref =
     >
     </div>
 
+    <!-- Inline breadcrumb: zero external config needed -->
+    <nav aria-label="Breadcrumb" class="max-w-6xl mx-auto px-6 pt-3 pb-1">
+      <ol class="flex flex-wrap items-center gap-2 text-[11px] text-white/35">
+        <li><a href="/" class="hover:text-hubRose transition-colors" style="text-decoration:none;">Home</a></li>
+        {
+          (() => {
+            const path = Astro.url.pathname.replace(/index\.html$/, '').replace(/\/$/, '') || '/';
+            const crumbs = path.split('/').filter(Boolean);
+            if (crumbs.length === 0) return '';
+            return crumbs.map((seg, i) => {
+              const href = '/' + crumbs.slice(0, i + 1).join('/');
+              const label = decodeURIComponent(seg).replace(/[-_]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+              const isLast = i === crumbs.length - 1;
+              return `
+                <li class="text-white/20">/</li>
+                <li>
+                  ${isLast ? `<span class="text-white/60 font-medium">${label}</span>` : `<a href="${href}" class="hover:text-hubRose transition-colors" style="text-decoration:none;">${label}</a>`}
+                </li>
+              `;
+            }).join('');
+          })()
+        }
+      </ol>
+    </nav>
+
     <slot />
     <!--
       If another app (e.g. Hearing Ops PWA) was ever deployed to the same Pages project + domain,

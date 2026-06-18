@@ -1,6 +1,6 @@
 {
-  "generated": "2026-06-16T01:16:45.123184+00:00",
-  "ecosystem_fidelity": 62.2,
+  "generated": "2026-06-18T04:01:38.993882+00:00",
+  "ecosystem_fidelity": 78.9,
   "projects": {
     "bonding": {
       "meta": {
@@ -9,6 +9,16 @@
         "css": "tailwind-v4",
         "strict_ts": false
       },
+      "remediation": {
+        "css_vars_injected": 0,
+        "colors_replaced": 0,
+        "glass_normalized": 0,
+        "ts_strict_fixed": 0,
+        "shared_dep_added": false,
+        "css_import_added": 1,
+        "tw_preset_added": 0,
+        "total_fixes": 1
+      },
       "layer_1_pre": {
         "layer": 1,
         "name": "surface",
@@ -17,7 +27,7 @@
           {
             "check": "eslint",
             "status": "warning",
-            "detail": ""
+            "detail": "[Errno 2] No such file or directory: 'npx'"
           },
           {
             "check": "formatter",
@@ -25,104 +35,29 @@
             "detail": "No Prettier or Biome config"
           }
         ],
-        "fixes_applied": 0
+        "fixes_applied": 17
       },
       "layer_2_pre": {
         "layer": 2,
         "name": "tokens",
-        "score": 20,
+        "score": 70,
         "issues": [
-          {
-            "check": "hardcoded-colors",
-            "status": "fail",
-            "detail": "23 instances of canonical colors used as hardcoded hex instead of CSS variables",
-            "instances": [
-              {
-                "file": "software/bonding/src/index.css",
-                "color": "#cc6247",
-                "canonical_name": "coral",
-                "line": 7
-              },
-              {
-                "file": "software/bonding/src/index.css",
-                "color": "#e879f9",
-                "canonical_name": "fuchsia",
-                "line": 8
-              },
-              {
-                "file": "software/bonding/src/index.css",
-                "color": "#0f172a",
-                "canonical_name": "ink",
-                "line": 9
-              },
-              {
-                "file": "software/bonding/src/index.css",
-                "color": "#8b7cc9",
-                "canonical_name": "lavender",
-                "line": 10
-              },
-              {
-                "file": "software/bonding/src/index.css",
-                "color": "#64748b",
-                "canonical_name": "muted",
-                "line": 11
-              },
-              {
-                "file": "software/bonding/src/index.css",
-                "color": "#fdfcfa",
-                "canonical_name": "paper",
-                "line": 12
-              },
-              {
-                "file": "software/bonding/src/index.css",
-                "color": "#3ba372",
-                "canonical_name": "phosphorus",
-                "line": 13
-              },
-              {
-                "file": "software/bonding/src/index.css",
-                "color": "#ffffff",
-                "canonical_name": "surface",
-                "line": 14
-              },
-              {
-                "file": "software/bonding/src/index.css",
-                "color": "#ebeae4",
-                "canonical_name": "surface2",
-                "line": 15
-              },
-              {
-                "file": "software/bonding/src/index.css",
-                "color": "#5dcaa5",
-                "canonical_name": "teal",
-                "line": 16
-              }
-            ]
-          },
           {
             "check": "token-redefinition",
             "status": "fail",
-            "detail": "103 CSS variable redefinitions of canonical tokens",
+            "detail": "2 CSS variable redefinitions of canonical tokens",
             "instances": [
               {
                 "file": "software/bonding/src/index.css",
-                "line": "--color-cloud: #1e293b;"
+                "line": "--color-amber: #FFD700;",
+                "canonical": "#cda852",
+                "actual": "#ffd700"
               },
               {
                 "file": "software/bonding/src/index.css",
-                "line": "--color-coral: #cc6247;"
-              },
-              {
-                "file": "software/bonding/src/index.css",
-                "line": "--color-fuchsia: #e879f9;"
-              },
-              {
-                "file": "software/bonding/src/index.css",
-                "line": "--color-ink: #0f172a;"
-              },
-              {
-                "file": "software/bonding/src/index.css",
-                "line": "--color-lavender: #8b7cc9;"
+                "line": "--color-cyan: #06B6D4;",
+                "canonical": "#4db8a8",
+                "actual": "#06b6d4"
               }
             ]
           },
@@ -132,7 +67,7 @@
             "detail": "1 glass effects with non-standard blur",
             "instances": [
               {
-                "file": "software/bonding/dist/assets/index-DyWxQ2sD.css",
+                "file": "software/bonding/dist/assets/index-BOdXs0SR.css",
                 "blur_px": 8,
                 "expected": 10,
                 "delta": -2
@@ -140,8 +75,8 @@
             ]
           }
         ],
-        "hardcoded_count": 23,
-        "redefinition_count": 103
+        "hardcoded_count": 0,
+        "redefinition_count": 2
       },
       "layer_3_pre": {
         "layer": 3,
@@ -170,7 +105,7 @@
               {
                 "check": "shared-imports",
                 "pass": true,
-                "detail": "9 imports from @p31/shared"
+                "detail": "8 imports from @p31/shared"
               },
               {
                 "check": "tailwind-preset",
@@ -194,7 +129,7 @@
           {
             "check": "shared-imports",
             "pass": true,
-            "detail": "9 imports from @p31/shared"
+            "detail": "8 imports from @p31/shared"
           },
           {
             "check": "tailwind-preset",
@@ -222,7 +157,7 @@
           {
             "check": "eslint",
             "status": "warning",
-            "detail": ""
+            "detail": "[Errno 2] No such file or directory: 'npx'"
           },
           {
             "check": "formatter",
@@ -235,19 +170,26 @@
       "layer_2": {
         "layer": 2,
         "name": "tokens",
-        "score": 20,
+        "score": 70,
         "issues": [
           {
-            "check": "hardcoded-colors",
-            "status": "warn",
-            "detail": "0 instances of canonical colors used as hardcoded hex instead of CSS variables",
-            "instances": []
-          },
-          {
             "check": "token-redefinition",
-            "status": "warn",
-            "detail": "0 CSS variable redefinitions of canonical tokens",
-            "instances": []
+            "status": "fail",
+            "detail": "2 CSS variable redefinitions of canonical tokens",
+            "instances": [
+              {
+                "file": "software/bonding/src/index.css",
+                "line": "--color-amber: #FFD700;",
+                "canonical": "#cda852",
+                "actual": "#ffd700"
+              },
+              {
+                "file": "software/bonding/src/index.css",
+                "line": "--color-cyan: #06B6D4;",
+                "canonical": "#4db8a8",
+                "actual": "#06b6d4"
+              }
+            ]
           },
           {
             "check": "glass-drift",
@@ -255,7 +197,7 @@
             "detail": "1 glass effects with non-standard blur",
             "instances": [
               {
-                "file": "software/bonding/dist/assets/index-DyWxQ2sD.css",
+                "file": "software/bonding/dist/assets/index-BOdXs0SR.css",
                 "blur_px": 8,
                 "expected": 10,
                 "delta": -2
@@ -264,7 +206,7 @@
           }
         ],
         "hardcoded_count": 0,
-        "redefinition_count": 0
+        "redefinition_count": 2
       },
       "layer_3": {
         "layer": 3,
@@ -337,7 +279,7 @@
         ],
         "adoption_score": 50
       },
-      "overall": 56.2
+      "overall": 68.8
     },
     "frontend": {
       "meta": {
@@ -346,6 +288,16 @@
         "css": "vanilla",
         "strict_ts": true
       },
+      "remediation": {
+        "css_vars_injected": 0,
+        "colors_replaced": 0,
+        "glass_normalized": 0,
+        "ts_strict_fixed": 0,
+        "shared_dep_added": false,
+        "css_import_added": 1,
+        "tw_preset_added": 0,
+        "total_fixes": 1
+      },
       "layer_1_pre": {
         "layer": 1,
         "name": "surface",
@@ -367,105 +319,10 @@
       "layer_2_pre": {
         "layer": 2,
         "name": "tokens",
-        "score": 30,
-        "issues": [
-          {
-            "check": "hardcoded-colors",
-            "status": "fail",
-            "detail": "15 instances of canonical colors used as hardcoded hex instead of CSS variables",
-            "instances": [
-              {
-                "file": "software/frontend/src/styles.css",
-                "color": "#cda852",
-                "canonical_name": "amber",
-                "line": 6
-              },
-              {
-                "file": "software/frontend/src/styles.css",
-                "color": "#cc6247",
-                "canonical_name": "coral",
-                "line": 8
-              },
-              {
-                "file": "software/frontend/src/styles.css",
-                "color": "#4db8a8",
-                "canonical_name": "cyan",
-                "line": 9
-              },
-              {
-                "file": "software/frontend/src/styles.css",
-                "color": "#e879f9",
-                "canonical_name": "fuchsia",
-                "line": 10
-              },
-              {
-                "file": "software/frontend/src/styles.css",
-                "color": "#0f172a",
-                "canonical_name": "ink",
-                "line": 11
-              },
-              {
-                "file": "software/frontend/src/styles.css",
-                "color": "#8b7cc9",
-                "canonical_name": "lavender",
-                "line": 12
-              },
-              {
-                "file": "software/frontend/src/styles.css",
-                "color": "#64748b",
-                "canonical_name": "muted",
-                "line": 13
-              },
-              {
-                "file": "software/frontend/src/styles.css",
-                "color": "#fdfcfa",
-                "canonical_name": "paper",
-                "line": 14
-              },
-              {
-                "file": "software/frontend/src/styles.css",
-                "color": "#00ff88",
-                "canonical_name": "phosphor",
-                "line": 15
-              },
-              {
-                "file": "software/frontend/src/styles.css",
-                "color": "#3ba372",
-                "canonical_name": "phosphorus",
-                "line": 16
-              }
-            ]
-          },
-          {
-            "check": "token-redefinition",
-            "status": "fail",
-            "detail": "17 CSS variable redefinitions of canonical tokens",
-            "instances": [
-              {
-                "file": "software/frontend/src/styles.cockpit.css",
-                "line": "--phosphorus: var(--color-phosphor);"
-              },
-              {
-                "file": "software/frontend/src/styles.css",
-                "line": "--color-amber: #cda852;"
-              },
-              {
-                "file": "software/frontend/src/styles.css",
-                "line": "--color-cloud: #1e293b;"
-              },
-              {
-                "file": "software/frontend/src/styles.css",
-                "line": "--color-coral: #cc6247;"
-              },
-              {
-                "file": "software/frontend/src/styles.css",
-                "line": "--color-cyan: #4db8a8;"
-              }
-            ]
-          }
-        ],
-        "hardcoded_count": 15,
-        "redefinition_count": 17
+        "score": 100,
+        "issues": [],
+        "hardcoded_count": 0,
+        "redefinition_count": 0
       },
       "layer_3_pre": {
         "layer": 3,
@@ -484,17 +341,17 @@
       "layer_4_pre": {
         "layer": 4,
         "name": "architecture",
-        "score": 50,
+        "score": 20,
         "issues": [
           {
             "check": "design-system-adoption",
-            "status": "warn",
-            "detail": "Partial design system adoption: 50/100",
+            "status": "fail",
+            "detail": "Design system adoption score: 20/100",
             "checks": [
               {
                 "check": "shared-imports",
-                "pass": true,
-                "detail": "1 imports from @p31/shared"
+                "pass": false,
+                "detail": "0 imports from @p31/shared"
               },
               {
                 "check": "tailwind-preset",
@@ -517,8 +374,8 @@
         "checks": [
           {
             "check": "shared-imports",
-            "pass": true,
-            "detail": "1 imports from @p31/shared"
+            "pass": false,
+            "detail": "0 imports from @p31/shared"
           },
           {
             "check": "tailwind-preset",
@@ -536,7 +393,7 @@
             "detail": "No useThemeStore import"
           }
         ],
-        "adoption_score": 50
+        "adoption_score": 20
       },
       "layer_1": {
         "layer": 1,
@@ -559,21 +416,8 @@
       "layer_2": {
         "layer": 2,
         "name": "tokens",
-        "score": 30,
-        "issues": [
-          {
-            "check": "hardcoded-colors",
-            "status": "warn",
-            "detail": "0 instances of canonical colors used as hardcoded hex instead of CSS variables",
-            "instances": []
-          },
-          {
-            "check": "token-redefinition",
-            "status": "warn",
-            "detail": "0 CSS variable redefinitions of canonical tokens",
-            "instances": []
-          }
-        ],
+        "score": 100,
+        "issues": [],
         "hardcoded_count": 0,
         "redefinition_count": 0
       },
@@ -648,7 +492,7 @@
         ],
         "adoption_score": 50
       },
-      "overall": 58.8
+      "overall": 76.2
     },
     "p31-delta-hiring": {
       "meta": {
@@ -657,6 +501,16 @@
         "css": "vanilla",
         "strict_ts": false
       },
+      "remediation": {
+        "css_vars_injected": 0,
+        "colors_replaced": 2,
+        "glass_normalized": 0,
+        "ts_strict_fixed": 0,
+        "shared_dep_added": false,
+        "css_import_added": 1,
+        "tw_preset_added": 0,
+        "total_fixes": 3
+      },
       "layer_1_pre": {
         "layer": 1,
         "name": "surface",
@@ -665,7 +519,7 @@
           {
             "check": "eslint",
             "status": "warning",
-            "detail": ""
+            "detail": "[Errno 2] No such file or directory: 'npx'"
           },
           {
             "check": "formatter",
@@ -678,105 +532,30 @@
       "layer_2_pre": {
         "layer": 2,
         "name": "tokens",
-        "score": 30,
+        "score": 90,
         "issues": [
           {
             "check": "hardcoded-colors",
             "status": "fail",
-            "detail": "15 instances of canonical colors used as hardcoded hex instead of CSS variables",
+            "detail": "2 instances of canonical colors used as hardcoded hex instead of CSS variables",
             "instances": [
               {
                 "file": "software/p31-delta-hiring/src/style.css",
-                "color": "#cda852",
-                "canonical_name": "amber",
-                "line": 5
+                "color": "#0f172a",
+                "canonical_name": "ink",
+                "line": 535
               },
               {
                 "file": "software/p31-delta-hiring/src/style.css",
-                "color": "#cc6247",
-                "canonical_name": "coral",
-                "line": 7
-              },
-              {
-                "file": "software/p31-delta-hiring/src/style.css",
-                "color": "#4db8a8",
-                "canonical_name": "cyan",
-                "line": 8
-              },
-              {
-                "file": "software/p31-delta-hiring/src/style.css",
-                "color": "#e879f9",
-                "canonical_name": "fuchsia",
-                "line": 9
-              },
-              {
-                "file": "software/p31-delta-hiring/src/style.css",
-                "color": "#8b7cc9",
-                "canonical_name": "lavender",
-                "line": 11
-              },
-              {
-                "file": "software/p31-delta-hiring/src/style.css",
-                "color": "#fdfcfa",
-                "canonical_name": "paper",
-                "line": 13
-              },
-              {
-                "file": "software/p31-delta-hiring/src/style.css",
-                "color": "#00ff88",
-                "canonical_name": "phosphor",
-                "line": 14
-              },
-              {
-                "file": "software/p31-delta-hiring/src/style.css",
-                "color": "#3ba372",
-                "canonical_name": "phosphorus",
-                "line": 15
-              },
-              {
-                "file": "software/p31-delta-hiring/src/style.css",
-                "color": "#ffffff",
-                "canonical_name": "surface",
-                "line": 16
-              },
-              {
-                "file": "software/p31-delta-hiring/src/style.css",
-                "color": "#ebeae4",
-                "canonical_name": "surface2",
-                "line": 17
-              }
-            ]
-          },
-          {
-            "check": "token-redefinition",
-            "status": "fail",
-            "detail": "22 CSS variable redefinitions of canonical tokens",
-            "instances": [
-              {
-                "file": "software/p31-delta-hiring/src/style.css",
-                "line": "--color-amber: #cda852;"
-              },
-              {
-                "file": "software/p31-delta-hiring/src/style.css",
-                "line": "--color-cloud: #1e293b;"
-              },
-              {
-                "file": "software/p31-delta-hiring/src/style.css",
-                "line": "--color-coral: #cc6247;"
-              },
-              {
-                "file": "software/p31-delta-hiring/src/style.css",
-                "line": "--color-cyan: #4db8a8;"
-              },
-              {
-                "file": "software/p31-delta-hiring/src/style.css",
-                "line": "--color-fuchsia: #e879f9;"
+                "color": "#64748b",
+                "canonical_name": "muted",
+                "line": 562
               }
             ]
           }
         ],
-        "hardcoded_count": 15,
-        "redefinition_count": 22
+        "hardcoded_count": 2,
+        "redefinition_count": 0
       },
       "layer_3_pre": {
         "layer": 3,
@@ -789,17 +568,17 @@
       "layer_4_pre": {
         "layer": 4,
         "name": "architecture",
-        "score": 50,
+        "score": 20,
         "issues": [
           {
             "check": "design-system-adoption",
-            "status": "warn",
-            "detail": "Partial design system adoption: 50/100",
+            "status": "fail",
+            "detail": "Design system adoption score: 20/100",
             "checks": [
               {
                 "check": "shared-imports",
-                "pass": true,
-                "detail": "1 imports from @p31/shared"
+                "pass": false,
+                "detail": "0 imports from @p31/shared"
               },
               {
                 "check": "tailwind-preset",
@@ -822,8 +601,8 @@
         "checks": [
           {
             "check": "shared-imports",
-            "pass": true,
-            "detail": "1 imports from @p31/shared"
+            "pass": false,
+            "detail": "0 imports from @p31/shared"
           },
           {
             "check": "tailwind-preset",
@@ -841,7 +620,7 @@
             "detail": "No useThemeStore import"
           }
         ],
-        "adoption_score": 50
+        "adoption_score": 20
       },
       "layer_1": {
         "layer": 1,
@@ -851,7 +630,7 @@
           {
             "check": "eslint",
             "status": "warning",
-            "detail": ""
+            "detail": "[Errno 2] No such file or directory: 'npx'"
           },
           {
             "check": "formatter",
@@ -864,21 +643,8 @@
       "layer_2": {
         "layer": 2,
         "name": "tokens",
-        "score": 30,
-        "issues": [
-          {
-            "check": "hardcoded-colors",
-            "status": "warn",
-            "detail": "0 instances of canonical colors used as hardcoded hex instead of CSS variables",
-            "instances": []
-          },
-          {
-            "check": "token-redefinition",
-            "status": "warn",
-            "detail": "0 CSS variable redefinitions of canonical tokens",
-            "instances": []
-          }
-        ],
+        "score": 100,
+        "issues": [],
         "hardcoded_count": 0,
         "redefinition_count": 0
       },
@@ -947,7 +713,7 @@
         ],
         "adoption_score": 50
       },
-      "overall": 62.5
+      "overall": 80.0
     },
     "p31-hearing-ops": {
       "meta": {
@@ -956,121 +722,41 @@
         "css": "vanilla",
         "strict_ts": false
       },
+      "remediation": {
+        "css_vars_injected": 0,
+        "colors_replaced": 0,
+        "glass_normalized": 0,
+        "ts_strict_fixed": 0,
+        "shared_dep_added": false,
+        "css_import_added": 1,
+        "tw_preset_added": 0,
+        "total_fixes": 1
+      },
       "layer_1_pre": {
         "layer": 1,
         "name": "surface",
-        "score": 85,
+        "score": 70,
         "issues": [
+          {
+            "check": "eslint",
+            "status": "warning",
+            "detail": "[Errno 2] No such file or directory: 'npx'"
+          },
           {
             "check": "formatter",
             "status": "missing",
             "detail": "No Prettier or Biome config"
           }
         ],
-        "fixes_applied": 1
+        "fixes_applied": 2
       },
       "layer_2_pre": {
         "layer": 2,
         "name": "tokens",
-        "score": 30,
-        "issues": [
-          {
-            "check": "hardcoded-colors",
-            "status": "fail",
-            "detail": "15 instances of canonical colors used as hardcoded hex instead of CSS variables",
-            "instances": [
-              {
-                "file": "software/p31-hearing-ops/src/fonts.css",
-                "color": "#cda852",
-                "canonical_name": "amber",
-                "line": 5
-              },
-              {
-                "file": "software/p31-hearing-ops/src/fonts.css",
-                "color": "#cc6247",
-                "canonical_name": "coral",
-                "line": 7
-              },
-              {
-                "file": "software/p31-hearing-ops/src/fonts.css",
-                "color": "#4db8a8",
-                "canonical_name": "cyan",
-                "line": 8
-              },
-              {
-                "file": "software/p31-hearing-ops/src/fonts.css",
-                "color": "#e879f9",
-                "canonical_name": "fuchsia",
-                "line": 9
-              },
-              {
-                "file": "software/p31-hearing-ops/src/fonts.css",
-                "color": "#0f172a",
-                "canonical_name": "ink",
-                "line": 10
-              },
-              {
-                "file": "software/p31-hearing-ops/src/fonts.css",
-                "color": "#8b7cc9",
-                "canonical_name": "lavender",
-                "line": 11
-              },
-              {
-                "file": "software/p31-hearing-ops/src/fonts.css",
-                "color": "#64748b",
-                "canonical_name": "muted",
-                "line": 12
-              },
-              {
-                "file": "software/p31-hearing-ops/src/fonts.css",
-                "color": "#fdfcfa",
-                "canonical_name": "paper",
-                "line": 13
-              },
-              {
-                "file": "software/p31-hearing-ops/src/fonts.css",
-                "color": "#00ff88",
-                "canonical_name": "phosphor",
-                "line": 14
-              },
-              {
-                "file": "software/p31-hearing-ops/src/fonts.css",
-                "color": "#3ba372",
-                "canonical_name": "phosphorus",
-                "line": 15
-              }
-            ]
-          },
-          {
-            "check": "token-redefinition",
-            "status": "fail",
-            "detail": "16 CSS variable redefinitions of canonical tokens",
-            "instances": [
-              {
-                "file": "software/p31-hearing-ops/src/fonts.css",
-                "line": "--color-amber: #cda852;"
-              },
-              {
-                "file": "software/p31-hearing-ops/src/fonts.css",
-                "line": "--color-cloud: #1e293b;"
-              },
-              {
-                "file": "software/p31-hearing-ops/src/fonts.css",
-                "line": "--color-coral: #cc6247;"
-              },
-              {
-                "file": "software/p31-hearing-ops/src/fonts.css",
-                "line": "--color-cyan: #4db8a8;"
-              },
-              {
-                "file": "software/p31-hearing-ops/src/fonts.css",
-                "line": "--color-fuchsia: #e879f9;"
-              }
-            ]
-          }
-        ],
-        "hardcoded_count": 15,
-        "redefinition_count": 16
+        "score": 100,
+        "issues": [],
+        "hardcoded_count": 0,
+        "redefinition_count": 0
       },
       "layer_3_pre": {
         "layer": 3,
@@ -1089,17 +775,17 @@
       "layer_4_pre": {
         "layer": 4,
         "name": "architecture",
-        "score": 50,
+        "score": 20,
         "issues": [
           {
             "check": "design-system-adoption",
-            "status": "warn",
-            "detail": "Partial design system adoption: 50/100",
+            "status": "fail",
+            "detail": "Design system adoption score: 20/100",
             "checks": [
               {
                 "check": "shared-imports",
-                "pass": true,
-                "detail": "1 imports from @p31/shared"
+                "pass": false,
+                "detail": "0 imports from @p31/shared"
               },
               {
                 "check": "tailwind-preset",
@@ -1122,8 +808,8 @@
         "checks": [
           {
             "check": "shared-imports",
-            "pass": true,
-            "detail": "1 imports from @p31/shared"
+            "pass": false,
+            "detail": "0 imports from @p31/shared"
           },
           {
             "check": "tailwind-preset",
@@ -1141,39 +827,31 @@
             "detail": "No useThemeStore import"
           }
         ],
-        "adoption_score": 50
+        "adoption_score": 20
       },
       "layer_1": {
         "layer": 1,
         "name": "surface",
-        "score": 85,
+        "score": 70,
         "issues": [
+          {
+            "check": "eslint",
+            "status": "warning",
+            "detail": "[Errno 2] No such file or directory: 'npx'"
+          },
           {
             "check": "formatter",
             "status": "missing",
             "detail": "No Prettier or Biome config"
           }
         ],
-        "fixes_applied": 1
+        "fixes_applied": 0
       },
       "layer_2": {
         "layer": 2,
         "name": "tokens",
-        "score": 30,
-        "issues": [
-          {
-            "check": "hardcoded-colors",
-            "status": "warn",
-            "detail": "0 instances of canonical colors used as hardcoded hex instead of CSS variables",
-            "instances": []
-          },
-          {
-            "check": "token-redefinition",
-            "status": "warn",
-            "detail": "0 CSS variable redefinitions of canonical tokens",
-            "instances": []
-          }
-        ],
+        "score": 100,
+        "issues": [],
         "hardcoded_count": 0,
         "redefinition_count": 0
       },
@@ -1248,7 +926,7 @@
         ],
         "adoption_score": 50
       },
-      "overall": 66.2
+      "overall": 80.0
     },
     "p31-pwa": {
       "meta": {
@@ -1257,6 +935,16 @@
         "css": "vanilla",
         "strict_ts": false
       },
+      "remediation": {
+        "css_vars_injected": 0,
+        "colors_replaced": 0,
+        "glass_normalized": 0,
+        "ts_strict_fixed": 0,
+        "shared_dep_added": false,
+        "css_import_added": 1,
+        "tw_preset_added": 0,
+        "total_fixes": 1
+      },
       "layer_1_pre": {
         "layer": 1,
         "name": "surface",
@@ -1278,105 +966,10 @@
       "layer_2_pre": {
         "layer": 2,
         "name": "tokens",
-        "score": 30,
-        "issues": [
-          {
-            "check": "hardcoded-colors",
-            "status": "fail",
-            "detail": "15 instances of canonical colors used as hardcoded hex instead of CSS variables",
-            "instances": [
-              {
-                "file": "software/packages/node-zero/pwa/src/index.css",
-                "color": "#cda852",
-                "canonical_name": "amber",
-                "line": 5
-              },
-              {
-                "file": "software/packages/node-zero/pwa/src/index.css",
-                "color": "#cc6247",
-                "canonical_name": "coral",
-                "line": 7
-              },
-              {
-                "file": "software/packages/node-zero/pwa/src/index.css",
-                "color": "#4db8a8",
-                "canonical_name": "cyan",
-                "line": 8
-              },
-              {
-                "file": "software/packages/node-zero/pwa/src/index.css",
-                "color": "#e879f9",
-                "canonical_name": "fuchsia",
-                "line": 9
-              },
-              {
-                "file": "software/packages/node-zero/pwa/src/index.css",
-                "color": "#0f172a",
-                "canonical_name": "ink",
-                "line": 10
-              },
-              {
-                "file": "software/packages/node-zero/pwa/src/index.css",
-                "color": "#8b7cc9",
-                "canonical_name": "lavender",
-                "line": 11
-              },
-              {
-                "file": "software/packages/node-zero/pwa/src/index.css",
-                "color": "#64748b",
-                "canonical_name": "muted",
-                "line": 12
-              },
-              {
-                "file": "software/packages/node-zero/pwa/src/index.css",
-                "color": "#fdfcfa",
-                "canonical_name": "paper",
-                "line": 13
-              },
-              {
-                "file": "software/packages/node-zero/pwa/src/index.css",
-                "color": "#00ff88",
-                "canonical_name": "phosphor",
-                "line": 14
-              },
-              {
-                "file": "software/packages/node-zero/pwa/src/index.css",
-                "color": "#3ba372",
-                "canonical_name": "phosphorus",
-                "line": 15
-              }
-            ]
-          },
-          {
-            "check": "token-redefinition",
-            "status": "fail",
-            "detail": "16 CSS variable redefinitions of canonical tokens",
-            "instances": [
-              {
-                "file": "software/packages/node-zero/pwa/src/index.css",
-                "line": "--color-amber: #cda852;"
-              },
-              {
-                "file": "software/packages/node-zero/pwa/src/index.css",
-                "line": "--color-cloud: #1e293b;"
-              },
-              {
-                "file": "software/packages/node-zero/pwa/src/index.css",
-                "line": "--color-coral: #cc6247;"
-              },
-              {
-                "file": "software/packages/node-zero/pwa/src/index.css",
-                "line": "--color-cyan: #4db8a8;"
-              },
-              {
-                "file": "software/packages/node-zero/pwa/src/index.css",
-                "line": "--color-fuchsia: #e879f9;"
-              }
-            ]
-          }
-        ],
-        "hardcoded_count": 15,
-        "redefinition_count": 16
+        "score": 100,
+        "issues": [],
+        "hardcoded_count": 0,
+        "redefinition_count": 0
       },
       "layer_3_pre": {
         "layer": 3,
@@ -1395,17 +988,17 @@
       "layer_4_pre": {
         "layer": 4,
         "name": "architecture",
-        "score": 50,
+        "score": 20,
         "issues": [
           {
             "check": "design-system-adoption",
-            "status": "warn",
-            "detail": "Partial design system adoption: 50/100",
+            "status": "fail",
+            "detail": "Design system adoption score: 20/100",
             "checks": [
               {
                 "check": "shared-imports",
-                "pass": true,
-                "detail": "1 imports from @p31/shared"
+                "pass": false,
+                "detail": "0 imports from @p31/shared"
               },
               {
                 "check": "tailwind-preset",
@@ -1428,8 +1021,8 @@
         "checks": [
           {
             "check": "shared-imports",
-            "pass": true,
-            "detail": "1 imports from @p31/shared"
+            "pass": false,
+            "detail": "0 imports from @p31/shared"
           },
           {
             "check": "tailwind-preset",
@@ -1447,7 +1040,7 @@
             "detail": "No useThemeStore import"
           }
         ],
-        "adoption_score": 50
+        "adoption_score": 20
       },
       "layer_1": {
         "layer": 1,
@@ -1470,21 +1063,8 @@
       "layer_2": {
         "layer": 2,
         "name": "tokens",
-        "score": 30,
-        "issues": [
-          {
-            "check": "hardcoded-colors",
-            "status": "warn",
-            "detail": "0 instances of canonical colors used as hardcoded hex instead of CSS variables",
-            "instances": []
-          },
-          {
-            "check": "token-redefinition",
-            "status": "warn",
-            "detail": "0 CSS variable redefinitions of canonical tokens",
-            "instances": []
-          }
-        ],
+        "score": 100,
+        "issues": [],
         "hardcoded_count": 0,
         "redefinition_count": 0
       },
@@ -1559,7 +1139,7 @@
         ],
         "adoption_score": 50
       },
-      "overall": 58.8
+      "overall": 76.2
     },
     "p31ca": {
       "meta": {
@@ -1568,6 +1148,16 @@
         "css": "tailwind-v3",
         "strict_ts": true
       },
+      "remediation": {
+        "css_vars_injected": 0,
+        "colors_replaced": 42,
+        "glass_normalized": 4,
+        "ts_strict_fixed": 0,
+        "shared_dep_added": false,
+        "css_import_added": 1,
+        "tw_preset_added": 0,
+        "total_fixes": 47
+      },
       "layer_1_pre": {
         "layer": 1,
         "name": "surface",
@@ -1576,7 +1166,7 @@
           {
             "check": "eslint",
             "status": "warning",
-            "detail": "Oops! Something went wrong! :(\n\nESLint: 10.2.1\n\nError [ERR_MODULE_NOT_FOUND]: Cannot find package '@typescript-eslint/eslint-plugin' imported from /home/p31/andromeda/software/eslint.config.mjs\nDid yo"
+            "detail": "[Errno 2] No such file or directory: 'npx'"
           },
           {
             "check": "formatter",
@@ -1584,104 +1174,77 @@
             "detail": "No Prettier or Biome config"
           }
         ],
-        "fixes_applied": 0
+        "fixes_applied": 5
       },
       "layer_2_pre": {
         "layer": 2,
         "name": "tokens",
-        "score": 10,
+        "score": 40,
         "issues": [
           {
             "check": "hardcoded-colors",
             "status": "fail",
-            "detail": "19 instances of canonical colors used as hardcoded hex instead of CSS variables",
+            "detail": "42 instances of canonical colors used as hardcoded hex instead of CSS variables",
             "instances": [
               {
-                "file": "software/p31ca/tailwind.build.css",
-                "color": "#cda852",
-                "canonical_name": "amber",
-                "line": 5
-              },
-              {
-                "file": "software/p31ca/tailwind.build.css",
+                "file": "software/p31ca/public/p31-style.css",
                 "color": "#cc6247",
                 "canonical_name": "coral",
-                "line": 7
+                "line": 72
               },
               {
-                "file": "software/p31ca/tailwind.build.css",
+                "file": "software/p31ca/public/p31-style.css",
+                "color": "#5DCAA5",
+                "canonical_name": "teal",
+                "line": 73
+              },
+              {
+                "file": "software/p31ca/public/p31-style.css",
                 "color": "#4db8a8",
                 "canonical_name": "cyan",
-                "line": 8
+                "line": 74
               },
               {
-                "file": "software/p31ca/tailwind.build.css",
-                "color": "#e879f9",
-                "canonical_name": "fuchsia",
-                "line": 9
+                "file": "software/p31ca/public/p31-style.css",
+                "color": "#d8d6d0",
+                "canonical_name": "cloud",
+                "line": 75
               },
               {
-                "file": "software/p31ca/tailwind.build.css",
-                "color": "#0f172a",
-                "canonical_name": "ink",
-                "line": 10
+                "file": "software/p31ca/public/p31-style.css",
+                "color": "#cda852",
+                "canonical_name": "amber",
+                "line": 76
               },
               {
-                "file": "software/p31ca/tailwind.build.css",
+                "file": "software/p31ca/public/p31-style.css",
                 "color": "#8b7cc9",
                 "canonical_name": "lavender",
-                "line": 11
+                "line": 77
               },
               {
-                "file": "software/p31ca/tailwind.build.css",
-                "color": "#64748b",
-                "canonical_name": "muted",
-                "line": 12
-              },
-              {
-                "file": "software/p31ca/tailwind.build.css",
-                "color": "#fdfcfa",
-                "canonical_name": "paper",
-                "line": 13
-              },
-              {
-                "file": "software/p31ca/tailwind.build.css",
-                "color": "#00ff88",
-                "canonical_name": "phosphor",
-                "line": 14
-              },
-              {
-                "file": "software/p31ca/tailwind.build.css",
+                "file": "software/p31ca/public/p31-style.css",
                 "color": "#3ba372",
                 "canonical_name": "phosphorus",
-                "line": 15
-              }
-            ]
-          },
-          {
-            "check": "token-redefinition",
-            "status": "fail",
-            "detail": "152 CSS variable redefinitions of canonical tokens",
-            "instances": [
-              {
-                "file": "software/p31ca/tailwind.build.css",
-                "line": "--color-amber: #cda852;"
+                "line": 78
               },
               {
-                "file": "software/p31ca/tailwind.build.css",
-                "line": "--color-cloud: #1e293b;"
+                "file": "software/p31ca/public/p31-style.css",
+                "color": "#00FF88",
+                "canonical_name": "phosphor",
+                "line": 82
               },
               {
-                "file": "software/p31ca/tailwind.build.css",
-                "line": "--color-coral: #cc6247;"
+                "file": "software/p31ca/public/p31-style.css",
+                "color": "#e879f9",
+                "canonical_name": "fuchsia",
+                "line": 83
               },
               {
-                "file": "software/p31ca/tailwind.build.css",
-                "line": "--color-cyan: #4db8a8;"
-              },
-              {
-                "file": "software/p31ca/tailwind.build.css",
-                "line": "--color-fuchsia: #e879f9;"
+                "file": "software/p31ca/public/p31-style.css",
+                "color": "#f5f4f0",
+                "canonical_name": "themeColor",
+                "line": 104
               }
             ]
           },
@@ -1697,16 +1260,16 @@
                 "delta": -2
               },
               {
-                "file": "software/p31ca/dist/p31-tw.css",
-                "blur_px": 8,
+                "file": "software/p31ca/public/p31-style.css",
+                "blur_px": 12,
                 "expected": 10,
-                "delta": -2
+                "delta": 2
               }
             ]
           }
         ],
-        "hardcoded_count": 19,
-        "redefinition_count": 152
+        "hardcoded_count": 42,
+        "redefinition_count": 0
       },
       "layer_3_pre": {
         "layer": 3,
@@ -1731,7 +1294,7 @@
           {
             "check": "shared-imports",
             "pass": true,
-            "detail": "5 imports from @p31/shared"
+            "detail": "3 imports from @p31/shared"
           },
           {
             "check": "tailwind-preset",
@@ -1759,7 +1322,7 @@
           {
             "check": "eslint",
             "status": "warning",
-            "detail": "Oops! Something went wrong! :(\n\nESLint: 10.2.1\n\nError [ERR_MODULE_NOT_FOUND]: Cannot find package '@typescript-eslint/eslint-plugin' imported from /home/p31/andromeda/software/eslint.config.mjs\nDid yo"
+            "detail": "[Errno 2] No such file or directory: 'npx'"
           },
           {
             "check": "formatter",
@@ -1772,33 +1335,15 @@
       "layer_2": {
         "layer": 2,
         "name": "tokens",
-        "score": 10,
+        "score": 90,
         "issues": [
-          {
-            "check": "hardcoded-colors",
-            "status": "warn",
-            "detail": "0 instances of canonical colors used as hardcoded hex instead of CSS variables",
-            "instances": []
-          },
-          {
-            "check": "token-redefinition",
-            "status": "warn",
-            "detail": "0 CSS variable redefinitions of canonical tokens",
-            "instances": []
-          },
           {
             "check": "glass-drift",
             "status": "fail",
-            "detail": "2 glass effects with non-standard blur",
+            "detail": "1 glass effects with non-standard blur",
             "instances": [
               {
                 "file": "software/p31ca/public/p31-tw.css",
-                "blur_px": 8,
-                "expected": 10,
-                "delta": -2
-              },
-              {
-                "file": "software/p31ca/dist/p31-tw.css",
                 "blur_px": 8,
                 "expected": 10,
                 "delta": -2
@@ -1832,7 +1377,7 @@
           {
             "check": "shared-imports",
             "pass": true,
-            "detail": "5 imports from @p31/shared"
+            "detail": "4 imports from @p31/shared"
           },
           {
             "check": "tailwind-preset",
@@ -1852,7 +1397,7 @@
         ],
         "adoption_score": 80
       },
-      "overall": 61.2
+      "overall": 81.2
     },
     "sovereign-command-center": {
       "meta": {
@@ -1861,6 +1406,16 @@
         "css": "tailwind-v3",
         "strict_ts": true
       },
+      "remediation": {
+        "css_vars_injected": 0,
+        "colors_replaced": 2,
+        "glass_normalized": 0,
+        "ts_strict_fixed": 0,
+        "shared_dep_added": false,
+        "css_import_added": 1,
+        "tw_preset_added": 0,
+        "total_fixes": 3
+      },
       "layer_1_pre": {
         "layer": 1,
         "name": "surface",
@@ -1877,110 +1432,35 @@
             "detail": "No Prettier or Biome config"
           }
         ],
-        "fixes_applied": 0
+        "fixes_applied": 55
       },
       "layer_2_pre": {
         "layer": 2,
         "name": "tokens",
-        "score": 30,
+        "score": 90,
         "issues": [
           {
             "check": "hardcoded-colors",
             "status": "fail",
-            "detail": "15 instances of canonical colors used as hardcoded hex instead of CSS variables",
+            "detail": "2 instances of canonical colors used as hardcoded hex instead of CSS variables",
             "instances": [
               {
                 "file": "software/sovereign-command-center/styles/globals.css",
-                "color": "#cda852",
-                "canonical_name": "amber",
-                "line": 5
+                "color": "#0f172a",
+                "canonical_name": "ink",
+                "line": 32
               },
               {
                 "file": "software/sovereign-command-center/styles/globals.css",
-                "color": "#cc6247",
-                "canonical_name": "coral",
-                "line": 7
-              },
-              {
-                "file": "software/sovereign-command-center/styles/globals.css",
-                "color": "#4db8a8",
-                "canonical_name": "cyan",
-                "line": 8
-              },
-              {
-                "file": "software/sovereign-command-center/styles/globals.css",
-                "color": "#e879f9",
-                "canonical_name": "fuchsia",
-                "line": 9
-              },
-              {
-                "file": "software/sovereign-command-center/styles/globals.css",
-                "color": "#8b7cc9",
-                "canonical_name": "lavender",
-                "line": 11
-              },
-              {
-                "file": "software/sovereign-command-center/styles/globals.css",
-                "color": "#64748b",
-                "canonical_name": "muted",
-                "line": 12
-              },
-              {
-                "file": "software/sovereign-command-center/styles/globals.css",
-                "color": "#fdfcfa",
-                "canonical_name": "paper",
-                "line": 13
-              },
-              {
-                "file": "software/sovereign-command-center/styles/globals.css",
-                "color": "#00ff88",
-                "canonical_name": "phosphor",
-                "line": 14
-              },
-              {
-                "file": "software/sovereign-command-center/styles/globals.css",
-                "color": "#3ba372",
-                "canonical_name": "phosphorus",
-                "line": 15
-              },
-              {
-                "file": "software/sovereign-command-center/styles/globals.css",
-                "color": "#ebeae4",
-                "canonical_name": "surface2",
-                "line": 17
-              }
-            ]
-          },
-          {
-            "check": "token-redefinition",
-            "status": "fail",
-            "detail": "17 CSS variable redefinitions of canonical tokens",
-            "instances": [
-              {
-                "file": "software/sovereign-command-center/styles/globals.css",
-                "line": "--color-amber: #cda852;"
-              },
-              {
-                "file": "software/sovereign-command-center/styles/globals.css",
-                "line": "--color-cloud: #1e293b;"
-              },
-              {
-                "file": "software/sovereign-command-center/styles/globals.css",
-                "line": "--color-coral: #cc6247;"
-              },
-              {
-                "file": "software/sovereign-command-center/styles/globals.css",
-                "line": "--color-cyan: #4db8a8;"
-              },
-              {
-                "file": "software/sovereign-command-center/styles/globals.css",
-                "line": "--color-fuchsia: #e879f9;"
+                "color": "#ffffff",
+                "canonical_name": "surface",
+                "line": 93
               }
             ]
           }
         ],
-        "hardcoded_count": 15,
-        "redefinition_count": 17
+        "hardcoded_count": 2,
+        "redefinition_count": 0
       },
       "layer_3_pre": {
         "layer": 3,
@@ -1999,7 +1479,7 @@
           {
             "check": "shared-imports",
             "pass": true,
-            "detail": "2 imports from @p31/shared"
+            "detail": "1 imports from @p31/shared"
           },
           {
             "check": "tailwind-preset",
@@ -2040,21 +1520,8 @@
       "layer_2": {
         "layer": 2,
         "name": "tokens",
-        "score": 30,
-        "issues": [
-          {
-            "check": "hardcoded-colors",
-            "status": "warn",
-            "detail": "0 instances of canonical colors used as hardcoded hex instead of CSS variables",
-            "instances": []
-          },
-          {
-            "check": "token-redefinition",
-            "status": "warn",
-            "detail": "0 CSS variable redefinitions of canonical tokens",
-            "instances": []
-          }
-        ],
+        "score": 100,
+        "issues": [],
         "hardcoded_count": 0,
         "redefinition_count": 0
       },
@@ -2095,7 +1562,7 @@
         ],
         "adoption_score": 80
       },
-      "overall": 70.0
+      "overall": 87.5
     },
     "spaceship-earth": {
       "meta": {
@@ -2104,6 +1571,16 @@
         "css": "vanilla",
         "strict_ts": false
       },
+      "remediation": {
+        "css_vars_injected": 1,
+        "colors_replaced": 21,
+        "glass_normalized": 0,
+        "ts_strict_fixed": 0,
+        "shared_dep_added": false,
+        "css_import_added": 1,
+        "tw_preset_added": 0,
+        "total_fixes": 23
+      },
       "layer_1_pre": {
         "layer": 1,
         "name": "surface",
@@ -2120,110 +1597,35 @@
             "detail": "No Prettier or Biome config"
           }
         ],
-        "fixes_applied": 0
+        "fixes_applied": 8
       },
       "layer_2_pre": {
         "layer": 2,
         "name": "tokens",
-        "score": 30,
+        "score": 90,
         "issues": [
           {
             "check": "hardcoded-colors",
             "status": "fail",
-            "detail": "14 instances of canonical colors used as hardcoded hex instead of CSS variables",
+            "detail": "2 instances of canonical colors used as hardcoded hex instead of CSS variables",
             "instances": [
               {
                 "file": "software/spaceship-earth/src/styles.css",
-                "color": "#cda852",
-                "canonical_name": "amber",
-                "line": 6
+                "color": "#0f172a",
+                "canonical_name": "ink",
+                "line": 55
               },
               {
                 "file": "software/spaceship-earth/src/styles.css",
-                "color": "#cc6247",
-                "canonical_name": "coral",
-                "line": 8
-              },
-              {
-                "file": "software/spaceship-earth/src/styles.css",
-                "color": "#4db8a8",
-                "canonical_name": "cyan",
-                "line": 9
-              },
-              {
-                "file": "software/spaceship-earth/src/styles.css",
-                "color": "#e879f9",
-                "canonical_name": "fuchsia",
-                "line": 10
-              },
-              {
-                "file": "software/spaceship-earth/src/styles.css",
-                "color": "#8b7cc9",
-                "canonical_name": "lavender",
-                "line": 12
-              },
-              {
-                "file": "software/spaceship-earth/src/styles.css",
-                "color": "#64748b",
-                "canonical_name": "muted",
-                "line": 13
-              },
-              {
-                "file": "software/spaceship-earth/src/styles.css",
-                "color": "#fdfcfa",
-                "canonical_name": "paper",
-                "line": 14
-              },
-              {
-                "file": "software/spaceship-earth/src/styles.css",
-                "color": "#3ba372",
-                "canonical_name": "phosphorus",
-                "line": 16
-              },
-              {
-                "file": "software/spaceship-earth/src/styles.css",
-                "color": "#ebeae4",
-                "canonical_name": "surface2",
-                "line": 18
-              },
-              {
-                "file": "software/spaceship-earth/src/styles.css",
-                "color": "#5dcaa5",
-                "canonical_name": "teal",
-                "line": 19
-              }
-            ]
-          },
-          {
-            "check": "token-redefinition",
-            "status": "fail",
-            "detail": "23 CSS variable redefinitions of canonical tokens",
-            "instances": [
-              {
-                "file": "software/spaceship-earth/src/styles.css",
-                "line": "--color-amber: #cda852;"
-              },
-              {
-                "file": "software/spaceship-earth/src/styles.css",
-                "line": "--color-cloud: #1e293b;"
-              },
-              {
-                "file": "software/spaceship-earth/src/styles.css",
-                "line": "--color-coral: #cc6247;"
-              },
-              {
-                "file": "software/spaceship-earth/src/styles.css",
-                "line": "--color-cyan: #4db8a8;"
-              },
-              {
-                "file": "software/spaceship-earth/src/styles.css",
-                "line": "--color-fuchsia: #e879f9;"
+                "color": "#ffffff",
+                "canonical_name": "surface",
+                "line": 254
               }
             ]
           }
         ],
-        "hardcoded_count": 14,
-        "redefinition_count": 23
+        "hardcoded_count": 2,
+        "redefinition_count": 0
       },
       "layer_3_pre": {
         "layer": 3,
@@ -2233,7 +1635,7 @@
           {
             "check": "export-style",
             "status": "warn",
-            "detail": "Mixed export styles: 34 named, 15 default (ratio 69%)"
+            "detail": "Mixed export styles: 36 named, 15 default (ratio 71%)"
           }
         ],
         "react_version": "^18.3.1",
@@ -2252,7 +1654,7 @@
               {
                 "check": "shared-imports",
                 "pass": true,
-                "detail": "8 imports from @p31/shared"
+                "detail": "7 imports from @p31/shared"
               },
               {
                 "check": "tailwind-preset",
@@ -2276,7 +1678,7 @@
           {
             "check": "shared-imports",
             "pass": true,
-            "detail": "8 imports from @p31/shared"
+            "detail": "7 imports from @p31/shared"
           },
           {
             "check": "tailwind-preset",
@@ -2317,22 +1719,23 @@
       "layer_2": {
         "layer": 2,
         "name": "tokens",
-        "score": 30,
+        "score": 95,
         "issues": [
           {
             "check": "hardcoded-colors",
-            "status": "warn",
-            "detail": "0 instances of canonical colors used as hardcoded hex instead of CSS variables",
-            "instances": []
-          },
-          {
-            "check": "token-redefinition",
-            "status": "warn",
-            "detail": "0 CSS variable redefinitions of canonical tokens",
-            "instances": []
+            "status": "fail",
+            "detail": "1 instances of canonical colors used as hardcoded hex instead of CSS variables",
+            "instances": [
+              {
+                "file": "software/spaceship-earth/src/styles.css",
+                "color": "#0f172a",
+                "canonical_name": "ink",
+                "line": 61
+              }
+            ]
           }
         ],
-        "hardcoded_count": 0,
+        "hardcoded_count": 1,
         "redefinition_count": 0
       },
       "layer_3": {
@@ -2343,7 +1746,7 @@
           {
             "check": "export-style",
             "status": "warn",
-            "detail": "Mixed export styles: 34 named, 15 default (ratio 69%)"
+            "detail": "Mixed export styles: 36 named, 15 default (ratio 71%)"
           }
         ],
         "react_version": "^18.3.1",
@@ -2406,7 +1809,7 @@
         ],
         "adoption_score": 70
       },
-      "overall": 63.8
+      "overall": 80.0
     },
     "spoon-calculator": {
       "meta": {
@@ -2415,6 +1818,16 @@
         "css": "vanilla",
         "strict_ts": false
       },
+      "remediation": {
+        "css_vars_injected": 0,
+        "colors_replaced": 1,
+        "glass_normalized": 0,
+        "ts_strict_fixed": 0,
+        "shared_dep_added": false,
+        "css_import_added": 1,
+        "tw_preset_added": 0,
+        "total_fixes": 2
+      },
       "layer_1_pre": {
         "layer": 1,
         "name": "surface",
@@ -2436,105 +1849,24 @@
       "layer_2_pre": {
         "layer": 2,
         "name": "tokens",
-        "score": 30,
+        "score": 95,
         "issues": [
           {
             "check": "hardcoded-colors",
             "status": "fail",
-            "detail": "15 instances of canonical colors used as hardcoded hex instead of CSS variables",
+            "detail": "1 instances of canonical colors used as hardcoded hex instead of CSS variables",
             "instances": [
               {
                 "file": "software/spoon-calculator/src/index.css",
-                "color": "#cda852",
-                "canonical_name": "amber",
-                "line": 5
-              },
-              {
-                "file": "software/spoon-calculator/src/index.css",
-                "color": "#cc6247",
-                "canonical_name": "coral",
-                "line": 7
-              },
-              {
-                "file": "software/spoon-calculator/src/index.css",
-                "color": "#4db8a8",
-                "canonical_name": "cyan",
-                "line": 8
-              },
-              {
-                "file": "software/spoon-calculator/src/index.css",
-                "color": "#e879f9",
-                "canonical_name": "fuchsia",
-                "line": 9
-              },
-              {
-                "file": "software/spoon-calculator/src/index.css",
-                "color": "#8b7cc9",
-                "canonical_name": "lavender",
-                "line": 11
-              },
-              {
-                "file": "software/spoon-calculator/src/index.css",
-                "color": "#64748b",
-                "canonical_name": "muted",
-                "line": 12
-              },
-              {
-                "file": "software/spoon-calculator/src/index.css",
-                "color": "#fdfcfa",
-                "canonical_name": "paper",
-                "line": 13
-              },
-              {
-                "file": "software/spoon-calculator/src/index.css",
-                "color": "#00ff88",
-                "canonical_name": "phosphor",
-                "line": 14
-              },
-              {
-                "file": "software/spoon-calculator/src/index.css",
-                "color": "#3ba372",
-                "canonical_name": "phosphorus",
-                "line": 15
-              },
-              {
-                "file": "software/spoon-calculator/src/index.css",
-                "color": "#ffffff",
-                "canonical_name": "surface",
-                "line": 16
-              }
-            ]
-          },
-          {
-            "check": "token-redefinition",
-            "status": "fail",
-            "detail": "16 CSS variable redefinitions of canonical tokens",
-            "instances": [
-              {
-                "file": "software/spoon-calculator/src/index.css",
-                "line": "--color-amber: #cda852;"
-              },
-              {
-                "file": "software/spoon-calculator/src/index.css",
-                "line": "--color-cloud: #1e293b;"
-              },
-              {
-                "file": "software/spoon-calculator/src/index.css",
-                "line": "--color-coral: #cc6247;"
-              },
-              {
-                "file": "software/spoon-calculator/src/index.css",
-                "line": "--color-cyan: #4db8a8;"
-              },
-              {
-                "file": "software/spoon-calculator/src/index.css",
-                "line": "--color-fuchsia: #e879f9;"
+                "color": "#0f172a",
+                "canonical_name": "ink",
+                "line": 27
               }
             ]
           }
         ],
-        "hardcoded_count": 15,
-        "redefinition_count": 16
+        "hardcoded_count": 1,
+        "redefinition_count": 0
       },
       "layer_3_pre": {
         "layer": 3,
@@ -2553,17 +1885,17 @@
       "layer_4_pre": {
         "layer": 4,
         "name": "architecture",
-        "score": 50,
+        "score": 20,
         "issues": [
           {
             "check": "design-system-adoption",
-            "status": "warn",
-            "detail": "Partial design system adoption: 50/100",
+            "status": "fail",
+            "detail": "Design system adoption score: 20/100",
             "checks": [
               {
                 "check": "shared-imports",
-                "pass": true,
-                "detail": "1 imports from @p31/shared"
+                "pass": false,
+                "detail": "0 imports from @p31/shared"
               },
               {
                 "check": "tailwind-preset",
@@ -2586,8 +1918,8 @@
         "checks": [
           {
             "check": "shared-imports",
-            "pass": true,
-            "detail": "1 imports from @p31/shared"
+            "pass": false,
+            "detail": "0 imports from @p31/shared"
           },
           {
             "check": "tailwind-preset",
@@ -2605,7 +1937,7 @@
             "detail": "No useThemeStore import"
           }
         ],
-        "adoption_score": 50
+        "adoption_score": 20
       },
       "layer_1": {
         "layer": 1,
@@ -2628,21 +1960,8 @@
       "layer_2": {
         "layer": 2,
         "name": "tokens",
-        "score": 30,
-        "issues": [
-          {
-            "check": "hardcoded-colors",
-            "status": "warn",
-            "detail": "0 instances of canonical colors used as hardcoded hex instead of CSS variables",
-            "instances": []
-          },
-          {
-            "check": "token-redefinition",
-            "status": "warn",
-            "detail": "0 CSS variable redefinitions of canonical tokens",
-            "instances": []
-          }
-        ],
+        "score": 100,
+        "issues": [],
         "hardcoded_count": 0,
         "redefinition_count": 0
       },
@@ -2717,89 +2036,89 @@
         ],
         "adoption_score": 50
       },
-      "overall": 62.5
+      "overall": 80.0
     }
   },
   "drift_signals": {
     "/home/p31/andromeda/software/bonding": {
-      "ui_ux_fidelity": 56.2,
+      "ui_ux_fidelity": 68.8,
       "layer_1_surface": 70,
-      "layer_2_tokens": 20,
+      "layer_2_tokens": 70,
       "layer_3_patterns": 85,
       "layer_4_architecture": 50,
-      "hardcoded_colors": 23,
+      "hardcoded_colors": 0,
       "design_system_adoption": 50
     },
     "/home/p31/andromeda/software/frontend": {
-      "ui_ux_fidelity": 58.8,
+      "ui_ux_fidelity": 76.2,
       "layer_1_surface": 70,
-      "layer_2_tokens": 30,
+      "layer_2_tokens": 100,
       "layer_3_patterns": 85,
       "layer_4_architecture": 50,
-      "hardcoded_colors": 15,
+      "hardcoded_colors": 0,
       "design_system_adoption": 50
     },
     "/home/p31/andromeda/software/p31-delta-hiring": {
-      "ui_ux_fidelity": 62.5,
+      "ui_ux_fidelity": 80.0,
       "layer_1_surface": 70,
-      "layer_2_tokens": 30,
+      "layer_2_tokens": 100,
       "layer_3_patterns": 100,
       "layer_4_architecture": 50,
-      "hardcoded_colors": 15,
+      "hardcoded_colors": 0,
       "design_system_adoption": 50
     },
     "/home/p31/andromeda/software/p31-hearing-ops": {
-      "ui_ux_fidelity": 66.2,
-      "layer_1_surface": 85,
-      "layer_2_tokens": 30,
+      "ui_ux_fidelity": 80.0,
+      "layer_1_surface": 70,
+      "layer_2_tokens": 100,
       "layer_3_patterns": 100,
       "layer_4_architecture": 50,
-      "hardcoded_colors": 15,
+      "hardcoded_colors": 0,
       "design_system_adoption": 50
     },
     "/home/p31/andromeda/software/packages/node-zero/pwa": {
-      "ui_ux_fidelity": 58.8,
+      "ui_ux_fidelity": 76.2,
       "layer_1_surface": 70,
-      "layer_2_tokens": 30,
+      "layer_2_tokens": 100,
       "layer_3_patterns": 85,
       "layer_4_architecture": 50,
-      "hardcoded_colors": 15,
+      "hardcoded_colors": 0,
       "design_system_adoption": 50
     },
     "/home/p31/andromeda/software/p31ca": {
-      "ui_ux_fidelity": 61.2,
+      "ui_ux_fidelity": 81.2,
       "layer_1_surface": 70,
-      "layer_2_tokens": 10,
+      "layer_2_tokens": 90,
       "layer_3_patterns": 85,
       "layer_4_architecture": 80,
-      "hardcoded_colors": 19,
+      "hardcoded_colors": 0,
       "design_system_adoption": 80
     },
     "/home/p31/andromeda/software/sovereign-command-center": {
-      "ui_ux_fidelity": 70.0,
+      "ui_ux_fidelity": 87.5,
       "layer_1_surface": 70,
-      "layer_2_tokens": 30,
+      "layer_2_tokens": 100,
       "layer_3_patterns": 100,
       "layer_4_architecture": 80,
-      "hardcoded_colors": 15,
+      "hardcoded_colors": 0,
       "design_system_adoption": 80
     },
     "/home/p31/andromeda/software/spaceship-earth": {
-      "ui_ux_fidelity": 63.8,
+      "ui_ux_fidelity": 80.0,
       "layer_1_surface": 70,
-      "layer_2_tokens": 30,
+      "layer_2_tokens": 95,
       "layer_3_patterns": 85,
       "layer_4_architecture": 70,
-      "hardcoded_colors": 14,
+      "hardcoded_colors": 1,
       "design_system_adoption": 70
     },
     "/home/p31/andromeda/software/spoon-calculator": {
-      "ui_ux_fidelity": 62.5,
+      "ui_ux_fidelity": 80.0,
       "layer_1_surface": 70,
-      "layer_2_tokens": 30,
+      "layer_2_tokens": 100,
       "layer_3_patterns": 100,
       "layer_4_architecture": 50,
-      "hardcoded_colors": 15,
+      "hardcoded_colors": 0,
       "design_system_adoption": 50
     }
   }

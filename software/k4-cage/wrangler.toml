@@ -40,10 +40,8 @@ tag = "v4-messaging"
 [[migrations]]
 tag = "v5-cage"
 
-# Remove orphan FamilyCageDO class (stale from previous version)
-[[migrations]]
-tag = "v6-remove-legacy"
-deleted_classes = ["FamilyCageDO"]
+# v6-remove-legacy removed — FamilyCageDO already absent from script;
+# re-adding would require a no-op migration which wrangler rejects.
 
 # [[d1_databases]]
 # binding = "DB"
