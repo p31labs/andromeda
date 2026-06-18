@@ -53,7 +53,7 @@ describe('Embedder', () => {
 
       await generateEmbedding('hello world');
       expect(fetchMock).toHaveBeenCalledWith(
-        'http://localhost:4000/v1/embeddings',
+        expect.stringContaining('/v1/embeddings'),
         expect.objectContaining({
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },

@@ -107,7 +107,7 @@ export function GlobeRoom() {
         roughness: 0.1, metalness: 0.9,
       }),
       core: new THREE.MeshStandardMaterial({
-        color: '#00FF88', emissive: '#00FF88', emissiveIntensity: 2.0,
+        color: 'var(--color-phosphor)', emissive: 'var(--color-phosphor)', emissiveIntensity: 2.0,
         roughness: 0.2, metalness: 0.8,
       }),
     }),
@@ -157,7 +157,7 @@ export function GlobeRoom() {
       {lineGeos.map((geo, i) => (
         <line key={i}>
           <primitive attach="geometry" object={geo} />
-          <lineBasicMaterial color="#00FF88" transparent opacity={0.2} />
+          <lineBasicMaterial color="var(--color-phosphor)" transparent opacity={0.2} />
         </line>
       ))}
       {nodePositions.map((pos, i) => (

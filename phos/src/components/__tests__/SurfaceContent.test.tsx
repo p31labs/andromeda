@@ -41,7 +41,7 @@ describe('SurfaceContent', () => {
 
   it('should render LEDGER surface', () => {
     renderSurface('LEDGER');
-    expect(screen.getByText('LOVE Ledger')).toBeTruthy();
+    expect(screen.getByText(/Tranche 3: Ontological Care Ledger/)).toBeTruthy();
   });
 
   it('should render ARCHIVE surface', () => {
