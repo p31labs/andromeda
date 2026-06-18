@@ -106,7 +106,7 @@ async function handleChannels(env) {
 }
 
 async function handleHealth(env) {
-  return json({ status: 'ok', timestamp: new Date().toISOString() }, {}, env);
+  return json({ ok: true, service: 'p31-forge', ts: new Date().toISOString() }, {}, env);
 }
 
 async function handleBrand(env) {
@@ -535,7 +535,7 @@ export default {
     // GET routes
     if (method === 'GET') {
       if (pathname === '/')               return handleInfo(env);
-      if (pathname === '/health')         return handleHealth(env);
+      if (pathname === '/health' || pathname === '/api/health' || pathname === '/v1/forge/health') return handleHealth(env);
       if (pathname === '/brand')          return handleBrand(env);
       if (pathname === '/channels')       return handleChannels(env);
       if (pathname === '/activity')       return handleActivity(request, env);

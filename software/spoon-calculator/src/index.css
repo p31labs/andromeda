@@ -24,7 +24,7 @@
   --yellow: #eab308;
   --red: #ef4444;
   --black: #111827;
-  --bg: #0f172a;
+  --bg: var(--color-ink);
   --card: #1e293b;
   --text: #f8fafc;
   --muted: #94a3b8;

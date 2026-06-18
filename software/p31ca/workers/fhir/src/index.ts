@@ -26,6 +26,12 @@ export default {
     }
 
     const url = new URL(request.url);
+    if (url.pathname === '/health') {
+      return new Response(JSON.stringify({ ok: true, service: 'fhir', ts: new Date().toISOString() }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },
+      });
+    }
 
     // OAuth initiation — redirects operator to Epic login
     if (url.pathname === '/fhir/auth' && request.method === 'GET') {

@@ -5,12 +5,12 @@ compatibility_date = "2026-04-13"
 
 [[kv_namespaces]]
 binding = "STATUS_KV"
-id = "ff890e80e7e64ae8b8afb59870f1a0f6"
+id = "b007da7b2ce6444091046b4df93ad0fd"
 
 [[d1_databases]]
 binding = "EPCP_DB"
 database_name = "epcp-audit"
-database_id = "12ce6570-839e-431d-a14d-bb6002dc89e8"
+database_id = "28804842-2a22-4afa-b546-199faba3924e"
 
 [[r2_buckets]]
 binding = "FORENSICS_HOT"

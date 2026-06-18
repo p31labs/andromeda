@@ -520,8 +520,15 @@ async function fetchEducationProgress(env: Env, subjectId: string): Promise<Resp
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
+    const url = new URL(request.url);
     if (request.method === 'OPTIONS') {
       return new Response(null, { headers: CORS_HEADERS });
+    }
+
+    if (url.pathname === '/health') {
+      return new Response(JSON.stringify({ ok: true, service: 'passkey', ts: new Date().toISOString() }), {
+        headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },
+      });
     }
 
     const url = new URL(request.url);

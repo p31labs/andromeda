@@ -28,7 +28,20 @@ type Message = {
   venues?: Array<{ name: string; lat: number; lon: number }>;
 };
 
-export default class MatchmakingDO {
+export default {
+  async fetch(request: Request, env: any, ctx: any): Promise<Response> {
+    const url = new URL(request.url);
+    if (url.pathname === '/health') {
+      return new Response(JSON.stringify({ ok: true, service: 'spin-matchmaking', ts: new Date().toISOString() }), {
+        headers: { 'Content-Type': 'application/json' },
+        status: 200,
+      });
+    }
+    return new Response('MatchmakingDO active', { status: 200 });
+  }
+};
+
+export class MatchmakingDO {
   intents: Map<string, Intent>;
   cycleLocks: Map<string, CycleLock>;
   websockets: Map<string, WebSocket>;
@@ -56,7 +69,12 @@ export default class MatchmakingDO {
     if (path === '/intent' && request.method === 'POST') return this.handlePostIntent(request);
     if (path === '/cycles' && request.method === 'GET') return this.handleGetCycles(request);
     if (path === '/ws' && request.headers.get('Upgrade') === 'websocket') return this.handleWebSocket(request);
-    if (path === '/health') return new Response('OK', { status: 200 });
+    if (path === '/health') {
+      return new Response(JSON.stringify({ ok: true, service: 'spin-matchmaking', ts: new Date().toISOString() }), {
+        headers: { 'Content-Type': 'application/json' },
+        status: 200,
+      });
+    }
 
     return new Response('Not Found', { status: 404 });
   }

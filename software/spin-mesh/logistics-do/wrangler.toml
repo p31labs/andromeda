@@ -1,12 +1,10 @@
 name = "spin-logistics"
-main = "./dist/index.js"
+main = "./index.ts"
 compatibility_date = "2024-10-22"
 
-durable_objects = { bindings = [{ name = "LOGISTICS", class_name = "HandoverDO" }] }
-
-[build]
-command = "npm run build"
+[durable_objects]
+bindings = [{ name = "LOGISTICS", class_name = "HandoverDO" }]
 
 [[migrations]]
 tag = "v1"
-new_classes = ["HandoverDO"]
+new_sqlite_classes = ["HandoverDO"]

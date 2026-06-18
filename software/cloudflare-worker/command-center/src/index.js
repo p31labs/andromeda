@@ -896,37 +896,25 @@ async function handleAiChat(request, env, persona) {
  * `status.json` in this package for bulk edits — legal/financial lines go stale quickly.
  */
 const DEFAULT_STATUS = {
-  updated: "2026-04-14T20:30:00Z",
+  updated: "2026-06-18T11:45:00Z",
   workers: [
     { name: "phosphorus31-org", status: "online", url: "https://phosphorus31.org" },
     { name: "p31ca-org", status: "online", url: "https://p31ca.org" },
     { name: "bonding-p31ca-org", status: "online", url: "https://bonding.p31ca.org" },
-     { name: "command-center", status: "online", url: "https://command-center.p31ca.org" },
-    { name: "carrie-agent", status: "online", url: "https://carrie-agent.trimtab-signal.workers.dev" },
-    { name: "carrie-wellness", status: "online", url: "https://carrie-wellness.trimtab-signal.workers.dev" },
-    { name: "p31-social-engine", status: "online", url: "https://p31-social-engine.trimtab-signal.workers.dev" },
-    { name: "genesis-gate", status: "online", url: "https://genesis-gate.trimtab-signal.workers.dev" },
-    { name: "p31-bonding-relay", status: "online", url: "https://p31-bonding-relay.trimtab-signal.workers.dev" },
-    { name: "p31-telemetry", status: "online", url: "https://p31-telemetry.trimtab-signal.workers.dev" },
-    // MAP D-MAP-12: card Checkout + /stripe-webhook = donate-api (custom domain). p31-stripe-webhook = trimtab legacy/alt — confirm in CF before retire.
-    { name: "donate-api", status: "online", url: "https://donate-api.phosphorus31.org/health" },
-    { name: "p31-stripe-webhook", status: "online", url: "https://p31-stripe-webhook.trimtab-signal.workers.dev" },
-    // Same liveness as p31-ecosystem glassProbe stripe-api-health + p31-constants payment.stripeApiHealthUrl (custom domain, not workers.dev root).
-    { name: "api-phosphorus31-org", status: "online", url: "https://api.phosphorus31.org/health" },
+    { name: "command-center", status: "online", url: "https://command-center.trimtab-signal.workers.dev" },
+    { name: "donate-api", status: "online", url: "https://donate-api.trimtab-signal.workers.dev" },
+    { name: "p31-forge", status: "online", url: "https://p31-forge.trimtab-signal.workers.dev" },
+    { name: "p31-cortex", status: "online", url: "https://p31-cortex.trimtab-signal.workers.dev" },
+    { name: "spin-matchmaking", status: "online", url: "https://spin-matchmaking.trimtab-signal.workers.dev" },
+    { name: "spin-logistics", status: "online", url: "https://spin-logistics.trimtab-signal.workers.dev" },
     { name: "fawn-guard", status: "online", url: "https://fawn-guard.trimtab-signal.workers.dev" },
     { name: "p31-signaling", status: "online", url: "https://p31-signaling.trimtab-signal.workers.dev" },
     { name: "p31-vault", status: "online", url: "https://p31-vault.pages.dev" },
     { name: "p31-mesh", status: "online", url: "https://p31-mesh.pages.dev" },
-    { name: "p31-lab", status: "online", url: "https://p31-lab.trimtab-signal.workers.dev" },
-    { name: "will-workshop", status: "online", url: "https://will-workshop.trimtab-signal.workers.dev" },
-    { name: "bash-lab", status: "online", url: "https://bash-lab.trimtab-signal.workers.dev" },
-    { name: "willow-garden", status: "online", url: "https://willow-garden.trimtab-signal.workers.dev" },
-    { name: "christyn-corner", status: "online", url: "https://christyn-corner.trimtab-signal.workers.dev" },
-    { name: "k4-cage", status: "online", url: "https://k4-cage.trimtab-signal.workers.dev" },
-    { name: "k4-personal", status: "online", url: "https://k4-personal.trimtab-signal.workers.dev" },
-    { name: "k4-hubs", status: "online", url: "https://k4-hubs.trimtab-signal.workers.dev" },
-    { name: "p31-bouncer", status: "online", url: "https://p31-bouncer.trimtab-signal.workers.dev" },
-    { name: "p31-phenix", status: "online", url: "https://p31-phenix.pages.dev" }
+    { name: "ops-p31ca", status: "online", url: "https://ops.p31ca.org" },
+    { name: "phos", status: "online", url: "https://phos.p31ca.org" },
+    { name: "spaceship-earth", status: "online", url: "https://spaceship-earth.pages.dev" },
+    { name: "bonding-meatspace", status: "online", url: "https://bonding-meatspace.pages.dev" }
   ],
   legal: {
     case: "Johnson v. Johnson, 2025CV936",
@@ -945,11 +933,11 @@ const DEFAULT_STATUS = {
   research: {
     paper_xii: "Sovereign Stack — 11pp, triple-gated, Zenodo-ready",
     bonding_tests: "413 / 30 suites",
-    deployed_workers: 25,
+    deployed_workers: 17,
     k4_phase: 4,
     k4_viz_url: "https://k4-cage.trimtab-signal.workers.dev/viz",
     k4_api_url: "https://k4-cage.trimtab-signal.workers.dev/api",
-    phenix_url: "https://p31-phenix.pages.dev"
+    p31ca_health_url: "https://p31ca.org/api/health"
   },
   dates: [
     { date: "Apr 14", event: "Discovery sent to McGhan (3 docs)" },
@@ -1087,4 +1075,6 @@ async function pingFleet(env) {
   } catch (e) {
     console.error('Health pinger KV write failed:', e);
   }
+}
+}
 }

@@ -34,6 +34,19 @@ type Message = {
   resourceIds?: string[];
 };
 
+export default {
+  async fetch(request: Request, env: any, ctx: any): Promise<Response> {
+    const url = new URL(request.url);
+    if (url.pathname === '/health') {
+      return new Response(JSON.stringify({ ok: true, service: 'spin-logistics', ts: new Date().toISOString() }), {
+        headers: { 'Content-Type': 'application/json' },
+        status: 200,
+      });
+    }
+    return new Response('HandoverDO active', { status: 200 });
+  }
+};
+
 export class HandoverDO {
   state: any;
   env: any;
@@ -61,7 +74,12 @@ export class HandoverDO {
     if (path === '/key' && request.method === 'POST') return this.submitKey(request);
     if (path === '/ready' && request.method === 'GET') return this.ready(request);
     if (path === '/complete' && request.method === 'POST') return this.complete(request);
-    if (path === '/health') return new Response('OK', { status: 200 });
+    if (path === '/health') {
+      return new Response(JSON.stringify({ ok: true, service: 'spin-logistics', ts: new Date().toISOString() }), {
+        headers: { 'Content-Type': 'application/json' },
+        status: 200,
+      });
+    }
 
     return new Response('Not Found', { status: 404 });
   }

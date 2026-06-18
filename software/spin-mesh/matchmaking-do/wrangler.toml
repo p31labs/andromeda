@@ -9,11 +9,8 @@ durable_objects = { bindings = [
 
 [build]
 command = "npm run build"
+esbuild = { format = "es" }
 
 [[migrations]]
 tag = "v1"
-new_classes = ["MatchmakingDO"]
-
-[[migrations]]
-tag = "v1"
-new_classes = ["HandoverDO"]
+new_sqlite_classes = ["MatchmakingDO"]

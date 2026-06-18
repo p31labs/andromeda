@@ -462,6 +462,25 @@ const ROOM_PATTERN = /^\/api\/geodesic\/([a-zA-Z0-9_-]{1,64})\/(ws|state)$/;
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
+
+    if (url.pathname === '/health') {
+      const pkg =
+        typeof env.WORKER_VERSION === 'string' && env.WORKER_VERSION.trim()
+          ? env.WORKER_VERSION.trim()
+          : undefined;
+      return Response.json(
+        {
+          ok: true,
+          service: 'geodesic-room',
+          status: 'healthy',
+          version: pkg || '2.0.0',
+          ts: new Date().toISOString(),
+          wireSchema: GEODESIC_ROOM_WIRE_SCHEMA,
+        },
+        { status: 200 },
+      );
+    }
+
     const m = ROOM_PATTERN.exec(url.pathname);
     if (!m) {
       const pkg =
@@ -471,7 +490,6 @@ export default {
       return Response.json(
         {
           service: 'geodesic-room',
-          /** Historic numeric probe — not semver */
           version: 2,
           ok: true,
           wireSchema: GEODESIC_ROOM_WIRE_SCHEMA,

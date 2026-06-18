@@ -1,13 +1,16 @@
 #!/bin/bash
-# P31 Labs — Status Update Script (CWP-043)
+# P31 Labs — Status Update Script (CWP-043) — with CF Access service-token support
 # Usage: ./update-status.sh [path/to/status.json]
 #
 # Tries HTTP POST first (requires Access session or service token).
-# Falls back to wrangler KV direct write if POST returns 301/302/401/403.
+# Supports three auth modes:
+#   1) Bearer token (COMMAND_CENTER_STATUS_TOKEN)
+#   2) CF Access service token headers (CF_ACCESS_CLIENT_ID + CF_ACCESS_CLIENT_SECRET)
+#   3) Falls back to wrangler KV direct write (requires wrangler login)
 #
-# Token (first match wins):
-#   1) Environment variable COMMAND_CENTER_STATUS_TOKEN
-#   2) ENV_FILE (default: repo-root .env.master)
+# Token resolution (first match wins for each path):
+#   HTTP Bearer: COMMAND_CENTER_STATUS_TOKEN
+#   Service token: CF_ACCESS_CLIENT_ID + CF_ACCESS_CLIENT_SECRET
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -16,7 +19,6 @@ REPO_ROOT="$(git -C "$SCRIPT_DIR" rev-parse --show-toplevel 2>/dev/null || true)
 DEFAULT_ENV="${REPO_ROOT:+$REPO_ROOT/}.env.master"
 ENV_FILE="${ENV_FILE:-$DEFAULT_ENV}"
 
-# Resolve wrangler: prefer p31ca local install, then global
 WRANGLER=""
 for candidate in \
   "$REPO_ROOT/software/p31ca/node_modules/.bin/wrangler" \
@@ -32,13 +34,11 @@ if [ ! -f "$STATUS_FILE" ]; then
   exit 1
 fi
 
-# Validate JSON
 node -e "JSON.parse(require('fs').readFileSync('$STATUS_FILE','utf8'))" 2>/dev/null || {
   echo "Error: Invalid JSON in $STATUS_FILE"
   exit 1
 }
 
-# Extract token (optional — only needed for HTTP path)
 TOKEN=""
 if [ -n "${COMMAND_CENTER_STATUS_TOKEN:-}" ]; then
   TOKEN="$COMMAND_CENTER_STATUS_TOKEN"
@@ -46,15 +46,31 @@ elif [ -f "$ENV_FILE" ]; then
   TOKEN=$(grep '^COMMAND_CENTER_STATUS_TOKEN=' "$ENV_FILE" 2>/dev/null | cut -d= -f2- || true)
 fi
 
-# ── Try HTTP POST ────────────────────────────────────────────────────────────
-HTTP_OK=false
+CF_ACCESS_CLIENT_ID="${CF_ACCESS_CLIENT_ID:-}"
+CF_ACCESS_CLIENT_SECRET="${CF_ACCESS_CLIENT_SECRET:-}"
+if [ -z "$CF_ACCESS_CLIENT_ID" ] && [ -f "$ENV_FILE" ]; then
+  CF_ACCESS_CLIENT_ID=$(grep '^CF_ACCESS_CLIENT_ID=' "$ENV_FILE" 2>/dev/null | cut -d= -f2- || true)
+  CF_ACCESS_CLIENT_SECRET=$(grep '^CF_ACCESS_CLIENT_SECRET=' "$ENV_FILE" 2>/dev/null | cut -d= -f2- || true)
+fi
+
+AUTH_HEADERS=()
 if [ -n "$TOKEN" ]; then
+  AUTH_HEADERS+=(-H "Authorization: Bearer $TOKEN")
+fi
+if [ -n "$CF_ACCESS_CLIENT_ID" ] && [ -n "$CF_ACCESS_CLIENT_SECRET" ]; then
+  AUTH_HEADERS+=(-H "CF-Access-Client-Id: $CF_ACCESS_CLIENT_ID")
+  AUTH_HEADERS+=(-H "CF-Access-Client-Secret: $CF_ACCESS_CLIENT_SECRET")
+fi
+
+HTTP_OK=false
+if [ ${#AUTH_HEADERS[@]} -gt 0 ]; then
   echo "Trying HTTP POST to command-center…"
   RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
     https://command-center.trimtab-signal.workers.dev/api/status \
-    -H "Authorization: Bearer $TOKEN" \
+    "${AUTH_HEADERS[@]}" \
     -H "Content-Type: application/json" \
-    -d @"$STATUS_FILE")
+    -d @"$STATUS_FILE" \
+    --max-time 15)
   HTTP_CODE=$(echo "$RESPONSE" | tail -1)
   if [ "$HTTP_CODE" = "200" ]; then
     echo "✓ HTTP POST succeeded (HTTP 200)"
@@ -66,7 +82,6 @@ else
   echo "No token available — skipping HTTP POST, using wrangler KV write directly"
 fi
 
-# ── Fallback: wrangler KV direct write ───────────────────────────────────────
 if [ "$HTTP_OK" = "false" ]; then
   if [ -z "$WRANGLER" ]; then
     echo "Error: wrangler not found. Install with: npm i -g wrangler && wrangler login"

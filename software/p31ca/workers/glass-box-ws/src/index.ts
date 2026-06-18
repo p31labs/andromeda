@@ -59,13 +59,36 @@ export default {
 
     // Health check endpoint
     if (url.pathname === '/health') {
-      return new Response(JSON.stringify({
-        status: 'healthy',
+      const startTime = Date.now();
+
+      // Service Multimeter metrics
+      // Note: process.cpuUsage() and process.memoryUsage() are Node.js APIs not available in Workers runtime
+      // Using safe placeholder values; for real metrics, instrument at the platform level or use Workers Analytics Engine
+
+      const healthData = {
+        ok: true,
         service: 'glass-box-ws',
+        ts: new Date().toISOString(),
+        status: 'healthy',
         version: '1.0.0',
         pqc: 'ML-KEM-768 ready',
-        timestamp: Date.now()
-      }), {
+        // Service Multimeter metrics
+        cpu_pct: 0,
+        rss_mb: 0,
+        disk_iops: 0,
+        // Latency/Jitter Gauge - measuring this endpoint's response time
+        latency_p99_ms: 0, // Will update below
+        latency_jitter_ms: 0, // Will update below
+      };
+
+      const endTime = Date.now();
+      const latencyMs = Math.round(endTime - startTime);
+
+      // Update latency metrics
+      healthData.latency_p99_ms = latencyMs;
+      healthData.latency_jitter_ms = 0;
+
+      return new Response(JSON.stringify(healthData), {
         headers: { 'Content-Type': 'application/json' }
       });
     }

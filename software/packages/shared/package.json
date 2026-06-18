@@ -67,6 +67,13 @@
     "./theme/canon": "./src/theme/canon.ts",
     "./theme/canon-brand": "./src/theme/canon-brand.ts",
     "./theme/tailwind-preset": "./src/theme/tailwind-preset.ts",
+    "./theme/css-variables": "./src/theme/css-variables.css",
+    "./theme/css-variables.css": {
+      "style": "./src/theme/css-variables.css",
+      "production": "./src/theme/css-variables.css",
+      "import": "./src/theme/css-variables.css",
+      "default": "./src/theme/css-variables.css"
+    },
     "./trust": "./src/trust/index.ts"
   }
 }

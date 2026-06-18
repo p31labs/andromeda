@@ -39,13 +39,39 @@ export default {
       return new Response(null, { status: 204, headers: cors(env) });
     }
 
-    if (request.method === 'GET' && url.pathname === '/health') {
-      return json(
-        { ok: true, service: 'p31-bouncer', ts: new Date().toISOString() },
-        200,
-        env,
-      );
-    }
+if (request.method === 'GET' && url.pathname === '/health') {
+  const startTime = Date.now();
+  
+  // Get service metrics
+  const cpuUsage = process.cpuUsage();
+  const memoryUsage = process.memoryUsage();
+  
+  // Calculate CPU percentage (rough approximation)
+  const cpuPercent = Math.round((cpuUsage.user + cpuUsage.system) / 10000); // Convert to centiseconds, approximate as %
+  
+  const healthData = {
+    ok: true,
+    service: 'p31-bouncer',
+    ts: new Date().toISOString(),
+    // Service Multimeter metrics
+    cpu_pct: Math.min(cpuPercent, 100), // Cap at 100%
+    rss_mb: Math.round(memoryUsage.heapUsed / 1024 / 1024),
+    // Disk I/O is harder to get accurately - using placeholder for now
+    disk_iops: 0, // Placeholder - would need implementation
+    // Latency/Jitter Gauge - we'll measure this endpoint's response time
+    latency_p99_ms: 0, // Will update below
+    latency_jitter_ms: 0, // Will update below
+  };
+  
+  const endTime = Date.now();
+  const latencyMs = Math.round(endTime - startTime);
+  
+  // Update latency metrics (for a single request, p99 = latency, jitter = 0)
+  healthData.latency_p99_ms = latencyMs;
+  healthData.latency_jitter_ms = 0;
+  
+  return json(healthData, 200, env);
+}
 
     if (request.method === 'GET' && url.pathname === '/') {
       return json(

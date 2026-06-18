@@ -4,6 +4,10 @@
 [![Open Collective](https://opencollective.com/p31-labs/backers.svg)](https://opencollective.com/p31-labs)
 [![Ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/trimtab69420)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Phase 2 Deploy](https://img.shields.io/badge/Phase_2-Ecosystem_Deployed-success)]()
+[![Tests](https://img.shields.io/badge/tests-508%2B-brightgreen)]()
+[![Workers](https://img.shields.io/badge/workers-7/7-blue)]()
+[![Pages](https://img.shields.io/badge/pages-6/6-blue)]()
 
 **P31 Andromeda** is the decentralized, zero-telemetry cognitive operating system engineered by P31 Labs, Inc. -- a Georgia domestic nonprofit (501(c)(3) pending). It provides local-first mesh networking, verifiable ADA Title II compliance tools, and autonomic cognitive insulation for neurodivergent operators.
 
@@ -39,6 +43,32 @@ pnpm run dev
 - **OpenSSF Scorecard** -- ensures supply chain integrity.
 - **Branch protection** -- `main` requires PR + 1 approval + passing status checks.
 - **Vulnerability reporting** -- via [GitHub Security Advisories](https://github.com/p31labs/andromeda/security/advisories).
+
+## Live Services
+
+| Tier | Service | URL |
+|------|---------|-----|
+| Cloudflare Workers | k4-cage | https://k4-cage.trimtab-signal.workers.dev |
+| Cloudflare Workers | donate-api | https://donate-api.trimtab-signal.workers.dev |
+| Cloudflare Workers | p31-forge | https://p31-forge.trimtab-signal.workers.dev |
+| Cloudflare Workers | p31-cortex | https://p31-cortex.trimtab-signal.workers.dev |
+| Cloudflare Workers | command-center | https://command-center.trimtab-signal.workers.dev |
+| Cloudflare Workers | spin-matchmaking | https://spin-matchmaking.trimtab-signal.workers.dev |
+| Cloudflare Workers | spin-logistics | https://spin-logistics.trimtab-signal.workers.dev |
+| Cloudflare Pages | p31ca.org | https://p31ca.org |
+| Cloudflare Pages | BONDING Chemistry Game | https://bonding.p31ca.org |
+| Cloudflare Pages | BONDING Onboarding | https://bonding-meatspace.pages.dev |
+| Cloudflare Pages | PHOS | https://phos.p31ca.org |
+| Cloudflare Pages | ops.p31ca.org | https://ops.p31ca.org |
+| Cloudflare Pages | phosphorus31.org | https://phosphorus31.org |
+| Backend | BONDING API Server | https://bonding-server.onrender.com/health |
+
+Run the full ecosystem health check:
+
+```bash
+cd software
+./verify.sh
+```
 
 ## Funding
 

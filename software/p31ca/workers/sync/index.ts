@@ -17,11 +17,19 @@ const CORS_HEADERS = {
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
+    const url = new URL(request.url);
+
+    if (url.pathname === '/health') {
+      return new Response(JSON.stringify({ ok: true, service: 'sync', ts: new Date().toISOString() }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },
+      });
+    }
+
     if (request.method === 'OPTIONS') {
       return new Response(null, { status: 204, headers: CORS_HEADERS });
     }
 
-    const url = new URL(request.url);
     const path = url.pathname;
 
     const authHeader = request.headers.get('Authorization');
