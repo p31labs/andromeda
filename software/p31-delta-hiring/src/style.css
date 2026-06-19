@@ -532,7 +532,7 @@ footer.site {
 }
 .inline-code,
 code {
-  background: #0f172a;
+  background: var(--color-ink);
   padding: 0.1rem 0.3rem;
   border-radius: 4px;
   font-size: 0.86em;
@@ -559,7 +559,7 @@ code {
 }
 .callout--legal {
   background: #1a1a0f;
-  border-color: #64748b;
+  border-color: var(--color-muted);
 }
 .p-callout {
   margin: 0;

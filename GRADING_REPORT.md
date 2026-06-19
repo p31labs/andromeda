@@ -1,10 +1,10 @@
 # P31 Maturity Model — Repository Grading Report
 
-**Generated:** 2026-06-15T18:00:18
+**Generated:** 2026-06-19T18:00:42
 **Schema:** PMM_SCHEMA=1.1
 **Total artifacts graded:** 72
 **Overrides applied:** 3
-**Scan duration:** 15.86s
+**Scan duration:** 40.23s
 
 ## Summary
 
@@ -99,7 +99,7 @@
 |------|------|------|------|-----|-----|
 | `admin` | 837 lines, mature codebase | No test files | README exists (43 lines) but no usage examples | CI/CD pipeline | Lockfile present (lockfile (pnpm-lock.yaml)) |
 | `firmware` | 108092 lines, mature codebase | No test files | Detailed docs (52 lines, examples) | CI/CD pipeline | Lockfile present (lockfile (pnpm-lock.yaml)) |
-| `scripts` | 6619 lines, mature codebase | No test files | Detailed docs (52 lines, examples) | CI/CD pipeline | Lockfile present (lockfile (pnpm-lock.yaml)) |
+| `scripts` | 7069 lines, mature codebase | No test files | Detailed docs (52 lines, examples) | CI/CD pipeline | Lockfile present (lockfile (pnpm-lock.yaml)) |
 | `software` | 8666 lines, mature codebase | No test files | Detailed docs (75 lines, examples) | CI/CD pipeline | Lockfile + lint + CI security audit |
 | `software/cloudflare-worker` | 1073 lines, mature codebase | No test files | Comprehensive docs (163 lines, examples, TOC) | CI/CD with wrangler deploy | Lockfile + lint + CI security audit |
 | `wcds` | 348 lines of real logic | No test files | Detailed docs (52 lines, examples) | CI/CD pipeline | Lockfile present (lockfile (pnpm-lock.yaml)) |
@@ -154,8 +154,8 @@
 | `software/packages/quantum-core` | 1990 lines, mature codebase | Core paths tested (128 assertions) | Comprehensive docs (196 lines, examples, TOC) | CI/CD with Docker deploy | Lockfile + lint + CI security audit |
 | `software/packages/quantum-edge` | 358 lines of real logic | Basic tests (9 assertions) | Detailed docs (75 lines, examples) | CI/CD with wrangler deploy | Lockfile + lint + CI security audit |
 | `software/packages/sovereign-sdk` | 328 lines of real logic | Basic tests (9 assertions) | Detailed docs (75 lines, examples) | CI/CD pipeline | Lockfile + lint + CI security audit |
-| `software/sovereign-command-center` | 410 lines of real logic | Basic tests (9 assertions) | Comprehensive docs (240 lines, examples, TOC) | CI/CD with wrangler deploy | Lockfile + lint + CI security audit |
-| `software/spaceship-earth` | 14322 lines, mature codebase | Core paths tested (127 assertions) | Detailed docs (75 lines, examples) | CI/CD with wrangler deploy | Lockfile + lint + CI security audit |
+| `software/sovereign-command-center` | 435 lines of real logic | Basic tests (9 assertions) | Comprehensive docs (240 lines, examples, TOC) | CI/CD with wrangler deploy | Lockfile + lint + CI security audit |
+| `software/spaceship-earth` | 15030 lines, mature codebase | Core paths tested (127 assertions) | Detailed docs (75 lines, examples) | CI/CD with wrangler deploy | Lockfile + lint + CI security audit |
 | `software/spin-mesh` | 1083 lines, mature codebase | Basic tests (16 assertions) | Detailed docs (180 lines, examples) | CI/CD pipeline | Lockfile + lint config (lockfile (pnpm-lock.yaml), eslint.config.mjs) |
 | `software/spin-mesh/logistics-do` | 114 lines of real logic | Basic tests (9 assertions) | Detailed docs (180 lines, examples) | CI/CD with wrangler deploy | Lockfile + lint config (lockfile (pnpm-lock.yaml), eslint.config.mjs) |
 | `software/spin-mesh/matchmaking-do` | 144 lines of real logic | Basic tests (9 assertions) | Detailed docs (180 lines, examples) | CI/CD with wrangler deploy | Lockfile + lint config (lockfile (pnpm-lock.yaml), eslint.config.mjs) |
@@ -169,25 +169,3 @@
 | `software/packages/k4-mesh-core` | 1531 lines, mature codebase | Comprehensive tests (53 assertions) + vitest thresholds | Detailed docs (75 lines, examples) | CI/CD pipeline | Lockfile + lint + CI security audit |
 | `software/packages/love-ledger` | 541 lines, mature codebase | Comprehensive tests (402 assertions) + vitest thresholds | Comprehensive docs (163 lines, examples, TOC) | CI/CD pipeline | Lockfile + lint + CI security audit |
 | `software/packages/shared` | 8058 lines, mature codebase | Comprehensive tests (123 assertions) + vitest thresholds | Comprehensive docs (309 lines, examples, TOC) | CI/CD pipeline | Lockfile + lint + CI security audit |
-
----
-
-## Jitterbug Tick Report
-
-**Tick:** 1
-**Time:** 2026-06-15T18:00:44
-**Spoon level:** 4 (Focus 🎯)
-**Duration:** 0.33s
-**Git data:** yes
-**Signals processed:** 22
-**Entanglement hits:** 10
-
-### Current Distribution
-
-| Stage | Count |
-|-------|-------|
-| 🍎 **FRUIT** | 0 |
-| 🌸 **BLOOM** | 7 |
-| 🌳 **SAPLING** | 31 |
-| 🌿 **SPROUT** | 28 |
-| 🌱 **SEED** | 6 |
