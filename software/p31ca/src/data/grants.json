@@ -45,7 +45,7 @@
     "amount": {"requested": 75000, "currency": "USD"},
     "deadline": null,
     "status": "draft_ready_submit_after_501c3",
-    "notes": "75K grant for AI augmentation of Cognitive Passport. Requires 501(c)(3) determination letter but pending status with CP575E is typically accepted.",
+    "notes": "75K grant for AI augmentation of Cognitive Passport. Requires 501(c)(3) determination letter but determination letter on file (CP 575E + IRS determination).",
     "archived": false
   },
   {

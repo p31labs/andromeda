@@ -34,6 +34,8 @@ cd software/p31ca
 pnpm run dev
 ```
 
+> 📖 **Source of truth for all deployable artifacts:** [`docs/ARTIFACTS.md`](docs/ARTIFACTS.md)
+
 ## Security & Compliance
 
 - **OpenSSF Scorecard** -- ensures supply chain integrity.

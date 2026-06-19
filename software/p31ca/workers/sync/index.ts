@@ -24,6 +24,12 @@ export default {
     const url = new URL(request.url);
     const path = url.pathname;
 
+    if (path === '/health' && request.method === 'GET') {
+      return new Response(JSON.stringify({ ok: true, worker: 'p31-sync', version: 2 }), {
+        status: 200, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },
+      });
+    }
+
     const authHeader = request.headers.get('Authorization');
     if (!authHeader || !(await validateHMAC(authHeader, env.P31_SYNC_SECRET))) {
       return new Response('Unauthorized', { status: 401, headers: CORS_HEADERS });

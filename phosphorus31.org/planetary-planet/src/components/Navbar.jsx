@@ -34,7 +34,7 @@ const Navbar = () => {
             </div>
             <div>
               <div className="font-heading font-bold text-espresso text-lg leading-none">Labs, Inc.</div>
-              <div className="text-teal-600 text-xs font-medium tracking-wide">Georgia Nonprofit &middot; 501(c)(3) pending</div>
+              <div className="text-teal-600 text-xs font-medium tracking-wide">Georgia Nonprofit &middot; 501(c)(3) tax-exempt</div>
             </div>
           </a>
 

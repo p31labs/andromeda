@@ -462,6 +462,15 @@ const ROOM_PATTERN = /^\/api\/geodesic\/([a-zA-Z0-9_-]{1,64})\/(ws|state)$/;
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
+
+    // GET /health — liveness probe (no DO lookup needed)
+    if (url.pathname === '/health' && request.method === 'GET') {
+      return Response.json(
+        { ok: true, worker: 'geodesic-room', version: 2 },
+        { status: 200 },
+      );
+    }
+
     const m = ROOM_PATTERN.exec(url.pathname);
     if (!m) {
       const pkg =

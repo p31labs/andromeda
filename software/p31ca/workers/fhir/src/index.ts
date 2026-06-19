@@ -27,6 +27,11 @@ export default {
 
     const url = new URL(request.url);
 
+    // GET /health — liveness probe (no auth required)
+    if (url.pathname === '/health' && request.method === 'GET') {
+      return json({ ok: true, worker: 'p31-fhir', version: 1 });
+    }
+
     // OAuth initiation — redirects operator to Epic login
     if (url.pathname === '/fhir/auth' && request.method === 'GET') {
       return handleAuthInit(env);

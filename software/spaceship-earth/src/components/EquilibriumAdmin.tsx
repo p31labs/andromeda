@@ -62,7 +62,7 @@ export function EquilibriumAdmin({ adminOpen, equilibrium }: EquilibriumAdminPro
 
       <div style={{ marginBottom: '1rem' }}>
         <div style={{ fontSize: '0.6rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'rgba(255,255,255,0.4)', marginBottom: '0.2rem' }}>Current Stage</div>
-        <div style={{ fontSize: '1.75rem', fontWeight: 'bold', fontFamily: 'monospace', color: '#00ff88', letterSpacing: '0.04em' }}>
+        <div style={{ fontSize: '1.75rem', fontWeight: 'bold', fontFamily: 'monospace', color: 'var(--color-phosphor)', letterSpacing: '0.04em' }}>
           {stage}
         </div>
       </div>

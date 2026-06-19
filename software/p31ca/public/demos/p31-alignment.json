@@ -1060,7 +1060,7 @@
     {
       "id": "p31-nonprofit-operations-master-doc",
       "path": "docs/P31-NONPROFIT-OPERATIONS.md",
-      "role": "Master operator-facing index for the entire P31 Labs nonprofit operations system (501(c)(3) pending, EIN 42-1888158). Single navigation point pointing at the 9 canonical contracts (governance / compliance / financials / donor-policy / programs / grants / legal / risk / people), the 7 runbooks (board-meeting / donor-receipt / filing-calendar / grant-application / incident-response / onboarding / README), and the 5 automation scripts (verify / status / calendar / receipt / report). Documents critical-path gaps in dependency order so the operator always knows the next move (Vice-Chair seat, banking, D&O insurance, GA registration, independent director, board policies). Built before scale-friction compounds \u2014 better to have it and not need it than the other way around."
+      "role": "Master operator-facing index for the entire P31 Labs nonprofit operations system (501(c)(3) tax-exempt, EIN 42-1888158). Single navigation point pointing at the 9 canonical contracts (governance / compliance / financials / donor-policy / programs / grants / legal / risk / people), the 7 runbooks (board-meeting / donor-receipt / filing-calendar / grant-application / incident-response / onboarding / README), and the 5 automation scripts (verify / status / calendar / receipt / report). Documents critical-path gaps in dependency order so the operator always knows the next move (Vice-Chair seat, banking, D&O insurance, GA registration, independent director, board policies). Built before scale-friction compounds \u2014 better to have it and not need it than the other way around."
     },
     {
       "id": "p31-nonprofit-runbooks",

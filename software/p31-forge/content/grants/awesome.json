@@ -19,6 +19,6 @@
     { "type": "bullet", "text": "Remaining buffer: $482 — allocated to 3D printing filament, domain redundancy (p31.dev), and operator time for integration" },
 
     { "type": "h1", "text": "ORGANIZATION" },
-    { "type": "para", "text": "P31 Labs, Inc. is a Georgia nonprofit corporation (EIN 42-1888158, CP 575E on file), 501(c)(3) determination pending. We deploy on Cloudflare Workers free tier — zero monthly infrastructure cost. Every artifact is AGPLv3/MIT open source." }
+    { "type": "para", "text": "P31 Labs, Inc. is a Georgia nonprofit corporation (EIN 42-1888158, CP 575E on file), 501(c)(3) tax-exempt. We deploy on Cloudflare Workers free tier — zero monthly infrastructure cost. Every artifact is AGPLv3/MIT open source." }
   ]
 }

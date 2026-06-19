@@ -126,7 +126,7 @@ export function DeltaMesh({
     }
   });
 
-  const gatewayColor = '#00FF88';
+  const gatewayColor = 'var(--color-phosphor)';
   const nodeColor = baseColor;
   const edgeColor = '#7A27FF';
   const emissiveIntensity = 0.3 + (equilibrium?.entropy || 0.5) * 0.5;

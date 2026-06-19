@@ -9,7 +9,11 @@ class_name = "SyncState"
 
 [[migrations]]
 tag = "v1"
-new_classes = ["SyncState"]
+new_sqlite_classes = ["SyncState"]
+
+[[r2_buckets]]
+bucket_name = "p31-mesh-bucket"
+binding = "P31_MESH_BUCKET"
 
 # Environment variables (set via wrangler secret)
 # P31_SYNC_SECRET - HMAC secret for request validation
