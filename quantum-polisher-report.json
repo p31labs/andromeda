@@ -1,6 +1,6 @@
 {
-  "generated": "2026-06-20T10:01:35.865403+00:00",
-  "ecosystem_fidelity": 78.6,
+  "generated": "2026-06-20T16:00:57.507695+00:00",
+  "ecosystem_fidelity": 78.8,
   "projects": {
     "bonding": {
       "meta": {
@@ -503,13 +503,13 @@
       },
       "remediation": {
         "css_vars_injected": 0,
-        "colors_replaced": 2,
+        "colors_replaced": 0,
         "glass_normalized": 0,
         "ts_strict_fixed": 0,
         "shared_dep_added": false,
         "css_import_added": 0,
         "tw_preset_added": 0,
-        "total_fixes": 2
+        "total_fixes": 0
       },
       "layer_1_pre": {
         "layer": 1,
@@ -532,29 +532,9 @@
       "layer_2_pre": {
         "layer": 2,
         "name": "tokens",
-        "score": 90,
-        "issues": [
-          {
-            "check": "hardcoded-colors",
-            "status": "fail",
-            "detail": "2 instances of canonical colors used as hardcoded hex instead of CSS variables",
-            "instances": [
-              {
-                "file": "software/p31-delta-hiring/src/style.css",
-                "color": "#0f172a",
-                "canonical_name": "ink",
-                "line": 535
-              },
-              {
-                "file": "software/p31-delta-hiring/src/style.css",
-                "color": "#64748b",
-                "canonical_name": "muted",
-                "line": 562
-              }
-            ]
-          }
-        ],
-        "hardcoded_count": 2,
+        "score": 100,
+        "issues": [],
+        "hardcoded_count": 0,
         "redefinition_count": 0
       },
       "layer_3_pre": {
@@ -1359,13 +1339,13 @@
       },
       "remediation": {
         "css_vars_injected": 0,
-        "colors_replaced": 2,
+        "colors_replaced": 0,
         "glass_normalized": 0,
         "ts_strict_fixed": 0,
         "shared_dep_added": false,
         "css_import_added": 0,
         "tw_preset_added": 0,
-        "total_fixes": 2
+        "total_fixes": 0
       },
       "layer_1_pre": {
         "layer": 1,
@@ -1388,29 +1368,9 @@
       "layer_2_pre": {
         "layer": 2,
         "name": "tokens",
-        "score": 90,
-        "issues": [
-          {
-            "check": "hardcoded-colors",
-            "status": "fail",
-            "detail": "2 instances of canonical colors used as hardcoded hex instead of CSS variables",
-            "instances": [
-              {
-                "file": "software/sovereign-command-center/styles/globals.css",
-                "color": "#0f172a",
-                "canonical_name": "ink",
-                "line": 32
-              },
-              {
-                "file": "software/sovereign-command-center/styles/globals.css",
-                "color": "#ffffff",
-                "canonical_name": "surface",
-                "line": 93
-              }
-            ]
-          }
-        ],
-        "hardcoded_count": 2,
+        "score": 100,
+        "issues": [],
+        "hardcoded_count": 0,
         "redefinition_count": 0
       },
       "layer_3_pre": {
@@ -1523,14 +1483,14 @@
         "strict_ts": false
       },
       "remediation": {
-        "css_vars_injected": 1,
-        "colors_replaced": 21,
+        "css_vars_injected": 0,
+        "colors_replaced": 1,
         "glass_normalized": 0,
         "ts_strict_fixed": 0,
         "shared_dep_added": false,
         "css_import_added": 0,
         "tw_preset_added": 0,
-        "total_fixes": 22
+        "total_fixes": 1
       },
       "layer_1_pre": {
         "layer": 1,
@@ -1548,34 +1508,28 @@
             "detail": "No Prettier or Biome config"
           }
         ],
-        "fixes_applied": 2
+        "fixes_applied": 0
       },
       "layer_2_pre": {
         "layer": 2,
         "name": "tokens",
-        "score": 90,
+        "score": 95,
         "issues": [
           {
             "check": "hardcoded-colors",
             "status": "fail",
-            "detail": "2 instances of canonical colors used as hardcoded hex instead of CSS variables",
+            "detail": "1 instances of canonical colors used as hardcoded hex instead of CSS variables",
             "instances": [
               {
                 "file": "software/spaceship-earth/src/styles.css",
                 "color": "#0f172a",
                 "canonical_name": "ink",
-                "line": 55
-              },
-              {
-                "file": "software/spaceship-earth/src/styles.css",
-                "color": "#ffffff",
-                "canonical_name": "surface",
-                "line": 254
+                "line": 60
               }
             ]
           }
         ],
-        "hardcoded_count": 2,
+        "hardcoded_count": 1,
         "redefinition_count": 0
       },
       "layer_3_pre": {
@@ -1670,23 +1624,9 @@
       "layer_2": {
         "layer": 2,
         "name": "tokens",
-        "score": 95,
-        "issues": [
-          {
-            "check": "hardcoded-colors",
-            "status": "fail",
-            "detail": "1 instances of canonical colors used as hardcoded hex instead of CSS variables",
-            "instances": [
-              {
-                "file": "software/spaceship-earth/src/styles.css",
-                "color": "#0f172a",
-                "canonical_name": "ink",
-                "line": 60
-              }
-            ]
-          }
-        ],
-        "hardcoded_count": 1,
+        "score": 100,
+        "issues": [],
+        "hardcoded_count": 0,
         "redefinition_count": 0
       },
       "layer_3": {
@@ -1760,7 +1700,7 @@
         ],
         "adoption_score": 70
       },
-      "overall": 80.0
+      "overall": 81.2
     },
     "spoon-calculator": {
       "meta": {
@@ -1771,13 +1711,13 @@
       },
       "remediation": {
         "css_vars_injected": 0,
-        "colors_replaced": 1,
+        "colors_replaced": 0,
         "glass_normalized": 0,
         "ts_strict_fixed": 0,
         "shared_dep_added": false,
         "css_import_added": 0,
         "tw_preset_added": 0,
-        "total_fixes": 1
+        "total_fixes": 0
       },
       "layer_1_pre": {
         "layer": 1,
@@ -1800,23 +1740,9 @@
       "layer_2_pre": {
         "layer": 2,
         "name": "tokens",
-        "score": 95,
-        "issues": [
-          {
-            "check": "hardcoded-colors",
-            "status": "fail",
-            "detail": "1 instances of canonical colors used as hardcoded hex instead of CSS variables",
-            "instances": [
-              {
-                "file": "software/spoon-calculator/src/index.css",
-                "color": "#0f172a",
-                "canonical_name": "ink",
-                "line": 27
-              }
-            ]
-          }
-        ],
-        "hardcoded_count": 1,
+        "score": 100,
+        "issues": [],
+        "hardcoded_count": 0,
         "redefinition_count": 0
       },
       "layer_3_pre": {
@@ -2055,12 +1981,12 @@
       "design_system_adoption": 80
     },
     "/home/p31/andromeda/software/spaceship-earth": {
-      "ui_ux_fidelity": 80.0,
+      "ui_ux_fidelity": 81.2,
       "layer_1_surface": 70,
-      "layer_2_tokens": 95,
+      "layer_2_tokens": 100,
       "layer_3_patterns": 85,
       "layer_4_architecture": 70,
-      "hardcoded_colors": 1,
+      "hardcoded_colors": 0,
       "design_system_adoption": 70
     },
     "/home/p31/andromeda/software/spoon-calculator": {

@@ -1,10 +1,10 @@
 # P31 Maturity Model — Repository Grading Report
 
-**Generated:** 2026-06-20T06:00:53
+**Generated:** 2026-06-20T12:00:31
 **Schema:** PMM_SCHEMA=1.1
 **Total artifacts graded:** 72
 **Overrides applied:** 3
-**Scan duration:** 37.63s
+**Scan duration:** 29.31s
 
 ## Summary
 

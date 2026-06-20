@@ -1,12 +1,12 @@
 {
   "meta": {
     "schema": "PMM_SCHEMA=1.1",
-    "generated": "2026-06-20T06:00:53",
+    "generated": "2026-06-20T12:00:31",
     "repo_root": "/home/p31/andromeda",
-    "git_sha": "410dd7fbdbe00402beca89e6530aaf883e447e2b",
+    "git_sha": "f5ff1296fd2881b74d6c283f6c156f9eb30a1dd9",
     "total_artifacts": 72,
     "overrides_applied": 3,
-    "scan_duration_seconds": 37.63,
+    "scan_duration_seconds": 29.31,
     "baseline_overrides_parsed": 6,
     "json_overrides_parsed": 0
   },
