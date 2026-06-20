@@ -29,7 +29,7 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: #0f172a;
+  background: var(--color-ink);
 }
 
 ::-webkit-scrollbar-thumb {
@@ -90,7 +90,7 @@
 /* Selection styling */
 ::selection {
   background-color: #10b98133;
-  color: #ffffff;
+  color: var(--color-surface);
 }
 
 /* Custom button focus styles */

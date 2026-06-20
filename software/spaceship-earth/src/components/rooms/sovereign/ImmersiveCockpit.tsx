@@ -172,7 +172,7 @@ export function ImmersiveCockpitUI({ isIdle }: { isIdle?: boolean }) {
       timeRef.current += 0.012; // Slow, majestic pace
       const t = timeRef.current;
       const state = useSovereignStore.getState();
-      const accentHex = parseInt((state.accentColor ?? '#4db8a8').replace('#', ''), 16);
+      const accentHex = parseInt((state.accentColor ?? 'var(--color-cyan)').replace('#', ''), 16);
 
       // Update Theme Colors dynamically
       for (const n of nodes) {
