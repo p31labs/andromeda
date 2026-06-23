@@ -38,5 +38,9 @@ jobs:
         run: grep -r "aria-" software/bonding/src/ || exit 1
 
       - name: Spoon Economy safety check
-        run: |
-          grep -r "spoon" software/packages/ --include="*.ts" -l | wc -l | xargs -I{} sh -c 'test {} -ge 1 || exit 1'
+         run: |
+           grep -r "spoon" software/packages/ --include="*.ts" -l | wc -l | xargs -I{} sh -c 'test {} -ge 1 || exit 1'
+
+      - name: TypeScript equilibrium check
+         run: npx tsc --noEmit 2>&1 | head -50
+         continue-on-error: true
