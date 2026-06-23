@@ -87,7 +87,7 @@ describe("StateEngine", () => {
     });
 
     it("should rate-limit to one broadcast per MIN_INTERVAL", async () => {
-      // TODO
+      // TODO: test body
     });
   });
 

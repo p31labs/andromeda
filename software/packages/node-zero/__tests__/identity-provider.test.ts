@@ -16,25 +16,25 @@ describe("IdentityProvider", () => {
     });
 
     it("should emit IDENTITY_PROVISIONED event on success", async () => {
-      // TODO
+      // TODO: test body
     });
 
     it("should throw SECURITY_ERROR when overwriting an active identity", async () => {
-      // TODO
+      // TODO: test body
     });
 
     it("should set identity status to 'active'", async () => {
-      // TODO
+      // TODO: test body
     });
 
     it("should set keySequence to 0 for initial key", async () => {
-      // TODO
+      // TODO: test body
     });
   });
 
   describe("sign()", () => {
     it("should produce a 64-byte ECDSA signature", async () => {
-      // TODO
+      // TODO: test body
     });
 
     it("should throw NOT_PROVISIONED if no identity exists", async () => {
@@ -49,21 +49,21 @@ describe("IdentityProvider", () => {
 
   describe("verify()", () => {
     it("should return true for a valid signature", async () => {
-      // TODO
+      // TODO: test body
     });
 
     it("should return false for an invalid signature", async () => {
-      // TODO
+      // TODO: test body
     });
 
     it("should work with compressed public keys (33 bytes)", async () => {
-      // TODO
+      // TODO: test body
     });
   });
 
   describe("exportPublicKey()", () => {
     it("should return the full NodeZeroIdentity object", async () => {
-      // TODO
+      // TODO: test body
     });
 
     it("should throw NOT_PROVISIONED if no identity exists", async () => {
@@ -71,17 +71,17 @@ describe("IdentityProvider", () => {
     });
 
     it("should include hardware provider metadata", async () => {
-      // TODO
+      // TODO: test body
     });
   });
 
   describe("createAttestation()", () => {
     it("should create a self-signed attestation without nonce", async () => {
-      // TODO
+      // TODO: test body
     });
 
     it("should include nonce in attestation for challenge-response", async () => {
-      // TODO
+      // TODO: test body
     });
 
     it("should throw NOT_PROVISIONED if no identity exists", async () => {
@@ -89,17 +89,17 @@ describe("IdentityProvider", () => {
     });
 
     it("should include correct deviceType (0 for SE050, 1 for WebCrypto)", async () => {
-      // TODO
+      // TODO: test body
     });
   });
 
   describe("rotateKey()", () => {
     it("should create a RotationCertificate signed by the old key", async () => {
-      // TODO
+      // TODO: test body
     });
 
     it("should increment keySequence by 1", async () => {
-      // TODO
+      // TODO: test body
     });
 
     it("should throw NOT_PROVISIONED if no identity exists", async () => {
@@ -107,39 +107,39 @@ describe("IdentityProvider", () => {
     });
 
     it("should set old identity to deprecated status", async () => {
-      // TODO
+      // TODO: test body
     });
 
     it("should emit IDENTITY_ROTATED event", async () => {
-      // TODO
+      // TODO: test body
     });
   });
 
   describe("migrateToDevice()", () => {
     it("should produce a MigrationCertificate", async () => {
-      // TODO
+      // TODO: test body
     });
 
     it("should set current identity to DEPRECATED status", async () => {
-      // TODO
+      // TODO: test body
     });
 
     it("should throw NOT_PROVISIONED if no identity exists", async () => {
-      // TODO
+      // TODO: test body
     });
 
     it("should throw MIGRATION_ERROR for invalid target attestation", async () => {
-      // TODO
+      // TODO: test body
     });
 
     it("should emit IDENTITY_MIGRATED event", async () => {
-      // TODO
+      // TODO: test body
     });
   });
 
   describe("recover()", () => {
     it("should accept recovery with M-of-N threshold met", async () => {
-      // TODO
+      // TODO: test body
     });
 
     it("should reject recovery if threshold not met", async () => {
@@ -150,15 +150,15 @@ describe("IdentityProvider", () => {
     });
 
     it("should verify each statement's signature against known bonded peers", async () => {
-      // TODO
+      // TODO: test body
     });
 
     it("should reject expired recovery statements", async () => {
-      // TODO
+      // TODO: test body
     });
 
     it("should emit IDENTITY_RECOVERED event on success", async () => {
-      // TODO
+      // TODO: test body
     });
   });
 
@@ -168,7 +168,7 @@ describe("IdentityProvider", () => {
     });
 
     it("should return true after successful generateKeypair()", async () => {
-      // TODO
+      // TODO: test body
     });
   });
 });

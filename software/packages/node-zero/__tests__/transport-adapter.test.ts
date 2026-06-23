@@ -30,11 +30,11 @@ describe("TransportAdapter", () => {
     });
 
     it("should emit TRANSMIT_COMPLETE on success", async () => {
-      // TODO
+      // TODO: test body
     });
 
     it("should respect LoRa duty-cycle limits", async () => {
-      // TODO
+      // TODO: test body
     });
   });
 
@@ -45,7 +45,7 @@ describe("TransportAdapter", () => {
     });
 
     it("should deliver reassembled data to listeners", async () => {
-      // TODO
+      // TODO: test body
     });
   });
 
@@ -55,7 +55,7 @@ describe("TransportAdapter", () => {
     });
 
     it("should emit PEER_DISCOVERED events", async () => {
-      // TODO
+      // TODO: test body
     });
   });
 
