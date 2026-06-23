@@ -53,6 +53,16 @@ export default {
       BLUESKY_APP_PASSWORD: getEnv(env, "BLUESKY_APP_PASSWORD", ""),
     };
 
+    // Health check
+    if (request.method === "GET" && new URL(request.url).pathname === "/health") {
+      return jsonResponse({
+        status: "ok",
+        service: "p31-social-broadcast",
+        version: "1.0.0",
+        timestamp: new Date().toISOString(),
+      });
+    }
+
     // Handle CORS
     if (request.method === "OPTIONS") {
       return new Response(null, {

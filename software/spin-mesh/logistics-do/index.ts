@@ -61,7 +61,17 @@ export class HandoverDO {
     if (path === '/key' && request.method === 'POST') return this.submitKey(request);
     if (path === '/ready' && request.method === 'GET') return this.ready(request);
     if (path === '/complete' && request.method === 'POST') return this.complete(request);
-    if (path === '/health') return new Response('OK', { status: 200 });
+    if (path === '/health') {
+      return new Response(JSON.stringify({
+        status: 'ok',
+        service: 'spin-logistics',
+        version: '0.1.0',
+        timestamp: new Date().toISOString(),
+      }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
 
     return new Response('Not Found', { status: 404 });
   }

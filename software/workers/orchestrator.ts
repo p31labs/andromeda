@@ -20,12 +20,13 @@ export default {
     const url = new URL(request.url);
     const pathParts = url.pathname.split('/').filter(Boolean);
 
-    // Health check
-    if (pathParts.length === 0) {
+    // Health check — supports both / and /health
+    if (pathParts.length === 0 || (pathParts[0] === 'health' && pathParts.length === 1)) {
       return new Response(JSON.stringify({
-        status: 'online',
+        status: 'ok',
         service: 'p31-orchestrator',
-        timestamp: Date.now()
+        version: '1.0.0',
+        timestamp: new Date().toISOString(),
       }), {
         headers: { 'Content-Type': 'application/json' }
       });

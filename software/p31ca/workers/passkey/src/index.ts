@@ -526,6 +526,16 @@ export default {
 
     const url = new URL(request.url);
 
+    // Health check
+    if (url.pathname === '/health' && request.method === 'GET') {
+      return json({
+        status: 'ok',
+        service: 'p31-passkey',
+        version: '2.0.0',
+        timestamp: new Date().toISOString(),
+      });
+    }
+
     const eduMatch = /^\/api\/education\/progress\/([^/?#]+)$/.exec(url.pathname);
     if (eduMatch && request.method === 'GET') {
       try {

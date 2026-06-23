@@ -169,6 +169,16 @@ export default {
     const url = new URL(request.url);
     const pathParts = url.pathname.split('/').filter(Boolean);
 
+    // Health check
+    if (pathParts.length === 0 || (pathParts[0] === 'health' && pathParts.length === 1)) {
+      return json({
+        status: 'ok',
+        service: 'love-ledger',
+        version: '1.3.0',
+        timestamp: new Date().toISOString(),
+      });
+    }
+
     // Route: GET /api/love/balance/{userId}
     if (pathParts[0] === 'api' && pathParts[1] === 'love' && pathParts[2] === 'balance') {
       const userId = pathParts[3];
