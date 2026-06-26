@@ -20,18 +20,12 @@ jobs:
   # ────────────────────────────────────────
   lint:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: software/p31ca
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
-        with:
-          version: ${{ env.PNPM_VERSION }}
+        with: { version: ${{ env.PNPM_VERSION }} }
       - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
+        with: { node-version: ${{ env.NODE_VERSION }}, cache: 'pnpm' }
       - run: pnpm install --frozen-lockfile
       - run: pnpm run security:lint
 
@@ -40,18 +34,12 @@ jobs:
   # ────────────────────────────────────────
   typecheck:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: software/p31ca
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
-        with:
-          version: ${{ env.PNPM_VERSION }}
+        with: { version: ${{ env.PNPM_VERSION }} }
       - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
+        with: { node-version: ${{ env.NODE_VERSION }}, cache: 'pnpm' }
       - run: pnpm install --frozen-lockfile
       - run: pnpm run typecheck
 
@@ -60,18 +48,12 @@ jobs:
   # ────────────────────────────────────────
   audit-content:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: software/p31ca
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
-        with:
-          version: ${{ env.PNPM_VERSION }}
+        with: { version: ${{ env.PNPM_VERSION }} }
       - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
+        with: { node-version: ${{ env.NODE_VERSION }}, cache: 'pnpm' }
       - run: pnpm install --frozen-lockfile
       - run: pnpm run audit:content
 
@@ -80,18 +62,12 @@ jobs:
   # ────────────────────────────────────────
   audit-pages:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: software/p31ca
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
-        with:
-          version: ${{ env.PNPM_VERSION }}
+        with: { version: ${{ env.PNPM_VERSION }} }
       - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
+        with: { node-version: ${{ env.NODE_VERSION }}, cache: 'pnpm' }
       - run: pnpm install --frozen-lockfile
       - run: pnpm run audit:pages
 
@@ -100,18 +76,12 @@ jobs:
   # ────────────────────────────────────────
   ground-truth:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: software/p31ca
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
-        with:
-          version: ${{ env.PNPM_VERSION }}
+        with: { version: ${{ env.PNPM_VERSION }} }
       - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
+        with: { node-version: ${{ env.NODE_VERSION }}, cache: 'pnpm' }
       - run: pnpm install --frozen-lockfile
       - run: pnpm run verify:ground-truth
       - run: pnpm run verify:worker-spa-launch
@@ -121,18 +91,12 @@ jobs:
   # ────────────────────────────────────────
   hub-verify:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: software/p31ca
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
-        with:
-          version: ${{ env.PNPM_VERSION }}
+        with: { version: ${{ env.PNPM_VERSION }} }
       - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
+        with: { node-version: ${{ env.NODE_VERSION }}, cache: 'pnpm' }
       - run: pnpm install --frozen-lockfile
       - run: pnpm run hub:verify
 
@@ -141,18 +105,12 @@ jobs:
   # ────────────────────────────────────────
   security:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: software/p31ca
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
-        with:
-          version: ${{ env.PNPM_VERSION }}
+        with: { version: ${{ env.PNPM_VERSION }} }
       - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
+        with: { node-version: ${{ env.NODE_VERSION }}, cache: 'pnpm' }
       - run: pnpm install --frozen-lockfile
       - run: pnpm run security:audit
       - run: pnpm run security:workers
@@ -163,19 +121,13 @@ jobs:
   # ────────────────────────────────────────
   build:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: software/p31ca
     needs: [lint, typecheck, audit-content, audit-pages, ground-truth, hub-verify, security]
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
-        with:
-          version: ${{ env.PNPM_VERSION }}
+        with: { version: ${{ env.PNPM_VERSION }} }
       - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
+        with: { node-version: ${{ env.NODE_VERSION }}, cache: 'pnpm' }
       - run: pnpm install --frozen-lockfile
       - run: pnpm run build
       - uses: actions/upload-artifact@v4
@@ -193,9 +145,7 @@ jobs:
     environment: staging
     steps:
       - uses: actions/download-artifact@v4
-        with:
-          name: dist
-          path: dist
+        with: { name: dist, path: dist }
       - name: Deploy to Cloudflare Pages (staging)
         uses: cloudflare/pages-action@v1
         with:
@@ -265,9 +215,7 @@ jobs:
     environment: production
     steps:
       - uses: actions/download-artifact@v4
-        with:
-          name: dist
-          path: dist
+        with: { name: dist, path: dist }
       - name: Deploy to Cloudflare Pages (production)
         uses: cloudflare/pages-action@v1
         with:
