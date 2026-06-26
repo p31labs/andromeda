@@ -206,23 +206,15 @@ export class RouterPhase implements PHOSPhase {
 
     switch (policy) {
       case 'priority-local':
-        // W.J.: Route to local edge first
-        return this.routes.get(`${persona}:local:${intent}`) || this.routes.get(intent);
-
+        return (this.routes.get(`${persona}:local:${intent}`) ?? this.routes.get(intent)) ?? null;
       case 'youth-optimized':
-        // S.J.: Prefer low-latency game routes
-        return this.routes.get(`${persona}:game:${intent}`) || this.routes.get(intent);
-
+        return (this.routes.get(`${persona}:game:${intent}`) ?? this.routes.get(intent)) ?? null;
       case 'guardian-supervised':
-        // C.J.: Route through guardian checkpoint
-        return this.routes.get(`${persona}:guardian:${intent}`) || this.routes.get(intent);
-
+        return (this.routes.get(`${persona}:guardian:${intent}`) ?? this.routes.get(intent)) ?? null;
       case 'child-safe':
-        // Wi.J.: Only safe routes
-        return this.routes.get(`${persona}:safe:${intent}`) || null;
-
+        return this.routes.get(`${persona}:safe:${intent}`) ?? null;
       default:
-        return this.routes.get(intent);
+        return this.routes.get(intent) ?? null;
     }
   }
 

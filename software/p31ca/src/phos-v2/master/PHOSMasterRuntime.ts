@@ -352,6 +352,14 @@ export interface ConvergenceReport {
   }>;
   integrations: IntegrationCheck[];
   blockers: string[];
+  summary?: string;
+  majorDemoReady?: boolean;
+  mockTopology?: { vertices: Array<{id: string; label: string}>; edges: Array<{from: string; to: string}> };
+  topologyRefreshInterval?: number;
+  predictionModel?: string;
+  contextWindow?: number;
+  guardianLevel?: string;
+  gaReady?: boolean;
 }
 
 export interface IntegrationCheck {

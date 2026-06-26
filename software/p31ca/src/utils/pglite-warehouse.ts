@@ -5,7 +5,7 @@
  */
 
 import { PGlite } from '@electric-sql/pglite';
-import { InventoryItem, Zone } from '../components/ZeroTapWarehouse';
+import type { InventoryItem, Zone } from '../components/ZeroTapWarehouse';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // SINGLETON INSTANCE
@@ -122,9 +122,9 @@ async function seedZones(db: PGlite): Promise<void> {
   ];
 
   for (const zone of zones) {
-    await db.exec(
+    await db.query<unknown>(
       `INSERT INTO zones (id, name, plu_prefix) VALUES (?, ?, ?)`,
-      [zone.id, zone.name, zone.pluPrefix]
+      [zone.id, zone.name, zone.pluPrefix] as any[]
     );
   }
 }
@@ -140,7 +140,7 @@ export async function logInventoryItem(
   db: PGlite,
   item: Omit<InventoryItem, 'synced'>
 ): Promise<void> {
-  await db.exec(
+  await db.query<unknown>(
     `
     INSERT INTO inventory_items
       (qr_data, category, zone_id, status, scanned_at, synced)
@@ -151,16 +151,16 @@ export async function logInventoryItem(
       scanned_at = EXCLUDED.scanned_at,
       synced = FALSE
   `,
-    [item.qrData, item.category, item.zoneId, item.status, item.scannedAt]
+    [item.qrData, item.category, item.zoneId, item.status, item.scannedAt] as any[]
   );
 
   // Also log to audit trail
-  await db.exec(
+  await db.query<unknown>(
     `
     INSERT INTO scan_log (qr_data, zone_id, action, scanned_at, synced)
     VALUES (?, ?, ?, ?, FALSE)
   `,
-    [item.qrData, item.zoneId, item.status, item.scannedAt]
+    [item.qrData, item.zoneId, item.status, item.scannedAt] as any[]
   );
 }
 
@@ -226,21 +226,20 @@ export async function getUnsyncedItems(db: PGlite): Promise<InventoryItem[]> {
  * Mark items as synced after successful push
  */
 export async function markItemsSynced(
-  db: PGlite,
-  qrDataList: string[]
+  db: PGlite, qrDataList: string[]
 ): Promise<void> {
   if (qrDataList.length === 0) return;
 
   // PGlite doesn't support IN (?) with arrays directly
   // Build parameterized query
   const placeholders = qrDataList.map((_, i) => `?`).join(',');
-  await db.exec(
+  await db.query<unknown>(
     `
     UPDATE inventory_items
     SET synced = TRUE, synced_at = (EXTRACT(EPOCH FROM NOW()) * 1000)
     WHERE qr_data IN (${placeholders})
   `,
-    qrDataList
+    qrDataList as any[]
   );
 }
 
@@ -308,12 +307,12 @@ export async function queueForSync(
   payload: Record<string, unknown>,
   qrData?: string
 ): Promise<void> {
-  await db.exec(
+  await db.query<unknown>(
     `
     INSERT INTO sync_queue (table_name, record_qr_data, operation, payload_json)
     VALUES (?, ?, ?, ?)
   `,
-    [table, qrData || null, operation, JSON.stringify(payload)]
+    [table, qrData || null, operation, JSON.stringify(payload)] as any[]
   );
 }
 
@@ -337,7 +336,7 @@ export async function getPendingSyncQueue(
 }
 
 export async function markSyncSuccess(db: PGlite, id: number): Promise<void> {
-  await db.exec(`DELETE FROM sync_queue WHERE id = ?`, [id]);
+  await db.query<unknown>(`DELETE FROM sync_queue WHERE id = ?`, [id] as any[]);
 }
 
 export async function markSyncError(
@@ -345,13 +344,13 @@ export async function markSyncError(
   id: number,
   error: string
 ): Promise<void> {
-  await db.exec(
+  await db.query<unknown>(
     `
     UPDATE sync_queue
     SET retry_count = retry_count + 1, last_error = ?
     WHERE id = ?
   `,
-    [error, id]
+    [error, id] as any[]
   );
 }
 

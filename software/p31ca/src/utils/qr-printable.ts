@@ -4,7 +4,8 @@
  * @module
  */
 
-import { WAREHOUSE_ZONES, Zone } from '../components/ZeroTapWarehouse';
+import type { Zone } from '../components/ZeroTapWarehouse';
+import { WAREHOUSE_ZONES } from '../components/ZeroTapWarehouse';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // CONFIGURATION

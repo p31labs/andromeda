@@ -205,24 +205,17 @@ export function AbyssalNodeScene() {
     dispMat.uniforms.uState.value = readFBO.current.texture;
 
     // Initialize simulation on first frame
-    if (!initialized.current) {
+if (!initialized.current) {
       simMat.uniforms.uInit.value = 1.0;
-       // Render initial state to readFBO
-       gl.viewport.x = 0;
-       gl.viewport.y = 0;
-       gl.viewport.z = SIM_RES;
-       gl.viewport.w = SIM_RES;
-       gl.setScissor(0, 0, SIM_RES, SIM_RES);
-       gl.setScissorTest(true);
-
-       gl.viewport(0, 0, SIM_RES, SIM_RES);
-       gl.scissor(0, 0, SIM_RES, SIM_RES);
+      gl.setViewport(0, 0, SIM_RES, SIM_RES);
+      gl.setScissor(0, 0, SIM_RES, SIM_RES);
+      gl.setScissorTest(true);
        gl.setRenderTarget(readFBO.current);
        gl.render(simScene.scene, simScene.camera);
-       gl.setRenderTarget(null);
-       // Restore viewport to canvas size
-       gl.viewport(0, 0, size.width, size.height);
-       gl.scissor(0, 0, size.width, size.height);
+gl.setRenderTarget(null);
+        // Restore viewport to canvas size
+        gl.setViewport(0, 0, size.width, size.height);
+        gl.setScissor(0, 0, size.width, size.height);
       initialized.current = true;
       return;
     }
@@ -232,21 +225,17 @@ export function AbyssalNodeScene() {
      simMat.uniforms.uNutrientBurst.value = burstValue.current;
      simMat.uniforms.uInit.value = 0.0;
 
-     // Set viewport and scissor for FBO render
-     gl.viewport.x = 0;
-     gl.viewport.y = 0;
-     gl.viewport.z = SIM_RES;
-     gl.viewport.w = SIM_RES;
-     gl.setScissor(0, 0, SIM_RES, SIM_RES);
-     gl.setScissorTest(true);
+      // Set viewport and scissor for FBO render
+      gl.setScissor(0, 0, SIM_RES, SIM_RES);
+      gl.setScissorTest(true);
 
-     gl.viewport(0, 0, SIM_RES, SIM_RES);
-     gl.scissor(0, 0, SIM_RES, SIM_RES);
+gl.setViewport(0, 0, SIM_RES, SIM_RES);
+      gl.setScissor(0, 0, SIM_RES, SIM_RES);
      gl.setRenderTarget(writeFBO.current);
      gl.render(simScene.scene, simScene.camera);
-     gl.setRenderTarget(null);
-     gl.viewport(0, 0, size.width, size.height);
-     gl.scissor(0, 0, size.width, size.height);
+gl.setRenderTarget(null);
+      gl.setViewport(0, 0, size.width, size.height);
+      gl.setScissor(0, 0, size.width, size.height);
 
     // Swap buffers
     const temp = readFBO.current;

@@ -25,21 +25,22 @@ class VirtualKeyboardManager {
   private listeners: Set<(state: VKState) => void> = new Set();
 
   constructor() {
-    if (typeof window === 'undefined') return;
+    if (typeof globalThis === 'undefined') return;
 
     // Use Visual Viewport API when available (modern browsers)
-    if ('visualViewport' in window) {
-      this.visualViewport = window.visualViewport;
-      this.visualViewport?.addEventListener('resize', this.handleVisualViewportChange);
-      this.visualViewport?.addEventListener('scroll', this.handleVisualViewportChange);
-    } else {
-      // Fallback: window resize detection (less accurate)
-      window.addEventListener('resize', this.handleWindowResize);
+    if ('visualViewport' in globalThis) {
+      this.visualViewport = (globalThis as Window & typeof globalThis).visualViewport;
+      if (this.visualViewport) {
+        this.visualViewport.addEventListener('resize', this.handleVisualViewportChange);
+        this.visualViewport.addEventListener('scroll', this.handleVisualViewportChange);
+      }
     }
 
     // Track focus/blur on inputs
-    document.addEventListener('focusin', this.handleFocusIn);
-    document.addEventListener('focusout', this.handleFocusOut);
+    if (typeof document !== 'undefined') {
+      document.addEventListener('focusin', this.handleFocusIn);
+      document.addEventListener('focusout', this.handleFocusOut);
+    }
   }
 
   private handleVisualViewportChange = (): void => {

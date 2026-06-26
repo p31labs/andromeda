@@ -206,7 +206,7 @@ export async function runWeek5Convergence(
 
   console.log(`[Week 5 Convergence] ${report.summary}`);
   console.log(`[Week 5 Convergence] Blockers: ${week5Blockers.length}`);
-  console.log(`[Week 5 Convergence] Live topology: ${report.mockTopology.vertices.length} vertices, ${report.mockTopology.edges.length} edges`);
+  console.log(`[Week 5 Convergence] Live topology: ${report.mockTopology?.vertices.length ?? 0} vertices, ${report.mockTopology?.edges.length ?? 0} edges`);
   console.log(`[Week 5 Convergence] Refresh interval: ${report.topologyRefreshInterval}ms`);
 
   return report;
