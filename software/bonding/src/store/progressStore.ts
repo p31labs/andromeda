@@ -9,8 +9,13 @@
 
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
+<<<<<<< HEAD
 import { 
   createBadgeCollection, 
+=======
+import {
+  createBadgeCollection,
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   updateBadgeProgress,
   type BadgeCollection,
   type Badge,
@@ -26,6 +31,7 @@ interface ProgressState {
   familyPlaySessions: number;
   totalPlayMinutes: number;
   lastSessionDate: string | null;
+<<<<<<< HEAD
   
   // Badge collection
   badgeCollection: BadgeCollection;
@@ -36,6 +42,18 @@ interface ProgressState {
   // Family challenge progress
   familyChallengeProgress: FamilyChallengeProgress | null;
   
+=======
+
+  // Badge collection
+  badgeCollection: BadgeCollection;
+
+  // Recently earned badges (for celebration)
+  recentBadges: string[];
+
+  // Family challenge progress
+  familyChallengeProgress: FamilyChallengeProgress | null;
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   // Actions
   addBond: () => void;
   addBonds: (count: number) => void;
@@ -45,7 +63,11 @@ interface ProgressState {
   checkAndUpdateBadges: () => { newlyEarned: Badge[] };
   clearRecentBadges: () => void;
   resetProgress: () => void;
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   // Family challenge actions
   startFamilyChallenge: (challengeId: string) => void;
   updateFamilyChallenge: (progress: number) => void;
@@ -97,9 +119,15 @@ export const useProgressStore = create<ProgressState>()(
   persist(
     (set, get) => ({
       ...createInitialState(),
+<<<<<<< HEAD
       
       // ── Core stat actions ──
       
+=======
+
+      // ── Core stat actions ──
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       addBond: () => {
         set((state) => {
           const newBonds = state.totalBonds + 1;
@@ -111,20 +139,34 @@ export const useProgressStore = create<ProgressState>()(
             false,
             0
           );
+<<<<<<< HEAD
           
           const newlyEarned = newCollection.newlyEarned.map(b => b.id);
           
+=======
+
+          const newlyEarned = newCollection.newlyEarned.map(b => b.id);
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
           return {
             totalBonds: newBonds,
             badgeCollection: newCollection.updated,
             recentBadges: [...state.recentBadges, ...newlyEarned].slice(-5),
           };
         });
+<<<<<<< HEAD
         
         // Check for new badge unlocks
         return get().checkAndUpdateBadges();
       },
       
+=======
+
+        // Check for new badge unlocks
+        return get().checkAndUpdateBadges();
+      },
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       addBonds: (count: number) => {
         set((state) => {
           const newBonds = state.totalBonds + count;
@@ -136,9 +178,15 @@ export const useProgressStore = create<ProgressState>()(
             false,
             0
           );
+<<<<<<< HEAD
           
           const newlyEarned = newCollection.newlyEarned.map(b => b.id);
           
+=======
+
+          const newlyEarned = newCollection.newlyEarned.map(b => b.id);
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
           return {
             totalBonds: newBonds,
             badgeCollection: newCollection.updated,
@@ -146,6 +194,7 @@ export const useProgressStore = create<ProgressState>()(
           };
         });
       },
+<<<<<<< HEAD
       
       addMolecule: (formula: string) => {
         set((state) => {
@@ -154,6 +203,16 @@ export const useProgressStore = create<ProgressState>()(
             ? [...state.uniqueMolecules, formula]
             : state.uniqueMolecules;
           
+=======
+
+      addMolecule: (formula: string) => {
+        set((state) => {
+          const isNew = !state.uniqueMolecules.includes(formula);
+          const newUnique = isNew
+            ? [...state.uniqueMolecules, formula]
+            : state.uniqueMolecules;
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
           const newCollection = updateBadgeProgress(
             state.badgeCollection,
             state.totalBonds,
@@ -162,9 +221,15 @@ export const useProgressStore = create<ProgressState>()(
             false,
             0
           );
+<<<<<<< HEAD
           
           const newlyEarned = newCollection.newlyEarned.map(b => b.id);
           
+=======
+
+          const newlyEarned = newCollection.newlyEarned.map(b => b.id);
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
           return {
             totalMolecules: state.totalMolecules + 1,
             uniqueMolecules: newUnique,
@@ -173,7 +238,11 @@ export const useProgressStore = create<ProgressState>()(
           };
         });
       },
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       addFamilyPlaySession: () => {
         set((state) => {
           const newCollection = updateBadgeProgress(
@@ -184,9 +253,15 @@ export const useProgressStore = create<ProgressState>()(
             true,
             0
           );
+<<<<<<< HEAD
           
           const newlyEarned = newCollection.newlyEarned.map(b => b.id);
           
+=======
+
+          const newlyEarned = newCollection.newlyEarned.map(b => b.id);
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
           return {
             familyPlaySessions: state.familyPlaySessions + 1,
             badgeCollection: newCollection.updated,
@@ -194,7 +269,11 @@ export const useProgressStore = create<ProgressState>()(
           };
         });
       },
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       addPlayMinutes: (minutes: number) => {
         set((state) => {
           const newCollection = updateBadgeProgress(
@@ -205,9 +284,15 @@ export const useProgressStore = create<ProgressState>()(
             false,
             minutes
           );
+<<<<<<< HEAD
           
           const newlyEarned = newCollection.newlyEarned.map(b => b.id);
           
+=======
+
+          const newlyEarned = newCollection.newlyEarned.map(b => b.id);
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
           return {
             totalPlayMinutes: state.totalPlayMinutes + minutes,
             lastSessionDate: new Date().toISOString(),
@@ -216,7 +301,11 @@ export const useProgressStore = create<ProgressState>()(
           };
         });
       },
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       // Check for newly earned badges (called after any action)
       checkAndUpdateBadges: () => {
         const state = get();
@@ -228,18 +317,29 @@ export const useProgressStore = create<ProgressState>()(
           state.familyPlaySessions > 0,
           0
         );
+<<<<<<< HEAD
         
         const newlyEarned = newCollection.newlyEarned;
         
+=======
+
+        const newlyEarned = newCollection.newlyEarned;
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         if (newlyEarned.length > 0) {
           set({
             badgeCollection: newCollection.updated,
             recentBadges: [
+<<<<<<< HEAD
               ...state.recentBadges, 
+=======
+              ...state.recentBadges,
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
               ...newlyEarned.map(b => b.id)
             ].slice(-5),
           });
         }
+<<<<<<< HEAD
         
         return { newlyEarned };
       },
@@ -248,12 +348,23 @@ export const useProgressStore = create<ProgressState>()(
         set({ recentBadges: [] });
       },
       
+=======
+
+        return { newlyEarned };
+      },
+
+      clearRecentBadges: () => {
+        set({ recentBadges: [] });
+      },
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       resetProgress: () => {
         set({
           ...createInitialState(),
           badgeCollection: createBadgeCollection(),
         });
       },
+<<<<<<< HEAD
       
       // ── Family Challenge actions ──
       
@@ -261,6 +372,15 @@ export const useProgressStore = create<ProgressState>()(
         const challenge = getFamilyChallengeById(challengeId);
         if (!challenge) return;
         
+=======
+
+      // ── Family Challenge actions ──
+
+      startFamilyChallenge: (challengeId: string) => {
+        const challenge = getFamilyChallengeById(challengeId);
+        if (!challenge) return;
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         set({
           familyChallengeProgress: {
             challengeId,
@@ -271,16 +391,25 @@ export const useProgressStore = create<ProgressState>()(
           },
         });
       },
+<<<<<<< HEAD
       
       updateFamilyChallenge: (progress: number) => {
         set((state) => {
           if (!state.familyChallengeProgress) return state;
           
+=======
+
+      updateFamilyChallenge: (progress: number) => {
+        set((state) => {
+          if (!state.familyChallengeProgress) return state;
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
           const newProgress = {
             ...state.familyChallengeProgress,
             current: Math.min(progress, state.familyChallengeProgress.target),
             completed: progress >= state.familyChallengeProgress.target,
           };
+<<<<<<< HEAD
           
           return { familyChallengeProgress: newProgress };
         });
@@ -293,6 +422,20 @@ export const useProgressStore = create<ProgressState>()(
           // Add sparks/rewards
           // TODO: Add to LOVE balance
           
+=======
+
+          return { familyChallengeProgress: newProgress };
+        });
+      },
+
+      completeFamilyChallenge: () => {
+        set((state) => {
+          if (!state.familyChallengeProgress) return state;
+
+          // Add sparks/rewards
+          // TODO: Add to LOVE balance
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
           return {
             familyChallengeProgress: {
               ...state.familyChallengeProgress,
@@ -330,7 +473,11 @@ export const useProgressStore = create<ProgressState>()(
 export function getFamilyChallenges(): FamilyChallenge[] {
   const now = new Date();
   const weekEnd = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   return [
     {
       id: 'water_weekly',
@@ -396,7 +543,11 @@ function getFamilyChallengeById(id: string): FamilyChallenge | undefined {
 export function getCurrentChallenge(): FamilyChallenge | null {
   const challenges = getFamilyChallenges();
   const now = new Date();
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   // Return first non-expired challenge
   return challenges.find(c => new Date(c.expiresAt) > now) || null;
 }
@@ -412,4 +563,8 @@ export const selectBadgeCollection = (state: ProgressState) => state.badgeCollec
 export const selectRecentBadges = (state: ProgressState) => state.recentBadges;
 export const selectFamilyChallengeProgress = (state: ProgressState) => state.familyChallengeProgress;
 
+<<<<<<< HEAD
 export default useProgressStore;
+=======
+export default useProgressStore;
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

@@ -7,7 +7,11 @@ export const useMeshState = (userId) => {
   const [edges, setEdges] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   // Configuration
   const KV_ENDPOINT = 'https://mesh.p31ca.org';
   const KV_NAMESPACE = 'P31_MESH_STATE';
@@ -64,7 +68,11 @@ export const useMeshState = (userId) => {
   const updateNodeData = useCallback(async (updates) => {
     try {
       setError(null);
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       const currentData = nodeData || {};
       const updatedData = {
         ...currentData,
@@ -93,9 +101,15 @@ export const useMeshState = (userId) => {
 
       // Get current edges
       const currentEdges = await getKVData('k4_edges') || [];
+<<<<<<< HEAD
       
       // Check for duplicates
       const isDuplicate = currentEdges.some(edge => 
+=======
+
+      // Check for duplicates
+      const isDuplicate = currentEdges.some(edge =>
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         (edge.from === edgeData.from && edge.to === edgeData.to) ||
         (edge.from === edgeData.to && edge.to === edgeData.from)
       );
@@ -138,7 +152,11 @@ export const useMeshState = (userId) => {
     try {
       const currentStatus = await getKVData('mesh_status') || {};
       const updatedStatus = { ...currentStatus, ...updates };
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       await setKVData('mesh_status', updatedStatus);
       setMeshState(updatedStatus);
     } catch (err) {
@@ -214,7 +232,11 @@ export const useMeshState = (userId) => {
         },
         body: JSON.stringify(data)
       });
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       if (!response.ok) {
         throw new Error(`KV set failed: ${response.status}`);
       }
@@ -261,7 +283,11 @@ export const useMeshState = (userId) => {
   // Initialize on mount
   useEffect(() => {
     initializeNode();
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     // Cleanup on unmount
     return () => {
       cleanup();
@@ -295,7 +321,11 @@ export const meshUtils = {
     const R = 6371000; // Earth's radius in meters
     const dLat = (lat2 - lat1) * Math.PI / 180;
     const dLon = (lon2 - lon1) * Math.PI / 180;
+<<<<<<< HEAD
     const a = 
+=======
+    const a =
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       Math.sin(dLat / 2) * Math.sin(dLat / 2) +
       Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
       Math.sin(dLon / 2) * Math.sin(dLon / 2);
@@ -312,13 +342,21 @@ export const meshUtils = {
   // Validate K4 tetrahedron completion
   validateK4: (edges) => {
     if (edges.length < 6) return false;
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     const uniqueNodes = new Set();
     edges.forEach(edge => {
       uniqueNodes.add(edge.from);
       uniqueNodes.add(edge.to);
     });
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     return uniqueNodes.size === 4;
   },
 
@@ -332,4 +370,8 @@ export const meshUtils = {
     };
     return emojis[phase] || '❓';
   }
+<<<<<<< HEAD
 };
+=======
+};
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

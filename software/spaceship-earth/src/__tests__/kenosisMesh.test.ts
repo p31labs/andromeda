@@ -26,4 +26,8 @@ describe('KenosisMesh', () => {
       expect(m1).toBe(m2);
     });
   });
+<<<<<<< HEAD
 });
+=======
+});
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

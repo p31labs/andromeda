@@ -2,8 +2,23 @@
   "extends": "astro/tsconfigs/strict",
   "compilerOptions": {
     "jsx": "react-jsx",
+<<<<<<< HEAD
     "jsxImportSource": "@astrojs/react"
   },
   "include": [".astro/types.d.ts", "**/*"],
   "exclude": ["dist", "workers"]
+=======
+    "jsxImportSource": "@astrojs/react",
+    "strict": true
+  },
+  "include": [
+    ".astro/types.d.ts",
+    "**/*"
+  ],
+  "exclude": [
+    "dist",
+    "workers",
+    "tests"
+  ]
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
 }

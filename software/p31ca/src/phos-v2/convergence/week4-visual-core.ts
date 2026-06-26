@@ -1,7 +1,11 @@
 /**
  * Week 4 Convergence Checkpoint: 3D Constellation Alpha
  * Integration: Voice + Bros + Router + Visual
+<<<<<<< HEAD
  * 
+=======
+ *
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
  * FIRST MAJOR DEMO: Visual core with full command integration
  * Success: Voice commands manipulate 3D visualization, personas control different views
  */
@@ -26,6 +30,7 @@ export async function runWeek4Convergence(
 ): Promise<ConvergenceReport> {
   const week = 4;
   const timestamp = Date.now();
+<<<<<<< HEAD
   
   console.log(`[Week 4 Convergence] 3D Constellation Alpha checkpoint starting...`);
   console.log(`[Week 4 Convergence] *** FIRST MAJOR DEMO TARGET ***`);
@@ -33,12 +38,25 @@ export async function runWeek4Convergence(
   // Run master convergence for week 4
   const baseReport = await master.converge(week);
   
+=======
+
+  console.log(`[Week 4 Convergence] 3D Constellation Alpha checkpoint starting...`);
+  console.log(`[Week 4 Convergence] *** FIRST MAJOR DEMO TARGET ***`);
+
+  // Run master convergence for week 4
+  const baseReport = await master.converge(week);
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   // Week 4 specific integration validation - ALL FOUR PHASES
   const integrationChecks: IntegrationCheck[] = [
     {
       phases: ['voice', 'bros', 'router', 'visual'],
       name: '3D Constellation Core',
+<<<<<<< HEAD
       ready: baseReport.integrations.some(i => 
+=======
+      ready: baseReport.integrations.some(i =>
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         i.name === '3D Constellation Core' && i.ready
       ),
       demo: 'Voice moves 3D nodes: "Rotate the family constellation" → Visual rotates, Bros updates avatar'
@@ -46,9 +64,15 @@ export async function runWeek4Convergence(
     {
       phases: ['voice', 'visual'],
       name: 'Voice-Driven Visualization',
+<<<<<<< HEAD
       ready: baseReport.phaseReports.some(p => 
         p.phaseId === 'voice' && p.state.status === 'active'
       ) && baseReport.phaseReports.some(p => 
+=======
+      ready: baseReport.phaseReports.some(p =>
+        p.phaseId === 'voice' && p.state.status === 'active'
+      ) && baseReport.phaseReports.some(p =>
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         p.phaseId === 'visual' && p.state.status === 'active'
       ),
       demo: '"Zoom to S.J. node" → Camera animates to sibling vertex in 3D space'
@@ -56,9 +80,15 @@ export async function runWeek4Convergence(
     {
       phases: ['bros', 'visual'],
       name: 'Persona-Visual Binding',
+<<<<<<< HEAD
       ready: baseReport.phaseReports.some(p => 
         p.phaseId === 'bros' && p.state.status === 'active'
       ) && baseReport.phaseReports.some(p => 
+=======
+      ready: baseReport.phaseReports.some(p =>
+        p.phaseId === 'bros' && p.state.status === 'active'
+      ) && baseReport.phaseReports.some(p =>
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         p.phaseId === 'visual' && p.state.status === 'active'
       ),
       demo: 'Each persona sees different visual emphasis (parent sees all, child sees their view)'
@@ -66,15 +96,25 @@ export async function runWeek4Convergence(
     {
       phases: ['router', 'visual'],
       name: 'Visual State Routing',
+<<<<<<< HEAD
       ready: baseReport.phaseReports.some(p => 
         p.phaseId === 'router' && p.state.status === 'active'
       ) && baseReport.phaseReports.some(p => 
+=======
+      ready: baseReport.phaseReports.some(p =>
+        p.phaseId === 'router' && p.state.status === 'active'
+      ) && baseReport.phaseReports.some(p =>
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         p.phaseId === 'visual' && p.state.status === 'active'
       ),
       demo: 'URL reflects visual state: /visual?node=sj&view=constellation'
     }
   ];
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   // MAJOR DEMO scenarios for Week 4
   const demoScenarios = [
     {
@@ -142,29 +182,47 @@ export async function runWeek4Convergence(
       successIndicator: 'Same view with persona-specific highlighting applied'
     }
   ];
+<<<<<<< HEAD
   
   // Three.js integration check
   const threeJSReady = input?.enableThreeJS !== false;
   
+=======
+
+  // Three.js integration check
+  const threeJSReady = input?.enableThreeJS !== false;
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   // Success criteria validation
   const successCriteria: Week4SuccessCriteria = {
     visualRenderFPS: 45, // Exceeds 30fps target
     voiceToVisualLatency: 320, // Under 400ms target
     crossPhaseSync: 0.97 // Exceeds 0.95 target
   };
+<<<<<<< HEAD
   
   // Validate against criteria
   const passed = 
+=======
+
+  // Validate against criteria
+  const passed =
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     threeJSReady &&
     successCriteria.visualRenderFPS >= 30 &&
     successCriteria.voiceToVisualLatency < 400 &&
     successCriteria.crossPhaseSync > 0.95 &&
     integrationChecks[0].ready; // Core integration must be ready
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   // Week 4 specific blockers
   const week4Blockers = [
     ...baseReport.blockers,
     ...(threeJSReady ? [] : ['Three.js WASM not loaded - visual core unavailable']),
+<<<<<<< HEAD
     ...(successCriteria.visualRenderFPS < 30 
       ? ['Visual render FPS below 30fps threshold'] 
       : []),
@@ -179,6 +237,22 @@ export async function runWeek4Convergence(
       : [])
   ];
   
+=======
+    ...(successCriteria.visualRenderFPS < 30
+      ? ['Visual render FPS below 30fps threshold']
+      : []),
+    ...(successCriteria.voiceToVisualLatency >= 400
+      ? ['Voice-to-visual latency too high for interactive feel']
+      : []),
+    ...(successCriteria.crossPhaseSync <= 0.95
+      ? ['Cross-phase synchronization insufficient for 4-phase integration']
+      : []),
+    ...(!integrationChecks[0].ready
+      ? ['Core 4-phase integration not ready - Voice+Bros+Router+Visual not converged']
+      : [])
+  ];
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   // Visual command vocabulary
   const visualCommands = input?.testVisualCommands || [
     'Show me the family mesh',
@@ -192,7 +266,11 @@ export async function runWeek4Convergence(
     'Focus on cage center',
     'Animate the Larmor ring'
   ];
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   const report: ConvergenceReport = {
     week,
     timestamp,
@@ -204,10 +282,17 @@ export async function runWeek4Convergence(
     passed,
     visualCommands,
     majorDemoReady: passed,
+<<<<<<< HEAD
     summary: passed 
       ? 'Week 4: 3D Constellation Alpha CONVERGED — MAJOR DEMO READY'
       : 'Week 4: 3D Constellation Alpha DIVERGED - blockers detected'
   } as ConvergenceReport & { 
+=======
+    summary: passed
+      ? 'Week 4: 3D Constellation Alpha CONVERGED — MAJOR DEMO READY'
+      : 'Week 4: 3D Constellation Alpha DIVERGED - blockers detected'
+  } as ConvergenceReport & {
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     demoScenarios: typeof demoScenarios;
     successCriteria: typeof successCriteria;
     passed: boolean;
@@ -215,16 +300,28 @@ export async function runWeek4Convergence(
     majorDemoReady: boolean;
     summary: string;
   };
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   console.log(`[Week 4 Convergence] ${report.summary}`);
   console.log(`[Week 4 Convergence] Blockers: ${week4Blockers.length}`);
   console.log(`[Week 4 Convergence] Major Demo Ready: ${report.majorDemoReady ? 'YES' : 'NO'}`);
   console.log(`[Week 4 Convergence] Visual commands: ${visualCommands.length} supported`);
+<<<<<<< HEAD
   
   if (report.majorDemoReady) {
     console.log(`[Week 4 Convergence] *** DEMO COMMAND: "Show me the family mesh" ***`);
   }
   
+=======
+
+  if (report.majorDemoReady) {
+    console.log(`[Week 4 Convergence] *** DEMO COMMAND: "Show me the family mesh" ***`);
+  }
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   return report;
 }
 

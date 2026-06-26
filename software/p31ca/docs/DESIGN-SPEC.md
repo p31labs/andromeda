@@ -1,9 +1,16 @@
 # P31CA.ORG Canonical Design Specification
 
+<<<<<<< HEAD
 **Version:** 1.0.0  
 **Schema:** `p31.designSpec/1.0.0`  
 **Date:** 2026-05-01  
 **Status:** LIVE  
+=======
+**Version:** 1.0.0
+**Schema:** `p31.designSpec/1.0.0`
+**Date:** 2026-05-01
+**Status:** LIVE
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
 
 ---
 

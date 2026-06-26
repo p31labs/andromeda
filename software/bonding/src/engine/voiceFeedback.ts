@@ -95,11 +95,19 @@ class VoiceFeedbackService {
   private createUtterance(text: string): SpeechSynthesisUtterance | null {
     const synth = this.getSynth();
     if (!synth) return null;
+<<<<<<< HEAD
     
     // Use the native SpeechSynthesisUtterance constructor
     const SpeechSynthesisUtteranceClass = (window as unknown as { SpeechSynthesisUtterance?: new (text: string) => SpeechSynthesisUtterance }).SpeechSynthesisUtterance;
     if (!SpeechSynthesisUtteranceClass) return null;
     
+=======
+
+    // Use the native SpeechSynthesisUtterance constructor
+    const SpeechSynthesisUtteranceClass = (window as unknown as { SpeechSynthesisUtterance?: new (text: string) => SpeechSynthesisUtterance }).SpeechSynthesisUtterance;
+    if (!SpeechSynthesisUtteranceClass) return null;
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     const utterance = new SpeechSynthesisUtteranceClass(text);
     return utterance;
   }
@@ -117,7 +125,11 @@ class VoiceFeedbackService {
     if (!utterance) return;
 
     const voices = this.getVoices();
+<<<<<<< HEAD
     const preferredVoice = voices.find(v => 
+=======
+    const preferredVoice = voices.find(v =>
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       v.name.includes('Google') || v.name.includes('Samantha') || v.name.includes('English')
     ) || voices[0] || null;
 
@@ -296,4 +308,8 @@ export function useVoiceFeedback() {
     isSpeaking: () => voiceFeedback.speaking,
     isSupported: () => voiceFeedback.isSupported(),
   };
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

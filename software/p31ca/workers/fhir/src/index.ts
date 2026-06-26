@@ -27,6 +27,19 @@ export default {
 
     const url = new URL(request.url);
 
+<<<<<<< HEAD
+=======
+    // Health check — no auth required
+    if (url.pathname === '/health' && request.method === 'GET') {
+      return json({
+        status: 'ok',
+        service: 'p31-fhir',
+        version: '0.1.0',
+        timestamp: new Date().toISOString(),
+      });
+    }
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     // OAuth initiation — redirects operator to Epic login
     if (url.pathname === '/fhir/auth' && request.method === 'GET') {
       return handleAuthInit(env);

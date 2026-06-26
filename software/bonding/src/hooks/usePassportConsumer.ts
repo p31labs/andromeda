@@ -35,6 +35,7 @@ export interface CognitivePassportData {
   // Identity
   operatorId: string;
   genesisBlock: string;
+<<<<<<< HEAD
   
   // Profile
   profile: CognitiveProfile;
@@ -42,6 +43,15 @@ export interface CognitivePassportData {
   // LOVE Ledger (earned, not spent)
   loveLedger: LoveEntry[];
   
+=======
+
+  // Profile
+  profile: CognitiveProfile;
+
+  // LOVE Ledger (earned, not spent)
+  loveLedger: LoveEntry[];
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   // Metadata
   version: string;
   createdAt: string;
@@ -107,7 +117,11 @@ export interface PassportConsumerState {
 // ─────────────────────────────────────────────────────────────────
 
 /**
+<<<<<<< HEAD
  * Verify signature structure (placeholder - full verification would 
+=======
+ * Verify signature structure (placeholder - full verification would
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
  * require the public key lookup logic from the parent)
  */
 async function verifySignatureStructure(
@@ -116,7 +130,11 @@ async function verifySignatureStructure(
 ): Promise<boolean> {
   try {
     // Basic structural validation
+<<<<<<< HEAD
     const isValid = 
+=======
+    const isValid =
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       signature.signature.length > 0 &&
       signature.keyId.length > 0 &&
       signature.signedAt.length > 0 &&
@@ -150,10 +168,17 @@ async function verifySignatureStructure(
 // ─────────────────────────────────────────────────────────────────
 /**
  * Passport Consumer Hook — For BONDING iframe
+<<<<<<< HEAD
  * 
  * On mount, broadcasts P31_MODULE_READY to parent. Listens for
  * P31_PASSPORT_SYNC and validates the signature before accepting.
  * 
+=======
+ *
+ * On mount, broadcasts P31_MODULE_READY to parent. Listens for
+ * P31_PASSPORT_SYNC and validates the signature before accepting.
+ *
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
  * @returns { passport, isReady, isValid, lastUpdateTime, error }
  */
 export function usePassportConsumer(): PassportConsumerState {
@@ -190,7 +215,11 @@ export function usePassportConsumer(): PassportConsumerState {
     }
 
     const payload = event.data?.payload as PassportSyncPayload | undefined;
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     if (!payload) {
       setError('No payload in passport sync message');
       return;
@@ -199,7 +228,11 @@ export function usePassportConsumer(): PassportConsumerState {
     // Validate timestamp freshness
     const now = Date.now();
     const messageAge = now - payload.timestamp;
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     if (messageAge > FRESHNESS_THRESHOLD_MS) {
       setError(`Passport message too old: ${Math.round(messageAge / 1000)}s`);
       console.log('[P31 Consumer] Stale passport received, requesting fresh');
@@ -210,7 +243,11 @@ export function usePassportConsumer(): PassportConsumerState {
 
     // Validate signature
     const signatureValid = await verifySignatureStructure(payload.signature, payload.data);
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     if (!signatureValid) {
       setError('Invalid passport signature');
       setIsValid(false);
@@ -264,7 +301,11 @@ export function usePassportConsumer(): PassportConsumerState {
         console.log('[P31 Consumer] Retrying parent handshake...');
         broadcastReady();
       }, 3000);
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       return () => clearTimeout(timeout);
     }
   }, [isReady, broadcastReady]);
@@ -288,17 +329,29 @@ export function usePassportConsumer(): PassportConsumerState {
  */
 export function getFawnGuardLatency(passport: CognitivePassportData | null): number {
   if (!passport?.profile) return 0;
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   // Look for fawn guard accommodation
   const fawnGuard = passport.profile.accommodations.find(
     (a) => a.toLowerCase().includes('fawn') || a.toLowerCase().includes('response')
   );
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   if (fawnGuard) {
     // Default 500ms delay for fawn response accommodation
     return 500;
   }
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   return 0;
 }
 
@@ -308,7 +361,11 @@ export function getFawnGuardLatency(passport: CognitivePassportData | null): num
  */
 export function getSpoonCapacity(passport: CognitivePassportData | null): number {
   if (!passport?.profile) return 12;
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   // Could be stored in profile metadata
   return 12; // Default
 }

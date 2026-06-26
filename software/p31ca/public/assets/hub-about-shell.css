@@ -8,10 +8,17 @@
   --void: #050505;
   --surface: rgba(255, 255, 255, 0.035);
   --surface2: rgba(255, 255, 255, 0.055);
+<<<<<<< HEAD
   --coral: var(--hub-coral, #cc6247);
   --teal: #25897d;
   --cyan: #4db8a8;
   --cloud: var(--hub-cloud, #d8d6d0);
+=======
+  --coral: var(--hub-coral, var(--color-coral));
+  --teal: #25897d;
+  --cyan: var(--color-cyan);
+  --cloud: var(--hub-cloud, var(--color-cloud));
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   --muted: #6b7280;
   --border: rgba(255, 255, 255, 0.06);
   --font: var(--hub-font-sans, "Inter", system-ui, sans-serif);
@@ -59,8 +66,13 @@
   z-index: 50;
   background: rgba(8, 8, 16, 0.88);
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+<<<<<<< HEAD
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
+=======
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
 }
 .hub-about-page .nav-inner {
   max-width: 72rem;
@@ -162,8 +174,13 @@
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 14px;
   padding: 14px 16px;
+<<<<<<< HEAD
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
+=======
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   box-shadow: 0 12px 48px rgba(0, 0, 0, 0.35);
 }
 .about-fleet-head {
@@ -446,8 +463,13 @@
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 14px;
   padding: 20px 22px;
+<<<<<<< HEAD
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
+=======
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   box-shadow: 0 16px 48px rgba(0, 0, 0, 0.32);
   transition: border-color 0.2s, box-shadow 0.2s;
 }

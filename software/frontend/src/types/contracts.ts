@@ -1,6 +1,10 @@
 /**
  * P31 Digital Consciousness Surrogate — TypeScript Data Contracts
+<<<<<<< HEAD
  * 
+=======
+ *
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
  * Vertex 3 (Interface Node) — Data contracts binding UI to Vertex 2's output
  * These interfaces bind the Cockpit UI to the backend's async data streams.
  */
@@ -144,7 +148,11 @@ export interface FawnGuardResult {
 /**
  * Submissive linguistic markers
  */
+<<<<<<< HEAD
 export type FawnMarker = 
+=======
+export type FawnMarker =
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   | 'apologetic_language'
   | 'self_deprecation'
   | 'passive_voice'
@@ -159,7 +167,11 @@ export const FAWN_GUARD_CONFIG = {
   MIN_CONFIDENCE: 0.6,
   MARKERS: [
     'apologetic_language',
+<<<<<<< HEAD
     'self_deprecation', 
+=======
+    'self_deprecation',
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     'passive_voice',
     'excessive_pleasing',
     'hedging',
@@ -186,7 +198,11 @@ export const FAWN_PATTERNS: Record<FawnMarker, RegExp> = {
 /**
  * Room types available in the cockpit
  */
+<<<<<<< HEAD
 export type RoomType = 
+=======
+export type RoomType =
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   | 'observatory'
   | 'collider'
   | 'bonding'
@@ -220,7 +236,11 @@ export const ROOMS: RoomDefinition[] = [
 // ═══════════════════════════════════════════════════════════════════
 
 export const COCKPIT_COLORS = {
+<<<<<<< HEAD
   phosphorus: '#00FF88',
+=======
+  phosphorus: 'var(--color-phosphor)',
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   quantum_cyan: '#00D4FF',
   quantum_violet: '#7A27FF',
   phosphorus_orange: '#FF6600',

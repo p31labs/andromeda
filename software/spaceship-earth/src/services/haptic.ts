@@ -25,4 +25,8 @@ export const haptic = {
   transmit: () => vibrate(25),
 };
 
+<<<<<<< HEAD
 export type HapticPattern = keyof typeof haptic;
+=======
+export type HapticPattern = keyof typeof haptic;
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

@@ -17,7 +17,11 @@ class TelemetryClient {
 
   constructor() {
     this.sessionId = crypto.randomUUID();
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     let storedId = localStorage.getItem('p31_player_id');
     if (!storedId) {
       storedId = crypto.randomUUID();
@@ -52,7 +56,11 @@ class TelemetryClient {
   public getPlayerId() {
     return this.playerId;
   }
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   public getSessionId() {
     return this.sessionId;
   }
@@ -71,4 +79,8 @@ class TelemetryClient {
   }
 }
 
+<<<<<<< HEAD
 export const telemetry = new TelemetryClient();
+=======
+export const telemetry = new TelemetryClient();
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

@@ -47,4 +47,8 @@ describe('TelemetryClient qFactor', () => {
       })
     );
   });
+<<<<<<< HEAD
 });
+=======
+});
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

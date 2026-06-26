@@ -1,6 +1,10 @@
 /**
  * Spoon Meter HUD — Metabolic Economics Display
+<<<<<<< HEAD
  * 
+=======
+ *
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
  * Vertex 3 (Interface Node) — Spoon economy visualizer
  * Displays current spoons with visual state management
  */
@@ -26,11 +30,19 @@ interface SpoonMeterProps {
 /**
  * Spoon Meter HUD element - shows current metabolic capacity
  */
+<<<<<<< HEAD
 export default function SpoonMeter({ 
   compact = false, 
   showControls = false,
   size = 'md',
   hideLabel = false 
+=======
+export default function SpoonMeter({
+  compact = false,
+  showControls = false,
+  size = 'md',
+  hideLabel = false
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
 }: SpoonMeterProps) {
   const metabolicState = useCockpitStore(s => s.metabolicState);
   const updateMetabolicState = useCockpitStore(s => s.updateMetabolicState);
@@ -50,7 +62,11 @@ export default function SpoonMeter({
       current_spoons: Math.min(maxSpoons, spoons + amount),
     });
   };
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   // Determine state based on percentage
   const getState = () => {
     if (percentage < 25) return 'critical';
@@ -58,9 +74,15 @@ export default function SpoonMeter({
     if (percentage < 75) return 'moderate';
     return 'optimal';
   };
+<<<<<<< HEAD
   
   const state = getState();
   
+=======
+
+  const state = getState();
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   // Color mapping based on state
   const getColor = () => {
     switch (state) {
@@ -70,6 +92,7 @@ export default function SpoonMeter({
       case 'optimal': return COCKPIT_COLORS.phosphorus;
     }
   };
+<<<<<<< HEAD
   
   const color = getColor();
   
@@ -80,6 +103,18 @@ export default function SpoonMeter({
     lg: 'spoon-meter-lg',
   };
   
+=======
+
+  const color = getColor();
+
+  // Size classes
+  const sizeClasses = {
+    sm: 'spoon-meter-sm',
+    md: 'spoon-meter-md',
+    lg: 'spoon-meter-lg',
+  };
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   // Label based on state
   const getLabel = () => {
     if (percentage < 25) return 'BREATHE';
@@ -87,7 +122,11 @@ export default function SpoonMeter({
     if (percentage < 75) return 'BUILD';
     return 'COMMAND';
   };
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   return (
     <div className={`spoon-meter ${sizeClasses[size]} spoon-meter-${state}`}>
       {!hideLabel && (
@@ -95,8 +134,13 @@ export default function SpoonMeter({
           {getLabel()}
         </span>
       )}
+<<<<<<< HEAD
       
       <div 
+=======
+
+      <div
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         className="spoon-meter-bar"
         role="progressbar"
         aria-valuenow={spoons}
@@ -104,20 +148,34 @@ export default function SpoonMeter({
         aria-valuemax={maxSpoons}
         aria-label={`Energy: ${spoons.toFixed(1)} of ${maxSpoons} spoons`}
       >
+<<<<<<< HEAD
         <div 
           className="spoon-meter-fill"
           style={{ 
+=======
+        <div
+          className="spoon-meter-fill"
+          style={{
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
             width: `${percentage}%`,
             background: color,
           }}
         />
+<<<<<<< HEAD
         <div 
+=======
+        <div
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
           className="spoon-meter-threshold"
           style={{ left: `${SPOON_CONFIG.LOW_THRESHOLD * 100}%` }}
           title="Heartbeat Lockout Threshold"
         />
       </div>
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       {showControls && (
         <div className="spoon-meter-controls">
           <button
@@ -138,11 +196,19 @@ export default function SpoonMeter({
           </button>
         </div>
       )}
+<<<<<<< HEAD
       
       <span className="spoon-meter-value" style={{ color }}>
         {spoons.toFixed(1)}
       </span>
       
+=======
+
+      <span className="spoon-meter-value" style={{ color }}>
+        {spoons.toFixed(1)}
+      </span>
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       {!compact && (
         <span className="spoon-meter-max">
           / {maxSpoons}
@@ -172,9 +238,15 @@ export function CompactSpoonMeter() {
  */
 export function FullSpoonMeter() {
   return (
+<<<<<<< HEAD
     <SpoonMeter 
       showControls 
       size="lg" 
+=======
+    <SpoonMeter
+      showControls
+      size="lg"
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     />
   );
 }

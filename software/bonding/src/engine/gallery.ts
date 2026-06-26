@@ -118,4 +118,8 @@ export function clearGallery(): void {
   } catch {
     // Storage unavailable — swallow
   }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

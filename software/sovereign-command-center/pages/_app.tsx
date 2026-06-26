@@ -15,4 +15,8 @@ export default function App({ Component, pageProps }: AppProps) {
       <Component {...pageProps} />
     </>
   )
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

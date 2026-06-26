@@ -1,6 +1,10 @@
 /**
  * @file fawn.ts — FawnGuard: detect fawn response patterns in text
+<<<<<<< HEAD
  * 
+=======
+ *
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
  * Hardened with:
  * - Input sanitization (null/undefined, trimming, max length)
  * - Caching for repeated analyses
@@ -106,7 +110,11 @@ export function analyze(text: string): FawnAnalysis {
 
   if (cache.size >= CACHE_MAX_SIZE) {
     const oldestKey = cache.keys().next().value;
+<<<<<<< HEAD
     cache.delete(oldestKey);
+=======
+    cache.delete(oldestKey!);
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   }
   cache.set(cacheKey, { result, timestamp: now });
 
@@ -125,7 +133,11 @@ export function safeAnalyze(text: unknown): FawnAnalysis {
 
 export function getWarning(text: string): string {
   if (!text || typeof text !== 'string') return '';
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   const result = analyze(text);
   if (!result.triggered) return '';
 
@@ -149,7 +161,11 @@ export function getWarning(text: string): string {
 export class FawnGuard {
   static analyze = analyze;
   static getWarning = getWarning;
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   static grayRock(text: string): string {
     let clean = text;
     clean = clean.replace(/\b(I'm so sorry|sorry if this is|so sorry to bother|sorry to bother you)\b/gi, 'Note:');
@@ -164,8 +180,22 @@ export class FawnGuard {
   }
 }
 
+<<<<<<< HEAD
 if (typeof setInterval !== 'undefined') {
   setInterval(() => {
+=======
+let evictionInterval: ReturnType<typeof setInterval> | undefined;
+
+export function stopCacheEviction(): void {
+  if (evictionInterval !== undefined) {
+    clearInterval(evictionInterval);
+    evictionInterval = undefined;
+  }
+}
+
+if (typeof setInterval !== 'undefined') {
+  evictionInterval = setInterval(() => {
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     const now = Date.now();
     for (const [key, entry] of cache.entries()) {
       if (now - entry.timestamp > CACHE_TTL_MS) {
@@ -173,4 +203,8 @@ if (typeof setInterval !== 'undefined') {
       }
     }
   }, 60000);
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

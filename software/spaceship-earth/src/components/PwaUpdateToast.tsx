@@ -11,17 +11,39 @@
  * CSS entrance: `@starting-style` slide-up (Chrome 117+, graceful fallback).
  */
 
+<<<<<<< HEAD
+=======
+import { useRef, useEffect } from 'react';
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
 import { useRegisterSW } from 'virtual:pwa-register/react';
 
 const NEON = '#00FFFF';
 const VOID = 'rgba(3, 3, 8, 0.95)';
 
 export function PwaUpdateToast() {
+<<<<<<< HEAD
+=======
+  const swUpdateInterval = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (swUpdateInterval.current !== null) {
+        clearInterval(swUpdateInterval.current);
+        swUpdateInterval.current = null;
+      }
+    };
+  }, []);
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   const { needRefresh: [needRefresh, setNeedRefresh], updateServiceWorker } = useRegisterSW({
     onRegisteredSW(swUrl: string, r: ServiceWorkerRegistration | undefined) {
       // Poll for updates every 60 minutes when app is in background
       if (r) {
+<<<<<<< HEAD
         setInterval(() => {
+=======
+        swUpdateInterval.current = setInterval(() => {
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
           if (!(!r.installing && navigator.onLine)) return;
           r.update().catch(console.error);
         }, 60 * 60 * 1000);

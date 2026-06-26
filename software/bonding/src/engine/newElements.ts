@@ -126,4 +126,8 @@ export const MODE_ELEMENTS: Record<string, ElementSymbol[]> = {
   seed: ['H', 'O'],
   sprout: ['H', 'C', 'N', 'O'],
   sapling: ['H', 'C', 'N', 'O', 'P', 'Na', 'Ca', 'Cl', 'S', 'Fe'],
+<<<<<<< HEAD
 };
+=======
+};
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

@@ -108,7 +108,12 @@ export class WebSocketScanner implements SpatialScanner {
         try {
           const data = JSON.parse(event.data as string);
           if (data.type === 'BLE_SCAN' && Array.isArray(data.devices)) {
+<<<<<<< HEAD
             this.callback(data.devices.map((d: any) => ({
+=======
+            type ScanDevice = { id: string; rssi: number; manufacturerData?: number[] };
+            this.callback(data.devices.map((d: ScanDevice) => ({
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
               id: String(d.id),
               rssi: Number(d.rssi),
               manufacturerData: d.manufacturerData

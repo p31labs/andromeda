@@ -42,9 +42,15 @@
       --glass-bg: rgba(10, 14, 20, 0.7);
       --glass-border: rgba(77, 184, 168, 0.2);
     }
+<<<<<<< HEAD
     
     * { box-sizing: border-box; }
     
+=======
+
+    * { box-sizing: border-box; }
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     body.lab {
       margin: 0;
       min-height: 100dvh;
@@ -61,7 +67,11 @@
       gap: 0;
       overflow: hidden;
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     @media (max-width: 1300px) {
       body.lab { grid-template-columns: 300px 1fr; grid-template-areas: "head head" "fleet stage" "foot foot"; }
       .lab-mesh { display: none; }
@@ -94,7 +104,11 @@
       position: relative;
       z-index: 10;
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     .lab-head::before {
       content: '';
       position: absolute;
@@ -107,25 +121,41 @@
       mask-composite: exclude;
       opacity: 0.3;
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     .lab-logo {
       display: flex;
       align-items: center;
       gap: 0.75rem;
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     .lab-tetra {
       width: 36px;
       height: 36px;
       position: relative;
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     .lab-tetra svg {
       width: 100%;
       height: 100%;
       filter: drop-shadow(0 0 8px var(--lab-cyan-glow));
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     .lab-title {
       margin: 0;
       font-size: 1.15rem;
@@ -136,6 +166,7 @@
       color: transparent;
       letter-spacing: -0.01em;
     }
+<<<<<<< HEAD
     
     .lab-subtitle { 
       margin: 0; 
@@ -144,12 +175,26 @@
       color: var(--lab-muted);
     }
     
+=======
+
+    .lab-subtitle {
+      margin: 0;
+      font-size: 0.8rem;
+      opacity: 0.7;
+      color: var(--lab-muted);
+    }
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     .lab-badges {
       margin-left: auto;
       display: flex;
       gap: 0.75rem;
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     .lab-badge {
       font-size: 0.65rem;
       text-transform: uppercase;
@@ -165,7 +210,11 @@
       gap: 6px;
       transition: all 0.2s ease;
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     .lab-badge::before {
       content: '';
       width: 6px;
@@ -174,6 +223,7 @@
       background: currentColor;
       box-shadow: 0 0 6px currentColor;
     }
+<<<<<<< HEAD
     
     .lab-badge.warning { 
       color: var(--lab-butter); 
@@ -187,6 +237,21 @@
     }
     .lab-badge.error::before { background: var(--lab-coral); }
     
+=======
+
+    .lab-badge.warning {
+      color: var(--lab-butter);
+      border-color: rgba(232, 197, 71, 0.3);
+    }
+    .lab-badge.warning::before { background: var(--lab-butter); }
+
+    .lab-badge.error {
+      color: var(--lab-coral);
+      border-color: rgba(204, 98, 71, 0.3);
+    }
+    .lab-badge.error::before { background: var(--lab-coral); }
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     .lab-badge.online { color: #7dd3c0; border-color: rgba(125, 211, 192, 0.3); }
     .lab-badge.online::before { background: #7dd3c0; }
 
@@ -202,7 +267,11 @@
       position: relative;
       z-index: 5;
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     .lab-section-title {
       font-size: 0.65rem;
       text-transform: uppercase;
@@ -213,7 +282,11 @@
       align-items: center;
       gap: 0.5rem;
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     .lab-section-title::after {
       content: '';
       flex: 1;
@@ -233,7 +306,11 @@
       position: relative;
       overflow: hidden;
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     .worker-card::before {
       content: '';
       position: absolute;
@@ -244,6 +321,7 @@
       background: var(--lab-muted);
       transition: background 0.2s ease;
     }
+<<<<<<< HEAD
     
     .worker-card:hover { 
       border-color: var(--lab-cyan); 
@@ -261,21 +339,50 @@
     .worker-card.warning::before { background: var(--lab-butter); }
     .worker-card.error::before { background: var(--lab-coral); }
     
+=======
+
+    .worker-card:hover {
+      border-color: var(--lab-cyan);
+      background: var(--lab-surface-hover);
+      transform: translateX(2px);
+    }
+
+    .worker-card.active {
+      border-color: var(--lab-phos);
+      background: rgba(167, 139, 250, 0.08);
+    }
+    .worker-card.active::before { background: var(--lab-phos); }
+
+    .worker-card.online::before { background: #7dd3c0; }
+    .worker-card.warning::before { background: var(--lab-butter); }
+    .worker-card.error::before { background: var(--lab-coral); }
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     .worker-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
       margin-bottom: 0.35rem;
     }
+<<<<<<< HEAD
     
     .worker-name { 
       font-weight: 600; 
+=======
+
+    .worker-name {
+      font-weight: 600;
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       color: #e8e6e0;
       display: flex;
       align-items: center;
       gap: 0.5rem;
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     .worker-status-dot {
       width: 7px;
       height: 7px;
@@ -283,6 +390,7 @@
       background: var(--lab-muted);
       transition: all 0.3s ease;
     }
+<<<<<<< HEAD
     
     .worker-status-dot.online { 
       background: #7dd3c0; 
@@ -303,6 +411,28 @@
       font-family: "JetBrains Mono", monospace;
     }
     
+=======
+
+    .worker-status-dot.online {
+      background: #7dd3c0;
+      box-shadow: 0 0 8px rgba(125, 211, 192, 0.6);
+    }
+    .worker-status-dot.warning {
+      background: var(--lab-butter);
+      box-shadow: 0 0 8px rgba(232, 197, 71, 0.4);
+    }
+    .worker-status-dot.error {
+      background: var(--lab-coral);
+      box-shadow: 0 0 8px rgba(204, 98, 71, 0.5);
+    }
+
+    .worker-status-text {
+      font-size: 0.7rem;
+      color: var(--lab-muted);
+      font-family: "JetBrains Mono", monospace;
+    }
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     .worker-actions {
       margin-top: 0.6rem;
       display: flex;
@@ -311,12 +441,20 @@
       transform: translateY(-4px);
       transition: all 0.2s ease;
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     .worker-card:hover .worker-actions {
       opacity: 1;
       transform: translateY(0);
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     .worker-btn {
       font-size: 0.65rem;
       padding: 4px 10px;
@@ -328,9 +466,15 @@
       transition: all 0.15s ease;
       font-family: "JetBrains Mono", monospace;
     }
+<<<<<<< HEAD
     
     .worker-btn:hover { 
       border-color: var(--lab-cyan); 
+=======
+
+    .worker-btn:hover {
+      border-color: var(--lab-cyan);
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       color: var(--lab-cyan);
       background: rgba(77, 184, 168, 0.1);
     }
@@ -343,7 +487,11 @@
       border-radius: 12px;
       background: rgba(0, 0, 0, 0.2);
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     .routing-panel h3 {
       margin: 0 0 0.75rem;
       font-size: 0.7rem;
@@ -354,7 +502,11 @@
       align-items: center;
       gap: 0.5rem;
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     .route-btn {
       display: flex;
       align-items: center;
@@ -371,19 +523,32 @@
       transition: all 0.15s ease;
       font-family: "JetBrains Mono", monospace;
     }
+<<<<<<< HEAD
     
     .route-btn:hover { 
+=======
+
+    .route-btn:hover {
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       border-color: var(--lab-butter);
       background: rgba(232, 197, 71, 0.15);
       transform: translateX(3px);
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     .route-btn::after {
       content: '→';
       opacity: 0.5;
       transition: all 0.15s ease;
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     .route-btn:hover::after {
       opacity: 1;
       transform: translateX(3px);
@@ -396,12 +561,21 @@
       background: radial-gradient(ellipse at center, rgba(16, 20, 35, 0.3) 0%, var(--lab-void-dark) 70%);
       overflow: hidden;
     }
+<<<<<<< HEAD
     
     .lab-stage canvas { 
       display: block; 
       width: 100%; 
       height: 100%; 
       touch-action: none; 
+=======
+
+    .lab-stage canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      touch-action: none;
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     }
 
     /* HUD Overlay */
@@ -422,22 +596,36 @@
       border: 1px solid var(--lab-border);
       backdrop-filter: blur(4px);
     }
+<<<<<<< HEAD
     
     .hud-line { 
       margin-bottom: 0.4rem; 
+=======
+
+    .hud-line {
+      margin-bottom: 0.4rem;
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       display: flex;
       align-items: center;
       justify-content: flex-end;
       gap: 0.75rem;
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     .hud-label {
       color: var(--lab-muted);
       font-size: 0.65rem;
       text-transform: uppercase;
       letter-spacing: 0.05em;
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     .hud-value {
       color: var(--lab-cyan);
       font-weight: 600;
@@ -458,7 +646,11 @@
       z-index: 10;
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     .lab-controls h3 {
       margin: 0 0 1rem;
       font-size: 0.75rem;
@@ -469,16 +661,28 @@
       align-items: center;
       gap: 0.5rem;
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     .lab-controls h3::before {
       content: '◍';
       font-size: 0.9em;
     }
+<<<<<<< HEAD
     
     .ctrl-row {
       margin-bottom: 0.9rem;
     }
     
+=======
+
+    .ctrl-row {
+      margin-bottom: 0.9rem;
+    }
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     .ctrl-row label {
       display: flex;
       align-items: center;
@@ -487,7 +691,11 @@
       color: var(--lab-muted);
       margin-bottom: 0.4rem;
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     .ctrl-val {
       font-family: "JetBrains Mono", monospace;
       font-size: 0.75rem;
@@ -497,14 +705,22 @@
       border-radius: 4px;
       border: 1px solid rgba(77, 184, 168, 0.2);
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     .slider-container {
       position: relative;
       height: 24px;
       display: flex;
       align-items: center;
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     input[type="range"] {
       -webkit-appearance: none;
       width: 100%;
@@ -513,7 +729,11 @@
       border-radius: 2px;
       outline: none;
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     input[type="range"]::-webkit-slider-thumb {
       -webkit-appearance: none;
       width: 16px;
@@ -525,12 +745,20 @@
       border: 2px solid var(--lab-void);
       transition: all 0.15s ease;
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     input[type="range"]::-webkit-slider-thumb:hover {
       transform: scale(1.1);
       box-shadow: 0 0 16px var(--lab-cyan-glow);
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     input[type="range"]::-moz-range-thumb {
       width: 16px;
       height: 16px;
@@ -540,14 +768,22 @@
       border: 2px solid var(--lab-void);
       box-shadow: 0 0 12px var(--lab-cyan-glow);
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     .ctrl-actions {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 0.6rem;
       margin-top: 1rem;
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     .ctrl-btn {
       padding: 0.6rem 0.8rem;
       font-size: 0.75rem;
@@ -563,31 +799,54 @@
       justify-content: center;
       gap: 0.4rem;
     }
+<<<<<<< HEAD
     
     .ctrl-btn:hover { 
+=======
+
+    .ctrl-btn:hover {
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       background: rgba(77, 184, 168, 0.25);
       box-shadow: 0 0 20px var(--lab-cyan-glow);
       transform: translateY(-1px);
     }
+<<<<<<< HEAD
     
     .ctrl-btn:disabled { 
       opacity: 0.4; 
+=======
+
+    .ctrl-btn:disabled {
+      opacity: 0.4;
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       cursor: not-allowed;
       box-shadow: none;
       transform: none;
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     .ctrl-btn.pulse-btn {
       border-color: var(--lab-phos);
       background: linear-gradient(135deg, rgba(167, 139, 250, 0.15) 0%, transparent 100%);
       color: var(--lab-phos);
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     .ctrl-btn.pulse-btn:hover {
       background: rgba(167, 139, 250, 0.25);
       box-shadow: 0 0 20px var(--lab-phos-glow);
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     .trim-pulse {
       width: 8px;
       height: 8px;
@@ -596,13 +855,21 @@
       opacity: 0.3;
       transition: all 0.3s ease;
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     .trim-pulse.active {
       opacity: 1;
       box-shadow: 0 0 12px currentColor;
       animation: pulse-glow 1s ease-in-out infinite;
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     @keyframes pulse-glow {
       0%, 100% { transform: scale(1); opacity: 1; }
       50% { transform: scale(1.3); opacity: 0.7; }
@@ -627,6 +894,7 @@
       backdrop-filter: blur(8px);
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
     }
+<<<<<<< HEAD
     
     .lab-console::-webkit-scrollbar {
       width: 6px;
@@ -636,11 +904,26 @@
       background: transparent;
     }
     
+=======
+
+    .lab-console::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .lab-console::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     .lab-console::-webkit-scrollbar-thumb {
       background: var(--lab-border-strong);
       border-radius: 3px;
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     .console-header {
       display: flex;
       align-items: center;
@@ -649,35 +932,59 @@
       padding-bottom: 0.5rem;
       border-bottom: 1px solid var(--lab-border);
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     .console-title {
       font-size: 0.7rem;
       text-transform: uppercase;
       letter-spacing: 0.1em;
       color: var(--lab-muted);
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     .console-clear {
       font-size: 0.65rem;
       color: var(--lab-muted);
       cursor: pointer;
       transition: color 0.15s ease;
     }
+<<<<<<< HEAD
     
     .console-clear:hover { color: var(--lab-cyan); }
     
     .log-entry { 
+=======
+
+    .console-clear:hover { color: var(--lab-cyan); }
+
+    .log-entry {
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       margin-bottom: 0.4rem;
       display: flex;
       gap: 0.5rem;
       line-height: 1.4;
     }
+<<<<<<< HEAD
     
     .log-time { 
       color: var(--lab-muted);
       flex-shrink: 0;
     }
     
+=======
+
+    .log-time {
+      color: var(--lab-muted);
+      flex-shrink: 0;
+    }
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     .log-cmd { color: var(--lab-cyan); }
     .log-err { color: var(--lab-coral); }
     .log-ok { color: #7dd3c0; }
@@ -694,7 +1001,11 @@
       position: relative;
       z-index: 5;
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     .k4-vertex {
       margin-bottom: 0.9rem;
       padding: 1rem;
@@ -705,7 +1016,11 @@
       overflow: hidden;
       transition: all 0.2s ease;
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     .k4-vertex::before {
       content: '';
       position: absolute;
@@ -716,6 +1031,7 @@
       background: var(--lab-muted);
       transition: background 0.3s ease;
     }
+<<<<<<< HEAD
     
     .k4-vertex.personal::before { background: var(--lab-phos); }
     .k4-vertex.cage::before { background: var(--lab-cyan); }
@@ -724,22 +1040,43 @@
       box-shadow: 0 0 12px var(--lab-cyan-glow);
     }
     
+=======
+
+    .k4-vertex.personal::before { background: var(--lab-phos); }
+    .k4-vertex.cage::before { background: var(--lab-cyan); }
+    .k4-vertex.active::before {
+      background: linear-gradient(180deg, var(--lab-cyan), var(--lab-phos));
+      box-shadow: 0 0 12px var(--lab-cyan-glow);
+    }
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     .k4-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
       margin-bottom: 0.4rem;
     }
+<<<<<<< HEAD
     
     .k4-name { 
       font-size: 0.9rem; 
       font-weight: 600; 
+=======
+
+    .k4-name {
+      font-size: 0.9rem;
+      font-weight: 600;
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       color: #e8e6e0;
       display: flex;
       align-items: center;
       gap: 0.5rem;
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     .k4-avatar {
       width: 28px;
       height: 28px;
@@ -752,16 +1089,28 @@
       font-weight: 700;
       color: var(--lab-void);
     }
+<<<<<<< HEAD
     
     .k4-state { 
       font-size: 0.72rem; 
+=======
+
+    .k4-state {
+      font-size: 0.72rem;
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       color: var(--lab-muted);
       font-family: "JetBrains Mono", monospace;
       margin-top: 0.3rem;
     }
+<<<<<<< HEAD
     
     .k4-edges { 
       font-size: 0.68rem; 
+=======
+
+    .k4-edges {
+      font-size: 0.68rem;
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       color: var(--lab-muted);
       margin-top: 0.5rem;
       padding-top: 0.5rem;
@@ -769,13 +1118,21 @@
       display: flex;
       gap: 1rem;
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     .k4-metric {
       display: flex;
       align-items: center;
       gap: 0.35rem;
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     .k4-metric-value {
       color: var(--lab-cyan);
       font-weight: 600;
@@ -790,7 +1147,11 @@
       background: rgba(0, 0, 0, 0.2);
       text-align: center;
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     .geo-btn {
       width: 100%;
       padding: 0.6rem;
@@ -803,12 +1164,20 @@
       transition: all 0.15s ease;
       font-family: "JetBrains Mono", monospace;
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     .geo-btn:hover {
       background: rgba(167, 139, 250, 0.2);
       box-shadow: 0 0 16px var(--lab-phos-glow);
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     .geo-status {
       margin-top: 0.5rem;
       font-size: 0.7rem;
@@ -831,15 +1200,26 @@
       position: relative;
       z-index: 10;
     }
+<<<<<<< HEAD
     
     .lab-foot a { 
+=======
+
+    .lab-foot a {
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       color: var(--lab-cyan);
       text-decoration: none;
       transition: color 0.15s ease;
     }
+<<<<<<< HEAD
     
     .lab-foot a:hover { color: var(--lab-phos); }
     
+=======
+
+    .lab-foot a:hover { color: var(--lab-phos); }
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     .lab-foot-links {
       display: flex;
       gap: 1.25rem;
@@ -857,23 +1237,39 @@
       z-index: 1000;
       transition: opacity 0.5s ease;
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     .loading-overlay.hidden {
       opacity: 0;
       pointer-events: none;
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     .loading-tetra {
       width: 60px;
       height: 60px;
       animation: rotate 3s linear infinite;
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     @keyframes rotate {
       from { transform: rotate(0deg); }
       to { transform: rotate(360deg); }
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     .loading-text {
       margin-top: 1rem;
       font-size: 0.8rem;
@@ -952,7 +1348,11 @@
   <aside class="lab-fleet" id="fleet-panel">
     <h2 class="lab-section-title">Worker Fleet</h2>
     <div id="worker-list"></div>
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     <div class="routing-panel">
       <h3>Quick Routes</h3>
       <button class="route-btn" onclick="routeTo('tetra-hub', '/trio')">
@@ -973,7 +1373,11 @@
   <!-- Stage -->
   <main id="main" class="lab-stage" id="stage">
     <canvas id="dome-canvas"></canvas>
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     <!-- HUD -->
     <div class="lab-hud">
       <div class="hud-line">
@@ -1052,7 +1456,11 @@
   <aside class="lab-mesh" id="mesh-panel">
     <h2 class="lab-section-title">K₄ Mesh State</h2>
     <div id="k4-vertices"></div>
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     <h2 class="lab-section-title" style="margin-top: 1.5rem;">Geodesic Room</h2>
     <div class="geo-connect">
       <button class="geo-btn" onclick="connectGeodesic()">Connect WebSocket</button>
@@ -1074,7 +1482,11 @@
     // ==========================================
     // SOVEREIGN LAB v2 - Worker Fleet Integration
     // ==========================================
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     import * as THREE from 'three';
     import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
@@ -1132,7 +1544,11 @@
     function initFleetPanel() {
       const list = document.getElementById('worker-list');
       list.innerHTML = '';
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       WORKERS.forEach(worker => {
         const card = document.createElement('div');
         card.className = 'worker-card';
@@ -1158,7 +1574,11 @@
     function initK4Panel() {
       const container = document.getElementById('k4-vertices');
       container.innerHTML = '';
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       K4_VERTICES.forEach(v => {
         const div = document.createElement('div');
         div.className = `k4-vertex cage`;
@@ -1183,6 +1603,7 @@
     window.probeWorker = async function(id) {
       const worker = WORKERS.find(w => w.id === id);
       if (!worker) return;
+<<<<<<< HEAD
       
       const statusEl = document.getElementById(`status-${id}`);
       const dotEl = document.getElementById(`dot-${id}`);
@@ -1198,20 +1619,47 @@
         const timeout = setTimeout(() => controller.abort(), 5000);
         
         const response = await fetch(url, { 
+=======
+
+      const statusEl = document.getElementById(`status-${id}`);
+      const dotEl = document.getElementById(`dot-${id}`);
+      const cardEl = document.getElementById(`worker-${id}`);
+
+      statusEl.textContent = '...';
+
+      try {
+        const probePath = worker.paths[0];
+        const url = `${worker.url}${probePath}`;
+
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 5000);
+
+        const response = await fetch(url, {
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
           method: 'HEAD',
           mode: 'cors',
           signal: controller.signal
         });
+<<<<<<< HEAD
         
         clearTimeout(timeout);
         
+=======
+
+        clearTimeout(timeout);
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         state.workerHealth[id] = 'online';
         statusEl.textContent = 'ONLINE';
         dotEl.className = 'worker-status-dot online';
         cardEl.classList.remove('error');
         cardEl.classList.add('online');
         log(`${worker.name}: ONLINE`, 'ok');
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       } catch (err) {
         state.workerHealth[id] = 'offline';
         statusEl.textContent = 'OFFLINE';
@@ -1219,7 +1667,11 @@
         cardEl.classList.add('error');
         log(`${worker.name}: ${err.name === 'AbortError' ? 'TIMEOUT' : 'OFFLINE'}`, 'error');
       }
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       updateFleetStatus();
     };
 
@@ -1234,6 +1686,7 @@
     window.routeTo = async function(id, path) {
       const worker = WORKERS.find(w => w.id === id);
       if (!worker) return;
+<<<<<<< HEAD
       
       log(`Routing to ${worker.name}...`);
       
@@ -1253,6 +1706,27 @@
           updateK4FromMesh(data);
         }
         
+=======
+
+      log(`Routing to ${worker.name}...`);
+
+      try {
+        const url = `${worker.url}${path}`;
+        const response = await fetch(url, {
+          mode: 'cors',
+          headers: { 'Accept': 'application/json' }
+        });
+
+        let data;
+        try { data = await response.json(); } catch { data = null; }
+
+        log(`${worker.name}: HTTP ${response.status}`, response.ok ? 'ok' : 'warn');
+
+        if (data && id === 'tetra-hub' && path === '/trio') {
+          updateK4FromMesh(data);
+        }
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         return data;
       } catch (err) {
         log(`${worker.name}: ${err.message}`, 'error');
@@ -1267,7 +1741,11 @@
           const edgesEl = document.getElementById(`edges-${v.id}`);
           const loveEl = document.getElementById(`love-${v.id}`);
           const vertexEl = document.getElementById(`vertex-${v.id}`);
+<<<<<<< HEAD
           
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
           if (stateEl) stateEl.textContent = `State: ${v.state || 'unknown'}`;
           if (edgesEl) edgesEl.textContent = v.edges ? v.edges.length : '0';
           if (loveEl) loveEl.textContent = v.love || '0';
@@ -1280,13 +1758,21 @@
     window.syncMesh = async function() {
       log('Syncing mesh state...');
       document.getElementById('trim-mesh').classList.add('active');
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       const trio = await window.routeTo('tetra-hub', '/trio');
       if (trio) {
         state.meshData = trio;
         updateK4FromMesh(trio);
       }
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       setTimeout(() => {
         document.getElementById('trim-mesh').classList.remove('active');
       }, 1000);
@@ -1295,24 +1781,40 @@
     window.sendPulse = function() {
       log('Sending LARMOR pulse...');
       document.getElementById('trim-pulse').classList.add('active');
+<<<<<<< HEAD
       
       if (window.domeScene) {
         const pulseGeo = new THREE.IcosahedronGeometry(2.5, 0);
         const pulseMat = new THREE.MeshBasicMaterial({ 
           color: 0xa78bfa, 
+=======
+
+      if (window.domeScene) {
+        const pulseGeo = new THREE.IcosahedronGeometry(2.5, 0);
+        const pulseMat = new THREE.MeshBasicMaterial({
+          color: 0xa78bfa,
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
           wireframe: true,
           transparent: true,
           opacity: 0.8
         });
         const pulse = new THREE.Mesh(pulseGeo, pulseMat);
         window.domeScene.add(pulse);
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         let scale = 1;
         const expand = () => {
           scale += 0.08;
           pulse.scale.set(scale, scale, scale);
           pulse.material.opacity = Math.max(0, 0.8 - (scale - 1) * 0.25);
+<<<<<<< HEAD
           
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
           if (scale < 4) {
             requestAnimationFrame(expand);
           } else {
@@ -1321,7 +1823,11 @@
         };
         expand();
       }
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       setTimeout(() => {
         document.getElementById('trim-pulse').classList.remove('active');
       }, 1500);
@@ -1329,7 +1835,11 @@
 
     window.connectGeodesic = function() {
       const statusEl = document.getElementById('geo-status');
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       if (state.geodesicWs) {
         state.geodesicWs.close();
         state.geodesicWs = null;
@@ -1338,6 +1848,7 @@
         log('Geodesic WS disconnected');
         return;
       }
+<<<<<<< HEAD
       
       log('Connecting to Geodesic Room...');
       statusEl.textContent = 'Connecting...';
@@ -1346,6 +1857,16 @@
       try {
         const ws = new WebSocket('wss://geodesic-room.trimtab-signal.workers.dev/api/geodesic/default/ws');
         
+=======
+
+      log('Connecting to Geodesic Room...');
+      statusEl.textContent = 'Connecting...';
+      statusEl.style.color = 'var(--lab-butter)';
+
+      try {
+        const ws = new WebSocket('wss://geodesic-room.trimtab-signal.workers.dev/api/geodesic/default/ws');
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         ws.onopen = () => {
           state.geodesicWs = ws;
           statusEl.textContent = 'Connected';
@@ -1353,20 +1874,32 @@
           log('Geodesic WS connected', 'ok');
           ws.send(JSON.stringify({ type: 'hello', client: 'sovereign-lab-v2' }));
         };
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         ws.onmessage = (event) => {
           try {
             const msg = JSON.parse(event.data);
             log(`Geo: ${msg.type}`, 'info');
           } catch {}
         };
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         ws.onerror = () => {
           log('Geodesic WS error', 'error');
           statusEl.textContent = 'Error';
           statusEl.style.color = 'var(--lab-coral)';
         };
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         ws.onclose = () => {
           state.geodesicWs = null;
           statusEl.textContent = 'Closed';
@@ -1388,6 +1921,7 @@
     function initThreeJS() {
       const canvas = document.getElementById('dome-canvas');
       const container = document.getElementById('stage');
+<<<<<<< HEAD
       
       const scene = new THREE.Scene();
       scene.background = new THREE.Color(0x050508);
@@ -1415,6 +1949,35 @@
       pointLight2.position.set(-5, -5, 5);
       scene.add(pointLight2);
       
+=======
+
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x050508);
+      window.domeScene = scene;
+
+      const camera = new THREE.PerspectiveCamera(60, container.clientWidth / container.clientHeight, 0.1, 100);
+      camera.position.set(0, 0, 6);
+
+      const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+      renderer.setSize(container.clientWidth, container.clientHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+      const controls = new OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true;
+      controls.dampingFactor = 0.05;
+
+      const ambientLight = new THREE.AmbientLight(0x404040, 1.5);
+      scene.add(ambientLight);
+
+      const pointLight = new THREE.PointLight(0x4db8a8, 2, 50);
+      pointLight.position.set(5, 5, 5);
+      scene.add(pointLight);
+
+      const pointLight2 = new THREE.PointLight(0xa78bfa, 2, 50);
+      pointLight2.position.set(-5, -5, 5);
+      scene.add(pointLight2);
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       const domeGeo = new THREE.IcosahedronGeometry(2, 1);
       const domeMat = new THREE.MeshStandardMaterial({
         color: 0x1a1f2e,
@@ -1425,7 +1988,11 @@
       });
       const dome = new THREE.Mesh(domeGeo, domeMat);
       scene.add(dome);
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       const wireGeo = new THREE.IcosahedronGeometry(2.02, 1);
       const wireMat = new THREE.MeshBasicMaterial({
         color: 0x4db8a8,
@@ -1435,18 +2002,31 @@
       });
       const wireframe = new THREE.Mesh(wireGeo, wireMat);
       scene.add(wireframe);
+<<<<<<< HEAD
       
       const vertexGeo = new THREE.SphereGeometry(0.08, 16, 16);
       const vertexColors = [0xa78bfa, 0x4db8a8, 0xe8c547, 0xcc6247];
       
       K4_VERTICES.forEach((v, i) => {
         const mat = new THREE.MeshBasicMaterial({ 
+=======
+
+      const vertexGeo = new THREE.SphereGeometry(0.08, 16, 16);
+      const vertexColors = [0xa78bfa, 0x4db8a8, 0xe8c547, 0xcc6247];
+
+      K4_VERTICES.forEach((v, i) => {
+        const mat = new THREE.MeshBasicMaterial({
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
           color: vertexColors[i],
           transparent: true,
           opacity: 0.9
         });
         const sphere = new THREE.Mesh(vertexGeo, mat);
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         const positions = [
           [0, 1.5, 0],
           [1.2, -0.8, 0.8],
@@ -1456,7 +2036,11 @@
         sphere.position.set(...positions[i]);
         scene.add(sphere);
       });
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       const edgePositions = [
         [[0, 1.5, 0], [1.2, -0.8, 0.8]],
         [[0, 1.5, 0], [-1.2, -0.8, 0.8]],
@@ -1465,12 +2049,17 @@
         [[1.2, -0.8, 0.8], [0, -0.8, -1.2]],
         [[-1.2, -0.8, 0.8], [0, -0.8, -1.2]]
       ];
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       edgePositions.forEach(([start, end]) => {
         const geo = new THREE.BufferGeometry().setFromPoints([
           new THREE.Vector3(...start),
           new THREE.Vector3(...end)
         ]);
+<<<<<<< HEAD
         const line = new THREE.Line(geo, new THREE.LineBasicMaterial({ 
           color: 0x4db8a8, transparent: true, opacity: 0.4 
         }));
@@ -1480,11 +2069,23 @@
       function animate() {
         requestAnimationFrame(animate);
         
+=======
+        const line = new THREE.Line(geo, new THREE.LineBasicMaterial({
+          color: 0x4db8a8, transparent: true, opacity: 0.4
+        }));
+        scene.add(line);
+      });
+
+      function animate() {
+        requestAnimationFrame(animate);
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         const speed = state.rotationSpeed * 0.01;
         dome.rotation.y += speed;
         dome.rotation.x += speed * 0.3;
         wireframe.rotation.y += speed;
         wireframe.rotation.x += speed * 0.3;
+<<<<<<< HEAD
         
         const pulse = 1 + Math.sin(Date.now() * 0.001) * state.coherence * 0.05;
         wireframe.scale.set(pulse, pulse, pulse);
@@ -1498,12 +2099,31 @@
         renderer.render(scene, camera);
       }
       
+=======
+
+        const pulse = 1 + Math.sin(Date.now() * 0.001) * state.coherence * 0.05;
+        wireframe.scale.set(pulse, pulse, pulse);
+
+        const hue = 0.45 + state.coherence * 0.1;
+        wireMat.color.setHSL(hue, 0.8, 0.6);
+
+        document.getElementById('hud-coherence').textContent = state.coherence.toFixed(2);
+
+        controls.update();
+        renderer.render(scene, camera);
+      }
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       window.addEventListener('resize', () => {
         camera.aspect = container.clientWidth / container.clientHeight;
         camera.updateProjectionMatrix();
         renderer.setSize(container.clientWidth, container.clientHeight);
       });
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       animate();
     }
 
@@ -1512,12 +2132,20 @@
         state.coherence = parseFloat(e.target.value);
         document.getElementById('val-coherence').textContent = state.coherence.toFixed(2);
       });
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       document.getElementById('slider-voltage').addEventListener('input', (e) => {
         state.voltage = parseFloat(e.target.value);
         document.getElementById('val-voltage').textContent = state.voltage.toFixed(2);
       });
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       document.getElementById('slider-rotation').addEventListener('input', (e) => {
         state.rotationSpeed = parseFloat(e.target.value);
         document.getElementById('val-rotation').textContent = state.rotationSpeed.toFixed(2);
@@ -1526,18 +2154,30 @@
 
     function init() {
       log('Initializing Sovereign Lab v2...');
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       initFleetPanel();
       initK4Panel();
       initThreeJS();
       initControls();
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       setTimeout(() => {
         WORKERS.forEach((w, i) => {
           setTimeout(() => window.probeWorker(w.id), i * 300);
         });
       }, 1500);
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       setTimeout(() => {
         document.getElementById('loading').classList.add('hidden');
         log('Sovereign Lab v2 initialized', 'ok');

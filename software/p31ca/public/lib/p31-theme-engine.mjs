@@ -179,7 +179,11 @@ export const P31_FLUID = {
   flowing: '500ms',
   cinematic: '800ms',
   ambient: '1200ms',
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   easing: {
     linear: 'linear',
     smooth: 'cubic-bezier(0.4, 0, 0.2, 1)',
@@ -198,7 +202,11 @@ export class P31ThemeController {
     this.defaultMode = options.defaultMode || 'default';
     this.autoSync = options.autoSync !== false;
     this.listeners = new Set();
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     this.state = this.loadState();
     this.init();
   }
@@ -257,16 +265,28 @@ export class P31ThemeController {
 
   getEffectiveTheme() {
     let themeId = this.state.theme;
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     // Handle auto appearance
     if (this.state.appearance === 'auto') {
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
       const currentTheme = P31_THEMES[themeId];
+<<<<<<< HEAD
       
       // If current theme doesn't match system preference, find one that does
       if (currentTheme && currentTheme.scheme !== (prefersDark ? 'dark' : 'light')) {
         // Find best matching theme
         const alternatives = Object.values(P31_THEMES).filter(t => 
+=======
+
+      // If current theme doesn't match system preference, find one that does
+      if (currentTheme && currentTheme.scheme !== (prefersDark ? 'dark' : 'light')) {
+        // Find best matching theme
+        const alternatives = Object.values(P31_THEMES).filter(t =>
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
           t.scheme === (prefersDark ? 'dark' : 'light')
         );
         if (alternatives.length > 0) {
@@ -274,7 +294,11 @@ export class P31ThemeController {
         }
       }
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     return P31_THEMES[themeId] || P31_THEMES[this.defaultTheme];
   }
 
@@ -286,7 +310,11 @@ export class P31ThemeController {
     const theme = this.getEffectiveTheme();
     const mode = this.getModeAdjustments();
     const root = document.documentElement;
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     // Apply theme colors with mode adjustments
     Object.entries(theme.colors).forEach(([key, hex]) => {
       const adjusted = this.adjustColor(hex, mode);
@@ -297,7 +325,11 @@ export class P31ThemeController {
     root.setAttribute('data-p31-theme', theme.id);
     root.setAttribute('data-p31-scheme', theme.scheme);
     root.setAttribute('data-p31-mode', this.state.mode);
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     // Apply emphasis colors
     if (theme.emphasis) {
       Object.entries(theme.emphasis).forEach(([role, colorKey]) => {
@@ -510,7 +542,11 @@ export class P31ThemeController {
 // Auto-initialize if in browser
 if (typeof window !== 'undefined') {
   window.p31Theme = new P31ThemeController();
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   // Make available for console debugging
   window.P31ThemeController = P31ThemeController;
   window.P31_THEMES = P31_THEMES;

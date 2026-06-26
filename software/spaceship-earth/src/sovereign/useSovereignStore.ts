@@ -35,7 +35,12 @@
 import { create } from 'zustand';
 import type { SovereignState, SovereignRoom, RelayPeer, RelayStatus } from './types';
 import { SOVEREIGN_ROOMS } from './types';
+<<<<<<< HEAD
 import { audioEngine, generateDID, hashTelemetry, exportLedgerJSON } from '@p31/shared/sovereign';
+=======
+import { audioEngine, hashTelemetry, exportLedgerJSON } from '@p31/shared/sovereign';
+import { boot as bootIdentity } from '../services/genesisIdentity';
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
 import { trackEvent } from '../services/telemetry';
 import { haptic } from '../services/haptic';
 // Refs for timers to prevent race conditions
@@ -163,10 +168,15 @@ export const useSovereignStore = create<SovereignState>((set, get) => ({
   initIdentity: async () => {
     set({ isGeneratingIdentity: true, ucanStatus: 'GENERATING Ed25519 VIA WebCrypto...' });
     try {
+<<<<<<< HEAD
       const didKey = await generateDID();
       setTimeout(() => {
         set({ didKey, ucanStatus: 'DELEGATION GRANTED (SE050 -> BROWSER)', isGeneratingIdentity: false });
       }, 2000);
+=======
+      const didKey = await bootIdentity();
+      set({ didKey, ucanStatus: 'DELEGATION GRANTED (SE050 -> BROWSER)', isGeneratingIdentity: false });
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     } catch {
       set({ ucanStatus: 'ERR: CRYPTO NOT AVAILABLE', isGeneratingIdentity: false });
     }

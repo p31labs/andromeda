@@ -15,7 +15,11 @@ const PALETTE = [
   '#FF00FF', // magenta
   '#BF5FFF', // violet
   '#FFD700', // amber
+<<<<<<< HEAD
   '#00FF88', // mint
+=======
+  'var(--color-phosphor)', // mint
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   '#FF6B6B', // coral
   '#00ccff', // blue
   '#FF00CC', // pink

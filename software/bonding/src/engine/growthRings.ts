@@ -52,13 +52,21 @@ export function getGrowthProfile(dob: Date, now = new Date()): GrowthProfile {
       moduleCreation: isFeatureAvailable('moduleCreation', tier),
       sovereignty: isFeatureAvailable('sovereignty', tier),
   };
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   let language: GrowthProfile['language'] = 'full';
   if (tier === 'seed') language = 'simple';
   else if (tier === 'sprout') language = 'curious';
   else if (tier === 'sapling') language = 'direct';
   else if (tier === 'canopy') language = 'peer';
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   // Simplified for now
   return {
       tier, age, language, features,

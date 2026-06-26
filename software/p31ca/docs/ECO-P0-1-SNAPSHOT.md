@@ -38,6 +38,11 @@ Older runs warned when **`legacy-mvp-hub.html`** **`mvpData`** ids differed from
 
 ## Strict mode
 
+<<<<<<< HEAD
 - **`npm run hub:diff`** — runs **`verify-ground-truth`** then **`diff-index-sources`**  
 - **`--strict-mvp`** on **`diff-index-sources.mjs`** — fail if **`mvpData`** ids are not in **registry** (only meaningful if legacy HTML returns)  
+=======
+- **`npm run hub:diff`** — runs **`verify-ground-truth`** then **`diff-index-sources`**
+- **`--strict-mvp`** on **`diff-index-sources.mjs`** — fail if **`mvpData`** ids are not in **registry** (only meaningful if legacy HTML returns)
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
 - **`--strict`** — treat **`diff-index-sources`** warnings as failure (inline **`coreProducts`** in **`index.astro`**, etc.)

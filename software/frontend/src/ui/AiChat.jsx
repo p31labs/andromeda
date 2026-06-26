@@ -51,8 +51,13 @@ export default function AiChat({ open, onClose }) {
           console.log('Model Route:', chunk);
           setRouteInfo(chunk);
         } else if (chunk.type === 'auth_request') {
+<<<<<<< HEAD
           setMessages(prev => [...prev, { 
             type: 'auth_request', 
+=======
+          setMessages(prev => [...prev, {
+            type: 'auth_request',
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
             nodeId: chunk.nodeId,
             content: `Access required for Sovereign node: ${chunk.nodeId}`
           }]);
@@ -73,6 +78,7 @@ export default function AiChat({ open, onClose }) {
       postMessage({ command: 'showError', data: 'Cognitive Voltage too low for decryption.' });
       return;
     }
+<<<<<<< HEAD
     
     // 2. Trigger the Decryption
     const node = nodes.find(n => n.id === nodeId);
@@ -80,6 +86,15 @@ export default function AiChat({ open, onClose }) {
     
     const plaintext = await decryptNode(node.ciphertext, node.accessControlConditions);
     
+=======
+
+    // 2. Trigger the Decryption
+    const node = nodes.find(n => n.id === nodeId);
+    if (!node || !node.ciphertext) return;
+
+    const plaintext = await decryptNode(node.ciphertext, node.accessControlConditions);
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     if (plaintext) {
       // 3. Send the unlocked content back to the AI Mesh
       postMessage({
@@ -149,7 +164,11 @@ export default function AiChat({ open, onClose }) {
       </div>
 
       {/* --- THE GLASS COCKPIT BADGE --- */}
+<<<<<<< HEAD
       <div 
+=======
+      <div
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         style={{
           padding: '4px 8px',
           fontSize: '10px',

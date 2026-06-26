@@ -1,10 +1,17 @@
 /**
  * @file nodeZeroBridge.ts
  * @brief Web Bluetooth service for Node Zero communication
+<<<<<<< HEAD
  * 
  * P31 Labs - Spaceship Earth - Node Zero Bridge
  * WCD-FW16: Spaceship Earth Client Bridge
  * 
+=======
+ *
+ * P31 Labs - Spaceship Earth - Node Zero Bridge
+ * WCD-FW16: Spaceship Earth Client Bridge
+ *
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
  * Connects to Node Zero via Web Bluetooth and syncs state
  * bidirectionally: SE ↔ Node Zero
  */
@@ -48,7 +55,11 @@ class NodeZeroBridge {
   private device: BluetoothDevice | null = null;
   private server: BluetoothRemoteGATTServer | null = null;
   private service: BluetoothRemoteGATTService | null = null;
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   private coherenceChar: BluetoothRemoteGATTCharacteristic | null = null;
   private spoonsChar: BluetoothRemoteGATTCharacteristic | null = null;
   private roomChar: BluetoothRemoteGATTCharacteristic | null = null;
@@ -57,15 +68,28 @@ class NodeZeroBridge {
   private batteryChar: BluetoothRemoteGATTCharacteristic | null = null;
   private hapticChar: BluetoothRemoteGATTCharacteristic | null = null;
   private didChar: BluetoothRemoteGATTCharacteristic | null = null;
+<<<<<<< HEAD
   
   private onStateChange: StateChangeCallback | null = null;
   private onIMUData: IMUCallback | null = null;
   
+=======
+
+  private onStateChange: StateChangeCallback | null = null;
+  private onIMUData: IMUCallback | null = null;
+  private _notifyHandlers = new Map<BluetoothRemoteGATTCharacteristic, EventListener>();
+  private _disconnectHandler?: EventListener;
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   private _connected = false;
   get connected(): boolean {
     return this._connected;
   }
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   /**
    * Request device connection via Web Bluetooth
    * Includes graceful error handling for unsupported browsers/platforms
@@ -74,17 +98,27 @@ class NodeZeroBridge {
     try {
       // Check if Web Bluetooth is available
       if (!navigator.bluetooth) {
+<<<<<<< HEAD
         return { 
           success: false, 
           error: 'Web Bluetooth is not supported in this browser. Use Chrome or Edge on desktop, or Chrome on Android.' 
         };
       }
       
+=======
+        return {
+          success: false,
+          error: 'Web Bluetooth is not supported in this browser. Use Chrome or Edge on desktop, or Chrome on Android.'
+        };
+      }
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       // Request device with P31 service
       this.device = await navigator.bluetooth.requestDevice({
         filters: [{ name: 'NODE ZERO' }],
         optionalServices: [P31_SERVICE_UUID]
       });
+<<<<<<< HEAD
       
       // Handle disconnect
       this.device.addEventListener('gattserverdisconnected', () => {
@@ -92,11 +126,23 @@ class NodeZeroBridge {
         this.onStateChange?.({ connected: false });
       });
       
+=======
+
+      // Handle disconnect
+      const onDisconnect = () => {
+        this._connected = false;
+        this.onStateChange?.({ connected: false });
+      };
+      this._disconnectHandler = onDisconnect;
+      this.device.addEventListener('gattserverdisconnected', onDisconnect);
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       // Connect to server
       this.server = this.device.gatt!;
       await this.server.connect();
       this._connected = true;
       this.onStateChange?.({ connected: true });
+<<<<<<< HEAD
       
       // Get service
       this.service = await this.server.getPrimaryService(P31_SERVICE_UUID);
@@ -107,12 +153,28 @@ class NodeZeroBridge {
       // Subscribe to notifications
       await this.subscribeToNotifications();
       
+=======
+
+      // Get service
+      this.service = await this.server.getPrimaryService(P31_SERVICE_UUID);
+
+      // Get all characteristics
+      await this.setupCharacteristics();
+
+      // Subscribe to notifications
+      await this.subscribeToNotifications();
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       console.log('[NodeZeroBridge] Connected to NODE ZERO');
       return { success: true };
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       console.error('[NodeZeroBridge] Connection failed:', errorMessage);
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       // Provide specific error messages for common issues
       let userMessage = 'Failed to connect to Node Zero';
       if (errorMessage.includes('Bluetooth')) {
@@ -122,6 +184,7 @@ class NodeZeroBridge {
       } else if (errorMessage.includes('User cancelled') || errorMessage.includes('cancelled')) {
         userMessage = 'Connection cancelled. Please try again.';
       }
+<<<<<<< HEAD
       
       return { success: false, error: userMessage };
     }
@@ -130,6 +193,16 @@ class NodeZeroBridge {
   private async setupCharacteristics(): Promise<void> {
     if (!this.service) return;
     
+=======
+
+      return { success: false, error: userMessage };
+    }
+  }
+
+  private async setupCharacteristics(): Promise<void> {
+    if (!this.service) return;
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     // Get all characteristics
     this.coherenceChar = await this.service.getCharacteristic(CHAR_COHERENCE_UUID);
     this.spoonsChar = await this.service.getCharacteristic(CHAR_SPOONS_UUID);
@@ -140,11 +213,16 @@ class NodeZeroBridge {
     this.hapticChar = await this.service.getCharacteristic(CHAR_HAPTIC_CMD_UUID);
     this.didChar = await this.service.getCharacteristic(CHAR_DID_UUID);
   }
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   private async subscribeToNotifications(): Promise<void> {
     // Subscribe to coherence notifications
     if (this.coherenceChar) {
       await this.coherenceChar.startNotifications();
+<<<<<<< HEAD
       this.coherenceChar.addEventListener('characteristicvaluechanged', (e) => {
         const view = (e.target as BluetoothRemoteGATTCharacteristic).value!;
         const coherence = view.getFloat32(0, true);
@@ -166,10 +244,38 @@ class NodeZeroBridge {
     if (this.roomChar) {
       await this.roomChar.startNotifications();
       this.roomChar.addEventListener('characteristicvaluechanged', (e) => {
+=======
+      const handler = (e: Event) => {
+        const view = (e.target as BluetoothRemoteGATTCharacteristic).value!;
+        const coherence = view.getFloat32(0, true);
+        this.onStateChange?.({ coherence });
+      };
+      this.coherenceChar.addEventListener('characteristicvaluechanged', handler);
+      this._notifyHandlers.set(this.coherenceChar, handler);
+    }
+
+    // Subscribe to spoons notifications
+    if (this.spoonsChar) {
+      await this.spoonsChar.startNotifications();
+      const handler = (e: Event) => {
+        const view = (e.target as BluetoothRemoteGATTCharacteristic).value!;
+        const spoons = view.getUint8(0);
+        this.onStateChange?.({ spoons });
+      };
+      this.spoonsChar.addEventListener('characteristicvaluechanged', handler);
+      this._notifyHandlers.set(this.spoonsChar, handler);
+    }
+
+    // Subscribe to room notifications
+    if (this.roomChar) {
+      await this.roomChar.startNotifications();
+      const handler = (e: Event) => {
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         const view = (e.target as BluetoothRemoteGATTCharacteristic).value!;
         const decoder = new TextDecoder();
         const room = decoder.decode(view).replace(/\0/g, '');
         this.onStateChange?.({ room });
+<<<<<<< HEAD
       });
     }
     
@@ -177,10 +283,22 @@ class NodeZeroBridge {
     if (this.themeChar) {
       await this.themeChar.startNotifications();
       this.themeChar.addEventListener('characteristicvaluechanged', (e) => {
+=======
+      };
+      this.roomChar.addEventListener('characteristicvaluechanged', handler);
+      this._notifyHandlers.set(this.roomChar, handler);
+    }
+
+    // Subscribe to theme notifications
+    if (this.themeChar) {
+      await this.themeChar.startNotifications();
+      const handler = (e: Event) => {
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         const view = (e.target as BluetoothRemoteGATTCharacteristic).value!;
         const decoder = new TextDecoder();
         const theme = decoder.decode(view).replace(/\0/g, '');
         this.onStateChange?.({ theme });
+<<<<<<< HEAD
       });
     }
     
@@ -188,6 +306,17 @@ class NodeZeroBridge {
     if (this.imuChar) {
       await this.imuChar.startNotifications();
       this.imuChar.addEventListener('characteristicvaluechanged', (e) => {
+=======
+      };
+      this.themeChar.addEventListener('characteristicvaluechanged', handler);
+      this._notifyHandlers.set(this.themeChar, handler);
+    }
+
+    // Subscribe to IMU notifications
+    if (this.imuChar) {
+      await this.imuChar.startNotifications();
+      const handler = (e: Event) => {
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         const view = (e.target as BluetoothRemoteGATTCharacteristic).value!;
         const data: IMUData = {
           ax: view.getInt16(0, true),
@@ -198,6 +327,7 @@ class NodeZeroBridge {
           gz: view.getInt16(10, true)
         };
         this.onIMUData?.(data);
+<<<<<<< HEAD
       });
     }
     
@@ -212,6 +342,26 @@ class NodeZeroBridge {
     }
   }
   
+=======
+      };
+      this.imuChar.addEventListener('characteristicvaluechanged', handler);
+      this._notifyHandlers.set(this.imuChar, handler);
+    }
+
+    // Subscribe to battery notifications
+    if (this.batteryChar) {
+      await this.batteryChar.startNotifications();
+      const handler = (e: Event) => {
+        const view = (e.target as BluetoothRemoteGATTCharacteristic).value!;
+        const battery = view.getUint8(0);
+        this.onStateChange?.({ battery });
+      };
+      this.batteryChar.addEventListener('characteristicvaluechanged', handler);
+      this._notifyHandlers.set(this.batteryChar, handler);
+    }
+  }
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   // Write state TO Node Zero:
   async writeCoherence(value: number): Promise<void> {
     if (!this.coherenceChar || !this._connected) return;
@@ -219,37 +369,58 @@ class NodeZeroBridge {
     new DataView(buffer).setFloat32(0, value, true);
     await this.coherenceChar.writeValue(buffer);
   }
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   async writeSpoons(value: number): Promise<void> {
     if (!this.spoonsChar || !this._connected) return;
     const buffer = new ArrayBuffer(1);
     new DataView(buffer).setUint8(0, value);
     await this.spoonsChar.writeValue(buffer);
   }
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   async writeRoom(room: string): Promise<void> {
     if (!this.roomChar || !this._connected) return;
     const encoder = new TextEncoder();
     await this.roomChar.writeValue(encoder.encode(room));
   }
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   async writeTheme(theme: string): Promise<void> {
     if (!this.themeChar || !this._connected) return;
     const encoder = new TextEncoder();
     await this.themeChar.writeValue(encoder.encode(theme));
   }
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   async triggerHaptic(effectId: number): Promise<void> {
     if (!this.hapticChar || !this._connected) return;
     const buffer = new ArrayBuffer(1);
     new DataView(buffer).setUint8(0, effectId);
     await this.hapticChar.writeValue(buffer);
   }
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   // Event handlers
   onStateChanged(callback: StateChangeCallback): void {
     this.onStateChange = callback;
   }
+<<<<<<< HEAD
   
   onIMU(callback: IMUCallback): void {
     this.onIMUData = callback;
@@ -257,6 +428,26 @@ class NodeZeroBridge {
   
   // Disconnect
   async disconnect(): Promise<void> {
+=======
+
+  onIMU(callback: IMUCallback): void {
+    this.onIMUData = callback;
+  }
+
+  // Disconnect
+  async disconnect(): Promise<void> {
+    // Remove all notification listeners
+    for (const [target, handler] of this._notifyHandlers) {
+      target.removeEventListener('characteristicvaluechanged', handler);
+    }
+    this._notifyHandlers.clear();
+
+    if (this.device && this._disconnectHandler) {
+      this.device.removeEventListener('gattserverdisconnected', this._disconnectHandler);
+      this._disconnectHandler = undefined;
+    }
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     if (this.server?.connected) {
       await this.server.disconnect();
     }

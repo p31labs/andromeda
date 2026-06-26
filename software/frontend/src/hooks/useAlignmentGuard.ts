@@ -1,10 +1,17 @@
 /**
  * P31 Alignment Guard Filter
  * ==========================
+<<<<<<< HEAD
  * 
  * Client-side alignment verification for prompt injection attempts.
  * Detects attempts to override immutable rules (Register P).
  * 
+=======
+ *
+ * Client-side alignment verification for prompt injection attempts.
+ * Detects attempts to override immutable rules (Register P).
+ *
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
  * Author: P31 Labs
  * License: MIT
  */
@@ -17,6 +24,7 @@ import { useCallback } from 'react';
 const ALIGNMENT_PATTERNS = [
   // Direct override attempts
   /\b(ignore|forget|bypass|discard|disregard)\b\s+(the\s+)?(previous|prior|original|earlier)\s+(instructions?|rules?|guidelines?|constraints?|context)/gi,
+<<<<<<< HEAD
   
   // Jailbreak patterns
   /\b(jailbreak|escape|override|unlock)\b.*\b(system|safety|guidelines|restrictions)\b/gi,
@@ -33,6 +41,24 @@ const ALIGNMENT_PATTERNS = [
   // Admin/sudo patterns
   /\b(sudo|admin mode|god mode|superuser)\b/gi,
   
+=======
+
+  // Jailbreak patterns
+  /\b(jailbreak|escape|override|unlock)\b.*\b(system|safety|guidelines|restrictions)\b/gi,
+
+  // Role override attempts
+  /\b(you are now|pretend to be|act as if you are|roleplay as)\b/gi,
+
+  // Constraint bypass
+  /\b(disabled?|deactivate|turn off)\b\s+(safety|security|filter|restriction)/gi,
+
+  // "New instructions" override
+  /\b(new instruction|new rule|bypass the|ignore all)\b/gi,
+
+  // Admin/sudo patterns
+  /\b(sudo|admin mode|god mode|superuser)\b/gi,
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   // Override specific P31 rules
   /\b(Kulik Recursive Rulebook|Kids First|register (P|N|U))\b/gi,
 ];
@@ -111,7 +137,11 @@ export function useAlignmentGuard() {
 export function handleAlignmentViolation(_originalText: string): { allowed: boolean; response: string } {
   return {
     allowed: false,
+<<<<<<< HEAD
     response: `I cannot process this request. The message contains instructions to override immutable constraints that are pinned in Register P. 
+=======
+    response: `I cannot process this request. The message contains instructions to override immutable constraints that are pinned in Register P.
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
 
 If you have a legitimate task, please rephrase it without attempting to bypass safety constraints.`
   };

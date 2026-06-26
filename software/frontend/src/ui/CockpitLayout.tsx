@@ -1,6 +1,10 @@
 /**
  * P31 Cockpit Layout — Z-Index Master Contract
+<<<<<<< HEAD
  * 
+=======
+ *
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
  * Vertex 3 (Interface Node) — Z-index layer enforcement
  * Digital equivalent of OS kernel ring privileges
  * Higher Z values always supersede lower Z values
@@ -25,11 +29,19 @@ interface ZLayerProps {
  */
 export function ZLayer({ children, layer, visible = true, className = '' }: ZLayerProps) {
   const zIndex = Z_LAYERS[layer];
+<<<<<<< HEAD
   
   if (!visible) return null;
   
   return (
     <div 
+=======
+
+  if (!visible) return null;
+
+  return (
+    <div
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       className={`z-layer z-layer-${layer.toLowerCase()} ${className}`}
       style={{ zIndex }}
       data-layer={Z_LAYER_NAMES[layer]}
@@ -70,8 +82,13 @@ export function CanvasLayer({ children }: { children?: React.ReactNode }) {
  */
 export function RoomHUDLayer({ children }: { children?: React.ReactNode }) {
   return (
+<<<<<<< HEAD
     <div 
       className="room-hud-layer" 
+=======
+    <div
+      className="room-hud-layer"
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       style={{ zIndex: Z_LAYERS.ROOM_HUD }}
     >
       {children}
@@ -84,8 +101,13 @@ export function RoomHUDLayer({ children }: { children?: React.ReactNode }) {
  */
 export function RouterNavLayer({ children }: { children?: React.ReactNode }) {
   return (
+<<<<<<< HEAD
     <div 
       className="router-nav-layer" 
+=======
+    <div
+      className="router-nav-layer"
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       style={{ zIndex: Z_LAYERS.ROUTER_NAV }}
     >
       {children}
@@ -98,8 +120,13 @@ export function RouterNavLayer({ children }: { children?: React.ReactNode }) {
  */
 export function ToastLayer({ children }: { children?: React.ReactNode }) {
   return (
+<<<<<<< HEAD
     <div 
       className="toast-layer" 
+=======
+    <div
+      className="toast-layer"
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       style={{ zIndex: Z_LAYERS.TOAST }}
     >
       {children}
@@ -112,8 +139,13 @@ export function ToastLayer({ children }: { children?: React.ReactNode }) {
  */
 export function ModalLayer({ children }: { children?: React.ReactNode }) {
   return (
+<<<<<<< HEAD
     <div 
       className="modal-layer" 
+=======
+    <div
+      className="modal-layer"
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       style={{ zIndex: Z_LAYERS.MODAL }}
     >
       {children}
@@ -126,8 +158,13 @@ export function ModalLayer({ children }: { children?: React.ReactNode }) {
  */
 export function CentaurLayer({ children }: { children?: React.ReactNode }) {
   return (
+<<<<<<< HEAD
     <div 
       className="centaur-layer" 
+=======
+    <div
+      className="centaur-layer"
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       style={{ zIndex: Z_LAYERS.CENTAUR }}
     >
       {children}
@@ -140,8 +177,13 @@ export function CentaurLayer({ children }: { children?: React.ReactNode }) {
  */
 export function BootLayer({ children }: { children?: React.ReactNode }) {
   return (
+<<<<<<< HEAD
     <div 
       className="boot-layer" 
+=======
+    <div
+      className="boot-layer"
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       style={{ zIndex: Z_LAYERS.BOOT }}
     >
       {children}
@@ -154,8 +196,13 @@ export function BootLayer({ children }: { children?: React.ReactNode }) {
  */
 export function OnboardingLayer({ children }: { children?: React.ReactNode }) {
   return (
+<<<<<<< HEAD
     <div 
       className="onboarding-layer" 
+=======
+    <div
+      className="onboarding-layer"
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       style={{ zIndex: Z_LAYERS.ONBOARDING }}
     >
       {children}
@@ -210,16 +257,25 @@ export default function CockpitLayout({
   const hasToasts = !!toasts;
   const hasRouterNav = !!routerNav;
   const hasRoomHUD = !!roomHUD;
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   return (
     <div className="cockpit-layout">
       {/* Z-0: Void Starfield */}
       {showVoid && <VoidLayer />}
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       {/* Z-1: Canvas (main content) */}
       <CanvasLayer>
         {children}
       </CanvasLayer>
+<<<<<<< HEAD
       
       {/* Z-10: Room HUD */}
       {hasRoomHUD && <RoomHUDLayer>{roomHUD}</RoomHUDLayer>}
@@ -239,6 +295,27 @@ export default function CockpitLayout({
       {/* Z-100: Boot Screen */}
       {hasBoot && <BootLayer>{boot}</BootLayer>}
       
+=======
+
+      {/* Z-10: Room HUD */}
+      {hasRoomHUD && <RoomHUDLayer>{roomHUD}</RoomHUDLayer>}
+
+      {/* Z-11: Router Nav */}
+      {hasRouterNav && <RouterNavLayer>{routerNav}</RouterNavLayer>}
+
+      {/* Z-50: System Toasts */}
+      {hasToasts && <ToastLayer>{toasts}</ToastLayer>}
+
+      {/* Z-60: Modals */}
+      {hasModals && <ModalLayer>{modals}</ModalLayer>}
+
+      {/* Z-80: Centaur Terminal */}
+      {hasCentaur && <CentaurLayer>{centaur}</CentaurLayer>}
+
+      {/* Z-100: Boot Screen */}
+      {hasBoot && <BootLayer>{boot}</BootLayer>}
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       {/* Z-200: Onboarding */}
       {hasOnboarding && <OnboardingLayer>{onboarding}</OnboardingLayer>}
     </div>
@@ -265,14 +342,22 @@ export function shouldShowLayer(
   activeLayers: Set<keyof typeof Z_LAYERS>
 ): boolean {
   const targetZ = Z_LAYERS[targetLayer];
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   for (const layer of activeLayers) {
     const layerZ = Z_LAYERS[layer];
     if (layerZ > targetZ) {
       return false;
     }
   }
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   return true;
 }
 

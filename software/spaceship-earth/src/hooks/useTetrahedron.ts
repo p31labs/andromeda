@@ -1,6 +1,10 @@
 /**
  * @file useTetrahedron.ts — React hook for tetrahedron state management
+<<<<<<< HEAD
  * 
+=======
+ *
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
  * Manages:
  * - Current tetrahedron data (by scale and id)
  * - Recursive zoom (drilling into sub_tetras)
@@ -31,7 +35,11 @@ export function useTetrahedron(
     depth: 0,
     parentChain: [],
   });
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [transform, setTransform] = useState({
@@ -43,21 +51,37 @@ export function useTetrahedron(
   // Load tetrahedron data on mount and when scale/id changes
   useEffect(() => {
     let cancelled = false;
+<<<<<<< HEAD
     
     const load = async () => {
       setIsLoading(true);
       setError(null);
       
+=======
+
+    const load = async () => {
+      setIsLoading(true);
+      setError(null);
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       try {
         // Initialize loader on first load
         if (!tetraLoader['isInitialized']) {
           await tetraLoader.initialize();
         }
+<<<<<<< HEAD
         
         const data = await tetraLoader.refresh(initialScale, initialId);
         
         if (cancelled) return;
         
+=======
+
+        const data = await tetraLoader.refresh(initialScale, initialId);
+
+        if (cancelled) return;
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         if (data) {
           setViewState({
             data,
@@ -79,9 +103,15 @@ export function useTetrahedron(
         }
       }
     };
+<<<<<<< HEAD
     
     load();
     
+=======
+
+    load();
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     return () => { cancelled = true; };
   }, [initialScale, initialId]);
 
@@ -93,7 +123,11 @@ export function useTetrahedron(
         setViewState(prev => ({ ...prev, data: tetra }));
       }
     });
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     return unsubscribe;
   }, [viewState.id]);
 
@@ -101,11 +135,20 @@ export function useTetrahedron(
   const zoomIntoVertex = useCallback((vertex: TetraVertex) => {
     if (!viewState.data?.sub_tetras?.[vertex.id]) {
       // If children not loaded yet, generate them
+<<<<<<< HEAD
       const children = tetraLoader.generateChildren(viewState.data);
       const childData = children[vertex.id];
       
       if (childData) {
         setViewState(prev => ({
+=======
+      if (viewState.data) {
+        const children = tetraLoader.generateChildren(viewState.data);
+        const childData = children[vertex.id];
+
+        if (childData) {
+          setViewState(prev => ({
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
           ...prev,
           data: childData,
           scale: childData.metadata.scale,
@@ -116,6 +159,10 @@ export function useTetrahedron(
             { id: prev.id, label: prev.data?.metadata.class || prev.id }
           ],
         }));
+<<<<<<< HEAD
+=======
+        }
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       }
     } else {
       // Children already exist
@@ -137,10 +184,17 @@ export function useTetrahedron(
   // Zoom out to parent
   const zoomOut = useCallback(() => {
     if (viewState.parentChain.length === 0) return;
+<<<<<<< HEAD
     
     const newParentChain = [...viewState.parentChain];
     const parent = newParentChain.pop()!;
     
+=======
+
+    const newParentChain = [...viewState.parentChain];
+    const parent = newParentChain.pop()!;
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     // Re-fetch parent data (it might have updated)
     tetraLoader.refresh(parent.id.split('-').pop() || parent.id, viewState.data?.metadata.parent_id || 'personal').then(parentData => {
       if (parentData) {

@@ -19,4 +19,8 @@ export function usePersistence() {
     }, [nodes]);
 
     return { syncStatus };
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

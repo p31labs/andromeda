@@ -6,12 +6,21 @@ export interface ExpandedCheckpoint {
   displayName: string;      // Common name
   category: 'gas' | 'liquid' | 'solid' | 'acid' | 'base' | 'salt' | 'organic' | 'mineral' | 'biological' | 'industrial';
   difficulty: 'seed' | 'sprout' | 'sapling' | 'advanced';
+<<<<<<< HEAD
   atomCount: number;        
   funFacts: {
     simple: string;         
     intermediate: string;   
     scientific: string;     
     research: string;       
+=======
+  atomCount: number;
+  funFacts: {
+    simple: string;
+    intermediate: string;
+    scientific: string;
+    research: string;
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   };
 }
 

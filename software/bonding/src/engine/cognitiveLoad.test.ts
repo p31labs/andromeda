@@ -64,7 +64,11 @@ describe('Cognitive Load Engine', () => {
     expect(inferLoadFromBehavior({ ...baselineMetrics, timeSinceLastAction: 70000 })).toBe(62);
     expect(inferLoadFromBehavior({ ...baselineMetrics, timeSinceLastAction: 130000 })).toBe(55);
   });
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   it('inferLoadFromBehavior errors drop score significantly', () => {
     expect(inferLoadFromBehavior({ ...baselineMetrics, errorsInLastMinute: 2 })).toBe(50);
   });
@@ -77,7 +81,11 @@ describe('Cognitive Load Engine', () => {
   it('inferLoadFromBehavior momentum boosts score', () => {
     expect(inferLoadFromBehavior({ ...baselineMetrics, moleculesCompleted: 4 })).toBe(80);
   });
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   it('inferLoadFromBehavior never returns below 0', () => {
     const extremeMetrics = { timeSinceLastAction: 200000, errorsInLastMinute: 10, sessionDuration: 8000000, timeOfDay: 23, moleculesCompleted: 0 };
     expect(inferLoadFromBehavior(extremeMetrics)).toBe(0);

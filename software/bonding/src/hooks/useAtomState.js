@@ -17,7 +17,11 @@ export const useAtomState = () => {
   const removeAtom = useCallback((atomId) => {
     setAtoms(prev => prev.filter(atom => atom.id !== atomId));
     // Remove any molecules that contained this atom
+<<<<<<< HEAD
     setMolecules(prev => prev.filter(molecule => 
+=======
+    setMolecules(prev => prev.filter(molecule =>
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       !molecule.atoms.includes(atomId)
     ));
   }, []);
@@ -53,7 +57,11 @@ export const useAtomState = () => {
 
   const calculateMoleculeStability = (atomIds) => {
     const atomElements = atoms.filter(atom => atomIds.includes(atom.id)).map(atom => atom.element);
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     // Simple stability rules
     if (atomElements.includes('C') && atomElements.includes('H')) {
       return 'High';
@@ -73,12 +81,21 @@ export const useAtomState = () => {
   const canFormBond = useCallback((atom1Id, atom2Id) => {
     const atom1 = atoms.find(a => a.id === atom1Id);
     const atom2 = atoms.find(a => a.id === atom2Id);
+<<<<<<< HEAD
     
     if (!atom1 || !atom2) return false;
     
     const atom1Available = atom1.valence - atom1.bonds.length;
     const atom2Available = atom2.valence - atom2.bonds.length;
     
+=======
+
+    if (!atom1 || !atom2) return false;
+
+    const atom1Available = atom1.valence - atom1.bonds.length;
+    const atom2Available = atom2.valence - atom2.bonds.length;
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     return atom1Available > 0 && atom2Available > 0;
   }, [atoms]);
 
@@ -92,4 +109,8 @@ export const useAtomState = () => {
     getAvailableBonds,
     canFormBond
   };
+<<<<<<< HEAD
 };
+=======
+};
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

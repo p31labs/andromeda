@@ -99,7 +99,11 @@ export const POSNER_PRISM_SVG = `<svg viewBox="0 0 100 100" xmlns="http://www.w3
   </g>
   <!-- Centroid: coral outer, white inner -->
   <circle cx="50" cy="50" r="5" fill="#f43f5e" filter="url(#prismGlow)"/>
+<<<<<<< HEAD
   <circle cx="50" cy="50" r="2" fill="#ffffff"/>
+=======
+  <circle cx="50" cy="50" r="2" fill="var(--color-surface)"/>
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
 </svg>`;
 
 // ─── 3. QUANTUM FLUCTUATION LOADER ───────────────────────────────────────────

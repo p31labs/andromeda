@@ -360,4 +360,8 @@ export async function estimateCalciumLevel(
   const calcitriolBoost = calcitriolCount * 0.5;
 
   return Math.max(7.0, lastReading - baselineDrop + calcitriolBoost);
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

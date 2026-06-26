@@ -77,7 +77,11 @@
       font-weight: 600;
       margin-bottom: 4px;
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     .budget-row {
       display: grid;
       grid-template-columns: 1fr 100px 100px 80px;
@@ -117,7 +121,11 @@
     import { renderShell, code, callout } from '/stylebook/_chrome.js';
     import { P31ThemeController } from '/lib/p31-theme-engine.mjs';
     window.p31Theme = new P31ThemeController({ defaultTheme: 'hub' });
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     const content = `
       <section class="sb-section">
         <div class="sb-section-header">
@@ -126,7 +134,11 @@
           <p class="sb-text">Google's user-experience yardsticks. Every public P31 page must hit
           "Good" on all four — measured against real users on the median connection.</p>
         </div>
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         <div class="vital-grid">
           <div class="vital-card">
             <div class="vital-name">Largest Contentful Paint</div>
@@ -150,7 +162,11 @@
               </div>
             </div>
           </div>
+<<<<<<< HEAD
           
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
           <div class="vital-card">
             <div class="vital-name">Interaction to Next Paint</div>
             <div class="vital-acronym">INP · responsiveness to input</div>
@@ -173,7 +189,11 @@
               </div>
             </div>
           </div>
+<<<<<<< HEAD
           
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
           <div class="vital-card">
             <div class="vital-name">Cumulative Layout Shift</div>
             <div class="vital-acronym">CLS · visual stability</div>
@@ -196,7 +216,11 @@
               </div>
             </div>
           </div>
+<<<<<<< HEAD
           
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
           <div class="vital-card">
             <div class="vital-name">First Contentful Paint</div>
             <div class="vital-acronym">FCP · first byte visible</div>
@@ -221,7 +245,11 @@
           </div>
         </div>
       </section>
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">Asset budgets</div>
@@ -229,7 +257,11 @@
           <p class="sb-text">Every page on a P31 surface stays under these budgets.
           Going over is not "we'll fix it later" — the build fails.</p>
         </div>
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         <div class="budget-row header">
           <div>Resource</div>
           <div style="text-align:right;">Budget</div>
@@ -284,22 +316,35 @@
           <div class="budget-value">~400</div>
           <div style="text-align:center;"><span class="budget-status under">UNDER</span></div>
         </div>
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         <p style="font-size: 12px; color: var(--p31-muted); margin-top: 12px;">
           * P31 prefers Unicode glyphs and SVG primitives over raster images. When images appear, they're WebP/AVIF.
         </p>
       </section>
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">Loading strategy</div>
           <h2 class="sb-h2">Critical path discipline</h2>
         </div>
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         ${code(`<head>
   <!-- 1. Preconnect to font origins (DNS + TLS warmup) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<<<<<<< HEAD
   
   <!-- 2. Preload the most critical asset (LCP) -->
   <link rel="preload" href="/p31-style.css" as="style">
@@ -311,11 +356,25 @@
   <!-- 4. Critical CSS (theme tokens) inline or top -->
   <link rel="stylesheet" href="/p31-style.css">
   
+=======
+
+  <!-- 2. Preload the most critical asset (LCP) -->
+  <link rel="preload" href="/p31-style.css" as="style">
+
+  <!-- 3. Async fonts so they don't block render -->
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible..."
+        rel="stylesheet" media="print" onload="this.media='all'">
+
+  <!-- 4. Critical CSS (theme tokens) inline or top -->
+  <link rel="stylesheet" href="/p31-style.css">
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   <!-- 5. Component CSS after tokens -->
   <link rel="stylesheet" href="/lib/p31-fluid.css">
 </head>
 <body>
   <!-- 6. Content first, scripts last -->
+<<<<<<< HEAD
   
   <!-- 7. JS modules at body end (defer by default) -->
   <script type="module" src="/lib/p31-theme-engine.mjs"><\/script>
@@ -328,12 +387,30 @@
         ${callout('info', 'Width &amp; height on every image', 'Always set <code>width</code> and <code>height</code> on <code>&lt;img&gt;</code>. Even with CSS scaling, the attributes prevent Cumulative Layout Shift when the image loads.')}
       </section>
       
+=======
+
+  <!-- 7. JS modules at body end (defer by default) -->
+  <script type="module" src="/lib/p31-theme-engine.mjs"><\/script>
+
+  <!-- 8. Heavy below-the-fold images: lazy load -->
+  <img src="hero.webp" alt="..." loading="lazy" decoding="async"
+       width="800" height="600">
+</body>`, 'html', 'Critical path')}
+
+        ${callout('info', 'Width &amp; height on every image', 'Always set <code>width</code> and <code>height</code> on <code>&lt;img&gt;</code>. Even with CSS scaling, the attributes prevent Cumulative Layout Shift when the image loads.')}
+      </section>
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">Image strategy</div>
           <h2 class="sb-h2">Format hierarchy</h2>
         </div>
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         <table class="sb-table">
           <thead><tr><th>Use case</th><th>Format</th><th>Why</th></tr></thead>
           <tbody>
@@ -345,7 +422,11 @@
             <tr><td>OG / social cards</td><td>PNG 1200×630</td><td>Universal compatibility, no format negotiation</td></tr>
           </tbody>
         </table>
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         ${code(`<!-- Modern format with fallback chain -->
 <picture>
   <source srcset="hero.avif" type="image/avif">
@@ -355,13 +436,21 @@
        loading="lazy" decoding="async">
 </picture>`, 'html', 'Modern image')}
       </section>
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">Caching</div>
           <h2 class="sb-h2">Cache-Control headers</h2>
         </div>
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         <table class="sb-table">
           <thead><tr><th>Asset type</th><th>Cache-Control</th></tr></thead>
           <tbody>
@@ -375,13 +464,21 @@
           </tbody>
         </table>
       </section>
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">Measurement</div>
           <h2 class="sb-h2">How we know</h2>
         </div>
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         <table class="sb-table">
           <thead><tr><th>Tool</th><th>What it tells you</th></tr></thead>
           <tbody>
@@ -393,11 +490,19 @@
             <tr><td>Bundle visualizer</td><td>What blew up the JS budget last week</td></tr>
           </tbody>
         </table>
+<<<<<<< HEAD
         
         ${callout('warn', 'Real users, not synthetic', 'Lighthouse on a fast machine paints a rosy picture. Real users on Chromebooks on flaky 4G are the ground truth — that\'s what CrUX measures.')}
       </section>
     `;
     
+=======
+
+        ${callout('warn', 'Real users, not synthetic', 'Lighthouse on a fast machine paints a rosy picture. Real users on Chromebooks on flaky 4G are the ground truth — that\'s what CrUX measures.')}
+      </section>
+    `;
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     renderShell({
       activeId: 'performance',
       breadcrumb: [

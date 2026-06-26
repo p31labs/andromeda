@@ -27,7 +27,11 @@ export const MeshAdminDashboard = ({ userId }) => {
   const [logs, setLogs] = useState([]);
   const [selectedConversation, setSelectedConversation] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   const ws = useWebSocket();
 
   // Fetch metrics on interval
@@ -72,10 +76,17 @@ export const MeshAdminDashboard = ({ userId }) => {
 
   const fetchConversations = async (query = '') => {
     try {
+<<<<<<< HEAD
       const url = query 
         ? `/api/admin/conversations?search=${encodeURIComponent(query)}`
         : '/api/admin/conversations';
       
+=======
+      const url = query
+        ? `/api/admin/conversations?search=${encodeURIComponent(query)}`
+        : '/api/admin/conversations';
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       const response = await fetch(url);
       if (response.ok) {
         const data = await response.json();
@@ -187,7 +198,11 @@ export const MeshAdminDashboard = ({ userId }) => {
 
   const getHealthColor = (status) => {
     switch (status) {
+<<<<<<< HEAD
       case 'healthy': return '#4db8a8';
+=======
+      case 'healthy': return 'var(--color-cyan)';
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       case 'degraded': return '#ffd700';
       case 'unhealthy': return '#e8863a';
       default: return '#666';
@@ -204,31 +219,51 @@ export const MeshAdminDashboard = ({ userId }) => {
       </div>
 
       <div className="admin-tabs">
+<<<<<<< HEAD
         <button 
+=======
+        <button
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
           className={`tab ${activeTab === 'overview' ? 'active' : ''}`}
           onClick={() => setActiveTab('overview')}
         >
           Overview
         </button>
+<<<<<<< HEAD
         <button 
+=======
+        <button
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
           className={`tab ${activeTab === 'conversations' ? 'active' : ''}`}
           onClick={() => { setActiveTab('conversations'); fetchConversations(); }}
         >
           Conversations
         </button>
+<<<<<<< HEAD
         <button 
+=======
+        <button
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
           className={`tab ${activeTab === 'members' ? 'active' : ''}`}
           onClick={() => { setActiveTab('members'); fetchMembers(); }}
         >
           Family Members
         </button>
+<<<<<<< HEAD
         <button 
+=======
+        <button
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
           className={`tab ${activeTab === 'health' ? 'active' : ''}`}
           onClick={() => { setActiveTab('health'); fetchSystemHealth(); }}
         >
           System Health
         </button>
+<<<<<<< HEAD
         <button 
+=======
+        <button
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
           className={`tab ${activeTab === 'logs' ? 'active' : ''}`}
           onClick={() => { setActiveTab('logs'); fetchLogs(); }}
         >
@@ -238,7 +273,11 @@ export const MeshAdminDashboard = ({ userId }) => {
 
       <div className="admin-content">
         {activeTab === 'overview' && (
+<<<<<<< HEAD
           <OverviewTab 
+=======
+          <OverviewTab
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
             metrics={metrics}
             conversations={conversations}
             members={members}
@@ -247,7 +286,11 @@ export const MeshAdminDashboard = ({ userId }) => {
         )}
 
         {activeTab === 'conversations' && (
+<<<<<<< HEAD
           <ConversationsTab 
+=======
+          <ConversationsTab
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
             conversations={conversations}
             onSearch={setSearchQuery}
             onMute={muteConversation}
@@ -258,14 +301,22 @@ export const MeshAdminDashboard = ({ userId }) => {
         )}
 
         {activeTab === 'members' && (
+<<<<<<< HEAD
           <MembersTab 
+=======
+          <MembersTab
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
             members={members}
             onBlock={blockMember}
           />
         )}
 
         {activeTab === 'health' && (
+<<<<<<< HEAD
           <HealthTab 
+=======
+          <HealthTab
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
             health={systemHealth}
             metrics={metrics}
           />
@@ -311,7 +362,11 @@ export const MeshAdminDashboard = ({ userId }) => {
         <div className="overview-sections">
           <div className="recent-conversations">
             <h3>Recent Conversations</h3>
+<<<<<<< HEAD
             <ConversationsTable 
+=======
+            <ConversationsTable
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
               conversations={conversations.slice(0, 10)}
               onMute={muteConversation}
               onExport={exportConversation}
@@ -343,7 +398,11 @@ export const MeshAdminDashboard = ({ userId }) => {
   function ConversationsTab({ conversations, onMute, onExport, onSelect, selected }) {
     const [localSearch, setLocalSearch] = useState('');
 
+<<<<<<< HEAD
     const filtered = conversations.filter(c => 
+=======
+    const filtered = conversations.filter(c =>
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       c.name?.toLowerCase().includes(localSearch.toLowerCase()) ||
       c.participants?.some(p => p.toLowerCase().includes(localSearch.toLowerCase()))
     );
@@ -374,8 +433,13 @@ export const MeshAdminDashboard = ({ userId }) => {
             </thead>
             <tbody>
               {filtered.map(conv => (
+<<<<<<< HEAD
                 <tr 
                   key={conv.id} 
+=======
+                <tr
+                  key={conv.id}
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
                   className={selected === conv.id ? 'selected' : ''}
                   onClick={() => onSelect(conv.id)}
                 >
@@ -398,13 +462,21 @@ export const MeshAdminDashboard = ({ userId }) => {
                     </span>
                   </td>
                   <td>
+<<<<<<< HEAD
                     <button 
+=======
+                    <button
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
                       className="btn btn-sm"
                       onClick={(e) => { e.stopPropagation(); onMute(conv.id); }}
                     >
                       {conv.muted ? 'Unmute' : 'Mute'}
                     </button>
+<<<<<<< HEAD
                     <button 
+=======
+                    <button
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
                       className="btn btn-sm btn-secondary"
                       onClick={(e) => { e.stopPropagation(); onExport(conv.id); }}
                     >
@@ -465,7 +537,11 @@ export const MeshAdminDashboard = ({ userId }) => {
                 {member.email && <div className="member-email">{member.email}</div>}
               </div>
               <div className="member-actions">
+<<<<<<< HEAD
                 <button 
+=======
+                <button
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
                   className={`btn btn-sm ${member.status === 'blocked' ? 'btn-unblock' : 'btn-block'}`}
                   onClick={() => onBlock(member.id)}
                 >
@@ -485,7 +561,11 @@ export const MeshAdminDashboard = ({ userId }) => {
         <div className="health-cards">
           <div className="health-card">
             <div className="card-title">K4-Cage Worker</div>
+<<<<<<< HEAD
             <div 
+=======
+            <div
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
               className="health-indicator"
               style={{ color: getHealthColor(health.worker) }}
             >
@@ -494,7 +574,11 @@ export const MeshAdminDashboard = ({ userId }) => {
           </div>
           <div className="health-card">
             <div className="card-title">D1 Database</div>
+<<<<<<< HEAD
             <div 
+=======
+            <div
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
               className="health-indicator"
               style={{ color: getHealthColor(health.d1) }}
             >
@@ -503,7 +587,11 @@ export const MeshAdminDashboard = ({ userId }) => {
           </div>
           <div className="health-card">
             <div className="card-title">KV Storage</div>
+<<<<<<< HEAD
             <div 
+=======
+            <div
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
               className="health-indicator"
               style={{ color: getHealthColor(health.kv) }}
             >
@@ -512,7 +600,11 @@ export const MeshAdminDashboard = ({ userId }) => {
           </div>
           <div className="health-card">
             <div className="card-title">WebSocket</div>
+<<<<<<< HEAD
             <div 
+=======
+            <div
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
               className="health-indicator"
               style={{ color: getHealthColor(health.websocket) }}
             >
@@ -558,7 +650,11 @@ export const MeshAdminDashboard = ({ userId }) => {
       switch (level) {
         case 'error': return '#e8863a';
         case 'warn': return '#ffd700';
+<<<<<<< HEAD
         case 'info': return '#4db8a8';
+=======
+        case 'info': return 'var(--color-cyan)';
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         default: return '#666';
       }
     };
@@ -566,7 +662,11 @@ export const MeshAdminDashboard = ({ userId }) => {
     return (
       <div className="logs-tab">
         <div className="tab-header">
+<<<<<<< HEAD
           <select 
+=======
+          <select
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
             value={levelFilter}
             onChange={(e) => setLevelFilter(e.target.value)}
             className="level-filter"
@@ -582,7 +682,11 @@ export const MeshAdminDashboard = ({ userId }) => {
           {filtered.slice(0, 100).map((log, i) => (
             <div key={i} className="log-entry">
               <span className="log-time">{formatTime(log.timestamp)}</span>
+<<<<<<< HEAD
               <span 
+=======
+              <span
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
                 className="log-level"
                 style={{ color: getLogColor(log.level) }}
               >

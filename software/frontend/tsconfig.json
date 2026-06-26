@@ -20,7 +20,11 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     /* Additional strict checks */
     "noImplicitAny": true,
     "noImplicitReturns": true,
@@ -28,10 +32,17 @@
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,
     "noUncheckedIndexedAccess": true,
+<<<<<<< HEAD
     
     /* WebGPU & React types */
     "types": ["@webgpu/types", "@types/node", "@types/react", "@types/react-dom"],
     
+=======
+
+    /* WebGPU & React types */
+    "types": ["@webgpu/types", "@types/node", "@types/react", "@types/react-dom"],
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     /* Path mapping */
     "baseUrl": ".",
     "paths": {

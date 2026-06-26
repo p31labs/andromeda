@@ -1,15 +1,26 @@
 /**
  * @file ProofOfCare.tsx — PoC Dashboard HUD Component
+<<<<<<< HEAD
  * 
+=======
+ *
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
  * Visualizes Proof of Care (PoC) metrics:
  * - Care Score calculation
  * - Green Coherence multiplier
  * - Growth Ring phase
  * - Proximity + Task breakdown
+<<<<<<< HEAD
  * 
  * CWP-JITTERBUG-12: Proof of Care (PoC) UI Engine
  */
 import { useState, useEffect, useMemo } from 'react';
+=======
+ *
+ * CWP-JITTERBUG-12: Proof of Care (PoC) UI Engine
+ */
+import { useState, useEffect, useMemo, useRef } from 'react';
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
 import { useSovereignStore } from '../../sovereign/useSovereignStore';
 import { haptic } from '../../services/haptic';
 import {
@@ -27,6 +38,13 @@ interface ProofOfCareProps {
 export function ProofOfCare({ userAge = 25 }: ProofOfCareProps) {
   const [pocState, setPocState] = useState<PoCState>(createEmptyPoCState);
   const [isExpanded, setIsExpanded] = useState(false);
+<<<<<<< HEAD
+=======
+  const pocStateRef = useRef<PoCState | null>(null);
+
+  // Keep ref in sync with latest state
+  pocStateRef.current = pocState;
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
 
   // Subscribe to somatic tether data from sovereign store
   const somaticHrv = useSovereignStore((s) => s.somaticHrv);
@@ -38,17 +56,31 @@ export function ProofOfCare({ userAge = 25 }: ProofOfCareProps) {
   // Update PoC state when biometric data changes
   useEffect(() => {
     const updatedState: PoCState = {
+<<<<<<< HEAD
       ...pocState,
+=======
+      ...(pocStateRef.current ?? pocState),
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       currentHRV: somaticHrv || 35,
       currentHR: somaticHr || 68,
       respirationRate: simulatedRespiration,
     };
+<<<<<<< HEAD
     
     const calculated = calculateCareScore(updatedState);
     setPocState(calculated);
     
     // Trigger haptic on green coherence (0.1 Hz)
     const wasCoherent = Math.abs(pocState.respirationRate - 6) <= 0.5;
+=======
+
+    const calculated = calculateCareScore(updatedState);
+    setPocState(calculated);
+
+    // Trigger haptic on green coherence (0.1 Hz)
+    const prior = pocStateRef.current!;
+    const wasCoherent = Math.abs(prior.respirationRate - 6) <= 0.5;
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     const isCoherent = Math.abs(calculated.respirationRate - 6) <= 0.5;
     if (isCoherent && !wasCoherent) {
       haptic.coherence();
@@ -62,8 +94,13 @@ export function ProofOfCare({ userAge = 25 }: ProofOfCareProps) {
   // Color by ring phase
   const ringColors = {
     trust: '#888888',
+<<<<<<< HEAD
     apprenticeship: '#cda852',
     sovereignty: '#4db8a8',
+=======
+    apprenticeship: 'var(--color-amber)',
+    sovereignty: 'var(--color-cyan)',
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   };
   const ringColor = ringColors[growthRing];
 
@@ -76,7 +113,11 @@ export function ProofOfCare({ userAge = 25 }: ProofOfCareProps) {
         zIndex: 100,
         fontFamily: 'monospace',
         fontSize: '12px',
+<<<<<<< HEAD
         color: '#4db8a8',
+=======
+        color: 'var(--color-cyan)',
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         background: 'rgba(5, 5, 11, 0.85)',
         border: `1px solid ${ringColor}40`,
         borderRadius: '8px',
@@ -136,19 +177,31 @@ export function ProofOfCare({ userAge = 25 }: ProofOfCareProps) {
       {/* Expanded Details */}
       {isExpanded && (
         <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px solid rgba(77, 184, 168, 0.15)' }}>
+<<<<<<< HEAD
           
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
           {/* Proximity Score */}
           <div style={{ marginBottom: '8px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '2px' }}>
               <span style={{ color: '#888', fontSize: '10px' }}>T<sub>prox</sub> (Proximity)</span>
+<<<<<<< HEAD
               <span style={{ color: '#4db8a8', fontSize: '10px' }}>{pocState.proximityScore.toFixed(2)}</span>
+=======
+              <span style={{ color: 'var(--color-cyan)', fontSize: '10px' }}>{pocState.proximityScore.toFixed(2)}</span>
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
             </div>
             <div style={{ height: '4px', background: '#222', borderRadius: '2px', overflow: 'hidden' }}>
               <div
                 style={{
                   width: `${pocState.proximityScore * 100}%`,
                   height: '100%',
+<<<<<<< HEAD
                   background: 'linear-gradient(90deg, #4db8a8, #cda852)',
+=======
+                  background: 'linear-gradient(90deg, var(--color-cyan), var(--color-amber))',
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
                   transition: 'width 0.3s ease',
                 }}
               />
@@ -159,7 +212,11 @@ export function ProofOfCare({ userAge = 25 }: ProofOfCareProps) {
           <div style={{ marginBottom: '8px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '2px' }}>
               <span style={{ color: '#888', fontSize: '10px' }}>Green Coherence</span>
+<<<<<<< HEAD
               <span style={{ color: pocState.greenCoherenceMultiplier > 1.4 ? '#cda852' : '#666', fontSize: '10px' }}>
+=======
+              <span style={{ color: pocState.greenCoherenceMultiplier > 1.4 ? 'var(--color-amber)' : '#666', fontSize: '10px' }}>
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
                 ×{pocState.greenCoherenceMultiplier.toFixed(2)}
               </span>
             </div>
@@ -168,7 +225,11 @@ export function ProofOfCare({ userAge = 25 }: ProofOfCareProps) {
                 style={{
                   width: `${((pocState.greenCoherenceMultiplier - 1) / 1.5) * 100}%`,
                   height: '100%',
+<<<<<<< HEAD
                   background: pocState.greenCoherenceMultiplier > 1.4 ? '#cda852' : '#4db8a8',
+=======
+                  background: pocState.greenCoherenceMultiplier > 1.4 ? 'var(--color-amber)' : 'var(--color-cyan)',
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
                   transition: 'width 0.3s ease',
                 }}
               />
@@ -179,7 +240,11 @@ export function ProofOfCare({ userAge = 25 }: ProofOfCareProps) {
           <div style={{ marginBottom: '8px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '2px' }}>
               <span style={{ color: '#888', fontSize: '10px' }}>Tasks Verified</span>
+<<<<<<< HEAD
               <span style={{ color: '#4db8a8', fontSize: '10px' }}>{pocState.taskScore}</span>
+=======
+              <span style={{ color: 'var(--color-cyan)', fontSize: '10px' }}>{pocState.taskScore}</span>
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
             </div>
           </div>
 
@@ -189,6 +254,7 @@ export function ProofOfCare({ userAge = 25 }: ProofOfCareProps) {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '4px', fontSize: '10px' }}>
               <div>
                 <span style={{ color: '#666' }}>HRV: </span>
+<<<<<<< HEAD
                 <span style={{ color: '#4db8a8' }}>{pocState.currentHRV}ms</span>
               </div>
               <div>
@@ -198,6 +264,17 @@ export function ProofOfCare({ userAge = 25 }: ProofOfCareProps) {
               <div>
                 <span style={{ color: '#666' }}>Resp: </span>
                 <span style={{ color: '#4db8a8' }}>{pocState.respirationRate.toFixed(1)}/min</span>
+=======
+                <span style={{ color: 'var(--color-cyan)' }}>{pocState.currentHRV}ms</span>
+              </div>
+              <div>
+                <span style={{ color: '#666' }}>HR: </span>
+                <span style={{ color: 'var(--color-cyan)' }}>{pocState.currentHR}bpm</span>
+              </div>
+              <div>
+                <span style={{ color: '#666' }}>Resp: </span>
+                <span style={{ color: 'var(--color-cyan)' }}>{pocState.respirationRate.toFixed(1)}/min</span>
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
               </div>
             </div>
           </div>
@@ -207,7 +284,11 @@ export function ProofOfCare({ userAge = 25 }: ProofOfCareProps) {
             <span
               style={{
                 fontSize: '9px',
+<<<<<<< HEAD
                 color: Math.abs(pocState.respirationRate - 6) <= 0.5 ? '#cda852' : '#555',
+=======
+                color: Math.abs(pocState.respirationRate - 6) <= 0.5 ? 'var(--color-amber)' : '#555',
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
                 background: Math.abs(pocState.respirationRate - 6) <= 0.5 ? 'rgba(205, 168, 82, 0.1)' : 'transparent',
                 padding: '2px 6px',
                 borderRadius: '3px',
@@ -221,4 +302,8 @@ export function ProofOfCare({ userAge = 25 }: ProofOfCareProps) {
       )}
     </div>
   );
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

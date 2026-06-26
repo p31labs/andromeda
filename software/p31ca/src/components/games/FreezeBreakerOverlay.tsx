@@ -144,7 +144,11 @@ export function FreezeBreakerOverlay({ onComplete, thresholdTime = 3 }: FreezeBr
           }}
         />
       </div>
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       {/* Central instruction */}
       <div className="relative z-10 text-center">
         <p className="text-p31-cyan text-2xl font-bold mb-2">HOLD SPACE</p>
@@ -162,4 +166,8 @@ export function FreezeBreakerOverlay({ onComplete, thresholdTime = 3 }: FreezeBr
   );
 }
 
+<<<<<<< HEAD
 export default FreezeBreakerOverlay;
+=======
+export default FreezeBreakerOverlay;
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

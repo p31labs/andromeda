@@ -87,7 +87,11 @@ describe("StateEngine", () => {
     });
 
     it("should rate-limit to one broadcast per MIN_INTERVAL", async () => {
+<<<<<<< HEAD
       // TODO
+=======
+      // TODO: test body
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     });
   });
 

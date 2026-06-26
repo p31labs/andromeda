@@ -27,7 +27,11 @@ export class PerformanceMonitor {
   private _lastFrameTime = 0; // Track last frame delta for smoothness calculation (reserved for future use)
   private frameCount = 0;
   private particleCount = 0;
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   // Track performance level transitions for event dispatching
   private currentLevel: PerformanceLevel = 'high';
   private lowFpsStartTime: number | null = null;
@@ -57,7 +61,11 @@ export class PerformanceMonitor {
 
   private sample(): void {
     const now = performance.now();
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     // Calculate FPS from frame times
     const avgFrameTime = this.frameTimes.reduce((a, b) => a + b, 0) / this.frameTimes.length;
     const fps = 1000 / avgFrameTime;
@@ -115,6 +123,7 @@ export class PerformanceMonitor {
 
     if (newLevel !== this.currentLevel) {
       this.currentLevel = newLevel;
+<<<<<<< HEAD
       
       // Dispatch event for quality settings dialog
       if (newLevel === 'low') {
@@ -122,6 +131,15 @@ export class PerformanceMonitor {
         
         // Check for critical (sustained low)
         if (this.lowFpsStartTime && 
+=======
+
+      // Dispatch event for quality settings dialog
+      if (newLevel === 'low') {
+        window.dispatchEvent(new CustomEvent('p31:perf:low'));
+
+        // Check for critical (sustained low)
+        if (this.lowFpsStartTime &&
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
             performance.now() - this.lowFpsStartTime >= 10000) {
           window.dispatchEvent(new CustomEvent('p31:perf:critical'));
         }

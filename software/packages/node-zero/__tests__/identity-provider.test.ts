@@ -16,6 +16,7 @@ describe("IdentityProvider", () => {
     });
 
     it("should emit IDENTITY_PROVISIONED event on success", async () => {
+<<<<<<< HEAD
       // TODO
     });
 
@@ -29,12 +30,31 @@ describe("IdentityProvider", () => {
 
     it("should set keySequence to 0 for initial key", async () => {
       // TODO
+=======
+      // TODO: test body
+    });
+
+    it("should throw SECURITY_ERROR when overwriting an active identity", async () => {
+      // TODO: test body
+    });
+
+    it("should set identity status to 'active'", async () => {
+      // TODO: test body
+    });
+
+    it("should set keySequence to 0 for initial key", async () => {
+      // TODO: test body
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     });
   });
 
   describe("sign()", () => {
     it("should produce a 64-byte ECDSA signature", async () => {
+<<<<<<< HEAD
       // TODO
+=======
+      // TODO: test body
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     });
 
     it("should throw NOT_PROVISIONED if no identity exists", async () => {
@@ -49,6 +69,7 @@ describe("IdentityProvider", () => {
 
   describe("verify()", () => {
     it("should return true for a valid signature", async () => {
+<<<<<<< HEAD
       // TODO
     });
 
@@ -58,12 +79,27 @@ describe("IdentityProvider", () => {
 
     it("should work with compressed public keys (33 bytes)", async () => {
       // TODO
+=======
+      // TODO: test body
+    });
+
+    it("should return false for an invalid signature", async () => {
+      // TODO: test body
+    });
+
+    it("should work with compressed public keys (33 bytes)", async () => {
+      // TODO: test body
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     });
   });
 
   describe("exportPublicKey()", () => {
     it("should return the full NodeZeroIdentity object", async () => {
+<<<<<<< HEAD
       // TODO
+=======
+      // TODO: test body
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     });
 
     it("should throw NOT_PROVISIONED if no identity exists", async () => {
@@ -71,17 +107,29 @@ describe("IdentityProvider", () => {
     });
 
     it("should include hardware provider metadata", async () => {
+<<<<<<< HEAD
       // TODO
+=======
+      // TODO: test body
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     });
   });
 
   describe("createAttestation()", () => {
     it("should create a self-signed attestation without nonce", async () => {
+<<<<<<< HEAD
       // TODO
     });
 
     it("should include nonce in attestation for challenge-response", async () => {
       // TODO
+=======
+      // TODO: test body
+    });
+
+    it("should include nonce in attestation for challenge-response", async () => {
+      // TODO: test body
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     });
 
     it("should throw NOT_PROVISIONED if no identity exists", async () => {
@@ -89,17 +137,29 @@ describe("IdentityProvider", () => {
     });
 
     it("should include correct deviceType (0 for SE050, 1 for WebCrypto)", async () => {
+<<<<<<< HEAD
       // TODO
+=======
+      // TODO: test body
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     });
   });
 
   describe("rotateKey()", () => {
     it("should create a RotationCertificate signed by the old key", async () => {
+<<<<<<< HEAD
       // TODO
     });
 
     it("should increment keySequence by 1", async () => {
       // TODO
+=======
+      // TODO: test body
+    });
+
+    it("should increment keySequence by 1", async () => {
+      // TODO: test body
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     });
 
     it("should throw NOT_PROVISIONED if no identity exists", async () => {
@@ -107,16 +167,25 @@ describe("IdentityProvider", () => {
     });
 
     it("should set old identity to deprecated status", async () => {
+<<<<<<< HEAD
       // TODO
     });
 
     it("should emit IDENTITY_ROTATED event", async () => {
       // TODO
+=======
+      // TODO: test body
+    });
+
+    it("should emit IDENTITY_ROTATED event", async () => {
+      // TODO: test body
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     });
   });
 
   describe("migrateToDevice()", () => {
     it("should produce a MigrationCertificate", async () => {
+<<<<<<< HEAD
       // TODO
     });
 
@@ -134,12 +203,35 @@ describe("IdentityProvider", () => {
 
     it("should emit IDENTITY_MIGRATED event", async () => {
       // TODO
+=======
+      // TODO: test body
+    });
+
+    it("should set current identity to DEPRECATED status", async () => {
+      // TODO: test body
+    });
+
+    it("should throw NOT_PROVISIONED if no identity exists", async () => {
+      // TODO: test body
+    });
+
+    it("should throw MIGRATION_ERROR for invalid target attestation", async () => {
+      // TODO: test body
+    });
+
+    it("should emit IDENTITY_MIGRATED event", async () => {
+      // TODO: test body
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     });
   });
 
   describe("recover()", () => {
     it("should accept recovery with M-of-N threshold met", async () => {
+<<<<<<< HEAD
       // TODO
+=======
+      // TODO: test body
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     });
 
     it("should reject recovery if threshold not met", async () => {
@@ -150,6 +242,7 @@ describe("IdentityProvider", () => {
     });
 
     it("should verify each statement's signature against known bonded peers", async () => {
+<<<<<<< HEAD
       // TODO
     });
 
@@ -159,6 +252,17 @@ describe("IdentityProvider", () => {
 
     it("should emit IDENTITY_RECOVERED event on success", async () => {
       // TODO
+=======
+      // TODO: test body
+    });
+
+    it("should reject expired recovery statements", async () => {
+      // TODO: test body
+    });
+
+    it("should emit IDENTITY_RECOVERED event on success", async () => {
+      // TODO: test body
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     });
   });
 
@@ -168,7 +272,11 @@ describe("IdentityProvider", () => {
     });
 
     it("should return true after successful generateKeypair()", async () => {
+<<<<<<< HEAD
       // TODO
+=======
+      // TODO: test body
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     });
   });
 });

@@ -53,14 +53,22 @@ function App() {
   const calculateRemaining = () => {
     const baseModifiers = state.sleepModifier + state.calciumModifier + state.residualModifier
     const baseTotal = state.baseCapacity + baseModifiers
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     let totalCost = 0
     state.history.forEach(entry => {
       const taskCost = entry.baseCost
       const modifierTotal = Object.values(entry.modifiers || {}).reduce((sum, val) => sum + val, 0)
       totalCost += taskCost + modifierTotal
     })
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     return baseTotal - totalCost
   }
 
@@ -70,12 +78,20 @@ function App() {
     const baseTotal = state.baseCapacity + baseModifiers
     const remaining = calculateRemaining()
     const pct = baseTotal > 0 ? remaining / baseTotal : 0
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     let zone = 'green'
     if (pct <= 0) zone = 'black'
     else if (pct <= 0.25) zone = 'red'
     else if (pct <= 0.5) zone = 'yellow'
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     return { remaining, baseTotal, pct, zone }
   }
 
@@ -92,7 +108,11 @@ function App() {
     const taskCost = selectedTask.cost
     const modifierTotal = Object.values(modifiers).reduce((sum, val) => sum + val, 0)
     const finalCost = Math.max(0, taskCost + modifierTotal)
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     const newEntry = {
       id: Date.now(),
       task: selectedTask.name,
@@ -101,16 +121,27 @@ function App() {
       finalCost: finalCost,
       timestamp: new Date().toLocaleTimeString()
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     setState(prev => ({
       ...prev,
       history: [...prev.history, newEntry],
       taskCount: prev.taskCount + 1
     }))
+<<<<<<< HEAD
     
     setSelectedTask(null)
     setShowModifiers(false)
     
+=======
+
+    setSelectedTask(null)
+    setShowModifiers(false)
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     // Tool check: warn if 3+ tasks without pause
     if (state.taskCount >= 2) {
       setToolCheck(true)
@@ -144,7 +175,11 @@ function App() {
         capacityInfo
       }
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
@@ -161,24 +196,39 @@ function App() {
       <div className="card">
         <h1>Spoon Calculator</h1>
         <p className="subtitle">Personal energy management for P31 Andromeda</p>
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         {/* Base Settings */}
         <div className="card" style={{ marginBottom: '15px' }}>
           <h3>Base Settings</h3>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '10px' }}>
             <div>
               <label>Base Capacity</label>
+<<<<<<< HEAD
               <input 
                 type="number" 
                 value={state.baseCapacity} 
+=======
+              <input
+                type="number"
+                value={state.baseCapacity}
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
                 onChange={(e) => setState(prev => ({ ...prev, baseCapacity: parseInt(e.target.value) || 12 }))}
                 style={{ width: '100%', padding: '8px', background: '#334155', border: '1px solid #475569', color: 'white', borderRadius: '4px' }}
               />
             </div>
             <div>
               <label>Sleep Quality (±2)</label>
+<<<<<<< HEAD
               <select 
                 value={state.sleepModifier} 
+=======
+              <select
+                value={state.sleepModifier}
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
                 onChange={(e) => setState(prev => ({ ...prev, sleepModifier: parseInt(e.target.value) }))}
                 style={{ width: '100%', padding: '8px', background: '#334155', border: '1px solid #475569', color: 'white', borderRadius: '4px' }}
               >
@@ -191,8 +241,13 @@ function App() {
             </div>
             <div>
               <label>Calcium Status (±2)</label>
+<<<<<<< HEAD
               <select 
                 value={state.calciumModifier} 
+=======
+              <select
+                value={state.calciumModifier}
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
                 onChange={(e) => setState(prev => ({ ...prev, calciumModifier: parseInt(e.target.value) }))}
                 style={{ width: '100%', padding: '8px', background: '#334155', border: '1px solid #475569', color: 'white', borderRadius: '4px' }}
               >
@@ -220,7 +275,11 @@ function App() {
               <div className="spoon-capacity">{Math.round(capacityInfo.pct * 100)}% capacity</div>
             </div>
           </div>
+<<<<<<< HEAD
           
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
           {/* Tool Check */}
           {toolCheck && (
             <div className="tool-check">
@@ -234,8 +293,13 @@ function App() {
           <h3>Quick Task Logging</h3>
           <div className="controls-grid">
             {TASKS.map(task => (
+<<<<<<< HEAD
               <button 
                 key={task.id} 
+=======
+              <button
+                key={task.id}
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
                 className={`button ${task.color}`}
                 onClick={() => handleTaskClick(task)}
               >
@@ -250,16 +314,27 @@ function App() {
           <div className="card" style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 1000, width: '90%', maxWidth: '500px' }}>
             <h3>Modifiers for {selectedTask.name}</h3>
             <p>Base cost: {selectedTask.cost} spoons</p>
+<<<<<<< HEAD
             
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
             <div className="modifiers">
               {MODIFIERS.map(mod => {
                 const currentValue = state.activeModifiers[mod.id] || 0
                 const canIncrease = currentValue < mod.maxStack
                 const canDecrease = currentValue > -mod.maxStack
+<<<<<<< HEAD
                 
                 return (
                   <div key={mod.id} style={{ display: 'flex', gap: '5px', alignItems: 'center' }}>
                     <button 
+=======
+
+                return (
+                  <div key={mod.id} style={{ display: 'flex', gap: '5px', alignItems: 'center' }}>
+                    <button
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
                       className="modifier-button"
                       disabled={!canDecrease}
                       onClick={() => {
@@ -275,7 +350,11 @@ function App() {
                       -
                     </button>
                     <span style={{ fontSize: '0.875rem', color: 'var(--muted)' }}>{mod.name}</span>
+<<<<<<< HEAD
                     <button 
+=======
+                    <button
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
                       className="modifier-button"
                       disabled={!canIncrease}
                       onClick={() => {
@@ -297,15 +376,25 @@ function App() {
                 )
               })}
             </div>
+<<<<<<< HEAD
             
             <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
               <button 
+=======
+
+            <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
+              <button
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
                 className="button green"
                 onClick={() => applyModifiers(state.activeModifiers)}
               >
                 Log Task
               </button>
+<<<<<<< HEAD
               <button 
+=======
+              <button
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
                 className="button"
                 onClick={() => {
                   setShowModifiers(false)
@@ -328,7 +417,11 @@ function App() {
               <button className="button" onClick={exportData}>Export Data</button>
             </div>
           </div>
+<<<<<<< HEAD
           
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
           {state.history.length === 0 ? (
             <p style={{ color: 'var(--muted)', fontStyle: 'italic' }}>No activities logged yet today.</p>
           ) : (
@@ -338,7 +431,11 @@ function App() {
                   <div>
                     <strong>{entry.task}</strong>
                     <span style={{ color: 'var(--muted)', marginLeft: '10px' }}>
+<<<<<<< HEAD
                       {Object.entries(entry.modifiers).map(([key, value]) => 
+=======
+                      {Object.entries(entry.modifiers).map(([key, value]) =>
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
                         value !== 0 ? `${key}: ${value > 0 ? '+' : ''}${value}` : null
                       ).filter(Boolean).join(', ')}
                     </span>
@@ -349,7 +446,11 @@ function App() {
                   </div>
                 </div>
               ))}
+<<<<<<< HEAD
               
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
               <div style={{ borderTop: '1px solid var(--border)', marginTop: '10px', paddingTop: '10px', display: 'flex', justifyContent: 'space-between' }}>
                 <strong>Total Used:</strong>
                 <strong>{state.history.reduce((sum, entry) => sum + entry.finalCost, 0)} spoons</strong>
@@ -362,4 +463,8 @@ function App() {
   )
 }
 
+<<<<<<< HEAD
 export default App
+=======
+export default App
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

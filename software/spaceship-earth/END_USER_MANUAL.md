@@ -240,4 +240,8 @@ Remember: This is your spaceship. You are the captain. Use these tools to create
 - **Reset System**: Clear data in settings if needed
 - **Contact Support**: Use Help Board or documentation
 
+<<<<<<< HEAD
 Welcome aboard, Captain. The journey begins now.
+=======
+Welcome aboard, Captain. The journey begins now.
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

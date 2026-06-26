@@ -5,6 +5,7 @@ module.exports = {
     './components/**/*.{js,ts,jsx,tsx,mdx}',
     './app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
+<<<<<<< HEAD
   theme: {
     extend: {
       colors: {
@@ -17,6 +18,21 @@ module.exports = {
         'slate-700': '#334155',
         'slate-600': '#475569',
         'slate-500': '#64748b',
+=======
+  presets: [require('@p31/shared/theme/tailwind-preset').p31Preset],
+  theme: {
+    extend: {
+      colors: {
+        'void': 'var(--color-ink)',
+        'phosphorus': '#10b981',
+        'crimson': '#ef4444',
+        'slate-950': '#020617',
+        'slate-900': 'var(--color-ink)',
+        'slate-800': '#1e293b',
+        'slate-700': '#334155',
+        'slate-600': '#475569',
+        'slate-500': 'var(--color-muted)',
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         'slate-400': '#94a3b8',
         'slate-300': '#cbd5e1',
         'slate-200': '#e2e8f0',
@@ -39,4 +55,8 @@ module.exports = {
     },
   },
   plugins: [],
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

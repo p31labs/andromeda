@@ -40,17 +40,28 @@ const ruleEvaluationShader = `
 fn main(@builtin(global_invocation_id) id: vec3<u32>) {
     let ruleIndex = id.x;
     if (ruleIndex >= rules.length()) { return; }
+<<<<<<< HEAD
     
     let rule = rules[ruleIndex];
     let ctx = context[0];
     
+=======
+
+    let rule = rules[ruleIndex];
+    let ctx = context[0];
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     // Evaluate conditions in parallel
     var allowed = true;
     for (var i = 0; i < rule.conditionCount; i++) {
         let condition = rule.conditions[i];
         allowed = allowed && evaluateCondition(condition, ctx);
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     results[ruleIndex] = RuleResult(rule.id, allowed);
 }
 `;
@@ -123,6 +134,7 @@ const trilaterationShader = `
 fn main(@builtin(global_invocation_id) id: vec3<u32>) {
     let beaconIndex = id.x;
     if (beaconIndex >= beacons.length()) { return; }
+<<<<<<< HEAD
     
     let beacon = beacons[beaconIndex];
     
@@ -132,6 +144,17 @@ fn main(@builtin(global_invocation_id) id: vec3<u32>) {
     // Trilateration calculation
     let position = calculatePosition(beacon, distance);
     
+=======
+
+    let beacon = beacons[beaconIndex];
+
+    // Calculate distance using RSSI
+    let distance = pow(10.0, (beacon.txPower - beacon.rssi) / (10.0 * 2.5));
+
+    // Trilateration calculation
+    let position = calculatePosition(beacon, distance);
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     results[beaconIndex] = PositionResult(beacon.id, position, distance);
 }
 `;
@@ -201,6 +224,7 @@ const collisionShader = `
 fn main(@builtin(global_invocation_id) id: vec3<u32>) {
     let obstacleIndex = id.x;
     if (obstacleIndex >= obstacles.length()) { return; }
+<<<<<<< HEAD
     
     let obstacle = obstacles[obstacleIndex];
     let cameraPos = cameraState.position;
@@ -209,6 +233,16 @@ fn main(@builtin(global_invocation_id) id: vec3<u32>) {
     let distance = length(cameraPos - obstacle.position);
     let minDistance = obstacle.radius + cameraState.radius;
     
+=======
+
+    let obstacle = obstacles[obstacleIndex];
+    let cameraPos = cameraState.position;
+
+    // Calculate distance to obstacle
+    let distance = length(cameraPos - obstacle.position);
+    let minDistance = obstacle.radius + cameraState.radius;
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     if (distance < minDistance) {
         // Calculate collision response
         let normal = normalize(cameraPos - obstacle.position);
@@ -292,16 +326,28 @@ const userAction = async (zoneId: string) => {
     context: getCurrentContext(),
     zoneId
   });
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   if (!ruleResult.allowed) {
     showRuleViolation(ruleResult.deniedBy);
     return;
   }
+<<<<<<< HEAD
   
   // Process any BLE data
   const bleData = await getBLEData();
   const position = await bleProcessor.processBeacons(bleData);
   
+=======
+
+  // Process any BLE data
+  const bleData = await getBLEData();
+  const position = await bleProcessor.processBeacons(bleData);
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   // Update camera based on position
   cameraSystem.updateCameraPosition(position);
 };
@@ -412,4 +458,8 @@ npm run benchmark:webgpu
 - Mobile WebGPU optimization
 - WebGPU 1.0 specification compliance
 
+<<<<<<< HEAD
 This WebGPU implementation provides cutting-edge performance while maintaining broad compatibility through comprehensive fallback mechanisms. The architecture is designed to be extensible and future-proof as WebGPU support continues to evolve.
+=======
+This WebGPU implementation provides cutting-edge performance while maintaining broad compatibility through comprehensive fallback mechanisms. The architecture is designed to be extensible and future-proof as WebGPU support continues to evolve.
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

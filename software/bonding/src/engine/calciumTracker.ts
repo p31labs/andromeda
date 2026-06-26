@@ -40,7 +40,11 @@ export function logDose(state: CalciumState, timestamp = new Date().toISOString(
   const streak = calculateStreak(logs);
   const nextDueAt = getNextDue({ ...state, lastDose: timestamp });
   const glowIntensity = calculateGlow({ ...state, lastDose: timestamp });
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   return { ...state, logs, streak, lastDose: timestamp, nextDueAt, glowIntensity };
 }
 

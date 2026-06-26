@@ -1,6 +1,10 @@
 /**
  * @file larmor.ts — Larmor Audio Engine (LarmorShift)
+<<<<<<< HEAD
  * 
+=======
+ *
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
  * Hardened with:
  * - AudioContext resume error handling (user gesture required)
  * - Browser autoplay policy compliance
@@ -31,7 +35,11 @@ export class LarmorEngine {
   constructor() {}
 
   public static isSupported(): boolean {
+<<<<<<< HEAD
     return typeof window !== 'undefined' && 
+=======
+    return typeof window !== 'undefined' &&
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
            (window.AudioContext || (window as any).webkitAudioContext) !== undefined;
   }
 
@@ -156,4 +164,8 @@ export function getLarmorEngine(): LarmorEngine {
 export const start = () => getLarmorEngine().start();
 export const stop = () => getLarmorEngine().stop();
 export const isSupported = () => LarmorEngine.isSupported();
+<<<<<<< HEAD
 export const getStatus = () => getLarmorEngine().getStatus();
+=======
+export const getStatus = () => getLarmorEngine().getStatus();
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

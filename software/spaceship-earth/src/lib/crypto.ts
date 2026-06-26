@@ -4,7 +4,11 @@
 //
 // Delta topology: Private key NEVER leaves the device.
 // Uses ECDSA P-384 with SHA-384 hashing for signatures.
+<<<<<<< HEAD
 // Brand: Phosphor Green #00FF88, Void #050510
+=======
+// Brand: Phosphor Green var(--color-phosphor), Void #050510
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
 // ═══════════════════════════════════════════════════════════════════
 
 import { get, set, del } from 'idb-keyval';
@@ -40,6 +44,7 @@ export interface CognitivePassportData {
   // Identity
   operatorId: string;
   genesisBlock: string;
+<<<<<<< HEAD
   
   // Profile
   profile: CognitiveProfile;
@@ -47,6 +52,15 @@ export interface CognitivePassportData {
   // LOVE Ledger (earned, not spent)
   loveLedger: LoveEntry[];
   
+=======
+
+  // Profile
+  profile: CognitiveProfile;
+
+  // LOVE Ledger (earned, not spent)
+  loveLedger: LoveEntry[];
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   // Metadata
   version: string;
   createdAt: string;
@@ -169,6 +183,7 @@ export const PassportCrypto = {
 
     // Export public key as JWK
     const publicKeyJwk = await crypto.subtle.exportKey('jwk', keyPair.publicKey);
+<<<<<<< HEAD
     
     // Convert to hex for storage/display
     const publicKeyHex = await jwkToHex(publicKeyJwk);
@@ -176,6 +191,15 @@ export const PassportCrypto = {
     // Generate key ID
     const keyId = await generateKeyId(publicKeyHex);
     
+=======
+
+    // Convert to hex for storage/display
+    const publicKeyHex = await jwkToHex(publicKeyJwk);
+
+    // Generate key ID
+    const keyId = await generateKeyId(publicKeyHex);
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     const genesisKey: GenesisKeyPair = {
       publicKey: publicKeyJwk,
       publicKeyHex,
@@ -243,7 +267,11 @@ export const PassportCrypto = {
       // we need to either: (1) store the private key JWK, or (2) use a derived key.
       // Current implementation: generate new keypair but preserve keyId from stored public key
       // This maintains identity continuity for verification purposes.
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       keyPair = await crypto.subtle.generateKey(
         {
           name: 'ECDSA',
@@ -325,7 +353,11 @@ export const PassportCrypto = {
       // Import the public key from the signature's keyId
       // In a full implementation, we'd look up the public key by keyId
       // For now, we verify against the embedded signature structure
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       // Convert signature hex back to ArrayBuffer
       const signatureBuffer = hexToArrayBuffer(signature.signature);
 

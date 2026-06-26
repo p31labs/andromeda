@@ -19,8 +19,13 @@ export const MvpHub: React.FC = () => {
   }, []);
 
   return (
+<<<<<<< HEAD
     <div style={{ minHeight: '100vh', padding: '2rem', background: '#0f1115', color: '#d8d6d0' }}>
       <h1 style={{ fontSize: '2rem', fontWeight: 700, textAlign: 'center', marginBottom: '2rem', color: '#d8d6d0' }}>
+=======
+    <div style={{ minHeight: '100vh', padding: '2rem', background: '#0f1115', color: 'var(--color-cloud)' }}>
+      <h1 style={{ fontSize: '2rem', fontWeight: 700, textAlign: 'center', marginBottom: '2rem', color: 'var(--color-cloud)' }}>
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         P31 Ecosystem Hub
       </h1>
       <div style={{
@@ -36,4 +41,8 @@ export const MvpHub: React.FC = () => {
       </div>
     </div>
   );
+<<<<<<< HEAD
 };
+=======
+};
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

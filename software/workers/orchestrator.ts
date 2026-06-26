@@ -20,12 +20,22 @@ export default {
     const url = new URL(request.url);
     const pathParts = url.pathname.split('/').filter(Boolean);
 
+<<<<<<< HEAD
     // Health check
     if (pathParts.length === 0) {
       return new Response(JSON.stringify({
         status: 'online',
         service: 'p31-orchestrator',
         timestamp: Date.now()
+=======
+    // Health check — supports both / and /health
+    if (pathParts.length === 0 || (pathParts[0] === 'health' && pathParts.length === 1)) {
+      return new Response(JSON.stringify({
+        status: 'ok',
+        service: 'p31-orchestrator',
+        version: '1.0.0',
+        timestamp: new Date().toISOString(),
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       }), {
         headers: { 'Content-Type': 'application/json' }
       });

@@ -1,7 +1,11 @@
 import { useState } from 'react'
 import P31OmnibusVault from './P31OmnibusVault.jsx'
 
+<<<<<<< HEAD
 const CORAL = '#cc6247'
+=======
+const CORAL = 'var(--color-coral)'
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
 const DARK = '#0A0A0F'
 const DARKER = '#06060A'
 const SURFACE = '#12121A'

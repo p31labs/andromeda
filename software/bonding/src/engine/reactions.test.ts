@@ -39,7 +39,11 @@ describe('Reaction Engine', () => {
     const reaction = canReact('Foo', 'Bar');
     expect(reaction).toBeNull();
   });
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   it('findReactions [H2, O2, CH4] returns 2 reactions', () => {
     const reactions = findReactions(['H2', 'O2', 'CH4']);
     const ids = reactions.map(r => r.id);
@@ -71,7 +75,11 @@ describe('Reaction Engine', () => {
     expect(ids).toContain('photosynthesis');
     expect(ids).toContain('cellular_respiration');
   });
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   it('getReactionsFor O2 returns multiple reactions', () => {
       const reactions = getReactionsFor('O2');
       expect(reactions.length).toBeGreaterThan(1);

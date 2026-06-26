@@ -7,11 +7,19 @@ const TOKENS = {
   glassBorder: "rgba(255,255,255,0.06)",
   cloud: "#e8e6e3",
   muted: "#6b7280",
+<<<<<<< HEAD
   teal: "#5DCAA5",
   cyan: "#4db8a8",
   coral: "#cc6247",
   amber: "#cda852",
   lavender: "#8b7cc9",
+=======
+  teal: "var(--color-teal)",
+  cyan: "var(--color-cyan)",
+  coral: "var(--color-coral)",
+  amber: "var(--color-amber)",
+  lavender: "var(--color-lavender)",
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   phosphorus: "#5dca5d",
 };
 
@@ -83,7 +91,11 @@ const TEMPLATES = {
 
     .glass-card { background: color-mix(in srgb, var(--p31-surface2) 60%, transparent);
                   border: 1px solid var(--p31-glass-border); border-radius: 12px;
+<<<<<<< HEAD
                   padding: 2rem; backdrop-filter: blur(20px); }
+=======
+                  padding: 2rem; backdrop-filter: blur(10px); }
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     .glass-card h3 { font-size: 1.1rem; margin-bottom: 0.5rem; }
     .glass-card p { color: var(--p31-muted); font-size: 0.95rem; }
 
@@ -102,9 +114,15 @@ const TEMPLATES = {
   <nav class="top-nav">
     <a href="/" class="nav-brand">
       <svg viewBox="0 0 100 100" width="24" height="24" fill="none" aria-hidden="true">
+<<<<<<< HEAD
         <path d="M50 10 L90 85 L10 85 Z" stroke="#5DCAA5" stroke-width="5" stroke-linejoin="round"/>
         <path d="M50 10 L50 60 L90 85" stroke="#cc6247" stroke-width="5" stroke-linejoin="round" opacity="0.8"/>
         <path d="M50 60 L10 85" stroke="#cda852" stroke-width="5" stroke-linejoin="round" opacity="0.6"/>
+=======
+        <path d="M50 10 L90 85 L10 85 Z" stroke="var(--color-teal)" stroke-width="5" stroke-linejoin="round"/>
+        <path d="M50 10 L50 60 L90 85" stroke="var(--color-coral)" stroke-width="5" stroke-linejoin="round" opacity="0.8"/>
+        <path d="M50 60 L10 85" stroke="var(--color-amber)" stroke-width="5" stroke-linejoin="round" opacity="0.6"/>
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       </svg>
       P31 Labs
     </a>
@@ -400,8 +418,13 @@ init();
   border: 1px solid var(--p31-glass-border);
   border-radius: 12px;
   padding: 2rem;
+<<<<<<< HEAD
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
+=======
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
 }
 
 body.safe-mode .glass-card {
@@ -1008,16 +1031,28 @@ William R. Johnson
 --p31-muted:        #6b7280;  /* Secondary text. 4.5:1 vs void. AA. Labels only. */
 
 /* BRAND SEMANTIC */
+<<<<<<< HEAD
 --p31-teal:         #5DCAA5;  /* Trust/structure/primary. 8.2:1. AAA. */
 --p31-cyan:         #4db8a8;  /* Highlight/accent. Alias target for teal in some contexts. */
 --p31-coral:        #cc6247;  /* Voltage/urgency/legal/warning. 4.6:1. AA. */
 --p31-amber:        #cda852;  /* Focus/biological/L.O.V.E./children. 7.1:1. AAA. */
 --p31-lavender:     #8b7cc9;  /* Archive/documentation/scribe. 4.8:1. AA. */
+=======
+--p31-teal:         var(--color-teal);  /* Trust/structure/primary. 8.2:1. AAA. */
+--p31-cyan:         var(--color-cyan);  /* Highlight/accent. Alias target for teal in some contexts. */
+--p31-coral:        var(--color-coral);  /* Voltage/urgency/legal/warning. 4.6:1. AA. */
+--p31-amber:        var(--color-amber);  /* Focus/biological/L.O.V.E./children. 7.1:1. AAA. */
+--p31-lavender:     var(--color-lavender);  /* Archive/documentation/scribe. 4.8:1. AA. */
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
 --p31-phosphorus:   #5dca5d;  /* Success/growth/confirmation. */
 
 /* CORRECTIONS LOG */
 /* ❌ --p31-void: var(--p31-void)     → ✅ #0f1115 (Kimi used wrong value) */
+<<<<<<< HEAD
 /* ❌ --p31-teal: var(--p31-teal)     → ✅ #5DCAA5 (Gemini used wrong value) */
+=======
+/* ❌ --p31-teal: var(--p31-teal)     → ✅ var(--color-teal) (Gemini used wrong value) */
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
 /* ❌ Border radius: 3rem/48px → ✅ 12px (Kimi too aggressive) */
 /* ❌ Font: Inter only         → ✅ Inter + Atkinson Hyperlegible (a11y) */`,
     },

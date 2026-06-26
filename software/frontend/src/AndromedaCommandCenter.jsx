@@ -81,9 +81,15 @@ export default function AndromedaCommandCenter({ userId = 'will' }) {
   return (
     <div className="flex h-screen w-full bg-[#050508] overflow-hidden">
       <div className="w-1/2 border-r border-[#1a1a24] flex flex-col relative z-10 shadow-[20px_0_50px_rgba(0,0,0,0.5)]">
+<<<<<<< HEAD
         <div className="absolute top-4 left-4 z-20 flex items-center gap-2 bg-[#0a3d3d]/80 px-3 py-1.5 rounded-full border border-[#4db8a8]/30 backdrop-blur-md">
           <ShieldCheck className="w-4 h-4 text-[#4db8a8]" />
           <span className="text-[10px] font-mono text-[#4db8a8] tracking-widest uppercase">
+=======
+        <div className="absolute top-4 left-4 z-20 flex items-center gap-2 bg-[#0a3d3d]/80 px-3 py-1.5 rounded-full border border-[var(--color-cyan)]/30 backdrop-blur-md">
+          <ShieldCheck className="w-4 h-4 text-[var(--color-cyan)]" />
+          <span className="text-[10px] font-mono text-[var(--color-cyan)] tracking-widest uppercase">
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
             {e2eeReady ? 'MLS TreeKEM Active' : 'Initializing Crypto...'}
           </span>
         </div>
@@ -99,7 +105,11 @@ export default function AndromedaCommandCenter({ userId = 'will' }) {
           <button
             type="button"
             onClick={() => setActiveTab('chat')}
+<<<<<<< HEAD
             className={`flex-1 py-2 text-sm font-mono ${activeTab === 'chat' ? 'bg-[#4db8a8] text-black' : 'text-gray-400 hover:text-white'}`}
+=======
+            className={`flex-1 py-2 text-sm font-mono ${activeTab === 'chat' ? 'bg-[var(--color-cyan)] text-black' : 'text-gray-400 hover:text-white'}`}
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
           >
             MESH CHAT
           </button>

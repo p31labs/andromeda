@@ -1,6 +1,10 @@
 /**
  * p31-phos-effects.css — Holographic WOW Factor
+<<<<<<< HEAD
  * 
+=======
+ *
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
  * Visual effects for PHOS Oracle:
  * - Holographic glows and gradients
  * - Particle animations
@@ -19,17 +23,30 @@
   right: 20px;
   width: 360px;
   max-height: 500px;
+<<<<<<< HEAD
   background: 
     linear-gradient(135deg, rgba(10, 22, 40, 0.95) 0%, rgba(20, 40, 60, 0.95) 100%);
   border: 1px solid rgba(34, 211, 238, 0.3);
   border-radius: 20px;
   box-shadow: 
+=======
+  background:
+    linear-gradient(135deg, rgba(10, 22, 40, 0.95) 0%, rgba(20, 40, 60, 0.95) 100%);
+  border: 1px solid rgba(34, 211, 238, 0.3);
+  border-radius: 20px;
+  box-shadow:
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     0 0 0 1px rgba(34, 211, 238, 0.1),
     0 20px 60px -10px rgba(0, 0, 0, 0.8),
     0 0 40px rgba(34, 211, 238, 0.15),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
+<<<<<<< HEAD
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
+=======
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   overflow: hidden;
   z-index: 9999;
   transform-origin: bottom right;
@@ -62,11 +79,19 @@
     rgba(251, 113, 133, 0.3) 75%,
     rgba(34, 211, 238, 0.6) 100%
   );
+<<<<<<< HEAD
   -webkit-mask: 
     linear-gradient(#fff 0 0) content-box, 
     linear-gradient(#fff 0 0);
   mask: 
     linear-gradient(#fff 0 0) content-box, 
+=======
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
@@ -99,10 +124,17 @@
   width: 44px;
   height: 44px;
   border-radius: 50%;
+<<<<<<< HEAD
   background: 
     radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.2) 0%, transparent 50%),
     linear-gradient(135deg, #22d3ee 0%, #0891b2 100%);
   box-shadow: 
+=======
+  background:
+    radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.2) 0%, transparent 50%),
+    linear-gradient(135deg, #22d3ee 0%, #0891b2 100%);
+  box-shadow:
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     0 0 20px rgba(34, 211, 238, 0.5),
     inset 0 0 10px rgba(255, 255, 255, 0.2);
   display: flex;
@@ -113,11 +145,19 @@
 }
 
 @keyframes phos-pulse {
+<<<<<<< HEAD
   0%, 100% { 
     box-shadow: 0 0 20px rgba(34, 211, 238, 0.5), inset 0 0 10px rgba(255, 255, 255, 0.2);
     transform: scale(1);
   }
   50% { 
+=======
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(34, 211, 238, 0.5), inset 0 0 10px rgba(255, 255, 255, 0.2);
+    transform: scale(1);
+  }
+  50% {
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     box-shadow: 0 0 30px rgba(34, 211, 238, 0.8), inset 0 0 15px rgba(255, 255, 255, 0.3);
     transform: scale(1.02);
   }
@@ -385,7 +425,11 @@
   align-items: center;
   justify-content: center;
   font-size: 24px;
+<<<<<<< HEAD
   box-shadow: 
+=======
+  box-shadow:
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     0 4px 20px rgba(34, 211, 238, 0.4),
     0 0 0 4px rgba(34, 211, 238, 0.1);
   z-index: 9998;
@@ -394,7 +438,11 @@
 
 .phos-fab:hover {
   transform: scale(1.1);
+<<<<<<< HEAD
   box-shadow: 
+=======
+  box-shadow:
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     0 6px 30px rgba(34, 211, 238, 0.6),
     0 0 0 6px rgba(34, 211, 238, 0.15);
 }
@@ -409,17 +457,29 @@
 
 @keyframes fab-pulse-ring {
   0% {
+<<<<<<< HEAD
     box-shadow: 
+=======
+    box-shadow:
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       0 4px 20px rgba(34, 211, 238, 0.4),
       0 0 0 0 rgba(34, 211, 238, 0.4);
   }
   70% {
+<<<<<<< HEAD
     box-shadow: 
+=======
+    box-shadow:
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       0 4px 20px rgba(34, 211, 238, 0.4),
       0 0 0 20px rgba(34, 211, 238, 0);
   }
   100% {
+<<<<<<< HEAD
     box-shadow: 
+=======
+    box-shadow:
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       0 4px 20px rgba(34, 211, 238, 0.4),
       0 0 0 0 rgba(34, 211, 238, 0);
   }
@@ -438,7 +498,11 @@
   border-radius: 16px;
   padding: 14px 18px;
   max-width: 280px;
+<<<<<<< HEAD
   box-shadow: 
+=======
+  box-shadow:
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     0 10px 40px rgba(0, 0, 0, 0.5),
     0 0 30px rgba(34, 211, 238, 0.1);
   backdrop-filter: blur(10px);
@@ -545,12 +609,20 @@
     width: auto;
     bottom: 80px;
   }
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   .phos-fab {
     right: 16px;
     bottom: 16px;
   }
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   .phos-proactive {
     right: 16px;
     left: 16px;

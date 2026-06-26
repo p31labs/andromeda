@@ -162,7 +162,11 @@ export function useVoiceInput(options: VoiceInputOptions = {}): VoiceInputReturn
 
   const parseCommand = useCallback((text: string): VoiceCommand | null => {
     const normalized = text.toLowerCase().trim();
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     // Check element commands
     if (normalized in ELEMENT_COMMANDS) {
       return {
@@ -257,7 +261,11 @@ export function useVoiceInput(options: VoiceInputOptions = {}): VoiceInputReturn
     };
 
     recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
+<<<<<<< HEAD
       const errorMsg = event.error === 'no-speech' ? 'No speech detected' : 
+=======
+      const errorMsg = event.error === 'no-speech' ? 'No speech detected' :
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
                        event.error === 'not-allowed' ? 'Microphone access denied' :
                        `Speech error: ${event.error}`;
       setError(errorMsg);
@@ -305,4 +313,8 @@ export function useVoiceInput(options: VoiceInputOptions = {}): VoiceInputReturn
     stopListening,
     toggleListening,
   };
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

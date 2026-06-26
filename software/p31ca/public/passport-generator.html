@@ -95,14 +95,24 @@
       const diagnosis = document.getElementById('diagnosis').value;
       const commStyle = document.getElementById('commStyle').value;
       const execStatus = document.getElementById('execStatus').value;
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       const constraints = [];
       if (document.getElementById('noMilitary').checked) constraints.push('NO military/naval metaphors');
       if (document.getElementById('handwriting').checked) constraints.push('Prefers handwriting');
       if (document.getElementById('lowVerbal').checked) constraints.push('Verbal serialization is lossy');
+<<<<<<< HEAD
       
       const date = new Date().toISOString().split('T')[0];
       
+=======
+
+      const date = new Date().toISOString().split('T')[0];
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       const output = `# P31 COGNITIVE PASSPORT — ${date}
 
 ## The Operator
@@ -135,7 +145,11 @@ When interacting with this node:
 
 *Generated: ${date} | P31 Labs*
 `;
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       document.getElementById('output').value = output;
     }
 

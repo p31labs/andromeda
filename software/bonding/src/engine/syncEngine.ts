@@ -17,12 +17,20 @@ export class SyncEngine {
 
   public start() {
     if (this.syncInterval) return;
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     console.log(`[SyncEngine] Connecting to Delta Mesh. Room: ${this.roomId}`);
     telemetry.log({ eventType: 'session_start', payload: { roomId: this.roomId } });
 
     this.syncInterval = setInterval(() => this.sync(), SYNC_INTERVAL_MS);
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     this.sync();
   }
 
@@ -61,4 +69,8 @@ export class SyncEngine {
       this.isSyncing = false;
     }
   }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

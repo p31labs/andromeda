@@ -1,6 +1,10 @@
 /**
  * P31 Cockpit Styles — Z-Index Layer & Component Styles
+<<<<<<< HEAD
  * 
+=======
+ *
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
  * Vertex 3 (Interface Node) — CSS for Cockpit Layout
  * Extends the base styles.css with Z-layer and component styles
  */
@@ -20,9 +24,15 @@
   --z-centaur: 80;
   --z-boot: 100;
   --z-onboarding: 200;
+<<<<<<< HEAD
   
   /* Cockpit Colors */
   --phosphorus: #00FF88;
+=======
+
+  /* Cockpit Colors */
+  --phosphorus: var(--color-phosphor);
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   --quantum-cyan: #00D4FF;
   --quantum-violet: #7A27FF;
   --phosphorus-orange: #FF6600;
@@ -57,7 +67,11 @@
 /* Specific Layer Styles */
 .void-starfield {
   background: var(--void);
+<<<<<<< HEAD
   background-image: 
+=======
+  background-image:
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     radial-gradient(1px 1px at 20% 30%, rgba(255,255,255,0.15) 0%, transparent 100%),
     radial-gradient(1px 1px at 40% 70%, rgba(255,255,255,0.1) 0%, transparent 100%),
     radial-gradient(1px 1px at 60% 20%, rgba(255,255,255,0.12) 0%, transparent 100%),
@@ -77,8 +91,13 @@
 
 .room-hud-layer > * {
   pointer-events: auto;
+<<<<<<< HEAD
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
+=======
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
 }
 
 .router-nav-layer {

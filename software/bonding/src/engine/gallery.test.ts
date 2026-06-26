@@ -186,4 +186,8 @@ describe('Gallery', () => {
     const gallery = getGallery();
     expect(gallery).toEqual([]);
   });
+<<<<<<< HEAD
 });
+=======
+});
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

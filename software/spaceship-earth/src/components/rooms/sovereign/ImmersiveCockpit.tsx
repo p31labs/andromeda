@@ -77,7 +77,11 @@ export function ImmersiveCockpitUI({ isIdle }: { isIdle?: boolean }) {
     dotCanvas.width = 16; dotCanvas.height = 16;
     const dotCtx = dotCanvas.getContext('2d')!;
     dotCtx.beginPath(); dotCtx.arc(8, 8, 8, 0, Math.PI * 2);
+<<<<<<< HEAD
     dotCtx.fillStyle = '#ffffff'; dotCtx.fill();
+=======
+    dotCtx.fillStyle = 'var(--color-surface)'; dotCtx.fill();
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     const dotTex = new THREE.CanvasTexture(dotCanvas);
 
     const starMat = new THREE.PointsMaterial({
@@ -172,7 +176,11 @@ export function ImmersiveCockpitUI({ isIdle }: { isIdle?: boolean }) {
       timeRef.current += 0.012; // Slow, majestic pace
       const t = timeRef.current;
       const state = useSovereignStore.getState();
+<<<<<<< HEAD
       const accentHex = parseInt((state.accentColor ?? '#4db8a8').replace('#', ''), 16);
+=======
+      const accentHex = parseInt((state.accentColor ?? 'var(--color-cyan)').replace('#', ''), 16);
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
 
       // Update Theme Colors dynamically
       for (const n of nodes) {

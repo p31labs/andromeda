@@ -50,4 +50,8 @@ export function playMoleculeChord(elementIds: string[]): void {
       playNote(frequency, 1.0, index * 0.1); // Stagger notes for chord
     }
   });
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

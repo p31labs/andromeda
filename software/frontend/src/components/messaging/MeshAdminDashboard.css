@@ -14,7 +14,11 @@
   padding: 16px 24px;
   background: rgba(5, 5, 8, 0.95);
   border-bottom: 1px solid var(--border);
+<<<<<<< HEAD
   backdrop-filter: blur(12px);
+=======
+  backdrop-filter: blur(10px);
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
 }
 
 .admin-header h2 {
@@ -523,11 +527,19 @@
     overflow-x: auto;
     padding: 8px 16px;
   }
+<<<<<<< HEAD
   
   .metrics-grid {
     grid-template-columns: repeat(2, 1fr);
   }
   
+=======
+
+  .metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   .members-grid {
     grid-template-columns: 1fr;
   }

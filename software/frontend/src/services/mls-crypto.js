@@ -1,7 +1,11 @@
 /**
  * MLS-Lite — Minimal MLS-style E2EE for K⁴ Mesh
  * Web Crypto-based TreeKEM + symmetric ratchet for 4-member group (K₄)
+<<<<<<< HEAD
  * 
+=======
+ *
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
  * P31 Labs, Inc. | EIN 42-1888158
  */
 
@@ -51,7 +55,11 @@ class TreeKEM {
     this.vertexId = vertexId;
     this.leafIndex = VERTICES.indexOf(vertexId);
     if (this.leafIndex === -1) throw new Error(`Unknown vertex: ${vertexId}`);
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     this.tree = new Array(7).fill(null);
     this.leafKeys = new Array(4).fill(null);
     this.privateKeys = new Array(4).fill(null);
@@ -64,19 +72,31 @@ class TreeKEM {
 
   async initialize() {
     this.signingKey = await generateEd25519KeyPair();
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     const xKeyPair = await generateX25519KeyPair();
     const leafIdx = this.leafIndex;
     this.privateKeys[leafIdx] = xKeyPair.privateKey;
     const pubJwk = await exportPublicKey(xKeyPair.publicKey, 'jwk');
     this.leafKeys[leafIdx] = pubJwk;
     this.tree[leafIdx + 3] = pubJwk;
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     const groupId = 'k4-mesh-family';
     const initialSecret = await sha256(JSON.stringify({ groupId, epoch: 0, leafKey: pubJwk }));
     this.treeSecret = await deriveHKDF(null, initialSecret, new TextEncoder().encode('k4-epoch-0'), 32);
     this.epochSecrets.set(0, this.treeSecret);
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     return {
       vertexId: this.vertexId,
       leafIndex: this.leafIndex,
@@ -88,7 +108,11 @@ class TreeKEM {
 
   async setGroupState(groupState) {
     this.epoch = groupState.epoch || 0;
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     for (const [vId, jwk] of Object.entries(groupState.tree || {})) {
       const idx = VERTICES.indexOf(vId);
       if (idx !== -1) {
@@ -97,12 +121,20 @@ class TreeKEM {
         this.verifiedPublicKeys.set(vId, jwk);
       }
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     const myJwk = this.leafKeys[this.leafIndex];
     if (myJwk && !this.privateKeys[this.leafIndex]) {
       console.warn('Private key not available for epoch', this.epoch);
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     if (groupState.treeSecret) {
       try {
         this.treeSecret = await deriveHKDF(
@@ -116,7 +148,11 @@ class TreeKEM {
         console.warn('Failed to restore tree secret:', e);
       }
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     await this._updateInternalNodes();
   }
 
@@ -142,13 +178,21 @@ class TreeKEM {
 
     const iv = crypto.getRandomValues(new Uint8Array(12));
     const key = await crypto.subtle.importKey('raw', this.treeSecret, 'AES-GCM', false, ['encrypt']);
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     const additionalData = new TextEncoder().encode(JSON.stringify({
       epoch: this.epoch,
       sender: this.vertexId,
       ...metadata
     }));
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     const encoded = new TextEncoder().encode(plaintext);
     const ciphertext = await crypto.subtle.encrypt(
       { name: 'AES-GCM', iv, additionalData },
@@ -187,7 +231,11 @@ class TreeKEM {
     const iv = this._base64ToArrayBuffer(encryptedObj.iv);
     const ciphertext = this._base64ToArrayBuffer(encryptedObj.ciphertext);
     const key = await crypto.subtle.importKey('raw', secret, 'AES-GCM', false, ['decrypt']);
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     const additionalData = new TextEncoder().encode(JSON.stringify({
       epoch: encryptedObj.epoch,
       sender: encryptedObj.sender
@@ -199,7 +247,11 @@ class TreeKEM {
         key,
         ciphertext
       );
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       const text = new TextDecoder().decode(plaintext);
       return JSON.parse(text);
     } catch (e) {
@@ -209,29 +261,50 @@ class TreeKEM {
 
   async createCommit(newMembers = [], removedMembers = []) {
     const newEpoch = this.epoch + 1;
+<<<<<<< HEAD
     
     const currentMembers = VERTICES.filter(v => this.leafKeys[VERTICES.indexOf(v)] !== null);
     const updatedMembers = [...new Set([...currentMembers.filter(m => !removedMembers.includes(m)), ...newMembers])];
     
+=======
+
+    const currentMembers = VERTICES.filter(v => this.leafKeys[VERTICES.indexOf(v)] !== null);
+    const updatedMembers = [...new Set([...currentMembers.filter(m => !removedMembers.includes(m)), ...newMembers])];
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     const ratchetInput = await deriveHKDF(
       this.treeSecret,
       crypto.getRandomValues(new Uint8Array(32)),
       new TextEncoder().encode(`k4-ratchet-${newEpoch}`),
       32
     );
+<<<<<<< HEAD
     
     this.epoch = newEpoch;
     this.treeSecret = ratchetInput;
     this.epochSecrets.set(this.epoch, this.treeSecret);
     
+=======
+
+    this.epoch = newEpoch;
+    this.treeSecret = ratchetInput;
+    this.epochSecrets.set(this.epoch, this.treeSecret);
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     const newKeyPair = await generateX25519KeyPair();
     const newPubJwk = await exportPublicKey(newKeyPair.publicKey, 'jwk');
     this.privateKeys[this.leafIndex] = newKeyPair.privateKey;
     this.leafKeys[this.leafIndex] = newPubJwk;
     this.tree[this.leafIndex + 3] = newPubJwk;
+<<<<<<< HEAD
     
     await this._updateInternalNodes();
     
+=======
+
+    await this._updateInternalNodes();
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     const commit = {
       type: 'commit',
       epoch: this.epoch,
@@ -240,13 +313,21 @@ class TreeKEM {
       treeSecret: this._arrayBufferToBase64(await deriveHKDF(ratchetInput, new Uint8Array(0), new TextEncoder().encode('export'), 32)),
       signature: ''
     };
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     VERTICES.forEach((v, idx) => {
       if (this.leafKeys[idx]) {
         commit.tree[v] = this.leafKeys[idx];
       }
     });
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     const commitData = new TextEncoder().encode(JSON.stringify({ epoch: commit.epoch, tree: commit.tree }));
     try {
       const sig = await crypto.subtle.sign('ECDSA', this.signingKey, commitData);
@@ -255,7 +336,11 @@ class TreeKEM {
       const sig = await crypto.subtle.sign('ECDSA', this.signingKey, commitData);
       commit.signature = this._arrayBufferToBase64(sig);
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     return commit;
   }
 
@@ -263,7 +348,11 @@ class TreeKEM {
     if (commit.epoch <= this.epoch) {
       throw new Error('Stale commit epoch');
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     for (const [vId, jwk] of Object.entries(commit.tree || {})) {
       const idx = VERTICES.indexOf(vId);
       if (idx !== -1) {
@@ -272,9 +361,15 @@ class TreeKEM {
         this.verifiedPublicKeys.set(vId, jwk);
       }
     }
+<<<<<<< HEAD
     
     this.epoch = commit.epoch;
     
+=======
+
+    this.epoch = commit.epoch;
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     if (commit.treeSecret && this.leafKeys[this.leafIndex]) {
       try {
         const secret = await deriveHKDF(
@@ -289,7 +384,11 @@ class TreeKEM {
         console.warn('Failed to derive secret from commit:', e);
       }
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     await this._updateInternalNodes();
   }
 
@@ -300,7 +399,11 @@ class TreeKEM {
         tree[v] = this.leafKeys[idx];
       }
     });
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     return {
       epoch: this.epoch,
       tree,
@@ -344,7 +447,11 @@ export class MLSMeshClient {
 
   async initialize() {
     if (this.initialized) return;
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     if (this.options.persistKeys && typeof window !== 'undefined') {
       try {
         const saved = localStorage.getItem(`k4-mls-state-${this.userId}`);
@@ -359,7 +466,11 @@ export class MLSMeshClient {
         console.warn('[MLS] Failed to restore state:', e);
       }
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     const initResult = await this.treeKEM.initialize();
     this.initialized = true;
     this._persistState();
@@ -374,7 +485,11 @@ export class MLSMeshClient {
 
   async encryptMessage(content, metadata = {}) {
     if (!this.initialized) await this.initialize();
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     if (this.options.useE2EE) {
       const encrypted = await this.treeKEM.encrypt(JSON.stringify(content), metadata);
       return {
@@ -392,7 +507,11 @@ export class MLSMeshClient {
 
   async decryptMessage(message) {
     if (!this.initialized) await this.initialize();
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     if (message.encrypted && this.options.useE2EE) {
       try {
         const decrypted = await this.treeKEM.decrypt(message.payload);
@@ -461,7 +580,11 @@ export class MLSMeshClient {
       const res = await fetch('/api/messages/' + conversationId + '?limit=' + limit, { headers: this.headers });
       if (!res.ok) throw new Error('Failed to fetch messages');
       const data = await res.json();
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       if (this.options.useE2EE && data.messages) {
         const decrypted = [];
         for (const msg of data.messages) {
@@ -474,7 +597,11 @@ export class MLSMeshClient {
         }
         data.messages = decrypted;
       }
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       return data;
     } catch (err) {
       return { messages: [] };
@@ -483,7 +610,11 @@ export class MLSMeshClient {
 
   async sendMessage(conversationId, content, type = 'text') {
     const encrypted = await this.encryptMessage({ content, type }, { conversationId });
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     const res = await fetch('/api/messages', {
       method: 'POST',
       headers: this.headers,
@@ -517,7 +648,11 @@ export class MLSMeshClient {
       ws.onmessage = async (event) => {
         try {
           const data = JSON.parse(event.data);
+<<<<<<< HEAD
           
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
           if (data.type === 'message:new' && data.message && data.message.encrypted) {
             const decrypted = await this.decryptMessage(data.message);
             if (decrypted && !decrypted.error) {
@@ -549,11 +684,19 @@ export class MLSMeshClient {
 
   async broadcastCommit() {
     const commit = await this.createCommit();
+<<<<<<< HEAD
     
     if (this.ws && this.ws.readyState === WebSocket.OPEN) {
       this.ws.send(JSON.stringify({ type: 'commit', payload: commit }));
     }
     
+=======
+
+    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+      this.ws.send(JSON.stringify({ type: 'commit', payload: commit }));
+    }
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     try {
       await fetch('/api/epoch/commit', {
         method: 'POST',
@@ -561,7 +704,11 @@ export class MLSMeshClient {
         body: JSON.stringify(commit)
       });
     } catch (e) {}
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     return commit;
   }
 }

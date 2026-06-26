@@ -162,4 +162,8 @@ export function CyberneticBonsaiScene() {
   return <primitive object={rootGroup} ref={groupRef} />;
 }
 
+<<<<<<< HEAD
 export default CyberneticBonsaiScene;
+=======
+export default CyberneticBonsaiScene;
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

@@ -97,4 +97,8 @@ export function GameShell({ children, routeName, suppressEbc = false, cameraZ = 
   );
 }
 
+<<<<<<< HEAD
 export default GameShell;
+=======
+export default GameShell;
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

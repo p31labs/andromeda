@@ -7,4 +7,8 @@ export default defineConfig({
     port: 3000,
     host: true
   }
+<<<<<<< HEAD
 })
+=======
+})
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

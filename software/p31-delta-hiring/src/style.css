@@ -1,3 +1,27 @@
+<<<<<<< HEAD
+=======
+@import '@p31/shared/src/theme/css-variables.css';
+
+/* P31 Canon — injected by Quantum Polisher */
+:root {
+  --color-amber: #cda852;
+  --color-cloud: #1e293b;
+  --color-coral: #cc6247;
+  --color-cyan: #4db8a8;
+  --color-fuchsia: #e879f9;
+  --color-ink: var(--color-ink);
+  --color-lavender: #8b7cc9;
+  --color-muted: var(--color-muted);
+  --color-paper: #fdfcfa;
+  --color-phosphor: #00ff88;
+  --color-phosphorus: #3ba372;
+  --color-surface: #ffffff;
+  --color-surface2: #ebeae4;
+  --color-teal: #5dcaa5;
+  --color-themeColor: #f5f4f0;
+  --color-void: #f5f4f0;
+}
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
 :root {
   --p31-bg: #0a0a0f;
   --p31-surface: #14141f;
@@ -194,7 +218,11 @@ ul.compact {
   font-size: 0.8rem;
 }
 .weights span {
+<<<<<<< HEAD
   background: #0f172a;
+=======
+  background: var(--color-ink);
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   padding: 0.3rem 0.45rem;
   border-radius: 6px;
   color: #cbd5e1;
@@ -238,7 +266,11 @@ select {
   padding: 0.45rem 0.55rem;
   border-radius: 8px;
   border: 1px solid var(--p31-border);
+<<<<<<< HEAD
   background: #0f172a;
+=======
+  background: var(--color-ink);
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   color: var(--p31-text);
 }
 textarea {
@@ -276,7 +308,11 @@ label {
   border-radius: 8px;
   padding: 0.6rem;
   margin-bottom: 0.5rem;
+<<<<<<< HEAD
   background: #0f172a;
+=======
+  background: var(--color-ink);
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
 }
 .artifact-row header {
   display: flex;
@@ -300,7 +336,11 @@ label {
 .json-preview {
   font-family: ui-monospace, 'Cascadia Code', monospace;
   font-size: 0.72rem;
+<<<<<<< HEAD
   background: #0f172a;
+=======
+  background: var(--color-ink);
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   border: 1px solid var(--p31-border);
   border-radius: 8px;
   padding: 0.75rem;
@@ -498,7 +538,11 @@ footer.site {
   padding: 0.45rem 0.55rem;
   border-radius: 8px;
   border: 1px solid var(--p31-border);
+<<<<<<< HEAD
   background: #0f172a;
+=======
+  background: var(--color-ink);
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   color: var(--p31-text);
 }
 .label-row {
@@ -511,7 +555,11 @@ footer.site {
 }
 .inline-code,
 code {
+<<<<<<< HEAD
   background: #0f172a;
+=======
+  background: var(--color-ink);
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   padding: 0.1rem 0.3rem;
   border-radius: 4px;
   font-size: 0.86em;
@@ -538,7 +586,11 @@ code {
 }
 .callout--legal {
   background: #1a1a0f;
+<<<<<<< HEAD
   border-color: #64748b;
+=======
+  border-color: var(--color-muted);
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
 }
 .p-callout {
   margin: 0;

@@ -1,6 +1,10 @@
 /**
  * @file kenosisMesh.ts — Kenosis Mesh (Delta Topology CRDT Engine)
+<<<<<<< HEAD
  * 
+=======
+ *
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
  * Hardened with:
  * - Input validation & sanitization
  * - Error boundaries for WebRTC/IndexedDB failures
@@ -14,6 +18,10 @@ import * as Y from 'yjs';
 import { IndexeddbPersistence } from 'y-indexeddb';
 import { WebrtcProvider } from 'y-webrtc';
 import { useSovereignStore } from '../../sovereign/useSovereignStore';
+<<<<<<< HEAD
+=======
+import type { GenesisSyncStatus } from '../../sovereign/types';
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
 
 export type MeshConnectionState = 'disconnected' | 'connecting' | 'connected' | 'error';
 
@@ -45,7 +53,11 @@ class KenosisMesh {
   private persistence: IndexeddbPersistence | null = null;
   private stateMap: Y.Map<any> | null = null;
   private telemetryArray: Y.Array<any> | null = null;
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   private connectionState: MeshConnectionState = 'disconnected';
   private lastError: string | null = null;
   private connectionTimeoutId: ReturnType<typeof setTimeout> | null = null;
@@ -173,7 +185,11 @@ class KenosisMesh {
       }
 
       if (typeof remoteStatus === 'string') {
+<<<<<<< HEAD
         useSovereignStore.setState({ genesisSyncStatus: remoteStatus as any });
+=======
+        useSovereignStore.setState({ genesisSyncStatus: remoteStatus as GenesisSyncStatus });
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       }
     } catch (err) {
       console.error('[KenosisMesh] Sync error:', err);
@@ -207,7 +223,11 @@ class KenosisMesh {
 
   public halt() {
     this.clearConnectionTimeout();
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     if (this.provider) {
       try {
         this.provider.disconnect();
@@ -245,4 +265,8 @@ export const mesh = new KenosisMesh();
 
 export const getKenosisMesh = () => mesh;
 
+<<<<<<< HEAD
 export type { KenosisMesh as KenosisMeshClass };
+=======
+export type { KenosisMesh as KenosisMeshClass };
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

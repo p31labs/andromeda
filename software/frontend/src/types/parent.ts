@@ -14,7 +14,11 @@ export interface Child {
 }
 
 // Activity types from BONDING
+<<<<<<< HEAD
 export type ActivityActionType = 
+=======
+export type ActivityActionType =
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   | 'element_place'
   | 'bond_create'
   | 'molecule_complete'
@@ -52,7 +56,11 @@ export interface ChildTimeSettings {
 }
 
 // Webhook events from Discord Bot
+<<<<<<< HEAD
 export type WebhookEventType = 
+=======
+export type WebhookEventType =
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   | 'bonding-match'
   | 'kofi-purchase'
   | 'node-one-status'
@@ -100,7 +108,11 @@ export interface ActivityFilter {
 }
 
 // Time control actions
+<<<<<<< HEAD
 export type TimeControlAction = 
+=======
+export type TimeControlAction =
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   | { type: 'SET_LIMIT'; childId: string; limit: TimeLimit }
   | { type: 'PAUSE_ACCESS'; childId: string }
   | { type: 'RESUME_ACCESS'; childId: string }
@@ -108,7 +120,11 @@ export type TimeControlAction =
   | { type: 'RESET_DAILY_USAGE'; childId: string };
 
 // Family management actions
+<<<<<<< HEAD
 export type FamilyAction = 
+=======
+export type FamilyAction =
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   | { type: 'ADD_CHILD'; child: Child }
   | { type: 'REMOVE_CHILD'; childId: string }
   | { type: 'UPDATE_CHILD'; child: Child }
@@ -121,4 +137,8 @@ export interface WebhookConfig {
   url: string;
   events: WebhookEventType[];
   enabled: boolean;
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

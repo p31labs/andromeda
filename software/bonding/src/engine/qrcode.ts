@@ -25,13 +25,21 @@ export function generateQRSvg(
   data: string,
   options?: {
     size?: number;        // px, default 200
+<<<<<<< HEAD
     fgColor?: string;     // default '#FFFFFF'
+=======
+    fgColor?: string;     // default 'var(--color-surface)'
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     bgColor?: string;     // default 'transparent'
     quiet?: number;       // quiet zone modules, default 2
   }
 ): string {
   const size = options?.size ?? 200;
+<<<<<<< HEAD
   const fgColor = options?.fgColor ?? '#FFFFFF';
+=======
+  const fgColor = options?.fgColor ?? 'var(--color-surface)';
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   const bgColor = options?.bgColor ?? 'transparent';
   const quiet = options?.quiet ?? 2;
 
@@ -108,4 +116,8 @@ export function generateQRMatrix(data: string): boolean[][] {
   }
 
   return matrix;
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

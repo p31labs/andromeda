@@ -7,7 +7,11 @@ Comprehensive audit of the Three.js scene initialization and animation loop reve
 
 ## 1. Geometry Bloat — BufferGeometry Disposal (Lines 411–452 in dome.astro)
 
+<<<<<<< HEAD
 **Finding:** The tetrahedron is decomposed into 120 sub-blocks via recursive face subdivision (geo.subs=2 produces 16×15=240 faces, ~120 unique vertices). Each block spawns a `MeshPhysicalMaterial` instance stored in `faceMeshes[]`. 
+=======
+**Finding:** The tetrahedron is decomposed into 120 sub-blocks via recursive face subdivision (geo.subs=2 produces 16×15=240 faces, ~120 unique vertices). Each block spawns a `MeshPhysicalMaterial` instance stored in `faceMeshes[]`.
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
 
 **Leak Mechanism:**
 - `faceMeshes` is a global array that accumulates meshes on every render.
@@ -234,4 +238,8 @@ domeGroup.rotation.y += 0.0008 * clampedDt;
 
 ---
 
+<<<<<<< HEAD
 *Report generated from static analysis of `/home/p31/andromeda/software/p31ca/src/pages/dome.astro` and `/home/p31/andromeda/software/p31ca/src/pages/index.astro`.*
+=======
+*Report generated from static analysis of `/home/p31/andromeda/software/p31ca/src/pages/dome.astro` and `/home/p31/andromeda/software/p31ca/src/pages/index.astro`.*
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

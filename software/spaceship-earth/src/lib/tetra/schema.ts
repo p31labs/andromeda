@@ -17,7 +17,11 @@ export const TETRA_SCHEMA = 'p31.tetra/v1' as const;
 
 // ── Entity classification ───────────────────────────────────────────────────
 
+<<<<<<< HEAD
 export type TetraClass = 
+=======
+export type TetraClass =
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   | 'PHYSIOLOGICAL'        // Single person's vitals (Ca, HRV, Spoons, Genesis)
   | 'FAMILY_CAGE'          // 4-person family tetrahedron
   | 'AGENT_HUB'            // AI agent cluster (4 agents)
@@ -98,6 +102,7 @@ export interface TetraData {
 export function validateTetra(data: unknown): data is TetraData {
   if (typeof data !== 'object' || data === null) return false;
   const d = data as Record<string, unknown>;
+<<<<<<< HEAD
   
   if (d.schema !== TETRA_SCHEMA) return false;
   if (typeof d.id !== 'string') return false;
@@ -113,6 +118,23 @@ export function validateTetra(data: unknown): data is TetraData {
   const edges = d.edges as Array<unknown> | undefined;
   if (!Array.isArray(edges) || edges.length !== 6) return false;
   
+=======
+
+  if (d.schema !== TETRA_SCHEMA) return false;
+  if (typeof d.id !== 'string') return false;
+  if (typeof d.metadata !== 'object') return false;
+
+  const meta = d.metadata as Record<string, unknown>;
+  if (typeof meta.scale !== 'string') return false;
+  if (typeof meta.class !== 'string') return false;
+
+  const vertices = d.vertices as Array<unknown> | undefined;
+  if (!Array.isArray(vertices) || vertices.length !== 4) return false;
+
+  const edges = d.edges as Array<unknown> | undefined;
+  if (!Array.isArray(edges) || edges.length !== 6) return false;
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   return true;
 }
 
@@ -127,7 +149,11 @@ export function createPhysiologicalTetra(
 ): TetraData {
   // Normalize values to 0-1 range
   const norm = (val: number, min: number, max: number) => Math.max(0, Math.min(1, (val - min) / (max - min)));
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   return {
     schema: TETRA_SCHEMA,
     id,
@@ -174,7 +200,11 @@ export function createHubTetra(
     },
     vertices: [
       { id: 'v0', label: 'Nodes',     val: nodeCount / 100,       color: '#00D4FF' },
+<<<<<<< HEAD
       { id: 'v1', label: 'Connections', val: activeConnections / 1000, color: '#00FF88' },
+=======
+      { id: 'v1', label: 'Connections', val: activeConnections / 1000, color: 'var(--color-phosphor)' },
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       { id: 'v2', label: 'Throughput', val: messageRate / 10000,   color: '#FFD93D' },
       { id: 'v3', label: 'Health',    val: healthScore,           color: '#EF4444' },
     ],
@@ -197,7 +227,11 @@ export function createMarketplaceTetra(
   volume: number
 ): TetraData {
   const norm = (v: number, max: number) => Math.min(1, v / max);
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   return {
     schema: TETRA_SCHEMA,
     id,
@@ -253,7 +287,11 @@ export async function hashTetra(tetra: TetraData): Promise<string> {
     vertices: tetra.vertices.map(v => ({ id: v.id, label: v.label, val: v.val })),
     edges: tetra.edges.map(e => ({ source: e.source, target: e.target, weight: e.weight })),
   });
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   const buf = new TextEncoder().encode(canonical);
   const hashBuffer = await crypto.subtle.digest('SHA-256', buf);
   return Array.from(new Uint8Array(hashBuffer))

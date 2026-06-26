@@ -1,10 +1,67 @@
 /**
  * WebGPU Type Definitions
+<<<<<<< HEAD
  * 
+=======
+ *
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
  * Provides TypeScript definitions for WebGPU APIs that may not be available
  * in all TypeScript environments or browser versions.
  */
 
+<<<<<<< HEAD
+=======
+// Minimal ambient stubs for WebGPU types missing from lib when @webgpu/types is not auto-included
+declare type GPUQueryType = 'occlusion' | 'timestamp';
+declare type GPUAddressMode = 'clamp-to-edge' | 'repeat' | 'mirror-repeat';
+declare type GPUFilterMode = 'nearest' | 'linear';
+declare type GPUMipmapFilterMode = 'nearest' | 'linear';
+declare type GPUCompareFunction = 'never' | 'less' | 'equal' | 'less-equal' | 'greater' | 'not-equal' | 'greater-equal' | 'always';
+declare type GPUTextureDimension = '1d' | '2d' | '3d';
+declare type GPUTextureUsageFlags = number;
+
+// Stub types for newer WebGPU APIs not in default lib
+export declare interface GPUDeviceLostInfo {
+  reason: string;
+  message: string;
+}
+
+export declare interface GPUUncapturedErrorEvent {
+  error: GPUError;
+  timestamp: number;
+}
+
+export declare interface GPUQuerySetDescriptor {
+  type: GPUQueryType;
+  count: number;
+}
+
+export declare interface GPURenderBundleEncoderDescriptor {
+  colorFormats: GPUTextureFormat[];
+  depthStencilFormat?: GPUTextureFormat;
+  sampleCount: number;
+}
+
+export declare interface GPUSamplerDescriptor {
+  addressModeU: GPUAddressMode;
+  addressModeV: GPUAddressMode;
+  addressModeW: GPUAddressMode;
+  magFilter: GPUFilterMode;
+  minFilter: GPUFilterMode;
+  mipmapFilter: GPUMipmapFilterMode;
+  lodMinClamp: number;
+  lodMaxClamp: number;
+  compare?: GPUCompareFunction;
+}
+
+export declare interface GPUTextureDescriptor {
+  size: number | [number, number, number];
+  dimension: GPUTextureDimension;
+  format: GPUTextureFormat;
+  usage: GPUTextureUsageFlags;
+}
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
 // WebGPU Buffer Usage Flags
 export const GPUBufferUsage = {
   MAP_READ: 0x0001,
@@ -200,7 +257,11 @@ export interface GPUShaderModule {
 }
 
 // WebGPU Texture Format
+<<<<<<< HEAD
 export type GPUTextureFormat = 
+=======
+declare type GPUTextureFormat =
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   | 'rgba8unorm'
   | 'rgba8snorm'
   | 'rgba8uint'
@@ -373,7 +434,11 @@ export interface GPULimits {
 }
 
 // WebGPU Feature Name
+<<<<<<< HEAD
 export type GPUFeatureName = 
+=======
+export type GPUFeatureName =
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   | 'depth-clip-control'
   | 'depth32float-stencil8'
   | 'timestamp-query'
@@ -399,7 +464,11 @@ export interface GPUQueueDescriptor {
 }
 
 // WebGPU Bindable Resource
+<<<<<<< HEAD
 export type GPUBindableResource = 
+=======
+export type GPUBindableResource =
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   | GPUBuffer
   | GPUSampler
   | GPUTextureView
@@ -410,6 +479,24 @@ export interface GPUSampler {
   // Empty interface - used for type checking
 }
 
+<<<<<<< HEAD
+=======
+// WebGPU Texture
+export interface GPUTexture {
+  // Empty interface - used for type checking
+}
+
+// WebGPU Query Set
+export interface GPUQuerySet {
+  // Empty interface - used for type checking
+}
+
+// WebGPU Render Bundle Encoder
+export interface GPURenderBundleEncoder {
+  // Empty interface - used for type checking
+}
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
 // WebGPU Texture View
 export interface GPUTextureView {
   // Empty interface - used for type checking
@@ -432,13 +519,21 @@ export interface GPUAdapterInfo {
   backendType: GPUBackendType;
 }
 
+<<<<<<< HEAD
 export type GPUAdapterType = 
+=======
+export type GPUAdapterType =
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   | 'discrete'
   | 'integrated'
   | 'cpu'
   | 'unknown';
 
+<<<<<<< HEAD
 export type GPUBackendType = 
+=======
+export type GPUBackendType =
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   | 'd3d11'
   | 'd3d12'
   | 'metal'
@@ -482,7 +577,14 @@ declare global {
 
   interface Navigator {
     gpu?: {
+<<<<<<< HEAD
       requestAdapter(options?: GPURequestAdapterOptions): Promise<any>;
     };
   }
 }
+=======
+      requestAdapter(options?: GPURequestAdapterOptions): Promise<GPUAdapter | null>;
+    };
+  }
+}
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

@@ -12,7 +12,12 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-datepicker": "^8.0.0",
+<<<<<<< HEAD
     "date-fns": "^3.6.0"
+=======
+    "date-fns": "^3.6.0",
+    "@p31/shared": "workspace:*"
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   },
   "devDependencies": {
     "@types/react": "^19.0.0",
@@ -20,4 +25,8 @@
     "@vitejs/plugin-react": "^4.2.1",
     "vite": "^5.4.0"
   }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

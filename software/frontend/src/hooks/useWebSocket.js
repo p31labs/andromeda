@@ -4,7 +4,11 @@ import { MeshClient } from '../api/mesh-client';
 /**
  * useWebSocket Hook
  * Manages WebSocket connection for real-time messaging
+<<<<<<< HEAD
  * 
+=======
+ *
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
  * Features:
  * - Auto-reconnection with exponential backoff
  * - Event subscription system
@@ -17,7 +21,11 @@ export function useWebSocket(userId, options = {}) {
   const [isConnected, setIsConnected] = useState(false);
   const [connectionError, setConnectionError] = useState(null);
   const [lastPong, setLastPong] = useState(null);
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   const clientRef = useRef(null);
   const wsRef = useRef(null);
   const handlersRef = useRef(new Map());
@@ -125,7 +133,11 @@ export function useWebSocket(userId, options = {}) {
    */
   const startHeartbeat = useCallback(() => {
     stopHeartbeat(); // Clear existing
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     pingIntervalRef.current = setInterval(() => {
       if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
         // Send ping (optional, server handles it)

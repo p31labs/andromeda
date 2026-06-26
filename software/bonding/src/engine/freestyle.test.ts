@@ -38,12 +38,20 @@ describe('Freestyle Mode Engine', () => {
   it('isFreestyleAvailable sapling → true', () => {
     expect(isFreestyleAvailable('sapling')).toBe(true);
   });
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   it('scoreFreestyle 2 H atoms = 6 base LOVE (3 per atom)', () => {
       const result = scoreFreestyle([{element: 'H'}, {element: 'H'}], 0, false);
       expect(result.baseLove).toBe(6);
   });
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   it('scoreFreestyle applies unique element bonus', () => {
       const result = scoreFreestyle([{element: 'H'}, {element: 'O'}], 0, false);
       const bonus = result.bonuses.find(b => b.name === 'Element Variety');
@@ -56,7 +64,11 @@ describe('Freestyle Mode Engine', () => {
       const bonus = result.bonuses.find(b => b.name === 'Big Molecule');
       expect(bonus?.love).toBe(10);
   });
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   it('scoreFreestyle applies size bonus at 20 atoms', () => {
       const atoms = Array(20).fill({element: 'C'});
       const result = scoreFreestyle(atoms, 0, false);
@@ -74,7 +86,11 @@ describe('Freestyle Mode Engine', () => {
       const result = scoreFreestyle([{element: 'H'}, {element: 'H'}], 100, false);
       expect(result.baseLove).toBe(12); // 6 * 2
   });
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   it('scoreFreestyle stability multiplier at 0% = 1x', () => {
       const result = scoreFreestyle([{element: 'H'}, {element: 'H'}], 0, false);
       expect(result.baseLove).toBe(6); // 6 * 1

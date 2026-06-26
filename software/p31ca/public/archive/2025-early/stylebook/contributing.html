@@ -58,7 +58,11 @@
     import { renderShell, code, callout } from '/stylebook/_chrome.js';
     import { P31ThemeController } from '/lib/p31-theme-engine.mjs';
     window.p31Theme = new P31ThemeController({ defaultTheme: 'hub' });
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     const content = `
       <section class="sb-section">
         <div class="sb-section-header">
@@ -66,7 +70,11 @@
           <h2 class="sb-h2">Three contribution paths</h2>
           <p class="sb-text">Different changes go through different channels. Pick the right one to avoid review-cycle pain.</p>
         </div>
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         <table class="sb-table">
           <thead><tr><th>Type</th><th>Where</th><th>Reviewer</th></tr></thead>
           <tbody>
@@ -79,13 +87,21 @@
           </tbody>
         </table>
       </section>
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">Adding a token</div>
           <h2 class="sb-h2">The canonical change flow</h2>
         </div>
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         <div style="background: var(--p31-surface); border: 1px solid var(--p31-border-subtle); border-radius: 12px; padding: 24px;">
           <div class="step">
             <div class="step-num">1</div>
@@ -138,7 +154,11 @@
           </div>
         </div>
       </section>
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">RFC process</div>
@@ -146,11 +166,19 @@
           <p class="sb-text">If you're adding a component the system doesn't have, write an RFC first.
           Saves everyone from "we already had this, named differently" pain.</p>
         </div>
+<<<<<<< HEAD
         
         ${code(`# RFC: <Component name>
 
 **Status:** Draft  
 **Author:** @username  
+=======
+
+        ${code(`# RFC: <Component name>
+
+**Status:** Draft
+**Author:** @username
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
 **Created:** 2026-05-01
 
 ## Problem
@@ -191,13 +219,21 @@ What does Material/Radix/HIG/Linear do? Why are we different?
 
 Does anything need to change in existing pages?`, 'plain', 'RFC template')}
       </section>
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">PR checklist</div>
           <h2 class="sb-h2">Before requesting review</h2>
         </div>
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         ${code(`Self-review pass:
 
 [ ] Branch named pr/<slug>-<shortsha>
@@ -221,13 +257,21 @@ If a token was added:
 [ ] Generated outputs committed (p31-style.css, etc.)
 [ ] Used by at least one component`, 'plain', 'PR checklist')}
       </section>
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">Versioning</div>
           <h2 class="sb-h2">Semver for the design system</h2>
         </div>
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         <table class="sb-table">
           <thead><tr><th>Change type</th><th>Version bump</th><th>Examples</th></tr></thead>
           <tbody>
@@ -236,16 +280,27 @@ If a token was added:
             <tr><td>Patch</td><td>0.0.X</td><td>Bug fix; copy correction; doc improvement</td></tr>
           </tbody>
         </table>
+<<<<<<< HEAD
         
         ${callout('warn', 'Deprecation, not deletion', 'When removing a token or component, mark it deprecated for one minor version before removal. The old token continues to work; <code>verify:style-alignment</code> warns on use; release notes call out the deadline.')}
       </section>
       
+=======
+
+        ${callout('warn', 'Deprecation, not deletion', 'When removing a token or component, mark it deprecated for one minor version before removal. The old token continues to work; <code>verify:style-alignment</code> warns on use; release notes call out the deadline.')}
+      </section>
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">Local dev</div>
           <h2 class="sb-h2">Setting up</h2>
         </div>
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         ${code(`# 1. Clone (root home + p31ca only — partial clone)
 git clone <home-repo>
 cd <home>
@@ -269,13 +324,21 @@ npm run apply:p31-style
 npm run verify
 npm run release:check`, 'shell', 'Local setup')}
       </section>
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">Code style</div>
           <h2 class="sb-h2">House conventions</h2>
         </div>
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         <table class="sb-table">
           <thead><tr><th>Concern</th><th>Rule</th></tr></thead>
           <tbody>
@@ -294,13 +357,21 @@ npm run release:check`, 'shell', 'Local setup')}
           </tbody>
         </table>
       </section>
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">Communication</div>
           <h2 class="sb-h2">Where to ask</h2>
         </div>
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         <table class="sb-table">
           <thead><tr><th>Question</th><th>Where</th></tr></thead>
           <tbody>
@@ -314,7 +385,11 @@ npm run release:check`, 'shell', 'Local setup')}
         </table>
       </section>
     `;
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     renderShell({
       activeId: 'contributing',
       breadcrumb: [
