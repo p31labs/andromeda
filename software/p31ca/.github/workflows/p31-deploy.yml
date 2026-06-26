@@ -1,0 +1,226 @@
+name: p31-deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: p31-deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '20'
+  PNPM_VERSION: '10.32.1'
+
+jobs:
+  # ────────────────────────────────────────
+  # 0. Lint — code quality, security patterns
+  # ────────────────────────────────────────
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with: { version: ${{ env.PNPM_VERSION }} }
+      - uses: actions/setup-node@v4
+        with: { node-version: ${{ env.NODE_VERSION }}, cache: 'pnpm' }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run security:lint
+
+  # ────────────────────────────────────────
+  # 1. Typecheck — TypeScript strict mode
+  # ────────────────────────────────────────
+  typecheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with: { version: ${{ env.PNPM_VERSION }} }
+      - uses: actions/setup-node@v4
+        with: { node-version: ${{ env.NODE_VERSION }}, cache: 'pnpm' }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run typecheck
+
+  # ────────────────────────────────────────
+  # 2. Content Audit — EIN drift, medical/FDA claims, wrong specs
+  # ────────────────────────────────────────
+  audit-content:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with: { version: ${{ env.PNPM_VERSION }} }
+      - uses: actions/setup-node@v4
+        with: { node-version: ${{ env.NODE_VERSION }}, cache: 'pnpm' }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run audit:content
+
+  # ────────────────────────────────────────
+  # 3. Page Coverage — every nav slot has a page
+  # ────────────────────────────────────────
+  audit-pages:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with: { version: ${{ env.PNPM_VERSION }} }
+      - uses: actions/setup-node@v4
+        with: { node-version: ${{ env.NODE_VERSION }}, cache: 'pnpm' }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run audit:pages
+
+  # ────────────────────────────────────────
+  # 4. Ground Truth — redirects, registry, worker-spa contracts
+  # ────────────────────────────────────────
+  ground-truth:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with: { version: ${{ env.PNPM_VERSION }} }
+      - uses: actions/setup-node@v4
+        with: { node-version: ${{ env.NODE_VERSION }}, cache: 'pnpm' }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run verify:ground-truth
+      - run: pnpm run verify:worker-spa-launch
+
+  # ────────────────────────────────────────
+  # 5. Hub Registry — product cards in lockstep
+  # ────────────────────────────────────────
+  hub-verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with: { version: ${{ env.PNPM_VERSION }} }
+      - uses: actions/setup-node@v4
+        with: { node-version: ${{ env.NODE_VERSION }}, cache: 'pnpm' }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run hub:verify
+
+  # ────────────────────────────────────────
+  # 6. Security — CVE scan, worker allowlist, crypto surface
+  # ────────────────────────────────────────
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with: { version: ${{ env.PNPM_VERSION }} }
+      - uses: actions/setup-node@v4
+        with: { node-version: ${{ env.NODE_VERSION }}, cache: 'pnpm' }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run security:audit
+      - run: pnpm run security:workers
+      - run: pnpm run security:crypto
+
+  # ────────────────────────────────────────
+  # 7. Build — Astro production build + postbuild verifiers
+  # ────────────────────────────────────────
+  build:
+    runs-on: ubuntu-latest
+    needs: [lint, typecheck, audit-content, audit-pages, ground-truth, hub-verify, security]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with: { version: ${{ env.PNPM_VERSION }} }
+      - uses: actions/setup-node@v4
+        with: { node-version: ${{ env.NODE_VERSION }}, cache: 'pnpm' }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+          retention-days: 7
+
+  # ────────────────────────────────────────
+  # 8. Staging Deploy
+  # ────────────────────────────────────────
+  staging:
+    runs-on: ubuntu-latest
+    needs: build
+    environment: staging
+    steps:
+      - uses: actions/download-artifact@v4
+        with: { name: dist, path: dist }
+      - name: Deploy to Cloudflare Pages (staging)
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: p31ca-staging
+          directory: dist
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+
+  # ────────────────────────────────────────
+  # 9. Smoke Tests — staging must breathe
+  # ────────────────────────────────────────
+  smoke:
+    runs-on: ubuntu-latest
+    needs: staging
+    steps:
+      - name: Staging health check
+        run: |
+          curl --fail --retry 3 --retry-delay 5 https://staging.p31ca.org/ || exit 1
+          curl --fail --retry 3 --retry-delay 5 https://staging.p31ca.org/andromeda || exit 1
+      - name: Verify critical assets
+        run: |
+          curl --fail https://staging.p31ca.org/robots.txt
+          curl --fail https://staging.p31ca.org/.well-known/security.txt
+
+  # ────────────────────────────────────────
+  # 10. Quality Gate — no pass if any prior stage failed
+  # ────────────────────────────────────────
+  quality-gate:
+    runs-on: ubuntu-latest
+    needs: [lint, typecheck, audit-content, audit-pages, ground-truth, hub-verify, security, build, staging, smoke]
+    if: always()
+    steps:
+      - name: Evaluate all dependencies
+        run: |
+          FAILED=0
+          for JOB in lint typecheck audit-content audit-pages ground-truth hub-verify security build staging smoke; do
+            RESULT="${{ needs.$JOB.result }}"
+            if [ "$RESULT" != "success" ]; then
+              echo "❌ $JOB: $RESULT"
+              FAILED=1
+            else
+              echo "✅ $JOB: $RESULT"
+            fi
+          done
+          if [ "$FAILED" -eq 1 ]; then
+            echo "QUALITY_GATE=FAILED" >> "$GITHUB_ENV"
+          else
+            echo "QUALITY_GATE=PASSED" >> "$GITHUB_ENV"
+          fi
+      - name: Block on failure
+        if: env.QUALITY_GATE == 'FAILED'
+        run: |
+          echo "::error::Quality gate failed — at least one stage did not pass."
+          exit 1
+      - name: Quality gate passed
+        if: env.QUALITY_GATE == 'PASSED'
+        run: echo "All 10 stages passed. Proceeding to production."
+
+  # ────────────────────────────────────────
+  # 11. Production Deploy — gated behind quality gate + approval
+  # ────────────────────────────────────────
+  deploy:
+    runs-on: ubuntu-latest
+    needs: quality-gate
+    if: github.ref == 'refs/heads/main' && env.QUALITY_GATE == 'PASSED'
+    environment: production
+    steps:
+      - uses: actions/download-artifact@v4
+        with: { name: dist, path: dist }
+      - name: Deploy to Cloudflare Pages (production)
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: p31ca
+          directory: dist
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
