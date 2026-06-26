@@ -20,6 +20,9 @@ jobs:
   # ────────────────────────────────────────
   lint:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: software/p31ca
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -34,6 +37,9 @@ jobs:
   # ────────────────────────────────────────
   typecheck:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: software/p31ca
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -48,6 +54,9 @@ jobs:
   # ────────────────────────────────────────
   audit-content:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: software/p31ca
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -62,6 +71,9 @@ jobs:
   # ────────────────────────────────────────
   audit-pages:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: software/p31ca
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -76,6 +88,9 @@ jobs:
   # ────────────────────────────────────────
   ground-truth:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: software/p31ca
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -91,6 +106,9 @@ jobs:
   # ────────────────────────────────────────
   hub-verify:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: software/p31ca
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -105,6 +123,9 @@ jobs:
   # ────────────────────────────────────────
   security:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: software/p31ca
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -121,6 +142,9 @@ jobs:
   # ────────────────────────────────────────
   build:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: software/p31ca
     needs: [lint, typecheck, audit-content, audit-pages, ground-truth, hub-verify, security]
     steps:
       - uses: actions/checkout@v4
