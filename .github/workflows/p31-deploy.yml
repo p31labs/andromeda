@@ -1,6 +1,7 @@
 name: p31-deploy
 
 on:
+  workflow_dispatch:
   push:
     branches: [main]
   pull_request:
@@ -16,21 +17,25 @@ env:
 
 jobs:
   lint:
-    runs-on: ubuntu-latest
+    runs-on:
+  workflow_dispatch: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
         with:
-          version: '${{ env.PNPM_VERSION }}'
+          version:
+  workflow_dispatch: '${{ env.PNPM_VERSION }}'
       - uses: actions/setup-node@v4
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version:
+  workflow_dispatch: ${{ env.NODE_VERSION }}
           cache: 'pnpm'
       - run: pnpm install --frozen-lockfile
       - run: pnpm run security:lint
 
   typecheck:
-    runs-on: ubuntu-latest
+    runs-on:
+  workflow_dispatch: ubuntu-latest
     needs: lint
     defaults:
       run:
@@ -39,16 +44,19 @@ jobs:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
         with:
-          version: '${{ env.PNPM_VERSION }}'
+          version:
+  workflow_dispatch: '${{ env.PNPM_VERSION }}'
       - uses: actions/setup-node@v4
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version:
+  workflow_dispatch: ${{ env.NODE_VERSION }}
           cache: 'pnpm'
       - run: pnpm install --frozen-lockfile
       - run: pnpm run typecheck
 
   audit-content:
-    runs-on: ubuntu-latest
+    runs-on:
+  workflow_dispatch: ubuntu-latest
     needs: lint
     defaults:
       run:
@@ -57,16 +65,19 @@ jobs:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
         with:
-          version: '${{ env.PNPM_VERSION }}'
+          version:
+  workflow_dispatch: '${{ env.PNPM_VERSION }}'
       - uses: actions/setup-node@v4
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version:
+  workflow_dispatch: ${{ env.NODE_VERSION }}
           cache: 'pnpm'
       - run: pnpm install --frozen-lockfile
       - run: pnpm run audit:content
 
   audit-pages:
-    runs-on: ubuntu-latest
+    runs-on:
+  workflow_dispatch: ubuntu-latest
     needs: lint
     defaults:
       run:
@@ -75,16 +86,19 @@ jobs:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
         with:
-          version: '${{ env.PNPM_VERSION }}'
+          version:
+  workflow_dispatch: '${{ env.PNPM_VERSION }}'
       - uses: actions/setup-node@v4
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version:
+  workflow_dispatch: ${{ env.NODE_VERSION }}
           cache: 'pnpm'
       - run: pnpm install --frozen-lockfile
       - run: pnpm run audit:pages
 
   ground-truth:
-    runs-on: ubuntu-latest
+    runs-on:
+  workflow_dispatch: ubuntu-latest
     needs: lint
     defaults:
       run:
@@ -93,17 +107,20 @@ jobs:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
         with:
-          version: '${{ env.PNPM_VERSION }}'
+          version:
+  workflow_dispatch: '${{ env.PNPM_VERSION }}'
       - uses: actions/setup-node@v4
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version:
+  workflow_dispatch: ${{ env.NODE_VERSION }}
           cache: 'pnpm'
       - run: pnpm install --frozen-lockfile
       - run: pnpm run verify:ground-truth
       - run: pnpm run verify:worker-spa-launch
 
   hub-verify:
-    runs-on: ubuntu-latest
+    runs-on:
+  workflow_dispatch: ubuntu-latest
     needs: lint
     defaults:
       run:
@@ -112,16 +129,19 @@ jobs:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
         with:
-          version: '${{ env.PNPM_VERSION }}'
+          version:
+  workflow_dispatch: '${{ env.PNPM_VERSION }}'
       - uses: actions/setup-node@v4
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version:
+  workflow_dispatch: ${{ env.NODE_VERSION }}
           cache: 'pnpm'
       - run: pnpm install --frozen-lockfile
       - run: pnpm run hub:verify
 
   security:
-    runs-on: ubuntu-latest
+    runs-on:
+  workflow_dispatch: ubuntu-latest
     needs: lint
     defaults:
       run:
@@ -130,10 +150,12 @@ jobs:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
         with:
-          version: '${{ env.PNPM_VERSION }}'
+          version:
+  workflow_dispatch: '${{ env.PNPM_VERSION }}'
       - uses: actions/setup-node@v4
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version:
+  workflow_dispatch: ${{ env.NODE_VERSION }}
           cache: 'pnpm'
       - run: pnpm install --frozen-lockfile
       - run: pnpm run security:audit
@@ -141,7 +163,8 @@ jobs:
       - run: pnpm run security:crypto
 
   build:
-    runs-on: ubuntu-latest
+    runs-on:
+  workflow_dispatch: ubuntu-latest
     needs: [lint, typecheck, audit-content, audit-pages, ground-truth, hub-verify, security]
     defaults:
       run:
@@ -150,10 +173,12 @@ jobs:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
         with:
-          version: '${{ env.PNPM_VERSION }}'
+          version:
+  workflow_dispatch: '${{ env.PNPM_VERSION }}'
       - uses: actions/setup-node@v4
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version:
+  workflow_dispatch: ${{ env.NODE_VERSION }}
           cache: 'pnpm'
       - run: pnpm install --frozen-lockfile
       - run: pnpm run build
@@ -164,7 +189,8 @@ jobs:
           retention-days: 7
 
   staging:
-    runs-on: ubuntu-latest
+    runs-on:
+  workflow_dispatch: ubuntu-latest
     needs: build
     environment: staging
     steps:
@@ -182,7 +208,8 @@ jobs:
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
 
   smoke:
-    runs-on: ubuntu-latest
+    runs-on:
+  workflow_dispatch: ubuntu-latest
     needs: staging
     steps:
       - name: Staging health check
@@ -195,7 +222,8 @@ jobs:
           curl --fail https://staging.p31ca.org/.well-known/security.txt
 
   quality-gate:
-    runs-on: ubuntu-latest
+    runs-on:
+  workflow_dispatch: ubuntu-latest
     needs: [lint, typecheck, audit-content, audit-pages, ground-truth, hub-verify, security, build, staging, smoke]
     if: always()
     steps:
@@ -231,7 +259,8 @@ jobs:
         run: echo "All 10 stages passed. Proceeding to production."
 
   deploy:
-    runs-on: ubuntu-latest
+    runs-on:
+  workflow_dispatch: ubuntu-latest
     needs: quality-gate
     if: github.ref == 'refs/heads/main' && needs.quality-gate.result == 'success'
     environment: production
