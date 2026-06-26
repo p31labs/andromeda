@@ -5,11 +5,6 @@ const VECTOR_PROXY = endpoints.vectorProxy;
 
 export async function generateEmbedding(text: string): Promise<number[]> {
   try {
-<<<<<<< HEAD
-    const response = await fetch(VECTOR_PROXY, {
-=======
-    const response = await fetch('http://localhost:4000/v1/embeddings', {
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

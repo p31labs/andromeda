@@ -24,12 +24,8 @@
     "three": "0.128.0",
     "y-websocket": "^1.5.4",
     "yjs": "^13.5.0",
-<<<<<<< HEAD
-    "zustand": "^5.0.12"
-=======
     "zustand": "^5.0.12",
     "@p31/shared": "workspace:*"
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
   },
   "devDependencies": {
     "@webgpu/types": "^0.1.69",

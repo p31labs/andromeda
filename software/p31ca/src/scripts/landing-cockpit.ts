@@ -20,19 +20,11 @@ const MAX_SPOONS = 20;
 let prevSpoonsForSunrise: number | undefined;
 
 function applyQFavicon(score: number) {
-<<<<<<< HEAD
   let stroke = "#4db8a8";
   if (score > 0.8) stroke = "#4db8a8";
   else if (score > 0.5) stroke = "#7a9e96";
   else if (score > 0.3) stroke = "#cda852";
   else stroke = "#cc6247";
-=======
-  let stroke = "var(--color-cyan)";
-  if (score > 0.8) stroke = "var(--color-cyan)";
-  else if (score > 0.5) stroke = "#7a9e96";
-  else if (score > 0.3) stroke = "var(--color-amber)";
-  else stroke = "var(--color-coral)";
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path fill="none" stroke="${stroke}" stroke-width="2" d="M16 4 L28 24 L4 24 Z"/></svg>`;
   const url = `data:image/svg+xml,${encodeURIComponent(svg)}`;
   let link = document.querySelector("link[rel='icon']") as HTMLLinkElement | null;
@@ -50,7 +42,6 @@ const updateTelemetry = async () => {
   if (qData && qData.score) {
     const score = qData.score.toFixed(3);
     const isOpt = qData.score >= 0.9, isStab = qData.score >= 0.7;
-<<<<<<< HEAD
     const colorClass = isOpt ? 'text-[var(--p31-phosphorus)]' : isStab ? 'text-[#cda852]' : 'text-[#E8636F]';
     const bgClass = isOpt ? 'bg-[var(--p31-phosphorus)]' : isStab ? 'bg-[#cda852]' : 'bg-[#E8636F]';
     
@@ -58,15 +49,6 @@ const updateTelemetry = async () => {
     if (nq) { nq.innerText = score; nq.className = `font-bold tracking-wider ${colorClass}`; }
     if (nd) { nd.className = `w-2 h-2 rounded-full animate-pulse ${bgClass}`; nd.style.boxShadow = `0 0 8px ${isOpt?'var(--p31-phosphorus)':isStab?'#cda852':'#E8636F'}`; }
     
-=======
-    const colorClass = isOpt ? 'text-[var(--p31-phosphorus)]' : isStab ? 'text-[var(--color-amber)]' : 'text-[#E8636F]';
-    const bgClass = isOpt ? 'bg-[var(--p31-phosphorus)]' : isStab ? 'bg-[var(--color-amber)]' : 'bg-[#E8636F]';
-
-    const nq = $('nav-q-factor'), nd = $('nav-status-dot');
-    if (nq) { nq.innerText = score; nq.className = `font-bold tracking-wider ${colorClass}`; }
-    if (nd) { nd.className = `w-2 h-2 rounded-full animate-pulse ${bgClass}`; nd.style.boxShadow = `0 0 8px ${isOpt?'var(--p31-phosphorus)':isStab?'var(--color-amber)':'#E8636F'}`; }
-
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
     const activeVerts = Object.values(qData.vertexHealth || {}).filter(v => v > 0).length;
     const fleetEl = $('nav-fleet-val'); if (fleetEl) fleetEl.innerText = `${activeVerts}/4`;
     if (typeof qData.score === "number" && Number.isFinite(qData.score)) applyQFavicon(qData.score);
@@ -127,11 +109,7 @@ updateTelemetry();
 // ================================================================
 const $trimCanvas = $('trimtab-canvas') as HTMLCanvasElement | null;
 const $trimFreq = $('trimtab-freq');
-<<<<<<< HEAD
 let trimValue = 1.0; 
-=======
-let trimValue = 1.0;
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
 let trimOn = false;
 let trimAudioCtx: AudioContext | null = null, trimOsc: OscillatorNode | null = null, trimGain: GainNode | null = null;
 let _trimIsDown = false, _trimAngle: number | null = null;
@@ -144,11 +122,7 @@ function drawTrimtab() {
   if (!ctx) return;
   ctx.clearRect(0, 0, 24, 24);
   const cx = 12, cy = 12, r = 8, start = 3*Math.PI/4, sweep = 3*Math.PI/2;
-<<<<<<< HEAD
   
-=======
-
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
   ctx.strokeStyle = 'rgba(255,255,255,0.15)'; ctx.lineWidth = 2; ctx.lineCap = 'round';
   ctx.beginPath(); ctx.arc(cx, cy, r, start, start + sweep); ctx.stroke();
 

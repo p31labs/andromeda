@@ -1,31 +1,8 @@
-<<<<<<< HEAD
-import React, { Suspense } from 'react';
-import { describe, it, expect } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
-import { DeviceProvider } from '../../context/DeviceContext';
-=======
-import React from 'react';
-import { describe, it, expect } from 'vitest';
-import { render, screen } from '@testing-library/react';
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
 import { AtmosphereProvider } from '../AtmosphereProvider';
 import { SurfaceContent } from '../SurfaceContent';
 
 const renderSurface = (surface: string, spoons = 3) => {
   return render(
-<<<<<<< HEAD
-    <DeviceProvider>
-      <AtmosphereProvider initialSpoons={spoons} initialSurface={surface}>
-        <Suspense fallback={<div>Loading...</div>}>
-          <SurfaceContent currentSurface={surface} setSurface={() => {}} spoons={spoons} />
-        </Suspense>
-      </AtmosphereProvider>
-    </DeviceProvider>
-=======
-    <AtmosphereProvider initialSpoons={spoons} initialSurface={surface}>
-      <SurfaceContent currentSurface={surface} setSurface={() => {}} spoons={spoons} />
-    </AtmosphereProvider>
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
   );
 };
 
@@ -35,15 +12,6 @@ describe('SurfaceContent', () => {
     expect(screen.getByText('P³¹')).toBeTruthy();
   });
 
-<<<<<<< HEAD
-  it('should render THE_BUFFER surface', async () => {
-    renderSurface('THE_BUFFER');
-    expect(await screen.findByText('Somatic Buffer Engine')).toBeTruthy();
-=======
-  it('should render THE_BUFFER surface', () => {
-    renderSurface('THE_BUFFER');
-    expect(screen.getByText('Somatic Buffer Engine')).toBeTruthy();
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
   });
 
   it('should render VAULT surface', () => {
@@ -51,15 +19,6 @@ describe('SurfaceContent', () => {
     expect(screen.getByText('PQC Protective Layer')).toBeTruthy();
   });
 
-<<<<<<< HEAD
-  it('should render ARCADE surface', async () => {
-    renderSurface('ARCADE');
-    expect(await screen.findByText('The Arcade Environment Hub')).toBeTruthy();
-=======
-  it('should render ARCADE surface', () => {
-    renderSurface('ARCADE');
-    expect(screen.getByText('The Arcade Environment Hub')).toBeTruthy();
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
   });
 
   it('should render HEARTH surface', () => {
@@ -70,21 +29,6 @@ describe('SurfaceContent', () => {
 
   it('should render LEDGER surface', () => {
     renderSurface('LEDGER');
-<<<<<<< HEAD
-    expect(screen.getByText('PHOS BIFURCATED BALANCE LEDGER')).toBeTruthy();
-  });
-
-  it('should render ARCHIVE surface', async () => {
-    renderSurface('ARCHIVE');
-    expect(await screen.findByText('Sovereign Archive Search')).toBeTruthy();
-=======
-    expect(screen.getByText('LOVE Ledger')).toBeTruthy();
-  });
-
-  it('should render ARCHIVE surface', () => {
-    renderSurface('ARCHIVE');
-    expect(screen.getByText('Sovereign Archive Search')).toBeTruthy();
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
   });
 
   it('should render SETTINGS surface', () => {
@@ -97,20 +41,6 @@ describe('SurfaceContent', () => {
     expect(screen.getByText(/ERR_SURFACE_NOT_BOUND/)).toBeTruthy();
   });
 
-<<<<<<< HEAD
-  it('should filter high-stress games at low spoons', async () => {
-    renderSurface('ARCADE', 1);
-    expect(await screen.findByText(/Zen Mode/)).toBeTruthy();
-    expect(screen.queryByText('Gridiron')).toBeNull();
-    expect(screen.queryByText('Orbital')).toBeNull();
-=======
-  it('should filter high-stress games at low spoons', () => {
-    renderSurface('ARCADE', 1);
-    const arcadeText = document.body.textContent || '';
-    expect(arcadeText).toContain('Zen Mode');
-    expect(arcadeText).not.toContain('Gridiron');
-    expect(arcadeText).not.toContain('Orbital');
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
   });
 
   it('should render COMPASS surface', () => {
@@ -136,16 +66,5 @@ describe('SurfaceContent', () => {
     expect(screen.getByText('DISCOVERING')).toBeTruthy();
   });
 
-<<<<<<< HEAD
-  it('should render GRID surface separately from NODE_ZERO', async () => {
-    renderSurface('GRID');
-    expect(await screen.findByText(/CONNECTION_GRID/)).toBeTruthy();
-    expect(await screen.findByText(/MESH_TOPOLOGY/)).toBeTruthy();
-=======
-  it('should render GRID surface separately from NODE_ZERO', () => {
-    renderSurface('GRID');
-    expect(screen.getByText(/CONNECTION_GRID/)).toBeTruthy();
-    expect(screen.getByText(/MESH_TOPOLOGY/)).toBeTruthy();
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
   });
 });

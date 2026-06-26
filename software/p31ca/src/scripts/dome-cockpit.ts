@@ -50,11 +50,7 @@ function showWebGLError() {
   if (container) {
     container.innerHTML = `
        <div class="flex flex-col items-center justify-center h-full text-center p-6">
-<<<<<<< HEAD
          <svg width="64" height="64" viewBox="0 0 512 512" class="mb-6"><rect width="512" height="512" rx="112" fill="var(--p31-teal)"/><circle cx="390" cy="120" r="48" fill="#cc6247"/><text x="256" y="340" font-family="system-ui" font-weight="900" font-size="220" fill="var(--p31-cloud)" text-anchor="middle">P31</text><rect x="156" y="380" width="200" height="16" rx="8" fill="#cda852"/></svg>
-=======
-         <svg width="64" height="64" viewBox="0 0 512 512" class="mb-6"><rect width="512" height="512" rx="112" fill="var(--p31-teal)"/><circle cx="390" cy="120" r="48" fill="var(--color-coral)"/><text x="256" y="340" font-family="system-ui" font-weight="900" font-size="220" fill="var(--p31-cloud)" text-anchor="middle">P31</text><rect x="156" y="380" width="200" height="16" rx="8" fill="var(--color-amber)"/></svg>
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
          <h2 class="text-2xl font-bold text-red-400 mb-3" data-i18n="error.webgl.title">WebGL Not Supported</h2>
          <p class="text-p31-cloud mb-6" data-i18n="error.webgl.message">Your browser or device does not support WebGL, which is required for the 3D visualization. Please try a modern browser like Chrome, Firefox, or Edge.</p>
          <button onclick="location.reload()" class="px-6 py-3 bg-white/20 hover:bg-white/30 text-p31-cloud rounded transition-colors" data-i18n="error.retry">Retry</button>
@@ -69,11 +65,7 @@ function showLoadingError() {
   if (container) {
     container.innerHTML = `
      <div class="flex flex-col items-center justify-center h-full text-center p-6">
-<<<<<<< HEAD
        <svg width="64" height="64" viewBox="0 0 512 512" class="mb-8"><rect width="512" height="512" rx="112" fill="var(--p31-teal)"/><circle cx="390" cy="120" r="48" fill="#cc6247"/><text x="256" y="340" font-family="system-ui" font-weight="900" font-size="220" fill="var(--p31-cloud)" text-anchor="middle">P31</text><rect x="156" y="380" width="200" height="16" rx="8" fill="#cda852"/></svg>
-=======
-       <svg width="64" height="64" viewBox="0 0 512 512" class="mb-8"><rect width="512" height="512" rx="112" fill="var(--p31-teal)"/><circle cx="390" cy="120" r="48" fill="var(--color-coral)"/><text x="256" y="340" font-family="system-ui" font-weight="900" font-size="220" fill="var(--p31-cloud)" text-anchor="middle">P31</text><rect x="156" y="380" width="200" height="16" rx="8" fill="var(--color-amber)"/></svg>
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
        <div class="text-red-400 font-bold mb-4" data-i18n="error.loading.title">Loading Failed</div>
        <div class="text-p31-cloud mb-6" data-i18n="error.loading.message">Failed to load 3D resources. Please check your connection and try again.</div>
        <button onclick="location.reload()" class="px-6 py-3 bg-white/20 hover:bg-white/30 text-p31-cloud rounded transition-colors" data-i18n="error.retry">Retry</button>
@@ -314,47 +306,27 @@ if (volumeValue) volumeValue.textContent = `${savedVolume}%`;
  // Initialize audio on first user interaction (browser requirement)
  function initAudio() {
    if (isAudioInitialized || prefersReducedMotion) return;
-<<<<<<< HEAD
    
-=======
-
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
    try {
     const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
     audioContext = new AudioCtx();
     masterGain = audioContext.createGain();
-<<<<<<< HEAD
     
-=======
-
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
     // Create ambient music oscillator (sine wave at 110Hz - A2 harmonic)
     ambientOscillator = audioContext.createOscillator();
     ambientOscillator.type = 'sine';
     ambientOscillator.frequency.setValueAtTime(110, audioContext.currentTime);
-<<<<<<< HEAD
     
     // Connect: oscillator -> masterGain -> destination
     ambientOscillator.connect(masterGain);
     masterGain.connect(audioContext.destination);
     
-=======
-
-    // Connect: oscillator -> masterGain -> destination
-    ambientOscillator.connect(masterGain);
-    masterGain.connect(audioContext.destination);
-
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
     // Set initial volume from saved setting, fade in over 2 seconds
     const volume = parseInt(savedVolume);
     const gain = Math.pow(volume / 100, 2) * 0.3; // Max gain 0.3 at 100%
     masterGain.gain.setValueAtTime(0, audioContext.currentTime);
     masterGain.gain.exponentialRampToValueAtTime(gain, audioContext.currentTime + 2.0);
-<<<<<<< HEAD
     
-=======
-
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
     ambientOscillator.start();
     isAudioInitialized = true;
   } catch (e) {
@@ -364,22 +336,14 @@ if (volumeValue) volumeValue.textContent = `${savedVolume}%`;
 
 function initAudioOnInteraction() {
   if (isAudioInitialized) return;
-<<<<<<< HEAD
   
-=======
-
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
   const initOnce = () => {
     initAudio();
     document.removeEventListener('click', initOnce);
     document.removeEventListener('keydown', initOnce);
     document.removeEventListener('touchstart', initOnce);
   };
-<<<<<<< HEAD
   
-=======
-
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
   document.addEventListener('click', initOnce);
   document.addEventListener('keydown', initOnce);
   document.addEventListener('touchstart', initOnce);
@@ -422,41 +386,24 @@ if (volumeSliderContainer) {
     (volumeSliderContainer as unknown as { disabled: boolean }).disabled = true;
     volumeSliderContainer.title = "Ambient audio disabled (prefers-reduced-motion)";
   }
-<<<<<<< HEAD
   
   let isDragging = false;
   
-=======
-
-  let isDragging = false;
-
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
   function handleVolumeInteraction(e: PointerEvent | MouseEvent | TouchEvent) {
     e.preventDefault();
     const rect = volumeSliderContainer!.getBoundingClientRect();
     const clientX = 'touches' in e ? (e as TouchEvent).touches[0].clientX : (e as MouseEvent | PointerEvent).clientX;
     let percent = Math.max(0, Math.min(100, ((clientX - rect.left) / rect.width) * 100));
-<<<<<<< HEAD
     
     currentVolume = Math.round(percent);
     updateVolumeUI(currentVolume, isMuted);
     
-=======
-
-    currentVolume = Math.round(percent);
-    updateVolumeUI(currentVolume, isMuted);
-
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
     // Show tooltip
     if (volumeTooltip) {
       volumeTooltip.style.opacity = '1';
       volumeTooltip.style.left = `${percent}%`;
     }
-<<<<<<< HEAD
     
-=======
-
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
     // Update audio
     localStorage.setItem('p31:dome:volume', currentVolume.toString());
     if (masterGain && audioContext && !isMuted) {
@@ -464,35 +411,22 @@ if (volumeSliderContainer) {
       masterGain.gain.cancelScheduledValues(audioContext.currentTime);
       masterGain.gain.setTargetAtTime(gain, audioContext.currentTime, 0.01);
     }
-<<<<<<< HEAD
     
-=======
-
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
     // Haptic feedback if supported and not reduced motion
     if (navigator.vibrate && !prefersReducedMotion) {
       navigator.vibrate(10);
     }
   }
-<<<<<<< HEAD
   
-=======
-
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
   volumeSliderContainer.addEventListener('mousedown', (e) => {
     isDragging = true;
     handleVolumeInteraction(e);
   });
-<<<<<<< HEAD
   
-=======
-
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
   volumeSliderContainer.addEventListener('touchstart', (e) => {
     isDragging = true;
     handleVolumeInteraction(e);
   }, { passive: false });
-<<<<<<< HEAD
   
   document.addEventListener('mousemove', (e) => {
     if (isDragging) handleVolumeInteraction(e);
@@ -502,26 +436,11 @@ if (volumeSliderContainer) {
     if (isDragging) handleVolumeInteraction(e);
   }, { passive: false });
   
-=======
-
-  document.addEventListener('mousemove', (e) => {
-    if (isDragging) handleVolumeInteraction(e);
-  });
-
-  document.addEventListener('touchmove', (e) => {
-    if (isDragging) handleVolumeInteraction(e);
-  }, { passive: false });
-
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
   const stopDrag = () => {
     isDragging = false;
     if (volumeTooltip) volumeTooltip.style.opacity = '0';
   };
-<<<<<<< HEAD
   
-=======
-
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
   document.addEventListener('mouseup', stopDrag);
   document.addEventListener('touchend', stopDrag);
 }
@@ -532,11 +451,7 @@ if (volumeMuteBtn) {
     isMuted = !isMuted;
     localStorage.setItem('p31:dome:muted', isMuted.toString());
     updateVolumeUI(currentVolume, isMuted);
-<<<<<<< HEAD
     
-=======
-
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
     if (masterGain && audioContext) {
       if (isMuted) {
         masterGain.gain.cancelScheduledValues(audioContext.currentTime);
@@ -547,11 +462,7 @@ if (volumeMuteBtn) {
         masterGain.gain.setTargetAtTime(gain, audioContext.currentTime, 0.01);
       }
     }
-<<<<<<< HEAD
     
-=======
-
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
     // Haptic feedback
     if (navigator.vibrate && !prefersReducedMotion) {
       navigator.vibrate(20);
@@ -565,13 +476,8 @@ initAudioOnInteraction();
   function applyQFactorHud(score: number) {
     const isOpt = score >= 0.9;
     const isStab = score >= 0.7;
-<<<<<<< HEAD
     const colorClass = isOpt ? "text-[var(--p31-phosphorus)]" : isStab ? "text-[#cda852]" : "text-[#E8636F]";
     const bgClass = isOpt ? "bg-[var(--p31-phosphorus)]" : isStab ? "bg-[#cda852]" : "bg-[#E8636F]";
-=======
-    const colorClass = isOpt ? "text-[var(--p31-phosphorus)]" : isStab ? "text-[var(--color-amber)]" : "text-[#E8636F]";
-    const bgClass = isOpt ? "bg-[var(--p31-phosphorus)]" : isStab ? "bg-[var(--color-amber)]" : "bg-[#E8636F]";
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
     const s = score.toFixed(3);
     const nq = $("dock-q-mini") || $("hud-q-val");
     const nd = $("dock-q-dot") || $("hud-q-dot");
@@ -581,11 +487,7 @@ initAudioOnInteraction();
     }
     if (nd) {
       nd.className = `h-1.5 w-1.5 shrink-0 rounded-full ${bgClass}`;
-<<<<<<< HEAD
       nd.style.boxShadow = `0 0 8px ${isOpt ? "var(--p31-phosphorus)" : isStab ? "#cda852" : "#E8636F"}`;
-=======
-      nd.style.boxShadow = `0 0 8px ${isOpt ? "var(--p31-phosphorus)" : isStab ? "var(--color-amber)" : "#E8636F"}`;
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
     }
   }
 
@@ -826,26 +728,15 @@ initAudioOnInteraction();
  if (!ctx) return;
  ctx.clearRect(0, 0, 24, 24);
  const cx = 12, cy = 12, r = 8, start = 3*Math.PI/4, sweep = 3*Math.PI/2;
-<<<<<<< HEAD
  
-=======
-
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
  ctx.strokeStyle = "rgba(255,255,255,0.15)"; ctx.lineWidth = 2; ctx.lineCap = "round";
  ctx.beginPath(); ctx.arc(cx, cy, r, start, start + sweep); ctx.stroke();
 
  const valEnd = start + trimValue * sweep;
-<<<<<<< HEAD
  ctx.strokeStyle = trimOn ? "#cda852" : "rgba(205,168,82,0.4)";
  ctx.beginPath(); ctx.arc(cx, cy, r, start, valEnd); ctx.stroke();
 
  ctx.fillStyle = trimOn ? "#cda852" : "rgba(205,168,82,0.6)";
-=======
- ctx.strokeStyle = trimOn ? "var(--color-amber)" : "rgba(205,168,82,0.4)";
- ctx.beginPath(); ctx.arc(cx, cy, r, start, valEnd); ctx.stroke();
-
- ctx.fillStyle = trimOn ? "var(--color-amber)" : "rgba(205,168,82,0.6)";
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
  ctx.beginPath(); ctx.arc(cx + r*Math.cos(valEnd), cy + r*Math.sin(valEnd), 2.5, 0, Math.PI*2); ctx.fill();
 
     const f = trimFreq();
@@ -899,11 +790,7 @@ initAudioOnInteraction();
     if (e.target !== $trimCanvas) activateLayer0();
     else if (!_trimIsDown) trimToggleAudio();
   });
-<<<<<<< HEAD
   
-=======
-
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
   drawTrimtab();
 
   // Layer 0 Logic
@@ -1013,30 +900,18 @@ loadingManager.onLoad = () => {
  // Track time for ETA calculation
  let loadStartTime = Date.now();
  let estimatedTotalTime = 0;
-<<<<<<< HEAD
  
-=======
-
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
  loadingManager.onProgress = (url, itemsLoaded, itemsTotal) => {
    const progress = itemsLoaded / itemsTotal;
    const progressBar = $('loading-bar');
    const loadingText = $('loading-text');
    const loadingDetails = $('loading-details');
    const loadingETA = $('loading-eta');
-<<<<<<< HEAD
    
    if (progressBar) progressBar.style.width = `${progress * 100}%`;
    if (loadingText) loadingText.textContent = `Loading... ${Math.round(progress * 100)}%`;
    if (loadingDetails) loadingDetails.textContent = `${itemsLoaded} of ${itemsTotal} resources`;
    
-=======
-
-   if (progressBar) progressBar.style.width = `${progress * 100}%`;
-   if (loadingText) loadingText.textContent = `Loading... ${Math.round(progress * 100)}%`;
-   if (loadingDetails) loadingDetails.textContent = `${itemsLoaded} of ${itemsTotal} resources`;
-
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
    // Calculate ETA
    if (loadingETA && progress > 0) {
      const elapsedTime = Date.now() - loadStartTime;
@@ -1149,11 +1024,7 @@ if (prefersReducedMotion) {
   // Data
   const AXIS_COLORS = { a: 0xff9944, b: 0x44aaff, c: 0x44ffaa, d: 0xff4466 };
   const AXIS_LABELS = { a: 'Operator', b: 'Signals', c: 'Context', d: 'Shield' };
-<<<<<<< HEAD
   const STATE_CSS = { active: 'var(--p31-phosphorus)', deployed: 'var(--p31-teal)', countdown: '#cda852', complete: '#4db8a8', missing: '#cc6247', ongoing: 'var(--p31-teal)', prototype: '#cda852', research: '#4db8a8' };
-=======
-  const STATE_CSS = { active: 'var(--p31-phosphorus)', deployed: 'var(--p31-teal)', countdown: 'var(--color-amber)', complete: 'var(--color-cyan)', missing: 'var(--color-coral)', ongoing: 'var(--p31-teal)', prototype: 'var(--color-amber)', research: 'var(--color-cyan)' };
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
   const STATE_GLOW = { countdown: 2.0, critical: 2.5, complete: 0.4, active: 1.0, ongoing: 0.6, deployed: 0.7, prototype: 0.8, missing: 1.2, research: 0.5 };
 
   const VERTICES = {
@@ -1826,29 +1697,17 @@ window.addEventListener('resize', () => {
      dismissDomeSplash();
    }
  }, 10000);
-<<<<<<< HEAD
  
  // ================================================================
  // 6. HUD AUTO-HIDE & LATENCY TRACKING
  // ================================================================
  
-=======
-
- // ================================================================
- // 6. HUD AUTO-HIDE & LATENCY TRACKING
- // ================================================================
-
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
  // HUD Auto-hide after 3s of inactivity
  let hudTimer: ReturnType<typeof setTimeout> | null = null;
  const hud = $('top-hud');
  const hudContent = $('hud-content');
  let isHudHidden = false;
-<<<<<<< HEAD
  
-=======
-
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
  function showHUD() {
    if (!hud) return;
    isHudHidden = false;
@@ -1856,11 +1715,7 @@ window.addEventListener('resize', () => {
    hud.classList.remove('opacity-0');
    if (hudContent) hudContent.classList.remove('hidden');
  }
-<<<<<<< HEAD
  
-=======
-
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
  function hideHUD() {
    if (!hud) return;
    isHudHidden = true;
@@ -1868,11 +1723,7 @@ window.addEventListener('resize', () => {
    hud.classList.add('opacity-0');
    if (hudContent) hudContent.classList.add('hidden');
  }
-<<<<<<< HEAD
  
-=======
-
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
  function resetHUDTimer() {
    if (hudTimer !== null) clearTimeout(hudTimer);
    if (isHudHidden) showHUD();
@@ -1894,38 +1745,23 @@ window.addEventListener('resize', () => {
      }, 3000);
    });
  }
-<<<<<<< HEAD
  
  // Initialize HUD timer
  resetHUDTimer();
  
-=======
-
- // Initialize HUD timer
- resetHUDTimer();
-
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
  // Performance Monitoring (Dev Mode)
  const perfIndicators = $('performance-indicators');
  const renderTimeEl = $('render-time');
  const fpsCounterEl = $('fps-counter');
  const webglStatusEl = $('webgl-status');
  const connectionStatusEl = $('connection-status');
-<<<<<<< HEAD
  
-=======
-
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
  // Only show in dev mode (localhost or dev query param)
  const isDevMode = window.location.hostname === 'localhost' || window.location.search.includes('dev=true');
  if (perfIndicators) {
    perfIndicators.classList.toggle('hidden', !isDevMode);
  }
-<<<<<<< HEAD
  
-=======
-
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
  // Render time tracking
  let frameCount = 0;
  let lastFpsTime = performance.now();
@@ -1933,17 +1769,10 @@ window.addEventListener('resize', () => {
 
  function updatePerformanceMetrics(dt: number) {
    if (!isDevMode) return;
-<<<<<<< HEAD
    
    // Render time
    if (renderTimeEl) renderTimeEl.textContent = (dt * 1000).toFixed(1);
    
-=======
-
-   // Render time
-   if (renderTimeEl) renderTimeEl.textContent = (dt * 1000).toFixed(1);
-
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
    // FPS calculation (2s average)
    frameCount++;
    const now = performance.now();
@@ -1956,71 +1785,42 @@ window.addEventListener('resize', () => {
      frameCount = 0;
      lastFpsTime = now;
    }
-<<<<<<< HEAD
    
-=======
-
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
    // WebGL status
    if (webglStatusEl) {
      webglStatusEl.textContent = renderer.getContext().isContextLost() ? '✗' : '✓';
      webglStatusEl.className = renderer.getContext().isContextLost() ? 'text-red-400' : 'text-emerald';
    }
  }
-<<<<<<< HEAD
  
-=======
-
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
  // Connection status simulation (replace with real WebSocket in production)
  let connectionState = 'connected'; // connected, reconnecting, failed
  function updateConnectionStatus() {
    if (!connectionStatusEl) return;
-<<<<<<< HEAD
    
-=======
-
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
    const statusConfig = {
      connected: { color: 'bg-emerald', title: 'Connected', ariaLabel: 'Connected' },
      reconnecting: { color: 'bg-amber', title: 'Reconnecting...', ariaLabel: 'Reconnecting' },
      failed: { color: 'bg-red-400', title: 'Connection failed', ariaLabel: 'Failed' }
    };
-<<<<<<< HEAD
    
-=======
-
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
    const config = statusConfig[connectionState as keyof typeof statusConfig] || statusConfig.connected;
    connectionStatusEl.className = `w-2 h-2 rounded-full ${config.color}`;
    connectionStatusEl.title = config.title;
    connectionStatusEl.setAttribute('aria-label', config.ariaLabel);
  }
-<<<<<<< HEAD
  
-=======
-
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
  // Simulate connection state changes (for demo)
  setInterval(() => {
    // In real implementation, update based on WebSocket/EventBus events
    updateConnectionStatus();
  }, 5000);
-<<<<<<< HEAD
  
  updateConnectionStatus();
  
  // Modify animate function to track performance
  const originalAnimate = animate;
  
-=======
-
- updateConnectionStatus();
-
- // Modify animate function to track performance
- const originalAnimate = animate;
-
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
  // Hook into animation loop to measure performance
  let animationStartTime = 0;
  function measureFramePerformance(timestamp: number) {
@@ -2029,11 +1829,7 @@ window.addEventListener('resize', () => {
    animationStartTime = timestamp;
    updatePerformanceMetrics(dt);
  }
-<<<<<<< HEAD
  
-=======
-
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
  // Override composer.render to measure frame time
  const originalRender = composer.render.bind(composer);
  composer.render = function() {
@@ -2042,11 +1838,7 @@ window.addEventListener('resize', () => {
    const end = performance.now();
    measureFramePerformance(end);
  };
-<<<<<<< HEAD
  
-=======
-
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
  // Focus-visible styles via JS (for browsers that don't support :focus-visible)
  document.addEventListener('focusin', (e) => {
    const t = e.target as HTMLElement | null;
@@ -2061,11 +1853,7 @@ window.addEventListener('resize', () => {
      t.classList.remove('focus-visible');
    }
  });
-<<<<<<< HEAD
  
-=======
-
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
  // Add focus-visible styles to head
  const focusStyle = document.createElement('style');
  focusStyle.textContent = `
@@ -2093,11 +1881,7 @@ window.addEventListener('resize', () => {
     }
  `;
  document.head.appendChild(focusStyle);
-<<<<<<< HEAD
  
-=======
-
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
   // UI Toggle Button functionality
   const uiToggleBtn = $('ui-toggle-btn');
   if (uiToggleBtn) {
@@ -2109,22 +1893,14 @@ window.addEventListener('resize', () => {
       } else {
         hideHUD();
       }
-<<<<<<< HEAD
       
-=======
-
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
       // Haptic feedback
       if (navigator.vibrate && !prefersReducedMotion) {
         navigator.vibrate(10);
       }
     });
   }
-<<<<<<< HEAD
   
-=======
-
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
   // ================================================================
   // 7b. A/B THEME VARIANT SWITCHER
   // ================================================================
@@ -2132,11 +1908,7 @@ window.addEventListener('resize', () => {
   const THEME_KEY = 'p31:dome:themeVariant';
   const defaultVariant = 'tm'; // teal-magenta
   const variants = { tm: 'A (teal-magenta)', cv: 'B (cyan-violet)' };
-<<<<<<< HEAD
   
-=======
-
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
   function applyTheme(variant: string) {
     document.documentElement.setAttribute('data-palette', variant);
     if (themeToggleBtn) {
@@ -2146,40 +1918,24 @@ window.addEventListener('resize', () => {
     }
     localStorage.setItem(THEME_KEY, variant);
   }
-<<<<<<< HEAD
   
   // Load saved theme
   const savedVariant = localStorage.getItem(THEME_KEY) || defaultVariant;
   applyTheme(savedVariant);
   
-=======
-
-  // Load saved theme
-  const savedVariant = localStorage.getItem(THEME_KEY) || defaultVariant;
-  applyTheme(savedVariant);
-
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
   if (themeToggleBtn) {
     themeToggleBtn.addEventListener('click', () => {
       const current = document.documentElement.getAttribute('data-palette') || defaultVariant;
       const next = current === 'tm' ? 'cv' : 'tm';
       applyTheme(next);
-<<<<<<< HEAD
       
-=======
-
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
       // Haptic feedback
       if (navigator.vibrate && !prefersReducedMotion) {
         navigator.vibrate(5);
       }
     });
   }
-<<<<<<< HEAD
   
-=======
-
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
   // ================================================================
   // 7. KEYBOARD SHORTCUTS OVERLAY
   // ================================================================
@@ -2187,20 +1943,12 @@ window.addEventListener('resize', () => {
   const closeShortcutsBtn = $('close-shortcuts');
   let shortcutsVisible = false;
   let shortcutsTimeout: ReturnType<typeof setTimeout> | null = null;
-<<<<<<< HEAD
   
-=======
-
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
   function showShortcuts(autoClose = true) {
     if (!shortcutsOverlay) return;
     shortcutsOverlay.classList.remove('opacity-0', 'pointer-events-none');
     shortcutsVisible = true;
-<<<<<<< HEAD
     
-=======
-
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
     if (autoClose) {
       // Auto-close after 2.5 seconds and then focus search
       shortcutsTimeout = setTimeout(() => {
@@ -2211,11 +1959,7 @@ window.addEventListener('resize', () => {
       }, 2500);
     }
   }
-<<<<<<< HEAD
   
-=======
-
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
   function hideShortcuts() {
     if (!shortcutsOverlay) return;
     shortcutsOverlay.classList.add('opacity-0', 'pointer-events-none');
@@ -2225,21 +1969,13 @@ window.addEventListener('resize', () => {
       shortcutsTimeout = null;
     }
   }
-<<<<<<< HEAD
   
-=======
-
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
   // Toggle with "/" key
   document.addEventListener('keydown', (e) => {
     // Ignore if typing in input
     const kT = e.target as HTMLElement | null;
     if (kT?.tagName === 'INPUT' || kT?.tagName === 'TEXTAREA') return;
-<<<<<<< HEAD
     
-=======
-
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
     if (e.key === '/' && !shortcutsVisible) {
       e.preventDefault();
       showShortcuts(true);
@@ -2254,41 +1990,25 @@ window.addEventListener('resize', () => {
       }, 50);
     }
   });
-<<<<<<< HEAD
   
-=======
-
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
   // Also allow Escape to close
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && shortcutsVisible) {
       hideShortcuts();
     }
   });
-<<<<<<< HEAD
   
   if (closeShortcutsBtn) {
     closeShortcutsBtn.addEventListener('click', hideShortcuts);
   }
   
-=======
-
-  if (closeShortcutsBtn) {
-    closeShortcutsBtn.addEventListener('click', hideShortcuts);
-  }
-
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
   // Close on backdrop click
   if (shortcutsOverlay) {
     shortcutsOverlay.addEventListener('click', (e) => {
       if (e.target === shortcutsOverlay) hideShortcuts();
     });
   }
-<<<<<<< HEAD
   
-=======
-
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
   // ================================================================
   // 8. AXE-CORE ACCESSIBILITY SCANNER (DEV ONLY)
   // ================================================================
@@ -2328,30 +2048,18 @@ window.addEventListener('resize', () => {
       }
     });
   }
-<<<<<<< HEAD
   
-=======
-
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
   // ================================================================
   // 9. REDUCED MOTION ENFORCEMENT
   // ================================================================
   // Already detected at top via: const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   // CSS handles transitions/animations; JS handles non-css motion in animate loop
-<<<<<<< HEAD
   
-=======
-
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
   // Apply reduced-motion class to html for CSS overrides
   if (prefersReducedMotion) {
     document.documentElement.classList.add('reduced-motion');
   }
-<<<<<<< HEAD
   
-=======
-
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
   // Watch for changes
   const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
   motionQuery.addEventListener('change', (e) => {
@@ -2394,8 +2102,4 @@ window.addEventListener('resize', () => {
     },
   };
 
-<<<<<<< HEAD
 } // WebGL branch (else opened when webglSupported)
-=======
-} // WebGL branch (else opened when webglSupported)
->>>>>>> auto-heal/ui-ux-drift-20260620-120057

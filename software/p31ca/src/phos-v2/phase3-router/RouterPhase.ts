@@ -206,7 +206,6 @@ export class RouterPhase implements PHOSPhase {
 
     switch (policy) {
       case 'priority-local':
-<<<<<<< HEAD
         // W.J.: Route to local edge first
         return this.routes.get(`${persona}:local:${intent}`) || this.routes.get(intent);
 
@@ -224,17 +223,6 @@ export class RouterPhase implements PHOSPhase {
 
       default:
         return this.routes.get(intent);
-=======
-        return (this.routes.get(`${persona}:local:${intent}`) ?? this.routes.get(intent)) ?? null;
-      case 'youth-optimized':
-        return (this.routes.get(`${persona}:game:${intent}`) ?? this.routes.get(intent)) ?? null;
-      case 'guardian-supervised':
-        return (this.routes.get(`${persona}:guardian:${intent}`) ?? this.routes.get(intent)) ?? null;
-      case 'child-safe':
-        return this.routes.get(`${persona}:safe:${intent}`) ?? null;
-      default:
-        return this.routes.get(intent) ?? null;
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
     }
   }
 

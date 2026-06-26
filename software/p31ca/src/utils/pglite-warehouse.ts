@@ -5,11 +5,7 @@
  */
 
 import { PGlite } from '@electric-sql/pglite';
-<<<<<<< HEAD
 import { InventoryItem, Zone } from '../components/ZeroTapWarehouse';
-=======
-import type { InventoryItem, Zone } from '../components/ZeroTapWarehouse';
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
 
 // ─────────────────────────────────────────────────────────────────────────────
 // SINGLETON INSTANCE
@@ -126,15 +122,9 @@ async function seedZones(db: PGlite): Promise<void> {
   ];
 
   for (const zone of zones) {
-<<<<<<< HEAD
     await db.exec(
       `INSERT INTO zones (id, name, plu_prefix) VALUES (?, ?, ?)`,
       [zone.id, zone.name, zone.pluPrefix]
-=======
-    await db.query<unknown>(
-      `INSERT INTO zones (id, name, plu_prefix) VALUES (?, ?, ?)`,
-      [zone.id, zone.name, zone.pluPrefix] as any[]
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
     );
   }
 }
@@ -150,15 +140,9 @@ export async function logInventoryItem(
   db: PGlite,
   item: Omit<InventoryItem, 'synced'>
 ): Promise<void> {
-<<<<<<< HEAD
   await db.exec(
     `
     INSERT INTO inventory_items 
-=======
-  await db.query<unknown>(
-    `
-    INSERT INTO inventory_items
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
       (qr_data, category, zone_id, status, scanned_at, synced)
     VALUES (?, ?, ?, ?, ?, FALSE)
     ON CONFLICT (qr_data) DO UPDATE SET
@@ -167,28 +151,16 @@ export async function logInventoryItem(
       scanned_at = EXCLUDED.scanned_at,
       synced = FALSE
   `,
-<<<<<<< HEAD
     [item.qrData, item.category, item.zoneId, item.status, item.scannedAt]
   );
 
   // Also log to audit trail
   await db.exec(
-=======
-    [item.qrData, item.category, item.zoneId, item.status, item.scannedAt] as any[]
-  );
-
-  // Also log to audit trail
-  await db.query<unknown>(
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
     `
     INSERT INTO scan_log (qr_data, zone_id, action, scanned_at, synced)
     VALUES (?, ?, ?, ?, FALSE)
   `,
-<<<<<<< HEAD
     [item.qrData, item.zoneId, item.status, item.scannedAt]
-=======
-    [item.qrData, item.zoneId, item.status, item.scannedAt] as any[]
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
   );
 }
 
@@ -204,11 +176,7 @@ export async function getZoneSummary(
     in_stock: number;
     pending: number;
   }>(`
-<<<<<<< HEAD
     SELECT 
-=======
-    SELECT
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
       z.id,
       z.name,
       COUNT(i.qr_data) FILTER (WHERE i.status = 'received') as in_stock,
@@ -258,19 +226,14 @@ export async function getUnsyncedItems(db: PGlite): Promise<InventoryItem[]> {
  * Mark items as synced after successful push
  */
 export async function markItemsSynced(
-<<<<<<< HEAD
   db: PGlite,
   qrDataList: string[]
-=======
-  db: PGlite, qrDataList: string[]
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
 ): Promise<void> {
   if (qrDataList.length === 0) return;
 
   // PGlite doesn't support IN (?) with arrays directly
   // Build parameterized query
   const placeholders = qrDataList.map((_, i) => `?`).join(',');
-<<<<<<< HEAD
   await db.exec(
     `
     UPDATE inventory_items 
@@ -278,15 +241,6 @@ export async function markItemsSynced(
     WHERE qr_data IN (${placeholders})
   `,
     qrDataList
-=======
-  await db.query<unknown>(
-    `
-    UPDATE inventory_items
-    SET synced = TRUE, synced_at = (EXTRACT(EPOCH FROM NOW()) * 1000)
-    WHERE qr_data IN (${placeholders})
-  `,
-    qrDataList as any[]
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
   );
 }
 
@@ -354,20 +308,12 @@ export async function queueForSync(
   payload: Record<string, unknown>,
   qrData?: string
 ): Promise<void> {
-<<<<<<< HEAD
   await db.exec(
-=======
-  await db.query<unknown>(
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
     `
     INSERT INTO sync_queue (table_name, record_qr_data, operation, payload_json)
     VALUES (?, ?, ?, ?)
   `,
-<<<<<<< HEAD
     [table, qrData || null, operation, JSON.stringify(payload)]
-=======
-    [table, qrData || null, operation, JSON.stringify(payload)] as any[]
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
   );
 }
 
@@ -391,11 +337,7 @@ export async function getPendingSyncQueue(
 }
 
 export async function markSyncSuccess(db: PGlite, id: number): Promise<void> {
-<<<<<<< HEAD
   await db.exec(`DELETE FROM sync_queue WHERE id = ?`, [id]);
-=======
-  await db.query<unknown>(`DELETE FROM sync_queue WHERE id = ?`, [id] as any[]);
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
 }
 
 export async function markSyncError(
@@ -403,7 +345,6 @@ export async function markSyncError(
   id: number,
   error: string
 ): Promise<void> {
-<<<<<<< HEAD
   await db.exec(
     `
     UPDATE sync_queue 
@@ -411,15 +352,6 @@ export async function markSyncError(
     WHERE id = ?
   `,
     [error, id]
-=======
-  await db.query<unknown>(
-    `
-    UPDATE sync_queue
-    SET retry_count = retry_count + 1, last_error = ?
-    WHERE id = ?
-  `,
-    [error, id] as any[]
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
   );
 }
 

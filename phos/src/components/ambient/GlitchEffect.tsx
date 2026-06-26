@@ -1,9 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { useAtmosphere } from '../AtmosphereProvider';
-<<<<<<< HEAD
-import { SurfaceErrorBoundary } from '../SurfaceErrorBoundary';
-=======
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
 
 const GlitchEffect: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -68,16 +64,3 @@ const GlitchEffect: React.FC = () => {
   );
 };
 
-<<<<<<< HEAD
-function GlitchEffectWithBoundary() {
-  return (
-    <SurfaceErrorBoundary canvasName="GlitchEffect">
-      <GlitchEffect />
-    </SurfaceErrorBoundary>
-  );
-}
-
-export default GlitchEffectWithBoundary;
-=======
-export default GlitchEffect;
->>>>>>> auto-heal/ui-ux-drift-20260620-120057

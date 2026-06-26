@@ -57,11 +57,7 @@ const ROUTE_CAM: Record<RouteId, RouteCam> = {
    dome:     { z: -1.2,  hue: 0.552, count: 400, speed: 0.08 }, // #0ea5e9 sky
    research: { z: -0.4,  hue: 0.444, count: 600, speed: 0.12 }, // var(--p31-teal) emerald
    connect:  { z: -0.6,  hue: 0.718, count: 700, speed: 0.13 }, // #8b5cf6 violet
-<<<<<<< HEAD
    ops:      { z:  0.4,  hue: 0.600, count: 150, speed: 0.01 }, // #64748b slate
-=======
-   ops:      { z:  0.4,  hue: 0.600, count: 150, speed: 0.01 }, // var(--color-muted) slate
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
    garden:   { z:  0.8,  hue: 0.105, count:  25, speed: 0.05 }, // var(--p31-amber) amber
    passport:   { z: -0.2,  hue: 0.710, count: 500, speed: 0.10 }, // #a78bfa violet-400
    qfactor:    { z: -0.3,  hue: 0.444, count: 420, speed: 0.09 }, // var(--p31-teal) emerald (vitality)

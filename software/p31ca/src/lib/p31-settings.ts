@@ -147,11 +147,7 @@ export const DEFAULT_SETTINGS: P31Settings = {
 
   display: {
     theme: 'dark',
-<<<<<<< HEAD
     accentColor: '#4db8a8',
-=======
-    accentColor: 'var(--color-cyan)',
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
     showMissionTrio: true,
     compactMode: false,
   },
@@ -288,11 +284,7 @@ export function getSetting<T>(path: string): T | undefined {
 
 // Set specific setting path
 export function setSetting(path: string, value: unknown): void {
-<<<<<<< HEAD
   const settings = getSettings();
-=======
-  const settings = getSettings() as unknown as Record<string, unknown>;
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
   const parts = path.split('.');
   let current: Record<string, unknown> = settings;
 
@@ -330,13 +322,8 @@ export function getSettingsHealth() {
 }
 
 // Make available globally for console debugging
-<<<<<<< HEAD
 if (typeof window !== 'undefined') {
   (window as Record<string, unknown>).__p31Settings = {
-=======
-  if (typeof window !== 'undefined') {
-    (window as unknown as Record<string, unknown>).__p31Settings = {
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
     get: getSettings,
     save: saveSettings,
     getPath: getSetting,

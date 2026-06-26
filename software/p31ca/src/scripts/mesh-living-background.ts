@@ -25,15 +25,9 @@ const AXIS_COLORS = { a: 0xff9944, b: 0x44aaff, c: 0x44ffaa, d: 0xff4466 };
 const STATE_CSS: Record<string, string> = {
   active: "var(--p31-phosphorus)",
   deployed: "var(--p31-teal)",
-<<<<<<< HEAD
   countdown: "#cda852",
   complete: "var(--p31-teal)",
   missing: "#cc6247",
-=======
-  countdown: "var(--color-amber)",
-  complete: "var(--p31-teal)",
-  missing: "var(--color-coral)",
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
   ongoing: "var(--p31-teal)",
   prototype: "var(--p31-teal)",
 };

@@ -1,9 +1,5 @@
 import React, { useRef, useEffect } from 'react';
 import { useAtmosphere } from '../AtmosphereProvider';
-<<<<<<< HEAD
-import { SurfaceErrorBoundary } from '../SurfaceErrorBoundary';
-=======
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
 
 interface DustMote {
   x: number; y: number; size: number; opacity: number; vx: number; vy: number; drift: number;
@@ -73,16 +69,3 @@ const DustMotes: React.FC = () => {
   return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 0 }} aria-hidden="true" />;
 };
 
-<<<<<<< HEAD
-function DustMotesWithBoundary() {
-  return (
-    <SurfaceErrorBoundary canvasName="DustMotes">
-      <DustMotes />
-    </SurfaceErrorBoundary>
-  );
-}
-
-export default DustMotesWithBoundary;
-=======
-export default DustMotes;
->>>>>>> auto-heal/ui-ux-drift-20260620-120057

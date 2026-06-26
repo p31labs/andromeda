@@ -11,13 +11,7 @@
     "hub:sync": "node scripts/hub/build-landing-data.mjs && node scripts/hub/verify.mjs",
     "hub:about:generate": "node scripts/generate-about-pages.mjs",
     "verify": "npm run passport:verify && npm run build",
-<<<<<<< HEAD
-    "ci": "npm run verify",
-=======
     "ci": "pnpm run lint && pnpm run typecheck && pnpm run audit:content && pnpm run audit:pages && pnpm run verify:ground-truth && pnpm run verify:worker-spa-launch && pnpm run hub:verify && pnpm run security:audit && pnpm run security:workers && pnpm run security:crypto && pnpm run build",
-    "lint": "eslint src/ workers/ --ext .ts,.js --config eslint.config.security.mjs",
-    "typecheck": "tsc --noEmit",
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
     "ci:content": "npm run hub:about:generate && npm run hub:about:enrich && npm run verify",
     "hub:ci": "npm run hub:about:generate && npm run verify",
     "postinstall": "node scripts/hub/build-landing-data.mjs",
@@ -54,13 +48,9 @@
     "postbuild": "node scripts/verify-p31ca-dist.mjs && node scripts/verify-internal-hub-links.mjs",
     "passport:verify": "node scripts/verify-passport.mjs",
     "passport:sync": "node ../../../scripts/sync-passport-to-p31ca.mjs",
-<<<<<<< HEAD
     "predeploy": "npm run verify",
     "deploy": "npx wrangler pages deploy dist --project-name p31ca --branch=main --commit-dirty=true",
     "deploy:dev": "npx wrangler pages deploy dist --project-name p31ca --branch=preview --commit-dirty=true",
-=======
-    "predeploy": "echo 'ERROR: Direct deploy disabled. Use CI pipeline only.' && exit 1",
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
     "preview": "astro preview",
     "test:e2e": "playwright test",
     "test:e2e:prod": "PLAYWRIGHT_BASE_URL=https://p31ca.org PLAYWRIGHT_SKIP_WEBSERVER=1 playwright test",
@@ -78,10 +68,9 @@
     "security:audit": "node scripts/security/sca.mjs",
     "security:workers": "node scripts/security/verify-worker-inventory.mjs",
     "security:crypto": "node scripts/security/verify-crypto-surface.mjs",
-<<<<<<< HEAD
-    "security:lint": "eslint src/ workers/ --ext .ts,.js --config eslint.config.security.mjs 2>/dev/null || true"
-=======
     "security:lint": "eslint src/ workers/ --ext .ts,.js --config eslint.config.security.mjs 2>/dev/null || true",
+    "lint": "eslint src/ workers/ --ext .ts,.js --config eslint.config.security.mjs",
+    "typecheck": "tsc --noEmit",
     "audit:content": "node scripts/audit/stale-content.mjs",
     "audit:pages": "node scripts/audit/page-coverage.mjs",
     "audit:health": "node scripts/audit/health-check.mjs",
@@ -90,7 +79,6 @@
     "bootstrap:pipeline": "bash scripts/bootstrap-pipeline.sh",
     "prepare": "husky",
     "verify:pipeline": "bash scripts/verify-pipeline.sh"
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
   },
   "dependencies": {
     "@astrojs/react": "^5.0.4",
@@ -99,10 +87,6 @@
     "@lit-protocol/contracts": "^0.9.1",
     "@noble/ed25519": "^3.1.0",
     "@noble/post-quantum": "^0.6.1",
-<<<<<<< HEAD
-=======
-    "@p31/shared": "workspace:*",
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
     "@react-three/drei": "^9.122.0",
     "@react-three/fiber": "^8.18.0",
     "@react-three/postprocessing": "^2.19.1",
@@ -117,7 +101,8 @@
     "tailwindcss": "^3.4.19",
     "three": "^0.170.0",
     "y-indexeddb": "^9.0.12",
-    "yjs": "^13.6.30"
+    "yjs": "^13.6.30",
+    "@p31/shared": "workspace:*"
   },
   "devDependencies": {
     "@playwright/test": "^1.59.1",
@@ -128,10 +113,7 @@
     "@typescript-eslint/parser": "^8.59.0",
     "eslint": "^10.2.1",
     "eslint-plugin-security": "^4.0.0",
-<<<<<<< HEAD
-=======
-    "husky": "^9.1.7",
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
-    "wrangler": "^4.85.0"
+    "wrangler": "^4.85.0",
+    "husky": "^9.1.7"
   }
 }

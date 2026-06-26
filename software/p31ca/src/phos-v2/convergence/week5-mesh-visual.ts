@@ -1,11 +1,7 @@
 /**
  * Week 5 Convergence Checkpoint: Mesh Topology Live
  * Integration: Router + Visual (live mesh data)
-<<<<<<< HEAD
  * 
-=======
- *
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
  * Success: Visual shows live mesh topology from Router state
  */
 
@@ -46,21 +42,12 @@ export async function runWeek5Convergence(
 ): Promise<ConvergenceReport> {
   const week = 5;
   const timestamp = Date.now();
-<<<<<<< HEAD
   
   console.log(`[Week 5 Convergence] Mesh-Visual Live Topology checkpoint starting...`);
   
   // Run master convergence for week 5
   const baseReport = await master.converge(week);
   
-=======
-
-  console.log(`[Week 5 Convergence] Mesh-Visual Live Topology checkpoint starting...`);
-
-  // Run master convergence for week 5
-  const baseReport = await master.converge(week);
-
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
   // Mock live topology for testing
   const mockTopology: MeshTopologyState = {
     vertices: [
@@ -79,25 +66,15 @@ export async function runWeek5Convergence(
     ],
     timestamp
   };
-<<<<<<< HEAD
   
-=======
-
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
   // Week 5 specific integration validation
   const integrationChecks: IntegrationCheck[] = [
     {
       phases: ['router', 'visual'],
       name: 'Live Mesh Topology',
-<<<<<<< HEAD
       ready: baseReport.phaseReports.some(p => 
         p.phaseId === 'router' && p.state.status === 'active'
       ) && baseReport.phaseReports.some(p => 
-=======
-      ready: baseReport.phaseReports.some(p =>
-        p.phaseId === 'router' && p.state.status === 'active'
-      ) && baseReport.phaseReports.some(p =>
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
         p.phaseId === 'visual' && p.state.status === 'active'
       ),
       demo: 'Router provides live mesh state → Visual renders real-time topology with status colors'
@@ -119,11 +96,7 @@ export async function runWeek5Convergence(
       demo: 'S.J. persona sees sibling-prioritized mesh view with relevant edges emphasized'
     }
   ];
-<<<<<<< HEAD
   
-=======
-
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
   // Demo scenarios for Week 5
   const demoScenarios = [
     {
@@ -174,31 +147,20 @@ export async function runWeek5Convergence(
       successIndicator: 'Smooth 300ms color/opacity transition on affected nodes'
     }
   ];
-<<<<<<< HEAD
   
-=======
-
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
   // Success criteria validation
   const successCriteria: Week5SuccessCriteria = {
     topologyUpdateLatency: 145, // Under 200ms target
     liveDataAccuracy: 0.995, // Exceeds 0.99 target
     meshSyncReliability: 0.99 // Exceeds 0.98 target
   };
-<<<<<<< HEAD
   
   // Validate against criteria
   const passed = 
-=======
-
-  // Validate against criteria
-  const passed =
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
     successCriteria.topologyUpdateLatency < 200 &&
     successCriteria.liveDataAccuracy > 0.99 &&
     successCriteria.meshSyncReliability > 0.98 &&
     integrationChecks[0].ready;
-<<<<<<< HEAD
   
   // Week 5 specific blockers
   const week5Blockers = [
@@ -217,26 +179,6 @@ export async function runWeek5Convergence(
       : [])
   ];
   
-=======
-
-  // Week 5 specific blockers
-  const week5Blockers = [
-    ...baseReport.blockers,
-    ...(successCriteria.topologyUpdateLatency >= 200
-      ? ['Topology update latency too high for live feel']
-      : []),
-    ...(successCriteria.liveDataAccuracy <= 0.99
-      ? ['Live data accuracy below 99% threshold']
-      : []),
-    ...(successCriteria.meshSyncReliability <= 0.98
-      ? ['Mesh sync reliability insufficient']
-      : []),
-    ...(!integrationChecks[0].ready
-      ? ['Router-Visual integration not ready - live topology unavailable']
-      : [])
-  ];
-
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
   const report: ConvergenceReport = {
     week,
     timestamp,
@@ -249,17 +191,10 @@ export async function runWeek5Convergence(
     mockTopology,
     topologyRefreshInterval: input?.refreshInterval || 5000,
     liveEndpoint: input?.liveMeshEndpoint || '/api/mesh/live',
-<<<<<<< HEAD
     summary: passed 
       ? 'Week 5: Mesh-Visual Live Topology CONVERGED'
       : 'Week 5: Mesh-Visual Live Topology DIVERGED - blockers detected'
   } as ConvergenceReport & { 
-=======
-    summary: passed
-      ? 'Week 5: Mesh-Visual Live Topology CONVERGED'
-      : 'Week 5: Mesh-Visual Live Topology DIVERGED - blockers detected'
-  } as ConvergenceReport & {
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
     demoScenarios: typeof demoScenarios;
     successCriteria: typeof successCriteria;
     passed: boolean;
@@ -268,21 +203,12 @@ export async function runWeek5Convergence(
     liveEndpoint: string;
     summary: string;
   };
-<<<<<<< HEAD
   
   console.log(`[Week 5 Convergence] ${report.summary}`);
   console.log(`[Week 5 Convergence] Blockers: ${week5Blockers.length}`);
   console.log(`[Week 5 Convergence] Live topology: ${report.mockTopology.vertices.length} vertices, ${report.mockTopology.edges.length} edges`);
   console.log(`[Week 5 Convergence] Refresh interval: ${report.topologyRefreshInterval}ms`);
   
-=======
-
-  console.log(`[Week 5 Convergence] ${report.summary}`);
-  console.log(`[Week 5 Convergence] Blockers: ${week5Blockers.length}`);
-  console.log(`[Week 5 Convergence] Live topology: ${report.mockTopology?.vertices.length ?? 0} vertices, ${report.mockTopology?.edges.length ?? 0} edges`);
-  console.log(`[Week 5 Convergence] Refresh interval: ${report.topologyRefreshInterval}ms`);
-
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
   return report;
 }
 

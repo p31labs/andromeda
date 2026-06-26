@@ -1,11 +1,1 @@
-name = "spaceship-relay"
-main = "worker/index.ts"
-<<<<<<< HEAD
-compatibility_date = "2024-01-01"
-=======
 compatibility_date = "2026-04-01"
->>>>>>> auto-heal/ui-ux-drift-20260620-120057
-
-[[kv_namespaces]]
-binding = "SPACESHIP_TELEMETRY"
-id = "cb2cbcad85a54b959f5fc81cb9fc21bb"
