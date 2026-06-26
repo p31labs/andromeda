@@ -266,7 +266,11 @@ interface EngagementEvent {
   sessionId: string;
   playerId: number;
   playerName: string;
+<<<<<<< HEAD
   eventType: 'atom_placed' | 'bond_formed' | 'ping_sent' | 'ping_received' | 
+=======
+  eventType: 'atom_placed' | 'bond_formed' | 'ping_sent' | 'ping_received' |
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
              'molecule_completed' | 'achievement_earned' | 'session_start' | 'session_end';
   metadata: Record<string, any>;  // element, position, achievement name, etc.
 }

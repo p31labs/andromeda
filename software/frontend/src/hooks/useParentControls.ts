@@ -134,7 +134,11 @@ export interface UseParentControlsReturn {
 export default function useParentControls(): UseParentControlsReturn {
   // Initialize state from localStorage or defaults
   const stored = loadFromStorage();
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   const [family, setFamily] = useState<FamilySettings>(
     stored.family || createDefaultFamily()
   );
@@ -150,7 +154,11 @@ export default function useParentControls(): UseParentControlsReturn {
   const [selectedChildId, setSelectedChildId] = useState<string | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [lastActivity, setLastActivity] = useState<BONDINGActivity | null>(null);
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   const wsRef = useRef<WebSocket | null>(null);
   const reconnectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -184,7 +192,11 @@ export default function useParentControls(): UseParentControlsReturn {
   useEffect(() => {
     // Use the same WebSocket URL pattern as useWebSocket.js
     const wsUrl = `ws://${window.location.hostname}:8031/ws`;
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     const connect = () => {
       try {
         const ws = new WebSocket(wsUrl);
@@ -375,17 +387,29 @@ export default function useParentControls(): UseParentControlsReturn {
 
   const canAccess = useCallback((childId: string): { allowed: boolean; reason?: string } => {
     const settings = childSettings[childId] || createDefaultTimeSettings();
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     // Check if paused
     if (settings.isPaused) {
       return { allowed: false, reason: 'Access is currently paused' };
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     // Check daily limit
     if (settings.usedToday >= settings.dailyLimit) {
       return { allowed: false, reason: 'Daily time limit reached' };
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     // Check schedule if enabled
     if (settings.schedule.enabled) {
       const now = new Date();
@@ -394,6 +418,7 @@ export default function useParentControls(): UseParentControlsReturn {
       const [endH = 0, endM = 0] = settings.schedule.allowedEnd.split(':').map(Number);
       const startMinutes = startH * 60 + startM;
       const endMinutes = endH * 60 + endM;
+<<<<<<< HEAD
       
       if (currentMinutes < startMinutes || currentMinutes > endMinutes) {
         return { 
@@ -403,6 +428,17 @@ export default function useParentControls(): UseParentControlsReturn {
       }
     }
     
+=======
+
+      if (currentMinutes < startMinutes || currentMinutes > endMinutes) {
+        return {
+          allowed: false,
+          reason: `Allowed only between ${settings.schedule.allowedStart} and ${settings.schedule.allowedEnd}`
+        };
+      }
+    }
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     return { allowed: true };
   }, [childSettings]);
 
@@ -412,6 +448,7 @@ export default function useParentControls(): UseParentControlsReturn {
 
   const filteredActivities = useCallback((filter?: ActivityFilter): BONDINGActivity[] => {
     let result = activities;
+<<<<<<< HEAD
     
     if (filter?.childId) {
       result = result.filter(a => a.childId === filter.childId);
@@ -429,6 +466,25 @@ export default function useParentControls(): UseParentControlsReturn {
       result = result.filter(a => filter.actionTypes!.includes(a.actionType));
     }
     
+=======
+
+    if (filter?.childId) {
+      result = result.filter(a => a.childId === filter.childId);
+    }
+
+    if (filter?.startDate) {
+      result = result.filter(a => a.timestamp >= filter.startDate!);
+    }
+
+    if (filter?.endDate) {
+      result = result.filter(a => a.timestamp <= filter.endDate!);
+    }
+
+    if (filter?.actionTypes?.length) {
+      result = result.filter(a => filter.actionTypes!.includes(a.actionType));
+    }
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     return result;
   }, [activities]);
 
@@ -510,4 +566,8 @@ export default function useParentControls(): UseParentControlsReturn {
     isConnected,
     lastActivity,
   };
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

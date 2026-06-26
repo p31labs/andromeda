@@ -51,7 +51,11 @@ export const SHOOTING_STARS = {
 
   // ── Visual ──
   colors: {
+<<<<<<< HEAD
     normal: '#ffffff',
+=======
+    normal: 'var(--color-surface)',
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     bloodMoon: '#ff6644',
   },
   trailLength: 120,
@@ -104,7 +108,11 @@ export const SHOOTING_STARS = {
 
 export const MISSING_NODE = {
   // ── Visual ──
+<<<<<<< HEAD
   color: '#00FF88',
+=======
+  color: 'var(--color-phosphor)',
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   idleOpacity: 0.08,
   activeOpacity: 1.0,
   activeDuration: 1200,
@@ -137,6 +145,10 @@ export const MISSING_NODE = {
   // ── Console (for the adults) ──
   consoleOnTap: {
     text: '\u{1F53A} The missing node has been here since day one.\n   172.35 Hz. The phosphorus frequency.\n   Pulsing. Waiting. Always here.',
+<<<<<<< HEAD
     style: 'color: #00FF88; font-size: 11px; font-style: italic;',
+=======
+    style: 'color: var(--color-phosphor); font-size: 11px; font-style: italic;',
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   },
 } as const;

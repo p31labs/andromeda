@@ -160,4 +160,8 @@ export function lookupDiscovery(formula: string): string | null {
   const discoveries = loadDiscoveries();
   const found = discoveries.find(d => d.formula === formula);
   return found ? found.name : null;
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

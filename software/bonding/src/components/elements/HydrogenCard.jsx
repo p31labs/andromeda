@@ -31,7 +31,11 @@ const HydrogenCard = ({ playerId, onBond }) => {
         <div className="stability">Stability: Low</div>
       </div>
       <div className="element-description">
+<<<<<<< HEAD
         The simplest atom. High mobility, low stability. 
+=======
+        The simplest atom. High mobility, low stability.
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         Forms 1 bond. Acts as catalyst for complex molecules.
       </div>
       <div className="bonding-capacity">
@@ -41,4 +45,8 @@ const HydrogenCard = ({ playerId, onBond }) => {
   );
 };
 
+<<<<<<< HEAD
 export default HydrogenCard;
+=======
+export default HydrogenCard;
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

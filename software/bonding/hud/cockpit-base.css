@@ -1,6 +1,10 @@
 /**
  * WCD-08 Phase A: Global CSS Additions
+<<<<<<< HEAD
  * 
+=======
+ *
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
  * Sonnet: Add these rules to the existing global stylesheet
  * (src/index.css or wherever @tailwind directives live).
  * Do NOT replace existing CSS. Append.

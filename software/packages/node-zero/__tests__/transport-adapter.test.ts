@@ -30,11 +30,19 @@ describe("TransportAdapter", () => {
     });
 
     it("should emit TRANSMIT_COMPLETE on success", async () => {
+<<<<<<< HEAD
       // TODO
     });
 
     it("should respect LoRa duty-cycle limits", async () => {
       // TODO
+=======
+      // TODO: test body
+    });
+
+    it("should respect LoRa duty-cycle limits", async () => {
+      // TODO: test body
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     });
   });
 
@@ -45,7 +53,11 @@ describe("TransportAdapter", () => {
     });
 
     it("should deliver reassembled data to listeners", async () => {
+<<<<<<< HEAD
       // TODO
+=======
+      // TODO: test body
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     });
   });
 
@@ -55,7 +67,11 @@ describe("TransportAdapter", () => {
     });
 
     it("should emit PEER_DISCOVERED events", async () => {
+<<<<<<< HEAD
       // TODO
+=======
+      // TODO: test body
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     });
   });
 

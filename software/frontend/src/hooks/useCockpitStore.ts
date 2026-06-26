@@ -7,11 +7,19 @@ import { sampleInitialCapacity, decaySpoons, getUITier, type UITier } from '../.
 /**
  * P31 Z-Index Cockpit Store
  * =========================
+<<<<<<< HEAD
  * 
  * Zustand-based state management for the Z-Index Cockpit frontend.
  * Manages all cockpit state including voltage monitoring, Fawn Guard,
  * and communication with the backend via WebSocket bridge.
  * 
+=======
+ *
+ * Zustand-based state management for the Z-Index Cockpit frontend.
+ * Manages all cockpit state including voltage monitoring, Fawn Guard,
+ * and communication with the backend via WebSocket bridge.
+ *
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
  * Author: P31 Labs
  * License: MIT
  */
@@ -23,7 +31,11 @@ const initialState: CockpitState = {
   isLocked: false,
   lockoutReason: null,
   lockoutUntil: null,
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   // Voltage & Metabolic State
   voltageLevel: 50,
   metabolicState: {
@@ -32,7 +44,11 @@ const initialState: CockpitState = {
     heartbeat_lockout_active: false,
   },
   voltageLogs: [],
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   // Fawn Guard
   fawnGuard: {
     isActive: false,
@@ -41,7 +57,11 @@ const initialState: CockpitState = {
     interventionMode: 'passive',
     lastIntervention: null
   },
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   // Catcher's Mitt
   catchersMitt: {
     isProcessing: false,
@@ -49,7 +69,11 @@ const initialState: CockpitState = {
     signalHistory: [],
     rawSequestered: false
   },
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   // System Status
   systemStatus: {
     backendConnected: false,
@@ -57,7 +81,11 @@ const initialState: CockpitState = {
     lastHeartbeat: null,
     errorCount: 0
   },
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   // UI State
   ui: {
     activeRoom: 'z-10',
@@ -70,7 +98,11 @@ const initialState: CockpitState = {
 // Create Zustand store
 export const useCockpitStore = create<CockpitStore>((set, get) => ({
   ...initialState,
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   // Core Actions
   initialize: () => {
     set(state => ({
@@ -78,7 +110,11 @@ export const useCockpitStore = create<CockpitStore>((set, get) => ({
       isInitialized: true
     }));
   },
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   setLockout: (reason: string | null, until: number | null) => {
     set(state => ({
       ...state,
@@ -87,7 +123,11 @@ export const useCockpitStore = create<CockpitStore>((set, get) => ({
       lockoutUntil: until
     }));
   },
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   checkLockout: () => {
     const state = get();
     if (state.lockoutUntil && Date.now() > state.lockoutUntil) {
@@ -99,11 +139,19 @@ export const useCockpitStore = create<CockpitStore>((set, get) => ({
       }));
     }
   },
+<<<<<<< HEAD
   
   // Voltage Management
   updateVoltage: (level: number) => {
     const newVoltage = Math.max(0, Math.min(100, level));
     
+=======
+
+  // Voltage Management
+  updateVoltage: (level: number) => {
+    const newVoltage = Math.max(0, Math.min(100, level));
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     set(state => ({
       ...state,
       voltageLevel: newVoltage,
@@ -117,13 +165,21 @@ export const useCockpitStore = create<CockpitStore>((set, get) => ({
         }
       ].slice(-50) // Keep last 50 logs
     }));
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     // Auto-lockout at critical voltage
     if (newVoltage <= 10) {
       get().setLockout('CRITICAL_VOLTAGE', Date.now() + 300000); // 5 minute lockout
     }
   },
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   addVoltageLog: (log: VoltageLogPayload) => {
     set(state => ({
       ...state,
@@ -133,7 +189,11 @@ export const useCockpitStore = create<CockpitStore>((set, get) => ({
       ].slice(-100) // Keep last 100 logs
     }));
   },
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   updateMetabolicState: (state: MetabolicState) => {
     set(store => ({
       ...store,
@@ -143,7 +203,11 @@ export const useCockpitStore = create<CockpitStore>((set, get) => ({
       }
     }));
   },
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   drainSpoons: (taskCost: number, lambda = 0.1) => {
     set(state => {
       const currentNormalized = state.metabolicState.current_spoons / state.metabolicState.max_spoons;
@@ -175,7 +239,11 @@ export const useCockpitStore = create<CockpitStore>((set, get) => ({
       }
     }));
   },
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   deactivateFawnGuard: () => {
     set(state => ({
       ...state,
@@ -191,7 +259,11 @@ export const useCockpitStore = create<CockpitStore>((set, get) => ({
       }
     }));
   },
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   setFawnGuardMode: (mode: 'passive' | 'active') => {
     set(state => ({
       ...state,
@@ -201,11 +273,19 @@ export const useCockpitStore = create<CockpitStore>((set, get) => ({
       }
     }));
   },
+<<<<<<< HEAD
   
   // Catcher's Mitt Actions
   processVoltageSignal: (signal: CatchersMittSignal) => {
     const state = get();
     
+=======
+
+  // Catcher's Mitt Actions
+  processVoltageSignal: (signal: CatchersMittSignal) => {
+    const state = get();
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     // Add to signal history
     const newHistory = [
       ...state.catchersMitt.signalHistory,
@@ -214,11 +294,19 @@ export const useCockpitStore = create<CockpitStore>((set, get) => ({
         receivedAt: Date.now()
       }
     ].slice(-20); // Keep last 20 signals
+<<<<<<< HEAD
     
     // Determine if Fawn Guard should activate
     const shouldActivate = signal.tier === 'HIGH' && 
                           state.fawnGuard.interventionMode === 'active';
     
+=======
+
+    // Determine if Fawn Guard should activate
+    const shouldActivate = signal.tier === 'HIGH' &&
+                          state.fawnGuard.interventionMode === 'active';
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     set(state => ({
       ...state,
       catchersMitt: {
@@ -228,7 +316,11 @@ export const useCockpitStore = create<CockpitStore>((set, get) => ({
         isProcessing: false,
         rawSequestered: signal.tier === 'HIGH'
       },
+<<<<<<< HEAD
       fawnGuard: shouldActivate 
+=======
+      fawnGuard: shouldActivate
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         ? {
             ...state.fawnGuard,
             isActive: true,
@@ -238,13 +330,21 @@ export const useCockpitStore = create<CockpitStore>((set, get) => ({
           }
         : state.fawnGuard
     }));
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     // Update voltage level based on signal
     if (signal.voltage_score !== undefined) {
       get().updateVoltage(signal.voltage_score);
     }
   },
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   setProcessing: (isProcessing: boolean) => {
     set(state => ({
       ...state,
@@ -254,7 +354,11 @@ export const useCockpitStore = create<CockpitStore>((set, get) => ({
       }
     }));
   },
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   // System Status
   setBackendConnected: (connected: boolean) => {
     set(state => ({
@@ -266,7 +370,11 @@ export const useCockpitStore = create<CockpitStore>((set, get) => ({
       }
     }));
   },
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   setWebsocketConnected: (connected: boolean) => {
     set(state => ({
       ...state,
@@ -276,7 +384,11 @@ export const useCockpitStore = create<CockpitStore>((set, get) => ({
       }
     }));
   },
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   incrementErrorCount: () => {
     set(state => ({
       ...state,
@@ -286,7 +398,11 @@ export const useCockpitStore = create<CockpitStore>((set, get) => ({
       }
     }));
   },
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   resetErrorCount: () => {
     set(state => ({
       ...state,
@@ -296,7 +412,11 @@ export const useCockpitStore = create<CockpitStore>((set, get) => ({
       }
     }));
   },
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   // UI Actions
   setActiveRoom: (room: string) => {
     set(state => ({
@@ -307,7 +427,11 @@ export const useCockpitStore = create<CockpitStore>((set, get) => ({
       }
     }));
   },
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   toggleFullscreen: () => {
     set(state => ({
       ...state,
@@ -317,7 +441,11 @@ export const useCockpitStore = create<CockpitStore>((set, get) => ({
       }
     }));
   },
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   setTheme: (theme: 'light' | 'dark') => {
     set(state => ({
       ...state,
@@ -327,7 +455,11 @@ export const useCockpitStore = create<CockpitStore>((set, get) => ({
       }
     }));
   },
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   addNotification: (notification: { id: string; message: string; type: 'info' | 'warning' | 'error'; duration?: number }) => {
     set(state => ({
       ...state,
@@ -339,7 +471,11 @@ export const useCockpitStore = create<CockpitStore>((set, get) => ({
         ]
       }
     }));
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     // Auto-remove notification after duration
     if (notification.duration) {
       setTimeout(() => {
@@ -347,7 +483,11 @@ export const useCockpitStore = create<CockpitStore>((set, get) => ({
       }, notification.duration);
     }
   },
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   removeNotification: (id: string) => {
     set(state => ({
       ...state,
@@ -357,7 +497,11 @@ export const useCockpitStore = create<CockpitStore>((set, get) => ({
       }
     }));
   },
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   // Reset function
   reset: () => {
     set(initialState);
@@ -413,7 +557,11 @@ export function useVoltageSignalProcessor(): typeof useCockpitStore {
       ws.onclose = (event) => {
         console.log(`🔌 WebSocket disconnected (code: ${event.code})`);
         setWebsocketConnected(false);
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         // Attempt reconnection after 3 seconds if not a deliberate close
         if (event.code !== 1000 && event.code !== 1001) {
           reconnectTimeoutRef.current = setTimeout(() => {
@@ -450,4 +598,8 @@ export function useVoltageSignalProcessor(): typeof useCockpitStore {
 }
 
 // Export types for external use
+<<<<<<< HEAD
 export type { CockpitState, CockpitActions, CockpitStore };
+=======
+export type { CockpitState, CockpitActions, CockpitStore };
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

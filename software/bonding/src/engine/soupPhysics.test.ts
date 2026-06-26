@@ -55,7 +55,11 @@ describe('Soup Physics Engine', () => {
         // Logic direction is validated in tickSoup integration tests
         expect(true).toBe(true);
     });
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     it('calculateForce nonpolar+nonpolar → weak attract', () => {
         // As above, logic direction is what matters
     });
@@ -94,7 +98,11 @@ describe('Soup Physics Engine', () => {
         const nextState = tickSoup(state, defaultConfig);
         expect(nextState.molecules[0]!.vx).toBeGreaterThan(0);
     });
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     it('tickSoup caps velocity at maxSpeed', () => {
         const m = { x:100, y:100, vx: 20, vy: 0, mass: 1 } as SoupMolecule;
         const state = { molecules: [m], tick: 0, reactions: [] };
@@ -109,7 +117,11 @@ describe('Soup Physics Engine', () => {
         const candidates = findNearbyReactions(state, defaultConfig);
         expect(candidates.length).toBe(1);
     });
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     it('findNearbyReactions returns empty for far molecules', () => {
         const m1 = { id: '1', x:100, y:100 } as SoupMolecule;
         const m2 = { id: '2', x:300, y:300 } as SoupMolecule;
@@ -117,13 +129,21 @@ describe('Soup Physics Engine', () => {
         const candidates = findNearbyReactions(state, defaultConfig);
         expect(candidates.length).toBe(0);
     });
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     it('initializeSoup creates molecule for each gallery entry', () => {
         const gallery = [{id:'1', formula:'H2O', elements:{H:2, O:1}}];
         const state = initializeSoup(gallery, 800, 600);
         expect(state.molecules.length).toBe(1);
     });
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     it('getDefaultSoupConfig returns valid config', () => {
         const config = getDefaultSoupConfig();
         expect(config.width).toBeGreaterThan(0);

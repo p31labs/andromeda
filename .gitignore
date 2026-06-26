@@ -53,6 +53,15 @@ npm-debug.log*
 # Build artifacts
 dist/
 build/
+<<<<<<< HEAD
+=======
+
+# Auto-generated reports (quantum polisher / grading)
+GRADING_REPORT.md
+grading-index.json
+jitterbug-depressed-queue.json
+quantum-polisher-report.json
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
 # TypeScript incremental + Next.js (never commit)
 *.tsbuildinfo
 .tsbuildinfo

@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import { useMemo, useRef } from 'react';
+=======
+import { useMemo, useRef, useEffect } from 'react';
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
@@ -54,6 +58,16 @@ export function NotificationStarfield({ isUrgent = false, count = 2000 }: Notifi
     depthWrite: false,
   }), []);
 
+<<<<<<< HEAD
+=======
+  useEffect(() => {
+    return () => {
+      geometry.dispose();
+      material.dispose();
+    };
+  }, [geometry, material]);
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   useFrame((_, delta) => {
     timeRef.current += delta * (isUrgent ? 2.5 : 0.4);
     if (!pointsRef.current) return;

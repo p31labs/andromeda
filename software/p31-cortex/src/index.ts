@@ -21,6 +21,23 @@ const app = {
     const url = new URL(request.url);
     const path = url.pathname;
 
+<<<<<<< HEAD
+=======
+    // Health check
+    if (path === "/health" && request.method === "GET") {
+      return new Response(
+        JSON.stringify({
+          status: "ok",
+          worker: "p31-cortex",
+          version: "0.1.0",
+          agents: AGENT_BINDINGS.map(a => a.key),
+          timestamp: new Date().toISOString()
+        }),
+        { headers: { "Content-Type": "application/json" } }
+      );
+    }
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     // Status
     if (path === "/api/status" && request.method === "GET") {
       return handleStatus(env);
@@ -90,6 +107,7 @@ const app = {
         },
       },
     );
+<<<<<<< HEAD
 
     // Health check endpoint
     if (path === "/health" && request.method === "GET") {
@@ -104,6 +122,8 @@ const app = {
         { headers: { "Content-Type": "application/json" } }
       );
     }
+=======
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   },
 
   async scheduled(_event: ScheduledEvent, env: CortexEnv): Promise<void> {

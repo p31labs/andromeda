@@ -1,9 +1,37 @@
+<<<<<<< HEAD
+=======
+@import '@p31/shared/src/theme/css-variables.css';
+
+/* P31 Canon — injected by Quantum Polisher */
+:root {
+  --color-amber: #cda852;
+  --color-cloud: #1e293b;
+  --color-coral: #cc6247;
+  --color-cyan: #4db8a8;
+  --color-fuchsia: #e879f9;
+  --color-ink: var(--color-ink);
+  --color-lavender: #8b7cc9;
+  --color-muted: #64748b;
+  --color-paper: #fdfcfa;
+  --color-phosphor: #00ff88;
+  --color-phosphorus: #3ba372;
+  --color-surface: #ffffff;
+  --color-surface2: #ebeae4;
+  --color-teal: #5dcaa5;
+  --color-themeColor: #f5f4f0;
+  --color-void: #f5f4f0;
+}
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
 :root {
   --green: #22c55e;
   --yellow: #eab308;
   --red: #ef4444;
   --black: #111827;
+<<<<<<< HEAD
   --bg: #0f172a;
+=======
+  --bg: var(--color-ink);
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   --card: #1e293b;
   --text: #f8fafc;
   --muted: #94a3b8;
@@ -162,6 +190,7 @@ body {
   .container {
     padding: 10px;
   }
+<<<<<<< HEAD
   
   .spoon-count {
     font-size: 2.5rem;
@@ -171,3 +200,14 @@ body {
     grid-template-columns: repeat(2, 1fr);
   }
 }
+=======
+
+  .spoon-count {
+    font-size: 2.5rem;
+  }
+
+  .controls-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

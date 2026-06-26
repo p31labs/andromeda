@@ -30,26 +30,44 @@ interface AvatarDisplayProps {
 // ── Sub-components ──
 
 /** Single badge display with progress ring */
+<<<<<<< HEAD
 function BadgeItem({ 
   badge, 
   progress,
   isNew,
 }: { 
+=======
+function BadgeItem({
+  badge,
+  progress,
+  isNew,
+}: {
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   badge: Badge;
   progress: { current: number; target: number; earned: boolean };
   isNew?: boolean;
 }) {
   const [showCelebration, setShowCelebration] = useState(isNew);
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   useEffect(() => {
     if (isNew) {
       const timer = setTimeout(() => setShowCelebration(false), 2000);
       return () => clearTimeout(timer);
     }
   }, [isNew]);
+<<<<<<< HEAD
   
   return (
     <div 
+=======
+
+  return (
+    <div
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       className={`badge-item ${progress.earned ? 'earned' : 'locked'} ${showCelebration ? 'celebrating' : ''}`}
       style={{
         display: 'flex',
@@ -58,10 +76,17 @@ function BadgeItem({
         padding: '8px',
         margin: '4px',
         borderRadius: '12px',
+<<<<<<< HEAD
         background: progress.earned 
           ? 'linear-gradient(135deg, rgba(0,255,136,0.2), rgba(0,212,255,0.1))'
           : 'rgba(255,255,255,0.05)',
         border: progress.earned 
+=======
+        background: progress.earned
+          ? 'linear-gradient(135deg, rgba(0,255,136,0.2), rgba(0,212,255,0.1))'
+          : 'rgba(255,255,255,0.05)',
+        border: progress.earned
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
           ? '2px solid rgba(0,255,136,0.5)'
           : '2px solid rgba(255,255,255,0.1)',
         opacity: progress.earned ? 1 : 0.5,
@@ -73,8 +98,13 @@ function BadgeItem({
       <div className="badge-icon" style={{ fontSize: '32px' }}>
         {progress.earned ? badge.icon : '🔒'}
       </div>
+<<<<<<< HEAD
       <div className="badge-name" style={{ 
         fontSize: '12px', 
+=======
+      <div className="badge-name" style={{
+        fontSize: '12px',
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         color: '#E8ECF4',
         marginTop: '4px',
         textAlign: 'center',
@@ -100,7 +130,11 @@ function LevelProgress({ bonds }: { bonds: number }) {
   const level = getLevelForBonds(bonds);
   const progress = getLevelProgress(bonds);
   const nextLevel = getNextLevel(bonds);
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   return (
     <div className="level-progress" style={{
       padding: '16px',
@@ -117,6 +151,7 @@ function LevelProgress({ bonds }: { bonds: number }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <span style={{ fontSize: '28px' }}>{level.icon}</span>
           <div>
+<<<<<<< HEAD
             <div style={{ 
               fontSize: '18px', 
               fontWeight: 'bold', 
@@ -126,6 +161,17 @@ function LevelProgress({ bonds }: { bonds: number }) {
             </div>
             <div style={{ 
               fontSize: '12px', 
+=======
+            <div style={{
+              fontSize: '18px',
+              fontWeight: 'bold',
+              color: 'var(--color-phosphor)',
+            }}>
+              {level.title}
+            </div>
+            <div style={{
+              fontSize: '12px',
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
               color: 'rgba(232,236,244,0.7)',
             }}>
               Level {level.level}
@@ -137,16 +183,26 @@ function LevelProgress({ bonds }: { bonds: number }) {
           flexDirection: 'column',
           alignItems: 'flex-end',
         }}>
+<<<<<<< HEAD
           <div style={{ 
             fontSize: '14px', 
+=======
+          <div style={{
+            fontSize: '14px',
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
             color: '#00D4FF',
             fontWeight: 'bold',
           }}>
             {bonds} bonds
           </div>
           {nextLevel && (
+<<<<<<< HEAD
             <div style={{ 
               fontSize: '11px', 
+=======
+            <div style={{
+              fontSize: '11px',
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
               color: 'rgba(232,236,244,0.6)',
             }}>
               {nextLevel.requiredBonds - bonds} to {nextLevel.title} {nextLevel.icon}
@@ -154,7 +210,11 @@ function LevelProgress({ bonds }: { bonds: number }) {
           )}
         </div>
       </div>
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       {/* Progress bar */}
       <div style={{
         height: '12px',
@@ -169,7 +229,11 @@ function LevelProgress({ bonds }: { bonds: number }) {
           top: 0,
           height: '100%',
           width: `${progress * 100}%`,
+<<<<<<< HEAD
           background: 'linear-gradient(90deg, #00FF88, #00D4FF)',
+=======
+          background: 'linear-gradient(90deg, var(--color-phosphor), #00D4FF)',
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
           borderRadius: '6px',
           transition: 'width 0.5s ease-out',
         }} />
@@ -179,6 +243,7 @@ function LevelProgress({ bonds }: { bonds: number }) {
 }
 
 /** Stats summary component */
+<<<<<<< HEAD
 function StatsSummary({ 
   bonds, 
   molecules, 
@@ -186,6 +251,15 @@ function StatsSummary({
   familySessions,
   playMinutes,
 }: { 
+=======
+function StatsSummary({
+  bonds,
+  molecules,
+  unique,
+  familySessions,
+  playMinutes,
+}: {
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   bonds: number;
   molecules: number;
   unique: number;
@@ -199,7 +273,11 @@ function StatsSummary({
     { icon: '👨‍👩‍👧‍👦', value: familySessions, label: 'Family Play' },
     { icon: '⏱️', value: playMinutes, label: 'Minutes' },
   ];
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   return (
     <div className="stats-summary" style={{
       display: 'flex',
@@ -217,6 +295,7 @@ function StatsSummary({
           gap: '4px',
         }}>
           <span style={{ fontSize: '20px' }}>{stat.icon}</span>
+<<<<<<< HEAD
           <span style={{ 
             fontSize: '16px', 
             fontWeight: 'bold',
@@ -226,6 +305,17 @@ function StatsSummary({
           </span>
           <span style={{ 
             fontSize: '10px', 
+=======
+          <span style={{
+            fontSize: '16px',
+            fontWeight: 'bold',
+            color: 'var(--color-phosphor)',
+          }}>
+            {stat.value}
+          </span>
+          <span style={{
+            fontSize: '10px',
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
             color: 'rgba(232,236,244,0.6)',
           }}>
             {stat.label}
@@ -237,18 +327,30 @@ function StatsSummary({
 }
 
 /** Celebration animation overlay */
+<<<<<<< HEAD
 function CelebrationOverlay({ 
   badge, 
   onComplete 
 }: { 
   badge: Badge; 
+=======
+function CelebrationOverlay({
+  badge,
+  onComplete
+}: {
+  badge: Badge;
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   onComplete: () => void;
 }) {
   useEffect(() => {
     const timer = setTimeout(onComplete, 3000);
     return () => clearTimeout(timer);
   }, [onComplete]);
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   return (
     <div className="celebration-overlay" style={{
       position: 'fixed',
@@ -273,7 +375,11 @@ function CelebrationOverlay({
       <div style={{
         fontSize: '48px',
         marginTop: '16px',
+<<<<<<< HEAD
         color: '#00FF88',
+=======
+        color: 'var(--color-phosphor)',
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         fontWeight: 'bold',
       }}>
         {badge.name}!
@@ -299,7 +405,11 @@ function CelebrationOverlay({
 
 export function AvatarDisplay({ expanded = false, onBadgeEarn }: AvatarDisplayProps) {
   const [showCelebration, setShowCelebration] = useState<Badge | null>(null);
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   // Get state from progress store
   const totalBonds = useProgressStore((s) => s.totalBonds);
   const totalMolecules = useProgressStore((s) => s.totalMolecules);
@@ -308,11 +418,19 @@ export function AvatarDisplay({ expanded = false, onBadgeEarn }: AvatarDisplayPr
   const totalPlayMinutes = useProgressStore((s) => s.totalPlayMinutes);
   const badgeCollection = useProgressStore((s) => s.badgeCollection);
   const recentBadges = useProgressStore((s) => s.recentBadges);
+<<<<<<< HEAD
   
   const earnedCount = getEarnedBadgesCount(badgeCollection);
   const totalBadges = getTotalBadgesCount();
   const level = getLevelForBonds(totalBonds);
   
+=======
+
+  const earnedCount = getEarnedBadgesCount(badgeCollection);
+  const totalBadges = getTotalBadgesCount();
+  const level = getLevelForBonds(totalBonds);
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   // Show celebration when new badge earned
   useEffect(() => {
     if (recentBadges.length > 0) {
@@ -324,7 +442,11 @@ export function AvatarDisplay({ expanded = false, onBadgeEarn }: AvatarDisplayPr
       }
     }
   }, [recentBadges, onBadgeEarn]);
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   return (
     <div className="avatar-display" style={{
       padding: '16px',
@@ -372,7 +494,11 @@ export function AvatarDisplay({ expanded = false, onBadgeEarn }: AvatarDisplayPr
           border-radius: 3px;
         }
       `}</style>
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       {/* Header */}
       <div style={{
         display: 'flex',
@@ -385,7 +511,11 @@ export function AvatarDisplay({ expanded = false, onBadgeEarn }: AvatarDisplayPr
             width: '60px',
             height: '60px',
             borderRadius: '50%',
+<<<<<<< HEAD
             background: 'linear-gradient(135deg, #00FF88, #00D4FF)',
+=======
+            background: 'linear-gradient(135deg, var(--color-phosphor), #00D4FF)',
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -395,22 +525,38 @@ export function AvatarDisplay({ expanded = false, onBadgeEarn }: AvatarDisplayPr
             {level.icon}
           </div>
           <div>
+<<<<<<< HEAD
             <div style={{ 
               fontSize: '14px', 
+=======
+            <div style={{
+              fontSize: '14px',
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
               color: 'rgba(232,236,244,0.7)',
             }}>
               Your Avatar
             </div>
+<<<<<<< HEAD
             <div style={{ 
               fontSize: '20px', 
               fontWeight: 'bold',
               color: '#00FF88',
+=======
+            <div style={{
+              fontSize: '20px',
+              fontWeight: 'bold',
+              color: 'var(--color-phosphor)',
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
             }}>
               {level.title}
             </div>
           </div>
         </div>
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         {/* Badge count */}
         <div style={{
           display: 'flex',
@@ -421,6 +567,7 @@ export function AvatarDisplay({ expanded = false, onBadgeEarn }: AvatarDisplayPr
           borderRadius: '20px',
         }}>
           <span>🏆</span>
+<<<<<<< HEAD
           <span style={{ 
             fontWeight: 'bold', 
             color: '#00FF88',
@@ -428,6 +575,15 @@ export function AvatarDisplay({ expanded = false, onBadgeEarn }: AvatarDisplayPr
             {earnedCount}
           </span>
           <span style={{ 
+=======
+          <span style={{
+            fontWeight: 'bold',
+            color: 'var(--color-phosphor)',
+          }}>
+            {earnedCount}
+          </span>
+          <span style={{
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
             color: 'rgba(232,236,244,0.6)',
             fontSize: '12px',
           }}>
@@ -435,19 +591,32 @@ export function AvatarDisplay({ expanded = false, onBadgeEarn }: AvatarDisplayPr
           </span>
         </div>
       </div>
+<<<<<<< HEAD
       
       {/* Level progress */}
       <LevelProgress bonds={totalBonds} />
       
       {/* Stats summary */}
       <StatsSummary 
+=======
+
+      {/* Level progress */}
+      <LevelProgress bonds={totalBonds} />
+
+      {/* Stats summary */}
+      <StatsSummary
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         bonds={totalBonds}
         molecules={totalMolecules}
         unique={uniqueMolecules.length}
         familySessions={familyPlaySessions}
         playMinutes={totalPlayMinutes}
       />
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       {/* Badge grid - only show when expanded */}
       {expanded && (
         <div className="badge-grid">
@@ -459,7 +628,11 @@ export function AvatarDisplay({ expanded = false, onBadgeEarn }: AvatarDisplayPr
             };
             const isNew = recentBadges.includes(badge.id);
             return (
+<<<<<<< HEAD
               <BadgeItem 
+=======
+              <BadgeItem
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
                 key={badge.id}
                 badge={badge}
                 progress={progress}
@@ -469,10 +642,17 @@ export function AvatarDisplay({ expanded = false, onBadgeEarn }: AvatarDisplayPr
           })}
         </div>
       )}
+<<<<<<< HEAD
       
       {/* Celebration overlay */}
       {showCelebration && (
         <CelebrationOverlay 
+=======
+
+      {/* Celebration overlay */}
+      {showCelebration && (
+        <CelebrationOverlay
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
           badge={showCelebration}
           onComplete={() => setShowCelebration(null)}
         />
@@ -483,13 +663,22 @@ export function AvatarDisplay({ expanded = false, onBadgeEarn }: AvatarDisplayPr
 
 // ── Compact version for HUD ──
 
+<<<<<<< HEAD
 export function AvatarCompact({ 
   bonds = 0, 
+=======
+export function AvatarCompact({
+  bonds = 0,
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   badgeCount = 0,
   level = 'Seed',
   levelIcon = '🌱',
   onClick,
+<<<<<<< HEAD
 }: { 
+=======
+}: {
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   bonds?: number;
   badgeCount?: number;
   level?: string;
@@ -497,7 +686,11 @@ export function AvatarCompact({
   onClick?: () => void;
 }) {
   return (
+<<<<<<< HEAD
     <button 
+=======
+    <button
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       onClick={onClick}
       style={{
         display: 'flex',
@@ -527,4 +720,8 @@ export function AvatarCompact({
   );
 }
 
+<<<<<<< HEAD
 export default AvatarDisplay;
+=======
+export default AvatarDisplay;
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

@@ -27,7 +27,11 @@ interface CommandBarProps {
 }
 
 function stabilityColor(pct: number): string {
+<<<<<<< HEAD
   if (pct === 100) return '#00FF88';  // phosphor green — complete
+=======
+  if (pct === 100) return 'var(--color-phosphor)';  // phosphor green — complete
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   if (pct > 60)   return '#FFD700';   // amber — progressing
   return '#EF4444';                    // red — unstable
 }

@@ -44,7 +44,11 @@ const DonationForm = () => {
         P
       </div>
       <h3 className="font-heading font-black text-3xl text-espresso mb-2 text-center">Donate to P31 Labs</h3>
+<<<<<<< HEAD
       <p className="text-sm text-espresso/60 text-center mb-8">Choose an amount below. Payments processed securely via Stripe.</p>
+=======
+      <p className="text-sm text-espresso/60 text-center mb-8">Choose an amount below. Payments processed securely via PayPal.</p>
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       
       {/* Frequency Toggle */}
       <div className="flex gap-4 mb-6">
@@ -89,7 +93,11 @@ const DonationForm = () => {
       </button>
 
       <p className="text-xs text-center text-espresso/50 mt-4">
+<<<<<<< HEAD
         Secure payment via Stripe. You will receive an email receipt.
+=======
+        Secure payment via PayPal. You will receive an email receipt.
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       </p>
     </div>
   );

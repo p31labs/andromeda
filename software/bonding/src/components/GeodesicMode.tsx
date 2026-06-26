@@ -137,7 +137,11 @@ export function GeodesicMode() {
   const showPill    = !coachDone && step && coachMinimized;
 
   return (
+<<<<<<< HEAD
     <div className="fixed inset-0 flex flex-col" style={{ background: '#0f1115', color: '#d8d6d0', fontFamily: "'JetBrains Mono', monospace" }}>
+=======
+    <div className="fixed inset-0 flex flex-col" style={{ background: '#0f1115', color: 'var(--color-cloud)', fontFamily: "'JetBrains Mono', monospace" }}>
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
 
       {/* ── Header ── */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 16px', minHeight: 48, background: 'rgba(15,17,21,0.95)', borderBottom: '1px solid rgba(255,255,255,0.05)', flexShrink: 0, zIndex: 10 }}>
@@ -189,7 +193,11 @@ export function GeodesicMode() {
             style={btnStyle(autoSnap)}
           >Snap</button>
           {shapeCount > 0 && (
+<<<<<<< HEAD
             <span style={{ fontSize: 9, color: '#cda852', padding: '0 4px', whiteSpace: 'nowrap' }}>
+=======
+            <span style={{ fontSize: 9, color: 'var(--color-amber)', padding: '0 4px', whiteSpace: 'nowrap' }}>
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
               {shapeCount} shape{shapeCount !== 1 ? 's' : ''}
             </span>
           )}
@@ -219,7 +227,11 @@ export function GeodesicMode() {
               <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
                 <span style={{ fontSize: '1.3rem', flexShrink: 0, opacity: 0.75, lineHeight: 1.3 }}>{step!.emoji}</span>
                 <div>
+<<<<<<< HEAD
                   <div style={{ fontFamily: "'Atkinson Hyperlegible', sans-serif", fontSize: 13, color: '#d8d6d0', lineHeight: 1.45 }}>{step!.msg}</div>
+=======
+                  <div style={{ fontFamily: "'Atkinson Hyperlegible', sans-serif", fontSize: 13, color: 'var(--color-cloud)', lineHeight: 1.45 }}>{step!.msg}</div>
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
                   <div style={{ fontSize: 9, color: 'rgba(216,214,208,0.25)', marginTop: 5, display: 'flex', gap: 10 }}>
                     <span>{track.label} · {stepIdx + 1}/{track.steps.length}</span>
                     <button type="button" onClick={skipCoach} style={{ background: 'none', border: 'none', color: 'inherit', cursor: 'pointer', padding: 0, fontFamily: 'inherit', font: 'inherit' }}>skip</button>
@@ -242,7 +254,11 @@ export function GeodesicMode() {
 
       {/* ── Toast ── */}
       {toastMsg && (
+<<<<<<< HEAD
         <div style={{ position: 'fixed', left: '50%', transform: 'translateX(-50%)', bottom: 'calc(72px + env(safe-area-inset-bottom, 0px))', background: 'rgba(37,137,125,0.95)', borderRadius: 10, padding: '10px 16px', fontFamily: "'Atkinson Hyperlegible', sans-serif", fontSize: 14, fontWeight: 500, color: '#d8d6d0', zIndex: 60, pointerEvents: 'none', maxWidth: 'min(94vw, 400px)', textAlign: 'center', boxShadow: '0 4px 20px rgba(0,0,0,0.35)' }}>
+=======
+        <div style={{ position: 'fixed', left: '50%', transform: 'translateX(-50%)', bottom: 'calc(72px + env(safe-area-inset-bottom, 0px))', background: 'rgba(37,137,125,0.95)', borderRadius: 10, padding: '10px 16px', fontFamily: "'Atkinson Hyperlegible', sans-serif", fontSize: 14, fontWeight: 500, color: 'var(--color-cloud)', zIndex: 60, pointerEvents: 'none', maxWidth: 'min(94vw, 400px)', textAlign: 'center', boxShadow: '0 4px 20px rgba(0,0,0,0.35)' }}>
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
           {toastMsg}
         </div>
       )}
@@ -259,7 +275,11 @@ function btnStyle(active: boolean): React.CSSProperties {
     cursor: 'pointer',
     border: active ? '1px solid #25897d' : '1px solid rgba(255,255,255,0.1)',
     background: active ? 'rgba(37,137,125,0.15)' : 'rgba(22,25,32,0.8)',
+<<<<<<< HEAD
     color: active ? '#4db8a8' : 'rgba(216,214,208,0.6)',
+=======
+    color: active ? 'var(--color-cyan)' : 'rgba(216,214,208,0.6)',
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     minHeight: 40,
     minWidth: 40,
     touchAction: 'manipulation',

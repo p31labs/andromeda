@@ -56,7 +56,11 @@ export function PosnerMolecule({ spoons, calcium }: PosnerMoleculeProps) {
   const isLow = spoons <= 4;
   const isCritical = calcium !== undefined && calcium < 8.0;
 
+<<<<<<< HEAD
   const caColor  = isCritical ? '#EF4444' : '#cda852';
+=======
+  const caColor  = isCritical ? '#EF4444' : 'var(--color-amber)';
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   const po4Color = '#9B59B6';
   const starSpeed = isLow ? 3 : 1;
 

@@ -40,7 +40,11 @@ const COLORS = [
   { name: 'amber', hex: '#f59e0b' },
   { name: 'magenta', hex: '#ec4899' },
   { name: 'violet', hex: '#8b5cf6' },
+<<<<<<< HEAD
   { name: 'white', hex: '#ffffff' },
+=======
+  { name: 'white', hex: 'var(--color-surface)' },
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
 ];
 
 export function Lobby() {
@@ -283,7 +287,11 @@ export function Lobby() {
               dangerouslySetInnerHTML={{
                 __html: generateQRSvg(roomCode, {
                   size: 120,
+<<<<<<< HEAD
                   fgColor: '#FFFFFF',
+=======
+                  fgColor: 'var(--color-surface)',
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
                   bgColor: 'transparent',
                 }),
               }}

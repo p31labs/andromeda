@@ -22,7 +22,11 @@ describe('Growth Rings Engine', () => {
     const now = new Date('2026-02-27T12:00:00Z');
     expect(calculateTier(dob, now)).toBe('seed');
   });
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   it('calculateTier 10-year-old → sprout', () => {
       const dob = new Date('2016-02-27T12:00:00Z');
       const now = new Date('2026-02-27T12:00:00Z');
@@ -67,11 +71,19 @@ describe('Growth Rings Engine', () => {
   it('isFeatureAvailable textInput sprout → true', () => {
       expect(isFeatureAvailable('textInput', 'sprout')).toBe(true);
   });
+<<<<<<< HEAD
   
   it('isFeatureAvailable reactions canopy → true', () => {
       expect(isFeatureAvailable('reactions', 'canopy')).toBe(true);
   });
   
+=======
+
+  it('isFeatureAvailable reactions canopy → true', () => {
+      expect(isFeatureAvailable('reactions', 'canopy')).toBe(true);
+  });
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   it('isFeatureAvailable moduleCreation forest → true', () => {
       expect(isFeatureAvailable('moduleCreation', 'forest')).toBe(true);
   });
@@ -80,12 +92,20 @@ describe('Growth Rings Engine', () => {
       const fact = "This is a fact. It has two sentences.";
       expect(adaptFunFact(fact, 'seed')).toBe("This is a fact");
   });
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   it('tierFromAge boundary: 9 → seed, 10 → sprout', () => {
       expect(tierFromAge(9)).toBe('seed');
       expect(tierFromAge(10)).toBe('sprout');
   });
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   it('tierFromAge boundary: 13 → sprout, 14 → sapling', () => {
       expect(tierFromAge(13)).toBe('sprout');
       expect(tierFromAge(14)).toBe('sapling');

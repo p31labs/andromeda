@@ -58,13 +58,25 @@
   .subtitle {
     font-size: 1rem;
   }
+<<<<<<< HEAD
   
   .modifiers {
     grid-template-columns: 1fr;
   }
   
+=======
+
+  .modifiers {
+    grid-template-columns: 1fr;
+  }
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   .export-controls {
     flex-direction: column;
     width: 100%;
   }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

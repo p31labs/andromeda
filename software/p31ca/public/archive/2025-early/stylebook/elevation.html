@@ -30,7 +30,11 @@
     .elev-cell:hover { transform: translateY(-2px); }
     .elev-name { font-weight: 600; color: var(--p31-paper); margin-bottom: 4px; }
     .elev-token { font-family: var(--p31-font-mono); font-size: 11px; color: var(--p31-muted); }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     .glass-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -74,7 +78,11 @@
     import { renderShell, code, callout } from '/stylebook/_chrome.js';
     import { P31ThemeController } from '/lib/p31-theme-engine.mjs';
     window.p31Theme = new P31ThemeController({ defaultTheme: 'hub' });
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     const content = `
       <section class="sb-section">
         <div class="sb-section-header">
@@ -84,7 +92,11 @@
           Each surface token sits subtly above the last. Shadows are reserved for moments where elevation
           must be unambiguous (modals, popovers, hover states).</p>
         </div>
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         <div class="elev-grid">
           <div class="elev-cell" style="background: var(--p31-void);">
             <div class="elev-name">Void</div>
@@ -104,7 +116,11 @@
           </div>
         </div>
       </section>
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">Shadows</div>
@@ -112,7 +128,11 @@
           <p class="sb-text">Shadows are subtle by default. Use them for hover states, modals, dropdowns —
           never as decoration.</p>
         </div>
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 24px; padding: 32px;">
           <div style="aspect-ratio: 1; background: var(--p31-surface); border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.1);">
             <div style="font-weight:600; color: var(--p31-paper);">xs</div>
@@ -136,7 +156,11 @@
           </div>
         </div>
       </section>
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">Glass</div>
@@ -144,7 +168,11 @@
           <p class="sb-text">Backdrop-filter blur creates depth on rich backgrounds (gradients, photography).
           Three intensities: weak, medium, strong.</p>
         </div>
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         <div class="glass-grid">
           <div class="glass-cell weak">
             <div style="font-weight:600; color: white;">Weak</div>
@@ -159,16 +187,27 @@
             <div style="font-family: var(--p31-font-mono); font-size: 11px; color: rgba(255,255,255,0.7); margin-top: 4px;">blur(20px)</div>
           </div>
         </div>
+<<<<<<< HEAD
         
         ${callout('warn', 'Glass needs context', 'Backdrop-filter only works when there\'s something behind it to blur. On a solid surface, glass effects look identical to a translucent overlay — pointless visual cost.')}
       </section>
       
+=======
+
+        ${callout('warn', 'Glass needs context', 'Backdrop-filter only works when there\'s something behind it to blur. On a solid surface, glass effects look identical to a translucent overlay — pointless visual cost.')}
+      </section>
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">When to elevate</div>
           <h2 class="sb-h2">Decision rules</h2>
         </div>
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         <table class="sb-table">
           <thead><tr><th>Scenario</th><th>Pattern</th></tr></thead>
           <tbody>
@@ -183,7 +222,11 @@
         </table>
       </section>
     `;
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     renderShell({
       activeId: 'elevation',
       breadcrumb: [

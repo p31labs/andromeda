@@ -1,9 +1,15 @@
 // @ts-nocheck — CockpitStore type reconciliation deferred (WCD-L02 parking lot)
 /**
  * Heartbeat Lockout — Somatic Regulation Pacer
+<<<<<<< HEAD
  * 
  * Vertex 3 (Interface Node) — Fullscreen recovery mode
  * When spoons drop below 25%, strip away complex editors and 
+=======
+ *
+ * Vertex 3 (Interface Node) — Fullscreen recovery mode
+ * When spoons drop below 25%, strip away complex editors and
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
  * render high-contrast breathing pacer to force physical recovery
  */
 
@@ -43,6 +49,7 @@ interface HeartbeatLockoutProps {
  * Heartbeat Lockout - Fullscreen breathing pacer
  * Activates when spoon count drops below 25%
  */
+<<<<<<< HEAD
 export default function HeartbeatLockout({ 
   onDismiss,
   allowEarlyDismiss = false 
@@ -68,6 +75,33 @@ export default function HeartbeatLockout({
     setPhase(currentPhase);
     setCountdown(BREATHING_PATTERN.inhale);
     
+=======
+export default function HeartbeatLockout({
+  onDismiss,
+  allowEarlyDismiss = false
+}: HeartbeatLockoutProps) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const animRef = useRef<number>();
+
+  const { spoons, maxSpoons, setSpoons } = useCockpitStore();
+  const isLocked = useHeartbeatLockout();
+
+  const [phase, setPhase] = useState<typeof PHASES[number]>('inhale');
+  const [countdown, setCountdown] = useState(BREATHING_PATTERN.inhale);
+  const [canDismiss, setCanDismiss] = useState(allowEarlyDismiss);
+
+  // Calculate recovery target (need 25% to dismiss)
+  const recoveryTarget = maxSpoons * 0.25;
+
+  // Phase timing
+  useEffect(() => {
+    if (!isLocked) return;
+
+    let currentPhase: typeof PHASES[number] = 'inhale';
+    setPhase(currentPhase);
+    setCountdown(BREATHING_PATTERN.inhale);
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     const interval = setInterval(() => {
       setCountdown((prev: number) => {
         if (prev <= 1) {
@@ -89,6 +123,7 @@ export default function HeartbeatLockout({
         return prev - 1;
       });
     }, 1000);
+<<<<<<< HEAD
     
     return () => clearInterval(interval);
   }, [isLocked]);
@@ -101,12 +136,27 @@ export default function HeartbeatLockout({
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
     
+=======
+
+    return () => clearInterval(interval);
+  }, [isLocked]);
+
+  // Canvas animation
+  useEffect(() => {
+    if (!isLocked || !canvasRef.current) return;
+
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     const resize = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
     };
     resize();
     window.addEventListener('resize', resize);
+<<<<<<< HEAD
     
     let lastTime = performance.now();
     let breathProgress = 0;
@@ -115,11 +165,22 @@ export default function HeartbeatLockout({
       const dt = Math.min((time - lastTime) / 1000, 0.1);
       lastTime = time;
       
+=======
+
+    let lastTime = performance.now();
+    let breathProgress = 0;
+
+    const animate = (time: number) => {
+      const dt = Math.min((time - lastTime) / 1000, 0.1);
+      lastTime = time;
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       const W = canvas.width;
       const H = canvas.height;
       const cx = W / 2;
       const cy = H / 2;
       const baseR = Math.min(W, H) * 0.15;
+<<<<<<< HEAD
       
       // Update breath progress
       breathProgress += dt / 12; // 12s full cycle
@@ -129,6 +190,17 @@ export default function HeartbeatLockout({
       let radius: number;
       const phaseProgress = (breathProgress * 12) % 12;
       
+=======
+
+      // Update breath progress
+      breathProgress += dt / 12; // 12s full cycle
+      if (breathProgress > 1) breathProgress = 0;
+
+      // Determine radius based on phase
+      let radius: number;
+      const phaseProgress = (breathProgress * 12) % 12;
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       if (phaseProgress < 4) {
         // Inhale - expand
         radius = baseR * (0.5 + 0.5 * (phaseProgress / 4));
@@ -139,6 +211,7 @@ export default function HeartbeatLockout({
         // Exhale - contract
         radius = baseR * (1.0 - 0.5 * ((phaseProgress - 6) / 6));
       }
+<<<<<<< HEAD
       
       // Clear with void color
       ctx.fillStyle = COCKPIT_COLORS.void;
@@ -148,6 +221,17 @@ export default function HeartbeatLockout({
       const phaseColor = PHASE_COLORS[phase];
       const rgb = hexToRgb(phaseColor);
       
+=======
+
+      // Clear with void color
+      ctx.fillStyle = COCKPIT_COLORS.void;
+      ctx.fillRect(0, 0, W, H);
+
+      // Draw central orb
+      const phaseColor = PHASE_COLORS[phase];
+      const rgb = hexToRgb(phaseColor);
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       // Outer glow
       const glow = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius * 2);
       glow.addColorStop(0, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`);
@@ -157,7 +241,11 @@ export default function HeartbeatLockout({
       ctx.arc(cx, cy, radius * 2, 0, Math.PI * 2);
       ctx.fillStyle = glow;
       ctx.fill();
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       // Inner orb
       const innerGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius * 0.4);
       innerGrad.addColorStop(0, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.3)`);
@@ -166,44 +254,73 @@ export default function HeartbeatLockout({
       ctx.arc(cx, cy, radius * 0.4, 0, Math.PI * 2);
       ctx.fillStyle = innerGrad;
       ctx.fill();
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       // Breathing ring particles
       const particleCount = 60;
       for (let i = 0; i < particleCount; i++) {
         const angle = (i / particleCount) * Math.PI * 2;
         const wobble = Math.sin(time * 0.002 + i) * 0.05;
         const r = radius + radius * wobble;
+<<<<<<< HEAD
         
         const x = cx + Math.cos(angle) * r;
         const y = cy + Math.sin(angle) * r;
         
+=======
+
+        const x = cx + Math.cos(angle) * r;
+        const y = cy + Math.sin(angle) * r;
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         ctx.beginPath();
         ctx.arc(x, y, 3, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.6)`;
         ctx.fill();
       }
+<<<<<<< HEAD
       
       animRef.current = requestAnimationFrame(animate);
     };
     
     animRef.current = requestAnimationFrame(animate);
     
+=======
+
+      animRef.current = requestAnimationFrame(animate);
+    };
+
+    animRef.current = requestAnimationFrame(animate);
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     return () => {
       if (animRef.current) cancelAnimationFrame(animRef.current);
       window.removeEventListener('resize', resize);
     };
   }, [isLocked, phase]);
+<<<<<<< HEAD
   
   // Auto-restore spoons slowly during lockout
   useEffect(() => {
     if (!isLocked) return;
     
+=======
+
+  // Auto-restore spoons slowly during lockout
+  useEffect(() => {
+    if (!isLocked) return;
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     const restoreInterval = setInterval(() => {
       const { spoons } = useCockpitStore.getState();
       if (spoons < recoveryTarget) {
         setSpoons(spoons + 0.1);
       }
     }, 2000);
+<<<<<<< HEAD
     
     return () => clearInterval(restoreInterval);
   }, [isLocked, recoveryTarget, setSpoons]);
@@ -220,19 +337,45 @@ export default function HeartbeatLockout({
       <div className="heartbeat-content">
         <div className="heartbeat-status">
           <span 
+=======
+
+    return () => clearInterval(restoreInterval);
+  }, [isLocked, recoveryTarget, setSpoons]);
+
+  if (!isLocked) return null;
+
+  const phaseColor = PHASE_COLORS[phase];
+  const canUserDismiss = spoons >= recoveryTarget;
+
+  return (
+    <div className="heartbeat-lockout">
+      <canvas ref={canvasRef} className="heartbeat-canvas" />
+
+      <div className="heartbeat-content">
+        <div className="heartbeat-status">
+          <span
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
             className="heartbeat-label"
             style={{ color: phaseColor }}
           >
             {PHASE_LABELS[phase]}
           </span>
+<<<<<<< HEAD
           <span 
+=======
+          <span
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
             className="heartbeat-countdown"
             style={{ color: phaseColor }}
           >
             {countdown}
           </span>
         </div>
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         <div className="heartbeat-instruction">
           <p style={{ color: phaseColor }}>
             Focus on your breath. Your body needs recovery.
@@ -244,9 +387,15 @@ export default function HeartbeatLockout({
             Need {recoveryTarget.toFixed(1)} spoons to continue
           </p>
         </div>
+<<<<<<< HEAD
         
         {(canUserDismiss || allowEarlyDismiss) && (
           <button 
+=======
+
+        {(canUserDismiss || allowEarlyDismiss) && (
+          <button
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
             className="heartbeat-dismiss"
             onClick={onDismiss}
           >

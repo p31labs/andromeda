@@ -72,7 +72,11 @@
       opacity: 0.85;
       margin-top: 8px;
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     .duration-list {
       display: flex;
       flex-direction: column;
@@ -118,7 +122,11 @@
     @keyframes dur-fill {
       to { width: 100%; }
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     .anim-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
@@ -154,7 +162,11 @@
       color: var(--p31-muted);
       margin-top: 4px;
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     @keyframes p31-fade-up { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes p31-fade-in { from { opacity: 0; } to { opacity: 1; } }
     @keyframes p31-scale-in { from { opacity: 0; transform: scale(0.92); } to { opacity: 1; transform: scale(1); } }
@@ -181,7 +193,11 @@
     import { renderShell, code, callout } from '/stylebook/_chrome.js';
     import { P31ThemeController } from '/lib/p31-theme-engine.mjs';
     window.p31Theme = new P31ThemeController({ defaultTheme: 'hub' });
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     const EASINGS = [
       { name: 'Linear', token: '--p31-ease-linear', fn: 'linear', usage: 'Loops, indeterminate progress' },
       { name: 'Smooth', token: '--p31-ease-smooth', fn: 'cubic-bezier(0.4, 0, 0.2, 1)', usage: 'Default for everything' },
@@ -192,7 +208,11 @@
       { name: 'Snap', token: '--p31-ease-snap', fn: 'cubic-bezier(0.77, 0, 0.175, 1)', usage: 'Confident transitions' },
       { name: 'Spring', token: '--p31-ease-spring', fn: 'cubic-bezier(0.175, 0.885, 0.32, 1.275)', usage: 'Natural physical feel' }
     ];
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     const DURATIONS = [
       { token: '--p31-duration-instant', value: '100ms', use: 'Hover state, focus ring' },
       { token: '--p31-duration-fast', value: '150ms', use: 'Button press, micro-feedback' },
@@ -202,7 +222,11 @@
       { token: '--p31-duration-cinematic', value: '800ms', use: 'Story moments, hero reveals' },
       { token: '--p31-duration-ambient', value: '1200ms', use: 'Background loops, ambient pulse' }
     ];
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     const ANIMATIONS = [
       { name: 'Fade up', anim: 'p31-fade-up' },
       { name: 'Fade in', anim: 'p31-fade-in' },
@@ -213,9 +237,15 @@
       { name: 'Spin', anim: 'p31-spin' },
       { name: 'Bounce', anim: 'p31-bounce' }
     ];
+<<<<<<< HEAD
     
     const easingsHTML = EASINGS.map(e => `
       <div class="motion-card" style="--motion-curve: ${e.fn};" 
+=======
+
+    const easingsHTML = EASINGS.map(e => `
+      <div class="motion-card" style="--motion-curve: ${e.fn};"
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
            onclick="this.classList.add('playing'); setTimeout(()=>this.classList.remove('playing'), 1200);">
         <div class="motion-name">${e.name}</div>
         <div class="motion-curve-fn">${e.token}</div>
@@ -225,7 +255,11 @@
         <div class="motion-usage">${e.usage}</div>
       </div>
     `).join('');
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     const durationsHTML = DURATIONS.map(d => `
       <div class="duration-row" style="--play-duration: ${d.value};"
            onclick="this.classList.remove('playing'); void this.offsetWidth; this.classList.add('playing'); setTimeout(()=>this.classList.remove('playing'), parseInt('${d.value}'));">
@@ -234,16 +268,26 @@
         <div style="font-size:12px;color:var(--p31-cloud);width:200px;">${d.use}</div>
       </div>
     `).join('');
+<<<<<<< HEAD
     
     const animsHTML = ANIMATIONS.map(a => `
       <div class="anim-card" style="--anim-name: ${a.anim};" 
+=======
+
+    const animsHTML = ANIMATIONS.map(a => `
+      <div class="anim-card" style="--anim-name: ${a.anim};"
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
            onclick="this.classList.remove('playing'); void this.offsetWidth; this.classList.add('playing'); setTimeout(()=>this.classList.remove('playing'), 1200);">
         <div class="anim-target"></div>
         <div class="anim-name">${a.name}</div>
         <div class="anim-token">${a.anim}</div>
       </div>
     `).join('');
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     const content = `
       <section class="sb-section">
         <div class="sb-section-header">
@@ -254,7 +298,11 @@
         </div>
         <div class="motion-grid">${easingsHTML}</div>
       </section>
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">Duration</div>
@@ -263,10 +311,17 @@
           Match duration to the importance of what's happening.</p>
         </div>
         <div class="duration-list">${durationsHTML}</div>
+<<<<<<< HEAD
         
         ${callout('warn', 'A note on speed', 'Anything over 400ms starts to feel slow on hover/click. Reserve longer durations for moments where the user is watching, not waiting.')}
       </section>
       
+=======
+
+        ${callout('warn', 'A note on speed', 'Anything over 400ms starts to feel slow on hover/click. Reserve longer durations for moments where the user is watching, not waiting.')}
+      </section>
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">Animations</div>
@@ -275,13 +330,21 @@
         </div>
         <div class="anim-grid">${animsHTML}</div>
       </section>
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">Use it</div>
           <h2 class="sb-h2">In CSS</h2>
         </div>
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         ${code(`/* Standard transition */
 .button {
   transition: all var(--p31-duration-fast) var(--p31-ease-fluid);
@@ -309,10 +372,17 @@
     transition-duration: 0.01ms !important;
   }
 }`, 'css', 'Motion tokens')}
+<<<<<<< HEAD
         
         ${callout('success', 'Already handled', 'The fluid system automatically respects <code>prefers-reduced-motion</code>. You don\'t need to add the media query yourself unless you have custom animations outside the token system.')}
       </section>
       
+=======
+
+        ${callout('success', 'Already handled', 'The fluid system automatically respects <code>prefers-reduced-motion</code>. You don\'t need to add the media query yourself unless you have custom animations outside the token system.')}
+      </section>
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">When not to animate</div>
@@ -320,7 +390,11 @@
           <p class="sb-text">Motion is a tool, not a flourish. The rule: <strong>animate only what changed,
           only when it changed.</strong> Initial paint should be still. Background animation should be rare.</p>
         </div>
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         <table class="sb-table">
           <thead><tr><th>Don't animate</th><th>Why</th></tr></thead>
           <tbody>
@@ -333,7 +407,11 @@
         </table>
       </section>
     `;
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     renderShell({
       activeId: 'motion',
       breadcrumb: [

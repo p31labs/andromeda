@@ -31,7 +31,11 @@ const PhosphorusCard = ({ playerId, onBond }) => {
         <div className="stability">Stability: Medium</div>
       </div>
       <div className="element-description">
+<<<<<<< HEAD
         The Quantum Egg builder. Forms 3 bonds. 
+=======
+        The Quantum Egg builder. Forms 3 bonds.
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         Central to Posner Molecule formation.
       </div>
       <div className="bonding-capacity">
@@ -43,4 +47,8 @@ const PhosphorusCard = ({ playerId, onBond }) => {
   );
 };
 
+<<<<<<< HEAD
 export default PhosphorusCard;
+=======
+export default PhosphorusCard;
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

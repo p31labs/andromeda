@@ -3,12 +3,20 @@ import { useGeolocationTracking, useFrequencySynthesis } from '../hooks';
 
 /**
  * ColliderMode — Proximity-based sensor interface
+<<<<<<< HEAD
  * 
+=======
+ *
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
  * Visualizes Wye/Delta topology based on GPS distance.
  * When grounded (< 50m), triggers Cloudflare webhook to Discord #mesh-telemetry.
  * Hot/cold audio feedback based on distance.
  */
+<<<<<<< HEAD
 export function ColliderMode({ 
+=======
+export function ColliderMode({
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   targetLocation = { lat: 30.9729, lon: -81.5683 }, // Default: St. Marys, GA
   groundThreshold = 50,
   onGrounded = () => {},
@@ -16,6 +24,7 @@ export function ColliderMode({
 }) {
   const [meshConnected, setMeshConnected] = useState(false);
   const [lastTelemetry, setLastTelemetry] = useState(null);
+<<<<<<< HEAD
   
   // Use the GPS hook
   const { 
@@ -25,6 +34,17 @@ export function ColliderMode({
     error: gpsError,
     isTracking, 
     startTracking, 
+=======
+
+  // Use the GPS hook
+  const {
+    currentLocation,
+    distance,
+    isGrounded,
+    error: gpsError,
+    isTracking,
+    startTracking,
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     stopTracking,
   } = useGeolocationTracking({
     targetLat: targetLocation.lat,
@@ -33,9 +53,15 @@ export function ColliderMode({
   });
 
   // Use the frequency synthesis hook
+<<<<<<< HEAD
   const { 
     playP31NMR, 
     playNoise, 
+=======
+  const {
+    playP31NMR,
+    playNoise,
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     stop: stopAudio,
     setVolume,
   } = useFrequencySynthesis();
@@ -45,7 +71,11 @@ export function ColliderMode({
     if (distance === null || distance === undefined) return 0;
     if (distance <= groundThreshold) return 0; // Grounded = no pulse
     if (distance > 1000) return 0.1; // Cold (far)
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     // Normalize 0-1000m to 1.0-0.2 range
     const normalized = 1 - (distance / 1000);
     return Math.max(0.2, normalized);
@@ -54,9 +84,15 @@ export function ColliderMode({
   // Audio feedback based on proximity
   useEffect(() => {
     if (!isTracking) return;
+<<<<<<< HEAD
     
     const pulseIntensity = getPulseIntensity();
     
+=======
+
+    const pulseIntensity = getPulseIntensity();
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     if (isGrounded) {
       // Grounded: Play calm 172.35 Hz
       stopAudio();
@@ -68,7 +104,11 @@ export function ColliderMode({
     } else {
       stopAudio();
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     return () => stopAudio();
   }, [isGrounded, distance, isTracking, getPulseIntensity, playP31NMR, playNoise, stopAudio]);
 
@@ -87,11 +127,19 @@ export function ColliderMode({
               threshold: groundThreshold,
             }),
           });
+<<<<<<< HEAD
           
           if (response.ok) {
             setLastTelemetry({ 
               event: 'grounded', 
               timestamp: Date.now() 
+=======
+
+          if (response.ok) {
+            setLastTelemetry({
+              event: 'grounded',
+              timestamp: Date.now()
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
             });
             setMeshConnected(true);
             onGrounded?.({ location: currentLocation, timestamp: Date.now() });
@@ -100,7 +148,11 @@ export function ColliderMode({
           console.error('Telemetry report failed:', err);
         }
       };
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       reportGrounded();
     }
   }, [isGrounded, currentLocation, groundThreshold, lastTelemetry, onGrounded]);
@@ -136,6 +188,7 @@ export function ColliderMode({
           <div className="delta-topology">
             <svg viewBox="0 0 100 100" className="tetrahedron">
               {/* K4 complete graph visualization */}
+<<<<<<< HEAD
               <line x1="50" y1="10" x2="20" y2="80" stroke="#00FF88" strokeWidth="2" />
               <line x1="50" y1="10" x2="80" y2="80" stroke="#00FF88" strokeWidth="2" />
               <line x1="20" y1="80" x2="80" y2="80" stroke="#00FF88" strokeWidth="2" />
@@ -145,6 +198,17 @@ export function ColliderMode({
               
               {/* Nodes */}
               <circle cx="50" cy="10" r="6" fill="#00FF88" />
+=======
+              <line x1="50" y1="10" x2="20" y2="80" stroke="var(--color-phosphor)" strokeWidth="2" />
+              <line x1="50" y1="10" x2="80" y2="80" stroke="var(--color-phosphor)" strokeWidth="2" />
+              <line x1="20" y1="80" x2="80" y2="80" stroke="var(--color-phosphor)" strokeWidth="2" />
+              <line x1="50" y1="10" x2="50" y2="50" stroke="var(--color-phosphor)" strokeWidth="2" />
+              <line x1="20" y1="80" x2="50" y2="50" stroke="var(--color-phosphor)" strokeWidth="2" />
+              <line x1="80" y1="80" x2="50" y2="50" stroke="var(--color-phosphor)" strokeWidth="2" />
+
+              {/* Nodes */}
+              <circle cx="50" cy="10" r="6" fill="var(--color-phosphor)" />
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
               <circle cx="20" cy="80" r="6" fill="#00D4FF" />
               <circle cx="80" cy="80" r="6" fill="#7A27FF" />
               <circle cx="50" cy="50" r="6" fill="#FF6600" />
@@ -158,7 +222,11 @@ export function ColliderMode({
               <line x1="50" y1="50" x2="50" y2="15" stroke="#FF6600" strokeWidth="1" strokeDasharray="4" />
               <line x1="50" y1="50" x2="15" y2="75" stroke="#FF6600" strokeWidth="1" strokeDasharray="4" />
               <line x1="50" y1="50" x2="85" y2="75" stroke="#FF6600" strokeWidth="1" strokeDasharray="4" />
+<<<<<<< HEAD
               
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
               {/* Central hub */}
               <circle cx="50" cy="50" r="8" fill="#FF6600" opacity="0.5" />
               <circle cx="50" cy="15" r="4" fill="#FF6600" />
@@ -174,11 +242,19 @@ export function ColliderMode({
       <div className="signal-bar">
         <div className="signal-label">SIGNAL</div>
         <div className="signal-track">
+<<<<<<< HEAD
           <div 
             className="signal-fill"
             style={{ 
               width: `${getSignalStrength()}%`,
               backgroundColor: isGrounded ? '#00FF88' : '#FF6600',
+=======
+          <div
+            className="signal-fill"
+            style={{
+              width: `${getSignalStrength()}%`,
+              backgroundColor: isGrounded ? 'var(--color-phosphor)' : '#FF6600',
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
             }}
           />
         </div>
@@ -226,21 +302,33 @@ export function ColliderMode({
 
       {/* Controls */}
       <div className="collider-controls">
+<<<<<<< HEAD
         <button 
+=======
+        <button
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
           onClick={startTracking}
           disabled={isTracking}
           className="control-btn"
         >
           {isTracking ? 'TRACKING' : 'START'}
         </button>
+<<<<<<< HEAD
         <button 
+=======
+        <button
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
           onClick={stopTracking}
           disabled={!isTracking}
           className="control-btn"
         >
           STOP
         </button>
+<<<<<<< HEAD
         <button 
+=======
+        <button
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
           onClick={() => setVolume(0)}
           className="control-btn"
         >
@@ -281,7 +369,11 @@ export function ColliderMode({
         }
 
         .status-indicator.grounded {
+<<<<<<< HEAD
           background: #00FF88;
+=======
+          background: var(--color-phosphor);
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
           color: #0B0F19;
         }
 
@@ -321,7 +413,11 @@ export function ColliderMode({
           margin-top: 8px;
         }
 
+<<<<<<< HEAD
         .delta-label { color: #00FF88; }
+=======
+        .delta-label { color: var(--color-phosphor); }
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
 
         .signal-bar {
           display: flex;
@@ -364,7 +460,11 @@ export function ColliderMode({
         .distance-value {
           font-size: 48px;
           font-weight: bold;
+<<<<<<< HEAD
           color: #00FF88;
+=======
+          color: var(--color-phosphor);
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
           line-height: 1;
         }
 
@@ -449,4 +549,8 @@ export function ColliderMode({
   );
 }
 
+<<<<<<< HEAD
 export default ColliderMode;
+=======
+export default ColliderMode;
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

@@ -160,7 +160,11 @@ import { meshSync } from './services/meshSync';
 // Initialize mesh synchronization
 useEffect(() => {
   meshSync.initialize().catch(console.error);
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   return () => {
     meshSync.disconnect();
   };
@@ -176,7 +180,11 @@ import { useMeshSync } from './services/meshSync';
 
 function MeshStatus() {
   const { isInitialized, peerCount, connectionState, peers } = useMeshSync();
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   return (
     <div className="mesh-status">
       <h3>Sovereign Mesh Status</h3>
@@ -358,4 +366,8 @@ This implementation perfectly aligns with your architectural principles:
 - ✅ Offline-first operation
 - ✅ Local network sovereignty
 - ✅ Conflict-free state management
+<<<<<<< HEAD
 - ✅ Real-time synchronization
+=======
+- ✅ Real-time synchronization
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

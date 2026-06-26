@@ -4,6 +4,7 @@
     "module": "ESNext",
     "moduleResolution": "bundler",
     "baseUrl": ".",
+<<<<<<< HEAD
     "strict": false,
     "esModuleInterop": true,
     "skipLibCheck": true,
@@ -27,4 +28,62 @@
   },
   "include": ["src", "src/types/**/*.d.ts"],
   "exclude": ["src/services/webgpu/**/*", "src/__tests__/**/*"]
+=======
+    "strict": true,
+    "esModuleInterop": true,
+"skipLibCheck": true,
+    "jsx": "react-jsx",
+    "lib": [
+      "DOM",
+      "ES2020"
+    ],
+    "paths": {
+      "@p31/shared": [
+        "../packages/shared/src"
+      ],
+      "@p31/shared/*": [
+        "../packages/shared/src/*"
+      ],
+      "@p31/node-zero": [
+        "../packages/node-zero/src"
+      ],
+      "@p31/node-zero/*": [
+        "../packages/node-zero/src/*"
+      ],
+      "@p31/love-ledger": [
+        "../packages/love-ledger/src"
+      ],
+      "@p31/love-ledger/*": [
+        "../packages/love-ledger/src/*"
+      ],
+      "@p31/game-engine": [
+        "../packages/game-engine/src"
+      ],
+      "@p31/game-engine/*": [
+        "../packages/game-engine/src/*"
+      ],
+      "@p31/sovereign": [
+        "../packages/sovereign/src"
+      ],
+      "@p31/sovereign/*": [
+        "../packages/sovereign/src/*"
+      ],
+      "@p31/tetra": [
+        "src/lib/tetra"
+      ],
+      "@p31/tetra/*": [
+        "src/lib/tetra/*"
+      ]
+    }
+  },
+  "include": [
+    "src",
+    "src/types/**/*.d.ts"
+  ],
+  "exclude": [
+    "src/_archive/**/*",
+    "src/services/webgpu/**/*",
+    "src/__tests__/**/*"
+  ]
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
 }

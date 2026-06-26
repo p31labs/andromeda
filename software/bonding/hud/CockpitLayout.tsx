@@ -1,20 +1,35 @@
 /**
  * WCD-08 Phase A: CockpitLayout — The Spatial Doctrine Enforcer.
+<<<<<<< HEAD
  * 
+=======
+ *
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
  * Z-INDEX CONTRACT:
  *   Layer 1 (z-1):  R3F Canvas — fills entire viewport
  *   Layer 2 (z-10): HUD Container — pointer-events: none passthrough
  *   Layer 3 (z-11): HUD Panels — pointer-events: auto per-panel
  *   Layer 4 (z-50): Toast layer — pointer-events: none
+<<<<<<< HEAD
  * 
+=======
+ *
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
  * RULE: Layer 1 and Layer 3 never geometrically overlap.
  * The R3F canvas renders behind the glass HUD panels.
  * The visual gap between TopBar and ElementDock is where
  * the molecule lives. Camera framing handles this, not CSS.
+<<<<<<< HEAD
  * 
  * PORTRAIT LAYOUT (default, mobile/tablet):
  *   TopBar (56px) → Viewport (flex-1) → ElementDock (72px) → CommandBar (56px)
  * 
+=======
+ *
+ * PORTRAIT LAYOUT (default, mobile/tablet):
+ *   TopBar (56px) → Viewport (flex-1) → ElementDock (72px) → CommandBar (56px)
+ *
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
  * LANDSCAPE LAYOUT (≥840px):
  *   Left Nav (72px) | TopBar + Viewport + Dock + Ping | Right Info (72px)
  *   (Landscape enhancement is Phase A stretch — portrait ships first)

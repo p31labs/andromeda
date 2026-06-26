@@ -73,4 +73,8 @@ describe('QR Code Generator', () => {
     // Just ensure it doesn't throw.
     expect(typeof svg).toBe('string');
   });
+<<<<<<< HEAD
 });
+=======
+});
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

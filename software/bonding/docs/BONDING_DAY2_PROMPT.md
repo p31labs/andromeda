@@ -78,7 +78,11 @@ interface GameStore {
   selectedElement: ElementSymbol | null;
   nextAtomId: number;
   gamePhase: 'placing' | 'complete';
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   // Actions
   selectElement: (symbol: ElementSymbol | null) => void;
   placeAtom: (element: ElementSymbol, position: Vector3, bondToAtomId: number) => void;
@@ -217,7 +221,11 @@ interface GameStore {
   // ... existing state
   dragging: { element: ElementSymbol; pointerPos: Vector3 } | null;
   snappedSite: { atomId: number; siteIndex: number; position: Vector3 } | null;
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   // ... existing actions
   startDrag: (element: ElementSymbol) => void;
   updateDragPosition: (pos: Vector3) => void;
@@ -232,7 +240,11 @@ interface GameStore {
 The chemistry.ts generateBondSitePositions function should return positions relative to the atom center. Make sure these are in WORLD SPACE when rendering (atom.position + relative offset). Site positions by valence:
 
 - Valence 1: one site directly "outward" from the atom (away from its bonded partner, or +y if first atom)
+<<<<<<< HEAD
 - Valence 2: two sites at ~104.5° angle (water-like bent geometry) 
+=======
+- Valence 2: two sites at ~104.5° angle (water-like bent geometry)
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
 - Valence 3: trigonal planar (120° apart in a plane)
 - Valence 4: tetrahedral (109.5° apart in 3D)
 

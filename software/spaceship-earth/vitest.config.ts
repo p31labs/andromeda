@@ -6,4 +6,8 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: ['./src/__tests__/setup.ts'],
   },
+<<<<<<< HEAD
 });
+=======
+});
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

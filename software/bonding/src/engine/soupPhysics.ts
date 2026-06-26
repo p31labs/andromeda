@@ -83,7 +83,11 @@ export function tickSoup(state: SoupState, config: SoupConfig): SoupState {
             vx = (vx / speed) * config.maxSpeed;
             vy = (vy / speed) * config.maxSpeed;
         }
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         // Update position
         let x = m.x + vx;
         let y = m.y + vy;

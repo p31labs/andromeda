@@ -11,8 +11,13 @@ const STORAGE_KEY = "p31-epcp-state";
 // ── Canonical P31 Tokens ─────────────────────────────────────────────────────
 const T = {
   void: "#0f1115", surface: "#161920", surface2: "#1c2028",
+<<<<<<< HEAD
   teal: "#4db8a8", coral: "#cc6247", amber: "#cda852",
   lavender: "#8b7cc9", phosphorus: "var(--p31-phosphorus)", cyan: "#5DCAA5",
+=======
+  teal: "var(--color-cyan)", coral: "var(--color-coral)", amber: "var(--color-amber)",
+  lavender: "var(--color-lavender)", phosphorus: "var(--p31-phosphorus)", cyan: "var(--color-teal)",
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   cloud: "var(--p31-cloud)", muted: "#6b7280", glass: "rgba(255,255,255,0.06)",
   glassBorder: "rgba(255,255,255,0.08)",
 };

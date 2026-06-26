@@ -4,4 +4,8 @@ export const BREATHING_PATTERN = {
   hold: 4,
   exhale: 6,
   total: 14, // 4+4+6
+<<<<<<< HEAD
 };
+=======
+};
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

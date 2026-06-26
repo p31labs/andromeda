@@ -17,10 +17,17 @@ export const FamilyChat = ({ userId, userName }) => {
   const [onlineUsers, setOnlineUsers] = useState({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+<<<<<<< HEAD
   
   const messagesEndRef = useRef(null);
   const clientRef = useRef(null);
   
+=======
+
+  const messagesEndRef = useRef(null);
+  const clientRef = useRef(null);
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   // Initialize API client
   const client = useMemo(() => {
     if (!userId) return null;
@@ -31,7 +38,11 @@ export const FamilyChat = ({ userId, userName }) => {
 
   // WebSocket connection
   const ws = useWebSocket(userId, { autoConnect: true });
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   // Message queue for offline support
   const { queueMessage, flushQueue, queueSize } = useWebSocketQueue(ws);
 
@@ -90,7 +101,11 @@ export const FamilyChat = ({ userId, userName }) => {
       const data = await response.json();
       setMessages(data.messages || []);
       setCurrentConversation(conversationId);
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       // Mark as read
       markConversationAsRead(conversationId);
     } catch (err) {
@@ -121,7 +136,11 @@ export const FamilyChat = ({ userId, userName }) => {
         delivered: false,
         read: false
       };
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       setMessages(prev => [...prev, optimisticMessage]);
       setNewMessage('');
 
@@ -145,7 +164,11 @@ export const FamilyChat = ({ userId, userName }) => {
 
         const data = await response.json();
         // Replace temp message with real one
+<<<<<<< HEAD
         setMessages(prev => prev.map(m => 
+=======
+        setMessages(prev => prev.map(m =>
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
           m.id === tempId ? { ...m, id: data.messageId, delivered: true } : m
         ));
       }
@@ -157,11 +180,19 @@ export const FamilyChat = ({ userId, userName }) => {
 
   const handleNewMessage = (data) => {
     const { message } = data;
+<<<<<<< HEAD
     
     setMessages(prev => {
       // Avoid duplicates
       if (prev.some(m => m.id === message.id)) return prev;
       
+=======
+
+    setMessages(prev => {
+      // Avoid duplicates
+      if (prev.some(m => m.id === message.id)) return prev;
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       const updated = [...prev, message];
       return updated.sort((a, b) => a.timestamp - b.timestamp);
     });
@@ -174,21 +205,33 @@ export const FamilyChat = ({ userId, userName }) => {
 
   const handleMessageDelivered = (data) => {
     const { messageId } = data;
+<<<<<<< HEAD
     setMessages(prev => prev.map(m => 
+=======
+    setMessages(prev => prev.map(m =>
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       m.id === messageId ? { ...m, delivered: true } : m
     ));
   };
 
   const handleMessageRead = (data) => {
     const { messageId } = data;
+<<<<<<< HEAD
     setMessages(prev => prev.map(m => 
+=======
+    setMessages(prev => prev.map(m =>
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       m.id === messageId ? { ...m, read: true } : m
     ));
   };
 
   const handleTypingIndicator = (data) => {
     const { userId, conversationId, typing } = data;
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     if (conversationId === currentConversation) {
       setTypingUsers(prev => ({
         ...prev,
@@ -211,13 +254,21 @@ export const FamilyChat = ({ userId, userName }) => {
       if (m.id === messageId) {
         const reactions = [...(m.reactions || [])];
         const existing = reactions.find(r => r.userId === userId);
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         if (existing) {
           existing.emoji = emoji;
         } else {
           reactions.push({ userId, emoji });
         }
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         return { ...m, reactions };
       }
       return m;
@@ -226,7 +277,11 @@ export const FamilyChat = ({ userId, userName }) => {
 
   const handleTyping = (e) => {
     setNewMessage(e.target.value);
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     if (ws && currentConversation) {
       // Send typing start
       ws.send(JSON.stringify({
@@ -284,18 +339,30 @@ export const FamilyChat = ({ userId, userName }) => {
       <div className="chat-sidebar">
         <div className="sidebar-header">
           <h3>Family Messages</h3>
+<<<<<<< HEAD
           <button 
+=======
+          <button
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
             className="btn btn-primary"
             onClick={() => {/* Open new conversation modal */}}
           >
             New Chat
           </button>
         </div>
+<<<<<<< HEAD
         
         <div className="conversations-list">
           {loading && <div className="loading">Loading...</div>}
           {error && <div className="error">{error}</div>}
           
+=======
+
+        <div className="conversations-list">
+          {loading && <div className="loading">Loading...</div>}
+          {error && <div className="error">{error}</div>}
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
           {conversations.map(conv => (
             <div
               key={conv.id}
@@ -312,7 +379,11 @@ export const FamilyChat = ({ userId, userName }) => {
                     </div>
                   ))}
               </div>
+<<<<<<< HEAD
               
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
               <div className="conversation-info">
                 <div className="conversation-name">
                   {conv.name || conv.participants
@@ -320,14 +391,22 @@ export const FamilyChat = ({ userId, userName }) => {
                     .map(id => id.charAt(0).toUpperCase())
                     .join(', ')}
                 </div>
+<<<<<<< HEAD
                 
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
                 {conv.lastMessage && (
                   <div className="last-message">
                     {conv.lastMessage.content.substring(0, 50)}
                   </div>
                 )}
               </div>
+<<<<<<< HEAD
               
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
               {conv.unreadCount > 0 && (
                 <div className="unread-badge">{conv.unreadCount}</div>
               )}
@@ -361,16 +440,27 @@ export const FamilyChat = ({ userId, userName }) => {
                   <div className="message-content">
                     {msg.content}
                   </div>
+<<<<<<< HEAD
                   
                   <div className="message-meta">
                     <span className="message-time">{formatTime(msg.timestamp)}</span>
                     
+=======
+
+                  <div className="message-meta">
+                    <span className="message-time">{formatTime(msg.timestamp)}</span>
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
                     {msg.senderId === userId && (
                       <span className="message-status">
                         {msg.read ? '✓✓' : msg.delivered ? '✓' : ''}
                       </span>
                     )}
+<<<<<<< HEAD
                     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
                     {msg.reactions && msg.reactions.length > 0 && (
                       <span className="message-reactions">
                         {msg.reactions.map((r, i) => (
@@ -381,13 +471,21 @@ export const FamilyChat = ({ userId, userName }) => {
                   </div>
                 </div>
               ))}
+<<<<<<< HEAD
               
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
               {Object.entries(typingUsers).some(([_, typing]) => typing) && (
                 <div className="typing-indicator">
                   <span>Someone is typing...</span>
                 </div>
               )}
+<<<<<<< HEAD
               
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
               <div ref={messagesEndRef} />
             </div>
 
@@ -400,7 +498,11 @@ export const FamilyChat = ({ userId, userName }) => {
                 placeholder="Type a message..."
                 disabled={loading}
               />
+<<<<<<< HEAD
               <button 
+=======
+              <button
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
                 onClick={sendMessage}
                 disabled={!newMessage.trim() || loading}
               >
@@ -418,4 +520,8 @@ export const FamilyChat = ({ userId, userName }) => {
   );
 };
 
+<<<<<<< HEAD
 export default FamilyChat;
+=======
+export default FamilyChat;
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

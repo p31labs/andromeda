@@ -49,8 +49,13 @@
   top: 0;
   z-index: 50;
   background: rgba(15, 17, 21, 0.85);
+<<<<<<< HEAD
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
+=======
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   border-bottom: 1px solid var(--p31-border-subtle);
   display: flex;
   align-items: center;
@@ -562,7 +567,11 @@
   align-items: center;
   justify-content: center;
   min-height: 120px;
+<<<<<<< HEAD
   background: 
+=======
+  background:
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     radial-gradient(circle at 1px 1px, var(--p31-border-subtle) 1px, transparent 0);
   background-size: 16px 16px;
 }

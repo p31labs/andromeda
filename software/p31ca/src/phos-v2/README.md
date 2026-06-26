@@ -87,17 +87,29 @@ interface PHOSPhase {
   id: string;
   version: string;
   status: 'alpha' | 'beta' | 'stable' | 'disabled';
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   // Lifecycle
   initialize(config: PHOSConfig): Promise<void>;
   activate(): void;
   deactivate(): void;
   destroy(): void;
+<<<<<<< HEAD
   
   // Convergence
   onConvergence(week: number, data: ConvergenceData): void;
   getState(): PhaseState;
   
+=======
+
+  // Convergence
+  onConvergence(week: number, data: ConvergenceData): void;
+  getState(): PhaseState;
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   // Events (set by master registration)
   emit(event: PHOSEvent): void;
   on(event: string, handler: Function): void;

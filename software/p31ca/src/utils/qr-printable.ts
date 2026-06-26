@@ -4,7 +4,12 @@
  * @module
  */
 
+<<<<<<< HEAD
 import { WAREHOUSE_ZONES, Zone } from '../components/ZeroTapWarehouse';
+=======
+import type { Zone } from '../components/ZeroTapWarehouse';
+import { WAREHOUSE_ZONES } from '../components/ZeroTapWarehouse';
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
 
 // ─────────────────────────────────────────────────────────────────────────────
 // CONFIGURATION
@@ -97,20 +102,32 @@ export function generatePrintableHTML(stickers: QRSticker[]): string {
       size: ${LABEL_WIDTH_MM}mm ${LABEL_HEIGHT_MM}mm;
       margin: 0;
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     body {
       font-family: 'Courier New', monospace;
       font-size: 8pt;
       line-height: 1.1;
       background: white;
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     .sticker {
       width: ${LABEL_WIDTH_MM}mm;
       height: ${LABEL_HEIGHT_MM}mm;
@@ -122,6 +139,7 @@ export function generatePrintableHTML(stickers: QRSticker[]): string {
       page-break-inside: avoid;
       break-inside: avoid;
     }
+<<<<<<< HEAD
     
     .sticker:not(:last-child) {
       border-bottom: 0.5pt dashed #ddd;
@@ -131,32 +149,59 @@ export function generatePrintableHTML(stickers: QRSticker[]): string {
       flex-shrink: 0;
     }
     
+=======
+
+    .sticker:not(:last-child) {
+      border-bottom: 0.5pt dashed #ddd;
+    }
+
+    .qr-section {
+      flex-shrink: 0;
+    }
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     .qr-code {
       width: ${QR_SIZE_MM}mm;
       height: ${QR_SIZE_MM}mm;
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     .info-section {
       flex: 1;
       display: flex;
       flex-direction: column;
       justify-content: center;
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     .plu-code {
       font-size: 10pt;
       font-weight: bold;
       color: #000;
       letter-spacing: 0.5pt;
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     .category {
       font-size: 7pt;
       color: #666;
       text-transform: uppercase;
       margin-top: 1mm;
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     .zone-pill {
       display: inline-block;
       background: #000;
@@ -167,38 +212,62 @@ export function generatePrintableHTML(stickers: QRSticker[]): string {
       margin-top: 1mm;
       width: fit-content;
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     .qr-data {
       font-size: 5pt;
       color: #999;
       margin-top: 1mm;
       word-break: break-all;
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     @media print {
       body {
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
       }
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       .no-print {
         display: none !important;
       }
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     /* Screen preview styles */
     @media screen {
       body {
         background: #f5f5f5;
         padding: 20px;
       }
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       .sticker {
         background: white;
         margin-bottom: 10px;
         box-shadow: 0 2px 4px rgba(0,0,0,0.1);
       }
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       .preview-controls {
         position: fixed;
         top: 20px;
@@ -209,17 +278,28 @@ export function generatePrintableHTML(stickers: QRSticker[]): string {
         box-shadow: 0 2px 8px rgba(0,0,0,0.15);
         z-index: 1000;
       }
+<<<<<<< HEAD
       
       .preview-controls button {
         padding: 10px 20px;
         background: #5DCAA5;
+=======
+
+      .preview-controls button {
+        padding: 10px 20px;
+        background: var(--color-teal);
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         color: #0f1115;
         border: none;
         border-radius: 6px;
         font-size: 14px;
         cursor: pointer;
       }
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       .preview-controls button:hover {
         background: #4aa884;
       }
@@ -234,15 +314,25 @@ export function generatePrintableHTML(stickers: QRSticker[]): string {
       Printer: 2" × 1" thermal labels
     </p>
   </div>
+<<<<<<< HEAD
   
   ${stickerHTML}
   
+=======
+
+  ${stickerHTML}
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script>
     // Generate QR codes after DOM loads
     document.addEventListener('DOMContentLoaded', function() {
       const qrContainers = document.querySelectorAll('.qr-code');
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       qrContainers.forEach(function(container) {
         const qrData = container.dataset.qr;
         if (qrData && window.QRCode) {
@@ -251,7 +341,11 @@ export function generatePrintableHTML(stickers: QRSticker[]): string {
             width: ${QR_SIZE_MM * 4},
             height: ${QR_SIZE_MM * 4},
             colorDark: '#000000',
+<<<<<<< HEAD
             colorLight: '#ffffff',
+=======
+            colorLight: 'var(--color-surface)',
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
             correctLevel: QRCode.CorrectLevel.M
           });
         }

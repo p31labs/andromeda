@@ -100,4 +100,8 @@ zone = GREEN if pct > 0.5, YELLOW if > 0.25, RED if > 0, BLACK if ≤ 0
 
 ## License
 
+<<<<<<< HEAD
 This project is part of the P31 Andromeda ecosystem.
+=======
+This project is part of the P31 Andromeda ecosystem.
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

@@ -40,7 +40,11 @@ const ElementGrid = ({ playerId }) => {
   return (
     <div className="element-grid-container">
       <ElementSelector playerId={playerId} onBond={handleBond} />
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       <div className="player-status">
         <h3>Your Atoms</h3>
         {atoms.length === 0 ? (
@@ -61,8 +65,13 @@ const ElementGrid = ({ playerId }) => {
                 </div>
                 <div className="bond-slots">
                   {Array.from({ length: atom.valence }, (_, i) => (
+<<<<<<< HEAD
                     <div 
                       key={i} 
+=======
+                    <div
+                      key={i}
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
                       className={`bond-slot ${i < atom.bonds.length ? 'filled' : 'empty'}`}
                     />
                   ))}
@@ -78,4 +87,8 @@ const ElementGrid = ({ playerId }) => {
   );
 };
 
+<<<<<<< HEAD
 export default ElementGrid;
+=======
+export default ElementGrid;
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

@@ -5,7 +5,11 @@ const colors = {
   gold: '#f59e0b',
   teal: '#14b8a6',
   coral: '#f97316',
+<<<<<<< HEAD
   muted: '#64748b'
+=======
+  muted: 'var(--color-muted)'
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
 };
 
 export default function P31MeshClock({ userId, externalEvent, activeNodes = [] }) {
@@ -60,6 +64,7 @@ export default function P31MeshClock({ userId, externalEvent, activeNodes = [] }
     if (!externalEvent) return;
 
     const { type, payload } = externalEvent;
+<<<<<<< HEAD
     
     switch (type) {
       case 'message:new':
@@ -67,6 +72,15 @@ export default function P31MeshClock({ userId, externalEvent, activeNodes = [] }
           payload.decrypted ? 'Secure Payload' : 'Encrypted Burst', 
           `Data from ${payload.senderId}`, 
           payload.decrypted ? colors.teal : colors.muted, 
+=======
+
+    switch (type) {
+      case 'message:new':
+        triggerQuantumEvent(
+          payload.decrypted ? 'Secure Payload' : 'Encrypted Burst',
+          `Data from ${payload.senderId}`,
+          payload.decrypted ? colors.teal : colors.muted,
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
           MessageSquare
         );
         break;
@@ -143,7 +157,11 @@ export default function P31MeshClock({ userId, externalEvent, activeNodes = [] }
     // Draw pendulum arm
     const pendulumX = centerX + Math.sin(pendulumAngle.current) * pendulumLength;
     const pendulumY = centerY + Math.cos(pendulumAngle.current) * pendulumLength;
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     ctx.beginPath();
     ctx.moveTo(centerX, centerY);
     ctx.lineTo(pendulumX, pendulumY);
@@ -157,7 +175,11 @@ export default function P31MeshClock({ userId, externalEvent, activeNodes = [] }
     gradient.addColorStop(0, 'rgba(77, 184, 168, 0.8)');
     gradient.addColorStop(0.5, 'rgba(77, 184, 168, 0.3)');
     gradient.addColorStop(1, 'rgba(77, 184, 168, 0)');
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     ctx.beginPath();
     ctx.arc(pendulumX, pendulumY, bobRadius * 3, 0, Math.PI * 2);
     ctx.fillStyle = gradient;
@@ -182,7 +204,11 @@ export default function P31MeshClock({ userId, externalEvent, activeNodes = [] }
       const angle = (2 * Math.PI * index) / Math.max(activeNodes.length, 1) - Math.PI / 2;
       const x = centerX + Math.cos(angle) * pendulumLength * 0.6;
       const y = centerY + Math.sin(angle) * pendulumLength * 0.6;
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       ctx.beginPath();
       ctx.arc(x, y, 4, 0, Math.PI * 2);
       ctx.fillStyle = '#14b8a6';
@@ -203,7 +229,11 @@ export default function P31MeshClock({ userId, externalEvent, activeNodes = [] }
       }
 
       ctx.globalAlpha = Math.max(0, p.life);
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       if (p.type === 'label') {
         ctx.font = '12px system-ui';
         ctx.fillStyle = p.color;
@@ -226,7 +256,11 @@ export default function P31MeshClock({ userId, externalEvent, activeNodes = [] }
     const hours = String(now.getHours()).padStart(2, '0');
     const minutes = String(now.getMinutes()).padStart(2, '0');
     const seconds = String(now.getSeconds()).padStart(2, '0');
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     ctx.font = 'bold 48px system-ui';
     ctx.fillStyle = '#14b8a6';
     ctx.textAlign = 'center';

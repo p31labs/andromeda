@@ -35,16 +35,28 @@ export interface Env {
 function getQFactor(spoonCount: number): number {
   // Default qFactor based on spoon deficit with hysteresis
   const defaultQFactor = 0.925;
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   // Calculate variance-based adjustment based on spoon count
   // Lower spoons = higher variance = lower qFactor
   if (spoonCount <= 0) return 0.5; // Critical low spoons
   if (spoonCount >= 20) return 1.0; // Full capacity
+<<<<<<< HEAD
   
   // Exponential decay based on spoon deficit
   const deficitRatio = (20 - spoonCount) / 20;
   const varianceFactor = Math.exp(-3 * deficitRatio);
   
+=======
+
+  // Exponential decay based on spoon deficit
+  const deficitRatio = (20 - spoonCount) / 20;
+  const varianceFactor = Math.exp(-3 * deficitRatio);
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   return defaultQFactor * varianceFactor;
 }
 
@@ -66,7 +78,11 @@ function emitToGenesis(env: Env, type: string, payload: Record<string, unknown>)
 async function publishSpoonsUpdate(env: Env, sessionId: string, spoonCount: number): Promise<void> {
   const qFactor = getQFactor(spoonCount);
   const url = (env.GENESIS_GATE_URL ?? 'https://genesis.p31ca.org') + '/event';
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   try {
     await fetch(url, {
       method: 'POST',

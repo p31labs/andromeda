@@ -8,6 +8,7 @@ compatibility_date = "2024-12-01"
 ALLOWED_ORIGIN = "https://phosphorus31.org"
 SUCCESS_URL = "https://phosphorus31.org/donate?success=1"
 CANCEL_URL = "https://phosphorus31.org/donate"
+<<<<<<< HEAD
 
 # Optional: idempotency for Stripe webhooks (D-MAP-5) — run:
 #   npx wrangler kv namespace create DONATE_EVENTS
@@ -23,3 +24,23 @@ CANCEL_URL = "https://phosphorus31.org/donate"
 #
 # Stripe Dashboard: add endpoint https://donate-api.phosphorus31.org/stripe-webhook
 # Events to subscribe: checkout.session.completed
+=======
+PAYPAL_MODE = "sandbox"  # "live" for production
+
+# PayPal REST API credentials (set via wrangler CLI):
+#   npx wrangler secret put PAYPAL_CLIENT_ID    → from PayPal Developer Dashboard
+#   npx wrangler secret put PAYPAL_CLIENT_SECRET → from PayPal Developer Dashboard
+#   npx wrangler secret put PAYPAL_WEBHOOK_ID   → from PayPal Developer Dashboard (webhooks)
+#   npx wrangler secret put PAYPAL_PRODUCT_ID   → from PayPal Developer Dashboard (billing product)
+#   npx wrangler secret put TURNSTILE_SECRET    → from Cloudflare Dashboard
+#
+# PayPal webhook endpoint: https://donate-api.phosphorus31.org/paypal-webhook
+# Events to subscribe: CHECKOUT.ORDER.APPROVED, PAYMENT.CAPTURE.COMPLETED, BILLING.SUBSCRIPTION.ACTIVATED, PAYMENT.SALE.COMPLETED
+#
+# Cloudflare Turnstile: https://dash.cloudflare.com/profile/turnstile → create sitekey/secret
+
+# Optional: idempotency for PayPal webhooks (D-MAP-5)
+[[kv_namespaces]]
+binding = "DONATE_EVENTS"
+id = "66478f1b65ee4dc590d80f880604d43f"
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

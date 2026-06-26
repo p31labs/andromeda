@@ -7,4 +7,8 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <App />
   </React.StrictMode>,
+<<<<<<< HEAD
 )
+=======
+)
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

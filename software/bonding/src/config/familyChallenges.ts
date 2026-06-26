@@ -161,10 +161,17 @@ export function getCurrentWeekChallenge(): FamilyChallengeConfig | null {
   // For now, rotate through challenges based on week number
   const now = new Date();
   const weekNumber = Math.floor(
+<<<<<<< HEAD
     (now.getTime() - new Date(now.getFullYear(), 0, 1).getTime()) / 
     (7 * 24 * 60 * 60 * 1000)
   );
   
+=======
+    (now.getTime() - new Date(now.getFullYear(), 0, 1).getTime()) /
+    (7 * 24 * 60 * 60 * 1000)
+  );
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   const index = weekNumber % FAMILY_CHALLENGES.length;
   return FAMILY_CHALLENGES[index];
 }
@@ -206,6 +213,7 @@ export function isChallengeExpired(state: FamilyChallengeState): boolean {
  */
 export function getTimeRemaining(state: FamilyChallengeState): string {
   if (!state.expiresAt) return 'No deadline';
+<<<<<<< HEAD
   
   const now = new Date();
   const expires = new Date(state.expiresAt);
@@ -216,6 +224,18 @@ export function getTimeRemaining(state: FamilyChallengeState): string {
   const days = Math.floor(diff / (24 * 60 * 60 * 1000));
   const hours = Math.floor((diff % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
   
+=======
+
+  const now = new Date();
+  const expires = new Date(state.expiresAt);
+  const diff = expires.getTime() - now.getTime();
+
+  if (diff <= 0) return 'Expired';
+
+  const days = Math.floor(diff / (24 * 60 * 60 * 1000));
+  const hours = Math.floor((diff % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   if (days > 0) return `${days}d ${hours}h left`;
   return `${hours}h left`;
 }
@@ -247,7 +267,11 @@ export interface FamilyChallengeSyncPayload {
 export function createChallengeState(challenge: FamilyChallengeConfig): FamilyChallengeState {
   const now = new Date();
   const expires = new Date(now.getTime() + challenge.durationDays * 24 * 60 * 60 * 1000);
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   return {
     activeChallengeId: challenge.id,
     currentProgress: 0,
@@ -259,4 +283,8 @@ export function createChallengeState(challenge: FamilyChallengeConfig): FamilyCh
   };
 }
 
+<<<<<<< HEAD
 export default FAMILY_CHALLENGES;
+=======
+export default FAMILY_CHALLENGES;
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

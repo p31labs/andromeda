@@ -21,7 +21,11 @@ async function getDb(): Promise<any> {
   dbReady = (async () => {
     try {
       const { PGlite } = await import('@electric-sql/pglite');
+<<<<<<< HEAD
       const db = await PGlite.create(DB_CONN, { relaxedDurability: true });
+=======
+      const db = new PGlite({ connectionString: DB_CONN });
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       await db.exec(`
         CREATE TABLE IF NOT EXISTS karma_ledger (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -37,6 +41,7 @@ async function getDb(): Promise<any> {
       dbInstance = db;
       return db;
     } catch {
+<<<<<<< HEAD
       try {
         const { PGlite } = await import('@electric-sql/pglite');
         const db = await PGlite.create('memory://');
@@ -58,6 +63,10 @@ async function getDb(): Promise<any> {
         dbReady = null;
         return null;
       }
+=======
+      dbReady = null;
+      return null;
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     }
   })();
 

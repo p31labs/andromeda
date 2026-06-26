@@ -1,10 +1,17 @@
 /**
  * P31 Fawn Guard Detection Hook
  * ============================
+<<<<<<< HEAD
  * 
  * Client-side linguistic pattern detection for the Fawn Guard system.
  * Identifies submissive linguistic markers in outbound text input.
  * 
+=======
+ *
+ * Client-side linguistic pattern detection for the Fawn Guard system.
+ * Identifies submissive linguistic markers in outbound text input.
+ *
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
  * Author: P31 Labs
  * License: MIT
  */
@@ -108,7 +115,11 @@ export function analyzeFawnPatterns(text: string): { markers: FawnMarker[]; conf
   // Calculate confidence based on match density
   const wordCount = text.split(/\s+/).length;
   const matchDensity = wordCount > 0 ? matchCount / wordCount : 0;
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   // Weight factors for each marker type
   const weights: Record<FawnMarker, number> = {
     apologetic_language: 1.0,

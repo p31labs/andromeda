@@ -139,4 +139,8 @@ describe('Discovery', () => {
     const stored = JSON.parse(mockStorage['bonding_discoveries'] ?? '[]');
     expect(stored[0].name).toBe('Trimmed');
   });
+<<<<<<< HEAD
 });
+=======
+});
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

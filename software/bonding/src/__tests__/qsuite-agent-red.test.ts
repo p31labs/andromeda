@@ -22,16 +22,27 @@ describe('Q-Suite: Infrastructure Validation', () => {
     // This test demonstrates the race condition pattern
     // without importing the actual store
     let counter = 0;
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     // Simulate concurrent increments
     const increment = () => {
       const current = counter;
       counter = current + 1;
     };
+<<<<<<< HEAD
     
     // Fire 10 simultaneous increments
     Array(10).fill(null).forEach(increment);
     
+=======
+
+    // Fire 10 simultaneous increments
+    Array(10).fill(null).forEach(increment);
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     // Without synchronization, result is unpredictable
     // (could be anywhere from 1 to 10)
     expect(counter).toBeGreaterThanOrEqual(1);

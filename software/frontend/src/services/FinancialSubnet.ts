@@ -3,11 +3,19 @@ import * as Phenix from './phenixWallet';
 
 /**
  * Financial Subnet
+<<<<<<< HEAD
  * 
  * Isolates the MLS Communication Mesh (ephemeral, forward-secret) 
  * from the Phenix Financial Vault (immutable, legal-ledger).
  * 
  * Memory Policy: Vault keys are flushed to null on lock to prevent 
+=======
+ *
+ * Isolates the MLS Communication Mesh (ephemeral, forward-secret)
+ * from the Phenix Financial Vault (immutable, legal-ledger).
+ *
+ * Memory Policy: Vault keys are flushed to null on lock to prevent
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
  * JS garbage collection lag from leaving secrets in memory.
  */
 export class FinancialSubnet {
@@ -35,7 +43,11 @@ export class FinancialSubnet {
 
   /**
    * Locks the Phenix Vault and aggressively scrubs memory.
+<<<<<<< HEAD
    * Overwrites session storage values with null before removal 
+=======
+   * Overwrites session storage values with null before removal
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
    * to prevent residual strings in JS heap.
    */
   lockPhenixVault(): void {
@@ -52,7 +64,11 @@ export class FinancialSubnet {
         // Ignore parse errors, just delete
       }
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     Phenix.lockVault();
     this.PhenixReady = false;
   }

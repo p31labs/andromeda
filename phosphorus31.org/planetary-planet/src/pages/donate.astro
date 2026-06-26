@@ -5,7 +5,11 @@ const donateJsonLd = {
   "@context": "https://schema.org",
   "@type": "WebPage",
   "name": "Donate to P31 Labs",
+<<<<<<< HEAD
   "description": "Support P31 Labs — open-source assistive technology for neurodivergent families. Tax-deductible donations via Stripe.",
+=======
+  "description": "Support P31 Labs — open-source assistive technology for neurodivergent families. Tax-deductible donations via PayPal.",
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   "url": "https://phosphorus31.org/donate",
   "mainEntity": {
     "@type": "DonateAction",
@@ -16,7 +20,14 @@ const donateJsonLd = {
 };
 ---
 
+<<<<<<< HEAD
 <Layout hideNav title="Donate | P31 Labs" description="Support P31 Labs — open-source assistive technology for neurodivergent families. Donations via Stripe. EIN 42-1888158. 501(c)(3) pending." jsonLd={donateJsonLd}>
+=======
+const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
+---
+
+<Layout hideNav title="Donate | P31 Labs" description="Support P31 Labs — open-source assistive technology for neurodivergent families. Donations via PayPal. EIN 42-1888158. 501(c)(3) pending." jsonLd={donateJsonLd}>
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   <main class="animate-[fadeIn_0.4s_ease-out] bg-gray-950 text-white min-h-screen pb-24">
     {/* Header */}
     <div class="bg-gray-900 text-white pt-32 pb-20 px-6">
@@ -38,7 +49,11 @@ const donateJsonLd = {
           </div>
           <h2 class="text-3xl font-heading font-black text-espresso mb-3">Donate to P31 Labs</h2>
           <p class="text-espresso/60 max-w-lg mx-auto">
+<<<<<<< HEAD
             Choose an amount below. Payments processed securely via Stripe.
+=======
+            Payments processed securely via PayPal.
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
           </p>
         </div>
 
@@ -78,6 +93,12 @@ const donateJsonLd = {
             P31 Labs, Inc. &middot; Georgia Nonprofit Corporation &middot; 501(c)(3) application pending IRS determination &middot; Receipt emailed automatically
           </p>
 
+<<<<<<< HEAD
+=======
+          {/* Cloudflare Turnstile (bot protection) */}
+          <div id="turnstile-container" class="flex justify-center mb-4"></div>
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
           <button
             id="donateBtn"
             class="w-full bg-cyan-400 text-black font-bold px-8 py-4 rounded-xl hover:bg-cyan-300 transition-colors text-lg cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
@@ -126,7 +147,11 @@ const donateJsonLd = {
           </div>
           <div class="bg-white p-6 rounded-xl border border-cloud">
             <div class="text-sm font-bold text-espresso/50 uppercase mb-2">Receipt</div>
+<<<<<<< HEAD
             <div class="text-lg font-bold text-espresso">Automatic via Stripe</div>
+=======
+            <div class="text-lg font-bold text-espresso">Automatic via PayPal</div>
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
             <div class="text-sm text-espresso/60 mt-1">Email receipt sent immediately</div>
           </div>
           <div class="bg-white p-6 rounded-xl border border-cloud">
@@ -220,7 +245,10 @@ const donateJsonLd = {
 
   <script is:inline>
     (function() {
+<<<<<<< HEAD
       const STRIPE_PK = 'pk_live_51T6z3U4Kt3K4WuBDDv6FjjDIygpXjRFMZ5ow28pDiVegBZNOaHffjJCtosLRdaVn0PBmO4rTCYNdoMONcIr5MAyp005FUET7VZ';
+=======
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       const API_URL = 'https://donate-api.phosphorus31.org';
 
       const IMPACT = {
@@ -232,10 +260,35 @@ const donateJsonLd = {
 
       let selectedAmount = 2500; // cents — default $25
       let isMonthly = true;
+<<<<<<< HEAD
       let stripe = null;
 
       function init() {
         stripe = Stripe(STRIPE_PK);
+=======
+      let turnstileToken = null;
+
+      function init() {
+        // Load Cloudflare Turnstile
+        const script = document.createElement('script');
+        script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js';
+        script.async = true;
+        script.defer = true;
+        script.onload = function() {
+          if (window.turnstile && TURNSTILE_SITE_KEY) {
+            window.turnstile.render('#turnstile-container', {
+              sitekey: TURNSTILE_SITE_KEY,
+              callback: function(token) {
+                turnstileToken = token;
+              },
+              'error-callback': function() {
+                turnstileToken = null;
+              },
+            });
+          }
+        };
+        document.head.appendChild(script);
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
 
         // Mode toggle
         document.querySelectorAll('#modeToggle button').forEach(btn => {
@@ -243,10 +296,17 @@ const donateJsonLd = {
             isMonthly = btn.dataset.mode === 'monthly';
             document.querySelectorAll('#modeToggle button').forEach(b => {
               const active = b.dataset.mode === (isMonthly ? 'monthly' : 'once');
+<<<<<<< HEAD
               b.classList.toggle('bg-teal-600', active);
               b.classList.toggle('text-white', active);
               b.classList.toggle('bg-white', !active);
               b.classList.toggle('text-espresso/60', !active);
+=======
+              b.classList.toggle('bg-cyan-400', active);
+              b.classList.toggle('text-black', active);
+              b.classList.toggle('bg-gray-800', !active);
+              b.classList.toggle('text-cyan-400', !active);
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
             });
             updateDonateButton();
           });
@@ -268,8 +328,13 @@ const donateJsonLd = {
           if (val > 0) {
             selectedAmount = val * 100;
             document.querySelectorAll('.amount-btn').forEach(b => {
+<<<<<<< HEAD
               b.classList.remove('active', 'bg-teal-600', 'text-white', 'border-teal-600');
               b.classList.add('bg-white', 'text-espresso', 'border-cloud');
+=======
+              b.classList.remove('active', 'bg-cyan-400', 'text-black', 'border-cyan-400');
+              b.classList.add('bg-gray-800', 'text-cyan-400', 'border-gray-600');
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
             });
           }
           updateDonateButton();
@@ -280,7 +345,11 @@ const donateJsonLd = {
         document.getElementById('donateBtn').addEventListener('click', async () => {
           const btn = document.getElementById('donateBtn');
           btn.disabled = true;
+<<<<<<< HEAD
           btn.textContent = 'Redirecting to Stripe...';
+=======
+          btn.textContent = 'Redirecting to PayPal...';
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
 
           try {
             const res = await fetch(API_URL + '/create-checkout', {
@@ -292,12 +361,29 @@ const donateJsonLd = {
                 mode: isMonthly ? 'monthly' : 'once',
                 successUrl: window.location.origin + '/donate?success=1',
                 cancelUrl: window.location.origin + '/donate',
+<<<<<<< HEAD
               }),
             });
 
             if (!res.ok) throw new Error('Failed to create checkout session');
             const { sessionId } = await res.json();
             await stripe.redirectToCheckout({ sessionId });
+=======
+                turnstileToken: turnstileToken,
+              }),
+            });
+
+            if (!res.ok) {
+              const err = await res.json().catch(() => ({ error: 'Unknown error' }));
+              throw new Error(err.error || 'Failed to create checkout session');
+            }
+            const { approval_url } = await res.json();
+            if (approval_url) {
+              window.location.href = approval_url;
+            } else {
+              throw new Error('No approval URL returned');
+            }
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
           } catch (err) {
             btn.disabled = false;
             updateDonateButton();
@@ -319,12 +405,21 @@ const donateJsonLd = {
         document.querySelectorAll('.amount-btn').forEach(b => {
           const isActive = parseInt(b.dataset.amount) === selectedAmount;
           b.classList.toggle('active', isActive);
+<<<<<<< HEAD
           b.classList.toggle('bg-teal-600', isActive);
           b.classList.toggle('text-white', isActive);
           b.classList.toggle('border-teal-600', isActive);
           b.classList.toggle('bg-white', !isActive);
           b.classList.toggle('text-espresso', !isActive);
           b.classList.toggle('border-cloud', !isActive);
+=======
+          b.classList.toggle('bg-cyan-400', isActive);
+          b.classList.toggle('text-black', isActive);
+          b.classList.toggle('border-cyan-400', isActive);
+          b.classList.toggle('bg-gray-800', !isActive);
+          b.classList.toggle('text-cyan-400', !isActive);
+          b.classList.toggle('border-gray-600', !isActive);
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         });
         updateDonateButton();
         updateImpact();
@@ -346,11 +441,15 @@ const donateJsonLd = {
         }
       }
 
+<<<<<<< HEAD
       // Dynamically load Stripe SDK, then init
       var s = document.createElement('script');
       s.src = 'https://js.stripe.com/v3/';
       s.onload = init;
       document.head.appendChild(s);
+=======
+      init();
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     })();
   </script>
 </Layout>

@@ -13,7 +13,11 @@ export class P31ThemeSwitcher {
     this.widget = null;
     this.panel = null;
     this.isOpen = false;
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     if (typeof document !== 'undefined') {
       this.init();
     }
@@ -32,14 +36,22 @@ export class P31ThemeSwitcher {
     this.widget.setAttribute('role', 'button');
     this.widget.setAttribute('aria-label', 'Open theme settings');
     this.widget.setAttribute('tabindex', '0');
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     // Position
     const [vertical, horizontal] = this.position.split('-');
     this.widget.style.position = 'fixed';
     this.widget.style[vertical] = '24px';
     this.widget.style[horizontal] = '24px';
     this.widget.style.zIndex = '9999';
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     // Create trigger button
     const trigger = document.createElement('button');
     trigger.className = 'p31-theme-trigger';
@@ -61,7 +73,11 @@ export class P31ThemeSwitcher {
       position: relative;
       overflow: hidden;
     `;
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     // Add shimmer effect
     const shimmer = document.createElement('div');
     shimmer.style.cssText = `
@@ -72,21 +88,36 @@ export class P31ThemeSwitcher {
       transition: transform 0.6s;
     `;
     trigger.appendChild(shimmer);
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     trigger.addEventListener('mouseenter', () => {
       shimmer.style.transform = 'translateX(100%)';
       trigger.style.transform = 'scale(1.1)';
       trigger.style.boxShadow = '0 15px 50px rgba(0,0,0,0.4)';
     });
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     trigger.addEventListener('mouseleave', () => {
       shimmer.style.transform = 'translateX(-100%)';
       trigger.style.transform = 'scale(1)';
     });
+<<<<<<< HEAD
     
     this.trigger = trigger;
     this.widget.appendChild(trigger);
     
+=======
+
+    this.trigger = trigger;
+    this.widget.appendChild(trigger);
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     // Create panel
     this.panel = document.createElement('div');
     this.panel.className = 'p31-theme-panel';
@@ -109,10 +140,17 @@ export class P31ThemeSwitcher {
       scrollbar-width: thin;
       scrollbar-color: var(--p31-surface3) transparent;
     `;
+<<<<<<< HEAD
     
     this.renderPanel();
     this.widget.appendChild(this.panel);
     
+=======
+
+    this.renderPanel();
+    this.widget.appendChild(this.panel);
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     document.body.appendChild(this.widget);
   }
 
@@ -132,7 +170,11 @@ export class P31ThemeSwitcher {
   renderPanel() {
     const panel = this.panel;
     panel.innerHTML = '';
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     // Header
     const header = document.createElement('div');
     header.style.cssText = `
@@ -143,7 +185,11 @@ export class P31ThemeSwitcher {
       padding-bottom: 12px;
       border-bottom: 1px solid var(--p31-border-subtle);
     `;
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     const title = document.createElement('h3');
     title.textContent = 'Theme';
     title.style.cssText = `
@@ -153,7 +199,11 @@ export class P31ThemeSwitcher {
       color: var(--p31-paper);
       margin: 0;
     `;
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     const closeBtn = document.createElement('button');
     closeBtn.innerHTML = '✕';
     closeBtn.style.cssText = `
@@ -169,11 +219,19 @@ export class P31ThemeSwitcher {
     closeBtn.addEventListener('click', () => this.close());
     closeBtn.addEventListener('mouseenter', () => closeBtn.style.color = 'var(--p31-cloud)');
     closeBtn.addEventListener('mouseleave', () => closeBtn.style.color = 'var(--p31-muted)');
+<<<<<<< HEAD
     
     header.appendChild(title);
     header.appendChild(closeBtn);
     panel.appendChild(header);
     
+=======
+
+    header.appendChild(title);
+    header.appendChild(closeBtn);
+    panel.appendChild(header);
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     // Current theme info
     const currentTheme = this.themeController?.getEffectiveTheme();
     if (currentTheme) {
@@ -191,7 +249,11 @@ export class P31ThemeSwitcher {
       `;
       panel.appendChild(current);
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     // Theme grid
     const themeLabel = document.createElement('div');
     themeLabel.textContent = 'Select Theme';
@@ -203,7 +265,11 @@ export class P31ThemeSwitcher {
       margin-bottom: 12px;
     `;
     panel.appendChild(themeLabel);
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     const themeGrid = document.createElement('div');
     themeGrid.style.cssText = `
       display: grid;
@@ -211,12 +277,20 @@ export class P31ThemeSwitcher {
       gap: 8px;
       margin-bottom: 20px;
     `;
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     Object.values(P31_THEMES).forEach(theme => {
       const btn = document.createElement('button');
       btn.className = 'p31-theme-option';
       btn.setAttribute('data-theme', theme.id);
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       // Create mini preview
       const isActive = this.themeController?.state?.theme === theme.id;
       btn.style.cssText = `
@@ -231,7 +305,11 @@ export class P31ThemeSwitcher {
         cursor: pointer;
         transition: all 0.2s;
       `;
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       const preview = document.createElement('div');
       preview.style.cssText = `
         width: 40px;
@@ -241,7 +319,11 @@ export class P31ThemeSwitcher {
         border: 1px solid var(--p31-border-subtle);
         position: relative;
       `;
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       if (isActive) {
         const check = document.createElement('div');
         check.innerHTML = '✓';
@@ -262,7 +344,11 @@ export class P31ThemeSwitcher {
         `;
         preview.appendChild(check);
       }
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       const label = document.createElement('span');
       label.textContent = theme.label;
       label.style.cssText = `
@@ -270,35 +356,59 @@ export class P31ThemeSwitcher {
         color: ${isActive ? 'var(--p31-paper)' : 'var(--p31-cloud)'};
         font-weight: ${isActive ? '500' : '400'};
       `;
+<<<<<<< HEAD
       
       btn.appendChild(preview);
       btn.appendChild(label);
       
+=======
+
+      btn.appendChild(preview);
+      btn.appendChild(label);
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       btn.addEventListener('click', () => {
         this.themeController?.setTheme(theme.id);
         this.trigger.innerHTML = this.getThemeIcon();
         this.renderPanel();
       });
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       btn.addEventListener('mouseenter', () => {
         if (!isActive) {
           btn.style.background = 'var(--p31-surface3)';
           btn.style.transform = 'translateY(-2px)';
         }
       });
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       btn.addEventListener('mouseleave', () => {
         if (!isActive) {
           btn.style.background = 'var(--p31-surface2)';
           btn.style.transform = 'translateY(0)';
         }
       });
+<<<<<<< HEAD
       
       themeGrid.appendChild(btn);
     });
     
     panel.appendChild(themeGrid);
     
+=======
+
+      themeGrid.appendChild(btn);
+    });
+
+    panel.appendChild(themeGrid);
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     // Mode selector
     const modeLabel = document.createElement('div');
     modeLabel.textContent = 'Mode';
@@ -310,14 +420,22 @@ export class P31ThemeSwitcher {
       margin-bottom: 12px;
     `;
     panel.appendChild(modeLabel);
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     const modeRow = document.createElement('div');
     modeRow.style.cssText = `
       display: flex;
       gap: 8px;
       margin-bottom: 20px;
     `;
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     Object.entries(P31_MODES).forEach(([modeId, mode]) => {
       const isActive = this.themeController?.state?.mode === modeId;
       const btn = document.createElement('button');
@@ -333,17 +451,30 @@ export class P31ThemeSwitcher {
         cursor: pointer;
         transition: all 0.2s;
       `;
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       btn.addEventListener('click', () => {
         this.themeController?.setMode(modeId);
         this.renderPanel();
       });
+<<<<<<< HEAD
       
       modeRow.appendChild(btn);
     });
     
     panel.appendChild(modeRow);
     
+=======
+
+      modeRow.appendChild(btn);
+    });
+
+    panel.appendChild(modeRow);
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     // Appearance selector
     const appearLabel = document.createElement('div');
     appearLabel.textContent = 'Appearance';
@@ -355,7 +486,11 @@ export class P31ThemeSwitcher {
       margin-bottom: 12px;
     `;
     panel.appendChild(appearLabel);
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     const appearRow = document.createElement('div');
     appearRow.style.cssText = `
       display: flex;
@@ -364,13 +499,21 @@ export class P31ThemeSwitcher {
       padding: 4px;
       border-radius: 10px;
     `;
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     const appearances = [
       { id: 'auto', icon: '◐', label: 'Auto' },
       { id: 'light', icon: '☀️', label: 'Light' },
       { id: 'dark', icon: '🌙', label: 'Dark' }
     ];
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     appearances.forEach(app => {
       const isActive = this.themeController?.state?.appearance === app.id;
       const btn = document.createElement('button');
@@ -390,17 +533,30 @@ export class P31ThemeSwitcher {
         justify-content: center;
         gap: 6px;
       `;
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       btn.addEventListener('click', () => {
         this.themeController?.setAppearance(app.id);
         this.renderPanel();
       });
+<<<<<<< HEAD
       
       appearRow.appendChild(btn);
     });
     
     panel.appendChild(appearRow);
     
+=======
+
+      appearRow.appendChild(btn);
+    });
+
+    panel.appendChild(appearRow);
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     // Keyboard shortcut hint
     const hint = document.createElement('div');
     hint.innerHTML = 'Press <kbd style="padding: 2px 6px; background: var(--p31-surface3); border-radius: 4px; font-family: var(--p31-font-mono); font-size: 0.75rem;">T</kbd> to toggle themes';
@@ -418,7 +574,11 @@ export class P31ThemeSwitcher {
   setupEventListeners() {
     // Toggle on trigger click
     this.trigger.addEventListener('click', () => this.toggle());
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     // Keyboard toggle
     document.addEventListener('keydown', (e) => {
       if (e.key === 't' || e.key === 'T') {
@@ -432,14 +592,22 @@ export class P31ThemeSwitcher {
         this.close();
       }
     });
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     // Close when clicking outside
     document.addEventListener('click', (e) => {
       if (this.isOpen && !this.widget.contains(e.target)) {
         this.close();
       }
     });
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     // Update on theme change
     this.themeController?.onChange(() => {
       this.trigger.innerHTML = this.getThemeIcon();
@@ -475,7 +643,11 @@ export class P31ThemeSwitcher {
   updateActiveStates() {
     // Update trigger icon
     this.trigger.innerHTML = this.getThemeIcon();
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     // Re-render panel if open
     if (this.isOpen) {
       this.renderPanel();
@@ -497,7 +669,11 @@ if (typeof window !== 'undefined') {
   } else {
     initSwitcher();
   }
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   function initSwitcher() {
     // Small delay to ensure theme controller is ready
     setTimeout(() => {

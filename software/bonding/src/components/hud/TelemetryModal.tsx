@@ -28,7 +28,11 @@ function formatTimestamp(ts: number): string {
 
 function eventColor(type: string): string {
   switch (type) {
+<<<<<<< HEAD
     case 'ATOM_PLACED': return 'text-[#00FF88]';
+=======
+    case 'ATOM_PLACED': return 'text-[var(--color-phosphor)]';
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     case 'ATOM_REJECTED': return 'text-red-400';
     case 'MOLECULE_COMPLETED': return 'text-[#FFD700]';
     case 'ACHIEVEMENT_UNLOCKED': return 'text-purple-400';
@@ -118,7 +122,11 @@ export function TelemetryModal({ onClose }: TelemetryModalProps) {
           <span className="font-mono text-[10px] text-white/20">
             {entries.length} EVENT{entries.length !== 1 ? 'S' : ''}
           </span>
+<<<<<<< HEAD
           <span className="font-mono text-[10px] text-[#00FF88]/40">
+=======
+          <span className="font-mono text-[10px] text-[var(--color-phosphor)]/40">
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
             CHAIN INTACT
           </span>
         </div>

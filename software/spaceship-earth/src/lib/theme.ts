@@ -6,8 +6,13 @@
 
 import * as THREE from 'three';
 
+<<<<<<< HEAD
 export type ThemeVar = 
   | '--cyan' | '--magenta' | '--amber' | '--violet' 
+=======
+export type ThemeVar =
+  | '--cyan' | '--magenta' | '--amber' | '--violet'
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   | '--mint' | '--coral' | '--orange' | '--blue' | '--lavender'
   | '--s1' | '--s2' | '--s3' | '--s4' | '--text' | '--dim';
 
@@ -41,9 +46,15 @@ class ThemeBridge {
     this.cache.clear();
     this.colorCache.clear();
     const style = getComputedStyle(document.documentElement);
+<<<<<<< HEAD
     
     const vars: ThemeVar[] = [
       '--cyan', '--magenta', '--amber', '--violet', 
+=======
+
+    const vars: ThemeVar[] = [
+      '--cyan', '--magenta', '--amber', '--violet',
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       '--mint', '--coral', '--orange', '--blue', '--lavender',
       '--s1', '--s2', '--s3', '--s4', '--text', '--dim'
     ];

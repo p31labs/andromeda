@@ -16,6 +16,7 @@ const ElementSelector = ({ playerId, onBond }) => {
     <div className="element-selector">
       <h3>Choose Your Element</h3>
       <div className="element-grid">
+<<<<<<< HEAD
         <HydrogenCard 
           playerId={playerId} 
           onBond={handleElementSelect}
@@ -34,6 +35,26 @@ const ElementSelector = ({ playerId, onBond }) => {
         />
       </div>
       
+=======
+        <HydrogenCard
+          playerId={playerId}
+          onBond={handleElementSelect}
+        />
+        <CarbonCard
+          playerId={playerId}
+          onBond={handleElementSelect}
+        />
+        <OxygenCard
+          playerId={playerId}
+          onBond={handleElementSelect}
+        />
+        <PhosphorusCard
+          playerId={playerId}
+          onBond={handleElementSelect}
+        />
+      </div>
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       {selectedElement && (
         <div className="element-info">
           <h4>Selected: {selectedElement}</h4>
@@ -44,4 +65,8 @@ const ElementSelector = ({ playerId, onBond }) => {
   );
 };
 
+<<<<<<< HEAD
 export default ElementSelector;
+=======
+export default ElementSelector;
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

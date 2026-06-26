@@ -48,7 +48,11 @@ describe('Constellation Engine', () => {
   it('brightness caps at 1.0', () => {
       expect(calculateBrightness(300)).toBe(1.0);
   });
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   it('discoveries get marked', () => {
       const { stars } = generateConstellation(mockGallery);
       expect(stars.find(s => s.id === '2')?.isDiscovery).toBe(true);
@@ -86,7 +90,11 @@ describe('Constellation Engine', () => {
       const lines = findConstellationLines(stars, gallery);
       expect(lines.length).toBe(0);
   });
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   it('positionStar distributes evenly', () => {
       const pos1 = positionStar(0, 10, 0, 0, 0);
       const pos2 = positionStar(5, 10, 0, 0, 0);

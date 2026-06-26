@@ -94,9 +94,15 @@ export function resetCallCount(): void {
 export function createMockFetch(): typeof fetch {
   return vi.fn(async (url: string | URL | Request, _init?: RequestInit): Promise<Response> => {
     callCount++;
+<<<<<<< HEAD
     
     const urlStr = url.toString();
     
+=======
+
+    const urlStr = url.toString();
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     // Check for URL-specific response first
     for (const [pattern, response] of Object.entries(mockConfig.responses)) {
       if (urlStr.includes(pattern)) {
@@ -104,12 +110,20 @@ export function createMockFetch(): typeof fetch {
         return new MockResponse(response.body, response.status);
       }
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     // Handle configured throw error
     if (mockConfig.throwError) {
       throw mockConfig.throwError;
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     // Auto-fail mode: increment failure count and return error
     if (mockConfig.autoFail) {
       mockConfig.failureCount++;
@@ -117,14 +131,22 @@ export function createMockFetch(): typeof fetch {
       await delay(mockConfig.latency);
       return new MockResponse({ error: 'Network error' }, status);
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     // Check failure count threshold for triggering backoff
     if (mockConfig.failureCount > 0 && callCount <= mockConfig.failureCount) {
       const status = mockConfig.status !== undefined ? mockConfig.status : 500;
       await delay(mockConfig.latency);
       return new MockResponse({ error: 'Network error' }, status);
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     // Normal response
     const status = mockConfig.status !== undefined ? mockConfig.status : 200;
     await delay(mockConfig.latency);
@@ -147,7 +169,11 @@ export const mockResponses = {
       players: [{
         id: 'p_0',
         name: 'Test Player',
+<<<<<<< HEAD
         color: '#00FF88',
+=======
+        color: 'var(--color-phosphor)',
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         mode: 'seed',
         joinedAt: new Date().toISOString(),
         state: {
@@ -175,7 +201,11 @@ export const mockResponses = {
       players: Array.from({ length: playerCount + 1 }, (_, i) => ({
         id: `p_${i}`,
         name: i === 0 ? 'Host' : 'Test Player',
+<<<<<<< HEAD
         color: i === 0 ? '#00FF88' : '#00D4FF',
+=======
+        color: i === 0 ? 'var(--color-phosphor)' : '#00D4FF',
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         mode: 'seed',
         joinedAt: new Date().toISOString(),
         state: {
@@ -203,7 +233,11 @@ export const mockResponses = {
       players: [{
         id: 'p_0',
         name: 'Test Player',
+<<<<<<< HEAD
         color: '#00FF88',
+=======
+        color: 'var(--color-phosphor)',
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         mode: 'seed',
         joinedAt: new Date().toISOString(),
         state: {
@@ -245,4 +279,8 @@ export function setupMockFetch(): void {
 export function teardownMockFetch(): void {
   resetMockFetch();
   vi.restoreAllMocks();
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

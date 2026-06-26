@@ -7,7 +7,11 @@ export const useQRHandshake = (userId) => {
   const [scanResult, setScanResult] = useState(null);
   const [error, setError] = useState(null);
   const [handshakeHistory, setHandshakeHistory] = useState([]);
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   const qrCodeRef = useRef(null);
   const scannerRef = useRef(null);
 
@@ -31,7 +35,11 @@ export const useQRHandshake = (userId) => {
 
       const timestamp = Date.now();
       const signatureData = `${userId}:${timestamp}`;
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       // Sign the identity data
       const signature = await crypto.subtle.sign(
         'RSASSA-PKCS1-v1_5',
@@ -127,21 +135,33 @@ export const useQRHandshake = (userId) => {
       // Use a simple QR code generation approach
       // In production, you might want to use a library like qrcode
       const qrData = JSON.stringify(data);
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       // For now, return a simple data URL representation
       // This would be replaced with actual QR code generation
       const canvas = document.createElement('canvas');
       canvas.width = 200;
       canvas.height = 200;
       const ctx = canvas.getContext('2d');
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       // Simple visual representation (replace with actual QR generation)
       ctx.fillStyle = '#000';
       ctx.font = '12px monospace';
       ctx.fillText('P31 Node Identity', 10, 20);
       ctx.fillText(`User: ${data.userId}`, 10, 40);
       ctx.fillText(`Time: ${new Date(data.timestamp).toISOString()}`, 10, 60);
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       return canvas.toDataURL();
     } catch (err) {
       console.error('QR code generation failed:', err);
@@ -203,13 +223,23 @@ export const createEdgeData = (fromUserId, toUserId, handshake) => {
 // Utility function to validate edge completeness for K4
 export const validateK4Completion = (edges) => {
   if (edges.length < 6) return false;
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   // Check if we have exactly 4 unique nodes
   const uniqueNodes = new Set();
   edges.forEach(edge => {
     uniqueNodes.add(edge.from);
     uniqueNodes.add(edge.to);
   });
+<<<<<<< HEAD
   
   return uniqueNodes.size === 4;
 };
+=======
+
+  return uniqueNodes.size === 4;
+};
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

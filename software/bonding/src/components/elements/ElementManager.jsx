@@ -11,11 +11,16 @@ const ElementManager = ({ playerId }) => {
     if (navigator.vibrate) {
       navigator.vibrate(100);
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     // Play bonding sound
     const audioContext = new (window.AudioContext || window.webkitAudioContext)();
     const oscillator = audioContext.createOscillator();
     const gainNode = audioContext.createGain();
+<<<<<<< HEAD
     
     oscillator.connect(gainNode);
     gainNode.connect(audioContext.destination);
@@ -26,6 +31,18 @@ const ElementManager = ({ playerId }) => {
     gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
     gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
     
+=======
+
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+
+    oscillator.frequency.setValueAtTime(440, audioContext.currentTime);
+    oscillator.frequency.exponentialRampToValueAtTime(880, audioContext.currentTime + 0.1);
+
+    gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     oscillator.start();
     oscillator.stop(audioContext.currentTime + 0.1);
   };
@@ -36,9 +53,15 @@ const ElementManager = ({ playerId }) => {
         <h2>Human Chemistry Lab</h2>
         <p>Build molecules by bonding with other players</p>
       </div>
+<<<<<<< HEAD
       
       <ElementGrid playerId={playerId} onBond={handleElementSelect} />
       
+=======
+
+      <ElementGrid playerId={playerId} onBond={handleElementSelect} />
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       <div className="chemistry-guide">
         <h3>Chemistry Rules</h3>
         <ul>
@@ -47,7 +70,11 @@ const ElementManager = ({ playerId }) => {
           <li><strong>Oxygen (O):</strong> 2 bonds, highly electronegative, essential for energy</li>
           <li><strong>Phosphorus (P):</strong> 3 bonds, Quantum Egg builder, central to Posner Molecule</li>
         </ul>
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         <div className="stability-guide">
           <h4>Molecular Stability</h4>
           <p><strong>High:</strong> Carbon + Hydrogen compounds</p>
@@ -59,4 +86,8 @@ const ElementManager = ({ playerId }) => {
   );
 };
 
+<<<<<<< HEAD
 export default ElementManager;
+=======
+export default ElementManager;
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

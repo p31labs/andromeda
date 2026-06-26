@@ -75,7 +75,11 @@ export function BootSequence({ onAcknowledge }: BootSequenceProps) {
             key={i}
             className={`font-mono text-sm tracking-wider transition-opacity duration-700 ${
               line.text.includes('WELCOME') || line.text.includes('LEVEL 10')
+<<<<<<< HEAD
                 ? 'text-[#00FF88]'
+=======
+                ? 'text-[var(--color-phosphor)]'
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
                 : 'text-white/40'
             }`}
             style={{
@@ -96,9 +100,15 @@ export function BootSequence({ onAcknowledge }: BootSequenceProps) {
       {showButton && (
         <button
           onClick={handleAcknowledge}
+<<<<<<< HEAD
           className="mt-12 px-8 py-3 rounded-xl border border-[#00FF88]/30 bg-[#00FF88]/[0.08]
                      text-[#00FF88] font-mono text-sm tracking-wider
                      hover:bg-[#00FF88]/15 active:scale-95
+=======
+          className="mt-12 px-8 py-3 rounded-xl border border-[var(--color-phosphor)]/30 bg-[var(--color-phosphor)]/[0.08]
+                     text-[var(--color-phosphor)] font-mono text-sm tracking-wider
+                     hover:bg-[var(--color-phosphor)]/15 active:scale-95
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
                      transition-all duration-200
                      animate-pulse"
           style={{

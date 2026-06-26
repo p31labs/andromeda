@@ -78,7 +78,11 @@
     import { renderShell, code, callout } from '/stylebook/_chrome.js';
     import { P31ThemeController } from '/lib/p31-theme-engine.mjs';
     window.p31Theme = new P31ThemeController({ defaultTheme: 'hub' });
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     const PRINCIPLES = [
       {
         num: '01',
@@ -137,7 +141,11 @@
         dont: 'Hardcode colors in component CSS'
       }
     ];
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     const principlesGrid = `
       <div class="principles-grid">
         ${PRINCIPLES.map(p => `
@@ -151,7 +159,11 @@
         `).join('')}
       </div>
     `;
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     const content = `
       <section class="sb-section">
         <div class="sb-section-header">
@@ -164,7 +176,11 @@
         </div>
         ${principlesGrid}
       </section>
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">In practice</div>
@@ -173,7 +189,11 @@
             Each principle has mechanical enforcement. We don't trust intent — we trust verification.
           </p>
         </div>
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         <table class="sb-table">
           <thead>
             <tr><th>Principle</th><th>Mechanism</th><th>Verifier</th></tr>
@@ -188,16 +208,27 @@
             <tr><td>Ephemeralization</td><td>Token-only colors</td><td><code>verify:style-alignment</code></td></tr>
           </tbody>
         </table>
+<<<<<<< HEAD
         
         ${callout('info', 'Living document', 'These principles evolve. When a new edge case demands a new rule, we add it to the system — not as an exception, but as a constraint that every future component honors.')}
       </section>
       
+=======
+
+        ${callout('info', 'Living document', 'These principles evolve. When a new edge case demands a new rule, we add it to the system — not as an exception, but as a constraint that every future component honors.')}
+      </section>
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">For contributors</div>
           <h2 class="sb-h2">The pre-ship checklist</h2>
         </div>
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         ${code(`Before merging any UI change:
 
 [ ] Initial paint is Gray Rock (muted, no chroma, no motion)
@@ -213,7 +244,11 @@
 [ ] verify:style-alignment passes`, 'plain', 'Checklist')}
       </section>
     `;
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     renderShell({
       activeId: 'principles',
       breadcrumb: [

@@ -186,7 +186,11 @@ function Scene({ atmosphereCoherence }: { atmosphereCoherence: number }) {
     ? ELEMENTS[dragging].color
     : previewElement
       ? ELEMENTS[previewElement].color
+<<<<<<< HEAD
       : '#ffffff';
+=======
+      : 'var(--color-surface)';
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
 
   return (
     <>

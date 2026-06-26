@@ -56,7 +56,21 @@ export default class MatchmakingDO {
     if (path === '/intent' && request.method === 'POST') return this.handlePostIntent(request);
     if (path === '/cycles' && request.method === 'GET') return this.handleGetCycles(request);
     if (path === '/ws' && request.headers.get('Upgrade') === 'websocket') return this.handleWebSocket(request);
+<<<<<<< HEAD
     if (path === '/health') return new Response('OK', { status: 200 });
+=======
+    if (path === '/health') {
+      return new Response(JSON.stringify({
+        status: 'ok',
+        service: 'spin-matchmaking',
+        version: '0.1.0',
+        timestamp: new Date().toISOString(),
+      }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
 
     return new Response('Not Found', { status: 404 });
   }

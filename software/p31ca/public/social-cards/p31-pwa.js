@@ -64,7 +64,11 @@
       display: "inline-flex",
       alignItems: "stretch",
       background: "rgba(15, 17, 21, 0.92)",
+<<<<<<< HEAD
       color: "#5DCAA5",
+=======
+      color: "var(--color-teal)",
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       border: "1px solid rgba(37, 137, 125, 0.4)",
       borderRadius: "8px",
       font: "600 12px/1 ui-monospace, 'SF Mono', Menlo, Consolas, monospace",

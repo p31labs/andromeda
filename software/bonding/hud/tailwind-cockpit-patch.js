@@ -1,6 +1,10 @@
 /**
  * WCD-08 Phase A: Tailwind Config Patch
+<<<<<<< HEAD
  * 
+=======
+ *
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
  * Sonnet: MERGE these additions into the existing tailwind.config.js.
  * Do NOT replace the entire config. Add to theme.extend.
  */
@@ -8,7 +12,11 @@
 // Add to theme.extend.colors:
 const colors = {
   void: '#050505',
+<<<<<<< HEAD
   phosphor: '#00FF88',
+=======
+  phosphor: 'var(--color-phosphor)',
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   amber: '#FFD700',
   cyan: '#06B6D4',
 };
@@ -36,7 +44,11 @@ const animation = {
 
 /**
  * Example merged config:
+<<<<<<< HEAD
  * 
+=======
+ *
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
  * export default {
  *   content: ['./src/** /*.{ts,tsx}'],
  *   theme: {
@@ -44,7 +56,11 @@ const animation = {
  *       colors: {
  *         ...existingColors,
  *         void: '#050505',
+<<<<<<< HEAD
  *         phosphor: '#00FF88',
+=======
+ *         phosphor: 'var(--color-phosphor)',
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
  *         amber: '#FFD700',
  *         cyan: '#06B6D4',
  *       },

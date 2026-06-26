@@ -9,7 +9,11 @@ const logStore = createStore('p31-logs', 'log-index');
 export async function logAction(route: string, action: string): Promise<void> {
   const key = `${route}:log:${Date.now()}`;
   await set(key, { action, ts: Date.now() }, logStore);
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   // Also maintain an index of keys for this route for efficient enumeration
   const indexKey = `${route}:log-index`;
   const existingKeys = await get(indexKey, logStore) || [];
@@ -22,6 +26,7 @@ export async function logAction(route: string, action: string): Promise<void> {
 export async function getLogs(route: string): Promise<Array<{action: string; ts: number}>> {
   try {
     const indexKey = `${route}:log-index`;
+<<<<<<< HEAD
     const keys = await get(indexKey, logStore) || [];
     
     // Fetch all log entries
@@ -29,6 +34,15 @@ export async function getLogs(route: string): Promise<Array<{action: string; ts:
       keys.map(key => get(key, logStore))
     );
     
+=======
+    const storedKeys = await get(indexKey, logStore) || [];
+
+    // Fetch all log entries
+    const entries = await Promise.all(
+      storedKeys.map((k: string) => get(k, logStore))
+    );
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     // Filter out null/undefined entries and sort by timestamp (most recent first)
     return entries
       .filter((entry): entry is {action: string; ts: number} => entry !== null)
@@ -45,6 +59,7 @@ export async function getLogs(route: string): Promise<Array<{action: string; ts:
 export async function clearLogs(route: string): Promise<void> {
   try {
     const indexKey = `${route}:log-index`;
+<<<<<<< HEAD
     const keys = await get(indexKey, logStore) || [];
     
     // Delete all log entries
@@ -52,6 +67,15 @@ export async function clearLogs(route: string): Promise<void> {
       keys.map(key => del(key, logStore))
     );
     
+=======
+    const logKeys = await get(indexKey, logStore) || [];
+
+// Delete all log entries
+    await Promise.all(
+      logKeys.map((k: string) => del(k, logStore))
+    );
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     // Clear the index
     await del(indexKey, logStore);
   } catch (error) {

@@ -124,4 +124,8 @@ describe('New Elements', () => {
     expect(formulas).toContain('Fe2O3');
     expect(formulas).toContain('FeS');
   });
+<<<<<<< HEAD
 });
+=======
+});
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

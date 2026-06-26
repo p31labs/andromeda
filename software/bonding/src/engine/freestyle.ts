@@ -71,7 +71,11 @@ export function scoreFreestyle(
 
   const stabilityMult = 1 + (stability / 100);
   let baseLove = Math.round(atoms.length * scoring.basePerAtom * stabilityMult);
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   const bonuses: FreestyleResult['bonuses'] = [];
 
   const elemBonus = uniqueElements * scoring.uniqueElementBonus;

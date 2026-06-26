@@ -2,14 +2,20 @@
  * ParentDashboard - Parent Supervision Dashboard
  * Real-time monitoring of children's BONDING activity with time controls,
  * webhook integration, and family management.
+<<<<<<< HEAD
  * 
  * Design: 16px min font, 48px touch targets, dark theme with Phosphor Green (#00FF88) accents
+=======
+ *
+ * Design: 16px min font, 48px touch targets, dark theme with Phosphor Green (var(--color-phosphor)) accents
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
  * Accessibility: WCAG AA compliant, grandparent-friendly (ages 6-80)
  */
 
 import React, { useState, useMemo } from 'react';
 import useParentControls from '../hooks/useParentControls';
 import { ProgressiveDisclosure } from './ProgressiveDisclosure';
+<<<<<<< HEAD
 import type { 
   BONDINGActivity, 
   WebhookEvent, 
@@ -22,6 +28,20 @@ import type {
 const COLORS = {
   phosphorus: '#00FF88',
   phosphorusDim: '#00FF8899',
+=======
+import type {
+  BONDINGActivity,
+  WebhookEvent,
+  TimeLimit,
+  TimeSchedule,
+  Child
+} from '../types/parent';
+
+// Use the same color constants as the main app (adjusted for var(--color-phosphor) phosphor)
+const COLORS = {
+  phosphorus: 'var(--color-phosphor)',
+  phosphorusDim: 'var(--color-phosphor)99',
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   void: '#050510',
   background: '#0a0f1a',
   panelBg: 'rgba(10, 15, 26, 0.9)',
@@ -96,8 +116,13 @@ function ActivityItem({ activity, childName }: ActivityItemProps) {
       borderBottom: '1px solid rgba(0, 255, 136, 0.08)',
       minHeight: '48px',
     }}>
+<<<<<<< HEAD
       <span style={{ 
         fontSize: '18px', 
+=======
+      <span style={{
+        fontSize: '18px',
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         color: COLORS.phosphorus,
         width: '24px',
         textAlign: 'center',
@@ -143,23 +168,40 @@ interface TimeControlCardProps {
   onSetSchedule: (schedule: TimeSchedule) => void;
 }
 
+<<<<<<< HEAD
 function TimeControlCard({ 
   child, 
   settings, 
   onSetLimit, 
   onPause, 
+=======
+function TimeControlCard({
+  child,
+  settings,
+  onSetLimit,
+  onPause,
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   onResume,
   onSetSchedule,
 }: TimeControlCardProps) {
   const [_showSchedule, setShowSchedule] = useState(false);
   const [scheduleStart, setScheduleStart] = useState(settings.schedule.allowedStart);
   const [scheduleEnd, setScheduleEnd] = useState(settings.schedule.allowedEnd);
+<<<<<<< HEAD
   
   const usagePercent = Math.min((settings.usedToday / settings.dailyLimit) * 100, 100);
   const isOverLimit = settings.usedToday >= settings.dailyLimit;
   
   const timeLimits: TimeLimit[] = [15, 30, 60, 120];
   
+=======
+
+  const usagePercent = Math.min((settings.usedToday / settings.dailyLimit) * 100, 100);
+  const isOverLimit = settings.usedToday >= settings.dailyLimit;
+
+  const timeLimits: TimeLimit[] = [15, 30, 60, 120];
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   const handleScheduleSave = () => {
     onSetSchedule({
       enabled: settings.schedule.enabled,
@@ -183,9 +225,15 @@ function TimeControlCard({
         alignItems: 'center',
         marginBottom: '16px',
       }}>
+<<<<<<< HEAD
         <h3 style={{ 
           color: COLORS.text, 
           fontSize: '18px', 
+=======
+        <h3 style={{
+          color: COLORS.text,
+          fontSize: '18px',
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
           margin: 0,
           fontWeight: 600,
         }}>
@@ -195,8 +243,13 @@ function TimeControlCard({
           padding: '4px 12px',
           borderRadius: '20px',
           fontSize: '13px',
+<<<<<<< HEAD
           background: settings.isPaused 
             ? COLORS.coral + '33' 
+=======
+          background: settings.isPaused
+            ? COLORS.coral + '33'
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
             : COLORS.phosphorus + '22',
           color: settings.isPaused ? COLORS.coral : COLORS.phosphorus,
         }}>
@@ -215,8 +268,13 @@ function TimeControlCard({
           <span style={{ color: COLORS.textDim }}>
             Used today: {formatMinutes(settings.usedToday)} / {formatMinutes(settings.dailyLimit)}
           </span>
+<<<<<<< HEAD
           <span style={{ 
             color: isOverLimit ? COLORS.coral : COLORS.textDim 
+=======
+          <span style={{
+            color: isOverLimit ? COLORS.coral : COLORS.textDim
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
           }}>
             {Math.round(usagePercent)}%
           </span>
@@ -230,8 +288,13 @@ function TimeControlCard({
           <div style={{
             height: '100%',
             width: `${usagePercent}%`,
+<<<<<<< HEAD
             background: isOverLimit 
               ? COLORS.coral 
+=======
+            background: isOverLimit
+              ? COLORS.coral
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
               : COLORS.phosphorus,
             borderRadius: '4px',
             transition: 'width 0.3s ease',
@@ -262,8 +325,13 @@ function TimeControlCard({
                 minWidth: '64px',
                 minHeight: '48px',
                 padding: '10px 16px',
+<<<<<<< HEAD
                 background: settings.dailyLimit === limit 
                   ? COLORS.phosphorus + '33' 
+=======
+                background: settings.dailyLimit === limit
+                  ? COLORS.phosphorus + '33'
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
                   : COLORS.void,
                 border: `1px solid ${settings.dailyLimit === limit ? COLORS.phosphorus : COLORS.panelBorder}`,
                 borderRadius: '8px',
@@ -305,7 +373,11 @@ function TimeControlCard({
             Enable schedule
           </span>
         </label>
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         {settings.schedule.enabled && (
           <div style={{
             marginTop: '12px',
@@ -369,8 +441,13 @@ function TimeControlCard({
           width: '100%',
           minHeight: '48px',
           padding: '14px',
+<<<<<<< HEAD
           background: settings.isPaused 
             ? COLORS.phosphorus + '22' 
+=======
+          background: settings.isPaused
+            ? COLORS.phosphorus + '22'
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
             : COLORS.coral + '22',
           border: `1px solid ${settings.isPaused ? COLORS.phosphorus : COLORS.coral}`,
           borderRadius: '8px',
@@ -406,8 +483,13 @@ function WebhookEventItem({ event, onMarkRead }: WebhookEventItemProps) {
     }}
     onClick={onMarkRead}
     >
+<<<<<<< HEAD
       <span style={{ 
         fontSize: '18px', 
+=======
+      <span style={{
+        fontSize: '18px',
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         color: COLORS.gold,
         width: '24px',
         textAlign: 'center',
@@ -1079,7 +1161,11 @@ export default function ParentDashboard({ onClose }: ParentDashboardProps) {
             fontSize: '13px',
             margin: 0,
           }}>
+<<<<<<< HEAD
             P31 Parent Dashboard • ages 6-80 accessible • Phosphor Green #00FF88
+=======
+            P31 Parent Dashboard • ages 6-80 accessible • Phosphor Green var(--color-phosphor)
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
           </p>
         </footer>
       </ProgressiveDisclosure>
@@ -1087,4 +1173,8 @@ export default function ParentDashboard({ onClose }: ParentDashboardProps) {
   );
 }
 
+<<<<<<< HEAD
 // ParentDashboard is exported as default at the function declaration
+=======
+// ParentDashboard is exported as default at the function declaration
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

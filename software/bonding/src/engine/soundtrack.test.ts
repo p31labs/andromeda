@@ -92,7 +92,11 @@ describe('Molecule Soundtrack Engine', () => {
     expect(consonance).toBeGreaterThanOrEqual(0);
     expect(consonance).toBeLessThanOrEqual(1);
   });
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   it('getChordName identifies major sixth', () => {
     const name = getChordName([330, 523]);
     expect(name).toContain('major sixth');

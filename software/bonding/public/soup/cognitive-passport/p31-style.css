@@ -69,6 +69,7 @@
   --p31-void: #0f1115;
   --p31-surface: #161920;
   --p31-surface2: #1c2028;
+<<<<<<< HEAD
   --p31-coral: #cc6247;
   --p31-teal: #25897d;
   --p31-cyan: #4db8a8;
@@ -80,6 +81,19 @@
   --p31-ink: #1e293b;
   --p31-muted: #6b7280;
   --p31-phosphor: #00FF88;
+=======
+  --p31-coral: var(--color-coral);
+  --p31-teal: #25897d;
+  --p31-cyan: var(--color-cyan);
+  --p31-cloud: var(--color-cloud);
+  --p31-amber: var(--color-amber);
+  --p31-lavender: var(--color-lavender);
+  --p31-phosphorus: var(--color-phosphorus);
+  --p31-paper: #f4f4f5;
+  --p31-ink: #1e293b;
+  --p31-muted: #6b7280;
+  --p31-phosphor: var(--color-phosphor);
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   --p31-border-subtle: rgba(255, 255, 255, 0.06);
   --p31-glass-border: rgba(255, 255, 255, 0.08);
   --p31-glass-surface: rgba(255, 255, 255, 0.04);
@@ -100,6 +114,7 @@
 
 [data-p31-appearance="org"] {
   color-scheme: light;
+<<<<<<< HEAD
   --p31-theme-color: #f5f4f0;
   --p31-void: #f5f4f0;
   --p31-surface: #ffffff;
@@ -115,6 +130,23 @@
   --p31-ink: #0f172a;
   --p31-muted: #64748b;
   --p31-phosphor: #00FF88;
+=======
+  --p31-theme-color: var(--color-themeColor);
+  --p31-void: var(--color-themeColor);
+  --p31-surface: var(--color-surface);
+  --p31-surface2: var(--color-surface2);
+  --p31-coral: var(--color-coral);
+  --p31-teal: #25897d;
+  --p31-cyan: var(--color-cyan);
+  --p31-cloud: #1e293b;
+  --p31-amber: var(--color-amber);
+  --p31-lavender: var(--color-lavender);
+  --p31-phosphorus: var(--color-phosphorus);
+  --p31-paper: var(--color-paper);
+  --p31-ink: var(--color-ink);
+  --p31-muted: var(--color-muted);
+  --p31-phosphor: var(--color-phosphor);
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   --p31-border-subtle: rgba(15, 23, 42, 0.09);
   --p31-glass-border: rgba(15, 23, 42, 0.07);
   --p31-glass-surface: rgba(255, 255, 255, 0.82);
@@ -136,6 +168,7 @@
 @media (prefers-color-scheme: light) {
   html[data-p31-appearance="auto"] {
     color-scheme: light;
+<<<<<<< HEAD
     --p31-void: #f5f4f0;
     --p31-surface: #ffffff;
     --p31-surface2: #ebeae4;
@@ -154,6 +187,26 @@
     --p31-glass-border: rgba(15, 23, 42, 0.07);
     --p31-glass-surface: rgba(255, 255, 255, 0.82);
     --p31-theme-color: #f5f4f0;
+=======
+    --p31-void: var(--color-themeColor);
+    --p31-surface: var(--color-surface);
+    --p31-surface2: var(--color-surface2);
+    --p31-coral: var(--color-coral);
+    --p31-teal: #25897d;
+    --p31-cyan: var(--color-cyan);
+    --p31-cloud: #1e293b;
+    --p31-amber: var(--color-amber);
+    --p31-lavender: var(--color-lavender);
+    --p31-phosphorus: var(--color-phosphorus);
+    --p31-paper: var(--color-paper);
+    --p31-ink: var(--color-ink);
+    --p31-muted: var(--color-muted);
+    --p31-phosphor: var(--color-phosphor);
+    --p31-border-subtle: rgba(15, 23, 42, 0.09);
+    --p31-glass-border: rgba(15, 23, 42, 0.07);
+    --p31-glass-surface: rgba(255, 255, 255, 0.82);
+    --p31-theme-color: var(--color-themeColor);
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     --void: var(--p31-void);
     --surface: var(--p31-surface);
     --surface2: var(--p31-surface2);
@@ -183,8 +236,13 @@ html { color-scheme: dark; }
   grid-template-columns: repeat(3, minmax(0, 1fr));
   border-top: 1px solid var(--p31-glass-border);
   background: var(--p31-glass-surface);
+<<<<<<< HEAD
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
+=======
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
 }
 .p31-mission-trio--hub {
   display: flex;
@@ -458,15 +516,25 @@ html { color-scheme: dark; }
   --p31-text-body: var(--p31-text-lg);
 }
 :root[data-p31-contrast="high"] {
+<<<<<<< HEAD
   --p31-cloud: #ffffff;
+=======
+  --p31-cloud: var(--color-surface);
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   --p31-muted: #9ca3af;
   --p31-border-subtle: rgba(255, 255, 255, 0.15);
 }
 :root[data-p31-contrast="max"] {
   --p31-void: #000000;
+<<<<<<< HEAD
   --p31-cloud: #ffffff;
   --p31-muted: #d1d5db;
   --p31-border-subtle: #ffffff;
+=======
+  --p31-cloud: var(--color-surface);
+  --p31-muted: #d1d5db;
+  --p31-border-subtle: var(--color-surface);
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
 }
 :root[data-p31-motion='none'] *,
 :root[data-p31-motion='none'] *::before,
@@ -497,4 +565,8 @@ html { color-scheme: dark; }
 .p31-reveal-trigger:hover,
 .p31-reveal-trigger:focus-visible {
   color: var(--p31-teal);
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

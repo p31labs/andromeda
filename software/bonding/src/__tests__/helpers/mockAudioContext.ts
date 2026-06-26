@@ -185,7 +185,11 @@ export class MockAudioContext {
   constructor() {
     this.destination = this._createNode();
     this.listener = new MockAudioListener();
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     // Advance time automatically
     this._timeInterval = setInterval(() => {
       this.currentTime += 0.1;
@@ -307,4 +311,8 @@ export function setupAudioContextMock(): void {
 
 export function teardownAudioContextMock(): void {
   resetAudioMocks();
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

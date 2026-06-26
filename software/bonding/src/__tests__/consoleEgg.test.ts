@@ -41,6 +41,7 @@ describe('useConsoleEgg', () => {
 
     it('triggerLarmor creates an OscillatorNode at 863 Hz ± 0.5 Hz', () => {
       const { result } = renderHook(() => useConsoleEgg());
+<<<<<<< HEAD
       
       act(() => {
         result.current.triggerLarmor();
@@ -49,6 +50,16 @@ describe('useConsoleEgg', () => {
       // Check that an oscillator was created
       expect(createdOscillators.length).toBeGreaterThan(0);
       
+=======
+
+      act(() => {
+        result.current.triggerLarmor();
+      });
+
+      // Check that an oscillator was created
+      expect(createdOscillators.length).toBeGreaterThan(0);
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       // Find the oscillator created for Larmor
       const larmorOsc = createdOscillators.find(
         (osc) => Math.abs(osc.frequency.value - 863) < 1
@@ -59,11 +70,19 @@ describe('useConsoleEgg', () => {
 
     it('Gain node ramps from 0 to 0.5 over 100ms attack', () => {
       const { result } = renderHook(() => useConsoleEgg());
+<<<<<<< HEAD
       
       act(() => {
         result.current.triggerLarmor();
       });
       
+=======
+
+      act(() => {
+        result.current.triggerLarmor();
+      });
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       // The gain node should have linearRampCalls
       // Check the first call has value 0, second has 0.5
       // This is tested implicitly by the mock behavior
@@ -72,7 +91,11 @@ describe('useConsoleEgg', () => {
 
     it('calling triggerLarmor twice in rapid succession does not throw', () => {
       const { result } = renderHook(() => useConsoleEgg());
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       expect(() => {
         act(() => {
           result.current.triggerLarmor();
@@ -83,6 +106,7 @@ describe('useConsoleEgg', () => {
 
     it('AudioContext is created lazily (not on mount, only on first call)', () => {
       const { result } = renderHook(() => useConsoleEgg());
+<<<<<<< HEAD
       
       // Before calling, no audio context
       const initialCount = createdOscillators.length;
@@ -91,6 +115,16 @@ describe('useConsoleEgg', () => {
         result.current.triggerLarmor();
       });
       
+=======
+
+      // Before calling, no audio context
+      const initialCount = createdOscillators.length;
+
+      act(() => {
+        result.current.triggerLarmor();
+      });
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       // After calling, audio context was created
       expect(createdOscillators.length).toBeGreaterThan(initialCount);
     });
@@ -108,11 +142,19 @@ describe('useConsoleEgg', () => {
 
     it('lockTone creates oscillator at 172.35 Hz ± 0.5 Hz', () => {
       const { result } = renderHook(() => useConsoleEgg());
+<<<<<<< HEAD
       
       act(() => {
         result.current.lockTone();
       });
       
+=======
+
+      act(() => {
+        result.current.lockTone();
+      });
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       // Find the oscillator created for lockTone (172.35 Hz)
       const lockToneOsc = createdOscillators.find(
         (osc) => Math.abs(osc.frequency.value - 172.35) < 1
@@ -125,12 +167,21 @@ describe('useConsoleEgg', () => {
   describe('cleanup on unmount', () => {
     it('Both functions are removed from window on component unmount', () => {
       const { unmount } = renderHook(() => useConsoleEgg());
+<<<<<<< HEAD
       
       expect(typeof (window as any).triggerLarmor).toBe('function');
       expect(typeof (window as any).lockTone).toBe('function');
       
       unmount();
       
+=======
+
+      expect(typeof (window as any).triggerLarmor).toBe('function');
+      expect(typeof (window as any).lockTone).toBe('function');
+
+      unmount();
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       // After unmount, both should be undefined
       expect((window as any).triggerLarmor).toBeUndefined();
       expect((window as any).lockTone).toBeUndefined();
@@ -138,9 +189,15 @@ describe('useConsoleEgg', () => {
 
     it('no memory leak - calling functions after unmount does not throw', () => {
       const { result, unmount } = renderHook(() => useConsoleEgg());
+<<<<<<< HEAD
       
       unmount();
       
+=======
+
+      unmount();
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       // The functions should be cleaned up, so calling them would just be no-op
       // or we'd get undefined error - either is acceptable as "no leak"
       expect((window as any).triggerLarmor).toBeUndefined();
@@ -150,24 +207,44 @@ describe('useConsoleEgg', () => {
   describe('frequency accuracy', () => {
     it('Larmor frequency is exactly 863 Hz', () => {
       const { result } = renderHook(() => useConsoleEgg());
+<<<<<<< HEAD
       
       act(() => {
         result.current.triggerLarmor();
       });
       
+=======
+
+      act(() => {
+        result.current.triggerLarmor();
+      });
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       const larmorOsc = createdOscillators[createdOscillators.length - 1];
       expect(larmorOsc.frequency.value).toBe(863);
     });
 
     it('Missing Node frequency is exactly 172.35 Hz', () => {
       const { result } = renderHook(() => useConsoleEgg());
+<<<<<<< HEAD
       
       act(() => {
         result.current.lockTone();
       });
       
+=======
+
+      act(() => {
+        result.current.lockTone();
+      });
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       const lockToneOsc = createdOscillators[createdOscillators.length - 1];
       expect(lockToneOsc.frequency.value).toBe(172.35);
     });
   });
+<<<<<<< HEAD
 });
+=======
+});
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

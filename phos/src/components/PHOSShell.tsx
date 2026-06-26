@@ -1,28 +1,42 @@
+<<<<<<< HEAD
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useAtmosphere, AtmosphereProvider } from './AtmosphereProvider';
 import { DeviceProvider } from '../context/DeviceContext';
 import { useDevice } from '../hooks/useDevice';
 import { PWAInstallPrompt } from './PWAInstallPrompt';
 import { listenForOnline, processQueue } from '../lib/offlineQueue';
+=======
+import React, { useState, useEffect, useCallback } from 'react';
+import { useAtmosphere, AtmosphereProvider } from './AtmosphereProvider';
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
 import PHOSOrb from './PHOSOrb';
 import TheGuardian from './TheGuardian';
 import { SurfaceContent } from './SurfaceContent';
 import { SurfaceErrorBoundary } from './SurfaceErrorBoundary';
 import { DemoController } from './DemoController';
 import { GrantNarrativeOverlay } from './GrantNarrativeOverlay';
+<<<<<<< HEAD
 import { SuperpositionSurface } from './SuperpositionSurface';
 import { getBiologicalTheme } from '../lib/themeEngine';
 import { EscapeHatch } from './EscapeHatch';
 import TerminalStatusBar from './TerminalStatusBar';
 import TerminalOmnibar from './TerminalOmnibar';
 import TerminalFooter from './TerminalFooter';
+=======
+import { getBiologicalTheme } from '../lib/themeEngine';
+import { EscapeHatch } from './EscapeHatch';
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
 
 export { getBiologicalTheme };
 
 const VALID_SURFACES = new Set([
   'GREETING', 'IGNITION', 'BONDING', 'THE_BUFFER', 'VAULT', 'GRID',
   'NODE_ZERO', 'LEDGER', 'LOVE', 'HEARTH', 'ARCADE', 'ARCHIVE',
+<<<<<<< HEAD
   'COMPASS', 'SETTINGS', 'WAREHOUSE',
+=======
+  'COMPASS', 'SETTINGS',
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
 ]);
 
 function hydrateFromURL(): { spoons: number; surface: string } {
@@ -45,6 +59,7 @@ function hydrateFromURL(): { spoons: number; surface: string } {
 /* v8 ignore start */
 function PHOSShellInner({ skipLoading = false }: { skipLoading?: boolean }) {
   const { spoons, setSpoons, grayRock, currentSurface, setSurface } = useAtmosphere();
+<<<<<<< HEAD
   const { currentDevice, inferredLevel, isSuperposition } = useDevice();
   const [hudOpen, setHudOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(!skipLoading);
@@ -54,6 +69,11 @@ function PHOSShellInner({ skipLoading = false }: { skipLoading?: boolean }) {
     () => getBiologicalTheme(spoons, grayRock, effectiveLevel),
     [spoons, grayRock, effectiveLevel]
   );
+=======
+  const [hudOpen, setHudOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(!skipLoading);
+  const theme = getBiologicalTheme(spoons, grayRock);
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
 
   useEffect(() => {
     if (skipLoading) return;
@@ -61,6 +81,7 @@ function PHOSShellInner({ skipLoading = false }: { skipLoading?: boolean }) {
     return () => clearTimeout(timer);
   }, [skipLoading]);
 
+<<<<<<< HEAD
   const showHelp = useCallback(() => {
     setHelpToast('go <surface> | spoons <0-5> | audio on/off | hud | status | panic | /help');
     setTimeout(() => setHelpToast(''), 5000);
@@ -71,6 +92,8 @@ function PHOSShellInner({ skipLoading = false }: { skipLoading?: boolean }) {
     setTimeout(() => setHelpToast(''), 4000);
   }, [currentSurface, spoons, theme.name]);
 
+=======
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
     if (e.key === 'Escape') {
       setHudOpen(false);
@@ -93,6 +116,7 @@ function PHOSShellInner({ skipLoading = false }: { skipLoading?: boolean }) {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handleKeyDown]);
 
+<<<<<<< HEAD
   useEffect(() => {
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw-hearth.js').catch(() => {});
@@ -105,6 +129,8 @@ function PHOSShellInner({ skipLoading = false }: { skipLoading?: boolean }) {
     listenForOnline();
   }, []);
 
+=======
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   if (spoons === 0 || grayRock) {
     return <TheGuardian />;
   }
@@ -115,6 +141,7 @@ function PHOSShellInner({ skipLoading = false }: { skipLoading?: boolean }) {
     HEARTH: 'Hearth', ARCADE: 'Arcade', ARCHIVE: 'Archive', COMPASS: 'Compass', SETTINGS: 'Settings',
   };
 
+<<<<<<< HEAD
   const isDesktopGreeting = currentSurface === 'GREETING' && theme.name === 'QUANTUM';
 
   const mainContent = isLoading ? (
@@ -170,6 +197,44 @@ function PHOSShellInner({ skipLoading = false }: { skipLoading?: boolean }) {
 
   return (
     <>
+=======
+  if (isLoading) {
+    return (
+      <div className={`h-screen w-screen overflow-hidden flex flex-col transition-all duration-1000 select-none ${theme.wrapper}`}>
+        <div className="flex-1 overflow-y-auto pt-28 pb-12 px-4 flex flex-col items-center justify-start">
+          <div className="mb-10"><PHOSOrb /></div>
+          <div className={`w-full ${theme.container}`}>
+            <div className="space-y-4 w-full">
+              <div className="flex items-center gap-3 mb-2"><div className="animate-pulse bg-white/5 rounded h-4 w-32" /><div className="animate-pulse bg-white/5 rounded h-3 w-16 ml-auto" /></div>
+              <div className="animate-pulse bg-white/5 rounded h-6 w-3/4" />
+              <div className="animate-pulse bg-white/5 rounded h-4 w-full" />
+              <div className="animate-pulse bg-white/5 rounded h-4 w-5/6" />
+              <div className="grid grid-cols-2 gap-3 mt-4">
+                <div className="animate-pulse bg-white/5 rounded h-20" />
+                <div className="animate-pulse bg-white/5 rounded h-20" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className={`h-screen w-screen overflow-hidden flex flex-col transition-all duration-1000 select-none ${theme.wrapper}`}>
+      <style>{`
+        @keyframes biomimetic-breath {
+          0%, 100% { transform: scale(0.96); opacity: 0.8; box-shadow: 0 0 35px rgba(251,146,60,0.15); }
+          50% { transform: scale(1.04); opacity: 1; box-shadow: 0 0 70px rgba(251,146,60,0.5); }
+        }
+        .animate-biomimetic-breath { animation: biomimetic-breath 6s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        @media (prefers-reduced-motion: reduce) {
+          .animate-biomimetic-breath, .animate-pulse, .transition-all { animation: none !important; transition: none !important; }
+        }
+        *:focus-visible { outline: 2px solid rgba(52, 211, 153, 0.6); outline-offset: 2px; }
+      `}</style>
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       <GrantNarrativeOverlay />
 
       <EscapeHatch
@@ -183,6 +248,7 @@ function PHOSShellInner({ skipLoading = false }: { skipLoading?: boolean }) {
         onSetSurface={(s) => { setSurface(s); setHudOpen(false); }}
       />
 
+<<<<<<< HEAD
       <div className={`h-screen w-screen overflow-hidden flex flex-col transition-all duration-1000 select-none ${theme.wrapper}`}>
         <style>{`
           @keyframes biomimetic-breath {
@@ -222,17 +288,40 @@ function PHOSShellInner({ skipLoading = false }: { skipLoading?: boolean }) {
 
       <PWAInstallPrompt />
     </>
+=======
+      <main className="flex-1 overflow-y-auto pt-28 pb-32 px-4 flex flex-col items-center justify-start z-10 relative" aria-live="polite" aria-label={`${surfaceNames[currentSurface] || currentSurface} surface`}>
+        <div className="mb-10 flex flex-col items-center justify-center">
+          <PHOSOrb />
+        </div>
+        <div className={`w-full transition-all duration-700 ${theme.container}`}>
+          <SurfaceErrorBoundary surfaceName={currentSurface}>
+            <SurfaceContent currentSurface={currentSurface} setSurface={setSurface} spoons={spoons} theme={theme} />
+          </SurfaceErrorBoundary>
+        </div>
+      </main>
+
+      <div className="relative z-50 flex justify-center pb-4">
+        <DemoController />
+      </div>
+    </div>
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   );
 }
 
 export default function PHOSShell() {
   const { spoons, surface } = hydrateFromURL();
   return (
+<<<<<<< HEAD
     <DeviceProvider>
       <AtmosphereProvider initialSpoons={spoons} initialSurface={surface}>
         <PHOSShellInner skipLoading={spoons !== 3 || surface !== 'GREETING'} />
       </AtmosphereProvider>
     </DeviceProvider>
+=======
+    <AtmosphereProvider initialSpoons={spoons} initialSurface={surface}>
+      <PHOSShellInner skipLoading={spoons !== 3 || surface !== 'GREETING'} />
+    </AtmosphereProvider>
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   );
 }
 /* v8 ignore stop */

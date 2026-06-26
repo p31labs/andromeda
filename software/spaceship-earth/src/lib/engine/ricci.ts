@@ -1,9 +1,16 @@
 /**
  * @file ricci.ts — P31 Labs Discrete Ricci Flow Math (dRfge)
+<<<<<<< HEAD
  * 
  * Ollivier-Ricci Curvature (κ) calculation for mesh topology.
  * Section 1.2 of Master Doctrine.
  * 
+=======
+ *
+ * Ollivier-Ricci Curvature (κ) calculation for mesh topology.
+ * Section 1.2 of Master Doctrine.
+ *
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
  * Hardened with:
  * - Input validation & clamping
  * - Non‑linear curvature response
@@ -37,17 +44,28 @@ function clamp(value: number, min: number, max: number): number {
 
 /**
  * P31 Labs: Discrete Ricci Flow Math (dRfge)
+<<<<<<< HEAD
  * 
+=======
+ *
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
  * Calculates proxy for Ollivier-Ricci Curvature (κ) used to detect
  * bottlenecks in the peer-to-peer mesh network.
  */
 export class RicciMath {
   /**
    * Calculate a proxy for Ollivier-Ricci Curvature (κ)
+<<<<<<< HEAD
    * 
    * Uses a sigmoid‑inspired response: latency up to 500ms has minor impact,
    * beyond 2000ms rapidly degrades curvature. Noise scales non‑linearly.
    * 
+=======
+   *
+   * Uses a sigmoid‑inspired response: latency up to 500ms has minor impact,
+   * beyond 2000ms rapidly degrades curvature. Noise scales non‑linearly.
+   *
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
    * @param latency - Network latency in ms (clamped 0 … 10000)
    * @param noise - Network noise factor 0 … 1 (clamped)
    * @returns κ value between 0.5 … 1.5
@@ -59,6 +77,7 @@ export class RicciMath {
 
     // Latency penalty: smooth transition, max penalty at 5000ms = 0.5
     const latencyPenalty = 1 - (1 / (1 + Math.pow(l / 800, 2)));
+<<<<<<< HEAD
     
     // Noise penalty: noise^1.5 (more punishing at high noise)
     const noisePenalty = Math.pow(n, 1.5);
@@ -74,18 +93,43 @@ export class RicciMath {
       console.debug(`[Ricci] curvature: l=${l}ms n=${n.toFixed(2)} → κ=${curvature.toFixed(3)}`);
     }
     
+=======
+
+    // Noise penalty: noise^1.5 (more punishing at high noise)
+    const noisePenalty = Math.pow(n, 1.5);
+
+    // Combined friction: weighted sum (latency dominates)
+    const friction = (latencyPenalty * 0.7) + (noisePenalty * 0.3);
+
+    // Base curvature = 1.0, subtract friction, then clamp to [0.5, 1.5]
+    let curvature = 1.0 - friction;
+    curvature = clamp(curvature, 0.5, 1.5);
+
+    if (debugEnabled()) {
+      console.debug(`[Ricci] curvature: l=${l}ms n=${n.toFixed(2)} → κ=${curvature.toFixed(3)}`);
+    }
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     return curvature;
   }
 
   /**
    * Calculate mesh resilience based on active node count.
+<<<<<<< HEAD
    * 
+=======
+   *
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
    * @param activeNodes - Number of active nodes in K4 mesh (must be integer >=0)
    * @returns Resilience description
    */
   static getResilience(activeNodes: number): string {
     let nodes = Math.floor(Math.max(0, activeNodes));
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     if (nodes >= 4) return "100% - ISOSTATIC";
     if (nodes === 3) return "57.7% - STABLE";
     return "DEGRADED";
@@ -94,7 +138,11 @@ export class RicciMath {
   /**
    * Calculate dRfge visual scale factor for 3D rendering.
    * Scale oscillates based on curvature deviation from 1.0.
+<<<<<<< HEAD
    * 
+=======
+   *
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
    * @param curvature - Current κ value (expected 0.5 … 1.5)
    * @returns Scale factor for mesh visualization (0.6 … 1.4)
    */
@@ -107,7 +155,11 @@ export class RicciMath {
   /**
    * Complete Ricci calculation for a given input state.
    * Handles all edge cases and returns safe values.
+<<<<<<< HEAD
    * 
+=======
+   *
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
    * @param input - RicciInput with latency, noise, node count
    * @returns RicciOutput with curvature, resilience, scale
    */
@@ -117,11 +169,19 @@ export class RicciMath {
       noise: typeof input?.noise === 'number' ? input.noise : 0.5,
       activeNodes: typeof input?.activeNodes === 'number' ? Math.floor(input.activeNodes) : 0
     };
+<<<<<<< HEAD
     
     const curvature = this.calculateCurvature(safeInput.latency, safeInput.noise);
     const resilience = this.getResilience(safeInput.activeNodes);
     const scale = this.getScaleFactor(curvature);
     
+=======
+
+    const curvature = this.calculateCurvature(safeInput.latency, safeInput.noise);
+    const resilience = this.getResilience(safeInput.activeNodes);
+    const scale = this.getScaleFactor(curvature);
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     return { curvature, resilience, scale };
   }
 }
@@ -131,6 +191,7 @@ let timeOffset = 0;
 export function getAnimatedCurvature(baseCurvature: number, time: number): number {
   let k = clamp(baseCurvature, 0.5, 1.5);
   let t = (typeof time === 'number' && !isNaN(time)) ? time : 0;
+<<<<<<< HEAD
   
   const oscillation = Math.sin(t * 0.5) * 0.08;
   let result = k + oscillation;
@@ -140,8 +201,33 @@ export function getAnimatedCurvature(baseCurvature: number, time: number): numbe
 
 if (typeof window !== 'undefined') {
   (window as any).__P31_RICCI_DEBUG = {
+=======
+
+  const oscillation = Math.sin(t * 0.5) * 0.08;
+  let result = k + oscillation;
+
+  return clamp(result, 0.5, 1.5);
+}
+
+declare global {
+  interface Window {
+    __P31_RICCI_DEBUG?: {
+      enable: () => void;
+      disable: () => void;
+      status: () => boolean;
+    };
+  }
+}
+
+if (typeof window !== 'undefined') {
+  window.__P31_RICCI_DEBUG = {
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     enable: () => localStorage.setItem(DEBUG_KEY, 'true'),
     disable: () => localStorage.removeItem(DEBUG_KEY),
     status: () => debugEnabled()
   };
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

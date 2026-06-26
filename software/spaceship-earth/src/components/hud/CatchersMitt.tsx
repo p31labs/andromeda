@@ -1,9 +1,16 @@
 /**
  * @file CatchersMitt.tsx — Inbound batching HUD component
+<<<<<<< HEAD
  * 
  * Visualizes buffered signals from the Catcher's Mitt temporal window.
  * Displays gentle pulsing indicator instead of flashing incoming data.
  * 
+=======
+ *
+ * Visualizes buffered signals from the Catcher's Mitt temporal window.
+ * Displays gentle pulsing indicator instead of flashing incoming data.
+ *
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
  * CWP-JITTERBUG-11: The Catcher's Mitt
  */
 import { useEffect, useState } from 'react';
@@ -51,7 +58,11 @@ export function CatchersMitt() {
         zIndex: 100,
         fontFamily: 'monospace',
         fontSize: '12px',
+<<<<<<< HEAD
         color: '#4db8a8',
+=======
+        color: 'var(--color-cyan)',
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         background: 'rgba(5, 5, 11, 0.85)',
         border: '1px solid rgba(77, 184, 168, 0.3)',
         borderRadius: '8px',
@@ -68,8 +79,13 @@ export function CatchersMitt() {
             width: '8px',
             height: '8px',
             borderRadius: '50%',
+<<<<<<< HEAD
             background: pendingCount > 0 ? '#cda852' : '#4db8a8',
             boxShadow: `0 0 ${4 + pendingCount * 2}px ${pendingCount > 0 ? '#cda852' : '#4db8a8'}`,
+=======
+            background: pendingCount > 0 ? 'var(--color-amber)' : 'var(--color-cyan)',
+            boxShadow: `0 0 ${4 + pendingCount * 2}px ${pendingCount > 0 ? 'var(--color-amber)' : 'var(--color-cyan)'}`,
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
             opacity: pendingCount > 0 ? 0.6 + Math.sin(pulsePhase) * 0.4 : 0.8,
           }}
         />
@@ -80,7 +96,11 @@ export function CatchersMitt() {
 
       {/* Buffer count */}
       <div style={{ marginBottom: '4px' }}>
+<<<<<<< HEAD
         <span style={{ color: pendingCount > 0 ? '#cda852' : '#666' }}>
+=======
+        <span style={{ color: pendingCount > 0 ? 'var(--color-amber)' : '#666' }}>
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
           {pendingCount} Signal{pendingCount !== 1 ? 's' : ''} Buffered
         </span>
       </div>
@@ -98,7 +118,11 @@ export function CatchersMitt() {
           background: 'transparent',
           border: '1px solid rgba(77, 184, 168, 0.4)',
           borderRadius: '4px',
+<<<<<<< HEAD
           color: '#4db8a8',
+=======
+          color: 'var(--color-cyan)',
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
           fontSize: '10px',
           padding: '4px 8px',
           cursor: pendingCount > 0 ? 'pointer' : 'default',
@@ -136,4 +160,8 @@ export function CatchersMitt() {
       )}
     </div>
   );
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

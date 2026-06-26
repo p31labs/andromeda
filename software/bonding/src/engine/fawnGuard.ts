@@ -48,4 +48,8 @@ export class FawnGuard {
     cleanText = cleanText.replace(/\b(does that make sense\??)\b/gi, 'Let me know your thoughts.');
     return cleanText;
   }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

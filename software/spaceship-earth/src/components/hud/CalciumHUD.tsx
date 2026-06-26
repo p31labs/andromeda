@@ -17,7 +17,11 @@ export function CalciumHUD() {
         const data = await res.json();
         setCalcium(data.calcium);
         setError(null);
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         // Determine status based on thresholds
         if (data.calcium < 8.0) {
           setStatus('critical');
@@ -69,4 +73,8 @@ export function CalciumHUD() {
       </span>
     </div>
   );
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

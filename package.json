@@ -40,7 +40,14 @@
     "test:e2e:ui": "playwright test --config playwright.config.ts --ui",
     "lighthouse:ci": "lhci autorun",
     "test:all": "pnpm test:unit && pnpm test:e2e",
+<<<<<<< HEAD
     "lint": "echo \"Lint per package: cd software/<project> && pnpm run lint (if defined)\"",
+=======
+    "lint": "eslint . --max-warnings 100",
+    "format": "prettier --check .",
+    "format:fix": "prettier --write .",
+    "typecheck": "tsc --noEmit",
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     "audit": "pnpm audit"
   },
   "devDependencies": {
@@ -52,10 +59,23 @@
     "@testing-library/user-event": "^14.6.1",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+<<<<<<< HEAD
     "@vitejs/plugin-react": "^6.0.2",
     "@vitest/coverage-v8": "^4.1.8",
     "jsdom": "^29.1.1",
     "playwright": "^1.60.0",
+=======
+    "@typescript-eslint/eslint-plugin": "^8.62.0",
+    "@typescript-eslint/parser": "^8.62.0",
+    "@vitejs/plugin-react": "^6.0.2",
+    "@vitest/coverage-v8": "^4.1.8",
+    "eslint": "^10.5.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.6",
+    "jsdom": "^29.1.1",
+    "playwright": "^1.60.0",
+    "prettier": "^3.8.1",
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     "react": "^18",
     "react-dom": "^18",
     "vitest": "^4.1.8"

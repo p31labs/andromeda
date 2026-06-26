@@ -24,7 +24,11 @@ A mobile-first, React-based Progressive Web App (PWA) designed as the central op
 ## 🚀 Quick Start
 
 ### Prerequisites
+<<<<<<< HEAD
 - Node.js 18+ 
+=======
+- Node.js 18+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
 - npm or pnpm
 
 ### Installation
@@ -237,4 +241,8 @@ For support and questions:
 
 ---
 
+<<<<<<< HEAD
 **🔺 Sovereign Command Center** - Your gateway to decentralized, quantum-safe social media management.
+=======
+**🔺 Sovereign Command Center** - Your gateway to decentralized, quantum-safe social media management.
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

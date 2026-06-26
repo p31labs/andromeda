@@ -9,4 +9,8 @@ const nextConfig = {
   },
 }
 
+<<<<<<< HEAD
 module.exports = nextConfig
+=======
+module.exports = nextConfig
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

@@ -81,18 +81,30 @@ export function saveFriends(friends: Friend[]): void {
 
 export function addFriend(did: string, displayName: string): Friend | null {
   const friends = loadFriends();
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   // Check if already exists
   if (friends.some(f => f.did === did)) {
     return null;
   }
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   const friend: Friend = {
     did,
     displayName,
     addedAt: Date.now(),
   };
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   friends.push(friend);
   saveFriends(friends);
   return friend;
@@ -129,10 +141,17 @@ function encodeBase64Url(str: string): string {
   // Use TextEncoder for proper UTF-8 encoding
   const encoder = new TextEncoder();
   const data = encoder.encode(str);
+<<<<<<< HEAD
   
   // Convert to base64
   let base64 = btoa(String.fromCharCode(...data));
   
+=======
+
+  // Convert to base64
+  let base64 = btoa(String.fromCharCode(...data));
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   // Make URL-safe and remove padding
   return base64
     .replace(/\+/g, '-')
@@ -149,13 +168,21 @@ function decodeBase64Url(str: string): string {
   while (base64.length % 4) {
     base64 += '=';
   }
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   const decoded = atob(base64);
   const bytes = new Uint8Array(decoded.length);
   for (let i = 0; i < decoded.length; i++) {
     bytes[i] = decoded.charCodeAt(i);
   }
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   const decoder = new TextDecoder('utf-8');
   return decoder.decode(bytes);
 }
@@ -176,7 +203,11 @@ export function generateUCANToken(
     exp: Date.now() + expiresInMs,
     cat: cartridgeId,
   };
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   // Use proper Base64Url encoding (handles Unicode, replaces +/ with -_)
   const token: UCANToken = {
     id: crypto.randomUUID(),
@@ -187,11 +218,19 @@ export function generateUCANToken(
     expiresAt: Date.now() + expiresInMs,
     token: encodeBase64Url(JSON.stringify(payload)),
   };
+<<<<<<< HEAD
   
   const tokens = loadUCANTokens();
   tokens.push(token);
   saveUCANTokens(tokens);
   
+=======
+
+  const tokens = loadUCANTokens();
+  tokens.push(token);
+  saveUCANTokens(tokens);
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   return token;
 }
 
@@ -202,6 +241,7 @@ export function verifyUCANToken(tokenString: string): UCANToken | null {
   try {
     const decoded = JSON.parse(decodeBase64Url(tokenString));
     const tokens = loadUCANTokens();
+<<<<<<< HEAD
     
     // Find matching token
     const token = tokens.find(t => 
@@ -209,6 +249,15 @@ export function verifyUCANToken(tokenString: string): UCANToken | null {
       t.expiresAt > Date.now()
     );
     
+=======
+
+    // Find matching token
+    const token = tokens.find(t =>
+      t.token === tokenString &&
+      t.expiresAt > Date.now()
+    );
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     return token || null;
   } catch {
     return null;

@@ -56,7 +56,11 @@ interface TelemetryMessage {
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     // Health check endpoint
     if (url.pathname === '/health') {
       return new Response(JSON.stringify({
@@ -69,27 +73,46 @@ export default {
         headers: { 'Content-Type': 'application/json' }
       });
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     // Telemetry WebSocket endpoint for GlassBox component
     if (url.pathname === '/telemetry') {
       return handleTelemetryEndpoint(request);
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     // WebSocket upgrade required
     const upgradeHeader = request.headers.get('Upgrade');
     if (upgradeHeader !== 'websocket') {
       return new Response(JSON.stringify({
         error: 'Expected WebSocket Upgrade',
         usage: 'Connect to /ws with WebSocket protocol'
+<<<<<<< HEAD
       }), { 
+=======
+      }), {
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         status: 400,
         headers: { 'Content-Type': 'application/json' }
       });
     }
+<<<<<<< HEAD
     
     // Create WebSocket pair
     const [client, server] = Object.values(new WebSocketPair()) as [WebSocket, WebSocket];
     
+=======
+
+    // Create WebSocket pair
+    const [client, server] = Object.values(new WebSocketPair()) as [WebSocket, WebSocket];
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     // Initialize session state
     const session: PQCSession = {
       clientId: null,
@@ -98,9 +121,15 @@ export default {
       established: false,
       createdAt: Date.now()
     };
+<<<<<<< HEAD
     
     server.accept();
     
+=======
+
+    server.accept();
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     // Handle messages
     server.addEventListener('message', async (event: MessageEvent) => {
       try {
@@ -114,7 +143,11 @@ export default {
         }));
       }
     });
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     // Handle close
     server.addEventListener('close', async () => {
       if (session.clientId) {
@@ -122,7 +155,11 @@ export default {
         await env.GLASS_BOX_KV.delete(`session:${session.clientId}`);
       }
     });
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     return new Response(null, { status: 101, webSocket: client });
   }
 };
@@ -136,12 +173,20 @@ async function handleMessage(
   session: PQCSession,
   env: Env
 ): Promise<void> {
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   switch (data.type) {
     case 'pqc_hello':
       // Client capability announcement
       session.clientId = data.clientId || `anon-${Date.now()}`;
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       ws.send(JSON.stringify({
         type: 'pqc_capabilities',
         supported: ['ML-KEM-768', 'AES-256-GCM'],
@@ -150,7 +195,11 @@ async function handleMessage(
         message: 'Ready for ML-KEM-768 encapsulation key'
       }));
       break;
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     case 'ml_kem_768_encapsulation_key':
       // Client sends public key, server encapsulates
       if (!data.publicKey) {
@@ -160,11 +209,19 @@ async function handleMessage(
         }));
         return;
       }
+<<<<<<< HEAD
       
       try {
         // Decode client public key (1184 bytes for ML-KEM-768)
         session.clientPublicKey = base64ToBytes(data.publicKey);
         
+=======
+
+      try {
+        // Decode client public key (1184 bytes for ML-KEM-768)
+        session.clientPublicKey = base64ToBytes(data.publicKey);
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         // Validate key length
         if (session.clientPublicKey.length !== 1184) {
           ws.send(JSON.stringify({
@@ -173,16 +230,28 @@ async function handleMessage(
           }));
           return;
         }
+<<<<<<< HEAD
         
         // In production, this would use actual ML-KEM-768 encapsulation
         // For now, we simulate the encapsulation process
         // const { cipherText, sharedSecret } = ml_kem768.encapsulate(session.clientPublicKey);
         
+=======
+
+        // In production, this would use actual ML-KEM-768 encapsulation
+        // For now, we simulate the encapsulation process
+        // const { cipherText, sharedSecret } = ml_kem768.encapsulate(session.clientPublicKey);
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         // Simulated encapsulation (32-byte shared secret, 1088-byte ciphertext)
         session.sharedSecret = crypto.getRandomValues(new Uint8Array(32));
         const cipherText = crypto.getRandomValues(new Uint8Array(1088));
         session.established = true;
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         // Store session in KV with 5-minute TTL
         await env.GLASS_BOX_KV.put(
           `session:${session.clientId}`,
@@ -194,7 +263,11 @@ async function handleMessage(
           }),
           { expirationTtl: 300 }
         );
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         // Send ciphertext to client
         ws.send(JSON.stringify({
           type: 'ml_kem_768_ciphertext',
@@ -208,10 +281,17 @@ async function handleMessage(
           standard: 'NIST FIPS 203',
           message: 'PQC session established. All subsequent traffic encrypted with AES-256-GCM.'
         }));
+<<<<<<< HEAD
         
         // Start telemetry stream
         startTelemetryStream(ws, session);
         
+=======
+
+        // Start telemetry stream
+        startTelemetryStream(ws, session);
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       } catch (err) {
         ws.send(JSON.stringify({
           type: 'error',
@@ -219,7 +299,11 @@ async function handleMessage(
         }));
       }
       break;
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     case 'encrypted_request':
       // Handle encrypted client requests after PQC establishment
       if (!session.established) {
@@ -229,11 +313,19 @@ async function handleMessage(
         }));
         return;
       }
+<<<<<<< HEAD
       
       // Decrypt and handle request (implementation depends on cipher)
       handleSecureMessage(data, ws, session);
       break;
       
+=======
+
+      // Decrypt and handle request (implementation depends on cipher)
+      handleSecureMessage(data, ws, session);
+      break;
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     case 'ping':
       ws.send(JSON.stringify({
         type: 'pong',
@@ -241,7 +333,11 @@ async function handleMessage(
         sessionEstablished: session.established
       }));
       break;
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     default:
       if (!session.established && data.type !== 'pqc_hello') {
         ws.send(JSON.stringify({
@@ -250,7 +346,11 @@ async function handleMessage(
         }));
         return;
       }
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       ws.send(JSON.stringify({
         type: 'error',
         message: `Unknown message type: ${data.type}`
@@ -268,7 +368,11 @@ function handleSecureMessage(
 ): void {
   // In production: decrypt data.payload using derived shared secret
   // For now, echo back acknowledgment
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   ws.send(JSON.stringify({
     type: 'secure_ack',
     received: data.type,
@@ -304,18 +408,30 @@ function startTelemetryStream(ws: WebSocket, session: PQCSession): void {
       timestamp: Date.now()
     }
   ];
+<<<<<<< HEAD
   
   initialTelemetry.forEach(msg => {
     ws.send(JSON.stringify(msg));
   });
   
+=======
+
+  initialTelemetry.forEach(msg => {
+    ws.send(JSON.stringify(msg));
+  });
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   // Periodic telemetry updates
   const intervalId = setInterval(() => {
     if (ws.readyState !== WS_READY_STATE_OPEN) {
       clearInterval(intervalId);
       return;
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     // Generate realistic-looking telemetry
     const messages: TelemetryMessage[] = [
       {
@@ -333,7 +449,11 @@ function startTelemetryStream(ws: WebSocket, session: PQCSession): void {
         timestamp: Date.now()
       }
     ];
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     // Randomly include audit events
     if (Math.random() < 0.1) {
       const auditEvents = [
@@ -350,7 +470,11 @@ function startTelemetryStream(ws: WebSocket, session: PQCSession): void {
         timestamp: Date.now()
       }));
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     messages.forEach(msg => ws.send(JSON.stringify(msg)));
   }, 5000);
 }
@@ -397,7 +521,11 @@ function handleTelemetryEndpoint(request: Request): Response {
     return new Response(JSON.stringify({
       error: 'Expected WebSocket Upgrade',
       usage: 'Connect to /telemetry with WebSocket protocol'
+<<<<<<< HEAD
     }), { 
+=======
+    }), {
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       status: 400,
       headers: { 'Content-Type': 'application/json' }
     });

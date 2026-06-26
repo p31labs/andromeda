@@ -10,6 +10,10 @@
     "verify": "node ../../../scripts/verify-monetary-surface.mjs"
   },
   "devDependencies": {
+<<<<<<< HEAD
+=======
+    "@cloudflare/workers-types": "^4.20260621.1",
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     "@vitest/coverage-v8": "^4.1.2",
     "typescript": "^6.0.2",
     "vitest": "^4.1.2",

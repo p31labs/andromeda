@@ -59,5 +59,22 @@
     "artifacts": [
       "software/packages/k4-mesh-core"
     ]
+<<<<<<< HEAD
+=======
+  },
+  "ui_ux_drift": {
+    "weight": 1.0,
+    "artifacts": [
+      "software/bonding",
+      "software/frontend",
+      "software/spaceship-earth",
+      "software/p31ca",
+      "software/sovereign-command-center",
+      "software/spoon-calculator",
+      "software/p31-hearing-ops",
+      "software/p31-delta-hiring",
+      "software/packages/node-zero/pwa"
+    ]
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   }
 }

@@ -9,7 +9,11 @@ export function useLit() {
 
   useEffect(() => {
     let client = null;
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     async function initLit() {
       try {
         setLitStatus('Connecting...');
@@ -18,7 +22,11 @@ export function useLit() {
           litNetwork: LIT_NETWORK.DatilDev,
           debug: false
         });
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         await client.connect();
         setLitClient(client);
         setLitStatus('Connected');

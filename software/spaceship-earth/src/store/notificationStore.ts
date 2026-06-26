@@ -1,9 +1,16 @@
 /**
  * @file notificationStore.ts — Catcher's Mitt Zustand store
+<<<<<<< HEAD
  * 
  * Temporal batching window (60s) for inbound mesh network data and UI notifications.
  * Flattens endocrinological curve, prevents sensory overwhelm.
  * 
+=======
+ *
+ * Temporal batching window (60s) for inbound mesh network data and UI notifications.
+ * Flattens endocrinological curve, prevents sensory overwhelm.
+ *
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
  * CWP-JITTERBUG-11: The Catcher's Mitt
  */
 import { create } from 'zustand';
@@ -20,16 +27,28 @@ interface NotificationState {
   // Buffer state
   pendingQueue: BufferedSignal[];
   activeDisplay: BufferedSignal[];
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   // Timing control
   flushIntervalMs: number;
   lastFlush: number;
   isManualOverride: boolean;
+<<<<<<< HEAD
   
   // Counters
   totalReceived: number;
   totalFlushed: number;
   
+=======
+
+  // Counters
+  totalReceived: number;
+  totalFlushed: number;
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   // Actions
   addSignal: (signal: Omit<BufferedSignal, 'id' | 'timestamp'>) => void;
   flushBuffer: () => void;
@@ -48,6 +67,7 @@ const generateId = () => Math.random().toString(36).slice(2, 11);
 export const useNotificationStore = create<NotificationState>((set, get) => ({
   pendingQueue: [],
   activeDisplay: [],
+<<<<<<< HEAD
   
   flushIntervalMs: 60000, // 60 seconds
   lastFlush: Date.now(),
@@ -56,23 +76,45 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
   totalReceived: 0,
   totalFlushed: 0,
   
+=======
+
+  flushIntervalMs: 60000, // 60 seconds
+  lastFlush: Date.now(),
+  isManualOverride: false,
+
+  totalReceived: 0,
+  totalFlushed: 0,
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   addSignal: (signal) => {
     const newSignal: BufferedSignal = {
       ...signal,
       id: generateId(),
       timestamp: Date.now(),
     };
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     set((state) => ({
       pendingQueue: [...state.pendingQueue, newSignal],
       totalReceived: state.totalReceived + 1,
     }));
   },
+<<<<<<< HEAD
   
   flushBuffer: () => {
     const { pendingQueue, activeDisplay } = get();
     const now = Date.now();
     
+=======
+
+  flushBuffer: () => {
+    const { pendingQueue, activeDisplay } = get();
+    const now = Date.now();
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     // Move all pending to active display
     set({
       pendingQueue: [],
@@ -82,21 +124,33 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
       isManualOverride: false,
     });
   },
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   setManualOverride: (enabled) => {
     if (enabled) {
       get().flushBuffer();
     }
     set({ isManualOverride: enabled });
   },
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   clearAll: () => {
     set({
       pendingQueue: [],
       activeDisplay: [],
     });
   },
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   getPendingCount: () => get().pendingQueue.length,
 }));
 
@@ -108,7 +162,11 @@ let flushIntervalId: ReturnType<typeof setInterval> | null = null;
 
 export function startCatchersMittTimer() {
   if (flushIntervalId) return;
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   const store = useNotificationStore.getState();
   flushIntervalId = setInterval(() => {
     const { pendingQueue, isManualOverride } = useNotificationStore.getState();
@@ -124,4 +182,8 @@ export function stopCatchersMittTimer() {
     clearInterval(flushIntervalId);
     flushIntervalId = null;
   }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

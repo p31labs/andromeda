@@ -272,31 +272,54 @@
   <div class="container">
     <h1>Tune The Engine</h1>
     <p class="subtitle">Find the missing frequency</p>
+<<<<<<< HEAD
     
     <div class="frequency-display" id="frequencyDisplay">172.35 Hz</div>
     
+=======
+
+    <div class="frequency-display" id="frequencyDisplay">172.35 Hz</div>
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     <div class="dial-container">
       <div class="dial-labels">
         <span>100 Hz</span>
         <span>250 Hz</span>
       </div>
       <div class="sweet-spot-marker"></div>
+<<<<<<< HEAD
       <input 
         type="range" 
         id="dial" 
         min="100" 
         max="250" 
         step="0.1" 
+=======
+      <input
+        type="range"
+        id="dial"
+        min="100"
+        max="250"
+        step="0.1"
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         value="175"
         aria-label="Frequency dial from 100 to 250 Hz"
       >
     </div>
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     <p class="hint">
       Drag the dial until you hear the heartbeat.<br>
       The screen will glow green when you find it.
     </p>
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     <div class="success-message" id="successMessage">
       <h2>🎉 Engine Tuned!</h2>
       <p>You found 172.35 Hz — the Larmor frequency!</p>
@@ -338,13 +361,20 @@
     // Initialize audio on user interaction
     function initAudio() {
       if (audioCtx) return;
+<<<<<<< HEAD
       
       audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       
+=======
+
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       // Main oscillator for sine wave
       oscillator = audioCtx.createOscillator();
       oscillator.type = 'sine';
       oscillator.frequency.value = TARGET_FREQUENCY;
+<<<<<<< HEAD
       
       gainNode = audioCtx.createGain();
       gainNode.gain.value = 0;
@@ -353,6 +383,16 @@
       gainNode.connect(audioCtx.destination);
       oscillator.start();
       
+=======
+
+      gainNode = audioCtx.createGain();
+      gainNode.gain.value = 0;
+
+      oscillator.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+      oscillator.start();
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       // Create noise for static effect
       createNoise();
     }
@@ -361,6 +401,7 @@
       const bufferSize = 2 * audioCtx.sampleRate;
       const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
       const output = noiseBuffer.getChannelData(0);
+<<<<<<< HEAD
       
       for (let i = 0; i < bufferSize; i++) {
         output[i] = Math.random() * 2 - 1;
@@ -373,12 +414,30 @@
       noiseGain = audioCtx.createGain();
       noiseGain.gain.value = 0;
       
+=======
+
+      for (let i = 0; i < bufferSize; i++) {
+        output[i] = Math.random() * 2 - 1;
+      }
+
+      noiseNode = audioCtx.createBufferSource();
+      noiseNode.buffer = noiseBuffer;
+      noiseNode.loop = true;
+
+      noiseGain = audioCtx.createGain();
+      noiseGain.gain.value = 0;
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       // Add filter for more pleasant static
       const filter = audioCtx.createBiquadFilter();
       filter.type = 'bandpass';
       filter.frequency.value = 1000;
       filter.Q.value = 0.5;
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       noiseNode.connect(filter);
       filter.connect(noiseGain);
       noiseGain.connect(audioCtx.destination);
@@ -387,6 +446,7 @@
 
     function playHeartbeat() {
       if (heartbeatOsc) return;
+<<<<<<< HEAD
       
       heartbeatOsc = audioCtx.createOscillator();
       heartbeatOsc.type = 'sine';
@@ -399,12 +459,30 @@
       heartbeatGain.connect(audioCtx.destination);
       heartbeatOsc.start();
       
+=======
+
+      heartbeatOsc = audioCtx.createOscillator();
+      heartbeatOsc.type = 'sine';
+      heartbeatOsc.frequency.value = 60; // Low frequency for heartbeat
+
+      heartbeatGain = audioCtx.createGain();
+      heartbeatGain.gain.value = 0;
+
+      heartbeatOsc.connect(heartbeatGain);
+      heartbeatGain.connect(audioCtx.destination);
+      heartbeatOsc.start();
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       // Create heartbeat pattern
       heartbeatGain.gain.setValueAtTime(0.4, audioCtx.currentTime);
       heartbeatGain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
       heartbeatGain.gain.setValueAtTime(0.4, audioCtx.currentTime + 0.3);
       heartbeatGain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.45);
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       // Loop the heartbeat
       setInterval(() => {
         if (hasWon && heartbeatGain) {
@@ -418,29 +496,50 @@
 
     function updateAudio(frequency) {
       if (!audioCtx) return;
+<<<<<<< HEAD
       
       const inZone = Math.abs(frequency - TARGET_FREQUENCY) <= TOLERANCE;
       
+=======
+
+      const inZone = Math.abs(frequency - TARGET_FREQUENCY) <= TOLERANCE;
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       if (inZone && !hasWon) {
         // Sweet spot - play sine wave and heartbeat
         hasWon = true;
         successMessage.classList.add('show');
         body.classList.add('success-glow');
         frequencyDisplay.classList.add('in-zone');
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         // Fade out noise
         if (noiseGain) {
           noiseGain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.1);
         }
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         // Play sine wave
         if (gainNode) {
           gainNode.gain.setTargetAtTime(0.3, audioCtx.currentTime, 0.1);
         }
+<<<<<<< HEAD
         
         // Play heartbeat
         playHeartbeat();
         
+=======
+
+        // Play heartbeat
+        playHeartbeat();
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         // Vibrate if supported
         if (navigator.vibrate) {
           navigator.vibrate([200, 100, 200]);
@@ -450,7 +549,11 @@
         if (gainNode) {
           gainNode.gain.setTargetAtTime(0, audioCtx.currentTime, 0.1);
         }
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         if (noiseGain) {
           noiseGain.gain.setTargetAtTime(0.15, audioCtx.currentTime, 0.05);
         }

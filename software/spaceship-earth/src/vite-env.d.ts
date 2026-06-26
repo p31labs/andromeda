@@ -11,4 +11,8 @@ declare module 'virtual:pwa-register/react' {
     offlineReady: [boolean, (value?: boolean) => void];
     registrationError: [Error | null, (error: Error | null) => void];
   };
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

@@ -6,11 +6,19 @@
   <meta name="theme-color" content="#0f1115">
   <title>P31 Stylebook · Welcome</title>
   <meta name="description" content="The definitive design system for p31ca.org — 6 themes, smart adaptive engine, fluid motion, complete component library.">
+<<<<<<< HEAD
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   
+=======
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   <link rel="stylesheet" href="/p31-style.css">
   <link rel="stylesheet" href="/lib/p31-fluid.css">
   <link rel="stylesheet" href="/stylebook/_chrome.css">
@@ -291,9 +299,15 @@
   <script type="module">
     import { renderShell, code, callout, section } from '/stylebook/_chrome.js';
     import { P31ThemeController, P31_THEMES } from '/lib/p31-theme-engine.mjs';
+<<<<<<< HEAD
     
     window.p31Theme = new P31ThemeController({ defaultTheme: 'hub' });
     
+=======
+
+    window.p31Theme = new P31ThemeController({ defaultTheme: 'hub' });
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     const themeStrip = Object.values(P31_THEMES).map(t => `
       <div class="theme-chip" data-theme-id="${t.id}" onclick="window.p31Theme.setTheme('${t.id}')">
         <div class="theme-chip-preview" style="background: linear-gradient(135deg, ${t.colors.void}, ${t.colors.primary || t.colors.teal}); border: 1px solid ${t.colors.surface};"></div>
@@ -301,7 +315,11 @@
         <div class="theme-chip-scheme">${t.scheme}</div>
       </div>
     `).join('');
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     const content = `
       <div class="home-hero">
         <div class="home-hero-inner">
@@ -323,7 +341,11 @@
               ⏣ Open playground
             </a>
           </div>
+<<<<<<< HEAD
           
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
           <div class="home-stats">
             <div>
               <div class="home-stat-num">32</div>
@@ -344,7 +366,11 @@
           </div>
         </div>
       </div>
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">Try it now</div>
@@ -355,13 +381,21 @@
         <div class="theme-strip">${themeStrip}</div>
         ${callout('info', 'Tip', 'Press <code>T</code> anywhere to cycle themes, <code>M</code> for modes, or <code>⌘K</code> to search.')}
       </section>
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">Explore</div>
           <h2 class="sb-h2">Start anywhere</h2>
         </div>
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         <div class="feature-grid">
           <a href="/stylebook/principles.html" class="feature-card">
             <div class="feature-icon">◈</div>
@@ -369,35 +403,55 @@
             <div class="feature-desc">The why behind every decision. Gray Rock, fluidity, dignity, autonomy.</div>
             <div class="feature-arrow">Read principles</div>
           </a>
+<<<<<<< HEAD
           
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
           <a href="/stylebook/color.html" class="feature-card">
             <div class="feature-icon">●</div>
             <div class="feature-title">Color</div>
             <div class="feature-desc">Living tokens that breathe with theme and mode. WCAG-compliant by default.</div>
             <div class="feature-arrow">Browse palette</div>
           </a>
+<<<<<<< HEAD
           
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
           <a href="/stylebook/typography.html" class="feature-card">
             <div class="feature-icon">A</div>
             <div class="feature-title">Typography</div>
             <div class="feature-desc">Atkinson Hyperlegible + JetBrains Mono. Fluid scale that responds to viewport.</div>
             <div class="feature-arrow">View type system</div>
           </a>
+<<<<<<< HEAD
           
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
           <a href="/stylebook/motion.html" class="feature-card">
             <div class="feature-icon">↝</div>
             <div class="feature-title">Motion</div>
             <div class="feature-desc">8 easing curves, 6 animation presets. Respects reduced motion preferences.</div>
             <div class="feature-arrow">Explore motion</div>
           </a>
+<<<<<<< HEAD
           
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
           <a href="/stylebook/buttons.html" class="feature-card">
             <div class="feature-icon">⊟</div>
             <div class="feature-title">Components</div>
             <div class="feature-desc">Buttons, cards, forms, navigation. Every state, every theme, every mode.</div>
             <div class="feature-arrow">Browse components</div>
           </a>
+<<<<<<< HEAD
           
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
           <a href="/stylebook/playground.html" class="feature-card">
             <div class="feature-icon">⏣</div>
             <div class="feature-title">Playground</div>
@@ -406,7 +460,11 @@
           </a>
         </div>
       </section>
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">Guidelines</div>
@@ -414,7 +472,11 @@
           <p class="sb-text">A design system isn't just colors and components. The site map, navigation IA,
           accessibility floor, SEO contract, and voice — all canonical, all verified, all here.</p>
         </div>
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         <div class="feature-grid">
           <a href="/stylebook/sitemap.html" class="feature-card">
             <div class="feature-icon">⊞</div>
@@ -422,35 +484,55 @@
             <div class="feature-desc">The complete canonical URL tree across the P31 ecosystem. 4 domains, 4 worker fleets, every public route.</div>
             <div class="feature-arrow">View map</div>
           </a>
+<<<<<<< HEAD
           
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
           <a href="/stylebook/routing.html" class="feature-card">
             <div class="feature-icon">↹</div>
             <div class="feature-title">Routing &amp; IA</div>
             <div class="feature-desc">Three-tier navigation, URL grammar, deep-linking conventions, mobile patterns.</div>
             <div class="feature-arrow">Read patterns</div>
           </a>
+<<<<<<< HEAD
           
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
           <a href="/stylebook/accessibility.html" class="feature-card">
             <div class="feature-icon">◉</div>
             <div class="feature-title">Accessibility</div>
             <div class="feature-desc">WCAG 2.1 AA checklist, keyboard map, ARIA usage, focus management, cognitive layer.</div>
             <div class="feature-arrow">See requirements</div>
           </a>
+<<<<<<< HEAD
           
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
           <a href="/stylebook/metadata.html" class="feature-card">
             <div class="feature-icon">⌗</div>
             <div class="feature-title">SEO &amp; metadata</div>
             <div class="feature-desc">Required head tags, OpenGraph, JSON-LD types, robots.txt, sitemap.xml.</div>
             <div class="feature-arrow">View bar</div>
           </a>
+<<<<<<< HEAD
           
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
           <a href="/stylebook/performance.html" class="feature-card">
             <div class="feature-icon">⏵</div>
             <div class="feature-title">Performance</div>
             <div class="feature-desc">Core Web Vitals targets, asset budgets (≤350KB), loading strategy, image hierarchy.</div>
             <div class="feature-arrow">See budgets</div>
           </a>
+<<<<<<< HEAD
           
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
           <a href="/stylebook/voice.html" class="feature-card">
             <div class="feature-icon">"</div>
             <div class="feature-title">Voice &amp; tone</div>
@@ -459,7 +541,11 @@
           </a>
         </div>
       </section>
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">Get started</div>
@@ -467,7 +553,11 @@
           <p class="sb-text">The entire system loads with three lines. Zero build step. No npm install.
           Everything cascades through CSS custom properties.</p>
         </div>
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         ${code(`<!-- Base tokens (canonical from p31-universal-canon.json) -->
 <link rel="stylesheet" href="/p31-style.css">
 
@@ -479,17 +569,29 @@
   import { P31ThemeController } from '/lib/p31-theme-engine.mjs';
   window.p31Theme = new P31ThemeController({ defaultTheme: 'hub' });
 <\/script>`, 'html', 'Setup')}
+<<<<<<< HEAD
         
         ${callout('success', 'That\'s it.', 'Every page now has access to all 120+ tokens, 6 themes, and the fluid motion library. Add <code>data-p31-appearance="hub"</code> to your <code>&lt;html&gt;</code> tag to opt into theme synchronization.')}
       </section>
     `;
     
+=======
+
+        ${callout('success', 'That\'s it.', 'Every page now has access to all 120+ tokens, 6 themes, and the fluid motion library. Add <code>data-p31-appearance="hub"</code> to your <code>&lt;html&gt;</code> tag to opt into theme synchronization.')}
+      </section>
+    `;
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     renderShell({
       activeId: 'home',
       title: null,
       content
     });
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     // Update active theme chip on theme change
     function updateActiveChip() {
       const current = window.p31Theme.state.theme;

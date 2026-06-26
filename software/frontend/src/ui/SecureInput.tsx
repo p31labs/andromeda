@@ -1,10 +1,17 @@
 /**
  * P31 Secure Input — Fawn Guard Integrated Text Input
  * =====================================================
+<<<<<<< HEAD
  * 
  * Wrapper component for text input that integrates Fawn Guard detection.
  * Monitors outbound text and triggers the interceptor when patterns detected.
  * 
+=======
+ *
+ * Wrapper component for text input that integrates Fawn Guard detection.
+ * Monitors outbound text and triggers the interceptor when patterns detected.
+ *
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
  * Author: P31 Labs
  * License: MIT
  */

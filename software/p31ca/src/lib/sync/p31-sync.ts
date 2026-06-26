@@ -250,4 +250,8 @@ export function startPeriodicSync(deviceId: string, intervalMs = 600000): () => 
   }, intervalMs);
 
   return () => clearInterval(interval);
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

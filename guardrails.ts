@@ -1,10 +1,14 @@
 /**
  * P31 Orchestrator Guardrails System
+<<<<<<< HEAD
  * SOURCE OF TRUTH — import from guardrails.ts, not guardrails.js
+=======
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
  * 5-level protection with hysteresis (2 consecutive readings to change)
  * Integrated with action-registry for safety gating
  */
 
+<<<<<<< HEAD
 export const S_MAX = 20
 export const FRICTION_COEFFICIENT = 1.5
 export const CARE_SCORE_MODIFIER = 0.3
@@ -76,13 +80,25 @@ export interface GuardrailState {
   currentLevel: number
   consecutiveReadings: number
   lastSpoonCount: number
+=======
+import { GUARDRAIL_LEVELS } from './guardrails.js';
+
+export interface GuardrailState {
+  currentLevel: number;
+  consecutiveReadings: number;
+  lastSpoonCount: number;
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
 }
 
 const DEFAULT_STATE: GuardrailState = {
   currentLevel: 4,
   consecutiveReadings: 1,
   lastSpoonCount: 20,
+<<<<<<< HEAD
 }
+=======
+};
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
 
 /**
  * Check and update guardrail level with hysteresis

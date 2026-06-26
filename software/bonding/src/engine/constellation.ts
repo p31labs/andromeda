@@ -23,13 +23,21 @@ export interface ConstellationLine {
   strength: number;
 }
 
+<<<<<<< HEAD
 const ELEMENT_COLORS: Record<string, string> = { H: '#FFFFFF', O: '#FF0000', C: '#808080', N: '#0000FF', P: '#FFA500', Na: '#9370DB', Ca: '#E6E6FA', Cl: '#00FF00', S: '#FFFF00', Fe: '#A52A2A' };
+=======
+const ELEMENT_COLORS: Record<string, string> = { H: 'var(--color-surface)', O: '#FF0000', C: '#808080', N: '#0000FF', P: '#FFA500', Na: '#9370DB', Ca: '#E6E6FA', Cl: '#00FF00', S: '#FFFF00', Fe: '#A52A2A' };
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
 
 export function generateConstellation(
   gallery: Array<{ id: string; formula: string; name: string; love: number; atoms: number; completedAt: string; isDiscovery: boolean; elements: Record<string, number>; }>
 ): { stars: Star[]; lines: ConstellationLine[] } {
   if (gallery.length === 0) return { stars: [], lines: [] };
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   const sortedGallery = [...gallery].sort((a,b) => new Date(a.completedAt).getTime() - new Date(b.completedAt).getTime());
   const firstCreated = new Date(sortedGallery[0]!.completedAt).getTime();
   const lastCreated = new Date(sortedGallery[sortedGallery.length - 1]!.completedAt).getTime();
@@ -48,7 +56,11 @@ export function generateConstellation(
       isDiscovery: entry.isDiscovery,
     };
   });
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   const lines = findConstellationLines(stars, gallery);
   return { stars, lines };
 }
@@ -70,7 +82,11 @@ export function calculateBrightness(love: number): number {
 
 export function getDominantColor(elements: Record<string, number>): string {
   const dominant = Object.entries(elements).sort((a, b) => b[1] - a[1])[0];
+<<<<<<< HEAD
   return ELEMENT_COLORS[dominant?.[0] ?? 'C'] ?? '#FFFFFF';
+=======
+  return ELEMENT_COLORS[dominant?.[0] ?? 'C'] ?? 'var(--color-surface)';
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
 }
 
 export function findConstellationLines(
@@ -86,7 +102,11 @@ export function findConstellationLines(
             const starB = stars[j]!;
             const elementsA = elementMap.get(starA.id) ?? new Set();
             const elementsB = elementMap.get(starB.id) ?? new Set();
+<<<<<<< HEAD
             
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
             const intersection = new Set(Array.from(elementsA).filter(x => elementsB.has(x)));
             if (intersection.size >= 2) {
                 lines.push({

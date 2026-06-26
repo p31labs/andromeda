@@ -24,6 +24,22 @@ export default {
     const url = new URL(request.url);
     const path = url.pathname;
 
+<<<<<<< HEAD
+=======
+    // Health check — no auth required
+    if (path === '/health' && request.method === 'GET') {
+      return new Response(JSON.stringify({
+        status: 'ok',
+        service: 'p31-sync',
+        version: '0.1.0',
+        timestamp: new Date().toISOString(),
+      }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },
+      });
+    }
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     const authHeader = request.headers.get('Authorization');
     if (!authHeader || !(await validateHMAC(authHeader, env.P31_SYNC_SECRET))) {
       return new Response('Unauthorized', { status: 401, headers: CORS_HEADERS });

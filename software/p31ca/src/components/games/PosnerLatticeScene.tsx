@@ -7,14 +7,24 @@ import * as THREE from 'three';
  * Decoherence drives jitter amplitude and emissive color (cyan → amber → coral).
  * Listens for 'p31:freezeBreakComplete' to reset decoherence to 0.
  */
+<<<<<<< HEAD
 export function PosnerLatticeScene({ 
   initialDecoherence = 0.5, 
   particleCount = 3000 
+=======
+export function PosnerLatticeScene({
+  initialDecoherence = 0.5,
+  particleCount = 3000
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
 }) {
   const meshRef = useRef<THREE.InstancedMesh>(null);
   const dummy = useRef(new THREE.Object3D()).current;
   const [decoherence, setDecoherence] = useState(initialDecoherence);
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   // Geometry + material memoized
   const geometry = useMemo(() => new THREE.SphereGeometry(0.04, 8, 8), []);
   const material = useMemo(() => new THREE.MeshPhysicalMaterial({
@@ -27,7 +37,11 @@ export function PosnerLatticeScene({
     metalness: 0.2,
     clearcoat: 0.5,
   }), []);
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   // Cleanup geometries and materials on unmount
   useEffect(() => {
     return () => {
@@ -60,6 +74,7 @@ export function PosnerLatticeScene({
 
   useFrame(() => {
     if (!meshRef.current) return;
+<<<<<<< HEAD
     
     const mesh = meshRef.current;
     const time = performance.now() / 1000;
@@ -69,6 +84,17 @@ export function PosnerLatticeScene({
     const hue = Math.max(0.05, 0.5 - decoherence * 0.5);
     mat.emissive.setHSL(hue, 0.9, 0.6);
     
+=======
+
+    const mesh = meshRef.current;
+    const time = performance.now() / 1000;
+    const mat = mesh.material as THREE.MeshPhysicalMaterial;
+
+    // Emissive hue: cyan (~0.5) → amber (~0.12) → coral (~0.05)
+    const hue = Math.max(0.05, 0.5 - decoherence * 0.5);
+    mat.emissive.setHSL(hue, 0.9, 0.6);
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     let instanceIdx = 0;
     const phiSpan = Math.PI * (3 - Math.sqrt(5)); // golden angle ≈ 2.39996 rad
     for (let i = 0; i < particleCount; i++) {
@@ -79,30 +105,54 @@ export function PosnerLatticeScene({
       let x = r * Math.sin(phi) * Math.cos(theta);
       let y = r * Math.sin(phi) * Math.sin(theta);
       let z = r * Math.cos(phi);
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       // Perlin-like noise (sin/cos combos), amplitude = decoherence
       const ns = decoherence * 0.5;
       x += Math.sin(time * 0.5 + i * 0.13) * ns;
       y += Math.cos(time * 0.37 + i * 0.17) * ns;
       z += Math.sin(time * 0.61 + i * 0.23) * ns;
+<<<<<<< HEAD
       
       // Scale: thermodynamic expansion metaphor
       const scale = 0.6 + (1 - decoherence) * 0.6;
       
+=======
+
+      // Scale: thermodynamic expansion metaphor
+      const scale = 0.6 + (1 - decoherence) * 0.6;
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       dummy.position.set(x, y, z);
       dummy.scale.setScalar(scale);
       dummy.updateMatrix();
       mesh.setMatrixAt(instanceIdx++, dummy.matrix);
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     mesh.instanceMatrix.needsUpdate = true;
   });
 
   return (
+<<<<<<< HEAD
     <primitive 
       object={new THREE.InstancedMesh(geometry, material, particleCount)} 
+=======
+    <primitive
+      object={new THREE.InstancedMesh(geometry, material, particleCount)}
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       ref={meshRef}
       frustumCulled={false}
     />
   );
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

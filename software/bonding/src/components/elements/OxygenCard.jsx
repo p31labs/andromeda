@@ -31,7 +31,11 @@ const OxygenCard = ({ playerId, onBond }) => {
         <div className="stability">Stability: Medium</div>
       </div>
       <div className="element-description">
+<<<<<<< HEAD
         Highly electronegative. Forms 2 bonds. 
+=======
+        Highly electronegative. Forms 2 bonds.
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         Essential for energy transfer and stability.
       </div>
       <div className="bonding-capacity">
@@ -42,4 +46,8 @@ const OxygenCard = ({ playerId, onBond }) => {
   );
 };
 
+<<<<<<< HEAD
 export default OxygenCard;
+=======
+export default OxygenCard;
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

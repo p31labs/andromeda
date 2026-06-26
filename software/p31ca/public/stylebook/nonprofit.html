@@ -59,7 +59,11 @@
       align-items: center;
       gap: 4px;
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     .gap-card {
       padding: 14px 16px;
       background: var(--p31-surface);
@@ -95,7 +99,11 @@
       margin-top: 4px;
       line-height: 1.5;
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     .terminal {
       background: #000;
       color: #c8e6ce;
@@ -114,7 +122,11 @@
     .terminal .yellow { color: #ffd700; }
     .terminal .green { color: #88ff88; }
     .terminal .cyan { color: #5ee5e5; }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     .runbook-list {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -149,7 +161,11 @@
     import { renderShell, code, callout } from '/stylebook/_chrome.js';
     import { P31ThemeController } from '/lib/p31-theme-engine.mjs';
     window.p31Theme = new P31ThemeController({ defaultTheme: 'hub' });
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     const CONTRACTS = [
       { name: 'governance.json', schema: 'p31.nonprofit.governance/1.0.0', desc: 'Board, officers, COI, meetings, document retention, succession.', stats: ['1 founder', '4 vacant seats', '6 policies'] },
       { name: 'compliance.json', schema: 'p31.nonprofit.compliance/1.0.0', desc: 'Form 990 schedule, GA annual registration, 39-state charitable solicitation tracker, filing calendar.', stats: ['39 states', '6 deadlines', '$1338 first-yr'] },
@@ -161,7 +177,11 @@
       { name: 'risk.json', schema: 'p31.nonprofit.risk/1.0.0', desc: '9-risk register, P0–P3 incident response, business continuity, insurance roadmap.', stats: ['9 risks', '4 P-classes', '4 policies'] },
       { name: 'people.json', schema: 'p31.nonprofit.people/1.0.0', desc: 'Role classifications, current roster, P0 open positions, onboarding checklists per role type.', stats: ['7 role types', '3 P0 positions', '5 onboardings'] }
     ];
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     const RUNBOOKS = [
       { name: 'Board meeting', when: 'Quarterly + annual + special', file: 'docs/runbooks/nonprofit/board-meeting.md' },
       { name: 'Donor receipt', when: 'New gift, Jan 31 batch, replacements', file: 'docs/runbooks/nonprofit/donor-receipt.md' },
@@ -170,7 +190,11 @@
       { name: 'Filing calendar', when: 'Monthly review', file: 'docs/runbooks/nonprofit/filing-calendar.md' },
       { name: 'Onboarding', when: 'New board / staff / contractor', file: 'docs/runbooks/nonprofit/onboarding.md' }
     ];
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     const contractGrid = CONTRACTS.map(c => `
       <div class="contract">
         <div class="contract-name">${c.name}</div>
@@ -181,7 +205,11 @@
         </div>
       </div>
     `).join('');
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     const runbookList = RUNBOOKS.map(r => `
       <div class="runbook">
         <div class="runbook-name">${r.name}</div>
@@ -189,7 +217,11 @@
         <code class="runbook-link">${r.file}</code>
       </div>
     `).join('');
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     const content = `
       <section class="sb-section">
         <div class="sb-section-header">
@@ -201,10 +233,17 @@
             so it's there <em>when</em> it's needed. Better to have it and not need it than the other way around.
           </p>
         </div>
+<<<<<<< HEAD
         
         ${callout('info', 'The mental model', 'Each <strong>contract</strong> is the canonical source of truth for one operational concern. Each <strong>runbook</strong> tells you what to <em>do</em> with the contract. Each <strong>automation</strong> executes the routine work. Edit the JSON; everything else follows.')}
       </section>
       
+=======
+
+        ${callout('info', 'The mental model', 'Each <strong>contract</strong> is the canonical source of truth for one operational concern. Each <strong>runbook</strong> tells you what to <em>do</em> with the contract. Each <strong>automation</strong> executes the routine work. Edit the JSON; everything else follows.')}
+      </section>
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">Nine canonical contracts</div>
@@ -212,10 +251,17 @@
           <p class="sb-text">All under <code>andromeda/04_SOFTWARE/p31ca/ground-truth/nonprofit/</code>.
           Each governs one concern. None overlap. The verifier enforces cross-contract consistency.</p>
         </div>
+<<<<<<< HEAD
         
         <div class="contract-grid">${contractGrid}</div>
       </section>
       
+=======
+
+        <div class="contract-grid">${contractGrid}</div>
+      </section>
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">Live status (run it)</div>
@@ -223,7 +269,11 @@
           <p class="sb-text"><code>npm run nonprofit:status</code> — produces this dashboard from
           the canonical contracts. No external services. No SaaS tools. Just JSON + Node.</p>
         </div>
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         <div class="terminal"><span class="header">  P31 Labs, Inc. · Operations Status</span>
 <span class="dim">  P31 Labs, Inc. · EIN 42-1888158
   fiscal year 12-31 · 2026-05-01</span>
@@ -259,17 +309,28 @@
     Required:    <span class="dim">39 states</span>
     Registered:  <span class="red">0</span>
     Pending est. first-year fees: <span class="dim">$1338</span></div>
+<<<<<<< HEAD
         
         ${callout('info', 'No external services', 'This dashboard is generated from local JSON files. No QuickBooks, no Salesforce, no Bonterra, no Bloomerang. Edge-friendly and zero-budget by design — same as the rest of P31.')}
       </section>
       
+=======
+
+        ${callout('info', 'No external services', 'This dashboard is generated from local JSON files. No QuickBooks, no Salesforce, no Bonterra, no Bloomerang. Edge-friendly and zero-budget by design — same as the rest of P31.')}
+      </section>
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">Critical-path gaps right now</div>
           <h2 class="sb-h2">In dependency order</h2>
           <p class="sb-text">Each gap blocks the next one. Address them in order; don't try to parallelize.</p>
         </div>
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         <div class="gap-card">
           <div class="gap-id">1</div>
           <div class="gap-content">
@@ -277,7 +338,11 @@
             <div class="gap-detail">Blocks succession plan activation, IRS application narrative, first board meeting quorum. Highest-priority recruitment.</div>
           </div>
         </div>
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         <div class="gap-card">
           <div class="gap-id">2</div>
           <div class="gap-content">
@@ -285,7 +350,11 @@
             <div class="gap-detail">Required by GA code + bylaws. Blocks: bank account (most banks require 3 separate officers), board minutes legitimacy, donation deposits.</div>
           </div>
         </div>
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         <div class="gap-card">
           <div class="gap-id">3</div>
           <div class="gap-content">
@@ -293,7 +362,11 @@
             <div class="gap-detail">HCB unresponsive; needs alternative path. Without an account, no Stripe verification, no donations, no expense reimbursements.</div>
           </div>
         </div>
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         <div class="gap-card">
           <div class="gap-id">4</div>
           <div class="gap-content">
@@ -301,7 +374,11 @@
             <div class="gap-detail">Without 501(c)(3) determination, donor deductibility is conditional. Application requires programs.json narrative + governance.json structure (both ready). $600 user fee.</div>
           </div>
         </div>
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         <div class="gap-card warn">
           <div class="gap-id">5</div>
           <div class="gap-content">
@@ -309,7 +386,11 @@
             <div class="gap-detail">Required before any GA donation. $35 fee. Must register before soliciting from GA residents (operator's home state).</div>
           </div>
         </div>
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         <div class="gap-card warn">
           <div class="gap-id">6</div>
           <div class="gap-content">
@@ -317,7 +398,11 @@
             <div class="gap-detail">Required before any non-founder board member is seated. Estimated $800/year for $1M coverage. Hiscox, The Hartford, USLI are vendors to evaluate.</div>
           </div>
         </div>
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         <div class="gap-card warn">
           <div class="gap-id">7</div>
           <div class="gap-content">
@@ -326,7 +411,11 @@
           </div>
         </div>
       </section>
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">Six runbooks</div>
@@ -334,16 +423,27 @@
           <p class="sb-text">Each runbook assumes operator spoon-deficit: terminal-readable,
           copy-paste commands, no tribal knowledge required.</p>
         </div>
+<<<<<<< HEAD
         
         <div class="runbook-list">${runbookList}</div>
       </section>
       
+=======
+
+        <div class="runbook-list">${runbookList}</div>
+      </section>
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">Five automation commands</div>
           <h2 class="sb-h2">Routine work, mechanically</h2>
         </div>
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         ${code(`# One-screen ops dashboard — entity, gaps, deadlines, programs, grants, risks
 npm run nonprofit:status
 
@@ -369,13 +469,21 @@ npm run nonprofit:report -- --year 2026 --out reports/annual-2026.md
 # (also runs as part of npm run verify)
 npm run verify:nonprofit`, 'shell', 'Automation commands')}
       </section>
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">What the verifier catches</div>
           <h2 class="sb-h2">Cross-contract guards</h2>
         </div>
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         <table class="sb-table">
           <thead><tr><th>Check</th><th>Why</th></tr></thead>
           <tbody>
@@ -392,13 +500,21 @@ npm run verify:nonprofit`, 'shell', 'Automation commands')}
           </tbody>
         </table>
       </section>
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">Mission lock</div>
           <h2 class="sb-h2">Structurally biased against drift</h2>
         </div>
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         <table class="sb-table">
           <thead><tr><th>Pressure</th><th>Mechanism</th></tr></thead>
           <tbody>
@@ -411,13 +527,21 @@ npm run verify:nonprofit`, 'shell', 'Automation commands')}
           </tbody>
         </table>
       </section>
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">Cross-system coupling</div>
           <h2 class="sb-h2">How this fits with the rest of P31</h2>
         </div>
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         <table class="sb-table">
           <thead><tr><th>P31 system</th><th>Coupling</th></tr></thead>
           <tbody>
@@ -431,17 +555,29 @@ npm run verify:nonprofit`, 'shell', 'Automation commands')}
           </tbody>
         </table>
       </section>
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">Operator note</div>
           <h2 class="sb-h2">For when the day-of-doing arrives</h2>
         </div>
+<<<<<<< HEAD
         
         ${callout('success', 'You don\'t have to do all of this today.', 'The contracts are the map; the runbooks are the path; the automation is the vehicle. Use <code>npm run nonprofit:status</code> to see what is <em>actually</em> due in the next 30 days. Everything else is for the future-you (or future-board-member) who will need it. The point of the scaffolding is that it\'s there <em>when</em> you need it, not that you use it now.')}
       </section>
     `;
     
+=======
+
+        ${callout('success', 'You don\'t have to do all of this today.', 'The contracts are the map; the runbooks are the path; the automation is the vehicle. Use <code>npm run nonprofit:status</code> to see what is <em>actually</em> due in the next 30 days. Everything else is for the future-you (or future-board-member) who will need it. The point of the scaffolding is that it\'s there <em>when</em> you need it, not that you use it now.')}
+      </section>
+    `;
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     renderShell({
       activeId: 'nonprofit',
       breadcrumb: [

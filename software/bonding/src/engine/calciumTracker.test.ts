@@ -76,7 +76,11 @@ describe('Calcium Tracker Engine', () => {
         const state = { lastDose: d.toISOString() } as any;
         expect(calculateGlow(state)).toBe(0.7);
     });
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     it('calculateGlow 20 hours ago → 0.4', () => {
         const d = new Date();
         d.setHours(d.getHours() - 20);
@@ -107,7 +111,11 @@ describe('Calcium Tracker Engine', () => {
         ] as any;
         expect(calculateStreak(logs)).toBe(1);
     });
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     it('calculateStreak resets on gap', () => {
         const d1 = new Date();
         d1.setDate(d1.getDate() - 2);
@@ -132,7 +140,11 @@ describe('Calcium Tracker Engine', () => {
         ] as any;
         expect(getAdherence(logs, 1, 2)).toBe(100);
     });
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     it('getAdherence 50% when half logged', () => {
          const logs = [ {timestamp: new Date().toISOString(), type: 'dose'} ] as any;
          expect(getAdherence(logs, 1, 2)).toBe(50);

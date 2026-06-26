@@ -37,4 +37,8 @@ describe('LarmorEngine', () => {
       expect(secondary).toBe(863.0);
     });
   });
+<<<<<<< HEAD
 });
+=======
+});
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

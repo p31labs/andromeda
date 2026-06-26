@@ -84,7 +84,11 @@
     import { renderShell, code, callout } from '/stylebook/_chrome.js';
     import { P31ThemeController } from '/lib/p31-theme-engine.mjs';
     window.p31Theme = new P31ThemeController({ defaultTheme: 'hub' });
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     const content = `
       <section class="sb-section">
         <div class="sb-section-header">
@@ -92,7 +96,11 @@
           <h2 class="sb-h2">Page not found</h2>
           <p class="sb-text">The classic. Honest about what happened. Offers paths forward, not apology.</p>
         </div>
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         <div class="err-mock">
           <div class="err-code">404 · Not found</div>
           <div class="err-glyph">⊘</div>
@@ -105,14 +113,22 @@
           <div class="err-meta">requested · /accidentally-deleted-page</div>
         </div>
       </section>
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">500</div>
           <h2 class="sb-h2">Server error</h2>
           <p class="sb-text">When the system itself failed. Acknowledge that <em>we</em> broke it, not the user.</p>
         </div>
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         <div class="err-mock">
           <div class="err-code" style="color: var(--p31-amber);">500 · Internal error</div>
           <div class="err-glyph" style="color: var(--p31-amber);">!</div>
@@ -124,17 +140,28 @@
           </div>
           <div class="err-meta">trace · 2026-05-01T17:42:09Z · req-x9k7</div>
         </div>
+<<<<<<< HEAD
         
         ${callout('info', 'Trace ID matters', 'Always show a request/trace ID on 500. If a user reports the issue, the operator can find that exact trace in logs without playing detective.')}
       </section>
       
+=======
+
+        ${callout('info', 'Trace ID matters', 'Always show a request/trace ID on 500. If a user reports the issue, the operator can find that exact trace in logs without playing detective.')}
+      </section>
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">Offline</div>
           <h2 class="sb-h2">No connection</h2>
           <p class="sb-text">Mobile, train tunnel, flaky cafe wifi. Recognize the state, hint at recovery.</p>
         </div>
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         <div class="err-mock">
           <div class="err-code" style="color: var(--p31-muted);">○ Offline</div>
           <div class="err-glyph" style="color: var(--p31-muted);">◌</div>
@@ -146,14 +173,22 @@
           <div class="err-meta">last sync · 14 minutes ago</div>
         </div>
       </section>
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">403</div>
           <h2 class="sb-h2">Forbidden</h2>
           <p class="sb-text">User is authenticated but doesn't have permission. Don't reveal what they're missing.</p>
         </div>
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         <div class="err-mock">
           <div class="err-code">403 · Forbidden</div>
           <div class="err-glyph">⊗</div>
@@ -164,16 +199,27 @@
           </div>
           <div class="err-meta">requested · /family/private-graph</div>
         </div>
+<<<<<<< HEAD
         
         ${callout('warn', 'Don\'t leak structure', 'Never tell a 403\'d user "Only admins can see this" — that confirms the resource type and the role gating it. Just say "you don\'t have access" and stop.')}
       </section>
       
+=======
+
+        ${callout('warn', 'Don\'t leak structure', 'Never tell a 403\'d user "Only admins can see this" — that confirms the resource type and the role gating it. Just say "you don\'t have access" and stop.')}
+      </section>
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">Maintenance</div>
           <h2 class="sb-h2">Planned downtime</h2>
         </div>
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         <div class="err-mock">
           <div class="err-code" style="color: var(--p31-cyan);">503 · Maintenance</div>
           <div class="err-glyph" style="color: var(--p31-cyan);">⏲</div>
@@ -185,13 +231,21 @@
           <div class="err-meta">started · 2026-05-01T17:48Z · ETA · 18:00Z</div>
         </div>
       </section>
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">Anatomy</div>
           <h2 class="sb-h2">What every error page needs</h2>
         </div>
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         <table class="sb-table">
           <thead><tr><th>Element</th><th>Purpose</th><th>Required?</th></tr></thead>
           <tbody>
@@ -207,13 +261,21 @@
           </tbody>
         </table>
       </section>
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">Implementation</div>
           <h2 class="sb-h2">Cloudflare Pages config</h2>
         </div>
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         ${code(`# /public/_redirects — handles 404 fallback for SPA
 /* /404.html 404
 
@@ -221,10 +283,17 @@
 async function handleError(err, request, env) {
   const status = err.status || 500;
   const traceId = crypto.randomUUID().slice(0, 8);
+<<<<<<< HEAD
   
   // Log the actual error with trace
   console.error(\`[\${traceId}] \${err.message}\`, err.stack);
   
+=======
+
+  // Log the actual error with trace
+  console.error(\`[\${traceId}] \${err.message}\`, err.stack);
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   // User-safe response
   return new Response(JSON.stringify({
     error: err.userMessage || 'Internal server error',
@@ -235,7 +304,11 @@ async function handleError(err, request, env) {
     headers: { 'content-type': 'application/json' }
   });
 }`, 'js', 'Error handler')}
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         ${code(`<!-- /public/404.html — minimal, fast, themed -->
 <!DOCTYPE html>
 <html lang="en" data-p31-appearance="hub">
@@ -257,13 +330,21 @@ async function handleError(err, request, env) {
 </body>
 </html>`, 'html', '/public/404.html')}
       </section>
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       <section class="sb-section">
         <div class="sb-section-header">
           <div class="sb-section-eyebrow">Status codes</div>
           <h2 class="sb-h2">When to use which</h2>
         </div>
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
         <table class="sb-table">
           <thead><tr><th>Code</th><th>Meaning</th><th>Use when</th></tr></thead>
           <tbody>
@@ -285,7 +366,11 @@ async function handleError(err, request, env) {
         </table>
       </section>
     `;
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     renderShell({
       activeId: 'error-pages',
       breadcrumb: [

@@ -47,4 +47,8 @@ export const ROOMS = [
   { id: 'bridge',    label: 'BRIDGE',      description: 'Identity & wallet (planned)' },
 ];
 
+<<<<<<< HEAD
 export default useHashRouter;
+=======
+export default useHashRouter;
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

@@ -1,5 +1,6 @@
 /**
  * @file DeltaMesh.tsx — Tetrahedron K4 Mesh 3D Visualizer
+<<<<<<< HEAD
  * 
  * Renders the K4 complete graph (4 nodes, 6 edges) in 3D space.
  * Visualizes the Delta topology for systemic resilience awareness.
@@ -7,19 +8,39 @@
  * Section 1.2: Tetrahedron Protocol - K4 Complete Graph
  * Mathematical Foundation: Isostatic rigidity, 57.7% capacity at single-node loss
  * 
+=======
+ *
+ * Renders the K4 complete graph (4 nodes, 6 edges) in 3D space.
+ * Visualizes the Delta topology for systemic resilience awareness.
+ *
+ * Section 1.2: Tetrahedron Protocol - K4 Complete Graph
+ * Mathematical Foundation: Isostatic rigidity, 57.7% capacity at single-node loss
+ *
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
  * Features:
  * - 4-node tetrahedron with floating animation
  * - Edge rendering (6 equidistant edges)
  * - Ollivier-Ricci curvature proxy (κ) calculation
  * - Discrete Ricci Flow Graph Embedding (dRfge) scale oscillation
+<<<<<<< HEAD
  * 
+=======
+ *
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
  * CWP-JITTERBUG-15: Delta Topology Visualizer
  */
 import { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
+<<<<<<< HEAD
 import { Float, Text } from '@react-three/drei';
 import * as THREE from 'three';
 import { RicciMath } from '../../lib/engine/ricci';
+=======
+import { Float, Text, Line } from '@react-three/drei';
+import * as THREE from 'three';
+import type { EquilibriumState } from '../../hooks/useEquilibrium';
+import { getStageColor, type GrowthStage } from '../../lib/theme/stageColors';
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
 
 export interface DeltaMeshNode {
   id: string;
@@ -38,8 +59,11 @@ export interface DeltaMeshEdge {
  * Vertices of a regular tetrahedron inscribed in a sphere of radius 1
  */
 export function generateK4Nodes(): DeltaMeshNode[] {
+<<<<<<< HEAD
   const phi = (1 + Math.sqrt(5)) / 2; // Golden ratio
   
+=======
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   // Regular tetrahedron vertices (normalized)
   const positions = [
     new THREE.Vector3(0, 1, 0),
@@ -47,7 +71,11 @@ export function generateK4Nodes(): DeltaMeshNode[] {
     new THREE.Vector3(0.4714, -0.3333, 0.8165),
     new THREE.Vector3(0.4714, -0.3333, -0.8165),
   ];
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   return positions.map((pos, i) => ({
     id: `node_${i}`,
     position: pos.multiplyScalar(1.5), // Scale up for visibility
@@ -72,7 +100,11 @@ export function generateK4Edges(): DeltaMeshEdge[] {
 /**
  * Calculate Ollivier-Ricci Curvature proxy (κ)
  * Based on local edge stress and network noise
+<<<<<<< HEAD
  * 
+=======
+ *
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
  * @param time - Current time for oscillation
  * @param networkStress - Optional stress factor from mesh
  * @returns κ value 0-2 (1 = optimal, <1 bottleneck, >1 expansive)
@@ -82,7 +114,11 @@ export function calculateRicciCurvature(time: number, networkStress: number = 0)
   const baseCurvature = 1.0;
   const dRfgeOscillation = Math.sin(time * 0.5) * 0.2; // Slow breathing
   const stressImpact = networkStress * 0.3;
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   return Math.max(0.2, Math.min(2.0, baseCurvature + dRfgeOscillation + stressImpact));
 }
 
@@ -97,6 +133,7 @@ export function calculateResilienceThreshold(lostNodes: number): number {
 }
 
 interface DeltaMeshProps {
+<<<<<<< HEAD
   networkStress?: number;
   showLabels?: boolean;
   autoRotate?: boolean;
@@ -141,6 +178,55 @@ export function DeltaMesh({
   const edgeHighlightColor = curvatureRef.current >= 0.8 ? '#4db8a8' : '#EF4444';
 
   return (
+=======
+  showLabels?: boolean;
+  scale?: number;
+  equilibrium?: EquilibriumState;
+}
+
+export function DeltaMesh({
+  showLabels = true,
+  scale = 6,
+  equilibrium,
+}: DeltaMeshProps) {
+  const groupRef = useRef<THREE.Group>(null);
+
+  const nodes = useMemo(() => generateK4Nodes(), []);
+  const edges = useMemo(() => generateK4Edges(), []);
+
+  const stage = equilibrium?.stage ?? 'VOID';
+  const baseColor = getStageColor(stage as GrowthStage);
+  const rotationSpeed = equilibrium ? 0.1 + equilibrium.entropy * 0.3 : 0.15;
+  const nodeScale = equilibrium ? 0.8 + (equilibrium.spoon / 10) * 0.4 : 1;
+
+  useFrame(({ clock }, delta) => {
+    if (groupRef.current) {
+      const t = clock.getElapsedTime();
+      const pulse = 1 + Math.sin(t * (1 + (equilibrium?.entropy || 1))) * 0.03 * (equilibrium?.entropy || 1);
+      groupRef.current.scale.setScalar(pulse);
+      groupRef.current.rotation.y += delta * rotationSpeed;
+      groupRef.current.rotation.x += delta * rotationSpeed * 0.3;
+    }
+  });
+
+  const gatewayColor = 'var(--color-phosphor)';
+  const nodeColor = baseColor;
+  const edgeColor = '#7A27FF';
+  const emissiveIntensity = 0.3 + (equilibrium?.entropy || 0.5) * 0.5;
+
+  const edgeEntries = useMemo(() => edges.map((edge) => {
+    const startNode = nodes[edge.from];
+    const endNode = nodes[edge.to];
+    return {
+      key: `edge_${edge.from}_${edge.to}`,
+      start: [startNode.position.x, startNode.position.y, startNode.position.z] as [number, number, number],
+      end: [endNode.position.x, endNode.position.y, endNode.position.z] as [number, number, number],
+    };
+  }), [edges, nodes]);
+
+  return (
+    <group scale={scale}>
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     <group ref={groupRef}>
       {/* Render Nodes */}
       {nodes.map((node, index) => (
@@ -151,6 +237,7 @@ export function DeltaMesh({
           floatIntensity={0.4}
         >
           <mesh position={node.position}>
+<<<<<<< HEAD
             <sphereGeometry args={[0.12, 32, 32]} />
             <meshStandardMaterial
               color={node.isGateway ? gatewayColor : nodeColor}
@@ -161,6 +248,18 @@ export function DeltaMesh({
             />
           </mesh>
           
+=======
+            <sphereGeometry args={[0.12 * nodeScale, 32, 32]} />
+            <meshStandardMaterial
+              color={node.isGateway ? gatewayColor : nodeColor}
+              emissive={node.isGateway ? gatewayColor : nodeColor}
+              emissiveIntensity={emissiveIntensity}
+              roughness={0.2}
+              metalness={0.5}
+            />
+          </mesh>
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
           {/* Node Label */}
           {showLabels && (
             <Text
@@ -178,6 +277,7 @@ export function DeltaMesh({
       ))}
 
       {/* Render Edges (K4 = 6 edges) */}
+<<<<<<< HEAD
       {edges.map((edge, index) => {
         const startNode = nodes[edge.from];
         const endNode = nodes[edge.to];
@@ -206,12 +306,40 @@ export function DeltaMesh({
           color={curvatureRef.current >= 0.8 ? gatewayColor : '#EF4444'}
           emissive={curvatureRef.current >= 0.8 ? gatewayColor : '#EF4444'}
           emissiveIntensity={curvatureRef.current >= 0.8 ? 1.0 : 2.0}
+=======
+      {edgeEntries.map(({ key, start, end }) => (
+        <Line
+          key={key}
+          points={[start, end]}
+          color={edgeColor}
+          lineWidth={0.02}
+          transparent
+          opacity={0.6}
+        />
+      ))}
+
+      {/* Central stress indicator (shows network health) */}
+      <mesh position={[0, 0, 0]}>
+        <sphereGeometry args={[0.08 * nodeScale, 16, 16]} />
+        <meshStandardMaterial
+          color={baseColor}
+          emissive={baseColor}
+          emissiveIntensity={emissiveIntensity}
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
           transparent
           opacity={0.8}
         />
       </mesh>
     </group>
+<<<<<<< HEAD
   );
 }
 
 export default DeltaMesh;
+=======
+    </group>
+  );
+}
+
+export default DeltaMesh;
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

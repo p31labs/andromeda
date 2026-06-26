@@ -12,14 +12,26 @@ export function useMesh(roomName: string) {
 
   useEffect(() => {
     const meshInstance = getKenosisMesh();
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     async function init() {
       const success = await meshInstance.ignite({ persistenceKey: roomName });
       setIsMeshActive(success);
       setConnectionState(meshInstance.getConnectionState());
     }
 
+<<<<<<< HEAD
     init();
+=======
+    init().catch((err) => {
+      console.error('[useMesh] ignite failed:', err);
+      setIsMeshActive(false);
+      setConnectionState('disconnected');
+    });
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
 
     const unsubscribe = useSovereignStore.subscribe((state, prevState) => {
       if (state.spoons !== prevState.spoons) {
@@ -44,4 +56,8 @@ export function useMesh(roomName: string) {
   }, [roomName]);
 
   return { isMeshActive, connectionState, broadcast };
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

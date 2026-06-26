@@ -40,7 +40,11 @@
     }
     .sf-settings-btn:hover {
       transform: scale(1.1);
+<<<<<<< HEAD
       border-color: #4db8a8;
+=======
+      border-color: var(--color-cyan);
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       box-shadow: 0 0 20px rgba(77, 184, 168, 0.3);
     }
     .sf-settings-btn.pulse::after {
@@ -154,7 +158,11 @@
       left: 2px;
       transition: transform 0.3s;
     }
+<<<<<<< HEAD
     .sf-toggle input:checked + .sf-switch { background: #4db8a8; }
+=======
+    .sf-toggle input:checked + .sf-switch { background: var(--color-cyan); }
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     .sf-toggle input:checked + .sf-switch::after { transform: translateX(22px); }
     .sf-status {
       display: flex;
@@ -193,7 +201,11 @@
       display: block;
       font-size: 24px;
       font-weight: 700;
+<<<<<<< HEAD
       color: #4db8a8;
+=======
+      color: var(--color-cyan);
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       font-family: monospace;
     }
     .sf-stat-label {
@@ -213,7 +225,11 @@
       transition: background 0.2s;
     }
     .sf-filter:hover { background: rgba(255, 255, 255, 0.06); }
+<<<<<<< HEAD
     .sf-filter input { width: 18px; height: 18px; accent-color: #4db8a8; }
+=======
+    .sf-filter input { width: 18px; height: 18px; accent-color: var(--color-cyan); }
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     .sf-filter-icon { font-size: 18px; }
     .sf-filter-text { flex: 1; font-size: 14px; color: #ede8e0; }
     .sf-slider { margin-bottom: 16px; }
@@ -236,7 +252,11 @@
       -webkit-appearance: none;
       width: 18px;
       height: 18px;
+<<<<<<< HEAD
       background: #4db8a8;
+=======
+      background: var(--color-cyan);
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       border-radius: 50%;
       cursor: pointer;
     }
@@ -260,7 +280,11 @@
     }
     .sf-test-btn:hover {
       background: var(--test-color, rgba(255, 255, 255, 0.1));
+<<<<<<< HEAD
       border-color: var(--test-color, #4db8a8);
+=======
+      border-color: var(--test-color, var(--color-cyan));
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     }
     .sf-footer {
       display: flex;
@@ -284,7 +308,11 @@
     }
     .sf-btn-secondary:hover { border-color: #ede8e0; color: #ede8e0; }
     .sf-btn-primary {
+<<<<<<< HEAD
       background: #4db8a8;
+=======
+      background: var(--color-cyan);
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
       border: none;
       color: #0f1115;
     }

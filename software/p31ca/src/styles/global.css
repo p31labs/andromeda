@@ -27,8 +27,13 @@
 @layer components {
   .glass-panel {
     background: rgba(255, 255, 255, 0.04);
+<<<<<<< HEAD
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
+=======
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 1rem;
   }
@@ -50,7 +55,11 @@
   .status-live {
     background: rgba(0, 255, 136, 0.1);
     border-color: rgba(0, 255, 136, 0.25);
+<<<<<<< HEAD
     color: #00FF88;
+=======
+    color: var(--color-phosphor);
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   }
 
   .status-dev {

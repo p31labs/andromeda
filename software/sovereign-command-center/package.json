@@ -15,7 +15,12 @@
     "react-dom": "^19.0.0",
     "lucide-react": "^0.454.0",
     "clsx": "^2.1.1",
+<<<<<<< HEAD
     "tailwind-merge": "^2.5.4"
+=======
+    "tailwind-merge": "^2.5.4",
+    "@p31/shared": "workspace:*"
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
   },
   "devDependencies": {
     "@types/node": "^20.11.5",
@@ -28,4 +33,8 @@
     "eslint": "^8.57.1",
     "eslint-config-next": "15.2.4"
   }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

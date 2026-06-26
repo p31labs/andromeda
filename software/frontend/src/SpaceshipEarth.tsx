@@ -1304,4 +1304,8 @@ export default function SpaceshipEarth() {
 
     </div>
   );
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057

@@ -109,4 +109,8 @@ describe('getAnimatedCurvature', () => {
   it('handles NaN time', () => {
     expect(getAnimatedCurvature(1.0, NaN)).toBeCloseTo(1.0, 5);
   });
+<<<<<<< HEAD
 });
+=======
+});
+>>>>>>> auto-heal/ui-ux-drift-20260620-120057
