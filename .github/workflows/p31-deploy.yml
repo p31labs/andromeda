@@ -26,9 +26,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
-        with: { version: ${{ env.PNPM_VERSION }} }
+        with:
+          version: ${{ env.PNPM_VERSION }}
       - uses: actions/setup-node@v4
-        with: { node-version: ${{ env.NODE_VERSION }}, cache: 'pnpm' }
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
       - run: pnpm install --frozen-lockfile
       - run: pnpm run security:lint
 
@@ -43,9 +46,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
-        with: { version: ${{ env.PNPM_VERSION }} }
+        with:
+          version: ${{ env.PNPM_VERSION }}
       - uses: actions/setup-node@v4
-        with: { node-version: ${{ env.NODE_VERSION }}, cache: 'pnpm' }
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
       - run: pnpm install --frozen-lockfile
       - run: pnpm run typecheck
 
@@ -60,9 +66,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
-        with: { version: ${{ env.PNPM_VERSION }} }
+        with:
+          version: ${{ env.PNPM_VERSION }}
       - uses: actions/setup-node@v4
-        with: { node-version: ${{ env.NODE_VERSION }}, cache: 'pnpm' }
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
       - run: pnpm install --frozen-lockfile
       - run: pnpm run audit:content
 
@@ -77,9 +86,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
-        with: { version: ${{ env.PNPM_VERSION }} }
+        with:
+          version: ${{ env.PNPM_VERSION }}
       - uses: actions/setup-node@v4
-        with: { node-version: ${{ env.NODE_VERSION }}, cache: 'pnpm' }
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
       - run: pnpm install --frozen-lockfile
       - run: pnpm run audit:pages
 
@@ -94,9 +106,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
-        with: { version: ${{ env.PNPM_VERSION }} }
+        with:
+          version: ${{ env.PNPM_VERSION }}
       - uses: actions/setup-node@v4
-        with: { node-version: ${{ env.NODE_VERSION }}, cache: 'pnpm' }
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
       - run: pnpm install --frozen-lockfile
       - run: pnpm run verify:ground-truth
       - run: pnpm run verify:worker-spa-launch
@@ -112,9 +127,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
-        with: { version: ${{ env.PNPM_VERSION }} }
+        with:
+          version: ${{ env.PNPM_VERSION }}
       - uses: actions/setup-node@v4
-        with: { node-version: ${{ env.NODE_VERSION }}, cache: 'pnpm' }
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
       - run: pnpm install --frozen-lockfile
       - run: pnpm run hub:verify
 
@@ -129,9 +147,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
-        with: { version: ${{ env.PNPM_VERSION }} }
+        with:
+          version: ${{ env.PNPM_VERSION }}
       - uses: actions/setup-node@v4
-        with: { node-version: ${{ env.NODE_VERSION }}, cache: 'pnpm' }
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
       - run: pnpm install --frozen-lockfile
       - run: pnpm run security:audit
       - run: pnpm run security:workers
@@ -149,9 +170,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
-        with: { version: ${{ env.PNPM_VERSION }} }
+        with:
+          version: ${{ env.PNPM_VERSION }}
       - uses: actions/setup-node@v4
-        with: { node-version: ${{ env.NODE_VERSION }}, cache: 'pnpm' }
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
       - run: pnpm install --frozen-lockfile
       - run: pnpm run build
       - uses: actions/upload-artifact@v4
@@ -169,7 +193,9 @@ jobs:
     environment: staging
     steps:
       - uses: actions/download-artifact@v4
-        with: { name: dist, path: dist }
+        with:
+          name: dist
+          path: dist
       - name: Deploy to Cloudflare Pages (staging)
         uses: cloudflare/pages-action@v1
         with:
@@ -239,7 +265,9 @@ jobs:
     environment: production
     steps:
       - uses: actions/download-artifact@v4
-        with: { name: dist, path: dist }
+        with:
+          name: dist
+          path: dist
       - name: Deploy to Cloudflare Pages (production)
         uses: cloudflare/pages-action@v1
         with:
