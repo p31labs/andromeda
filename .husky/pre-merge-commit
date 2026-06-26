@@ -1,0 +1,5 @@
+#!/bin/sh
+if grep -r --exclude-dir={node_modules,.git,dist} -l '<<<<<<< HEAD' .; then
+  echo "❌ Conflict markers found in working tree. Aborting merge."
+  exit 1
+fi

@@ -1,0 +1,8 @@
+#!/bin/sh
+# Fast-fail: block Git conflict markers before they enter the repo
+# Search ONLY tracked source files — excludes node_modules, dist, .git
+if git ls-files | grep -v '^node_modules/' | grep -v '^dist/' | grep -v '^\.git/' | xargs grep -lE '^(<<<<<<< |=======$|>>>>>>> )|^(<<<<<<< |=======$|>>>>>>>$)' 2>/dev/null; then
+  echo "❌ Conflict markers found in working tree. Aborting commit."
+  exit 1
+fi
+echo "✅ No conflict markers. CI is the quality gate."
