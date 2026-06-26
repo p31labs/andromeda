@@ -4,3 +4,12 @@ GRADING_REPORT.md
 grading-index.json
 jitterbug-depressed-queue.json
 quantum-polisher-report.json
+*.tfstate*
+.terraform/
+
+# Terraform
+*.tfstate*
+*.tfvars
+.terraform/
+.terraform.lock.hcl
+tfplan.txt
