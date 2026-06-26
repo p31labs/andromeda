@@ -75,7 +75,8 @@
     "audit:full": "node scripts/audit/full-audit.mjs",
     "monitor": "node scripts/audit/health-check.mjs",
     "bootstrap:pipeline": "bash scripts/bootstrap-pipeline.sh",
-    "prepare": "husky"
+    "prepare": "husky",
+    "verify:pipeline": "bash scripts/verify-pipeline.sh"
   },
   "dependencies": {
     "@astrojs/react": "^5.0.4",
