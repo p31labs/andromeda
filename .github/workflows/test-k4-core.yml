@@ -49,3 +49,4 @@ jobs:
         with:
           name: test-results-k4-core
           path: workers/k4-core/test-results/
+trigger
