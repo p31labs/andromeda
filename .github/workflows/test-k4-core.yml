@@ -38,7 +38,7 @@ jobs:
           cache-dependency-path: 'pnpm-lock.yaml'
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile --dir workers/k4-core
+        run: pnpm install --dir workers/k4-core
 
       - name: Run Vitest tests
         run: pnpm --dir workers/k4-core test
