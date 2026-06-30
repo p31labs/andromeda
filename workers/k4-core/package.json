@@ -3,7 +3,21 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
+  "scripts": {
+    "dev": "wrangler dev --port 8787",
+    "deploy": "wrangler deploy --env production",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "typecheck": "tsc --noEmit"
+  },
   "dependencies": {
-    "hono": "^4.0.0"
+    "hono": "4.12.14"
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-pool-workers": "^0.13.0",
+    "@cloudflare/workers-types": "^4.20260621.1",
+    "vitest": "^4.1.0",
+    "wrangler": "^4.85.0"
   }
 }

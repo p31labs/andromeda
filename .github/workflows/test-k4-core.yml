@@ -1,0 +1,49 @@
+name: k4-core Tests
+
+on:
+  pull_request:
+    paths:
+      - 'workers/k4-core/**'
+      - 'packages/**'
+  push:
+    paths:
+      - 'workers/k4-core/**'
+      - 'packages/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Unit + Integration Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/toolchain-constants
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+          cache-dependency-path: 'workers/k4-core/pnpm-lock.yaml'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --dir workers/k4-core
+
+      - name: Run Vitest tests
+        run: pnpm --dir workers/k4-core test
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-k4-core
+          path: workers/k4-core/test-results/
