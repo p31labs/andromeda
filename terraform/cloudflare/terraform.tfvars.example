@@ -1,0 +1,6 @@
+# Copy to terraform.tfvars and fill in real values
+# DO NOT commit terraform.tfvars to git
+cloudflare_api_token = "your-token-here"
+account_id          = "ee05f70c889cb6f876b9925257e3a2fa"
+zone_id_p31ca       = "3ba5eda28c73c52dc6f0c33a2a607aae"
+zone_id_phosphorus31 = "a3de54c2da0406238d9c2e66e23c9ac6"

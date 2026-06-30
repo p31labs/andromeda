@@ -1,0 +1,25 @@
+name = "passport-api"
+main = "src/index.ts"
+compatibility_date = "2025-10-01"
+
+[[d1_databases]]
+binding = "PASSPORT_DB"
+database_name = "p31-passport-db"
+database_id = "64dc1d50-e46c-4640-b98b-244dc892e331"
+
+[[kv_namespaces]]
+binding = "PASSPORT_SESSION_KV"
+id = "01064cb7bbe14fd8a9d0c95b80dcdd25"
+
+[vars]
+ENVIRONMENT = "production"
+PASSPORT_VERSION = "0.1.0"
+PQC_COMPLIANT = "true"
+PQC_ALGORITHMS = "ML-KEM-768, ML-DSA-65"
+PQC_STANDARD = "FIPS-203, FIPS-204"
+
+[env.staging]
+vars = { ENVIRONMENT = "staging" }
+
+[env.production]
+vars = { ENVIRONMENT = "production" }

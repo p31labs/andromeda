@@ -1,0 +1,48 @@
+---
+// settle.astro — K₄ Settlement Onboarding Funnel
+// P31 Labs, Inc. | EIN 42-1888158
+//
+// 7-step progressive disclosure flow:
+// 1. Welcome  → 2. Passport  → 3. Settlement  → 4. Edges  → 5. LOVE  → 6. Graduation  → 7. Dashboard
+
+import Layout from '../layouts/BaseLayout.astro';
+import { OnboardingApp } from '../components/OnboardingApp';
+
+const STEPS = [
+  { id: 'welcome',     title: 'Welcome',                  description: 'You are leaving the extractive web.' },
+  { id: 'passport',    title: 'Generate Passport',         description: 'Create your sovereign identity.' },
+  { id: 'settlement',  title: 'Create or Join Settlement', description: 'Connect with your family.' },
+  { id: 'edges',       title: 'Configure Your Mesh',       description: 'Who is in your family?' },
+  { id: 'love',        title: 'Mint LOVE',                 description: 'Earn your first LOVE tokens.' },
+  { id: 'graduation',  title: 'Graduation Ceremony',        description: 'You are now a citizen.' },
+  { id: 'dashboard',   title: 'Welcome Home',              description: 'Your Settlement awaits.' },
+];
+---
+
+<Layout title="Join the K₄ Settlement — P31 Labs">
+  <div class="min-h-screen bg-[#030305] text-slate-200 antialiased">
+    <OnboardingApp steps={STEPS} />
+  </div>
+
+  <style>
+    .btn-primary {
+      padding: 0.6rem 1.5rem;
+      border-radius: 0.5rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: var(--phos-primary, #00f0ff);
+      color: #030305;
+      border: none;
+    }
+    .btn-primary:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 240, 255, 0.3);
+    }
+    .btn-primary:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+  </style>
+</Layout>

@@ -1,6 +1,5 @@
 import React, { useRef, useEffect } from 'react';
 import { useAtmosphere } from '../AtmosphereProvider';
-import { SurfaceErrorBoundary } from '../SurfaceErrorBoundary';
 
 const VagusBreath: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -49,12 +48,3 @@ const VagusBreath: React.FC = () => {
   return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 0 }} aria-hidden="true" />;
 };
 
-function VagusBreathWithBoundary() {
-  return (
-    <SurfaceErrorBoundary canvasName="VagusBreath">
-      <VagusBreath />
-    </SurfaceErrorBoundary>
-  );
-}
-
-export default VagusBreathWithBoundary;

@@ -1,6 +1,5 @@
 import React, { useRef, useEffect } from 'react';
 import { useAtmosphere } from '../AtmosphereProvider';
-import { SurfaceErrorBoundary } from '../SurfaceErrorBoundary';
 
 const VaultScanlines: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -53,12 +52,3 @@ const VaultScanlines: React.FC = () => {
   return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 0 }} aria-hidden="true" />;
 };
 
-function VaultScanlinesWithBoundary() {
-  return (
-    <SurfaceErrorBoundary canvasName="VaultScanlines">
-      <VaultScanlines />
-    </SurfaceErrorBoundary>
-  );
-}
-
-export default VaultScanlinesWithBoundary;

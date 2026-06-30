@@ -1,6 +1,5 @@
 import React, { useRef, useEffect } from 'react';
 import { useAtmosphere } from '../AtmosphereProvider';
-import { SurfaceErrorBoundary } from '../SurfaceErrorBoundary';
 
 interface HexDrop {
   x: number; y: number; speed: number; chars: string; opacity: number; len: number;
@@ -64,12 +63,3 @@ const HexRain: React.FC = () => {
   return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 0 }} aria-hidden="true" />;
 };
 
-function HexRainWithBoundary() {
-  return (
-    <SurfaceErrorBoundary canvasName="HexRain">
-      <HexRain />
-    </SurfaceErrorBoundary>
-  );
-}
-
-export default HexRainWithBoundary;
