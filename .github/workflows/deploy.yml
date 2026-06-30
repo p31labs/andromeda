@@ -27,7 +27,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   deploy-workers:
-    name: Workers
+    name: Workers (legacy)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -90,13 +90,6 @@ jobs:
           command: deploy
           api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           account-id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-      - name: Deploy k4-core
-        uses: ./.github/actions/wrangler-run
-        with:
-          working-directory: workers/k4-core
-          command: deploy
-          api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          account-id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       - name: Deploy q-factor
         uses: ./.github/actions/wrangler-run
         with:
@@ -118,7 +111,7 @@ jobs:
           command: deploy
           api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           account-id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-      - name: Health checks
+      - name: Health checks (legacy workers)
         run: |
           fail=0
           check() {
@@ -144,5 +137,47 @@ jobs:
           check pdf-generator https://pdf-generator.trimtab-signal.workers.dev/health
           check governance-engine https://governance-engine.trimtab-signal.workers.dev/health
           check love-ledger https://love-ledger.trimtab-signal.workers.dev/health
-          check k4-core https://k4-core.trimtab-signal.workers.dev/health
           exit $fail
+
+  deploy-k4-core-canary:
+    name: k4-core Canary (10%)
+    needs: deploy-workers
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/toolchain-constants
+      - name: Install dependencies
+        run: pnpm install --dir workers/k4-core
+      - name: Canary deployment (10%)
+        run: ./scripts/gradual-deploy.sh 10
+        working-directory: workers/k4-core
+      - name: Smoke tests
+        run: ./scripts/smoke-test.sh
+        working-directory: workers/k4-core
+
+  deploy-k4-core-production:
+    name: k4-core Full Rollout (100%)
+    needs: deploy-k4-core-canary
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/toolchain-constants
+      - name: Install dependencies
+        run: pnpm install --dir workers/k4-core
+      - name: Full rollout (100%)
+        run: |
+          cd workers/k4-core
+          npx wrangler versions deploy --percentage 100
+      - name: Health check
+        run: |
+          for attempt in 1 2 3; do
+            code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 https://k4-cage.trimtab-signal.workers.dev/health 2>/dev/null || echo 000)
+            [[ "$code" == "200" ]] && break
+            [[ $attempt -lt 3 ]] && sleep 10
+          done
+          if [[ "$code" != "200" ]]; then
+            echo "❌ k4-core health check failed ($code)"
+            exit 1
+          fi
+          echo "✅ k4-core healthy"
