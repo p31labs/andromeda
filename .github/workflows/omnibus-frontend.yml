@@ -41,23 +41,25 @@ jobs:
 
       - uses: ./.github/actions/toolchain-constants
 
+      - uses: pnpm/action-setup@v4
+        with: { version: '10.32.1' }
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: npm
-          cache-dependency-path: software/frontend/package-lock.json
+          cache: pnpm
+          cache-dependency-path: software/pnpm-lock.yaml
 
       - name: Install p31-forge (docx)
-        run: cd software/p31-forge && npm install
+        run: cd software/p31-forge && pnpm install
 
       - name: Forge omnibus 25 papers
         run: node software/scripts/forge-omnibus-all.cjs
 
       - name: Install frontend
-        run: cd software/frontend && npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Build frontend
-        run: cd software/frontend && npm run build
+        run: pnpm --dir software/frontend run build
 
       - name: update-dois.js (empty map, exit 0)
         run: cd software && node ops/update-dois.js
