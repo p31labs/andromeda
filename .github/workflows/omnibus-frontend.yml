@@ -55,6 +55,9 @@ jobs:
       - name: Forge omnibus 25 papers
         run: node software/scripts/forge-omnibus-all.cjs
 
+      - name: Install root workspace
+        run: pnpm install --frozen-lockfile
+
       - name: Install frontend
         run: pnpm install --frozen-lockfile
 
