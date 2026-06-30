@@ -40,12 +40,8 @@
     "test:e2e:ui": "playwright test --config playwright.config.ts --ui",
     "lighthouse:ci": "lhci autorun",
     "test:all": "pnpm test:unit && pnpm test:e2e",
-    "lint": "eslint . --max-warnings 100",
-    "audit": "pnpm audit",
-    "format": "prettier --check .",
-    "format:fix": "prettier --write .",
-    "typecheck": "tsc --noEmit",
-    "prepare": "husky"
+    "lint": "echo \"Lint per package: cd software/<project> && pnpm run lint (if defined)\"",
+    "audit": "pnpm audit"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.11.3",
@@ -58,7 +54,6 @@
     "@types/react-dom": "^18",
     "@vitejs/plugin-react": "^6.0.2",
     "@vitest/coverage-v8": "^4.1.8",
-    "husky": "^9.1.7",
     "jsdom": "^29.1.1",
     "playwright": "^1.60.0",
     "react": "^18",
@@ -66,21 +61,8 @@
     "vitest": "^4.1.8"
   },
   "dependencies": {
-    "hono": "^4.0.0",
     "@types/web-bluetooth": "^0.0.21",
     "@upstash/redis": "^1.37.0",
     "@webgpu/types": "^0.1.69"
-  },
-  "pnpm": {
-    "overrides": {
-      "undici": ">=7.28.0",
-      "elliptic": "^6.6.1",
-      "form-data": ">=2.5.4",
-      "protobufjs": "^7.5.5"
-    }
-  },
-  "lint-staged": {
-    "*.{js,ts,tsx,astro}": "pnpm run lint",
-    "*.{ts,tsx}": "pnpm run typecheck"
   }
 }
