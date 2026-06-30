@@ -1,0 +1,9 @@
+{
+  "name": "k4-core",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "hono": "^4.0.0"
+  }
+}

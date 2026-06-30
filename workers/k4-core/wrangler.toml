@@ -1,0 +1,70 @@
+name = "k4-core"
+main = "src/index.ts"
+compatibility_date = "2025-10-01"
+compatibility_flags = ["nodejs_compat"]
+
+[placement]
+mode = "smart"
+
+[[d1_databases]]
+binding = "CAPITAL_DB"
+database_name = "capital-db"
+database_id = "d7f0afea-6c49-46e3-a225-6353367578f2"
+
+[[kv_namespaces]]
+binding = "CAPITAL_KV"
+id = "d81cd27a8b5f4d58905a49081c436ad9"
+
+[[d1_databases]]
+binding = "GOVERNANCE_DB"
+database_name = "governance-db"
+database_id = "f05c8f18-a419-440c-a4e4-fe7da18dd7ae"
+
+[[kv_namespaces]]
+binding = "GOVERNANCE_KV"
+id = "873a583358d243eb9658c0090dfed7b0"
+
+[[d1_databases]]
+binding = "LOVE_D1"
+database_name = "love-ledger"
+database_id = "592e3e2e-3203-4e0a-8342-9e85215ec8a6"
+
+[[kv_namespaces]]
+binding = "LOVE_KV"
+id = "c50d8a1f878c4d31b2d1918fa8994e08"
+
+
+[[durable_objects.bindings]]
+name = "GOVERNANCE_ENGINE_DO"
+class_name = "GovernanceEngineDO"
+
+[[migrations]]
+tag = "v1-gov"
+new_sqlite_classes = ["GovernanceEngineDO"]
+
+[[durable_objects.bindings]]
+name = "LOVE_TRANSACTION"
+class_name = "LoveTransactionDO"
+
+[[migrations]]
+tag = "v1-love"
+new_sqlite_classes = ["LoveTransactionDO"]
+
+[[queues.producers]]
+binding = "EVENTS_QUEUE"
+queue = "p31-events"
+
+[vars]
+ENVIRONMENT = "production"
+PQC_COMPLIANT = "true"
+PQC_ALGORITHMS = "ML-KEM-768, ML-DSA-65"
+PQC_STANDARD = "FIPS-203, FIPS-204"
+PASSPORT_API = "https://passport-api.trimtab-signal.workers.dev"
+GOVERNANCE_MAJORITY = "0.66"
+GOVERNANCE_QUORUM = "0.20"
+GOVERNANCE_VOTING_DAYS = "7"
+GOVERNANCE_VETO_WINDOW_MS = "86400000"
+
+[observability]
+enabled = true
+head_sampling_rate = 0.1

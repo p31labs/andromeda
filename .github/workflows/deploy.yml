@@ -1,0 +1,148 @@
+name: Deploy — Workers & Pages
+on:
+  push:
+    branches: [main]
+    paths:
+      - "software/k4-cage/**"
+      - "software/k4-hubs/**"
+      - "software/p31-agent-hub/**"
+      - "workers/care-api/**"
+      - "workers/events-queue/**"
+      - "workers/pdf-generator/**"
+      - "workers/governance-engine/**"
+      - "workers/love-ledger/**"
+      - "workers/k4-core/**"
+      - "software/cloudflare-worker/q-factor/**"
+      - "software/p31ca/workers/fhir/**"
+      - "software/cloudflare-worker/command-center/**"
+      - ".github/actions/**"
+      - ".github/workflows/deploy.yml"
+  workflow_dispatch:
+    inputs:
+      target:
+        description: "Deploy target (workers | all)"
+        default: "all"
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  deploy-workers:
+    name: Workers
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/toolchain-constants
+      - name: Install wrangler globally
+        run: npm install -g wrangler@${{ env.WRANGLER_VERSION }}
+      - name: Deploy k4-cage
+        uses: ./.github/actions/wrangler-run
+        with:
+          working-directory: software/k4-cage
+          command: deploy
+          api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          account-id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      - name: Deploy k4-hubs
+        uses: ./.github/actions/wrangler-run
+        with:
+          working-directory: software/k4-hubs
+          command: deploy
+          api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          account-id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      - name: Deploy p31-agent-hub
+        uses: ./.github/actions/wrangler-run
+        with:
+          working-directory: software/p31-agent-hub
+          command: deploy
+          api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          account-id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      - name: Deploy care-api
+        uses: ./.github/actions/wrangler-run
+        with:
+          working-directory: workers/care-api
+          command: deploy
+          api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          account-id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      - name: Deploy events-queue
+        uses: ./.github/actions/wrangler-run
+        with:
+          working-directory: workers/events-queue
+          command: deploy
+          api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          account-id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      - name: Deploy pdf-generator
+        uses: ./.github/actions/wrangler-run
+        with:
+          working-directory: workers/pdf-generator
+          command: deploy
+          api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          account-id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      - name: Deploy governance-engine
+        uses: ./.github/actions/wrangler-run
+        with:
+          working-directory: workers/governance-engine
+          command: deploy
+          api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          account-id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      - name: Deploy love-ledger
+        uses: ./.github/actions/wrangler-run
+        with:
+          working-directory: workers/love-ledger
+          command: deploy
+          api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          account-id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      - name: Deploy k4-core
+        uses: ./.github/actions/wrangler-run
+        with:
+          working-directory: workers/k4-core
+          command: deploy
+          api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          account-id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      - name: Deploy q-factor
+        uses: ./.github/actions/wrangler-run
+        with:
+          working-directory: software/cloudflare-worker/q-factor
+          command: deploy --env production
+          api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          account-id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      - name: Deploy fhir
+        uses: ./.github/actions/wrangler-run
+        with:
+          working-directory: software/p31ca/workers/fhir
+          command: deploy
+          api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          account-id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      - name: Deploy command-center
+        uses: ./.github/actions/wrangler-run
+        with:
+          working-directory: software/cloudflare-worker/command-center
+          command: deploy
+          api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          account-id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      - name: Health checks
+        run: |
+          fail=0
+          check() {
+            local name=$1 url=$2
+            local code attempt
+            for attempt in 1 2 3; do
+              code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 "$url" 2>/dev/null || echo 000)
+              [[ "$code" == "200" ]] && break
+              [[ $attempt -lt 3 ]] && sleep 10
+            done
+            if [[ "$code" == "200" ]]; then
+              echo "✅ $name"
+            else
+              echo "❌ $name ($code) — $url"
+              fail=1
+            fi
+          }
+          check k4-cage       https://k4-cage.trimtab-signal.workers.dev/health
+          check k4-hubs       https://k4-hubs.trimtab-signal.workers.dev/health
+          check p31-agent-hub https://p31-agent-hub.trimtab-signal.workers.dev/api/health
+          check care-api      https://care-api.trimtab-signal.workers.dev/health
+          check events-queue  https://events-queue.trimtab-signal.workers.dev/health
+          check pdf-generator https://pdf-generator.trimtab-signal.workers.dev/health
+          check governance-engine https://governance-engine.trimtab-signal.workers.dev/health
+          check love-ledger https://love-ledger.trimtab-signal.workers.dev/health
+          check k4-core https://k4-core.trimtab-signal.workers.dev/health
+          exit $fail
