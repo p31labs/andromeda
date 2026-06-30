@@ -8,12 +8,17 @@ interface Env {
   PAYPAL_WEBHOOK_ID: string;
   PAYPAL_PRODUCT_ID: string;
   TURNSTILE_SECRET: string;
+}
+
+const env = {
   PAYPAL_CLIENT_ID: 'paypal_client_fake',
   PAYPAL_CLIENT_SECRET: 'paypal_secret_fake',
   PAYPAL_MODE: 'sandbox',
   PAYPAL_WEBHOOK_ID: 'webhook_fake',
   PAYPAL_PRODUCT_ID: 'PROD_fake',
   TURNSTILE_SECRET: 'turnstile_secret_fake',
+} as const;
+
 // ── Import worker after mocking global fetch ────────────────────────────────
 function mockTurnstile() {
   mockFetch.mockResolvedValueOnce(
