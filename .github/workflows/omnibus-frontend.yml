@@ -50,7 +50,7 @@ jobs:
           cache-dependency-path: software/pnpm-lock.yaml
 
       - name: Install p31-forge (docx)
-        run: cd software/p31-forge && pnpm install
+        run: cd software/p31-forge && npm install
 
       - name: Forge omnibus 25 papers
         run: node software/scripts/forge-omnibus-all.cjs
