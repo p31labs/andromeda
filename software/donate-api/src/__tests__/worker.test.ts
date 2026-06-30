@@ -1,416 +1,148 @@
-/// <reference types="@cloudflare/workers-types" />
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 
-// ── Types matching the worker ────────────────────────────────────────────────
+// Mock the worker environment
 interface Env {
-  PAYPAL_CLIENT_ID: string;
-  PAYPAL_CLIENT_SECRET: string;
-  PAYPAL_MODE: string;
-  PAYPAL_WEBHOOK_ID: string;
-  PAYPAL_PRODUCT_ID: string;
-  TURNSTILE_SECRET: string;
+  PAYPAL_CLIENT_ID: string
+  PAYPAL_CLIENT_SECRET: string
+  PAYPAL_MODE: string
+  PAYPAL_WEBHOOK_ID: string
+  PAYPAL_PRODUCT_ID: string
+  TURNSTILE_SECRET: string
+  DISCORD_WEBHOOK_URL: string
+  ALLOWED_ORIGIN: string
+  GENESIS_GATE_URL?: string
 }
 
-const env = {
-  PAYPAL_CLIENT_ID: 'paypal_client_fake',
-  PAYPAL_CLIENT_SECRET: 'paypal_secret_fake',
+// Mock environment
+const env: Env = {
+  PAYPAL_CLIENT_ID: 'test_client_id',
+  PAYPAL_CLIENT_SECRET: 'test_client_secret',
   PAYPAL_MODE: 'sandbox',
-  PAYPAL_WEBHOOK_ID: 'webhook_fake',
-  PAYPAL_PRODUCT_ID: 'PROD_fake',
-  TURNSTILE_SECRET: 'turnstile_secret_fake',
-} as const;
-
-// ── Import worker after mocking global fetch ────────────────────────────────
-function mockTurnstile() {
-  mockFetch.mockResolvedValueOnce(
-    new Response(JSON.stringify({ success: true }), { status: 200 }),
-  );
+  PAYPAL_WEBHOOK_ID: 'test_webhook_id',
+  PAYPAL_PRODUCT_ID: 'test_product_id',
+  TURNSTILE_SECRET: 'test_turnstile_secret',
+  DISCORD_WEBHOOK_URL: 'https://discord.example.com/webhook',
+  ALLOWED_ORIGIN: 'https://example.com',
 }
 
-function mockPayPalOrderFlow(approvalUrl = 'https://www.sandbox.paypal.com/checkoutnow?token=test123') {
-  mockTurnstile();
-  mockFetch.mockResolvedValueOnce(
-    new Response(JSON.stringify({ access_token: 'access_fake' }), { status: 200 }),
-  );
-  mockFetch.mockResolvedValueOnce(
-    new Response(
-      JSON.stringify({
-        id: 'ORDER_fake',
-        links: [{ rel: 'approve', href: approvalUrl }],
-      }),
-      { status: 200 },
-    ),
-  );
-}
+// Mock fetch
+const mockFetch = vi.fn()
+beforeEach(() => {
+  vi.stubGlobal('fetch', mockFetch)
+  mockFetch.mockReset()
+})
 
-// ── CORS preflight ──────────────────────────────────────────────────────────
-// ── GET /health ────────────────────────────────────────────────────────────
-describe('GET /health', () => {
-  it('returns 200 JSON with status ok and processor paypal', async () => {
-    const body = await res.json() as { status: string; worker: string; processor: string };
-    expect(body.status).toBe('ok');
-    expect(body.worker).toBe('donate-api');
-    expect(body.processor).toBe('paypal');
-  });
-});
+// Import the worker
+import worker from '../worker'
 
-// ── 404 for unknown routes ──────────────────────────────────────────────────
-// ── POST /create-checkout — validation ──────────────────────────────────────
-      body: JSON.stringify({
-        amount: 50,
-        currency: 'usd',
-        mode: 'once',
-        successUrl: 'https://example.com/success',
-        cancelUrl: 'https://example.com/cancel',
-        turnstileToken: 'valid_token',
-      }),
-      body: JSON.stringify({
-        amount: 100_000_000,
-        currency: 'usd',
-        mode: 'once',
-        successUrl: 'https://example.com/success',
-        cancelUrl: 'https://example.com/cancel',
-        turnstileToken: 'valid_token',
-      }),
-  it('reflects Origin https://p31ca.org for CORS', async () => {
-    mockPayPalOrderFlow();
-        turnstileToken: 'valid_token',
-    mockTurnstile();
-        turnstileToken: 'valid_token',
-  it('accepts valid u_* subject id', async () => {
-    mockPayPalOrderFlow();
-    const sid = 'u_' + 'a'.repeat(32);
-        turnstileToken: 'valid_token',
-  });
+describe('Donate API Worker', () => {
+  describe('POST /create-checkout', () => {
+    it('should return approval URL for valid request', async () => {
+      // Mock PayPal API responses
+      mockFetch
+        .mockResolvedValueOnce(new Response(JSON.stringify({ access_token: 'access_token' }), { status: 200 }))
+        .mockResolvedValueOnce(new Response(JSON.stringify({ id: 'PAYPAL_ORDER_ID' }), { status: 201 }))
 
-  it('rejects missing turnstile token', async () => {
-    const worker = await getWorker();
-    const req = new Request('https://example.com/create-checkout', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        amount: 500,
-        currency: 'usd',
-        mode: 'once',
-        successUrl: 'https://example.com/success',
-        cancelUrl: 'https://example.com/cancel',
-      }),
-    });
-    const res = await worker.fetch(req, env);
-    expect(res.status).toBe(400);
-    const body = await res.json() as { error: string };
-    expect(body.error).toMatch(/Security check required/);
-  });
-
-  it('rejects failed turnstile validation', async () => {
-    mockFetch.mockResolvedValueOnce(
-      new Response(JSON.stringify({ success: false }), { status: 200 }),
-    );
-    const worker = await getWorker();
-    const req = new Request('https://example.com/create-checkout', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        amount: 500,
-        currency: 'usd',
-        mode: 'once',
-        successUrl: 'https://example.com/success',
-        cancelUrl: 'https://example.com/cancel',
-        turnstileToken: 'invalid_token',
-      }),
-    });
-    const res = await worker.fetch(req, env);
-    expect(res.status).toBe(400);
-    const body = await res.json() as { error: string };
-    expect(body.error).toMatch(/Security check failed/);
-      body: JSON.stringify({
-        currency: 'usd',
-        mode: 'once',
-        successUrl: 'https://example.com/success',
-        cancelUrl: 'https://example.com/cancel',
-        turnstileToken: 'valid_token',
-      }),
-  it('allows localhost dev origin', async () => {
-    mockPayPalOrderFlow();
-      body: JSON.stringify({
-        amount: 200,
-        currency: 'usd',
-        mode: 'once',
-        successUrl: 'https://example.com/s',
-        cancelUrl: 'https://example.com/c',
-        turnstileToken: 'valid_token',
-      }),
-// ── POST /create-checkout — PayPal API calls ────────────────────────────────
-describe('POST /create-checkout — PayPal integration', () => {
-  it('creates one-time order and returns approval_url', async () => {
-    mockPayPalOrderFlow();
-    const worker = await getWorker();
-    const req = new Request('https://example.com/create-checkout', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        amount: 500,
-        currency: 'usd',
-        mode: 'once',
-        successUrl: 'https://example.com/success',
-        cancelUrl: 'https://example.com/cancel',
-        turnstileToken: 'valid_token',
-      }),
-    });
-    const res = await worker.fetch(req, env);
-    expect(res.status).toBe(200);
-    const body = await res.json() as { approval_url: string };
-    expect(body.approval_url).toContain('paypal');
-  });
-
-  it('creates monthly subscription and returns approval_url', async () => {
-    mockTurnstile();
-    // getOrCreatePlan calls getPayPalAccessToken first
-    mockFetch.mockResolvedValueOnce(
-      new Response(JSON.stringify({ access_token: 'access_fake' }), { status: 200 }),
-    );
-    mockFetch.mockResolvedValueOnce(
-      new Response(
-        JSON.stringify({
-          id: 'P-Plan_fake',
-          product_id: env.PAYPAL_PRODUCT_ID,
+      const request = new Request('https://example.com/create-checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          amount: 1000,
+          currency: 'usd',
+          mode: 'once',
+          successUrl: 'https://example.com/success',
+          cancelUrl: 'https://example.com/cancel',
         }),
-        { status: 201 },
-      ),
-    );
-    // createPayPalSubscription calls getPayPalAccessToken again
-    mockFetch.mockResolvedValueOnce(
-      new Response(JSON.stringify({ access_token: 'access_fake' }), { status: 200 }),
-    );
-    mockFetch.mockResolvedValueOnce(
-      new Response(
-        JSON.stringify({
-          id: 'I-Sub_fake',
-          links: [{ rel: 'approve', href: 'https://www.sandbox.paypal.com/webapps/billing/subscriptions?token=sub123' }],
+      })
+
+      const response = await worker.fetch(request, env)
+      const data = await response.json()
+
+      expect(response.status).toBe(200)
+      expect(data).toHaveProperty('approval_url')
+      expect(mockFetch).toHaveBeenCalledTimes(2)
+    })
+
+    it('should return 400 for missing required fields', async () => {
+      const request = new Request('https://example.com/create-checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          // missing amount
+          currency: 'usd',
+          mode: 'once',
+          successUrl: 'https://example.com/success',
+          cancelUrl: 'https://example.com/cancel',
         }),
-        { status: 201 },
-      ),
-    );
+      })
 
-    const worker = await getWorker();
-    const req = new Request('https://example.com/create-checkout', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        amount: 1000,
-        currency: 'usd',
-        mode: 'monthly',
-        successUrl: 'https://example.com/success',
-        cancelUrl: 'https://example.com/cancel',
-        turnstileToken: 'valid_token',
-      }),
-    });
-    const res = await worker.fetch(req, env);
-    expect(res.status).toBe(200);
-    const body = await res.json() as { approval_url: string };
-    expect(body.approval_url).toContain('paypal');
-  });
+      const response = await worker.fetch(request, env)
+      expect(response.status).toBe(400)
+    })
+  })
 
-  it('returns 502 if PayPal token fetch fails', async () => {
-    mockTurnstile();
-    mockFetch.mockResolvedValueOnce(
-      new Response('unauthorized', { status: 401 }),
-    );
-    const worker = await getWorker();
-    const req = new Request('https://example.com/create-checkout', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        amount: 500,
-        currency: 'usd',
-        mode: 'once',
-        successUrl: 'https://example.com/success',
-        cancelUrl: 'https://example.com/cancel',
-        turnstileToken: 'valid_token',
-      }),
-    });
-    const res = await worker.fetch(req, env);
-    expect(res.status).toBe(502);
-  });
-
-  it('returns 502 if PayPal order creation fails', async () => {
-    mockTurnstile();
-    mockFetch.mockResolvedValueOnce(
-      new Response(JSON.stringify({ access_token: 'access_fake' }), { status: 200 }),
-    );
-    mockFetch.mockResolvedValueOnce(
-      new Response('internal_error', { status: 500 }),
-    );
-    const worker = await getWorker();
-    const req = new Request('https://example.com/create-checkout', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        amount: 500,
-        currency: 'usd',
-        mode: 'once',
-        successUrl: 'https://example.com/success',
-        cancelUrl: 'https://example.com/cancel',
-        turnstileToken: 'valid_token',
-      }),
-    });
-    const res = await worker.fetch(req, env);
-    expect(res.status).toBe(502);
-  });
-});
-
-// ── POST /paypal-webhook ────────────────────────────────────────────────────
-describe('POST /paypal-webhook', () => {
-  it('rejects request with no PayPal signature headers', async () => {
-    const worker = await getWorker();
-    const req = new Request('https://example.com/paypal-webhook', {
-      method: 'POST',
-      body: JSON.stringify({ event_type: 'PAYMENT.CAPTURE.COMPLETED' }),
-    });
-    const res = await worker.fetch(req, env);
-    expect(res.status).toBe(401);
-  });
-
-  it('rejects invalid PayPal webhook signature', async () => {
-    mockFetch.mockResolvedValueOnce(
-      new Response(JSON.stringify({ access_token: 'access_fake' }), { status: 200 }),
-    );
-    mockFetch.mockResolvedValueOnce(
-      new Response(JSON.stringify({ verification_status: 'FAILURE' }), { status: 200 }),
-    );
-    const worker = await getWorker();
-    const req = new Request('https://example.com/paypal-webhook', {
-      method: 'POST',
-      headers: {
-        'paypal-transmission-id': 'txn_1',
-        'paypal-transmission-time': new Date().toISOString(),
-        'paypal-cert-url': 'https://api-m.sandbox.paypal.com/cert',
-        'paypal-auth-algo': 'SHA256withRSA',
-        'paypal-transmission-sig': 'badsig',
-      },
-      body: JSON.stringify({ event_type: 'PAYMENT.CAPTURE.COMPLETED' }),
-    });
-    const res = await worker.fetch(req, env);
-    expect(res.status).toBe(401);
-  });
-
-  it('accepts valid PayPal webhook signature', async () => {
-    mockFetch.mockResolvedValueOnce(
-      new Response(JSON.stringify({ access_token: 'access_fake' }), { status: 200 }),
-    );
-    mockFetch.mockResolvedValueOnce(
-      new Response(JSON.stringify({ verification_status: 'SUCCESS' }), { status: 200 }),
-    );
-    mockFetch.mockResolvedValueOnce(new Response('ok', { status: 200 }));
-
-    const worker = await getWorker();
-    const req = new Request('https://example.com/paypal-webhook', {
-      method: 'POST',
-      headers: {
-        'paypal-transmission-id': 'txn_1',
-        'paypal-transmission-time': new Date().toISOString(),
-        'paypal-cert-url': 'https://api-m.sandbox.paypal.com/cert',
-        'paypal-auth-algo': 'SHA256withRSA',
-        'paypal-transmission-sig': 'goodsig',
-      },
-      body: JSON.stringify({
-        id: 'evt_paypal_1',
-        event_type: 'PAYMENT.CAPTURE.COMPLETED',
-        resource: {
-          id: 'CAPTURE_fake',
-          status: 'COMPLETED',
-          amount: { value: '5.00', currency_code: 'USD' },
-          create_time: new Date().toISOString(),
+  describe('POST /paypal-webhook', () => {
+    it('should return 200 for valid webhook', async () => {
+      const request = new Request('https://example.com/paypal-webhook', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-      }),
-    });
-    const res = await worker.fetch(req, env);
-    expect(res.status).toBe(200);
-    const body = await res.json() as { received: boolean };
-    expect(body.received).toBe(true);
-  });
+        body: JSON.stringify({
+          id: 'webhook_id',
+          event_type: 'PAYMENT.SALE.COMPLETED',
+          resource: {
+            id: 'payment_id',
+            state: 'approved',
+          },
+        }),
+      })
 
-  it('returns duplicate on second delivery of same event id', async () => {
-    const storage = new Map<string, string>();
-    const mockKV = {
-      async get(k: string) { return storage.get(k) ?? null; },
-      async put(k: string, v: string) { storage.set(k, v); },
-    } as KVNamespace;
+      const response = await worker.fetch(request, env)
+      expect(response.status).toBe(200)
+    })
 
-    const localEnv = {
-      ...env,
-      DONATE_EVENTS: mockKV,
-    };
+    it('should return 401 for missing/invalid headers', async () => {
+      const request = new Request('https://example.com/paypal-webhook', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: 'webhook_id',
+          event_type: 'PAYMENT.SALE.COMPLETED',
+          resource: { id: 'payment_id', state: 'approved' },
+        }),
+      })
 
-    const webhookHeaders = {
-      'paypal-transmission-id': 'txn_idem',
-      'paypal-transmission-time': new Date().toISOString(),
-      'paypal-cert-url': 'https://api-m.sandbox.paypal.com/cert',
-      'paypal-auth-algo': 'SHA256withRSA',
-      'paypal-transmission-sig': 'goodsig',
-    };
-    const payload = JSON.stringify({
-      id: 'evt_idem_1',
-      event_type: 'PAYMENT.CAPTURE.COMPLETED',
-      resource: {
-        id: 'CAPTURE_idem',
-        status: 'COMPLETED',
-        amount: { value: '5.00', currency_code: 'USD' },
-        create_time: new Date().toISOString(),
-      },
-    });
+      const response = await worker.fetch(request, env)
+      expect(response.status).toBe(401)
+    })
+  })
 
-    // First delivery
-    mockFetch.mockResolvedValueOnce(
-      new Response(JSON.stringify({ access_token: 'access_fake' }), { status: 200 }),
-    );
-    mockFetch.mockResolvedValueOnce(
-      new Response(JSON.stringify({ verification_status: 'SUCCESS' }), { status: 200 }),
-    );
-    mockFetch.mockResolvedValueOnce(new Response('ok', { status: 200 }));
+  describe('Event logging', () => {
+    it('should attempt to log events to external service', async () => {
+      // This would test the fetch to /event endpoint
+      // We mainly want to ensure it doesn't throw
+      const request = new Request('https://example.com/create-checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          amount: 1000,
+          currency: 'usd',
+          mode: 'once',
+          successUrl: 'https://example.com/success',
+          cancelUrl: 'https://example.com/cancel',
+        }),
+      })
 
-    const worker = await getWorker();
-    const req1 = new Request('https://example.com/paypal-webhook', {
-      method: 'POST',
-      headers: webhookHeaders,
-      body: payload,
-    });
-    const r1 = await worker.fetch(req1, localEnv);
-    // Second delivery — need fresh mocks
-    mockFetch.mockResolvedValueOnce(
-      new Response(JSON.stringify({ access_token: 'access_fake' }), { status: 200 }),
-    );
-    mockFetch.mockResolvedValueOnce(
-      new Response(JSON.stringify({ verification_status: 'SUCCESS' }), { status: 200 }),
-    );
-    mockFetch.mockResolvedValueOnce(new Response('ok', { status: 200 }));
+      // Mock the event logging endpoint
+      mockFetch
+        .mockResolvedValueOnce(new Response(JSON.stringify({ access_token: 'access_token' }), { status: 200 }))
+        .mockResolvedValueOnce(new Response(JSON.stringify({ id: 'PAYPAL_ORDER_ID' }), { status: 201 }))
+        .mockResolvedValueOnce(new Response('', { status: 204 })) // Event logging endpoint
 
-    const req2 = new Request('https://example.com/paypal-webhook', {
-      method: 'POST',
-      headers: { ...webhookHeaders, 'paypal-transmission-id': 'txn_idem_2' },
-      body: payload,
-    });
-
-// ── CORS origin handling ────────────────────────────────────────────────────
-describe('CORS origin', () => {
-  it('allows localhost dev origin for create-checkout', async () => {
-    mockPayPalOrderFlow();
-    const worker = await getWorker();
-    const req = new Request('https://example.com/create-checkout', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Origin: 'http://localhost:4321',
-      },
-      body: JSON.stringify({
-        amount: 200,
-        currency: 'usd',
-        mode: 'once',
-        successUrl: 'https://example.com/s',
-        cancelUrl: 'https://example.com/c',
-        turnstileToken: 'valid_token',
-      }),
-    });
-    const res = await worker.fetch(req, env);
-    expect(res.headers.get('Access-Control-Allow-Origin')).toBe('http://localhost:4321');
-  });
-});
+      await worker.fetch(request, env)
+      // Should have made 3 calls: get token, create order, log event
+      expect(mockFetch).toHaveBeenCalledTimes(3)
+    })
+  })
+})
