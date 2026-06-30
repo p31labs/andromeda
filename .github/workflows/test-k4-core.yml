@@ -33,7 +33,7 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'pnpm'
-          cache-dependency-path: 'workers/k4-core/pnpm-lock.yaml'
+          cache-dependency-path: 'pnpm-lock.yaml'
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile --dir workers/k4-core
