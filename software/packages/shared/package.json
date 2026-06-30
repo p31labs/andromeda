@@ -66,7 +66,6 @@
     "./telemetry/daubert": "./src/telemetry/daubert-export.ts",
     "./theme/canon": "./src/theme/canon.ts",
     "./theme/canon-brand": "./src/theme/canon-brand.ts",
-    "./theme/css-variables.css": "./src/theme/css-variables.css",
     "./theme/tailwind-preset": "./src/theme/tailwind-preset.ts",
     "./trust": "./src/trust/index.ts"
   }

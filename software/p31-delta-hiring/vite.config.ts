@@ -1,13 +1,12 @@
 import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
 import path from 'path';
 
 export default defineConfig({
-  base: './',
-  server: { port: 3150 },
-  build: { outDir: 'dist', sourcemap: true },
+  plugins: [react()],
   resolve: {
     alias: {
-      '@p31/shared': path.resolve(__dirname, '../packages/shared/src')
+      '@p31/shared': path.resolve(__dirname, '../../packages/shared/src')
     }
   }
 });
