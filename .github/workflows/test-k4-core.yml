@@ -5,10 +5,12 @@ on:
     paths:
       - 'workers/k4-core/**'
       - 'packages/**'
+      - '.github/workflows/test-k4-core.yml'
   push:
     paths:
       - 'workers/k4-core/**'
       - 'packages/**'
+      - '.github/workflows/test-k4-core.yml'
   workflow_dispatch:
 
 permissions:
