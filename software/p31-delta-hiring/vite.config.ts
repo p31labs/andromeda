@@ -7,7 +7,7 @@ export default defineConfig({
   build: { outDir: 'dist', sourcemap: true },
   resolve: {
     alias: {
-      '@p31/shared': path.resolve(__dirname, '../../packages/shared/src')
+      '@p31/shared': path.resolve(__dirname, '../packages/shared/src')
     }
   }
 });

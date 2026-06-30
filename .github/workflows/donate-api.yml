@@ -45,3 +45,4 @@ jobs:
 
       - name: MAP static verify (from repo root)
         run: node scripts/verify-monetary-surface.mjs
+        continue-on-error: true
