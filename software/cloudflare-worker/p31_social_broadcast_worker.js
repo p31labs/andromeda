@@ -1,12 +1,175 @@
-    // Health check
-    if (request.method === "GET" && new URL(request.url).pathname === "/health") {
-      return jsonResponse({
-        status: "ok",
-        service: "p31-social-broadcast",
-        version: "1.0.0",
-        timestamp: new Date().toISOString(),
+/**
+ * DEPRECATED — Consolidated into p31-social-worker
+ * -------------------------------------------------
+ * This worker has been merged into social-drop-automation/worker.js (v2.0.0).
+ * All functionality (Twitter, Reddit, Bluesky, Mastodon, Nostr, Substack)
+ * is now implemented with real API integrations in the unified worker.
+ *
+ * Route: social.p31ca.org (was: mesh.p31ca.org for broadcast)
+ *
+ * This file is kept for reference only. Do not deploy.
+ *
+ * P31 Labs: Decentralized Social Broadcast Worker
+ * ---------------------------------------------------------
+ * Orchestrates multi-platform broadcasts across Nostr, Mastodon,
+ * Bluesky, Twitter, Reddit, and Substack.
+ *
+ * Deploy: wrangler deploy p31_social_broadcast_worker.js
+ */
+
+// Helper to get secrets from env object
+const getEnv = (env, key, fallback = "") => {
+  if (env && env[key]) return env[key];
+  return fallback;
+};
+
+export default {
+  async fetch(request, env, ctx) {
+    // Build config from secrets at runtime
+    const config = {
+      NOSTR_PRIVATE_KEY: getEnv(env, "NOSTR_PRIVATE_KEY", ""),
+      NOSTR_RELAYS: getEnv(
+        env,
+        "NOSTR_RELAYS",
+        "wss://relay.damus.io,wss://nos.lol,wss://relay.nostr.band",
+      ).split(","),
+      TWITTER_BEARER_TOKEN: getEnv(env, "TWITTER_BEARER_TOKEN", ""),
+      TWITTER_API_KEY: getEnv(env, "TWITTER_API_KEY", ""),
+      TWITTER_API_SECRET: getEnv(env, "TWITTER_API_SECRET", ""),
+      TWITTER_ACCESS_TOKEN: getEnv(env, "TWITTER_ACCESS_TOKEN", ""),
+      TWITTER_ACCESS_TOKEN_SECRET: getEnv(
+        env,
+        "TWITTER_ACCESS_TOKEN_SECRET",
+        "",
+      ),
+      SUBSTACK_API_KEY: getEnv(env, "SUBSTACK_API_KEY", ""),
+      REDDIT_CLIENT_ID: getEnv(env, "REDDIT_CLIENT_ID", ""),
+      REDDIT_CLIENT_SECRET: getEnv(env, "REDDIT_CLIENT_SECRET", ""),
+      REDDIT_USERNAME: getEnv(env, "REDDIT_USERNAME", ""),
+      REDDIT_PASSWORD: getEnv(env, "REDDIT_PASSWORD", ""),
+      MASTODON_INSTANCE: getEnv(env, "MASTODON_INSTANCE", ""),
+      MASTODON_ACCESS_TOKEN: getEnv(env, "MASTODON_ACCESS_TOKEN", ""),
+      BLUESKY_HANDLE: getEnv(env, "BLUESKY_HANDLE", ""),
+      BLUESKY_APP_PASSWORD: getEnv(env, "BLUESKY_APP_PASSWORD", ""),
+    };
+
+    // Handle CORS
+    if (request.method === "OPTIONS") {
+      return new Response(null, {
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+          "Access-Control-Allow-Headers": "Content-Type",
+        },
       });
     }
+
+    // GET - Health check and status
+    if (request.method === "GET") {
+      const url = new URL(request.url);
+      const action = url.searchParams.get("action");
+
+      if (action === "status") {
+        return jsonResponse({
+          nostr: !!config.NOSTR_PRIVATE_KEY,
+          twitter: !!(config.TWITTER_API_KEY && config.TWITTER_ACCESS_TOKEN),
+          substack: !!config.SUBSTACK_API_KEY,
+          reddit: !!(config.REDDIT_CLIENT_ID && config.REDDIT_USERNAME),
+          mastodon: !!(
+            config.MASTODON_INSTANCE && config.MASTODON_ACCESS_TOKEN
+          ),
+          bluesky: !!(config.BLUESKY_HANDLE && config.BLUESKY_APP_PASSWORD),
+        });
+      }
+
+      if (action === "nostr") {
+        const relays = await testNostrRelays(config);
+        return jsonResponse({ relays });
+      }
+
+      return jsonResponse({
+        service: "p31-social-broadcast",
+        endpoints: {
+          "POST /": "Broadcast message to all configured platforms",
+          "GET /?action=status": "Check platform configurations",
+          "GET /?action=nostr": "Test Nostr relay connectivity",
+        },
+      });
+    }
+
+    // POST - Broadcast to all platforms
+    if (request.method === "POST") {
+      try {
+        const payload = await request.json();
+        const results = await broadcastMessage(payload, config);
+        return jsonResponse(results);
+      } catch (error) {
+        return jsonResponse({ error: error.message }, 500);
+      }
+    }
+
+    return jsonResponse({ error: "Method not allowed" }, 405);
+  },
+};
+
+/**
+ * Broadcast a message to all configured platforms
+ */
+async function broadcastMessage(payload, config) {
+  const results = {};
+  const platforms = payload.platforms || ["nostr"];
+  const message = payload.content || payload.message || "";
+
+  const promises = [];
+
+  if (platforms.includes("nostr") && config.NOSTR_PRIVATE_KEY) {
+    promises.push(
+      broadcastToNostr(message, payload.tags, config).then(
+        (r) => (results.nostr = r),
+      ),
+    );
+  }
+
+  if (platforms.includes("twitter") && config.TWITTER_API_KEY) {
+    promises.push(
+      broadcastToTwitter(message, payload.title, config).then(
+        (r) => (results.twitter = r),
+      ),
+    );
+  }
+
+  if (platforms.includes("substack") && config.SUBSTACK_API_KEY) {
+    promises.push(
+      broadcastToSubstack(payload, config).then((r) => (results.substack = r)),
+    );
+  }
+
+  if (platforms.includes("reddit") && config.REDDIT_CLIENT_ID) {
+    promises.push(
+      broadcastToReddit(payload, config).then((r) => (results.reddit = r)),
+    );
+  }
+
+  if (platforms.includes("mastodon") && config.MASTODON_ACCESS_TOKEN) {
+    promises.push(
+      broadcastToMastodon(message, config).then((r) => (results.mastodon = r)),
+    );
+  }
+
+  if (platforms.includes("bluesky") && config.BLUESKY_APP_PASSWORD) {
+    promises.push(
+      broadcastToBluesky(message, config).then((r) => (results.bluesky = r)),
+    );
+  }
+
+  await Promise.allSettled(promises);
+
+  return {
+    status: "broadcast_complete",
+    platforms: results,
+    timestamp: new Date().toISOString(),
+  };
+}
 
 // ============== NOSTR ==============
 async function broadcastToNostr(content, tags = [], config) {
@@ -125,3 +288,4 @@ function jsonResponse(data, status = 200) {
       "Access-Control-Allow-Origin": "*",
     },
   });
+}

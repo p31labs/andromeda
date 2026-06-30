@@ -15,8 +15,7 @@
     "react-dom": "^19.0.0",
     "lucide-react": "^0.454.0",
     "clsx": "^2.1.1",
-    "tailwind-merge": "^2.5.4",
-    "@p31/shared": "workspace:*"
+    "tailwind-merge": "^2.5.4"
   },
   "devDependencies": {
     "@types/node": "^20.11.5",

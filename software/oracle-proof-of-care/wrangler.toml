@@ -1,0 +1,24 @@
+name = "oracle-proof-of-care"
+main = "src/index.ts"
+compatibility_date = "2025-10-01"
+compatibility_flags = ["nodejs_compat"]
+
+[[d1_databases]]
+binding = "CAPITAL_DB"
+database_name = "capital-db"
+database_id = "d7f0afea-6c49-46e3-a225-6353367578f2"
+
+[[kv_namespaces]]
+binding = "ORACLE_KV"
+id = "c9b94ef0d9c740b1b0423cba48ec8b69"
+
+# Cron disabled — free plan limit reached (5/5). Trigger manually via POST /oracle/snapshot
+# [triggers]
+# crons = ["0 */6 * * *"]
+
+[vars]
+ENVIRONMENT = "production"
+ORACLE_VERSION = "0.1.0"
+PQC_COMPLIANT = "true"
+PQC_ALGORITHMS = "ML-KEM-768, ML-DSA-65"
+PQC_STANDARD = "FIPS-203, FIPS-204"

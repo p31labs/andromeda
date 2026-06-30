@@ -1,0 +1,64 @@
+# ════════════════════════════════════════════════════════════════════════════════
+# Caddyfile — Auto-HTTPS for Crypto Processors
+#
+# Uses environment variables for domains.
+# Falls back to HTTP if domains don't resolve (for staging/testing).
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# ─── BTCPay Server (Bitcoin/Lightning) ─────────────────────────────────
+{$SATSALE_DOMAIN:satsale.p31ca.org} {
+    # If using a real domain, Caddy auto-provisions TLS.
+    # If using IP:port (no domain), this block is skipped and we use the fallback below.
+    encode gzip
+    reverse_proxy btcpay:8080 {
+        health_uri /api/v1/health
+        health_interval 30s
+        health_timeout 5s
+    }
+    # Security headers
+    header {
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "SAMEORIGIN"
+        X-XSS-Protection "1; mode=block"
+        Strict-Transport-Security "max-age=31536000; includeSubDomains"
+    }
+    # Logging
+    log {
+        output file /logs/btcpay.log
+        format json
+    }
+}
+
+# ─── Paylix (Multi-chain EVM) ──────────────────────────────────────────
+{$PAYLIX_DOMAIN:paylix.p31ca.org} {
+    encode gzip
+    reverse_proxy paylix:8080 {
+        health_uri /health
+        health_interval 30s
+        health_timeout 5s
+    }
+    header {
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "SAMEORIGIN"
+        X-XSS-Protection "1; mode=block"
+        Strict-Transport-Security "max-age=31536000; includeSubDomains"
+    }
+    log {
+        output file /logs/paylix.log
+        format json
+    }
+}
+
+# ─── Fallback: IP-based access (no TLS) ────────────────────────────────
+# Uncomment these if you're testing with raw IP:port instead of domains.
+# BTCPay will be at http://<IP>:8080 and Paylix at http://<IP>:8081.
+
+# :8080 {
+#     encode gzip
+#     reverse_proxy btcpay:8080
+# }
+
+# :8081 {
+#     encode gzip
+#     reverse_proxy paylix:8080
+# }

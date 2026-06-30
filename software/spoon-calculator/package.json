@@ -12,8 +12,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-datepicker": "^8.0.0",
-    "date-fns": "^3.6.0",
-    "@p31/shared": "workspace:*"
+    "date-fns": "^3.6.0"
   },
   "devDependencies": {
     "@types/react": "^19.0.0",

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Graduation Ceremony — P31 Labs</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #030305;
+      color: #e0e0e0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    .ceremony {
+      max-width: 600px;
+      width: 100%;
+      text-align: center;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 1rem;
+      padding: 3rem 2rem;
+    }
+    .did {
+      display: inline-block;
+      background: rgba(0, 240, 255, 0.1);
+      border: 1px solid rgba(0, 240, 255, 0.2);
+      border-radius: 0.5rem;
+      padding: 1rem;
+      margin: 1.5rem 0;
+      font-family: monospace;
+      font-size: 0.75rem;
+      color: #00f0ff;
+      word-break: break-all;
+    }
+    .btn {
+      display: inline-block;
+      padding: 0.75rem 2rem;
+      background: #00f0ff;
+      color: #030305;
+      border: none;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 240, 255, 0.3);
+    }
+  </style>
+</head>
+<body>
+  <div class="ceremony">
+    <div style="font-size: 4rem; margin-bottom: 1rem;">🎓</div>
+    <h1 style="font-size: 2rem; font-weight: 600; color: #fff; margin-bottom: 0.5rem;">You Are Now a Citizen</h1>
+    <p style="color: #94a3b8; font-size: 1rem; margin-bottom: 2rem;">Your K₄ Settlement passport has been minted.</p>
+    <div class="did" id="did-display">did:key:z... (loading)</div>
+    <p style="color: #34d399; font-weight: 500; margin: 0.75rem 0;">✓ Identity Verified</p>
+    <p style="color: #34d399; font-weight: 500; margin: 0.75rem 0;">✓ Settlement Joined</p>
+    <p style="color: #34d399; font-weight: 500; margin: 0.75rem 0;">✓ LOVE Minted</p>
+    <a href="/phos?surface=GREETING&spoons=3" class="btn" style="margin-top: 2rem;">Enter Your Settlement →</a>
+    <p style="margin-top: 2rem; font-size: 0.75rem; color: #475569;">P31 Labs, Inc. — Sovereign Infrastructure for Neurodivergent Families</p>
+  </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const did = localStorage.getItem('p31:passport:did');
+      if (did) {
+        const el = document.getElementById('did-display');
+        if (el) el.textContent = did;
+      }
+    });
+  </script>
+</body>
+</html>

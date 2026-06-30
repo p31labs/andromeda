@@ -1,0 +1,16 @@
+name = "p31-scheduler"
+main = "src/index.js"
+compatibility_date = "2025-10-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Single consolidated cron — dispatches all periodic tasks internally.
+# Uses 1 of 5 free-plan slots instead of 3+.
+[triggers]
+crons = []
+
+[vars]
+ENVIRONMENT = "production"
+SCHEDULER_VERSION = "0.1.0"
+
+# Secrets (set via wrangler):
+#   wrangler secret put FORGE_API_KEY    — matches p31-forge worker's FORGE_API_KEY

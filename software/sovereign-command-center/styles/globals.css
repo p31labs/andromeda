@@ -1,29 +1,105 @@
-@import '@p31/shared/src/theme/css-variables.css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-/* P31 Canon — injected by Quantum Polisher */
-:root {
-  --color-amber: #cda852;
-  --color-cloud: #1e293b;
-  --color-coral: #cc6247;
-  --color-cyan: #4db8a8;
-  --color-fuchsia: #e879f9;
-  --color-ink: var(--color-ink);
-  --color-lavender: #8b7cc9;
-  --color-muted: #64748b;
-  --color-paper: #fdfcfa;
-  --color-phosphor: #00ff88;
-  --color-phosphorus: #3ba372;
-  --color-surface: var(--color-surface);
-  --color-surface2: #ebeae4;
-  --color-teal: #5dcaa5;
-  --color-themeColor: #f5f4f0;
-  --color-void: #f5f4f0;
+/* Custom scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
 }
-  background: var(--color-ink);
-  from {
+
+::-webkit-scrollbar-track {
+  background: #0f172a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
+
+/* Custom focus styles for accessibility */
+.focus-ring {
+  outline: 2px solid #10b981;
+  outline-offset: 2px;
+}
+
+/* Mobile-specific optimizations */
+@media (max-width: 640px) {
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* Animation utilities */
+.animate-in {
+  animation-fill-mode: both;
+}
+
+.fade-in {
+  animation-name: fadeIn;
+  animation-duration: 300ms;
+  animation-timing-function: ease-out;
+}
+
+.slide-in-from-bottom-2 {
+  animation-name: slideInFromBottom;
+  animation-duration: 300ms;
+  animation-timing-function: ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideInFromBottom {
+  from { 
     transform: translateY(10px);
     opacity: 0;
   }
-  to {
-  color: var(--color-surface);
+  to { 
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Selection styling */
+::selection {
+  background-color: #10b98133;
+  color: #ffffff;
+}
+
+/* Custom button focus styles */
+button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.3);
+}
+
+/* Input focus styles */
+input:focus, textarea:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.4);
+}
+
+/* Disable text selection on interactive elements */
+.select-none {
+  user-select: none;
+}
+
+/* Custom loading spinner */
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #334155;
+  border-top: 2px solid #10b981;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }

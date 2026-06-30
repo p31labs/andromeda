@@ -1,0 +1,201 @@
+# ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+# P31 Labs — Crypto Processor Deployment (FORTUNE 1 Stack - COMPLETE)
+#
+#   Bitcoin/Lightning → BTCPay Server (enterprise standard)
+#   Multi-chain EVM    → Paylix (complete stack: web + indexer + db)
+#   Database            → Postgres (shared)
+#   Reverse Proxy       → Caddy (auto-HTTPS)
+#
+# Usage:
+#   docker compose up -d          # Start all services
+#   docker compose down           # Stop all services
+#   docker compose logs -f        # Follow logs
+#   ./deploy-crypto.sh init       # Generate .env with secrets
+# ═════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+services:
+  # ─── BTCPay Server (Bitcoin + Lightning) ─────────────────────────────
+  # Enterprise-grade, self-hosted Bitcoin payment processor.
+  # Used by BTC Inc at scale. Supports full node, Lightning, multisig.
+  # Docs: https://docs.btcpayserver.org/docker/installation/
+  # Image: https://github.com/btcpayserver/btcpayserver-docker
+  # Running in explorer-only mode — no local bitcoind.
+  btcpay:
+    image: btcpayserver/btcpayserver:2.4.0
+    container_name: p31_btcpay
+    restart: unless-stopped
+    environment:
+      BTCPAY_HOST: ${SATSALE_DOMAIN:-satsale.p31ca.org}
+      BTCPAY_NETWORK: ${BTCPAY_NETWORK:-testnet}
+      BTCPAY_BIND: ${BTCPAY_BIND:-0.0.0.0}
+      BTCPAY_PORT: ${BTCPAY_PORT:-8080}
+      BTCPAY_API_PORT: ${BTCPAY_API_PORT:-8081}
+      BTCPAY_API_KEY: ${BTCPAY_API_KEY:-}
+      NBITCOIN_NETWORK: ${BTCPAY_NETWORK:-testnet}
+      # Explorer-only: uses public Electrum server, no full node required
+      BTCPAY_BTCEXPLORERURL: "http://nbxplorer:24444"
+      NBXPLORER_URL: "http://nbxplorer:24444"
+      BTCPAY_POSTGRES: "Host=postgres;Port=5432;Database=btcpay;Username=${POSTGRES_USER:-paylix};Password=${POSTGRES_PASSWORD:-}"
+      BTCPAYGEN_ADDITIONAL_FRAGMENTS: "opt-save-storage"
+    volumes:
+      - ./data/btcpay:/etc/btcpayserver
+      - ./data/btcpay-db:/var/lib/docker/volumes/btcpay_db/_data
+    depends_on:
+      postgres:
+        condition: service_healthy
+      nbxplorer:
+        condition: service_started
+    ports:
+      - "${BTCPAY_PORT:-8080}:${BTCPAY_PORT:-8080}"
+      - "${BTCPAY_API_PORT:-8081}:${BTCPAY_API_PORT:-8081}"
+    networks:
+      - p31-crypto
+
+  # ─── Bitcoin Node (pruned testnet) ───────────────────────────────────
+  # Required by NBXplorer (Postgres backend) and BTCPay for UTXO/wallet ops.
+  # Pruned to 2GB — enough for testnet indexing without full archive.
+  bitcoind:
+    image: dobtc/bitcoin:26.0
+    container_name: p31_bitcoind
+    restart: unless-stopped
+    environment:
+      BITCOIN_DATA: /data
+    command:
+      -testnet=1
+      -prune=2000
+      -dbcache=1024
+      -assumevalid=0000000000018294498c75c83bbb6508884238e2b12494c4c4dcef4dbc149e56
+      -rpcuser=${BTCPAY_RPC_USER:-bitcoin}
+      -rpcpassword=${BTCPAY_RPC_PASSWORD:-}
+      -rpcallowip=0.0.0.0/0
+      -rpcbind=0.0.0.0
+      -rpcport=8332
+    volumes:
+      - ./data/bitcoind:/data
+    healthcheck:
+      test: ["CMD-SHELL", "pidof bitcoind > /dev/null 2>&1 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 6
+      start_period: 5s
+    networks:
+      - p31-crypto
+
+  # ─── NBXplorer (Bitcoin indexer for BTCPay) ──────────────────────────
+  # Required by BTCPay for UTXO indexing. Connects to the local bitcoind.
+  nbxplorer:
+    image: nicolasdorier/nbxplorer:2.5.0
+    container_name: p31_nbxplorer
+    restart: unless-stopped
+    command: ["--network", "testnet", "--btcnodeendpoint", "bitcoind:18333", "--btcrpcurl", "http://bitcoind:8332/", "--btcrpcuser", "${BTCPAY_RPC_USER:-bitcoin}", "--btcrpcpassword", "${BTCPAY_RPC_PASSWORD:-}"]
+    environment:
+      NBITCOIN_NETWORK: ${BTCPAY_NETWORK:-testnet}
+      BPAY_DATADIRECTORY: /data
+      BPAY_BIND: 0.0.0.0
+      BPAY_PORT: 24444
+      NBXPLORER_POSTGRES: "Host=postgres;Port=5432;Database=nbxplorer;Username=${POSTGRES_USER:-paylix};Password=${POSTGRES_PASSWORD:-}"
+      BPAY_btcrpcUrl: "http://bitcoind:8332/"
+      BPAY_btcnode: "bitcoind:18333"
+      BPAY_btcrpcUser: ${BTCPAY_RPC_USER:-bitcoin}
+      BPAY_btcrpcPassword: ${BTCPAY_RPC_PASSWORD:-}
+      ASPNETCORE_URLS: http://0.0.0.0:24444
+      NBXPLORER_DATADIR: /data
+    depends_on:
+      bitcoind:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./data/nbxplorer:/data
+    ports:
+      - "24444:24444"
+    networks:
+      - p31-crypto
+
+  # ─── Postgres (shared for Paylix and potentially other services) ────
+  postgres:
+    image: postgres:15-alpine
+    container_name: p31_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-paylix}
+      POSTGRES_USER: ${POSTGRES_USER:-paylix}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-}
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER:-paylix}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - p31-crypto
+
+  # ─── Paylix Web (HTTP API server) ────────────────────────────────────
+  # Official Paylix build from GitHub: https://github.com/JanoTheDev/paylix
+  # Provides the REST API endpoints: /paylix/session, /paylix/webhook, etc.
+  # This is what the donate-api worker communicates with.
+  paylix-web:
+    build:
+      context: ./paylix
+      dockerfile: apps/web/Dockerfile
+    container_name: p31_paylix_web
+    restart: unless-stopped
+    env_file: ./paylix/.env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+    networks:
+      - p31-crypto
+
+  # ─── Paylix Indexer (EVM blockchain listener) ────────────────────────
+  # Official Paylix build from GitHub: https://github.com/JanoTheDev/paylix
+  # Listens to blockchain events and processes payments
+  paylix-indexer:
+    build:
+      context: ./paylix
+      dockerfile: packages/indexer/Dockerfile
+    container_name: p31_paylix_indexer
+    restart: unless-stopped
+    env_file: ./paylix/.env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - p31-crypto
+
+  # ─── Caddy (Reverse Proxy + Auto-HTTPS) ──────────────────────────────
+  # Automatically provisions TLS certificates for your domains.
+  # Falls back to HTTP if domains don't resolve (for staging).
+  caddy:
+    image: caddy:2-alpine
+    container_name: p31_crypto_caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - ./data/caddy:/data
+      - ./logs/caddy:/logs
+    environment:
+      SATSALE_DOMAIN: ${SATSALE_DOMAIN:-satsale.p31ca.org}
+      PAYLIX_DOMAIN: ${PAYLIX_DOMAIN:-paylix.p31ca.org}
+    depends_on:
+      - btcpay
+      - paylix-web
+    networks:
+      - p31-crypto
+
+volumes:
+  btcpay-data:
+  btcpay-db:
+  nbxplorer-data:
+  postgres-data:
+  paylix-data:
+
+networks:
+  p31-crypto:
+    driver: bridge

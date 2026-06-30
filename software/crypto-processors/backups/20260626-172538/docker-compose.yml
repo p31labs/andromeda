@@ -1,0 +1,171 @@
+# ═════════════════════════════════════════════════════════════════════════════
+# P31 Labs — Crypto Processor Deployment (FORTUNE 1 Stack)
+#
+#   Bitcoin/Lightning → BTCPay Server (enterprise standard)
+#   Multi-chain EVM    → Paylix
+#   Database            → Postgres (Paylix)
+#   Reverse Proxy       → Caddy (auto-HTTPS)
+#
+# Usage:
+#   docker compose up -d          # Start all services
+#   docker compose down           # Stop all services
+#   docker compose logs -f        # Follow logs
+#   ./deploy-crypto.sh init       # Generate .env with secrets
+# ═════════════════════════════════════════════════════════════════════════════
+
+services:
+  # ─── BTCPay Server (Bitcoin + Lightning) ─────────────────────────────
+  # Enterprise-grade, self-hosted Bitcoin payment processor.
+  # Used by BTC Inc at scale. Supports full node, Lightning, multisig.
+  # Docs: https://docs.btcpayserver.org/docker/installation/
+  # Image: https://github.com/btcpayserver/btcpayserver-docker
+  btcpay:
+    image: btcpayserver/btcpayserver:1.14.0
+    container_name: p31_btcpay
+    restart: unless-stopped
+    environment:
+      BTCPAY_HOST: ${SATSALE_DOMAIN:-satsale.p31ca.org}
+      BTCPAY_ENVIRONMENT: ${BTCPAY_NETWORK:-mainnet}
+      BTCPAY_BIND: ${BTCPAY_BIND:-0.0.0.0}
+      BTCPAY_PORT: ${BTCPAY_PORT:-8080}
+      BTCPAY_API_PORT: ${BTCPAY_API_PORT:-8081}
+      BTCPAY_API_KEY: ${BTCPAY_API_KEY:-}
+      NBITCOIN_NETWORK: ${BTCPAY_NETWORK:-mainnet}
+      # Optional: Lightning (uncomment to enable)
+      # BTCPAY_LIGHTNING_ENABLED: ${BTCPAY_LIGHTNING_ENABLED:-false}
+      # BTCPAY_LIGHTNING_TYPE: ${BTCPAY_LIGHTNING_TYPE:-lnd}
+      # BTCPAY_LIGHTNING_HOST: ${BTCPAY_LIGHTNING_HOST:-lnd}
+      # BTCPAY_LIGHTNING_PORT: ${BTCPAY_LIGHTNING_PORT:-8080}
+    volumes:
+      - ./data/btcpay:/etc/btcpayserver
+      - ./data/btcpay-db:/var/lib/docker/volumes/btcpay_db/_data
+    ports:
+      - "${BTCPAY_PORT:-8080}:8080"
+      - "${BTCPAY_API_PORT:-8081}:8081"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    networks:
+      - p31-crypto
+
+  # ─── NBXplorer (Bitcoin indexer for BTCPay) ──────────────────────────
+  # Required by BTCPay for UTXO indexing. Uses SQLite by default.
+  nbxplorer:
+    image: nicolasdorier/nbxplorer:2.5.0
+    container_name: p31_nbxplorer
+    restart: unless-stopped
+    environment:
+      NBITCOIN_NETWORK: ${BTCPAY_NETWORK:-mainnet}
+      BPAY_DATADIRECTORY: /data
+      BPAY_BIND: 0.0.0.0
+      BPAY_PORT: 24444
+    volumes:
+      - ./data/nbxplorer:/data
+    ports:
+      - "24444:24444"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:24444/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 120s
+    networks:
+      - p31-crypto
+
+  # ─── Postgres (shared for Paylix) ────────────────────────────────────
+  postgres:
+    image: postgres:15-alpine
+    container_name: p31_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-paylix}
+      POSTGRES_USER: ${POSTGRES_USER:-paylix}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-}
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER:-paylix}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - p31-crypto
+
+  # ─── Paylix (Multi-chain EVM) ────────────────────────────────────────
+  # Open-source crypto payments. USDC/USDT on 7 chains, non-custodial.
+  # Docs: https://github.com/JanoTheDev/paylix
+  # Docker: https://hub.docker.com/r/janthedev/paylix
+  paylix:
+    image: janthedev/paylix:latest
+    container_name: p31_paylix
+    restart: unless-stopped
+    environment:
+      # Chain configuration
+      CHAINS: ${PAYLIX_CHAINS:-1,137,56,42161,10,8453,250}
+      CURRENCIES: ${PAYLIX_CURRENCIES:-USDC,USDT}
+      # Wallet (choose one method)
+      MNEMONIC: ${PAYLIX_MNEMONIC:-}
+      # PRIVATE_KEY: ${PAYLIX_PRIVATE_KEY:-}
+      # Network
+      NETWORK: mainnet
+      PORT: 8080
+      HOST: 0.0.0.0
+      LOG_LEVEL: info
+      # Gas settings
+      GAS_PRICE_STRATEGY: moderate
+      MAX_GAS_PRICE: 100
+      # Database
+      DATABASE_URL: postgresql://${POSTGRES_USER:-paylix}:${POSTGRES_PASSWORD:-}@postgres:5432/${POSTGRES_DB:-paylix}?schema=public
+      # Webhook
+      WEBHOOK_URL: ${DONATE_API_URL:-https://donate-api.phosphorus31.org}${PAYLIX_WEBHOOK_PATH:-/paylix/webhook}
+      WEBHOOK_SECRET: ${PAYLIX_WEBHOOK_SECRET:-}
+    volumes:
+      - ./data/paylix:/app/data
+      - ./config/paylix:/app/config
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - p31-crypto
+
+  # ─── Caddy (Reverse Proxy + Auto-HTTPS) ──────────────────────────────
+  # Automatically provisions TLS certificates for your domains.
+  # Falls back to HTTP if domains don't resolve (for staging).
+  caddy:
+    image: caddy:2-alpine
+    container_name: p31_crypto_caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - ./data/caddy:/data
+      - ./logs/caddy:/logs
+    environment:
+      SATSALE_DOMAIN: ${SATSALE_DOMAIN:-satsale.p31ca.org}
+      PAYLIX_DOMAIN: ${PAYLIX_DOMAIN:-paylix.p31ca.org}
+    depends_on:
+      - btcpay
+      - paylix
+    networks:
+      - p31-crypto
+
+volumes:
+  btcpay-data:
+  btcpay-db:
+  nbxplorer-data:
+  postgres-data:
+  paylix-data:
+
+networks:
+  p31-crypto:
+    driver: bridge
