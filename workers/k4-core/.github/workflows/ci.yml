@@ -1,0 +1,32 @@
+name: k4-core CI
+
+'on':
+  pull_request:
+    paths:
+      - 'workers/k4-core/**'
+  push:
+    branches: [main]
+    paths:
+      - 'workers/k4-core/**'
+  workflow_dispatch:
+
+concurrency:
+  group: ci-k4-core-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Test & Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608
+      - uses: actions/setup-node@1d0ff469b7b2f02069e5e1777b7c29a401f1b885
+        with:
+          node-version: 22
+          cache: 'npm'
+      - run: cd workers/k4-core && npm ci
+      - run: cd workers/k4-core && npm test
+      - run: cd workers/k4-core && npm run build
